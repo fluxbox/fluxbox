@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.75 2003/07/25 10:03:55 rathnor Exp $
+// $Id: Slit.cc,v 1.76 2003/08/04 12:53:10 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -577,11 +577,6 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
     if (client == 0)
         return;
 
-#ifdef DEBUG
-    cerr<<"Slit::removeClient( client->client_window = 0x"<<hex<<client->clientWindow()<<
-        ", client->icon_window)"<<endl;
-#endif // DEBUG
-
     // remove from event manager
     if (client->clientWindow() != 0)
         FbTk::EventManager::instance()->remove(client->clientWindow());
@@ -622,9 +617,7 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
 
 
 void Slit::removeClient(Window w, bool remap) {
-#ifdef DEBUG
-    cerr<<"Slit::removeClient(Window w = 0x"<<hex<<w<<dec<<", remap = "<<remap<<")"<<endl;
-#endif // DEBUG
+
     if (w == frame.window)
         return;
 

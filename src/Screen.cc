@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.211 2003/07/28 20:11:55 fluxgen Exp $
+// $Id: Screen.cc,v 1.212 2003/08/04 12:50:06 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -687,12 +687,12 @@ void BScreen::reconfigure() {
         slit()->reconfigure();
 #endif // SLIT
 
-    //reconfigure workspaces
+    // reconfigure workspaces
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
              mem_fun(&Workspace::reconfigure));
 
-    //reconfigure Icons
+    // reconfigure Icons
     for_each(m_icon_list.begin(),
              m_icon_list.end(),
              mem_fun(&FluxboxWindow::reconfigure));
@@ -1296,91 +1296,92 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
 void BScreen::nextFocus(int opts) {
     const int num_windows = currentWorkspace()->numberOfWindows();
 
-    if (num_windows >= 1) {
-        if (!(opts & CYCLELINEAR)) {
-            if (!cycling_focus) {
-                cycling_focus = True;
-                cycling_window = focused_list.begin();
-                cycling_last = 0;
-            } else {
-                // already cycling, so restack to put windows back in their proper order
-                m_layermanager.restack();
+    if (num_windows < 1)
+        return;
+
+    if (!(opts & CYCLELINEAR)) {
+        if (!cycling_focus) {
+            cycling_focus = True;
+            cycling_window = focused_list.begin();
+            cycling_last = 0;
+        } else {
+            // already cycling, so restack to put windows back in their proper order
+            m_layermanager.restack();
+        }
+        // if it is stacked, we want the highest window in the focused list
+        // that is on the same workspace
+        FocusedWindows::iterator it = cycling_window;
+        const FocusedWindows::iterator it_end = focused_list.end();
+
+        while (true) {
+            ++it;
+            if (it == it_end) {
+                it = focused_list.begin();
             }
-            // if it is stacked, we want the highest window in the focused list
-            // that is on the same workspace
-            FocusedWindows::iterator it = cycling_window;
-            FocusedWindows::iterator it_end = focused_list.end();
+            // give up [do nothing] if we reach the current focused again
+            if ((*it) == (*cycling_window)) {
+                break;
+            }
 
-            while (true) {
-                ++it;
-                if (it == it_end) {
-                    it = focused_list.begin();
-                }
-                // give up [do nothing] if we reach the current focused again
-                if ((*it) == (*cycling_window)) {
-                    break;
-                }
+            FluxboxWindow *fbwin = (*it)->m_win;
+            if (fbwin && !fbwin->isIconic() &&
+                (fbwin->isStuck() 
+                 || fbwin->workspaceNumber() == currentWorkspaceID())) {
+                // either on this workspace, or stuck
 
-                FluxboxWindow *fbwin = (*it)->m_win;
-                if (fbwin && !fbwin->isIconic() &&
-                    (fbwin->isStuck() 
-                     || fbwin->workspaceNumber() == currentWorkspaceID())) {
-                    // either on this workspace, or stuck
+                // keep track of the originally selected window in a set
+                WinClient &last_client = fbwin->winClient();
 
-                    // keep track of the originally selected window in a set
-                    WinClient &last_client = fbwin->winClient();
-
-                    if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
-                        // moved onto a new fbwin
-                        if (!cycling_last || cycling_last->fbwindow() != fbwin) {
-                            if (cycling_last)
-                                // set back to orig current Client in that fbwin
-                                cycling_last->fbwindow()->setCurrentClient(*cycling_last, false);
-                            cycling_last = &last_client;
-                        }
-                        fbwin->tempRaise();
-                        break;
+                if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
+                    // moved onto a new fbwin
+                    if (!cycling_last || cycling_last->fbwindow() != fbwin) {
+                        if (cycling_last)
+                            // set back to orig current Client in that fbwin
+                            cycling_last->fbwindow()->setCurrentClient(*cycling_last, false);
+                        cycling_last = &last_client;
                     }
-                }
-            }
-            cycling_window = it;
-        } else { // not stacked cycling
-            // I really don't like this, but evidently some people use it(!)
-            Workspace *wksp = currentWorkspace();
-            Workspace::Windows &wins = wksp->windowList();
-            Workspace::Windows::iterator it = wins.begin();
-
-            FluxboxWindow *focused_group = 0;
-            // start from the focused window
-            bool have_focused = false;
-            WinClient *focused = Fluxbox::instance()->getFocusedWindow();
-            if (focused != 0) {
-                if (focused->screen().screenNumber() == screenNumber()) {
-                    have_focused = true;
-                    focused_group = focused->fbwindow();
-                }
-            }
-
-            if (!have_focused) {
-                focused_group = (*it);
-            } else {
-                //get focused window iterator
-                for (; it != wins.end() && (*it) != focused_group; ++it) 
-                    continue;
-            }
-
-            do {
-                ++it;
-                if (it == wins.end())
-                    it = wins.begin();
-                // see if the window should be skipped
-                if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
+                    fbwin->tempRaise();
                     break;
-            } while ((*it) != focused_group);
-            if ((*it) != focused_group && it != wins.end())
-                (*it)->raise();
+                }
+            }
+        }
+        cycling_window = it;
+    } else { // not stacked cycling
+        // I really don't like this, but evidently some people use it(!)
+        Workspace *wksp = currentWorkspace();
+        Workspace::Windows &wins = wksp->windowList();
+        Workspace::Windows::iterator it = wins.begin();
+
+        FluxboxWindow *focused_group = 0;
+        // start from the focused window
+        bool have_focused = false;
+        WinClient *focused = Fluxbox::instance()->getFocusedWindow();
+        if (focused != 0) {
+            if (focused->screen().screenNumber() == screenNumber()) {
+                have_focused = true;
+                focused_group = focused->fbwindow();
+            }
         }
 
+        if (!have_focused) {
+            focused_group = (*it);
+        } else {
+            // get focused window iterator
+            for (; it != wins.end() && (*it) != focused_group; ++it) 
+                continue;
+        }
+
+        do {
+            ++it;
+            if (it == wins.end())
+                it = wins.begin();
+            // see if the window should be skipped
+            if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
+                break;
+        } while ((*it) != focused_group);
+
+        if ((*it) != focused_group && it != wins.end())
+            (*it)->raise();
     }
 
 }
@@ -1389,108 +1390,113 @@ void BScreen::nextFocus(int opts) {
 void BScreen::prevFocus(int opts) {
     int num_windows = currentWorkspace()->numberOfWindows();
 	
-    if (num_windows >= 1) {
-        if (!(opts & CYCLELINEAR)) {
-            if (!cycling_focus) {
-                cycling_focus = true;
-                cycling_window = focused_list.end();
-                cycling_last = 0;
-            } else {
-                // already cycling, so restack to put windows back in their proper order
-                m_layermanager.restack();
-            }
-            // if it is stacked, we want the highest window in the focused list
-            // that is on the same workspace
-            FocusedWindows::iterator it = cycling_window;
-            FocusedWindows::iterator it_end = focused_list.end();
+    if (num_windows < 1)
+        return;
 
-            while (true) {
-                --it;
-                if (it == it_end) {
-                    it = focused_list.end();
-                    --it;
-                }
-                // give up [do nothing] if we reach the current focused again
-                if ((*it) == (*cycling_window)) {
-                    break;
-                }
-
-                FluxboxWindow *fbwin = (*it)->m_win;
-                if (fbwin && !fbwin->isIconic() &&
-                    (fbwin->isStuck() 
-                     || fbwin->workspaceNumber() == currentWorkspaceID())) {
-                    // either on this workspace, or stuck
-
-                    // keep track of the originally selected window in a set
-                    WinClient &last_client = fbwin->winClient();
-
-
-                    if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
-                        // moved onto a new fbwin
-                        if (!cycling_last || cycling_last->fbwindow() != fbwin) {
-                            if (cycling_last)
-                                // set back to orig current Client in that fbwin
-                                cycling_last->fbwindow()->setCurrentClient(*cycling_last, false);
-                            cycling_last = &last_client;
-                        }
-                        fbwin->tempRaise();
-                        break;
-                    }
-                }
-            }
-            cycling_window = it;
-        } else { // not stacked cycling
-            
-            Workspace *wksp = currentWorkspace();
-            Workspace::Windows &wins = wksp->windowList();
-            Workspace::Windows::iterator it = wins.begin();
-            
-            FluxboxWindow *focused_group = 0;
-            // start from the focused window
-            bool have_focused = false;
-            WinClient *focused = Fluxbox::instance()->getFocusedWindow();
-            if (focused != 0) {
-                if (focused->screen().screenNumber() == screenNumber()) {
-                    have_focused = true;
-                    focused_group = focused->fbwindow();
-                }
-            }
-
-            if (!have_focused) {
-                focused_group = (*it);
-            } else {
-                //get focused window iterator
-                for (; it != wins.end() && (*it) != focused_group; ++it) 
-                    continue;
-            }
-
-            do {
-                if (it == wins.begin())
-                    it = wins.end();
-                --it;
-                // see if the window should be skipped
-                if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
-                    break;
-            } while ((*it) != focused_group);
-            
-            if ((*it) != focused_group && it != wins.end())
-                (*it)->raise();
+    if (!(opts & CYCLELINEAR)) {
+        if (!cycling_focus) {
+            cycling_focus = true;
+            cycling_window = focused_list.end();
+            cycling_last = 0;
+        } else {
+            // already cycling, so restack to put windows back in their proper order
+            m_layermanager.restack();
         }
+        // if it is stacked, we want the highest window in the focused list
+        // that is on the same workspace
+        FocusedWindows::iterator it = cycling_window;
+        FocusedWindows::iterator it_end = focused_list.end();
+
+        while (true) {
+            --it;
+            if (it == it_end) {
+                it = focused_list.end();
+                --it;
+            }
+            // give up [do nothing] if we reach the current focused again
+            if ((*it) == (*cycling_window)) {
+                break;
+            }
+
+            FluxboxWindow *fbwin = (*it)->m_win;
+            if (fbwin && !fbwin->isIconic() &&
+                (fbwin->isStuck() 
+                 || fbwin->workspaceNumber() == currentWorkspaceID())) {
+                // either on this workspace, or stuck
+
+                // keep track of the originally selected window in a set
+                WinClient &last_client = fbwin->winClient();
+
+
+                if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
+                    // moved onto a new fbwin
+                    if (!cycling_last || cycling_last->fbwindow() != fbwin) {
+                        if (cycling_last)
+                            // set back to orig current Client in that fbwin
+                            cycling_last->fbwindow()->setCurrentClient(*cycling_last, false);
+                        cycling_last = &last_client;
+                    }
+                    fbwin->tempRaise();
+                    break;
+                }
+            }
+        }
+        cycling_window = it;
+    } else { // not stacked cycling
+            
+        Workspace *wksp = currentWorkspace();
+        Workspace::Windows &wins = wksp->windowList();
+        Workspace::Windows::iterator it = wins.begin();
+            
+        FluxboxWindow *focused_group = 0;
+        // start from the focused window
+        bool have_focused = false;
+        WinClient *focused = Fluxbox::instance()->getFocusedWindow();
+        if (focused != 0) {
+            if (focused->screen().screenNumber() == screenNumber()) {
+                have_focused = true;
+                focused_group = focused->fbwindow();
+            }
+        }
+
+        if (!have_focused) {
+            focused_group = (*it);
+        } else {
+            //get focused window iterator
+            for (; it != wins.end() && (*it) != focused_group; ++it) 
+                continue;
+        }
+
+        do {
+            if (it == wins.begin())
+                it = wins.end();
+            --it;
+            // see if the window should be skipped
+            if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
+                break;
+        } while ((*it) != focused_group);
+            
+        if ((*it) != focused_group && it != wins.end())
+            (*it)->raise();
     }
 }
 
 
 void BScreen::raiseFocus() {
     bool have_focused = false;
-    Fluxbox * const fb = Fluxbox::instance();
-	
-    if (fb->getFocusedWindow())
-        if (fb->getFocusedWindow()->screen().screenNumber() == screenNumber()) {
+    Fluxbox &fb = *Fluxbox::instance();
+    // set have_focused if the currently focused window 
+    // is on this screen
+    if (fb.getFocusedWindow()) {
+        if (fb.getFocusedWindow()->screen().screenNumber() == screenNumber()) {
             have_focused = true;
         }
+    }
 
-    if ((currentWorkspace()->numberOfWindows() > 1) && have_focused)
-        fb->getFocusedWindow()->raise();
+    // if we have a focused window on this screen and
+    // number of windows is greater than one raise the focused window
+    if (currentWorkspace()->numberOfWindows() > 1 && have_focused)
+        fb.getFocusedWindow()->raise();
 }
 
 void BScreen::setFocusedWindow(WinClient &winclient) {
@@ -1519,7 +1525,7 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
     Workspace::Windows &wins = currentWorkspace()->windowList();
     Workspace::Windows::iterator it = wins.begin();
     for (; it != wins.end(); ++it) {
-        if ((*it) == &win) continue; // skip self
+        if ((*it) == &win) continue; // skip slef
         
         // we check things against an edge, and within the bounds (draw a picture)
         int edge=0, upper=0, lower=0, oedge=0, oupper=0, olower=0;
@@ -1680,233 +1686,230 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
         hide_menu(new FbTk::SimpleCommand<FbTk::Menu>(menu, &FbTk::Menu::hide));
 
     while (! file.eof()) {
+        
+        if (!getline(file, line))
+            continue;
 
-        if (getline(file, line)) {
-            row++;
-            if (line[0] != '#') { //the line is commented
-                int parse_pos = 0, err = 0;
+        row++;
+        if (line[0] == '#') //the line is commented
+            continue;
+
+            int parse_pos = 0, err = 0;
 
 
-                std::string str_key, str_label, str_cmd;
+            std::string str_key, str_label, str_cmd;
 				
+            err = FbTk::StringUtil::
+                getStringBetween(str_key, 
+                                 line.c_str(),
+                                 '[', ']');
+            if (err > 0 ) {
+                parse_pos += err;	
                 err = FbTk::StringUtil::
-                    getStringBetween(str_key, 
-                                     line.c_str(),
-                                     '[', ']');
-                if (err > 0 ) {
+                    getStringBetween(str_label, 
+                                     line.c_str() + parse_pos,
+                                     '(', ')');
+                if (err>0) {
                     parse_pos += err;	
-                    err = FbTk::StringUtil::
-                        getStringBetween(str_label, 
+                    FbTk::StringUtil::
+                        getStringBetween(str_cmd, 
                                          line.c_str() + parse_pos,
-                                         '(', ')');
-                    if (err>0) {
-                        parse_pos += err;	
-                       FbTk::StringUtil::
-                           getStringBetween(str_cmd, 
-                                            line.c_str() + parse_pos,
-                                            '{', '}');
-                    }
-                } else 
-                    continue; //read next line
-				
-                if (!str_key.size()) 
-                    continue;	//read next line
-
-                I18n *i18n = I18n::instance();
-                if (str_key == "end") {
-                    return ((menu.numberOfItems() == 0) ? true : false);
-                } else if (str_key == "nop") { 
-                    menu.insert(str_label.c_str());
-                } else if (str_key == "exec") { // exec
-                    if (!(str_label.size() && str_cmd.size())) {
-                        fprintf(stderr,
-                                i18n->getMessage(
-                                                 FBNLS::ScreenSet, FBNLS::ScreenEXECError,
-                                                 "BScreen::parseMenuFile: [exec] error, "
-                                                 "no menu label and/or command defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else {
-                        FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd, screenNumber()));
-                        FbTk::MacroCommand *exec_and_hide = new FbTk::MacroCommand();
-                        exec_and_hide->add(hide_menu);
-                        exec_and_hide->add(exec_cmd);
-                        FbTk::RefCount<FbTk::Command> exec_and_hide_cmd(exec_and_hide);
-                        menu.insert(str_label.c_str(), exec_and_hide_cmd);
-                    }
-                } else if (str_key == "exit") { // exit
-                    if (!str_label.size()) {
-                        fprintf(stderr,
-                                i18n->getMessage(
-                                                 FBNLS::ScreenSet, FBNLS::ScreenEXITError,
-                                                 "BScreen::parseMenuFile: [exit] error, "
-                                                 "no menu label defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else {
-                        FbTk::RefCount<FbTk::Command> exit_fb_cmd(new FbCommands::ExitFluxboxCmd());
-                        menu.insert(str_label.c_str(), exit_fb_cmd);
-                    }
-                } else if (str_key == "style") {	// style
-                    if (!( str_label.size() && str_cmd.size())) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLEError,
-                                           "BScreen::parseMenuFile: [style] error, "
-                                           "no menu label and/or filename defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else
-                        menu.insert(new StyleMenuItem(str_label, str_cmd));						
-
-                } else if (str_key == "config") {
-                    if (! str_label.size()) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                           FBNLS::ScreenSet, FBNLS::ScreenCONFIGError,
-                                           "BScreen::parseMenufile: [config] error, "
-                                           "no label defined"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else {
-#ifdef DEBUG
-                        cerr<<__FILE__<<"("<<__FUNCTION__<<
-                            "): inserts configmenu: "<<m_configmenu.get()<<endl;
-#endif // DEBUG
-                        menu.insert(str_label.c_str(), m_configmenu.get());
-                    }
-                } // end of config                
-                else if ( str_key == "include") { // include
-                    if (!str_label.size()) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                           FBNLS::ScreenSet, FBNLS::ScreenINCLUDEError,
-                                           "BScreen::parseMenuFile: [include] error, "
-                                           "no filename defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else {	// start of else 'x'
-                        // perform shell style ~ home directory expansion
-                        string newfile(FbTk::StringUtil::expandFilename(str_label));
-
-                        if (newfile.size() != 0) {
-                            FILE *submenufile = fopen(newfile.c_str(), "r");
-
-                            if (submenufile) {
-                                struct stat buf;
-                                if (fstat(fileno(submenufile), &buf) ||
-                                    (! S_ISREG(buf.st_mode))) {
-                                    fprintf(stderr,
-                                            i18n->
-                                            getMessage(
-                                                       FBNLS::ScreenSet, 
-                                                       FBNLS::ScreenINCLUDEErrorReg,
-                                                       "BScreen::parseMenuFile: [include] error: "
-                                                       "'%s' is not a regular file\n"), 
-                                            newfile.c_str());
-
-                                    cerr<<"Row: "<<row<<endl;
-                                }
-								
-                                if (! feof(submenufile)) {
-                                    fclose(submenufile);
-                                    ifstream subfile(newfile.c_str());
-                                    if (! parseMenuFile(subfile, menu, row))
-                                        Fluxbox::instance()->saveMenuFilename(newfile.c_str());
-                                }
-                            } else
-                                perror(newfile.c_str());
-                        } 
-                    } // end of else 'x'
-                } // end of include
-                else if (str_key == "submenu") { // sub
-                    if (!str_label.size()) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                           FBNLS::ScreenSet, FBNLS::ScreenSUBMENUError,
-                                           "BScreen::parseMenuFile: [submenu] error, "
-                                           "no menu label defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else {
-                        FbTk::Menu *submenu = createMenuFromScreen(*this);
-
-                        if (str_cmd.size())
-                            submenu->setLabel(str_cmd.c_str());
-                        else
-                            submenu->setLabel(str_label.c_str());
-
-                        parseMenuFile(file, *submenu, row);				
-                        submenu->update();
-                        menu.insert(str_label.c_str(), submenu);
-                        // save to list so we can delete it later
-                        m_rootmenu_list.push_back(submenu);
-					
-                    }
-                } // end of sub
-                else if (str_key == "restart") {
-                    if (!str_label.size()) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                           FBNLS::ScreenSet, FBNLS::ScreenRESTARTError,
-                                           "BScreen::parseMenuFile: [restart] error, "
-                                           "no menu label defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else {
-                        FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd(str_cmd));
-                        menu.insert(str_label.c_str(), restart_fb);
-                    }
-                } // end of restart
-                else if (str_key == "reconfig") { // reconf
-                    if (!str_label.c_str()) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                           FBNLS::ScreenSet, FBNLS::ScreenRECONFIGError,
-                                           "BScreen::parseMenuFile: [reconfig] error, "
-                                           "no menu label defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else {
-                        FbTk::RefCount<FbTk::Command> 
-                            reconfig_fb_cmd(new FbCommands::ReconfigureFluxboxCmd());
-                        menu.insert(str_label.c_str(), reconfig_fb_cmd);
-                    }
-                } else if (str_key == "stylesdir" || str_key == "stylesmenu") {
-
-                    bool newmenu = (str_key == "stylesmenu");
-
-                    if (!( str_label.size() && str_cmd.size()) && newmenu) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                           FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRError,
-                                           "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-                                           " error, no directory defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else { 
-                        createStyleMenu(menu, str_label.c_str(), 
-                                        newmenu ? str_cmd.c_str() : str_label.c_str());
-                    }
-                } // end of stylesdir
-                else if (str_key == "workspaces") {
-                    if (!str_label.size()) {
-                        fprintf(stderr,
-                                i18n->getMessage(
-                                                 FBNLS::ScreenSet, FBNLS::ScreenWORKSPACESError,
-                                                 "BScreen:parseMenuFile: [workspaces] error, "
-                                                 "no menu label defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else
-                        menu.insert(str_label.c_str(), workspacemenu.get());
-                } // end of workspaces
-                else { // ok, if we didn't find any special menu item we try with command parser
-                    // we need to attach command with arguments so command parser can parse it
-                    string line = str_key + " " + str_cmd;
-                    FbTk::RefCount<FbTk::Command> command(CommandParser::instance().parseLine(line));
-                    if (*command != 0)
-                        menu.insert(str_label.c_str(), command);
+                                         '{', '}');
                 }
+            } else 
+                continue; //read next line
+				
+            if (!str_key.size()) 
+                continue;	//read next line
+
+            I18n *i18n = I18n::instance();
+            if (str_key == "end") {
+                return ((menu.numberOfItems() == 0) ? true : false);
+            } else if (str_key == "nop") { 
+                menu.insert(str_label.c_str());
+            } else if (str_key == "exec") { // exec
+                if (!(str_label.size() && str_cmd.size())) {
+                    fprintf(stderr,
+                            i18n->getMessage(
+                                             FBNLS::ScreenSet, FBNLS::ScreenEXECError,
+                                             "BScreen::parseMenuFile: [exec] error, "
+                                             "no menu label and/or command defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else {
+                    FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd, screenNumber()));
+                    FbTk::MacroCommand *exec_and_hide = new FbTk::MacroCommand();
+                    exec_and_hide->add(hide_menu);
+                    exec_and_hide->add(exec_cmd);
+                    FbTk::RefCount<FbTk::Command> exec_and_hide_cmd(exec_and_hide);
+                    menu.insert(str_label.c_str(), exec_and_hide_cmd);
+                }
+            } else if (str_key == "exit") { // exit
+                if (!str_label.size()) {
+                    fprintf(stderr,
+                            i18n->getMessage(
+                                             FBNLS::ScreenSet, FBNLS::ScreenEXITError,
+                                             "BScreen::parseMenuFile: [exit] error, "
+                                             "no menu label defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else {
+                    FbTk::RefCount<FbTk::Command> exit_fb_cmd(new FbCommands::ExitFluxboxCmd());
+                    menu.insert(str_label.c_str(), exit_fb_cmd);
+                }
+            } else if (str_key == "style") {	// style
+                if (!( str_label.size() && str_cmd.size())) {
+                    fprintf(stderr,
+                            i18n->
+                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLEError,
+                                       "BScreen::parseMenuFile: [style] error, "
+                                       "no menu label and/or filename defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else
+                    menu.insert(new StyleMenuItem(str_label, str_cmd));						
+
+            } else if (str_key == "config") {
+                if (! str_label.size()) {
+                    fprintf(stderr,
+                            i18n->
+                            getMessage(
+                                       FBNLS::ScreenSet, FBNLS::ScreenCONFIGError,
+                                       "BScreen::parseMenufile: [config] error, "
+                                       "no label defined"));
+                    cerr<<"Row: "<<row<<endl;
+                } else {
+#ifdef DEBUG
+                    cerr<<__FILE__<<"("<<__FUNCTION__<<
+                        "): inserts configmenu: "<<m_configmenu.get()<<endl;
+#endif // DEBUG
+                    menu.insert(str_label.c_str(), m_configmenu.get());
+                }
+            } // end of config                
+            else if ( str_key == "include") { // include
+                if (!str_label.size()) {
+                    fprintf(stderr,
+                            i18n->
+                            getMessage(
+                                       FBNLS::ScreenSet, FBNLS::ScreenINCLUDEError,
+                                       "BScreen::parseMenuFile: [include] error, "
+                                       "no filename defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else {	// start of else 'x'
+                    // perform shell style ~ home directory expansion
+                    string newfile(FbTk::StringUtil::expandFilename(str_label));
+
+                    if (newfile.size() != 0) {
+                        FILE *submenufile = fopen(newfile.c_str(), "r");
+
+                        if (submenufile) {
+                            struct stat buf;
+                            if (fstat(fileno(submenufile), &buf) ||
+                                (! S_ISREG(buf.st_mode))) {
+                                fprintf(stderr,
+                                        i18n->
+                                        getMessage(
+                                                   FBNLS::ScreenSet, 
+                                                   FBNLS::ScreenINCLUDEErrorReg,
+                                                   "BScreen::parseMenuFile: [include] error: "
+                                                   "'%s' is not a regular file\n"), 
+                                        newfile.c_str());
+
+                                cerr<<"Row: "<<row<<endl;
+                            }
+								
+                            if (! feof(submenufile)) {
+                                fclose(submenufile);
+                                ifstream subfile(newfile.c_str());
+                                if (! parseMenuFile(subfile, menu, row))
+                                    Fluxbox::instance()->saveMenuFilename(newfile.c_str());
+                            }
+                        } else
+                            perror(newfile.c_str());
+                    } 
+                } // end of else 'x'
+            } // end of include
+            else if (str_key == "submenu") { // sub
+                if (!str_label.size()) {
+                    fprintf(stderr,
+                            i18n->
+                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenSUBMENUError,
+                                       "BScreen::parseMenuFile: [submenu] error, "
+                                       "no menu label defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else {
+                    FbTk::Menu *submenu = createMenuFromScreen(*this);
+
+                    if (str_cmd.size())
+                        submenu->setLabel(str_cmd.c_str());
+                    else
+                        submenu->setLabel(str_label.c_str());
+
+                    parseMenuFile(file, *submenu, row);				
+                    submenu->update();
+                    menu.insert(str_label.c_str(), submenu);
+                    // save to list so we can delete it later
+                    m_rootmenu_list.push_back(submenu);
+					
+                }
+            } // end of sub
+            else if (str_key == "restart") {
+                if (!str_label.size()) {
+                    fprintf(stderr,
+                            i18n->
+                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenRESTARTError,
+                                       "BScreen::parseMenuFile: [restart] error, "
+                                       "no menu label defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else {
+                    FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd(str_cmd));
+                    menu.insert(str_label.c_str(), restart_fb);
+                }
+            } // end of restart
+            else if (str_key == "reconfig") { // reconf
+                if (!str_label.c_str()) {
+                    fprintf(stderr,
+                            i18n->
+                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenRECONFIGError,
+                                       "BScreen::parseMenuFile: [reconfig] error, "
+                                       "no menu label defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else {
+                    FbTk::RefCount<FbTk::Command> 
+                        reconfig_fb_cmd(new FbCommands::ReconfigureFluxboxCmd());
+                    menu.insert(str_label.c_str(), reconfig_fb_cmd);
+                }
+            } else if (str_key == "stylesdir" || str_key == "stylesmenu") {
+
+                bool newmenu = (str_key == "stylesmenu");
+
+                if (!( str_label.size() && str_cmd.size()) && newmenu) {
+                    fprintf(stderr,
+                            i18n->
+                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRError,
+                                       "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
+                                       " error, no directory defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else { 
+                    createStyleMenu(menu, str_label.c_str(), 
+                                    newmenu ? str_cmd.c_str() : str_label.c_str());
+                }
+            } // end of stylesdir
+            else if (str_key == "workspaces") {
+                if (!str_label.size()) {
+                    fprintf(stderr,
+                            i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenWORKSPACESError,
+                                             "BScreen:parseMenuFile: [workspaces] error, "
+                                             "no menu label defined\n"));
+                    cerr<<"Row: "<<row<<endl;
+                } else
+                    menu.insert(str_label.c_str(), workspacemenu.get());
+            } // end of workspaces
+            else { // ok, if we didn't find any special menu item we try with command parser
+                // we need to attach command with arguments so command parser can parse it
+                string line = str_key + " " + str_cmd;
+                FbTk::RefCount<FbTk::Command> command(CommandParser::instance().parseLine(line));
+                if (*command != 0)
+                    menu.insert(str_label.c_str(), command);
             }
-        }
-    }
+    } // end of while not eof
 
     return ((menu.numberOfItems() == 0) ? true : false);
 }
@@ -1948,29 +1951,28 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                                    "Focus Model");
     FbTk::Menu *focus_menu = createMenuFromScreen(*this, focusmenu_label);
 
-    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
-                                                               ConfigmenuSet, 
+    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
                                                                ConfigmenuClickToFocus,
                                                                "Click To Focus"), 
                                               *this,
                                               Fluxbox::CLICKTOFOCUS,
                                               save_and_reconfigure));
-    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
-                                                               ConfigmenuSet, 
+
+    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
                                                                ConfigmenuSloppyFocus,
                                                                "Sloppy Focus"), 
                                               *this,
                                               Fluxbox::SLOPPYFOCUS,
                                               save_and_reconfigure));
-    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
-                                                               ConfigmenuSet, 
+
+    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
                                                                ConfigmenuSemiSloppyFocus,
                                                                "Semi Sloppy Focus"),
                                               *this,
                                               Fluxbox::SEMISLOPPYFOCUS,
                                               save_and_reconfigure));
-    focus_menu->insert(new BoolMenuItem(i18n->getMessage(
-                                                         ConfigmenuSet, 
+
+    focus_menu->insert(new BoolMenuItem(i18n->getMessage(ConfigmenuSet, 
                                                          ConfigmenuAutoRaise,
                                                          "Auto Raise"),
                                         *resource.auto_raise,
@@ -2084,19 +2086,17 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
         } else { // no directory
             fprintf(stderr,
                     i18n->
-                    getMessage(
-                        FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNotDir,
-                        "BScreen::parseMenuFile:"
-                        " [stylesdir/stylesmenu] error, %s is not a"
-                        " directory\n"), stylesdir.c_str());
+                    getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNotDir,
+                               "BScreen::parseMenuFile:"
+                               " [stylesdir/stylesmenu] error, %s is not a"
+                               " directory\n"), stylesdir.c_str());
         } // end of directory check
     } else { // stat failed
         fprintf(stderr,
 		i18n->
-		getMessage(
-                    FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNoExist,		
-                    "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-                    " error, %s does not exist\n"), stylesdir.c_str());
+		getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNoExist,		
+                           "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
+                           " error, %s does not exist\n"), stylesdir.c_str());
     } // end of stat
    
 }
@@ -2243,7 +2243,7 @@ bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
             // skip if not active client (i.e. only visit each fbwin once)
             (opts & CYCLEGROUPS) != 0 && win->winClient().window() != winclient.window() ||
             (opts & CYCLESKIPSHADED) != 0 && win->isShaded() // skip if shaded
-        ); 
+            ); 
 }
 
 void BScreen::renderGeomWindow() {
@@ -2328,8 +2328,10 @@ void BScreen::updateSize() {
     // reset background
     m_root_theme->reconfigTheme();
 
+#ifdef SLIT
     if (slit())
         slit()->reconfigure();
+#endif // SLIT
 
     //!! TODO: should we re-maximize the maximized windows?
     

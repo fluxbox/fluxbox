@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.40 2003/07/10 14:49:26 fluxgen Exp $
+// $Id: IconBar.cc,v 1.41 2003/08/04 12:57:23 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -237,7 +237,7 @@ void IconBar::reconfigure() {
  just redraws all the icons
 */
 void IconBar::exposeEvent(XExposeEvent *ee) {
-    IconBarObj *obj=0;	
+    IconBarObj *obj = 0;	
     IconList::iterator it = m_iconlist.begin();
     IconList::iterator it_end = m_iconlist.end();
     for (; it != it_end; ++it) {
@@ -363,7 +363,7 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
                                     fluxboxwin->iconTitle().size());
 
     unsigned int bevel_w = screen().rootTheme().bevelWidth();
-    int dx=bevel_w*2;
+    int dx = bevel_w * 2;
 
     // center by default
     unsigned int newlen = 0;
@@ -372,7 +372,7 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
                            fluxboxwin->iconTitle().c_str(), 
                            fluxboxwin->iconTitle().size(),
                            newlen);
-    //Draw title to m_iconwin
+    // Draw title to m_iconwin
 
     XClearWindow(m_display, iconwin);		
     int dy = 1 + m_font.ascent();
@@ -383,12 +383,12 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
     } else 
         dy += bevel_w;
 
-    m_font.drawText(
-        iconwin,
-        screen().screenNumber(),
-        screen().winFrameTheme().labelTextFocusGC(),
-        fluxboxwin->iconTitle().c_str(), newlen,
-        dx, dy,	m_vertical);
+    m_font.drawText(iconwin,
+                    screen().screenNumber(),
+                    screen().winFrameTheme().labelTextFocusGC(),
+                    fluxboxwin->iconTitle().c_str(), newlen,
+                    dx, dy,
+                    m_vertical);
 
 }
 
@@ -403,9 +403,10 @@ FluxboxWindow *IconBar::findWindow(Window w) {
     IconList::iterator it_end = m_iconlist.end();
     for (; it != it_end; ++it) {
         IconBarObj *tmp = (*it);
-        if (tmp)
+        if (tmp) {
             if (tmp->getIconWin() == w)
-                return tmp->getFluxboxWin();			
+                return tmp->getFluxboxWin();
+        }
     }
 	
     return 0;
@@ -421,9 +422,10 @@ IconBarObj *IconBar::findIcon(FluxboxWindow *fluxboxwin) {
     IconList::iterator it_end = m_iconlist.end();
     for (; it != it_end; ++it) {
         IconBarObj *tmp = (*it);
-        if (tmp)
+        if (tmp) {
             if (tmp->getFluxboxWin() == fluxboxwin)
-                return tmp;			
+                return tmp;
+        }
     }
 	
     return 0;
@@ -435,9 +437,10 @@ const IconBarObj *IconBar::findIcon(const FluxboxWindow * const fluxboxwin) cons
     IconList::const_iterator it_end = m_iconlist.end();
     for (; it != it_end; ++it) {
         IconBarObj *tmp = (*it);
-        if (tmp)
+        if (tmp) {
             if (tmp->getFluxboxWin() == fluxboxwin)
-                return tmp;			
+                return tmp;
+        }
     }
 	
     return 0;
