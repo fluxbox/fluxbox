@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.16 2002/01/09 19:28:35 fluxgen Exp $
+// $Id: Window.cc,v 1.17 2002/01/10 12:54:27 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -426,24 +426,16 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	}
 
 	setFocusFlag(false);
-/*
-#ifdef GNOME
-	//tell the creator of this window that we are a gnome compilant windowmanager
-	{
-	XChangeProperty(display, screen->getRootWindow(),
-			screen->getBaseDisplay()->getGnomeSupportingWMCheckAtom(),
-			XA_CARDINAL, 32,
-      PropModeReplace, (unsigned char *)&client.window, 1);	
-  XChangeProperty(display, client.window, 
-			screen->getBaseDisplay()->getGnomeSupportingWMCheckAtom(),
-			XA_CARDINAL, 32, PropModeReplace,
-		 	(unsigned char *)&client.window, 1);
-	}
-#endif
-*/
+
 	fluxbox->ungrab();
 	#ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
+	#endif
+	//TODO move this
+	#ifdef GNOME		
+  int val = workspace_number; 
+  XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32,
+                  PropModeReplace, (unsigned char *)&val, 1);
 	#endif
 }
 
@@ -1801,8 +1793,9 @@ void FluxboxWindow::close(void) {
 void FluxboxWindow::withdraw(void) {
 	visible = false;
 	iconic = false;
-
-	setState(WithdrawnState);
+// 
+//	setState(WithdrawnState);
+//
 	XUnmapWindow(display, frame.window);
 
 	XSelectInput(display, client.window, NoEventMask);
