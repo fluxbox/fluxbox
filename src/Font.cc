@@ -19,12 +19,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.6 2002/05/02 07:19:02 fluxgen Exp $
+//$Id: Font.cc,v 1.7 2002/08/04 15:36:19 fluxgen Exp $
 
 
 #include "Font.hh"
-
 #include "StringUtil.hh"
+
+#ifdef    HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
+
 //use gnu extensions
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -36,13 +40,9 @@
 #include <string>
 #include <cstdio>
 
-#ifdef    HAVE_CONFIG_H
-#  include "../config.h"
-#endif // HAVE_CONFIG_H
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
 #endif //HAVE_SETLOCALE
-#include "i18n.hh"
 
 namespace FbTk
 {
@@ -54,8 +54,11 @@ m_display(display) {
 	m_font.fontstruct = 0;
 	m_font.set_extents = 0;
 	m_font.set = 0;
-	//TODO: should only be done once
-	m_multibyte = I18n::instance()->multibyte();
+	
+	// MB_CUR_MAX returns the size of a char in the current locale
+	if (MB_CUR_MAX > 1)
+			m_multibyte = true;
+	
 	if (name!=0) {
 		load(name);
 	}
@@ -96,7 +99,7 @@ bool Font::loadFromDatabase(XrmDatabase &database, const char *rname, const char
 	XrmValue value;
 	char *value_type;
 
-	//this should probably be moved to a Database class so we can keep
+	//This should probably be moved to a Database class so we can keep
 	//track of database init	
 	
 	if (XrmGetResource(database, rname, rclass, &value_type, &value)) {
@@ -109,7 +112,7 @@ bool Font::loadFromDatabase(XrmDatabase &database, const char *rname, const char
 	return false;
 
 }
-unsigned int Font::getTextWidth(const char *text, unsigned int size) const {
+unsigned int Font::textWidth(const char *text, unsigned int size) const {
 	if (text==0)
 		return 0;
 	if (multibyte()) {
@@ -126,11 +129,15 @@ unsigned int Font::getTextWidth(const char *text, unsigned int size) const {
 	return 0;
 }
 
-unsigned int Font::getHeight() const {
-	if (multibyte() && getFontSetExtents())
-		return getFontSetExtents()->max_ink_extent.height;
-	if (getFontStruct())
-		return getFontStruct()->ascent + getFontStruct()->descent;
+unsigned int Font::height() const {
+	if (!isLoaded())
+		return 0;
+
+	if (multibyte() && fontSetExtents())
+		return fontSetExtents()->max_ink_extent.height;
+	if (fontStruct())
+		return fontStruct()->ascent + fontStruct()->descent;
+
 	return 0;
 }
 
