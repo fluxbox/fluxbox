@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.3 2003/01/09 16:45:21 fluxgen Exp $
+// $Id: Menu.cc,v 1.4 2003/01/10 00:47:59 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -31,7 +31,7 @@
 
 #include "Menu.hh"
 
-#include "../ImageControl.hh"
+#include "ImageControl.hh"
 #include "MenuTheme.hh"
 #include "App.hh"
 #include "EventManager.hh"
@@ -50,7 +50,7 @@ namespace FbTk {
 
 static Menu *shown = 0;
 
-Menu::Menu(MenuTheme &tm, int screen_num, BImageControl &imgctrl):
+Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_theme(tm),
     m_screen_num(screen_num),
     m_image_ctrl(imgctrl),
@@ -105,9 +105,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, BImageControl &imgctrl):
     XSetWindowAttributes attrib;
     attrib.override_redirect = True;
     attrib.event_mask = ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | KeyPressMask | ExposureMask;
-#ifdef DEBUG
-    cerr<<__FILE__<<": Creating menu("<<menu.width<<", "<<menu.height<<")"<<endl;
-#endif // DEBUG    
+
     //create menu window
     menu.window = XCreateWindow(m_display, RootWindow(m_display, screen_num), 
                                 menu.x, menu.y, menu.width, menu.height,  // pos and size
