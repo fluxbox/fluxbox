@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.28 2003/07/20 08:12:36 rathnor Exp $
+// $Id: Remember.cc,v 1.29 2003/08/18 09:32:15 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -139,7 +139,7 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enab
 
 // offset is the offset in the string that we start looking from
 // return true if all ok, false on error
-bool handleStartupItem(string line, int offset) {
+bool handleStartupItem(const string &line, int offset) {
     int next = 0;
     string str;
     int screen = 0;
