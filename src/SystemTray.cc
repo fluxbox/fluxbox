@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.13 2004/08/31 23:18:29 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.14 2004/09/01 00:05:52 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -121,8 +121,12 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
     // get selection owner and see if it's free
     Atom tray_atom = XInternAtom(disp, atom_name.c_str(), False);
     Window owner = XGetSelectionOwner(disp, tray_atom);
-    if (owner != 0)
+    if (owner != 0) {
+#ifdef DEBUG
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): can't set owner!"<<endl;
+#endif // DEBUG
         return;  // the're can't be more than one owner
+    }
 
     // ok, it was free. Lets set owner
 #ifdef DEBUG
@@ -264,6 +268,8 @@ void SystemTray::addClient(Window win) {
 #ifdef DEBUG
     cerr<<"SystemTray::"<<__FUNCTION__<<": 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
+    if (m_clients.empty())
+        show();
 
     m_clients.push_back(traywin);
     FbTk::EventManager::instance()->add(*this, win);
@@ -272,12 +278,10 @@ void SystemTray::addClient(Window win) {
     traywin->reparent(m_window, 0, 0);
     traywin->show();
 
-    if (m_clients.empty())
-        show();
-#ifdef DEBUG
-    cerr<<"number of clients = "<<m_clients.size()<<endl;
-#endif // DEBUG
 
+#ifdef DEBUG
+    cerr<<"SystemTray: number of clients = "<<m_clients.size()<<endl;
+#endif // DEBUG
     rearrangeClients();
 }
 
@@ -326,6 +330,8 @@ void SystemTray::handleEvent(XEvent &event) {
                 (*it)->moveResize((*it)->x(), (*it)->y(),
                                   (*it)->width(), (*it)->height());
             }
+            // so toolbar know that we changed size
+            resizeSig().notify();
         }
 
     }
@@ -344,7 +350,10 @@ void SystemTray::rearrangeClients() {
 }
 
 void SystemTray::removeAllClients() {
+    BScreen *screen = Fluxbox::instance()->findScreen(window().screenNumber());
     while (!m_clients.empty()) {
+        if (screen)
+            m_clients.back()->reparent(screen->rootWindow(), 0, 0);
         m_clients.back()->hide();
         delete m_clients.back();
         m_clients.pop_back();
