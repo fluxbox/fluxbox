@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.cc,v 1.7 2003/10/25 22:11:22 fluxgen Exp $
+// $Id: CurrentWindowCmd.cc,v 1.8 2003/10/26 12:36:55 fluxgen Exp $
 
 #include "CurrentWindowCmd.hh"
 
@@ -69,7 +69,7 @@ MoveCmd::MoveCmd(const int step_size_x, const int step_size_y) :
 void MoveCmd::real_execute() {
   fbwindow().move(
       fbwindow().x() + m_step_size_x,
-      fbwindow().y() + m_step_size_y );
+      fbwindow().y() + m_step_size_y);
 }
 
 ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
@@ -77,24 +77,22 @@ ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
 
 void ResizeCmd::real_execute() {
   fbwindow().resize(
-      fbwindow().width() + m_step_size_x * fbwindow().winClient().width_inc,
-      fbwindow().height() + m_step_size_y * fbwindow().winClient().height_inc );
+                    fbwindow().width() + 
+                    m_step_size_x * fbwindow().winClient().width_inc,
+                    fbwindow().height() + 
+                    m_step_size_y * fbwindow().winClient().height_inc);
 }
 
 MoveToCmd::MoveToCmd(const int step_size_x, const int step_size_y) :
-  m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
+    m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
 void MoveToCmd::real_execute() {
-  fbwindow().move(
-      m_step_size_x,
-      m_step_size_y );
+    fbwindow().move(m_step_size_x, m_step_size_y);
 }
 
 ResizeToCmd::ResizeToCmd(const int step_size_x, const int step_size_y) :
-  m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
+    m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
 void ResizeToCmd::real_execute() {
-  fbwindow().resize(
-      m_step_size_x * fbwindow().winClient().width_inc,
-      m_step_size_y * fbwindow().winClient().height_inc );
+    fbwindow().resize(m_step_size_x, m_step_size_y);
 }
