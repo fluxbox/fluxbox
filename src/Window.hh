@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.31 2002/09/08 19:49:39 fluxgen Exp $
+// $Id: Window.hh,v 1.32 2002/10/02 16:11:30 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -182,7 +182,10 @@ public:
 	void showMenu(int mx, int my);	
 	void pauseMoving();
 	void resumeMoving();
-
+	/**
+		@name event handlers
+	*/
+	//@{
 	void buttonPressEvent(XButtonEvent *be);
 	void buttonReleaseEvent(XButtonEvent *be);
 	void motionNotifyEvent(XMotionEvent *me);
@@ -193,7 +196,8 @@ public:
 	void propertyNotifyEvent(Atom a);
 	void exposeEvent(XExposeEvent *ee);
 	void configureRequestEvent(XConfigureRequestEvent *ce);
-	
+	//@}
+
 	void setDecoration(Decoration decoration);
 	void toggleDecoration();
 	
