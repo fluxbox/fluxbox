@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.26 2004/08/30 12:19:52 akir Exp $
+// $Id: FbCommands.cc,v 1.27 2004/09/11 20:28:35 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -47,6 +47,45 @@
 #endif // __EMX__
 
 using namespace std;
+
+namespace {
+
+void showMenu(const BScreen &screen, FbTk::Menu &menu) {
+    Window root_ret; // not used
+    Window window_ret; // not used
+
+    int rx = 0, ry = 0;
+    int wx, wy; // not used
+    unsigned int mask; // not used
+
+    XQueryPointer(menu.fbwindow().display(),
+                  screen.rootWindow().window(), &root_ret, &window_ret,
+                  &rx, &ry, &wx, &wy, &mask);
+
+    int borderw = menu.fbwindow().borderWidth();
+    int head = screen.getHead(rx, ry);
+
+    pair<int, int> m = 
+        screen.clampToHead(head,
+                           rx - menu.width() / 2, 
+                           ry - menu.titleWindow().height() / 2,
+                           menu.width() + 2*borderw,
+                           menu.height() + 2*borderw);
+
+    menu.move(m.first, m.second);
+    menu.setScreen(screen.getHeadX(head),
+                   screen.getHeadY(head),
+                   screen.getHeadWidth(head),
+                   screen.getHeadHeight(head));
+    // special case for root menu
+    if (&menu == &screen.getRootmenu())
+        Fluxbox::instance()->checkMenu();
+
+    menu.show();
+    menu.grabInputFocus();
+}
+
+}
 
 namespace FbCommands {
 
@@ -123,59 +162,19 @@ void SetStyleCmd::execute() {
 }
 
 void ShowRootMenuCmd::execute() {
-    Fluxbox *fb = Fluxbox::instance();
-    BScreen *screen = fb->mouseScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
 
-    Window root_ret;
-    Window window_ret;
-
-    int rx, ry;
-    int wx, wy;
-    unsigned int mask;
-
-    if (XQueryPointer(fb->display(),
-                      screen->rootWindow().window(), &root_ret, &window_ret,
-                      &rx, &ry, &wx, &wy, &mask) ) {
-
-        if ( rx - (screen->getRootmenu().width()/2) > 0 )
-            rx-= screen->getRootmenu().width()/2;
-        screen->getRootmenu().move(rx, ry);
-    }
-    fb->checkMenu();
-    screen->getRootmenu().show();
-    screen->getRootmenu().grabInputFocus();
-
+    ::showMenu(*screen, screen->getRootmenu());
 }
 
 void ShowWorkspaceMenuCmd::execute() {
-
-    Fluxbox *fb = Fluxbox::instance();
-    BScreen *screen = fb->mouseScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
 
- 
-    Window root_ret;
-    Window window_ret;
-
-    int rx, ry;
-    int wx, wy;
-    unsigned int mask;
-
-    if ( XQueryPointer(fb->display(),
-                       screen->rootWindow().window(), &root_ret, &window_ret,
-                       &rx, &ry, &wx, &wy, &mask) ) {
-
-        if ( rx - (screen->getWorkspacemenu().width()/2) > 0 )
-            rx-= screen->getWorkspacemenu().width()/2;
-        screen->getWorkspacemenu().move(rx, ry);
-    }
-    fb->checkMenu(); 
-    screen->getWorkspacemenu().show();
-    screen->getWorkspacemenu().grabInputFocus();
- 
+    ::showMenu(*screen, screen->getWorkspacemenu());
 }
 
 
@@ -263,7 +262,7 @@ void BindKeyCmd::execute() {
 }
 
 DeiconifyCmd::DeiconifyCmd(const Mode mode, 
-    const Destination dest) : m_mode(mode), m_dest(dest) { }
+                           const Destination dest) : m_mode(mode), m_dest(dest) { }
 
 void DeiconifyCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -279,35 +278,35 @@ void DeiconifyCmd::execute() {
 
     switch(m_mode) {
         
-        case ALL:
-        case ALLWORKSPACE:
-            for(; it != itend; it++) {
-                old_workspace_num= (*it)->workspaceNumber();
-                if (m_mode == ALL || old_workspace_num == workspace_num) {
-                    if (m_dest == ORIGIN || m_dest == ORIGINQUIET)
-                        screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
-                    else
-                        (*it)->deiconify(false);
-                }
+    case ALL:
+    case ALLWORKSPACE:
+        for(; it != itend; it++) {
+            old_workspace_num= (*it)->workspaceNumber();
+            if (m_mode == ALL || old_workspace_num == workspace_num) {
+                if (m_dest == ORIGIN || m_dest == ORIGINQUIET)
+                    screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
+                else
+                    (*it)->deiconify(false);
             }
-            break;
+        }
+        break;
 
-        case LAST:
-        case LASTWORKSPACE:
-        default:
-            for (; it != itend; it++) {
-                old_workspace_num= (*it)->workspaceNumber();
-                if(m_mode == LAST || old_workspace_num == workspace_num) {
-                    if ((m_dest == ORIGIN || m_dest == ORIGINQUIET) && 
-                        m_mode != LASTWORKSPACE)
-                        screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
-                    else
-                        (*it)->deiconify(false);
-                    break;
-                }
+    case LAST:
+    case LASTWORKSPACE:
+    default:
+        for (; it != itend; it++) {
+            old_workspace_num= (*it)->workspaceNumber();
+            if(m_mode == LAST || old_workspace_num == workspace_num) {
+                if ((m_dest == ORIGIN || m_dest == ORIGINQUIET) && 
+                    m_mode != LASTWORKSPACE)
+                    screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
+                else
+                    (*it)->deiconify(false);
+                break;
             }
-            break;
-   };
+        }
+        break;
+    };
 }
     
 }; // end namespace FbCommands
