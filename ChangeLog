@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
 *03/04/16:
+   * Fixed toolbar width percent menu item
+     Toolbar.cc
+   * Fixed current focused client button rendered (Henrik)
+     FbWinFrame.hh/cc, Window.cc
    * Applied click raises patch (Thanks Dale P. Smith)
      Screen.hh/cc, Window.cc
 *03/04/15:
