@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.21 2003/01/12 18:52:35 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.22 2003/02/15 02:00:29 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -33,6 +33,7 @@
 #include "EventHandler.hh"
 #include "FbWindow.hh"
 #include "ArrowButton.hh"
+#include "Observer.hh"
 
 #include <memory>
 
@@ -144,6 +145,7 @@ private:
 
         virtual void timeout();
     } hide_handler;
+    friend class HideHandler;
 
     BScreen *m_screen;
     FbTk::ImageControl &image_ctrl; 
@@ -156,8 +158,18 @@ private:
 
     ToolbarTheme m_theme;
     Placement m_place;
-
-    friend class HideHandler;
+    //!! TODO this is just temporary
+    class ThemeListener: public FbTk::Observer {
+    public:
+        ThemeListener(Toolbar &tb):m_tb(tb) { }
+        void update(FbTk::Subject *subj) {
+            m_tb.reconfigure();
+        }
+    private:
+        Toolbar &m_tb;
+    };
+    
+    ThemeListener m_themelistener;
 };
 
 

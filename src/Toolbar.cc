@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.55 2003/01/12 18:53:16 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.56 2003/02/15 02:00:29 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -181,7 +181,11 @@ Toolbar::Toolbar(BScreen *scrn, size_t width):
     hide_timer(&hide_handler),
     m_toolbarmenu(*scrn->menuTheme(), scrn->getScreenNumber(), *scrn->getImageControl()),
     m_theme(scrn->getScreenNumber()),
-    m_place(BOTTOMCENTER) {
+    m_place(BOTTOMCENTER),
+    m_themelistener(*this) {
+
+    // we need to get notified when the theme is reloaded
+    m_theme.addListener(m_themelistener);
 
     setupMenus(*this);
 
@@ -412,7 +416,8 @@ void Toolbar::reconfigure() {
         frame.base = None;
         frame.window.setBackgroundColor(texture->color());
     } else {
-        frame.base = image_ctrl.renderImage(frame.window.width(), frame.window.height(), *texture);
+        frame.base = image_ctrl.renderImage(frame.window.width(), 
+                                            frame.window.height(), *texture);
         frame.window.setBackgroundPixmap(frame.base);
     }
     if (tmp) image_ctrl.removeImage(tmp);
@@ -424,7 +429,8 @@ void Toolbar::reconfigure() {
         frame.window_label.setBackgroundColor(texture->color());
     } else {
         frame.label =
-            image_ctrl.renderImage(frame.window_label.width(), frame.window_label.height(), *texture);
+            image_ctrl.renderImage(frame.window_label.width(), 
+                                   frame.window_label.height(), *texture);
         frame.window_label.setBackgroundPixmap(frame.label);
     }
     if (tmp) image_ctrl.removeImage(tmp);
@@ -562,75 +568,77 @@ void Toolbar::checkClock(bool redraw, bool date) {
         cerr<<__FILE__<<"("<<__LINE__<<"): time(null)<0"<<endl;
 	
 
-    if (redraw) {
-        frame.clock.clear();
+    if (!redraw)
+        return;
+
+    frame.clock.clear();
 #ifdef HAVE_STRFTIME
-        char t[1024];
-        if (! strftime(t, 1024, screen()->getStrftimeFormat(), tt))
-            return;
+    char t[1024];
+    if (! strftime(t, 1024, screen()->getStrftimeFormat(), tt))
+        return;
 #else // !HAVE_STRFTIME
-        char t[9];
-        if (date) {
-            // format the date... with special consideration for y2k ;)
-            if (screen()->getDateFormat() == Blackbox::B_EuropeanDate) {
-                sprintf(t,
-                        i18n->getMessage(
-                            ToolbarSet, ToolbarNoStrftimeDateFormatEu,
-                            "%02d.%02d.%02d"),
-                        tt->tm_mday, tt->tm_mon + 1,
-                        (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
-            } else {
-                sprintf(t,
-                        i18n->getMessage(
-                            ToolbarSet, ToolbarNoStrftimeDateFormat,
-                            "%02d/%02d/%02d"),
-                        tt->tm_mon + 1, tt->tm_mday,
-                        (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
-            }
+    char t[9];
+    if (date) {
+        // format the date... with special consideration for y2k ;)
+        if (screen()->getDateFormat() == Blackbox::B_EuropeanDate) {
+            sprintf(t,
+                    i18n->getMessage(
+                                     ToolbarSet, ToolbarNoStrftimeDateFormatEu,
+                                     "%02d.%02d.%02d"),
+                    tt->tm_mday, tt->tm_mon + 1,
+                    (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
         } else {
-            if (screen()->isClock24Hour()) {
-                sprintf(t,
-                        i18n->getMessage(
-                            ToolbarSet, ToolbarNoStrftimeTimeFormat24,
-                            "	%02d:%02d "),
-                        frame.hour, frame.minute);
-            } else {
-                sprintf(t,
-                        i18n->getMessage(
-                            ToolbarSet, ToolbarNoStrftimeTimeFormat12,
-                            "%02d:%02d %sm"),
-                        ((frame.hour > 12) ? frame.hour - 12 :
-                         ((frame.hour == 0) ? 12 : frame.hour)), frame.minute,
-                        ((frame.hour >= 12) ?
-                         i18n->getMessage(
-                             ToolbarSet, ToolbarNoStrftimeTimeFormatP,
-                             "p") :
-                         i18n->getMessage(
-                             ToolbarSet, ToolbarNoStrftimeTimeFormatA,
-                             "a")));
-            }
+            sprintf(t,
+                    i18n->getMessage(
+                                     ToolbarSet, ToolbarNoStrftimeDateFormat,
+                                     "%02d/%02d/%02d"),
+                    tt->tm_mon + 1, tt->tm_mday,
+                    (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
         }
+    } else {
+        if (screen()->isClock24Hour()) {
+            sprintf(t,
+                    i18n->getMessage(
+                                     ToolbarSet, ToolbarNoStrftimeTimeFormat24,
+                                     "	%02d:%02d "),
+                    frame.hour, frame.minute);
+        } else {
+            sprintf(t,
+                    i18n->getMessage(
+                                     ToolbarSet, ToolbarNoStrftimeTimeFormat12,
+                                     "%02d:%02d %sm"),
+                    ((frame.hour > 12) ? frame.hour - 12 :
+                     ((frame.hour == 0) ? 12 : frame.hour)), frame.minute,
+                    ((frame.hour >= 12) ?
+                     i18n->getMessage(
+                                      ToolbarSet, ToolbarNoStrftimeTimeFormatP,
+                                      "p") :
+                     i18n->getMessage(
+                                      ToolbarSet, ToolbarNoStrftimeTimeFormatA,
+                                      "a")));
+        }
+    }
 #endif // HAVE_STRFTIME
 
-        size_t newlen = strlen(t);
-        int dx = FbTk::doAlignment(frame.clock_w,
-                                       frame.bevel_w*2,
-                                       m_theme.justify(),
-                                       m_theme.font(),
-                                       t, strlen(t), newlen);
-        int dy = 1 + m_theme.font().ascent();
-	if (m_theme.font().isRotated()) {
-            int tmp = dy;
-            dy = frame.clock.height() - dx;
-            dx = tmp;
-        }		
-        m_theme.font().drawText(
-            frame.clock.window(),
-            screen()->getScreenNumber(),
-            m_theme.clockTextGC(),
-            t, newlen,
-            dx, dy);
-    }
+    size_t newlen = strlen(t);
+    int dx = FbTk::doAlignment(frame.clock_w,
+                               frame.bevel_w*2,
+                               m_theme.justify(),
+                               m_theme.font(),
+                               t, strlen(t), newlen);
+    int dy = 1 + m_theme.font().ascent();
+    if (m_theme.font().isRotated()) {
+        int tmp = dy;
+        dy = frame.clock.height() - dx;
+        dx = tmp;
+    }		
+    m_theme.font().drawText(
+                            frame.clock.window(),
+                            screen()->getScreenNumber(),
+                            m_theme.clockTextGC(),
+                            t, newlen,
+                            dx, dy);
+
 }
 
 
