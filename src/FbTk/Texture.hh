@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.hh,v 1.4 2003/08/12 11:44:19 fluxgen Exp $
+// $Id: Texture.hh,v 1.5 2003/12/07 16:32:12 fluxgen Exp $
 
 #ifndef FBTK_TEXTURE_HH
 #define FBTK_TEXTURE_HH
@@ -89,7 +89,7 @@ public:
     const Color &loColor() const { return m_locolor; }
     const FbTk::FbPixmap &pixmap() const { return m_pixmap; }
     inline unsigned long type() const { return m_type; }
-
+    inline bool usePixmap() const { return !( type() == (FLAT | SOLID) && pixmap().drawable() == 0); }
 
 private:
     FbTk::Color m_color, m_color_to, m_hicolor, m_locolor;
