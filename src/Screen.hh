@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.60 2003/01/10 00:34:08 fluxgen Exp $
+// $Id: Screen.hh,v 1.61 2003/01/12 17:57:46 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -32,7 +32,8 @@
 #include "Workspace.hh"
 #include "Tab.hh"
 #include "Resource.hh"
-#include "Toolbar.hh"
+#include "Subject.hh"
+#include "FbWinFrameTheme.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -48,11 +49,12 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-class Configmenu;
 class Workspacemenu;
 class Iconmenu;
 class Netizen;
 class Slit;
+class Toolbar;
+class FbWinFrameTheme;
 
 namespace FbTk {
 class MenuTheme;
@@ -168,7 +170,6 @@ public:
 		
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
-    inline Toolbar::Placement getToolbarPlacement() const { return *resource.toolbar_placement; }
 
     inline int getToolbarOnHead() { return *resource.toolbar_on_head; }
 
@@ -191,7 +192,6 @@ public:
     inline void saveToolbarOnTop(bool r) { *resource.toolbar_on_top = r;  }
     inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r;  }
     inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w;  }
-    inline void saveToolbarPlacement(Toolbar::Placement p) { *resource.toolbar_placement = p;  }
 
     inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head;  }
 
@@ -310,6 +310,7 @@ public:
     };
 	
 private:
+    void setupConfigmenu(FbTk::Menu &menu);
     void createStyleMenu(FbTk::Menu &menu, bool newmenu, const char *label, const char *directory);
 
     bool parseMenuFile(std::ifstream &filestream, FbTk::Menu &menu, int &row);
@@ -333,7 +334,7 @@ private:
     Window geom_window;
 
     FbTk::ImageControl *image_control;
-    Configmenu *configmenu;
+    std::auto_ptr<FbTk::Menu> m_configmenu;
 
     std::auto_ptr<FbTk::Menu> m_rootmenu;
 
@@ -382,10 +383,6 @@ private:
         Resource<Tab::Placement> tab_placement;
         Resource<Tab::Alignment> tab_alignment;
         Resource<int> toolbar_on_head;
-
-
-        Resource<Toolbar::Placement> toolbar_placement;
-
 
         bool slit_on_top, slit_auto_hide;
         int slit_placement, slit_direction;
