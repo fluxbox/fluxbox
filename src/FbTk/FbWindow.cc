@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.30 2004/01/08 22:04:39 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.31 2004/01/21 20:07:41 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -285,8 +285,16 @@ void FbWindow::setNew(Window win) {
                                  m_window,
                                  &attr) != 0 && attr.screen != 0) {
             m_screen_num = XScreenNumberOfScreen(attr.screen);
-            m_width = attr.width;
-            m_height = attr.height ;
+            if (attr.width <= 0)
+                m_width = 1;
+            else
+                m_width = attr.width;
+
+            if (attr.height <= 0)
+                m_height = 1;
+            else
+                m_height = attr.height;
+
             m_x = attr.x;
             m_y = attr.y;
             m_depth = attr.depth;
