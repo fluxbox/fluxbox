@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.221 2003/08/17 19:06:10 fluxgen Exp $
+// $Id: Screen.cc,v 1.222 2003/08/18 11:26:17 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -79,22 +79,10 @@
 #include <ctype.h>
 #endif // HAVE_CTYPE_H
 
-#ifdef HAVE_DIRENT_H
-#include <dirent.h>
-#endif // HAVE_DIRENT_H
-
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif // HAVE_LOCALE_H
-
 #ifdef HAVE_UNISTD_H
 #include <sys/types.h>
 #include <unistd.h>
 #endif // HAVE_UNISTD_H
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/stat.h>
-#endif // HAVE_SYS_STAT_H
 
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
@@ -110,10 +98,6 @@
 #include <time.h>
 #endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
-
-#ifndef  MAXPATHLEN
-#define	 MAXPATHLEN 255
-#endif // MAXPATHLEN
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
@@ -433,8 +417,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_configmenu->update();
 
 #ifdef SLIT
-    //    if (slit()) // this will load theme and reconfigure slit
-    //        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
+    if (slit()) // this will load theme and reconfigure slit
+        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
 #endif // SLIT
 
     FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
@@ -530,11 +514,9 @@ BScreen::~BScreen() {
 
     m_netizen_list.clear();
 
-#ifdef XINERAMA
     if (hasXinerama() && m_xinerama_headinfo) {
         delete [] m_xinerama_headinfo;
     }
-#endif // XINERAMA
 }
 
 unsigned int BScreen::currentWorkspaceID() const { 
@@ -602,9 +584,6 @@ unsigned int BScreen::maxBottom(int head) const {
 }
 
 void BScreen::reconfigure() {
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): BScreen::reconfigure"<<endl;
-#endif // DEBUG
     m_menutheme->setAlpha(*resource.menu_alpha);
     Fluxbox::instance()->loadRootCommand(*this);
 
@@ -865,11 +844,6 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     if (focused_client)
         focused = focused_client->fbwindow();
         
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): "<<focused_client<<endl;
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): focused = "<<focused<<endl;
-#endif // DEBUG
-
     if (focused && focused->isMoving()) {
         if (doOpaqueMove())
             reassociateWindow(focused, id, true);
@@ -1268,12 +1242,8 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
     if (w == 0)
         return;
 
-    if (wkspc_id >= getCount()) {
+    if (wkspc_id >= getCount())
         wkspc_id = currentWorkspace()->workspaceID();
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): wkspc_id >= getCount()"<<endl;
-#endif // DEBUG
-    }
 
     if (!w->isIconic() && w->workspaceNumber() == wkspc_id)
         return;
@@ -1660,16 +1630,13 @@ void BScreen::initMenu() {
         FbTk::RefCount<FbTk::Command> exit_fb(new FbCommands::ExitFluxboxCmd());
         FbTk::RefCount<FbTk::Command> execute_xterm(new FbCommands::ExecuteCmd("xterm", screenNumber()));
         m_rootmenu->setInternalMenu();
-        m_rootmenu->insert(i18n->getMessage(
-                                            FBNLS::ScreenSet, FBNLS::Screenxterm,
+        m_rootmenu->insert(i18n->getMessage(FBNLS::ScreenSet, FBNLS::Screenxterm,
                                             "xterm"),
                            execute_xterm);
-        m_rootmenu->insert(i18n->getMessage(
-                                            FBNLS::ScreenSet, FBNLS::ScreenRestart,
+        m_rootmenu->insert(i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenRestart,
                                             "Restart"),
                            restart_fb);
-        m_rootmenu->insert(i18n->getMessage(
-                                            FBNLS::ScreenSet, FBNLS::ScreenExit,
+        m_rootmenu->insert(i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenExit,
                                             "Exit"),
                            exit_fb);
     }
@@ -1727,8 +1694,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
             } else if (str_key == "exec") { // exec
                 if (!(str_label.size() && str_cmd.size())) {
                     fprintf(stderr,
-                            i18n->getMessage(
-                                             FBNLS::ScreenSet, FBNLS::ScreenEXECError,
+                            i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenEXECError,
                                              "BScreen::parseMenuFile: [exec] error, "
                                              "no menu label and/or command defined\n"));
                     cerr<<"Row: "<<row<<endl;
@@ -1743,8 +1709,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
             } else if (str_key == "exit") { // exit
                 if (!str_label.size()) {
                     fprintf(stderr,
-                            i18n->getMessage(
-                                             FBNLS::ScreenSet, FBNLS::ScreenEXITError,
+                            i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenEXITError,
                                              "BScreen::parseMenuFile: [exit] error, "
                                              "no menu label defined\n"));
                     cerr<<"Row: "<<row<<endl;
@@ -1767,8 +1732,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                 if (! str_label.size()) {
                     fprintf(stderr,
                             i18n->
-                            getMessage(
-                                       FBNLS::ScreenSet, FBNLS::ScreenCONFIGError,
+                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenCONFIGError,
                                        "BScreen::parseMenufile: [config] error, "
                                        "no label defined"));
                     cerr<<"Row: "<<row<<endl;
@@ -1784,8 +1748,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                 if (!str_label.size()) {
                     fprintf(stderr,
                             i18n->
-                            getMessage(
-                                       FBNLS::ScreenSet, FBNLS::ScreenINCLUDEError,
+                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenINCLUDEError,
                                        "BScreen::parseMenuFile: [include] error, "
                                        "no filename defined\n"));
                     cerr<<"Row: "<<row<<endl;
@@ -1794,32 +1757,22 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                     string newfile(FbTk::StringUtil::expandFilename(str_label));
 
                     if (newfile.size() != 0) {
-                        FILE *submenufile = fopen(newfile.c_str(), "r");
-
-                        if (submenufile) {
-                            struct stat buf;
-                            if (fstat(fileno(submenufile), &buf) ||
-                                (! S_ISREG(buf.st_mode))) {
-                                fprintf(stderr,
-                                        i18n->
-                                        getMessage(
-                                                   FBNLS::ScreenSet, 
-                                                   FBNLS::ScreenINCLUDEErrorReg,
-                                                   "BScreen::parseMenuFile: [include] error: "
-                                                   "'%s' is not a regular file\n"), 
-                                        newfile.c_str());
-
-                                cerr<<"Row: "<<row<<endl;
-                            }
-								
-                            if (! feof(submenufile)) {
-                                fclose(submenufile);
-                                ifstream subfile(newfile.c_str());
-                                if (! parseMenuFile(subfile, menu, row))
-                                    Fluxbox::instance()->saveMenuFilename(newfile.c_str());
-                            }
-                        } else
-                            perror(newfile.c_str());
+                        if (!FbTk::Directory::isRegularFile(newfile)) {
+                            fprintf(stderr,
+                                    i18n->
+                                    getMessage(
+                                               FBNLS::ScreenSet, 
+                                               FBNLS::ScreenINCLUDEErrorReg,
+                                               "BScreen::parseMenuFile: [include] error: "
+                                               "'%s' is not a regular file\n"), 
+                                    newfile.c_str());
+                            cerr<<"Row: "<<row<<endl;
+                        } else {
+                            // the file is a regular file, lets open and parse it
+                            ifstream subfile(newfile.c_str());
+                            if (!parseMenuFile(subfile, menu, row))
+                                Fluxbox::instance()->saveMenuFilename(newfile.c_str());
+                        }
                     } 
                 } // end of else 'x'
             } // end of include
@@ -2028,7 +1981,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                                   "AntiAlias"), 
                                  *resource.antialias, 
                                  save_and_reconfigure));
-
+    //!! TODO: antialias
     FbTk::MenuItem *menu_alpha_item = new IntResMenuItem("Menu Alpha", resource.menu_alpha,
                                               0, 255);
     menu_alpha_item->setCommand(saverc_cmd);
@@ -2046,8 +1999,6 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
     // perform shell style ~ home directory expansion
     string stylesdir(FbTk::StringUtil::expandFilename(directory ? directory : ""));
 
-    I18n *i18n = I18n::instance();						
-        
     if (!FbTk::Directory::isDirectory(stylesdir)) {
         //!! TODO: NLS
         cerr<<"Error creating style menu! Stylesdir: "<<stylesdir<<" does not exist or is not a directory!"<<endl;
@@ -2065,15 +2016,12 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
 
     std::sort(filelist.begin(), filelist.end(), less<string>());
 
-    int slen = stylesdir.size();
     // for each file in directory add filename and path to menu
     for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
         std::string style(stylesdir + '/' + filelist[file_index]);
-
-        if (FbTk::Directory::isRegularFile(style)) {
-            FbTk::MenuItem *item = new StyleMenuItem(filelist[file_index], style);
-            menu.insert(item);
-        }
+        // add to menu only if the file is a regular file
+        if (FbTk::Directory::isRegularFile(style))
+            menu.insert(new StyleMenuItem(filelist[file_index], style));
     } 
     // update menu graphics
     menu.update();
@@ -2104,7 +2052,7 @@ void BScreen::showPosition(int x, int y) {
             unsigned int head = getCurrHead();
 
             m_geom_window.move(getHeadX(head) + (getHeadWidth(head) - m_geom_window.width()) / 2,
-                             getHeadY(head) + (getHeadHeight(head) - m_geom_window.height()) / 2);
+                               getHeadY(head) + (getHeadHeight(head) - m_geom_window.height()) / 2);
                             
         } else {
             m_geom_window.move((width() - m_geom_window.width()) / 2, (height() - m_geom_window.height()) / 2);
@@ -2154,13 +2102,12 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     char label[256];
 
     sprintf(label,
-            I18n::instance()->getMessage(
-                                         FBNLS::ScreenSet, FBNLS::ScreenGeometryFormat,
+            I18n::instance()->getMessage(FBNLS::ScreenSet, FBNLS::ScreenGeometryFormat,
                                          "W: %4d x H: %4d"), gx, gy);
 
     m_geom_window.clear();
 
-    //TODO: geom window again?! repeated
+    //!! TODO: geom window again?! repeated
     winFrameTheme().font().drawText(m_geom_window.window(),
                                     screenNumber(),
                                     winFrameTheme().labelTextFocusGC(),
