@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.cc,v 1.2 2003/04/14 12:08:50 fluxgen Exp $
+// $Id: TextButton.cc,v 1.3 2003/08/11 14:34:46 fluxgen Exp $
 
 #include "TextButton.hh"
 #include "Font.hh"
@@ -29,10 +29,11 @@ using namespace std;
 
 TextButton::TextButton(const FbTk::FbWindow &parent, 
                        const FbTk::Font &font, 
-                       const std::string &text):FbTk::Button(parent, 0, 0, 10, 10),
-                                                m_font(&font),
-                                                m_text(text),
-                                                m_justify(FbTk::LEFT), m_bevel(1) {
+                       const std::string &text):
+    FbTk::Button(parent, 0, 0, 10, 10),
+    m_font(&font),
+    m_text(text),
+    m_justify(FbTk::LEFT), m_bevel(1) {
 
 }
 
@@ -61,21 +62,29 @@ void TextButton::setBevel(int bevel) {
 
 /// clear window and redraw text 
 void TextButton::clear() {
-    FbTk::Button::clear(); // clear window and draw background
+    FbTk::Button::clear();
+    drawText();
+}
+
+unsigned int TextButton::textWidth() const {
+    return font().textWidth(text().c_str(), text().size());
+}
+
+void TextButton::drawText(int x_offset, int y_offset) {
     unsigned int textlen = text().size();
     // do text alignment
-    int align_x = FbTk::doAlignment(width(),
+    int align_x = FbTk::doAlignment(width() - x_offset,
                                     bevel(),
                                     justify(),
                                     font(),
                                     text().c_str(), text().size(),
                                     textlen // return new text len
                                     );
-
+    // center text by default
+    int center_pos = height()/2 + font().ascent()/2;
     font().drawText(window().window(), // drawable
                     window().screenNumber(),
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size
-                    align_x, font().ascent());// position
+                    align_x + x_offset, center_pos + y_offset); // position
 }
-
