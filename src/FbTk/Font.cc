@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.13 2004/08/28 18:10:19 rathnor Exp $
+//$Id: Font.cc,v 1.14 2004/08/31 15:26:39 rathnor Exp $
 
 
 #include "StringUtil.hh"
@@ -55,8 +55,16 @@
 #endif //__USE_GNU
 
 #include <iostream> 
-#include <cstring>
-#include <cstdlib>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
 #include <list>
 #include <typeinfo>
 #include <langinfo.h>
@@ -71,7 +79,11 @@
 #error "You dont have sstream or strstream headers!"
 #endif // HAVE_STRSTREAM
 
-#include <cstdlib>
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
 
 using namespace std;
 

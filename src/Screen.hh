@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.142 2004/06/21 15:23:42 rathnor Exp $
+// $Id: Screen.hh,v 1.143 2004/08/31 15:26:38 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -40,7 +40,11 @@
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 #include <string>
 #include <list>
 #include <vector>

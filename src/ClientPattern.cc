@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.cc,v 1.7 2004/04/28 13:04:06 rathnor Exp $
+// $Id: ClientPattern.cc,v 1.8 2004/08/31 15:26:38 rathnor Exp $
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
@@ -38,7 +38,11 @@
 #include <fstream>
 #include <string>
 #include <memory>
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 
 // needed as well for index on some systems (e.g. solaris)
 #include <strings.h> 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.13 2004/06/07 11:46:05 rathnor Exp $
+// $Id: ImageControl.cc,v 1.14 2004/08/31 15:26:39 rathnor Exp $
 
 #include "ImageControl.hh"
 
@@ -45,9 +45,21 @@
 #include <sys/types.h>
 #endif // HAVE_SYS_TYPES_H
 
-#include <cstdlib>
-#include <cstring>
-#include <cstdio>
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 
 #ifdef HAVE_CTYPE_H
 #include <ctype.h>

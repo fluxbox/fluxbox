@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.30 2004/04/22 21:01:58 fluxgen Exp $
+// $Id: FbRun.cc,v 1.31 2004/08/31 15:26:40 rathnor Exp $
 
 #include "FbRun.hh"
 
@@ -48,7 +48,11 @@
 #include <iterator>
 #include <fstream>
 #include <algorithm>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 
 using namespace std;
 FbRun::FbRun(int x, int y, size_t width):

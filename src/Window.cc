@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.297 2004/08/29 12:35:29 rathnor Exp $
+// $Id: Window.cc,v 1.298 2004/08/31 15:26:38 rathnor Exp $
 
 #include "Window.hh"
 
@@ -61,10 +61,22 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#include <cstring>
-#include <cstdio>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 #include <iostream>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 #include <functional>
 #include <algorithm>
 

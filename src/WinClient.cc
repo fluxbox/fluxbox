@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.41 2004/08/10 13:36:07 fluxgen Exp $
+// $Id: WinClient.cc,v 1.42 2004/08/31 15:26:38 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -35,7 +35,11 @@
 #include <iostream>
 #include <algorithm>
 #include <iterator>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 
 using namespace std;
 

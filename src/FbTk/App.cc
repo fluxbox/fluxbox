@@ -23,7 +23,11 @@
 
 #include "EventManager.hh"
 
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 #include <string>
 
 namespace FbTk {

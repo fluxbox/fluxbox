@@ -28,7 +28,11 @@
 
 #include <string>
 #include <iostream>
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 
 using namespace std;
 

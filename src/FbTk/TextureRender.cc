@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.10 2004/07/05 23:51:57 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.11 2004/08/31 15:26:39 rathnor Exp $
 
 #include "TextureRender.hh"
 
@@ -34,7 +34,11 @@
 
 #include <iostream>
 #include <string>
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 using namespace std;
 
 namespace FbTk {

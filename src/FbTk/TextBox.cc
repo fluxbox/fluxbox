@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.11 2004/08/11 12:41:28 fluxgen Exp $
+// $Id: TextBox.cc,v 1.12 2004/08/31 15:26:39 rathnor Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -27,7 +27,11 @@
 #include "App.hh"
 #include "KeyUtil.hh"
 
-#include <cctype>
+#ifdef HAVE_CCTYPE
+  #include <cctype>
+#else
+  #include <ctype.h>
+#endif
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
 

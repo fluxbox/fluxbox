@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.19 2004/08/29 12:33:55 rathnor Exp $
+// $Id: MenuTheme.cc,v 1.20 2004/08/31 15:26:39 rathnor Exp $
 
 #include "MenuTheme.hh"
 
@@ -29,7 +29,11 @@
 #include "App.hh"
 #include "StringUtil.hh"
 
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 #include <algorithm>
 
 namespace FbTk {

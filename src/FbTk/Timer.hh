@@ -27,7 +27,11 @@
 
 #include "RefCount.hh"
 
-#include <ctime> 
+#ifdef HAVE_CTIME
+  #include <ctime>
+#else
+  #include <time.h>
+#endif
 #include <list>
 
 #ifdef HAVE_CONFIG_H

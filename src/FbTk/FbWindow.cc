@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.36 2004/06/15 11:03:17 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.37 2004/08/31 15:26:39 rathnor Exp $
 
 #include "FbWindow.hh"
 
@@ -35,7 +35,11 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 
 namespace FbTk {
 

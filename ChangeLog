@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/31:
+  * Check for C++ std headers, some older machines dont have them (Simon)
+    configure.in  src/<MANY>.hh/cc
 *04/08/30:
   * Changed session.screen<num>.iconbar.clientWidth to
     session.screen<num>.iconbar.iconWidth

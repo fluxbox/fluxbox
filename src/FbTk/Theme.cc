@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.28 2004/08/26 18:26:39 akir Exp $
+// $Id: Theme.cc,v 1.29 2004/08/31 15:26:39 rathnor Exp $
 
 #include "Theme.hh"
 
@@ -30,7 +30,11 @@
 #include "Directory.hh"
 #include "I18n.hh"
 
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 #include <memory>
 #include <iostream>
 

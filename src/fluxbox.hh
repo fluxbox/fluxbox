@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.89 2004/07/15 09:52:14 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.90 2004/08/31 15:26:39 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -36,7 +36,11 @@
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.21 2004/06/08 13:15:30 rathnor Exp $
+// $Id: bsetroot.cc,v 1.22 2004/08/31 15:26:40 rathnor Exp $
 
 #include "bsetroot.hh"
 
@@ -32,9 +32,21 @@
 
 #include <X11/Xatom.h>
 
-#include <cstring>
-#include <cstdlib>
-#include <cstdio>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 #include <iostream>
 
 using namespace std;

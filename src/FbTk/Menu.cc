@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.78 2004/08/30 10:23:37 akir Exp $
+// $Id: Menu.cc,v 1.79 2004/08/31 15:26:39 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -48,9 +48,21 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 #include <iostream>
 #include <typeinfo>
 

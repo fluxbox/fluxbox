@@ -22,7 +22,11 @@
 #include "../FbTk/SignalHandler.hh"
 
 #include <iostream>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 
 using namespace std;
 using namespace FbTk;

@@ -19,11 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IntResMenuItem.cc,v 1.3 2004/06/10 17:24:24 fluxgen Exp $
+// $Id: IntResMenuItem.cc,v 1.4 2004/08/31 15:26:38 rathnor Exp $
 
 #include "IntResMenuItem.hh"
 #include "PixmapWithMask.hh"
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 
 namespace {
 

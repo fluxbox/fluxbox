@@ -38,7 +38,11 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 
 namespace FbTk {
 

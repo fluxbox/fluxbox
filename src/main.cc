@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.30 2004/06/07 11:46:04 rathnor Exp $
+// $Id: main.cc,v 1.31 2004/08/31 15:26:39 rathnor Exp $
 
 #include "fluxbox.hh"
 #include "version.h"
@@ -38,9 +38,21 @@
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 #include <iostream>
 #include <fstream>
 #include <stdexcept>

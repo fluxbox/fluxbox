@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.150 2004/08/29 12:33:53 rathnor Exp $
+// $Id: Toolbar.cc,v 1.151 2004/08/31 15:26:38 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -62,7 +62,11 @@
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 
-#include <cstring>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 #include <iterator>
 
 using namespace std;

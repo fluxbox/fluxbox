@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.13 2004/08/29 08:33:12 rathnor Exp $
+// $Id: ClockTool.cc,v 1.14 2004/08/31 15:26:38 rathnor Exp $
 
 #include "ClockTool.hh"
 
@@ -39,7 +39,11 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#include <ctime>
+#ifdef HAVE_CTIME
+  #include <ctime>
+#else
+  #include <time.h>
+#endif
 #include <string>
 #include <iostream>
 using namespace std;

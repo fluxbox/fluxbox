@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.9 2004/08/28 18:10:19 rathnor Exp $
+// $Id: XmbFontImp.cc,v 1.10 2004/08/31 15:26:39 rathnor Exp $
 
 #include "XmbFontImp.hh"
 
@@ -38,10 +38,22 @@
 #define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#include <cstdio>
-#include <cstdarg>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
+#ifdef HAVE_CSTDARG
+  #include <cstdarg>
+#else
+  #include <stdarg.h>
+#endif
 #include <iostream>
-#include <cstring>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 using namespace std;
 

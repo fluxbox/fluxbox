@@ -22,14 +22,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.cc,v 1.9 2004/08/26 16:37:48 rathnor Exp $
+// $Id: Texture.cc,v 1.10 2004/08/31 15:26:39 rathnor Exp $
 
 #include "App.hh"
 #include "Texture.hh"
 
 #include <X11/Xlib.h>
-#include <cstring>
-#include <cctype>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+#ifdef HAVE_CCTYPE
+  #include <cctype>
+#else
+  #include <ctype.h>
+#endif
 
 namespace FbTk {
 

@@ -19,13 +19,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.cc,v 1.9 2003/09/24 14:02:25 rathnor Exp $
+// $Id: FbAtoms.cc,v 1.10 2004/08/31 15:26:38 rathnor Exp $
 
 #include "FbAtoms.hh"
 #include "App.hh"
 
 #include <string>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 
 using namespace std;
 

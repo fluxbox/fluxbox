@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.43 2004/06/07 11:46:04 rathnor Exp $
+//$Id: Keys.cc,v 1.44 2004/08/31 15:26:38 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -41,10 +41,26 @@
 #include <ctype.h>
 #endif	// HAVE_CTYPE_H
 
-#include <cstdio>
-#include <cstdlib>
-#include <cerrno>
-#include <cstring>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+#ifdef HAVE_CERRNO
+  #include <cerrno>
+#else
+  #include <errno.h>
+#endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -69,7 +85,11 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 #include <memory>
 
 using namespace std;

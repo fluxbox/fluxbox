@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.12 2004/08/10 19:34:35 fluxgen Exp $
+// $Id: Shape.cc,v 1.13 2004/08/31 15:26:38 rathnor Exp $
 
 #include "Shape.hh"
 
@@ -28,7 +28,11 @@
 #include "FbTk/GContext.hh"
 #include "FbTk/FbPixmap.hh"
 
-#include <cstring>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 #include <X11/Xutil.h>
 #ifdef HAVE_CONFIG_H

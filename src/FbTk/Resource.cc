@@ -19,14 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.cc,v 1.6 2004/06/07 11:46:05 rathnor Exp $
+// $Id: Resource.cc,v 1.7 2004/08/31 15:26:39 rathnor Exp $
 
 #include "XrmDatabaseHelper.hh"
 #include "Resource.hh"
 #include "I18n.hh"
 
 #include <iostream>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 
 using namespace std;
 

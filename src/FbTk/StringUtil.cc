@@ -19,15 +19,31 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.11 2004/05/02 20:42:56 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.12 2004/08/31 15:26:39 rathnor Exp $
 
 #include "StringUtil.hh"
 
 #include <string>
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
-#include <cassert>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+#ifdef HAVE_CCTYPE
+  #include <cctype>
+#else
+  #include <ctype.h>
+#endif
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 #include <memory>
 #include <algorithm>
 

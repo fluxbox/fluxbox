@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.97 2004/08/30 11:34:56 akir Exp $
+// $Id: Slit.cc,v 1.98 2004/08/31 15:26:38 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -61,7 +61,11 @@
 
 #include <algorithm>
 #include <iostream>
-#include <cassert>
+#ifdef HAVE_CASSERT
+  #include <cassert>
+#else
+  #include <assert.h>
+#endif
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/types.h>

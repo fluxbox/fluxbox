@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.hh,v 1.7 2004/08/26 16:37:48 rathnor Exp $
+// $Id: ThemeItems.hh,v 1.8 2004/08/31 15:26:39 rathnor Exp $
 
 /// @file implements common theme items
 
@@ -34,7 +34,11 @@
 #include "Image.hh"
 
 #include <string>
-#include <cstdio>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 #include <iostream>
 namespace FbTk {
 

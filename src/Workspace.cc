@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.98 2004/06/21 09:53:01 rathnor Exp $
+// $Id: Workspace.cc,v 1.99 2004/08/31 15:26:39 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -48,8 +48,16 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
-#include <cstdio>
-#include <cstring>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 #include <algorithm>
 #include <iostream>

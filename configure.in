@@ -33,6 +33,8 @@ AC_CHECK_HEADERS(sstream, ,
         )]
 )
 
+AC_CHECK_HEADERS(cassert cctype cerrno cmath cstdarg cstdio cstdlib cstring ctime)
+
 AC_HEADER_TIME
 
 dnl Check for existance of basename(), setlocale() and strftime()
