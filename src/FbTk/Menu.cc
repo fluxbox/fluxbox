@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.15 2003/04/25 16:23:59 fluxgen Exp $
+// $Id: Menu.cc,v 1.16 2003/04/26 12:34:48 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -87,7 +87,9 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_screen_height(DisplayHeight(m_display, screen_num)),
     m_alignment(ALIGNDONTCARE),
     m_border_width(0),
-    m_themeobserver(*this), m_trans(new Transparent(0, 0, 255, screen_num)),
+    m_themeobserver(*this), 
+    m_trans(new Transparent(getRootPixmap(screen_num), 0,
+                            s_alpha, screen_num)),
     m_need_update(true) {
 
     // make sure we get updated when the theme is reloaded
@@ -177,7 +179,7 @@ Menu::~Menu() {
     menu.window.hide();
    
     if (shown && shown->window() == window())
-        shown = (Menu *) 0;
+        shown = 0;
 
     while (!menuitems.empty()) {
         delete menuitems.back();
@@ -369,11 +371,9 @@ void Menu::update() {
     const FbTk::Texture &frame_tex = m_theme.frameTexture();
     if (frame_tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         menu.frame_pixmap = None;
-        //        menu.frame.setBackgroundColor(frame_tex.color());
     } else {
         menu.frame_pixmap =
-            m_image_ctrl.renderImage(menu.width, menu.frame_h, frame_tex);
-        //        menu.frame.setBackgroundPixmap(menu.frame_pixmap);
+            m_image_ctrl.renderImage(menu.width, menu.frame_h, frame_tex);        
     }
 
     if (tmp)
@@ -548,8 +548,6 @@ void Menu::redrawTitle() {
                   text, len,  // text string with lenght
                   dx, font.ascent() + menu.bevel_w);  // position
     if (m_trans.get()) {
-        if (m_trans->alpha() != s_alpha)
-            m_trans->setAlpha(s_alpha);
 
         if (m_trans->alpha() != 255) {
             Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
@@ -839,9 +837,9 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
                item_x, item_y,
                menu.item_w, menu.item_h, False);
 
+    if (m_trans->alpha() != s_alpha)
+        m_trans->setAlpha(s_alpha);
     if (m_trans.get() && render_trans) {
-        if (m_trans->alpha() != s_alpha)
-            m_trans->setAlpha(s_alpha);
 
         if (m_trans->alpha() != 255) {                               
             Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
@@ -983,8 +981,6 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             }
         } else
             drawItem(p, false, true, true);
-				
-        
     }
 }
 
