@@ -42,7 +42,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH fluxbox 1 "September 24th, 2003" "0.9.6"
+.TH fluxbox 1 "September 26th, 2003" "0.9.6"
 .SH NAME
 fluxbox \- a window manager for X11
 .SH SYNOPSIS
@@ -74,7 +74,9 @@ Fluxbox uses its own graphics class to render its images on the fly.
 By using style files, you can determine at a great level how your desktop looks
 like.  Fluxbox styles are compatible with those of Blackbox, so users migrating
 can still use their current favourite themes.
-.\" TODO KDE2
+.PP
+.\" TODO wmhints support
+.\" TODO KDE2 GNome support
 Currently KDE WM hints are not supported, but Fluxbox is already prepared to
 support the new window manager specification that is now being developed for
 both Gnome and KDE2.0.
@@ -224,15 +226,11 @@ When you doubleclick on the titlebar of a window, it will `shade', so
 that only the titlebar stays visible.
 Another double click will redisplay the window contents.
 .SS Window Buttons:
-In fluxbox, the window button's configuration 
-.B was
-controlled by your 
-.I ~/.fluxbox/titlebar
-file, which specifies which buttons to put on the right of left side of
-the title bar. The default is:
+In fluxbox, the window button's configuration is controlled by \ init
+file entries. The default is:
 .EX 0
-Right: minimize maximize close
-Left: sticky
+session.titlebar.left:  Stick 
+session.titlebar.right: Minimize Maximize Close 
 .EE
 Clicking the minimize button with any button causes the window to be iconified.
 Clicking the close button with any button closes the application.
@@ -253,6 +251,7 @@ titlebar, you can press Alt + button 1 anywhere in the window and then
 drag it around.
 You can also use Alt + button 1 to raise a partially visible window.
 Finally, Alt + button 2 lowers a window, and Alt + button 3 resizes the window.
+.B FROM HERE ON UNREVISITED
 .SH MENU FILE
 A default menu file is installed in
 .IR @pkgdatadir@/menu .
