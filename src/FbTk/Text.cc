@@ -1,5 +1,5 @@
 // Text.cc for FbTk - text utils
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Text.cc,v 1.1 2002/12/02 20:11:58 fluxgen Exp $
+// $Id: Text.cc,v 1.2 2003/08/11 14:59:57 fluxgen Exp $
 
 #include "Text.hh"
 
