@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.25 2003/08/26 23:45:36 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.26 2003/09/14 09:51:40 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -66,7 +66,8 @@ Pixmap getRootPixmap(int screen_num) {
 Display *FbWindow::s_display = 0;
 
 FbWindow::FbWindow():m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0), 
-                     m_width(0), m_height(0), m_border_width(0), m_depth(0), m_destroy(true) {
+                     m_width(0), m_height(0), m_border_width(0), m_depth(0), m_destroy(true),
+                     m_buffer_pm(0) {
 
     if (s_display == 0)
         s_display = App::instance()->display();
@@ -77,7 +78,8 @@ FbWindow::FbWindow(const FbWindow& the_copy):m_parent(the_copy.parent()),
                                              m_x(the_copy.x()), m_y(the_copy.y()), 
                                              m_width(the_copy.width()), m_height(the_copy.height()),
                                              m_border_width(the_copy.borderWidth()), 
-                                             m_depth(the_copy.depth()), m_destroy(true) {
+                                             m_depth(the_copy.depth()), m_destroy(true),
+                                             m_buffer_pm(0) {
     if (s_display == 0)
         s_display = App::instance()->display();
 
@@ -92,7 +94,8 @@ FbWindow::FbWindow(int screen_num,
                    int depth,
                    int class_type):
     m_screen_num(screen_num),
-    m_parent(0), m_destroy(true) {
+    m_parent(0), m_destroy(true),
+    m_buffer_pm(0) {
 	
     create(RootWindow(FbTk::App::instance()->display(), screen_num), 
            x, y, width, height, eventmask,
@@ -105,7 +108,8 @@ FbWindow::FbWindow(const FbWindow &parent,
                    bool override_redirect, 
                    int depth, int class_type):
     m_parent(&parent),
-    m_screen_num(parent.screenNumber()), m_destroy(true) { 
+    m_screen_num(parent.screenNumber()), m_destroy(true),
+    m_buffer_pm(0) { 
 
     create(parent.window(), x, y, width, height, eventmask, 
            override_redirect, depth, class_type);
@@ -115,7 +119,8 @@ FbWindow::FbWindow(const FbWindow &parent,
 
 FbWindow::FbWindow(Window client):m_parent(0), m_window(0),
                                   m_screen_num(0),
-                                  m_destroy(false) { // don't destroy this window
+                                  m_destroy(false),  // don't destroy this window
+                                  m_buffer_pm(0) {
 
     setNew(client);
 }
@@ -189,8 +194,13 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
     if (m_transparent->source() != root)
         m_transparent->setSource(root, screenNumber());
 
-    if (m_transparent->dest() != window())
+    if (m_buffer_pm) {
+        if (m_transparent->dest() != m_buffer_pm) {
+            m_transparent->setDest(m_buffer_pm, screenNumber());
+        }
+    } else if (m_transparent->dest() != window())
         m_transparent->setDest(window(), screenNumber());
+
 
     // get root position
 
@@ -366,6 +376,10 @@ long FbWindow::eventMask() const {
         return attrib.your_event_mask;
     }
     return 0;
+}
+
+void FbWindow::setBufferPixmap(Pixmap pm) {
+    m_buffer_pm = pm;
 }
 
 void FbWindow::updateGeometry() {

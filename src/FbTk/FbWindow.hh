@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.24 2003/09/10 21:26:28 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.25 2003/09/14 09:51:40 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -143,6 +143,7 @@ public:
 protected:
     /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);
+    void setBufferPixmap(Pixmap pm);
     /// updates x,y, width, height and screen num from X window
     void updateGeometry();
 private:
@@ -164,6 +165,7 @@ private:
     int m_depth; ///< bit depth
     bool m_destroy; ///< wheter the x window was created before
     std::auto_ptr<FbTk::Transparent> m_transparent;
+    Pixmap m_buffer_pm;
 };
 
 bool operator == (Window win, const FbWindow &fbwin);
