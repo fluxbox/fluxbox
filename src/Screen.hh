@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.50 2002/11/24 20:57:32 fluxgen Exp $
+// $Id: Screen.hh,v 1.51 2002/11/27 13:00:05 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -367,30 +367,30 @@ private:
 
 		Resource<Tab::Placement> tab_placement;
 		Resource<Tab::Alignment> tab_alignment;
-		#ifdef XINERAMA
+#ifdef XINERAMA
 		Resource<int> toolbar_on_head;
-		#endif // XINERAMA
+#endif // XINERAMA
 
 		Resource<Toolbar::Placement> toolbar_placement;
 
 
-		#ifdef SLIT
+#ifdef SLIT
 		bool slit_on_top, slit_auto_hide;
 		int slit_placement, slit_direction;
 
-		#ifdef XINERAMA
+#ifdef XINERAMA
 		unsigned int slit_on_head;
-		#endif // XINERAMA
+#endif // XINERAMA
 
-		#endif // SLIT
+#endif // SLIT
 
 
-		#ifdef	HAVE_STRFTIME
+#ifdef	HAVE_STRFTIME
 		std::string strftime_format;
-		#else // !HAVE_STRFTIME
-		Bool clock24hour;
+#else // !HAVE_STRFTIME
+		bool clock24hour;
 		int date_format;
-		#endif // HAVE_STRFTIME
+#endif // HAVE_STRFTIME
 
 	} resource;
 };
