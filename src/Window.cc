@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.44 2002/04/14 11:54:59 fluxgen Exp $
+// $Id: Window.cc,v 1.45 2002/04/17 06:42:04 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2753,14 +2753,17 @@ void FluxboxWindow::redrawLabel(void) {
 		else
 			XSetWindowBackground(display, frame.label, frame.ulabel_pixel);
 	}
-	
-	GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
-			 screen->getWindowStyle()->l_text_unfocus_gc);
 
-	DrawUtil::DrawString(display, frame.label, gc,
-			&screen->getWindowStyle()->font, 
-			client.title_text_w, frame.label_w,
-			frame.bevel_w, getTitle().c_str());
+	//no need to draw the title if we don't have any
+	if (getTitle().size()!=0) {
+		GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
+				 screen->getWindowStyle()->l_text_unfocus_gc);
+
+		DrawUtil::DrawString(display, frame.label, gc,
+				&screen->getWindowStyle()->font, 
+				client.title_text_w, frame.label_w,
+				frame.bevel_w, getTitle().c_str());
+	}
 }
 
 
