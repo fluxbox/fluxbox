@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.27 2004/08/22 03:45:03 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.28 2004/08/22 04:29:16 rathnor Exp $
 
 #
 # Portability notes:
@@ -143,12 +143,16 @@ case `uname` in
 esac
 
 append() {
-    echo -n "      $*" >> ${MENUFILENAME}
-    execname="`echo $*|cut -d\( -f2|cut -d\) -f1`"
-    if [ -r "${HOME}/.fluxbox/icons/$execname.xpm" ]; then
-        echo "<${HOME}/.fluxbox/icons/$execname.xpm>"  >> ${MENUFILENAME}
+    if [ -z "${INSTALL}" ]; then
+        echo -n "      $*" >> ${MENUFILENAME}
+        execname="`echo $*|cut -d\( -f2|cut -d\) -f1`"
+        if [ -r "${HOME}/.fluxbox/icons/$execname.xpm" ]; then
+            echo "<${HOME}/.fluxbox/icons/$execname.xpm>"  >> ${MENUFILENAME}
+        else
+            echo >> ${MENUFILENAME}
+        fi
     else
-        echo >> ${MENUFILENAME}
+        echo "      $*" >> ${MENUFILENAME}        
     fi
 }
 
