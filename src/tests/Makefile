@@ -1,10 +1,11 @@
-OBJ=StringUtiltest.o ../StringUtil.o
 CXX=g++
 CXXFLAGS= -I.. -DDEBUG -Wall -g -O2
 LIBS=
 XFLAGS= -I/usr/X11R6/include
-XLIBS= -L/usr/X11R6/lib -lX11
+XLIBS= -L/usr/X11R6/lib -lX11 -lXft
 COMPILEFILE=$(CXX) -c $(CXXFLAGS)
+FONT_OBJ = ../BaseDisplay.o ../Font.o ../XFontImp.o ../XftFontImp.o ../XmbFontImp.o \
+	../Timer.o ../StringUtil.o ../i18n.o
 
 all: testStringUtil testKeys testResource testSignal
 
@@ -35,11 +36,14 @@ testResource: Resourcetest.o Resource.o
 testSignal: signaltest.cc ../SignalHandler.o
 	${CXX} ${LIBS} signaltest.cc ../SignalHandler.o -o testSignal
 
+testFont: testFont.cc ${FONT_OBJ}
+	${CXX} ${CXXFLAGS} ${XLIBS} testFont.cc ${FONT_OBJ} -o testFont
 
-run: testResource testKeys testStringUtil 
+run: testResource testKeys testStringUtil testFont
 	./testKeys
 	./testStringUtil
 	./testResource
 	./testSignal
+	./testFont
 clean:
 	rm -f *.o
