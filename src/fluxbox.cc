@@ -161,9 +161,9 @@ char *Fluxbox::expandFilename(char *filename) {
     strcat(retval, getenv("HOME"));
     strcat(retval, &filename[1]);
   } else
-    return bstrdup(filename);	//return unmodified value
+    return Misc::strdup(filename);	//return unmodified value
   
-  return bstrdup(retval);	//return modified value
+  return Misc::strdup(retval);	//return modified value
 }
 
 //static singleton var
@@ -1710,7 +1710,7 @@ char *Fluxbox::getRcFilename() {
 		snprintf(dbfile, dbfile_size, "%s/.%s/%s", homedir, RC_PATH, RC_INIT_FILE);
 	
 	} else
-		dbfile = bstrdup(rc_file);
+		dbfile = Misc::strdup(rc_file);
  
 	return dbfile;
 }
@@ -1744,7 +1744,7 @@ void Fluxbox::load_rc(void) {
     
 		resource.menu_file = expandFilename(value.addr); // expand ~ to $HOME
 	} else
-		resource.menu_file = bstrdup(DEFAULTMENU);
+		resource.menu_file = Misc::strdup(DEFAULTMENU);
 
 	if (resource.titlebar_file) {
 		delete resource.titlebar_file;
@@ -1756,7 +1756,7 @@ void Fluxbox::load_rc(void) {
 				&value_type, &value)) {
 		resource.titlebar_file = expandFilename(value.addr); //expand ~ to home 
 	} else 
-		resource.titlebar_file = bstrdup(DEFAULTTITLEBAR);
+		resource.titlebar_file = Misc::strdup(DEFAULTTITLEBAR);
 	
 	//if already allocated memory for keys_file destroy it
 	if (resource.keys_file) {
@@ -1769,7 +1769,7 @@ void Fluxbox::load_rc(void) {
 				&value_type, &value)) {
 		resource.keys_file = expandFilename(value.addr); //expand ~ to home		
 	} else 
-		resource.keys_file = bstrdup(DEFAULTKEYSFILE);
+		resource.keys_file = Misc::strdup(DEFAULTKEYSFILE);
 		
 	
 	if (XrmGetResource(database, "session.iconbar", "Session.Iconbar",
@@ -1836,7 +1836,7 @@ void Fluxbox::load_rc(void) {
 				&value_type, &value))
 		resource.style_file = expandFilename(value.addr);
 	else
-		resource.style_file = bstrdup(DEFAULTSTYLE);
+		resource.style_file = Misc::strdup(DEFAULTSTYLE);
 
 	if (resource.root_cmd) {
 		delete [] resource.root_cmd;
@@ -2084,7 +2084,7 @@ void Fluxbox::load_rc(BScreen *screen) {
   sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
 		     &value)) {
-    char *search = bstrdup(value.addr);
+    char *search = Misc::strdup(value.addr);
 
     int i;
     for (i = 0; i < screen->getNumberOfWorkspaces(); i++) {
@@ -2479,7 +2479,7 @@ void Fluxbox::saveStyleFilename(const char *filename) {
   if (resource.style_file)
     delete [] resource.style_file;
 
-  resource.style_file = bstrdup(filename);
+  resource.style_file = Misc::strdup(filename);
 }
 
 
@@ -2496,7 +2496,7 @@ void Fluxbox::saveMenuFilename(const char *filename) {
     if (! stat(filename, &buf)) {
       MenuTimestamp *ts = new MenuTimestamp;
 
-      ts->filename = bstrdup(filename);
+      ts->filename = Misc::strdup(filename);
       ts->timestamp = buf.st_ctime;
 
       menuTimestamps->insert(ts);
