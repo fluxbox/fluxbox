@@ -1,5 +1,5 @@
 // Ewmh.hh for fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@fluxbox.org)
+// Copyright (c) 2002 - 2004 Henrik Kinnunen (fluxgen<at>fluxbox.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.13 2004/01/18 19:12:11 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.14 2004/01/19 18:21:51 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -36,10 +36,14 @@ public:
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient);
 
+    void updateFocusedWindow(BScreen &screen, Window win);
     void updateClientList(BScreen &screen);
     void updateWorkspaceNames(BScreen &screen);
     void updateCurrentWorkspace(BScreen &screen);
     void updateWorkspaceCount(BScreen &screen);
+    void updateViewPort(BScreen &screen);
+    void updateGeometry(BScreen &screen);
+    void updateWorkarea(BScreen &screen);
 
     void updateState(FluxboxWindow &win);
     void updateLayer(FluxboxWindow &win);
