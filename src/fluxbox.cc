@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.81 2002/11/15 12:19:17 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.82 2002/11/27 22:00:19 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -1558,11 +1558,11 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
 }
 
 // handle system signals here
-void Fluxbox::handleEvent(SignalEvent * const sig) {
+void Fluxbox::handleSignal(int signum) {
 	I18n *i18n = I18n::instance();
 	static int re_enter = 0;
 
-	switch (sig->signum) {
+	switch (signum) {
 		case SIGCHLD: // we don't want the child process to kill us
 			waitpid(-1, 0, WNOHANG | WUNTRACED);
 		break;
@@ -1588,7 +1588,7 @@ void Fluxbox::handleEvent(SignalEvent * const sig) {
 			i18n->getMessage(
 				 FBNLS::BaseDisplaySet, FBNLS::BaseDisplaySignalCaught,
 				 "%s:	signal %d caught\n"),
-				getApplicationName(), sig);
+				getApplicationName(), signum);
 
 			if (! isStartup() && ! re_enter) {
 				re_enter = 1;
