@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.6 2002/01/11 09:18:58 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.7 2002/01/18 01:23:54 fluxgen Exp $
 
 #ifndef	 _FLUXBOX_HH_
 #define	 _FLUXBOX_HH_
@@ -45,8 +45,13 @@
 #	endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
-//forward declaration
-class Fluxbox;
+#ifndef _RESOURCE_HH_
+#include "Resource.hh"
+#endif
+
+#ifndef _KEYS_HH_
+#include "Keys.hh"
+#endif
 
 #ifndef _BASEDISPLAY_HH_
 #include "BaseDisplay.hh"
@@ -76,10 +81,6 @@ class Fluxbox;
 #include "Toolbar.hh"
 #endif
 
-#ifndef _KEYS_HH_
-#include "Keys.hh"
-#endif
-
 #ifdef		SLIT
 #	include "Slit.hh"
 #endif // SLIT
@@ -93,10 +94,10 @@ public:
 	
 	static Fluxbox *instance(int m_argc=0, char **m_argv=0, char *dpy_name=0, char *rc=0);
 	
-	inline bool useTabs() const { return resource.tabs; }
-	inline bool useIconBar() const { return resource.iconbar; }
-	inline void saveTabs(bool value) { resource.tabs = value; }
-	inline void saveIconBar(bool value) { resource.iconbar = value; }
+	inline bool useTabs() { return *m_rc_tabs; }
+	inline bool useIconBar() { return *m_rc_iconbar; }
+	inline void saveTabs(bool value) { *m_rc_tabs = value; }
+	inline void saveIconBar(bool value) { m_rc_iconbar = value; }
 #ifdef		HAVE_GETPID
 	inline const Atom &getFluxboxPidAtom(void) const { return fluxbox_pid; }
 	#ifdef KDE
@@ -124,24 +125,24 @@ public:
 	
 	enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
 	
-	inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return titlebar.right; }
-	inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return titlebar.left; }
-	inline const char *getStyleFilename(void) const
-		{ return resource.style_file; }
+	inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return *m_rc_titlebar_right; }
+	inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return *m_rc_titlebar_left; }
+	inline const char *getStyleFilename(void)
+		{ return m_rc_stylefile->c_str(); }
 
-	inline const char *getMenuFilename(void) const
-		{ return resource.menu_file; }
+	inline const char *getMenuFilename(void)
+		{ return m_rc_menufile->c_str(); }
 
-	inline const int &getColorsPerChannel(void) const
-		{ return resource.colors_per_channel; }
+	inline const int &getColorsPerChannel(void)
+		{ return *m_rc_colors_per_channel; }
 
 	inline const timeval &getAutoRaiseDelay(void) const
 		{ return resource.auto_raise_delay; }
 
-	inline const unsigned long &getCacheLife(void) const
-		{ return resource.cache_life; }
-	inline const unsigned long &getCacheMax(void) const
-		{ return resource.cache_max; }
+	inline const unsigned int getCacheLife(void)
+		{ return *m_rc_cache_life * 60000; }
+	inline const unsigned int getCacheMax(void)
+		{ return *m_rc_cache_max; }
 
 	inline void maskWindowEvents(Window w, FluxboxWindow *bw)
 		{ masked = w; masked_window = bw; }
@@ -152,7 +153,7 @@ public:
 	void load_rc(BScreen *);
 	void loadRootCommand(BScreen *);
 	void loadTitlebar();
-	void saveStyleFilename(const char *);
+	void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
 	void saveMenuFilename(const char *);
 	void saveTitlebarFilename(const char *);
 	void saveMenuSearch(Window, Basemenu *);
@@ -201,6 +202,7 @@ public:
 		inline Z *getData(void) { return data; }
 	};
 	
+	typedef std::vector<Fluxbox::Titlebar> TitlebarList;
 		
 private:
 	typedef struct MenuTimestamp {
@@ -210,21 +212,23 @@ private:
 
 	struct resource {
 		Time double_click_interval;
-
-		char *menu_file, *style_file, *titlebar_file, *keys_file;
-		int colors_per_channel;
+		
 		timeval auto_raise_delay;
-		unsigned long cache_life, cache_max;
-		bool tabs, iconbar;
+		//unsigned long cache_life, cache_max;
 	} resource;
+		
+	ResourceManager m_resourcemanager;
 	
-	struct titlebar_t {
-		std::vector<Fluxbox::Titlebar> left;
-		std::vector<Fluxbox::Titlebar> right;
-	};
+	//--- Resources
+	Resource<bool> m_rc_tabs, m_rc_iconbar;
+	Resource<int> m_rc_colors_per_channel;
+	Resource<std::string> m_rc_stylefile, 
+		m_rc_menufile, m_rc_keyfile;	
 	
-	titlebar_t titlebar;
-	std::vector<std::string> parseTitleArgs(const char *arg);
+	Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
+	Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
+
+	//std::vector<std::string> parseTitleArgs(const char *arg);
 	void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
 	
 	typedef DataSearch<FluxboxWindow> WindowSearch;
@@ -262,6 +266,7 @@ private:
 	char *rc_file, **argv;
 	int argc;
 	Keys *key;
+
 	void doWindowAction(Keys::KeyAction action);
 protected:
 	Fluxbox(int, char **, char * = 0, char * = 0);
@@ -274,6 +279,7 @@ protected:
 
 	virtual void process_event(XEvent *);
 	//only main should be able to creat new blackbox object
+	//TODO this must be removed!
 	friend int main(int,char **);
 	static Fluxbox *singleton;	//singleton object ( can only be destroyed by main )
 	virtual ~Fluxbox(void);

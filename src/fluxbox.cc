@@ -16,22 +16,22 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.20 2002/01/11 22:48:45 pekdon Exp $
+// $Id: fluxbox.cc,v 1.21 2002/01/18 01:23:54 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
-#ifndef   _GNU_SOURCE
-#define   _GNU_SOURCE
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef    HAVE_CONFIG_H
-#  include "../config.h"
+#ifdef		HAVE_CONFIG_H
+#	include "../config.h"
 #endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
@@ -41,7 +41,7 @@
 #include "Rootmenu.hh"
 #include "Screen.hh"
 
-#ifdef    SLIT
+#ifdef		SLIT
 #include "Slit.hh"
 #endif // SLIT
 
@@ -50,6 +50,7 @@
 #include "Workspace.hh"
 #include "Workspacemenu.hh"
 #include "StringUtil.hh"
+#include "Resource.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -57,63 +58,63 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#ifdef    SHAPE
+#ifdef		SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
 
-#ifdef    HAVE_STDIO_H
-#  include <stdio.h>
+#ifdef		HAVE_STDIO_H
+#	include <stdio.h>
 #endif // HAVE_STDIO_H
 
-#ifdef    STDC_HEADERS
-#  include <stdlib.h>
-#  include <string.h>
+#ifdef		STDC_HEADERS
+#	include <stdlib.h>
+#	include <string.h>
 #endif // STDC_HEADERS
 
-#ifdef    HAVE_UNISTD_H
-#  include <sys/types.h>
-#  include <unistd.h>
+#ifdef		HAVE_UNISTD_H
+#	include <sys/types.h>
+#	include <unistd.h>
 #endif // HAVE_UNISTD_H
 
-#ifdef    HAVE_SYS_PARAM_H
-#  include <sys/param.h>
+#ifdef		HAVE_SYS_PARAM_H
+#	include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
 
-#ifndef   MAXPATHLEN
-#define   MAXPATHLEN 255
+#ifndef	 MAXPATHLEN
+#define	 MAXPATHLEN 255
 #endif // MAXPATHLEN
 
-#ifdef    HAVE_SYS_SELECT_H
-#  include <sys/select.h>
+#ifdef		HAVE_SYS_SELECT_H
+#	include <sys/select.h>
 #endif // HAVE_SYS_SELECT_H
 
-#ifdef    HAVE_SIGNAL_H
-#  include <signal.h>
+#ifdef		HAVE_SIGNAL_H
+#	include <signal.h>
 #endif // HAVE_SIGNAL_H
 
-#ifdef    HAVE_SYS_SIGNAL_H
-#  include <sys/signal.h>
+#ifdef		HAVE_SYS_SIGNAL_H
+#	include <sys/signal.h>
 #endif // HAVE_SYS_SIGNAL_H
 
-#ifdef    HAVE_SYS_STAT_H
-#  include <sys/types.h>
-#  include <sys/stat.h>
+#ifdef		HAVE_SYS_STAT_H
+#	include <sys/types.h>
+#	include <sys/stat.h>
 #endif // HAVE_SYS_STAT_H
 
-#ifdef    TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
+#ifdef		TIME_WITH_SYS_TIME
+#	include <sys/time.h>
+#	include <time.h>
 #else // !TIME_WITH_SYS_TIME
-#  ifdef    HAVE_SYS_TIME_H
-#    include <sys/time.h>
-#  else // !HAVE_SYS_TIME_H
-#    include <time.h>
-#  endif // HAVE_SYS_TIME_H
+#	ifdef		HAVE_SYS_TIME_H
+#		include <sys/time.h>
+#	else // !HAVE_SYS_TIME_H
+#		include <time.h>
+#	endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
-#ifdef    HAVE_LIBGEN_H
-#  include <libgen.h>
+#ifdef		HAVE_LIBGEN_H
+#	include <libgen.h>
 #endif // HAVE_LIBGEN_H
 
 #include <iostream>
@@ -122,14 +123,14 @@
 #include <memory>
 using namespace std;
 
-#ifndef   HAVE_BASENAME
+#ifndef	 HAVE_BASENAME
 static inline char *basename (char *);
 static inline char *basename (char *s) {
-  char *save = s;
+	char *save = s;
 
-  while (*s) if (*s++ == '/') save = s;
+	while (*s) if (*s++ == '/') save = s;
 
-  return save;
+	return save;
 }
 #endif // HAVE_BASENAME
 
@@ -139,23 +140,142 @@ static inline char *basename (char *s) {
 
 // X event scanner for enter/leave notifies - adapted from twm
 typedef struct scanargs {
-  Window w;
-  Bool leave, inferior, enter;
+	Window w;
+	Bool leave, inferior, enter;
 } scanargs;
 
 static Bool queueScanner(Display *, XEvent *e, char *args) {
-  if ((e->type == LeaveNotify) &&
-      (e->xcrossing.window == ((scanargs *) args)->w) &&
-      (e->xcrossing.mode == NotifyNormal)) {
-    ((scanargs *) args)->leave = True;
-    ((scanargs *) args)->inferior = (e->xcrossing.detail == NotifyInferior);
-  } else if ((e->type == EnterNotify) &&
-             (e->xcrossing.mode == NotifyUngrab))
-    ((scanargs *) args)->enter = True;
+	if ((e->type == LeaveNotify) &&
+			(e->xcrossing.window == ((scanargs *) args)->w) &&
+			(e->xcrossing.mode == NotifyNormal)) {
+		((scanargs *) args)->leave = True;
+		((scanargs *) args)->inferior = (e->xcrossing.detail == NotifyInferior);
+	} else if ((e->type == EnterNotify) &&
+						 (e->xcrossing.mode == NotifyUngrab))
+		((scanargs *) args)->enter = True;
 
-  return False;
+	return False;
+}
+//-----------------------------------------------------------------
+//---- accessors for int, bool, and some enums with Resource ------
+//-----------------------------------------------------------------
+template<>
+void Resource<int>::
+setFromString(const char* strval) {
+	int val;
+	if (sscanf(strval, "%d", &val)==1)
+		*this = val;
 }
 
+template<>
+void Resource<std::string>::
+setFromString(const char *strval) {
+	*this = strval;
+}
+
+template<>
+void Resource<bool>::
+setFromString(char const *strval) {
+	if (strcasecmp(strval, "true")==0)
+		*this = true;
+	else
+		*this = false;
+}
+
+template<>
+void Resource<Fluxbox::TitlebarList>::
+setFromString(char const *strval) {
+	vector<std::string> val;
+	StringUtil::stringtok(val, strval);
+	int size=val.size();
+	//clear old values
+	m_value.clear();
+		
+	for (int i=0; i<size; i++) {
+		if (strcasecmp(val[i].c_str(), "Maximize")==0)
+			m_value.push_back(Fluxbox::MAXIMIZE);
+		else if (strcasecmp(val[i].c_str(), "Minimize")==0)
+			m_value.push_back(Fluxbox::MINIMIZE);
+		else if (strcasecmp(val[i].c_str(), "Shade")==0)
+			m_value.push_back(Fluxbox::SHADE);
+		else if (strcasecmp(val[i].c_str(), "Stick")==0)
+			m_value.push_back(Fluxbox::STICK);
+		else if (strcasecmp(val[i].c_str(), "Menu")==0)
+			m_value.push_back(Fluxbox::MENU);
+		else if (strcasecmp(val[i].c_str(), "Close")==0)
+			m_value.push_back(Fluxbox::CLOSE);
+	}
+}
+
+template<>
+void Resource<unsigned int>::
+setFromString(const char *strval) {	
+	if (sscanf(strval, "%ul", &m_value) != 1)
+		setDefaultValue();
+}
+
+//-----------------------------------------------------------------
+//---- manipulators for int, bool, and some enums with Resource ---
+//-----------------------------------------------------------------
+template<>
+std::string Resource<bool>::
+getString() {				
+	return std::string(**this == true ? "true" : "false");
+}
+
+template<>
+std::string Resource<int>::
+getString() {
+	char strval[256];
+	sprintf(strval, "%d", **this);
+	return std::string(strval);
+}
+
+template<>
+std::string Resource<std::string>::
+getString() { return **this; }
+
+template<>
+string Resource<Fluxbox::TitlebarList>::
+getString() {
+	string retval;
+	int size=m_value.size();
+	for (int i=0; i<size; i++) {
+		switch (m_value[i]) {
+			case Fluxbox::SHADE:
+				retval.append("Shade");
+				break;
+			case Fluxbox::MINIMIZE:
+				retval.append("Minimize");
+				break;
+			case Fluxbox::MAXIMIZE:
+				retval.append("Maximize");
+				break;
+			case Fluxbox::CLOSE:
+				retval.append("Close");
+				break;
+			case Fluxbox::STICK:
+				retval.append("Stick");
+				break;
+			case Fluxbox::MENU:
+				retval.append("Menu");
+				break;
+			default:
+				break;
+		}
+		retval.append(" ");
+	}
+
+	return retval;
+}
+
+template<>
+string Resource<unsigned int>::
+getString() {
+	char tmpstr[128];
+	sprintf(tmpstr, "%ul", m_value);
+	return string(tmpstr);
+}
 
 //static singleton var
 Fluxbox *Fluxbox::singleton=0;
@@ -165,48 +285,59 @@ Fluxbox *Fluxbox::singleton=0;
 //since we only need to create one instance of Fluxbox
 //-------------------------------------------
 Fluxbox *Fluxbox::instance(int m_argc, char **m_argv, char *dpy_name, char *rc) {
-  return singleton;
+	return singleton;
 }
 
 
 Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
-: BaseDisplay(m_argv[0], dpy_name)
+: BaseDisplay(m_argv[0], dpy_name),
+m_resourcemanager(),
+m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
+m_rc_iconbar(m_resourcemanager, true, "session.iconbar", "Session.Iconbar"),
+m_rc_colors_per_channel(m_resourcemanager, 4, "session.colorsPerChannel", "Session.ColorsPerChannel"),
+m_rc_stylefile(m_resourcemanager, "", "session.styleFile", "Session.StyleFile"),
+m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
+m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
+m_rc_titlebar_left(m_resourcemanager, TitlebarList(0), "session.titlebar.left", "Session.Titlebar.Left"),
+m_rc_titlebar_right(m_resourcemanager, TitlebarList(0), "session.titlebar.right", "Session.Titlebar.Right"),
+m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
+m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
+focused_window(0),
+masked_window(0),
+no_focus(0),
+rc_file(rc)
+
 {
-		
+
 	//singleton pointer
 	singleton = this;
-  grab();
+	grab();
 
-  if (! XSupportsLocale())
-    fprintf(stderr, "X server does not support locale\n");
+	if (! XSupportsLocale())
+		fprintf(stderr, "X server does not support locale\n");
 
-  if (XSetLocaleModifiers("") == NULL)
-    fprintf(stderr, "cannot set locale modifiers\n");
+	if (XSetLocaleModifiers("") == NULL)
+		fprintf(stderr, "cannot set locale modifiers\n");
 
 // Set default values to member variables
 
-  argc = m_argc;
-  argv = m_argv;
-  rc_file = rc;
+	argc = m_argc;
+	argv = m_argv;
 	key=0;
 	
-  no_focus = False;
-  resource.titlebar_file = resource.menu_file = resource.style_file = resource.keys_file = 0;
+	no_focus = False;
+//	resource.titlebar_file = resource.keys_file = 0;
 
 	resource.auto_raise_delay.tv_sec = resource.auto_raise_delay.tv_usec = 0;
 		
-  focused_window = masked_window = (FluxboxWindow *) 0;
-  masked = None;
-	/*resource.tabtype.listtype = TabType::Vertical;
-	resource.tabtype.listpos = TabType::Top;
-	resource.tabtype.pos = TabType::Right;
-	*/
 	
-  windowSearchList = new LinkedList<WindowSearch>;
-  menuSearchList = new LinkedList<MenuSearch>;
+	masked = None;
+	
+	windowSearchList = new LinkedList<WindowSearch>;
+	menuSearchList = new LinkedList<MenuSearch>;
 
-#ifdef    SLIT
-  slitSearchList = new LinkedList<SlitSearch>;
+#ifdef SLIT
+	slitSearchList = new LinkedList<SlitSearch>;
 	#ifdef KDE
 	//For KDE dock applets
 	kwm1_dockwindow = XInternAtom(getXDisplay(), "KWM_DOCKWINDOW", False); //KDE v1.x
@@ -215,29 +346,28 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
 
 #endif // SLIT
 
-  toolbarSearchList = new LinkedList<ToolbarSearch>;
+	toolbarSearchList = new LinkedList<ToolbarSearch>;
 	tabSearchList = new LinkedList<TabSearch>;
-  groupSearchList = new LinkedList<WindowSearch>;
+	groupSearchList = new LinkedList<WindowSearch>;
 
-  menuTimestamps = new LinkedList<MenuTimestamp>;
+	menuTimestamps = new LinkedList<MenuTimestamp>;
 
-  XrmInitialize();
-  load_rc();
+	load_rc();
 
-#ifdef    HAVE_GETPID
-  fluxbox_pid = XInternAtom(getXDisplay(), "_BLACKBOX_PID", False);
+#ifdef HAVE_GETPID
+	fluxbox_pid = XInternAtom(getXDisplay(), "_BLACKBOX_PID", False);
 #endif // HAVE_GETPID
 
-  screenList = new LinkedList<BScreen>;
-  int i;
+	screenList = new LinkedList<BScreen>;
+	int i;
 
-  //allocate screens
+	//allocate screens
 	for (i = 0; i < getNumberOfScreens(); i++) {
-    BScreen *screen = new BScreen(this, i);
+		BScreen *screen = new BScreen(this, i);
 
-    if (! screen->isScreenManaged()) {
-      delete screen;
-      continue;
+		if (! screen->isScreenManaged()) {
+			delete screen;
+			continue;
 		}
 
 		screenList->insert(screen);
@@ -245,14 +375,14 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
 	I18n *i18n = I18n::instance();
 	if (! screenList->count()) {
 		fprintf(stderr,
-				i18n->
-			getMessage(
-#ifdef    NLS
-					blackboxSet, blackboxNoManagableScreens,
+			i18n->
+				getMessage(
+#ifdef		NLS
+				blackboxSet, blackboxNoManagableScreens,
 #else // !NLS
-					 0, 0,
+				 0, 0,
 #endif // NLS
-					"Fluxbox::Fluxbox: no managable screens found, aborting.\n"));
+				"Fluxbox::Fluxbox: no managable screens found, aborting.\n"));
 
 		throw static_cast<int>(3);
 	}
@@ -267,7 +397,7 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
 	timer->fireOnce(True);
 
 	//create keybindings handler and load keys file
-	key = new Keys(getXDisplay(), resource.keys_file);
+	key = new Keys(getXDisplay(), const_cast<char *>((*m_rc_keyfile).c_str()));
 
 	ungrab();
 }
@@ -284,24 +414,12 @@ Fluxbox::~Fluxbox(void) {
 		if (ts->filename)
 			delete [] ts->filename;
 
-    delete ts;
+		delete ts;
 	}
 	
 	delete key;
 	key = 0;
-	
-	if (resource.menu_file)
-		delete [] resource.menu_file;
-	
-	if (resource.style_file)
-		delete [] resource.style_file;
-	
-	if (resource.titlebar_file)
-		delete resource.titlebar_file;
-		
-	if (resource.keys_file)
-		delete resource.keys_file;
-	
+
 	delete timer;
 
 	delete screenList;
@@ -313,7 +431,7 @@ Fluxbox::~Fluxbox(void) {
 	delete tabSearchList;
 	delete groupSearchList;
 
-#ifdef    SLIT
+#ifdef		SLIT
 	delete slitSearchList;
 #endif // SLIT
 }
@@ -322,12 +440,12 @@ Fluxbox::~Fluxbox(void) {
 void Fluxbox::process_event(XEvent *e) {
 
 	if ((masked == e->xany.window) && masked_window &&
-      (e->type == MotionNotify)) {
-    last_time = e->xmotion.time;
-    masked_window->motionNotifyEvent(&e->xmotion);
+			(e->type == MotionNotify)) {
+		last_time = e->xmotion.time;
+		masked_window->motionNotifyEvent(&e->xmotion);
 
-    return;
-  }
+		return;
+	}
 	
 	switch (e->type) {
 	case ButtonPress:
@@ -337,7 +455,7 @@ void Fluxbox::process_event(XEvent *e) {
 			FluxboxWindow *win = (FluxboxWindow *) 0;
 			Basemenu *menu = (Basemenu *) 0;
 
-			#ifdef    SLIT
+			#ifdef		SLIT
 			Slit *slit = (Slit *) 0;
 			#endif // SLIT
 
@@ -354,10 +472,10 @@ void Fluxbox::process_event(XEvent *e) {
 			} else if ((menu = searchMenu(e->xbutton.window))) {
 				menu->buttonPressEvent(&e->xbutton);
 
-#ifdef    SLIT
+			#ifdef		SLIT
 			} else if ((slit = searchSlit(e->xbutton.window))) {
 				slit->buttonPressEvent(&e->xbutton);
-#endif // SLIT
+			#endif // SLIT
 
 			} else if ((tbar = searchToolbar(e->xbutton.window))) {
 				tbar->buttonPressEvent(&e->xbutton);
@@ -388,40 +506,40 @@ void Fluxbox::process_event(XEvent *e) {
 					} else if (e->xbutton.button == 2) {
 						int mx = e->xbutton.x_root -
 							(screen->getWorkspacemenu()->getWidth() / 2);
-	  				int my = e->xbutton.y_root -
-			  	  	(screen->getWorkspacemenu()->getTitleHeight() / 2);
+						int my = e->xbutton.y_root -
+							(screen->getWorkspacemenu()->getTitleHeight() / 2);
 	
-	  				if (mx < 0) mx = 0;
-					  if (my < 0) my = 0;
+						if (mx < 0) mx = 0;
+						if (my < 0) my = 0;
 
-					  if (mx + screen->getWorkspacemenu()->getWidth() >
+						if (mx + screen->getWorkspacemenu()->getWidth() >
 							 screen->getWidth())
 								mx = screen->getWidth() -
 						screen->getWorkspacemenu()->getWidth() -
 						screen->getBorderWidth();
 
-					  if (my + screen->getWorkspacemenu()->getHeight() >
-								  screen->getHeight())
+						if (my + screen->getWorkspacemenu()->getHeight() >
+									screen->getHeight())
 							my = screen->getHeight() -
 						screen->getWorkspacemenu()->getHeight() -
 						screen->getBorderWidth();
 
-					  screen->getWorkspacemenu()->move(mx, my);
+						screen->getWorkspacemenu()->move(mx, my);
 
-	      		if (! screen->getWorkspacemenu()->isVisible()) {
-            	screen->getWorkspacemenu()->removeParent();
+						if (! screen->getWorkspacemenu()->isVisible()) {
+							screen->getWorkspacemenu()->removeParent();
 							screen->getWorkspacemenu()->show();
-	      		}
-	    		} else if (e->xbutton.button == 3) {
-			      int mx = e->xbutton.x_root -
-			       (screen->getRootmenu()->getWidth() / 2);
-	    		  int my = e->xbutton.y_root -
-		      	 (screen->getRootmenu()->getTitleHeight() / 2);
+						}
+					} else if (e->xbutton.button == 3) {
+						int mx = e->xbutton.x_root -
+						 (screen->getRootmenu()->getWidth() / 2);
+						int my = e->xbutton.y_root -
+						 (screen->getRootmenu()->getTitleHeight() / 2);
 
-			      if (mx < 0) mx = 0;
-			      if (my < 0) my = 0;
+						if (mx < 0) mx = 0;
+						if (my < 0) my = 0;
 
-	  		    if (mx + screen->getRootmenu()->getWidth() > screen->getWidth())
+						if (mx + screen->getRootmenu()->getWidth() > screen->getWidth())
 							mx = screen->getWidth() -
 						screen->getRootmenu()->getWidth() -
 						screen->getBorderWidth();
@@ -429,7 +547,7 @@ void Fluxbox::process_event(XEvent *e) {
 						if (my + screen->getRootmenu()->getHeight() >
 							screen->getHeight())
 							my = screen->getHeight() -
-					    	screen->getRootmenu()->getHeight() -
+								screen->getRootmenu()->getHeight() -
 								screen->getBorderWidth();
 
 						screen->getRootmenu()->move(mx, my);
@@ -439,13 +557,13 @@ void Fluxbox::process_event(XEvent *e) {
 							screen->getRootmenu()->show();
 						}
 						
-		  		} 
+					} 
 			
 				}
 			}
 		}
 
-      break;
+			break;
 	}
 
 	case ButtonRelease:
@@ -459,14 +577,14 @@ void Fluxbox::process_event(XEvent *e) {
 				win->buttonReleaseEvent(&e->xbutton);
 			else if ((menu = searchMenu(e->xbutton.window)))
 				menu->buttonReleaseEvent(&e->xbutton);
-      else if ((tbar = searchToolbar(e->xbutton.window)))
+			else if ((tbar = searchToolbar(e->xbutton.window)))
 				tbar->buttonReleaseEvent(&e->xbutton);
 			else if ((tab = searchTab(e->xbutton.window)))
 				tab->buttonReleaseEvent(&e->xbutton);
-      break;
-    }
+			break;
+		}
 
-  case ConfigureRequest:
+		case ConfigureRequest:
 	{
 		FluxboxWindow *win = (FluxboxWindow *) 0;
 
@@ -506,21 +624,22 @@ void Fluxbox::process_event(XEvent *e) {
 		break;
 	}
 
-  case MapRequest:
-    {
-#ifdef    DEBUG
-      fprintf(stderr,
-	      I18n::instance()->
-	      getMessage(
-#  ifdef    NLS
-			 blackboxSet, blackboxMapRequest,
-#  else // !NLS
-			 0, 0,
-#  endif // NLS
-			 "Fluxbox::process_event(): MapRequest for 0x%lx\n"),
-              e->xmaprequest.window);
-#endif // DEBUG
-	#ifdef    SLIT
+	case MapRequest:
+	{
+		#ifdef		DEBUG
+		fprintf(stderr,
+			I18n::instance()->
+				getMessage(
+				#ifdef NLS
+				 blackboxSet, blackboxMapRequest,
+				#else // !NLS
+				 0, 0,
+				#endif // NLS
+				 "Fluxbox::process_event(): MapRequest for 0x%lx\n"),
+							e->xmaprequest.window);
+		#endif // DEBUG
+		
+		#ifdef SLIT
 		#ifdef KDE
 		//Check and see if client is KDE dock applet.
 		//If so add to Slit
@@ -529,7 +648,7 @@ void Fluxbox::process_event(XEvent *e) {
 		int ijunk;
 		unsigned long *data = (unsigned long *) 0, uljunk;
 
-			// Check if KDE v2.x dock applet
+		// Check if KDE v2.x dock applet
 		if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
 				getKWM2DockwindowAtom(), 0l, 1l, False,
 				XA_WINDOW, &ajunk, &ijunk, &uljunk,
@@ -538,15 +657,15 @@ void Fluxbox::process_event(XEvent *e) {
 			if (data)
 				iskdedockapp = True;
 			XFree((char *) data);
-			
+	
 		}
 
-   // Check if KDE v1.x dock applet
+		// Check if KDE v1.x dock applet
 		if (!iskdedockapp) {
 			if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
-							getKWM1DockwindowAtom(), 0l, 1l, False,
-							getKWM1DockwindowAtom(), &ajunk, &ijunk, &uljunk,
-							&uljunk, (unsigned char **) &data) == Success) {
+					getKWM1DockwindowAtom(), 0l, 1l, False,
+					getKWM1DockwindowAtom(), &ajunk, &ijunk, &uljunk,
+					&uljunk, (unsigned char **) &data) == Success) {
 				iskdedockapp = (data && data[0] != 0);
 				XFree((char *) data);
 			}
@@ -562,62 +681,68 @@ void Fluxbox::process_event(XEvent *e) {
 			return;
 		}
 		#endif //KDE
-	#endif // SLIT
-      
-			FluxboxWindow *win = searchWindow(e->xmaprequest.window);
-
-      if (! win)
-        win = new FluxboxWindow(e->xmaprequest.window);
-				
+		#endif // SLIT
 			
-      if ((win = searchWindow(e->xmaprequest.window)))
-        win->mapRequestEvent(&e->xmaprequest);
+		FluxboxWindow *win = searchWindow(e->xmaprequest.window);
 
-      break;
-    }
+		if (! win) {
+			try {
+				win = new FluxboxWindow(e->xmaprequest.window);
+			} catch (FluxboxWindow::Error error) {
+				FluxboxWindow::showError(error);
+				delete win;
+				win = 0;
+			}
+		}
+			
+		if ((win = searchWindow(e->xmaprequest.window)))
+					win->mapRequestEvent(&e->xmaprequest);
+
+		break;
+	}
 
 	case MapNotify:
-		{
-			FluxboxWindow *win = searchWindow(e->xmap.window);
+	{
+		FluxboxWindow *win = searchWindow(e->xmap.window);
 
-			if (win)
-				win->mapNotifyEvent(&e->xmap);
+		if (win)
+			win->mapNotifyEvent(&e->xmap);
 
-			break;
-		}
+		break;
+	}
 
 	case UnmapNotify:
-		{
-			FluxboxWindow *win = (FluxboxWindow *) 0;
+	{
+		FluxboxWindow *win = (FluxboxWindow *) 0;
 
-#ifdef    SLIT
-			Slit *slit = (Slit *) 0;
+#ifdef		SLIT
+		Slit *slit = (Slit *) 0;
 #endif // SLIT
 
 			if ((win = searchWindow(e->xunmap.window))) {
 				win->unmapNotifyEvent(&e->xunmap);
 
-#ifdef    SLIT
+#ifdef		SLIT
 			} else if ((slit = searchSlit(e->xunmap.window))) {
-        slit->removeClient(e->xunmap.window);
+				slit->removeClient(e->xunmap.window);
 #endif // SLIT
 
-      }
+			}
 
 			break;
 		}
 
-  case DestroyNotify:
-    {
-      FluxboxWindow *win = (FluxboxWindow *) 0;
+	case DestroyNotify:
+		{
+			FluxboxWindow *win = (FluxboxWindow *) 0;
 
-#ifdef    SLIT
+#ifdef		SLIT
 			Slit *slit = 0;
 #endif // SLIT
 
 			if ((win = searchWindow(e->xdestroywindow.window))) {
 				win->destroyNotifyEvent(&e->xdestroywindow);
-#ifdef    SLIT
+#ifdef		SLIT
 			} else if ((slit = searchSlit(e->xdestroywindow.window))) {
 				slit->removeClient(e->xdestroywindow.window, False);
 #endif // SLIT
@@ -626,8 +751,8 @@ void Fluxbox::process_event(XEvent *e) {
 			break;
 		}
 
-  case MotionNotify:
-    {
+	case MotionNotify:
+		{
 			last_time = e->xmotion.time;
 
 			FluxboxWindow *win = 0;
@@ -656,10 +781,10 @@ void Fluxbox::process_event(XEvent *e) {
 			}
 
 			break;
-    }
+		}
 
-  case EnterNotify:
-    {
+	case EnterNotify:
+		{
 			last_time = e->xcrossing.time;
 
 			BScreen *screen = (BScreen *) 0;
@@ -667,8 +792,8 @@ void Fluxbox::process_event(XEvent *e) {
 			Basemenu *menu = (Basemenu *) 0;
 			Toolbar *tbar = (Toolbar *) 0;
 			Tab *tab = (Tab *) 0;
-			#ifdef    SLIT
-      Slit *slit = (Slit *) 0;
+			#ifdef		SLIT
+			Slit *slit = (Slit *) 0;
 			#endif // SLIT
 
 			if (e->xcrossing.mode == NotifyGrab)
@@ -716,25 +841,25 @@ void Fluxbox::process_event(XEvent *e) {
 				}
 			}
 				
-#ifdef    SLIT
-      else if ((slit = searchSlit(e->xcrossing.window)))
-        slit->enterNotifyEvent(&e->xcrossing);
+#ifdef		SLIT
+			else if ((slit = searchSlit(e->xcrossing.window)))
+				slit->enterNotifyEvent(&e->xcrossing);
 #endif // SLIT
 
-      break;
-    }
+			break;
+		}
 
-  case LeaveNotify:
-    {
-      last_time = e->xcrossing.time;
+	case LeaveNotify:
+		{
+			last_time = e->xcrossing.time;
 
-      FluxboxWindow *win = (FluxboxWindow *) 0;
-      Basemenu *menu = (Basemenu *) 0;
-      Toolbar *tbar = (Toolbar *) 0;
+			FluxboxWindow *win = (FluxboxWindow *) 0;
+			Basemenu *menu = (Basemenu *) 0;
+			Toolbar *tbar = (Toolbar *) 0;
 		//	Tab *tab = 0;
 			
-#ifdef    SLIT
-      Slit *slit = (Slit *) 0;
+#ifdef		SLIT
+			Slit *slit = (Slit *) 0;
 #endif // SLIT
 
 			if ((menu = searchMenu(e->xcrossing.window)))
@@ -745,19 +870,19 @@ void Fluxbox::process_event(XEvent *e) {
 				tbar->leaveNotifyEvent(&e->xcrossing);
 		//	else if ((tab = searchTab(e->xcrossing.window)))
 		//		tab->leaveNotifyEvent(&e->xcrossing);
-#ifdef    SLIT
-      else if ((slit = searchSlit(e->xcrossing.window)))
-        slit->leaveNotifyEvent(&e->xcrossing);
+#ifdef		SLIT
+			else if ((slit = searchSlit(e->xcrossing.window)))
+				slit->leaveNotifyEvent(&e->xcrossing);
 #endif // SLIT
 			
-      break;
-    }
+			break;
+		}
 
-  case Expose:
-    {
-      FluxboxWindow *win = (FluxboxWindow *) 0;
-      Basemenu *menu = (Basemenu *) 0;
-      Toolbar *tbar = (Toolbar *) 0;
+	case Expose:
+		{
+			FluxboxWindow *win = (FluxboxWindow *) 0;
+			Basemenu *menu = (Basemenu *) 0;
+			Toolbar *tbar = (Toolbar *) 0;
 			Tab *tab = 0;
 			
 			if ((win = searchWindow(e->xexpose.window)))
@@ -771,8 +896,8 @@ void Fluxbox::process_event(XEvent *e) {
 			break;
 		}
 
-  case KeyPress:
-    {
+	case KeyPress:
+		{
 			Toolbar *tbar = searchToolbar(e->xkey.window);
 			BScreen *screen = searchScreen(e->xkey.window);
 			
@@ -884,9 +1009,9 @@ void Fluxbox::process_event(XEvent *e) {
 						break;
 					case Keys::EXECUTE: //execute command on keypress
 					{
-						#ifndef    __EMX__
+						#ifndef		__EMX__
 						char displaystring[MAXPATHLEN];
-	  				sprintf(displaystring, "DISPLAY=%s",
+						sprintf(displaystring, "DISPLAY=%s",
 								DisplayString(getXDisplay()));
 						sprintf(displaystring + strlen(displaystring) - 1, "%d",
 								screen->getScreenNumber());		
@@ -910,7 +1035,7 @@ void Fluxbox::process_event(XEvent *e) {
 
 	case ColormapNotify:
 		{
-      BScreen *screen = searchScreen(e->xcolormap.window);
+			BScreen *screen = searchScreen(e->xcolormap.window);
 
 			if (screen)
 				screen->setRootColormapInstalled((e->xcolormap.state ==
@@ -932,11 +1057,11 @@ void Fluxbox::process_event(XEvent *e) {
 		break;
 	}
 
-  case FocusOut:
-    break;
+	case FocusOut:
+		break;
 
-  case ClientMessage:
-    {
+	case ClientMessage:
+		{
 			if (e->xclient.format == 32) {
 				if (e->xclient.message_type == getWMChangeStateAtom()) {
 					FluxboxWindow *win = searchWindow(e->xclient.window);
@@ -957,13 +1082,13 @@ void Fluxbox::process_event(XEvent *e) {
 				} else if (e->xclient.message_type == getFluxboxChangeWindowFocusAtom()) {
 					FluxboxWindow *win = searchWindow(e->xclient.window);
 
-          if (win && win->isVisible() && win->setInputFocus())
+					if (win && win->isVisible() && win->setInputFocus())
 						win->installColormap(True);
 				} else if (e->xclient.message_type == getFluxboxCycleWindowFocusAtom()) {
 					BScreen *screen = searchScreen(e->xclient.window);
 
-          if (screen)
-            if (! e->xclient.data.l[0])
+					if (screen)
+						if (! e->xclient.data.l[0])
 							screen->prevFocus();
 						else
 							screen->nextFocus();
@@ -979,7 +1104,7 @@ void Fluxbox::process_event(XEvent *e) {
 						net.stack = e->xclient.data.l[3];
 						net.decoration = static_cast<BaseDisplay::Decor>(e->xclient.data.l[4]);
 
-	  	  		win->changeBlackboxHints(&net);
+						win->changeBlackboxHints(&net);
 					}
 				} 
 				#ifdef GNOME
@@ -996,25 +1121,25 @@ void Fluxbox::process_event(XEvent *e) {
 			}
 
 			break;
-    }
+		}
 
 
-  default:
-    {
+	default:
+		{
 
-#ifdef    SHAPE
-      if (e->type == getShapeEventBase()) {
+#ifdef		SHAPE
+			if (e->type == getShapeEventBase()) {
 	XShapeEvent *shape_event = (XShapeEvent *) e;
 	FluxboxWindow *win = (FluxboxWindow *) 0;
 
 	if ((win = searchWindow(e->xany.window)) ||
-	    (shape_event->kind != ShapeBounding))
-	  win->shapeEvent(shape_event);
-      }
+			(shape_event->kind != ShapeBounding))
+		win->shapeEvent(shape_event);
+			}
 #endif // SHAPE
 
-    }
-  }
+		}
+	}
 }
 
 void Fluxbox::doWindowAction(Keys::KeyAction action) {
@@ -1159,46 +1284,46 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 }
 
 Bool Fluxbox::handleSignal(int sig) {
-  switch (sig) {
-  case SIGHUP:
-    reconfigure();
-    break;
+	switch (sig) {
+	case SIGHUP:
+		reconfigure();
+		break;
 
-  case SIGUSR1:
-    reload_rc();
-    break;
+	case SIGUSR1:
+		reload_rc();
+		break;
 
-  case SIGUSR2:
-    rereadMenu();
-    break;
+	case SIGUSR2:
+		rereadMenu();
+		break;
 
-  case SIGSEGV:
-  case SIGFPE:
-  case SIGINT:
-  case SIGTERM:
-    shutdown();
+	case SIGSEGV:
+	case SIGFPE:
+	case SIGINT:
+	case SIGTERM:
+		shutdown();
 
-  default:
-    return False;
-  }
+	default:
+		return False;
+	}
 
-  return True;
+	return True;
 }
 
 
 BScreen *Fluxbox::searchScreen(Window window) {
-  BScreen *screen = (BScreen *) 0;
-  LinkedListIterator<BScreen> it(screenList);
+	BScreen *screen = (BScreen *) 0;
+	LinkedListIterator<BScreen> it(screenList);
 
-  for (; it.current(); it++) {
-    if (it.current())
-      if (it.current()->getRootWindow() == window) {
-       screen = it.current();
+	for (; it.current(); it++) {
+		if (it.current())
+			if (it.current()->getRootWindow() == window) {
+			 screen = it.current();
 	return screen;
-      }
-  }
+			}
+	}
 
-  return (BScreen *) 0;
+	return (BScreen *) 0;
 }
 
 
@@ -1216,72 +1341,72 @@ FluxboxWindow *Fluxbox::searchWindow(Window window) {
 
 
 FluxboxWindow *Fluxbox::searchGroup(Window window, FluxboxWindow *win) {
-  FluxboxWindow *w = (FluxboxWindow *) 0;
-  LinkedListIterator<WindowSearch> it(groupSearchList);
+	FluxboxWindow *w = (FluxboxWindow *) 0;
+	LinkedListIterator<WindowSearch> it(groupSearchList);
 
-  for (; it.current(); it++) {
-    WindowSearch *tmp = it.current();
-    if (tmp)
-      if (tmp->getWindow() == window) {
-        w = tmp->getData();
-        if (w->getClientWindow() != win->getClientWindow())
-          return win;
-      }
-  }
+	for (; it.current(); it++) {
+		WindowSearch *tmp = it.current();
+		if (tmp)
+			if (tmp->getWindow() == window) {
+				w = tmp->getData();
+				if (w->getClientWindow() != win->getClientWindow())
+					return win;
+			}
+	}
 
-  return (FluxboxWindow *) 0;
+	return (FluxboxWindow *) 0;
 }
 
 
 Basemenu *Fluxbox::searchMenu(Window window) {
-  Basemenu *menu = (Basemenu *) 0;
-  LinkedListIterator<MenuSearch> it(menuSearchList);
+	Basemenu *menu = (Basemenu *) 0;
+	LinkedListIterator<MenuSearch> it(menuSearchList);
 
-  for (; it.current(); it++) {
-    MenuSearch *tmp = it.current();
+	for (; it.current(); it++) {
+		MenuSearch *tmp = it.current();
 
-    if (tmp)
-      if (tmp->getWindow() == window) {
-        menu = tmp->getData();
-        return menu;
-      }
-  }
+		if (tmp)
+			if (tmp->getWindow() == window) {
+				menu = tmp->getData();
+				return menu;
+			}
+	}
 
-  return (Basemenu *) 0;
+	return (Basemenu *) 0;
 }
 
 
 Toolbar *Fluxbox::searchToolbar(Window window) {
-  Toolbar *tbar = (Toolbar *) 0;
-  LinkedListIterator<ToolbarSearch> it(toolbarSearchList);
+	Toolbar *tbar = (Toolbar *) 0;
+	LinkedListIterator<ToolbarSearch> it(toolbarSearchList);
 
-  for (; it.current(); it++) {
-    ToolbarSearch *tmp = it.current();
+	for (; it.current(); it++) {
+		ToolbarSearch *tmp = it.current();
 
-    if (tmp)
-      if (tmp->getWindow() == window) {
-        tbar = tmp->getData();
-        return tbar;
-      }
-  }
+		if (tmp)
+			if (tmp->getWindow() == window) {
+				tbar = tmp->getData();
+				return tbar;
+			}
+	}
 
-  return (Toolbar *) 0;
+	return (Toolbar *) 0;
 }
 
 Tab *Fluxbox::searchTab(Window window) {
-  LinkedListIterator<TabSearch> it(tabSearchList);
+	LinkedListIterator<TabSearch> it(tabSearchList);
 
-  for (; it.current(); it++) {
-    TabSearch *tmp = it.current();
-    if (tmp && tmp->getWindow() == window)
-        return tmp->getData();      
-  }
+	for (; it.current(); it++) {
+		TabSearch *tmp = it.current();
+		if (tmp && tmp->getWindow() == window)
+				return tmp->getData();			
+	}
 
-  return 0;
+	return 0;
 }
 
 
-#ifdef    SLIT
+#ifdef		SLIT
 Slit *Fluxbox::searchSlit(Window window) {
 	Slit *s = (Slit *) 0;
 	LinkedListIterator<SlitSearch> it(slitSearchList);
@@ -1296,38 +1421,38 @@ Slit *Fluxbox::searchSlit(Window window) {
 			}
 	}
 
-  return (Slit *) 0;
+	return (Slit *) 0;
 }
 #endif // SLIT
 
 
 void Fluxbox::saveWindowSearch(Window window, FluxboxWindow *data) {
-  windowSearchList->insert(new WindowSearch(window, data));
+	windowSearchList->insert(new WindowSearch(window, data));
 }
 
 
 void Fluxbox::saveGroupSearch(Window window, FluxboxWindow *data) {
-  groupSearchList->insert(new WindowSearch(window, data));
+	groupSearchList->insert(new WindowSearch(window, data));
 }
 
 
 void Fluxbox::saveMenuSearch(Window window, Basemenu *data) {
-  menuSearchList->insert(new MenuSearch(window, data));
+	menuSearchList->insert(new MenuSearch(window, data));
 }
 
 
 void Fluxbox::saveToolbarSearch(Window window, Toolbar *data) {
-  toolbarSearchList->insert(new ToolbarSearch(window, data));
+	toolbarSearchList->insert(new ToolbarSearch(window, data));
 }
 
 
 void Fluxbox::saveTabSearch(Window window, Tab *data) {
-  tabSearchList->insert(new TabSearch(window, data));
+	tabSearchList->insert(new TabSearch(window, data));
 }
 
-#ifdef    SLIT
+#ifdef		SLIT
 void Fluxbox::saveSlitSearch(Window window, Slit *data) {
-  slitSearchList->insert(new SlitSearch(window, data));
+	slitSearchList->insert(new SlitSearch(window, data));
 }
 #endif // SLIT
 
@@ -1343,7 +1468,7 @@ void Fluxbox::removeWindowSearch(Window window) {
 				delete tmp;
 				break;
 			}
-  }
+	}
 }
 
 
@@ -1367,8 +1492,8 @@ void Fluxbox::removeMenuSearch(Window window) {
 	for (; it.current(); it++) {
 		MenuSearch *tmp = it.current();
 
-    if (tmp)
-      if (tmp->getWindow() == window) {
+		if (tmp)
+			if (tmp->getWindow() == window) {
 				menuSearchList->remove(tmp);
 				delete tmp;
 				break;
@@ -1378,9 +1503,9 @@ void Fluxbox::removeMenuSearch(Window window) {
 
 
 void Fluxbox::removeToolbarSearch(Window window) {
-  LinkedListIterator<ToolbarSearch> it(toolbarSearchList);
-  for (; it.current(); it++) {
-    ToolbarSearch *tmp = it.current();
+	LinkedListIterator<ToolbarSearch> it(toolbarSearchList);
+	for (; it.current(); it++) {
+		ToolbarSearch *tmp = it.current();
 		if (tmp)
 			if (tmp->getWindow() == window) {
 				toolbarSearchList->remove(tmp);	
@@ -1392,9 +1517,9 @@ void Fluxbox::removeToolbarSearch(Window window) {
 
 
 void Fluxbox::removeTabSearch(Window window) {
-  LinkedListIterator<TabSearch> it(tabSearchList);
-  for (; it.current(); it++) {
-    TabSearch *tmp = it.current();
+	LinkedListIterator<TabSearch> it(tabSearchList);
+	for (; it.current(); it++) {
+		TabSearch *tmp = it.current();
 		if (tmp && tmp->getWindow() == window) {
 				tabSearchList->remove(tmp);	
 				delete tmp;
@@ -1403,7 +1528,7 @@ void Fluxbox::removeTabSearch(Window window) {
 	}
 }
 
-#ifdef    SLIT
+#ifdef		SLIT
 void Fluxbox::removeSlitSearch(Window window) {
 	LinkedListIterator<SlitSearch> it(slitSearchList);
 	for (; it.current(); it++) {
@@ -1421,35 +1546,36 @@ void Fluxbox::removeSlitSearch(Window window) {
 
 
 void Fluxbox::restart(const char *prog) {
-  shutdown();
+	shutdown();
 
-  if (prog) {
-    execlp(prog, prog, NULL);
-    perror(prog);
-  }
+	if (prog) {
+		execlp(prog, prog, NULL);
+		perror(prog);
+	}
 
-  // fall back in case the above execlp doesn't work
-  execvp(argv[0], argv);
-  execvp(basename(argv[0]), argv);
+	// fall back in case the above execlp doesn't work
+	execvp(argv[0], argv);
+	execvp(basename(argv[0]), argv);
 }
 
 
 void Fluxbox::shutdown(void) {
-  BaseDisplay::shutdown();
+	BaseDisplay::shutdown();
 
-  XSetInputFocus(getXDisplay(), PointerRoot, None, CurrentTime);
+	XSetInputFocus(getXDisplay(), PointerRoot, None, CurrentTime);
 
-  LinkedListIterator<BScreen> it(screenList);
-  for (; it.current(); it++)
-    it.current()->shutdown();
+	LinkedListIterator<BScreen> it(screenList);
+	for (; it.current(); it++)
+		it.current()->shutdown();
 
-  XSync(getXDisplay(), False);
+	XSync(getXDisplay(), False);
 
-  save_rc();
+	save_rc();
 }
 
-//save_rc
+//------ save_rc --------
 //saves resources
+//----------------------
 void Fluxbox::save_rc(void) {
 
 	XrmDatabase new_blackboxrc = (XrmDatabase) 0;
@@ -1457,42 +1583,21 @@ void Fluxbox::save_rc(void) {
 
 	auto_ptr<char> dbfile(getRcFilename());
 
-// load_rc();
-// This overwrites configs made while running, for example
-// usage of iconbar and tabs
-  
-	sprintf(rc_string, "session.iconbar: %s", resource.iconbar ? "true" : "false");
-	XrmPutLineResource(&new_blackboxrc, rc_string);
-	
-	sprintf(rc_string, "session.tabs: %s", resource.tabs ? "true" : "false");
-	XrmPutLineResource(&new_blackboxrc, rc_string);
-	
-	sprintf(rc_string, "session.menuFile:  %s", resource.menu_file);
-	XrmPutLineResource(&new_blackboxrc, rc_string);
+	// load_rc();
+	// This overwrites configs made while running, for example
+	// usage of iconbar and tabs
+	if (*dbfile)
+		m_resourcemanager.save(dbfile.get(), dbfile.get());
+	else
+		cerr<<"database filename is invalid!"<<endl;
 
-	sprintf(rc_string, "session.titlebarFile:  %s", resource.titlebar_file);
-	XrmPutLineResource(&new_blackboxrc, rc_string);
-	
-	sprintf(rc_string, "session.keyFile:  %s", resource.keys_file);
-	XrmPutLineResource(&new_blackboxrc, rc_string);
-	
-	sprintf(rc_string, "session.colorsPerChannel:  %d",
-					resource.colors_per_channel);
-	XrmPutLineResource(&new_blackboxrc, rc_string);
-
-	sprintf(rc_string, "session.doubleClickInterval:  %lu",
+	sprintf(rc_string, "session.doubleClickInterval:	%lu",
 					resource.double_click_interval);
 	XrmPutLineResource(&new_blackboxrc, rc_string);
 
-	sprintf(rc_string, "session.autoRaiseDelay:  %lu",
+	sprintf(rc_string, "session.autoRaiseDelay:	%lu",
 					((resource.auto_raise_delay.tv_sec * 1000) +
 					(resource.auto_raise_delay.tv_usec / 1000)));
-	XrmPutLineResource(&new_blackboxrc, rc_string);
-
-	sprintf(rc_string, "session.cacheLife: %lu", resource.cache_life / 60000);
-	XrmPutLineResource(&new_blackboxrc, rc_string);
-
-	sprintf(rc_string, "session.cacheMax: %lu", resource.cache_max);
 	XrmPutLineResource(&new_blackboxrc, rc_string);
 
 	LinkedListIterator<BScreen> it(screenList);
@@ -1500,7 +1605,7 @@ void Fluxbox::save_rc(void) {
 		BScreen *screen = it.current();
 		int screen_number = screen->getScreenNumber();
 
-#ifdef    SLIT
+#ifdef		SLIT
 		char *slit_placement = (char *) 0;
 
 		switch (screen->getSlitPlacement()) {
@@ -1586,7 +1691,7 @@ void Fluxbox::save_rc(void) {
 			placement = "RowSmartPlacement";
 			break;
 		}
-		sprintf(rc_string, "session.screen%d.windowPlacement:  %s", screen_number,
+		sprintf(rc_string, "session.screen%d.windowPlacement:	%s", screen_number,
 					placement);
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 //TODO: This isn't pretty!
@@ -1607,15 +1712,15 @@ void Fluxbox::save_rc(void) {
 
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		sprintf(rc_string, "session.screen%d.workspaces:  %d", screen_number,
+		sprintf(rc_string, "session.screen%d.workspaces:	%d", screen_number,
 					screen->getCount());
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		sprintf(rc_string, "session.screen%d.toolbar.onTop:  %s", screen_number,
+		sprintf(rc_string, "session.screen%d.toolbar.onTop:	%s", screen_number,
 				((screen->getToolbar()->isOnTop()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		sprintf(rc_string, "session.screen%d.toolbar.autoHide:  %s", screen_number,
+		sprintf(rc_string, "session.screen%d.toolbar.autoHide:	%s", screen_number,
 					((screen->getToolbar()->doAutoHide()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
@@ -1643,32 +1748,32 @@ void Fluxbox::save_rc(void) {
 			Tab::getTabAlignmentString(screen->getTabAlignment()));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		sprintf(rc_string, "session.screen%d.tab.rotatevertical:  %s", screen_number,
+		sprintf(rc_string, "session.screen%d.tab.rotatevertical:	%s", screen_number,
 					((screen->isTabRotateVertical()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		sprintf(rc_string, "session.screen%d.sloppywindowgrouping:  %s", screen_number,
+		sprintf(rc_string, "session.screen%d.sloppywindowgrouping:	%s", screen_number,
 					((screen->isSloppyWindowGrouping()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		load_rc(screen);
 
 		// these are static, but may not be saved in the users resource file,
-    // writing these resources will allow the user to edit them at a later
+		// writing these resources will allow the user to edit them at a later
 		// time... but loading the defaults before saving allows us to rewrite the
 		// users changes...
 
-#ifdef    HAVE_STRFTIME
+#ifdef		HAVE_STRFTIME
 		sprintf(rc_string, "session.screen%d.strftimeFormat: %s", screen_number,
 			screen->getStrftimeFormat());
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 #else // !HAVE_STRFTIME
-		sprintf(rc_string, "session.screen%d.dateFormat:  %s", screen_number,
+		sprintf(rc_string, "session.screen%d.dateFormat:	%s", screen_number,
 			((screen->getDateFormat() == B_EuropeanDate) ?
 				"European" : "American"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		sprintf(rc_string, "session.screen%d.clockFormat:  %d", screen_number,
+		sprintf(rc_string, "session.screen%d.clockFormat:	%d", screen_number,
 			((screen->isClock24Hour()) ? 24 : 12));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 #endif // HAVE_STRFTIME
@@ -1677,7 +1782,7 @@ void Fluxbox::save_rc(void) {
 			screen->getEdgeSnapThreshold());
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		sprintf(rc_string, "session.screen%d.toolbar.widthPercent:  %d",
+		sprintf(rc_string, "session.screen%d.toolbar.widthPercent:	%d",
 						screen_number, screen->getToolbarWidthPercent());
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
@@ -1695,37 +1800,37 @@ void Fluxbox::save_rc(void) {
 			for (i = 0; i < screen->getCount(); i++) {
 				len = strlen((screen->getWorkspace(i)->getName()) ?
 							screen->getWorkspace(i)->getName() : "Null") + 1;
-      	name_string_pos =
+				name_string_pos =
 					(char *) ((screen->getWorkspace(i)->getName()) ?
 					screen->getWorkspace(i)->getName() : "Null");
 
-				while (--len) *(save_string_pos++) = *(name_string_pos++);
+				while (--len) 
+					*(save_string_pos++) = *(name_string_pos++);
 				*(save_string_pos++) = ',';
 			}
-    }
+		}
 
-    *(--save_string_pos) = '\0';
+		*(--save_string_pos) = '\0';
 
-    sprintf(resource_string, "session.screen%d.workspaceNames:  %s",
-	    screen_number, save_string);
-    XrmPutLineResource(&new_blackboxrc, resource_string);
+		sprintf(resource_string, "session.screen%d.workspaceNames:	%s",
+			screen_number, save_string);
+		XrmPutLineResource(&new_blackboxrc, resource_string);
 
-    delete [] resource_string;
-    delete [] save_string;
-  }
+		delete [] resource_string;
+		delete [] save_string;
+	}
 
-  XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.get());
+	XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.get());
 
-  XrmMergeDatabases(new_blackboxrc, &old_blackboxrc);		//merge database together
-  XrmPutFileDatabase(old_blackboxrc, dbfile.get());
-  XrmDestroyDatabase(old_blackboxrc);
+	XrmMergeDatabases(new_blackboxrc, &old_blackboxrc);		//merge database together
+	XrmPutFileDatabase(old_blackboxrc, dbfile.get());
+	XrmDestroyDatabase(old_blackboxrc);
 //	XrmDestroyDatabase(new_blackboxrc);
 	
 }
 
 //-------- getRcFilename -------------
 // Returns filename of resource file
-// TODO: possible replacement with strstream?
 //------------------------------------
 char *Fluxbox::getRcFilename() {
 	char *dbfile=0;
@@ -1741,99 +1846,57 @@ char *Fluxbox::getRcFilename() {
 }
 
 void Fluxbox::load_rc(void) {
-  XrmDatabase database = (XrmDatabase) 0;
-  
-  //get resource filename
-  auto_ptr<char> dbfile(getRcFilename());
+	XrmDatabase database = (XrmDatabase) 0;
+	
+	//get resource filename
+	auto_ptr<char> dbfile(getRcFilename());
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): dbfile="<<dbfile.get()<<endl;
+	#endif
+	if (dbfile.get()) {
+		if (!m_resourcemanager.load(dbfile.get())) {
+			cerr<<"Faild to load database:"<<dbfile.get()<<endl;
+			cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
+			if (!m_resourcemanager.load(DEFAULT_INITFILE))
+				cerr<<"Faild to load database: "<<DEFAULT_INITFILE<<endl;
+		}
+	} else {
+		if (!m_resourcemanager.load(DEFAULT_INITFILE))
+			cerr<<"Faild to load database: "<<DEFAULT_INITFILE<<endl;
+	}
+	
+	XrmValue value;
+	char *value_type;
 
-  //load file
-  database = XrmGetFileDatabase(dbfile.get());
+	if (m_rc_menufile->size()) {
+		char *tmpvar =StringUtil::expandFilename(m_rc_menufile->c_str());
+		*m_rc_menufile = (tmpvar==0 ? "" : tmpvar);
+		if (!m_rc_menufile->size())
+			m_rc_menufile.setDefaultValue();
+
+		delete tmpvar;
+	} else
+		m_rc_menufile.setDefaultValue();
+
+	if (*m_rc_colors_per_channel < 2)
+		*m_rc_colors_per_channel = 2;
+	else if (*m_rc_colors_per_channel > 6)
+		*m_rc_colors_per_channel = 6;
+
+	if (*m_rc_stylefile=="")
+		*m_rc_stylefile = DEFAULTSTYLE;
+	else {
+		auto_ptr<char> tmpvar(StringUtil::expandFilename(m_rc_stylefile->c_str()));
+		*m_rc_stylefile = (tmpvar.get()==0 ? "" : tmpvar.get());
+	}
+
+	//load file
+	database = XrmGetFileDatabase(dbfile.get());
 	if (!database) {
 		cerr<<"Fluxbox: Cant open "<<dbfile.get()<<" !"<<endl;
 		cerr<<"Using: "<<DEFAULT_INITFILE<<endl;
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
 	}
-
-  XrmValue value;
-  char *value_type;
-
-	if (resource.menu_file) {
-		delete [] resource.menu_file;
-		resource.menu_file = 0;
-	}
-	//get menu filename
-	if (XrmGetResource(database, "session.menuFile", "Session.MenuFile",
-				&value_type, &value)) {
-    
-		resource.menu_file = StringUtil::expandFilename(value.addr); // expand ~ to $HOME
-	} else
-		resource.menu_file = StringUtil::strdup(DEFAULTMENU);
-
-	if (resource.titlebar_file) {
-		delete resource.titlebar_file;
-		resource.titlebar_file = 0;
-	}
-	
-	//get titlebar filename
-	if (XrmGetResource(database, "session.titlebarFile", "Session.TitlebarFile",
-				&value_type, &value)) {
-		resource.titlebar_file = StringUtil::expandFilename(value.addr); //expand ~ to home 
-	} else 
-		resource.titlebar_file = StringUtil::strdup(DEFAULTTITLEBAR);
-	
-	//if already allocated memory for keys_file destroy it
-	if (resource.keys_file) {
-		delete resource.keys_file;
-		resource.keys_file = 0;
-	}
-	
-	//get keys filename
-	if (XrmGetResource(database, "session.keyFile", "Session.keyFile",
-				&value_type, &value)) {
-		resource.keys_file = StringUtil::expandFilename(value.addr); //expand ~ to home		
-	} else 
-		resource.keys_file = StringUtil::strdup(DEFAULTKEYSFILE);
-		
-	
-	if (XrmGetResource(database, "session.iconbar", "Session.Iconbar",
-				&value_type, &value)) {
-		if (! strncasecmp("true", value.addr, value.size))
-      resource.iconbar = true;
-    else
-      resource.iconbar = false;
-	} else
-		resource.iconbar = true;
-	
-	if (XrmGetResource(database, "session.tabs", "Session.Tabs",
-				&value_type, &value)) {
-		if (! strncasecmp("true", value.addr, value.size))
-      resource.tabs = true;
-    else
-      resource.tabs = false;
-	} else
-		resource.tabs = true;
-
-	if (XrmGetResource(database, "session.colorsPerChannel",
-			"Session.ColorsPerChannel", &value_type, &value)) {
-		if (sscanf(value.addr, "%d", &resource.colors_per_channel) != 1)
-			resource.colors_per_channel = 4;
-		else {
-			if (resource.colors_per_channel < 2) 
-				resource.colors_per_channel = 2;
-			if (resource.colors_per_channel > 6)	
-				resource.colors_per_channel = 6;
-		}
-	} else
-		resource.colors_per_channel = 4;
-
-	if (resource.style_file)
-		delete [] resource.style_file;
-
-	if (XrmGetResource(database, "session.styleFile", "Session.StyleFile",
-				&value_type, &value))
-		resource.style_file = StringUtil::expandFilename(value.addr);
-	else
-		resource.style_file = StringUtil::strdup(DEFAULTSTYLE);
 
 	if (XrmGetResource(database, "session.doubleClickInterval",
 				"Session.DoubleClickInterval", &value_type, &value)) {
@@ -1854,282 +1917,190 @@ void Fluxbox::load_rc(void) {
 		(resource.auto_raise_delay.tv_sec * 1000);
 	resource.auto_raise_delay.tv_usec *= 1000;
 
-	if (XrmGetResource(database, "session.cacheLife", "Session.CacheLife",
-										&value_type, &value)) {
-		if (sscanf(value.addr, "%lu", &resource.cache_life) != 1)
-			resource.cache_life = 5l;
-	} else
-		resource.cache_life = 5l;
+	XrmDestroyDatabase(database);
 
-	resource.cache_life *= 60000;
-
-	if (XrmGetResource(database, "session.cacheMax", "Session.CacheMax",
-						&value_type, &value)) {
-		if (sscanf(value.addr, "%lu", &resource.cache_max) != 1)
-			resource.cache_max = 200;
-	} else
-		resource.cache_max = 200;
-
-	//XrmDestroyDatabase(database);
-	
-	loadTitlebar();
-}
-//parseTitleArgs
-//parses the titlearg configline
-vector<string> Fluxbox::parseTitleArgs(const char *arg) {
-	vector<string> args;
-	string tmp;
-	unsigned int i=0;	
-	while ( i<strlen(arg) ) {
-		for (; arg[i] != ' ' && i<strlen(arg); i++)
-			tmp+=arg[i];
-		i++;
-		args.push_back(tmp);
-		tmp="";
-	}
-		
-	return args;
-}
-
-void Fluxbox::setTitlebar(vector<Fluxbox::Titlebar>& dir, const char *arg) {
-	vector<string> argv = parseTitleArgs(arg);
-	for (unsigned int i=0; i<argv.size(); i++) {
-		if (argv[i]==NAME_STICKY)
-			dir.push_back(STICK);
-		else if (argv[i]==NAME_MAXIMIZE)
-			dir.push_back(MAXIMIZE);
-		else if (argv[i]==NAME_MINIMIZE)
-			dir.push_back(MINIMIZE);
-		else if (argv[i]== NAME_CLOSE)
-			dir.push_back(CLOSE);
-		else if (argv[i]==NAME_SHADE)
-			dir.push_back(SHADE);
-		else if (argv[i]==NAME_MENU)
-			dir.push_back(MENU);
-		else if(argv[i]==NAME_NONE);//do nothing			
-		else
-			cerr<<"Fluxbox::Titlebar Unknown type: \""<<argv[i]<<"\""<<endl;	
-		
-	}
-}
-
-void Fluxbox::loadTitlebar() {
-	XrmDatabase database;
-	database = XrmGetFileDatabase(resource.titlebar_file);
-	if (!database)
-		cerr<<"Fluxbox: Cant open "<<resource.titlebar_file<<" !"<<endl;
-	
-	XrmValue value;
-	char *value_type;
-	
-	//clear titlebar
-	titlebar.left.clear();
-	titlebar.right.clear();
-	
-	if (XrmGetResource(database, "left", "Left", &value_type, &value)) {		
-		setTitlebar(titlebar.left, value.addr);
-	} else {
-		cerr<<"Fluxbox: \'Left\' not found in "<<resource.titlebar_file<<endl;
-		cerr<<"Using default."<<endl;
-		//default settings		
-		titlebar.left.push_back(SHADE);
-	}
-	
-	if (XrmGetResource(database, "right", "Right", &value_type, &value)) {				
-		setTitlebar(titlebar.right, value.addr);
-	} else {
-		cerr<<"Fluxbox: \'Right\' not found in "<<resource.titlebar_file<<endl;
-		cerr<<"Using default."<<endl;
-		//default settings
-		titlebar.right.push_back(STICK);
-		titlebar.right.push_back(MINIMIZE);
-		titlebar.right.push_back(MAXIMIZE);
-		titlebar.right.push_back(CLOSE);
-	}	
-	
-//	XrmDestroyDatabase(database);
 }
 
 void Fluxbox::load_rc(BScreen *screen) {
-  XrmDatabase database = (XrmDatabase) 0;
+	XrmDatabase database = (XrmDatabase) 0;
 
-  auto_ptr<char> dbfile(getRcFilename());
+	auto_ptr<char> dbfile(getRcFilename());
 
-  database = XrmGetFileDatabase(dbfile.get());
+	database = XrmGetFileDatabase(dbfile.get());
 	if (!database) 
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
 		
-  XrmValue value;
-  char *value_type, name_lookup[1024], class_lookup[1024];
-  int screen_number = screen->getScreenNumber();
+	XrmValue value;
+	char *value_type, name_lookup[1024], class_lookup[1024];
+	int screen_number = screen->getScreenNumber();
 
-	sprintf(name_lookup,  "session.screen%d.fullMaximization", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.FullMaximization", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value)) {
-    if (! strncasecmp(value.addr, "true", value.size))
-      screen->saveFullMax(True);
-    else
-      screen->saveFullMax(False);
-  } else
-    screen->saveFullMax(False);
+	sprintf(name_lookup,	"session.screen%d.fullMaximization", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.FullMaximization", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value)) {
+		if (! strncasecmp(value.addr, "true", value.size))
+			screen->saveFullMax(True);
+		else
+			screen->saveFullMax(False);
+	} else
+		screen->saveFullMax(False);
 
-  sprintf(name_lookup,  "session.screen%d.rootCommand", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.RootCommand", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value)) {										 
-    screen->saveRootCommand(value.addr==0 ? "": value.addr);
-  } else
-		screen->saveRootCommand("");    
+	sprintf(name_lookup,	"session.screen%d.rootCommand", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.RootCommand", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value)) {										 
+		screen->saveRootCommand(value.addr==0 ? "": value.addr);
+	} else
+		screen->saveRootCommand("");		
 
-	sprintf(name_lookup,  "session.screen%d.focusNewWindows", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.FocusNewWindows", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value)) {
-    if (! strncasecmp(value.addr, "true", value.size))
-      screen->saveFocusNew(True);
-    else
-      screen->saveFocusNew(False);
-  } else
-    screen->saveFocusNew(False);
+	sprintf(name_lookup,	"session.screen%d.focusNewWindows", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.FocusNewWindows", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value)) {
+		if (! strncasecmp(value.addr, "true", value.size))
+			screen->saveFocusNew(True);
+		else
+			screen->saveFocusNew(False);
+	} else
+		screen->saveFocusNew(False);
 
-  sprintf(name_lookup,  "session.screen%d.focusLastWindow", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.focusLastWindow", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    if (! strncasecmp(value.addr, "true", value.size))
-      screen->saveFocusLast(True);
-    else
-      screen->saveFocusLast(False);
-  } else
-    screen->saveFocusLast(False);
+	sprintf(name_lookup,	"session.screen%d.focusLastWindow", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.focusLastWindow", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		if (! strncasecmp(value.addr, "true", value.size))
+			screen->saveFocusLast(True);
+		else
+			screen->saveFocusLast(False);
+	} else
+		screen->saveFocusLast(False);
 
-  sprintf(name_lookup,  "session.screen%d.rowPlacementDirection", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.RowPlacementDirection", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    if (! strncasecmp(value.addr, "righttoleft", value.size))
-      screen->saveRowPlacementDirection(BScreen::RIGHTLEFT);
-    else
-  
-  sprintf(name_lookup,  "session.screen%d.maxOverSlit", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.MaxOverSlit", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value)) {
-    if (! strncasecmp(value.addr, "true", value.size))
-      screen->saveMaxOverSlit(True);
-    else
-      screen->saveMaxOverSlit(False);
-  } else
-    screen->saveMaxOverSlit(False);
-      screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
-  } else
-    screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
+	sprintf(name_lookup,	"session.screen%d.rowPlacementDirection", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.RowPlacementDirection", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		if (! strncasecmp(value.addr, "righttoleft", value.size))
+			screen->saveRowPlacementDirection(BScreen::RIGHTLEFT);
+		else
+	
+	sprintf(name_lookup,	"session.screen%d.maxOverSlit", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.MaxOverSlit", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value)) {
+		if (! strncasecmp(value.addr, "true", value.size))
+			screen->saveMaxOverSlit(True);
+		else
+			screen->saveMaxOverSlit(False);
+	} else
+		screen->saveMaxOverSlit(False);
+			screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
+	} else
+		screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
 
-  sprintf(name_lookup,  "session.screen%d.colPlacementDirection", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.ColPlacementDirection", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    if (! strncasecmp(value.addr, "bottomtotop", value.size))
-      screen->saveColPlacementDirection(BScreen::BOTTOMTOP);
-    else
-      screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
-  } else
-    screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
+	sprintf(name_lookup,	"session.screen%d.colPlacementDirection", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.ColPlacementDirection", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		if (! strncasecmp(value.addr, "bottomtotop", value.size))
+			screen->saveColPlacementDirection(BScreen::BOTTOMTOP);
+		else
+			screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
+	} else
+		screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
 
-  sprintf(name_lookup,  "session.screen%d.workspaces", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Workspaces", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    int i;
-    if (sscanf(value.addr, "%d", &i) != 1) i = 1;
-    screen->saveWorkspaces(i);
-  } else
-    screen->saveWorkspaces(1);
+	sprintf(name_lookup,	"session.screen%d.workspaces", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Workspaces", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		int i;
+		if (sscanf(value.addr, "%d", &i) != 1) i = 1;
+		screen->saveWorkspaces(i);
+	} else
+		screen->saveWorkspaces(1);
 
-  sprintf(name_lookup,  "session.screen%d.toolbar.widthPercent",
-          screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Toolbar.WidthPercent",
-          screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    int i;
-    if (sscanf(value.addr, "%d", &i) != 1) i = 66;
+	sprintf(name_lookup,	"session.screen%d.toolbar.widthPercent",
+					screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Toolbar.WidthPercent",
+					screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		int i;
+		if (sscanf(value.addr, "%d", &i) != 1) i = 66;
 
-    if (i <= 0 || i > 100)
-      i = 66;
+		if (i <= 0 || i > 100)
+			i = 66;
 
-    screen->saveToolbarWidthPercent(i);
-  } else
-    screen->saveToolbarWidthPercent(66);
+		screen->saveToolbarWidthPercent(i);
+	} else
+		screen->saveToolbarWidthPercent(66);
 
-  sprintf(name_lookup, "session.screen%d.toolbar.placement", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Toolbar.Placement", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value)) {
-    if (! strncasecmp(value.addr, "TopLeft", value.size))
-      screen->saveToolbarPlacement(Toolbar::TOPLEFT);
-    else if (! strncasecmp(value.addr, "BottomLeft", value.size))
-      screen->saveToolbarPlacement(Toolbar::BOTTOMLEFT);
-    else if (! strncasecmp(value.addr, "TopCenter", value.size))
-      screen->saveToolbarPlacement(Toolbar::TOPCENTER);
-    else if (! strncasecmp(value.addr, "TopRight", value.size))
-      screen->saveToolbarPlacement(Toolbar::TOPRIGHT);
-    else if (! strncasecmp(value.addr, "BottomRight", value.size))
-      screen->saveToolbarPlacement(Toolbar::BOTTOMRIGHT);
-    else
-      screen->saveToolbarPlacement(Toolbar::BOTTOMCENTER);
-  } else
-    screen->saveToolbarPlacement(Toolbar::BOTTOMCENTER);
+	sprintf(name_lookup, "session.screen%d.toolbar.placement", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Toolbar.Placement", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value)) {
+		if (! strncasecmp(value.addr, "TopLeft", value.size))
+			screen->saveToolbarPlacement(Toolbar::TOPLEFT);
+		else if (! strncasecmp(value.addr, "BottomLeft", value.size))
+			screen->saveToolbarPlacement(Toolbar::BOTTOMLEFT);
+		else if (! strncasecmp(value.addr, "TopCenter", value.size))
+			screen->saveToolbarPlacement(Toolbar::TOPCENTER);
+		else if (! strncasecmp(value.addr, "TopRight", value.size))
+			screen->saveToolbarPlacement(Toolbar::TOPRIGHT);
+		else if (! strncasecmp(value.addr, "BottomRight", value.size))
+			screen->saveToolbarPlacement(Toolbar::BOTTOMRIGHT);
+		else
+			screen->saveToolbarPlacement(Toolbar::BOTTOMCENTER);
+	} else
+		screen->saveToolbarPlacement(Toolbar::BOTTOMCENTER);
 
-  screen->removeWorkspaceNames();
+	screen->removeWorkspaceNames();
 
-  sprintf(name_lookup,  "session.screen%d.workspaceNames", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    char *search = StringUtil::strdup(value.addr);
+	sprintf(name_lookup,	"session.screen%d.workspaceNames", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		char *search = StringUtil::strdup(value.addr);
 
-    int i;
-    for (i = 0; i < screen->getNumberOfWorkspaces(); i++) {
-      char *nn;
+		int i;
+		for (i = 0; i < screen->getNumberOfWorkspaces(); i++) {
+			char *nn;
 
-      if (! i) nn = strtok(search, ",");
-      else nn = strtok(NULL, ",");
+			if (! i) nn = strtok(search, ",");
+			else nn = strtok(NULL, ",");
 
-      if (nn)
+			if (nn)
 				screen->addWorkspaceName(nn);	
 			else break;
 			
-    }
+		}
 
-    delete [] search;
-  }
+		delete [] search;
+	}
 
-  sprintf(name_lookup,  "session.screen%d.toolbar.onTop", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Toolbar.OnTop", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    if (! strncasecmp(value.addr, "true", value.size))
-      screen->saveToolbarOnTop(True);
-    else
-      screen->saveToolbarOnTop(False);
-  } else
-    screen->saveToolbarOnTop(False);
+	sprintf(name_lookup,	"session.screen%d.toolbar.onTop", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Toolbar.OnTop", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		if (! strncasecmp(value.addr, "true", value.size))
+			screen->saveToolbarOnTop(True);
+		else
+			screen->saveToolbarOnTop(False);
+	} else
+		screen->saveToolbarOnTop(False);
 
-  sprintf(name_lookup,  "session.screen%d.toolbar.autoHide", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Toolbar.autoHide", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    if (! strncasecmp(value.addr, "true", value.size))
-      screen->saveToolbarAutoHide(True);
-    else
-      screen->saveToolbarAutoHide(False);
-  } else
-    screen->saveToolbarAutoHide(False);
+	sprintf(name_lookup,	"session.screen%d.toolbar.autoHide", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Toolbar.autoHide", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		if (! strncasecmp(value.addr, "true", value.size))
+			screen->saveToolbarAutoHide(True);
+		else
+			screen->saveToolbarAutoHide(False);
+	} else
+		screen->saveToolbarAutoHide(False);
 
 //TODO: make this nicer?
-	sprintf(name_lookup,  "session.screen%d.focusModel", screen_number);
+	sprintf(name_lookup,	"session.screen%d.focusModel", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.FocusModel", screen_number);
 	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
 			&value)) {
@@ -2164,143 +2135,143 @@ void Fluxbox::load_rc(BScreen *screen) {
 		screen->saveAutoRaise(False); //as click should be default, or?
 	}
 
-  sprintf(name_lookup,  "session.screen%d.windowPlacement", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.WindowPlacement", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value))
-    if (! strncasecmp(value.addr, "RowSmartPlacement", value.size))
-      screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
-    else if (! strncasecmp(value.addr, "ColSmartPlacement", value.size))
-      screen->savePlacementPolicy(BScreen::COLSMARTPLACEMENT);
-    else
-      screen->savePlacementPolicy(BScreen::CASCADEPLACEMENT);
-  else
-    screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
+	sprintf(name_lookup,	"session.screen%d.windowPlacement", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.WindowPlacement", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value))
+		if (! strncasecmp(value.addr, "RowSmartPlacement", value.size))
+			screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
+		else if (! strncasecmp(value.addr, "ColSmartPlacement", value.size))
+			screen->savePlacementPolicy(BScreen::COLSMARTPLACEMENT);
+		else
+			screen->savePlacementPolicy(BScreen::CASCADEPLACEMENT);
+	else
+		screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
 
-#ifdef    SLIT
-  sprintf(name_lookup, "session.screen%d.slit.placement", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Slit.Placement", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value))
-    if (! strncasecmp(value.addr, "TopLeft", value.size))
-      screen->saveSlitPlacement(Slit::TOPLEFT);
-    else if (! strncasecmp(value.addr, "CenterLeft", value.size))
-      screen->saveSlitPlacement(Slit::CENTERLEFT);
-    else if (! strncasecmp(value.addr, "BottomLeft", value.size))
-      screen->saveSlitPlacement(Slit::BOTTOMLEFT);
-    else if (! strncasecmp(value.addr, "TopCenter", value.size))
-      screen->saveSlitPlacement(Slit::TOPCENTER);
-    else if (! strncasecmp(value.addr, "BottomCenter", value.size))
-      screen->saveSlitPlacement(Slit::BOTTOMCENTER);
-    else if (! strncasecmp(value.addr, "TopRight", value.size))
-      screen->saveSlitPlacement(Slit::TOPRIGHT);
-    else if (! strncasecmp(value.addr, "BottomRight", value.size))
-      screen->saveSlitPlacement(Slit::BOTTOMRIGHT);
-    else
-      screen->saveSlitPlacement(Slit::CENTERRIGHT);
-  else
-    screen->saveSlitPlacement(Slit::CENTERRIGHT);
+#ifdef SLIT
+	sprintf(name_lookup, "session.screen%d.slit.placement", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Slit.Placement", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value))
+		if (! strncasecmp(value.addr, "TopLeft", value.size))
+			screen->saveSlitPlacement(Slit::TOPLEFT);
+		else if (! strncasecmp(value.addr, "CenterLeft", value.size))
+			screen->saveSlitPlacement(Slit::CENTERLEFT);
+		else if (! strncasecmp(value.addr, "BottomLeft", value.size))
+			screen->saveSlitPlacement(Slit::BOTTOMLEFT);
+		else if (! strncasecmp(value.addr, "TopCenter", value.size))
+			screen->saveSlitPlacement(Slit::TOPCENTER);
+		else if (! strncasecmp(value.addr, "BottomCenter", value.size))
+			screen->saveSlitPlacement(Slit::BOTTOMCENTER);
+		else if (! strncasecmp(value.addr, "TopRight", value.size))
+			screen->saveSlitPlacement(Slit::TOPRIGHT);
+		else if (! strncasecmp(value.addr, "BottomRight", value.size))
+			screen->saveSlitPlacement(Slit::BOTTOMRIGHT);
+		else
+			screen->saveSlitPlacement(Slit::CENTERRIGHT);
+	else
+		screen->saveSlitPlacement(Slit::CENTERRIGHT);
 
-  sprintf(name_lookup, "session.screen%d.slit.direction", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Slit.Direction", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value))
-    if (! strncasecmp(value.addr, "Horizontal", value.size))
-      screen->saveSlitDirection(Slit::HORIZONTAL);
-    else
-      screen->saveSlitDirection(Slit::VERTICAL);
-  else
-    screen->saveSlitDirection(Slit::VERTICAL);
+	sprintf(name_lookup, "session.screen%d.slit.direction", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Slit.Direction", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value))
+		if (! strncasecmp(value.addr, "Horizontal", value.size))
+			screen->saveSlitDirection(Slit::HORIZONTAL);
+		else
+			screen->saveSlitDirection(Slit::VERTICAL);
+	else
+		screen->saveSlitDirection(Slit::VERTICAL);
 
-  sprintf(name_lookup, "session.screen%d.slit.onTop", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Slit.OnTop", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value))
-    if (! strncasecmp(value.addr, "True", value.size))
-      screen->saveSlitOnTop(True);
-    else
-      screen->saveSlitOnTop(False);
-  else
-    screen->saveSlitOnTop(False);
+	sprintf(name_lookup, "session.screen%d.slit.onTop", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Slit.OnTop", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value))
+		if (! strncasecmp(value.addr, "True", value.size))
+			screen->saveSlitOnTop(True);
+		else
+			screen->saveSlitOnTop(False);
+	else
+		screen->saveSlitOnTop(False);
 
-  sprintf(name_lookup, "session.screen%d.slit.autoHide", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Slit.AutoHide", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value))
-    if (! strncasecmp(value.addr, "True", value.size))
-      screen->saveSlitAutoHide(True);
-    else
-      screen->saveSlitAutoHide(False);
-  else
-    screen->saveSlitAutoHide(False);
+	sprintf(name_lookup, "session.screen%d.slit.autoHide", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Slit.AutoHide", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value))
+		if (! strncasecmp(value.addr, "True", value.size))
+			screen->saveSlitAutoHide(True);
+		else
+			screen->saveSlitAutoHide(False);
+	else
+		screen->saveSlitAutoHide(False);
 #endif // SLIT
 
-#ifdef    HAVE_STRFTIME
-  sprintf(name_lookup,  "session.screen%d.strftimeFormat", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.StrftimeFormat", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value))
-    screen->saveStrftimeFormat(value.addr);
-  else
-    screen->saveStrftimeFormat("%I:%M %p");
-#else //  HAVE_STRFTIME
+#ifdef HAVE_STRFTIME
+	sprintf(name_lookup,	"session.screen%d.strftimeFormat", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.StrftimeFormat", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value))
+		screen->saveStrftimeFormat(value.addr);
+	else
+		screen->saveStrftimeFormat("%I:%M %p");
+#else //	HAVE_STRFTIME
 
-  sprintf(name_lookup,  "session.screen%d.dateFormat", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.DateFormat", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    if (strncasecmp(value.addr, "european", value.size))
-      screen->saveDateFormat(B_AmericanDate);
-    else
-      screen->saveDateFormat(B_EuropeanDate);
-  } else
-    screen->saveDateFormat(B_AmericanDate);
+	sprintf(name_lookup,	"session.screen%d.dateFormat", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.DateFormat", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		if (strncasecmp(value.addr, "european", value.size))
+			screen->saveDateFormat(B_AmericanDate);
+		else
+			screen->saveDateFormat(B_EuropeanDate);
+	} else
+		screen->saveDateFormat(B_AmericanDate);
 
-  sprintf(name_lookup,  "session.screen%d.clockFormat", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.ClockFormat", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    int clock;
-    if (sscanf(value.addr, "%d", &clock) != 1) screen->saveClock24Hour(False);
-    else if (clock == 24) screen->saveClock24Hour(True);
-    else screen->saveClock24Hour(False);
-  } else
-    screen->saveClock24Hour(False);
+	sprintf(name_lookup,	"session.screen%d.clockFormat", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.ClockFormat", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		int clock;
+		if (sscanf(value.addr, "%d", &clock) != 1) screen->saveClock24Hour(False);
+		else if (clock == 24) screen->saveClock24Hour(True);
+		else screen->saveClock24Hour(False);
+	} else
+		screen->saveClock24Hour(False);
 #endif // HAVE_STRFTIME
 
-  sprintf(name_lookup,  "session.screen%d.edgeSnapThreshold", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.EdgeSnapThreshold", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-		     &value)) {
-    int threshold;
-    if (sscanf(value.addr, "%d", &threshold) != 1)
-      screen->saveEdgeSnapThreshold(0);
-    else
-      screen->saveEdgeSnapThreshold(threshold);
-  } else
-    screen->saveEdgeSnapThreshold(0);
+	sprintf(name_lookup,	"session.screen%d.edgeSnapThreshold", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.EdgeSnapThreshold", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+				 &value)) {
+		int threshold;
+		if (sscanf(value.addr, "%d", &threshold) != 1)
+			screen->saveEdgeSnapThreshold(0);
+		else
+			screen->saveEdgeSnapThreshold(threshold);
+	} else
+		screen->saveEdgeSnapThreshold(0);
 
-  sprintf(name_lookup,  "session.screen%d.imageDither", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.ImageDither", screen_number);
-  if (XrmGetResource(database, "session.imageDither", "Session.ImageDither",
-		     &value_type, &value)) {
-    if (! strncasecmp("true", value.addr, value.size))
-      screen->saveImageDither(True);
-    else
-      screen->saveImageDither(False);
-  } else
-    screen->saveImageDither(True);
+	sprintf(name_lookup,	"session.screen%d.imageDither", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.ImageDither", screen_number);
+	if (XrmGetResource(database, "session.imageDither", "Session.ImageDither",
+				 &value_type, &value)) {
+		if (! strncasecmp("true", value.addr, value.size))
+			screen->saveImageDither(True);
+		else
+			screen->saveImageDither(False);
+	} else
+		screen->saveImageDither(True);
 
-  if (XrmGetResource(database, "session.opaqueMove", "Session.OpaqueMove",
-                     &value_type, &value)) {
-    if (! strncasecmp("true", value.addr, value.size))
-      screen->saveOpaqueMove(True);
-    else
-      screen->saveOpaqueMove(False);
-  } else
-    screen->saveOpaqueMove(False);
+	if (XrmGetResource(database, "session.opaqueMove", "Session.OpaqueMove",
+										 &value_type, &value)) {
+		if (! strncasecmp("true", value.addr, value.size))
+			screen->saveOpaqueMove(True);
+		else
+			screen->saveOpaqueMove(False);
+	} else
+		screen->saveOpaqueMove(False);
 
-	sprintf(name_lookup,  "session.screen%d.tab.width", screen_number);
+	sprintf(name_lookup,	"session.screen%d.tab.width", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.Tab.Width", screen_number);
 	if (XrmGetResource(database, name_lookup, class_lookup,
 			&value_type, &value)) {
@@ -2320,8 +2291,8 @@ void Fluxbox::load_rc(BScreen *screen) {
 	} else
 		screen->saveTabWidth(64); // default tab width
 
-  sprintf(name_lookup,  "session.screen%d.tab.height", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Tab.Height", screen_number);
+	sprintf(name_lookup,	"session.screen%d.tab.height", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Tab.Height", screen_number);
 	if (XrmGetResource(database, name_lookup, class_lookup,
 				&value_type, &value)) {
 		unsigned int tmp_val;
@@ -2340,77 +2311,77 @@ void Fluxbox::load_rc(BScreen *screen) {
 	} else
 		screen->saveTabHeight(16); // default tab height
 
-  sprintf(name_lookup,  "session.screen%d.tab.placement", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Tab.Placement", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup,
-  			&value_type, &value)) {		
+	sprintf(name_lookup,	"session.screen%d.tab.placement", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Tab.Placement", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup,
+				&value_type, &value)) {		
 		screen->saveTabPlacement(Tab::getTabPlacementNum(value.addr));
-  } else
+	} else
 		screen->saveTabPlacement(Tab::PTOP);
 
-  sprintf(name_lookup,  "session.screen%d.tab.alignment", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Tab.Alignment", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup,
-  			&value_type, &value)) {		
+	sprintf(name_lookup,	"session.screen%d.tab.alignment", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Tab.Alignment", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup,
+				&value_type, &value)) {		
 		screen->saveTabAlignment(Tab::getTabAlignmentNum(value.addr));
 	} else
 		screen->saveTabAlignment(Tab::ALEFT);
 
-  sprintf(name_lookup,  "session.screen%d.tab.rotatevertical", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.Tab.RotateVertical", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup,
-		     &value_type, &value)) {
-    if (! strncasecmp("true", value.addr, value.size))
-      screen->saveTabRotateVertical(True);
-    else
-      screen->saveTabRotateVertical(False);
-  } else
-    screen->saveTabRotateVertical(False);
+	sprintf(name_lookup,	"session.screen%d.tab.rotatevertical", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Tab.RotateVertical", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup,
+				 &value_type, &value)) {
+		if (! strncasecmp("true", value.addr, value.size))
+			screen->saveTabRotateVertical(True);
+		else
+			screen->saveTabRotateVertical(False);
+	} else
+		screen->saveTabRotateVertical(False);
 
-  sprintf(name_lookup,  "session.screen%d.sloppywindowgrouping", screen_number);
-  sprintf(class_lookup, "Session.Screen%d.SloppyWindowGrouping", screen_number);
-  if (XrmGetResource(database, name_lookup, class_lookup,
-		     &value_type, &value)) {
-    if (! strncasecmp("true", value.addr, value.size))
-      screen->saveSloppyWindowGrouping(True);
-    else
-      screen->saveSloppyWindowGrouping(False);
-  } else
-    screen->saveSloppyWindowGrouping(False);
+	sprintf(name_lookup,	"session.screen%d.sloppywindowgrouping", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.SloppyWindowGrouping", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup,
+				 &value_type, &value)) {
+		if (! strncasecmp("true", value.addr, value.size))
+			screen->saveSloppyWindowGrouping(True);
+		else
+			screen->saveSloppyWindowGrouping(False);
+	} else
+		screen->saveSloppyWindowGrouping(False);
 
 }
 
-void Fluxbox::loadRootCommand(BScreen *screen)  {
+void Fluxbox::loadRootCommand(BScreen *screen)	{
 	XrmDatabase database = (XrmDatabase) 0;
  
-  auto_ptr<char> dbfile(getRcFilename());
+	auto_ptr<char> dbfile(getRcFilename());
 
-  database = XrmGetFileDatabase(dbfile.get());
+	database = XrmGetFileDatabase(dbfile.get());
 	if (!database) 
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
 
-  XrmValue value;
-  char *value_type, name_lookup[1024], class_lookup[1024];
-	sprintf(name_lookup,  "session.screen%d.rootCommand", screen->getScreenNumber());
-  sprintf(class_lookup, "Session.Screen%d.RootCommand", screen->getScreenNumber());
-  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
-                     &value)) {										 
-    screen->saveRootCommand(value.addr==0 ? "": value.addr);
-  } else
-		screen->saveRootCommand("");    
+	XrmValue value;
+	char *value_type, name_lookup[1024], class_lookup[1024];
+	sprintf(name_lookup,	"session.screen%d.rootCommand", screen->getScreenNumber());
+	sprintf(class_lookup, "Session.Screen%d.RootCommand", screen->getScreenNumber());
+	if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+										 &value)) {										 
+		screen->saveRootCommand(value.addr==0 ? "": value.addr);
+	} else
+		screen->saveRootCommand("");		
 	
 }
 
 void Fluxbox::reload_rc(void) {
-  load_rc();
-  reconfigure();
+	load_rc();
+	reconfigure();
 }
 
 
 void Fluxbox::reconfigure(void) {
-  reconfigure_wait = True;
+	reconfigure_wait = True;
 
-  if (! timer->isTiming()) timer->start();
+	if (! timer->isTiming()) timer->start();
 }
 
 
@@ -2418,13 +2389,8 @@ void Fluxbox::real_reconfigure(void) {
 	grab();
 
 	XrmDatabase new_blackboxrc = (XrmDatabase) 0;
-	char style[MAXPATHLEN + 64];
 
 	auto_ptr<char> dbfile(getRcFilename());
- 
-	sprintf(style, "session.styleFile: %s", resource.style_file);
-	XrmPutLineResource(&new_blackboxrc, style);
-
 	XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.get());
 
 	XrmMergeDatabases(new_blackboxrc, &old_blackboxrc);
@@ -2452,7 +2418,7 @@ void Fluxbox::real_reconfigure(void) {
 	}
 	
 	//reconfigure keys
-	key->reconfigure(resource.keys_file);
+	key->reconfigure(const_cast<char *>(m_rc_keyfile->c_str()));
 
 	//reconfigure tabs
 	reconfigureTabs();
@@ -2487,127 +2453,127 @@ void Fluxbox::reconfigureTabs(void) {
 }
 
 void Fluxbox::checkMenu(void) {
-  Bool reread = False;
-  LinkedListIterator<MenuTimestamp> it(menuTimestamps);
-  for (; it.current() && (! reread); it++) {
-    struct stat buf;
+	Bool reread = False;
+	LinkedListIterator<MenuTimestamp> it(menuTimestamps);
+	for (; it.current() && (! reread); it++) {
+		struct stat buf;
 
-    if (! stat(it.current()->filename, &buf)) {
-      if (it.current()->timestamp != buf.st_ctime)
-        reread = True;
-    } else
-      reread = True;
-  }
+		if (! stat(it.current()->filename, &buf)) {
+			if (it.current()->timestamp != buf.st_ctime)
+				reread = True;
+		} else
+			reread = True;
+	}
 
-  if (reread) rereadMenu();
+	if (reread) rereadMenu();
 }
 
 
 void Fluxbox::rereadMenu(void) {
-  reread_menu_wait = True;
+	reread_menu_wait = True;
 
-  if (! timer->isTiming()) timer->start();
+	if (! timer->isTiming()) timer->start();
 }
 
 
 void Fluxbox::real_rereadMenu(void) {
-  for (int i = 0, n = menuTimestamps->count(); i < n; i++) {
-    MenuTimestamp *ts = menuTimestamps->remove(0);
+	for (int i = 0, n = menuTimestamps->count(); i < n; i++) {
+		MenuTimestamp *ts = menuTimestamps->remove(0);
 
-    if (ts) {
-      if (ts->filename)
+		if (ts) {
+			if (ts->filename)
 	delete [] ts->filename;
 
-      delete ts;
-    }
-  }
+			delete ts;
+		}
+	}
 
-  LinkedListIterator<BScreen> it(screenList);
-  for (; it.current(); it++)
-    it.current()->rereadMenu();
+	LinkedListIterator<BScreen> it(screenList);
+	for (; it.current(); it++)
+		it.current()->rereadMenu();
 }
 
-
+/*
 void Fluxbox::saveStyleFilename(const char *filename) {
-  if (resource.style_file)
-    delete [] resource.style_file;
+	if (resource.style_file)
+		delete [] resource.style_file;
 
-  resource.style_file = StringUtil::strdup(filename);
+	resource.style_file = StringUtil::strdup(filename);
 }
-
+*/
 
 void Fluxbox::saveMenuFilename(const char *filename) {
-  Bool found = False;
+	Bool found = False;
 
-  LinkedListIterator<MenuTimestamp> it(menuTimestamps);
-  for (; it.current() && (! found); it++)
-    if (! strcmp(it.current()->filename, filename)) found = True;
+	LinkedListIterator<MenuTimestamp> it(menuTimestamps);
+	for (; it.current() && (! found); it++)
+		if (! strcmp(it.current()->filename, filename)) found = True;
 
-  if (! found) {
-    struct stat buf;
+	if (! found) {
+		struct stat buf;
 
-    if (! stat(filename, &buf)) {
-      MenuTimestamp *ts = new MenuTimestamp;
+		if (! stat(filename, &buf)) {
+			MenuTimestamp *ts = new MenuTimestamp;
 
-      ts->filename = StringUtil::strdup(filename);
-      ts->timestamp = buf.st_ctime;
+			ts->filename = StringUtil::strdup(filename);
+			ts->timestamp = buf.st_ctime;
 
-      menuTimestamps->insert(ts);
-    }
-  }
+			menuTimestamps->insert(ts);
+		}
+	}
 }
 
 
 void Fluxbox::timeout(void) {
-  if (reconfigure_wait)
-    real_reconfigure();
+	if (reconfigure_wait)
+		real_reconfigure();
 
-  if (reread_menu_wait)
-    real_rereadMenu();
+	if (reread_menu_wait)
+		real_rereadMenu();
 
-  reconfigure_wait = reread_menu_wait = False;
+	reconfigure_wait = reread_menu_wait = False;
 }
 
 
 void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 	
 	BScreen *old_screen = (BScreen *) 0, *screen = (BScreen *) 0;
-  FluxboxWindow *old_win = (FluxboxWindow *) 0;
-  Toolbar *old_tbar = (Toolbar *) 0, *tbar = (Toolbar *) 0;
-  Workspace *old_wkspc = (Workspace *) 0, *wkspc = (Workspace *) 0;
+	FluxboxWindow *old_win = (FluxboxWindow *) 0;
+	Toolbar *old_tbar = (Toolbar *) 0, *tbar = (Toolbar *) 0;
+	Workspace *old_wkspc = (Workspace *) 0, *wkspc = (Workspace *) 0;
 
-  if (focused_window) {
-    old_win = focused_window;
-    old_screen = old_win->getScreen();
+	if (focused_window) {
+		old_win = focused_window;
+		old_screen = old_win->getScreen();
 		
-    old_tbar = old_screen->getToolbar();
-    old_wkspc = old_screen->getWorkspace(old_win->getWorkspaceNumber());
+		old_tbar = old_screen->getToolbar();
+		old_wkspc = old_screen->getWorkspace(old_win->getWorkspaceNumber());
 
-    old_win->setFocusFlag(False);
-    old_wkspc->getMenu()->setItemSelected(old_win->getWindowNumber(), False);
+		old_win->setFocusFlag(False);
+		old_wkspc->getMenu()->setItemSelected(old_win->getWindowNumber(), False);
 		
-  }
+	}
 
-  if (win && ! win->isIconic()) {
+	if (win && ! win->isIconic()) {
 		
 		screen = win->getScreen();
-    tbar = screen->getToolbar();
-    wkspc = screen->getWorkspace(win->getWorkspaceNumber());		
-    focused_window = win;
-    win->setFocusFlag(True);
-    wkspc->getMenu()->setItemSelected(win->getWindowNumber(), True);
+		tbar = screen->getToolbar();
+		wkspc = screen->getWorkspace(win->getWorkspaceNumber());		
+		focused_window = win;
+		win->setFocusFlag(True);
+		wkspc->getMenu()->setItemSelected(win->getWindowNumber(), True);
 		
-  } else
-    focused_window = (FluxboxWindow *) 0;
+	} else
+		focused_window = (FluxboxWindow *) 0;
 
-  if (tbar)
-    tbar->redrawWindowLabel(True);
-  if (screen)
-    screen->updateNetizenWindowFocus();
+	if (tbar)
+		tbar->redrawWindowLabel(True);
+	if (screen)
+		screen->updateNetizenWindowFocus();
 
-  if (old_tbar && old_tbar != tbar)
-    old_tbar->redrawWindowLabel(True);
-  if (old_screen && old_screen != screen)
-    old_screen->updateNetizenWindowFocus();
+	if (old_tbar && old_tbar != tbar)
+		old_tbar->redrawWindowLabel(True);
+	if (old_screen && old_screen != screen)
+		old_screen->updateNetizenWindowFocus();
 
 }
