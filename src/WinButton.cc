@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.11 2003/09/12 22:52:22 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.12 2003/09/12 23:36:16 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -265,6 +265,7 @@ void WinButton::drawType() {
 
         break;
     }
+    updateTransparent();
 }
 
 void WinButton::clear() {
