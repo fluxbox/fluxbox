@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.36 2002/10/25 21:03:13 fluxgen Exp $
+// $Id: Tab.cc,v 1.37 2002/10/29 16:03:15 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -871,7 +871,7 @@ void Tab::motionNotifyEvent(XMotionEvent *me) {
 
 				default:
 					dtty = 0;
-					dbby = m_win->getScreen()->getToolbar()->getY();
+					dbby = m_win->getScreen()->getToolbar()->y();
 					break;
 				}
 		
