@@ -101,6 +101,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Container.hh Container.cc \
 	TextTheme.hh TextTheme.cc \
 	BorderTheme.hh BorderTheme.cc \
+	SetWorkspaceName.hh SetWorkspaceName.cc \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
