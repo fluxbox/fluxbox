@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/12:
+  * Fixed bug when adding alot of new workspaces (Henrik)
+    Ewmh.cc
   * Removed Next/Prev client from window menu (Henrik)
     Window.cc
   * Added aligment for buttons in iconbar (Henrik)
