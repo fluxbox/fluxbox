@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ScreenInfo.hh,v 1.1 2003/05/10 13:54:29 fluxgen Exp $
+// $Id: ScreenInfo.hh,v 1.2 2003/05/10 23:01:00 fluxgen Exp $
 
 #ifndef SCREENINFO_HH
 #define SCREENINFO_HH
@@ -45,15 +45,7 @@ public:
     explicit ScreenInfo(int screen_num);
     ~ScreenInfo();
 
-    inline Visual *getVisual() const { return visual; }
-    inline Window getRootWindow() const { return root_window; }
-    inline Colormap colormap() const { return m_colormap; }
-
-    inline int getDepth() const { return depth; }
     inline int getScreenNumber() const { return screen_number; }
-
-    inline unsigned int getWidth() const { return width; }
-    inline unsigned int getHeight() const { return height; }
 
 #ifdef XINERAMA
     inline bool hasXinerama() const { return m_hasXinerama; }
