@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.232 2003/09/23 13:52:05 rathnor Exp $
+// $Id: Window.cc,v 1.233 2003/09/24 11:33:40 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1119,11 +1119,8 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
 
         shaded = false;
         send_event = true;
-    } else {
+    } else if (send_event)
         frame().move(new_x, new_y);
-		
-        send_event = true;
-    }
 
     if (send_event && ! moving) {
         sendConfigureNotify();
