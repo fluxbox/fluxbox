@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.187 2003/06/20 01:48:06 fluxgen Exp $
+// $Id: Screen.cc,v 1.188 2003/06/23 13:10:52 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -175,38 +175,6 @@ private:
 
 
 template<>
-void FbTk::Resource<Toolbar::Placement>::
-setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft")==0)
-        m_value = Toolbar::TOPLEFT;
-    else if (strcasecmp(strval, "BottomLeft")==0)
-        m_value = Toolbar::BOTTOMLEFT;
-    else if (strcasecmp(strval, "TopCenter")==0)
-        m_value = Toolbar::TOPCENTER;
-    else if (strcasecmp(strval, "BottomCenter")==0)
-        m_value = Toolbar::BOTTOMCENTER;
-    else if (strcasecmp(strval, "TopRight")==0)
-        m_value = Toolbar::TOPRIGHT;
-    else if (strcasecmp(strval, "BottomRight")==0)
-        m_value = Toolbar::BOTTOMRIGHT;
-    else if (strcasecmp(strval, "LeftTop") == 0)
-        m_value = Toolbar::LEFTTOP;
-    else if (strcasecmp(strval, "LeftCenter") == 0)
-        m_value = Toolbar::LEFTCENTER;
-    else if (strcasecmp(strval, "LeftBottom") == 0)
-        m_value = Toolbar::LEFTBOTTOM;
-    else if (strcasecmp(strval, "RightTop") == 0)
-        m_value = Toolbar::RIGHTTOP;
-    else if (strcasecmp(strval, "RightCenter") == 0)
-        m_value = Toolbar::RIGHTCENTER;
-    else if (strcasecmp(strval, "RightBottom") == 0)
-        m_value = Toolbar::RIGHTBOTTOM;
-    else
-        setDefaultValue();
-}
-
-
-template<>
 void FbTk::Resource<ToolbarHandler::ToolbarMode>::
 setFromString(const char *strval) {
     if (strcasecmp(strval, "Off") == 0) 
@@ -224,52 +192,6 @@ setFromString(const char *strval) {
     else
         setDefaultValue();
 }
-
-
-string FbTk::Resource<Toolbar::Placement>::
-getString() {
-    switch (m_value) {
-    case Toolbar::TOPLEFT:
-        return string("TopLeft");
-        break;
-    case Toolbar::BOTTOMLEFT:
-        return string("BottomLeft");
-        break;
-    case Toolbar::TOPCENTER:
-        return string("TopCenter");
-        break;			
-    case Toolbar::BOTTOMCENTER:
-        return string("BottomCenter");
-        break;
-    case Toolbar::TOPRIGHT:
-        return string("TopRight");
-        break;
-    case Toolbar::BOTTOMRIGHT:
-        return string("BottomRight");
-        break;
-    case Toolbar::LEFTTOP:
-        return string("LeftTop");
-        break;
-    case Toolbar::LEFTCENTER:
-        return string("LeftCenter");
-        break;
-    case Toolbar::LEFTBOTTOM:
-        return string("LeftBottom");
-        break;
-    case Toolbar::RIGHTTOP:
-        return string("RightTop");
-        break;
-    case Toolbar::RIGHTCENTER:
-        return string("RightCenter");
-        break;
-    case Toolbar::RIGHTBOTTOM:
-        return string("RightBottom");
-        break;
-    }
-    //default string
-    return string("BottomCenter");
-}
-
 
 
 template<>
@@ -351,84 +273,6 @@ void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
 };
 
 
-template<>
-void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft")==0)
-        m_value = Slit::TOPLEFT;
-    else if (strcasecmp(strval, "CenterLeft")==0)
-        m_value = Slit::CENTERLEFT;
-    else if (strcasecmp(strval, "BottomLeft")==0)
-        m_value = Slit::BOTTOMLEFT;
-    else if (strcasecmp(strval, "TopCenter")==0)
-        m_value = Slit::TOPCENTER;
-    else if (strcasecmp(strval, "BottomCenter")==0)
-        m_value = Slit::BOTTOMCENTER;
-    else if (strcasecmp(strval, "TopRight")==0)
-        m_value = Slit::TOPRIGHT;
-    else if (strcasecmp(strval, "CenterRight")==0)
-        m_value = Slit::CENTERRIGHT;
-    else if (strcasecmp(strval, "BottomRight")==0)
-        m_value = Slit::BOTTOMRIGHT;
-    else
-        setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<Slit::Direction>::setFromString(const char *strval) {
-    if (strcasecmp(strval, "Vertical") == 0) 
-        m_value = Slit::VERTICAL;
-    else if (strcasecmp(strval, "Horizontal") == 0) 
-        m_value = Slit::HORIZONTAL;
-    else
-        setDefaultValue();
-}
-
-string FbTk::Resource<Slit::Placement>::getString() {
-    switch (m_value) {
-    case Slit::TOPLEFT:
-        return string("TopLeft");
-        break;
-    case Slit::CENTERLEFT:
-        return string("CenterLeft");
-        break;
-    case Slit::BOTTOMLEFT:
-        return string("BottomLeft");
-        break;
-    case Slit::TOPCENTER:
-        return string("TopCenter");
-        break;			
-    case Slit::BOTTOMCENTER:
-        return string("BottomCenter");
-        break;
-    case Slit::TOPRIGHT:
-        return string("TopRight");
-        break;
-    case Slit::CENTERRIGHT:
-        return string("CenterRight");
-        break;
-    case Slit::BOTTOMRIGHT:
-        return string("BottomRight");
-        break;
-    }
-    //default string
-    return string("BottomRight");
-}
-
-template<>
-string FbTk::Resource<Slit::Direction>::getString() {
-    switch (m_value) {
-    case Slit::VERTICAL:
-        return string("Vertical");
-        break;
-    case Slit::HORIZONTAL:
-        return string("Horizontal");
-        break;
-    }
-    // default string
-    return string("Vertical");
-}
-
-
 template <>
 void FbTk::ThemeItem<std::string>::load() { }
 
@@ -460,7 +304,7 @@ void FbTk::ThemeItem<int>::setFromString(const char *str) {
 BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm, 
                                         const std::string &scrname, 
                                         const std::string &altscrname):
-    toolbar_auto_hide(rm, false, scrname+".toolbar.autoHide", altscrname+".Toolbar.AutoHide"),
+
     image_dither(rm, false, scrname+".imageDither", altscrname+".ImageDither"),
     opaque_move(rm, false, "session.opaqueMove", "Session.OpaqueMove"),
     full_max(rm, true, scrname+".fullMaximization", altscrname+".FullMaximization"),
@@ -477,17 +321,9 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     focus_model(rm, Fluxbox::CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
-    toolbar_width_percent(rm, 65, 
-                          scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
     menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha"),
-
-    toolbar_layernum(rm, Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()), 
-                     scrname+".toolbar.layer", altscrname+".Toolbar.Layer"),
-    toolbar_mode(rm, ToolbarHandler::ICONS, scrname+".toolbar.mode", altscrname+".Toolbar.Mode"),
-    toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
-    toolbar_placement(rm, Toolbar::BOTTOMCENTER, 
-                      scrname+".toolbar.placement", altscrname+".Toolbar.Placement") {
+    toolbar_mode(rm, ToolbarHandler::ICONS, scrname+".toolbar.mode", altscrname+".Toolbar.Mode") {
 
 };
 
@@ -902,10 +738,8 @@ void BScreen::reconfigure() {
         }
     }
 
-    if (toolbar()) {
-        toolbar()->setPlacement(*resource.toolbar_placement);
+    if (toolbar())
         toolbar()->reconfigure();
-    }
 
 #ifdef SLIT    
     if (slit())
@@ -1099,8 +933,6 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     m_current_workspace = getWorkspace(id);
 
     workspacemenu->setItemSelected(currentWorkspace()->workspaceID() + 2, true);
-    if (toolbar() != 0)
-        toolbar()->redrawWorkspaceLabel(true);
 
     currentWorkspace()->showAll();
 
@@ -2680,14 +2512,31 @@ int BScreen::getHeadHeight(int head) const {
 #endif // XINERAMA
 }
 
+// TODO: when toolbar gets its resources moved into Toolbar.hh/cc, then
+// this can be gone and a consistent interface for the two used
+// on the actual objects
+
+
+template <>
+int BScreen::getOnHead<Slit>(Slit &slit) {
+    return 0;
+}
+
+template <>
+void BScreen::setOnHead<Slit>(Slit &slit, int head) {
+    //    slit.saveOnHead(head);
+    slit.reconfigure();
+}
+
 template <>
 int BScreen::getOnHead<Toolbar>(Toolbar &tbar) {
-    return getToolbarOnHead();
+    return 0;
+    //    return tbar.getOnHead();
 }
 
 template <>
 void BScreen::setOnHead<Toolbar>(Toolbar &tbar, int head) {
-    saveToolbarOnHead(head);
+    //    saveToolbarOnHead(head);
     tbar.reconfigure();
 }
 
