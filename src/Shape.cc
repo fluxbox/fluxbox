@@ -19,12 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.8 2004/01/09 02:17:46 fluxgen Exp $
+// $Id: Shape.cc,v 1.9 2004/01/11 15:02:11 fluxgen Exp $
 
 #include "Shape.hh"
+
 #include "FbTk/FbWindow.hh"
 #include "FbTk/App.hh"
 #include "FbTk/GContext.hh"
+#include "FbTk/FbPixmap.hh"
 
 #include <cstring>
 
@@ -39,7 +41,7 @@ using namespace std;
 
 namespace {
 
-Pixmap createShape(FbTk::FbWindow &win, int place) {
+FbTk::FbPixmap *createShape(FbTk::FbWindow &win, int place) {
     if (win.window() == 0 || place == 0 || 
         win.width() < 3 || win.height() < 3)
         return 0;
@@ -111,39 +113,34 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
         }
     }
 
-    Pixmap pm = XCreatePixmap(disp, win.window(), win_width, win_height, 1);
+    FbTk::FbPixmap *pm = new FbTk::FbPixmap(win, win_width, win_height, 1);
 
-    FbTk::GContext gc(pm);
+
+    FbTk::GContext gc(*pm);
         
-    XPutImage(disp, pm, gc.gc(), ximage, 0, 0, 0, 0,
+    XPutImage(disp, pm->drawable(), gc.gc(), ximage, 0, 0, 0, 0,
               win_width, win_height);
 
     XDestroyImage(ximage);
 
     return pm;
 
-
 }
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 Shape::Shape(FbTk::FbWindow &win, int shapeplaces):
     m_win(&win),
     m_shapeplaces(shapeplaces) {
 
-    m_shape = createShape(win, shapeplaces);
-    m_width = win.width();
-    m_height = win.height();
-
+    m_shape.reset(createShape(win, shapeplaces));
 }
 
 Shape::~Shape() {
-    if (m_shape != 0)
-        XFreePixmap(FbTk::App::instance()->display(), m_shape);
 
 #ifdef SHAPE
     if (m_win != 0 && m_win->window()) {
-        // reset shape of window
+        // Reset shape of window
         XShapeCombineMask(FbTk::App::instance()->display(),
                           m_win->window(),
                           ShapeBounding,
@@ -162,14 +159,10 @@ void Shape::update() {
     if (m_win == 0 || m_win->window() == 0)
         return;
 #ifdef SHAPE
-    if (m_win->width() != m_width ||
-        m_win->height() != m_height) {
-        if (m_shape != 0)
-            XFreePixmap(FbTk::App::instance()->display(), m_shape);
-        m_shape = createShape(*m_win, m_shapeplaces);
-        m_width = m_win->width();
-        m_height = m_win->height();
-
+    if (m_shape.get() == 0 ||
+        m_win->width() != width() ||
+        m_win->height() != height()) {
+        m_shape.reset(createShape(*m_win, m_shapeplaces));
     }
 
     // the m_shape can be = 0 which will just reset the shape mask
@@ -178,8 +171,9 @@ void Shape::update() {
                       m_win->window(),
                       ShapeBounding,
                       -m_win->borderWidth(), -m_win->borderWidth(),
-                      m_shape,
+                      m_shape.get() ? m_shape->drawable() : 0,
                       ShapeSet);
+
 
 #endif // SHAPE
 
@@ -214,4 +208,12 @@ bool Shape::isShaped(const FbTk::FbWindow &win) {
 #endif // SHAPE
 
     return (shaped != 0 ? true : false);
+}
+
+unsigned int Shape::width() const {
+    return m_shape.get() ? m_shape->width() : 0;
+}
+
+unsigned int Shape::height() const {
+    return m_shape.get() ? m_shape->height() : 0;
 }
