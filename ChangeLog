@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/18:
+  * Patch from Ciaran that fixes so style files that    (Thanks Ciaran McCreesh)
+    starts with "." or ends with "~" (backup files)
+    doesn't gett added to style menu
   * Some cleaning (Henrik)
     ...    
   * nl_NL locales (Thanks Han Boetes)
