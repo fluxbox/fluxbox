@@ -1,4 +1,3 @@
-
 * const-correctnes
 * Clean up in BImage class, some of those functions are huge, and needs to be smaller.
   And make the class more independent so it could be movable to other applications, 
@@ -20,7 +19,6 @@
   so the user can configure toolbar in a config file
 * Toolbar shouldn't hide if its autohide and 
   you are in "change workspace mode"
-* The BadAccess error in Theme
 * Finnish (Finland) translation
 * Wheel-config support
 * Separator in the menus
@@ -28,8 +26,6 @@
 * Net wm atom support
 * Clean up in the global namespace
 * Create fbinput style app
-* Add wheelscroll-workspace-change configuration (reversed order or
-  regular)
 * Add "system menu" for minimized apps in the icon bar.
   (Close, Kill, Send to, etc)	
 * "Iconify group"/group commands in Windowmenu
@@ -42,8 +38,6 @@
 * Unique names (e.g, the second xterm title will be "xterm <2>", as in
   emacs), needed for the next wish:
 * "Goto Frame" as Emacs C-x b, that show completions in the bar
-  (I really like the emacs's "ido.el" package behavior, which I recommend
-   to any emacs user)
 * mouse button configure
 
 

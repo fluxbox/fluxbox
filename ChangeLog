@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.1.10:
+*02/07/13:
+   * Added xsri target in bsetbg (Thanks Jeramy)
+   * Fixed bug [ 566277 ] xine fullscreen causes hard X lockup.
+     Invalid win and screen pointer in Fluxbox::setFocusedWindow
+*02/07/10:
+   * Fixed border and handle in Window.cc so we don't show them as default, 
+     if the window is transient. 
+     (bug [ 554218 ] windows have wrong resizeableness)
 *02/06/14:
    * Extra checking for transient, so we don't get lockup
 *02/06/04:
@@ -9,20 +17,20 @@ Changes for 0.1.10:
      The client was removed from netizenlist in ~FluxboxWindow.
    * Fixed bug [ 562713 ] "incorrect listings in workspace menu".
      Normal insert of new clients in the list again, in 
-	 Workspace::addWindow
+     Workspace::addWindow
    * Fixed bug [ 554646 ] "Dialog boxes have tabs briefly"
      Windows that are not maximizable by default, such as
      dialogs, wont get a tab by default.
 *02/06/01:
-   * Updated nl_NL locales in fluxbox-generate_menu (THanks Han Boetes)
+   * Updated nl_NL locales in fluxbox-generate_menu (Thanks Han Boetes)
 *02/05/31:
    * Added ru_RU locales to fluxbox-generate_menu (Thanks Anton Denisov)
 *02/05/29:
    * Made some cleaning in class FluxboxWindow:
      Removed unused variable, moved Mwm* defines into enums in
-	 the class, changed (void) to ()  (C++ uses void as default, and (void)
-	 is really anoying to look at when syntax highlight is on) and
-	 removed NAME_* defines since they're no longer in use
+     the class, changed (void) to ()  (C++ uses void as default, and (void)
+     is really anoying to look at when syntax highlight is on) and
+     removed NAME_* defines since they're no longer in use
    * Fixed "Desktop Wheeling" translation in ru_RU (Thanks Anton Denisov)
    * Added slit order (Thanks Steve Cooper)
    * Fixed language support in fluxbox-generate_menu:
