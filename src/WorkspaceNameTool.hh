@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.hh,v 1.6 2004/09/12 14:56:19 rathnor Exp $
+// $Id: WorkspaceNameTool.hh,v 1.7 2004/10/21 11:08:04 akir Exp $
 
 #ifndef WORKSPACENAMETOOL_HH
 #define WORKSPACENAMETOOL_HH
@@ -33,7 +33,7 @@
 class BScreen;
 class ToolTheme;
 
-class WorkspaceNameTool: public ToolbarItem, FbTk::Observer {
+class WorkspaceNameTool: public ToolbarItem, public FbTk::Observer {
 public:
     WorkspaceNameTool(const FbTk::FbWindow &parent, ToolTheme &theme, BScreen &screen);
     virtual ~WorkspaceNameTool();
