@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/11/16:
+  * Fixed sstream and strstream header check (Henrik)
+    configure.in, Remember.cc, FbCommandFactory.cc, ClientPattern.cc
   * Add image search paths when loading a style (Simon)
     - now looks for pixmaps in <stylebase> and <stylebase>/pixmaps
     - now looks for styles in <stylesdir>/<stylename>/theme.cfg
