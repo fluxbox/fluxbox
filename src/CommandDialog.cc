@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.cc,v 1.3 2004/01/02 13:53:21 fluxgen Exp $
+// $Id: CommandDialog.cc,v 1.4 2004/01/21 13:16:09 fluxgen Exp $
 
 #include "CommandDialog.hh"
 
@@ -173,7 +173,7 @@ void CommandDialog::tabComplete() {
         if (first == string::npos)
             first = 0;
         string prefix = FbTk::StringUtil::toLower(m_textbox.text().substr(first, m_textbox.cursorPosition()));
-        if (prefix.size() == 0) {
+        if (prefix.empty()) {
             XBell(FbTk::App::instance()->display(), 0);
             return;
         }
