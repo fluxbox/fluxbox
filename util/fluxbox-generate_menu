@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.49 2003/08/07 10:35:19 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.50 2003/08/17 13:30:35 fluxgen Exp $
 
 #
 # Portability notes:
@@ -769,7 +769,7 @@ append_menu_end
 
 append_submenu "${NETMENU}"
     append_submenu "${BROWSERMENU}"
-        normal_find netscape galeon mozilla dillo
+        normal_find mozilla-firebird netscape galeon mozilla dillo
         find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
         find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
         find_it links       append "[exec]   (links) {${DEFAULT_TERM} -e links ${HOMEPAGE}}"

@@ -23,20 +23,26 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.14 2003/08/04 16:49:25 fluxgen Exp $
+# $Id: fbsetbg,v 1.15 2003/08/17 13:27:44 fluxgen Exp $
 
-#
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
 # please keep the following restrictions in mind:
 #
-# don't use [ -e file ], use [ -r file ]
-# don't use $(), use ``
-# don't use ~, use ${HOME}
-# don't use id -u, use whoami
-# getopts won't work on all platforms, but the config-file can
-# compensate for that.
-#
+# - don't use if ! command;, use command; if [ $? -ne 0 ];
+# - don't use [ -e file ] use [ -r file ]
+# - don't use $(), use ``
+# - don't use ~, use ${HOME}
+# - don't use id -u, use whoami
+# - getopts won't work on all platforms, but the config-file can
+#   compensate for that.
+# - various software like grep/sed/perl may be not present or not
+#   the version you have. for example grep '\W' only works on gnu-grep.
+#   Keep this in mind, use bare basic defaults.
+# - Do _NOT_ suggest to use #!/bin/bash. Not everybody uses bash.
+#   Non portable features like getopts in this script can be achieved in
+#   other ways.
+
 
 # The wallpapersetter is selected in this order
 wpsetters='chbg Esetroot wmsetbg display qiv xv xsri xli xsetbg' # broken icewmbg'
@@ -50,7 +56,7 @@ WHOAMI=`whoami`
 # Functions
 display_usage() {
     cat << EOF
-Usage: fbsetbg [ -fcta /path/to/wallpaper ] [ -l ] [ -h ] [ -d ]
+Usage: fbsetbg [ -fFcCtTaA /path/to/wallpaper ] [ -l ] [ -h ] [ -d ] [ -p ]
 EOF
 }
 
@@ -67,49 +73,63 @@ Options:
         ( if your bgsetter doesn't support this
           fbsetbg falls back to -f )
 
+    -F,-C,-T,-A same as uncapsed but without remembering.
+
     -h  Display this help
 
     -l  Set previous wallpaper
 
     -d  Debug fbsetbg
-    -T  Tips
+    -p  Tips
 
 Files:
-
+    In this file the wallpaper you set will be stored, for the -l option:
     ~/.fluxbox/lastwallpaper
 
 EOF
 }
 
-display_tips(){
-cat<< EOF
+display_tips() {
+    cat << EOF
 
-To replace all occurrences of bsetbg in a file use this command:
+1) To replace all occurrences of bsetbg in a file use this command:
 
-  perl -pi -e 's,([^f]|^)bsetbg,fbsetbg,' filename
+   perl -pi -e 's,([^f]|^)bsetbg,fbsetbg,' filename
 
-If you want the style to set the wallpaper and you want fbsetbg to
-remember the previous wallpaper put this in your ~/.fluxbox/init
+2) If you want the style to set the wallpaper and you want fbsetbg to
+   remember the previous wallpaper put this in your ~/.fluxbox/init
 
-  session.screen0.rootCommand:    fbsetbg -l
+   session.screen0.rootCommand:    fbsetbg -l
 
+3) Use fbsetbg -d to find out what wallpapersetter fbsetbg will use and
+   what he thinks about it.
 
 EOF
 }
 
 # ugly code for solaris compat.
-find_it() {
-    file=`which $1 2> /dev/null`
-    if [ -x "$file" ]; then
-        if [ $# -gt 1 ]; then
-            shift
-            $*
-        fi
-        return 0
-    else
-        return 1
-    fi
-}
+case `uname` in
+    Linux|*BSD)
+        find_it() {
+            which $1 > /dev/null 2>&1 && shift && $*
+        }
+        ;;
+    *)
+        find_it() {
+            file=`which $1 2> /dev/null`
+            if [ -x "$file" ]; then
+                if [ $# -gt 1 ]; then
+                    shift
+                    $*
+                fi
+                return 0
+            else
+                return 1
+            fi
+        }
+        ;;
+esac
+
 
 message() {
     xmessage -center "$@"
@@ -126,7 +146,7 @@ remembercommand() {
     esac
 }
 
-debugfbsetbg (){
+debugfbsetbg() {
     echo
     echo $debugstory
     echo
@@ -232,7 +252,7 @@ recommend you install the package provided by your distro."
 esac
 
 #Get options.
-getopts ":a:f:c:t:Tdlh-" COMMAND_LINE_ARGUMENT
+getopts ":a:f:c:t:A:F:C:T:pdlh-" COMMAND_LINE_ARGUMENT
 case "${COMMAND_LINE_ARGUMENT}" in
     d) debugfbsetbg
         exit 0
@@ -249,6 +269,23 @@ case "${COMMAND_LINE_ARGUMENT}" in
     t) option=$tile
         wallpaper=$OPTARG
         ;;
+    A) option=$aspect
+        wallpaper=$OPTARG
+        remember=false
+        ;;
+    F) option=$full
+        wallpaper=$OPTARG
+        remember=false
+        ;;
+    C) option=$center
+        wallpaper=$OPTARG
+        remember=false
+        ;;
+    T) option=$tile
+        wallpaper=$OPTARG
+        remember=false
+        ;;
+
     l)
         if [ -r $lastwallpaper ]; then
             option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
@@ -260,7 +297,7 @@ case "${COMMAND_LINE_ARGUMENT}" in
         remember=false
         ;;
     h) display_help ; exit 0 ;;
-    T) display_tips ; exit 0 ;;
+    p) display_tips ; exit 0 ;;
     -) echo "fbsetbg doesn't recognize -- gnu-longopts."
         echo 'Use fbsetbg -h for a long help message.'
         display_usage
@@ -292,3 +329,5 @@ $WPSETTER $option "$wallpaper" || message "Something went wrong while setting th
 Run '$WPSETTER $option "$wallpaper"' from an xterm to find out what."
 #remember previous wallpaper
 [ ! "$remember" = false ] && remembercommand
+# Off course this returns 1 most of the time.
+exit 0
