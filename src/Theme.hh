@@ -1,5 +1,5 @@
 // Theme.hh for fluxbox 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -42,7 +42,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.7 2002/03/21 10:54:29 fluxgen Exp $
+// $Id: Theme.hh,v 1.8 2002/05/07 15:22:07 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
