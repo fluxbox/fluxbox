@@ -566,7 +566,6 @@ void FluxboxWindow::init() {
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
 
-
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
 
     if (shaded) { // start shaded
@@ -1221,6 +1220,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
         m_last_resize_x = new_x;
         m_last_resize_y = new_y;
     }
+
 }	
 
 // returns whether the focus was "set" to this window
@@ -2058,6 +2058,7 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 #ifdef DEBUG
         cerr<<"ConfigureRequest("<<title()<<")"<<endl;
 #endif // DEBUG
+
         configureRequestEvent(event.xconfigurerequest);
         break;
     case MapNotify:
@@ -2112,6 +2113,7 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 }
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
+
     // we're only concerned about client window event
     WinClient *client = findClient(re.window);
     if (client == 0) {
@@ -2124,10 +2126,9 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     Fluxbox *fluxbox = Fluxbox::instance();
 	
     bool get_state_ret = getState();
-    if (! (get_state_ret && fluxbox->isStartup())) {
-        if ((m_client->wm_hint_flags & StateHint) && m_current_state == 0) {// &&
+    if (!(get_state_ret && fluxbox->isStartup())) {
+        if (m_client->wm_hint_flags & StateHint)
             m_current_state = m_client->initial_state;
-        }
     } else if (iconic)
         m_current_state = NormalState;
 
@@ -2325,7 +2326,6 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
 
         moveResize(frame().x(), frame().y(),
                    frame().width(), frame().height());
-                   
 
         break; 
     }
@@ -2361,7 +2361,7 @@ void FluxboxWindow::exposeEvent(XExposeEvent &ee) {
 void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
 
     WinClient *client = findClient(cr.window);
-    if (client == 0)
+    if (client == 0 || isIconic())
         return;
 
     int cx = frame().x(), cy = frame().y(), ignore = 0;
@@ -2416,6 +2416,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     }
 
     sendConfigureNotify();
+
 }
 
 
@@ -3154,7 +3155,7 @@ void FluxboxWindow::stopResizing(bool interrupted) {
         fixsize();
 
         moveResize(m_last_resize_x, m_last_resize_y,
-               m_last_resize_w, m_last_resize_h);
+                   m_last_resize_w, m_last_resize_h);
     }
 	
     ungrabPointer(CurrentTime);
