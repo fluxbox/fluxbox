@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.8 2004/04/19 22:48:19 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.9 2004/04/19 22:49:25 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -221,7 +221,6 @@ SystemTray::ClientList::iterator SystemTray::findClient(Window win) {
 void SystemTray::addClient(Window win) {
     if (win == 0)
         return;
-    cerr<<"Add client: "<<win<<endl;
 
     ClientList::iterator it = findClient(win);
     if (it != m_clients.end())
