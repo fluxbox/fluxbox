@@ -1,7 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/08/28:
-   * Fixed pixmap bug when changing between non-pixmap themes and pixmap themes (Henrik)
+   * Fixed so ThemeManager::load expands ~  (Henrik)
+     Theme.cc
+   * Fixed pixmap bug when changing between non-pixmap themes 
+     and pixmap themes (Henrik)
      Theme.cc
    * Fixed so Theme items calls setDefaultValue in constructor (Henrik)
      This should fix init values.
