@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.239 2003/10/05 02:31:22 rathnor Exp $
+// $Id: Window.cc,v 1.240 2003/10/05 09:03:43 rathnor Exp $
 
 #include "Window.hh"
 
@@ -511,7 +511,6 @@ void FluxboxWindow::init() {
     
     if (!place_window)
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
-
 
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
 
@@ -2627,6 +2626,7 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 // commit current decoration values to actual displayed things
 void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
+    bool client_move = false;
 
     int grav_x=0, grav_y=0;
     // negate gravity
@@ -2636,28 +2636,34 @@ void FluxboxWindow::applyDecorations(bool initial) {
     if (decorations.border)
         border_width = frame().theme().border().width();
 
-    if (initial || frame().window().borderWidth() != border_width)
+    if (initial || frame().window().borderWidth() != border_width) {
+        client_move = true;
         frame().setBorderWidth(border_width);
+    }
 
     // we rely on frame not doing anything if it is already shown/hidden
     if (decorations.titlebar) 
-        frame().showTitlebar();
+        client_move |= frame().showTitlebar();
     else
-        frame().hideTitlebar();
+        client_move |= frame().hideTitlebar();
 
     if (decorations.handle) {
-        frame().showHandle();
+        client_move |= frame().showHandle();
     } else
-        frame().hideHandle();
+        client_move |= frame().hideHandle();
 
     // apply gravity once more
     frame().gravityTranslate(grav_x, grav_y, m_client->gravity(), false);
 
     // if the location changes, shift it
-    if (grav_x != 0 || grav_y != 0)
+    if (grav_x != 0 || grav_y != 0) {
         move(grav_x + frame().x(), grav_y + frame().y());
+        client_move = true;
+    }
 
     frame().reconfigure();
+    if (client_move)
+        sendConfigureNotify();
 }
 
 void FluxboxWindow::toggleDecoration() {
@@ -2988,8 +2994,6 @@ void FluxboxWindow::attachTo(int x, int y) {
         FluxboxWindow *attach_to_win = 0;
         if (client)
             attach_to_win = client->fbwindow();
-
-        cerr<<"client = "<<client<<", child = "<<hex<<child<<dec<<", fbwin = "<<attach_to_win<<endl;
 
         if (attach_to_win != this &&
             attach_to_win != 0) {

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.22 2003/10/02 14:14:46 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.23 2003/10/05 09:03:43 rathnor Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -118,12 +118,13 @@ public:
     /// remove any handler for the windows
     void removeEventHandler();
 
-    void hideTitlebar();
-    void showTitlebar();
-    void hideHandle();
-    void showHandle();
-    void hideAllDecorations();
-    void showAllDecorations();
+    // these return true/false for if something changed
+    bool hideTitlebar();
+    bool showTitlebar();
+    bool hideHandle();
+    bool showHandle();
+    bool hideAllDecorations();
+    bool showAllDecorations();
 
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation

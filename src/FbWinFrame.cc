@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.56 2003/10/02 14:14:45 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.57 2003/10/05 09:03:43 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -391,9 +391,9 @@ void FbWinFrame::setClientWindow(Window win) {
 
 }
 
-void FbWinFrame::hideTitlebar() {
+bool FbWinFrame::hideTitlebar() {
     if (!m_use_titlebar)
-        return;
+        return false;
 
     m_titlebar.hide();
     m_use_titlebar = false;
@@ -402,11 +402,12 @@ void FbWinFrame::hideTitlebar() {
     // only take away one borderwidth (as the other border is still the "top" border)
     m_window.resize(m_window.width(), m_window.height() - m_titlebar.height() -
                     m_titlebar.borderWidth());
+    return true;
 }
 
-void FbWinFrame::showTitlebar() {
+bool FbWinFrame::showTitlebar() {
     if (m_use_titlebar)
-        return;
+        return false;
 
     m_titlebar.show();
     m_use_titlebar = true;
@@ -414,24 +415,26 @@ void FbWinFrame::showTitlebar() {
     // only add one borderwidth (as the other border is still the "top" border)
     m_window.resize(m_window.width(), m_window.height() + m_titlebar.height() +
                     m_titlebar.borderWidth());
+    return true;
 
 }
 
-void FbWinFrame::hideHandle() {
+bool FbWinFrame::hideHandle() {
     if (!m_use_handle)
-        return;
+        return false;
     m_handle.hide();
     m_grip_left.hide();
     m_grip_right.hide();
     m_use_handle = false;
     m_window.resize(m_window.width(), m_window.height() - m_handle.height() -
                     m_handle.borderWidth());
+    return true;
 
 }
 
-void FbWinFrame::showHandle() {
+bool FbWinFrame::showHandle() {
     if (m_use_handle)
-        return;
+        return false;
 
     m_handle.show();
     m_handle.showSubwindows(); // shows grips
@@ -439,22 +442,29 @@ void FbWinFrame::showHandle() {
     m_use_handle = true;
     m_window.resize(m_window.width(), m_window.height() + m_handle.height() +
                     m_handle.borderWidth());
+    return true;
 }
 
-void FbWinFrame::hideAllDecorations() {
-    hideHandle();
-    hideTitlebar();
+bool FbWinFrame::hideAllDecorations() {
+    bool changed = false;
+    changed |= hideHandle();
+    changed |= hideTitlebar();
     // resize done by hide*
     reconfigure();
+
+    return changed;
 }
 
-void FbWinFrame::showAllDecorations() {
+bool FbWinFrame::showAllDecorations() {
+    bool changed = false;
     if (!m_use_handle)
-        showHandle();
+        changed |= showHandle();
     if (!m_use_titlebar)
-        showTitlebar();
+        changed |= showTitlebar();
     // resize shouldn't be necessary
     reconfigure();
+
+    return changed;
 }
 
 /**
@@ -740,12 +750,16 @@ void FbWinFrame::reconfigureTitlebar() {
     if (!m_use_titlebar)
         return;
 
+    int orig_height = m_titlebar.height();
     // resize titlebar to window size with font height
     int title_height = m_theme.font().height() == 0 ? 16 : 
         m_theme.font().height() + m_bevel*2 + 2;
     if (m_theme.titleHeight() != 0)
         title_height = m_theme.titleHeight();
 
+    // if the titlebar grows in size, make sure the whole window does too
+    if (orig_height != title_height) 
+        m_window.resize(m_window.width(), m_window.height()-orig_height+title_height);
     m_titlebar.moveResize(-m_titlebar.borderWidth(), -m_titlebar.borderWidth(),
                           m_window.width(), title_height);
 

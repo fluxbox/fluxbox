@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/05:
+  * Fix frame size when changing titlebar size (Simon)
+    - also send configure notify when toggling decorations
+    FbWinFrame.hh/cc Window.cc
   * Move a bunch of functionality from Keys into FbTk::KeyUtil (Simon)
     - also fix issue where Capslock mod was taken to be whatever caps
       key was mapped to (why??). Now uses LockMask (ditto num,scroll).
