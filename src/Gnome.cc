@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.3 2002/09/10 12:23:03 fluxgen Exp $
+// $Id: Gnome.cc,v 1.4 2002/10/16 19:06:51 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -213,7 +213,7 @@ void Gnome::updateHints(FluxboxWindow &win) {
 	
 }
 
-bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen *screen, FluxboxWindow *win) {
+bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * const screen, FluxboxWindow * const win) {
 	if (ce.message_type == m_gnome_wm_win_workspace) {
 #ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;

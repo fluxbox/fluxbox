@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.2 2002/10/11 10:20:33 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.3 2002/10/16 19:02:25 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -45,7 +45,7 @@ public:
 
 
 	bool checkClientMessage(const XClientMessageEvent &ce, 
-		BScreen *screen, FluxboxWindow *win);
+		BScreen * const screen, FluxboxWindow * const win);
 private:
 	
 	enum { STATE_REMOVE = 0, STATE_ADD = 1, STATE_TOGGLE = 2};
@@ -58,7 +58,7 @@ private:
 	Atom m_net_supported, m_net_client_list, m_net_client_list_stacking,
 		m_net_number_of_desktops, m_net_desktop_geometry, m_net_desktop_viewport,
 		m_net_current_desktop, m_net_desktop_names, m_net_active_window, m_net_workarea,
-		m_net_supporting_wm_check, m_net_virtual_roots;
+		m_net_supporting_wm_check, m_net_virtual_roots, m_net_moveresize_window;
 
 	// root window messages
 	Atom m_net_close_window, m_net_wm_moveresize;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.hh,v 1.2 2002/09/08 10:57:34 fluxgen Exp $
+// $Id: Gnome.hh,v 1.3 2002/10/16 19:01:58 fluxgen Exp $
 
 #ifndef GNOME_HH
 #define GNOME_HH
@@ -77,7 +77,7 @@ public:
 	void updateWorkspace(FluxboxWindow &win);
 
 
-	bool checkClientMessage(const XClientMessageEvent &ce, BScreen *screen, FluxboxWindow *win);
+	bool checkClientMessage(const XClientMessageEvent &ce, BScreen * const screen, FluxboxWindow * const win);
 	
 private:
 	void setLayer(GnomeLayer layer);
