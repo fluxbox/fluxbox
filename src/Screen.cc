@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.21 2002/02/08 13:35:03 fluxgen Exp $
+// $Id: Screen.cc,v 1.22 2002/02/10 22:48:19 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -231,7 +231,7 @@ resource(rm, screenname, altscreenname)
 
 	event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
 		SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
-		ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask;
+		ButtonPressMask | ButtonReleaseMask;//| SubstructureNotifyMask;
 
 	XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
 	XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), event_mask);
@@ -1592,11 +1592,9 @@ void BScreen::shutdown(void) {
 	}
 
 	{
-		Icons::iterator it = iconList.begin();
-		Icons::iterator it_end = iconList.end();
-		for (; it != it_end; ++it) {
-			(*it)->restore();
-			delete (*it);
+		while (!iconList.empty()) {
+			iconList.back()->restore();
+			delete iconList.back(); // the window removes it self from iconlist
 		}
 	}
 
