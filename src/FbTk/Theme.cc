@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.7 2003/06/15 21:02:41 fluxgen Exp $
+// $Id: Theme.cc,v 1.8 2003/07/01 12:39:49 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -43,7 +43,34 @@
 using namespace std;
 namespace FbTk {
 
-// create default handlers for Color, Font, and Texture
+// create default handlers for Color, Font, Texture, int and string
+template <>
+void FbTk::ThemeItem<std::string>::load() { }
+
+template <>
+void FbTk::ThemeItem<std::string>::setDefaultValue() { 
+    *(*this) = ""; 
+}
+
+template <>
+void FbTk::ThemeItem<std::string>::setFromString(const char *str) { 
+    *(*this) = (str ? str : ""); 
+}
+
+template <>
+void FbTk::ThemeItem<int>::load() { }
+
+template <>
+void FbTk::ThemeItem<int>::setDefaultValue() {
+    *(*this) = 0;
+}
+
+template <>
+void FbTk::ThemeItem<int>::setFromString(const char *str) {
+    if (str == 0)
+        return;
+    sscanf(str, "%d", &m_value);
+}
 
 template <>
 void ThemeItem<FbTk::Font>::setDefaultValue() {
