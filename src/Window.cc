@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.269 2004/03/03 12:29:31 rathnor Exp $
+// $Id: Window.cc,v 1.270 2004/03/08 12:20:31 rathnor Exp $
 
 #include "Window.hh"
 
@@ -601,6 +601,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
     // reparent client win to this frame 
     frame().setClientWindow(client);
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
+    WinClient *was_focused = 0;
+    WinClient *focused_win = Fluxbox::instance()->getFocusedWindow();
 
     // get the current window on the end of our client list
     Window leftwin = None;
@@ -621,6 +623,9 @@ void FluxboxWindow::attachClient(WinClient &client) {
             
             // reparent window to this
             frame().setClientWindow(**client_it);
+            if ((*client_it) == focused_win)
+                was_focused = focused_win;
+
             moveResizeClient(**client_it, 
                              frame().clientArea().x(),
                              frame().clientArea().y(),
@@ -678,6 +683,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
         btn->setOnClick(set_client_cmd);
         evm.add(*this, btn->window()); // we take care of button events for this
 
+        if (&client == focused_win)
+            was_focused = focused_win;
         client.m_win = this;    
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
@@ -690,6 +697,12 @@ void FluxboxWindow::attachClient(WinClient &client) {
     m_statesig.notify();
     m_workspacesig.notify();
     m_layersig.notify();
+
+    if (was_focused != 0) {
+        // already has focus, we're just assuming the state of the old window
+        setCurrentClient(*was_focused, false);
+        frame().setFocus(true);
+    }
 
     frame().reconfigure();
 

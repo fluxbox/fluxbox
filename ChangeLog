@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/03/08:
+  * Fix focus passing when grouping (Simon)
+    Window.cc
   * Fix receipt of _NET_WM_DESKTOP client messages (Simon)
     - fixes xmms "show on all desktops" not working
     Ewmh.cc
