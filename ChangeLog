@@ -1,4 +1,14 @@
 changes for 0.1.8:
+*02/04/04:
+   * Fixed the i18n checking with MB_CUR_MAX and some other fixes 
+     from the blackbox code (Thanks bb-developers).
+*02/04/03:
+   * Fixed some signed/unsigned in Windowmenu.cc/hh, Slit.hh/cc, Basemenu.hh,
+     Icon.hh/cc and Workspacemenu.cc/hh
+   * Fixed reassociateWindow in Tab.cc
+   * Fixed font in some styles (Thanks Matt Hope)
+   * Changed icon and title name to std::string in FluxboxWindow
+   * Removed int Basemenu::insert(char **, int = -1, int = 0);
 *02/04/02:
    * Fixed smarter next/prev focus in Screen.cc/.hh and addWindow in Workspace.cc
      Makes new windows get inserted after the focused window in the cycling 
