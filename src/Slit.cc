@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.44 2003/05/01 15:35:24 rathnor Exp $
+// $Id: Slit.cc,v 1.45 2003/05/04 20:50:15 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -32,7 +32,7 @@
 #endif // _GNU_SOURCE
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
@@ -244,7 +244,10 @@ class SlitTheme:public FbTk::Theme {
 public:
     explicit SlitTheme(Slit &slit):FbTk::Theme(slit.screen().getScreenNumber()), 
                           m_slit(slit),
-                          m_texture(*this, "slit", "Slit") { }
+                          m_texture(*this, "slit", "Slit") { 
+        // default texture type
+        m_texture->setType(FbTk::Texture::SOLID);
+    }
     void reconfigTheme() {
         m_slit.reconfigure();
     }
@@ -560,23 +563,21 @@ void Slit::reconfigure() {
     int num_windows = 0;
     const int bevel_width = screen().rootTheme().bevelWidth();
     switch (direction()) {
-    case VERTICAL: 
-        {
-            SlitClients::iterator it = clientList.begin();
-            SlitClients::iterator it_end = clientList.end();
-            for (; it != it_end; ++it) {
-                //client created window?
-                if ((*it)->window != None && (*it)->visible) {
-                    num_windows++;
-                    frame.height += (*it)->height + 
-                        bevel_width;
+    case VERTICAL: {
+        SlitClients::iterator it = clientList.begin();
+        SlitClients::iterator it_end = clientList.end();
+        for (; it != it_end; ++it) {
+            //client created window?
+            if ((*it)->window != None && (*it)->visible) {
+                num_windows++;
+                frame.height += (*it)->height + bevel_width;
 					
-                    //frame width < client window?
-                    if (frame.width < (*it)->width) 
-                        frame.width = (*it)->width;
-                }
+                //frame width < client window?
+                if (frame.width < (*it)->width) 
+                    frame.width = (*it)->width;
             }
         }
+    }
 
         if (frame.width < 1)
             frame.width = 1;
@@ -590,21 +591,21 @@ void Slit::reconfigure() {
 
         break;
 
-    case HORIZONTAL: 
-        {
-            SlitClients::iterator it = clientList.begin();
-            SlitClients::iterator it_end = clientList.end();
-            for (; it != it_end; ++it) {
-                //client created window?
-                if ((*it)->window != None && (*it)->visible) {
-                    num_windows++;
-                    frame.width += (*it)->width + bevel_width;
-                    //frame height < client height?
-                    if (frame.height < (*it)->height)
-                        frame.height = (*it)->height;
-                }
+    case HORIZONTAL: {
+        SlitClients::iterator it = clientList.begin();
+        SlitClients::iterator it_end = clientList.end();
+        for (; it != it_end; ++it) {
+            //client created window?
+            if ((*it)->window != None && (*it)->visible) {
+                num_windows++;
+                frame.width += (*it)->width + bevel_width;
+                //frame height < client height?
+                if (frame.height < (*it)->height)
+                    frame.height = (*it)->height;
             }
         }
+        break;
+    }
 
         if (frame.width < 1)
             frame.width = 1;
