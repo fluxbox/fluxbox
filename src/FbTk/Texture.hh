@@ -1,5 +1,5 @@
 // Texture.hh for Fluxbox Window Manager 
-// Copyright (c) 2002 Henrik Kinnunen (fluxbox@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxbox<at>users.sourceforge.net)
 //
 // from Image.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -22,12 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
+// $Id: Texture.hh,v 1.3 2003/04/28 22:23:41 fluxgen Exp $
 
 #ifndef FBTK_TEXTURE_HH
 #define FBTK_TEXTURE_HH
 
 #include "Color.hh"
+#include "FbPixmap.hh"
 
 namespace FbTk  {
 
@@ -79,16 +80,19 @@ public:
     Color &hiColor() { return m_hicolor; }
     Color &loColor() { return m_locolor; }
 
+    FbPixmap &pixmap() { return m_pixmap; }
+
     const Color &color() const { return m_color; }
     const Color &colorTo() const { return m_color_to; }
     const Color &hiColor() const { return m_hicolor; }
     const Color &loColor() const { return m_locolor; }
-	
+    const FbTk::FbPixmap &pixmap() const { return m_pixmap; }
     inline unsigned long type() const { return m_type; }
 
 
 private:
     FbTk::Color m_color, m_color_to, m_hicolor, m_locolor;
+    FbTk::FbPixmap m_pixmap;
     unsigned long m_type;
 };
 
