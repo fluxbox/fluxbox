@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.13 2003/09/08 15:37:37 fluxgen Exp $
+// $Id: Button.cc,v 1.14 2003/09/10 11:19:39 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -131,7 +131,7 @@ void Button::exposeEvent(XExposeEvent &event) {
         FbWindow::setBackgroundColor(m_background_color);
 
     clear();
-    FbWindow::updateTransparent(event.x, event.y, event.width, event.height);
+    FbWindow::updateTransparent();
 }
 
 }; // end namespace FbTk
