@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.55 2003/10/20 17:05:14 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.56 2003/10/28 21:51:03 rathnor Exp $
 
 #
 # Portability notes:
@@ -762,6 +762,9 @@ else
         fi
     done
 fi
+DEFAULT_TERMNAME=`echo $DEFAULT_TERM|awk '{print $1}'`
+DEFAULT_TERMNAME=`basename $DEFAULT_TERMNAME`
+
 
 # find the default browser
 if find_it_options $MY_BROWSER; then
@@ -776,6 +779,9 @@ else
         fi
     done
 fi
+DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
+DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
+
 
 # a unix system without any terms. that's odd
 if [ -z "$DEFAULT_TERM" ]; then
@@ -809,12 +815,8 @@ EOF
 
 echo "[begin] (${MENUTITLE})" >> ${MENUFILENAME}
 
-DEFAULT_TERMNAME=`echo $DEFAULT_TERM|awk '{print $1}'`
-DEFAULT_TERMNAME=`basename $DEFAULT_TERMNAME`
 append "[exec]    (${DEFAULT_TERMNAME}) {${DEFAULT_TERM}}"
 
-DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
-DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
 case "$DEFAULT_BROWSERNAME" in
     links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} ${HOMEPAGE}}" ;;
     firebird|mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_BROWSER}}" ;;
