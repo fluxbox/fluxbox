@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.9 2003/08/22 15:02:33 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.10 2003/08/25 16:37:50 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -60,7 +60,8 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_shape_place(*this, "window.roundCorners", "Window.RoundCorners"),
 
     m_alpha(*this, "window.alpha", "Window.Alpha"),
-    m_title_height(*this, "window.title.height", "Window.Title.Height") {
+    m_title_height(*this, "window.title.height", "Window.Title.Height"),
+    m_border(*this, "window", "Window") { // for window.border*
 
     *m_title_height = 0;
     // set defaults
@@ -88,6 +89,15 @@ FbWinFrameTheme::~FbWinFrameTheme() {
     XFreeGC(disp, m_label_text_unfocus_gc);
     XFreeGC(disp, m_button_pic_focus_gc);
     XFreeGC(disp, m_button_pic_unfocus_gc);
+}
+
+bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
+    if (item.name() == "window.borderWidth")
+        return FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
+    else if (item.name() == "window.borderColor")
+        return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
+
+    return false;
 }
 
 void FbWinFrameTheme::reconfigTheme() {

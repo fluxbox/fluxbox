@@ -19,17 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.8 2003/08/22 15:02:33 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.9 2003/08/25 16:37:50 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
 
-#include "Font.hh"
-#include "Texture.hh"
-#include "Text.hh"
-#include "Color.hh"
+#include "FbTk/Font.hh"
+#include "FbTk/Texture.hh"
+#include "FbTk/Text.hh"
+#include "FbTk/Color.hh"
 #include "FbTk/Theme.hh"
-#include "Subject.hh"
+#include "FbTk/Subject.hh"
+#include "BorderTheme.hh"
 #include "Shape.hh"
 
 class FbWinFrameTheme: public FbTk::Theme {
@@ -78,6 +79,7 @@ public:
     GC buttonPicFocusGC() const { return m_button_pic_focus_gc; }
     GC buttonPicUnfocusGC() const { return m_button_pic_unfocus_gc; }
 
+    bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
 
     void addListener(FbTk::Observer &obs) { m_theme_change.attach(&obs); }
@@ -88,7 +90,7 @@ public:
     inline Cursor lowerRightAngleCursor() const { return m_cursor_lower_right_angle; }
 
     inline Shape::ShapePlace shapePlace() const { return *m_shape_place; }
-
+    inline const BorderTheme &border() const { return m_border; }
     unsigned char alpha() const { return *m_alpha; }
 
     unsigned int titleHeight() const { return *m_title_height; }
@@ -108,7 +110,8 @@ private:
     FbTk::ThemeItem<Shape::ShapePlace> m_shape_place;
 
     FbTk::ThemeItem<int> m_alpha, m_title_height;
-    
+    BorderTheme m_border;
+
     GC m_label_text_focus_gc, m_label_text_unfocus_gc;
     GC m_button_pic_focus_gc, m_button_pic_unfocus_gc;
 
