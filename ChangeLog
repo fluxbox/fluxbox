@@ -2,12 +2,28 @@
 Changes for 0.1.11:
 *02/08/11:
    * New menu items (Thanks Cosmic Flo)
+   * Added Autogrouping
+     * Add this line: session.groupFile: ~/.fluxbox/group
+       to the file ~/.fluxbox/init and edit ~/.fluxbox/group 
+       Groupfile format:
+       There is one group for each line in the file
+       and you just type the instance name of the program 
+       to be grouped. Ex:
+       Navigator nedit
+       xterm
+       This will make two groups, one with netscape and nedit
+       and one with xterm.
+       The new window will only group itself to other windows
+       on the same workspace and to the last window that was
+	   focused.
 *02/08/10:
    * French translation in fluxbox-generate_menu (Thanks Cosmic Flo)
 *02/08/04:
    * Fixed doxygen comments and minor clean up.
 *02/08/02:
    * autogrouping-from-tab patch (Thanks Steve Cooper)
+     This will allow you to popup the root menu, if you right click,
+     and select an application and it'll start grouped to the tab.
 *02/07/23:
    * Fixed "send to..." bug (Thanks Bradley C Bailey)
    * Moved BTexture from Image.hh to FbTk::Texture in Texture.hh
