@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.36 2003/02/20 16:41:22 fluxgen Exp $
+// $Id: Slit.cc,v 1.37 2003/02/23 00:54:13 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -177,6 +177,7 @@ public:
     void click(int button, int time) { 
         m_client.visible = !m_client.visible;
         FbTk::MenuItem::click(button, time);
+        Fluxbox::instance()->save_rc();
     }
 private:
     SlitClient &m_client;
@@ -257,7 +258,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     // default placement and direction
     m_direction = HORIZONTAL;
-    m_placement = TOPLEFT;
+    m_placement = BOTTOMRIGHT;
     hidden = do_auto_hide = false;
 
     frame.pixmap = None;
