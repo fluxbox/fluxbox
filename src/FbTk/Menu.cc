@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.75 2004/08/29 08:33:13 rathnor Exp $
+// $Id: Menu.cc,v 1.76 2004/08/29 14:37:52 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -947,7 +947,7 @@ int Menu::drawItem(unsigned int index, bool clear, bool render_trans,
 
     if (render_trans) {
         renderTransp(item_x, item_y,
-                     width(), theme().itemHeight()); 
+                     menu.item_w, theme().itemHeight()); 
     }
     //!!
     //!! TODO: Move this out to MenuItem

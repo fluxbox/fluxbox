@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/29:
+  * Fix rendering bug when revisiting >1 column menus (Simon)
+    FbTk/Menu.cc
   * Fix crash when extramenus not attached to windowmenu (Simon)
     - and add checking that windowmenu file exists and sorta parses
     Window.cc FbTk/Menu.hh MenuCreator.hh/cc
