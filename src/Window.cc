@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.17 2002/01/10 12:54:27 fluxgen Exp $
+// $Id: Window.cc,v 1.18 2002/01/11 10:04:32 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -107,22 +107,22 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	for (char c=0; c<2; c++) {
 		for (unsigned int i=0; i<dir.size(); i++) {
 			switch (dir[i]) {
-				case Fluxbox::Shade:
+				case Fluxbox::SHADE:
 					decorations.shade = true;
 					break;
-				case Fluxbox::Maximize:
+				case Fluxbox::MAXIMIZE:
 					decorations.maximize = true;	
 					break;
-				case Fluxbox::Minimize:
+				case Fluxbox::MINIMIZE:
 					decorations.iconify = true;			
 				break;
-				case Fluxbox::Stick:
+				case Fluxbox::STICK:
 					decorations.sticky = true;
 					break;
-				case Fluxbox::Close:
+				case Fluxbox::CLOSE:
 					decorations.close = true;
 					break;
-				case Fluxbox::Menu:
+				case Fluxbox::MENU:
 					decorations.menu = true;
 					break;
 				default:
@@ -362,15 +362,13 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 
 	associateClientWindow();
 
-	if (! (screen->isSloppyFocus() || screen->isSemiSloppyFocus())) {
-		XGrabButton(display, Button1, AnyModifier, 
-				frame.plate, True, ButtonPressMask,
-				GrabModeSync, GrabModeSync, None, None);		
-		XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
+
+	XGrabButton(display, Button1, AnyModifier, 
+			frame.plate, True, ButtonPressMask,
+			GrabModeSync, GrabModeSync, None, None);		
+	XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
 		
-	} else 
-		XUngrabButton(display, Button1, AnyModifier, frame.plate);
-	
+
 	XGrabButton(display, Button1, Mod1Mask, frame.window, True,
 				ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
 				GrabModeAsync, None, fluxbox->getMoveCursor());
@@ -437,6 +435,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
   XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32,
                   PropModeReplace, (unsigned char *)&val, 1);
 	#endif
+
 }
 
 
@@ -667,22 +666,22 @@ void FluxboxWindow::associateClientWindow(void) {
 #endif // SHAPE
 	//create the buttons
 	if (decorations.iconify) 
-		createButton(Fluxbox::Minimize, FluxboxWindow::iconifyPressed_cb, FluxboxWindow::iconifyButton_cb, FluxboxWindow::iconifyDraw_cb);			
+		createButton(Fluxbox::MINIMIZE, FluxboxWindow::iconifyPressed_cb, FluxboxWindow::iconifyButton_cb, FluxboxWindow::iconifyDraw_cb);			
 	if (decorations.maximize)
-		createButton(Fluxbox::Maximize, FluxboxWindow::maximizePressed_cb, FluxboxWindow::maximizeButton_cb, 
+		createButton(Fluxbox::MAXIMIZE, FluxboxWindow::maximizePressed_cb, FluxboxWindow::maximizeButton_cb, 
 				FluxboxWindow::maximizeDraw_cb);
 	if (decorations.close) 
-		createButton(Fluxbox::Close, FluxboxWindow::closePressed_cb, 
+		createButton(Fluxbox::CLOSE, FluxboxWindow::closePressed_cb, 
 				FluxboxWindow::closeButton_cb, FluxboxWindow::closeDraw_cb);		
 	if (decorations.sticky)
-		createButton(Fluxbox::Stick, FluxboxWindow::stickyPressed_cb, 
+		createButton(Fluxbox::STICK, FluxboxWindow::stickyPressed_cb, 
 				FluxboxWindow::stickyButton_cb, FluxboxWindow::stickyDraw_cb);
 
 	if (decorations.menu)//TODO
-		createButton(Fluxbox::Menu, 0, 0, 0);
+		createButton(Fluxbox::MENU, 0, 0, 0);
 
 	if (decorations.shade)
-		createButton(Fluxbox::Shade, 0, FluxboxWindow::shadeButton_cb, FluxboxWindow::shadeDraw_cb);
+		createButton(Fluxbox::SHADE, 0, FluxboxWindow::shadeButton_cb, FluxboxWindow::shadeDraw_cb);
 
 	if (frame.ubutton) {
 		for (unsigned int i=0; i<buttonlist.size(); i++)
@@ -1298,7 +1297,7 @@ void FluxboxWindow::getWMHints(void) {
 	if (! wmhint) {
 		visible = true;
 		iconic = false;
-		focus_mode = F_Passive;
+		focus_mode = F_PASSIVE;
 		client.window_group = None;
 		client.initial_state = NormalState;
 	} else {
@@ -1306,17 +1305,17 @@ void FluxboxWindow::getWMHints(void) {
 		if (wmhint->flags & InputHint) {
 			if (wmhint->input == true) {
 				if (send_focus_message)
-					focus_mode = F_LocallyActive;
+					focus_mode = F_LOCALLYACTIVE;
 				else
-					focus_mode = F_Passive;
+					focus_mode = F_PASSIVE;
 			} else {
 				if (send_focus_message)
-					focus_mode = F_GloballyActive;
+					focus_mode = F_GLOBALLYACTIVE;
 				else
-					focus_mode = F_NoInput;
+					focus_mode = F_NOINPUT;
 			}
 		} else
-			focus_mode = F_Passive;
+			focus_mode = F_PASSIVE;
 
 		if (wmhint->flags & StateHint)
 			client.initial_state = wmhint->initial_state;
@@ -1415,14 +1414,14 @@ void FluxboxWindow::getMWMHints(void) {
 				else {
 					decorations.titlebar = decorations.handle = decorations.border =
 						decorations.iconify = decorations.maximize =
-						decorations.close = decorations.menu = false;
+						decorations.close = decorations.menu = decorations.tab = false;
 
 					if (client.mwm_hint->decorations & MwmDecorBorder)
 						decorations.border = true;
 					if (client.mwm_hint->decorations & MwmDecorHandle)
 						decorations.handle = true;
 					if (client.mwm_hint->decorations & MwmDecorTitle)
-						decorations.titlebar = true;
+						decorations.titlebar = decorations.tab = true; //only tab on windows with titlebar
 					if (client.mwm_hint->decorations & MwmDecorMenu)
 						decorations.menu = true;
 					if (client.mwm_hint->decorations & MwmDecorIconify)
@@ -1492,7 +1491,7 @@ void FluxboxWindow::getBlackboxHints(void) {
 				case BaseDisplay::DECOR_NONE:
 					decorations.titlebar = decorations.border = decorations.handle =
 						decorations.iconify = decorations.maximize =
-						decorations.menu = false;
+						decorations.menu = decorations.tab = false; //tab is also a decor
 					functions.resize = functions.move = functions.iconify =
 						functions.maximize = false;
 
@@ -1651,7 +1650,7 @@ bool FluxboxWindow::setInputFocus(void) {
 		ret = client.transient->setInputFocus();
 	else {
 		if (! focused) {
-			if (focus_mode == F_LocallyActive || focus_mode == F_Passive)
+			if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE)
 				XSetInputFocus(display, client.window,
 											RevertToPointerRoot, CurrentTime);
 			else
@@ -1793,8 +1792,8 @@ void FluxboxWindow::close(void) {
 void FluxboxWindow::withdraw(void) {
 	visible = false;
 	iconic = false;
-// 
-//	setState(WithdrawnState);
+//
+// setState(WithdrawnState);
 //
 	XUnmapWindow(display, frame.window);
 
@@ -1822,12 +1821,12 @@ void FluxboxWindow::maximize(unsigned int button) {
 		{
 			switch(screen->getSlitDirection())
 			{
-			case Slit::Vertical:
+			case Slit::VERTICAL:
 				switch(screen->getSlitPlacement())
 				{
-				case Slit::TopRight:
-				case Slit::CenterRight:
-				case Slit::BottomRight:
+				case Slit::TOPRIGHT:
+				case Slit::CENTERRIGHT:
+				case Slit::BOTTOMRIGHT:
 					slitModR = mSlt->getWidth() + screen->getBevelWidth();
 					break;
 				default:
@@ -1835,12 +1834,12 @@ void FluxboxWindow::maximize(unsigned int button) {
 					break;
 				}
 			break;
-			case Slit::Horizontal:
+			case Slit::HORIZONTAL:
 				switch(screen->getSlitPlacement())
 				{
-				case Slit::TopLeft:
-				case Slit::TopCenter:
-				case Slit::TopRight:
+				case Slit::TOPLEFT:
+				case Slit::TOPCENTER:
+				case Slit::TOPRIGHT:
 					slitModT = mSlt->getHeight() + screen->getBevelWidth();
 					switch (screen->getToolbarPlacement()) {
 					case Toolbar::TOPLEFT:
@@ -2684,16 +2683,16 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 	default:
 		if (atom == fluxbox->getWMProtocolsAtom()) {
 			getWMProtocols();
-		
-			if (decorations.close && !findTitleButton(Fluxbox::Close)) {	
-				createButton(Fluxbox::Close, FluxboxWindow::closePressed_cb, 
+
+			if (decorations.close && !findTitleButton(Fluxbox::CLOSE)) {	
+				createButton(Fluxbox::CLOSE, FluxboxWindow::closePressed_cb, 
 					FluxboxWindow::closeButton_cb, FluxboxWindow::closeDraw_cb);
 
 				if (decorations.titlebar)
 					positionButtons(true);
 				if (windowmenu)
 					windowmenu->reconfigure();
-      }
+			}
 		}
 
 		break;
@@ -2781,8 +2780,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 	
 	if (! validateClient())	
 		return;
-
-		
+	
 	if (be->button == 1 || (be->button == 3 && be->state == Mod1Mask)) {
 		if ((! focused) && (! screen->isSloppyFocus()))	 //check focus
 			setInputFocus(); 
@@ -3245,7 +3243,7 @@ void FluxboxWindow::changeBlackboxHints(BaseDisplay::BlackboxHints *net) {
 		case BaseDisplay::DECOR_NONE:
 			decorations.titlebar = decorations.border = decorations.handle =
 				decorations.iconify = decorations.maximize =
-				decorations.menu = false;
+				decorations.menu = decorations.tab = false; //tab is also a decor
 			functions.resize = functions.move = functions.iconify =
 				functions.maximize = false;
 
