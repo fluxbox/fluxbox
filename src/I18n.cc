@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.4 2003/12/08 17:29:24 fluxgen Exp $
+// $Id: I18n.cc,v 1.5 2004/01/06 13:42:47 grubert Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -79,6 +79,10 @@ I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
         index = m_locale.find('.');
         if (index != string::npos) 
             m_locale.erase(index); //erase all characters starting at index 
+        // remove everything before =		
+        index = m_locale.find('=');
+        if (index != string::npos) 
+            m_locale.erase(0,index+1); //erase all characters starting up to index 
     }
 #endif // HAVE_SETLOCALE
 }
