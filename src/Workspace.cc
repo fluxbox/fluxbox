@@ -1,5 +1,5 @@
 // Workspace.cc for Fluxbox
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen[at]users.sourceforge.net)
+// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen[at]users.sourceforge.net)
 //
 // Workspace.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.91 2004/02/20 09:29:07 fluxgen Exp $
+// $Id: Workspace.cc,v 1.92 2004/02/28 16:55:59 fluxgen Exp $
 
 #include "Workspace.hh"
 
