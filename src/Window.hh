@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.32 2002/10/02 16:11:30 fluxgen Exp $
+// $Id: Window.hh,v 1.33 2002/10/11 10:18:43 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -169,9 +169,10 @@ public:
 	void close();
 	void withdraw();
 	void maximize(unsigned int);
+	/// toggles shade
 	void shade();
-	void stick();
-	void unstick();
+	/// toggles sticky
+	void stick(); 
 	void reconfigure();
 	void installColormap(bool);
 	void restore(bool remap);
