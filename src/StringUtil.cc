@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.6 2002/01/21 01:56:39 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.7 2002/01/27 12:46:28 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -67,7 +67,7 @@ char *StringUtil::expandFilename(const char *filename) {
   
 	auto_ptr<char> retval( new char[strlen(filename)+strlen(getenv("HOME"))+2]);
   if (filename[0]=='~') {
-    strcat(retval.get(), getenv("HOME"));
+    strcpy(retval.get(), getenv("HOME"));
     strcat(retval.get(), &filename[1]);
   } else
     return StringUtil::strdup(filename);	//return unmodified value
