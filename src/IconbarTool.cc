@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.19 2003/12/07 16:39:43 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.20 2003/12/07 17:51:02 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -348,6 +348,10 @@ void IconbarTool::update(FbTk::Subject *subj) {
                 }
             }
             return;
+
+        } else if (subj == &(winsubj->win().titleSig())) {
+            renderWindow(winsubj->win());
+            return;
         } else {
             // signal not handled
             return;
@@ -517,11 +521,13 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
     if (it == m_icon_list.end())
         return;
     
+    // detach from all signals
     win.focusSig().detach(this);
     win.dieSig().detach(this);
     win.workspaceSig().detach(this);
     win.stateSig().detach(this);
- 
+    win.titleSig().detach(this);
+
 
     // remove from list and render theme again
     IconButton *button = *it;
@@ -548,6 +554,7 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     win.dieSig().attach(this);
     win.workspaceSig().attach(this);
     win.stateSig().attach(this);
+    win.titleSig().attach(this);
 }
 
 void IconbarTool::updateIcons() {
