@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.38 2004/08/03 21:25:51 fluxgen Exp $
+// $Id: Menu.hh,v 1.39 2004/08/29 12:35:29 rathnor Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -162,6 +162,9 @@ public:
     /// @return true if index is valid
     inline bool validIndex(int index) const { return (index < static_cast<int>(numberOfItems()) && index >= 0); }
 
+    inline Menu *parent() { return m_parent; }
+    inline const Menu *parent() const { return m_parent; }
+
 protected:
 
     inline void setTitleVisibility(bool b) { 
@@ -179,8 +182,6 @@ protected:
                          unsigned int width= 0, unsigned int height= 0);
     virtual void redrawTitle();
     virtual void internal_hide();
-    inline Menu *parent() { return m_parent; }
-    inline const Menu *parent() const { return m_parent; }
 
     void update(FbTk::Subject *);
     void renderTransp(int x, int y,

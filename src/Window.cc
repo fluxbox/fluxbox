@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.296 2004/08/13 12:39:02 fluxgen Exp $
+// $Id: Window.cc,v 1.297 2004/08/29 12:35:29 rathnor Exp $
 
 #include "Window.hh"
 
@@ -350,7 +350,14 @@ FluxboxWindow::~FluxboxWindow() {
         // still in the menu
         // (They need to be internal for most of the time so that if we 
         // rebuild the menu, then they won't be removed.
-        mit->second->setInternalMenu(false);
+        if (mit->second->parent() == 0) {
+            // not attached to our windowmenu
+            // so we clean it up
+            delete mit->second;
+        } else {
+            // let the parent clean it up
+            mit->second->setInternalMenu(false);
+        }
     }
 
 #ifdef DEBUG
@@ -3562,9 +3569,10 @@ void FluxboxWindow::setupMenu() {
     menu().removeAll(); // clear old items
     menu().disableTitle(); // not titlebar
     
-    if (!screen().windowMenuFilename().empty()) {
-        MenuCreator::createFromFile(screen().windowMenuFilename(), menu(), *this);
-    } else {
+    if (screen().windowMenuFilename().empty() ||
+        ! MenuCreator::createFromFile(screen().windowMenuFilename(), menu(), *this))
+        
+    {
         MenuCreator::createWindowMenuItem("shade", "", menu(), *this);
         MenuCreator::createWindowMenuItem("stick", "", menu(), *this);
         MenuCreator::createWindowMenuItem("maximize", "", menu(), *this);

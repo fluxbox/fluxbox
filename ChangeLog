@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/29:
+  * Fix crash when extramenus not attached to windowmenu (Simon)
+    - and add checking that windowmenu file exists and sorta parses
+    Window.cc FbTk/Menu.hh MenuCreator.hh/cc
+  * Tweak toolbar size/position (esp when 100% width)  (Simon)
+    - and fix menu size bug when initialising with no style
+    Toolbar.cc FbTk/MenuTheme.cc
   * Add back Workspace<n> actions with deprecated message (Simon)
     - need transition time, remove when 1.0 has been widely used for a while
     FbCommandFactory.cc

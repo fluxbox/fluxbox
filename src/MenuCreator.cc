@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.11 2004/08/26 18:26:39 akir Exp $
+// $Id: MenuCreator.cc,v 1.12 2004/08/29 12:35:29 rathnor Exp $
 
 #include "MenuCreator.hh"
 
@@ -322,36 +322,38 @@ FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_
 }
 
 
-void MenuCreator::createFromFile(const std::string &filename, 
+bool MenuCreator::createFromFile(const std::string &filename, 
                                  FbTk::Menu &inject_into) {
 
     std::string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
-        return;
+        return false;
 
     std::string label;
     if (!getStart(parser, label))
-        return;
+        return false;
 
     parseMenu(parser, inject_into);
+    return true;
 }
 
 
-void MenuCreator::createFromFile(const std::string &filename, 
+bool MenuCreator::createFromFile(const std::string &filename, 
                                  FbTk::Menu &inject_into, 
                                  FluxboxWindow &win) {
     std::string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
-        return;
+        return false;
 
     std::string label;
 
     if (!getStart(parser, label))
-        return;
+        return false;
 
     parseWindowMenu(parser, inject_into, win);
+    return true;
 }
 
 
