@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+  * Fix for #1099278, #1099950 (Warnings on amd64) (thanx Barry Schwartz)
+    Resources.cc FbTk/FbWindow.cc FbTk/TextureRender.cc
   * Updated ko_KR - (thanx Jo Hyunseok)
     nls/ko_KR/Translation.m
 *05/01/10:
