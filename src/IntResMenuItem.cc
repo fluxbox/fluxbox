@@ -19,9 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IntResMenuItem.cc,v 1.2 2003/05/18 21:59:14 fluxgen Exp $
+// $Id: IntResMenuItem.cc,v 1.3 2004/06/10 17:24:24 fluxgen Exp $
 
 #include "IntResMenuItem.hh"
+#include "PixmapWithMask.hh"
 #include <cstdio>
 
 namespace {
