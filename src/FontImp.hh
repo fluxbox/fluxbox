@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FontImp.hh,v 1.1 2002/10/13 22:22:14 fluxgen Exp $
+// $Id: FontImp.hh,v 1.2 2002/10/15 16:43:15 fluxgen Exp $
 
 #ifndef FBTK_FONTIMP_HH
 #define FBTK_FONTIMP_HH
@@ -43,6 +43,7 @@ public:
 	virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const = 0;
 	virtual unsigned int textWidth(const char * const text, unsigned int size) const = 0;
 	virtual unsigned int height() const = 0;
+	virtual bool loaded() const = 0;
 protected:
 	FontImp() { }
 };
