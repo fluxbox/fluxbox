@@ -508,12 +508,36 @@ AC_ARG_ENABLE(
 )
 
 AC_ARG_WITH(
+  menu,
+  [  --with-menu=path        location menu file (PREFIX/share/fluxbox/menu)],
+  DEFAULT_MENU=$with_menu,
+  DEFAULT_MENU=$prefix/share/fluxbox/menu
+)
+AC_SUBST(DEFAULT_MENU)
+
+AC_ARG_WITH(
   style,
-  [  --with-style=path       style by default (PREFIX/share/fluxbox/styles/Meta)],
+  [  --with-style=path       style by default   (PREFIX/share/fluxbox/styles/Meta)],
   DEFAULT_STYLE=$with_style,
   DEFAULT_STYLE=$prefix/share/fluxbox/styles/Meta
 )
 AC_SUBST(DEFAULT_STYLE)
+
+AC_ARG_WITH(
+  keys,
+  [  --with-keys=path        location keys file (PREFIX/share/fluxbox/keys)],
+  DEFAULT_KEYS=$with_keys,
+  DEFAULT_KEYS=$prefix/share/fluxbox/keys
+)
+AC_SUBST(DEFAULT_KEYS)
+
+AC_ARG_WITH(
+  init,
+  [  --with-init=path        location init file (PREFIX/share/fluxbox/init)],
+  DEFAULT_INIT=$with_init,
+  DEFAULT_INIT=$prefix/share/fluxbox/init
+)
+AC_SUBST(DEFAULT_INIT)
 
 dnl Determine the return type of signal handlers
 AC_TYPE_SIGNAL
@@ -526,7 +550,10 @@ AC_MSG_RESULT([])
 AC_MSG_RESULT([	$PACKAGE version $VERSION configured successfully.])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Using '$prefix' for installation.])
+AC_MSG_RESULT([Using '$DEFAULT_MENU' for location menu file.])
 AC_MSG_RESULT([Using '$DEFAULT_STYLE' by default style.])
+AC_MSG_RESULT([Using '$DEFAULT_KEYS' for location keys file.])
+AC_MSG_RESULT([Using '$DEFAULT_INIT' for location init file.])
 AC_MSG_RESULT([Using '$CXX' for C++ compiler.])
 AC_MSG_RESULT([Building with '$CXXFLAGS' for C++ compiler flags.])
 AC_MSG_RESULT([Building with '$LIBS' for linker flags.])
