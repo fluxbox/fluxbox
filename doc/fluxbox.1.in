@@ -22,6 +22,8 @@
 .\"
 .\" Updated for version 0.1.6 by Rando Christensen <eyez@babblica.net>
 .\"
+.\" Updated for version 0.1.7.1 by Stanislav Karchebny <berk@madfire.net>
+.\"
 .\" ..define sort of <blockquote><pre> macro
 .de EX
 .ne 5
@@ -724,6 +726,7 @@ Mod4 c :Minimize
 Mod4 r :ExecCommand rxvt 
 Mod4 v :NextWorkspace 
 Mod4 x :Close 
+Mod4 m :RootMenu 
 Control n Mod1 n :NextTab
 .EE
 As you can see from the last line, keybinds can be chained in a fashion similar
@@ -734,6 +737,8 @@ Minimize
 Raise
 Lower
 Close
+RootMenu
+Workspace N (where N is positive integer)
 Workspace1
 Workspace2
 Workspace3
