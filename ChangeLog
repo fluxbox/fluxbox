@@ -1,4 +1,17 @@
 (Format: Year/Month/Day)
+Changes for 0.1.9:
+*02/04/28:
+   * Fixed shade bug while vertical rotated tabs and tabs off (Thanks signal9)
+   * Fluxbox doesn't save on exit anymore so restart of fluxbox will reread 
+     configuration
+   * Minor clean up in Configmenu.hh/cc
+   * Fixed bug [ 515483 ] "XMMS Problem", in Window.cc, 
+     decorations.handle and decorations.border now = true on transient windows
+*02/04/26:
+   * Fixed m_multibyte in Font.cc (Thanks kita)
+*02/04/20:
+   * Fixed menu.font string in Theme.cc
+--------------------------------------------------------------
 Changes for 0.1.8:
 *02/04/19:
    * Added ToggleTab to key actions (Thanks Matt Hope)
