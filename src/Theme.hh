@@ -42,7 +42,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.8 2002/05/07 15:22:07 fluxgen Exp $
+// $Id: Theme.hh,v 1.9 2002/05/15 09:35:49 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -66,10 +66,12 @@ public:
 	
 	
 	typedef struct MenuStyle {
+		MenuStyle(Display *display):titlefont(display, "fixed"),
+			framefont(display, "fixed") { }
 		BColor t_text, f_text, h_text, d_text;
 		BTexture title, frame, hilite;
 		GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
-		FbTk::Font *titlefont, *framefont;
+		FbTk::Font titlefont, framefont;
 		DrawUtil::Font::FontJustify framefont_justify;
 		DrawUtil::Font::FontJustify titlefont_justify;
 		int bullet, bullet_pos;

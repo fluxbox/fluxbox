@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.20 2002/04/20 10:33:10 fluxgen Exp $
+// $Id: Theme.cc,v 1.21 2002/05/15 09:35:49 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -71,6 +71,7 @@ using namespace std;
 
 Theme::Theme(Display *display, Window rootwindow, Colormap colormap, 
 	int screennum, BImageControl *ic, const char *filename, const char *rootcommand):
+m_menustyle(display),
 m_imagecontrol(ic),
 m_display(display),
 m_colormap(colormap),
@@ -81,8 +82,7 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 	cerr<<__FILE__<<"("<<__LINE__<<"): Creating."<<endl;
 	#endif //DEBUG
 	//default settings	
-	m_menustyle.titlefont = new FbTk::Font(m_display, "fixed"); //create with default font
-	m_menustyle.framefont = new FbTk::Font(m_display, "fixed");
+
 	m_windowstyle.font.set = m_toolbarstyle.font.set = m_windowstyle.tab.font.set =  0;
 	
 	m_toolbarstyle.font.fontstruct = m_windowstyle.font.fontstruct = m_windowstyle.tab.font.fontstruct = 0;
@@ -147,15 +147,15 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 				GCForeground, &gcv);
 
 	gcv.foreground = m_menustyle.t_text.getPixel();
-	if (m_menustyle.titlefont->getFontStruct())
-		gcv.font = m_menustyle.titlefont->getFontStruct()->fid;
+	if (m_menustyle.titlefont.getFontStruct())
+		gcv.font = m_menustyle.titlefont.getFontStruct()->fid;
 	m_menustyle.t_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
 	gcv.foreground = m_menustyle.f_text.getPixel();
-	if (m_menustyle.framefont->getFontStruct())
-		gcv.font = m_menustyle.framefont->getFontStruct()->fid;
+	if (m_menustyle.framefont.getFontStruct())
+		gcv.font = m_menustyle.framefont.getFontStruct()->fid;
 
 	m_menustyle.f_text_gc =
 		XCreateGC(m_display, rootwindow,
@@ -213,10 +213,6 @@ Theme::~Theme() {
 // should only be called from ~Theme
 //--------------------
 void Theme::freeMenuStyle() {
-	delete m_menustyle.framefont;
-	m_menustyle.framefont = 0;
-	delete m_menustyle.titlefont;
-	m_menustyle.titlefont = 0;
 		
 	XFreeGC(m_display, m_menustyle.t_text_gc);
 	XFreeGC(m_display, m_menustyle.f_text_gc);
@@ -300,8 +296,6 @@ void Theme::load(const char *filename){
 }
 
 void Theme::loadMenuStyle() {
-	if (m_menustyle.titlefont==0)
-		m_menustyle.titlefont = new FbTk::Font(m_display);
 
 	readDatabaseTexture("menu.title", "Menu.Title",
 		&m_menustyle.title,
@@ -381,30 +375,8 @@ void Theme::loadMenuStyle() {
 		m_menustyle.bullet_pos = Basemenu::LEFT;
 
 	//---------- font
-	m_menustyle.framefont->loadFromDatabase(m_database, "menu.frame.font", "Menu.Frame.Font");
-	m_menustyle.titlefont->loadFromDatabase(m_database, "menu.title.font", "Menu.Title.Font");
-	/*
-	if (I18n::instance()->multibyte()) {
-		
-		readDatabaseFontSet("menu.title.font", "Menu.Title.Font",
-			&m_menustyle.titlefont.set);					
-		readDatabaseFontSet("menu.frame.font", "Menu.Frame.Font",
-			&m_menustyle.framefont.set);
-	
-		m_menustyle.titlefont.set_extents =
-				XExtentsOfFontSet(m_menustyle.titlefont.set);
-		m_menustyle.framefont.set_extents =
-			XExtentsOfFontSet(m_menustyle.framefont.set);	
-	
-	
-	} else {
-		
-		readDatabaseFont("menu.title.font", "Menu.Title.Font",
-				&m_menustyle.titlefont.fontstruct);			
-		
-		readDatabaseFont("menu.frame.font", "Menu.Frame.Font",
-				&m_menustyle.framefont.fontstruct);
-	}*/
+	m_menustyle.framefont.loadFromDatabase(m_database, "menu.frame.font", "Menu.Frame.Font");
+	m_menustyle.titlefont.loadFromDatabase(m_database, "menu.title.font", "Menu.Title.Font");
 	
 }
 
@@ -990,14 +962,14 @@ void Theme::reconfigure() {
 		GCForeground, &gcv);
 
 	gcv.foreground = m_menustyle.t_text.getPixel();
-	if (m_menustyle.titlefont->getFontStruct())
-		gcv.font = m_menustyle.titlefont->getFontStruct()->fid;
+	if (m_menustyle.titlefont.getFontStruct())
+		gcv.font = m_menustyle.titlefont.getFontStruct()->fid;
 	XChangeGC(m_display, m_menustyle.t_text_gc,
 		gc_value_mask, &gcv);
 
 	gcv.foreground = m_menustyle.f_text.getPixel();	
-	if (m_menustyle.framefont->getFontStruct())
-		gcv.font = m_menustyle.framefont->getFontStruct()->fid;
+	if (m_menustyle.framefont.getFontStruct())
+		gcv.font = m_menustyle.framefont.getFontStruct()->fid;
 		
 	XChangeGC(m_display, m_menustyle.f_text_gc,
 		gc_value_mask, &gcv);
