@@ -218,14 +218,6 @@ void bexec(const char *command, char* displaystring) {
 #endif // !__EMX__
 
 
-char *bstrdup(const char *s) {
-  int l = strlen(s) + 1;
-  char *n = new char[l];
-  strncpy(n, s, l);
-  return n;
-}
-
-
 BaseDisplay::BaseDisplay(char *app_name, char *dpy_name) {
 	application_name = app_name;
 
