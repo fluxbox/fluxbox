@@ -19,4 +19,4 @@ menu: 			../util/fluxbox-generate_menu
 		../util/fluxbox-generate_menu
 
 ../util/fluxbox-generate_menu:
-	cd ../util && make fluxbox-generate_menu
+	cd ../util && ${MAKE} fluxbox-generate_menu

@@ -32,8 +32,8 @@ fluxbox-generate_menu: fluxbox-generate_menu.in
 		-chmod 755 fluxbox-generate_menu
 
 ../src/FbRootWindow.o:
-	cd ../src && make FbRootWindow.o
+	cd ../src && ${MAKE} FbRootWindow.o
 ../src/I18n.o:
-	cd ../src && make I18n.o
+	cd ../src && ${MAKE} I18n.o
 ../src/FbAtoms.o:
-	cd ../src && make FbAtoms.o
+	cd ../src && ${MAKE} FbAtoms.o

@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.25 2003/12/12 13:07:47 fluxgen Exp $
+# $Id: fbsetbg,v 1.26 2003/12/28 23:59:57 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -59,7 +59,9 @@ command="`basename \"$0\"`"
 # Functions
 display_usage() {
     cat << EOF
-Usage: $command [-u/-U [wallpapersetter]] [-fFcCtTaA /path/to/wallpaper] [-bB bsetrootoptions] [-l] [-h] [-i] [-p]
+Usage: $command [-u/-U [wallpapersetter]] [-fFcCtTaA /path/to/wallpaper]
+                [-r/-R /path/to/wallpaperdirectory]
+                [-b/-B bsetrootoptions] [-l] [-h] [-i] [-p]
 Use \`\`$command -h'' for a complete help message.
 
 EOF
@@ -79,8 +81,9 @@ Options:
           we fall back to -f )
     -u  Use specified wallpapersetter, use no argument to forget.
     -b  Forward the options to bsetroot.
+    -r  set random wallpaper from a directory
 
-    -F,-C,-T,-A,-U,-B same as uncapsed but without remembering.
+    -F,-C,-T,-A,-U,-B,-R same as uncapsed but without remembering.
 
     -h  Display this help.
 
@@ -259,7 +262,14 @@ while [ $# -gt 0 ]; do
             shift
             wallpaper=$*
             remember=false
-            break;;
+            break ;;
+        -r) option=random
+            wallpaper=$2 # in this case it's a dir
+            break ;;
+        -R) option=random
+            wallpaper=$2 # in this case it's a dir
+            remember=false
+            break ;;
         -l)
             if [ -r "$lastwallpaper" ]; then
                 option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
@@ -270,8 +280,7 @@ while [ $# -gt 0 ]; do
                 fi
             fi
             remember=false
-            break
-            ;;
+            break ;;
         -p) display_tips ; exit 0 ;;
         -h) display_help ; exit 0 ;;
         --)
@@ -282,10 +291,11 @@ while [ $# -gt 0 ]; do
         -*)
             message "unrecognized option "\`"$1'"
             display_usage
-            exit 1
-            ;;
+            exit 1 ;;
         *)
-            if [ ! -r "$1" ]; then
+            if [ "$option" = random ]; then
+                option='$aspect'
+            elif [ ! -r "$1" ]; then
                 message "$1 isn't an existing wallpaper or a valid option."
                 display_usage
                 exit 1
@@ -296,8 +306,7 @@ while [ $# -gt 0 ]; do
             else
                 wallpaper=$1
                 break
-            fi
-            ;;
+            fi ;;
     esac
 done
 
@@ -410,7 +419,7 @@ recommend you install the package provided by your distro."
         ;;
 esac
 
-if [ "$debug" = true ];then
+if [ "$debug" = true ]; then
     debugfbsetbg
     exit 0
 fi
@@ -419,10 +428,11 @@ option=${option:='$full'}
 
 
 
-if [ -z "$DISPLAY" ];then
+if [ -z "$DISPLAY" ]; then
     message "You are not connected to an X session\nPerhaps you should set the DISPLAY environment variable?"
     exit 1
 fi
+
 
 if [ "$option" = bsetroot ]; then
     bsetroot $wallpaper
@@ -432,10 +442,44 @@ if [ "$option" = bsetroot ]; then
     exit 0
 fi
 
+
+# random wallpaper code
+if [ "$option" = random ]; then
+    # Lets make one thing clear...
+    wallpaperdir=$wallpaper
+    if [ -z "$wallpaperdir" ]; then
+        message "No random wallpaper directory specified."
+        exit 1
+    fi
+    if [ -d "$wallpaperdir" ]; then
+        number_of_wallpapers=`ls $wallpaperdir|wc -l`
+        # some shells don't support $RANDOM
+        if [ -z $RANDOM ]; then
+            randomnumber=`(echo $$ ;time ps; w ; date )2>&1 | cksum | cut -f1 -d' '`
+        else
+            randomnumber=$RANDOM
+        fi
+        wallpapernumber=`expr $randomnumber % $number_of_wallpapers + 1`
+        #remember previous wallpaper
+        if [ ! "$remember" = false ]; then
+            remembercommand
+        fi
+        remember=false
+        #set -x
+        wallpaper="$wallpaperdir/`ls $wallpaperdir|sed -n ${wallpapernumber}p`"
+        option='$aspect' # have to choose something...
+    else
+        message "Invalid random wallpaper directory specified."
+        exit 1
+    fi
+fi
+
+
 if [ ! -r "$wallpaper" ]; then
     message "Can't find wallpaper $wallpaper"
     exit 1
 fi
+
 
 $WPSETTER `eval echo $option` "$wallpaper"
 if [ $? -ne 0 ]; then
@@ -443,6 +487,7 @@ if [ $? -ne 0 ]; then
 Run '$WPSETTER "`eval echo $option` $wallpaper"' from an xterm to find out what."
     exit 1
 fi
+
 
 #remember previous wallpaper
 if [ ! "$remember" = false ]; then

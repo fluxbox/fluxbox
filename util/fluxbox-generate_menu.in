@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.5 2003/12/22 01:19:02 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.6 2003/12/28 23:59:57 fluxgen Exp $
 
 #
 # Portability notes:
@@ -1014,6 +1014,7 @@ append_submenu "${FBSETTINGSMENU}"
         NUMBER_OF_BACKGROUNDS=`find $BACKGROUND_DIRS -follow -type f 2> /dev/null|wc -l`
         if [ "$NUMBER_OF_BACKGROUNDS" -gt 0 ]; then
             append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
+            append "[exec] (random background) {fbsetbg -r ${HOME}/.fluxbox/backgrounds}"
             if [ "$NUMBER_OF_BACKGROUNDS" -gt 30 ]; then
                 menucounter=1 ; counter=1
                 append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
