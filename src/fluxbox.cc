@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.247 2004/07/15 13:42:50 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.248 2004/07/15 18:23:03 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -159,13 +159,8 @@ setFromString(const char *strval) {
 template<>
 void FbTk::Resource<bool>::
 setFromString(char const *strval) {
-    if (strcasecmp(strval, "true")==0)
-        *this = true;
-    else
-        *this = false;
+    *this = (bool)!strcasecmp(strval, "true");
 }
-
-
 
 template<>
 void FbTk::Resource<Fluxbox::TitlebarList>::
@@ -1117,6 +1112,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             if (! screen->getWorkspacemenu().isVisible()) {
                 screen->getWorkspacemenu().removeParent();
                 screen->getWorkspacemenu().show();
+                screen->getWorkspacemenu().grabInputFocus();
             }
         } else if (be.button == 3) { 
             //calculate placement of root menu
@@ -1147,6 +1143,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             if (! screen->getRootmenu().isVisible()) {
                 checkMenu();
                 screen->getRootmenu().show();
+                screen->getRootmenu().grabInputFocus();
             }
         } else if (screen->isDesktopWheeling() && be.button == 4) {
             screen->nextWorkspace(1);
