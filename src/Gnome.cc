@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.22 2003/05/11 17:11:58 fluxgen Exp $
+// $Id: Gnome.cc,v 1.23 2003/05/15 11:17:27 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -92,7 +92,7 @@ void Gnome::setupWindow(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     long flags, *data = 0;
 
-    if (XGetWindowProperty(disp, win.getClientWindow(), 
+    if (XGetWindowProperty(disp, win.clientWindow(), 
                            m_gnome_wm_win_state, 0, 1, False, XA_CARDINAL, 
                            &ret_type, &fmt, &nitems, &bytes_after, 
                            (unsigned char **) &data) ==  Success && data) {
@@ -102,7 +102,7 @@ void Gnome::setupWindow(FluxboxWindow &win) {
     }
 
     // load gnome layer atom
-    if (XGetWindowProperty(disp, win.getClientWindow(), 
+    if (XGetWindowProperty(disp, win.clientWindow(), 
                            m_gnome_wm_win_layer, 0, 1, False, XA_CARDINAL, 
                            &ret_type, &fmt, &nitems, &bytes_after, 
                            (unsigned char **) &data) ==  Success && data) {
@@ -112,12 +112,12 @@ void Gnome::setupWindow(FluxboxWindow &win) {
     }
 
     // load gnome workspace atom
-    if (XGetWindowProperty(disp, win.getClientWindow(), 
+    if (XGetWindowProperty(disp, win.clientWindow(), 
                            m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL, 
                            &ret_type, &fmt, &nitems, &bytes_after, 
                            (unsigned char **) &data) ==  Success && data) {
         unsigned int workspace_num = *data;
-        if (win.getWorkspaceNumber() != workspace_num) 
+        if (win.workspaceNumber() != workspace_num) 
             win.screen().reassociateWindow(&win, workspace_num, false);
         XFree (data);
     }
@@ -222,12 +222,12 @@ void Gnome::updateWorkspaceCount(BScreen &screen) {
 }
 
 void Gnome::updateWorkspace(FluxboxWindow &win) {
-    int val = win.getWorkspaceNumber(); 
+    int val = win.workspaceNumber(); 
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): setting workspace("<<val<<
         ") for window("<<&win<<")"<<endl;
 #endif // DEBUG
-    XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(), 
+    XChangeProperty(FbTk::App::instance()->display(), win.clientWindow(), 
                     m_gnome_wm_win_workspace, 
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
 }
@@ -242,7 +242,7 @@ void Gnome::updateState(FluxboxWindow &win) {
     if (win.isShaded())
         state |= WIN_STATE_SHADED;
 	
-    XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(), 
+    XChangeProperty(FbTk::App::instance()->display(), win.clientWindow(), 
                     m_gnome_wm_win_state,
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&state, 1);
 }
@@ -250,8 +250,8 @@ void Gnome::updateState(FluxboxWindow &win) {
 void Gnome::updateLayer(FluxboxWindow &win) {
     //TODO - map from flux layers to gnome ones
     // our layers are in the opposite direction to GNOME
-    int layernum = Fluxbox::instance()->getDesktopLayer() - win.getLayerNum();
-    XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(), 
+    int layernum = Fluxbox::instance()->getDesktopLayer() - win.layerNum();
+    XChangeProperty(FbTk::App::instance()->display(), win.clientWindow(), 
                     m_gnome_wm_win_layer,
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&layernum, 1);
     

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.28 2003/05/13 21:09:43 fluxgen Exp $
+/// $Id: Slit.hh,v 1.29 2003/05/15 11:17:27 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -105,7 +105,7 @@ public:
     //@}
 	
     void moveToLayer(int layernum);
-    FbTk::XLayerItem &getLayerItem() { return *m_layeritem; }
+    FbTk::XLayerItem &layerItem() { return *m_layeritem; }
 
     virtual void timeout();
 

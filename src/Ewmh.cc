@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.23 2003/05/11 17:06:02 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.24 2003/05/15 11:17:26 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -103,7 +103,7 @@ void Ewmh::setupWindow(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     long *data = 0;
 /*	
-	if (XGetWindowProperty(disp, win.getClientWindow(), 
+	if (XGetWindowProperty(disp, win.clientWindow(), 
         m_net_wm_state, 0, 1, False, XA_CARDINAL, 
         &ret_type, &fmt, &nitems, &bytes_after, 
         (unsigned char **) &data) ==  Success && data) {
@@ -112,7 +112,7 @@ void Ewmh::setupWindow(FluxboxWindow &win) {
         XFree(data);
 	}
 */
-    if (XGetWindowProperty(disp, win.getClientWindow(), 
+    if (XGetWindowProperty(disp, win.clientWindow(), 
                            m_net_wm_desktop, 0, 1, False, XA_CARDINAL, 
                            &ret_type, &fmt, &nitems, &bytes_after, 
                            (unsigned char **) &data) ==  Success && data) {
@@ -168,7 +168,7 @@ void Ewmh::updateClientList(BScreen &screen) {
             (*workspace_it)->windowList().end();		
         for (; it != it_end; ++it) {
             if ((*it)->numClients() == 1)
-                wl[win++] = (*it)->getClientWindow();
+                wl[win++] = (*it)->clientWindow();
             else {
                 // add every client in fluxboxwindow to list window list
                 std::list<WinClient *>::iterator client_it = 
@@ -251,7 +251,7 @@ void Ewmh::updateHints(FluxboxWindow &win) {
 }
 
 void Ewmh::updateWorkspace(FluxboxWindow &win) {
-    int workspace = win.getWorkspaceNumber();
+    int workspace = win.workspaceNumber();
     if (win.isStuck())
         workspace = 0xFFFFFFFF; // appear on all desktops/workspaces
 

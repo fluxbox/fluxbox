@@ -1,6 +1,6 @@
 CXX=g++
-CXXFLAGS= -I.. -I../FbTk -DDEBUG -DUSE_XFT -Wall -g -O2
-LIBS=
+CXXFLAGS= -I.. -I../FbTk -DDEBUG -DUSE_XFT -Wall -g -O2 ../FbTk/libFbTk.a
+LIBS= 
 XFLAGS= -I/usr/X11R6/include
 XLIBS= -L/usr/X11R6/lib -lX11 -lXft
 COMPILEFILE=$(CXX) -c $(CXXFLAGS)
@@ -49,6 +49,12 @@ testFont: testFont.cc ${FONT_OBJ}
 
 testLayers: testLayers.cc
 	${CXX} ${CXXFLAGS} ${XLIBS} testLayers.cc ../FbTk/libFbTk.a -o testLayers
+
+testTransp: transpTest.cc
+	${CXX} ${CXXFLAGS} ${XLIBS} transpTest.cc ../FbTk/libFbTk.a -o testTransp
+
+testScale: scaleTest.cc
+	${CXX} ${CXXFLAGS} ${XLIBS} scaleTest.cc ../FbTk/libFbTk.a -lXpm -o testScale
 
 run: testLayers testResource testKeys testStringUtil testFont
 	./testLayers

@@ -1,5 +1,5 @@
 // Window.hh for Fluxbox Window Manager
-// Copyright (c) 2001-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Window.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.72 2003/05/14 14:43:06 fluxgen Exp $
+// $Id: Window.hh,v 1.73 2003/05/15 11:17:27 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -30,36 +30,28 @@
 #include "Timer.hh"
 #include "Menu.hh"
 #include "Subject.hh"
-#include "FbWinFrame.hh"
 #include "EventHandler.hh"
 #include "XLayerItem.hh"
-#include "LayerMenu.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif // SHAPE
 
 #include <vector>
 #include <string>
 #include <memory>
 #include <map>
 
-#define PropMwmHintsElements	3
-
 class WinClient;
 class FbWinFrameTheme;
 class BScreen;
 class TextButton;
+class FbWinFrame;
 
 namespace FbTk {
 class MenuTheme;
 class ImageControl;
 class XLayer;
 };
-
 
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow : public FbTk::TimeoutHandler, public FbTk::EventHandler {
@@ -112,6 +104,7 @@ public:
 
     static const int PropBlackboxHintsElements = 5;
     static const int PropBlackboxAttributesElements = 8;
+    static const int PropMwmHintsElements = 3;
 
     typedef struct _blackbox_hints {
         unsigned long flags, attrib, workspace, stack;
@@ -249,12 +242,8 @@ public:
         DECORM_LAST     = (1<<11) // useful for getting "All"
     };
 
-    unsigned int getDecorationMask() const;
+    unsigned int decorationMask() const;
     void setDecorationMask(unsigned int mask);
-
-#ifdef SHAPE
-    void shapeEvent(XShapeEvent *event);
-#endif // SHAPE
 
     virtual void timeout();
 
@@ -264,7 +253,7 @@ public:
     //@{
     inline bool isManaged() const { return m_managed; }
     inline bool isFocused() const { return focused; }
-    inline bool isVisible() const { return m_frame.isVisible(); }
+    bool isVisible() const;
     inline bool isIconic() const { return iconic; }
     inline bool isShaded() const { return shaded; }
     inline bool isMaximized() const { return maximized; }
@@ -286,46 +275,42 @@ public:
     inline const BScreen &screen() const { return m_screen; }
     inline BScreen &screen() { return m_screen; }
 
-    inline const FbTk::XLayerItem &getLayerItem() const { return m_layeritem; }
-    inline FbTk::XLayerItem &getLayerItem() { return m_layeritem; }
+    inline const FbTk::XLayerItem &layerItem() const { return m_layeritem; }
+    inline FbTk::XLayerItem &layerItem() { return m_layeritem; }
 
-    Window getClientWindow() const;
+    Window clientWindow() const;
 
-    FbTk::FbWindow &getFbWindow() { return m_frame.window(); }
-    const FbTk::FbWindow &getFbWindow() const { return m_frame.window(); }
+    FbTk::FbWindow &fbWindow();
+    const FbTk::FbWindow &fbWindow() const;
 
-    FbTk::Menu &getWindowmenu() { return m_windowmenu; }
-    const FbTk::Menu &getWindowmenu() const { return m_windowmenu; }
+    FbTk::Menu &menu() { return m_windowmenu; }
+    const FbTk::Menu &menu() const { return m_windowmenu; }
 
-    FbTk::Menu &getLayermenu() { return m_layermenu; }
-    const FbTk::Menu &getLayermenu() const { return m_layermenu; }
+    FbTk::Menu &layermenu() { return *m_layermenu.get(); }
+    const FbTk::Menu &layermenu() const { return *m_layermenu.get(); }
 
     const FbTk::FbWindow &parent() const { return m_parent; }
     FbTk::FbWindow &parent() { return m_parent; }
 
-    const std::string &getTitle() const;
-    const std::string &getIconTitle() const;
-    int getXFrame() const { return m_frame.x(); }
-    int getYFrame() const { return m_frame.y(); }
-    int getXClient() const;
-    int getYClient() const;
-    unsigned int getWorkspaceNumber() const { return m_workspace_number; }
-    int getWindowNumber() const { return m_window_number; }
-    int getLayerNum() const { return m_layernum; }
+    const std::string &title() const;
+    const std::string &iconTitle() const;
+    int x() const;
+    int y() const;
+    unsigned int workspaceNumber() const { return m_workspace_number; }
+    int windowNumber() const { return m_window_number; }
+    int layerNum() const { return m_layernum; }
     void setLayerNum(int layernum);
  
-    unsigned int width() const { return m_frame.width(); }
-    unsigned int height() const { return m_frame.height(); }
-    unsigned int getClientHeight() const;
-    unsigned int getClientWidth() const;
-    unsigned int getTitleHeight() const { return m_frame.titleHeight(); }
+    unsigned int width() const;
+    unsigned int height() const;
+    unsigned int titleHeight() const;
     const std::string &className() const { return m_class_name; }
     const std::string &instanceName() const { return m_instance_name; }
     bool isLowerTab() const;
     int initialState() const;
 
-    FbWinFrame &frame() { return m_frame; }
-    const FbWinFrame &frame() const { return m_frame; }
+    FbWinFrame &frame() { return *m_frame.get(); }
+    const FbWinFrame &frame() const { return *m_frame.get(); }
 
     /**
        @name signals
@@ -343,7 +328,7 @@ public:
     const FbTk::Subject &dieSig() const { return m_diesig; }
     /** @} */ // end group signals
 
-    const timeval &getLastFocusTime() const { return m_last_focus_time;}
+    const timeval &lastFocusTime() const { return m_last_focus_time;}
 
     //@}
 	
@@ -420,7 +405,7 @@ private:
     BlackboxAttributes m_blackbox_attrib;
 
     FbTk::Menu m_windowmenu;
-    LayerMenu<FluxboxWindow> m_layermenu;
+    std::auto_ptr<FbTk::Menu> m_layermenu;
     
     timeval m_last_focus_time;
 	
@@ -458,7 +443,7 @@ private:
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
-    FbWinFrame m_frame;
+    std::auto_ptr<FbWinFrame> m_frame;
 
     FbTk::XLayerItem m_layeritem;
     int m_layernum;

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.10 2003/05/11 17:11:58 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.11 2003/05/15 11:17:27 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -196,7 +196,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         BScreen::Icons::iterator iconit = wiconlist.begin();
         BScreen::Icons::iterator iconit_end = wiconlist.end();
         for(; iconit != iconit_end; ++iconit) {
-            if ((*iconit)->getWorkspaceNumber() == m_current_workspace)
+            if ((*iconit)->workspaceNumber() == m_current_workspace)
                 m_toolbar->addIcon(*iconit);
         }
     }
@@ -213,11 +213,11 @@ void ToolbarHandler::setupWindow(FluxboxWindow &win) {
     case NONE:
         break;
     case WORKSPACE:
-        if (win.getWorkspaceNumber() == m_current_workspace)    
+        if (win.workspaceNumber() == m_current_workspace)    
             m_toolbar->addIcon(&win);
         break;
     case WORKSPACEICONS:
-        if (win.getWorkspaceNumber() != m_current_workspace) 
+        if (win.workspaceNumber() != m_current_workspace) 
             break;
         // else fall through and add the icon
     case LASTMODE:
@@ -242,7 +242,7 @@ void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
     case NONE:
         break;
     case WORKSPACEICONS:
-        if (win.getWorkspaceNumber() != m_current_workspace) 
+        if (win.workspaceNumber() != m_current_workspace) 
             break;
         // else fall through and remove the icon
     case LASTMODE:
@@ -252,7 +252,7 @@ void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
         }
         break;
     case WORKSPACE:
-        if (win.getWorkspaceNumber() == m_current_workspace)
+        if (win.workspaceNumber() == m_current_workspace)
             m_toolbar->delIcon(&win);
         break;
     case ALLWINDOWS:
@@ -273,7 +273,7 @@ void ToolbarHandler::updateState(FluxboxWindow &win) {
     case ALLWINDOWS:
         break;
     case WORKSPACEICONS:
-        if (win.getWorkspaceNumber() != m_current_workspace) break;
+        if (win.workspaceNumber() != m_current_workspace) break;
         // else fall through and do the same as icons (knowing it is the right ws)
     case LASTMODE:
     case ICONS:
@@ -298,7 +298,7 @@ void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
     // don't care about current workspace except if in workspace mode
     if (!(m_mode == WORKSPACE || (m_mode == WORKSPACEICONS && win.isIconic()))) return;
     
-    if (win.getWorkspaceNumber() == m_current_workspace) {
+    if (win.workspaceNumber() == m_current_workspace) {
         //!! TODO
         // this shouldn't be needed, but is until Workspaces get fixed so that
         // you only move between them, you don't 'add' and 'remove'

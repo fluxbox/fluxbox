@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerMenu.hh,v 1.3 2003/05/07 11:30:28 fluxgen Exp $
+// $Id: LayerMenu.hh,v 1.4 2003/05/15 11:17:27 fluxgen Exp $
 
 #ifndef LAYERMENU_HH
 #define LAYERMENU_HH
@@ -45,7 +45,7 @@ public:
     LayerMenuItem(const char *label, ItemType *object, int layernum):
         FbTk::MenuItem(label), m_object(object), m_layernum(layernum) {}
 
-    bool isEnabled() const { return m_object->getLayerItem().getLayerNum() != m_layernum; } ;
+    bool isEnabled() const { return m_object->layerItem().getLayerNum() != m_layernum; } ;
     void click(int button, int time) {
         m_object->moveToLayer(m_layernum);
         FbTk::MenuItem::click(button, time);
@@ -101,12 +101,12 @@ LayerMenu<ItemType>::LayerMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageC
         // TODO: fetch nls string
         if (save_rc) {    
             insert(new LayerMenuItem<ItemType>(
-                       layer_menuitems[i].default_str, 
-                       m_object, layer_menuitems[i].layernum, saverc_cmd));
+                                               layer_menuitems[i].default_str, 
+                                               m_object, layer_menuitems[i].layernum, saverc_cmd));
         } else {
             insert(new LayerMenuItem<ItemType>(
-                       layer_menuitems[i].default_str, 
-                       m_object, layer_menuitems[i].layernum));               
+                                               layer_menuitems[i].default_str, 
+                                               m_object, layer_menuitems[i].layernum));               
         }
     }
     update();

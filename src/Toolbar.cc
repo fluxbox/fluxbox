@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.80 2003/05/12 23:05:19 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.81 2003/05/15 11:17:27 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -41,6 +41,7 @@
 #include "MacroCommand.hh"
 #include "RootTheme.hh"
 #include "BoolMenuItem.hh"
+#include "FbWinFrameTheme.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -792,15 +793,15 @@ void Toolbar::redrawWindowLabel(bool redraw) {
 
         FluxboxWindow *foc = Fluxbox::instance()->getFocusedWindow();
         // don't draw focused window if it's not on the same screen
-        if (&foc->screen() != &screen() || foc->getTitle().size() == 0)
+        if (&foc->screen() != &screen() || foc->title().size() == 0)
             return;
 		
-        unsigned int newlen = foc->getTitle().size();
+        unsigned int newlen = foc->title().size();
         int dx = FbTk::doAlignment(frame.window_label_w, frame.bevel_w*2,
                                    m_theme.justify(),
                                    m_theme.font(),
-                                   foc->getTitle().c_str(), 
-                                   foc->getTitle().size(), newlen);
+                                   foc->title().c_str(), 
+                                   foc->title().size(), newlen);
 	int dy = 1 + m_theme.font().ascent();
 
         if (m_theme.font().isRotated()) {
@@ -814,7 +815,7 @@ void Toolbar::redrawWindowLabel(bool redraw) {
                                 frame.window_label.window(),
                                 screen().getScreenNumber(),
                                 m_theme.windowTextGC(),
-                                foc->getTitle().c_str(), newlen,
+                                foc->title().c_str(), newlen,
                                 dx, dy);
     } else
         frame.window_label.clear();
@@ -895,7 +896,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
         FluxboxWindow *fluxboxwin = 0;
         // if we clicked on a icon then show window menu
         if ( m_iconbar.get() != 0 && (fluxboxwin = m_iconbar->findWindow(be.window)) ) {
-            const FbTk::Menu &wm = fluxboxwin->getWindowmenu();
+            const FbTk::Menu &wm = fluxboxwin->menu();
 
             int menu_y = be.y_root - wm.height();
             int menu_x = be.x_root;

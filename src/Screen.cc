@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.165 2003/05/14 12:08:19 fluxgen Exp $
+// $Id: Screen.cc,v 1.166 2003/05/15 11:17:27 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -52,6 +52,7 @@
 #include "LayerMenu.hh"
 #include "WinClient.hh"
 #include "Subject.hh"
+#include "FbWinFrame.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1005,7 +1006,7 @@ void BScreen::removeWindow(FluxboxWindow *win) {
     if (win->isIconic())
         removeIcon(win);
     else
-        getWorkspace(win->getWorkspaceNumber())->removeWindow(win);
+        getWorkspace(win->workspaceNumber())->removeWindow(win);
 }
 
 
@@ -1173,7 +1174,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
             }
 #ifdef DEBUG
             cerr<<__FILE__<<": Sending to id = "<<id<<endl;
-            cerr<<__FILE__<<": win->workspaceId="<<win->getWorkspaceNumber()<<endl;
+            cerr<<__FILE__<<": win->workspaceId="<<win->workspaceNumber()<<endl;
 #endif //DEBUG
 
         }
@@ -1196,13 +1197,13 @@ void BScreen::addNetizen(Window win) {
         Workspace::Windows::iterator win_it = (*it)->windowList().begin();
         Workspace::Windows::iterator win_it_end = (*it)->windowList().end();
         for (; win_it != win_it_end; ++win_it) {
-            net->sendWindowAdd((*win_it)->getClientWindow(), 
+            net->sendWindowAdd((*win_it)->clientWindow(), 
                              (*it)->workspaceID());
         }
     }
 
     Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
-		Fluxbox::instance()->getFocusedWindow()->getClientWindow() : None);
+		Fluxbox::instance()->getFocusedWindow()->clientWindow() : None);
     net->sendWindowFocus(f);
 }
 
@@ -1242,7 +1243,7 @@ void BScreen::updateNetizenWindowFocus() {
     Netizens::iterator it = netizenList.begin();
     Netizens::iterator it_end = netizenList.end();
     Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
-                Fluxbox::instance()->getFocusedWindow()->getClientWindow() : None);
+                Fluxbox::instance()->getFocusedWindow()->clientWindow() : None);
     for (; it != it_end; ++it) {
         (*it)->sendWindowFocus(f);
     }
@@ -1305,7 +1306,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
  
 #ifdef SLIT
     if (win->initialState() == WithdrawnState)
-        getSlit()->addClient(win->getClientWindow());
+        getSlit()->addClient(win->clientWindow());
 #endif // SLIT
 
     if (!win->isManaged()) {
@@ -1324,7 +1325,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         setupWindowActions(*win);
         Fluxbox::instance()->attachSignals(*win);
     }
-    if (win->getWorkspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
+    if (win->workspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
         win->show();
     }
     XSync(FbTk::App::instance()->display(), False);
@@ -1337,7 +1338,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
 #ifdef SLIT
     if (win->initialState() == WithdrawnState)
-        getSlit()->addClient(win->getClientWindow());
+        getSlit()->addClient(win->clientWindow());
 #endif // SLIT
     if (!win->isManaged()) {
         delete win;
@@ -1349,7 +1350,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     Fluxbox::instance()->saveWindowSearch(client.window(), win);
     setupWindowActions(*win);
     Fluxbox::instance()->attachSignals(*win);
-    if (win->getWorkspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
+    if (win->workspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
         win->show();      
     }
     return win;
@@ -1450,7 +1451,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     frame.setOnClickTitlebar(lower_cmd, 2); // on release with button 2
     frame.setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
     // setup menu
-    FbTk::Menu &menu = win.getWindowmenu();
+    FbTk::Menu &menu = win.menu();
     menu.removeAll(); // clear old items
     menu.disableTitle(); // not titlebar
 
@@ -1463,7 +1464,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     menu.insert("Iconify", iconify_cmd);
     menu.insert("Raise", raise_cmd);
     menu.insert("Lower", lower_cmd);
-    menu.insert("Layer...", &win.getLayermenu());
+    menu.insert("Layer...", &win.layermenu());
     CommandRef next_client_cmd(new WindowCmd(win, &FluxboxWindow::nextClient));
     CommandRef prev_client_cmd(new WindowCmd(win, &FluxboxWindow::prevClient));
     menu.insert("Next Client", next_client_cmd);
@@ -1508,7 +1509,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
 #endif // DEBUG
     }
 
-    if (!w->isIconic() && w->getWorkspaceNumber() == wkspc_id)
+    if (!w->isIconic() && w->workspaceNumber() == wkspc_id)
         return;
 
 
@@ -1516,7 +1517,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
         removeIcon(w);
         getWorkspace(wkspc_id)->addWindow(*w);
     } else if (ignore_sticky || ! w->isStuck()) {
-        getWorkspace(w->getWorkspaceNumber())->removeWindow(w);
+        getWorkspace(w->workspaceNumber())->removeWindow(w);
         getWorkspace(wkspc_id)->addWindow(*w);
     }
 }
@@ -1532,7 +1533,7 @@ void BScreen::nextFocus(int opts) {
         if (focused->screen().getScreenNumber() == 
             getScreenNumber()) {
             have_focused = true;
-            focused_window_number = focused->getWindowNumber();
+            focused_window_number = focused->windowNumber();
         }
     }
 
@@ -1564,7 +1565,7 @@ void BScreen::nextFocus(int opts) {
                 FluxboxWindow *fbwin = (*it)->m_win;
                 if (fbwin && !fbwin->isIconic() &&
                     (fbwin->isStuck() 
-                     || fbwin->getWorkspaceNumber() == getCurrentWorkspaceID())) {
+                     || fbwin->workspaceNumber() == getCurrentWorkspaceID())) {
                     // either on this workspace, or stuck
 
                     // keep track of the originally selected window in a set
@@ -1622,7 +1623,7 @@ void BScreen::prevFocus(int opts) {
         if (focused->screen().getScreenNumber() ==
             getScreenNumber()) {
             have_focused = true;
-            focused_window_number = focused->getWindowNumber();
+            focused_window_number = focused->windowNumber();
         }
     }
 
@@ -1655,7 +1656,7 @@ void BScreen::prevFocus(int opts) {
                 FluxboxWindow *fbwin = (*it)->m_win;
                 if (fbwin && !fbwin->isIconic() &&
                     (fbwin->isStuck() 
-                     || fbwin->getWorkspaceNumber() == getCurrentWorkspaceID())) {
+                     || fbwin->workspaceNumber() == getCurrentWorkspaceID())) {
                     // either on this workspace, or stuck
 
                     // keep track of the originally selected window in a set
@@ -1714,7 +1715,7 @@ void BScreen::raiseFocus() {
         if (fb->getFocusedWindow()->screen().getScreenNumber() ==
             getScreenNumber()) {
             have_focused = true;
-            focused_window_number = fb->getFocusedWindow()->getWindowNumber();
+            focused_window_number = fb->getFocusedWindow()->windowNumber();
         }
 
     if ((getCurrentWorkspace()->numberOfWindows() > 1) && have_focused)
@@ -1739,10 +1740,10 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
     FluxboxWindow *foundwin = 0;
     int weight = 999999, exposure = 0; // extreme values
     int borderW = m_root_theme->borderWidth(),
-        top = win.getYFrame(), 
-        bottom = win.getYFrame() + win.height() + 2*borderW,
-        left = win.getXFrame(),
-        right = win.getXFrame() + win.width() + 2*borderW;
+        top = win.y(), 
+        bottom = win.y() + win.height() + 2*borderW,
+        left = win.x(),
+        right = win.x() + win.width() + 2*borderW;
 
     Workspace::Windows &wins = getCurrentWorkspace()->windowList();
     Workspace::Windows::iterator it = wins.begin();
@@ -1752,10 +1753,10 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
         // we check things against an edge, and within the bounds (draw a picture)
         int edge=0, upper=0, lower=0, oedge=0, oupper=0, olower=0;
 
-        int otop = (*it)->getYFrame(), 
-            obottom = (*it)->getYFrame() + (*it)->height() + 2*borderW,
-            oleft = (*it)->getXFrame(),
-            oright = (*it)->getXFrame() + (*it)->width() + 2*borderW;
+        int otop = (*it)->y(), 
+            obottom = (*it)->y() + (*it)->height() + 2*borderW,
+            oleft = (*it)->x(),
+            oright = (*it)->x() + (*it)->width() + 2*borderW;
         // check if they intersect
         switch (dir) {
         case FOCUSUP:
@@ -2494,7 +2495,7 @@ WinClient *BScreen::getLastFocusedWindow(int workspace) {
     FocusedWindows::iterator it_end = focused_list.end();
     for (; it != it_end; ++it)
         if ((*it)->fbwindow() &&
-            (((int)(*it)->fbwindow()->getWorkspaceNumber()) == workspace 
+            (((int)(*it)->fbwindow()->workspaceNumber()) == workspace 
              && !(*it)->fbwindow()->isIconic()
              && (!(*it)->fbwindow()->isStuck() || (*it)->fbwindow()->isFocused())))
             // only give focus to a stuck window if it is currently focused

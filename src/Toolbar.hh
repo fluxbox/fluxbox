@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.30 2003/05/10 13:55:57 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.31 2003/05/15 11:17:27 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -87,7 +87,7 @@ public:
 
     void moveToLayer(int layernum);
 
-    FbTk::XLayerItem &getLayerItem() { return m_layeritem; }
+    FbTk::XLayerItem &layerItem() { return m_layeritem; }
 
     /// are we in workspacename editing?
     inline bool isEditing() const { return editing; }

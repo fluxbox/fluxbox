@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.23 2003/05/01 13:19:36 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.24 2003/05/15 11:17:26 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -284,7 +284,6 @@ void FbWinFrame::setClientWindow(Window win) {
     XSetWindowBorderWidth(display, win, 0);
 
     XChangeSaveSet(display, win, SetModeInsert);
-
     
     XSelectInput(display, m_clientarea.window(), NoEventMask);
     // we need to mask this so we don't get unmap event
@@ -292,7 +291,7 @@ void FbWinFrame::setClientWindow(Window win) {
     XReparentWindow(display, win, m_clientarea.window(), 0, 0);
     // remask window so we get events
     XSelectInput(display, win, PropertyChangeMask | StructureNotifyMask | 
-                 FocusChangeMask );
+                 FocusChangeMask);
     XSelectInput(display, m_clientarea.window(), SubstructureRedirectMask);
 
     XFlush(display);

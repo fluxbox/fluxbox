@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.13 2003/05/11 13:36:10 fluxgen Exp $
+// $Id: Remember.cc,v 1.14 2003/05/15 11:17:27 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -462,19 +462,19 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     }
     switch (attrib) {
     case REM_WORKSPACE:
-        app->rememberWorkspace(win->getWorkspaceNumber());
+        app->rememberWorkspace(win->workspaceNumber());
         break;
     case REM_DIMENSIONS:
         app->rememberDimensions(win->width(), win->height());
         break;
     case REM_POSITION:
-        app->rememberPosition(win->getXFrame(), win->getYFrame());
+        app->rememberPosition(win->x(), win->y());
         break;
     case REM_STUCKSTATE:
         app->rememberShadedstate(win->isShaded());
         break;
     case REM_DECOSTATE:
-        app->rememberDecostate(win->getDecorationMask());
+        app->rememberDecostate(win->decorationMask());
         break;
     case REM_SHADEDSTATE:
         app->rememberStuckstate(win->isStuck());
@@ -485,7 +485,7 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         app->rememberJumpworkspace(true);
         break;
     case REM_LAYER:
-        app->rememberLayer(win->getLayerNum());
+        app->rememberLayer(win->layerNum());
         break;
     case REM_SAVEONCLOSE:
         app->rememberSaveOnClose(true);
@@ -547,7 +547,7 @@ void Remember::setupWindow(FluxboxWindow &win) {
 
     // we don't touch the window if it is a transient
     // of something else
-    int menupos = win.getWindowmenu().numberOfItems()-2;
+    int menupos = win.menu().numberOfItems()-2;
     if (menupos < -1)
         menupos = -1;
 
@@ -556,18 +556,18 @@ void Remember::setupWindow(FluxboxWindow &win) {
         // so, we add a disabled item...
         FbTk::MenuItem *item = new FbTk::MenuItem("Remember...");
         item->setEnabled(false);
-        win.getWindowmenu().insert(item, menupos);
-        win.getWindowmenu().update();
+        win.menu().insert(item, menupos);
+        win.menu().update();
         return;
     }
 
     // add the menu, this -2 is somewhat dodgy... :-/
     // All windows get the remember menu.
     // TODO: nls
-    win.getWindowmenu().insert("Remember...", 
+    win.menu().insert("Remember...", 
                                createRememberMenu(*this, win), 
                                menupos);
-    win.getWindowmenu().reconfigure();
+    win.menu().reconfigure();
 
     Application *app = find(winclient);
     if (app == 0) 
@@ -629,17 +629,17 @@ void Remember::updateWindowClose(FluxboxWindow &win) {
     }
 /*
     if (app->workspace_remember) 
-        app->rememberWorkspace(win.getWorkspaceNumber());
+        app->rememberWorkspace(win.workspaceNumber());
     if (app->dimensions_remember)
         app->rememberDimensions(win.width(), win.height());
     if (app->position_remember)
-        app->rememberPosition(win.getXFrame(), win.getYFrame());
+        app->rememberPosition(win.x(), win.y());
     if (app->shadedstate_remember)
         app->rememberShadedstate(win.isShaded());
     // external tabs off atm
     //if (app->tabstate_remember) ...
     if (app->decostate_remember)
-        app->rememberDecostate(win.getDecorationMask());
+        app->rememberDecostate(win.decorationMask());
     if (app->stuckstate_remember)
         app->rememberStuckstate(win.isStuck());
     if (app->jumpworkspace_remember)

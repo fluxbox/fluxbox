@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.33 2003/05/10 22:55:10 fluxgen Exp $
+// $Id: IconBar.cc,v 1.34 2003/05/15 11:17:27 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -29,6 +29,7 @@
 #include "ImageControl.hh"
 #include "Text.hh"
 #include "RootTheme.hh"
+#include "FbWinFrameTheme.hh"
 
 #include <algorithm>
 
@@ -321,7 +322,7 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
     unsigned int title_text_w;
 
     title_text_w = m_font.textWidth(
-        fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
+        fluxboxwin->iconTitle().c_str(), fluxboxwin->iconTitle().size());
 
     unsigned int bevel_w = screen().rootTheme().bevelWidth();
     int dx=bevel_w*2;
@@ -330,8 +331,8 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
     unsigned int newlen = 0;
     dx = FbTk::doAlignment(m_vertical ? obj->height() : obj->width(), 
                            bevel_w*2, FbTk::CENTER, m_font,
-                           fluxboxwin->getIconTitle().c_str(), 
-                           fluxboxwin->getIconTitle().size(),
+                           fluxboxwin->iconTitle().c_str(), 
+                           fluxboxwin->iconTitle().size(),
                            newlen);
     //Draw title to m_iconwin
 
@@ -348,7 +349,7 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
         iconwin,
         screen().getScreenNumber(),
         screen().winFrameTheme().labelTextFocusGC(),
-        fluxboxwin->getIconTitle().c_str(), newlen,
+        fluxboxwin->iconTitle().c_str(), newlen,
         dx, dy,	m_vertical);
 
 }
