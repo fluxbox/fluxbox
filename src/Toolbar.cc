@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.32 2002/09/14 10:58:25 rathnor Exp $
+// $Id: Toolbar.cc,v 1.33 2002/10/13 21:51:12 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -41,8 +41,8 @@
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 #include <X11/Xutil.h>
@@ -346,18 +346,10 @@ void Toolbar::reconfigure() {
 	frame.clock_w =
 		XTextWidth(screen->getToolbarStyle()->font.fontstruct,
 				 i18n->getMessage(
-		#ifdef NLS
 			ToolbarSet, ToolbarNoStrftimeLength,
-		#else // !NLS
-			0, 0,
-		#endif // NLS
 			"00:00000"),
 			strlen(i18n->getMessage(
-		#ifdef		NLS
 				 ToolbarSet, ToolbarNoStrftimeLength,
-		#else // !NLS
-				 0, 0,
-		#endif // NLS
 			 "00:00000"))) + (frame.bevel_w * 4);
 	
 	#endif // HAVE_STRFTIME
@@ -597,22 +589,14 @@ void Toolbar::checkClock(bool redraw, bool date) {
 			if (screen->getDateFormat() == Blackbox::B_EuropeanDate) {
 				sprintf(t,
 					i18n->getMessage(
-				#ifdef NLS
 				 		ToolbarSet, ToolbarNoStrftimeDateFormatEu,
-				#else // !NLS
-						0, 0,
-				#endif // NLS
 					 "%02d.%02d.%02d"),
 					tt->tm_mday, tt->tm_mon + 1,
 					(tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
 			} else {
 				sprintf(t,
 				i18n->getMessage(
-			#ifdef		NLS
 				 ToolbarSet, ToolbarNoStrftimeDateFormat,
-			#else // !NLS
-				 0, 0,
-			#endif // NLS
 				 "%02d/%02d/%02d"),
 				tt->tm_mon + 1, tt->tm_mday,
 				(tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
@@ -621,38 +605,22 @@ void Toolbar::checkClock(bool redraw, bool date) {
 			if (screen->isClock24Hour())
 	sprintf(t,
 		i18n->getMessage(
-#ifdef		NLS
 				 ToolbarSet, ToolbarNoStrftimeTimeFormat24,
-#else // !NLS
-				 0, 0,
-#endif // NLS
 				 "	%02d:%02d "),
 		frame.hour, frame.minute);
 			else
 	sprintf(t,
 		i18n->getMessage(
-		#ifdef NLS
 				ToolbarSet, ToolbarNoStrftimeTimeFormat12,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
 				"%02d:%02d %sm"),
 		((frame.hour > 12) ? frame.hour - 12 :
 		 ((frame.hour == 0) ? 12 : frame.hour)), frame.minute,
 		((frame.hour >= 12) ?
 		 i18n->getMessage(
-		#ifdef NLS
 				ToolbarSet, ToolbarNoStrftimeTimeFormatP,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
 					"p") :
 		 i18n->getMessage(
-		#ifdef NLS
 					ToolbarSet, ToolbarNoStrftimeTimeFormatA,
-		#else // !NLS
-					0, 0,
-			#endif // NLS
 					"a")));
 		}
 		#endif // HAVE_STRFTIME
