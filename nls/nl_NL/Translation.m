@@ -22,7 +22,7 @@ $set 3 #Configmenu
 5 Venster ondoorzichtig verplaatsen
 6 Volledig maximaliseren
 7 Nieuwe vensters focussen
-8 Vensters na Werkveldwissel focussen
+8 Focus Vensters na Werkveldwissel
 9 Klik om Focus te krijgen
 10 Muis focus
 11 Automatisch verhogen
@@ -42,6 +42,7 @@ $set 3 #Configmenu
 25 Willekeurig vensters groeperen
 26 Werkveld springen
 27 Werkveld met muiswiel wisselen
+28 Lettertypes bijwerken
 
 $set 4 #Icon
 
@@ -185,17 +186,17 @@ $set 14 #Common
 
 $set 15 #main
 
-1 error: '-rc' requires an argument\n
-2 error: '-display' requires an argument\n
-3 warning: could not set environment variable 'DISPLAY'\n
+1 error: '-rc' heeft een argument nodig\n
+2 error: '-display' heeft een argument nodig\n
+3 warning: kan omgevingsvariabele 'DISPLAY' niet instellen.\n
 4 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
-  -display <string>\t\tuse display connection.\n\
-  -rc <string>\t\t\tuse alternate resource file.\n\
-  -version\t\t\tdisplay version and exit.\n\
-  -info\t\t\t\tdisplay some useful information.\n\
-  -log <filename>\t\t\tlog output to file.\n\
-  -help\t\t\t\tdisplay this help text and exit.\n\n
-5 Compile time options:\n\
+  -display <string>\t\tkies ander scherm.\n\
+  -rc <string>\t\t\tgebruik alternatieve configuratie.\n\
+  -version\t\t\ttoon versienummer.\n\
+  -info\t\t\t\ttoon bruikbare informatie.\n\
+  -log <filename>\t\t\tlog uitvoer naar bestand.\n\
+  -help\t\t\t\ttoon alleen deze helptext.\n\n
+5 Compileer opties:\n\
   Debugging\t\t\t%s\n\
   Interlacing:\t\t\t%s\n\
   Shape:\t\t\t%s\n\

@@ -15,7 +15,7 @@ $ #FullMax
 $ #FocusNew
 # Nieuwe vensters focussen
 $ #FocusLast
-# Vensters na Werkveldwissel focussen
+# Focus Vensters na Werkveldwissel
 $ #ClickToFocus
 # Klik om Focus te krijgen
 $ #SloppyFocus
@@ -54,3 +54,5 @@ $ #WorkspaceWarping
 # Werkveld springen
 $ #DesktopWheeling
 # Werkveld met muiswiel wisselen
+$ #AntiAlias
+# Lettertypes bijwerken

@@ -2,4 +2,4 @@ List of translators contrubutors
 --------------------------------
 
 pl_PL: offtza@gazeta.pl
-
+nl_NL: Han Boetes <han@mijncomputer.nl>
