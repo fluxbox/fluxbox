@@ -1,8 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/08/18:
+   * Added FbTk::EventHandler, a generic eventhandler
+   * Changed FbTk::SignalHandler to use FbTk::EventHandler with FbTk::SignalEvent
+   * Moved some functions from BaseDisplay to Fluxbox, and
+     made BaseDisplay singleton type with FbTk::EventHandler<XEvent>
+
+*02/08/16:
+   * Minor cleaning in Window.cc
 *02/08/14:
    * Added class SignalHandler (SignalHandler.hh/cc) which should
      take care of any system signals
+   * Change FbAtoms in to a singleton
+   * Changed expandFilename to use std::string
 *02/08/12:
    * The window menu now popups in iconbar when you right click on the icon.
    * Fixed bug [ 574717 ] restaring fluxbox should keep iconic.
