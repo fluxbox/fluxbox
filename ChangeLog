@@ -20,6 +20,11 @@ Changes for 0.9.4:
        will match anything with gaim in the title ("gaim", "the gaim 
        window", etc.
      RegExp.hh/cc ClientPattern.hh/cc configure.in Makefile.am Remember.hh/cc WinClient.hh/cc StringUtil.hh/cc
+*03/06/12:
+   * Renamed i18n.hh/cc to I18n.hh/cc (Henrik)
+*03/06/11:
+   * Added nls for antialias (Thanks ...)
+     nls/C/Configmenu.m, Screen.cc, nls/C/ja_JP/Configmenu.m
 Changes for 0.9.3:
 *03/06/08:
    * Add Reconfigure and Restart Key actions, thanks Jann Fisher (Simon)
