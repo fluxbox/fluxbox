@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.29 2002/09/09 10:01:41 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.30 2002/09/10 10:50:04 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -160,7 +160,7 @@ m_alignment(ALIGNDONTCARE) {
 }
 
 
-Basemenu::~Basemenu(void) {
+Basemenu::~Basemenu() {
 	XUnmapWindow(m_display, menu.window);
 
 	if (shown && shown->windowID() == windowID())
@@ -254,8 +254,15 @@ int Basemenu::remove(unsigned int index) {
 	return menuitems.size();
 }
 
+void Basemenu::raise() {
+	XRaiseWindow(BaseDisplay::getXDisplay(), windowID());
+}
 
-void Basemenu::update(void) {
+void Basemenu::lower() {
+	XLowerWindow(BaseDisplay::getXDisplay(), windowID());
+}
+
+void Basemenu::update() {
 	I18n *i18n = I18n::instance();
 	
 	if (i18n->multibyte()) {

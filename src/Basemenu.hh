@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.16 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.17 2002/09/10 10:48:44 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -63,6 +63,8 @@ public:
 	inline void setAlignment(Alignment a) { m_alignment = a; }
 	inline void setTorn() { torn = true; }
 	inline void removeParent() { if (internal_menu) m_parent = 0; }
+	void raise();
+	void lower();
 	/**
 		@name event handlers
 	*/
