@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.14 2002/09/14 13:52:08 fluxgen Exp $
+// $Id: Image.cc,v 1.15 2002/09/14 15:05:00 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -2306,26 +2306,6 @@ void BImageControl::removeImage(Pixmap pixmap) {
 			}
 		}
 	}
-}
-
-
-
-
-unsigned long BImageControl::color(const char *colorname) {
-	XColor color;
-	color.pixel = 0;
-
-	if (! XParseColor(basedisplay->getXDisplay(), colormap(), colorname, &color))
-		fprintf(stderr, "BImageControl::color: color parse error: \"%s\"\n",
-			colorname);
-	else	{
-		if (! XAllocColor(basedisplay->getXDisplay(), colormap(), &color))
-			fprintf(stderr, "BImageControl::color: color alloc error: \"%s\"\n",
-				colorname);
-		else
-			fprintf(stderr, "%s(%d) Allocated color:%s", __FILE__, __LINE__, colorname);
-	}
-	return color.pixel;
 }
 
 

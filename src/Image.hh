@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.12 2002/09/14 13:50:38 fluxgen Exp $
+// $Id: Image.hh,v 1.13 2002/09/14 15:03:32 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
@@ -120,9 +120,6 @@ public:
 	inline int depth() const { return screen_depth; }
 	inline int colorsPerChannel() const	{ return colors_per_channel; }
 
-	unsigned long color(const char *colorname);
-	unsigned long color(const char *, unsigned char *, unsigned char *,
-												 unsigned char *);
 	unsigned long getSqrt(unsigned int val);
 	/**
 		Render to pixmap
