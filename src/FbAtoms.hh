@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.hh,v 1.2 2002/03/18 20:28:24 fluxgen Exp $
+// $Id: FbAtoms.hh,v 1.3 2002/05/07 15:07:02 fluxgen Exp $
 #ifndef FBATOMS_HH
 #define FBATOMS_HH
 
@@ -32,15 +32,15 @@ public:
 	virtual ~FbAtoms();
 	void initAtoms(Display *display);
 #ifdef GNOME
-	inline Atom &getGnomeProtAtom() { return gnome_wm_prot; }
-	inline Atom &getGnomeClientListAtom() { return gnome_wm_win_client_list; }
-	inline Atom &getGnomeSupportingWMCheckAtom() { return gnome_wm_supporting_wm_check; }
-	inline Atom &getGnomeWorkspaceAtom() { return gnome_wm_win_workspace; }
-	inline Atom &getGnomeWorkspaceCountAtom() { return gnome_wm_win_workspace_count; }
-	inline Atom &getGnomeWorkspaceNamesAtom() { return gnome_wm_win_workspace_names; }
-	inline Atom &getGnomeStateAtom() { return gnome_wm_win_state; }
-	inline Atom &getGnomeHintsAtom() { return gnome_wm_win_hints; }
-	inline Atom &getGnomeLayerAtom() { return gnome_wm_win_layer; }
+	inline const Atom &getGnomeProtAtom() const { return gnome_wm_prot; }
+	inline const Atom &getGnomeClientListAtom() const { return gnome_wm_win_client_list; }
+	inline const Atom &getGnomeSupportingWMCheckAtom() const { return gnome_wm_supporting_wm_check; }
+	inline const Atom &getGnomeWorkspaceAtom() const { return gnome_wm_win_workspace; }
+	inline const Atom &getGnomeWorkspaceCountAtom() const { return gnome_wm_win_workspace_count; }
+	inline const Atom &getGnomeWorkspaceNamesAtom() const { return gnome_wm_win_workspace_names; }
+	inline const Atom &getGnomeStateAtom() const { return gnome_wm_win_state; }
+	inline const Atom &getGnomeHintsAtom() const { return gnome_wm_win_hints; }
+	inline const Atom &getGnomeLayerAtom() const { return gnome_wm_win_layer; }
 #endif //GNOME
 
 	inline const Atom &getWMChangeStateAtom(void) const { return xa_wm_change_state; }
