@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.93 2003/06/23 13:17:57 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.94 2003/06/24 18:33:29 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -458,7 +458,7 @@ void Toolbar::reconfigure() {
     if (m_iconbar.get())
         m_iconbar->setVertical(vertical);
 
-    frame.bevel_w = screen().rootTheme().bevelWidth();
+    frame.bevel_w = theme().bevelWidth();
 
     // recallibrate size
     setPlacement(placement());
@@ -719,8 +719,8 @@ void Toolbar::reconfigure() {
     if (tmp) 
         image_ctrl.removeImage(tmp);
 
-    frame.window.setBorderColor(screen().rootTheme().borderColor());
-    frame.window.setBorderWidth(screen().rootTheme().borderWidth());
+    frame.window.setBorderColor(theme().borderColor());
+    frame.window.setBorderWidth(theme().borderWidth());
 
     frame.window.clear();
 
@@ -1157,6 +1157,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     frame.height += 2;
     frame.height += (frame.bevel_w * 2);
 
+    int bevel_width = theme().bevelWidth();
+    int border_width = theme().borderWidth();
 
     // should we flipp sizes?
     if (isVertical()) {
@@ -1179,92 +1181,77 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x;
         frame.y = head_y;
         frame.x_hidden = head_x;
-        frame.y_hidden = head_y +
-            screen().rootTheme().bevelWidth() - 
-            screen().rootTheme().borderWidth() - frame.height;
+        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
         break;
 
     case BOTTOMLEFT:
         frame.x = head_x;
-        frame.y = head_y + head_h - frame.height - 
-            screen().rootTheme().borderWidth()*2;
+        frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = head_x;
-        frame.y_hidden = head_y + head_h - screen().rootTheme().bevelWidth() - 
-            screen().rootTheme().borderWidth();
+        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+
         break;
 
     case TOPCENTER:
         frame.x = head_x + ((head_w - frame.width) / 2);
         frame.y = head_y;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y +
-            screen().rootTheme().bevelWidth() - 
-            screen().rootTheme().borderWidth() - frame.height;
+        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
         break;
     case TOPRIGHT:
-        frame.x = head_x + head_w - frame.width - screen().rootTheme().borderWidth()*2;
+        frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         frame.x_hidden = frame.x;
         break;
 
     case BOTTOMRIGHT:
-        frame.x = head_x + head_w - frame.width - 
-            screen().rootTheme().borderWidth()*2;
-        frame.y = head_y + head_h - frame.height - 
-            screen().rootTheme().borderWidth()*2;
+        frame.x = head_x + head_w - frame.width - border_width*2;
+        frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - screen().rootTheme().bevelWidth() - 
-            screen().rootTheme().borderWidth();
+        frame.y_hidden = head_y + head_h - bevel_width - border_width;
         break;
 
     case BOTTOMCENTER: // default is BOTTOMCENTER
     default:
         frame.x = head_x + (head_w - frame.width) / 2;
-        frame.y = head_y + head_h - frame.height - screen().rootTheme().borderWidth()*2;
+        frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - screen().rootTheme().bevelWidth() - 
-            screen().rootTheme().borderWidth();
+        frame.y_hidden = head_y + head_h - bevel_width - border_width;
         break;
     case LEFTCENTER:
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height)/2;
-        frame.x_hidden = frame.x - frame.width + 
-            screen().rootTheme().bevelWidth() + screen().rootTheme().borderWidth();
+        frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
         break;
     case LEFTTOP:
         frame.x = head_x;
         frame.y = head_y;
-        frame.x_hidden = frame.x - frame.width + 
-            screen().rootTheme().bevelWidth() + screen().rootTheme().borderWidth();
+        frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
         break;
     case LEFTBOTTOM:
         frame.x = head_x;
-        frame.y = head_y + head_h - frame.height - screen().rootTheme().borderWidth()*2;
-        frame.x_hidden = frame.x - frame.width + 
-            screen().rootTheme().bevelWidth() + screen().rootTheme().borderWidth();
+        frame.y = head_y + head_h - frame.height - border_width*2;
+        frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
         break;
     case RIGHTCENTER:
-        frame.x = head_x + head_w - frame.width - screen().rootTheme().borderWidth()*2;
+        frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + (head_h - frame.height)/2;
-        frame.x_hidden = frame.x + frame.width - 
-            screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
+        frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
         break;
     case RIGHTTOP:
-        frame.x = head_x + head_w - frame.width - screen().rootTheme().borderWidth()*2;
+        frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
-        frame.x_hidden = frame.x + frame.width - 
-            screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
+        frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
         break;
     case RIGHTBOTTOM:
-        frame.x = head_x + head_w - frame.width - screen().rootTheme().borderWidth()*2;
-        frame.y = head_y + head_h - frame.height - screen().rootTheme().borderWidth()*2;
-        frame.x_hidden = frame.x + frame.width - 
-            screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
+        frame.x = head_x + head_w - frame.width - border_width*2;
+        frame.y = head_y + head_h - frame.height - border_width*2;
+        frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
         break;
     }
