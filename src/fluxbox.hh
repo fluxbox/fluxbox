@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.87 2004/04/22 21:07:57 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.88 2004/05/02 20:48:16 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -199,7 +199,8 @@ public:
 
     bool isStartup() const { return m_starting; }
 
-
+    /// get screen from number
+    BScreen *findScreen(int num);
 
     typedef std::vector<Fluxbox::Titlebar> TitlebarList;
     /// @return whether the timestamps on the menu changed

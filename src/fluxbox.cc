@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.241 2004/04/26 09:25:42 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.242 2004/05/02 20:48:16 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -535,7 +535,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
             delete screen;			
             continue;
         }
-        // now it's safe to create windows
+        // add to our list
+        m_screen_list.push_back(screen);
+
+        // now we can create menus (which needs this screen to be in screen_list)
+        screen->initMenus();
         screen->initWindows();
 
 #ifdef HAVE_GETPID
@@ -559,10 +563,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
 #endif // HAVE_RANDR
 
-        m_screen_list.push_back(screen);
+
 #ifdef USE_TOOLBAR
         m_toolbars.push_back(new Toolbar(*screen, 
-                                         *screen->layerManager().getLayer(Fluxbox::instance()->getNormalLayer())));
+                                         *screen->layerManager().
+                                         getLayer(Fluxbox::instance()->getNormalLayer())));
 #endif // USE_TOOLBAR
         // must do this after systray is created
         screen->setupKdeDockapps();
@@ -1840,6 +1845,19 @@ void Fluxbox::real_reconfigure() {
 
 }
 
+BScreen *Fluxbox::findScreen(int id) {
+    ScreenList::iterator it = m_screen_list.begin();
+    ScreenList::iterator it_end = m_screen_list.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->screenNumber() == id)
+            break;
+    }
+
+    if (it == m_screen_list.end())
+        return 0;
+
+    return *it;
+}
 
 bool Fluxbox::menuTimestampsChanged() const {
     std::list<MenuTimestamp *>::const_iterator it = m_menu_timestamps.begin();
