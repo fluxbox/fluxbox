@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.22 2003/04/16 16:18:05 rathnor Exp $
+/// $Id: Slit.hh,v 1.23 2003/04/25 10:45:02 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -41,6 +41,7 @@
 #include <string>
 #include <memory>
 
+class SlitTheme;
 class SlitClient;
 class BScreen;
 
@@ -142,6 +143,7 @@ private:
     Atom kwm1_dockwindow, kwm2_dockwindow;
 
     std::auto_ptr<FbTk::XLayerItem> m_layeritem;
+    std::auto_ptr<SlitTheme> m_slit_theme;
 };
 
 
