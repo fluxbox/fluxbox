@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.10 2003/07/10 11:10:51 fluxgen Exp $
+# $Id: fbsetbg,v 1.11 2003/07/20 10:58:27 rathnor Exp $
 
 #
 # Portability notes:
@@ -116,7 +116,7 @@ message() {
 }
 
 remembercommand() {
-    grep -vs "${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
+    grep -vs "|${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
     mv -f ${lastwallpaper}.tmp ${lastwallpaper}
     # Make dir/../../path/file.jpg work
     case $wallpaper in
