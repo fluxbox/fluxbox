@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.62 2003/02/23 12:04:27 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.63 2003/02/23 16:29:26 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -432,9 +432,9 @@ void Toolbar::reconfigure() {
     frame.psbutton.moveResize(next_x , next_y,
                               frame.button_w, frame.button_w);
     if (vertical)
-        next_y += frame.psbutton.height() + 1 + frame.bevel_w * 3;
+        next_y += frame.psbutton.height() + 1;
     else
-        next_x += frame.psbutton.width() + 1 + frame.bevel_w * 3;
+        next_x += frame.psbutton.width() + 1;
 
     frame.nsbutton.moveResize(next_x, next_y,
                               frame.button_w, frame.button_w);
