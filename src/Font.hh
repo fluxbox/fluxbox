@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.5 2002/10/13 22:24:14 fluxgen Exp $
+//$Id: Font.hh,v 1.6 2002/10/15 10:55:30 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -61,12 +61,14 @@ public:
 	unsigned int textWidth(const char *text, unsigned int size) const;
 	unsigned int height() const;
 	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+	bool isAntialias() const { return m_antialias; }
 private:
 	
 	std::auto_ptr<FontImp> m_fontimp;
 	std::string m_fontstr;
 	static bool m_multibyte;
 	static bool m_utf8mode;
+	bool m_antialias;
 };
 
 }; //end namespace FbTk

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.12 2002/10/14 18:25:37 fluxgen Exp $
+//$Id: Font.cc,v 1.13 2002/10/15 10:56:49 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -65,7 +65,9 @@ namespace FbTk {
 bool Font::m_multibyte = false; 
 bool Font::m_utf8mode = false;
 
-Font::Font(const char *name, bool antialias) {
+Font::Font(const char *name, bool antialias):
+m_fontimp(0),
+m_antialias(false) {
 	
 	// MB_CUR_MAX returns the size of a char in the current locale
 	if (MB_CUR_MAX > 1) // more than one byte, then we're multibyte
@@ -81,10 +83,11 @@ Font::Font(const char *name, bool antialias) {
 	}
 
 	// create the right font implementation
+	// antialias is prio 1
 #ifdef USE_XFT
-	antialias = true;
 	if (antialias) {
 		m_fontimp = std::auto_ptr<FontImp>(new XftFontImp());
+		m_antialias = true;
 	}
 #endif //USE_XFT
 	// if we didn't create a Xft font then create basic font
@@ -108,18 +111,19 @@ Font::~Font() {
 void Font::setAntialias(bool flag) {
 
 #ifdef USE_XFT
-	bool is_antialias = typeid(m_fontimp) == typeid(XftFontImp);	
-
-	if (flag &&  !is_antialias) {
+	if (flag && !isAntialias()) {
 		m_fontimp = std::auto_ptr<FontImp>(new XftFontImp(m_fontstr.c_str()));
-	} else if (!flag && is_antialias) 
+	} else if (!flag && isAntialias()) 
 #endif // USE_XFT
 	{
 		if (m_multibyte || m_utf8mode)
 			m_fontimp = std::auto_ptr<FontImp>(new XmbFontImp(m_fontstr.c_str(), m_utf8mode));
-		else
+		else {
 			m_fontimp = std::auto_ptr<FontImp>(new XFontImp(m_fontstr.c_str()));
+		}
 	}
+
+	m_antialias = flag;
 }
 
 bool Font::load(const char *name) {
