@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.7 2003/04/26 22:10:53 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.8 2003/07/19 03:59:56 rathnor Exp $
 
 #include "MenuTheme.hh"
 
@@ -51,7 +51,9 @@ MenuTheme::MenuTheme(int screen_num):
     m_border_width(*this, "borderWidth", "BorderWidth"),
     m_bevel_width(*this, "bevelWidth", "BevelWidth"),
     m_border_color(*this, "borderColor", "BorderColor"),
-    m_display(FbTk::App::instance()->display()) { 
+    m_display(FbTk::App::instance()->display()),
+    m_alpha(255)
+{ 
 	
     Window rootwindow = RootWindow(m_display, screen_num);
 

@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/19:
+   * Move menu alpha setting into MenuTheme (Simon)
+     - fixes alpha init on multi-screened machines
+     MenuTheme.hh/cc Menu.hh/cc Screen.cc
    * Add compiled-in defaults to fluxbox -info (thanks Matt Hope)
      main.cc
    * Redo ResourceManager so that it loads resources on registration, and

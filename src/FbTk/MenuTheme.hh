@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.6 2003/05/04 21:01:43 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.7 2003/07/19 03:59:56 rathnor Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -86,6 +86,10 @@ public:
 
     unsigned int borderWidth() const { return *m_border_width; }
     unsigned int bevelWidth() const { return *m_bevel_width; }
+
+    inline unsigned char alpha() const { return m_alpha; }
+    void setAlpha(unsigned char alpha) { m_alpha = alpha; }
+
     const FbTk::Color &borderColor() const { return *m_border_color; }
     FbTk::Subject &themeChangeSig() { return m_theme_change_sig; }
     /// attach observer
@@ -107,6 +111,8 @@ private:
     Display *m_display;
     GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
     FbTk::Subject m_theme_change_sig;
+
+    unsigned char m_alpha;
 };
 
 }; // end namespace FbTk

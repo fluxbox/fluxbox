@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.28 2003/07/10 11:57:37 fluxgen Exp $
+// $Id: Menu.cc,v 1.29 2003/07/19 03:59:56 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -77,7 +77,6 @@ namespace FbTk {
 
 static Menu *shown = 0;
 
-unsigned char Menu::s_alpha = 255;
 Menu *Menu::s_focused = 0;
 
 Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
@@ -92,7 +91,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_border_width(0),
     m_themeobserver(*this), 
     m_trans(new Transparent(getRootPixmap(screen_num), 0,
-                            s_alpha, screen_num)),
+                            tm.alpha(), screen_num)),
     m_need_update(true) {
 
     // make sure we get updated when the theme is reloaded
@@ -139,7 +138,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
 
     m_root_pm = getRootPixmap(screen_num);
     m_trans->setSource(m_root_pm, screen_num);
-    m_trans->setAlpha(s_alpha);
+    m_trans->setAlpha(alpha());
 
     //set attributes for menu window
     unsigned long attrib_mask = CWOverrideRedirect | CWEventMask;
@@ -952,8 +951,8 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
                item_x, item_y,
                menu.item_w, menu.item_h, False);
 
-    if (m_trans->alpha() != s_alpha)
-        m_trans->setAlpha(s_alpha);
+    if (m_trans->alpha() != alpha())
+        m_trans->setAlpha(alpha());
     if (m_trans.get() && render_trans) {
 
         if (m_trans->alpha() != 255) {                               
@@ -1338,8 +1337,8 @@ void Menu::reconfigure() {
     menu.window.setBorderWidth(m_border_width);
     menu.title.setBorderWidth(m_border_width);
 
-    if (m_trans.get() && m_trans->alpha() != s_alpha)
-        m_trans->setAlpha(s_alpha);
+    if (m_trans.get() && m_trans->alpha() != alpha())
+        m_trans->setAlpha(alpha());
 
     update();
 }
@@ -1348,8 +1347,8 @@ void Menu::renderTransFrame() {
     if (m_trans.get() == 0 || moving)
         return;
 
-    if (m_trans->alpha() != s_alpha)
-        m_trans->setAlpha(s_alpha);
+    if (m_trans->alpha() != alpha())
+        m_trans->setAlpha(alpha());
 
     if (m_trans->alpha() != 255) {
 

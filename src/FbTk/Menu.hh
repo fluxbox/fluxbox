@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.18 2003/07/10 11:55:49 fluxgen Exp $
+// $Id: Menu.hh,v 1.19 2003/07/19 03:59:56 rathnor Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -39,11 +39,11 @@
 #include "Observer.hh"
 #include "XLayerItem.hh"
 #include "FbPixmap.hh"
+#include "MenuTheme.hh"
 
 namespace FbTk {
 
 class MenuItem;
-class MenuTheme;
 class ImageControl;
 class Transparent;
 
@@ -94,8 +94,6 @@ public:
 
     void disableTitle();
     void enableTitle();
-
-    static void setAlpha(unsigned char alpha) { s_alpha = alpha; }
 
     /**
        @name event handlers
@@ -153,7 +151,7 @@ public:
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
     const MenuTheme &theme() const { return m_theme; }
-    static unsigned char alpha() { return s_alpha; }
+    inline unsigned char alpha() const { return m_theme.alpha(); }
     static Menu *focused() { return s_focused; }
     /// @return menuitem at index
     inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
@@ -218,7 +216,6 @@ private:
     ThemeObserver m_themeobserver;
     std::auto_ptr<Transparent> m_trans;
     Drawable m_root_pm;
-    static unsigned char s_alpha;
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
     FbPixmap m_frame_pm;
     bool m_need_update;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.203 2003/07/18 15:40:55 rathnor Exp $
+// $Id: Screen.cc,v 1.204 2003/07/19 03:59:55 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -341,7 +341,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // load this screens resources
     fluxbox->load_rc(*this);
 
-    FbTk::Menu::setAlpha(*resource.menu_alpha);
+    m_menutheme->setAlpha(*resource.menu_alpha);
 
     imageControl().setDither(*resource.image_dither);
 
@@ -594,7 +594,7 @@ void BScreen::reconfigure() {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): BScreen::reconfigure"<<endl;
 #endif // DEBUG
-    FbTk::Menu::setAlpha(*resource.menu_alpha);
+    m_menutheme->setAlpha(*resource.menu_alpha);
     Fluxbox::instance()->loadRootCommand(*this);
 
     // setup windowtheme, toolbartheme for antialias
