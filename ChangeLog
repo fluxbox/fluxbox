@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/11/20:
+  * Fix for (possible) segfaults at Restart/Exit (Mathias)
+    should close  #1067582, #1067580, #1060912
+    fluxbox.cc Screen.cc
   * Fix for adding/removing Workspaces via Menu (thanx Øyvind Albrigtsen)
     WorkspaceMenu.cc
 *04/11/19:
