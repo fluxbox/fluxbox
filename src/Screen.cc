@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.26 2002/02/20 22:40:19 fluxgen Exp $
+// $Id: Screen.cc,v 1.27 2002/02/20 23:04:51 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1712,37 +1712,31 @@ void BScreen::hideGeometry(void) {
 //-------------- nextWorkspace ---------------
 // Goes to the workspace "right" of the current
 //--------------------------------------------
-void BScreen::nextWorkspace(void) {
-	if (getCurrentWorkspaceID()+1 > getCount()-1)
-		changeWorkspaceID(0);
-	else
-		changeWorkspaceID(getCurrentWorkspaceID()+1);
+void BScreen::nextWorkspace(const int delta) {
+    changeWorkspaceID( (getCurrentWorkspaceID()+delta) % getCount());
 }
 
 //------------- prevWorkspace ----------------
 // Goes to the workspace "left" of the current
 //--------------------------------------------
-void BScreen::prevWorkspace(void) {
-	if (getCurrentWorkspaceID()-1 < 0)
-		changeWorkspaceID(getCount()-1);
-	else
-		changeWorkspaceID(getCurrentWorkspaceID()-1);
+void BScreen::prevWorkspace(const int delta) {
+    changeWorkspaceID( (getCurrentWorkspaceID()-delta+getCount()) % getCount());
 }
 
 //-------------- rightWorkspace ---------------
 // Goes to the workspace "right" of the current
 //--------------------------------------------
-void BScreen::rightWorkspace(void) {
-	if (getCurrentWorkspaceID()+1 < getCount())
-		changeWorkspaceID(getCurrentWorkspaceID()+1);
+void BScreen::rightWorkspace(const int delta) {
+	if (getCurrentWorkspaceID()+delta < getCount())
+		changeWorkspaceID(getCurrentWorkspaceID()+delta);
 }
 
 //------------- leftWorkspace ----------------
 // Goes to the workspace "left" of the current
 //--------------------------------------------
-void BScreen::leftWorkspace(void) {
-	if (getCurrentWorkspaceID() > 0)
-		changeWorkspaceID(getCurrentWorkspaceID()-1);
+void BScreen::leftWorkspace(const int delta) {
+	if (getCurrentWorkspaceID() >= delta)
+		changeWorkspaceID(getCurrentWorkspaceID()-delta);
 }
 
 #ifdef GNOME
