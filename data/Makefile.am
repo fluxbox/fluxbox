@@ -1,10 +1,10 @@
 # data/Makefile.am for Fluxbox - an X11 Window manager
 
 SUBDIRS= 		styles
-CLEANFILES= 		menu menu.in menu.pre menu.bak init startup
+CLEANFILES= 		menu menu.in menu.pre menu.bak init
 MAINTAINERCLEANFILES= 	Makefile.in
-pkgdata_DATA= 		keys menu init startup
-EXTRA_DIST= 		keys init.in startup.in README.style README.menu README
+pkgdata_DATA= 		keys menu init
+EXTRA_DIST= 		keys init.in README.style README.menu README
 all-local: 		menu init
 distclean-local:
 		rm -f *\~
@@ -17,10 +17,6 @@ menu: 			../util/fluxbox-generate_menu
 		MENUTITLE="Fluxbox-${VERSION}" \
 		INSTALL=Yes \
 		../util/fluxbox-generate_menu
-
-startup: 		startup.in
-	@regex_cmd@ -e "s,@pkgbindir@,$(bindir),g" \
-		startup.in > startup
 
 ../util/fluxbox-generate_menu:
 	cd ../util && make fluxbox-generate_menu
