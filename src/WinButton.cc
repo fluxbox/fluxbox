@@ -19,15 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.4 2003/04/28 22:41:28 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.5 2003/05/06 23:58:08 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
 #include "Window.hh"
 #include "WinButtonTheme.hh"
-
-#include <iostream>
-using namespace std;
 
 namespace {
 
@@ -46,15 +43,27 @@ void updateScale(const FbTk::Button &btn, WinButtonTheme &theme) {
 
     // we need to scale our pixmaps to right size
     scale(btn, theme.closePixmap());
+    scale(btn, theme.closeUnfocusPixmap());
     scale(btn, theme.closePressedPixmap());
+
     scale(btn, theme.maximizePixmap());
+    scale(btn, theme.maximizeUnfocusPixmap());
     scale(btn, theme.maximizePressedPixmap());
+
     scale(btn, theme.iconifyPixmap());
+    scale(btn, theme.iconifyUnfocusPixmap());
     scale(btn, theme.iconifyPressedPixmap());
+
     scale(btn, theme.shadePixmap());
+    scale(btn, theme.shadeUnfocusPixmap());
     scale(btn, theme.shadePressedPixmap());
+
     scale(btn, theme.stickPixmap());
+    scale(btn, theme.stickUnfocusPixmap());
     scale(btn, theme.stickPressedPixmap());
+
+    scale(btn, theme.stuckPixmap());
+    scale(btn, theme.stuckUnfocusPixmap());
 }
 
 };
@@ -91,9 +100,18 @@ void WinButton::drawType() {
                                              maximizePressedPixmap().
                                              pixmap_scaled.drawable());
             } else if (m_theme.maximizePixmap().pixmap_scaled.drawable()) {
-                window().setBackgroundPixmap(m_theme.
-                                             maximizePixmap().
-                                             pixmap_scaled.drawable());
+                // check focus 
+                if (!m_listen_to.isFocused() && 
+                    m_theme.maximizeUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    // not focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 maximizeUnfocusPixmap().
+                                                 pixmap_scaled.drawable());
+                } else { // focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 maximizePixmap().
+                                                 pixmap_scaled.drawable());
+                }
             }
             
             window().clear();
@@ -114,9 +132,18 @@ void WinButton::drawType() {
                                              iconifyPressedPixmap().
                                              pixmap_scaled.drawable());
             } else if (m_theme.iconifyPixmap().pixmap_scaled.drawable()){
-                window().setBackgroundPixmap(m_theme.
-                                             iconifyPixmap().
-                                             pixmap_scaled.drawable());
+                // check focus 
+                if (!m_listen_to.isFocused() && 
+                    m_theme.iconifyUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    // not focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 iconifyUnfocusPixmap().
+                                                 pixmap_scaled.drawable());
+                } else { // focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 iconifyPixmap().
+                                                 pixmap_scaled.drawable());
+                }
             }
             
             window().clear();
@@ -130,17 +157,45 @@ void WinButton::drawType() {
         break;
     case STICK:
         if (m_theme.stickPixmap().pixmap_scaled.drawable() != 0) {
-            if (pressed()) { 
-                window().setBackgroundPixmap(m_theme.
-                                             stickPressedPixmap().
-                                             pixmap_scaled.drawable());
+            if (m_listen_to.isStuck() && 
+                m_theme.stuckPixmap().pixmap_scaled.drawable() &&
+                ! pressed()) { // we're using the same pixmap for pressed as in not stuck
+                // check focus 
+                if (!m_listen_to.isFocused() && 
+                    m_theme.stuckUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    // not focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 stuckUnfocusPixmap().
+                                                 pixmap_scaled.drawable());
+                } else { // focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 stuckPixmap().
+                                                 pixmap_scaled.drawable());
+                }
+            } else { // not stuck
 
-            } else if (m_theme.closePixmap().pixmap_scaled.drawable()) {
-                window().setBackgroundPixmap(m_theme.
-                                             stickPixmap().
-                                             pixmap_scaled.drawable());
-            }
-            
+                if (pressed()) { 
+                    window().setBackgroundPixmap(m_theme.
+                                                 stickPressedPixmap().
+                                                 pixmap_scaled.drawable());
+
+                } else if (m_theme.stickPixmap().pixmap_scaled.drawable()) {
+                    // check focus 
+                    if (!m_listen_to.isFocused() && 
+                        m_theme.stickUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                        // not focused
+                        window().setBackgroundPixmap(m_theme.
+                                                     stickUnfocusPixmap().
+                                                     pixmap_scaled.drawable());
+                    } else { // focused
+                        window().setBackgroundPixmap(m_theme.
+                                                     stickPixmap().
+                                                     pixmap_scaled.drawable());
+                    }
+
+                }
+            } // end if stuck
+
             window().clear();
             
         } else {
@@ -166,9 +221,18 @@ void WinButton::drawType() {
                                              pixmap_scaled.drawable());
 
             } else if (m_theme.closePixmap().pixmap_scaled.drawable()) {
-                window().setBackgroundPixmap(m_theme.
-                                             closePixmap().
-                                             pixmap_scaled.drawable());
+                // check focus 
+                if (!m_listen_to.isFocused() && 
+                    m_theme.closeUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    // not focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 closeUnfocusPixmap().
+                                                 pixmap_scaled.drawable());
+                } else { // focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 closePixmap().
+                                                 pixmap_scaled.drawable());
+                }
             }
             
             window().clear();
@@ -191,9 +255,18 @@ void WinButton::drawType() {
                                              shadePressedPixmap().
                                              pixmap_scaled.drawable());
             } else if (m_theme.shadePixmap().pixmap_scaled.drawable()) {
-                window().setBackgroundPixmap(m_theme.
-                                             shadePixmap().
-                                             pixmap_scaled.drawable());
+                // check focus 
+                if (!m_listen_to.isFocused() && 
+                    m_theme.shadeUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    // not focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 shadeUnfocusPixmap().
+                                                 pixmap_scaled.drawable());
+                } else { // focused
+                    window().setBackgroundPixmap(m_theme.
+                                                 shadePixmap().
+                                                 pixmap_scaled.drawable());
+                }
             }
             
             window().clear();            

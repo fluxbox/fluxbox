@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinButtonTheme.cc,v 1.2 2003/04/28 22:33:19 fluxgen Exp $
+// $Id: WinButtonTheme.cc,v 1.3 2003/05/06 23:56:46 fluxgen Exp $
 
 #include "WinButtonTheme.hh"
 
@@ -80,15 +80,22 @@ setFromString(const char *str) {
 WinButtonTheme::WinButtonTheme(int screen_num):
     FbTk::Theme(screen_num),
     m_close_pm(*this, "window.close.pixmap", "Window.Close.Pixmap"),
+    m_close_unfocus_pm(*this, "window.close.unfocus.pixmap", "Window.Close.Unfocus.Pixmap"),
     m_close_pressed_pm(*this, "window.close.pressed.pixmap", "Window.Close.Pressed.Pixmap"),
     m_maximize_pm(*this, "window.maximize.pixmap", "Window.Maximize.Pixmap"),
+    m_maximize_unfocus_pm(*this, "window.maximize.unfocus.pixmap", "Window.Maximize.Unfocus.pixmap"),
     m_maximize_pressed_pm(*this, "window.maximize.pressed.pixmap", "Window.Maximize.Pressed.Pixmap"),
     m_iconify_pm(*this, "window.iconify.pixmap", "Window.Iconify.Pixmap"),
+    m_iconify_unfocus_pm(*this, "window.iconify.unfocus.pixmap", "Window.Iconify.Unfocus.Pixmap"),    
     m_iconify_pressed_pm(*this, "window.iconify.pressed.pixmap", "Window.Iconify.Pressed.Pixmap"),
     m_shade_pm(*this, "window.shade.pixmap", "Window.Shade.Pixmap"),
+    m_shade_unfocus_pm(*this, "window.shade.unfocus.pixmap", "Window.Shade.Unfocus.Pixmap"),
     m_shade_pressed_pm(*this, "window.shade.pressed.pixmap", "Window.Shade.Pressed.Pixmap"),
     m_stick_pm(*this, "window.stick.pixmap", "Window.Stick.Pixmap"),
-    m_stick_pressed_pm(*this, "window.stick.pressed.pixmap", "Window.Stick.Pressed.Pixmap") {
+    m_stick_unfocus_pm(*this, "window.stick.unfocus.pixmap", "Window.Stick.Unfocus.Pixmap"),
+    m_stick_pressed_pm(*this, "window.stick.pressed.pixmap", "Window.Stick.Pressed.Pixmap"),
+    m_stuck_pm(*this, "window.stuck.pixmap", "Window.Stuck.Pixmap"),
+    m_stuck_unfocus_pm(*this, "window.stuck.unfocus.pixmap", "Window.Stuck.Unfocus.Pixmap") {
 
 }
 
