@@ -22,10 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.25 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: Window.hh,v 1.26 2002/08/11 22:33:41 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
+
+#include "BaseDisplay.hh"
+#include "Timer.hh"
+#include "Windowmenu.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -33,10 +37,6 @@
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
-
-#include "BaseDisplay.hh"
-#include "Timer.hh"
-#include "Windowmenu.hh"
 
 #include <vector>
 #include <string>
@@ -173,6 +173,8 @@ public:
 	inline unsigned int getClientHeight() const { return client.height; }
 	inline unsigned int getClientWidth() const { return client.width; }
 	inline unsigned int getTitleHeight() const { return frame.title_h; }
+	const std::string className() const { return m_class_name; }
+	const std::string instanceName() const { return m_instance_name; }
 	bool isLowerTab() const;
 	//@}
 
@@ -183,7 +185,7 @@ public:
 	bool validateClient();
 	bool setInputFocus();
 	void setTab(bool flag);
-	void setFocusFlag(bool);
+	void setFocusFlag(bool flag);
 	void iconify();
 	void deiconify(bool = true, bool = true);
 	void close();
@@ -239,6 +241,10 @@ public:
 private:
 	
 	BImageControl *image_ctrl; //image control for rendering
+	
+	// got from WM_CLASS
+	std::string m_instance_name;
+	std::string m_class_name;
 	
 	//Window state
 	bool moving, resizing, shaded, maximized, visible, iconic, transient,
