@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.158 2003/05/12 04:28:46 fluxgen Exp $
+// $Id: Screen.cc,v 1.159 2003/05/12 04:47:34 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2471,6 +2471,9 @@ void BScreen::updateSize() {
     rootWindow().updateGeometry();
 
     // reconfigure anything that depends on root window size
+
+    // reset background
+    m_root_theme->reconfigTheme();
 
     if (getToolbar())
         getToolbar()->reconfigure();
