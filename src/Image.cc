@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.16 2002/09/15 09:42:00 fluxgen Exp $
+// $Id: Image.cc,v 1.17 2002/11/14 10:12:42 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -2288,23 +2288,24 @@ Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
 
 
 void BImageControl::removeImage(Pixmap pixmap) {
-	if (pixmap) {
-		CacheList::iterator it = cache.begin();
-		CacheList::iterator it_end = cache.end();
-		for (; it != it_end; ++it) {
-			if ((*it)->pixmap == pixmap) {
-				if ((*it)->count) {
-					(*it)->count--;
+	if (!pixmap)
+		return;
+
+	CacheList::iterator it = cache.begin();
+	CacheList::iterator it_end = cache.end();
+	for (; it != it_end; ++it) {
+		if ((*it)->pixmap == pixmap) {
+			if ((*it)->count) {
+				(*it)->count--;
 
 #ifdef		TIMEDCACHE
-					timeout();
+				timeout();
 #else // !TIMEDCACHE
-					if (! (*it)->count) timeout();
+				if (! (*it)->count) timeout();
 #endif // TIMEDCACHE
-				}
-
-				return;
 			}
+
+			return;
 		}
 	}
 }
