@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.66 2004/06/13 12:01:52 fluxgen Exp $
+// $Id: Menu.cc,v 1.67 2004/06/14 12:24:23 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -381,7 +381,6 @@ void Menu::enableTitle() {
 }
 
 void Menu::update(int active_index) {
-
     if (title_vis) {
         menu.item_w = theme().titleFont().textWidth(menu.label.c_str(),
                                                     menu.label.size());
@@ -485,7 +484,7 @@ void Menu::update(int active_index) {
                                          m_title_pm.width(), m_title_pm.height());
 
             }
-            
+
         }
     }
 
@@ -536,8 +535,8 @@ void Menu::update(int active_index) {
                           width(), menu.frame_h);
 
 
-    if (m_need_update && (m_frame_pm.width() != menu.frame.width() ||
-                          m_frame_pm.height() != menu.frame.height() )){
+    if (m_need_update || m_frame_pm.width() != menu.frame.width() ||
+        m_frame_pm.height() != menu.frame.height()){
 
         m_frame_pm = FbTk::FbPixmap(menu.frame.window(),
                                     menu.frame.width(), menu.frame.height(),
@@ -548,82 +547,61 @@ void Menu::update(int active_index) {
                                          menu.frame.depth());
 
         menu.frame.setBackgroundPixmap(m_real_frame_pm.drawable());
-
+        GContext def_gc(menu.frame);
         if (m_frame_pm.drawable() == 0) {
             _FB_USES_NLS;
             cerr<<"FbTk::Menu: "<<_FBTKTEXT(Error, CreatePixmap, "Error creating pixmap", "Couldn't create a pixmap - image - for some reason")<<" ("<<
                 menu.frame.window()<<", "<<menu.frame.width()<<", "<<
                 menu.frame.height()<<
                 ", "<<menu.frame.depth()<<") !"<<endl;
-        } else if (menu.sublevels > 0 && menu.persub * menu.sublevels != (int)menuitems.size()) {
+        } else {
 
-            // TODO: fill only that part of the menuframe with the
-            // pixmap/color, that has actually NO buttons on it
-            // ??? did I made this comment ? (fluxgen)
-            // if so, what am I talking about?
-            GContext def_gc(menu.frame);
             if (menu.frame_pixmap == 0) {
                 def_gc.setForeground(theme().frameTexture().color());
                 m_frame_pm.fillRectangle(def_gc.gc(),
                                          0, 0,
                                          width(), menu.frame_h);
-                m_real_frame_pm.fillRectangle(def_gc.gc(),
-                                              0, 0,
-                                              width(), menu.frame_h);
             } else {
                 m_frame_pm.copyArea(menu.frame_pixmap, def_gc.gc(),
                                     0, 0,
                                     0, 0,
                                     width(), menu.frame_h);
-
-                m_real_frame_pm.copyArea(menu.frame_pixmap, 
-                                         def_gc.gc(),
-                                         0, 0,
-                                         0, 0,
-                                         width(), menu.frame_h);
             }
+            
 
         }
-        
+
+        m_real_frame_pm.copyArea(m_frame_pm.drawable(),
+                                 def_gc.gc(),
+                                 0, 0,
+                                 0, 0,
+                                 m_frame_pm.width(), m_frame_pm.height());
+            
     }
 
     // if menu visible and title visible
     if (title_vis && visible) 
         redrawTitle();
 
-    if (active_index >= 0 && isVisible()) {
-        move(x(), y());
+    if (active_index >= 0 || m_need_update) {
+
         renderTransp(0, 0,
                      m_real_frame_pm.width(), m_real_frame_pm.height());
         for (unsigned int i = 0; i < menuitems.size(); i++) {
             if (i == (unsigned int)which_sub) {
-                drawItem(i, true, // highlight
-                         true,  // clear
+                drawItem(i,      // index
+                         true,   // highlight
+                         true,   // clear
                          false); // render_trans
-            } else
-                drawItem(i, 
-                         // high light
+            } else {
+                drawItem(i,     // index
+                                // highlight
                          (static_cast<signed>(i) == active_index && isItemEnabled(i)), 
                          true,  // clear 
                          false); // render transparent
+            }
         }
-
-        //        if (m_parent)
-        //            m_parent->drawSubmenu(m_parent->which_sub);
-        /*
-          renderTransp(0, active_index*menu.item_h,
-          width(), menu.item_h);       
-        */
-
-    }
-
-    if (m_need_update) {
-        for (unsigned int i = 0; i < menuitems.size(); i++) {
-            if (i == (unsigned int)which_sub) {
-                drawItem(i, true, true, false);
-            } else
-                drawItem(i, (static_cast<signed>(i) == active_index && isItemEnabled(i)), true, true);
-        }
+        
     }
 
     m_need_update = false;
@@ -633,6 +611,7 @@ void Menu::update(int active_index) {
 void Menu::show() {
     if (m_need_update)
         update();
+
     menu.window.showSubwindows();
     menu.window.show();
     raise();
@@ -644,7 +623,7 @@ void Menu::show() {
 
         shown = this;
     }
-
+    
 }
 
 
@@ -707,6 +686,15 @@ void Menu::internal_hide() {
 
 
 void Menu::move(int x, int y) {
+    if (x == this->x() && y == this->y())
+        return;
+
+    // if we're not visible and we do transparency
+    // we need to update transparency when we call
+    // show() next time
+    if (alpha() < 255)
+        m_need_update = true;
+
     menu.window.move(x, y);
 
     if (!isVisible())
@@ -725,7 +713,7 @@ void Menu::move(int x, int y) {
                      true, // clear
                      false); // transparent
         }
-
+        m_need_update = false;
     }
 
 }
@@ -962,18 +950,20 @@ int Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_t
         
     }
 
-    if (render_trans)
+    if (render_trans) {
         renderTransp(item_x, item_y,
                      width(), theme().itemHeight()); 
+    }
 
     item->draw(m_real_frame_pm, theme(), highlight, 
                item_x, item_y, 
                menu.item_w, theme().itemHeight());
 
 
-    if (clear)
+    if (clear) {
         menu.frame.clearArea(item_x, item_y,
                              menu.item_w, theme().itemHeight(), False);
+    }
 
 
     return item_y;
@@ -1072,7 +1062,22 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
     if (re.window == menu.title) {
         if (moving) {
             moving = false;
-            move(x(), y());
+
+            if (which_sub != -1)
+                drawSubmenu(which_sub);
+
+            if (alpha() < 255) {
+                redrawTitle();
+                menu.title.clear();
+                renderTransp(0, 0,
+                             m_real_frame_pm.width(), m_real_frame_pm.height());
+                for (size_t i=0; i < menuitems.size(); ++i) {
+                    drawItem(i, false, // highlight
+                             true, // clear
+                             false); // transparent
+                }
+
+            }
         }
 
         if (re.x >= 0 && re.x <= (signed) width() &&
@@ -1196,54 +1201,8 @@ void Menu::exposeEvent(XExposeEvent &ee) {
     if (ee.window == menu.title) {
         redrawTitle();
         menu.title.clearArea(ee.x, ee.y, ee.width, ee.height);
-    } else if (ee.window == menu.frame) {
-
-        if (moving) {
-            menu.frame.clearArea(ee.x, ee.y, ee.width, ee.height);
-            return;
-        }
-
-        // this is a compilicated algorithm... lets do it step by step...
-        // first... we see in which sub level the expose starts... and how many
-        // items down in that sublevel
-
-        // Simon was here :-) I think this all makes much more sense when
-        // we rename sbl to "start_col", sbl_d to "end_col", ditto id -> row
-        // a "sublevel" is basically a column in a multi-column menu (e.g. placement)
-        
-        if (menu.item_w == 0)
-            menu.item_w = 1;
-
-        unsigned int 
-            start_column = (ee.x / menu.item_w), 
-            end_column = ((ee.x + ee.width) / menu.item_w),
-            start_row = (ee.y / theme().itemHeight()),
-            end_row = ((ee.y + ee.height) / theme().itemHeight());
-        if (static_cast<signed>(end_row) > menu.persub) 
-            end_row = menu.persub;
-
-        // draw the sublevels and the number of items the exposure spans
-        unsigned int col, row;
-        int max_y = 0;
-        for (col = start_column; col <= end_column; col++) {
-            // set the iterator to the first item in the column needing redrawing
-            unsigned int index = start_row + col * menu.persub;
-            if (index < menuitems.size()) {
-                Menuitems::iterator it = menuitems.begin() + index;
-                Menuitems::iterator it_end = menuitems.end();
-                for (row = start_row; row <= end_row && it != it_end; ++it, row++) {
-                    unsigned int index = row + (col * menu.persub);
-                    max_y = max(drawItem(index, 
-                                         (which_sub == static_cast<signed>(index)), // highlight
-                                         false, // clear
-                                         true), max_y); // render trans
-                }
-            }
-        }
-        
+    } else if (ee.window == menu.frame)
         menu.frame.clearArea(ee.x, ee.y, ee.width, ee.height);
-
-    }
 }
 
 
@@ -1375,6 +1334,7 @@ void Menu::reconfigure() {
     
 
     update();
+
 }
     
 
@@ -1424,10 +1384,8 @@ void Menu::update(FbTk::Subject *subj) {
                   
 void Menu::renderTransp(int x, int y,
                         unsigned int width, unsigned int height) {
-    // no need to render transparent unless visible
-    if (!isVisible())
-        return;
-
+    // even though we dont render transparency
+    // we do need to copy the style background
     GContext def_gc(menu.frame);
     m_real_frame_pm.copyArea(m_frame_pm.drawable(),
                              def_gc.gc(),
@@ -1435,9 +1393,14 @@ void Menu::renderTransp(int x, int y,
                              x, y,
                              width, height);
 
-    if (m_transp.get() == 0)
+    // no need to render transparent unless visible
+    // but we do need to render it if we marked it as
+    // need update
+    if (!isVisible() && !m_need_update || m_transp.get() == 0)
         return;
-    
+
+
+    // render the root background
 #ifdef HAVE_XRENDER
 
     Pixmap root = getRootPixmap(screenNumber());
