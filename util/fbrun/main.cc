@@ -38,7 +38,7 @@ extern  "C" {
 using namespace std;
 
 void showUsage(const char *progname) {
-    cerr<<"fbrun 1.1.3 : (c) 2002-2003 Henrik Kinnunen"<<endl;
+    cerr<<"fbrun 1.5 : (c) 2002-2004 Henrik Kinnunen"<<endl;
     cerr<<"Usage: "<<
         progname<<" [arguments]"<<endl<<
         "Arguments: "<<endl<<
