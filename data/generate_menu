@@ -1,4 +1,4 @@
-# generate_menu for Fluxbox 
+# generate_menu for Fluxbox
 # Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,210 +23,124 @@
 
 FILENAME=menu.in
 
+find_it() {
+	if [ ! -z "$(which $1 2>/dev/null | grep "^/.*$1")" ]; then
+		if [ -x "$(which $1)" ]; then
+			shift
+			$*
+		else
+			echo "$1 exists but it is not executable!  Check permissions."
+		fi
+	fi
+}
+
+append() {
+	echo "	$*" >> $FILENAME
+}
+
+append_menu() {
+	echo "$*" >> $FILENAME
+}
 
 # Start of menu
 
 echo "[begin] (Fluxbox @VERSION@)" > $FILENAME
 
-if [ -x `which xterm` ]; then 		
-		echo "	[exec] (xterm) {xterm -fg white -bg black}" >> $FILENAME		
-fi
-
-if [ -x `which nedit` ]; then 		
-		echo "	[exec] (nedit) {nedit}" >> $FILENAME		
-fi
-
-echo "[submenu] (Browsers)" >> $FILENAME
-	if [ -x `which netscape` ]; then 		
-		echo "	[exec] (netscape) {netscape}" >> $FILENAME		
-	fi
-	if [ -x `which opera` ]; then 		
-		echo "	[exec] (opera) {opera}" >> $FILENAME		
-	fi
-	if [ -x `which galeon` ]; then 		
-		echo "	[exec] (galeon) {galeon}" >> $FILENAME		
-	fi
-	if [ -x `which mozilla` ]; then 		
-		echo "	[exec] (mozilla) {mozilla}" >> $FILENAME		
-	fi
-	if [ -x `which konqueror` ]; then 		
-		echo "	[exec] (konqueror) {konqueror}" >> $FILENAME		
-	fi	
-echo "[end]" >> $FILENAME
+find_it xterm           append "[exec]   (xterm) {xterm -fg white -bg black
+}"
+find_it nedit           append "[exec]   (nedit) {nedit}"
 
 
-echo "[submenu] (Editors)" >> $FILENAME
-	if [ -x `which nedit` ]; then 		
-		echo "	[exec] (nedit) {nedit}" >> $FILENAME		
-	fi
-	if [ -x `which vim` ]; then 		
-		echo "	[exec] (vim) {vim -g}" >> $FILENAME		
-	fi
-	if [ -x `which xemacs` ]; then 		
-		echo "	[exec] (xemacs) {xemacs}" >> $FILENAME		
-	fi
-	if [ -x `which gedit` ]; then 		
-		echo "	[exec] (gedit) {gedit}" >> $FILENAME		
-	fi
-	if [ -x `which xedit` ]; then 		
-		echo "	[exec] (xedit) {xedit}" >> $FILENAME		
-	fi
-	if [ -x `which kword` ]; then 		
-		echo "	[exec] (kword) {kword}" >> $FILENAME		
-	fi
+append_menu "[submenu] (Browsers)"
+	find_it netscape    append "[exec]   (netscape) {netscape}"
+	find_it opera       append "[exec]   (opera) {opera}"
+	find_it galeon      append "[exec]   (galeon) {galeon}"
+	find_it mozilla     append "[exec]   (mozilla) {mozilla}"
+	find_it konqueror   append "[exec]   (konqueror) {konqueror}"
+append_menu "[end]"
 
-echo "[end]" >> $FILENAME
 
-echo "[submenu] (Net)" >> $FILENAME
-	if [ -x `which realplay` ]; then 		
-		echo "	[exec] (realplay) {realplay}" >> $FILENAME		
-	fi
+append_menu "[submenu] (Editors)"
+	find_it nedit       append "[exec]   (nedit) {nedit}"
+	find_it vim         append "[exec]   (vim) {vim -g}"
+	find_it xemacs      append "[exec]   (xemacs) {xemacs}"
+	find_it gedit       append "[exec]   (gedit) {gedit}"
+	find_it xedit       append "[exec]   (xedit) {xedit}"
+	find_it kword       append "[exec]   (kword) {kword}"
+append_menu "[end]"
+
+
+append_menu "[submenu] (Net)"
+	find_it realplay    append "[exec]   (realplay) {realplay}"
+	find_it licq        append "[exec]   (licq) {licq}"	
+	find_it sylpheed    append "[exec]   (sylpheed) {sylpheed}"
 	
-	if [ -x `which licq` ]; then 		
-		echo "	[exec] (licq) {licq}" >> $FILENAME		
-	fi
-	if [ -x `which xchat` ]; then 		
-		echo "	[exec] (xchat) {xchat}" >> $FILENAME		
-	fi
-	if [ -x `which sylpheed` ]; then 		
-		echo "	[exec] (sylpheed) {sylpheed}" >> $FILENAME		
-	fi
-	if [ -x `which gftp` ]; then 		
-		echo "	[exec] (gftp) {gftp}" >> $FILENAME		
-	fi
-	if [ -x `which BitchX` ]; then 		
-		echo "	[exec] (BitchX) {xterm -title BitchX -fg white -bg black -e BitchX -N}" >> $FILENAME
-	else
-		if [ -x `which bitchx` ]; then 		
-			echo "	[exec] (BitchX) {xterm -title BitchX -fg white -bg black -e bitchx -N}" >> $FILENAME
-		fi
-	fi
-	if [ -x `which ircii` ]; then 		
-		echo "	[exec] (ircii) {xterm -title ircii -fg white -bg black -e ircii -s}" >> $FILENAME
-	fi
-echo "[end]" >> $FILENAME
+	find_it gftp        append "[exec]   (gftp) {gftp}"
+	find_it xchat       append "[exec]   (xchat) {xchat}"
+	find_it irssi       append "[exec]   (irssi) {xterm -title irssi -e irssi}"
+	find_it BitchX      append "[exec]   (BitchX) {xterm -title BitchX -fg white -bg black -e BitchX -N}"
+	find_it bitchx      append "[exec]   (BitchX) {xterm -title BitchX -fg white -bg black -e bitchx -N}"
+	find_it ircii       append "[exec]   (ircii) {xterm -title ircii -fg white -bg black -e ircii -s}"
+append_menu "[end]"
 
 
-echo "[submenu] (Graphics)" >> $FILENAME
-	if [ -x `which gimp` ]; then 		
-		echo "	[exec] (gimp) {gimp}" >> $FILENAME		
-	fi
-	if [ -x `which xv` ]; then 		
-		echo "	[exec] (xv) {xv}" >> $FILENAME		
-	fi
-	if [ -x `which gqview` ]; then 		
-		echo "	[exec] (gqview) {gqview}" >> $FILENAME		
-	fi
-	if [ -x `which xpaint` ]; then 		
-		echo "	[exec] (xpaint) {xpaint}" >> $FILENAME		
-	fi
-echo "[end]" >> $FILENAME
-
-echo "[submenu] (Music)" >> $FILENAME
-	if [ -x `which xmms` ]; then 		
-		echo "	[exec] (xmms) {xmms}" >> $FILENAME		
-	fi
-	if [ -x `which gqmpeg` ]; then 		
-		echo "	[exec] (gqmpeg) {gqmpeg}" >> $FILENAME		
-	fi
-	if [ -x `which xmixer` ]; then 		
-		echo "	[exec] (xmixer) {xmixer}" >> $FILENAME		
-	fi
-	if [ -x `which gmix` ]; then 		
-		echo "	[exec] (gmix) {gmix}" >> $FILENAME		
-	fi
-	if [ -x `which xplaycd` ]; then 		
-		echo "	[exec] (xplaycd) {xplaycd}" >> $FILENAME		
-	fi
-	if [ -x `which soundtracker` ]; then 		
-		echo "	[exec] (soundtracker) {soundtracker}" >> $FILENAME		
-	fi
-echo "[end]" >> $FILENAME
-
-echo "[submenu] (Terminals)" >> $FILENAME
-	if [ -x `which xterm` ]; then 		
-		echo "	[exec] (xterm) {xterm -fg white -bg black}" >> $FILENAME		
-	fi
-	if [ -x `which gnome-terminal` ]; then
-		echo "  [exec] (gnome-terminal) {gnome-terminal}" >> $FILENAME
-	fi	
-	if [ -x `which Eterm` ]; then
-		echo "  [exec] (Eterm) {Eterm}" >> $FILENAME
-	fi	
-	if [ -x `which konsole` ]; then
-		echo "  [exec] (konsole) {konsole}" >> $FILENAME
-	fi	
-	if [ -x `which aterm` ]; then
-		echo "  [exec] (aterm) {aterm}" >> $FILENAME
-	fi	
-	if [ -x `which rxvt` ]; then
-		echo "  [exec] (rxvt) {rxvt}" >> $FILENAME
-	fi
-echo "[end]" >> $FILENAME	
+append_menu "[submenu] (Graphics)"
+	find_it gimp        append "[exec]   (gimp) {gimp}"
+	find_it xv          append "[exec]   (xv) {xv}"
+	find_it gqview      append "[exec]   (gqview) {gqview}"
+	find_it xpaint      append "[exec]   (xpaint) {xpaint}"
+append_menu "[end]"
 
 
-echo "[submenu] (Misc)" >> $FILENAME
-	if [ -x `which acroread` ]; then
-		echo "  [exec] (acroread) {acroread}" >> $FILENAME
-	fi
-	if [ -x `which gcalc` ]; then
-		echo "  [exec] (gcalc) {gcalc}" >> $FILENAME
-	fi	
-	if [ -x `which xgdb` ]; then
-		echo "  [exec] (xgdb) {xgdb}" >> $FILENAME
-	fi	
-	if [ -x `which ddd` ]; then
-		echo "  [exec] (ddd) {ddd}" >> $FILENAME
-	fi	
-	if [ -x `which xterm` ]; then 		
-	  echo "	[exec] (tail access_log) {xterm -fg white -bg black -title access_log -e tail -f /var/log/access_log}" >> $FILENAME
-	fi
-echo "[end]" >> $FILENAME	
-
-echo "[submenu] (X utils)" >> $FILENAME
-	if [ -x `which xpenguins` ]; then
-		echo "  [exec] (xpenguins) {xpenguins}" >> $FILENAME
-	fi		
-	if [ -x `which xcalc` ]; then
-		echo "  [exec] (xcalc) {xcalc}" >> $FILENAME
-	fi	
-	if [ -x `which xfontsel` ]; then
-		echo "  [exec] (xfontsel) {xfontsel}" >> $FILENAME
-	fi	
-	if [ -x `which xman` ]; then
-		echo "  [exec] (xman) {xman}" >> $FILENAME
-	fi	
-	if [ -x `which xload` ]; then
-		echo "  [exec] (xload) {xload}" >> $FILENAME
-	fi	
-	if [ -x `which xfig` ]; then
-		echo "  [exec] (xfig) {xfig}" >> $FILENAME
-	fi	
-	if [ -x `which xbiff` ]; then
-		echo "  [exec] (xbiff) {xbiff}" >> $FILENAME
-	fi	
-	if [ -x `which editres` ]; then
-		echo "  [exec] (editres) {editres}" >> $FILENAME
-	fi	
-	if [ -x `which viewres` ]; then
-		echo "  [exec] (viewres) {viewres}" >> $FILENAME
-	fi	
-	if [ -x `which xsnow` ]; then
-		echo "  [exec] (xsnow) {xsnow}" >> $FILENAME
-	fi	
-	if [ -x `which xclock` ]; then
-		echo "  [exec] (xclock) {xclock}" >> $FILENAME
-	fi
-echo "[end]" >> $FILENAME		
+append_menu "[submenu] (Music)"
+	find_it xmms        append "[exec]   (xmms) {xmms}"
+	find_it gqmpeg      append "[exec]   (gqmpeg) {gqmpeg}"
+	find_it xmixer      append "[exec]   (xmixer) {xmixer}"
+	find_it gmix        append "[exec]   (gmix) {gmix}"
+	find_it xplaycd     append "[exec]   (xplaycd) {xplaycd}"
+	find_it soundtracker append "[exec]   (soundtracker) {soundtracker}"
+append_menu "[end]"
 
 
-echo "[workspaces] (Workspace List)" >> $FILENAME
-echo "[submenu] (Styles) {Choose a style...}" >> $FILENAME
-echo "[stylesdir] (@pkgdatadir@/styles)" >> $FILENAME
-echo "[end]" >> $FILENAME
-echo "[config] (Configuration)" >> $FILENAME
-echo "[reconfig] (Reconfigure)" >> $FILENAME
-echo "[restart] (Restart)" >> $FILENAME
-echo "[exit] (Exit)" >> $FILENAME
+append_menu "[submenu] (Terminals)"
+	find_it xterm       append "[exec]   (xterm) {xterm -fg white -bg black}"
+	find_it gnome-terminal append "[exec] (gnome-terminal) {gnome-terminal}"
+	find_it Eterm       append "[exec] (Eterm) {Eterm}"
+	find_it konsole     append "[exec] (konsole) {konsole}"
+	find_it aterm       append "[exec] (aterm) {aterm}"
+	find_it rxvt        append "[exec] (rxvt) {rxvt}"
+append_menu "[end]"
 
-echo "[end]" >> $FILENAME
+
+append_menu "[submenu] (Misc)"
+	find_it acroread    append "[exec] (acroread) {acroread}"
+	find_it gcalc       append "[exec] (gcalc) {gcalc}"
+	find_it xgdb        append "[exec] (xgdb) {xgdb}"
+	find_it ddd         append "[exec] (ddd) {ddd}"
+	find_it xterm       append "[exec]   (tail access_log) {xterm -fg white -bg black -title access_log -e tail -f /var/log/access_log}"
+append_menu "[end]"
+
+append_menu "[submenu] (X utils)"
+	find_it xpenguins   append "[exec] (xpenguins) {xpenguins}"
+	find_it xcalc       append "[exec] (xcalc) {xcalc}"
+	find_it xfontsel    append "[exec] (xfontsel) {xfontsel}"
+	find_it xman        append "[exec] (xman) {xman}"
+	find_it xload       append "[exec] (xload) {xload}"
+	find_it xfig        append "[exec] (xfig) {xfig}"
+	find_it xbiff       append "[exec] (xbiff) {xbiff}"
+	find_it editres     append "[exec] (editres) {editres}"
+	find_it viewres     append "[exec] (viewres) {viewres}"
+	find_it xsnow       append "[exec] (xsnow) {xsnow}"
+	find_it xclock      append "[exec] (xclock) {xclock}"
+append_menu "[end]"
+
+append_menu "[workspaces]   (Workspace List)"
+append_menu "[submenu] (Styles) {Choose a style...}"
+append_menu "[stylesdir] (@pkgdatadir@/styles)"
+append_menu "[end]"
+append_menu "[config] (Configuration)"
+append_menu "[reconfig] (Reconfigure)"
+append_menu "[restart] (Restart)"
+append_menu "[exit] (Exit)"
+
+append_menu "[end]"

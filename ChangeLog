@@ -1,6 +1,7 @@
 Changes for 0.1.6:
 *02/01/09:
    * Updated copyright date
+	 * Updated generate_menu (Thanks zyrnix)
 *02/01/08:
    * Made class Keys more independent (layer 2). class Keys now only
      depends on StringUtil.
