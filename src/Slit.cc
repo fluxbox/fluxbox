@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.90 2004/02/10 18:45:26 fluxgen Exp $
+// $Id: Slit.cc,v 1.91 2004/02/12 10:29:24 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -1132,7 +1132,7 @@ void Slit::loadClientList(const char *filename) {
     m_filename = FbTk::StringUtil::expandFilename(filename); 
 
     struct stat buf;
-    if (stat(m_filename.c_str(), &buf) != 0) {
+    if (stat(m_filename.c_str(), &buf) == 0) {
         std::ifstream file(m_filename.c_str());
         std::string name;
         while (! file.eof()) {
