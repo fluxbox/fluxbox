@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.51 2002/04/17 06:57:10 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.52 2002/04/19 09:33:42 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1444,6 +1444,10 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
 		break;
 		case Keys::TOGGLEDECOR:
 			focused_window->toggleDecoration();
+		break;
+		case Keys::TOGGLETAB:
+			focused_window->setTab(!focused_window->hasTab());
+		break;
 		default: //do nothing
 		break;							
 	}
