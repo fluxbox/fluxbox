@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.29 2003/05/15 11:17:27 fluxgen Exp $
+/// $Id: Slit.hh,v 1.30 2003/05/17 11:00:50 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -146,6 +146,7 @@ private:
     std::auto_ptr<FbTk::XLayerItem> m_layeritem;
     std::auto_ptr<SlitTheme> m_slit_theme;
     std::auto_ptr<FbTk::Transparent> m_transp;
+    static unsigned int s_eventmask;
 };
 
 

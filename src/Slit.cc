@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.54 2003/05/15 23:30:06 fluxgen Exp $
+// $Id: Slit.cc,v 1.55 2003/05/17 11:00:50 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -334,7 +334,9 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     reconfigure();
 }
 
-
+unsigned int Slit::s_eventmask = StructureNotifyMask | SubstructureNotifyMask |
+                                 SubstructureRedirectMask | ButtonPressMask |
+                                 EnterWindowMask | LeaveWindowMask | ExposureMask;
 Slit::~Slit() {
     if (frame.pixmap != 0)
         screen().imageControl().removeImage(frame.pixmap);
@@ -462,8 +464,7 @@ void Slit::addClient(Window w) {
     XChangeSaveSet(disp, client->window, SetModeInsert);
 
     // reactivate events for frame.window
-    frame.window.setEventMask(SubstructureRedirectMask |
-                              ButtonPressMask | EnterWindowMask | LeaveWindowMask | ExposureMask);
+    frame.window.setEventMask(s_eventmask);
 
     // setup event for slit client window
     client->enableEvents();
@@ -528,8 +529,7 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
 			client->x, client->y);
         XChangeSaveSet(disp, client->window, SetModeDelete);
         // reactivate events to frame.window
-        frame.window.setEventMask(SubstructureRedirectMask | ButtonPressMask |
-                                          EnterWindowMask | LeaveWindowMask | ExposureMask);
+        frame.window.setEventMask(s_eventmask);
         XFlush(disp);
     }
 
