@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/02/01:
+  * minor changes to ru_RU (thanx php-coder)
 *05/01/31:
+  * Close #1107213, 64bit issues (thanx to  Matthieu Herrb <matthieu.herrb@laas.fr>)
+    Window.hh Ewmh.cc Gnome.cc FbTk/FbPixmap.cc
+  * Close #1111378, -S (smooth) to wmsetbg's aspect-setting
   * Added cs_CZ (thanx to Radek Kubicek)
 *05/01/29:
   * Added icon-support for fbgm (thanx to Dung N. Lam)
