@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.283 2004/06/21 15:23:41 rathnor Exp $
+// $Id: Screen.cc,v 1.284 2004/07/14 12:13:29 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -436,10 +436,26 @@ void BScreen::initWindows() {
     Display *disp = FbTk::App::instance()->display();
     XQueryTree(disp, rootWindow().window(), &r, &p, &children, &nchild);
 
+    // Count number of windows created and when this counter reaches zero
+    // we've created all windows.
+    // We need to do this because  sometimes the transient windows are 
+    // before the transient_for windows in the list and we need to 
+    // postpone the creation of transient windows until the transient_for 
+    // is created (see: WinClient::updateTransientInfo()) 
+    //
+    // - Henrik
+    int created = nchild; // number of created/managed windows
+
+    Fluxbox *fluxbox = Fluxbox::instance();
+
     // preen the window list of all icon windows... for better dockapp support
     for (int i = 0; i < (int) nchild; i++) {
 		
-        if (children[i] == None) continue;
+        if (children[i] == None) {
+            // we dont use this window, decrease counter
+            created--;
+            continue;
+        }
 
         XWMHints *wmhints = XGetWMHints(disp, children[i]);
 
@@ -454,29 +470,71 @@ void BScreen::initWindows() {
                 }
             XFree(wmhints);
         }
+
+        // we dont use this window, decrease counter
+        if (children[i] == None || (! fluxbox->validateWindow(children[i])))
+            created--;
     }
 
     // manage shown windows
-    Fluxbox *fluxbox = Fluxbox::instance();
-    for (int i = 0; i < (int) nchild; ++i) {
-        if (children[i] == None || (! fluxbox->validateWindow(children[i])))
-            continue;
+    Window transient_for = 0;
+    int safety_counter = nchild*nchild;
+    while (created > 0) {
 
-        XWindowAttributes attrib;
-        if (XGetWindowAttributes(disp, children[i],
-                                 &attrib)) {
-            if (attrib.override_redirect) 
+        if (--safety_counter < 0) {
+            cerr<<"BScreen::initWindows() Warning!!! Safety counter reached!"<<endl;
+            cerr<<"--------------"<<endl;
+            cerr<<"created = "<<created<<hex<<endl;
+            for (int i=0; i < nchild; ++i)
+                cerr<<"child("<<i<<") = 0x"<<children[i]<<endl;
+            cerr<<dec<<"--------------"<<endl;
+            cerr<<"Please report this to fluxbox development team."<<endl;
+
+            break;
+        }
+
+        for (int i = 0; i < (int) nchild; ++i) {
+            if (children[i] == None || (! fluxbox->validateWindow(children[i]))) {
+#ifdef DEBUG
+                cerr<<"BScreen::initWindows(): created = "<<created<<endl;
+#endif // DEBUG
                 continue;
+            }
 
-            if (attrib.map_state != IsUnmapped) {
-                FluxboxWindow *win = createWindow(children[i]);
+            // if we have a transient_for window and it isn't created yet...
+            // postpone creation of this window until transient_for is created
+            // See comment at the begining
+            if (XGetTransientForHint(disp, children[i], &transient_for) &&
+                fluxbox->searchWindow(transient_for) == 0)
+                    continue;
 
-                if (win) {
-                    XMapRequestEvent mre;
-                    mre.window = children[i];
-                    win->mapRequestEvent(mre);
+                                 
+            XWindowAttributes attrib;
+            if (XGetWindowAttributes(disp, children[i],
+                                     &attrib)) {
+                if (attrib.override_redirect) {
+                    children[i] = None; // we dont need this anymore, since we already created a window for it
+                    // we "created" a window...decrease creation counter
+                    if (--created <= 0)
+                        break; // end for-loop
+                    continue;
+                }
+
+                if (attrib.map_state != IsUnmapped) {
+                    FluxboxWindow *win = createWindow(children[i]);
+
+                    if (win) {
+                        XMapRequestEvent mre;
+                        mre.window = children[i];
+                        win->mapRequestEvent(mre);
+                    }
                 }
             }
+            children[i] = None; // we dont need this anymore, since we already created a window for it
+            // we created a window...decrease creation counter
+            if (--created <= 0)
+                break; // end for-loop
+            
         }
     }
 
