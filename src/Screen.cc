@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.274 2004/04/12 23:05:10 fluxgen Exp $
+// $Id: Screen.cc,v 1.275 2004/04/19 22:44:42 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -48,6 +48,7 @@
 #include "SlitTheme.hh"
 #include "CommandParser.hh"
 #include "IconMenuItem.hh"
+#include "AtomHandler.hh"
 
 #include "FbTk/Subject.hh"
 #include "FbTk/Directory.hh"
@@ -57,6 +58,7 @@
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/EventManager.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -69,6 +71,7 @@
 
 #ifdef SLIT
 #include "Slit.hh"
+#include "SlitClient.hh"
 #else
 // fill it in
 class Slit {};
@@ -153,265 +156,6 @@ private:
 
 
 } // End anonymous namespace
-
-template <>
-void FbTk::Resource<BScreen::PlacementPolicy>::setDefaultValue() {
-    *(*this) = BScreen::ROWSMARTPLACEMENT;
-}
-
-template <>
-void FbTk::Resource<BScreen::PlacementPolicy>::setFromString(const char *str) {
-    if (strcasecmp("RowSmartPlacement", str) == 0)
-        *(*this) = BScreen::ROWSMARTPLACEMENT;
-    else if (strcasecmp("ColSmartPlacement", str) == 0)
-        *(*this) = BScreen::COLSMARTPLACEMENT;
-    else if (strcasecmp("UnderMousePlacement", str) == 0)
-        *(*this) = BScreen::UNDERMOUSEPLACEMENT;
-    else if (strcasecmp("CascadePlacement", str) == 0)
-        *(*this) = BScreen::CASCADEPLACEMENT;
-    else
-        setDefaultValue();
-    
-}
-
-template <>
-string FbTk::Resource<BScreen::PlacementPolicy>::getString() {
-    switch (*(*this)) {
-    case BScreen::ROWSMARTPLACEMENT:
-        return "RowSmartPlacement";
-    case BScreen::COLSMARTPLACEMENT:
-        return "ColSmartPlacement";
-    case BScreen::UNDERMOUSEPLACEMENT:
-        return "UnderMousePlacement";
-    case BScreen::CASCADEPLACEMENT:
-        return "CascadePlacement";
-    }
-
-    return "RowSmartPlacement";
-}
-
-template <>
-void FbTk::Resource<BScreen::RowDirection>::setDefaultValue() {
-    *(*this) = BScreen::LEFTRIGHT;
-}
-
-template <>
-void FbTk::Resource<BScreen::RowDirection>::setFromString(const char *str) {
-    if (strcasecmp("LeftToRight", str) == 0)
-        *(*this) = BScreen::LEFTRIGHT;
-    else if (strcasecmp("RightToLeft", str) == 0)
-        *(*this) = BScreen::RIGHTLEFT;
-    else
-        setDefaultValue();
-    
-}
-
-template <>
-string FbTk::Resource<BScreen::RowDirection>::getString() {
-    switch (*(*this)) {
-    case BScreen::LEFTRIGHT:
-        return "LeftToRight";
-    case BScreen::RIGHTLEFT:
-        return "RightToLeft";
-    }
-
-    return "LeftToRight";
-}
-
-
-template <>
-void FbTk::Resource<BScreen::ColumnDirection>::setDefaultValue() {
-    *(*this) = BScreen::TOPBOTTOM;
-}
-
-template <>
-void FbTk::Resource<BScreen::ColumnDirection>::setFromString(const char *str) {
-    if (strcasecmp("TopToBottom", str) == 0)
-        *(*this) = BScreen::TOPBOTTOM;
-    else if (strcasecmp("BottomToTop", str) == 0)
-        *(*this) = BScreen::BOTTOMTOP;
-    else
-        setDefaultValue();
-    
-}
-
-template <>
-string FbTk::Resource<BScreen::ColumnDirection>::getString() {
-    switch (*(*this)) {
-    case BScreen::TOPBOTTOM:
-        return "TopToBottom";
-    case BScreen::BOTTOMTOP:
-        return "BottomToTop";
-    }
-
-    return "TopToBottom";
-}
-
-template <>
-void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setDefaultValue() {
-    *(*this) = FbTk::MenuTheme::DELAY_OPEN;
-}
-
-template <>
-string FbTk::Resource<FbTk::MenuTheme::MenuMode>::getString() {
-    switch (*(*this)) {
-    case FbTk::MenuTheme::DELAY_OPEN:
-        return string("Delay");
-    case FbTk::MenuTheme::CLICK_OPEN:
-        return string("Click");
-    }
-    return string("Delay");
-}
-
-template <>
-void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setFromString(const char *str) {
-    if (strcasecmp(str, "Delay") == 0)
-        *(*this) = FbTk::MenuTheme::DELAY_OPEN;
-    else if (strcasecmp(str, "Click") == 0)
-        *(*this) = FbTk::MenuTheme::CLICK_OPEN;
-    else
-        setDefaultValue();
-}
-
-template<>
-std::string FbTk::Resource<BScreen::FocusModel>::
-getString() {
-    switch (m_value) {
-    case BScreen::SLOPPYFOCUS:
-        return string("SloppyFocus");
-    case BScreen::SEMISLOPPYFOCUS:
-        return string("SemiSloppyFocus");
-    case BScreen::CLICKTOFOCUS:
-        return string("ClickToFocus");
-    }
-    // default string
-    return string("ClickToFocus");
-}
-
-template<>
-void FbTk::Resource<BScreen::FocusModel>::
-setFromString(char const *strval) {
-    // auto raise options here for backwards read compatibility
-    // they are not supported for saving purposes. Nor does the "AutoRaise" 
-    // part actually do anything
-    if (strcasecmp(strval, "SloppyFocus") == 0 
-        || strcasecmp(strval, "AutoRaiseSloppyFocus") == 0) 
-        m_value = BScreen::SLOPPYFOCUS;
-    else if (strcasecmp(strval, "SemiSloppyFocus") == 0
-        || strcasecmp(strval, "AutoRaiseSemiSloppyFocus") == 0) 
-        m_value = BScreen::SEMISLOPPYFOCUS;
-    else if (strcasecmp(strval, "ClickToFocus") == 0) 
-        m_value = BScreen::CLICKTOFOCUS;
-    else
-        setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::LineStyle>::setDefaultValue() {
-    *(*this) = FbTk::GContext::LINESOLID;
-}
-
-template<>
-std::string FbTk::Resource<FbTk::GContext::LineStyle>::getString() {
-    switch(m_value) {
-    case FbTk::GContext::LINESOLID:
-        return "LineSolid";
-        break;
-    case FbTk::GContext::LINEONOFFDASH:
-        return "LineOnOffDash";
-        break;
-    case FbTk::GContext::LINEDOUBLEDASH:
-        return "LineDoubleDash";
-        break;
-    };
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::LineStyle>
-::setFromString(char const *strval) { 
-
-    if (strcasecmp(strval, "LineSolid") == 0 )
-        m_value = FbTk::GContext::LINESOLID;
-    else if (strcasecmp(strval, "LineOnOffDash") == 0 )
-        m_value = FbTk::GContext::LINEONOFFDASH;
-    else if (strcasecmp(strval, "LineDoubleDash") == 0) 
-        m_value = FbTk::GContext::LINEDOUBLEDASH;
-    else
-        setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::JoinStyle>::setDefaultValue() {
-    *(*this) = FbTk::GContext::JOINMITER;
-}
-
-template<>
-std::string FbTk::Resource<FbTk::GContext::JoinStyle>::getString() {
-    switch(m_value) {
-    case FbTk::GContext::JOINMITER:
-        return "JoinMiter";
-        break;
-    case FbTk::GContext::JOINBEVEL:
-        return "JoinBevel";
-        break;
-    case FbTk::GContext::JOINROUND:
-        return "JoinRound";
-        break;
-    };
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::JoinStyle>
-::setFromString(char const *strval) { 
-
-    if (strcasecmp(strval, "JoinRound") == 0 )
-        m_value = FbTk::GContext::JOINROUND;
-    else if (strcasecmp(strval, "JoinMiter") == 0 )
-        m_value = FbTk::GContext::JOINMITER;
-    else if (strcasecmp(strval, "JoinBevel") == 0) 
-        m_value = FbTk::GContext::JOINBEVEL;
-    else
-        setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::CapStyle>::setDefaultValue() {
-    *(*this) = FbTk::GContext::CAPNOTLAST;
-}
-
-template<>
-std::string FbTk::Resource<FbTk::GContext::CapStyle>::getString() {
-    switch(m_value) {
-    case FbTk::GContext::CAPNOTLAST:
-        return "CapNotLast";
-        break;
-    case FbTk::GContext::CAPBUTT:
-        return "CapButt";
-        break;
-    case FbTk::GContext::CAPROUND:
-        return "CapRound";
-        break;
-    case FbTk::GContext::CAPPROJECTING:
-        return "CapProjecting";
-        break;
-    };
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::CapStyle>
-::setFromString(char const *strval) { 
-
-    if (strcasecmp(strval, "CapNotLast") == 0 )
-        m_value = FbTk::GContext::CAPNOTLAST;
-    else if (strcasecmp(strval, "CapProjecting") == 0 )
-        m_value = FbTk::GContext::CAPPROJECTING;
-    else if (strcasecmp(strval, "CapRound") == 0) 
-        m_value = FbTk::GContext::CAPROUND;
-    else if (strcasecmp(strval, "CapButt" ) == 0)
-        m_value = FbTk::GContext::CAPBUTT;
-    else
-        setDefaultValue();
-}
 
 namespace {
 
@@ -710,58 +454,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                                     *resource.gc_cap_style,
                                     *resource.gc_join_style);
 
-    int i;
-    unsigned int nchild;
-    Window r, p, *children;
-    XQueryTree(disp, rootWindow().window(), &r, &p, &children, &nchild);
-
-    // preen the window list of all icon windows... for better dockapp support
-    for (i = 0; i < (int) nchild; i++) {
-		
-        if (children[i] == None) continue;
-
-        XWMHints *wmhints = XGetWMHints(FbTk::App::instance()->display(),
-                                        children[i]);
-
-        if (wmhints) {
-            if ((wmhints->flags & IconWindowHint) &&
-                (wmhints->icon_window != children[i]))
-                for (int j = 0; j < (int) nchild; j++) {
-                    if (children[j] == wmhints->icon_window) {
-                        children[j] = None;
-                        break;
-                    }
-                }
-            XFree(wmhints);
-        }
-    }
-
-    // manage shown windows
-    for (i = 0; i < (int) nchild; ++i) {
-        if (children[i] == None || (! fluxbox->validateWindow(children[i])))
-            continue;
-
-        XWindowAttributes attrib;
-        if (XGetWindowAttributes(disp, children[i],
-                                 &attrib)) {
-            if (attrib.override_redirect) 
-                continue;
-
-            if (attrib.map_state != IsUnmapped) {
-                FluxboxWindow *win = createWindow(children[i]);
-
-                if (win) {
-                    XMapRequestEvent mre;
-                    mre.window = children[i];
-                    win->mapRequestEvent(mre);
-                }
-            }
-        }
-    }
-
     rm.unlock();
 
-    XFree(children);
 
     XFlush(disp);
 }
@@ -799,6 +493,60 @@ BScreen::~BScreen() {
     if (hasXinerama() && m_xinerama_headinfo) {
         delete [] m_xinerama_headinfo;
     }
+}
+
+void BScreen::initWindows() {
+    unsigned int nchild;
+    Window r, p, *children;
+    Display *disp = FbTk::App::instance()->display();
+    XQueryTree(disp, rootWindow().window(), &r, &p, &children, &nchild);
+
+    // preen the window list of all icon windows... for better dockapp support
+    for (int i = 0; i < (int) nchild; i++) {
+		
+        if (children[i] == None) continue;
+
+        XWMHints *wmhints = XGetWMHints(disp, children[i]);
+
+        if (wmhints) {
+            if ((wmhints->flags & IconWindowHint) &&
+                (wmhints->icon_window != children[i]))
+                for (int j = 0; j < (int) nchild; j++) {
+                    if (children[j] == wmhints->icon_window) {
+                        children[j] = None;
+                        break;
+                    }
+                }
+            XFree(wmhints);
+        }
+    }
+
+    // manage shown windows
+    Fluxbox *fluxbox = Fluxbox::instance();
+    for (int i = 0; i < (int) nchild; ++i) {
+        if (children[i] == None || (! fluxbox->validateWindow(children[i])))
+            continue;
+
+        XWindowAttributes attrib;
+        if (XGetWindowAttributes(disp, children[i],
+                                 &attrib)) {
+            if (attrib.override_redirect) 
+                continue;
+
+            if (attrib.map_state != IsUnmapped) {
+                FluxboxWindow *win = createWindow(children[i]);
+
+                if (win) {
+                    XMapRequestEvent mre;
+                    mre.window = children[i];
+                    win->mapRequestEvent(mre);
+                }
+            }
+        }
+    }
+
+    XFree(children);
+
 }
 
 unsigned int BScreen::currentWorkspaceID() const { 
@@ -1371,63 +1119,114 @@ void BScreen::updateNetizenConfigNotify(XEvent &e) {
         (*it)->sendConfigNotify(e);
 }
 
-FluxboxWindow *BScreen::createWindow(Window client) {
-    FbTk::App::instance()->sync(false);
-
-#ifdef SLIT
-#ifdef KDE
-        //Check and see if client is KDE dock applet.
-        //If so add to Slit
-        bool iskdedockapp = false;
-        Atom ajunk;
-        int ijunk;
-        unsigned long *data = 0, uljunk;
-        Display *disp = FbTk::App::instance()->display();
-        // Check if KDE v2.x dock applet
-        if (XGetWindowProperty(disp, client,
-                               XInternAtom(FbTk::App::instance()->display(), 
-                                           "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False),
-                               0l, 1l, False,
-                               XA_WINDOW, &ajunk, &ijunk, &uljunk,
-                               &uljunk, (unsigned char **) &data) == Success) {
+bool BScreen::isKdeDockapp(Window client) const {
+    //Check and see if client is KDE dock applet.
+    //If so add to Slit
+    bool iskdedockapp = false;
+    Atom ajunk;
+    int ijunk;
+    unsigned long *data = 0, uljunk;
+    Display *disp = FbTk::App::instance()->display();
+    // Check if KDE v2.x dock applet
+    if (XGetWindowProperty(disp, client,
+                           XInternAtom(FbTk::App::instance()->display(), 
+                                       "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False),
+                           0l, 1l, False,
+                           XA_WINDOW, &ajunk, &ijunk, &uljunk,
+                           &uljunk, (unsigned char **) &data) == Success) {
 					
-            if (data)
-                iskdedockapp = True;
+        if (data)
+            iskdedockapp = true;
+        XFree((void *) data);
+        data = 0;
+    }
+
+    // Check if KDE v1.x dock applet
+    if (!iskdedockapp) {
+        Atom kwm1 = XInternAtom(FbTk::App::instance()->display(), 
+                                "KWM_DOCKWINDOW", False);
+        if (XGetWindowProperty(disp, client,
+                               kwm1, 0l, 1l, False,
+                               kwm1, &ajunk, &ijunk, &uljunk,
+                               &uljunk, (unsigned char **) &data) == Success && data) {
+            iskdedockapp = (data && data[0] != 0);
             XFree((void *) data);
             data = 0;
         }
+    } 
 
-        // Check if KDE v1.x dock applet
-        if (!iskdedockapp) {
-            Atom kwm1 = XInternAtom(FbTk::App::instance()->display(), 
-                                    "KWM_DOCKWINDOW", False);
-            if (XGetWindowProperty(disp, client,
-                                   kwm1, 0l, 1l, False,
-                                   kwm1, &ajunk, &ijunk, &uljunk,
-                                   &uljunk, (unsigned char **) &data) == Success && data) {
-                iskdedockapp = (data && data[0] != 0);
-                XFree((void *) data);
-                data = 0;
-            }
+    return iskdedockapp;
+}
+
+bool BScreen::addKdeDockapp(Window client) {
+
+    XSelectInput(FbTk::App::instance()->display(), client, StructureNotifyMask);
+    char intbuff[16];    
+    sprintf(intbuff, "%d", screenNumber());
+    std::string atom_name("_NET_SYSTEM_TRAY_S");
+    atom_name += intbuff; // append number
+    AtomHandler *handler = Fluxbox::instance()->getAtomHandler(atom_name);
+    FbTk::EventHandler *evh  = 0;
+    FbTk::EventManager *evm = FbTk::EventManager::instance();
+    if (handler == 0) {
+#ifdef SLIT
+        if (slit() != 0)
+            slit()->addClient(client);
+        else
+#endif // SLIT
+            return false;
+    } else {
+        WinClient winclient(client, *this);
+        handler->setupClient(winclient);
+        // we need to save old handler and re-add it later
+        evh = evm->find(client);
+    }
+
+    if (evh != 0) // re-add handler
+        evm->add(*evh, client);
+
+    return true;
+}
+
+void BScreen::setupKdeDockapps() {
+#ifdef SLIT
+    if (slit() == 0)
+        return;
+    // kde dockapps end up in the slit at start
+    Slit::SlitClients::iterator it = slit()->clients().begin();
+    Slit::SlitClients::iterator it_end = slit()->clients().end();
+    std::list<Window> winlist;
+    for (; it != it_end; ++it) {
+        if (isKdeDockapp((*it)->window())) {
+            winlist.push_back((*it)->window());
+            slit()->removeClient((*it)->window());
         }
+    }
+    std::list<Window>::iterator win_it = winlist.begin();
+    std::list<Window>::iterator win_it_end = winlist.end();
+    for (; win_it != win_it_end; ++win_it) {
+        createWindow(*win_it);
+    }
+#endif // SLIT    
+}
 
-        if (iskdedockapp) {
-            XSelectInput(disp, client, StructureNotifyMask);
+FluxboxWindow *BScreen::createWindow(Window client) {
+    FbTk::App::instance()->sync(false);
 
-            if (slit())
-                slit()->addClient(client);
 
+    if (isKdeDockapp(client)) {
+        if (addKdeDockapp(client)) {            
             return 0; // dont create a FluxboxWindow for this one
         }
-#endif // KDE
-#endif // SLIT
+    }
 
     WinClient *winclient = new WinClient(client, *this);
 
     if (winclient->initial_state == WithdrawnState) {
         delete winclient;
 #ifdef SLIT
-        slit()->addClient(client);
+        if (slit())
+            slit()->addClient(client);
 #endif // SLIT
         return 0;
     }
@@ -1487,14 +1286,31 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     return win;
 }
 
+
 FluxboxWindow *BScreen::createWindow(WinClient &client) {
     FluxboxWindow *win = new FluxboxWindow(client,
                                            winFrameTheme(),
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
+
+    if (isKdeDockapp(client.window())) {
+        if (addKdeDockapp(client.window())) {
+            // we need to save old handler and readd it later
+            FbTk::EventManager *evm = FbTk::EventManager::instance();
+            FbTk::EventHandler *evh = evm->find(client.window());
+            delete win;
+            evm->add(*evh, client.window());
+            return 0;
+        }
+    } else {
+
 #ifdef SLIT
-    if (win->initialState() == WithdrawnState)
-        slit()->addClient(win->clientWindow());
+        if (win->initialState() == WithdrawnState && slit() != 0) {
+            slit()->addClient(win->clientWindow());
+        }
 #endif // SLIT
+    }
+                 
+
     if (!win->isManaged()) {
         delete win;
         return 0;

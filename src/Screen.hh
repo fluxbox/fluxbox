@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.138 2004/04/12 23:05:10 fluxgen Exp $
+// $Id: Screen.hh,v 1.139 2004/04/19 22:44:42 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -88,6 +88,7 @@ public:
             int scrn, int number_of_layers);
     ~BScreen();
 
+    void initWindows();
     inline bool isSloppyFocus() const { return (*resource.focus_model == SLOPPYFOCUS); }
     inline bool isSemiSloppyFocus() const { return (*resource.focus_model == SEMISLOPPYFOCUS); }
     inline bool isRootColormapInstalled() const { return root_colormap_installed; }
@@ -134,6 +135,11 @@ public:
     unsigned int maxRight(int head) const;
     unsigned int maxTop(int head) const;
     unsigned int maxBottom(int head) const;
+    /// @return true if window is kde dock app
+    bool isKdeDockapp(Window win) const;
+    /// @return true if dock app was added, else false
+    bool addKdeDockapp(Window win);
+    void setupKdeDockapps();
 
     inline unsigned int width() const { return rootWindow().width(); }
     inline unsigned int height() const { return rootWindow().height(); }
