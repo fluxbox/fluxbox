@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.147 2003/05/07 16:21:25 rathnor Exp $
+// $Id: Screen.cc,v 1.148 2003/05/08 01:04:05 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -637,7 +637,8 @@ BScreen::BScreen(ResourceManager &rm,
     current_workspace = workspacesList.front();
 
 #ifdef SLIT
-    m_slit.reset(new Slit(*this, *layerManager().getLayer(getSlitLayerNum())));
+    m_slit.reset(new Slit(*this, *layerManager().getLayer(getSlitLayerNum()),
+                 Fluxbox::instance()->getSlitlistFilename().c_str()));
 #endif // SLIT
 
     m_toolbarhandler = new ToolbarHandler(*this, getToolbarMode());
