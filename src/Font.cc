@@ -19,11 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.11 2002/10/13 22:27:21 fluxgen Exp $
+//$Id: Font.cc,v 1.12 2002/10/14 18:25:37 fluxgen Exp $
 
 
 #include "Font.hh"
 #include "FontImp.hh"
+
+#ifdef    HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
 
 // for antialias 
 #ifdef USE_XFT
@@ -33,10 +37,6 @@
 // standard font system
 #include "XFontImp.hh"
 #include "XmbFontImp.hh"
-
-#ifdef    HAVE_CONFIG_H
-#include "../config.h"
-#endif // HAVE_CONFIG_H
 
 //use gnu extensions
 #ifndef _GNU_SOURCE
@@ -82,8 +82,9 @@ Font::Font(const char *name, bool antialias) {
 
 	// create the right font implementation
 #ifdef USE_XFT
+	antialias = true;
 	if (antialias) {
-		m_fontimp = new XftFontImp();
+		m_fontimp = std::auto_ptr<FontImp>(new XftFontImp());
 	}
 #endif //USE_XFT
 	// if we didn't create a Xft font then create basic font
