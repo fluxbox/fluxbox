@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.26 2002/05/02 07:09:22 fluxgen Exp $
+// $Id: Tab.cc,v 1.27 2002/05/19 15:37:29 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -352,7 +352,7 @@ void Tab::shade() {
 // mode else it draws it in normal mode
 // TODO: the "draw in pressed mode" 
 //-----------------------------------
-void Tab::draw(bool pressed) {	
+void Tab::draw(bool pressed) const {	
 	unsigned int tabtext_w;
 
 	GC gc = ((m_win->isFocused()) ? m_win->getScreen()->getWindowStyle()->tab.l_text_focus_gc :
