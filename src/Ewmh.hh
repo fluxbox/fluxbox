@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.16 2004/01/21 09:37:04 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.17 2004/01/21 15:42:35 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -36,7 +36,7 @@ public:
     void initForScreen(BScreen &screen);
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient);
-
+    
     void updateFocusedWindow(BScreen &screen, Window win);
     void updateClientList(BScreen &screen);
     void updateWorkspaceNames(BScreen &screen);
@@ -76,6 +76,7 @@ private:
     void toggleState(FluxboxWindow &win, Atom state);
     void createAtoms();
     void updateStrut(WinClient &winclient);
+    void setupState(FluxboxWindow &win);
 
     // root window properties
     Atom m_net_supported, m_net_client_list, m_net_client_list_stacking,
