@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.32 2002/02/15 22:16:09 pekdon Exp $
+// $Id: fluxbox.cc,v 1.33 2002/02/16 02:28:11 pekdon Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1207,11 +1207,11 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 		break;								
 		case Keys::VERTMAX:
 			if (focused_window->isResizable())
-				focused_window->maximize(3); // maximize vertically, done with mouse3
+				focused_window->maximize(2); // maximize vertically, done with mouse2
 		break;
 		case Keys::HORIZMAX:
 			if (focused_window->isResizable())
-				focused_window->maximize(2); // maximize horisontally, done with mouse2
+				focused_window->maximize(3); // maximize horisontally, done with mouse3
 		break;
 		case Keys::NUDGERIGHT:	
 			focused_window->configure(
