@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.279 2004/04/14 15:40:57 rathnor Exp $
+// $Id: Window.cc,v 1.280 2004/04/14 16:38:33 rathnor Exp $
 
 #include "Window.hh"
 
@@ -977,7 +977,7 @@ void FluxboxWindow::grabButtons() {
     // needed for click to focus
     XGrabButton(display, Button1, AnyModifier, 
                 frame().window().window(), True, ButtonPressMask,
-                GrabModeAsync, GrabModeAsync, None, None);                
+                GrabModeSync, GrabModeSync, None, None);                
     XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame().window().window());
 
     if (Fluxbox::instance()->useMod1()) {
