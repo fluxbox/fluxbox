@@ -1,0 +1,9 @@
+Known bugs and missing features that will be fixed in future version:
+
+bugs:
+
+* Window handle is invisible sometimes
+* It maximize over everything
+* Some menus doesn't close when you click on items
+
+fixed bugs:
