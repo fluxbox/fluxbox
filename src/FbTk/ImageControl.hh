@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.6 2003/12/16 17:06:51 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.7 2004/01/02 13:27:29 fluxgen Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
@@ -74,7 +74,6 @@ public:
     void setColorsPerChannel(int cpc);
 
     void cleanCache();
-
 private:
     /** 
         Search cache for a specific pixmap
@@ -85,7 +84,6 @@ private:
 
     void createColorTable();
     bool m_dither;
-
     Timer m_timer;
 
     Colormap m_colormap;
@@ -124,7 +122,7 @@ private:
                     (s1->width  < s2->width  || s1->width == s2->width && 
                     (s1->height < s2->height || s1->height == s2->height &&
                      (s1->texture < s2->texture || s1->texture == s2->texture &&
-                      s1->pixel1 < s2->pixel1 || s1->pixel1 == s2->pixel2 &&
+                      s1->pixel1 < s2->pixel1 || s1->pixel1 == s2->pixel1 &&
                       (s1->texture & FbTk::Texture::GRADIENT) &&
                        s1->pixel2 < s2->pixel2)
                         ));
