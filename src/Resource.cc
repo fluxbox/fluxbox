@@ -19,6 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Resource.cc,v 1.2 2002/02/04 06:47:34 fluxgen Exp $
+
 #include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
 
@@ -55,7 +57,7 @@ bool ResourceManager::load(const char *filename) {
 		Resource_base *resource = *i;
 		if (XrmGetResource(*database, resource->getName().c_str(),
 				resource->getAltName().c_str(), &value_type, &value))			
-			resource->setFromString(value.addr);			
+			resource->setFromString(value.addr);
 		else {
 			cerr<<"Faild to read: "<<resource->getName()<<endl;
 			cerr<<"Setting default value"<<endl;
