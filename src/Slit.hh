@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.41 2004/06/07 11:46:04 rathnor Exp $
+/// $Id: Slit.hh,v 1.42 2004/09/11 18:58:27 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -140,6 +140,13 @@ private:
     std::string m_filename;
 
     struct frame {
+        frame(const FbTk::FbWindow &parent):
+            window(parent, 0, 0, 10, 10, 
+                   SubstructureRedirectMask |  ButtonPressMask | 
+                   EnterWindowMask | LeaveWindowMask | ExposureMask, 
+                   true),  // override redirect
+            x(0), y(0), x_hidden(0), y_hidden(0),
+        width(10), height(10) {}
         Pixmap pixmap;
         FbTk::FbWindow window;
 

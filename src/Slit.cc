@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.100 2004/09/11 13:31:36 fluxgen Exp $
+// $Id: Slit.cc,v 1.101 2004/09/11 18:58:27 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -251,6 +251,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
                         *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+      frame(scr.rootWindow()),
        //For KDE dock applets
       m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
                                     "KWM_DOCKWINDOW", False)), //KDE v1.x
@@ -292,33 +293,15 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     FbTk::RefCount<FbTk::Command> toggle_hidden(new FbTk::SimpleCommand<Slit>(*this, &Slit::toggleHidden));
     m_timer.setCommand(toggle_hidden);
 
-    // create main window
-    XSetWindowAttributes attrib;
-    unsigned long create_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
-        CWColormap | CWOverrideRedirect | CWEventMask;
-    attrib.background_pixmap = None;
-    attrib.background_pixel = attrib.border_pixel = theme().borderColor().pixel();
-    attrib.colormap = screen().rootWindow().colormap();
-    attrib.override_redirect = True;
-    attrib.event_mask = s_eventmask;
-
-    frame.x = frame.y = 0;
-    frame.width = frame.height = 1;
-    Display *disp = FbTk::App::instance()->display();
-    frame.window =
-        XCreateWindow(disp, screen().rootWindow().window(), frame.x, frame.y,
-                      frame.width, frame.height, theme().borderWidth(),
-                      screen().rootWindow().depth(), InputOutput, screen().rootWindow().visual(),
-                      create_mask, &attrib);
 
     FbTk::EventManager::instance()->add(*this, frame.window);
     
     frame.window.setAlpha(*m_rc_alpha);
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
     m_layermenu.reset(new LayerMenu<Slit>(scr.menuTheme(),
-                                    scr.imageControl(),
-                                    *scr.layerManager().
-                                    getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                          scr.imageControl(),
+                                          *scr.layerManager().
+                                          getLayer(Fluxbox::instance()->getMenuLayer()), 
                                           this,
                                           true));
     moveToLayer((*m_rc_layernum).getNum());
