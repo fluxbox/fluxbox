@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.26 2004/04/18 14:16:09 fluxgen Exp $
+// $Id: FbRun.cc,v 1.27 2004/04/18 18:57:24 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -135,7 +135,6 @@ FbRun::FbRun(int x, int y, size_t width):
 
     sort(m_apps.begin(), m_apps.end());
     unique(m_apps.begin(), m_apps.end());
-    reverse(m_apps.begin(), m_apps.end());
 
     if (!m_apps.empty())
         m_current_apps_item= 1;
@@ -385,20 +384,20 @@ void FbRun::tabCompleteApps() {
     if ( m_current_apps_item == 0 || m_apps.empty() ) {
       XBell(m_display, 0);
     } else {
-        unsigned int nr= 0;
-        int apps_item = m_current_apps_item - 1;
+        size_t apps_item = m_current_apps_item + 1;
         string prefix = text().substr(0, cursorPosition());
-        while (apps_item != m_current_apps_item && nr++ < m_apps.size()) {
-            if (apps_item <= -1 )
-                apps_item= m_apps.size() - 1;
-            if (m_apps[apps_item].find(prefix) == 0) {
+        while (apps_item != m_current_apps_item) {
+            if (apps_item > m_apps.size() )
+                apps_item = 1;
+            if (m_apps[apps_item - 1].find(prefix) == 0) {
                 m_current_apps_item = apps_item;
-                setText(m_apps[m_current_apps_item]);
+                setText(m_apps[m_current_apps_item - 1]);
                 break;
             }
-            apps_item--;
+            apps_item++;
         }
-        if (apps_item == m_current_apps_item) XBell(m_display, 0);
+        if (apps_item == m_current_apps_item) 
+            XBell(m_display, 0);
     }
 }
 
