@@ -1,5 +1,5 @@
 // Toolbar.hh for Fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Toolbar.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.17 2002/12/03 16:54:13 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.18 2002/12/13 20:36:36 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -33,6 +33,7 @@
 #include "ToolbarTheme.hh"
 #include "EventHandler.hh"
 #include "FbWindow.hh"
+#include "ArrowButton.hh"
 
 #include <memory>
 
@@ -90,24 +91,27 @@ private:
 };
 
 
+
+///	The toolbar.
 /**
-	the toolbar.
-*/
+   Handles iconbar, workspace name view and clock view
+ */
 class Toolbar : public TimeoutHandler, public FbTk::EventHandler {
 public:
-    /**
-       Toolbar placement on the screen
-    */
+       
+    ///Toolbar placement on the screen
     enum Placement{ 
-        // top bottom placement
+        // top and bottom placement
         TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
         BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT,
-        // left right placement
+        // left and right placement
         LEFTCENTER, LEFTBOTTOM, LEFTTOP,
         RIGHTCENTER, RIGHTBOTTOM, RIGHTTOP        
     };
 
+    /// create a toolbar on the screen with specific width
     explicit Toolbar(BScreen *screen, size_t width = 200);
+    /// destructor
     virtual ~Toolbar();
 
     /// add icon to iconbar
@@ -152,10 +156,6 @@ public:
 	
     void redrawWindowLabel(bool redraw= false);
     void redrawWorkspaceLabel(bool redraw= false);
-    void redrawPrevWorkspaceButton(bool pressed = false, bool redraw = false);
-    void redrawNextWorkspaceButton(bool pressed = false, bool redraw = false);
-    void redrawPrevWindowButton(bool pressed = false, bool redraw = false);
-    void redrawNextWindowButton(bool pressed = false, bool redraw = false);
     /// enter edit mode on workspace label
     void edit();
     void reconfigure();
@@ -166,7 +166,6 @@ public:
 
 		
 private:
-    void drawButtonBase(FbTk::FbWindow &win, bool pressed);
 
     bool on_top;       ///< always on top
     bool editing;      ///< edit workspace label mode
@@ -174,12 +173,13 @@ private:
     bool do_auto_hide; ///< do we auto hide	
     Display *display;  ///< display connection
 
+    /// Toolbar frame
     struct Frame {
         Frame(FbTk::EventHandler &evh, int screen_num);
         ~Frame();
         Pixmap base, label, wlabel, clk, button, pbutton;
-        FbTk::FbWindow window, workspace_label, window_label, clock, psbutton, nsbutton,
-            pwbutton, nwbutton;
+        FbTk::FbWindow window, workspace_label, window_label, clock;
+        ArrowButton psbutton, nsbutton, pwbutton, nwbutton;
 
         int x, y, x_hidden, y_hidden, hour, minute, grab_x, grab_y;
         unsigned int width, height, window_label_w, workspace_label_w, clock_w,

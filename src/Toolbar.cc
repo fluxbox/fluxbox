@@ -1,8 +1,8 @@
 // Toolbar.cc for Fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Toolbar.cc for Blackbox - an X11 Window manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.49 2002/12/04 22:36:47 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.50 2002/12/13 20:37:55 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -39,6 +39,8 @@
 #include "ToolbarTheme.hh"
 #include "EventManager.hh"
 #include "Text.hh"
+#include "ArrowButton.hh"
+#include "SimpleCommand.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -74,68 +76,62 @@ using namespace std;
 Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
     window(screen_num, // screen (parent)
            0, 0, // pos
-           1, 1, //
+           1, 1, // size
+           // event mask
            ButtonPressMask | ButtonReleaseMask | 
            EnterWindowMask | LeaveWindowMask,
            true), // override redirect 
     workspace_label(window, // parent
                     0, 0, //pos
                     1, 1, // size
+                    // event mask
                     ButtonPressMask | ButtonReleaseMask | 
                     ExposureMask | KeyPressMask),
     window_label(window, // parent
                   0, 0, // pos
                   1, 1, // size
+                 // event mask
                   ButtonPressMask | ButtonReleaseMask | 
                   ExposureMask),
     clock (window, //parent
             0, 0, // pos
             1, 1, // size
+           // event mask
             ButtonPressMask | ButtonReleaseMask | 
             ExposureMask),
-    psbutton(window, // parent
+    psbutton(ArrowButton::LEFT, // arrow type
+             window, // parent
              0, 0, // pos
-             1, 1, // size
-              ButtonPressMask | ButtonReleaseMask | 
-             ExposureMask),
-    nsbutton(window,
-             0, 0,
-             1, 1,
-             ButtonPressMask | ButtonReleaseMask | 
-             ExposureMask),
-    pwbutton(window,
-             0, 0,
-             1, 1,
-             ButtonPressMask | ButtonReleaseMask | 
-             ExposureMask),
-    nwbutton(window,
-              0, 0,
-              1, 1,
-              ButtonPressMask | ButtonReleaseMask | 
-              ExposureMask) 
+             1, 1), // size
+    nsbutton(ArrowButton::RIGHT, // arrow type
+             window, // parent
+             0, 0, // pos
+             1, 1), // size
+    pwbutton(ArrowButton::LEFT, // arrow type
+             window, // parent
+             0, 0, // pos
+             1, 1), // size
+    nwbutton(ArrowButton::RIGHT, // arrow type
+             window, // parent
+             0, 0, // pos 
+             1, 1) // size
+
 {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
+    // add windows to eventmanager
     evm.add(evh, window);
     evm.add(evh, workspace_label);
     evm.add(evh, window_label);
     evm.add(evh, clock);
-    evm.add(evh, psbutton);
-    evm.add(evh, nsbutton);
-    evm.add(evh, pwbutton);
-    evm.add(evh, nwbutton);
-    
 }
 
 Toolbar::Frame::~Frame() {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
+    // remove windows from eventmanager
     evm.remove(window);
     evm.remove(workspace_label);
     evm.remove(window_label);
     evm.remove(clock);
-    evm.remove(psbutton);
-    evm.remove(nsbutton);
-    evm.remove(pwbutton);
-    evm.remove(nwbutton);
 }
 
 Toolbar::Toolbar(BScreen *scrn, size_t width):
@@ -184,6 +180,16 @@ Toolbar::Toolbar(BScreen *scrn, size_t width):
 
     XMapSubwindows(display, frame.window.window());
     frame.window.show();
+
+    // finaly: setup Commands for the buttons in the frame
+    FbTk::RefCount<FbTk::Command> nextworkspace(new FbTk::SimpleCommand<BScreen>(*screen(), &BScreen::nextWorkspace));
+    FbTk::RefCount<FbTk::Command> prevworkspace(new FbTk::SimpleCommand<BScreen>(*screen(), &BScreen::prevWorkspace));
+    FbTk::RefCount<FbTk::Command> nextwindow(new FbTk::SimpleCommand<BScreen>(*screen(), &BScreen::nextFocus));
+    FbTk::RefCount<FbTk::Command> prevwindow(new FbTk::SimpleCommand<BScreen>(*screen(), &BScreen::prevFocus));
+    frame.psbutton.setOnClick(prevworkspace);
+    frame.nsbutton.setOnClick(nextworkspace);
+    frame.pwbutton.setOnClick(prevwindow);
+    frame.nwbutton.setOnClick(nextwindow);
 
     reconfigure();
 	
@@ -434,13 +440,25 @@ void Toolbar::reconfigure() {
     if (tmp) 
         image_ctrl.removeImage(tmp);
 
+    // pressed button pixmap
     tmp = frame.pbutton;
     texture = &(m_theme.pressedButton());
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.pbutton = None;
-    } else
+    } else {
         frame.pbutton =
             image_ctrl.renderImage(frame.button_w, frame.button_w, *texture);
+        frame.psbutton.setPressedPixmap(frame.pbutton);
+        frame.nsbutton.setPressedPixmap(frame.pbutton);
+        frame.pwbutton.setPressedPixmap(frame.pbutton);
+        frame.nwbutton.setPressedPixmap(frame.pbutton);
+    }
+    // setup button gc
+    frame.psbutton.setGC(m_theme.buttonPicGC());
+    frame.nsbutton.setGC(m_theme.buttonPicGC());
+    frame.pwbutton.setGC(m_theme.buttonPicGC());
+    frame.nwbutton.setGC(m_theme.buttonPicGC());
+
     if (tmp) 
         image_ctrl.removeImage(tmp);
 
@@ -458,10 +476,6 @@ void Toolbar::reconfigure() {
 	
     redrawWindowLabel();
     redrawWorkspaceLabel();
-    redrawPrevWorkspaceButton();
-    redrawNextWorkspaceButton();
-    redrawPrevWindowButton();
-    redrawNextWindowButton();
     checkClock(true);
 
     m_toolbarmenu.reconfigure();
@@ -646,90 +660,6 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
         dx, dy);
 }
 
-
-void Toolbar::redrawPrevWorkspaceButton(bool pressed, bool redraw) {
-    if (redraw) {
-        drawButtonBase(frame.psbutton, pressed);
-    }
-
-    int hh = frame.button_w / 2, hw = frame.button_w / 2;
-
-    XPoint pts[3];
-    pts[0].x = hw - 2; pts[0].y = hh;
-    pts[1].x = 4; pts[1].y = 2;
-    pts[2].x = 0; pts[2].y = -4;
-
-    XFillPolygon(display, frame.psbutton.window(), m_theme.buttonPicGC(),
-                 pts, 3, Convex, CoordModePrevious);
-}
-
-
-void Toolbar::redrawNextWorkspaceButton(bool pressed, bool redraw) {
-    if (redraw) {
-        drawButtonBase(frame.nsbutton, pressed);
-    }
-
-    int hh = frame.button_w / 2, hw = frame.button_w / 2;
-
-    XPoint pts[3];
-    pts[0].x = hw - 2; pts[0].y = hh - 2;
-    pts[1].x = 4; pts[1].y =	2;
-    pts[2].x = -4; pts[2].y = 2;
-
-    XFillPolygon(display, frame.nsbutton.window(), m_theme.buttonPicGC(),
-                 pts, 3, Convex, CoordModePrevious);
-}
-
-
-void Toolbar::redrawPrevWindowButton(bool pressed, bool redraw) {
-    if (redraw) {
-        drawButtonBase(frame.pwbutton, pressed);
-    }
-
-    int hh = frame.button_w / 2, hw = frame.button_w / 2;
-
-    XPoint pts[3];
-    pts[0].x = hw - 2; pts[0].y = hh;
-    pts[1].x = 4; pts[1].y = 2;
-    pts[2].x = 0; pts[2].y = -4;
-
-    XFillPolygon(display, frame.pwbutton.window(), m_theme.buttonPicGC(),
-                 pts, 3, Convex, CoordModePrevious);
-}
-
-
-void Toolbar::redrawNextWindowButton(bool pressed, bool redraw) {
-    if (redraw) {
-        drawButtonBase(frame.nwbutton, pressed);
-    }
-
-    int hh = frame.button_w / 2, hw = frame.button_w / 2;
-
-    XPoint pts[3];
-    pts[0].x = hw - 2; pts[0].y = hh - 2;
-    pts[1].x = 4; pts[1].y =	2;
-    pts[2].x = -4; pts[2].y = 2;
-
-    XFillPolygon(display, frame.nwbutton.window(), m_theme.buttonPicGC(),
-                 pts, 3, Convex, CoordModePrevious);
-}
-
-void Toolbar::drawButtonBase(FbTk::FbWindow &win, bool pressed) {
-    if (pressed) {
-        if (frame.pbutton)
-            win.setBackgroundPixmap(frame.pbutton);
-        else
-            win.setBackgroundColor(m_theme.pressedButton().color());
-    } else {
-        if (frame.button)            
-            win.setBackgroundPixmap(frame.button);            
-        else
-            win.setBackgroundColor(m_theme.button().color());
-    }
-    win.clear();
-
-}
-
 void Toolbar::edit() {
     Window window;
     int foo;
@@ -762,15 +692,7 @@ void Toolbar::edit() {
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
     FluxboxWindow *fluxboxwin=0;
     if (be.button == 1) {
-        if (be.window == frame.psbutton)
-            redrawPrevWorkspaceButton(true, true);
-        else if (be.window == frame.nsbutton)
-            redrawNextWorkspaceButton(true, true);
-        else if (be.window == frame.pwbutton)
-            redrawPrevWindowButton(true, true);
-        else if (be.window == frame.nwbutton)
-            redrawNextWindowButton(true, true);
-        else if ( m_iconbar.get() != 0 ) {
+        if ( m_iconbar.get() != 0 ) {
             if ( (fluxboxwin = m_iconbar->findWindow(be.window)) )
                 fluxboxwin->deiconify();
         }
@@ -834,31 +756,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 
 void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
     if (re.button == 1) {
-        if (re.window == frame.psbutton) {
-            redrawPrevWorkspaceButton(false, true);
-
-            if (re.x >= 0 && re.x < (signed) frame.button_w &&
-                re.y >= 0 && re.y < (signed) frame.button_w)
-                screen()->prevWorkspace(1);
-        } else if (re.window == frame.nsbutton) {
-            redrawNextWorkspaceButton(false, true);
-
-            if (re.x >= 0 && re.x < (signed) frame.button_w &&
-                re.y >= 0 && re.y < (signed) frame.button_w)
-                screen()->nextWorkspace(1);
-        } else if (re.window == frame.pwbutton) {
-            redrawPrevWindowButton(false, true);
-
-            if (re.x >= 0 && re.x < (signed) frame.button_w &&
-                re.y >= 0 && re.y < (signed) frame.button_w)
-                screen()->prevFocus();
-        } else if (re.window == frame.nwbutton) {
-            redrawNextWindowButton(false, true);
-
-            if (re.x >= 0 && re.x < (signed) frame.button_w &&
-                re.y >= 0 && re.y < (signed) frame.button_w)
-                screen()->nextFocus();
-        } else if (re.window == frame.workspace_label) {
+        if (re.window == frame.workspace_label) {
             Basemenu *menu = screen()->getWorkspacemenu();
             //move the workspace label and make it visible
             menu->move(re.x_root, re.y_root);
@@ -923,11 +821,6 @@ void Toolbar::exposeEvent(XExposeEvent &ee) {
         checkClock(true);
     else if (ee.window == frame.workspace_label && (! editing))
         redrawWorkspaceLabel();
-    else if (ee.window == frame.window_label) redrawWindowLabel();
-    else if (ee.window == frame.psbutton) redrawPrevWorkspaceButton();
-    else if (ee.window == frame.nsbutton) redrawNextWorkspaceButton();
-    else if (ee.window == frame.pwbutton) redrawPrevWindowButton();
-    else if (ee.window == frame.nwbutton) redrawNextWindowButton();
     else if (m_iconbar.get() != 0)
         m_iconbar->exposeEvent(&ee);
 }
