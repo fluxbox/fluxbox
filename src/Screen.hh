@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.93 2003/05/11 17:11:58 fluxgen Exp $
+// $Id: Screen.hh,v 1.94 2003/05/12 04:28:46 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -290,6 +290,12 @@ public:
 
     FluxboxWindow* useAutoGroupWindow();
 
+    /// updates root window size and resizes/reconfigures screen clients 
+    /// that depends on screen size (toolbar, slit)
+    /// (and maximized windows?)
+    void updateSize();
+
+    // notify netizens
     void updateNetizenCurrentWorkspace();
     void updateNetizenWorkspaceCount();
     void updateNetizenWindowFocus();

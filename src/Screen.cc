@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.157 2003/05/11 23:44:08 rathnor Exp $
+// $Id: Screen.cc,v 1.158 2003/05/12 04:28:46 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -52,7 +52,6 @@
 #include "LayerMenu.hh"
 #include "WinClient.hh"
 #include "Subject.hh"
-
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -525,6 +524,7 @@ BScreen::BScreen(ResourceManager &rm,
 
     XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
     rootWindow().setEventMask(event_mask);
+
     XSync(disp, False);
     XSetErrorHandler((XErrorHandler) old);
 
@@ -2467,3 +2467,17 @@ FluxboxWindow* BScreen::useAutoGroupWindow() {
     return w ? Fluxbox::instance()->searchWindow(w) : 0;
 }
 
+void BScreen::updateSize() {
+    rootWindow().updateGeometry();
+
+    // reconfigure anything that depends on root window size
+
+    if (getToolbar())
+        getToolbar()->reconfigure();
+
+    if (getSlit())
+        getSlit()->reconfigure();
+
+    //!! TODO: should we re-maximize the maximized windows?
+    
+}
