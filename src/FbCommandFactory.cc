@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.13 2003/08/26 23:53:01 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.14 2003/08/30 11:59:29 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -38,56 +38,57 @@ FbCommandFactory FbCommandFactory::s_autoreg;
 
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
-    const char commands[][32] = {
-        "setstyle",
-        "saverc",
-        "reconfigure",
-        "execcommand",
-        "exec",
-        "execute",
-        "quit",
-        "restart",
-        "minimizewindow",
-        "minimize",
-        "iconfiy",
-        "maximizewindow",
-        "maximize",
-        "maximizevertical",
-        "maximizehorizontal",
-        "resizevertical",
-        "resizehorizontal",
-        "moveright",
-        "moveleft",
-        "moveup",
-        "movedown",
-        "raise",
-        "lower",
+    const char commands[][33] = {
+        "arrangewindows",
         "close",
+        "detachclient",
+        "exec",
+        "execcommand",
+        "execute",
+        "iconfiy",
+        "killwindow",
+        "leftworkspace",
+        "lower",
+        "maximize",
+        "maximizehorizontal",
+        "maximizevertical",
+        "maximizewindow",
+        "minimize",
+        "minimizewindow",
+        "movedown",
+        "moveleft",
+        "moveright",
+        "movetableft",
+        "movetabright",
+        "moveup",
+        "nextgroup",
+        "nexttab",
+        "nextwindow",
+        "nextworkspace",
+        "prevgroup",
+        "prevtab",
+        "prevwindow",
+        "prevworkspace",
+        "quit",
+        "raise",
+        "reconfigure",
+        "resizehorizontal",
+        "resizevertical",
+        "restart",
+        "rightworkspace",
+        "rootmenu",
+        "saverc",
+        "sendtoworkspace",
+        "setstyle",
+        "setworkspacename",
         "shade",
         "shadewindow",
+        "showdesktop",
         "stick",
         "stickwindow",
         "toggledecor",
-        "sendtoworkspace",
-        "killwindow",
-        "nexttab",
-        "prevtab",
-        "movetableft",
-        "movetabright",
-        "detachclient",
-        "nextworkspace",
-        "rightworkspace",
-        "leftworkspace",
-        "prevworkspace",
         "workspace",
-        "nextwindow",
-        "prevwindow",
-        "nextgroup",
-        "prevgroup",
-        "showdesktop",
-        "arrangewindows",
-        "rootmenu",
-        "setworkspacename",
+        "workspacemenu",
         ""
     };
 
@@ -196,6 +197,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new ShowDesktopCmd();
     else if (command == "rootmenu")
         return new ShowRootMenuCmd();
+    else if (command == "workspacemenu")
+        return new ShowWorkspaceMenuCmd();
     else if (command == "setworkspacename")
         return new SetWorkspaceNameCmd();
     return 0;

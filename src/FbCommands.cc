@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.14 2003/08/26 23:52:09 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.15 2003/08/30 11:59:29 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -111,6 +111,17 @@ void ShowRootMenuCmd::execute() {
     if (screen->getRootmenu()) {
         screen->getRootmenu()->show();
         screen->getRootmenu()->grabInputFocus();
+    }
+}
+
+void ShowWorkspaceMenuCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    if (screen->getWorkspacemenu()) {
+        screen->getWorkspacemenu()->show();
+        screen->getWorkspacemenu()->grabInputFocus();
     }
 }
 
