@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.16 2004/08/31 21:24:05 fluxgen Exp $
+//$Id: Font.cc,v 1.17 2004/08/31 21:47:56 akir Exp $
 
 
 #include "StringUtil.hh"
@@ -279,8 +279,8 @@ Font::Font(const char *name, bool antialias):
             // drawing functions
             m_utf8mode = true;
         }
-    }
 #endif // HAVE_ICONV
+    }
 
 #ifdef DEBUG
     cerr<<"FbTk::Font m_iconv = "<<(int)m_iconv<<endl;
@@ -311,8 +311,10 @@ Font::Font(const char *name, bool antialias):
 }
 
 Font::~Font() {
+#ifdef HAVE_ICONV
     if (m_iconv != (iconv_t)(-1))
         iconv_close(m_iconv);
+#endif // HAVE_ICONV
 }
 
 void Font::setAntialias(bool flag) {
@@ -390,6 +392,7 @@ bool Font::load(const std::string &name) {
 }
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
+#ifdef HAVE_ICONV
     if (m_iconv != (iconv_t)(-1)) {
         char* rtext  = recode(m_iconv, text, size);
         if (rtext != 0)
@@ -399,7 +402,7 @@ unsigned int Font::textWidth(const char * const text, unsigned int size) const {
             delete rtext;
         return r;
     }
-
+#endif // HAVE_ICONV
     return m_fontimp->textWidth(text, size);
 }
 
@@ -425,7 +428,8 @@ void Font::drawText(Drawable w, int screen, GC gc,
 
     // so we don't end up in a loop with m_shadow
     static bool first_run = true; 
-
+    
+#ifdef HAVE_ICONV
     if (m_iconv != (iconv_t)(-1) && first_run) {
         rtext = recode(m_iconv, text, len);
         if (rtext != 0) {
@@ -433,7 +437,7 @@ void Font::drawText(Drawable w, int screen, GC gc,
             // ok, we can't use utf8 mode since the string is invalid
         }
     } 
-
+#endif // HAVE_ICONV
 
     const char *real_text = rtext ? rtext : text;
 
