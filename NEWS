@@ -2,11 +2,11 @@ News in 0.9.4:
     * Keyboard navigation in menus
        * Keys:
          Up/Down: select menu item
-         Left/Right: go in/out from submenus
+         Left/Right: go in/out from sub menus
          Escape: close menu and return focus to windows
          Enter: run/execute/toggle menu item
-      To set input focus on the menu you either click on the titlebar
-      or bring it up with keybindings
+      To set input focus on the menu you either click on the title bar
+      or bring it up with key bindings
     * New action strings
       * ArrangeWindows 
    	    This will arrange the windows on the current desktop
@@ -42,16 +42,17 @@ News in 0.9.4:
     * Compile time option for toolbar
       --disable-toolbar
       --enable-toolbar (default)
-    * Emacs style keybindings in fbrun
+    * Emacs style key bindings in fbrun
+	* Tab completion in fbrun
     * Group persistence over a restart
     * Maximization stop on slit and toolbar (check Maximize Over menu items)
     * Support for _NET_WM_STRUT
     * Regular expression support for remember
 Bug fixes: 
     * Toggle maximize vertical/horizontal
-    * Slit/Toolbar autohide bug
-    * Button alignment bug in titlebar
-    * Trailing whitespace in groupfile resource
+    * Slit/Toolbar auto hide bug
+    * Button alignment bug in title bar
+    * Trailing whitespace in group file resource
     * Group cycling
 
 See ChangeLog for more details
