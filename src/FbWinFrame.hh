@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.20 2003/09/14 10:32:31 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.21 2003/09/24 14:02:25 rathnor Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -80,7 +80,12 @@ public:
     void resize(unsigned int width, unsigned int height);
     /// resize client to specified size and resize frame to it
     void resizeForClient(unsigned int width, unsigned int height);
-    void moveResize(int x, int y, unsigned int width, unsigned int height);
+
+    // for when there needs to be an atomic move+resize operation
+    void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true);
+
+    // can elect to ignore move or resize (mainly for use of move/resize individual functions
+    void moveResize(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true);
 
     /// set focus/unfocus style
     void setFocus(bool newvalue);

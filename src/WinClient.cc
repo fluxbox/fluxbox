@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.26 2003/09/21 13:24:27 rathnor Exp $
+// $Id: WinClient.cc,v 1.27 2003/09/24 14:02:25 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -356,12 +356,12 @@ void WinClient::updateMWMHints() {
     int format;
     Atom atom_return;
     unsigned long num = 0, len = 0;
-    Atom  motif_wm_hints = XInternAtom(FbTk::App::instance()->display(), "_MOTIF_WM_HINTS", False);
 
     if (m_mwm_hint) {
         XFree(m_mwm_hint);
         m_mwm_hint = 0;
     }
+    Atom motif_wm_hints = FbAtoms::instance()->getMWMHintsAtom();
 
     if (!(property(motif_wm_hints, 0,
                    PropMwmHintsElements, false,

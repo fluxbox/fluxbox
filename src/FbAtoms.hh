@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.hh,v 1.10 2003/04/26 18:56:02 fluxgen Exp $
+// $Id: FbAtoms.hh,v 1.11 2003/09/24 14:02:25 rathnor Exp $
 #ifndef FBATOMS_HH
 #define FBATOMS_HH
 
@@ -34,7 +34,6 @@ public:
 
     static FbAtoms *instance();
 
-
     inline Atom getWMChangeStateAtom() const { return xa_wm_change_state; }
     inline Atom getWMStateAtom() const { return xa_wm_state; }
     inline Atom getWMDeleteAtom() const { return xa_wm_delete_window; }
@@ -44,6 +43,7 @@ public:
     // this atom is for normal app->WM hints about decorations, stacking,
     // starting workspace etc...
     inline Atom getFluxboxHintsAtom() const { return blackbox_hints;}
+    inline Atom getMWMHintsAtom() const { return motif_wm_hints; }
 
     // these atoms are for normal app->WM interaction beyond the scope of the
     // ICCCM...
@@ -77,6 +77,8 @@ private:
     void initAtoms();
 // NETAttributes
     Atom blackbox_attributes, blackbox_change_attributes, blackbox_hints;
+
+    Atom motif_wm_hints;
 
     // NETStructureMessages
     Atom blackbox_structure_messages, blackbox_notify_startup,

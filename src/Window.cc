@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.233 2003/09/24 11:33:40 fluxgen Exp $
+// $Id: Window.cc,v 1.234 2003/09/24 14:02:25 rathnor Exp $
 
 #include "Window.hh"
 
@@ -415,9 +415,9 @@ void FluxboxWindow::init() {
     decorations.close = false;
 
     if (m_client->getBlackboxHint() != 0)
-        getBlackboxHints();
+        updateBlackboxHintsFromClient(*m_client);
     else
-        getMWMHints();
+        updateMWMHintsFromClient(*m_client);
     
     //!!
     // fetch client size and placement
@@ -498,8 +498,7 @@ void FluxboxWindow::init() {
 
     }
 
-    frame().move(wattrib.x, wattrib.y);
-    frame().resizeForClient(wattrib.width, wattrib.height);
+    frame().moveResizeForClient(wattrib.x, wattrib.y, wattrib.width, wattrib.height);
 
     // if we're a transient then we should be on the same layer as our parent
     if (m_client->isTransient() && 
@@ -907,8 +906,8 @@ bool FluxboxWindow::isGroupable() const {
 
 void FluxboxWindow::associateClientWindow() {
     m_client->setBorderWidth(0);
-    updateTitleFromClient();
-    updateIconNameFromClient();
+    updateTitleFromClient(*m_client);
+    updateIconNameFromClient(*m_client);
 
     frame().setClientWindow(*m_client);
     frame().resizeForClient(m_client->width(), m_client->height());
@@ -964,25 +963,24 @@ void FluxboxWindow::reconfigure() {
 }
 
 /// update current client title and title in our frame
-void FluxboxWindow::updateTitleFromClient() {
-    m_client->updateTitle();
+void FluxboxWindow::updateTitleFromClient(WinClient &client) {
+    client.updateTitle();
     // compare old title with new and see if we need to update
     // graphics
-    if (m_labelbuttons[m_client]->text() != m_client->title()) {
-        m_labelbuttons[m_client]->setText(m_client->title());    
-        m_labelbuttons[m_client]->clear(); // redraw text
-        m_labelbuttons[m_client]->updateTransparent();
+    if (m_labelbuttons[&client]->text() != client.title()) {
+        m_labelbuttons[&client]->setText(client.title());    
+        m_labelbuttons[&client]->clear(); // redraw text
+        m_labelbuttons[&client]->updateTransparent();
     }
 }
 
 /// update icon title from client
-void FluxboxWindow::updateIconNameFromClient() {
-    m_client->updateIconTitle();
+void FluxboxWindow::updateIconNameFromClient(WinClient &client) {
+    client.updateIconTitle();
 }
 
-
-void FluxboxWindow::getMWMHints() {
-    const WinClient::MwmHints *hint = m_client->getMwmHint();
+void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
+    const WinClient::MwmHints *hint = client.getMwmHint();
 
     if (!hint) return;
 
@@ -1049,8 +1047,8 @@ void FluxboxWindow::updateFunctions() {
         setupWindow();
 }
 
-void FluxboxWindow::getBlackboxHints() {
-    const FluxboxWindow::BlackboxHints *hint = m_client->getBlackboxHint();
+void FluxboxWindow::updateBlackboxHintsFromClient(WinClient &client) {
+    const FluxboxWindow::BlackboxHints *hint = client.getBlackboxHint();
     if (!hint) return;
 
     if (hint->flags & ATTRIB_SHADED)
@@ -1912,10 +1910,12 @@ void FluxboxWindow::handleEvent(XEvent &event) {
         // case MapRequest:
         //        mapRequestEvent(event.xmaprequest);
         //break;
-    case PropertyNotify:
-        if (event.xproperty.state != PropertyDelete) {
-            propertyNotifyEvent(event.xproperty.atom);
+    case PropertyNotify: {
+        WinClient *client = findClient(event.xproperty.window);
+        if (client) {
+            propertyNotifyEvent(*client, event.xproperty.atom);
         }
+    }
         break;
 
     default:
@@ -2076,8 +2076,7 @@ void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent &de) {
 }
 
 
-void FluxboxWindow::propertyNotifyEvent(Atom atom) {
-
+void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
     switch(atom) {
     case XA_WM_CLASS:
     case XA_WM_CLIENT_MACHINE:
@@ -2085,31 +2084,28 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
         break;
 
     case XA_WM_TRANSIENT_FOR: {
-        // TODO: this property notify should be handled by winclient
-        // but for now we'll justhave to update all transient info
-        //bool was_transient = isTransient();
-        for_each(clientList().begin(), clientList().end(), 
-                 mem_fun(&WinClient::updateTransientInfo));
-        reconfigure();
-        // TODO: this is broken whilst we don't know which client
+        bool was_transient = client.isTransient();
+        client.updateTransientInfo();
         // update our layer to be the same layer as our transient for
-        //if (isTransient() && isTransient() != was_transient)
-        //    layerItem().setLayer(getTransientFor()->layerItem().getLayer());
+        if (client.isTransient() && !was_transient
+            && client.transientFor()->fbwindow())
+            layerItem().setLayer(client.transientFor()->fbwindow()->layerItem().getLayer());
             
     } break;
 
     case XA_WM_HINTS:
-        m_client->updateWMHints();
+        client.updateWMHints();
         hintSig().notify(); // notify listeners
         break;
 
     case XA_WM_ICON_NAME:
-        updateIconNameFromClient();
+        client.updateIconTitle();
+        updateIconNameFromClient(client);
         updateIcon();
         break;
 
     case XA_WM_NAME:
-        updateTitleFromClient();
+        updateTitleFromClient(client);
 
         if (! iconic)
             screen().getWorkspace(m_workspace_number)->update();
@@ -2120,27 +2116,27 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
         break;
 
     case XA_WM_NORMAL_HINTS: {
-        m_client->updateWMNormalHints();
+        client.updateWMNormalHints();
 
-        if ((m_client->normal_hint_flags & PMinSize) &&
-            (m_client->normal_hint_flags & PMaxSize)) {
+        if ((client.normal_hint_flags & PMinSize) &&
+            (client.normal_hint_flags & PMaxSize)) {
 
-            if (m_client->max_width != 0 && m_client->max_width <= m_client->min_width &&
-                m_client->max_height != 0 && m_client->max_height <= m_client->min_height) {
+            if (client.max_width != 0 && client.max_width <= client.min_width &&
+                client.max_height != 0 && client.max_height <= client.min_height) {
                 decorations.maximize = false;
                 decorations.handle = false;
                 functions.resize=false;
                 functions.maximize=false;
             } else {
                 // TODO: is broken while handled by FbW, needs to be in WinClient
-                if (! winClient().isTransient()) {
+                if (! client.isTransient()) {
                     decorations.maximize = true;
                     decorations.handle = true;
                     functions.maximize = true;	        
                 }
                 functions.resize = true;
             }
- 
+            setupWindow();
     	}
 
         // save old values
@@ -2159,13 +2155,16 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
     }
 
     default:
-        if (atom == FbAtoms::instance()->getWMProtocolsAtom()) {
-            m_client->updateWMProtocols();
-            //!!TODO  check this area            
-            // reset window actions
-            setupWindow();
-            
-        } 
+        FbAtoms *fbatoms = FbAtoms::instance();
+        if (atom == fbatoms->getWMProtocolsAtom()) {
+            client.updateWMProtocols();
+        } else if (atom == fbatoms->getMWMHintsAtom()) {
+            client.updateMWMHints();
+            updateMWMHintsFromClient(client);
+        } else if (atom == fbatoms->getFluxboxHintsAtom()) {
+            client.updateBlackboxHints();
+            updateBlackboxHintsFromClient(client);
+        }
         break;
     }
 
@@ -2208,11 +2207,12 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
 
     // the request is for client window so we resize the frame to it first
     if (frame().width() != cw || frame().height() != ch) {        
-        frame().resizeForClient(cw, ch);
+        if (frame().x() != cx || frame().y() != cy) 
+            frame().moveResizeForClient(cx, cy, cw, ch);
+        else 
+            frame().resizeForClient(cw, ch);
         send_notify = true;
-    }
-
-    if (frame().x() != cx || frame().y() != cy) {
+    } else if (frame().x() != cx || frame().y() != cy) {
         move(cx, cy);
         // since we already send a notify in move we don't need to do that again
         send_notify = false;
@@ -2627,7 +2627,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
 
     // if the location changes, shift it
     if (grav_x != 0 || grav_y != 0)
-        frame().move(grav_x + frame().x(), grav_y + frame().y());
+        move(grav_x + frame().x(), grav_y + frame().y());
 
     frame().reconfigure();
 }

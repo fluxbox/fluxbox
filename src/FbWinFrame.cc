@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.53 2003/09/16 13:11:41 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.54 2003/09/24 14:02:25 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -163,53 +163,66 @@ void FbWinFrame::shade() {
 
 
 void FbWinFrame::move(int x, int y) {
-    // don't update unless we really changes position
-    if (x == window().x() && y == window().y())
-        return;
-
-    window().move(x, y);
-    // update transparent only if we need to
-    if (theme().alpha() == 255)
-        return;
-
-    // restart update timer
-    m_update_timer.start();
-
-    /*
-
-    */
+    moveResize(x, y, 0, 0, true, false);
 }
 
 void FbWinFrame::resize(unsigned int width, unsigned int height) {
-    // update unshaded size if  we're in shaded state and just resize width
-    if (m_shaded) {
+    moveResize(0, 0, width, height, false, true);
+}
+
+// need an atomic moveresize where possible
+void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned int height, bool move, bool resize) {
+    // total height for frame
+
+    unsigned int total_height = height;
+
+    if (resize) {
+        // having a titlebar = 1 extra border + titlebar height
+        if (m_use_titlebar)
+            total_height += m_titlebar.height() + m_titlebar.borderWidth();
+        // having a handle = 1 extra border + handle height
+        if (m_use_handle)
+            total_height += m_handle.height() + m_handle.borderWidth();
+    }
+    moveResize(x, y, width, total_height, move, resize);
+}
+
+void FbWinFrame::resizeForClient(unsigned int width, unsigned int height) {
+    moveResizeForClient(0, 0, width, height, false, true);
+}
+
+void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height, bool move, bool resize) {
+    if (move && x == window().x() && y == window().y()) 
+        move = false;
+
+    if (resize && width == FbWinFrame::width() && height == FbWinFrame::height()) 
+        resize = false;
+
+    if (!move && !resize)
+        return;
+
+    if (resize && m_shaded) {
+        // update unshaded size if  we're in shaded state and just resize width
         m_width_before_shade = width;
         m_height_before_shade = height;
-        m_window.resize(width, m_window.height());
+        height = m_window.height();
+    }
+
+    if (move && resize) {
+        m_window.moveResize(x, y, width, height);
+    } else if (move) {
+        m_window.move(x, y);
+        // this stuff will be caught by reconfigure if resized
+        if (theme().alpha() != 255) {
+            // restart update timer
+            m_update_timer.start();
+        }
     } else {
         m_window.resize(width, height);
     }
 
-    reconfigure();
-}
-
-void FbWinFrame::resizeForClient(unsigned int width, unsigned int height) {
-    // total height for frame
-    unsigned int total_height = height;
-
-    // having a titlebar = 1 extra border + titlebar height
-    if (m_use_titlebar)
-        total_height += m_titlebar.height() + m_titlebar.borderWidth();
-    // having a handle = 1 extra border + handle height
-    if (m_use_handle)
-        total_height += m_handle.height() + m_handle.borderWidth();
-    resize(width, total_height);
-}
-
-void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height) {
-    move(x, y);
-    if (width != FbWinFrame::width() || height != FbWinFrame::height())
-        resize(width, height);
+    if (resize)
+        reconfigure();
 }
 
 void FbWinFrame::setFocus(bool newvalue) {

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.cc,v 1.8 2003/05/13 11:47:29 fluxgen Exp $
+// $Id: FbAtoms.cc,v 1.9 2003/09/24 14:02:25 rathnor Exp $
 
 #include "FbAtoms.hh"
 #include "App.hh"
@@ -46,7 +46,6 @@ FbAtoms::~FbAtoms() {
 FbAtoms *FbAtoms::instance() {
     if (s_singleton == 0)
         throw string("Create one instance of FbAtoms first!");
-
     return s_singleton;
 }
 
@@ -60,6 +59,7 @@ void FbAtoms::initAtoms() {
     xa_wm_change_state = XInternAtom(display, "WM_CHANGE_STATE", False);
     xa_wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
     xa_wm_take_focus = XInternAtom(display, "WM_TAKE_FOCUS", False);
+    motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
 
     blackbox_hints = XInternAtom(display, "_BLACKBOX_HINTS", False);
     blackbox_attributes = XInternAtom(display, "_BLACKBOX_ATTRIBUTES", False);

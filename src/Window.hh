@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.94 2003/09/23 13:52:05 rathnor Exp $
+// $Id: Window.hh,v 1.95 2003/09/24 14:02:25 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -236,7 +236,7 @@ public:
     void unmapNotifyEvent(XUnmapEvent &unmapev);
     void exposeEvent(XExposeEvent &ee);
     void configureRequestEvent(XConfigureRequestEvent &ce);
-    void propertyNotifyEvent(Atom a);
+    void propertyNotifyEvent(WinClient &client, Atom a);
     void enterNotifyEvent(XCrossingEvent &ev);
     void leaveNotifyEvent(XCrossingEvent &ev);
     //@}
@@ -374,11 +374,11 @@ private:
 
     bool getState();
     /// gets title string from client window and updates frame's title
-    void updateTitleFromClient();
+    void updateTitleFromClient(WinClient &client);
     /// gets icon name from client window
-    void updateIconNameFromClient();
-    void getMWMHints();
-    void getBlackboxHints();
+    void updateIconNameFromClient(WinClient &client);
+    void updateMWMHintsFromClient(WinClient &client);
+    void updateBlackboxHintsFromClient(WinClient &client);
     void saveBlackboxAttribs();
     void setNetWMAttributes();
     void associateClientWindow();

@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/09/24:
+  * Fix updates to mwm_hints, and make configure request
+    move and resize atomic (Simon)
+    - fixes mplayer fullscreen window being moveable
+    - fixes focus loss when toggling mplayer fullscreen
+    FbWinFrame.hh/cc Window.hh/cc FbAtoms.hh/cc WinClient.cc
   * Fixed the "aterm"-bug  (Henrik)
     Window.cc
 *03/09/23:
