@@ -30,5 +30,5 @@ Translation.m: $(MFILES)
 
 blackbox.cat: Translation.m
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		$(gencat_cmd) blackbox.cat Translation.m; \
+		LANG=fr_FR $(gencat_cmd) blackbox.cat Translation.m; \
 	fi

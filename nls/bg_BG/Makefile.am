@@ -10,7 +10,7 @@ all-local: blackbox.cat
 install-data-local: blackbox.cat
 	@if test x$(NLSTEST) = "x-DNLS"; then \
 		echo "Installing catalog in $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG)"; \
-		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/sv_SE; \
+		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 		$(INSTALL_DATA) blackbox.cat $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 	fi
 uninstall-local:
@@ -27,5 +27,5 @@ Translation.m: $(MFILES)
 
 blackbox.cat: Translation.m
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		$(gencat_cmd) blackbox.cat Translation.m; \
+		LANG=bg_BG $(gencat_cmd) blackbox.cat Translation.m; \
 	fi

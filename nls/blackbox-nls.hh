@@ -176,9 +176,6 @@ enum {
 	bsetrootMustSpecify = 0x1,
 	bsetrootUsage = 0x2,
 	dummy_not_used = 0 //just for the ending
-}; //end enum
-
-}; //end namespace
-
-#endif //BLACKBOX_NLS_HH
-
+}; //end enum\n
+}; //end namespace\n
+#endif //BLACKBOX_NLS_HH\n

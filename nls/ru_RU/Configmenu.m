@@ -51,6 +51,6 @@ $ #MaxOverSlit
 $ #SloppyWindowGrouping
 # Группировка "размытых" окон
 $ #WorkspaceWarping
-# Workspace Warping
+# Перемещение окон между рабочими столами
 $ #DesktopWheeling
 # Desktop Wheeling
