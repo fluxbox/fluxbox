@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.30 2002/08/02 12:57:19 fluxgen Exp $
+// $Id: Tab.cc,v 1.31 2002/08/11 21:12:10 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -556,11 +556,7 @@ void Tab::moveNext() {
 // calculates m_inc_x and m_inc_y for tabs
 // used for positioning the tabs.
 //-------------------------------------------
-void Tab::calcIncrease(void) {
-	#ifdef DEBUG
-	cerr << "Calculating tab increase" << endl;
-	#endif // DEBUG
-
+void Tab::calcIncrease() {
 	Tab *tab;
 	int inc_x = 0, inc_y = 0;
 	unsigned int i = 0, tabs = numObjects();
@@ -1078,10 +1074,10 @@ void Tab::setTabHeight(unsigned int h) {
 // to get right size/width of tabs when
 // PLeft || PRight && isTabRotateVertical
 // ---------------------------------------
-void Tab::resizeGroup(void) {
-	#ifdef DEBUG
+void Tab::resizeGroup() {
+#ifdef DEBUG
 	cerr <<__FILE__<<"("<<__LINE__<<"): Resizing group"<<endl;
-	#endif //DEBUG
+#endif //DEBUG
 	Tab *first;
 	for (first = getFirst(this); first != 0; first = first->m_next) {
 		if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
