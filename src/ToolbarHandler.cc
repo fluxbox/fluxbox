@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.24 2003/07/20 02:45:57 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.25 2003/07/25 08:46:51 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -159,6 +159,7 @@ ToolbarHandler::ToolbarHandler(BScreen &screen)
     // (we only want it done once, so it can't go in initforscreen)
 
     screen.addConfigMenu("Toolbar", m_toolbarmenu);
+    enableUpdate();
 }
 
 void ToolbarHandler::setMode(ToolbarMode newmode, bool initialise) {
@@ -284,7 +285,7 @@ void ToolbarHandler::setupFrame(FluxboxWindow &win) {
     case NONE:
         break;
     case WORKSPACE:
-        if (win.workspaceNumber() == m_current_workspace)    
+        if (win.workspaceNumber() == m_current_workspace)
             m_toolbar->addIcon(&win);
         break;
     case WORKSPACEICONS:

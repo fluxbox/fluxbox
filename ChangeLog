@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/25:
+   * Fix pesky crash and phantom icons (diesig wasn't getting through) (Simon)
+     ToolbarHandler.cc
 *03/07/24:
    * Fix some maximisation issues (Simon)
      Window.hh/cc FbCommandFactory.cc
