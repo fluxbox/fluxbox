@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.178 2003/05/15 23:30:07 fluxgen Exp $
+// $Id: Window.cc,v 1.179 2003/05/17 11:08:06 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -361,7 +361,11 @@ void FluxboxWindow::init() {
 
 #endif // DEBUG    
 
+    Fluxbox &fluxbox = *Fluxbox::instance();
 
+    // setup cursors for resize grips
+    frame().gripLeft().setCursor(fluxbox.getLowerLeftAngleCursor());
+    frame().gripRight().setCursor(fluxbox.getLowerRightAngleCursor());
 
     frame().resize(m_client->width(), m_client->height());
     TextButton *btn =  new TextButton(frame().label(), 
@@ -439,11 +443,9 @@ void FluxboxWindow::init() {
     m_client->old_bw = wattrib.border_width;
     m_client->x = wattrib.x; m_client->y = wattrib.y;
 
-    Fluxbox *fluxbox = Fluxbox::instance();
+    fluxbox.saveWindowSearch(frame().window().window(), this);
 
-    fluxbox->saveWindowSearch(frame().window().window(), this);
-
-    m_timer.setTimeout(fluxbox->getAutoRaiseDelay());
+    m_timer.setTimeout(fluxbox.getAutoRaiseDelay());
     m_timer.fireOnce(true);
 
     if (m_client->initial_state == WithdrawnState) {
@@ -473,11 +475,11 @@ void FluxboxWindow::init() {
     upsize();
 
     bool place_window = true;
-    if (fluxbox->isStartup() || m_client->isTransient() ||
+    if (fluxbox.isStartup() || m_client->isTransient() ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
         setGravityOffsets();
 
-        if (! fluxbox->isStartup()) {
+        if (! fluxbox.isStartup()) {
 
             int real_x = frame().x();
             int real_y = frame().y();
