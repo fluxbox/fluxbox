@@ -20,10 +20,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.22 2004/07/15 14:20:19 fluxgen Exp $
+// $Id: IconButton.cc,v 1.23 2004/10/22 00:35:28 akir Exp $
 
 #include "IconButton.hh"
-
+#include "IconbarTool.hh"
 
 #include "fluxbox.hh"
 #include "Screen.hh"
@@ -49,6 +49,8 @@
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
+typedef FbTk::RefCount<FbTk::Command> RefCmd;
+
 namespace {
 
 class ShowMenu: public FbTk::Command {
@@ -69,47 +71,95 @@ private:
 
 class FocusCommand: public FbTk::Command {
 public:
-    explicit FocusCommand(FluxboxWindow &win):m_win(win) { }
+    explicit FocusCommand(const IconbarTool& tool, FluxboxWindow &win) : 
+        m_win(win), m_tool(tool) { }
     void execute() {
         if(m_win.isIconic() || !m_win.isFocused()) {
-            m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+            switch(m_tool.deiconifyMode()) {
+            case IconbarTool::CURRENT:
+                m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
+                break;
+            case IconbarTool::FOLLOW:
+                m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+                break;
+            case IconbarTool::SEMIFOLLOW:
+                if (m_win.isIconic()) 
+                    m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
+                else
+                    m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+                break;
+            };
+
             m_win.raiseAndFocus();
        } else
            m_win.iconify();
     }
+
 private:
     FluxboxWindow &m_win;
+    const IconbarTool& m_tool;
 };
 
+// simple forwarding of wheeling, but only 
+// if desktopwheeling is enabled
+class WheelWorkspaceCmd : public FbTk::Command {
+public:
+    explicit WheelWorkspaceCmd(const IconbarTool& tool, FluxboxWindow &win, const char* cmd) : 
+        m_win(win), m_tool(tool), m_cmd(CommandParser::instance().parseLine(cmd)){ }
+    void execute() {
+
+        switch(m_tool.wheelMode()) {
+        case IconbarTool::ON:
+            m_cmd->execute();
+            break;
+        case IconbarTool::SCREEN:
+            if(m_win.screen().isDesktopWheeling())
+                m_cmd->execute();
+            break;
+        case IconbarTool::OFF:
+        default:
+            break;
+        };
+    }
+
+private:
+    FluxboxWindow &m_win;
+    RefCmd m_cmd;
+    const IconbarTool& m_tool;
+};
 
 } // end anonymous namespace
 
 
 
-IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
-                       FluxboxWindow &win):
+IconButton::IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent, 
+                       const FbTk::Font &font, FluxboxWindow &win):
     FbTk::TextButton(parent, font, win.winClient().title()),
     m_win(win), 
     m_icon_window(*this, 1, 1, 1, 1, 
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_use_pixmap(true) {
 
-    typedef FbTk::RefCount<FbTk::Command> RefCmd;
-    RefCmd hidemenus(new FbTk::SimpleCommand<BScreen>(win.screen(), &BScreen::hideMenus));
-    RefCmd next_workspace(CommandParser::instance().parseLine("nextworkspace"));
-    RefCmd prev_workspace(CommandParser::instance().parseLine("prevworkspace"));
+
+    RefCmd next_workspace(new ::WheelWorkspaceCmd(tool, m_win, "nextworkspace"));
+    RefCmd prev_workspace(new ::WheelWorkspaceCmd(tool, m_win, "prevworkspace"));
+
     //!! TODO: There're some issues with MacroCommand when
     //         this object dies when the last macrocommand is executed (focused cmd)
     //         In iconbar mode Icons
+    //
+    //    RefCmd hidemenus(new FbTk::SimpleCommand<BScreen>(win.screen(), &BScreen::hideMenus));
     //    FbTk::MacroCommand *focus_macro = new FbTk::MacroCommand();
     //    focus_macro->add(hidemenus);
     //    focus_macro->add(focus);
-    FbTk::RefCount<FbTk::Command> focus_cmd(new ::FocusCommand(m_win));
-    FbTk::RefCount<FbTk::Command> menu_cmd(new ::ShowMenu(m_win));
+    
+    RefCmd focus_cmd(new ::FocusCommand(tool, m_win));
+    RefCmd menu_cmd(new ::ShowMenu(m_win));
     setOnClick(focus_cmd, 1);
     setOnClick(menu_cmd, 3);
     setOnClick(next_workspace, 4);
     setOnClick(prev_workspace, 5);
+   
     m_win.hintSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.hh,v 1.4 2003/11/27 14:27:48 fluxgen Exp $
+// $Id: IconButton.hh,v 1.5 2004/10/22 00:35:28 akir Exp $
 
 #ifndef ICONBUTTON_HH
 #define ICONBUTTON_HH
@@ -30,11 +30,12 @@
 #include "FbTk/TextButton.hh"
 
 class FluxboxWindow;
+class IconbarTool;
 
 class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
-    IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font, 
-               FluxboxWindow &window);
+    IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent, 
+               const FbTk::Font &font, FluxboxWindow &window);
     virtual ~IconButton();
 
     void exposeEvent(XExposeEvent &event);

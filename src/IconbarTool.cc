@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.48 2004/10/10 16:11:25 akir Exp $
+// $Id: IconbarTool.cc,v 1.49 2004/10/22 00:35:28 akir Exp $
 
 #include "IconbarTool.hh"
 
@@ -63,6 +63,68 @@ void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
         m_value = IconbarTool::ALLWINDOWS;
     else
         setDefaultValue();
+}
+
+template<>
+void FbTk::Resource<IconbarTool::DeiconifyMode>::setDefaultValue() {
+    m_value = IconbarTool::CURRENT;
+}
+
+template<>
+void FbTk::Resource<IconbarTool::DeiconifyMode>::setFromString(const char* strval) {
+    if (strncasecmp(strval, "Current", strlen("Current")) == 0)
+        m_value = IconbarTool::CURRENT;
+    else if (strncasecmp(strval, "Follow", strlen("Follow")) == 0)
+        m_value = IconbarTool::FOLLOW;
+    else if (strncasecmp(strval, "SemiFollow", strlen("SemiFollow")) == 0)
+        m_value = IconbarTool::SEMIFOLLOW;
+    else
+        setDefaultValue();
+}
+
+template<>
+std::string FbTk::Resource<IconbarTool::DeiconifyMode>::getString() {
+    switch (m_value) {
+    case IconbarTool::SEMIFOLLOW:
+        return std::string("SemiFollow");
+        break;
+    case IconbarTool::FOLLOW:
+        return std::string("Follow");
+        break;
+    };
+    return std::string("Current");
+}
+
+template<>
+void FbTk::Resource<IconbarTool::WheelMode>::setDefaultValue() {
+    m_value = IconbarTool::SCREEN;
+}
+
+
+template<>
+void FbTk::Resource<IconbarTool::WheelMode>::setFromString(const char* strval) {
+    if (strncasecmp(strval, "off", strlen("off")) == 0)
+        m_value = IconbarTool::OFF;
+    else if (strncasecmp(strval, "on", strlen("on")) == 0)
+        m_value = IconbarTool::ON;
+    else if (strncasecmp(strval, "screen", strlen("screen")) == 0)
+        m_value = IconbarTool::SCREEN;
+    else
+        setDefaultValue();
+}
+
+
+template<>
+std::string FbTk::Resource<IconbarTool::WheelMode>::getString() {
+    switch(m_value) {
+    case IconbarTool::ON:
+        return std::string("On");
+        break;
+    case IconbarTool::SCREEN:
+        return std::string("Screen");
+        break;
+    };
+    return std::string("Off");
 }
 
 template<>
@@ -275,6 +337,12 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_empty_pm(0),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
+    m_deiconify_mode(screen.resourceManager(), CURRENT,
+                     screen.name() + ".iconbar.deiconifyMode",
+                     screen.name() + ".iconbar.DeiconifyMode"),
+    m_wheel_mode(screen.resourceManager(), OFF,
+                 screen.name() + ".iconbar.wheelMode",
+                 screen.name() + ".iconbar.WheelMode"),
     m_rc_alignment(screen.resourceManager(), Container::LEFT,
                    screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
     m_rc_client_width(screen.resourceManager(), 70,
@@ -403,6 +471,20 @@ void IconbarTool::setMode(Mode mode) {
 
     renderTheme();
 }
+
+void IconbarTool::setDeiconifyMode(DeiconifyMode mode) {
+    if (mode == *m_deiconify_mode)
+        return;
+
+    *m_deiconify_mode = mode;
+}
+
+void IconbarTool::setWheelMode(WheelMode mode) {
+    if (mode == *m_wheel_mode)
+        return;
+    *m_wheel_mode = mode;
+}
+
 
 unsigned int IconbarTool::width() const {
     return m_icon_container.width();
@@ -735,7 +817,12 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
 #ifdef DEBUG
     cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
 #endif // DEBUG
-    IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);
+    IconButton *button = new IconButton(*this, 
+                                        m_icon_container, 
+                                        m_theme.focusedText().font(), 
+                                        win);
+  
+
     button->setTextPadding(*m_rc_client_padding);
 
     renderButton(*button, false); // update the attributes, but don't clear it

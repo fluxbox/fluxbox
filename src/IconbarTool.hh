@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.17 2004/10/10 16:11:25 akir Exp $
+// $Id: IconbarTool.hh,v 1.18 2004/10/22 00:35:29 akir Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -54,6 +54,20 @@ public:
         ALLWINDOWS ///< all windows and all icons from all workspaces
     };
 
+    /// deiconfiy mode for iconbuttons
+    enum DeiconifyMode {
+        CURRENT, ///< raise the window on the current workspace
+        FOLLOW, ///< raise the window on the workspace it was iconified from
+        SEMIFOLLOW, ///< like current for iconified windows, and like follow for others
+    };
+    
+    /// wheeling on iconbutton
+    enum WheelMode { 
+      OFF, ///< no wheeling, default mode
+      ON,  ///< enabled wheeling
+      SCREEN ///< in perfect harmony with desktopwheeling-value
+    };
+
     IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, 
                 BScreen &screen, FbTk::Menu &menu);
     ~IconbarTool();
@@ -68,12 +82,17 @@ public:
     void hide();
     void setAlignment(Container::Alignment a);
     void setMode(Mode mode);
+    void setDeiconifyMode(DeiconifyMode mode);
+    void setWheelMode(WheelMode mode);
 
     unsigned int width() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
 
     Mode mode() const { return *m_rc_mode; }
+    DeiconifyMode deiconifyMode() const { return *m_deiconify_mode; }
+    WheelMode wheelMode() const { return *m_wheel_mode; }
+
     Container::Alignment alignment() const { return m_icon_container.alignment(); }
 private:
     /// @return button associated with window
@@ -117,6 +136,8 @@ private:
 
     IconList m_icon_list;
     FbTk::Resource<Mode> m_rc_mode;
+    FbTk::Resource<DeiconifyMode> m_deiconify_mode;
+    FbTk::Resource<WheelMode> m_wheel_mode;
     FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text
