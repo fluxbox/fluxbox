@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.1 2002/12/02 19:34:54 fluxgen Exp $
+// $Id: Theme.cc,v 1.2 2003/02/23 00:47:34 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -77,14 +77,16 @@ void ThemeItem<FbTk::Texture>::load() {
     m_value.colorTo().setFromString(colorto_name.c_str(), m_tm.screenNum());
 }
 
-template <>
-void ThemeItem<FbTk::Color>::setFromString(const char *str) {
-    m_value.setFromString(str, m_tm.screenNum());
-}
 
 template <>
 void ThemeItem<FbTk::Color>::setDefaultValue() {
-    m_value.setPixel(0xFFFFFFFF);
+    m_value.setFromString("white", m_tm.screenNum());
+}
+
+template <>
+void ThemeItem<FbTk::Color>::setFromString(const char *str) {
+    if (!m_value.setFromString(str, m_tm.screenNum()))
+        setDefaultValue();
 }
 
 // does nothing
