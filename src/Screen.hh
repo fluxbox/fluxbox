@@ -16,13 +16,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.32 2002/05/08 10:10:19 fluxgen Exp $
+// $Id: Screen.hh,v 1.33 2002/05/08 14:25:40 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -102,8 +102,8 @@ public:
 	inline const int getSlitDirection(void) const { return resource.slit_direction; }
 	inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
 	inline void saveSlitDirection(int d) { resource.slit_direction = d;  }
-	inline void saveSlitOnTop(Bool t) { resource.slit_on_top = t;  }
-	inline void saveSlitAutoHide(Bool t) { resource.slit_auto_hide = t;  }
+	inline void saveSlitOnTop(bool t) { resource.slit_on_top = t;  }
+	inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
 #ifdef XINERAMA
 	inline const unsigned int getSlitOnHead(void) const { return resource.slit_on_head; }
 	inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
