@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.29 2002/08/24 19:31:24 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.30 2002/09/06 16:50:51 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -1167,7 +1167,7 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 			screen->getWorkspacemenu()->
 				insert(screen->getCurrentWorkspace()->name().c_str(),
 			screen->getCurrentWorkspace()->menu(),
-			screen->getCurrentWorkspace()->workspaceID() + 1);
+			screen->getCurrentWorkspace()->workspaceID() + 2);
 			screen->getWorkspacemenu()->update();
 
 			reconfigure();
