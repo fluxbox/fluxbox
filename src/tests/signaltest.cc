@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "../SignalHandler.hh"
+#include "../FbTk/SignalHandler.hh"
 
 #include <iostream>
 #include <cassert>
@@ -27,7 +27,7 @@
 using namespace std;
 using namespace FbTk;
 
-class IntSig:public SignalHandler::EventHandler {
+class IntSig:public SignalEventHandler {
 public:
     void handleSignal(int signum) {
         assert(signum == SIGINT);
@@ -36,10 +36,13 @@ public:
     }
 };
 
-class AllSig:public SignalHandler::EventHandler {
+class AllSig:public SignalEventHandler {
 public:
     void handleSignal(int signum) {
         switch (signum) {
+        case SIGSEGV:
+            cerr<<"SIGSEGV";
+            break;
         case SIGTERM:
             cerr<<"SIGTERM";
             break;
@@ -59,14 +62,17 @@ public:
 };
 
 int main(int argc, char **argv) {
-    SignalHandler *sigh = SignalHandler::instance();
+    SignalHandler &sigh = SignalHandler::instance();
+    
     IntSig handler;
     AllSig allhand;
 	
-    sigh->registerHandler(SIGINT, &handler);
-    sigh->registerHandler(SIGTERM, &allhand);
-    sigh->registerHandler(SIGUSR1, &allhand);
-    sigh->registerHandler(SIGUSR2, &allhand);
+    sigh.registerHandler(SIGINT, &handler);
+    sigh.registerHandler(SIGSEGV, &allhand);
+    sigh.registerHandler(SIGTERM, &allhand);
+    sigh.registerHandler(SIGUSR1, &allhand);
+    sigh.registerHandler(SIGUSR2, &allhand);
+
     cerr<<"Send signals to me :)"<<endl;
     while (1) {
 	
