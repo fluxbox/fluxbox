@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.19 2004/02/27 13:25:18 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.20 2004/05/14 13:44:31 rathnor Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -231,15 +231,22 @@ void WinButton::drawType(bool clear, bool no_trans) {
 
             drawLine(gc(), 
                      2, 2,
-                     width() - 2, height() - 2);
+                     width() - 3, height() - 3);
             // I can't figure out why this second one needs a y offset of 1?????
             // but it does - at least on my box:
             //   XFree86 Version 4.2.1.1 (Debian 4.2.1-12.1 20031003005825)
             //   (protocol Version 11, revision 0, vendor release 6600)
+            // But not on mine? It's wonky. Put back to the same coords.
+            //  was width-2, 1 in the second drawline
+            // Perhaps some X versions don't draw the endpoint?
+            // Mine:
+            // XFree86 Version 4.3.0.1 (Debian 4.3.0.dfsg.1-1 20040428170728)
+            // (X Protocol Version 11, Revision 0, Release 6.6)
+
 
             drawLine(gc(), 
                      2, height() - 3,
-                     width() - 2, 1);
+                     width() - 3, 2);
         }
         break;
     case SHADE:
