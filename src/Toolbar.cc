@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.94 2003/06/24 18:33:29 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.95 2003/06/25 12:33:28 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -857,8 +857,7 @@ void Toolbar::redrawWindowLabel(bool redraw) {
         } else 
             dy += frame.bevel_w;
     
-        m_theme.font().drawText(
-                                frame.window_label.window(),
+        m_theme.font().drawText(frame.window_label.window(),
                                 screen().screenNumber(),
                                 m_theme.windowTextGC(),
                                 foc->title().c_str(), newlen,
@@ -1176,6 +1175,10 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.button_w = frame.height;    
     }
 
+    // So we get at least one pixel visible in hidden mode
+    if (bevel_width <= border_width)
+        bevel_width = border_width + 1;
+
     switch (where) {
     case TOPLEFT:
         frame.x = head_x;
@@ -1193,7 +1196,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
 
     case TOPCENTER:
-        frame.x = head_x + ((head_w - frame.width) / 2);
+        frame.x = head_x + (head_w - frame.width) / 2;
         frame.y = head_y;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + bevel_width - border_width - frame.height;
@@ -1255,7 +1258,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y_hidden = frame.y;
         break;
     }
-
 }
 
 void Toolbar::HideHandler::timeout() {
