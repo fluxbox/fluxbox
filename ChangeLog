@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/28:
+  * Fix building with --disable-slit (Simon)
+    Screen.cc
 *03/10/27:
   * Change FbWinFrame to NOT reparent client windows into clientarea (Simon)
     - fixes (I think) java bug with missing drawing bits of window

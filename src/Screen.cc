@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.238 2003/10/05 06:28:47 rathnor Exp $
+// $Id: Screen.cc,v 1.239 2003/10/28 17:39:59 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -69,6 +69,9 @@
 
 #ifdef SLIT
 #include "Slit.hh"
+#else
+// fill it in
+class Slit {};
 #endif // SLIT
 
 #ifdef STDC_HEADERS
@@ -2417,6 +2420,7 @@ int BScreen::getHeadHeight(int head) const {
 // on the actual objects
 
 
+#ifdef SLIT
 template <>
 int BScreen::getOnHead<Slit>(Slit &slit) {
     return 0;
@@ -2427,4 +2431,4 @@ void BScreen::setOnHead<Slit>(Slit &slit, int head) {
     //    slit.saveOnHead(head);
     slit.reconfigure();
 }
-
+#endif // SLIT
