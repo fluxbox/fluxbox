@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: testFont.cc,v 1.8 2004/09/12 00:06:37 fluxgen Exp $
+// $Id$
 
 #include "App.hh"
 #include "FbWindow.hh"
@@ -141,7 +141,9 @@ int main(int argc, char **argv) {
         }
             
     }
-
+    
+    FbTk::fontInit();
+    
     App app(displayname.c_str(), foreground, background);
     app.font().setAntialias(antialias);
     if (!app.font().load(fontname.c_str()))
