@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.2 2003/02/15 01:58:52 fluxgen Exp $
+// $Id: ToolbarTheme.hh,v 1.3 2003/06/24 16:26:56 fluxgen Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
@@ -47,6 +47,7 @@ public:
     const FbTk::Color &windowTextColor() const { return *m_window_textcolor; }
     const FbTk::Color &clockTextColor() const { return *m_clock_textcolor; }
     const FbTk::Color &buttonColor() const { return *m_button_color; }
+    const FbTk::Color &borderColor() const { return *m_border_color; }
     ///@}
     /**
        @name textures
@@ -72,16 +73,20 @@ public:
     ///@}
     FbTk::Justify justify() const { return *m_justify; }
 
+    int borderWidth() const { return *m_border_width; }
+    int bevelWidth() const { return *m_bevel_width; }    
     void addListener(FbTk::Observer &obs) { m_theme_change_sig.attach(&obs); }
     void removeListener(FbTk::Observer &obs) { m_theme_change_sig.detach(&obs); }
 private:
     // text colors
     FbTk::ThemeItem<FbTk::Color> m_label_textcolor, m_window_textcolor, m_clock_textcolor;
-    FbTk::ThemeItem<FbTk::Color> m_button_color;
+    FbTk::ThemeItem<FbTk::Color> m_button_color, m_border_color;
     // textures
     FbTk::ThemeItem<FbTk::Texture> m_toolbar, m_label, m_window, m_button, m_pressed_button, m_clock;
     FbTk::ThemeItem<FbTk::Font> m_font;
     FbTk::ThemeItem<FbTk::Justify> m_justify;
+
+    FbTk::ThemeItem<int> m_border_width, m_bevel_width;
     // graphic context
     GC m_label_text_gc, m_window_text_gc, m_clock_text_gc, m_button_pic_gc;
     Display *m_display;

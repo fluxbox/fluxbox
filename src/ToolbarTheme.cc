@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.2 2003/02/15 01:59:00 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.3 2003/06/24 16:26:56 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -38,6 +38,8 @@ ToolbarTheme::ToolbarTheme(int screen_num):
                       "toolbar.clock.textColor", "Toolbar.Clock.TextColor"),
     m_button_color(*this, 
                    "toolbar.button.picColor", "Toolbar.Button.PicColor"),
+    m_border_color(*this,
+                   "toolbar.borderColor", "toolbar.borderColor"),
     m_toolbar(*this, "toolbar", "Toolbar"),
     m_label(*this, "toolbar.label", "Toolbar.Label"),
     m_window(*this, "toolbar.windowLabel", "Toolbar.WindowLabel"),
@@ -47,6 +49,8 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_clock(*this, "toolbar.clock", "Toolbar.Clock"),
     m_font(*this, "toolbar.font", "Toolbar.Font"),
     m_justify(*this, "toolbar.justify", "Toolbar.Justify"),
+    m_border_width(*this, "toolbar.borderWidth", "Toolbar.BorderWidth"),
+    m_bevel_width(*this, "toolbar.bevelWidth", "Toolbar.BevelWidth"),
     m_display(FbTk::App::instance()->display()){
 
     Window rootwindow = RootWindow(m_display, screen_num);
