@@ -3,6 +3,8 @@ Changes for 0.9.2:
 *03/04/20:
    * Snap to Windows (and toolbar, slit + screen edge) (Simon)
      Window.hh/cc
+   * Directional focus movement (key actions FocusUp/Down/Left/Right) (Simon)
+     Keys.hh/cc Screen.hh/cc fluxbox.cc
 Changes for 0.9.1:
 *03/04/16:
    * Fixed resize bug (Henrik)

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.25 2003/04/15 00:50:24 rathnor Exp $
+//$Id: Keys.cc,v 1.26 2003/04/20 12:21:35 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -110,6 +110,10 @@ Keys::t_actionstr Keys::m_actionlist[] = {
     {"MoveTabNext", MOVETABNEXT},
     {"AttachLast", ATTACHLAST},
     {"DetachClient", DETACHCLIENT},
+    {"FocusUp", FOCUSUP},
+    {"FocusDown", FOCUSDOWN},
+    {"FocusLeft", FOCUSLEFT},
+    {"FocusRight", FOCUSRIGHT},
     {"ShadeWindow", SHADE},
     {"MaximizeWindow", MAXIMIZE},
     {"StickWindow", STICK},

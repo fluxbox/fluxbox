@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.114 2003/04/16 16:18:06 rathnor Exp $
+// $Id: fluxbox.cc,v 1.115 2003/04/20 12:21:35 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1164,6 +1164,22 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     watchKeyRelease(screen, Keys::cleanMods(ke.state));
                 }
                 screen->prevFocus(key->getParam());
+                break;
+            case Keys::FOCUSUP:
+                if (focused_window) 
+                    screen->dirFocus(*focused_window, BScreen::FOCUSUP);
+                break;
+            case Keys::FOCUSDOWN:
+                if (focused_window) 
+                    screen->dirFocus(*focused_window, BScreen::FOCUSDOWN);
+                break;
+            case Keys::FOCUSLEFT:
+                if (focused_window) 
+                    screen->dirFocus(*focused_window, BScreen::FOCUSLEFT);
+                break;
+            case Keys::FOCUSRIGHT:
+                if (focused_window) 
+                    screen->dirFocus(*focused_window, BScreen::FOCUSRIGHT);
                 break;
             case Keys::NEXTTAB: 
                 if (focused_window && focused_window->numClients() > 1)

@@ -103,7 +103,7 @@ Major Features:
  - Transparency                         (Henrik)
 Minor Features:
  - more keybinding actions              (Both)
- - directional focus movement           (?)
+ * directional focus movement           (?)
  - fix up focus issues                  (Simon)
  * snap to windows                      (Simon)
  - improved command-line help option    (Henrik)

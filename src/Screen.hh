@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.80 2003/04/16 16:17:57 rathnor Exp $
+// $Id: Screen.hh,v 1.81 2003/04/20 12:21:35 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -277,6 +277,9 @@ public:
     void nextFocus(int options);
     void raiseFocus();
     void setFocusedWindow(WinClient &winclient);
+
+    enum FocusDir { FOCUSUP, FOCUSDOWN, FOCUSLEFT, FOCUSRIGHT };
+    void dirFocus(FluxboxWindow &win, FocusDir dir);
 
     void reconfigure();	
     void rereadMenu();

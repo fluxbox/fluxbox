@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.127 2003/04/18 12:51:14 fluxgen Exp $
+// $Id: Screen.cc,v 1.128 2003/04/20 12:21:35 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1616,6 +1616,95 @@ void BScreen::setFocusedWindow(WinClient &winclient) {
         focused_list.push_front(&winclient);
         cycling_window = focused_list.begin();
     }
+}
+
+void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
+    // change focus to the window in direction dir from the given window
+
+    // we scan through the list looking for the window that is "closest"
+    // in the given direction
+
+    FluxboxWindow *foundwin = 0;
+    int weight = 999999, exposure = 0; // extreme values
+    int borderW = getBorderWidth(),
+        top = win.getYFrame(), 
+        bottom = win.getYFrame() + win.getHeight() + 2*borderW,
+        left = win.getXFrame(),
+        right = win.getXFrame() + win.getWidth() + 2*borderW;
+
+    Workspace::Windows &wins = getCurrentWorkspace()->getWindowList();
+    Workspace::Windows::iterator it = wins.begin();
+    for (; it != wins.end(); ++it) {
+        if ((*it) == &win) continue; // skip self
+        
+        // we check things against an edge, and within the bounds (draw a picture)
+        int edge=0, upper=0, lower=0, oedge=0, oupper=0, olower=0;
+
+        int otop = (*it)->getYFrame(), 
+            obottom = (*it)->getYFrame() + (*it)->getHeight() + 2*borderW,
+            oleft = (*it)->getXFrame(),
+            oright = (*it)->getXFrame() + (*it)->getWidth() + 2*borderW;
+        // check if they intersect
+        switch (dir) {
+        case FOCUSUP:
+            edge = obottom;
+            oedge = bottom;
+            upper = left;
+            oupper = oleft;
+            lower = right;
+            olower = oright;
+            break;
+        case FOCUSDOWN:
+            edge = top;
+            oedge = otop;
+            upper = left;
+            oupper = oleft;
+            lower = right;
+            olower = oright;
+            break;
+        case FOCUSLEFT:
+            edge = oright;
+            oedge = right;
+            upper = top;
+            oupper = otop;
+            lower = bottom;
+            olower = obottom;
+            break;
+        case FOCUSRIGHT:
+            edge = left;
+            oedge = oleft;
+            upper = top;
+            oupper = otop;
+            lower = bottom;
+            olower = obottom;
+            break;
+        }
+
+        if (oedge < edge) continue; // not in the right direction
+        if (olower <= upper || oupper >= lower) {
+            // outside our horz bounds, get a heavy weight penalty
+            int myweight = 100000 + oedge - edge + abs(upper-oupper)+abs(lower-olower);
+            if (myweight < weight) {
+                foundwin = *it;
+                exposure = 0;
+                weight = myweight;
+            }
+        } else if ((oedge - edge) < weight) {
+            foundwin = *it;
+            weight = oedge - edge;
+            exposure = ((lower < olower)?lower:olower) - ((upper > oupper)?upper:oupper);
+        } else if (foundwin && oedge - edge == weight) {
+            int myexp = ((lower < olower)?lower:olower) - ((upper > oupper)?upper:oupper);
+            if (myexp > exposure) {
+                foundwin = *it;
+                // weight is same
+                exposure = myexp;
+            }
+        } // else not improvement
+    }
+
+    if (foundwin) 
+        foundwin->setInputFocus();
 }
 
 void BScreen::initMenu() {
