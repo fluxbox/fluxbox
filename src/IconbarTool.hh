@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.9 2003/10/06 06:22:42 rathnor Exp $
+// $Id: IconbarTool.hh,v 1.10 2003/11/27 14:30:11 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -108,6 +108,7 @@ private:
 
     IconList m_icon_list;
     FbTk::Resource<Mode> m_rc_mode;
+    FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
 
     FbMenu m_menu;
 };

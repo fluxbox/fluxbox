@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.hh,v 1.3 2003/09/10 21:40:01 fluxgen Exp $
+// $Id: IconButton.hh,v 1.4 2003/11/27 14:27:48 fluxgen Exp $
 
 #ifndef ICONBUTTON_HH
 #define ICONBUTTON_HH
@@ -33,7 +33,8 @@ class FluxboxWindow;
 
 class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
-    IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font, FluxboxWindow &window);
+    IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font, 
+               FluxboxWindow &window);
     virtual ~IconButton();
 
     void exposeEvent(XExposeEvent &event);
@@ -46,8 +47,11 @@ public:
     void resize(unsigned int width, unsigned int height);
 
     void update(FbTk::Subject *subj);
+    void setPixmap(bool use);
+
     FluxboxWindow &win() { return m_win; }
     const FluxboxWindow &win() const { return m_win; }
+
 protected:
     void drawText(int x = 0, int y = 0);
 private:
@@ -57,6 +61,7 @@ private:
     FbTk::FbWindow m_icon_window;
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;
+    bool m_use_pixmap;
 };
 
 #endif // ICONBUTTON_HH

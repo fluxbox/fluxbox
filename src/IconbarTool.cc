@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.15 2003/10/26 20:13:11 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.16 2003/11/27 14:30:11 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -31,12 +31,15 @@
 #include "Workspace.hh"
 #include "fluxbox.hh"
 #include "FbMenu.hh"
+#include "BoolMenuItem.hh"
+#include "CommandParser.hh"
 
 #include "FbTk/Menu.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/MacroCommand.hh"
 
 #include <typeinfo>
 #include <string>
@@ -181,11 +184,26 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_empty_pm(0),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
+    m_rc_use_pixmap(screen.resourceManager(), true,
+                    screen.name() + ".iconbar.usePixmap", screen.altName() + ".Iconbar.UsePixmap"),
     m_menu(*screen.menuTheme(), menu.screenNumber(), screen.imageControl(),
            *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())) {
 
-    // setup menu
+    // setup mode menu
     setupModeMenu(m_menu, *this);
+
+    using namespace FbTk;
+    // setup use pixmap item to reconfig iconbar and save resource on click
+    MacroCommand *save_and_reconfig = new MacroCommand();   
+    RefCount<Command> reconfig(new SimpleCommand<IconbarTool>(*this, &IconbarTool::renderTheme));
+    RefCount<Command> save(CommandParser::instance().parseLine("saverc"));
+    save_and_reconfig->add(reconfig);
+    save_and_reconfig->add(save);
+    RefCount<Command> s_and_reconfig(save_and_reconfig);
+    m_menu.insert(new BoolMenuItem("Use Pixmap", *m_rc_use_pixmap, s_and_reconfig));
+    m_menu.update();
+
+    // add iconbar menu to toolbar menu
     menu.insert(m_menu.label().c_str(), &m_menu);
 
     // setup signals
@@ -445,6 +463,8 @@ void IconbarTool::renderTheme() {
 
 void IconbarTool::renderButton(IconButton &button) {
 
+    button.setPixmap(*m_rc_use_pixmap);
+
     if (button.win().isFocused()) { // focused texture
         button.setGC(m_theme.focusedText().textGC());     
         button.setFont(m_theme.focusedText().font());
@@ -517,6 +537,7 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
         return;
 
     IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);
+    button->setPixmap(*m_rc_use_pixmap);
     m_icon_container.insertItem(button);    
     m_icon_list.push_back(button);
 
@@ -526,7 +547,6 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     win.workspaceSig().attach(this);
     win.stateSig().attach(this);
 }
-
 
 void IconbarTool::updateIcons() {
     std::list<FluxboxWindow *> itemlist;

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.12 2003/11/19 12:57:27 rathnor Exp $
+// $Id: IconButton.cc,v 1.13 2003/11/27 14:27:48 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -66,7 +66,8 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
     FbTk::TextButton(parent, font, win.winClient().title()),
     m_win(win), 
     m_icon_window(*this, 1, 1, 1, 1, 
-                  ExposureMask | ButtonPressMask | ButtonReleaseMask) {
+                  ExposureMask | ButtonPressMask | ButtonReleaseMask),
+    m_use_pixmap(true) {
 
     FbTk::RefCount<FbTk::Command> focus(new FbTk::SimpleCommand<FluxboxWindow>(m_win, &FluxboxWindow::raiseAndFocus));
     FbTk::RefCount<FbTk::Command> menu(new ::ShowMenu(m_win));
@@ -117,6 +118,13 @@ void IconButton::clearArea(int x, int y,
                                 width, height, exposure);
 }
 
+void IconButton::setPixmap(bool use) {
+    if (m_use_pixmap != use) {
+        m_use_pixmap = use;
+        update(0);
+    }
+}
+
 void IconButton::update(FbTk::Subject *subj) {
     // we got signal that either title or 
     // icon pixmap was updated, 
@@ -130,7 +138,7 @@ void IconButton::update(FbTk::Subject *subj) {
     if (hints == 0)
         return;
 
-    if (hints->flags & IconPixmapHint && hints->icon_pixmap != 0) {
+    if (m_use_pixmap && (hints->flags & IconPixmapHint) && hints->icon_pixmap != 0) {
         // setup icon window
         m_icon_window.show();
         int new_height = height() - 2*m_icon_window.y(); // equally padded
@@ -148,7 +156,7 @@ void IconButton::update(FbTk::Subject *subj) {
         m_icon_pixmap = 0;
     }
 
-    if(hints->flags & IconMaskHint) {
+    if(m_use_pixmap && (hints->flags & IconMaskHint)) {
         m_icon_mask.copy(hints->icon_mask);
         m_icon_mask.scale(m_icon_pixmap.width(), m_icon_pixmap.height());
     } else
@@ -186,7 +194,10 @@ void IconButton::setupWindow() {
 
 void IconButton::drawText(int x, int y) {
     // offset text
-    FbTk::TextButton::drawText(m_icon_window.x() + m_icon_window.width() + 1, y);
+    if (m_icon_pixmap.drawable() != 0)
+        FbTk::TextButton::drawText(m_icon_window.x() + m_icon_window.width() + 1, y);
+    else
+        FbTk::TextButton::drawText(1, y);
 }
                           
 
