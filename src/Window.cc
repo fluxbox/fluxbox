@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.292 2004/06/29 12:41:23 rathnor Exp $
+// $Id: Window.cc,v 1.293 2004/07/15 18:20:13 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -153,7 +153,9 @@ WinClient *getRootTransientFor(WinClient *client) {
 void raiseFluxboxWindow(FluxboxWindow &win) {
     if (win.oplock) return;
     win.oplock = true;
-
+#ifdef DEBUG
+    cerr<<"raiseFluxboxWindow("<<win.title()<<")"<<endl;
+#endif // DEBUG
     // we need to lock actual restacking so that raising above active transient
     // won't do anything nasty
     if (!win.winClient().transientList().empty())
@@ -176,6 +178,9 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
 
     if (!win.winClient().transientList().empty())
         win.screen().layerManager().unlock();
+#ifdef DEBUG
+    cerr<<"window("<<win.title()<<") transient size: "<<win.winClient().transientList().size()<<endl;
+#endif // DEBUG
 }
 
 /// lower window and do the same for each transient it holds
@@ -485,7 +490,6 @@ void FluxboxWindow::init() {
         decorations.tab = false; //no tab for this window
     }
 
-    upsize();
 
     applyDecorations(true);
 
@@ -528,10 +532,17 @@ void FluxboxWindow::init() {
     if (m_client->isTransient() && 
         m_client->transientFor()->fbwindow() &&
         m_client->transientFor()->fbwindow() != this)
-        layerItem().setLayer(m_client->transientFor()->fbwindow()->layerItem().getLayer());       
+        layerItem().setLayer(m_client->transientFor()->fbwindow()->layerItem().getLayer());
     else // if no parent then set default layer
         moveToLayer(m_layernum);
-    
+#ifdef DEBUG
+    cerr<<"FluxboxWindow::init("<<title()<<") transientFor: "<<
+        m_client->transientFor()<<endl;
+    if (m_client->transientFor() && m_client->transientFor()->fbwindow()) {
+        cerr<<"FluxboxWindow::init("<<title()<<") transientFor->title(): "<<
+            m_client->transientFor()->fbwindow()->title()<<endl;
+    }
+#endif // DEBUG    
     if (!place_window)
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
@@ -920,6 +931,10 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     m_client = &client;
     m_client->raise();
 
+#ifdef DEBUG
+    cerr<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
+        m_labelbuttons[m_client]<<endl;
+#endif // DEBUG
     // frame focused doesn't necessarily mean input focused
     frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
 
@@ -936,7 +951,9 @@ bool FluxboxWindow::isGroupable() const {
     return false;
 }
 
-void FluxboxWindow::associateClientWindow(bool use_attrs, int x, int y, unsigned int width, unsigned int height) {
+void FluxboxWindow::associateClientWindow(bool use_attrs, 
+                                          int x, int y, 
+                                          unsigned int width, unsigned int height) {
     m_client->setBorderWidth(0);
     updateTitleFromClient(*m_client);
     updateIconNameFromClient(*m_client);
@@ -981,8 +998,6 @@ void FluxboxWindow::grabButtons() {
 
 
 void FluxboxWindow::reconfigure() {
-
-    upsize();
 
     applyDecorations();
 
@@ -1118,8 +1133,7 @@ void FluxboxWindow::updateBlackboxHintsFromClient(const WinClient &client) {
                       ATTRIB_MAXHORIZ) ? MAX_HORZ : MAX_NONE);
 
     if (hint->flags & ATTRIB_OMNIPRESENT)
-        stuck = (hint->attrib & 
-                 ATTRIB_OMNIPRESENT);
+        stuck = (hint->attrib & ATTRIB_OMNIPRESENT);
 
     if (hint->flags & ATTRIB_WORKSPACE)
         m_workspace_number = hint->workspace;
@@ -1156,7 +1170,6 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
         if ((((signed) frame().height()) + new_y) < 0) 
             new_y = 0;
 
-        downsize();
         if (!isResizable()) {
             new_width = width();
             new_height = height();
@@ -1218,11 +1231,23 @@ bool FluxboxWindow::setInputFocus() {
 
     if (! m_client->validateClient())
         return false;
-
+#ifdef DEBUG
+    cerr<<"FluxboxWindow::"<<__FUNCTION__<<" isModal() = "<<m_client->isModal()<<endl;
+    cerr<<"FluxboxWindow::"<<__FUNCTION__<<" transient size = "<<m_client->transients.size()<<endl;
+#endif // DEBUG
     if (!m_client->transients.empty() && m_client->isModal()) {
+#ifdef DEBUG
+        cerr<<__FUNCTION__<<": isModal and have transients client = "<<
+            hex<<m_client->window()<<dec<<endl;
+        cerr<<__FUNCTION__<<": this = "<<this<<endl;
+#endif // DEBUG
+
         WinClient::TransientList::iterator it = m_client->transients.begin();
         WinClient::TransientList::iterator it_end = m_client->transients.end();
         for (; it != it_end; ++it) {
+#ifdef DEBUG
+            cerr<<__FUNCTION__<<": transient 0x"<<(*it)<<endl;
+#endif // DEBUG
             if ((*it)->isModal())
                 return (*it)->fbwindow()->setCurrentClient(**it, true);
         }
@@ -1373,6 +1398,9 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
  Set window in withdrawn state
 */
 void FluxboxWindow::withdraw(bool interrupt_moving) {
+#ifdef DEBUG
+    cerr<<"FluxboxWindow::"<<__FUNCTION__<<": this = "<<this<<endl;
+#endif // DEBUG
     iconic = false;
 
     hide(interrupt_moving);
@@ -1560,7 +1588,9 @@ void FluxboxWindow::stick() {
 void FluxboxWindow::raise() {
     if (isIconic())
         deiconify();
-
+#ifdef DEBUG
+    cerr<<"FluxboxWindow("<<title()<<")::raise()[layer="<<layerNum()<<""<<endl;
+#endif // DEBUG
     // get root window
     WinClient *client = getRootTransientFor(m_client);
 
@@ -1576,7 +1606,9 @@ void FluxboxWindow::raise() {
 void FluxboxWindow::lower() {
     if (isIconic())
         deiconify();
-
+#ifdef DEBUG
+    cerr<<"FluxboxWindow("<<title()<<")::lower()"<<endl;
+#endif // DEBUG
     // get root window
     WinClient *client = getRootTransientFor(m_client);
     
@@ -1673,6 +1705,10 @@ void FluxboxWindow::lowerLayer() {
 
 
 void FluxboxWindow::moveToLayer(int layernum) {
+#ifdef DEBUG
+    cerr<<"FluxboxWindow("<<title()<<")::moveToLayer("<<layernum<<")"<<endl;
+#endif // DEBUG
+
     Fluxbox * fluxbox = Fluxbox::instance();
 
     // don't let it set its layer into menu area
@@ -1730,7 +1766,9 @@ void FluxboxWindow::setIconHidden(bool value) {
 void FluxboxWindow::setFocusFlag(bool focus) {
     bool was_focused = isFocused();
     focused = focus;
-
+#ifdef DEBUG
+    cerr<<"FluxboxWindow("<<title()<<")::setFocusFlag("<<focus<<")"<<endl;
+#endif // DEBUG
     // Record focus timestamp for window cycling enhancements
     if (focused) {
         gettimeofday(&m_last_focus_time, 0);
@@ -2100,8 +2138,16 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
     WinClient *client = findClient(ne.window);
     if (client == 0)
         return;
+#ifdef DEBUG
+    cerr<<"FluxboxWindow::mapNotifyEvent: "
+        <<"ne.override_redirect = "<<ne.override_redirect
+        <<" isVisible() = "<<isVisible()<<endl;
+#endif // DEBUG
 
     if (!ne.override_redirect && isVisible()) {
+#ifdef DEBUG
+        cerr<<"FluxboxWindow::mapNotify: not override redirect ans visible!"<<endl;
+#endif // DEBUG
         Fluxbox *fluxbox = Fluxbox::instance();
         fluxbox->grab();
         if (! client->validateClient())
@@ -2222,7 +2268,6 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         int x = frame().x(), y = frame().y();
         unsigned int w = frame().width(), h = frame().height();
 
-        upsize();
 
         // reconfigure if the old values changed
         if (x != frame().x() || y != frame().y() ||
@@ -2272,12 +2317,15 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     if (cr.value_mask & CWBorderWidth)
         client->old_bw = cr.border_width;
 
-    if (cr.value_mask & CWX) {
+    if ((cr.value_mask & CWX) && 
+        (cr.value_mask & CWY)) {
+        cx = cr.x;
+        cy = cr.y;
+        frame().gravityTranslate(cx, cy, client->gravity(), false);
+    } else if (cr.value_mask & CWX) {
         cx = cr.x;
         frame().gravityTranslate(cx, ignore, client->gravity(), false);
-    }
-
-    if (cr.value_mask & CWY) {
+    } else if (cr.value_mask & CWY) {
         cy = cr.y;
         frame().gravityTranslate(ignore, cy, client->gravity(), false);
     }
@@ -2289,19 +2337,15 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         ch = cr.height;
 
     // whether we should send ConfigureNotify to netizens
-    bool send_notify = false;
-
     // the request is for client window so we resize the frame to it first
     if (frame().width() != cw || frame().height() != ch) {        
         if (frame().x() != cx || frame().y() != cy) 
             frame().moveResizeForClient(cx, cy, cw, ch);
         else 
             frame().resizeForClient(cw, ch);
-        send_notify = true;
+
     } else if (frame().x() != cx || frame().y() != cy) {
-        move(cx, cy);
-        // since we already send a notify in move we don't need to do that again
-        send_notify = false;
+        frame().move(cx, cy);
     } 
 
     if (cr.value_mask & CWStackMode) {
@@ -2319,7 +2363,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         }
     }
 
-    sendConfigureNotify(send_notify);
+    sendConfigureNotify();
 }
 
 
@@ -2338,11 +2382,16 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         if (frame().window().window() == be.window) {            
             if (screen().clickRaises())
                 raise();
+#ifdef DEBUG
+            cerr<<"FluxboxWindow::buttonPressEvent: AllowEvent"<<endl;
+#endif // DEBUG
+
             XAllowEvents(display, ReplayPointer, be.time);			
 
             m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
             m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
-        }
+        } else if (frame().handle() == be.window)
+            raise();
         
         Fluxbox::instance()->hideExtraMenus(screen());
         screen().hideWindowMenus(this);
@@ -3267,16 +3316,6 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
         setDecoration(m_old_decoration);
     }
 
-}
-
-void FluxboxWindow::upsize() {
-
-}
-
-
-///TODO
-void FluxboxWindow::downsize() {
-	
 }
 
 
