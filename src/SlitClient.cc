@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitClient.cc,v 1.2 2003/06/22 12:30:59 fluxgen Exp $
+// $Id: SlitClient.cc,v 1.3 2004/01/31 11:39:32 rathnor Exp $
 
 #include "SlitClient.hh"
 
@@ -53,7 +53,7 @@ void SlitClient::initialize(BScreen *screen, Window win) {
     resize(0, 0);
 
     if (matchName().empty())
-        m_match_name = Xutil::getWMName(clientWindow());
+        m_match_name = Xutil::getWMClassName(clientWindow());
     m_visible = true;        
 }
 
