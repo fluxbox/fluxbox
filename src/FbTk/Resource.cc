@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.cc,v 1.4 2003/12/19 18:25:39 fluxgen Exp $
+// $Id: Resource.cc,v 1.5 2004/01/19 18:26:04 fluxgen Exp $
 
 #include "XrmDatabaseHelper.hh"
 #include "Resource.hh"
@@ -34,7 +34,7 @@ namespace FbTk {
 ResourceManager::ResourceManager(const char *filename, bool lock_db) :
  m_db_lock(0),
  m_database(0),
- m_filename(filename)
+ m_filename(filename ? filename : "")
 {
     ensureXrmIsInitialize();
 
