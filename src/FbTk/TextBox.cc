@@ -69,6 +69,7 @@ TextBox::~TextBox() {
 
 void TextBox::setText(const std::string &text) {
     m_text = text;
+    m_start_pos = 0;
     cursorEnd();
     adjustStartPos();
 }
