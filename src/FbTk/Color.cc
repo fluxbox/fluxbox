@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.7 2004/01/09 01:54:37 fluxgen Exp $
+// $Id: Color.cc,v 1.8 2004/01/09 21:36:21 fluxgen Exp $
 
 #include "Color.hh"
 
 #include "App.hh"
+#include "StringUtil.hh"
 
 #include <iostream>
 using namespace std;
@@ -80,13 +81,16 @@ bool Color::setFromString(const char *color_string, int screen) {
         free();
         return false;
     }
+    string color_string_tmp = color_string;
+    StringUtil::removeFirstWhitespace(color_string_tmp);
+    StringUtil::removeTrailingWhitespace(color_string_tmp);
 
     Display *disp = App::instance()->display();
     Colormap colm = DefaultColormap(disp, screen);
 
     XColor color;
 
-    if (! XParseColor(disp, colm, color_string, &color))
+    if (! XParseColor(disp, colm, color_string_tmp.c_str(), &color))
         return false;
     else if (! XAllocColor(disp, colm, &color))
         return false;
