@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.31 2002/09/21 16:02:22 fluxgen Exp $
+// $Id: Workspace.cc,v 1.32 2002/10/13 21:52:00 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -41,7 +41,7 @@
 #endif // _GNU_SOURCE
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 #include <X11/Xlib.h>
@@ -463,7 +463,7 @@ void Workspace::shutdown() {
 void Workspace::placeWindow(FluxboxWindow *win) {
 	Bool placed = False;
 	int borderWidth4x = screen->getBorderWidth2x() * 2,
-#ifdef		SLIT
+#ifdef SLIT
 		slit_x = screen->getSlit()->x() - screen->getBorderWidth(),
 		slit_y = screen->getSlit()->y() - screen->getBorderWidth(),
 		slit_w = screen->getSlit()->width() + borderWidth4x,
@@ -611,7 +611,7 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 						 toolbar_x + toolbar_w > test_x &&
 						 toolbar_y < test_y + win_h &&
 						 toolbar_y + toolbar_h > test_y)
-#ifdef		SLIT
+#ifdef SLIT
 						 ||
 						(slit_x < test_x + win_w &&
 						 slit_x + slit_w > test_x &&
@@ -733,7 +733,7 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 						toolbar_x + toolbar_w > test_x &&
 						toolbar_y < test_y + win_h &&
 						toolbar_y + toolbar_h > test_y)
-#ifdef		SLIT
+#ifdef SLIT
 						||
 						(slit_x < test_x + win_w &&
 						slit_x + slit_w > test_x &&
