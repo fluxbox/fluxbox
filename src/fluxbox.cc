@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.196 2003/10/05 07:19:38 rathnor Exp $
+// $Id: fluxbox.cc,v 1.197 2003/10/06 09:55:36 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -989,16 +989,16 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 
             if (mx + screen->getWorkspacemenu()->width() >
                 screen->width()) {
-                mx = screen->width() -
+                mx = screen->width()-1 -
                     screen->getWorkspacemenu()->width() -
-                    screen->getWorkspacemenu()->fbwindow().borderWidth();
+                    2*screen->getWorkspacemenu()->fbwindow().borderWidth();
             }
 
             if (my + screen->getWorkspacemenu()->height() >
                 screen->height()) {
-                my = screen->height() -
+                my = screen->height()-1 -
                     screen->getWorkspacemenu()->height() -
-                    screen->getWorkspacemenu()->fbwindow().borderWidth();
+                    2*screen->getWorkspacemenu()->fbwindow().borderWidth();
             }
             screen->getWorkspacemenu()->move(mx, my);
 
@@ -1007,27 +1007,28 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
                 screen->getWorkspacemenu()->show();
             }
         } else if (be.button == 3) { 
-            //calculate placement of workspace menu
+            //calculate placement of root menu
             //and show/hide it				
             int mx = be.x_root -
                 (screen->getRootmenu()->width() / 2);
             int my = be.y_root -
                 (screen->getRootmenu()->titleHeight() / 2);
+            int borderw = screen->getRootmenu()->fbwindow().borderWidth();
 
             if (mx < 0) mx = 0;
             if (my < 0) my = 0;
-
-            if (mx + screen->getRootmenu()->width() > screen->width()) {
+            
+            if (mx + screen->getRootmenu()->width() + 2*borderw > screen->width()) {
                 mx = screen->width() -
                     screen->getRootmenu()->width() -
-                    screen->getRootmenu()->fbwindow().borderWidth();
+                    2*borderw;
             }
 
-            if (my + screen->getRootmenu()->height() >
+            if (my + screen->getRootmenu()->height() + 2*borderw >
                 screen->height()) {
                 my = screen->height() -
                     screen->getRootmenu()->height() -
-                    screen->getRootmenu()->fbwindow().borderWidth();
+                    2*borderw;
             }
             screen->getRootmenu()->move(mx, my);
 

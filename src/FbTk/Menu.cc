@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.38 2003/09/07 14:57:49 rathnor Exp $
+// $Id: Menu.cc,v 1.39 2003/10/06 09:55:36 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1231,18 +1231,18 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
 
     menu.x_shift = menu.x, menu.y_shift = menu.y;
     if (menu.x + menu.width > m_screen_width) {
-        menu.x_shift = m_screen_width - menu.width - m_border_width;
+        menu.x_shift = m_screen_width - menu.width - 2*m_border_width;
         shifted = true;
     } else if (menu.x < 0) {
-        menu.x_shift = -m_border_width;
+        menu.x_shift = 0; //-m_border_width;
         shifted = true;
     }
 
-    if (menu.y + menu.height > m_screen_height) {
-        menu.y_shift = m_screen_height - menu.height - m_border_width;
+    if (menu.y + menu.height + 2*m_border_width > m_screen_height) {
+        menu.y_shift = m_screen_height - menu.height - 2*m_border_width;
         shifted = true;
     } else if (menu.y + (signed) menu.title_h < 0) {
-        menu.y_shift = -m_border_width;;
+        menu.y_shift = 0; // -m_border_width;;
         shifted = true;
     }
 
