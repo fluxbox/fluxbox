@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.28 2003/06/23 14:18:54 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.29 2003/06/24 14:05:00 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -561,7 +561,9 @@ void FbWinFrame::redrawTitle() {
 
     int button_width = label().width()/m_labelbuttons.size();
     //!! TODO: bevel
-    int border_width = m_labelbuttons.front()->window().borderWidth();
+    //int border_width = m_labelbuttons.front()->window().borderWidth();
+    int border_width =  m_labelbuttons.size() != 0 ?
+        m_labelbuttons.front()->window().borderWidth() : 0;
 
     ButtonList::iterator btn_it = m_labelbuttons.begin();
     ButtonList::iterator btn_it_end = m_labelbuttons.end();
@@ -570,7 +572,7 @@ void FbWinFrame::redrawTitle() {
          ++btn_it, last_x += button_width + border_width) {        
         // since we add border width pixel we should remove
         // the same size for inside width so we can fit all buttons into label
-        (*btn_it)->moveResize(last_x - (last_x ? border_width : 0), - border_width,
+        (*btn_it)->moveResize(last_x - border_width, - border_width,
                               button_width, 
                               label().height() + border_width);
         (*btn_it)->clear();
