@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.66 2002/09/07 20:22:08 fluxgen Exp $
+// $Id: Screen.cc,v 1.67 2002/09/08 19:45:59 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -390,7 +390,7 @@ resource(rm, screenname, altscreenname)
 
 	initMenu();
 
-	raiseWindows(0, 0);
+	raiseWindows(Workspace::Stack());
 
 	//update menus
 	rootmenu->update();
@@ -620,7 +620,7 @@ void BScreen::reconfigure() {
 	{
 		int remember_sub = rootmenu->currentSubmenu();
 		initMenu();
-		raiseWindows(0, 0);
+		raiseWindows(Workspace::Stack());
 		rootmenu->reconfigure();		
 		rootmenu->drawSubmenu(remember_sub);
 	}
@@ -653,7 +653,7 @@ void BScreen::reconfigure() {
 
 void BScreen::rereadMenu() {
 	initMenu();
-	raiseWindows(0, 0);
+	raiseWindows(Workspace::Stack());
 
 	rootmenu->reconfigure();
 }
@@ -683,7 +683,8 @@ void BScreen::addIcon(FluxboxWindow *w) {
 
 
 void BScreen::removeIcon(FluxboxWindow *w) {
-	if (! w) return;
+	if (! w)
+		return;
 	
 	{
 	Icons::iterator it = iconList.begin();
@@ -707,6 +708,13 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 	}
 }
 
+void BScreen::removeWindow(FluxboxWindow *win) {
+	Workspaces::iterator it = workspacesList.begin();
+	Workspaces::iterator it_end = workspacesList.end();
+	for (; it != it_end; ++it) {
+		(*it)->removeWindow(win);
+	}
+}
 
 FluxboxWindow *BScreen::getIcon(unsigned int index) {
 	if (index < iconList.size())
@@ -975,9 +983,9 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 }
 
 
-void BScreen::raiseWindows(Window *workspace_stack, int num) {
+void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
-	Window session_stack[(num + workspacesList.size() + rootmenuList.size() + 30)];
+	Window session_stack[(workspace_stack.size() + workspacesList.size() + rootmenuList.size() + 30)];
 	int i = 0;	
 	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->windowID());
 	session_stack[i++] = iconmenu->windowID();
@@ -1029,10 +1037,12 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 	if (slit->isOnTop())
 		session_stack[i++] = slit->getWindowID();
 	#endif // SLIT
-	
-	int k=num;
-	while (k--)
-		session_stack[i++] = *(workspace_stack + k);
+	if (!workspace_stack.empty()) {
+		Workspace::Stack::const_reverse_iterator it = workspace_stack.rbegin();
+		Workspace::Stack::const_reverse_iterator it_end = workspace_stack.rend();
+		for (; it != it_end; ++it)
+			session_stack[i++] = (*it);
+	}
 
 	XRestackWindows(getBaseDisplay()->getXDisplay(), session_stack, i);
 
@@ -1095,10 +1105,10 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ig
 void BScreen::nextFocus(int opts) {
 	bool have_focused = false;
 	int focused_window_number = -1;
-	FluxboxWindow *focused;
+	FluxboxWindow *focused = fluxbox->getFocusedWindow();
 	const int num_windows = getCurrentWorkspace()->getCount();
 	
-	if ((focused = fluxbox->getFocusedWindow())) {
+	if (focused != 0) {
 		if (focused->getScreen()->getScreenNumber() == 
 				getScreenNumber()) {
 			have_focused = true;
@@ -1108,9 +1118,11 @@ void BScreen::nextFocus(int opts) {
 
 	if (num_windows > 1 && have_focused) {
 		Workspace *wksp = getCurrentWorkspace();
-		Workspace::Windows wins = wksp->getWindowList();
+		Workspace::Windows &wins = wksp->getWindowList();
 		Workspace::Windows::iterator it = wins.begin();
-		for (; *it != focused; ++it); //get focused window iterator
+
+		for (; *it != focused; ++it) //get focused window iterator
+			continue;
 
 		do {
 			++it;
@@ -1121,7 +1133,7 @@ void BScreen::nextFocus(int opts) {
 				break;
 		} while (*it != focused);
 
-		if (*it != focused)
+		if (*it != focused && it != wins.end())
 			wksp->raiseWindow(*it);
 
 	} else if (num_windows >= 1) {
