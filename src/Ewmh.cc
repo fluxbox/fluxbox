@@ -1,5 +1,5 @@
 // Ewmh.cc for fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@fluxbox.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at user.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.11 2003/03/03 21:51:00 rathnor Exp $
+// $Id: Ewmh.cc,v 1.12 2003/03/04 11:06:03 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -37,13 +37,14 @@ Ewmh::Ewmh() {
 
 Ewmh::~Ewmh() {
     while (!m_windows.empty()) {
-        XDestroyWindow(BaseDisplay::getXDisplay(), m_windows.back());
+        XDestroyWindow(FbTk::App::instance()->display(), m_windows.back());
         m_windows.pop_back();
     }
 }
 
 void Ewmh::initForScreen(BScreen &screen) {
-    Display *disp = BaseDisplay::getXDisplay();
+    Display *disp = FbTk::App::getXDisplay();
+
 
     Window wincheck = XCreateSimpleWindow(disp,
                                           screen.getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
@@ -83,14 +84,16 @@ void Ewmh::initForScreen(BScreen &screen) {
 
     XChangeProperty(disp, screen.getRootWindow(), 
                     m_net_supported, XA_ATOM, 32,
-                    PropModeReplace, (unsigned char *) &atomsupported, (sizeof atomsupported)/sizeof atomsupported[0]);
+                    PropModeReplace, 
+                    (unsigned char *) &atomsupported, 
+                    (sizeof atomsupported)/sizeof atomsupported[0]);
 
 	
 }
 
 void Ewmh::setupWindow(FluxboxWindow &win) {
 
-    Display *disp = BaseDisplay::getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
@@ -156,7 +159,7 @@ void Ewmh::updateClientList(BScreen &screen) {
     
     //number of windows to show in client list
     num = win;
-    XChangeProperty(BaseDisplay::getXDisplay(), 
+    XChangeProperty(FbTk::App::instance()->display(), 
                     screen.getRootWindow(), 
                     m_net_client_list, 
                     XA_CARDINAL, 32,
@@ -177,7 +180,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     }
 	
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
-        XSetTextProperty(BaseDisplay::getXDisplay(), screen.getRootWindow(),
+        XSetTextProperty(FbTk::App::instance()->display(), screen.getRootWindow(),
 			 &text, m_net_desktop_names);
         XFree(text.value);
     }
@@ -188,7 +191,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
 
 void Ewmh::updateCurrentWorkspace(BScreen &screen) {
     size_t workspace = screen.getCurrentWorkspaceID();
-    XChangeProperty(BaseDisplay::getXDisplay(), 
+    XChangeProperty(FbTk::App::instance()->display(), 
                     screen.getRootWindow(),
                     m_net_current_desktop, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&workspace, 1);
@@ -197,7 +200,7 @@ void Ewmh::updateCurrentWorkspace(BScreen &screen) {
 
 void Ewmh::updateWorkspaceCount(BScreen &screen) {
     size_t numworkspaces = screen.getCount();
-    XChangeProperty(BaseDisplay::getXDisplay(), screen.getRootWindow(),
+    XChangeProperty(FbTk::App::instance()->display(), screen.getRootWindow(),
                     m_net_number_of_desktops, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&numworkspaces, 1);
 }
@@ -219,7 +222,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
     if (win.isStuck())
         workspace = 0xFFFFFFFF; // appear on all desktops/workspaces
 
-    XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(),
+    XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(),
                     m_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&workspace, 1);
 }
@@ -232,7 +235,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, F
             return true;
         // ce.data.l[0] = workspace number
         // valid window and workspace number?
-        if (win == 0 || static_cast<unsigned int>(ce.data.l[0]) >= screen->getCount())
+        if (win == 0 || 
+            static_cast<unsigned int>(ce.data.l[0]) >= screen->getCount())
             return true;
 		
         screen->sendToWorkspace(ce.data.l[0], win, false);		
@@ -327,7 +331,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, F
 
 
 void Ewmh::createAtoms() {
-    Display *disp = BaseDisplay::getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
     m_net_supported = XInternAtom(disp, "_NET_SUPPORTED", False);
     m_net_client_list = XInternAtom(disp, "_NET_CLIENT_LIST", False);
     m_net_client_list_stacking = XInternAtom(disp, "_NET_CLIENT_LIST_STACKING", False);
