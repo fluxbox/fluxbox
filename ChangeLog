@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/30:
+  * Changed session.screen<num>.iconbar.clientWidth to
+    session.screen<num>.iconbar.iconWidth
+    (Henrik)
+    IconbarTool.cc
   * Added RaiseLayer and LowerLayer to the commands (Mathias)
     FbCommandFactory.cc
   * Close bug #1013735, #1012314, #977054 (Mathias)
