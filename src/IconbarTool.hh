@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.12 2003/12/19 14:57:44 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.13 2003/12/23 01:55:07 rathnor Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -107,6 +107,8 @@ private:
     const IconbarTheme &m_theme;
     // cached pixmaps
     Pixmap m_focused_pm, m_unfocused_pm;
+    // some are a fraction bigger due to rounding
+    Pixmap m_focused_err_pm, m_unfocused_err_pm;
     Pixmap m_empty_pm; ///< pixmap for empty container
 
 

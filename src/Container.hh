@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.hh,v 1.4 2003/12/12 14:35:34 fluxgen Exp $
+// $Id: Container.hh,v 1.5 2003/12/23 01:55:07 rathnor Exp $
 
 #ifndef CONTAINER_HH
 #define CONTAINER_HH
@@ -54,6 +54,8 @@ public:
     void setSelected(int index);
     void setMaxSizePerClient(unsigned int size);
     void setAlignment(Alignment a);
+
+    Item back() { return m_item_list.back(); }
 
     /// force update
     inline void update() { repositionItems(); }

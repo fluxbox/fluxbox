@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/22:
+  * Fix rendering of icon buttons when larger from rounding (Simon)
+    Container.hh IconbarTool.hh/cc
+*03/12/22:
   * Added Lock Screen to fluxbox-generate_menu (Thanks Han)
 *03/12/21:
   * Fix rounding on Iconbar (Simon)
