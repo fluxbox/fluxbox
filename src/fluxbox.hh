@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.70 2003/08/10 12:50:04 rathnor Exp $
+// $Id: fluxbox.hh,v 1.71 2003/08/11 17:15:51 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -71,7 +71,7 @@ class FbAtoms;
 /**
 	singleton type
 */
-class Fluxbox : public FbTk::App, public FbTk::TimeoutHandler, 
+class Fluxbox : public FbTk::App,
                 public FbTk::SignalEventHandler,
                 public FbTk::Observer {
 public:
@@ -185,7 +185,7 @@ public:
     void attachSignals(FluxboxWindow &win);
     void attachSignals(WinClient &winclient);
 	
-    virtual void timeout();
+    void timed_reconfigure();
 
     bool isStartup() const { return m_starting; }
     enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
