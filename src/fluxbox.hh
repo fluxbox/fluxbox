@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.60 2003/05/18 22:02:55 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.61 2003/05/27 11:55:23 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -191,6 +191,8 @@ public:
     bool menuTimestampsChanged() const;
     bool haveShape() const { return m_have_shape; }
     int shapeEventbase() const { return m_shape_eventbase; }
+    void getDefaultDataFilename(char *, std::string &);
+
 private:
     struct cursor {
         Cursor session, move, ll_angle, lr_angle;
@@ -208,7 +210,6 @@ private:
 		
 
     std::string getRcFilename();
-    void getDefaultDataFilename(char *, std::string &);
     void load_rc();
 	
     void reload_rc();

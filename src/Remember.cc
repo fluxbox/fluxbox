@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.18 2003/05/26 11:27:31 rathnor Exp $
+// $Id: Remember.cc,v 1.19 2003/05/27 11:55:23 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -31,10 +31,6 @@
 #include "FbMenu.hh"
 #include "MenuItem.hh"
 #include "App.hh"
-
-// TODO get rid of these
-#define RC_PATH "fluxbox"
-#define RC_INIT_FILE "init"
 
 #include <X11/Xlib.h>
 
@@ -301,7 +297,9 @@ int Remember::parseApp(ifstream &file, Application &app) {
 
 void Remember::load() {
 
-    string apps_string = getenv("HOME")+string("/.")+RC_PATH+string("/")+"apps";
+    string apps_string;
+    Fluxbox::instance()->getDefaultDataFilename("apps", apps_string);
+
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;
 #endif // DEBUG
@@ -356,7 +354,8 @@ void Remember::save() {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): Saving apps file..."<<endl;
 #endif // DEBUG
-    string apps_string = getenv("HOME")+string("/.")+RC_PATH+string("/")+"apps";
+    string apps_string;
+    Fluxbox::instance()->getDefaultDataFilename("apps", apps_string);
     ofstream apps_file(apps_string.c_str());
     Apps::iterator it = apps.begin();
     Apps::iterator it_end = apps.end();
