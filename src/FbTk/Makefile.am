@@ -20,5 +20,6 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Button.hh Button.cc \
 	Layer.hh LayerItem.hh MultLayers.cc MultLayers.hh \
 	XLayer.cc XLayer.hh XLayerItem.cc XLayerItem.hh \
+	Subject.hh Subject.cc Observer.hh Observer.cc \
 	${xft_SOURCE} \
 	${xmb_SOURCE}
