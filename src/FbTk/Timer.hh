@@ -99,7 +99,7 @@ private:
 
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_TIMER_HH
 

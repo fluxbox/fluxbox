@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.26 2003/12/12 18:18:49 fluxgen Exp $
+// $Id: Menu.hh,v 1.27 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -225,6 +225,6 @@ private:
     Timer m_hide_timer;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_MENU_HH

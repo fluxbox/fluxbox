@@ -19,20 +19,19 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XrmDatabaseHelper.hh,v 1.2 2003/07/18 15:40:55 rathnor Exp $
+// $Id: XrmDatabaseHelper.hh,v 1.3 2003/12/16 17:06:52 fluxgen Exp $
 
-// This is a helper for XrmDatabase
-// when database goes out of scope
-// the XrmDatabase variable will be destroyed.
 
-#ifndef XRMDATABASEHELPER_HH
-#define XRMDATABASEHELPER_HH
+#ifndef FBTK_XRMDATABASEHELPER_HH
+#define FBTK_XRMDATABASEHELPER_HH
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
 /**
-	Helper class for XrmDatabase.
+  This is a helper for XrmDatabase
+  when database goes out of scope
+  the XrmDatabase variable will be destroyed.
 */
 namespace FbTk {
 
@@ -77,5 +76,6 @@ private:
     XrmDatabase m_database;	
 };
 
-}; // namespace FbTk
-#endif //_XRMDATABASEHELPER_HH_
+} // namespace FbTk
+
+#endif // FBTK_XRMDATABASEHELPER_HH

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayerItem.hh,v 1.7 2003/04/15 23:09:26 rathnor Exp $
+// $Id: XLayerItem.hh,v 1.8 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_XLAYERITEM_HH
 #define FBTK_XLAYERITEM_HH
@@ -83,6 +83,6 @@ private:
     Windows m_windows;
 };
 
-};
+}
 
 #endif // FBTK_XLAYERITEM_HH

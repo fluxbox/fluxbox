@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.hh,v 1.3 2003/08/27 14:18:02 fluxgen Exp $
+// $Id: MenuItem.hh,v 1.4 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_MENUITEM_HH
 #define FBTK_MENUITEM_HH
@@ -96,6 +96,6 @@ private:
     bool m_toggle_item;
 };
 
-};// end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_MENUITEM_HH

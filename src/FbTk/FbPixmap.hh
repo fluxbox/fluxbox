@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.hh,v 1.7 2003/09/10 21:28:13 fluxgen Exp $
+// $Id: FbPixmap.hh,v 1.8 2003/12/16 17:06:49 fluxgen Exp $
 
 #ifndef FBTK_FBPIXMAP_HH
 #define FBTK_FBPIXMAP_HH
@@ -74,7 +74,7 @@ private:
     unsigned int m_width, m_height;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_FBPIXMAP_HH
 

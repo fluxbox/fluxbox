@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.hh,v 1.3 2003/01/05 23:39:50 fluxgen Exp $
+// $Id: XmbFontImp.hh,v 1.4 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_XMBFONTIMP_HH
 #define FBTK_XMBFONTIMP_HH
@@ -48,6 +48,6 @@ private:
     const bool m_utf8mode;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_XMBFONTIMP_HH

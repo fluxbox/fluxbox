@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.hh,v 1.4 2003/01/05 23:39:50 fluxgen Exp $
+// $Id: XFontImp.hh,v 1.5 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_XFONTIMP_HH
 #define FBTK_XFONTIMP_HH
@@ -83,6 +83,6 @@ private:
     bool m_rotate; ///< used to disable/enable rotation temprarly without reallocating m_rotfont
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // XFONTIMP_HH

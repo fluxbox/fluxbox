@@ -32,11 +32,12 @@ class NotCopyable
 {
 protected:
     NotCopyable() {}
+    virtual ~NotCopyable() { }
 private:
     NotCopyable(const NotCopyable &rhs); // copy constructor
     NotCopyable &operator=(const NotCopyable &rhs); // assignment operator
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif //FBTK_NOTCOPYABLE_HH

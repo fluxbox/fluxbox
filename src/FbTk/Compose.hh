@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Compose.hh,v 1.1 2003/08/24 10:37:31 fluxgen Exp $
+// $Id: Compose.hh,v 1.2 2003/12/16 17:06:49 fluxgen Exp $
 
 #ifndef FBTK_COMPOSE_HH
 #define FBTK_COMPOSE_HH
@@ -55,6 +55,6 @@ Compose(const A& a, const B& b) {
     return Compose_base<A, B>(a, b);
 }
 
-}; // namespace FbTk
+} // namespace FbTk
 
 #endif // FBTK_COMPOSE_HH

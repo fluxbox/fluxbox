@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.5 2003/11/28 23:27:29 fluxgen Exp $
+//$Id: Font.hh,v 1.6 2003/12/16 17:06:51 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -100,6 +100,6 @@ private:
     bool m_shadow; ///< shadow text
 };
 
-}; //end namespace FbTk
+} //end namespace FbTk
 
 #endif //FBTK_FONT_HH

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.4 2003/09/13 09:29:26 fluxgen Exp $
+// $Id: Resource.hh,v 1.5 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_RESOURCE_HH
 #define FBTK_RESOURCE_HH
@@ -196,6 +196,6 @@ void ResourceManager::addResource(Resource<T> &r) {
 }
 	
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_RESOURCE_HH

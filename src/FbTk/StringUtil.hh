@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.7 2003/10/25 22:06:53 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.8 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_STRINGUTIL_HH
 #define FBTK_STRINGUTIL_HH
@@ -89,9 +89,9 @@ stringtok (Container &container, std::string const &in,
     }
 }
 
-}; // end namespace StringUtil
+} // end namespace StringUtil
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 
 #endif // FBTK_STRINGUTIL_HH

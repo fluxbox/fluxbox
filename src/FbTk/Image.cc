@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.2 2003/11/16 22:33:55 rathnor Exp $
+// $Id: Image.cc,v 1.3 2003/12/16 17:06:51 fluxgen Exp $
 
 #include "Image.hh"
 #include "StringUtil.hh"
@@ -87,10 +87,12 @@ bool Image::registerType(const std::string &type, ImageBase &base) {
         s_image_map[ucase_type] != &base) 
         return false;
     // already registered?
-    if (s_image_map[ucase_type] = &base)
+    if (s_image_map[ucase_type] == &base)
         return true;
 
     s_image_map[ucase_type] = &base;
+
+    return true;
 }
 
 void Image::remove(ImageBase &base) {

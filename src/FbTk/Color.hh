@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.hh,v 1.5 2003/10/09 16:48:09 rathnor Exp $
+// $Id: Color.hh,v 1.6 2003/12/16 17:06:49 fluxgen Exp $
 
 #ifndef FBTK_COLOR_HH
 #define FBTK_COLOR_HH
@@ -70,6 +70,6 @@ private:
     int m_screen;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_COLOR_HH

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.hh,v 1.3 2003/09/06 15:39:06 fluxgen Exp $
+// $Id: FbDrawable.hh,v 1.4 2003/12/16 17:06:49 fluxgen Exp $
 #ifndef FBTK_FBDRAWABLE_HH
 #define FBTK_FBDRAWABLE_HH
 
@@ -57,6 +57,6 @@ public:
     virtual unsigned int height() const = 0;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_FBDRAWABLE_HH

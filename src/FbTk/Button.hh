@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.hh,v 1.7 2003/10/13 23:43:11 fluxgen Exp $
+// $Id: Button.hh,v 1.8 2003/12/16 17:06:49 fluxgen Exp $
 
 #ifndef FBTK_BUTTON_HH
 #define FBTK_BUTTON_HH
@@ -85,6 +85,6 @@ private:
     RefCount<Command> m_onclick[5]; ///< what to do when this button is clicked with button num
 };
 
-};
+} // namespace FbTk
 
 #endif // FBTK_BUTTON_HH

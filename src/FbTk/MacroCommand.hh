@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MacroCommand.hh,v 1.2 2003/09/29 14:00:45 fluxgen Exp $
+// $Id: MacroCommand.hh,v 1.3 2003/12/16 17:06:51 fluxgen Exp $
 
 #ifndef FBTK_MACROCOMMAND_HH
 #define FBTK_MACROCOMMAND_HH
@@ -42,6 +42,6 @@ private:
     std::vector<RefCount<Command> > m_commandlist;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_MACROCOMMAND_HH

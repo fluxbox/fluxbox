@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.hh,v 1.3 2003/09/14 09:50:01 fluxgen Exp $
+// $Id: TextButton.hh,v 1.4 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_TEXTBUTTON_HH
 #define FBTK_TEXTBUTTON_HH
@@ -75,6 +75,6 @@ private:
     int m_bevel;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_TEXTBUTTON_HH

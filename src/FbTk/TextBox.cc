@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.3 2003/10/05 07:20:47 rathnor Exp $
+// $Id: TextBox.cc,v 1.4 2003/12/16 17:06:52 fluxgen Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -254,11 +254,9 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
 }
 
 void TextBox::setCursorPosition(int pos) {
-    m_cursor_pos = pos;
+    m_cursor_pos = pos < 0 ? 0 : pos;
     if (m_cursor_pos > text().size())
         cursorEnd();
-    else if (m_cursor_pos < 0)
-        cursorHome();
 }
 
 void TextBox::adjustEndPos() {

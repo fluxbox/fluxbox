@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.hh,v 1.4 2003/04/15 23:09:25 rathnor Exp $
+// $Id: XLayer.hh,v 1.5 2003/12/16 17:06:52 fluxgen Exp $
 
 
 #ifndef FBTK_XLAYER_HH
@@ -86,6 +86,6 @@ private:
 
 };
 
-};
+} // namespace FbTk
 
 #endif // FBTK_XLAYER_HH

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Text.hh,v 1.2 2003/08/11 14:59:40 fluxgen Exp $
+// $Id: Text.hh,v 1.3 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_TEXT_HH
 #define FBTK_TEXT_HH
@@ -36,6 +36,6 @@ int doAlignment(int max_width, int bevel, FbTk::Justify justify,
                 const FbTk::Font &font, const char * const text, 
                 unsigned int textlen, unsigned int &newlen);
 
-};
+} // end namespace FbTk
 
 #endif // FBTK_TEXT_HH

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.hh,v 1.5 2003/12/07 16:32:12 fluxgen Exp $
+// $Id: Texture.hh,v 1.6 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_TEXTURE_HH
 #define FBTK_TEXTURE_HH
@@ -97,6 +97,6 @@ private:
     unsigned long m_type;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_TEXTURE_HH

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.8 2003/10/25 22:06:53 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.9 2003/12/16 17:06:52 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -196,6 +196,7 @@ string::size_type removeTrailingWhitespace(std::string &str) {
             last_pos = str.find_first_of(" \t", last_pos);
         }
     }
+    return first_pos;
 }
 
 }; // end namespace StringUtil

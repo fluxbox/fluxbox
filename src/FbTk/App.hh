@@ -59,6 +59,6 @@ private:
     Display *m_display;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_APP_HH

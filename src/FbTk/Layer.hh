@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Layer.hh,v 1.1 2003/01/16 12:41:27 rathnor Exp $
+// $Id: Layer.hh,v 1.2 2003/12/16 17:06:51 fluxgen Exp $
 
 #ifndef FBTK_LAYERTEMPLATE_HH
 #define FBTK_LAYERTEMPLATE_HH
@@ -195,7 +195,7 @@ void Layer<ItemType, Container>::restack() {
 }
 
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 
 #endif // FBTK_LAYERTEMPLATE_HH

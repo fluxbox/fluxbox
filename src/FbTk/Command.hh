@@ -31,6 +31,6 @@ public:
     virtual void execute() = 0;
 };
 
-};
+} // end namespace FbTk
 
 #endif // FBTK_COMMAND_HH

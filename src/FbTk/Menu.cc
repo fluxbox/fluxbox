@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.48 2003/12/12 21:47:36 fluxgen Exp $
+// $Id: Menu.cc,v 1.49 2003/12/16 17:06:51 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -404,10 +404,8 @@ void Menu::update(int active_index) {
         menu.persub = 0;
     }
 
-    menu.frame_h = (menu.item_h * menu.persub);
-    if (menu.frame_h < 0)
-        menu.frame_h = 0;
-
+    int itmp = (menu.item_h * menu.persub);
+    menu.frame_h = itmp < 0 ? 0 : itmp;
 
     int new_width = (menu.sublevels * menu.item_w);
     int new_height = menu.frame_h;
@@ -1229,7 +1227,7 @@ void Menu::exposeEvent(XExposeEvent &ee) {
         for (i = sbl; i <= sbl_d; i++) {
             // set the iterator to the first item in the sublevel needing redrawing
             unsigned int index = id + i * menu.persub;
-            if (index < static_cast<int>(menuitems.size()) && index >= 0) {
+            if (index < static_cast<int>(menuitems.size())) {
                 Menuitems::iterator it = menuitems.begin() + index;
                 Menuitems::iterator it_end = menuitems.end();
                 for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
@@ -1351,8 +1349,6 @@ void Menu::reconfigure() {
 
     if (menu.bevel_w > 10) // clamp to "normal" size
         menu.bevel_w = 10;
-    if (menu.bevel_w < 0)
-        menu.bevel_w = 1;
 
     if (m_border_width > 20) // clamp to normal size
         m_border_width = 20;

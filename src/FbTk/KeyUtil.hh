@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.hh,v 1.3 2003/10/13 19:31:56 fluxgen Exp $
+// $Id: KeyUtil.hh,v 1.4 2003/12/16 17:06:51 fluxgen Exp $
 
 #ifndef FBTK_KEYUTIL_HH
 #define FBTK_KEYUTIL_HH
@@ -54,7 +54,7 @@ public:
     /**
        @return the modifier for the modstr else zero on failure.
     */
-    static unsigned int KeyUtil::getModifier(const char *modstr);
+    static unsigned int getModifier(const char *modstr);
 
     /**
        ungrabs all keys

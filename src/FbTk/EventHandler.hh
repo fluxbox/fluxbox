@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventHandler.hh,v 1.5 2003/05/10 23:14:22 fluxgen Exp $
+// $Id: EventHandler.hh,v 1.6 2003/12/16 17:06:49 fluxgen Exp $
 
 /// @file holds EventHandler interface for X events
 
@@ -48,17 +48,17 @@ public:
     /**
        Events that don't have an specific event function
     */
-    virtual void handleEvent(XEvent &ev) { }
-    virtual void buttonPressEvent(XButtonEvent &ev) { }
-    virtual void buttonReleaseEvent(XButtonEvent &ev) { }
-    virtual void exposeEvent(XExposeEvent &ev) { }
-    virtual void motionNotifyEvent(XMotionEvent &ev) { }
-    virtual void keyPressEvent(XKeyEvent &ev) { }
-    virtual void keyReleaseEvent(XKeyEvent &ev) { }
-    virtual void leaveNotifyEvent(XCrossingEvent &ev) { }
-    virtual void enterNotifyEvent(XCrossingEvent &ev) { }
+    virtual void handleEvent(XEvent &) { }
+    virtual void buttonPressEvent(XButtonEvent &) { }
+    virtual void buttonReleaseEvent(XButtonEvent &) { }
+    virtual void exposeEvent(XExposeEvent &) { }
+    virtual void motionNotifyEvent(XMotionEvent &) { }
+    virtual void keyPressEvent(XKeyEvent &) { }
+    virtual void keyReleaseEvent(XKeyEvent &) { }
+    virtual void leaveNotifyEvent(XCrossingEvent &) { }
+    virtual void enterNotifyEvent(XCrossingEvent &) { }
 };
 
-};
+} // end namespace FbTk
 
 #endif // FBTK_EVENTHANDLER_HH

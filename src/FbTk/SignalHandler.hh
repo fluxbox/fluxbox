@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.hh,v 1.5 2003/05/13 11:41:29 fluxgen Exp $
+// $Id: SignalHandler.hh,v 1.6 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_SIGNALHANDLER_HH
 #define FBTK_SIGNALHANDLER_HH
@@ -66,6 +66,6 @@ private:
     static SignalEventHandler *s_signal_handler[NSIG]; ///< NSIG defined in signal.h
 }; 
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_SIGNALHANDLER_HH

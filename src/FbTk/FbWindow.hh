@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.25 2003/09/14 09:51:40 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.26 2003/12/16 17:06:49 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -191,6 +191,6 @@ private:
 
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_FBWINDOW_HH

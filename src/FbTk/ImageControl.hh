@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.5 2003/10/09 16:48:09 rathnor Exp $
+// $Id: ImageControl.hh,v 1.6 2003/12/16 17:06:51 fluxgen Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
@@ -139,7 +139,7 @@ private:
     static bool s_timed_cache;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_IMAGECONTROL_HH
 

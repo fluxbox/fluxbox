@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.11 2003/12/12 18:18:49 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.12 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -146,6 +146,6 @@ private:
     
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_MENUTHEME_HH

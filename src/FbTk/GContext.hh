@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.hh,v 1.5 2003/11/28 22:50:55 fluxgen Exp $
+// $Id: GContext.hh,v 1.6 2003/12/16 17:06:51 fluxgen Exp $
 
 #ifndef FBTK_GCONTEXT_HH
 #define FBTK_GCONTEXT_HH
@@ -62,7 +62,7 @@ public:
     }
 
     /// not implemented
-    inline void setFont(const FbTk::Font &font) {}
+    inline void setFont(const FbTk::Font &) {}
 
     /// set font id
     inline void setFont(int fid) {

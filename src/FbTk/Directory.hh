@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Directory.hh,v 1.2 2003/08/17 13:19:54 fluxgen Exp $
+// $Id: Directory.hh,v 1.3 2003/12/16 17:06:49 fluxgen Exp $
 
 #ifndef FBTK_DIRECTORY_HH
 #define FBTK_DIRECTORY_HH
@@ -60,6 +60,6 @@ private:
     size_t m_num_entries; ///< number of file entries in directory
 };
 
-};
+} // end namespace FbTk
 
 #endif // FBTK_DIRECTORY_HH

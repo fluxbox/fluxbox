@@ -124,6 +124,6 @@ void RefCount<Pointer>::incRefCount() {
     (*m_refcount)++;
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_REFCOUNT_HH

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Observer.hh,v 1.1 2003/02/15 01:21:40 fluxgen Exp $
+// $Id: Observer.hh,v 1.2 2003/12/16 17:06:52 fluxgen Exp $
 
 #ifndef FBTK_OBSERVER_HH
 #define FBTK_OBSERVER_HH
@@ -34,6 +34,6 @@ public:
     virtual void update(Subject *changedSubj) = 0;
 };
 
-}; // end namespace FBTK
+} // end namespace FBTK
 
 #endif // FBTK_OBSERVER_HH

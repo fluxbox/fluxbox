@@ -39,6 +39,6 @@ private:
     Action m_action;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_SIMPLECOMMAND_HH

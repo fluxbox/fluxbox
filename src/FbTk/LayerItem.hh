@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerItem.hh,v 1.1 2003/01/16 12:41:27 rathnor Exp $
+// $Id: LayerItem.hh,v 1.2 2003/12/16 17:06:51 fluxgen Exp $
 
 #ifndef FBTK_LAYERITEM_HH
 #define FBTK_LAYERITEM_HH
@@ -38,6 +38,6 @@ public:
     virtual void stepDown() = 0;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_LAYERITEM_HH

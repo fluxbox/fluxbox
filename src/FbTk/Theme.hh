@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.11 2003/11/16 22:33:56 rathnor Exp $
+// $Id: Theme.hh,v 1.12 2003/12/16 17:06:52 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -104,7 +104,7 @@ public:
     /// remove ThemeItem
     template <typename T>
     void remove(ThemeItem<T> &item);
-    virtual bool fallback(ThemeItem_base &base) { return false; }
+    virtual bool fallback(ThemeItem_base &) { return false; }
     FbTk::Subject &reconfigSig() { return m_reconfig_sig; }
 
     
@@ -180,7 +180,7 @@ void Theme::remove(ThemeItem<T> &item)  {
     m_themeitems.remove(&item);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_THEME_HH
 
