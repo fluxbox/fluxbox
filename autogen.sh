@@ -1,5 +1,5 @@
 #!/bin/sh
-libtoolize --copy --force --automake || exit 1
+libtoolize --copy --force --automake
 rm -f config.cache
 aclocal
 autoheader
