@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.18 2002/12/16 11:10:44 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.19 2002/12/16 11:34:06 fluxgen Exp $
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -316,6 +316,28 @@ case ${LC_ALL} in
                 WORKSPACEMENU="Рабочие пространства"
                 XUTILSMENU="X-утилиты"
         ;;
+        de_DE*) # german locales
+               #OFFICEMENU="Bueroprogramme"
+               BROWSERMENU="Internet-Browser"
+               CONFIGUREMENU="Einstellungen"
+               EDITORMENU="Editoren"
+               EXITITEM="Beenden"
+               FBSETTINGSMENU="Fluxbox-Einstellungen"
+               GNOMEMENUTEXT="Gnome-Menues"
+               GRAPHICMENU="Grafik"
+               KDEMENUTEXT="Kde-Menues"
+               MISCMENU="Sonstiges"
+               MUSICMENU="Musik"
+               NETMENU="Netzwerk"
+               RELOADITEM="Konfiguration neu laden"
+               RESTARTITEM="Neustarten"
+               STYLEMENU="Stile"
+               STYLEMENUTITLE="Einen Stil auswaehlen..."
+               TERMINALMENU="Terminals"
+               WORKSPACEMENU="Arbeitsflaechenliste"
+               XUTILSMENU="X-Anwendungen"
+	   ;;
+
         sv_SE*) #Swedish locales
                 #OFFICEMENU="Office"
                 #BACKGROUNDMENU="Backgrounds"
