@@ -1,7 +1,15 @@
 (Format: Year/Month/Day)
 Changes for 0.1.14:
+*02/12/13:
+   * Changed toolbar to use ArrowButton and Command
+   * Added Command.hh, SimpleCommand.hh, Button.hh/cc, 
+     RefCount.hh, ArrowButton.hh/cc
+*02/12/10:
+   * Changed blackbox.cat to fluxbox.cat
 *02/12/08:
    * Fixed better Xft checking in configure.in
+   * Fixed rotation argument in Font::drawText
+     Font.hh/cc
 *02/12/04:
    * Updated FbRun
    * Fixed Left and Right placement of toolbar with vertical text.
