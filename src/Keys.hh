@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.13 2002/06/29 10:44:50 fluxgen Exp $
+// $Id: Keys.hh,v 1.14 2002/07/27 18:03:39 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -60,13 +60,37 @@ public:
 			LASTKEYGRAB //mark end of keygrabbs
 	};
 	
-	Keys(Display *display, char *filename=0);
+	Keys(Display *display, const char *filename=0);
+	/// destructor
 	~Keys();
-	bool load(char *filename=0);
+	/**
+		Load configuration from file
+		@return true on success, else false
+	*/
+	bool load(const char *filename=0);
+	/**
+		Determine action from XKeyEvent
+		@return KeyAction value
+	*/
 	KeyAction getAction(XKeyEvent *ke);
-	bool reconfigure(char *filename);
+	/**
+		Reload configuration from filename
+		@return true on success, else false
+	*/
+	bool reconfigure(const char *filename);
+	/**
+		Get string value of the KeyAction enum value
+		@return string of action
+	*/
 	const char *getActionStr(KeyAction action);
-	std::string getExecCommand() { return m_execcmdstring; }
+	/**
+		Get command to execute (key action EXECUTE)
+		@return string to command
+	*/
+	const std::string &getExecCommand() { return m_execcmdstring; }
+	/**
+		@return number of parameters
+	*/
 	int getParam() const { return m_param; }
 
 private:
@@ -110,17 +134,23 @@ private:
 		std::string execcommand;
         int param;              // parameter to comands
 	};
-	
+	/**
+		merge two linked list
+		@return true on success, else false
+	*/
 	bool mergeTree(t_key *newtree, t_key *basetree=0);
-	#ifdef DEBUG
-	//debug functions
+#ifdef DEBUG
+	/// debug function
 	void showTree();
+	/// debug function
 	void showKeyTree(t_key *key, unsigned int w=0);
-	#endif //DEBUG
+#endif //DEBUG
+
 	struct t_actionstr{
 		const char *string;
 		KeyAction action;
 	};	
+	
 	static t_actionstr m_actionlist[];
 	
 	std::vector<t_key *> m_keylist;	

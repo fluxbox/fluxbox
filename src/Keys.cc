@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.16 2002/05/02 07:10:03 fluxgen Exp $
+//$Id: Keys.cc,v 1.17 2002/07/27 18:03:39 fluxgen Exp $
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -131,7 +131,7 @@ Keys::t_actionstr Keys::m_actionlist[] = {
 	{0, LASTKEYGRAB}
 	};	
 
-Keys::Keys(Display *display, char *filename):
+Keys::Keys(Display *display, const char *filename):
 m_abortkey(0),
 m_display(display)
 {
@@ -175,7 +175,7 @@ void Keys::ungrabKeys() {
 // Returns true on success else false
 // TODO: error checking
 //------------------------------------
-bool Keys::load(char *filename) {
+bool Keys::load(const char *filename) {
 	if (!filename)
 		return false;
 	
@@ -501,7 +501,7 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
 // deletes the tree and load configuration
 // returns true on success else false
 //-----------------------------------
-bool Keys::reconfigure(char *filename) {
+bool Keys::reconfigure(const char *filename) {
 	deleteTree();
 	return load(filename);
 }
