@@ -22,10 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.hh,v 1.4 2002/04/03 12:08:54 fluxgen Exp $
+// $Id: Configmenu.hh,v 1.5 2002/04/28 16:58:36 fluxgen Exp $
 
-#ifndef   CONFIGMENU_HH
-#define   CONFIGMENU_HH
+#ifndef	 CONFIGMENU_HH
+#define	 CONFIGMENU_HH
 
 // forward declaration
 class Configmenu;
@@ -36,63 +36,64 @@ class Configmenu;
 
 class Configmenu : public Basemenu {
 private:
-  class Focusmenu : public Basemenu {
-  private:
-    Configmenu *configmenu;
+	class Focusmenu : public Basemenu {
+	public:
+		Focusmenu(Configmenu *);
+	protected:
+		virtual void itemSelected(int button, unsigned int index);
 
-  protected:
-    virtual void itemSelected(int button, unsigned int index);
+	private:
+		Configmenu *configmenu;
 
-  public:
-    Focusmenu(Configmenu *);
-  };
+	};
 
-  class Placementmenu : public Basemenu {
-  private:
-    Configmenu *configmenu;
+	class Placementmenu : public Basemenu {
+	public:
+		Placementmenu(Configmenu *);
+	
+	protected:
+		virtual void itemSelected(int button, unsigned int index);
+		
+	private:
+		Configmenu *configmenu;
+	};
 
-  protected:
-    virtual void itemSelected(int button, unsigned int index);
+	class Tabmenu : public Basemenu {
+	public:
+		Tabmenu(Configmenu *);
+	protected:
+		virtual void itemSelected(int button, unsigned int index);
+	private:
+		Configmenu *configmenu;
+		void setSelected();	
+	};
 
-  public:
-    Placementmenu(Configmenu *);
-  };
+	BScreen *screen;
+	Focusmenu *focusmenu;
+	Placementmenu *placementmenu;
+	Tabmenu *tabmenu;
 
-  class Tabmenu : public Basemenu {
-  private:
-    Configmenu *configmenu;
-		void setSelected(void);
-  protected:
-    virtual void itemSelected(int button, unsigned int index);
-
-  public:
-    Tabmenu(Configmenu *);
-  };
-
-//  Fluxbox *fluxbox;
-  BScreen *screen;
-  Focusmenu *focusmenu;
-  Placementmenu *placementmenu;
-  Tabmenu *tabmenu;
-
-  friend class Focusmenu;
-  friend class Placementmenu;
-  friend class Tabmenu;
+	friend class Focusmenu;
+	friend class Placementmenu;
+	friend class Tabmenu;
 
 
 protected:
-  virtual void itemSelected(int button, unsigned int index);
+	virtual void itemSelected(int button, unsigned int index);
 
 
 public:
-  Configmenu(BScreen *);
-  virtual ~Configmenu(void);
+	Configmenu(BScreen *);
+	virtual ~Configmenu();
+	inline Basemenu *getFocusmenu() { return focusmenu; }
+	inline Basemenu *getPlacementmenu() { return placementmenu; }
+	inline Basemenu *getTabmenu() { return tabmenu; }
+	
+	inline const Basemenu *getFocusmenu() const { return focusmenu; }
+	inline const Basemenu *getPlacementmenu() const { return placementmenu; }
+	inline const Basemenu *getTabmenu() const { return tabmenu; }
 
-  inline Basemenu *getFocusmenu(void) { return focusmenu; }
-  inline Basemenu *getPlacementmenu(void) { return placementmenu; }
-  inline Basemenu *getTabmenu(void) { return tabmenu; }
-
-  void reconfigure(void);
+	void reconfigure();
 };
 
 
