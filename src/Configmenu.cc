@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.12 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.13 2002/04/12 15:14:09 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -39,7 +39,8 @@
 #include "Toolbar.hh"
 #include "Window.hh"
 
-enum {CMENU_USE_TABS=9, CMENU_USE_ICONS, CMENU_SLOPPY_WIN_GROUP, CMENU_TAB_ROTATE=21};
+enum {CMENU_USE_TABS=9, CMENU_USE_ICONS, CMENU_SLOPPY_WIN_GROUP,
+		CMENU_WORKSPACE_WARPING, CMENU_TAB_ROTATE=21};
 
 
 Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
@@ -93,6 +94,9 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuSloppyWindowGrouping,
 		"Sloppy Window Grouping"), CMENU_SLOPPY_WIN_GROUP);
+	insert(i18n->getMessage(
+		ConfigmenuSet, ConfigmenuWorkspaceWarping,
+		"Workspace Warping"), CMENU_WORKSPACE_WARPING);
 
 	update();
 	setItemSelected(8, screen->doMaxOverSlit());
@@ -105,6 +109,7 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	setItemSelected(CMENU_USE_TABS, Fluxbox::instance()->useTabs());
 	setItemSelected(CMENU_USE_ICONS, Fluxbox::instance()->useIconBar());
 	setItemSelected(CMENU_SLOPPY_WIN_GROUP, screen->isSloppyWindowGrouping());
+	setItemSelected(CMENU_WORKSPACE_WARPING, screen->isWorkspaceWarping());
 }
 
 
@@ -178,6 +183,13 @@ void Configmenu::itemSelected(int button, unsigned int index) {
 				{
 					screen->saveSloppyWindowGrouping(!screen->isSloppyWindowGrouping());
 					setItemSelected(index, screen->isSloppyWindowGrouping());
+					screen->reconfigure();
+				}
+				break;
+			case CMENU_WORKSPACE_WARPING:
+				{
+					screen->saveWorkspaceWarping(!screen->isWorkspaceWarping());
+					setItemSelected(index, screen->isWorkspaceWarping());
 					screen->reconfigure();
 				}
 				break;
