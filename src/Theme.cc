@@ -766,9 +766,9 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 				 &value))
 		m_imagecontrol->parseTexture(texture, value.addr);
 	else
-		texture->setTexture(BImage_Solid | BImage_Flat);
+		texture->setTexture(BImage::SOLID | BImage::FLAT);
 
-	if (texture->getTexture() & BImage_Solid) {
+	if (texture->getTexture() & BImage::SOLID) {
 		int clen = strlen(rclass) + 32, nlen = strlen(rname) + 32;
 
 		char *colorclass = new char[clen], *colorname = new char[nlen];
@@ -792,7 +792,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		delete [] colorname;
 
 		if ((! texture->getColor()->isAllocated()) ||
-				(texture->getTexture() & BImage_Flat))
+				(texture->getTexture() & BImage::FLAT))
 			return retval;
 
 		XColor xcol;
@@ -829,7 +829,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 			xcol.pixel = 0;
 
 		texture->getLoColor()->setPixel(xcol.pixel);
-	} else if (texture->getTexture() & BImage_Gradient) {
+	} else if (texture->getTexture() & BImage::GRADIENT) {
 		int clen = strlen(rclass) + 10, nlen = strlen(rname) + 10;
 
 		char *colorclass = new char[clen], *colorname = new char[nlen],

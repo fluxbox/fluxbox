@@ -165,9 +165,9 @@ void Tab::decorate() {
 	Pixmap tmp = m_focus_pm;
 	BTexture *texture = &(m_win->getScreen()->getWindowStyle()->tab.l_focus);
 
- 	if (texture->getTexture() & BImage_ParentRelative ) {
+ 	if (texture->getTexture() & BImage::PARENTRELATIVE ) {
 		BTexture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_focus);
-		if (pt->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
   		  m_focus_pm = None;
 	    m_focus_pixel = pt->getColor()->getPixel();
   	} else
@@ -176,7 +176,7 @@ void Tab::decorate() {
   	if (tmp) image_ctrl->removeImage(tmp);
 		
 	} else {
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
   		  m_focus_pm = None;
 	    m_focus_pixel = texture->getColor()->getPixel();
   	} else
@@ -188,16 +188,16 @@ void Tab::decorate() {
 	tmp = m_unfocus_pm;
 	texture = &(m_win->getScreen()->getWindowStyle()->tab.l_unfocus);
   
-	if (texture->getTexture() & BImage_ParentRelative ) {
+	if (texture->getTexture() & BImage::PARENTRELATIVE ) {
 		BTexture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_unfocus);
-		if (pt->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			m_unfocus_pm = None;
 			m_unfocus_pixel = pt->getColor()->getPixel();
   		} else
 			m_unfocus_pm =
 			image_ctrl->renderImage(m_size_w, m_size_h, pt);
 	} else {
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			m_unfocus_pm = None;
 			m_unfocus_pixel = texture->getColor()->getPixel();
   		} else

@@ -310,7 +310,7 @@ void Slit::reconfigure(void) {
 	Pixmap tmp = frame.pixmap;
 	BImageControl *image_ctrl = screen->getImageControl();
 	BTexture *texture = &(screen->getToolbarStyle()->toolbar);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.pixmap = None;
 		XSetWindowBackground(display, frame.window,
 			 texture->getColor()->getPixel());

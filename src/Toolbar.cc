@@ -391,7 +391,7 @@ void Toolbar::reconfigure(void) {
 
 	Pixmap tmp = frame.base;
 	BTexture *texture = &(screen->getToolbarStyle()->toolbar);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.base = None;
 		XSetWindowBackground(display, frame.window,
 			 texture->getColor()->getPixel());
@@ -404,7 +404,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.label;
 	texture = &(screen->getToolbarStyle()->window);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.label = None;
 		XSetWindowBackground(display, frame.window_label,
 			 texture->getColor()->getPixel());
@@ -417,7 +417,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.wlabel;
 	texture = &(screen->getToolbarStyle()->label);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.wlabel = None;
 		XSetWindowBackground(display, frame.workspace_label,
 			 texture->getColor()->getPixel());
@@ -430,7 +430,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.clk;
 	texture = &(screen->getToolbarStyle()->clock);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.clk = None;
 		XSetWindowBackground(display, frame.clock,
 			 texture->getColor()->getPixel());
@@ -443,7 +443,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.button;
 	texture = &(screen->getToolbarStyle()->button);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.button = None;
 
 		frame.button_pixel = texture->getColor()->getPixel();
@@ -464,7 +464,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.pbutton;
 	texture = &(screen->getToolbarStyle()->pressed);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.pbutton = None;
 		frame.pbutton_pixel = texture->getColor()->getPixel();
 	} else
