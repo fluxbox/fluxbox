@@ -1,4 +1,4 @@
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen(at)linuxmail.org)
 // Copyright (c) 1997 - 2000 Brad Hughes <bhughes at trolltech.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18,12 +18,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.hh,v 1.5 2003/02/17 13:33:07 fluxgen Exp $
+// $Id: bsetroot.hh,v 1.6 2003/05/10 15:44:15 fluxgen Exp $
 
 #ifndef BSETROOT_HH
 #define BSETROOT_HH
 
-#include "../src/BaseDisplay.hh"
+#include "../src/FbTk/App.hh"
 
 namespace FbTk {
 
@@ -31,30 +31,24 @@ class ImageControl;
 
 };
 
-class bsetroot : public BaseDisplay {
+class bsetroot : public FbTk::App {
 public:
-	bsetroot(int argc, char **argv, char * dpy_name= 0);
-	~bsetroot();
+    bsetroot(int argc, char **argv, char * dpy_name= 0);
+    ~bsetroot();
 
-	inline virtual bool handleSignal(int num) { return False; }
-
-	void gradient();
-	void modula(int, int);
-	void solid();
-	void usage(int = 0);
-	void setRootAtoms(Pixmap pixmap, int screen);
-
-protected:
-	void handleEvent(XEvent *xe) { }
+    void gradient();
+    void modula(int, int);
+    void solid();
+    void usage(int = 0);
+    void setRootAtoms(Pixmap pixmap, int screen);
 
 private:
-	FbTk::ImageControl **img_ctrl;
-	Pixmap *pixmaps;
+    FbTk::ImageControl **img_ctrl;
+    Pixmap *pixmaps;
 
-	char *fore, *back, *grad;
-	Display *display;
-	int num_screens;
-
+    char *fore, *back, *grad;
+    int num_screens;
+    char *m_app_name;
 };
 
 

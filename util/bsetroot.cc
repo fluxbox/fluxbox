@@ -18,12 +18,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.15 2003/02/17 13:33:36 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.16 2003/05/10 15:44:15 fluxgen Exp $
 
 #include "bsetroot.hh"
 
 #include "../src/i18n.hh"
 #include "../src/FbTk/ImageControl.hh"
+#include "../src/ScreenInfo.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -39,203 +40,204 @@
 using namespace std;
 
 bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
-  : BaseDisplay(argv[0], dpy_name) {
+    : FbTk::App(dpy_name), m_app_name(argv[0]) {
 
-	pixmaps = (Pixmap *) 0;
-	grad = fore = back = (char *) 0;
+    pixmaps = (Pixmap *) 0;
+    grad = fore = back = (char *) 0;
 
-	bool mod = false, sol = false, grd = false;
-	int mod_x = 0, mod_y = 0, i = 0;
+    bool mod = false, sol = false, grd = false;
+    int mod_x = 0, mod_y = 0, i = 0;
 
-	img_ctrl = new FbTk::ImageControl*[getNumberOfScreens()];
-	for (; i < getNumberOfScreens(); i++) {
-		img_ctrl[i] = new FbTk::ImageControl(i, true);
-	}
+    img_ctrl = new FbTk::ImageControl*[ScreenCount(display())];
+    for (; i < ScreenCount(display()); i++) {
+        img_ctrl[i] = new FbTk::ImageControl(i, true);
+    }
 
-	for (i = 1; i < argc; i++) {
-		if (! strcmp("-help", argv[i])) {
-			usage();
+    for (i = 1; i < argc; i++) {
+        if (! strcmp("-help", argv[i])) {
+            usage();
 
-		} else if ((! strcmp("-fg", argv[i])) ||
-				(! strcmp("-foreground", argv[i])) ||
-				(! strcmp("-from", argv[i]))) {
-			if ((++i) >= argc)
-				usage(1);
-			fore = argv[i];
+        } else if ((! strcmp("-fg", argv[i])) ||
+                   (! strcmp("-foreground", argv[i])) ||
+                   (! strcmp("-from", argv[i]))) {
+            if ((++i) >= argc)
+                usage(1);
+            fore = argv[i];
 
-		} else if ((! strcmp("-bg", argv[i])) ||
-				(! strcmp("-background", argv[i])) ||
-				(! strcmp("-to", argv[i]))) {
-			if ((++i) >= argc)
-				usage(1);
-			back = argv[i];
+        } else if ((! strcmp("-bg", argv[i])) ||
+                   (! strcmp("-background", argv[i])) ||
+                   (! strcmp("-to", argv[i]))) {
+            if ((++i) >= argc)
+                usage(1);
+            back = argv[i];
 
-		} else if (! strcmp("-solid", argv[i])) {
-			if ((++i) >= argc)
-				usage(1);
-      fore = argv[i];
-      sol = true;
+        } else if (! strcmp("-solid", argv[i])) {
+            if ((++i) >= argc)
+                usage(1);
+            fore = argv[i];
+            sol = true;
 
-    } else if (! strcmp("-mod", argv[i])) {
-      if ((++i) >= argc)
-				usage();
-			mod_x = atoi(argv[i]);
-      if ((++i) >= argc)
-				usage();
-			mod_y = atoi(argv[i]);
-			if (mod_x < 1)
-				mod_x = 1;
-			if (mod_y < 1)
-				mod_y = 1;
-			mod = true;
+        } else if (! strcmp("-mod", argv[i])) {
+            if ((++i) >= argc)
+                usage();
+            mod_x = atoi(argv[i]);
+            if ((++i) >= argc)
+                usage();
+            mod_y = atoi(argv[i]);
+            if (mod_x < 1)
+                mod_x = 1;
+            if (mod_y < 1)
+                mod_y = 1;
+            mod = true;
 
-		} else if (! strcmp("-gradient", argv[i])) {
-			if ((++i) >= argc)
-				usage();
+        } else if (! strcmp("-gradient", argv[i])) {
+            if ((++i) >= argc)
+                usage();
 
-			grad = argv[i];
-			grd = true;
+            grad = argv[i];
+            grd = true;
 
-		} else if (! strcmp("-display", argv[i])) {
-			// -display passed through tests earlier... we just skip it now
-			i++;
+        } else if (! strcmp("-display", argv[i])) {
+            // -display passed through tests earlier... we just skip it now
+            i++;
 
-		} else
-			usage();
-	}
+        } else
+            usage();
+    }
 
-	if ((mod + sol + grd) != true) {
-		fprintf(stderr,
-			I18n::instance()->
-			getMessage(
-				FBNLS::bsetrootSet, FBNLS::bsetrootMustSpecify,
-				"%s: error: must specify on of: -solid, -mod, -gradient\n"),
-			getApplicationName());
+    if ((mod + sol + grd) != true) {
+        fprintf(stderr,
+                I18n::instance()->
+                getMessage(
+                           FBNLS::bsetrootSet, FBNLS::bsetrootMustSpecify,
+                           "%s: error: must specify on of: -solid, -mod, -gradient\n"),
+                m_app_name);
 
-		usage(2);
-	}
+        usage(2);
+    }
 
-	display = getXDisplay();
-	num_screens = getNumberOfScreens();
+    num_screens = ScreenCount(display());
  
-	if (sol && fore)
-		solid();
-	else if (mod && mod_x && mod_y && fore && back)
-		modula(mod_x, mod_y);
-	else if (grd && grad && fore && back)
-		gradient();
-	else
-		usage();
+    if (sol && fore)
+        solid();
+    else if (mod && mod_x && mod_y && fore && back)
+        modula(mod_x, mod_y);
+    else if (grd && grad && fore && back)
+        gradient();
+    else
+        usage();
 
 }
 
 
 bsetroot::~bsetroot() {
-	XKillClient(display, AllTemporary);
+    XKillClient(display(), AllTemporary);
 
-	if (pixmaps) { // should always be true
-		XSetCloseDownMode(display, RetainTemporary);
+    if (pixmaps) { // should always be true
+        XSetCloseDownMode(display(), RetainTemporary);
 
-		delete [] pixmaps;
-	}
+        delete [] pixmaps;
+    }
 
-	if (img_ctrl != 0) {
-		int i = 0;
-		for (; i < num_screens; i++)
-			delete img_ctrl[i];
+    if (img_ctrl != 0) {
+        int i = 0;
+        for (; i < num_screens; i++)
+            delete img_ctrl[i];
 
-		delete [] img_ctrl;
-	} 
+        delete [] img_ctrl;
+    } 
 }
 
 /**
- set root pixmap atoms so that apps like
- Eterm and xchat will be able to use
- transparent background
+   set root pixmap atoms so that apps like
+   Eterm and xchat will be able to use
+   transparent background
 */
 void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
-	Atom atom_root, atom_eroot, type;
-	unsigned char *data_root, *data_eroot;
-	int format;
-	unsigned long length, after;
+    Atom atom_root, atom_eroot, type;
+    unsigned char *data_root, *data_eroot;
+    int format;
+    unsigned long length, after;
 
-	atom_root = XInternAtom(display, "_XROOTMAP_ID", true);
-	atom_eroot = XInternAtom(display, "ESETROOT_PMAP_ID", true);
+    atom_root = XInternAtom(display(), "_XROOTMAP_ID", true);
+    atom_eroot = XInternAtom(display(), "ESETROOT_PMAP_ID", true);
+    ScreenInfo screen_info(screen);
+    // doing this to clean up after old background
+    if (atom_root != None && atom_eroot != None) {
+        XGetWindowProperty(display(), screen_info.getRootWindow(),
+                           atom_root, 0L, 1L, false, AnyPropertyType,
+                           &type, &format, &length, &after, &data_root);
 
-	// doing this to clean up after old background
-	if (atom_root != None && atom_eroot != None) {
-		XGetWindowProperty(display, getScreenInfo(screen)->getRootWindow(),
-			atom_root, 0L, 1L, false, AnyPropertyType,
-			&type, &format, &length, &after, &data_root);
+        if (type == XA_PIXMAP) {
+            XGetWindowProperty(display(), screen_info.getRootWindow(),
+                               atom_eroot, 0L, 1L, False, AnyPropertyType,
+                               &type, &format, &length, &after, &data_eroot);
+                
+            if (data_root && data_eroot && type == XA_PIXMAP &&
+                *((Pixmap *) data_root) == *((Pixmap *) data_eroot)) {
+                    
+                XKillClient(display(), *((Pixmap *) data_root));
+            }
+        }
+    }
 
-		if (type == XA_PIXMAP) {
-    	XGetWindowProperty(display, getScreenInfo(screen)->getRootWindow(),
-				atom_eroot, 0L, 1L, False, AnyPropertyType,
-				&type, &format, &length, &after, &data_eroot);
+    atom_root = XInternAtom(display(), "_XROOTPMAP_ID", false);
+    atom_eroot = XInternAtom(display(), "ESETROOT_PMAP_ID", false);
 
-			if (data_root && data_eroot && type == XA_PIXMAP &&
-					*((Pixmap *) data_root) == *((Pixmap *) data_eroot)) {
+    if (atom_root == None || atom_eroot == None) {
+        cerr<<"couldn't create pixmap atoms, giving up!"<<endl;
+        exit(1);
+    }
 
-				XKillClient(display, *((Pixmap *) data_root));
-			}
-		}
-	}
-
-	atom_root = XInternAtom(display, "_XROOTPMAP_ID", false);
-	atom_eroot = XInternAtom(display, "ESETROOT_PMAP_ID", false);
-
-	if (atom_root == None || atom_eroot == None) {
-		cerr<<"couldn't create pixmap atoms, giving up!"<<endl;
-		exit(1);
-	}
-
-	// setting new background atoms
-	XChangeProperty(display, getScreenInfo(screen)->getRootWindow(),
-		atom_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &pixmap, 1);
-	XChangeProperty(display, getScreenInfo(screen)->getRootWindow(),
-		atom_eroot, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &pixmap, 1);
+    // setting new background atoms
+    XChangeProperty(display(), screen_info.getRootWindow(),
+                    atom_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &pixmap, 1);
+    XChangeProperty(display(), screen_info.getRootWindow(),
+                    atom_eroot, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &pixmap, 1);
 
 }
 
-//-------------- solid --------------------
-// draws pixmaps with a single color 
-//-----------------------------------------
+/**
+   Draws pixmaps with a single color 
+*/
 void bsetroot::solid() {
-  register int screen = 0;
+    register int screen = 0;
 
-	pixmaps = new Pixmap[getNumberOfScreens()];
+    pixmaps = new Pixmap[ScreenCount(display())];
 
-  for (; screen < getNumberOfScreens(); screen++) {
-    FbTk::Color c;
-		GC gc;
-		XGCValues gcv;
+    for (; screen < ScreenCount(display()); screen++) {
+        ScreenInfo screen_info(screen);
 
-    c.setFromString(fore, screen);
+        FbTk::Color c;
+        GC gc;
+        XGCValues gcv;
 
-    if (! c.isAllocated())
-				c.setPixel(BlackPixel(getXDisplay(), screen));
+        c.setFromString(fore, screen);
 
-		gcv.foreground = c.pixel();
-		gc = XCreateGC(getXDisplay(), getScreenInfo(screen)->getRootWindow(),
-			GCForeground , &gcv);
+        if (! c.isAllocated())
+            c.setPixel(BlackPixel(display(), screen));
 
-		pixmaps[screen] = XCreatePixmap(getXDisplay(), 
-			getScreenInfo(screen)->getRootWindow(),
-			getScreenInfo(screen)->getWidth(), getScreenInfo(screen)->getHeight(),
-			getScreenInfo(screen)->getDepth());
+        gcv.foreground = c.pixel();
+        gc = XCreateGC(display(), screen_info.getRootWindow(),
+                       GCForeground , &gcv);
 
-		XFillRectangle(getXDisplay(), pixmaps[screen], gc, 0, 0,
-			getScreenInfo(screen)->getWidth(), getScreenInfo(screen)->getHeight());
+        pixmaps[screen] = XCreatePixmap(display(), 
+                                        screen_info.getRootWindow(),
+                                        screen_info.getWidth(), screen_info.getHeight(),
+                                        screen_info.getDepth());
 
-		setRootAtoms(pixmaps[screen], screen);
+        XFillRectangle(display(), pixmaps[screen], gc, 0, 0,
+                       screen_info.getWidth(), screen_info.getHeight());
 
-		XSetWindowBackgroundPixmap(getXDisplay(),
-			getScreenInfo(screen)->getRootWindow(), pixmaps[screen]);
+        setRootAtoms(pixmaps[screen], screen);
 
-    XClearWindow(getXDisplay(), getScreenInfo(screen)->getRootWindow());
+        XSetWindowBackgroundPixmap(display(),
+                                   screen_info.getRootWindow(), pixmaps[screen]);
 
-		XFreeGC(getXDisplay(), gc);
-  }
+        XClearWindow(display(), screen_info.getRootWindow());
+
+        XFreeGC(display(), gc);
+    }
 }
 
 //-------------- modula  ------------------
@@ -243,190 +245,192 @@ void bsetroot::solid() {
 // fg and bg colors.
 //-----------------------------------------
 void bsetroot::modula(int x, int y) {
-	char data[32];
-	long pattern;
+    char data[32];
+    long pattern;
 
-	register int screen, i;
+    register int screen, i;
 
-	pixmaps = new Pixmap[getNumberOfScreens()];
+    pixmaps = new Pixmap[ScreenCount(display())];
 
-	for (pattern = 0, screen = 0; screen < getNumberOfScreens(); screen++) {
+    for (pattern = 0, screen = 0; screen < ScreenCount(display()); screen++) {
+        ScreenInfo screen_info(screen);
 
-		for (i = 0; i < 16; i++) {
-			pattern <<= 1;
-			if ((i % x) == 0)
-				pattern |= 0x0001;
-		}
+        for (i = 0; i < 16; i++) {
+            pattern <<= 1;
+            if ((i % x) == 0)
+                pattern |= 0x0001;
+        }
 
-		for (i = 0; i < 16; i++) {
-			if ((i %  y) == 0) {
-				data[(i * 2)] = (char) 0xff;
-				data[(i * 2) + 1] = (char) 0xff;
-			} else {
-				data[(i * 2)] = pattern & 0xff;
-				data[(i * 2) + 1] = (pattern >> 8) & 0xff;
-			}
-		}
+        for (i = 0; i < 16; i++) {
+            if ((i %  y) == 0) {
+                data[(i * 2)] = (char) 0xff;
+                data[(i * 2) + 1] = (char) 0xff;
+            } else {
+                data[(i * 2)] = pattern & 0xff;
+                data[(i * 2) + 1] = (pattern >> 8) & 0xff;
+            }
+        }
 
-		FbTk::Color f, b;
-		GC gc;
-		Pixmap bitmap, r_bitmap;
-		XGCValues gcv;
+        FbTk::Color f, b;
+        GC gc;
+        Pixmap bitmap, r_bitmap;
+        XGCValues gcv;
 
-		bitmap = XCreateBitmapFromData(getXDisplay(),
-			getScreenInfo(screen)->getRootWindow(), data, 16, 16);
+        bitmap = XCreateBitmapFromData(display(),
+                                       screen_info.getRootWindow(), data, 16, 16);
 
-		// bitmap used as tile, needs to have the same depth as background pixmap
-		r_bitmap = XCreatePixmap(getXDisplay(),
-			getScreenInfo(screen)->getRootWindow(), 16, 16,
-			getScreenInfo(screen)->getDepth());
+        // bitmap used as tile, needs to have the same depth as background pixmap
+        r_bitmap = XCreatePixmap(display(),
+                                 screen_info.getRootWindow(), 16, 16,
+                                 screen_info.getDepth());
 
-		f.setFromString(fore, screen);
-		b.setFromString(back, screen);
+        f.setFromString(fore, screen);
+        b.setFromString(back, screen);
 
-		if (! f.isAllocated())
-			f.setPixel(WhitePixel(getXDisplay(), screen));
-		if (! b.isAllocated())
-			b.setPixel(BlackPixel(getXDisplay(), screen));
+        if (! f.isAllocated())
+            f.setPixel(WhitePixel(display(), screen));
+        if (! b.isAllocated())
+            b.setPixel(BlackPixel(display(), screen));
 
-		gcv.foreground = f.pixel();
-		gcv.background = b.pixel();
+        gcv.foreground = f.pixel();
+        gcv.background = b.pixel();
 
-		gc = XCreateGC(getXDisplay(), getScreenInfo(screen)->getRootWindow(),
-			GCForeground | GCBackground, &gcv);
+        gc = XCreateGC(display(), screen_info.getRootWindow(),
+                       GCForeground | GCBackground, &gcv);
 
-		// copying bitmap to the one going to be used as tile
-		XCopyPlane(getXDisplay(), bitmap, r_bitmap, gc,
-			0, 0, 16, 16, 0, 0, 1l);
+        // copying bitmap to the one going to be used as tile
+        XCopyPlane(display(), bitmap, r_bitmap, gc,
+                   0, 0, 16, 16, 0, 0, 1l);
 
-		XSetTile(getXDisplay(), gc, r_bitmap);
-		XSetFillStyle(getXDisplay(), gc, FillTiled);	
+        XSetTile(display(), gc, r_bitmap);
+        XSetFillStyle(display(), gc, FillTiled);	
 
-		pixmaps[screen] = XCreatePixmap(getXDisplay(), 
-			getScreenInfo(screen)->getRootWindow(),
-			getScreenInfo(screen)->getWidth(), getScreenInfo(screen)->getHeight(),
-			getScreenInfo(screen)->getDepth());
+        pixmaps[screen] = XCreatePixmap(display(), 
+                                        screen_info.getRootWindow(),
+                                        screen_info.getWidth(), screen_info.getHeight(),
+                                        screen_info.getDepth());
 
-		XFillRectangle(getXDisplay(), pixmaps[screen], gc, 0, 0,
-			getScreenInfo(screen)->getWidth(), getScreenInfo(screen)->getHeight());
+        XFillRectangle(display(), pixmaps[screen], gc, 0, 0,
+                       screen_info.getWidth(), screen_info.getHeight());
 
-		setRootAtoms(pixmaps[screen], screen);
+        setRootAtoms(pixmaps[screen], screen);
 
-		XSetWindowBackgroundPixmap(getXDisplay(),
-			getScreenInfo(screen)->getRootWindow(), pixmaps[screen]);
+        XSetWindowBackgroundPixmap(display(),
+                                   screen_info.getRootWindow(), pixmaps[screen]);
 
-		XClearWindow(getXDisplay(), getScreenInfo(screen)->getRootWindow());
+        XClearWindow(display(), screen_info.getRootWindow());
 
-		XFreeGC(getXDisplay(), gc);
-		XFreePixmap(getXDisplay(), bitmap);
-		XFreePixmap(getXDisplay(), r_bitmap);
-	}
+        XFreeGC(display(), gc);
+        XFreePixmap(display(), bitmap);
+        XFreePixmap(display(), r_bitmap);
+    }
 }
 
-//-------------- gradient -----------------
-// draws pixmaps with a fluxbox texure
-//-----------------------------------------
+/**
+ draws pixmaps with a fluxbox texure
+*/
 void bsetroot::gradient(void) {
-	register int screen;
-	// using temporaray pixmap and then copying it to background pixmap, as it'll
-	// get crashed somewhere on the way causing apps like XChat chrashing
-	// as the pixmap has been destroyed
-	Pixmap tmp;
-	pixmaps = new Pixmap[getNumberOfScreens()];
+    // using temporaray pixmap and then copying it to background pixmap, as it'll
+    // get crashed somewhere on the way causing apps like XChat chrashing
+    // as the pixmap has been destroyed
+    Pixmap tmp;
+    pixmaps = new Pixmap[ScreenCount(display())];
 
-	for (screen = 0; screen < getNumberOfScreens(); screen++) {
-		FbTk::Texture texture;
-		GC gc;
-		XGCValues gcv;
+    for (int screen = 0; screen < ScreenCount(display()); screen++) {
+        ScreenInfo screen_info(screen);
+        FbTk::Texture texture;
+        GC gc;
+        XGCValues gcv;
 
-		texture.setFromString(grad);
-		texture.color().setFromString(fore, screen);
-		texture.colorTo().setFromString(back, screen);
+        texture.setFromString(grad);
+        texture.color().setFromString(fore, screen);
+        texture.colorTo().setFromString(back, screen);
 		
-		if (! texture.color().isAllocated())
-			texture.color().setPixel(WhitePixel(getXDisplay(), screen));
-		if (! texture.colorTo().isAllocated())
-			texture.colorTo().setPixel(BlackPixel(getXDisplay(), screen));
+        if (! texture.color().isAllocated())
+            texture.color().setPixel(WhitePixel(display(), screen));
+        if (! texture.colorTo().isAllocated())
+            texture.colorTo().setPixel(BlackPixel(display(), screen));
 
-		tmp = img_ctrl[screen]->renderImage(getScreenInfo(screen)->getWidth(),
-			getScreenInfo(screen)->getHeight(), texture);
+        tmp = img_ctrl[screen]->renderImage(screen_info.getWidth(),
+                                            screen_info.getHeight(), texture);
 
-		pixmaps[screen] = XCreatePixmap(getXDisplay(), 
-			getScreenInfo(screen)->getRootWindow(),
-			getScreenInfo(screen)->getWidth(), getScreenInfo(screen)->getHeight(),
-			getScreenInfo(screen)->getDepth());
+        pixmaps[screen] = XCreatePixmap(display(), 
+                                        screen_info.getRootWindow(),
+                                        screen_info.getWidth(), screen_info.getHeight(),
+                                        screen_info.getDepth());
 
-		gc = XCreateGC(getXDisplay(), getScreenInfo(screen)->getRootWindow(),
-			GCForeground , &gcv);
+        gc = XCreateGC(display(), screen_info.getRootWindow(),
+                       GCForeground , &gcv);
 
-		XCopyArea(getXDisplay(), tmp, pixmaps[screen], gc, 0, 0,
-			getScreenInfo(screen)->getWidth(), getScreenInfo(screen)->getHeight(),
-			0, 0);
+        XCopyArea(display(), tmp, pixmaps[screen], gc, 0, 0,
+                  screen_info.getWidth(), screen_info.getHeight(),
+                  0, 0);
 
-		setRootAtoms(pixmaps[screen], screen);
+        setRootAtoms(pixmaps[screen], screen);
 
-	    XSetWindowBackgroundPixmap(getXDisplay(),
-			getScreenInfo(screen)->getRootWindow(), pixmaps[screen]);
+        XSetWindowBackgroundPixmap(display(),
+                                   screen_info.getRootWindow(), pixmaps[screen]);
 
-		XClearWindow(getXDisplay(), getScreenInfo(screen)->getRootWindow());
+        XClearWindow(display(), screen_info.getRootWindow());
 
-		if (! (getScreenInfo(screen)->getVisual()->c_class & 1)) {
-			img_ctrl[screen]->removeImage(tmp);
-			img_ctrl[screen]->timeout();
-		}
+        if (! (screen_info.getVisual()->c_class & 1)) {
+            img_ctrl[screen]->removeImage(tmp);
+            img_ctrl[screen]->timeout();
+        }
 
-		XFreeGC(getXDisplay(), gc);
-	}
+        XFreeGC(display(), gc);
+    }
 }
 
-//-------------- usage --------------------
-// shows information about usage
-//-----------------------------------------
+/**
+ Shows information about usage
+*/
 void bsetroot::usage(int exit_code) {
-	fprintf(stderr,
-		I18n::instance()->getMessage(
-			FBNLS::bsetrootSet, FBNLS::bsetrootUsage,
-			"%s 2.1 : (c) 2002 Claes Nasten\n"
-			"%s 2.0 : (c) 1997-2000 Brad Hughes\n\n"
-			"  -display <string>        display connection\n"
-			"  -mod <x> <y>             modula pattern\n"
-			"  -foreground, -fg <color> modula foreground color\n"
-			"  -background, -bg <color> modula background color\n\n"
-			"  -gradient <texture>      gradient texture\n"
-			"  -from <color>            gradient start color\n"
-			"  -to <color>              gradient end color\n\n"
-			"  -solid <color>           solid color\n\n"
-			"  -help                    print this help text and exit\n"),
-			getApplicationName(), getApplicationName());
+    fprintf(stderr,
+            I18n::instance()->getMessage(
+                                         FBNLS::bsetrootSet, FBNLS::bsetrootUsage,
+                                         "%s 2.2 : (c) 2003 Fluxbox Development Team\n"
+                                         "%s 2.1 : (c) 2002 Claes Nasten\n"
+                                         "%s 2.0 : (c) 1997-2000 Brad Hughes\n\n"
+                                         "  -display <string>        display connection\n"
+                                         "  -mod <x> <y>             modula pattern\n"
+                                         "  -foreground, -fg <color> modula foreground color\n"
+                                         "  -background, -bg <color> modula background color\n\n"
+                                         "  -gradient <texture>      gradient texture\n"
+                                         "  -from <color>            gradient start color\n"
+                                         "  -to <color>              gradient end color\n\n"
+                                         "  -solid <color>           solid color\n\n"
+                                         "  -help                    print this help text and exit\n"),
+            m_app_name, m_app_name);
  
-	exit(exit_code);
+    exit(exit_code);
 }
 
 
 int main(int argc, char **argv) {
-	char *display_name = (char *) 0;
-	int i = 1;
+    char *display_name = (char *) 0;
+    int i = 1;
   
-	NLSInit("fluxbox.cat");
+    NLSInit("fluxbox.cat");
   
-	for (; i < argc; i++) {
-		if (! strcmp(argv[i], "-display")) {
-		// check for -display option
+    for (; i < argc; i++) {
+        if (! strcmp(argv[i], "-display")) {
+            // check for -display option
 
-		if ((++i) >= argc) {
-			fprintf(stderr,
-				I18n::instance()->getMessage(
-					FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,
-					"error: '-display' requires an argument\n"));
+            if ((++i) >= argc) {
+                fprintf(stderr,
+                        I18n::instance()->getMessage(
+                                                     FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,
+                                                     "error: '-display' requires an argument\n"));
 	
-				::exit(1);
-			}
+                ::exit(1);
+            }
 
-			display_name = argv[i];
-		}
-	}
+            display_name = argv[i];
+        }
+    }
  
-	bsetroot app(argc, argv, display_name);
+    bsetroot app(argc, argv, display_name);
  
-	return (0);
+    return (0);
 }
