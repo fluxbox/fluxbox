@@ -1,14 +1,14 @@
-.\"
+.\" AT THE BOTTOM IS ADD ONS TO THE PAGE search /ADDITIONS
 .\" Manual page for Fluxbox Styles
 .\"
 .\" Fluxbox is Copyright (c) 2001-2004 Henrik Kinnunen
-.\" Fluxstyle(1) is Copyright (c) 2004 Curtis Micol
+.\" Fluxstyle(1) is Copyright (c) 2004 Curt Micol
 .\"
 .\" This manual page is freely distrubted and modified.
 .\" Parts of the text are taken from websites and style
 .\" files on http://www.fluxbox.org and http://www.fluxmod.dk
 .\"
-.\" Created and Updated for version 0.9.7 by Curtis Micol <asenchi@asenchi.com>
+.\" Created and Updated for version 0.9.7 by Curt Micol <asenchi@asenchi.com>
 .\"
 .\" Define this: <blockquote><pre>
 .de EX
@@ -26,7 +26,7 @@
 ..
 .\" Begin actual page
 .\"
-.TH fluxstyle 1 "January 7th, 2004" "0.9.7"
+.TH fluxstyle 1 "January 7th, 2004" "0.9.8"
 .SH NAME
 fluxstyle \- all you need to know about Fluxbox styles
 .SH DESCRIPTION
@@ -91,12 +91,17 @@ providing a default configureation at installation.
 .PP
 Once you create your own, you can create a directory in
 .IR ~/.fluxbox/
-called 'styles'.  Place your styles here and you will be able to access them from the configure
-portion of the Root Menu called 'User Styles'.  This goes true for any directories associated
-with your style.  An example being, if you create a style with pixmaps, create
-.IR ~/.fluxbox/pixmaps
-and place your pixmaps here.  Of course, this means that the path to your pixmaps in your style
-file will be the same.
+called 'styles'.  While there isn't an official structure of how to package your style, one way that is recommended is creating a directory named after your style and placing your pixmaps directory in there along with a theme.cfg.  The theme.cfg file being your created style.  So for example if I created a style called 'MyStyle' I would create the following:
+.EX
+mkdir -p ~/.fluxbox/styles/MyStyle
+cd ~/.fluxbox/styles/MyStyle
+mkdir pixmaps
+vi theme.cfg (this being where you design your style with
+              the necessary components)
+.EE
+If you follow this, the path to your pixmaps will be:
+.IR ~/fluxbox/styles/MyStyle/pixmaps
+which makes it a bit easier to setup up and distribute your style.
 
 .SH CREATING STYLES
 As discussed in the
@@ -207,176 +212,206 @@ mode, the
 .I colorTo
 resource is used to find the interlacing color.
 .PP
-Here is the complete component list, also all components together with
-which kind of value they can contain.
+.SH A WORD ABOUT FONTS
+We should comment about fonts before we move on to the complete component
+list.  
+.PP
+Fluxbox supports different options for text.  These options currently include bold and shadow.  To set these do this, fontname-size:options, for any of the font components in the style file.  For example:
+.EX
+menu.title.font: sans-8:bold,shadow
+.EE
+If you have problems installing fonts or getting them to work, you should read the docs page at xfree.org.  Here is a link to one of these: http://xfree.org/4.3.0/fonts2.html#3.
+.SH FULL COMPONENT LIST
+Here is the complete component list, together with which kind of value they take.
 Comments are preceded with an exclamation sign (!), which is also used for
 comments in Fluxbox style c.q. X resource files.
 .PP
-.ta \w'window.button.unfocus.picColor:\ 'u
-.nf
-.\"
 .\" The comments also to be translated!
-.\"
-! The toolbar itself
-toolbar:        Texture
-toolbar.color:  Color
-toolbar.colorTo:        Color
-
-! The buttons on the toolbar
-toolbar.button: Texture or \fIParentRelative\fR
-toolbar.button.color:   Color
-toolbar.button.colorTo: Color
-
-! Color of the button arrows
-toolbar.button.picColor:        Color
-
-! Buttons in pressed state
-toolbar.button.pressed: Texture \fI(e.g. Sunken)\fR or \fIParentRelative\fR
-toolbar.button.pressed.color:   Color
-toolbar.button.pressed.colorTo: Color
-
-! Color of pressed button arrows
-toolbar.button.pressed.picColor:        Color
-
-! The toolbar workspace label
-toolbar.label:  Texture or \fIParentRelative\fR
-toolbar.label.color:    Color
-toolbar.label.colorTo:  Color
-toolbar.label.textColor:        Color
-
-! The toolbar window label
-toolbar.windowLabel:    Texture or \fIParentRelative\fR
-toolbar.windowLabel.color:      Color
-toolbar.windowLabel.colorTo:    Color
-toolbar.windowLabel.textColor:  Color
-
-! The toolbar clock
-toolbar.clock:  Texture or \fIParentRelative\fR
-toolbar.clock.color:    Color
-toolbar.clock.colorTo:  Color
-toolbar.clock.textColor:        Color
-
-! How the toolbar's text should be justified.
-toolbar.justify:        \fIcenter\fR, \fIleft\fR, or \fIright\fR
-
-! Font to be used for all toolbar components
-toolbar.font:   Font \fI(e.g. -*-helvetica-medium-r-normal-*-*-100-*)\fR
-
-! The menu titlebar
-menu.title:     Texture
-menu.title.color:       Color
-menu.title.colorTo:     Color
-menu.title.textColor:   Color
-menu.title.font:        Font
-menu.title.justify:     \fIcenter\fR, \fIleft\fR, or \fIright\fR
-
-! The menu frame
-menu.frame:     Texture
-menu.frame.color:       Color
-menu.frame.colorTo:     Color
-menu.frame.textColor:   Color
-menu.frame.disableColor:        Color
-menu.frame.font:        Font
-menu.frame.justify:     \fIcenter\fR, \fIleft\fR, or \fIright\fR
-
-! Bullets for submenu items
-menu.bullet:    \fIempty\fR, \fItriangle\fR, \fIsquare\fR, or \fIdiamond\fR
-menu.bullet.position:   \fIright\fR or \fIleft\fR
-
-! The highlighted menu item
-menu.hilite:    Texture (e.g. \fIRaised\fR)
-menu.hilite.color:      Color
-menu.hilite.colorTo:    Color
-menu.hilite.textColor:  Color
-
-! A focused window
-window.title.focus:     Texture
-window.title.focus.color:       Color
-window.title.focus.colorTo:     Color
-
-! An unfocused window
-window.title.unfocus:   Texture
-window.title.unfocus.color:     Color
-window.title.unfocus.colorTo:   Color
-
-! Window label in window.title
-window.label.focus:     Texture or \fIParentRelative\fR
-window.label.focus.color:       Color
-window.label.focus.colorTo:     Color
-window.label.focus.textColor:   Color
-
-window.label.unfocus:   Texture or \fIParentRelative\fR
-window.label.unfocus.color:     Color
-window.label.unfocus.colorTo:   Color
-window.label.unfocus.textColor: Color
-
-! Handlebar
-window.handle.focus:    Texture
-window.handle.focus.color:      Color
-window.handle.focus.colorTo:    Color
-
-window.handle.unfocus:  Texture
-window.handle.unfocus.color:    Color
-window.handle.unfocus.colorTo:  Color
-
-! Resize grips
-window.grip.focus:      Texture
-window.grip.focus.color:        Color
-window.grip.focus.colorTo:      Color
-
-window.grip.unfocus:    Texture
-window.grip.unfocus.color:      Color
-window.grip.unfocus.colorTo:    Color
-
-! Window buttons
-window.button.focus:    Texture or \fIParentRelative\fR
-window.button.focus.color:      Color
-window.button.focus.colorTo:    Color
-window.button.focus.picColor:   Color
-
-window.button.unfocus:  Texture or \fIParentRelative\fR
-window.button.unfocus.color:    Color
-window.button.unfocus.colorTo:  Color
-window.button.unfocus.picColor: Color
-
-window.button.pressed:  Texture (e.g. \fISunken\fR)
-window.button.pressed.color:    Color
-window.button.pressed.colorTo:  Color
-
-! Frame around window
-window.frame.focusColor:        Color
-window.frame.unfocusColor:      Color
-
-! Font and justification for window labels
-window.font:    Font
-window.justify: \fIcenter\fR, \fIleft\fR, or \fIright\fR
-
-! Slit resources
-slit:
-slit.color:                     Color
-slit.colorTo:                   Color
-
-! Miscellaneous resources
-
-! A border can be drawn round all components
-borderWidth:    a number of pixels, e.g. \fI1\fR
-borderColor:    Color
-
-bevelWidth:     a number of pixels > 0
-handleWidth:    a number of pixels > 0
-
-! Width of the window frame
-! When not specified, frameWidth defaults to the value of bevelWidth
-frameWidth:     a number of pixels >= 0
-
-! This command is executed whenever this style is selected.
-! Typically it sets the root window to a nice picture.
-rootCommand:    Shell command, e.g. \fIbsetroot -mod 4 4 -fg rgb:       5/6/6 -bg grey20\fR
-
-! Some of the bbtools read these old 0.51 resources
-menuFont:       Font
-titleFont:      Font
-.fi
+.SS WINDOW OPTIONS
+Many, many things you can do with window design in Fluxbox, below are your options.  Have fun.
+.EX
+window.label.focus: <texture type>
+window.label.focus.pixmap:  <filename>
+window.label.focus.color:  <color>
+window.label.focus.colorTo: <color>
+window.label.unfocus: <texture type>
+window.label.unfocus.pixmap:  <filename>
+window.label.unfocus.color:  <color>
+window.label.unfocus.colorTo: <color>
+window.title.focus: <texture type>
+window.title.focus.pixmap:  <filename>
+window.title.focus.color:  <color>
+window.title.focus.colorTo: <color>
+window.title.unfocus: <texture type>
+window.title.unfocus.pixmap:  <filename>
+window.title.unfocus.color:  <color>
+window.title.unfocus.colorTo: <color>
+window.handle.focus: <texture type>
+window.handle.focus.pixmap:  <filename>
+window.handle.focus.color:  <color>
+window.handle.focus.colorTo: <color>
+window.handle.unfocus: <texture type>
+window.handle.unfocus.pixmap:  <filename>
+window.handle.unfocus.color:  <color>
+window.handle.unfocus.colorTo: <color>
+window.button.focus: <texture type>
+window.button.focus.pixmap:  <filename>
+window.button.focus.color:  <color>
+window.button.focus.colorTo: <color>
+window.button.unfocus: <texture type>
+window.button.unfocus.pixmap:  <filename>
+window.button.unfocus.color:  <color>
+window.button.unfocus.colorTo: <color>
+window.button.pressed: <texture type>
+window.button.pressed.pixmap:  <filename>
+window.button.pressed.color:  <color>
+window.button.pressed.colorTo: <color>
+window.grip.focus: <texture type>
+window.grip.focus.pixmap:  <filename>
+window.grip.focus.color:  <color>
+window.grip.focus.colorTo: <color>
+window.grip.unfocus: <texture type>
+window.grip.unfocus.pixmap:  <filename>
+window.grip.unfocus.color:  <color>
+window.grip.unfocus.colorTo: <color>
+window.label.focus.textColor: <color>
+window.label.unfocus.textColor: <color>
+window.frame.focusColor: <color>
+window.frame.unfocusColor: <color>
+window.button.focus.picColor: <color>
+window.button.unfocus.picColor: <color>
+window.font: <font>
+window.justify:
+window.roundCorners:
+window.alpha: <integer>
+window.title.height: <integer>
+window.bevelWidth: <integer>
+window.handleWidth: <integer>
+window.borderWidth: <integer>
+window.borderColor: <color>
+window.close.pixmap: <filename>
+window.close.unfocus.pixmap: <filename>
+window.close.pressed.pixmap: <filename>
+window.maximize.pixmap: <filename>
+window.maximize.unfocus.pixmap: <filename>
+window.maximize.pressed.pixmap: <filename>
+window.iconify.pixmap: <filename>
+window.iconify.unfocus.pixmap: <filename>
+window.iconify.pressed.pixmap: <filename>
+window.shade.pixmap: <filename>
+window.shade.unfocus.pixmap: <filename>
+window.shade.pressed.pixmap: <filename>
+window.stick.pixmap: <filename>
+window.stick.unfocus.pixmap: <filename>
+window.stick.pressed.pixmap: <filename>
+window.stuck.pixmap: <filename>
+window.stuck.unfocus.pixmap: <filename>
+.EE
+.SS MENU OPTIONS
+Everything you need to make your menu look pretty.
+.EX
+menu.title.textColor: <color>
+menu.frame.textColor: <color>
+menu.hilite.textColor: <color>
+menu.frame.disableColor: <color>
+menu.title: <texture type>
+menu.title.pixmap:  <filename>
+menu.title.color:  <color>
+menu.title.colorTo: <color>
+menu.frame: <texture type>
+menu.frame.pixmap:  <filename>
+menu.frame.color:  <color>
+menu.frame.colorTo: <color>
+menu.hilite: <texture type>
+menu.hilite.pixmap:  <filename>
+menu.hilite.color:  <color>
+menu.hilite.colorTo: <color>
+menu.title.font: <font>
+menu.frame.font: <font>
+menu.frame.justify:
+menu.title.justify:
+menu.bullet.position:
+menu.bullet:
+menu.borderWidth:
+menu.bevelWidth:
+menu.borderColor: <color>
+menu.submenu.pixmap: <filename>
+menu.selected.pixmap: <filename>
+menu.unselected.pixmap: <filename>
+menu.roundCorners:
+.EE
+.SS ROOT COMMAND OPTION
+This is how you set your background within your style.  Use the official fluxbox background program, fbsetbg.  It is distributed with Fluxbox, and can also be downloaded from here: http://www.xs4all.nl/~hanb/software/fluxbox/fbsetbg.html
+.EX
+rootCommand: <string>
+.EE
+.SS SLIT
+Here are all of the options for the slit.
+.EX
+slit: <texture type>
+slit.pixmap:  <filename>
+slit.color:  <color>
+slit.colorTo: <color>
+slit.borderWidth: <integer>
+slit.bevelWidth: <integer>
+slit.borderColor: <color>
+.EE
+.SS TOOLBAR OPTIONS
+Below you will find all of the configuration possibilities for the toolbar.  The list is pretty extensive and offers you many options to make your toolbar look just the way you want it.
+.EX
+toolbar: <texture type>
+toolbar.pixmap:  <filename>
+toolbar.color:  <color>
+toolbar.colorTo: <color>
+toolbar.borderWidth: <integer>
+toolbar.borderColor: <color>
+toolbar.bevelWidth: <0-255>
+toolbar.shaped: <boolean>
+toolbar.alpha: <integer>
+toolbar.height: <integer>
+toolbar.clock.font: <font>
+toolbar.clock.textColor: <color>
+toolbar.clock.justify:
+toolbar.clock: <texture type>
+toolbar.clock.pixmap:  <filename>
+toolbar.clock.color:  <color>
+toolbar.clock.colorTo: <color>
+toolbar.clock.borderWidth: <integer>
+toolbar.clock.borderColor: <color>
+toolbar.workspace.font: <font>
+toolbar.workspace.textColor: <color>
+toolbar.workspace.justify:
+toolbar.workspace: <texture type>
+toolbar.workspace.pixmap:  <filename>
+toolbar.workspace.color:  <color>
+toolbar.workspace.colorTo: <color>
+toolbar.workspace.borderWidth: <integer>
+toolbar.workspace.borderColor: <color>
+toolbar.iconbar.focused: <texture type>
+toolbar.iconbar.focused.pixmap:  <filename>
+toolbar.iconbar.focused.color:  <color>
+toolbar.iconbar.focused.colorTo: <color>
+toolbar.iconbar.unfocused: <texture type>
+toolbar.iconbar.unfocused.pixmap:  <filename>
+toolbar.iconbar.unfocused.color:  <color>
+toolbar.iconbar.unfocused.colorTo: <color>
+toolbar.iconbar.empty: <texture type>
+toolbar.iconbar.empty.pixmap:  <filename>
+toolbar.iconbar.empty.color:  <color>
+toolbar.iconbar.empty.colorTo: <color>
+toolbar.iconbar.focused.borderWidth: <integer>
+toolbar.iconbar.focused.borderColor: <color>
+toolbar.iconbar.unfocused.borderWidth: <integer>
+toolbar.iconbar.unfocused.borderColor: <color>
+toolbar.iconbar.borderWidth: <integer>
+toolbar.iconbar.borderColor: <color>
+toolbar.iconbar.focused.font: <font>
+toolbar.iconbar.focused.textColor: <color>
+toolbar.iconbar.focused.justify:
+toolbar.iconbar.unfocused.font: <font>
+toolbar.iconbar.unfocused.textColor: <color>
+toolbar.iconbar.unfocused.justify:
+.EE
 .SH EXAMPLES
 This may seem like a long list, but remember, when you create your own style, you
 can easily set lots of keys with a single command, e.g.
@@ -433,7 +468,7 @@ You can also find more styles here:
 .B http://themes.freshmeat.net/
 .PP
 This manpage was composed from various resources including the documentation, fluxbox
-man page and numerous other resources by Curtis Micol
+man page and numerous other resources by Curt Micol
 .nh
 <asenchi@asenchi.com>
 .hy 
@@ -445,3 +480,10 @@ Numerous other languages could be available if someone jumps in.
 .SH SEE ALSO
 .IR fluxbox (1) 
 .IR bsetroot (1)
+
+.\" ADDITIONS TO MAKE
+.\" Create a font section
+.\" Change layout of theme items
+.\" Obtain new theme items, grubert just placed in new man page
+.\" Become a little more verbose on color usage.
+.\" 
