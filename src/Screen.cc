@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.93 2003/01/05 22:26:56 fluxgen Exp $
+// $Id: Screen.cc,v 1.94 2003/01/07 02:06:06 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -42,6 +42,7 @@
 #include "DirHelper.hh"
 #include "WinButton.hh"
 #include "SimpleCommand.hh"
+#include "MenuTheme.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -273,6 +274,7 @@ BScreen::BScreen(ResourceManager &rm,
                              m_workspacenames_sig(*this), // workspace names signal 
                              m_currentworkspace_sig(*this), // current workspace signal
                              theme(0), m_windowtheme(scrn),
+                             m_menutheme(new FbTk::MenuTheme(scrn)),
                              resource(rm, screenname, altscreenname)
 {
     Display *disp = BaseDisplay::getXDisplay();
@@ -1020,7 +1022,8 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 }
 
 FluxboxWindow *BScreen::createWindow(Window client) {
-    FluxboxWindow *win = new FluxboxWindow(client, this, getScreenNumber(), *getImageControl(), winFrameTheme());
+    FluxboxWindow *win = new FluxboxWindow(client, this, getScreenNumber(), *getImageControl(), 
+                                           winFrameTheme(), *menuTheme());
  
 #ifdef SLIT
     if (win->initialState() == WithdrawnState)
@@ -1042,18 +1045,31 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
 
     FbWinFrame &frame = win.frame();
 
-    // clear old buttons from frame
-    frame.removeAllButtons();
 
     typedef FbTk::RefCount<FbTk::Command> CommandRef;
 
     using namespace FbTk;
+    typedef RefCount<Command> CommandRef;
+    typedef SimpleCommand<FluxboxWindow> WindowCmd;
+
+    CommandRef iconify_cmd(new WindowCmd(win, &FluxboxWindow::iconify));
+    CommandRef maximize_cmd(new WindowCmd(win, &FluxboxWindow::maximize));
+    CommandRef maximize_vert_cmd(new WindowCmd(win, &FluxboxWindow::maximizeVertical));
+    CommandRef maximize_horiz_cmd(new WindowCmd(win, &FluxboxWindow::maximizeHorizontal));
+    CommandRef close_cmd(new WindowCmd(win, &FluxboxWindow::close));
+    CommandRef shade_cmd(new WindowCmd(win, &FluxboxWindow::shade));
+    CommandRef raise_cmd(new WindowCmd(win, &FluxboxWindow::raise));
+    CommandRef lower_cmd(new WindowCmd(win, &FluxboxWindow::raise));
+    CommandRef stick_cmd(new WindowCmd(win, &FluxboxWindow::stick));
+    CommandRef show_menu_cmd(new WindowCmd(win, &FluxboxWindow::popupMenu));
+
+    // clear old buttons from frame
+    frame.removeAllButtons();
 
     //create new buttons
     if (win.isIconifiable()) {
         FbTk::Button *iconifybtn = new WinButton(WinButton::MINIMIZE, frame.titlebar(), 0, 0, 10, 10);
-        CommandRef iconifycmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::iconify));
-        iconifybtn->setOnClick(iconifycmd);
+        iconifybtn->setOnClick(iconify_cmd);
         iconifybtn->show();
         frame.addRightButton(iconifybtn);
 #ifdef DEBUG
@@ -1063,11 +1079,8 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
 
     if (win.isMaximizable()) {
         FbTk::Button *maximizebtn = new WinButton(WinButton::MAXIMIZE, frame.titlebar(), 0, 0, 10, 10);
-        CommandRef maximizecmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::maximize));
-        CommandRef maximize_horiz_cmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::maximizeHorizontal));
-        CommandRef maximize_vert_cmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::maximizeVertical));
 
-        maximizebtn->setOnClick(maximizecmd, 1);
+        maximizebtn->setOnClick(maximize_cmd, 1);
         maximizebtn->setOnClick(maximize_horiz_cmd, 3);
         maximizebtn->setOnClick(maximize_vert_cmd, 2);
         maximizebtn->show();
@@ -1079,39 +1092,39 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
 
     if (win.isClosable()) {
         Button *closebtn = new WinButton(WinButton::CLOSE, frame.titlebar(), 0, 0, 10, 10);
-        CommandRef closecmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::close));
-        closebtn->setOnClick(closecmd);
+
+        closebtn->setOnClick(close_cmd);
         closebtn->show();
         frame.addRightButton(closebtn);
 #ifdef DEBUG
         cerr<<"Creating close button"<<endl;
 #endif // DEBUG
     }
-    /*
-    if (decorations.sticky) {
-        FbTk::Button *stickbtn = new WinButton(WinButton::STICK, m_frame.titlebar(),
-                                               0, 0, 10, 10);
-        FbTk::RefCount<FbTk::Command> stickcmd(new FbTk::SimpleCommand<FluxboxWindow>(*this, &FluxboxWindow::stick));
-        stickbtn->setOnClick(stickcmd);
-        stickbtn->show();
-        m_frame.addLeftButton(stickbtn);
-#ifdef DEBUG
-        cerr<<"Creating sticky button"<<endl;
-#endif // DEBUG
-    }
-    */
-    /*    if (decorations.shade) {
-        FbTk::Button *shadebtn = new WinButton(WinButton::SHADE, m_frame.titlebar(),
-                                               0, 0, 10, 10);
-        FbTk::RefCount<FbTk::Command> shadecmd(new FbTk::SimpleCommand<FluxboxWindow>(*this, &FluxboxWindow::shade));
-        shadebtn->setOnClick(shadecmd);
-        shadebtn->show();
-        m_frame.addRightButton(shadebtn);
-#ifdef DEBUG
-        cerr<<"Creating shade button"<<endl;
-#endif // DEBUG
-    }
-    */
+    // setup titlebar
+    frame.setOnClickTitlebar(raise_cmd, 1, false, true); // on press with button 1
+    frame.setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
+    frame.setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
+    frame.setOnClickTitlebar(lower_cmd, 3, false, true);  // on press with button 3
+    frame.setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
+    // setup menu
+    FbTk::Menu &menu = win.getWindowmenu();
+    menu.removeAll(); // clear old items
+    menu.disableTitle();
+
+    // set new menu items
+    menu.insert("Shade", shade_cmd);
+    menu.insert("Stick", stick_cmd);
+    menu.insert("Maximize", maximize_cmd);
+    menu.insert("Maximize Vertical", maximize_vert_cmd);
+    menu.insert("Maximize Horizontal", maximize_horiz_cmd);
+    menu.insert("Iconify", iconify_cmd);
+    menu.insert("Raise", raise_cmd);
+    menu.insert("Lower", lower_cmd);
+    menu.insert("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+    menu.insert("Close", close_cmd);
+
+    menu.reconfigure(); // update graphics
+
 }
 void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
