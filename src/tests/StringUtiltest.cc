@@ -20,6 +20,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "../StringUtil.hh"
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif //_GNU_SOURCE
 
 #include <vector>
 #include <iostream>
