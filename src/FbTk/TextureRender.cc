@@ -113,7 +113,7 @@ void TextureRender::allocateColorTables() {
 
     if (red == 0) {
         char sbuf[128];
-        sprintf(sbuf, "%d", size);
+        sprintf(sbuf, "%ld", (long int) size);
         throw std::string("TextureRender::TextureRender(): " + 
               std::string(_FBTKTEXT(Error, OutOfMemoryRed, "Out of memory while allocating red buffer.", "")) + string(sbuf));
     }
@@ -122,7 +122,7 @@ void TextureRender::allocateColorTables() {
     green = FB_new_nothrow unsigned char[size];
     if (green == 0) {
         char sbuf[128];
-        sprintf(sbuf, "%d", size);
+        sprintf(sbuf, "%ld", (long int) size);
         throw std::string("TextureRender::TextureRender(): " + 
               std::string(_FBTKTEXT(Error, OutOfMemoryGreen, "Out of memory while allocating green buffer.", ""))+ string(sbuf));
     }
@@ -130,7 +130,7 @@ void TextureRender::allocateColorTables() {
     blue = FB_new_nothrow unsigned char[size];
     if (blue == 0) {
         char sbuf[128];
-        sprintf(sbuf, "%d", size);
+        sprintf(sbuf, "%ld", (long int) size);
         throw std::string("TextureRender::TextureRender(): " +
               std::string(_FBTKTEXT(Error, OutOfMemoryBlue, "Out of memory while allocating blue buffer.", ""))+ string(sbuf));
     }
