@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.23 2003/12/19 18:17:08 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.24 2003/12/20 17:42:04 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -61,6 +61,7 @@ FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
     const char* commands[] = {
         "arrangewindows",
+        "bindkey",
         "close",
         "commanddialog",
         "detachclient",
@@ -153,6 +154,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), &Fluxbox::shutdown);
     else if (command == "commanddialog") // run specified fluxbox command
         return new CommandDialogCmd();
+    else if (command == "bindkey")
+        return new BindKeyCmd(arguments);
     else if (command == "setresourcevalue") {
         // we need to parse arguments as:
         // <remove whitespace here><resname><one whitespace><value>

@@ -19,13 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.21 2003/12/19 17:22:04 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.22 2003/12/20 17:41:32 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "CommandDialog.hh"
 #include "Workspace.hh"
+#include "Keys.hh"
 
 #include "FbTk/Theme.hh"
 #include "FbTk/Menu.hh"
@@ -33,6 +34,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <fstream>
 #include <iostream>
 using namespace std;
 
@@ -106,7 +108,6 @@ SetStyleCmd::SetStyleCmd(const std::string &filename):m_filename(filename) {
 }
 
 void SetStyleCmd::execute() {
-    cerr<<"SetStyle: "<<m_filename<<endl;
     Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
     Fluxbox::instance()->save_rc();
     FbTk::ThemeManager::instance().load(m_filename);
@@ -235,5 +236,18 @@ void SetResourceValueDialogCmd::execute() {
     FbTk::FbWindow *win = new CommandDialog(*screen,  "Type resource name and the value", "SetResourceValue ");
     win->show();
 };
+
+BindKeyCmd::BindKeyCmd(const std::string &keybind):m_keybind(keybind) { }
+
+void BindKeyCmd::execute() {
+    if (Fluxbox::instance()->keys() != 0) {
+        if (Fluxbox::instance()->keys()->addBinding(m_keybind)) {
+            ofstream ofile(Fluxbox::instance()->keys()->filename().c_str(), ios::app);
+            if (!ofile)
+                return;            
+            ofile<<m_keybind<<endl;
+        }
+    }
+}
 
 }; // end namespace FbCommands
