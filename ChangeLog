@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/17:
+  * fbsetbg update from Han - new option to explicitly say 
+    which wallpaper setting to use, plus minor changes
+    fbsetbg
 *03/10/15:
   * Fix event manager target window (Simon)
     -> Some events don't have the main window as xany.window

@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.21 2003/10/08 14:00:47 rathnor Exp $
+# $Id: fbsetbg,v 1.22 2003/10/16 15:54:20 rathnor Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -34,6 +34,7 @@
 # - don't use $(), use ``
 # - don't use ~, use ${HOME}
 # - don't use id -u, use whoami
+# - don't use echo -e
 # - getopts won't work on all platforms, but the config-file can
 #   compensate for that.
 # - various software like grep/sed/perl may be not present or not
@@ -45,7 +46,7 @@
 # _NET_CURRENT_DESKTOP
 
 # The wallpapersetter is selected in this order
-wpsetters='Esetroot wmsetbg feh chbg display qiv xv xsri xli xsetbg' # broken icewmbg'
+wpsetters=${wpsetters:=Esetroot wmsetbg feh chbg display qiv xv xsri xli xsetbg} # broken icewmbg'
 lastwallpaper=${HOME}/.fluxbox/lastwallpaper
 
 
@@ -58,8 +59,9 @@ command="`basename \"$0\"`"
 # Functions
 display_usage() {
     cat << EOF
-Usage: $command [ -fFcCtTaA /path/to/wallpaper ] [ -l ] [ -h ] [ -i ] [ -p ]
+Usage: $command [-u wallpapersetter] [-fFcCtTaA /path/to/wallpaper] [-l] [-h] [-i] [-p]
 Use $command -h for a complete help message.
+
 EOF
 }
 
@@ -85,11 +87,20 @@ Options:
     -i  Information about selected wallpaper command
     -d  (deprecated, use -i) Debug info
     -p  Tips
+    -u  Use specified wallpapersetter
 
 Files:
 
     ~/.fluxbox/lastwallpaper     In this file the wallpaper you set
                                  will be stored, for the -l option:
+Environment variables:
+    wpsetters   Wallpapersetters to use.
+                example:
+                  wpsetters=feh fbsetbg wallpaper.jpg
+
+    DISPLAY     The display you want to set the wallpaper on.
+                example:
+                  DISPLAY=:0.0 fbsetbg -l
 
 EOF
 }
@@ -165,34 +176,27 @@ debugfbsetbg() {
     exit 0
 }
 
-# Find the default wallpapersetter
-for wpsetter in $wpsetters; do
-    if find_it $wpsetter; then
-        WPSETTER=$wpsetter
-        break
-    fi
-done
-
-standardrant=\
-"$WPSETTER sets the 'wrong' wallpaper. Transparency for fluxbox and
-apps like aterm and xchat won't work right with it. Consider installing
-chbg, wmsetbg (from windowmaker) or Esetroot (from Eterm) and I'll use
-them instead."
-
-standardok=\
-"$WPSETTER is a nice wallpapersetter. You won't have any problems."
-
-unset debug
-
 if [ $# -eq 0 ]; then
     message "no options given"
     display_help
     exit 1
 fi
 
+
+unset debug
+
 # Parse command-line options
-while :; do
+while [ $# -gt 0 ]; do
     case "$1" in
+        -u)
+            if find_it "$2"; then
+                wpsetters=$2
+            else
+                message "Couldn't find \"$2\" for wallpapersetter"
+                display_usage
+                exit 1
+            fi
+            shift 2 ;;
         -d|-i) debug=true
             break ;;
         -a) option='$aspect'
@@ -257,12 +261,29 @@ while :; do
                 display_usage
                 exit 1
             else
+                wallpaper=$1
                 break
             fi
             ;;
     esac
 done
 
+# Find the default wallpapersetter
+for wpsetter in $wpsetters; do
+    if find_it $wpsetter; then
+        WPSETTER=$wpsetter
+        break
+    fi
+done
+
+standardrant=\
+"$WPSETTER sets the 'wrong' wallpaper. Transparency for fluxbox and
+apps like aterm and xchat won't work right with it. Consider installing
+chbg, wmsetbg (from windowmaker) or Esetroot (from Eterm) and I'll use
+them instead."
+
+standardok=\
+"$WPSETTER is a nice wallpapersetter. You won't have any problems."
 
 case $WPSETTER in
     chbg)
@@ -280,7 +301,7 @@ case $WPSETTER in
         debugstory=$standardok
         ;;
     display)
-        full="`xwininfo -root|grep geom` -window root"
+        full="`xwininfo -root 2> /dev/null|grep geom` -window root"
         tile='-window root'
         center='-backdrop -window root'
         aspect=$full
@@ -359,17 +380,22 @@ if [ "$debug" = true ];then
 fi
 
 option=${option:='$full'}
-wallpaper=${wallpaper:=$1}
 
 if [ ! -r "$wallpaper" ]; then
     message "Can't find wallpaper $wallpaper"
     exit 1
 fi
 
+if [ -z "$DISPLAY" ];then
+    message "You are not connected to an X session\nPerhaps you should set the DISPLAY environment variable?"
+    exit 1
+fi
+
+
 $WPSETTER `eval echo $option` "$wallpaper"
 if [ $? -ne 0 ]; then
     message "Something went wrong while setting the wallpaper.
-Run '$WPSETTER $option "$wallpaper"' from an xterm to find out what."
+Run '$WPSETTER "`eval echo $option` $wallpaper"' from an xterm to find out what."
     exit 1
 fi
 
