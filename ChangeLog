@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*05/01/14:
+  * Fix for #1091710 (SystemTray is not covered by StyleStuff) (Mathias)
+    SystemTray is not configurable via styles thru the 
+    toolbar.systray.* - resource, it falls back to the look of the clock
+    SystemTray.cc/hh ToolFactory.cc/hh
+*05/01/12:
   * Fix for #1099278, #1099950 (Warnings on amd64) (thanx Barry Schwartz)
     Resources.cc FbTk/FbWindow.cc FbTk/TextureRender.cc
   * Updated ko_KR - (thanx Jo Hyunseok)
