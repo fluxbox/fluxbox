@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.14 2002/05/29 06:21:59 fluxgen Exp $
+// $Id: Slit.cc,v 1.15 2002/05/29 19:10:04 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -54,7 +54,6 @@
 // Utility method for extracting name from window
 namespace {
 	void getWMName(BScreen *screen, Window window, std::string& name) {
-		assert(screen);
 		name = "";
 	
 		if (screen != 0 && window != None) {
@@ -1088,7 +1087,6 @@ Slit::SlitClient::SlitClient(BScreen *screen, Window w)
 }
 
 void Slit::SlitClient::initialize(BScreen *screen, Window w) {
-	assert(screen);
 	client_window = w;
 	window = icon_window = None;
 	x = y = 0;
