@@ -893,7 +893,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         id == m_current_workspace->workspaceID())
         return;
 
-    FbTk::App::instance()->sync(true);
+    FbTk::App::instance()->sync(false);
 
     WinClient *focused_client = Fluxbox::instance()->getFocusedWindow();
     FluxboxWindow *focused = 0;
@@ -958,7 +958,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     }
 
 
-    FbTk::App::instance()->sync(true);
+    FbTk::App::instance()->sync(false);
 
     if (win && &win->screen() == this &&
         (! win->isStuck())) {
