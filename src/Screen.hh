@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.44 2002/09/07 20:19:13 fluxgen Exp $
+// $Id: Screen.hh,v 1.45 2002/09/08 19:44:18 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -233,10 +233,13 @@ public:
 	void removeNetizen(Window win);
 	void addIcon(FluxboxWindow *win);
 	void removeIcon(FluxboxWindow *win);
+	// remove window
+	void removeWindow(FluxboxWindow *win);
+
 	std::string getNameOfWorkspace(unsigned int workspace) const;
 	void changeWorkspaceID(unsigned int);
 	void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, bool changeworkspace=true);
-	void raiseWindows(Window *workspace_stack, int num);
+	void raiseWindows(const Workspace::Stack &workspace_stack);
 	void reassociateGroup(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
 	void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
 	void prevFocus(int = 0);
@@ -245,7 +248,7 @@ public:
 	void reconfigure();	
 	void rereadMenu();
 	void shutdown();
-	void showPosition(int, int);
+	void showPosition(int x, int y);
 	void showGeometry(unsigned int, unsigned int);
 	void hideGeometry();
 
@@ -322,9 +325,6 @@ private:
 
 	unsigned int geom_w, geom_h;
 	unsigned long event_mask;
-
-    
-    
 
     WorkspaceNames workspaceNames;
     Workspaces workspacesList;
