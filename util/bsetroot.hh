@@ -18,14 +18,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.hh,v 1.4 2002/08/18 09:47:03 fluxgen Exp $
+// $Id: bsetroot.hh,v 1.5 2003/02/17 13:33:07 fluxgen Exp $
 
 #ifndef BSETROOT_HH
 #define BSETROOT_HH
 
 #include "../src/BaseDisplay.hh"
 
-class BImageControl;
+namespace FbTk {
+
+class ImageControl;
+
+};
 
 class bsetroot : public BaseDisplay {
 public:
@@ -44,7 +48,7 @@ protected:
 	void handleEvent(XEvent *xe) { }
 
 private:
-	BImageControl **img_ctrl;
+	FbTk::ImageControl **img_ctrl;
 	Pixmap *pixmaps;
 
 	char *fore, *back, *grad;

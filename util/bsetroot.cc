@@ -18,12 +18,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.14 2002/12/09 23:41:54 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.15 2003/02/17 13:33:36 fluxgen Exp $
 
 #include "bsetroot.hh"
 
 #include "../src/i18n.hh"
-#include "../src/ImageControl.hh"
+#include "../src/FbTk/ImageControl.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -47,9 +47,9 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 	bool mod = false, sol = false, grd = false;
 	int mod_x = 0, mod_y = 0, i = 0;
 
-	img_ctrl = new BImageControl*[getNumberOfScreens()];
+	img_ctrl = new FbTk::ImageControl*[getNumberOfScreens()];
 	for (; i < getNumberOfScreens(); i++) {
-		img_ctrl[i] = new BImageControl(i, true);
+		img_ctrl[i] = new FbTk::ImageControl(i, true);
 	}
 
 	for (i = 1; i < argc; i++) {
