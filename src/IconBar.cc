@@ -22,18 +22,21 @@
 #include "IconBar.hh"
 #include "i18n.hh"
 
-IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin) {
-	m_iconwin = iconwin;
-	m_fluxboxwin = fluxboxwin;	
+IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin):
+m_fluxboxwin(fluxboxwin),
+m_iconwin(iconwin)
+{
+
 }
 
 IconBarObj::~IconBarObj() {
 	
 }
 
-IconBar::IconBar(BScreen *scrn, Window parent) {
-	m_parent = parent;
-	m_screen = scrn;
+IconBar::IconBar(BScreen *scrn, Window parent):
+m_screen(scrn),
+m_parent(parent)
+{
 	m_iconlist = new IconList;	
 	m_display = scrn->getBaseDisplay()->getXDisplay();
 }
