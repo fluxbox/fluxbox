@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.113 2003/04/16 14:43:06 rathnor Exp $
+// $Id: fluxbox.cc,v 1.114 2003/04/16 16:18:06 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1703,6 +1703,7 @@ void Fluxbox::save_rc() {
         BScreen *screen = *it;
         int screen_number = screen->getScreenNumber();
         
+/*
 #ifdef SLIT
         string slit_placement;
 
@@ -1735,9 +1736,9 @@ void Fluxbox::save_rc() {
           screen->getSlitOnHead());
           XrmPutLineResource(&new_blackboxrc, rc_string);
           #endif // XINERAMA
-        */
+*//*
 #endif // SLIT
-        
+  */      
         sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
                 ((screen->getRowPlacementDirection() == BScreen::LEFTRIGHT) ?
                  "LeftToRight" : "RightToLeft"));

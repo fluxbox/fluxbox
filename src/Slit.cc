@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.39 2003/04/16 13:43:43 rathnor Exp $
+// $Id: Slit.cc,v 1.40 2003/04/16 16:18:02 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -185,9 +185,10 @@ private:
 
 class SlitDirMenuItem: public FbTk::MenuItem {
 public:
-    SlitDirMenuItem(const char *label, Slit &slit):FbTk::MenuItem(label), 
-                                                   m_slit(slit), 
-                                                   m_label(label ? label : "") { 
+    SlitDirMenuItem(const char *label, Slit &slit, FbTk::RefCount<FbTk::Command> &cmd)
+        :FbTk::MenuItem(label,cmd), 
+         m_slit(slit), 
+         m_label(label ? label : "") { 
         setLabel(m_label.c_str()); // update label
     }
     void click(int button, int time) {
@@ -197,6 +198,7 @@ public:
         else
             m_slit.setDirection(Slit::HORIZONTAL);
         setLabel(m_label.c_str());
+        FbTk::MenuItem::click(button, time);
     }
 
     void setLabel(const char *label) {
@@ -219,13 +221,14 @@ private:
 
 class PlaceSlitMenuItem: public FbTk::MenuItem {
 public:
-    PlaceSlitMenuItem(const char *label, Slit &slit, Slit::Placement place):
-        FbTk::MenuItem(label), m_slit(slit), m_place(place) {
+    PlaceSlitMenuItem(const char *label, Slit &slit, Slit::Placement place, FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(label, cmd), m_slit(slit), m_place(place) {
      
     }
     bool isEnabled() const { return m_slit.placement() != m_place; }
     void click(int button, int time) {
         m_slit.setPlacement(m_place);
+        FbTk::MenuItem::click(button, time);
     }
 private:
     Slit &m_slit;
@@ -258,9 +261,9 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                                    true));
 
     // default placement and direction
-    m_direction = HORIZONTAL;
-    m_placement = BOTTOMRIGHT;
-    hidden = do_auto_hide = false;
+    m_direction = screen().getSlitDirection();
+    m_placement = screen().getSlitPlacement();
+    hidden = do_auto_hide = screen().doSlitAutoHide();
 
     frame.pixmap = None;
 
@@ -456,11 +459,13 @@ void Slit::addClient(Window w) {
 
 void Slit::setDirection(Direction dir) {
     m_direction = dir;
+    screen().saveSlitDirection(dir);
     reconfigure();
 }
 
 void Slit::setPlacement(Placement place) {
     m_placement = place;
+    screen().saveSlitPlacement(place);
     reconfigure();
 }
 
@@ -532,6 +537,9 @@ void Slit::removeClient(Window w, bool remap) {
 void Slit::reconfigure() {
     frame.width = 0;
     frame.height = 0;
+
+    // be sure to sync slit auto hide up with the screen's menu resource
+    do_auto_hide = screen().doSlitAutoHide();
 
     // Need to count windows because not all client list entries
     // actually correspond to mapped windows.
@@ -1091,6 +1099,7 @@ void Slit::saveClientList() {
 
 void Slit::setAutoHide(bool val) {
     do_auto_hide = val;
+    screen().saveSlitAutoHide(val);
 }
 
 void Slit::setupMenu() {
@@ -1098,7 +1107,14 @@ void Slit::setupMenu() {
     using namespace FBNLS;
     using namespace FbTk;
 
-    RefCount<Command> menu_cmd(new SimpleCommand<Slit>(*this, &Slit::reconfigure));
+    FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
+    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), 
+                                                                              &Fluxbox::save_rc));
+    FbTk::RefCount<FbTk::Command> reconf_cmd(new FbCommands::ReconfigureFluxboxCmd());
+    s_a_reconf_macro->add(saverc_cmd);
+    s_a_reconf_macro->add(reconf_cmd);
+    FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
+
     // setup base menu
     slitmenu.setLabel("Slit");
     slitmenu.insert(i18n->getMessage(
@@ -1111,12 +1127,14 @@ void Slit::setupMenu() {
     slitmenu.insert(new BoolMenuItem(i18n->getMessage(
                                                       CommonSet, CommonAutoHide,
                                                       "Auto hide"),
-                                     do_auto_hide,
-                                     menu_cmd));
+                                     screen().doSlitAutoHide(),
+                                     save_and_reconfigure));
 
     slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(
-                                                         SlitSet, SlitSlitDirection,
-                                                         "Slit Direction"), *this));
+                                            SlitSet, SlitSlitDirection,
+                                            "Slit Direction"), 
+                                        *this,
+                                        save_and_reconfigure));
     slitmenu.insert("Clients", &clientlist_menu);
     slitmenu.update();
 
@@ -1156,9 +1174,15 @@ void Slit::setupMenu() {
                                                     place_menu[i].base,
                                                     place_menu[i].default_str);
             placement_menu.insert(new PlaceSlitMenuItem(i18n_str, *this,
-                                                        place_menu[i].slit_placement));
+                                                        place_menu[i].slit_placement,
+                                                        save_and_reconfigure));
         }
     }
     // finaly update sub menu
     placement_menu.update();
+}
+
+void Slit::moveToLayer(int layernum) {
+    m_layeritem->moveToLayer(layernum);
+    m_screen.saveSlitLayer((Fluxbox::Layer) layernum);
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.125 2003/04/16 14:43:01 rathnor Exp $
+// $Id: Screen.cc,v 1.126 2003/04/16 16:17:56 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -193,6 +193,29 @@ setFromString(const char *strval) {
 }
 
 template<>
+void Resource<Slit::Placement>::
+setFromString(const char *strval) {
+    if (strcasecmp(strval, "TopLeft")==0)
+        m_value = Slit::TOPLEFT;
+    else if (strcasecmp(strval, "CenterLeft")==0)
+        m_value = Slit::CENTERLEFT;
+    else if (strcasecmp(strval, "BottomLeft")==0)
+        m_value = Slit::BOTTOMLEFT;
+    else if (strcasecmp(strval, "TopCenter")==0)
+        m_value = Slit::TOPCENTER;
+    else if (strcasecmp(strval, "BottomCenter")==0)
+        m_value = Slit::BOTTOMCENTER;
+    else if (strcasecmp(strval, "TopRight")==0)
+        m_value = Slit::TOPRIGHT;
+    else if (strcasecmp(strval, "CenterRight")==0)
+        m_value = Slit::CENTERRIGHT;
+    else if (strcasecmp(strval, "BottomRight")==0)
+        m_value = Slit::BOTTOMRIGHT;
+    else
+        setDefaultValue();
+}
+
+template<>
 void Resource<ToolbarHandler::ToolbarMode>::
 setFromString(const char *strval) {
     if (strcasecmp(strval, "Off") == 0) 
@@ -212,6 +235,16 @@ setFromString(const char *strval) {
 }
 
 template<>
+void Resource<Slit::Direction>::
+setFromString(const char *strval) {
+    if (strcasecmp(strval, "Vertical") == 0) 
+        m_value = Slit::VERTICAL;
+    else if (strcasecmp(strval, "Horizontal") == 0) 
+        m_value = Slit::HORIZONTAL;
+    else
+        setDefaultValue();
+}
+
 string Resource<Toolbar::Placement>::
 getString() {
     switch (m_value) {
@@ -256,6 +289,39 @@ getString() {
     return string("BottomCenter");
 }
 
+
+string Resource<Slit::Placement>::
+getString() {
+    switch (m_value) {
+    case Slit::TOPLEFT:
+        return string("TopLeft");
+        break;
+    case Slit::CENTERLEFT:
+        return string("CenterLeft");
+        break;
+    case Slit::BOTTOMLEFT:
+        return string("BottomLeft");
+        break;
+    case Slit::TOPCENTER:
+        return string("TopCenter");
+        break;			
+    case Slit::BOTTOMCENTER:
+        return string("BottomCenter");
+        break;
+    case Slit::TOPRIGHT:
+        return string("TopRight");
+        break;
+    case Slit::CENTERRIGHT:
+        return string("CenterRight");
+        break;
+    case Slit::BOTTOMRIGHT:
+        return string("BottomRight");
+        break;
+    }
+    //default string
+    return string("BottomRight");
+}
+
 template<>
 string Resource<ToolbarHandler::ToolbarMode>::
 getString() {
@@ -283,6 +349,22 @@ getString() {
     // default string
     return string("Icons");
 }
+
+template<>
+string Resource<Slit::Direction>::
+getString() {
+    switch (m_value) {
+    case Slit::VERTICAL:
+        return string("Vertical");
+        break;
+    case Slit::HORIZONTAL:
+        return string("Horizontal");
+        break;
+    }
+    // default string
+    return string("Vertical");
+}
+
 
 namespace {
 
@@ -400,7 +482,12 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     toolbar_mode(rm, ToolbarHandler::ICONS, scrname+".toolbar.mode", altscrname+".Toolbar.Mode"),
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
     toolbar_placement(rm, Toolbar::BOTTOMCENTER, 
-                      scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
+                      scrname+".toolbar.placement", altscrname+".Toolbar.Placement"),
+    slit_auto_hide(rm, false, scrname+".slit.autoHide", altscrname+".Slit.AutoHide"),
+    slit_placement(rm, Slit::BOTTOMRIGHT,
+                   scrname+".slit.placement", altscrname+".Slit.Placement"),
+    slit_direction(rm, Slit::VERTICAL, scrname+".slit.direction", altscrname+".Slit.Direction")
+
 {
 
 };

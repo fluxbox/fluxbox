@@ -1,10 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
 *03/04/16:
+   * Fixed saving of some other slit params - placement, direction, 
+     autohide (Simon)
+     Screen.hh/cc Slit.hh/cc fluxbox.cc
    * Fixed saving of toolbar and slit layer (Simon)
      LayerMenu.hh Screen.hh Slit.hh/cc Toolbar.hh/cc ToolbarHandler.hh 
      Window.cc
-   * Fixed toolbar width percent menu item
+   * Fixed toolbar width percent menu item (Henrik)
      Toolbar.cc
    * Fixed current focused client button rendered (Henrik)
      FbWinFrame.hh/cc, Window.cc

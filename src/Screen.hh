@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.79 2003/04/16 14:43:02 rathnor Exp $
+// $Id: Screen.hh,v 1.80 2003/04/16 16:17:57 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -36,6 +36,7 @@
 #include "MultLayers.hh"
 #include "XLayerItem.hh"
 #include "ToolbarHandler.hh"
+#include "Slit.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -52,7 +53,6 @@
 #endif // HAVE_CONFIG_H
 
 class Netizen;
-class Slit;
 class Toolbar;
 class FbWinFrameTheme;
 class RootTheme;
@@ -109,15 +109,16 @@ public:
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline Fluxbox::FocusModel getFocusModel() const { return *resource.focus_model; }
 
-    inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
+    inline bool &doSlitAutoHide() { return *resource.slit_auto_hide; }
+    inline const bool &doSlitAutoHide() const { return *resource.slit_auto_hide; }
 #ifdef SLIT
     inline Slit *getSlit() { return m_slit.get(); }
     inline const Slit *getSlit() const { return m_slit.get(); }
 #endif // SLIT
-    inline int getSlitPlacement() const { return resource.slit_placement; }
-    inline int getSlitDirection() const { return resource.slit_direction; }
-    inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
-    inline void saveSlitDirection(int d) { resource.slit_direction = d;  }
+    inline Slit::Placement getSlitPlacement() const { return *resource.slit_placement; }
+    inline Slit::Direction getSlitDirection() const { return *resource.slit_direction; }
+    inline void saveSlitPlacement(Slit::Placement p) { resource.slit_placement = p;  }
+    inline void saveSlitDirection(Slit::Direction d) { resource.slit_direction = d;  }
     inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
 
     inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
@@ -409,8 +410,9 @@ private:
         Resource<ToolbarHandler::ToolbarMode> toolbar_mode;
         Resource<int> toolbar_on_head;
         Resource<Toolbar::Placement> toolbar_placement;
-        bool slit_auto_hide;
-        int slit_placement, slit_direction;
+        Resource<bool> slit_auto_hide;
+        Resource<Slit::Placement> slit_placement;
+        Resource<Slit::Direction> slit_direction;
 
         unsigned int slit_on_head;
 
