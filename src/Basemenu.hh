@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.22 2002/12/13 20:39:41 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.23 2003/01/09 21:57:46 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -35,8 +35,11 @@
 #include "EventHandler.hh"
 
 class BasemenuItem;
-class BImageControl;
 class BScreen;
+
+namespace FbTk {
+class ImageControl;
+};
 
 /**
    Base class for menus
@@ -136,7 +139,7 @@ private:
     BScreen *m_screen;
     Display *m_display;
     Basemenu *m_parent;
-    BImageControl *m_image_ctrl;
+    FbTk::ImageControl *m_image_ctrl;
     Menuitems menuitems;
 	
     bool moving, visible, movable, torn, internal_menu, title_vis, shifted,
