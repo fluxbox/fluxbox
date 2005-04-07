@@ -35,18 +35,22 @@ bin_PROGRAMS= fluxbox
 BUILT_SOURCES = defaults.hh
 CONFIG_CLEAN_FILES = defaults.hh
 defaults.hh: Makefile
-	echo '// This file is generated from makefile. Do not edit!' > defaults.hh
-	echo '#define DEFAULTMENU "$(DEFAULT_MENU)"' >> defaults.hh
-	echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"' >> defaults.hh
-	echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"' >> defaults.hh
-	echo '#define DEFAULT_INITFILE "$(DEFAULT_INITFILE)"' >> defaults.hh
-	echo '#define LOCALEPATH "$(pkgdatadir)/nls"' >> defaults.hh
-	echo 'const char* svnversion(void);' >> defaults.hh
+	@( \
+		echo '// This file is generated from Makefile. Do not edit!'; \
+		echo '#define DEFAULTMENU "$(DEFAULT_MENU)"'; \
+		echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"'; \
+		echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"'; \
+		echo '#define DEFAULT_INITFILE "$(DEFAULT_INITFILE)"'; \
+		echo '#define LOCALEPATH "$(pkgdatadir)/nls"'; \
+		echo 'const char* svnversion(void);' ) > defaults.hh
 
 defaults.cc: force
-	echo 'const char* svnversion(void) {' > defaults.cc
-	echo '  return "'`(svnversion . | sed "s/[^0-9].*//") 2> /dev/null`'";' >> defaults.cc
-	echo '}' >> defaults.cc
+	@( \
+		echo 'const char* svnversion(void) {'; \
+		echo '  return "'`(svnversion . | sed "s/[^0-9].*//") 2> /dev/null`'";';\
+		echo '}' ) > defaults_tmp.cc
+	@if ! cmp defaults_tmp.cc defaults.cc ; then cp defaults_tmp.cc defaults.cc; fi
+	@rm defaults_tmp.cc
 
 force: ;
 

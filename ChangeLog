@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/07:
+  * Minor tweak for the buildsystem so it doesnt compile
+    defaults.cc every time (Mathias)
+    src/Makefile.am
 *05/04/03:
   * Tidy up some redundant pixmap allocations (Simon)
     Menu.cc TextButton.cc FbPixmap.hh
