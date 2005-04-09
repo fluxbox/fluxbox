@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/09:
+  * minor fix to startfluxbox (Mathias)
 *05/04/07:
   * Minor tweak for the buildsystem so it doesnt compile
     defaults.cc every time (Mathias)
