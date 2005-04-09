@@ -2,7 +2,7 @@
 # $Id$
 
 command="`basename \"$0\"`"
-startup="~/.fluxbox/startup"
+startup=~/.fluxbox/startup
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -32,7 +32,7 @@ else
 	mkdir -p ~/.fluxbox/{backgrounds,styles,pixmaps}
     fi
     if [ ! -r "$startup" ]; then
-        cat << EOF > "$startup"
+        ( cat << EOF
 # fluxbox startup-script:
 #
 # Lines starting with a '#' are ignored.
@@ -83,6 +83,7 @@ exec @pkgbindir@/fluxbox
 # or if you want to keep a log:
 # exec @pkgbindir@/fluxbox -log ~/.fluxbox/log
 EOF
+    ) > "$startup"
     fi
     chmod 755 "$startup"
     exec "$startup"
