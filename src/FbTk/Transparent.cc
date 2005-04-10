@@ -206,6 +206,17 @@ void Transparent::setAlpha(unsigned char alpha) {
     allocAlpha(alpha);
 }
 
+void Transparent::freeDest() {
+#ifdef HAVE_XRENDER
+    if (m_dest_pic != 0) {
+        Display *disp = FbTk::App::instance()->display();
+        XRenderFreePicture(disp, m_dest_pic);
+        m_dest_pic = 0;
+    }
+    m_dest = None;
+#endif
+}
+
 void Transparent::setDest(Drawable dest, int screen_num) {
 #ifdef HAVE_XRENDER
     if (m_dest == dest || !s_render)
@@ -213,10 +224,7 @@ void Transparent::setDest(Drawable dest, int screen_num) {
 
     Display *disp = FbTk::App::instance()->display();
 
-    if (m_dest_pic != 0) {
-        XRenderFreePicture(disp, m_dest_pic);
-        m_dest_pic = 0;
-    }
+    freeDest();
     // create new dest pic if we have a valid dest drawable
     if (dest != 0) {
 

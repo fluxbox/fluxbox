@@ -200,7 +200,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                               "session.colorsPerChannel", "Session.ColorsPerChannel"),
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
-      m_rc_update_delay_time(m_resourcemanager, 0, "session.updateDelayTime", "Session.UpdateDelayTime"),
       m_rc_stylefile(m_resourcemanager, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
       m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
@@ -278,7 +277,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_reconfig_timer.setTimeout(to);
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
-    //XSynchronize(disp, True);
+//    XSynchronize(disp, True);
 
     s_singleton = this;
     m_have_shape = false;
@@ -377,8 +376,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     // setup theme manager to have our style file ready to be scanned
     FbTk::ThemeManager::instance().load(FbTk::StringUtil::expandFilename(getStyleFilename()));
 
-    XSynchronize(disp, False);
-    //XSynchronize(disp, True);
+    //XSynchronize(disp, False);
     sync(false);
 
     m_reconfigure_wait = m_reread_menu_wait = false;
@@ -1854,7 +1852,6 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
         m_focused_window = 0;
 
 
-
     if (screen != 0) {
         screen->updateNetizenWindowFocus();
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
@@ -1871,7 +1868,6 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
              it != m_atomhandler.end(); it++)
             (*it).first->updateFocusedWindow(*old_screen, 0);
     }
-
 }
 
 /**

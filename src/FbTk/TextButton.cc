@@ -37,8 +37,7 @@ TextButton::TextButton(const FbTk::FbWindow &parent,
     m_text(text),
     m_justify(FbTk::LEFT), m_bevel(1),
     m_left_padding(0),
-    m_right_padding(0),
-    m_buffer(drawable(), width(), height(), depth()) {
+    m_right_padding(0) {
 
 }
 
@@ -46,10 +45,6 @@ void TextButton::resize(unsigned int width, unsigned int height) {
     if (this->width() == width && height == this->height())
         return;
 
-    m_buffer.resize(width, height);
-
-    if (backgroundPixmap() != ParentRelative)
-        FbWindow::setBackgroundPixmap(m_buffer.drawable());
     Button::resize(width, height);
 }
 
@@ -59,12 +54,6 @@ void TextButton::moveResize(int x, int y,
         x == this->x() && y == this->y())
         return;
 
-    if (this->width() != width || height != this->height())
-        m_buffer.resize(width, height);
-
-    if (backgroundPixmap() != ParentRelative)
-        FbWindow::setBackgroundPixmap(m_buffer.drawable());
-    
     Button::moveResize(x, y, width, height);
 }
 
@@ -112,37 +101,12 @@ void TextButton::clear() {
 void TextButton::clearArea(int x, int y,
                            unsigned int width, unsigned int height,
                            bool exposure) {
-    if (backgroundPixmap() != ParentRelative) {
-        if (backgroundPixmap()) {
-            m_buffer.copyArea(backgroundPixmap(),
-                              gc(),
-                              x, y,
-                              x, y,
-                              width, height);
+    Button::clearArea(x, y, width, height, exposure);
+    // TODO: do we need to check if the text overlaps the clearing area
+    // and if so, then clear a rectangle that encompases all the text plus the
+    // requested area?
+    drawText();
 
-        } else { // fill with background color
-            FbTk::GContext gc(m_buffer);
-            gc.setForeground(backgroundColor());
-            m_buffer.fillRectangle(gc.gc(),
-                                   x, y,
-                                   width, height);
-
-        }
-        drawText();
-
-        setBufferPixmap(m_buffer.drawable());
-        FbWindow::setBackgroundPixmap(m_buffer.drawable());
-        updateTransparent(x, y, width, height);
-
-        FbWindow::clearArea(x, y, width, height, exposure);
-
-    } else { // parent relative
-        FbWindow::setBufferPixmap(0);
-        FbWindow::setBackgroundPixmap(backgroundPixmap());
-        Button::clearArea(x, y, width, height, exposure);
-        updateTransparent(x, y, width, height);
-        drawText();
-    }
 }
 
 unsigned int TextButton::textWidth() const {
@@ -161,11 +125,8 @@ void TextButton::drawText(int x_offset, int y_offset) {
 
     // center text by default
     int center_pos = height()/2 + font().ascent()/2 - 1;
-    FbDrawable *drawable = &m_buffer;
-    if (backgroundPixmap() == ParentRelative)
-        drawable = this;
 
-    font().drawText(*drawable,
+    font().drawText(*this,
                     screenNumber(),
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size

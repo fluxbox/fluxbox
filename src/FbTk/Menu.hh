@@ -45,7 +45,6 @@ namespace FbTk {
 
 class MenuItem;
 class ImageControl;
-class Transparent;
 
 ///   Base class for menus
 class Menu: public FbTk::EventHandler, protected FbTk::Observer {
@@ -179,15 +178,16 @@ protected:
 
     virtual void itemSelected(int button, unsigned int index) { }
     virtual int drawItem(unsigned int index,
-                         bool clear = false, bool render_trans = true,
+                         bool clear = false,
                          int x= -1, int y= -1, 
                          unsigned int width= 0, unsigned int height= 0);
     virtual void redrawTitle();
+    virtual void redrawFrame();
+
     virtual void internal_hide();
 
     void update(FbTk::Subject *);
-    void renderTransp(int x, int y,
-                      unsigned int width, unsigned int height);
+
 private: 
 
     void openSubmenu();
@@ -229,11 +229,6 @@ private:
 
     Drawable m_root_pm;
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
-    FbPixmap m_frame_pm,  ///< buffer pixmap
-        m_real_frame_pm; ///< buffer pixmap (this one is shown to the user)
-    FbPixmap m_title_pm, ///< buffer pixmap to avoid flicker
-        m_real_title_pm; ///< buffer pixmap (this one is shown to the user)
-    std::auto_ptr<Transparent> m_transp;
     bool m_need_update;
     Timer m_submenu_timer;
     Timer m_hide_timer;

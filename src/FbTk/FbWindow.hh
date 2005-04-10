@@ -93,24 +93,40 @@ public:
     virtual void show();
     virtual void showSubwindows();
 
+    /// Notify that the parent window was moved,
+    /// thus the absolute position of this one moved
+    virtual inline void parentMoved() {
+        updateBackground(true);
+    }
+
     virtual inline void move(int x, int y) {
+        if (x == m_x && y == m_y)
+            return;
         XMoveWindow(s_display, m_window, x, y);
         m_x = x;
         m_y = y;
+        updateBackground(true);
     }
 
     virtual inline void resize(unsigned int width, unsigned int height) {
-            XResizeWindow(s_display, m_window, width, height);
-            m_width = width;
-            m_height = height;
+        if (width == m_width && height == m_height)
+            return;
+        XResizeWindow(s_display, m_window, width, height);
+        m_width = width;
+        m_height = height;
+        updateBackground(true);
     }
 
     virtual inline void moveResize(int x, int y, unsigned int width, unsigned int height) {
+        if (x == m_x && y == m_y && width == m_width && height == m_height)
+            return;
         XMoveResizeWindow(s_display, m_window, x, y, width, height);
         m_x = x;
         m_y = y;
         m_width = width;
         m_height = height;
+        updateBackground(true);
+
     }
     virtual void lower();
     virtual void raise();
@@ -138,8 +154,6 @@ public:
                         int nelements);
 
     void deleteProperty(Atom property);
-
-    void setBufferPixmap(Pixmap pm);
 
     std::string textProperty(Atom property) const;
 
@@ -184,6 +198,9 @@ private:
                 bool save_unders,
                 int depth, 
                 int class_type);
+    /// forces full background change, recalcing of alpha values if necessary
+    void updateBackground(bool only_if_alpha);
+
     const FbWindow *m_parent; ///< parent FbWindow
     int m_screen_num;  ///< screen num on which this window exist
     mutable Window m_window; ///< the X window
@@ -193,7 +210,9 @@ private:
     int m_depth; ///< bit depth
     bool m_destroy; ///< wheter the x window was created before
     std::auto_ptr<FbTk::Transparent> m_transparent;
-    Pixmap m_buffer_pm;
+    bool m_lastbg_color_set;
+    unsigned long m_lastbg_color;
+    Pixmap m_lastbg_pm;
 };
 
 bool operator == (Window win, const FbWindow &fbwin);

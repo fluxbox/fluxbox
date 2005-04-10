@@ -52,13 +52,11 @@ ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
 
 void ArrowButton::clear() {
     FbTk::Button::clear();
-    updateTransparent();
     drawArrow();
 }
 
 void ArrowButton::exposeEvent(XExposeEvent &event) {
     FbTk::Button::exposeEvent(event);
-    updateTransparent(event.x, event.y, event.width, event.height);
     drawArrow();
 }
 

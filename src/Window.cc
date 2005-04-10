@@ -1194,7 +1194,6 @@ void FluxboxWindow::reconfigure() {
     grabButtons();
 
     frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
-    frame().setUpdateDelayTime(Fluxbox::instance()->getUpdateDelayTime());
 
     frame().reconfigure();
 
@@ -1210,7 +1209,7 @@ void FluxboxWindow::updateTitleFromClient(WinClient &client) {
     if (m_labelbuttons[&client]->text() != client.title()) {
         m_labelbuttons[&client]->setText(client.title());
         m_labelbuttons[&client]->clear(); // redraw text
-        m_labelbuttons[&client]->updateTransparent();
+        //m_labelbuttons[&client]->updateTransparent();
     }
 }
 
@@ -1341,8 +1340,9 @@ void FluxboxWindow::resize(unsigned int width, unsigned int height) {
     moveResize(frame().x(), frame().y(), width, height);
 }
 
+// send_event is just an override
 void FluxboxWindow::moveResize(int new_x, int new_y,
-                               unsigned int new_width, unsigned int new_height, int gravity) {
+                               unsigned int new_width, unsigned int new_height, int gravity, bool send_event) {
 
     // magic to detect if moved during initialisation
     if (!isInitialized())
@@ -1352,7 +1352,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
         frame().gravityTranslate(new_x, new_y, gravity, false);
     }
 
-    bool send_event = (frame().x() != new_x || frame().y() != new_y);
+    send_event = send_event || (frame().x() != new_x || frame().y() != new_y);
 
     if (new_width != frame().width() || new_height != frame().height()) {
         if ((((signed) frame().width()) + new_x) < 0)
@@ -1367,7 +1367,6 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
 
         frame().moveResize(new_x, new_y, new_width, new_height);
         setFocusFlag(focused);
-
 
         shaded = false;
         send_event = true;
@@ -2848,7 +2847,9 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 m_last_move_x = dx;
                 m_last_move_y = dy;
             } else {
-                moveResize(dx, dy, frame().width(), frame().height());
+                //moveResize(dx, dy, frame().width(), frame().height());
+                // need to move the base window without interfering with transparency
+                frame().window().moveResize(dx, dy, frame().width(), frame().height());
             }
 
             screen().showPosition(dx, dy);
@@ -3216,7 +3217,6 @@ void FluxboxWindow::stopMoving(bool interrupted) {
 
     fluxbox->maskWindowEvents(0, 0);
 
-
     if (! screen().doOpaqueMove()) {
         parent().drawRectangle(screen().rootTheme().opGC(),
                                m_last_move_x, m_last_move_y,
@@ -3231,8 +3231,8 @@ void FluxboxWindow::stopMoving(bool interrupted) {
         }
         fluxbox->ungrab();
     } else if (!interrupted) {
-        moveResize(frame().x(), frame().y(), frame().width(), frame().height());
-        sendConfigureNotify();
+        moveResize(frame().x(), frame().y(), frame().width(), frame().height(), ForgetGravity, true);
+        frame().notifyMoved(true);
     }
 
 

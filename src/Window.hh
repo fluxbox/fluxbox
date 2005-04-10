@@ -232,7 +232,7 @@ public:
     /// resize frame to width, height
     void resize(unsigned int width, unsigned int height);
     /// move and resize frame to pox x,y and size width, height
-    void moveResize(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity);
+    void moveResize(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity, bool send_event = false);
     /// move to pos x,y and resize client window to size width, height
     void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity);
     void setWorkspace(int n);

@@ -79,10 +79,8 @@ unsigned int GenericTool::borderWidth() const {
 void GenericTool::renderTheme(unsigned char alpha) {
     m_window->setAlpha(alpha);
     m_window->clear();
-    m_window->updateTransparent();
 }
 
 void GenericTool::update(FbTk::Subject *subj) {
     m_window->clear();
-    m_window->updateTransparent();
 }

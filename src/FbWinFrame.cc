@@ -82,37 +82,14 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
     m_focused(false),
     m_visible(false),
     m_button_pm(0),
+    m_need_render(true),
     m_themelistener(*this),
     m_shape(new Shape(m_window, theme.shapePlace())) {
     m_theme.reconfigSig().attach(&m_themelistener);
     init();
 }
 
-/*
-  FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, const FbTk::FbWindow &parent, int x, int y,
-  unsigned int width, unsigned int height):
-  m_theme(theme),
-  m_imagectrl(imgctrl),
-  m_window(parent, x, y, width, height, ExposureMask | StructureNotifyMask),
-  m_titlebar(m_window, 0, 0, 100, 16, 
-  ExposureMask | ButtonPressMask | ButtonReleaseMask),
-  m_label(m_titlebar, 0, 0, 100, 16,
-  ExposureMask | ButtonPressMask | ButtonReleaseMask),
-  m_grip_right(m_window, 0, 0, 100, 100, ExposureMask | ButtonPressMask | ButtonReleaseMask),
-  m_grip_left(m_window, 0, 0, 100, 100, ExposureMask | ButtonPressMask | ButtonReleaseMask),
-  m_handle(m_window, 0, 0, 100, 100, ExposureMask | ButtonPressMask | ButtonReleaseMask),
-  m_clientarea(m_window, 0, 0, 100, 100, SubstructureRedirectMask),
-  m_bevel(1),
-  m_use_titlebar(true), 
-  m_use_handles(true),
-  m_button_pm(0) {
-
-  init();
-  }
-*/
-
 FbWinFrame::~FbWinFrame() {
-    m_update_timer.stop();
     removeEventHandler();
     removeAllButtons();
 }
@@ -141,9 +118,15 @@ void FbWinFrame::hide() {
 
 void FbWinFrame::show() {
     m_visible = true;
+
+    if (m_need_render) {
+        renderAll();
+        applyAll();
+        clearAll();
+    }
+
     m_window.showSubwindows();
     m_window.show();
-    updateTransparent();
 }
 
 /**
@@ -217,14 +200,11 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
 
     if (move && resize) {
         m_window.moveResize(x, y, width, height);
+        notifyMoved(false); // will reconfigure
     } else if (move) {
         m_window.move(x, y);
         // this stuff will be caught by reconfigure if resized
-        unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
-        if (alpha != 255) {
-            // restart update timer
-            m_update_timer.start();
-        }
+        notifyMoved(true);
     } else {
         m_window.resize(width, height);
     }
@@ -233,29 +213,86 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
         reconfigure();
 }
 
+void FbWinFrame::notifyMoved(bool clear) {
+    // not important if no alpha...
+    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    if (alpha == 255) 
+        return;
+
+    if (m_use_titlebar) {
+        m_titlebar.parentMoved();
+        m_label.parentMoved();
+
+        for_each(m_buttons_left.begin(),
+                 m_buttons_left.end(),
+                 mem_fun(&FbTk::Button::parentMoved));
+        for_each(m_buttons_right.begin(),
+                 m_buttons_right.end(),
+                 mem_fun(&FbTk::Button::parentMoved));
+        for_each(m_labelbuttons.begin(),
+                 m_labelbuttons.end(),
+                 mem_fun(&FbTk::Button::parentMoved));
+    }
+
+    if (m_use_handle) {
+        m_handle.parentMoved();
+        m_grip_left.parentMoved();
+        m_grip_right.parentMoved();
+    }
+
+    if (clear && (m_use_handle || m_use_titlebar)) {
+        clearAll();
+    }
+}
+
+void FbWinFrame::clearAll() {
+    if  (m_use_titlebar) {
+        redrawTitlebar();
+
+        for_each(m_buttons_left.begin(),
+                 m_buttons_left.end(),
+                 mem_fun(&FbTk::Button::clear));
+        for_each(m_buttons_right.begin(),
+                 m_buttons_right.end(),
+                 mem_fun(&FbTk::Button::clear));
+    }
+
+    if (m_use_handle) {
+        m_handle.clear();
+        m_grip_left.clear();
+        m_grip_right.clear();
+    }
+}
+
 void FbWinFrame::setFocus(bool newvalue) {
     if (m_focused == newvalue)
         return;
 
     m_focused = newvalue;
 
+    if (theme().focusedAlpha() != theme().unfocusedAlpha()) {
+        unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+        if (FbTk::Transparent::haveComposite()) {
+            m_window.setOpaque(alpha);
+        } else {
+            LabelList::iterator btn_it = m_labelbuttons.begin();
+            LabelList::iterator btn_it_end = m_labelbuttons.end();        
+            for (; btn_it != btn_it_end; ++btn_it) {
+                (*btn_it)->setAlpha(alpha);
+            }
+        }
+    }
+
     if (currentLabel()) {
         if (newvalue) // focused
-            renderButtonFocus(*m_current_label);       
+            applyFocusLabel(*m_current_label);       
         else // unfocused
-            renderButtonActive(*m_current_label);
+            applyActiveLabel(*m_current_label);
     }
 
-    if (theme().focusedAlpha() != theme().unfocusedAlpha() && FbTk::Transparent::haveComposite()) {
-        if (m_focused)
-            m_window.setOpaque(theme().focusedAlpha());
-        else
-            m_window.setOpaque(theme().unfocusedAlpha());
-    }
-
-    renderTitlebar();
-    renderButtons(); // parent relative buttons -> need render after titlebar
-    renderHandles();
+    applyTitlebar();
+    applyHandles();
+    clearAll();
 }
 
 void FbWinFrame::setDoubleClickTime(unsigned int time) {
@@ -266,7 +303,7 @@ void FbWinFrame::addLeftButton(FbTk::Button *btn) {
     if (btn == 0) // valid button?
         return;
 
-    setupButton(*btn); // setup theme and other stuff
+    applyButton(*btn); // setup theme and other stuff
     
     m_buttons_left.push_back(btn);
 }
@@ -275,7 +312,7 @@ void FbWinFrame::addRightButton(FbTk::Button *btn) {
     if (btn == 0) // valid button?
         return;
 
-    setupButton(*btn); // setup theme and other stuff
+    applyButton(*btn); // setup theme and other stuff
 
     m_buttons_right.push_back(btn);
 }
@@ -470,14 +507,14 @@ void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
 
     // render label buttons
     if (currentLabel() != 0)
-        renderButtonUnfocus(*m_current_label);
+        applyUnfocusLabel(*m_current_label);
 
     m_current_label = *it; // current focused button
 
     if (m_focused)
-        renderButtonFocus(*m_current_label);
+        applyFocusLabel(*m_current_label);
     else
-        renderButtonActive(*m_current_label);
+        applyActiveLabel(*m_current_label);
 }
 
 void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
@@ -571,9 +608,11 @@ bool FbWinFrame::showHandle() {
     if (m_use_handle || theme().handleWidth() == 0)
         return false;
 
+    // weren't previously rendered...
+    renderHandles();
+
     m_use_handle = true;
 
-    renderHandles();
     m_handle.show();
     m_handle.showSubwindows(); // shows grips
 
@@ -691,19 +730,14 @@ void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
 void FbWinFrame::exposeEvent(XExposeEvent &event) {
     if (m_titlebar == event.window) {
         m_titlebar.clearArea(event.x, event.y, event.width, event.height);
-        m_titlebar.updateTransparent(event.x, event.y, event.width, event.height);
     } else if (m_label == event.window) {
         m_label.clearArea(event.x, event.y, event.width, event.height);
-        m_label.updateTransparent(event.x, event.y, event.width, event.height);
     } else if (m_handle == event.window) {
         m_handle.clearArea(event.x, event.y, event.width, event.height);
-        m_handle.updateTransparent(event.x, event.y, event.width, event.height);
     } else if (m_grip_left == event.window) {
         m_grip_left.clearArea(event.x, event.y, event.width, event.height);
-        m_grip_left.updateTransparent(event.x, event.y, event.width, event.height);
     } else if (m_grip_right == event.window) {
         m_grip_right.clearArea(event.x, event.y, event.width, event.height);
-        m_grip_right.updateTransparent(event.x, event.y, event.width, event.height);
     } else {
         // create compare function
         // that we should use with find_if        
@@ -819,9 +853,8 @@ void FbWinFrame::reconfigure() {
 
 
     // render the theme
-    renderButtons();
-    if (!m_shaded)
-        renderHandles();
+    renderAll();
+    applyAll();
 
     if (m_shape.get() && theme().shapePlace() == Shape::NONE  || m_disable_shape)
         m_shape.reset(0);
@@ -914,20 +947,15 @@ void FbWinFrame::redrawTitle() {
                               dx - border_width, 
                               label().height() + border_width);
 
-
     }
 
     if (isVisible()) {
         for_each(m_labelbuttons.begin(),
                  m_labelbuttons.end(),
-                 mem_fun(&FbTk::Button::clear));
-    }
+                 mem_fun(&FbTk::TextButton::clear));
 
-    if (isVisible()) {
         m_label.clear();
-        m_label.updateTransparent();
         m_titlebar.clear();
-        m_titlebar.updateTransparent();
     }
 }
 
@@ -964,12 +992,13 @@ void FbWinFrame::reconfigureTitlebar() {
     unsigned int button_size = buttonHeight();
     m_button_size = button_size;
     for (size_t i=0; i < m_buttons_left.size(); i++, next_x += button_size + m_bevel) {
+        //cerr<<"m_buttons_left["<<i<<"]->moveResize(next_x="<<next_x<<", m_bev="<<m_bevel<<", bs="<<button_size<<", bs="<<button_size<<")"<<endl;
         m_buttons_left[i]->moveResize(next_x, m_bevel, 
                                       button_size, button_size);
     }
     
     next_x += m_bevel;
-	
+
     // space left on titlebar between left and right buttons
     unsigned int space_left = m_titlebar.width() - next_x;
     if (!m_buttons_right.empty()) 
@@ -989,13 +1018,32 @@ void FbWinFrame::reconfigureTitlebar() {
                                        button_size, button_size);
     }
 
-    renderTitlebar();
+//    renderTitlebar(); // gets done outside
     m_titlebar.raise(); // always on top
+}
+
+void FbWinFrame::renderAll() {
+    m_need_render = false;
+
+    renderTitlebar();
+    renderHandles();
+    renderLabelButtons();
+}
+
+void FbWinFrame::applyAll() {
+    applyTitlebar();
+    applyHandles();
+    applyLabelButtons();
 }
 
 void FbWinFrame::renderTitlebar() {
     if (!m_use_titlebar)
         return;
+
+    if (!isVisible()) {
+        m_need_render = true;
+        return;
+    }
 
     // render pixmaps
     render(m_theme.titleFocusTexture(), m_title_focused_color, 
@@ -1006,7 +1054,6 @@ void FbWinFrame::renderTitlebar() {
            m_title_unfocused_pm,
            m_titlebar.width(), m_titlebar.height());
 
-
     render(m_theme.labelFocusTexture(), m_label_focused_color, 
            m_label_focused_pm,
            m_label.width(), m_label.height());
@@ -1016,18 +1063,22 @@ void FbWinFrame::renderTitlebar() {
            m_label_unfocused_pm,
            m_label.width(), m_label.height());
 
-    render(m_theme.labelActiveTexture(), m_label_active_color, 
-           m_label_active_pm,
-           m_label.width(), m_label.height());
+    renderButtons();
+}
 
+void FbWinFrame::applyTitlebar() {
 
-    // finaly set up pixmaps for titlebar windows
+    // set up pixmaps for titlebar windows
     Pixmap label_pm = None;
     Pixmap title_pm = None;    
     FbTk::Color label_color;
     FbTk::Color title_color;
     getCurrentFocusPixmap(label_pm, title_pm,
                           label_color, title_color);
+
+    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    m_titlebar.setAlpha(alpha);
+    m_label.setAlpha(alpha);
 
     if (label_pm != 0)
         m_label.setBackgroundPixmap(label_pm);
@@ -1039,24 +1090,18 @@ void FbWinFrame::renderTitlebar() {
     else
         m_titlebar.setBackgroundColor(title_color);
 
-    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
-    m_titlebar.setAlpha(alpha);
-    m_label.setAlpha(alpha);
-
-    LabelList::iterator btn_it = m_labelbuttons.begin();
-    LabelList::iterator btn_it_end = m_labelbuttons.end();        
-    for (; btn_it != btn_it_end; ++btn_it) {
-        (*btn_it)->setAlpha(alpha);
-    }
-
-    renderLabelButtons();
-    redrawTitlebar();
+    applyButtons();
 }
 
 
 void FbWinFrame::renderHandles() {
     if (!m_use_handle)
         return;
+
+    if (!isVisible()) {
+        m_need_render = true;
+        return;
+    }
 
     render(m_theme.handleFocusTexture(), m_handle_focused_color, 
            m_handle_focused_pm,
@@ -1066,20 +1111,6 @@ void FbWinFrame::renderHandles() {
            m_handle_unfocused_pm,
            m_handle.width(), m_handle.height());
 
-    if (m_focused) {
-        if (m_handle_focused_pm) {
-            m_handle.setBackgroundPixmap(m_handle_focused_pm);
-        } else {
-            m_handle.setBackgroundColor(m_handle_focused_color);
-        }                
-    } else {
-        if (m_handle_unfocused_pm) {
-            m_handle.setBackgroundPixmap(m_handle_unfocused_pm);
-        } else {
-            m_handle.setBackgroundColor(m_handle_unfocused_color);
-        }                
-    }
-
     render(m_theme.gripFocusTexture(), m_grip_focused_color, m_grip_focused_pm,
            m_grip_left.width(), m_grip_left.height());
 
@@ -1087,7 +1118,23 @@ void FbWinFrame::renderHandles() {
            m_grip_unfocused_pm,
            m_grip_left.width(), m_grip_left.height());
 
+}
+
+void FbWinFrame::applyHandles() {
+
+    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    m_handle.setAlpha(alpha);
+    m_grip_left.setAlpha(alpha);
+    m_grip_right.setAlpha(alpha);
+
     if (m_focused) {
+
+        if (m_handle_focused_pm) {
+            m_handle.setBackgroundPixmap(m_handle_focused_pm);
+        } else {
+            m_handle.setBackgroundColor(m_handle_focused_color);
+        }
+
         if (m_grip_focused_pm) {
             m_grip_left.setBackgroundPixmap(m_grip_focused_pm);
             m_grip_right.setBackgroundPixmap(m_grip_focused_pm);
@@ -1095,7 +1142,15 @@ void FbWinFrame::renderHandles() {
             m_grip_left.setBackgroundColor(m_grip_focused_color);
             m_grip_right.setBackgroundColor(m_grip_focused_color);
         }                
+
     } else {
+
+        if (m_handle_unfocused_pm) {
+            m_handle.setBackgroundPixmap(m_handle_unfocused_pm);
+        } else {
+            m_handle.setBackgroundColor(m_handle_unfocused_color);
+        }                
+
         if (m_grip_unfocused_pm) {
             m_grip_left.setBackgroundPixmap(m_grip_unfocused_pm);
             m_grip_right.setBackgroundPixmap(m_grip_unfocused_pm);
@@ -1105,23 +1160,17 @@ void FbWinFrame::renderHandles() {
         }                
     }
 
-    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
-    m_handle.setAlpha(alpha);
-    m_grip_left.setAlpha(alpha);
-    m_grip_right.setAlpha(alpha);
-
-    m_grip_left.clear();
-    m_grip_left.updateTransparent();
-    m_grip_right.clear();
-    m_grip_right.updateTransparent();
-    m_handle.clear();
-    m_handle.updateTransparent();
-
 }
 
 void FbWinFrame::renderButtons() {
 
-    render(m_theme.buttonFocusTexture(), m_button_color, m_button_pm,
+    if (!isVisible()) {
+        m_need_render = true;
+        return;
+    }
+
+    render(m_theme.buttonFocusTexture(), m_button_color, 
+           m_button_pm,
            m_button_size, m_button_size);
 
     render(m_theme.buttonUnfocusTexture(), m_button_unfocused_color, 
@@ -1131,23 +1180,15 @@ void FbWinFrame::renderButtons() {
     render(m_theme.buttonPressedTexture(), m_button_pressed_color, 
            m_button_pressed_pm,
            m_button_size, m_button_size);
+}
 
+void FbWinFrame::applyButtons() {
     // setup left and right buttons
     for (size_t i=0; i < m_buttons_left.size(); ++i)
-        setupButton(*m_buttons_left[i]);
+        applyButton(*m_buttons_left[i]);
 
     for (size_t i=0; i < m_buttons_right.size(); ++i)
-        setupButton(*m_buttons_right[i]);
-
-    if (isVisible()) {
-            for_each(m_buttons_left.begin(),
-                     m_buttons_left.end(),
-                     mem_fun(&FbTk::Button::clear));
-            for_each(m_buttons_right.begin(),
-                     m_buttons_right.end(),
-                     mem_fun(&FbTk::Button::clear));
-    }
-    
+        applyButton(*m_buttons_right[i]);
 }
 
 void FbWinFrame::init() {
@@ -1157,13 +1198,6 @@ void FbWinFrame::init() {
             m_window.setOpaque(theme().focusedAlpha());
         else
             m_window.setOpaque(theme().unfocusedAlpha());
-    } else {
-        // setup update timer
-        FbTk::RefCount<FbTk::Command> update_transp(new FbTk::SimpleCommand<FbWinFrame>(*this, 
-                                                                                        &FbWinFrame::updateTransparent));
-        m_update_timer.setCommand(update_transp);
-        m_update_timer.setTimeout(10L);
-        m_update_timer.fireOnce(true);
     }
 
     if (theme().handleWidth() == 0)
@@ -1177,7 +1211,8 @@ void FbWinFrame::init() {
 
     // clear pixmaps
     m_title_focused_pm = m_title_unfocused_pm = 0;
-    m_label_focused_pm = m_label_unfocused_pm = m_label_active_pm = 0;
+    m_label_focused_pm = m_label_unfocused_pm = 0;
+    m_labelbutton_focused_pm = m_labelbutton_unfocused_pm = m_labelbutton_active_pm = 0;
     m_handle_focused_pm = m_handle_unfocused_pm = 0;
     m_button_pm = m_button_unfocused_pm = m_button_pressed_pm = 0;
     m_grip_unfocused_pm = m_grip_focused_pm = 0;
@@ -1200,27 +1235,28 @@ void FbWinFrame::init() {
 /**
    Setups upp background, pressed pixmap/color of the button to current theme
 */
-void FbWinFrame::setupButton(FbTk::Button &btn) {
+void FbWinFrame::applyButton(FbTk::Button &btn) {
     if (m_button_pressed_pm)
         btn.setPressedPixmap(m_button_pressed_pm);
-
-    //!! TODO button pressed color
+    else
+        btn.setPressedColor(m_button_pressed_color);
 
     if (focused()) { // focused
+        btn.setAlpha(theme().focusedAlpha());
+
         btn.setGC(m_theme.buttonPicFocusGC());
         if (m_button_pm)
             btn.setBackgroundPixmap(m_button_pm);
         else
             btn.setBackgroundColor(m_button_color);
-        btn.setAlpha(theme().focusedAlpha());
     } else { // unfocused
+        btn.setAlpha(theme().unfocusedAlpha());
+
         btn.setGC(m_theme.buttonPicUnfocusGC());
         if (m_button_unfocused_pm)
             btn.setBackgroundPixmap(m_button_unfocused_pm);
         else
             btn.setBackgroundColor(m_button_unfocused_color);
-
-        btn.setAlpha(theme().unfocusedAlpha());
     }
 
 }
@@ -1244,10 +1280,10 @@ void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
 void FbWinFrame::getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                        FbTk::Color &label_color, FbTk::Color &title_color) {
     if (m_focused) {
-        if (m_label_focused_pm != 0)
-            label_pm = m_label_focused_pm;
+        if (m_labelbutton_focused_pm != 0)
+            label_pm = m_labelbutton_focused_pm;
         else
-            label_color = m_label_focused_color;
+            label_color = m_labelbutton_focused_color;
     
         if (m_title_focused_pm != 0)
             title_pm = m_title_focused_pm;
@@ -1266,10 +1302,10 @@ void FbWinFrame::getActiveLabelPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                   FbTk::Color &label_color, 
                                   FbTk::Color &title_color) {
 
-    if (m_label_active_pm != 0)
-        label_pm = m_label_active_pm;            
+    if (m_labelbutton_active_pm != 0)
+        label_pm = m_labelbutton_active_pm;            
     else
-        label_color = m_label_active_color;
+        label_color = m_labelbutton_active_color;
 
     if (m_title_unfocused_pm != 0)
         title_pm  = m_title_unfocused_pm;
@@ -1278,36 +1314,39 @@ void FbWinFrame::getActiveLabelPixmap(Pixmap &label_pm, Pixmap &title_pm,
 }
 
 void FbWinFrame::renderLabelButtons() {
+    if (!isVisible()) {
+        m_need_render = true;
+        return;
+    }
 
-    Pixmap label_pm = 0;
-    Pixmap not_used_pm = 0;
-    FbTk::Color label_color;
-    FbTk::Color not_used_color;
-    getCurrentFocusPixmap(label_pm, not_used_pm,
-                          label_color, not_used_color);
+    render(m_theme.labelFocusTexture(), m_labelbutton_focused_color, 
+           m_labelbutton_focused_pm,
+           m_label.width(), m_label.height());
+		
+
+    render(m_theme.labelUnfocusTexture(), m_labelbutton_unfocused_color, 
+           m_labelbutton_unfocused_pm,
+           m_label.width(), m_label.height());
+
+    render(m_theme.labelActiveTexture(), m_labelbutton_active_color, 
+           m_labelbutton_active_pm,
+           m_label.width(), m_label.height());
+
+}
+
+void FbWinFrame::applyLabelButtons() {
 
     LabelList::iterator btn_it = m_labelbuttons.begin();
     LabelList::iterator btn_it_end = m_labelbuttons.end();        
     for (; btn_it != btn_it_end; ++btn_it) {
         if (*btn_it == m_current_label) {
             if (m_focused)
-                renderButtonFocus(**btn_it);
+                applyFocusLabel(**btn_it);
             else
-                renderButtonActive(**btn_it);
+                applyActiveLabel(**btn_it);
         } else
-            renderButtonUnfocus(**btn_it);
-
+            applyUnfocusLabel(**btn_it);
     }
-    
-    if (m_current_label != 0) {
-
-        if (label_pm) {
-            m_current_label->setBackgroundPixmap(label_pm);
-        } else
-            m_current_label->setBackgroundColor(label_color);
-
-    }
-
 }
 
 void FbWinFrame::setBorderWidth(unsigned int border_width) {
@@ -1338,50 +1377,48 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
         resize(width(), height() + bw_changes);
 }
 
-void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
+void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextFocusGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
+    button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
 
-    if (m_label_focused_pm != 0) {
-        // already set
-        if (button.backgroundPixmap() != m_label_focused_pm)
-            button.setBackgroundPixmap(m_label_focused_pm);
+    if (m_labelbutton_focused_pm != 0) {
+        button.setBackgroundPixmap(m_labelbutton_focused_pm);
     } else
-        button.setBackgroundColor(m_label_focused_color);
+        button.setBackgroundColor(m_labelbutton_focused_color);
 
 }
 
-void FbWinFrame::renderButtonActive(FbTk::TextButton &button) {
+void FbWinFrame::applyActiveLabel(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextActiveGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
+    button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
 
-    if (m_label_active_pm != 0) {
-        // already set
-        if (button.backgroundPixmap() != m_label_active_pm)
-            button.setBackgroundPixmap(m_label_active_pm);
+    if (m_labelbutton_active_pm != 0) {
+            button.setBackgroundPixmap(m_labelbutton_active_pm);
     } else
-        button.setBackgroundColor(m_label_active_color);
+        button.setBackgroundColor(m_labelbutton_active_color);
 
 }
 
-void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
+void FbWinFrame::applyUnfocusLabel(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextUnfocusGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
+    button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
 
-    if (m_label_unfocused_pm != 0) {
-        // already set
-        if (button.backgroundPixmap() != m_label_unfocused_pm)
-            button.setBackgroundPixmap(m_label_unfocused_pm);
+    if (m_labelbutton_unfocused_pm != 0) {
+        button.setBackgroundPixmap(m_labelbutton_unfocused_pm);
     } else
-        button.setBackgroundColor(m_label_unfocused_color);
+        button.setBackgroundColor(m_labelbutton_unfocused_color);
 
 }
+
 namespace {
 class IgnoreEvent {
 public:
@@ -1402,58 +1439,6 @@ private:
     long m_event_mask;
 };
 }
-
-void FbWinFrame::updateTransparent() {
-    if (FbTk::Transparent::haveComposite())
-        return;
-
-    m_label.clear();
-    m_label.updateTransparent();
-    m_titlebar.clear();
-    m_titlebar.updateTransparent();
-    
-    for_each(m_labelbuttons.begin(),
-             m_labelbuttons.end(),
-             mem_fun(&FbTk::Button::clear));
-
-    for_each(m_buttons_left.begin(),
-             m_buttons_left.end(),
-             mem_fun(&FbTk::Button::clear));
-
-    for_each(m_buttons_right.begin(),
-             m_buttons_right.end(),
-             mem_fun(&FbTk::Button::clear));
-    // ignore exposure events, since we already cleared
-    // and redrawn the windows
-    IgnoreEvent ign(ExposureMask);
-
-    // base windows
-    ign(m_label.window());
-    ign(m_titlebar.window());
-
-    // labels
-    for_each(m_labelbuttons.begin(),
-             m_labelbuttons.end(),
-             FbTk::Compose(ign, mem_fun(&FbTk::Button::window)));
-    // win buttons
-    for_each(m_buttons_right.begin(),
-             m_buttons_right.end(),
-             FbTk::Compose(ign, mem_fun(&FbTk::Button::window)));
-    for_each(m_buttons_left.begin(),
-             m_buttons_left.end(),
-             FbTk::Compose(ign, mem_fun(&FbTk::Button::window)));
-
-    m_grip_left.clear();
-    m_grip_left.updateTransparent();
-    ign(m_grip_left.window());
-    m_grip_right.clear();
-    m_grip_right.updateTransparent();
-    ign(m_grip_right.window());
-    m_handle.clear();
-    m_handle.updateTransparent();
-    ign(m_handle.window());
-}
-
 
 // this function translates its arguments according to win_gravity
 // if win_gravity is negative, it does an inverse translation

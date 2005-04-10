@@ -48,11 +48,9 @@ public:
     /// sets action when the button is clicked with #button mouse btn
     void setOnClick(RefCount<Command> &com, int button = 1);
 
-    /// sets foreground pixmap 
-    void setPixmap(Pixmap pm);
     /// sets the pixmap to be viewed when the button is pressed
-    void setPressedPixmap(Pixmap pm);
-    void setPressedColor(const FbTk::Color &color);
+    virtual void setPressedPixmap(Pixmap pm);
+    virtual void setPressedColor(const FbTk::Color &color);
     /// sets graphic context for drawing
     void setGC(GC gc) { m_gc = gc; }
     /// sets background pixmap, this will override background color
@@ -78,9 +76,7 @@ public:
     GC gc() const { return m_gc; }
     Pixmap backgroundPixmap() const { return m_background_pm; }
     const Color &backgroundColor() const { return m_background_color; }
-    Pixmap foregroundPixmap() const { return m_foreground_pm; }
 private:
-    Pixmap m_foreground_pm; ///< foreground pixmap
     Pixmap m_background_pm; ///< background pixmap
     Color m_background_color; ///< background color
     Pixmap m_pressed_pm; ///< pressed pixmap

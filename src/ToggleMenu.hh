@@ -48,15 +48,12 @@ public:
         // so that the last toggled item gets redrawn as 
         // not toggled.
         if (ev.window == frameWindow()) {
-            renderTransp(0, 0, width(), frameWindow().height());
-
+            frameWindow().clear();
             for (size_t i = 0; i < numberOfItems(); ++i) {
-                drawItem(i,    // index
-                         true,  // clear 
-                         false); // render transparent
+                drawItem(i,      // index
+                         false);  // clear 
 
             }
-            frameWindow().clear();
         }
 
     }

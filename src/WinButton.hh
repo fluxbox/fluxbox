@@ -27,6 +27,10 @@
 class FluxboxWindow;
 class WinButtonTheme;
 
+namespace FbTk{
+class Color;
+}
+
 /// draws and handles basic window button graphic
 class WinButton:public FbTk::Button, public FbTk::Observer {
 public:
@@ -39,13 +43,20 @@ public:
     /// override for drawing
     void exposeEvent(XExposeEvent &event);
     void buttonReleaseEvent(XButtonEvent &event);
+    void setBackgroundPixmap(Pixmap pm);
+    void setPressedPixmap(Pixmap pm);
+    void setBackgroundColor(const FbTk::Color &color);
+    void setPressedColor(const FbTk::Color &color);
+
+    Pixmap getBackgroundPixmap() const;
+    Pixmap getPressedPixmap() const;
     /// override for redrawing
     void clear();
     void update(FbTk::Subject *subj);
 private:
-    void drawType(bool clear, bool no_trans); // don't update transparency (eg in clear)
+    void drawType();
     Type m_type; ///< the button type
     const FluxboxWindow &m_listen_to;
     WinButtonTheme &m_theme;
-
+    bool overrode_bg, overrode_pressed;
 };

@@ -1,5 +1,33 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/11:
+  * Rework lots of stuff relating to transparency, esp menus+frame (Simon)
+    + Massively reduce pixmap memory usage (view with xrestop)
+    + Should also improve startup+style change times, esp for large menus
+    + This introduces a few rendering bugs, but I'd like stuff tested
+    + Transparency is done differently now. People shouldn't need to 
+      call updateTransparent.
+    + Do not use persistent pixmap buffers unless you're sure! 
+      XSetWindowBackground already copies/buffers the set pixmap, so 
+      things need to be rendered to a temp pixmap once, then can be 
+      freed.
+    Known bugs (please report others to Rathnor on #fluxbox):
+     - different focus/unfocus transparency doesn't update labelbuttons 
+       properly. Workaround: use same transparency for both.
+     - Text sometimes gets overdrawn a lot. Probably should render it to 
+       background using a virtual hook in FbWindow::updateBackground
+     - Changing style resizes things, not all pixmaps updated properly
+       Workaround: restart fluxbox after changing style
+     - Probably breaks Composite support. Let me know how.
+    TODO:
+     + FbPixmap::getRootPixmap called very often. It should cache the 
+       result and watch the relevant properties.
+    Changed:
+    FbTk/  FbWindow.hh/cc Button.hh/cc Menu.hh/cc TextButton.hh/cc
+           Transparent.hh/cc FbPixmap.cc
+    Window.hh/cc FbWinFrame.hh/cc fluxbox.hh/cc ArrowButton.cc 
+    ButtonTool.cc Container.cc GenericTool.cc Slit.cc ToggleMenu.hh 
+    Toolbar.cc WinButton.hh/cc WinClient.cc
 *05/04/09:
   * minor fix to startfluxbox (Mathias)
 *05/04/07:

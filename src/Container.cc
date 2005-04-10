@@ -132,7 +132,6 @@ void Container::removeAll() {
     m_item_list.clear();
     if (!m_update_lock) {
         clear();
-        updateTransparent();
     }
 
 }
@@ -176,7 +175,6 @@ void Container::setAlignment(Container::Alignment a) {
 void Container::exposeEvent(XExposeEvent &event) {
     if (!m_update_lock) {
         clearArea(event.x, event.y, event.width, event.height);
-        updateTransparent(event.x, event.y, event.width, event.height);
     }
 }
 

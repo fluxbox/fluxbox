@@ -39,6 +39,7 @@ public:
     void setSource(Drawable src, int screen_num);
     /// sets destination drawable
     void setDest(Drawable dest, int screen_num);
+    void freeDest();
     /**
        renders to dest from src with specified coordinates and size
     */

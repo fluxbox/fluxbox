@@ -81,7 +81,6 @@ private:
     unsigned int m_left_padding; ///< space between buttonborder and text
     unsigned int m_right_padding; ///< space between buttonborder and text
 
-    FbTk::FbPixmap m_buffer; ///< for background buffer
 };
 
 } // end namespace FbTk

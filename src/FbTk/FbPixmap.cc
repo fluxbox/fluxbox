@@ -311,13 +311,12 @@ Pixmap FbPixmap::getRootPixmap(int screen_num) {
         if (XGetWindowProperty(display(),
                                RootWindow(display(), screen_num),
                                XInternAtom(display(), prop_ids[prop], False),
-                               0l, 4l,
+                               0l, 1l,
                                False, XA_PIXMAP,
                                &real_type, &real_format,
                                &items_read, &items_left,
                                (unsigned char **) &data) == Success) {
             if (real_format == 32 && items_read == 1) {
-
                 if (print_error && strcmp(prop_ids[prop], "_XSETROOT_ID") == 0) {
                     cerr<<error_message;
                     print_error = false;

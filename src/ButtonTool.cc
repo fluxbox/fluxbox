@@ -87,6 +87,5 @@ void ButtonTool::renderTheme(unsigned char alpha) {
         m_image_ctrl.removeImage(old_pm);
 
     btn.clear();
-    btn.updateTransparent();
 }
 

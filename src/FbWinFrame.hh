@@ -30,7 +30,6 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/Color.hh"
 #include "FbTk/FbPixmap.hh"
-#include "FbTk/Timer.hh"
 
 #include <vector>
 #include <list>
@@ -86,6 +85,11 @@ public:
 
     // can elect to ignore move or resize (mainly for use of move/resize individual functions
     void moveResize(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true, int win_gravity=ForgetGravity);
+
+    /// some outside move/resize happened, and we need to notify all of our windows
+    /// in case of transparency
+    void notifyMoved(bool clear);
+    void clearAll();
 
     /// set focus/unfocus style
     void setFocus(bool newvalue);
@@ -151,8 +155,6 @@ public:
     void reconfigure();
     void setUseShape(bool value);
 
-    void setUpdateDelayTime(long t) { m_update_timer.setTimeout(t); }
-
     /**
        @name accessors
     */
@@ -199,31 +201,43 @@ private:
        @name render helper functions
     */
     //@{
+    void renderAll();
     void renderTitlebar();
     void renderHandles();
-    void renderButtons();
-    // focused => has focus
-    void renderButtonFocus(FbTk::TextButton &button);
-    // unfocus => has no focus, label not the active one
-    void renderButtonUnfocus(FbTk::TextButton &button);
-    // active => doesn't have keybaord focus, but is the active tab
-    void renderButtonActive(FbTk::TextButton &button);
-    void renderLabel();
+    void renderLabelButtons();
+
+    void renderButtons(); // subset of renderTitlebar - don't call directly
+
     /// renders to pixmap or sets color
     void render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
                 unsigned int width, unsigned int height);
+
+    //@}
+
+    /**
+       @name apply pixmaps depending on focus
+    */
+    //@{
+    void applyAll();
+    void applyTitlebar();
+    void applyHandles();
+    void applyLabelButtons();
+    void applyFocusLabel(FbTk::TextButton &button);
+    void applyUnfocusLabel(FbTk::TextButton &button);
+    void applyActiveLabel(FbTk::TextButton &button);
+    void applyButtons(); // only called within applyTitlebar
+
     void getActiveLabelPixmap(Pixmap &label_pm, Pixmap &title_pm,
                               FbTk::Color &label_color, FbTk::Color &title_color);
     void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                FbTk::Color &label_color, FbTk::Color &title_color);
-    void renderLabelButtons();
+
+    /// initiate inserted button for current theme
+    void applyButton(FbTk::Button &btn);
     //@}
 
     /// initiate some commont variables
     void init();
-    /// initiate inserted buttons for current theme
-    void setupButton(FbTk::Button &btn);
-    void updateTransparent();
 
     FbWinFrameTheme &m_theme; ///< theme to be used 
     FbTk::ImageControl &m_imagectrl; ///< Image control for rendering
@@ -265,8 +279,13 @@ private:
     FbTk::Color m_label_focused_color; ///< color for focused label
     Pixmap m_label_unfocused_pm; ///< pixmap for unfocused label
     FbTk::Color m_label_unfocused_color; ///< color for unfocued label
-    Pixmap m_label_active_pm; ///< pixmap for active label
-    FbTk::Color m_label_active_color; ///< color for active label
+
+    Pixmap m_labelbutton_focused_pm; ///< pixmap for focused label
+    FbTk::Color m_labelbutton_focused_color; ///< color for focused label
+    Pixmap m_labelbutton_unfocused_pm; ///< pixmap for unfocused label
+    FbTk::Color m_labelbutton_unfocused_color; ///< color for unfocued label
+    Pixmap m_labelbutton_active_pm; ///< pixmap for active label
+    FbTk::Color m_labelbutton_active_color; ///< color for active label
     
     FbTk::Color m_handle_focused_color, m_handle_unfocused_color;
     Pixmap m_handle_focused_pm, m_handle_unfocused_pm;
@@ -285,6 +304,7 @@ private:
     FbTk::Color m_grip_unfocused_color; ///< unfocused color for grip if no pixmap is given
     //@}
 
+    bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
     unsigned int m_width_before_shade,  ///< width before shade, so we can restore it when we unshade
         m_height_before_shade; ///< height before shade, so we can restore it when we unshade
@@ -309,7 +329,6 @@ private:
     ThemeListener m_themelistener;
     std::auto_ptr<Shape> m_shape;
     bool m_disable_shape;
-    FbTk::Timer m_update_timer;
 };
 
 #endif // FBWINFRAME_HH

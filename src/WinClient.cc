@@ -358,7 +358,7 @@ void WinClient::updateIconTitle() {
 
 void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs) {
     changeProperty(FbAtoms::instance()->getFluxboxAttributesAtom(),
-                   PropModeReplace, XA_CARDINAL, 32,
+                   XA_CARDINAL, 32, PropModeReplace,
                    (unsigned char *)&blackbox_attribs,
                    FluxboxWindow::PropBlackboxAttributesElements
         );

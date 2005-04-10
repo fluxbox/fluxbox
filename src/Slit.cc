@@ -1084,7 +1084,6 @@ void Slit::exposeEvent(XExposeEvent &ev) {
     // we don't need to clear the entire window 
     // just the are that gets exposed
     frame.window.clearArea(ev.x, ev.y, ev.width, ev.height);
-    frame.window.updateTransparent(ev.x, ev.y, ev.width, ev.height);
 }
 
 void Slit::update(FbTk::Subject *subj) {
@@ -1093,7 +1092,6 @@ void Slit::update(FbTk::Subject *subj) {
 
 void Slit::clearWindow() {
     frame.window.clear();
-    frame.window.updateTransparent();
 }
 
 void Slit::toggleHidden() {

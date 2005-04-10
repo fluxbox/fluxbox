@@ -46,7 +46,7 @@ namespace FbTk {
 
 FbWindow::FbWindow():FbDrawable(), m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0),
                      m_width(0), m_height(0), m_border_width(0), m_depth(0), m_destroy(true),
-                     m_buffer_pm(0){
+                     m_lastbg_pm(0){
 
 }
 
@@ -57,7 +57,7 @@ FbWindow::FbWindow(const FbWindow& the_copy):FbDrawable(),
                                              m_width(the_copy.width()), m_height(the_copy.height()),
                                              m_border_width(the_copy.borderWidth()),
                                              m_depth(the_copy.depth()), m_destroy(true),
-                                             m_buffer_pm(0) {
+                                             m_lastbg_pm(0) {
     the_copy.m_window = 0;
 }
 
@@ -73,7 +73,9 @@ FbWindow::FbWindow(int screen_num,
     m_parent(0),
     m_screen_num(screen_num),
     m_destroy(true),
-    m_buffer_pm(0) {
+    m_lastbg_color_set(false),
+    m_lastbg_color(0),
+    m_lastbg_pm(0) {
 
     create(RootWindow(display(), screen_num),
            x, y, width, height, eventmask,
@@ -89,7 +91,9 @@ FbWindow::FbWindow(const FbWindow &parent,
     m_parent(&parent),
     m_screen_num(parent.screenNumber()),
     m_destroy(true),
-    m_buffer_pm(0) {
+    m_lastbg_color_set(false),
+    m_lastbg_color(0x42),
+    m_lastbg_pm(0) {
 
     create(parent.window(), x, y, width, height, eventmask,
            override_redirect, save_unders, depth, class_type);
@@ -105,7 +109,7 @@ FbWindow::FbWindow(Window client):FbDrawable(), m_parent(0),
                                   m_border_width(0),
                                   m_depth(0),
                                   m_destroy(false),  // don't destroy this window
-                                  m_buffer_pm(0) {
+                                  m_lastbg_pm(0) {
 
     setNew(client);
 }
@@ -124,13 +128,90 @@ FbWindow::~FbWindow() {
     }
 }
 
-
 void FbWindow::setBackgroundColor(const FbTk::Color &bg_color) {
-    XSetWindowBackground(display(), m_window, bg_color.pixel());
+    if (bg_color.isAllocated()) {
+        m_lastbg_color = bg_color.pixel();
+        m_lastbg_color_set = true;
+        m_lastbg_pm = None;
+    } else {
+        m_lastbg_color_set = false;
+    }
+
+    updateBackground(false);
 }
 
 void FbWindow::setBackgroundPixmap(Pixmap bg_pixmap) {
-    XSetWindowBackgroundPixmap(display(), m_window, bg_pixmap);
+    m_lastbg_pm = bg_pixmap;
+    if (bg_pixmap != None)
+        m_lastbg_color_set = false;
+
+    updateBackground(false);
+}
+
+void FbWindow::updateBackground(bool only_if_alpha) {
+    Pixmap newbg = m_lastbg_pm;
+    unsigned char alpha = 255;
+    bool free_newbg = false;
+
+    if (m_transparent.get() != 0)
+        alpha = m_transparent->alpha();
+
+    if (only_if_alpha && alpha == 255) 
+        return;
+
+
+    if (alpha != 255 && m_lastbg_pm != ParentRelative) {
+        // update source and destination if needed
+        Pixmap root = FbPixmap::getRootPixmap(screenNumber());
+        if (m_transparent->source() != root)
+            m_transparent->setSource(root, screenNumber());
+
+        newbg = XCreatePixmap(display(), window(), width(), height(), depth());
+        free_newbg = true;
+        GC gc = XCreateGC(display(), window(), 0, 0);
+
+        if (m_lastbg_pm == None && m_lastbg_color_set) {
+            XSetForeground(display(), gc, m_lastbg_color);
+            XFillRectangle(display(), newbg, gc, 0, 0, width(), height());
+        } else {
+            // copy from window if no color and no bg...
+            XCopyArea(display(), (m_lastbg_pm == None)?drawable():m_lastbg_pm, newbg, gc,
+                      0, 0,
+                      width(), height(),
+                      0, 0);
+        }
+        XFreeGC(display(), gc);
+        m_transparent->setDest(newbg, screenNumber());
+
+        // get root position
+
+        const FbWindow *root_parent = parent();
+        // our position in parent ("root")
+        int root_x = x() + borderWidth(), root_y = y() + borderWidth();
+        if (root_parent != 0) {
+            root_x += root_parent->x() + root_parent->borderWidth();
+            root_y += root_parent->y() + root_parent->borderWidth();
+            while (root_parent->parent() != 0) {
+                root_parent = root_parent->parent();
+                root_x += root_parent->x() + root_parent->borderWidth();
+                root_y += root_parent->y() + root_parent->borderWidth();
+            }
+        }
+
+        // render background image from root pos to our window
+        m_transparent->render(root_x, root_y,
+                              0, 0,
+                              width(), height());
+        m_transparent->freeDest(); // it's only temporary, don't leave it hanging around
+    }
+
+    if (newbg != None)
+        XSetWindowBackgroundPixmap(display(), m_window, newbg);
+    else if (m_lastbg_color_set)
+        XSetWindowBackground(display(), m_window, m_lastbg_color);
+
+    if (free_newbg)
+        XFreePixmap(display(), newbg);
 }
 
 void FbWindow::setBorderColor(const FbTk::Color &border_color) {
@@ -168,6 +249,13 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
     if (width() == 0 || height() == 0)
         return;
 
+    if ((the_width == 0 && the_height == 0 || the_width == width() && the_height == height()) &&
+        the_x <= 0 && the_y <= 0) {
+        // do the whole thing
+        updateBackground(true);
+        return;
+    }
+
     if (the_width == 0 || the_height == 0) {
         the_width = width();
         the_height = height();
@@ -183,13 +271,8 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
     if (m_transparent->source() != root)
         m_transparent->setSource(root, screenNumber());
 
-    if (m_buffer_pm) {
-        if (m_transparent->dest() != m_buffer_pm) {
-            m_transparent->setDest(m_buffer_pm, screenNumber());
-        }
-    } else if (m_transparent->dest() != window())
+    if (m_transparent->dest() != window())
         m_transparent->setDest(window(), screenNumber());
-
 
     // get root position
 
@@ -414,9 +497,11 @@ void FbWindow::setOpaque(unsigned char alpha) {
 #endif // HAVE_XRENDER
 }
 
+/*
 void FbWindow::setBufferPixmap(Pixmap pm) {
-    m_buffer_pm = pm;
+    m_lastbg_pm = pm;
 }
+*/
 
 void FbWindow::updateGeometry() {
     if (m_window == 0)

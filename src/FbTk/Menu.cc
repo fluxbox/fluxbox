@@ -86,7 +86,6 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     m_alignment(ALIGNDONTCARE),
     m_active_index(-1),
     m_need_update(true) {
-
     // setup timers
 
     RefCount<Command> show_cmd(new SimpleCommand<Menu>(*this, &Menu::openSubmenu));
@@ -286,9 +285,7 @@ void Menu::nextItem() {
             // since it might hide the parent if we use Menu::hide
             menuitems[old_which_press]->submenu()->internal_hide();
         }
-        drawItem(old_which_press, 
-                 true,  // clear
-                 true); // transp
+        drawItem(old_which_press, true);  // clear
     }
 
     // restore old in case we changed m_which_press
@@ -309,9 +306,7 @@ void Menu::nextItem() {
 
     m_active_index = m_which_press;    
 
-    drawItem(m_which_press, 
-             true,  // clear
-             true); // transp
+    drawItem(m_which_press, true); // clear
     
 }
 
@@ -325,9 +320,7 @@ void Menu::prevItem() {
             // since it might hide the parent if we use Menu::hide
             menuitems[old_which_press]->submenu()->internal_hide();            
         }
-        drawItem(old_which_press, 
-                 true,  // clear
-                 true); // transp
+        drawItem(old_which_press, true); // clear
     }
     // restore old in case we changed m_which_press
     m_which_press = old_which_press - 1;
@@ -347,9 +340,7 @@ void Menu::prevItem() {
 
     m_active_index = m_which_press;
 
-    drawItem(m_which_press, 
-             true,  // clear
-             true); // transp
+    drawItem(m_which_press, true); // clear
 
 }
 
@@ -379,9 +370,7 @@ void Menu::enterParent() {
         submenu->internal_hide();
 
     m_active_index = -1;
-    drawItem(m_which_press, 
-             true,  // clear
-             true); // transp
+    drawItem(m_which_press, true);  // clear
     m_which_press = -1; // dont select any in this 
     // hide self
     m_visible = false;
@@ -399,10 +388,13 @@ void Menu::enableTitle() {
 }
 
 void Menu::updateMenu(int active_index) {
+    if (!m_visible) {
+        m_need_update = true;
+        return;
+    }
     if (m_title_vis) {
         menu.item_w = theme().titleFont().textWidth(menu.label.c_str(),
                                                     menu.label.size());
-		
         menu.item_w += (theme().bevelWidth() * 2);
     } else
         menu.item_w = 1;
@@ -433,6 +425,9 @@ void Menu::updateMenu(int active_index) {
         menu.persub = 0;
     }
 
+    if (menu.frame.alpha() != alpha())
+        menu.frame.setAlpha(alpha());
+
     int itmp = (theme().itemHeight() * menu.persub);
     menu.frame_h = itmp < 1 ? 1 : itmp;
 
@@ -461,60 +456,16 @@ void Menu::updateMenu(int active_index) {
         const FbTk::Texture &tex = theme().titleTexture();
         if (!tex.usePixmap()) {
             menu.title_pixmap = None;
+            menu.title.setBackgroundColor(tex.color());
         } else {
             menu.title_pixmap =
                 m_image_ctrl.renderImage(width(), theme().titleHeight(), tex);
+            // set pixmap that we have as real face to the user
+            menu.title.setBackgroundPixmap(menu.title_pixmap);
         }
 
         if (tmp) 
             m_image_ctrl.removeImage(tmp);
-
-        // if new size of title doesn't match our
-        // buffer pixmap -> resize buffer pixmap
-        if (m_title_pm.width() != width() || 
-            m_title_pm.height() != theme().titleHeight()) {
-
-            if (m_title_pm.drawable() != None) {
-                m_title_pm.resize(width(), theme().titleHeight());
-                m_real_title_pm.resize(width(), theme().titleHeight());
-            } else {
-                m_title_pm.create(menu.title.window(),
-                                      width(), theme().titleHeight(),
-                                      menu.title.depth());
-                m_real_title_pm.create(menu.title.window(),
-                                       width(), theme().titleHeight(),
-                                       menu.title.depth());
-            }
-
-            // set pixmap that we have as real face to the user
-            menu.title.setBackgroundPixmap(m_real_title_pm.drawable());
-            menu.title.setBufferPixmap(m_real_title_pm.drawable());
-            //!! TODO: error checking?
-            GContext def_gc(menu.title);
-            if (menu.title_pixmap == 0) {
-                def_gc.setForeground(theme().titleTexture().color());
-                m_title_pm.fillRectangle(def_gc.gc(),
-                                         0, 0,
-                                         m_title_pm.width(), m_title_pm.height());
-                m_real_title_pm.fillRectangle(def_gc.gc(),
-                                              0, 0,
-                                              m_title_pm.width(), m_title_pm.height());
-            } else {
-                m_title_pm.copyArea(menu.title_pixmap, 
-                                    def_gc.gc(),
-                                    0, 0,
-                                    0, 0,
-                                    m_title_pm.width(), m_title_pm.height());
-
-                m_real_title_pm.copyArea(menu.title_pixmap, 
-                                         def_gc.gc(),
-                                         0, 0,
-                                         0, 0,
-                                         m_title_pm.width(), m_title_pm.height());
-
-            }
-
-        }
     }
 
     tmp = menu.frame_pixmap;
@@ -522,9 +473,11 @@ void Menu::updateMenu(int active_index) {
     if (m_need_update) {
         if (!frame_tex.usePixmap()) {
             menu.frame_pixmap = None;
+            menu.frame.setBackgroundColor(frame_tex.color());
         } else {
             menu.frame_pixmap =
                 m_image_ctrl.renderImage(width(), menu.frame_h, frame_tex);        
+            menu.frame.setBackgroundPixmap(menu.frame_pixmap);
         }
 
         if (tmp)
@@ -563,71 +516,12 @@ void Menu::updateMenu(int active_index) {
                               menu.title.borderWidth()*2 : 1), 
                           width(), menu.frame_h);
 
-
-    if (m_need_update || m_frame_pm.width() != menu.frame.width() ||
-        m_frame_pm.height() != menu.frame.height()){
-
-        if (m_frame_pm.drawable() != None) {
-            m_frame_pm.resize(menu.frame.width(), menu.frame.height());
-            m_real_frame_pm.resize(menu.frame.width(), menu.frame.height());
-        } else {
-            m_frame_pm.create(menu.frame.window(),
-                              menu.frame.width(), menu.frame.height(),
-                              menu.frame.depth());
-
-            m_real_frame_pm.create(menu.frame.window(),
-                                   menu.frame.width(), menu.frame.height(),
-                                   menu.frame.depth());
-        }
-        if (m_transp.get() != 0) 
-            m_transp->setDest(m_real_frame_pm.drawable(), screenNumber());
-
-        menu.frame.setBackgroundPixmap(m_real_frame_pm.drawable());
-        GContext def_gc(menu.frame);
-        if (m_frame_pm.drawable() == 0) {
-            _FB_USES_NLS;
-            cerr<<"FbTk::Menu: "<<_FBTKTEXT(Error, CreatePixmap, "Error creating pixmap", "Couldn't create a pixmap - image - for some reason")<<" ("<<
-                menu.frame.window()<<", "<<menu.frame.width()<<", "<<
-                menu.frame.height()<<
-                ", "<<menu.frame.depth()<<") !"<<endl;
-        } else {
-
-            if (menu.frame_pixmap == 0) {
-                def_gc.setForeground(theme().frameTexture().color());
-                m_frame_pm.fillRectangle(def_gc.gc(),
-                                         0, 0,
-                                         width(), menu.frame_h);
-            } else {
-                m_frame_pm.copyArea(menu.frame_pixmap, def_gc.gc(),
-                                    0, 0,
-                                    0, 0,
-                                    width(), menu.frame_h);
-            }
-
-        }
-
-        m_real_frame_pm.copyArea(m_frame_pm.drawable(),
-                                 def_gc.gc(),
-                                 0, 0,
-                                 0, 0,
-                                 m_frame_pm.width(), m_frame_pm.height());
-            
-    }
-
     // if menu m_visible and title m_visible
     if (m_title_vis && m_visible) 
         redrawTitle();
 
-    if (active_index >= 0 || m_need_update) {
-
-        renderTransp(0, 0,
-                     m_real_frame_pm.width(), m_real_frame_pm.height());
-        for (unsigned int i = 0; i < menuitems.size(); i++) {
-            drawItem(i,      // index
-                     true,   // clear
-                     false); // render_trans
-        }
-        
+    if (m_visible && (active_index >= 0 || m_need_update)) {
+        redrawFrame();
     }
 
     m_need_update = false;
@@ -636,8 +530,13 @@ void Menu::updateMenu(int active_index) {
 
 void Menu::show() {
 
-    if (m_need_update)
+    if (m_visible)
+        return;
+
+    if (m_need_update) {
+        m_visible = true;
         updateMenu();
+    }
 
     menu.window.showSubwindows();
     menu.window.show();
@@ -683,16 +582,16 @@ void Menu::grabInputFocus() {
 
 
 void Menu::clearWindow() {
-    redrawTitle();
- 
-    if (alpha() < 255) {
-        renderTransp(0, 0,
-                     menu.frame.width(), menu.frame.height());
-        updateMenu();
+    redrawTitle(); 
+    redrawFrame();
+}
+
+void Menu::redrawFrame() {
+    menu.frame.clear();
+    for (unsigned int i = 0; i < menuitems.size(); i++) {
+        drawItem(i, false);   // no clear
     }
 
-    menu.title.clear();
-    menu.frame.clear();
 }
 
 void Menu::internal_hide() {
@@ -713,7 +612,7 @@ void Menu::internal_hide() {
 
     m_torn = m_visible = false;
     m_which_sub = m_which_press = m_which_sub = -1;
-    
+
     menu.window.hide();
 }
 
@@ -722,33 +621,19 @@ void Menu::move(int x, int y) {
     if (x == this->x() && y == this->y())
         return;
 
-    // if we're not m_visible and we do transparency
-    // we need to update transparency when we call
-    // show() next time
-    if (alpha() < 255)
-        m_need_update = true;
-
     menu.window.move(x, y);
+    // potentially transparent children
+    menu.title.parentMoved();
+    menu.frame.parentMoved();
 
     if (!isVisible())
         return;
 
+    if (alpha() < 255)
+        clearWindow();
+
     if (m_which_sub != -1)
         drawSubmenu(m_which_sub);
-
-    if (alpha() < 255) {
-        redrawTitle();
-        menu.title.clear();
-        renderTransp(0, 0,
-                     m_real_frame_pm.width(), m_real_frame_pm.height());
-        for (size_t i=0; i < menuitems.size(); ++i) {
-            drawItem(i,
-                     true, // clear
-                     false); // transparent
-        }
-        m_need_update = false;
-    }
-
 }
 
 
@@ -776,16 +661,11 @@ void Menu::redrawTitle() {
 
     FbTk::GContext def_gc(menu.title);
 
-    m_real_title_pm.copyArea(m_title_pm.drawable(),
-                             def_gc.gc(),
-                             0, 0,
-                             0, 0,
-                             m_title_pm.width(), m_title_pm.height());
+    menu.title.clear();
 
     // difference between height based on font, and style-set height
     int height_offset = theme().titleHeight() - (font.height() + 2*theme().bevelWidth());
-    menu.title.updateTransparent();
-    font.drawText(m_real_title_pm, // drawable
+    font.drawText(menu.title, // drawable
                   screenNumber(),
                   theme().titleTextGC().gc(), // graphic context
                   text, len,  // text string with length
@@ -885,10 +765,14 @@ bool Menu::hasSubmenu(unsigned int index) const {
 }
 
 
-int Menu::drawItem(unsigned int index, bool clear, bool render_trans,
+int Menu::drawItem(unsigned int index, bool clear,
                    int x, int y, unsigned int w, unsigned int h) {
     if (index >= menuitems.size() || menuitems.size() == 0 ||
         menu.persub == 0)
+        return 0;
+
+    // don't bother if we're not showing
+    if (!isVisible())
         return 0;
 
     MenuItem *item = menuitems[index];
@@ -896,6 +780,7 @@ int Menu::drawItem(unsigned int index, bool clear, bool render_trans,
 
     int sbl = index / menu.persub, i = index - (sbl * menu.persub);
     int item_x = (sbl * menu.item_w), item_y = (i * theme().itemHeight());
+    unsigned int item_w = menu.item_w, item_h = theme().itemHeight();
     int hilite_x = item_x, hilite_y = item_y, hoff_x = 0, hoff_y = 0;
     int sel_x = 0, sel_y = 0;
     unsigned int hilite_w = menu.item_w, hilite_h = theme().itemHeight();
@@ -914,50 +799,23 @@ int Menu::drawItem(unsigned int index, bool clear, bool render_trans,
     sel_y = item_y + quarter_w;
 
     if (clear) {
-        GContext def_gc(menu.frame);
-        if (menu.frame_pixmap == 0) {
-            def_gc.setForeground(theme().frameTexture().color());
-            m_frame_pm.fillRectangle(def_gc.gc(), item_x, item_y, menu.item_w, theme().itemHeight());
-
-        } else {
-
-            m_frame_pm.copyArea(menu.frame_pixmap, def_gc.gc(),
-                                item_x, item_y,
-                                item_x, item_y,
-                                menu.item_w, theme().itemHeight());
-        }    
-    } else if (! (x == y && y == -1 && w == h && h == 0)) {
-        // calculate the which part of the hilite to redraw
-        if (!(std::max(item_x, x) <= (signed) std::min(item_x + menu.item_w, x + w) &&
-              std::max(item_y, y) <= (signed) std::min(item_y + theme().itemHeight(), y + h))) {
-            hilite_x = std::max(item_x, x);
-            hilite_y = std::max(item_y, y);
-            hilite_w = std::min(item_x + menu.item_w, x + w) - hilite_x;
-            hilite_h = std::min(item_y + theme().itemHeight(), y + h) - hilite_y;
-            hoff_x = hilite_x % menu.item_w;
-            hoff_y = hilite_y % theme().itemHeight();
-        }
-		
+        frameWindow().clearArea(item_x, item_y,
+                                menu.item_w, theme().itemHeight(), False);
     }
-    
+
     if (highlight && (menu.hilite_pixmap != ParentRelative)) {
         if (menu.hilite_pixmap) {
-            m_frame_pm.copyArea(menu.hilite_pixmap,
+            menu.frame.copyArea(menu.hilite_pixmap,
                                 theme().hiliteGC().gc(), hoff_x, hoff_y,
-                                hilite_x, hilite_y,
-                                hilite_w, hilite_h);
-        } else {            
-            m_frame_pm.fillRectangle(theme().hiliteGC().gc(),
-                                     hilite_x, hilite_y, hilite_w, hilite_h);
+                                item_x, item_y,
+                                item_w, item_h);
+        } else {
+            menu.frame.fillRectangle(theme().hiliteGC().gc(),
+                                     item_x, item_y, item_w, item_h);
         }
-        
-    } 
-	
-
-    if (render_trans) {
-        renderTransp(item_x, item_y,
-                     menu.item_w, theme().itemHeight()); 
+        menu.frame.updateTransparent(item_x, item_y, item_w, item_h);
     }
+
     //!!
     //!! TODO: Move this out to MenuItem
     //!! current problem: menu.sel_pixmap needs a image control instance
@@ -974,7 +832,7 @@ int Menu::drawItem(unsigned int index, bool clear, bool render_trans,
             XSetClipOrigin(disp,
                            gc, sel_x, item_y);
             // copy bullet pixmap to frame
-            m_real_frame_pm.copyArea(theme().selectedPixmap().pixmap().drawable(),
+            menu.frame.copyArea(theme().selectedPixmap().pixmap().drawable(),
                                      gc,
                                      0, 0,
                                      sel_x, item_y,
@@ -985,30 +843,23 @@ int Menu::drawItem(unsigned int index, bool clear, bool render_trans,
                          gc,
                          None);
         } else {
-            if (menu.sel_pixmap) {
-                m_real_frame_pm.copyArea(highlight ? menu.frame_pixmap : menu.sel_pixmap,
+            if (highlight && menu.sel_pixmap) {
+                menu.frame.copyArea(menu.sel_pixmap,
                                          theme().hiliteGC().gc(), 
                                          0, 0,                                 
                                          sel_x, sel_y,
                                          half_w, half_w);
             } else {
-                m_real_frame_pm.fillRectangle(theme().hiliteGC().gc(),
+                menu.frame.fillRectangle(theme().hiliteGC().gc(),
                                               sel_x, sel_y, half_w, half_w);
             }
         }
         
     }
 
-    item->draw(m_real_frame_pm, theme(), highlight, 
+    item->draw(menu.frame, theme(), highlight, 
                item_x, item_y, 
                menu.item_w, theme().itemHeight());
-
-
-    if (clear) {
-        frameWindow().clearArea(item_x, item_y,
-                                menu.item_w, theme().itemHeight(), False);
-    }
-
 
     return item_y;
 }
@@ -1104,11 +955,8 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
                 if (!item->submenu()->isVisible())
                     drawSubmenu(w);
             } else {
-                drawItem(w, 
-                         true,  // clear
-                         true); // render transparency
+                drawItem(w, true);  // clear
             }
-
         }
     } else {
         menu.x_move = be.x_root - x();
@@ -1126,16 +974,11 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                 drawSubmenu(m_which_sub);
 
             if (alpha() < 255) {
+                // update these since we've (probably) moved
+                menu.title.parentMoved();
+                menu.frame.parentMoved();
                 redrawTitle();
-                menu.title.clear();
-                renderTransp(0, 0,
-                             m_real_frame_pm.width(), m_real_frame_pm.height());
-                for (size_t i=0; i < menuitems.size(); ++i) {
-                    drawItem(i, 
-                             true, // clear
-                             false); // transparent
-                }
-
+                redrawFrame();
             }
         }
 
@@ -1158,9 +1001,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                 }
             }
 
-            drawItem(p,
-                     true,  // clear
-                     true); // transparent
+            drawItem(p, true); // clear
         }
     }
 }
@@ -1174,9 +1015,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         if (! m_moving) {
             // if not m_moving: start m_moving operation
             if (m_parent && (! m_torn)) {
-                m_parent->drawItem(m_parent->m_which_sub, 
-                                   true,  // clear
-                                   true); // render transparency
+                m_parent->drawItem(m_parent->m_which_sub, true);  // clear
                 m_parent->m_which_sub = -1;
             }
 
@@ -1207,9 +1046,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
             if (item != 0) {
 
-                drawItem(old,
-                         true,  // clear
-                         true); // transparent
+                drawItem(old, true);  // clear
 
                 if (item->submenu()) {
 
@@ -1247,8 +1084,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             // draw item highlighted and
             // start submenu open delay
 
-            drawItem(w, 
-                     true); // clear
+            drawItem(w, true); // clear
             
             if (theme().menuMode() == MenuTheme::DELAY_OPEN) {
                 // setup show menu timer
@@ -1265,9 +1101,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             // draw highlighted
             m_submenu_timer.stop();
             if (itmp->isEnabled()) {
-                drawItem(w, 
-                         true,  // clear
-                         true); // transp
+                drawItem(w, true); // clear
             }
         }
         
@@ -1278,9 +1112,38 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 void Menu::exposeEvent(XExposeEvent &ee) {
     if (ee.window == menu.title) {
         redrawTitle();
-        menu.title.clearArea(ee.x, ee.y, ee.width, ee.height);
-    } else if (ee.window == menu.frame)
+    } else if (ee.window == menu.frame) {
         menu.frame.clearArea(ee.x, ee.y, ee.width, ee.height);
+
+        // find where to clear
+        // this is a compilicated algorithm... lets do it step by step...
+        // first... we see in which sub level the expose starts... and how many
+        // items down in that sublevel
+
+        int sbl = (ee.x / menu.item_w), id = (ee.y / theme().itemHeight()),
+            // next... figure out how many sublevels over the redrawspans
+            sbl_d = ((ee.x + ee.width) / menu.item_w),
+            // then we see how many items down to redraw
+            id_d = ((ee.y + ee.height) / theme().itemHeight());
+
+        if (id_d > menu.persub) id_d = menu.persub;
+        // draw the sublevels and the number of items the exposure spans
+        int i, ii;
+        for (i = sbl; i <= sbl_d; i++) {
+            // set the iterator to the first item in the sublevel needing redrawing
+            int index = id + i * menu.persub;
+
+            if (index < static_cast<int>(menuitems.size()) && index >= 0) {
+                Menuitems::iterator it = menuitems.begin() + index;
+                Menuitems::iterator it_end = menuitems.end();
+                for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
+                    int index = ii + (i * menu.persub);
+                    // redraw the item
+                    drawItem(index, false);  // no clear
+                }
+            }
+        }
+    }
 }
 
 
@@ -1307,9 +1170,13 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
     }
 
 
-    if (m_shifted)
+    if (m_shifted) {
         menu.window.move(menu.x_shift, menu.y_shift);
-    
+        menu.title.parentMoved();
+        menu.frame.parentMoved();
+        clearWindow();
+    }
+
     if (validIndex(m_which_sub)) {
         MenuItem *tmp = menuitems[m_which_sub];
         if (tmp->submenu()->isVisible()) {
@@ -1319,9 +1186,7 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
             if (w != m_which_sub && (! tmp->submenu()->isTorn())) {
                 tmp->submenu()->internal_hide();
 
-                drawItem(m_which_sub, 
-                         true,  // clear
-                         true); // transp
+                drawItem(m_which_sub, true); // clear
                 m_which_sub = -1;
             }
         }
@@ -1335,9 +1200,7 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
     if (m_which_press != -1 && m_which_sbl != -1 && menuitems.size() > 0) {
         int p = (m_which_sbl * menu.persub) + m_which_press;
 
-        drawItem(p, 
-                 true,  // clear
-                 true); // transp
+        drawItem(p, true); // clear
 
         m_which_sbl = m_which_press = -1;
     }
@@ -1390,31 +1253,13 @@ void Menu::keyPressEvent(XKeyEvent &event) {
 
 void Menu::reconfigure() {
 
-    if (FbTk::Transparent::haveComposite()) {
-        if (m_transp.get() != 0)
-            m_transp.reset(0);
-
+    if (FbTk::Transparent::haveComposite())
         menu.window.setOpaque(alpha());
-    } else if (alpha() == 255 && m_transp.get() != 0) {
-        m_transp.reset(0);
-    } else if (alpha () < 255) {
-        if (m_transp.get() == 0) {
-            m_transp.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()),
-                                           m_real_frame_pm.drawable(), alpha(),
-                                           screenNumber()));
-        } else {
-            Pixmap root = FbPixmap::getRootPixmap(screenNumber());
-            if (m_transp->source() != root)
-                m_transp->setSource(root, screenNumber());
-
-            m_transp->setAlpha(alpha());
-        }
-    }
 
     m_need_update = true; // redraw items
 
-
     menu.title.setAlpha(alpha());
+    menu.frame.setAlpha(alpha());
 
     menu.window.setBorderColor(theme().borderColor());
     menu.title.setBorderColor(theme().borderColor());
@@ -1423,9 +1268,9 @@ void Menu::reconfigure() {
     menu.window.setBorderWidth(theme().borderWidth());
     menu.title.setBorderWidth(theme().borderWidth());
     
-
-    updateMenu();
-
+    if (m_visible) {
+        updateMenu();
+    }
 }
     
 
@@ -1438,8 +1283,7 @@ void Menu::openSubmenu() {
     if (!validIndex(item))
         return;
 
-    drawItem(item, 
-             true); // clear
+    drawItem(item, true); // clear
     if (menuitems[item]->submenu() != 0 && !menuitems[item]->submenu()->isVisible())
         drawSubmenu(item);
 
@@ -1474,61 +1318,6 @@ void Menu::update(FbTk::Subject *subj) {
 }
 
                   
-void Menu::renderTransp(int x, int y,
-                        unsigned int width, unsigned int height) {
-    // even though we dont render transparency
-    // we do need to copy the style background
-    GContext def_gc(menu.frame);
-    m_real_frame_pm.copyArea(m_frame_pm.drawable(),
-                             def_gc.gc(),
-                             x, y,
-                             x, y,
-                             width, height);
-
-    // no need to render transparent unless visible
-    // but we do need to render it if we marked it as
-    // need update
-    if (!isVisible() && !m_need_update || m_transp.get() == 0)
-        return;
-
-
-    // render the root background
-#ifdef HAVE_XRENDER
-
-    Pixmap root = FbPixmap::getRootPixmap(screenNumber());
-    if (m_transp->source() != root)
-        m_transp->setSource(root, screenNumber());
-
-    if (m_transp->dest() != m_real_frame_pm.drawable())
-        m_transp->setDest(m_real_frame_pm.drawable(), screenNumber());
-
-    if (m_transp->alpha() != alpha())
-        m_transp->setAlpha(alpha());
-
-    const FbWindow *root_parent = menu.frame.parent();
-    // our position in parent ("root")
-    int root_x = menu.frame.x() - menu.frame.borderWidth(), 
-        root_y = menu.frame.y() - menu.frame.borderWidth();
-    if (root_parent != 0) {
-        root_x += root_parent->x() + root_parent->borderWidth();
-        root_y += root_parent->y() + root_parent->borderWidth();
-        while (root_parent->parent() != 0) {
-            root_parent = root_parent->parent();
-            root_x += root_parent->x() + root_parent->borderWidth();
-            root_y += root_parent->y() + root_parent->borderWidth();
-        }
-
-    } // else toplevel window so we already have x, y set
-
-    // render background image from root pos to our window
-    m_transp->render(root_x + x, root_y + y,
-                     x, y,
-                     width, height);
-        
-#endif // HAVE_XRENDER
-        
-}
-
 void Menu::setScreen(int x, int y, int w, int h) {
     m_screen_x = x;
     m_screen_y = y;
