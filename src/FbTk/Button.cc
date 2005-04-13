@@ -92,10 +92,10 @@ void Button::buttonPressEvent(XButtonEvent &event) {
     bool update = false;
     if (m_pressed_pm != 0) {
         update = true;
-        FbWindow::setBackgroundPixmap(m_pressed_pm);
+        FbTk::FbWindow::setBackgroundPixmap(m_pressed_pm);
     } else if (m_pressed_color.isAllocated()) {
         update = true;
-        FbWindow::setBackgroundColor(m_pressed_color);
+        FbTk::FbWindow::setBackgroundColor(m_pressed_color);
     }
         
     m_pressed = true;    
@@ -110,11 +110,11 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
     if (m_background_pm) {
         if (m_pressed_pm != 0) {
             update = true;
-           FbTk::FbWindow::setBackgroundPixmap(m_background_pm);
+            setBackgroundPixmap(m_background_pm);
         }
     } else if (m_pressed_color.isAllocated()) {
         update = true;
-        FbTk::FbWindow::setBackgroundColor(m_background_color);
+        setBackgroundColor(m_background_color);
     }
 
     if (update)

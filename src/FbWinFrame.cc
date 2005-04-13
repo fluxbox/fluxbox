@@ -246,6 +246,7 @@ void FbWinFrame::notifyMoved(bool clear) {
 }
 
 void FbWinFrame::clearAll() {
+
     if  (m_use_titlebar) {
         redrawTitlebar();
 
@@ -853,8 +854,13 @@ void FbWinFrame::reconfigure() {
 
 
     // render the theme
-    renderAll();
-    applyAll();
+    if (isVisible()) {
+        renderAll();
+        applyAll();
+        clearAll();
+    } else {
+        m_need_render = true;
+    }
 
     if (m_shape.get() && theme().shapePlace() == Shape::NONE  || m_disable_shape)
         m_shape.reset(0);

@@ -106,7 +106,6 @@ void TextButton::clearArea(int x, int y,
     // and if so, then clear a rectangle that encompases all the text plus the
     // requested area?
     drawText();
-
 }
 
 unsigned int TextButton::textWidth() const {

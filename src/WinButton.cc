@@ -84,7 +84,7 @@ void WinButton::setPressedPixmap(Pixmap pm) {
         overrode_pressed = false;
     }
 
-    FbTk::Button::setBackgroundPixmap(pm);
+    FbTk::Button::setPressedPixmap(pm);
 }
 
 void WinButton::setPressedColor(const FbTk::Color &color) {
@@ -236,5 +236,11 @@ void WinButton::clear() {
 }
 
 void WinButton::update(FbTk::Subject *subj) {
+    // pressed_pixmap isn't stateful in any current buttons, so no need
+    // to potentially override that. Just make sure background pm is ok
+    Pixmap my_pm = getBackgroundPixmap();
+    if (my_pm != None)
+        setBackgroundPixmap(my_pm);
+
     clear();
 }

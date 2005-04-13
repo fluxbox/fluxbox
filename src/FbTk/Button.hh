@@ -75,7 +75,9 @@ public:
 
     GC gc() const { return m_gc; }
     Pixmap backgroundPixmap() const { return m_background_pm; }
+    Pixmap pressedPixmap() const { return m_pressed_pm; }
     const Color &backgroundColor() const { return m_background_color; }
+    const Color &pressedColor() const { return m_pressed_color; }
 private:
     Pixmap m_background_pm; ///< background pixmap
     Color m_background_color; ///< background color
