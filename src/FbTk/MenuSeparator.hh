@@ -1,5 +1,5 @@
 // MenuSeparator.hh for FbTk - Fluxbox ToolKit
-// Copyright (c) 2004 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2004 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden (rathnor at users.sourceforge.net)
 //                 
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 // $Id$
 
 #ifndef MENUSEPARATOR_HH
-#define MENUSEPARATOR_hh
+#define MENUSEPARATOR_HH
 
 #include "MenuItem.hh"
 
