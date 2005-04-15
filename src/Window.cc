@@ -939,7 +939,8 @@ void FluxboxWindow::moveClientLeft() {
 }
 
 void FluxboxWindow::moveClientRight() {
-    if (m_clientlist.size() == 1)
+    if (m_clientlist.size() == 1 ||
+            *m_clientlist.rbegin() == &winClient())
         return;
     // move label button to the right
     frame().moveLabelButtonRight(*m_labelbuttons[&winClient()]);
