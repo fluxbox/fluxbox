@@ -388,10 +388,6 @@ void Menu::enableTitle() {
 }
 
 void Menu::updateMenu(int active_index) {
-    if (!m_visible) {
-        m_need_update = true;
-        return;
-    }
     if (m_title_vis) {
         menu.item_w = theme().titleFont().textWidth(menu.label.c_str(),
                                                     menu.label.size());
@@ -425,9 +421,6 @@ void Menu::updateMenu(int active_index) {
         menu.persub = 0;
     }
 
-    if (menu.frame.alpha() != alpha())
-        menu.frame.setAlpha(alpha());
-
     int itmp = (theme().itemHeight() * menu.persub);
     menu.frame_h = itmp < 1 ? 1 : itmp;
 
@@ -448,7 +441,15 @@ void Menu::updateMenu(int active_index) {
     if (new_height < 1)
         new_height = 1;
 
+    // must update main window size whether visible or not
+    // the rest can wait until the end
     menu.window.resize(new_width, new_height);
+
+    if (!m_visible)
+        return;
+
+    if (menu.frame.alpha() != alpha())
+        menu.frame.setAlpha(alpha());
 
     Pixmap tmp = 0;
     if (m_title_vis && m_need_update) {
@@ -1267,10 +1268,8 @@ void Menu::reconfigure() {
 
     menu.window.setBorderWidth(theme().borderWidth());
     menu.title.setBorderWidth(theme().borderWidth());
-    
-    if (m_visible) {
-        updateMenu();
-    }
+
+    updateMenu();
 }
     
 

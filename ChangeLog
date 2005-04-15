@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/15:
+  * Fixed a few drawing bugs created by last patch (Simon)
+    (titlebar no clear on resize, menu opening offscreen...)
+    Menu.cc FbWinFrame.cc
 *05/04/11:
   * Rework lots of stuff relating to transparency, esp menus+frame (Simon)
     + Massively reduce pixmap memory usage (view with xrestop)
