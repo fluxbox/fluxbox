@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/18:
+  * Fixed problem with WindowSnapping (Mathias)
+    Window.cc Slit.cc
 *05/04/15:
   * Fixed #1170056 (Mathias)
     Window.cc
