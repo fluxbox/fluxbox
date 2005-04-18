@@ -3328,11 +3328,12 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     // we only care about the left/top etc that includes borders
     int borderW = 0;
 
-    if (decorationMask() & DECORM_ENABLED)
+    if (decorationMask() & (DECORM_ENABLED|DECORM_BORDER|DECORM_HANDLE))
         borderW = frame().window().borderWidth();
 
     int top = orig_top; // orig include the borders
     int left = orig_left;
+    
     int right = orig_left + width() + 2 * borderW;
     int bottom = orig_top + height() + 2 * borderW;
 
@@ -3386,7 +3387,8 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
         if ((*it) == this) 
             continue; // skip myself
 
-        bw = (*it)->decorationMask() & DECORM_ENABLED ? (*it)->frame().window().borderWidth() : 0;
+        bw = (*it)->decorationMask() & (DECORM_ENABLED|DECORM_BORDER|DECORM_HANDLE) ? 
+                (*it)->frame().window().borderWidth() : 0;
 
         snapToWindow(dx, dy, left, right, top, bottom,
                      (*it)->x(),
