@@ -359,52 +359,53 @@ void Slit::updateStrut() {
         return;
     }
 
-
+    unsigned int bw = m_slit_theme->borderWidth();
     int left = 0, right = 0, top = 0, bottom = 0;
     switch (placement()) {
     case TOPLEFT:
         if (direction() == HORIZONTAL)
-            top = height();
+            top = height() + 2 * bw;
         else
-            left = width();
+            left = width() + 2 * bw;
         break;
     case TOPCENTER:
         if (direction() == HORIZONTAL)
-            top = height();
+            top = height() + 2 * bw;
         break;
     case TOPRIGHT:
         if (direction() == HORIZONTAL)
-            top = height();
+            top = height() + 2 * bw;
         else
-            right = width();
+            right = width() + 2 * bw;
         break;
     case BOTTOMLEFT:
         if (direction() == HORIZONTAL)
-            bottom = height();
+            bottom = height() + 2 * bw;
         else
-            left = width();
+            left = width() + 2 * bw;
         break;
     case BOTTOMCENTER:
         // would be strange to have it request size on vertical direction
         // each time we add a client
         if (direction() == HORIZONTAL)
-            bottom = height();
+            bottom = height() + 2 * bw;
         break;
     case BOTTOMRIGHT:
         if (direction() == HORIZONTAL)
-            bottom = height();
+            bottom = height() + 2 * bw;
         else
-            right = width();
+            right = width() + 2 * bw;
         break;
     case LEFTCENTER:
         if (direction() == VERTICAL)
-            left = width();        
+            left = width() + 2 * bw;
         break;
     case RIGHTCENTER:
         if (direction() == VERTICAL)
-            right = width();
+            right = width() + 2 * bw;
         break;
     }
+
     m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);
     screen().updateAvailableWorkspaceArea();
 }
