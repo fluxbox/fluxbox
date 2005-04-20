@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/20:
+  * Fixed problem with _NET_WM_STRUT (Mathias)
+    WinClient.cc	  
 *05/04/18:
   * Fixed problem with WindowSnapping (Mathias)
     Window.cc Slit.cc
