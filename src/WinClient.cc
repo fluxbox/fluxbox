@@ -626,6 +626,7 @@ void WinClient::setStrut(Strut *strut) {
 void WinClient::clearStrut() {
     if (m_strut != 0) {
         screen().clearStrut(m_strut);
+        screen().updateAvailableWorkspaceArea();
         m_strut = 0;
     }
 }
