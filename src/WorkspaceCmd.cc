@@ -159,12 +159,12 @@ void ArrangeWindowsCmd::execute() {
     const unsigned int cal_heigth = max_heigth/rows; // heigth ratio (heigth of every window)
 
     // Resizes and sets windows positions in columns and rows.
-    unsigned int x_offs = 0; // window position offset in x
-    unsigned int y_offs = 0; // window position offset in y
+    unsigned int x_offs = screen->maxLeft(head); // window position offset in x
+    unsigned int y_offs = screen->maxTop(head); // window position offset in y
     unsigned int window = 0; // current window 
     Workspace::Windows &windowlist = space->windowList();
     for (unsigned int i = 0; i < rows; ++i) {
-        x_offs = 0;
+        x_offs = screen->maxLeft(head);
         for (unsigned int j = 0; j < cols && window < win_count; ++j, ++window) {
 			if (window==(win_count-1)) {
 				// the last window gets everything that is left.
