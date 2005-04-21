@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/21:
+  * Fixed #1133809, ArrangeWindows covers Toolbar/Slit (Mathias)
+    WorkspaceCmd.cc
 *05/04/20:
   * Fixed problem with _NET_WM_STRUT (Mathias)
     WinClient.cc	  
