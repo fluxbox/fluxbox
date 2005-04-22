@@ -3188,6 +3188,8 @@ void FluxboxWindow::startMoving(Window win) {
         return;
 
     moving = true;
+    maximized = MAX_NONE;
+    
     Fluxbox *fluxbox = Fluxbox::instance();
     // grabbing (and masking) on the root window allows us to
     // freely map and unmap the window we're moving.
@@ -3411,6 +3413,7 @@ void FluxboxWindow::startResizing(Window win, int x, int y) {
         return;
 
     resizing = true;
+    maximized = MAX_NONE;
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme().upperLeftAngleCursor() :
                            (m_resize_corner == RIGHTTOP) ? frame().theme().upperRightAngleCursor() :
