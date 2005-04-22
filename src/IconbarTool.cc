@@ -846,7 +846,9 @@ void IconbarTool::updateIcons() {
     for (; icon_it != icon_it_end; ++icon_it) {
         if (mode() == ICONS)
             itemlist.push_back(*icon_it);
-        else if (mode() == WORKSPACEICONS && (*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID())
+        else if (mode() == WORKSPACEICONS && 
+                   ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID() ||
+                    (*icon_it)->isStuck()))
             itemlist.push_back(*icon_it);
     }
     removeDuplicate(m_icon_list, itemlist);
