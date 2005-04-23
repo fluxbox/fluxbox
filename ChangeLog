@@ -1,7 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/23:
+  * Fixed #1020399 aka broken ShowDesktop - command (mathias)
+    WorkspaceCmd.cc
 *05/04/22:
-  * clear maximized-Flags of a resized/moved Window (Mathias=
+  * clear maximized-Flags of a resized/moved Window (Mathias)
     Window.cc
   * fixed Iconified+Sticky Windows not shown in Iconbar (Mathias)
     (when in WorkspaceIcons-Mode

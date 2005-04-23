@@ -185,8 +185,8 @@ void ShowDesktopCmd::execute() {
     if (screen == 0)
         return;
 
-    Workspace *space = screen->currentWorkspace();
-    std::for_each(space->windowList().begin(),
-                  space->windowList().end(),
+    Workspace::Windows windows(screen->currentWorkspace()->windowList());
+    std::for_each(windows.begin(),
+                  windows.end(),
                   std::mem_fun(&FluxboxWindow::iconify));
 }
