@@ -313,7 +313,8 @@ void DeiconifyCmd::execute() {
     case ALLWORKSPACE:
         for(; it != itend; it++) {
             old_workspace_num= (*it)->workspaceNumber();
-            if (m_mode == ALL || old_workspace_num == workspace_num) {
+            if (m_mode == ALL || old_workspace_num == workspace_num || 
+                    (*it)->isStuck()) {
                 if (m_dest == ORIGIN || m_dest == ORIGINQUIET)
                     screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
                 else
@@ -327,7 +328,8 @@ void DeiconifyCmd::execute() {
     default:
         for (; it != itend; it++) {
             old_workspace_num= (*it)->workspaceNumber();
-            if(m_mode == LAST || old_workspace_num == workspace_num) {
+            if(m_mode == LAST || old_workspace_num == workspace_num ||
+                    (*it)->isStuck()) {
                 if ((m_dest == ORIGIN || m_dest == ORIGINQUIET) && 
                     m_mode != LASTWORKSPACE)
                     screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
