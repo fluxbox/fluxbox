@@ -1,6 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/04/23:
+  * Close of #956325 (Mathias)
+       WorkspaceMenu -> left click on a item will jump TO that
+                        workspace
+                     -> middle click will fetch it to the current
+                        workspac
+       SendToMenu    -> left click send it quietly
+                     -> middle click send it and follows to that
+                        workspace
+    This should now match whats written in the manpage.
+    Workspace.cc SendToMenu.cc
   * Fixed #960535 aka Deiconify with apps set 'sticky' (Mathias)
     FbCommands.cc
   * Fixed #1020399 aka broken ShowDesktop - command (Mathias)

@@ -29,19 +29,22 @@
 #include "fluxbox.hh"
 #include "Workspace.hh"
 
+#include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/Command.hh"
 
 class SendToCmd: public FbTk::Command {
 public:
-    SendToCmd(FluxboxWindow &win, int workspace):
+    SendToCmd(FluxboxWindow &win, int workspace, bool follow):
         m_win(win),
-        m_workspace(workspace) { }
+        m_workspace(workspace),
+        m_follow(follow) { }
     void execute() {
-        m_win.screen().sendToWorkspace(m_workspace, &m_win, false);
+        m_win.screen().sendToWorkspace(m_workspace, &m_win, m_follow);
     }
 private:
     FluxboxWindow &m_win;
     const int m_workspace;
+    const bool m_follow;
 };
 
 SendToMenu::SendToMenu(FluxboxWindow &win):
@@ -91,9 +94,14 @@ void SendToMenu::update(FbTk::Subject *subj) {
 
     const BScreen::Workspaces &wlist = m_win.screen().getWorkspacesList();
     for (size_t i = 0; i < wlist.size(); ++i) {
-        FbTk::RefCount<FbTk::Command> sendto_cmd(new SendToCmd(m_win, i));
-        insert(wlist[i]->name().c_str(), sendto_cmd);
-
+        FbTk::RefCount<FbTk::Command> sendto_cmd(new SendToCmd(m_win, i, false));
+        FbTk::RefCount<FbTk::Command> sendto_follow_cmd(new SendToCmd(m_win, i, true));
+        
+        FbTk::MultiButtonMenuItem* item = new FbTk::MultiButtonMenuItem(3, wlist[i]->name().c_str());
+        item->setCommand(1, sendto_cmd);
+        item->setCommand(2, sendto_follow_cmd);
+        item->setCommand(3, sendto_cmd);
+        insert(item);
     }
 
     setItemEnabled(m_win.workspaceNumber(), false);
