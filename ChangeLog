@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/25:
+  * Fixed #1188690, fbrun segfault (Mathias)
+    FbTk/App.cc
 *05/04/23:
   * Close of #956325 (Mathias)
        WorkspaceMenu -> left click on a item will jump TO that
