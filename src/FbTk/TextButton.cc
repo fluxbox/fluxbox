@@ -24,8 +24,6 @@
 #include "TextButton.hh"
 #include "Font.hh"
 #include "GContext.hh"
-#include <iostream>
-using namespace std;
 
 namespace FbTk {
 
@@ -38,6 +36,7 @@ TextButton::TextButton(const FbTk::FbWindow &parent,
     m_justify(FbTk::LEFT), m_bevel(1),
     m_left_padding(0),
     m_right_padding(0) {
+    setRenderer(*this);
 
 }
 
@@ -62,7 +61,11 @@ void TextButton::setJustify(FbTk::Justify just) {
 }
 
 void TextButton::setText(const std::string &text) {
-    m_text = text;
+    if (m_text != text) {
+        m_text = text;
+        parentMoved();
+        clear();
+    }
 }
 
 void TextButton::setFont(const FbTk::Font &font) {
@@ -102,30 +105,37 @@ void TextButton::clearArea(int x, int y,
                            unsigned int width, unsigned int height,
                            bool exposure) {
     Button::clearArea(x, y, width, height, exposure);
-    // TODO: do we need to check if the text overlaps the clearing area
-    // and if so, then clear a rectangle that encompases all the text plus the
-    // requested area?
-    drawText();
+    if (backgroundPixmap() == ParentRelative) 
+        drawText(0, 0, this);
 }
 
 unsigned int TextButton::textWidth() const {
     return font().textWidth(text().c_str(), text().size());
 }
 
-void TextButton::drawText(int x_offset, int y_offset) {
+void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
+    // (win should always be *this, no need to check)
+    drawText(0, 0, &drawable);
+}
+
+void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
     unsigned int textlen = text().size();
     // do text alignment
+
     int align_x = FbTk::doAlignment(width() - x_offset - m_left_padding - m_right_padding,
                                     bevel(),
                                     justify(),
                                     font(),
                                     text().c_str(), text().size(),
-                                    textlen); // return new text len
+                                    textlen); // return new text lne
 
     // center text by default
     int center_pos = height()/2 + font().ascent()/2 - 1;
 
-    font().drawText(*this,
+    if (drawable == 0)
+        drawable = this;
+
+    font().drawText(*drawable,
                     screenNumber(),
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size

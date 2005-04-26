@@ -47,7 +47,7 @@ class MenuItem;
 class ImageControl;
 
 ///   Base class for menus
-class Menu: public FbTk::EventHandler, protected FbTk::Observer {
+class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer, protected FbTk::Observer {
 public:
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
     enum { RIGHT = 1, LEFT };
@@ -166,6 +166,8 @@ public:
     inline Menu *parent() { return m_parent; }
     inline const Menu *parent() const { return m_parent; }
 
+    void renderForeground(FbWindow &win, FbDrawable &drawable);
+
 protected:
 
     inline void setTitleVisibility(bool b) { 
@@ -177,12 +179,14 @@ protected:
     }
 
     virtual void itemSelected(int button, unsigned int index) { }
-    virtual int drawItem(unsigned int index,
-                         bool clear = false,
-                         int x= -1, int y= -1, 
-                         unsigned int width= 0, unsigned int height= 0);
-    virtual void redrawTitle();
-    virtual void redrawFrame();
+    // renders item onto pm
+    int drawItem(FbDrawable &pm, unsigned int index,
+                 bool highlight = false,
+                 bool exclusive_drawable = false);
+    void clearItem(int index, bool clear = true);
+    void highlightItem(int index);
+    virtual void redrawTitle(FbDrawable &pm);
+    virtual void redrawFrame(FbDrawable &pm);
 
     virtual void internal_hide();
 
@@ -197,7 +201,7 @@ private:
 
 
     typedef std::vector<MenuItem *> Menuitems;
-    const MenuTheme &m_theme;
+    MenuTheme &m_theme;
     Menu *m_parent;
     ImageControl &m_image_ctrl;
     Menuitems menuitems;
@@ -215,7 +219,7 @@ private:
     Alignment m_alignment;
 
     struct _menu {
-        Pixmap frame_pixmap, title_pixmap, hilite_pixmap, sel_pixmap;
+        Pixmap frame_pixmap, title_pixmap, hilite_pixmap;
         FbTk::FbWindow window, frame, title;
 
         std::string label;

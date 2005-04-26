@@ -53,35 +53,39 @@ void MenuIcon::updateTheme(const MenuTheme &theme) {
 
 void MenuIcon::draw(FbDrawable &drawable,
                     const MenuTheme &theme,
-                    bool highlight,
+                    bool highlight, bool draw_foreground, bool draw_background,
                     int x, int y,
                     unsigned int width, unsigned int height) const {
 
-    Display *disp = FbTk::App::instance()->display();
-    if (height - 2*theme.bevelWidth() != m_pixmap.height() &&
-        !m_filename.empty()) {
-        unsigned int scale_size = height - 2*theme.bevelWidth();
-        m_pixmap.scale(scale_size, scale_size);
-        m_mask.scale(scale_size, scale_size);
+    // all background
+    if (draw_background) {
+        Display *disp = FbTk::App::instance()->display();
+        if (height - 2*theme.bevelWidth() != m_pixmap.height() &&
+            !m_filename.empty()) {
+            unsigned int scale_size = height - 2*theme.bevelWidth();
+            m_pixmap.scale(scale_size, scale_size);
+            m_mask.scale(scale_size, scale_size);
+        }
+
+        if (m_pixmap.drawable() != 0) {
+            GC gc = theme.frameTextGC().gc();
+
+            // enable clip mask
+            XSetClipMask(disp, gc, m_mask.drawable());
+            XSetClipOrigin(disp, gc, x + theme.bevelWidth(), y + theme.bevelWidth());
+
+            drawable.copyArea(m_pixmap.drawable(),
+                              gc,
+                              0, 0,
+                              x + theme.bevelWidth(), y + theme.bevelWidth(),
+                              m_pixmap.width(), m_pixmap.height());
+
+            // restore clip mask
+            XSetClipMask(disp, gc, None);
+        }
     }
-
-    if (m_pixmap.drawable() != 0) {
-        GC gc = theme.frameTextGC().gc();
-
-        // enable clip mask
-        XSetClipMask(disp, gc, m_mask.drawable());
-        XSetClipOrigin(disp, gc, x + theme.bevelWidth(), y + theme.bevelWidth());
-
-        drawable.copyArea(m_pixmap.drawable(),
-                          gc,
-                          0, 0,
-                          x + theme.bevelWidth(), y + theme.bevelWidth(),
-                          m_pixmap.width(), m_pixmap.height());
-
-        // restore clip mask
-        XSetClipMask(disp, gc, None);
-    }
-    FbTk::MenuItem::draw(drawable, theme, highlight, x, y, width, height);
+    FbTk::MenuItem::draw(drawable, theme, highlight, 
+                         draw_background, draw_foreground, x, y, width, height);
 }
 
 unsigned int MenuIcon::width(const MenuTheme &theme) const {

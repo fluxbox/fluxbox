@@ -249,6 +249,7 @@ void ClockTool::updateTime() {
         if (!strftime(time_string, 255, m_timeformat->c_str(), time_type) || m_button.text() == time_string)
             return;
         m_button.setText(time_string);
+        m_button.parentMoved();
 #else // dont have strftime so we have to set it to hour:minut
         //        sprintf(time_string, "%d:%d", );
 #endif // HAVE_STRFTIME

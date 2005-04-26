@@ -193,7 +193,6 @@ public:
 
 private:
     void redrawTitlebar();
-    void redrawTitle();
 
     /// reposition titlebar items
     void reconfigureTitlebar();

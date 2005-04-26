@@ -38,6 +38,7 @@ public:
     void draw(FbDrawable &drawable, 
               const MenuTheme &theme,
               bool highlight,
+              bool draw_foreground, bool draw_background,
               int x, int y,
               unsigned int width, unsigned int height) const;
     unsigned int width(const MenuTheme &item) const;

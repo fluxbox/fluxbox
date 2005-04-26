@@ -288,12 +288,12 @@ void IconButton::setupWindow() {
     FbTk::TextButton::clear();
 }
 
-void IconButton::drawText(int x, int y) {
+void IconButton::drawText(int x, int y, FbTk::FbDrawable *drawable) {
     // offset text
     if (m_icon_pixmap.drawable() != 0)
-        FbTk::TextButton::drawText(m_icon_window.x() + m_icon_window.width() + 1, y);
+        FbTk::TextButton::drawText(m_icon_window.x() + m_icon_window.width() + 1, y, drawable);
     else
-        FbTk::TextButton::drawText(1, y);
+        FbTk::TextButton::drawText(1, y, drawable);
 }
                           
 

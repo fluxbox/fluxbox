@@ -54,7 +54,7 @@ public:
     const FluxboxWindow &win() const { return m_win; }
 
 protected:
-    void drawText(int x = 0, int y = 0);
+    void drawText(int x, int y, FbTk::FbDrawable *drawable_override);
 private:
     void setupWindow();
 

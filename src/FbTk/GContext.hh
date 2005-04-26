@@ -131,6 +131,7 @@ public:
 
     void copy(GC gc);
     void copy(const GContext &gc);
+
     inline GContext &operator = (const GContext &copy_gc) { copy(copy_gc); return *this; }
     inline GContext &operator = (GC copy_gc) { copy(copy_gc); return *this; }
     inline GC gc() const { return m_gc; }

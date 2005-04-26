@@ -156,6 +156,8 @@ namespace {
 
 Window last_bad_window = None;
  
+// *** NOTE: if you want to debug here the X errors are 
+//     coming from, you should turn on the XSynchronise call below
 int handleXErrors(Display *d, XErrorEvent *e) {
     if (e->error_code == BadWindow)
         last_bad_window = e->resourceid;
@@ -277,7 +279,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_reconfig_timer.setTimeout(to);
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
-//    XSynchronize(disp, True);
+    // XSynchronize(disp, True);
 
     s_singleton = this;
     m_have_shape = false;

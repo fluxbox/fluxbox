@@ -1207,11 +1207,8 @@ void FluxboxWindow::updateTitleFromClient(WinClient &client) {
     client.updateTitle();
     // compare old title with new and see if we need to update
     // graphics
-    if (m_labelbuttons[&client]->text() != client.title()) {
+    if (m_labelbuttons[&client]->text() != client.title())
         m_labelbuttons[&client]->setText(client.title());
-        m_labelbuttons[&client]->clear(); // redraw text
-        //m_labelbuttons[&client]->updateTransparent();
-    }
 }
 
 /// update icon title from client
@@ -2346,7 +2343,9 @@ void FluxboxWindow::handleEvent(XEvent &event) {
         //break;
     case PropertyNotify: {
 #ifdef DEBUG
-        cerr<<"PropertyNotify("<<title()<<")"<<endl;
+        char *atomname = XGetAtomName(display, event.xproperty.atom);
+        cerr<<"PropertyNotify("<<title()<<"), property = "<<atomname<<endl;
+        XFree(atomname);
 #endif // DEBUG
         WinClient *client = findClient(event.xproperty.window);
         if (client) {

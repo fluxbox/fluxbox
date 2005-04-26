@@ -377,7 +377,7 @@ void FbWinFrame::moveLabelButtonLeft(const FbTk::TextButton &btn) {
     // insert on the new place
     m_labelbuttons.insert(new_pos, item);
     // update titlebar
-    redrawTitle();
+    redrawTitlebar();
 }
 
 void FbWinFrame::moveLabelButtonRight(const FbTk::TextButton &btn) {
@@ -395,7 +395,7 @@ void FbWinFrame::moveLabelButtonRight(const FbTk::TextButton &btn) {
     // insert on the new place
     m_labelbuttons.insert(new_pos, item);
     // update titlebar
-    redrawTitle();
+    redrawTitlebar();
 }
 
 void FbWinFrame::moveLabelButtonTo(FbTk::TextButton &btn, int x, int y) {
@@ -464,7 +464,7 @@ void FbWinFrame::moveLabelButtonLeftOf(const FbTk::TextButton &btn, const FbTk::
 	//insert on the new place
 	m_labelbuttons.insert(new_pos, item);
 	//update titlebar
-	redrawTitle();
+	redrawTitlebar();
 }
 
 void FbWinFrame::moveLabelButtonRightOf(const FbTk::TextButton &btn, const FbTk::TextButton &dest) {
@@ -494,7 +494,7 @@ void FbWinFrame::moveLabelButtonRightOf(const FbTk::TextButton &btn, const FbTk:
 	else
 		m_labelbuttons.insert(new_pos, item);
 	//update titlebar
-	redrawTitle();
+	redrawTitlebar();
 }
 
 void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
@@ -893,8 +893,8 @@ unsigned int FbWinFrame::buttonHeight() const {
 /**
    aligns and redraws title
 */
-void FbWinFrame::redrawTitle() {
-    if (m_labelbuttons.empty())
+void FbWinFrame::redrawTitlebar() {
+    if (!m_use_titlebar || m_labelbuttons.empty())
         return;
 
     int focus_button_min_percent = Fluxbox::instance()->getFocusedTabMinWidth();
@@ -965,14 +965,6 @@ void FbWinFrame::redrawTitle() {
     }
 }
 
-void FbWinFrame::redrawTitlebar() {
-    if (!m_use_titlebar)
-        return;
-
-    redrawTitle();
-
- }
-
 /**
    Align buttons with title text window
 */
@@ -998,7 +990,6 @@ void FbWinFrame::reconfigureTitlebar() {
     unsigned int button_size = buttonHeight();
     m_button_size = button_size;
     for (size_t i=0; i < m_buttons_left.size(); i++, next_x += button_size + m_bevel) {
-        //cerr<<"m_buttons_left["<<i<<"]->moveResize(next_x="<<next_x<<", m_bev="<<m_bevel<<", bs="<<button_size<<", bs="<<button_size<<")"<<endl;
         m_buttons_left[i]->moveResize(next_x, m_bevel, 
                                       button_size, button_size);
     }
@@ -1024,7 +1015,6 @@ void FbWinFrame::reconfigureTitlebar() {
                                        button_size, button_size);
     }
 
-//    renderTitlebar(); // gets done outside
     m_titlebar.raise(); // always on top
 }
 

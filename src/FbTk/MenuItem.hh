@@ -96,6 +96,8 @@ public:
     virtual void draw(FbDrawable &drawable, 
                       const MenuTheme &theme,
                       bool highlight,
+                      // "foreground" is the transient bits - more likely to change
+                      bool draw_foreground, bool draw_background,
                       int x, int y,
                       unsigned int width, unsigned int height) const;
     virtual void updateTheme(const MenuTheme &theme);

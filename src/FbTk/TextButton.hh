@@ -35,7 +35,7 @@ namespace FbTk {
 class Font;
 
 /// Displays a text on a button
-class TextButton: public FbTk::Button {
+class TextButton: public FbTk::Button, FbTk::FbWindowRenderer {
 public:
     TextButton(const FbTk::FbWindow &parent, 
                const FbTk::Font &font, const std::string &text);
@@ -61,6 +61,8 @@ public:
 
     void exposeEvent(XExposeEvent &event);
 
+    void renderForeground(FbDrawable &drawable);
+
     inline FbTk::Justify justify() const { return m_justify; }
     inline const std::string &text() const { return m_text; }
     inline const FbTk::Font &font() const { return *m_font; }
@@ -69,8 +71,10 @@ public:
     unsigned int leftPadding() const { return m_left_padding; }
     unsigned int rightPadding() const { return m_right_padding; }
 
+    void renderForeground(FbWindow &win, FbDrawable &drawable);
+
 protected:
-    virtual void drawText(int x_offset = 0, int y_offset = 0);
+    virtual void drawText(int x_offset, int y_offset, FbDrawable *drawable_override);
 
 private:
     const FbTk::Font *m_font;

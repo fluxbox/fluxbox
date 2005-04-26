@@ -34,6 +34,8 @@ namespace FbTk {
 
 class Color;
 class Transparent;
+class FbPixmap;
+class FbWindowRenderer;
 
 ///   Wrapper for X window
 /**
@@ -82,7 +84,7 @@ public:
     virtual void clearArea(int x, int y, 
                            unsigned int width, unsigned int height, 
                            bool exposures = false);
-    void updateTransparent(int x = -1, int y = -1, unsigned int width = 0, unsigned int height = 0);
+    void updateTransparent(int x = -1, int y = -1, unsigned int width = 0, unsigned int height = 0, Pixmap dest_override = None, bool override_is_offset = false);
 
     void setAlpha(unsigned char alpha);
 
@@ -182,6 +184,8 @@ public:
     // used for composite
     void setOpaque(unsigned char alpha);
 
+    void setRenderer(FbWindowRenderer &renderer) { m_renderer = &renderer; }
+
 protected:
     /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);
@@ -213,6 +217,8 @@ private:
     bool m_lastbg_color_set;
     unsigned long m_lastbg_color;
     Pixmap m_lastbg_pm;
+
+    FbWindowRenderer *m_renderer;
 };
 
 bool operator == (Window win, const FbWindow &fbwin);
@@ -235,8 +241,14 @@ private:
     unsigned char *m_state;
     int m_num;
     int m_mode;
-
 };
+
+/// Interface class to render FbWindow foregrounds.
+class FbWindowRenderer {
+public:
+    virtual void renderForeground(FbWindow &win, FbDrawable &drawable) = 0;
+};
+
 
 } // end namespace FbTk
 

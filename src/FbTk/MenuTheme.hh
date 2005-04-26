@@ -71,6 +71,10 @@ public:
     inline const FbTk::PixmapWithMask &bulletPixmap() const { return *m_bullet_pixmap; }
     inline const FbTk::PixmapWithMask &selectedPixmap() const { return *m_selected_pixmap; }
     inline const FbTk::PixmapWithMask &unselectedPixmap() const { return *m_unselected_pixmap; }
+
+    inline const FbTk::PixmapWithMask &highlightBulletPixmap() const { return *m_hl_bullet_pixmap; }
+    inline const FbTk::PixmapWithMask &highlightSelectedPixmap() const { return *m_hl_selected_pixmap; }
+    inline const FbTk::PixmapWithMask &highlightUnselectedPixmap() const { return *m_hl_unselected_pixmap; }
     /**
        @name fonts
     */
@@ -121,6 +125,10 @@ public:
     
     inline const FbTk::Color &borderColor() const { return *m_border_color; }
 
+    // special override
+    inline void setSelectedPixmap(Pixmap pm) { m_selected_pixmap->pixmap() = pm; }
+    inline void setHighlightSelectedPixmap(Pixmap pm) { m_hl_selected_pixmap->pixmap() = pm; }
+
 private:
     FbTk::ThemeItem<FbTk::Color> t_text, f_text, h_text, d_text;
     FbTk::ThemeItem<FbTk::Texture> title, frame, hilite;
@@ -133,6 +141,7 @@ private:
     FbTk::ThemeItem<unsigned int> m_bevel_width;
     FbTk::ThemeItem<FbTk::Color> m_border_color;
     FbTk::ThemeItem<FbTk::PixmapWithMask> m_bullet_pixmap, m_selected_pixmap, m_unselected_pixmap;
+    FbTk::ThemeItem<FbTk::PixmapWithMask> m_hl_bullet_pixmap, m_hl_selected_pixmap, m_hl_unselected_pixmap;
 
     Display *m_display;
     FbTk::GContext t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;

@@ -1,5 +1,19 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/26:
+  * Extension of previous patch, pushing various bits of menu items and
+    text buttons onto the background, and fixing various issues (Simon) 
+    + Incidentally, adds some new theme items (due to backwards 
+      compatibility fix):
+      - menu.hilite.submenu.pixmap:    <Pixmap>
+      - menu.hilite.selected.pixmap:   <Pixmap>
+      - menu.hilite.unselected.pixmap: <Pixmap>
+    These are equivalent to the no-.hilite ones, except are shown
+    when the item is highlighted...
+    FbTk/...
+      Menu.hh/cc MenuItem.hh/cc MenuTheme.hh/cc TextButton.hh/cc 
+      FbWindow.hh/cc MenuIcon.hh/cc
+    FbWinFrame.hh/cc IconButton.hh/cc ToggleMenu.hh Window.cc    
 *05/04/25:
   * Fixed #1188690, fbrun segfault (Mathias)
     FbTk/App.cc

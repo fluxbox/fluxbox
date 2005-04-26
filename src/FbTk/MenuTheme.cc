@@ -61,6 +61,9 @@ MenuTheme::MenuTheme(int screen_num):
     m_bullet_pixmap(*this, "menu.submenu.pixmap", "Menu.Submenu.Pixmap"),
     m_selected_pixmap(*this, "menu.selected.pixmap", "Menu.Selected.Pixmap"),
     m_unselected_pixmap(*this, "menu.unselected.pixmap", "Menu.Unselected.Pixmap"),
+    m_hl_bullet_pixmap(*this, "menu.hilite.submenu.pixmap", "Menu.Hilite.Submenu.Pixmap"),
+    m_hl_selected_pixmap(*this, "menu.hilite.selected.pixmap", "Menu.Hilite.Selected.Pixmap"),
+    m_hl_unselected_pixmap(*this, "menu.hilite.unselected.pixmap", "Menu.Hilite.Unselected.Pixmap"),
     m_display(FbTk::App::instance()->display()),
     t_text_gc(RootWindow(m_display, screen_num)),
     f_text_gc(RootWindow(m_display, screen_num)),
@@ -109,12 +112,18 @@ void MenuTheme::reconfigTheme() {
     m_real_title_height = std::max(*m_title_height,
                                    titleFont().height() + 2*bevelWidth());
 
-    m_real_item_height = m_real_item_height == 0 ? 1 : m_real_item_height;
-    m_real_title_height = m_real_title_height == 0 ? 1 : m_real_title_height;
+    unsigned int minsize = 2*bevelWidth()+1;
+    m_real_item_height = m_real_item_height < minsize ? minsize: m_real_item_height;
+    m_real_title_height = m_real_title_height == minsize ? minsize : m_real_title_height;
+    unsigned int item_pm_height = itemHeight();
 
-    m_bullet_pixmap->scale(itemHeight(), itemHeight());
-    m_selected_pixmap->scale(itemHeight(), itemHeight());
-    m_unselected_pixmap->scale(itemHeight(), itemHeight());
+    m_bullet_pixmap->scale(item_pm_height, item_pm_height);
+    m_selected_pixmap->scale(item_pm_height, item_pm_height);
+    m_unselected_pixmap->scale(item_pm_height, item_pm_height);
+
+    m_hl_bullet_pixmap->scale(item_pm_height, item_pm_height);
+    m_hl_selected_pixmap->scale(item_pm_height, item_pm_height);
+    m_hl_unselected_pixmap->scale(item_pm_height, item_pm_height);
 
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);
