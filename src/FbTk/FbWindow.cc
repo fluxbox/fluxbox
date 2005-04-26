@@ -555,6 +555,30 @@ void FbWindow::create(Window parent, int x, int y,
     FbWindow::setBackgroundColor(Color("gray", screenNumber()));
 }
 
+
+void FbWindow::sendConfigureNotify(int x, int y, 
+                                   unsigned int width, unsigned int height) {
+    Display *disp = FbTk::App::instance()->display();
+    XEvent event;
+    event.type = ConfigureNotify;
+
+    event.xconfigure.display = disp;
+    event.xconfigure.event = window();
+    event.xconfigure.window = window();
+    event.xconfigure.x = x;
+    event.xconfigure.y = y;
+    event.xconfigure.width = width;
+    event.xconfigure.height = height;
+    //!! TODO
+    event.xconfigure.border_width = 1;
+    //!! TODO
+    event.xconfigure.above = None; 
+    event.xconfigure.override_redirect = false;
+
+    XSendEvent(disp, window(), False, StructureNotifyMask, &event);
+
+}
+
 bool operator == (Window win, const FbWindow &fbwin) {
     return win == fbwin.window();
 }

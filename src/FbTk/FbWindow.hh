@@ -186,6 +186,8 @@ public:
 
     void setRenderer(FbWindowRenderer &renderer) { m_renderer = &renderer; }
 
+    void sendConfigureNotify(int x, int y, unsigned int width, unsigned int height);
+
 protected:
     /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);

@@ -129,29 +129,6 @@ WinClient::~WinClient() {
     m_win = 0;
 }
 
-void WinClient::updateRect(int x, int y, 
-                        unsigned int width, unsigned int height) {
-    Display *disp = FbTk::App::instance()->display();
-    XEvent event;
-    event.type = ConfigureNotify;
-
-    event.xconfigure.display = disp;
-    event.xconfigure.event = window();
-    event.xconfigure.window = window();
-    event.xconfigure.x = x;
-    event.xconfigure.y = y;
-    event.xconfigure.width = width;
-    event.xconfigure.height = height;
-    //!! TODO
-    event.xconfigure.border_width = 1;//client.old_bw;
-    //!! TODO
-    event.xconfigure.above = None; //m_frame.window().window();
-    event.xconfigure.override_redirect = false;
-
-    XSendEvent(disp, window(), False, StructureNotifyMask, &event);
-
-}
-
 bool WinClient::acceptsFocus() const {
     return (m_focus_mode == F_LOCALLYACTIVE || 
             m_focus_mode == F_PASSIVE || 

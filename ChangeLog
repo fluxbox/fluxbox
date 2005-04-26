@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/04/26:
+  * Fix systray icon sizing (send a configurenotify on resize) (Simon)
+    SystemTray.cc WinClient.hh/cc FbTk/FbWindow.hh/cc Window.cc
   * Extension of previous patch, pushing various bits of menu items and
     text buttons onto the background, and fixing various issues (Simon) 
     + Incidentally, adds some new theme items (due to backwards 

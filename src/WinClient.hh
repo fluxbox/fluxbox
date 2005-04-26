@@ -50,8 +50,6 @@ public:
 
     ~WinClient();
 
-    void updateRect(int x, int y, unsigned int width, unsigned int height);
-
     bool sendFocus(); // returns whether we sent a message or not 
                       // i.e. whether we assume the focus will get taken
     bool acceptsFocus() const; // will this window accept focus (according to hints)

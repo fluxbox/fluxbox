@@ -3727,7 +3727,7 @@ void FluxboxWindow::moveResizeClient(WinClient &client, int x, int y,
     client.moveResize(x, y,
                       frame().clientArea().width(),
                       frame().clientArea().height());
-    client.updateRect(frame().x() + frame().clientArea().x(),
+    client.sendConfigureNotify(frame().x() + frame().clientArea().x(),
                       frame().y() + frame().clientArea().y(),
                       frame().clientArea().width(),
                       frame().clientArea().height());

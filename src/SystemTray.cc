@@ -326,7 +326,6 @@ void SystemTray::removeClient(Window win) {
 
 void SystemTray::exposeEvent(XExposeEvent &event) {
     m_window.clear();
-    update(0);
 }
 
 void SystemTray::handleEvent(XEvent &event) {
@@ -350,6 +349,8 @@ void SystemTray::handleEvent(XEvent &event) {
                 // copy of position
                 (*it)->moveResize((*it)->x(), (*it)->y(),
                                   (*it)->width(), (*it)->height());
+                // this was why gaim wasn't centring the icon
+                (*it)->sendConfigureNotify(0, 0, (*it)->width(), (*it)->height());
             }
             // so toolbar know that we changed size
             resizeSig().notify();
@@ -359,19 +360,23 @@ void SystemTray::handleEvent(XEvent &event) {
 }
 
 void SystemTray::rearrangeClients() {
+    const unsigned int h = height();
+    const unsigned int bw = m_theme.border().width();
+    int final_size = m_clients.size()*h + bw;
+    resize(final_size, h);
+    update(0);
+
     // move and resize clients
     ClientList::iterator client_it = m_clients.begin();
     ClientList::iterator client_it_end = m_clients.end();
-    int next_x = 0;
-    const unsigned int h = height();
-    const unsigned int b = m_theme.border().width();
+    int next_x = bw;
     for (; client_it != client_it_end;
-         ++client_it, next_x += h - 2 * b) {
-        (*client_it)->moveResize(next_x, b, h - b, h - b);
+         ++client_it, next_x += h+bw) {
+        (*client_it)->moveResize(next_x, bw, h, h);
+        (*client_it)->sendConfigureNotify(next_x, bw, h, h);
     }
 
-    resize(next_x, height());
-    update(0);
+    client_it = m_clients.begin();
 }
 
 void SystemTray::removeAllClients() {
