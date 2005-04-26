@@ -159,11 +159,12 @@ void FbWindow::updateBackground(bool only_if_alpha) {
     if (only_if_alpha && alpha == 255) 
         return;
 
-
-    if (alpha != 255 && m_lastbg_pm != ParentRelative) {
+    // still use bg buffer pixmap if transparent
+    // cause it does nice caching things
+    if (m_lastbg_pm != ParentRelative) {
         // update source and destination if needed
         Pixmap root = FbPixmap::getRootPixmap(screenNumber());
-        if (m_transparent->source() != root)
+        if (alpha != 255 && m_transparent->source() != root)
             m_transparent->setSource(root, screenNumber());
 
         FbPixmap newpm = FbPixmap(*this, width(), height(), depth());
@@ -178,7 +179,9 @@ void FbWindow::updateBackground(bool only_if_alpha) {
             newpm.copyArea((m_lastbg_pm == None)?drawable():m_lastbg_pm, gc, 0, 0, 0, 0, width(), height());
         }
         XFreeGC(display(), gc);
-        m_transparent->setDest(newpm.drawable(), screenNumber());
+
+        if (alpha != 255)
+            m_transparent->setDest(newpm.drawable(), screenNumber());
 
         // get root position
 
@@ -196,15 +199,17 @@ void FbWindow::updateBackground(bool only_if_alpha) {
         }
 
         // render background image from root pos to our window
-        m_transparent->render(root_x, root_y,
-                              0, 0,
-                              width(), height());
+        if (alpha != 255)
+            m_transparent->render(root_x, root_y,
+                                  0, 0,
+                                  width(), height());
 
         // render any foreground items
         if (m_renderer)
             m_renderer->renderForeground(*this, newpm);
 
-        m_transparent->freeDest(); // it's only temporary, don't leave it hanging around
+        if (alpha != 255)
+            m_transparent->freeDest(); // it's only temporary, don't leave it hanging around
         newbg = newpm.release();
     }
 
@@ -315,12 +320,17 @@ void FbWindow::setAlpha(unsigned char alpha) {
 
         // don't setOpaque, let controlling objects do that
         // since it's only needed on toplevel windows
-    } else if (m_transparent.get() == 0 && alpha < 255) {
-        m_transparent.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()), window(), alpha, screenNumber()));
-    } else if (alpha < 255 && alpha != m_transparent->alpha())
-        m_transparent->setAlpha(alpha);
-    else if (alpha == 255)
-        m_transparent.reset(0); // destroy transparent object
+    } else {
+        if (!FbTk::Transparent::haveRender()) 
+            alpha = 255;
+
+        if (m_transparent.get() == 0 && alpha < 255) {
+            m_transparent.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()), window(), alpha, screenNumber()));
+        } else if (alpha < 255 && alpha != m_transparent->alpha())
+            m_transparent->setAlpha(alpha);
+        else if (alpha == 255)
+            m_transparent.reset(0); // destroy transparent object
+    }
 #endif // HAVE_XRENDER
 }
 
