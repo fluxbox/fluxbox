@@ -328,21 +328,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     renderPosWindow();
 
     // setup workspaces and workspace menu
-
-    if (*resource.workspaces != 0) {
-        for (int i = 0; i < *resource.workspaces; ++i) {
-            Workspace *wkspc = new Workspace(*this, m_layermanager, 
-                                             getNameOfWorkspace(m_workspaces_list.size()),
-                                             m_workspaces_list.size());
-            m_workspaces_list.push_back(wkspc);
-        }
-    } else { // create at least one workspace
-        Workspace *wkspc = new Workspace(*this, m_layermanager, 
-                                         getNameOfWorkspace(m_workspaces_list.size()),
-                                         m_workspaces_list.size());
-        m_workspaces_list.push_back(wkspc);
+    int nr_ws = *resource.workspaces;
+    addWorkspace(); // at least one
+    for (int i = 1; i < nr_ws; ++i) {
+        addWorkspace();
     }
-
 
     m_current_workspace = m_workspaces_list.front();
 
@@ -656,6 +646,7 @@ void BScreen::hideWindowMenus(const FluxboxWindow* except) {
 
 
 void BScreen::reconfigure() {
+
     m_windowtheme->setFocusedAlpha(*resource.focused_alpha);
     m_windowtheme->setUnfocusedAlpha(*resource.unfocused_alpha);
     m_menutheme->setAlpha(*resource.menu_alpha);
@@ -687,6 +678,18 @@ void BScreen::reconfigure() {
 
     renderGeomWindow();
     renderPosWindow();
+
+    // realize the number of workspaces from the init-file
+    const int nr_ws = *resource.workspaces;
+    if (nr_ws > m_workspaces_list.size()) {
+        while(nr_ws != m_workspaces_list.size()) {
+            addWorkspace();
+        }
+    } else if (nr_ws < m_workspaces_list.size()) {
+        while(nr_ws != m_workspaces_list.size()) {
+            removeLastWorkspace();
+        }
+    }
 
     //reconfigure menus
     m_workspacemenu->reconfigure();
@@ -851,11 +854,16 @@ void BScreen::setAntialias(bool value) {
 }
 
 int BScreen::addWorkspace() {
+
+    bool save_name = getNameOfWorkspace(m_workspaces_list.size()) != "" ? false : true;
     Workspace *wkspc = new Workspace(*this, m_layermanager, 
-                                     "",
+                                     getNameOfWorkspace(m_workspaces_list.size()),
                                      m_workspaces_list.size());
     m_workspaces_list.push_back(wkspc);
-    addWorkspaceName(wkspc->name().c_str()); // update names
+    
+    if (save_name)
+        addWorkspaceName(wkspc->name().c_str()); //update names
+
     saveWorkspaces(m_workspaces_list.size());
     
     updateNetizenWorkspaceCount();	
@@ -878,8 +886,6 @@ int BScreen::removeLastWorkspace() {
 
     //remove last workspace
     m_workspaces_list.pop_back();		
-
-
 
     updateNetizenWorkspaceCount();
     saveWorkspaces(m_workspaces_list.size());

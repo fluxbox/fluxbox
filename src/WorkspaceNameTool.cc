@@ -30,6 +30,8 @@
 
 #include "FbTk/ImageControl.hh"
 
+#include <algorithm>
+
 WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent, 
                                      ToolTheme &theme, BScreen &screen):
     ToolbarItem(ToolbarItem::FIXED),
@@ -68,6 +70,7 @@ void WorkspaceNameTool::moveResize(int x, int y,
 }
 
 void WorkspaceNameTool::update(FbTk::Subject *subj) {
+
     m_button.setText(m_screen.currentWorkspace()->name());
     if (m_button.width() != width()) {
         resize(width(), height());
@@ -79,13 +82,13 @@ void WorkspaceNameTool::update(FbTk::Subject *subj) {
 
 unsigned int WorkspaceNameTool::width() const {
     // calculate largest size
-    int max_size = 0;
-    const int num_workspaces = m_screen.getNumberOfWorkspaces();
-    for (int workspace = 0; workspace < num_workspaces; ++workspace) {
-        const std::string &name = m_screen.getWorkspace(workspace)->name().c_str();
-        int size = m_theme.font().textWidth(name.c_str(), name.size());
-        if (size > max_size)
-            max_size = size;
+    unsigned int max_size = 0;
+    const BScreen::Workspaces& workspaces = m_screen.getWorkspacesList();
+    BScreen::Workspaces::const_iterator it;
+    for (it = workspaces.begin(); it != workspaces.end(); it++) {
+        const std::string &name = (*it)->name();
+        max_size = std::max(m_theme.font().textWidth(name.c_str(), name.size()), 
+                            max_size);
     }
     // so align text dont cut the last character
     max_size += 2;

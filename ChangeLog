@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/04/27:
+  * Fix #1182770 (Mathias)
+    session.screen*.workspaces: <int> and the number of
+    workspaces in the running fluxbox were out of sync and lead to
+    segfault on a "reloadconfig"-Command.
+    fluxbox.cc Screen.cc Workspace.cc WorkspaceNameTool.cc
   * Fix drawing when transparency off (Simon)
     FbWindow.cc
 *05/04/26:

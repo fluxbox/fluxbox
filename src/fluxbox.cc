@@ -374,7 +374,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     }
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
-
+   
     // setup theme manager to have our style file ready to be scanned
     FbTk::ThemeManager::instance().load(FbTk::StringUtil::expandFilename(getStyleFilename()));
 
@@ -388,7 +388,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     m_resourcemanager.unlock();
     ungrab();
-
+ 
 #ifdef DEBUG
     if (m_resourcemanager.lockDepth() != 0)
         cerr<<"--- resource manager lockdepth = "<<m_resourcemanager.lockDepth()<<endl;
@@ -1568,22 +1568,18 @@ void Fluxbox::load_rc(BScreen &screen) {
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): Workspaces="<<
             screen.getNumberOfWorkspaces()<<endl;
 #endif // DEBUG
-        char *search = StringUtil::strdup(value.addr);
-
-        int i;
-        for (i = 0; i < screen.getNumberOfWorkspaces(); i++) {
-            char *nn;
-
-            if (! i) nn = strtok(search, ",");
-            else nn = strtok(0, ",");
-
-            if (nn)
-                screen.addWorkspaceName(nn);
-            else break;
-
+        string values(value.addr);
+        BScreen::WorkspaceNames names;
+        
+        StringUtil::removeTrailingWhitespace(values);
+        StringUtil::removeFirstWhitespace(values);
+        StringUtil::stringtok<BScreen::WorkspaceNames>(names, values, ",");
+        BScreen::WorkspaceNames::iterator it;
+        for(it = names.begin(); it != names.end(); it++) {
+            if (!(*it).empty() && (*it) != "")
+            screen.addWorkspaceName((*it).c_str());
         }
-
-        delete [] search;
+        
     }
 
     FbTk::Image::removeAllSearchPaths();

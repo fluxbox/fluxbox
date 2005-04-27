@@ -364,7 +364,7 @@ void Workspace::update(FbTk::Subject *subj) {
 
 
 void Workspace::setName(const std::string &name) {
-    if (!name.empty()) {
+    if (!name.empty() && name != "") {
         m_name = name;
     } else { //if name == 0 then set default name from nls
         _FB_USES_NLS;
@@ -375,7 +375,7 @@ void Workspace::setName(const std::string &name) {
                 m_id + 1); //m_id starts at 0
         m_name = tname;
     }
-	
+    
     screen().updateWorkspaceNamesAtom();
 	
     menu().setLabel(m_name.c_str());
