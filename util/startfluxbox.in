@@ -47,7 +47,7 @@ else
 @pkgbindir@/bsetroot -solid black
 
 # This shows the fluxbox-splash-screen
-# fbsetbg -C /usr/share/fluxbox/splash.jpg
+# fbsetbg -C @pkgdatadir@/splash.jpg
 
 # Other examples. Check man xset for details.
 #
