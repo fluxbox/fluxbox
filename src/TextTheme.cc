@@ -34,10 +34,6 @@ TextTheme::TextTheme(FbTk::Theme &theme,
     m_text_color(theme, name + ".textColor", altname + ".TextColor"),
     m_justify(theme, name + ".justify", altname + ".Justify"),
     m_text_gc(RootWindow(FbTk::App::instance()->display(), theme.screenNum())) {
-    *m_justify = FbTk::LEFT;
-    // set default values
-    m_font->load("fixed");
-    m_text_color->setFromString("white", theme.screenNum());
 
     update();
 }

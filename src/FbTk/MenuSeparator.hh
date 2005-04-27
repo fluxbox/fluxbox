@@ -33,7 +33,7 @@ class MenuSeparator: public MenuItem {
 public:
     virtual void draw(FbDrawable &drawable, 
                       const MenuTheme &theme,
-                      bool highlight,
+                      bool highlight, bool draw_foreground, bool draw_background,
                       int x, int y,
                       unsigned int width, unsigned int height) const;
 

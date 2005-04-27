@@ -116,7 +116,7 @@ public:
         XResizeWindow(s_display, m_window, width, height);
         m_width = width;
         m_height = height;
-        updateBackground(true);
+        updateBackground(false);
     }
 
     virtual inline void moveResize(int x, int y, unsigned int width, unsigned int height) {
@@ -127,7 +127,7 @@ public:
         m_y = y;
         m_width = width;
         m_height = height;
-        updateBackground(true);
+        updateBackground(false);
 
     }
     virtual void lower();
@@ -185,8 +185,10 @@ public:
     void setOpaque(unsigned char alpha);
 
     void setRenderer(FbWindowRenderer &renderer) { m_renderer = &renderer; }
-
     void sendConfigureNotify(int x, int y, unsigned int width, unsigned int height);
+
+    /// forces full background change, recalcing of alpha values if necessary
+    void updateBackground(bool only_if_alpha);
 
 protected:
     /// creates a window with x window client (m_window = client)
@@ -204,8 +206,6 @@ private:
                 bool save_unders,
                 int depth, 
                 int class_type);
-    /// forces full background change, recalcing of alpha values if necessary
-    void updateBackground(bool only_if_alpha);
 
     const FbWindow *m_parent; ///< parent FbWindow
     int m_screen_num;  ///< screen num on which this window exist

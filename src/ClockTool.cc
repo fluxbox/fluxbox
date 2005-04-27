@@ -46,8 +46,6 @@
   #include <time.h>
 #endif
 #include <string>
-#include <iostream>
-using namespace std;
 
 class ClockMenuItem: public FbTk::MenuItem {
 public:
@@ -220,6 +218,10 @@ void ClockTool::update(FbTk::Subject *subj) {
         resize(new_width, m_button.height());
         resizeSig().notify();
     }
+
+    if (subj != 0 && typeid(*subj) == typeid(ToolTheme))
+        renderTheme(m_button.alpha());
+
 }
 
 unsigned int ClockTool::borderWidth() const { 
@@ -249,13 +251,10 @@ void ClockTool::updateTime() {
         if (!strftime(time_string, 255, m_timeformat->c_str(), time_type) || m_button.text() == time_string)
             return;
         m_button.setText(time_string);
-        m_button.parentMoved();
 #else // dont have strftime so we have to set it to hour:minut
         //        sprintf(time_string, "%d:%d", );
 #endif // HAVE_STRFTIME
     }
-
-    m_button.clear();
 }
 
 // Just change things that affect the size
@@ -266,28 +265,27 @@ void ClockTool::updateSizing() {
 }
 
 void ClockTool::reRender() {
+    if (m_pixmap) 
+        m_screen.imageControl().removeImage(m_pixmap);
+
     if (m_theme.texture().usePixmap()) {
-        if (m_pixmap) 
-            m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
                                                        m_theme.texture());
         m_button.setBackgroundPixmap(m_pixmap);
+    } else {
+        m_pixmap = 0;
+        m_button.setBackgroundColor(m_theme.texture().color());
     }
 }
 
-void ClockTool::renderTheme(unsigned char alpha) {
-    if (!m_theme.texture().usePixmap()) {
-        if (m_pixmap)
-            m_screen.imageControl().removeImage(m_pixmap);
-        m_pixmap = 0;
-        m_button.setBackgroundColor(m_theme.texture().color());
-    } else {
-        reRender();
-    }
 
+void ClockTool::renderTheme(unsigned char alpha) {
+    m_button.setAlpha(alpha);
     m_button.setJustify(m_theme.justify());
+
+    reRender();
+
     m_button.setBorderWidth(m_theme.border().width());
     m_button.setBorderColor(m_theme.border().color());
-    m_button.setAlpha(alpha);
     m_button.clear();
 }

@@ -558,7 +558,10 @@ void IconbarTool::update(FbTk::Subject *subj) {
             return;
 
         } else if (subj == &(winsubj->win().titleSig())) {
-            renderWindow(winsubj->win());
+            IconButton *button = findButton(winsubj->win());
+            if (button == 0)
+                return;
+            button->setText(winsubj->win().title());
             return;
         } else {
             // signal not handled

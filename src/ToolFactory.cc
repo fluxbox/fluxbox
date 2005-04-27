@@ -153,9 +153,13 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
 
 void ToolFactory::updateThemes() {
     m_clock_theme.setAntialias(screen().antialias());
+    m_clock_theme.reconfigTheme();
     m_iconbar_theme.setAntialias(screen().antialias());
+    m_iconbar_theme.reconfigTheme();
     m_button_theme->setAntialias(screen().antialias());
+    m_button_theme->reconfigTheme();
     m_workspace_theme->setAntialias(screen().antialias());
+    m_workspace_theme->reconfigTheme();
 }
 
 

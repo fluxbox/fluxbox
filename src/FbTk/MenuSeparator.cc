@@ -32,16 +32,19 @@ namespace FbTk {
 
 void MenuSeparator::draw(FbDrawable &drawable, 
                          const MenuTheme &theme,
-                         bool highlight,
+                         bool highlight, bool draw_foreground, bool draw_background,
                          int x, int y,
                          unsigned int width, unsigned int height) const {
-    const GContext &tgc =
-        (highlight ? theme.hiliteTextGC() :
-         (isEnabled() ? theme.frameTextGC() : theme.disableTextGC() ) );
 
-    drawable.drawRectangle(tgc.gc(),
-                           x + theme.bevelWidth() + height + 1, y + height / 2,
-        width - ((theme.bevelWidth() + height) * 2) - 1, 0);
+    if (draw_background) {
+        const GContext &tgc =
+            (highlight ? theme.hiliteTextGC() :
+             (isEnabled() ? theme.frameTextGC() : theme.disableTextGC() ) );
+
+        drawable.drawRectangle(tgc.gc(),
+                               x + theme.bevelWidth() + height + 1, y + height / 2,
+                               width - ((theme.bevelWidth() + height) * 2) - 1, 0);
+    }
 }
 
 }

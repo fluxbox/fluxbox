@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/04/27:
+  * Fix a bunch more issues with recent patches (Simon)
+    - Clock text colour on start
+    - Resizing not updating in some cases
+    - menu separators not being drawn
+    FbTk/... FbWindow.hh MenuSeparator.hh/cc TextButton.cc
+    ClockTool.cc IconbarTool.cc TextTheme.cc ToolFactory.cc
   * Close #1107216, minor fbgm-issue, cosmetic startfluxbox (from the OpenBSD patches)
     nls/Makefile.am util/fluxbox-generate_menu.in util/startfluxbox.in
   * Fix #1182770 (Mathias)

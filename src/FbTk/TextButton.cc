@@ -63,7 +63,7 @@ void TextButton::setJustify(FbTk::Justify just) {
 void TextButton::setText(const std::string &text) {
     if (m_text != text) {
         m_text = text;
-        parentMoved();
+        updateBackground(false);
         clear();
     }
 }
