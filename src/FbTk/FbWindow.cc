@@ -46,7 +46,7 @@ namespace FbTk {
 
 FbWindow::FbWindow():FbDrawable(), m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0),
                      m_width(0), m_height(0), m_border_width(0), m_depth(0), m_destroy(true),
-                     m_lastbg_pm(0), m_renderer(0) {
+                     m_lastbg_color_set(false), m_lastbg_color(0), m_lastbg_pm(0), m_renderer(0) {
 
 }
 
@@ -57,6 +57,7 @@ FbWindow::FbWindow(const FbWindow& the_copy):FbDrawable(),
                                              m_width(the_copy.width()), m_height(the_copy.height()),
                                              m_border_width(the_copy.borderWidth()),
                                              m_depth(the_copy.depth()), m_destroy(true),
+                                             m_lastbg_color_set(false), m_lastbg_color(0), 
                                              m_lastbg_pm(0), m_renderer(the_copy.m_renderer) {
     the_copy.m_window = 0;
 }
@@ -91,8 +92,7 @@ FbWindow::FbWindow(const FbWindow &parent,
     m_parent(&parent),
     m_screen_num(parent.screenNumber()),
     m_destroy(true),
-    m_lastbg_color_set(false),
-    m_lastbg_color(0x42),
+    m_lastbg_color_set(false), m_lastbg_color(0),
     m_lastbg_pm(0), m_renderer(0) {
 
     create(parent.window(), x, y, width, height, eventmask,
@@ -109,6 +109,7 @@ FbWindow::FbWindow(Window client):FbDrawable(), m_parent(0),
                                   m_border_width(0),
                                   m_depth(0),
                                   m_destroy(false),  // don't destroy this window
+                                  m_lastbg_color_set(false), m_lastbg_color(0),
                                   m_lastbg_pm(0), m_renderer(0) {
 
     setNew(client);
@@ -152,6 +153,9 @@ void FbWindow::updateBackground(bool only_if_alpha) {
     Pixmap newbg = m_lastbg_pm;
     unsigned char alpha = 255;
     bool free_newbg = false;
+
+    if (m_lastbg_pm == None && !m_lastbg_color_set)
+        return;
 
     if (m_transparent.get() != 0)
         alpha = m_transparent->alpha();
