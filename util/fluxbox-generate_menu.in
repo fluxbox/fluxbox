@@ -96,7 +96,7 @@ Options:
 
   Only for packagers:
 
-    -p  prefix; default is /usr/local
+    -p  prefix; default is @PREFIX@
     -n  Gnome-prefix; /opt, /usr, /usr/X11R6 and /usr/local autodetected
     -q  KDE-prefix; idem dito
 
