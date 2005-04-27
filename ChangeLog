@@ -1,8 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/04/27:
-  * Fix some initialisation, plus setting background too much (Simon)
-    FbWindow.cc
+  * Fix some initialisation, plus setting background too much (Simon + Mathias)
+    FbTk/FbWindow.cc/hh FbWinFrame.cc
   * Add some extremely basic handling for icon pixmaps that aren't
     the same depth as the screen (treat all as 1-bit, easy to handle)
     (Simon)
