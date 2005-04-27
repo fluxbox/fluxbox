@@ -226,9 +226,13 @@ void IconButton::update(FbTk::Subject *subj) {
     if (m_win.clientList().empty())
         return;
 
-    XWMHints *hints = XGetWMHints(FbTk::App::instance()->display(), m_win.winClient().window());
+    Display *display = FbTk::App::instance()->display();
+
+    XWMHints *hints = XGetWMHints(display, m_win.winClient().window());
     if (hints == 0)
         return;
+
+    int screen = m_win.screen().screenNumber();
 
     if (m_use_pixmap && (hints->flags & IconPixmapHint) && hints->icon_pixmap != 0) {
         // setup icon window
@@ -237,7 +241,7 @@ void IconButton::update(FbTk::Subject *subj) {
         int new_width = new_height;
         m_icon_window.resize((new_width>0) ? new_width : 1, (new_height>0) ? new_height : 1);
 
-        m_icon_pixmap.copy(hints->icon_pixmap);
+        m_icon_pixmap.copy(hints->icon_pixmap, DefaultDepth(display, screen), screen);
         m_icon_pixmap.scale(m_icon_window.width(), m_icon_window.height());
 
         m_icon_window.setBackgroundPixmap(m_icon_pixmap.drawable());
@@ -249,7 +253,7 @@ void IconButton::update(FbTk::Subject *subj) {
     }
 
     if(m_use_pixmap && (hints->flags & IconMaskHint)) {
-        m_icon_mask.copy(hints->icon_mask);
+        m_icon_mask.copy(hints->icon_mask, 0, 0);
         m_icon_mask.scale(m_icon_pixmap.width(), m_icon_pixmap.height());
     } else
         m_icon_mask = 0;
@@ -260,7 +264,7 @@ void IconButton::update(FbTk::Subject *subj) {
 #ifdef SHAPE
 
     if (m_icon_mask.drawable() != 0) {
-        XShapeCombineMask(FbTk::App::instance()->display(),
+        XShapeCombineMask(display,
                           m_icon_window.drawable(),
                           ShapeBounding,
                           0, 0,

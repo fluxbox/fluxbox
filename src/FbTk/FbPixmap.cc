@@ -139,7 +139,8 @@ void FbPixmap::copy(const FbPixmap &the_copy) {
     }
 }
 
-void FbPixmap::copy(Pixmap pm) {
+// screen doesn't count if depth is "zero"...
+void FbPixmap::copy(Pixmap pm, int depth, int screen_num) {
     free();
     if (pm == 0)
         return;
@@ -157,15 +158,28 @@ void FbPixmap::copy(Pixmap pm) {
                  &new_width, &new_height,
                  &border_width,
                  &bpp);
+
+    if (depth == 0)
+        depth = bpp;
+
     // create new pixmap and copy area
-    create(root, new_width, new_height, bpp);
+    create(root, new_width, new_height, depth);
 
     GC gc = XCreateGC(display(), drawable(), 0, 0);
 
-    XCopyArea(display(), pm, drawable(), gc,
-              0, 0,
-              width(), height(),
-              0, 0);
+    if (depth == bpp) {
+        XCopyArea(display(), pm, drawable(), gc,
+                  0, 0,
+                  width(), height(),
+                  0, 0);
+    } else {
+        XSetForeground(display(), gc, Color("black", screen_num).pixel());
+        XSetBackground(display(), gc, Color("white", screen_num).pixel());
+        XCopyPlane(display(), pm, drawable(), gc,
+                   0, 0,
+                   width(), height(),
+                   0, 0, 1);
+    }
 
     XFreeGC(display(), gc);
 }
@@ -254,7 +268,7 @@ void FbPixmap::tile(unsigned int dest_width, unsigned int dest_height) {
 
     FbPixmap new_pm(drawable(), width(), height(), depth());
 
-    new_pm.copy(m_pm);
+    new_pm.copy(m_pm, 0, 0);
 
     resize(dest_width, dest_height);
 

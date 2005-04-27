@@ -147,8 +147,8 @@ PixmapWithMask *ImageImlib2::load(const std::string &filename, int screen_num) c
         // pm and mask belong to imlib2, 
         // so we have to copy them
         PixmapWithMask* result = new PixmapWithMask();
-        result->pixmap().copy(pm);
-        result->mask().copy(mask);
+        result->pixmap().copy(pm, 0, 0);
+        result->mask().copy(mask, 0, 0);
 
         // mark pm and mask as freeable in imlib
         imlib_free_image_and_decache();

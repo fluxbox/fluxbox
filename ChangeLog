@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/04/27:
+  * Add some extremely basic handling for icon pixmaps that aren't
+    the same depth as the screen (treat all as 1-bit, easy to handle)
+    (Simon)
+    FbTk/FbPixmap.hh/cc FbTk/ImageImlib2.cc IconButton.cc
   * Fix a bunch more issues with recent patches (Simon)
     - Clock text colour on start
     - Resizing not updating in some cases

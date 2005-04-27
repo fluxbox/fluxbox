@@ -48,7 +48,7 @@ public:
     virtual ~FbPixmap();
 
     void copy(const FbPixmap &the_copy);
-    void copy(Pixmap pixmap);
+    void copy(Pixmap pixmap, int depth_convert, int screen_num);
     /// rotates the pixmap 90 deg, not implemented!
     void rotate();
     /// scales the pixmap to specified size
