@@ -86,8 +86,6 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
     m_themelistener(*this),
     m_shape(new Shape(m_window, theme.shapePlace())) {
     m_theme.reconfigSig().attach(&m_themelistener);
-    m_window.setCarrier(true);
-    m_clientarea.setCarrier(true);
     init();
 }
 

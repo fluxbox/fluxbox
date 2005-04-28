@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/28:
+  * Revert Mathias's little change to my patch, and fix it properly :) (Simon)
+    FbTk/FbWindow.cc/hh FbWinFrame.cc    
 *05/04/27:
   * Fix some initialisation, plus setting background too much (Simon + Mathias)
     FbTk/FbWindow.cc/hh FbWinFrame.cc

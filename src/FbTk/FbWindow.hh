@@ -187,9 +187,6 @@ public:
     void setRenderer(FbWindowRenderer &renderer) { m_renderer = &renderer; }
     void sendConfigureNotify(int x, int y, unsigned int width, unsigned int height);
 
-    /// this window is basicly a carrier and does not need background-updates
-    void setCarrier(bool flag) { m_is_carrier = flag; }
-    bool isCarrier() const { return m_is_carrier; }
     /// forces full background change, recalcing of alpha values if necessary
     void updateBackground(bool only_if_alpha);
 
@@ -224,8 +221,6 @@ private:
     Pixmap m_lastbg_pm;
 
     FbWindowRenderer *m_renderer;
-
-    bool m_is_carrier;
 };
 
 bool operator == (Window win, const FbWindow &fbwin);
