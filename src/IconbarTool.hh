@@ -49,7 +49,9 @@ public:
     enum Mode {
         NONE, ///< no icons
         ICONS,  ///< all icons from all workspaces
+        NOICONS, ///< all noniconified windows from all workspaces
         WORKSPACEICONS,  ///< icons on current workspace
+        WORKSPACENOICONS, ///< non iconified workspaces on current workspaces
         WORKSPACE, ///< all windows and all icons on current workspace
         ALLWINDOWS ///< all windows and all icons from all workspaces
     };
