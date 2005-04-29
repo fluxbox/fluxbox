@@ -185,6 +185,8 @@ $set 14 #Toolbar
 14 Clock: 12h
 15 Edit Clock Format
 16 Show Pictures
+17 NoIcons
+18 WorkspaceNoIcons
 
 $set 15 #Window
 

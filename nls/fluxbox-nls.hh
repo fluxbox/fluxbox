@@ -177,6 +177,8 @@ enum {
 	ToolbarClock12 = 14,
 	ToolbarClockEditFormat = 15,
 	ToolbarShowIcons = 16,
+    ToolbarIconbarModeNoIcons = 17,
+    ToolbarIconbarModeWorkspaceNoIcons = 18,
 
 	WindowSet = 15,
 	WindowUnnamed = 1,

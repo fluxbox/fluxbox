@@ -55,8 +55,12 @@ void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
         m_value = IconbarTool::NONE;
     else if (strcasecmp(strval, "Icons") == 0) 
         m_value = IconbarTool::ICONS;
+    else if (strcasecmp(strval, "NoIcons") == 0)
+        m_value = IconbarTool::NOICONS;
     else if (strcasecmp(strval, "WorkspaceIcons") == 0) 
         m_value = IconbarTool::WORKSPACEICONS;
+    else if (strcasecmp(strval, "WorkspaceNoIcons") == 0)
+        m_value = IconbarTool::WORKSPACENOICONS;
     else if (strcasecmp(strval, "Workspace") == 0) 
         m_value = IconbarTool::WORKSPACE;
     else if (strcasecmp(strval, "AllWindows") == 0) 
@@ -167,8 +171,14 @@ string FbTk::Resource<IconbarTool::Mode>::getString() {
     case IconbarTool::ICONS:
         return string("Icons");
         break;
+    case IconbarTool::NOICONS:
+        return string("NoIcons");
+        break;
     case IconbarTool::WORKSPACEICONS:
         return string("WorkspaceIcons");
+        break;
+    case IconbarTool::WORKSPACENOICONS:
+        return string("WorkspaceNoIcons");
         break;
     case IconbarTool::WORKSPACE:
         return string("Workspace");
@@ -242,11 +252,23 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
                     IconbarTool::ICONS, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
+                    _FBTEXT(Toolbar, IconbarModeNoIcons,
+                        "NoIcons", "No iconified windows from all workspaces are shown"),
+                    handler,
+                    IconbarTool::NOICONS, saverc_cmd));
+
+    menu.insert(new ToolbarModeMenuItem(
                     _FBTEXT(Toolbar, IconbarModeWorkspaceIcons, 
                             "WorkspaceIcons", "Iconified windows from this workspace are shown"),
                     handler,
                     IconbarTool::WORKSPACEICONS, saverc_cmd));
 
+    menu.insert(new ToolbarModeMenuItem(
+                    _FBTEXT(Toolbar, IconbarModeWorkspaceNoIcons, 
+                            "WorkspaceNoIcons", "No iconified windows from this workspace are shown"),
+                    handler,
+                    IconbarTool::WORKSPACENOICONS, saverc_cmd));
+    
     menu.insert(new ToolbarModeMenuItem(
                     _FBTEXT(Toolbar, IconbarModeWorkspace, 
                             "Workspace", "Normal and iconified windows from this workspace are shown"),
@@ -290,11 +312,18 @@ inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
         if (win.isIconic())
             ret_val = true;
         break;
+    case IconbarTool::NOICONS:
+        if (!win.isIconic())
+            ret_val = true;
+        break;
     case IconbarTool::WORKSPACEICONS:
         if(win.workspaceNumber() == win.screen().currentWorkspaceID() &&
            win.isIconic())
             ret_val = true;
         break;
+    case IconbarTool::WORKSPACENOICONS:
+        if (win.isIconic())
+            break;
     case IconbarTool::WORKSPACE:
         if (win.workspaceNumber() == win.screen().currentWorkspaceID())
             ret_val = true;
@@ -456,9 +485,11 @@ void IconbarTool::setMode(Mode mode) {
     case WORKSPACEICONS: // all icons on current workspace
         updateIcons();
         break;
+    case WORKSPACENOICONS:
     case WORKSPACE: // all windows and all icons on current workspace
         updateWorkspace();
         break;
+    case NOICONS:
     case ALLWINDOWS: // all windows and all icons from all workspaces
         updateAllWindows();
         break;
@@ -595,9 +626,11 @@ void IconbarTool::update(FbTk::Subject *subj) {
     case WORKSPACEICONS:
         updateIcons();
         break;
+    case WORKSPACENOICONS:
     case WORKSPACE:
         updateWorkspace();
         break;
+    case NOICONS:
     case ALLWINDOWS:
         updateAllWindows();
         break;
@@ -867,13 +900,16 @@ void IconbarTool::updateWorkspace() {
     for (; win_it != win_it_end; ++win_it) {
         if (checkAddWindow(mode(), **win_it))
             itemlist.push_back(*win_it);
-    }    
+    }
+
     // add icons from current workspace
-    BScreen::Icons::iterator icon_it =  m_screen.getIconList().begin();
-    BScreen::Icons::iterator icon_it_end =  m_screen.getIconList().end();
-    for (; icon_it != icon_it_end; ++icon_it) {
-        if ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID())
-            itemlist.push_back(*icon_it);
+    if (mode() != WORKSPACENOICONS) {
+        BScreen::Icons::iterator icon_it =  m_screen.getIconList().begin();
+        BScreen::Icons::iterator icon_it_end =  m_screen.getIconList().end();
+        for (; icon_it != icon_it_end; ++icon_it) {
+            if ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID())
+                itemlist.push_back(*icon_it);
+        }
     }
 
     removeDuplicate(m_icon_list, itemlist);
@@ -892,9 +928,11 @@ void IconbarTool::updateAllWindows() {
                          (*workspace_it)->windowList().end());
     }
     // add icons
-    full_list.insert(full_list.end(),
-                     m_screen.getIconList().begin(),
-                     m_screen.getIconList().end());
+    if(mode() != NOICONS && mode() != WORKSPACENOICONS) {
+        full_list.insert(full_list.end(),
+                         m_screen.getIconList().begin(),
+                         m_screen.getIconList().end());
+    }
 
     removeDuplicate(m_icon_list, full_list);
     addList(full_list);

@@ -163,6 +163,8 @@ public:
     inline int y() const { return m_window.y(); }
     inline unsigned int width() const { return m_window.width(); }
     inline unsigned int height() const { return m_window.height(); }
+    inline unsigned int widthBeforeShade() const { return m_width_before_shade; }
+    inline unsigned int heightBeforeShade() const { return m_height_before_shade; }
     inline const FbTk::FbWindow &window() const { return m_window; }
     inline FbTk::FbWindow &window() { return m_window; }
     /// @return titlebar window
