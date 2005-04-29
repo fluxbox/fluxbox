@@ -27,14 +27,18 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "FbAtoms.hh"
-#include "EventManager.hh"
+
 #include "Xutil.hh"
 
+#include "EventManager.hh"
 #include "FbTk/I18n.hh"
+#include "FbTk/MultLayers.hh"
 
 #include <iostream>
 #include <algorithm>
 #include <iterator>
+#include <memory>
+
 #ifdef HAVE_CASSERT
   #include <cassert>
 #else
@@ -42,6 +46,9 @@
 #endif
 
 using namespace std;
+
+
+WinClient::TransientWaitMap WinClient::s_transient_wait;
 
 WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::FbWindow(win),
                      transient_for(0),
@@ -80,6 +87,16 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
     if (window_group != None) 
         Fluxbox::instance()->saveGroupSearch(window_group, this);
 
+    // search for this in transient waiting list
+    if (s_transient_wait.find(win) != s_transient_wait.end()) {
+        // Found transients that are waiting for this.
+        // For each transient that waits call updateTransientInfo
+        for_each(s_transient_wait[win].begin(),
+                 s_transient_wait[win].end(),
+                 mem_fun(&WinClient::updateTransientInfo));
+        // clear transient waiting list for this window
+        s_transient_wait.erase(win);
+    }
 }
 
 WinClient::~WinClient() {
@@ -99,16 +116,25 @@ WinClient::~WinClient() {
 
     Fluxbox *fluxbox = Fluxbox::instance();
 
+
+    //
+    // clear transients and transient_for
+    //
     if (transient_for != 0) {
         assert(transient_for != this);
         transient_for->transientList().remove(this);
         transient_for = 0;
     }
-
+    
     while (!transients.empty()) {
         transients.back()->transient_for = 0;
         transients.pop_back();
     }
+    // This fixes issue 1 (see WinClient.hh):
+    // If transients die before the transient_for is created
+    removeTransientFromWaitingList();
+    s_transient_wait.erase(window());
+
 
     screen().removeNetizen(window());
 
@@ -142,12 +168,12 @@ bool WinClient::sendFocus() {
     cerr<<"WinClient::"<<__FUNCTION__<<": this = "<<this<<
         " window = 0x"<<hex<<window()<<dec<<endl;
 #endif // DEBUG
-    Display *disp = FbTk::App::instance()->display();
+
     // setup focus msg
     XEvent ce;
     ce.xclient.type = ClientMessage;
     ce.xclient.message_type = FbAtoms::instance()->getWMProtocolsAtom();
-    ce.xclient.display = disp;
+    ce.xclient.display = display();
     ce.xclient.window = window();
     ce.xclient.format = 32;
     ce.xclient.data.l[0] = FbAtoms::instance()->getWMTakeFocusAtom();
@@ -156,21 +182,20 @@ bool WinClient::sendFocus() {
     ce.xclient.data.l[3] = 0l;
     ce.xclient.data.l[4] = 0l;
     // send focus msg
-    XSendEvent(disp, window(), false, NoEventMask, &ce);
+    XSendEvent(display(), window(), false, NoEventMask, &ce);
     return true;
 }
 
 void WinClient::sendClose(bool forceful) {
     if (forceful || !send_close_message)
-        XKillClient(FbTk::App::instance()->display(), window());
+        XKillClient(display(), window());
     else {
         // send WM_DELETE message
-        Display *disp = FbTk::App::instance()->display();
         // fill in XClientMessage structure for delete message
         XEvent ce;
         ce.xclient.type = ClientMessage;
         ce.xclient.message_type = FbAtoms::instance()->getWMProtocolsAtom();
-        ce.xclient.display = disp;
+        ce.xclient.display = display();
         ce.xclient.window = window();
         ce.xclient.format = 32;
         ce.xclient.data.l[0] = FbAtoms::instance()->getWMDeleteAtom();
@@ -179,20 +204,20 @@ void WinClient::sendClose(bool forceful) {
         ce.xclient.data.l[3] = 0l;
         ce.xclient.data.l[4] = 0l;
         // send event delete message to client window
-        XSendEvent(disp, window(), false, NoEventMask, &ce);
+        XSendEvent(display(), window(), false, NoEventMask, &ce);
     }
 }
 
 bool WinClient::getAttrib(XWindowAttributes &attr) const {
-    return XGetWindowAttributes(FbTk::App::instance()->display(), window(), &attr);
+    return XGetWindowAttributes(display(), window(), &attr);
 }
 
 bool WinClient::getWMName(XTextProperty &textprop) const {
-    return XGetWMName(FbTk::App::instance()->display(), window(), &textprop);
+    return XGetWMName(display(), window(), &textprop);
 }
 
 bool WinClient::getWMIconName(XTextProperty &textprop) const {
-    return XGetWMName(FbTk::App::instance()->display(), window(), &textprop);
+    return XGetWMName(display(), window(), &textprop);
 }
 
 const std::string &WinClient::getWMClassName() const {
@@ -205,7 +230,7 @@ const std::string &WinClient::getWMClassClass() const {
 
 void WinClient::updateWMClassHint() {
     XClassHint ch;
-    if (XGetClassHint(FbTk::App::instance()->display(), window(), &ch) == 0) {
+    if (XGetClassHint(display(), window(), &ch) == 0) {
 #ifdef DEBUG
         cerr<<"WinClient: Failed to read class hint!"<<endl;
 #endif //DEBUG
@@ -234,16 +259,16 @@ void WinClient::updateTransientInfo() {
     if (m_win == 0)
         return;
 
-    // remove us from parent
+
+    // remove this from parent
     if (transientFor() != 0) {
         transientFor()->transientList().remove(this);
     }
     
     transient_for = 0;
-    Display *disp = FbTk::App::instance()->display();
     // determine if this is a transient window
     Window win = 0;
-    if (!XGetTransientForHint(disp, window(), &win)) {
+    if (!XGetTransientForHint(display(), window(), &win)) {
 #ifdef DEBUG
         cerr<<__FUNCTION__<<": window() = 0x"<<hex<<window()<<dec<<"Failed to read transient for hint."<<endl;
 #endif // DEBUG
@@ -266,6 +291,22 @@ void WinClient::updateTransientInfo() {
 
 
     transient_for = Fluxbox::instance()->searchWindow(win);
+    // if we did not find a transient WinClient but still
+    // have a transient X window, then we have to put the 
+    // X transient_for window in a waiting list and update this clients transient
+    // list later when the transient_for has a Winclient
+    if (!transient_for) {
+        // We might also already waiting for an old transient_for;
+        // 
+        // this call fixes issue 2:
+        // If transients changes to new transient_for before the old transient_for is created. 
+        // (see comment in WinClient.hh)
+        //
+        removeTransientFromWaitingList();
+
+        s_transient_wait[win].push_back(this);
+    }
+
 
 #ifdef DEBUG
     cerr<<__FUNCTION__<<": transient_for window = 0x"<<hex<<win<<dec<<endl;
@@ -287,6 +328,7 @@ void WinClient::updateTransientInfo() {
         if (transientFor()->fbwindow() && transientFor()->fbwindow()->isStuck())
             m_win->stick();
     }
+
 }
 
 
@@ -301,7 +343,7 @@ void WinClient::updateTitle() {
     //         also influenced
     //
     // the limitation to 512 chars only avoids running in that trap
-    m_title = string(Xutil::getWMName(window()) ,0 , 512);
+    m_title = string(Xutil::getWMName(window()), 0, 512);
 }
 
 void WinClient::updateIconTitle() {
@@ -314,7 +356,7 @@ void WinClient::updateIconTitle() {
             if (text_prop.encoding != XA_STRING) {
                 text_prop.nitems = strlen((char *) text_prop.value);
 
-                if (XmbTextPropertyToTextList(FbTk::App::instance()->display(), &text_prop,
+                if (XmbTextPropertyToTextList(display(), &text_prop,
                                                &list, &num) == Success &&
                     num > 0 && *list) {
                     m_icon_title = (char *)*list;
@@ -339,6 +381,10 @@ void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_
                    (unsigned char *)&blackbox_attribs,
                    FluxboxWindow::PropBlackboxAttributesElements
         );
+}
+
+void WinClient::setFluxboxWindow(FluxboxWindow *win) {
+    m_win = win;
 }
 
 void WinClient::updateBlackboxHints() {
@@ -392,7 +438,7 @@ void WinClient::updateMWMHints() {
 }
 
 void WinClient::updateWMHints() {
-    XWMHints *wmhint = XGetWMHints(FbTk::App::instance()->display(), window());
+    XWMHints *wmhint = XGetWMHints(display(), window());
     if (! wmhint) {
         m_focus_mode = F_PASSIVE;
         window_group = None;
@@ -447,7 +493,7 @@ void WinClient::updateWMHints() {
 void WinClient::updateWMNormalHints() {
     long icccm_mask;
     XSizeHints sizehint;
-    if (! XGetWMNormalHints(FbTk::App::instance()->display(), window(), &sizehint, &icccm_mask)) {
+    if (! XGetWMNormalHints(display(), window(), &sizehint, &icccm_mask)) {
         min_width = min_height =
             base_width = base_height =
             width_inc = height_inc = 1;
@@ -515,7 +561,7 @@ Window WinClient::getGroupLeftWindow() const {
     int format;
     Atom atom_return;
     unsigned long num = 0, len = 0;
-    Atom group_left_hint = XInternAtom(FbTk::App::instance()->display(), "_FLUXBOX_GROUP_LEFT", False);
+    Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
 
     Window *data = 0;
     if (property(group_left_hint, 0,
@@ -538,7 +584,7 @@ Window WinClient::getGroupLeftWindow() const {
 
 
 void WinClient::setGroupLeftWindow(Window win) {
-    Atom group_left_hint = XInternAtom(FbTk::App::instance()->display(), "_FLUXBOX_GROUP_LEFT", False);
+    Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
     changeProperty(group_left_hint, XA_WINDOW, 32, 
                    PropModeReplace, (unsigned char *) &win, 1);
 }
@@ -549,7 +595,7 @@ bool WinClient::hasGroupLeftWindow() const {
     int format;
     Atom atom_return;
     unsigned long num = 0, len = 0;
-    Atom group_left_hint = XInternAtom(FbTk::App::instance()->display(), "_FLUXBOX_GROUP_LEFT", False);
+    Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
 
     Window *data = 0;
     if (property(group_left_hint, 0,
@@ -581,13 +627,12 @@ void WinClient::removeModal() {
 }
 
 bool WinClient::validateClient() const {
-    Display *display = FbTk::App::instance()->display();
     FbTk::App::instance()->sync(false);
 
     XEvent e;
-    if (( XCheckTypedWindowEvent(display, window(), DestroyNotify, &e) ||
-          XCheckTypedWindowEvent(display, window(), UnmapNotify, &e)) 
-        && XPutBackEvent(display, &e)) {
+    if (( XCheckTypedWindowEvent(display(), window(), DestroyNotify, &e) ||
+          XCheckTypedWindowEvent(display(), window(), UnmapNotify, &e)) 
+        && XPutBackEvent(display(), &e)) {
         Fluxbox::instance()->ungrab();
         return false;
     }
@@ -620,7 +665,7 @@ void WinClient::updateWMProtocols() {
     int num_return = 0;
     FbAtoms *fbatoms = FbAtoms::instance();
 
-    if (XGetWMProtocols(FbTk::App::instance()->display(), window(), &proto, &num_return)) {
+    if (XGetWMProtocols(display(), window(), &proto, &num_return)) {
 
         // defaults
         send_focus_message = false;
@@ -761,4 +806,29 @@ void WinClient::applySizeHints(int &width, int &height,
 
     if (display_height)
         *display_height = j;
+}
+
+void WinClient::removeTransientFromWaitingList() {
+
+    // holds the windows that dont have empty
+    // transient waiting list
+    std::list<Window> remove_list;
+
+    // The worst case complexity is huge, but since we usually do not (virtualy never) 
+    // have a large transient waiting list the time spent here is neglectable
+    TransientWaitMap::iterator t_it = s_transient_wait.begin();
+    TransientWaitMap::iterator t_it_end = s_transient_wait.end();
+    for (; t_it != t_it_end; ++t_it) {
+        (*t_it).second.remove(this);
+        // if the list is empty, add it to remove list
+        // so we can erase it later
+        if ((*t_it).second.empty())
+            remove_list.push_back((*t_it).first);
+    }
+
+    // erase empty waiting lists
+    std::list<Window>::iterator it = remove_list.begin();
+    std::list<Window>::iterator it_end = remove_list.end();
+    for (; it != it_end; ++it)
+        s_transient_wait.erase(*it);
 }

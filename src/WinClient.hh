@@ -94,6 +94,7 @@ public:
     void setGroupLeftWindow(Window win);
 
     void saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs);
+    void setFluxboxWindow(FluxboxWindow *win);
 
     // does this client have a pending unmap or destroy event?
     bool validateClient() const;
@@ -164,7 +165,7 @@ public:
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
 
-    FluxboxWindow *m_win;
+
     class WinClientSubj: public FbTk::Subject {
     public:
         explicit WinClientSubj(WinClient &client):m_winclient(client) { }
@@ -176,6 +177,11 @@ public:
     enum FocusMode { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
 private:
+    /// removes client from any waiting list and clears empty waiting lists
+    void removeTransientFromWaitingList();
+
+    FluxboxWindow *m_win;
+
     // number of transients which we are modal for
     // or indicates that we are modal if don't have any transients
     int m_modal;
@@ -195,6 +201,19 @@ private:
     BScreen &m_screen;
 
     Strut *m_strut;
+    // map transient_for X window to winclient transient 
+    // (used if transient_for FbWindow was created after transient)    
+    // Since a lot of transients can be created before transient_for 
+    // we need to map transient_for window to a list of transients
+    //
+    // Stuff to worry about:
+    // 1) If transients die before the transient_for is created
+    // 2) If transients changes to a new transient_for before old transient_for is created
+    // ( 3) Transient_for is never created 
+    //      This is not a big deal since the key value will be cleared 
+    //      once the list is empty )
+    typedef std::map<Window, TransientList> TransientWaitMap;
+    static TransientWaitMap s_transient_wait;
 
 };
 

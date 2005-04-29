@@ -1177,10 +1177,8 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     FbTk::App::instance()->sync(false);
 
 
-    if (isKdeDockapp(client)) {
-        if (addKdeDockapp(client)) {            
-            return 0; // dont create a FluxboxWindow for this one
-        }
+    if (isKdeDockapp(client) && addKdeDockapp(client)) {
+        return 0; // dont create a FluxboxWindow for this one
     }
 
     WinClient *winclient = new WinClient(client, *this);
@@ -1387,7 +1385,7 @@ void BScreen::nextFocus(int opts) {
                 break;
             }
 
-            FluxboxWindow *fbwin = (*it)->m_win;
+            FluxboxWindow *fbwin = (*it)->fbwindow();
             if (fbwin && !fbwin->isIconic() &&
                 (fbwin->isStuck() 
                  || fbwin->workspaceNumber() == currentWorkspaceID())) {
@@ -1482,7 +1480,7 @@ void BScreen::prevFocus(int opts) {
                 break;
             }
 
-            FluxboxWindow *fbwin = (*it)->m_win;
+            FluxboxWindow *fbwin = (*it)->fbwindow();
             if (fbwin && !fbwin->isIconic() &&
                 (fbwin->isStuck() 
                  || fbwin->workspaceNumber() == currentWorkspaceID())) {
@@ -2220,7 +2218,7 @@ FluxboxWindow *BScreen::findGroupRight(WinClient &winclient) {
         other->getGroupLeftWindow() != None)
         return 0;
 
-    return other->m_win;
+    return other->fbwindow();
 }
 void BScreen::initXinerama() {
 #ifdef XINERAMA
