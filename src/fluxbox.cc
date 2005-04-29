@@ -370,7 +370,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     if (m_screen_list.empty()) {
         throw string(_FBTEXT(Fluxbox, ErrorNoScreens,
-                             "Couldn't find screens to manage.\nMake sure you don't have another window manager running.", "Error message when no unmanaged screens found - usually means another window manager is running"));
+                             "Couldn't find screens to manage.\nMake sure you don't have another window manager running.", 
+                             "Error message when no unmanaged screens found - usually means another window manager is running"));
     }
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
@@ -594,7 +595,9 @@ void Fluxbox::setupConfigFiles() {
         // create directory with perm 700
         if (mkdir(dirname.c_str(), 0700)) {
             fprintf(stderr, _FBTEXT(Fluxbox, ErrorCreatingDirectory,
-                                    "Can't create %s directory", "Can't create a directory, one %s for directory name"), dirname.c_str());
+                                    "Can't create %s directory", 
+                                    "Can't create a directory, one %s for directory name"), 
+                    dirname.c_str());
             cerr<<endl;
             return;
         }
@@ -658,7 +661,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
     // we need to check focus out for menus before
     // we call FbTk eventhandler
     // so we can get FbTk::Menu::focused() before it sets to 0
-
     if (e->type == FocusOut &&
         e->xfocus.mode != NotifyGrab &&
         e->xfocus.detail != NotifyPointer &&
@@ -828,7 +830,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
     } break;
     case LeaveNotify:
-
         m_last_time = e->xcrossing.time;
         break;
     case Expose:
