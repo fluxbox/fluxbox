@@ -1,12 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/04/29:
+  * Added new IconbarModes:  (Mathias)
+       NoIcons          - all but iconified windows
+       WorkspaceNoIcons - all but iconified windows on the current ws
+    IconbarTool.cc/hh nls/fluxbox_nls.hh C/Translation.m
   * Fixed transient bug.  (Henrik)
     #1157361 inconsistent behavior of Java dialogs.
     Transients that are created before the transient_for window
     gets copied to a transient_for waiting list and when the 
     transient_for window is created the transients are updated, 
-	When raising a transient window the window gets placed last
+    When raising a transient window the window gets placed last
     in the transient list so it gets raised last and thus gets 
     places above.
     WinClient.hh/cc, Window.cc    
