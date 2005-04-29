@@ -174,6 +174,8 @@ public:
     unsigned char alpha() const;
     int screenNumber() const;
     long eventMask() const;
+    Display *display() const { return s_display; }
+
     /// compare X window
     inline bool operator == (Window win) const { return m_window == win; }	
     inline bool operator != (Window win) const { return m_window != win; }
