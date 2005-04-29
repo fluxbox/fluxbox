@@ -163,11 +163,12 @@ WinClient *getRootTransientFor(WinClient *client) {
 
 /// raise window and do the same for each transient of the current window
 void raiseFluxboxWindow(FluxboxWindow &win) {
-    if (win.oplock) return;
+    if (win.oplock) 
+        return;
+
     win.oplock = true;
-#ifdef DEBUG
-    cerr<<"raiseFluxboxWindow("<<win.title()<<")"<<endl;
-#endif // DEBUG
+
+
     // we need to lock actual restacking so that raising above active transient
     // won't do anything nasty
     if (!win.winClient().transientList().empty())
@@ -179,6 +180,7 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
     }
 
     // for each transient do raise
+    
     WinClient::TransientList::const_iterator it = win.winClient().transientList().begin();
     WinClient::TransientList::const_iterator it_end = win.winClient().transientList().end();
     for (; it != it_end; ++it) {
@@ -186,18 +188,20 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
             // TODO: should we also check if it is the active client?
             raiseFluxboxWindow(*(*it)->fbwindow());
     }
+    
     win.oplock = false;
+
 
     if (!win.winClient().transientList().empty())
         win.screen().layerManager().unlock();
-#ifdef DEBUG
-    cerr<<"window("<<win.title()<<") transient size: "<<win.winClient().transientList().size()<<endl;
-#endif // DEBUG
+
 }
 
 /// lower window and do the same for each transient it holds
 void lowerFluxboxWindow(FluxboxWindow &win) {
-    if (win.oplock) return;
+    if (win.oplock) 
+        return;
+
     win.oplock = true;
 
     // we need to lock actual restacking so that raising above active transient
@@ -220,6 +224,7 @@ void lowerFluxboxWindow(FluxboxWindow &win) {
     win.oplock = false;
     if (!win.winClient().transientList().empty())
         win.screen().layerManager().unlock();
+
 }
 
 /// raise window and do the same for each transient it holds
@@ -255,8 +260,8 @@ public:
     explicit SetClientCmd(WinClient &client):m_client(client) {
     }
     void execute() {
-        if (m_client.m_win != 0)
-            m_client.m_win->setCurrentClient(m_client);
+        if (m_client.fbwindow() != 0)
+            m_client.fbwindow()->setCurrentClient(m_client);
     }
 private:
     WinClient &m_client;
@@ -386,7 +391,7 @@ void FluxboxWindow::init() {
     m_old_pos_x = 0;
 
     assert(m_client);
-    m_client->m_win = this;
+    m_client->setFluxboxWindow(this);
     m_client->setGroupLeftWindow(None); // nothing to the left.
 
     // check for shape extension and whether the window is shaped
@@ -492,6 +497,8 @@ void FluxboxWindow::init() {
         return;
     }
 
+
+
     Fluxbox::instance()->saveWindowSearchGroup(frame().window().window(), this);
 
     /**************************************************/
@@ -516,7 +523,6 @@ void FluxboxWindow::init() {
         decorations.tab = false; //no tab for this window
     }
 
-
     associateClientWindow(true, wattrib.x, wattrib.y, wattrib.width, wattrib.height);
 
     
@@ -524,6 +530,8 @@ void FluxboxWindow::init() {
 
     // this window is managed, we are now allowed to modify actual state
     m_initialized = true;
+
+
 
     applyDecorations(true);
 
@@ -560,6 +568,8 @@ void FluxboxWindow::init() {
     if (wattrib.height <= 0)
         wattrib.height = 1;
 
+
+
     // if we're a transient then we should be on the same layer as our parent
     if (m_client->isTransient() &&
         m_client->transientFor()->fbwindow() &&
@@ -576,11 +586,15 @@ void FluxboxWindow::init() {
     }
 #endif // DEBUG
 
+
     if (!place_window)
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
+
+
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
     setWorkspace(m_workspace_number);
+
 
     if (shaded) { // start shaded
         shaded = false;
@@ -633,7 +647,7 @@ void FluxboxWindow::shape() {
 /// attach a client to this window and destroy old window
 void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     //!! TODO: check for isGroupable in client
-    if (client.m_win == this)
+    if (client.fbwindow() == this)
         return;
 
     menu().hide();
@@ -678,7 +692,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
                              frame().clientArea().width(),
                              frame().clientArea().height());
 
-            (*client_it)->m_win = this;
+            (*client_it)->setFluxboxWindow(this);
             // create a labelbutton for this client and
             // associate it with the pointer
             FbTk::TextButton *btn = new FbTk::TextButton(frame().label(),
@@ -736,7 +750,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
         if (&client == focused_win)
             was_focused = focused_win;
-        client.m_win = this;
+        client.setFluxboxWindow(this);
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
         m_clientlist.push_back(&client);
@@ -764,7 +778,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
 /// detach client from window and create a new window for it
 bool FluxboxWindow::detachClient(WinClient &client) {
-    if (client.m_win != this || numClients() <= 1)
+    if (client.fbwindow() != this || numClients() <= 1)
         return false;
 
     // I'm not sure how to do this bit better
@@ -811,7 +825,7 @@ bool FluxboxWindow::detachClient(WinClient &client) {
 
     // m_client must be valid as there should be at least one other window
     // otherwise this wouldn't be here (refer numClients() <= 1 return)
-    client.m_win = screen().createWindow(client);
+    client.setFluxboxWindow(screen().createWindow(client));
     m_client->raise();
     setInputFocus();
     return true;
@@ -826,7 +840,7 @@ void FluxboxWindow::detachCurrentClient() {
 
 /// removes client from client list, does not create new fluxboxwindow for it
 bool FluxboxWindow::removeClient(WinClient &client) {
-    if (client.m_win != this || numClients() == 0)
+    if (client.fbwindow() != this || numClients() == 0)
         return false;
 
 #ifdef DEBUG
@@ -1111,7 +1125,7 @@ void FluxboxWindow::updateClientLeftWindow() {
 
 bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     // make sure it's in our list
-    if (client.m_win != this)
+    if (client.fbwindow() != this)
         return false;
 
     m_client = &client;
@@ -1870,7 +1884,7 @@ void FluxboxWindow::raise() {
     if (isIconic())
         deiconify();
 #ifdef DEBUG
-    cerr<<"FluxboxWindow("<<title()<<")::raise()[layer="<<layerNum()<<""<<endl;
+    cerr<<"FluxboxWindow("<<title()<<")::raise()[layer="<<layerNum()<<"]"<<endl;
 #endif // DEBUG
     // get root window
     WinClient *client = getRootTransientFor(m_client);
@@ -1878,10 +1892,17 @@ void FluxboxWindow::raise() {
     // if we don't have any root window use this as root
     if (client == 0)
         client = m_client;
-
-    // raise this window and every transient in it
+    // if we have transient_for then we should put ourself last in 
+    // transients list so we get raised last and thus gets above the other transients
+    if (m_client->transientFor() && m_client != m_client->transientFor()->transientList().back()) {
+        // remove and push back so this window gets raised last
+        m_client->transientFor()->transientList().remove(m_client);
+        m_client->transientFor()->transientList().push_back(m_client);
+    }
+    // raise this window and every transient in it with this one last
     if (client->fbwindow())
         raiseFluxboxWindow(*client->fbwindow());
+        
 }
 
 void FluxboxWindow::lower() {
@@ -2178,13 +2199,11 @@ bool FluxboxWindow::getState() {
     bool ret = false;
     int foo;
     unsigned long *state, ulfoo, nitems;
-    if ((XGetWindowProperty(display, m_client->window(), FbAtoms::instance()->getWMStateAtom(),
-                            0l, 2l, false, FbAtoms::instance()->getWMStateAtom(),
-                            &atom_return, &foo, &nitems, &ulfoo,
-                            (unsigned char **) &state) != Success) ||
-        (! state)) {
+    if (!m_client->property(FbAtoms::instance()->getWMStateAtom(),
+                             0l, 2l, false, FbAtoms::instance()->getWMStateAtom(),
+                             &atom_return, &foo, &nitems, &ulfoo,
+                             (unsigned char **) &state) || !state)
         return false;
-    }
 
     if (nitems >= 1) {
         m_current_state = static_cast<unsigned long>(state[0]);
@@ -2342,15 +2361,17 @@ void FluxboxWindow::handleEvent(XEvent &event) {
         //        mapRequestEvent(event.xmaprequest);
         //break;
     case PropertyNotify: {
+
 #ifdef DEBUG
         char *atomname = XGetAtomName(display, event.xproperty.atom);
         cerr<<"PropertyNotify("<<title()<<"), property = "<<atomname<<endl;
-        XFree(atomname);
+        if (atomname)
+            XFree(atomname);
 #endif // DEBUG
         WinClient *client = findClient(event.xproperty.window);
-        if (client) {
+        if (client)
             propertyNotifyEvent(*client, event.xproperty.atom);
-        }
+
     }
         break;
 
@@ -2513,7 +2534,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
 void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent &de) {
     if (de.window == m_client->window()) {
 #ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): DestroyNotifyEvent this="<<this<<endl;
+        cerr<<__FILE__<<"("<<__LINE__<<"): DestroyNotifyEvent this="<<this<<" title = "<<title()<<endl;
 #endif // DEBUG
         if (numClients() == 1)
             hide();
@@ -3511,9 +3532,9 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
             detachClient(*old_attached);
             // move window by relative amount of mouse movement
             // since just detached, move relative to old location
-            if (client.m_win != 0) {
-                client.m_win->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
-                client.m_win->show();
+            if (client.fbwindow() != 0) {
+                client.fbwindow()->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
+                client.fbwindow()->show();
             }
         } else if(attach_to_win==this && attach_to_win->isTabable()) {
             //reording of tabs within a frame
@@ -3524,7 +3545,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
 }
 
 void FluxboxWindow::restore(WinClient *client, bool remap) {
-    if (client->m_win != this)
+    if (client->fbwindow() != this)
         return;
 
     XChangeSaveSet(display, client->window(), SetModeDelete);
