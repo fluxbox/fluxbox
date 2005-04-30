@@ -131,52 +131,98 @@ void JumpToWorkspaceCmd::execute() {
 }
 
 
+/**
+  try to arrange the windows on the current workspace in a 'clever' way.
+  we take the shaded-windows and put them ontop of the workspace and put the
+  normal windows underneath it.
+ */
 void ArrangeWindowsCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
 
     Workspace *space = screen->currentWorkspace();
-    const unsigned int win_count = space->windowList().size();
+    unsigned int win_count = space->windowList().size();
   
     if (win_count == 0) 
         return;
 
+    // TODO: choice between 
+    //        -  arrange using all windows on all heads
+    //        -  arrange for each head
+    //        -  only on current head
     const int head = screen->getCurrHead();
+    Workspace::Windows::iterator win;
+    
+    Workspace::Windows normal_windows;
+    Workspace::Windows shaded_windows;
+    for(win = space->windowList().begin(); win != space->windowList().end(); win++) {
+        int winhead = screen->getHead((*win)->fbWindow());
+        if (winhead == head || winhead == 0) {
+            if (!(*win)->isShaded())
+                normal_windows.push_back(*win);
+            else
+                shaded_windows.push_back(*win);
+        }
+    }
+
+    // to arrange only shaded windows is a bit pointless imho (mathias)
+    if (normal_windows.size() == 0)
+        return;
+
+    win_count = normal_windows.size();
+    
     const unsigned int max_width = screen->maxRight(head) - screen->maxLeft(head);
-    const unsigned int max_heigth = screen->maxBottom(head) - screen->maxTop(head);
+    unsigned int max_height = screen->maxBottom(head) - screen->maxTop(head);
 
 	// try to get the same number of rows as columns.
 	unsigned int rows = int(sqrt((float)win_count));  // truncate to lower
 	unsigned int cols = int(0.99 + float(win_count) / float(rows));
-	if (max_width<max_heigth) {	// rotate
-		unsigned int tmp;
-		tmp = rows;	
-		rows = cols;
-		cols = tmp;
+	if (max_width<max_height) {	// rotate
+        std::swap(cols, rows);
 	}
-    const unsigned int cal_width = max_width/cols; // calculated width ratio (width of every window)
-    const unsigned int cal_heigth = max_heigth/rows; // heigth ratio (heigth of every window)
 
-    // Resizes and sets windows positions in columns and rows.
     unsigned int x_offs = screen->maxLeft(head); // window position offset in x
     unsigned int y_offs = screen->maxTop(head); // window position offset in y
     unsigned int window = 0; // current window 
-    Workspace::Windows &windowlist = space->windowList();
-    for (unsigned int i = 0; i < rows; ++i) {
+    const unsigned int cal_width = max_width/cols; // calculated width ratio (width of every window)
+    unsigned int i;
+    unsigned int j;
+
+    // place the shaded windows
+    // TODO: until i resolve the shadedwindow->moveResize() issue to place
+    // them in the same columns as the normal windows i just place the shaded
+    // windows unchanged ontop of the current head
+    for (i = 0, win = shaded_windows.begin(); win != shaded_windows.end(); win++, i++) {
+        if (i & 1)
+            (*win)->move(x_offs, y_offs);
+        else
+            (*win)->move(screen->maxRight(head) - (*win)->frame().width(), y_offs);
+            
+        y_offs += (*win)->frame().height();
+    }
+
+    // TODO: what if the number of shaded windows is really big and we end up
+    // with really little space left for the normal windows? how to handle
+    // this?
+    if (!shaded_windows.empty())
+        max_height -= i * (*shaded_windows.begin())->frame().height(); 
+
+    const unsigned int cal_height = max_height/rows; // height ratio (height of every window)
+    // Resizes and sets windows positions in columns and rows.
+    for (i = 0; i < rows; ++i) {
         x_offs = screen->maxLeft(head);
-        for (unsigned int j = 0; j < cols && window < win_count; ++j, ++window) {
-			if (window==(win_count-1)) {
-				// the last window gets everything that is left.
-	            windowlist[window]->moveResize(x_offs, y_offs, max_width-x_offs, cal_heigth);
-			} else {
-	            windowlist[window]->moveResize(x_offs, y_offs, cal_width, cal_heigth);
+        for (j = 0; j < cols && window < win_count; ++j, ++window) {
+			if (window!=(win_count-1)) {
+	            normal_windows[window]->moveResize(x_offs, y_offs, cal_width, cal_height);
+			} else { // the last window gets everything that is left.
+	            normal_windows[window]->moveResize(x_offs, y_offs, screen->maxRight(head)-x_offs, cal_height);
 			}
             // next x offset
             x_offs += cal_width;
         }
         // next y offset
-        y_offs += cal_heigth;
+        y_offs += cal_height;
     }
 }
 

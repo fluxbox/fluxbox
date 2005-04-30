@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/30:
+  * Fix #1086673 ArrangeWindows on shaded aterms causes inconsistency (Mathias)
+    we now place shaded Windows above the normal windows. ArrangeWindows
+    touches only windows on the current (xinerama)-head.
+    src/WorkspaceCmd.cc
 *05/04/29:
   * Added new IconbarModes:  (Mathias)
        NoIcons          - all but iconified windows
