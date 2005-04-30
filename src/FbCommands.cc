@@ -292,8 +292,8 @@ void BindKeyCmd::execute() {
     }
 }
 
-DeiconifyCmd::DeiconifyCmd(const Mode mode, 
-                           const Destination dest) : m_mode(mode), m_dest(dest) { }
+DeiconifyCmd::DeiconifyCmd(Mode mode, 
+                           Destination dest) : m_mode(mode), m_dest(dest) { }
 
 void DeiconifyCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();

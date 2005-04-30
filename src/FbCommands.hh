@@ -160,8 +160,8 @@ public:
         ORIGINQUIET /// deiconification on origin workspace, dont change ws
     };
     
-    DeiconifyCmd(const Mode mode= LASTWORKSPACE,
-                 const Destination dest= CURRENT);
+    DeiconifyCmd(Mode mode= LASTWORKSPACE,
+                 Destination dest= CURRENT);
     void execute();
 private:
     Mode m_mode;
