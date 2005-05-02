@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/05/02:
+  * Cleaning,  (Henrik)
+    Create/delete tabs with FbWinFrame::createTab/removeTab
+    FbWinFrame.hh/cc, Window.cc
 *05/04/30:
   * Fix #1086673 ArrangeWindows on shaded aterms causes inconsistency (Mathias)
     we now place shaded Windows above the normal windows. ArrangeWindows
