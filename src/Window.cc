@@ -953,13 +953,13 @@ FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x
                                &labelbutton))
         return m_clientlist.end();
 
-    Client2ButtonMap::iterator it = m_labelbuttons.begin();
-    Client2ButtonMap::iterator it_end = m_labelbuttons.end();
-    // find the label button to move next to
-    for (; it != it_end; it++) {
-        if ((*it).second->window() == labelbutton)
-            break;
-    }
+    Client2ButtonMap::iterator it =             
+        find_if(m_labelbuttons.begin(),
+                m_labelbuttons.end(),
+                Compose(bind2nd(equal_to<Window>(), labelbutton),
+                        Compose(mem_fun(&TextButton::window),
+                                Select2nd<Client2ButtonMap::value_type>())));
+
 
     // label button not found
     if (it == m_labelbuttons.end())
@@ -993,16 +993,16 @@ void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
                                x, y, &dest_x, &dest_y,
                                &labelbutton))
         return;
-    Client2ButtonMap::iterator it = m_labelbuttons.begin();
-    Client2ButtonMap::iterator it_end = m_labelbuttons.end();
-    //find the label button to move next to
-    for (; it != it_end; it++) {
-        if ((*it).second->window() == labelbutton)
-            break;
-    }
+
+    Client2ButtonMap::iterator it =             
+        find_if(m_labelbuttons.begin(),
+                m_labelbuttons.end(),
+                Compose(bind2nd(equal_to<Window>(), labelbutton),
+                        Compose(mem_fun(&TextButton::window),
+                                Select2nd<Client2ButtonMap::value_type>())));
 
     // label button not found
-    if (it == it_end)
+    if (it == m_labelbuttons.end())
         return;
 
     Window child_return = 0;
@@ -2766,14 +2766,15 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
     WinClient *client = 0;
     if (!inside_titlebar) {
         // determine if we're in titlebar
-        Client2ButtonMap::iterator it = m_labelbuttons.begin();
-        Client2ButtonMap::iterator it_end = m_labelbuttons.end();
-        for (; it != it_end; ++it) {
-            if ((*it).second->window() == me.window) {
-                inside_titlebar = true;
-                client = (*it).first;
-                break;
-            }
+        Client2ButtonMap::iterator it = 
+            find_if(m_labelbuttons.begin(),
+                    m_labelbuttons.end(),
+                    Compose(bind2nd(equal_to<Window>(), me.window),
+                            Compose(mem_fun(&TextButton::window),
+                                    Select2nd<Client2ButtonMap::value_type>())));
+        if (it != m_labelbuttons.end()) {
+            inside_titlebar = true;
+            client = (*it).first;
         }
     }
 
@@ -2984,14 +2985,15 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
     // don't waste our time scanning if we aren't real sloppy focus
     if (screen().isSloppyFocus()) {
         // determine if we're in a label button (tab)
-        Client2ButtonMap::iterator it = m_labelbuttons.begin();
-        Client2ButtonMap::iterator it_end = m_labelbuttons.end();
-        for (; it != it_end; ++it) {
-            if ((*it).second->window() == ev.window) {
-                client = (*it).first;
-                break;
-            }
-        }
+        Client2ButtonMap::iterator it = 
+            find_if(m_labelbuttons.begin(),
+                    m_labelbuttons.end(),
+                    Compose(bind2nd(equal_to<Window>(), ev.window),
+                            Compose(mem_fun(&TextButton::window),
+                                    Select2nd<Client2ButtonMap::value_type>())));
+        if (it != m_labelbuttons.end())
+            client = (*it).first;
+                
     }
     if (ev.window == frame().window() ||
         ev.window == m_client->window() ||
