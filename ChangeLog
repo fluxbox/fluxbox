@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/05/02:
+  * Added FbTk::Select2nd + more code cleaning (Henrik)
+    This returns .second from operator ()(Someclass &a)
+    Usefull for std::map loops.
+    FbTk/Select2nd.hh, Window.cc, Screen.cc, fluxbox.cc/hh    
   * Cleaning,  (Henrik)
     Create/delete tabs with FbWinFrame::createTab/removeTab
     FbWinFrame.hh/cc, Window.cc
