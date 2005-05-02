@@ -338,10 +338,9 @@ FluxboxWindow::~FluxboxWindow() {
 
     Client2ButtonMap::iterator it = m_labelbuttons.begin();
     Client2ButtonMap::iterator it_end = m_labelbuttons.end();
-    for (; it != it_end; ++it) {
-        frame().removeLabelButton(*(*it).second);
-        delete (*it).second;
-    }
+    for (; it != it_end; ++it)
+        frame().removeTab((*it).second);
+
     m_labelbuttons.clear();
 
     m_timer.stop();
@@ -420,21 +419,14 @@ void FluxboxWindow::init() {
     frame().gripRight().setCursor(frame().theme().lowerRightAngleCursor());
 
 
-    FbTk::TextButton *btn =  new FbTk::TextButton(frame().label(),
-                                                  frame().theme().font(),
-                                                  m_client->title());
-    btn->setJustify(frame().theme().justify());
-    m_labelbuttons[m_client] = btn;
-    frame().addLabelButton(*btn);
-    frame().setLabelButtonFocus(*btn);
-    btn->show();
-    FbTk::EventManager &evm = *FbTk::EventManager::instance();
-    // we need motion notify so we mask it
-    btn->setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
-                      ButtonMotionMask | EnterWindowMask);
+    FbWinFrame::ButtonId btn = frame().createTab(m_client->title(),
+                                                 new SetClientCmd(*m_client));
 
-    FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(*m_client));
-    btn->setOnClick(set_client_cmd);
+    m_labelbuttons[m_client] = btn;
+    frame().setLabelButtonFocus(*btn);
+
+    FbTk::EventManager &evm = *FbTk::EventManager::instance();
+
     evm.add(*this, btn->window()); // we take care of button events for this
     evm.add(*this, m_client->window());
 
@@ -668,11 +660,10 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     if (client.fbwindow() != 0) {
         FluxboxWindow *old_win = client.fbwindow(); // store old window
 
-	ClientList::iterator client_insert_pos=getClientInsertPosition(x,y);
-	FbTk::TextButton *button_insert_pos=NULL;
-	if(client_insert_pos!=m_clientlist.end())
-		button_insert_pos=m_labelbuttons[*client_insert_pos];
-		
+	ClientList::iterator client_insert_pos = getClientInsertPosition(x, y);
+	FbTk::TextButton *button_insert_pos = NULL;
+	if(client_insert_pos != m_clientlist.end())
+            button_insert_pos = m_labelbuttons[*client_insert_pos];
 	
         // make sure we set new window search for each client
         ClientList::iterator client_it = old_win->clientList().begin();
@@ -693,29 +684,18 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
                              frame().clientArea().height());
 
             (*client_it)->setFluxboxWindow(this);
+            
             // create a labelbutton for this client and
             // associate it with the pointer
-            FbTk::TextButton *btn = new FbTk::TextButton(frame().label(),
-                                             frame().theme().font(),
-                                             (*client_it)->title());
-            btn->setJustify(frame().theme().justify());
+            FbWinFrame::ButtonId btn = frame().createTab((*client_it)->title(),
+                                                         new SetClientCmd(*(*client_it)));
             m_labelbuttons[(*client_it)] = btn;
-            frame().addLabelButton(*btn);
-	    if(x >= 0) {
-		    if(button_insert_pos){ //null if we want the new button at the end of the list
-			    frame().moveLabelButtonLeftOf(*btn, *button_insert_pos);
-		    }
-	    }
-            btn->show();
-            // we need motion notify so we mask it
-            btn->setEventMask(ExposureMask | ButtonPressMask |
-                              ButtonReleaseMask | ButtonMotionMask |
-                              EnterWindowMask);
+            
+            //null if we want the new button at the end of the list
+	    if(x >= 0 && button_insert_pos)
+                frame().moveLabelButtonLeftOf(*btn, *button_insert_pos);
 
 
-            FbTk::RefCount<FbTk::Command>
-                set_client_cmd(new SetClientCmd(*(*client_it)));
-            btn->setOnClick(set_client_cmd);
             evm.add(*this, btn->window()); // we take care of button events for this
 
             (*client_it)->saveBlackboxAttribs(m_blackbox_attrib);
@@ -731,25 +711,17 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
     } else { // client.fbwindow() == 0
         // create a labelbutton for this client and associate it with the pointer
-        FbTk::TextButton *btn = new FbTk::TextButton(frame().label(),
-                                         frame().theme().font(),
-                                         client.title());
+        FbWinFrame::ButtonId btn = frame().createTab(client.title(),
+                                                     new SetClientCmd(client));
         m_labelbuttons[&client] = btn;
-        frame().addLabelButton(*btn);
-        btn->show();
+
         FbTk::EventManager &evm = *FbTk::EventManager::instance();
-        // we need motion notify so we mask it
-        btn->setEventMask(ExposureMask | ButtonPressMask |
-                          ButtonReleaseMask | ButtonMotionMask |
-                          EnterWindowMask);
 
-
-        FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(client));
-        btn->setOnClick(set_client_cmd);
         evm.add(*this, btn->window()); // we take care of button events for this
 
         if (&client == focused_win)
             was_focused = focused_win;
+
         client.setFluxboxWindow(this);
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
@@ -871,9 +843,8 @@ bool FluxboxWindow::removeClient(WinClient &client) {
 
     FbTk::TextButton *label_btn = m_labelbuttons[&client];
     if (label_btn != 0) {
-        frame().removeLabelButton(*label_btn);
+        frame().removeTab(label_btn);
         evm.remove(label_btn->window());
-        delete label_btn;
         label_btn = 0;
     }
 

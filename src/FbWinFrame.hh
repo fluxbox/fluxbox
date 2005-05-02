@@ -51,6 +51,7 @@ class Texture;
 /// (see: <a href="fluxbox_fbwinframe.png">image</a>)
 class FbWinFrame:public FbTk::EventHandler {
 public:
+    typedef FbTk::TextButton *ButtonId; ///< defines a button id 
 
     /// create a top level window
     FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
@@ -81,10 +82,14 @@ public:
     void resizeForClient(unsigned int width, unsigned int height, int win_gravity=ForgetGravity);
 
     // for when there needs to be an atomic move+resize operation
-    void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true, int win_gravity=ForgetGravity);
+    void moveResizeForClient(int x, int y, 
+                             unsigned int width, unsigned int height, 
+                             bool move = true, bool resize = true, int win_gravity=ForgetGravity);
 
     // can elect to ignore move or resize (mainly for use of move/resize individual functions
-    void moveResize(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true, int win_gravity=ForgetGravity);
+    void moveResize(int x, int y, 
+                    unsigned int width, unsigned int height, 
+                    bool move = true, bool resize = true, int win_gravity=ForgetGravity);
 
     /// some outside move/resize happened, and we need to notify all of our windows
     /// in case of transparency
@@ -101,10 +106,11 @@ public:
     void addRightButton(FbTk::Button *btn);
     /// remove all buttons from titlebar
     void removeAllButtons();
-    /// adds a button to label window
-    void addLabelButton(FbTk::TextButton &btn);
+    /// adds a button to label window with specified title and command
+    ButtonId createTab(const std::string &title, FbTk::Command *cmd);
+    //    void addLabelButton(FbTk::TextButton &btn);
     /// removes a specific button from label window
-    void removeLabelButton(FbTk::TextButton &btn);
+    void removeTab(ButtonId id);
     /// move label button to the left
     void moveLabelButtonLeft(const FbTk::TextButton &btn);
     /// move label button to the right
