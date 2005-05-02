@@ -69,6 +69,8 @@
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
 #include "FbTk/Transparent.hh"
+#include "FbTk/Select2nd.hh"
+#include "FbTk/Compose.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -830,16 +832,17 @@ void BScreen::removeClient(WinClient &client) {
     for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
              mem_fun(&Workspace::updateClientmenu));
 
+    using namespace FbTk;
+
     // remove any grouping this is expecting
-    Groupables::iterator it = m_expecting_groups.begin();
-    Groupables::iterator it_end = m_expecting_groups.end();
-    for (; it != it_end; ++it) {
-        if (it->second == &client) {
-            m_expecting_groups.erase(it);
-            // it should only be in there a maximum of once
-            break;
-        }
-    }
+    Groupables::iterator erase_it = find_if(m_expecting_groups.begin(),
+                                            m_expecting_groups.end(),
+                                            Compose(bind2nd(equal_to<WinClient *>(), &client),
+                                                    Select2nd<Groupables::value_type>()));
+
+    if (erase_it != m_expecting_groups.end())
+        m_expecting_groups.erase(erase_it);
+
     // the client could be on icon menu so we update it
     //!! TODO: check this with the new icon menu
     //    updateIconMenu();
@@ -1711,14 +1714,12 @@ void BScreen::addConfigMenu(const char *label, FbTk::Menu &menu) {
 }
 
 void BScreen::removeConfigMenu(FbTk::Menu &menu) {
-    Configmenus::iterator it = m_configmenu_list.begin();
-    Configmenus::iterator it_end = m_configmenu_list.end();
-    for (; it != it_end; ++it) {
-        if (it->second == &menu) {
-            m_configmenu_list.erase(it);
-            break;
-        }
-    }
+    Configmenus::iterator erase_it = find_if(m_configmenu_list.begin(),
+                                             m_configmenu_list.end(),
+                                             FbTk::Compose(bind2nd(equal_to<FbTk::Menu *>(), &menu),
+                                                           FbTk::Select2nd<Configmenus::value_type>()));
+    if (erase_it != m_configmenu_list.end())
+        m_configmenu_list.erase(erase_it);
     setupConfigmenu(*m_configmenu.get());
 
 }    

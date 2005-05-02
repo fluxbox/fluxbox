@@ -273,8 +273,10 @@ private:
     FbTk::Resource<time_t> m_rc_auto_raise_delay;
     FbTk::Resource<bool> m_rc_use_mod1; /// temporary!, to disable mod1 for resize/move
 
-    std::map<Window, WinClient *> m_window_search;
-    std::map<Window, FluxboxWindow *> m_window_search_group;
+    typedef std::map<Window, WinClient *> WinClientMap;
+    WinClientMap m_window_search;
+    typedef std::map<Window, FluxboxWindow *> WindowMap;
+    WindowMap m_window_search_group;
     // A window is the group leader, which can map to several
     // WinClients in the group, it is *not* fluxbox's concept of groups
     // See ICCCM section 4.1.11

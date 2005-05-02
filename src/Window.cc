@@ -45,6 +45,7 @@
 #include "FbTk/EventManager.hh"
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/SimpleCommand.hh"
+#include "FbTk/Select2nd.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -81,15 +82,18 @@
 #include <algorithm>
 
 using namespace std;
+using namespace FbTk;
 
 namespace {
 
-void grabButton(Display *display, unsigned int button,
+void grabButton(unsigned int button,
                 Window window, Cursor cursor) {
 
-    const int numlock = FbTk::KeyUtil::instance().numlock();
-    const int capslock = FbTk::KeyUtil::instance().capslock();
-    const int scrolllock = FbTk::KeyUtil::instance().scrolllock();
+    static Display *display = App::instance()->display();
+
+    const int numlock = KeyUtil::instance().numlock();
+    const int capslock = KeyUtil::instance().capslock();
+    const int scrolllock = KeyUtil::instance().scrolllock();
 
     // Grab with Mod1 and with all lock modifiers
     // (num, scroll and caps)
@@ -863,8 +867,8 @@ bool FluxboxWindow::removeClient(WinClient &client) {
 WinClient *FluxboxWindow::findClient(Window win) {
     ClientList::iterator it = find_if(clientList().begin(),
                                       clientList().end(),
-                                      FbTk::Compose(bind2nd(equal_to<Window>(), win),
-                                                    mem_fun(&WinClient::window)));
+                                      Compose(bind2nd(equal_to<Window>(), win),
+                                              mem_fun(&WinClient::window)));
     return (it == clientList().end() ? 0 : *it);
 }
 
@@ -941,74 +945,77 @@ void FluxboxWindow::moveClientRight() {
 //std::list<*WinClient>::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
 FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
 
-	int dest_x=0, dest_y=0;
-	Window labelbutton=0;
-	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
-				parent().window(), frame().label().window(),
-				x,y, &dest_x, &dest_y,
-				&labelbutton))
-		return m_clientlist.end();
-	Client2ButtonMap::iterator it = m_labelbuttons.begin();
-	Client2ButtonMap::iterator it_end = m_labelbuttons.end();
-	//find the label button to move next to
-	for(; it!=it_end; it++) {
-		if( (*it).second->window()==labelbutton)
-			break;
-	}
-	//label button not found
-	if(it==it_end)	{
-		return m_clientlist.end();
-	}
-	Window child_return=0;
-	//make x and y relative to our labelbutton
-	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
-			        frame().label().window(),labelbutton,
-				dest_x,dest_y, &x, &y,
-				&child_return))
-		return m_clientlist.end();
-	ClientList::iterator client = find(m_clientlist.begin(),
-				       m_clientlist.end(),
-				       it->first);
-	if(x>(*it).second->width()/2)
-		client++;
-	return client;
-	
+    int dest_x = 0, dest_y = 0;
+    Window labelbutton = 0;
+    if (!XTranslateCoordinates(FbTk::App::instance()->display(),
+                               parent().window(), frame().label().window(),
+                               x, y, &dest_x, &dest_y,
+                               &labelbutton))
+        return m_clientlist.end();
+
+    Client2ButtonMap::iterator it = m_labelbuttons.begin();
+    Client2ButtonMap::iterator it_end = m_labelbuttons.end();
+    // find the label button to move next to
+    for (; it != it_end; it++) {
+        if ((*it).second->window() == labelbutton)
+            break;
+    }
+
+    // label button not found
+    if (it == m_labelbuttons.end())
+        return m_clientlist.end();
+
+    Window child_return=0;
+    // make x and y relative to our labelbutton
+    if (!XTranslateCoordinates(FbTk::App::instance()->display(),
+                               frame().label().window(), labelbutton,
+                               dest_x, dest_y, &x, &y,
+                               &child_return))
+        return m_clientlist.end();
+
+    ClientList::iterator client = find(m_clientlist.begin(),
+                                       m_clientlist.end(),
+                                       it->first);
+    if (x > (*it).second->width() / 2)
+        client++;
+
+    return client;
 
 }
 	
 
 
 void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
-	int dest_x=0, dest_y=0;
-	Window labelbutton=0;
-	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
-				parent().window(), frame().label().window(),
-				x,y, &dest_x, &dest_y,
-				&labelbutton))
-		return;
-	Client2ButtonMap::iterator it = m_labelbuttons.begin();
-	Client2ButtonMap::iterator it_end = m_labelbuttons.end();
-	//find the label button to move next to
-	for(; it!=it_end; it++) {
-		if( (*it).second->window()==labelbutton)
-			break;
-	}
-	//label button not found
-	if(it==it_end)	{
-		return;
-	}
-	Window child_return=0;
-	//make x and y relative to our labelbutton
-	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
-			        frame().label().window(),labelbutton,
-				dest_x,dest_y, &x, &y,
-				&child_return))
-		return;
-	if(x>(*it).second->width()/2) {
-		moveClientRightOf(win, *it->first);
-	} else {
-		moveClientLeftOf(win, *it->first);
-	}
+    int dest_x = 0, dest_y = 0;
+    Window labelbutton = 0;
+    if (!XTranslateCoordinates(FbTk::App::instance()->display(),
+                               parent().window(), frame().label().window(),
+                               x, y, &dest_x, &dest_y,
+                               &labelbutton))
+        return;
+    Client2ButtonMap::iterator it = m_labelbuttons.begin();
+    Client2ButtonMap::iterator it_end = m_labelbuttons.end();
+    //find the label button to move next to
+    for (; it != it_end; it++) {
+        if ((*it).second->window() == labelbutton)
+            break;
+    }
+
+    // label button not found
+    if (it == it_end)
+        return;
+
+    Window child_return = 0;
+    //make x and y relative to our labelbutton
+    if (!XTranslateCoordinates(FbTk::App::instance()->display(),
+                               frame().label().window(), labelbutton,
+                               dest_x, dest_y, &x, &y,
+                               &child_return))
+        return;
+    if (x > (*it).second->width() / 2)
+        moveClientRightOf(win, *it->first);
+    else
+        moveClientLeftOf(win, *it->first);
 
 }
 
@@ -1154,7 +1161,7 @@ void FluxboxWindow::grabButtons() {
                     GrabModeAsync, None, frame().theme().moveCursor());
 
         //----grab with "all" modifiers
-        grabButton(display, Button1, frame().window().window(), frame().theme().moveCursor());
+        grabButton(Button1, frame().window().window(), frame().theme().moveCursor());
 
         XGrabButton(display, Button2, Mod1Mask, frame().window().window(), True,
                     ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);
@@ -1164,7 +1171,7 @@ void FluxboxWindow::grabButtons() {
                     GrabModeAsync, None, None);
 
         //---grab with "all" modifiers
-        grabButton(display, Button3, frame().window().window(), None);
+        grabButton(Button3, frame().window().window(), None);
     }
 }
 
@@ -3772,14 +3779,13 @@ void FluxboxWindow::addExtraMenu(const char *label, FbTk::Menu *menu) {
 }
 
 void FluxboxWindow::removeExtraMenu(FbTk::Menu *menu) {
-    ExtraMenus::iterator it = m_extramenus.begin();
-    ExtraMenus::iterator it_end = m_extramenus.end();
-    for (; it != it_end; ++it) {
-        if (it->second == menu) {
-            m_extramenus.erase(it);
-            break;
-        }
-    }
+    ExtraMenus::iterator it = find_if(m_extramenus.begin(),
+                                      m_extramenus.end(),
+                                      Compose(bind2nd(equal_to<Menu *>(), menu),
+                                              Select2nd<ExtraMenus::value_type>()));
+    if (it != m_extramenus.end())
+        m_extramenus.erase(it);
+
     setupMenu();
 }
 

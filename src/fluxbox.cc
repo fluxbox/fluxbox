@@ -51,6 +51,8 @@
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/CompareEqual.hh"
 #include "FbTk/Transparent.hh"
+#include "FbTk/Select2nd.hh"
+#include "FbTk/Compose.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1329,11 +1331,13 @@ BScreen *Fluxbox::searchScreen(Window window) {
 
 AtomHandler* Fluxbox::getAtomHandler(const std::string &name) {
     if ( name != "" ) {
-        for (AtomHandlerContainerIt it= m_atomhandler.begin();
-             it != m_atomhandler.end(); it++ ) {
-            if ( name == (*it).second )
-                return (*it).first;
-        }
+        using namespace FbTk;
+        AtomHandlerContainerIt it = find_if(m_atomhandler.begin(),
+                                            m_atomhandler.end(),
+                                            Compose(bind2nd(equal_to<string>(), name),
+                                                    Select2nd<AtomHandlerContainer::value_type>()));
+        if (it != m_atomhandler.end())
+            return (*it).first;
     }
     return 0;
 }
@@ -1342,7 +1346,6 @@ void Fluxbox::addAtomHandler(AtomHandler *atomh, const std::string &name) {
 }
 
 void Fluxbox::removeAtomHandler(AtomHandler *atomh) {
-
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end();
          ++it) {
@@ -1354,11 +1357,11 @@ void Fluxbox::removeAtomHandler(AtomHandler *atomh) {
 }
 
 WinClient *Fluxbox::searchWindow(Window window) {
-    std::map<Window, WinClient *>::iterator it = m_window_search.find(window);
+    WinClientMap::iterator it = m_window_search.find(window);
     if (it != m_window_search.end())
         return it->second;
 
-    std::map<Window, FluxboxWindow *>::iterator git = m_window_search_group.find(window);
+    WindowMap::iterator git = m_window_search_group.find(window);
     return git == m_window_search_group.end() ? 0 : &git->second->winClient();
 }
 
@@ -1806,18 +1809,13 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
     if (m_focused_window != 0) {
         // check if m_focused_window is valid
-        bool found = false;
-        std::map<Window, WinClient *>::iterator it = m_window_search.begin();
-        std::map<Window, WinClient *>::iterator it_end = m_window_search.end();
-        for (; it != it_end; ++it) {
-            if (it->second == m_focused_window) {
-                // we found it, end loop
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
+        WinClientMap::iterator it = find_if(m_window_search.begin(),
+                                            m_window_search.end(),
+                                            Compose(bind2nd(equal_to<WinClient *>(), m_focused_window),
+                                                    Select2nd<WinClientMap::value_type>()));
+                
+        // if not found...
+        if (it == m_window_search.end()) {
             m_focused_window = 0;
         } else {
             old_client = m_focused_window;
