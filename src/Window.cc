@@ -813,7 +813,6 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     FbTk::TextButton *label_btn = m_labelbuttons[&client];
     if (label_btn != 0) {
         frame().removeTab(label_btn);
-        evm.remove(label_btn->window());
         label_btn = 0;
     }
 
