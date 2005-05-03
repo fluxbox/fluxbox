@@ -445,6 +445,8 @@ private:
                      Time time);
     static void ungrabPointer(Time time);
 
+    void associateClient(WinClient &client);
+
     // state and hint signals
     WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig, m_focussig, m_titlesig;
 

@@ -422,20 +422,11 @@ void FluxboxWindow::init() {
     frame().gripLeft().setCursor(frame().theme().lowerLeftAngleCursor());
     frame().gripRight().setCursor(frame().theme().lowerRightAngleCursor());
 
+    associateClient(*m_client);
 
-    FbWinFrame::ButtonId btn = frame().createTab(m_client->title(),
-                                                 new SetClientCmd(*m_client));
-
-    m_labelbuttons[m_client] = btn;
-    frame().setLabelButtonFocus(*btn);
-
-    FbTk::EventManager &evm = *FbTk::EventManager::instance();
-
-    evm.add(*this, btn->window()); // we take care of button events for this
-    evm.add(*this, m_client->window());
+    frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
 
     // redirect events from frame to us
-
     frame().setEventHandler(*this);
 
     frame().resize(m_client->width(), m_client->height());
@@ -473,10 +464,10 @@ void FluxboxWindow::init() {
     // fetch client size and placement
     XWindowAttributes wattrib;
     if (! m_client->getAttrib(wattrib) ||
-        !wattrib.screen // no screen? ??
-        || wattrib.override_redirect) { // override redirect
+        !wattrib.screen  || // no screen? ??
+        wattrib.override_redirect || // override redirect
+        m_client->initial_state == WithdrawnState) // Slit client
         return;
-    }
 
     // save old border width so we can restore it later
     m_client->old_bw = wattrib.border_width;
@@ -487,13 +478,6 @@ void FluxboxWindow::init() {
                                                                                    &FluxboxWindow::raise));
     m_timer.setCommand(raise_cmd);
     m_timer.fireOnce(true);
-
-    // Slit client?
-    if (m_client->initial_state == WithdrawnState) {
-        return;
-    }
-
-
 
     Fluxbox::instance()->saveWindowSearchGroup(frame().window().window(), this);
 
@@ -666,16 +650,13 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
 	ClientList::iterator client_insert_pos = getClientInsertPosition(x, y);
 	FbTk::TextButton *button_insert_pos = NULL;
-	if(client_insert_pos != m_clientlist.end())
+	if (client_insert_pos != m_clientlist.end())
             button_insert_pos = m_labelbuttons[*client_insert_pos];
 	
         // make sure we set new window search for each client
         ClientList::iterator client_it = old_win->clientList().begin();
         ClientList::iterator client_it_end = old_win->clientList().end();
 	for (; client_it != client_it_end; ++client_it) {
-            // setup eventhandlers for client
-            evm.add(*this, (*client_it)->window());
-
             // reparent window to this
             frame().setClientWindow(**client_it);
             if ((*client_it) == focused_win)
@@ -687,20 +668,13 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
                              frame().clientArea().width(),
                              frame().clientArea().height());
 
-            (*client_it)->setFluxboxWindow(this);
-            
             // create a labelbutton for this client and
             // associate it with the pointer
-            FbWinFrame::ButtonId btn = frame().createTab((*client_it)->title(),
-                                                         new SetClientCmd(*(*client_it)));
-            m_labelbuttons[(*client_it)] = btn;
+            associateClient(*(*client_it));
             
             //null if we want the new button at the end of the list
-	    if(x >= 0 && button_insert_pos)
-                frame().moveLabelButtonLeftOf(*btn, *button_insert_pos);
-
-
-            evm.add(*this, btn->window()); // we take care of button events for this
+	    if (x >= 0 && button_insert_pos)
+                frame().moveLabelButtonLeftOf(*m_labelbuttons[*client_it], *button_insert_pos);
 
             (*client_it)->saveBlackboxAttribs(m_blackbox_attrib);
         }
@@ -714,19 +688,10 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
         delete old_win;
 
     } else { // client.fbwindow() == 0
-        // create a labelbutton for this client and associate it with the pointer
-        FbWinFrame::ButtonId btn = frame().createTab(client.title(),
-                                                     new SetClientCmd(client));
-        m_labelbuttons[&client] = btn;
-
-        FbTk::EventManager &evm = *FbTk::EventManager::instance();
-
-        evm.add(*this, btn->window()); // we take care of button events for this
+        associateClient(client);
 
         if (&client == focused_win)
             was_focused = focused_win;
-
-        client.setFluxboxWindow(this);
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
         m_clientlist.push_back(&client);
@@ -3985,4 +3950,19 @@ void FluxboxWindow::ungrabPointer(Time time) {
     s_num_grabs--;
     if (s_num_grabs < 0)
         s_num_grabs = 0;
+}
+
+void FluxboxWindow::associateClient(WinClient &client) {
+
+    FbWinFrame::ButtonId btn = frame().createTab(client.title(),
+                                                 new SetClientCmd(client));
+
+    m_labelbuttons[&client] = btn;
+
+
+    FbTk::EventManager &evm = *FbTk::EventManager::instance();
+
+    evm.add(*this, btn->window()); // we take care of button events for this
+    evm.add(*this, client.window());
+    client.setFluxboxWindow(this);
 }
