@@ -407,118 +407,117 @@ void FbWinFrame::moveLabelButtonRight(const FbTk::TextButton &btn) {
 }
 
 void FbWinFrame::moveLabelButtonTo(FbTk::TextButton &btn, int x, int y) {
-	Window parent_return=0,
-	       root_return=75,
-	       *children_return=NULL;
-	unsigned int nchildren_return;
-	//get the root window
-	if(!XQueryTree(FbTk::App::instance()->display(), window().window(),
-			&root_return, &parent_return, &children_return, &nchildren_return))
-		parent_return=parent_return;//return;
-	if(children_return!=NULL)
-		XFree(children_return);
-	int dest_x=0, dest_y=0;
-	Window labelbutton=0;
-	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
-				root_return, label().window(),
-				x,y, &dest_x, &dest_y,
-				&labelbutton))
-		return;
-	LabelList::iterator it = m_labelbuttons.begin();
-	LabelList::iterator it_end = m_labelbuttons.end();
-	//find the label button to move next to
-	for(; it!=it_end; it++) {
-		if( (*it)->window()==labelbutton)
-			break;
-	}
-	//label button not found
-	if(it==it_end)
-		return;
-	Window child_return=0;
-	//make x and y relative to our labelbutton
-	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
-			        label().window(),labelbutton,
-				dest_x,dest_y, &x, &y,
-				&child_return))
-		return;
-	if(x>(*it)->width()/2)
-		moveLabelButtonRightOf(btn,**it);
-	else
-		moveLabelButtonLeftOf(btn,**it);
+    Window parent_return=0,
+        root_return=75,
+        *children_return = NULL;
+
+    unsigned int nchildren_return;
+
+    // get the root window
+    if (!XQueryTree(window().display(), window().window(),
+                    &root_return, &parent_return, &children_return, &nchildren_return))
+        parent_return = parent_return;
+
+    if (children_return != NULL)
+        XFree(children_return);
+
+    int dest_x = 0, dest_y = 0;
+    Window labelbutton = 0;
+    if (!XTranslateCoordinates(window().display(),
+                               root_return, label().window(),
+                               x, y, &dest_x, &dest_y,
+                               &labelbutton))
+        return;
+
+    LabelList::iterator it = find_if(m_labelbuttons.begin(),
+                                     m_labelbuttons.end(),
+                                     CompareWindow(&FbTk::Button::window,
+                                                   labelbutton));
+    // label button not found
+    if (it == m_labelbuttons.end())
+        return;
+
+    Window child_return = 0;
+    //make x and y relative to our labelbutton
+    if (!XTranslateCoordinates(window().display(),
+                               label().window(),labelbutton,
+                               dest_x, dest_y, &x, &y,
+                               &child_return))
+        return;
+
+    if (x > (*it)->width() / 2)
+        moveLabelButtonRightOf(btn,**it);
+    else
+        moveLabelButtonLeftOf(btn,**it);
 
 }
 
 
 
 void FbWinFrame::moveLabelButtonLeftOf(const FbTk::TextButton &btn, const FbTk::TextButton &dest) {
-	LabelList::iterator it = find(m_labelbuttons.begin(),
-                                  m_labelbuttons.end(),
-                                  &btn);
-	LabelList::iterator new_pos = find(m_labelbuttons.begin(),
-				       m_labelbuttons.end(),
-				       &dest);
-
-	// make sure we found them
-	if (it == m_labelbuttons.end() || new_pos==m_labelbuttons.end()) {
-		return;
-	}
-	//moving a button to the left of itself results in no change
-	if( new_pos == it) {
-		return;
-	}
-	FbTk::TextButton *item = *it;
-	//remove from list
-	m_labelbuttons.erase(it);
-	//insert on the new place
-	m_labelbuttons.insert(new_pos, item);
-	//update titlebar
-	redrawTitlebar();
-}
-
-void FbWinFrame::moveLabelButtonRightOf(const FbTk::TextButton &btn, const FbTk::TextButton &dest) {
-	LabelList::iterator it = find(m_labelbuttons.begin(),
-                                  m_labelbuttons.end(),
-                                  &btn);
-	LabelList::iterator new_pos = find(m_labelbuttons.begin(),
-				       m_labelbuttons.end(),
-				       &dest);
-
-	// make sure we found them
-	if (it == m_labelbuttons.end() || new_pos==m_labelbuttons.end()){
-		return;
-	}
-	//moving a button to the right of itself results in no change
-	if( new_pos == it){
-		return;
-	}
-	FbTk::TextButton *item = *it;
-	//remove from list
-	m_labelbuttons.erase(it);
-	//need to insert into the next position
-	new_pos++;
-	//insert on the new place
-	if(new_pos == m_labelbuttons.end())
-		m_labelbuttons.push_back(item);
-	else
-		m_labelbuttons.insert(new_pos, item);
-	//update titlebar
-	redrawTitlebar();
-}
-
-void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
-    if (&btn == currentLabel())
-        return;
     LabelList::iterator it = find(m_labelbuttons.begin(),
                                   m_labelbuttons.end(),
                                   &btn);
-    if (it == m_labelbuttons.end())
+    LabelList::iterator new_pos = find(m_labelbuttons.begin(),
+				       m_labelbuttons.end(),
+				       &dest);
+
+    // make sure we found them
+    if (it == m_labelbuttons.end() || new_pos == m_labelbuttons.end())
+        return;
+
+    // moving a button to the left of itself results in no change
+    if (new_pos == it)
+        return;
+
+    FbTk::TextButton *item = *it;
+    // remove from list
+    m_labelbuttons.erase(it);
+    // insert on the new place
+    m_labelbuttons.insert(new_pos, item);
+    // update titlebar
+    redrawTitlebar();
+}
+
+void FbWinFrame::moveLabelButtonRightOf(const FbTk::TextButton &btn, const FbTk::TextButton &dest) {
+    LabelList::iterator it = find(m_labelbuttons.begin(),
+                                  m_labelbuttons.end(),
+                                  &btn);
+    LabelList::iterator new_pos = find(m_labelbuttons.begin(),
+				       m_labelbuttons.end(),
+				       &dest);
+
+    // make sure we found them
+    if (it == m_labelbuttons.end() || new_pos == m_labelbuttons.end())
+        return;
+
+    //moving a button to the right of itself results in no change
+    if (new_pos == it)
+        return;
+
+    FbTk::TextButton *item = *it;
+    // remove from list
+    m_labelbuttons.erase(it);
+    // need to insert into the next position
+    new_pos++;
+    // insert on the new place
+    if (new_pos == m_labelbuttons.end())
+        m_labelbuttons.push_back(item);
+    else
+        m_labelbuttons.insert(new_pos, item);
+    //update titlebar
+    redrawTitlebar();
+}
+
+void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
+    if (&btn == currentLabel() || btn.parent() != &label())
         return;
 
     // render label buttons
     if (currentLabel() != 0)
         applyUnfocusLabel(*m_current_label);
 
-    m_current_label = *it; // current focused button
+    m_current_label = &btn; // current focused button
 
     if (m_focused)
         applyFocusLabel(*m_current_label);
@@ -528,11 +527,9 @@ void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
 
 void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
 
-    Display *display = FbTk::App::instance()->display();
-
     win.setBorderWidth(0);
 
-    XChangeSaveSet(display, win.window(), SetModeInsert);
+    XChangeSaveSet(win.display(), win.window(), SetModeInsert);
 
     m_window.setEventMask(NoEventMask);
 
@@ -546,14 +543,14 @@ void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
     m_window.setEventMask(ButtonPressMask | ButtonReleaseMask |
                           ButtonMotionMask | EnterWindowMask | SubstructureRedirectMask);
 
-    XFlush(display);
+    XFlush(win.display());
 
     XSetWindowAttributes attrib_set;
     attrib_set.event_mask = PropertyChangeMask | StructureNotifyMask | FocusChangeMask;
     attrib_set.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask | 
         ButtonMotionMask;
 
-    XChangeWindowAttributes(display, win.window(), CWEventMask|CWDontPropagate, &attrib_set);
+    XChangeWindowAttributes(win.display(), win.window(), CWEventMask|CWDontPropagate, &attrib_set);
 
     m_clientarea.raise();
     win.raise();
