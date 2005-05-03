@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/05/03:
+  * Fix drawing of no-title menus, plus updating of int menu items (Simon)
+    IntResMenuItem.hh/cc MenuItem.hh Menu.cc Screen.cc ToggleMenu.hh
+    Toolbar.cc Slit.cc
   * Code cleaning. (Henrik)
     Fluxbox::associateClient; creates tab and
     maps WinClient to label button.

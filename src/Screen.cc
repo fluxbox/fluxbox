@@ -1829,17 +1829,17 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         }
 
         FbTk::MenuItem *focused_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, FocusedAlpha, "Focused Window Alpha", "Transparency level of the focused window"),
-                    resource.focused_alpha, 0, 255);
+                    resource.focused_alpha, 0, 255, *alpha_menu);
         focused_alpha_item->setCommand(saverc_cmd);
         alpha_menu->insert(focused_alpha_item);
 
         FbTk::MenuItem *unfocused_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, UnfocusedAlpha, "Unfocused Window Alpha", "Transparency level of unfocused windows"),
-                    resource.unfocused_alpha, 0, 255);
+                    resource.unfocused_alpha, 0, 255, *alpha_menu);
         unfocused_alpha_item->setCommand(saverc_cmd);
         alpha_menu->insert(unfocused_alpha_item);
 
         FbTk::MenuItem *menu_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, MenuAlpha, "Menu Alpha", "Transparency level of menu"),
-                    resource.menu_alpha, 0, 255);
+                    resource.menu_alpha, 0, 255, *alpha_menu);
         menu_alpha_item->setCommand(saverc_cmd);
         alpha_menu->insert(menu_alpha_item);
 

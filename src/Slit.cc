@@ -1257,7 +1257,7 @@ void Slit::setupMenu() {
     FbTk::MenuItem *alpha_menuitem = 
         new IntResMenuItem(_FBTEXT(Common, Alpha, "Alpha", "Transparency level"),
                            m_rc_alpha,
-                           0, 255);
+                           0, 255, m_slitmenu);
     // setup command for alpha value
     MacroCommand *alpha_macrocmd = new MacroCommand(); 
     RefCount<Command> alpha_cmd(new SimpleCommand<Slit>(*this, &Slit::updateAlpha));

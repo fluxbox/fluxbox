@@ -48,11 +48,8 @@ public:
         // so that the last toggled item gets redrawn as 
         // not toggled.
         if (ev.window == frameWindow()) {
-            // force full foreground update (by setting bg to same thing)
-            frameWindow().parentMoved();
-//            for (size_t i = 0; i < numberOfItems(); ++i) {
-//                clearItem(i);
-//            }
+            // force full foreground update
+            frameWindow().updateBackground(false);
         }
 
     }

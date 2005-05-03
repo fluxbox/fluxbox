@@ -21,8 +21,11 @@
 
 // $Id$
 
+#include "FbTk/Menu.hh"
+
 #include "IntResMenuItem.hh"
 #include "PixmapWithMask.hh"
+
 #ifdef HAVE_CSTDIO
   #include <cstdio>
 #else
@@ -41,8 +44,8 @@ std::string appendIntValue(const std::string &label, int value) {
 
 };
 
-IntResMenuItem::IntResMenuItem(const char *label, FbTk::Resource<int> &res, int min_val, int max_val):
-    FbTk::MenuItem(label), m_org_label(FbTk::MenuItem::label()),
+IntResMenuItem::IntResMenuItem(const char *label, FbTk::Resource<int> &res, int min_val, int max_val, FbTk::Menu &host_menu):
+    FbTk::MenuItem(label, host_menu), m_org_label(FbTk::MenuItem::label()),
         m_max(max_val), m_min(min_val), m_res(res) { 
         setLabel(appendIntValue(m_org_label, *m_res).c_str());
 }
@@ -72,4 +75,11 @@ void IntResMenuItem::click(int button, int time) {
     setLabel(appendIntValue(m_org_label, *m_res).c_str());
     // call other commands
     FbTk::MenuItem::click(button, time);
+
+    // show new value, which for us means forcing a full menu update
+    // since the text is drawn onto the background!
+    if (menu()) {
+        menu()->frameWindow().updateBackground(false);
+        menu()->clearWindow();
+    }
 }

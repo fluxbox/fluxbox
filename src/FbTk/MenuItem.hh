@@ -42,6 +42,7 @@ class MenuItem {
 public:
     MenuItem()
         : m_label(""),
+          m_menu(0),
           m_submenu(0),
           m_enabled(true),
           m_selected(false),
@@ -50,14 +51,25 @@ public:
     explicit MenuItem(
              const char *label)
         : m_label(label ? label : ""),
+          m_menu(0),
+          m_submenu(0),
+          m_enabled(true),
+          m_selected(false),
+          m_toggle_item(false)
+    { }
+
+    MenuItem(const char *label, Menu &host_menu)
+        : m_label(label ? label : ""),
+          m_menu(&host_menu),
           m_submenu(0),
           m_enabled(true),
           m_selected(false),
           m_toggle_item(false)
     { }
     /// create a menu item with a specific command to be executed on click
-    MenuItem(const char *label, RefCount<Command> &cmd):
+    MenuItem(const char *label, RefCount<Command> &cmd, Menu *menu = 0):
         m_label(label ? label : ""),
+        m_menu(menu),
         m_submenu(0),
         m_command(cmd),
         m_enabled(true),
@@ -66,8 +78,9 @@ public:
 		
     }
 
-    MenuItem(const char *label, Menu *submenu)
+    MenuItem(const char *label, Menu *submenu, Menu *host_menu = 0)
         : m_label(label ? label : "")
+        , m_menu(host_menu)
         , m_submenu(submenu)
         , m_enabled(true)
         , m_selected(false),
@@ -110,9 +123,13 @@ public:
     RefCount<Command> &command() { return m_command; }
     const RefCount<Command> &command() const { return m_command; }
     //@}
+
+    void setMenu(Menu &menu) { m_menu = &menu; }
+    Menu *menu() { return m_menu; }
 	
 private:
     std::string m_label; ///< label of this item
+    Menu *m_menu; ///< the menu we live in
     Menu *m_submenu; ///< a submenu, 0 if we don't have one
     RefCount<Command> m_command; ///< command to be executed
     bool m_enabled, m_selected;
@@ -123,6 +140,7 @@ private:
         std::string filename;
     };
     std::auto_ptr<Icon> m_icon;
+
 };
 
 } // end namespace FbTk

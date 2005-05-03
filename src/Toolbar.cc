@@ -796,7 +796,7 @@ void Toolbar::setupMenus() {
 
     MenuItem *toolbar_menuitem = new IntResMenuItem(_FBTEXT(Toolbar, WidthPercent, "Toolbar width percent", "Percentage of screen width taken by toolbar"),
                                                     m_rc_width_percent,
-                                                    0, 100); // min/max value
+                                                    0, 100, menu()); // min/max value
 
 
     RefCommand reconfig_toolbar(new ToolbarCommand(*this, &Toolbar::reconfigure));
@@ -886,7 +886,7 @@ void Toolbar::setupMenus() {
     FbTk::MenuItem *alpha_menuitem =
         new IntResMenuItem(_FBTEXT(Common, Alpha, "Alpha", "Transparency level"),
                            m_rc_alpha,
-                           0, 255);
+                           0, 255, menu());
     // setup command for alpha value
     MacroCommand *alpha_macrocmd = new MacroCommand();
     RefCount<Command> alpha_cmd(new SimpleCommand<Toolbar>(*this, &Toolbar::updateAlpha));

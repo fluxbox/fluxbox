@@ -475,7 +475,7 @@ void Menu::updateMenu(int active_index) {
     }
 
     menu.frame.moveResize(0, ((m_title_vis) ? menu.title.y() + menu.title.height() + 
-                              menu.title.borderWidth()*2 : 1), 
+                              menu.title.borderWidth()*2 : 0), 
                           width(), menu.frame_h);
 
     if (m_title_vis && m_need_update) {
@@ -927,6 +927,8 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             }
 
             m_moving = m_torn = true;
+            // clear current highlighted item
+            clearItem(m_active_index);
 
             if (m_which_sub >= 0)
                 drawSubmenu(m_which_sub);
@@ -1238,7 +1240,8 @@ void Menu::clearItem(int index, bool clear) {
     int item_x = (sbl * item_w), item_y = (i * item_h);
     bool highlight = (index == m_active_index);
 
-    if (highlight) {
+    // don't highlight if moving, doesn't work with alpha on
+    if (highlight && !m_moving) {
         highlightItem(index);
         return;
     } else if (clear)
