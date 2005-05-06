@@ -777,11 +777,13 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): MappingNotify"<<endl;
 #endif // DEBUG
-
-        FbTk::KeyUtil::instance().init(); // reinitialise the key utils
-        // reconfigure keys (if the mapping changes, they don't otherwise update
-        m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
-
+        if (e->xmapping.request == MappingKeyboard
+            || e->xmapping.request == MappingModifier) {
+            XRefreshKeyboardMapping(&e->xmapping);
+            FbTk::KeyUtil::instance().init(); // reinitialise the key utils
+            // reconfigure keys (if the mapping changes, they don't otherwise update
+            m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
+        }
         break;
     case CreateNotify:
 	break;
@@ -1076,7 +1078,6 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
     if (keyScreen() == 0 || mouseScreen() == 0)
         return;
 
-
     switch (ke.type) {
     case KeyPress:
         m_key->doAction(ke);
@@ -1089,9 +1090,10 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
         if (m_watching_screen && m_watch_keyrelease) {
             // mask the mod of the released key out
             // won't mask anything if it isn't a mod
-            ke.state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
-
-            if ((m_watch_keyrelease & ke.state) == 0) {
+            unsigned int state = FbTk::KeyUtil::instance().isolateModifierMask(ke.state);
+            state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
+            
+            if ((m_watch_keyrelease & state) == 0) {
 
                 m_watching_screen->notifyReleasedKeys(ke);
                 XUngrabKeyboard(FbTk::App::instance()->display(), CurrentTime);
@@ -1107,8 +1109,6 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
     default:
         break;
     }
-
-
 }
 
 /// handle system signals
@@ -1951,12 +1951,15 @@ void Fluxbox::unfocusWindow(WinClient &client, bool full_revert, bool unfocus_fr
 
 
 void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
+    
     if (mods == 0) {
         cerr<<"WARNING: attempt to grab without modifiers!"<<endl;
         return;
     }
     m_watching_screen = &screen;
-    m_watch_keyrelease = mods;
+
+    // just make sure we are saving the mods with any other flags (xkb)
+    m_watch_keyrelease = FbTk::KeyUtil::instance().isolateModifierMask(mods);
     XGrabKeyboard(FbTk::App::instance()->display(),
                   screen.rootWindow().window(), True,
                   GrabModeAsync, GrabModeAsync, CurrentTime);

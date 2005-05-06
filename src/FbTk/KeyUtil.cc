@@ -26,6 +26,30 @@
 
 #include <string>
 
+namespace {
+
+struct t_modlist{
+    char *str;
+    unsigned int mask;
+    bool operator == (const char *modstr) const {
+        return  (strcasecmp(str, modstr) == 0 && mask !=0);
+    }
+};
+
+const struct t_modlist modlist[] = {
+    {"SHIFT", ShiftMask},
+    {"LOCK", LockMask},
+    {"CONTROL", ControlMask},
+    {"MOD1", Mod1Mask},
+    {"MOD2", Mod2Mask},
+    {"MOD3", Mod3Mask},
+    {"MOD4", Mod4Mask},
+    {"MOD5", Mod5Mask},
+    {0, 0}
+};
+
+};
+
 namespace FbTk {
 
 std::auto_ptr<KeyUtil> KeyUtil::s_keyutil;
@@ -57,19 +81,7 @@ void KeyUtil::loadModmap() {
         XFreeModifiermap(m_modmap);
 
     m_modmap = XGetModifierMapping(App::instance()->display());
-    // mask to use for modifier
-    static const int mods[] = {
-        ShiftMask,
-        LockMask,
-        ControlMask,
-        Mod1Mask,
-        Mod2Mask,
-        Mod3Mask,
-        Mod4Mask,
-        Mod5Mask,
-        0
-    };
-	
+    	
     // find modifiers and set them
     for (int i=0, realkey=0; i<8; ++i) {
         for (int key=0; key<m_modmap->max_keypermod; ++key, ++realkey) {
@@ -77,17 +89,18 @@ void KeyUtil::loadModmap() {
             if (m_modmap->modifiermap[realkey] == 0)
                 continue;
 
-            KeySym ks = XKeycodeToKeysym(App::instance()->display(), m_modmap->modifiermap[realkey], 0);
+            KeySym ks = XKeycodeToKeysym(App::instance()->display(), 
+                    m_modmap->modifiermap[realkey], 0);
 
             switch (ks) {
             case XK_Caps_Lock:
-                m_capslock = mods[i];
+                m_capslock = modlist[i].mask;
                 break;
             case XK_Scroll_Lock:
-                m_scrolllock = mods[i];
+                m_scrolllock = modlist[i].mask;
                 break;
             case XK_Num_Lock:
-                m_numlock = mods[i];
+                m_numlock = modlist[i].mask;
                 break;
             }
         }
@@ -164,31 +177,13 @@ unsigned int KeyUtil::getKey(const char *keystr) {
 }
 
 
-struct t_modlist{
-    char *str;
-    unsigned int mask;
-    bool operator == (const char *modstr) const {
-        return  (strcasecmp(str, modstr) == 0 && mask !=0);
-    }
-};
-
 /**
  @return the modifier for the modstr else zero on failure.
 */
 unsigned int KeyUtil::getModifier(const char *modstr) {
     if (!modstr)
         return 0;
-    const static struct t_modlist modlist[] = {
-        {"SHIFT", ShiftMask},
-        {"CONTROL", ControlMask},
-        {"MOD1", Mod1Mask},
-        {"MOD2", Mod2Mask},
-        {"MOD3", Mod3Mask},
-        {"MOD4", Mod4Mask},
-        {"MOD5", Mod5Mask},
-        {0, 0}
-    };
-
+    
     // find mod mask string
     for (unsigned int i=0; modlist[i].str !=0; i++) {
         if (modlist[i] == modstr)		
@@ -210,7 +205,8 @@ void KeyUtil::ungrabKeys() {
 unsigned int KeyUtil::keycodeToModmask(unsigned int keycode) {
     XModifierKeymap *modmap = instance().m_modmap;
 
-    if (!modmap) return 0;
+    if (!modmap) 
+        return 0;
 
     // search through modmap for this keycode
     for (int mod=0; mod < 8; mod++) {
@@ -218,7 +214,7 @@ unsigned int KeyUtil::keycodeToModmask(unsigned int keycode) {
             // modifiermap is an array with 8 sets of keycodes
             // each max_keypermod long, but in a linear array.
             if (modmap->modifiermap[modmap->max_keypermod*mod + key] == keycode) {
-                return (1<<mod);
+                return modlist[mod].mask;
             }
         } 
     }

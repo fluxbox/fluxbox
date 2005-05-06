@@ -42,13 +42,13 @@
 #include <iostream>
 
 void NextWindowCmd::execute() {
-    
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
         Fluxbox *fb = Fluxbox::instance();
         // special case for commands from key events
         if (fb->lastEvent().type == KeyPress) {
             unsigned int mods = FbTk::KeyUtil::instance().cleanMods(fb->lastEvent().xkey.state);
+            mods = FbTk::KeyUtil::instance().isolateModifierMask(mods);
             if (mods == 0) // can't stacked cycle unless there is a mod to grab
                 screen->nextFocus(m_option | BScreen::CYCLELINEAR);
             else {
@@ -71,6 +71,7 @@ void PrevWindowCmd::execute() {
         // special case for commands from key events
         if (fb->lastEvent().type == KeyPress) {
             unsigned int mods = FbTk::KeyUtil::instance().cleanMods(fb->lastEvent().xkey.state);
+            mods = FbTk::KeyUtil::instance().isolateModifierMask(mods);
             if (mods == 0) // can't stacked cycle unless there is a mod to grab
                 screen->prevFocus(m_option | BScreen::CYCLELINEAR);
             else {

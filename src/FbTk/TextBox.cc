@@ -209,7 +209,7 @@ void TextBox::buttonPressEvent(XButtonEvent &event) {
 }
 
 void TextBox::keyPressEvent(XKeyEvent &event) {
-    // strip numlock and scrolllock mask
+    
     event.state = KeyUtil::instance().cleanMods(event.state);
 
     KeySym ks;
@@ -218,8 +218,8 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
     // a modifier key by itself doesn't do anything
     if (IsModifierKey(ks)) return;
 
-    if (event.state) { // handle keybindings with state
-        if (event.state == ControlMask) {
+    if (FbTk::KeyUtil::instance().isolateModifierMask(event.state)) { // handle keybindings with state
+        if ((event.state & ControlMask) == ControlMask) {
 
             switch (ks) {
             case XK_b:
@@ -248,7 +248,8 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 m_end_pos = 0;
                 break;
             }
-        } else if (event.state == ShiftMask || event.state == 0x80) { // shif and altgr
+        } else if ((event.state & ShiftMask)== ShiftMask || 
+                   (event.state & 0x80) == 0x80) { // shif and altgr
             if (isprint(keychar[0])) {
                 std::string val;
                 val += keychar[0];

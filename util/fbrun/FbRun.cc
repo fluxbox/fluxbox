@@ -223,7 +223,7 @@ void FbRun::redrawLabel() {
 }
 
 void FbRun::keyPressEvent(XKeyEvent &ke) {
-    // strip numlock, capslock and scrolllock mask
+    
     ke.state = FbTk::KeyUtil::instance().cleanMods(ke.state);
 
     int cp= cursorPosition();
@@ -232,10 +232,11 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
     char keychar[1];
     XLookupString(&ke, keychar, 1, &ks, 0);
     // a modifier key by itself doesn't do anything
-    if (IsModifierKey(ks)) return;
+    if (IsModifierKey(ks)) 
+        return;
 
-    if (ke.state) { // a modifier key is down
-        if (ke.state == ControlMask) {
+    if (FbTk::KeyUtil::instance().isolateModifierMask(ke.state)) { // a modifier key is down
+        if ((ke.state & ControlMask) == ControlMask) {
             switch (ks) {
             case XK_p:
                 prevHistoryItem();
@@ -248,7 +249,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
                 setCursorPosition(cp);
                 break;
             }
-        } else if (ke.state == (Mod1Mask | ShiftMask)) {
+        } else if ((ke.state & (Mod1Mask|ShiftMask)) == (Mod1Mask | ShiftMask)) {
             switch (ks) {
             case XK_less:
                 firstHistoryItem();

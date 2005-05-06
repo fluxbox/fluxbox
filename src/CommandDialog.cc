@@ -33,6 +33,7 @@
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/KeyUtil.hh"
 #include "FbTk/App.hh"
 
 #include <X11/keysym.h>
@@ -43,11 +44,11 @@
 #include <stdexcept>
 using namespace std;
 
-CommandDialog::CommandDialog(BScreen &screen, 
+CommandDialog::CommandDialog(BScreen &screen,
         const std::string &title, const std::string precommand) :
     FbTk::FbWindow(screen.rootWindow().screenNumber(), 0, 0, 200, 1, ExposureMask),
     m_textbox(*this, screen.winFrameTheme().font(), ""),
-    m_label(*this, screen.winFrameTheme().font(), title),    
+    m_label(*this, screen.winFrameTheme().font(), title),
     m_gc(m_textbox),
     m_screen(screen),
     m_move_x(0),
@@ -121,12 +122,13 @@ void CommandDialog::motionNotifyEvent(XMotionEvent &event) {
 }
 
 void CommandDialog::keyPressEvent(XKeyEvent &event) {
-    if (event.state)
+    unsigned int state = FbTk::KeyUtil::instance().isolateModifierMask(event.state);
+    if (state)
         return;
 
     KeySym ks;
-    char keychar[1];
-    XLookupString(&event, keychar, 1, &ks, 0);
+    char keychar;
+    XLookupString(&event, &keychar, 1, &ks, 0);
 
     if (ks == XK_Return) {
         hide(); // hide and return focus to a FluxboxWindow
@@ -135,7 +137,7 @@ void CommandDialog::keyPressEvent(XKeyEvent &event) {
             parseLine(m_precommand + m_textbox.text()));
         if (cmd.get())
             cmd->execute();
-        // post execute 
+        // post execute
         if (*m_postcommand != 0)
             m_postcommand->execute();
 
@@ -152,7 +154,7 @@ void CommandDialog::tabComplete() {
     try {
         string::size_type first = m_textbox.text().find_last_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                                                     "abcdefghijklmnopqrstuvwxyz"
-                                                                    "0123456789", 
+                                                                    "0123456789",
                                                                     m_textbox.cursorPosition());
         if (first == string::npos)
             first = 0;
@@ -173,7 +175,7 @@ void CommandDialog::tabComplete() {
 
         if (!matches.empty()) {
             // sort and apply larges match
-            std::sort(matches.begin(), matches.end(), less<string>());        
+            std::sort(matches.begin(), matches.end(), less<string>());
             m_textbox.setText(m_textbox.text() + matches[0].substr(prefix.size()));
         } else
             XBell(FbTk::App::instance()->display(), 0);
@@ -204,7 +206,7 @@ void CommandDialog::init() {
 
     // setup label
     // we listen to motion notify too
-    m_label.setEventMask(m_label.eventMask() | ButtonPressMask | ButtonMotionMask); 
+    m_label.setEventMask(m_label.eventMask() | ButtonPressMask | ButtonMotionMask);
     m_label.setGC(m_screen.winFrameTheme().labelTextFocusGC());
     m_label.show();
 
@@ -234,7 +236,7 @@ void CommandDialog::init() {
 void CommandDialog::updateSizes() {
     m_label.moveResize(0, 0,
                        width(), m_textbox.font().height() + 2);
-    
+
     m_textbox.moveResize(2, m_label.height(),
-                         width() - 4, m_textbox.font().height() + 2);    
+                         width() - 4, m_textbox.font().height() + 2);
 }

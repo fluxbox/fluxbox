@@ -31,6 +31,7 @@
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/Command.hh"
+#include "FbTk/KeyUtil.hh"
 
 class Keys:private FbTk::NotCopyable  {
 public:
@@ -86,21 +87,22 @@ private:
 		
         inline t_key *find(unsigned int key_, unsigned int mod_) {
             for (unsigned int i=0; i<keylist.size(); i++) {
-                if (keylist[i]->key == key_ && keylist[i]->mod == mod_)
+                if (keylist[i]->key == key_ && keylist[i]->mod == FbTk::KeyUtil::instance().isolateModifierMask(mod_))
                     return keylist[i];				
             }			
             return 0;
         }
         inline t_key *find(XKeyEvent &ke) {
             for (unsigned int i=0; i<keylist.size(); i++) {
-                if (keylist[i]->key == ke.keycode && keylist[i]->mod == ke.state)
+                if (keylist[i]->key == ke.keycode && 
+                        keylist[i]->mod == FbTk::KeyUtil::instance().isolateModifierMask(ke.state))
                     return keylist[i];				
             }			
             return 0;
         }
 			
         inline bool operator == (XKeyEvent &ke) const {
-            return (mod == ke.state && key == ke.keycode);
+            return (mod == FbTk::KeyUtil::instance().isolateModifierMask(ke.state) && key == ke.keycode);
         }
 		
         FbTk::RefCount<FbTk::Command> m_command;

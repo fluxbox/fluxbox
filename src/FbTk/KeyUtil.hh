@@ -70,6 +70,14 @@ public:
          return mods & ~(capslock() | numlock() );
     }
 
+    /** 
+       strip away everything which is actually not a modifier
+       eg, xkb-keyboardgroups are encoded as bit 13 and 14
+    */
+    unsigned int isolateModifierMask(unsigned int mods) {
+        return mods & (ShiftMask|LockMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask); 
+    }
+
     /**
        Convert the specified key into appropriate modifier mask
        @return corresponding modifier mask
@@ -78,6 +86,7 @@ public:
     int numlock() const { return Mod2Mask; } //m_numlock; }
     int capslock() const { return LockMask; } //m_capslock; }
     int scrolllock() const { return Mod5Mask; } //m_scrolllock; }
+
 private:
     void loadModmap();
 

@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/05/05:
+  * Fix #1160244, #1099704, #1094107 Mutiple keyboard layout (Mathias + thanx
+    to Vadim)
+    Switching to a secondary/third keyboard layout via the xkb-extensions
+    leads to broken NextWindow/PrevWindow and broken fbrun/CommandDialog:
+    - be aware of what xkb is doing to the event.state
+    - minor cleaning
+    CommandDialog.cc WorkspaceCmd.cc Keys.cc FbTk/KeyUtil.cc/hh 
+    FbTk/TextBox.cc fluxbox.cc FbRun.cc
 *05/05/03:
   * Fix drawing of no-title menus, plus updating of int menu items (Simon)
     IntResMenuItem.hh/cc MenuItem.hh Menu.cc Screen.cc ToggleMenu.hh
