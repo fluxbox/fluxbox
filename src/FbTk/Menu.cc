@@ -273,6 +273,9 @@ void Menu::lower() {
 }
 
 void Menu::nextItem() {
+    if (menuitems.empty())
+        return;
+
     int old_which_press = m_which_press;
     m_active_index = -1;
     if (validIndex(old_which_press) && 
@@ -308,6 +311,8 @@ void Menu::nextItem() {
 }
 
 void Menu::prevItem() {
+    if (menuitems.empty())
+        return;
 
     int old_which_press = m_which_press;
     m_active_index = -1;

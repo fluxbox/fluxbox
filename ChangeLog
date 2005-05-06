@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/05/06:
+  * Fix potential segfault menu bug, thanks chenfeng (Simon)
+    Menu.cc
   * Added more KeyActions to TextBox (thanx to Vadim <suhanov_vadim@mail.ru>
       Control + LeftArrow  -> Moves cursor to the left direction, up to next word.
       Control + RightArrow -> to the right direction.
