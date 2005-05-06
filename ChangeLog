@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/05/06:
+  * Added more KeyActions to TextBox (thanx to Vadim <suhanov_vadim@mail.ru>
+      Control + LeftArrow  -> Moves cursor to the left direction, up to next word.
+      Control + RightArrow -> to the right direction.
+      Control + BackSpace  -> Removes everything from the cursor left side, up to next left word.
+      Control + Delete     -> like above but removes to the right direction.
+    FbTk/TextBox.cc/hh
 *05/05/05:
   * Fix #1160244, #1099704, #1094107 Mutiple keyboard layout (Mathias + thanx
     to Vadim)

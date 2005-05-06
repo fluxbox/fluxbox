@@ -35,6 +35,8 @@
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
 
+#include <iostream>
+
 namespace FbTk {
 
 TextBox::TextBox(int screen_num,
@@ -141,11 +143,8 @@ void TextBox::insertText(const std::string &val) {
     m_text.insert(m_start_pos + cursorPosition(), val);
     m_cursor_pos += val.size();
     m_end_pos += val.size();
-   
-    if (m_start_pos + cursorPosition() < m_end_pos)
-        adjustEndPos();
-    else
-        adjustStartPos();
+ 
+    adjustPos();
 }
 
 void TextBox::killToEnd() {
@@ -246,6 +245,47 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 m_start_pos = 0;
                 m_cursor_pos = 0;
                 m_end_pos = 0;
+                break;
+            case XK_Left:
+                if (m_cursor_pos && m_text.size()){
+                    m_cursor_pos = findEmptySpaceLeft();
+                    adjustPos();
+                }
+                break;
+            case XK_Right:
+                if (m_text.size() && m_cursor_pos < m_text.size()){
+                    m_cursor_pos = findEmptySpaceRight();
+                    adjustPos();
+                }
+                break;
+
+            case XK_BackSpace: {
+                    if (!m_cursor_pos || !m_text.size())
+                        break;
+
+                    int pos = findEmptySpaceLeft();
+
+                    m_text.erase(pos, m_cursor_pos - pos);
+                    m_start_pos  = 0;
+                    m_cursor_pos = pos;
+                    m_end_pos    = m_text.size();
+                    adjustPos();
+                }
+                break;
+            case XK_Delete: {
+            
+                    if (!m_text.size() || m_cursor_pos >= m_text.size())
+                        break;
+
+                    int pos = findEmptySpaceRight();
+
+                    m_text.erase(m_cursor_pos, pos - m_cursor_pos);
+                    m_start_pos  = 0;
+                    m_cursor_pos = m_cursor_pos;
+                    m_end_pos    = m_text.size();
+
+                    adjustPos();
+                }
                 break;
             }
         } else if ((event.state & ShiftMask)== ShiftMask || 
@@ -356,6 +396,47 @@ void TextBox::adjustStartPos() {
     m_start_pos = start_pos;
 }
 
+int TextBox::findEmptySpaceLeft(){
 
+    // found the first left space symbol
+    int pos = m_text.rfind(' ', m_cursor_pos - 1);
 
+    // do we have one more space symbol near?
+    int next_pos = -1;
+    while ( pos > 0 && (next_pos = m_text.rfind(' ', pos - 1)) > -1 ){
+        if (next_pos + 1 < pos)
+            break;
+        pos = next_pos;
+    }
+    if (pos < 0)  
+        pos = 0;
+
+    return pos;
+
+}
+int TextBox::findEmptySpaceRight(){
+
+    // found the first right space symbol
+    int pos = m_text.find(' ', m_cursor_pos);
+
+    // do we have one more space symbol near?
+    int next_pos = -1;
+    while (pos > -1 && pos < m_text.size() && (next_pos = m_text.find(' ', pos + 1)) > -1 ){
+        if (next_pos - 1 > pos)
+            break;
+        pos = next_pos;
+    }
+    if (pos < 0)
+        pos = m_text.size();
+
+    return pos + 1; // (+1) - sets cursor at the right.
+
+}
+void TextBox::adjustPos(){
+    if (m_start_pos + cursorPosition() < m_end_pos)
+        adjustEndPos();
+    else
+        adjustStartPos();
+
+}
 }; // end namespace FbTk

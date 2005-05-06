@@ -69,9 +69,14 @@ public:
     GC gc() const { return m_gc; }
     int cursorPosition() const { return m_cursor_pos; }
 
+    int findEmptySpaceLeft();
+    int findEmptySpaceRight();
+
 private:
     void adjustEndPos();
     void adjustStartPos();
+
+    void adjustPos();
 
     const FbTk::Font *m_font;
     std::string m_text;
