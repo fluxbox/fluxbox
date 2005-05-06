@@ -92,7 +92,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,
                         PropModeReplace, (unsigned char *) &wincheck, 1);
 
-        XChangeProperty(disp, wincheck, m_net_wm_name, XA_STRING, 8,
+        XChangeProperty(disp, wincheck, m_net_wm_name, utf8_string, 8,
                         PropModeReplace, (unsigned char *) "Fluxbox", strlen("Fluxbox"));
     }
 
@@ -794,6 +794,7 @@ void Ewmh::createAtoms() {
     m_net_wm_handled_icons = XInternAtom(disp, "_NET_WM_HANDLED_ICONS", False);
 
     m_net_wm_ping = XInternAtom(disp, "_NET_WM_PING", False);
+    utf8_string = XInternAtom(disp, "UTF8_STRING", False);
 }
 
 

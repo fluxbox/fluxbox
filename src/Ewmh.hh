@@ -122,6 +122,8 @@ private:
     // application protocols
     Atom m_net_wm_ping;
 
+    Atom utf8_string;
+
     std::vector<Window> m_windows;
     typedef std::map<FluxboxWindow *, WindowState *> SavedState;
     SavedState m_savedstate;
