@@ -43,6 +43,14 @@ WinButtonTheme::WinButtonTheme(int screen_num, const FbWinFrameTheme &frame_them
     m_shade_pm(*this, "window.shade.pixmap", "Window.Shade.Pixmap"),
     m_shade_unfocus_pm(*this, "window.shade.unfocus.pixmap", "Window.Shade.Unfocus.Pixmap"),
     m_shade_pressed_pm(*this, "window.shade.pressed.pixmap", "Window.Shade.Pressed.Pixmap"),
+    m_unshade_pm(*this, "window.unshade.pixmap", "Window.Unshade.Pixmap"),
+    m_unshade_unfocus_pm(*this, "window.unshade.unfocus.pixmap", "Window.Unhade.Unfocus.Pixmap"),
+    m_unshade_pressed_pm(*this, "window.unshade.pressed.pixmap", "Window.Unshade.Pressed.Pixmap"),
+    m_menuicon_pm(*this, "window.menuicon.pixmap", "Window.MenuIcon.Pixmap"),
+    m_menuicon_unfocus_pm(*this, "window.menuicon.unfocus.pixmap", "Window.MenuIcon.Unfocus.Pixmap"),
+    m_menuicon_pressed_pm(*this, "window.menuicon.pressed.pixmap", "Window.MenuIcon.Pressed.Pixmap"),
+    m_title_focus_pm(*this, "window.title.focus.pixmap", "Window.Title.Focus.Pixmap"),
+    m_title_unfocus_pm(*this, "window.title.unfocus.pixmap", "Window.Title.UnFocus.Pixmap"),
     m_stick_pm(*this, "window.stick.pixmap", "Window.Stick.Pixmap"),
     m_stick_unfocus_pm(*this, "window.stick.unfocus.pixmap", "Window.Stick.Unfocus.Pixmap"),
     m_stick_pressed_pm(*this, "window.stick.pressed.pixmap", "Window.Stick.Pressed.Pixmap"),
@@ -70,7 +78,7 @@ void WinButtonTheme::reconfigTheme() {
     m_close_pm->scale(size, size);
     m_close_unfocus_pm->scale(size, size);
     m_close_pressed_pm->scale(size, size);
-        
+
     m_maximize_pm->scale(size, size);
     m_maximize_unfocus_pm->scale(size, size);
     m_maximize_pressed_pm->scale(size, size);
@@ -82,6 +90,13 @@ void WinButtonTheme::reconfigTheme() {
     m_shade_pm->scale(size, size);
     m_shade_unfocus_pm->scale(size, size);
     m_shade_pressed_pm->scale(size, size);
+
+    m_unshade_pm->scale(size, size);
+    m_unshade_unfocus_pm->scale(size, size);
+    m_unshade_pressed_pm->scale(size, size);
+
+    m_title_focus_pm->scale(size, size);
+    m_title_unfocus_pm->scale(size, size);
 
     m_stick_pm->scale(size, size);
     m_stick_unfocus_pm->scale(size, size);

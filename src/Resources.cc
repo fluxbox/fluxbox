@@ -75,8 +75,8 @@ setFromString(char const *strval) {
             m_value.push_back(Fluxbox::SHADE);
         else if (strcasecmp(val[i].c_str(), "Stick")==0)
             m_value.push_back(Fluxbox::STICK);
-        else if (strcasecmp(val[i].c_str(), "Menu")==0)
-            m_value.push_back(Fluxbox::MENU);
+        else if (strcasecmp(val[i].c_str(), "MenuIcon")==0)
+            m_value.push_back(Fluxbox::MENUICON);
         else if (strcasecmp(val[i].c_str(), "Close")==0)
             m_value.push_back(Fluxbox::CLOSE);
     }
@@ -150,8 +150,8 @@ getString() {
         case Fluxbox::STICK:
             retval.append("Stick");
             break;
-        case Fluxbox::MENU:
-            retval.append("Menu");
+        case Fluxbox::MENUICON:
+            retval.append("MenuIcon");
             break;
         default:
             break;

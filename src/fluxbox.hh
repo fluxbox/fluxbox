@@ -109,7 +109,7 @@ public:
     void removeAtomHandler(AtomHandler *atomh);
 
     /// obsolete
-    enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
+    enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENUICON, EMPTY};		
     enum TabsAttachArea{ATTACH_AREA_WINDOW= 0, ATTACH_AREA_TITLEBAR};
 
 

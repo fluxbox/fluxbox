@@ -1,6 +1,22 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/05/06:
+  * Added new Buttons for the Titlebar of a Window (Mathias)
+    - Shade - just like the "Stick"-button
+      Styleresources:
+        window.shade.pixmap, window.shade.unfocus.pixmap, window.shade.pressed.pixmap
+        window.unshade.pixmap, window.unshade.unfocus.pixmap, window.unshade.pressed.pixmap
+		etc.
+    - MenuIcon - click on it provides the windowmenu, if the app
+      contains a pixmap (gvim, konqueror etc etc) the pixmap is displayed, a
+      little menu otherwise. 
+      Styleresources:
+        windowmenu.pixmap, windowmenu.unfocus.pixmap windowmenu.pressed.pixmap
+        etc.
+    Example ~/.fluxbox/init - entry:
+      session.titlebar.left: MenuIcon Stick
+      session.titlebar.right: Shade Minimize Maximize Close
+    Window.cc Resources.cc fluxbox.hh WinButton.cc/hh WinButtonTheme.cc/hh
   * xrestop should now display "Fluxbox" (Simon)
     Ewmh.hh/cc
   * Fix potential segfault menu bug, thanks chenfeng (Simon)

@@ -3834,7 +3834,18 @@ void FluxboxWindow::setupWindow() {
                                                   WinButton::SHADE,
                                                   frame().titlebar(),
                                                   0, 0, 10, 10);
+                stateSig().attach(winbtn);
                 winbtn->setOnClick(shade_cmd);
+                newbutton = winbtn;
+            } else if ((*dir)[i] == Fluxbox::MENUICON) {
+                WinButton* winbtn = new WinButton(*this, winbutton_theme,
+                                                  WinButton::MENUICON,
+                                                  frame().titlebar(),
+                                                  0, 0, 10, 10);
+                hintSig().attach(winbtn);
+                titleSig().attach(winbtn);
+                winbtn->setOnClick(show_menu_cmd);
+                newbutton = winbtn;
             }
 
             if (newbutton != 0) {

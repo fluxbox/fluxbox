@@ -21,11 +21,20 @@
 
 /// $Id$
 
+#include <X11/Xlib.h>
+
 #include "WinButton.hh"
 #include "App.hh"
 #include "Window.hh"
+#include "Screen.hh"
+#include "WinClient.hh"
 #include "WinButtonTheme.hh"
 #include "FbTk/Color.hh"
+
+#ifdef SHAPE
+#include <X11/extensions/shape.h>
+#endif // SHAPE
+
 
 WinButton::WinButton(const FluxboxWindow &listen_to, 
                      WinButtonTheme &theme,
@@ -33,10 +42,13 @@ WinButton::WinButton(const FluxboxWindow &listen_to,
                      int x, int y,
                      unsigned int width, unsigned int height):
     FbTk::Button(parent, x, y, width, height),
-    m_type(buttontype), m_listen_to(listen_to), m_theme(theme), 
+    m_type(buttontype), m_listen_to(listen_to), m_theme(theme),
+    m_icon_pixmap(0), m_icon_mask(0),
     overrode_bg(false), overrode_pressed(false) {
-
     theme.reconfigSig().attach(this);
+
+    if (buttontype == MENUICON)
+        update(0);
 }
 
 void WinButton::exposeEvent(XExposeEvent &event) {
@@ -51,7 +63,7 @@ void WinButton::buttonReleaseEvent(XButtonEvent &event) {
 // when someone else tries to set the background, we may override it
 void WinButton::setBackgroundPixmap(Pixmap pm) {
     Pixmap my_pm = getBackgroundPixmap();
-
+    
     if (my_pm != 0) {
         overrode_bg = true;
         pm = my_pm;
@@ -114,9 +126,8 @@ Pixmap WinButton::getBackgroundPixmap() const {
         else
             return m_theme.iconifyUnfocusPixmap().pixmap().drawable();
         break;
-    case STICK: {
-        bool stuck = m_listen_to.isStuck();
-        if (stuck) {
+    case STICK:
+        if (m_listen_to.isStuck()) {
             if (focused)
                 return m_theme.stuckPixmap().pixmap().drawable();
             else
@@ -127,7 +138,6 @@ Pixmap WinButton::getBackgroundPixmap() const {
             else
                 return m_theme.stickUnfocusPixmap().pixmap().drawable();
         }
-    }
         break;
     case CLOSE:
         if (focused)
@@ -135,11 +145,31 @@ Pixmap WinButton::getBackgroundPixmap() const {
         else
             return m_theme.closeUnfocusPixmap().pixmap().drawable();
         break;
-    case SHADE:
-        if (focused)
-            return m_theme.shadePixmap().pixmap().drawable();
-        else
-            return m_theme.shadeUnfocusPixmap().pixmap().drawable();
+    case SHADE: 
+        if (m_listen_to.isShaded()) {
+            if (focused)
+                return m_theme.unshadePixmap().pixmap().drawable();
+            else
+                return m_theme.unshadeUnfocusPixmap().pixmap().drawable();
+        } else {
+            if (focused)
+                return m_theme.shadePixmap().pixmap().drawable();
+            else
+                return m_theme.shadeUnfocusPixmap().pixmap().drawable();
+        }
+        break;
+    case MENUICON:
+        if (m_icon_pixmap.drawable()) {
+            if (focused)
+                return m_theme.titleFocusPixmap().pixmap().drawable();
+            else
+                return m_theme.titleUnfocusPixmap().pixmap().drawable();
+        } else {
+            if (focused)
+                return m_theme.menuiconPixmap().pixmap().drawable();
+            else
+                return m_theme.menuiconUnfocusPixmap().pixmap().drawable();
+        }
         break;
     }
     return None;
@@ -156,23 +186,33 @@ Pixmap WinButton::getPressedPixmap() const {
     case CLOSE:
         return m_theme.closePressedPixmap().pixmap().drawable();
     case SHADE:
-        return m_theme.shadePressedPixmap().pixmap().drawable();
+        if (m_listen_to.isShaded())
+            return m_theme.unshadePressedPixmap().pixmap().drawable();
+        else
+            return m_theme.shadePressedPixmap().pixmap().drawable();
+    case MENUICON:
+        if (m_icon_pixmap.drawable())
+            if (m_listen_to.isFocused())
+                return m_theme.titleFocusPixmap().pixmap().drawable();
+            else
+                return m_theme.titleUnfocusPixmap().pixmap().drawable();
+        else
+            return m_theme.menuiconPressedPixmap().pixmap().drawable();
     }
     return None;
 }
 
 // clear is used to force this to clear the window (e.g. called from clear())
 void WinButton::drawType() {
-    bool used = false;
 
     // if it's odd and we're centring, we need to add one
     int oddW = width()%2;
     int oddH = height()%2;
 
     bool is_pressed = pressed();
-    if (is_pressed && overrode_pressed) 
+    if (is_pressed && overrode_pressed && !m_icon_pixmap.drawable())
         return;
-    if (!is_pressed && overrode_bg)
+    if (!is_pressed && overrode_bg && !m_icon_pixmap.drawable())
         return;
     if (gc() == 0)
         return;
@@ -190,8 +230,7 @@ void WinButton::drawType() {
                  2, 3, width() - 3, 3);
         break;
     case MINIMIZE:
-        FbTk::FbWindow::drawRectangle(gc(),
-                                      2, height() - 5, width() - 5, 2);
+        drawRectangle(gc(), 2, height() - 5, width() - 5, 2);
         break;
     case STICK:
         // width/4 != width/2, so we use /4*2 so that it's properly centred
@@ -225,17 +264,106 @@ void WinButton::drawType() {
                  width() - 3, 2);
         break;
     case SHADE:
-        // no cute image defined
+        
+        drawRectangle(gc(), 2, 2, width() - 5 - oddW, 2);
+        
+        XPoint points[3];
+        if (m_listen_to.isShaded()) {
+            points[1].x = (width() / 2) - 3; points[1].y = 7;
+            points[2].x = (width() / 2) + 4 - oddW; points[2].y = 7;
+            points[0].x = (width() / 2); points[0].y = height() / 2 + 2;
+        } else {
+            points[0].x = (width() / 2); points[0].y = 6;
+            points[1].x = (width() / 2) - 4; points[1].y = height() / 2 + 2;
+            points[2].x = (width() / 2) + 4 - oddW; points[2].y = height() / 2 + 2;
+        }
+        fillPolygon(gc(), points, 3, Convex, CoordModeOrigin);
+        break;
+    case MENUICON:
+        if (m_icon_pixmap.drawable()) {
+
+            if (m_icon_mask.drawable()) {
+                XSetClipMask(m_listen_to.fbWindow().display(), 
+                             gc(), m_icon_mask.drawable());
+                XSetClipOrigin(m_listen_to.fbWindow().display(), 
+                             gc(), 2, 2);
+            }
+            
+            copyArea(m_icon_pixmap.drawable(),
+                     gc(),
+                     0, 0, 
+                     2, 2, 
+                     m_icon_pixmap.width(), m_icon_pixmap.height());
+
+            if (m_icon_mask.drawable())
+                XSetClipMask(m_listen_to.fbWindow().display(), gc(), None);
+        } else {
+            for (int y = height()/3; y <= height() - height()/3; y+=3) {
+                drawLine(gc(), width()/4, y, width() - width()/4 - oddW - 1, y);
+            }
+            drawRectangle(gc(),
+                      2, 2, width() - 5, height() - 5);
+        }
         break;
     }
 }
 
 void WinButton::clear() {
     FbTk::Button::clear();
+
+    if (m_type == MENUICON && (
+        !m_icon_pixmap.drawable() ||
+        (m_icon_pixmap.width() != width() - 4 || 
+         m_icon_pixmap.height() != height() - 4))) {
+       
+        Display* display = m_listen_to.fbWindow().display();
+        int screen = m_listen_to.screen().screenNumber();
+        XWMHints* hints = XGetWMHints(display, m_listen_to.winClient().window());
+        if (hints == 0) {
+            m_icon_pixmap.release();
+            m_icon_mask.release();
+        } else {
+            if ((hints->flags & IconPixmapHint) && hints->icon_pixmap != 0) {
+                 m_icon_pixmap.copy(hints->icon_pixmap, 
+                                    DefaultDepth(display, screen), screen);
+                 m_icon_pixmap.scale(width() - 4, height() - 4);
+            } else
+                m_icon_pixmap.release();
+            
+            if ((hints->flags & IconMaskHint)) {
+                m_icon_mask.copy(hints->icon_mask, 0, 0);
+                m_icon_mask.scale(width() - 4, height() - 4);
+            } else
+                m_icon_mask.release();
+        }
+        
+        XFree(hints);
+    }
+    
     drawType();
 }
 
 void WinButton::update(FbTk::Subject *subj) {
+
+
+    // just checking, if we the app provides a pixmap.
+    if (m_type == MENUICON) {
+        XWMHints* hints = XGetWMHints(m_listen_to.fbWindow().display(), 
+                                      m_listen_to.winClient().window());
+        if (hints == 0) {
+            m_icon_pixmap.release();
+            m_icon_mask.release();
+        } else {
+            if (!((hints->flags & IconPixmapHint) && hints->icon_pixmap != 0))
+                m_icon_pixmap.release();
+            
+            if (!(hints->flags & IconMaskHint))
+                m_icon_mask.release();
+        }
+        
+        XFree(hints);
+    }
+    
     // pressed_pixmap isn't stateful in any current buttons, so no need
     // to potentially override that. Just make sure background pm is ok
     Pixmap my_pm = getBackgroundPixmap();

@@ -21,8 +21,9 @@
 
 /// $Id$
 
-#include "Button.hh"
-#include "Observer.hh"
+#include "FbTk/Button.hh"
+#include "FbTk/Observer.hh"
+#include "FbTk/FbPixmap.hh"
 
 class FluxboxWindow;
 class WinButtonTheme;
@@ -35,7 +36,7 @@ class Color;
 class WinButton:public FbTk::Button, public FbTk::Observer {
 public:
     /// draw type for the button
-    enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE};
+    enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE, MENUICON};
     WinButton(const FluxboxWindow &listen_to, 
               WinButtonTheme &theme,
               Type buttontype, const FbTk::FbWindow &parent, int x, int y, 
@@ -58,5 +59,9 @@ private:
     Type m_type; ///< the button type
     const FluxboxWindow &m_listen_to;
     WinButtonTheme &m_theme;
+
+    FbTk::FbPixmap m_icon_pixmap;
+    FbTk::FbPixmap m_icon_mask;
+    
     bool overrode_bg, overrode_pressed;
 };
