@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/05/07:
+  * Remove default "gray" background (Simon)
+    FbTk/FbWindow.cc
   * Fix titlebar transparency in some (tabbed) cases (Simon)
     FbWinFrame.cc
 *05/05/06:

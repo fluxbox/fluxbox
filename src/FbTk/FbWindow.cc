@@ -163,9 +163,9 @@ void FbWindow::updateBackground(bool only_if_alpha) {
     if (only_if_alpha && alpha == 255) 
         return;
 
-     // still use bg buffer pixmap if not transparent
-     // cause it does nice caching things, assuming we have a renderer
-     if (m_lastbg_pm != ParentRelative && (m_renderer || alpha != 255)) {
+    // still use bg buffer pixmap if not transparent
+    // cause it does nice caching things, assuming we have a renderer
+    if (m_lastbg_pm != ParentRelative && (m_renderer || alpha != 255)) {
         // update source and destination if needed
         Pixmap root = FbPixmap::getRootPixmap(screenNumber());
         if (alpha != 255 && m_transparent->source() != root)
@@ -566,7 +566,6 @@ void FbWindow::create(Window parent, int x, int y,
     assert(m_window);
 
     updateGeometry();
-    FbWindow::setBackgroundColor(Color("gray", screenNumber()));
 }
 
 
