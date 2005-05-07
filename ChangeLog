@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/05/07:
+  * Fix titlebar transparency in some (tabbed) cases (Simon)
+    FbWinFrame.cc
 *05/05/06:
   * Added new Buttons for the Titlebar of a Window (Mathias)
     - Shade - just like the "Stick"-button

@@ -271,7 +271,7 @@ void FbWinFrame::setFocus(bool newvalue) {
 
     m_focused = newvalue;
 
-    if (theme().focusedAlpha() != theme().unfocusedAlpha()) {
+    if (FbTk::Transparent::haveRender() && theme().focusedAlpha() != theme().unfocusedAlpha()) {
         unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
         if (FbTk::Transparent::haveComposite()) {
             m_window.setOpaque(alpha);
@@ -280,6 +280,8 @@ void FbWinFrame::setFocus(bool newvalue) {
             LabelList::iterator btn_it_end = m_labelbuttons.end();        
             for (; btn_it != btn_it_end; ++btn_it) {
                 (*btn_it)->setAlpha(alpha);
+                if (m_current_label != (*btn_it))
+                    (*btn_it)->updateBackground(false);
             }
         }
     }
