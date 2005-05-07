@@ -310,8 +310,9 @@ void WinButton::drawType() {
 
 void WinButton::clear() {
     FbTk::Button::clear();
-
-    if (m_type == MENUICON && (
+    
+    // ensure the m_listen_to has actually a client
+    if (m_type == MENUICON && m_listen_to.numClients() && (
         !m_icon_pixmap.drawable() ||
         (m_icon_pixmap.width() != width() - 4 || 
          m_icon_pixmap.height() != height() - 4))) {
@@ -339,15 +340,14 @@ void WinButton::clear() {
         
         XFree(hints);
     }
-    
+
     drawType();
 }
 
 void WinButton::update(FbTk::Subject *subj) {
 
-
     // just checking, if we the app provides a pixmap.
-    if (m_type == MENUICON) {
+    if (m_type == MENUICON && m_listen_to.numClients()) {
         XWMHints* hints = XGetWMHints(m_listen_to.fbWindow().display(), 
                                       m_listen_to.winClient().window());
         if (hints == 0) {
