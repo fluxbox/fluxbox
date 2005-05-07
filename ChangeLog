@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/05/07:
+  * Fix isses in patch from Vadim (thanx Vadim)
+    FbTk/TextBox.cc
   * Remove default "gray" background (Simon)
     FbTk/FbWindow.cc
   * Fix titlebar transparency in some (tabbed) cases (Simon)
@@ -11,7 +13,7 @@ Changes for 0.9.13
       Styleresources:
         window.shade.pixmap, window.shade.unfocus.pixmap, window.shade.pressed.pixmap
         window.unshade.pixmap, window.unshade.unfocus.pixmap, window.unshade.pressed.pixmap
-		etc.
+        etc.
     - MenuIcon - click on it provides the windowmenu, if the app
       contains a pixmap (gvim, konqueror etc etc) the pixmap is displayed, a
       little menu otherwise. 
@@ -26,7 +28,7 @@ Changes for 0.9.13
     Ewmh.hh/cc
   * Fix potential segfault menu bug, thanks chenfeng (Simon)
     Menu.cc
-  * Added more KeyActions to TextBox (thanx to Vadim <suhanov_vadim@mail.ru>
+  * Added more KeyActions to TextBox (thanx to Vadim <suhanov_vadim at mail dot ru>
       Control + LeftArrow  -> Moves cursor to the left direction, up to next word.
       Control + RightArrow -> to the right direction.
       Control + BackSpace  -> Removes everything from the cursor left side, up to next left word.

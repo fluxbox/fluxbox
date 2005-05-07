@@ -246,44 +246,54 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 m_cursor_pos = 0;
                 m_end_pos = 0;
                 break;
-            case XK_Left:
-                if (m_cursor_pos && m_text.size()){
-                    m_cursor_pos = findEmptySpaceLeft();
+            case XK_Left: {
+                    int pos = findEmptySpaceLeft();
+                    if (pos < m_start_pos){
+                        m_start_pos  = pos;
+                        m_cursor_pos = 0;
+                    } else if (m_start_pos > 0) {
+                        m_cursor_pos = pos - m_start_pos;
+                    } else {
+                        m_cursor_pos = pos;
+                    }
                     adjustPos();
                 }
                 break;
             case XK_Right:
                 if (m_text.size() && m_cursor_pos < m_text.size()){
-                    m_cursor_pos = findEmptySpaceRight();
+                    int pos = findEmptySpaceRight() - m_start_pos;
+                    if (m_start_pos + pos <= m_end_pos)
+                        m_cursor_pos = pos;
+                    else if (m_end_pos < text().size()) {
+                        m_cursor_pos = pos;
+                        m_end_pos = pos;
+                    }
+
                     adjustPos();
+
                 }
                 break;
 
             case XK_BackSpace: {
-                    if (!m_cursor_pos || !m_text.size())
-                        break;
-
                     int pos = findEmptySpaceLeft();
+                    m_text.erase(pos, m_cursor_pos - pos + m_start_pos);
 
-                    m_text.erase(pos, m_cursor_pos - pos);
-                    m_start_pos  = 0;
-                    m_cursor_pos = pos;
-                    m_end_pos    = m_text.size();
+                    if (pos < m_start_pos){
+                        m_start_pos  = pos;
+                        m_cursor_pos = 0;
+                    } else if (m_start_pos > 0) {
+                        m_cursor_pos = pos - m_start_pos;
+                    } else {
+                        m_cursor_pos = pos;
+                    }
                     adjustPos();
                 }
                 break;
             case XK_Delete: {
-            
                     if (!m_text.size() || m_cursor_pos >= m_text.size())
                         break;
-
                     int pos = findEmptySpaceRight();
-
-                    m_text.erase(m_cursor_pos, pos - m_cursor_pos);
-                    m_start_pos  = 0;
-                    m_cursor_pos = m_cursor_pos;
-                    m_end_pos    = m_text.size();
-
+                    m_text.erase(m_cursor_pos + m_start_pos, pos - (m_cursor_pos + m_start_pos));
                     adjustPos();
                 }
                 break;
@@ -399,11 +409,12 @@ void TextBox::adjustStartPos() {
 int TextBox::findEmptySpaceLeft(){
 
     // found the first left space symbol
-    int pos = m_text.rfind(' ', m_cursor_pos - 1);
+    int pos = m_text.rfind(' ', (m_start_pos + m_cursor_pos) > 0 ? 
+                                 m_start_pos + m_cursor_pos - 1 : 0);
 
     // do we have one more space symbol near?
     int next_pos = -1;
-    while ( pos > 0 && (next_pos = m_text.rfind(' ', pos - 1)) > -1 ){
+    while (pos > 0 && (next_pos = m_text.rfind(' ', pos - 1)) > -1){
         if (next_pos + 1 < pos)
             break;
         pos = next_pos;
@@ -417,17 +428,18 @@ int TextBox::findEmptySpaceLeft(){
 int TextBox::findEmptySpaceRight(){
 
     // found the first right space symbol
-    int pos = m_text.find(' ', m_cursor_pos);
+    int pos = m_text.find(' ', m_start_pos + m_cursor_pos);
 
     // do we have one more space symbol near?
     int next_pos = -1;
     while (pos > -1 && pos < m_text.size() && (next_pos = m_text.find(' ', pos + 1)) > -1 ){
+
         if (next_pos - 1 > pos)
             break;
         pos = next_pos;
     }
     if (pos < 0)
-        pos = m_text.size();
+        pos = m_text.size() - 1;
 
     return pos + 1; // (+1) - sets cursor at the right.
 
