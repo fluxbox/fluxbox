@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/05/09:
+  * Fix for fbrun and completion (thanx Vadim)
+    TextBox.hh fbrun.cc
   * Fix for gentoo-bug #91955 (thanx Julien Trolet)
     Remembering the position of a window didnt store the reference
     corner

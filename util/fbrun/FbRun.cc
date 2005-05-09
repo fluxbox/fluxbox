@@ -343,7 +343,7 @@ void FbRun::tabCompleteHistory() {
     } else {
         unsigned int nr= 0;
         int history_item = m_current_history_item - 1;
-        string prefix = text().substr(0, cursorPosition());
+        string prefix = text().substr(0, textStartPos() + cursorPosition());
         while (history_item != m_current_history_item && nr++ < m_history.size()) {
             if (history_item <= -1 )
                 history_item= m_history.size() - 1;
@@ -362,7 +362,7 @@ void FbRun::tabCompleteApps() {
   
     static bool first_run= true;
     static string saved_prefix= "";
-    string prefix= text().substr(0, cursorPosition());
+    string prefix= text().substr(0, textStartPos() + cursorPosition());
     FbTk::Directory dir;
 
     bool add_dirs= false;

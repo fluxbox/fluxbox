@@ -68,6 +68,7 @@ public:
     const Font &font() const { return *m_font; }
     GC gc() const { return m_gc; }
     int cursorPosition() const { return m_cursor_pos; }
+    inline int textStartPos(){ return m_start_pos; }
 
     int findEmptySpaceLeft();
     int findEmptySpaceRight();
