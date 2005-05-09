@@ -567,7 +567,27 @@ void Remember::save() {
             apps_file << "  [Dimensions]\t{" << a.w << " " << a.h << "}" << endl;
         }
         if (a.position_remember) {
-            apps_file << "  [Position]\t{" << a.x << " " << a.y << "}" << endl;
+            apps_file << "  [Position]\t(";
+            switch(a.refc) {
+            case POS_WINCENTER:
+                apps_file << "WINCENTER";
+                break;
+            case POS_CENTER:
+                apps_file << "CENTER";
+                break;
+            case POS_LOWERLEFT:
+                apps_file << "LOWERLEFT";
+                break;
+            case POS_LOWERRIGHT:
+                apps_file << "LOWERRIGHT";
+                break;
+            case POS_UPPERRIGHT:
+                apps_file << "UPPERRIGHT";
+                break;
+            default:
+                apps_file << "UPPERLEFT";
+            }
+            apps_file << ")\t{" << a.x << " " << a.y << "}" << endl;
         }
         if (a.shadedstate_remember) {
             apps_file << "  [Shaded]\t{" << ((a.shadedstate)?"yes":"no") << "}" << endl;
