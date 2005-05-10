@@ -69,6 +69,7 @@ public:
     inline int depth() const { return m_depth; }
 
     static Pixmap getRootPixmap(int screen_num);
+    static void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom);
 
     void create(Drawable src,
                 unsigned int width, unsigned int height,
@@ -79,6 +80,14 @@ private:
     Pixmap m_pm;
     unsigned int m_width, m_height;
     int m_depth;
+
+    /// Functions relating to the maintenance of root window pixmap caching
+    static void checkAtoms();
+    static void setRootPixmap(int screen_num, Pixmap pm);
+    // array of pixmaps: 1 per screen
+    static Pixmap *m_root_pixmaps;
+    static const char *root_prop_ids[];
+    static Atom  root_prop_atoms[];
 };
 
 } // end namespace FbTk

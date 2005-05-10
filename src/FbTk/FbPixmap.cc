@@ -24,6 +24,7 @@
 #include "FbPixmap.hh"
 #include "App.hh"
 #include "GContext.hh"
+#include "Transparent.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -33,6 +34,22 @@
 using namespace std;
 
 namespace FbTk {
+
+Pixmap *FbPixmap::m_root_pixmaps = 0;
+
+const char* FbPixmap::root_prop_ids[] = {
+    "_XROOTPMAP_ID",
+    "_XSETROOT_ID",
+    0
+};
+
+// same number as in root_prop_ids
+Atom FbPixmap::root_prop_atoms[] = {
+    None,
+    None,
+    None
+};
+
 
 FbPixmap::FbPixmap():m_pm(0),
                      m_width(0), m_height(0),
@@ -297,53 +314,107 @@ Pixmap FbPixmap::release() {
     return ret;
 }
 
+void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
+    if (!FbTk::Transparent::haveRender()) 
+        return;
+
+    checkAtoms();
+    for (int i=0; root_prop_ids[i] != 0; ++i) {
+        if (root_prop_atoms[i] == atom) {
+            Pixmap root_pm = None;
+            Atom real_type;
+            int real_format;
+            unsigned long items_read, items_left;
+            unsigned long *data;
+
+            unsigned int prop = 0;
+            if (XGetWindowProperty(display(),
+                                   RootWindow(display(), i),
+                                   root_prop_atoms[i],
+                                   0l, 1l,
+                                   False, XA_PIXMAP,
+                                   &real_type, &real_format,
+                                   &items_read, &items_left,
+                                   (unsigned char **) &data) == Success) {
+                if (real_format == 32 && items_read == 1) {
+                    root_pm = (Pixmap) (*data);
+                }
+                XFree(data);
+                if (root_pm != None)
+                    setRootPixmap(screen_num, root_pm);
+            }
+            break;
+        }
+    }
+}
+
+void FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
+    if (!m_root_pixmaps) {
+        m_root_pixmaps = new Pixmap[ScreenCount(display())];
+    }
+
+    m_root_pixmaps[screen_num] = pm;
+}
+
 Pixmap FbPixmap::getRootPixmap(int screen_num) {
+    if (!FbTk::Transparent::haveRender()) 
+        return None;
 
-    Atom real_type;
-    int real_format;
-    unsigned long items_read, items_left;
-    unsigned long *data;
+    if (!m_root_pixmaps) {
+        int numscreens = ScreenCount(display());
+        for (int i=0; i < numscreens; ++i) {
+            Atom real_type;
+            int real_format;
+            unsigned long items_read, items_left;
+            unsigned long *data;
 
-    unsigned int prop = 0;
-    static const char* prop_ids[] = {
-      "_XROOTPMAP_ID",
-      "_XSETROOT_ID",
-      0
-    };
-    static bool print_error = true; // print error_message only once
-    static const char* error_message = { "\n\n !!! WARNING WARNING WARNING WARNING !!!!!\n"
+            unsigned int prop = 0;
+
+            static bool print_error = true; // print error_message only once
+            static const char* error_message = { "\n\n !!! WARNING WARNING WARNING WARNING !!!!!\n"
         "   if you experience problems with transparency:\n"
         "   you are using a wallpapersetter that \n"
         "   uses _XSETROOT_ID .. which we do not support.\n"
         "   consult 'fbsetbg -i' or try any other wallpapersetter\n"
         "   that uses _XROOTPMAP_ID !\n"
         " !!! WARNING WARNING WARNING WARNING !!!!!!\n\n"
-    };
+            };
 
-    Pixmap root_pm = None;
-    for (prop = 0; prop_ids[prop]; prop++) {
-        if (XGetWindowProperty(display(),
-                               RootWindow(display(), screen_num),
-                               XInternAtom(display(), prop_ids[prop], False),
-                               0l, 1l,
-                               False, XA_PIXMAP,
-                               &real_type, &real_format,
-                               &items_read, &items_left,
-                               (unsigned char **) &data) == Success) {
-            if (real_format == 32 && items_read == 1) {
-                if (print_error && strcmp(prop_ids[prop], "_XSETROOT_ID") == 0) {
-                    cerr<<error_message;
-                    print_error = false;
-                } else
-                    root_pm = (Pixmap) (*data);
+            Pixmap root_pm = None;
+            for (prop = 0; root_prop_ids[prop]; prop++) {
+                checkAtoms();
+                if (XGetWindowProperty(display(),
+                                       RootWindow(display(), i),
+                                       root_prop_atoms[i],
+                                       0l, 1l,
+                                       False, XA_PIXMAP,
+                                       &real_type, &real_format,
+                                       &items_read, &items_left,
+                                       (unsigned char **) &data) == Success) {
+                    if (real_format == 32 && items_read == 1) {
+                        if (print_error && strcmp(root_prop_ids[prop], "_XSETROOT_ID") == 0) {
+                            cerr<<error_message;
+                            print_error = false;
+                        } else
+                            root_pm = (Pixmap) (*data);
+                    }
+                    XFree(data);
+                    if (root_pm != None)
+                        break;
+                }
             }
-            XFree(data);
-            if (root_pm != None)
-                break;
+            setRootPixmap(i, root_pm);
         }
     }
+    return m_root_pixmaps[screen_num];
+}
 
-    return root_pm;
+void FbPixmap::checkAtoms() {
+    for (int i=0; root_prop_ids[i] != 0; ++i) {
+        if (root_prop_atoms[i] == None) {
+            root_prop_atoms[i] = XInternAtom(display(), root_prop_ids[i], False);
+        }
+    }
 }
 
 void FbPixmap::free() {

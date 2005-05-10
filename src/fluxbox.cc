@@ -657,8 +657,15 @@ void Fluxbox::handleEvent(XEvent * const e) {
                e->type == LeaveNotify) {
         m_last_time = e->xcrossing.time;
         m_mousescreen = searchScreen(e->xcrossing.root);
-    } else if (e->type == PropertyNotify)
+    } else if (e->type == PropertyNotify) {
         m_last_time = e->xproperty.time;
+        // check transparency atoms if it's a root pm
+        
+        BScreen *screen = searchScreen(e->xproperty.window);
+        if (screen) {
+            FbTk::FbPixmap::rootwinPropertyNotify(screen->screenNumber(), e->xproperty.atom);
+        }
+    }
 
     // we need to check focus out for menus before
     // we call FbTk eventhandler
