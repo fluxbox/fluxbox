@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/05/10:
+  * minor tweak to configure.in (thanx php-coder)
 *05/05/09:
   * Fix for fbrun and completion (thanx Vadim)
     TextBox.hh fbrun.cc

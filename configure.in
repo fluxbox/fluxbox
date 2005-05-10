@@ -571,7 +571,7 @@ AC_MSG_RESULT([Building with '$LIBS' for linker flags.])
 AC_MSG_RESULT([])
 
 dnl Output files
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADER(config.h)
 
 AC_OUTPUT(Makefile
 version.h
