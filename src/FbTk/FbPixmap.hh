@@ -69,7 +69,7 @@ public:
     inline int depth() const { return m_depth; }
 
     static Pixmap getRootPixmap(int screen_num);
-    static void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom);
+    static void rootwinPropertyNotify(int screen_num, Atom atom);
 
     void create(Drawable src,
                 unsigned int width, unsigned int height,
