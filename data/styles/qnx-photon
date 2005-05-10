@@ -117,16 +117,12 @@ window.tab.borderColor:              black
 window.tab.font:                     -*-gamow-medium-r-*-*-7-*-*-*-*-60-*-*
 ! ^ change this to lucidasans-10 if you don't have gamow
 
-toolbar.font:                        lucidasans-10
+
+*.font:                              lucidasans-10
+
 toolbar.justify:                     left
-
-window.font:                         lucidasans-10
 window.justify:                      left
-
-menu.title.Font:                     lucidasans-10
 menu.title.justify:                  left
-
-menu.frame.font:                     lucidasans-10
 menu.frame.justify:                  left
 
 ! borders n stuff
