@@ -37,6 +37,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <set>
 
 #ifdef HAVE_CSTDLIB
   #include <cstdlib>
@@ -145,12 +146,35 @@ ExportCmd::ExportCmd(const std::string& name, const std::string& value) :
 }
 
 void ExportCmd::execute() {
-// TODO: we need to analyze this a bit more
-#if defined sgi && ! defined GCC
-    putenv((m_name + "=" + m_value).c_str());
-#else
-    setenv(m_name.c_str(), m_value.c_str(), 1);
-#endif
+
+    // the setenv()-routine is not everywhere available and
+    // putenv() doesnt manage the strings in the environment
+    // and hence we have to do that on our own to avoid memleaking
+    static std::set<char*> stored;
+    char* newenv = new char[m_name.size() + m_value.size() + 2];
+    if (newenv) {
+    
+        char* oldenv = getenv(m_name.c_str());
+        
+        // oldenv points to the value .. we have to go back a bit
+        if (oldenv && stored.find(oldenv - (m_name.size() + 1)) != stored.end())
+            oldenv -= (m_name.size() + 1);
+        else
+            oldenv = NULL;
+
+        memset(newenv, 0, m_name.size() + m_value.size() + 2);
+        strcat(newenv, m_name.c_str());
+        strcat(newenv, "=");
+        strcat(newenv, m_value.c_str());
+
+        if (putenv(newenv) == 0) {
+            if (oldenv) {
+                stored.erase(oldenv);
+                delete[] oldenv;
+            }
+            stored.insert(newenv);
+        }
+    }
 }
 
 
