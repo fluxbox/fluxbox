@@ -46,6 +46,7 @@
   #include <time.h>
 #endif
 #include <string>
+#include <typeinfo>
 
 class ClockMenuItem: public FbTk::MenuItem {
 public:
