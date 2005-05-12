@@ -354,10 +354,22 @@ void WinButton::update(FbTk::Subject *subj) {
             m_icon_pixmap.release();
             m_icon_mask.release();
         } else {
+
+            // no pixmap
             if (!((hints->flags & IconPixmapHint) && hints->icon_pixmap != 0))
                 m_icon_pixmap.release();
+
+            // pixmap has changed
+            if (hints->flags & IconPixmapHint && hints->icon_pixmap != 0 && 
+                    hints->icon_pixmap != m_icon_pixmap.drawable())
+                m_icon_pixmap.release();
             
+            // no pixmap-mask
             if (!(hints->flags & IconMaskHint))
+                m_icon_mask.release();
+
+            // pixmap-mask has changed
+            if (hints->flags & IconMaskHint && hints->icon_mask != m_icon_mask.drawable())
                 m_icon_mask.release();
         }
         
