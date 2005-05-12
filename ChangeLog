@@ -1,5 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/05/12:
+  * Fixed configure.in for iconv for different platforms (Mathias)
+  * Fixed setenv/putenv issues on platforms which dont support setenv (Mathias)
+    we now use only putenv() and manage the used values on our own
+    FbCommands.cc
+  * Fixed compile issues on Darwin/MacOSX (Mathias)
+    FbTk/I18n.hh
+  * Fixed problem when app changes the app-pixmap (Mathias)
+    WinButton.cc
+  * Fixed missing header (Mathias)
+    ClockTool.cc
+  * Fixed some FbTk_istringstream issues for gcc295* (Mathias)
+    Remember.cc FbCommandFactory.cc FbTk/Font.cc
 *05/05/10:
   * Cache root pixmap, watch for property changes (Simon)
     (previously was checked EVERY time = lots)
