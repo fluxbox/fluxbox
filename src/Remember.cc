@@ -354,7 +354,6 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 iss >> w >> h;
                 app.rememberDimensions(w,h);
             } else if (str_key == "Position") {
-                FbTk_istringstream iss;
                 unsigned int r= 0;
                 unsigned int x= 0;
                 unsigned int y= 0;
@@ -370,13 +369,13 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                         else if ( str_option == "CENTER" )     r= POS_CENTER;
                         else if ( str_option == "WINCENTER" )  r= POS_WINCENTER;
                         else {
-                            iss.str(str_option);
-                            iss >> r;
+                            FbTk_istringstream iss_r(str_option.c_str());
+                            iss_r >> r;
                         }
                     }
 
-                iss.str(str_label.c_str());
-                iss >> x >> y;
+                FbTk_istringstream iss_xy(str_label.c_str());
+                iss_xy >> x >> y;
                 app.rememberPosition(x, y, r);
             } else if (str_key == "Shaded") {
                 app.rememberShadedstate((str_label=="yes"));

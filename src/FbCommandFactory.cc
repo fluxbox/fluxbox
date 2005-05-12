@@ -358,7 +358,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     //
     else if (command == "deiconify") {
 
-        FbTk_istringstream iss(arguments);
+        FbTk_istringstream iss(arguments.c_str());
         string mode;
         string d;
         DeiconifyCmd::Destination dest;

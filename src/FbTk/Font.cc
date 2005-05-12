@@ -23,6 +23,7 @@
 
 
 #include "StringUtil.hh"
+#include "stringstream.hh"
 #include "Font.hh"
 #include "FontImp.hh"
 #include "I18n.hh"
@@ -69,15 +70,6 @@
 #include <typeinfo>
 #include <langinfo.h>
 
-#ifdef HAVE_SSTREAM
-#include <sstream>
-#define FB_istringstream istringstream
-#elif HAVE_STRSTREAM
-#include <strstream>
-#define FB_istringstream istrstream
-#else
-#error "You dont have sstream or strstream headers!"
-#endif // HAVE_STRSTREAM
 
 #ifdef HAVE_CSTDLIB
   #include <cstdlib>
@@ -202,14 +194,14 @@ int extract_shadow_options(const std::string& opts,
        }
        else if ( (*token).find("offsetx=", 0) != std::string::npos ) {
            size_t s= (*token).find_first_of('=');
-           FB_istringstream o((*token).substr(s + 1, (*token).length()));
+           FbTk_istringstream o((*token).substr(s + 1, (*token).length()).c_str());
            if ( !o.eof() ) {
                o >> offx;
            }
        }
        else if ( (*token).find("offsety=", 0) != std::string::npos ) {
            size_t s= (*token).find_first_of('=');
-           FB_istringstream o((*token).substr(s + 1, (*token).length()));
+           FbTk_istringstream o((*token).substr(s + 1, (*token).length()).c_str());
            if ( !o.eof() ) {
                o >> offy;
            }
