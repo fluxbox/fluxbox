@@ -72,42 +72,75 @@ size_t x = strftime(s, 5, "%a", localtime(&t));
 dnl ---------------
 dnl CHECK FOR ICONV
 dnl ---------------
-
 dnl Find iconv. It may be in libiconv and may be iconv() or libiconv()
 if test "x$ac_cv_header_iconv_h" = "xyes"; then
-  AC_CHECK_FUNC(iconv, ac_found_iconv=yes, ac_found_iconv=no)
-  if test "x$ac_found_iconv" = "xno"; then
-    AC_CHECK_LIB(iconv, iconv, ac_found_iconv=yes)
-    if test "x$ac_found_iconv" = "xno"; then
-      AC_CHECK_LIB(iconv, libiconv, ac_found_iconv=yes)
-    fi
-    if test "x$ac_found_iconv" != "xno"; then
-      LIBS="-liconv $LIBS"
-    fi
-  fi
-fi
-if test "x$ac_found_iconv" = xyes; then
-  AC_DEFINE(HAVE_ICONV, 1, [Define if you have the iconv() function.])
-fi
+    ac_found_iconv=no
+    AC_COMPILE_IFELSE(
+        [AC_LANG_PROGRAM(
+        [[#include <stdlib.h>
+          #include <iconv.h>]],
+        [[
+          iconv_open(NULL, NULL);
+          return 0;
+        ]]
+        )],
+        [
+            ac_found_iconv=yes
+        ],
+        [ ])
+     
+    AC_COMPILE_IFELSE(
+        [AC_LANG_PROGRAM(
+        [[#include <stdlib.h>
+          #include <iconv.h>]],
+        [[
+          libiconv_open(NULL, NULL);
+          return 0;
+        ]]
+        )],
+        [
+            ac_found_iconv=yes
+        ],
+        [ ])
 
+    if test "x$ac_found_iconv" = xyes; then
+        AC_DEFINE(HAVE_ICONV, 1, [Define if you have the iconv() function.])
+        AC_CHECK_LIB([iconv], 
+                     [iconv_open], 
+                     [
+                        LIBS="$LIBS -liconv"
+                     ], 
+                     [])
+        AC_CHECK_LIB([iconv], 
+                     [libiconv_open], 
+                     [
+                        LIBS="$LIBS -liconv"
+                     ], 
+                     [])
 
 dnl Check if iconv uses const in prototype declaration
-if test "x$ac_found_iconv" = "xyes"; then
-  AC_CACHE_CHECK(for iconv declaration, ac_cv_iconv_const,
-    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-        #include <iconv.h>]],
-        [[
-            char **msg, **new_msg; 
-            size_t result, inleft, outleft; 
-            result = iconv((iconv_t)(-1), msg, &inleft, new_msg, &outleft);
-            return 0;
-         ]])],
-      [ac_cv_iconv_const=no],
-      [ac_cv_iconv_const=yes])])
-  if test "x$ac_cv_iconv_const" = xyes; then
-    AC_DEFINE(HAVE_CONST_ICONV, 1, [Define if you have the iconv() function.])
-  fi
+        AC_CACHE_CHECK(for iconv declaration, 
+                        ac_cv_iconv_const,
+                        [AC_COMPILE_IFELSE(
+                            [AC_LANG_PROGRAM(
+                             [[#include <stdlib.h>
+                               #include <iconv.h>]],
+                             [[
+                               char **msg, **new_msg; 
+                               size_t result, inleft, outleft; 
+                               result = iconv((iconv_t)(-1), msg, &inleft, new_msg, &outleft);
+                               return 0;
+                             ]]
+                             )],
+                             [ac_cv_iconv_const=no],
+                             [ac_cv_iconv_const=yes])
+                        ])
+        if test "x$ac_cv_iconv_const" = xyes; then
+            AC_DEFINE(HAVE_CONST_ICONV, 1, [Define if you have the iconv() function.])
+        fi
+    fi
 fi
+
 
 
 AC_CHECK_LIB(nsl, t_open, LIBS="$LIBS -lnsl")
