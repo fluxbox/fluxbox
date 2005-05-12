@@ -44,7 +44,7 @@
 extern "C" {
 #include <nl_types.h>
 }
-#elif defined(__CYGWIN__) || defined(__EMX__)
+#elif defined(__CYGWIN__) || defined(__EMX__) || defined(__APPLE__)
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
