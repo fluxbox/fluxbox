@@ -1,23 +1,45 @@
-News in 0.9.12: 
-   * Added Imlib2 support (./configure --enable-imlib2) [default=disabled]
-      Fluxbox can now load *.png, *.jpg and other image-formats.
-   *  Added Tab command, which goes to a specific tab number 
-      action:
-      Tab <number>
-      ex:
-      Mod1 1 :Tab 1
-      Mod2 3 :Tab 3
-    * Added support for hsetroot to fbsetbg
+News in 0.9.13: 
+
+    * Massive speed- and memoryimprovements
+    * Added new Buttons for the Titlebar:
+        - Shade - just like the "Stick"-button
+          Styleresources:
+            window.shade.pixmap, window.shade.unfocus.pixmap, window.shade.pressed.pixmap
+            window.unshade.pixmap, window.unshade.unfocus.pixmap, window.unshade.pressed.pixmap
+            etc.
+        - MenuIcon - click on it provides the windowmenu, if the app
+          contains a pixmap (gvim, konqueror etc etc) the pixmap is displayed, a
+          little menu otherwise. 
+          Styleresources:
+            windowmenu.pixmap, windowmenu.unfocus.pixmap windowmenu.pressed.pixmap
+            etc.
+        Example ~/.fluxbox/init - entry:
+          session.titlebar.left: MenuIcon Stick
+          session.titlebar.right: Shade Minimize Maximize Close
+    * Added more KeyActions to TextBoxes
+        - Control + LeftArrow  - Moves cursor to the left direction, up to next word.
+        - Control + RightArrow - to the right direction.
+        - Control + BackSpace  - Removes everything from the cursor left side, up to next left word.
+        - Control + Delete     - like above but removes to the right direction.
+    * Added some style-resources:
+        - menu.hilite.submenu.pixmap:    <Pixmap>
+        - menu.hilite.selected.pixmap:   <Pixmap>
+        - menu.hilite.unselected.pixmap: <Pixmap>
+    * Added new IconbarModes:
+        - NoIcons   - all but iconified windows
+        - WorkspaceNoIcons - all but iconified windows on the current Workspace
+    * Added -screen <"all"|int[,int]> :
+       $> fluxbox -screen 0,2      will run fluxbox on 0.0 and 0.2 so
+                                   one can run any other wm on 0.1.
+       $> fluxbox -screen all      default, fluxbox manages all screens
+    * fluxbox-generate_menu now can add pixmaps to the menuentries
 
 Bug fixes:
-    * Fix for #1091710 (SystemTray is not covered by StyleStuff)
-      SystemTray is now configurable via styles thru the 
-      toolbar.systray.* - resource, it falls back to the look of the clock
-    * Warnings on amd64 (#1099278, #1099950)
-    * WithdrawnState handling) (#1087220)
-    * Windows dont respect toolbar.border.width (#996298)
-    * Fixed "remove last workspace" bug
-    * Fixed problems with gtk2-fullscreen-mode (gimp2, galeon etc)
-    * missing header (#1080323)
-    * Update ClockTool when timeformat changed (#1026096)
+    * Mutiple keyboard layout (#1160244, #1099704, #1094107)
+    * ArrangeWindows (#1086673)
+    * Inconsistent behavior of Java dialogs (#1157361)
+    * fbrun segfault (#1188690)
+    * ShowDesktop (#1020399)
+    * 64bit issues (#1107213, #1105041)
+
 See ChangeLog for more details
