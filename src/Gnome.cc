@@ -120,7 +120,7 @@ void Gnome::setupFrame(FluxboxWindow &win) {
                                  (unsigned char **) &data) && data) {
         unsigned int workspace_num = *data;
         if (win.workspaceNumber() != workspace_num) 
-            win.screen().reassociateWindow(&win, workspace_num, false);
+            win.setWorkspace(workspace_num);
         XFree (data);
     } else {
         updateWorkspace(win);

@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/05/13:
+  * Fix a segfault crash, and a similar potential one (Simon)
+    Remember.cc Gnome.cc
 *05/05/12:
   * Fixed configure.in for iconv for different platforms (Mathias)
   * Fixed setenv/putenv issues on platforms which dont support setenv (Mathias)

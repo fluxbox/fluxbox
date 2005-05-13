@@ -828,8 +828,8 @@ void Remember::setupFrame(FluxboxWindow &win) {
     BScreen &screen = winclient.screen();
 
     if (app->workspace_remember) {
-        // TODO: fix placement to initialise properly
-        screen.reassociateWindow(&win, app->workspace, true);
+        // we use setWorkspace and not reassoc because we're still initialising
+        win.setWorkspace(app->workspace);
         if (app->jumpworkspace_remember)
             screen.changeWorkspaceID(app->workspace);
     }
