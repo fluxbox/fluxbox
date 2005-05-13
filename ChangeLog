@@ -46,7 +46,7 @@ Changes for 0.9.13
       contains a pixmap (gvim, konqueror etc etc) the pixmap is displayed, a
       little menu otherwise. 
       Styleresources:
-        windowmenu.pixmap, windowmenu.unfocus.pixmap windowmenu.pressed.pixmap
+        window.menuicon.pixmap, window.menuicon.unfocus.pixmap window.menuicon.pressed.pixmap
         etc.
     Example ~/.fluxbox/init - entry:
       session.titlebar.left: MenuIcon Stick
