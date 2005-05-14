@@ -240,7 +240,7 @@ void Gnome::updateWorkspaceCount(BScreen &screen) {
 }
 
 void Gnome::updateWorkspace(FluxboxWindow &win) {
-    long val = win.workspaceNumber();
+    long val = win.isInitialized() ? win.workspaceNumber() : win.screen().currentWorkspaceID();
     if (win.isStuck()) {
         val = -1;
     }

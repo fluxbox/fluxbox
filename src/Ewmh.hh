@@ -57,8 +57,8 @@ public:
     bool propertyNotify(WinClient &winclient, Atom the_property);
     void updateFrameClose(FluxboxWindow &win);
 
-    //ignore this one
-    void updateClientClose(WinClient &winclient) {}
+    void updateClientClose(WinClient &winclient);
+    
 
     void setFullscreen(FluxboxWindow &win, bool value);
 

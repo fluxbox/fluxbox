@@ -241,7 +241,8 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
             win.setWorkspace(desktop);
 
         XFree(data);
-    }
+    } else 
+        updateWorkspace(win);
 
 }
 
@@ -263,6 +264,10 @@ void Ewmh::updateFocusedWindow(BScreen &screen, Window win) {
                                        XA_WINDOW, 32,
                                        PropModeReplace,
                                        (unsigned char *)&win, 1);
+}
+
+void Ewmh::updateClientClose(WinClient &winclient){
+    updateClientList(winclient.screen());
 }
 
 void Ewmh::updateClientList(BScreen &screen) {
@@ -568,7 +573,8 @@ void Ewmh::updateHints(FluxboxWindow &win) {
 }
 
 void Ewmh::updateWorkspace(FluxboxWindow &win) {
-    long workspace = win.workspaceNumber();
+    long workspace = win.isInitialized() ? win.workspaceNumber() : win.screen().currentWorkspaceID();
+
     if (win.isStuck())
         workspace = 0xFFFFFFFF; // appear on all desktops/workspaces
 
