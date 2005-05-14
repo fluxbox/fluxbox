@@ -1,4 +1,13 @@
 (Format: Year/Month/Day)
+Changes for 0.9.14
+*05/05/14:
+  * Fix some Ewmh/Gnome issues (Mathias + thanx Vadim)
+    +  _NET_CLIENT_LIST and _NET_CLIENT_LIST_STACKING not updated 
+       when sending _BLACKBOX_NOTIFY_WINDOW_DEL
+    + _NET_WM_DESKTOP and _WIN_WORKSPACE had wrong initial values (-1), which
+      lead to probems with (eg) fbpager
+    Ewmh.cc/hh Gnome.cc
+-------------------------------------------------------------    
 Changes for 0.9.13
 *05/05/13:
   * Fix a segfault crash, and a similar potential one (Simon)
