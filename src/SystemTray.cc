@@ -347,8 +347,10 @@ void SystemTray::handleEvent(XEvent &event) {
                 static_cast<unsigned int>(event.xconfigure.height) != (*it)->height()) {
                 // the position might differ so we update from our local
                 // copy of position
-                (*it)->moveResize((*it)->x(), (*it)->y(),
+                XMoveResizeWindow(FbTk::App::instance()->display(), (*it)->window(), 
+                                  (*it)->x(), (*it)->y(),
                                   (*it)->width(), (*it)->height());
+
                 // this was why gaim wasn't centring the icon
                 (*it)->sendConfigureNotify(0, 0, (*it)->width(), (*it)->height());
             }

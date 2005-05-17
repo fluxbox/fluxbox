@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14
+*05/05/17:
+  * Fix systemtray overlap (Simon + Thanks Vadim)
+    SystemTray.cc
 *05/05/14:
   * Fix some Ewmh/Gnome issues (Mathias + thanx Vadim)
     +  _NET_CLIENT_LIST and _NET_CLIENT_LIST_STACKING not updated 
