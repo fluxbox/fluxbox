@@ -1,5 +1,6 @@
 # nls/Makefile.am for fluxbox - http://fluxbox.sf.net
 
+LOCALE_PATH = @LOCALE_PATH@
 NLSTEST = @NLS@
 SUBDIRS = C cs_CZ da_DK es_ES et_EE fr_FR pt_BR ru_RU \
 		  sv_SE tr_TR it_IT pt_PT bg_BG ja_JP ko_KR \
@@ -11,7 +12,7 @@ BUILT_SOURCES=fluxbox-nls.hh
 
 uninstall-local:
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		rmdir $(DESTDIR)$(pkgdatadir)/nls; \
+		rmdir $(DESTDIR)$(LOCALE_PATH); \
 	fi
 distclean-local:
 	rm -f *\~
