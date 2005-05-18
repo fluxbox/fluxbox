@@ -83,6 +83,7 @@ void showInfo(ostream &ostr) {
 
     ostr<<_FBTEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTKEYSFILE<<endl;
     ostr<<_FBTEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")<<": "<<DEFAULT_INITFILE<<endl;
+    // TODO: FIXME: print LOCALEPATH too
 
     const char NOT[] = "-";
     ostr<<endl<<
