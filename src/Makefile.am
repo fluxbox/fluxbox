@@ -41,7 +41,6 @@ defaults.hh: Makefile
 		echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"'; \
 		echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"'; \
 		echo '#define DEFAULT_INITFILE "$(DEFAULT_INITFILE)"'; \
-		echo '#define LOCALEPATH "$(pkgdatadir)/nls"'; \
 		echo 'const char* svnversion(void);' ) > defaults.hh
 
 defaults.cc: force
