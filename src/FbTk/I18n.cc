@@ -59,9 +59,6 @@
 
 #include <iostream>
 
-// TODO: FIXME: the LOCALEPATH from this file should be ./configure-ed into config.h
-#include "../defaults.hh"
-
 using std::cerr;
 using std::endl;
 using std::string;
