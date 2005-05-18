@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14
+*05/05/18:
+  * Added new configure option --with-locale=path
+    redirects location of nls directories.
+    (Thanks php-coder at altlinux dot ru)
+    configure.in, nls/*/Makefile.am, 
 *05/05/17:
   * Fix systemtray overlap (Simon + Thanks Vadim)
     SystemTray.cc
