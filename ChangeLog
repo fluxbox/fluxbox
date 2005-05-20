@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14
+*05/05/21:
+  * Keycodes can now be used in the keys file.
+    Example:
+    None 10 :NextWorkspace
+    (10 - keycode for '1')
+    Usefull for keys that has no symbol.
+    (Thanks Matus Telgarsky, catachresis at cmu [d0t] edu)
+    Keys.cc
 *05/05/18:
   * Added new configure option --with-locale=path
     redirects location of nls directories.
