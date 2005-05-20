@@ -201,9 +201,27 @@ bool Keys::addBinding(const std::string &linebuffer) {
                 if(tmpmod)
                     mod |= tmpmod; //If it's a modifier
                 else {
-                    key = FbTk::KeyUtil::getKey(val[argc].c_str()); // else get the key
+                    // keycode covers the following three two-byte cases:
+                    // 0x       - hex
+                    // +[1-9]   - number between +1 and +9
+                    // numbers 10 and above
+                    //
+                    if (val[argc].size() > 1 && (isdigit(val[argc][0]) && 
+                                                 (isdigit(val[argc][1]) || val[argc][1] == 'x') || 
+                                                 val[argc][0] == '+' && isdigit(val[argc][1])) ) {
+                        
+                        key = strtoul(val[argc].c_str(), NULL, 0);
+
+                        if (errno == EINVAL || errno == ERANGE)
+                            key = 0;
+
+                    } else // convert from string symbol
+                        key = FbTk::KeyUtil::getKey(val[argc].c_str()); 
+
                     if (key == 0) {
-                        cerr<<_FBTEXT(Keys, InvalidKeyMod, "Keys: Invalid key/modifier on line", "A bad key/modifier string was found on line (number following)")<<" "<<
+                        cerr<<_FBTEXT(Keys, InvalidKeyMod, 
+                                      "Keys: Invalid key/modifier on line", 
+                                      "A bad key/modifier string was found on line (number following)")<<" "<<
                             m_current_line<<"): "<<linebuffer<<endl;
                         return false;
                     }
