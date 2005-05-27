@@ -1,6 +1,9 @@
 # data/Makefile.am for Fluxbox - an X11 Window manager
 
+DEFAULT_MENU = @DEFAULT_MENU@
 DEFAULT_STYLE = @DEFAULT_STYLE@
+DEFAULT_KEYS = @DEFAULT_KEYS@
+DEFAULT_INIT = @DEFAULT_INIT@
 
 SUBDIRS= 		styles
 CLEANFILES= 		menu menu.in menu.pre menu.bak init
@@ -8,6 +11,17 @@ MAINTAINERCLEANFILES= 	Makefile.in
 pkgdata_DATA= 		keys menu init
 EXTRA_DIST= 		keys init.in README.style README.menu README
 all-local: 		menu init
+install-pkgdataDATA:
+	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"
+	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_MENU))
+	$(INSTALL_DATA) menu $(DESTDIR)$(DEFAULT_MENU)
+	@echo "Installing keys file in $(DESTDIR)$(DEFAULT_KEYS)"
+	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_KEYS))
+	$(INSTALL_DATA) keys $(DESTDIR)$(DEFAULT_KEYS)
+	@echo "Installing init file in $(DESTDIR)$(DEFAULT_INIT)"
+	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_INIT))
+	$(INSTALL_DATA) init $(DESTDIR)$(DEFAULT_INIT)
+
 distclean-local:
 		rm -f *\~
 init: 			init.in
