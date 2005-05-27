@@ -652,4 +652,5 @@ nls/nl_NL/Makefile
 nls/pl_PL/Makefile
 nls/sl_SI/Makefile
 nls/vi_VN/Makefile
+nls/be_BY/Makefile
 )
