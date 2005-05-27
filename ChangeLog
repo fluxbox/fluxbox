@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
 *05/05/27:
+  * Bugfix, install directory for keys, menu, init (Thanks php-coder)
+    data/Makefile.am
   * Belarusian language translation 
    (Thanks Kirill A. Shutemov, k.shutemov at sam-solutions d0t net)
    configure.in, nls/Makefile.am, be_BY/*
