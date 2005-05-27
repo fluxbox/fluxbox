@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
-Changes for 0.9.14
+Changes for 0.9.14:
+*05/05/27:
+  * Belarusian language translation 
+   (Thanks Kirill A. Shutemov, k.shutemov at sam-solutions d0t net)
+   configure.in, nls/Makefile.am, be_BY/*
 *05/05/21:
   * Keycodes can now be used in the keys file.
     Example:
