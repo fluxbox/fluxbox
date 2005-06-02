@@ -1,5 +1,17 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/02:
+  * Fixed _BLACKBOX_NOTIFY_WINDOW_ADD issue (thanx Vadim)
+    _BLACKBOX_NOTIFY_WINDOW_ADD was emited before _NET_CLIENT_LIST 
+    and _NET_CLIENT_LIST_STACKING lists updates.
+    Screen.cc
+  * Fixed iconified windows disappear from _NET_CLIENT_LIST (thanx Vadim)
+    fluxbox.cc
+  * Fixes for _NET* hints (Mathias + thanx Vadim)
+    - _NET_WM_STATE_HIDDEN now correctly used
+    - _NET_WM_STATE_SKIP_PAGER not longer deleted from state
+    - _NET_WM_STATE_SKIP_TASKBAR not longer mixed with _HIDDEN
+    Ewmh.cc/hh
 *05/05/27:
   * Bugfix, install directory for keys, menu, init (Thanks php-coder)
     data/Makefile.am
