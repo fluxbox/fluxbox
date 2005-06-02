@@ -1066,6 +1066,11 @@ void BScreen::updateNetizenWindowFocus() {
 
 
 void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
+
+    // update the list of clients
+    m_clientlist_sig.notify();
+    
+    // and then send the signal to listeners
     Netizens::iterator it = m_netizen_list.begin();
     Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
