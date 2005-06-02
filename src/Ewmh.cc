@@ -526,7 +526,9 @@ void Ewmh::updateState(FluxboxWindow &win) {
     // TODO: should we update the _NET_WM_ALLOWED_ACTIONS
     //       here too?
     
-    std::vector<unsigned int> state;
+    typedef std::vector<unsigned int> StateVec;
+
+    StateVec state;
 
     if (win.isStuck())
         state.push_back(m_net_wm_state_sticky);
@@ -536,10 +538,10 @@ void Ewmh::updateState(FluxboxWindow &win) {
         state.push_back(m_net_wm_state_below);
     if (win.layerNum() == Fluxbox::instance()->getAboveDockLayer())
         state.push_back(m_net_wm_state_above);
-    if (win.isFocusHidden()) {
+    if (win.isIconic())
         state.push_back(m_net_wm_state_hidden);
+    if (win.isIconHidden())
         state.push_back(m_net_wm_state_skip_taskbar);
-    }
     if (win.isFullscreen()) {
         state.push_back(m_net_wm_state_fullscreen);
     }
@@ -549,9 +551,31 @@ void Ewmh::updateState(FluxboxWindow &win) {
     
     it = win.clientList().begin();
     for (; it != it_end; ++it) {
-        if (!state.empty())
+        
+        // search the old states for _NET_WM_STATE_SKIP_PAGER and append it
+        // to the current state, so it wont get deleted by us.
+        StateVec client_state(state);
+        Atom ret_type;
+        int fmt;
+        unsigned long nitems, bytes_after;
+        unsigned char *data = 0;
+
+        (*it)->property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM,
+                                 &ret_type, &fmt, &nitems, &bytes_after,
+                                 &data);
+        if (data) {
+            Atom *old_states = (Atom *)data;
+            for (unsigned long i=0; i < nitems; ++i)
+                if (old_states[i] == m_net_wm_state_skip_pager) {
+                    client_state.push_back(m_net_wm_state_skip_pager);
+                }
+            XFree(data);
+        }
+
+        if (!client_state.empty())
             (*it)->changeProperty(m_net_wm_state, XA_ATOM, 32, PropModeReplace,
-                                  reinterpret_cast<unsigned char*>(&state.front()), state.size());
+                                  reinterpret_cast<unsigned char*>(&client_state.front()), 
+                                  client_state.size());
         else
             (*it)->deleteProperty(m_net_wm_state);
     }
@@ -777,6 +801,7 @@ void Ewmh::createAtoms() {
     m_net_wm_state_fullscreen = XInternAtom(disp, "_NET_WM_STATE_FULLSCREEN", False);
     m_net_wm_state_hidden = XInternAtom(disp, "_NET_WM_STATE_HIDDEN", False);
     m_net_wm_state_skip_taskbar = XInternAtom(disp, "_NET_WM_STATE_SKIP_TASKBAR", False);
+    m_net_wm_state_skip_pager = XInternAtom(disp, "_NET_WM_STATE_SKIP_PAGER", False);
     m_net_wm_state_above = XInternAtom(disp, "_NET_WM_STATE_ABOVE", False);
     m_net_wm_state_below = XInternAtom(disp, "_NET_WM_STATE_BELOW", False);
 
@@ -860,9 +885,7 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
         if ((value && !win.isFullscreen()) ||
             (!value && win.isFullscreen()))
         setFullscreen(win, value);
-    } else if (state == m_net_wm_state_hidden ||
-               state == m_net_wm_state_skip_taskbar) {
-        win.setFocusHidden(value);
+    } else if (state == m_net_wm_state_skip_taskbar) {
         win.setIconHidden(value);
     } else if (state == m_net_wm_state_below) {  // bottom layer
         if (value)
@@ -875,7 +898,6 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
             win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
         else
             win.moveToLayer(Fluxbox::instance()->getNormalLayer());
-
     }
 }
 
@@ -891,9 +913,7 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
         win.maximizeVertical();
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
         setFullscreen(win, getState(win) == 0); // toggle current state
-    } else if (state == m_net_wm_state_hidden ||
-               state == m_net_wm_state_skip_taskbar) {
-        win.setFocusHidden(!win.isFocusHidden());
+    } else if (state == m_net_wm_state_skip_taskbar) {
         win.setIconHidden(!win.isIconHidden());
     } else if (state == m_net_wm_state_below) { // bottom layer
         if (win.layerNum() == Fluxbox::instance()->getBottomLayer())

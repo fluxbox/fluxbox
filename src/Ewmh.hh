@@ -101,6 +101,7 @@ private:
         m_net_wm_state_fullscreen,
         m_net_wm_state_hidden,
         m_net_wm_state_skip_taskbar,
+        m_net_wm_state_skip_pager,
         m_net_wm_state_below,
         m_net_wm_state_above,
 
