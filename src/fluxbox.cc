@@ -1186,10 +1186,10 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             // if window changed to iconic state
             // add to icon list
             if (win.isIconic()) {
+                win.screen().addIcon(&win);
                 Workspace *space = win.screen().getWorkspace(win.workspaceNumber());
                 if (space != 0)
                     space->removeWindow(&win, true);
-                win.screen().addIcon(&win);
             }
 
             if (win.isStuck()) {
