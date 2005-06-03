@@ -138,56 +138,14 @@ XFontSet createFontSet(const char *fontname, bool& utf8mode) {
 
 #ifdef HAVE_SETLOCALE
     if (! fs) {
-        if (nmissing) XFreeStringList(missing);
+        if (nmissing)
+            XFreeStringList(missing);
 
         setlocale(LC_CTYPE, "C");
         fs = XCreateFontSet(display, fontname,
                             &missing, &nmissing, &def);
         setlocale(LC_CTYPE, orig_locale.c_str());
     }
-#endif // HAVE_SETLOCALE
-
-    if (fs) {
-        XFontStruct **fontstructs;
-        char **fontnames;
-        XFontsOfFontSet(fs, &fontstructs, &fontnames);
-        fontname = fontnames[0];
-    }
-
-    getFontElement(fontname, weight, FONT_ELEMENT_SIZE,
-                   "-medium-", "-bold-", "-demibold-", "-regular-", NULL);
-    getFontElement(fontname, slant, FONT_ELEMENT_SIZE,
-                   "-r-", "-i-", "-o-", "-ri-", "-ro-", NULL);
-    getFontSize(fontname, &pixel_size);
-
-    if (! strcmp(weight, "*"))
-        strncpy(weight, "medium", FONT_ELEMENT_SIZE);
-    if (! strcmp(slant, "*"))
-        strncpy(slant, "r", FONT_ELEMENT_SIZE);
-    if (pixel_size < 3)
-        pixel_size = 3;
-    else if (pixel_size > 97)
-        pixel_size = 97;
-
-    buf_size = strlen(fontname) + (FONT_ELEMENT_SIZE * 2) + 64;
-    char *pattern2 = new char[buf_size];
-    snprintf(pattern2, buf_size - 1,
-             "%s,"
-             "-*-*-%s-%s-*-*-%d-*-*-*-*-*-*-*,"
-             "-*-*-*-*-*-*-%d-*-*-*-*-*-*-*,*",
-             fontname, weight, slant, pixel_size, pixel_size);
-    fontname = pattern2;
-
-    if (nmissing)
-        XFreeStringList(missing);
-    if (fs)
-        XFreeFontSet(display, fs);
-
-    fs = XCreateFontSet(display, fontname,
-                        &missing, &nmissing, &def);
-    delete [] pattern2;
-
-#ifdef HAVE_SETLOCALE
     if (utf8mode)
         setlocale(LC_CTYPE, orig_locale.c_str());
 #endif // HAVE_SETLOCALE
