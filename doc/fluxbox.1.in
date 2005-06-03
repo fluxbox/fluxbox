@@ -551,6 +551,7 @@ ExecCommand, Execute or Exec \fIcommand\fR
 .EX
 Minimize, MinimizeWindow or Iconify
 Maximize, MaximizeWindow
+Fullscreen
 MaximizeVertical
 MaximizeHorizontal
 ResizeTo \fIwidth\fR \fIheight\fR
