@@ -28,7 +28,6 @@
 #include <X11/Xresource.h>
 
 #include <string>
-#include <memory>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -37,6 +36,8 @@
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif // HAVE_ICONV
+
+#include "Color.hh"
 
 namespace FbTk {
 
@@ -56,13 +57,13 @@ public:
     static void shutdown();
 
     /// @return true if multibyte is enabled, else false
-    static bool multibyte() { return m_multibyte; }
+    static bool multibyte() { return s_multibyte; }
     /// @return true if utf-8 mode is enabled, else false
-    static bool utf8() { return m_utf8mode; }
+    static bool utf8() { return s_utf8mode; }
 
 
 
-    Font(const char *name=0, bool antialias = false);
+    Font(const char *name = "fixed");
     virtual ~Font();
     /**
         Load a font
@@ -70,10 +71,15 @@ public:
         loaded font
     */
     bool load(const std::string &name);
-
-    void setAntialias(bool flag);
-    inline void setShadow(bool flag) { m_shadow = flag; if (m_shadow) setHalo(false); }
-    inline void setHalo(bool flag)   { m_halo = flag; if (m_halo) setShadow(false); }
+    
+    void setHalo(bool flag)   { m_halo = flag; if (m_halo) setShadow(false); }
+    void setHaloColor(const Color& color) { m_halo_color = color; }
+    
+    void setShadow(bool flag) { m_shadow = flag; if (m_shadow) setHalo(false); }
+    void setShadowColor(const Color& color) { m_shadow_color = color; }
+    void setShadowOffX(int offx) { m_shadow_offx = offx; }
+    void setShadowOffY(int offy) { m_shadow_offy = offy; }
+    
     /**
        @param text text to check size
        @param size length of text in bytes
@@ -103,28 +109,28 @@ public:
     void drawText(const FbDrawable &w, int screen, GC gc,
                   const char *text, size_t len,
                   int x, int y, bool rotate=true) const;
-    bool isAntialias() const { return m_antialias; }
     /// @return true if the font is rotated, else false
     bool isRotated() const { return m_rotated; }
     /// @return rotated angle
     float angle() const { return m_angle; }
-    bool shadow() const { return m_shadow; }
-    bool halo() const { return m_halo; }
+    bool hasShadow() const { return m_shadow; }
+    bool hasHalo() const { return m_halo; }
 private:
 
-    std::auto_ptr<FontImp> m_fontimp; ///< font implementation
+    FbTk::FontImp* m_fontimp; ///< font implementation
     std::string m_fontstr; ///< font name
-    static bool m_multibyte; ///< if the fontimp should be a multibyte font
-    static bool m_utf8mode; ///< should the font use utf8 font imp
-    bool m_antialias; ///< is font antialias
+    
+    static bool s_multibyte; ///< if the fontimp should be a multibyte font
+    static bool s_utf8mode; ///< should the font use utf8 font imp
+
     bool m_rotated; ///< wheter we're rotated or not
     float m_angle; ///< rotation angle
     bool m_shadow; ///< shadow text
-    std::string m_shadow_color; ///< shadow color
+    Color m_shadow_color; ///< shadow color
     int m_shadow_offx; ///< offset y for shadow
     int m_shadow_offy; ///< offset x for shadow
     bool m_halo; ///< halo text
-    std::string m_halo_color; ///< halo color
+    Color m_halo_color; ///< halo color
 #ifdef HAVE_ICONV
     iconv_t m_iconv;
 #else

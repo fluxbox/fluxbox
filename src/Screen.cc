@@ -310,14 +310,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     imageControl().setDither(*resource.image_dither);
 
-    // setup windowtheme for antialias
-    // before we load the theme
-
-    winFrameTheme().font().setAntialias(*resource.antialias);
-    menuTheme().titleFont().setAntialias(*resource.antialias);
-    menuTheme().frameFont().setAntialias(*resource.antialias);
-
-
     winFrameTheme().reconfigSig().attach(this);// for geom window
 
 
@@ -343,7 +335,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // own resources we must do this.
     fluxbox->load_rc(*this);
 
-    m_configmenu.reset(createMenu(_FBTEXT(Menu, Configuration, "Configuration", "Title of configuration menu")));
+    m_configmenu.reset(createMenu(_FBTEXT(Menu, Configuration, 
+                                  "Configuration", "Title of configuration menu")));
     setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
 
@@ -673,11 +666,6 @@ void BScreen::reconfigure() {
     m_menutheme->setDelayOpen(*resource.menu_delay);
     m_menutheme->setDelayClose(*resource.menu_delay_close);
 
-    // setup windowtheme, toolbartheme for antialias
-    winFrameTheme().font().setAntialias(*resource.antialias);
-    m_menutheme->titleFont().setAntialias(*resource.antialias);
-    m_menutheme->frameFont().setAntialias(*resource.antialias);
-
     renderGeomWindow();
     renderPosWindow();
 
@@ -847,13 +835,6 @@ void BScreen::removeClient(WinClient &client) {
     //!! TODO: check this with the new icon menu
     //    updateIconMenu();
 
-}
-
-void BScreen::setAntialias(bool value) {
-    if (*resource.antialias == value)
-        return;
-    resource.antialias = value;
-    reconfigure();
 }
 
 int BScreen::addWorkspace() {
@@ -1812,12 +1793,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     _BOOLITEM(Configmenu, ClickRaises,
               "Click Raises", "Click Raises", 
               *resource.click_raises, saverc_cmd);
-#ifdef USE_XFT
-    // setup antialias cmd to reload style and save resource on toggle
-    _BOOLITEM(Configmenu, AntiAlias,
-              "AntiAlias", "Use Anti-aliased fonts",
-              *resource.antialias, save_and_reconfigure);
-#endif // USE_XFT
 
 #ifdef HAVE_XRENDER
     if (FbTk::Transparent::haveRender() ||

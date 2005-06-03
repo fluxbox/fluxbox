@@ -53,11 +53,6 @@ void IconbarTheme::reconfigTheme() {
     m_unfocused_text.update();
 }
 
-void IconbarTheme::setAntialias(bool value) {
-    m_focused_text.setAntialias(value);
-    m_unfocused_text.setAntialias(value);
-}
-
 // fallback resources
 bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
     using namespace FbTk;

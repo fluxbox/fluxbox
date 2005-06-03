@@ -26,6 +26,10 @@
 #ifndef THEMEITEMS_HH
 #define THEMEITEMS_HH
 
+#ifdef    HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
 #include "Theme.hh"
 #include "Color.hh"
 #include "Texture.hh"
@@ -98,9 +102,40 @@ void FbTk::ThemeItem<bool>::setFromString(char const *strval) {
 }
 
 template <>
+void ThemeItem<unsigned int>::setDefaultValue() {
+    m_value = 0;
+}
+
+template <>
+void ThemeItem<unsigned int>::setFromString(const char *str) {
+    sscanf(str, "%d", &m_value);
+}
+
+template <>
+void ThemeItem<unsigned int>::load(const std::string *name, const std::string *altname) {
+}
+
+
 void ThemeItem<Font>::setDefaultValue() {
     if (!m_value.load("fixed")) {
         cerr<<"ThemeItem<Font>: Warning! Failed to load default value 'fixed'"<<endl;
+    } else {
+        string effect(ThemeManager::instance().resourceValue(name()+".effect", altName()+".Effect"));
+        if (effect == "halo") {
+            m_value.setHalo(true);
+            FbTk::Color halo_color(ThemeManager::instance().resourceValue(name()+".halo.color", altName()+".Halo.Color").c_str(), 
+                    theme().screenNum());
+            m_value.setHaloColor(halo_color);
+
+        } else if (effect == "shadow" ) {
+            FbTk::Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str(), 
+                    theme().screenNum());
+            
+            m_value.setShadow(true);
+            m_value.setShadowColor(shadow_color);
+            m_value.setShadowOffX(atoi(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str()));
+            m_value.setShadowOffY(atoi(ThemeManager::instance().resourceValue(name()+".shadow.y", altName()+".Shadow.Y").c_str()));
+        }
     }
 }
 
@@ -110,19 +145,30 @@ void ThemeItem<Font>::setFromString(const char *str) {
     if (str == 0 || m_value.load(str) == false) {
         if (ThemeManager::instance().verbose()) {
             cerr<<"Theme: Error loading font "<<
-                ((m_value.isAntialias() || m_value.utf8()) ? "(" : "")<<
-
-                (m_value.isAntialias() ? "antialias" : "")<<
-                (m_value.utf8() ? " utf8" : "")<<
-
-                ((m_value.isAntialias() || m_value.utf8()) ? ") " : "")<<
+                ((m_value.utf8()) ? "(utf8)" : "")<<
                 "for \""<<name()<<"\" or \""<<altName()<<"\": "<<str<<endl;
 
             cerr<<"Theme: Setting default value"<<endl;
         }
         setDefaultValue();
-    }
+    } else {
+        string effect(ThemeManager::instance().resourceValue(name()+".effect", altName()+".Effect"));
+        if (effect == "halo") {
+            m_value.setHalo(true);
+            FbTk::Color halo_color(ThemeManager::instance().resourceValue(name()+".halo.color", altName()+".Halo.Color").c_str(), 
+                    theme().screenNum());
+            m_value.setHaloColor(halo_color);
 
+        } else if (effect == "shadow" ) {
+            FbTk::Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str(), 
+                    theme().screenNum());
+            
+            m_value.setShadow(true);
+            m_value.setShadowColor(shadow_color);
+            m_value.setShadowOffX(atoi(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str()));
+            m_value.setShadowOffY(atoi(ThemeManager::instance().resourceValue(name()+".shadow.y", altName()+".Shadow.Y").c_str()));
+        }
+    }
 }
 
 // do nothing

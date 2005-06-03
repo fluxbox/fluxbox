@@ -218,8 +218,6 @@ public:
 
     void saveMenu(FbTk::Menu &menu) { m_rootmenu_list.push_back(&menu); }
 
-    void setAntialias(bool value);
-
     inline FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
     inline const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
     inline MenuTheme &menuTheme() { return *m_menutheme.get(); }

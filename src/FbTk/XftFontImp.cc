@@ -33,7 +33,6 @@ namespace FbTk {
 
 XftFontImp::XftFontImp(const char *name, bool utf8):m_xftfont(0),
                                                     m_utf8mode(utf8) {
-
     if (name != 0)
         load(name);
 }
@@ -47,13 +46,14 @@ bool XftFontImp::load(const std::string &name) {
     //Note: assumes screen 0 for now, changes on draw if needed
 
     Display *disp = App::instance()->display();
-    XftFont *newxftfont = XftFontOpenName(disp, 0, name.c_str());
 
-    if (newxftfont == 0) { // failed to open font, lets test with XLFD
-        newxftfont = XftFontOpenXlfd(disp, 0, name.c_str());
+    XftFont *newxftfont = XftFontOpenXlfd(disp, 0, name.c_str());
+    if (newxftfont == 0) {
+        newxftfont = XftFontOpenName(disp, 0, name.c_str());
         if (newxftfont == 0)
             return false;
     }
+    
     // destroy old font and set new
     if (m_xftfont != 0)
         XftFontClose(disp, m_xftfont);

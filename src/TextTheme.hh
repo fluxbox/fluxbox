@@ -38,8 +38,6 @@ public:
 
     void update();
 
-    void setAntialias(bool value);
-
     FbTk::Font &font() { return *m_font; }
     const FbTk::Font &font() const { return *m_font; }
     const FbTk::Color &textColor() const { return *m_text_color; }

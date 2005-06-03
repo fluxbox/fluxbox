@@ -171,19 +171,4 @@ void ThemeItem<MenuTheme::BulletType>::load(const std::string *name, const std::
     // do nothing, we don't have anything extra to load
 }
 
-template <>
-void ThemeItem<unsigned int>::setDefaultValue() {
-    m_value = 0;
-}
-
-template <>
-void ThemeItem<unsigned int>::setFromString(const char *str) {
-    sscanf(str, "%d", &m_value);
-}
-
-template <>
-void ThemeItem<unsigned int>::load(const std::string *name, const std::string *altname) {
-}
-
-
 }; // end namespace  FbTk

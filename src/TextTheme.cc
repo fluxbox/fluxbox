@@ -34,6 +34,9 @@ TextTheme::TextTheme(FbTk::Theme &theme,
     m_text_color(theme, name + ".textColor", altname + ".TextColor"),
     m_justify(theme, name + ".justify", altname + ".Justify"),
     m_text_gc(RootWindow(FbTk::App::instance()->display(), theme.screenNum())) {
+    *m_justify = FbTk::LEFT;
+    // set default values
+    m_text_color->setFromString("white", theme.screenNum());
 
     update();
 }
@@ -44,10 +47,4 @@ TextTheme::~TextTheme() {
 
 void TextTheme::update() {
     m_text_gc.setForeground(*m_text_color);
-}
-    
-
-void TextTheme::setAntialias(bool value) {
-    font().setAntialias(value);
-    FbTk::ThemeManager::instance().loadItem(m_font);
 }

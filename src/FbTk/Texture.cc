@@ -57,9 +57,7 @@ void Texture::setFromString(const char * const texture_str) {
     } else {
         setType(Texture::NONE);
 
-        if (strstr(ts, "solid"))
-            addType(Texture::SOLID);
-        else if (strstr(ts, "gradient")) {
+        if (strstr(ts, "gradient")) {
             addType(Texture::GRADIENT);
             if (strstr(ts, "crossdiagonal"))
                 addType(Texture::CROSSDIAGONAL);
@@ -79,17 +77,15 @@ void Texture::setFromString(const char * const texture_str) {
                 addType(Texture::VERTICAL);
             else
                 addType(Texture::DIAGONAL);
-        } else
+        } else // default is "solid", according to ThemeItems.cc
             addType(Texture::SOLID);
 
         if (strstr(ts, "raised"))
             addType(Texture::RAISED);
         else if (strstr(ts, "sunken"))
             addType(Texture::SUNKEN);
-        else if (strstr(ts, "flat"))
-            addType(Texture::FLAT);        
-        else
-            addType(Texture::RAISED);
+        else // default us "flat", according to ThemeItems.cc
+            addType(Texture::FLAT);
 
         if (! (type() & Texture::FLAT))
             if (strstr(ts, "bevel2"))

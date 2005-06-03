@@ -1,5 +1,43 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/03:
+  * Massive change of font handling (Mathias)
+    - Usage of xft-fonts is prefered, except a font-description starts with '-'
+    - Removed "antialias"-option completly, to enable/disable "antialias"
+      use either  <fontname>:antialias=<bool> in the style or use
+      Xft.antialias: <bool> in your .Xdefaults
+    - Added new styleresources: 
+        *.font.effect: <halo|shadow>
+        *.font.shadow.x : <int>       - shadow x offset
+        *.font.shadow.y : <int>       - shadow y offset
+        *.font.shadow.color : <color> - color of shadow
+        *.font.halo.color : <color>   - color of halo
+    - Removed 'shadow' and 'halo' options from fontdefinitions:
+        !! Style authors have to update their styles !!
+    - Simplified XmbFontImp to not try all possible fonts to match locale
+    - Style authors may specify multiple fonts:
+        <font1>|<font2>|<font3>
+      if loading of font1 fails, fluxbox probes <font2>, etc. The last font is
+      "fixed". Hints for style authors:
+        - if xft tries to load a font it will _ALWAYS_ return a valid font,
+          it doesnt have to look like the one you want to have, read more
+          about it: http://fontconfig.org/fontconfig-user.html
+        - export XFT_DEBUG=1  before running fluxbox helps to see
+          which fonts are picked.
+      eg:
+          *.font: Verdana,Arial-12:antialias=true|-artwiz-snap-*-
+          if fluxbox is compiled with xft this will NEVER try to
+          load "-artwiz-snap-*-" since xft gives for sure a font,
+          most likely Verdana or Arial but noone knows. So, if
+          fluxbox has no xft support the first fontpattern fails
+          and fluxbox tries the next one, which might be successful.
+          if everything fails, it will use "fixed"
+    - Added caching of fonts, fonts are only loaded once.
+    - Fixed #1090902
+    ToolFactory.cc TextTheme.hh/cc IconbarTheme.cc Screen.hh/cc
+    FbTk/Font.hh/cc FbTk/XftFontImp.cc FbTk/XmbFontImp.cc
+    FbTk/MenuTheme.cc FbTk/Texture.cc FbTk/ThemeItems.cc
+    fbrun/main.cc fbrun/FbRun.cc
 *05/06/02:
   * Fixed _BLACKBOX_NOTIFY_WINDOW_ADD issue (thanx Vadim)
     _BLACKBOX_NOTIFY_WINDOW_ADD was emited before _NET_CLIENT_LIST 

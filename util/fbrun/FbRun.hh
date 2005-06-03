@@ -48,7 +48,7 @@ public:
     /// load and reconfigure for new font
     bool loadFont(const std::string &fontname);
     void setForegroundColor(const FbTk::Color &color);
-    void setAntialias(bool val) { m_font.setAntialias(val); }
+    void setAntialias(bool val) { /*m_font.setAntialias(val);*/ }
     const FbTk::Font &font() const { return m_font; }
     /// execute command and exit
     void run(const std::string &execstring);

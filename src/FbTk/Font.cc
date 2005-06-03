@@ -27,6 +27,7 @@
 #include "Font.hh"
 #include "FontImp.hh"
 #include "I18n.hh"
+#include "App.hh"
 
 #ifdef    HAVE_CONFIG_H
 #include "config.h"
@@ -67,6 +68,7 @@
   #include <stdlib.h>
 #endif
 #include <list>
+#include <map>
 #include <typeinfo>
 #include <langinfo.h>
 
@@ -148,69 +150,15 @@ char *recode(int cd,
 }
 #endif // HAVE_ICONV
 
-int extract_halo_options(const std::string& opts, std::string& color) {
-   std::list< std::string > tokens;
-   size_t sep= opts.find_first_of(':');
+// use to map <font1>|<font2>|<font3> => <fontthatworks>
+typedef std::map<std::string, std::string> StringMap;
+typedef StringMap::iterator StringMapIt;
+StringMap lookup_map;
 
-   if ( sep == std::string::npos )
-       return 1;
-
-   FbTk::StringUtil::stringtok(tokens, opts.substr(sep + 1, opts.length()), ";");
-   tokens.unique();
-   std::list< std::string >::const_iterator token;
-
-   for ( token= tokens.begin(); token != tokens.end(); token++ ) {
-       if ( (*token).find("color=", 0) != std::string::npos ) {
-           size_t s= (*token).find_first_of('=');
-           std::string c= (*token).substr(s + 1, (*token).length());
-           if ( !c.empty() )
-               std::swap(color, c);
-       }
-   }
-
-   return 1;
-}
-
-int extract_shadow_options(const std::string& opts, 
-                           std::string& color, 
-                           int& offx, int& offy) {
-
-   std::list< std::string > tokens;
-   size_t sep= opts.find_first_of(':');
-
-   if ( sep == std::string::npos )
-       return 1;
-
-   FbTk::StringUtil::stringtok(tokens, opts.substr(sep + 1, opts.length()), ";");
-   tokens.unique();
-   std::list< std::string >::const_iterator token;
-
-   for ( token= tokens.begin(); token != tokens.end(); token++ ) {
-       if ( (*token).find("color=", 0) != std::string::npos ) {
-           size_t s= (*token).find_first_of('=');
-           std::string c= (*token).substr(s + 1, (*token).length());
-           if ( !c.empty() )
-               std::swap(color, c);
-       }
-       else if ( (*token).find("offsetx=", 0) != std::string::npos ) {
-           size_t s= (*token).find_first_of('=');
-           FbTk_istringstream o((*token).substr(s + 1, (*token).length()).c_str());
-           if ( !o.eof() ) {
-               o >> offx;
-           }
-       }
-       else if ( (*token).find("offsety=", 0) != std::string::npos ) {
-           size_t s= (*token).find_first_of('=');
-           FbTk_istringstream o((*token).substr(s + 1, (*token).length()).c_str());
-           if ( !o.eof() ) {
-               o >> offy;
-           }
-       }
-   }
-
-   return 1;
-
-};
+// stores <fontthatworks and the fontimp
+typedef std::map<std::string, FbTk::FontImp* > FontCache;
+typedef FontCache::iterator FontCacheIt;
+FontCache font_cache;
 
 }; // end nameless namespace
 
@@ -218,8 +166,8 @@ int extract_shadow_options(const std::string& opts,
 
 namespace FbTk {
 
-bool Font::m_multibyte = false; 
-bool Font::m_utf8mode = false;
+bool Font::s_multibyte = false; 
+bool Font::s_utf8mode = false;
 
 
 void Font::init() {
@@ -229,24 +177,34 @@ void Font::init() {
 
 void Font::shutdown() {
 
+    FontCacheIt fit;
+    for (fit = font_cache.begin(); fit != font_cache.end(); fit++) {
+        FontImp* font = fit->second;
+        if (font) {
+            FontCacheIt it;
+            for (it = fit; it != font_cache.end(); it++)
+                if (it->second == font)
+                    it->second = 0;
+            delete font;
+        }
+    }
 }
 
-Font::Font(const char *name, bool antialias):
+Font::Font(const char *name):
     m_fontimp(0),
-    m_antialias(false), m_rotated(false), 
-    m_shadow(false), m_shadow_color("#000000"), 
-    m_shadow_offx(1), m_shadow_offy(1),
-    m_halo(false), m_halo_color("#ffffff"),
+    m_rotated(false), 
+    m_shadow(false), m_shadow_color("black", DefaultScreen(App::instance()->display())), 
+    m_shadow_offx(2), m_shadow_offy(2),
+    m_halo(false), m_halo_color("white", DefaultScreen(App::instance()->display())),
 #ifdef HAVE_ICONV
     m_iconv((iconv_t)(-1))
 #else
     m_iconv(-1)
 #endif // HAVE_ICONV
 {
-
     // MB_CUR_MAX returns the size of a char in the current locale
     if (MB_CUR_MAX > 1) // more than one byte, then we're multibyte
-        m_multibyte = true;
+        s_multibyte = true;
 
     // check for utf-8 mode
 #ifdef CODESET
@@ -256,7 +214,7 @@ Font::Font(const char *name, bool antialias):
 #endif // CODESET
 
     if (locale_codeset && strcmp("UTF-8", locale_codeset) == 0) {
-        m_utf8mode = true;
+        s_utf8mode = true;
     } else if (locale_codeset != 0) {
         // if locale isn't UTF-8 we try to
         // create a iconv pointer so we can
@@ -272,13 +230,13 @@ Font::Font(const char *name, bool antialias):
             cerr<<"FbTk::Font: code error: from "<<locale_codeset<<" to: UTF-8"<<endl;
             // if we failed with iconv then we can't convert
             // the strings to utf-8, so we disable utf8 mode
-            m_utf8mode = false;
+            s_utf8mode = false;
         } else {
             // success, we can now enable utf8mode 
             // and if antialias is on later we can recode
             // the non utf-8 string to utf-8 and use utf-8 
             // drawing functions
-            m_utf8mode = true;
+            s_utf8mode = true;
         }
 #endif // HAVE_ICONV
     }
@@ -286,23 +244,6 @@ Font::Font(const char *name, bool antialias):
 #ifdef DEBUG
     cerr<<"FbTk::Font m_iconv = "<<(int)m_iconv<<endl;
 #endif // DEBUG
-
-    // create the right font implementation
-    // antialias is prio 1
-#ifdef USE_XFT
-    if (antialias) {
-        m_fontimp.reset(new XftFontImp(0, m_utf8mode));
-    }
-#endif //USE_XFT
-    // if we didn't create a Xft font then create basic font
-    if (m_fontimp.get() == 0) {
-#ifdef USE_XMB
-        if (m_multibyte || m_utf8mode)
-            m_fontimp.reset(new XmbFontImp(0, m_utf8mode));
-        else // basic font implementation
-#endif // USE_XMB
-            m_fontimp.reset(new XFontImp());
-    }
 
     if (name != 0) {
         load(name);
@@ -317,82 +258,68 @@ Font::~Font() {
 #endif // HAVE_ICONV
 }
 
-void Font::setAntialias(bool flag) {
-    bool loaded = m_fontimp->loaded();
-#ifdef USE_XFT
-    if (flag && !isAntialias() && !m_rotated) {
-        m_fontimp.reset(new XftFontImp(m_fontstr.c_str(), m_utf8mode));
-    } else if (!flag && isAntialias()) 
-#endif // USE_XFT
-	{
-#ifdef USE_XMB
-            if (m_multibyte || m_utf8mode)
-                m_fontimp.reset(new XmbFontImp(m_fontstr.c_str(), m_utf8mode));
-            else
-#endif // USE_XMB
-                m_fontimp.reset(new XFontImp(m_fontstr.c_str()));
-	}
-
-    if (m_fontimp->loaded() != loaded) { // if the new font failed to load, fall back to 'fixed'
-        if (!m_fontimp->load("fixed")) {// if that failes too, output warning
-            _FB_USES_NLS;
-            cerr<<_FBTKTEXT(Error, CantFallbackFont, "Warning: can't load fallback font", "Attempt to load the last-resort default font failed")<<" 'fixed'."<<endl;
-        } 
-    }
-    
-    m_antialias = flag;
-}
-
 bool Font::load(const std::string &name) {
 
     if (name.size() == 0)
         return false;
-    // default values for font options
-    m_shadow = false;
-    m_halo = false;
+ 
+    StringMapIt lookup_entry;
+    FontCacheIt cache_entry;
 
-    // everything after ':' is a fontoption
-    // -> extract 'halo' and 'shadow' and
-    // load remaining fname
-    size_t                   sep= name.find_first_of(':');
+    // check if one of <font1>|<font2>|<font3> is already there
+    if ((lookup_entry = lookup_map.find(name)) != lookup_map.end() &&
+            (cache_entry = font_cache.find(lookup_entry->second)) != font_cache.end()) {
+        m_fontstr = cache_entry->first;
+        m_fontimp = cache_entry->second;
+        return true;
+     }
+    
+    // split up the namelist
+    typedef std::list<std::string> StringList;
+    typedef StringList::iterator StringListIt;
+    StringList names;
+    FbTk::StringUtil::stringtok<StringList>(names, name, "|");
+    
+    StringListIt name_it;
+    for (name_it = names.begin(); name_it != names.end(); name_it++) {
+        FbTk::StringUtil::removeTrailingWhitespace(*name_it);
+        FbTk::StringUtil::removeFirstWhitespace(*name_it);
 
-    if ( sep != std::string::npos ) {
-
-        std::list< std::string > tokens;
-        std::string              fname;
-
-        fname= std::string(name.c_str(), sep);
-
-        FbTk::StringUtil::stringtok(tokens, name.substr(sep + 1), ",");
-
-        tokens.unique();
-        bool firstone= true;
-        std::list< std::string >::const_iterator token;
-
-        // check tokens and extract extraoptions for halo and shadow
-        for( token= tokens.begin(); token != tokens.end(); token++ ) {
-            if ( (*token).find("halo",0) != std::string::npos ) {
-                m_halo= true;
-                extract_halo_options(*token, m_halo_color);
-            }
-            else if ( (*token).find("shadow", 0) != std::string::npos ) {
-                m_shadow= true;
-                extract_shadow_options(*token, m_shadow_color, m_shadow_offx, m_shadow_offy);
-            }
-            else {
-                if ( !firstone )
-                    fname+= ", ";
-                else
-                    firstone= false;
-                fname= fname + ":" + *token;
-            }
+        if ((cache_entry = font_cache.find(*name_it)) != font_cache.end()) {
+            m_fontstr = cache_entry->first;
+            m_fontimp = cache_entry->second;
+            lookup_map[name] = m_fontstr;
+            return true;
         }
 
-        m_fontstr = fname;
-    } else
-        m_fontstr = name;
+        FontImp* tmp_font(0);
+        
+#ifdef USE_XFT
+        if ((*name_it)[0] != '-')
+            tmp_font = new XftFontImp(0, s_utf8mode);
+#endif // USE_XFT
+    
+        if (!tmp_font) {
+#ifdef USE_XMB
+            if (s_multibyte || s_utf8mode)
+                tmp_font = new XmbFontImp(0, s_utf8mode);
+            else // basic font implementation
+#endif // USE_XMB
+                tmp_font = new XFontImp();
+        }
 
-    return m_fontimp->load(m_fontstr.c_str());
+        if (tmp_font && tmp_font->load((*name_it).c_str())) {
+            lookup_map[name] = (*name_it);
+            m_fontimp = tmp_font;
+            font_cache[(*name_it)] = tmp_font;
+            m_fontstr = name;
+            return true;
+        }
+        
+        delete tmp_font;
+    }
+
+    return false;;
 }
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
@@ -449,14 +376,14 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
     if (first_run) {
         if (m_shadow) {
             FbTk::GContext shadow_gc(w);
-            shadow_gc.setForeground(FbTk::Color(m_shadow_color.c_str(), screen));
+            shadow_gc.setForeground(m_shadow_color);
             first_run = false;
             drawText(w, screen, shadow_gc.gc(), real_text, len,
                      x + m_shadow_offx, y + m_shadow_offy, rotate);
             first_run = true;
         } else if (m_halo) {
             FbTk::GContext halo_gc(w);
-            halo_gc.setForeground(FbTk::Color(m_halo_color.c_str(), screen));
+            halo_gc.setForeground(m_halo_color);
             first_run = false;
             drawText(w, screen, halo_gc.gc(), real_text, len, x + 1, y + 1, rotate);
             drawText(w, screen, halo_gc.gc(), real_text, len, x - 1, y + 1, rotate);
@@ -473,7 +400,7 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
         // Using dynamic_cast just temporarly until there's a better solution 
         // to put in FontImp
         try {
-            XFontImp *font = dynamic_cast<XFontImp *>(m_fontimp.get());
+            XFontImp *font = dynamic_cast<XFontImp *>(m_fontimp);
             font->setRotate(false); // disable rotation temporarly
 
             font->drawText(w, screen, gc, real_text, len, x, y);
@@ -492,15 +419,16 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
 }	
 
 void Font::rotate(float angle) {
+/* TODO: reimplement rotated text
 #ifdef USE_XFT
     // if we are rotated and we are changing to horiz text 
     // and we were antialiased before we rotated then change to XftFontImp
-    if (isRotated() && angle == 0 && isAntialias())
-        m_fontimp.reset(new XftFontImp(m_fontstr.c_str(), m_utf8mode));
+    if (isRotated() && angle == 0 && !m_xftfontstr.empty())
+        m_fontimp.reset(new XftFontImp(m_fontstr.c_str(),s_utf8mode));
 #endif // USE_XFT
     // change to a font imp that handles rotated fonts (i.e just XFontImp at the moment)
     // if we're going to rotate this font
-    if (angle != 0 && isAntialias() && !isRotated()) {
+    if (angle != 0 && !isRotated()) {
         m_fontimp.reset(new XFontImp(m_fontstr.c_str()));
         if (!m_fontimp->loaded()) // if it failed to load font, try default font fixed
             m_fontimp->load("fixed");
@@ -511,6 +439,7 @@ void Font::rotate(float angle) {
 
     m_rotated = (angle == 0 ? false : true);
     m_angle = angle;
+    */
 }
 
 

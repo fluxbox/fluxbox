@@ -73,8 +73,8 @@ public:
         m_menu_theme(DefaultScreen(display())),
         m_menu(m_menu_theme, m_image_ctrl) { 
 
-        m_menu_theme.frameFont().setAntialias(true);
-        m_menu_theme.titleFont().setAntialias(true);
+        //m_menu_theme.frameFont().setAntialias(true);
+        //m_menu_theme.titleFont().setAntialias(true);
 
         cerr<<"Loading menu: "<<menufile<<endl;
         FbMenuParser parser(menufile);

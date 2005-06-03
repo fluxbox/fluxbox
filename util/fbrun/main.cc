@@ -119,7 +119,7 @@ int main(int argc, char **argv) {
         FbTk::App application(display_name.c_str());
         FbRun fbrun;
 
-        fbrun.setAntialias(antialias);
+        //fbrun.setAntialias(antialias);
 
         if (fontname.size() != 0) {
             if (!fbrun.loadFont(fontname.c_str())) {
@@ -140,8 +140,8 @@ int main(int argc, char **argv) {
             fbrun.resize(fbrun.width(), height);
         if (set_width)
             fbrun.resize(width, fbrun.height());
-        if (antialias)
-            fbrun.setAntialias(antialias);
+        //if (antialias)
+        //    fbrun.setAntialias(antialias);
         // expand and load command history
         string expanded_filename = FbTk::StringUtil::expandFilename(history_file);
         if (!fbrun.loadHistory(expanded_filename.c_str()))

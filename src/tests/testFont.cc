@@ -1,4 +1,3 @@
-// testFont.cc for fbtk test suite
 // Copyright (c) 2002 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -56,12 +55,13 @@ public:
         XLookupString(&ke, keychar, 1, &ks, 0);
         if (ks == XK_Escape)
             end();
+        /*
         else { // toggle antialias
             m_font.setAntialias(!m_font.isAntialias());
             cerr<<boolalpha;
             cerr<<"antialias: "<<m_font.isAntialias()<<endl;
             redraw();
-        }
+        } */
     }
 
     void exposeEvent(XExposeEvent &event) {
@@ -86,7 +86,7 @@ public:
         m_win.drawLine(wingc.gc(),
                        x, y, x + text_w, y);
         wingc.setForeground(FbTk::Color(m_foreground.c_str(), m_win.screenNumber()));
-        cerr<<"text width: "<<m_font.textWidth(m_text.c_str(), m_text.size())<<endl;
+        //cerr<<"text width: "<<m_font.textWidth(m_text.c_str(), m_text.size())<<endl;
         m_font.drawText(m_win,
                         0, wingc.gc(),
 			m_text.c_str(), m_text.size(),
@@ -105,9 +105,10 @@ private:
 };
 
 int main(int argc, char **argv) {
-    bool antialias = false;
+    //bool antialias = false;
     bool rotate = false;
-    string fontname("fixed");
+    bool xft = false;
+    string fontname("");
     string displayname("");
     string background("black");
     string foreground("white");
@@ -115,8 +116,8 @@ int main(int argc, char **argv) {
     for (int a=1; a<argc; ++a) {
         if (strcmp("-font", argv[a])==0 && a + 1 < argc) {
             fontname = argv[++a];
-        } else if (strcmp("-antialias", argv[a]) == 0) {
-            antialias = true;
+        } else if (strcmp("-xft", argv[a])==0) {
+            xft = true;
         } else if (strcmp("-display", argv[a]) == 0 && a + 1 < argc) {
             displayname = argv[++a];
         } else if (strcmp("-text", argv[a]) == 0 && a + 1 < argc) {
@@ -130,7 +131,7 @@ int main(int argc, char **argv) {
         } else if (strcmp("-h", argv[a]) == 0) {
             cerr<<"Arguments: "<<endl;
             cerr<<"-font <fontname>"<<endl;
-            cerr<<"-antialias"<<endl;
+         //   cerr<<"-antialias"<<endl;
             cerr<<"-display <display>"<<endl;
             cerr<<"-text <text>"<<endl;
             cerr<<"-rotate"<<endl;
@@ -144,7 +145,7 @@ int main(int argc, char **argv) {
     
 
     App app(displayname.c_str(), foreground, background);
-    app.font().setAntialias(antialias);
+    //app.font().setAntialias(antialias);
     if (!app.font().load(fontname.c_str()))
         cerr<<"Failed to load: "<<fontname<<endl;
     cerr<<"Setting text: "<<text<<endl;
