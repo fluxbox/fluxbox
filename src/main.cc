@@ -218,6 +218,7 @@ int main(int argc, char **argv) {
                            "Fluxbox %s : (c) %s Henrik Kinnunen\n"
                            "Website: http://www.fluxbox.org/ \n\n"
                            "\t-display <string>\t\tuse display connection.\n"
+                           "\t-screen <all|int,int,int>\trun on specified screens only.\n"
                            "\t-rc <string>\t\t\tuse alternate resource file.\n"
                            "\t-version\t\t\tdisplay version and exit.\n"
                            "\t-info\t\t\t\tdisplay some useful information.\n"
