@@ -127,6 +127,12 @@ void WorkspaceNameTool::reRender() {
 }
 
 void WorkspaceNameTool::renderTheme(unsigned char alpha) {
+    
+    m_button.setJustify(m_theme.justify());
+    m_button.setBorderWidth(m_theme.border().width());
+    m_button.setBorderColor(m_theme.border().color());
+    m_button.setAlpha(alpha);
+
     if (!m_theme.texture().usePixmap()) {
         if (m_pixmap)
             m_screen.imageControl().removeImage(m_pixmap);
@@ -136,9 +142,5 @@ void WorkspaceNameTool::renderTheme(unsigned char alpha) {
         reRender();
     }
 
-    m_button.setJustify(m_theme.justify());
-    m_button.setBorderWidth(m_theme.border().width());
-    m_button.setBorderColor(m_theme.border().color());
-    m_button.setAlpha(alpha);
     m_button.clear();
 }

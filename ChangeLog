@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/07:
+  * Fixed justification in WorkspaceNameTool #1213262 (Mathias)
+    WorkspaceNameTool.cc
 *05/06/03:
   * Massive change of font handling (Mathias)
     - Usage of xft-fonts is prefered, except a font-description starts with '-'
