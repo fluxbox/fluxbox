@@ -28,15 +28,29 @@
 #include "Workspace.hh"
 #include "WorkspaceCmd.hh"
 #include "MenuCreator.hh"
-
+#include "CommandParser.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/MenuItem.hh"
+#include "FbTk/MenuSeparator.hh"
 #include "FbTk/MultiButtonMenuItem.hh"
 
 #include <typeinfo>
+
+// the menu consists of (* means static)
+//   - icons               * 0
+//   --------------------- * 1
+//   - workspaces            2
+//   --------------------- * 3
+//   - new workspace       * 4
+//   - edit workspace name * 5
+//   - remove last         * 6
+//
+
+#define IDX_AFTER_ICONS 2
+#define NR_STATIC_ITEMS 6
 
 WorkspaceMenu::WorkspaceMenu(BScreen &screen):
    FbMenu(screen.menuTheme(), 
@@ -57,20 +71,20 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
         BScreen &screen = screen_subj.screen();
         if (subj == &screen.currentWorkspaceSig()) {
             FbTk::MenuItem *item = 0;
-            for (unsigned int i = 2; i < numberOfItems(); ++i) {
-                item = find(i);
+            for (unsigned int i = 0; i < screen.getCount(); ++i) {
+                item = find(i + IDX_AFTER_ICONS);
                 if (item && item->isSelected()) {
-                    setItemSelected(i, false);
-                    updateMenu(i);
+                    setItemSelected(i + IDX_AFTER_ICONS, false);
+                    updateMenu(i + IDX_AFTER_ICONS);
                     break;
                 }
             }
-            setItemSelected(screen.currentWorkspace()->workspaceID() + 2, true);
-            updateMenu(screen.currentWorkspace()->workspaceID() + 2);
+            setItemSelected(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS, true);
+            updateMenu(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS);
         } else if (subj == &screen.workspaceCountSig() || 
                    subj == &screen.workspaceNamesSig()) {
-            while (numberOfItems() > 2) {
-                remove(numberOfItems()-1);
+            while (numberOfItems() > NR_STATIC_ITEMS) {
+                remove(IDX_AFTER_ICONS);
             }
             // for each workspace add workspace name and it's menu
             // to our workspace menu
@@ -83,10 +97,8 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
                                                                                    &wkspc->menu());
                 FbTk::RefCount<FbTk::Command> jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
                 mb_menu->setCommand(2, jump_cmd);
-                insert(mb_menu);
+                insert(mb_menu, workspace + IDX_AFTER_ICONS);
             }
-            insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
-                   MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
 
             updateMenu(-1);
         }
@@ -105,12 +117,9 @@ void WorkspaceMenu::init(BScreen &screen) {
     removeAll();
 
     setLabel(_FBTEXT(Workspace, MenuTitle, "Workspaces", "Title of main workspace menu"));
-    RefCount<Command> new_workspace(new SimpleCommand<BScreen, int>(screen, &BScreen::addWorkspace));
-    RefCount<Command> remove_last(new SimpleCommand<BScreen, int>(screen, &BScreen::removeLastWorkspace));
-    insert(_FBTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 
-           new_workspace);
-    insert(_FBTEXT(Workspace, RemoveLast, "Remove Last", "Remove the last workspace"), 
-           remove_last);
+    insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
+           MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
+    insert(new FbTk::MenuSeparator());
     // for each workspace add workspace name and it's menu to our workspace menu
     for (size_t workspace = 0; workspace < screen.getCount(); ++workspace) {
         Workspace *wkspc = screen.getWorkspace(workspace);
@@ -120,11 +129,21 @@ void WorkspaceMenu::init(BScreen &screen) {
                                                                            &wkspc->menu());
         FbTk::RefCount<FbTk::Command> jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
         mb_menu->setCommand(2, jump_cmd);
-        insert(mb_menu);
+        insert(mb_menu, workspace + IDX_AFTER_ICONS);
     }
-    setItemSelected(screen.currentWorkspace()->workspaceID() + 2, true);
+    setItemSelected(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS, true);
 
-    insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
-           MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
+    RefCount<Command> new_workspace(new SimpleCommand<BScreen, int>(screen, &BScreen::addWorkspace));
+    RefCount<Command> remove_last(new SimpleCommand<BScreen, int>(screen, &BScreen::removeLastWorkspace));
+    RefCount<Command> start_edit(CommandParser::instance().parseLine("setworkspacenamedialog"));
+
+    insert(new FbTk::MenuSeparator());
+    insert(_FBTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 
+           new_workspace);
+    insert(_FBTEXT(Toolbar, EditWkspcName, "Edit current workspace name", "Edit current workspace name"),
+           start_edit);
+    insert(_FBTEXT(Workspace, RemoveLast, "Remove Last", "Remove the last workspace"), 
+          remove_last);
+    
     updateMenu();
 }

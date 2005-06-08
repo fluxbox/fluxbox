@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/09:
+  * Reordering of the WorkspaceMenu (Mathias)
+    Icon submenu ontop, workspaces below, new|edit|remove on bottom
+    WorkspaceMenu.cc
 *05/06/07:
   * Fixed justification in WorkspaceNameTool #1213262 (Mathias)
     WorkspaceNameTool.cc
