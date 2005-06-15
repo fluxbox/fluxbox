@@ -96,6 +96,34 @@ private:
     const int m_workspace_num;
 };
 
+class TakeToWorkspaceCmd : public WindowHelperCmd {
+public:
+    explicit TakeToWorkspaceCmd(int workspace_num) : m_workspace_num(workspace_num) { }
+protected:
+    void real_execute();
+private:
+    const int m_workspace_num;
+};
+
+class TakeToNextWorkspaceCmd : public WindowHelperCmd {
+public:
+    explicit TakeToNextWorkspaceCmd(int workspace_num) : m_workspace_num(workspace_num) { }
+protected:
+    void real_execute();
+private:
+    const int m_workspace_num;
+};
+
+class TakeToPrevWorkspaceCmd : public WindowHelperCmd {
+public:
+    explicit TakeToPrevWorkspaceCmd(int workspace_num) : m_workspace_num(workspace_num) { }
+protected:
+    void real_execute();
+private:
+    const int m_workspace_num;
+};
+
+
 // goto tab
 class GoToTabCmd: public WindowHelperCmd {
 public:

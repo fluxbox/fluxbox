@@ -122,6 +122,9 @@ FbCommandFactory::FbCommandFactory() {
         "stick",
         "stickwindow",
         "tab",
+        "taketoworkspace",
+        "taketonextworkspace",
+        "taketoprevworkspace",
         "toggledecor",
         "windowmenu",
         "workspace",
@@ -279,6 +282,12 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SendToNextWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "sendtoprevworkspace")
         return new SendToPrevWorkspaceCmd(atoi(arguments.c_str()));
+    else if (command == "taketoworkspace")
+        return new TakeToWorkspaceCmd(atoi(arguments.c_str()) - 1);
+    else if (command == "taketonextworkspace")
+        return new TakeToNextWorkspaceCmd(atoi(arguments.c_str()));
+    else if (command == "taketoprevworkspace")
+        return new TakeToPrevWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "killwindow" || command == "kill")
         return new KillWindowCmd();
     else if (command == "tab") {

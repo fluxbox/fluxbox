@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
 *05/06/15:
+  * Fixes #1213003, SendToWorkspace shouldnt follow (Mathias)
+      - SendToWorkspace silently changes the workspace of the window
+      - TakeToWorkspace takes the window and puts it onto the ws
+    FbCommandFactory.cc CurrentWindowCmd.cc/hh
   * Fixes #1216020, *.font.effect wont get cleared if not defined in style (Mathias)
     FbTk/Font.cc
 *05/06/09:
