@@ -1562,7 +1562,7 @@ append_submenu "${MULTIMEDIAMENU}"
 
 
        append_submenu "${VIDEOMENU}"
-           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb realplay xawtv fxtv ogle goggles
+           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb realplay xawtv fxtv ogle goggles vlc
            find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
        append_menu_end
 

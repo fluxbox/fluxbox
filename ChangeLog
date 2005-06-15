@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
 *05/06/15:
+  * Fixes #1198192, vlc to fbgm (Mathias)
+    fluxbox-generate_menu.in
   * Fixes #1213003, SendToWorkspace shouldnt follow (Mathias)
       - SendToWorkspace silently changes the workspace of the window
       - TakeToWorkspace takes the window and puts it onto the ws
