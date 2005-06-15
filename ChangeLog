@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/15:
+  * Fixes #1216020, *.font.effect wont get cleared if not defined in style (Mathias)
+    FbTk/Font.cc
 *05/06/09:
   * Reordering of the WorkspaceMenu (Mathias)
     Icon submenu ontop, workspaces below, new|edit|remove on bottom
