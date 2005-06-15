@@ -239,10 +239,49 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "resizevertical")
         return new ResizeCmd(0,atoi(arguments.c_str()));
     else if (command == "moveto") {
-       FbTk_istringstream is(arguments.c_str());
-       int dx = 0, dy = 0;
-       is >> dx >> dy;
-       return new MoveToCmd(dx,dy);    
+        typedef std::vector<std::string> StringTokens;
+        StringTokens tokens;
+        FbTk::StringUtil::stringtok<StringTokens>(tokens, arguments);
+    
+        if (tokens.size() < 2) {
+            cerr<<"*** WARNING: missing arguments for MoveTo\n";
+            return NULL;
+        }
+        
+        unsigned int refc = MoveToCmd::UPPER|MoveToCmd::LEFT;
+        int dx = 0;
+        int dy = 0;
+       
+        if (tokens[0][0] == '*')
+            refc |= MoveToCmd::IGNORE_X;
+        else
+            dx = atoi(tokens[0].c_str());
+
+        if (tokens[1][0] == '*' && ! (refc & MoveToCmd::IGNORE_X))
+            refc |= MoveToCmd::IGNORE_Y;
+        else
+            dy = atoi(tokens[1].c_str());
+        
+        if (tokens.size() >= 3) {
+            tokens[2] = FbTk::StringUtil::toLower(tokens[2]);
+            if (tokens[2] == "left" || tokens[2] == "upperleft" || tokens[2] == "lowerleft") {
+                refc |= MoveToCmd::LEFT;
+                refc &= ~MoveToCmd::RIGHT;   
+            } else if (tokens[2] == "right" || tokens[2] == "upperright" || tokens[2] == "lowerright") {
+                refc |= MoveToCmd::RIGHT;
+                refc &= ~MoveToCmd::LEFT;
+            } 
+            
+            if (tokens[2] == "upper" || tokens[2] == "upperleft" || tokens[2] == "upperright") {
+                refc |= MoveToCmd::UPPER;
+                refc &= ~MoveToCmd::LOWER;
+            } else if (tokens[2] == "lower" || tokens[2] == "lowerleft" || tokens[2] == "lowerright") {
+                refc |= MoveToCmd::LOWER;
+                refc &= ~MoveToCmd::UPPER;
+            }
+        }
+        
+        return new MoveToCmd(dx, dy, refc);    
     }
     else if (command == "move") {
         FbTk_istringstream is(arguments.c_str());

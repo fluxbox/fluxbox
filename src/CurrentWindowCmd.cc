@@ -133,12 +133,32 @@ void ResizeCmd::real_execute() {
     fbwindow().resize(w, h);
 }
 
-MoveToCmd::MoveToCmd(const int step_size_x, const int step_size_y) :
-    m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
+MoveToCmd::MoveToCmd(const int step_size_x, const int step_size_y, const unsigned int refc) :
+    m_step_size_x(step_size_x), m_step_size_y(step_size_y), m_refc(refc) { }
 
 void MoveToCmd::real_execute() {
-    fbwindow().move(m_step_size_x, m_step_size_y);
+    int x = 0;
+    int y = 0;
+
+    const int head = fbwindow().screen().getHead(fbwindow().fbWindow());
+    
+    if (m_refc & MoveToCmd::LOWER)
+        y = fbwindow().screen().maxBottom(head) - fbwindow().height() - m_step_size_y;
+    if (m_refc & MoveToCmd::UPPER)
+        y = fbwindow().screen().maxTop(head) + m_step_size_y;
+    if (m_refc & MoveToCmd::RIGHT)
+        x = fbwindow().screen().maxRight(head) - fbwindow().width() - m_step_size_x;
+    if (m_refc & MoveToCmd::LEFT)
+        x = fbwindow().screen().maxLeft(head) + m_step_size_x;
+
+    if (m_refc & MoveToCmd::IGNORE_X)
+        x = fbwindow().x();
+    if (m_refc & MoveToCmd::IGNORE_Y)
+        y = fbwindow().y();
+    
+    fbwindow().move(x, y);
 }
+
 
 ResizeToCmd::ResizeToCmd(const int step_size_x, const int step_size_y) :
     m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }

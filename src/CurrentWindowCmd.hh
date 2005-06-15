@@ -161,26 +161,34 @@ private:
 
 class MoveToCmd: public WindowHelperCmd {
 public:
-    explicit MoveToCmd(const int step_size_x, const int step_size_y);
+    enum {
+        LEFT =  1 << 0,
+        RIGHT = 1 << 1,
+        UPPER = 1 << 2,
+        LOWER = 1 << 3,
+
+        IGNORE_X = 1 << 8,
+        IGNORE_Y = 1 << 9
+    };
+    explicit MoveToCmd(const int step_size_x, const int step_size_y, const unsigned int refc);
 protected:
     void real_execute();
 
 private:
     const int m_step_size_x;
     const int m_step_size_y;
+    const unsigned int m_refc;
 };
 
 // resize cmd
 class ResizeToCmd: public WindowHelperCmd{
 public:
-  explicit ResizeToCmd(int step_size_x, int step_size_y);
+    explicit ResizeToCmd(int step_size_x, int step_size_y);
 protected:
-  void real_execute();
-
+    void real_execute();
 private:
-
-  const int m_step_size_x;
-  const int m_step_size_y;
+    const int m_step_size_x;
+    const int m_step_size_y;
 };
 
 class FullscreenCmd: public WindowHelperCmd{

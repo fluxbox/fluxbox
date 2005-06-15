@@ -1,6 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
 *05/06/15:
+  * Enhanced MoveTo, fixes #1074568 (Mathias)
+      MoveTo <int|*> <int|*> <Reference Corner>
+       - * means "use current value"
+       - Reference Corner is one of:
+         - UpperLeft, Upper, UpperRight
+         - Left, Right
+         - LowerLeft, Lower, Right
+       examples:
+         MoveTo 0 * Left       -> snap to left workspace edge
+         MoveTo * 0 Lower      -> snap to lower workspace edge
+         MoveTo 0 0 UpperRight -> snap to upper right workspace corner
+    FbCommandFactory.cc CurrentWindowCmd.cc/hh
   * Fixes #1198192, vlc to fbgm (Mathias)
     fluxbox-generate_menu.in
   * Fixes #1213003, SendToWorkspace shouldnt follow (Mathias)
