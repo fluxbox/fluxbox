@@ -128,7 +128,7 @@ void ThemeItem<Font>::setDefaultValue() {
             m_value.setHaloColor(halo_color);
 
         } else if (effect == "shadow" ) {
-            FbTk::Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str(), 
+            FbTk::Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.color", altName()+".Shadow.Color").c_str(), 
                     theme().screenNum());
             
             m_value.setShadow(true);
