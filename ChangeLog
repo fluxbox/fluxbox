@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/18:
+  * little Fix for font effects (Mathias)
+    FbTk/ThemeItems.cc
 *05/06/15:
   * Enhanced MoveTo, fixes #1074568 (Mathias)
       MoveTo <int|*> <int|*> <Reference Corner>

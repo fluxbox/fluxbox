@@ -160,13 +160,18 @@ void ThemeItem<Font>::setFromString(const char *str) {
             m_value.setHaloColor(halo_color);
 
         } else if (effect == "shadow" ) {
-            FbTk::Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str(), 
+            FbTk::Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.color", altName()+".Shadow.Color").c_str(), 
                     theme().screenNum());
             
             m_value.setShadow(true);
             m_value.setShadowColor(shadow_color);
-            m_value.setShadowOffX(atoi(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str()));
-            m_value.setShadowOffY(atoi(ThemeManager::instance().resourceValue(name()+".shadow.y", altName()+".Shadow.Y").c_str()));
+
+            int offset_x = atoi(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str());
+            int offset_y = atoi(ThemeManager::instance().resourceValue(name()+".shadow.y", altName()+".Shadow.Y").c_str());
+            if (offset_x != 0)
+                m_value.setShadowOffX(offset_x);
+            if (offset_y != 0)
+                m_value.setShadowOffY(offset_y);
         }
     }
 }
