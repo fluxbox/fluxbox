@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
 *05/06/18:
+  * Fixes #1206821, unportable usage of grep in fbgm (thanx Dung)
+    util/fluxbox-generate_menu.in
   * Fixes #1116965, shadwd windows on restart (Mathias)
     Window.cc
   * little Fix for font effects (Mathias)
