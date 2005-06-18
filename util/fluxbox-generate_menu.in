@@ -1556,7 +1556,7 @@ append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${MUSICMENU}"
                normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix kscd \
                    grecord kmidi xplaycd soundtracker grip easytag audacity \
-                   zinf rhythmbox kaboodle beep-media-player
+                   zinf rhythmbox kaboodle beep-media-player amarok
                cli_find cdcd cplay alsamixer orpheus mp3blaster
        append_menu_end
 

@@ -1181,8 +1181,6 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         return 0;
     }
 
-    bool new_win = false;
-
     // check if it should be grouped with something else
     FluxboxWindow *win;
     if ((win = findGroupLeft(*winclient)) != 0) {
@@ -1198,8 +1196,6 @@ FluxboxWindow *BScreen::createWindow(Window client) {
                                     winFrameTheme(),
                                     *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
             
-            new_win = true;
-
             if (!win->isManaged()) {
                 delete win;
                 return 0;
