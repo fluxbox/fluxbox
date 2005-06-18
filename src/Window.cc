@@ -504,19 +504,8 @@ void FluxboxWindow::init() {
     }
 
     associateClientWindow(true, wattrib.x, wattrib.y, wattrib.width, wattrib.height);
-
-    
-    Fluxbox::instance()->attachSignals(*this);
-
-    // this window is managed, we are now allowed to modify actual state
-    m_initialized = true;
-
-
-
     applyDecorations(true);
-
     grabButtons();
-
     restoreAttributes();
 
     if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
@@ -548,8 +537,6 @@ void FluxboxWindow::init() {
     if (wattrib.height <= 0)
         wattrib.height = 1;
 
-
-
     // if we're a transient then we should be on the same layer as our parent
     if (m_client->isTransient() &&
         m_client->transientFor()->fbwindow() &&
@@ -570,11 +557,8 @@ void FluxboxWindow::init() {
     if (!place_window)
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
-
-
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
     setWorkspace(m_workspace_number);
-
 
     if (shaded) { // start shaded
         shaded = false;
@@ -594,6 +578,10 @@ void FluxboxWindow::init() {
         stick();
         deiconify(); //we're omnipresent and visible
     }
+    
+    Fluxbox::instance()->attachSignals(*this);
+    // this window is managed, we are now allowed to modify actual state
+    m_initialized = true;
 
     sendConfigureNotify();
     // no focus default
@@ -3545,6 +3533,14 @@ void FluxboxWindow::restore(bool remap) {
 #ifdef DEBUG
     cerr<<"restore("<<remap<<")"<<endl;
 #endif // DEBUG
+
+    if (isShaded()) {
+        if (!isIconic())
+            setState(NormalState, false);
+        if (frame().isShaded())
+            frame().shade();
+    }
+    
     while (!clientList().empty()) {
         restore(clientList().back(), remap);
         // deleting winClient removes it from the clientList
