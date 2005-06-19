@@ -30,6 +30,7 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/Color.hh"
 #include "FbTk/FbPixmap.hh"
+#include "Container.hh"
 
 #include <vector>
 #include <list>
@@ -51,6 +52,8 @@ class Texture;
 /// (see: <a href="fluxbox_fbwinframe.png">image</a>)
 class FbWinFrame:public FbTk::EventHandler {
 public:
+    enum TabMode { INTERNAL = 1, EXTERNAL };
+
     typedef FbTk::TextButton *ButtonId; ///< defines a button id 
 
     /// create a top level window
@@ -112,15 +115,15 @@ public:
     /// removes a specific button from label window
     void removeTab(ButtonId id);
     /// move label button to the left
-    void moveLabelButtonLeft(const FbTk::TextButton &btn);
+    void moveLabelButtonLeft(FbTk::TextButton &btn);
     /// move label button to the right
-    void moveLabelButtonRight(const FbTk::TextButton &btn);
+    void moveLabelButtonRight(FbTk::TextButton &btn);
     /// move label button to the given location( x and y are relative to the root window)
     void moveLabelButtonTo(FbTk::TextButton &btn, int x, int y);
     /// move the first label button to the left of the second
-    void moveLabelButtonLeftOf(const FbTk::TextButton &btn, const FbTk::TextButton &dest);
+    void moveLabelButtonLeftOf(FbTk::TextButton &btn, const FbTk::TextButton &dest);
     //move the first label button to the right of the second
-    void moveLabelButtonRightOf(const FbTk::TextButton &btn, const FbTk::TextButton &dest);
+    void moveLabelButtonRightOf(FbTk::TextButton &btn, const FbTk::TextButton &dest);
     /// which button is to be rendered focused
     void setLabelButtonFocus(FbTk::TextButton &btn);
     /// attach a client window for client area
@@ -252,6 +255,7 @@ private:
     //@{
     FbTk::FbWindow m_window; ///< base window that holds each decorations (ie titlebar, handles)
     FbTk::FbWindow m_titlebar; ///<  titlebar window
+    Container      m_tab_container; ///< Holds tabs
     FbTk::FbWindow m_label; ///< holds title
     FbTk::FbWindow m_handle; ///< handle between grips
     FbTk::FbWindow m_grip_right,  ///< rightgrip
@@ -262,7 +266,6 @@ private:
     ButtonList m_buttons_left, ///< buttons to the left
         m_buttons_right; ///< buttons to the right
     typedef std::list<FbTk::TextButton *> LabelList;
-    LabelList m_labelbuttons; ///< holds label buttons inside label window
     FbTk::TextButton *m_current_label; ///< which client button is focused at the moment
     std::string m_titletext; ///< text to be displayed int m_label
     int m_bevel;  ///< bevel between titlebar items and titlebar
@@ -309,6 +312,8 @@ private:
     FbTk::Color m_grip_unfocused_color; ///< unfocused color for grip if no pixmap is given
     //@}
 
+    TabMode m_tabmode;
+
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
     unsigned int m_width_before_shade,  ///< width before shade, so we can restore it when we unshade
@@ -334,6 +339,7 @@ private:
     ThemeListener m_themelistener;
     std::auto_ptr<Shape> m_shape;
     bool m_disable_shape;
+
 };
 
 #endif // FBWINFRAME_HH

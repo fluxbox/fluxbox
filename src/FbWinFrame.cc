@@ -34,6 +34,8 @@
 #include "FbWinFrameTheme.hh"
 #include "fluxbox.hh"
 
+#include "Container.hh"
+
 #ifdef SHAPE
 #include "Shape.hh"
 #endif // SHAPE
@@ -56,10 +58,13 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |
                EnterWindowMask | LeaveWindowMask),
+    m_tab_container(m_titlebar),
+/*
     m_label(m_titlebar, 0, 0, 100, 16,
 	    ButtonPressMask | ButtonReleaseMask |
             ButtonMotionMask | ExposureMask |
             EnterWindowMask | LeaveWindowMask),
+*/
     m_handle(m_window, 0, 0, 100, 5,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | ExposureMask |
@@ -82,6 +87,7 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
     m_focused(false),
     m_visible(false),
     m_button_pm(0),
+    m_tabmode(INTERNAL), // TODO: configurable default (on compile, for backwards compat)
     m_need_render(true),
     m_themelistener(*this),
     m_shape(new Shape(m_window, theme.shapePlace())) {
@@ -221,7 +227,8 @@ void FbWinFrame::notifyMoved(bool clear) {
 
     if (m_use_titlebar) {
         m_titlebar.parentMoved();
-        m_label.parentMoved();
+        //m_label.parentMoved();
+        m_tab_container.parentMoved();
 
         for_each(m_buttons_left.begin(),
                  m_buttons_left.end(),
@@ -229,9 +236,7 @@ void FbWinFrame::notifyMoved(bool clear) {
         for_each(m_buttons_right.begin(),
                  m_buttons_right.end(),
                  mem_fun(&FbTk::Button::parentMoved));
-        for_each(m_labelbuttons.begin(),
-                 m_labelbuttons.end(),
-                 mem_fun(&FbTk::Button::parentMoved));
+        m_tab_container.for_each(mem_fun(&FbTk::Button::parentMoved));
     }
 
     if (m_use_handle) {
@@ -276,13 +281,7 @@ void FbWinFrame::setFocus(bool newvalue) {
         if (FbTk::Transparent::haveComposite()) {
             m_window.setOpaque(alpha);
         } else {
-            LabelList::iterator btn_it = m_labelbuttons.begin();
-            LabelList::iterator btn_it_end = m_labelbuttons.end();        
-            for (; btn_it != btn_it_end; ++btn_it) {
-                (*btn_it)->setAlpha(alpha);
-                if (m_current_label != (*btn_it))
-                    (*btn_it)->updateBackground(false);
-            }
+            m_tab_container.setAlpha(alpha);
         }
     }
 
@@ -334,13 +333,15 @@ void FbWinFrame::removeAllButtons() {
 }
 
 FbWinFrame::ButtonId FbWinFrame::createTab(const std::string &title, FbTk::Command *command) {
-    FbTk::TextButton *button = new FbTk::TextButton(label(),
+    FbTk::TextButton *button = new FbTk::TextButton(m_tab_container,
                                                     theme().font(),
                                                     title);
+
     button->show();
     button->setEventMask(ExposureMask | ButtonPressMask |
-                          ButtonReleaseMask | ButtonMotionMask |
+                         ButtonReleaseMask | ButtonMotionMask |
                          EnterWindowMask);
+    FbTk::EventManager::instance()->add(*button, button->window());
     
     FbTk::RefCount<FbTk::Command> refcmd(command);
     button->setOnClick(refcmd);
@@ -348,7 +349,7 @@ FbWinFrame::ButtonId FbWinFrame::createTab(const std::string &title, FbTk::Comma
     button->setTextPadding(Fluxbox::instance()->getTabsPadding());
     button->setJustify(theme().justify());
 
-    m_labelbuttons.push_back(button);
+    m_tab_container.insertItem(button);
 
     if (currentLabel() == 0)
         setLabelButtonFocus(*button);
@@ -357,162 +358,47 @@ FbWinFrame::ButtonId FbWinFrame::createTab(const std::string &title, FbTk::Comma
 }
 
 void FbWinFrame::removeTab(ButtonId btn) {
-    LabelList::iterator erase_it = remove(m_labelbuttons.begin(),
-                                          m_labelbuttons.end(),
-                                          btn);
-    if (erase_it == m_labelbuttons.end())
-        return;
-
     if (btn == m_current_label)
         m_current_label = 0;
 
-    m_labelbuttons.erase(erase_it);
-    delete btn;
+    if (m_tab_container.removeItem(btn))
+        delete btn;
+
 }
 
 
-void FbWinFrame::moveLabelButtonLeft(const FbTk::TextButton &btn) {
-    LabelList::iterator it = find(m_labelbuttons.begin(),
-                                  m_labelbuttons.end(),
-                                  &btn);
-    // make sure we found it and we're not at the begining
-    if (it == m_labelbuttons.end() || it == m_labelbuttons.begin())
-        return;
-
-    LabelList::iterator new_pos = it;
-    new_pos--;
-    FbTk::TextButton *item = *it;
-    // remove from list
-    m_labelbuttons.erase(it); 
-    // insert on the new place
-    m_labelbuttons.insert(new_pos, item);
-    // update titlebar
-    redrawTitlebar();
+void FbWinFrame::moveLabelButtonLeft(FbTk::TextButton &btn) {
+    m_tab_container.moveItem(&btn, -1);
 }
 
-void FbWinFrame::moveLabelButtonRight(const FbTk::TextButton &btn) {
-    LabelList::iterator it = find(m_labelbuttons.begin(),
-                                  m_labelbuttons.end(),
-                                  &btn);
-    // make sure we found it and we're not at the last item
-    if (it == m_labelbuttons.end() || *it == m_labelbuttons.back())
-        return;
-
-    FbTk::TextButton *item = *it;
-    // remove from list
-    LabelList::iterator new_pos = m_labelbuttons.erase(it); 
-    new_pos++;
-    // insert on the new place
-    m_labelbuttons.insert(new_pos, item);
-    // update titlebar
-    redrawTitlebar();
+void FbWinFrame::moveLabelButtonRight(FbTk::TextButton &btn) {
+    m_tab_container.moveItem(&btn, -1);
 }
 
 void FbWinFrame::moveLabelButtonTo(FbTk::TextButton &btn, int x, int y) {
-    Window parent_return=0,
-        root_return=75,
-        *children_return = NULL;
-
-    unsigned int nchildren_return;
-
-    // get the root window
-    if (!XQueryTree(window().display(), window().window(),
-                    &root_return, &parent_return, &children_return, &nchildren_return))
-        parent_return = parent_return;
-
-    if (children_return != NULL)
-        XFree(children_return);
-
-    int dest_x = 0, dest_y = 0;
-    Window labelbutton = 0;
-    if (!XTranslateCoordinates(window().display(),
-                               root_return, label().window(),
-                               x, y, &dest_x, &dest_y,
-                               &labelbutton))
-        return;
-
-    LabelList::iterator it = find_if(m_labelbuttons.begin(),
-                                     m_labelbuttons.end(),
-                                     CompareWindow(&FbTk::Button::window,
-                                                   labelbutton));
-    // label button not found
-    if (it == m_labelbuttons.end())
-        return;
-
-    Window child_return = 0;
-    //make x and y relative to our labelbutton
-    if (!XTranslateCoordinates(window().display(),
-                               label().window(),labelbutton,
-                               dest_x, dest_y, &x, &y,
-                               &child_return))
-        return;
-
-    if (x > (*it)->width() / 2)
-        moveLabelButtonRightOf(btn,**it);
-    else
-        moveLabelButtonLeftOf(btn,**it);
-
+    m_tab_container.moveItemTo(&btn, x, y);
 }
 
 
 
-void FbWinFrame::moveLabelButtonLeftOf(const FbTk::TextButton &btn, const FbTk::TextButton &dest) {
-    LabelList::iterator it = find(m_labelbuttons.begin(),
-                                  m_labelbuttons.end(),
-                                  &btn);
-    LabelList::iterator new_pos = find(m_labelbuttons.begin(),
-				       m_labelbuttons.end(),
-				       &dest);
-
-    // make sure we found them
-    if (it == m_labelbuttons.end() || new_pos == m_labelbuttons.end())
+void FbWinFrame::moveLabelButtonLeftOf(FbTk::TextButton &btn, const FbTk::TextButton &dest) {
+    int pos = m_tab_container.find(&dest);
+    if (pos < 0)
         return;
 
-    // moving a button to the left of itself results in no change
-    if (new_pos == it)
-        return;
-
-    FbTk::TextButton *item = *it;
-    // remove from list
-    m_labelbuttons.erase(it);
-    // insert on the new place
-    m_labelbuttons.insert(new_pos, item);
-    // update titlebar
-    redrawTitlebar();
+    m_tab_container.moveItem(&btn, pos-1);
 }
 
-void FbWinFrame::moveLabelButtonRightOf(const FbTk::TextButton &btn, const FbTk::TextButton &dest) {
-    LabelList::iterator it = find(m_labelbuttons.begin(),
-                                  m_labelbuttons.end(),
-                                  &btn);
-    LabelList::iterator new_pos = find(m_labelbuttons.begin(),
-				       m_labelbuttons.end(),
-				       &dest);
-
-    // make sure we found them
-    if (it == m_labelbuttons.end() || new_pos == m_labelbuttons.end())
+void FbWinFrame::moveLabelButtonRightOf(FbTk::TextButton &btn, const FbTk::TextButton &dest) {
+    int pos = m_tab_container.find(&dest);
+    if (pos < 0)
         return;
 
-    //moving a button to the right of itself results in no change
-    if (new_pos == it)
-        return;
-
-    FbTk::TextButton *item = *it;
-    // remove from list
-    m_labelbuttons.erase(it);
-    // need to insert into the next position
-    new_pos++;
-    // insert on the new place
-    if (new_pos == m_labelbuttons.end())
-        m_labelbuttons.push_back(item);
-    else
-        m_labelbuttons.insert(new_pos, item);
-    //update titlebar
-    redrawTitlebar();
+    m_tab_container.moveItem(&btn, pos-1);
 }
 
 void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
-    if (&btn == currentLabel() || btn.parent() != &label())
+    if (&btn == currentLabel() || btn.parent() != &m_tab_container)
         return;
 
     // render label buttons
@@ -658,7 +544,7 @@ bool FbWinFrame::showAllDecorations() {
 void FbWinFrame::setEventHandler(FbTk::EventHandler &evh) {
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
-    evm.add(evh, m_label);
+    evm.add(evh, m_tab_container);
     evm.add(evh, m_titlebar);
     evm.add(evh, m_handle);
     evm.add(evh, m_grip_right);
@@ -672,7 +558,7 @@ void FbWinFrame::setEventHandler(FbTk::EventHandler &evh) {
 */
 void FbWinFrame::removeEventHandler() {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
-    evm.remove(m_label);
+    evm.remove(m_tab_container);
     evm.remove(m_titlebar);
     evm.remove(m_handle);
     evm.remove(m_grip_right);
@@ -683,14 +569,7 @@ void FbWinFrame::removeEventHandler() {
 
 void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
     // we can ignore which window the event was generated for
-    LabelList::iterator btn_it = m_labelbuttons.begin();
-    LabelList::iterator btn_it_end = m_labelbuttons.end();
-    for (; btn_it != btn_it_end; ++btn_it) {
-        if ((*btn_it)->window() == event.window) {
-            (*btn_it)->buttonPressEvent(event);
-            break;
-        }
-    }
+    m_tab_container.tryButtonPressEvent(event);
     if (event.window == m_grip_right.window() ||
         event.window == m_grip_left.window() ||
         event.window == m_clientarea.window() ||
@@ -707,12 +586,8 @@ void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
 void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
     // we can ignore which window the event was generated for
     
-    LabelList::iterator button_it = find_if(m_labelbuttons.begin(),
-                                            m_labelbuttons.end(),
-                                            CompareWindow(&FbTk::Button::window,
-                                                          event.window));
-    if (button_it != m_labelbuttons.end())
-        (*button_it)->buttonReleaseEvent(event);
+    // we continue even if a button got the event
+    m_tab_container.tryButtonReleaseEvent(event);
 
     if (event.window == m_grip_right.window() ||
         event.window == m_grip_left.window() ||
@@ -739,8 +614,8 @@ void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
 void FbWinFrame::exposeEvent(XExposeEvent &event) {
     if (m_titlebar == event.window) {
         m_titlebar.clearArea(event.x, event.y, event.width, event.height);
-    } else if (m_label == event.window) {
-        m_label.clearArea(event.x, event.y, event.width, event.height);
+    } else if (m_tab_container == event.window) {
+        m_tab_container.clearArea(event.x, event.y, event.width, event.height);
     } else if (m_handle == event.window) {
         m_handle.clearArea(event.x, event.y, event.width, event.height);
     } else if (m_grip_left == event.window) {
@@ -748,18 +623,14 @@ void FbWinFrame::exposeEvent(XExposeEvent &event) {
     } else if (m_grip_right == event.window) {
         m_grip_right.clearArea(event.x, event.y, event.width, event.height);
     } else {
+
+        if (m_tab_container.tryExposeEvent(event))
+            return;
+
         // create compare function
         // that we should use with find_if        
         FbTk::CompareEqual_base<FbTk::FbWindow, Window> compare(&FbTk::FbWindow::window,
                                                                 event.window);
-
-        LabelList::iterator btn_it = find_if(m_labelbuttons.begin(),
-                                             m_labelbuttons.end(),
-                                             compare);
-        if (btn_it != m_labelbuttons.end()) {
-            (*btn_it)->exposeEvent(event);
-            return;
-        }
 
         ButtonList::iterator it = find_if(m_buttons_left.begin(),
                                           m_buttons_left.end(),
@@ -789,7 +660,7 @@ void FbWinFrame::configureNotifyEvent(XConfigureEvent &event) {
 }
 
 void FbWinFrame::reconfigure() {
-    if (m_labelbuttons.empty())
+    if (m_tab_container.empty())
         return;
 
     m_bevel = theme().bevelWidth();
@@ -902,73 +773,12 @@ unsigned int FbWinFrame::buttonHeight() const {
    aligns and redraws title
 */
 void FbWinFrame::redrawTitlebar() {
-    if (!m_use_titlebar || m_labelbuttons.empty())
+    if (!m_use_titlebar || m_tab_container.empty())
         return;
 
-    int focus_button_min_percent = Fluxbox::instance()->getFocusedTabMinWidth();
-    int button_count = m_labelbuttons.size();
-    int label_width = label().width();
-
-    /* force sane value */
-    if (focus_button_min_percent > 90) 
-        focus_button_min_percent = 90;
-    if (focus_button_min_percent < 1) 
-        focus_button_min_percent = 1;
-
-    int focus_button_width, unfocus_button_width;
-    if (100 < (focus_button_min_percent * button_count)) {
-        focus_button_width = label_width * focus_button_min_percent / 100;
-        if (button_count > 1) {
-            unfocus_button_width = label_width *
-                (100 - focus_button_min_percent) / (100 * (button_count - 1));
-        } else {
-            /* should never happen */
-            unfocus_button_width = 0;
-        }
-    } else {
-        focus_button_width = label_width / button_count;
-        unfocus_button_width = focus_button_width;
-    }
-
-    int rounding_error = label_width - focus_button_width -
-        ((button_count - 1) * unfocus_button_width);
-
-    //!! TODO: bevel
-    //int border_width = m_labelbuttons.front()->window().borderWidth();
-    int border_width =  m_labelbuttons.empty() ? 0 : m_labelbuttons.front()->borderWidth();
-
-    LabelList::iterator btn_it = m_labelbuttons.begin();
-    LabelList::iterator btn_it_end = m_labelbuttons.end();
-    int extra = 0, dx = 0;
-    for (unsigned int last_x = 0;
-         btn_it != btn_it_end; 
-         ++btn_it, last_x += dx) {
-
-        if (rounding_error != 0) {
-            extra = 1;
-            --rounding_error;
-        } else
-            extra = 0;
-
-        if (currentLabel() == *btn_it) {
-            dx = focus_button_width;
-        } else {
-            dx = unfocus_button_width;
-        }
-        dx += border_width + extra;
-
-        (*btn_it)->moveResize(last_x - border_width, - border_width,
-                              dx - border_width, 
-                              label().height() + border_width);
-
-    }
-
     if (isVisible()) {
-        for_each(m_labelbuttons.begin(),
-                 m_labelbuttons.end(),
-                 mem_fun(&FbTk::TextButton::clear));
-
-        m_label.clear();
+        m_tab_container.clear();
+        //m_label.clear();
         m_titlebar.clear();
     }
 }
@@ -1011,10 +821,10 @@ void FbWinFrame::reconfigureTitlebar() {
 
     space_left -= m_bevel;
 	
-    m_label.moveResize(next_x, m_bevel,
-                       space_left, button_size);
+    m_tab_container.moveResize(next_x, m_bevel,
+                               space_left, button_size);
 
-    next_x += m_label.width() + m_bevel;;
+    next_x += m_tab_container.width() + m_bevel;;
 
     // finaly set new buttons to the right
     for (size_t i=0; i < m_buttons_right.size(); 
@@ -1060,12 +870,12 @@ void FbWinFrame::renderTitlebar() {
 
     render(m_theme.labelFocusTexture(), m_label_focused_color, 
            m_label_focused_pm,
-           m_label.width(), m_label.height());
+           m_tab_container.width(), m_tab_container.height());
 		
 
     render(m_theme.labelUnfocusTexture(), m_label_unfocused_color, 
            m_label_unfocused_pm,
-           m_label.width(), m_label.height());
+           m_tab_container.width(), m_tab_container.height());
 
     renderButtons();
 }
@@ -1082,12 +892,12 @@ void FbWinFrame::applyTitlebar() {
 
     unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
     m_titlebar.setAlpha(alpha);
-    m_label.setAlpha(alpha);
+    m_tab_container.setAlpha(alpha);
 
     if (label_pm != 0)
-        m_label.setBackgroundPixmap(label_pm);
+        m_tab_container.setBackgroundPixmap(label_pm);
     else            
-        m_label.setBackgroundColor(label_color);
+        m_tab_container.setBackgroundColor(label_color);
     
     if (title_pm != 0)
         m_titlebar.setBackgroundPixmap(title_pm);
@@ -1226,7 +1036,7 @@ void FbWinFrame::init() {
 
     m_clientarea.setBorderWidth(0);
     m_shaded = false;
-    m_label.show();
+    m_tab_container.show();
 
     showHandle();
     showTitlebar();
@@ -1325,31 +1135,32 @@ void FbWinFrame::renderLabelButtons() {
 
     render(m_theme.labelFocusTexture(), m_labelbutton_focused_color, 
            m_labelbutton_focused_pm,
-           m_label.width(), m_label.height());
+           m_tab_container.width(), m_tab_container.height());
 		
 
     render(m_theme.labelUnfocusTexture(), m_labelbutton_unfocused_color, 
            m_labelbutton_unfocused_pm,
-           m_label.width(), m_label.height());
+           m_tab_container.width(), m_tab_container.height());
 
     render(m_theme.labelActiveTexture(), m_labelbutton_active_color, 
            m_labelbutton_active_pm,
-           m_label.width(), m_label.height());
+           m_tab_container.width(), m_tab_container.height());
 
 }
 
 void FbWinFrame::applyLabelButtons() {
 
-    LabelList::iterator btn_it = m_labelbuttons.begin();
-    LabelList::iterator btn_it_end = m_labelbuttons.end();        
+    Container::ItemList::iterator btn_it = m_tab_container.begin();
+    Container::ItemList::iterator btn_it_end = m_tab_container.end();
     for (; btn_it != btn_it_end; ++btn_it) {
-        if (*btn_it == m_current_label) {
+        FbTk::TextButton *btn = static_cast<FbTk::TextButton *>(*btn_it);
+        if (btn == m_current_label) {
             if (m_focused)
-                applyFocusLabel(**btn_it);
+                applyFocusLabel(*btn);
             else
-                applyActiveLabel(**btn_it);
+                applyActiveLabel(*btn);
         } else
-            applyUnfocusLabel(**btn_it);
+            applyUnfocusLabel(*btn);
     }
 }
 

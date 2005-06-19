@@ -25,7 +25,7 @@
 #ifndef CONTAINER_HH
 #define CONTAINER_HH
 
-#include "FbTk/FbWindow.hh"
+#include "FbTk/Button.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/NotCopyable.hh"
 
@@ -34,7 +34,8 @@
 class Container:public FbTk::FbWindow, public FbTk::EventHandler, private FbTk::NotCopyable {
 public:
     enum Alignment { LEFT, RELATIVE, RIGHT };
-    typedef FbTk::FbWindow * Item;
+    typedef FbTk::Button * Item;
+    typedef const FbTk::Button * ConstItem;
     typedef std::list<Item> ItemList;
 
     explicit Container(const FbTk::FbWindow &parent);
@@ -48,9 +49,12 @@ public:
 
     void insertItems(ItemList &list, int position=-1);
     void insertItem(Item item, int pos = -1);
-    void removeItem(int item);
+    bool removeItem(int item); // return true if something was removed
+    bool removeItem(Item item); // return true if something was removed
     void removeAll();
-    int find(Item item);
+    void moveItem(Item item, int movement); // wraps around
+    bool moveItemTo(Item item, int x, int y);
+    int find(ConstItem item);
     void setSelected(int index);
     void setMaxSizePerClient(unsigned int size);
     void setAlignment(Alignment a);
@@ -64,6 +68,10 @@ public:
 
     /// event handler
     void exposeEvent(XExposeEvent &event);
+    // for use when embedded in something that may passthrough
+    bool tryExposeEvent(XExposeEvent &event);
+    bool tryButtonPressEvent(XButtonEvent &event);
+    bool tryButtonReleaseEvent(XButtonEvent &event);
 
     /// accessors
     inline Alignment alignment() const { return m_align; }
@@ -74,6 +82,14 @@ public:
     unsigned int maxWidthPerClient() const;
     inline unsigned int maxHeightPerClient() const { return (empty() ? height() : height()/size()); }    
     inline bool updateLock() const { return m_update_lock; }
+
+    void for_each(std::mem_fun_t<void, FbWindow> function);
+    void setAlpha(unsigned char alpha); // set alpha on all windows
+
+    ItemList::iterator begin() { return m_item_list.begin(); }
+    ItemList::iterator end() { return m_item_list.end(); }
+
+    void clear(); // clear all windows
 
 private:
     void repositionItems();

@@ -26,6 +26,7 @@
 
 #include "FbTk/Button.hh"
 #include "FbTk/EventManager.hh"
+#include "CompareWindow.hh"
 
 Container::Container(const FbTk::FbWindow &parent):
     FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), 
@@ -111,9 +112,96 @@ void Container::insertItem(Item item, int pos) {
     repositionItems();
 }
 
-void Container::removeItem(int index) {    
-    if (index < 0 || index > size())
+void Container::moveItem(Item item, int movement) {
+    int index = find(item);
+    if (index < 0)
         return;
+
+    int size = m_item_list.size();
+    int newindex = (index + movement) % size;
+    if (newindex < 0) // neg wrap
+        newindex += size;
+
+    if (newindex > index) // one smaller now
+        --newindex;
+
+    ItemList::iterator it = m_item_list.begin();
+    for (; newindex > 0 && index > 0; ++it, --newindex, --index) {
+        if (newindex == 0) {
+            m_item_list.insert(it, item);
+            ++newindex;
+        }
+
+        if (index == 0) {
+            m_item_list.erase(it);
+            --index;
+        }
+    }
+
+            m_item_list.insert(it, item);
+    insertItem(item, newindex);
+    repositionItems();
+
+}
+
+// returns true if something was done
+bool Container::moveItemTo(Item item, int x, int y) {
+    Window parent_return=0,
+        root_return=0,
+        *children_return = NULL;
+
+    unsigned int nchildren_return;
+
+    // get the root window
+    if (!XQueryTree(display(), window(),
+                    &root_return, &parent_return, &children_return, &nchildren_return))
+        parent_return = parent_return;
+
+    if (children_return != NULL)
+        XFree(children_return);
+
+    int dest_x = 0, dest_y = 0;
+    Window itemwin = 0;
+    if (!XTranslateCoordinates(display(),
+                               root_return, window(),
+                               x, y, &dest_x, &dest_y,
+                               &itemwin))
+        return false;
+
+    ItemList::iterator it = find_if(m_item_list.begin(),
+                                    m_item_list.end(),
+                                    CompareWindow(&FbTk::FbWindow::window,
+                                                  itemwin));
+    // not found :(
+    if (it == m_item_list.end())
+        return false;
+
+    Window child_return = 0;
+    //make x and y relative to our item
+    if (!XTranslateCoordinates(display(),
+                               window(), itemwin,
+                               dest_x, dest_y, &x, &y,
+                               &child_return))
+        return false;
+    return true;
+}
+
+bool Container::removeItem(Item item) {
+    ItemList::iterator it = m_item_list.begin();
+    ItemList::iterator it_end = m_item_list.end();
+    for (; it != it_end && (*it) != item; ++it);
+
+    if (it == it_end)
+        return false;
+
+    m_item_list.erase(it);
+    repositionItems();
+    return true;
+}
+
+bool Container::removeItem(int index) {
+    if (index < 0 || index > size())
+        return false;
 
     ItemList::iterator it = m_item_list.begin();
     for (; index != 0; ++it, --index)
@@ -125,6 +213,7 @@ void Container::removeItem(int index) {
     m_item_list.erase(it);
 
     repositionItems();
+    return true;
 }
 
 void Container::removeAll() {
@@ -136,7 +225,7 @@ void Container::removeAll() {
 
 }
 
-int Container::find(Item item) {
+int Container::find(ConstItem item) {
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();
     int index = 0;
@@ -176,6 +265,60 @@ void Container::exposeEvent(XExposeEvent &event) {
     if (!m_update_lock) {
         clearArea(event.x, event.y, event.width, event.height);
     }
+}
+
+bool Container::tryExposeEvent(XExposeEvent &event) {
+    if (event.window == window()) {
+        exposeEvent(event);
+        return true;
+    }
+
+    ItemList::iterator it = find_if(m_item_list.begin(),
+                                    m_item_list.end(),
+                                    CompareWindow(&FbTk::FbWindow::window,
+                                                  event.window));
+    // not found :(
+    if (it == m_item_list.end())
+        return false;
+
+    (*it)->exposeEvent(event);
+    return true;
+}
+
+bool Container::tryButtonPressEvent(XButtonEvent &event) {
+    if (event.window == window()) {
+        // we don't have a buttonrelease event atm
+        return true;
+    }
+
+    ItemList::iterator it = find_if(m_item_list.begin(),
+                                    m_item_list.end(),
+                                    CompareWindow(&FbTk::FbWindow::window,
+                                                  event.window));
+    // not found :(
+    if (it == m_item_list.end())
+        return false;
+
+    (*it)->buttonPressEvent(event);
+    return true;
+}
+
+bool Container::tryButtonReleaseEvent(XButtonEvent &event) {
+    if (event.window == window()) {
+        // we don't have a buttonrelease event atm
+        return true;
+    }
+
+    ItemList::iterator it = find_if(m_item_list.begin(),
+                                    m_item_list.end(),
+                                    CompareWindow(&FbTk::FbWindow::window,
+                                                  event.window));
+    // not found :(
+    if (it == m_item_list.end())
+        return false;
+
+    (*it)->buttonReleaseEvent(event);
+    return true;
 }
 
 void Container::repositionItems() {
@@ -240,4 +383,25 @@ unsigned int Container::maxWidthPerClient() const {
 
     // this will never happen anyway
     return 1;
+}
+
+void Container::for_each(std::mem_fun_t<void, FbTk::FbWindow> function) {
+    std::for_each(m_item_list.begin(),
+             m_item_list.end(),
+             function);
+}
+
+void Container::setAlpha(unsigned char alpha) {
+    ItemList::iterator it = m_item_list.begin();
+    ItemList::iterator it_end = m_item_list.end();
+    for (; it != it_end; ++it)
+        (*it)->setAlpha(alpha);
+}
+
+void Container::clear() {
+    ItemList::iterator it = m_item_list.begin();
+    ItemList::iterator it_end = m_item_list.end();
+    for (; it != it_end; ++it)
+        (*it)->clear();
+
 }
