@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
 *05/06/19:
+  * Fix shaded + iconic windows + restart (Simon)
+    - use ATTRIB_HIDDEN, can't use IconicState
+    Window.cc
   * Revert shaded window fix. Wrong approach and caused crashes (Simon)
     Window.cc
   * Change FbWinFrame to use a Container (Simon)

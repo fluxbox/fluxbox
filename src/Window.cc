@@ -512,7 +512,6 @@ void FluxboxWindow::init() {
     m_initialized = true;
 
 
-
     applyDecorations(true);
 
     grabButtons();
@@ -570,16 +569,8 @@ void FluxboxWindow::init() {
     if (!place_window)
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
-
-
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
     setWorkspace(m_workspace_number);
-
-
-    if (shaded) { // start shaded
-        shaded = false;
-        shade();
-    }
 
     if (maximized && functions.maximize) { // start maximized
         // This will set it to the appropriate style of maximisation
@@ -593,6 +584,16 @@ void FluxboxWindow::init() {
         stuck = false;
         stick();
         deiconify(); //we're omnipresent and visible
+    }
+
+    if (shaded) { // start shaded
+        shaded = false;
+        shade();
+    }
+
+    if (iconic) {
+        iconic = false;
+        iconify();
     }
 
     sendConfigureNotify();
@@ -1259,6 +1260,9 @@ void FluxboxWindow::updateBlackboxHintsFromClient(const WinClient &client) {
     if (hint->flags & ATTRIB_SHADED)
         shaded = (hint->attrib & ATTRIB_SHADED);
 
+    if (hint->flags & ATTRIB_HIDDEN)
+        iconic = (hint->attrib & ATTRIB_HIDDEN);
+
     if ((hint->flags & ATTRIB_MAXHORIZ) &&
         (hint->flags & ATTRIB_MAXVERT))
         maximized = ((hint->attrib &
@@ -1474,6 +1478,9 @@ void FluxboxWindow::iconify() {
     if (isIconic()) // no need to iconify if we're already
         return;
 
+    m_blackbox_attrib.flags |= ATTRIB_HIDDEN;
+    m_blackbox_attrib.attrib |= ATTRIB_HIDDEN;
+
     iconic = true;
 
     setState(IconicState, false);
@@ -1522,7 +1529,9 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     bool was_iconic = iconic;
 
+    m_blackbox_attrib.flags &= ~ATTRIB_HIDDEN;
     iconic = false;
+
     setState(NormalState, false);
 
     ClientList::iterator client_it = clientList().begin();
@@ -1776,7 +1785,9 @@ void FluxboxWindow::shade() {
     if (!decorations.titlebar)
         return;
 
-    frame().shade();
+    // we're toggling, so if they're equal now, we need to change it
+    if (isInitialized() && m_frame.isShaded() == shaded)
+        frame().shade();
 
     if (shaded) {
         shaded = false;
@@ -2007,11 +2018,6 @@ void FluxboxWindow::moveToLayer(int layernum) {
 }
 
 void FluxboxWindow::setFocusHidden(bool value) {
-    if(value)
-        m_blackbox_attrib.flags |= ATTRIB_HIDDEN;
-    else
-        m_blackbox_attrib.flags ^= ATTRIB_HIDDEN;
-
     if (isInitialized())
         m_statesig.notify();
 }
@@ -2163,8 +2169,11 @@ bool FluxboxWindow::getState() {
  * (so the caller can set defaults etc as well)
  */
 void FluxboxWindow::restoreAttributes() {
-    if (!getState())
+    if (!getState()) {
         m_current_state = m_client->initial_state;
+        if (m_current_state == IconicState)
+            iconic = true;
+    }
 
     Atom atom_return;
     int foo;
@@ -2197,6 +2206,11 @@ void FluxboxWindow::restoreAttributes() {
     if (m_blackbox_attrib.flags & ATTRIB_SHADED &&
         m_blackbox_attrib.attrib & ATTRIB_SHADED)
         shaded = true;
+
+    if (m_blackbox_attrib.flags & ATTRIB_HIDDEN &&
+        m_blackbox_attrib.attrib & ATTRIB_HIDDEN) {
+        iconic = true;
+    }
 
     if (( m_blackbox_attrib.workspace != screen().currentWorkspaceID()) &&
         ( m_blackbox_attrib.workspace < screen().getCount()))
@@ -2361,27 +2375,11 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
         return;
     }
 
-    Fluxbox *fluxbox = Fluxbox::instance();
-
-    bool get_state_ret = getState();
-    if (!(get_state_ret && fluxbox->isStartup())) {
-        if (m_client->wm_hint_flags & StateHint)
-            m_current_state = m_client->initial_state;
-    } else if (iconic)
-        m_current_state = NormalState;
-
-    setState(m_current_state, false);
-
-    switch (m_current_state) {
-    case IconicState:
-        iconify();
-	break;
-
-    case WithdrawnState:
+    // rest of current state checking is in initialisation
+    if (m_current_state == WithdrawnState)
         withdraw(true);
-	break;
+    else {
 
-    case NormalState: {
         // if this window was destroyed while autogrouping
         bool destroyed = false;
 
@@ -2394,18 +2392,10 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
             destroyed = wsp->checkGrouping(*this);
 
 	// if we weren't grouped with another window we deiconify ourself
-        if (!destroyed)
+        if (!destroyed && !iconic)
             deiconify(false);
 
-
-    } break;
-    case InactiveState:
-    case ZoomState:
-    default:
-        deiconify(false);
-        break;
     }
-
 }
 
 
@@ -3594,6 +3584,16 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
         ((m_blackbox_attrib.attrib & ATTRIB_SHADED) !=
          (net.attrib & ATTRIB_SHADED)))
         shade();
+
+    if ((net.flags & ATTRIB_HIDDEN) &&
+        ((m_blackbox_attrib.attrib & ATTRIB_HIDDEN) !=
+         (net.attrib & ATTRIB_HIDDEN))) {
+        bool want_iconic = net.attrib & ATTRIB_HIDDEN;
+        if (!iconic && want_iconic)
+            iconify();
+        else if (iconic && !want_iconic)
+            deiconify();
+    }
 
     if (net.flags & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)) {
         // make maximise look like the net maximise flags
