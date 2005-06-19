@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
 *05/06/19:
+  * Revert shaded window fix. Wrong approach and caused crashes (Simon)
+    Window.cc
   * Change FbWinFrame to use a Container (Simon)
     FbWinFrame.hh/cc Container.hh/cc
 *05/06/18:
