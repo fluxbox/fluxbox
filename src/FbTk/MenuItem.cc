@@ -29,6 +29,7 @@
 #include "Image.hh"
 #include "App.hh"
 #include "StringUtil.hh"
+#include "Menu.hh"
 
 namespace FbTk {
 
@@ -295,6 +296,11 @@ void MenuItem::updateTheme(const MenuTheme &theme) {
     m_icon->pixmap.reset(Image::load(m_icon->filename.c_str(), theme.screenNum()));
 
 
+}
+
+void MenuItem::showSubmenu() { 
+    if (submenu() != 0) 
+        submenu()->show(); 
 }
 
 }; // end namespace FbTk

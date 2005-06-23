@@ -94,13 +94,13 @@ public:
     virtual inline void setLabel(const char *label) { m_label = (label ? label : ""); }
     virtual inline void setToggleItem(bool val) { m_toggle_item = val; }
     void setIcon(const std::string &filename, int screen_num);
-    Menu *submenu() { return m_submenu; }
+    virtual Menu *submenu() { return m_submenu; }
     /** 
         @name accessors
     */
     //@{
     virtual inline const std::string &label() const { return m_label; }
-    inline const Menu *submenu() const { return m_submenu; } 
+    virtual const Menu *submenu() const { return m_submenu; } 
     virtual inline bool isEnabled() const { return m_enabled; }
     virtual inline bool isSelected() const { return m_selected; }
     virtual inline bool isToggleItem() const { return m_toggle_item; }
@@ -120,6 +120,8 @@ public:
        @param time the time stamp 
     */
     virtual void click(int button, int time);
+    /// must use this to show submenu to ensure consistency for object like window menu in ClientMenu (see Workspace.cc)
+    virtual void showSubmenu();
     RefCount<Command> &command() { return m_command; }
     const RefCount<Command> &command() const { return m_command; }
     //@}

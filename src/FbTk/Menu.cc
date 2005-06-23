@@ -734,7 +734,7 @@ void Menu::drawSubmenu(unsigned int index) {
             clearItem(index);
 		
         if (! item->submenu()->isVisible()) {
-            item->submenu()->show();
+            item->showSubmenu();
             item->submenu()->raise();
         }
 			
