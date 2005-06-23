@@ -826,7 +826,7 @@ void Toolbar::setupMenus() {
     menu().insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
                                    *m_rc_maximize_over,
                                    reconfig_toolbar_and_save_resource));
-    menu().insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), &layermenu());
+    menu().insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), &layerMenu());
 
 
 

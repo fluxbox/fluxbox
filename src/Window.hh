@@ -31,7 +31,6 @@
 #include "FbTk/Subject.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/XLayerItem.hh"
-
 #include "FbWinFrame.hh"
 
 #include <X11/Xlib.h>
@@ -153,8 +152,6 @@ public:
     } BlackboxAttributes;
 
     typedef std::list<WinClient *> ClientList;
-    // this should perhaps be a refcount??
-    typedef std::list<std::pair<const char *, FbTk::Menu *> > ExtraMenus;
 
     /// create a window from a client
     FluxboxWindow(WinClient &client,
@@ -322,18 +319,8 @@ public:
     FbTk::FbWindow &fbWindow();
     const FbTk::FbWindow &fbWindow() const;
 
-    FbTk::Menu &menu() { return *m_windowmenu.get(); }
-    const FbTk::Menu &menu() const { return *m_windowmenu.get(); }
-
-
-    // for extras to add menus.
-    // These menus will be marked internal,
-    // and deleted when the window dies (as opposed to Screen
-    void addExtraMenu(const char *label, FbTk::Menu *menu);
-    void removeExtraMenu(FbTk::Menu *menu);
-
-    ExtraMenus &extraMenus() { return m_extramenus; }
-    const ExtraMenus &extraMenus() const { return m_extramenus; }
+    FbTk::Menu &menu(); 
+    const FbTk::Menu &menu() const;
 
     const FbTk::FbWindow &parent() const { return m_parent; }
     FbTk::FbWindow &parent() { return m_parent; }
@@ -398,7 +385,6 @@ private:
     static const int PropBlackboxAttributesElements = 8;
 
     void setupWindow();
-    void setupMenu();
 
     void init();
     /// applies a shape mask to the window if it has one
@@ -474,8 +460,6 @@ private:
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;
 
-    std::auto_ptr<FbTk::Menu> m_windowmenu;
-
     timeval m_last_focus_time;
 
     int m_button_grab_x, m_button_grab_y; // handles last button press event for move
@@ -524,7 +508,6 @@ private:
 
     ResizeCorner m_resize_corner;
 
-    ExtraMenus m_extramenus;
     static int s_num_grabs; ///< number of XGrabPointer's
 };
 

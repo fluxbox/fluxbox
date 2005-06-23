@@ -97,6 +97,7 @@ public:
     typedef std::list<WinClient *> FocusedWindows;
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
+    typedef std::list<std::pair<const char *, FbTk::Menu *> > ExtraMenus;
 
     BScreen(FbTk::ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
@@ -123,10 +124,16 @@ public:
     inline bool decorateTransient() const { return *resource.decorate_transient; }
     inline const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
     inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
+    // menus
     const FbTk::Menu &getRootmenu() const { return *m_rootmenu.get(); }
     FbTk::Menu &getRootmenu() { return *m_rootmenu.get(); }
     const FbTk::Menu &configMenu() const { return *m_configmenu.get(); }
     FbTk::Menu &configMenu() { return *m_configmenu.get(); }
+    const FbTk::Menu &windowMenu() const { return *m_windowmenu.get(); }
+    FbTk::Menu &windowMenu() { return *m_windowmenu.get(); }
+
+    ExtraMenus &extraWindowMenus() { return m_extramenus; }
+    const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
 
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline ResizeModel getResizeModel() const { return *resource.resize_model; }
@@ -199,6 +206,11 @@ public:
 
     FbTk::Menu *createMenu(const std::string &label);
     void hideMenus();
+    // for extras to add menus.
+    // These menus will be marked internal,
+    // and deleted when the window dies (as opposed to Screen
+    void addExtraWindowMenu(const char *label, FbTk::Menu *menu);
+    void removeExtraWindowMenu(FbTk::Menu *menu);
 
     /// hide all windowmenus except the given one (if given)
     void hideWindowMenus(const FluxboxWindow* except= 0);
@@ -393,7 +405,9 @@ private:
 
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
-    std::auto_ptr<FbTk::Menu> m_configmenu, m_rootmenu, m_workspacemenu;
+    std::auto_ptr<FbTk::Menu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
+
+    ExtraMenus m_extramenus;
 
     typedef std::list<FbTk::Menu *> Rootmenus;
     typedef std::list<Netizen *> Netizens;

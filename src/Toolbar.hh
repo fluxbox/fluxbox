@@ -31,6 +31,7 @@
 #include "LayerMenu.hh"
 #include "ToolFactory.hh"
 #include "ToolTheme.hh"
+#include "fluxbox.hh"
 
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
@@ -54,7 +55,7 @@ class ImageControl;
 
 ///	The toolbar.
 /// Handles iconbar, workspace name view and clock view
-class Toolbar: public FbTk::EventHandler, public FbTk::Observer {
+class Toolbar: public FbTk::EventHandler, public FbTk::Observer, public LayerObject {
 public:
        
     /// Toolbar placement on the screen
@@ -101,15 +102,15 @@ public:
 
     void update(FbTk::Subject *subj);
 
-    FbTk::XLayerItem &layerItem() { return m_layeritem; }
+    int layerNumber() const { return const_cast<FbTk::XLayerItem &>(m_layeritem).getLayerNum(); }
 
     inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
     inline FbTk::Menu &menu() { return m_toolbarmenu; }
     inline FbTk::Menu &placementMenu() { return m_placementmenu; }
     inline const FbTk::Menu &placementMenu() const { return m_placementmenu; }
 
-    inline FbTk::Menu &layermenu() { return m_layermenu; }
-    inline const FbTk::Menu &layermenu() const { return m_layermenu; }
+    inline FbTk::Menu &layerMenu() { return m_layermenu; }
+    inline const FbTk::Menu &layerMenu() const { return m_layermenu; }
 
     /// are we hidden?
     inline bool isHidden() const { return m_hidden; }
@@ -163,8 +164,8 @@ private:
     FbTk::Timer m_hide_timer; ///< timer to for auto hide toolbar
 
     FbTk::XLayerItem m_layeritem; ///< layer item, must be declared before layermenu
-    LayerMenu<Toolbar> m_layermenu;
-    FbMenu  m_placementmenu, m_toolbarmenu;
+    LayerMenu m_layermenu;
+    FbMenu m_placementmenu, m_toolbarmenu;
 
 
     // themes

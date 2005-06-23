@@ -27,11 +27,15 @@
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
 
-#include "Menu.hh"
-#include "FbWindow.hh"
-#include "Timer.hh"
-#include "XLayerItem.hh"
+
 #include "LayerMenu.hh"
+#include "fluxbox.hh"
+
+#include "FbTk/Menu.hh"
+#include "FbTk/FbWindow.hh"
+#include "FbTk/Timer.hh"
+#include "FbTk/Resource.hh"
+#include "FbTk/XLayerItem.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -47,7 +51,7 @@ class FbMenu;
 class Strut;
 
 /// Handles dock apps
-class Slit: public FbTk::EventHandler, public FbTk::Observer {
+class Slit: public FbTk::EventHandler, public FbTk::Observer, public LayerObject {
 public:
     typedef std::list<SlitClient *> SlitClients;    
     /**
@@ -105,7 +109,8 @@ public:
     SlitTheme &theme() { return *m_slit_theme.get(); }
     const SlitTheme &theme() const { return *m_slit_theme.get(); }
 
-    FbTk::XLayerItem &layerItem() { return *m_layeritem; }
+    int layerNumber() const { return m_layeritem->getLayerNum(); }
+
     inline bool isHidden() const { return m_hidden; }
     inline bool doAutoHide() const { return *m_rc_auto_hide; }
     inline Direction direction() const { return *m_rc_direction; }
@@ -141,7 +146,7 @@ private:
 
     SlitClients m_client_list;
     FbMenu m_slitmenu, m_placement_menu, m_clientlist_menu;
-    std::auto_ptr<LayerMenu<Slit> > m_layermenu;
+    std::auto_ptr<LayerMenu> m_layermenu;
     std::string m_filename;
 
     struct frame {

@@ -367,7 +367,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 #endif // SLIT
 
     rm.unlock();
-
+  
     XFlush(disp);
 }
 
@@ -384,6 +384,7 @@ void destroyAndClearList(A &a) {
 
 BScreen::~BScreen() {
     
+
     if (! managed)
         return;
     
@@ -394,6 +395,24 @@ BScreen::~BScreen() {
     // we need to destroy it before we destroy workspaces
     m_workspacemenu.reset(0);
 
+    ExtraMenus::iterator mit = m_extramenus.begin();
+    ExtraMenus::iterator mit_end = m_extramenus.end();
+    for (; mit != mit_end; ++mit) {
+        // we set them to NOT internal so that they will be deleted when the
+        // menu is cleaned up. We can't delete them here because they are
+        // still in the menu
+        // (They need to be internal for most of the time so that if we
+        // rebuild the menu, then they won't be removed.
+        if (mit->second->parent() == 0) {
+            // not attached to our windowmenu
+            // so we clean it up
+            delete mit->second;
+        } else {
+            // let the parent clean it up
+            mit->second->setInternalMenu(false);
+        }
+    }
+    
     if (geom_pixmap != None)
         imageControl().removeImage(geom_pixmap);
 
@@ -601,6 +620,25 @@ FbTk::Menu *BScreen::createMenu(const std::string &label) {
     return menu;
 }
 
+void BScreen::addExtraWindowMenu(const char *label, FbTk::Menu *menu) {
+    menu->setInternalMenu();
+    menu->disableTitle();
+    m_extramenus.push_back(std::make_pair(label, menu));
+    // recreate window menu
+    m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
+}
+
+void BScreen::removeExtraWindowMenu(FbTk::Menu *menu) {
+    ExtraMenus::iterator it = find_if(m_extramenus.begin(),
+                                      m_extramenus.end(),
+                                      FbTk::Compose(bind2nd(equal_to<FbTk::Menu *>(), menu),
+                                                    FbTk::Select2nd<ExtraMenus::value_type>()));
+    if (it != m_extramenus.end())
+        m_extramenus.erase(it);
+    // recreate window menu
+    m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
+}
+
 void BScreen::hideMenus() {
     // hide extra menus
     Fluxbox::instance()->hideExtraMenus(*this);
@@ -684,6 +722,8 @@ void BScreen::reconfigure() {
     //reconfigure menus
     m_workspacemenu->reconfigure();
     m_configmenu->reconfigure();
+    // recreate window menu
+    m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
 
     // We need to check to see if the timestamps
     // changed before we actually can restore the menus 
@@ -963,8 +1003,10 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
             win->deiconify();
 
         // if the window isn't on current workspace, hide it
-        if (id != currentWorkspace()->workspaceID())
+        if (id != currentWorkspace()->workspaceID()) 
             win->withdraw(true);
+
+        windowMenu().hide();
 
         reassociateWindow(win, id, true);
 
@@ -1649,8 +1691,10 @@ void BScreen::dirFocus(FluxboxWindow &win, const FocusDir dir) {
 }
 void BScreen::initMenus() {
     m_workspacemenu.reset(MenuCreator::createMenuType("workspacemenu", screenNumber()));
+    m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
     initMenu();
 }
+
 
 void BScreen::initMenu() {
 	

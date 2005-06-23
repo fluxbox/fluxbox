@@ -28,39 +28,36 @@
 #include "Screen.hh"
 #include "fluxbox.hh"
 #include "Workspace.hh"
+#include "WindowCmd.hh"
 
 #include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/Command.hh"
 
 class SendToCmd: public FbTk::Command {
 public:
-    SendToCmd(FluxboxWindow &win, int workspace, bool follow):
-        m_win(win),
+    SendToCmd(int workspace, bool follow):
         m_workspace(workspace),
         m_follow(follow) { }
     void execute() {
-        m_win.screen().sendToWorkspace(m_workspace, &m_win, m_follow);
+        if (WindowCmd<void>::window() != 0)
+            WindowCmd<void>::window()->screen().sendToWorkspace(m_workspace, WindowCmd<void>::window(), m_follow);
     }
 private:
-    FluxboxWindow &m_win;
     const int m_workspace;
     const bool m_follow;
 };
 
-SendToMenu::SendToMenu(FluxboxWindow &win):
-    FbMenu(win.screen().menuTheme(),
-           win.screen().imageControl(), 
-           *win.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-    m_win(win) {
+SendToMenu::SendToMenu(BScreen &screen):
+    FbMenu(screen.menuTheme(),
+           screen.imageControl(), 
+           *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())) {
     // listen to:
     // workspace count signal
     // workspace names signal
     // current workspace signal
-    // and window's workspace sig
-    win.screen().workspaceCountSig().attach(this);
-    win.screen().workspaceNamesSig().attach(this);
-    win.screen().currentWorkspaceSig().attach(this);
-    win.workspaceSig().attach(this);
+    screen.workspaceCountSig().attach(this);
+    screen.workspaceNamesSig().attach(this);
+    screen.currentWorkspaceSig().attach(this);
 
     disableTitle();
     // build menu
@@ -69,19 +66,7 @@ SendToMenu::SendToMenu(FluxboxWindow &win):
 
 void SendToMenu::update(FbTk::Subject *subj) {
     if (subj != 0) {
-        // if workspace changed we enable all workspaces except the current one
-        if (subj == &(m_win.screen().currentWorkspaceSig()) || 
-            subj == &(m_win.workspaceSig())) {
-            // enabled all workspaces
-            const BScreen::Workspaces &wlist = m_win.screen().getWorkspacesList();
-            for (size_t i = 0; i < wlist.size(); ++i)
-                setItemEnabled(i, true);
-            // disable send to on the workspace which the window exist
-            setItemEnabled(m_win.workspaceNumber(), false);
-            updateMenu();
-            // we're done
-            return;
-        } else if (subj == &(theme().reconfigSig())) {
+        if (subj == &(theme().reconfigSig())) {
             // we got reconfig Theme signal, let base menu handle it 
             FbTk::Menu::update(subj);
             return;
@@ -91,11 +76,11 @@ void SendToMenu::update(FbTk::Subject *subj) {
     // rebuild menu
 
     removeAll();
-
-    const BScreen::Workspaces &wlist = m_win.screen().getWorkspacesList();
+    BScreen *screen = Fluxbox::instance()->findScreen(screenNumber());
+    const BScreen::Workspaces &wlist = screen->getWorkspacesList();
     for (size_t i = 0; i < wlist.size(); ++i) {
-        FbTk::RefCount<FbTk::Command> sendto_cmd(new SendToCmd(m_win, i, false));
-        FbTk::RefCount<FbTk::Command> sendto_follow_cmd(new SendToCmd(m_win, i, true));
+        FbTk::RefCount<FbTk::Command> sendto_cmd(new SendToCmd(i, false));
+        FbTk::RefCount<FbTk::Command> sendto_follow_cmd(new SendToCmd(i, true));
         
         FbTk::MultiButtonMenuItem* item = new FbTk::MultiButtonMenuItem(3, wlist[i]->name().c_str());
         item->setCommand(1, sendto_cmd);
@@ -104,7 +89,16 @@ void SendToMenu::update(FbTk::Subject *subj) {
         insert(item);
     }
 
-    setItemEnabled(m_win.workspaceNumber(), false);
-
     updateMenu();
 }
+
+void SendToMenu::show() {
+    if (WindowCmd<void>::window() != 0) {
+        for (unsigned int i=0; i < numberOfItems(); ++i)
+            setItemEnabled(i, true);
+        setItemEnabled(WindowCmd<void>::window()->workspaceNumber(), false);
+        updateMenu();
+    }
+    FbTk::Menu::show();
+}
+

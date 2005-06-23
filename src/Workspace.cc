@@ -31,6 +31,7 @@
 #include "Window.hh"
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
+#include "WindowCmd.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/MenuItem.hh"
@@ -83,10 +84,18 @@ int countTransients(const WinClient &client) {
 class ClientMenuItem:public FbTk::MenuItem {
 public:
     ClientMenuItem(WinClient &client):
-        FbTk::MenuItem(client.title().c_str(), client.fbwindow() ? &client.fbwindow()->menu() : 0),
+        FbTk::MenuItem(client.title().c_str(), &client.screen().windowMenu()),
         m_client(client) {
         
     }
+    FbTk::Menu *submenu() { return &m_client.screen().windowMenu(); }
+    const FbTk::Menu *submenu() const { return &m_client.screen().windowMenu(); }
+
+    void showSubmenu() {
+        WindowCmd<void>::setWindow(m_client.fbwindow());
+        FbTk::MenuItem::showSubmenu();
+    }
+
     void click(int button, int time) {
         if (m_client.fbwindow() == 0)
             return;

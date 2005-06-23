@@ -29,6 +29,7 @@
 #include "fluxbox.hh"
 #include "CommandParser.hh"
 #include "Window.hh"
+#include "WindowCmd.hh"
 
 #include "FbMenu.hh"
 #include "IconMenu.hh"
@@ -53,13 +54,8 @@
 #include <iostream>
 using namespace std;
 
-template <>
-void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
-    m_object->moveToLayer(m_layernum);
-}
-
 static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
-                                   const std::string &directory) {
+                            const std::string &directory) {
     // perform shell style ~ home directory expansion
     string stylesdir(FbTk::StringUtil::expandFilename(directory));
 
@@ -326,19 +322,19 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
 }
 
 
-static void parseWindowMenu(Parser &parse, FbTk::Menu &menu, FluxboxWindow &win) {
+static void parseWindowMenu(Parser &parse, FbTk::Menu &menu) {
 
     ParseItem pitem(&menu);
     while (!parse.eof()) {
         pitem.load(parse);
-        if (MenuCreator::createWindowMenuItem(pitem.key(), pitem.label(), menu, win))
+        if (MenuCreator::createWindowMenuItem(pitem.key(), pitem.label(), menu))
             continue;
 
         if (pitem.key() == "end") {
             return;
         } else if (pitem.key() == "submenu") {
             FbTk::Menu *submenu = MenuCreator::createMenu(pitem.label(), menu.screenNumber());
-            parseWindowMenu(parse, *submenu, win);
+            parseWindowMenu(parse, *submenu);
             submenu->updateMenu();
             menu.insert(pitem.label().c_str(), submenu);
 
@@ -416,9 +412,9 @@ bool MenuCreator::createFromFile(const std::string &filename,
 }
 
 
-bool MenuCreator::createFromFile(const std::string &filename,
-                                 FbTk::Menu &inject_into,
-                                 FluxboxWindow &win, bool require_begin) {
+bool MenuCreator::createWindowMenuFromFile(const std::string &filename,
+                                           FbTk::Menu &inject_into,
+                                           bool require_begin) {
     std::string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
@@ -429,7 +425,7 @@ bool MenuCreator::createFromFile(const std::string &filename,
     if (require_begin && !getStart(parser, label))
         return false;
 
-    parseWindowMenu(parser, inject_into, win);
+    parseWindowMenu(parser, inject_into);
     return true;
 }
 
@@ -442,26 +438,56 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
         return new IconMenu(*screen);
     } else if (type == "workspacemenu") {
         return new WorkspaceMenu(*screen);
+    } else if (type == "windowmenu") {
+        FbTk::Menu *menu = screen->createMenu("");
+
+        menu->removeAll(); // clear old items
+        menu->disableTitle(); // not titlebar
+        if (screen->windowMenuFilename().empty() ||
+            ! createWindowMenuFromFile(screen->windowMenuFilename(), *menu, true)) {
+            char default_menu[][11] = {
+                "shade", 
+                "stick",
+                "maximize",
+                "iconify",
+                "raise",
+                "lower",
+                "sendto",
+                "layer",
+                "extramenus",
+                "separator",
+                "close",
+                0
+            };
+            for (int i=0; i < sizeof(default_menu); ++i)
+                createWindowMenuItem(default_menu[i], "", *menu);
+        }
+        menu->reconfigure(); // update graphics
+        return menu;
     }
+
     return 0;
 }
 
 bool MenuCreator::createWindowMenuItem(const std::string &type,
                                        const std::string &label,
-                                       FbTk::Menu &menu,
-                                       FluxboxWindow &win) {
+                                       FbTk::Menu &menu) {
     typedef FbTk::RefCount<FbTk::Command> RefCmd;
-    typedef FbTk::SimpleCommand<FluxboxWindow> WindowCmd;
     _FB_USES_NLS;
 
     if (type == "shade") {
-        RefCmd shade_cmd(new WindowCmd(win, &FluxboxWindow::shade));
+        RefCmd shade_cmd(new WindowCmd<void>(&FluxboxWindow::shade));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Shade, "Shade", "Shade the window"):label.c_str(), shade_cmd);
     } else if (type == "maximize") {
-        RefCmd maximize_cmd(new WindowCmd(win, &FluxboxWindow::maximizeFull));
-        RefCmd maximize_vert_cmd(new WindowCmd(win, &FluxboxWindow::maximizeVertical));
-        RefCmd maximize_horiz_cmd(new WindowCmd(win, &FluxboxWindow::maximizeHorizontal));
-        FbTk::MultiButtonMenuItem *maximize_item = new FbTk::MultiButtonMenuItem(3, label.empty()?_FBTEXT(Windowmenu, Maximize, "Maximize", "Maximize the window"):label.c_str());
+        RefCmd maximize_cmd(new WindowCmd<void>(&FluxboxWindow::maximizeFull));
+        RefCmd maximize_vert_cmd(new WindowCmd<void>(&FluxboxWindow::maximizeVertical));
+        RefCmd maximize_horiz_cmd(new WindowCmd<void>(&FluxboxWindow::maximizeHorizontal));
+        FbTk::MultiButtonMenuItem *maximize_item = 
+            new FbTk::MultiButtonMenuItem(3, 
+                                          label.empty()?
+                                          _FBTEXT(Windowmenu, Maximize, 
+                                                  "Maximize", "Maximize the window"):
+                                          label.c_str());
         // create maximize item with:
         // button1: Maximize normal
         // button2: Maximize Vertical
@@ -471,43 +497,61 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
         maximize_item->setCommand(3, maximize_horiz_cmd);
         menu.insert(maximize_item);
     } else if (type == "iconify") {
-        RefCmd iconify_cmd(new WindowCmd(win, &FluxboxWindow::iconify));
+        RefCmd iconify_cmd(new WindowCmd<void>(&FluxboxWindow::iconify));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Iconify, "Iconify", "Iconify the window"):label.c_str(), iconify_cmd);
     } else if (type == "close") {
-        RefCmd close_cmd(new WindowCmd(win, &FluxboxWindow::close));
+        RefCmd close_cmd(new WindowCmd<void>(&FluxboxWindow::close));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Close, "Close", "Close the window"):label.c_str(), close_cmd);
     } else if (type == "kill" || type == "killwindow") {
-        RefCmd kill_cmd(new WindowCmd(win, &FluxboxWindow::kill));
+        RefCmd kill_cmd(new WindowCmd<void>(&FluxboxWindow::kill));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Kill, "Kill", "Kill the window"):label.c_str(), kill_cmd);
     } else if (type == "lower") {
-        RefCmd lower_cmd(new WindowCmd(win, &FluxboxWindow::lower));
+        RefCmd lower_cmd(new WindowCmd<void>(&FluxboxWindow::lower));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Lower, "Lower", "Lower the window"):label.c_str(), lower_cmd);
     } else if (type == "raise") {
-        RefCmd raise_cmd(new WindowCmd(win, &FluxboxWindow::raise));
+        RefCmd raise_cmd(new WindowCmd<void>(&FluxboxWindow::raise));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Raise, "Raise", "Raise the window"):label.c_str(), raise_cmd);
     } else if (type == "stick") {
-        RefCmd stick_cmd(new WindowCmd(win, &FluxboxWindow::stick));
+        RefCmd stick_cmd(new WindowCmd<void>(&FluxboxWindow::stick));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Stick, "Stick", "Stick the window"):label.c_str(), stick_cmd);
-    } else if (type == "extramenus") {
-        FluxboxWindow::ExtraMenus::iterator it = win.extraMenus().begin();
-        FluxboxWindow::ExtraMenus::iterator it_end = win.extraMenus().end();
+    } 
+    else if (type == "extramenus") {
+        BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
+        BScreen::ExtraMenus::iterator it = screen->extraWindowMenus().begin();
+        BScreen::ExtraMenus::iterator it_end = screen->extraWindowMenus().end();
         for (; it != it_end; ++it) {
             it->second->disableTitle();
             menu.insert(it->first, it->second);
         }
-
+        
     } else if (type == "sendto") {
-        menu.insert(label.empty()?_FBTEXT(Windowmenu, SendTo, "Send To...", "Send to menu item name"):label.c_str(), new SendToMenu(win));
-    } else if (type == "layer") {
+        menu.insert(label.empty() ? _FBTEXT(Windowmenu, SendTo, "Send To...", "Send to menu item name"):
+                    label.c_str(), new SendToMenu(*Fluxbox::instance()->findScreen(menu.screenNumber())));
+    }else if (type == "layer") {
         BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
         if (screen == 0)
             return false;
-        FbTk::Menu *submenu = new LayerMenu<FluxboxWindow>(screen->menuTheme(),
-                                                           screen->imageControl(),
-                                                           *screen->layerManager().
-                                                           getLayer(Fluxbox::instance()->getMenuLayer()),
-                                                           &win,
-                                                           false);
+
+        class MenuContext: public LayerObject {
+        public:
+            void moveToLayer(int layer_number) {
+                if (WindowCmd<void>::window() == 0)
+                    return;
+                WindowCmd<void>::window()->moveToLayer(layer_number);
+            }
+            int layerNumber() const {
+                if (WindowCmd<void>::window() == 0)
+                    return -1;
+                return WindowCmd<void>::window()->layerItem().getLayerNum();
+            }
+        } static context;
+
+        FbTk::Menu *submenu = new LayerMenu(screen->menuTheme(),
+                                            screen->imageControl(),
+                                            *screen->layerManager().
+                                            getLayer(Fluxbox::instance()->getMenuLayer()),
+                                            &context,
+                                            false);
         submenu->disableTitle();
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Layer, "Layer ...", "Layer menu"):label.c_str(), submenu);
 

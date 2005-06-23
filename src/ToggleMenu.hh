@@ -51,7 +51,7 @@ public:
             // force full foreground update
             frameWindow().updateBackground(false);
         }
-
+        clearWindow();
     }
 
 };

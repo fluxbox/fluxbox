@@ -36,6 +36,7 @@
 #include "FbWinFrame.hh"
 #include "WinButton.hh"
 #include "WinButtonTheme.hh"
+#include "WindowCmd.hh"
 #include "Remember.hh"
 #include "MenuCreator.hh"
 
@@ -294,7 +295,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_attaching_tab(0),
     m_screen(client.screen()),
     display(FbTk::App::instance()->display()),
-    m_windowmenu(MenuCreator::createMenu("", client.screenNumber())),
     m_button_grab_x(0), m_button_grab_y(0),
     m_last_move_x(0), m_last_move_y(0),
     m_last_resize_h(1), m_last_resize_w(1),
@@ -323,6 +323,9 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
 
 
 FluxboxWindow::~FluxboxWindow() {
+    if (WindowCmd<void>::window() == this)
+        WindowCmd<void>::setWindow(0);
+
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<", "<<title()<<")"<<endl;
     cerr<<__FILE__<<"("<<__LINE__<<"): num clients = "<<numClients()<<endl;
@@ -364,24 +367,6 @@ FluxboxWindow::~FluxboxWindow() {
     }
 
     // deal with extra menus
-    ExtraMenus::iterator mit = m_extramenus.begin();
-    ExtraMenus::iterator mit_end = m_extramenus.end();
-    for (; mit != mit_end; ++mit) {
-        // we set them to NOT internal so that they will be deleted when the
-        // menu is cleaned up. We can't delete them here because they are
-        // still in the menu
-        // (They need to be internal for most of the time so that if we
-        // rebuild the menu, then they won't be removed.
-        if (mit->second->parent() == 0) {
-            // not attached to our windowmenu
-            // so we clean it up
-            delete mit->second;
-        } else {
-            // let the parent clean it up
-            mit->second->setInternalMenu(false);
-        }
-    }
-
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
 #endif // DEBUG
@@ -2263,7 +2248,7 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
     else if (menu_x + static_cast<signed>(menu().width()) >= static_cast<signed>(screen().maxRight(head)))
         menu_x = screen().maxRight(head) - menu().width() - 1;
 
-
+    WindowCmd<void>::setWindow(this);
     menu().move(menu_x, menu_y);
     menu().show();
     menu().raise();
@@ -2275,6 +2260,8 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
    if it's already visible it'll be hidden
  */
 void FluxboxWindow::popupMenu() {
+    WindowCmd<void>::setWindow(this);
+
     if (menu().isVisible()) {
         menu().hide();
         return;
@@ -3553,6 +3540,14 @@ const FbTk::FbWindow &FluxboxWindow::fbWindow() const {
     return frame().window();
 }
 
+FbTk::Menu &FluxboxWindow::menu() {
+    return screen().windowMenu();
+}
+
+const FbTk::Menu &FluxboxWindow::menu() const {
+    return screen().windowMenu();
+}
+
 unsigned int FluxboxWindow::titlebarHeight() const {
     return frame().titlebarHeight();
 }
@@ -3736,24 +3731,6 @@ void FluxboxWindow::sendConfigureNotify(bool send_to_netizens) {
     } // end for
 }
 
-void FluxboxWindow::addExtraMenu(const char *label, FbTk::Menu *menu) {
-    menu->setInternalMenu();
-    menu->disableTitle();
-    m_extramenus.push_back(std::make_pair(label, menu));
-
-    setupMenu();
-}
-
-void FluxboxWindow::removeExtraMenu(FbTk::Menu *menu) {
-    ExtraMenus::iterator it = find_if(m_extramenus.begin(),
-                                      m_extramenus.end(),
-                                      Compose(bind2nd(equal_to<Menu *>(), menu),
-                                              Select2nd<ExtraMenus::value_type>()));
-    if (it != m_extramenus.end())
-        m_extramenus.erase(it);
-
-    setupMenu();
-}
 
 void FluxboxWindow::close() {
     if (m_client)
@@ -3870,33 +3847,6 @@ void FluxboxWindow::setupWindow() {
 
     // end setup frame
 
-    setupMenu();
-}
-
-void FluxboxWindow::setupMenu() {
-    // setup menu
-
-    menu().removeAll(); // clear old items
-    menu().disableTitle(); // not titlebar
-
-    if (screen().windowMenuFilename().empty() ||
-        ! MenuCreator::createFromFile(screen().windowMenuFilename(), menu(), *this, true))
-
-    {
-        MenuCreator::createWindowMenuItem("shade", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("stick", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("maximize", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("iconify", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("raise", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("lower", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("sendto", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("layer", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("extramenus", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("separator", "", menu(), *this);
-        MenuCreator::createWindowMenuItem("close", "", menu(), *this);
-    }
-
-    menu().reconfigure(); // update graphics
 }
 
 

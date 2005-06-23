@@ -31,6 +31,7 @@
 #include "FbMenu.hh"
 #include "FbCommands.hh"
 #include "fluxbox.hh"
+#include "WindowCmd.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/StringUtil.hh"
@@ -60,53 +61,58 @@ namespace {
 
 class RememberMenuItem : public FbTk::MenuItem {
 public:
-    RememberMenuItem(const char *label, Remember &remember,
-                     FluxboxWindow &fbwin,
+    RememberMenuItem(const char *label,
                      Remember::Attribute attrib) :
-        FbTk::MenuItem(label), m_remember(remember),
-        m_win(fbwin), m_attrib(attrib) {
+        FbTk::MenuItem(label),
+        m_attrib(attrib) {
         setToggleItem(true);
     }
 
     bool isSelected() const {
-        if (m_win.numClients()) // ensure it HAS clients
-            return m_remember.isRemembered(m_win.winClient(), m_attrib);
+        if (WindowCmd<void>::window() == 0)
+            return false;
+
+        if (WindowCmd<void>::window()->numClients()) // ensure it HAS clients
+            return Remember::instance().isRemembered(WindowCmd<void>::window()->winClient(), m_attrib);
         else
             return false;
     }
 
     bool isEnabled() const {
+        if (WindowCmd<void>::window() == 0)
+            return false;
+
         if (m_attrib != Remember::REM_JUMPWORKSPACE)
             return true;
-        else if (m_win.numClients())
-            return (m_remember.isRemembered(m_win.winClient(), Remember::REM_WORKSPACE));
+        else if (WindowCmd<void>::window()->numClients())
+            return (Remember::instance().isRemembered(WindowCmd<void>::window()->winClient(), Remember::REM_WORKSPACE));
         else
             return false;
     }
 
     void click(int button, int time) {
-        if (isSelected()) {
-            m_remember.forgetAttrib(m_win.winClient(), m_attrib);
-        } else {
-            m_remember.rememberAttrib(m_win.winClient(), m_attrib);
+        if (WindowCmd<void>::window() != 0) {
+            if (isSelected()) {
+                Remember::instance().forgetAttrib(WindowCmd<void>::window()->winClient(), m_attrib);
+            } else {
+                Remember::instance().rememberAttrib(WindowCmd<void>::window()->winClient(), m_attrib);
+            }
         }
-        m_remember.save();
+        Remember::instance().save();
         FbTk::MenuItem::click(button, time);
     }
 
 private:
-    // my remember manager
-    Remember &m_remember;
-    FluxboxWindow &m_win;
     Remember::Attribute m_attrib;
 };
 
-FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enabled) {
+FbTk::Menu *createRememberMenu(BScreen &screen) {
     // each fluxboxwindow has its own windowmenu
     // so we also create a remember menu just for it...
-    FbTk::Menu *menu = win.screen().createMenu("");
+    FbTk::Menu *menu = screen.createMenu("");
 
     // if enabled, then we want this to be a unavailable menu
+    /*
     if (!enabled) {
         FbTk::MenuItem *item = new FbTk::MenuItem("unavailable");
         item->setEnabled(false);
@@ -114,28 +120,28 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enab
         menu->updateMenu();
         return menu;
     }
-
+    */
     _FB_USES_NLS;
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Workspace, "Workspace", "Remember Workspace"),
-                                      remember, win, Remember::REM_WORKSPACE));
+                                      Remember::REM_WORKSPACE));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"),
-                                      remember, win, Remember::REM_JUMPWORKSPACE));
+                                      Remember::REM_JUMPWORKSPACE));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Head, "Head", "Remember Head"),
-                                      remember, win, Remember::REM_HEAD));
+                                      Remember::REM_HEAD));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - with width and height"),
-                                      remember, win, Remember::REM_DIMENSIONS));
+                                      Remember::REM_DIMENSIONS));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"),
-                                      remember, win, Remember::REM_POSITION));
+                                      Remember::REM_POSITION));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Sticky, "Sticky", "Remember Sticky"),
-                                      remember, win, Remember::REM_STUCKSTATE));
+                                      Remember::REM_STUCKSTATE));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Decorations, "Decorations", "Remember window decorations"),
-                                      remember, win, Remember::REM_DECOSTATE));
+                                      Remember::REM_DECOSTATE));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
-                                      remember, win, Remember::REM_SHADEDSTATE));
+                                      Remember::REM_SHADEDSTATE));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Layer, "Layer", "Remember Layer"),
-                                      remember, win, Remember::REM_LAYER));
+                                      Remember::REM_LAYER));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
-                                      remember, win, Remember::REM_SAVEONCLOSE));
+                                      Remember::REM_SAVEONCLOSE));
 
     menu->updateMenu();
     return menu;
@@ -217,16 +223,23 @@ Application::Application(bool grouped)
         save_on_close_remember = false;
 }
 
-/********************************************************
+/************
  * Remember *
  ************/
 
+Remember *Remember::s_instance = 0;
+
 Remember::Remember() {
+    if (s_instance != 0)
+        throw string("Can not create more than one instance of Remember");
+
+    s_instance = this;
     enableUpdate();
     load();
 }
 
 Remember::~Remember() {
+
     // free our resources
 
     // the patterns free the "Application"s
@@ -245,6 +258,8 @@ Remember::~Remember() {
         delete (*ait);
         ++ait;
     }
+
+    s_instance = 0;
 }
 
 Application* Remember::find(WinClient &winclient) {
@@ -811,9 +826,6 @@ void Remember::setupFrame(FluxboxWindow &win) {
     // we don't touch the window if it is a transient
     // of something else
 
-    // All windows get the remember menu.
-    win.addExtraMenu(_FBTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
-                     createRememberMenu(*this, win, (winclient.transientFor() == 0)));
 
     if (winclient.transientFor())
         return;
@@ -933,6 +945,13 @@ void Remember::updateClientClose(WinClient &winclient) {
     if (wc_it != m_clients.end()) {
         m_clients.erase(wc_it);
     }
+
+}
+
+void Remember::initForScreen(BScreen &screen) {
+    // All windows get the remember menu.
+    screen.addExtraWindowMenu(_FBTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
+                              createRememberMenu(screen));
 
 }
 

@@ -29,16 +29,15 @@
 
 #include "FbTk/Observer.hh"
 
-class FluxboxWindow;
+class BScreen;
 
 class SendToMenu:public FbMenu {
 public:
-    explicit SendToMenu(FluxboxWindow &win);
+    explicit SendToMenu(BScreen &win);
     virtual ~SendToMenu() { }
+    void show();
 protected:
     void update(FbTk::Subject *subj);
-private:
-    FluxboxWindow &m_win;
 };
 
 #endif // SENDTOMENU_HH

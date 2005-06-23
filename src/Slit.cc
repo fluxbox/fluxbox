@@ -313,16 +313,18 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     }
 
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
-    m_layermenu.reset(new LayerMenu<Slit>(scr.menuTheme(),
-                                          scr.imageControl(),
-                                          *scr.layerManager().
-                                          getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                          this,
-                                          true));
+
+    m_layermenu.reset(new LayerMenu(scr.menuTheme(),
+                                    scr.imageControl(),
+                                    *scr.layerManager().
+                                    getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                    this,
+                                    true));
+    m_layermenu->setLabel(_FBTEXT(Slit, Layer, "Slit Layer", "Title of Slit Layer Menu"));
+
     moveToLayer((*m_rc_layernum).getNum());
 
-    if (m_layermenu.get())
-        m_layermenu->setLabel(_FBTEXT(Slit, Layer, "Slit Layer", "Title of Slit Layer Menu"));
+
 
     // Get client list for sorting purposes
     loadClientList(filename);
