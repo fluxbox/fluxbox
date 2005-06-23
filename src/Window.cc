@@ -2260,12 +2260,14 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
    if it's already visible it'll be hidden
  */
 void FluxboxWindow::popupMenu() {
-    WindowCmd<void>::setWindow(this);
 
-    if (menu().isVisible()) {
+    // hide menu if it was opened for this window before
+    if (menu().isVisible() && WindowCmd<void>::window() == this) {
         menu().hide();
         return;
     }
+
+    WindowCmd<void>::setWindow(this);
 
     menu().disableTitle();
     int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
