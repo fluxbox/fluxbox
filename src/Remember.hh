@@ -208,10 +208,12 @@ public:
     void updateFrameClose(FluxboxWindow &win);
     void updateClientClose(WinClient &winclient);
 
+    void initForScreen(BScreen &screen);
+
     // Functions we ignore (zero from AtomHandler)
     // Leaving here in case they might be useful later
 
-    void initForScreen(BScreen &screen) {}
+
 
     void updateFocusedWindow(BScreen &, Window) { }
     void updateClientList(BScreen &screen) {}
@@ -229,6 +231,8 @@ public:
         BScreen * screen, WinClient * const winclient) { return false; }
     // ignore this
     bool propertyNotify(WinClient &winclient, Atom the_property) { return false; }
+
+    static Remember &instance() { return *s_instance; }
 private:
 
     // returns number of lines read
@@ -238,7 +242,7 @@ private:
     Clients m_clients;
 
     Startups m_startups;
-
+    static Remember *s_instance;
 };
 
 #endif // REMEMBER_HH
