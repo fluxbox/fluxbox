@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/23:
+  * Moved window menu from FluxboxWindow to BScreen, so  
+    we now use one window menu per screen instead of one menu per window,
+    thus saving memory and increasing speed.      (Henrik)
+   Makefile.am, WindowCmd.hh/cc, LayerMenu.hh/cc,
+   Window.hh/cc, Screen.hh/cc, SendToMenu.hh/cc, Workspace.cc,
+   Toolbar.hh/cc, Slit.hh/cc, Remember.hh/cc, ToggleMenu.hh,
+   MenuCreator.hh/cc
+   FbTk/MenuItem.hh/cc, FbTk/Menu.cc
 *05/06/19:
   * Fix shaded + iconic windows + restart (Simon)
     - use ATTRIB_HIDDEN, can't use IconicState
