@@ -100,7 +100,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	WinButtonTheme.hh WinButtonTheme.cc \
 	Window.cc Window.hh \
 	Workspace.cc Workspace.hh \
-	FbCommands.hh FbCommands.cc LayerMenu.hh \
+	FbCommands.hh FbCommands.cc LayerMenu.hh LayerMenu.cc \
 	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh FbMenu.cc \
 	WinClient.hh WinClient.cc \
 	Strut.hh \
@@ -128,6 +128,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	ToggleMenu.hh \
 	HeadArea.hh HeadArea.cc \
 	Resources.cc \
+	WindowCmd.hh WindowCmd.cc \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
