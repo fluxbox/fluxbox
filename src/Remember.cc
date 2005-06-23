@@ -950,6 +950,7 @@ void Remember::updateClientClose(WinClient &winclient) {
 
 void Remember::initForScreen(BScreen &screen) {
     // All windows get the remember menu.
+    _FB_USES_NLS;
     screen.addExtraWindowMenu(_FBTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
                               createRememberMenu(screen));
 
