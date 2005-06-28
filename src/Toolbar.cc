@@ -302,7 +302,7 @@ void Toolbar::updateStrut() {
     clearStrut();
     // we should request space if we're in autohide mode or
     // if the user dont want to request space for toolbar.
-    if (doAutoHide() || *m_rc_maximize_over) {
+    if (doAutoHide() || *m_rc_maximize_over || ! *m_rc_visible) {
         if (had_strut)
             screen().updateAvailableWorkspaceArea();
         return;
@@ -783,52 +783,42 @@ void Toolbar::setupMenus() {
     typedef RefCount<Command> RefCommand;
     typedef SimpleCommand<Toolbar> ToolbarCommand;
 
-    //!! TODO: this should be inserted by the workspace tool
-
-
-    RefCommand start_edit(CommandParser::instance().parseLine("setworkspacenamedialog"));
-    menu().insert(_FBTEXT(Toolbar, EditWkspcName,
-                          "Edit current workspace name", "Edit current workspace name"),
-                  start_edit);
-
     menu().setLabel(_FBTEXT(Toolbar, Toolbar,
                             "Toolbar", "Title of Toolbar menu"));
-
-    MenuItem *toolbar_menuitem = new IntResMenuItem(_FBTEXT(Toolbar, WidthPercent, "Toolbar width percent", "Percentage of screen width taken by toolbar"),
-                                                    m_rc_width_percent,
-                                                    0, 100, menu()); // min/max value
-
 
     RefCommand reconfig_toolbar(new ToolbarCommand(*this, &Toolbar::reconfigure));
     RefCommand save_resources(CommandParser::instance().parseLine("saverc"));
     MacroCommand *toolbar_menuitem_macro = new MacroCommand();
     toolbar_menuitem_macro->add(reconfig_toolbar);
     toolbar_menuitem_macro->add(save_resources);
-
     RefCommand reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
-    toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);
 
-    menu().insert(toolbar_menuitem);
+    MacroCommand *visible_macro = new MacroCommand();
+    RefCommand toggle_visible(new ToolbarCommand(*this, &Toolbar::updateVisibleState));
+    visible_macro->add(toggle_visible);
+    visible_macro->add(reconfig_toolbar);
+    visible_macro->add(save_resources);
+    RefCommand toggle_visible_cmd(visible_macro);
+    menu().insert(new BoolMenuItem(_FBTEXT(Common, Visible, "Visible", "Whether this item is visible"),
+                                   *m_rc_visible, toggle_visible_cmd));
 
     menu().insert(new BoolMenuItem(_FBTEXT(Common, AutoHide,
                                            "Auto hide", "Toggle auto hide of toolbar"),
                                    *m_rc_auto_hide,
                                    reconfig_toolbar_and_save_resource));
 
-    MacroCommand *visible_macro = new MacroCommand();
-    RefCommand toggle_visible(new ToolbarCommand(*this, &Toolbar::updateVisibleState));
-    visible_macro->add(toggle_visible);
-    visible_macro->add(save_resources);
-    RefCommand toggle_visible_cmd(visible_macro);
-    menu().insert(new BoolMenuItem(_FBTEXT(Common, Visible, "Visible", "Whether this item is visible"),
-                                   *m_rc_visible, toggle_visible_cmd));
+    MenuItem *toolbar_menuitem = new IntResMenuItem(_FBTEXT(Toolbar, WidthPercent, "Toolbar width percent", "Percentage of screen width taken by toolbar"),
+                                                    m_rc_width_percent,
+                                                    0, 100, menu()); // min/max value
 
+    
+    toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);
+    menu().insert(toolbar_menuitem);
+    
     menu().insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
                                    *m_rc_maximize_over,
                                    reconfig_toolbar_and_save_resource));
     menu().insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), &layerMenu());
-
-
 
     if (screen().hasXinerama()) {
         menu().insert(_FBTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),

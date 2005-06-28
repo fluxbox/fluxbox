@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/28:
+  * Fix for toggling the toolbar doesnt update strut (thanx C. Monti)
+  * Little reordering of ToolbarMenu items (Mathias)
+    Toolbar.cc
 *05/06/23:
   * Moved window menu from FluxboxWindow to BScreen, so  
     we now use one window menu per screen instead of one menu per window,
