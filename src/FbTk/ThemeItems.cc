@@ -115,7 +115,7 @@ template <>
 void ThemeItem<unsigned int>::load(const std::string *name, const std::string *altname) {
 }
 
-
+template <>
 void ThemeItem<Font>::setDefaultValue() {
     if (!m_value.load("fixed")) {
         cerr<<"ThemeItem<Font>: Warning! Failed to load default value 'fixed'"<<endl;
