@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/06/30:
+  * Fix for clock displaying %S too late sometimes (Mathias)
+    ClockTool.cc
 *05/06/28:
   * Fix for toggling the toolbar doesnt update strut (thanx C. Monti)
   * Little reordering of ToolbarMenu items (Mathias)

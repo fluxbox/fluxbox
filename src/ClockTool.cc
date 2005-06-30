@@ -148,10 +148,11 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
 
     _FB_USES_NLS;	
 
-    // setup timer to update the graphics each second
+    // setup timer to check the clock every 0.01 second
+    // if nothing has changed, it wont update the graphics
     timeval delay;
-    delay.tv_sec = 1;
-    delay.tv_usec = 0;
+    delay.tv_sec = 0;
+    delay.tv_usec = 100000;
     m_timer.setTimeout(delay);
     FbTk::RefCount<FbTk::Command> update_graphic(new FbTk::SimpleCommand<ClockTool>(*this, 
                                                                                     &ClockTool::updateTime));
