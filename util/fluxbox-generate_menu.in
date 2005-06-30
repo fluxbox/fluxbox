@@ -1538,7 +1538,8 @@ append_submenu "${EDITORMENU}"
 append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
-    normal_find konqueror gentoo krusader linuxcmd rox tuxcmd krename xfe
+    find_it     konqueror append "[exec] (konqueror) {kfmclient openProfile filemanagement}"
+    normal_find gentoo krusader linuxcmd rox tuxcmd krename xfe
     find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop}"
     cli_find mc
 append_menu_end
@@ -1555,7 +1556,7 @@ append_submenu "${MULTIMEDIAMENU}"
        append_menu_end
 
        append_submenu "${MUSICMENU}"
-               normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix kscd \
+               normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gnome-alsamixer gmix kmix kscd \
                    grecord kmidi xplaycd soundtracker grip easytag audacity \
                    zinf rhythmbox kaboodle beep-media-player amarok
                cli_find cdcd cplay alsamixer orpheus mp3blaster

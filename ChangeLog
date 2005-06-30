@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
 *05/06/30:
+  * Fix #1223780, fbgm updated (Mathias)
+    - added gnome-alsamixer
+    - use "kfmclient openProfile filemanagement" for konqueror as filebrowser
+    fluxbox-generate_menu.in
   * Fix for clock displaying %S too late sometimes (Mathias)
     ClockTool.cc
 *05/06/28:
