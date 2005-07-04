@@ -47,38 +47,38 @@ void SetHeadCmd::real_execute() {
 }
 
 void SendToWorkspaceCmd::real_execute() {
-    if (m_workspace_num >= 0 && m_workspace_num < fbwindow().screen().getNumberOfWorkspaces())
-        fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow(), false);
+    fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow(), false);
 }
 
 void SendToNextWorkspaceCmd::real_execute() {
     const int ws_nr = 
         ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) % 
-          fbwindow().screen().getNumberOfWorkspaces();
+          fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
 }
 
 void SendToPrevWorkspaceCmd::real_execute() {
     int ws_nr = fbwindow().screen().currentWorkspaceID() - m_workspace_num;
-    if ( ws_nr < 0 ) ws_nr += fbwindow().screen().getNumberOfWorkspaces();
+    if ( ws_nr < 0 ) 
+        ws_nr += fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
 }
 
 void TakeToWorkspaceCmd::real_execute() {
-    if (m_workspace_num >= 0 && m_workspace_num < fbwindow().screen().getNumberOfWorkspaces())
-        fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow());
+    fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow());
 }
 
 void TakeToNextWorkspaceCmd::real_execute() {
     unsigned int workspace_num= 
         ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) % 
-          fbwindow().screen().getNumberOfWorkspaces();
+          fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
 }
 
 void TakeToPrevWorkspaceCmd::real_execute() {
     int workspace_num= fbwindow().screen().currentWorkspaceID() - m_workspace_num;
-    if ( workspace_num < 0 ) workspace_num+= fbwindow().screen().getNumberOfWorkspaces();
+    if ( workspace_num < 0 ) 
+        workspace_num += fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
 }
 

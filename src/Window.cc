@@ -503,7 +503,7 @@ void FluxboxWindow::init() {
 
     restoreAttributes();
 
-    if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
+    if (m_workspace_number < 0 || m_workspace_number >= screen().numberOfWorkspaces())
         m_workspace_number = screen().currentWorkspaceID();
 
     bool place_window = (m_old_pos_x == 0);
@@ -2198,7 +2198,7 @@ void FluxboxWindow::restoreAttributes() {
     }
 
     if (( m_blackbox_attrib.workspace != screen().currentWorkspaceID()) &&
-        ( m_blackbox_attrib.workspace < screen().getCount()))
+        ( m_blackbox_attrib.workspace < screen().numberOfWorkspaces()))
         m_workspace_number = m_blackbox_attrib.workspace;
 
     if (m_blackbox_attrib.flags & ATTRIB_OMNIPRESENT &&
@@ -2267,8 +2267,6 @@ void FluxboxWindow::popupMenu() {
         return;
     }
 
-    WindowCmd<void>::setWindow(this);
-
     menu().disableTitle();
     int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
     if (!decorations.titlebar) // if we don't have any titlebar
@@ -2278,13 +2276,6 @@ void FluxboxWindow::popupMenu() {
     showMenu(m_last_button_x, menu_y + frame().y());
 }
 
-/**
-   Determine if this is the lowest tab of them all
-*/
-bool FluxboxWindow::isLowerTab() const {
-    cerr<<__FILE__<<"(FluxboxWindow::isLowerTab()) TODO!"<<endl;
-    return true;
-}
 
 /**
    Redirect any unhandled event to our handlers
@@ -2754,12 +2745,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 if (me.x_root >= int(screen().width()) - warpPad - 1 &&
                     moved_x > 0) {
                     //warp right
-                    new_id = (cur_id + 1) % screen().getCount();
+                    new_id = (cur_id + 1) % screen().numberOfWorkspaces();
                     dx = - me.x_root; // move mouse back to x=0
                 } else if (me.x_root <= warpPad &&
                            moved_x < 0) {
                     //warp left
-                    new_id = (cur_id + screen().getCount() - 1) % screen().getCount();
+                    new_id = (cur_id + screen().numberOfWorkspaces() - 1) % screen().numberOfWorkspaces();
                     dx = screen().width() - me.x_root-1; // move mouse to screen width - 1
                 }
                 if (new_id != cur_id) {

@@ -125,17 +125,15 @@ public:
     inline const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
     inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     // menus
-    const FbTk::Menu &getRootmenu() const { return *m_rootmenu.get(); }
-    FbTk::Menu &getRootmenu() { return *m_rootmenu.get(); }
+    const FbTk::Menu &rootMenu() const { return *m_rootmenu.get(); }
+    FbTk::Menu &rootMenu() { return *m_rootmenu.get(); }
     const FbTk::Menu &configMenu() const { return *m_configmenu.get(); }
     FbTk::Menu &configMenu() { return *m_configmenu.get(); }
     const FbTk::Menu &windowMenu() const { return *m_windowmenu.get(); }
     FbTk::Menu &windowMenu() { return *m_windowmenu.get(); }
-
     ExtraMenus &extraWindowMenus() { return m_extramenus; }
     const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
 
-    inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline ResizeModel getResizeModel() const { return *resource.resize_model; }
     inline FocusModel getFocusModel() const { return *resource.focus_model; }
     inline FollowModel getFollowModel() const { return *resource.follow_model; }
@@ -147,8 +145,8 @@ public:
     inline Workspace *currentWorkspace() { return m_current_workspace; }
     inline const Workspace *currentWorkspace() const { return m_current_workspace; }
 
-    const FbTk::Menu &getWorkspacemenu() const { return *m_workspacemenu.get(); }
-    FbTk::Menu &getWorkspacemenu() { return *m_workspacemenu.get(); }
+    const FbTk::Menu &workspaceMenu() const { return *m_workspacemenu.get(); }
+    FbTk::Menu &workspaceMenu() { return *m_workspacemenu.get(); }
 
 
     unsigned int currentWorkspaceID() const;
@@ -169,11 +167,10 @@ public:
     inline int screenNumber() const { return rootWindow().screenNumber(); }
 
     /// @return number of workspaces
-    inline unsigned int getCount() const { return m_workspaces_list.size(); }
-    /// @return number of icons
-    inline unsigned int getIconCount() const { return m_icon_list.size(); }
-    inline const Icons &getIconList() const { return m_icon_list; }
-    inline Icons &getIconList() { return m_icon_list; }
+    unsigned int numberOfWorkspaces() const { return m_workspaces_list.size(); }
+
+    inline const Icons &iconList() const { return m_icon_list; }
+    inline Icons &iconList() { return m_icon_list; }
     inline const FocusedWindows &getFocusedList() const { return focused_list; }
     inline FocusedWindows &getFocusedList() { return focused_list; }
     WinClient *getLastFocusedWindow(int workspace = -1);
@@ -214,9 +211,6 @@ public:
 
     /// hide all windowmenus except the given one (if given)
     void hideWindowMenus(const FluxboxWindow* except= 0);
-
-    /// @return the resource value of number of workspace
-    inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
 
     inline PlacementPolicy getPlacementPolicy() const { return *resource.placement_policy; }
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }

@@ -931,10 +931,10 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             if (! screen->isRootColormapInstalled())
                 screen->imageControl().installRootColormap();
             // hide menus
-            if (screen->getRootmenu().isVisible())
-                screen->getRootmenu().hide();
-            if (screen->getWorkspacemenu().isVisible())
-                screen->getWorkspacemenu().hide();
+            if (screen->rootMenu().isVisible())
+                screen->rootMenu().hide();
+            if (screen->workspaceMenu().isVisible())
+                screen->workspaceMenu().hide();
 
         } else if (be.button == 2) {
             FbCommands::ShowWorkspaceMenuCmd cmd;
@@ -1033,7 +1033,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         BScreen *screen = searchScreen(ce.window);
 
         if (screen && ce.data.l[0] >= 0 &&
-            ce.data.l[0] < (signed)screen->getCount())
+            ce.data.l[0] < (signed)screen->numberOfWorkspaces())
             screen->changeWorkspaceID(ce.data.l[0]);
 
     } else if (ce.message_type == m_fbatoms->getFluxboxChangeWindowFocusAtom()) {
@@ -1468,7 +1468,7 @@ void Fluxbox::save_rc() {
         sprintf(rc_string, "session.screen%d.workspaceNames: ", screen_number);
         string workspaces_string(rc_string);
 
-        for (unsigned int workspace=0; workspace < screen->getCount(); workspace++) {
+        for (unsigned int workspace=0; workspace < screen->numberOfWorkspaces(); workspace++) {
             if (screen->getWorkspace(workspace)->name().size()!=0)
                 workspaces_string.append(screen->getWorkspace(workspace)->name());
             else
@@ -1575,10 +1575,7 @@ void Fluxbox::load_rc(BScreen &screen) {
     sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): Workspaces="<<
-            screen.getNumberOfWorkspaces()<<endl;
-#endif // DEBUG
+
         string values(value.addr);
         BScreen::WorkspaceNames names;
         

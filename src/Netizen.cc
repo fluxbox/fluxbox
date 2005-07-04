@@ -50,7 +50,7 @@ Netizen::Netizen(const BScreen &scr, Window win):
 void Netizen::sendWorkspaceCount() {
  
     event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWorkspaceCountAtom();
-    event.xclient.data.l[1] = m_screen.getCount();
+    event.xclient.data.l[1] = m_screen.numberOfWorkspaces();
 
     XSendEvent(m_display, window(), False, NoEventMask, &event);
 }

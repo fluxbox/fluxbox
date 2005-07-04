@@ -877,8 +877,8 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
 void IconbarTool::updateIcons() {
     std::list<FluxboxWindow *> itemlist;
     // add icons to the itemlist    
-    BScreen::Icons::iterator icon_it = m_screen.getIconList().begin();
-    BScreen::Icons::iterator icon_it_end = m_screen.getIconList().end();
+    BScreen::Icons::iterator icon_it = m_screen.iconList().begin();
+    BScreen::Icons::iterator icon_it_end = m_screen.iconList().end();
     for (; icon_it != icon_it_end; ++icon_it) {
         if (mode() == ICONS)
             itemlist.push_back(*icon_it);
@@ -904,8 +904,8 @@ void IconbarTool::updateWorkspace() {
 
     // add icons from current workspace
     if (mode() != WORKSPACENOICONS) {
-        BScreen::Icons::iterator icon_it =  m_screen.getIconList().begin();
-        BScreen::Icons::iterator icon_it_end =  m_screen.getIconList().end();
+        BScreen::Icons::iterator icon_it =  m_screen.iconList().begin();
+        BScreen::Icons::iterator icon_it_end =  m_screen.iconList().end();
         for (; icon_it != icon_it_end; ++icon_it) {
             if ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID())
                 itemlist.push_back(*icon_it);
@@ -930,8 +930,8 @@ void IconbarTool::updateAllWindows() {
     // add icons
     if(mode() != NOICONS && mode() != WORKSPACENOICONS) {
         full_list.insert(full_list.end(),
-                         m_screen.getIconList().begin(),
-                         m_screen.getIconList().end());
+                         m_screen.iconList().begin(),
+                         m_screen.iconList().end());
     }
 
     removeDuplicate(m_icon_list, full_list);

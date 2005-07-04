@@ -340,7 +340,6 @@ public:
 
     unsigned int titlebarHeight() const;
 
-    bool isLowerTab() const;
     int initialState() const;
 
     inline FbWinFrame &frame() { return m_frame; }

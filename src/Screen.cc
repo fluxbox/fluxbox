@@ -650,9 +650,9 @@ void BScreen::hideMenus() {
 #endif // SLIT
 
     // hide icon menus
-    if (getIconList().size()) {
-        Icons::iterator it = getIconList().begin();
-        const Icons::iterator it_end = getIconList().end();
+    if (iconList().size()) {
+        Icons::iterator it = iconList().begin();
+        const Icons::iterator it_end = iconList().end();
         for (; it != it_end; ++it)
             (*it)->menu().hide();
     }
@@ -804,7 +804,7 @@ void BScreen::addIcon(FluxboxWindow *w) {
         return;
 
     // make sure we have a unique list
-    if (find(getIconList().begin(), getIconList().end(), w) != getIconList().end())
+    if (find(iconList().begin(), iconList().end(), w) != iconList().end())
         return;
 
     m_icon_list.push_back(w);
@@ -818,13 +818,13 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     if (w == 0)
         return;
 
-    Icons::iterator erase_it = remove_if(getIconList().begin(),
-                                         getIconList().end(),
+    Icons::iterator erase_it = remove_if(iconList().begin(),
+                                         iconList().end(),
                                          bind2nd(equal_to<FluxboxWindow *>(), w));
     // no need to send iconlist signal if we didn't 
     // change the iconlist
     if (erase_it != m_icon_list.end()) {
-        getIconList().erase(erase_it);
+        iconList().erase(erase_it);
         m_iconlist_sig.notify();
     }
 }
@@ -1354,7 +1354,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
     if (w == 0)
         return;
 
-    if (wkspc_id >= getCount())
+    if (wkspc_id >= numberOfWorkspaces())
         wkspc_id = currentWorkspace()->workspaceID();
 
     if (!w->isIconic() && w->workspaceNumber() == wkspc_id)
@@ -1992,21 +1992,21 @@ void BScreen::setLayer(FbTk::XLayerItem &item, int layernum) {
  Goes to the workspace "right" of the current
 */
 void BScreen::nextWorkspace(const int delta) {
-    changeWorkspaceID( (currentWorkspaceID() + delta) % getCount());
+    changeWorkspaceID( (currentWorkspaceID() + delta) % numberOfWorkspaces());
 }
 
 /**
  Goes to the workspace "left" of the current
 */
 void BScreen::prevWorkspace(const int delta) {
-    changeWorkspaceID( (currentWorkspaceID() - delta + getCount()) % getCount());
+    changeWorkspaceID( (currentWorkspaceID() - delta + numberOfWorkspaces()) % numberOfWorkspaces());
 }
 
 /**
  Goes to the workspace "right" of the current
 */
 void BScreen::rightWorkspace(const int delta) {
-    if (currentWorkspaceID()+delta < getCount())
+    if (currentWorkspaceID()+delta < numberOfWorkspaces())
         changeWorkspaceID(currentWorkspaceID()+delta);
 }
 
@@ -2152,7 +2152,7 @@ void BScreen::notifyReleasedKeys(XKeyEvent &ke) {
  */
 WinClient *BScreen::getLastFocusedWindow(int workspace) {
     if (focused_list.empty()) return 0;
-    if (workspace < 0 || workspace >= (int) getCount())
+    if (workspace < 0 || workspace >= (int) numberOfWorkspaces())
         return focused_list.front();
 
     FocusedWindows::iterator it = focused_list.begin();    
