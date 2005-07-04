@@ -234,7 +234,7 @@ void Gnome::updateCurrentWorkspace(BScreen &screen) {
 }
 
 void Gnome::updateWorkspaceCount(BScreen &screen) {
-    long numworkspaces = screen.getCount();
+    long numworkspaces = screen.numberOfWorkspaces();
     screen.rootWindow().changeProperty(m_gnome_wm_win_workspace_count, XA_CARDINAL, 32, PropModeReplace,
                                        (unsigned char *)&numworkspaces, 1);
 }
@@ -302,12 +302,12 @@ bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, 
 #endif//!DEBUG
         if ( winclient !=0 && // the message sent to client window?
              ce.data.l[0] >= 0 &&
-             ce.data.l[0] < (signed)winclient->screen().getCount()) {
+             ce.data.l[0] < (signed)winclient->screen().numberOfWorkspaces()) {
             winclient->screen().changeWorkspaceID(ce.data.l[0]);
 					
         } else if (screen!=0 && //the message sent to root window?
                    ce.data.l[0] >= 0 &&
-                   ce.data.l[0] < (signed)screen->getCount())
+                   ce.data.l[0] < (signed)screen->numberOfWorkspaces())
             screen->changeWorkspaceID(ce.data.l[0]);
         return true;
     } else if (winclient == 0)

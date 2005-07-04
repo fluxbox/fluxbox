@@ -61,7 +61,7 @@ namespace {
 void showMenu(const BScreen &screen, FbTk::Menu &menu) {
 
     // special case for root menu
-    if (&menu == &screen.getRootmenu()) {
+    if (&menu == &screen.rootMenu()) {
         Fluxbox* fb = Fluxbox::instance();
         if(fb->menuTimestampsChanged()) {
             // we dont show the menu here because fluxbox
@@ -221,7 +221,7 @@ void ShowRootMenuCmd::execute() {
     if (screen == 0)
         return;
 
-    ::showMenu(*screen, screen->getRootmenu());
+    ::showMenu(*screen, screen->rootMenu());
 }
 
 void ShowWorkspaceMenuCmd::execute() {
@@ -229,7 +229,7 @@ void ShowWorkspaceMenuCmd::execute() {
     if (screen == 0)
         return;
 
-    ::showMenu(*screen, screen->getWorkspacemenu());
+    ::showMenu(*screen, screen->workspaceMenu());
 }
 
 
@@ -324,8 +324,8 @@ void DeiconifyCmd::execute() {
     if (screen == 0)
         return;
 
-    BScreen::Icons::reverse_iterator it= screen->getIconList().rbegin();
-    BScreen::Icons::reverse_iterator itend= screen->getIconList().rend();
+    BScreen::Icons::reverse_iterator it= screen->iconList().rbegin();
+    BScreen::Icons::reverse_iterator itend= screen->iconList().rend();
     unsigned int workspace_num= screen->currentWorkspaceID();
     unsigned int old_workspace_num;
 

@@ -288,8 +288,8 @@ void Ewmh::updateClientList(BScreen &screen) {
 
     }
     // and count icons
-    BScreen::Icons::const_iterator icon_it = screen.getIconList().begin();
-    BScreen::Icons::const_iterator icon_it_end = screen.getIconList().end();
+    BScreen::Icons::const_iterator icon_it = screen.iconList().begin();
+    BScreen::Icons::const_iterator icon_it_end = screen.iconList().end();
     for (; icon_it != icon_it_end; ++icon_it) {
         num += (*icon_it)->numClients();
     }
@@ -327,7 +327,7 @@ void Ewmh::updateClientList(BScreen &screen) {
     }
 
     // plus iconified windows
-    icon_it = screen.getIconList().begin();
+    icon_it = screen.iconList().begin();
     for (; icon_it != icon_it_end; ++icon_it) {
         FluxboxWindow::ClientList::iterator client_it = (*icon_it)->clientList().begin();
         FluxboxWindow::ClientList::iterator client_it_end = (*icon_it)->clientList().end();
@@ -437,7 +437,7 @@ void Ewmh::updateWorkspaceCount(BScreen &screen) {
      * Window Manager to indicate the number of virtual
      * desktops.
      */
-    unsigned long numworkspaces = screen.getCount();
+    unsigned long numworkspaces = screen.numberOfWorkspaces();
     screen.rootWindow().changeProperty(m_net_number_of_desktops,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
@@ -502,8 +502,8 @@ void Ewmh::updateWorkarea(BScreen &screen) {
      * Not sure how to handle xinerama stuff here.
      * So i'm just doing this on the first head.
      */
-    unsigned long *coords = new unsigned long[4*screen.getCount()];
-    for (unsigned int i=0; i<screen.getCount()*4; i+=4) {
+    unsigned long *coords = new unsigned long[4*screen.numberOfWorkspaces()];
+    for (unsigned int i=0; i < screen.numberOfWorkspaces()*4; i+=4) {
         // x, y
         coords[i] = screen.maxLeft(0);
         coords[i + 1] = screen.maxTop(0);
@@ -516,7 +516,7 @@ void Ewmh::updateWorkarea(BScreen &screen) {
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)coords,
-                                       4*screen.getCount());
+                                       4 * screen.numberOfWorkspaces());
 
     delete[] coords;
 }
@@ -638,7 +638,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // which doesn't apply here (so borrow the variable :) )
         screen = &fbwin->screen();
         // valid workspace number?
-        if (static_cast<unsigned int>(ce.data.l[0]) < screen->getCount())
+        if (static_cast<unsigned int>(ce.data.l[0]) < screen->numberOfWorkspaces())
             screen->sendToWorkspace(ce.data.l[0], fbwin, false);
 
         return true;
@@ -668,20 +668,20 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
         // no need to alter number of desktops if they are the same
         // or if requested number of workspace is less than zero
-        if (screen->getCount() == static_cast<unsigned int>(ce.data.l[0]) ||
+        if (screen->numberOfWorkspaces() == static_cast<unsigned int>(ce.data.l[0]) ||
             ce.data.l[0] < 0)
             return true;
 
-        if (screen->getCount() > static_cast<unsigned int>(ce.data.l[0])) {
+        if (screen->numberOfWorkspaces() > static_cast<unsigned int>(ce.data.l[0])) {
             // remove last workspace until we have
             // the same number of workspaces
-            while (screen->getCount() != static_cast<unsigned int>(ce.data.l[0])) {
+            while (screen->numberOfWorkspaces() != static_cast<unsigned int>(ce.data.l[0])) {
                 screen->removeLastWorkspace();
-                if (screen->getCount() == 1) // must have at least one workspace
+                if (screen->numberOfWorkspaces() == 1) // must have at least one workspace
                     break;
             }
         } else { // add workspaces to screen until workspace count match the requested size
-            while (screen->getCount() != static_cast<unsigned int>(ce.data.l[0])) {
+            while (screen->numberOfWorkspaces() != static_cast<unsigned int>(ce.data.l[0])) {
                 screen->addWorkspace();
             }
         }
@@ -693,7 +693,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // ce.data.l[0] = workspace number
 
         // prevent out of range value
-        if (static_cast<unsigned int>(ce.data.l[0]) >= screen->getCount())
+        if (static_cast<unsigned int>(ce.data.l[0]) >= screen->numberOfWorkspaces())
             return true;
         screen->changeWorkspaceID(ce.data.l[0]);
         return true;
