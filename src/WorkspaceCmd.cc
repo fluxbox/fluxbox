@@ -127,7 +127,7 @@ JumpToWorkspaceCmd::JumpToWorkspaceCmd(int workspace_num):m_workspace_num(worksp
 
 void JumpToWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
-    if (screen != 0 && m_workspace_num >= 0 && m_workspace_num < screen->getNumberOfWorkspaces())
+    if (screen != 0)
         screen->changeWorkspaceID(m_workspace_num);
 }
 

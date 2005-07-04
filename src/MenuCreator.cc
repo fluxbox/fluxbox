@@ -290,8 +290,8 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
     else if (str_key == "workspaces") {
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
         if (screen != 0) {
-            screen->getWorkspacemenu().setInternalMenu();
-            menu.insert(str_label.c_str(), &screen->getWorkspacemenu());
+            screen->workspaceMenu().setInternalMenu();
+            menu.insert(str_label.c_str(), &screen->workspaceMenu());
         }
     } else if (str_key == "separator") {
         menu.insert(new FbTk::MenuSeparator());

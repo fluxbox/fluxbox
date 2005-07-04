@@ -32,8 +32,8 @@
 
 static void updateItems(FbTk::Menu &menu, BScreen &screen) {
     menu.removeAll();
-    BScreen::Icons::iterator it = screen.getIconList().begin();
-    BScreen::Icons::iterator it_end = screen.getIconList().end();
+    BScreen::Icons::iterator it = screen.iconList().begin();
+    BScreen::Icons::iterator it_end = screen.iconList().end();
     for (; it != it_end; ++it) {
         FluxboxWindow::ClientList::iterator client_it = (*it)->clientList().begin();
         FluxboxWindow::ClientList::iterator client_it_end = (*it)->clientList().end();
