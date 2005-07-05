@@ -143,11 +143,11 @@ void MoveToCmd::real_execute() {
     const int head = fbwindow().screen().getHead(fbwindow().fbWindow());
     
     if (m_refc & MoveToCmd::LOWER)
-        y = fbwindow().screen().maxBottom(head) - fbwindow().height() - m_step_size_y;
+        y = fbwindow().screen().maxBottom(head) - fbwindow().height() - 2 * fbwindow().frame().window().borderWidth() - m_step_size_y;
     if (m_refc & MoveToCmd::UPPER)
         y = fbwindow().screen().maxTop(head) + m_step_size_y;
     if (m_refc & MoveToCmd::RIGHT)
-        x = fbwindow().screen().maxRight(head) - fbwindow().width() - m_step_size_x;
+        x = fbwindow().screen().maxRight(head) - fbwindow().width() - 2 * fbwindow().frame().window().borderWidth() - m_step_size_x;
     if (m_refc & MoveToCmd::LEFT)
         x = fbwindow().screen().maxLeft(head) + m_step_size_x;
 
