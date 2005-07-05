@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/07/05:
+  * Added kcommander, Valknut, dcgui-qt, quickdc, asami, amsn to fbgm (Mathias)
+    fluxbox-generate_menu.in
 *05/06/30:
   * Fix #1223780, fbgm updated (Mathias)
     - added gnome-alsamixer

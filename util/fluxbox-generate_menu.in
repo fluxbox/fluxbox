@@ -1491,7 +1491,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IM
-        normal_find gaim kopete gnomemeeting sim kadu psi
+        normal_find gaim kopete gnomemeeting sim kadu psi amsn
         find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
         cli_find centericq micq
     append_menu_end
@@ -1516,7 +1516,8 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu P2P
-        normal_find gtk-gnutella lopster nicotine pyslsk xmule amule dcgui-qt
+        normal_find gtk-gnutella lopster nicotine pyslsk xmule amule \
+            Valknut dcgui-qt dc_qt quickdc asami
         cli_find TekNap giFTcurs
     append_menu_end
 
@@ -1531,7 +1532,7 @@ append_menu_end
 
 append_submenu "${EDITORMENU}"
     normal_find gvim bluefish nedit gedit xedit kword kwrite kate anjuta \
-        wings xemacs emacs kvim cream evim
+        wings xemacs emacs kvim cream evim scite
     cli_find nano vim vi zile jed
     find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
     find_it     xemacs append "[exec]   (xemacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
@@ -1539,7 +1540,7 @@ append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
     find_it     konqueror append "[exec] (konqueror) {kfmclient openProfile filemanagement}"
-    normal_find gentoo krusader linuxcmd rox tuxcmd krename xfe
+    normal_find gentoo krusader kcommander linuxcmd rox tuxcmd krename xfe
     find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop}"
     cli_find mc
 append_menu_end
