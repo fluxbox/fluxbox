@@ -1475,7 +1475,8 @@ find_it "${LAUNCHER}" append "[exec]   (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTION
 
 
 append_submenu "${TERMINALMENU}"
-    normal_find xterm gnome-terminal Eterm konsole aterm rxvt
+    normal_find xterm urxvt urxvtc gnome-terminal multi-gnome-terminal Eterm \
+        konsole aterm mlterm multi-aterm rxvt
 append_menu_end
 
 
@@ -1533,22 +1534,22 @@ append_menu_end
 append_submenu "${EDITORMENU}"
     normal_find gvim bluefish nedit gedit xedit kword kwrite kate anjuta \
         wings xemacs emacs kvim cream evim scite
-    cli_find nano vim vi zile jed
+    cli_find nano vim vi zile jed joe
     find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
     find_it     xemacs append "[exec]   (xemacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
 append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
     find_it     konqueror append "[exec] (konqueror) {kfmclient openProfile filemanagement}"
-    normal_find gentoo krusader kcommander linuxcmd rox tuxcmd krename xfe
-    find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop}"
+    normal_find gentoo krusader kcommander linuxcmd rox tuxcmd krename xfe xplore
+    find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop --browser}"
     cli_find mc
 append_menu_end
 
 append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${GRAPHICMENU}"
-               normal_find gimp gimp2 inkscape sodipodi xv gqview showimg xpaint kpaint kiconedit \
-                   ee xzgv xscreensaver-demo xlock gphoto
+               normal_find gimp gimp2 gimp-2.2 inkscape sodipodi xv gqview showimg xpaint kpaint kiconedit \
+                   ee xzgv xscreensaver-demo xlock gphoto tuxpaint
                find_it xnview           append "[exec] (xnview browser) {xnview -browser}"
                find_it blender          append "[exec] (blender) {blender -w}"
                find_it gears            append "[exec] (Mesa gears) {gears}"
@@ -1605,12 +1606,16 @@ append_submenu "${GAMESMENU}"
         openmortal quake2 quake3 skoosh same-gnome enigma xbill \
         icebreaker scorched3d sol dosbox black-box enigma freeciv \
         freeciv-server frozen-bubble liquidwar qt-nethack \
-        nethack-gnome pathological scummvm xqf
+        nethack-gnome pathological scummvm xqf \
+        wesnoth canfeild ace_canfeild golf merlin chickens \
+        supertux tuxdash  neverball cube_client blackjack \
+        doom doom3 blackshades gltron kpoker
     cli_find gnugo
 
     find_it et append "[exec] (Enemy Territory) {et}"
     find_it ut append "[exec] (Unreal Tournament) {ut}"
     find_it ut2003 append "[exec] (Unreal Tournament 2003) {ut2003}"
+    find_it ut2004 append "[exec] (Unreal Tournament 2004) {ut2004}"
 append_menu_end
 
 # We'll only use this once
