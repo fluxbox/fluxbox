@@ -83,7 +83,10 @@ void showInfo(ostream &ostr) {
 
     ostr<<_FBTEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTKEYSFILE<<endl;
     ostr<<_FBTEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")<<": "<<DEFAULT_INITFILE<<endl;
-    // TODO: FIXME: print LOCALEPATH too
+
+#ifdef NLS
+    ostr<<_FBTEXT(Common, DefaultLocalePath, "    nls", "location for localization files (right aligned - make sure same width as other default values)")<<": "<<LOCALEPATH<<endl;
+#endif
 
     const char NOT[] = "-";
     ostr<<endl<<
