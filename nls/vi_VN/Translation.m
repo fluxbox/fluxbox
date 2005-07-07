@@ -33,14 +33,14 @@ $set 3 #Common
 6 Phiên bản trình biên dịch
 7 Xác lập cơ bản
 8 Phím nóng
-9 Thực đơn
-10 Sắc thái
-11 Mặc định
-12 Không chọn
-13 Lỗi
-14 Phiên bản fluxbox
-15 Phóng đại che hết màn hình
-16 Có thể nhìn thấy
+10 Thực đơn
+11 Sắc thái
+12 Mặc định
+13 Không chọn
+14 Lỗi
+15 Phiên bản fluxbox
+16 Phóng đại che hết màn hình
+17 Có thể nhìn thấy
 
 $set 4 #Configmenu
 

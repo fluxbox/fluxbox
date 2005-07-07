@@ -36,14 +36,15 @@ $set 3 #Common
 6 Compiler version
 7 init
 8 keys
-9 menu
-10 style
-11 Defaults
-12 disabled
-13 Error
-14 Fluxbox version
-15 Maximize Over
-16 Visible
+9 nls
+10 menu
+11 style
+12 Defaults
+13 disabled
+14 Error
+15 Fluxbox version
+16 Maximize Over
+17 Visible
 
 $set 4 #Configmenu
 

@@ -35,14 +35,14 @@ $set 3 #Common
 6 Wersja kompilatora
 7 init
 8 keys
-9 menu
-10 Styl
-11 Warto¶ci domy¶lne
-12 wy³±czone
-13 B³±d
-14 Fluxbox wersja
-15 Maksymalizuj nad
-16 Widoczny
+10 menu
+11 Styl
+12 Warto¶ci domy¶lne
+13 wy³±czone
+14 B³±d
+15 Fluxbox wersja
+16 Maksymalizuj nad
+17 Widoczny
 
 
 

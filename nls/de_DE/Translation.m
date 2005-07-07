@@ -36,14 +36,14 @@ $set 3 #Common
 6 Compiler Version
 7 Init Datei
 8 Tastendefinitionsdatei
-9 Menüdatei
-10 Stildatei (Theme)
-11 Standard Einstellungen
-12 deaktiviert
-13 Fehler
-14 Fluxbox Version
-15 Durch maximierte Fenster verdecken
-16 Sichtbar
+10 Menüdatei
+11 Stildatei (Theme)
+12 Standard Einstellungen
+13 deaktiviert
+14 Fehler
+15 Fluxbox Version
+16 Durch maximierte Fenster verdecken
+17 Sichtbar
 
 $set 4 #Configmenu
 

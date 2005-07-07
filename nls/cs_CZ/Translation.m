@@ -36,14 +36,14 @@ $set 3 #Common
 6 Verze kompilátoru
 7 Soubor init
 8 Soubor s definicí kláves
-9 Soubor s definicí menu
-10 Soubor se stylem
-11 Implicitní
-12 neaktivní
-13 Chyba
-14 Verze Fluxboxu
-15 Maximalizovat pøes v¹echna okna
-16 Viditelný
+10 Soubor s definicí menu
+11 Soubor se stylem
+12 Implicitní
+13 neaktivní
+14 Chyba
+15 Verze Fluxboxu
+16 Maximalizovat pøes v¹echna okna
+17 Viditelný
 
 $set 4 #Configmenu
 
