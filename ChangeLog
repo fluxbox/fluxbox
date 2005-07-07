@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/07/07:
+  * Added info about locale path in -info argument (Thanks php-coder)
+    src/main.cc, nls/*
 *05/07/05:
   * Respect border size in the MoveTo action (Mathias)
     CurrentWindowCmd.cc
