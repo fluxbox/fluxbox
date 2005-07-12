@@ -61,7 +61,7 @@ display_usage() {
     cat << EOF
 Usage: $command [-u/-U [wallpapersetter]] [-fFcCtTaA /path/to/wallpaper]
                 [-r/-R /path/to/wallpaperdirectory]
-                [-b/-B bsetrootoptions] [-l] [-h] [-i] [-p]
+                [-b/-B fbsetrootoptions] [-l] [-h] [-i] [-p]
 Use \`\`$command -h'' for a complete help message.
 
 EOF
@@ -80,7 +80,7 @@ Options:
         ( if your bgsetter doesn't support this
           we fall back to -f )
     -u  Use specified wallpapersetter, use no argument to forget.
-    -b  Forward the options to bsetroot.
+    -b  Forward the options to fbsetroot.
     -r  set random wallpaper from a directory
 
     -F,-C,-T,-A,-U,-B,-R same as uncapsed but without remembering.
@@ -174,7 +174,7 @@ message() {
 remembercommand() {
     grep -vs "|${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
     mv -f ${lastwallpaper}.tmp ${lastwallpaper}
-    if [ "$option" = bsetroot ]; then
+    if [ "$option" = fbsetroot ]; then
         echo $option'|'$wallpaper'|'$DISPLAY >> $lastwallpaper
         return
     fi
@@ -262,11 +262,11 @@ while [ $# -gt 0 ]; do
             wallpaper=$2
             remember=false
             break ;;
-        -b) option=bsetroot
+        -b) option=fbsetroot
             shift
             wallpaper=$*
             break ;;
-        -B) option=bsetroot
+        -B) option=fbsetroot
             shift
             wallpaper=$*
             remember=false
@@ -461,8 +461,8 @@ if [ -z "$DISPLAY" ]; then
 fi
 
 
-if [ "$option" = bsetroot ]; then
-    bsetroot $wallpaper
+if [ "$option" = fbsetroot ]; then
+    fbsetroot $wallpaper
     if [ ! "$remember" = false ]; then
         remembercommand
     fi

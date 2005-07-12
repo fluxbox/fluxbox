@@ -210,7 +210,7 @@ $set 17 #Workspace
 3 새 작업공간 추가
 4 마지막 것 제거
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: error: must specify one of: -solid, -mod, -gradient\n
 2 Couldn't create pixmap atoms, giving up!

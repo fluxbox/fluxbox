@@ -106,7 +106,7 @@ $set 17 #Workspace
 3 新規ワークスペース作成
 4 末尾のワークスペースを削除
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: error: 次の中から一つを選択しなければなりません: -solid, -mod, -gradient\n
 3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\

@@ -20,8 +20,8 @@
 
 // $Id$
 
-#ifndef BSETROOT_HH
-#define BSETROOT_HH
+#ifndef FBSETROOT_HH
+#define FBSETROOT_HH
 
 #include "../src/FbTk/App.hh"
 
@@ -31,10 +31,10 @@ class ImageControl;
 
 };
 
-class bsetroot : public FbTk::App {
+class fbsetroot : public FbTk::App {
 public:
-    bsetroot(int argc, char **argv, char * dpy_name= 0);
-    ~bsetroot();
+    fbsetroot(int argc, char **argv, char * dpy_name= 0);
+    ~fbsetroot();
 
     void gradient();
     void modula(int, int);
@@ -52,4 +52,4 @@ private:
 };
 
 
-#endif // BSETROOT_HH
+#endif // FBSETROOT_HH

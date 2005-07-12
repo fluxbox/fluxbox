@@ -104,7 +104,7 @@ $set 17 #Workspace
 3 Yeni Masaüstü
 4 Son Masaüstünü Kaldýr
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s : hata : -solid, -mod yada -gradient'den en az birisini belirlemek zorundasýnýz\n
 3 %s 2.0 : Telif hakký (c) 1997-2000 Brad Hughes\n\n\

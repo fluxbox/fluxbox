@@ -202,10 +202,10 @@ enum {
 	WorkspaceNewWorkspace = 3,
 	WorkspaceRemoveLast = 4,
 
-	bsetrootSet = 18,
-	bsetrootMustSpecify = 1,
-	bsetrootNoPixmapAtoms = 2,
-	bsetrootUsage = 3,
+	fbsetrootSet = 18,
+	fbsetrootMustSpecify = 1,
+	fbsetrootNoPixmapAtoms = 2,
+	fbsetrootUsage = 3,
 
 	mainSet = 19,
 	mainDISPLAYRequiresArg = 1,

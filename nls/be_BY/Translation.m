@@ -211,7 +211,7 @@ $set 17 #Workspace
 3 Новае працоўнае месца
 4 Выдаліць апошняе
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: памылка: павінна быць нешта з наступнага: -solid, -mod, -gradient\n
 2 Couldn't create pixmap atoms, giving up!

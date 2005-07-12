@@ -105,7 +105,7 @@ $set 17 #Workspace
 3 Nieuw werkveld
 4 Verwijder laatste
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: error: must specify one of: -solid, -mod, -gradient\n
 3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\

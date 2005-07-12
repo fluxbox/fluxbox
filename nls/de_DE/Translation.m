@@ -206,7 +206,7 @@ $set 17 #Workspace
 3 Neuer Desktop
 4 Letzten Desktop entfernen
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: error: must specify one of: -solid, -mod, -gradient\n
 2 Couldn't create pixmap atoms, giving up!

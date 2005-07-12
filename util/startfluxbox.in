@@ -44,7 +44,7 @@ else
 #
 # This sets a black background
 
-@pkgbindir@/bsetroot -solid black
+@pkgbindir@/fbsetroot -solid black
 
 # This shows the fluxbox-splash-screen
 # fbsetbg -C @pkgdatadir@/splash.jpg

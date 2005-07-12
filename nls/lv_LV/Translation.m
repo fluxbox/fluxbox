@@ -103,7 +103,7 @@ $set 17 #Workspace
 3 Jauna Darba vieta
 4 Noòemt Pçdçjo
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: kïûda: jânosaka viens no: -solid, -mod, -gradient\n
 3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\

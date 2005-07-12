@@ -103,7 +103,7 @@ $set 17 #Workspace
 3 Crea una nuova
 4 Elimina l'ultima
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: errore: specicare una delle opzioni : -solid, -mod, -gradient\n
 3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\

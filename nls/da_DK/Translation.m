@@ -104,7 +104,7 @@ $set 17 #Workspace
 3 Nyt skrivebord
 4 Fjern sidste
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: fejl: specificér en af følgende: -solid, -mod, -gradient\n
 3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\

@@ -20,7 +20,7 @@
 
 // $Id$
 
-#include "bsetroot.hh"
+#include "fbsetroot.hh"
 
 #include "../src/FbTk/I18n.hh"
 #include "../src/FbTk/ImageControl.hh"
@@ -52,7 +52,7 @@
 
 using namespace std;
 
-bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
+fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
     : FbTk::App(dpy_name), m_app_name(argv[0]) {
 
     pixmaps = (Pixmap *) 0;
@@ -121,7 +121,7 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
     if ((mod + sol + grd) != true) {
         _FB_USES_NLS;
         cerr<<m_app_name<<
-            _FBTEXT(bsetroot, MustSpecify, 
+            _FBTEXT(fbsetroot, MustSpecify, 
                     "Error: must specify one of: -solid, -mod, -gradient\n",
                     "user didn't give one of the required options")<<endl;
 
@@ -142,7 +142,7 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 }
 
 
-bsetroot::~bsetroot() {
+fbsetroot::~fbsetroot() {
     XKillClient(display(), AllTemporary);
 
     if (pixmaps) { // should always be true
@@ -164,7 +164,7 @@ bsetroot::~bsetroot() {
    Eterm and xchat will be able to use
    transparent background
 */
-void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
+void fbsetroot::setRootAtoms(Pixmap pixmap, int screen) {
     Atom atom_root, atom_eroot, type;
     unsigned char *data_root, *data_eroot;
     int format;
@@ -196,7 +196,7 @@ void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
 
     if (atom_root == None || atom_eroot == None) {
         _FB_USES_NLS;
-        cerr<<_FBTEXT(bsetroot, NoPixmapAtoms, "Couldn't create pixmap atoms, giving up!", "Couldn't create atoms to point at root pixmap")<<endl;
+        cerr<<_FBTEXT(fbsetroot, NoPixmapAtoms, "Couldn't create pixmap atoms, giving up!", "Couldn't create atoms to point at root pixmap")<<endl;
         exit(1);
     }
 
@@ -209,7 +209,7 @@ void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
 /**
    Draws pixmaps with a single color 
 */
-void bsetroot::solid() {
+void fbsetroot::solid() {
     register int screen = 0;
 
     pixmaps = new Pixmap[ScreenCount(display())];
@@ -244,7 +244,7 @@ void bsetroot::solid() {
  Draws pixmaps with an 16x16 pattern with
  fg and bg colors.
 */
-void bsetroot::modula(int x, int y) {
+void fbsetroot::modula(int x, int y) {
     char data[32];
     long pattern;
 
@@ -322,7 +322,7 @@ void bsetroot::modula(int x, int y) {
 /**
  draws pixmaps with a fluxbox texure
 */
-void bsetroot::gradient() {
+void fbsetroot::gradient() {
     // using temporaray pixmap and then copying it to background pixmap, as it'll
     // get crashed somewhere on the way causing apps like XChat chrashing
     // as the pixmap has been destroyed
@@ -378,12 +378,12 @@ void bsetroot::gradient() {
 /**
  Shows information about usage
 */
-void bsetroot::usage(int exit_code) {
+void fbsetroot::usage(int exit_code) {
     _FB_USES_NLS;
-    cerr<<m_app_name<<" 2.3 : (c) 2003-2004 Fluxbox Development Team"<<endl;
+    cerr<<m_app_name<<" 2.3 : (c) 2003-2005 Fluxbox Development Team"<<endl;
     cerr<<m_app_name<<" 2.1 : (c) 2002 Claes Nasten"<<endl;
     cerr<<m_app_name<<" 2.0 : (c) 1997-2000 Brad Hughes\n"<<endl;
-    cerr<<_FBTEXT(bsetroot, Usage,
+    cerr<<_FBTEXT(fbsetroot, Usage,
                   "  -display <string>        display connection\n"
                   "  -mod <x> <y>             modula pattern\n"
                   "  -foreground, -fg <color> modula foreground color\n"
@@ -393,7 +393,7 @@ void bsetroot::usage(int exit_code) {
                   "  -to <color>              gradient end color\n\n"
                   "  -solid <color>           solid color\n\n"
                   "  -help                    print this help text and exit\n",
-                  "bsetroot usage options")<<endl;
+                  "fbsetroot usage options")<<endl;
     exit(exit_code);
 }
 
@@ -421,7 +421,7 @@ int main(int argc, char **argv) {
         }
     }
  
-    bsetroot app(argc, argv, display_name);
+    fbsetroot app(argc, argv, display_name);
  
     return (0);
 }

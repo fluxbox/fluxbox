@@ -185,7 +185,7 @@ $set 17 #Workspace
 3 Không gian mới
 4 Xóa không gian cuối
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: lỗi: cần đưa ra một trong các từ khóa sau: -solid, -mod, -gradient\n
 2 Không thể tạo các pixmap!

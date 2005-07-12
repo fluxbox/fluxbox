@@ -217,7 +217,7 @@ $set 17 #Workspace
 3 Nowy Pulpit
 4 Usuñ Ostatni
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: b³±d: musisz okre¶liæ jedno z: -solid, -mod, -gradient\n
 2 Nie mogê stowrzyæ elementów pixmap - dajê sobie spokój!

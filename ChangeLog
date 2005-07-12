@@ -1,6 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
-*05/07/07:
+*05/07/12:
+    Renaming of 'bsetroot' to 'fbsetroot' (Mathias)
+    blackbox's 'bsetroot' and fluxbox's 'bsetroot' have different syntax
+    nowadays and collide when you install fluxbox and blackbox. hence
+    the renaming
+    updated manpage, helper utils (fbgm, startfluxbox, fbsetbg), nls etc
+*05/07/06:
+    Added even more applications to fbgm (Mathias)
+    fluxbox-generate_menu.in
   * Added info about locale path in -info argument (Thanks php-coder)
     src/main.cc, nls/*
 *05/07/05:

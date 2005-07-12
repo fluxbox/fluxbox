@@ -104,7 +104,7 @@ $set 17 #Workspace
 3 Escritorio nuevo
 4 Quitar el último escritorio
 
-$set 18 #bsetroot
+$set 18 #fbsetroot
 
 1 %s: error: es necesario especifiar uno de: -solid, -mod, -gradient\n
 3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
