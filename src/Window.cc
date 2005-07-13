@@ -3421,17 +3421,21 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
     if (XTranslateCoordinates(display, parent().window(),
                               parent().window(),
                               x, y, &dest_x, &dest_y, &child)) {
+
+        bool inside_titlebar = false;
         // search for a fluxboxwindow
         WinClient *client = Fluxbox::instance()->searchWindow(child);
         FluxboxWindow *attach_to_win = 0;
         if (client) {
+
+            inside_titlebar = client->fbwindow()->hasTitlebar() &&
+                client->fbwindow()->y() + client->fbwindow()->titlebarHeight() > dest_y;
+            
             Fluxbox::TabsAttachArea area= Fluxbox::instance()->getTabsAttachArea();
             if (area == Fluxbox::ATTACH_AREA_WINDOW)
                 attach_to_win = client->fbwindow();
-            else if (area == Fluxbox::ATTACH_AREA_TITLEBAR) {
-                if(client->fbwindow()->hasTitlebar() &&
-                   client->fbwindow()->y() + client->fbwindow()->titlebarHeight() > dest_y)
-                    attach_to_win = client->fbwindow();
+            else if (area == Fluxbox::ATTACH_AREA_TITLEBAR && inside_titlebar) {
+                attach_to_win = client->fbwindow();
             }
         }
 
@@ -3440,7 +3444,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
 
             attach_to_win->attachClient(*old_attached,x,y );
             // we could be deleted here, DO NOT do anything else that alters this object
-        } else if (attach_to_win != this) {
+        } else if (attach_to_win != this || (attach_to_win == this && !inside_titlebar)) {
             // disconnect client if we didn't drop on a window
             WinClient &client = *old_attached;
             detachClient(*old_attached);
@@ -3450,11 +3454,10 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
                 client.fbwindow()->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
                 client.fbwindow()->show();
             }
-        } else if(attach_to_win==this && attach_to_win->isTabable()) {
+        } else if( attach_to_win == this && attach_to_win->isTabable()) {
             //reording of tabs within a frame
             moveClientTo(*old_attached, x, y);
         }
-
     }
 }
 

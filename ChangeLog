@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/07/13:
+    Dragging a tab button from current titlebar onto current client area will
+    detach that client (Mathias)
+    Window.cc
 *05/07/12:
     Renaming of 'bsetroot' to 'fbsetroot' (Mathias)
     blackbox's 'bsetroot' and fluxbox's 'bsetroot' have different syntax
