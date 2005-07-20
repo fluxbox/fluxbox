@@ -176,31 +176,46 @@ template<>
 std::string FbTk::Resource<BScreen::FocusModel>::
 getString() {
     switch (m_value) {
-    case BScreen::SLOPPYFOCUS:
-        return string("SloppyFocus");
-    case BScreen::SEMISLOPPYFOCUS:
-        return string("SemiSloppyFocus");
-    case BScreen::CLICKTOFOCUS:
-        return string("ClickToFocus");
+    case BScreen::MOUSEFOCUS:
+        return string("MouseFocus");
+    case BScreen::CLICKFOCUS:
+        return string("ClickFocus");
     }
     // default string
-    return string("ClickToFocus");
+    return string("ClickFocus");
 }
 
 template<>
 void FbTk::Resource<BScreen::FocusModel>::
 setFromString(char const *strval) {
-    // auto raise options here for backwards read compatibility
-    // they are not supported for saving purposes. Nor does the "AutoRaise" 
-    // part actually do anything
-    if (strcasecmp(strval, "SloppyFocus") == 0 
-        || strcasecmp(strval, "AutoRaiseSloppyFocus") == 0) 
-        m_value = BScreen::SLOPPYFOCUS;
-    else if (strcasecmp(strval, "SemiSloppyFocus") == 0
-        || strcasecmp(strval, "AutoRaiseSemiSloppyFocus") == 0) 
-        m_value = BScreen::SEMISLOPPYFOCUS;
+    if (strcasecmp(strval, "MouseFocus") == 0) 
+        m_value = BScreen::MOUSEFOCUS;
     else if (strcasecmp(strval, "ClickToFocus") == 0) 
-        m_value = BScreen::CLICKTOFOCUS;
+        m_value = BScreen::CLICKFOCUS;
+    else
+        setDefaultValue();
+}
+
+template<>
+std::string FbTk::Resource<BScreen::TabFocusModel>::
+getString() {
+    switch (m_value) {
+    case BScreen::MOUSETABFOCUS:
+        return string("SloppyTabFocus");
+    case BScreen::CLICKTABFOCUS:
+        return string("ClickToTabFocus");
+    }
+    // default string
+    return string("ClickToTabFocus");
+}
+
+template<>
+void FbTk::Resource<BScreen::TabFocusModel>::
+setFromString(char const *strval) {
+    if (strcasecmp(strval, "SloppyTabFocus") == 0 )
+        m_value = BScreen::MOUSETABFOCUS;
+    else if (strcasecmp(strval, "ClickToTabFocus") == 0) 
+        m_value = BScreen::CLICKTABFOCUS;
     else
         setDefaultValue();
 }

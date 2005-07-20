@@ -1892,12 +1892,11 @@ void Fluxbox::revertFocus(BScreen &screen) {
           next_focus->fbwindow()->setCurrentClient(*next_focus, true))) {
         setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
         switch (screen.getFocusModel()) {
-        case BScreen::SLOPPYFOCUS:
-        case BScreen::SEMISLOPPYFOCUS:
+        case BScreen::MOUSEFOCUS:
             XSetInputFocus(FbTk::App::instance()->display(),
                            PointerRoot, None, CurrentTime);
             break;
-        case BScreen::CLICKTOFOCUS:
+        case BScreen::CLICKFOCUS:
             screen.rootWindow().setInputFocus(RevertToPointerRoot, CurrentTime);
             break;
         }

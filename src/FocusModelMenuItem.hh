@@ -50,4 +50,24 @@ private:
     BScreen::FocusModel m_focusmodel;
 };
 
+class TabFocusModelMenuItem : public FbTk::MenuItem {
+public:
+    TabFocusModelMenuItem(const char *label, BScreen &screen, 
+                       BScreen::TabFocusModel model, 
+                       FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(label, cmd), m_screen(screen), m_tabfocusmodel(model) {
+    }
+    bool isEnabled() const { return m_screen.getTabFocusModel() != m_tabfocusmodel; }
+
+    void click(int button, int time) {
+        m_screen.saveTabFocusModel(m_tabfocusmodel);
+        FbTk::MenuItem::click(button, time);
+    }
+
+private:
+    BScreen &m_screen;
+    BScreen::TabFocusModel m_tabfocusmodel;
+};
+
+
 #endif // FOCUSMODELMENUITEM_HH

@@ -60,8 +60,7 @@ $set 4 #Configmenu
 10 Full Maximization
 11 Image Dithering
 12 Opaque Window Moving
-13 Semi Sloppy Focus
-14 Sloppy Focus
+14 Mouse Focus
 15 Workspace Warping
 16 Force Pseudo-Transparency
 17 Menu Alpha

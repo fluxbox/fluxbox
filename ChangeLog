@@ -1,5 +1,20 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/07/20:
+    Changed some *Focus options (Mathias)
+    removed SloppyFocus, SemiSloppyFocus and ClickToFocus options
+    added MouseFocus, ClickFocus, MouseTabFocus, ClickTabFocus
+    - MouseFocus - change the focus to the window under the mouse
+      (almost similar to the 'old' SloppyFocus)
+    - ClickFocus - change the focus to the window the user clicks
+    - MouseTabFocus - change active tabclient to the one under the
+      mouse in titlebar, does NOT change the focus
+    - ClickTabFocus - change active tabclient when clicked onto a 
+      tabbutton
+    to achieve former SemiSloppyFocus behavior one needs MouseFocus and
+    ClickTabFocus
+    Window.cc Screen.cc/hh ScreenResource.cc FocusModelMenuItem.hh fluxbox.cc
+    nls/fluxbox-nls.hh and some nls/*/Translation.m
 *05/07/13:
     Dragging a tab button from current titlebar onto current client area will
     detach that client (Mathias)

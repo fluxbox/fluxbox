@@ -50,7 +50,7 @@ $set 4 #Configmenu
 1 Kantenglättung (AntiAliasing)
 2 Automatisches Hervorheben
 3 Klicken zum Hervorheben
-4 Klicken zum Fokussieren
+4 Fokus durch Klick
 5 Flüchtige (transient) Fenster dekorieren
 6 Desktop mit Mausrad wechseln
 7 Fenster nach Desktopwechsel fokussieren
@@ -60,10 +60,10 @@ $set 4 #Configmenu
 11 Bild-Dithering
 12 Fenster undurchsichtig bewegen
 13 Halb-"schlampiger" Fokus
-14 "schlampiger" Fokus
+14 MausFokus
 15 Fenster über Desktopgrenzen verschieben
 16 Erzwinge Pseudo-Transparenz
-17	Menü Alpha Transparenz
+17 Menü Alpha Transparenz
 18 Transparenz
 19 Alpha Transparenz fokussierter Fenster
 20 Alpha Transparenz nicht fokussierter Fenster

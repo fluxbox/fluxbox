@@ -176,7 +176,8 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     resize_model(rm, BOTTOMRESIZE, scrname+".resizeMode", altscrname+".ResizeMode"),
     windowmenufile(rm, "", scrname+".windowMenu", altscrname+".WindowMenu"),
-    focus_model(rm, CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
+    focus_model(rm, CLICKFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
+    tabfocus_model(rm, CLICKTABFOCUS, scrname+".tabFocusModel", altscrname+".TabFocusModel"),
     follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
@@ -1771,15 +1772,16 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
 #define _FOCUSITEM(a, b, c, d, e) focus_menu->insert(new FocusModelMenuItem(_FBTEXT(a, b, c, d), *this, e, save_and_reconfigure))
 
-    _FOCUSITEM(Configmenu, ClickToFocus,
+    _FOCUSITEM(Configmenu, ClickFocus,
                "Click To Focus", "Click to focus",
-               CLICKTOFOCUS);
-    _FOCUSITEM(Configmenu, SloppyFocus,
-               "Sloppy Focus", "Sloppy Focus",
-               SLOPPYFOCUS);
-    _FOCUSITEM(Configmenu, SemiSloppyFocus,
-               "Semi Sloppy Focus", "Semi Sloppy Focus",
-               SEMISLOPPYFOCUS);
+               CLICKFOCUS);
+    _FOCUSITEM(Configmenu, MouseFocus,
+               "Mouse Focus", "Mouse Focus",
+               MOUSEFOCUS);
+
+    focus_menu->insert(new TabFocusModelMenuItem("ClickTabFocus", *this, CLICKTABFOCUS, save_and_reconfigure));
+    focus_menu->insert(new TabFocusModelMenuItem("MouseTabFocus", *this, MOUSETABFOCUS, save_and_reconfigure));
+    
 #undef _FOCUSITEM
 
     focus_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, 

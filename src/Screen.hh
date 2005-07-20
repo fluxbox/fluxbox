@@ -78,7 +78,8 @@ class Subject;
 class BScreen : public FbTk::Observer, private FbTk::NotCopyable {
 public:
     enum ResizeModel { BOTTOMRESIZE = 0, QUADRANTRESIZE, DEFAULTRESIZE = BOTTOMRESIZE };
-    enum FocusModel { SLOPPYFOCUS = 0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
+    enum FocusModel { MOUSEFOCUS = 0, CLICKFOCUS };
+    enum TabFocusModel { MOUSETABFOCUS = 0, CLICKTABFOCUS };
     enum FollowModel { ///< a window becomes active / focussed on a different workspace
         IGNORE_OTHER_WORKSPACES = 0, ///< who cares?
         FOLLOW_ACTIVE_WINDOW, ///< go to that workspace
@@ -106,24 +107,24 @@ public:
 
     void initWindows();
     void initMenus();
-    inline bool isSloppyFocus() const { return (*resource.focus_model == SLOPPYFOCUS); }
-    inline bool isSemiSloppyFocus() const { return (*resource.focus_model == SEMISLOPPYFOCUS); }
-    inline bool isRootColormapInstalled() const { return root_colormap_installed; }
-    inline bool isScreenManaged() const { return managed; }
-    inline bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
-    inline bool isWorkspaceWarping() const { return *resource.workspace_warping; }
-    inline bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
-    inline bool doAutoRaise() const { return *resource.auto_raise; }
-    inline bool clickRaises() const { return *resource.click_raises; }
-    inline bool doOpaqueMove() const { return *resource.opaque_move; }
-    inline bool doFullMax() const { return *resource.full_max; }
-    inline bool doFocusNew() const { return *resource.focus_new; }
-    inline bool doFocusLast() const { return *resource.focus_last; }
-    inline bool doShowWindowPos() const { return *resource.show_window_pos; }
-    inline bool antialias() const { return *resource.antialias; }
-    inline bool decorateTransient() const { return *resource.decorate_transient; }
-    inline const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
-    inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
+    bool isMouseFocus() const { return (*resource.focus_model == MOUSEFOCUS); }
+    bool isMouseTabFocus() const { return (*resource.tabfocus_model == MOUSETABFOCUS); }
+    bool isRootColormapInstalled() const { return root_colormap_installed; }
+    bool isScreenManaged() const { return managed; }
+    bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
+    bool isWorkspaceWarping() const { return *resource.workspace_warping; }
+    bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
+    bool doAutoRaise() const { return *resource.auto_raise; }
+    bool clickRaises() const { return *resource.click_raises; }
+    bool doOpaqueMove() const { return *resource.opaque_move; }
+    bool doFullMax() const { return *resource.full_max; }
+    bool doFocusNew() const { return *resource.focus_new; }
+    bool doFocusLast() const { return *resource.focus_last; }
+    bool doShowWindowPos() const { return *resource.show_window_pos; }
+    bool antialias() const { return *resource.antialias; }
+    bool decorateTransient() const { return *resource.decorate_transient; }
+    const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
+    FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     // menus
     const FbTk::Menu &rootMenu() const { return *m_rootmenu.get(); }
     FbTk::Menu &rootMenu() { return *m_rootmenu.get(); }
@@ -134,8 +135,10 @@ public:
     ExtraMenus &extraWindowMenus() { return m_extramenus; }
     const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
 
-    inline ResizeModel getResizeModel() const { return *resource.resize_model; }
-    inline FocusModel getFocusModel() const { return *resource.focus_model; }
+    ResizeModel getResizeModel() const { return *resource.resize_model; }
+    FocusModel getFocusModel() const { return *resource.focus_model; }
+    TabFocusModel getTabFocusModel() const { return *resource.tabfocus_model; }
+    
     inline FollowModel getFollowModel() const { return *resource.follow_model; }
 
     inline Slit *slit() { return m_slit.get(); }
@@ -217,38 +220,40 @@ public:
     inline RowDirection getRowPlacementDirection() const { return *resource.row_direction; }
     inline ColumnDirection getColPlacementDirection() const { return *resource.col_direction; }
 
-    inline void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
-    inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
-    inline void saveFocusModel(FocusModel model) { resource.focus_model = model; }
-    inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
+    void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
+    void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
+    void saveFocusModel(FocusModel model) { resource.focus_model = model; }
+    void saveTabFocusModel(TabFocusModel model) { resource.tabfocus_model = model; }
+
+    void saveWorkspaces(int w) { *resource.workspaces = w;  }
 
     void saveMenu(FbTk::Menu &menu) { m_rootmenu_list.push_back(&menu); }
 
-    inline FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
-    inline const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
-    inline MenuTheme &menuTheme() { return *m_menutheme.get(); }
-    inline const MenuTheme &menuTheme() const { return *m_menutheme.get(); }
-    inline const RootTheme &rootTheme() const { return *m_root_theme.get(); }
-    inline WinButtonTheme &winButtonTheme() { return *m_winbutton_theme.get(); }
-    inline const WinButtonTheme &winButtonTheme() const { return *m_winbutton_theme.get(); }
+    FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
+    const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
+    MenuTheme &menuTheme() { return *m_menutheme.get(); }
+    const MenuTheme &menuTheme() const { return *m_menutheme.get(); }
+    const RootTheme &rootTheme() const { return *m_root_theme.get(); }
+    WinButtonTheme &winButtonTheme() { return *m_winbutton_theme.get(); }
+    const WinButtonTheme &winButtonTheme() const { return *m_winbutton_theme.get(); }
 
-    inline FbRootWindow &rootWindow() { return m_root_window; }
-    inline const FbRootWindow &rootWindow() const { return m_root_window; }
+    FbRootWindow &rootWindow() { return m_root_window; }
+    const FbRootWindow &rootWindow() const { return m_root_window; }
 
-    inline FbTk::MultLayers &layerManager() { return m_layermanager; }
-    inline const FbTk::MultLayers &layerManager() const { return m_layermanager; }
-    inline FbTk::ResourceManager &resourceManager() { return m_resource_manager; }
-    inline const FbTk::ResourceManager &resourceManager() const { return m_resource_manager; }
-    inline const std::string &name() const { return m_name; }
-    inline const std::string &altName() const { return m_altname; }
-    inline bool isShuttingdown() const { return m_shutdown; }
+    FbTk::MultLayers &layerManager() { return m_layermanager; }
+    const FbTk::MultLayers &layerManager() const { return m_layermanager; }
+    FbTk::ResourceManager &resourceManager() { return m_resource_manager; }
+    const FbTk::ResourceManager &resourceManager() const { return m_resource_manager; }
+    const std::string &name() const { return m_name; }
+    const std::string &altName() const { return m_altname; }
+    bool isShuttingdown() const { return m_shutdown; }
 
 
     int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
-    inline void nextWorkspace() { nextWorkspace(1); }
-    inline void prevWorkspace() { prevWorkspace(1); }
+    void nextWorkspace() { nextWorkspace(1); }
+    void prevWorkspace() { prevWorkspace(1); }
     void nextWorkspace(int delta);
     void prevWorkspace(int delta);
     void rightWorkspace(int delta);
@@ -272,8 +277,8 @@ public:
                          bool changeworkspace=true);
     void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, 
                            bool ignore_sticky);
-    inline void prevFocus() { prevFocus(0); }
-    inline void nextFocus() { nextFocus(0); }
+    void prevFocus() { prevFocus(0); }
+    void nextFocus() { nextFocus(0); }
     void prevFocus(int options);
     void nextFocus(int options);
     void raiseFocus();
@@ -303,8 +308,8 @@ public:
     void updateSize();
 
     // Xinerama-related functions
-    inline bool hasXinerama() const { return m_xinerama_avail; }
-    inline int numHeads() const { return m_xinerama_num_heads; }
+    bool hasXinerama() const { return m_xinerama_avail; }
+    int numHeads() const { return m_xinerama_num_heads; }
 
     void initXinerama();
 
@@ -447,6 +452,7 @@ private:
         FbTk::Resource<ResizeModel> resize_model;
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<FocusModel> focus_model;
+        FbTk::Resource<TabFocusModel> tabfocus_model;
         FbTk::Resource<FollowModel> follow_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,

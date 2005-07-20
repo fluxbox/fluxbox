@@ -1070,7 +1070,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (setinput && setInputFocus()) {
         return true;
     }
-
+    
     return false;
 }
 
@@ -2033,7 +2033,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     if (focus != frame().focused())
         frame().setFocus(focus);
 
-    if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
+    if ((screen().isMouseFocus())
         && screen().doAutoRaise()) {
         if (focused)
             m_timer.start();
@@ -2637,7 +2637,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     frame().buttonPressEvent(be);
 
     if (be.button == 1 || (be.button == 3 && be.state == Mod1Mask)) {
-        if ((! focused) && (! screen().isSloppyFocus())) { //check focus
+        if ((! focused) && (! screen().isMouseFocus())) { //check focus
             setInputFocus();
         }
 
@@ -2916,8 +2916,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
     }
 
     WinClient *client = 0;
-    // don't waste our time scanning if we aren't real sloppy focus
-    if (screen().isSloppyFocus()) {
+    if (screen().isMouseTabFocus()) {
         // determine if we're in a label button (tab)
         Client2ButtonMap::iterator it = 
             find_if(m_labelbuttons.begin(),
@@ -2929,13 +2928,12 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             client = (*it).first;
                 
     }
+
     if (ev.window == frame().window() ||
         ev.window == m_client->window() ||
         client) {
-        if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
-            && !isFocused() ||
-            // or, we are focused, but it isn't the one we want
-            client && screen().isSloppyFocus() && (m_client != client)) {
+
+        if (screen().isMouseFocus() && !isFocused()) {
 
             // check that there aren't any subsequent leave notify events in the
             // X event queue
@@ -2945,16 +2943,16 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             sa.enter = sa.leave = False;
             XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);
 
-            // if client is set, use setCurrent client, otherwise just setInputFocus
             if ((!sa.leave || sa.inferior)) {
-                if (client)
-                    setCurrentClient(*client, true);
-                else
-                    setInputFocus();
+                setInputFocus();
             }
-
         }
     }
+
+    if (screen().isMouseTabFocus() && client && client != m_client) {
+        setCurrentClient(*client, isFocused());
+    }
+
 }
 
 void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
