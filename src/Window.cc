@@ -864,14 +864,12 @@ void FluxboxWindow::moveClientLeft() {
     if (m_clientlist.size() == 1 ||
         *m_clientlist.begin() == &winClient())
         return;
-    // move label button to the left
-    frame().moveLabelButtonLeft(*m_labelbuttons[&winClient()]);
+    
     // move client in clientlist to the left
-    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), &winClient());
-    ClientList::iterator new_pos = it;
-    new_pos--;
-    m_clientlist.erase(it);
-    m_clientlist.insert(new_pos, &winClient());
+    ClientList::iterator oldpos = find(m_clientlist.begin(), m_clientlist.end(), &winClient());
+    ClientList::iterator newpos = oldpos; newpos--;
+    std::swap(*newpos, *oldpos);
+    frame().moveLabelButtonLeft(*m_labelbuttons[&winClient()]);
 
     updateClientLeftWindow();
 
@@ -879,15 +877,13 @@ void FluxboxWindow::moveClientLeft() {
 
 void FluxboxWindow::moveClientRight() {
     if (m_clientlist.size() == 1 ||
-            *m_clientlist.rbegin() == &winClient())
+        *m_clientlist.rbegin() == &winClient())
         return;
-    // move label button to the right
+    
+    ClientList::iterator oldpos = find(m_clientlist.begin(), m_clientlist.end(), &winClient());
+    ClientList::iterator newpos = oldpos; newpos++;
+    std::swap(*newpos, *oldpos);
     frame().moveLabelButtonRight(*m_labelbuttons[&winClient()]);
-    // move client in clientlist to the right
-    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), &winClient());
-    ClientList::iterator new_pos = m_clientlist.erase(it);
-    new_pos++;
-    m_clientlist.insert(new_pos, &winClient());
 
     updateClientLeftWindow();
 }

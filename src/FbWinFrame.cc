@@ -372,7 +372,7 @@ void FbWinFrame::moveLabelButtonLeft(FbTk::TextButton &btn) {
 }
 
 void FbWinFrame::moveLabelButtonRight(FbTk::TextButton &btn) {
-    m_tab_container.moveItem(&btn, -1);
+    m_tab_container.moveItem(&btn, +1);
 }
 
 void FbWinFrame::moveLabelButtonTo(FbTk::TextButton &btn, int x, int y) {
@@ -394,7 +394,7 @@ void FbWinFrame::moveLabelButtonRightOf(FbTk::TextButton &btn, const FbTk::TextB
     if (pos < 0)
         return;
 
-    m_tab_container.moveItem(&btn, pos-1);
+    m_tab_container.moveItem(&btn, pos+1);
 }
 
 void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {

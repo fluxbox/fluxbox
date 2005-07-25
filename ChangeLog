@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/07/25:
+    Fix for #1240248, Segfaults for :MoveTabLeft/Right (Mathias)
+    Container.cc FbWinFrame.cc Window.cc
 *05/07/20:
     Changed some *Focus options (Mathias)
     removed SloppyFocus, SemiSloppyFocus and ClickToFocus options

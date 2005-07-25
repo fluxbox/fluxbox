@@ -28,6 +28,8 @@
 #include "FbTk/EventManager.hh"
 #include "CompareWindow.hh"
 
+#include <algorithm>
+
 Container::Container(const FbTk::FbWindow &parent):
     FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), 
     m_align(RELATIVE),
@@ -113,35 +115,31 @@ void Container::insertItem(Item item, int pos) {
 }
 
 void Container::moveItem(Item item, int movement) {
-    int index = find(item);
-    if (index < 0)
-        return;
 
-    int size = m_item_list.size();
+    int index = find(item);
+    const int size = m_item_list.size();
+
+    if (index < 0 || (movement % size) == 0) {
+        return;
+    }
+
     int newindex = (index + movement) % size;
     if (newindex < 0) // neg wrap
         newindex += size;
 
-    if (newindex > index) // one smaller now
-        --newindex;
-
-    ItemList::iterator it = m_item_list.begin();
-    for (; newindex > 0 && index > 0; ++it, --newindex, --index) {
+    ItemList::iterator it = std::find(m_item_list.begin(), 
+                                      m_item_list.end(), 
+                                      item);
+    m_item_list.erase(it);
+    
+    for (it = m_item_list.begin(); newindex >= 0; ++it, --newindex) {
         if (newindex == 0) {
-            m_item_list.insert(it, item);
-            ++newindex;
-        }
-
-        if (index == 0) {
-            m_item_list.erase(it);
-            --index;
+            break;
         }
     }
 
-            m_item_list.insert(it, item);
-    insertItem(item, newindex);
+    m_item_list.insert(it, item);
     repositionItems();
-
 }
 
 // returns true if something was done
