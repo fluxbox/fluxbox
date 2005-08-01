@@ -26,7 +26,7 @@ toolbar.button.pressed:			flat gradient vertical
      toolbar.button.pressed.color:	#0f1319
      toolbar.button.pressed.colorTo:	#7a8290
 
-toolbar.workspace:			raised gradient vertical
+toolbar.workspace:			parentrelative
      toolbar.workspace.borderWidth:	0
      toolbar.workspace.color:		#585858
      toolbar.workspace.colorTo: 	#0f1319
