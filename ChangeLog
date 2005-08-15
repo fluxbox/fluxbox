@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/08/15
+   * Added uk_UA locales (Thanks Anatoli Sakhnik and php-coder)
+     nls/uk_UA/*, configure.in, nls/Makefile.ams
 *05/07/25:
     Fix for #1240248, Segfaults for :MoveTabLeft/Right (Mathias)
     Container.cc FbWinFrame.cc Window.cc
