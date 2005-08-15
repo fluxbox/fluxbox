@@ -4,7 +4,7 @@ LOCALE_PATH = @LOCALE_PATH@
 NLSTEST = @NLS@
 SUBDIRS = C cs_CZ da_DK es_ES et_EE fr_FR pt_BR ru_RU \
 		  sv_SE tr_TR it_IT pt_PT bg_BG ja_JP ko_KR \
-		  lv_LV de_DE nl_NL sl_SI pl_PL vi_VN be_BY
+		  lv_LV de_DE nl_NL sl_SI pl_PL vi_VN be_BY uk_UA
 
 MAINTAINERCLEANFILES = Makefile.in fluxbox-nls.hh
 EXTRA_DIST=fluxbox-nls.hh nlsinfo
