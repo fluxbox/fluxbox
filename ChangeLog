@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/08/17
+   * Added the 'Education' submenu to fbgm (thanx Lam)
+     fluxbox-generate_menu.in
 *05/08/15
    * Added uk_UA locales (Thanks Anatoli Sakhnik and php-coder)
      nls/uk_UA/*, configure.in, nls/Makefile.ams

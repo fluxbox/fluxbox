@@ -570,6 +570,7 @@ BACKGROUNDMENUTITLE='Set the Background'
 BROWSERMENU='Browsers'
 CONFIGUREMENU='Configure'
 EDITORMENU='Editors'
+EDUCATIONMENU='Education'
 EXITITEM='Exit'
 FBSETTINGSMENU='fluxbox menu'
 FILEUTILSMENU='File utils'
@@ -1537,6 +1538,13 @@ append_submenu "${EDITORMENU}"
     cli_find nano vim vi zile jed joe
     find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
     find_it     xemacs append "[exec]   (xemacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
+append_menu_end
+
+append_submenu "${EDUCATIONMENU}"
+    normal_find celestia scilab geomview scigraphica oregano xcircuit electric \
+        pymol chemtool xdrawchem 
+    find_it     R          append "[exec] (R) {${DEFAULT_TERM} -e R --gui=gnome}"
+    cli_find maxima grace yacas octave gnuplot grass coq acl
 append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
