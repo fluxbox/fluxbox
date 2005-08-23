@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
-*05/08/17
+*05/08/23:
+   * Fixed unresolved symbols when configure --disable-regexp (Mathias)
+     src/Makefile.am
+*05/08/17:
    * Added the 'Education' submenu to fbgm (thanx Lam)
      fluxbox-generate_menu.in
 *05/08/15

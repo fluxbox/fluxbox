@@ -99,6 +99,6 @@ bool RegExp::error() const {
 #ifdef USE_REGEXP
     return m_regex == 0; 
 #else
-    return return m_str == "";
+    return m_str == "";
 #endif // USE_REGEXP
 }

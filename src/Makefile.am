@@ -65,11 +65,9 @@ if GNOME
 gnome_SOURCE= Gnome.hh Gnome.cc
 endif
 if REMEMBER_SRC
-REMEMBER_SOURCE= Remember.hh Remember.cc
 # For now we only want regexp if we have remember
-if REGEXP_SRC
-REGEXP_SOURCE = RegExp.hh RegExp.cc ClientPattern.hh ClientPattern.cc
-endif
+REMEMBER_SOURCE= Remember.hh Remember.cc \
+	RegExp.hh RegExp.cc ClientPattern.hh ClientPattern.cc
 endif
 if TOOLBAR_SRC
 TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \
@@ -130,7 +128,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Resources.cc \
 	WindowCmd.hh WindowCmd.cc \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
-	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
+	${REMEMBER_SOURCE} ${TOOLBAR_SOURCE}
 
 
 LDADD=FbTk/libFbTk.a defaults.$(OBJEXT)
