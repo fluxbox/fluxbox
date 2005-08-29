@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/08/30:
+   * Added el_GR (greek) Translation (thanx to Theofilos Intzoglou)
+     nls/el_GR/*
 *05/08/23:
    * Fixed unresolved symbols when configure --disable-regexp (Mathias)
      src/Makefile.am
