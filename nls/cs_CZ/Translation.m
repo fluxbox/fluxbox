@@ -43,7 +43,7 @@ $set 3 #Common
 14 Chyba
 15 Verze Fluxboxu
 16 Maximalizovat pøes v¹echna okna
-17 Viditelný
+18 Viditelný
 
 $set 4 #Configmenu
 

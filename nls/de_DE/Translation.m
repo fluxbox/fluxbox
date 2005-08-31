@@ -43,7 +43,7 @@ $set 3 #Common
 14 Fehler
 15 Fluxbox Version
 16 Durch maximierte Fenster verdecken
-17 Sichtbar
+18 Sichtbar
 
 $set 4 #Configmenu
 

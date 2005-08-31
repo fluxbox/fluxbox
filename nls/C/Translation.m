@@ -44,7 +44,8 @@ $set 3 #Common
 14 Error
 15 Fluxbox version
 16 Maximize Over
-17 Visible
+17 SVN Revision
+18 Visible
 
 $set 4 #Configmenu
 

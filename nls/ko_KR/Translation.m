@@ -43,7 +43,7 @@ $set 3 #Common
 14 Error
 15 Fluxbox version
 16 창 최대화 시 덮기
-17 툴바 표시
+18 툴바 표시
 
 $set 4 #Configmenu
 

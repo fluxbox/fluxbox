@@ -40,7 +40,7 @@ $set 3 #Common
 14 Lỗi
 15 Phiên bản fluxbox
 16 Phóng đại che hết màn hình
-17 Có thể nhìn thấy
+18 Có thể nhìn thấy
 
 $set 4 #Configmenu
 

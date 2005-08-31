@@ -47,7 +47,8 @@ enum {
 	CommonError = 14,
 	CommonFluxboxVersion = 15,
 	CommonMaximizeOver = 16,
-	CommonVisible = 17,
+	CommonSvnRevision = 17,
+	CommonVisible = 18,
 
 	ConfigmenuSet = 4,
 	ConfigmenuAntiAlias = 1,

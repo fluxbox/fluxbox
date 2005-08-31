@@ -42,7 +42,7 @@ $set 3 #Common
 14 B³±d
 15 Fluxbox wersja
 16 Maksymalizuj nad
-17 Widoczny
+18 Widoczny
 
 
 
