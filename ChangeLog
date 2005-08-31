@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/08/31:
+   * Added SVN Revision number output in info output (Thanks php-coder)
+     nls/*/Translation.m, nls/fluxbox-nls.hh src/main.cc
 *05/08/30:
    * Added el_GR (greek) Translation (thanx to Theofilos Intzoglou)
      nls/el_GR/*
