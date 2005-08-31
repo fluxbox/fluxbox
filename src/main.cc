@@ -65,7 +65,7 @@ void showInfo(ostream &ostr) {
     ostr<<_FBTEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")<<": "<<__fluxbox_version<<endl;
 
     if (strlen(svnversion()) > 0)
-        ostr<<"SVN Revision: "<<svnversion()<<endl;
+        ostr << _FBTEXT(Common, SvnRevision, "SVN Revision", "Revision number in SVN repositary") << ": " << svnversion() << endl;
 #if defined(__DATE__) && defined(__TIME__)
     ostr<<_FBTEXT(Common, Compiled, "Compiled", "Time fluxbox was compiled")<<": "<<__DATE__<<" "<<__TIME__<<endl;
 #endif
