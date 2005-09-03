@@ -62,16 +62,19 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     width(static_cast<signed>((w > 0 ? w : 1))), height(static_cast<signed>(h > 0 ? h : 1)),
     xtable(0), ytable(0) {
 
+    unsigned int texture_max_width = WidthOfScreen(ScreenOfDisplay(FbTk::App::instance()->display(), imgctrl.screenNumber())) * 2;
+    unsigned int texture_max_height = HeightOfScreen(ScreenOfDisplay(FbTk::App::instance()->display(), imgctrl.screenNumber())) * 2;
+    
     _FB_USES_NLS;
     // clamp to "normal" size
-    if (width > 3200) {
+    if (width > texture_max_width) {
         cerr<<"TextureRender: "<<_FBTKTEXT(Error, BigWidth, "Warning! Width > 3200 setting Width = 3200", "Image width seems too big, clamping")<<endl;
-        width = 3200;
+        width = texture_max_width;
     }
 
-    if (height > 3200) {
+    if (height > texture_max_height) {
         cerr<<"TextureRender: "<<_FBTKTEXT(Error, BigHeight, "Warning! Height > 3200 setting Height = 3200", "Image height seems too big, clamping")<<endl;
-        height = 3200;
+        height = texture_max_height;
     }
 
 

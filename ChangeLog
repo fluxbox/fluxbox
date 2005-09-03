@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/09/03:
+   * Exchanged the hardcoded 3200 pixel limit for texture size to
+     a calculated value based on screen dimensions (Mathias)
+     FbTk/TextureRender.cc
 *05/08/31:
    * Added SVN Revision number output in info output (Thanks php-coder)
      nls/*/Translation.m, nls/fluxbox-nls.hh src/main.cc
