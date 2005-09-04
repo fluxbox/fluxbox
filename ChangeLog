@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/09/04:
+   * Added Feature Request #1084510 (Mathias)
+     When Mod1 + LeftMouse are clicked on a Window and the mouse is not
+     moved, the window is raised at LeftMouseRelease
+     src/Window.cc
 *05/09/03:
    * Exchanged the hardcoded 3200 pixel limit for texture size to
      a calculated value based on screen dimensions (Mathias)
