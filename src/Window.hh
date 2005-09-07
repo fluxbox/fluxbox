@@ -208,6 +208,10 @@ public:
     void maximizeFull();
     /// toggles shade
     void shade();
+    /// shades window
+    void shadeOn();
+    /// unshades window
+    void shadeOff();
     /// toggles sticky
     void stick();
     void raise();

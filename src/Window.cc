@@ -1788,6 +1788,19 @@ void FluxboxWindow::shade() {
 
 }
 
+void FluxboxWindow::shadeOn() {
+
+    if (!shaded)
+        shade();
+
+}
+
+void FluxboxWindow::shadeOff() {
+
+    if (shaded)
+        shade();
+
+}
 
 void FluxboxWindow::stick() {
 
@@ -3752,6 +3765,10 @@ void FluxboxWindow::setupWindow() {
     CommandRef maximize_horiz_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeHorizontal));
     CommandRef close_cmd(new WindowCmd(*this, &FluxboxWindow::close));
     CommandRef shade_cmd(new WindowCmd(*this, &FluxboxWindow::shade));
+    CommandRef shade_on_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOn));
+    CommandRef shade_off_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOff));
+    CommandRef next_tab_cmd(new WindowCmd(*this, &FluxboxWindow::nextClient));
+    CommandRef prev_tab_cmd(new WindowCmd(*this, &FluxboxWindow::prevClient));
     CommandRef raise_cmd(new WindowCmd(*this, &FluxboxWindow::raise));
     CommandRef lower_cmd(new WindowCmd(*this, &FluxboxWindow::lower));
     CommandRef raise_and_focus_cmd(new WindowCmd(*this, &FluxboxWindow::raiseAndFocus));
@@ -3837,6 +3854,19 @@ void FluxboxWindow::setupWindow() {
     frame().setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
     frame().setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
     frame().setOnClickTitlebar(lower_cmd, 2); // on release with button 2
+
+    int reverse = 0;
+    if (screen().getScrollReverse())
+        reverse = 1;
+    
+    if (StringUtil::strcasestr(screen().getScrollAction(), std::string("shade")) == 0) {
+        frame().setOnClickTitlebar(shade_on_cmd, 5 - reverse); // shade on mouse roll
+        frame().setOnClickTitlebar(shade_off_cmd, 4 + reverse); // unshade if rolled oposite direction
+    } else if (StringUtil::strcasestr(screen().getScrollAction(), std::string("nexttab")) == 0) {
+        frame().setOnClickTitlebar(next_tab_cmd, 5 - reverse); // next tab
+        frame().setOnClickTitlebar(prev_tab_cmd, 4 + reverse); // previous tab
+    }
+
     frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
 
     // end setup frame

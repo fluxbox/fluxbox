@@ -202,7 +202,10 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     gc_cap_style(rm,
                  FbTk::GContext::CAPNOTLAST,
                  scrname+".overlay.capStyle",
-                 altscrname+".overlay.CapStyle") {
+                 altscrname+".overlay.CapStyle"),
+    scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
+    scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse") {
+    
 
 }
 

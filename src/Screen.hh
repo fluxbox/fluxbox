@@ -141,6 +141,9 @@ public:
     
     inline FollowModel getFollowModel() const { return *resource.follow_model; }
 
+    inline const std::string &getScrollAction() const { return *resource.scroll_action; }
+    inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
+
     inline Slit *slit() { return m_slit.get(); }
     inline const Slit *slit() const { return m_slit.get(); }
 
@@ -465,6 +468,8 @@ private:
         FbTk::Resource<FbTk::GContext::LineStyle> gc_line_style;
         FbTk::Resource<FbTk::GContext::JoinStyle> gc_join_style;
         FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
+        FbTk::Resource<std::string> scroll_action;
+        FbTk::Resource<bool> scroll_reverse;
 
     } resource;
 

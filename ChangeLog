@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/09/08:
+   * Add titlebar scrolling options (thanks Krzysiek Pawlik <krzysiek.pawlik__AT__people.pl>)
+     New init options:
+       session.screenN.windowScrollAction: Shade|NextTab
+       - set the action that happens when scrolling on the titlebar
+       session.screenN.windowScrollReverse: true|false
+       - reverse the action direction
+     Screen.hh/cc Window.hh/cc
 *05/09/04:
    * Added Feature Request #1084510 (Mathias)
      When Mod1 + LeftMouse are clicked on a Window and the mouse is not
