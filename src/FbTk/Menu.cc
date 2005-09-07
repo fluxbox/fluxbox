@@ -447,7 +447,7 @@ void Menu::updateMenu(int active_index) {
     // the rest can wait until the end
     menu.window.resize(new_width, new_height);
 
-    if (!m_visible)
+    if (!isVisible())
         return;
 
     if (menu.frame.alpha() != alpha())
@@ -524,18 +524,17 @@ void Menu::updateMenu(int active_index) {
 
 void Menu::show() {
 
-    if (m_visible)
+    if (isVisible())
         return;
 
-    if (m_need_update) {
-        m_visible = true;
+    m_visible = true;
+
+    if (m_need_update)
         updateMenu();
-    }
 
     menu.window.showSubwindows();
     menu.window.show();
     raise();
-    m_visible = true;
 
     if (! m_parent && shown != this) {
         if (shown && (! shown->m_torn))
@@ -551,7 +550,6 @@ void Menu::hide() {
 
     if (!isVisible())
         return;
-
 
     // if not m_torn and parent is m_visible, go to first parent
     // and hide it
@@ -675,10 +673,11 @@ void Menu::drawSubmenu(unsigned int index) {
     if (index >= menuitems.size())
         return;
 
+
     MenuItem *item = menuitems[index];
-    if (item->submenu() && m_visible && (! item->submenu()->isTorn()) &&
+    if (item->submenu() && isVisible() && (! item->submenu()->isTorn()) &&
         item->isEnabled()) {
-			
+
         if (item->submenu()->m_parent != this)
             item->submenu()->m_parent = this;
 
@@ -951,16 +950,17 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
         if (w == m_active_index)
             return;
-       
-        if (validIndex(m_active_index) && w != m_active_index) {
 
-            int old = m_active_index;
+        
+
+        if (validIndex(m_active_index) && w != m_active_index) {
+            int old_active_index = m_active_index;
             m_active_index = -1;
-            MenuItem *item = menuitems[old];
+            MenuItem *item = menuitems[old_active_index];
 
             if (item != 0) {
 
-                clearItem(old);
+                clearItem(old_active_index);
 
                 if (item->submenu()) {
                     if (item->submenu()->isVisible() &&
@@ -1006,7 +1006,6 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                 timeout.tv_usec = theme().delayOpen() * 1000; // transformed to usec
                 m_submenu_timer.setTimeout(timeout);
                 m_submenu_timer.start();
-
             }
 
         } else if (isItemSelectable(w)){
@@ -1172,6 +1171,7 @@ void Menu::reconfigure() {
     
 
 void Menu::openSubmenu() {
+
     if (!isVisible() || ! validIndex(m_which_press) ||
         ! validIndex(m_which_sbl))
         return;
@@ -1181,8 +1181,14 @@ void Menu::openSubmenu() {
         return;
 
     clearItem(item);
-    if (menuitems[item]->submenu() != 0 && !menuitems[item]->submenu()->isVisible())
+    
+    if (menuitems[item]->submenu() != 0) {
+        // stop hide timer, so it doesnt hides the menu if we
+        // have the same submenu as the last shown submenu 
+        // (window menu for clients inside workspacemenu for example)
+        menuitems[item]->submenu()->m_hide_timer.stop();
         drawSubmenu(item);
+    }
 
 }
 
