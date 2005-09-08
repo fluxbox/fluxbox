@@ -39,6 +39,7 @@
 #include "WindowCmd.hh"
 #include "Remember.hh"
 #include "MenuCreator.hh"
+#include "StringUtil.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/TextButton.hh"
@@ -3859,10 +3860,10 @@ void FluxboxWindow::setupWindow() {
     if (screen().getScrollReverse())
         reverse = 1;
     
-    if (StringUtil::strcasestr(screen().getScrollAction(), std::string("shade")) == 0) {
+    if (StringUtil::toLower(screen().getScrollAction()) == std::string("shade")) {
         frame().setOnClickTitlebar(shade_on_cmd, 5 - reverse); // shade on mouse roll
         frame().setOnClickTitlebar(shade_off_cmd, 4 + reverse); // unshade if rolled oposite direction
-    } else if (StringUtil::strcasestr(screen().getScrollAction(), std::string("nexttab")) == 0) {
+    } else if (StringUtil::toLower(screen().getScrollAction()) == std::string("nexttab")) {
         frame().setOnClickTitlebar(next_tab_cmd, 5 - reverse); // next tab
         frame().setOnClickTitlebar(prev_tab_cmd, 4 + reverse); // previous tab
     }
