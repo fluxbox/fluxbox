@@ -83,6 +83,10 @@ void WinButtonTheme::reconfigTheme() {
     m_maximize_unfocus_pm->scale(size, size);
     m_maximize_pressed_pm->scale(size, size);
 
+    m_menuicon_pm->scale(size, size);
+    m_menuicon_unfocus_pm->scale(size, size);
+    m_menuicon_pressed_pm->scale(size, size);
+
     m_iconify_pm->scale(size, size);
     m_iconify_unfocus_pm->scale(size, size);
     m_iconify_pressed_pm->scale(size, size);

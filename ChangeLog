@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.14:
+*05/09/12:
+   * Fixes #1281708, MenuIcon doesnt scale properly (thanx Erik-Jan)
+     src/WinButtonTheme.cc
 *05/09/08:
    * Fixed bug in client menu. Window menu did not open. (Henrik)
       FbTk/Menu.cc
