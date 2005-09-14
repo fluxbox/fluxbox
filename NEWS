@@ -5,7 +5,7 @@ News in 0.9.14:
        * session.screenN.windowScrollReverse: true|false
          - reverse the action direction
     * New locales: uk_UA, be_BY, el_GR
-    * Focus options: (Mathias)
+    * Focus options: 
       SloppyFocus, SemiSloppyFocus and ClickToFocus options are now
       MouseFocus, ClickFocus, MouseTabFocus and ClickTabFocus
     * Renamed bsetroot to fbsetroot
@@ -24,8 +24,9 @@ News in 0.9.14:
       - Usage of xft-fonts is prefered, except a font-description starts with '-'
       - Removed "antialias"-option completly, to enable/disable "antialias"
         use either  <fontname>:antialias=<bool> in the style or use
+        Xft.antialias: <bool> in your .Xdefaults
       - Added caching of fonts, fonts are only loaded once.        
-      Xft.antialias: <bool> in your .Xdefaults
+      
       * New style resources: 
         *.font.effect: <halo|shadow>
         *.font.shadow.x : <int>       - shadow x offset
