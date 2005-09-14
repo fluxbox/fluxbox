@@ -54,4 +54,4 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	${xpm_SOURCE} \
 	${xft_SOURCE} \
 	${xmb_SOURCE} \
-	${imlib2_SOURCE}
+	$(imlib2_SOURCE)
