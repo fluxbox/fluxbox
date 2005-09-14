@@ -29,6 +29,8 @@
 
 #include "FbTk/NotCopyable.hh"
 
+#include <memory>
+
 class ToolbarItem;
 class BScreen;
 class Toolbar;
