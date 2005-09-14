@@ -45,7 +45,10 @@
 #else
   #include <stdio.h>
 #endif
+
 #include <iostream>
+#include <memory>
+
 namespace FbTk {
 
 using std::string;
