@@ -42,7 +42,7 @@ News in 0.9.14:
       None 10 :NextWorkspace
       where 10 is the keycode for '1'
     * Added new configure option --with-locale=path
-    redirects location of nls directories.
+      redirects location of nls directories.
 Bug fixes:
     * #1281708, MenuIcon does not scale properly
     * #1240248, Segfaults for :MoveTabLeft/Right
