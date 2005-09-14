@@ -30,6 +30,7 @@
 #include "FbTk/NotCopyable.hh"
 
 #include <list>
+#include <functional>
 
 class Container:public FbTk::FbWindow, public FbTk::EventHandler, private FbTk::NotCopyable {
 public:
