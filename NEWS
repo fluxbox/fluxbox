@@ -1,46 +1,55 @@
-News in 0.9.13: 
-
-    * Massive speed- and memoryimprovements
-    * Added new Buttons for the Titlebar:
-        - Shade - just like the "Stick"-button
-          Styleresources:
-            window.shade.pixmap, window.shade.unfocus.pixmap, window.shade.pressed.pixmap
-            window.unshade.pixmap, window.unshade.unfocus.pixmap, window.unshade.pressed.pixmap
-            etc.
-        - MenuIcon - click on it provides the windowmenu, if the app
-          contains a pixmap (gvim, konqueror etc etc) the pixmap is displayed, a
-          little menu otherwise. 
-          Styleresources:
-            window.menuicon.pixmap, window.menuicon.unfocus.pixmap
-            window.menuicon.pressed.pixmap
-            etc.
-        Example ~/.fluxbox/init - entry:
-          session.titlebar.left: MenuIcon Stick
-          session.titlebar.right: Shade Minimize Maximize Close
-    * Added more KeyActions to TextBoxes
-        - Control + LeftArrow  - Moves cursor to the left direction, up to next word.
-        - Control + RightArrow - to the right direction.
-        - Control + BackSpace  - Removes everything from the cursor left side, up to next left word.
-        - Control + Delete     - like above but removes to the right direction.
-    * Added some style-resources:
-        - menu.hilite.submenu.pixmap:    <Pixmap>
-        - menu.hilite.selected.pixmap:   <Pixmap>
-        - menu.hilite.unselected.pixmap: <Pixmap>
-    * Added new IconbarModes:
-        - NoIcons   - all but iconified windows
-        - WorkspaceNoIcons - all but iconified windows on the current Workspace
-    * Added -screen <"all"|int[,int]> :
-       $> fluxbox -screen 0,2      will run fluxbox on 0.0 and 0.2 so
-                                   one can run any other wm on 0.1.
-       $> fluxbox -screen all      default, fluxbox manages all screens
-    * fluxbox-generate_menu now can add pixmaps to the menuentries
-
+News in 0.9.14: 
+    * Titlebar scrolling options 
+       * session.screenN.windowScrollAction: Shade|NextTab
+         - set the action that happens when scrolling on the titlebar
+       * session.screenN.windowScrollReverse: true|false
+         - reverse the action direction
+    * New locales: uk_UA, be_BY, el_GR
+    * Focus options: (Mathias)
+      SloppyFocus, SemiSloppyFocus and ClickToFocus options are now
+      MouseFocus, ClickFocus, MouseTabFocus and ClickTabFocus
+    * Renamed bsetroot to fbsetroot
+    * Improved move to action: 
+       * MoveTo <int|*> <int|*> <Reference Corner>
+         - * means "use current value"
+         - Reference Corner is one of:
+           - UpperLeft, Upper, UpperRight
+           - Left, Right
+           - LowerLeft, Lower, Right
+       examples:
+         MoveTo 0 * Left       -> snap to left workspace edge
+         MoveTo * 0 Lower      -> snap to lower workspace edge
+         MoveTo 0 0 UpperRight -> snap to upper right workspace corner
+    * Font changes:
+      - Usage of xft-fonts is prefered, except a font-description starts with '-'
+      - Removed "antialias"-option completly, to enable/disable "antialias"
+        use either  <fontname>:antialias=<bool> in the style or use
+      - Added caching of fonts, fonts are only loaded once.        
+      Xft.antialias: <bool> in your .Xdefaults
+      * New style resources: 
+        *.font.effect: <halo|shadow>
+        *.font.shadow.x : <int>       - shadow x offset
+        *.font.shadow.y : <int>       - shadow y offset
+        *.font.shadow.color : <color> - color of shadow
+        *.font.halo.color : <color>   - color of halo
+      - Removed 'shadow' and 'halo' options from fontdefinitions
+      - Style authors may specify multiple fonts:
+        <font1>|<font2>|<font3>
+        
+    * Keycodes can now be used in the keys file.
+      Example:
+      None 10 :NextWorkspace
+      where 10 is the keycode for '1'
+    * Added new configure option --with-locale=path
+    redirects location of nls directories.
 Bug fixes:
-    * Mutiple keyboard layout (#1160244, #1099704, #1094107)
-    * ArrangeWindows (#1086673)
-    * Inconsistent behavior of Java dialogs (#1157361)
-    * fbrun segfault (#1188690)
-    * ShowDesktop (#1020399)
-    * 64bit issues (#1107213, #1105041)
+    * #1281708, MenuIcon does not scale properly
+    * #1240248, Segfaults for :MoveTabLeft/Right
+    * #1206821, unportable usage of grep in fbgm
+    * #1116965, #1047529, shaded windows on restart
+    * #1213003, SendToWorkspace shouldnt follow
+    * #1216020, *.font.effect wont get cleared if not defined in style
+    * #1213262, justification in WorkspaceNameTool 
+    * Fixed systemtray overlap
 
 See ChangeLog for more details
