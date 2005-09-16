@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+   * Click of LeftMouseButton should always setInputFocus (thanx Eike von Seggern)
+     solves problem with focus changes via key and then not beeing
+     able to focus the window underneath the mouse with a simple
+     click in MouseFocus mode
+     src/Window.cc
    * Use fbsetroot in Default-Styles (Mathias)
      data/styles/*
 -------------------------------------------------------------   
