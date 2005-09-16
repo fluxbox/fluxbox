@@ -2647,7 +2647,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     frame().buttonPressEvent(be);
 
     if (be.button == 1 || (be.button == 3 && be.state == Mod1Mask)) {
-        if ((! focused) ) {
+        if ((! focused) && (! screen().isMouseFocus())) { //check focus
             setInputFocus();
         }
 
