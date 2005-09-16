@@ -117,7 +117,7 @@ bevelWidth:				2
 handleWidth:				4
 frameWidth:				0
 
-rootCommand:				bsetroot -solid "#3a404b"
+rootCommand:				fbsetroot -solid "#3a404b"
 
 ! ***** bbpager *****
 bbpager.frame:				sunken gradient crossdiagonal

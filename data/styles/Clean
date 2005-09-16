@@ -114,4 +114,4 @@ bevelWidth:                          1
 borderWidth:                         1
 handleWidth:                         2
 
-rootCommand:                         bsetroot -solid rgb:9A/9A/90
+rootCommand:                         fbsetroot -solid rgb:9A/9A/90

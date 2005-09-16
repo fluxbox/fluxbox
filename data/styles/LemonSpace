@@ -125,4 +125,4 @@ window.tab.label.unfocus.textColor:  rgb:5a/5a/5a
 window.tab.label.focus.textColor:    rgb:1a/04/08
 ! -
 
-rootCommand:                         bsetroot -solid rgb:db/bc/83
+rootCommand:                         fbsetroot -solid rgb:db/bc/83

@@ -100,4 +100,4 @@ handleWidth:                    4
 *textColor:                     grey85
 *Font:                          lucidasans-10
 
-rootCommand:                    bsetroot -solid grey20
+rootCommand:                    fbsetroot -solid grey20

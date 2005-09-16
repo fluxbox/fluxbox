@@ -99,4 +99,4 @@ handleWidth:                     5
 *font:                           -b&h-lucida-medium-r-normal-*-*-100-*-*-p-*-iso8859-*
 *textColor:                      black
 
-rootCommand:                     bsetroot -mod 16 8 -bg rgb:0/8/8 -fg rgb:0/9/9
+rootCommand:                     fbsetroot -mod 16 8 -bg rgb:0/8/8 -fg rgb:0/9/9

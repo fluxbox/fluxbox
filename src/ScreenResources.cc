@@ -30,11 +30,6 @@
 using namespace std;
 
 template <>
-void FbTk::Resource<BScreen::PlacementPolicy>::setDefaultValue() {
-    *(*this) = BScreen::ROWSMARTPLACEMENT;
-}
-
-template <>
 void FbTk::Resource<BScreen::PlacementPolicy>::setFromString(const char *str) {
     if (strcasecmp("RowSmartPlacement", str) == 0)
         *(*this) = BScreen::ROWSMARTPLACEMENT;
@@ -66,11 +61,6 @@ string FbTk::Resource<BScreen::PlacementPolicy>::getString() {
 }
 
 template <>
-void FbTk::Resource<BScreen::RowDirection>::setDefaultValue() {
-    *(*this) = BScreen::LEFTRIGHT;
-}
-
-template <>
 void FbTk::Resource<BScreen::RowDirection>::setFromString(const char *str) {
     if (strcasecmp("LeftToRight", str) == 0)
         *(*this) = BScreen::LEFTRIGHT;
@@ -95,11 +85,6 @@ string FbTk::Resource<BScreen::RowDirection>::getString() {
 
 
 template <>
-void FbTk::Resource<BScreen::ColumnDirection>::setDefaultValue() {
-    *(*this) = BScreen::TOPBOTTOM;
-}
-
-template <>
 void FbTk::Resource<BScreen::ColumnDirection>::setFromString(const char *str) {
     if (strcasecmp("TopToBottom", str) == 0)
         *(*this) = BScreen::TOPBOTTOM;
@@ -120,11 +105,6 @@ string FbTk::Resource<BScreen::ColumnDirection>::getString() {
     }
 
     return "TopToBottom";
-}
-
-template <>
-void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setDefaultValue() {
-    *(*this) = FbTk::MenuTheme::DELAY_OPEN;
 }
 
 template <>
@@ -316,11 +296,6 @@ void FbTk::Resource<FbTk::GContext::JoinStyle>
         m_value = FbTk::GContext::JOINBEVEL;
     else
         setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::CapStyle>::setDefaultValue() {
-    *(*this) = FbTk::GContext::CAPNOTLAST;
 }
 
 template<>

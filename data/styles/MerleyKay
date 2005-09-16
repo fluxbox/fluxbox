@@ -131,4 +131,4 @@ bevelWidth:                          2
 borderWidth:                         2
 handleWidth:                         3
 
-rootCommand:                         bsetroot -mod 5 5 -fg rgb:62/70/85 -bg rgb:52/60/75
+rootCommand:                         fbsetroot -mod 5 5 -fg rgb:62/70/85 -bg rgb:52/60/75

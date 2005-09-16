@@ -104,6 +104,6 @@ bevelWidth:                     1
 borderWidth:                    1
 handleWidth:                    3
 
-rootCommand:                    bsetroot -mod 2 2 -fg rgb:48/50/68 -bg rgb:50/58/70
+rootCommand:                    fbsetroot -mod 2 2 -fg rgb:48/50/68 -bg rgb:50/58/70
 
 *Font:  lucidasans-10

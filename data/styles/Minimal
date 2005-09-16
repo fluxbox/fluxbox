@@ -76,4 +76,4 @@ handleWidth:                    4
 
 *Font:                          -*-helvetica-*-r-*-*-12-*-*-*-*-*-*-*
 
-rootCommand:                    bsetroot -solid SlateGrey
+rootCommand:                    fbsetroot -solid SlateGrey

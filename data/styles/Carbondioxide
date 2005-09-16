@@ -132,4 +132,4 @@ bevelWidth:                          2
 borderWidth:                         1
 handleWidth:                         3
 
-rootCommand:                         bsetroot -gradient flatverticalgradient -from black -to white
+rootCommand:                         fbsetroot -gradient flatverticalgradient -from black -to white

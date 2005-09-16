@@ -1,4 +1,8 @@
 (Format: Year/Month/Day)
+Changes for 0.9.15:
+   * Use fbsetroot in Default-Styles (Mathias)
+     data/styles/*
+-------------------------------------------------------------   
 Changes for 0.9.14:
 *05/09/12:
    * Fixes #1281708, MenuIcon doesnt scale properly (thanx Erik-Jan)

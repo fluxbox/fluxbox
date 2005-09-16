@@ -124,5 +124,5 @@ bevelWidth:                          1
 frameWidth:                          1
 handleWidth:                         4
 
-rootCommand:                         bsetroot -solid "#d6d7e7"
+rootCommand:                         fbsetroot -solid "#d6d7e7"
 *font:                               glisp

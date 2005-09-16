@@ -131,4 +131,4 @@ borderWidth:                         1
 bevelWidth:                          2
 handleWidth:                         4
 frameWidth:                          0
-rootCommand:                         bsetroot -solid white
+rootCommand:                         fbsetroot -solid white
