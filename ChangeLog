@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/09/25:
+   * added nls for "-screen" argument (Thanks php-coder)
+     nls/*/Translation.m, nls/fluxbox-nls.hh
+*05/09/13:
    * Use fbsetroot in Default-Styles (Mathias)
      data/styles/*
 -------------------------------------------------------------   
