@@ -238,14 +238,14 @@ $set 19 #main
 9 Log File
 10 Logging to
 11 error: '-rc' requires an argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tuse display connection.\n\
 -rc <string>\t\t\tuse alternate resource file.\n\
 -version\t\t\tdisplay version and exit.\n\
 -info\t\t\t\tdisplay some useful information.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tdisplay this help text and exit.\n\n
-13 warning: couldn't set environment variable 'DISPLAY'
+14 warning: couldn't set environment variable 'DISPLAY'
 
 $set 20
 

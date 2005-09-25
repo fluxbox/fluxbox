@@ -244,14 +244,14 @@ $set 19 #main
 9 Plik dziennika
 10 Zapisujê dziennik
 11 b³±d: '-rc' wymaga argumentu\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tu¿yj po³±czenia ekranu.\n\
 -rc <string>\t\t\tu¿yj innego pliku zasobów.\n\
 -version\t\t\twy¶wietlam wersjê i wychodzê.\n\
 -info\t\t\t\twy¶wietlam przydatne informacje.\n\
 -log <filename>\t\t\tlogi przesy³am do pliku.\n\
 -help\t\t\t\twy¶wietlam tê pomoc i wychodzê.\n\
-13 Nie mog³em ustawiæ zmiennej ¶rodowiskowej 'DISPLAY'\n\n
+14 Nie mog³em ustawiæ zmiennej ¶rodowiskowej 'DISPLAY'\n\n
  
 
 $set 20 #layers

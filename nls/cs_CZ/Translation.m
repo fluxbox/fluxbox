@@ -238,14 +238,14 @@ $set 19 #main
 9 Logovací soubor
 10 Loguji do
 11 chyba: '-rc' vy¾aduje argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tpouz¾ije propojení s displejem <string>.\n\
 -rc <string>\t\t\tpouzije alternativní soubor zdrojù (resource file).\n\
 -version\t\t\tzobrazi verzi a skonci.\n\
 -info\t\t\t\tzobrazi nektere zajimave informace.\n\
 -log <filename>\t\t\tlogovat výstup do souboru <filename>.\n\
 -help\t\t\t\tzobrazí tuto nápovìdu a skonèí.\n\n
-13 varování: nemohu nastavit promìnnou prostøedí 'DISPLAY'
+14 varování: nemohu nastavit promìnnou prostøedí 'DISPLAY'
 
 $set 20
 

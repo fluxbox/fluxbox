@@ -166,7 +166,7 @@ $set 19 #main
 
 1 помилка: '-display' потребу╓ аргумент\n
 11 помилка: '-rc' потребу╓ аргумент\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tвикористовувати заданий дисплей.\n\
 -rc <string>\t\t\tвикористовувати альтернативний файл ресурс╕в.\n\
 -version\t\t\tвивести номер верс╕╖ ╕ вийти.\n\

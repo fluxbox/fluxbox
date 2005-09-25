@@ -234,7 +234,7 @@ $set 19 #main
 9 Log Datei
 10 Schreibe Log in
 11 Fehler: '-rc' braucht ein Argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tBenutze ein anderes $DISPLAY.\n\
 -rc <string>\t\t\tBenutze andere Init-Datei.\n\
 -version\t\t\tZeige Version an.\n\

@@ -220,8 +220,9 @@ enum {
 	mainLogFile = 9,
 	mainLoggingTo = 10,
 	mainRCRequiresArg = 11,
-	mainUsage = 12,
-	mainWarnDisplayEnv = 13,
+	mainScreenRequiresArg = 12,
+	mainUsage = 13,
+	mainWarnDisplayEnv = 14,
 
 	LayerSet = 20,
 	LayerAboveDock = 1,

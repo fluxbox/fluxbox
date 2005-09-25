@@ -237,18 +237,21 @@ $set 19 #main
 5 Runtime error
 6 Standard Exception
 7 Unknown error
-8 error: '-log' needs an argument
+8 error: '-log' needs an argument\n
 9 Log File
 10 Logging to
 11 error: '-rc' requires an argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+12 error: '-screen' requires an argument\n
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
+Website: http://www.fluxbox.org/\n\n\
 -display <string>\t\tuse display connection.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
 -rc <string>\t\t\tuse alternate resource file.\n\
 -version\t\t\tdisplay version and exit.\n\
 -info\t\t\t\tdisplay some useful information.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tdisplay this help text and exit.\n\n
-13 warning: couldn't set environment variable 'DISPLAY'
+14 warning: couldn't set environment variable 'DISPLAY'
 
 $set 20
 
