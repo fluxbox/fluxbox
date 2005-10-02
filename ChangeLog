@@ -4,6 +4,8 @@ Changes for 0.9.15:
    * added nls for "-screen" argument (Thanks php-coder)
      nls/*/Translation.m, nls/fluxbox-nls.hh
 *05/09/13:
+   * Fixes #1267076, cygwin link problems (Mathias)
+     src/ScreenResources.cc
    * Use fbsetroot in Default-Styles (Mathias)
      data/styles/*
 -------------------------------------------------------------   
