@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/10/04:
+   * Avoid drawing the resize outline if not really resizing (Mathias)
+     Window.cc
 *05/09/25:
    * added nls for "-screen" argument (Thanks php-coder)
      nls/*/Translation.m, nls/fluxbox-nls.hh

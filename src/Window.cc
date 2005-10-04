@@ -2824,14 +2824,14 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
               m_resize_corner = (me.y < cy) ? RIGHTTOP : RIGHTBOTTOM;
 
           startResizing(me.window, me.x, me.y);
+
         } else if (resizing) {
-            // draw over old rect
-            parent().drawRectangle(screen().rootTheme().opGC(),
-                                   m_last_resize_x, m_last_resize_y,
-                                   m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
-                                   m_last_resize_h - 1 + 2 * frame().window().borderWidth());
-
-
+            
+            int old_resize_x = m_last_resize_x;
+            int old_resize_y = m_last_resize_y;
+            int old_resize_w = m_last_resize_w;
+            int old_resize_h = m_last_resize_h;
+            
             // move rectangle
             int gx = 0, gy = 0;
 
@@ -2854,13 +2854,25 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             fixsize(&gx, &gy);
 
-            // draw resize rectangle
-            parent().drawRectangle(screen().rootTheme().opGC(),
-                                   m_last_resize_x, m_last_resize_y,
-                                   m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
-                                   m_last_resize_h - 1 + 2 * frame().window().borderWidth());
+            if (old_resize_x != m_last_resize_x ||
+                old_resize_y != m_last_resize_y ||
+                old_resize_w != m_last_resize_w ||
+                old_resize_h != m_last_resize_h ) {
 
-            screen().showGeometry(gx, gy);
+                // draw over old rect
+                parent().drawRectangle(screen().rootTheme().opGC(),
+                                       old_resize_x, old_resize_y,
+                                       old_resize_w - 1 + 2 * frame().window().borderWidth(),
+                                       old_resize_h - 1 + 2 * frame().window().borderWidth());
+
+                // draw resize rectangle
+                parent().drawRectangle(screen().rootTheme().opGC(),
+                                       m_last_resize_x, m_last_resize_y,
+                                       m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
+                                       m_last_resize_h - 1 + 2 * frame().window().borderWidth());
+
+                screen().showGeometry(gx, gy);
+            }
         }
     } else if (functions.tabable &&
                (me.state & Button2Mask) && inside_titlebar && (client != 0 || m_attaching_tab != 0)) {
@@ -3355,6 +3367,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
 
 void FluxboxWindow::startResizing(Window win, int x, int y) {
+
     if (s_num_grabs > 0 || isShaded() || isIconic() )
         return;
 
@@ -3379,18 +3392,17 @@ void FluxboxWindow::startResizing(Window win, int x, int y) {
 
     fixsize(&gx, &gy);
 
-
     screen().showGeometry(gx, gy);
 
     parent().drawRectangle(screen().rootTheme().opGC(),
-                           m_last_resize_x, m_last_resize_y,
-                           m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
-                           m_last_resize_h - 1 + 2 * frame().window().borderWidth());
+                       m_last_resize_x, m_last_resize_y,
+                       m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
+                       m_last_resize_h - 1 + 2 * frame().window().borderWidth());
 }
 
 void FluxboxWindow::stopResizing(bool interrupted) {
     resizing = false;
-
+    
     parent().drawRectangle(screen().rootTheme().opGC(),
                            m_last_resize_x, m_last_resize_y,
                            m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
