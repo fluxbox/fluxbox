@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/10/12:
+   * Small changes, coming from fbsd-ports (thanx Jeremy Messenger <mezz at FreeBSD dot org>)
+     util/fluxbox-generate_menu.in util/startfluxbox.in
 *05/10/04:
    * Avoid drawing the resize outline if not really resizing (Mathias)
      Window.cc

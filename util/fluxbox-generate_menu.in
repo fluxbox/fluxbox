@@ -1166,8 +1166,8 @@ if [ ! "${INSTALL}" = Yes ]; then
 # FBRUNOPTIONS='-font 10x20 -fg grey -bg black -title run'
 
 # --- PREFIX'es
-# These are prefixes; So if fluxbox is installed in /usr/bin/fluxbox
-# your prefix is: /usr
+# These are prefixes; So if fluxbox is installed in @PREFIX@/bin/fluxbox
+# your prefix is: @PREFIX@
 
 # fluxbox-generate already looks in /usr/X11R6, /usr, /usr/local and /opt so
 # there should be no need to specify them.
