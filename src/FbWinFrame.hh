@@ -179,6 +179,10 @@ public:
     inline FbTk::FbWindow &titlebar() { return m_titlebar; }
     inline const FbTk::FbWindow &label() const { return m_label; }
     inline FbTk::FbWindow &label() { return m_label; }
+
+    inline const Container &tabcontainer() const { return m_tab_container; }
+    inline Container &tabcontainer() { return m_tab_container; }
+    
     /// @return clientarea window
     inline const FbTk::FbWindow &clientArea() const { return m_clientarea; }
     inline FbTk::FbWindow &clientArea() { return m_clientarea; }

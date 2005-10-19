@@ -895,7 +895,7 @@ FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x
     int dest_x = 0, dest_y = 0;
     Window labelbutton = 0;
     if (!XTranslateCoordinates(FbTk::App::instance()->display(),
-                               parent().window(), frame().label().window(),
+                               parent().window(), frame().tabcontainer().window(),
                                x, y, &dest_x, &dest_y,
                                &labelbutton))
         return m_clientlist.end();
@@ -915,7 +915,7 @@ FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x
     Window child_return=0;
     // make x and y relative to our labelbutton
     if (!XTranslateCoordinates(FbTk::App::instance()->display(),
-                               frame().label().window(), labelbutton,
+                               frame().tabcontainer().window(), labelbutton,
                                dest_x, dest_y, &x, &y,
                                &child_return))
         return m_clientlist.end();
@@ -936,7 +936,7 @@ void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
     int dest_x = 0, dest_y = 0;
     Window labelbutton = 0;
     if (!XTranslateCoordinates(FbTk::App::instance()->display(),
-                               parent().window(), frame().label().window(),
+                               parent().window(), frame().tabcontainer().window(),
                                x, y, &dest_x, &dest_y,
                                &labelbutton))
         return;
@@ -955,11 +955,11 @@ void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
     Window child_return = 0;
     //make x and y relative to our labelbutton
     if (!XTranslateCoordinates(FbTk::App::instance()->display(),
-                               frame().label().window(), labelbutton,
+                               frame().tabcontainer().window(), labelbutton,
                                dest_x, dest_y, &x, &y,
                                &child_return))
         return;
-    if (x > (*it).second->width() / 2)
+    if (x > (*it).second->width() / 2) 
         moveClientRightOf(win, *it->first);
     else
         moveClientLeftOf(win, *it->first);

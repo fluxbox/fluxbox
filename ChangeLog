@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/10/19:
+   * Fixed reordering of tabs (thanx Rob Stevens)
+     Window.cc FbWinFrame.hh FbWinFrame.cc
 *05/10/12:
    * Small changes, coming from fbsd-ports (thanx Jeremy Messenger <mezz at FreeBSD dot org>)
      util/fluxbox-generate_menu.in util/startfluxbox.in
