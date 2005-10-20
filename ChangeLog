@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/10/20:
+   * Fixed bug #1327878. (Henrik)
+     Appending backslash to () and [] characters in the apps file
+     ClientPattern.cc, FbTk/StringUtil.hh/cc
 *05/10/19:
    * Fixed reordering of tabs (thanx Rob Stevens)
      Window.cc FbWinFrame.hh FbWinFrame.cc
