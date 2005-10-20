@@ -41,6 +41,11 @@ std::string expandFilename(const std::string &filename);
 /// @return extension of filename (ex: filename.txt will return txt)
 std::string findExtension(const std::string &filename);
 
+/// @return copy of original with find_string replaced with "replace"
+std::string replaceString(const std::string &original, 
+                          const char *find_string,
+                          const char *replace);
+                          
 ///  returns string between character first and last
 int getStringBetween(std::string& out, const char *instr,
                      char first, char last,

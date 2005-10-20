@@ -23,7 +23,7 @@
 
 #include "StringUtil.hh"
 
-#include <string>
+
 #ifdef HAVE_CSTDIO
   #include <cstdio>
 #else
@@ -44,8 +44,11 @@
 #else
   #include <assert.h>
 #endif
+
+
 #include <memory>
 #include <algorithm>
+#include <string>
 
 using namespace std;
 
@@ -114,6 +117,27 @@ string findExtension(const std::string &filename) {
         return "";
     // return from last . to end of string
     return filename.substr(start_pos + 1);
+}
+
+string replaceString(const std::string &original,
+                     const char *findthis,
+                     const char *replace) {
+    int i=0;
+    const int size_of_replace = strlen(replace);
+    const int size_of_find = strlen(findthis);
+    string ret_str(original);
+    while (i < ret_str.size()) {
+        i = ret_str.find(findthis, i);
+        if (i == std::string::npos)
+            break;
+        // erase old string and insert replacement
+        ret_str.erase(i, size_of_find);
+        ret_str.insert(i, replace);
+        // jump to next position after insert
+        i += size_of_replace;
+    }
+
+    return ret_str;
 }
 
 /**
