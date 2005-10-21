@@ -50,7 +50,8 @@
 #include <algorithm>
 #include <string>
 
-using namespace std;
+using std::string;
+using std::transform;
 
 namespace FbTk {
 
@@ -92,11 +93,11 @@ const char *strcasestr(const char *str, const char *ptn) {
    if ~ then expand it to home of user
    returns expanded filename
 */
-string expandFilename(const std::string &filename) {
+string expandFilename(const string &filename) {
     string retval;
     size_t pos = filename.find_first_not_of(" \t");
-    if (pos != std::string::npos && filename[pos] == '~') {
-    	retval = getenv("HOME");
+    if (pos != string::npos && filename[pos] == '~') {
+        retval = getenv("HOME");
         if (pos != filename.size()) {
             // copy from the character after '~'
             retval += static_cast<const char *>(filename.c_str() + pos + 1);
@@ -110,16 +111,16 @@ string expandFilename(const std::string &filename) {
 /**
    @return string from last "." to end of string
 */
-string findExtension(const std::string &filename) {
+string findExtension(const string &filename) {
     //get start of extension
-    std::string::size_type start_pos = filename.find_last_of(".");
-    if (start_pos == std::string::npos && start_pos != filename.size())
+    string::size_type start_pos = filename.find_last_of(".");
+    if (start_pos == string::npos && start_pos != filename.size())
         return "";
     // return from last . to end of string
     return filename.substr(start_pos + 1);
 }
 
-string replaceString(const std::string &original,
+string replaceString(const string &original,
                      const char *findthis,
                      const char *replace) {
     int i=0;
@@ -128,7 +129,7 @@ string replaceString(const std::string &original,
     string ret_str(original);
     while (i < ret_str.size()) {
         i = ret_str.find(findthis, i);
-        if (i == std::string::npos)
+        if (i == string::npos)
             break;
         // erase old string and insert replacement
         ret_str.erase(i, size_of_find);
@@ -150,31 +151,31 @@ string replaceString(const std::string &original,
    for the position + 1 in the in-string where the "last"-char value
    was found.
 */
-int getStringBetween(std::string& out, const char *instr, const char first, const char last,
+int getStringBetween(string& out, const char *instr, const char first, const char last,
                      const char *ok_chars, bool allow_nesting) {
     assert(first);
     assert(last);
     assert(instr);
 
-    std::string::size_type i = 0,
-        total_add=0; //used to add extra if there is a \last to skip
-    std::string in(instr);
+    string::size_type i = 0;
+    string::size_type total_add=0; //used to add extra if there is a \last to skip
+    string in(instr);
 
     // eat leading whitespace
     i = in.find_first_not_of(ok_chars);
-    if (i == std::string::npos)
+    if (i == string::npos)
         return -in.size();   // nothing left but whitespace
 
     if (in[i]!=first)
         return -i; //return position to error
 
     // find the end of the token
-    std::string::size_type j = i, k;
+    string::size_type j = i, k;
     int nesting = 0;
     while (1) {
         k = in.find_first_of(first, j+1);
         j = in.find_first_of(last, j+1);
-        if (j==std::string::npos)
+        if (j==string::npos)
             return -in.size(); //send negative size
 
         if (allow_nesting && k < j && in[k-1] != '\\') {
@@ -199,26 +200,26 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
     return (j+1+total_add);
 }
 
-std::string toLower(const std::string &conv) {
-    std::string ret = conv;
-    std::transform(ret.begin(), ret.end(), ret.begin(), tolower);
+string toLower(const string &conv) {
+    string ret = conv;
+    transform(ret.begin(), ret.end(), ret.begin(), tolower);
     return ret;
 }
 
-std::string toUpper(const std::string &conv) {
-    std::string ret = conv;
-    std::transform(ret.begin(), ret.end(), ret.begin(), toupper);
+string toUpper(const string &conv) {
+    string ret = conv;
+    transform(ret.begin(), ret.end(), ret.begin(), toupper);
     return ret;
 }
 
-std::string basename(const std::string &filename) {
-    std::string::size_type first_pos = filename.find_last_of("/");
-    if (first_pos != std::string::npos)
+string basename(const string &filename) {
+    string::size_type first_pos = filename.find_last_of("/");
+    if (first_pos != string::npos)
         return filename.substr(first_pos + 1);
     return filename;
 }
 
-string::size_type removeFirstWhitespace(std::string &str) {
+string::size_type removeFirstWhitespace(string &str) {
     string::size_type first_pos = str.find_first_not_of(" \t");
     if (first_pos != string::npos)
         str.erase(0, first_pos);
@@ -226,7 +227,7 @@ string::size_type removeFirstWhitespace(std::string &str) {
 }
 
 
-string::size_type removeTrailingWhitespace(std::string &str) {
+string::size_type removeTrailingWhitespace(string &str) {
     // strip trailing whitespace
     string::size_type first_pos = str.find_last_not_of(" \t");
     if (first_pos != string::npos) {

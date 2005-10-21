@@ -683,6 +683,7 @@ void BScreen::hideWindowMenus(const FluxboxWindow* except) {
 
 
 void BScreen::reconfigure() {
+    Fluxbox *fluxbox = Fluxbox::instance();
 
     m_windowtheme->setFocusedAlpha(*resource.focused_alpha);
     m_windowtheme->setUnfocusedAlpha(*resource.unfocused_alpha);
@@ -786,6 +787,9 @@ void BScreen::reconfigure() {
     // notify objects that the screen is reconfigured
     m_reconfigure_sig.notify();
 
+    // Reload style
+    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
+                                        m_root_theme->screenNum());
 }
 
 

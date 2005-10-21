@@ -45,7 +45,7 @@ std::string findExtension(const std::string &filename);
 std::string replaceString(const std::string &original, 
                           const char *find_string,
                           const char *replace);
-                          
+
 ///  returns string between character first and last
 int getStringBetween(std::string& out, const char *instr,
                      char first, char last,
