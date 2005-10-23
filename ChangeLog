@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/10/23:
+   * Fixed #1335255 (Gentoo #110197) fbgm had some globbing related probs (thanx t35t0r)
+     fluxbox-generate_menu.in
 *05/10/21:
    * Fixed #1223878, Style reloading on USR2 (thanx Zan)
      Screen.cc

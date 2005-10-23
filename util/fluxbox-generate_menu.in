@@ -133,7 +133,7 @@ if which this_program_does_not_exist-no_really-aA1zZ9 2> /dev/null 1> /dev/null;
         if [ -x "$file" ]; then
             if [ $# -gt 1 ]; then
                 shift
-                $*
+                "$@"
             fi
             return 0
         else
@@ -153,7 +153,7 @@ if which this_program_does_not_exist-no_really-aA1zZ9 2> /dev/null 1> /dev/null;
 else
     # can rely on return value
     find_it() {
-        which $1 > /dev/null 2>&1 && shift && $*
+        which $1 > /dev/null 2>&1 && shift && "$@"
     }
 
     find_it_options() {
