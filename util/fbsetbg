@@ -199,6 +199,11 @@ if [ $# -eq 0 ]; then
     exit 1
 fi
 
+# create directory and last wallpaper file 
+if [ ! -d  ~/.fluxbox ]; then
+	mkdir ~/.fluxbox
+    touch ${lastwallpaper}
+fi
 
 unset debug setterfromcommandline
 # Parse command-line options
