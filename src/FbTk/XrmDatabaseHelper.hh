@@ -39,9 +39,9 @@ class XrmDatabaseHelper
 {
 public:
     XrmDatabaseHelper(char const * filename=0)
-	: m_database(0)
+        : m_database(0)
     { if (filename != 0) load(filename); }
-	
+
     ~XrmDatabaseHelper() {
         close();
     }
@@ -49,7 +49,7 @@ public:
     /// assignment operator
     XrmDatabaseHelper& operator=(const XrmDatabase& database) {
         if (m_database!=0)
-            XrmDestroyDatabase(m_database);
+            close();
         m_database = database; 
         return *this;
     }
@@ -69,11 +69,12 @@ public:
             m_database = 0;
         }
     }
+
     bool operator == (const XrmDatabase& database) { return m_database == database; }
-    XrmDatabase & operator*(void) {	return m_database; }
+    XrmDatabase & operator*() { return m_database; }
 
 private:
-    XrmDatabase m_database;	
+    XrmDatabase m_database;
 };
 
 } // namespace FbTk
