@@ -1,8 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
 *05/11/16:
-   * Added overlayStyle resource to init-file (Mathias)
-       session.overlayStyle : ~/.fluxbox/overlay
+   * Added styleOverlay resource to init-file (Mathias)
+       session.styleOverlay: ~/.fluxbox/overlay
      Style settings in this file override any settings from a
      regular style
      fluxbox.hh/cc Screen.cc FbCommands.cc FbTk/Theme.hh/cc
