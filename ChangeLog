@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/11/16:
+   * Added overlayStyle resource to init-file (Mathias)
+       session.overlayStyle : ~/.fluxbox/overlay
+     Style settings in this file override any settings from a
+     regular style
+     fluxbox.hh/cc Screen.cc FbCommands.cc FbTk/Theme.hh/cc
 *05/11/13:
    * Fixed #1307877 fbsetbg did not create ~/.fluxbox/lastwallpaper 
      (Henrik)

@@ -80,54 +80,56 @@ class Fluxbox : public FbTk::App,
                 public FbTk::SignalEventHandler,
                 public FbTk::Observer {
 public:
-    Fluxbox(int argc, char **argv, const char * dpy_name= 0, 
+    Fluxbox(int argc, char **argv, const char * dpy_name= 0,
             const char *rcfilename = 0);
     virtual ~Fluxbox();
 
     static Fluxbox *instance() { return s_singleton; }
+
     /// main event loop
     void eventLoop();
     bool validateWindow(Window win) const;
     void grab();
     void ungrab();
     Keys *keys() { return m_key.get(); }
-    inline Atom getFluxboxPidAtom() const { return m_fluxbox_pid; }
+    Atom getFluxboxPidAtom() const { return m_fluxbox_pid; }
 
     // Not currently implemented until we decide how it'll be used
     //WinClient *searchGroup(Window);
     WinClient *searchWindow(Window);
-    inline WinClient *getFocusedWindow() { return m_focused_window; }
+    WinClient *getFocusedWindow() { return m_focused_window; }
 
     int initScreen(int screen_nr);
     BScreen *searchScreen(Window w);
 
-    inline unsigned int getDoubleClickInterval() const { return *m_rc_double_click_interval; }
-    inline Time getLastTime() const { return m_last_time; }
+    unsigned int getDoubleClickInterval() const { return *m_rc_double_click_interval; }
+    Time getLastTime() const { return m_last_time; }
 
     AtomHandler *getAtomHandler(const std::string &name);
     void addAtomHandler(AtomHandler *atomh, const std::string &name);
     void removeAtomHandler(AtomHandler *atomh);
 
     /// obsolete
-    enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENUICON, EMPTY};		
+    enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENUICON, EMPTY};
     enum TabsAttachArea{ATTACH_AREA_WINDOW= 0, ATTACH_AREA_TITLEBAR};
 
 
-    inline bool getIgnoreBorder() const { return *m_rc_ignoreborder; }
-    inline bool &getPseudoTrans() { return *m_rc_pseudotrans; }
+    bool getIgnoreBorder() const { return *m_rc_ignoreborder; }
+    bool &getPseudoTrans() { return *m_rc_pseudotrans; }
 
-    inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
-    inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
-    inline Fluxbox::TabsAttachArea getTabsAttachArea() const { return *m_rc_tabs_attach_area; }
-    inline const std::string &getStyleFilename() const { return *m_rc_stylefile; }
+    const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
+    const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
+    Fluxbox::TabsAttachArea getTabsAttachArea() const { return *m_rc_tabs_attach_area; }
+    const std::string &getStyleFilename() const { return *m_rc_stylefile; }
+    const std::string &getStyleOverlayFilename() const { return *m_rc_styleoverlayfile; }
 
-    inline const std::string &getMenuFilename() const { return *m_rc_menufile; }
-    inline const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
-    inline const std::string &getAppsFilename() const { return *m_rc_appsfile; }
-    inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
-    inline int getNumberOfLayers() const { return *m_rc_numlayers; }
-    inline int getTabsPadding() const { return *m_rc_tabs_padding; }
-    inline int getFocusedTabMinWidth() const { return *m_rc_focused_tab_min_width; }
+    const std::string &getMenuFilename() const { return *m_rc_menufile; }
+    const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
+    const std::string &getAppsFilename() const { return *m_rc_appsfile; }
+    int colorsPerChannel() const { return *m_rc_colors_per_channel; }
+    int getNumberOfLayers() const { return *m_rc_numlayers; }
+    int getTabsPadding() const { return *m_rc_tabs_padding; }
+    int getFocusedTabMinWidth() const { return *m_rc_focused_tab_min_width; }
 
     // class to store layer numbers (special Resource type)
     // we have a special resource type because we need to be able to name certain layers
@@ -135,7 +137,7 @@ public:
     class Layer {
     public:
         explicit Layer(int i) : m_num(i) {};
-        inline int getNum() const { return m_num; }
+        int getNum() const { return m_num; }
 
         Layer &operator=(int num) { m_num = num; return *this; }
 
@@ -144,22 +146,22 @@ public:
     };
 
     // TODO these probably should be configurable
-    inline int getMenuLayer()      const { return 0; }
-    inline int getAboveDockLayer() const { return 2; }
-    inline int getDockLayer()      const { return 4; }
-    inline int getTopLayer()       const { return 6; }
-    inline int getNormalLayer()    const { return 8; }
-    inline int getBottomLayer()    const { return 10; }
-    inline int getDesktopLayer()   const { return 12; }
+    int getMenuLayer()      const { return 0; }
+    int getAboveDockLayer() const { return 2; }
+    int getDockLayer()      const { return 4; }
+    int getTopLayer()       const { return 6; }
+    int getNormalLayer()    const { return 8; }
+    int getBottomLayer()    const { return 10; }
+    int getDesktopLayer()   const { return 12; }
 
 
-    inline time_t getAutoRaiseDelay() const { return *m_rc_auto_raise_delay; }
+    time_t getAutoRaiseDelay() const { return *m_rc_auto_raise_delay; }
 
-    inline unsigned int getCacheLife() const { return *m_rc_cache_life * 60000; }
-    inline unsigned int getCacheMax() const { return *m_rc_cache_max; }
-    inline bool useMod1() const { return *m_rc_use_mod1; }
+    unsigned int getCacheLife() const { return *m_rc_cache_life * 60000; }
+    unsigned int getCacheMax() const { return *m_rc_cache_max; }
+    bool useMod1() const { return *m_rc_use_mod1; }
 
-    inline void maskWindowEvents(Window w, FluxboxWindow *bw)
+    void maskWindowEvents(Window w, FluxboxWindow *bw)
         { m_masked = w; m_masked_window = bw; }
 
     void watchKeyRelease(BScreen &screen, unsigned int mods);
@@ -173,6 +175,7 @@ public:
     void loadRootCommand(BScreen &scr);
     void loadTitlebar();
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
+    void saveStyleOverlayFilename(const char *val) { m_rc_styleoverlayfile = (val == 0 ? "" : val); }
     void saveMenuFilename(const char *);
     void clearMenuFilenames();
     void saveTitlebarFilename(const char *);
@@ -247,7 +250,7 @@ private:
     void handleButtonEvent(XButtonEvent &be);
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
-    void handleKeyEvent(XKeyEvent &ke);	
+    void handleKeyEvent(XKeyEvent &ke);
     void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
@@ -263,6 +266,7 @@ private:
         m_rc_tabs_padding,
         m_rc_focused_tab_min_width;
     FbTk::Resource<std::string> m_rc_stylefile,
+        m_rc_styleoverlayfile,
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
         m_rc_groupfile, m_rc_appsfile;
 
@@ -280,7 +284,7 @@ private:
     // A window is the group leader, which can map to several
     // WinClients in the group, it is *not* fluxbox's concept of groups
     // See ICCCM section 4.1.11
-    // The group leader (which may not be mapped, so may not have a WinClient) 
+    // The group leader (which may not be mapped, so may not have a WinClient)
     // will have it's window being the group index
     std::multimap<Window, WinClient *> m_group_search;
 

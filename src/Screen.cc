@@ -358,6 +358,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // This must be fixed in the future.
     m_root_theme->lock(true);
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
+                                        fluxbox->getStyleOverlayFilename(),
                                         m_root_theme->screenNum());
     m_root_theme->lock(false);
     m_root_theme->setLineAttributes(*resource.gc_line_width,
@@ -789,6 +790,7 @@ void BScreen::reconfigure() {
 
     // Reload style
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
+                                        fluxbox->getStyleOverlayFilename(),
                                         m_root_theme->screenNum());
 }
 

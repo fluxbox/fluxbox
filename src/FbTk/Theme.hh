@@ -127,7 +127,7 @@ class ThemeManager {
 public:
     static ThemeManager &instance();
     /// load style file "filename" to screen 
-    bool load(const std::string &filename, int screen_num = -1);
+    bool load(const std::string &filename, const std::string &overlay_filename, int screen_num = -1);
     std::string resourceValue(const std::string &name, const std::string &altname);
     void loadTheme(Theme &tm);
     bool loadItem(ThemeItem_base &resource);

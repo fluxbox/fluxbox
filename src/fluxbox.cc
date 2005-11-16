@@ -205,6 +205,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
       m_rc_stylefile(m_resourcemanager, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
+      m_rc_styleoverlayfile(m_resourcemanager, "~/.fluxbox/ovrd_style", "session.styleOverlay", "Session.StyleOverlay"),
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
       m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
       m_rc_slitlistfile(m_resourcemanager, "~/.fluxbox/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
@@ -299,7 +300,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     load_rc();
     // setup theme manager to have our style file ready to be scanned
-    FbTk::ThemeManager::instance().load(getStyleFilename());
+    FbTk::ThemeManager::instance().load(getStyleFilename(), getStyleOverlayFilename());
 
     // setup atom handlers before we create any windows
 #ifdef REMEMBER
@@ -377,9 +378,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     }
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
-   
+
     // setup theme manager to have our style file ready to be scanned
-    FbTk::ThemeManager::instance().load(FbTk::StringUtil::expandFilename(getStyleFilename()));
+    FbTk::ThemeManager::instance().load(getStyleFilename(), getStyleOverlayFilename());
 
     //XSynchronize(disp, False);
     sync(false);
@@ -1587,7 +1588,7 @@ void Fluxbox::load_rc(BScreen &screen) {
             if (!(*it).empty() && (*it) != "")
             screen.addWorkspaceName((*it).c_str());
         }
-        
+
     }
 
     FbTk::Image::removeAllSearchPaths();

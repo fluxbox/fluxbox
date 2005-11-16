@@ -213,7 +213,8 @@ SetStyleCmd::SetStyleCmd(const std::string &filename):m_filename(filename) {
 void SetStyleCmd::execute() {
     Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
     Fluxbox::instance()->save_rc();
-    FbTk::ThemeManager::instance().load(m_filename);
+    FbTk::ThemeManager::instance().load(m_filename, 
+            Fluxbox::instance()->getStyleOverlayFilename());
 }
 
 void ShowRootMenuCmd::execute() {

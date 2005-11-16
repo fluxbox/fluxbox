@@ -83,7 +83,8 @@ bool ThemeManager::unregisterTheme(Theme &tm) {
     return true;
 }
 
-bool ThemeManager::load(const std::string &filename, int screen_num) {
+bool ThemeManager::load(const std::string &filename, 
+        const std::string &overlay_filename, int screen_num) {
     std::string location = FbTk::StringUtil::expandFilename(filename);
     std::string prefix = "";
 
@@ -107,6 +108,20 @@ bool ThemeManager::load(const std::string &filename, int screen_num) {
     if (!m_database.load(location.c_str()))
         return false;
 
+
+    if (!overlay_filename.empty()) {
+        std::string overlay_location = FbTk::StringUtil::expandFilename(overlay_filename);
+        if (FileUtil::isRegularFile(overlay_location.c_str())) {
+            XrmDatabaseHelper overlay_db;
+            if (overlay_db.load(overlay_location.c_str())) {
+                // after a merge the src_db is destroyed
+                // so, make sure XrmDatabaseHelper::m_database == 0
+                XrmMergeDatabases(*overlay_db, &(*m_database));
+                *overlay_db = 0;
+            }
+        }
+    }
+
     // relies on the fact that load_rc clears search paths each time
     if (m_themelocation != "") {
         Image::removeSearchPath(m_themelocation);
@@ -129,8 +144,8 @@ bool ThemeManager::load(const std::string &filename, int screen_num) {
             loadTheme(**theme_it);
         else if (screen_num == (*theme_it)->screenNum()) // specified screen
             loadTheme(**theme_it);
-            
     }
+
     // notify all themes that we reconfigured
     theme_it = m_themelist.begin();
     for (; theme_it != theme_it_end; ++theme_it) {
