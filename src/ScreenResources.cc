@@ -41,7 +41,6 @@ void FbTk::Resource<BScreen::PlacementPolicy>::setFromString(const char *str) {
         *(*this) = BScreen::CASCADEPLACEMENT;
     else
         setDefaultValue();
-    
 }
 
 template <>
@@ -129,8 +128,7 @@ void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setFromString(const char *str) {
 }
 
 template<>
-std::string FbTk::Resource<BScreen::ResizeModel>::
-getString() {
+std::string FbTk::Resource<BScreen::ResizeModel>::getString() {
     switch (m_value) {
     case BScreen::QUADRANTRESIZE:
         return std::string("Quadrant");
@@ -153,8 +151,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<BScreen::FocusModel>::
-getString() {
+std::string FbTk::Resource<BScreen::FocusModel>::getString() {
     switch (m_value) {
     case BScreen::MOUSEFOCUS:
         return string("MouseFocus");
@@ -177,8 +174,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<BScreen::TabFocusModel>::
-getString() {
+std::string FbTk::Resource<BScreen::TabFocusModel>::getString() {
     switch (m_value) {
     case BScreen::MOUSETABFOCUS:
         return string("SloppyTabFocus");
@@ -201,8 +197,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<BScreen::FollowModel>::
-getString() {
+std::string FbTk::Resource<BScreen::FollowModel>::getString() {
     switch (m_value) {
     case BScreen::FOLLOW_ACTIVE_WINDOW:
         return std::string("Follow");
@@ -226,11 +221,6 @@ setFromString(char const *strval) {
         m_value = BScreen::FETCH_ACTIVE_WINDOW;
     else
         setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::LineStyle>::setDefaultValue() {
-    *(*this) = FbTk::GContext::LINESOLID;
 }
 
 template<>
@@ -261,11 +251,6 @@ void FbTk::Resource<FbTk::GContext::LineStyle>
         m_value = FbTk::GContext::LINEDOUBLEDASH;
     else
         setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<FbTk::GContext::JoinStyle>::setDefaultValue() {
-    *(*this) = FbTk::GContext::JOINMITER;
 }
 
 template<>
