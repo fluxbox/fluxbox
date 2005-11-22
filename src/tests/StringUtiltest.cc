@@ -28,13 +28,6 @@
 #include <iostream>
 #include <memory>
 
-#ifdef UDS
-#include <uds/init.hh>
-#include <uds/uds.hh>
-// configure UDS
-uds::uds_flags_t uds::flags = uds::leak_check|uds::log_allocs;
-#endif
-
 using namespace std;
 using namespace FbTk;
 
@@ -132,13 +125,26 @@ void testGetStringBetween() {
     }
 }
 int main() {	
-#ifdef UDS
-    uds::Init uds_init;
-#endif
+    try {
+        string replaceme = "something((((otherthanthis)could[be]changed";
+
+        string newstr = StringUtil::replaceString(replaceme, "(", "\\(");
+
+        newstr = StringUtil::replaceString(newstr, ")", "\\)");
+        newstr = StringUtil::replaceString(newstr, "be", "not be");
+
+        cerr<<"original =  "<<replaceme<<endl;
+        cerr<<"newstr   =  "<<newstr<<endl;
+    } catch (std::exception e) {
+        cerr<<"exception: "<<e.what()<<endl;
+    }
     cerr<<"Testing stringtok."<<endl;	
     testStringtok();
     cerr<<"Testing expandFilename."<<endl;
     testExpandFilename();
     cerr<<"Testing strcasestr."<<endl;
     testStrcasestr();
+
+
+    
 }
