@@ -127,7 +127,7 @@ void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setFromString(const char *str) {
         setDefaultValue();
 }
 
-
+template <>
 std::string FbTk::Resource<BScreen::ResizeModel>::getString() const {
     switch (m_value) {
     case BScreen::QUADRANTRESIZE:
