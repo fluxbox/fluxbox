@@ -132,4 +132,6 @@ bevelWidth:                          2
 borderWidth:                         1
 handleWidth:                         3
 
-rootCommand:                         fbsetroot -gradient flatverticalgradient -from black -to white
+background: flatverticalgradient 
+background.color: black 
+background.colorTo: white

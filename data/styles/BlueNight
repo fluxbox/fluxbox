@@ -5,7 +5,8 @@ style.credits:
 style.comments:                      Modified/tweaked by skypher
 
 
-rootCommand:                         fbsetroot -solid rgb:6A/9A/AF
+background: flat
+background.color: rgb:6A/9A/AF
 
 ! Toolbar settings...
 toolbar.button:                      Gradient Diagonal

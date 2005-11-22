@@ -76,4 +76,5 @@ handleWidth:                    4
 
 *Font:                          -*-helvetica-*-r-*-*-12-*-*-*-*-*-*-*
 
-rootCommand:                    fbsetroot -solid SlateGrey
+background: flat
+background.color: SlateGrey

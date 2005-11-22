@@ -117,7 +117,8 @@ bevelWidth:				2
 handleWidth:				4
 frameWidth:				0
 
-rootCommand:				fbsetroot -solid "#3a404b"
+background: flat
+background.color: #3a404b
 
 ! ***** bbpager *****
 bbpager.frame:				sunken gradient crossdiagonal

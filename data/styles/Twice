@@ -100,4 +100,6 @@ handleWidth:                    4
 *textColor:                     grey85
 *Font:                          lucidasans-10
 
-rootCommand:                    fbsetroot -solid grey20
+background: flat
+background.color: grey20
+

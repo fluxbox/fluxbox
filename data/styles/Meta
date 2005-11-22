@@ -124,5 +124,7 @@ bevelWidth:                          1
 frameWidth:                          1
 handleWidth:                         4
 
-rootCommand:                         fbsetroot -solid "#d6d7e7"
+background: flat
+background.color: #d6d7e7
+
 *font:                               glisp

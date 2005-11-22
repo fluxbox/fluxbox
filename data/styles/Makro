@@ -113,4 +113,5 @@ bevelWidth:                          2
 borderWidth:                         1
 handleWidth:                         3
 
-rootCommand:                         fbsetroot -solid rgb:9A/9A/90
+background: flat
+background.color: rgb:9A/9A/90

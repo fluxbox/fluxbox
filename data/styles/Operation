@@ -83,7 +83,9 @@ handleWidth:                    4
 *textColor:                     grey85
 *Font:                          lucidasans-10
 
-rootCommand:                    fbsetroot -gradient flatcrossdiagonalgradient -from rgb:4/6/8 -to rgb:3/48/6
+background: flatcrossdiagonalgradient 
+background.color: rgb:4/6/8 
+background.colorTo: rgb:3/48/6
 
 bbpager.desktop.focus:          flat interlaced crossdiagonal gradient
 bbpager.desktop.focus.color:    rgb:6/9/c
