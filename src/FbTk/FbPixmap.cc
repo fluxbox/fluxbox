@@ -357,55 +357,62 @@ void FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
 }
 
 Pixmap FbPixmap::getRootPixmap(int screen_num) {
-    if (!FbTk::Transparent::haveRender()) 
-        return None;
+    /*
+      if (!FbTk::Transparent::haveRender()) 
+      return None;
+    */
 
-    if (!m_root_pixmaps) {
-        int numscreens = ScreenCount(display());
-        for (int i=0; i < numscreens; ++i) {
-            Atom real_type;
-            int real_format;
-            unsigned long items_read, items_left;
-            unsigned long *data;
+    // check and see if if we have the pixmaps in cache
+    if (m_root_pixmaps)
+        return m_root_pixmaps[screen_num];
 
-            unsigned int prop = 0;
+    // else setup pixmap cache        
+    int numscreens = ScreenCount(display());
+    for (int i=0; i < numscreens; ++i) {
+        Atom real_type;
+        int real_format;
+        unsigned long items_read, items_left;
+        unsigned long *data;
 
-            static bool print_error = true; // print error_message only once
-            static const char* error_message = { "\n\n !!! WARNING WARNING WARNING WARNING !!!!!\n"
-        "   if you experience problems with transparency:\n"
-        "   you are using a wallpapersetter that \n"
-        "   uses _XSETROOT_ID .. which we do not support.\n"
-        "   consult 'fbsetbg -i' or try any other wallpapersetter\n"
-        "   that uses _XROOTPMAP_ID !\n"
-        " !!! WARNING WARNING WARNING WARNING !!!!!!\n\n"
-            };
+        unsigned int prop = 0;
 
-            Pixmap root_pm = None;
-            for (prop = 0; root_prop_ids[prop]; prop++) {
-                checkAtoms();
-                if (XGetWindowProperty(display(),
-                                       RootWindow(display(), i),
-                                       root_prop_atoms[i],
-                                       0l, 1l,
-                                       False, XA_PIXMAP,
-                                       &real_type, &real_format,
-                                       &items_read, &items_left,
-                                       (unsigned char **) &data) == Success) {
-                    if (real_format == 32 && items_read == 1) {
-                        if (print_error && strcmp(root_prop_ids[prop], "_XSETROOT_ID") == 0) {
-                            cerr<<error_message;
-                            print_error = false;
-                        } else
-                            root_pm = (Pixmap) (*data);
-                    }
-                    XFree(data);
-                    if (root_pm != None)
-                        break;
+        static bool print_error = true; // print error_message only once
+        static const char* error_message = {
+            "\n\n !!! WARNING WARNING WARNING WARNING !!!!!\n"
+            "   if you experience problems with transparency:\n"
+            "   you are using a wallpapersetter that \n"
+            "   uses _XSETROOT_ID .. which we do not support.\n"
+            "   consult 'fbsetbg -i' or try any other wallpapersetter\n"
+            "   that uses _XROOTPMAP_ID !\n"
+            " !!! WARNING WARNING WARNING WARNING !!!!!!\n\n"
+        };
+
+        Pixmap root_pm = None;
+        for (prop = 0; root_prop_ids[prop]; prop++) {
+            checkAtoms();
+            if (XGetWindowProperty(display(),
+                                   RootWindow(display(), i),
+                                   root_prop_atoms[i],
+                                   0l, 1l,
+                                   False, XA_PIXMAP,
+                                   &real_type, &real_format,
+                                   &items_read, &items_left,
+                                   (unsigned char **) &data) == Success) {
+                if (real_format == 32 && items_read == 1) {
+                    if (print_error && strcmp(root_prop_ids[prop], "_XSETROOT_ID") == 0) {
+                        cerr<<error_message;
+                        print_error = false;
+                    } else
+                        root_pm = (Pixmap) (*data);
                 }
+                XFree(data);
+                if (root_pm != None)
+                    break;
             }
-            setRootPixmap(i, root_pm);
         }
+        setRootPixmap(i, root_pm);
     }
+
     return m_root_pixmaps[screen_num];
 }
 
