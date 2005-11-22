@@ -115,7 +115,7 @@ void FbTk::Resource<Slit::Direction>::setFromString(const char *strval) {
 }
 
 template<>
-string FbTk::Resource<Slit::Placement>::getString() {
+string FbTk::Resource<Slit::Placement>::getString() const {
     switch (m_value) {
     case Slit::TOPLEFT:
         return string("TopLeft");
@@ -147,7 +147,7 @@ string FbTk::Resource<Slit::Placement>::getString() {
 }
 
 template<>
-string FbTk::Resource<Slit::Direction>::getString() {
+string FbTk::Resource<Slit::Direction>::getString() const {
     switch (m_value) {
     case Slit::VERTICAL:
         return string("Vertical");

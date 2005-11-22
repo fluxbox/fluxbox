@@ -111,13 +111,13 @@ setFromString(const char *strval) {
 //-----------------------------------------------------------------
 template<>
 std::string FbTk::Resource<bool>::
-getString() {				
+getString() const {
     return std::string(**this == true ? "true" : "false");
 }
 
 template<>
 std::string FbTk::Resource<int>::
-getString() {
+getString() const {
     char strval[256];
     sprintf(strval, "%d", **this);
     return std::string(strval);
@@ -125,12 +125,12 @@ getString() {
 
 template<>
 std::string FbTk::Resource<std::string>::
-getString() { return **this; }
+getString() const { return **this; }
 
 
 template<>
 std::string FbTk::Resource<Fluxbox::TitlebarList>::
-getString() {
+getString() const {
     string retval;
     int size=m_value.size();
     for (int i=0; i<size; i++) {
@@ -164,7 +164,7 @@ getString() {
 
 template<>
 std::string FbTk::Resource<Fluxbox::TabsAttachArea>::
-getString() {
+getString() const {
     if (m_value == Fluxbox::ATTACH_AREA_TITLEBAR)
         return "Titlebar";
     else
@@ -173,7 +173,7 @@ getString() {
 
 template<>
 string FbTk::Resource<unsigned int>::
-getString() {
+getString() const {
     char tmpstr[128];
     sprintf(tmpstr, "%ul", m_value);
     return string(tmpstr);
@@ -181,7 +181,7 @@ getString() {
 
 template<>
 string FbTk::Resource<long long>::
-getString() {
+getString() const {
     char tmpstr[128];
     sprintf(tmpstr, "%llu", (unsigned long long) m_value);
     return string(tmpstr);
@@ -214,7 +214,7 @@ setFromString(const char *strval) {
 
 template<>
 string FbTk::Resource<Fluxbox::Layer>::
-getString() {
+getString() const {
 
     if (m_value.getNum() == Fluxbox::instance()->getMenuLayer()) 
         return string("Menu");
@@ -245,7 +245,7 @@ setFromString(const char *strval) {
  
 template<>
 string FbTk::Resource<long>::
-getString() {
+getString() const {
     char tmpstr[128];
     sprintf(tmpstr, "%ld", m_value);
     return string(tmpstr);

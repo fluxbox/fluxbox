@@ -106,7 +106,7 @@ setFromString(const char *strval) {
 
 template<>
 string FbTk::Resource<Toolbar::Placement>::
-getString() {
+getString() const {
     switch (m_value) {
     case Toolbar::TOPLEFT:
         return string("TopLeft");

@@ -87,7 +87,7 @@ void FbTk::Resource<IconbarTool::DeiconifyMode>::setFromString(const char* strva
 }
 
 template<>
-std::string FbTk::Resource<IconbarTool::DeiconifyMode>::getString() {
+std::string FbTk::Resource<IconbarTool::DeiconifyMode>::getString() const {
     switch (m_value) {
     case IconbarTool::SEMIFOLLOW:
         return std::string("SemiFollow");
@@ -119,7 +119,7 @@ void FbTk::Resource<IconbarTool::WheelMode>::setFromString(const char* strval) {
 
 
 template<>
-std::string FbTk::Resource<IconbarTool::WheelMode>::getString() {
+std::string FbTk::Resource<IconbarTool::WheelMode>::getString() const {
     switch(m_value) {
     case IconbarTool::ON:
         return std::string("On");
@@ -137,7 +137,7 @@ void FbTk::Resource<Container::Alignment>::setDefaultValue() {
 }
 
 template<>
-string FbTk::Resource<Container::Alignment>::getString() {
+string FbTk::Resource<Container::Alignment>::getString() const {
     switch (m_value) {
     case Container::LEFT:
         return string("Left");
@@ -162,7 +162,7 @@ void FbTk::Resource<Container::Alignment>::setFromString(const char *str) {
 }
 
 template<>
-string FbTk::Resource<IconbarTool::Mode>::getString() {
+string FbTk::Resource<IconbarTool::Mode>::getString() const {
 
     switch (m_value) {
     case IconbarTool::NONE:
@@ -721,8 +721,8 @@ void IconbarTool::renderTheme() {
                                                              m_icon_container.height(),
                                                              m_theme.unfocusedTexture());
         m_unfocused_err_pm = m_screen.imageControl().renderImage(icon_width+1,
-                                                             m_icon_container.height(),
-                                                             m_theme.unfocusedTexture());
+                                                                 m_icon_container.height(),
+                                                                 m_theme.unfocusedTexture());
     }
     if (tmp)
         m_screen.imageControl().removeImage(tmp);
