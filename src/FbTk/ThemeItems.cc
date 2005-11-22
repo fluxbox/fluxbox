@@ -218,8 +218,8 @@ void ThemeItem<Texture>::load(const string *o_name, const string *o_altname) {
         return;
     }
 
-    std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name,
-                                                             m_tm.screenNum()));
+    std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name, m_tm.screenNum()));
+
     if (pm.get() == 0) {
         if (ThemeManager::instance().verbose()) {
             cerr<<"Resource("<<m_name+".pixmap"
