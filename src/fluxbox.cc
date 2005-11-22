@@ -337,10 +337,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         screens.push_back(i);
 
     // find out, on what "screens" fluxbox should run
+    // FIXME(php-coder): maybe it worths moving this code to main.cc, where command line is parsed?
     for (i = 1; i < m_argc; i++) {
         if (! strcmp(m_argv[i], "-screen")) {
             if ((++i) >= m_argc) {
-                cerr<<"error, -screen requires argument\n";
+                cerr << _FBTEXT(main, ScreenRequiresArg, "error, -screen requires argument", "the -screen option requires a file argument") << endl;
                 exit(1);
             }
 
