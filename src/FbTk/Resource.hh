@@ -49,7 +49,7 @@ public:
     /// set default value
     virtual void setDefaultValue() = 0;
     /// get string value
-    virtual std::string getString() = 0;
+    virtual std::string getString() const = 0;
     /// get alternative name of this resource
     inline const std::string& altName() const { return m_altname; }
     /// get name of this resource
@@ -99,7 +99,8 @@ public:
     }
 
     Resource_base *findResource(const std::string &resourcename);
-    std::string resourceValue(const std::string &resourcename);
+    const Resource_base *findResource(const std::string &resourcename) const;
+    std::string resourceValue(const std::string &resourcename) const;
     void setResourceValue(const std::string &resourcename, const std::string &value);
 
     // this marks the database as "in use" and will avoid reloading 
@@ -164,7 +165,7 @@ public:
     inline Resource<T>& operator = (const T& newvalue) { m_value = newvalue;  return *this;}
     /// specialized, must be implemented
     /// @return string value of resource
-    std::string getString();
+    std::string getString() const;
 
     inline T& operator*() { return m_value; }
     inline const T& operator*() const { return m_value; }
