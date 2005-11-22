@@ -996,34 +996,34 @@ void FluxboxWindow::moveClientLeftOf(WinClient &win, WinClient &dest) {
 
 
 void FluxboxWindow::moveClientRightOf(WinClient &win, WinClient &dest) {
-	frame().moveLabelButtonRightOf(*m_labelbuttons[&win], *m_labelbuttons[&dest]);
+    frame().moveLabelButtonRightOf(*m_labelbuttons[&win], *m_labelbuttons[&dest]);
 
-	ClientList::iterator it = find(m_clientlist.begin(),
-                                  m_clientlist.end(),
-                                  &win);
-	ClientList::iterator new_pos = find(m_clientlist.begin(),
-				       m_clientlist.end(),
-				       &dest);
+    ClientList::iterator it = find(m_clientlist.begin(),
+                                   m_clientlist.end(),
+                                   &win);
+    ClientList::iterator new_pos = find(m_clientlist.begin(),
+                                        m_clientlist.end(),
+                                        &dest);
 
-	// make sure we found them
-	if (it == m_clientlist.end() || new_pos==m_clientlist.end()) {
-		return;
-	}
-	//moving a button to the right of itself results in no change
-	if( new_pos == it) {
-		return;
-	}
-	//remove from list
-	m_clientlist.erase(it);
-	//need to insert into the next position
-	new_pos++;
-	//insert on the new place
-	if(new_pos == m_clientlist.end())
-		m_clientlist.push_back(&win);
-	else
-		m_clientlist.insert(new_pos, &win);
+    // make sure we found them
+    if (it == m_clientlist.end() || new_pos==m_clientlist.end())
+        return;
+
+    //moving a button to the right of itself results in no change
+    if (new_pos == it) 
+        return;
 	
-	updateClientLeftWindow();
+    //remove from list
+    m_clientlist.erase(it);
+    //need to insert into the next position
+    new_pos++;
+    //insert on the new place
+    if (new_pos == m_clientlist.end())
+        m_clientlist.push_back(&win);
+    else
+        m_clientlist.insert(new_pos, &win);
+	
+    updateClientLeftWindow();
 }
 
 /// Update LEFT window atom on all clients.
