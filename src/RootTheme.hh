@@ -26,21 +26,30 @@
 
 #include "FbTk/Theme.hh"
 #include "FbTk/GContext.hh"
+#include "FbTk/Texture.hh"
 
 #include <X11/Xlib.h>
 
 #include <string>
 
+class BackgroundItem;
+
+namespace FbTk {
+class ResourceManager;
+class ImageControl;
+}
 
 /// Contains border color, border size, bevel width and opGC for objects like geometry window in BScreen
 class RootTheme: public FbTk::Theme {
 public:
     /// constructor
-    /// @param screen_num the screen number
-    /// @param screen_root_command the string to be executed override theme rootCommand
-    RootTheme(int screen_num, std::string &screen_root_command);
+    /// @param resmanager resource manager for finding specific resources
+    /// @param image_control for rendering background texture
+    RootTheme(const std::string &root_command,
+              FbTk::ImageControl &image_control);
     ~RootTheme();
 
+    bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
 
     GC opGC() const { return m_opgc.gc(); }
@@ -55,10 +64,13 @@ public:
     //!! TODO we should need this later
     void lock(bool value) { m_lock = value; }
 private:
-    FbTk::ThemeItem<std::string> m_root_command;
-    std::string &m_screen_root_command; ///< string to execute and override theme rootCommand
+    BackgroundItem *m_background;///< background image/texture
     FbTk::GContext m_opgc;
-    bool m_lock;
+    const std::string &m_root_command;
+    FbTk::ImageControl &m_image_ctrl; ///< image control for rendering background texture
+    bool m_lock; ///< reconfigure lock
+    bool m_background_loaded; ///< whether or not the background is present in the style file
+
 };
 
 #endif // ROOTTHEME_HH

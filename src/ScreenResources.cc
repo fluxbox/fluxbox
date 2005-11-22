@@ -44,7 +44,7 @@ void FbTk::Resource<BScreen::PlacementPolicy>::setFromString(const char *str) {
 }
 
 template <>
-string FbTk::Resource<BScreen::PlacementPolicy>::getString() {
+string FbTk::Resource<BScreen::PlacementPolicy>::getString() const {
     switch (*(*this)) {
     case BScreen::ROWSMARTPLACEMENT:
         return "RowSmartPlacement";
@@ -71,7 +71,7 @@ void FbTk::Resource<BScreen::RowDirection>::setFromString(const char *str) {
 }
 
 template <>
-string FbTk::Resource<BScreen::RowDirection>::getString() {
+string FbTk::Resource<BScreen::RowDirection>::getString() const {
     switch (*(*this)) {
     case BScreen::LEFTRIGHT:
         return "LeftToRight";
@@ -95,7 +95,7 @@ void FbTk::Resource<BScreen::ColumnDirection>::setFromString(const char *str) {
 }
 
 template <>
-string FbTk::Resource<BScreen::ColumnDirection>::getString() {
+string FbTk::Resource<BScreen::ColumnDirection>::getString() const {
     switch (*(*this)) {
     case BScreen::TOPBOTTOM:
         return "TopToBottom";
@@ -107,7 +107,7 @@ string FbTk::Resource<BScreen::ColumnDirection>::getString() {
 }
 
 template <>
-string FbTk::Resource<FbTk::MenuTheme::MenuMode>::getString() {
+string FbTk::Resource<FbTk::MenuTheme::MenuMode>::getString() const {
     switch (*(*this)) {
     case FbTk::MenuTheme::DELAY_OPEN:
         return string("Delay");
@@ -127,14 +127,14 @@ void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setFromString(const char *str) {
         setDefaultValue();
 }
 
-template<>
-std::string FbTk::Resource<BScreen::ResizeModel>::getString() {
+
+std::string FbTk::Resource<BScreen::ResizeModel>::getString() const {
     switch (m_value) {
     case BScreen::QUADRANTRESIZE:
         return std::string("Quadrant");
     case BScreen::BOTTOMRESIZE:
         return std::string("Bottom");
-    };
+    }
 
     return std::string("Default");
 }
@@ -151,7 +151,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<BScreen::FocusModel>::getString() {
+std::string FbTk::Resource<BScreen::FocusModel>::getString() const {
     switch (m_value) {
     case BScreen::MOUSEFOCUS:
         return string("MouseFocus");
@@ -174,7 +174,8 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<BScreen::TabFocusModel>::getString() {
+
+std::string FbTk::Resource<BScreen::TabFocusModel>::getString() const {
     switch (m_value) {
     case BScreen::MOUSETABFOCUS:
         return string("SloppyTabFocus");
@@ -197,7 +198,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<BScreen::FollowModel>::getString() {
+std::string FbTk::Resource<BScreen::FollowModel>::getString() const {
     switch (m_value) {
     case BScreen::FOLLOW_ACTIVE_WINDOW:
         return std::string("Follow");
@@ -205,7 +206,7 @@ std::string FbTk::Resource<BScreen::FollowModel>::getString() {
     case BScreen::FETCH_ACTIVE_WINDOW:
         return std::string("Current");
         break;
-    };
+    }
 
     return std::string("Ignore");
 }
@@ -224,7 +225,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<FbTk::GContext::LineStyle>::getString() {
+std::string FbTk::Resource<FbTk::GContext::LineStyle>::getString() const {
     switch(m_value) {
     case FbTk::GContext::LINESOLID:
         return "LineSolid";
@@ -254,7 +255,7 @@ void FbTk::Resource<FbTk::GContext::LineStyle>
 }
 
 template<>
-std::string FbTk::Resource<FbTk::GContext::JoinStyle>::getString() {
+std::string FbTk::Resource<FbTk::GContext::JoinStyle>::getString() const {
     switch(m_value) {
     case FbTk::GContext::JOINMITER:
         return "JoinMiter";
@@ -284,7 +285,7 @@ void FbTk::Resource<FbTk::GContext::JoinStyle>
 }
 
 template<>
-std::string FbTk::Resource<FbTk::GContext::CapStyle>::getString() {
+std::string FbTk::Resource<FbTk::GContext::CapStyle>::getString() const {
     switch(m_value) {
     case FbTk::GContext::CAPNOTLAST:
         return "CapNotLast";

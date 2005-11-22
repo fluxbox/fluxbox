@@ -1,5 +1,28 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/11/22:
+   * New theme item:
+      background: <texture option>
+      background.pixmap: <image filename>
+      background.color: <color>
+      background.colorTo: <color>
+     The background.pixmap filename will be sent to "fbsetbg" 
+     which in turn sets the background.
+     The following options will be available for the background.pixmap:
+       - tiled 
+       - centered
+     For example:
+       background: tiled
+       background.pixmap: someimage.png
+     and it can also generate a normal texture:
+       background: gradient
+       background.color: blue
+       background.colorTo: green     
+     The rootCommand in the style is now obsolete and 
+     if the "background" item is not found in the style then the default
+     background will be black and with a warning text.     
+     (Henrik)
+     RootTheme.hh/cc, Screen.cc
 *05/11/16:
    * Added styleOverlay resource to init-file (Mathias)
        session.styleOverlay: ~/.fluxbox/overlay

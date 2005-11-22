@@ -229,9 +229,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // after fbwinframe have resized them
     m_winbutton_theme(new WinButtonTheme(scrn, *m_windowtheme)),
     m_menutheme(new MenuTheme(scrn)),
-    m_root_theme(new 
-                 RootTheme(scrn, 
-                           *resource.rootcommand)),
     m_root_window(scrn),
     m_geom_window(m_root_window,
                   0, 0, 10, 10, 
@@ -249,8 +246,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_shutdown(false) {
 
 
-    Fluxbox *fluxbox = Fluxbox::instance();
-    Display *disp = fluxbox->display();
+    Display *disp = m_root_window.display();
 
     initXinerama();
 
@@ -261,7 +257,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                               SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
                               ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask);
 
-    fluxbox->sync(false);
+    FbTk::App::instance()->sync(false);
 
     XSetErrorHandler((XErrorHandler) old);
 
@@ -286,13 +282,17 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
     // load this screens resources
+    Fluxbox *fluxbox = Fluxbox::instance();
     fluxbox->load_rc(*this);
 
     // setup image cache engine
-    m_image_control.reset(new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
+    m_image_control.reset(new FbTk::ImageControl(scrn, true, 
+                                                 fluxbox->colorsPerChannel(),
                                                  fluxbox->getCacheLife(), fluxbox->getCacheMax()));
     imageControl().installRootColormap();
     root_colormap_installed = true;
+
+    m_root_theme.reset(new RootTheme(*resource.rootcommand, imageControl()));
 
     m_windowtheme->setFocusedAlpha(*resource.focused_alpha);
     m_windowtheme->setUnfocusedAlpha(*resource.unfocused_alpha);
@@ -778,12 +778,12 @@ void BScreen::reconfigure() {
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
              mem_fun(&Workspace::reconfigure));
-
+    
     // reconfigure Icons
     for_each(m_icon_list.begin(),
              m_icon_list.end(),
              mem_fun(&FluxboxWindow::reconfigure));
-
+    
     imageControl().cleanCache();
     // notify objects that the screen is reconfigured
     m_reconfigure_sig.notify();
