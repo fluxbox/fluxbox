@@ -161,8 +161,20 @@ Resource_base *ResourceManager::findResource(const std::string &resname) {
     return 0;
 }
 
-string ResourceManager::resourceValue(const std::string &resname) {
-    Resource_base *res = findResource(resname);
+const Resource_base *ResourceManager::findResource(const std::string &resname) const {
+   // find resource name
+    ResourceList::const_iterator i = m_resourcelist.begin();
+    ResourceList::const_iterator i_end = m_resourcelist.end();
+    for (; i != i_end; ++i) {
+        if ((*i)->name() == resname ||
+            (*i)->altName() == resname) 
+            return *i;
+    }
+    return 0;
+}
+
+string ResourceManager::resourceValue(const std::string &resname) const {
+    const Resource_base *res = findResource(resname);
     if (res != 0)
         return res->getString();
 
