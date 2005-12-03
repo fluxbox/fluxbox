@@ -202,7 +202,11 @@ void RootTheme::reconfigTheme() {
                 options += "-t ";
             if (strstr(m_background->options().c_str(), "centered") != 0)
                 options += "-c ";
-
+            if (strstr(m_background->options().c_str(), "random") != 0)
+                options += "-r ";
+            if (strstr(m_background->options.c_str(), "aspect") != 0)
+                options += "-a ";
+            
             // compose wallpaper application "fbsetbg" with argumetns
             std::string commandargs = "fbsetbg " + options + " " + filename;
             
