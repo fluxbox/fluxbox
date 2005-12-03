@@ -2,7 +2,7 @@
 Changes for 0.9.15:
 *05/12/03:
    * Added 'random' and 'aspect' options to background theme
-     (Thanks Mitz)
+     (Thanks Shashkin Konstantin)
      RootTheme.cc
 *05/11/22:
    * New theme item:
