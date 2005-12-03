@@ -204,7 +204,7 @@ void RootTheme::reconfigTheme() {
                 options += "-c ";
             if (strstr(m_background->options().c_str(), "random") != 0)
                 options += "-r ";
-            if (strstr(m_background->options.c_str(), "aspect") != 0)
+            if (strstr(m_background->options().c_str(), "aspect") != 0)
                 options += "-a ";
             
             // compose wallpaper application "fbsetbg" with argumetns
