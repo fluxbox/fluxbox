@@ -129,7 +129,6 @@ int main(int argc, char **argv) {
         }
 
         // get color
-        XColor xc_foreground, xc_background;
         FbTk::Color fg_color(foreground.c_str(), 0);
         FbTk::Color bg_color(background.c_str(), 0);
 		
