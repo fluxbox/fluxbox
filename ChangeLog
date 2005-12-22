@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/12/23:
+   * Fixed some compiler warnings (Thanks php-coder)
 *05/12/03:
    * Added 'random' and 'aspect' options to background theme
      (Thanks Shashkin Konstantin)
