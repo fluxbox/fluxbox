@@ -273,7 +273,6 @@ bool Font::load(const std::string &name) {
     if (name.size() == 0)
         return false;
  
-    bool ret = false;
     StringMapIt lookup_entry;
     FontCacheIt cache_entry;
 
