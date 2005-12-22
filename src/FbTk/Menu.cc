@@ -1274,7 +1274,6 @@ void Menu::highlightItem(int index) {
 
     FbPixmap buffer = FbPixmap(menu.frame, item_w, item_h, menu.frame.depth());
 
-    int hilite_x = item_x, hilite_y = item_y;
     if (menu.hilite_pixmap != ParentRelative) {
         if (menu.hilite_pixmap) {
             buffer.copyArea(menu.hilite_pixmap,
