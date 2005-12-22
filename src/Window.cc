@@ -621,7 +621,6 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
     // reparent client win to this frame
     frame().setClientWindow(client);
-    FbTk::EventManager &evm = *FbTk::EventManager::instance();
     WinClient *was_focused = 0;
     WinClient *focused_win = Fluxbox::instance()->getFocusedWindow();
 
@@ -1572,7 +1571,6 @@ void FluxboxWindow::withdraw(bool interrupt_moving) {
 void FluxboxWindow::setFullscreen(bool flag) {
 
     const int head = screen().getHead(fbWindow());
-    Fluxbox* fb = Fluxbox::instance();
     
     if (flag && !isFullscreen()) {
 
