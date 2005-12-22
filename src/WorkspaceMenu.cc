@@ -66,8 +66,6 @@ WorkspaceMenu::WorkspaceMenu(BScreen &screen):
 
 void WorkspaceMenu::update(FbTk::Subject *subj) {
 
-    _FB_USES_NLS;
-    
     if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject &screen_subj = *static_cast<BScreen::ScreenSubject *>(subj);
         BScreen &screen = screen_subj.screen();
