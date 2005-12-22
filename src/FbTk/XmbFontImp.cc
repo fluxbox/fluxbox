@@ -113,10 +113,8 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
 XFontSet createFontSet(const char *fontname, bool& utf8mode) {
     Display *display = FbTk::App::instance()->display();
     XFontSet fs;
-    const int FONT_ELEMENT_SIZE=50;
     char **missing, *def = "-";
-    int nmissing, pixel_size = 0, buf_size = 0;
-    char weight[FONT_ELEMENT_SIZE], slant[FONT_ELEMENT_SIZE];
+    int nmissing;
     std::string orig_locale = "";
 
 #ifdef HAVE_SETLOCALE
