@@ -822,7 +822,6 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
 
 void Remember::setupFrame(FluxboxWindow &win) {
     WinClient &winclient = win.winClient();
-    _FB_USES_NLS;
     // we don't touch the window if it is a transient
     // of something else
 
