@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*05/12/28:
+   * Fix url in fbsetbg.1.
 *05/12/23:
    * Fixed some compiler warnings (Thanks php-coder)
 *05/12/03:
