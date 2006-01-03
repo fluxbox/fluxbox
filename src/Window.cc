@@ -41,7 +41,6 @@
 #include "MenuCreator.hh"
 #include "StringUtil.hh"
 
-#include "FbTk/I18n.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/EventManager.hh"

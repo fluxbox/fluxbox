@@ -31,7 +31,6 @@
 #include "Xutil.hh"
 
 #include "EventManager.hh"
-#include "FbTk/I18n.hh"
 #include "FbTk/MultLayers.hh"
 
 #include <iostream>
