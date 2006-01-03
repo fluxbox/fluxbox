@@ -30,6 +30,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 #include <string>
 
 #include "XrmDatabaseHelper.hh"
@@ -94,6 +95,8 @@ private:
 /// Hold ThemeItems. Use this to create a Theme set
 class Theme {
 public:
+    typedef std::list<ThemeItem_base *> ItemList;
+
     explicit Theme(int screen_num); // create a theme for a specific screen
     virtual ~Theme();
     virtual void reconfigTheme() = 0;
@@ -113,7 +116,7 @@ public:
     
 private:
     const int m_screen_num;
-    typedef std::list<ThemeItem_base *> ItemList;
+
     ItemList m_themeitems;
     FbTk::Subject m_reconfig_sig;
 };
@@ -125,6 +128,9 @@ private:
 */
 class ThemeManager {
 public:
+    typedef std::list<FbTk::Theme *> ThemeList;
+    typedef std::vector<ThemeList> ScreenThemeVector;
+
     static ThemeManager &instance();
     /// load style file "filename" to screen 
     bool load(const std::string &filename, const std::string &overlay_filename, int screen_num = -1);
@@ -150,8 +156,8 @@ private:
     /// @return false if theme isn't registred in the manager
     bool unregisterTheme(FbTk::Theme &tm);
     /// map each theme manager to a screen
-    typedef std::list<FbTk::Theme *> ThemeList;
-    ThemeList m_themelist;
+
+    ScreenThemeVector m_themes;
     int m_max_screens;
     XrmDatabaseHelper m_database;
     bool m_verbose;

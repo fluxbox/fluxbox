@@ -42,6 +42,27 @@ using namespace std;
 
 namespace FbTk {
 
+struct LoadThemeHelper {
+    LoadThemeHelper():m_tm(ThemeManager::instance()) {}
+    void operator ()(Theme *tm) {
+        m_tm.loadTheme(*tm);
+    }
+    void operator ()(ThemeManager::ThemeList &tmlist) {
+        
+        for_each(tmlist.begin(), tmlist.end(), 
+                 *this);
+        // send reconfiguration signal to theme and listeners
+        ThemeManager::ThemeList::iterator it = tmlist.begin();
+        ThemeManager::ThemeList::iterator it_end = tmlist.end();
+        for (; it != it_end; ++it) {
+            (*it)->reconfigTheme();
+            (*it)->reconfigSig().notify();
+        }
+    }
+
+    ThemeManager &m_tm;    
+};
+
 Theme::Theme(int screen_num):m_screen_num(screen_num) {
     ThemeManager::instance().registerTheme(*this);
 }
@@ -65,26 +86,33 @@ ThemeManager::ThemeManager():
 }
 
 bool ThemeManager::registerTheme(Theme &tm) {
-    if (m_max_screens < 0)
+    if (m_max_screens < 0) {
         m_max_screens = ScreenCount(FbTk::App::instance()->display());
+        m_themes.resize(m_max_screens);
+    }
 
     // valid screen num?
     if (m_max_screens < tm.screenNum() || tm.screenNum() < 0)
         return false;
     // TODO: use find and return false if it's already there
     // instead of unique 
-    m_themelist.push_back(&tm);
-    m_themelist.unique(); 
+
+    m_themes[tm.screenNum()].push_back(&tm);
+    m_themes[tm.screenNum()].unique();
     return true;
 }
 
 bool ThemeManager::unregisterTheme(Theme &tm) {
-    m_themelist.remove(&tm);
+    if (m_max_screens < tm.screenNum() || tm.screenNum() < 0)
+        return false;
+
+    m_themes[tm.screenNum()].remove(&tm);
+
     return true;
 }
 
 bool ThemeManager::load(const std::string &filename, 
-        const std::string &overlay_filename, int screen_num) {
+                        const std::string &overlay_filename, int screen_num) {
     std::string location = FbTk::StringUtil::expandFilename(filename);
     std::string prefix = "";
 
@@ -136,31 +164,24 @@ bool ThemeManager::load(const std::string &filename,
     location.append("/pixmaps");
     Image::addSearchPath(location);
 
+    LoadThemeHelper load_theme_helper;
+
     // get list and go throu all the resources and load them
-    ThemeList::iterator theme_it = m_themelist.begin();
-    const ThemeList::iterator theme_it_end = m_themelist.end();
-    for (; theme_it != theme_it_end; ++theme_it) {
-        if (screen_num < 0)
-            loadTheme(**theme_it);
-        else if (screen_num == (*theme_it)->screenNum()) // specified screen
-            loadTheme(**theme_it);
+    // and then reconfigure them
+    if (screen_num < 0 || screen_num > m_max_screens) {
+        for_each(m_themes.begin(),
+                 m_themes.end(),
+                 load_theme_helper);
+    } else {
+        load_theme_helper(m_themes[screen_num]);
     }
 
-    // notify all themes that we reconfigured
-    theme_it = m_themelist.begin();
-    for (; theme_it != theme_it_end; ++theme_it) {
-        // send reconfiguration signal to theme and listeners
-        if (screen_num < 0 || (*theme_it)->screenNum() == screen_num) {
-            (*theme_it)->reconfigTheme();
-            (*theme_it)->reconfigSig().notify();
-        }
-    }
     return true;
 }
 
 void ThemeManager::loadTheme(Theme &tm) {
-    std::list<ThemeItem_base *>::iterator i = tm.itemList().begin();
-    std::list<ThemeItem_base *>::iterator i_end = tm.itemList().end();
+    Theme::ItemList::iterator i = tm.itemList().begin();
+    Theme::ItemList::iterator i_end = tm.itemList().end();
     for (; i != i_end; ++i) {
         ThemeItem_base *resource = *i;
         if (!loadItem(*resource)) {
