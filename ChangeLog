@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/01/03:
+   * Improved style loading
+     (Henrik)
+     Theme.hh/cc
+    
 *05/12/28:
    * Fix url in fbsetbg.1.
 *05/12/23:
