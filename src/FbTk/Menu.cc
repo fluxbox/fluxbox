@@ -43,7 +43,6 @@
 #include "EventManager.hh"
 #include "Transparent.hh"
 #include "SimpleCommand.hh"
-#include "I18n.hh"
 #include "FbPixmap.hh"
 
 #include <X11/Xatom.h>

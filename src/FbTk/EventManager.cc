@@ -24,7 +24,6 @@
 #include "EventManager.hh"
 #include "FbWindow.hh"
 #include "App.hh"
-#include "I18n.hh"
 
 #include <iostream>
 using namespace std;

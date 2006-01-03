@@ -26,7 +26,6 @@
 #include "stringstream.hh"
 #include "Font.hh"
 #include "FontImp.hh"
-#include "I18n.hh"
 #include "App.hh"
 
 #ifdef    HAVE_CONFIG_H
