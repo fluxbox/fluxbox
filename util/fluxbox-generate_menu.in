@@ -1534,7 +1534,7 @@ append_menu_end
 
 append_submenu "${EDITORMENU}"
     normal_find gvim bluefish nedit gedit xedit kword kwrite kate anjuta \
-        wings xemacs emacs kvim cream evim scite
+        wings xemacs emacs kvim cream evim scite Ted
     cli_find nano vim vi zile jed joe
     find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
     find_it     xemacs append "[exec]   (xemacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
@@ -1542,7 +1542,7 @@ append_menu_end
 
 append_submenu "${EDUCATIONMENU}"
     normal_find celestia scilab geomview scigraphica oregano xcircuit electric \
-        pymol chemtool xdrawchem 
+        pymol elem chemtool xdrawchem 
     find_it     R          append "[exec] (R) {${DEFAULT_TERM} -e R --gui=gnome}"
     cli_find maxima grace yacas octave gnuplot grass coq acl
 append_menu_end
@@ -1579,7 +1579,7 @@ append_submenu "${MULTIMEDIAMENU}"
        append_menu_end
 
        append_submenu "${XUTILSMENU}"
-           normal_find xfontsel xman xload xfigxbiff editres viewres xclock \
+           normal_find xfontsel xman xload xbiff editres viewres xclock \
                xmag wmagnify gkrellm gkrellm2 vmware portagemaster celestia
            find_it xrdb append "[exec] (Reload .Xdefaults) {xrdb -load $HOME/.Xdefaults}"
        append_menu_end
@@ -1587,37 +1587,53 @@ append_menu_end
 
 
 append_submenu "${OFFICEMENU}"
-    normal_find xclock xcalc kcalc gv
+    normal_find xclock xcalc kcalc grisbi qbankmanager
     find_it gcalc           append "[exec] (gcalc) {gcalc}" || \
         find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
+    find_it ical            append "[exec] (Calendar)   {ical}"
 
     for ext in s o xo; do
-        find_it ${ext}office   append "[exec] (Open Office)      {${ext}office}"
-        find_it ${ext}ocalc    append "[exec] (OO Calc)          {${ext}ocalc}"
-        find_it ${ext}owriter  append "[exec] (OO Writer)        {${ext}owriter}"
-        find_it ${ext}oimpress append "[exec] (OO Impress)       {${ext}oimpress}"
-        find_it ${ext}odraw    append "[exec] (OO Draw)          {${ext}odraw}"
-        find_it ${ext}omath    append "[exec] (OO Math)          {${ext}omath}"
-        find_it ${ext}opadmin  append "[exec] (OO Printer Admin) {${ext}opadmin}"
-        find_it mrproject      append "[exec] (Mr.Project)       {mrproject}"
+        find_it ${ext}office2 && (
+            find_it ${ext}office2   append "[exec] (Open Office 2)      {${ext}office2}"
+            find_it ${ext}obase2    append "[exec] (OO Base 2)          {${ext}obase2}"
+            find_it ${ext}ocalc2    append "[exec] (OO Calc 2)          {${ext}ocalc2}"
+            find_it ${ext}owriter2  append "[exec] (OO Writer 2)        {${ext}owriter2}"
+            find_it ${ext}oweb2     append "[exec] (OO Web 2)           {${ext}oweb2}"
+            find_it ${ext}ohtml2    append "[exec] (OO HTML 2)          {${ext}ohtml2}"
+            find_it ${ext}oimpress2 append "[exec] (OO Impress 2)       {${ext}oimpress2}"
+            find_it ${ext}odraw2    append "[exec] (OO Draw 2)          {${ext}odraw2}"
+            find_it ${ext}omath2    append "[exec] (OO Math 2)          {${ext}omath2}"
+            find_it ${ext}ofromtemplate2  append "[exec] (OO Templates 2) {${ext}ofromtemplate2}"
+        )
+        find_it ${ext}office && (
+            find_it ${ext}office   append "[exec] (Open Office)      {${ext}office}"
+            find_it ${ext}ocalc    append "[exec] (OO Calc)          {${ext}ocalc}"
+            find_it ${ext}owriter  append "[exec] (OO Writer)        {${ext}owriter}"
+            find_it ${ext}oimpress append "[exec] (OO Impress)       {${ext}oimpress}"
+            find_it ${ext}odraw    append "[exec] (OO Draw)          {${ext}odraw}"
+            find_it ${ext}omath    append "[exec] (OO Math)          {${ext}omath}"
+            find_it ${ext}opadmin  append "[exec] (OO Printer Admin) {${ext}opadmin}"
+            find_it mrproject      append "[exec] (Mr.Project)       {mrproject}"
+        )
     done
 
-    normal_find abiword kword wordperfect katoob acroread xpdf lyx
+    normal_find abiword kword wordperfect katoob lyx acroread xpdf gv ghostview
     normal_find dia xfig
+    normal_find gnumeric
 append_menu_end
 
 append_submenu "${GAMESMENU}"
     normal_find bzflag gnibbles gnobots2 tuxpuck gataxx glines \
         gnect mahjongg gnomine gnome-stones gnometris gnotravex \
         gnotski iagno knights eboard xboard scid freecell pysol \
-        gtali tuxracer xpenguins xsnow xeyes xpenguins smclone \
+        gtali tuxracer xpenguins xsnow xeyes smclone \
         openmortal quake2 quake3 skoosh same-gnome enigma xbill \
         icebreaker scorched3d sol dosbox black-box enigma freeciv \
         freeciv-server frozen-bubble liquidwar qt-nethack \
         nethack-gnome pathological scummvm xqf \
         wesnoth canfeild ace_canfeild golf merlin chickens \
         supertux tuxdash  neverball cube_client blackjack \
-        doom doom3 blackshades gltron kpoker
+        doom doom3 quake4 blackshades gltron kpoker concentration torrent scramble
     cli_find gnugo
 
     find_it et append "[exec] (Enemy Territory) {et}"
@@ -1704,6 +1720,7 @@ append_submenu "${FBSETTINGSMENU}"
 
     append_submenu ${TOOLS}
         normal_find fluxconf fluxkeys fluxmenu
+        find_it fbpanel append "[exec] (Fluxbox panel) {fbpanel}"
         # if gxmessage exitst use it; else use xmessage
         find_it gxmessage append \
             "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \

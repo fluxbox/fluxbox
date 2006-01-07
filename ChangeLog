@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/01/07:
+   * minor addons to fbgm, close Gentoo #74523 and #110677 (Mathias)
 *06/01/03:
    * Improved style loading
      (Henrik)
@@ -19,7 +21,7 @@ Changes for 0.9.15:
       background.pixmap: <image filename>
       background.color: <color>
       background.colorTo: <color>
-     The background.pixmap filename will be sent to "fbsetbg" 
+     The background.pixmap filename will be sent to "fbsetbg"
      which in turn sets the background.
      The following options will be available for the background.pixmap:
        - tiled 
@@ -30,10 +32,10 @@ Changes for 0.9.15:
      and it can also generate a normal texture:
        background: gradient
        background.color: blue
-       background.colorTo: green     
-     The rootCommand in the style is now obsolete and 
+       background.colorTo: green
+     The rootCommand in the style is now obsolete and
      if the "background" item is not found in the style then the default
-     background will be black and with a warning text.     
+     background will be black and with a warning text.
      (Henrik)
      RootTheme.hh/cc, Screen.cc
 *05/11/16:
