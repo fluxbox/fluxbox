@@ -714,7 +714,7 @@ void BScreen::reconfigure() {
     renderPosWindow();
 
     // realize the number of workspaces from the init-file
-    const int nr_ws = *resource.workspaces;
+    const unsigned int nr_ws = *resource.workspaces;
     if (nr_ws > m_workspaces_list.size()) {
         while(nr_ws != m_workspaces_list.size()) {
             addWorkspace();
@@ -760,7 +760,7 @@ void BScreen::reconfigure() {
     if (restore_menus) {
         // restore submenus, no timestamp changed
         FbTk::Menu *menu = m_rootmenu.get();
-        for (int i = 0; i < (int)remember_sub.size(); i++ ) {
+        for (unsigned int i = 0; i < remember_sub.size(); i++ ) {
             int sub = remember_sub[i];
             if (!menu || sub < 0) 
                 break;

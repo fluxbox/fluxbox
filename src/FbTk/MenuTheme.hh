@@ -150,8 +150,8 @@ private:
     MenuMode m_menumode;
     unsigned int m_delayopen; ///< in msec
     unsigned int m_delayclose; ///< in msec
-    int m_real_title_height; ///< the calculated item height (from font and menu.titleHeight)
-    int m_real_item_height; ///< the calculated item height (from font and menu.itemHeight)
+    unsigned int m_real_title_height; ///< the calculated item height (from font and menu.titleHeight)
+    unsigned int m_real_item_height; ///< the calculated item height (from font and menu.itemHeight)
 };
 
 } // end namespace FbTk

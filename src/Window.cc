@@ -2496,10 +2496,10 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
 #ifdef DEBUG
         cerr<<"XA_WM_NORMAL_HINTS("<<title()<<")"<<endl;
 #endif // DEBUG
-        int old_max_width = client.max_width;
-        int old_min_width = client.min_width;
-        int old_min_height = client.min_height;
-        int old_max_height = client.max_height;
+        unsigned int old_max_width = client.max_width;
+        unsigned int old_min_width = client.min_width;
+        unsigned int old_min_height = client.min_height;
+        unsigned int old_max_height = client.max_height;
         bool changed = false;
         client.updateWMNormalHints();
 

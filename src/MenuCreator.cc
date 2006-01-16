@@ -472,7 +472,7 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
                 "close",
                 0
             };
-            for (int i=0; i < sizeof(default_menu); ++i)
+            for (unsigned int i=0; i < sizeof(default_menu); ++i)
                 createWindowMenuItem(default_menu[i], "", *menu);
         }
         menu->reconfigure(); // update graphics

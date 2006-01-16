@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/01/16:
+   * minor changes to fix some warnings (Thanks php-coder)
+     Screen.cc Window.cc MenuCreator.cc MenuTheme.hh
 *06/01/07:
    * minor addons to fbgm, close Gentoo #74523 and #110677 (Mathias)
 *06/01/03:
