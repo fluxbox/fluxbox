@@ -1,4 +1,4 @@
-# nls/Makefile.am for fluxbox - http://fluxbox.sf.net
+# nls/Makefile.am for fluxbox - http://fluxbox.org
 
 LOCALE_PATH = @LOCALE_PATH@
 NLSTEST = @NLS@
