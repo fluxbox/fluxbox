@@ -93,7 +93,7 @@ namespace {
    assuming cd is correct
    @param cd the iconv type
    @param msg text to be converted
-   @param len number of chars to convert
+   @param size number of chars to convert
    @return the recoded string, or 0 on failure
 */
 char* recode(iconv_t cd,
