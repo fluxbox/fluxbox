@@ -1,4 +1,4 @@
-# Makefile.am for Fluxbox 0.1.x 
+# Makefile.am for Fluxbox - http://fluxbox.org
 
 SUBDIRS = data doc nls src util
 MAINTAINERCLEANFILES = aclocal.m4 config.h.in configure Makefile.in stamp-h.in
