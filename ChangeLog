@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/01/23:
+   * minor fix for fbsetbg (thanx Mark Tiefenbruck)
 *06/01/16:
    * minor changes to fix some warnings (Thanks php-coder)
      Screen.cc Window.cc MenuCreator.cc MenuTheme.hh

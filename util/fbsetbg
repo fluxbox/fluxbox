@@ -288,6 +288,10 @@ while [ $# -gt 0 ]; do
                 option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
                 wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
                 if [ -z "$wallpaper" ]; then
+                    option=`grep "|${DISPLAY}.0$"    $lastwallpaper|cut -d'|' -f1`
+                    wallpaper=`grep "|${DISPLAY}.0$" $lastwallpaper|cut -d'|' -f2`
+                fi
+                if [ -z "$wallpaper" ]; then
                     message "No previous wallpaper recorded for display ${DISPLAY}"
                     exit 1
                 fi
