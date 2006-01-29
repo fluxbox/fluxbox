@@ -548,6 +548,6 @@ Numerous other languages could be available if someone jumps in.
 .SH SEE ALSO
 .IR fluxbox(1) 
 .IR fbsetbg(1)
-.IR bsetroot(1)
+.IR fbsetroot(1)
 
 .\" ADDITIONS TO MAKE
