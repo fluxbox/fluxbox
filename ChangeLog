@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/01/29:
+   * Changed bsetroot to fbsetroot in documentation (Thanks OpenBSD)
+     fbsetbg.1 fluxstyle.1.in fluxbox.1.in
 *06/01/23:
    * minor fix for fbsetbg (thanx Mark Tiefenbruck)
 *06/01/16:
@@ -11,7 +14,6 @@ Changes for 0.9.15:
    * Improved style loading
      (Henrik)
      Theme.hh/cc
-    
 *05/12/28:
    * Fix url in fbsetbg.1.
 *05/12/23:
