@@ -120,12 +120,11 @@ fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
 
     if ((mod + sol + grd) != true) {
         _FB_USES_NLS;
-        cerr<<m_app_name<<
-            _FBTEXT(fbsetroot, MustSpecify, 
+        cerr << _FBTEXT(fbsetroot, MustSpecify, 
                     "Error: must specify one of: -solid, -mod, -gradient\n",
-                    "user didn't give one of the required options")<<endl;
+                    "user didn't give one of the required options") << endl;
 
-        usage(2);
+        exit(2);
     }
 
     num_screens = ScreenCount(display());
