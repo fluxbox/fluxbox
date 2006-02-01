@@ -213,7 +213,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: памылка: пав≥нна быць нешта з наступнага: -solid, -mod, -gradient\n
+1 памылка: пав≥нна быць нешта з наступнага: -solid, -mod, -gradient\n
 2 Couldn't create pixmap atoms, giving up!
 3 -display <string>        «лучэньне з дысплэ€м\n\
 -mod <x> <y>             modula pattern\n\

@@ -219,7 +219,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: b³±d: musisz okre¶liæ jedno z: -solid, -mod, -gradient\n
+1 b³±d: musisz okre¶liæ jedno z: -solid, -mod, -gradient\n
 2 Nie mogê stowrzyæ elementów pixmap - dajê sobie spokój!
 3 -display <string>        korzystam z ekranu <nazwa ekranu>\n\
 -mod <x> <y>             wzór modu³u\n\

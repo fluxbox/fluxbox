@@ -106,7 +106,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: Erreur: il faut préciser: -solid, -mod, -gradient\n
+1 Erreur: il faut préciser: -solid, -mod, -gradient\n
 3 -display <chaîne>        	connexion à l'écran\n\
 -mod <x> <y>             	schéma\n\
 -foreground, -fg <couleur> 	couleur au premier plan\n\

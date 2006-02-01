@@ -106,7 +106,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: erro: necessario especificar um dos seguintes argumentos: -solid, -mod, -gradient\n
+1 erro: necessario especificar um dos seguintes argumentos: -solid, -mod, -gradient\n
 3 -display <string>        conexão com display\n\
 -mod <x> <y>             altera pattern\n\
 -foreground, -fg <color> altera foreground color\n\

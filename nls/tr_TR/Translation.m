@@ -106,7 +106,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s : hata : -solid, -mod yada -gradient'den en az birisini belirlemek zorundasýnýz\n
+1 hata : -solid, -mod yada -gradient'den en az birisini belirlemek zorundasýnýz\n
 3 -display <metin>         baðlantýyý göster\n\
 -mod <x> <y>             yerleþtirme\n\
 -foreground, -fg <renk>  önplan rengi\n\

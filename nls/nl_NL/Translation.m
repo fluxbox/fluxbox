@@ -107,7 +107,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: error: must specify one of: -solid, -mod, -gradient\n
+1 error: must specify one of: -solid, -mod, -gradient\n
 3 -display <string>        display connection\n\
 -mod <x> <y>             modula pattern\n\
 -foreground, -fg <color> modula foreground color\n\

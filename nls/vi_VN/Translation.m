@@ -187,7 +187,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: lỗi: cần đưa ra một trong các từ khóa sau: -solid, -mod, -gradient\n
+1 lỗi: cần đưa ra một trong các từ khóa sau: -solid, -mod, -gradient\n
 2 Không thể tạo các pixmap!
 3 -display <string>        hiển thị trên màn hình <tên màn hình>\n\
 -mod <x> <y>             mẫu môđun <x> <y>\n\

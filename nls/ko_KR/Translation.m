@@ -212,7 +212,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: error: must specify one of: -solid, -mod, -gradient\n
+1 Error: must specify one of: -solid, -mod, -gradient\n
 2 Couldn't create pixmap atoms, giving up!
 3 -display <string>        display connection\n\
 -mod <x> <y>             modula pattern\n\

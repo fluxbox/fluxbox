@@ -215,7 +215,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: feil: må oppgi en av: -solid, -mod, -gradient\n
+1 feil: må oppgi en av: -solid, -mod, -gradient\n
 2 Klarte ikke opprette pikselkartatomer, gir opp.
 3 -display <streng>        tilkobling til visningsenhet\n\
 -mod <x> <y>             «modula»-mønster\n\

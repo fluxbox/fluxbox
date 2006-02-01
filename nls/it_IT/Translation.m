@@ -105,7 +105,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: errore: specicare una delle opzioni : -solid, -mod, -gradient\n
+1 errore: specicare una delle opzioni : -solid, -mod, -gradient\n
 3 -display <stringa>        connessione al display\n\
 -mod <x> <y>              schema\n\
 -foreground, -fg <colore> colore di primo piano nello schema\n\

@@ -107,7 +107,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: napaka: doloèiti je treba eno: -solid, -mod, -gradient\n
+1 napaka: doloèiti je treba eno: -solid, -mod, -gradient\n
 3 -display <string>        prika¾i povezavo\n\
 -mod <x> <y>             vzorec\n\
 -foreground, -fg <color> barva ospredja\n\

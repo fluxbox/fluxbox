@@ -104,7 +104,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: viga: pead määratlema ühe järgnevaist: -solid, -mod, -gradient\n
+1 viga: pead määratlema ühe järgnevaist: -solid, -mod, -gradient\n
 3 -display <string>        displei ühendus\n\
 -mod <x> <y>             moodula tapeet\n\
 -foreground, -fg <color> esiplaani värvi moodula\n\

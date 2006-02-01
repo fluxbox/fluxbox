@@ -181,7 +181,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: fel: måste specifiera en av: -solid, -mod, -gradient\n
+1 fel: måste specifiera en av: -solid, -mod, -gradient\n
 3 -display <string>        skärmanslutning\n\
 -mod <x> <y>             modulamönster\n\
 -foreground, -fg <color> förgrundsfärg för modulamönster\n\
