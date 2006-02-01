@@ -1,8 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/02/01:
+   * fbsetroot copyright/help fixes (Thanks php-coder)
+     fbsetroot.cc, nls/*
 *06/01/29:
    * Changed bsetroot to fbsetroot in documentation (Thanks OpenBSD)
      fbsetbg.1 fluxstyle.1.in fluxbox.1.in
+*06/01/25:
+   * Added norwegian bokmal, nb_NO (Thanks Alexander Sornes)
+     nls/nb_NO, util/fluxbox-generate_menu.in
 *06/01/23:
    * minor fix for fbsetbg (thanx Mark Tiefenbruck)
 *06/01/16:
