@@ -236,18 +236,18 @@ $set 19 #main
 5 Kjøretidsfeil
 6 Standard Exception
 7 Ukjent feil
-8 feil: «-log» trenger et argument
+8 feil: «-log» trenger et argument\n
 9 Loggfil
 10 Logger til
 11 feil: «-rc» krever et argument\n
-12 FluxBox %s: kopirett %s Henrik Kinnunen\n\n\
+13 FluxBox %s: kopirett %s Henrik Kinnunen\n\n\
 -display <streng>\t\tbruk visningsenhetforbindelse.\n\
 -rc <streng>\t\t\tbruk alternativ ressursfil.\n\
 -version\t\t\tvis versjonnummer og avslutt.\n\
 -info\t\t\t\tvis litt nyttig informasjon.\n\
 -log <filnavn>\t\t\tlogg utdata til fil.\n\
 -help\t\t\t\tvis denne hjelpeteksten og avslutt.\n\n
-13 advarsel: klarte ikke angi miljøvariabelen «DISPLAY»
+14 advarsel: klarte ikke angi miljøvariabelen «DISPLAY»
 
 $set 20
 
