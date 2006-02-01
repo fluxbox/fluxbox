@@ -380,10 +380,10 @@ void fbsetroot::gradient() {
 */
 void fbsetroot::usage(int exit_code) {
     _FB_USES_NLS;
-    cerr<<m_app_name<<" 2.3 : (c) 2003-2005 Fluxbox Development Team"<<endl;
-    cerr<<m_app_name<<" 2.1 : (c) 2002 Claes Nasten"<<endl;
-    cerr<<m_app_name<<" 2.0 : (c) 1997-2000 Brad Hughes\n"<<endl;
-    cerr<<_FBTEXT(fbsetroot, Usage,
+    cout << m_app_name << " 2.3 : (c) 2003-2005 Fluxbox Development Team" << endl;
+    cout << m_app_name << " 2.1 : (c) 2002 Claes Nasten" << endl;
+    cout << m_app_name << " 2.0 : (c) 1997-2000 Brad Hughes\n" << endl;
+    cout << _FBTEXT(fbsetroot, Usage,
                   "  -display <string>        display connection\n"
                   "  -mod <x> <y>             modula pattern\n"
                   "  -foreground, -fg <color> modula foreground color\n"
@@ -393,7 +393,7 @@ void fbsetroot::usage(int exit_code) {
                   "  -to <color>              gradient end color\n\n"
                   "  -solid <color>           solid color\n\n"
                   "  -help                    print this help text and exit\n",
-                  "fbsetroot usage options")<<endl;
+                  "fbsetroot usage options") << endl;
     exit(exit_code);
 }
 
