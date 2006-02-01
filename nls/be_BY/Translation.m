@@ -162,7 +162,6 @@ $set 13 #Slit
 3 Па кругу ўверх
 4 Напрамак шчыліны
 5 Слой шчыліны
-6 Slit on Head
 7 Месца шчыліны
 8 Шчыліна
 9 Захаваць сьпіс шчыліны
@@ -203,7 +202,6 @@ $set 16 #Windowmenu
 9 Прыляпіць
 10 Забіць
 
-x
 $set 17 #Workspace
 
 1 Працоўнае месца %d
@@ -214,7 +212,6 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 памылка: павінна быць нешта з наступнага: -solid, -mod, -gradient\n
-2 Couldn't create pixmap atoms, giving up!
 3 -display <string>        Злучэньне з дысплэям\n\
 -mod <x> <y>             modula pattern\n\
 -foreground, -fg <color> modula foreground color\n\
@@ -228,9 +225,6 @@ $set 18 #fbsetroot
 $set 19 #main
 
 1 памылка: '-display' патрэбны аргумэнт\n
-2 Bad Alloc
-3 Bad cast
-4 Out of range
 5 Памылка выкананьня
 6 Стандартнае выключана
 7 Невядомая памылка
