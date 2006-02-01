@@ -151,8 +151,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: помилка: необх╕дно задати один ╕з таких ключ╕в: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        з'╓днання з диспле╓м\n\
+3 -display <string>        з'╓днання з диспле╓м\n\
 -mod <x> <y>             макет кл╕тинки\n\
 -foreground, -fg <color> кол╕р переднього плану кл╕тинки\n\
 -background, -bg <color> кол╕р фона кл╕тинки\n\n\

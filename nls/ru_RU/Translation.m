@@ -158,8 +158,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: ошибка: необходимо задать один из следующих ключей: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        соединение с дисплеем\n\
+3 -display <string>        соединение с дисплеем\n\
 -mod <x> <y>             макет клетки\n\
 -foreground, -fg <color> цвет переднего плана клетки\n\
 -background, -bg <color> цвет фона клетки\n\n\

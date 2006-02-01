@@ -106,8 +106,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: kïûda: jânosaka viens no: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <virkne>        displeja savienojums\n\
+3 -display <virkne>        displeja savienojums\n\
 -mod <x> <y>             moduïa raksts\n\
 -foreground, -fg <krâsa> moduïa priekðplâna krâsa\n\
 -background, -bg <krâsa> moduïa fona krâsa\n\n\

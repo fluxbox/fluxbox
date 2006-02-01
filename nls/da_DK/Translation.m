@@ -107,8 +107,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: fejl: specificér en af følgende: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        skærmtilslutning\n\
+3 -display <string>        skærmtilslutning\n\
 -mod <x> <y>             modula mønster\n\
 -foreground, -fg <color> modula foregrundsfarve\n\
 -background, -bg <color> modula baggrundsfarve\n\n\

@@ -214,8 +214,7 @@ $set 18 #fbsetroot
 
 1 %s: error: must specify one of: -solid, -mod, -gradient\n
 2 Couldn't create pixmap atoms, giving up!
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        display connection\n\
+3 -display <string>        display connection\n\
 -mod <x> <y>             modula pattern\n\
 -foreground, -fg <color> modula foreground color\n\
 -background, -bg <color> modula background color\n\n\

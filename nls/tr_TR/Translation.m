@@ -107,8 +107,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s : hata : -solid, -mod yada -gradient'den en az birisini belirlemek zorundasýnýz\n
-3 %s 2.0 : Telif hakký (c) 1997-2000 Brad Hughes\n\n\
--display <metin>         baðlantýyý göster\n\
+3 -display <metin>         baðlantýyý göster\n\
 -mod <x> <y>             yerleþtirme\n\
 -foreground, -fg <renk>  önplan rengi\n\
 -background, -bg <renk>  arkaplan rengi\n\n\

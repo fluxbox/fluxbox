@@ -108,9 +108,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: napaka: doloèiti je treba eno: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
-(c) 2001-2002 Sean 'Shaleh' Perry\n\n\
--display <string>        prika¾i povezavo\n\
+3 -display <string>        prika¾i povezavo\n\
 -mod <x> <y>             vzorec\n\
 -foreground, -fg <color> barva ospredja\n\
 -background, -bg <color> barva ozadja\n\n\

@@ -107,8 +107,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: Erreur: il faut préciser: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <chaîne>        	connexion à l'écran\n\
+3 -display <chaîne>        	connexion à l'écran\n\
 -mod <x> <y>             	schéma\n\
 -foreground, -fg <couleur> 	couleur au premier plan\n\
 -background, -bg <couleur> 	couleur au second plan\n\n\

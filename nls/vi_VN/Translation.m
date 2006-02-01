@@ -189,8 +189,7 @@ $set 18 #fbsetroot
 
 1 %s: lỗi: cần đưa ra một trong các từ khóa sau: -solid, -mod, -gradient\n
 2 Không thể tạo các pixmap!
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        hiển thị trên màn hình <tên màn hình>\n\
+3 -display <string>        hiển thị trên màn hình <tên màn hình>\n\
 -mod <x> <y>             mẫu môđun <x> <y>\n\
 -foreground, -fg <color> màu nền trước <màu>\n\
 -background, -bg <color> màu nền sau <màu>\n\n\

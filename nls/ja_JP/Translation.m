@@ -109,8 +109,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: error: 次の中から一つを選択しなければなりません: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        指定ディスプレイに接続\n\
+3 -display <string>        指定ディスプレイに接続\n\
 -mod <x> <y>             格子のパターン間隔\n\
 -foreground, -fg <color> 格子模様の前景色\n\
 -background, -bg <color> 格子模様の背景色\n\n\

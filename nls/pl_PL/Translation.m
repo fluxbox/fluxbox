@@ -221,8 +221,7 @@ $set 18 #fbsetroot
 
 1 %s: b³±d: musisz okre¶liæ jedno z: -solid, -mod, -gradient\n
 2 Nie mogê stowrzyæ elementów pixmap - dajê sobie spokój!
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        korzystam z ekranu <nazwa ekranu>\n\
+3 -display <string>        korzystam z ekranu <nazwa ekranu>\n\
 -mod <x> <y>             wzór modu³u\n\
 -foreground, -fg <kolor> kolor pierwszego planu modu³u\n\
 -background, -bg <kolor> kolor t³a modu³u\n\n\

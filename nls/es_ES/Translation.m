@@ -107,8 +107,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: error: es necesario especifiar uno de: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        conexión de despliegue\n\
+3 -display <string>        conexión de despliegue\n\
 -mod <x> <y>             diseño de modula\n\
 -foreground, -fg <color> color del primer plano de modula\n\
 -background, -bg <color> color del fondo de modula\n\n\

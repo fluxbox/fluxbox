@@ -107,8 +107,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: erro: necessario especificar um dos seguintes argumentos: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        conexão com display\n\
+3 -display <string>        conexão com display\n\
 -mod <x> <y>             modula pattern\n\
 -foreground, -fg <color> modula foreground color\n\
 -background, -bg <color> modula background color\n\n\

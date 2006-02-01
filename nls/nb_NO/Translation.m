@@ -217,8 +217,7 @@ $set 18 #fbsetroot
 
 1 %s: feil: må oppgi en av: -solid, -mod, -gradient\n
 2 Klarte ikke opprette pikselkartatomer, gir opp.
-3 %s 2.0: kopirett 1997-2000 Brad Hughes\n\n\
--display <streng>        tilkobling til visningsenhet\n\
+3 -display <streng>        tilkobling til visningsenhet\n\
 -mod <x> <y>             «modula»-mønster\n\
 -foreground, -fg <farge> «modula»-forgrunnsfarge\n\
 -background, -bg <farge> «modula»-bakgrunnsfarge\n\n\
