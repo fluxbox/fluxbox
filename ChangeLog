@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/02/12:
+   * Fixed #bug #1417688, remember apps keeps incrementing vertical dimension  (Henrik)
+     Remember.cc
+   * Fixed root pixmap problem. 
+     Using fbsetroot to set background.  (Henrik)
+     RootTheme.cc, FbPixmap.hh/cc, FbCommands.hh/cc
 *06/02/01:
    * fbsetroot copyright/help fixes (Thanks php-coder)
      fbsetroot.cc, nls/*
