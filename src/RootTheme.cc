@@ -33,10 +33,16 @@
 #include "FbTk/FileUtil.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/TextureRender.hh"
-
+#include "FbTk/I18n.hh"
 
 #include <X11/Xatom.h>
+#include <iostream>
 
+#include <sys/types.h>
+#include <sys/wait.h>
+
+using std::cerr;
+using std::endl;
 using std::string;
 
 class BackgroundItem: public FbTk::ThemeItem<FbTk::Texture> {
@@ -58,7 +64,8 @@ public:
         string pixmap_name(FbTk::ThemeManager::instance().
                            resourceValue(m_name + ".pixmap", m_altname + ".Pixmap"));
 
-
+        m_color = color_name;
+        m_color_to = colorto_name;
         // set default value if we failed to load colors
         if (!(*this)->color().setFromString(color_name.c_str(),
                                             theme().screenNum()))
@@ -87,8 +94,11 @@ public:
     }
     const std::string &filename() const { return m_filename; }
     const std::string &options() const { return m_options; }
+    const std::string &colorString() const { return m_color; }
+    const std::string &colorToString() const { return m_color_to; }
 private:
     std::string m_filename, m_options;
+    std::string m_color, m_color_to;
 };
 
 
@@ -128,6 +138,7 @@ bool RootTheme::fallback(FbTk::ThemeItem_base &item) {
 void RootTheme::reconfigTheme() {
     if (m_lock)
         return;
+
     // if user specified background in the config then use it
     // instead of style background
     if (!m_root_command.empty()) {
@@ -135,7 +146,7 @@ void RootTheme::reconfigTheme() {
         cmd.execute();
         return;
     }
-    
+
     //
     // Else parse background from style 
     //
@@ -148,45 +159,59 @@ void RootTheme::reconfigTheme() {
     // notifies the user about it
         
     if (!m_background_loaded) {
-        FbTk::FbPixmap root(FbTk::FbPixmap::getRootPixmap(screenNum()));
-        // if there is no root background pixmap
-        // then we need to create one
-        if (root.drawable() == None) {
-            root.create(rootwin.window(),
-                        rootwin.width(), rootwin.height(),
-                        rootwin.depth());
 
-            FbTk::FbPixmap::setRootPixmap(screenNum(), root.drawable());
+        // get the pixmap, force update of pixmap (needed if this is the first time)
+        FbTk::FbPixmap root(FbTk::FbPixmap::getRootPixmap(screenNum(), true));
+
+        // render text
+        static const char warning_msg[] = 
+            _FBTEXT(Common, BackgroundWarning,
+                    "There is no background option specified in this style."
+                    " Please consult the manual or read the FAQ.",
+                    "Background missing warning");
+
+        // if there is no root background pixmap...do nothing
+        if (root.drawable() == None) {
+            FbCommands::ExecuteCmd cmd("fbsetroot -solid darkgreen", screenNum());
+            // wait for command to finish
+            waitpid(cmd.run(), NULL, 0);
+            // pixmap setting done. Force update of pixmaps
+            root = FbTk::FbPixmap::getRootPixmap(screenNum(), true);
+
+            // The command could fail and not set the background...
+            // so if the drawable is still none then just dont do anything more
+            // but we still output warning msg to the console/log
+            if (root.drawable() == None) {
+                cerr<<"Fluxbox: "<<warning_msg<<endl;
+                return;
+            }
         }
 
-        // setup root window property
-        Atom atom_root = XInternAtom(rootwin.display(), "_XROOTPMAP_ID", false);
-        Pixmap pm = root.drawable();
-        rootwin.changeProperty(atom_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *)&pm, 1);
-        rootwin.setBackgroundPixmap(root.drawable());
+        
+        _FB_USES_NLS;
 
-
-        FbTk::GContext gc(root);
-
-        // fill background color
-        gc.setForeground(FbTk::Color("black", screenNum()));        
-        root.fillRectangle(gc.gc(),
-                           0, 0,
-                           root.width(), root.height());
+        FbTk::GContext gc(root);        
+        // fill rectangle
+        gc.setForeground(FbTk::Color("black", screenNum()));
+        FbTk::Font font;
+        root.fillRectangle(gc.gc(), 0, 0, 
+                           font.textWidth(warning_msg, strlen(warning_msg)) + 4,
+                           font.height() + 4);
         // text color
         gc.setForeground(FbTk::Color("white", screenNum()));
-        // render text
-        const char errormsg[] = 
-            "There is no background option specified in this style. Please consult the manual or read the FAQ.";
-        FbTk::Font font;
+        
         font.drawText(root, screenNum(), gc.gc(),
-                      errormsg, strlen(errormsg), 
+                      warning_msg, strlen(warning_msg), 
                       2, font.height() + 2); // added some extra pixels for better visibility
-
+        // output same msg to the log
+        cerr<<"Fluxbox: "<<warning_msg<<endl;
        
         // reset background mark
         m_background_loaded = true;
         root.release(); // we dont want to destroy this pixmap
+
+        rootwin.clear();
+        
     } else {
         // handle background option in style
         std::string filename = m_background->filename();
@@ -209,34 +234,50 @@ void RootTheme::reconfigTheme() {
             
             // compose wallpaper application "fbsetbg" with argumetns
             std::string commandargs = "fbsetbg " + options + " " + filename;
-            
+
             // call command with options
             FbCommands::ExecuteCmd exec(commandargs, screenNum());
             exec.execute();
 
         } else {
-            // render normal texture
-            
-            // we override the image control renderImage since 
-            // since we do not want to cache this pixmap
-            XColor *colors;
-            int num_colors;
-            m_image_ctrl.getXColorTable(&colors, &num_colors);
-            FbTk::TextureRender image(m_image_ctrl, rootwin.width(), rootwin.height(), 
-                                      colors, num_colors);
-            Pixmap pixmap = image.render(*(*m_background));
-            // setup root window property
-            Atom atom_root = XInternAtom(rootwin.display(), "_XROOTPMAP_ID", false);
-            rootwin.changeProperty(atom_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *)&pixmap, 1);
-            rootwin.setBackgroundPixmap(pixmap);
+            // render normal texture with fbsetroot
 
+
+            // Make sure the color strings are valid, 
+            // so we dont pass any `commands` that can be executed
+            bool color_valid = 
+                FbTk::Color::validColorString(m_background->colorString().c_str(), 
+                                              screenNum());
+            bool color_to_valid = 
+                FbTk::Color::validColorString(m_background->colorToString().c_str(), 
+                                              screenNum());
+
+            std::string options;
+            if (color_valid)
+                options += "-foreground '" + m_background->colorString() + "' ";
+            if (color_to_valid)
+                options += "-background '" + m_background->colorToString() + "' ";
+
+            if ((*m_background)->type() & FbTk::Texture::SOLID && color_valid)
+                options += "-solid '" + m_background->colorString() + "' ";
+
+            if ((*m_background)->type() & FbTk::Texture::GRADIENT) {
+
+                if (color_valid)
+                    options += "-from '" + m_background->colorString() + "' ";
+                if (color_to_valid)
+                    options += "-to '" + m_background->colorToString() + "' ";
+
+                options += "-gradient '" + m_background->options() + "'";
+            }
+
+            std::string commandargs = "fbsetroot " + options;
+
+            FbCommands::ExecuteCmd exec(commandargs, screenNum());
+            exec.execute();
         }
 
+        rootwin.clear();
     }
 
-    // clear root window
-    rootwin.clear();
-
-
-        
 }
