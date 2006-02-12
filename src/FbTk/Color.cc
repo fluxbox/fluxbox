@@ -31,11 +31,9 @@
 using namespace std;
 
 namespace {
-unsigned char maxValue(unsigned short colval) {
-    if (colval == 65535) 
-        return 0xFF;
 
-    return static_cast<unsigned char>(colval/0xFF);
+inline unsigned char maxValue(unsigned short colval) {
+   return colval == 65535 ? 0xFF : static_cast<unsigned char>(colval/0xFF);
 }
 
 };
@@ -106,6 +104,17 @@ bool Color::setFromString(const char *color_string, int screen) {
     return true;
 }
 
+bool Color::validColorString(const char *color_string, int screen) {
+    XColor color;
+    Display *disp = App::instance()->display();
+    Colormap colm = DefaultColormap(disp, screen);   
+    // trim white space
+    string color_string_tmp = color_string;
+    StringUtil::removeFirstWhitespace(color_string_tmp);
+    StringUtil::removeTrailingWhitespace(color_string_tmp);
+
+    return XParseColor(disp, colm, color_string_tmp.c_str(), &color) != 0;
+}
 
 Color &Color::operator  = (const Color &col_copy) {
     // check for aliasing

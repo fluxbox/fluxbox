@@ -54,7 +54,10 @@ public:
     inline unsigned short green() const { return m_green; }
     inline unsigned short blue() const { return m_blue; }
     inline unsigned long pixel() const { return m_pixel; }
-	
+
+    /// @return true if the color name in color_string is resolved, else false
+    static bool validColorString(const char *color_string, int screen);
+
 private:
     void free();
     void copy(const Color &col);
