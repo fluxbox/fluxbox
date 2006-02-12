@@ -63,7 +63,7 @@ public:
 
 
 
-    Font(const char *name = "fixed");
+    explicit Font(const char *name = "fixed");
     virtual ~Font();
     /**
         Load a font
