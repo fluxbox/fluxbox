@@ -37,6 +37,10 @@ class ExecuteCmd: public FbTk::Command {
 public:
     ExecuteCmd(const std::string &cmd, int screen_num = -1);
     void execute();
+    /**
+     * same as execute but returns pid
+     */
+    int run();
 private:
     std::string m_cmd;
     const int m_screen_num;

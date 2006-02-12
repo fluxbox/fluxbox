@@ -113,32 +113,40 @@ ExecuteCmd::ExecuteCmd(const std::string &cmd, int screen_num):m_cmd(cmd), m_scr
 
 void ExecuteCmd::execute() {
 #ifndef __EMX__
-    if (! fork()) {
-        std::string displaystring("DISPLAY=");
-        displaystring += DisplayString(FbTk::App::instance()->display());
-        char intbuff[64];
-        int screen_num = m_screen_num;
-        if (screen_num < 0) {
-            if (Fluxbox::instance()->mouseScreen() == 0)
-                screen_num = 0;
-            else
-                screen_num = Fluxbox::instance()->mouseScreen()->screenNumber();
-        }
-
-        sprintf(intbuff, "%d", screen_num);
-
-        // remove last number of display and add screen num
-        displaystring.erase(displaystring.size()-1);
-        displaystring += intbuff;
-        setsid();
-        putenv(const_cast<char *>(displaystring.c_str()));
-        execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), static_cast<void*>(NULL));
-        exit(0);
-    }
+    run();
 #else //   __EMX__
     spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_cmd.c_str(), static_cast<void*>(NULL));
 #endif // !__EMX__
 
+}
+
+int ExecuteCmd::run() {
+    pid_t pid = fork();
+    if (pid) 
+        return pid;
+
+    std::string displaystring("DISPLAY=");
+    displaystring += DisplayString(FbTk::App::instance()->display());
+    char intbuff[64];
+    int screen_num = m_screen_num;
+    if (screen_num < 0) {
+        if (Fluxbox::instance()->mouseScreen() == 0)
+            screen_num = 0;
+        else
+            screen_num = Fluxbox::instance()->mouseScreen()->screenNumber();
+    }
+
+    sprintf(intbuff, "%d", screen_num);
+
+    // remove last number of display and add screen num
+    displaystring.erase(displaystring.size()-1);
+    displaystring += intbuff;
+    setsid();
+    putenv(const_cast<char *>(displaystring.c_str()));
+    execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), static_cast<void*>(NULL));
+    exit(0);
+
+    return pid; // compiler happy -> we are happy ;)
 }
 
 ExportCmd::ExportCmd(const std::string& name, const std::string& value) :
@@ -214,7 +222,7 @@ void SetStyleCmd::execute() {
     Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
     Fluxbox::instance()->save_rc();
     FbTk::ThemeManager::instance().load(m_filename, 
-            Fluxbox::instance()->getStyleOverlayFilename());
+                                        Fluxbox::instance()->getStyleOverlayFilename());
 }
 
 void ShowRootMenuCmd::execute() {
@@ -339,7 +347,7 @@ void DeiconifyCmd::execute() {
         for(; it != itend; it++) {
             old_workspace_num= (*it)->workspaceNumber();
             if (m_mode == ALL || old_workspace_num == workspace_num || 
-                    (*it)->isStuck()) {
+                (*it)->isStuck()) {
                 if (m_dest == ORIGIN || m_dest == ORIGINQUIET)
                     screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
                 else
@@ -354,7 +362,7 @@ void DeiconifyCmd::execute() {
         for (; it != itend; it++) {
             old_workspace_num= (*it)->workspaceNumber();
             if(m_mode == LAST || old_workspace_num == workspace_num ||
-                    (*it)->isStuck()) {
+               (*it)->isStuck()) {
                 if ((m_dest == ORIGIN || m_dest == ORIGINQUIET) && 
                     m_mode != LASTWORKSPACE)
                     screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
