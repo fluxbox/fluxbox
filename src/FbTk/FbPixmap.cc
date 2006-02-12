@@ -356,14 +356,14 @@ void FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
     m_root_pixmaps[screen_num] = pm;
 }
 
-Pixmap FbPixmap::getRootPixmap(int screen_num) {
+Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
     /*
       if (!FbTk::Transparent::haveRender()) 
       return None;
     */
 
     // check and see if if we have the pixmaps in cache
-    if (m_root_pixmaps)
+    if (m_root_pixmaps && !force_update)
         return m_root_pixmaps[screen_num];
 
     // else setup pixmap cache        
