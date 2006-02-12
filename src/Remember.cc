@@ -367,7 +367,9 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 unsigned int h,w;
                 FbTk_istringstream iss(str_label.c_str());
                 iss >> w >> h;
-                app.rememberDimensions(w,h);
+
+                app.rememberDimensions(w, h);
+
             } else if (str_key == "Position") {
                 unsigned int r= 0;
                 unsigned int x= 0;
@@ -728,7 +730,8 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         app->rememberHead(win->screen().getHead(win->fbWindow()));
         break;
     case REM_DIMENSIONS:
-        app->rememberDimensions(win->width(), win->height());
+        //!! Note: This is odd, why dont we need to substract border width on win->width() ?
+        app->rememberDimensions(win->width(), win->height() - 2 * win->fbWindow().borderWidth());
         break;
     case REM_POSITION:
         app->rememberPosition(win->x(), win->y());
