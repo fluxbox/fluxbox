@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/02/14:
+   * Fix nls compilation (Mathias)
+     RootTheme.cc fbsetbg
 *06/02/12:
    * Fixed #bug #1417688, remember apps keeps incrementing vertical dimension  (Henrik)
      Remember.cc

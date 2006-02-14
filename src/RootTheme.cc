@@ -136,6 +136,8 @@ bool RootTheme::fallback(FbTk::ThemeItem_base &item) {
 }
 
 void RootTheme::reconfigTheme() {
+    _FB_USES_NLS;
+
     if (m_lock)
         return;
 
@@ -164,7 +166,7 @@ void RootTheme::reconfigTheme() {
         FbTk::FbPixmap root(FbTk::FbPixmap::getRootPixmap(screenNum(), true));
 
         // render text
-        static const char warning_msg[] = 
+        static const char *warning_msg = 
             _FBTEXT(Common, BackgroundWarning,
                     "There is no background option specified in this style."
                     " Please consult the manual or read the FAQ.",
@@ -188,8 +190,6 @@ void RootTheme::reconfigTheme() {
         }
 
         
-        _FB_USES_NLS;
-
         FbTk::GContext gc(root);        
         // fill rectangle
         gc.setForeground(FbTk::Color("black", screenNum()));

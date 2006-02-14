@@ -49,6 +49,7 @@ enum {
 	CommonMaximizeOver = 16,
 	CommonSvnRevision = 17,
 	CommonVisible = 18,
+    CommonBackgroundWarning = 19,
 
 	ConfigmenuSet = 4,
 	ConfigmenuAntiAlias = 1,
