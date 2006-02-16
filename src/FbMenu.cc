@@ -1,5 +1,5 @@
 // FbMenu.cc for fluxbox
-// Copyright (c) 2003 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

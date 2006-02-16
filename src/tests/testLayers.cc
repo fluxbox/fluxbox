@@ -1,5 +1,5 @@
 // testLayers.cc a test app for Layers
-// Copyright (c) 2003 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 
 
 #include "App.hh"

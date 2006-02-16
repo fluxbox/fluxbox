@@ -1,5 +1,5 @@
 // movetest.cc a test app for moving windows
-// Copyright (c) 2004 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2004 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 
 #include <iostream>
 

@@ -1,5 +1,5 @@
 // HeadArea.cc for Fluxbox Window Manager
-// Copyright (c) 2004 - 2005 Mathieu De Zutter (mathieu at dezutter dot org)
+// Copyright (c) 2004 - 2006 Mathieu De Zutter (mathieu at dezutter dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

@@ -1,5 +1,5 @@
 // menutest.cc a test app for Menus
-// Copyright (c) 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

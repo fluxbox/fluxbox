@@ -1,5 +1,5 @@
 // Remember.cc for Fluxbox Window Manager
-// Copyright (c) 2003 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                     and Simon Bowden    (rathnor at users.sourceforge.net)
 // Copyright (c) 2002 Xavier Brouckaert
 // 

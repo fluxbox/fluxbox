@@ -1,5 +1,5 @@
 // parsertest.cc a test app for Parser
-// Copyright (c) 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 
 #include "../FbMenuParser.hh"
 

@@ -1,5 +1,5 @@
 // StyleMenuItem.cc for Fluxbox Window Manager
-// Copyright (c) 2004 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2004 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                    and Simon Bowden (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a

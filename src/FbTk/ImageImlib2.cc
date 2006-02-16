@@ -1,5 +1,5 @@
 // ImageImlib2.cc for FbTk - Fluxbox ToolKit
-// Copyright (c) 2004 - 2005 Mathias Gumz <akira at fluxbox dot org>
+// Copyright (c) 2004 - 2006 Mathias Gumz <akira at fluxbox dot org>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/02/15:
+   * updated copyright info (Mathias)
 *06/02/14:
    * Fix nls compilation (Mathias)
      RootTheme.cc fbsetbg
