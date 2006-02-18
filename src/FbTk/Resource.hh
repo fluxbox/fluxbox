@@ -32,11 +32,23 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
+#include <exception>
+#include <typeinfo>
 #include "XrmDatabaseHelper.hh"
 
 namespace FbTk {
 
 class XrmDatabaseHelper;
+
+class ResourceException: public std::exception {
+public:
+    ResourceException(const std::string &err):
+        m_str(err) { };
+    ~ResourceException() throw() { }
+    const char *what() const throw () { return m_str.c_str(); }
+private:
+    std::string m_str;
+};
 
 /// Base class for resources, this is only used in ResourceManager
 class Resource_base:private FbTk::NotCopyable
@@ -100,8 +112,17 @@ public:
 
     Resource_base *findResource(const std::string &resourcename);
     const Resource_base *findResource(const std::string &resourcename) const;
+
     std::string resourceValue(const std::string &resourcename) const;
     void setResourceValue(const std::string &resourcename, const std::string &value);
+
+    /**
+     * Will search and cast the resource to Resource<Type>, 
+     * it will throw exception if it fails
+     * @return reference to resource type
+     */
+    template <typename ResourceType>
+    Resource<ResourceType> &getResource(const std::string &resource);
 
     // this marks the database as "in use" and will avoid reloading 
     // resources unless it is zero.
@@ -207,6 +228,25 @@ void ResourceManager::addResource(Resource<T> &r) {
     unlock();
 }
 	
+
+template <typename ResourceType>
+Resource<ResourceType> &ResourceManager::getResource(const std::string &resname) {
+    Resource_base *res = findResource(resname);
+    if (res == 0) {
+        throw ResourceException("Could not find resource \"" + 
+                                resname + "\"");
+    }
+
+    Resource<ResourceType> *res_type = 
+        dynamic_cast<Resource<ResourceType> *>(res);
+    if (res_type == 0) {
+        throw ResourceException("Could not convert resource \"" +
+                                resname +
+                                "\"");
+    }
+
+    return *res_type;
+}
 
 } // end namespace FbTk
 
