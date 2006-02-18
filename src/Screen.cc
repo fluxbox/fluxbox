@@ -32,6 +32,8 @@
 #include "Workspace.hh"
 #include "Netizen.hh"
 
+#include "FocusControl.hh"
+
 // themes
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
@@ -155,7 +157,6 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 
 } // end anonymous namespace
 
-
 BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm, 
                                         const std::string &scrname, 
                                         const std::string &altscrname):
@@ -167,8 +168,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
     desktop_wheeling(rm, true, scrname+".desktopwheeling", altscrname+".DesktopWheeling"),
     show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
-    focus_last(rm, true, scrname+".focusLastWindow", altscrname+".FocusLastWindow"),
-    focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
     antialias(rm, false, scrname+".antialias", altscrname+".Antialias"),
     auto_raise(rm, false, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
@@ -176,8 +175,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     resize_model(rm, BOTTOMRESIZE, scrname+".resizeMode", altscrname+".ResizeMode"),
     windowmenufile(rm, "", scrname+".windowMenu", altscrname+".WindowMenu"),
-    focus_model(rm, CLICKFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
-    tabfocus_model(rm, CLICKTABFOCUS, scrname+".tabFocusModel", altscrname+".TabFocusModel"),
     follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
@@ -221,8 +218,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_reconfigure_sig(*this), // reconfigure signal
     m_resize_sig(*this),
     m_layermanager(num_layers),
-    cycling_focus(false),
-    cycling_last(0),
     m_windowtheme(new FbWinFrameTheme(scrn)), 
     // the order of windowtheme and winbutton theme is important
     // because winbutton need to rescale the pixmaps in winbutton theme
@@ -239,9 +234,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  false,  // override redirect
                  true), // save under
     resource(rm, screenname, altscreenname),
+    m_resource_manager(rm),
     m_name(screenname),
     m_altname(altscreenname),
-    m_resource_manager(rm),
+    m_focus_control(new FocusControl(*this)),
     m_xinerama_headinfo(0),
     m_shutdown(false) {
 
@@ -277,7 +273,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
             screenNumber(), XVisualIDFromVisual(rootWindow().visual()),
             rootWindow().depth());
 
-    cycling_window = focused_list.end();
     
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
@@ -738,10 +733,10 @@ void BScreen::reconfigure() {
     // menu changed.
 
     // if timestamp changed then no restoring
-    bool restore_menus = ! Fluxbox::instance()->menuTimestampsChanged();
+    bool restore_menus = ! fluxbox->menuTimestampsChanged();
 
     // destroy old timestamps
-    Fluxbox::instance()->clearMenuFilenames();
+    fluxbox->clearMenuFilenames();
 
     // save submenu index so we can restore them afterwards
     vector<int> remember_sub;
@@ -855,17 +850,7 @@ void BScreen::removeWindow(FluxboxWindow *win) {
 
 void BScreen::removeClient(WinClient &client) {
 
-    WinClient *cyc = 0;
-    if (cycling_window != focused_list.end())
-        cyc = *cycling_window;
-
-    focused_list.remove(&client);
-    if (cyc == &client) {
-        cycling_window = focused_list.end();
-    }
-
-    if (cycling_last == &client)
-        cycling_last = 0;
+    focusControl().removeClient(client);
 
     for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
              mem_fun(&Workspace::updateClientmenu));
@@ -1257,10 +1242,10 @@ FluxboxWindow *BScreen::createWindow(Window client) {
                 
     // always put on end of focused list, if it gets focused it'll get pushed up
     // there is only the one win client at this stage
-    if (doFocusNew())
-        focused_list.push_front(&win->winClient());
-    else
-        focused_list.push_back(&win->winClient());
+    if (focusControl().focusNew())
+        focusControl().addFocusFront(win->winClient());
+    else            
+        focusControl().addFocusBack(win->winClient());
  
     // we also need to check if another window expects this window to the left
     // and if so, then join it.
@@ -1391,314 +1376,6 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
     }
 }
 
-
-void BScreen::nextFocus(int opts) {
-    const int num_windows = currentWorkspace()->numberOfWindows();
-
-    if (num_windows < 1)
-        return;
-
-    if (!(opts & CYCLELINEAR)) {
-        if (!cycling_focus) {
-            cycling_focus = True;
-            cycling_window = focused_list.begin();
-            cycling_last = 0;
-        } else {
-            // already cycling, so restack to put windows back in their proper order
-            m_layermanager.restack();
-        }
-        // if it is stacked, we want the highest window in the focused list
-        // that is on the same workspace
-        FocusedWindows::iterator it = cycling_window;
-        const FocusedWindows::iterator it_end = focused_list.end();
-
-        while (true) {
-            ++it;
-            if (it == it_end) {
-                it = focused_list.begin();
-            }
-            // give up [do nothing] if we reach the current focused again
-            if ((*it) == (*cycling_window)) {
-                break;
-            }
-
-            FluxboxWindow *fbwin = (*it)->fbwindow();
-            if (fbwin && !fbwin->isIconic() &&
-                (fbwin->isStuck() 
-                 || fbwin->workspaceNumber() == currentWorkspaceID())) {
-                // either on this workspace, or stuck
-
-                // keep track of the originally selected window in a set
-                WinClient &last_client = fbwin->winClient();
-
-                if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
-                    // moved onto a new fbwin
-                    if (!cycling_last || cycling_last->fbwindow() != fbwin) {
-                        if (cycling_last)
-                            // set back to orig current Client in that fbwin
-                            cycling_last->fbwindow()->setCurrentClient(*cycling_last, false);
-                        cycling_last = &last_client;
-                    }
-                    fbwin->tempRaise();
-                    break;
-                }
-            }
-        }
-        cycling_window = it;
-    } else { // not stacked cycling
-        // I really don't like this, but evidently some people use it(!)
-        Workspace *wksp = currentWorkspace();
-        Workspace::Windows &wins = wksp->windowList();
-        Workspace::Windows::iterator it = wins.begin();
-
-        FluxboxWindow *focused_group = 0;
-        // start from the focused window
-        bool have_focused = false;
-        WinClient *focused = Fluxbox::instance()->getFocusedWindow();
-        if (focused != 0) {
-            if (focused->screen().screenNumber() == screenNumber()) {
-                have_focused = true;
-                focused_group = focused->fbwindow();
-            }
-        }
-
-        if (!have_focused) {
-            focused_group = (*it);
-        } else {
-            // get focused window iterator
-            for (; it != wins.end() && (*it) != focused_group; ++it) 
-                continue;
-        }
-
-        do {
-            ++it;
-            if (it == wins.end())
-                it = wins.begin();
-            // see if the window should be skipped
-            if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
-                break;
-        } while ((*it) != focused_group);
-
-        if ((*it) != focused_group && it != wins.end())
-            (*it)->raise();
-    }
-
-}
-
-
-void BScreen::prevFocus(int opts) {
-    int num_windows = currentWorkspace()->numberOfWindows();
-	
-    if (num_windows < 1)
-        return;
-
-    if (!(opts & CYCLELINEAR)) {
-        if (!cycling_focus) {
-            cycling_focus = true;
-            cycling_window = focused_list.end();
-            cycling_last = 0;
-        } else {
-            // already cycling, so restack to put windows back in their proper order
-            m_layermanager.restack();
-        }
-        // if it is stacked, we want the highest window in the focused list
-        // that is on the same workspace
-        FocusedWindows::iterator it = cycling_window;
-        FocusedWindows::iterator it_end = focused_list.end();
-
-        while (true) {
-            --it;
-            if (it == it_end) {
-                it = focused_list.end();
-                --it;
-            }
-            // give up [do nothing] if we reach the current focused again
-            if ((*it) == (*cycling_window)) {
-                break;
-            }
-
-            FluxboxWindow *fbwin = (*it)->fbwindow();
-            if (fbwin && !fbwin->isIconic() &&
-                (fbwin->isStuck() 
-                 || fbwin->workspaceNumber() == currentWorkspaceID())) {
-                // either on this workspace, or stuck
-
-                // keep track of the originally selected window in a set
-                WinClient &last_client = fbwin->winClient();
-
-
-                if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
-                    // moved onto a new fbwin
-                    if (!cycling_last || cycling_last->fbwindow() != fbwin) {
-                        if (cycling_last)
-                            // set back to orig current Client in that fbwin
-                            cycling_last->fbwindow()->setCurrentClient(*cycling_last, false);
-                        cycling_last = &last_client;
-                    }
-                    fbwin->tempRaise();
-                    break;
-                }
-            }
-        }
-        cycling_window = it;
-    } else { // not stacked cycling
-            
-        Workspace *wksp = currentWorkspace();
-        Workspace::Windows &wins = wksp->windowList();
-        Workspace::Windows::iterator it = wins.begin();
-            
-        FluxboxWindow *focused_group = 0;
-        // start from the focused window
-        bool have_focused = false;
-        WinClient *focused = Fluxbox::instance()->getFocusedWindow();
-        if (focused != 0) {
-            if (focused->screen().screenNumber() == screenNumber()) {
-                have_focused = true;
-                focused_group = focused->fbwindow();
-            }
-        }
-
-        if (!have_focused) {
-            focused_group = (*it);
-        } else {
-            //get focused window iterator
-            for (; it != wins.end() && (*it) != focused_group; ++it) 
-                continue;
-        }
-
-        do {
-            if (it == wins.begin())
-                it = wins.end();
-            --it;
-            // see if the window should be skipped
-            if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
-                break;
-        } while ((*it) != focused_group);
-            
-        if ((*it) != focused_group && it != wins.end())
-            (*it)->raise();
-    }
-}
-
-
-void BScreen::raiseFocus() {
-    bool have_focused = false;
-    Fluxbox &fb = *Fluxbox::instance();
-    // set have_focused if the currently focused window 
-    // is on this screen
-    if (fb.getFocusedWindow()) {
-        if (fb.getFocusedWindow()->screen().screenNumber() == screenNumber()) {
-            have_focused = true;
-        }
-    }
-
-    // if we have a focused window on this screen and
-    // number of windows is greater than one raise the focused window
-    if (currentWorkspace()->numberOfWindows() > 1 && have_focused)
-        fb.getFocusedWindow()->raise();
-}
-
-void BScreen::setFocusedWindow(WinClient &winclient) {
-    // raise newly focused window to the top of the focused list
-    if (!cycling_focus) { // don't change the order if we're cycling
-        focused_list.remove(&winclient);
-        focused_list.push_front(&winclient);
-        cycling_window = focused_list.begin();
-    }
-}
-
-void BScreen::dirFocus(FluxboxWindow &win, const FocusDir dir) {
-    // change focus to the window in direction dir from the given window
-
-    // we scan through the list looking for the window that is "closest"
-    // in the given direction
-
-    FluxboxWindow *foundwin = 0;
-    int weight = 999999, exposure = 0; // extreme values
-    int borderW = winFrameTheme().border().width(),
-        top = win.y(), 
-        bottom = win.y() + win.height() + 2*borderW,
-        left = win.x(),
-        right = win.x() + win.width() + 2*borderW;
-
-    Workspace::Windows &wins = currentWorkspace()->windowList();
-    Workspace::Windows::iterator it = wins.begin();
-    for (; it != wins.end(); ++it) {
-        if ((*it) == &win 
-            || (*it)->isIconic() 
-            || (*it)->isFocusHidden() 
-            || !(*it)->winClient().acceptsFocus()) 
-            continue; // skip self
-        
-        // we check things against an edge, and within the bounds (draw a picture)
-        int edge=0, upper=0, lower=0, oedge=0, oupper=0, olower=0;
-
-        int otop = (*it)->y(), 
-            obottom = (*it)->y() + (*it)->height() + 2*borderW,
-            oleft = (*it)->x(),
-            oright = (*it)->x() + (*it)->width() + 2*borderW;
-        // check if they intersect
-        switch (dir) {
-        case FOCUSUP:
-            edge = obottom;
-            oedge = bottom;
-            upper = left;
-            oupper = oleft;
-            lower = right;
-            olower = oright;
-            break;
-        case FOCUSDOWN:
-            edge = top;
-            oedge = otop;
-            upper = left;
-            oupper = oleft;
-            lower = right;
-            olower = oright;
-            break;
-        case FOCUSLEFT:
-            edge = oright;
-            oedge = right;
-            upper = top;
-            oupper = otop;
-            lower = bottom;
-            olower = obottom;
-            break;
-        case FOCUSRIGHT:
-            edge = left;
-            oedge = oleft;
-            upper = top;
-            oupper = otop;
-            lower = bottom;
-            olower = obottom;
-            break;
-        }
-
-        if (oedge < edge) continue; // not in the right direction
-        if (olower <= upper || oupper >= lower) {
-            // outside our horz bounds, get a heavy weight penalty
-            int myweight = 100000 + oedge - edge + abs(upper-oupper)+abs(lower-olower);
-            if (myweight < weight) {
-                foundwin = *it;
-                exposure = 0;
-                weight = myweight;
-            }
-        } else if ((oedge - edge) < weight) {
-            foundwin = *it;
-            weight = oedge - edge;
-            exposure = ((lower < olower)?lower:olower) - ((upper > oupper)?upper:oupper);
-        } else if (foundwin && oedge - edge == weight) {
-            int myexp = ((lower < olower)?lower:olower) - ((upper > oupper)?upper:oupper);
-            if (myexp > exposure) {
-                foundwin = *it;
-                // weight is same
-                exposure = myexp;
-            }
-        } // else not improvement
-    }
-
-    if (foundwin) 
-        foundwin->setInputFocus();
-}
 void BScreen::initMenus() {
     m_workspacemenu.reset(MenuCreator::createMenuType("workspacemenu", screenNumber()));
     m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
@@ -1776,22 +1453,29 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     // we don't set this to internal menu so will 
     // be deleted toghether with the parent
     const char *focusmenu_label = _FBTEXT(Configmenu, FocusModel,
-                                          "Focus Model", "Method used to give focus to windows");
+                                          "Focus Model", 
+                                          "Method used to give focus to windows");
     FbTk::Menu *focus_menu = createMenu(focusmenu_label ? focusmenu_label : "");
 
-#define _FOCUSITEM(a, b, c, d, e) focus_menu->insert(new FocusModelMenuItem(_FBTEXT(a, b, c, d), *this, e, save_and_reconfigure))
+#define _FOCUSITEM(a, b, c, d, e) \
+    focus_menu->insert(new FocusModelMenuItem(_FBTEXT(a, b, c, d), focusControl(), \
+                                              e, save_and_reconfigure))
 
     _FOCUSITEM(Configmenu, ClickFocus,
                "Click To Focus", "Click to focus",
-               CLICKFOCUS);
+               FocusControl::CLICKFOCUS);
     _FOCUSITEM(Configmenu, MouseFocus,
                "Mouse Focus", "Mouse Focus",
-               MOUSEFOCUS);
-
-    focus_menu->insert(new TabFocusModelMenuItem("ClickTabFocus", *this, CLICKTABFOCUS, save_and_reconfigure));
-    focus_menu->insert(new TabFocusModelMenuItem("MouseTabFocus", *this, MOUSETABFOCUS, save_and_reconfigure));
-    
+               FocusControl::MOUSEFOCUS);
 #undef _FOCUSITEM
+
+    focus_menu->insert(new TabFocusModelMenuItem("ClickTabFocus", focusControl(), 
+                                                 FocusControl::CLICKTABFOCUS, 
+                                                 save_and_reconfigure));
+    focus_menu->insert(new TabFocusModelMenuItem("MouseTabFocus", focusControl(), 
+                                                 FocusControl::MOUSETABFOCUS, 
+                                                 save_and_reconfigure));
+    
 
     focus_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, 
                                                 AutoRaise,
@@ -1821,19 +1505,33 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Image Dithering", "Image Dithering",
               *resource.image_dither, save_and_reconfigure);
     _BOOLITEM(Configmenu, OpaqueMove,
-              "Opaque Window Moving", "Window Moving with whole window visible (as opposed to outline moving)",
+              "Opaque Window Moving", 
+              "Window Moving with whole window visible (as opposed to outline moving)",
               *resource.opaque_move, saverc_cmd);
     _BOOLITEM(Configmenu, FullMax,
               "Full Maximization", "Maximise over slit, toolbar, etc",
               *resource.full_max, saverc_cmd);
-    _BOOLITEM(Configmenu, FocusNew,
-              "Focus New Windows", "Focus newly created windows",
-              *resource.focus_new, saverc_cmd);
-    _BOOLITEM(Configmenu, FocusLast,
-              "Focus Last Window on Workspace", "Focus Last Window on Workspace",
-              *resource.focus_last, saverc_cmd);
+    try {
+        _BOOLITEM(Configmenu, FocusNew,
+                  "Focus New Windows", "Focus newly created windows",
+                  *m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
+                  saverc_cmd);
+    } catch (FbTk::ResourceException e) {
+        cerr<<e.what()<<endl;
+    }
+
+    try {
+        _BOOLITEM(Configmenu, FocusLast,
+                  "Focus Last Window on Workspace", "Focus Last Window on Workspace",
+                  *resourceManager().getResource<bool>(name() + ".focusLastWindow"),
+                  saverc_cmd);
+    } catch (FbTk::ResourceException e) {
+        cerr<<e.what()<<endl;
+    }
+
     _BOOLITEM(Configmenu, WorkspaceWarping,
-              "Workspace Warping", "Workspace Warping - dragging windows to the edge and onto the next workspace",
+              "Workspace Warping", 
+              "Workspace Warping - dragging windows to the edge and onto the next workspace",
               *resource.workspace_warping, saverc_cmd);
     _BOOLITEM(Configmenu, DesktopWheeling,
               "Desktop MouseWheel Switching", "Workspace switching using mouse wheel",
@@ -1850,26 +1548,38 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         FbTk::Transparent::haveComposite()) {
 
         const char *alphamenu_label = _FBTEXT(Configmenu, Transparency,
-                                          "Transparency", "Menu containing various transparency options");
+                                          "Transparency", 
+                                           "Menu containing various transparency options");
         FbTk::Menu *alpha_menu = createMenu(alphamenu_label ? alphamenu_label : "");
 
         if (FbTk::Transparent::haveComposite(true)) {
             alpha_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, ForcePseudoTrans,
-                               "Force Pseudo-Transparency", "When composite is available, still use old pseudo-transparency"),
+                               "Force Pseudo-Transparency", 
+                               "When composite is available, still use old pseudo-transparency"),
                     Fluxbox::instance()->getPseudoTrans(), save_and_reconfigure));
         }
 
-        FbTk::MenuItem *focused_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, FocusedAlpha, "Focused Window Alpha", "Transparency level of the focused window"),
+        FbTk::MenuItem *focused_alpha_item =
+            new IntResMenuItem(_FBTEXT(Configmenu, FocusedAlpha, 
+                                       "Focused Window Alpha",
+                                       "Transparency level of the focused window"),
                     resource.focused_alpha, 0, 255, *alpha_menu);
         focused_alpha_item->setCommand(saverc_cmd);
         alpha_menu->insert(focused_alpha_item);
 
-        FbTk::MenuItem *unfocused_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, UnfocusedAlpha, "Unfocused Window Alpha", "Transparency level of unfocused windows"),
+        FbTk::MenuItem *unfocused_alpha_item = 
+            new IntResMenuItem(_FBTEXT(Configmenu, 
+                                       UnfocusedAlpha, 
+                                       "Unfocused Window Alpha", 
+                                       "Transparency level of unfocused windows"),
+
                     resource.unfocused_alpha, 0, 255, *alpha_menu);
         unfocused_alpha_item->setCommand(saverc_cmd);
         alpha_menu->insert(unfocused_alpha_item);
 
-        FbTk::MenuItem *menu_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, MenuAlpha, "Menu Alpha", "Transparency level of menu"),
+        FbTk::MenuItem *menu_alpha_item = 
+            new IntResMenuItem(_FBTEXT(Configmenu, MenuAlpha, 
+                                       "Menu Alpha", "Transparency level of menu"),
                     resource.menu_alpha, 0, 255, *alpha_menu);
         menu_alpha_item->setCommand(saverc_cmd);
         alpha_menu->insert(menu_alpha_item);
@@ -1907,7 +1617,8 @@ void BScreen::showPosition(int x, int y) {
                               getHeadY(head) + (getHeadHeight(head) - m_pos_window.height()) / 2);
                             
         } else {
-            m_pos_window.move((width() - m_pos_window.width()) / 2, (height() - m_pos_window.height()) / 2);
+            m_pos_window.move((width() - m_pos_window.width()) / 2, 
+                              (height() - m_pos_window.height()) / 2);
         }
 
         m_pos_window.show();
@@ -1954,9 +1665,10 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
             unsigned int head = getCurrHead();
 
             m_geom_window.move(getHeadX(head) + (getHeadWidth(head) - m_geom_window.width()) / 2,
-                             getHeadY(head) + (getHeadHeight(head) - m_geom_window.height()) / 2);
+                               getHeadY(head) + (getHeadHeight(head) - m_geom_window.height()) / 2);
         } else {
-            m_geom_window.move((width() - m_geom_window.width()) / 2, (height() - m_geom_window.height()) / 2);
+            m_geom_window.move((width() - m_geom_window.width()) / 2, 
+                               (height() - m_geom_window.height()) / 2);
 
         }
         m_geom_window.show();
@@ -2029,19 +1741,6 @@ void BScreen::leftWorkspace(const int delta) {
         changeWorkspaceID(currentWorkspaceID()-delta);
 }
 
-/**
-  @return true if the windows should be skiped else false
-*/
-bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
-    const FluxboxWindow *win = winclient.fbwindow();
-    return (!win ||
-            (opts & CYCLESKIPSTUCK) != 0 && win->isStuck() || // skip if stuck
-            // skip if not active client (i.e. only visit each fbwin once)
-            (opts & CYCLEGROUPS) != 0 && win->winClient().window() != winclient.window() ||
-            (opts & CYCLESKIPSHADED) != 0 && win->isShaded() || // skip if shaded
-            win->isFocusHidden()
-            ); 
-}
 
 void BScreen::renderGeomWindow() {
     _FB_USES_NLS;
@@ -2139,63 +1838,7 @@ void BScreen::renderPosWindow() {
    Called when a set of watched modifiers has been released
 */
 void BScreen::notifyReleasedKeys(XKeyEvent &ke) {
-    if (cycling_focus) {
-        cycling_focus = false;
-        cycling_last = 0;
-        // put currently focused window to top
-        // the iterator may be invalid if the window died
-        // in which case we'll do a proper revert focus
-        if (cycling_window != focused_list.end()) {
-            WinClient *client = *cycling_window;
-            focused_list.erase(cycling_window);
-            focused_list.push_front(client);
-            client->fbwindow()->raise();
-        } else {
-            Fluxbox::instance()->revertFocus(*this);
-        }
-    }
-}
-
-/**
- * Used to find out which window was last focused on the given workspace
- * If workspace is outside the ID range, then the absolute last focused window
- * is given.
- */
-WinClient *BScreen::getLastFocusedWindow(int workspace) {
-    if (focused_list.empty()) return 0;
-    if (workspace < 0 || workspace >= (int) numberOfWorkspaces())
-        return focused_list.front();
-
-    FocusedWindows::iterator it = focused_list.begin();    
-    FocusedWindows::iterator it_end = focused_list.end();
-    for (; it != it_end; ++it) {
-        if ((*it)->fbwindow() &&
-            (((int)(*it)->fbwindow()->workspaceNumber()) == workspace 
-             && !(*it)->fbwindow()->isIconic()
-             && (!(*it)->fbwindow()->isStuck() || (*it)->fbwindow()->isFocused())))
-            // only give focus to a stuck window if it is currently focused
-            // otherwise they tend to override normal workspace focus
-            return *it;
-    }
-    return 0;
-}
-
-/**
- * Used to find out which window was last active in the given group
- * If ignore_client is given, it excludes that client.
- * Stuck, iconic etc don't matter within a group
- */
-WinClient *BScreen::getLastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client) {
-    if (focused_list.empty()) return 0;
-
-    FocusedWindows::iterator it = focused_list.begin();    
-    FocusedWindows::iterator it_end = focused_list.end();
-    for (; it != it_end; ++it) {
-        if (((*it)->fbwindow() == &group) &&
-            (*it) != ignore_client)
-            return *it;
-    }
-    return 0;
+    focusControl().stopCyclingFocus();
 }
 
 void BScreen::updateSize() {

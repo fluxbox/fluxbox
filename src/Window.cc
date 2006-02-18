@@ -40,6 +40,7 @@
 #include "Remember.hh"
 #include "MenuCreator.hh"
 #include "StringUtil.hh"
+#include "FocusControl.hh"
 
 #include "FbTk/TextButton.hh"
 #include "FbTk/Compose.hh"
@@ -775,7 +776,7 @@ bool FluxboxWindow::removeClient(WinClient &client) {
 
     // if it is our active client, deal with it...
     if (m_client == &client) {
-        WinClient *next_client = screen().getLastFocusedWindow(*this, m_client);
+        WinClient *next_client = screen().focusControl().lastFocusedWindow(*this, m_client);
         if (next_client != 0)
             setCurrentClient(*next_client, false);
     }
@@ -1540,7 +1541,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     show();
 
-    if (was_iconic && screen().doFocusNew())
+    if (was_iconic && screen().focusControl().focusNew())
         setInputFocus();
 
 
@@ -2032,7 +2033,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     // Record focus timestamp for window cycling enhancements
     if (focused) {
         gettimeofday(&m_last_focus_time, 0);
-        screen().setFocusedWindow(*m_client);
+        screen().focusControl().setScreenFocusedWindow(*m_client);
     }
 
     installColormap(focus);
@@ -2040,7 +2041,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     if (focus != frame().focused())
         frame().setFocus(focus);
 
-    if ((screen().isMouseFocus())
+    if ((screen().focusControl().isMouseFocus())
         && screen().doAutoRaise()) {
         if (focused)
             m_timer.start();
@@ -2407,7 +2408,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         setState(NormalState, false);
 
-        if (client->isTransient() || screen().doFocusNew())
+        if (client->isTransient() || screen().focusControl().focusNew())
             setCurrentClient(*client, true);
         else
             setFocusFlag(false);
@@ -2644,7 +2645,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     frame().buttonPressEvent(be);
 
     if (be.button == 1 || (be.button == 3 && be.state == Mod1Mask)) {
-        if ((! focused) && (! screen().isMouseFocus())) { //check focus
+        if ((! focused) && (! screen().focusControl().isMouseFocus())) { //check focus
             setInputFocus();
         }
 
@@ -2939,7 +2940,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
     }
 
     WinClient *client = 0;
-    if (screen().isMouseTabFocus()) {
+    if (screen().focusControl().isMouseTabFocus()) {
         // determine if we're in a label button (tab)
         Client2ButtonMap::iterator it = 
             find_if(m_labelbuttons.begin(),
@@ -2956,7 +2957,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         ev.window == m_client->window() ||
         client) {
 
-        if (screen().isMouseFocus() && !isFocused()) {
+        if (screen().focusControl().isMouseFocus() && !isFocused()) {
 
             // check that there aren't any subsequent leave notify events in the
             // X event queue
@@ -2972,7 +2973,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         }
     }
 
-    if (screen().isMouseTabFocus() && client && client != m_client) {
+    if (screen().focusControl().isMouseTabFocus() && client && client != m_client) {
         setCurrentClient(*client, isFocused());
     }
 

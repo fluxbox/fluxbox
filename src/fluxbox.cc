@@ -34,6 +34,8 @@
 #include "WinClient.hh"
 #include "Keys.hh"
 #include "FbAtoms.hh"
+#include "FocusControl.hh"
+
 #include "defaults.hh"
 
 #include "FbTk/I18n.hh"
@@ -1050,9 +1052,9 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 
         if (screen) {
             if (! ce.data.l[0])
-                screen->prevFocus();
+                screen->focusControl().prevFocus();
             else
-                screen->nextFocus();
+                screen->focusControl().nextFocus();
         }
     } else if (ce.message_type == m_fbatoms->getFluxboxChangeAttributesAtom()) {
         WinClient *winclient = searchWindow(ce.window);
@@ -1887,18 +1889,18 @@ void Fluxbox::revertFocus(BScreen &screen) {
     // Relevant resources:
     // resource.focus_last = whether we focus last focused when changing workspace
     // BScreen::FocusModel = sloppy, click, whatever
-    WinClient *next_focus = screen.getLastFocusedWindow(screen.currentWorkspaceID());
+    WinClient *next_focus = screen.focusControl().lastFocusedWindow(screen.currentWorkspaceID());
 
     // if setting focus fails, or isn't possible, fallback correctly
     if (!(next_focus && next_focus->fbwindow() &&
           next_focus->fbwindow()->setCurrentClient(*next_focus, true))) {
         setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
-        switch (screen.getFocusModel()) {
-        case BScreen::MOUSEFOCUS:
+        switch (screen.focusControl().focusModel()) {
+        case FocusControl::MOUSEFOCUS:
             XSetInputFocus(FbTk::App::instance()->display(),
                            PointerRoot, None, CurrentTime);
             break;
-        case BScreen::CLICKFOCUS:
+        case FocusControl::CLICKFOCUS:
             screen.rootWindow().setInputFocus(RevertToPointerRoot, CurrentTime);
             break;
         }
@@ -1942,7 +1944,7 @@ void Fluxbox::unfocusWindow(WinClient &client, bool full_revert, bool unfocus_fr
     BScreen &screen = fbwin->screen();
 
     if (!unfocus_frame) {
-        WinClient *last_focus = screen.getLastFocusedWindow(*fbwin, &client);
+        WinClient *last_focus = screen.focusControl().lastFocusedWindow(*fbwin, &client);
         if (last_focus != 0 &&
             fbwin->setCurrentClient(*last_focus, m_focused_window == &client)) {
             return;

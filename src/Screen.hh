@@ -62,6 +62,7 @@ class Workspace;
 class Strut;
 class Slit;
 class HeadArea;
+class FocusControl;
 
 namespace FbTk {
 class Menu;
@@ -77,25 +78,30 @@ class Subject;
  */
 class BScreen : public FbTk::Observer, private FbTk::NotCopyable {
 public:
-    enum ResizeModel { BOTTOMRESIZE = 0, QUADRANTRESIZE, DEFAULTRESIZE = BOTTOMRESIZE };
-    enum FocusModel { MOUSEFOCUS = 0, CLICKFOCUS };
-    enum TabFocusModel { MOUSETABFOCUS = 0, CLICKTABFOCUS };
-    enum FollowModel { ///< a window becomes active / focussed on a different workspace
+    /// a window becomes active / focussed on a different workspace
+    enum FollowModel { 
         IGNORE_OTHER_WORKSPACES = 0, ///< who cares?
         FOLLOW_ACTIVE_WINDOW, ///< go to that workspace
         FETCH_ACTIVE_WINDOW ///< put that window to the current workspace 
     };
-    enum FocusDir { FOCUSUP, FOCUSDOWN, FOCUSLEFT, FOCUSRIGHT };
-    enum PlacementPolicy { ROWSMARTPLACEMENT, COLSMARTPLACEMENT, 
-                           CASCADEPLACEMENT, UNDERMOUSEPLACEMENT};
+
+    enum ResizeModel { 
+        BOTTOMRESIZE = 0, 
+        QUADRANTRESIZE, 
+        DEFAULTRESIZE = BOTTOMRESIZE };
+
+    enum PlacementPolicy { 
+        ROWSMARTPLACEMENT, 
+        COLSMARTPLACEMENT,                            
+        CASCADEPLACEMENT, 
+        UNDERMOUSEPLACEMENT
+    };
+
     enum RowDirection { LEFTRIGHT, RIGHTLEFT};
     enum ColumnDirection { TOPBOTTOM, BOTTOMTOP};
-    // prevFocus/nextFocus option bits
-    enum { CYCLEGROUPS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
-           CYCLELINEAR = 0x08, CYCLEDEFAULT = 0x00 };
 
     typedef std::vector<FluxboxWindow *> Icons;
-    typedef std::list<WinClient *> FocusedWindows;
+
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
     typedef std::list<std::pair<const char *, FbTk::Menu *> > ExtraMenus;
@@ -107,8 +113,7 @@ public:
 
     void initWindows();
     void initMenus();
-    bool isMouseFocus() const { return (*resource.focus_model == MOUSEFOCUS); }
-    bool isMouseTabFocus() const { return (*resource.tabfocus_model == MOUSETABFOCUS); }
+
     bool isRootColormapInstalled() const { return root_colormap_installed; }
     bool isScreenManaged() const { return managed; }
     bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
@@ -118,8 +123,6 @@ public:
     bool clickRaises() const { return *resource.click_raises; }
     bool doOpaqueMove() const { return *resource.opaque_move; }
     bool doFullMax() const { return *resource.full_max; }
-    bool doFocusNew() const { return *resource.focus_new; }
-    bool doFocusLast() const { return *resource.focus_last; }
     bool doShowWindowPos() const { return *resource.show_window_pos; }
     bool antialias() const { return *resource.antialias; }
     bool decorateTransient() const { return *resource.decorate_transient; }
@@ -134,11 +137,9 @@ public:
     FbTk::Menu &windowMenu() { return *m_windowmenu.get(); }
     ExtraMenus &extraWindowMenus() { return m_extramenus; }
     const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
-
-    ResizeModel getResizeModel() const { return *resource.resize_model; }
-    FocusModel getFocusModel() const { return *resource.focus_model; }
-    TabFocusModel getTabFocusModel() const { return *resource.tabfocus_model; }
     
+    ResizeModel getResizeModel() const { return *resource.resize_model; }
+
     inline FollowModel getFollowModel() const { return *resource.follow_model; }
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
@@ -154,6 +155,8 @@ public:
     const FbTk::Menu &workspaceMenu() const { return *m_workspacemenu.get(); }
     FbTk::Menu &workspaceMenu() { return *m_workspacemenu.get(); }
 
+    const FocusControl &focusControl() const { return *m_focus_control; }
+    FocusControl &focusControl() { return *m_focus_control; }
 
     unsigned int currentWorkspaceID() const;
     /*
@@ -177,10 +180,7 @@ public:
 
     inline const Icons &iconList() const { return m_icon_list; }
     inline Icons &iconList() { return m_icon_list; }
-    inline const FocusedWindows &getFocusedList() const { return focused_list; }
-    inline FocusedWindows &getFocusedList() { return focused_list; }
-    WinClient *getLastFocusedWindow(int workspace = -1);
-    WinClient *getLastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client = 0);
+
     const Workspaces &getWorkspacesList() const { return m_workspaces_list; }
     Workspaces &getWorkspacesList() { return m_workspaces_list; }
     const WorkspaceNames &getWorkspaceNames() const { return m_workspace_names; }
@@ -225,8 +225,6 @@ public:
 
     void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
     void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
-    void saveFocusModel(FocusModel model) { resource.focus_model = model; }
-    void saveTabFocusModel(TabFocusModel model) { resource.tabfocus_model = model; }
 
     void saveWorkspaces(int w) { *resource.workspaces = w;  }
 
@@ -280,15 +278,7 @@ public:
                          bool changeworkspace=true);
     void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, 
                            bool ignore_sticky);
-    void prevFocus() { prevFocus(0); }
-    void nextFocus() { nextFocus(0); }
-    void prevFocus(int options);
-    void nextFocus(int options);
-    void raiseFocus();
-    void setFocusedWindow(WinClient &winclient);
 
-
-    void dirFocus(FluxboxWindow &win, const FocusDir dir);
 
     void reconfigure();	
     void rereadMenu();
@@ -382,7 +372,6 @@ public:
 private:
     void setupConfigmenu(FbTk::Menu &menu);
     void initMenu();
-    bool doSkipWindow(const WinClient &winclient, int options);
     void renderGeomWindow();
     void renderPosWindow();
 
@@ -400,7 +389,8 @@ private:
 		
     FbTk::MultLayers m_layermanager;
 	
-    bool root_colormap_installed, managed, geom_visible, pos_visible, cycling_focus;
+    bool root_colormap_installed, managed, geom_visible, pos_visible;
+
     GC opGC;
     Pixmap geom_pixmap, pos_pixmap;
 
@@ -420,12 +410,6 @@ private:
     Netizens m_netizen_list;
     Configmenus m_configmenu_list;
     Icons m_icon_list;
-
-    // This list keeps the order of window focusing for this screen
-    // Screen global so it works for sticky windows too.
-    FocusedWindows focused_list;
-    FocusedWindows::iterator cycling_window;
-    WinClient *cycling_last;
 
     std::auto_ptr<Slit> m_slit;
 
@@ -448,14 +432,11 @@ private:
 
         FbTk::Resource<bool> image_dither, opaque_move, full_max,
             sloppy_window_grouping, workspace_warping,
-            desktop_wheeling, show_window_pos,
-            focus_last, focus_new,
+            desktop_wheeling, show_window_pos,            
             antialias, auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> rootcommand;		
         FbTk::Resource<ResizeModel> resize_model;
         FbTk::Resource<std::string> windowmenufile;
-        FbTk::Resource<FocusModel> focus_model;
-        FbTk::Resource<TabFocusModel> tabfocus_model;
         FbTk::Resource<FollowModel> follow_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
@@ -473,13 +454,15 @@ private:
 
     } resource;
 
+    FbTk::ResourceManager &m_resource_manager;
+    const std::string m_name, m_altname;
+
+    FocusControl *m_focus_control;
+
     // This is a map of windows to clients for clients that had a left
     // window set, but that window wasn't present at the time
     typedef std::map<Window, WinClient *> Groupables;
     Groupables m_expecting_groups;
-
-    const std::string m_name, m_altname;
-    FbTk::ResourceManager &m_resource_manager;
 
     // Xinerama related private data
     bool m_xinerama_avail;

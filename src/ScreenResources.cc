@@ -151,53 +151,6 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<BScreen::FocusModel>::getString() const {
-    switch (m_value) {
-    case BScreen::MOUSEFOCUS:
-        return string("MouseFocus");
-    case BScreen::CLICKFOCUS:
-        return string("ClickFocus");
-    }
-    // default string
-    return string("ClickFocus");
-}
-
-template<>
-void FbTk::Resource<BScreen::FocusModel>::
-setFromString(char const *strval) {
-    if (strcasecmp(strval, "MouseFocus") == 0) 
-        m_value = BScreen::MOUSEFOCUS;
-    else if (strcasecmp(strval, "ClickToFocus") == 0) 
-        m_value = BScreen::CLICKFOCUS;
-    else
-        setDefaultValue();
-}
-
-template<>
-
-std::string FbTk::Resource<BScreen::TabFocusModel>::getString() const {
-    switch (m_value) {
-    case BScreen::MOUSETABFOCUS:
-        return string("SloppyTabFocus");
-    case BScreen::CLICKTABFOCUS:
-        return string("ClickToTabFocus");
-    }
-    // default string
-    return string("ClickToTabFocus");
-}
-
-template<>
-void FbTk::Resource<BScreen::TabFocusModel>::
-setFromString(char const *strval) {
-    if (strcasecmp(strval, "SloppyTabFocus") == 0 )
-        m_value = BScreen::MOUSETABFOCUS;
-    else if (strcasecmp(strval, "ClickToTabFocus") == 0) 
-        m_value = BScreen::CLICKTABFOCUS;
-    else
-        setDefaultValue();
-}
-
-template<>
 std::string FbTk::Resource<BScreen::FollowModel>::getString() const {
     switch (m_value) {
     case BScreen::FOLLOW_ACTIVE_WINDOW:

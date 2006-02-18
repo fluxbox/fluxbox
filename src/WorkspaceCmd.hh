@@ -25,7 +25,9 @@
 #ifndef WORKSPACECMD_HH
 #define WORKSPACECMD_HH
 #include "Command.hh"
-#include "Screen.hh"
+
+#include "FocusControl.hh"
+
 
 class NextWindowCmd: public FbTk::Command {
 public:
@@ -45,10 +47,10 @@ private:
 
 class DirFocusCmd: public FbTk::Command {
 public:
-    explicit DirFocusCmd(const BScreen::FocusDir dir): m_dir(dir) { }
+    explicit DirFocusCmd(const FocusControl::FocusDir dir): m_dir(dir) { }
     void execute();
 private:
-    const BScreen::FocusDir m_dir;
+    const FocusControl::FocusDir m_dir;
 };
 
 class NextWorkspaceCmd: public FbTk::Command {
