@@ -127,6 +127,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	HeadArea.hh HeadArea.cc \
 	Resources.cc \
 	WindowCmd.hh WindowCmd.cc \
+	FocusControl.hh FocusControl.cc \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${TOOLBAR_SOURCE}
 
