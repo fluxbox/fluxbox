@@ -89,6 +89,8 @@ public:
     /// main event loop
     void eventLoop();
     bool validateWindow(Window win) const;
+    bool validateClient(const WinClient *client) const;
+
     void grab();
     void ungrab();
     Keys *keys() { return m_key.get(); }
@@ -97,7 +99,6 @@ public:
     // Not currently implemented until we decide how it'll be used
     //WinClient *searchGroup(Window);
     WinClient *searchWindow(Window);
-    WinClient *getFocusedWindow() { return m_focused_window; }
 
     int initScreen(int screen_nr);
     BScreen *searchScreen(Window w);
@@ -134,6 +135,7 @@ public:
     // class to store layer numbers (special Resource type)
     // we have a special resource type because we need to be able to name certain layers
     // a Resource<int> wouldn't allow this
+
     class Layer {
     public:
         explicit Layer(int i) : m_num(i) {};
@@ -166,10 +168,6 @@ public:
 
     void watchKeyRelease(BScreen &screen, unsigned int mods);
 
-    void setFocusedWindow(WinClient *w);
-    void revertFocus(BScreen &screen);
-    // like revertFocus, but specifically related to this window (transients etc)
-    void unfocusWindow(WinClient &client, bool full_revert = true, bool unfocus_frame = false);
     void shutdown();
     void load_rc(BScreen &scr);
     void loadRootCommand(BScreen &scr);
@@ -200,6 +198,12 @@ public:
     /// handle any system signal sent to the application
     void handleSignal(int signum);
     void update(FbTk::Subject *changed);
+    /**
+     * Sends update signal to atomhandlers, 
+     * @param screen the new screen
+     * @param old_screen the old screen if any, can be the same as new screen
+     */
+    void updateFocusedWindow(BScreen *screen, BScreen *old_screen);
 
     void attachSignals(FluxboxWindow &win);
     void attachSignals(WinClient &winclient);
@@ -227,7 +231,7 @@ public:
     // screen we are watching for modifier changes
     BScreen *watchingScreen() { return m_watching_screen; }
     const XEvent &lastEvent() const { return m_last_event; }
-
+    
 private:
 
     typedef struct MenuTimestamp {
@@ -292,7 +296,6 @@ private:
     typedef std::list<BScreen *> ScreenList;
     ScreenList m_screen_list;
 
-    WinClient *m_focused_window;
     FluxboxWindow *m_masked_window;
 
     BScreen *m_mousescreen, *m_keyscreen;

@@ -28,7 +28,7 @@
 #include "FbWinFrameTheme.hh"
 #include "WinClient.hh"
 #include "CommandParser.hh"
-#include "fluxbox.hh"
+#include "FocusControl.hh"
 
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
@@ -90,9 +90,9 @@ void CommandDialog::hide() {
     FbTk::FbWindow::hide();
 
     // return focus to fluxbox window
-    if (Fluxbox::instance()->getFocusedWindow() &&
-        Fluxbox::instance()->getFocusedWindow()->fbwindow())
-        Fluxbox::instance()->getFocusedWindow()->fbwindow()->setInputFocus();
+    if (FocusControl::focusedWindow() &&
+        FocusControl::focusedWindow()->fbwindow())
+        FocusControl::focusedWindow()->fbwindow()->setInputFocus();
 
 }
 

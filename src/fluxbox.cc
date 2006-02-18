@@ -224,7 +224,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
       m_rc_auto_raise_delay(m_resourcemanager, 250, "session.autoRaiseDelay", "Session.AutoRaiseDelay"),
       m_rc_use_mod1(m_resourcemanager, true, "session.useMod1", "Session.UseMod1"),
-      m_focused_window(0), m_masked_window(0),
+      m_masked_window(0),
       m_mousescreen(0),
       m_keyscreen(0),
       m_watching_screen(0), m_watch_keyrelease(0),
@@ -511,7 +511,7 @@ int Fluxbox::initScreen(int scrnr) {
         (*it).first->initForScreen(*screen);
     }
 
-    revertFocus(*screen); // make sure focus style is correct
+    FocusControl::revertFocus(*screen); // make sure focus style is correct
 #ifdef SLIT
     if (screen->slit())
         screen->slit()->show();
@@ -694,7 +694,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         }
 
         if (screen != 0)
-            revertFocus(*screen);
+            FocusControl::revertFocus(*screen);
     }
 
     // try FbTk::EventHandler first
@@ -870,8 +870,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
             e->xfocus.detail == NotifyInferior)
             break;
         WinClient *winclient = searchWindow(e->xfocus.window);
-        if (winclient && m_focused_window != winclient)
-            setFocusedWindow(winclient);
+        if (winclient && FocusControl::focusedWindow() != winclient)
+            FocusControl::setFocusedWindow(winclient);
 
     } break;
     case FocusOut:{
@@ -886,11 +886,11 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
-        } else if (winclient && winclient == m_focused_window &&
+        } else if (winclient && winclient == FocusControl::focusedWindow() &&
                    (winclient->fbwindow() == 0
                     || !winclient->fbwindow()->isMoving()))
             // we don't unfocus a moving window
-            setFocusedWindow(0);
+            FocusControl::setFocusedWindow(0);
     }
 	break;
     case ClientMessage:
@@ -1224,8 +1224,8 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             // make sure each workspace get this
             BScreen &scr = win.screen();
             scr.removeWindow(&win);
-            if (m_focused_window == &win.winClient())
-                m_focused_window = 0;
+            if (FocusControl::focusedWindow() == &win.winClient())
+                FocusControl::setFocusedWindow(0);
 
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
             for (AtomHandlerContainerIt it= m_atomhandler.begin();
@@ -1297,12 +1297,12 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 
         // This is where we revert focus on window close
         // NOWHERE ELSE!!!
-        if (m_focused_window == &client)
-            unfocusWindow(client);
+        if (FocusControl::focusedWindow() == &client)
+            FocusControl::unfocusWindow(client);
 
         // failed to revert focus?
-        if (m_focused_window == &client)
-            m_focused_window = 0;
+        if (FocusControl::focusedWindow() == &client)
+            FocusControl::setFocusedWindow(0);
     }
 }
 
@@ -1796,73 +1796,22 @@ void Fluxbox::timed_reconfigure() {
     m_reconfigure_wait = m_reread_menu_wait = false;
 }
 
-// set focused window
-void Fluxbox::setFocusedWindow(WinClient *client) {
-    // already focused
-    if (m_focused_window == client) {
-#ifdef DEBUG
-        cerr<<"Focused window already win"<<endl;
-#endif // DEBUG
-        return;
-    }
-#ifdef DEBUG
-    cerr<<"Setting Focused window = "<<client<<endl;
-    if (client != 0 && client->fbwindow() != 0)
-        cerr<<"title: "<<client->fbwindow()->title()<<endl;
-    cerr<<"Current Focused window = "<<m_focused_window<<endl;
-    cerr<<"------------------"<<endl;
-#endif // DEBUG
-    BScreen *old_screen = 0, *screen = 0;
-    WinClient *old_client = 0;
+bool Fluxbox::validateClient(const WinClient *client) const {
+    WinClientMap::const_iterator it = 
+        find_if(m_window_search.begin(),
+                m_window_search.end(),
+                Compose(bind2nd(equal_to<WinClient *>(), client),
+                        Select2nd<WinClientMap::value_type>()));
+    return it != m_window_search.end();
+}
 
-    if (m_focused_window != 0) {
-        // check if m_focused_window is valid
-        WinClientMap::iterator it = find_if(m_window_search.begin(),
-                                            m_window_search.end(),
-                                            Compose(bind2nd(equal_to<WinClient *>(), m_focused_window),
-                                                    Select2nd<WinClientMap::value_type>()));
-                
-        // if not found...
-        if (it == m_window_search.end()) {
-            m_focused_window = 0;
-        } else {
-            old_client = m_focused_window;
-            old_screen = &old_client->screen();
-
-            if (old_client->fbwindow()) {
-                FluxboxWindow *old_win = old_client->fbwindow();
-
-                if (!client || client->fbwindow() != old_win)
-                    old_win->setFocusFlag(false);
-            }
-        }
-    }
-
-    if (client && client->fbwindow() && !client->fbwindow()->isIconic()) {
-        FluxboxWindow *win = client->fbwindow();
-        // make sure we have a valid win pointer with a valid screen
-        ScreenList::iterator winscreen =
-            std::find(m_screen_list.begin(), m_screen_list.end(),
-                      &client->screen());
-        if (winscreen == m_screen_list.end()) {
-            m_focused_window = 0; // the window pointer wasn't valid, mark no window focused
-        } else {
-            screen = *winscreen;
-            m_focused_window = client;     // update focused window
-            win->setCurrentClient(*client, false); // don't setinputfocus
-            win->setFocusFlag(true); // set focus flag
-        }
-
-    } else
-        m_focused_window = 0;
-
-
+void Fluxbox::updateFocusedWindow(BScreen *screen, BScreen *old_screen) {
     if (screen != 0) {
         screen->updateNetizenWindowFocus();
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++) {
-            (*it).first->updateFocusedWindow(*screen, (m_focused_window ?
-                                                       m_focused_window->window() :
+            (*it).first->updateFocusedWindow(*screen, (FocusControl::focusedWindow() ?
+                                                       FocusControl::focusedWindow()->window() :
                                                        0));
         }
     }
@@ -1874,88 +1823,6 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
             (*it).first->updateFocusedWindow(*old_screen, 0);
     }
 }
-
-/**
- * This function is called whenever we aren't quite sure what
- * focus is meant to be, it'll make things right ;-)
- * last_focused is set to something if we want to make use of the
- * previously focused window (it must NOT be set focused now, it
- *   is probably dying).
- *
- * ignore_event means that it ignores the given event until
- * it gets a focusIn
- */
-void Fluxbox::revertFocus(BScreen &screen) {
-    // Relevant resources:
-    // resource.focus_last = whether we focus last focused when changing workspace
-    // BScreen::FocusModel = sloppy, click, whatever
-    WinClient *next_focus = screen.focusControl().lastFocusedWindow(screen.currentWorkspaceID());
-
-    // if setting focus fails, or isn't possible, fallback correctly
-    if (!(next_focus && next_focus->fbwindow() &&
-          next_focus->fbwindow()->setCurrentClient(*next_focus, true))) {
-        setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
-        switch (screen.focusControl().focusModel()) {
-        case FocusControl::MOUSEFOCUS:
-            XSetInputFocus(FbTk::App::instance()->display(),
-                           PointerRoot, None, CurrentTime);
-            break;
-        case FocusControl::CLICKFOCUS:
-            screen.rootWindow().setInputFocus(RevertToPointerRoot, CurrentTime);
-            break;
-        }
-    }
-}
-
-/*
- * Like revertFocus, but specifically related to this window (transients etc)
- * if full_revert, we fallback to a full revertFocus if we can't find anything
- * local to the client.
- * If unfocus_frame is true, we won't focus anything in the same frame
- * as the client.
- *
- * So, we first prefer to choose a transient parent, then the last
- * client in this window, and if no luck (or unfocus_frame), then
- * we just use the normal revertFocus on the screen.
- *
- * assumption: client has focus
- */
-void Fluxbox::unfocusWindow(WinClient &client, bool full_revert, bool unfocus_frame) {
-    // go up the transient tree looking for a focusable window
-
-    FluxboxWindow *fbwin = client.fbwindow();
-    if (fbwin == 0)
-        unfocus_frame = false;
-
-    WinClient *trans_parent = client.transientFor();
-    while (trans_parent) {
-        if (trans_parent->fbwindow() && // can't focus if no fbwin
-            (!unfocus_frame || trans_parent->fbwindow() != fbwin) && // can't be this window
-            trans_parent->fbwindow()->isVisible() &&
-            trans_parent->fbwindow()->setCurrentClient(*trans_parent, m_focused_window == &client)) {
-            return;
-        }
-        trans_parent = trans_parent->transientFor();
-    }
-
-    if (fbwin == 0)
-        return; // nothing more we can do
-
-    BScreen &screen = fbwin->screen();
-
-    if (!unfocus_frame) {
-        WinClient *last_focus = screen.focusControl().lastFocusedWindow(*fbwin, &client);
-        if (last_focus != 0 &&
-            fbwin->setCurrentClient(*last_focus, m_focused_window == &client)) {
-            return;
-        }
-    }
-
-    if (full_revert && m_focused_window == &client)
-        revertFocus(screen);
-
-}
-
 
 void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
     

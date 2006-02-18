@@ -925,7 +925,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
     FbTk::App::instance()->sync(false);
 
-    WinClient *focused_client = Fluxbox::instance()->getFocusedWindow();
+    WinClient *focused_client = FocusControl::focusedWindow();
     FluxboxWindow *focused = 0;
     if (focused_client)
         focused = focused_client->fbwindow();
@@ -966,7 +966,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     if (focused && (focused->isStuck() || focused->isMoving()))
         focused->setInputFocus();
     else
-        Fluxbox::instance()->revertFocus(*this);
+        FocusControl::revertFocus(*this);
 
     if (focused && focused->isMoving())
         focused->resumeMoving();
@@ -982,7 +982,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
         return;
 
     if (!win) {
-        WinClient *client = Fluxbox::instance()->getFocusedWindow();
+        WinClient *client = FocusControl::focusedWindow();
         if (client) 
             win = client->fbwindow();
     }
@@ -1039,8 +1039,8 @@ void BScreen::addNetizen(Window win) {
         }
     }
 
-    Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
-		Fluxbox::instance()->getFocusedWindow()->window() : None);
+    Window f = ((FocusControl::focusedWindow()) ?
+		FocusControl::focusedWindow()->window() : None);
     net->sendWindowFocus(f);
 }
 
@@ -1075,8 +1075,8 @@ void BScreen::updateNetizenWorkspaceCount() {
 
 
 void BScreen::updateNetizenWindowFocus() {
-    Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
-                Fluxbox::instance()->getFocusedWindow()->window() : None);
+    Window f = ((FocusControl::focusedWindow()) ?
+                FocusControl::focusedWindow()->window() : None);
     for_each(m_netizen_list.begin(),
              m_netizen_list.end(),
              bind2nd(mem_fun(&Netizen::sendWindowFocus), f));

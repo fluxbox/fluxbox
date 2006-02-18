@@ -32,6 +32,7 @@
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
 #include "WindowCmd.hh"
+#include "FocusControl.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/MenuItem.hh"
@@ -207,7 +208,7 @@ int Workspace::removeWindow(FluxboxWindow *w, bool still_alive) {
     }
 
     if (w->isFocused() && still_alive)
-        Fluxbox::instance()->unfocusWindow(w->winClient(), true, true);
+        FocusControl::unfocusWindow(w->winClient(), true, true);
 	
     // we don't remove it from the layermanager, as it may be being moved
     Windows::iterator erase_it = remove(m_windowlist.begin(), 

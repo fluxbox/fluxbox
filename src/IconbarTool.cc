@@ -34,6 +34,7 @@
 #include "BoolMenuItem.hh"
 #include "CommandParser.hh"
 #include "WinClient.hh"
+#include "FocusControl.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/Menu.hh"
@@ -948,7 +949,7 @@ void IconbarTool::addList(std::list<FluxboxWindow *> &winlist) {
 }
 
 void IconbarTool::timedRender() {
-    WinClient *client = Fluxbox::instance()->getFocusedWindow();
+    WinClient *client = FocusControl::focusedWindow();
     if (client == 0 || client->fbwindow() == 0)
         return;
 

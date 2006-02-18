@@ -29,10 +29,12 @@
 #include "Screen.hh"
 #include "WinClient.hh"
 
+#include "FocusControl.hh"
+
 CurrentWindowCmd::CurrentWindowCmd(Action act):m_action(act) { }
 
 void CurrentWindowCmd::execute() {
-    WinClient *client = Fluxbox::instance()->getFocusedWindow();
+    WinClient *client = FocusControl::focusedWindow();
     if (client && client->fbwindow())
         (client->fbwindow()->*m_action)();
 }
@@ -95,19 +97,19 @@ void GoToTabCmd::real_execute() {
 }
 
 void WindowHelperCmd::execute() {
-    WinClient *client = Fluxbox::instance()->getFocusedWindow();
+    WinClient *client = FocusControl::focusedWindow();
     if (client && client->fbwindow()) // guarantee that fbwindow() exists too
         real_execute();
 }
 
 WinClient &WindowHelperCmd::winclient() {
     // will exist from execute above
-    return *Fluxbox::instance()->getFocusedWindow();
+    return *FocusControl::focusedWindow();
 }
 
 FluxboxWindow &WindowHelperCmd::fbwindow() {
     // will exist from execute above
-    return *Fluxbox::instance()->getFocusedWindow()->fbwindow();
+    return *FocusControl::focusedWindow()->fbwindow();
 }
 
 MoveCmd::MoveCmd(const int step_size_x, const int step_size_y) :

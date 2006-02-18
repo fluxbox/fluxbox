@@ -96,7 +96,8 @@ public:
     void removeClient(WinClient &client);
 
     static void revertFocus(BScreen &screen);
-    static void unfocusWindow(WinClient &client, bool full_revert, bool unfocus_frame);
+    // like revertFocus, but specifically related to this window (transients etc)
+    static void unfocusWindow(WinClient &client, bool full_revert = true, bool unfocus_frame = false);
     static void setFocusedWindow(WinClient *focus_to);
     static WinClient *focusedWindow() { return s_focused_window; }
 private:

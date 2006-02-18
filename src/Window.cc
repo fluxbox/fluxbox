@@ -622,7 +622,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     // reparent client win to this frame
     frame().setClientWindow(client);
     WinClient *was_focused = 0;
-    WinClient *focused_win = Fluxbox::instance()->getFocusedWindow();
+    WinClient *focused_win = FocusControl::focusedWindow();
 
     // get the current window on the end of our client list
     Window leftwin = None;

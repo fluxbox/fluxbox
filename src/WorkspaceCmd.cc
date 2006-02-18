@@ -29,6 +29,7 @@
 #include "Screen.hh"
 #include "fluxbox.hh"
 #include "WinClient.hh"
+#include "FocusControl.hh"
 
 #include "FbTk/KeyUtil.hh"
 
@@ -92,7 +93,7 @@ void DirFocusCmd::execute() {
     if (screen == 0)
         return;
 
-    WinClient *client = Fluxbox::instance()->getFocusedWindow();
+    WinClient *client = FocusControl::focusedWindow();
     if (client == 0 || client->fbwindow() == 0)
         return;
 
