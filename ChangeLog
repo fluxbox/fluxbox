@@ -1,12 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/02/18:
+   * Moved focus handling code to class FocusControl (Henrik)
+     fluxbox.hh/cc, Screen.hh/cc, Window.cc, Workspace.cc....
 *06/02/15:
    * updated copyright info (Mathias)
 *06/02/14:
    * Fix nls compilation (Mathias)
      RootTheme.cc fbsetbg
 *06/02/12:
-   * Fixed #bug #1417688, remember apps keeps incrementing vertical dimension  (Henrik)
+   * Fixed #bug #1417688, remember apps keeps 
+     incrementing vertical dimension  (Henrik)
      Remember.cc
    * Fixed root pixmap problem. 
      Using fbsetroot to set background.  (Henrik)
