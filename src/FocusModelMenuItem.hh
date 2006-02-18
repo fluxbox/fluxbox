@@ -25,48 +25,54 @@
 #ifndef FOCUSMODELMENUITEM_HH
 #define FOCUSMODELMENUITEM_HH
 
-#include "Screen.hh"
 
 #include "FbTk/MenuItem.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/Command.hh"
 
+#include "FocusControl.hh"
+
 class FocusModelMenuItem : public FbTk::MenuItem {
 public:
-    FocusModelMenuItem(const char *label, BScreen &screen, 
-                       BScreen::FocusModel model, 
+    FocusModelMenuItem(const char *label, FocusControl &focus_control, 
+                       FocusControl::FocusModel model,
                        FbTk::RefCount<FbTk::Command> &cmd):
-        FbTk::MenuItem(label, cmd), m_screen(screen), m_focusmodel(model) {
-    }
-    bool isEnabled() const { return m_screen.getFocusModel() != m_focusmodel; }
+        FbTk::MenuItem(label, cmd), 
+        m_focus_control(focus_control), 
+        m_focusmodel(model) { }
+
+    bool isEnabled() const { return m_focus_control.focusModel() != m_focusmodel; }
 
     void click(int button, int time) {
-        m_screen.saveFocusModel(m_focusmodel);
+        m_focus_control.setFocusModel(m_focusmodel);
         FbTk::MenuItem::click(button, time);
     }
 
 private:
-    BScreen &m_screen;
-    BScreen::FocusModel m_focusmodel;
+    FocusControl &m_focus_control;
+    FocusControl::FocusModel m_focusmodel;
 };
 
 class TabFocusModelMenuItem : public FbTk::MenuItem {
 public:
-    TabFocusModelMenuItem(const char *label, BScreen &screen, 
-                       BScreen::TabFocusModel model, 
-                       FbTk::RefCount<FbTk::Command> &cmd):
-        FbTk::MenuItem(label, cmd), m_screen(screen), m_tabfocusmodel(model) {
-    }
-    bool isEnabled() const { return m_screen.getTabFocusModel() != m_tabfocusmodel; }
+    TabFocusModelMenuItem(const char *label, 
+                          FocusControl &focus_control,
+                          FocusControl::TabFocusModel model, 
+                          FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(label, cmd), 
+        m_focus_control(focus_control), 
+        m_tabfocusmodel(model) { }
+
+    bool isEnabled() const { return m_focus_control.tabFocusModel() != m_tabfocusmodel; }
 
     void click(int button, int time) {
-        m_screen.saveTabFocusModel(m_tabfocusmodel);
+        m_focus_control.setTabFocusModel(m_tabfocusmodel);
         FbTk::MenuItem::click(button, time);
     }
 
 private:
-    BScreen &m_screen;
-    BScreen::TabFocusModel m_tabfocusmodel;
+    FocusControl &m_focus_control;
+    FocusControl::TabFocusModel m_tabfocusmodel;
 };
 
 

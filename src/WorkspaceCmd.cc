@@ -50,17 +50,17 @@ void NextWindowCmd::execute() {
             unsigned int mods = FbTk::KeyUtil::instance().cleanMods(fb->lastEvent().xkey.state);
             mods = FbTk::KeyUtil::instance().isolateModifierMask(mods);
             if (mods == 0) // can't stacked cycle unless there is a mod to grab
-                screen->nextFocus(m_option | BScreen::CYCLELINEAR);
+                screen->focusControl().nextFocus(m_option | FocusControl::CYCLELINEAR);
             else {
                 // if stacked cycling, then set a watch for 
                 // the release of exactly these modifiers
                 if (!fb->watchingScreen() && 
-                    !(m_option & BScreen::CYCLELINEAR))
+                    !(m_option & FocusControl::CYCLELINEAR))
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
-                screen->nextFocus(m_option);
+                screen->focusControl().nextFocus(m_option);
             }
         } else
-            screen->nextFocus(m_option);
+            screen->focusControl().nextFocus(m_option);
     }
 }
 
@@ -73,17 +73,17 @@ void PrevWindowCmd::execute() {
             unsigned int mods = FbTk::KeyUtil::instance().cleanMods(fb->lastEvent().xkey.state);
             mods = FbTk::KeyUtil::instance().isolateModifierMask(mods);
             if (mods == 0) // can't stacked cycle unless there is a mod to grab
-                screen->prevFocus(m_option | BScreen::CYCLELINEAR);
+                screen->focusControl().prevFocus(m_option | FocusControl::CYCLELINEAR);
             else {
                 // if stacked cycling, then set a watch for 
                 // the release of exactly these modifiers
                 if (!fb->watchingScreen() 
-                    && !(m_option & BScreen::CYCLELINEAR))
+                    && !(m_option & FocusControl::CYCLELINEAR))
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
-                screen->prevFocus(m_option);
+                screen->focusControl().prevFocus(m_option);
             }
         } else
-            screen->nextFocus(m_option);
+            screen->focusControl().nextFocus(m_option);
     }
 }
 
@@ -96,7 +96,7 @@ void DirFocusCmd::execute() {
     if (client == 0 || client->fbwindow() == 0)
         return;
 
-    screen->dirFocus(*client->fbwindow(), m_dir);
+    screen->focusControl().dirFocus(*client->fbwindow(), m_dir);
 }
 
 void NextWorkspaceCmd::execute() {
