@@ -374,17 +374,17 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "prevwindow")
         return new PrevWindowCmd(atoi(arguments.c_str()));
     else if (command == "focusup")
-        return new DirFocusCmd(BScreen::FOCUSUP);
+        return new DirFocusCmd(FocusControl::FOCUSUP);
     else if (command == "focusdown")
-        return new DirFocusCmd(BScreen::FOCUSDOWN);
+        return new DirFocusCmd(FocusControl::FOCUSDOWN);
     else if (command == "focusleft")
-        return new DirFocusCmd(BScreen::FOCUSLEFT);
+        return new DirFocusCmd(FocusControl::FOCUSLEFT);
     else if (command == "focusright")
-        return new DirFocusCmd(BScreen::FOCUSRIGHT);
+        return new DirFocusCmd(FocusControl::FOCUSRIGHT);
     else if (command == "nextgroup")
-        return new NextWindowCmd(atoi(arguments.c_str()) ^ BScreen::CYCLEGROUPS);
+        return new NextWindowCmd(atoi(arguments.c_str()) ^ FocusControl::CYCLEGROUPS);
     else if (command == "prevgroup")
-        return new PrevWindowCmd(atoi(arguments.c_str()) ^ BScreen::CYCLEGROUPS);
+        return new PrevWindowCmd(atoi(arguments.c_str()) ^ FocusControl::CYCLEGROUPS);
     else if (command == "arrangewindows")
         return new ArrangeWindowsCmd();
     else if (command == "showdesktop")
