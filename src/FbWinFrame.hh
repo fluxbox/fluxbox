@@ -110,7 +110,7 @@ public:
     /// remove all buttons from titlebar
     void removeAllButtons();
     /// adds a button to label window with specified title and command
-    ButtonId createTab(const std::string &title, FbTk::Command *cmd);
+    ButtonId createTab(const std::string &title, FbTk::Command *cmd, int tab_padding);
     //    void addLabelButton(FbTk::TextButton &btn);
     /// removes a specific button from label window
     void removeTab(ButtonId id);

@@ -32,7 +32,6 @@
 #include "FbTk/Transparent.hh"
 #include "CompareWindow.hh"
 #include "FbWinFrameTheme.hh"
-#include "fluxbox.hh"
 
 #include "Container.hh"
 
@@ -332,7 +331,8 @@ void FbWinFrame::removeAllButtons() {
     }
 }
 
-FbWinFrame::ButtonId FbWinFrame::createTab(const std::string &title, FbTk::Command *command) {
+FbWinFrame::ButtonId FbWinFrame::createTab(const std::string &title, FbTk::Command *command,
+                                           int tabs_padding) {
     FbTk::TextButton *button = new FbTk::TextButton(m_tab_container,
                                                     theme().font(),
                                                     title);
@@ -346,7 +346,7 @@ FbWinFrame::ButtonId FbWinFrame::createTab(const std::string &title, FbTk::Comma
     FbTk::RefCount<FbTk::Command> refcmd(command);
     button->setOnClick(refcmd);
 
-    button->setTextPadding(Fluxbox::instance()->getTabsPadding());
+    button->setTextPadding(tabs_padding);
     button->setJustify(theme().justify());
 
     m_tab_container.insertItem(button);

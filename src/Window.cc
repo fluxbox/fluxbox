@@ -3950,7 +3950,8 @@ void FluxboxWindow::ungrabPointer(Time time) {
 void FluxboxWindow::associateClient(WinClient &client) {
 
     FbWinFrame::ButtonId btn = frame().createTab(client.title(),
-                                                 new SetClientCmd(client));
+                                                 new SetClientCmd(client),
+                                                 Fluxbox::instance()->getTabsPadding());
 
     m_labelbuttons[&client] = btn;
 
