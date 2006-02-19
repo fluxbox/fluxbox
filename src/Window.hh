@@ -137,7 +137,8 @@ public:
         LEFTTOP,
         LEFTBOTTOM,
         RIGHTBOTTOM,
-        RIGHTTOP
+        RIGHTTOP,
+        ALLCORNERS
     };
 
     typedef struct _blackbox_hints {

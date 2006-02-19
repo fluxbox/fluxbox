@@ -58,6 +58,8 @@ std::string FbTk::Resource<BScreen::ResizeModel>::getString() const {
         return std::string("Quadrant");
     case BScreen::BOTTOMRESIZE:
         return std::string("Bottom");
+    case BScreen::CENTERRESIZE:
+        return std::string("Center");
     }
 
     return std::string("Default");
@@ -70,6 +72,8 @@ setFromString(char const *strval) {
         m_value = BScreen::BOTTOMRESIZE;
     } else if (strcasecmp(strval, "Quadrant") == 0) {
         m_value = BScreen::QUADRANTRESIZE;
+    } else if (strcasecmp(strval, "Center") == 0) {
+        m_value = BScreen::CENTERRESIZE;
     } else 
         m_value = BScreen::DEFAULTRESIZE;
 }

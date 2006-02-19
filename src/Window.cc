@@ -2814,9 +2814,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
               m_resize_corner = RIGHTBOTTOM;
           else if (me.window == frame().gripLeft())
               m_resize_corner = LEFTBOTTOM;
-          else if (screen().getResizeModel() != BScreen::QUADRANTRESIZE)
-              m_resize_corner = RIGHTBOTTOM;
-          else if (me.x < cx)
+          else if (screen().getResizeModel() != BScreen::QUADRANTRESIZE) {
+              if (screen().getResizeModel() == BScreen::CENTERRESIZE)
+                  m_resize_corner = ALLCORNERS;
+              else
+                  m_resize_corner = RIGHTBOTTOM;              
+          } else if (me.x < cx)
               m_resize_corner = (me.y < cy) ? LEFTTOP : LEFTBOTTOM;
           else
               m_resize_corner = (me.y < cy) ? RIGHTTOP : RIGHTBOTTOM;
@@ -2835,21 +2838,45 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             int dx = me.x - m_button_grab_x;
             int dy = me.y - m_button_grab_y;
-
-            if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP) {
-                m_last_resize_h = frame().height() - dy;
-                m_last_resize_y = frame().y() + dy;
-            } else {
-                m_last_resize_h = frame().height() + dy;
-            }
-
-            if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM) {
+            switch (m_resize_corner) {
+            case LEFTTOP:
                  m_last_resize_w = frame().width() - dx;
                  m_last_resize_x = frame().x() + dx;
-            } else {
-                 m_last_resize_w = frame().width() + dx;
-            }
+                 // no break, use code below too
+            case RIGHTTOP:
+                m_last_resize_h = frame().height() - dy;
+                m_last_resize_y = frame().y() + dy;
+                break;
+            case LEFTBOTTOM:
+                 m_last_resize_w = frame().width() - dx;
+                 m_last_resize_x = frame().x() + dx;
+                 break;
+            case ALLCORNERS:
+                // dx or dy must be at least 2
+                if (abs(dx) >= 2 || abs(dy) >= 2) {
+                    // take max and make it even
+                    int diff = 2 * (max(dx, dy) / 2);
 
+                    m_last_resize_h =  frame().height() + diff;
+                        
+                    m_last_resize_w = frame().width() + diff;
+                    m_last_resize_x = frame().x() - diff/2;
+                    m_last_resize_y = frame().y() - diff/2;
+                }
+                break;
+            };
+
+            // if not on top or all corner then move bottom
+            
+            if (!(m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP ||
+                  m_resize_corner == ALLCORNERS))
+                m_last_resize_h = frame().height() + dy;
+
+            // if not top or left bottom or all corners then move right side
+            if (!(m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
+                  m_resize_corner == ALLCORNERS))
+                m_last_resize_w = frame().width() + dx;
+            
             fixsize(&gx, &gy);
 
             if (old_resize_x != m_last_resize_x ||
@@ -3692,7 +3719,7 @@ void FluxboxWindow::fixsize(int *user_w, int *user_h) {
     // move X if necessary
     if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM) {
         m_last_resize_x = frame().x() + frame().width() - m_last_resize_w;
-    }
+    } 
 
     if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP) {
         m_last_resize_y = frame().y() + frame().height() - m_last_resize_h;

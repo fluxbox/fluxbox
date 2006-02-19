@@ -90,6 +90,7 @@ public:
     enum ResizeModel { 
         BOTTOMRESIZE = 0, 
         QUADRANTRESIZE, 
+        CENTERRESIZE,
         DEFAULTRESIZE = BOTTOMRESIZE };
 
 
