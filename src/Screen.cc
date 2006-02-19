@@ -33,6 +33,7 @@
 #include "Netizen.hh"
 
 #include "FocusControl.hh"
+#include "ScreenPlacement.hh"
 
 // themes
 #include "FbWinFrameTheme.hh"
@@ -184,9 +185,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     menu_delay(rm, 0, scrname + ".menuDelay", altscrname+".MenuDelay"),
     menu_delay_close(rm, 0, scrname + ".menuDelayClose", altscrname+".MenuDelayClose"),
     menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode"),
-    placement_policy(rm, ROWSMARTPLACEMENT, scrname+".windowPlacement", altscrname+".WindowPlacement"),
-    row_direction(rm, LEFTRIGHT, scrname+".rowPlacementDirection", altscrname+".RowPlacementDirection"),
-    col_direction(rm, TOPBOTTOM, scrname+".colPlacementDirection", altscrname+".ColPlacementDirection"),
+
     gc_line_width(rm, 1, scrname+".overlay.lineWidth", altscrname+".Overlay.LineWidth"),
     gc_line_style(rm, 
                   FbTk::GContext::LINESOLID, 
@@ -238,6 +237,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_name(screenname),
     m_altname(altscreenname),
     m_focus_control(new FocusControl(*this)),
+    m_placement_strategy(new ScreenPlacement(*this)),
     m_xinerama_headinfo(0),
     m_shutdown(false) {
 
@@ -446,7 +446,10 @@ BScreen::~BScreen() {
 
     // TODO fluxgen: check if this is the right place
     delete [] m_head_areas;
+
     delete m_focus_control;
+    delete m_placement_strategy;
+
 }
 
 void BScreen::initWindows() {

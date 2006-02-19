@@ -30,6 +30,7 @@
 
 #include "FbRootWindow.hh"
 #include "MenuTheme.hh"
+#include "PlacementStrategy.hh"
 
 #include "FbTk/Resource.hh"
 #include "FbTk/Subject.hh"
@@ -63,6 +64,7 @@ class Strut;
 class Slit;
 class HeadArea;
 class FocusControl;
+class PlacementStrategy;
 
 namespace FbTk {
 class Menu;
@@ -90,15 +92,6 @@ public:
         QUADRANTRESIZE, 
         DEFAULTRESIZE = BOTTOMRESIZE };
 
-    enum PlacementPolicy { 
-        ROWSMARTPLACEMENT, 
-        COLSMARTPLACEMENT,                            
-        CASCADEPLACEMENT, 
-        UNDERMOUSEPLACEMENT
-    };
-
-    enum RowDirection { LEFTRIGHT, RIGHTLEFT};
-    enum ColumnDirection { TOPBOTTOM, BOTTOMTOP};
 
     typedef std::vector<FluxboxWindow *> Icons;
 
@@ -218,10 +211,7 @@ public:
     /// hide all windowmenus except the given one (if given)
     void hideWindowMenus(const FluxboxWindow* except= 0);
 
-    inline PlacementPolicy getPlacementPolicy() const { return *resource.placement_policy; }
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
-    inline RowDirection getRowPlacementDirection() const { return *resource.row_direction; }
-    inline ColumnDirection getColPlacementDirection() const { return *resource.col_direction; }
 
     void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
     void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
@@ -249,7 +239,9 @@ public:
     const std::string &altName() const { return m_altname; }
     bool isShuttingdown() const { return m_shutdown; }
 
-
+    PlacementStrategy &placementStrategy() { return *m_placement_strategy; }
+    const PlacementStrategy &placementStrategy() const { return *m_placement_strategy; }
+    
     int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
@@ -442,9 +434,7 @@ private:
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
             unfocused_alpha, menu_alpha, menu_delay, menu_delay_close;
         FbTk::Resource<FbTk::MenuTheme::MenuMode> menu_mode;
-        FbTk::Resource<PlacementPolicy> placement_policy;
-        FbTk::Resource<RowDirection> row_direction;
-        FbTk::Resource<ColumnDirection> col_direction;
+
         FbTk::Resource<int> gc_line_width;
         FbTk::Resource<FbTk::GContext::LineStyle> gc_line_style;
         FbTk::Resource<FbTk::GContext::JoinStyle> gc_join_style;
@@ -458,6 +448,7 @@ private:
     const std::string m_name, m_altname;
 
     FocusControl *m_focus_control;
+    PlacementStrategy *m_placement_strategy;
 
     // This is a map of windows to clients for clients that had a left
     // window set, but that window wasn't present at the time
