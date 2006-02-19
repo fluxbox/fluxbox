@@ -446,6 +446,7 @@ BScreen::~BScreen() {
 
     // TODO fluxgen: check if this is the right place
     delete [] m_head_areas;
+    delete m_focus_control;
 }
 
 void BScreen::initWindows() {
