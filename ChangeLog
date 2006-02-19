@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
 *06/02/19:
+   * Added new resize mode: Center
+     This mode will move all corners at the same time with 
+     equal distance.
+     Set resource:  session.screen0.resizeMode: Center
+     (Henrik)
+     Window.hh Window.cc Screen.hh ScreenResources.cc 
    * Moved Window placement code from Workspace to different 
      PlacementStrategy classes. The main class is ScreenPlacement which
      selects the right placement class to use.     (Henrik)
