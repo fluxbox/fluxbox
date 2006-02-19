@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/02/19:
+   * Moved Window placement code from Workspace to different 
+     PlacementStrategy classes. The main class is ScreenPlacement which
+     selects the right placement class to use.     (Henrik)
+     CascadePlacement.{hh,cc} UnderMousePlacement.{hh,cc}
+     ColSmartPlacement.{hh,cc} RowSmartPlacement.{hh,cc}
+     ScreenPlacement.{cc,hh} ScreenResources.cc Workspace.{hh,cc}
+     PlacementStrategy.hh Screen.{hh,cc}
+     Makefile.am 
 *06/02/18:
    * Moved focus handling code to class FocusControl (Henrik)
      fluxbox.hh/cc, Screen.hh/cc, Window.cc, Workspace.cc....
