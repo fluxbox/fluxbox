@@ -17,7 +17,7 @@ install-pkgdataDATA:
 	$(INSTALL_DATA) menu $(DESTDIR)$(DEFAULT_MENU)
 	@echo "Installing keys file in $(DESTDIR)$(DEFAULT_KEYS)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_KEYS))
-	$(INSTALL_DATA) keys $(DESTDIR)$(DEFAULT_KEYS)
+	$(INSTALL_DATA) $(srcdir)/keys $(DESTDIR)$(DEFAULT_KEYS)
 	@echo "Installing init file in $(DESTDIR)$(DEFAULT_INIT)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_INIT))
 	$(INSTALL_DATA) init $(DESTDIR)$(DEFAULT_INIT)
