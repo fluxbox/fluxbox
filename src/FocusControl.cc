@@ -1,4 +1,4 @@
-// FocusControl.hh
+// FocusControl.cc
 // Copyright (c) 2006 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -252,7 +252,7 @@ void FocusControl::nextFocus(int opts) {
 
     if (!(opts & CYCLELINEAR)) {
         if (!m_cycling_focus) {
-            m_cycling_focus = True;
+            m_cycling_focus = true;
             m_cycling_window = m_focused_list.begin();
             m_cycling_last = 0;
         } else {
@@ -263,11 +263,14 @@ void FocusControl::nextFocus(int opts) {
         // that is on the same workspace
         FocusedWindows::iterator it = m_cycling_window;
         const FocusedWindows::iterator it_end = m_focused_list.end();
-
+        int safety_counter = 0;
         while (true) {
             ++it;
             if (it == it_end) {
                 it = m_focused_list.begin();
+                safety_counter++;
+                if (safety_counter > 3)
+                    break;
             }
             // give up [do nothing] if we reach the current focused again
             if ((*it) == (*m_cycling_window)) {
@@ -323,10 +326,15 @@ void FocusControl::nextFocus(int opts) {
                 continue;
         }
 
+        int safety_counter = 0;
         do {
             ++it;
-            if (it == wins.end())
+            if (it == wins.end()) {
                 it = wins.begin();
+                safety_counter++;
+                if (safety_counter > 3)
+                    break;
+            }
             // see if the window should be skipped
             if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
                 break;
