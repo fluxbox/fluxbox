@@ -365,7 +365,6 @@ void FocusControl::raiseFocus() {
 }
 
 void FocusControl::setScreenFocusedWindow(WinClient &win_client) {
-    cerr<<__FUNCTION__<<endl;
 
      // raise newly focused window to the top of the focused list
     if (!m_cycling_focus) { // don't change the order if we're cycling
@@ -509,7 +508,6 @@ void FocusControl::removeClient(WinClient &client) {
  * it gets a focusIn
  */
 void FocusControl::revertFocus(BScreen &screen) {
-    cerr<<__FUNCTION__<<endl;
 
     // Relevant resources:
     // resource.focus_last = whether we focus last focused when changing workspace
@@ -549,8 +547,6 @@ void FocusControl::revertFocus(BScreen &screen) {
 void FocusControl::unfocusWindow(WinClient &client,
                                  bool full_revert, 
                                  bool unfocus_frame) {
-    cerr<<__FUNCTION__<<endl;
-
     // go up the transient tree looking for a focusable window
 
     FluxboxWindow *fbwin = client.fbwindow();
@@ -596,7 +592,6 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         &FocusControl::focusedWindow()->screen() : 0;
 
 #ifdef DEBUG
-    cerr<<__FILE__<<endl;
     cerr<<"------------------"<<endl;
     cerr<<"Setting Focused window = "<<client<<endl;
     if (client != 0 && client->fbwindow() != 0)
