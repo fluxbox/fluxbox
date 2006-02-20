@@ -26,9 +26,10 @@
 
 #include "Window.hh"
 #include "Screen.hh"
-#include "fluxbox.hh"
 #include "Workspace.hh"
 #include "WindowCmd.hh"
+#include "fluxbox.hh"
+#include "Layer.hh"
 
 #include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/Command.hh"
@@ -50,7 +51,7 @@ private:
 SendToMenu::SendToMenu(BScreen &screen):
     FbMenu(screen.menuTheme(),
            screen.imageControl(), 
-           *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())) {
+           *screen.layerManager().getLayer(Layer::MENU)) {
     // listen to:
     // workspace count signal
     // workspace names signal

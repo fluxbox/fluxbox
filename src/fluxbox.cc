@@ -35,6 +35,7 @@
 #include "Keys.hh"
 #include "FbAtoms.hh"
 #include "FocusControl.hh"
+#include "Layer.hh"
 
 #include "defaults.hh"
 
@@ -491,7 +492,7 @@ int Fluxbox::initScreen(int scrnr) {
 #ifdef USE_TOOLBAR
     m_toolbars.push_back(new Toolbar(*screen,
                                      *screen->layerManager().
-                                     getLayer(Fluxbox::instance()->getNormalLayer())));
+                                     getLayer(::Layer::NORMAL)));
 #endif // USE_TOOLBAR
 
     // must do this after toolbar is created

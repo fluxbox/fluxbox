@@ -33,13 +33,13 @@
 #include "ToolbarTheme.hh"
 
 #include "FbTk/I18n.hh"
-#include "fluxbox.hh"
 #include "Screen.hh"
 #include "IntResMenuItem.hh"
 #include "BoolMenuItem.hh"
 #include "Xinerama.hh"
 #include "Strut.hh"
 #include "CommandParser.hh"
+#include "Layer.hh"
 
 #include "FbTk/ImageControl.hh"
 #include "FbTk/MacroCommand.hh"
@@ -198,15 +198,15 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_layeritem(frame.window, layer),
     m_layermenu(scrn.menuTheme(),
                 scrn.imageControl(),
-                *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
+                *scrn.layerManager().getLayer(Layer::MENU),
                 this,
                 true),
     m_placementmenu(scrn.menuTheme(),
                     scrn.imageControl(),
-                    *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+                    *scrn.layerManager().getLayer(Layer::MENU)),
     m_toolbarmenu(scrn.menuTheme(),
                   scrn.imageControl(),
-                  *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+                  *scrn.layerManager().getLayer(Layer::MENU)),
     m_theme(scrn.screenNumber()),
     m_tool_factory(scrn),
     m_strut(0),
@@ -220,7 +220,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
                        scrn.name() + ".toolbar.widthPercent", scrn.altName() + ".Toolbar.WidthPercent"),
     m_rc_alpha(scrn.resourceManager(), 255,
                        scrn.name() + ".toolbar.alpha", scrn.altName() + ".Toolbar.Alpha"),
-    m_rc_layernum(scrn.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()),
+    m_rc_layernum(scrn.resourceManager(), Layer(Layer::DESKTOP),
                   scrn.name() + ".toolbar.layer", scrn.altName() + ".Toolbar.Layer"),
     m_rc_on_head(scrn.resourceManager(), 0,
                  scrn.name() + ".toolbar.onhead", scrn.altName() + ".Toolbar.onHead"),
@@ -799,7 +799,8 @@ void Toolbar::setupMenus() {
     visible_macro->add(reconfig_toolbar);
     visible_macro->add(save_resources);
     RefCommand toggle_visible_cmd(visible_macro);
-    menu().insert(new BoolMenuItem(_FBTEXT(Common, Visible, "Visible", "Whether this item is visible"),
+    menu().insert(new BoolMenuItem(_FBTEXT(Common, Visible, 
+                                           "Visible", "Whether this item is visible"),
                                    *m_rc_visible, toggle_visible_cmd));
 
     menu().insert(new BoolMenuItem(_FBTEXT(Common, AutoHide,
@@ -807,27 +808,33 @@ void Toolbar::setupMenus() {
                                    *m_rc_auto_hide,
                                    reconfig_toolbar_and_save_resource));
 
-    MenuItem *toolbar_menuitem = new IntResMenuItem(_FBTEXT(Toolbar, WidthPercent, "Toolbar width percent", "Percentage of screen width taken by toolbar"),
-                                                    m_rc_width_percent,
-                                                    0, 100, menu()); // min/max value
+    MenuItem *toolbar_menuitem = 
+        new IntResMenuItem(_FBTEXT(Toolbar, WidthPercent, 
+                                   "Toolbar width percent", 
+                                   "Percentage of screen width taken by toolbar"),
+                           m_rc_width_percent,
+                           0, 100, menu()); // min/max value
 
     
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);
     menu().insert(toolbar_menuitem);
     
-    menu().insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
+    menu().insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,
+                                           "Maximize Over", 
+                                           "Maximize over this thing when maximizing"),
                                    *m_rc_maximize_over,
                                    reconfig_toolbar_and_save_resource));
     menu().insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), &layerMenu());
 
     if (screen().hasXinerama()) {
         menu().insert(_FBTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
-                      new XineramaHeadMenu<Toolbar>(screen().menuTheme(),
-                                                    screen(),
-                                                    screen().imageControl(),
-                                                    *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                                                    *this,
-                                                    _FBTEXT(Toolbar, OnHead, "Toolbar on Head", "Title of toolbar on head menu")));
+         new XineramaHeadMenu<Toolbar>(screen().menuTheme(),
+                                       screen(),
+                                       screen().imageControl(),
+                                       *screen().layerManager().getLayer(::Layer::MENU),
+                                       *this,
+                                       _FBTEXT(Toolbar, OnHead, "Toolbar on Head", 
+                                               "Title of toolbar on head menu")));
     }
 
     typedef pair<const char*, Toolbar::Placement> PlacementP;

@@ -23,12 +23,14 @@
 
 #include "Gnome.hh"
 
-#include "fluxbox.hh"
+#include "App.hh"
 #include "Window.hh"
 #include "Screen.hh"
 #include "WinClient.hh"
 #include "Workspace.hh"
+#include "Layer.hh"
 #include "FbTk/I18n.hh"
+
 
 #include <iostream>
 #include <new>
@@ -279,7 +281,7 @@ void Gnome::updateState(FluxboxWindow &win) {
 void Gnome::updateLayer(FluxboxWindow &win) {
     //TODO - map from flux layers to gnome ones
     // our layers are in the opposite direction to GNOME
-    long layernum = Fluxbox::instance()->getDesktopLayer() - win.layerNum();
+    long layernum = Layer::DESKTOP - win.layerNum();
 
     FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
@@ -418,47 +420,47 @@ void Gnome::setLayer(FluxboxWindow *win, int layer) {
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DESKTOP)"<<endl;
 #endif // DEBUG
-        layer = Fluxbox::instance()->getDesktopLayer();
+        layer = Layer::DESKTOP;
         break;
     case WIN_LAYER_BELOW:
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_BELOW)"<<endl;
 #endif // DEBUG
-        layer = Fluxbox::instance()->getBottomLayer();
+        layer = Layer::BOTTOM;
         break;
     case WIN_LAYER_NORMAL:
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_NORMAL)"<<endl;
 #endif // DEBUG
-        layer = Fluxbox::instance()->getNormalLayer();
+        layer = Layer::NORMAL;
         break;		
     case WIN_LAYER_ONTOP:
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ONTOP)"<<endl;
 #endif // DEBUG
-        layer = Fluxbox::instance()->getTopLayer();
+        layer = Layer::TOP;
         break;
     case WIN_LAYER_DOCK:
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DOCK)"<<endl;
 #endif // DEBUG
-        layer = Fluxbox::instance()->getDockLayer();
+        layer = Layer::DOCK;
         break;
     case WIN_LAYER_ABOVE_DOCK:
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ABOVE_DOCK)"<<endl;
 #endif // DEBUG
-        layer = Fluxbox::instance()->getAboveDockLayer();
+        layer = Layer::ABOVE_DOCK;
         break;
     case WIN_LAYER_MENU:
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_MENU)"<<endl;
 #endif // DEBUG
-        layer = Fluxbox::instance()->getMenuLayer();
+        layer = Layer::MENU;
         break;
     default:
         // our windows are in the opposite direction to gnome
-        layer = Fluxbox::instance()->getDesktopLayer() - layer;
+        layer = Layer::DESKTOP - layer;
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", "<<layer<<")"<<endl;
 #endif // DEBUG

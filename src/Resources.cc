@@ -24,8 +24,11 @@
 
 // holds main resource functions
 
-#include "fluxbox.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/Resource.hh"
+#include "fluxbox.hh"
+
+#include "Layer.hh"
 
 #include <stdio.h>
 #include <string>
@@ -188,54 +191,55 @@ getString() const {
 }
 
 template<>
-void FbTk::Resource<Fluxbox::Layer>::
+void FbTk::Resource<Layer>::
 setFromString(const char *strval) {
     int tempnum = 0;
     if (sscanf(strval, "%d", &tempnum) == 1)
         m_value = tempnum;
     else if (strcasecmp(strval, "Menu") == 0)
-        m_value = Fluxbox::instance()->getMenuLayer();
+        m_value = ::Layer::MENU;
     else if (strcasecmp(strval, "AboveDock") == 0)
-        m_value = Fluxbox::instance()->getAboveDockLayer();
+        m_value = ::Layer::ABOVE_DOCK;
     else if (strcasecmp(strval, "Dock") == 0)
-        m_value = Fluxbox::instance()->getDockLayer();
+        m_value = ::Layer::DOCK;
     else if (strcasecmp(strval, "Top") == 0)
-        m_value = Fluxbox::instance()->getTopLayer();
+        m_value = ::Layer::TOP;
     else if (strcasecmp(strval, "Normal") == 0)
-        m_value = Fluxbox::instance()->getNormalLayer();
+        m_value = ::Layer::NORMAL;
     else if (strcasecmp(strval, "Bottom") == 0)
-        m_value = Fluxbox::instance()->getBottomLayer();
+        m_value = ::Layer::BOTTOM;
     else if (strcasecmp(strval, "Desktop") == 0)
-        m_value = Fluxbox::instance()->getDesktopLayer();
+        m_value = ::Layer::DESKTOP;
     else 
         setDefaultValue();
 }
 
 
 template<>
-string FbTk::Resource<Fluxbox::Layer>::
+std::string FbTk::Resource<Layer>::
 getString() const {
-
-    if (m_value.getNum() == Fluxbox::instance()->getMenuLayer()) 
-        return string("Menu");
-    else if (m_value.getNum() == Fluxbox::instance()->getAboveDockLayer()) 
-        return string("AboveDock");
-    else if (m_value.getNum() == Fluxbox::instance()->getDockLayer()) 
-        return string("Dock");
-    else if (m_value.getNum() == Fluxbox::instance()->getTopLayer()) 
-        return string("Top");
-    else if (m_value.getNum() == Fluxbox::instance()->getNormalLayer()) 
-        return string("Normal");
-    else if (m_value.getNum() == Fluxbox::instance()->getBottomLayer()) 
-        return string("Bottom");
-    else if (m_value.getNum() == Fluxbox::instance()->getDesktopLayer()) 
-        return string("Desktop");
-    else {
+    switch (m_value.getNum()) {
+    case Layer::MENU:
+        return std::string("Menu");
+    case Layer::ABOVE_DOCK:
+        return std::string("AboveDock");
+    case Layer::DOCK:
+        return std::string("Dock");
+    case Layer::TOP:
+        return std::string("Top");
+    case Layer::NORMAL:
+        return std::string("Normal");
+    case Layer::BOTTOM:
+        return std::string("Bottom");
+    case Layer::DESKTOP:
+        return std::string("Desktop");
+    default:
         char tmpstr[128];
         sprintf(tmpstr, "%d", m_value.getNum());
-        return string(tmpstr);
+        return std::string(tmpstr);
     }
 }
+
 template<>
 void FbTk::Resource<long>::
 setFromString(const char *strval) {   

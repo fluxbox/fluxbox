@@ -136,26 +136,6 @@ public:
     // we have a special resource type because we need to be able to name certain layers
     // a Resource<int> wouldn't allow this
 
-    class Layer {
-    public:
-        explicit Layer(int i) : m_num(i) {};
-        int getNum() const { return m_num; }
-
-        Layer &operator=(int num) { m_num = num; return *this; }
-
-    private:
-        int m_num;
-    };
-
-    // TODO these probably should be configurable
-    int getMenuLayer()      const { return 0; }
-    int getAboveDockLayer() const { return 2; }
-    int getDockLayer()      const { return 4; }
-    int getTopLayer()       const { return 6; }
-    int getNormalLayer()    const { return 8; }
-    int getBottomLayer()    const { return 10; }
-    int getDesktopLayer()   const { return 12; }
-
 
     time_t getAutoRaiseDelay() const { return *m_rc_auto_raise_delay; }
 

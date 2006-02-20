@@ -24,12 +24,12 @@
 #include "WorkspaceMenu.hh"
 
 #include "Screen.hh"
-#include "fluxbox.hh"
 #include "Workspace.hh"
 #include "WorkspaceCmd.hh"
 #include "MenuCreator.hh"
 #include "CommandParser.hh"
 #include "FbCommands.hh"
+#include "Layer.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -57,8 +57,7 @@
 WorkspaceMenu::WorkspaceMenu(BScreen &screen):
    FbMenu(screen.menuTheme(), 
            screen.imageControl(), 
-           *screen.layerManager().
-           getLayer(Fluxbox::instance()->getMenuLayer())) {
+           *screen.layerManager().getLayer(Layer::MENU)) {
 
 
     init(screen);

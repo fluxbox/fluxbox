@@ -29,12 +29,13 @@
 #include "Window.hh"
 #include "IconButton.hh"
 #include "Workspace.hh"
-#include "fluxbox.hh"
 #include "FbMenu.hh"
 #include "BoolMenuItem.hh"
 #include "CommandParser.hh"
 #include "WinClient.hh"
 #include "FocusControl.hh"
+#include "FbCommands.hh"
+#include "Layer.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/Menu.hh"
@@ -236,9 +237,7 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 
     menu.setLabel(_FBTEXT(Toolbar, IconbarMode, "Iconbar Mode", "Menu title - chooses which set of icons are shown in the iconbar"));
 
-    RefCount<Command> saverc_cmd(new SimpleCommand<Fluxbox>(
-                                                            *Fluxbox::instance(), 
-                                                            &Fluxbox::save_rc));
+    RefCount<Command> saverc_cmd(new FbCommands::SaveResources());
     
 
     menu.insert(new ToolbarModeMenuItem(_FBTEXT(Toolbar, IconbarModeNone, 
@@ -382,7 +381,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_rc_use_pixmap(screen.resourceManager(), true,
                     screen.name() + ".iconbar.usePixmap", screen.altName() + ".Iconbar.UsePixmap"),
     m_menu(screen.menuTheme(), screen.imageControl(),
-           *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())) {
+           *screen.layerManager().getLayer(Layer::MENU)) {
 
     // setup mode menu
     setupModeMenu(m_menu, *this);

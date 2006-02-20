@@ -32,6 +32,7 @@
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "WindowCmd.hh"
+#include "Layer.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/StringUtil.hh"
@@ -345,19 +346,19 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
             } else if (str_key == "Layer") {
                 unsigned int l;
                 if (str_label == "DESKTOP") {
-                    l = Fluxbox::instance()->getDesktopLayer();
+                    l = Layer::DESKTOP;
                 } else if (str_label == "BOTTOM") {
-                    l = Fluxbox::instance()->getBottomLayer();
+                    l = Layer::BOTTOM;
                 } else if (str_label == "NORMAL") {
-                    l = Fluxbox::instance()->getNormalLayer();
+                    l = Layer::NORMAL;
                 } else if (str_label == "TOP") {
-                    l = Fluxbox::instance()->getTopLayer();
+                    l = Layer::TOP;
                 } else if (str_label == "DOCK") {
-                    l = Fluxbox::instance()->getDockLayer();
+                    l = Layer::DOCK;
                 } else if (str_label == "ABOVEDOCK") {
-                    l = Fluxbox::instance()->getAboveDockLayer();
+                    l = Layer::ABOVE_DOCK;
                 } else if (str_label == "MENU") {
-                    l = Fluxbox::instance()->getMenuLayer();
+                    l = Layer::MENU;
                 } else {
                     FbTk_istringstream iss(str_label.c_str());
                     iss >> l;

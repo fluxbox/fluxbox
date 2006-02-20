@@ -362,7 +362,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                                     *resource.gc_join_style);
 
 #ifdef SLIT
-    m_slit.reset(new Slit(*this, *layerManager().getLayer(fluxbox->getDesktopLayer()),
+    m_slit.reset(new Slit(*this, *layerManager().getLayer(Layer::DESKTOP),
                  fluxbox->getSlitlistFilename().c_str()));
 #endif // SLIT
 
@@ -458,8 +458,6 @@ void BScreen::initWindows() {
     Display *disp = FbTk::App::instance()->display();
     XQueryTree(disp, rootWindow().window(), &r, &p, &children, &nchild);
 
-    Fluxbox *fluxbox = Fluxbox::instance();
-
     // preen the window list of all icon windows... for better dockapp support
     for (unsigned int i = 0; i < nchild; i++) {
 
@@ -485,6 +483,8 @@ void BScreen::initWindows() {
         }
 
     }
+
+    Fluxbox *fluxbox = Fluxbox::instance();
 
     // manage shown windows
     // complexity: O(n^2) if we have lots of transients to transient_for
@@ -617,7 +617,7 @@ void BScreen::update(FbTk::Subject *subj) {
 FbTk::Menu *BScreen::createMenu(const std::string &label) {
     FbTk::Menu *menu = new FbMenu(menuTheme(), 
                                   imageControl(), 
-                                  *layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
+                                  *layerManager().getLayer(Layer::MENU));
     if (!label.empty())
         menu->setLabel(label.c_str());
 
@@ -1235,7 +1235,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         else {
             win = new FluxboxWindow(*winclient,
                                     winFrameTheme(),
-                                    *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
+                                    *layerManager().getLayer(Layer::NORMAL));
             
             if (!win->isManaged()) {
                 delete win;
@@ -1274,7 +1274,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
 
     FluxboxWindow *win = new FluxboxWindow(client,
                                            winFrameTheme(),
-                                           *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
+                                           *layerManager().getLayer(Layer::NORMAL));
 
 #ifdef SLIT
     if (win->initialState() == WithdrawnState && slit() != 0) {

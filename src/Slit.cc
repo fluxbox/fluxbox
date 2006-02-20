@@ -44,7 +44,6 @@
 #include "MacroCommand.hh"
 #include "FbCommands.hh"
 #include "LayerMenu.hh"
-#include "fluxbox.hh"
 #include "XLayer.hh"
 #include "RootTheme.hh"
 #include "FbTk/Theme.hh"
@@ -252,13 +251,13 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_screen(scr),
       m_slitmenu(scr.menuTheme(), 
                  scr.imageControl(),
-                 *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+                 *scr.layerManager().getLayer(Layer::MENU)),
       m_placement_menu(scr.menuTheme(),
                        scr.imageControl(),
-                       *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+                       *scr.layerManager().getLayer(Layer::MENU)),
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
-                        *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+                        *scr.layerManager().getLayer(Layer::MENU)),
       frame(scr.rootWindow()),
        //For KDE dock applets
       m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
@@ -284,7 +283,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                  scr.name() + ".slit.alpha", scr.altName() + ".Slit.Alpha"),
       m_rc_on_head(scr.resourceManager(), 0,
                    scr.name() + ".slit.onhead", scr.altName() + ".Slit.onHead"),
-      m_rc_layernum(scr.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDockLayer()), 
+      m_rc_layernum(scr.resourceManager(), Layer(Layer::DOCK), 
                     scr.name() + ".slit.layer", scr.altName() + ".Slit.Layer") {
 
     _FB_USES_NLS;
@@ -317,7 +316,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     m_layermenu.reset(new LayerMenu(scr.menuTheme(),
                                     scr.imageControl(),
                                     *scr.layerManager().
-                                    getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                    getLayer(Layer::MENU), 
                                     this,
                                     true));
     m_layermenu->setLabel(_FBTEXT(Slit, Layer, "Slit Layer", "Title of Slit Layer Menu"));
@@ -1240,7 +1239,7 @@ void Slit::setupMenu() {
                               screen().menuTheme(),
                               screen(),
                               screen().imageControl(),
-                              *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
+                              *screen().layerManager().getLayer(Layer::MENU),
                               *this,
                               _FBTEXT(Slit, OnHead, "Slit on Head", "Title of Slits On Head menu")
                               ));

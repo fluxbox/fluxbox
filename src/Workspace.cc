@@ -26,7 +26,6 @@
 
 #include "Workspace.hh"
 
-#include "fluxbox.hh"
 #include "Screen.hh"
 #include "Window.hh"
 #include "WinClient.hh"
@@ -34,6 +33,7 @@
 #include "WindowCmd.hh"
 #include "FocusControl.hh"
 #include "PlacementStrategy.hh"
+#include "Layer.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/MenuItem.hh"
@@ -136,7 +136,7 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager,
     m_screen(scrn),
     m_lastfocus(0),
     m_clientmenu(scrn.menuTheme(), scrn.imageControl(),
-                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+                 *scrn.layerManager().getLayer(Layer::MENU)),
     m_layermanager(layermanager),
     m_name(name),
     m_id(id) {

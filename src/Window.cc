@@ -41,6 +41,7 @@
 #include "MenuCreator.hh"
 #include "StringUtil.hh"
 #include "FocusControl.hh"
+#include "Layer.hh"
 
 #include "FbTk/TextButton.hh"
 #include "FbTk/Compose.hh"
@@ -1595,7 +1596,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
         // be xinerama aware
         moveResize(screen().getHeadX(head), screen().getHeadY(head),
                    screen().getHeadWidth(head), screen().getHeadHeight(head));
-        moveToLayer(Fluxbox::instance()->getAboveDockLayer());
+        moveToLayer(::Layer::ABOVE_DOCK);
 
         fullscreen = true;
 
@@ -1612,7 +1613,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
         moveToLayer(m_old_layernum);
 
         m_old_decoration_mask = 0;
-        m_old_layernum = Fluxbox::instance()->getNormalLayer();
+        m_old_layernum = ::Layer::NORMAL;
        
         stateSig().notify();
     }
@@ -1886,7 +1887,7 @@ void FluxboxWindow::tempRaise() {
 
 void FluxboxWindow::raiseLayer() {
     // don't let it up to menu layer
-    if (layerNum() == (Fluxbox::instance()->getMenuLayer()+1))
+    if (layerNum() == ::Layer::MENU + 1)
         return;
 
     if (!isInitialized()) {
@@ -1968,11 +1969,9 @@ void FluxboxWindow::moveToLayer(int layernum) {
     cerr<<"FluxboxWindow("<<title()<<")::moveToLayer("<<layernum<<")"<<endl;
 #endif // DEBUG
 
-    Fluxbox * fluxbox = Fluxbox::instance();
-
     // don't let it set its layer into menu area
-    if (layernum <= fluxbox->getMenuLayer()) {
-        layernum = fluxbox->getMenuLayer() + 1;
+    if (layernum <= ::Layer::MENU) {
+        layernum = ::Layer::MENU + 1;
     }
 
     if (!isInitialized()) {

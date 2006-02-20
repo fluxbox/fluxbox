@@ -27,8 +27,8 @@
 #include "Window.hh"
 #include "WinClient.hh"
 #include "Workspace.hh"
-#include "fluxbox.hh"
-
+#include "Layer.hh"
+#include "FbTk/App.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/I18n.hh"
 
@@ -194,7 +194,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                              &data);
     if (data) {
         Atom *atoms = (unsigned long *)data;
-        for (unsigned long l=0; l<nitems; ++l) {
+        for (unsigned long l = 0; l < nitems; ++l) {
             /* From Extended Window Manager Hints, draft 1.3:
              *
              * _NET_WM_WINDOW_TYPE_DOCK indicates a dock or panel feature.
@@ -217,7 +217,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
 
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
-                win.moveToLayer(Fluxbox::instance()->getDesktopLayer());
+                win.moveToLayer(Layer::DESKTOP);
                 win.setDecorationMask(0);
                 win.setTabable(false);
                 win.setMovable(false);
@@ -534,9 +534,9 @@ void Ewmh::updateState(FluxboxWindow &win) {
         state.push_back(m_net_wm_state_sticky);
     if (win.isShaded())
         state.push_back(m_net_wm_state_shaded);
-    if (win.layerNum() == Fluxbox::instance()->getBottomLayer())
+    if (win.layerNum() == Layer::BOTTOM)
         state.push_back(m_net_wm_state_below);
-    if (win.layerNum() == Fluxbox::instance()->getAboveDockLayer())
+    if (win.layerNum() == Layer::ABOVE_DOCK)
         state.push_back(m_net_wm_state_above);
     if (win.isIconic())
         state.push_back(m_net_wm_state_hidden);
@@ -889,15 +889,15 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
         win.setIconHidden(value);
     } else if (state == m_net_wm_state_below) {  // bottom layer
         if (value)
-            win.moveToLayer(Fluxbox::instance()->getBottomLayer());
+            win.moveToLayer(Layer::BOTTOM);
         else
-            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+            win.moveToLayer(Layer::NORMAL);
 
     } else if (state == m_net_wm_state_above) { // above layer
         if (value)
-            win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
+            win.moveToLayer(Layer::ABOVE_DOCK);
         else
-            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+            win.moveToLayer(Layer::NORMAL);
     }
 }
 
@@ -916,16 +916,16 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
     } else if (state == m_net_wm_state_skip_taskbar) {
         win.setIconHidden(!win.isIconHidden());
     } else if (state == m_net_wm_state_below) { // bottom layer
-        if (win.layerNum() == Fluxbox::instance()->getBottomLayer())
-            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+        if (win.layerNum() == Layer::BOTTOM)
+            win.moveToLayer(Layer::NORMAL);
         else
-            win.moveToLayer(Fluxbox::instance()->getBottomLayer());
+            win.moveToLayer(Layer::BOTTOM);
 
     } else if (state == m_net_wm_state_above) { // top layer
-        if (win.layerNum() == Fluxbox::instance()->getAboveDockLayer())
-            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+        if (win.layerNum() == Layer::ABOVE_DOCK)
+            win.moveToLayer(Layer::NORMAL);
         else
-            win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
+            win.moveToLayer(Layer::ABOVE_DOCK);
     }
 
 }

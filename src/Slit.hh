@@ -29,7 +29,7 @@
 
 
 #include "LayerMenu.hh"
-#include "fluxbox.hh"
+#include "Layer.hh"
 
 #include "FbTk/Menu.hh"
 #include "FbTk/FbWindow.hh"
@@ -49,6 +49,7 @@ class SlitClient;
 class BScreen;
 class FbMenu;
 class Strut;
+class Layer;
 
 /// Handles dock apps
 class Slit: public FbTk::EventHandler, public FbTk::Observer, public LayerObject {
@@ -176,7 +177,7 @@ private:
     FbTk::Resource<Slit::Placement> m_rc_placement;
     FbTk::Resource<Slit::Direction> m_rc_direction;
     FbTk::Resource<int> m_rc_alpha, m_rc_on_head;
-    FbTk::Resource<Fluxbox::Layer> m_rc_layernum;
+    FbTk::Resource<Layer> m_rc_layernum;
 };
 
 

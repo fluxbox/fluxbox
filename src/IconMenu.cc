@@ -25,7 +25,7 @@
 
 #include "Screen.hh"
 #include "IconMenuItem.hh"
-#include "fluxbox.hh"
+#include "Layer.hh"
 #include "FbTk/I18n.hh"
 
 #include <typeinfo>
@@ -47,7 +47,7 @@ IconMenu::IconMenu(BScreen &screen):
     FbMenu(screen.menuTheme(), 
            screen.imageControl(), 
            *screen.layerManager().
-           getLayer(Fluxbox::instance()->getMenuLayer())) {
+           getLayer(Layer::MENU)) {
 
     _FB_USES_NLS;
     setLabel(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"));
