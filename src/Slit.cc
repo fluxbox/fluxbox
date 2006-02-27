@@ -43,6 +43,7 @@
 #include "SimpleCommand.hh"
 #include "MacroCommand.hh"
 #include "FbCommands.hh"
+#include "Layer.hh"
 #include "LayerMenu.hh"
 #include "XLayer.hh"
 #include "RootTheme.hh"
@@ -1244,13 +1245,13 @@ void Slit::setupMenu() {
                               screen().menuTheme(),
                               screen(),
                               screen().imageControl(),
-                              *screen().layerManager().getLayer(Layer::MENU),
+                              *screen().layerManager().getLayer(::Layer::MENU),
                               *this,
                               _FBTEXT(Slit, OnHead, "Slit on Head", "Title of Slits On Head menu")
                               ));
     }
-                    
 #endif //XINERAMA
+
     m_slitmenu.insert(new BoolMenuItem(_FBTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
                                        *m_rc_auto_hide,
                                        save_and_reconfigure_slit));
