@@ -50,7 +50,11 @@
 #include "FbMenu.hh"
 #include "Transparent.hh"
 #include "IntResMenuItem.hh"
+
+#ifdef XINERAMA
 #include "Xinerama.hh"
+#endif // XINERAMA
+
 #include "SlitTheme.hh"
 #include "SlitClient.hh"
 #include "Xutil.hh"

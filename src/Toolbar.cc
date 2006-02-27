@@ -36,7 +36,11 @@
 #include "Screen.hh"
 #include "IntResMenuItem.hh"
 #include "BoolMenuItem.hh"
+
+#ifdef XINERAMA
 #include "Xinerama.hh"
+#endif // XINERAMA
+
 #include "Strut.hh"
 #include "CommandParser.hh"
 #include "Layer.hh"
