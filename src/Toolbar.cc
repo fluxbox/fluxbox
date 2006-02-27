@@ -32,7 +32,7 @@
 // themes
 #include "ToolbarTheme.hh"
 
-#include "FbTk/I18n.hh"
+#include "fluxbox.hh"
 #include "Screen.hh"
 #include "IntResMenuItem.hh"
 #include "BoolMenuItem.hh"
@@ -45,6 +45,7 @@
 #include "CommandParser.hh"
 #include "Layer.hh"
 
+#include "FbTk/I18n.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/EventManager.hh"
@@ -819,17 +820,17 @@ void Toolbar::setupMenus() {
                            m_rc_width_percent,
                            0, 100, menu()); // min/max value
 
-    
+
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);
     menu().insert(toolbar_menuitem);
-    
+
     menu().insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,
                                            "Maximize Over", 
                                            "Maximize over this thing when maximizing"),
                                    *m_rc_maximize_over,
                                    reconfig_toolbar_and_save_resource));
     menu().insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), &layerMenu());
-
+#ifdef XINERAMA
     if (screen().hasXinerama()) {
         menu().insert(_FBTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
          new XineramaHeadMenu<Toolbar>(screen().menuTheme(),
@@ -840,6 +841,7 @@ void Toolbar::setupMenus() {
                                        _FBTEXT(Toolbar, OnHead, "Toolbar on Head", 
                                                "Title of toolbar on head menu")));
     }
+#endif // XINERAMA
 
     typedef pair<const char*, Toolbar::Placement> PlacementP;
     typedef list<PlacementP> Placements;

@@ -59,6 +59,7 @@
 #include "SlitClient.hh"
 #include "Xutil.hh"
 #include "FbAtoms.hh"
+#include "FbTk/App.hh"
 #include "FbTk/MenuSeparator.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/I18n.hh"
