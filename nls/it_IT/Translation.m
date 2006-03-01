@@ -118,9 +118,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 errore: '-display' richiede un argomento\n
-11 errore: '-rc' richiede un argomento\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 errore: '-display' richiede un argomento
+11 errore: '-rc' richiede un argomento
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <stringa>\t\tusa la connessione al display.\n\
 -rc <stringa>\t\t\tusa un file di configurazione alternativo.\n\
 -version\t\t\tmostra la versione ed esci.\n\

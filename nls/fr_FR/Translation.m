@@ -119,9 +119,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 Erreur: '-display' nécessite un argument\n
-11 Erreur: '-rc' nécessite un argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 Erreur: '-display' nécessite un argument
+11 Erreur: '-rc' nécessite un argument
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <chaîne>\t\tutilise la connexion à l'affichage.\n\
 -rc <chaîne>\t\t\tutilise un autre fichier de configuration.\n\
 -version\t\t\taffiche la version et quitte.\n\

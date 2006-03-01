@@ -121,7 +121,7 @@ $set 19 #main
 
 1 error: '-display' requiere un argumento
 11 error: '-rc' requiere un argumento
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string> conexión de despliegue.\n\
 -rc <string>      archivo alternativo de recuros.\n\
 -version          mostrar la versión y cerrar.\n\

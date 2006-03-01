@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/01/03:
+   * corrections for translation files (thanx php-coder)
 *06/02/27:
    * minor cosmetic issues (thanx php-coder)
      Slit.cc WindowCmd.cc PlacementStrategy.hh stringstream.hh

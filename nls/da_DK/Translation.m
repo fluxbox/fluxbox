@@ -119,9 +119,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 fjel: '-display' kræver et argument\n
-11 fejl: '-rc' kræver et argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 fjel: '-display' kræver et argument
+11 fejl: '-rc' kræver et argument
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tbrug skærm tilslutning.\n\
 -rc <string>\t\t\tbrug alternativ resource fil.\n\
 -version\t\t\tvis versionsnummer og afslut.\n\

@@ -118,9 +118,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 kïûda: '-display' nepiecieğams arguments\n
-11 kïûda: '-rc' nepiecieğams arguments\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 kïûda: '-display' nepiecieğams arguments
+11 kïûda: '-rc' nepiecieğams arguments
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <virkne>\t\tlietot displeja savienojumu.\n\
 -rc <virkne>\t\t\tlietot citu resersu failu.\n\
 -version\t\t\tparâdît versiju un iziet.\n\

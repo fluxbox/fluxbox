@@ -119,9 +119,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 erro: '-display' requer um argumento\n
-11 erro: '-rc' requer um argumento\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 erro: '-display' requer um argumento
+11 erro: '-rc' requer um argumento
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tusar conexão com o display.\n\
 -rc <string>\t\t\tusar arquivo alternativo de recursos.\n\
 -version\t\t\tmostrar versao e sair.\n\

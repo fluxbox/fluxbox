@@ -119,9 +119,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 грешка: '-display' изисква аргумент\n
-11 грешка: '-rc' изисква аргумент\n
-12 Fluxkbox %s: (c) %s Henrik Kinnunen\n\n\
+1 грешка: '-display' изисква аргумент
+11 грешка: '-rc' изисква аргумент
+13 Fluxkbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tuse display connection.\n\
 -rc <string>\t\t\tползвай заместващ ресурсен файл.\n\
 -version\t\t\tпокажи версията и излез.\n\

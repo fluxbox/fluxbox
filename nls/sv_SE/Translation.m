@@ -120,9 +120,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 fel: '-display' kräver ett argument\n
-11 fel: '-rc' kräver ett argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 fel: '-display' kräver ett argument
+11 fel: '-rc' kräver ett argument
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <sträng>\t\tanvänd skärmanslutning.\n\
 -rc <sträng>\t\t\tanvänd alternativ resursfil.\n\
 -version\t\t\tvisa version och avsluta.\n\

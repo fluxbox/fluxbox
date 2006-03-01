@@ -226,17 +226,17 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 chyba: '-display' vy¾aduje argument\n
+1 chyba: '-display' vy¾aduje argument
 2 Bad Alloc
 3 Bad cast
 4 Out of range
 5 Runtime error
 6 Standard Exception
 7 Neznámá chyba
-8 chyba: '-log' vy¾aduje argument\n
+8 chyba: '-log' vy¾aduje argument
 9 Logovací soubor
 10 Loguji do
-11 chyba: '-rc' vy¾aduje argument\n
+11 chyba: '-rc' vy¾aduje argument
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tpouz¾ije propojení s displejem <string>.\n\
 -rc <string>\t\t\tpouzije alternativní soubor zdrojù (resource file).\n\

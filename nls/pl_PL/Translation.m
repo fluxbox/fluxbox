@@ -233,7 +233,7 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 b³±d: '-display' wymaga argumentu\n
+1 b³±d: '-display' wymaga argumentu
 2 Z³a allokacja
 4 Poza zakresem
 5 B³±d wykonania
@@ -242,7 +242,7 @@ $set 19 #main
 8 B³±d: '-log' wymaga warto¶ci
 9 Plik dziennika
 10 Zapisujê dziennik
-11 b³±d: '-rc' wymaga argumentu\n
+11 b³±d: '-rc' wymaga argumentu
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tu¿yj po³±czenia ekranu.\n\
 -rc <string>\t\t\tu¿yj innego pliku zasobów.\n\

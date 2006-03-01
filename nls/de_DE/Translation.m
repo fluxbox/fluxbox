@@ -86,9 +86,9 @@ $set 6 #FbTkError
 10 Warnung: Kann Alpha Pixmap nicht erzeugen.
 11 Kann kein Format für screen(%d) finden
 12 Kein Speicher mehr frei
-13 Kein Speicher mehr frei für "blue buffer".
-14 Kein Speicher mehr frei für "green buffer".
-15 Kein Speicher mehr frei für "red buffer".
+13 Kein Speicher mehr frei für 'blue buffer'.
+14 Kein Speicher mehr frei für 'green buffer'.
+15 Kein Speicher mehr frei für 'red buffer'.
 16 Kann Stil (Theme) Eintrag nicht lesen
 17 Nicht unterstütztes visual
 18 Benutze Standard Einstellung
@@ -222,7 +222,7 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 Fehler: '-display' braucht ein Argument\n
+1 Fehler: '-display' braucht ein Argument
 2 Bad Alloc
 3 Bad cast
 4 Out of range
@@ -232,7 +232,7 @@ $set 19 #main
 8 Fehler: '-log' braucht ein Argument
 9 Log Datei
 10 Schreibe Log in
-11 Fehler: '-rc' braucht ein Argument\n
+11 Fehler: '-rc' braucht ein Argument
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tBenutze ein anderes $DISPLAY.\n\
 -rc <string>\t\t\tBenutze andere Init-Datei.\n\

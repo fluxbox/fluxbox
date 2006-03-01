@@ -119,9 +119,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 hata : '-display' bir argüman gerektirir\n
-11 hata : '-rc' bir argüman gerektirir\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 hata : '-display' bir argüman gerektirir
+11 hata : '-rc' bir argüman gerektirir
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <metin>\t\tekran baðlantýsý kullan.\n\
 -rc <metin>\t\t\talternatif bir ayar kaynak dosyasý kullan.\n\
 -version\t\t\tsürümü göster.\n\

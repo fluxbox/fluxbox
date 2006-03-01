@@ -120,9 +120,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 error: '-display' heeft een argument nodig\n
-11 error: '-rc' heeft een argument nodig\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 error: '-display' heeft een argument nodig
+11 error: '-rc' heeft een argument nodig
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tkies ander scherm.\n\
 -rc <string>\t\t\tgebruik alternatieve configuratie.\n\
 -version\t\t\ttoon versienummer.\n\

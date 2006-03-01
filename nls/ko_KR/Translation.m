@@ -226,7 +226,7 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 error: '-display' requires an argument\n
+1 error: '-display' requires an argument
 2 Bad Alloc
 3 Bad cast
 4 Out of range
@@ -236,7 +236,7 @@ $set 19 #main
 8 error: '-log' needs an argument
 9 Log File
 10 Logging to
-11 error: '-rc' requires an argument\n
+11 error: '-rc' requires an argument
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tuse display connection.\n\
 -rc <string>\t\t\tuse alternate resource file.\n\

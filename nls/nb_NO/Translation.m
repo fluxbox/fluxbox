@@ -229,17 +229,17 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 feil: «-display» krever et argument\n
+1 feil: «-display» krever et argument
 2 Bad Alloc
 3 Bad cast
 4 Utenfor rekkevidde
 5 Kjøretidsfeil
 6 Standard Exception
 7 Ukjent feil
-8 feil: «-log» trenger et argument\n
+8 feil: «-log» trenger et argument
 9 Loggfil
 10 Logger til
-11 feil: «-rc» krever et argument\n
+11 feil: «-rc» krever et argument
 13 FluxBox %s: kopirett %s Henrik Kinnunen\n\n\
 -display <streng>\t\tbruk visningsenhetforbindelse.\n\
 -rc <streng>\t\t\tbruk alternativ ressursfil.\n\

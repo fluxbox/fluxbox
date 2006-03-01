@@ -201,7 +201,7 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 lỗi: '-display' cần đối số\n
+1 lỗi: '-display' cần đối số
 2 Phân phối không tốt
 3 Chia sẻ không tốt
 4 Lỗi ngoài hàng
@@ -211,8 +211,8 @@ $set 19 #main
 8 lỗi: '-log' cần một đối số <tên tệp tin>
 9 Tệp tin sự kiện
 10 Ghi sự kiện vào
-11 lỗi: '-rc' cần đối số\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+11 lỗi: '-rc' cần đối số
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tsử dụng màn hình lựa chọn.\n\
 -rc <string>\t\t\tsử dụng tệp tin tài nguyên khác.\n\
 -version\t\t\tđưa ra số phiên bản và thoát.\n\

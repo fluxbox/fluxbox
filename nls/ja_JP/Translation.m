@@ -121,9 +121,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 error: '-display' オプションは引数を必要とします\n
-11 error: '-rc' オプションは引数を必要とします\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 error: '-display' オプションは引数を必要とします
+11 error: '-rc' オプションは引数を必要とします
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\t 指定ディスプレイに接続.\n\
 -rc <string>\t\t\t 代わりのリソースファイルを使用.\n\
 -version\t\t\t バージョン情報を表示して終了.\n\

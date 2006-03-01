@@ -117,9 +117,9 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 viga: '-display' vajab argumenti\n
-11 viga: '-rc' vajab argumenti\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 viga: '-display' vajab argumenti
+11 viga: '-rc' vajab argumenti
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tkasuta displei ühendust.\n\
 -rc <string>\t\t\tkasuta alternatiivseid resursse.\n\
 -version\t\t\tnäita versiooninumber ja välju.\n\
