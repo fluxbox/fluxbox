@@ -78,6 +78,8 @@
 
 using namespace std;
 
+namespace FbTk {
+
 template<>
 void FbTk::Resource<Toolbar::Placement>::
 setFromString(const char *strval) {
@@ -153,7 +155,7 @@ getString() const {
     //default string
     return string("BottomCenter");
 }
-
+} // end namespace FbTk
 
 namespace {
 class SetToolbarPlacementCmd: public FbTk::Command {

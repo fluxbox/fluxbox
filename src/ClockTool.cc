@@ -50,7 +50,7 @@
 
 class ClockMenuItem: public FbTk::MenuItem {
 public:
-    explicit ClockMenuItem::ClockMenuItem(ClockTool &tool):
+    explicit ClockMenuItem(ClockTool &tool):
         FbTk::MenuItem(""), m_tool(tool) { 
         // determine 12/24 hour format
         _FB_USES_NLS;

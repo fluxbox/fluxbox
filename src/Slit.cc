@@ -85,6 +85,8 @@
 #include <algorithm>
 using namespace std;
 
+namespace FbTk {
+
 template<>
 void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
     if (strcasecmp(strval, "TopLeft")==0)
@@ -164,7 +166,7 @@ string FbTk::Resource<Slit::Direction>::getString() const {
     // default string
     return string("Vertical");
 }
-
+} // end namespace FbTk
 namespace { 
 
 class SlitClientMenuItem: public FbTk::MenuItem{

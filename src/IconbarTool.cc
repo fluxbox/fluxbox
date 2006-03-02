@@ -51,6 +51,8 @@
 #include <iterator>
 using namespace std;
 
+namespace FbTk {
+
 template<>
 void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
     if (strcasecmp(strval, "None") == 0) 
@@ -192,6 +194,7 @@ string FbTk::Resource<IconbarTool::Mode>::getString() const {
     // default string
     return string("Icons");
 }
+} // end namespace FbTk
 
 namespace {
 

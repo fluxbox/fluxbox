@@ -29,6 +29,7 @@
 #include <string>
 using namespace std;
 
+namespace FbTk {
 
 template <>
 string FbTk::Resource<FbTk::MenuTheme::MenuMode>::getString() const {
@@ -199,4 +200,4 @@ void FbTk::Resource<FbTk::GContext::CapStyle>
     else
         setDefaultValue();
 }
-
+} // end namespace FbTk

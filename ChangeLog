@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
-*06/01/03:
+*06/03/02:
+   * closed bug #1409775, gcc4.1 problems (thanx to Andreas Bierfert)
+     Slit.cc MenuTheme.cc Resources.cc ClockTool.cc FocusControl.cc
+     ScreenPlacement.cc ScreenResources.cc Toolbar.cc IconbarTool.cc
+*06/03/01:
    * corrections for translation files (thanx php-coder)
 *06/02/27:
    * minor cosmetic issues (thanx php-coder)
@@ -11,7 +15,6 @@ Changes for 0.9.15:
    * Moved resource helper class Layer out from 
      class Fluxbox. Reduced some dependencies.
      (Henrik)
-     
 *06/02/19:
    * Added new resize mode: Center
      This mode will move all corners at the same time with 

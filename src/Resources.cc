@@ -39,6 +39,7 @@ using namespace FbTk;
 //-----------------------------------------------------------------
 //---- accessors for int, bool, and some enums with Resource ------
 //-----------------------------------------------------------------
+namespace FbTk {
 
 template<>
 void FbTk::Resource<int>::
@@ -254,3 +255,4 @@ getString() const {
     sprintf(tmpstr, "%ld", m_value);
     return string(tmpstr);
 }
+} // end namespace FbTk

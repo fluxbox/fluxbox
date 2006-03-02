@@ -636,6 +636,8 @@ void FocusControl::setFocusedWindow(WinClient *client) {
 }
 
 ////////////////////// FocusControl RESOURCES
+namespace FbTk {
+
 template<>
 std::string FbTk::Resource<FocusControl::FocusModel>::getString() const {
     switch (m_value) {
@@ -682,4 +684,4 @@ setFromString(char const *strval) {
     else
         setDefaultValue();
 }
-
+} // end namespace FbTk

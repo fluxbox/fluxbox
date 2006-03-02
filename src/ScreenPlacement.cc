@@ -129,6 +129,8 @@ bool ScreenPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist
 
 
 ////////////////////// Placement Resources
+namespace FbTk {
+    
 template <>
 void FbTk::Resource<ScreenPlacement::PlacementPolicy>::setFromString(const char *str) {
     if (strcasecmp("RowSmartPlacement", str) == 0)
@@ -205,3 +207,4 @@ std::string FbTk::Resource<ScreenPlacement::ColumnDirection>::getString() const 
 
     return "TopToBottom";
 }
+} // end namespace FbTk

@@ -26,6 +26,8 @@
 #include <iostream>
 using namespace std;
 
+namespace FbTk {
+
 template <>
 void FbTk::ThemeItem<Shape::ShapePlace>::load(const std::string *name, const std::string *altname) { }
 
@@ -49,7 +51,7 @@ void FbTk::ThemeItem<Shape::ShapePlace>::setFromString(const char *str) {
 
     *(*this) = static_cast<Shape::ShapePlace>(places);
 }
-
+} // end namespace FbTk
 MenuTheme::MenuTheme(int screen_num):FbTk::MenuTheme(screen_num),
                                      m_shapeplace(*this, "menu.roundCorners", "Menu.RoundCorners") {
     *m_shapeplace = Shape::NONE;
