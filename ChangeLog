@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/03/05:
+   * Update da_DK (danish) translation.
+     (Thanks Jonas Kölker, jonaskoelker at users.sourceforge.net).
+     nls/da_DK/Translation.m
 *06/03/02:
    * closed bug #1409775, gcc4.1 problems (thanx to Andreas Bierfert)
      Slit.cc MenuTheme.cc Resources.cc ClockTool.cc FocusControl.cc
