@@ -910,7 +910,8 @@ void IconbarTool::updateWorkspace() {
         BScreen::Icons::iterator icon_it =  m_screen.iconList().begin();
         BScreen::Icons::iterator icon_it_end =  m_screen.iconList().end();
         for (; icon_it != icon_it_end; ++icon_it) {
-            if ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID())
+            if ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID() ||
+                (*icon_it)->isStuck())
                 itemlist.push_back(*icon_it);
         }
     }
