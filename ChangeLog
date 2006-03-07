@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/03/07:
+   * Bugfix for stuck icons (Thanks _markt)
+     IconbarTool.cc
 *06/03/05:
    * Update da_DK (danish) translation.
      (Thanks Jonas Kölker, jonaskoelker at users.sourceforge.net).
