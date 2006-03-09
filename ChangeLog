@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
 *06/03/09:
+   * Enhanced :NextWindow and :PrevWindow to accept a <delta>,see 
+     :RightWindow and :LeftWindow
+     (Thanks Marcus Obst, marcus dot obst at s2003 dot tu minus chemnitz dot de)
+     FbCommandFactory.cc WorkspaceCmd.hh WorkspaceCmd.cc
    * Bugfix for _net_wm_state_hidden (Thanks Mark)
      Ewmh.cc
    * Updated ko_KR translations (Thanks Jo Hyunseok)

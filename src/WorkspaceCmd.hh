@@ -55,12 +55,18 @@ private:
 
 class NextWorkspaceCmd: public FbTk::Command {
 public:
+    explicit NextWorkspaceCmd(int option):m_option(option) { }
     void execute();
+private:
+    const int m_option;
 };
 
 class PrevWorkspaceCmd: public FbTk::Command {
 public:
+    explicit PrevWorkspaceCmd(int option):m_option(option) { }
     void execute();
+private:
+    const int m_option;
 };
 
 class LeftWorkspaceCmd: public FbTk::Command {

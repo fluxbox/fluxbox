@@ -350,10 +350,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     // 
     // Workspace commands
     //
-    else if (command == "nextworkspace" && arguments.empty())
-        return new NextWorkspaceCmd();
-    else if (command == "prevworkspace" && arguments.empty())
-        return new PrevWorkspaceCmd();
+    else if (command == "nextworkspace")
+        return new NextWorkspaceCmd(atoi(arguments.c_str()));
+    else if (command == "prevworkspace")
+        return new PrevWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "rightworkspace")
         return new RightWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "leftworkspace")

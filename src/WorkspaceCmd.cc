@@ -103,13 +103,13 @@ void DirFocusCmd::execute() {
 void NextWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
-        screen->nextWorkspace();
+        screen->nextWorkspace(m_option == 0 ? 1 : m_option);
 }
 
 void PrevWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
-        screen->prevWorkspace();
+        screen->prevWorkspace(m_option == 0 ? 1 : m_option);
 }
 
 void LeftWorkspaceCmd::execute() {
