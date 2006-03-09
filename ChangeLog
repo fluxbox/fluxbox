@@ -1,7 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
 *06/03/07:
-   * Bugfix for stuck icons (Thanks _markt)
+   * Bugfix for _net_wm_state_hidden (Thanks Mark)
+     Ewmh.cc
+   * Bugfix for stuck icons (Thanks Mark Tiefenbruck, mark at tiefenbruck dot org)
      IconbarTool.cc
 *06/03/05:
    * Update da_DK (danish) translation.

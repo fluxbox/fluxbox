@@ -885,6 +885,11 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
         if ((value && !win.isFullscreen()) ||
             (!value && win.isFullscreen()))
         setFullscreen(win, value);
+    } else if (state == m_net_wm_state_hidden) { // minimized
+        if (value && !win.isIconic())
+            win.iconify();
+        else if (!value && win.isIconic())
+            win.deiconify();
     } else if (state == m_net_wm_state_skip_taskbar) {
         win.setIconHidden(value);
     } else if (state == m_net_wm_state_below) {  // bottom layer
@@ -913,6 +918,11 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
         win.maximizeVertical();
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
         setFullscreen(win, getState(win) == 0); // toggle current state
+    } else if (state == m_net_wm_state_hidden) { // minimized
+        if(win.isIconic())
+            win.deiconify();
+        else
+            win.iconify();
     } else if (state == m_net_wm_state_skip_taskbar) {
         win.setIconHidden(!win.isIconHidden());
     } else if (state == m_net_wm_state_below) { // bottom layer
