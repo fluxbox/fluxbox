@@ -1,8 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
-*06/03/07:
+*06/03/09:
    * Bugfix for _net_wm_state_hidden (Thanks Mark)
      Ewmh.cc
+   * Updated ko_KR translations (Thanks Jo Hyunseok)
+   * Added zh_CN translationas (Thanks Andyliu, liudeyan at gmail dot com)
+*06/03/07:
    * Bugfix for stuck icons (Thanks Mark Tiefenbruck, mark at tiefenbruck dot org)
      IconbarTool.cc
 *06/03/05:

@@ -1,24 +1,24 @@
-$ codeset=eucKR
+$ codeset=UTF-8
 
 $set 1 #Align
 
-1 ÇÏ´Ü Áß¾Ó
-2 ÇÏ´Ü ¿ŞÂÊ
-3 ÇÏ´Ü ¿À¸¥ÂÊ
-4 [¼öÆò]
-5 ¿ŞÂÊ Á¤·Ä
-6 ÁÂÃø ¾Æ·¡
-7 ÁÂÃø Áß°£
-8 ÁÂÃø À§
-9 ¾çÂÊ È¥ÇÕ
-10 ¿À¸¥ÂÊ Á¤·Ä
-11 ¿ìÃø ¾Æ·¡
-12 ¿ìÃø Áß°£
-13 ¿ìÃø À§
-14 »ó´Ü Áß¾Ó
-15 »ó´Ü ¿ŞÂÊ
-16 »ó´Ü ¿À¸¥ÂÊ
-17 [¼öÁ÷]
+1 í•˜ë‹¨ ì¤‘ì•™
+2 í•˜ë‹¨ ì™¼ìª½
+3 í•˜ë‹¨ ì˜¤ë¥¸ìª½
+4 [ìˆ˜í‰]
+5 ì™¼ìª½ ì •ë ¬
+6 ì¢Œì¸¡ ì•„ë˜
+7 ì¢Œì¸¡ ì¤‘ê°„
+8 ì¢Œì¸¡ ìœ„
+9 ì–‘ìª½ ì •ë ¬
+10 ì˜¤ë¥¸ìª½ ì •ë ¬
+11 ìš°ì¸¡ ì•„ë˜
+12 ìš°ì¸¡ ì¤‘ê°„
+13 ìš°ì¸¡ ìœ„
+14 ìƒë‹¨ ì¤‘ì•™
+15 ìƒë‹¨ ì™¼ìª½
+16 ìƒë‹¨ ì˜¤ë¥¸ìª½
+17 [ìˆ˜ì§]
 
 $set 2 #BaseDisplay
 
@@ -28,45 +28,46 @@ $set 2 #BaseDisplay
 
 $set 3 #Common
 
-1 ¾ËÆÄ Ã¤³Î°ª
-2 ÀÚµ¿ ¼û±è
+1 ì•ŒíŒŒ ì±„ë„ê°’
+2 ìë™ ìˆ¨ê¹€
 3 Compiled
 4 Compiled options
 5 Compiler
 6 Compiler version
 7 init
 8 keys
+9 nls
 10 menu
 11 style
 12 Defaults
 13 disabled
 14 Error
 15 Fluxbox version
-16 Ã¢ ÃÖ´ëÈ­ ½Ã µ¤±â
-18 Åø¹Ù Ç¥½Ã
+16 ì°½ ìµœëŒ€í™” ì‹œ ë®ê¸°
+17 SVN Revision
+18 íˆ´ë°” í‘œì‹œ
 
 $set 4 #Configmenu
 
-1 ¾ÈÆ¼ ¾Ù¸®¾î½º
-2 È°¼ºÈ­µÈ Ã¢ ÀÚµ¿ ¿Ã¸²
-3 Å¬¸¯ ½Ã Ã¢ ¿Ã¸²
-4 Å¬¸¯ ½Ã È°¼ºÈ­
-5 Decorate Transient Windows
-6 ¸¶¿ì½º ÈÙ·Î ÀÛ¾÷°ø°£ ÀüÈ¯
+1 ì•ˆí‹° ì•¨ë¦¬ì–´ìŠ¤
+2 í™œì„±í™”ëœ ì°½ ìë™ ì˜¬ë¦¼
+3 í´ë¦­ ì‹œ ì°½ ì˜¬ë¦¼
+4 í´ë¦­ ì‹œ í™œì„±í™”
+5 ì„ì‹œì°½ í…Œë‘ë¦¬ ê¾¸ë°ˆ
+6 ë§ˆìš°ìŠ¤ íœ ë¡œ ì‘ì—…ê³µê°„ ì „í™˜
 7 Focus Window on Workspace Change
-8 È°¼ºÈ­ ¹æ¹ı
-9 »õ·Î ¿©´Â Ã¢ È°¼ºÈ­
-10 ¸ğ´ÏÅÍ ÀüÃ¼ ÃÖ´ëÈ­
-11 ÀÌ¹ÌÁö µğ´õ¸µ
-12 Ã¢ ÀÌµ¿ ½Ã ³»¿ë º¸ÀÓ
-13 Ä¿¼­ À§Ä¡ ¹İÀÚµ¿ È°¼ºÈ­
-14 Ä¿¼­ À§Ä¡ÀÇ Ã¢ È°¼ºÈ­
-15 ¼øÈ¯½Ä ÀÛ¾÷°ø°£ ÀüÈ¯
+8 í™œì„±í™” ë°©ë²•
+9 ìƒˆë¡œ ì—¬ëŠ” ì°½ í™œì„±í™”
+10 í™”ë©´ ì „ì²´ ìµœëŒ€í™” (íˆ´ë°” ìœ„ì¹˜ í¬í•¨)
+11 ì´ë¯¸ì§€ ë””ë”ë§
+12 ì°½ ì´ë™ ì¤‘ ë‚´ìš© ë‚˜íƒ€ëƒ„
+14 ë§ˆìš°ìŠ¤ ì»¤ì„œê°€ ë†“ì¸ ì°½ í™œì„±í™”
+15 ìˆœí™˜ì‹ ì‘ì—…ê³µê°„ ì „í™˜ (ë§ˆì§€ë§‰ -> ë§¨ ì²˜ìŒ) 
 16 Force Pseudo-Transparency
-17 ¸Ş´ºÀÇ ¾ËÆÄ Ã¤³Î°ª
-18 ¹İÅõ¸í ¼³Á¤
-19 È°¼ºÃ¢ÀÇ ¾ËÆÄ Ã¤³Î°ª
-20 ºñÈ°¼ºÃ¢ÀÇ ¾ËÆÄ Ã¤³Î°ª
+17 ë©”ë‰´ì˜ ì•ŒíŒŒ ì±„ë„ê°’
+18 ë°˜íˆ¬ëª… ì„¤ì •
+19 í™œì„±ì°½ì˜ ì•ŒíŒŒ ì±„ë„ê°’
+20 ë¹„í™œì„±ì°½ì˜ ì•ŒíŒŒ ì±„ë„ê°’
 
 $set 5 #Ewmh
 
@@ -120,30 +121,30 @@ $set 9 #Keys
 
 $set 10 #Menu
 
-1 Configuration
+1 ì„¤ì •
 2 Fluxbox default menu
-3 Exit
+3 ì¢…ë£Œ
 4 Icons
-5 ·¹ÀÌ¾î ...
+5 ë ˆì´ì–´ ...
 6 On Head...
-7 À§Ä¡
+7 ìœ„ì¹˜
 8 Reload Config
-9 Restart
+9 ì¬ì‹œì‘
 10 xterm
 
 $set 11 #Remember
 
-1 Å×µÎ¸®?
-2 Å©±â
-3 ÇØ´ç ÀÛ¾÷°ø°£À¸·Î Á¡ÇÁ
-4 ·¹ÀÌ¾î
-5 ±â¾ïÇÏ±â ...
-6 À§Ä¡
-7 Á¾·á ½ÃÀÇ °ª ±â¾ï
-8 ¼ÎÀÌµå?
-9 °íÁ¤?
+1 í…Œë‘ë¦¬ ìƒíƒœ
+2 í¬ê¸°
+3 ê¸°ì–µí•œ ì‘ì—…ê³µê°„ìœ¼ë¡œ ê±´ë„ˆê°
+4 ë ˆì´ì–´
+5 ê¸°ì–µí•˜ê¸° ...
+6 ìœ„ì¹˜
+7 ì¢…ë£Œ ì‹œì˜ ê°’ ê¸°ì–µ
+8 ì…°ì´ë“œ ì—¬ë¶€
+9 ê³ ì • ì—¬ë¶€
 10 Unknown apps key
-11 ÀÛ¾÷°ø°£
+11 ì‘ì—…ê³µê°„
 12 Head
 
 $set 12 #Screen
@@ -157,34 +158,36 @@ $set 12 #Screen
 
 $set 13 #Slit
 
-1 Å¬¶óÀÌ¾ğÆ®
-2 ÇÑ Ä­¾¿ ³»·Á¾ÉÈ÷±â
-3 ÇÑ Ä­¾¿ ¹Ğ¾î¿Ã¸®±â
-4 Slit ¹æÇâ
-5 Slit ·¹ÀÌ¾î
+1 í´ë¼ì´ì–¸íŠ¸
+2 í•œ ì¹¸ì”© ë‚´ë ¤ì•‰íˆê¸°
+3 í•œ ì¹¸ì”© ë°€ì–´ì˜¬ë¦¬ê¸°
+4 Slit ë°©í–¥
+5 Slit ë ˆì´ì–´
 6 Slit on Head
-7 Slit À§Ä¡
+7 Slit ìœ„ì¹˜
 8 Slit
-9 SlitList ÀúÀå
+9 SlitList ì €ì¥
 
 $set 14 #Toolbar
 
-1 ÀÛ¾÷°ø°£ ÀÌ¸§ º¯°æ
-2 ¾ÆÀÌÄÜ¹Ù ¸ğµå
-3 ¸ğµç ÀÛ¾÷°ø°£ÀÇ Ã¢ Ç¥½Ã
-4 ¾ÆÀÌÄÜÈ­ µÈ °Í¸¸
-5 Ç¥½Ã ¾ÈÇÔ
-6 ÇöÀç ÀÛ¾÷°ø°£ÀÇ Ã¢ Ç¥½Ã
-7 ÇöÀç ÀÛ¾÷°ø°£¿¡¼­ ¾ÆÀÌÄÜÈ­ µÈ °Í¸¸
-8 Åø¹Ù ·¹ÀÌ¾î
+1 ì‘ì—…ê³µê°„ ì´ë¦„ ë³€ê²½
+2 ì•„ì´ì½˜ë°” ëª¨ë“œ
+3 ëª¨ë“  ì‘ì—…ê³µê°„ì˜ ì°½ í‘œì‹œ
+4 ìµœì†Œí™”ëœ ì°½ë§Œ
+5 í‘œì‹œ ì•ˆí•¨
+6 í˜„ì¬ ì‘ì—…ê³µê°„ì˜ ì°½ í‘œì‹œ
+7 í˜„ì¬ ì‘ì—…ê³µê°„ì—ì„œ ìµœì†Œí™”ëœ ì°½ë§Œ
+8 íˆ´ë°” ë ˆì´ì–´
 9 Toolbar on Head
-10 Åø¹Ù À§Ä¡
-11 Åø¹Ù
-12 Åø¹Ù ³Êºñ(%)
-13 ½Ã°è: 24 ½Ã°£Á¦
-14 ½Ã°è: 12 ½Ã°£Á¦
-15 ½Ã°£ Ç¥½Ã Çü½Ä ¼öÁ¤
-16 ¾ÆÀÌÄÜ ±×¸² Ç¥½Ã
+10 íˆ´ë°” ìœ„ì¹˜
+11 íˆ´ë°”
+12 íˆ´ë°” ë„ˆë¹„(%)
+13 ì‹œê³„: 24 ì‹œê°„ì œ
+14 ì‹œê³„: 12 ì‹œê°„ì œ
+15 ì‹œê°„ í‘œì‹œ í˜•ì‹ ìˆ˜ì •
+16 ì•„ì´ì½˜ ê·¸ë¦¼ ë³´ê¸°
+17 ìµœì†Œí™”ëœ ì°½ì€ ì œì™¸í•˜ê³  í‘œì‹œ
+18 í˜„ì¬ ì‘ì—…ê³µê°„ì˜ ìµœì†Œí™”ëœ ì°½ ì œì™¸
 
 $set 15 #Window
 
@@ -192,29 +195,30 @@ $set 15 #Window
 
 $set 16 #Windowmenu
 
-1 ´İ±â
-2 ¾ÆÀÌÄÜÈ­
-3 ·¹ÀÌ¾î
-4 ³·Ãã
-5 ÃÖ´ëÈ­
-6 ¿Ã¸²
-7 º¸³»±â ...
-8 ¼ÎÀÌµå
-9 °íÁ¤
-10 °­Á¦ Á¾·á
+1 ë‹«ê¸°
+2 ì•„ì´ì½˜í™”
+3 ë ˆì´ì–´
+4 ë‚®ì¶¤
+5 ìµœëŒ€í™”
+6 ì˜¬ë¦¼
+7 Send To ...
+8 ì…°ì´ë“œ
+9 ê³ ì •
+10 ê°•ì œ ì¢…ë£Œ
 
 $set 17 #Workspace
 
-1 ÀÛ¾÷°ø°£ %d
-2 ÀÛ¾÷°ø°£
-3 »õ ÀÛ¾÷°ø°£ Ãß°¡
-4 ¸¶Áö¸· °Í Á¦°Å
+1 ì‘ì—…ê³µê°„ %d
+2 ì‘ì—…ê³µê°„
+3 ìƒˆ ì‘ì—…ê³µê°„ ì¶”ê°€
+4 ë§ˆì§€ë§‰ ê²ƒ ì œê±°
 
-$set 18 #fbsetroot
+$set 18 #bsetroot
 
-1 Error: must specify one of: -solid, -mod, -gradient\n
+1 %s: error: must specify one of: -solid, -mod, -gradient\n
 2 Couldn't create pixmap atoms, giving up!
-3 -display <string>        display connection\n\
+3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
+-display <string>        display connection\n\
 -mod <x> <y>             modula pattern\n\
 -foreground, -fg <color> modula foreground color\n\
 -background, -bg <color> modula background color\n\n\
@@ -226,7 +230,7 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 error: '-display' requires an argument
+1 error: '-display' requires an argument\n
 2 Bad Alloc
 3 Bad cast
 4 Out of range
@@ -236,23 +240,23 @@ $set 19 #main
 8 error: '-log' needs an argument
 9 Log File
 10 Logging to
-11 error: '-rc' requires an argument
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+11 error: '-rc' requires an argument\n
+12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tuse display connection.\n\
 -rc <string>\t\t\tuse alternate resource file.\n\
 -version\t\t\tdisplay version and exit.\n\
 -info\t\t\t\tdisplay some useful information.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tdisplay this help text and exit.\n\n
-14 warning: couldn't set environment variable 'DISPLAY'
+13 warning: couldn't set environment variable 'DISPLAY'
 
 $set 20
 
-1 Dock À§
-2 ÇÏºÎ
-3 µ¥½ºÅ©Å¾
+1 Dock ìœ„
+2 í•˜ë¶€
+3 ë°ìŠ¤í¬íƒ‘
 4 Dock
-5 Ç¥ÁØ
-6 »óÀ§
+5 í‘œì¤€
+6 ìƒìœ„
 
 
