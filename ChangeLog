@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/03/14:
+   * Fixes for nls/da_DK and nls/ko_KR  (Thanks php-coder)
 *06/03/09:
    * Enhanced :NextWindow and :PrevWindow to accept a <delta>,see 
      :RightWindow and :LeftWindow
