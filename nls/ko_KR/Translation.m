@@ -217,8 +217,7 @@ $set 18 #bsetroot
 
 1 %s: error: must specify one of: -solid, -mod, -gradient\n
 2 Couldn't create pixmap atoms, giving up!
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        display connection\n\
+3 -display <string>        display connection\n\
 -mod <x> <y>             modula pattern\n\
 -foreground, -fg <color> modula foreground color\n\
 -background, -bg <color> modula background color\n\n\
@@ -230,7 +229,7 @@ $set 18 #bsetroot
 
 $set 19 #main
 
-1 error: '-display' requires an argument\n
+1 error: '-display' requires an argument
 2 Bad Alloc
 3 Bad cast
 4 Out of range
@@ -240,15 +239,15 @@ $set 19 #main
 8 error: '-log' needs an argument
 9 Log File
 10 Logging to
-11 error: '-rc' requires an argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+11 error: '-rc' requires an argument
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tuse display connection.\n\
 -rc <string>\t\t\tuse alternate resource file.\n\
 -version\t\t\tdisplay version and exit.\n\
 -info\t\t\t\tdisplay some useful information.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tdisplay this help text and exit.\n\n
-13 warning: couldn't set environment variable 'DISPLAY'
+14 warning: couldn't set environment variable 'DISPLAY'
 
 $set 20
 
