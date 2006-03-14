@@ -221,7 +221,7 @@ void XFontImp::rotate(float angle) {
                          boxlen/2 - descent, text, 1);
 
         // reserve memory for first XImage
-        vertdata = new unsigned char[vert_len * vert_h];
+        vertdata = (unsigned char *)calloc((unsigned)(vert_len * vert_h), 1);
 
         XImage *I1 = XCreateImage(dpy, DefaultVisual(dpy, screen), 
                                   1, XYBitmap,
@@ -229,7 +229,11 @@ void XFontImp::rotate(float angle) {
                                   vert_w, vert_h, 8, 0);
 
         if (I1 == None) {				
-            cerr<<"RotFont: "<<_FBTKTEXT(Error, CreateXImage, "Cant create XImage", "XCreateImage failed for some reason")<<"."<<endl;
+            cerr<<"RotFont: "<<_FBTKTEXT(Error, CreateXImage, 
+                                         "Cant create XImage", 
+                                         "XCreateImage failed for some reason")
+                <<"."<<endl;
+            free(vertdata);
             delete m_rotfont;
             m_rotfont = 0;			
             return;
@@ -267,7 +271,11 @@ void XFontImp::rotate(float angle) {
                           (char *)bitdata, bit_w, bit_h, 8, 0); 
 
         if (I2 == None) {
-            cerr<<"XFontImp: "<<_FBTKTEXT(Error, CreateXImage, "Cant create XImage", "XCreateImage failed for some reason")<<"."<<endl;
+            cerr<<"XFontImp: "<<_FBTKTEXT(Error, CreateXImage, 
+                                          "Cant create XImage", 
+                                          "XCreateImage failed for some reason") 
+                <<"."<<endl;
+            free(bitdata);
             delete m_rotfont;
             m_rotfont = 0;
             return;
