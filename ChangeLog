@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
 *06/03/14:
+   * Fixed memory leak when XCreateImage failes in XFontImp 
+     (Thanks Semushin Slava [php-coder] )
    * Fixes for nls/da_DK and nls/ko_KR  (Thanks php-coder)
 *06/03/09:
    * Enhanced :NextWindow and :PrevWindow to accept a <delta>,see 
