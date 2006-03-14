@@ -175,8 +175,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 %s: fejl: specificér en af følgende: -solid, -mod, -gradient\n
-3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
--display <string>        skærmtilslutning\n\
+3 -display <string>        skærmtilslutning\n\
 -mod <x> <y>             modula mønster\n\
 -foreground, -fg <color> modula foregrundsfarve\n\
 -background, -bg <color> modula baggrundsfarve\n\n\
@@ -188,13 +187,13 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 fejl: '-display' kræver et argument\n
+1 fejl: '-display' kræver et argument
 2 Dårlig allokering
 7 Ukendt fejl
 9 Logfil
 10 Logger til
-11 fejl: '-rc' kræver et argument\n
-12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+11 fejl: '-rc' kræver et argument
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tbrug skærmtilslutning.\n\
 -rc <string>\t\t\tbrug alternativ resourcefil.\n\
 -version\t\t\tvis versionsnummer og afslut.\n\
