@@ -32,6 +32,7 @@
 #include "Workspace.hh"
 #include "Netizen.hh"
 
+#include "Layer.hh"
 #include "FocusControl.hh"
 #include "ScreenPlacement.hh"
 
