@@ -26,13 +26,15 @@
 
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Resource.hh"
+#include "WinButton.hh"
+
 #include "fluxbox.hh"
 
 #include "Layer.hh"
 
 #include <stdio.h>
 #include <string>
-
+#include <vector>
 using namespace std;
 using namespace FbTk;
 
@@ -62,7 +64,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-void FbTk::Resource<Fluxbox::TitlebarList>::
+void FbTk::Resource<std::vector<WinButton::Type> >::
 setFromString(char const *strval) {
     vector<std::string> val;
     StringUtil::stringtok(val, strval);
@@ -72,17 +74,17 @@ setFromString(char const *strval) {
 		
     for (int i=0; i<size; i++) {
         if (strcasecmp(val[i].c_str(), "Maximize")==0)
-            m_value.push_back(Fluxbox::MAXIMIZE);
+            m_value.push_back(WinButton::MAXIMIZE);
         else if (strcasecmp(val[i].c_str(), "Minimize")==0)
-            m_value.push_back(Fluxbox::MINIMIZE);
+            m_value.push_back(WinButton::MINIMIZE);
         else if (strcasecmp(val[i].c_str(), "Shade")==0)
-            m_value.push_back(Fluxbox::SHADE);
+            m_value.push_back(WinButton::SHADE);
         else if (strcasecmp(val[i].c_str(), "Stick")==0)
-            m_value.push_back(Fluxbox::STICK);
+            m_value.push_back(WinButton::STICK);
         else if (strcasecmp(val[i].c_str(), "MenuIcon")==0)
-            m_value.push_back(Fluxbox::MENUICON);
+            m_value.push_back(WinButton::MENUICON);
         else if (strcasecmp(val[i].c_str(), "Close")==0)
-            m_value.push_back(Fluxbox::CLOSE);
+            m_value.push_back(WinButton::CLOSE);
     }
 }
 
@@ -133,28 +135,28 @@ getString() const { return **this; }
 
 
 template<>
-std::string FbTk::Resource<Fluxbox::TitlebarList>::
+std::string FbTk::Resource<std::vector<WinButton::Type> >::
 getString() const {
     string retval;
     int size=m_value.size();
     for (int i=0; i<size; i++) {
         switch (m_value[i]) {
-        case Fluxbox::SHADE:
+        case WinButton::SHADE:
             retval.append("Shade");
             break;
-        case Fluxbox::MINIMIZE:
+        case WinButton::MINIMIZE:
             retval.append("Minimize");
             break;
-        case Fluxbox::MAXIMIZE:
+        case WinButton::MAXIMIZE:
             retval.append("Maximize");
             break;
-        case Fluxbox::CLOSE:
+        case WinButton::CLOSE:
             retval.append("Close");
             break;
-        case Fluxbox::STICK:
+        case WinButton::STICK:
             retval.append("Stick");
             break;
-        case Fluxbox::MENUICON:
+        case WinButton::MENUICON:
             retval.append("MenuIcon");
             break;
         default:
