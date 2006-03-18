@@ -3814,74 +3814,142 @@ void FluxboxWindow::setupWindow() {
 
     // clear old buttons from frame
     frame().removeAllButtons();
-    //!! TODO: fix this ugly hack
-    // get titlebar configuration
-    const vector<Fluxbox::Titlebar> *dir = &Fluxbox::instance()->getTitlebarLeft();
-    for (char c=0; c<2; c++) {
-        for (size_t i=0; i< dir->size(); ++i) {
+
+    typedef FbTk::Resource<std::vector<WinButton::Type> > WinButtonsResource;
+
+    std::string titlebar_name[2];
+    std::string titlebar_alt_name[2];
+    titlebar_name[0] = screen().name() + ".titlebar.left";
+    titlebar_alt_name[0] = screen().altName() + ".Titlebar.Left";
+    titlebar_name[1] = screen().name() + ".titlebar.right";
+    titlebar_alt_name[1] = screen().altName() + ".Titlebar.Right";
+
+    WinButtonsResource *titlebar_side[2];
+
+
+
+    ResourceManager &rm = screen().resourceManager();
+
+    // create resource for titlebar
+    for (int i=0; i < 2; ++i) {
+        titlebar_side[i] = dynamic_cast<WinButtonsResource *>(
+                            rm.findResource( titlebar_name[i] ) );
+
+        if (titlebar_side[i] != 0)
+            continue; // find next resource too
+
+        WinButton::Type titlebar_left[] =  {
+            WinButton::STICK
+        };
+
+        WinButton::Type titlebar_right[] =  {
+            WinButton::MINIMIZE,
+            WinButton::MAXIMIZE, 
+            WinButton::CLOSE
+        };
+           
+        WinButton::Type *begin = 0;
+        WinButton::Type *end = 0;
+            
+        if (i == 0) {
+            begin = titlebar_left;
+            end = titlebar_left + 1;
+        } else {
+            begin = titlebar_right;
+            end = titlebar_right + 3;
+        }
+
+        titlebar_side[i] = 
+            new WinButtonsResource(rm,
+                                   WinButtonsResource::Type(begin, end),
+                                   titlebar_name[i], titlebar_alt_name[i]);
+
+
+        screen().addManagedResource(titlebar_side[i]);     
+    }
+
+
+
+
+    for (char c = 0; c < 2 ; c++) {
+        // get titlebar configuration for current side
+        const std::vector<WinButton::Type> &dir = *(*titlebar_side[c]);
+        
+        for (size_t i=0; i < dir.size(); ++i) {
             //create new buttons
-            FbTk::Button *newbutton = 0;
-            if (isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
-                newbutton = new WinButton(*this, winbutton_theme,
-                                          WinButton::MINIMIZE,
-                                          frame().titlebar(),
-                                          0, 0, 10, 10);
-                newbutton->setOnClick(iconify_cmd);
+            WinButton *winbtn = 0;
 
-            } else if (isMaximizable() && (*dir)[i] == Fluxbox::MAXIMIZE) {
-                newbutton = new WinButton(*this, winbutton_theme,
-                                          WinButton::MAXIMIZE,
-                                          frame().titlebar(),
-                                          0, 0, 10, 10);
+            switch (dir[i]) {
+            case WinButton::MINIMIZE:
+                if (isIconifiable()) {
+                    winbtn = new WinButton(*this, winbutton_theme,
+                                           WinButton::MINIMIZE,
+                                           frame().titlebar(),
+                                           0, 0, 10, 10);
+                    winbtn->setOnClick(iconify_cmd);
+                }
+                break;
+            case WinButton::MAXIMIZE:
+                if (isMaximizable()) {
+                    winbtn = new WinButton(*this, winbutton_theme,
+                                           dir[i],
+                                           frame().titlebar(),
+                                           0, 0, 10, 10);
+                    winbtn->setOnClick(maximize_cmd, 1);
+                    winbtn->setOnClick(maximize_horiz_cmd, 3);
+                    winbtn->setOnClick(maximize_vert_cmd, 2);
 
-                newbutton->setOnClick(maximize_cmd, 1);
-                newbutton->setOnClick(maximize_horiz_cmd, 3);
-                newbutton->setOnClick(maximize_vert_cmd, 2);
+                }
+                break;
+            case WinButton::CLOSE:
+                if (m_client->isClosable()) {
+                    winbtn = new WinButton(*this, winbutton_theme,
+                                           dir[i],
+                                           frame().titlebar(),
+                                           0, 0, 10, 10);
 
-            } else if (m_client->isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
-                newbutton = new WinButton(*this, winbutton_theme,
-                                          WinButton::CLOSE,
-                                          frame().titlebar(),
-                                          0, 0, 10, 10);
+                    winbtn->setOnClick(close_cmd);
+                    stateSig().attach(winbtn);
+                }
+                break;
+            case WinButton::STICK:
+                winbtn =  new WinButton(*this, winbutton_theme,
+                                        dir[i],
+                                        frame().titlebar(),
+                                        0, 0, 10, 10);
 
-                newbutton->setOnClick(close_cmd);
-
-            } else if ((*dir)[i] == Fluxbox::STICK) {
-                WinButton *winbtn = new WinButton(*this, winbutton_theme,
-                                                  WinButton::STICK,
-                                                  frame().titlebar(),
-                                                  0, 0, 10, 10);
-                stateSig().attach(winbtn);
                 winbtn->setOnClick(stick_cmd);
-                newbutton = winbtn;
-            } else if ((*dir)[i] == Fluxbox::SHADE) {
-                WinButton *winbtn = new WinButton(*this, winbutton_theme,
-                                                  WinButton::SHADE,
-                                                  frame().titlebar(),
-                                                  0, 0, 10, 10);
+                break;
+            case WinButton::SHADE:
+                winbtn = new WinButton(*this, winbutton_theme,
+                                       dir[i],
+                                       frame().titlebar(),
+                                       0, 0, 10, 10);
                 stateSig().attach(winbtn);
-                winbtn->setOnClick(shade_cmd);
-                newbutton = winbtn;
-            } else if ((*dir)[i] == Fluxbox::MENUICON) {
-                WinButton* winbtn = new WinButton(*this, winbutton_theme,
-                                                  WinButton::MENUICON,
-                                                  frame().titlebar(),
-                                                  0, 0, 10, 10);
+                winbtn->setOnClick(shade_cmd); 
+                break;
+            case WinButton::MENUICON:
+                winbtn = new WinButton(*this, winbutton_theme,
+                                       dir[i],
+                                       frame().titlebar(),
+                                       0, 0, 10, 10);
                 hintSig().attach(winbtn);
                 titleSig().attach(winbtn);
                 winbtn->setOnClick(show_menu_cmd);
-                newbutton = winbtn;
+                break;
             }
 
-            if (newbutton != 0) {
-                newbutton->show();
+
+            if (winbtn != 0) {
+                winbtn->show();
                 if (c == 0)
-                    frame().addLeftButton(newbutton);
+                    frame().addLeftButton(winbtn);
                 else
-                    frame().addRightButton(newbutton);
+                    frame().addRightButton(winbtn);
             }
         } //end for i
-        dir = &Fluxbox::instance()->getTitlebarRight();
+
+
     } // end for c
 
     frame().reconfigure();
