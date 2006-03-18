@@ -1,56 +1,43 @@
-News in 0.9.14: 
-    * Titlebar scrolling options 
-       * session.screenN.windowScrollAction: Shade|NextTab
-         - set the action that happens when scrolling on the titlebar
-       * session.screenN.windowScrollReverse: true|false
-         - reverse the action direction
-    * New locales: uk_UA, be_BY, el_GR
-    * Focus options: 
-      SloppyFocus, SemiSloppyFocus and ClickToFocus options are now
-      MouseFocus, ClickFocus, MouseTabFocus and ClickTabFocus
-    * Renamed bsetroot to fbsetroot
-    * Improved move to action: 
-       * MoveTo <int|*> <int|*> <Reference Corner>
-         - * means "use current value"
-         - Reference Corner is one of:
-           - UpperLeft, Upper, UpperRight
-           - Left, Right
-           - LowerLeft, Lower, Right
-       examples:
-         MoveTo 0 * Left       -> snap to left workspace edge
-         MoveTo * 0 Lower      -> snap to lower workspace edge
-         MoveTo 0 0 UpperRight -> snap to upper right workspace corner
-    * Font changes:
-      - Usage of xft-fonts is prefered, except a font-description starts with '-'
-      - Removed "antialias"-option completly, to enable/disable "antialias"
-        use either  <fontname>:antialias=<bool> in the style or use
-        Xft.antialias: <bool> in your .Xdefaults
-      - Added caching of fonts, fonts are only loaded once.        
-      
-      * New style resources: 
-        *.font.effect: <halo|shadow>
-        *.font.shadow.x : <int>       - shadow x offset
-        *.font.shadow.y : <int>       - shadow y offset
-        *.font.shadow.color : <color> - color of shadow
-        *.font.halo.color : <color>   - color of halo
-      - Removed 'shadow' and 'halo' options from fontdefinitions
-      - Style authors may specify multiple fonts:
-        <font1>|<font2>|<font3>
-        
-    * Keycodes can now be used in the keys file.
-      Example:
-      None 10 :NextWorkspace
-      where 10 is the keycode for '1'
-    * Added new configure option --with-locale=path
-      redirects location of nls directories.
+News in 0.9.15:
+    * Added styleOverlay resource 
+          session.styleOverlay: ~/.fluxbox/overlay
+        Style settings in this file override any settings from a
+        regular style
+    * New theme item:
+          background: <texture option>
+          background.pixmap: <image filename>
+          background.color: <color>
+          background.colorTo: <color>
+        The background.pixmap filename will be sent to "fbsetbg"
+        which in turn sets the background.
+        The following options will be available for the background.pixmap:
+           - tiled 
+           - centered
+        For example:
+          background: tiled
+          background.pixmap: someimage.png
+        and it can also generate a normal texture:
+          background: gradient
+          background.color: blue
+          background.colorTo: green
+        The rootCommand in the style is now obsolete and if the 
+        "background" item is not found in the style then the default
+        background will be green and with a warning text.
+    * Added new resize mode: Center 
+        Example session.screen0.resizeMode: Center
+        This mode will move all corners at the same time with 
+        equal distance.
+    * nls changes:
+       * Updated ko_KR
+       * Added zh_CN, nb_NO
 Bug fixes:
-    * #1281708, MenuIcon does not scale properly
-    * #1240248, Segfaults for :MoveTabLeft/Right
-    * #1206821, unportable usage of grep in fbgm
-    * #1116965, #1047529, shaded windows on restart
-    * #1213003, SendToWorkspace shouldnt follow
-    * #1216020, *.font.effect wont get cleared if not defined in style
-    * #1213262, justification in WorkspaceNameTool 
-    * Fixed systemtray overlap
+    * #1409775, gcc4.1 problems
+    * #1327878. Appending backslash to () and [] characters in the apps file
+    * #1417688, remember apps keeps incrementing vertical dimension
+    * #1307877 fbsetbg did not create ~/.fluxbox/lastwallpaper
+    * #1335255 (Gentoo #110197) fbgm had some globbing related probs 
+    * #1267076, cygwin link problems 
+    * Fixed memory leak when XCreateImage failes in XFontImp
+    * _net_wm_state_hidden
 
 See ChangeLog for more details
