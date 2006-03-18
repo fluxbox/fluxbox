@@ -186,11 +186,6 @@ int handleXErrors(Display *d, XErrorEvent *e) {
 //static singleton var
 Fluxbox *Fluxbox::s_singleton=0;
 
-//default values for titlebar left and right
-//don't forget to change last value in m_rc_titlebar_* if you add more to these
-Fluxbox::Titlebar Fluxbox::s_titlebar_left[] = {STICK};
-Fluxbox::Titlebar Fluxbox::s_titlebar_right[] = {MINIMIZE, MAXIMIZE, CLOSE};
-
 Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfilename)
     : FbTk::App(dpy_name),
       m_fbatoms(new FbAtoms()),
@@ -214,12 +209,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_slitlistfile(m_resourcemanager, "~/.fluxbox/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
       m_rc_groupfile(m_resourcemanager, "~/.fluxbox/groups", "session.groupFile", "Session.GroupFile"),
       m_rc_appsfile(m_resourcemanager, "~/.fluxbox/apps", "session.appsFile", "Session.AppsFile"),
-      m_rc_titlebar_left(m_resourcemanager, 
-                         TitlebarList(&s_titlebar_left[0], &s_titlebar_left[1]), 
-                         "session.titlebar.left", "Session.Titlebar.Left"),
-      m_rc_titlebar_right(m_resourcemanager,
-                          TitlebarList(&s_titlebar_right[0], &s_titlebar_right[3]),
-                          "session.titlebar.right", "Session.Titlebar.Right"),
       m_rc_tabs_attach_area(m_resourcemanager, ATTACH_AREA_WINDOW, "session.tabsAttachArea", "Session.TabsAttachArea"),
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
