@@ -168,14 +168,14 @@ template <typename T>
 class Resource:public Resource_base
 {
 public:	
+    typedef T Type;
     Resource(ResourceManager &rm, T val, 
              const std::string &name, const std::string &altname):
 	Resource_base(name, altname),
 	m_value(val), m_defaultval(val),
-	m_rm(rm)
-	{
-            m_rm.addResource(*this); // add this to resource handler
-	}
+	m_rm(rm) {
+        m_rm.addResource(*this); // add this to resource handler
+    }
     virtual ~Resource() {
         m_rm.removeResource(*this); // remove this from resource handler
     }
