@@ -111,15 +111,12 @@ public:
     void removeAtomHandler(AtomHandler *atomh);
 
     /// obsolete
-    enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENUICON, EMPTY};
     enum TabsAttachArea{ATTACH_AREA_WINDOW= 0, ATTACH_AREA_TITLEBAR};
 
 
     bool getIgnoreBorder() const { return *m_rc_ignoreborder; }
     bool &getPseudoTrans() { return *m_rc_pseudotrans; }
 
-    const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
-    const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
     Fluxbox::TabsAttachArea getTabsAttachArea() const { return *m_rc_tabs_attach_area; }
     const std::string &getStyleFilename() const { return *m_rc_stylefile; }
     const std::string &getStyleOverlayFilename() const { return *m_rc_styleoverlayfile; }
@@ -198,7 +195,6 @@ public:
     /// get screen from number
     BScreen *findScreen(int num);
 
-    typedef std::vector<Fluxbox::Titlebar> TitlebarList;
     /// @return whether the timestamps on the menu changed
     bool menuTimestampsChanged() const;
     bool haveShape() const { return m_have_shape; }
@@ -235,7 +231,6 @@ private:
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
     void handleKeyEvent(XKeyEvent &ke);
-    void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 
@@ -255,7 +250,6 @@ private:
         m_rc_groupfile, m_rc_appsfile;
 
 
-    FbTk::Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
     FbTk::Resource<TabsAttachArea> m_rc_tabs_attach_area;
     FbTk::Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
     FbTk::Resource<time_t> m_rc_auto_raise_delay;
@@ -300,7 +294,6 @@ private:
     std::auto_ptr<Keys> m_key;
 
     //default arguments for titlebar left and right
-    static Fluxbox::Titlebar s_titlebar_left[], s_titlebar_right[];
     static Fluxbox *s_singleton;
 
     typedef std::map<AtomHandler *, std::string> AtomHandlerContainer;
