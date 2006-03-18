@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.15:
+*06/03/19:
+   * Fixed some wrong fbsetroot nls (Thanks  Semushin Slava )
+     nls/da_DK/Translation.m, nls/ko_KR/Translation.m
+   * Cleaned up some nls and help text in ./fluxbox -h (Thanks Semushin Slava [php-coder at ngs ru] )
+     nls/*/Translation.m, Screen.cc, main.cc
+   * Titlebar button configuration changed from session.titlbar.left/right
+     to screen specific:  session.screen<num>.titlbar.left/right
+     (Henrik)
+     Screen.hh/cc, Window.hh/cc, fluxbox.hh/cc
 *06/03/14:
    * Fixed memory leak when XCreateImage failes in XFontImp 
      (Thanks Semushin Slava [php-coder] )
