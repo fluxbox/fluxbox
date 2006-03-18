@@ -424,6 +424,7 @@ BScreen::~BScreen() {
 
     destroyAndClearList(m_workspaces_list);
     destroyAndClearList(m_netizen_list);
+    destroyAndClearList(m_managed_resources);
 
     //why not destroyAndClearList(m_icon_list); ? 
     //problem with that: a delete FluxboxWindow* calls m_diesig.notify()
@@ -1414,8 +1415,7 @@ void BScreen::initMenu() {
         FbTk::RefCount<FbTk::Command> exit_fb(CommandParser::instance().parseLine("exit"));
         FbTk::RefCount<FbTk::Command> execute_xterm(CommandParser::instance().parseLine("exec xterm"));
         m_rootmenu->setInternalMenu();
-        m_rootmenu->insert(_FBTEXT(Menu, xterm, "xterm", "xterm - in fallback menu"),
-                           execute_xterm);
+        m_rootmenu->insert("xterm", execute_xterm);
         m_rootmenu->insert(_FBTEXT(Menu, Restart, "Restart", "Restart command"),
                            restart_fb);
         m_rootmenu->insert(_FBTEXT(Menu, Exit, "Exit", "Exit command"),
@@ -1441,6 +1441,11 @@ void BScreen::removeConfigMenu(FbTk::Menu &menu) {
     setupConfigmenu(*m_configmenu.get());
 
 }    
+
+
+void BScreen::addManagedResource(FbTk::Resource_base *resource) {
+    m_managed_resources.push_back(resource);
+}
 
 void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     _FB_USES_NLS;
@@ -1631,14 +1636,9 @@ void BScreen::showPosition(int x, int y) {
 
         pos_visible = true;
     }
+
     char label[256];
-
-    _FB_USES_NLS;
-
-    sprintf(label,
-            _FBTEXT(Screen, PositionFormat,
-                    "X: %4d x Y: %4d",
-                    "Format for screen coordinates - %4d for X, and %4d for Y"), x, y);
+    sprintf(label, "X: %4d x Y: %4d", x, y);
 
     m_pos_window.clear();
 
@@ -1748,16 +1748,17 @@ void BScreen::leftWorkspace(const int delta) {
 
 
 void BScreen::renderGeomWindow() {
+
+    char label[256];
     _FB_USES_NLS;
 
-    const char *s = _FBTEXT(Screen, 
-                            GeometryLength,
-                            "W: 0000 x H: 0000",
-                            "Representative maximum sized text for width and height dialog");
-    int l = strlen(s);
+    sprintf(label,
+            _FBTEXT(Screen, GeometryFormat,
+            "W: %4d x H: %4d", "Representative maximum sized text for width and height dialog"),
+            0, 0);
 
     int geom_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
-    int geom_w = winFrameTheme().font().textWidth(s, l) + winFrameTheme().bevelWidth()*2;
+    int geom_w = winFrameTheme().font().textWidth(label, strlen(label)) + winFrameTheme().bevelWidth()*2;
     m_geom_window.resize(geom_w, geom_h);
 
     m_geom_window.setBorderWidth(winFrameTheme().border().width());
@@ -1793,16 +1794,9 @@ void BScreen::renderGeomWindow() {
 
 
 void BScreen::renderPosWindow() {
-    _FB_USES_NLS;
-
-    const char *s = _FBTEXT(Screen, 
-                            PositionLength,
-                            "0: 0000 x 0: 0000",
-                            "Representative maximum sized text for X and Y dialog");
-    int l = strlen(s);
 
     int pos_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
-    int pos_w = winFrameTheme().font().textWidth(s, l) + winFrameTheme().bevelWidth()*2;
+    int pos_w = winFrameTheme().font().textWidth("0: 0000 x 0: 0000", 17) + winFrameTheme().bevelWidth()*2;
     m_pos_window.resize(pos_w, pos_h);
 
     m_pos_window.setBorderWidth(winFrameTheme().border().width());
