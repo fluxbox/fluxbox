@@ -129,7 +129,6 @@ $set 10 #Menu
 7 Platzierung
 8 Konfiguration neu laden
 9 Neu starten
-10 xterm
 
 $set 11 #Remember
 
@@ -149,10 +148,7 @@ $set 12 #Screen
 
 1 BScreen::BScreen: Ein Fehler beim Verbinden zum X-Server ist aufgetreten.\nEin anderer Windowmanager läuft bereits auf dem Display 
 2 W: %4d x H: %4d
-3 W: 0000 x H: 0000
-4 BScreen::BScreen: Verwalte screen %d mit visual 0x%lx, Farbtiefe %d\n
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
+3 BScreen::BScreen: Verwalte screen %d mit visual 0x%lx, Farbtiefe %d\n
 
 $set 13 #Slit
 

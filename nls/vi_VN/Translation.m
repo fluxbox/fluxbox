@@ -114,7 +114,6 @@ $set 10 #Menu
 7 Vị trí
 8 Nạp lại cấu hình
 9 Khởi động lại
-10 xterm
 
 $set 11 #Remember
 
@@ -133,9 +132,6 @@ $set 11 #Remember
 $set 12 #Screen
 
 2 Rộng: %4d x Cao: %4d
-3 Rộng: 0000 x Cao: 000
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
 
 $set 13 #Slit
 

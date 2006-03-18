@@ -128,7 +128,6 @@ enum {
 	MenuPlacement = 7,
 	MenuReconfigure = 8,
 	MenuRestart = 9,
-	Menuxterm = 10,
 
 	RememberSet = 11,
 	RememberDecorations = 1,
@@ -147,10 +146,7 @@ enum {
 	ScreenSet = 12,
 	ScreenAnotherWMRunning = 1,
 	ScreenGeometryFormat = 2,
-	ScreenGeometryLength = 3,
-	ScreenManagingScreen = 4,
-	ScreenPositionFormat = 5,
-	ScreenPositionLength = 6,
+	ScreenManagingScreen = 3,
 
 	SlitSet = 13,
 	SlitClientsMenu = 1,

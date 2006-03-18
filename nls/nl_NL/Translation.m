@@ -60,7 +60,6 @@ $set 10 #Menu
 4 Iconen
 7 Plaats
 9 Herstart
-10 Xterm
 
 $set 11 #Remember
 
@@ -68,8 +67,6 @@ $set 11 #Remember
 $set 12 #Screen
 
 2 W: %4d x H: %4d
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
 
 $set 13 #Slit
 

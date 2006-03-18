@@ -60,7 +60,6 @@ $set 10 #Menu
 4 アイコン
 7 配置
 9 再起動
-10 Ｘたーむ
 
 $set 11 #Remember
 
@@ -68,9 +67,6 @@ $set 11 #Remember
 $set 12 #Screen
 
 2 幅: %4d x 高: %4d
-3 幅: 0000 x 高: 0000
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
 
 $set 13 #Slit
 

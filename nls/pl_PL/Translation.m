@@ -131,7 +131,6 @@ $set 10 #Menu
 7 Umiejscowienie
 8 Prze³aduj ustawienia
 9 Restart
-10 xterm
 
 
 $set 11 #Remember
@@ -155,9 +154,7 @@ $set 12 #Screen
 1 BScreen::BScreen: wyst±pi³ b³±d podczas wysy³ania zapytania do serwera X'ów.\nNa ekranie w³±czony jest ju¿ inny mened¿er okien
 2 S: %4d x W: %4d
 
-4 BScreen::BScreen: u¿ywanie ekrany %d u¿ywam visuala 0x%lx, g³êboko¶æ %d\n
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
+3 BScreen::BScreen: u¿ywanie ekrany %d u¿ywam visuala 0x%lx, g³êboko¶æ %d\n
 
 
 $set 13 #Slit

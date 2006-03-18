@@ -59,7 +59,6 @@ $set 10 #Menu
 4 Ikonas
 7 Novietoðana
 9 Restartçt
-10 xterm
 
 $set 11 #Remember
 
@@ -67,8 +66,6 @@ $set 11 #Remember
 $set 12 #Screen
 
 2 P: %4d x A: %4d
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
 
 $set 13 #Slit
 

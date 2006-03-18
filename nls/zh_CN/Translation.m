@@ -130,7 +130,6 @@ $set 10 #Menu
 7 替换
 8 重新加载配置文件
 9 重启动
-10 xterm
 
 $set 11 #Remember
 
@@ -151,10 +150,7 @@ $set 12 #Screen
 
 1 BScreen::BScreen: querying the X server时发生错误.\n 另外一个窗口管理器正运行,display为
 2 W: %4d x H: %4d
-3 W: 0000 x H: 0000
-4 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
+3 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
 
 $set 13 #Slit
 

@@ -130,7 +130,6 @@ $set 10 #Menu
 7 Plassering
 8 Last oppsett på nytt
 9 Start på nytt
-10 xterm
 
 $set 11 #Remember
 
@@ -151,10 +150,7 @@ $set 12 #Screen
 
 1 BScreen::BScreen: feil ved spørring av X-tjeneren;\n	en annen vindusbehandler kjører allerede på visningsenheten
 2 B: %4d x H: %4d
-3 B: 0000 x H: 0000
-4 BScreen::BScreen: kontrollerer skjerm %d ved hjelp av visuell 0x%lx, dybde %d\n
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
+3 BScreen::BScreen: kontrollerer skjerm %d ved hjelp av visuell 0x%lx, dybde %d\n
 
 $set 13 #Slit
 

@@ -129,7 +129,6 @@ $set 10 #Menu
 7 Umístìní
 8 Znovu naèíst konfiguraci
 9 Restart
-10 xterm
 
 $set 11 #Remember
 
@@ -150,10 +149,7 @@ $set 12 #Screen
 
 1 BScreen::BScreen: an error occured while querying the X server.\n	another window manager already running on display
 2 W: %4d x H: %4d
-3 W: 0000 x H: 0000
-4 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
+3 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
 
 $set 13 #Slit
 

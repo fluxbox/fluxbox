@@ -82,7 +82,6 @@ $set 10 #Menu
 5 Шар...
 7 Розм╕щення
 9 Перезапуск
-10 Xterm
 
 $set 11 #Remember
 1 Декорац╕╖
@@ -99,8 +98,6 @@ $set 11 #Remember
 $set 12 #Screen
 
 2 W: %4d x H: %4d
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
 
 $set 13 #Slit
 1 Кл╕╓нти
