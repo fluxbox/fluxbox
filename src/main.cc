@@ -207,7 +207,7 @@ int main(int argc, char **argv) {
             }
         } else if (strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0) {
             // print current version string
-            cout<<"Fluxbox "<<__fluxbox_version<<" : (c) 2001-2005 Henrik Kinnunen "<<endl<<endl;
+            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2006 Henrik Kinnunen " << endl << endl;
             exit(0);
         } else if (strcmp(argv[i], "-log") == 0 ) {
             if (i + 1 >= argc) {
@@ -220,16 +220,16 @@ int main(int argc, char **argv) {
             printf(_FBTEXT(main, Usage,
                            "Fluxbox %s : (c) %s Henrik Kinnunen\n"
                            "Website: http://www.fluxbox.org/ \n\n"
-                           "\t-display <string>\t\tuse display connection.\n"
-                           "\t-screen <all|int,int,int>\trun on specified screens only.\n"
-                           "\t-rc <string>\t\t\tuse alternate resource file.\n"
-                           "\t-version\t\t\tdisplay version and exit.\n"
-                           "\t-info\t\t\t\tdisplay some useful information.\n"
-                           "\t-log <filename>\t\t\tlog output to file.\n"
-                           "\t-help\t\t\t\tdisplay this help text and exit.\n\n",
+                           "-display <string>\t\tuse display connection.\n"
+                           "-screen <all|int,int,int>\trun on specified screens only.\n"
+                           "-rc <string>\t\t\tuse alternate resource file.\n"
+                           "-version\t\t\tdisplay version and exit.\n"
+                           "-info\t\t\t\tdisplay some useful information.\n"
+                           "-log <filename>\t\t\tlog output to file.\n"
+                           "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
                            "Main usage string. Please lay it out nicely. There is one %s that is given the version"),
-                   __fluxbox_version, "2001-2005");
+                   __fluxbox_version, "2001-2006");
             exit(0);
         } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {
             showInfo(cout);
