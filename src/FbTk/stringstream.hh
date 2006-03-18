@@ -31,9 +31,11 @@
 #ifdef HAVE_SSTREAM
 #include <sstream>
 #define FbTk_istringstream std::istringstream
+#define FbTk_ostringstream std::ostringstream
 #elif HAVE_STRSTREAM 
 #include <strstream>
 #define FbTk_istringstream std::istrstream
+#define FbTk_ostringstream std::ostrstream
 #else
 #error "You dont have sstream or strstream headers!"
 #endif // HAVE_STRSTREAM
