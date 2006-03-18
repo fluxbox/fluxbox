@@ -352,6 +352,10 @@ public:
     void removeConfigMenu(FbTk::Menu &menu);
 
 
+    /// Adds a resource to managed resource list
+    /// This resource is now owned by Screen and will be destroyed
+    /// when screen dies
+    void addManagedResource(FbTk::Resource_base *resource);
 
     class ScreenSubject:public FbTk::Subject {
     public:
@@ -444,6 +448,9 @@ private:
         FbTk::Resource<bool> scroll_reverse;
 
     } resource;
+
+    /// Holds manage resources that screen destroys
+    FbTk::ResourceManager::ResourceList m_managed_resources;
 
     FbTk::ResourceManager &m_resource_manager;
     const std::string m_name, m_altname;
