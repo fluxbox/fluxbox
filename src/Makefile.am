@@ -99,6 +99,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Window.cc Window.hh \
 	Workspace.cc Workspace.hh \
 	FbCommands.hh FbCommands.cc LayerMenu.hh LayerMenu.cc \
+	Layer.hh \
 	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh FbMenu.cc \
 	WinClient.hh WinClient.cc \
 	Strut.hh \
@@ -128,6 +129,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Resources.cc \
 	WindowCmd.hh WindowCmd.cc \
 	FocusControl.hh FocusControl.cc \
+	PlacementStrategy.hh \
 	CascadePlacement.hh CascadePlacement.cc \
 	ColSmartPlacement.hh ColSmartPlacement.cc \
 	RowSmartPlacement.hh RowSmartPlacement.cc \
