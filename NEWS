@@ -1,43 +1,49 @@
 News in 0.9.15:
     * Added styleOverlay resource 
-          session.styleOverlay: ~/.fluxbox/overlay
-        Style settings in this file override any settings from a
-        regular style
+       * session.styleOverlay: ~/.fluxbox/overlay
+       Style settings in this file override any settings from a
+       regular style
     * New theme item:
-          background: <texture option>
-          background.pixmap: <image filename>
-          background.color: <color>
-          background.colorTo: <color>
-        The background.pixmap filename will be sent to "fbsetbg"
-        which in turn sets the background.
-        The following options will be available for the background.pixmap:
-           - tiled 
-           - centered
-        For example:
-          background: tiled
-          background.pixmap: someimage.png
-        and it can also generate a normal texture:
-          background: gradient
-          background.color: blue
-          background.colorTo: green
-        The rootCommand in the style is now obsolete and if the 
-        "background" item is not found in the style then the default
-        background will be green and with a warning text.
+       * background: <texture option>
+       * background.pixmap: <image filename>
+       * background.color: <color>
+       * background.colorTo: <color>
+       The background.pixmap filename will be sent to "fbsetbg"
+       which in turn sets the background.
+       The following options will be available for the background.pixmap:
+         - tiled 
+         - centered
+       For example:
+         background: tiled
+         background.pixmap: someimage.png
+       and it can also generate a normal texture:
+         background: gradient
+         background.color: blue
+         background.colorTo: green
+       The rootCommand in the style is now obsolete and if the 
+       "background" item is not found in the style then the default
+       background will be green and with a warning text.
     * Added new resize mode: Center 
-        Example session.screen0.resizeMode: Center
-        This mode will move all corners at the same time with 
-        equal distance.
+       Example:
+       session.screen0.resizeMode: Center
+       This mode will move all corners at the same time with 
+       equal distance.
+    * Resources changes for titlebar:
+      The titlebar is now configured by setting:
+      * session.screen<num>.titlebar.left
+      * session.screen<num>.titlebar.right
     * nls changes:
        * Updated ko_KR
        * Added zh_CN, nb_NO
 Bug fixes:
-    * #1409775, gcc4.1 problems
-    * #1327878. Appending backslash to () and [] characters in the apps file
-    * #1417688, remember apps keeps incrementing vertical dimension
+    * #1409775 gcc4.1 problems
+    * #1327878 Appending backslash to () and [] characters in the apps file
+    * #1417688 remember apps keeps incrementing vertical dimension
     * #1307877 fbsetbg did not create ~/.fluxbox/lastwallpaper
     * #1335255 (Gentoo #110197) fbgm had some globbing related probs 
-    * #1267076, cygwin link problems 
-    * Fixed memory leak when XCreateImage failes in XFontImp
+    * #1267076 cygwin link problems
+    * Fix for stuck icons
+    * Fixed memory leak when XCreateImage fails in XFontImp
     * _net_wm_state_hidden
 
 See ChangeLog for more details
