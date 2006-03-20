@@ -309,7 +309,7 @@ XImage *TextureRender::renderXImage() {
 
     if (! image) {
         _FB_USES_NLS;
-        cerr<<"FbTk::TextureRender::renderXImage(): "<<_FBTKTEXT(Error, CreateXImage, "Error creating XImage", "Couldn't create an XImage")<<endl;
+        cerr << "FbTk::TextureRender::renderXImage(): " << _FBTKTEXT(Error, CreateXImage, "Can't create XImage", "Couldn't create an XImage") << "." << endl;
         return 0;
     }
 
@@ -581,8 +581,8 @@ XImage *TextureRender::renderXImage() {
 
     default:
         _FB_USES_NLS;
-        cerr<<"TextureRender::renderXImage(): "<<
-            _FBTKTEXT(Error, UnsupportedVisual, "unsupported visual", "A visual is a technical term in X")<<endl;
+        cerr << "TextureRender::renderXImage(): " <<
+            _FBTKTEXT(Error, UnsupportedVisual, "Unsupported visual", "A visual is a technical term in X") << endl;
         delete [] d;
         XDestroyImage(image);
         return (XImage *) 0;
@@ -684,8 +684,8 @@ XImage *TextureRender::renderXImage() {
 
     default:
         _FB_USES_NLS;
-        cerr<<"TextureRender::renderXImage(): "<<
-            _FBTKTEXT(Error, UnsupportedVisual, "unsupported visual", "A visual is a technical term in X")<<endl;
+        cerr << "TextureRender::renderXImage(): " <<
+            _FBTKTEXT(Error, UnsupportedVisual, "Unsupported visual", "A visual is a technical term in X") << endl;
         delete [] d;
         XDestroyImage(image);
         return (XImage *) 0;
