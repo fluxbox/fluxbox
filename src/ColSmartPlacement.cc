@@ -66,7 +66,7 @@ bool ColSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
     while (!placed &&
            (left_right ? test_x + win_w <= head_right
             : test_x >= head_left)) {
-                
+
         if (left_right)
             next_x = head_right; // it will get shrunk
         else 
@@ -90,8 +90,8 @@ bool ColSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
             std::vector<FluxboxWindow *>::const_iterator it_end = 
                 windowlist.end();
             for (; it != it_end && placed; ++it) {
-                int curr_x = (*it)->x() + (*it)->xOffset();
-                int curr_y = (*it)->y() + (*it)->yOffset();
+                int curr_x = (*it)->x() - (*it)->xOffset();
+                int curr_y = (*it)->y() - (*it)->yOffset();
                 int curr_w = (*it)->width()  + (*it)->fbWindow().borderWidth()*2 + (*it)->widthOffset();
                 int curr_h = (*it)->height() + (*it)->fbWindow().borderWidth()*2 + (*it)->heightOffset();
 

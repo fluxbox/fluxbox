@@ -47,8 +47,8 @@ ScreenPlacement::ScreenPlacement(BScreen &screen):
     m_placement_policy(screen.resourceManager(), ROWSMARTPLACEMENT, 
                        screen.name()+".windowPlacement", 
                        screen.altName()+".WindowPlacement"),
-    m_old_policy(*m_placement_policy),
-    m_strategy(new RowSmartPlacement())
+    m_old_policy(ROWSMARTPLACEMENT),
+    m_strategy(0)
 {
 }
 
@@ -56,9 +56,10 @@ bool ScreenPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist
                                   const FluxboxWindow &win,
                                   int &place_x, int &place_y) {
 
+
     // check the resource placement and see if has changed
     // and if so update the strategy
-    if (m_old_policy != *m_placement_policy) {
+    if (m_old_policy != *m_placement_policy || !m_strategy.get()) {
         m_old_policy = *m_placement_policy;
         switch (*m_placement_policy) {
         case ROWSMARTPLACEMENT:

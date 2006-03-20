@@ -103,8 +103,8 @@ bool RowSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
             for (; win_it != win_it_end && placed; ++win_it) {
                 FluxboxWindow &window = **win_it;
 
-                int curr_x = window.x() + window.xOffset();
-                int curr_y = window.y() + window.yOffset();
+                int curr_x = window.x() - window.xOffset(); // minus offset to get back up to fake place
+                int curr_y = window.y() - window.yOffset();
                 int curr_w = window.width() + window.fbWindow().borderWidth()*2 + window.widthOffset();
                 int curr_h = window.height() + window.fbWindow().borderWidth()*2 + window.heightOffset();
 

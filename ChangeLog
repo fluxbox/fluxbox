@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/03/20:
+   * Fix placement config (some compilers resulted in ignoring of 
+     placement policy setting), and a minor ext. tabs placement bug
+     ScreenPlacement.cc Row/ColSmartPlacement.cc
    * External tabs (Simon)
      - option in Configure menu to enable
        - restart require at present when toggling this option
