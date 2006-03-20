@@ -229,10 +229,10 @@ void XFontImp::rotate(float angle) {
                                   vert_w, vert_h, 8, 0);
 
         if (I1 == None) {				
-            cerr<<"RotFont: "<<_FBTKTEXT(Error, CreateXImage, 
-                                         "Cant create XImage", 
+            cerr << "RotFont: " << _FBTKTEXT(Error, CreateXImage, 
+                                         "Can't create XImage", 
                                          "XCreateImage failed for some reason")
-                <<"."<<endl;
+                 << "." << endl;
             free(vertdata);
             delete m_rotfont;
             m_rotfont = 0;			
@@ -271,10 +271,10 @@ void XFontImp::rotate(float angle) {
                           (char *)bitdata, bit_w, bit_h, 8, 0); 
 
         if (I2 == None) {
-            cerr<<"XFontImp: "<<_FBTKTEXT(Error, CreateXImage, 
-                                          "Cant create XImage", 
+            cerr << "XFontImp: " <<_FBTKTEXT(Error, CreateXImage,
+                                          "Can't create XImage",
                                           "XCreateImage failed for some reason") 
-                <<"."<<endl;
+                 << "." << endl;
             free(bitdata);
             delete m_rotfont;
             m_rotfont = 0;
