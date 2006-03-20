@@ -1,4 +1,4 @@
-# nls/C/Makefile.am for Fluxbox - www.fluxbox.org
+# nls/zh_CN/Makefile.am for Fluxbox - www.fluxbox.org
 
 THE_LANG = zh_CN
 
