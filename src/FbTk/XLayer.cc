@@ -131,6 +131,26 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     
 }
 
+void XLayer::alignItem(XLayerItem &item) {
+    // Note: some other things effectively assume that the window list is 
+    // sorted from highest to lowest
+    size_t winnum = 0, 
+        num = item.numWindows();
+    Window *winlist = new Window[num];
+
+    // fill the rest of the array
+    XLayerItem::Windows::iterator it = item.getWindows().begin();
+    XLayerItem::Windows::iterator it_end = item.getWindows().end();
+    for (; it != it_end; ++it) {
+        if ((*it)->window()) {
+            winlist[winnum++] = (*it)->window();
+        }
+    }
+
+    XRestackWindows(FbTk::App::instance()->display(), winlist, winnum);
+    delete [] winlist;
+}
+
 XLayer::iterator XLayer::insert(XLayerItem &item, unsigned int pos) {
 #ifdef DEBUG
     // at this point we don't support insertions into a layer other than at the top

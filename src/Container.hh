@@ -25,15 +25,21 @@
 #ifndef CONTAINER_HH
 #define CONTAINER_HH
 
-#include "FbTk/Button.hh"
+#include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/NotCopyable.hh"
+
+namespace FbTk {
+    class Button;
+}
 
 #include <list>
 #include <functional>
 
 class Container:public FbTk::FbWindow, public FbTk::EventHandler, private FbTk::NotCopyable {
 public:
+    // LEFT, RIGHT => fixed total width, fixed icon size
+    // RELATIVE => fixed total width, relative/variable icon size
     enum Alignment { LEFT, RELATIVE, RIGHT };
     typedef FbTk::Button * Item;
     typedef const FbTk::Button * ConstItem;
@@ -58,6 +64,7 @@ public:
     int find(ConstItem item);
     void setSelected(int index);
     void setMaxSizePerClient(unsigned int size);
+    void setMaxTotalSize(unsigned int size);
     void setAlignment(Alignment a);
 
     Item back() { return m_item_list.back(); }
@@ -81,6 +88,7 @@ public:
     inline const Item& selected() const { return m_selected; }
     inline Item selected() { return m_selected; }
     unsigned int maxWidthPerClient() const;
+    unsigned int maxTotalSize() const { return m_max_total_size; }
     inline unsigned int maxHeightPerClient() const { return (empty() ? height() : height()/size()); }    
     inline bool updateLock() const { return m_update_lock; }
 
@@ -97,6 +105,7 @@ private:
 
     Alignment m_align;
     unsigned int m_max_size_per_client;
+    unsigned int m_max_total_size;
     ItemList m_item_list;
     Item m_selected;
     bool m_update_lock;

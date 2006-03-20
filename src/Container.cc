@@ -34,6 +34,7 @@ Container::Container(const FbTk::FbWindow &parent):
     FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), 
     m_align(RELATIVE),
     m_max_size_per_client(60),
+    m_max_total_size(0),
     m_selected(0),
     m_update_lock(false) {
     FbTk::EventManager::instance()->add(*this, *this);
@@ -58,6 +59,13 @@ void Container::moveResize(int x, int y,
     FbTk::FbWindow::moveResize(x, y, width, height);
     repositionItems();
 }
+
+/*
+void Container::move(int x, int y) {
+    FbTk::FbWindow::move(x, y);
+    // no need to reposition
+}
+*/
 
 void Container::insertItems(ItemList &item_list, int pos) {
 
@@ -255,6 +263,33 @@ void Container::setMaxSizePerClient(unsigned int size) {
     m_max_size_per_client = size;
 }
 
+void Container::setMaxTotalSize(unsigned int size) {
+    m_max_total_size = size;
+
+    if (m_max_total_size && width() > m_max_total_size) {
+        resize(m_max_total_size, height());
+    } else {
+        // this is a bit of duplication from repositionItems
+        // for when we are allowed to grow ourself
+        Alignment align = alignment();
+        unsigned int num_items = m_item_list.size();
+        if (m_max_total_size && (align == RIGHT || align == LEFT) &&
+            num_items) { 
+            unsigned int max_width_per_client = maxWidthPerClient();
+            unsigned int borderW = m_item_list.front()->borderWidth();
+            
+            unsigned int preferred_width = (max_width_per_client + borderW) * num_items - borderW;
+
+            if (preferred_width > m_max_total_size)
+                preferred_width = m_max_total_size;
+
+            if (preferred_width != width())
+                repositionItems();
+        }
+
+    }
+}
+
 void Container::setAlignment(Container::Alignment a) {
     m_align = a;
 }
@@ -325,25 +360,48 @@ void Container::repositionItems() {
 
     //!! TODO vertical position
 
-    const int max_width_per_client = maxWidthPerClient();
+    unsigned int max_width_per_client = maxWidthPerClient();
+    unsigned int borderW = m_item_list.front()->borderWidth();
+    unsigned int num_items = m_item_list.size();
+
+    unsigned int total_width = width();
+
+    // if we have a max total size, then we must also resize ourself
+    // within that bound
+    Alignment align = alignment();
+    if (m_max_total_size && (align == RIGHT || align == LEFT)) {
+        total_width = (max_width_per_client + borderW) * num_items - borderW;
+        if (total_width > m_max_total_size) {
+            total_width = m_max_total_size;
+            if (m_max_total_size > ((num_items - 1)*borderW)) { // don't go negative with unsigned nums
+                max_width_per_client = ( m_max_total_size - (num_items - 1)*borderW ) / num_items;
+                total_width = (max_width_per_client + borderW) * num_items - borderW;
+            } else
+                max_width_per_client = 1;
+        }
+        if (total_width != width()) {
+            // calling Container::resize here risks infinite loops
+            FbTk::FbWindow::resize(total_width, height());
+        }
+    }
+
 
     ItemList::iterator it = m_item_list.begin();
     const ItemList::iterator it_end = m_item_list.end();
-    int borderW = m_item_list.front()->borderWidth();
 
-    int rounding_error = width() - ((maxWidthPerClient() + borderW)* m_item_list.size() - borderW);
+    int rounding_error = total_width - ((max_width_per_client + borderW)* num_items - borderW);
 
     int next_x = -borderW; // zero so the border of the first shows
     int extra = 0;
     int direction = 1;
-    if (alignment() == RIGHT) {
+    if (align == RIGHT) {
         direction = -1;
-        next_x = width() - max_width_per_client + borderW;
+        next_x = total_width - max_width_per_client + borderW;
     }
 
     for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {
         // we only need to do error stuff with alignment RELATIVE
-        if (rounding_error != 0 && alignment() == RELATIVE) {
+        if (rounding_error != 0 && align == RELATIVE) {
             --rounding_error;
             extra = 1;
         } else {
@@ -374,7 +432,11 @@ unsigned int Container::maxWidthPerClient() const {
             int borderW = m_item_list.front()->borderWidth();
             // there're count-1 borders to fit in with the windows
             // -> 1 per window plus end
-            return (width() - (count - 1) * borderW) / count;
+            unsigned int w = width();
+            if (w < (count-1)*borderW)
+                return 1;
+            else
+                return (w - (count - 1) * borderW) / count;
         }
         break;
     }

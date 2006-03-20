@@ -175,6 +175,8 @@ int handleXErrors(Display *d, XErrorEvent *e) {
         XGetErrorText(d, e->error_code, errtxt, 128);
         cerr<<"Fluxbox: X Error: "<<errtxt<<"("<<(int)e->error_code<<") opcodes "<<
             (int)e->request_code<<"/"<<(int)e->minor_code<<" resource 0x"<<hex<<(int)e->resourceid<<dec<<endl;
+//        if (e->error_code != 9 && e->error_code != 183)
+//            kill(0, 2);
     }
 #endif // !DEBUG
 
@@ -193,15 +195,15 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       // TODO: shouldn't need a separate one for screen
       m_screen_rm(m_resourcemanager),
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
-      m_rc_tabs_padding(m_resourcemanager, 0, "session.tabPadding", "Session.TabPadding"),
-      m_rc_focused_tab_min_width(m_resourcemanager, 0, "session.focusTabMinWidth",
-              "Session.FocusTabMinWidth"),
       m_rc_ignoreborder(m_resourcemanager, false, "session.ignoreBorder", "Session.IgnoreBorder"),
       m_rc_pseudotrans(m_resourcemanager, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
       m_rc_colors_per_channel(m_resourcemanager, 4,
                               "session.colorsPerChannel", "Session.ColorsPerChannel"),
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
+      m_rc_tabs_padding(m_resourcemanager, 0, "session.tabPadding", "Session.TabPadding"),
+      m_rc_focused_tab_min_width(m_resourcemanager, 0, "session.focusTabMinWidth",
+              "Session.FocusTabMinWidth"),
       m_rc_stylefile(m_resourcemanager, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
       m_rc_styleoverlayfile(m_resourcemanager, "~/.fluxbox/overlay", "session.styleOverlay", "Session.StyleOverlay"),
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
@@ -358,8 +360,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     }
     
     // init all "screens"
-    for(i = 0; i < screens.size(); i++)
-        initScreen(screens[i]);
+    for(unsigned int s = 0; s < screens.size(); s++)
+        initScreen(screens[s]);
     
     XAllowEvents(disp, ReplayPointer, CurrentTime);
 

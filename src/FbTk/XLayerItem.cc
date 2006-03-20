@@ -81,9 +81,10 @@ void XLayerItem::moveToLayer(int layernum) {
 }
 
 void XLayerItem::addWindow(FbWindow &win) {
-  // I'd like to think we can trust ourselves that it won't be added twice...
-  // Otherwise we're always scanning through the list.
-  m_windows.push_back(&win);
+    // I'd like to think we can trust ourselves that it won't be added twice...
+    // Otherwise we're always scanning through the list.
+    m_windows.push_back(&win);
+    m_layer->alignItem(*this);
 }
 
 void XLayerItem::removeWindow(FbWindow &win) {
@@ -91,7 +92,8 @@ void XLayerItem::removeWindow(FbWindow &win) {
   // Otherwise we're always scanning through the list.
 
   XLayerItem::Windows::iterator it = std::find(m_windows.begin(), m_windows.end(), &win);
-  m_windows.erase(it);
+  if (it != m_windows.end())
+      m_windows.erase(it);
 }
 
 void XLayerItem::bringToTop(FbWindow &win) {

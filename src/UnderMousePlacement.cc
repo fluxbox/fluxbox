@@ -43,6 +43,7 @@ bool UnderMousePlacement::placeWindow(const std::vector<FluxboxWindow *> &list,
                   &ignore_i, &ignore_i, &ignore_ui);
 
     // 2*border = border on each side of the screen
+    // not using offset ones because we won't let tabs influence the "centre"
     int win_w = win.width() + win.fbWindow().borderWidth()*2,
         win_h = win.height() + win.fbWindow().borderWidth()*2;
 

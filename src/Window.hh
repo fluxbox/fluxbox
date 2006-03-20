@@ -316,8 +316,8 @@ public:
     inline const BScreen &screen() const { return m_screen; }
     inline BScreen &screen() { return m_screen; }
 
-    inline const FbTk::XLayerItem &layerItem() const { return m_layeritem; }
-    inline FbTk::XLayerItem &layerItem() { return m_layeritem; }
+    inline const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }
+    inline FbTk::XLayerItem &layerItem() { return m_frame.layerItem(); }
 
     Window clientWindow() const;
 
@@ -336,6 +336,11 @@ public:
     inline int y() const { return frame().y(); }
     inline unsigned int width() const { return frame().width(); }
     inline unsigned int height() const { return frame().height(); }
+
+    inline int xOffset() const { return frame().xOffset(); }
+    inline int yOffset() const { return frame().yOffset(); }
+    inline int widthOffset() const { return frame().widthOffset(); }
+    inline int heightOffset() const { return frame().heightOffset(); }
 
     unsigned int workspaceNumber() const { return m_workspace_number; }
 
@@ -504,7 +509,6 @@ private:
         m_last_button_y; ///< last known y position of the mouse button
     FbWinFrame m_frame;
 
-    FbTk::XLayerItem m_layeritem;
     int m_layernum;
     int m_old_layernum;
 

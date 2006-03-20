@@ -57,11 +57,12 @@ bool RowSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
     if (screen_placement.rowDirection() == ScreenPlacement::RIGHTLEFT)
         change_x = -1;
 
+    int win_w = win.width() + win.fbWindow().borderWidth()*2 + win.widthOffset();
+    int win_h = win.height() + win.fbWindow().borderWidth()*2 + win.heightOffset();
 
+    int x_off = win.xOffset();
+    int y_off = win.yOffset();
 
-
-    int win_h = win.height() + win.fbWindow().borderWidth()*2;
-    int win_w = win.width() + win.fbWindow().borderWidth()*2;
     int test_y;
     if (top_bot)
         test_y = head_top;
@@ -102,10 +103,10 @@ bool RowSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
             for (; win_it != win_it_end && placed; ++win_it) {
                 FluxboxWindow &window = **win_it;
 
-                int curr_x = window.x();
-                int curr_y = window.y();
-                int curr_w = window.width() + window.fbWindow().borderWidth()*2;
-                int curr_h = window.height() + window.fbWindow().borderWidth()*2;
+                int curr_x = window.x() + window.xOffset();
+                int curr_y = window.y() + window.yOffset();
+                int curr_w = window.width() + window.fbWindow().borderWidth()*2 + window.widthOffset();
+                int curr_h = window.height() + window.fbWindow().borderWidth()*2 + window.heightOffset();
 
                 if (curr_x < test_x + win_w &&
                     curr_x + curr_w > test_x &&
@@ -138,8 +139,8 @@ bool RowSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
 
 
             if (placed) {
-                place_x = test_x;
-                place_y = test_y;
+                place_x = test_x + x_off;
+                place_y = test_y + y_off;
 
                 break;
             }

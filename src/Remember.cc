@@ -416,6 +416,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                                           FluxboxWindow::DECORM_TITLEBAR
                                           | FluxboxWindow::DECORM_ICONIFY
                                           | FluxboxWindow::DECORM_MENU
+                                          | FluxboxWindow::DECORM_TAB
                                           );
                 } else if (str_label == "TOOL") {
                     app.rememberDecostate((unsigned int)
@@ -426,6 +427,12 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                     app.rememberDecostate((unsigned int)
                                           FluxboxWindow::DECORM_BORDER
                                           | FluxboxWindow::DECORM_MENU
+                                          );
+                } else if (str_label == "TAB") {
+                    app.rememberDecostate((unsigned int)
+                                          FluxboxWindow::DECORM_BORDER
+                                          | FluxboxWindow::DECORM_MENU
+                                          | FluxboxWindow::DECORM_TAB
                                           );
                 } else {
                     unsigned int mask;

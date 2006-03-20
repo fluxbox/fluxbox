@@ -201,7 +201,8 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                  scrname+".overlay.capStyle",
                  altscrname+".overlay.CapStyle"),
     scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
-    scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse") {
+    scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
+    default_external_tabs(rm, false /* TODO: autoconf option? */ , scrname+".externalTabs", altscrname+".ExternalTabs") {
     
 
 }
@@ -1549,6 +1550,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     _BOOLITEM(Configmenu, DecorateTransient,
               "Decorate Transient Windows", "Decorate Transient Windows",
               *resource.decorate_transient, saverc_cmd);
+    _BOOLITEM(Configmenu, ExternalTabs,
+              "Use External Tabs (experimental)", "Use External Tabs (experimental)", 
+              *resource.default_external_tabs, saverc_cmd);
     _BOOLITEM(Configmenu, ClickRaises,
               "Click Raises", "Click Raises", 
               *resource.click_raises, saverc_cmd);

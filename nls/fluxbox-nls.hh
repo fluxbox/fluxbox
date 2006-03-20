@@ -72,6 +72,7 @@ enum {
 	ConfigmenuTransparency = 18,
 	ConfigmenuFocusedAlpha = 19,
 	ConfigmenuUnfocusedAlpha = 20,
+	ConfigmenuExternalTabs = 21,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,

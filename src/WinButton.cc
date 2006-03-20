@@ -298,7 +298,7 @@ void WinButton::drawType() {
             if (m_icon_mask.drawable())
                 XSetClipMask(m_listen_to.fbWindow().display(), gc(), None);
         } else {
-            for (int y = height()/3; y <= height() - height()/3; y+=3) {
+            for (unsigned int y = height()/3; y <= height() - height()/3; y+=3) {
                 drawLine(gc(), width()/4, y, width() - width()/4 - oddW - 1, y);
             }
             drawRectangle(gc(),

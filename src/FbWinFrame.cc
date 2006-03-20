@@ -25,13 +25,13 @@
 
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
-#include "FbTk/TextButton.hh"
 #include "FbTk/App.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/Transparent.hh"
 #include "CompareWindow.hh"
 #include "FbWinFrameTheme.hh"
+#include "Screen.hh"
 
 #include "Container.hh"
 
@@ -46,24 +46,22 @@
 
 using namespace std;
 
-FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
+FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
+                       FbTk::XLayer &layer,
                        int x, int y,
                        unsigned int width, unsigned int height):
+    m_screen(screen),
     m_theme(theme),
     m_imagectrl(imgctrl),
     m_window(theme.screenNum(), x, y, width, height,  ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | EnterWindowMask, true),
+    m_layeritem(window(), layer),
     m_titlebar(m_window, 0, 0, 100, 16, 
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |
                EnterWindowMask | LeaveWindowMask),
     m_tab_container(m_titlebar),
-/*
-    m_label(m_titlebar, 0, 0, 100, 16,
-	    ButtonPressMask | ButtonReleaseMask |
-            ButtonMotionMask | ExposureMask |
-            EnterWindowMask | LeaveWindowMask),
-*/
+    m_label(m_titlebar, m_theme.font(), ""),
     m_handle(m_window, 0, 0, 100, 5,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | ExposureMask |
@@ -82,11 +80,12 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
                  EnterWindowMask | LeaveWindowMask),
     m_bevel(1),
     m_use_titlebar(true), 
+    m_use_tabs(true), 
     m_use_handle(true),
     m_focused(false),
     m_visible(false),
     m_button_pm(0),
-    m_tabmode(INTERNAL), // TODO: configurable default (on compile, for backwards compat)
+    m_tabmode(NOTSET),
     m_need_render(true),
     m_themelistener(*this),
     m_shape(new Shape(m_window, theme.shapePlace())) {
@@ -116,8 +115,78 @@ bool FbWinFrame::setOnClickTitlebar(FbTk::RefCount<FbTk::Command> &ref, int mous
     return true;
 }
 
+bool FbWinFrame::setTabMode(TabMode tabmode) {
+    if (m_tabmode == tabmode)
+        return false;
+
+    bool ret = true;
+
+    // setting tabmode to notset forces it through when 
+    // something is likely to change
+    if (tabmode == NOTSET)
+        tabmode = m_tabmode;
+
+    // reparent tab container
+    if (tabmode == EXTERNAL) {
+
+        m_tab_container.setBorderWidth(m_window.borderWidth());
+        m_tab_container.setBorderColor(theme().border().color());
+        m_tab_container.setEventMask(
+               ButtonPressMask | ButtonReleaseMask |
+               ButtonMotionMask | ExposureMask |
+               EnterWindowMask | LeaveWindowMask);
+
+        XGrabButton(m_tab_container.display(), Button1, AnyModifier,
+                    m_tab_container.window(), True, ButtonPressMask,
+                    GrabModeSync, GrabModeSync, None, None);
+        XUngrabButton(m_tab_container.display(), Button1, Mod1Mask|Mod2Mask|Mod3Mask, m_tab_container.window());
+
+        if (m_tab_container.parent()->window() != m_screen.rootWindow().window()) {
+            int tabx = x();
+            // one borderwidth only, so the adjacent borders overlab
+            int taby = y() - m_tab_container.height() - m_tab_container.borderWidth();
+            m_tab_container.reparent(m_screen.rootWindow(), tabx, taby);
+            m_layeritem.addWindow(m_tab_container);
+        }
+
+        m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setMaxSizePerClient(64); //!!TODO make this a setting
+        m_tab_container.setMaxTotalSize(window().width());
+
+        // TODO: tab position
+        if (m_use_tabs && m_visible)
+            m_tab_container.show();
+        else {
+            ret = false;
+            m_tab_container.hide();
+        }
+
+    } else {
+        if (m_tab_container.parent()->window() == m_screen.rootWindow().window()) {
+            m_layeritem.removeWindow(m_tab_container);
+            m_tab_container.reparent(m_titlebar, m_label.x(), m_label.y());
+            m_tab_container.raise();
+        }
+        m_tab_container.setBorderWidth(0);
+        m_tab_container.setMaxTotalSize(0);
+        m_tab_container.setMaxSizePerClient(0);
+        m_tab_container.setAlignment(Container::RELATIVE);
+        if (!m_use_tabs)
+            m_tab_container.show();
+        else
+            ret = false;
+//        reconfigure();
+    }
+
+    m_tabmode = tabmode;
+    return true;
+}
+
 void FbWinFrame::hide() {
     m_window.hide();
+    if (m_tabmode == EXTERNAL && m_use_tabs)
+        m_tab_container.hide();
+
     m_visible = false;
 }
 
@@ -129,6 +198,9 @@ void FbWinFrame::show() {
         applyAll();
         clearAll();
     }
+
+    if (m_tabmode == EXTERNAL && m_use_tabs)
+        m_tab_container.show();
 
     m_window.showSubwindows();
     m_window.show();
@@ -214,8 +286,28 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
         m_window.resize(width, height);
     }
 
-    if (resize)
+    if (move)
+        alignTabs();
+
+    if (resize) {
+        if (m_tabmode == EXTERNAL)
+            m_tab_container.setMaxTotalSize(width);
         reconfigure();
+    }
+}
+
+void FbWinFrame::quietMoveResize(int x, int y, 
+                                 unsigned int width, unsigned int height) {
+    m_window.moveResize(x, y, width, height);
+    if (m_tabmode == EXTERNAL) {
+        m_tab_container.setMaxTotalSize(width);
+        alignTabs();
+    }
+}
+
+void FbWinFrame::alignTabs() {
+    if (m_tabmode == EXTERNAL)
+        m_tab_container.move(m_window.x(), m_window.y() - m_tab_container.height() - m_tab_container.borderWidth());
 }
 
 void FbWinFrame::notifyMoved(bool clear) {
@@ -224,10 +316,16 @@ void FbWinFrame::notifyMoved(bool clear) {
     if (alpha == 255) 
         return;
 
-    if (m_use_titlebar) {
-        m_titlebar.parentMoved();
-        //m_label.parentMoved();
+    if (m_tabmode == EXTERNAL && m_use_tabs || m_use_titlebar) {
         m_tab_container.parentMoved();
+        m_tab_container.for_each(mem_fun(&FbTk::Button::parentMoved));
+    }
+
+    if (m_use_titlebar) {
+        if (m_tabmode == INTERNAL)
+            m_label.parentMoved();
+
+        m_titlebar.parentMoved();
 
         for_each(m_buttons_left.begin(),
                  m_buttons_left.end(),
@@ -235,7 +333,6 @@ void FbWinFrame::notifyMoved(bool clear) {
         for_each(m_buttons_right.begin(),
                  m_buttons_right.end(),
                  mem_fun(&FbTk::Button::parentMoved));
-        m_tab_container.for_each(mem_fun(&FbTk::Button::parentMoved));
     }
 
     if (m_use_handle) {
@@ -246,7 +343,8 @@ void FbWinFrame::notifyMoved(bool clear) {
 
     if (clear && (m_use_handle || m_use_titlebar)) {
         clearAll();
-    }
+    } else if (clear && m_tabmode == EXTERNAL && m_use_tabs)
+        m_tab_container.clear();
 }
 
 void FbWinFrame::clearAll() {
@@ -260,7 +358,8 @@ void FbWinFrame::clearAll() {
         for_each(m_buttons_right.begin(),
                  m_buttons_right.end(),
                  mem_fun(&FbTk::Button::clear));
-    }
+    } else if (m_tabmode == EXTERNAL && m_use_tabs)
+        m_tab_container.clear();
 
     if (m_use_handle) {
         m_handle.clear();
@@ -293,6 +392,7 @@ void FbWinFrame::setFocus(bool newvalue) {
 
     applyTitlebar();
     applyHandles();
+    applyTabContainer();
     clearAll();
 }
 
@@ -416,6 +516,7 @@ void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
         applyUnfocusLabel(*m_current_label);
 
     m_current_label = &btn; // current focused button
+    m_label.setText(btn.text());
 
     if (m_focused)
         applyFocusLabel(*m_current_label);
@@ -451,9 +552,33 @@ void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
     XChangeWindowAttributes(win.display(), win.window(), CWEventMask|CWDontPropagate, &attrib_set);
 
     m_clientarea.raise();
+    win.show();
     win.raise();
     m_window.showSubwindows();
 
+}
+
+bool FbWinFrame::hideTabs() {
+    if (m_tabmode == INTERNAL || !m_use_tabs) {
+        m_use_tabs = false;
+        return false;
+    }
+
+    m_use_tabs = false;
+    m_tab_container.hide();
+    return true;
+}
+
+bool FbWinFrame::showTabs() {
+    if (m_tabmode == INTERNAL || m_use_tabs) {
+        m_use_tabs = true;
+        return false; // nothing changed
+    }
+
+    m_use_tabs = true;
+    if (m_visible)
+        m_tab_container.show();
+    return true;
 }
 
 bool FbWinFrame::hideTitlebar() {
@@ -484,6 +609,7 @@ bool FbWinFrame::showTitlebar() {
     // only add one borderwidth (as the other border is still the "top" border)
     m_window.resize(m_window.width(), m_window.height() + m_titlebar.height() +
                     m_titlebar.borderWidth());
+
     return true;
 
 }
@@ -555,6 +681,7 @@ void FbWinFrame::setEventHandler(FbTk::EventHandler &evh) {
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     evm.add(evh, m_tab_container);
+    evm.add(evh, m_label);
     evm.add(evh, m_titlebar);
     evm.add(evh, m_handle);
     evm.add(evh, m_grip_right);
@@ -569,6 +696,7 @@ void FbWinFrame::setEventHandler(FbTk::EventHandler &evh) {
 void FbWinFrame::removeEventHandler() {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     evm.remove(m_tab_container);
+    evm.remove(m_label);
     evm.remove(m_titlebar);
     evm.remove(m_handle);
     evm.remove(m_grip_right);
@@ -579,6 +707,9 @@ void FbWinFrame::removeEventHandler() {
 
 void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
     // we can ignore which window the event was generated for
+    if (event.window == m_label.window() && m_current_label) 
+        event.window = m_current_label->window();
+
     m_tab_container.tryButtonPressEvent(event);
     if (event.window == m_grip_right.window() ||
         event.window == m_grip_left.window() ||
@@ -595,6 +726,8 @@ void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
 
 void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
     // we can ignore which window the event was generated for
+    if (event.window == m_label.window() && m_current_label) 
+        event.window = m_current_label->window();
     
     // we continue even if a button got the event
     m_tab_container.tryButtonReleaseEvent(event);
@@ -626,6 +759,8 @@ void FbWinFrame::exposeEvent(XExposeEvent &event) {
         m_titlebar.clearArea(event.x, event.y, event.width, event.height);
     } else if (m_tab_container == event.window) {
         m_tab_container.clearArea(event.x, event.y, event.width, event.height);
+    } else if (m_label == event.window) {
+        m_label.clearArea(event.x, event.y, event.width, event.height);
     } else if (m_handle == event.window) {
         m_handle.clearArea(event.x, event.y, event.width, event.height);
     } else if (m_grip_left == event.window) {
@@ -696,6 +831,8 @@ void FbWinFrame::reconfigure() {
     } else 
         m_titlebar.lower();
 
+    if (m_tabmode == EXTERNAL)
+        m_tab_container.resize(m_tab_container.width(), buttonHeight());
 
     // leave client+grips alone if we're shaded (it'll get fixed when we unshade)
     if (!m_shaded) {
@@ -788,7 +925,7 @@ void FbWinFrame::redrawTitlebar() {
 
     if (isVisible()) {
         m_tab_container.clear();
-        //m_label.clear();
+        m_label.clear();
         m_titlebar.clear();
     }
 }
@@ -825,16 +962,23 @@ void FbWinFrame::reconfigureTitlebar() {
     next_x += m_bevel;
 
     // space left on titlebar between left and right buttons
-    unsigned int space_left = m_titlebar.width() - next_x;
+    int space_left = m_titlebar.width() - next_x;
+
     if (!m_buttons_right.empty()) 
         space_left -= m_buttons_right.size() * (button_size + m_bevel);
 
     space_left -= m_bevel;
-	
-    m_tab_container.moveResize(next_x, m_bevel,
-                               space_left, button_size);
 
-    next_x += m_tab_container.width() + m_bevel;;
+    if (space_left <= 0)
+        space_left = 1;
+
+    m_label.moveResize(next_x, m_bevel, space_left, button_size);
+
+    if (m_tabmode == INTERNAL)
+        m_tab_container.moveResize(next_x, m_bevel,
+                                   space_left, button_size);
+
+    next_x += m_label.width() + m_bevel;
 
     // finaly set new buttons to the right
     for (size_t i=0; i < m_buttons_right.size(); 
@@ -851,13 +995,13 @@ void FbWinFrame::renderAll() {
 
     renderTitlebar();
     renderHandles();
-    renderLabelButtons();
+    renderTabContainer();
 }
 
 void FbWinFrame::applyAll() {
     applyTitlebar();
     applyHandles();
-    applyLabelButtons();
+    applyTabContainer();
 }
 
 void FbWinFrame::renderTitlebar() {
@@ -878,16 +1022,45 @@ void FbWinFrame::renderTitlebar() {
            m_title_unfocused_pm,
            m_titlebar.width(), m_titlebar.height());
 
+    //!! TODO: don't render label if internal tabs
+
     render(m_theme.labelFocusTexture(), m_label_focused_color, 
            m_label_focused_pm,
-           m_tab_container.width(), m_tab_container.height());
-		
+           m_label.width(), m_label.height());
 
     render(m_theme.labelUnfocusTexture(), m_label_unfocused_color, 
            m_label_unfocused_pm,
-           m_tab_container.width(), m_tab_container.height());
+           m_label.width(), m_label.height());
 
     renderButtons();
+}
+
+void FbWinFrame::renderTabContainer() {
+    if (!isVisible()) {
+        m_need_render = true;
+        return;
+    }
+
+    render(m_theme.labelFocusTexture(), m_tabcontainer_focused_color, 
+           m_tabcontainer_focused_pm,
+           m_tab_container.width(), m_tab_container.height());		
+
+    render(m_theme.labelUnfocusTexture(), m_tabcontainer_unfocused_color, 
+           m_tabcontainer_unfocused_pm,
+           m_tab_container.width(), m_tab_container.height());
+
+    render(m_theme.labelFocusTexture(), m_labelbutton_focused_color, 
+           m_labelbutton_focused_pm,
+           m_tab_container.width(), m_tab_container.height());
+
+    render(m_theme.labelUnfocusTexture(), m_labelbutton_unfocused_color, 
+           m_labelbutton_unfocused_pm,
+           m_tab_container.width(), m_tab_container.height());
+
+    render(m_theme.labelActiveTexture(), m_labelbutton_active_color, 
+           m_labelbutton_active_pm,
+           m_tab_container.width(), m_tab_container.height());
+
 }
 
 void FbWinFrame::applyTitlebar() {
@@ -902,13 +1075,13 @@ void FbWinFrame::applyTitlebar() {
 
     unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
     m_titlebar.setAlpha(alpha);
-    m_tab_container.setAlpha(alpha);
+    m_label.setAlpha(alpha);
 
     if (label_pm != 0)
-        m_tab_container.setBackgroundPixmap(label_pm);
-    else            
-        m_tab_container.setBackgroundColor(label_color);
-    
+        m_label.setBackgroundPixmap(label_pm);
+    else
+        m_label.setBackgroundColor(label_color);
+
     if (title_pm != 0)
         m_titlebar.setBackgroundPixmap(title_pm);
     else
@@ -1036,6 +1209,7 @@ void FbWinFrame::init() {
     // clear pixmaps
     m_title_focused_pm = m_title_unfocused_pm = 0;
     m_label_focused_pm = m_label_unfocused_pm = 0;
+    m_tabcontainer_focused_pm = m_tabcontainer_unfocused_pm = 0;
     m_labelbutton_focused_pm = m_labelbutton_unfocused_pm = m_labelbutton_active_pm = 0;
     m_handle_focused_pm = m_handle_unfocused_pm = 0;
     m_button_pm = m_button_unfocused_pm = m_button_pressed_pm = 0;
@@ -1045,8 +1219,20 @@ void FbWinFrame::init() {
     m_button_size = 26;
 
     m_clientarea.setBorderWidth(0);
+    m_label.setBorderWidth(0);
     m_shaded = false;
+
+    // TODO: configurable default (on compile, for backwards compat)
+//    setTabMode(EXTERNAL);
+    setTabMode(INTERNAL);
+
+    m_label.setEventMask(ExposureMask | ButtonPressMask |
+                         ButtonReleaseMask | ButtonMotionMask |
+                         EnterWindowMask);
+    m_label.show();
+
     m_tab_container.show();
+    m_tab_container.raise();
 
     showHandle();
     showTitlebar();
@@ -1104,62 +1290,52 @@ void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
 void FbWinFrame::getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                        FbTk::Color &label_color, FbTk::Color &title_color) {
     if (m_focused) {
-        if (m_labelbutton_focused_pm != 0)
-            label_pm = m_labelbutton_focused_pm;
+        if (m_label_focused_pm != 0)
+            label_pm = m_label_focused_pm;
         else
-            label_color = m_labelbutton_focused_color;
+            label_color = m_label_focused_color;
     
         if (m_title_focused_pm != 0)
             title_pm = m_title_focused_pm;
         else
             title_color = m_title_focused_color;
-     
     } else {
-        getActiveLabelPixmap(label_pm, title_pm,
-                             label_color, title_color);
+        if (m_label_unfocused_pm != 0)
+            label_pm = m_label_unfocused_pm;
+        else
+            label_color = m_label_unfocused_color;
+    
+        if (m_title_unfocused_pm != 0)
+            title_pm = m_title_unfocused_pm;
+        else
+            title_color = m_title_unfocused_color;
+    }     
+}
+
+void FbWinFrame::applyTabContainer() {
+    m_tab_container.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+
+    // do the parent container
+    Pixmap tabcontainer_pm = None;
+    FbTk::Color *tabcontainer_color = NULL;
+    if (m_focused) {
+        if (m_tabcontainer_focused_pm != 0)
+            tabcontainer_pm = m_tabcontainer_focused_pm;
+        else
+            tabcontainer_color = &m_tabcontainer_focused_color;
+    } else {
+        if (m_tabcontainer_unfocused_pm != 0)
+            tabcontainer_pm = m_tabcontainer_unfocused_pm;
+        else
+            tabcontainer_color = &m_tabcontainer_unfocused_color;
     }
 
-}
-
-// only called if not focused
-void FbWinFrame::getActiveLabelPixmap(Pixmap &label_pm, Pixmap &title_pm,
-                                  FbTk::Color &label_color, 
-                                  FbTk::Color &title_color) {
-
-    if (m_labelbutton_active_pm != 0)
-        label_pm = m_labelbutton_active_pm;            
+    if (tabcontainer_pm != 0)
+        m_tab_container.setBackgroundPixmap(tabcontainer_pm);
     else
-        label_color = m_labelbutton_active_color;
+        m_tab_container.setBackgroundColor(*tabcontainer_color);
 
-    if (m_title_unfocused_pm != 0)
-        title_pm  = m_title_unfocused_pm;
-    else
-        title_color = m_title_unfocused_color;
-}
-
-void FbWinFrame::renderLabelButtons() {
-    if (!isVisible()) {
-        m_need_render = true;
-        return;
-    }
-
-    render(m_theme.labelFocusTexture(), m_labelbutton_focused_color, 
-           m_labelbutton_focused_pm,
-           m_tab_container.width(), m_tab_container.height());
-		
-
-    render(m_theme.labelUnfocusTexture(), m_labelbutton_unfocused_color, 
-           m_labelbutton_unfocused_pm,
-           m_tab_container.width(), m_tab_container.height());
-
-    render(m_theme.labelActiveTexture(), m_labelbutton_active_color, 
-           m_labelbutton_active_pm,
-           m_tab_container.width(), m_tab_container.height());
-
-}
-
-void FbWinFrame::applyLabelButtons() {
-
+    // and the labelbuttons in it
     Container::ItemList::iterator btn_it = m_tab_container.begin();
     Container::ItemList::iterator btn_it_end = m_tab_container.end();
     for (; btn_it != btn_it_end; ++btn_it) {
@@ -1186,6 +1362,8 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
     window().setBorderWidth(border_width);
     window().setBorderColor(theme().border().color());
 
+    setTabMode(NOTSET);
+
     titlebar().setBorderWidth(border_width);
     titlebar().setBorderColor(theme().border().color());
 
@@ -1200,13 +1378,16 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
 
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);
+
+    if (m_tabmode == EXTERNAL)
+        alignTabs();
 }
 
 void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
 
+    button.setBorderWidth(1);
     button.setGC(theme().labelTextFocusGC());
     button.setJustify(theme().justify());
-    button.setBorderWidth(1);
     button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
 
     if (m_labelbutton_focused_pm != 0) {
@@ -1217,10 +1398,9 @@ void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
 }
 
 void FbWinFrame::applyActiveLabel(FbTk::TextButton &button) {
-
+    button.setBorderWidth(1);
     button.setGC(theme().labelTextActiveGC());
     button.setJustify(theme().justify());
-    button.setBorderWidth(1);
     button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
 
     if (m_labelbutton_active_pm != 0) {
@@ -1362,3 +1542,18 @@ void FbWinFrame::gravityTranslate(int &x, int &y, unsigned int width, unsigned i
         move(x, y);
     }
 }
+
+int FbWinFrame::heightOffset() const {
+    if (m_tabmode == EXTERNAL && m_use_tabs) 
+        return m_tab_container.height() + m_window.borderWidth();
+    else
+        return 0;
+}
+
+int FbWinFrame::yOffset() const {
+    if (m_tabmode == EXTERNAL && m_use_tabs) 
+        return m_tab_container.height() + m_window.borderWidth();
+    else
+        return 0;
+}
+

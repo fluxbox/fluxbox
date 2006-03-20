@@ -311,8 +311,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_old_pos_x(0), m_old_pos_y(0),
     m_old_width(1),  m_old_height(1),
     m_last_button_x(0),  m_last_button_y(0),
-    m_frame(tm, client.screen().imageControl(), 0, 0, 100, 100),
-    m_layeritem(m_frame.window(), layer),
+    m_frame(client.screen(), tm, client.screen().imageControl(), layer, 0, 0, 100, 100),
     m_layernum(layer.getLayerNum()),
     m_old_layernum(0),
     m_parent(client.screen().rootWindow()),
@@ -344,6 +343,7 @@ FluxboxWindow::~FluxboxWindow() {
 
     // no longer a valid window to do stuff with
     Fluxbox::instance()->removeWindowSearchGroup(frame().window().window());
+    Fluxbox::instance()->removeWindowSearchGroup(frame().tabcontainer().window());
 
     Client2ButtonMap::iterator it = m_labelbuttons.begin();
     Client2ButtonMap::iterator it_end = m_labelbuttons.end();
@@ -393,6 +393,12 @@ void FluxboxWindow::init() {
     }
 
     frame().setUseShape(!m_shaped);
+
+    if (screen().getDefaultExternalTabs()) {
+        frame().setTabMode(FbWinFrame::EXTERNAL);
+    } else {
+        frame().setTabMode(FbWinFrame::INTERNAL);
+    }
 
     //!! TODO init of client should be better
     // we don't want to duplicate code here and in attachClient
@@ -467,6 +473,7 @@ void FluxboxWindow::init() {
     m_timer.fireOnce(true);
 
     Fluxbox::instance()->saveWindowSearchGroup(frame().window().window(), this);
+    Fluxbox::instance()->saveWindowSearchGroup(frame().tabcontainer().window(), this);
 
     /**************************************************/
     /* Read state above here, apply state below here. */
@@ -1146,8 +1153,11 @@ void FluxboxWindow::updateTitleFromClient(WinClient &client) {
     client.updateTitle();
     // compare old title with new and see if we need to update
     // graphics
-    if (m_labelbuttons[&client]->text() != client.title())
+    if (m_labelbuttons[&client]->text() != client.title()) {
         m_labelbuttons[&client]->setText(client.title());
+        if (&client == m_client)
+            frame().setFocusTitle(client.title());
+    }
 }
 
 /// update icon title from client
@@ -2648,7 +2658,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
             setInputFocus();
         }
 
-        if (frame().window().window() == be.window) {
+        if (frame().window().window() == be.window || frame().tabcontainer().window() == be.window) {
             if (screen().clickRaises())
                 raise();
 #ifdef DEBUG
@@ -2694,17 +2704,28 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
     if (isMoving() && me.window == parent()) {
         me.window = frame().window().window();
     }
-    bool inside_titlebar = (frame().titlebar() == me.window || frame().label() == me.window ||
-                            frame().handle() == me.window || frame().window() == me.window);
+
+    bool inside_titlebar = (frame().titlebar() == me.window
+                            || frame().label() == me.window
+                            || frame().tabcontainer() == me.window
+                            || frame().handle() == me.window
+                            || frame().window() == me.window);
 
     if (Fluxbox::instance()->getIgnoreBorder()
         && !(me.state & Mod1Mask) // really should check for exact matches
         && !(isMoving() || isResizing() || m_attaching_tab != 0)) {
         int borderw = frame().window().borderWidth();
-        if (me.x_root < (frame().x() + borderw) ||
+        //!! TODO(tabs): the below test ought to be in FbWinFrame
+        if ((me.x_root < (frame().x() + borderw) ||
             me.y_root < (frame().y() + borderw) ||
             me.x_root > (frame().x() + (int)frame().width() + borderw) ||
-            me.y_root > (frame().y() + (int)frame().height() + borderw))
+            me.y_root > (frame().y() + (int)frame().height() + borderw)) &&
+            ( !frame().externalTabMode() ||
+              (me.x_root < (frame().tabcontainer().x() + borderw) ||
+               me.y_root < (frame().tabcontainer().y() + borderw) ||
+               me.x_root > (frame().tabcontainer().x() + (int)frame().tabcontainer().width() + borderw) ||
+               me.y_root > (frame().tabcontainer().y() + (int)frame().tabcontainer().height() + borderw)
+                  )))
             return;
     }
 
@@ -2794,7 +2815,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             } else {
                 //moveResize(dx, dy, frame().width(), frame().height());
                 // need to move the base window without interfering with transparency
-                frame().window().moveResize(dx, dy, frame().width(), frame().height());
+                frame().quietMoveResize(dx, dy, frame().width(), frame().height());
             }
 
             screen().showPosition(dx, dy);
@@ -3077,11 +3098,26 @@ void FluxboxWindow::applyDecorations(bool initial) {
         frame().setBorderWidth(border_width);
     }
 
-    // we rely on frame not doing anything if it is already shown/hidden
-    if (decorations.titlebar)
-        client_move |= frame().showTitlebar();
+    // tab deocration only affects if we're external
+    // must do before the setTabMode in case it goes
+    // to external and is meant to be hidden
+    if (decorations.tab) 
+        client_move |= frame().showTabs();
     else
+        client_move |= frame().hideTabs();
+
+    // we rely on frame not doing anything if it is already shown/hidden
+    if (decorations.titlebar) {
+        bool change = frame().showTitlebar();
+        client_move |= change;
+        if (change && !screen().getDefaultExternalTabs()) {
+            client_move |= frame().setTabMode(FbWinFrame::INTERNAL);
+        }
+    } else {
         client_move |= frame().hideTitlebar();
+        if (decorations.tab)
+            client_move |= frame().setTabMode(FbWinFrame::EXTERNAL);
+    }
 
     if (decorations.handle) {
         client_move |= frame().showHandle();
@@ -4048,6 +4084,7 @@ void FluxboxWindow::associateClient(WinClient &client) {
                                                  Fluxbox::instance()->getTabsPadding());
 
     m_labelbuttons[&client] = btn;
+    
 
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();

@@ -113,15 +113,14 @@ bool ScreenPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist
 
 
 
-    int win_w = win.width() + win.fbWindow().borderWidth()*2,
-        win_h = win.height() + win.fbWindow().borderWidth()*2;
-
+    int win_w = win.width() + win.fbWindow().borderWidth()*2 + win.widthOffset(),
+        win_h = win.height() + win.fbWindow().borderWidth()*2 + win.heightOffset();
 
     // make sure the window is inside our screen(head) area
     if (place_x + win_w > head_right)
-        place_x = (head_right - win_w) / 2;
+        place_x = (head_right - win_w) / 2 + win.xOffset();
     if (place_y + win_h > head_bot)
-        place_y = (head_bot - win_h) / 2;
+        place_y = (head_bot - win_h) / 2 + win.yOffset();
 
     return true;
 }

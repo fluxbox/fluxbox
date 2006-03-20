@@ -1,4 +1,17 @@
 (Format: Year/Month/Day)
+Changes for 0.9.16:
+*06/03/20:
+   * External tabs (Simon)
+     - option in Configure menu to enable
+       - restart require at present when toggling this option
+     - New apps pnemonic for "Deco" option: TAB, which is like NONE, 
+       but with an external tab
+     Notes:
+     - tab width currently hardcoded
+     - only alignment is topleft
+     fluxbox.cc Screen.hh/cc Window.hh/cc FbWinFrame.hh/cc Remember.cc
+     Container.hh/cc FbTk/XLayer.hh/cc XLayerItem.cc fluxbox-nls.hh
+     RowSmart/ColSmart/UnderMousePlacement.cc WinButton.cc
 Changes for 0.9.15:
 *06/03/19:
    * Fixed some wrong fbsetroot nls (Thanks  Semushin Slava )

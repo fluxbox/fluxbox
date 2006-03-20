@@ -48,8 +48,11 @@ bool ColSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
 
     int test_x;
 
-    int win_w = win.width() + win.fbWindow().borderWidth()*2;
-    int win_h = win.height() + win.fbWindow().borderWidth()*2;
+    int win_w = win.width() + win.fbWindow().borderWidth()*2 + win.widthOffset();
+    int win_h = win.height() + win.fbWindow().borderWidth()*2 + win.heightOffset();
+
+    int x_off = win.xOffset();
+    int y_off = win.yOffset();
 
     if (left_right)
         test_x = head_left;
@@ -87,10 +90,10 @@ bool ColSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
             std::vector<FluxboxWindow *>::const_iterator it_end = 
                 windowlist.end();
             for (; it != it_end && placed; ++it) {
-                int curr_x = (*it)->x();
-                int curr_y = (*it)->y();
-                int curr_w = (*it)->width()  + (*it)->fbWindow().borderWidth()*2;
-                int curr_h = (*it)->height() + (*it)->fbWindow().borderWidth()*2;
+                int curr_x = (*it)->x() + (*it)->xOffset();
+                int curr_y = (*it)->y() + (*it)->yOffset();
+                int curr_w = (*it)->width()  + (*it)->fbWindow().borderWidth()*2 + (*it)->widthOffset();
+                int curr_h = (*it)->height() + (*it)->fbWindow().borderWidth()*2 + (*it)->heightOffset();
 
                 if (curr_x < test_x + win_w &&
                     curr_x + curr_w > test_x &&
@@ -122,8 +125,8 @@ bool ColSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
             }
 
             if (placed) {
-                place_x = test_x;
-                place_y = test_y;
+                place_x = test_x + x_off;
+                place_y = test_y + y_off;
             }
 
             test_y = next_y;

@@ -30,6 +30,8 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/Color.hh"
 #include "FbTk/FbPixmap.hh"
+#include "FbTk/XLayerItem.hh"
+#include "FbTk/TextButton.hh"
 #include "Container.hh"
 
 #include <vector>
@@ -39,6 +41,7 @@
 
 class Shape;
 class FbWinFrameTheme;
+class BScreen;
 
 namespace FbTk {
 class TextButton;
@@ -46,27 +49,30 @@ class ImageControl;
 class Command;
 class Button;
 class Texture;
+class XLayer;
 }
 
 /// holds a window frame with a client window
 /// (see: <a href="fluxbox_fbwinframe.png">image</a>)
 class FbWinFrame:public FbTk::EventHandler {
 public:
-    enum TabMode { INTERNAL = 1, EXTERNAL };
+    // STRICTINTERNAL means it doesn't go external automatically when no titlebar
+    enum TabMode { NOTSET = 0, INTERNAL = 1, EXTERNAL };
 
     typedef FbTk::TextButton *ButtonId; ///< defines a button id 
 
     /// create a top level window
-    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
+    FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
+               FbTk::XLayer &layer,
                int x, int y,
                unsigned int width, unsigned int height);
 
-    /// create a frame window inside another FbWindow, NOT IMPLEMENTED!
-    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
+/*    /// create a frame window inside another FbWindow, NOT IMPLEMENTED!
+    FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
                const FbTk::FbWindow &parent,
                int x, int y, 
                unsigned int width, unsigned int height);
-
+*/
     /// destroy frame
     ~FbWinFrame();
 
@@ -94,6 +100,10 @@ public:
                     unsigned int width, unsigned int height, 
                     bool move = true, bool resize = true, int win_gravity=ForgetGravity);
 
+    // move without transparency or special effects (generally when dragging)
+    void quietMoveResize(int x, int y, 
+                         unsigned int width, unsigned int height);
+
     /// some outside move/resize happened, and we need to notify all of our windows
     /// in case of transparency
     void notifyMoved(bool clear);
@@ -101,7 +111,9 @@ public:
 
     /// set focus/unfocus style
     void setFocus(bool newvalue);
+    inline void setFocusTitle(const std::string &str) { m_label.setText(str); }
     void setDoubleClickTime(unsigned int time);
+    bool setTabMode(TabMode tabmode);
 
     /// add a button to the left of the label
     void addLeftButton(FbTk::Button *btn);
@@ -138,6 +150,8 @@ public:
     // these return true/false for if something changed
     bool hideTitlebar();
     bool showTitlebar();
+    bool hideTabs();
+    bool showTabs();
     bool hideHandle();
     bool showHandle();
     bool hideAllDecorations();
@@ -172,6 +186,13 @@ public:
     inline int y() const { return m_window.y(); }
     inline unsigned int width() const { return m_window.width(); }
     inline unsigned int height() const { return m_window.height(); }
+
+    // extra bits for tabs
+    inline int xOffset() const { return 0; }
+    int yOffset() const;
+    inline int widthOffset() const { return 0; }
+    int heightOffset() const;
+
     inline const FbTk::FbWindow &window() const { return m_window; }
     inline FbTk::FbWindow &window() { return m_window; }
     /// @return titlebar window
@@ -201,6 +222,10 @@ public:
     unsigned int titlebarHeight() const { return m_titlebar.height(); }
     /// @return size of button
     unsigned int buttonHeight() const;
+    bool externalTabMode() const { return m_tabmode == EXTERNAL; }
+
+    inline const FbTk::XLayerItem &layerItem() const { return m_layeritem; }
+    inline FbTk::XLayerItem &layerItem() { return m_layeritem; }
 
     //@}
 
@@ -216,7 +241,7 @@ private:
     void renderAll();
     void renderTitlebar();
     void renderHandles();
-    void renderLabelButtons();
+    void renderTabContainer(); // and labelbuttons
 
     void renderButtons(); // subset of renderTitlebar - don't call directly
 
@@ -233,7 +258,7 @@ private:
     void applyAll();
     void applyTitlebar();
     void applyHandles();
-    void applyLabelButtons();
+    void applyTabContainer(); // and label buttons
     void applyFocusLabel(FbTk::TextButton &button);
     void applyUnfocusLabel(FbTk::TextButton &button);
     void applyActiveLabel(FbTk::TextButton &button);
@@ -246,10 +271,14 @@ private:
 
     /// initiate inserted button for current theme
     void applyButton(FbTk::Button &btn);
+
+    void alignTabs();
     //@}
 
     /// initiate some commont variables
     void init();
+
+    BScreen &m_screen;
 
     FbWinFrameTheme &m_theme; ///< theme to be used 
     FbTk::ImageControl &m_imagectrl; ///< Image control for rendering
@@ -258,9 +287,12 @@ private:
     */
     //@{
     FbTk::FbWindow m_window; ///< base window that holds each decorations (ie titlebar, handles)
+    // want this deleted before the windows in it
+    FbTk::XLayerItem m_layeritem;
+
     FbTk::FbWindow m_titlebar; ///<  titlebar window
     Container      m_tab_container; ///< Holds tabs
-    FbTk::FbWindow m_label; ///< holds title
+    FbTk::TextButton m_label; ///< holds title
     FbTk::FbWindow m_handle; ///< handle between grips
     FbTk::FbWindow m_grip_right,  ///< rightgrip
         m_grip_left; ///< left grip
@@ -274,6 +306,7 @@ private:
     std::string m_titletext; ///< text to be displayed int m_label
     int m_bevel;  ///< bevel between titlebar items and titlebar
     bool m_use_titlebar; ///< if we should use titlebar
+    bool m_use_tabs; ///< if we should use tabs (turns them off in external mode only)
     bool m_use_handle; ///< if we should use handle
     bool m_focused; ///< focused/unfocused mode
     bool m_visible; ///< if we are currently showing
@@ -285,17 +318,22 @@ private:
     Pixmap m_title_focused_pm; ///< pixmap for focused title
     FbTk::Color m_title_focused_color; ///< color for focused title
     Pixmap m_title_unfocused_pm; ///< pixmap for unfocused title
-    FbTk::Color m_title_unfocused_color; ///< color for unfocued title
+    FbTk::Color m_title_unfocused_color; ///< color for unfocused title
 
-    Pixmap m_label_focused_pm; ///< pixmap for focused label
+    Pixmap m_label_focused_pm; ///< pixmap for focused label (only visible with external tabs)
     FbTk::Color m_label_focused_color; ///< color for focused label
     Pixmap m_label_unfocused_pm; ///< pixmap for unfocused label
-    FbTk::Color m_label_unfocused_color; ///< color for unfocued label
+    FbTk::Color m_label_unfocused_color; ///< color for unfocused label
+
+    Pixmap m_tabcontainer_focused_pm; ///< pixmap for focused tab container
+    FbTk::Color m_tabcontainer_focused_color; ///< color for focused tab container
+    Pixmap m_tabcontainer_unfocused_pm; ///< pixmap for unfocused tab container
+    FbTk::Color m_tabcontainer_unfocused_color; ///< color for unfocused tab container
 
     Pixmap m_labelbutton_focused_pm; ///< pixmap for focused label
     FbTk::Color m_labelbutton_focused_color; ///< color for focused label
     Pixmap m_labelbutton_unfocused_pm; ///< pixmap for unfocused label
-    FbTk::Color m_labelbutton_unfocused_color; ///< color for unfocued label
+    FbTk::Color m_labelbutton_unfocused_color; ///< color for unfocused label
     Pixmap m_labelbutton_active_pm; ///< pixmap for active label
     FbTk::Color m_labelbutton_active_color; ///< color for active label
     
