@@ -125,7 +125,7 @@ public:
     inline void setFocusTitle(const std::string &str) { m_label.setText(str); }
     void setDoubleClickTime(unsigned int time);
     bool setTabMode(TabMode tabmode);
-    inline void setTabPlacement(TabPlacement tabplacement) { m_tabplacement = tabplacement; alignTabs(); }
+    inline void updateTabProperties() { alignTabs(); }
 
     /// add a button to the left of the label
     void addLeftButton(FbTk::Button *btn);
@@ -367,7 +367,6 @@ private:
     //@}
 
     TabMode m_tabmode;
-    TabPlacement m_tabplacement;
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons

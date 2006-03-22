@@ -394,13 +394,6 @@ void FluxboxWindow::init() {
 
     frame().setUseShape(!m_shaped);
 
-    frame().setTabPlacement(screen().getTabPlacement());
-    if (screen().getDefaultInternalTabs()) {
-        frame().setTabMode(FbWinFrame::INTERNAL);
-    } else {
-        frame().setTabMode(FbWinFrame::EXTERNAL);
-    }
-
     //!! TODO init of client should be better
     // we don't want to duplicate code here and in attachClient
     m_clientlist.push_back(m_client);

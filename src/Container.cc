@@ -260,7 +260,10 @@ void Container::setSelected(int pos) {
 }
 
 void Container::setMaxSizePerClient(unsigned int size) {
-    m_max_size_per_client = size;
+    if (size != m_max_size_per_client) {
+        m_max_size_per_client = size;
+        repositionItems();
+    }
 }
 
 void Container::setMaxTotalSize(unsigned int size) {

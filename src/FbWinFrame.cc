@@ -80,13 +80,12 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
                  EnterWindowMask | LeaveWindowMask),
     m_bevel(1),
     m_use_titlebar(true), 
-    m_tabplacement(BOTTOMRIGHT),
     m_use_tabs(true), 
     m_use_handle(true),
     m_focused(false),
     m_visible(false),
     m_button_pm(0),
-    m_tabmode(NOTSET),
+    m_tabmode(screen.getDefaultInternalTabs()?INTERNAL:EXTERNAL),
     m_need_render(true),
     m_themelistener(*this),
     m_shape(new Shape(m_window, theme.shapePlace())) {
@@ -129,6 +128,8 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
 
     m_tabmode = tabmode;
 
+    m_tab_container.setUpdateLock(true);
+
     // reparent tab container
     if (tabmode == EXTERNAL) {
         m_label.show();
@@ -145,7 +146,7 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
         XUngrabButton(m_tab_container.display(), Button1, Mod1Mask|Mod2Mask|Mod3Mask, m_tab_container.window());
 
         int tabx, taby;
-        switch (m_tabplacement) {
+        switch (m_screen.getTabPlacement()) {
         case TOPLEFT:
             m_tab_container.setAlignment(Container::LEFT);
             tabx = x();
@@ -173,8 +174,13 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
             m_layeritem.addWindow(m_tab_container);
         }
 
-        m_tab_container.setMaxSizePerClient(64); //!!TODO make this a setting
+        m_tab_container.setMaxSizePerClient(m_screen.getTabWidth());
+        m_tab_container.setUpdateLock(false);
         m_tab_container.setMaxTotalSize(window().width());
+
+        renderTabContainer();
+        applyTabContainer();
+        m_tab_container.clear();
 
         // TODO: tab position
         if (m_use_tabs && m_visible)
@@ -194,7 +200,13 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
         }
         m_tab_container.setBorderWidth(0);
         m_tab_container.setMaxTotalSize(0);
+        m_tab_container.setUpdateLock(false);
         m_tab_container.setMaxSizePerClient(0);
+
+        renderTabContainer();
+        applyTabContainer();
+        m_tab_container.clear();
+
         if (!m_use_tabs)
             m_tab_container.show();
         else
@@ -310,7 +322,7 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
         m_window.resize(width, height);
     }
 
-    if (move || resize && m_tabplacement != TOPLEFT)
+    if (move || resize && m_screen.getTabPlacement() != TOPLEFT)
         alignTabs();
 
     if (resize) {
@@ -333,8 +345,10 @@ void FbWinFrame::alignTabs() {
     if (m_tabmode != EXTERNAL)
         return;
 
+    m_tab_container.setMaxSizePerClient(m_screen.getTabWidth());
+
     int tabx = 0, taby = 0;
-    switch (m_tabplacement) {
+    switch (m_screen.getTabPlacement()) {
     case TOPLEFT:
         tabx = x();
         taby = y() - yOffset();
@@ -877,8 +891,10 @@ void FbWinFrame::reconfigure() {
     } else 
         m_titlebar.lower();
 
-    if (m_tabmode == EXTERNAL)
+    if (m_tabmode == EXTERNAL) {
         m_tab_container.resize(m_tab_container.width(), buttonHeight());
+        alignTabs();
+    }
 
     // leave client+grips alone if we're shaded (it'll get fixed when we unshade)
     if (!m_shaded) {
@@ -1271,9 +1287,7 @@ void FbWinFrame::init() {
     m_label.setBorderWidth(0);
     m_shaded = false;
 
-    // TODO: configurable default (on compile, for backwards compat)
-//    setTabMode(EXTERNAL);
-    setTabMode(INTERNAL);
+    setTabMode(NOTSET);
 
     m_label.setEventMask(ExposureMask | ButtonPressMask |
                          ButtonReleaseMask | ButtonMotionMask |
@@ -1605,7 +1619,7 @@ int FbWinFrame::yOffset() const {
     if (m_tabmode != EXTERNAL || !m_use_tabs) 
         return 0;
 
-    switch (m_tabplacement) {
+    switch (m_screen.getTabPlacement()) {
     case TOPLEFT:
     case TOPRIGHT:
         return m_tab_container.height() + m_window.borderWidth();

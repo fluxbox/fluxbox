@@ -142,6 +142,8 @@ public:
     inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
     inline const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
 
+    inline unsigned int getTabWidth() const { return *resource.tab_width; }
+
     inline Slit *slit() { return m_slit.get(); }
     inline const Slit *slit() const { return m_slit.get(); }
 
@@ -445,7 +447,7 @@ private:
         FbTk::Resource<FollowModel> follow_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
-            unfocused_alpha, menu_alpha, menu_delay, menu_delay_close;
+            unfocused_alpha, menu_alpha, menu_delay, menu_delay_close, tab_width;
         FbTk::Resource<FbTk::MenuTheme::MenuMode> menu_mode;
 
         FbTk::Resource<int> gc_line_width;

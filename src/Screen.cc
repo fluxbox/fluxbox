@@ -270,6 +270,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     menu_alpha(rm, 255, scrname+".menu.alpha", altscrname+".Menu.Alpha"),
     menu_delay(rm, 0, scrname + ".menuDelay", altscrname+".MenuDelay"),
     menu_delay_close(rm, 0, scrname + ".menuDelayClose", altscrname+".MenuDelayClose"),
+    tab_width(rm, 64, scrname + ".tab.width", altscrname+".Tab.Width"),
     menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode"),
 
     gc_line_width(rm, 1, scrname+".overlay.lineWidth", altscrname+".Overlay.LineWidth"),
@@ -287,7 +288,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                  altscrname+".overlay.CapStyle"),
     scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
     scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
-    default_internal_tabs(rm, false /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
+    default_internal_tabs(rm, true /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
     
 
 }
@@ -900,7 +901,7 @@ void BScreen::reconfigureTabs() {
             Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
             const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
             for (; win_it != win_it_end; ++win_it) {
-                (*win_it)->frame().setTabPlacement(*resource.tab_placement);
+                (*win_it)->frame().updateTabProperties();
                 if (*resource.default_internal_tabs)
                     (*win_it)->frame().setTabMode(FbWinFrame::INTERNAL);
                 else
@@ -1642,11 +1643,21 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Tabs in Titlebar", "Tabs in Titlebar",
               *resource.default_internal_tabs, save_and_reconftabs);
 
+    FbTk::MenuItem *tab_width_item =
+            new IntResMenuItem(_FBTEXT(Configmenu, ExternalTabWidth, 
+                                       "External Tab Width",
+                                       "Width of external-style tabs"),
+                               resource.tab_width, 10, 3000, /* silly number */
+                               *tab_menu);
+    tab_width_item->setCommand(save_and_reconftabs);
+    tab_menu->insert(tab_width_item);
+
+
     typedef pair<const char*, FbWinFrame::TabPlacement> PlacementP;
     typedef list<PlacementP> Placements;
     Placements place_menu;
 
-    // menu is 3 wide, 5 down
+    // menu is 2 wide, 2 down
     place_menu.push_back(PlacementP(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT));

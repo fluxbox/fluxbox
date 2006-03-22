@@ -4,6 +4,7 @@ Changes for 0.9.16:
    * More external tabs work (Simon)
      - Can now be placed TopLeft/TopRight/BottomLeft/BottomRight
      - New "Tab Options" config menu, with (efficient) runtime updating
+     - New tab.width config option to control external tab width
      - edge snapping includes tabs
      - decoration fixes where some missed the tab option
      - label text color was not updated
