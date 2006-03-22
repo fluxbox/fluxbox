@@ -394,10 +394,11 @@ void FluxboxWindow::init() {
 
     frame().setUseShape(!m_shaped);
 
-    if (screen().getDefaultExternalTabs()) {
-        frame().setTabMode(FbWinFrame::EXTERNAL);
-    } else {
+    frame().setTabPlacement(screen().getTabPlacement());
+    if (screen().getDefaultInternalTabs()) {
         frame().setTabMode(FbWinFrame::INTERNAL);
+    } else {
+        frame().setTabMode(FbWinFrame::EXTERNAL);
     }
 
     //!! TODO init of client should be better
@@ -3049,20 +3050,28 @@ void FluxboxWindow::setDecoration(Decoration decoration, bool apply) {
     case DECOR_NORMAL:
         decorations.titlebar = decorations.border = decorations.handle =
             decorations.iconify = decorations.maximize =
-            decorations.menu = true;
+            decorations.menu = decorations.tab = true;
+        functions.resize = functions.move = functions.iconify =
+            functions.maximize = true;
+	break;
+
+    case DECOR_TAB:
+        decorations.border = decorations.iconify = decorations.maximize =
+            decorations.menu = decorations.tab = true;
+        decorations.titlebar = decorations.handle = false;
         functions.resize = functions.move = functions.iconify =
             functions.maximize = true;
 	break;
 
     case DECOR_TINY:
         decorations.titlebar = decorations.iconify = decorations.menu =
-            functions.move = functions.iconify = true;
+            functions.move = functions.iconify = decorations.tab = true;
         decorations.border = decorations.handle = decorations.maximize =
             functions.resize = functions.maximize = false;
 	break;
 
     case DECOR_TOOL:
-        decorations.titlebar = decorations.menu = functions.move = true;
+        decorations.titlebar = decorations.tab = decorations.menu = functions.move = true;
         decorations.iconify = decorations.border = decorations.handle =
             decorations.maximize = functions.resize = functions.maximize =
             functions.iconify = false;
@@ -3110,7 +3119,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
     if (decorations.titlebar) {
         bool change = frame().showTitlebar();
         client_move |= change;
-        if (change && !screen().getDefaultExternalTabs()) {
+        if (change && screen().getDefaultInternalTabs()) {
             client_move |= frame().setTabMode(FbWinFrame::INTERNAL);
         }
     } else {
@@ -3357,41 +3366,55 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     int right = orig_left + width() + 2 * borderW;
     int bottom = orig_top + height() + 2 * borderW;
 
+    // test against tabs too
+    bool i_have_tabs = frame().externalTabMode();
+    int xoff,yoff,woff,hoff;
+    if (i_have_tabs) {
+        xoff = xOffset();
+        yoff = yOffset();
+        woff = widthOffset();
+        hoff = heightOffset();
+    }
+
+
     /////////////////////////////////////
     // begin by checking the screen (or Xinerama head) edges
 
-    int h;
-    if (screen().numHeads() > 0) {
-        // head "0" == whole screen width + height, which we skip since the
-        // sum of all the heads covers those edges
-        for (h = 1; h <= screen().numHeads(); h++) {
-            snapToWindow(dx, dy, left, right, top, bottom,
+    int starth = 0;
+
+    // head "0" == whole screen width + height, which we skip since the
+    // sum of all the heads covers those edges, if >1 head
+    if (screen().numHeads() > 0)
+        starth=1;
+
+    for (int h=starth; h <= screen().numHeads(); h++) {
+        snapToWindow(dx, dy, left, right, top, bottom,
+                     screen().maxLeft(h),
+                     screen().maxRight(h),
+                     screen().maxTop(h),
+                     screen().maxBottom(h));
+
+        if (i_have_tabs)
+            snapToWindow(dx, dy, left - xoff, right - xoff + woff, top - yoff, bottom - yoff + hoff,
                          screen().maxLeft(h),
                          screen().maxRight(h),
                          screen().maxTop(h),
                          screen().maxBottom(h));
-        }
-        for (h = 1; h <= screen().numHeads(); h++) {
-            snapToWindow(dx, dy, left, right, top, bottom,
+    }
+    for (int h=starth; h <= screen().numHeads(); h++) {
+        snapToWindow(dx, dy, left, right, top, bottom,
+                     screen().getHeadX(h),
+                     screen().getHeadX(h) + screen().getHeadWidth(h),
+                     screen().getHeadY(h),
+                     screen().getHeadY(h) + screen().getHeadHeight(h));
+
+        if (i_have_tabs)
+            snapToWindow(dx, dy, left - xoff, right - xoff + woff, top - yoff, bottom - yoff + hoff,
                          screen().getHeadX(h),
                          screen().getHeadX(h) + screen().getHeadWidth(h),
                          screen().getHeadY(h),
                          screen().getHeadY(h) + screen().getHeadHeight(h));
-        }
-    } else {
-        snapToWindow(dx, dy, left, right, top, bottom,
-                     screen().maxLeft(0),
-                     screen().maxRight(0),
-                     screen().maxTop(0),
-                     screen().maxBottom(0));
-
-        snapToWindow(dx, dy, left, right, top, bottom,
-                     screen().getHeadX(0),
-                     screen().getHeadX(0) + screen().getHeadWidth(0),
-                     screen().getHeadY(0),
-                     screen().getHeadY(0) + screen().getHeadHeight(0));
     }
-
 
     /////////////////////////////////////
     // now check window edges
@@ -3415,6 +3438,30 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
                      (*it)->x() + (*it)->width() + 2 * bw,
                      (*it)->y(),
                      (*it)->y() + (*it)->height() + 2 * bw);
+
+        if (i_have_tabs)
+            snapToWindow(dx, dy, left - xoff, right - xoff + woff, top - yoff, bottom - yoff + hoff,
+                         (*it)->x(),
+                         (*it)->x() + (*it)->width() + 2 * bw,
+                         (*it)->y(),
+                         (*it)->y() + (*it)->height() + 2 * bw);
+
+        // also snap to the box containing the tabs (don't bother with actual
+        // tab edges, since they're dynamic
+        if ((*it)->frame().externalTabMode())
+            snapToWindow(dx, dy, left, right, top, bottom,
+                         (*it)->x() - (*it)->xOffset(),
+                         (*it)->x() - (*it)->xOffset() + (*it)->width() + 2 * bw + (*it)->widthOffset(),
+                         (*it)->y() - (*it)->yOffset(),
+                         (*it)->y() - (*it)->yOffset() + (*it)->height() + 2 * bw + (*it)->heightOffset());
+        
+        if (i_have_tabs)
+            snapToWindow(dx, dy, left - xoff, right - xoff + woff, top - yoff, bottom - yoff + hoff,
+                         (*it)->x() - (*it)->xOffset(),
+                         (*it)->x() - (*it)->xOffset() + (*it)->width() + 2 * bw + (*it)->widthOffset(),
+                         (*it)->y() - (*it)->yOffset(),
+                         (*it)->y() - (*it)->yOffset() + (*it)->height() + 2 * bw + (*it)->heightOffset());
+
     }
 
     // commit

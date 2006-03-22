@@ -62,7 +62,8 @@ public:
         DECOR_NONE=0, ///< no decor at all
         DECOR_NORMAL, ///< normal normal
         DECOR_TINY,   ///< tiny decoration
-        DECOR_TOOL    ///< decor tool
+        DECOR_TOOL,   ///< decor tool
+        DECOR_TAB     ///< decor tab (border + tab)
     };
 
     /// Motif wm Hints

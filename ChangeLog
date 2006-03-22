@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/03/22:
+   * More external tabs work (Simon)
+     - Can now be placed TopLeft/TopRight/BottomLeft/BottomRight
+     - New "Tab Options" config menu, with (efficient) runtime updating
+     - edge snapping includes tabs
+     - decoration fixes where some missed the tab option
+     - label text color was not updated
+     Screen.hh/cc Window.hh/cc FbWinFrame.hh/cc Container.cc 
+     fluxbox-nls.hh
 *06/03/20:
    * Fix placement config (some compilers resulted in ignoring of 
      placement policy setting), and a minor ext. tabs placement bug

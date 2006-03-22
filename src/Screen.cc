@@ -156,8 +156,92 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 }
 
 
+class TabPlacementMenuItem: public FbTk::MenuItem {
+public:
+    TabPlacementMenuItem(const char * label, BScreen &screen, FbWinFrame::TabPlacement place, FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(label, cmd),
+        m_screen(screen),
+        m_place(place) { }
+
+    bool isEnabled() const { return m_screen.getTabPlacement() != m_place; }
+    void click(int button, int time) {
+        m_screen.saveTabPlacement(m_place);
+        FbTk::MenuItem::click(button, time);
+    }
+
+
+private:
+    BScreen &m_screen;
+    FbWinFrame::TabPlacement m_place;
+};
 
 } // end anonymous namespace
+
+
+
+namespace FbTk {
+
+template<>
+void FbTk::Resource<FbWinFrame::TabPlacement>::
+setFromString(const char *strval) {
+    if (strcasecmp(strval, "TopLeft")==0)
+        m_value = FbWinFrame::TOPLEFT;
+    else if (strcasecmp(strval, "BottomLeft")==0)
+        m_value = FbWinFrame::BOTTOMLEFT;
+    else if (strcasecmp(strval, "TopRight")==0)
+        m_value = FbWinFrame::TOPRIGHT;
+    else if (strcasecmp(strval, "BottomRight")==0)
+        m_value = FbWinFrame::BOTTOMRIGHT;
+    /*
+    else if (strcasecmp(strval, "LeftTop") == 0)
+        m_value = FbWinFrame::LEFTTOP;
+    else if (strcasecmp(strval, "LeftBottom") == 0)
+        m_value = FbWinFrame::LEFTBOTTOM;
+    else if (strcasecmp(strval, "RightTop") == 0)
+        m_value = FbWinFrame::RIGHTTOP;
+    else if (strcasecmp(strval, "RightBottom") == 0)
+        m_value = FbWinFrame::RIGHTBOTTOM;
+    */
+    else
+        setDefaultValue();
+}
+
+template<>
+string FbTk::Resource<FbWinFrame::TabPlacement>::
+getString() const {
+    switch (m_value) {
+    case FbWinFrame::TOPLEFT:
+        return string("TopLeft");
+        break;
+    case FbWinFrame::BOTTOMLEFT:
+        return string("BottomLeft");
+        break;
+    case FbWinFrame::TOPRIGHT:
+        return string("TopRight");
+        break;
+    case FbWinFrame::BOTTOMRIGHT:
+        return string("BottomRight");
+        break;
+/*
+    case FbWinFrame::LEFTTOP:
+        return string("LeftTop");
+        break;
+    case FbWinFrame::LEFTBOTTOM:
+        return string("LeftBottom");
+        break;
+    case FbWinFrame::RIGHTTOP:
+        return string("RightTop");
+        break;
+    case FbWinFrame::RIGHTBOTTOM:
+        return string("RightBottom");
+        break;
+*/
+    }
+    //default string
+    return string("TopLeft");
+}
+} // end namespace FbTk
+
 
 BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm, 
                                         const std::string &scrname, 
@@ -176,6 +260,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     decorate_transient(rm, false, scrname+".decorateTransient", altscrname+".DecorateTransient"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     resize_model(rm, BOTTOMRESIZE, scrname+".resizeMode", altscrname+".ResizeMode"),
+    tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
     windowmenufile(rm, "", scrname+".windowMenu", altscrname+".WindowMenu"),
     follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
@@ -202,7 +287,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                  altscrname+".overlay.CapStyle"),
     scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
     scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
-    default_external_tabs(rm, false /* TODO: autoconf option? */ , scrname+".externalTabs", altscrname+".ExternalTabs") {
+    default_internal_tabs(rm, false /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
     
 
 }
@@ -330,7 +415,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     }
 
     m_current_workspace = m_workspaces_list.front();
-
+    
 
     //!! TODO: we shouldn't do this more than once, but since slit handles their
     // own resources we must do this.
@@ -626,6 +711,15 @@ FbTk::Menu *BScreen::createMenu(const std::string &label) {
 
     return menu;
 }
+FbTk::Menu *BScreen::createToggleMenu(const std::string &label) {
+    FbTk::Menu *menu = new ToggleMenu(menuTheme(), 
+                                      imageControl(), 
+                                      *layerManager().getLayer(Layer::MENU));
+    if (!label.empty())
+        menu->setLabel(label.c_str());
+
+    return menu;
+}
 
 void BScreen::addExtraWindowMenu(const char *label, FbTk::Menu *menu) {
     menu->setInternalMenu();
@@ -794,6 +888,26 @@ void BScreen::reconfigure() {
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
                                         fluxbox->getStyleOverlayFilename(),
                                         m_root_theme->screenNum());
+
+    reconfigureTabs();
+}
+
+void BScreen::reconfigureTabs() {
+    Workspaces::iterator w_it = getWorkspacesList().begin();
+    const Workspaces::iterator w_it_end = getWorkspacesList().end();
+    for (; w_it != w_it_end; ++w_it) {
+        if ((*w_it)->windowList().size()) {
+            Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
+            const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
+            for (; win_it != win_it_end; ++win_it) {
+                (*win_it)->frame().setTabPlacement(*resource.tab_placement);
+                if (*resource.default_internal_tabs)
+                    (*win_it)->frame().setTabMode(FbWinFrame::INTERNAL);
+                else
+                    (*win_it)->frame().setTabMode(FbWinFrame::EXTERNAL);
+            }
+        }
+    }
 }
 
 
@@ -1454,12 +1568,21 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     menu.removeAll();
 
     FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
-    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), 
-                                                                              &Fluxbox::save_rc));
+    FbTk::MacroCommand *s_a_reconftabs_macro = new FbTk::MacroCommand();
+    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
+                                                 *Fluxbox::instance(), 
+                                                 &Fluxbox::save_rc));
     FbTk::RefCount<FbTk::Command> reconf_cmd(CommandParser::instance().parseLine("reconfigure"));
+
+    FbTk::RefCount<FbTk::Command> reconftabs_cmd(new FbTk::SimpleCommand<BScreen>(
+                                                 *this, 
+                                                 &BScreen::reconfigureTabs));
     s_a_reconf_macro->add(saverc_cmd);
     s_a_reconf_macro->add(reconf_cmd);
+    s_a_reconftabs_macro->add(saverc_cmd);
+    s_a_reconftabs_macro->add(reconftabs_cmd);
     FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
+    FbTk::RefCount<FbTk::Command> save_and_reconftabs(s_a_reconftabs_macro);
     // create focus menu
     // we don't set this to internal menu so will 
     // be deleted toghether with the parent
@@ -1467,6 +1590,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                           "Focus Model", 
                                           "Method used to give focus to windows");
     FbTk::Menu *focus_menu = createMenu(focusmenu_label ? focusmenu_label : "");
+
+#define _BOOLITEM(m,a, b, c, d, e, f) (m).insert(new BoolMenuItem(_FBTEXT(a, b, c, d), e, f))
+                             
 
 #define _FOCUSITEM(a, b, c, d, e) \
     focus_menu->insert(new FocusModelMenuItem(_FBTEXT(a, b, c, d), focusControl(), \
@@ -1498,6 +1624,84 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     focus_menu->updateMenu();
 
     menu.insert(focusmenu_label, focus_menu);
+
+    // END focus menu
+
+    // BEGIN tab menu
+
+    const char *tabmenu_label = _FBTEXT(Configmenu, TabMenu,
+                                        "Tab Options", 
+                                        "heading for tab-related options");
+    FbTk::Menu *tab_menu = createMenu(tabmenu_label ? tabmenu_label : "");
+    const char *tabplacement_label = _FBTEXT(Menu, Placement, "Placement", "Title of Placement menu");
+    FbTk::Menu *tabplacement_menu = createToggleMenu(tabplacement_label);
+
+    tab_menu->insert(tabplacement_label, tabplacement_menu);
+
+    _BOOLITEM(*tab_menu,Configmenu, TabsInTitlebar,
+              "Tabs in Titlebar", "Tabs in Titlebar",
+              *resource.default_internal_tabs, save_and_reconftabs);
+
+    typedef pair<const char*, FbWinFrame::TabPlacement> PlacementP;
+    typedef list<PlacementP> Placements;
+    Placements place_menu;
+
+    // menu is 3 wide, 5 down
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT));
+
+/*
+    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftTop, "Left Top", "Left Top"), FbWinFrame::LEFTTOP));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), FbWinFrame::LEFTBOTTOM));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, RightTop, "Right Top", "Right Top"), FbWinFrame::RIGHTTOP));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), FbWinFrame::RIGHTBOTTOM));
+*/
+
+    tabplacement_menu->setMinimumSublevels(2);
+    // create items in sub menu
+    size_t i=0;
+    while (!place_menu.empty()) {
+        i++;
+        const char *str = place_menu.front().first;
+        FbWinFrame::TabPlacement placement = place_menu.front().second;
+
+        if (str == 0) {
+            tabplacement_menu->insert("");
+            tabplacement_menu->setItemEnabled(i, false);
+        } else {
+            tabplacement_menu->insert(new TabPlacementMenuItem(str, *this, placement, save_and_reconftabs));
+        }
+        place_menu.pop_front();
+    }
+    tabplacement_menu->updateMenu();
+
+    menu.insert(tabmenu_label, tab_menu);
+
+#undef _FOCUSITEM
+
+    focus_menu->insert(new TabFocusModelMenuItem("ClickTabFocus", focusControl(), 
+                                                 FocusControl::CLICKTABFOCUS, 
+                                                 save_and_reconfigure));
+    focus_menu->insert(new TabFocusModelMenuItem("MouseTabFocus", focusControl(), 
+                                                 FocusControl::MOUSETABFOCUS, 
+                                                 save_and_reconfigure));
+    
+
+    focus_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, 
+                                                AutoRaise,
+                                                "Auto Raise",
+                                                "Auto Raise windows on sloppy"),
+                                        *resource.auto_raise,
+                                        save_and_reconfigure));
+
+    focus_menu->updateMenu();
+
+    menu.insert(focusmenu_label, focus_menu);
+
+    // end tab menu
+
 #ifdef SLIT
     if (slit() != 0) {
         slit()->menu().setInternalMenu();
@@ -1510,20 +1714,18 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     for (; it != it_end; ++it)
         menu.insert(it->first, it->second);
 
-#define _BOOLITEM(a, b, c, d, e, f) menu.insert(new BoolMenuItem(_FBTEXT(a, b, c, d), e, f))
-                             
-    _BOOLITEM(Configmenu, ImageDithering,
+    _BOOLITEM(menu, Configmenu, ImageDithering,
               "Image Dithering", "Image Dithering",
               *resource.image_dither, save_and_reconfigure);
-    _BOOLITEM(Configmenu, OpaqueMove,
+    _BOOLITEM(menu, Configmenu, OpaqueMove,
               "Opaque Window Moving", 
               "Window Moving with whole window visible (as opposed to outline moving)",
               *resource.opaque_move, saverc_cmd);
-    _BOOLITEM(Configmenu, FullMax,
+    _BOOLITEM(menu, Configmenu, FullMax,
               "Full Maximization", "Maximise over slit, toolbar, etc",
               *resource.full_max, saverc_cmd);
     try {
-        _BOOLITEM(Configmenu, FocusNew,
+        _BOOLITEM(menu, Configmenu, FocusNew,
                   "Focus New Windows", "Focus newly created windows",
                   *m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
                   saverc_cmd);
@@ -1532,7 +1734,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     }
 
     try {
-        _BOOLITEM(Configmenu, FocusLast,
+        _BOOLITEM(menu, Configmenu, FocusLast,
                   "Focus Last Window on Workspace", "Focus Last Window on Workspace",
                   *resourceManager().getResource<bool>(name() + ".focusLastWindow"),
                   saverc_cmd);
@@ -1540,20 +1742,17 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         cerr<<e.what()<<endl;
     }
 
-    _BOOLITEM(Configmenu, WorkspaceWarping,
+    _BOOLITEM(menu, Configmenu, WorkspaceWarping,
               "Workspace Warping", 
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
               *resource.workspace_warping, saverc_cmd);
-    _BOOLITEM(Configmenu, DesktopWheeling,
+    _BOOLITEM(menu, Configmenu, DesktopWheeling,
               "Desktop MouseWheel Switching", "Workspace switching using mouse wheel",
               *resource.desktop_wheeling, saverc_cmd);
-    _BOOLITEM(Configmenu, DecorateTransient,
+    _BOOLITEM(menu, Configmenu, DecorateTransient,
               "Decorate Transient Windows", "Decorate Transient Windows",
               *resource.decorate_transient, saverc_cmd);
-    _BOOLITEM(Configmenu, ExternalTabs,
-              "Use External Tabs (experimental)", "Use External Tabs (experimental)", 
-              *resource.default_external_tabs, saverc_cmd);
-    _BOOLITEM(Configmenu, ClickRaises,
+    _BOOLITEM(menu, Configmenu, ClickRaises,
               "Click Raises", "Click Raises", 
               *resource.click_raises, saverc_cmd);
 

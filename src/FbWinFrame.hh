@@ -59,6 +59,17 @@ public:
     // STRICTINTERNAL means it doesn't go external automatically when no titlebar
     enum TabMode { NOTSET = 0, INTERNAL = 1, EXTERNAL };
 
+   /// Toolbar placement on the screen
+    enum TabPlacement{ 
+        // top and bottom placement
+        TOPLEFT = 1, BOTTOMLEFT,
+        TOPRIGHT, BOTTOMRIGHT
+        // left and right placement
+//        LEFTBOTTOM, LEFTTOP,
+//        RIGHTBOTTOM, RIGHTTOP        
+    };
+
+
     typedef FbTk::TextButton *ButtonId; ///< defines a button id 
 
     /// create a top level window
@@ -114,6 +125,7 @@ public:
     inline void setFocusTitle(const std::string &str) { m_label.setText(str); }
     void setDoubleClickTime(unsigned int time);
     bool setTabMode(TabMode tabmode);
+    inline void setTabPlacement(TabPlacement tabplacement) { m_tabplacement = tabplacement; alignTabs(); }
 
     /// add a button to the left of the label
     void addLeftButton(FbTk::Button *btn);
@@ -222,7 +234,7 @@ public:
     unsigned int titlebarHeight() const { return m_titlebar.height(); }
     /// @return size of button
     unsigned int buttonHeight() const;
-    bool externalTabMode() const { return m_tabmode == EXTERNAL; }
+    bool externalTabMode() const { return m_tabmode == EXTERNAL && m_use_tabs; }
 
     inline const FbTk::XLayerItem &layerItem() const { return m_layeritem; }
     inline FbTk::XLayerItem &layerItem() { return m_layeritem; }
@@ -355,6 +367,7 @@ private:
     //@}
 
     TabMode m_tabmode;
+    TabPlacement m_tabplacement;
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons

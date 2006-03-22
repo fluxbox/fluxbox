@@ -264,10 +264,16 @@ void Container::setMaxSizePerClient(unsigned int size) {
 }
 
 void Container::setMaxTotalSize(unsigned int size) {
+    if (m_max_total_size == size)
+        return;
+
+    unsigned int old = m_max_total_size;
     m_max_total_size = size;
 
     if (m_max_total_size && width() > m_max_total_size) {
         resize(m_max_total_size, height());
+    } else if (!m_max_total_size && old) { // going from restricted to unrestricted
+        repositionItems();
     } else {
         // this is a bit of duplication from repositionItems
         // for when we are allowed to grow ourself
@@ -286,7 +292,6 @@ void Container::setMaxTotalSize(unsigned int size) {
             if (preferred_width != width())
                 repositionItems();
         }
-
     }
 }
 
@@ -381,7 +386,10 @@ void Container::repositionItems() {
         }
         if (total_width != width()) {
             // calling Container::resize here risks infinite loops
-            FbTk::FbWindow::resize(total_width, height());
+            if (align == RIGHT)
+                FbTk::FbWindow::moveResize(x() - (total_width - width()), y(),  total_width, height());
+            else
+                FbTk::FbWindow::resize(total_width, height());
         }
     }
 
@@ -396,7 +404,7 @@ void Container::repositionItems() {
     int direction = 1;
     if (align == RIGHT) {
         direction = -1;
-        next_x = total_width - max_width_per_client + borderW;
+        next_x = total_width - max_width_per_client - borderW;
     }
 
     for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {

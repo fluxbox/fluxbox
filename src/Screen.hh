@@ -27,7 +27,7 @@
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
 
-
+#include "FbWinFrame.hh"
 #include "FbRootWindow.hh"
 #include "MenuTheme.hh"
 #include "PlacementStrategy.hh"
@@ -132,13 +132,15 @@ public:
     ExtraMenus &extraWindowMenus() { return m_extramenus; }
     const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
     
+    FbWinFrame::TabPlacement getTabPlacement() const { return *resource.tab_placement; }
+
     ResizeModel getResizeModel() const { return *resource.resize_model; }
 
     inline FollowModel getFollowModel() const { return *resource.follow_model; }
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
     inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
-    inline const bool getDefaultExternalTabs() const { return *resource.default_external_tabs; }
+    inline const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
 
     inline Slit *slit() { return m_slit.get(); }
     inline const Slit *slit() const { return m_slit.get(); }
@@ -203,6 +205,7 @@ public:
     void update(FbTk::Subject *subj);
 
     FbTk::Menu *createMenu(const std::string &label);
+    FbTk::Menu *createToggleMenu(const std::string &label);
     void hideMenus();
     // for extras to add menus.
     // These menus will be marked internal,
@@ -217,6 +220,8 @@ public:
 
     void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
     void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
+
+    void saveTabPlacement(FbWinFrame::TabPlacement place) { *resource.tab_placement = place; }
 
     void saveWorkspaces(int w) { *resource.workspaces = w;  }
 
@@ -275,6 +280,7 @@ public:
 
 
     void reconfigure();	
+    void reconfigureTabs();	
     void rereadMenu();
     void shutdown();
     /// show position window centered on the screen with "X x Y" text
@@ -434,6 +440,7 @@ private:
             antialias, auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> rootcommand;		
         FbTk::Resource<ResizeModel> resize_model;
+        FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<FollowModel> follow_model;
         bool ordered_dither;
@@ -447,7 +454,7 @@ private:
         FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
         FbTk::Resource<std::string> scroll_action;
         FbTk::Resource<bool> scroll_reverse;
-        FbTk::Resource<bool> default_external_tabs;
+        FbTk::Resource<bool> default_internal_tabs;
 
     } resource;
 

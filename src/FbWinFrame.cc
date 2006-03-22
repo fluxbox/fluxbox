@@ -80,6 +80,7 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
                  EnterWindowMask | LeaveWindowMask),
     m_bevel(1),
     m_use_titlebar(true), 
+    m_tabplacement(BOTTOMRIGHT),
     m_use_tabs(true), 
     m_use_handle(true),
     m_focused(false),
@@ -126,9 +127,11 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
     if (tabmode == NOTSET)
         tabmode = m_tabmode;
 
+    m_tabmode = tabmode;
+
     // reparent tab container
     if (tabmode == EXTERNAL) {
-
+        m_label.show();
         m_tab_container.setBorderWidth(m_window.borderWidth());
         m_tab_container.setBorderColor(theme().border().color());
         m_tab_container.setEventMask(
@@ -141,15 +144,35 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
                     GrabModeSync, GrabModeSync, None, None);
         XUngrabButton(m_tab_container.display(), Button1, Mod1Mask|Mod2Mask|Mod3Mask, m_tab_container.window());
 
+        int tabx, taby;
+        switch (m_tabplacement) {
+        case TOPLEFT:
+            m_tab_container.setAlignment(Container::LEFT);
+            tabx = x();
+            taby = y() - yOffset();
+            break;
+        case TOPRIGHT:
+            m_tab_container.setAlignment(Container::RIGHT);
+            tabx = x() + width() - m_tab_container.width();
+            taby = y() - yOffset();
+            break;
+        case BOTTOMLEFT:
+            m_tab_container.setAlignment(Container::LEFT);
+            tabx = x();
+            taby = y() + height() + m_window.borderWidth();
+            break;
+        case BOTTOMRIGHT:
+            m_tab_container.setAlignment(Container::RIGHT);
+            tabx = x() + width() - m_tab_container.width();
+            taby = y() + height() + m_window.borderWidth();
+            break;
+        }
+
         if (m_tab_container.parent()->window() != m_screen.rootWindow().window()) {
-            int tabx = x();
-            // one borderwidth only, so the adjacent borders overlab
-            int taby = y() - m_tab_container.height() - m_tab_container.borderWidth();
             m_tab_container.reparent(m_screen.rootWindow(), tabx, taby);
             m_layeritem.addWindow(m_tab_container);
         }
 
-        m_tab_container.setAlignment(Container::LEFT);
         m_tab_container.setMaxSizePerClient(64); //!!TODO make this a setting
         m_tab_container.setMaxTotalSize(window().width());
 
@@ -162,23 +185,24 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
         }
 
     } else {
+        m_tab_container.setAlignment(Container::RELATIVE);
         if (m_tab_container.parent()->window() == m_screen.rootWindow().window()) {
             m_layeritem.removeWindow(m_tab_container);
             m_tab_container.reparent(m_titlebar, m_label.x(), m_label.y());
+            m_tab_container.resize(m_label.width(), m_label.height());
             m_tab_container.raise();
         }
         m_tab_container.setBorderWidth(0);
         m_tab_container.setMaxTotalSize(0);
         m_tab_container.setMaxSizePerClient(0);
-        m_tab_container.setAlignment(Container::RELATIVE);
         if (!m_use_tabs)
             m_tab_container.show();
         else
             ret = false;
+        m_label.hide();
 //        reconfigure();
     }
 
-    m_tabmode = tabmode;
     return true;
 }
 
@@ -286,7 +310,7 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
         m_window.resize(width, height);
     }
 
-    if (move)
+    if (move || resize && m_tabplacement != TOPLEFT)
         alignTabs();
 
     if (resize) {
@@ -306,8 +330,30 @@ void FbWinFrame::quietMoveResize(int x, int y,
 }
 
 void FbWinFrame::alignTabs() {
-    if (m_tabmode == EXTERNAL)
-        m_tab_container.move(m_window.x(), m_window.y() - m_tab_container.height() - m_tab_container.borderWidth());
+    if (m_tabmode != EXTERNAL)
+        return;
+
+    int tabx = 0, taby = 0;
+    switch (m_tabplacement) {
+    case TOPLEFT:
+        tabx = x();
+        taby = y() - yOffset();
+        break;
+    case TOPRIGHT:
+        tabx = x() + width() - m_tab_container.width();
+        taby = y() - yOffset();
+        break;
+    case BOTTOMLEFT:
+        tabx = x();
+        taby = y() + height() + m_window.borderWidth();
+        break;
+    case BOTTOMRIGHT:
+        tabx = x() + width() - m_tab_container.width();
+        taby = y() + height() + m_window.borderWidth();
+        break;
+    }
+
+    m_tab_container.move(tabx, taby);
 }
 
 void FbWinFrame::notifyMoved(bool clear) {
@@ -1077,6 +1123,9 @@ void FbWinFrame::applyTitlebar() {
     m_titlebar.setAlpha(alpha);
     m_label.setAlpha(alpha);
 
+    if (externalTabMode())
+        m_label.setGC(m_focused?theme().labelTextFocusGC():theme().labelTextUnfocusGC());
+
     if (label_pm != 0)
         m_label.setBackgroundPixmap(label_pm);
     else
@@ -1398,6 +1447,7 @@ void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
 }
 
 void FbWinFrame::applyActiveLabel(FbTk::TextButton &button) {
+
     button.setBorderWidth(1);
     button.setGC(theme().labelTextActiveGC());
     button.setJustify(theme().justify());
@@ -1544,16 +1594,26 @@ void FbWinFrame::gravityTranslate(int &x, int &y, unsigned int width, unsigned i
 }
 
 int FbWinFrame::heightOffset() const {
-    if (m_tabmode == EXTERNAL && m_use_tabs) 
-        return m_tab_container.height() + m_window.borderWidth();
-    else
+    if (m_tabmode != EXTERNAL || !m_use_tabs) 
         return 0;
+
+    // same height offset for top and bottom tabs
+    return m_tab_container.height() + m_window.borderWidth();
 }
 
 int FbWinFrame::yOffset() const {
-    if (m_tabmode == EXTERNAL && m_use_tabs) 
-        return m_tab_container.height() + m_window.borderWidth();
-    else
+    if (m_tabmode != EXTERNAL || !m_use_tabs) 
         return 0;
+
+    switch (m_tabplacement) {
+    case TOPLEFT:
+    case TOPRIGHT:
+        return m_tab_container.height() + m_window.borderWidth();
+        break;
+    case BOTTOMLEFT:
+    case BOTTOMRIGHT:
+        return 0;
+        break;
+    }
 }
 
