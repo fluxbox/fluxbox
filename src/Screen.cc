@@ -1690,29 +1690,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     menu.insert(tabmenu_label, tab_menu);
 
-#undef _FOCUSITEM
-
-    focus_menu->insert(new TabFocusModelMenuItem("ClickTabFocus", focusControl(), 
-                                                 FocusControl::CLICKTABFOCUS, 
-                                                 save_and_reconfigure));
-    focus_menu->insert(new TabFocusModelMenuItem("MouseTabFocus", focusControl(), 
-                                                 FocusControl::MOUSETABFOCUS, 
-                                                 save_and_reconfigure));
-    
-
-    focus_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, 
-                                                AutoRaise,
-                                                "Auto Raise",
-                                                "Auto Raise windows on sloppy"),
-                                        *resource.auto_raise,
-                                        save_and_reconfigure));
-
-    focus_menu->updateMenu();
-
-    menu.insert(focusmenu_label, focus_menu);
-
-    // end tab menu
-
 #ifdef SLIT
     if (slit() != 0) {
         slit()->menu().setInternalMenu();
