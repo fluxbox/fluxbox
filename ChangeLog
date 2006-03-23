@@ -1,6 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/03/23:
+   * Fixed duplicate ClickToFocus menu item (Thanks mal at komcept com)
    * Fix some tab stacking alignment and rendering on tab resize (Simon)
      (and very minor tidying)
      FbWinFrame.cc FbTk/XLayer.cc FbTk/XLayerItem.hh/cc
@@ -15,6 +16,7 @@ Changes for 0.9.16:
      Screen.hh/cc Window.hh/cc FbWinFrame.hh/cc Container.cc 
      fluxbox-nls.hh
 *06/03/20:
+   * Fixed some minor typos (Thanks Semushin Slava)
    * Fix placement config (some compilers resulted in ignoring of 
      placement policy setting), and a minor ext. tabs placement bug
      ScreenPlacement.cc Row/ColSmartPlacement.cc
@@ -29,6 +31,7 @@ Changes for 0.9.16:
      fluxbox.cc Screen.hh/cc Window.hh/cc FbWinFrame.hh/cc Remember.cc
      Container.hh/cc FbTk/XLayer.hh/cc XLayerItem.cc fluxbox-nls.hh
      RowSmart/ColSmart/UnderMousePlacement.cc WinButton.cc
+-------------------------------------------------------------
 Changes for 0.9.15:
 *06/03/19:
    * Fixed some wrong fbsetroot nls (Thanks  Semushin Slava )
