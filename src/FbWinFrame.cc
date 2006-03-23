@@ -207,10 +207,12 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
         applyTabContainer();
         m_tab_container.clear();
 
+        m_tab_container.raise();
+        m_tab_container.show();
+    
         if (!m_use_tabs)
-            m_tab_container.show();
-        else
             ret = false;
+
         m_label.hide();
 //        reconfigure();
     }
@@ -1296,10 +1298,6 @@ void FbWinFrame::init() {
     m_label.setEventMask(ExposureMask | ButtonPressMask |
                          ButtonReleaseMask | ButtonMotionMask |
                          EnterWindowMask);
-    m_label.show();
-
-    m_tab_container.show();
-    m_tab_container.raise();
 
     showHandle();
     showTitlebar();

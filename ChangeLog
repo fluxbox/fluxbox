@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/03/23:
+   * Fix some tab stacking alignment and rendering on tab resize (Simon)
+     (and very minor tidying)
+     FbWinFrame.cc FbTk/XLayer.cc FbTk/XLayerItem.hh/cc
 *06/03/22:
    * More external tabs work (Simon)
      - Can now be placed TopLeft/TopRight/BottomLeft/BottomRight

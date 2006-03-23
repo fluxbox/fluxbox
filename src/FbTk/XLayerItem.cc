@@ -28,7 +28,7 @@
 using namespace FbTk;
 
 XLayerItem::XLayerItem(FbWindow &win, XLayer &layer) :
-    m_layer(&layer), m_layeriterator(0) {
+    m_layer(&layer) {
     m_windows.push_front(&win);
     m_layer->insert(*this);
 }

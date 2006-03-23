@@ -79,7 +79,6 @@ public:
 
 private:
     XLayer *m_layer;
-    XLayer::iterator m_layeriterator;
     Windows m_windows;
 };
 

@@ -131,24 +131,33 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     
 }
 
+// We can't just use Restack here, because it won't do anything if they're
+// already in the same relative order excluding other windows
 void XLayer::alignItem(XLayerItem &item) {
-    // Note: some other things effectively assume that the window list is 
-    // sorted from highest to lowest
-    size_t winnum = 0, 
-        num = item.numWindows();
-    Window *winlist = new Window[num];
-
-    // fill the rest of the array
-    XLayerItem::Windows::iterator it = item.getWindows().begin();
-    XLayerItem::Windows::iterator it_end = item.getWindows().end();
-    for (; it != it_end; ++it) {
-        if ((*it)->window()) {
-            winlist[winnum++] = (*it)->window();
-        }
+    if (itemList().front() == &item) {
+        stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
+        return;
     }
 
-    XRestackWindows(FbTk::App::instance()->display(), winlist, winnum);
-    delete [] winlist;
+    // Note: some other things effectively assume that the window list is 
+    // sorted from highest to lowest
+    // get our item
+    iterator myit = std::find(itemList().begin(), itemList().end(), &item);
+    iterator it = myit;
+
+    // go to the one above it in our layer (top is front, so we decrement)
+    --it;
+
+    // keep going until we find one that is currently visible to the user
+    while (it != itemList().begin() && !(*it)->visible()) 
+        --it;
+
+    if (it == itemList().begin() && !(*it)->visible())
+        // reached front item, but it wasn't visible, therefore it was already raised
+        stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
+    else
+        stackBelowItem(&item, *it);
+
 }
 
 XLayer::iterator XLayer::insert(XLayerItem &item, unsigned int pos) {
