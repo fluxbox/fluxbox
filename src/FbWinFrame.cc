@@ -345,7 +345,11 @@ void FbWinFrame::alignTabs() {
     if (m_tabmode != EXTERNAL)
         return;
 
-    m_tab_container.setMaxSizePerClient(m_screen.getTabWidth());
+    if (m_tab_container.maxWidthPerClient() != m_screen.getTabWidth()) {
+        m_tab_container.setMaxSizePerClient(m_screen.getTabWidth());
+        renderTabContainer();
+        applyTabContainer();
+    }
 
     int tabx = 0, taby = 0;
     switch (m_screen.getTabPlacement()) {
