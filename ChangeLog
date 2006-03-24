@@ -4,7 +4,7 @@ Changes for 0.9.16:
    * Fixed apps filename on save (Thanks mal at komcept com)
      Remember.cc
 *06/03/23:
-   * Fixed duplicate ClickToFocus menu item (Thanks mal at komcept com)
+   * Fixed duplicate ClickToFocus menu item (Thanks _markt)
    * Fix some tab stacking alignment and rendering on tab resize (Simon)
      (and very minor tidying)
      FbWinFrame.cc FbTk/XLayer.cc FbTk/XLayerItem.hh/cc
