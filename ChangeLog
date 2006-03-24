@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/03/24:
+   * Fix compile error in Theme.cc (sf.net bug #1454204)
+     FbTk/Theme.cc
    * Fixed apps filename on save (Thanks mal at komcept com)
      Remember.cc
 *06/03/23:
