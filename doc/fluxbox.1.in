@@ -570,7 +570,8 @@ Close
 Shade, ShadeWindow
 Stick, StickWindow
 ToggleDecor
-SendToWorkspace \fInumber\fR : Sends the current window and takes you with it.
+SendToWorkspace \fInumber\fR : Sends the current window to the workspace
+TakeToWorkspace \fInumber\fR : Sends the window and changes to the workspace.
 KillWindow
 NextTab
 PrevTab
