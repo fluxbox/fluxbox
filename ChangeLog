@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/03/24:
+   * Fixed apps filename on save (Thanks mal at komcept com)
+     Remember.cc
 *06/03/23:
    * Fixed duplicate ClickToFocus menu item (Thanks mal at komcept com)
    * Fix some tab stacking alignment and rendering on tab resize (Simon)

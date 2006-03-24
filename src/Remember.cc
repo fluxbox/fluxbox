@@ -543,11 +543,12 @@ void Remember::load() {
 }
 
 void Remember::save() {
+
+    string apps_string = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getAppsFilename());
+
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): Saving apps file..."<<endl;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): Saving apps file ["<<apps_string<<"]"<<endl;
 #endif // DEBUG
-    string apps_string;
-    Fluxbox::instance()->getDefaultDataFilename("apps", apps_string);
     ofstream apps_file(apps_string.c_str());
 
     // first of all we output all the startup commands
