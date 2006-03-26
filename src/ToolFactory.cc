@@ -159,7 +159,7 @@ void ToolFactory::updateThemes() {
 }
 
 
-int ToolFactory::maxFontHeight() const {
+int ToolFactory::maxFontHeight() {
     unsigned int max_height = 0;
     if (max_height < m_clock_theme.font().height())
         max_height = m_clock_theme.font().height();

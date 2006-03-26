@@ -31,7 +31,7 @@ class FbWinFrameTheme;
 
 class WinButtonTheme: public FbTk::Theme {
 public:
-    WinButtonTheme(int screen_num, const FbWinFrameTheme &frame_theme);
+    WinButtonTheme(int screen_num, FbWinFrameTheme &frame_theme);
     ~WinButtonTheme();
 
     void reconfigTheme();
@@ -99,7 +99,7 @@ private:
     FbTk::ThemeItem<FbTk::PixmapWithMask> m_stick_pm, m_stick_unfocus_pm, m_stick_pressed_pm;    
     FbTk::ThemeItem<FbTk::PixmapWithMask> m_stuck_pm, m_stuck_unfocus_pm; 
 
-    const FbWinFrameTheme &m_frame_theme;
+    FbWinFrameTheme &m_frame_theme;
 };
 
 #endif // WINBUTTONTHEME_HH

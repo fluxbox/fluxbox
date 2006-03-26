@@ -33,6 +33,7 @@
 Container::Container(const FbTk::FbWindow &parent):
     FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), 
     m_align(RELATIVE),
+    m_orientation(FbTk::ROT0),
     m_max_size_per_client(60),
     m_max_total_size(0),
     m_selected(0),
@@ -104,6 +105,7 @@ void Container::insertItem(Item item, int pos) {
     if (item->parent() != this)
         return;
 
+    item->setOrientation(m_orientation);
     if (pos >= size() || pos < 0) {
         m_item_list.push_back(item);
     } else if (pos == 0) {
@@ -273,6 +275,9 @@ void Container::setMaxTotalSize(unsigned int size) {
     unsigned int old = m_max_total_size;
     m_max_total_size = size;
 
+    repositionItems();
+    return;
+
     if (m_max_total_size && width() > m_max_total_size) {
         resize(m_max_total_size, height());
     } else if (!m_max_total_size && old) { // going from restricted to unrestricted
@@ -366,13 +371,25 @@ void Container::repositionItems() {
     if (empty() || m_update_lock)
         return;
 
-    //!! TODO vertical position
+    /**
+       NOTE: all calculations here are done in non-rotated space
+     */
 
     unsigned int max_width_per_client = maxWidthPerClient();
     unsigned int borderW = m_item_list.front()->borderWidth();
     unsigned int num_items = m_item_list.size();
 
-    unsigned int total_width = width();
+    unsigned int total_width;
+    unsigned int cur_width;
+    unsigned int height;
+    // unrotate
+    if (m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) {
+        total_width = cur_width = width();
+        height = this->height();
+    } else {
+        total_width = cur_width = this->height();
+        height = width();
+    }
 
     // if we have a max total size, then we must also resize ourself
     // within that bound
@@ -387,12 +404,20 @@ void Container::repositionItems() {
             } else
                 max_width_per_client = 1;
         }
-        if (total_width != width()) {
+    
+        if (total_width != cur_width) {
             // calling Container::resize here risks infinite loops
-            if (align == RIGHT)
-                FbTk::FbWindow::moveResize(x() - (total_width - width()), y(),  total_width, height());
-            else
-                FbTk::FbWindow::resize(total_width, height());
+            unsigned int neww = total_width, newh = height;
+            translateSize(m_orientation, neww, newh);
+            if (align == RIGHT || m_orientation == FbTk::ROT270) {
+                int deltax = - (total_width - cur_width);
+                int deltay = 0;
+                FbTk::translateCoords(m_orientation, deltax, deltay, total_width, height);
+
+                FbTk::FbWindow::moveResize(x() + deltax, y() + deltay, neww, newh);
+            } else {
+                FbTk::FbWindow::resize(neww, newh);
+            }
         }
     }
 
@@ -410,6 +435,8 @@ void Container::repositionItems() {
         next_x = total_width - max_width_per_client - borderW;
     }
 
+    int tmpx, tmpy;
+    unsigned int tmpw, tmph;
     for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {
         // we only need to do error stuff with alignment RELATIVE
         if (rounding_error != 0 && align == RELATIVE) {
@@ -418,11 +445,20 @@ void Container::repositionItems() {
         } else {
             extra = 0;
         }
+        // rotate the x and y coords
+        tmpx = next_x;
+        tmpy = -borderW;
+        tmpw = max_width_per_client + extra;
+        tmph = height;
+
+        FbTk::translateCoords(m_orientation, tmpx, tmpy, total_width, height);
+        FbTk::translatePosition(m_orientation, tmpx, tmpy, tmpw, tmph);
+        FbTk::translateSize(m_orientation, tmpw, tmph);
+
         // resize each clients including border in size
-        (*it)->moveResize(next_x,
-                          -borderW,
-                          max_width_per_client + extra,
-                          height());
+        (*it)->moveResize(tmpx, tmpy,
+                          tmpw, tmph);
+
         // moveresize does a clear
     }
 
@@ -474,5 +510,28 @@ void Container::clear() {
     ItemList::iterator it_end = m_item_list.end();
     for (; it != it_end; ++it)
         (*it)->clear();
+
+}
+
+void Container::setOrientation(FbTk::Orientation orient) {
+    if (m_orientation == orient)
+        return;
+
+    ItemList::iterator it = m_item_list.begin();
+    ItemList::iterator it_end = m_item_list.end();
+    for (; it != it_end; ++it)
+        (*it)->setOrientation(orient);
+
+    if ((m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) &&
+        (orient == FbTk::ROT90 || orient == FbTk::ROT270) ||
+        (m_orientation == FbTk::ROT90 || m_orientation == FbTk::ROT270) &&
+        (orient == FbTk::ROT0 || orient == FbTk::ROT180)) {
+        // flip width and height
+        m_orientation = orient;
+        resize(height(), width());
+    } else {
+        m_orientation = orient;
+        repositionItems();
+    }
 
 }

@@ -128,7 +128,7 @@ private:
 
     BScreen &m_screen;
     Container m_icon_container;
-    const IconbarTheme &m_theme;
+    IconbarTheme &m_theme;
     // cached pixmaps
     Pixmap m_focused_pm, m_unfocused_pm;
     // some are a fraction bigger due to rounding

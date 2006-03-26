@@ -134,7 +134,7 @@ private:
 
 
 IconButton::IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent, 
-                       const FbTk::Font &font, FluxboxWindow &win):
+                       FbTk::Font &font, FluxboxWindow &win):
     FbTk::TextButton(parent, font, win.winClient().title()),
     m_win(win), 
     m_icon_window(*this, 1, 1, 1, 1, 

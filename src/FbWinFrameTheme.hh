@@ -72,7 +72,6 @@ public:
     const FbTk::Color &buttonFocuscolor() const { return *m_button_focus_color; }
     const FbTk::Color &buttonUnfocuscolor() const { return *m_button_unfocus_color; }
     //@}
-    const FbTk::Font &font() const {  return *m_font; }
     FbTk::Font &font() { return *m_font; }
 
     FbTk::Justify justify() const { return *m_textjustify; }

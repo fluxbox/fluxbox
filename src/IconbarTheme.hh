@@ -41,8 +41,8 @@ public:
 
     void setAntialias(bool antialias);
 
-    const TextTheme &focusedText() const { return m_focused_text; }
-    const TextTheme &unfocusedText() const { return m_unfocused_text; }
+    TextTheme &focusedText()  { return m_focused_text; }
+    TextTheme &unfocusedText() { return m_unfocused_text; }
 
     const BorderTheme &focusedBorder() const { return m_focused_border; }
     const BorderTheme &unfocusedBorder() const { return m_unfocused_border; }

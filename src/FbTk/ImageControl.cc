@@ -166,7 +166,7 @@ ImageControl::~ImageControl() {
 
 
 Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
-                                 const Texture &text) const {
+                                 const Texture &text, FbTk::Orientation orient) const {
 
     if (text.pixmap().drawable() != None) {
         // do comparsion with width/height and texture_pixmap
@@ -174,7 +174,9 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
         CacheList::iterator it_end = cache.end();
         for (; it != it_end; ++it) {
             if ((*it)->texture_pixmap == text.pixmap().drawable() &&
-                (*it)->width == width && (*it)->height == height &&
+                (*it)->orient == orient &&
+                (*it)->width == width && 
+                (*it)->height == height &&
                 (*it)->texture == text.type()) {
                 (*it)->count++;
                 return (*it)->pixmap;
@@ -196,6 +198,7 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
     CacheList::iterator it_end = cache.end();
     for (; it != it_end; ++it) {
         if (((*it)->width == width) &&
+            ((*it)->orient == orient) &&
             ((*it)->height == height) &&
             ((*it)->texture == text.type()) &&
             ((*it)->pixel1 == text.color().pixel())) {
@@ -217,19 +220,21 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
 
 
 Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
-                                 const FbTk::Texture &texture) {
+                                 const FbTk::Texture &texture,
+                                 FbTk::Orientation orient) {
 
     if (texture.type() & FbTk::Texture::PARENTRELATIVE)
         return ParentRelative;
 
     // search cache first
-    Pixmap pixmap = searchCache(width, height, texture);
+    Pixmap pixmap = searchCache(width, height, texture, orient);
     if (pixmap) {
         return pixmap; // return cache item
     }
 
     // render new image
-    TextureRender image(*this, width, height, m_colors, m_num_colors);
+    
+    TextureRender image(*this, width, height, orient, m_colors, m_num_colors);
     pixmap = image.render(texture);
 
     if (pixmap) {
@@ -239,6 +244,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
 
         tmp->pixmap = pixmap;
         tmp->texture_pixmap = texture.pixmap().drawable();
+        tmp->orient = orient;
         tmp->width = width;
         tmp->height = height;
         tmp->count = 1;

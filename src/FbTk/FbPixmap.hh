@@ -25,6 +25,7 @@
 #define FBTK_FBPIXMAP_HH
 
 #include "FbDrawable.hh"
+#include "Text.hh"
 
 #include <X11/Xlib.h>
 
@@ -49,8 +50,8 @@ public:
 
     void copy(const FbPixmap &the_copy);
     void copy(Pixmap pixmap, int depth_convert, int screen_num);
-    /// rotates the pixmap 90 deg, not implemented!
-    void rotate();
+    /// rotates the pixmap to specified orientation (assumes ROT0 now)
+    void rotate(FbTk::Orientation orient);
     /// scales the pixmap to specified size
     void scale(unsigned int width, unsigned int height);
     void resize(unsigned int width, unsigned int height);

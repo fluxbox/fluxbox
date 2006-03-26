@@ -29,7 +29,7 @@
 
 #include "FbWinFrameTheme.hh"
 
-WinButtonTheme::WinButtonTheme(int screen_num, const FbWinFrameTheme &frame_theme):
+WinButtonTheme::WinButtonTheme(int screen_num, FbWinFrameTheme &frame_theme):
     FbTk::Theme(screen_num),
     m_close_pm(*this, "window.close.pixmap", "Window.Close.Pixmap"),
     m_close_unfocus_pm(*this, "window.close.unfocus.pixmap", "Window.Close.Unfocus.Pixmap"),

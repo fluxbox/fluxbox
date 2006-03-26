@@ -38,6 +38,7 @@
 #endif // HAVE_ICONV
 
 #include "Color.hh"
+#include "Text.hh"
 
 namespace FbTk {
 
@@ -89,11 +90,13 @@ public:
     unsigned int height() const;
     int ascent() const;
     int descent() const;
+
     /**
-       Rotate font in any angle
-       (currently only 90 degrees supported and just XFont implementation)
+       Returns whether we can draw this font in the given orientation.
+       (will instantiate that orientation, so do plan to use it...)
+       @param orient the orientation to test
     */
-    void rotate(float angle);
+    bool validOrientation(FbTk::Orientation orient);
 
     /**
        Draws text to drawable
@@ -108,11 +111,8 @@ public:
     */
     void drawText(const FbDrawable &w, int screen, GC gc,
                   const char *text, size_t len,
-                  int x, int y, bool rotate=true) const;
-    /// @return true if the font is rotated, else false
-    bool isRotated() const { return m_rotated; }
-    /// @return rotated angle
-    float angle() const { return m_angle; }
+                  int x, int y, FbTk::Orientation orient = ROT0) const;
+
     bool hasShadow() const { return m_shadow; }
     bool hasHalo() const { return m_halo; }
 private:
@@ -123,8 +123,7 @@ private:
     static bool s_multibyte; ///< if the fontimp should be a multibyte font
     static bool s_utf8mode; ///< should the font use utf8 font imp
 
-    bool m_rotated; ///< wheter we're rotated or not
-    float m_angle; ///< rotation angle
+    int m_angle; ///< rotation angle
     bool m_shadow; ///< shadow text
     Color m_shadow_color; ///< shadow color
     int m_shadow_offx; ///< offset y for shadow

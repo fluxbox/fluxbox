@@ -43,6 +43,7 @@ public:
               0, 0, 640, 480, KeyPressMask | ExposureMask) { 
         m_background = background;
         m_foreground = foreground;
+        m_orient = FbTk::ROT0;
         m_win.show();
         m_win.setBackgroundColor(FbTk::Color(background.c_str(), m_win.screenNumber()));
         FbTk::EventManager::instance()->add(*this, m_win);
@@ -70,43 +71,70 @@ public:
 
     void redraw() {
         size_t text_w = m_font.textWidth(m_text.c_str(), m_text.size());
+        int mult = 1;
+        if (m_orient == FbTk::ROT180)
+            mult = -1;
         size_t text_h = m_font.height();
-        int x = 640/2 - text_w/2;
-        int y = 480/2 - text_h/2;
+        int x = 640/2 - mult* text_w/2;
+        int y = 480/2 - mult*text_h/2;
         m_win.clear();
         FbTk::GContext wingc(m_win.drawable());
-        
+
+        int bx1 = 0;
+        int by1 = 0;
+        int bx2 = text_w;
+        int by2 = 0;
+        int tmp;
+
+        switch (m_orient) {
+        case FbTk::ROT90:
+            by2 = bx2;
+            bx2 = 0;
+            break;
+        case FbTk::ROT180:
+            bx2 = -bx2;
+            break;
+        case FbTk::ROT270:
+            by2 = -bx2;
+            bx2 = 0;
+            break;
+        }
+
+/*
         m_win.drawLine(wingc.gc(),
                        x, y + m_font.descent(),
                        x + text_w, y + m_font.descent());
         m_win.drawLine(wingc.gc(),
                        x, y - text_h, 
                        x + text_w, y - text_h);
+*/
+        // draw the baseline in red
         wingc.setForeground(FbTk::Color("red", m_win.screenNumber()));
         m_win.drawLine(wingc.gc(),
-                       x, y, x + text_w, y);
+                       x + bx1, y + by1, x + bx2, y+by2);
         wingc.setForeground(FbTk::Color(m_foreground.c_str(), m_win.screenNumber()));
-        //cerr<<"text width: "<<m_font.textWidth(m_text.c_str(), m_text.size())<<endl;
+        cerr<<"text size "<<text_w<<"x"<<text_h<<endl;
         m_font.drawText(m_win,
                         0, wingc.gc(),
 			m_text.c_str(), m_text.size(),
-                        x, y);
+                        x, y, m_orient);
 
     }
 
     FbTk::Font &font() { return m_font; }
-    void setText(const std::string& text) { m_text = text; }
+    void setText(const std::string& text, const FbTk::Orientation orient) { m_text = text; m_orient = orient; }
 
 private:
     string m_foreground, m_background;
     FbTk::FbWindow m_win;
     FbTk::Font m_font;
+    FbTk::Orientation m_orient;
     string m_text;
 };
 
 int main(int argc, char **argv) {
     //bool antialias = false;
-    bool rotate = false;
+    FbTk::Orientation orient = FbTk::ROT0;
     bool xft = false;
     string fontname("");
     string displayname("");
@@ -122,8 +150,8 @@ int main(int argc, char **argv) {
             displayname = argv[++a];
         } else if (strcmp("-text", argv[a]) == 0 && a + 1 < argc) {
             text = argv[++a];
-        } else if (strcmp("-rotate", argv[a]) == 0) {
-            rotate = true;
+        } else if (strcmp("-orient", argv[a]) == 0) {
+            orient = (FbTk::Orientation) (atoi(argv[++a]) % 4);
         } else if (strcmp("-bg", argv[a]) == 0 && a + 1 < argc) {
             background = argv[++a];
         } else if (strcmp("-fg", argv[a]) == 0 && a + 1 < argc) {
@@ -134,7 +162,7 @@ int main(int argc, char **argv) {
          //   cerr<<"-antialias"<<endl;
             cerr<<"-display <display>"<<endl;
             cerr<<"-text <text>"<<endl;
-            cerr<<"-rotate"<<endl;
+            cerr<<"-orient"<<endl;
             cerr<<"-fg <foreground color>"<<endl;
             cerr<<"-bg <background color>"<<endl;
             cerr<<"-h"<<endl;
@@ -148,10 +176,12 @@ int main(int argc, char **argv) {
     //app.font().setAntialias(antialias);
     if (!app.font().load(fontname.c_str()))
         cerr<<"Failed to load: "<<fontname<<endl;
+    if (orient && !app.font().validOrientation(orient)) {
+        cerr<<"Orientation not valid ("<<orient<<")"<<endl;
+        orient = FbTk::ROT0;
+    }
     cerr<<"Setting text: "<<text<<endl;
-    app.setText(text);
-    if (rotate)
-        app.font().rotate(90);
+    app.setText(text, orient);
 
     app.redraw();
     app.eventLoop();

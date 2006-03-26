@@ -28,6 +28,7 @@
 #define FBTK_TEXTURRENDER_HH
 
 #include "Texture.hh"
+#include "Text.hh"
 
 #include <X11/Xlib.h>
 
@@ -43,6 +44,7 @@ class ImageControl;
 class TextureRender {
 public:
     TextureRender(ImageControl &ic, unsigned int width, unsigned int height, 
+                  Orientation orient = ROT0,
                   XColor *_colors=0, size_t num_colors=0);
     ~TextureRender();
     /// render to pixmap
@@ -94,6 +96,7 @@ private:
         ncolors, cpc, cpccpc;
     unsigned char *red, *green, *blue;
     const unsigned char *red_table, *green_table, *blue_table;
+    Orientation orientation;
     unsigned int width, height;
     unsigned int *xtable, *ytable;
 };

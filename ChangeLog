@@ -1,5 +1,20 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/03/26:
+   * More external tabs work AND rotated Xft text (Simon)
+     - new tab positions (LeftTop, LeftBottom, etc)
+     - TextButtons and Containers can have orientation set on them
+     - XftFonts store all rotated versions (if used), 
+       so the theme doesn't need to know about it. Pixmaps are also auto-rotated.
+     - TODO: Update XFontImp rotation code
+     - Note: many files touched because constness removed from many fonts
+     FbTk/  Button.hh FbPixmap.hh/cc Font.hh/cc FontImp.hh ImageControl.hh/cc
+            Text.hh/cc TextButton.hh/cc TextureRender.hh/cc XFontImp.hh/cc
+            XftFontImp.hh/cc XmbFontImp.hh/cc
+     Container.hh/cc FbWinFrame.hh/cc FbWinFrameTheme.hh IconButton.hh/cc
+     IconbarTheme.hh IconbarTool.hh Screen.cc ToolFactory.hh/cc
+     WinButtonTheme.hh/cc
+     tests/testFont.cc
 *06/03/24:
    * Fix compile error in Theme.cc (sf.net bug #1454204)
      FbTk/Theme.cc
@@ -200,7 +215,6 @@ Changes for 0.9.15:
      src/ScreenResources.cc
    * Use fbsetroot in Default-Styles (Mathias)
      data/styles/*
--------------------------------------------------------------
 Changes for 0.9.14:
 *05/09/12:
    * Fixes #1281708, MenuIcon doesnt scale properly (thanx Erik-Jan)

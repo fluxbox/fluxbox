@@ -38,11 +38,12 @@ class Font;
 class TextButton: public FbTk::Button, FbTk::FbWindowRenderer {
 public:
     TextButton(const FbTk::FbWindow &parent, 
-               const FbTk::Font &font, const std::string &text);
+               FbTk::Font &font, const std::string &text);
 
     void setJustify(FbTk::Justify just);
+    bool setOrientation(FbTk::Orientation orient);
     void setText(const std::string &text);
-    void setFont(const FbTk::Font &font);
+    void setFont(FbTk::Font &font);
     void setBevel(int bevel);
     void setTextPadding(unsigned int padding);
     void setTextPaddingLeft(unsigned int leftpadding);
@@ -65,8 +66,9 @@ public:
 
     inline FbTk::Justify justify() const { return m_justify; }
     inline const std::string &text() const { return m_text; }
-    inline const FbTk::Font &font() const { return *m_font; }
+    inline FbTk::Font &font() const { return *m_font; }
     unsigned int textWidth() const;
+    unsigned int textHeight() const;
     int bevel() const { return m_bevel; }
     unsigned int leftPadding() const { return m_left_padding; }
     unsigned int rightPadding() const { return m_right_padding; }
@@ -77,10 +79,11 @@ protected:
     virtual void drawText(int x_offset, int y_offset, FbDrawable *drawable_override);
 
 private:
-    const FbTk::Font *m_font;
+    FbTk::Font *m_font;
     std::string m_text;
     FbTk::Justify m_justify;
-    
+    FbTk::Orientation m_orientation;
+
     int m_bevel;
     unsigned int m_left_padding; ///< space between buttonborder and text
     unsigned int m_right_padding; ///< space between buttonborder and text

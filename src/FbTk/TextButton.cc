@@ -28,16 +28,18 @@
 namespace FbTk {
 
 TextButton::TextButton(const FbTk::FbWindow &parent,
-                       const FbTk::Font &font,
+                       FbTk::Font &font,
                        const std::string &text):
     FbTk::Button(parent, 0, 0, 10, 10),
     m_font(&font),
     m_text(text),
-    m_justify(FbTk::LEFT), m_bevel(1),
+    m_justify(FbTk::LEFT),
+    m_orientation(FbTk::ROT0),
+    m_bevel(1),
     m_left_padding(0),
     m_right_padding(0) {
-    setRenderer(*this);
 
+    setRenderer(*this);
 }
 
 void TextButton::resize(unsigned int width, unsigned int height) {
@@ -60,6 +62,23 @@ void TextButton::setJustify(FbTk::Justify just) {
     m_justify = just;
 }
 
+bool TextButton::setOrientation(FbTk::Orientation orient) {
+    if (!m_font->validOrientation(orient))
+        return false;
+
+    if ((m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) &&
+        (orient == FbTk::ROT90 || orient == FbTk::ROT270) ||
+        (m_orientation == FbTk::ROT90 || m_orientation == FbTk::ROT270) &&
+        (orient == FbTk::ROT0 || orient == FbTk::ROT180)) {
+        // flip width and height
+        m_orientation = orient;
+        resize(height(), width());
+    } else {
+        m_orientation = orient;
+    }
+    return true;
+}
+
 void TextButton::setText(const std::string &text) {
     if (m_text != text) {
         m_text = text;
@@ -68,7 +87,7 @@ void TextButton::setText(const std::string &text) {
     }
 }
 
-void TextButton::setFont(const FbTk::Font &font) {
+void TextButton::setFont(FbTk::Font &font) {
     // no need to set new font if it's the same
     if (&font == m_font)
         return;
@@ -109,8 +128,14 @@ void TextButton::clearArea(int x, int y,
         drawText(0, 0, this);
 }
 
+
 unsigned int TextButton::textWidth() const {
     return font().textWidth(text().c_str(), text().size());
+}
+
+unsigned int TextButton::textHeight() const {
+    return font().height();
+
 }
 
 void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
@@ -122,7 +147,10 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
     unsigned int textlen = text().size();
     // do text alignment
 
-    int align_x = FbTk::doAlignment(width() - x_offset - m_left_padding - m_right_padding,
+    unsigned int textw = width(), texth = height();
+    translateSize(m_orientation, textw, texth);
+
+    int align_x = FbTk::doAlignment(textw - x_offset - m_left_padding - m_right_padding,
                                     bevel(),
                                     justify(),
                                     font(),
@@ -130,17 +158,22 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
                                     textlen); // return new text lne
 
     // center text by default
-    int center_pos = height()/2 + font().ascent()/2 - 1;
+    int center_pos = texth/2 + font().ascent()/2 - 1;
+
+    int textx = align_x + x_offset + m_left_padding;
+    int texty = center_pos + y_offset;
 
     if (drawable == 0)
         drawable = this;
+
+    // give it ROT0 style coords
+    translateCoords(m_orientation, textx, texty, textw, texth);
 
     font().drawText(*drawable,
                     screenNumber(),
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size
-                    align_x + x_offset + m_left_padding, center_pos + y_offset); // position
-    
+                    textx, texty, m_orientation); // position
 }
 
 void TextButton::exposeEvent(XExposeEvent &event) {

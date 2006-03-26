@@ -201,25 +201,63 @@ void FbPixmap::copy(Pixmap pm, int depth, int screen_num) {
     XFreeGC(display(), gc);
 }
 
-void FbPixmap::rotate() {
+void FbPixmap::rotate(FbTk::Orientation orient) {
+    if (orient == ROT0)
+        return;
+
+    unsigned int oldw = width(), oldh = height();
+    unsigned int neww = oldw, newh = oldh;
+    translateSize(orient, neww, newh);
 
     // make an image copy
     XImage *src_image = XGetImage(display(), drawable(),
                                   0, 0, // pos
-                                  width(), height(), // size
+                                  oldw, oldh, // size
                                   ~0, // plane mask
                                   ZPixmap); // format
     // reverse height/width for new pixmap
-    FbPixmap new_pm(drawable(), height(), width(), depth());
+    FbPixmap new_pm(drawable(), neww, newh, depth());
 
     GContext gc(drawable());
 
-    // copy new area
-    for (unsigned int y = 0; y < height(); ++y) {
-        for (unsigned int x = 0; x < width(); ++x) {
-            gc.setForeground(XGetPixel(src_image, x, y));
-            // revers coordinates
-            XDrawPoint(display(), new_pm.drawable(), gc.gc(), y, x);
+    if (orient == ROT180) {
+        unsigned int srcx, srcy, destx, desty;
+        for (srcy = 0, desty = oldh; srcy < oldh; ++srcy, --desty) {
+            for (srcx = 0, destx = oldw; srcx < oldw; ++srcx, --destx) {
+                gc.setForeground(XGetPixel(src_image, srcx, srcy));
+                XDrawPoint(display(), new_pm.drawable(), gc.gc(), destx, desty);
+            }
+        }
+    } else {
+        // need to flip x and y
+
+        // set start, end and direction based on rotation
+        // NOTE that startx etc are in the direction of the OLD pixmap
+        unsigned int startx, starty;
+        int dirx, diry;
+        switch (orient) {
+        case ROT90:
+            startx = neww-1;
+            starty = 0;
+            dirx = -1;
+            diry = 1;
+            break;
+        case ROT270:
+            startx = 0;
+            starty = newh-1;
+            dirx = 1;
+            diry = -1;
+            break;
+        }
+        
+
+        // copy new area
+        unsigned int srcx, srcy, destx, desty;
+        for (srcy = 0, destx = startx; srcy < oldh; ++srcy, destx+=dirx) {
+            for (srcx = 0, desty = starty; srcx < oldw; ++srcx, desty+=diry) {
+                gc.setForeground(XGetPixel(src_image, srcx, srcy));
+                XDrawPoint(display(), new_pm.drawable(), gc.gc(), destx, desty);
+            }
         }
     }
 

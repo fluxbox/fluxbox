@@ -192,7 +192,6 @@ setFromString(const char *strval) {
         m_value = FbWinFrame::TOPRIGHT;
     else if (strcasecmp(strval, "BottomRight")==0)
         m_value = FbWinFrame::BOTTOMRIGHT;
-    /*
     else if (strcasecmp(strval, "LeftTop") == 0)
         m_value = FbWinFrame::LEFTTOP;
     else if (strcasecmp(strval, "LeftBottom") == 0)
@@ -201,7 +200,6 @@ setFromString(const char *strval) {
         m_value = FbWinFrame::RIGHTTOP;
     else if (strcasecmp(strval, "RightBottom") == 0)
         m_value = FbWinFrame::RIGHTBOTTOM;
-    */
     else
         setDefaultValue();
 }
@@ -222,7 +220,6 @@ getString() const {
     case FbWinFrame::BOTTOMRIGHT:
         return string("BottomRight");
         break;
-/*
     case FbWinFrame::LEFTTOP:
         return string("LeftTop");
         break;
@@ -235,7 +232,6 @@ getString() const {
     case FbWinFrame::RIGHTBOTTOM:
         return string("RightBottom");
         break;
-*/
     }
     //default string
     return string("TopLeft");
@@ -1659,16 +1655,13 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     // menu is 2 wide, 2 down
     place_menu.push_back(PlacementP(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT));
-
-/*
     place_menu.push_back(PlacementP(_FBTEXT(Align, LeftTop, "Left Top", "Left Top"), FbWinFrame::LEFTTOP));
     place_menu.push_back(PlacementP(_FBTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), FbWinFrame::LEFTBOTTOM));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, RightTop, "Right Top", "Right Top"), FbWinFrame::RIGHTTOP));
     place_menu.push_back(PlacementP(_FBTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), FbWinFrame::RIGHTBOTTOM));
-*/
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT));
 
     tabplacement_menu->setMinimumSublevels(2);
     // create items in sub menu

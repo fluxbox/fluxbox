@@ -27,6 +27,8 @@
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
 
+// actually, Text is rather tool like, that's where orientation comes from
+#include "Text.hh" 
 #include "Texture.hh"
 #include "Timer.hh"
 #include "NotCopyable.hh"
@@ -61,7 +63,8 @@ public:
        @return pixmap of the rendered image, on failure None
     */
     Pixmap renderImage(unsigned int width, unsigned int height,
-                       const FbTk::Texture &src_texture);
+                       const FbTk::Texture &src_texture,
+                       Orientation orient = ROT0);
 
     void installRootColormap();
     void removeImage(Pixmap thepix);
@@ -79,7 +82,7 @@ private:
         Search cache for a specific pixmap
         @return None if no cache was found
     */
-    Pixmap searchCache(unsigned int width, unsigned int height, const Texture &text) const;
+    Pixmap searchCache(unsigned int width, unsigned int height, const Texture &text, Orientation orient) const;
 
     void createColorTable();
     bool m_dither;
@@ -109,19 +112,20 @@ private:
     typedef struct Cache {
         Pixmap pixmap;
         Pixmap texture_pixmap;
+        Orientation orient;
         unsigned int count, width, height;
         unsigned long pixel1, pixel2, texture;
     } Cache;
 
     struct ltCacheEntry {
         bool operator()(const Cache* s1, const Cache* s2) const {
-            return (s1->width  < s2->width  || s1->width == s2->width && 
-                    (s1->height < s2->height || s1->height == s2->height &&
-                     (s1->texture < s2->texture || s1->texture == s2->texture &&
-                      s1->pixel1 < s2->pixel1 || s1->pixel1 == s2->pixel1 &&
-                      (s1->texture & FbTk::Texture::GRADIENT) &&
-                       s1->pixel2 < s2->pixel2)
-                        ));
+            return (s1->orient  < s2->orient || s1->orient == s2->orient 
+                    && (s1->width  < s2->width || s1->width == s2->width 
+                    && (s1->height < s2->height || s1->height == s2->height
+                    && (s1->texture < s2->texture || s1->texture == s2->texture
+                    && (s1->pixel1 < s2->pixel1 || s1->pixel1 == s2->pixel1
+                    && ((s1->texture & FbTk::Texture::GRADIENT) && s1->pixel2 < s2->pixel2)
+                        )))));
         }
     };
 

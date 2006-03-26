@@ -52,6 +52,7 @@ namespace FbTk {
 
 TextureRender::TextureRender(ImageControl &imgctrl, 
                              unsigned int w, unsigned int h, 
+                             FbTk::Orientation orient,
                              XColor *_colors, size_t num_colors):
     control(imgctrl),
     colors(_colors),
@@ -59,6 +60,7 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     cpc(imgctrl.colorsPerChannel()),
     cpccpc(cpc * cpc),
     red(0), green(0), blue(0),
+    orientation(orient),
     width(static_cast<signed>((w > 0 ? w : 1))), height(static_cast<signed>(h > 0 ? h : 1)),
     xtable(0), ytable(0) {
 
@@ -231,6 +233,9 @@ Pixmap TextureRender::renderGradient(const FbTk::Texture &texture) {
 
     bool inverted = false;
 
+    // invert our width and height if necessary
+    translateSize(orientation, width, height);
+
     using namespace FbTk;
 
     interlaced = texture.type() & Texture::INTERLACED;
@@ -281,23 +286,30 @@ Pixmap TextureRender::renderGradient(const FbTk::Texture &texture) {
 }
 
 Pixmap TextureRender::renderPixmap(const FbTk::Texture &src_texture) {
-    if (width != src_texture.pixmap().width() ||
-        height != src_texture.pixmap().height()) {
+    unsigned int tmpw = width, tmph = height;
+    // we are given width and height in rotated form, we
+    // unrotate it here to render it
+    translateSize(orientation, tmpw, tmph);
+    if (tmpw != src_texture.pixmap().width() ||
+        tmph != src_texture.pixmap().height()) {
 
         // copy src_texture's pixmap and 
         // scale/tile to fit our size
         FbPixmap new_pm(src_texture.pixmap());
  
         if ((src_texture.type() & Texture::TILED)) {
-            new_pm.tile(width,height);
+            new_pm.tile(tmpw,tmph);
         } else {
-            new_pm.scale(width, height);
+            new_pm.scale(tmpw, tmph);
         }
-
+        new_pm.rotate(orientation);
         return new_pm.release();
     }
     // return copy of pixmap
-    return FbPixmap(src_texture.pixmap()).release();
+    FbPixmap pm_copy = FbPixmap(src_texture.pixmap());
+    pm_copy.rotate(orientation);
+
+    return pm_copy.release();
 }
 
 XImage *TextureRender::renderXImage() {
@@ -727,6 +739,8 @@ Pixmap TextureRender::renderPixmap() {
     }
 
     XDestroyImage(image);
+
+    pixmap.rotate(orientation);
 
     return pixmap.release();
 }

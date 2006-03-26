@@ -64,6 +64,7 @@ int doAlignment(int max_width, int bevel, FbTk::Justify justify,
     return dx;
 }
 
+
 /// specialization for Justify
 template <>
 void ThemeItem<FbTk::Justify>::setDefaultValue() {

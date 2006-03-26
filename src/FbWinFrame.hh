@@ -63,10 +63,10 @@ public:
     enum TabPlacement{ 
         // top and bottom placement
         TOPLEFT = 1, BOTTOMLEFT,
-        TOPRIGHT, BOTTOMRIGHT
+        TOPRIGHT, BOTTOMRIGHT,
         // left and right placement
-//        LEFTBOTTOM, LEFTTOP,
-//        RIGHTBOTTOM, RIGHTTOP        
+        LEFTBOTTOM, LEFTTOP,
+        RIGHTBOTTOM, RIGHTTOP        
     };
 
 
@@ -200,9 +200,9 @@ public:
     inline unsigned int height() const { return m_window.height(); }
 
     // extra bits for tabs
-    inline int xOffset() const { return 0; }
+    int xOffset() const;
     int yOffset() const;
-    inline int widthOffset() const { return 0; }
+    int widthOffset() const;
     int heightOffset() const;
 
     inline const FbTk::FbWindow &window() const { return m_window; }
@@ -229,7 +229,7 @@ public:
     inline const FbTk::TextButton *currentLabel() const { return m_current_label; }
     inline bool focused() const { return m_focused; }
     inline bool isShaded() const { return m_shaded; }
-    inline const FbWinFrameTheme &theme() const { return m_theme; }
+    inline FbWinFrameTheme &theme() const { return m_theme; }
     /// @return titlebar height
     unsigned int titlebarHeight() const { return m_titlebar.height(); }
     /// @return size of button
@@ -259,7 +259,7 @@ private:
 
     /// renders to pixmap or sets color
     void render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
-                unsigned int width, unsigned int height);
+                unsigned int width, unsigned int height, FbTk::Orientation orient = FbTk::ROT0);
 
     //@}
 

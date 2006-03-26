@@ -25,21 +25,28 @@
 #include "App.hh"
 #include "FbDrawable.hh"
 
+#include <math.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif //HAVE_CONFIG_H
 
 namespace FbTk {
 
-XftFontImp::XftFontImp(const char *name, bool utf8):m_xftfont(0),
-                                                    m_utf8mode(utf8) {
+XftFontImp::XftFontImp(const char *name, bool utf8):
+    m_utf8mode(utf8), m_name("") {
+
+    for (int r = ROT0; r <= ROT270; r++) 
+        m_xftfonts[r] = 0;
+
     if (name != 0)
         load(name);
 }
 
 XftFontImp::~XftFontImp() {
-    if (m_xftfont != 0)
-        XftFontClose(App::instance()->display(), m_xftfont);
+    for (int r = ROT0; r <= ROT270; r++) 
+        if (m_xftfonts[r] != 0)
+            XftFontClose(App::instance()->display(), m_xftfonts[r]);
 }
 
 bool XftFontImp::load(const std::string &name) {
@@ -54,18 +61,39 @@ bool XftFontImp::load(const std::string &name) {
             return false;
     }
     
-    // destroy old font and set new
-    if (m_xftfont != 0)
-        XftFontClose(disp, m_xftfont);
+    // destroy all old fonts and set new
+    for (int r = ROT0; r <= ROT270; r++) 
+        if (m_xftfonts[r] != 0)
+            XftFontClose(App::instance()->display(), m_xftfonts[r]);
 
-    m_xftfont = newxftfont;
+    m_xftfonts[ROT0] = newxftfont;
+    m_name = name;
 
     return true;
 }
 
-void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const {
-    if (m_xftfont == 0)
+void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const {
+    if (m_xftfonts[orient] == 0)
         return;
+
+    // we adjust y slightly so that the baseline is in the right spot
+    // (it is offset one by rotation >=180 degrees)
+    switch (orient) {
+    case ROT0:
+        break;
+    case ROT90:
+        break;
+    case ROT180:
+        x+=1;
+        y+=1;
+        break;
+    case ROT270:
+        y+=1;
+        break;
+    }
+
+    XftFont *font = m_xftfonts[orient];
+
     XftDraw *draw = XftDrawCreate(w.display(),
                                   w.drawable(),
                                   DefaultVisual(w.display(), screen),
@@ -101,13 +129,13 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *te
         // if the size is zero we use the XftDrawString8 function instead.
         XGlyphInfo ginfo;
         XftTextExtentsUtf8(w.display(),
-                           m_xftfont,
+                           m_xftfonts[ROT0],
                            (XftChar8 *)text, len,
                            &ginfo);
         if (ginfo.xOff != 0) {
             XftDrawStringUtf8(draw,
                               &xftcolor,
-                              m_xftfont,
+                              font,
                               x, y,
                               (XftChar8 *)(text), len);
             XftColorFree(w.display(), 
@@ -121,7 +149,7 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *te
 
     XftDrawString8(draw,
                    &xftcolor,
-                   m_xftfont,
+                   font,
                    x, y,
                    (XftChar8 *)(text), len);
 
@@ -133,16 +161,19 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *te
 }
 
 unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) const {
-    if (m_xftfont == 0)
+    if (m_xftfonts[ROT0] == 0)
         return 0;
 
     XGlyphInfo ginfo;
     Display* disp = App::instance()->display();
 
+    XftFont *font = m_xftfonts[ROT0];
+
+
 #ifdef HAVE_XFT_UTF8_STRING
     if (m_utf8mode) {
         XftTextExtentsUtf8(disp,
-                           m_xftfont,
+                           font,
                            (XftChar8 *)text, len,
                            &ginfo);
         if (ginfo.xOff != 0)
@@ -153,7 +184,7 @@ unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) co
 #endif  //HAVE_XFT_UTF8_STRING
 
     XftTextExtents8(disp,
-                    m_xftfont,
+                    font,
                     (XftChar8 *)text, len,
                     &ginfo);
 
@@ -161,12 +192,47 @@ unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) co
 }
 
 unsigned int XftFontImp::height() const {
-    if (m_xftfont == 0)
+    if (m_xftfonts[ROT0] == 0)
         return 0;
-    return m_xftfont->height;
+    else
+        return m_xftfonts[ROT0]->height;
     //m_xftfont->ascent + m_xftfont->descent;
     // curiously, fonts seem to have a smaller height, but the "height"
     // is specified within the actual font, so it must be right, right?
 }
+
+bool XftFontImp::validOrientation(FbTk::Orientation orient) {
+    if (orient == ROT0 || m_xftfonts[orient])
+        return true;
+
+    if (m_xftfonts[ROT0] == 0)
+        return false;
+
+    // otherwise, try to load that orientation
+    // radians is actually anti-clockwise, so we reverse it
+    double radians = -(orient) * 90 * M_PI / 180;
+
+    XftMatrix matrix;
+    XftMatrixInit(&matrix);
+    XftMatrixRotate(&matrix, cos(radians), sin(radians));
+
+    Display *disp = App::instance()->display();
+
+    XftPattern * pattern = XftNameParse(m_name.c_str());
+    XftPatternAddMatrix(pattern, XFT_MATRIX, &matrix);
+    XftResult result;
+    XftPattern * foundpat = XftFontMatch(disp, 0, pattern, &result);
+    XftPatternDestroy(pattern);
+    XftFont * new_font = XftFontOpenPattern(disp, foundpat);
+
+    if (new_font == 0)
+        return false;
+
+    m_xftfonts[orient] = new_font;
+
+    return true;
+}
+
+
 
 }; // end namespace FbTk

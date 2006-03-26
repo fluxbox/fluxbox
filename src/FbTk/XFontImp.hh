@@ -38,12 +38,13 @@ public:
     bool load(const std::string &filename);
     unsigned int textWidth(const char * const text, unsigned int size) const;
     unsigned int height() const;
-    float angle() const { return m_angle; }
+    int angle() const { return m_angle; }
     int ascent() const;
     int descent() const { return m_fontstruct ? m_fontstruct->descent : 0; }
-    void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const;
+
     bool loaded() const { return m_fontstruct != 0; }
-    void rotate(float angle);
+    void rotate(int angle);
     /// enable/disable rotation witout alloc/dealloc rotfont structures
     void setRotate(bool val) { m_rotate = val; }
 private:
@@ -79,7 +80,7 @@ private:
     };
     XRotFontStruct *m_rotfont; ///< rotated font structure
     XFontStruct *m_fontstruct; ///< X font structure
-    float m_angle; ///< the rotated angle
+    int m_angle; ///< the rotated angle
     bool m_rotate; ///< used to disable/enable rotation temprarly without reallocating m_rotfont
 };
 

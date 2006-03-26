@@ -28,6 +28,7 @@
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/NotCopyable.hh"
+#include "FbTk/Text.hh" // for Orientation
 
 namespace FbTk {
     class Button;
@@ -66,6 +67,7 @@ public:
     void setMaxSizePerClient(unsigned int size);
     void setMaxTotalSize(unsigned int size);
     void setAlignment(Alignment a);
+    void setOrientation(FbTk::Orientation orient);
 
     Item back() { return m_item_list.back(); }
 
@@ -83,6 +85,7 @@ public:
 
     /// accessors
     inline Alignment alignment() const { return m_align; }
+    inline FbTk::Orientation orientation() const { return m_orientation; }
     inline int size() const { return m_item_list.size(); }
     inline bool empty() const { return m_item_list.empty(); }
     inline const Item& selected() const { return m_selected; }
@@ -102,6 +105,8 @@ public:
 
 private:
     void repositionItems();
+
+    FbTk::Orientation m_orientation;
 
     Alignment m_align;
     unsigned int m_max_size_per_client;

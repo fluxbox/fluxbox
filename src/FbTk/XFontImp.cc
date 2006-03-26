@@ -79,9 +79,10 @@ bool XFontImp::load(const std::string &fontname) {
     return true;
 }
 
-void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const {
+void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const {
     if (m_fontstruct == 0)
         return;
+
     // use roated font functions?
     if (m_rotfont != 0 && m_rotate) {
         drawRotText(w.drawable(), screen, gc, text, len, x, y);
@@ -110,7 +111,7 @@ unsigned int XFontImp::height() const {
     return m_fontstruct->ascent + m_fontstruct->descent;
 }
 
-void XFontImp::rotate(float angle) {
+void XFontImp::rotate(int angle) {
     //we must have a font loaded before we rotate
     if (m_fontstruct == 0 || m_fontstruct->per_char == 0)
         return;

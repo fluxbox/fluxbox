@@ -25,6 +25,7 @@
 #define FBTK_FONTIMP_HH
 
 #include "Color.hh"
+#include "Font.hh"
 
 #include <X11/Xlib.h>
 
@@ -43,13 +44,14 @@ class FontImp {
 public:
     virtual ~FontImp() { }
     virtual bool load(const std::string &name) = 0;
-    virtual void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const = 0;
+    virtual void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const = 0;
     virtual unsigned int textWidth(const char * const text, unsigned int size) const = 0;
+    virtual bool validOrientation(FbTk::Orientation orient) { return orient == ROT0; }
     virtual int ascent() const = 0;
     virtual int descent() const = 0;
     virtual unsigned int height() const = 0;
     virtual bool loaded() const = 0;
-    virtual void rotate(float angle) { } // by default, no rotate support
+    virtual void rotate(int angle) { } // by default, no rotate support
     virtual bool utf8() const { return false; };
 protected:
     FontImp() { }

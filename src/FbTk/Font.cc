@@ -201,7 +201,6 @@ void Font::shutdown() {
 
 Font::Font(const char *name):
     m_fontimp(0),
-    m_rotated(false), 
     m_shadow(false), m_shadow_color("black", DefaultScreen(App::instance()->display())), 
     m_shadow_offx(2), m_shadow_offy(2),
     m_halo(false), m_halo_color("white", DefaultScreen(App::instance()->display())),
@@ -361,9 +360,13 @@ int Font::descent() const {
     return m_fontimp->descent();
 }
 
+bool Font::validOrientation(FbTk::Orientation orient) {
+    return m_fontimp->validOrientation(orient);
+}
+
 void Font::drawText(const FbDrawable &w, int screen, GC gc,
                     const char *text, size_t len, int x, int y, 
-                    bool rotate) const {
+                    Orientation orient) const {
     if (text == 0 || len == 0)
         return;
 
@@ -391,69 +394,26 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
             shadow_gc.setForeground(m_shadow_color);
             first_run = false;
             drawText(w, screen, shadow_gc.gc(), real_text, len,
-                     x + m_shadow_offx, y + m_shadow_offy, rotate);
+                     x + m_shadow_offx, y + m_shadow_offy, orient);
             first_run = true;
         } else if (m_halo) {
             FbTk::GContext halo_gc(w);
             halo_gc.setForeground(m_halo_color);
             first_run = false;
-            drawText(w, screen, halo_gc.gc(), real_text, len, x + 1, y + 1, rotate);
-            drawText(w, screen, halo_gc.gc(), real_text, len, x - 1, y + 1, rotate);
-            drawText(w, screen, halo_gc.gc(), real_text, len, x - 1, y - 1, rotate);
-            drawText(w, screen, halo_gc.gc(), real_text, len, x + 1, y - 1, rotate);
+            drawText(w, screen, halo_gc.gc(), real_text, len, x + 1, y + 1, orient);
+            drawText(w, screen, halo_gc.gc(), real_text, len, x - 1, y + 1, orient);
+            drawText(w, screen, halo_gc.gc(), real_text, len, x - 1, y - 1, orient);
+            drawText(w, screen, halo_gc.gc(), real_text, len, x + 1, y - 1, orient);
             first_run = true;
         }
     }
 
-    if (!rotate && isRotated()) {
-        // if this was called with request to not rotated the text
-        // we just forward it to the implementation that handles rotation
-        // currently just XFontImp
-        // Using dynamic_cast just temporarly until there's a better solution 
-        // to put in FontImp
-        try {
-            XFontImp *font = dynamic_cast<XFontImp *>(m_fontimp);
-            font->setRotate(false); // disable rotation temporarly
-
-            font->drawText(w, screen, gc, real_text, len, x, y);
-            font->setRotate(true); // enable rotation
-        } catch (std::bad_cast &bc) {
-            // draw normal...
-            m_fontimp->drawText(w, screen, gc, real_text, len, x, y);
-        }
-
-    } else
-        m_fontimp->drawText(w, screen, gc, real_text, len, x, y);		
+    m_fontimp->drawText(w, screen, gc, real_text, len, x, y, orient);
 
     if (rtext != 0)
         delete[] rtext;
 
 }	
-
-void Font::rotate(float angle) {
-/* TODO: reimplement rotated text
-#ifdef USE_XFT
-    // if we are rotated and we are changing to horiz text 
-    // and we were antialiased before we rotated then change to XftFontImp
-    if (isRotated() && angle == 0 && !m_xftfontstr.empty())
-        m_fontimp.reset(new XftFontImp(m_fontstr.c_str(),s_utf8mode));
-#endif // USE_XFT
-    // change to a font imp that handles rotated fonts (i.e just XFontImp at the moment)
-    // if we're going to rotate this font
-    if (angle != 0 && !isRotated()) {
-        m_fontimp.reset(new XFontImp(m_fontstr.c_str()));
-        if (!m_fontimp->loaded()) // if it failed to load font, try default font fixed
-            m_fontimp->load("fixed");
-    }
-
-    //Note: only XFontImp implements FontImp::rotate
-    m_fontimp->rotate(angle);
-
-    m_rotated = (angle == 0 ? false : true);
-    m_angle = angle;
-    */
-}
-
 
 };
 

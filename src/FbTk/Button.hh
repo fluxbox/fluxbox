@@ -30,6 +30,7 @@
 #include "FbWindow.hh"
 #include "Command.hh"
 #include "Color.hh"
+#include "Text.hh"
 
 #include <X11/Xlib.h>
 #include <memory>
@@ -57,6 +58,7 @@ public:
     virtual void setBackgroundPixmap(Pixmap pm);
     /// sets background color
     virtual void setBackgroundColor(const Color &color);
+    virtual bool setOrientation(FbTk::Orientation orient) { return orient == FbTk::ROT0; }
 
     /**
        @name eventhandlers

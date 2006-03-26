@@ -35,7 +35,7 @@ class IconbarTool;
 class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
     IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent, 
-               const FbTk::Font &font, FluxboxWindow &window);
+               FbTk::Font &font, FluxboxWindow &window);
     virtual ~IconButton();
 
     void exposeEvent(XExposeEvent &event);
