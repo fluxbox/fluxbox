@@ -413,6 +413,7 @@ void FbWinFrame::alignTabs() {
         applyTabContainer();
     }
 
+    FbTk::Orientation orig_orient = m_tab_container.orientation();
     int tabx = 0, taby = 0;
     switch (m_screen.getTabPlacement()) {
     case TOPLEFT:
@@ -455,6 +456,12 @@ void FbWinFrame::alignTabs() {
         tabx = x() + width() - m_tab_container.width();
         taby = y() + height() + m_window.borderWidth();
         break;
+    }
+
+    if (m_tab_container.orientation() != orig_orient) {
+        renderTabContainer();
+        applyTabContainer();
+        m_tab_container.clear();
     }
 
     m_tab_container.move(tabx, taby);
