@@ -409,10 +409,13 @@ void Container::repositionItems() {
             // calling Container::resize here risks infinite loops
             unsigned int neww = total_width, newh = height;
             translateSize(m_orientation, neww, newh);
-            if (align == RIGHT || m_orientation == FbTk::ROT270) {
-                int deltax = - (total_width - cur_width);
+            if (align == RIGHT && m_orientation != FbTk::ROT270 || align == LEFT && m_orientation == FbTk::ROT270) {
+                int deltax = 0;
                 int deltay = 0;
-                FbTk::translateCoords(m_orientation, deltax, deltay, total_width, height);
+                if (m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180)
+                    deltax = - (total_width - cur_width);
+                else
+                    deltay = - (total_width - cur_width);
 
                 FbTk::FbWindow::moveResize(x() + deltax, y() + deltay, neww, newh);
             } else {
@@ -434,6 +437,11 @@ void Container::repositionItems() {
         direction = -1;
         next_x = total_width - max_width_per_client - borderW;
     }
+
+    // when rot270, our borderwidth adjustment actually needs to be at the
+    // other end (i.e. top), so this puts it there
+    if (m_orientation == FbTk::ROT270)
+        next_x += 2*borderW;
 
     int tmpx, tmpy;
     unsigned int tmpw, tmph;

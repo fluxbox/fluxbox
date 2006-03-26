@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/03/26:
+   * Related to external (Simon)
+     - Fix title alignment
+     - Fix "jumpy" vertical tabs on tab size change & other change-related
+     - Fix alignment error for left-hand vertical tabs
+     FbWinFrame.cc Container.cc
    * More external tabs work AND rotated Xft text (Simon)
      - new tab positions (LeftTop, LeftBottom, etc)
      - TextButtons and Containers can have orientation set on them
