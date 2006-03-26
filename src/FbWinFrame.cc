@@ -39,9 +39,10 @@
 #include "Shape.hh"
 #endif // SHAPE
 
-
 #include <algorithm>
 #include <X11/X.h>
+
+using namespace std; // mem_fun
 
 FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
                        FbTk::XLayer &layer,
