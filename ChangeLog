@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/03/27:
+   * Fix crash when deiconifying stuck windows with Follow mode (Simon)
+     IconButton.cc
 *06/03/26:
    * Related to external (Simon)
      - Fix title alignment

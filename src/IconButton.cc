@@ -74,26 +74,29 @@ public:
     explicit FocusCommand(const IconbarTool& tool, FluxboxWindow &win) : 
         m_win(win), m_tool(tool) { }
     void execute() {
-        if(m_win.isIconic() || !m_win.isFocused()) {
+        // this needs to be a local variable, as this object could be destroyed
+        // if the workspace is changed.
+        FluxboxWindow &win = m_win;
+        if(win.isIconic() || !win.isFocused()) {
             switch(m_tool.deiconifyMode()) {
             case IconbarTool::SEMIFOLLOW:
-                if (m_win.isIconic()) {
-                    m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
+                if (win.isIconic()) {
+                    win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
                 } else {
-                    m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+                    win.screen().changeWorkspaceID(win.workspaceNumber());
                 }
                 break;
             case IconbarTool::CURRENT:
-                m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
+                win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
                 break;
             case IconbarTool::FOLLOW:
             default:
-                m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+                win.screen().changeWorkspaceID(win.workspaceNumber());
                 break;
             };
-            m_win.raiseAndFocus();
+            win.raiseAndFocus();
        } else
-           m_win.iconify();
+           win.iconify();
     }
 
 private:
