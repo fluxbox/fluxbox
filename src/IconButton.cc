@@ -91,7 +91,8 @@ public:
                 break;
             case IconbarTool::FOLLOW:
             default:
-                win.screen().changeWorkspaceID(win.workspaceNumber());
+                if (!win.isStuck())
+                    win.screen().changeWorkspaceID(win.workspaceNumber());
                 break;
             };
             win.raiseAndFocus();
