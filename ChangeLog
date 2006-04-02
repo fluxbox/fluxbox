@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/02:
+   * size_t fixes. (Thanks Semushin Slava aka php-coder)
 *06/03/27:
    * Fix crash when deiconifying stuck windows with Follow mode (Simon)
      IconButton.cc
