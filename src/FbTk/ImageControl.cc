@@ -258,7 +258,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
 
         cache.push_back(tmp);
 
-        if ((unsigned) cache.size() > cache_max)
+        if (cache.size() > cache_max)
             cleanCache();
 
         return pixmap;

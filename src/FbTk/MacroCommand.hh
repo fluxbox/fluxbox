@@ -35,7 +35,7 @@ namespace FbTk {
 class MacroCommand:public Command {
 public:
     void add(RefCount<Command> &com);
-    unsigned int size() const;
+    size_t size() const;
     virtual void execute();
 
 private:

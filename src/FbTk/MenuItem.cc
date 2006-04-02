@@ -168,8 +168,8 @@ void MenuItem::draw(FbDrawable &draw,
             // disable clip mask
             XSetClipMask(disp, gc, None);
         } else if (isSelected()) {
-                draw.fillRectangle(theme.hiliteGC().gc(),
-                                   sel_x+item_pm_height/4, sel_y+item_pm_height/4, item_pm_height/2, item_pm_height/2);
+            draw.fillRectangle(theme.hiliteGC().gc(),
+                               sel_x+item_pm_height/4, sel_y+item_pm_height/4, item_pm_height/2, item_pm_height/2);
         }
     }
 

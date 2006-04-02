@@ -360,7 +360,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     }
     
     // init all "screens"
-    for(unsigned int s = 0; s < screens.size(); s++)
+    for(size_t s = 0; s < screens.size(); s++)
         initScreen(screens[s]);
     
     XAllowEvents(disp, ReplayPointer, CurrentTime);
@@ -1593,7 +1593,7 @@ void Fluxbox::load_rc(BScreen &screen) {
                        &value) && value.addr) {
         std::vector<std::string> paths;
         StringUtil::stringtok(paths, value.addr, ", ");
-        for (unsigned int i=0; i<paths.size(); ++i)
+        for (size_t i = 0; i < paths.size(); ++i)
             FbTk::Image::addSearchPath(paths[i]);
     }
 

@@ -3947,7 +3947,7 @@ void FluxboxWindow::setupWindow() {
 
 
 
-    for (char c = 0; c < 2 ; c++) {
+    for (size_t c = 0; c < 2 ; c++) {
         // get titlebar configuration for current side
         const std::vector<WinButton::Type> &dir = *(*titlebar_side[c]);
         

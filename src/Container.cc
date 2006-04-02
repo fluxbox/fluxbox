@@ -127,7 +127,7 @@ void Container::insertItem(Item item, int pos) {
 void Container::moveItem(Item item, int movement) {
 
     int index = find(item);
-    const int size = m_item_list.size();
+    const size_t size = m_item_list.size();
 
     if (index < 0 || (movement % size) == 0) {
         return;
@@ -286,7 +286,7 @@ void Container::setMaxTotalSize(unsigned int size) {
         // this is a bit of duplication from repositionItems
         // for when we are allowed to grow ourself
         Alignment align = alignment();
-        unsigned int num_items = m_item_list.size();
+        size_t num_items = m_item_list.size();
         if (m_max_total_size && (align == RIGHT || align == LEFT) &&
             num_items) { 
             unsigned int max_width_per_client = maxWidthPerClient();
@@ -377,7 +377,7 @@ void Container::repositionItems() {
 
     unsigned int max_width_per_client = maxWidthPerClient();
     unsigned int borderW = m_item_list.front()->borderWidth();
-    unsigned int num_items = m_item_list.size();
+    size_t num_items = m_item_list.size();
 
     unsigned int total_width;
     unsigned int cur_width;
@@ -480,18 +480,17 @@ unsigned int Container::maxWidthPerClient() const {
         return m_max_size_per_client;
         break;
     case RELATIVE:
-        int count = size();
-        if (count == 0)
+        if (size() == 0)
             return width();
         else {
             int borderW = m_item_list.front()->borderWidth();
             // there're count-1 borders to fit in with the windows
             // -> 1 per window plus end
             unsigned int w = width();
-            if (w < (count-1)*borderW)
+            if (w < (size()-1)*borderW)
                 return 1;
             else
-                return (w - (count - 1) * borderW) / count;
+                return (w - (size() - 1) * borderW) / size();
         }
         break;
     }
@@ -502,8 +501,8 @@ unsigned int Container::maxWidthPerClient() const {
 
 void Container::for_each(std::mem_fun_t<void, FbTk::FbWindow> function) {
     std::for_each(m_item_list.begin(),
-             m_item_list.end(),
-             function);
+                  m_item_list.end(),
+                  function);
 }
 
 void Container::setAlpha(unsigned char alpha) {

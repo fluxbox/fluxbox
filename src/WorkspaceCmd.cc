@@ -144,7 +144,7 @@ void ArrangeWindowsCmd::execute() {
         return;
 
     Workspace *space = screen->currentWorkspace();
-    unsigned int win_count = space->windowList().size();
+    size_t win_count = space->windowList().size();
   
     if (win_count == 0) 
         return;

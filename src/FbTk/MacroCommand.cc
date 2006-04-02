@@ -29,7 +29,7 @@ void MacroCommand::add(RefCount<Command> &com) {
     m_commandlist.push_back(com);
 }
 
-unsigned int MacroCommand::size() const {
+size_t MacroCommand::size() const {
     return m_commandlist.size();
 }
 

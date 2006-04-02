@@ -577,13 +577,13 @@ void Menu::clearWindow() {
     menu.frame.clear();
     
     // clear foreground bits of frame items
-    for (unsigned int i = 0; i < menuitems.size(); i++) {
+    for (size_t i = 0; i < menuitems.size(); i++) {
         clearItem(i, false);   // no clear
     }
 }
 
 void Menu::redrawFrame(FbDrawable &drawable) {
-    for (unsigned int i = 0; i < menuitems.size(); i++) {
+    for (size_t i = 0; i < menuitems.size(); i++) {
         drawItem(drawable, i);
     }
 
@@ -636,7 +636,8 @@ void Menu::redrawTitle(FbDrawable &drawable) {
     const char *text = menu.label.c_str();
 
     const FbTk::Font &font = theme().titleFont();
-    int dx = theme().bevelWidth(), len = menu.label.size();
+    int dx = theme().bevelWidth();
+    size_t len = menu.label.size();
     unsigned int l = font.textWidth(text, len) + theme().bevelWidth()*2;
 
     switch (theme().titleFontJustify()) {

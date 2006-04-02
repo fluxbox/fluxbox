@@ -158,7 +158,9 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 
 class TabPlacementMenuItem: public FbTk::MenuItem {
 public:
-    TabPlacementMenuItem(const char * label, BScreen &screen, FbWinFrame::TabPlacement place, FbTk::RefCount<FbTk::Command> &cmd):
+    TabPlacementMenuItem(const char * label, BScreen &screen, 
+                         FbWinFrame::TabPlacement place, 
+                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd),
         m_screen(screen),
         m_place(place) { }
@@ -853,7 +855,7 @@ void BScreen::reconfigure() {
     if (restore_menus) {
         // restore submenus, no timestamp changed
         FbTk::Menu *menu = m_rootmenu.get();
-        for (unsigned int i = 0; i < remember_sub.size(); i++ ) {
+        for (size_t i = 0; i < remember_sub.size(); i++ ) {
             int sub = remember_sub[i];
             if (!menu || sub < 0) 
                 break;

@@ -86,14 +86,14 @@ private:
         ~t_key();
 		
         inline t_key *find(unsigned int key_, unsigned int mod_) {
-            for (unsigned int i=0; i<keylist.size(); i++) {
+            for (size_t i = 0; i < keylist.size(); i++) {
                 if (keylist[i]->key == key_ && keylist[i]->mod == FbTk::KeyUtil::instance().isolateModifierMask(mod_))
                     return keylist[i];				
             }			
             return 0;
         }
         inline t_key *find(XKeyEvent &ke) {
-            for (unsigned int i=0; i<keylist.size(); i++) {
+            for (size_t i = 0; i < keylist.size(); i++) {
                 if (keylist[i]->key == ke.keycode && 
                         keylist[i]->mod == FbTk::KeyUtil::instance().isolateModifierMask(ke.state))
                     return keylist[i];				

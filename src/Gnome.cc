@@ -205,12 +205,12 @@ void Gnome::updateClientList(BScreen &screen) {
 
 void Gnome::updateWorkspaceNames(BScreen &screen) {
 
-    int number_of_desks = screen.getWorkspaceNames().size();
+    size_t number_of_desks = screen.getWorkspaceNames().size();
     const BScreen::WorkspaceNames &workspace_names = screen.getWorkspaceNames();
     // convert our desktop names to a char * so we can send it
     char *names[number_of_desks];		
     
-    for (int i = 0; i < number_of_desks; i++) {		
+    for (size_t i = 0; i < number_of_desks; i++) {		
         names[i] = new char[workspace_names[i].size() + 1];
         strcpy(names[i], workspace_names[i].c_str());
     }
@@ -223,7 +223,7 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
     }
 
     // destroy name buffers
-    for (int i = 0; i < number_of_desks; i++)
+    for (size_t i = 0; i < number_of_desks; i++)
         delete [] names[i];
 }
 

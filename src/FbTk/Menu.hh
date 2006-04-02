@@ -147,7 +147,7 @@ public:
     inline int y() const { return menu.window.y(); }
     inline unsigned int width() const { return menu.window.width(); }
     inline unsigned int height() const { return menu.window.height(); }
-    inline unsigned int numberOfItems() const { return menuitems.size(); }
+    inline size_t numberOfItems() const { return menuitems.size(); }
     inline int currentSubmenu() const { return m_which_sub; } 
     bool hasSubmenu(unsigned int index) const;
     bool isItemSelected(unsigned int index) const;

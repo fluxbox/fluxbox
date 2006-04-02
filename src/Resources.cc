@@ -68,11 +68,10 @@ void FbTk::Resource<std::vector<WinButton::Type> >::
 setFromString(char const *strval) {
     vector<std::string> val;
     StringUtil::stringtok(val, strval);
-    int size=val.size();
     //clear old values
     m_value.clear();
 		
-    for (int i=0; i<size; i++) {
+    for (size_t i = 0; i < val.size(); i++) {
         if (strcasecmp(val[i].c_str(), "Maximize")==0)
             m_value.push_back(WinButton::MAXIMIZE);
         else if (strcasecmp(val[i].c_str(), "Minimize")==0)
@@ -138,8 +137,7 @@ template<>
 std::string FbTk::Resource<std::vector<WinButton::Type> >::
 getString() const {
     string retval;
-    int size=m_value.size();
-    for (int i=0; i<size; i++) {
+    for (size_t i = 0; i < m_value.size(); i++) {
         switch (m_value[i]) {
         case WinButton::SHADE:
             retval.append("Shade");

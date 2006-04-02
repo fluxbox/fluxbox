@@ -189,7 +189,7 @@ bool Keys::addBinding(const std::string &linebuffer) {
 
     _FB_USES_NLS;
     // for each argument
-    for (unsigned int argc=0; argc<val.size(); argc++) {
+    for (size_t argc = 0; argc < val.size(); argc++) {
 
         if (val[argc][0] != ':') { // parse key(s)
             keyarg++;
@@ -289,7 +289,7 @@ void Keys::doAction(XKeyEvent &ke) {
 
     if (!next_key) {
 
-        for (unsigned int i=0; i<m_keylist.size(); i++) {
+        for (size_t i = 0; i < m_keylist.size(); i++) {
             if (*m_keylist[i] == ke) {
                 if (m_keylist[i]->keylist.size()) {
                     next_key = m_keylist[i];
@@ -335,8 +335,8 @@ bool Keys::reconfigure(const char *filename) {
  @return true on success else false.
 */
 bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
+    size_t baselit_i = 0;
     if (basetree==0) {
-        unsigned int baselist_i=0;
         for (; baselist_i<m_keylist.size(); baselist_i++) {
             if (m_keylist[baselist_i]->mod == newtree->mod &&
                 m_keylist[baselist_i]->key == newtree->key) {
@@ -357,7 +357,6 @@ bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
         }
 
     } else {
-        unsigned int baselist_i = 0;
         for (; baselist_i<basetree->keylist.size(); baselist_i++) {
             if (basetree->keylist[baselist_i]->mod == newtree->mod &&
                 basetree->keylist[baselist_i]->key == newtree->key) {

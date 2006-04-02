@@ -59,7 +59,7 @@ public:
     /// @return layer item on specific position, on failure 0
     ItemType *getItem(unsigned int position);
     /// @return number of elements in layer
-    unsigned int size() const { return m_list.size(); }
+    size_t size() const { return m_list.size(); }
     /// @return layer list
     const ListType &itemList() const { return m_list; }
     /// @return layer list

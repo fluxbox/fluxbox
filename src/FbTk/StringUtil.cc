@@ -123,7 +123,7 @@ string findExtension(const string &filename) {
 string replaceString(const string &original,
                      const char *findthis,
                      const char *replace) {
-    int i=0;
+    size_t i = 0;
     const int size_of_replace = strlen(replace);
     const int size_of_find = strlen(findthis);
     string ret_str(original);

@@ -180,8 +180,8 @@ void MultLayers::restack() {
 }
 
 int MultLayers::size() {
-    int i = 0, num = 0;
-    for (; i < static_cast<signed>(m_layers.size()); i++) {
+    int num = 0;
+    for (size_t i = 0; i < m_layers.size(); i++) {
         num += m_layers[i]->countWindows();
     }
     return num;

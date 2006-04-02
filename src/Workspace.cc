@@ -264,7 +264,7 @@ void Workspace::reconfigure() {
     }
 }
 
-int Workspace::numberOfWindows() const {
+size_t Workspace::numberOfWindows() const {
     return m_windowlist.size();
 }
 

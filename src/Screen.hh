@@ -175,7 +175,7 @@ public:
     inline int screenNumber() const { return rootWindow().screenNumber(); }
 
     /// @return number of workspaces
-    unsigned int numberOfWorkspaces() const { return m_workspaces_list.size(); }
+    size_t numberOfWorkspaces() const { return m_workspaces_list.size(); }
 
     inline const Icons &iconList() const { return m_icon_list; }
     inline Icons &iconList() { return m_icon_list; }

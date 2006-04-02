@@ -144,7 +144,7 @@ void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
 }
 
 void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
-    unsigned int textlen = text().size();
+    size_t textlen = text().size();
     // do text alignment
 
     unsigned int textw = width(), texth = height();
