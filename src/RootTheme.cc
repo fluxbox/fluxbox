@@ -157,60 +157,15 @@ void RootTheme::reconfigTheme() {
     FbRootWindow rootwin(screenNum());
 
     // if the background theme item was not loaded
-    // then generate an image with a text that 
-    // notifies the user about it
         
     if (!m_background_loaded) {
-
-        // get the pixmap, force update of pixmap (needed if this is the first time)
-        FbTk::FbPixmap root(FbTk::FbPixmap::getRootPixmap(screenNum(), true));
-
-        // render text
-        static const char *warning_msg = 
+        const char *warning_msg = 
             _FBTEXT(Common, BackgroundWarning,
                     "There is no background option specified in this style."
                     " Please consult the manual or read the FAQ.",
                     "Background missing warning");
 
-        // if there is no root background pixmap...do nothing
-        if (root.drawable() == None) {
-            FbCommands::ExecuteCmd cmd("fbsetroot -solid darkgreen", screenNum());
-            // wait for command to finish
-            waitpid(cmd.run(), NULL, 0);
-            // pixmap setting done. Force update of pixmaps
-            root = FbTk::FbPixmap::getRootPixmap(screenNum(), true);
-
-            // The command could fail and not set the background...
-            // so if the drawable is still none then just dont do anything more
-            // but we still output warning msg to the console/log
-            if (root.drawable() == None) {
-                cerr<<"Fluxbox: "<<warning_msg<<endl;
-                return;
-            }
-        }
-
-        
-        FbTk::GContext gc(root);        
-        // fill rectangle
-        gc.setForeground(FbTk::Color("black", screenNum()));
-        FbTk::Font font;
-        root.fillRectangle(gc.gc(), 0, 0, 
-                           font.textWidth(warning_msg, strlen(warning_msg)) + 4,
-                           font.height() + 4);
-        // text color
-        gc.setForeground(FbTk::Color("white", screenNum()));
-        
-        font.drawText(root, screenNum(), gc.gc(),
-                      warning_msg, strlen(warning_msg), 
-                      2, font.height() + 2); // added some extra pixels for better visibility
-        // output same msg to the log
         cerr<<"Fluxbox: "<<warning_msg<<endl;
-       
-        // reset background mark
-        m_background_loaded = true;
-        root.release(); // we dont want to destroy this pixmap
-
-        rootwin.clear();
         
     } else {
         // handle background option in style
