@@ -83,7 +83,7 @@ public:
     const Windows &windowList() const { return m_windowlist; }
     Windows &windowList() { return m_windowlist; }
 
-    int numberOfWindows() const;
+    size_t numberOfWindows() const;
     bool checkGrouping(FluxboxWindow &win);
 
     static bool loadGroups(const std::string &filename);
