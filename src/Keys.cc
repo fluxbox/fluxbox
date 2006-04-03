@@ -335,7 +335,7 @@ bool Keys::reconfigure(const char *filename) {
  @return true on success else false.
 */
 bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
-    size_t baselit_i = 0;
+    size_t baselist_i = 0;
     if (basetree==0) {
         for (; baselist_i<m_keylist.size(); baselist_i++) {
             if (m_keylist[baselist_i]->mod == newtree->mod &&
