@@ -49,7 +49,7 @@ enum {
 	CommonMaximizeOver = 16,
 	CommonSvnRevision = 17,
 	CommonVisible = 18,
-    CommonBackgroundWarning = 19,
+	CommonBackgroundWarning = 19,
 
 	ConfigmenuSet = 4,
 	ConfigmenuAntiAlias = 1,
@@ -74,6 +74,7 @@ enum {
 	ConfigmenuUnfocusedAlpha = 20,
 	ConfigmenuTabMenu = 21,
 	ConfigmenuTabsInTitlebar = 22,
+	ConfigmenuExternalTabWidth = 23,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,
@@ -143,7 +144,7 @@ enum {
 	RememberSticky = 9,
 	RememberUnknown = 10,
 	RememberWorkspace = 11,
-    RememberHead = 12,
+	RememberHead = 12,
 
 	ScreenSet = 12,
 	ScreenAnotherWMRunning = 1,
@@ -159,7 +160,7 @@ enum {
 	SlitOnHead = 6,
 	SlitPlacement = 7,
 	SlitSlit = 8,
-    SlitSaveSlitList = 9,
+	SlitSaveSlitList = 9,
 
 	ToolbarSet = 14,
 	ToolbarEditWkspcName = 1,
@@ -178,8 +179,8 @@ enum {
 	ToolbarClock12 = 14,
 	ToolbarClockEditFormat = 15,
 	ToolbarShowIcons = 16,
-    ToolbarIconbarModeNoIcons = 17,
-    ToolbarIconbarModeWorkspaceNoIcons = 18,
+	ToolbarIconbarModeNoIcons = 17,
+	ToolbarIconbarModeWorkspaceNoIcons = 18,
 
 	WindowSet = 15,
 	WindowUnnamed = 1,
@@ -194,7 +195,7 @@ enum {
 	WindowmenuSendTo = 7,
 	WindowmenuShade = 8,
 	WindowmenuStick = 9,
-    WindowmenuKill = 10,
+	WindowmenuKill = 10,
 
 	WorkspaceSet = 17,
 	WorkspaceDefaultNameFormat = 1,
