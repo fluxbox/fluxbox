@@ -77,7 +77,7 @@ inline void translateCoords(Orientation orient, int &x, int &y, unsigned int w, 
 
 // When positioning an X11 box inside another area, we need to
 // relocate the x,y coordinates
-inline void translatePosition(Orientation orient, int &x, int &y, unsigned int w, unsigned int h) {
+inline void translatePosition(Orientation orient, int &x, int &y, unsigned int w, unsigned int h, unsigned int bw) {
 
     int orig_x = x;
     int orig_y = y;
@@ -86,14 +86,14 @@ inline void translatePosition(Orientation orient, int &x, int &y, unsigned int w
     case ROT0:
         break;
     case ROT90:
-        x -= h;
+        x -= h + 2*bw;
         break;
     case ROT180:
-        x -= w;
-        y -= h;
+        x -= w + 2*bw;
+        y -= h + 2*bw;
         break;
     case ROT270:
-        y -= w;
+        y -= w + 2*bw;
         break;
     }
 

@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/04:
+   * Rotated X Fonts again, plus minor external tab alignment fixes (Simon)
+     - Still need to do XmbFonts. Most people probably load those 
+       instead of XFont these days. Will need yet another approach...
+     FbTk/XFontImp.hh/cc FbTk/Text.hh FbWinFrame.cc Container.cc 
 *06/04/02:
    * size_t fixes. (Thanks Semushin Slava aka php-coder)
 *06/03/27:

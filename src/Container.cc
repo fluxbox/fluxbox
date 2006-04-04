@@ -382,6 +382,7 @@ void Container::repositionItems() {
     unsigned int total_width;
     unsigned int cur_width;
     unsigned int height;
+
     // unrotate
     if (m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) {
         total_width = cur_width = width();
@@ -438,11 +439,6 @@ void Container::repositionItems() {
         next_x = total_width - max_width_per_client - borderW;
     }
 
-    // when rot270, our borderwidth adjustment actually needs to be at the
-    // other end (i.e. top), so this puts it there
-    if (m_orientation == FbTk::ROT270)
-        next_x += 2*borderW;
-
     int tmpx, tmpy;
     unsigned int tmpw, tmph;
     for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {
@@ -460,7 +456,7 @@ void Container::repositionItems() {
         tmph = height;
 
         FbTk::translateCoords(m_orientation, tmpx, tmpy, total_width, height);
-        FbTk::translatePosition(m_orientation, tmpx, tmpy, tmpw, tmph);
+        FbTk::translatePosition(m_orientation, tmpx, tmpy, tmpw, tmph, borderW);
         FbTk::translateSize(m_orientation, tmpw, tmph);
 
         // resize each clients including border in size

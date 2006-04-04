@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <X11/X.h>
 
+#include <iostream>
 using namespace std; // mem_fun
 
 FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
@@ -334,6 +335,7 @@ void FbWinFrame::alignTabs() {
     if (m_tabmode != EXTERNAL)
         return;
 
+
     FbTk::Orientation orig_orient = m_tab_container.orientation();
     unsigned int orig_tabwidth = m_tab_container.maxWidthPerClient();
 
@@ -374,14 +376,14 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT90) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT90);
         m_tab_container.setAlignment(Container::LEFT);
-        tabx = x() + width();
+        tabx = x() + width() + m_window.borderWidth();
         taby = y();
         break;
     case RIGHTBOTTOM:
         if (orig_orient != FbTk::ROT90) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT90);
         m_tab_container.setAlignment(Container::RIGHT);
-        tabx = x() + width();
+        tabx = x() + width() + m_window.borderWidth();
         taby = y() + height() - m_tab_container.height();
         break;
     case BOTTOMLEFT:
@@ -1106,6 +1108,15 @@ void FbWinFrame::reconfigureTitlebar() {
     if (m_tabmode == INTERNAL)
         m_tab_container.moveResize(next_x, m_bevel,
                                    space_left, button_size);
+    else {
+        if (m_use_tabs) {
+            if (m_tab_container.orientation() == FbTk::ROT0) {
+                m_tab_container.resize(m_tab_container.width(), button_size);
+            } else {
+                m_tab_container.resize(button_size, m_tab_container.height());
+            }
+        }
+    }
 
     next_x += m_label.width() + m_bevel;
 

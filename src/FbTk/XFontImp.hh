@@ -38,50 +38,49 @@ public:
     bool load(const std::string &filename);
     unsigned int textWidth(const char * const text, unsigned int size) const;
     unsigned int height() const;
-    int angle() const { return m_angle; }
     int ascent() const;
     int descent() const { return m_fontstruct ? m_fontstruct->descent : 0; }
     void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const;
 
+    bool validOrientation(FbTk::Orientation orient);
+
     bool loaded() const { return m_fontstruct != 0; }
-    void rotate(int angle);
-    /// enable/disable rotation witout alloc/dealloc rotfont structures
-    void setRotate(bool val) { m_rotate = val; }
+
 private:
-    void freeRotFont();
-    void drawRotText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-    unsigned int rotTextWidth(const char * const text, unsigned int size) const;
     struct BitmapStruct {
-        int	bit_w;
+        int bit_w;
         int bit_h;
 
         Pixmap bm;
     };
-
     struct XRotCharStruct {
-        int	ascent;
-        int	descent;
-        int	lbearing;
-        int	rbearing;
+        int ascent;
+        int descent;
+        int lbearing;
+        int rbearing;
         int width;
 
         BitmapStruct glyph;
     };
 
     struct XRotFontStruct {
-        int	dir;
-        int	height;
-        int	max_ascent;
-        int	max_descent;
-        int	max_char;
+        int height;
+        int max_ascent;
+        int max_descent;
+        int max_char;
         int min_char;
 
         XRotCharStruct per_char[95];
     };
-    XRotFontStruct *m_rotfont; ///< rotated font structure
+
+    void rotate(FbTk::Orientation orient);
+
+    void freeRotFont(XRotFontStruct * rotfont);
+    void drawRotText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const;
+
+    XRotFontStruct *m_rotfonts[4]; ///< rotated font structure (only 3 used)
     XFontStruct *m_fontstruct; ///< X font structure
-    int m_angle; ///< the rotated angle
-    bool m_rotate; ///< used to disable/enable rotation temprarly without reallocating m_rotfont
+
 };
 
 } // end namespace FbTk

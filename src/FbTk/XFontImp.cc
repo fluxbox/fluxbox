@@ -40,8 +40,10 @@ using namespace std;
 
 namespace FbTk {
 
-XFontImp::XFontImp(const char *fontname):m_rotfont(0), m_fontstruct(0),
-                                         m_angle(0), m_rotate(true) {
+XFontImp::XFontImp(const char *fontname):m_fontstruct(0) {
+    for (int i = ROT0; i <= ROT270; ++i)
+        m_rotfonts[i] = 0;
+
     if (fontname != 0)
         load(fontname);	
 }
@@ -49,20 +51,21 @@ XFontImp::XFontImp(const char *fontname):m_rotfont(0), m_fontstruct(0),
 XFontImp::~XFontImp() {
     if (m_fontstruct != 0)
         XFreeFont(App::instance()->display(), m_fontstruct);
-    if (m_rotfont != 0)
-        freeRotFont();
+    
+    for (int i = ROT0; i <= ROT270; ++i)
+        if (m_rotfonts[i] != 0)
+            freeRotFont(m_rotfonts[i]);
 }
 
 int XFontImp::ascent() const {
     if (m_fontstruct == 0)
         return 0;
-    if (m_rotfont != 0)
-        return m_rotfont->max_ascent;
 		
     return m_fontstruct->ascent;
 }
 
 bool XFontImp::load(const std::string &fontname) {
+
     XFontStruct *font = XLoadQueryFont(App::instance()->display(), fontname.c_str());
     if (font == 0)
         return false;
@@ -71,10 +74,9 @@ bool XFontImp::load(const std::string &fontname) {
 
     m_fontstruct = font; //set new font
 
-    if (m_rotfont != 0) {
-        freeRotFont(); // free old rotated font
-        rotate(m_angle); // allocate new rotated font and rotate it to old angle
-    }
+    for (int i = ROT0; i <= ROT270; ++i)
+        if (m_rotfonts[i] != 0)
+            freeRotFont(m_rotfonts[i]);
 
     return true;
 }
@@ -84,8 +86,8 @@ void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text
         return;
 
     // use roated font functions?
-    if (m_rotfont != 0 && m_rotate) {
-        drawRotText(w.drawable(), screen, gc, text, len, x, y);
+    if (orient != ROT0 && m_rotfonts[orient] != 0) {
+        drawRotText(w.drawable(), screen, gc, text, len, x, y, orient);
         return;
     }
 
@@ -97,10 +99,6 @@ unsigned int XFontImp::textWidth(const char * const text, unsigned int size) con
     if (text == 0 || m_fontstruct == 0)
         return 0;
 
-    // check rotated font?
-    if (m_rotfont != 0)
-        return rotTextWidth(text, size);
-
     return XTextWidth(m_fontstruct, text, size);
 }
 
@@ -111,27 +109,12 @@ unsigned int XFontImp::height() const {
     return m_fontstruct->ascent + m_fontstruct->descent;
 }
 
-void XFontImp::rotate(int angle) {
+void XFontImp::rotate(FbTk::Orientation orient) {
     //we must have a font loaded before we rotate
-    if (m_fontstruct == 0 || m_fontstruct->per_char == 0)
+    if (m_fontstruct == 0 || m_fontstruct->per_char == 0 || orient == ROT0)
         return;
-
-    if (m_rotfont != 0)
-        freeRotFont();
-
-    // no need for rotating, use regular font
-    if (angle == 0) {
-        m_angle = 0;
-        return;
-    }
 
     _FB_USES_NLS;
-
-    //get positive angle
-    while (angle < 0)
-        angle += 360;
-
-    m_angle = angle;
 
     // X system default vars
     Display *dpy = App::instance()->display();
@@ -145,12 +128,6 @@ void XFontImp::rotate(int angle) {
     unsigned char *vertdata, *bitdata;
     int ascent, descent, lbearing, rbearing;
 
-    // get nearest vertical or horizontal direction 
-    int dir = (int)((angle+45.0)/90.0)%4;
-
-    if (dir == 0) // no rotation
-        return;
-
     // create the depth 1 canvas bitmap
     FbTk::FbPixmap canvas(rootwin, boxlen, boxlen, 1);
  
@@ -160,9 +137,10 @@ void XFontImp::rotate(int angle) {
     font_gc.setFont(m_fontstruct->fid);
 
     // allocate space for rotated font
-    m_rotfont = new(nothrow) XRotFontStruct;
+    m_rotfonts[orient] = new(nothrow) XRotFontStruct;
+    XRotFontStruct *rotfont = m_rotfonts[orient];
 
-    if (m_rotfont == 0) {
+    if (rotfont == 0) {
         cerr<<"RotFont: "<<_FBTKTEXT(Error, OutOfMemory, "Out of memory", "Something couldn't allocate memory")<<endl;
         return;
     }
@@ -178,12 +156,11 @@ void XFontImp::rotate(int angle) {
         max_char = 126;
      
     /* some overall font data ... */
-    m_rotfont->dir = dir;
-    m_rotfont->min_char = min_char;
-    m_rotfont->max_char = max_char;
-    m_rotfont->max_ascent = m_fontstruct->max_bounds.ascent;
-    m_rotfont->max_descent = m_fontstruct->max_bounds.descent;   
-    m_rotfont->height = m_rotfont->max_ascent + m_rotfont->max_descent;
+    rotfont->min_char = min_char;
+    rotfont->max_char = max_char;
+    rotfont->max_ascent = m_fontstruct->max_bounds.ascent;
+    rotfont->max_descent = m_fontstruct->max_bounds.descent;   
+    rotfont->height = rotfont->max_ascent + rotfont->max_descent;
 
     // font needs rotation
     // loop through each character
@@ -191,17 +168,17 @@ void XFontImp::rotate(int angle) {
         index = ichar - m_fontstruct->min_char_or_byte2;
 
         // per char dimensions ...
-        ascent = m_rotfont->per_char[ichar-32].ascent = m_fontstruct->per_char[index].ascent;
-        descent =  m_rotfont->per_char[ichar-32].descent = m_fontstruct->per_char[index].descent;
-        lbearing = m_rotfont->per_char[ichar-32].lbearing = m_fontstruct->per_char[index].lbearing;
-        rbearing = m_rotfont->per_char[ichar-32].rbearing = m_fontstruct->per_char[index].rbearing;
-        m_rotfont->per_char[ichar-32].width = m_fontstruct->per_char[index].width;
+        ascent = rotfont->per_char[ichar-32].ascent = m_fontstruct->per_char[index].ascent;
+        descent =  rotfont->per_char[ichar-32].descent = m_fontstruct->per_char[index].descent;
+        lbearing = rotfont->per_char[ichar-32].lbearing = m_fontstruct->per_char[index].lbearing;
+        rbearing = rotfont->per_char[ichar-32].rbearing = m_fontstruct->per_char[index].rbearing;
+        rotfont->per_char[ichar-32].width = m_fontstruct->per_char[index].width;
 
         // some space chars have zero body, but a bitmap can't have
         if (!ascent && !descent)   
-            ascent = m_rotfont->per_char[ichar-32].ascent =   1;
+            ascent = rotfont->per_char[ichar-32].ascent =   1;
         if (!lbearing && !rbearing) 
-            rbearing = m_rotfont->per_char[ichar-32].rbearing = 1;
+            rbearing = rotfont->per_char[ichar-32].rbearing = 1;
 
         // glyph width and height when vertical
         vert_w = rbearing - lbearing;
@@ -235,8 +212,8 @@ void XFontImp::rotate(int angle) {
                                          "XCreateImage failed for some reason")
                  << "." << endl;
             free(vertdata);
-            delete m_rotfont;
-            m_rotfont = 0;			
+            delete rotfont;
+            m_rotfonts[orient] = 0;
             return;
         }
 
@@ -250,7 +227,7 @@ void XFontImp::rotate(int angle) {
         I1->format = XYBitmap; 
 
         // width, height of rotated character
-        if (dir == 2) { 
+        if (orient == ROT180) { 
             bit_w = vert_w;
             bit_h = vert_h; 
         } else {
@@ -261,8 +238,8 @@ void XFontImp::rotate(int angle) {
         // width in bytes
         bit_len = (bit_w-1)/8 + 1;
 
-        m_rotfont->per_char[ichar-32].glyph.bit_w = bit_w;
-        m_rotfont->per_char[ichar-32].glyph.bit_h = bit_h;
+        rotfont->per_char[ichar-32].glyph.bit_w = bit_w;
+        rotfont->per_char[ichar-32].glyph.bit_h = bit_h;
 
         // reserve memory for the rotated image
         bitdata = (unsigned char *)calloc((unsigned)(bit_h * bit_len), 1);
@@ -277,8 +254,8 @@ void XFontImp::rotate(int angle) {
                                           "XCreateImage failed for some reason") 
                  << "." << endl;
             free(bitdata);
-            delete m_rotfont;
-            m_rotfont = 0;
+            delete rotfont;
+            m_rotfonts[orient] = 0;
             return;
         }
 
@@ -288,10 +265,10 @@ void XFontImp::rotate(int angle) {
         for (j = 0; j < bit_h; j++) {
             for (i = 0; i < bit_w; i++) {
                 char val = 0;
-                if (dir == 1) {
+                if (orient == ROT270) {
                     val = vertdata[i*vert_len + (vert_w-j-1)/8] &
                         (128>>((vert_w-j-1)%8));
-                } else if (dir == 2) {
+                } else if (orient == ROT180) {
                     val = vertdata[(vert_h-j-1)*vert_len +
                                    (vert_w-i-1)/8] & (128>>((vert_w-i-1)%8));
                 } else {
@@ -306,11 +283,11 @@ void XFontImp::rotate(int angle) {
         }
 
         // create this character's bitmap 
-        m_rotfont->per_char[ichar-32].glyph.bm = 
+        rotfont->per_char[ichar-32].glyph.bm = 
             XCreatePixmap(dpy, rootwin, bit_w, bit_h, 1);
  
         // put the image into the bitmap 
-        XPutImage(dpy, m_rotfont->per_char[ichar-32].glyph.bm, 
+        XPutImage(dpy, rotfont->per_char[ichar-32].glyph.bm, 
                   font_gc.gc(), I2, 0, 0, 0, 0, bit_w, bit_h);
 
         // free the image and data
@@ -320,29 +297,28 @@ void XFontImp::rotate(int angle) {
 
 }
 
-void XFontImp::freeRotFont() {
-    if (m_rotfont == 0)
-        return;
+void XFontImp::freeRotFont(XRotFontStruct *rotfont) {
     // loop through each character and free its pixmap
-    for (int ichar = m_rotfont->min_char - 32; 
-         ichar <= m_rotfont->max_char - 32; ++ichar) {
-        XFreePixmap(App::instance()->display(), m_rotfont->per_char[ichar].glyph.bm);
+    for (int ichar = rotfont->min_char - 32; 
+         ichar <= rotfont->max_char - 32; ++ichar) {
+        XFreePixmap(App::instance()->display(), rotfont->per_char[ichar].glyph.bm);
     }
 
-    delete m_rotfont;
-    m_rotfont = 0;
+    delete rotfont;
+    rotfont = 0;
 }
 
-void XFontImp::drawRotText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const {            
+void XFontImp::drawRotText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const {            
 
     Display *dpy = App::instance()->display();
     static GC my_gc = 0;
-    int xp, yp, dir, ichar;
+    int xp, yp, ichar;
+
+    XRotFontStruct *rotfont = m_rotfonts[orient];
 
     if (text == NULL || len<1)
         return;
 
-    dir = m_rotfont->dir;
     if (my_gc == 0)
         my_gc = XCreateGC(dpy, w, 0, 0);
 
@@ -359,52 +335,44 @@ void XFontImp::drawRotText(Drawable w, int screen, GC gc, const char *text, size
         // make sure it's a printing character
         if (ichar >= 0 && ichar<95) {
             // suitable offset
-            if (dir == 1) {
-                xp = x-m_rotfont->per_char[ichar].ascent;
-                yp = y-m_rotfont->per_char[ichar].rbearing; 
-            } else if (dir == 2) {
-                xp = x-m_rotfont->per_char[ichar].rbearing;
-                yp = y-m_rotfont->per_char[ichar].descent+1; 
-            } else {
-                xp = x-m_rotfont->per_char[ichar].descent+1;  
-                yp = y+m_rotfont->per_char[ichar].lbearing; 
+            if (orient == ROT270) {
+                xp = x-rotfont->per_char[ichar].ascent;
+                yp = y-rotfont->per_char[ichar].rbearing; 
+            } else if (orient == ROT180) {
+                xp = x-rotfont->per_char[ichar].rbearing;
+                yp = y-rotfont->per_char[ichar].descent+1; 
+            } else { // ROT90
+                xp = x-rotfont->per_char[ichar].descent;
+                yp = y+rotfont->per_char[ichar].lbearing; 
             }
                    
             // draw the glyph
-            XSetStipple(dpy, my_gc, m_rotfont->per_char[ichar].glyph.bm);
+            XSetStipple(dpy, my_gc, rotfont->per_char[ichar].glyph.bm);
     
             XSetTSOrigin(dpy, my_gc, xp, yp);
       
             XFillRectangle(dpy, w, my_gc, xp, yp,
-                           m_rotfont->per_char[ichar].glyph.bit_w,
-                           m_rotfont->per_char[ichar].glyph.bit_h);
+                           rotfont->per_char[ichar].glyph.bit_w,
+                           rotfont->per_char[ichar].glyph.bit_h);
     
             // advance position
-            if (dir == 1)
-                y -= m_rotfont->per_char[ichar].width;
-            else if (dir == 2)
-                x -= m_rotfont->per_char[ichar].width;
+            if (orient == ROT270)
+                y -= rotfont->per_char[ichar].width;
+            else if (orient == ROT180)
+                x -= rotfont->per_char[ichar].width;
             else 
-                y += m_rotfont->per_char[ichar].width;
+                y += rotfont->per_char[ichar].width;
         }
     }
 }
 
 
-unsigned int XFontImp::rotTextWidth(const char * const text, unsigned int size) const {
+bool XFontImp::validOrientation(FbTk::Orientation orient) {
+    if (orient == ROT0 || m_rotfonts[orient])
+        return true;
 
-    if (text == 0)
-        return 0;
-
-    unsigned int width = 0;	
-    for (size_t i = 0; i<size; i++) {
-        int ichar = text[i] - 32;  
-        // make sure it's a printing character
-        if (ichar >= 0 && ichar < 95) 
-            width += m_rotfont->per_char[ichar].width;
-    }
-
-    return width;
+    rotate(orient);
+    return m_rotfonts[orient] != 0;
 }
 
 };
