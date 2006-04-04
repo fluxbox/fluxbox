@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/04:
+   * Rotated Xmb Fonts (Simon)
+     - rotated when drawn. Probably not very efficient for 
+       parentrelative backgrounds. If it proves an issue, we should 
+       probably cache recently-drawn strings so we can just re-stipple.
+     XmbFontImp.hh/cc Text.hh
    * Rotated X Fonts again, plus minor external tab alignment fixes (Simon)
      - Still need to do XmbFonts. Most people probably load those 
        instead of XFont these days. Will need yet another approach...

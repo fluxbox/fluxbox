@@ -43,6 +43,9 @@ public:
     int descent() const { return m_setextents ? m_setextents->max_ink_extent.height + m_setextents->max_ink_extent.y : 0; }
     bool loaded() const { return m_fontset != 0; }
     bool utf8() const { return m_utf8mode; }
+
+    bool validOrientation(FbTk::Orientation orient) { return true; }; // rotated on demand
+
 private:
     XFontSet m_fontset;
     XFontSetExtents *m_setextents;

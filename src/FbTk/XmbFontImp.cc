@@ -25,7 +25,8 @@
 
 #include "App.hh"
 #include "StringUtil.hh"
-#include "FbDrawable.hh"
+#include "FbPixmap.hh"
+#include "GContext.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -55,6 +56,8 @@
 #else
   #include <string.h>
 #endif
+
+#include <X11/Xlib.h>
 
 using namespace std;
 
@@ -183,24 +186,87 @@ bool XmbFontImp::load(const std::string &fontname) {
     return true;
 }
 
-void XmbFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text,
+void XmbFontImp::drawText(const FbDrawable &d, int screen, GC main_gc, const char *text,
                           size_t len, int x, int y, FbTk::Orientation orient) const {
 
     if (m_fontset == 0)
         return;
 
+    if (orient == ROT0) {
+#ifdef X_HAVE_UTF8_STRING
+        if (m_utf8mode) {
+            Xutf8DrawString(d.display(), d.drawable(), m_fontset,
+                            main_gc, x, y,
+                            text, len);
+        } else
+#endif //X_HAVE_UTF8_STRING
+            {
+                XmbDrawString(d.display(), d.drawable(), m_fontset,
+                              main_gc, x, y,
+                              text, len);
+            }
+        return;
+    }
+
+    Display *dpy = App::instance()->display();
+    Window rootwin = DefaultRootWindow(dpy);
+
+    int xpos = x, ypos = y;
+    unsigned int w = d.width();
+    unsigned int h = d.height();
+
+    translateSize(orient, w, h);
+    untranslateCoords(orient, xpos, ypos, w, h);
+
+    // not straight forward, we actually draw it elsewhere, then rotate it
+    FbTk::FbPixmap canvas(rootwin, w, h, 1);
+ 
+    // create graphic context for our canvas
+    FbTk::GContext font_gc(canvas);
+    font_gc.setBackground(None);
+    font_gc.setForeground(None);
+
+    XFillRectangle(dpy, canvas.drawable(), font_gc.gc(), 0, 0, canvas.width(), canvas.height());
+    font_gc.setForeground(1);
+
+
 #ifdef X_HAVE_UTF8_STRING
     if (m_utf8mode) {
-        Xutf8DrawString(w.display(), w.drawable(), m_fontset,
-                        gc, x, y,
-                        text, len);
+        Xutf8DrawString(dpy, canvas.drawable(), m_fontset,
+                             font_gc.gc(), xpos, ypos,
+                             text, len);
     } else
 #endif //X_HAVE_UTF8_STRING
     {
-        XmbDrawString(w.display(), w.drawable(), m_fontset,
-                      gc, x, y,
-                      text, len);
+        XmbDrawString(dpy, canvas.drawable(), m_fontset,
+                           font_gc.gc(), xpos, ypos,
+                           text, len);
     }
+
+    canvas.rotate(orient);
+
+    GC my_gc = XCreateGC(dpy, d.drawable(), 0, 0);
+
+    XCopyGC(dpy, main_gc, GCForeground|GCBackground, my_gc);
+
+    // vertical or upside down
+
+    XSetFillStyle(dpy, my_gc, FillStippled);    
+
+    // vertical or upside down
+
+    XSetFillStyle(dpy, my_gc, FillStippled);
+
+    XSetStipple(dpy, my_gc, canvas.drawable());
+
+    XSetTSOrigin(dpy, my_gc, 0, 0);
+
+    XFillRectangle(dpy, d.drawable(), my_gc, 0, 0,
+                   canvas.width(),
+                   canvas.height());
+
+    XFreeGC(dpy, my_gc);
+    
 }
 
 unsigned int XmbFontImp::textWidth(const char * const text, unsigned int len) const {
