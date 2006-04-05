@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/05:
+   * Fix gcc 2.95.4 build error in ScreenPlacement.hh (Simon)
+     ScreenPlacement.hh
    * Fix tabs on other workspaces being shown on placement change (Simon)
      + Fix XmbFonts for multiple screens. Still need to fix XFontImp, 
        it's quite a bit more convoluted.

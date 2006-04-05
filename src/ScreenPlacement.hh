@@ -27,6 +27,8 @@
 #include "PlacementStrategy.hh"
 #include "FbTk/Resource.hh"
 
+#include <memory>
+
 class BScreen;
 
 /**
