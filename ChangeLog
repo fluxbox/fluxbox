@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/05:
+   * Fix tabs on other workspaces being shown on placement change (Simon)
+     + Fix XmbFonts for multiple screens. Still need to fix XFontImp, 
+       it's quite a bit more convoluted.
+     FbWinFrame.cc FbTk/XmbFontImp.cc
 *06/04/04:
    * Rotated Xmb Fonts (Simon)
      - rotated when drawn. Probably not very efficient for 

@@ -412,9 +412,8 @@ void FbWinFrame::alignTabs() {
         if (m_visible && m_use_tabs) {
             applyTabContainer();
             m_tab_container.clear();
-        }
-        if (m_use_tabs)
             m_tab_container.show();
+        }
     }
 
     if (m_tab_container.parent()->window() != m_screen.rootWindow().window()) {

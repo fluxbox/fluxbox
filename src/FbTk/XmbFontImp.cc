@@ -209,7 +209,6 @@ void XmbFontImp::drawText(const FbDrawable &d, int screen, GC main_gc, const cha
     }
 
     Display *dpy = App::instance()->display();
-    Window rootwin = DefaultRootWindow(dpy);
 
     int xpos = x, ypos = y;
     unsigned int w = d.width();
@@ -219,7 +218,7 @@ void XmbFontImp::drawText(const FbDrawable &d, int screen, GC main_gc, const cha
     untranslateCoords(orient, xpos, ypos, w, h);
 
     // not straight forward, we actually draw it elsewhere, then rotate it
-    FbTk::FbPixmap canvas(rootwin, w, h, 1);
+    FbTk::FbPixmap canvas(d.drawable(), w, h, 1);
  
     // create graphic context for our canvas
     FbTk::GContext font_gc(canvas);
