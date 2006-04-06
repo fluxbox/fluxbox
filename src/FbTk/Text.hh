@@ -24,6 +24,8 @@
 #ifndef FBTK_TEXT_HH
 #define FBTK_TEXT_HH
 
+#include <sys/types.h>
+
 namespace FbTk {
 
 class Font;
@@ -37,7 +39,7 @@ enum Orientation { ROT0=0, ROT90, ROT180, ROT270 };
  */
 int doAlignment(int max_width, int bevel, FbTk::Justify justify, 
                 const FbTk::Font &font, const char * const text, 
-                unsigned int textlen, unsigned int &newlen);
+                size_t textlen, size_t &newlen);
 
 /**
    There are 3 interesting translations:

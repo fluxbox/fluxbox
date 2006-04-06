@@ -32,7 +32,7 @@ namespace FbTk {
 
 int doAlignment(int max_width, int bevel, FbTk::Justify justify, 
                 const FbTk::Font &font, const char * const text, 
-                unsigned int textlen, unsigned int &newlen) {
+                size_t textlen, size_t &newlen) {
 
     if (text == 0 || textlen == 0)
         return 0;

@@ -250,7 +250,7 @@ Font::Font(const char *name):
     }
 
 #ifdef DEBUG
-    cerr<<"FbTk::Font m_iconv = "<<(int)m_iconv<<endl;
+    cerr<<"FbTk::Font m_iconv = "<<m_iconv<<endl;
 #endif // DEBUG
 
     if (name != 0) {
