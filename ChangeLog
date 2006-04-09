@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/09:
+   * Fix label background update with external tabs (Simon)
+     FbWinFrame.cc
 *06/04/06:
    * Fix build on amd64 - some more size_t propagation and includes 
     (Simon)

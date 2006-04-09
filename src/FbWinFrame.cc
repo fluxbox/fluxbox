@@ -436,7 +436,7 @@ void FbWinFrame::notifyMoved(bool clear) {
     }
 
     if (m_use_titlebar) {
-        if (m_tabmode == INTERNAL)
+        if (m_tabmode != INTERNAL)
             m_label.parentMoved();
 
         m_titlebar.parentMoved();
