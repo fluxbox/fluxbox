@@ -84,7 +84,9 @@ public:
     virtual void clearArea(int x, int y, 
                            unsigned int width, unsigned int height, 
                            bool exposures = false);
-    void updateTransparent(int x = -1, int y = -1, unsigned int width = 0, unsigned int height = 0, Pixmap dest_override = None, bool override_is_offset = false);
+    void updateTransparent(int x = -1, int y = -1, unsigned int width = 0, 
+                           unsigned int height = 0, Pixmap dest_override = None,
+                           bool override_is_offset = false);
 
     void setAlpha(unsigned char alpha);
 
@@ -198,6 +200,7 @@ protected:
 
     /// updates x,y, width, height and screen num from X window
     void updateGeometry();
+
 private:
     /// sets new X window and destroys old
     void setNew(Window win);
@@ -232,7 +235,10 @@ class ChangeProperty {
 public:
     ChangeProperty(Display *disp, Atom prop, int mode,
                    unsigned char *state, int num):m_disp(disp),
-                                                  m_prop(prop), m_state(state), m_num(num), m_mode(mode){
+                                                  m_prop(prop), 
+                                                  m_state(state), 
+                                                  m_num(num), 
+                                                  m_mode(mode){
         
     }
     void operator () (FbTk::FbWindow *win) {
