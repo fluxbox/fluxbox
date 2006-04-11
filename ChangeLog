@@ -3,6 +3,8 @@ Changes for 0.9.16:
 *06/04/11:
    * Fix calculation of prevWorkspace (Mathias)
      Screen.cc
+   * Cosmetic, close #1467926 (thanx Jonas Koelker)
+     Keys.hh/cc
 *06/04/09:
    * Fix label background update with external tabs (Simon)
      FbWinFrame.cc

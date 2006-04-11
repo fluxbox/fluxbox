@@ -75,40 +75,43 @@ private:
     void deleteTree();
 
     void bindKey(unsigned int key, unsigned int mod);
-    
-    std::string m_filename;	
-	
-    class t_key {	
+
+    std::string m_filename;
+
+    class t_key;
+    typedef std::vector<t_key*> keylist_t;
+
+    class t_key {
     public:
-        t_key(unsigned int key, unsigned int mod, 
+        t_key(unsigned int key, unsigned int mod,
               FbTk::RefCount<FbTk::Command> command = FbTk::RefCount<FbTk::Command>(0));
         t_key(t_key *k);
         ~t_key();
-		
-        inline t_key *find(unsigned int key_, unsigned int mod_) {
+
+        t_key *find(unsigned int key_, unsigned int mod_) {
             for (size_t i = 0; i < keylist.size(); i++) {
                 if (keylist[i]->key == key_ && keylist[i]->mod == FbTk::KeyUtil::instance().isolateModifierMask(mod_))
-                    return keylist[i];				
-            }			
+                    return keylist[i];
+            }
             return 0;
         }
-        inline t_key *find(XKeyEvent &ke) {
+        t_key *find(XKeyEvent &ke) {
             for (size_t i = 0; i < keylist.size(); i++) {
-                if (keylist[i]->key == ke.keycode && 
+                if (keylist[i]->key == ke.keycode &&
                         keylist[i]->mod == FbTk::KeyUtil::instance().isolateModifierMask(ke.state))
-                    return keylist[i];				
-            }			
+                    return keylist[i];
+            }
             return 0;
         }
-			
-        inline bool operator == (XKeyEvent &ke) const {
+
+        bool operator == (XKeyEvent &ke) const {
             return (mod == FbTk::KeyUtil::instance().isolateModifierMask(ke.state) && key == ke.keycode);
         }
-		
+
         FbTk::RefCount<FbTk::Command> m_command;
         unsigned int key;
         unsigned int mod;
-        std::vector<t_key *> keylist;
+        keylist_t keylist;
     };
 
     /**
@@ -117,7 +120,7 @@ private:
     */
     bool mergeTree(t_key *newtree, t_key *basetree=0);
 
-    std::vector<t_key *> m_keylist;	
+    keylist_t m_keylist;
 
     Display *m_display;  ///< display connection
     unsigned int m_current_line;

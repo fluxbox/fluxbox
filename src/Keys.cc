@@ -111,11 +111,11 @@ Keys::~Keys() {
 
 /// Destroys the keytree
 void Keys::deleteTree() {
-    while (!m_keylist.empty()) {
-        if (m_keylist.back())
-            delete m_keylist.back();
-        m_keylist.pop_back();
-    }
+    keylist_t::iterator it = m_keylist.begin();
+    const keylist_t::iterator end = m_keylist.end();
+    for ( ; it != end; it++)
+        delete *it;
+    m_keylist.clear();
 }
 
 /**
