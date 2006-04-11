@@ -1913,7 +1913,7 @@ void BScreen::nextWorkspace(const int delta) {
  Goes to the workspace "left" of the current
 */
 void BScreen::prevWorkspace(const int delta) {
-    changeWorkspaceID( (currentWorkspaceID() - delta + numberOfWorkspaces()) % numberOfWorkspaces());
+    changeWorkspaceID( (static_cast<signed>(numberOfWorkspaces()) + currentWorkspaceID() - (delta % numberOfWorkspaces())) % numberOfWorkspaces());
 }
 
 /**

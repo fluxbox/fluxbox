@@ -170,15 +170,15 @@ public:
     /// @return true if dock app was added, else false
     bool addKdeDockapp(Window win);
 
-    inline unsigned int width() const { return rootWindow().width(); }
-    inline unsigned int height() const { return rootWindow().height(); }
-    inline int screenNumber() const { return rootWindow().screenNumber(); }
+    unsigned int width() const { return rootWindow().width(); }
+    unsigned int height() const { return rootWindow().height(); }
+    int screenNumber() const { return rootWindow().screenNumber(); }
 
     /// @return number of workspaces
     size_t numberOfWorkspaces() const { return m_workspaces_list.size(); }
 
-    inline const Icons &iconList() const { return m_icon_list; }
-    inline Icons &iconList() { return m_icon_list; }
+    const Icons &iconList() const { return m_icon_list; }
+    Icons &iconList() { return m_icon_list; }
 
     const Workspaces &getWorkspacesList() const { return m_workspaces_list; }
     Workspaces &getWorkspacesList() { return m_workspaces_list; }

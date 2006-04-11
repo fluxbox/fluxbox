@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/11:
+   * Fix calculation of prevWorkspace (Mathias)
+     Screen.cc
 *06/04/09:
    * Fix label background update with external tabs (Simon)
      FbWinFrame.cc
