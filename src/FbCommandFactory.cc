@@ -65,6 +65,7 @@ FbCommandFactory::FbCommandFactory() {
         "focusright",
         "fullscreen",
         "iconify",
+        "keymode",
         "killwindow",
         "leftworkspace",
         "lower",
@@ -106,11 +107,11 @@ FbCommandFactory::FbCommandFactory() {
         "rightworkspace",
         "rootmenu",
         "saverc",
-        "setenv",
-        "sethead",
         "sendtoworkspace",
         "sendtonextworkspace",
         "sendtoprevworkspace",
+        "setenv",
+        "sethead",
         "setstyle",
         "setworkspacename",
         "setworkspacenamedialog",
@@ -168,6 +169,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SetStyleCmd(arguments);
     else if (command == "reloadstyle")
         return new ReloadStyleCmd();
+    else if (command == "keymode")
+        return new KeyModeCmd(arguments);
     else if (command == "saverc")
         return new SaveResources();
     else if (command == "execcommand" || command == "execute" || command == "exec")

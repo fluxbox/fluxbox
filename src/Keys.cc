@@ -86,6 +86,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <map>
 #ifdef HAVE_CASSERT
   #include <cassert>
 #else
@@ -95,12 +96,10 @@
 
 using namespace std;
 
-Keys::Keys(const char *filename):
+Keys::Keys():
     m_display(FbTk::App::instance()->display())
 {
 
-    if (filename != 0)
-        load(filename);
 }
 
 Keys::~Keys() {
@@ -111,11 +110,15 @@ Keys::~Keys() {
 
 /// Destroys the keytree
 void Keys::deleteTree() {
-    keylist_t::iterator it = m_keylist.begin();
-    const keylist_t::iterator end = m_keylist.end();
-    for ( ; it != end; it++)
-        delete *it;
-    m_keylist.clear();
+    for (keyspace_t::iterator map_it = m_map.begin(); map_it != m_map.end(); ++map_it) {
+        keylist_t::iterator it = map_it->second->begin();
+        const keylist_t::iterator it_end = map_it->second->end();
+        for ( ; it != it_end; it++)
+            delete *it;
+        map_it->second->clear();
+        delete map_it->second;
+        m_map.erase(map_it->first);
+    }
 }
 
 /**
@@ -132,6 +135,8 @@ bool Keys::load(const char *filename) {
 
     //free memory of previous grabs
     deleteTree();
+
+    m_map["default:"] = new keylist_t;
 
     FbTk::App::instance()->sync(false);
 
@@ -154,6 +159,7 @@ bool Keys::load(const char *filename) {
 
     m_current_line = 0;
     m_filename = filename;
+    m_keylist = m_map["default:"];
     return true;
 }
 
@@ -184,55 +190,60 @@ bool Keys::addBinding(const std::string &linebuffer) {
         return true; // still a valid line.
 
     unsigned int key = 0, mod = 0;
-    char keyarg = 0;
     t_key *current_key=0, *last_key=0;
+    size_t argc = 0;
+    std::string keyMode = "default:";
 
+    if (val[0][val[0].length()-1] == ':') {
+        argc++;
+        keyspace_t::iterator it = m_map.find(val[0]);
+        if (it == m_map.end())
+            m_map[val[0]] = new keylist_t;
+        keyMode = val[0];
+    }
     _FB_USES_NLS;
     // for each argument
-    for (size_t argc = 0; argc < val.size(); argc++) {
+    for (; argc < val.size(); argc++) {
 
         if (val[argc][0] != ':') { // parse key(s)
-            keyarg++;
-            if (keyarg==1) //first arg is modifier
-                mod = FbTk::KeyUtil::getModifier(val[argc].c_str());
-            else if (keyarg > 1) {
 
-                int tmpmod = FbTk::KeyUtil::getModifier(val[argc].c_str());
-                if(tmpmod)
-                    mod |= tmpmod; //If it's a modifier
-                else {
-                    // keycode covers the following three two-byte cases:
-                    // 0x       - hex
-                    // +[1-9]   - number between +1 and +9
-                    // numbers 10 and above
-                    //
-                    if (val[argc].size() > 1 && (isdigit(val[argc][0]) && 
-                                                 (isdigit(val[argc][1]) || val[argc][1] == 'x') || 
-                                                 val[argc][0] == '+' && isdigit(val[argc][1])) ) {
+            int tmpmod = FbTk::KeyUtil::getModifier(val[argc].c_str());
+            if(tmpmod)
+                mod |= tmpmod; //If it's a modifier
+            else if (strcasecmp("NONE",val[argc].c_str()) == 0)
+                mod = 0;
+            else {
+                // keycode covers the following three two-byte cases:
+                // 0x       - hex
+                // +[1-9]   - number between +1 and +9
+                // numbers 10 and above
+                //
+                if (val[argc].size() > 1 && (isdigit(val[argc][0]) && 
+                                             (isdigit(val[argc][1]) || val[argc][1] == 'x') || 
+                                             val[argc][0] == '+' && isdigit(val[argc][1])) ) {
                         
-                        key = strtoul(val[argc].c_str(), NULL, 0);
+                    key = strtoul(val[argc].c_str(), NULL, 0);
 
-                        if (errno == EINVAL || errno == ERANGE)
-                            key = 0;
+                    if (errno == EINVAL || errno == ERANGE)
+                        key = 0;
 
-                    } else // convert from string symbol
-                        key = FbTk::KeyUtil::getKey(val[argc].c_str()); 
+                } else // convert from string symbol
+                    key = FbTk::KeyUtil::getKey(val[argc].c_str()); 
 
-                    if (key == 0) {
-                        cerr<<_FBTEXT(Keys, InvalidKeyMod, 
-                                      "Keys: Invalid key/modifier on line", 
-                                      "A bad key/modifier string was found on line (number following)")<<" "<<
-                            m_current_line<<"): "<<linebuffer<<endl;
-                        return false;
-                    }
-                    if (!current_key) {
-                        current_key = new t_key(key, mod);
-                        last_key = current_key;
-                    } else {
-                        t_key *temp_key = new t_key(key, mod);
-                        last_key->keylist.push_back(temp_key);
-                        last_key = temp_key;
-                    }
+                if (key == 0) {
+                    cerr<<_FBTEXT(Keys, InvalidKeyMod, 
+                                  "Keys: Invalid key/modifier on line", 
+                                  "A bad key/modifier string was found on line (number following)")<<" "<<
+                        m_current_line<<"): "<<linebuffer<<endl;
+                    return false;
+                }
+                if (!current_key) {
+                    current_key = new t_key(key, mod);
+                    last_key = current_key;
+                } else {
+                    t_key *temp_key = new t_key(key, mod);
+                    last_key->keylist.push_back(temp_key);
+                    last_key = temp_key;
                 }
             }
 
@@ -258,6 +269,8 @@ bool Keys::addBinding(const std::string &linebuffer) {
                     cerr<<_FBTEXT(Keys, BadLine, "Keys: Error on line", "Error on line (number following)")<<": "<<m_current_line<<endl;
                     cerr<<"> "<<linebuffer<<endl;
                 } else {
+                    // need to change keymode here so it doesn't get changed by CommandParser
+                    m_keylist = m_map[keyMode];
                     // Add the keychain to list
                     if (!mergeTree(current_key)) {
                         cerr<<_FBTEXT(Keys, BadMerge, "Keys: Failed to merge keytree!", "relatively technical error message. Key bindings are stored in a tree structure")<<endl;
@@ -279,46 +292,50 @@ bool Keys::addBinding(const std::string &linebuffer) {
 
 
 /**
- @return the KeyAction of the XKeyEvent
+ @return the KeyAction of the XKeyEvent; return false if not bound
 */
-void Keys::doAction(XKeyEvent &ke) {
+bool Keys::doAction(XKeyEvent &ke) {
 
     ke.state = FbTk::KeyUtil::instance().cleanMods(ke.state);
 
     static struct t_key* next_key = 0;
 
     if (!next_key) {
-
-        for (size_t i = 0; i < m_keylist.size(); i++) {
-            if (*m_keylist[i] == ke) {
-                if (m_keylist[i]->keylist.size()) {
-                    next_key = m_keylist[i];
-                    break; //end for-loop
-                } else {
-                    if (*m_keylist[i]->m_command != 0)
-                        m_keylist[i]->m_command->execute();
+        bool retval = false;
+        // need a local keylist, in case m_command->execute() changes it
+        keylist_t *keylist = m_keylist;
+        for (size_t i = 0; i < keylist->size(); i++) {
+            if (*(*keylist)[i] == ke) {
+                if ((*keylist)[i]->keylist.size()) {
+                    next_key = (*keylist)[i];
+                    return true; //still counts as being grabbed
+                }
+                if (*(*keylist)[i]->m_command != 0) {
+                    (*keylist)[i]->m_command->execute();
+                    retval = true;
                 }
             }
         }
-
-    } else { //check the nextkey
-            t_key *temp_key = next_key->find(ke);
-        if (temp_key) {
-            if (temp_key->keylist.size()) {
-                next_key = temp_key;
-            } else {
-                next_key = 0;
-                if (*temp_key->m_command != 0)
-                    temp_key->m_command->execute();
-            }
-        }  else  {
-            temp_key = next_key;
-            next_key = 0;
-            if (*temp_key->m_command != 0)
-                temp_key->m_command->execute();
-
-        }
+        return retval;
     }
+    t_key *temp_key = next_key->find(ke);
+    if (temp_key) {
+        if (temp_key->keylist.size()) {
+            next_key = temp_key;
+            return true;
+        }
+        next_key = 0;
+        if (*temp_key->m_command == 0)
+            return false;
+        temp_key->m_command->execute();
+        return true;
+    }
+    temp_key = next_key;
+    next_key = 0;
+    if (*temp_key->m_command == 0)
+        return false;
+    temp_key->m_command->execute();
+    return true;
 }
 
 /**
@@ -337,22 +354,22 @@ bool Keys::reconfigure(const char *filename) {
 bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
     size_t baselist_i = 0;
     if (basetree==0) {
-        for (; baselist_i<m_keylist.size(); baselist_i++) {
-            if (m_keylist[baselist_i]->mod == newtree->mod &&
-                m_keylist[baselist_i]->key == newtree->key) {
-                if (newtree->keylist.size() && *m_keylist[baselist_i]->m_command == 0) {
+        for (; baselist_i<m_keylist->size(); baselist_i++) {
+            if ((*m_keylist)[baselist_i]->mod == newtree->mod &&
+                (*m_keylist)[baselist_i]->key == newtree->key) {
+                if (newtree->keylist.size() && *(*m_keylist)[baselist_i]->m_command == 0) {
                     //assumes the newtree only have one branch
-                    return mergeTree(newtree->keylist[0], m_keylist[baselist_i]);
+                    return mergeTree(newtree->keylist[0], (*m_keylist)[baselist_i]);
                 } else
                     break;
             }
         }
 
-        if (baselist_i == m_keylist.size()) {
+        if (baselist_i == m_keylist->size()) {
             FbTk::KeyUtil::grabKey(newtree->key, newtree->mod);
-            m_keylist.push_back(new t_key(newtree));
+            m_keylist->push_back(new t_key(newtree));
             if (newtree->keylist.size())
-                return mergeTree(newtree->keylist[0], m_keylist.back());
+                return mergeTree(newtree->keylist[0], m_keylist->back());
             return true;
         }
 
@@ -378,6 +395,14 @@ bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
     }
 
     return false;
+}
+
+void Keys::keyMode(std::string keyMode = "default") {
+    keyspace_t::iterator it = m_map.find(keyMode + ":");
+    if (it == m_map.end())
+        m_keylist = m_map["default:"];
+    else
+        m_keylist = it->second;
 }
 
 Keys::t_key::t_key(unsigned int key_, unsigned int mod_, FbTk::RefCount<FbTk::Command> command) {

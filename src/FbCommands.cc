@@ -225,6 +225,21 @@ void SetStyleCmd::execute() {
                                         Fluxbox::instance()->getStyleOverlayFilename());
 }
 
+KeyModeCmd::KeyModeCmd(const std::string &arguments):m_keymode(arguments),m_end_args("None Escape") {
+    string::size_type second_pos = m_keymode.find_first_of(" \t", 0);
+    if (second_pos != string::npos) {
+        // ok we have arguments, parsing them here
+        m_end_args = m_keymode.substr(second_pos);
+        m_keymode.erase(second_pos); // remove argument from command
+    }
+    if (m_keymode != "default")
+        Fluxbox::instance()->keys()->addBinding(m_keymode + ": " + m_end_args + " :keymode default");
+}
+
+void KeyModeCmd::execute() {
+    Fluxbox::instance()->keys()->keyMode(m_keymode);
+}
+
 void ShowRootMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)

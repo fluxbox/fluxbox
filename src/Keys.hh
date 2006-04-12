@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <X11/Xlib.h>
 
 #include "FbTk/NotCopyable.hh"
@@ -41,7 +42,7 @@ public:
        @param display display connection
        @param filename file to load, default none
     */
-    explicit Keys(const char *filename=0);
+    explicit Keys();
     /// destructor
     ~Keys();
 
@@ -61,9 +62,9 @@ public:
     bool addBinding(const std::string &binding);
 
     /**
-       do action from XKeyEvent
+       do action from XKeyEvent; return false if not bound to anything
     */
-    void doAction(XKeyEvent &ke);
+    bool doAction(XKeyEvent &ke);
 
     /**
        Reload configuration from filename
@@ -71,6 +72,7 @@ public:
     */
     bool reconfigure(const char *filename);
     const std::string filename() const { return m_filename; }
+    void keyMode(std::string keyMode);
 private:
     void deleteTree();
 
@@ -120,7 +122,9 @@ private:
     */
     bool mergeTree(t_key *newtree, t_key *basetree=0);
 
-    keylist_t m_keylist;
+    typedef std::map<std::string, keylist_t *> keyspace_t;
+    keylist_t *m_keylist;
+    keyspace_t m_map;
 
     Display *m_display;  ///< display connection
     unsigned int m_current_line;

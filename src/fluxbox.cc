@@ -383,7 +383,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_reconfigure_wait = m_reread_menu_wait = false;
 
     // Create keybindings handler and load keys file
-    m_key.reset(new Keys(StringUtil::expandFilename(*m_rc_keyfile).c_str()));
+    m_key.reset(new Keys);
+    m_key->load(StringUtil::expandFilename(*m_rc_keyfile).c_str());
 
     m_resourcemanager.unlock();
     ungrab();
@@ -1083,7 +1084,10 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 
     switch (ke.type) {
     case KeyPress:
-        m_key->doAction(ke);
+        if (m_key->doAction(ke))
+            XAllowEvents(FbTk::App::instance()->display(), AsyncKeyboard, CurrentTime);
+        else
+            XAllowEvents(FbTk::App::instance()->display(), ReplayKeyboard, CurrentTime);
         break;
     case KeyRelease: {
         // we ignore most key releases unless we need to use

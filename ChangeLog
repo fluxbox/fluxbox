@@ -1,5 +1,27 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/13:
+   * Provide "Key Modes" (Thanks Mark Tiefenbruck, mark at tiefenbruck dot org)
+     - New action in keys file:
+         Modifier Key :Keymode <Name> <End Modifier> <End Key>
+       Will define a keybinding namespace activated by the given mod/key 
+       combination. The End Modifier and key are optional. They define 
+       the key combination that quits the given key mode. They default 
+       to just 'Escape'.
+     - New keys file optional prefix:
+         <Name>: Modifier Key :Command
+       will only work when the <Name> keymode is activated.
+     - <Name> is  "default" if not specified - so:
+        **default commands will not be activated inside another keymode**
+     - Handy Example:
+        Mod1 X :KeyMode XNest
+        XNest: Mod1 X :KeyMode default
+       Will switch to XNest keymode when you press Alt-X. Then the 
+       default bindings will not be caught by normal fluxbox, and will 
+       pass through to an Xnested one! Groovy... Alt-X will switch back 
+       to normal.
+     Keys.hh/cc FbCommands.hh/cc fluxbox.cc FbCommandFactory.cc 
+     FbTk/KeyUtil.cc
 *06/04/11:
    * Ensure applying of size hints while maximizing (Mathias)
      Window.cc

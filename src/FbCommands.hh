@@ -96,6 +96,15 @@ private:
     std::string m_filename;
 };
 
+class KeyModeCmd: public FbTk::Command {
+public:
+    explicit KeyModeCmd(const std::string &arguments);
+    void execute();
+private:
+    std::string m_keymode;
+    std::string m_end_args;
+};
+
 class ShowRootMenuCmd: public FbTk::Command {
 public:
     void execute();
