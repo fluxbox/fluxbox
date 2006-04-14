@@ -187,9 +187,9 @@ Pixmap WinButton::getPressedPixmap() const {
         return m_theme.closePressedPixmap().pixmap().drawable();
     case SHADE:
         if (m_listen_to.isShaded())
-            return m_theme.shadePressedPixmap().pixmap().drawable();
-        else
             return m_theme.unshadePressedPixmap().pixmap().drawable();
+        else
+            return m_theme.shadePressedPixmap().pixmap().drawable();
     case MENUICON:
         if (m_icon_pixmap.drawable())
             if (m_listen_to.isFocused())
@@ -381,6 +381,14 @@ void WinButton::update(FbTk::Subject *subj) {
     Pixmap my_pm = getBackgroundPixmap();
     if (my_pm != None)
         setBackgroundPixmap(my_pm);
+
+    // incorrect, pressed_pixmap is stateful in shade, so we'll do oneoff for now
+    if (m_type == SHADE) {
+        Pixmap p_pm = getPressedPixmap();
+        if (p_pm != None)
+            setPressedPixmap(p_pm);
+    }
+        
 
     clear();
 }
