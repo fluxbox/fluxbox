@@ -856,7 +856,7 @@ void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
     if (event.button < 1 || event.button > 5)
         return;
 
-    static int last_release_time = 0;
+    static Time last_release_time = 0;
     bool double_click = (event.time - last_release_time <= m_double_click_time);
     last_release_time = event.time;
     int real_button = event.button - 1;
