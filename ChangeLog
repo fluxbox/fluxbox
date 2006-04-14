@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/14:
+   * Fix updating of button state (esp stick/shade)  (Simon)
+     (sf.net #1281724, #1213257)
+     FbTk/Button.hh/cc WinButton.cc Window.cc
 *06/04/13:
    * Provide "Key Modes" (Thanks Mark Tiefenbruck, mark at tiefenbruck dot org)
      - New action in keys file:

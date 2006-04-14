@@ -37,7 +37,8 @@ Button::Button(int screen_num, int x, int y,
     m_pressed_pm(0),
     m_pressed_color(),
     m_gc(DefaultGC(FbTk::App::instance()->display(), screen_num)),
-    m_pressed(false) {
+    m_pressed(false),
+    mark_if_deleted(0) {
 
     // add this to eventmanager
     FbTk::EventManager::instance()->add(*this, *this); 
@@ -51,13 +52,16 @@ Button::Button(const FbWindow &parent, int x, int y,
     m_pressed_pm(0),
     m_pressed_color(),
     m_gc(DefaultGC(FbTk::App::instance()->display(), screenNumber())),
-    m_pressed(false) {
+    m_pressed(false),
+    mark_if_deleted(0) {
     // add this to eventmanager
     FbTk::EventManager::instance()->add(*this, *this);
 }
 
 Button::~Button() {
-
+    if (mark_if_deleted) {
+        *mark_if_deleted = true;
+    }
 }
 
 void Button::setOnClick(RefCount<Command> &cmd, int button) {
@@ -107,26 +111,33 @@ void Button::buttonPressEvent(XButtonEvent &event) {
 void Button::buttonReleaseEvent(XButtonEvent &event) {
     m_pressed = false;
     bool update = false;
-    if (m_background_pm) {
-        if (m_pressed_pm != 0) {
-            update = true;
-            setBackgroundPixmap(m_background_pm);
-        }
-    } else if (m_pressed_color.isAllocated()) {
-        update = true;
-        setBackgroundColor(m_background_color);
-    }
+    bool been_deleted = false;
+    mark_if_deleted = &been_deleted;
 
-    if (update)
-        clear(); // clear background
-
-    // finaly, execute command (this must be done last since this object might be deleted by the command)
+    // This command may result in this object being deleted
+    // hence the mark_if_deleted mechanism so that we can
+    // update our state after the command
     if (event.button > 0 && event.button <= 5 &&
         event.x > 0 && event.x < static_cast<signed>(width()) &&
         event.y > 0 && event.y < static_cast<signed>(height()) &&
         m_onclick[event.button -1].get() != 0)
         m_onclick[event.button - 1]->execute();
 
+    if (!been_deleted) {
+        mark_if_deleted = 0;
+        if (m_background_pm) {
+            if (m_pressed_pm != 0) {
+                update = true;
+                setBackgroundPixmap(m_background_pm);
+            }
+        } else if (m_pressed_color.isAllocated()) {
+            update = true;
+            setBackgroundColor(m_background_color);
+        }
+
+        if (update)
+            clear(); // clear background
+    }
 
 }
 

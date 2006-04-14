@@ -87,6 +87,7 @@ private:
     Color m_pressed_color;
     GC m_gc; ///< graphic context for button
     bool m_pressed; ///< if the button is pressed
+    bool *mark_if_deleted; ///< if the button is deleted and this is set, make it true
     RefCount<Command> m_onclick[5]; ///< what to do when this button is clicked with button num
 };
 

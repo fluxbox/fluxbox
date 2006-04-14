@@ -187,9 +187,9 @@ Pixmap WinButton::getPressedPixmap() const {
         return m_theme.closePressedPixmap().pixmap().drawable();
     case SHADE:
         if (m_listen_to.isShaded())
-            return m_theme.unshadePressedPixmap().pixmap().drawable();
-        else
             return m_theme.shadePressedPixmap().pixmap().drawable();
+        else
+            return m_theme.unshadePressedPixmap().pixmap().drawable();
     case MENUICON:
         if (m_icon_pixmap.drawable())
             if (m_listen_to.isFocused())

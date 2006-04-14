@@ -4008,6 +4008,7 @@ void FluxboxWindow::setupWindow() {
                                         frame().titlebar(),
                                         0, 0, 10, 10);
 
+                stateSig().attach(winbtn);
                 winbtn->setOnClick(stick_cmd);
                 break;
             case WinButton::SHADE:
