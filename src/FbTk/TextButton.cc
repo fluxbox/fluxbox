@@ -92,6 +92,7 @@ void TextButton::setFont(FbTk::Font &font) {
     if (&font == m_font)
         return;
     m_font = &font;
+    font.validOrientation(m_orientation); // load the orientation!
 }
 
 /// set bevel and redraw text

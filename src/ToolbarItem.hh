@@ -26,6 +26,7 @@
 #define TOOLBARITEM_HH
 
 #include "FbTk/Subject.hh"
+#include "FbTk/Text.hh" // orientation
 
 /// An item in the toolbar that has either fixed or relative size to the toolbar
 class ToolbarItem {
@@ -65,10 +66,15 @@ public:
     void setType(Type type) { m_type = type; }
     Type type() const { return m_type; }
 
+    inline FbTk::Orientation orientation() const { return m_orientation; }
+    virtual void setOrientation(FbTk::Orientation orient) { m_orientation = orient; }
+
     class ToolbarItemSubject : public FbTk::Subject {};
 
 private:
     Type m_type;
+
+    FbTk::Orientation m_orientation;
 
     ToolbarItemSubject m_resize_sig;
 };

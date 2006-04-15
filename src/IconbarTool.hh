@@ -95,6 +95,7 @@ public:
     DeiconifyMode deiconifyMode() const { return *m_deiconify_mode; }
     WheelMode wheelMode() const { return *m_wheel_mode; }
 
+    void setOrientation(FbTk::Orientation orient);
     Container::Alignment alignment() const { return m_icon_container.alignment(); }
 private:
     /// @return button associated with window

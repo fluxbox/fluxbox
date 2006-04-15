@@ -24,7 +24,7 @@
 
 #include "ToolbarItem.hh"
 
-ToolbarItem::ToolbarItem(Type type):m_type(type) {
+ToolbarItem::ToolbarItem(Type type):m_type(type), m_orientation(FbTk::ROT0) {
 
 }
 

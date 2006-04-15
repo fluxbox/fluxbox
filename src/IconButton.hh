@@ -53,6 +53,8 @@ public:
     FluxboxWindow &win() { return m_win; }
     const FluxboxWindow &win() const { return m_win; }
 
+    bool setOrientation(FbTk::Orientation orient);
+
 protected:
     void drawText(int x, int y, FbTk::FbDrawable *drawable_override);
 private:

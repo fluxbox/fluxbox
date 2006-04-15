@@ -215,9 +215,13 @@ void ClockTool::update(FbTk::Subject *subj) {
     // + 2 to make the entire text fit inside
     std::string text(m_button.text().size() + 2, '0');
 
-    int new_width = m_theme.font().textWidth(text.c_str(), text.size());
-    if (new_width != m_button.width()) {
-        resize(new_width, m_button.height());
+    unsigned int new_width = m_button.width();
+    unsigned int new_height = m_button.height();
+    translateSize(orientation(), new_width, new_height);
+    new_width = m_theme.font().textWidth(text.c_str(), text.size());
+    translateSize(orientation(), new_width, new_height);
+    if (new_width != m_button.width() || new_height != m_button.height()) {
+        resize(new_width, new_height);
         resizeSig().notify();
     }
 
@@ -272,7 +276,7 @@ void ClockTool::reRender() {
 
     if (m_theme.texture().usePixmap()) {
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
-                                                       m_theme.texture());
+                                                       m_theme.texture(), orientation());
         m_button.setBackgroundPixmap(m_pixmap);
     } else {
         m_pixmap = 0;
@@ -290,4 +294,9 @@ void ClockTool::renderTheme(unsigned char alpha) {
     m_button.setBorderWidth(m_theme.border().width());
     m_button.setBorderColor(m_theme.border().color());
     m_button.clear();
+}
+
+void ClockTool::setOrientation(FbTk::Orientation orient) {
+    m_button.setOrientation(orient);
+    ToolbarItem::setOrientation(orient);
 }

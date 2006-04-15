@@ -599,6 +599,8 @@ void Toolbar::update(FbTk::Subject *subj) {
 
 void Toolbar::setPlacement(Toolbar::Placement where) {
     // disable vertical toolbar
+
+/*
     switch (where) {
     case LEFTTOP:
     case LEFTCENTER:
@@ -611,6 +613,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     default:
         break;
     }
+*/
 
     *m_rc_placement = where;
     int head_x = 0,
@@ -625,6 +628,10 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_w = screen().getHeadWidth(head);
         head_h = screen().getHeadHeight(head);
     }
+
+    FbTk::Orientation was_orient = FbTk::ROT0;
+    if (!m_item_list.empty())
+        was_orient = m_item_list.front()->orientation(); // all save orient (for rendering)
 
     int bevel_width = theme().bevelWidth();
     int border_width = theme().border().width();
@@ -656,6 +663,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     // So we get at least one pixel visible in hidden mode
     if (bevel_width <= border_width)
         bevel_width = border_width + 1;
+
+    FbTk::Orientation orient = FbTk::ROT0;
 
     switch (where) {
     case TOPLEFT:
@@ -703,7 +712,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
 
     case BOTTOMCENTER: // default is BOTTOMCENTER
-    default:
         frame.x = head_x + (head_w - frame.width) / 2 - border_width;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
@@ -712,6 +720,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPRIGHT | Shape::TOPLEFT);
         break;
     case LEFTCENTER:
+        orient = FbTk::ROT90;
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height)/2 - border_width;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
@@ -720,6 +729,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case LEFTTOP:
+        orient = FbTk::ROT90;
         frame.x = head_x;
         frame.y = head_y;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
@@ -728,6 +738,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case LEFTBOTTOM:
+        orient = FbTk::ROT90;
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
@@ -736,6 +747,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case RIGHTCENTER:
+        orient = FbTk::ROT270;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + (head_h - frame.height)/2 - border_width;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
@@ -744,6 +756,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
         break;
     case RIGHTTOP:
+        orient = FbTk::ROT270;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
@@ -752,6 +765,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
         break;
     case RIGHTBOTTOM:
+        orient = FbTk::ROT270;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
@@ -759,6 +773,19 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         if (m_shape.get())
             m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
         break;
+    }
+
+    if (was_orient != orient) {
+        // hide for all this moving around
+        if (*m_rc_visible)
+            frame.window.hide();
+        ItemList::iterator item_it = m_item_list.begin();
+        ItemList::iterator item_it_end = m_item_list.end();
+        for (; item_it != item_it_end; ++item_it) {
+            (*item_it)->setOrientation(orient);
+        }
+        if (*m_rc_visible)
+            frame.window.show();
     }
 }
 
@@ -920,6 +947,22 @@ void Toolbar::rearrangeItems() {
         m_item_list.empty())
         return;
 
+    FbTk::Orientation orient = FbTk::ROT0;
+    switch (placement()) {
+    case LEFTTOP:
+    case LEFTCENTER:
+    case LEFTBOTTOM:
+        orient = FbTk::ROT90;
+        break;
+    case RIGHTTOP:
+    case RIGHTCENTER:
+    case RIGHTBOTTOM:
+        orient = FbTk::ROT270;
+        break;
+    default:
+        orient = FbTk::ROT0;
+    }
+
     // lock this
     m_resize_lock = true;
     // calculate size for fixed items
@@ -931,6 +974,12 @@ void Toolbar::rearrangeItems() {
     int relative_items = 0;
     int last_bw = 0; // we show the largest border of adjoining items
     bool first = true;
+
+    unsigned int width = this->width(), height = this->height();
+    unsigned int tmpw, tmph;
+    int tmpx, tmpy;
+    FbTk::translateSize(orient, width, height);
+
     for (; item_it != item_it_end; ++item_it) {
         if (!(*item_it)->active())
             continue;
@@ -953,12 +1002,16 @@ void Toolbar::rearrangeItems() {
 
         last_bw = borderW;
 
+        tmpw = (*item_it)->width();
+        tmph = (*item_it)->height();
+        FbTk::translateSize(orient, tmpw, tmph);
+
         if ((*item_it)->type() == ToolbarItem::FIXED) {
-            fixed_width += (*item_it)->width();
+            fixed_width += tmpw;
             fixed_items++;
         } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
-            fixed_width += height() - 2*bevel_width;
-            if (bevel_width != 0) fixed_width -= 2*borderW;
+            fixed_width += tmph;
+            //if (bevel_width != 0) fixed_width -= 2*borderW;
             fixed_items++;
         } else {
             relative_items++;
@@ -969,13 +1022,13 @@ void Toolbar::rearrangeItems() {
     int relative_width = 0;
     int rounding_error = 0;
     if (fixed_items == 0) // no fixed items, then the rest is the entire width
-        relative_width = width();
+        relative_width = width;
     else {
         if (relative_items == 0)
             relative_width = 0;
         else { // size left after fixed items / number of relative items
-            relative_width = (width() - fixed_width)/relative_items;
-            rounding_error = width() - fixed_width - relative_items*(relative_width);
+            relative_width = (width - fixed_width)/relative_items;
+            rounding_error = width - fixed_width - relative_items*(relative_width);
         }
     }
 
@@ -991,7 +1044,9 @@ void Toolbar::rearrangeItems() {
         if (!(*item_it)->active()) {
             (*item_it)->hide();
             // make sure it still gets told the toolbar height
-            (*item_it)->resize(1, height()-2*(bevel_width+borderW));  // width of 0 changes to 1 anyway
+            tmpw = 1; tmph = height - 2*(bevel_width+borderW);
+            FbTk::translateSize(orient, tmpw, tmph);
+            (*item_it)->resize(tmpw, tmph);  // width of 0 changes to 1 anyway
             continue;
         }
         int offset = bevel_width;
@@ -1007,24 +1062,34 @@ void Toolbar::rearrangeItems() {
         }
         last_bw = borderW;
 
+        int tmpx = next_x + offset,
+            tmpy = offset;
+
         if ((*item_it)->type() == ToolbarItem::RELATIVE) {
             int extra = 0;
             if (rounding_error != 0) { // distribute rounding error over all relatives
                 extra = 1;
                 --rounding_error;
             }
-            (*item_it)->moveResize(next_x + offset, offset, extra + relative_width, height() - size_offset);
+            tmpw = extra + relative_width;
+            tmph = height - size_offset;
         } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
-            (*item_it)->moveResize(next_x + offset, offset,
-                                   height() - size_offset, height() - size_offset);
+            tmpw = tmph = height - size_offset;
         } else { // fixed size
-            (*item_it)->moveResize(next_x + offset, offset,
-                                   (*item_it)->width(), height() - size_offset);
+            unsigned int itemw = (*item_it)->width(), itemh = (*item_it)->height();
+            FbTk::translateSize(orient, itemw, itemh);
+            tmpw = itemw;
+            tmph = height - size_offset;
         }
-        (*item_it)->show();
-        next_x += (*item_it)->width() + bevel_width;
+        next_x += tmpw + bevel_width;
         if (bevel_width != 0)
             next_x += 2*borderW;
+
+        FbTk::translateCoords(orient, tmpx, tmpy, width, height);
+        FbTk::translatePosition(orient, tmpx, tmpy, tmpw, tmph, borderW);
+        FbTk::translateSize(orient, tmpw, tmph);
+        (*item_it)->moveResize(tmpx, tmpy, tmpw, tmph);
+        (*item_it)->show();
 
     }
     // unlock

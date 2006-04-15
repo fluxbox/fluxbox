@@ -67,7 +67,7 @@ void ButtonTool::renderTheme(unsigned char alpha) {
         btn.setBackgroundColor(theme().texture().color());
     } else {
         m_cache_pm = m_image_ctrl.renderImage(width(), height(),
-                                              theme().texture());
+                                              theme().texture(), orientation());
         btn.setBackgroundPixmap(m_cache_pm);
     }
     if (old_pm)
@@ -79,7 +79,7 @@ void ButtonTool::renderTheme(unsigned char alpha) {
         btn.setPressedColor(static_cast<const ButtonTheme &>(theme()).pressed().color());
     } else {
         m_cache_pressed_pm = m_image_ctrl.renderImage(width(), height(),
-                                                      static_cast<const ButtonTheme &>(theme()).pressed());
+                                                      static_cast<const ButtonTheme &>(theme()).pressed(), orientation());
         btn.setPressedPixmap(m_cache_pressed_pm);
     }
 

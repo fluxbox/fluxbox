@@ -39,7 +39,6 @@
 #include "FbTk/RefCount.hh"
 #include "FbTk/Menu.hh"
 
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif // HAVE_CONFIG_H
@@ -241,12 +240,29 @@ void IconButton::update(FbTk::Subject *subj) {
     if (m_use_pixmap && (hints->flags & IconPixmapHint) && hints->icon_pixmap != 0) {
         // setup icon window
         m_icon_window.show();
-        int new_height = height() - 2*m_icon_window.y(); // equally padded
-        int new_width = new_height;
-        m_icon_window.resize((new_width>0) ? new_width : 1, (new_height>0) ? new_height : 1);
+        unsigned int w = width();
+        unsigned int h = height();
+        FbTk::translateSize(orientation(), w, h);
+        int iconx = 1, icony = 1;
+        unsigned int neww = w, newh = h;
+        if (newh > 2*icony)
+            newh -= 2*icony;
+        else
+            newh = 1;
+        neww = newh;
+
+        FbTk::translateCoords(orientation(), iconx, icony, w, h);
+        FbTk::translatePosition(orientation(), iconx, icony, neww, newh, 0);
+        
+        neww = newh;
+        m_icon_window.moveResize(iconx, icony, neww, newh);
 
         m_icon_pixmap.copy(hints->icon_pixmap, DefaultDepth(display, screen), screen);
         m_icon_pixmap.scale(m_icon_window.width(), m_icon_window.height());
+
+        // rotate the icon or not?? lets go not for now, and see what they say...
+        // need to rotate mask too if we do do this
+        m_icon_pixmap.rotate(orientation());
 
         m_icon_window.setBackgroundPixmap(m_icon_pixmap.drawable());
     } else {
@@ -259,6 +275,7 @@ void IconButton::update(FbTk::Subject *subj) {
     if(m_use_pixmap && (hints->flags & IconMaskHint)) {
         m_icon_mask.copy(hints->icon_mask, 0, 0);
         m_icon_mask.scale(m_icon_pixmap.width(), m_icon_pixmap.height());
+        m_icon_mask.rotate(orientation());
     } else
         m_icon_mask = 0;
 
@@ -304,4 +321,20 @@ void IconButton::drawText(int x, int y, FbTk::FbDrawable *drawable) {
         FbTk::TextButton::drawText(1, y, drawable);
 }
                           
+bool IconButton::setOrientation(FbTk::Orientation orient) {
+    if (orientation() == orient)
+        return true;
+
+    if (FbTk::TextButton::setOrientation(orient)) {
+        int iconx = 1, icony = 1;
+        unsigned int tmpw = width(), tmph = height();
+        FbTk::translateSize(orient, tmpw, tmph);
+        FbTk::translateCoords(orient, iconx, icony, tmpw, tmph);
+        FbTk::translatePosition(orient, iconx, icony, m_icon_window.width(), m_icon_window.height(), 0);
+        m_icon_window.move(iconx, icony);
+        return true;
+    } else {
+        return false;
+    }
+}
 

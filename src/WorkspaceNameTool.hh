@@ -52,6 +52,8 @@ public:
     void update(FbTk::Subject *subj);
     FbTk::Button &button() { return m_button; }
     const FbTk::Button &button() const { return m_button; }
+    void setOrientation(FbTk::Orientation orient);
+
 private:
     void renderTheme(unsigned char alpha);
     void reRender();

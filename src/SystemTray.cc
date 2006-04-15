@@ -213,11 +213,17 @@ void SystemTray::show() {
 }
 
 unsigned int SystemTray::width() const {
+    if (orientation() == FbTk::ROT90 || orientation() == FbTk::ROT270)
+        return m_window.width();
+
     return m_clients.size()* (height() - 2 * m_theme.border().width());
 }
 
 unsigned int SystemTray::height() const {
-    return m_window.height();
+    if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180)
+        return m_window.height();
+
+    return m_clients.size()* (width() - 2 * m_theme.border().width());
 }
 
 unsigned int SystemTray::borderWidth() const {
@@ -362,10 +368,12 @@ void SystemTray::handleEvent(XEvent &event) {
 }
 
 void SystemTray::rearrangeClients() {
-    const unsigned int h = height();
+    unsigned int w_rot0 = width(), h_rot0 = height();
     const unsigned int bw = m_theme.border().width();
-    int final_size = m_clients.size()*h + bw;
-    resize(final_size, h);
+    FbTk::translateSize(orientation(), w_rot0, h_rot0);
+    unsigned int trayw = m_clients.size()*h_rot0 + bw, trayh = h_rot0;
+    FbTk::translateSize(orientation(), trayw, trayh);
+    resize(trayw, trayh);
     update(0);
 
     // move and resize clients
@@ -373,9 +381,13 @@ void SystemTray::rearrangeClients() {
     ClientList::iterator client_it_end = m_clients.end();
     int next_x = bw;
     for (; client_it != client_it_end;
-         ++client_it, next_x += h+bw) {
-        (*client_it)->moveResize(next_x, bw, h, h);
-        (*client_it)->sendConfigureNotify(next_x, bw, h, h);
+         ++client_it, next_x += h_rot0+bw) {
+        int x = next_x, y = bw;
+        translateCoords(orientation(), x, y, w_rot0, h_rot0);
+        translatePosition(orientation(), x, y, h_rot0, h_rot0, 0);
+
+        (*client_it)->moveResize(x, y, h_rot0, h_rot0);
+        (*client_it)->sendConfigureNotify(x, y, h_rot0, h_rot0);
     }
 
     client_it = m_clients.begin();
@@ -401,7 +413,7 @@ void SystemTray::update(FbTk::Subject* subject) {
         if(m_pixmap)
             m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
-                                                       m_theme.texture());
+                                                       m_theme.texture(), orientation());
         m_window.setBackgroundPixmap(m_pixmap);
     }
 
@@ -409,11 +421,7 @@ void SystemTray::update(FbTk::Subject* subject) {
     if (subject) {
         ClientList::iterator client_it = m_clients.begin();
         ClientList::iterator client_it_end = m_clients.end();
-        int next_x = 0;
-        const unsigned int h = height();
-        const unsigned int b = m_theme.border().width();
-        for (; client_it != client_it_end;
-             ++client_it, next_x += h - 2 * b) {
+        for (; client_it != client_it_end; ++client_it) {
 
             // maybe not the best solution (yet), force a refresh of the
             // background of the client

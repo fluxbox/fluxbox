@@ -82,7 +82,10 @@ void WorkspaceNameTool::update(FbTk::Subject *subj) {
 
 unsigned int WorkspaceNameTool::width() const {
     // calculate largest size
+    if (orientation() == FbTk::ROT90 || orientation() == FbTk::ROT270)
+        return m_button.width();
     unsigned int max_size = 0;
+
     const BScreen::Workspaces& workspaces = m_screen.getWorkspacesList();
     BScreen::Workspaces::const_iterator it;
     for (it = workspaces.begin(); it != workspaces.end(); it++) {
@@ -97,7 +100,21 @@ unsigned int WorkspaceNameTool::width() const {
 }
 
 unsigned int WorkspaceNameTool::height() const {
-    return m_button.height();
+    if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180) 
+        return m_button.height();
+
+    unsigned int max_size = 0;
+    const BScreen::Workspaces& workspaces = m_screen.getWorkspacesList();
+    BScreen::Workspaces::const_iterator it;
+    for (it = workspaces.begin(); it != workspaces.end(); it++) {
+        const std::string &name = (*it)->name();
+        max_size = std::max(m_theme.font().textWidth(name.c_str(), name.size()), 
+                            max_size);
+    }
+    // so align text dont cut the last character
+    max_size += 2;
+
+    return max_size;
 }
 
 unsigned int WorkspaceNameTool::borderWidth() const {
@@ -121,7 +138,7 @@ void WorkspaceNameTool::reRender() {
         if (m_pixmap) 
             m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
-                                                       m_theme.texture());
+                                                       m_theme.texture(), orientation());
         m_button.setBackgroundPixmap(m_pixmap);
     }
 }
@@ -143,4 +160,9 @@ void WorkspaceNameTool::renderTheme(unsigned char alpha) {
     }
 
     m_button.clear();
+}
+
+void WorkspaceNameTool::setOrientation(FbTk::Orientation orient) {
+    m_button.setOrientation(orient);
+    ToolbarItem::setOrientation(orient);
 }

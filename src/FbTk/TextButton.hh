@@ -67,6 +67,7 @@ public:
     inline FbTk::Justify justify() const { return m_justify; }
     inline const std::string &text() const { return m_text; }
     inline FbTk::Font &font() const { return *m_font; }
+    inline FbTk::Orientation orientation() const { return m_orientation; }
     unsigned int textWidth() const;
     unsigned int textHeight() const;
     int bevel() const { return m_bevel; }

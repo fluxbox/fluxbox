@@ -482,7 +482,8 @@ unsigned int Container::maxWidthPerClient() const {
             int borderW = m_item_list.front()->borderWidth();
             // there're count-1 borders to fit in with the windows
             // -> 1 per window plus end
-            unsigned int w = width();
+            unsigned int w = width(), h = height();
+            translateSize(m_orientation, w, h);
             if (w < (size()-1)*borderW)
                 return 1;
             else
