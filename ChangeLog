@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/16:
+   * signedness fix in Container moveItem (thanks _markt)
+     Container.cc
    * Vertical toolbar (Simon)
      Toolbar.cc ToolbarItem.hh/cc IconbarTool.hh/cc IconButton.hh/cc
      ClockTool.hh/cc ButtonTool.cc WorkspaceNameTool.hh/cc Container.cc

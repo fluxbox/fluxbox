@@ -129,11 +129,11 @@ void Container::moveItem(Item item, int movement) {
     int index = find(item);
     const size_t size = m_item_list.size();
 
-    if (index < 0 || (movement % size) == 0) {
+    if (index < 0 || (movement % static_cast<signed>(size)) == 0) {
         return;
     }
 
-    int newindex = (index + movement) % size;
+    int newindex = (index + movement) % static_cast<signed>(size);
     if (newindex < 0) // neg wrap
         newindex += size;
 
