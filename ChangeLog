@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/16:
+   * Missing space in translation (thanks... anonymous, sf.net #1455024)
+     nls/C/Translation.m
    * Set (take|send)to(next|prev)workspace offset default value to 1
      instead of the current 0 (which makes them look non-functional).
      Similarly for tab and (|next|prev|left|right)workspace.

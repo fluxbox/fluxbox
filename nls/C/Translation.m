@@ -2,7 +2,7 @@ $ codeset=ISO-8859-1
 
 $set 1 #Align
 
-1 BottomCenter
+1 Bottom Center
 2 Bottom Left
 3 Bottom Right
 4 Horizontal
