@@ -137,10 +137,11 @@ ClientPattern::ClientPattern(const char *str):
         
         // there shouldn't be anything else on the line
         match = str + pos;
-        err = match.find_first_not_of(" \t\n", pos);
-        if ((unsigned) err != match.npos) {
+        size_t uerr;// need a special type here
+        uerr = match.find_first_not_of(" \t\n", pos);
+        if (uerr != match.npos) {
             // found something, not good
-            had_error = err;
+            had_error++;
         }
     }
 

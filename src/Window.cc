@@ -924,7 +924,7 @@ FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x
     ClientList::iterator client = find(m_clientlist.begin(),
                                        m_clientlist.end(),
                                        it->first);
-    if (x > (*it).second->width() / 2)
+    if (x > static_cast<signed>((*it).second->width()) / 2)
         client++;
 
     return client;
@@ -960,7 +960,7 @@ void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
                                dest_x, dest_y, &x, &y,
                                &child_return))
         return;
-    if (x > (*it).second->width() / 2)
+    if (x > static_cast<signed>((*it).second->width()) / 2)
         moveClientRightOf(win, *it->first);
     else
         moveClientLeftOf(win, *it->first);
@@ -2296,7 +2296,7 @@ void FluxboxWindow::popupMenu() {
     int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
     if (!decorations.titlebar) // if we don't have any titlebar
         menu_y = 0;
-    if (m_last_button_x < x() || m_last_button_x > x() + width())
+    if (m_last_button_x < x() || m_last_button_x > x() + static_cast<signed>(width()))
         m_last_button_x = x();
     showMenu(m_last_button_x, menu_y + frame().y());
 }
@@ -2858,8 +2858,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             int old_resize_x = m_last_resize_x;
             int old_resize_y = m_last_resize_y;
-            int old_resize_w = m_last_resize_w;
-            int old_resize_h = m_last_resize_h;
+            unsigned int old_resize_w = m_last_resize_w;
+            unsigned int old_resize_h = m_last_resize_h;
 
             // move rectangle
             int gx = 0, gy = 0;
@@ -2891,6 +2891,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     m_last_resize_x = frame().x() - diff/2;
                     m_last_resize_y = frame().y() - diff/2;
                 }
+                break;
+            default: // kill warning
                 break;
             };
 
@@ -3567,7 +3569,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
         if (client) {
 
             inside_titlebar = client->fbwindow()->hasTitlebar() &&
-                client->fbwindow()->y() + client->fbwindow()->titlebarHeight() > dest_y;
+                client->fbwindow()->y() + static_cast<signed>(client->fbwindow()->titlebarHeight()) > dest_y;
 
             Fluxbox::TabsAttachArea area= Fluxbox::instance()->getTabsAttachArea();
             if (area == Fluxbox::ATTACH_AREA_WINDOW)

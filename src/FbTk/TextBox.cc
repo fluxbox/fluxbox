@@ -247,21 +247,25 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 m_end_pos = 0;
                 break;
             case XK_Left: {
-                    int pos = findEmptySpaceLeft();
-                    if (pos < m_start_pos){
-                        m_start_pos  = pos;
-                        m_cursor_pos = 0;
-                    } else if (m_start_pos > 0) {
-                        m_cursor_pos = pos - m_start_pos;
-                    } else {
-                        m_cursor_pos = pos;
-                    }
-                    adjustPos();
+                unsigned int pos = findEmptySpaceLeft();
+                if (pos < m_start_pos){
+                    m_start_pos  = pos;
+                    m_cursor_pos = 0;
+                } else if (m_start_pos > 0) {
+                    m_cursor_pos = pos - m_start_pos;
+                } else {
+                    m_cursor_pos = pos;
                 }
+                adjustPos();
+            }
                 break;
             case XK_Right:
                 if (m_text.size() && m_cursor_pos < m_text.size()){
-                    int pos = findEmptySpaceRight() - m_start_pos;
+                    unsigned int pos = findEmptySpaceRight();
+                    if (pos > m_start_pos)
+                        pos -= m_start_pos;
+                    else 
+                        pos = 0;
                     if (m_start_pos + pos <= m_end_pos)
                         m_cursor_pos = pos;
                     else if (m_end_pos < text().size()) {
@@ -275,7 +279,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 break;
 
             case XK_BackSpace: {
-                    int pos = findEmptySpaceLeft();
+                    unsigned int pos = findEmptySpaceLeft();
                     m_text.erase(pos, m_cursor_pos - pos + m_start_pos);
 
                     if (pos < m_start_pos){
@@ -292,7 +296,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
             case XK_Delete: {
                     if (!m_text.size() || m_cursor_pos >= m_text.size())
                         break;
-                    int pos = findEmptySpaceRight();
+                    unsigned int pos = findEmptySpaceRight();
                     m_text.erase(m_cursor_pos + m_start_pos, pos - (m_cursor_pos + m_start_pos));
                     adjustPos();
                 }
@@ -406,7 +410,7 @@ void TextBox::adjustStartPos() {
     m_start_pos = start_pos;
 }
 
-int TextBox::findEmptySpaceLeft(){
+unsigned int TextBox::findEmptySpaceLeft(){
 
     // found the first left space symbol
     int pos = m_text.rfind(' ', (m_start_pos + m_cursor_pos) > 0 ? 
@@ -425,14 +429,14 @@ int TextBox::findEmptySpaceLeft(){
     return pos;
 
 }
-int TextBox::findEmptySpaceRight(){
+unsigned int TextBox::findEmptySpaceRight(){
 
     // found the first right space symbol
     int pos = m_text.find(' ', m_start_pos + m_cursor_pos);
 
     // do we have one more space symbol near?
     int next_pos = -1;
-    while (pos > -1 && pos < m_text.size() && (next_pos = m_text.find(' ', pos + 1)) > -1 ){
+    while (pos > -1 && pos < static_cast<signed>(m_text.size()) && (next_pos = m_text.find(' ', pos + 1)) > -1 ){
 
         if (next_pos - 1 > pos)
             break;

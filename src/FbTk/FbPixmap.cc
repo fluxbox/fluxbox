@@ -73,7 +73,7 @@ FbPixmap::FbPixmap(Pixmap pm):m_pm(0),
 
 FbPixmap::FbPixmap(const FbDrawable &src,
                    unsigned int width, unsigned int height,
-                   int depth):m_pm(0),
+                   unsigned int depth):m_pm(0),
                               m_width(0), m_height(0),
                               m_depth(0) {
 
@@ -82,7 +82,7 @@ FbPixmap::FbPixmap(const FbDrawable &src,
 
 FbPixmap::FbPixmap(Drawable src,
                    unsigned int width, unsigned int height,
-                   int depth):m_pm(0),
+                   unsigned int depth):m_pm(0),
                               m_width(0), m_height(0),
                               m_depth(0) {
 
@@ -157,7 +157,7 @@ void FbPixmap::copy(const FbPixmap &the_copy) {
 }
 
 // screen doesn't count if depth is "zero"...
-void FbPixmap::copy(Pixmap pm, int depth, int screen_num) {
+void FbPixmap::copy(Pixmap pm, unsigned int depth, int screen_num) {
     free();
     if (pm == 0)
         return;
@@ -247,6 +247,8 @@ void FbPixmap::rotate(FbTk::Orientation orient) {
             starty = newh-1;
             dirx = 1;
             diry = -1;
+            break;
+        default: // kill warning
             break;
         }
         
@@ -365,7 +367,6 @@ void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
             unsigned long items_read, items_left;
             unsigned long *data;
 
-            unsigned int prop = 0;
             if (XGetWindowProperty(display(),
                                    RootWindow(display(), i),
                                    root_prop_atoms[i],
@@ -474,7 +475,7 @@ void FbPixmap::free() {
 
 void FbPixmap::create(Drawable src,
                       unsigned int width, unsigned int height,
-                      int depth) {
+                      unsigned int depth) {
     if (src == 0)
         return;
 

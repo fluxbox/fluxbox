@@ -207,7 +207,7 @@ private:
     Menuitems menuitems;
 
     int m_screen_x, m_screen_y;
-    int m_screen_width, m_screen_height;
+    unsigned int m_screen_width, m_screen_height;
     bool m_moving; ///< if we're moving/draging or not
     bool m_visible; ///< menu visibility
     bool m_torn; ///< torn from parent

@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/16:
+   * Fix all warnings with (gcc 3.4.6) -Wall, mainly sign comparisons (Simon)
+     ClientPattern.cc Container.cc FbWinFrame.cc IconButton.cc IconbarTool.cc
+     ScreenPlacement.hh ScreenResources.cc ToolFactory.cc Toolbar.cc
+     Window.cc  FbTk/... FbPixmap.hh/cc Menu.hh Text.hh TextBox.hh/cc
    * signedness fix in Container moveItem (thanks _markt)
      Container.cc
    * Vertical toolbar (Simon)

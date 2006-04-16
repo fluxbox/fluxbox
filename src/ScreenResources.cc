@@ -88,9 +88,12 @@ std::string FbTk::Resource<BScreen::FollowModel>::getString() const {
     case BScreen::FETCH_ACTIVE_WINDOW:
         return std::string("Current");
         break;
+    case BScreen::IGNORE_OTHER_WORKSPACES:
+    default: 
+        return std::string("Ignore");
+        break;
     }
 
-    return std::string("Ignore");
 }
 
 template<>

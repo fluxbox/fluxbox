@@ -1694,6 +1694,8 @@ int FbWinFrame::widthOffset() const {
     case RIGHTBOTTOM:
         return m_tab_container.width() + m_window.borderWidth();
         break;
+    default: // kill warning
+        break;
     }
     return 0;
 }
@@ -1709,6 +1711,8 @@ int FbWinFrame::heightOffset() const {
     case BOTTOMRIGHT:
         return m_tab_container.height() + m_window.borderWidth();
         break;
+    default: // kill warning
+        break;
     }
     return 0;
 }
@@ -1722,6 +1726,8 @@ int FbWinFrame::xOffset() const {
     case LEFTBOTTOM:
         return m_tab_container.width() + m_window.borderWidth();
         break;
+    default: // kill warning
+        break;
     }
     return 0;
 }
@@ -1734,6 +1740,8 @@ int FbWinFrame::yOffset() const {
     case TOPLEFT:
     case TOPRIGHT:
         return m_tab_container.height() + m_window.borderWidth();
+        break;
+    default: // kill warning
         break;
     }
     return 0;

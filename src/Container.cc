@@ -32,8 +32,8 @@
 
 Container::Container(const FbTk::FbWindow &parent):
     FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), 
-    m_align(RELATIVE),
     m_orientation(FbTk::ROT0),
+    m_align(RELATIVE),
     m_max_size_per_client(60),
     m_max_total_size(0),
     m_selected(0),
@@ -479,7 +479,7 @@ unsigned int Container::maxWidthPerClient() const {
         if (size() == 0)
             return width();
         else {
-            int borderW = m_item_list.front()->borderWidth();
+            unsigned int borderW = m_item_list.front()->borderWidth();
             // there're count-1 borders to fit in with the windows
             // -> 1 per window plus end
             unsigned int w = width(), h = height();

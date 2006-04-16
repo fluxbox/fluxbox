@@ -977,7 +977,6 @@ void Toolbar::rearrangeItems() {
 
     unsigned int width = this->width(), height = this->height();
     unsigned int tmpw, tmph;
-    int tmpx, tmpy;
     FbTk::translateSize(orient, width, height);
 
     for (; item_it != item_it_end; ++item_it) {

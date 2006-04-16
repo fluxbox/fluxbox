@@ -41,15 +41,15 @@ public:
     explicit FbPixmap(Pixmap pm);
     FbPixmap(const FbDrawable &src, 
              unsigned int width, unsigned int height,
-             int depth);
+             unsigned int depth);
     FbPixmap(Drawable src, 
              unsigned int width, unsigned int height,
-             int depth);
+             unsigned int depth);
 
     virtual ~FbPixmap();
 
     void copy(const FbPixmap &the_copy);
-    void copy(Pixmap pixmap, int depth_convert, int screen_num);
+    void copy(Pixmap pixmap, unsigned int depth_convert, int screen_num);
     /// rotates the pixmap to specified orientation (assumes ROT0 now)
     void rotate(FbTk::Orientation orient);
     /// scales the pixmap to specified size
@@ -67,7 +67,7 @@ public:
     inline Drawable drawable() const { return m_pm; }
     inline unsigned int width() const { return m_width; }
     inline unsigned int height() const { return m_height; }
-    inline int depth() const { return m_depth; }
+    inline unsigned int depth() const { return m_depth; }
 
     static Pixmap getRootPixmap(int screen_num, bool force_update=false);
     static void setRootPixmap(int screen_num, Pixmap pm);
@@ -75,13 +75,13 @@ public:
 
     void create(Drawable src,
                 unsigned int width, unsigned int height,
-                int depth);
+                unsigned int depth);
 
 private:
     void free();
     Pixmap m_pm;
     unsigned int m_width, m_height;
-    int m_depth;
+    unsigned int m_depth;
 
     /// Functions relating to the maintenance of root window pixmap caching
     static void checkAtoms();

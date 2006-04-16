@@ -70,8 +70,8 @@ public:
     int cursorPosition() const { return m_cursor_pos; }
     inline int textStartPos(){ return m_start_pos; }
 
-    int findEmptySpaceLeft();
-    int findEmptySpaceRight();
+    unsigned int findEmptySpaceLeft();
+    unsigned int findEmptySpaceRight();
 
 private:
     void adjustEndPos();

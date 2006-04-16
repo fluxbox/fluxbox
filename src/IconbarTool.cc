@@ -99,8 +99,11 @@ std::string FbTk::Resource<IconbarTool::DeiconifyMode>::getString() const {
     case IconbarTool::CURRENT:
         return std::string("Current");
         break;
+    case IconbarTool::FOLLOW:
+    default:
+        return std::string("Follow");
+        break;
     };
-    return std::string("Follow");
 }
 
 template<>
@@ -131,8 +134,10 @@ std::string FbTk::Resource<IconbarTool::WheelMode>::getString() const {
     case IconbarTool::SCREEN:
         return std::string("Screen");
         break;
+    case IconbarTool::OFF:
+    default:
+        return std::string("Off");
     };
-    return std::string("Off");
 }
 
 template<>

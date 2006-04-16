@@ -58,6 +58,8 @@ public:
     };
 
     explicit ScreenPlacement(BScreen &screen);
+
+    virtual ~ScreenPlacement() {}
     /// placeWindow is guaranteed to succeed, ignore return value
     /// @return true
     bool placeWindow(const std::vector<FluxboxWindow *> &windowlist,

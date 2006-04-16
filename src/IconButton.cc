@@ -109,7 +109,7 @@ private:
 class WheelWorkspaceCmd : public FbTk::Command {
 public:
     explicit WheelWorkspaceCmd(const IconbarTool& tool, FluxboxWindow &win, const char* cmd) : 
-        m_win(win), m_tool(tool), m_cmd(CommandParser::instance().parseLine(cmd)){ }
+        m_win(win), m_cmd(CommandParser::instance().parseLine(cmd)), m_tool(tool) { }
     void execute() {
 
         switch(m_tool.wheelMode()) {
@@ -245,7 +245,7 @@ void IconButton::update(FbTk::Subject *subj) {
         FbTk::translateSize(orientation(), w, h);
         int iconx = 1, icony = 1;
         unsigned int neww = w, newh = h;
-        if (newh > 2*icony)
+        if (newh > 2*static_cast<unsigned>(icony))
             newh -= 2*icony;
         else
             newh = 1;

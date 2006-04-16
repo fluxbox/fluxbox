@@ -106,9 +106,6 @@ inline void untranslateCoords(Orientation orient, int &orig_x, int &orig_y, unsi
 // relocate the x,y coordinates
 inline void translatePosition(Orientation orient, int &x, int &y, unsigned int w, unsigned int h, unsigned int bw) {
 
-    int orig_x = x;
-    int orig_y = y;
-
     switch(orient) {
     case ROT0:
         break;
