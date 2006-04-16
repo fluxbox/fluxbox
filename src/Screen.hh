@@ -113,6 +113,7 @@ public:
     bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
     bool isWorkspaceWarping() const { return *resource.workspace_warping; }
     bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
+    bool isReverseWheeling() const { return *resource.reverse_wheeling; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
     bool doOpaqueMove() const { return *resource.opaque_move; }
@@ -438,7 +439,7 @@ private:
 
         FbTk::Resource<bool> image_dither, opaque_move, full_max,
             sloppy_window_grouping, workspace_warping,
-            desktop_wheeling, show_window_pos,            
+            desktop_wheeling, reverse_wheeling, show_window_pos,            
             antialias, auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> rootcommand;		
         FbTk::Resource<ResizeModel> resize_model;

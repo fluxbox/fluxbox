@@ -940,9 +940,17 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             FbCommands::ShowRootMenuCmd cmd;
             cmd.execute();
         } else if (screen->isDesktopWheeling() && be.button == 4) {
-            screen->nextWorkspace(1);
+            if(screen->isReverseWheeling()) {
+                screen->prevWorkspace(1);
+            } else {
+                screen->nextWorkspace(1);
+            }
         } else if (screen->isDesktopWheeling() && be.button == 5) {
-            screen->prevWorkspace(1);
+            if(screen->isReverseWheeling()) {
+                screen->nextWorkspace(1);
+            } else {
+                screen->prevWorkspace(1);
+            }
         }
 
     } break;

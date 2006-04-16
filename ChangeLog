@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/16:
+   * Add option to reverse desktop wheeling, patch #1034287
+       session.screen0.reversewheeling: true|false
+     (thanks Kalle - ice_jkpg at users.sourceforge.net)
+     Screen.hh/cc fluxbox.cc Toolbar.cc IconButton.cc
    * Missing space in translation (thanks... anonymous, sf.net #1455024)
      nls/C/Translation.m
    * Set (take|send)to(next|prev)workspace offset default value to 1

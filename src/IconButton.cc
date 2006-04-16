@@ -161,9 +161,14 @@ IconButton::IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent,
     RefCmd menu_cmd(new ::ShowMenu(m_win));
     setOnClick(focus_cmd, 1);
     setOnClick(menu_cmd, 3);
-    setOnClick(next_workspace, 4);
-    setOnClick(prev_workspace, 5);
-   
+    if(win.screen().isReverseWheeling()) {
+        setOnClick(next_workspace, 5);
+        setOnClick(prev_workspace, 4);
+    } else {
+        setOnClick(next_workspace, 4);
+        setOnClick(prev_workspace, 5);
+    }
+
     m_win.hintSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);

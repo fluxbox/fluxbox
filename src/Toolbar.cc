@@ -524,12 +524,21 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 
 
 void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
-    if (re.button == 1)
+    if (re.button == 1) {
         raise();
-    else if (re.button == 4) //mousewheel scroll up
-        screen().nextWorkspace(1);
-    else if (re.button == 5)	//mousewheel scroll down
-        screen().prevWorkspace(1);
+    } else if (re.button == 4) { //mousewheel scroll up
+        if(screen().isReverseWheeling()) {
+            screen().prevWorkspace(1);
+        } else {
+            screen().nextWorkspace(1);
+        }
+    } else if (re.button == 5) { //mousewheel scroll down
+        if(screen().isReverseWheeling()) {    
+            screen().nextWorkspace(1);
+        } else {
+            screen().prevWorkspace(1);
+        }
+    }
 }
 
 void Toolbar::enterNotifyEvent(XCrossingEvent &not_used) {
