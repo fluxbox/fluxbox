@@ -38,12 +38,21 @@
 
 #include <string>
 
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 
 using namespace std;
 
 // autoregister this module to command parser
 FbCommandFactory FbCommandFactory::s_autoreg;
 
+static int getint(const char *str, int defaultvalue) {
+    sscanf(str, "%d", &defaultvalue);
+    return defaultvalue;
+}
 
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
@@ -148,12 +157,8 @@ FbCommandFactory::FbCommandFactory() {
         0
     };
 
-    for (int i=0;; ++i) {
-        if (commands[i] == 0)
-            break;
+    for (int i=0; commands[i]; ++i)
         addCommand(commands[i]);
-    }
-                     
 }
 
 FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
@@ -322,26 +327,24 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "sethead")
         return new SetHeadCmd(atoi(arguments.c_str()));
     else if (command == "sendtoworkspace")
-        return new SendToWorkspaceCmd(atoi(arguments.c_str()) - 1); // make 1-indexed to user
+		// workspaces appear 1-indexed to the user, hence the minus 1
+        return new SendToWorkspaceCmd(getint(arguments.c_str(), 1) - 1);
     else if (command == "sendtonextworkspace")
-        return new SendToNextWorkspaceCmd(atoi(arguments.c_str()));
+        return new SendToNextWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "sendtoprevworkspace")
-        return new SendToPrevWorkspaceCmd(atoi(arguments.c_str()));
+        return new SendToPrevWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "taketoworkspace")
-        return new TakeToWorkspaceCmd(atoi(arguments.c_str()) - 1);
+		// workspaces appear 1-indexed to the user, hence the minus 1
+        return new TakeToWorkspaceCmd(getint(arguments.c_str(), 1) - 1);
     else if (command == "taketonextworkspace")
-        return new TakeToNextWorkspaceCmd(atoi(arguments.c_str()));
+        return new TakeToNextWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "taketoprevworkspace")
-        return new TakeToPrevWorkspaceCmd(atoi(arguments.c_str()));
+        return new TakeToPrevWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "killwindow" || command == "kill")
         return new KillWindowCmd();
-    else if (command == "tab") {
-        // XXX
-        int num = 1;
-        if (!arguments.empty())
-            num = atoi(arguments.c_str());
-        return new GoToTabCmd(num);
-    } else if (command == "nexttab")
+    else if (command == "tab")
+        return new GoToTabCmd(getint(arguments.c_str(), 1));
+    else if (command == "nexttab")
         return new CurrentWindowCmd(&FluxboxWindow::nextClient);
     else if (command == "prevtab")
         return new CurrentWindowCmd(&FluxboxWindow::prevClient);
@@ -357,23 +360,19 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     // Workspace commands
     //
     else if (command == "nextworkspace")
-        return new NextWorkspaceCmd(atoi(arguments.c_str()));
+        return new NextWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "prevworkspace")
-        return new PrevWorkspaceCmd(atoi(arguments.c_str()));
+        return new PrevWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "rightworkspace")
-        return new RightWorkspaceCmd(atoi(arguments.c_str()));
+        return new RightWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "leftworkspace")
-        return new LeftWorkspaceCmd(atoi(arguments.c_str()));
-    else if (command == "workspace") {
-        int num = 1; // workspaces appear 1-indexed to the user
-        if (!arguments.empty())
-            num = atoi(arguments.c_str());
-        return new JumpToWorkspaceCmd(num-1);
-    } if (command.substr(0, 9) == "workspace" && command[9] >= '0' && command[9] <= '9') {
+        return new LeftWorkspaceCmd(getint(arguments.c_str(), 1));
+    else if (command == "workspace")
+		// workspaces appear 1-indexed to the user, hence the minus 1
+        return new JumpToWorkspaceCmd(getint(arguments.c_str(), 1) - 1);
+    else if (command.substr(0, 9) == "workspace" && command[9] >= '0' && command[9] <= '9') {
         cerr<<"*** WARNING: 'Workspace<n>' actions are deprecated! Use 'Workspace <n>' instead"<<endl;
-        int num = 1;
-        num = atoi(command.substr(9).c_str());
-        return new JumpToWorkspaceCmd(num-1);
+        return new JumpToWorkspaceCmd(getint(command.substr(9).c_str(), 1) - 1);
         
     } else if (command == "nextwindow")
         return new NextWindowCmd(atoi(arguments.c_str()));
