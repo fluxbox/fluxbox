@@ -238,3 +238,24 @@ void ShowDesktopCmd::execute() {
                   windows.end(),
                   std::mem_fun(&FluxboxWindow::iconify));
 }
+
+void CloseAllWindowsCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+  
+    BScreen::Workspaces::iterator workspace_it = screen->getWorkspacesList().begin();
+    BScreen::Workspaces::iterator workspace_it_end = screen->getWorkspacesList().end();
+       for (; workspace_it != workspace_it_end; ++workspace_it) {
+            Workspace::Windows windows((*workspace_it)->windowList());
+            std::for_each(windows.begin(),
+            windows.end(),
+            std::mem_fun(&FluxboxWindow::close));
+           }
+    BScreen::Icons::iterator icon_it = screen->iconList().begin();
+    BScreen::Icons::iterator icon_it_end = screen->iconList().end();
+	    for (; icon_it != icon_it_end; ++icon_it ) {
+	         (*icon_it)->close();
+	      }
+				   
+}

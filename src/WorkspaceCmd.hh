@@ -104,4 +104,10 @@ public:
     void execute();
 };
 
+
+class CloseAllWindowsCmd: public FbTk::Command {
+public:
+    void execute();
+};
+
 #endif // WORKSPACECMD_HH

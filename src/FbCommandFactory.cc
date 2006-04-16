@@ -51,6 +51,7 @@ FbCommandFactory::FbCommandFactory() {
         "arrangewindows",
         "bindkey",
         "close",
+		"closeallwindows",
         "commanddialog",
         "deiconify",
         "detachclient",
@@ -310,6 +311,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::lowerLayer);
     else if (command == "close")
         return new CurrentWindowCmd(&FluxboxWindow::close);
+    else if (command == "closeallwindows")
+        return new CloseAllWindowsCmd();
     else if (command == "shade" || command == "shadewindow")
         return new CurrentWindowCmd(&FluxboxWindow::shade);
     else if (command == "stick" || command == "stickwindow")
