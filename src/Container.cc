@@ -510,6 +510,14 @@ void Container::setAlpha(unsigned char alpha) {
         (*it)->setAlpha(alpha);
 }
 
+void Container::parentMoved() {
+    FbTk::FbWindow::parentMoved();
+    ItemList::iterator it = m_item_list.begin();
+    ItemList::iterator it_end = m_item_list.end();
+    for (; it != it_end; ++it)
+        (*it)->parentMoved();
+}
+
 void Container::clear() {
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();

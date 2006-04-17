@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/17:
+   * Fix toolbar transparency when autohide enabled (Simon)
+     Toolbar.cc Container.hh/cc ToolbarItem.hh/cc *Tool.hh/cc
    * Fix toolbar transparency (frame and empty iconbar) (Simon)
      Container.cc Toolbar.cc
    * Fix display of label for dialog-type boxes (Simon)

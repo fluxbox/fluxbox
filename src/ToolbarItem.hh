@@ -58,6 +58,9 @@ public:
     // the toolbar instead. Otherwise there are ordering problems.
     virtual void renderTheme(unsigned char alpha) = 0;
 
+    // insist implemented, even if blank
+    virtual void parentMoved() = 0; // called when moved from hiding
+
     // just update theme items that affect the size
     virtual void updateSizing() = 0;
 

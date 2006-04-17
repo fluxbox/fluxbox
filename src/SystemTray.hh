@@ -71,6 +71,8 @@ public:
     inline void renderTheme(unsigned char alpha) {}
     inline void updateSizing() {}
 
+    void parentMoved() { m_window.parentMoved(); }
+
 private:
 
     void update(FbTk::Subject *subj);

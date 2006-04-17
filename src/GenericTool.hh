@@ -52,6 +52,8 @@ public:
     unsigned int height() const;
     unsigned int borderWidth() const;
 
+    void parentMoved();
+
     const ToolTheme &theme() const { return m_theme; }
     FbTk::FbWindow &window() { return *m_window; }
     const FbTk::FbWindow &window() const { return *m_window; }

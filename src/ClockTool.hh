@@ -65,6 +65,8 @@ public:
 
     void setOrientation(FbTk::Orientation orient);
 
+    void parentMoved() { m_button.parentMoved(); }
+
 private:
     void updateTime();
     void update(FbTk::Subject *subj);

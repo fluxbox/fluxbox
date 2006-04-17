@@ -84,3 +84,8 @@ void GenericTool::renderTheme(unsigned char alpha) {
 void GenericTool::update(FbTk::Subject *subj) {
     m_window->clear();
 }
+
+void GenericTool::parentMoved() {
+    m_window->parentMoved();
+}
+

@@ -83,6 +83,8 @@ public:
     bool tryButtonPressEvent(XButtonEvent &event);
     bool tryButtonReleaseEvent(XButtonEvent &event);
 
+    void parentMoved();
+
     /// accessors
     inline Alignment alignment() const { return m_align; }
     inline FbTk::Orientation orientation() const { return m_orientation; }

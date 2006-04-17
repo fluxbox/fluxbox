@@ -54,6 +54,8 @@ public:
     const FbTk::Button &button() const { return m_button; }
     void setOrientation(FbTk::Orientation orient);
 
+    void parentMoved() { m_button.parentMoved(); }
+
 private:
     void renderTheme(unsigned char alpha);
     void reRender();
