@@ -1216,7 +1216,7 @@ void FbWinFrame::applyTitlebar() {
     m_titlebar.setAlpha(alpha);
     m_label.setAlpha(alpha);
 
-    if (externalTabMode()) {
+    if (m_tabmode != INTERNAL) {
         m_label.setGC(m_focused?theme().labelTextFocusGC():theme().labelTextUnfocusGC());
         m_label.setJustify(theme().justify());
 

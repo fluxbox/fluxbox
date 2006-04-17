@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/17:
+   * Fix display of label for dialog-type boxes (Simon)
+     (only when external tabs are enabled, but not for particular window)
+     FbWinFrame.cc
    * Fix fbrun position setting (-pos and -nearmouse args) (Simon)
      util/fbrun/... FbRun.hh/cc main.cc
    * Resize the clock if the text gets too big, sf.net patch #1436406
