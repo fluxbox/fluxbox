@@ -1092,6 +1092,7 @@ void Toolbar::updateAlpha() {
         frame.window.setOpaque(*m_rc_alpha);
     } else {
         frame.window.setAlpha(*m_rc_alpha);
+        frame.window.updateBackground(false);
         frame.window.clear();
 
         ItemList::iterator item_it = m_item_list.begin();

@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/17:
+   * Fix toolbar transparency (frame and empty iconbar) (Simon)
+     Container.cc Toolbar.cc
    * Fix display of label for dialog-type boxes (Simon)
      (only when external tabs are enabled, but not for particular window)
      FbWinFrame.cc

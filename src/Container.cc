@@ -503,6 +503,7 @@ void Container::for_each(std::mem_fun_t<void, FbTk::FbWindow> function) {
 }
 
 void Container::setAlpha(unsigned char alpha) {
+    FbTk::FbWindow::setAlpha(alpha);
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();
     for (; it != it_end; ++it)
