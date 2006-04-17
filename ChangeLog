@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/17:
+   * Fix /bin/sh portability for fbsetbg and startfluxbox (Simon)
+     (fluxbox-generate_menu is seriously broken wrt portability 
+     atm though :-/)
+     fbsetbg startfluxbox.in
    * Make autogen.sh properly /bin/sh portable (Simon)
      Fixes #1445464
      autogen.sh

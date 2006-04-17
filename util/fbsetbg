@@ -46,8 +46,8 @@
 # _NET_CURRENT_DESKTOP
 
 # The wallpapersetter is selected in this order
-wpsetters=${wpsetters:=Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg} # broken icewmbg'
-lastwallpaper=${HOME}/.fluxbox/lastwallpaper
+wpsetters="${wpsetters:=Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg}" # broken icewmbg'
+lastwallpaper="${HOME}/.fluxbox/lastwallpaper"
 
 
 WHOAMI=`whoami`
@@ -200,8 +200,8 @@ if [ $# -eq 0 ]; then
 fi
 
 # create directory and last wallpaper file 
-if [ ! -d  ~/.fluxbox ]; then
-	mkdir ~/.fluxbox
+if [ ! -d  "$HOME/.fluxbox" ]; then
+	mkdir "$HOME/.fluxbox"
     touch ${lastwallpaper}
 fi
 
@@ -482,20 +482,20 @@ fi
 # random wallpaper code
 if [ "$option" = random ]; then
     # Lets make one thing clear...
-    wallpaperdir=$wallpaper
+    wallpaperdir="$wallpaper"
     if [ -z "$wallpaperdir" ]; then
         message "No random wallpaper directory specified."
         exit 1
     fi
     if [ -d "$wallpaperdir" ]; then
-        number_of_wallpapers=`ls $wallpaperdir|wc -l`
+        number_of_wallpapers=`ls "$wallpaperdir"|wc -l`
         if find_it random_number; then
-            randomnumber=$(random_number)
+            randomnumber=`random_number`
         # some shells don't support $RANDOM
-        elif [ -z $RANDOM ]; then
+        elif [ -z "$RANDOM" ]; then
             randomnumber=`(echo $$ ;time ps; w ; date )2>&1 | cksum | cut -f1 -d' '`
         else
-            randomnumber=$RANDOM
+            randomnumber="$RANDOM"
         fi
         wallpapernumber=`expr $randomnumber % $number_of_wallpapers + 1`
         #remember previous wallpaper
@@ -504,7 +504,7 @@ if [ "$option" = random ]; then
         fi
         remember=false
         #set -x
-        wallpaper="$wallpaperdir/`ls $wallpaperdir|sed -n ${wallpapernumber}p`"
+        wallpaper="$wallpaperdir/`ls \"$wallpaperdir\"|sed -n ${wallpapernumber}p`"
         option='$aspect' # have to choose something...
     else
         message "Invalid random wallpaper directory specified."
