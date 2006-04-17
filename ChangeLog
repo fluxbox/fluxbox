@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/17:
+   * Fix fbrun position setting (-pos and -nearmouse args) (Simon)
+     util/fbrun/... FbRun.hh/cc main.cc
    * Resize the clock if the text gets too big, sf.net patch #1436406
      (thanks Geoff Lywood - glywood at users.sourceforge.net)
      ClockTool.cc

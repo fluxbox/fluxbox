@@ -215,7 +215,6 @@ void FbRun::setTitle(const string &title) {
 
 void FbRun::resize(unsigned int width, unsigned int height) {
     FbTk::TextBox::resize(width, height);    
-    setNoMaximize();
 }
 
 void FbRun::redrawLabel() {
@@ -285,7 +284,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
     clear();
 }
 
-void FbRun::setNoMaximize() {
+void FbRun::lockPosition(bool size_too) {
     // we don't need to maximize this window
     XSizeHints sh;
     sh.flags = PMaxSize | PMinSize;
@@ -293,6 +292,11 @@ void FbRun::setNoMaximize() {
     sh.max_height = height();
     sh.min_width = width();
     sh.min_height = height();
+    if (size_too) {
+        sh.flags |= USPosition;
+        sh.x = x();
+        sh.y = y();
+    }
     XSetWMNormalHints(m_display, window(), &sh);
 }
 

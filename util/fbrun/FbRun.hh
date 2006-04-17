@@ -66,6 +66,9 @@ public:
     void keyPressEvent(XKeyEvent &ev);
     ///@}
 
+    /// set no maximizable for this window
+    void lockPosition(bool size_too);
+
 private:
     void nextHistoryItem();
     void prevHistoryItem();
@@ -73,8 +76,6 @@ private:
     void getSize(size_t &width, size_t &height);
     void createWindow(int x, int y, size_t width, size_t height);
     void redrawLabel();
-    /// set no maximizable for this window
-    void setNoMaximize();
 
     void insertCharacter(char key);
     void adjustStartPos();

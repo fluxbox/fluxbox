@@ -205,6 +205,8 @@ int main(int argc, char **argv) {
         
         if (set_pos)
             fbrun.move(x, y);
+
+        fbrun.lockPosition(set_pos);
 		
         fbrun.show();
 
