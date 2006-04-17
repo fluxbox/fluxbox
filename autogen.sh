@@ -4,7 +4,8 @@
 dothis() {
     echo "Executing:  $*"
     echo
-    if ! $* ;then
+    $*
+    if [ $? -ne 0 ]; then
         echo -e '\n ERROR: Carefully read the error message and'
         echo      '        try to figure out what went wrong.'
         exit 1

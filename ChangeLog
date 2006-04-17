@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/17:
+   * Make autogen.sh properly /bin/sh portable (Simon)
+     Fixes #1445464
+     autogen.sh
    * patchset missed my fbrun -Wall fixes (Simon)
      util/fbrun/FbRun.cc
 *06/04/16:
