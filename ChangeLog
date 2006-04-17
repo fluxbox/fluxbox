@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/17:
+   * patchset missed my fbrun -Wall fixes (Simon)
+     util/fbrun/FbRun.cc
 *06/04/16:
    * Add option to reverse desktop wheeling, patch #1034287
        session.screen0.reversewheeling: true|false

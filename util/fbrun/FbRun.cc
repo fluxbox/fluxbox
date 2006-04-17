@@ -145,7 +145,7 @@ void FbRun::run(const std::string &command) {
             // now m_current_history_item points at the duplicate, or
             // at m_history.size() if no duplicate
             if (m_current_history_item != m_history.size()) {
-                int i = 0;
+                unsigned int i = 0;
                 // read past history items before current
                 for (; inoutfile.good() && i < m_current_history_item; i++)
                     inoutfile.ignore(1, '\n');
@@ -342,16 +342,16 @@ void FbRun::tabCompleteHistory() {
         XBell(m_display, 0);
     } else {
         unsigned int nr= 0;
-        int history_item = m_current_history_item - 1;
+        unsigned int history_item = m_current_history_item - 1;
         string prefix = text().substr(0, textStartPos() + cursorPosition());
         while (history_item != m_current_history_item && nr++ < m_history.size()) {
-            if (history_item <= -1 )
-                history_item= m_history.size() - 1;
             if (m_history[history_item].find(prefix) == 0) {
                 m_current_history_item = history_item;
                 setText(m_history[m_current_history_item]);
                 break;
             }
+            if (history_item == 0) // loop
+                history_item = m_history.size();
             history_item--;
         }
         if (history_item == m_current_history_item) XBell(m_display, 0);
