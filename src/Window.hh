@@ -331,6 +331,11 @@ public:
     const FbTk::FbWindow &parent() const { return m_parent; }
     FbTk::FbWindow &parent() { return m_parent; }
 
+    const FbTk::FbPixmap &iconPixmap() const;
+    const FbTk::FbPixmap &iconMask() const;
+    const bool usePixmap() const;
+    const bool useMask() const;
+
     const std::string &title() const;
     const std::string &iconTitle() const;
     inline int x() const { return frame().x(); }

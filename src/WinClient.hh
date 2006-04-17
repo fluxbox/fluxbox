@@ -128,6 +128,10 @@ public:
         return (m_win == &win);
     }
 
+    const FbTk::FbPixmap &iconPixmap() const { return m_icon_pixmap; }
+    const FbTk::FbPixmap &iconMask() const { return m_icon_mask; }
+    const bool usePixmap() const { return m_icon_pixmap.drawable() != None; }
+    const bool useMask() const { return m_icon_mask.drawable() != None; }
 
     inline const std::string &title() const { return m_title; }
     inline const std::string &iconTitle() const { return m_icon_title; }
@@ -191,6 +195,9 @@ private:
 
     std::string m_title, m_icon_title;
     std::string m_class_name, m_instance_name;
+
+    FbTk::FbPixmap m_icon_pixmap;
+    FbTk::FbPixmap m_icon_mask;
 
     FluxboxWindow::BlackboxHints *m_blackbox_hint;
     MwmHints *m_mwm_hint;

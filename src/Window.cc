@@ -3680,6 +3680,11 @@ FbTk::Menu &FluxboxWindow::menu() {
     return screen().windowMenu();
 }
 
+const FbTk::FbPixmap &FluxboxWindow::iconPixmap() const { return m_client->iconPixmap(); }
+const FbTk::FbPixmap &FluxboxWindow::iconMask() const { return m_client->iconMask(); }
+const bool FluxboxWindow::usePixmap() const { return m_client->usePixmap(); }
+const bool FluxboxWindow::useMask() const { return m_client->useMask(); }
+
 const FbTk::Menu &FluxboxWindow::menu() const {
     return screen().windowMenu();
 }

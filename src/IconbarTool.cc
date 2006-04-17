@@ -596,12 +596,6 @@ void IconbarTool::update(FbTk::Subject *subj) {
 
             return;
 
-        } else if (subj == &(winsubj->win().titleSig())) {
-            IconButton *button = findButton(winsubj->win());
-            if (button == 0)
-                return;
-            button->setText(winsubj->win().title());
-            return;
         } else {
             // signal not handled
             return;
@@ -897,7 +891,6 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     win.dieSig().attach(this);
     win.workspaceSig().attach(this);
     win.stateSig().attach(this);
-    win.titleSig().attach(this);
 
 }
 

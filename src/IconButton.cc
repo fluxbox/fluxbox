@@ -170,6 +170,7 @@ IconButton::IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent,
     }
 
     m_win.hintSig().attach(this);
+    m_win.titleSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);
 
@@ -236,13 +237,9 @@ void IconButton::update(FbTk::Subject *subj) {
 
     Display *display = FbTk::App::instance()->display();
 
-    XWMHints *hints = XGetWMHints(display, m_win.winClient().window());
-    if (hints == 0)
-        return;
-
     int screen = m_win.screen().screenNumber();
 
-    if (m_use_pixmap && (hints->flags & IconPixmapHint) && hints->icon_pixmap != 0) {
+    if (m_use_pixmap && m_win.usePixmap()) {
         // setup icon window
         m_icon_window.show();
         unsigned int w = width();
@@ -262,7 +259,7 @@ void IconButton::update(FbTk::Subject *subj) {
         neww = newh;
         m_icon_window.moveResize(iconx, icony, neww, newh);
 
-        m_icon_pixmap.copy(hints->icon_pixmap, DefaultDepth(display, screen), screen);
+        m_icon_pixmap.copy(m_win.iconPixmap().drawable(), DefaultDepth(display, screen), screen);
         m_icon_pixmap.scale(m_icon_window.width(), m_icon_window.height());
 
         // rotate the icon or not?? lets go not for now, and see what they say...
@@ -277,28 +274,26 @@ void IconButton::update(FbTk::Subject *subj) {
         m_icon_pixmap = 0;
     }
 
-    if(m_use_pixmap && (hints->flags & IconMaskHint)) {
-        m_icon_mask.copy(hints->icon_mask, 0, 0);
+    if(m_use_pixmap && m_win.useMask()) {
+        m_icon_mask.copy(m_win.iconMask().drawable(), 0, 0);
         m_icon_mask.scale(m_icon_pixmap.width(), m_icon_pixmap.height());
         m_icon_mask.rotate(orientation());
     } else
         m_icon_mask = 0;
 
-    XFree(hints);
-    hints = 0;
-
 #ifdef SHAPE
 
-    if (m_icon_mask.drawable() != 0) {
-        XShapeCombineMask(display,
-                          m_icon_window.drawable(),
-                          ShapeBounding,
-                          0, 0,
-                          m_icon_mask.drawable(),
-                          ShapeSet);
-    }
+    XShapeCombineMask(display,
+                      m_icon_window.drawable(),
+                      ShapeBounding,
+                      0, 0,
+                      m_icon_mask.drawable(),
+                      ShapeSet);
 
 #endif // SHAPE
+
+    if (subj == &(m_win.titleSig()))
+        setText(m_win.title());
 
     if (subj != 0) {
         setupWindow();

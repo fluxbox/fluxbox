@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/18:
+   * Fix iconbar updates (icon and title)
+     (Thanks Mark Tiefenbruck, mark at tiefenbruck dot org)
+     WinClient.hh/cc Window.hh/cc IconButton.cc IconbarTool.cc WinButton.cc
 *06/04/17:
    * Fix toolbar transparency when autohide enabled (Simon)
      Toolbar.cc Container.hh/cc ToolbarItem.hh/cc *Tool.hh/cc

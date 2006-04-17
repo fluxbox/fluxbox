@@ -319,26 +319,19 @@ void WinButton::clear() {
        
         Display* display = m_listen_to.fbWindow().display();
         int screen = m_listen_to.screen().screenNumber();
-        XWMHints* hints = XGetWMHints(display, m_listen_to.winClient().window());
-        if (hints == 0) {
+        if (m_listen_to.usePixmap()) {
+             m_icon_pixmap.copy(m_listen_to.iconPixmap().drawable(), 
+                                DefaultDepth(display, screen), screen);
+             m_icon_pixmap.scale(width() - 4, height() - 4);
+        } else
             m_icon_pixmap.release();
-            m_icon_mask.release();
-        } else {
-            if ((hints->flags & IconPixmapHint) && hints->icon_pixmap != 0) {
-                 m_icon_pixmap.copy(hints->icon_pixmap, 
-                                    DefaultDepth(display, screen), screen);
-                 m_icon_pixmap.scale(width() - 4, height() - 4);
-            } else
-                m_icon_pixmap.release();
             
-            if ((hints->flags & IconMaskHint)) {
-                m_icon_mask.copy(hints->icon_mask, 0, 0);
-                m_icon_mask.scale(width() - 4, height() - 4);
-            } else
-                m_icon_mask.release();
-        }
+        if (m_listen_to.useMask()) {
+            m_icon_mask.copy(m_listen_to.iconMask().drawable(), 0, 0);
+            m_icon_mask.scale(width() - 4, height() - 4);
+        } else
+            m_icon_mask.release();
         
-        XFree(hints);
     }
 
     drawType();

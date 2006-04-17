@@ -484,6 +484,16 @@ void WinClient::updateWMHints() {
         } else
             window_group = None;
 
+        if ((bool)(wmhint->flags & IconPixmapHint) && wmhint->icon_pixmap != 0)
+            m_icon_pixmap.copy(wmhint->icon_pixmap, 0, 0);
+        else
+            m_icon_pixmap = 0;
+
+        if ((bool)(wmhint->flags & IconMaskHint) && wmhint->icon_mask != 0)
+            m_icon_mask.copy(wmhint->icon_mask, 0, 0);
+        else
+            m_icon_mask = 0;
+
         XFree(wmhint);
     }
 }
