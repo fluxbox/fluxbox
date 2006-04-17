@@ -701,12 +701,16 @@ void IconbarTool::renderTheme() {
     Pixmap tmp = m_focused_pm;
     Pixmap err_tmp = m_focused_err_pm;
     unsigned int icon_width, icon_height;
+    unsigned int icon_width_off=0, icon_height_off=0;
+    
     if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180) {
         icon_width = m_icon_container.maxWidthPerClient();
         icon_height = m_icon_container.height();
+        icon_width_off = 1;
     } else {
         icon_width = m_icon_container.width();
         icon_height = m_icon_container.maxWidthPerClient();
+        icon_height_off = 1;
     }
 
     if (!m_theme.focusedTexture().usePixmap()) {
@@ -716,8 +720,8 @@ void IconbarTool::renderTheme() {
         m_focused_pm = m_screen.imageControl().renderImage(icon_width,
                                                            icon_height,
                                                            m_theme.focusedTexture(), orientation());
-        m_focused_err_pm = m_screen.imageControl().renderImage(icon_width+1,
-                                                               icon_height,
+        m_focused_err_pm = m_screen.imageControl().renderImage(icon_width+icon_width_off,
+                                                               icon_height+icon_height_off,
                                                                m_theme.focusedTexture(), orientation());
     }
         
@@ -736,8 +740,8 @@ void IconbarTool::renderTheme() {
         m_unfocused_pm = m_screen.imageControl().renderImage(icon_width,
                                                              icon_height,
                                                              m_theme.unfocusedTexture(), orientation());
-        m_unfocused_err_pm = m_screen.imageControl().renderImage(icon_width+1,
-                                                                 icon_height,
+        m_unfocused_err_pm = m_screen.imageControl().renderImage(icon_width+icon_width_off,
+                                                                 icon_height+icon_height_off,
                                                                  m_theme.unfocusedTexture(), orientation());
     }
     if (tmp)
@@ -780,9 +784,15 @@ void IconbarTool::renderButton(IconButton &button, bool clear) {
 
     // The last button is always the regular width
     bool wider_button = false;
-    if (!m_icon_container.empty())
-        wider_button = (button.width() != m_icon_container.back()->width() || // height to cover both orients
-                        button.height() != m_icon_container.back()->height());
+    if (!m_icon_container.empty()) {
+        if (button.orientation() == FbTk::ROT0 || button.orientation() == FbTk::ROT180)
+            wider_button = button.width() != m_icon_container.back()->width();
+        else
+            wider_button = button.height() != m_icon_container.back()->height();
+//            wider_button = (button.width() != m_icon_container.maxWidthPerClient() || // height to cover both orients
+
+//                        button.height() != m_icon_container.back()->height());
+    }
 
     if (button.win().isFocused()) { // focused texture
         m_icon_container.setSelected(m_icon_container.find(&button));

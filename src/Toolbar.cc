@@ -609,21 +609,6 @@ void Toolbar::update(FbTk::Subject *subj) {
 void Toolbar::setPlacement(Toolbar::Placement where) {
     // disable vertical toolbar
 
-/*
-    switch (where) {
-    case LEFTTOP:
-    case LEFTCENTER:
-    case LEFTBOTTOM:
-    case RIGHTTOP:
-    case RIGHTCENTER:
-    case RIGHTBOTTOM:
-        where = BOTTOMCENTER;
-        break;
-    default:
-        break;
-    }
-*/
-
     *m_rc_placement = where;
     int head_x = 0,
         head_y = 0,
@@ -637,10 +622,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_w = screen().getHeadWidth(head);
         head_h = screen().getHeadHeight(head);
     }
-
-    FbTk::Orientation was_orient = FbTk::ROT0;
-    if (!m_item_list.empty())
-        was_orient = m_item_list.front()->orientation(); // all save orient (for rendering)
 
     int bevel_width = theme().bevelWidth();
     int border_width = theme().border().width();
@@ -784,18 +765,10 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
     }
 
-    if (was_orient != orient) {
-        // hide for all this moving around
-        if (*m_rc_visible)
-            frame.window.hide();
-        ItemList::iterator item_it = m_item_list.begin();
-        ItemList::iterator item_it_end = m_item_list.end();
-        for (; item_it != item_it_end; ++item_it) {
-            (*item_it)->setOrientation(orient);
-        }
-        if (*m_rc_visible)
-            frame.window.show();
-    }
+    ItemList::iterator item_it = m_item_list.begin();
+    ItemList::iterator item_it_end = m_item_list.end();
+    for (; item_it != item_it_end; ++item_it)
+        (*item_it)->setOrientation(orient);
 }
 
 void Toolbar::updateVisibleState() {

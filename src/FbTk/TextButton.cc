@@ -76,6 +76,8 @@ bool TextButton::setOrientation(FbTk::Orientation orient) {
     } else {
         m_orientation = orient;
     }
+    updateBackground(false);
+    clear();
     return true;
 }
 

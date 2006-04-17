@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/17:
+   * Fix some rotated toolbar+textbutton issues (Simon)
+     Toolbar.cc IconbarTool.cc FbTk/TextButton.cc
    * Fix /bin/sh portability for fbsetbg and startfluxbox (Simon)
      (fluxbox-generate_menu is seriously broken wrt portability 
      atm though :-/)
