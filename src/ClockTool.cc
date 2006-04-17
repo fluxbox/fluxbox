@@ -249,14 +249,22 @@ void ClockTool::updateTime() {
 
     if (the_time != -1) {
         char time_string[255];
+        int time_string_len;
         struct tm *time_type = localtime(&the_time);
         if (time_type == 0)
             return;
 
 #ifdef HAVE_STRFTIME
-        if (!strftime(time_string, 255, m_timeformat->c_str(), time_type) || m_button.text() == time_string)
+        time_string_len = strftime(time_string, 255, m_timeformat->c_str(), time_type);
+        if( time_string_len == 0 || m_button.text() == time_string)
             return;
         m_button.setText(time_string);
+
+        int new_width = m_theme.font().textWidth(time_string, time_string_len) + 2;
+        if (new_width > m_button.width()) {
+            resize(new_width, m_button.height());
+            resizeSig().notify();
+        }
 #else // dont have strftime so we have to set it to hour:minut
         //        sprintf(time_string, "%d:%d", );
 #endif // HAVE_STRFTIME

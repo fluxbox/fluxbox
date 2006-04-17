@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/17:
+   * Resize the clock if the text gets too big, sf.net patch #1436406
+     (thanks Geoff Lywood - glywood at users.sourceforge.net)
+     ClockTool.cc
    * Fix some rotated toolbar+textbutton issues (Simon)
      Toolbar.cc IconbarTool.cc FbTk/TextButton.cc
    * Fix /bin/sh portability for fbsetbg and startfluxbox (Simon)
