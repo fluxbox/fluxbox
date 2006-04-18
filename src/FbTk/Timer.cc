@@ -48,14 +48,15 @@ namespace FbTk {
 
 Timer::TimerList Timer::m_timerlist;
 
-Timer::Timer():m_timing(false), m_once(false) {
+Timer::Timer():m_timing(false), m_once(false), m_interval(0) {
 
 }
 
 Timer::Timer(RefCount<Command> &handler):
     m_handler(handler),
     m_timing(false),
-    m_once(false) {
+    m_once(false),
+    m_interval(0) {
 }
 
 
@@ -72,7 +73,7 @@ void Timer::setTimeout(time_t t) {
 }
 
 
-void Timer::setTimeout(timeval t) {
+void Timer::setTimeout(const timeval &t) {
     m_timeout.tv_sec = t.tv_sec;
     m_timeout.tv_usec = t.tv_usec;
 }
@@ -85,10 +86,10 @@ void Timer::start() {
     gettimeofday(&m_start, 0);
 
     // only add Timers that actually DO something
-    if (! m_timing && *m_handler) {
+    if ((! m_timing || m_interval != 0) && *m_handler) {
         m_timing = true;
         addTimer(this); //add us to the list
-    }
+    }        
 }
 
 
@@ -111,17 +112,19 @@ void Timer::updateTimers(int fd) {
     FD_SET(fd, &rfds);
 
   
-    if (m_timerlist.size() > 0) {
+    if (!m_timerlist.empty()) {
         gettimeofday(&now, 0);
 
         tm.tv_sec = tm.tv_usec = 0l;
 
         Timer *timer = m_timerlist.front();
 
-        tm.tv_sec = timer->getStartTime().tv_sec +
-            timer->getTimeout().tv_sec - now.tv_sec;
-        tm.tv_usec = timer->getStartTime().tv_usec +
-            timer->getTimeout().tv_usec - now.tv_usec;
+        const timeval &start = timer->getStartTime();
+        const timeval &length = timer->getTimeout();
+        tm.tv_sec = start.tv_sec +
+            length.tv_sec - now.tv_sec;
+        tm.tv_usec = start.tv_usec +
+            length.tv_usec - now.tv_usec;
 
         while (tm.tv_usec >= 1000000) {
             tm.tv_sec++;
@@ -138,10 +141,17 @@ void Timer::updateTimers(int fd) {
             }
         }
 
+        if (tm.tv_sec < 0) {
+            tm.tv_sec = 0;
+            tm.tv_usec = 0;
+        }
+
         timeout = &tm;
     }
 
-    select(fd + 1, &rfds, 0, 0, timeout);
+    if (select(fd + 1, &rfds, 0, 0, timeout) != 0)
+        // didn't time out! x events pending
+        return;
 
     TimerList::iterator it;
 
@@ -167,10 +177,13 @@ void Timer::updateTimers(int fd) {
         //This is to make sure we don't get an invalid iterator
         //when we do fireTimeout
         Timer &t = *(*it);
-        tm.tv_sec = t.getStartTime().tv_sec +
-            t.getTimeout().tv_sec;
-        tm.tv_usec = t.getStartTime().tv_usec +
-            t.getTimeout().tv_usec;
+        const timeval &start = t.getStartTime();
+        const timeval &length = t.getTimeout();
+
+        tm.tv_sec = start.tv_sec +
+            length.tv_sec;
+        tm.tv_usec = start.tv_usec +
+            length.tv_usec;
 
         if (((now.tv_sec < tm.tv_sec) ||
              (now.tv_sec == tm.tv_sec && now.tv_usec < tm.tv_usec)))
@@ -179,6 +192,9 @@ void Timer::updateTimers(int fd) {
         t.fireTimeout();
         // restart the current timer so that the start time is updated
         if (! t.doOnce()) {
+            if (t.getInterval() != 0) {
+                it = m_timerlist.erase(it);
+            }
             t.start();
 
             // Note that this mustn't be done if we're deleting the
@@ -200,6 +216,22 @@ void Timer::updateTimers(int fd) {
 
 void Timer::addTimer(Timer *timer) {
     assert(timer);
+    int interval = timer->getInterval();
+    // interval timers have their timeout change every time they are started!
+    if (interval != 0) {
+        timeval tm;
+        tm.tv_sec = timer->getStartTime().tv_sec;
+        tm.tv_usec = timer->getStartTime().tv_usec;
+
+        // now convert to interval
+        tm.tv_sec = interval - (tm.tv_sec % interval) - 1;
+        tm.tv_usec = 1000000 - tm.tv_usec;
+        if (tm.tv_usec == 1000000) {
+            tm.tv_usec = 0;
+            tm.tv_sec += 1;
+        }
+        timer->setTimeout(tm);
+    }
 
     TimerList::iterator it = m_timerlist.begin();
     TimerList::iterator it_end = m_timerlist.end();

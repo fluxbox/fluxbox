@@ -64,8 +64,9 @@ public:
     /// set timeout
     void setTimeout(time_t val);
     /// set timeout 
-    void setTimeout(timeval val);
+    void setTimeout(const timeval &val);
     void setCommand(RefCount<Command> &cmd);
+    void setInterval(int val) { m_interval = val; }
     /// start timing
     void start();
     /// stop timing
@@ -73,7 +74,8 @@ public:
     /// update all timers
     static void updateTimers(int file_descriptor);
 
-    inline int isTiming() const { return m_timing; } 
+    inline int isTiming() const { return m_timing; }
+    inline int getInterval() const { return m_interval; }
     inline int doOnce() const { return m_once; }
     
     inline const timeval &getTimeout() const { return m_timeout; }
@@ -96,6 +98,8 @@ private:
 	
     bool m_timing; ///< clock running?
     bool m_once;  ///< do timeout only once?
+    int m_interval; ///< Is an interval-only timer (e.g. clock)
+    // note that intervals only take note of the seconds, not microseconds
 
     timeval m_start;    ///< start time
     timeval m_timeout; ///< time length

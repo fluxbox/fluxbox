@@ -150,10 +150,8 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
 
     // setup timer to check the clock every 0.01 second
     // if nothing has changed, it wont update the graphics
-    timeval delay;
-    delay.tv_sec = 0;
-    delay.tv_usec = 100000;
-    m_timer.setTimeout(delay);
+    m_timer.setInterval(1);
+    // m_timer.setTimeout(delay); // don't need to set timeout on interval timer
     FbTk::RefCount<FbTk::Command> update_graphic(new FbTk::SimpleCommand<ClockTool>(*this, 
                                                                                     &ClockTool::updateTime));
     m_timer.setCommand(update_graphic);
@@ -243,7 +241,6 @@ unsigned int ClockTool::height() const {
 }
 
 void ClockTool::updateTime() {
-
     // update clock
     time_t the_time = time(0);
 
