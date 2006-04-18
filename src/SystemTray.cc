@@ -359,9 +359,10 @@ void SystemTray::handleEvent(XEvent &event) {
 
                 // this was why gaim wasn't centring the icon
                 (*it)->sendConfigureNotify(0, 0, (*it)->width(), (*it)->height());
+                // so toolbar know that we changed size
+                // done inside this loop, because otherwise we can get into nasty looping
+                resizeSig().notify();
             }
-            // so toolbar know that we changed size
-            resizeSig().notify();
         }
 
     }
