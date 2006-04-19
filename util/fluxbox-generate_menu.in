@@ -1395,7 +1395,7 @@ done
 if [ -z "${INSTALL}" ] && [ -z "${NO_ICON}" ]; then
     # [ -z "$dnlamVERBOSE" ] && dnlamVERBOSE=": echo"   # for debugging
     FB_ICONDIR="$HOME/.fluxbox/icons"
-    [ -d "$FB_ICONDIR" ] || mkdir "$FB_ICONDIR"
+    [ -r "$FB_ICONDIR" ] || mkdir "$FB_ICONDIR"
     ICONMAPPING="$HOME/.fluxbox/iconmapping"
 
     if [ "$GNOMEMENU" ] ; then
@@ -1541,8 +1541,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IM
-        normal_find gaim kopete gnomemeeting sim kadu psi amsn aim ayttm everyb
-uddy gabber ymessenger
+        normal_find gaim kopete gnomemeeting sim kadu psi amsn aim ayttm everybuddy gabber ymessenger
         find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
         cli_find centericq micq
     append_menu_end
@@ -1696,13 +1695,13 @@ append_submenu "${SYSTEMTOOLSMENU}"
   append_submenu "${BURNINGMENU}"
     normal_find k3b cdbakeoven graveman xcdroast arson eroaster gcombust \
                 gtoaster kiso kover gtkcdlabel kcdlabel cdw cdlabelgen 
-    clifind     mp3burn cdrx burncenter
+    cli_find     mp3burn cdrx burncenter
   append_menu_end
 
   normal_find firestarter gtk-lshw gproftd gpureftpd guitoo porthole gtk-iptables \
               gtk-cpuspeedy
   find_it    fireglcontrol   append "[exec] (ATI Config) {fireglcontrol}"
-  clifind    top
+  cli_find    top
 append_menu_end
 
 
