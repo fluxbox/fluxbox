@@ -29,17 +29,20 @@ $set 2 #BaseDisplay
 $set 3 #Common
 
 1 Alfa
-2 Gem automatisk
+2 Skjul automatisk
 10 menu
 11 stil
+12 Standarder
 13 Slået fra
 14 Fejl
 15 Fluxbox version
+16 Maksimer over
 17 SVN Revision
 18 Synlig
 
 $set 4 #Configmenu
 
+1 Antialias
 2 Hæv automatisk
 3 Klik hæver
 4 Klik for fokus
@@ -65,22 +68,36 @@ $set 6 #FbTkError
 
 1 Advarsel! Højde > 3200, sætter højde = 3200
 2 Advarsel! Bredde > 3200, sætter bredde = 3200
+3 Advarsel: Kan ikke indlæse reserveskrifttype
 4 Allokeringsfejl.
 5 Fejl i oprettelse af pixmap
+6 Kunne ikke oprette XImage (`Xbillede')
 7 Kunne ikke læse.
+8 Advarsel: Fandt ikke noget gyldigt format for alfa.
+9 Advarsel: Kunne ikke oprette alfa-billede.
+10 Advarsel: Kunne ikke oprette alfa-pixmap.
+11 Kunne ikke finde format for skærm(%d)
 12 Løbet tør for hukommelse
 13 Løbet tør for hukommelse under allokering af blå buffer.
 14 Løbet tør for hukommelse under allokering af grøn buffer.
 15 Løbet tør for hukommelse under allokering af rød buffer.
+16 Kunne ikke læse tema-object
+17 uunderstøttet visual
+18 Sætter standardværdi
 
 $set 7 #Fluxbox
 
-1 rc filnavn ugyldigt.
-4 Kunne ikke indlæse databasen
+1 rc-filnavn ugyldigt!
+2 Kunne ikke indlæse gruppefilen
+3 Kunne ikke indlæse databasen
+4 Prøver igen med
 6 Kan ikke oprette mappen %s
-8 Fejl: kan ikke forstå det regulære udtryk
+7 Kunne ikke finde skærme til håndtering.\nSørg for at ikke at ha' en anden window manager kørende.
+8 Fejl: kan ikke parse regulært udtryk
 9 Fatal fejl: der kan kun være en instans af klassen fluxbox.
+10 Kunne ikke forbinde til X-serveren.\nSørg for at starte X før du starter Fluxbox.
 11 Advarsel: X-serveren understøtter ikke lokale indstillinger (locale)
+12 Advarsel: Kan ikke sætte `locale'-modifikatorer
 
 $set 8 #Gnome
 
@@ -106,7 +123,7 @@ $set 10 #Menu
 $set 11 #Remember
 
 1 Dekorationer
-2 Dimensioner
+2 Størrelse
 3 Gå til skriverbord
 4 Lag
 5 Husk...
@@ -114,11 +131,14 @@ $set 11 #Remember
 7 Gem ved lukning
 8 Kun titelbjælke
 9 På alle skriveborde
+10 Ukendt apps nøgle
 11 Skrivebord
 
 $set 12 #Screen
 
+1 BScreen::BScreen: der opstod en fejl under X-server-forespørgsel.\n	en anden window manager kører allerede på display
 2 W: %4d x H: %4d
+3 BScreen::BScreen: håndterer skærm %d med visual 0x%lx, dybde %d\n
 
 $set 13 #Slit
 
