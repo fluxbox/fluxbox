@@ -175,6 +175,7 @@ void RootTheme::reconfigTheme() {
         // if background argument is a file then
         // parse image options and call image setting 
         // command specified in the resources
+        filename = FbTk::StringUtil::expandFilename(filename);
         if (FbTk::FileUtil::isRegularFile(filename.c_str())) {
             // parse options
             std::string options;
