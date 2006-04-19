@@ -223,7 +223,6 @@ convertIcon(){
 
 removePath(){
     execname="$1"
-    local progname
     progname="${execname%% *}"
     # separate program name and its parameters
     if [ "$progname" = "$execname" ]; then
@@ -231,7 +230,6 @@ removePath(){
         # remove path from only program name
         execname="${progname##*/}"
     else
-        local params
         params="${execname#* }"
         # remove path from only program name
         execname="${progname##*/} $params"
@@ -266,7 +264,6 @@ doSearchLoop(){
 
 doSearch(){
     # remove '(' from '(fluxbox ...) | ...'
-    local execname temp_icon
     execname=`replaceWithinString "$1" "\("`
     temp_icon="$2"
     # $dnlamVERBOSE "# Searching for icon $temp_icon for $execname" >> $ICONMAPPING
@@ -296,7 +293,7 @@ searchForIcon(){
     entry_exec="${1%%&*}"
     entry_icon="$2"
     # $dnlamVERBOSE echo "searchForIcon \"$entry_exec\" \"$entry_icon\"" >&2
-    
+
     # get the basename and parameters of entry_exec -- no path
     entry_exec=`removePath "${entry_exec}"`
     [ -z "$entry_exec" ] && { echo "Exec is NULL $1 with icon $2"; return 1; }
@@ -305,7 +302,6 @@ searchForIcon(){
     if [ -n "$entry_icon" ] && [ ! "$entry_exec" = "$entry_icon" ] && [ ! -f "$entry_icon" ]; then
         # to search for icon in other paths,
         # get basename
-        local temp_icon
         temp_icon="${entry_icon##*/}"
         # remove parameters
         temp_icon="${temp_icon#* }"
@@ -318,7 +314,6 @@ searchForIcon(){
     fi
 
     # remove parameters
-    local execname
     execname="${entry_exec%% *}"
 
     # echo "search for icon named $execname.{xpm,png,gif}"
@@ -336,7 +331,6 @@ searchForIcon(){
     fi
 
     # remove path to icon; just get basename
-    local icon_base
     icon_base="${entry_icon##*/}"
     # remove extension
     icon_base="${icon_base%%.*}"
@@ -399,7 +393,6 @@ lookupIcon() {
         return 1
     fi
 
-    local execname
     execname="$1"
     shift
     [ -n "$1" ] && echo "!! Ignoring extra paramters: $*" >&2
@@ -428,13 +421,11 @@ lookupIcon() {
 append() {
      if [ -z "${INSTALL}" ]; then
         # $dnlamVERBOSE echo "append: $*" >&2
-        local iconString
         iconString="`echo $* | grep -o '<.*>'`"
         # echo "iconString=$iconString" >&2
         if [ -z "$iconString" ] && [ -z "$NO_ICON" ]; then
             echo -n "      $* " >> ${MENUFILENAME}
             # get the program name between '{}' from parameters            
-            local execname
             execname="$*"
             execname=${execname#*\{}
             execname=${execname%%\}*}
@@ -1286,9 +1277,22 @@ while [ $# -gt 0 ]; do
         -g) GNOMEMENU=yes; shift;;
         -in) NO_ICON=yes; shift;;
         -is) OTHER_ICONPATHS="
-                /usr{,/local}/share{,/xclass}/{icons,pixmaps}
-                /usr{,/local}/share/icons/mini
-                /usr{,/local}/{,X11R6/}share/icons/{default.kde,hicolor}/16x16/*
+                /usr/share/icons,
+                /usr/share/icons/mini,
+                /usr/share/pixmaps,
+                /usr/local/share/icons,
+                /usr/local/share/icons/mini,
+                /usr/local/share/pixmaps,
+                /usr/share/xclass/icons,
+                /usr/share/xclass/pixmaps,
+                /usr/local/share/xclass/icons,
+                /usr/local/share/xclass/pixmaps,
+                /usr/X11R6/share/icons/default/16x16,
+                /usr/X11R6/share/icons/kde/16x16,
+                /usr/X11R6/share/icons/hicolor/16x16,
+                /usr/local/X11R6/share/icons/default/16x16,
+                /usr/local/X11R6/share/icons/kde/16x16,
+                /usr/local/X11R6/share/icons/hicolor/16x16,
             "
             shift;;
         -ds) OTHER_DESKTOP_PATHS="

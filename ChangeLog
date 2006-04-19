@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/19:
+   * Made fbgm more pure bourne-compatibel (Mathias)
+     fluxbox-generate_menu.in
 *06/04/18:
    * Add new timer ability - interval - to reduce clock update checks (Simon)
      ClockTool.cc FbTk/Timer.hh/cc
