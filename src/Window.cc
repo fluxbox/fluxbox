@@ -2662,7 +2662,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     frame().buttonPressEvent(be);
 
     if (be.button == 1 || (be.button == 3 && be.state == Mod1Mask)) {
-        if ((! focused) && (! screen().focusControl().isMouseFocus())) { //check focus
+        if ( (! focused) ) { //check focus
             setInputFocus();
         }
 
@@ -3024,7 +3024,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             sa.enter = sa.leave = False;
             XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);
 
-            if ((!sa.leave || sa.inferior)) {
+            if ((!sa.leave || sa.inferior) && !screen().focusControl().isCycling() ) {
                 setInputFocus();
             }
         }

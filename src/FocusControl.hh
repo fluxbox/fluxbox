@@ -82,6 +82,7 @@ public:
     void dirFocus(FluxboxWindow &win, FocusDir dir);
     bool isMouseFocus() const { return focusModel() == MOUSEFOCUS; }
     bool isMouseTabFocus() const { return tabFocusModel() == MOUSETABFOCUS; }
+    bool isCycling() const { return m_cycling_focus; }
     void addFocusFront(WinClient &client);
     void addFocusBack(WinClient &client);
 

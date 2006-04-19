@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/19:
+   * Fixes to Mouse Focus (thanks Scott Kuhl; skuhl AT cs utah edu)
+     Window.cc
    * Allow ~ in "background" pixmap options (Simon + thanks_markt)
      RootTheme.cc
    * Windows keep relative position in ArrangeWindows (Mathias)
