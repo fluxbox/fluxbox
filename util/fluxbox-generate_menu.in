@@ -559,6 +559,7 @@ ABOUTITEM='About'
 BACKGROUNDMENU='Backgrounds'
 BACKGROUNDMENUTITLE='Set the Background'
 BROWSERMENU='Browsers'
+BURNINGMENU='Burning'
 CONFIGUREMENU='Configure'
 EDITORMENU='Editors'
 EDUCATIONMENU='Education'
@@ -585,6 +586,7 @@ RUNCOMMAND='Run'
 SCREENSHOT='Screenshot'
 STYLEMENUTITLE='Choose a style...'
 SYSTEMSTYLES='System Styles'
+SYSTEMTOOLSMENU='System Tools'
 TERMINALMENU='Terminals'
 TOOLS='Tools'
 USERSTYLES='User Styles'
@@ -644,6 +646,7 @@ case ${LC_ALL} in
         BACKGROUNDMENU='Pozadí'
         BACKGROUNDMENUTITLE='Nastavení pozadí'
         BROWSERMENU='Prohlí¾eèe'
+        BURNINGMENU='Vypalování'
         CONFIGUREMENU='Konfigurace'
         EDITORMENU='Editory'
         EXITITEM='Ukonèit'
@@ -668,6 +671,7 @@ case ${LC_ALL} in
         RUNCOMMAND='Spustit program...'
         SCREENSHOT='Screenshot'
         STYLEMENUTITLE='Volba stylu...'
+        SYSTEMTOOLSMENU='Systémové utility'
         SYSTEMSTYLES='Systémové styly'
         TERMINALMENU='Terminály'
         TOOLS='Nástroje'
@@ -1470,7 +1474,7 @@ if find_it_options $MY_BROWSER; then
 else
     [ -n "$MY_BROWSER" ] && echo "Warning: you chose an invalid browser." >&2
     #The precise order is up for debate.
-    for browser in firefox mozilla-firefox mozilla-firebird MozillaFirebird opera skipstone mozilla galeon konqueror dillo netscape w3m links lynx; do
+    for browser in firefox mozilla-firefox mozilla-firebird MozillaFirebird opera skipstone mozilla galeon konqueror dillo netscape w3m amaya links lynx; do
         if find_it $browser; then
             DEFAULT_BROWSER=$browser
             break
@@ -1508,7 +1512,7 @@ append "[exec] (${DEFAULT_TERMNAME}) {${DEFAULT_TERM}}"
 
 case "$DEFAULT_BROWSERNAME" in
     links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} ${HOMEPAGE}}" ;;
-    firefox|firebird|mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_BROWSER}}" ;;
+    firefox|firebird|mozilla|phoenix|galeon|dillo|netscape|amaya) append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_BROWSER}}" ;;
     konqueror) append "[exec] (konqueror) {kfmclient openProfile webbrowsing}" ;;
     opera) append "[exec] (opera) {env QT_XFT=true opera}" ;;
     MozillaFirebird) append "[exec] (firebird) {MozillaFirebird}" ;;
@@ -1537,7 +1541,8 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IM
-        normal_find gaim kopete gnomemeeting sim kadu psi amsn
+        normal_find gaim kopete gnomemeeting sim kadu psi amsn aim ayttm everyb
+uddy gabber ymessenger
         find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
         cli_find centericq micq
     append_menu_end
@@ -1549,7 +1554,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu News
-        normal_find liferea pears
+        normal_find liferea pears pan
         cli_find slrn tin
     append_menu_end
 
@@ -1568,11 +1573,11 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu ftp
-        normal_find gftp IglooFTP-PRO
+        normal_find gftp IglooFTP-PRO kbear
         cli_find ncftp pftp ftp lftp yafc
     append_menu_end
 
-    normal_find pan xnmap skype x3270
+    normal_find xnmap skype x3270
 
 append_menu_end
 
@@ -1593,7 +1598,7 @@ append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
     find_it     konqueror append "[exec] (konqueror) {kfmclient openProfile filemanagement}"
-    normal_find gentoo krusader kcommander linuxcmd rox tuxcmd krename xfe xplore
+    normal_find gentoo krusader kcommander linuxcmd rox tuxcmd krename xfe xplore worker endeavour2 evidence
     find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop --browser}"
     cli_find mc
 append_menu_end
@@ -1631,32 +1636,33 @@ append_menu_end
 
 
 append_submenu "${OFFICEMENU}"
-    normal_find xclock xcalc kcalc grisbi qbankmanager
+    normal_find xclock xcalc kcalc grisbi qbankmanager evolution
     find_it gcalc           append "[exec] (gcalc) {gcalc}" || \
         find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
     find_it ical            append "[exec] (Calendar)   {ical}"
 
-    for ext in s o xo; do
-        find_it ${ext}office2 && (
-            find_it ${ext}office2   append "[exec] (Open Office 2)      {${ext}office2}"
-            find_it ${ext}obase2    append "[exec] (OO Base 2)          {${ext}obase2}"
-            find_it ${ext}ocalc2    append "[exec] (OO Calc 2)          {${ext}ocalc2}"
-            find_it ${ext}owriter2  append "[exec] (OO Writer 2)        {${ext}owriter2}"
-            find_it ${ext}oweb2     append "[exec] (OO Web 2)           {${ext}oweb2}"
-            find_it ${ext}ohtml2    append "[exec] (OO HTML 2)          {${ext}ohtml2}"
-            find_it ${ext}oimpress2 append "[exec] (OO Impress 2)       {${ext}oimpress2}"
-            find_it ${ext}odraw2    append "[exec] (OO Draw 2)          {${ext}odraw2}"
-            find_it ${ext}omath2    append "[exec] (OO Math 2)          {${ext}omath2}"
-            find_it ${ext}ofromtemplate2  append "[exec] (OO Templates 2) {${ext}ofromtemplate2}"
+    # older <=1.1.3 apparently have stuff like swriter, not sowriter
+    for ext in s so oo xoo; do
+        find_it ${ext}ffice2 && (
+            find_it ${ext}ffice2   append "[exec] (Open Office 2)      {${ext}ffice2}"
+            find_it ${ext}base2    append "[exec] (OO Base 2)          {${ext}base2}"
+            find_it ${ext}calc2    append "[exec] (OO Calc 2)          {${ext}calc2}"
+            find_it ${ext}writer2  append "[exec] (OO Writer 2)        {${ext}writer2}"
+            find_it ${ext}web2     append "[exec] (OO Web 2)           {${ext}web2}"
+            find_it ${ext}html2    append "[exec] (OO HTML 2)          {${ext}html2}"
+            find_it ${ext}impress2 append "[exec] (OO Impress 2)       {${ext}impress2}"
+            find_it ${ext}draw2    append "[exec] (OO Draw 2)          {${ext}draw2}"
+            find_it ${ext}math2    append "[exec] (OO Math 2)          {${ext}math2}"
+            find_it ${ext}fromtemplate2  append "[exec] (OO Templates 2) {${ext}fromtemplate2}"
         )
-        find_it ${ext}office && (
-            find_it ${ext}office   append "[exec] (Open Office)      {${ext}office}"
-            find_it ${ext}ocalc    append "[exec] (OO Calc)          {${ext}ocalc}"
-            find_it ${ext}owriter  append "[exec] (OO Writer)        {${ext}owriter}"
-            find_it ${ext}oimpress append "[exec] (OO Impress)       {${ext}oimpress}"
-            find_it ${ext}odraw    append "[exec] (OO Draw)          {${ext}odraw}"
-            find_it ${ext}omath    append "[exec] (OO Math)          {${ext}omath}"
-            find_it ${ext}opadmin  append "[exec] (OO Printer Admin) {${ext}opadmin}"
+        find_it ${ext}ffice && (
+            find_it ${ext}ffice   append "[exec] (Open Office)      {${ext}ffice}"
+            find_it ${ext}calc    append "[exec] (OO Calc)          {${ext}calc}"
+            find_it ${ext}writer  append "[exec] (OO Writer)        {${ext}writer}"
+            find_it ${ext}impress append "[exec] (OO Impress)       {${ext}impress}"
+            find_it ${ext}draw    append "[exec] (OO Draw)          {${ext}draw}"
+            find_it ${ext}math    append "[exec] (OO Math)          {${ext}math}"
+            find_it ${ext}padmin  append "[exec] (OO Printer Admin) {${ext}padmin}"
             find_it mrproject      append "[exec] (Mr.Project)       {mrproject}"
         )
     done
@@ -1672,12 +1678,12 @@ append_submenu "${GAMESMENU}"
         gnotski iagno knights eboard xboard scid freecell pysol \
         gtali tuxracer xpenguins xsnow xeyes smclone \
         openmortal quake2 quake3 skoosh same-gnome enigma xbill \
-        icebreaker scorched3d sol dosbox black-box enigma freeciv \
+        icebreaker scorched3d sol dosbox black-box freeciv \
         freeciv-server frozen-bubble liquidwar qt-nethack \
         nethack-gnome pathological scummvm xqf \
         wesnoth canfeild ace_canfeild golf merlin chickens \
         supertux tuxdash  neverball cube_client blackjack \
-        doom doom3 quake4 blackshades gltron kpoker concentration torrent scramble
+        doom doom3 quake4 blackshades gltron kpoker concentration torrent scramble kiki
     cli_find gnugo
 
     find_it et append "[exec] (Enemy Territory) {et}"
@@ -1685,6 +1691,22 @@ append_submenu "${GAMESMENU}"
     find_it ut2003 append "[exec] (Unreal Tournament 2003) {ut2003}"
     find_it ut2004 append "[exec] (Unreal Tournament 2004) {ut2004}"
 append_menu_end
+
+append_submenu "${SYSTEMTOOLSMENU}"
+  append_submenu "${BURNINGMENU}"
+    normal_find k3b cdbakeoven graveman xcdroast arson eroaster gcombust \
+                gtoaster kiso kover gtkcdlabel kcdlabel cdw cdlabelgen 
+    clifind     mp3burn cdrx burncenter
+  append_menu_end
+
+  normal_find firestarter gtk-lshw gproftd gpureftpd guitoo porthole gtk-iptables \
+              gtk-cpuspeedy
+  find_it    fireglcontrol   append "[exec] (ATI Config) {fireglcontrol}"
+  clifind    top
+append_menu_end
+
+
+
 
 # We'll only use this once
 ETCAPPLNK=/etc/X11/applnk
@@ -1780,7 +1802,7 @@ append_submenu "${FBSETTINGSMENU}"
 
     append_submenu ${WINDOWMANAGERS}
     #hard to properly maintain since there are so many exceptions to the rule.
-    for wm in icewm ion kde sawfish enlightenment fvwm openbox evilwm waimea xfce pekwm; do
+    for wm in icewm ion kde sawfish enlightenment fvwm openbox evilwm waimea xfce pekwm xfce4 fvwm2 blackbox ; do
         find_it start${wm} append "[restart] (${wm}) {start${wm}}" ||\
             find_it ${wm} append "[restart] (${wm}) {${wm}}"
     done
