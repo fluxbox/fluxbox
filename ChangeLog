@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/19:
+   * Windows keep relative position in ArrangeWindows (Mathias)
+     WorkspaceCmd.cc
    * Made fbgm more pure bourne-compatibel (Mathias)
      fluxbox-generate_menu.in
 *06/04/18:

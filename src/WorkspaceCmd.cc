@@ -53,9 +53,9 @@ void NextWindowCmd::execute() {
             if (mods == 0) // can't stacked cycle unless there is a mod to grab
                 screen->focusControl().nextFocus(m_option | FocusControl::CYCLELINEAR);
             else {
-                // if stacked cycling, then set a watch for 
+                // if stacked cycling, then set a watch for
                 // the release of exactly these modifiers
-                if (!fb->watchingScreen() && 
+                if (!fb->watchingScreen() &&
                     !(m_option & FocusControl::CYCLELINEAR))
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
                 screen->focusControl().nextFocus(m_option);
@@ -76,9 +76,9 @@ void PrevWindowCmd::execute() {
             if (mods == 0) // can't stacked cycle unless there is a mod to grab
                 screen->focusControl().prevFocus(m_option | FocusControl::CYCLELINEAR);
             else {
-                // if stacked cycling, then set a watch for 
+                // if stacked cycling, then set a watch for
                 // the release of exactly these modifiers
-                if (!fb->watchingScreen() 
+                if (!fb->watchingScreen()
                     && !(m_option & FocusControl::CYCLELINEAR))
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
                 screen->focusControl().prevFocus(m_option);
@@ -145,17 +145,17 @@ void ArrangeWindowsCmd::execute() {
 
     Workspace *space = screen->currentWorkspace();
     size_t win_count = space->windowList().size();
-  
-    if (win_count == 0) 
+
+    if (win_count == 0)
         return;
 
-    // TODO: choice between 
+    // TODO: choice between
     //        -  arrange using all windows on all heads
     //        -  arrange for each head
     //        -  only on current head
     const int head = screen->getCurrHead();
     Workspace::Windows::iterator win;
-    
+
     Workspace::Windows normal_windows;
     Workspace::Windows shaded_windows;
     for(win = space->windowList().begin(); win != space->windowList().end(); win++) {
@@ -173,20 +173,20 @@ void ArrangeWindowsCmd::execute() {
         return;
 
     win_count = normal_windows.size();
-    
+
     const unsigned int max_width = screen->maxRight(head) - screen->maxLeft(head);
     unsigned int max_height = screen->maxBottom(head) - screen->maxTop(head);
 
-	// try to get the same number of rows as columns.
-	unsigned int rows = int(sqrt((float)win_count));  // truncate to lower
-	unsigned int cols = int(0.99 + float(win_count) / float(rows));
-	if (max_width<max_height) {	// rotate
+    // try to get the same number of rows as columns.
+    unsigned int cols = int(sqrt((float)win_count));  // truncate to lower
+    unsigned int rows = int(0.99 + float(win_count) / float(cols));
+    if (max_width<max_height) {    // rotate
         std::swap(cols, rows);
-	}
+    }
 
     unsigned int x_offs = screen->maxLeft(head); // window position offset in x
     unsigned int y_offs = screen->maxTop(head); // window position offset in y
-    unsigned int window = 0; // current window 
+   // unsigned int window = 0; // current window
     const unsigned int cal_width = max_width/cols; // calculated width ratio (width of every window)
     unsigned int i;
     unsigned int j;
@@ -200,7 +200,7 @@ void ArrangeWindowsCmd::execute() {
             (*win)->move(x_offs, y_offs);
         else
             (*win)->move(screen->maxRight(head) - (*win)->frame().width(), y_offs);
-            
+
         y_offs += (*win)->frame().height();
     }
 
@@ -208,18 +208,41 @@ void ArrangeWindowsCmd::execute() {
     // with really little space left for the normal windows? how to handle
     // this?
     if (!shaded_windows.empty())
-        max_height -= i * (*shaded_windows.begin())->frame().height(); 
+        max_height -= i * (*shaded_windows.begin())->frame().height();
 
     const unsigned int cal_height = max_height/rows; // height ratio (height of every window)
     // Resizes and sets windows positions in columns and rows.
     for (i = 0; i < rows; ++i) {
         x_offs = screen->maxLeft(head);
-        for (j = 0; j < cols && window < win_count; ++j, ++window) {
-			if (window!=(win_count-1)) {
-	            normal_windows[window]->moveResize(x_offs, y_offs, cal_width, cal_height);
-			} else { // the last window gets everything that is left.
-	            normal_windows[window]->moveResize(x_offs, y_offs, screen->maxRight(head)-x_offs, cal_height);
-			}
+        for (j = 0; j < cols && normal_windows.size() > 0; ++j) {
+
+
+            int cell_center_x = x_offs + (x_offs + cal_width) / 2;
+            int cell_center_y = y_offs + (y_offs + cal_height) / 2;
+            unsigned int closest_dist = ~0;
+
+            Workspace::Windows::iterator closest = normal_windows.end();
+            for (win = normal_windows.begin(); win != normal_windows.end(); win++) {
+
+                int win_center_x = (*win)->frame().x() + ((*win)->frame().x() + (*win)->frame().width() / 2);
+                int win_center_y = (*win)->frame().y() + ((*win)->frame().y() + (*win)->frame().height() / 2);
+                unsigned int dist = (win_center_x - cell_center_x) * (win_center_x - cell_center_x) + 
+                                    (win_center_y - cell_center_y) * (win_center_y - cell_center_y);
+
+                if (dist < closest_dist) {
+                    closest = win;
+                    closest_dist = dist;
+                }
+            }
+
+            if (normal_windows.size() > 1) {
+                (*closest)->moveResize(x_offs, y_offs, cal_width, cal_height);
+            } else { // the last window gets everything that is left.
+                (*closest)->moveResize(x_offs, y_offs, screen->maxRight(head)-x_offs, cal_height);
+            }
+
+            normal_windows.erase(closest);
+
             // next x offset
             x_offs += cal_width;
         }
