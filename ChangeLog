@@ -1,7 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/19:
-   * Update Danish translation, da_DK
+   * Update Norwegian Bokml translation, nb_NO, sf.net patch #1393780
+     (Thanks Alexander N. Sornes, emptydoor at users.sourceforge.net)
+     nls/nb_NO/Translation.m
+   * Update Danish translation, da_DK, sf.net patch #1455023
      (Thanks Jonas Kölker, jonaskoelker at users.sourceforge.net).
      nls/da_DK/Translation.m
    * Fixes to Mouse Focus (thanks Scott Kuhl; skuhl AT cs utah edu)
