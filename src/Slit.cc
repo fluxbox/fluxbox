@@ -675,16 +675,10 @@ void Slit::reconfigure() {
     else
         frame.height += bevel_width*2;
 
-    reposition();
     Display *disp = FbTk::App::instance()->display();
 
     frame.window.setBorderWidth(theme().borderWidth());
     frame.window.setBorderColor(theme().borderColor());
-    // did we actually use slit slots
-    if (num_windows == 0)
-        frame.window.hide();
-    else
-        frame.window.show();
 
     Pixmap tmp = frame.pixmap;
     FbTk::ImageControl &image_ctrl = screen().imageControl();
@@ -709,7 +703,14 @@ void Slit::reconfigure() {
     } else {
         frame.window.setAlpha(*m_rc_alpha);
     }
-    clearWindow();
+    // reposition clears the bg
+    reposition();
+
+    // did we actually use slit slots
+    if (num_windows == 0)
+        frame.window.hide();
+    else
+        frame.window.show();
 
     int x = 0, y = 0;
     height_inc = false;
@@ -908,7 +909,9 @@ void Slit::reposition() {
         frame.window.moveResize(frame.x,  frame.y,
                                 frame.width, frame.height);
     }
-
+    updateBackground(true);
+    if (*m_rc_alpha != 255)
+        clearWindow();
 }
 
 
@@ -1343,6 +1346,7 @@ void Slit::updateAlpha() {
         frame.window.setOpaque(*m_rc_alpha);
     } else {
         frame.window.setAlpha(*m_rc_alpha);
+        updateBackground(true);
         clearWindow();
     }
 }

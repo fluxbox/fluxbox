@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/21:
+   * Minor fixes to slit transparency (esp if autohidden) (Simon)
+     Slit.cc
    * php_coder tells me that the nb_NO patch was somewhat broken
      Revert it for now, pending another update ... (Simon)
      nls/nb_NO/Translation.m
