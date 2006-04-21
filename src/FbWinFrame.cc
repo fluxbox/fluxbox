@@ -562,6 +562,8 @@ FbWinFrame::ButtonId FbWinFrame::createTab(const std::string &title, FbTk::Comma
 
     button->setTextPadding(tabs_padding);
     button->setJustify(theme().justify());
+    button->setBorderColor(theme().border().color());
+    button->setBorderWidth(m_window.borderWidth());
 
     m_tab_container.insertItem(button);
 
@@ -1514,6 +1516,15 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
     gripRight().setBorderWidth(border_width);
     gripRight().setBorderColor(theme().border().color());
 
+    // and the labelbuttons
+    Container::ItemList::iterator btn_it = m_tab_container.begin();
+    Container::ItemList::iterator btn_it_end = m_tab_container.end();
+    for (; btn_it != btn_it_end; ++btn_it) {
+        (*btn_it)->setBorderWidth(border_width);
+        (*btn_it)->setBorderColor(theme().border().color());
+    }
+    m_tab_container.update();
+
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);
 
@@ -1523,7 +1534,6 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
 
 void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
 
-    button.setBorderWidth(1);
     button.setGC(theme().labelTextFocusGC());
     button.setJustify(theme().justify());
     button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
@@ -1537,7 +1547,6 @@ void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
 
 void FbWinFrame::applyActiveLabel(FbTk::TextButton &button) {
 
-    button.setBorderWidth(1);
     button.setGC(theme().labelTextActiveGC());
     button.setJustify(theme().justify());
     button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
@@ -1553,7 +1562,6 @@ void FbWinFrame::applyUnfocusLabel(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextUnfocusGC());
     button.setJustify(theme().justify());
-    button.setBorderWidth(1);
     button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
 
     if (m_labelbutton_unfocused_pm != 0) {

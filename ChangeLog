@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/21:
+   * Make border between tabs same width/color as window border (Simon)
+     (sf.net #1473870)
+     FbWinFrame.cc
 *06/04/19:
    * Add a bunch of apps to fluxbox-generate_menu, plus a new System 
      Tools menu (thanks Ku8aZ at users.sourceforge.net)
