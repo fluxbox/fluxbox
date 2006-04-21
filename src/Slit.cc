@@ -909,7 +909,7 @@ void Slit::reposition() {
         frame.window.moveResize(frame.x,  frame.y,
                                 frame.width, frame.height);
     }
-    updateBackground(true);
+    frame.window.updateBackground(true);
     if (*m_rc_alpha != 255)
         clearWindow();
 }
@@ -1346,7 +1346,7 @@ void Slit::updateAlpha() {
         frame.window.setOpaque(*m_rc_alpha);
     } else {
         frame.window.setAlpha(*m_rc_alpha);
-        updateBackground(true);
+        frame.window.updateBackground(true);
         clearWindow();
     }
 }
