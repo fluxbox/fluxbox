@@ -118,8 +118,10 @@ FbWindow::FbWindow(Window client):FbDrawable(), m_parent(0),
 FbWindow::~FbWindow() {
 
     // Need to free xrender pics before destroying window
-    if (m_transparent.get() != 0)
+    if (m_transparent.get() != 0) {
+        removeAlphaWin(*this);
         m_transparent.reset(0);
+    }
 
     if (m_window != 0) {
         // so we don't get any dangling eventhandler for this window
@@ -127,6 +129,7 @@ FbWindow::~FbWindow() {
         if (m_destroy)
             XDestroyWindow(display(), m_window);
     }
+
 }
 
 void FbWindow::setBackgroundColor(const FbTk::Color &bg_color) {
@@ -319,8 +322,10 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
 void FbWindow::setAlpha(unsigned char alpha) {
 #ifdef HAVE_XRENDER
     if (FbTk::Transparent::haveComposite()) {
-        if (m_transparent.get() != 0)
+        if (m_transparent.get() != 0) {
+            removeAlphaWin(*this);
             m_transparent.reset(0);
+        }
 
         // don't setOpaque, let controlling objects do that
         // since it's only needed on toplevel windows
@@ -330,10 +335,13 @@ void FbWindow::setAlpha(unsigned char alpha) {
 
         if (m_transparent.get() == 0 && alpha < 255) {
             m_transparent.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()), window(), alpha, screenNumber()));
+            addAlphaWin(*this);
         } else if (alpha < 255 && alpha != m_transparent->alpha())
             m_transparent->setAlpha(alpha);
-        else if (alpha == 255)
+        else if (alpha == 255) {
+            removeAlphaWin(*this);
             m_transparent.reset(0); // destroy transparent object
+        }
     }
 #endif // HAVE_XRENDER
 }
@@ -590,6 +598,29 @@ void FbWindow::sendConfigureNotify(int x, int y,
 
     XSendEvent(disp, window(), False, StructureNotifyMask, &event);
 
+}
+
+FbWindow::FbWinList FbWindow::m_alpha_wins;
+
+void FbWindow::addAlphaWin(FbWindow &win) {
+    m_alpha_wins.insert(&win);
+}
+
+void FbWindow::removeAlphaWin(FbWindow &win) {
+    FbWinList::iterator it = m_alpha_wins.find(&win);
+    if (it != m_alpha_wins.end())
+        m_alpha_wins.erase(it);
+}
+
+void FbWindow::updatedAlphaBackground(int screen) {
+    FbWinList::iterator it = m_alpha_wins.begin();
+    FbWinList::iterator it_end = m_alpha_wins.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->screenNumber() == screen) {
+            (*it)->updateBackground(false);
+            (*it)->clear();
+        }
+    }
 }
 
 bool operator == (Window win, const FbWindow &fbwin) {

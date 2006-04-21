@@ -25,6 +25,7 @@
 #include "App.hh"
 #include "GContext.hh"
 #include "Transparent.hh"
+#include "FbWindow.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -390,9 +391,14 @@ void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
 void FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
     if (!m_root_pixmaps) {
         m_root_pixmaps = new Pixmap[ScreenCount(display())];
+        for (int i=0; i < ScreenCount(display()); ++i)
+            m_root_pixmaps[i] = None;
     }
 
-    m_root_pixmaps[screen_num] = pm;
+    if (m_root_pixmaps[screen_num] != pm) {
+        m_root_pixmaps[screen_num] = pm;
+        FbWindow::updatedAlphaBackground(screen_num);
+    }
 }
 
 Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {

@@ -29,6 +29,7 @@
 #include <X11/Xlib.h>
 #include <memory>
 #include <string>
+#include <set>
 
 namespace FbTk {
 
@@ -194,6 +195,8 @@ public:
     /// forces full background change, recalcing of alpha values if necessary
     void updateBackground(bool only_if_alpha);
 
+    static void updatedAlphaBackground(int screen);
+
 protected:
     /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);
@@ -226,6 +229,12 @@ private:
     Pixmap m_lastbg_pm;
 
     FbWindowRenderer *m_renderer;
+
+    static void addAlphaWin(FbWindow &win);
+    static void removeAlphaWin(FbWindow &win);
+
+    typedef std::set<FbWindow *> FbWinList;
+    static FbWinList m_alpha_wins;
 };
 
 bool operator == (Window win, const FbWindow &fbwin);
