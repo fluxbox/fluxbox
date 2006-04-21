@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/21:
+   * php_coder tells me that the nb_NO patch was somewhat broken
+     Revert it for now, pending another update ... (Simon)
+     nls/nb_NO/Translation.m
    * Update all transparent things when bg changes (Simon)
      (fixes sf.net #1446516 - slit transparency on start)
      FbTk/... FbPixmap.cc FbWindow.hh/cc

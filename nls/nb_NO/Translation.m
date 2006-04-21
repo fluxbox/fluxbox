@@ -49,7 +49,7 @@ $set 3 #Common
 
 $set 4 #Configmenu
 
-1 Antialias
+1 Kantutjevning
 2 Hev automatisk
 3 Klikk hever
 4 Klikk for fokus
@@ -130,7 +130,6 @@ $set 10 #Menu
 7 Plassering
 8 Last oppsett på nytt
 9 Start på nytt
-10 xterm
 
 $set 11 #Remember
 
@@ -151,10 +150,7 @@ $set 12 #Screen
 
 1 BScreen::BScreen: feil ved spørring av X-tjeneren;\n	en annen vindusbehandler kjører allerede på visningsenheten
 2 B: %4d x H: %4d
-3 B: 0000 x H: 0000
-4 BScreen::BScreen: kontrollerer skjerm %d ved hjelp av visuell 0x%lx, dybde %d\n
-5 X: %4d x Y: %4d
-6 0: 0000 x 0: 0000
+3 BScreen::BScreen: kontrollerer skjerm %d ved hjelp av visuell 0x%lx, dybde %d\n
 
 $set 13 #Slit
 
@@ -215,10 +211,9 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 %s: feil: må oppgi en av: -solid, -mod, -gradient\n
+1 feil: må oppgi en av: -solid, -mod, -gradient\n
 2 Klarte ikke opprette pikselkartatomer, gir opp.
-3 %s 2.0: kopirett 1997-2000 Brad Hughes\n\n\
--display <streng>        tilkobling til visningsenhet\n\
+3 -display <streng>        tilkobling til visningsenhet\n\
 -mod <x> <y>             «modula»-mønster\n\
 -foreground, -fg <farge> «modula»-forgrunnsfarge\n\
 -background, -bg <farge> «modula»-bakgrunnsfarge\n\n\
@@ -230,7 +225,7 @@ $set 18 #fbsetroot
 
 $set 19 #main
 
-1 feil: «-display» krever et argument\n
+1 feil: «-display» krever et argument
 2 Bad Alloc
 3 Bad cast
 4 Utenfor rekkevidde
@@ -240,15 +235,15 @@ $set 19 #main
 8 feil: «-log» trenger et argument
 9 Loggfil
 10 Logger til
-11 feil: «-rc» krever et argument\n
-12 FluxBox %s: kopirett %s Henrik Kinnunen\n\n\
+11 feil: «-rc» krever et argument
+13 FluxBox %s: kopirett %s Henrik Kinnunen\n\n\
 -display <streng>\t\tbruk visningsenhetforbindelse.\n\
 -rc <streng>\t\t\tbruk alternativ ressursfil.\n\
 -version\t\t\tvis versjonnummer og avslutt.\n\
 -info\t\t\t\tvis litt nyttig informasjon.\n\
 -log <filnavn>\t\t\tlogg utdata til fil.\n\
 -help\t\t\t\tvis denne hjelpeteksten og avslutt.\n\n
-13 advarsel: klarte ikke angi miljøvariabelen «DISPLAY»
+14 advarsel: klarte ikke angi miljøvariabelen «DISPLAY»
 
 $set 20
 
