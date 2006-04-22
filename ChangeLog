@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/22:
+   * static CommandParser could be used after destruction (Simon)
+     Fixes sf.net #1474444, segfault when DISPLAY not set
+     CommmandParser.hh/cc
    * Minor cosmetic changes, thanks Semushin Slava (php-coder AT ngs ru)
      main.cc Screen.cc util/startfluxbox.in
    * First draft of new docs in docs/asciidoc (Mathias)

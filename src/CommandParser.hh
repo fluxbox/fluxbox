@@ -54,6 +54,8 @@ public:
     /// @return parses and returns a command matching the line
     FbTk::Command *parseLine(const std::string &line);
 
+    CommandParser();
+
     /// @return instance of command parser
     static CommandParser &instance();
     /// @return map of factorys
@@ -71,7 +73,8 @@ private:
                              const std::string &arguments);
     
     CommandFactoryMap m_commandfactorys; ///< a string to factory map
-    
+
+    static CommandParser *s_singleton;
 };
 
 #endif // COMMANDPARSER_HH

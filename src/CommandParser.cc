@@ -32,6 +32,9 @@ using std::vector;
 using FbTk::StringUtil::removeFirstWhitespace;
 using FbTk::StringUtil::toLower;
 
+
+CommandParser *CommandParser::s_singleton = 0;
+
 CommandFactory::CommandFactory() {
 
 }
@@ -39,15 +42,24 @@ CommandFactory::CommandFactory() {
 CommandFactory::~CommandFactory() {
     // remove all associations with this factory
     CommandParser::instance().removeAssociation(*this);
+
 }
 
 void CommandFactory::addCommand(const string &command_name) {
     CommandParser::instance().associateCommand(command_name, *this);
 }
 
+// ensure it is singleton
+CommandParser::CommandParser() {
+    if (s_singleton != 0)
+        throw std::string("CommandParser currently meant ot be singleton");
+}
+
 CommandParser &CommandParser::instance() {
-    static CommandParser singleton;
-    return singleton;
+    if (s_singleton == 0)
+        s_singleton = new CommandParser();
+
+    return *s_singleton;
 }
 
 FbTk::Command *CommandParser::parseLine(const string &line) {
@@ -105,4 +117,7 @@ void CommandParser::removeAssociation(CommandFactory &factory) {
         m_commandfactorys.erase(commands.back());
         commands.pop_back();
     }
+
+    if (m_commandfactorys.empty())
+        delete s_singleton;
 }
