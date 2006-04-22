@@ -444,6 +444,9 @@ void Menu::updateMenu(int active_index) {
 
     // must update main window size whether visible or not
     // the rest can wait until the end
+    if (menu.window.width() != new_width)
+        m_need_update = true;
+
     menu.window.resize(new_width, new_height);
 
     if (!isVisible())

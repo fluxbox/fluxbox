@@ -114,7 +114,7 @@ void MenuItem::draw(FbDrawable &draw,
         theme.frameFont().drawText(draw, // drawable
                                    theme.screenNum(),
                                    tgc.gc(),
-                                   m_label.c_str(), m_label.size(), // text string and lenght
+                                   label().c_str(), label().size(), // text string and lenght
                                    text_x, text_y); // position
     }
 

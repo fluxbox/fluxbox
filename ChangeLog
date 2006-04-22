@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/22:
+   * Fix workspace menu corruption when window title changes (Simon)
+     sf.net bug #1113668
+     Menu.cc MenuItem.cc
    * Fix crash when toolbar disabled (Simon)
      Slit.hh/cc Screen.cc
    * Couple of memory-based fixes from valgrind (Simon)
