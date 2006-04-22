@@ -40,7 +40,7 @@ else
 # You can set your favourite wallpaper here if you don't want
 # to do it from your style.
 #
-# bsetbg -f $HOME/pictures/wallpaper.png
+# fbsetbg -f $HOME/pictures/wallpaper.png
 #
 # This sets a black background
 

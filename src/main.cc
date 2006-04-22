@@ -219,7 +219,7 @@ int main(int argc, char **argv) {
             // print program usage and command line options
             printf(_FBTEXT(main, Usage,
                            "Fluxbox %s : (c) %s Henrik Kinnunen\n"
-                           "Website: http://www.fluxbox.org/ \n\n"
+                           "Website: http://www.fluxbox.org/\n\n"
                            "-display <string>\t\tuse display connection.\n"
                            "-screen <all|int,int,int>\trun on specified screens only.\n"
                            "-rc <string>\t\t\tuse alternate resource file.\n"

@@ -610,9 +610,7 @@ void BScreen::initWindows() {
 
 #ifdef DEBUG
             cerr<<"BScreen::initWindows(): j = "<<j<<" i = "<<i<<" nchild = "<<nchild<<endl;
-#endif // DEBUG
 
-#ifdef DEBUG
             if (j < nchild)
                 cerr<<"BScreen::initWindows(): postpone creation of 0x"<<hex<<children[j]<<dec<<endl;
             else

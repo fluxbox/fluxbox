@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/22:
+   * Minor cosmetic changes, thanks Semushin Slava (php-coder AT ngs ru)
+     main.cc Screen.cc util/startfluxbox.in
    * First draft of new docs in docs/asciidoc (Mathias)
    * Cosmetics to Workspace.hh CurrentWindowCmd.cc
 *06/04/21:
