@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/22:
+   * First draft of new docs in docs/asciidoc (Mathias)
+   * Cosmetics to Workspace.hh CurrentWindowCmd.cc
 *06/04/21:
    * Minor fixes to slit transparency (esp if autohidden) (Simon)
      Slit.cc
@@ -213,6 +216,7 @@ Changes for 0.9.16:
      fluxbox.cc Screen.hh/cc Window.hh/cc FbWinFrame.hh/cc Remember.cc
      Container.hh/cc FbTk/XLayer.hh/cc XLayerItem.cc fluxbox-nls.hh
      RowSmart/ColSmart/UnderMousePlacement.cc WinButton.cc
+
 -------------------------------------------------------------
 Changes for 0.9.15:
 *06/03/19:
@@ -377,6 +381,8 @@ Changes for 0.9.15:
      src/ScreenResources.cc
    * Use fbsetroot in Default-Styles (Mathias)
      data/styles/*
+
+-------------------------------------------------------------
 Changes for 0.9.14:
 *05/09/12:
    * Fixes #1281708, MenuIcon doesnt scale properly (thanx Erik-Jan)

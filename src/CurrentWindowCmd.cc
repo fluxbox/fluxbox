@@ -53,15 +53,15 @@ void SendToWorkspaceCmd::real_execute() {
 }
 
 void SendToNextWorkspaceCmd::real_execute() {
-    const int ws_nr = 
-        ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) % 
+    const int ws_nr =
+        ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) %
           fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
 }
 
 void SendToPrevWorkspaceCmd::real_execute() {
     int ws_nr = fbwindow().screen().currentWorkspaceID() - m_workspace_num;
-    if ( ws_nr < 0 ) 
+    if ( ws_nr < 0 )
         ws_nr += fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
 }
@@ -71,15 +71,15 @@ void TakeToWorkspaceCmd::real_execute() {
 }
 
 void TakeToNextWorkspaceCmd::real_execute() {
-    unsigned int workspace_num= 
-        ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) % 
+    unsigned int workspace_num=
+        ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) %
           fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
 }
 
 void TakeToPrevWorkspaceCmd::real_execute() {
     int workspace_num= fbwindow().screen().currentWorkspaceID() - m_workspace_num;
-    if ( workspace_num < 0 ) 
+    if ( workspace_num < 0 )
         workspace_num += fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
 }
@@ -125,12 +125,12 @@ ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
     m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
 void ResizeCmd::real_execute() {
-  
-    int w = std::max<int>(static_cast<int>(fbwindow().width() + 
-                                      m_step_size_x * fbwindow().winClient().width_inc), 
+
+    int w = std::max<int>(static_cast<int>(fbwindow().width() +
+                                      m_step_size_x * fbwindow().winClient().width_inc),
                      fbwindow().frame().titlebarHeight() * 2 + 10);
-    int h = std::max<int>(static_cast<int>(fbwindow().height() + 
-                                      m_step_size_y * fbwindow().winClient().height_inc), 
+    int h = std::max<int>(static_cast<int>(fbwindow().height() +
+                                      m_step_size_y * fbwindow().winClient().height_inc),
                      fbwindow().frame().titlebarHeight() + 10);
     fbwindow().resize(w, h);
 }
@@ -143,7 +143,7 @@ void MoveToCmd::real_execute() {
     int y = 0;
 
     const int head = fbwindow().screen().getHead(fbwindow().fbWindow());
-    
+
     if (m_refc & MoveToCmd::LOWER)
         y = fbwindow().screen().maxBottom(head) - fbwindow().height() - 2 * fbwindow().frame().window().borderWidth() - m_step_size_y;
     if (m_refc & MoveToCmd::UPPER)
@@ -157,7 +157,7 @@ void MoveToCmd::real_execute() {
         x = fbwindow().x();
     if (m_refc & MoveToCmd::IGNORE_Y)
         y = fbwindow().y();
-    
+
     fbwindow().move(x, y);
 }
 

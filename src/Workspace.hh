@@ -22,8 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef	 WORKSPACE_HH
-#define	 WORKSPACE_HH
+#ifndef     WORKSPACE_HH
+#define     WORKSPACE_HH
 
 
 
@@ -42,7 +42,7 @@ class FluxboxWindow;
 class WinClient;
 
 /**
-	Handles a single workspace
+    Handles a single workspace
 */
 class Workspace:private FbTk::NotCopyable, private FbTk::Observer {
 public:
@@ -51,7 +51,7 @@ public:
     Workspace(BScreen &screen, FbTk::MultLayers &layermanager, const std::string &name,
               unsigned int workspaceid = 0);
     ~Workspace();
-	
+
     void setLastFocusedWindow(FluxboxWindow *w);
 
     ///   Set workspace name
@@ -66,19 +66,19 @@ public:
     void updateClientmenu();
 
     BScreen &screen() { return m_screen; }
-    const BScreen &screen() const { return m_screen; }	
+    const BScreen &screen() const { return m_screen; }
 
     FluxboxWindow *lastFocusedWindow() { return m_lastfocus; }
-    const FluxboxWindow *lastFocusedWindow() const { return m_lastfocus; }	
+    const FluxboxWindow *lastFocusedWindow() const { return m_lastfocus; }
 
-    inline FbTk::Menu &menu() { return m_clientmenu; }
-    inline const FbTk::Menu &menu() const { return m_clientmenu; }
-    ///	name of this workspace
-    inline const std::string &name() const { return m_name; }
+    FbTk::Menu &menu() { return m_clientmenu; }
+    const FbTk::Menu &menu() const { return m_clientmenu; }
+    ///    name of this workspace
+    const std::string &name() const { return m_name; }
     /**
        @return the number of this workspace, note: obsolete, should be in BScreen
     */
-    inline unsigned int workspaceID() const { return m_id; }	
+    unsigned int workspaceID() const { return m_id; }
 
     const Windows &windowList() const { return m_windowlist; }
     Windows &windowList() { return m_windowlist; }
@@ -98,14 +98,14 @@ private:
 
     typedef std::vector<std::string> Group;
     typedef std::vector<Group> GroupList;
-	
+
     static GroupList m_groups; ///< handle auto groupings
 
     FbTk::MultLayers &m_layermanager;
     Windows m_windowlist;
 
     std::string m_name;  ///< name of this workspace
-    unsigned int m_id;	///< id, obsolete, this should be in BScreen
+    unsigned int m_id;    ///< id, obsolete, this should be in BScreen
 
 };
 
