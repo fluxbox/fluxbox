@@ -60,7 +60,7 @@ STARTING FLUXBOX
 fluxbox(1) comes with a program called startfluxbox(8) usually located wherever
 you installed fluxbox. This script provides you with many options and
 variables that can be set when starting fluxbox. To actually call fluxbox and
-begin using it, you should place "exec startfluxbox" in your ~/.xinitrc or 
+begin using it, you should place "exec startfluxbox" in your ~/.xinitrc or
 ~/.xsession (depending on your distributions and/or display manager) as the
 last executed command. This is assuming that the location of fluxbox(1) and
 startfluxbox(8) are in your shell's $PATH. Also note that you may need to
@@ -83,7 +83,7 @@ USING FLUXBOX
 When using fluxbox for the first time, users who are more accustomed to
 full desktop environments such as KDE or Gnome may be a little surprised by
 the minimal screen content. fluxbox is designed to be fast and powerful, so it
-may take a bit of getting used to -- however, the rewards are worthwhile. 
+may take a bit of getting used to -- however, the rewards are worthwhile.
 user.
 We'll give a quick summary of the common things in this section. However, we
 recommend that you consult the referenced sections of this manual to further
@@ -93,7 +93,7 @@ Root Window (Main)
 ~~~~~~~~~~~~~~~~~~
 Looking at the fluxbox desktop immediately after startup you'll generally
 see only one thing: The toolbar. If you were to right click (mouse button
-3) somewhere else blank, you would be able to access the RootMenu, a 
+3) somewhere else blank, you would be able to access the RootMenu, a
 middle click (mouse button 2) on the desktop shows you the WorkspaceMenu.
 
 RootMenu and WorkspaceMenu
@@ -183,8 +183,8 @@ its titlebar you can press (and hold!)
     ALT + Left Mousebutton (mouse button 1)
 
 and move it anywhere in the current workspace. This key combination can
-also be used to raise a partially visible window. 
-    
+also be used to raise a partially visible window.
+
 The key combination
 
     ALT + Right Mousebutton (mouse button 3)
@@ -193,6 +193,16 @@ will allow you to resize the window. These can be disabled in the
 resource file with:
 
     session.session0.useMod1: <boolean>
+
+You can also alter how resizing is done.  By default, you drag the
+bottom right corner.  You can drag the corner closest to the mouse
+pointer instead if you set
+
+    session.screen0.resizeMode: Quadrant
+
+or all corners at the same time if you set it to:
+
+    session.screen0.resizeMode: Center
 
 MENUS
 -----
@@ -204,7 +214,7 @@ menu file in ~/.fluxbox . Once you've created your own menu file, you'll want
 to make sure that you properly declare this location in your `init' file so
 that fluxbox knows where to look. The value you'll want to add or change is:
 
-    session.session0.menuFile: <menufile>
+    session.menuFile: <menufile>
 
 For this change to take effect, fluxbox must be restarted.  Be sure that your
 menu is usable, then choose `Restart' from the default fluxbox root menu.
@@ -272,37 +282,37 @@ if not all, of those here.
 Configuration Menu
 ~~~~~~~~~~~~~~~~~~
 This menu offers the opportunity to set up fluxbox. It ca also achieved by
-editing the init file, but this is a easier and faster way to most users. 
-    
+editing the init file, but this is a easier and faster way to most users.
+
 - *Focus Model*:
     Please read the FOCUS MODEL section at the end of this manual.
-        
+
 - *Slit*:
     This Menu can be opend by right clicking the slit (if visible).
-        
+
 - *Placement*:
     This lets you set the position of the slit.
-        
+
 - *Layer*:
     Look above for the layer priorities.
-        
+
 - *Auto hide*:
     If enabled, the slit will disappear after a given amount of time and hide
     from the view of the user. You can make it appear if you move the mouse to
     the edge of the desktop where the slit is psitioned.
-        
+
 - *Maximize over*:
     If this is enabled, all windows, if you maximize them, will stretch
     over/under the slit. Otherwise the will be limited to the slit's edge.
-        
+
 - *Alpha*:
     By changing the value the slit (only the decoration not the apps in the
     slit) will become transparent.  0 (transparent) - 255 (opaque)
-    
+
 - *Slit direction*:
     Changing the value will set the slit's direction for ordering apps sitting
     in the slit. There is no effect with only on application.
-        
+
 - *Clients*:
     This submenu lets you reorder the the applications running in the
     slit. You are able to hide apps from the slit by unselecting them in
@@ -310,47 +320,47 @@ editing the init file, but this is a easier and faster way to most users.
     by selecting them in the list.  The "Save SlitList" option saves the
     new order to you slitlist located in ~/.fluxbox (useful if you
     reordered the apps with the cycle option).
-        
+
 - *Toolbar*:
     Please take a look at the "Configuration via the Toolbar Menu" part of the
     TOOLBAR section.
-    
+
 - *Image Dithering*:
     Enable or disable dithering of images.
-    
+
 - *Opaque Window Moving*:
     If enabled, you will see the window content while dragging it. Otherwise
     the window will be shown as a "border".
-        
+
 - *Full Maximization*:
     Enabling this will override the seperate settings for the slit/toolbar.
     Windows will always maximize over/under both of them.
-    
+
 - *Focus New Window*:
     If enabled, a newly opend window will gain focus.
-        
+
 - *Focus Last Window on Workspace*:
     This focuses the last window if switching back to a worspace if the option
     is enabled.
-                
+
 - *Windows Warping*:
     If enabled, you can drag windows from one to another workspace.
-        
+
 - *Desktop MouseWheel Switching*:
     You will be able to change the workspace with your mousewheel if used on
-    the desktop or over the toolbar if the option is enabled. 
-        
+    the desktop or over the toolbar if the option is enabled.
+
 - *Decorate Transient Windows*:
     With this option enabled all temporary windows will have a border and
     grips.
-        
+
 - *Click Raises*:
     If enabled a click anywhere on a window area (including the decorations)
     will raise it. Otherwise you can only raise it by clicking the titlebar.
-        
+
 - *Transparency*:
-    This sets the transparency for an focused, unfocused window and the menu.         
-            
+    This sets the transparency for an focused, unfocused window and the menu.
+
 Window Menu
 ~~~~~~~~~~~
 The Window menu is displayed when you right click on the titlebar or
@@ -672,7 +682,7 @@ visible:
 - *Iconbar Mode*:
 
     Specifies the mode of the iconbar:
-    
+
     - *None*:
         will show not a single window
     - *Icons*:
@@ -685,7 +695,7 @@ visible:
         will only show the windows of the current workspace that are
         minimzed (iconified)
     - *WorkspaceNoIcons*:
-        will only show the windows of the current workspace that are not 
+        will only show the windows of the current workspace that are not
         minimzed (iconified)
     - *Workspace*:
         will show all windows of the current workspace
@@ -702,7 +712,7 @@ visible:
     - *Relative*:
         all Icons/Windows will be averaged so that the iconbar will always be
         completely filled
-    - *Right*: 
+    - *Right*:
         all Icons/Windows will be left aligned according to the width set in
         init
 
@@ -896,7 +906,12 @@ session.screen0.tab.width: 64
 session.screen0.followModel: Ignore
 session.screen0.rowPlacementDirection: LeftToRight
 session.screen0.colPlacementDirection: TopToBottom
-session.screen0.resizeMode: Bottom
+session.screen0.resizeMode: Bottom|Quadrant|Center
+      Setting this resource to 'Quadrant' makes resizing by ALT +
+      Right Mousebutton (mouse button 3) grab the corner closest
+      to the mouse pointer instead of the bottom right corner.
+      'Center' resizes all corners at the same time.
+
 session.screen0.focusModel: ClickToFocus
 session.screen0.autoRaise: <boolean>
 session.screen0.clickRaises: <boolean>
@@ -1090,8 +1105,12 @@ Currently Focused Window Commands
 - Stick
 - StickWindow
 - ToggleDecor
+- TakeToWorkspace <number>
+- TakeToNextWorkspace <offset>
+- TakeToPrevWorkspace <offset>
 - SendToWorkspace <number>
-- SentToWorkspace <number>
+- SendToNextWorkspace <offset>
+- SendToPrevWorkspace <offset>
 - KillWindow
 - NextTab
 - PrevTab
@@ -1126,9 +1145,17 @@ Special Commands
 
 Couple of things
 ~~~~~~~~~~~~~~~~
-- SentToWorkspace:
+- TakeToWorkspace:
     Will send you along with the window to the selected workspace.
     SendToWorkspace just sends the window.
+
+- TakeToNextWorkspace <offset>:
+    Will send you and the window to workspace number <current +
+    offset>;  that is, move you and the window <offset> spaces to the
+    right (offset defaults to 1).  SendToNextWorkspace does the same,
+    except that it only sends the window (as for SendToWorkspace).
+    TakeToPrevWorkspace and SendToPrevWorkspace work similarly, except
+    moving to the previous windows, not the next one.
 
 - PrevWindow/NextWindow parameters take an integer:
     0 or unspecified = Default/current behavior - no skipping
@@ -1213,9 +1240,9 @@ mouse clicks on them.
 Thus, there are four main options when choosing a focus model. You should choose
 one of the first two and one of the last two. They are:
 
-- *Click To Focus*: 
+- *Click To Focus*:
     click to focus windows
-- *Mouse Focus*: 
+- *Mouse Focus*:
     window focus follows mouse
 - *ClickTabFocus*:
     click to focus tabs
@@ -1278,7 +1305,7 @@ time (default is to match all matching windows).
 # match an rdesktop window to a particular host
 [app] (title=rdesktop - hostname.*)
 ...................................................................
-    
+
 The following are the properties that can be defined in each [app] entry.
 Each name must be enclosed in square brackets, and the value is generally in
 curly brackets:
@@ -1292,7 +1319,7 @@ curly brackets:
 
 - [Position] (*refspot*)) {X Y}:
     Position the application at a particular spot:
-    +   
+    +
         * WINCENTER
         * CENTER
         * UPPERLEFT
@@ -1300,13 +1327,13 @@ curly brackets:
         * LOWERLEFT
         * LOWERRIGHT
     +
-    
+
     You can optionally specify what X and Y are relative to. By default the
     upper left corner is placed at screen coordinates (X, Y). If you specify
     LOWERRIGHT, then the lower right corner of the window is positioned (X,Y)
     pixels from the lower right of the screen. Note that CENTER puts the top
     left corner of the window relative to the center of the screen (WINCENTER
-    acts like the rest - positions the center of the window relative to the 
+    acts like the rest - positions the center of the window relative to the
     center of the screen).
 
 - [Layer] {Layernum}:
@@ -1339,7 +1366,7 @@ curly brackets:
     o   BORDER - like NONE except keep the X window border
     o   TINY - titlebar with an iconify button
     o   TOOL - titlebar only
-    
+
     A bitmask can also be used for fine-grained control.  The bits are (from
     "1" to 1<<10): titlebar, handle/grips, border, iconify button, maximize
     button, close button, menu enabled, sticky button, shade button, tabbing
@@ -1374,7 +1401,7 @@ o   name - the name of the window (the first field of WM_CLASS)
 o   class - class of the window (the second field of WM_CLASS)
 o   title - title of the window ( WM_NAME property)
 o   role - role of the window (the WM_WINDOW_ROLE property)
-    
+
 If no `property' is specified, the name property is assumed. You can find out
 the value for these fields for a particular window by running xprop(1).
 
@@ -1475,7 +1502,7 @@ wmdrawer &
 exec fluxbox
 ..............
 
-NOTE: 
+NOTE:
 You can also put all of these in the startfluxbox(8) script. This way you
 would only need to specify: exec startfluxbox in your ~/.xinitrc.
 
