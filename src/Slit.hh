@@ -147,7 +147,7 @@ private:
     FbTk::Timer m_timer;
 
     SlitClients m_client_list;
-    FbMenu m_slitmenu, m_placement_menu, m_clientlist_menu;
+    FbMenu m_slitmenu, m_clientlist_menu;
     std::auto_ptr<LayerMenu> m_layermenu;
     std::string m_filename;
 

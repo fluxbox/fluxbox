@@ -260,9 +260,6 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_slitmenu(scr.menuTheme(), 
                  scr.imageControl(),
                  *scr.layerManager().getLayer(Layer::MENU)),
-      m_placement_menu(scr.menuTheme(),
-                       scr.imageControl(),
-                       *scr.layerManager().getLayer(Layer::MENU)),
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
                         *scr.layerManager().getLayer(Layer::MENU)),
@@ -274,6 +271,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                                     "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False)), //KDE v2.x
 
       m_layeritem(0),
+
       m_slit_theme(new SlitTheme(scr.rootWindow().screenNumber())),
       m_strut(0),
       // resources
@@ -300,6 +298,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     m_slit_theme->reconfigSig().attach(this);
     scr.resizeSig().attach(this);
     scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
+
+    scr.addConfigMenu(_FBTEXT(Slit, Slit, "Slit", "The Slit"), m_slitmenu);
 
     frame.pixmap = None;
     // move the frame out of sight for a moment
@@ -1236,10 +1236,17 @@ void Slit::setupMenu() {
     FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
     FbTk::RefCount<FbTk::Command> save_and_reconfigure_slit(s_a_reconf_slit_macro);
 
+
+    // it'll be freed by the slitmenu (since not marked internal)
+    FbMenu *placement_menu = new FbMenu(m_screen.menuTheme(),
+                                        m_screen.imageControl(),
+                                        *m_screen.layerManager().getLayer(::Layer::MENU));
+    
+
     // setup base menu
     m_slitmenu.setLabel(_FBTEXT(Slit, Slit, "Slit", "The Slit"));
     m_slitmenu.insert(_FBTEXT(Menu, Placement, "Placement", "Title of Placement menu"),
-                      &m_placement_menu);
+                      placement_menu);
 
     m_slitmenu.insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), m_layermenu.get());
 
@@ -1287,10 +1294,11 @@ void Slit::setupMenu() {
     m_slitmenu.updateMenu();
 
     // setup sub menu
-    m_placement_menu.setLabel(_FBTEXT(Slit, Placement, "Slit Placement", "Slit Placement"));
-    m_placement_menu.setMinimumSublevels(3);
+    placement_menu->setLabel(_FBTEXT(Slit, Placement, "Slit Placement", "Slit Placement"));
+    placement_menu->setMinimumSublevels(3);
     m_layermenu->setInternalMenu();
     m_clientlist_menu.setInternalMenu();
+    m_slitmenu.setInternalMenu();
    
     typedef pair<const char *, Slit::Placement> PlacementP;
     typedef list<PlacementP> Placements;
@@ -1314,10 +1322,10 @@ void Slit::setupMenu() {
         Slit::Placement placement = place_menu.front().second;
 
         if (str == 0) {
-            m_placement_menu.insert("");
-            m_placement_menu.setItemEnabled(i, false);
+            placement_menu->insert("");
+            placement_menu->setItemEnabled(i, false);
         } else {
-            m_placement_menu.insert(new PlaceSlitMenuItem(str, *this,
+            placement_menu->insert(new PlaceSlitMenuItem(str, *this,
                                                           placement, 
                                                           save_and_reconfigure));
                                                               
@@ -1326,7 +1334,7 @@ void Slit::setupMenu() {
     }
 
     // finaly update sub menu
-    m_placement_menu.updateMenu();
+    placement_menu->updateMenu();
 }
 
 void Slit::moveToLayer(int layernum) {

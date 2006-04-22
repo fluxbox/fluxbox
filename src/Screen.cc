@@ -1687,13 +1687,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     menu.insert(tabmenu_label, tab_menu);
 
-#ifdef SLIT
-    if (slit() != 0) {
-        slit()->menu().setInternalMenu();
-        menu.insert("Slit", &slit()->menu());
-    }
-#endif // SLIT
-
     Configmenus::iterator it = m_configmenu_list.begin();
     Configmenus::iterator it_end = m_configmenu_list.end();
     for (; it != it_end; ++it)
