@@ -458,7 +458,7 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
         menu->disableTitle(); // not titlebar
         if (screen->windowMenuFilename().empty() ||
             ! createWindowMenuFromFile(screen->windowMenuFilename(), *menu, true)) {
-            char default_menu[][11] = {
+            char *default_menu[] = {
                 "shade", 
                 "stick",
                 "maximize",
@@ -472,7 +472,7 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
                 "close",
                 0
             };
-            for (unsigned int i=0; i < sizeof(default_menu); ++i)
+            for (unsigned int i=0; default_menu[i]; ++i)
                 createWindowMenuItem(default_menu[i], "", *menu);
         }
         menu->reconfigure(); // update graphics

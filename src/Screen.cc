@@ -345,8 +345,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     XSetErrorHandler((XErrorHandler) old);
 
     managed = running;
-    if (! managed)
+    if (! managed) {
+        delete m_placement_strategy; m_placement_strategy = 0;
+        delete m_focus_control; m_focus_control = 0;
         return;
+    }
 
     // TODO fluxgen: check if this is the right place
     m_head_areas = new HeadArea[numHeads() ? numHeads() : 1];

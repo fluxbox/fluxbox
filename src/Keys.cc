@@ -117,8 +117,8 @@ void Keys::deleteTree() {
             delete *it;
         map_it->second->clear();
         delete map_it->second;
-        m_map.erase(map_it->first);
     }
+    m_map.clear();
 }
 
 /**
@@ -343,7 +343,6 @@ bool Keys::doAction(XKeyEvent &ke) {
  returns true on success else false
 */
 bool Keys::reconfigure(const char *filename) {
-    deleteTree();
     return load(filename);
 }
 
