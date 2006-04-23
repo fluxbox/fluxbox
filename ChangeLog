@@ -4,7 +4,8 @@ Changes for 0.9.16:
    * Fixed typos in new docs (thanks Semushin Slava)
      docs/asciidoc/fluxbox.txt
    * Added support for _NET_WM_ALLOWED_ACTIONS and all the _NET_WM_ACTION_*,
-     _NET_WM_STATE_MODAL and _NET_WM_WINDOW_TYPE_SPLASH.  (Henrik)
+     _NET_WM_STATE_MODAL, _NET_WM_WINDOW_TYPE_SPLASH,
+     _NET_RESTACK_WINDOW  (Henrik)
      Ewmh.hh/cc, Window.hh, WinClient.hh, WinClientUtil.hh/cc
    * Reload the apps file on fluxbox reload (Simon)
      Remember.hh/cc fluxbox.cc AtomHandler.hh ClientPattern.hh/cc
