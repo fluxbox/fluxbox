@@ -1546,7 +1546,8 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     show();
 
-    if (was_iconic && screen().focusControl().focusNew())
+    // focus new, OR if it's the only window on the workspace
+    if (was_iconic && (screen().focusControl().focusNew() || screen().currentWorkspace()->numberOfWindows() == 1))
         setInputFocus();
 
 
