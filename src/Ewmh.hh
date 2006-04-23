@@ -82,10 +82,20 @@ private:
     void setupState(FluxboxWindow &win);
 
     // root window properties
-    Atom m_net_supported, m_net_client_list, m_net_client_list_stacking,
-        m_net_number_of_desktops, m_net_desktop_geometry, m_net_desktop_viewport,
-        m_net_current_desktop, m_net_desktop_names, m_net_active_window, m_net_workarea,
-        m_net_supporting_wm_check, m_net_virtual_roots, m_net_moveresize_window;
+    Atom m_net_supported, 
+        m_net_client_list, 
+        m_net_client_list_stacking,
+        m_net_number_of_desktops, 
+        m_net_desktop_geometry, 
+        m_net_desktop_viewport,
+        m_net_current_desktop, 
+        m_net_desktop_names,
+        m_net_active_window, 
+        m_net_workarea,
+        m_net_supporting_wm_check, 
+        m_net_virtual_roots, 
+        m_net_moveresize_window,
+        m_net_restack_window;
 
     // root window messages
     Atom m_net_close_window, m_net_wm_moveresize;

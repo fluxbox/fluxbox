@@ -103,6 +103,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         // window properties
         m_net_wm_strut,
         m_net_wm_state,
+
         // states that we support:
         m_net_wm_state_sticky,
         m_net_wm_state_shaded,
@@ -143,6 +144,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_close_window,
         m_net_moveresize_window,
         m_net_workarea,
+        m_net_restack_window,
 
         // desktop properties
         m_net_wm_desktop,
@@ -770,7 +772,30 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         winclient->fbwindow()->moveResizeForClient(ce.data.l[1], ce.data.l[2],
                                           ce.data.l[3], ce.data.l[4], win_gravity);
         return true;
-    }
+    } else if (ce.message_type == m_net_restack_window) {
+#ifndef DEBUG
+        cerr << "Ewmh: restack window" << endl;
+#endif // DEBUG
+        if (winclient == 0 || winclient->fbwindow() == 0)
+            return true;
+
+        // ce.data.l[0] = source indication
+        // ce.data.l[1] = sibling window
+        // ce.data.l[2] = detail
+        
+
+        WinClient *above_win = Fluxbox::instance()->searchWindow(ce.data.l[1]);
+        if (above_win == 0 || above_win->fbwindow() == 0 ||
+            above_win == winclient) // this would be very wrong :)
+            return true;
+
+        // this might break the transient_for layering
+        winclient->layerItem().stackBelowItem(&winclient->layerItem(), 
+                                              &above_win->layerItem());
+
+        return true;
+
+    } 
 
     // we didn't handle the ce.message_type here
     return false;
@@ -805,6 +830,7 @@ void Ewmh::createAtoms() {
 
     m_net_close_window = XInternAtom(disp, "_NET_CLOSE_WINDOW", False);
     m_net_moveresize_window = XInternAtom(disp, "_NET_MOVERESIZE_WINDOW", False);
+    m_net_restack_window = XInternAtom(disp, "_NET_RESTACK_WINDOW", False);
 
     // TODO: implement this one
     m_net_wm_moveresize = XInternAtom(disp, "_NET_WM_MOVERESIZE", False);
