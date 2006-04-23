@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/23:
+   * Fixed typos in new docs (thanks Semushin Slava)
+     docs/asciidoc/fluxbox.txt
    * Added support for _NET_WM_ALLOWED_ACTIONS and all the _NET_WM_ACTION_*,
      _NET_WM_STATE_MODAL and _NET_WM_WINDOW_TYPE_SPLASH.  (Henrik)
      Ewmh.hh/cc, Window.hh, WinClient.hh, WinClientUtil.hh/cc

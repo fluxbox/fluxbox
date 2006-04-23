@@ -1,6 +1,6 @@
 fluxbox(1)
 ==========
-Henri Kinnunen <fluxgen@fluxbox.org>
+Henrik Kinnunen <fluxgen@fluxbox.org>
 v0.9.15, 18th March 2006
 
 NAME
@@ -9,7 +9,14 @@ fluxbox - A lightweight window manager for the X Windowing System
 
 SYNOPSIS
 --------
-'fluxbox' [-vhi] [-rc rcfile] [-l logfile] [-d display] [-screens scr,scr]
+'fluxbox' [-v | -version]
+          [-h | -help]
+          [-i | -info]
+'fluxbox' [-rc rcfile]
+          [-log logfile]
+          [-display display]
+          [-screen scr,scr|all]
+          [-verbose]
 
 DESCRIPTION
 -----------
@@ -39,7 +46,7 @@ standard features used by applications and desktop utilities.
 
 OPTIONS
 -------
--d display, -display display::
+-display display::
     Start fluxbox on the specified display. Programs started by fluxbox
     will share the DISPLAY environment variable also.
 -h, -help::
@@ -47,13 +54,17 @@ OPTIONS
 -i, -info::
     Display useful information concerning the defaults and compiled-in
     options.
--l logfile::
+-log logfile::
     Starting fluxbox with this option will designate a file in which you
     want to log events to.
 -rc rcfile::
     Use a different config file other than the default ~/.fluxbox/init.
 -v, -version::
     The version of fluxbox installed.
+-screen scr,scr|all::
+    Run on specified screens only or all (by default).
+-verbose::
+    Print more information in process.
 
 STARTING FLUXBOX
 ----------------
@@ -100,7 +111,7 @@ RootMenu and WorkspaceMenu
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 From the RootMenu you can launch applications and configure fluxbox. The
 WorkspaceMenu shows all windows and on which workspaces they are. See
-section MENUS on how to customize thess menus.
+section MENUS on how to customize these menus.
 
 Toolbar
 ~~~~~~~
@@ -127,7 +138,7 @@ Slit
 Initially you won't be able to see the slit. It is there, it just isn't
 being utilized yet. The slit confuses some people initially.  Think of it
 as a dock where you can place smaller programs. If you've looked at any
-screenshots on the offical fluxbox web site you'll have noticed some small
+screenshots on the official fluxbox web site you'll have noticed some small
 programs on the edge of some of the screens. These were more than likely
 those docked programs in the slit. To learn more about the slit, we have
 an entire section below that goes into detail about the options you have.
@@ -234,7 +245,7 @@ if not all, of those here.
 
 - *Configure*:
     The next level under this menu is where you can set certain resources and
-    really begin to cus- tomize the look and feel of your desktop.
+    really begin to customize the look and feel of your desktop.
 
 - *System Styles*:
     This is where the standard styles are listed. You can select one of these
@@ -288,7 +299,7 @@ editing the init file, but this is a easier and faster way to most users.
     Please read the FOCUS MODEL section at the end of this manual.
 
 - *Slit*:
-    This Menu can be opend by right clicking the slit (if visible).
+    This Menu can be opened by right clicking the slit (if visible).
 
 - *Placement*:
     This lets you set the position of the slit.
@@ -299,7 +310,7 @@ editing the init file, but this is a easier and faster way to most users.
 - *Auto hide*:
     If enabled, the slit will disappear after a given amount of time and hide
     from the view of the user. You can make it appear if you move the mouse to
-    the edge of the desktop where the slit is psitioned.
+    the edge of the desktop where the slit is positioned.
 
 - *Maximize over*:
     If this is enabled, all windows, if you maximize them, will stretch
@@ -333,14 +344,14 @@ editing the init file, but this is a easier and faster way to most users.
     the window will be shown as a "border".
 
 - *Full Maximization*:
-    Enabling this will override the seperate settings for the slit/toolbar.
+    Enabling this will override the separate settings for the slit/toolbar.
     Windows will always maximize over/under both of them.
 
 - *Focus New Window*:
-    If enabled, a newly opend window will gain focus.
+    If enabled, a newly opened window will gain focus.
 
 - *Focus Last Window on Workspace*:
-    This focuses the last window if switching back to a worspace if the option
+    This focuses the last window if switching back to a workspace if the option
     is enabled.
 
 - *Windows Warping*:
@@ -506,7 +517,7 @@ The supported tags are:
     When selected this item re-reads the current style and menu files and
     applies any changes. This is useful for creating a new style or theme,
     as you don't have to constantly restart fluxbox every time you save
-    your style. However, fluxbox automagically rereads the menu whenever
+    your style. However, fluxbox automatically rereads the menu whenever
     it changes.
 
 [restart] (label) \{command\};;
@@ -567,7 +578,7 @@ Using '\' inserts a literal back-slash into the label/command/filename field.
 TOOLBAR
 -------
 The toolbar is a small area to display information by fluxbox like a clock,
-the identifier for the workspaces, a systemtray or a taskbar (iconbar)
+the identifier for the workspaces, a system tray or a taskbar (iconbar)
 that can contain the running programs. The color, look, font etc. is
 defined in the the style and can't be defined as a global setting.
 
@@ -577,7 +588,7 @@ arguments given to the line:
      session.screen0.toolbar.tools
 
 The order and the count of the Tools is freely selectable and has to be
-seperated by a ",". E.g.:
+separated by a ",". E.g.:
 
     session.screen0.toolbar.tools: workspacename, systemtray, iconbar, clock
 
@@ -654,7 +665,7 @@ visible:
 - *Maximize Over*:
     Enabling this option will prevent windows from maximizing over the
     toolbar. With this switched on they will only dock to the edge of the bar.
-    To use this option, "Full Maximazition" from  the fluxbox Configuration
+    To use this option, "Full Maximization" from  the fluxbox Configuration
     menu has to be DISABLED. Otherwise this option will not work.
 
     session.screen0.toolbar.maxOver: <boolean>
@@ -673,7 +684,7 @@ visible:
     session.screen0.toolbar.placement: <direction>
 
 - *Alpha*:
-    This sets the alpa value for the toolbar. Use the left mouse-button to
+    This sets the alpha value for the toolbar. Use the left mouse-button to
     decrease and the right mouse-button to increase the value. 0 is invisible,
     255 is not transparent at all.
 
@@ -686,17 +697,17 @@ visible:
     - *None*:
         will show not a single window
     - *Icons*:
-        will only show the windows of all workspaces that are minimzed
+        will only show the windows of all workspaces that are minimized
         (iconified)
     - *NoIcons*:
-        will only show the windows of all workspaces that are not minimzed
+        will only show the windows of all workspaces that are not minimized
         (iconified)
     - *WorkspaceIcons*:
         will only show the windows of the current workspace that are
-        minimzed (iconified)
+        minimized (iconified)
     - *WorkspaceNoIcons*:
         will only show the windows of the current workspace that are not
-        minimzed (iconified)
+        minimized (iconified)
     - *Workspace*:
         will show all windows of the current workspace
     - *All Windows*:
@@ -1265,7 +1276,7 @@ specify colors, textures, pixmaps and fonts, and thus the overall look of your
 window borders, menus and the toolbar.
 
 The default installation of fluxbox provides some of these style files.  See
-fluxstyle(1) to accomodate the growing number of style components.
+fluxstyle(1) to accommodate the growing number of style components.
 
 APPLICATIONS
 ------------
@@ -1485,7 +1496,7 @@ and to the last window that was focused.
 THE SLIT
 --------
 The slit is a special fluxbox window frame that can contain dockable
-applicatioins, e.g. 'bbtools' or 'wmapps'.
+applications, e.g. 'bbtools' or 'wmapps'.
 
 When applications are run in the slit they have no window borders of their
 own; instead they are framed in the slit, and they are always visible in the
@@ -1585,7 +1596,7 @@ This manpage is the combined work of:
 - Curt Micol <asenchi at asenchi com> (>fluxbox-0.9.11)
 
 - Tobias Klausmann <klausman at users sourceforge net> (<=fluxbox-0.9.11)
-- Grupert <grubert at users sourceforge net> (fluxbox)
+- Grubert <grubert at users sourceforge net> (fluxbox)
 
 - Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 - Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
