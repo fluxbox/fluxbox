@@ -524,6 +524,7 @@ void Remember::reconfigure() {
     // we merge the old patterns with new ones
     Patterns *old_pats = m_pats.release();
     m_pats.reset(new Patterns());
+    m_startups.clear();
 
     if (!apps_file.fail()) {
         m_last_timestamp = timestamp;
