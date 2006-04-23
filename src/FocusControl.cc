@@ -77,108 +77,84 @@ bool doSkipWindow(const WinClient &winclient, int opts) {
     ); 
 }
 
-void FocusControl::prevFocus(int opts) {
+void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
     int num_windows = m_screen.currentWorkspace()->numberOfWindows();
 	
     if (num_windows < 1)
         return;
 
-    if (!(opts & CYCLELINEAR)) {
-        if (!m_cycling_focus) {
-            m_cycling_focus = true;
-            m_cycling_window = m_focused_list.end();
-            m_cycling_last = 0;
+    FocusedWindows *window_list = (opts & CYCLELINEAR) ? &m_creation_order_list : &m_focused_list;
+    if (!m_cycling_focus) {
+        m_cycling_focus = true;
+        if ((opts & CYCLELINEAR) && m_cycling_window != m_focused_list.end()) {
+            m_cycling_creation_order = true;
+            m_cycling_window = find(window_list->begin(),window_list->end(),*m_cycling_window);
         } else {
-            // already cycling, so restack to put windows back in their proper order
-            m_screen.layerManager().restack();
+            m_cycling_creation_order = (opts & CYCLELINEAR);
+            m_cycling_window = window_list->begin();
         }
-        // if it is stacked, we want the highest window in the focused list
-        // that is on the same workspace
-        FocusedWindows::iterator it = m_cycling_window;
-        FocusedWindows::iterator it_end = m_focused_list.end();
-
-        while (true) {
-            --it;
-            if (it == it_end) {
-                it = m_focused_list.end();
-                --it;
-            }
-            // give up [do nothing] if we reach the current focused again
-            if ((*it) == (*m_cycling_window)) {
-                break;
-            }
-
-            FluxboxWindow *fbwin = (*it)->fbwindow();
-            if (fbwin && !fbwin->isIconic() &&
-                (fbwin->isStuck() 
-                 || fbwin->workspaceNumber() == m_screen.currentWorkspaceID())) {
-                // either on this workspace, or stuck
-
-                // keep track of the originally selected window in a set
-                WinClient &last_client = fbwin->winClient();
-
-
-                if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
-                    // moved onto a new fbwin
-                    if (!m_cycling_last || m_cycling_last->fbwindow() != fbwin) {
-                        if (m_cycling_last) {
-                            // set back to orig current Client in that fbwin
-                            m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
-                        }
-                        m_cycling_last = &last_client;
-                    }
-                    fbwin->tempRaise();
-                    break;
-                }
-            }
+        m_cycling_last = 0;
+    } else {
+        // already cycling, so restack to put windows back in their proper order
+        m_screen.layerManager().restack();
+        if (m_cycling_creation_order ^ (bool)(opts & CYCLELINEAR)) {
+            m_cycling_creation_order ^= true;
+            if (m_cycling_window != m_focused_list.end() && m_cycling_window != m_creation_order_list.end())
+                m_cycling_window = find(window_list->begin(),window_list->end(),*m_cycling_window);
+            else
+                m_cycling_window = window_list->begin();
         }
-        m_cycling_window = it;
-    } else { // not stacked cycling
-            
-        Workspace &wksp = *m_screen.currentWorkspace();
-        Workspace::Windows &wins = wksp.windowList();
-        Workspace::Windows::iterator it = wins.begin();
-            
-        FluxboxWindow *focused_group = 0;
-        // start from the focused window
-        bool have_focused = false;
-        WinClient *focused = focusedWindow();
-        if (focused != 0) {
-            if (focused->screen().screenNumber() == m_screen.screenNumber()) {
-                have_focused = true;
-                focused_group = focused->fbwindow();
-            }
-        }
-
-        if (!have_focused) {
-            focused_group = (*it);
-        } else {
-            //get focused window iterator
-            for (; it != wins.end() && (*it) != focused_group; ++it) 
-                continue;
-        }
-
-        do {
-            if (it == wins.begin())
-                it = wins.end();
-            --it;
-            // see if the window should be skipped
-            if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
-                break;
-        } while ((*it) != focused_group);
-            
-        if ((*it) != focused_group && it != wins.end())
-            (*it)->raise();
     }
+    // if it is stacked, we want the highest window in the focused list
+    // that is on the same workspace
+    FocusedWindows::iterator it = m_cycling_window;
+    FocusedWindows::iterator it_begin = window_list->begin();
+    FocusedWindows::iterator it_end = window_list->end();
 
+    while (true) {
+        if (cycle_reverse && it == it_begin)
+            it = it_end;
+        cycle_reverse ? --it : ++it;
+        if (it == it_end)
+            it = it_begin;
+        // give up [do nothing] if we reach the current focused again
+        if ((*it) == (*m_cycling_window))
+            break;
+
+        FluxboxWindow *fbwin = (*it)->fbwindow();
+        if (fbwin && !fbwin->isIconic() &&
+            (fbwin->isStuck() 
+             || fbwin->workspaceNumber() == m_screen.currentWorkspaceID())) {
+            // either on this workspace, or stuck
+
+            // keep track of the originally selected window in a set
+            WinClient &last_client = fbwin->winClient();
+
+            if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
+                // moved onto a new fbwin
+                if (!m_cycling_last || m_cycling_last->fbwindow() != fbwin) {
+                    if (m_cycling_last) {
+                        // set back to orig current Client in that fbwin
+                        m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
+                    }
+                    m_cycling_last = &last_client;
+                }
+                fbwin->tempRaise();
+                break;
+            }
+        }
+    }
+    m_cycling_window = it;
 }
 
 void FocusControl::addFocusFront(WinClient &client) {
     m_focused_list.push_front(&client);
+    m_creation_order_list.push_back(&client);
 }
 
 void FocusControl::addFocusBack(WinClient &client) {
     m_focused_list.push_back(&client);
+    m_creation_order_list.push_back(&client);
 }
 
 void FocusControl::stopCyclingFocus() {
@@ -191,7 +167,9 @@ void FocusControl::stopCyclingFocus() {
     // put currently focused window to top
     // the iterator may be invalid if the window died
     // in which case we'll do a proper revert focus
-    if (m_cycling_window != m_focused_list.end()) {
+    if (m_cycling_creation_order && m_cycling_window != m_creation_order_list.end())
+        m_cycling_window = find(m_focused_list.begin(),m_focused_list.end(),*m_cycling_window);
+    if (m_cycling_window != m_focused_list.end() && m_cycling_window != m_creation_order_list.end()) {
         WinClient *client = *m_cycling_window;
         m_focused_list.erase(m_cycling_window);
         m_focused_list.push_front(client);
@@ -242,108 +220,6 @@ WinClient *FocusControl::lastFocusedWindow(FluxboxWindow &group, WinClient *igno
             return *it;
     }
     return 0;
-}
-
-void FocusControl::nextFocus(int opts) {
-    const int num_windows = m_screen.currentWorkspace()->numberOfWindows();
-
-    if (num_windows < 1)
-        return;
-
-    if (!(opts & CYCLELINEAR)) {
-        if (!m_cycling_focus) {
-            m_cycling_focus = true;
-            m_cycling_window = m_focused_list.begin();
-            m_cycling_last = 0;
-        } else {
-            // already cycling, so restack to put windows back in their proper order
-            m_screen.layerManager().restack();
-        }
-        // if it is stacked, we want the highest window in the focused list
-        // that is on the same workspace
-        FocusedWindows::iterator it = m_cycling_window;
-        const FocusedWindows::iterator it_end = m_focused_list.end();
-        int safety_counter = 0;
-        while (true) {
-            ++it;
-            if (it == it_end) {
-                it = m_focused_list.begin();
-                safety_counter++;
-                if (safety_counter > 3)
-                    break;
-            }
-            // give up [do nothing] if we reach the current focused again
-            if ((*it) == (*m_cycling_window)) {
-                break;
-            }
-
-            FluxboxWindow *fbwin = (*it)->fbwindow();
-            if (fbwin && !fbwin->isIconic() &&
-                (fbwin->isStuck() 
-                 || fbwin->workspaceNumber() == m_screen.currentWorkspaceID())) {
-                // either on this workspace, or stuck
-
-                // keep track of the originally selected window in a set
-                WinClient &last_client = fbwin->winClient();
-
-                if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
-                    // moved onto a new fbwin
-                    if (!m_cycling_last || m_cycling_last->fbwindow() != fbwin) {
-                        if (m_cycling_last) {
-                            // set back to orig current Client in that fbwin
-                            m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
-                        }
-                        m_cycling_last = &last_client;
-                    }
-                    fbwin->tempRaise();
-                    break;
-                }
-            }
-        }
-        m_cycling_window = it;
-    } else { // not stacked cycling
-        // I really don't like this, but evidently some people use it(!)
-        Workspace &wksp = *m_screen.currentWorkspace();
-        Workspace::Windows &wins = wksp.windowList();
-        Workspace::Windows::iterator it = wins.begin();
-
-        FluxboxWindow *focused_group = 0;
-        // start from the focused window
-        bool have_focused = false;
-        WinClient *focused = focusedWindow();
-        if (focused != 0) {
-            if (focused->screen().screenNumber() == m_screen.screenNumber()) {
-                have_focused = true;
-                focused_group = focused->fbwindow();
-            }
-        }
-
-        if (!have_focused) {
-            focused_group = (*it);
-        } else {
-            // get focused window iterator
-            for (; it != wins.end() && (*it) != focused_group; ++it) 
-                continue;
-        }
-
-        int safety_counter = 0;
-        do {
-            ++it;
-            if (it == wins.end()) {
-                it = wins.begin();
-                safety_counter++;
-                if (safety_counter > 3)
-                    break;
-            }
-            // see if the window should be skipped
-            if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
-                break;
-        } while ((*it) != focused_group);
-
-        if ((*it) != focused_group && it != wins.end())
-            (*it)->raise();
-    }
-
 }
 
 void FocusControl::raiseFocus() {
@@ -483,17 +359,14 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
 
 void FocusControl::removeClient(WinClient &client) {
     WinClient *cyc = 0;
-    if (m_cycling_window != m_focused_list.end())
+    if (m_cycling_window != m_focused_list.end() && m_cycling_window != m_creation_order_list.end())
         cyc = *m_cycling_window;
 
     m_focused_list.remove(&client);
+    m_creation_order_list.remove(&client);
 
-    if (cyc == &client) {
-        m_cycling_window = m_focused_list.end();
-    }
-
-    if (m_cycling_last == &client)
-        m_cycling_last = 0;
+    if (cyc == &client)
+        stopCyclingFocus();
 
 }
 

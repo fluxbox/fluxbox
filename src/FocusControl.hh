@@ -67,10 +67,11 @@ public:
 
     explicit FocusControl(BScreen &screen);
 
-    void prevFocus() { prevFocus(0); }
-    void nextFocus() { nextFocus(0); }
-    void prevFocus(int options);
-    void nextFocus(int options);
+    void prevFocus() { cycleFocus(0, true); }
+    void nextFocus() { cycleFocus(0, false); }
+    void prevFocus(int options) { cycleFocus(options, true); }
+    void nextFocus(int options) { cycleFocus(options, false); }
+    void cycleFocus(int options, bool cycle_reverse);
     void raiseFocus();
 
     void setScreenFocusedWindow(WinClient &win_client);
@@ -112,8 +113,10 @@ private:
     // This list keeps the order of window focusing for this screen
     // Screen global so it works for sticky windows too.
     FocusedWindows m_focused_list;
+    FocusedWindows m_creation_order_list;
     FocusedWindows::iterator m_cycling_window;
     bool m_cycling_focus;
+    bool m_cycling_creation_order;
     WinClient *m_cycling_last;
 
     static WinClient *s_focused_window;

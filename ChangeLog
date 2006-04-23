@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/23:
+   * Tidy up window cycling, and make linear mode work in order of 
+     creation (Thanks Mark Tiefenbruck, mark at tiefenbruck dot org)
+     FocusControl.hh/cc
 *06/04/22:
    * Fix workspace menu corruption when window title changes (Simon)
      sf.net bug #1113668
