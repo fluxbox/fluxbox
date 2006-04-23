@@ -35,6 +35,7 @@
 #include <list>
 #include <string>
 #include <utility>
+#include <memory>
 
 class FluxboxWindow;
 class BScreen;
@@ -193,7 +194,7 @@ public:
     Application* find(WinClient &winclient);
     Application* add(WinClient &winclient);
 
-    void load();
+    void reconfigure(); // was load
     void save();
 
     bool isRemembered(WinClient &win, Attribute attrib);
@@ -213,8 +214,6 @@ public:
     // Functions we ignore (zero from AtomHandler)
     // Leaving here in case they might be useful later
 
-
-
     void updateFocusedWindow(BScreen &, Window) { }
     void updateClientList(BScreen &screen) {}
     void updateWorkspaceNames(BScreen &screen) {}
@@ -233,16 +232,22 @@ public:
     bool propertyNotify(WinClient &winclient, Atom the_property) { return false; }
 
     static Remember &instance() { return *s_instance; }
+
 private:
 
     // returns number of lines read
     // optionally can give a line to read before the first (lookahead line)
     int parseApp(std::ifstream &file, Application &app, std::string *first_line = 0);
-    Patterns m_pats;
+
+    Application *findMatchingPatterns(ClientPattern *pat, Patterns *patlist, bool is_group);
+
+    std::auto_ptr<Patterns> m_pats;
     Clients m_clients;
 
     Startups m_startups;
     static Remember *s_instance;
+
+    time_t m_last_timestamp;
 };
 
 #endif // REMEMBER_HH

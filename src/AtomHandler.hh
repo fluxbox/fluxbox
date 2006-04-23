@@ -59,6 +59,8 @@ public:
 
     virtual bool propertyNotify(WinClient &winclient, Atom the_property) = 0;
 
+    virtual void reconfigure() {}
+
     /// should this object be updated or not?
     bool update() const { return m_update; }
 protected:

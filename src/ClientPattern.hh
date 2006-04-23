@@ -73,6 +73,9 @@ public:
         return match(win);
     }
 
+    // whether this pattern has identical matching criteria
+    bool equals(const ClientPattern &pat) const;
+
     /**
      * If there are no terms, then there is assumed to be an error
      * the column of the error is stored in m_matchlimit

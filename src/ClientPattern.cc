@@ -257,3 +257,19 @@ std::string ClientPattern::getProperty(WinProperty prop, const WinClient &client
     }
     return client.getWMClassName();
 }
+
+bool ClientPattern::equals(const ClientPattern &pat) const {
+    // we require the terms to be identical (order too)
+    Terms::const_iterator it = m_terms.begin();
+    Terms::const_iterator it_end = m_terms.end();
+    Terms::const_iterator other_it = pat.m_terms.begin();
+    Terms::const_iterator other_it_end = pat.m_terms.end();
+    for (; it != it_end, other_it != other_it_end; ++it, ++other_it) {
+        if ((*it)->orig != (*other_it)->orig)
+            return false;
+    }
+    if (it != it_end || other_it != other_it_end)
+        return false;
+
+    return true;
+}

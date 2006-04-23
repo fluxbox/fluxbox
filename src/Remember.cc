@@ -36,6 +36,7 @@
 
 #include "FbTk/I18n.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/FileUtil.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/App.hh"
 #include "FbTk/stringstream.hh"
@@ -230,13 +231,16 @@ Application::Application(bool grouped)
 
 Remember *Remember::s_instance = 0;
 
-Remember::Remember() {
+Remember::Remember():
+    m_pats(new Patterns()),
+    m_last_timestamp(0)
+{
     if (s_instance != 0)
         throw string("Can not create more than one instance of Remember");
 
     s_instance = this;
     enableUpdate();
-    load();
+    reconfigure();
 }
 
 Remember::~Remember() {
@@ -247,11 +251,11 @@ Remember::~Remember() {
     // the client mapping shouldn't need cleaning
     Patterns::iterator it;
     std::set<Application *> all_apps; // no duplicates
-    while (!m_pats.empty()) {
-        it = m_pats.begin();
+    while (!m_pats->empty()) {
+        it = m_pats->begin();
         delete it->first; // ClientPattern
         all_apps.insert(it->second); // Application, not necessarily unique
-        m_pats.erase(it);
+        m_pats->erase(it);
     }
 
     std::set<Application *>::iterator ait = all_apps.begin(); // no duplicates
@@ -270,8 +274,8 @@ Application* Remember::find(WinClient &winclient) {
     if (wc_it != m_clients.end())
         return wc_it->second;
     else {
-        Patterns::iterator it = m_pats.begin();
-        for (; it != m_pats.end(); it++)
+        Patterns::iterator it = m_pats->begin();
+        for (; it != m_pats->end(); it++)
             if (it->first->match(winclient)) {
                 it->first->addMatch();
                 m_clients[&winclient] = it->second;
@@ -289,7 +293,7 @@ Application * Remember::add(WinClient &winclient) {
     p->addTerm(p->getProperty(ClientPattern::NAME, winclient), ClientPattern::NAME);
     m_clients[&winclient] = app;
     p->addMatch();
-    m_pats.push_back(make_pair(p, app));
+    m_pats->push_back(make_pair(p, app));
     return app;
 }
 
@@ -463,16 +467,66 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
     return row;
 }
 
-void Remember::load() {
+/*
+  This function is used to search for old instances of the same pattern
+  (when reloading apps file). More than one pattern might match, but only
+  if the application is the same (also note that they'll be adjacent).
+  We REMOVE and delete any matching patterns from the old list, as they're 
+  effectively moved into the new 
+*/
 
+Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlist, bool is_group) {
+    Patterns::iterator it = patlist->begin();
+    Patterns::iterator it_end = patlist->end();
+    for (; it != it_end; ++it) {
+        if (it->first->equals(*pat) && is_group == it->second->is_grouped) {
+            Application *ret = it->second;
+
+            // find any previous or subsequent matching ones and delete
+
+            // rewind
+            Patterns::iterator tmpit = it;
+            while (tmpit != patlist->begin()) {
+                --tmpit;
+                if (tmpit->second == ret)
+                    it = tmpit;
+                else
+                    break;
+            }
+
+            // forward
+            while (it != it_end && it->second == ret) {
+                tmpit = it;
+                ++it;
+                delete tmpit->first;
+                patlist->erase(tmpit);
+            }
+            return ret;
+        }
+    }
+
+    return 0;
+}
+
+
+void Remember::reconfigure() {
     string apps_string = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getAppsFilename());
 
+    time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(apps_string.c_str());
+    if (m_last_timestamp > 0 && m_last_timestamp == timestamp)
+        return;
+            
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;
 #endif // DEBUG
     ifstream apps_file(apps_string.c_str());
 
+    // we merge the old patterns with new ones
+    Patterns *old_pats = m_pats.release();
+    m_pats.reset(new Patterns());
+
     if (!apps_file.fail()) {
+        m_last_timestamp = timestamp;
         if (!apps_file.eof()) {
             string line;
             int row = 0;
@@ -494,8 +548,11 @@ void Remember::load() {
                     ClientPattern *pat = new ClientPattern(line.c_str() + pos);
                     if (!in_group) {
                         if ((err = pat->error()) == 0) {
-                            Application *app = new Application(false);
-                            m_pats.push_back(make_pair(pat, app));
+                            Application *app = findMatchingPatterns(pat, old_pats, false);
+                            if (!app) 
+                                app = new Application(false);
+
+                            m_pats->push_back(make_pair(pat, app));
                             row += parseApp(apps_file, *app);
                         } else {
                             cerr<<"Error reading apps file at line "<<row<<", column "<<(err+pos)<<"."<<endl;
@@ -514,10 +571,21 @@ void Remember::load() {
                     in_group = true;
                 } else if (in_group) {
                     // otherwise assume that it is the start of the attributes
-                    Application *app = new Application(true);
+                    Application *app = 0;
+                    // search for a matching app
+                    std::list<ClientPattern *>::iterator it = grouped_pats.begin();
+                    std::list<ClientPattern *>::iterator it_end = grouped_pats.end();
+                    while (!app && it != it_end) {
+                        app = findMatchingPatterns(*it, old_pats, true);
+                        ++it;
+                    }
+
+                    if (!app)
+                        app = new Application(true);
+
                     while (!grouped_pats.empty()) {
                         // associate all the patterns with this app
-                        m_pats.push_back(make_pair(grouped_pats.front(), app));
+                        m_pats->push_back(make_pair(grouped_pats.front(), app));
                         grouped_pats.pop_front();
                     }
 
@@ -540,6 +608,40 @@ void Remember::load() {
     } else {
         cerr << "apps file failure" << endl;
     }
+
+    // Clean up old state
+    // can't just delete old patterns list. Need to delete the
+    // patterns themselves, plus the applications!
+    
+    Patterns::iterator it;
+    std::set<Application *> old_apps; // no duplicates
+    while (!old_pats->empty()) {
+        it = old_pats->begin();
+        delete it->first; // ClientPattern
+        old_apps.insert(it->second); // Application, not necessarily unique
+        old_pats->erase(it);
+    }
+
+    // now remove any client entries for the old apps
+    Clients::iterator cit = m_clients.begin();
+    Clients::iterator cit_end = m_clients.end();
+    while (cit != cit_end) {
+        if (old_apps.find(cit->second) != old_apps.end()) {
+            Clients::iterator tmpit = cit;
+            ++cit;
+            m_clients.erase(tmpit);
+        } else {
+            ++cit;
+        }
+    }
+
+    std::set<Application *>::iterator ait = old_apps.begin(); // no duplicates
+    while (ait != old_apps.end()) {
+        delete (*ait);
+        ++ait;
+    }
+
+    delete old_pats;
 }
 
 void Remember::save() {
@@ -558,8 +660,8 @@ void Remember::save() {
         apps_file<<"[startup] "<<(*sit)<<endl;
     }
 
-    Patterns::iterator it = m_pats.begin();
-    Patterns::iterator it_end = m_pats.end();
+    Patterns::iterator it = m_pats->begin();
+    Patterns::iterator it_end = m_pats->end();
 
     std::set<Application *> grouped_apps; // no duplicates
 
@@ -572,8 +674,8 @@ void Remember::save() {
             grouped_apps.insert(&a);
             // otherwise output this whole group
             apps_file << "[group]" << endl;
-            Patterns::iterator git = m_pats.begin();
-            Patterns::iterator git_end = m_pats.end();
+            Patterns::iterator git = m_pats->begin();
+            Patterns::iterator git_end = m_pats->end();
             for (; git != git_end; git++) {
                 if (git->second == &a) {
                     apps_file << " [app]"<<git->first->toString()<<endl;
@@ -969,8 +1071,8 @@ void Remember::initForScreen(BScreen &screen) {
 
 void Remember::updateFrameClose(FluxboxWindow &win) {
     // scan all applications and remove this fbw if it is a recorded group
-    Patterns::iterator it = m_pats.begin();
-    while (it != m_pats.end()) {
+    Patterns::iterator it = m_pats->begin();
+    while (it != m_pats->end()) {
         if (&win == it->second->group)
             it->second->group = 0;
         ++it;

@@ -1678,6 +1678,12 @@ void Fluxbox::real_reconfigure() {
     //reconfigure keys
     m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
 
+    // and atomhandlers
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
+         it != m_atomhandler.end();
+         it++) {
+        (*it).first->reconfigure();
+    }
 }
 
 BScreen *Fluxbox::findScreen(int id) {
