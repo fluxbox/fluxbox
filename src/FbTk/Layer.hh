@@ -25,7 +25,6 @@
 #ifndef FBTK_LAYERTEMPLATE_HH
 #define FBTK_LAYERTEMPLATE_HH
 
-/*#include "Layer.hh"*/
 #include <vector>
 #include <algorithm>
 #include <iostream>
