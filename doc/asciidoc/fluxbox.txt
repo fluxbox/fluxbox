@@ -1158,14 +1158,18 @@ Couple of things
     moving to the previous windows, not the next one.
 
 - PrevWindow/NextWindow parameters take an integer:
-    0 or unspecified = Default/current behavior - no skipping
-    1 = Skip lower tabs
+    0 or unspecified = Default/current behavior - most recently used.
+    1 = Groups instead of Windows - only visit one tab in each group
     2 = Skip stuck windows
-    3 = Skip lower tabs/stuck windows
     4 = Skip shaded windows
-    5 = Skip lower tabs/shaded windows
-    6 = Skip stuck windows/shaded windows
-    7 = Skip lower tabs/stuck windows/shaded windows
+    8 = Switch between windows `linearly';  that is, if you repeatedly
+    press the NextWindow key, you will walk through all windows in the,
+    order that they were opened, instead of switching back and forth 
+    between the most recently focused windows.
+
+    To combine any of these effects, add the corresponding numbers.
+    For instance, 14 means switch linearly, skipping stuck and shaded
+    windows.
 
 - Bindkey will append key string and action to your keys file and bind the key.
 

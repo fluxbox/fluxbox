@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/23:
+   * Update documentation for Next/PrevWindow (Simon / thanks Jonas 
+     Koelker), sf.net patch #1474825
+     doc/asciidoc/fluxbox.txt
    * Focus singular windows on a workspace (Simon / thanks Jonas Koelker)
      sf.net patch #1474722
      Window.cc
