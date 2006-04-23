@@ -147,6 +147,9 @@ public:
     inline const FluxboxWindow::BlackboxHints *getBlackboxHint() const { return m_blackbox_hint; }
     inline const MwmHints *getMwmHint() const { return m_mwm_hint; }
 
+    inline unsigned int maxWidth() const { return max_width; }
+    inline unsigned int maxHeight() const { return max_height; }
+
 
     static const int PropBlackboxHintsElements = 5;
     static const int PropMwmHintsElements = 3;
