@@ -28,6 +28,8 @@
 #include "WinClient.hh"
 #include "Workspace.hh"
 #include "Layer.hh"
+#include "WinClientUtil.hh"
+
 #include "FbTk/App.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/I18n.hh"
@@ -109,11 +111,28 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_wm_state_fullscreen,
         m_net_wm_state_hidden,
         m_net_wm_state_skip_taskbar,
-
+        m_net_wm_state_modal,
+        m_net_wm_state_below,
+        m_net_wm_state_above,
+        
         // window type
         m_net_wm_window_type,
         m_net_wm_window_type_dock,
         m_net_wm_window_type_desktop,
+        m_net_wm_window_type_splash,
+
+        // window actions
+        m_net_wm_allowed_actions,
+        m_net_wm_action_move,
+        m_net_wm_action_resize,
+        m_net_wm_action_minimize,
+        m_net_wm_action_shade,
+        m_net_wm_action_stick,
+        m_net_wm_action_maximize_horz,
+        m_net_wm_action_maximize_vert,
+        m_net_wm_action_fullscreen,
+        m_net_wm_action_change_desktop,
+        m_net_wm_action_close,
 
         // root properties
         m_net_client_list,
@@ -223,6 +242,15 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 win.setMovable(false);
                 win.setResizable(false);
                 win.stick();
+
+            } else if (atoms[l] == m_net_wm_window_type_splash) {
+                /*
+                 * _NET_WM_WINDOW_TYPE_SPLASH indicates that the 
+                 * window is a splash screen displayed as an application 
+                 * is starting up.
+                 */
+                win.setDecoration(FluxboxWindow::DECOR_NONE);
+                win.setMovable(false);
             }
 
         }
@@ -297,7 +325,8 @@ void Ewmh::updateClientList(BScreen &screen) {
     Window *wl = FB_new_nothrow Window[num];
     if (wl == 0) {
         _FB_USES_NLS;
-        cerr<<_FBTEXT(Ewmh, OutOfMemoryClientList, "Fatal: Out of memory, can't allocate for EWMH client list", "")<<endl;
+        cerr<<_FBTEXT(Ewmh, OutOfMemoryClientList, 
+                      "Fatal: Out of memory, can't allocate for EWMH client list", "")<<endl;
         return;
     }
 
@@ -523,8 +552,8 @@ void Ewmh::updateWorkarea(BScreen &screen) {
 
 void Ewmh::updateState(FluxboxWindow &win) {
     
-    // TODO: should we update the _NET_WM_ALLOWED_ACTIONS
-    //       here too?
+
+    updateActions(win);
     
     typedef std::vector<unsigned int> StateVec;
 
@@ -542,14 +571,13 @@ void Ewmh::updateState(FluxboxWindow &win) {
         state.push_back(m_net_wm_state_hidden);
     if (win.isIconHidden())
         state.push_back(m_net_wm_state_skip_taskbar);
-    if (win.isFullscreen()) {
+    if (win.isFullscreen())
         state.push_back(m_net_wm_state_fullscreen);
-    }
+    if (win.winClient().isModal())
+        state.push_back(m_net_wm_state_modal);
 
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
-    
-    it = win.clientList().begin();
     for (; it != it_end; ++it) {
         
         // search the old states for _NET_WM_STATE_SKIP_PAGER and append it
@@ -565,18 +593,19 @@ void Ewmh::updateState(FluxboxWindow &win) {
                                  &data);
         if (data) {
             Atom *old_states = (Atom *)data;
-            for (unsigned long i=0; i < nitems; ++i)
+            for (unsigned long i=0; i < nitems; ++i) {
                 if (old_states[i] == m_net_wm_state_skip_pager) {
                     client_state.push_back(m_net_wm_state_skip_pager);
                 }
+            }
             XFree(data);
         }
 
-        if (!client_state.empty())
+        if (!client_state.empty()) {
             (*it)->changeProperty(m_net_wm_state, XA_ATOM, 32, PropModeReplace,
                                   reinterpret_cast<unsigned char*>(&client_state.front()), 
                                   client_state.size());
-        else
+        } else
             (*it)->deleteProperty(m_net_wm_state);
     }
 }
@@ -750,9 +779,6 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
 bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
     if (the_property == m_net_wm_strut) {
-#ifdef DEBUG
-        cerr<<"_NET_WM_STRUT"<<endl;
-#endif // DEBUG
         updateStrut(winclient);
         return true;
     } 
@@ -791,6 +817,7 @@ void Ewmh::createAtoms() {
     m_net_wm_window_type = XInternAtom(disp, "_NET_WM_WINDOW_TYPE", False);
     m_net_wm_window_type_dock = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DOCK", False);
     m_net_wm_window_type_desktop = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+    m_net_wm_window_type_splash = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_SPLASH", False);
 
     // state atom and the supported state atoms
     m_net_wm_state = XInternAtom(disp, "_NET_WM_STATE", False);
@@ -804,19 +831,20 @@ void Ewmh::createAtoms() {
     m_net_wm_state_skip_pager = XInternAtom(disp, "_NET_WM_STATE_SKIP_PAGER", False);
     m_net_wm_state_above = XInternAtom(disp, "_NET_WM_STATE_ABOVE", False);
     m_net_wm_state_below = XInternAtom(disp, "_NET_WM_STATE_BELOW", False);
+    m_net_wm_state_modal = XInternAtom(disp, "_NET_WM_STATE_MODAL", False);
 
     // allowed actions
     m_net_wm_allowed_actions = XInternAtom(disp, "_NET_WM_ALLOWED_ACTIONS", False);
-    m_net_wm_action_move = XInternAtom(disp, "_NET_WM_ACTIONS_MOVE", False);
-    m_net_wm_action_resize = XInternAtom(disp, "_NET_WM_ACTIONS_RESIZE", False);
-    m_net_wm_action_minimize = XInternAtom(disp, "_NET_WM_ACTIONS_MINIMIZE", False);
-    m_net_wm_action_shade = XInternAtom(disp, "_NET_WM_ACTIONS_SHADE", False);
-    m_net_wm_action_stick = XInternAtom(disp, "_NET_WM_ACTIONS_STICK", False);
-    m_net_wm_action_maximize_horz = XInternAtom(disp, "_NET_WM_ACTIONS_MAXIMIZE_HORZ", False);
-    m_net_wm_action_maximize_vert = XInternAtom(disp, "_NET_WM_ACTIONS_MAXIMIZE_VERT", False);
-    m_net_wm_action_fullscreen = XInternAtom(disp, "_NET_WM_ACTIONS_FULLSCREEN", False);
-    m_net_wm_action_change_desktop = XInternAtom(disp, "_NET_WM_ACTIONS_CHANGE_DESKTOP", False);
-    m_net_wm_action_close = XInternAtom(disp, "_NET_WM_ACTIONS_CLOSE", False);
+    m_net_wm_action_move = XInternAtom(disp, "_NET_WM_ACTION_MOVE", False);
+    m_net_wm_action_resize = XInternAtom(disp, "_NET_WM_ACTION_RESIZE", False);
+    m_net_wm_action_minimize = XInternAtom(disp, "_NET_WM_ACTION_MINIMIZE", False);
+    m_net_wm_action_shade = XInternAtom(disp, "_NET_WM_ACTION_SHADE", False);
+    m_net_wm_action_stick = XInternAtom(disp, "_NET_WM_ACTION_STICK", False);
+    m_net_wm_action_maximize_horz = XInternAtom(disp, "_NET_WM_ACTION_MAXIMIZE_HORZ", False);
+    m_net_wm_action_maximize_vert = XInternAtom(disp, "_NET_WM_ACTION_MAXIMIZE_VERT", False);
+    m_net_wm_action_fullscreen = XInternAtom(disp, "_NET_WM_ACTION_FULLSCREEN", False);
+    m_net_wm_action_change_desktop = XInternAtom(disp, "_NET_WM_ACTION_CHANGE_DESKTOP", False);
+    m_net_wm_action_close = XInternAtom(disp, "_NET_WM_ACTION_CLOSE", False);
 
     m_net_wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
     m_net_wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
@@ -890,7 +918,7 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
             win.iconify();
         else if (!value && win.isIconic())
             win.deiconify();
-    } else if (state == m_net_wm_state_skip_taskbar) {
+    } else if (state == m_net_wm_state_skip_taskbar) { // skip taskbar
         win.setIconHidden(value);
     } else if (state == m_net_wm_state_below) {  // bottom layer
         if (value)
@@ -904,13 +932,14 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
         else
             win.moveToLayer(Layer::NORMAL);
     }
+    // Note: state == net_wm_state_modal, We should not change it
 }
 
 // toggle window state
 void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
-    if (state == m_net_wm_state_sticky) {
+    if (state == m_net_wm_state_sticky) { // sticky
         win.stick();
-    } else if (state == m_net_wm_state_shaded){
+    } else if (state == m_net_wm_state_shaded){ // shaded
         win.shade();
     } else if (state == m_net_wm_state_maximized_horz ) { // maximized Horizontal
         win.maximizeHorizontal();
@@ -923,7 +952,7 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
             win.deiconify();
         else
             win.iconify();
-    } else if (state == m_net_wm_state_skip_taskbar) {
+    } else if (state == m_net_wm_state_skip_taskbar) { // taskbar
         win.setIconHidden(!win.isIconHidden());
     } else if (state == m_net_wm_state_below) { // bottom layer
         if (win.layerNum() == Layer::BOTTOM)
@@ -956,6 +985,70 @@ void Ewmh::updateStrut(WinClient &winclient) {
                            data[2], data[3]));
         winclient.screen().updateAvailableWorkspaceArea();
     }
+}
+
+void Ewmh::updateActions(FluxboxWindow &win) {
+
+    /* From Extended Window Manager Hints, draft 1.3:
+     *
+     * _NET_WM_ALLOWED_ACTIONS, ATOM[]
+     *
+     * A list of atoms indicating user operations that the 
+     * Window Manager supports for this window. Atoms present  in the
+     * list indicate allowed actions, atoms not present in the list 
+     * indicate actions that are not supported for this window. The 
+     * Window Manager MUST keep this property updated to reflect the 
+     * actions which are currently "active" or "sensitive" for a window.
+     * Taskbars, Pagers, and other tools use _NET_WM_ALLOWED_ACTIONS to 
+     * decide which actions should be made available to the user. 
+     */
+    
+    typedef std::vector<Atom> ActionsVector;
+    ActionsVector actions;
+    actions.reserve(10);
+    // all windows can change desktop,
+    // be shaded or be sticky
+    actions.push_back(m_net_wm_action_change_desktop);
+    actions.push_back(m_net_wm_action_shade);
+    actions.push_back(m_net_wm_action_stick);
+    
+    if (win.isResizable())
+        actions.push_back(m_net_wm_action_resize);
+    if (win.isMoveable())
+        actions.push_back(m_net_wm_action_move);
+    if (win.isClosable())
+        actions.push_back(m_net_wm_action_close);
+    if (win.isIconifiable())
+        actions.push_back(m_net_wm_action_minimize);
+
+    unsigned int max_width, max_height;
+    WinClientUtil::maxSize(win.clientList(), max_width, max_height);
+
+    // if unlimited max width we can maximize horizontal
+    if (max_width == 0) {
+        actions.push_back(m_net_wm_action_maximize_horz);
+    }
+    // if unlimited max height we can maxmize vert
+    if (max_height == 0) {
+        actions.push_back(m_net_wm_action_maximize_vert);
+    }
+
+    // if we have unlimited size in all directions we can have this window
+    // in fullscreen mode
+    if (max_height == 0 && max_width == 0) {
+        actions.push_back(m_net_wm_action_fullscreen);
+    }
+
+
+
+    FluxboxWindow::ClientList::iterator it = win.clientList().begin();
+    FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
+    for (; it != it_end; ++it) {
+        (*it)->changeProperty(m_net_wm_allowed_actions, XA_ATOM, 32, PropModeReplace,
+                              reinterpret_cast<unsigned char*>(&actions.front()),
+                              actions.size());        
+    }
+
 }
 
 void Ewmh::setupState(FluxboxWindow &win) {

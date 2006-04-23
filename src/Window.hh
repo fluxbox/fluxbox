@@ -302,6 +302,7 @@ public:
     inline bool isMaximizable() const { return functions.maximize; }
     inline bool isResizable() const { return functions.resize; }
     inline bool isClosable() const { return functions.close; }
+    inline bool isMoveable() const { return functions.move; }
     inline bool isStuck() const { return stuck; }
     inline bool hasTitlebar() const { return decorations.titlebar; }
     inline bool isMoving() const { return moving; }

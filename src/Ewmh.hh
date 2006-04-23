@@ -77,6 +77,8 @@ private:
     void toggleState(FluxboxWindow &win, Atom state);
     void createAtoms();
     void updateStrut(WinClient &winclient);
+    void updateActions(FluxboxWindow &win);
+
     void setupState(FluxboxWindow &win);
 
     // root window properties
@@ -94,6 +96,7 @@ private:
         m_net_wm_window_type,
         m_net_wm_window_type_dock,
         m_net_wm_window_type_desktop,
+        m_net_wm_window_type_splash,
 
         // states
         m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
@@ -104,6 +107,7 @@ private:
         m_net_wm_state_skip_pager,
         m_net_wm_state_below,
         m_net_wm_state_above,
+        m_net_wm_state_modal,
 
         // allowed actions
         m_net_wm_allowed_actions,
