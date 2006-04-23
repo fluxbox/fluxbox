@@ -29,10 +29,13 @@
 #include "Workspace.hh"
 #include "Layer.hh"
 #include "WinClientUtil.hh"
+#include "fluxbox.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/I18n.hh"
+#include "FbTk/XLayerItem.hh"
+#include "FbTk/XLayer.hh"
 
 #include <iostream>
 #include <algorithm>
@@ -789,9 +792,10 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             above_win == winclient) // this would be very wrong :)
             return true;
 
+        FbTk::XLayerItem &below_item = winclient->fbwindow()->layerItem();
+        FbTk::XLayerItem &above_item = above_win->fbwindow()->layerItem();
         // this might break the transient_for layering
-        winclient->layerItem().stackBelowItem(&winclient->layerItem(), 
-                                              &above_win->layerItem());
+        below_item.getLayer().stackBelowItem(&below_item, &above_item);
 
         return true;
 
