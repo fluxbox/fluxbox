@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/24:
+   * Use external tabs by default (Simon)
+     - they provide a unique look to fluxbox
+     - backwards compatible with 0.1.14 ("stable")
+     - new users will wonder what they are :)
+     Screen.cc
 *06/04/23:
    * Fixed typos in new docs (thanks Semushin Slava)
      docs/asciidoc/fluxbox.txt
