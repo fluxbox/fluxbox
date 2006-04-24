@@ -257,7 +257,7 @@ void ClockTool::updateTime() {
             return;
         m_button.setText(time_string);
 
-        int new_width = m_theme.font().textWidth(time_string, time_string_len) + 2;
+        unsigned int new_width = m_theme.font().textWidth(time_string, time_string_len) + 2;
         if (new_width > m_button.width()) {
             resize(new_width, m_button.height());
             resizeSig().notify();

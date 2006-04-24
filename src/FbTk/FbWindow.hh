@@ -266,6 +266,7 @@ private:
 class FbWindowRenderer {
 public:
     virtual void renderForeground(FbWindow &win, FbDrawable &drawable) = 0;
+    virtual ~FbWindowRenderer() { }
 };
 
 

@@ -40,6 +40,7 @@ struct PlacementStrategy {
     virtual bool placeWindow(const std::vector<FluxboxWindow *> &windowlist,
                              const FluxboxWindow &win,
                              int &place_x, int &place_y) = 0;
+    virtual ~PlacementStrategy() { }
 };
 
 #endif // PLACEMENTSTRATEGY_HH

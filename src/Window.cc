@@ -3378,14 +3378,13 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
     // test against tabs too
     bool i_have_tabs = frame().externalTabMode();
-    int xoff,yoff,woff,hoff;
+    int xoff = 0, yoff = 0, woff = 0, hoff = 0;
     if (i_have_tabs) {
         xoff = xOffset();
         yoff = yOffset();
         woff = widthOffset();
         hoff = heightOffset();
     }
-
 
     /////////////////////////////////////
     // begin by checking the screen (or Xinerama head) edges

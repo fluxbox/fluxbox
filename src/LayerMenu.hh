@@ -34,6 +34,7 @@ class LayerObject {
 public:
     virtual void moveToLayer(int layer_number) = 0;
     virtual int layerNumber() const = 0;
+    virtual ~LayerObject() { }
 };
 
 

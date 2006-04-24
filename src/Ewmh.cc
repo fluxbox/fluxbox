@@ -267,8 +267,8 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
     if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
-        unsigned int desktop = static_cast<unsigned int>(*data);
-        if (desktop == 0xFFFFFFFF && !win.isStuck())
+        unsigned int desktop = static_cast<long>(*data);
+        if (desktop == -1 && !win.isStuck())
             win.stick();
         else
             win.setWorkspace(desktop);
@@ -634,7 +634,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
     long workspace = win.isInitialized() ? win.workspaceNumber() : win.screen().currentWorkspaceID();
 
     if (win.isStuck())
-        workspace = 0xFFFFFFFF; // appear on all desktops/workspaces
+        workspace = -1; // appear on all desktops/workspaces
 
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
@@ -661,7 +661,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
         // if it's stick, make sure it is stuck.
         // otherwise, make sure it isn't stuck
-        if (ce.data.l[0] == 0xFFFFFFFF) {
+        if (ce.data.l[0] == -1) {
             if (!fbwin->isStuck())
                 fbwin->stick();
             return true;

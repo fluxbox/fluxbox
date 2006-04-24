@@ -33,6 +33,7 @@ namespace FbTk {
 class SignalEventHandler {
 public:
     virtual void handleSignal(int signum) = 0;
+    virtual ~SignalEventHandler() { }
 };
 
 ///   Handles system signals, singleton.

@@ -304,9 +304,10 @@ int main(int argc, char **argv) {
         cerr.rdbuf(errbuf);
 
     if (restarting) {
-        if (restart_argument.c_str()) {
-            execlp(restart_argument.c_str(), restart_argument.c_str(), 0);
-            perror(restart_argument.c_str());
+        const char *arg = restart_argument.c_str();
+        if (arg) {
+            execlp(arg, arg, (char *) NULL);
+            perror(arg);
         }
 
         // fall back in case the above execlp doesn't work
