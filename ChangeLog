@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/24:
+   * Fix memory leaks & other errors in Menu code (Simon)
+     Screen.cc Slit.cc Toolbar.cc fluxbox.cc MenuCreator.cc FbTk/Menu.cc
    * Use external tabs by default (Simon)
      - they provide a unique look to fluxbox
      - backwards compatible with 0.1.14 ("stable")

@@ -728,6 +728,7 @@ void BScreen::addExtraWindowMenu(const char *label, FbTk::Menu *menu) {
     m_extramenus.push_back(std::make_pair(label, menu));
     // recreate window menu
     m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
+    m_windowmenu->setInternalMenu();
 }
 
 void BScreen::removeExtraWindowMenu(FbTk::Menu *menu) {
@@ -739,6 +740,7 @@ void BScreen::removeExtraWindowMenu(FbTk::Menu *menu) {
         m_extramenus.erase(it);
     // recreate window menu
     m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
+    m_windowmenu->setInternalMenu();
 }
 
 void BScreen::hideMenus() {
@@ -827,6 +829,7 @@ void BScreen::reconfigure() {
     m_configmenu->reconfigure();
     // recreate window menu
     m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
+    m_windowmenu->setInternalMenu();
 
     // We need to check to see if the timestamps
     // changed before we actually can restore the menus 
@@ -1501,6 +1504,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
 void BScreen::initMenus() {
     m_workspacemenu.reset(MenuCreator::createMenuType("workspacemenu", screenNumber()));
     m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
+    m_windowmenu->setInternalMenu();
     initMenu();
 }
 
@@ -1554,6 +1558,7 @@ void BScreen::removeConfigMenu(FbTk::Menu &menu) {
                                                            FbTk::Select2nd<Configmenus::value_type>()));
     if (erase_it != m_configmenu_list.end())
         m_configmenu_list.erase(erase_it);
+
     setupConfigmenu(*m_configmenu.get());
 
 }    

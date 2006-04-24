@@ -347,6 +347,9 @@ Slit::~Slit() {
     if (frame.pixmap != 0)
         screen().imageControl().removeImage(frame.pixmap);
 
+    // otherwise it will try to access it on deletion
+    screen().removeConfigMenu(m_slitmenu); 
+
     shutdown();
 }
 

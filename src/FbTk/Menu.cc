@@ -232,14 +232,16 @@ int Menu::remove(unsigned int index) {
     if (item) {
         menuitems.erase(it);
 
-        if (!m_internal_menu && item->submenu() != 0) {
+        if (item->submenu() != 0) {
             Menu *tmp = item->submenu();
-            // if menu is interal we should just hide it instead
+            // if menu is internal we should just hide it instead
             // if destroying it
             if (! tmp->m_internal_menu) {
                 delete tmp;
-            } else
-                tmp->internal_hide();
+            }
+            // We can't internal_hide here, as the child may be deleted!
+//            } else
+//                tmp->internal_hide();
         }
         
 		

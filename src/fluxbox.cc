@@ -418,12 +418,6 @@ Fluxbox::~Fluxbox() {
         delete m_toolbars.back();
         m_toolbars.pop_back();
     }
-   
-    // destroy screens
-    while (!m_screen_list.empty()) {
-        delete m_screen_list.back();
-        m_screen_list.pop_back();
-    }
 
     // destroy atomhandlers
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
@@ -432,6 +426,13 @@ Fluxbox::~Fluxbox() {
         delete (*it).first;
     }
     m_atomhandler.clear();
+
+    // destroy screens (after others, as they may do screen things)
+    while (!m_screen_list.empty()) {
+        delete m_screen_list.back();
+        m_screen_list.pop_back();
+    }
+
 
     clearMenuFilenames();
 }

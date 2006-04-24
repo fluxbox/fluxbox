@@ -252,6 +252,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
 
     m_layermenu.setInternalMenu();
     m_placementmenu.setInternalMenu();
+    m_toolbarmenu.setInternalMenu();
     setupMenus();
     // add menu to screen
     screen().addConfigMenu(_FBTEXT(Toolbar, Toolbar, "Toolbar", "title of toolbar menu item"), menu());
@@ -287,6 +288,8 @@ Toolbar::~Toolbar() {
     // remove menu items before we delete tools so we dont end up
     // with dangling pointers to old submenu items (internal menus)
     // from the tools
+    screen().removeConfigMenu(menu());
+
     menu().removeAll();
 
     deleteItems();

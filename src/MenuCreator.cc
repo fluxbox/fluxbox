@@ -454,7 +454,6 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
     } else if (type == "windowmenu") {
         FbTk::Menu *menu = screen->createMenu("");
 
-        menu->removeAll(); // clear old items
         menu->disableTitle(); // not titlebar
         if (screen->windowMenuFilename().empty() ||
             ! createWindowMenuFromFile(screen->windowMenuFilename(), *menu, true)) {
