@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/25:
+   * Fix occasional highlighting of menu nops+separators, sf.net patch 
+     #1475268 (thanks Scott Kuhl; skuhl AT cs utah edu)
+     FbTk/MenuSeparator.hh/cc FbTk/Menu.cc MenuCreator.cc
    * fbrun: Move the cursor to the end when tab completing
      (Simon + thanks Jonas Koelker), sf.net rfe #1333003, patch #1475578
      util/fbrun/FbRun.hh/cc

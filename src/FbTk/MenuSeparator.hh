@@ -36,6 +36,7 @@ public:
                       bool highlight, bool draw_foreground, bool draw_background,
                       int x, int y,
                       unsigned int width, unsigned int height) const;
+    virtual inline bool isEnabled() const { return false; }
 
 };
 

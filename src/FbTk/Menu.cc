@@ -1182,7 +1182,7 @@ void Menu::openSubmenu() {
         return;
 
     int item = m_which_sbl * menu.persub + m_which_press;
-    if (!validIndex(item))
+    if (!validIndex(item) || !menuitems[item]->isEnabled())
         return;
 
     clearItem(item);

@@ -38,8 +38,10 @@ void MenuSeparator::draw(FbDrawable &drawable,
 
     if (draw_background) {
         const GContext &tgc =
-            (highlight ? theme.hiliteTextGC() :
-             (isEnabled() ? theme.frameTextGC() : theme.disableTextGC() ) );
+// its a separator, it shouldn't be highlighted! or shown as disabled
+//            (highlight ? theme.hiliteTextGC() :
+//             (isEnabled() ? theme.frameTextGC() : theme.disableTextGC() ) );
+            theme.frameTextGC();
 
         drawable.drawRectangle(tgc.gc(),
                                x + theme.bevelWidth() + height + 1, y + height / 2,
