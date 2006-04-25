@@ -1,7 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/25:
-   * Cleanup unneeded headers (thanks Slava Semushin)
+   * Cleanup unneeded headers (thanks Semushin Slava)
      FbAtoms.cc Slit.cc Keys.cc FocusControl.cc FbTk/App.cc
      util/fbrun/FbRun.cc
    * Fix occasional highlighting of menu nops+separators, sf.net patch 
