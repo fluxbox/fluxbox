@@ -1,4 +1,4 @@
-// EventHandler.cc for Fluxbox Window Manager
+// EventHandler.hh for Fluxbox Window Manager
 // Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -21,7 +21,7 @@
 
 // $Id$
 
-/// @file holds EventHandler interface for X events
+/// @file EventHandler.hh holds EventHandler interface for X events
 
 #ifndef FBTK_EVENTHANDLER_HH
 #define FBTK_EVENTHANDLER_HH

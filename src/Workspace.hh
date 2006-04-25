@@ -42,8 +42,8 @@ class FluxboxWindow;
 class WinClient;
 
 /**
-    Handles a single workspace
-*/
+ * Handles a single workspace
+ */
 class Workspace:private FbTk::NotCopyable, private FbTk::Observer {
 public:
     typedef std::vector<FluxboxWindow *> Windows;
@@ -54,13 +54,17 @@ public:
 
     void setLastFocusedWindow(FluxboxWindow *w);
 
-    ///   Set workspace name
+    /// Set workspace name
     void setName(const std::string &name);
+    /// Deiconify all windows on this workspace
     void showAll();
     void hideAll(bool interrupt_moving);
+    /// Iconify all windows on this workspace
     void removeAll();
     void reconfigure();
     void shutdown();
+
+    /// Add @a win to this workspace, placing it if @a place is true
     void addWindow(FluxboxWindow &win, bool place = false);
     int removeWindow(FluxboxWindow *win, bool still_alive);
     void updateClientmenu();

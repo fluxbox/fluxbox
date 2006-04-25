@@ -22,7 +22,7 @@
 // $Id$
 
 /**
- @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
+ @file Theme.hh holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
 */
 
 #ifndef FBTK_THEME_HH

@@ -293,7 +293,8 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
 }
 
 BScreen::BScreen(FbTk::ResourceManager &rm,
-                 const string &screenname, const string &altscreenname,
+                 const std::string &screenname,
+                 const std::string &altscreenname,
                  int scrn, int num_layers) : 
     m_clientlist_sig(*this),  // client signal
     m_iconlist_sig(*this), // icon list signal

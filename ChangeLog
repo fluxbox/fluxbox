@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/25:
+   * Fix up comments for doxygen (Thanks Jonas Koelker)
+     Screen.cc CommandParser.cc Container.hh fluxbox.hh Workspace.hh 
+     ArrowButton.hh FbTk/Texture.cc FbTk/ThemeItems.cc FbTk/Texture.hh 
+     FbTk/Theme.hh FbTk/EventHandler.hh fluxbox.cc Remember.cc
    * Output the error message on fallback restart execs (sf patch#1475213)
      (Thanks Jonas Kölker, jonaskoelker at users.sourceforge.net).
      main.cc     

@@ -31,10 +31,10 @@ class ArrowButton: public FbTk::Button {
 public:
     enum Type { LEFT, RIGHT, UP, DOWN};
 
-    ArrowButton(Type arrow_type, const FbTk::FbWindow &parent,
+    ArrowButton(ArrowButton::Type arrow_type, const FbTk::FbWindow &parent,
                 int x, int y, 
                 unsigned int width, unsigned int height);
-    ArrowButton(Type arrow_type, int screen_num,
+    ArrowButton(ArrowButton::Type arrow_type, int screen_num,
                 int x, int y,
                 unsigned int width, unsigned int height);
     void clear();

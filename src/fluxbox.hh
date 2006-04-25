@@ -199,7 +199,7 @@ public:
     bool menuTimestampsChanged() const;
     bool haveShape() const { return m_have_shape; }
     int shapeEventbase() const { return m_shape_eventbase; }
-    void getDefaultDataFilename(char *, std::string &);
+    void getDefaultDataFilename(char *name, std::string &);
     // screen mouse was in at last key event
     BScreen *mouseScreen() { return m_mousescreen; }
     // screen of window that last key event (i.e. focused window) went to

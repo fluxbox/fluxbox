@@ -45,7 +45,7 @@ CommandFactory::~CommandFactory() {
 
 }
 
-void CommandFactory::addCommand(const string &command_name) {
+void CommandFactory::addCommand(const std::string &command_name) {
     CommandParser::instance().associateCommand(command_name, *this);
 }
 
@@ -62,7 +62,7 @@ CommandParser &CommandParser::instance() {
     return *s_singleton;
 }
 
-FbTk::Command *CommandParser::parseLine(const string &line) {
+FbTk::Command *CommandParser::parseLine(const std::string &line) {
 
     // parse arguments and command
     string command = line;

@@ -77,15 +77,19 @@ void Texture::setFromString(const char * const texture_str) {
                 addType(Texture::VERTICAL);
             else
                 addType(Texture::DIAGONAL);
-        } else // default is "solid", according to ThemeItems.cc
+        } else if (strstr(ts, "solid"))
             addType(Texture::SOLID);
+        else
+            addType(Texture::DEFAULT_BEVEL);
 
         if (strstr(ts, "raised"))
             addType(Texture::RAISED);
         else if (strstr(ts, "sunken"))
             addType(Texture::SUNKEN);
-        else // default us "flat", according to ThemeItems.cc
+        else if (strstr(ts, "flat"))
             addType(Texture::FLAT);
+        else
+            addType(Texture::DEFAULT_TEXTURE);
 
         if (! (type() & Texture::FLAT))
             if (strstr(ts, "bevel2"))

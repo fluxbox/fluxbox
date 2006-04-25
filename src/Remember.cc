@@ -297,7 +297,7 @@ Application * Remember::add(WinClient &winclient) {
     return app;
 }
 
-int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
+int Remember::parseApp(std::ifstream &file, Application &app, std::string *first_line) {
     string line;
     _FB_USES_NLS;
     int row = 0;

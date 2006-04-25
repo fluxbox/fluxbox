@@ -97,7 +97,7 @@ public:
     inline unsigned int maxHeightPerClient() const { return (empty() ? height() : height()/size()); }    
     inline bool updateLock() const { return m_update_lock; }
 
-    void for_each(std::mem_fun_t<void, FbWindow> function);
+    void for_each(std::mem_fun_t<void, FbTk::FbWindow> function);
     void setAlpha(unsigned char alpha); // set alpha on all windows
 
     ItemList::iterator begin() { return m_item_list.begin(); }

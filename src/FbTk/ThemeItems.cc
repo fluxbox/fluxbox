@@ -21,7 +21,7 @@
 
 // $Id$
 
-/// @file implements common theme items
+/// @file ThemeItems.cc implements common theme items
 
 #ifndef THEMEITEMS_HH
 #define THEMEITEMS_HH
@@ -71,7 +71,7 @@ void ThemeItem<string>::setFromString(const char *str) {
 }
 
 template <>
-void ThemeItem<int>::load(const string *name, const string *altname) { }
+void ThemeItem<int>::load(const std::string *name, const std::string *altname) { }
 
 template<>
 void ThemeItem<int>::setDefaultValue() {
@@ -233,7 +233,7 @@ void ThemeItem<Texture>::load(const string *o_name, const string *o_altname) {
 
 template <>
 void ThemeItem<Texture>::setDefaultValue() {
-    m_value.setType(Texture::FLAT | Texture::SOLID);
+    m_value.setType(Texture::DEFAULT_BEVEL | Texture::DEFAULT_TEXTURE);
     load(); // one might forget to add line something:  so we try to load something.*:  too
 }
 
