@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/04/25:
+   * Output the error message on fallback restart execs (sf patch#1475213)
+     (Thanks Jonas Kölker, jonaskoelker at users.sourceforge.net).
+     main.cc     
 *06/04/24:
    * Use -Wall when --enable-debug and some warning fixes 
      (Simon + thanks Jonas Koelker)

@@ -312,7 +312,11 @@ int main(int argc, char **argv) {
 
         // fall back in case the above execlp doesn't work
         execvp(argv[0], argv);
-        execvp(FbTk::StringUtil::basename(argv[0]).c_str(), argv);
+        perror(argv[0]);
+
+        const char *basename = FbTk::StringUtil::basename(argv[0]).c_str();
+        execvp(basename, argv);
+        perror(basename);
     }
 
     return exitcode;
