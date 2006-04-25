@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/25:
+   * fbrun: Move the cursor to the end when tab completing
+     (Simon + thanks Jonas Koelker), sf.net rfe #1333003, patch #1475578
+     util/fbrun/FbRun.hh/cc
    * Fix up comments for doxygen (Thanks Jonas Koelker)
      Screen.cc CommandParser.cc Container.hh fluxbox.hh Workspace.hh 
      ArrowButton.hh FbTk/Texture.cc FbTk/ThemeItems.cc FbTk/Texture.hh 

@@ -64,6 +64,7 @@ FbRun::FbRun(int x, int y, size_t width):
     m_gc(*this),
     m_end(false),
     m_current_history_item(0),
+    m_last_completion_prefix(""),
     m_current_apps_item(0),
     m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)) {
     
@@ -222,10 +223,11 @@ void FbRun::redrawLabel() {
 }
 
 void FbRun::keyPressEvent(XKeyEvent &ke) {
-    
+    // reset last completion prefix if we don't do a tab completion thing
+    bool did_tab_complete = false;
+
     ke.state = FbTk::KeyUtil::instance().cleanMods(ke.state);
 
-    int cp= cursorPosition();
     FbTk::TextBox::keyPressEvent(ke);
     KeySym ks;
     char keychar[1];
@@ -238,22 +240,26 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
         if ((ke.state & ControlMask) == ControlMask) {
             switch (ks) {
             case XK_p:
+                did_tab_complete = true;
                 prevHistoryItem();
                 break;
             case XK_n:
+                did_tab_complete = true;
                 nextHistoryItem();
                 break;
             case XK_Tab:
+                did_tab_complete = true;
                 tabCompleteHistory();
-                setCursorPosition(cp);
                 break;
             }
         } else if ((ke.state & (Mod1Mask|ShiftMask)) == (Mod1Mask | ShiftMask)) {
             switch (ks) {
             case XK_less:
+                did_tab_complete = true;
                 firstHistoryItem();
                 break;
             case XK_greater:
+                did_tab_complete = true;
                 lastHistoryItem();
                 break;
             }
@@ -276,12 +282,14 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
             nextHistoryItem();
             break;
         case XK_Tab:
+            did_tab_complete = true;
             tabCompleteApps();
-            setCursorPosition(cp);
             break;
         }
     }
     clear();
+    if (!did_tab_complete)
+        m_last_completion_prefix = "";
 }
 
 void FbRun::lockPosition(bool size_too) {
@@ -347,11 +355,14 @@ void FbRun::tabCompleteHistory() {
     } else {
         unsigned int nr= 0;
         unsigned int history_item = m_current_history_item - 1;
-        string prefix = text().substr(0, textStartPos() + cursorPosition());
+        if (m_last_completion_prefix.empty())
+            m_last_completion_prefix = text().substr(0, textStartPos() + cursorPosition());
+
         while (history_item != m_current_history_item && nr++ < m_history.size()) {
-            if (m_history[history_item].find(prefix) == 0) {
+            if (m_history[history_item].find(m_last_completion_prefix) == 0) {
                 m_current_history_item = history_item;
                 setText(m_history[m_current_history_item]);
+                cursorEnd();
                 break;
             }
             if (history_item == 0) // loop
@@ -365,15 +376,16 @@ void FbRun::tabCompleteHistory() {
 void FbRun::tabCompleteApps() {
   
     static bool first_run= true;
-    static string saved_prefix= "";
-    string prefix= text().substr(0, textStartPos() + cursorPosition());
+    if (m_last_completion_prefix.empty())
+        m_last_completion_prefix = text().substr(0, textStartPos() + cursorPosition());
+    string prefix = m_last_completion_prefix;
     FbTk::Directory dir;
 
     bool add_dirs= false;
     bool changed_prefix= false;
 
     // (re)build m_apps-container
-    if (first_run || saved_prefix != prefix) {
+    if (first_run || m_last_completion_prefix != prefix) {
         first_run= false;
         
         string path;
@@ -430,7 +442,7 @@ void FbRun::tabCompleteApps() {
         sort(m_apps.begin(), m_apps.end());
         unique(m_apps.begin(), m_apps.end());
 
-        saved_prefix= prefix;
+        m_last_completion_prefix = prefix;
         changed_prefix= true;
         m_current_apps_item= 0;
     }
@@ -456,6 +468,7 @@ void FbRun::tabCompleteApps() {
                     setText(m_apps[m_current_apps_item] +  "/");
                 else
                     setText(m_apps[m_current_apps_item]);
+                cursorEnd();
                 break;
             }
             apps_item++;

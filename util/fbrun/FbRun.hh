@@ -93,6 +93,7 @@ private:
     std::vector<std::string> m_history; ///< history list of commands
     std::string m_history_file; ///< holds filename for command history file
     size_t m_current_history_item; ///< holds current position in command history
+    std::string m_last_completion_prefix; ///< last prefix we completed on
     
     typedef std::vector<std::string> AppsContainer;
     typedef AppsContainer::iterator AppsContainerIt;
