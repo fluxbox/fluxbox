@@ -25,11 +25,6 @@
 #include "App.hh"
 
 #include <string>
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
 
 using namespace std;
 

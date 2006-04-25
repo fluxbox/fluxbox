@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/04/25:
+   * Cleanup unneeded headers (thanks Slava Semushin)
+     FbAtoms.cc Slit.cc Keys.cc FocusControl.cc FbTk/App.cc
+     util/fbrun/FbRun.cc
    * Fix occasional highlighting of menu nops+separators, sf.net patch 
      #1475268 (thanks Scott Kuhl; skuhl AT cs utah edu)
      FbTk/MenuSeparator.hh/cc FbTk/Menu.cc MenuCreator.cc

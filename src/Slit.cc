@@ -67,11 +67,6 @@
 
 #include <algorithm>
 #include <iostream>
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/types.h>

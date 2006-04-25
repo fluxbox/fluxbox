@@ -87,11 +87,6 @@
 #include <fstream>
 #include <vector>
 #include <map>
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
 #include <memory>
 
 using namespace std;

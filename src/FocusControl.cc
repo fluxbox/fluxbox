@@ -31,8 +31,8 @@
 #include "FbWinFrameTheme.hh"
 
 #include <string>
-#include <cassert>
 #include <iostream>
+
 using std::cerr;
 using std::endl;
 using std::string;

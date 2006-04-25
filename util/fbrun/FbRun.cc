@@ -48,13 +48,9 @@
 #include <iterator>
 #include <fstream>
 #include <algorithm>
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
 
 using namespace std;
+
 FbRun::FbRun(int x, int y, size_t width):
     FbTk::TextBox(DefaultScreen(FbTk::App::instance()->display()),
                   m_font, ""),
@@ -67,7 +63,7 @@ FbRun::FbRun(int x, int y, size_t width):
     m_last_completion_prefix(""),
     m_current_apps_item(0),
     m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)) {
-    
+
     setGC(m_gc.gc());
     setCursor(m_cursor);
     // setting nomaximize in local resize
@@ -78,9 +74,9 @@ FbRun::FbRun(int x, int y, size_t width):
     if (class_hint == 0)
         throw string("Out of memory");
     class_hint->res_name = "fbrun";
-    class_hint->res_class = "FbRun";    
+    class_hint->res_class = "FbRun";
     XSetClassHint(m_display, window(), class_hint);
-    
+
     XFree(class_hint);
 #ifdef HAVE_XPM
     Pixmap mask = 0;
@@ -123,7 +119,7 @@ void FbRun::run(const std::string &command) {
     }
 
     hide(); // hide gui
-    
+
     // save command history to file
     if (text().size() != 0) { // no need to save empty command
 
@@ -134,7 +130,7 @@ void FbRun::run(const std::string &command) {
             // m_current_history_item is the duplicate
         } else {
             m_current_history_item = 0;
-            for (; m_current_history_item < m_history.size(); 
+            for (; m_current_history_item < m_history.size();
                  ++m_current_history_item) {
                 if (m_history[m_current_history_item] == text())
                     break;
@@ -154,7 +150,7 @@ void FbRun::run(const std::string &command) {
                 // write the history items that come after current
                 for (i++; i < m_history.size(); i++)
                     inoutfile<<m_history[i]<<endl;
-                
+
             } else {
                 // set put-pointer at end of file
                 inoutfile.seekp(0, ios::end);
@@ -215,7 +211,7 @@ void FbRun::setTitle(const string &title) {
 }
 
 void FbRun::resize(unsigned int width, unsigned int height) {
-    FbTk::TextBox::resize(width, height);    
+    FbTk::TextBox::resize(width, height);
 }
 
 void FbRun::redrawLabel() {
@@ -233,7 +229,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
     char keychar[1];
     XLookupString(&ke, keychar, 1, &ks, 0);
     // a modifier key by itself doesn't do anything
-    if (IsModifierKey(ks)) 
+    if (IsModifierKey(ks))
         return;
 
     if (FbTk::KeyUtil::instance().isolateModifierMask(ke.state)) { // a modifier key is down
@@ -374,7 +370,7 @@ void FbRun::tabCompleteHistory() {
 }
 
 void FbRun::tabCompleteApps() {
-  
+
     static bool first_run= true;
     if (m_last_completion_prefix.empty())
         m_last_completion_prefix = text().substr(0, textStartPos() + cursorPosition());
@@ -387,19 +383,21 @@ void FbRun::tabCompleteApps() {
     // (re)build m_apps-container
     if (first_run || m_last_completion_prefix != prefix) {
         first_run= false;
-        
+
         string path;
-        
-        if(!prefix.empty() && 
+
+        if(!prefix.empty() &&
             string("/.~").find_first_of(prefix[0]) != string::npos) {
             size_t rseparator= prefix.find_last_of("/");
             path= prefix.substr(0, rseparator + 1) +  ":";
             add_dirs= true;
-        } else
-            path= getenv("PATH");
-
+        } else {
+            char* tmp_path = getenv("PATH");
+            if (tmp_path)
+                path = tmp_path;
+        }
         m_apps.clear();
-        
+
         unsigned int l;
         unsigned int r;
 
@@ -412,27 +410,27 @@ void FbRun::tabCompleteApps() {
                 if (n >= 0) {
                     while(n--) {
                         filename= dir.readFilename();
-                        fncomplete= dir.name() + 
-                                    (*dir.name().rbegin() != '/' ? "/" : "") + 
+                        fncomplete= dir.name() +
+                                    (*dir.name().rbegin() != '/' ? "/" : "") +
                                     filename;
 
                         // directories in dirmode ?
                         if (add_dirs && FbTk::FileUtil::isDirectory(fncomplete.c_str()) &&
                             filename != ".." && filename != ".") {
-                            m_apps.push_back(fncomplete); 
+                            m_apps.push_back(fncomplete);
                         // executables in dirmode ?
-                        } else if (add_dirs && FbTk::FileUtil::isRegularFile(fncomplete.c_str()) && 
-                                   FbTk::FileUtil::isExecutable(fncomplete.c_str()) && 
-                                   (prefix == "" || 
+                        } else if (add_dirs && FbTk::FileUtil::isRegularFile(fncomplete.c_str()) &&
+                                   FbTk::FileUtil::isExecutable(fncomplete.c_str()) &&
+                                   (prefix == "" ||
                                     fncomplete.substr(0, prefix.size()) == prefix)) {
                             m_apps.push_back(fncomplete);
                         // executables in $PATH ?
-                        } else if (FbTk::FileUtil::isRegularFile(fncomplete.c_str()) && 
-                                   FbTk::FileUtil::isExecutable(fncomplete.c_str()) && 
-                                   (prefix == "" || 
+                        } else if (FbTk::FileUtil::isRegularFile(fncomplete.c_str()) &&
+                                   FbTk::FileUtil::isExecutable(fncomplete.c_str()) &&
+                                   (prefix == "" ||
                                     filename.substr(0, prefix.size()) == prefix)) {
                             m_apps.push_back(filename);
-                        } 
+                        }
                     }
                 }
                 l= r + 1;
@@ -473,7 +471,7 @@ void FbRun::tabCompleteApps() {
             }
             apps_item++;
         }
-        if (!changed_prefix && apps_item == m_current_apps_item) 
+        if (!changed_prefix && apps_item == m_current_apps_item)
             XBell(m_display, 0);
     }
 }
