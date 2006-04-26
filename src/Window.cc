@@ -678,6 +678,12 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     } else { // client.fbwindow() == 0
         associateClient(client);
 
+        moveResizeClient(client,
+                         frame().clientArea().x(),
+                         frame().clientArea().y(),
+                         frame().clientArea().width(),
+                         frame().clientArea().height());
+
         if (&client == focused_win)
             was_focused = focused_win;
 
