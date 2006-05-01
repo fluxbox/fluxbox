@@ -49,7 +49,6 @@
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -60,6 +59,10 @@
 using namespace std;
 
 namespace {
+
+bool getuint(const char *val, unsigned int &ret) {
+    return (sscanf(val, "%ui", &ret) == 1);
+}
 
 class RememberMenuItem : public FbTk::MenuItem {
 public:
@@ -93,6 +96,8 @@ public:
     }
 
     void click(int button, int time) {
+        // reconfigure only does stuff if the apps file has changed
+        Remember::instance().reconfigure();
         if (WindowCmd<void>::window() != 0) {
             if (isSelected()) {
                 Remember::instance().forgetAttrib(WindowCmd<void>::window()->winClient(), m_attrib);
@@ -154,7 +159,7 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
 bool handleStartupItem(const string &line, int offset) {
     int next = 0;
     string str;
-    int screen = 0;
+    unsigned int screen = 0;
 
     // accept some options, for now only "screen=NN"
     // these option are given in parentheses before the command
@@ -168,9 +173,8 @@ bool handleStartupItem(const string &line, int offset) {
         bool error = false;
         if (pos > 0) {
             option = str.substr(0, pos);
-            if (option == "screen") {
-                FbTk_istringstream iss(str.c_str() + pos + 1);
-                iss >> screen;
+            if (strcasecmp(option.c_str(), "screen") == 0) {
+                error = getuint(str.c_str() + pos + 1, screen);
             } else {
                 error = true;
             }
@@ -337,45 +341,50 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
             } else
                 continue; //read next line
 
+            bool had_error = false;
+
             if (!str_key.size())
                 continue; //read next line
-            if (str_key == "Workspace") {
+            if (strcasecmp(str_key.c_str(), "Workspace") == 0) {
                 unsigned int w;
-                FbTk_istringstream iss(str_label.c_str());
-                iss >> w;
-                app.rememberWorkspace(w);
-            } else if (str_key == "Head") {
-                int h = atoi(str_label.c_str());
-                app.rememberHead(h);
-            } else if (str_key == "Layer") {
+                if (getuint(str_label.c_str(), w)) 
+                    app.rememberWorkspace(w);
+                else
+                    had_error = true;
+            } else if (strcasecmp(str_key.c_str(), "Head") == 0) {
+                unsigned int h;
+                if (getuint(str_label.c_str(), h)) 
+                    app.rememberHead(h);
+                else
+                    had_error = true;
+            } else if (strcasecmp(str_key.c_str(), "Layer") == 0) {
                 unsigned int l;
-                if (str_label == "DESKTOP") {
+                if (strcasecmp(str_label.c_str(), "DESKTOP") == 0) {
                     l = Layer::DESKTOP;
-                } else if (str_label == "BOTTOM") {
+                } else if (strcasecmp(str_label.c_str(), "BOTTOM") == 0) {
                     l = Layer::BOTTOM;
-                } else if (str_label == "NORMAL") {
+                } else if (strcasecmp(str_label.c_str(), "NORMAL") == 0) {
                     l = Layer::NORMAL;
-                } else if (str_label == "TOP") {
+                } else if (strcasecmp(str_label.c_str(), "TOP") == 0) {
                     l = Layer::TOP;
-                } else if (str_label == "DOCK") {
+                } else if (strcasecmp(str_label.c_str(), "DOCK") == 0) {
                     l = Layer::DOCK;
-                } else if (str_label == "ABOVEDOCK") {
+                } else if (strcasecmp(str_label.c_str(), "ABOVEDOCK") == 0) {
                     l = Layer::ABOVE_DOCK;
-                } else if (str_label == "MENU") {
+                } else if (strcasecmp(str_label.c_str(), "MENU") == 0) {
                     l = Layer::MENU;
-                } else {
-                    FbTk_istringstream iss(str_label.c_str());
-                    iss >> l;
+                } else if (!getuint(str_label.c_str(), l)) {
+                    had_error = true;
                 }
-                app.rememberLayer(l);
-            } else if (str_key == "Dimensions") {
+                if (!had_error)
+                    app.rememberLayer(l);
+            } else if (strcasecmp(str_key.c_str(), "Dimensions") == 0) {
                 unsigned int h,w;
-                FbTk_istringstream iss(str_label.c_str());
-                iss >> w >> h;
-
-                app.rememberDimensions(w, h);
-
-            } else if (str_key == "Position") {
+                if (sscanf(str_label.c_str(), "%i %i", &w, &h) == 2)
+                    app.rememberDimensions(w, h);
+                else
+                    had_error = true;
+            } else if (strcasecmp(str_key.c_str(), "Position") == 0) {
                 unsigned int r= 0;
                 unsigned int x= 0;
                 unsigned int y= 0;
@@ -384,55 +393,55 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
 
                 if ( str_option.length() )
                     {
-                        if      ( str_option == "UPPERLEFT"  ) r= POS_UPPERLEFT;
-                        else if ( str_option == "UPPERRIGHT" ) r= POS_UPPERRIGHT;
-                        else if ( str_option == "LOWERLEFT"  ) r= POS_LOWERLEFT;
-                        else if ( str_option == "LOWERRIGHT" ) r= POS_LOWERRIGHT;
-                        else if ( str_option == "CENTER" )     r= POS_CENTER;
-                        else if ( str_option == "WINCENTER" )  r= POS_WINCENTER;
-                        else {
-                            FbTk_istringstream iss_r(str_option.c_str());
-                            iss_r >> r;
+                        if      (strcasecmp(str_option.c_str(), "UPPERLEFT") == 0) r= POS_UPPERLEFT;
+                        else if (strcasecmp(str_option.c_str(), "UPPERRIGHT") == 0) r= POS_UPPERRIGHT;
+                        else if (strcasecmp(str_option.c_str(), "LOWERLEFT") == 0) r= POS_LOWERLEFT;
+                        else if (strcasecmp(str_option.c_str(), "LOWERRIGHT") == 0) r= POS_LOWERRIGHT;
+                        else if (strcasecmp(str_option.c_str(), "CENTER") == 0)     r= POS_CENTER;
+                        else if (strcasecmp(str_option.c_str(), "WINCENTER") == 0)  r= POS_WINCENTER;
+                        else if (!getuint(str_option.c_str(), r)) {
+                            had_error = 1;
                         }
                     }
 
-                FbTk_istringstream iss_xy(str_label.c_str());
-                iss_xy >> x >> y;
-                app.rememberPosition(x, y, r);
-            } else if (str_key == "Shaded") {
-                app.rememberShadedstate((str_label=="yes"));
-            } else if (str_key == "Tab") {
-                app.rememberTabstate((str_label=="yes"));
-            } else if (str_key == "FocusHidden") {
-                app.rememberFocusHiddenstate((str_label=="yes"));
-            } else if (str_key == "IconHidden") {
-                app.rememberIconHiddenstate((str_label=="yes"));
-            } else if (str_key == "Hidden") {
-                app.rememberIconHiddenstate((str_label=="yes"));
-                app.rememberFocusHiddenstate((str_label=="yes"));
-            } else if (str_key == "Deco") {
-                if (str_label == "NONE") {
+                if (!had_error && sscanf(str_label.c_str(), "%i %i", &x, &y) == 2) 
+                    app.rememberPosition(x, y, r);
+                else
+                    had_error = true;
+            } else if (strcasecmp(str_key.c_str(), "Shaded") == 0) {
+                app.rememberShadedstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "Tab") == 0) {
+                app.rememberTabstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "FocusHidden") == 0) {
+                app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "IconHidden") == 0) {
+                app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "Hidden") == 0) {
+                app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "Deco") == 0) {
+                if (strcasecmp(str_label.c_str(), "NONE") == 0) {
                     app.rememberDecostate((unsigned int) 0);
-                } else if (str_label == "NORMAL") {
+                } else if (strcasecmp(str_label.c_str(), "NORMAL") == 0) {
                     app.rememberDecostate((unsigned int) 0xfffffff);
-                } else if (str_label == "TINY") {
+                } else if (strcasecmp(str_label.c_str(), "TINY") == 0) {
                     app.rememberDecostate((unsigned int)
                                           FluxboxWindow::DECORM_TITLEBAR
                                           | FluxboxWindow::DECORM_ICONIFY
                                           | FluxboxWindow::DECORM_MENU
                                           | FluxboxWindow::DECORM_TAB
                                           );
-                } else if (str_label == "TOOL") {
+                } else if (strcasecmp(str_label.c_str(), "TOOL") == 0) {
                     app.rememberDecostate((unsigned int)
                                           FluxboxWindow::DECORM_TITLEBAR
                                           | FluxboxWindow::DECORM_MENU
                                           );
-                } else if (str_label == "BORDER") {
+                } else if (strcasecmp(str_label.c_str(), "BORDER") == 0) {
                     app.rememberDecostate((unsigned int)
                                           FluxboxWindow::DECORM_BORDER
                                           | FluxboxWindow::DECORM_MENU
                                           );
-                } else if (str_label == "TAB") {
+                } else if (strcasecmp(str_label.c_str(), "TAB") == 0) {
                     app.rememberDecostate((unsigned int)
                                           FluxboxWindow::DECORM_BORDER
                                           | FluxboxWindow::DECORM_MENU
@@ -440,27 +449,24 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
                                           );
                 } else {
                     unsigned int mask;
-                    const char * str = str_label.c_str();
-                    // it'll have at least one char and \0, so this is safe
-                    FbTk_istringstream iss(str);
-                    // check for hex
-                    if (str[0] == '0' && str[1] == 'x') {
-                        iss.seekg(2);
-                        iss >> hex;
-                    }
-                    iss >> mask ;
-                    app.rememberDecostate(mask);
+                    if (getuint(str_label.c_str(), mask))
+                        app.rememberDecostate(mask);
+                    else
+                        had_error = 1;
                 }
-            } else if (str_key == "Sticky") {
-                app.rememberStuckstate((str_label=="yes"));
-            } else if (str_key == "Jump") {
-                app.rememberJumpworkspace((str_label=="yes"));
-            } else if (str_key == "Close") {
-                app.rememberSaveOnClose((str_label=="yes"));
-            } else if (str_key == "end") {
+            } else if (strcasecmp(str_key.c_str(), "Sticky") == 0) {
+                app.rememberStuckstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "Jump") == 0) {
+                app.rememberJumpworkspace((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "Close") == 0) {
+                app.rememberSaveOnClose((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "end") == 0) {
                 return row;
             } else {
                 cerr << _FBTEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
+            }
+            if (had_error) {
+                cerr<<"Error parsing apps entry: ("<<line<<")"<<endl;
             }
         }
     }
@@ -545,7 +551,7 @@ void Remember::reconfigure() {
                                                              line.c_str(),
                                                              '[', ']');
 
-                if (pos > 0 && key == "app") {
+                if (pos > 0 && strcasecmp(key.c_str(), "app") == 0) {
                     ClientPattern *pat = new ClientPattern(line.c_str() + pos);
                     if (!in_group) {
                         if ((err = pat->error()) == 0) {
@@ -562,13 +568,13 @@ void Remember::reconfigure() {
                     } else {
                         grouped_pats.push_back(pat);
                     }
-                } else if (pos > 0 && key == "startup") {
+                } else if (pos > 0 && strcasecmp(key.c_str(), "startup") == 0) {
                     if (!handleStartupItem(line, pos)) {
                         cerr<<"Error reading apps file at line "<<row<<"."<<endl;
                     }
                     // save the item even if it was bad (aren't we nice)
                     m_startups.push_back(line.substr(pos));
-                } else if (pos > 0 && key == "group") {
+                } else if (pos > 0 && strcasecmp(key.c_str(), "group") == 0) {
                     in_group = true;
                 } else if (in_group) {
                     // otherwise assume that it is the start of the attributes
@@ -593,7 +599,7 @@ void Remember::reconfigure() {
                     // we hit end... probably don't have attribs for the group
                     // so finish it off with an empty application
                     // otherwise parse the app
-                    if (!(pos>0 && key == "end")) {
+                    if (!(pos>0 && strcasecmp(key.c_str(), "end") == 0)) {
                         row += parseApp(apps_file, *app, &line);
                     }
                     in_group = false;
@@ -745,6 +751,11 @@ void Remember::save() {
                   | FluxboxWindow::DECORM_MENU):
                 apps_file << "  [Deco]\t{BORDER}" << endl;
                 break;
+            case (FluxboxWindow::DECORM_BORDER
+                  | FluxboxWindow::DECORM_MENU
+                  | FluxboxWindow::DECORM_TAB):
+                apps_file << "  [Deco]\t{TAB}" << endl;
+                break;
             default:
                 apps_file << "  [Deco]\t{0x"<<hex<<a.decostate<<dec<<"}"<<endl;
                 break;
@@ -775,6 +786,12 @@ void Remember::save() {
         }
         apps_file << "[end]" << endl;
     }
+    apps_file.close();
+
+    time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(apps_string.c_str());
+    if (timestamp > 0)
+        m_last_timestamp = timestamp;
+
 }
 
 bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
@@ -1040,6 +1057,7 @@ void Remember::setupClient(WinClient &winclient) {
 }
 
 void Remember::updateClientClose(WinClient &winclient) {
+    reconfigure(); // reload if it's changed
     Application *app = find(winclient);
 
     if (app && (app->save_on_close_remember && app->save_on_close)) {

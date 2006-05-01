@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/05/01:
+   * Make apps file keywords case insensitive, plus reload it (if newer)
+     before save on close and remember menu events (Simon)
+     Remember.cc
 *06/04/26:
    * Fix resizing of client window when autogroup from apps (Simon)
      Window.cc
