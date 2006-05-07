@@ -27,6 +27,7 @@
 #include "EventManager.hh"
 #include "GContext.hh"
 #include "Color.hh"
+#include "FbString.hh"
 
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
@@ -180,8 +181,10 @@ int main(int argc, char **argv) {
         cerr<<"Orientation not valid ("<<orient<<")"<<endl;
         orient = FbTk::ROT0;
     }
+    // utf-8 it
+
     cerr<<"Setting text: "<<text<<endl;
-    app.setText(text, orient);
+    app.setText(FbTk::FbStringUtil::XStrToFb(text), orient);
 
     app.redraw();
     app.eventLoop();

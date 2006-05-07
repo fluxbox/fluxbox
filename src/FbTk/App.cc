@@ -20,6 +20,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "App.hh"
+#include "FbString.hh"
 #include "Font.hh"
 #include "Image.hh"
 
@@ -49,15 +50,16 @@ App::App(const char *displayname):m_done(false), m_display(0) {
     if (!m_display)
         throw std::string("Couldn't connect to XServer");
 
-    Font::init();
+    FbStringUtil::init();
     Image::init();
 }
 
 App::~App() {
     if (m_display != 0) {
-        
+
         Font::shutdown();
         Image::shutdown();
+        FbStringUtil::shutdown();
         
         XCloseDisplay(m_display);
         m_display = 0;

@@ -26,6 +26,7 @@
 
 #include "FbTk/I18n.hh"
 #include "FbTk/App.hh"
+#include "FbTk/FbString.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -35,7 +36,7 @@ using namespace std;
 
 namespace Xutil {
 
-std::string getWMName(Window window) {
+FbTk::FbString getWMName(Window window) {
 
     if (window == None)
         return "";
@@ -58,22 +59,22 @@ std::string getWMName(Window window) {
                 if ((XmbTextPropertyToTextList(display, &text_prop,
                                                &list, &num) == Success) &&
                     (num > 0) && *list) {
-                    name = static_cast<char *>(*list);
+                    name = FbTk::FbStringUtil::LocaleStrToFb(static_cast<char *>(*list));
                     XFreeStringList(list);
                 } else
-                    name = text_prop.value ? (char *)text_prop.value : "";
+                    name = text_prop.value ? FbTk::FbStringUtil::XStrToFb((char *)text_prop.value) : "";
 					
-            } else				
-                name = text_prop.value ? (char *)text_prop.value : "";
+            } else
+                name = text_prop.value ? FbTk::FbStringUtil::XStrToFb((char *)text_prop.value) : "";
 
             XFree(text_prop.value);
 
         } else { // default name
-            name = _FBTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
+            name = FbTk::FbStringUtil::LocaleStrToFb(_FBTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME"));
         }
     } else {
         // default name
-        name = _FBTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
+        name = FbTk::FbStringUtil::LocaleStrToFb(_FBTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME"));
     }
 
     return name;

@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/05/07:
+   * Handle UTF-8 strings properly (Simon)
+     - still need to integrate EWMH strings properly (they are utf8)
+     - still need to fix up TextBox
+     FbTk/... FbString.hh/cc App.cc FOnt.hh/cc FontImp.hh Makefile.am 
+       XFontImp.hh/cc XmbFontImp.hh/cc XftFontImp.hh/cc TextButton.cc
+     Window.cc Xutil.hh/cc tests/testFont.cc
 *06/05/01:
    * Make apps file keywords case insensitive, plus reload it (if newer)
      before save on close and remember menu events (Simon)

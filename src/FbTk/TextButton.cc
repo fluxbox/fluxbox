@@ -133,7 +133,7 @@ void TextButton::clearArea(int x, int y,
 
 
 unsigned int TextButton::textWidth() const {
-    return font().textWidth(text().c_str(), text().size());
+    return font().textWidth(text().data(), text().size());
 }
 
 unsigned int TextButton::textHeight() const {
@@ -157,7 +157,7 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
                                     bevel(),
                                     justify(),
                                     font(),
-                                    text().c_str(), text().size(),
+                                    text().data(), text().size(),
                                     textlen); // return new text lne
 
     // center text by default
@@ -175,7 +175,7 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
     font().drawText(*drawable,
                     screenNumber(),
                     gc(), // graphic context
-                    text().c_str(), textlen, // string and string size
+                    text().data(), textlen, // string and string size
                     textx, texty, m_orientation); // position
 }
 

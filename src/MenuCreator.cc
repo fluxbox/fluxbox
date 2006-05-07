@@ -188,6 +188,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
     } else if (str_key == "nop") {
         int menuSize = menu.insert(str_label.c_str());
         menu.setItemEnabled(menuSize-1, false);
+        menu.setItemEnabled(menuSize-1, false);
     } else if (str_key == "icons") {
         FbTk::Menu *submenu = MenuCreator::createMenuType("iconmenu", menu.screenNumber());
         if (submenu == 0)

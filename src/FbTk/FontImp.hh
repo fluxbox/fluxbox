@@ -44,8 +44,8 @@ class FontImp {
 public:
     virtual ~FontImp() { }
     virtual bool load(const std::string &name) = 0;
-    virtual void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const = 0;
-    virtual unsigned int textWidth(const char * const text, unsigned int size) const = 0;
+    virtual void drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const = 0;
+    virtual unsigned int textWidth(const FbString &text, unsigned int size) const = 0;
     virtual bool validOrientation(FbTk::Orientation orient) { return orient == ROT0; }
     virtual int ascent() const = 0;
     virtual int descent() const = 0;

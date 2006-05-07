@@ -27,16 +27,11 @@
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
-#include <string>
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#ifdef HAVE_ICONV
-#include <iconv.h>
-#endif // HAVE_ICONV
-
+#include "FbString.hh"
 #include "Color.hh"
 #include "Text.hh"
 
@@ -51,10 +46,7 @@ class FbDrawable;
 class Font {
 public:
 
-    /// called at FbTk::App creation time, initializes some stuff
-    static void init();
-
-    /// called at FbTk::App destruction time, cleans up what was inited first
+    /// called at FbTk::App destruction time, cleans up cache
     static void shutdown();
 
     /// @return true if multibyte is enabled, else false
@@ -86,7 +78,7 @@ public:
        @param size length of text in bytes
        @return size of text in pixels
     */
-    unsigned int textWidth(const char * const text, unsigned int size) const;
+    unsigned int textWidth(const FbString &text, unsigned int size) const;
     unsigned int height() const;
     int ascent() const;
     int descent() const;
@@ -110,7 +102,7 @@ public:
        @param rotate if the text should be drawn rotated (if it's rotated before)
     */
     void drawText(const FbDrawable &w, int screen, GC gc,
-                  const char *text, size_t len,
+                  const FbString &text, size_t len,
                   int x, int y, FbTk::Orientation orient = ROT0) const;
 
     bool hasShadow() const { return m_shadow; }
@@ -130,11 +122,6 @@ private:
     int m_shadow_offy; ///< offset x for shadow
     bool m_halo; ///< halo text
     Color m_halo_color; ///< halo color
-#ifdef HAVE_ICONV
-    iconv_t m_iconv;
-#else
-    int m_iconv;
-#endif // HAVE_ICONV
 };
 
 } //end namespace FbTk

@@ -439,7 +439,7 @@ void FluxboxWindow::init() {
         decorations.sticky = decorations.shade = decorations.tab = true;
 
 
-    functions.resize = functions.move = functions.iconify = functions.maximize = functions.tabable = true;
+    functions.resize = functions.move = functions.iconify = functions.maximize = functions.close = functions.tabable = true;
     decorations.close = false;
 
     if (m_client->getBlackboxHint() != 0)

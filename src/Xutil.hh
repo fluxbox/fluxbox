@@ -26,12 +26,13 @@
 #define XUTIL_HH
 
 #include <X11/Xlib.h>
+#include "FbTk/FbString.hh"
 
 #include <string>
 
 namespace Xutil {
 
-std::string getWMName(Window window);
+FbTk::FbString getWMName(Window window);
 
 std::string getWMClassName(Window win);
 std::string getWMClassClass(Window win);

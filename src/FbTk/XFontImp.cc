@@ -81,7 +81,7 @@ bool XFontImp::load(const std::string &fontname) {
     return true;
 }
 
-void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const {
+void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const {
     if (m_fontstruct == 0)
         return;
 
@@ -91,15 +91,23 @@ void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text
         return;
     }
 
+    std::string localestr = text;
+    localestr.erase(len, std::string::npos);
+    localestr = FbStringUtil::FbStrToLocale(localestr);
+
     XSetFont(w.display(), gc, m_fontstruct->fid);
-    XDrawString(w.display(), w.drawable(), gc, x, y, text, len);
+    XDrawString(w.display(), w.drawable(), gc, x, y, localestr.data(), localestr.size());
 }
 
-unsigned int XFontImp::textWidth(const char * const text, unsigned int size) const {
-    if (text == 0 || m_fontstruct == 0)
+unsigned int XFontImp::textWidth(const FbString &text, unsigned int size) const {
+    if (text.empty() || m_fontstruct == 0)
         return 0;
 
-    return XTextWidth(m_fontstruct, text, size);
+    std::string localestr = text;
+    localestr.erase(size, std::string::npos);
+    localestr = FbStringUtil::FbStrToLocale(localestr);
+
+    return XTextWidth(m_fontstruct, localestr.data(), localestr.size());
 }
 
 unsigned int XFontImp::height() const {
@@ -308,7 +316,7 @@ void XFontImp::freeRotFont(XRotFontStruct *rotfont) {
     rotfont = 0;
 }
 
-void XFontImp::drawRotText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const {            
+void XFontImp::drawRotText(Drawable w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const {            
 
     Display *dpy = App::instance()->display();
     static GC my_gc = 0;
@@ -316,7 +324,7 @@ void XFontImp::drawRotText(Drawable w, int screen, GC gc, const char *text, size
 
     XRotFontStruct *rotfont = m_rotfonts[orient];
 
-    if (text == NULL || len<1)
+    if (text.empty() || len<1)
         return;
 
     if (my_gc == 0)
@@ -327,10 +335,16 @@ void XFontImp::drawRotText(Drawable w, int screen, GC gc, const char *text, size
     // vertical or upside down
 
     XSetFillStyle(dpy, my_gc, FillStippled);
+    std::string localestr = text;
+    localestr.erase(len, std::string::npos);
+    localestr = FbStringUtil::FbStrToLocale(localestr);
+    const char *ctext = localestr.data();
+    len = localestr.size();
+
 
     // loop through each character in texting
     for (size_t i = 0; i<len; i++) {
-        ichar = text[i]-32;
+        ichar = ctext[i]-32;
 
         // make sure it's a printing character
         if (ichar >= 0 && ichar<95) {

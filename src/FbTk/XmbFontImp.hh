@@ -36,8 +36,8 @@ public:
     XmbFontImp(const char *fontname, bool utf8);
     ~XmbFontImp();
     bool load(const std::string &name);
-    virtual void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y, FbTk::Orientation orient) const;
-    unsigned int textWidth(const char * const text, unsigned int len) const;
+    virtual void drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const;
+    unsigned int textWidth(const FbString &text, unsigned int len) const;
     unsigned int height() const;
     int ascent() const { return m_setextents ? -m_setextents->max_ink_extent.y : 0; }
     int descent() const { return m_setextents ? m_setextents->max_ink_extent.height + m_setextents->max_ink_extent.y : 0; }
