@@ -38,6 +38,7 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/FbString.hh"
 
 // use GNU extensions
 #ifndef  _GNU_SOURCE
@@ -376,7 +377,7 @@ void Workspace::setName(const std::string &name) {
                 _FBTEXT(Workspace, DefaultNameFormat, 
                         "Workspace %d", "Default workspace names, with a %d for the workspace number"),
                 m_id + 1); //m_id starts at 0
-        m_name = tname;
+        m_name = FbTk::FbStringUtil::LocaleStrToFb(tname);
     }
     
     screen().updateWorkspaceNamesAtom();

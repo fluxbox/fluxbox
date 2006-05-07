@@ -90,7 +90,7 @@ unsigned int WorkspaceNameTool::width() const {
     BScreen::Workspaces::const_iterator it;
     for (it = workspaces.begin(); it != workspaces.end(); it++) {
         const std::string &name = (*it)->name();
-        max_size = std::max(m_theme.font().textWidth(name.c_str(), name.size()), 
+        max_size = std::max(m_theme.font().textWidth(name, name.size()), 
                             max_size);
     }
     // so align text dont cut the last character
@@ -108,7 +108,7 @@ unsigned int WorkspaceNameTool::height() const {
     BScreen::Workspaces::const_iterator it;
     for (it = workspaces.begin(); it != workspaces.end(); it++) {
         const std::string &name = (*it)->name();
-        max_size = std::max(m_theme.font().textWidth(name.c_str(), name.size()), 
+        max_size = std::max(m_theme.font().textWidth(name, name.size()), 
                             max_size);
     }
     // so align text dont cut the last character

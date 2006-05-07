@@ -27,9 +27,9 @@
 #include "Window.hh"
 #include "Subject.hh"
 #include "FbWindow.hh"
+#include "FbTk/FbString.hh"
 
 #include <X11/Xutil.h>
-#include <string>
 
 class BScreen;
 class Strut;
@@ -64,7 +64,9 @@ public:
     void updateWMClassHint();
     void updateWMProtocols();
 
- 
+    // override the title with this
+    void setTitle(FbTk::FbString &title);
+    void setIconTitle(FbTk::FbString &icon_title);
     void updateTitle();
     void updateIconTitle();
     /// updates transient window information
@@ -198,6 +200,7 @@ private:
 
     std::string m_title, m_icon_title;
     std::string m_class_name, m_instance_name;
+    bool m_title_override, m_icon_title_override;
 
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;

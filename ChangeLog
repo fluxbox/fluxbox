@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/05/07:
+   * Handle EMWH window and icon titles, plus localise workspace names (Simon)
+     - FbTk::FbWindow::textProperty now handles utf8 type, and always 
+       returns UTF-8 encoded strings (for internal use)
+     Ewmh.hh/cc Screen.cc WinClient.hh/cc WinClientUtil.cc Workspace.cc 
+     WorkspaceNameTool.cc fluxbox.cc FbTk/... FbString.hh/cc FbWindow.cc
    * Handle UTF-8 strings properly (Simon)
      - still need to integrate EWMH strings properly (they are utf8)
      - still need to fix up TextBox

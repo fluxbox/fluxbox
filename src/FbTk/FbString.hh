@@ -49,10 +49,6 @@ std::string FbStrToX(const FbString &src);
 FbString LocaleStrToFb(const std::string &src);
 std::string FbStrToLocale(const FbString &src);
 
-// essentially NO-OP
-inline FbString UTF8StrToFb(const std::string &src) { return src; } 
-inline std::string FbStrToUTF8(const FbString &src) { return src; }
-
 bool haveUTF8();
 
 } // namespace FbStringUtil

@@ -189,6 +189,15 @@ void Ewmh::initForScreen(BScreen &screen) {
 
 void Ewmh::setupClient(WinClient &winclient) {
     updateStrut(winclient);
+
+    FbTk::FbString newtitle = winclient.textProperty(m_net_wm_name);
+    if (!newtitle.empty()) {
+        winclient.setTitle(newtitle);
+    }
+    newtitle = winclient.textProperty(m_net_wm_icon_name);
+    if (!newtitle.empty()) {
+        winclient.setIconTitle(newtitle);
+    }
 }
 
 void Ewmh::setupFrame(FluxboxWindow &win) {
@@ -268,7 +277,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
         unsigned int desktop = static_cast<long>(*data);
-        if (desktop == -1 && !win.isStuck())
+        if (desktop == (unsigned int)(-1) && !win.isStuck())
             win.stick();
         else
             win.setWorkspace(desktop);
@@ -433,11 +442,21 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
         strcpy(names[i], workspacenames[i].c_str());
     }
 
+#ifdef X_HAVE_UTF8_STRING
+    Xutf8TextListToTextProperty(FbTk::App::instance()->display(),
+                                names, number_of_desks, XUTF8StringStyle, &text);
+    XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
+                     &text, m_net_desktop_names);
+
+    XFree(text.value);
+
+#else
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
 			 &text, m_net_desktop_names);
         XFree(text.value);
     }
+#endif
 
     for (size_t i = 0; i < number_of_desks; i++)
         delete [] names[i];
@@ -810,7 +829,17 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
     if (the_property == m_net_wm_strut) {
         updateStrut(winclient);
         return true;
-    } 
+    } else if (the_property == m_net_wm_name) {
+        FbTk::FbString newtitle = winclient.textProperty(the_property);
+        if (!newtitle.empty())
+            winclient.setTitle(newtitle);
+        return true;
+    } else if (the_property == m_net_wm_icon_name) {
+        FbTk::FbString newtitle = winclient.textProperty(the_property);
+        if (!newtitle.empty())
+            winclient.setIconTitle(newtitle);
+        return true;
+    }
 
     return false;
 }
@@ -841,6 +870,7 @@ void Ewmh::createAtoms() {
 
     m_net_properties = XInternAtom(disp, "_NET_PROPERTIES", False);
     m_net_wm_name = XInternAtom(disp, "_NET_WM_NAME", False);
+    m_net_wm_icon_name = XInternAtom(disp, "_NET_WM_ICON_NAME", False);
     m_net_wm_desktop = XInternAtom(disp, "_NET_WM_DESKTOP", False);
 
     // type atoms
@@ -1017,6 +1047,8 @@ void Ewmh::updateStrut(WinClient &winclient) {
     }
 }
 
+
+
 void Ewmh::updateActions(FluxboxWindow &win) {
 
     /* From Extended Window Manager Hints, draft 1.3:
@@ -1151,3 +1183,4 @@ void Ewmh::clearState(FluxboxWindow &win) {
 void Ewmh::saveState(FluxboxWindow &win, WindowState *state) {
     m_savedstate[&win] = state;
 }
+

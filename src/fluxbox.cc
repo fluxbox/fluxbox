@@ -1479,7 +1479,7 @@ void Fluxbox::save_rc() {
 
         for (unsigned int workspace=0; workspace < screen->numberOfWorkspaces(); workspace++) {
             if (screen->getWorkspace(workspace)->name().size()!=0)
-                workspaces_string.append(screen->getWorkspace(workspace)->name());
+                workspaces_string.append(FbTk::FbStringUtil::FbStrToLocale(screen->getWorkspace(workspace)->name()));
             else
                 workspaces_string.append("Null");
             workspaces_string.append(",");

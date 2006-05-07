@@ -107,6 +107,14 @@ void shutdown() {
    @param size number of BYTES to convert
    @return the recoded string, or 0 on failure
 */
+
+/** 
+  --NOTE--
+  In the "C" locale, this will strip any high-bit characters
+  because C means 7-bit ASCII charset. If you don't want this
+  then you need to set your locale to something UTF-8, OR something
+  ISO8859-1.
+*/
 std::string recode(iconv_t cd,
              const std::string &in) {
 

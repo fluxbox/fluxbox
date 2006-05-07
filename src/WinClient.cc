@@ -69,6 +69,8 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_win_gravity(0),
                      m_title(""), m_icon_title(""),
                      m_class_name(""), m_instance_name(""),
+                     m_title_override(false),
+                     m_icon_title_override(false),
                      m_blackbox_hint(0),
                      m_mwm_hint(0),
                      m_focus_mode(F_PASSIVE),
@@ -342,10 +344,26 @@ void WinClient::updateTitle() {
     //         also influenced
     //
     // the limitation to 512 chars only avoids running in that trap
+    if (m_title_override)
+        return;
+
     m_title = string(Xutil::getWMName(window()), 0, 512);
 }
 
+void WinClient::setTitle(FbTk::FbString &title) {
+    m_title = title;
+    m_title_override = true;
+}
+
+void WinClient::setIconTitle(FbTk::FbString &icon_title) {
+    m_icon_title = icon_title;
+    m_icon_title_override = true;
+}
+
 void WinClient::updateIconTitle() {
+    if (m_icon_title_override)
+        return;
+
     XTextProperty text_prop;
     char **list = 0;
     int num = 0;

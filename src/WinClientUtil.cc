@@ -9,8 +9,8 @@ void maxSize(const FluxboxWindow::ClientList &clients,
              unsigned int &max_width, unsigned int &max_height) {
     FluxboxWindow::ClientList::const_iterator it = clients.begin();
     FluxboxWindow::ClientList::const_iterator it_end = clients.end();
-    max_width = ~0; // unlimited
-    max_height = ~0; // unlimited
+    max_width = (unsigned int) ~0; // unlimited
+    max_height = (unsigned int) ~0; // unlimited
     for (; it != it_end; ++it) {
         // special case for max height/width == 0
         // 0 indicates unlimited size, so we skip them
@@ -21,9 +21,9 @@ void maxSize(const FluxboxWindow::ClientList &clients,
             max_width = std::min( (*it)->maxWidth(), max_width );
     }
 
-    if (max_width == ~0)
+    if (max_width == (unsigned int) ~0)
         max_width = 0;
-    if (max_height == ~0)
+    if (max_height == (unsigned int) ~0)
         max_height = 0;
 }
 

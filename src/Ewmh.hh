@@ -22,6 +22,7 @@
 // $Id$
 
 #include "AtomHandler.hh"
+#include "FbTk/FbString.hh"
 
 #include <X11/Xatom.h>
 #include <vector>
@@ -101,7 +102,8 @@ private:
     Atom m_net_close_window, m_net_wm_moveresize;
 
     // application window properties
-    Atom m_net_properties, m_net_wm_name, m_net_wm_desktop,
+    Atom m_net_properties, m_net_wm_name, m_net_wm_icon_name,
+        m_net_wm_desktop,
         // types
         m_net_wm_window_type,
         m_net_wm_window_type_dock,
@@ -146,5 +148,7 @@ private:
     WindowState *getState(FluxboxWindow &win);
     void clearState(FluxboxWindow &win);
     void saveState(FluxboxWindow &win, WindowState *state);
+
+    FbTk::FbString getUTF8Property(Atom property);
 
 };

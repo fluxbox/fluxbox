@@ -75,6 +75,7 @@
 #include "FbTk/Transparent.hh"
 #include "FbTk/Select2nd.hh"
 #include "FbTk/Compose.hh"
+#include "FbTk/FbString.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1459,7 +1460,7 @@ void BScreen::updateAvailableWorkspaceArea() {
 }
 
 void BScreen::addWorkspaceName(const char *name) {
-    m_workspace_names.push_back(name);
+    m_workspace_names.push_back(FbTk::FbStringUtil::LocaleStrToFb(name));
 }
 
 
