@@ -45,6 +45,9 @@ testScale: scaleTest.cc
 testTexture: texturetest.cc
 	${COMPILE} texturetest.cc ../FbTk/libFbTk.a -lXpm -o testTexture
 
+testDemandAttention: testDemandAttention.cc
+	${COMPILE} testDemandAttention.cc ../FbTk/libFbTk.a -lXpm -o testDemandAttention
+
 Parser.o: ../Parser.hh ../Parser.cc
 	${COMPILE} ${CXXFLAGS} -c ../Parser.cc
 
@@ -56,6 +59,8 @@ parsertest: parsertest.cc  ../Parser.hh FbMenuParser.o Parser.o
 
 movetest: movetest.cc
 	${COMPILE} movetest.cc ../FbTk/libFbTk.a -lXpm -o movetest
+
+
 run: testLayers testResource testKeys testStringUtil testFont
 	./testLayers
 	./testKeys
