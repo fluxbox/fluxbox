@@ -1,5 +1,15 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/05/13:
+   * Added support for _NET_WM_STATE_DEMANDS_ATTENTION . (Henrik)
+     When this state is set fluxbox will start flashing 
+     the titlebar and button in the toolbar. It will stop when the window
+     is focused.
+     The blink rate can be configured with the following resource:
+     session.screen0.demandsAttentionTimeout: <timeout in milliseconds>
+     Default value is 500.
+     If the value is zero this feature will be disabled.
+     Ewmh.hh/cc, IconbarTool.cc, AttentionNoticeHandler.hh/cc, Window.hh/cc
 *06/05/07:
    * Handle EMWH window and icon titles, plus localise workspace names (Simon)
      - FbTk::FbWindow::textProperty now handles utf8 type, and always 
