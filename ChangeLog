@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/05/13:
+   * Fixed some title redraw issues (Thanks _markt)
+     WinClient.cc, Window.cc
    * Added support for _NET_WM_STATE_DEMANDS_ATTENTION . (Henrik)
      When this state is set fluxbox will start flashing 
      the titlebar and button in the toolbar. It will stop when the window
