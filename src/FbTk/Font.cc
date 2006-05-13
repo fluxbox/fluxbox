@@ -99,13 +99,13 @@ typedef FontCache::iterator FontCacheIt;
 FontCache font_cache;
 
 
-void resetEffects(FbTk::Font* font) {
-    font->setHalo(false);
-    font->setHaloColor(FbTk::Color("white", DefaultScreen(FbTk::App::instance()->display())));
-    font->setShadow(false);
-    font->setShadowColor(FbTk::Color("black", DefaultScreen(FbTk::App::instance()->display())));
-    font->setShadowOffY(2);
-    font->setShadowOffX(2);
+void resetEffects(FbTk::Font& font) {
+    font.setHalo(false);
+    font.setHaloColor(FbTk::Color("white", DefaultScreen(FbTk::App::instance()->display())));
+    font.setShadow(false);
+    font.setShadowColor(FbTk::Color("black", DefaultScreen(FbTk::App::instance()->display())));
+    font.setShadowOffY(2);
+    font.setShadowOffX(2);
 }
 
 }; // end nameless namespace
@@ -178,7 +178,7 @@ bool Font::load(const std::string &name) {
             (cache_entry = font_cache.find(lookup_entry->second)) != font_cache.end()) {
         m_fontstr = cache_entry->first;
         m_fontimp = cache_entry->second;
-        resetEffects(this);
+        resetEffects(*this);
         return true;
      }
     
@@ -197,7 +197,7 @@ bool Font::load(const std::string &name) {
             m_fontstr = cache_entry->first;
             m_fontimp = cache_entry->second;
             lookup_map[name] = m_fontstr;
-            resetEffects(this);
+            resetEffects(*this);
             return true;
         }
 
@@ -222,7 +222,7 @@ bool Font::load(const std::string &name) {
             m_fontimp = tmp_font;
             font_cache[(*name_it)] = tmp_font;
             m_fontstr = name;
-            resetEffects(this);
+            resetEffects(*this);
             return true;
         }
         
