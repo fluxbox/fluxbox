@@ -110,7 +110,11 @@ public:
         m_resourcelist.remove(&r);
     }
 
+    /// searches for the resource with the resourcename
+    /// @return pointer to resource base on success, else 0.
     Resource_base *findResource(const std::string &resourcename);
+    /// searches for the resource with the resourcename
+    /// @return pointer to resource base on success, else 0.
     const Resource_base *findResource(const std::string &resourcename) const;
 
     std::string resourceValue(const std::string &resourcename) const;
