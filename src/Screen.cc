@@ -36,6 +36,8 @@
 #include "FocusControl.hh"
 #include "ScreenPlacement.hh"
 
+#include "STLUtil.hh"
+
 // themes
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
@@ -463,16 +465,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     XFlush(disp);
 }
 
-template <typename A>
-void destroyAndClearList(A &a) {
-    typedef typename A::iterator iterator;
-    iterator it = a.begin();
-    iterator it_end = a.end();
-    for (; it != it_end; ++it)
-        delete (*it);
 
-    a.clear();
-}
 
 BScreen::~BScreen() {
     
@@ -512,12 +505,12 @@ BScreen::~BScreen() {
         imageControl().removeImage(pos_pixmap);
 
     removeWorkspaceNames();
+    using namespace STLUtil;
+    destroyAndClear(m_workspaces_list);
+    destroyAndClear(m_netizen_list);
+    destroyAndClear(m_managed_resources);
 
-    destroyAndClearList(m_workspaces_list);
-    destroyAndClearList(m_netizen_list);
-    destroyAndClearList(m_managed_resources);
-
-    //why not destroyAndClearList(m_icon_list); ? 
+    //why not destroyAndClear(m_icon_list); ? 
     //problem with that: a delete FluxboxWindow* calls m_diesig.notify()
     //which leads to screen.removeWindow() which leads to removeIcon(win)
     //which would modify the m_icon_list anyways...
