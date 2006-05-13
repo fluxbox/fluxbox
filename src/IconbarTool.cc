@@ -596,6 +596,14 @@ void IconbarTool::update(FbTk::Subject *subj) {
 
             return;
 
+        } else if (subj == &(winsubj->win().attentionSig())) {
+            // render with titlebar focus, on attention
+            IconButton *button = findButton(winsubj->win());
+            if (button) {
+                renderButton(*button, true, 
+                             winsubj->win().frame().focused() ? 1 : 0);
+            }
+            return;
         } else {
             // signal not handled
             return;
@@ -659,14 +667,14 @@ IconButton *IconbarTool::findButton(FluxboxWindow &win) {
 
     return 0;
 }
-
+/*
 void IconbarTool::renderWindow(FluxboxWindow &win) {
     IconButton *button = findButton(win);
     if (button == 0)
         return;
     renderButton(*button);
 }
-
+*/
 void IconbarTool::updateSizing() {
     m_icon_container.setBorderWidth(m_theme.border().width());
 
@@ -771,7 +779,8 @@ void IconbarTool::renderTheme() {
     }
 }
 
-void IconbarTool::renderButton(IconButton &button, bool clear) {
+void IconbarTool::renderButton(IconButton &button, bool clear,
+                               int focusOption) {
 
     button.setPixmap(*m_rc_use_pixmap);
     button.setAlpha(m_alpha);
@@ -788,8 +797,13 @@ void IconbarTool::renderButton(IconButton &button, bool clear) {
 //                        button.height() != m_icon_container.back()->height());
     }
 
-    if (button.win().isFocused()) { // focused texture
-        m_icon_container.setSelected(m_icon_container.find(&button));
+    if (focusOption == 1 || 
+        (focusOption == -1 &&
+         button.win().isFocused())) { 
+        
+        // focused texture
+        if (button.win().isFocused())
+            m_icon_container.setSelected(m_icon_container.find(&button));
 
         button.setGC(m_theme.focusedText().textGC());     
         button.setFont(m_theme.focusedText().font());
@@ -891,7 +905,7 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     win.dieSig().attach(this);
     win.workspaceSig().attach(this);
     win.stateSig().attach(this);
-
+    win.attentionSig().attach(this);
 }
 
 void IconbarTool::updateIcons() {
