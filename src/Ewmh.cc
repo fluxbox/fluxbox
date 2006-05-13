@@ -50,6 +50,19 @@ using namespace std;
 #define FB_new_nothrow new(std::nothrow)
 #endif
 
+enum EwmhMoveResizeDirection {
+    _NET_WM_MOVERESIZE_SIZE_TOPLEFT    =   0,
+    _NET_WM_MOVERESIZE_SIZE_TOP        =   1,
+    _NET_WM_MOVERESIZE_SIZE_TOPRIGHT   =   2,
+    _NET_WM_MOVERESIZE_SIZE_RIGHT      =   3,
+    _NET_WM_MOVERESIZE_SIZE_BOTTOMRIGHT =  4,
+    _NET_WM_MOVERESIZE_SIZE_BOTTOM      =  5,
+    _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT  =  6,
+    _NET_WM_MOVERESIZE_SIZE_LEFT        =  7,
+    _NET_WM_MOVERESIZE_MOVE             =  8,   // movement only 
+    _NET_WM_MOVERESIZE_SIZE_KEYBOARD    =  9,   // size via keyboard
+    _NET_WM_MOVERESIZE_MOVE_KEYBOARD    = 10 
+};
 
 Ewmh::Ewmh() {
     createAtoms();
@@ -106,6 +119,8 @@ void Ewmh::initForScreen(BScreen &screen) {
         // window properties
         m_net_wm_strut,
         m_net_wm_state,
+        m_net_wm_name,
+        m_net_wm_icon_name,
 
         // states that we support:
         m_net_wm_state_sticky,
@@ -148,6 +163,9 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_moveresize_window,
         m_net_workarea,
         m_net_restack_window,
+
+        //        m_net_wm_moveresize,
+        
 
         // desktop properties
         m_net_wm_desktop,
@@ -813,13 +831,55 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
         FbTk::XLayerItem &below_item = winclient->fbwindow()->layerItem();
         FbTk::XLayerItem &above_item = above_win->fbwindow()->layerItem();
+
         // this might break the transient_for layering
-        below_item.getLayer().stackBelowItem(&below_item, &above_item);
+
+        // do restack if both items are on the same layer
+        // else ignore restack
+        if (&below_item.getLayer() == &above_item.getLayer())
+            below_item.getLayer().stackBelowItem(&below_item, &above_item);
+
 
         return true;
 
-    } 
-
+    } /* Still in progress...
+        else if (ce.message_type == m_net_wm_moveresize) {
+        if (winclient == 0 || winclient->fbwindow() == 0)
+            return true;
+        // data.l[0] = x_root 
+        // data.l[1] = y_root
+        // data.l[2] = direction
+        // data.l[3] = button
+        // data.l[4] = source indication
+        cerr<<"("<<ce.data.l[0]<<", "<<ce.data.l[1]<<")"<<endl;
+        cerr<<"dir="<<ce.data.l[2]<<endl;
+        cerr<<"button="<<ce.data.l[3]<<endl;
+        cerr<<"source="<<ce.data.l[4]<<endl;
+        switch (ce.data.l[2] ) {
+        case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:
+        case _NET_WM_MOVERESIZE_SIZE_TOP:
+        case _NET_WM_MOVERESIZE_SIZE_TOPRIGHT:
+        case _NET_WM_MOVERESIZE_SIZE_RIGHT:
+        case _NET_WM_MOVERESIZE_SIZE_BOTTOMRIGHT:
+        case _NET_WM_MOVERESIZE_SIZE_BOTTOM:
+        case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
+        case _NET_WM_MOVERESIZE_SIZE_LEFT:
+        case _NET_WM_MOVERESIZE_SIZE_KEYBOARD:
+            winclient->fbwindow()->startResizing(ce.data.l[0], ce.data.l[1],
+                                                 static_cast<FluxboxWindow::ResizeDirection>
+                                                 (ce.data.l[2]));
+            break;
+        case _NET_WM_MOVERESIZE_MOVE:
+        case _NET_WM_MOVERESIZE_MOVE_KEYBOARD:
+            winclient->fbwindow()->startMoving(ce.data.l[0], ce.data.l[1]);
+            break;
+        default:
+            cerr << "Ewmh: Unknown move/resize direction: " << ce.data.l[2] << endl;
+            break;
+        }
+        return true;
+    }
+      */
     // we didn't handle the ce.message_type here
     return false;
 }
