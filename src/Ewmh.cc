@@ -133,12 +133,14 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_wm_state_modal,
         m_net_wm_state_below,
         m_net_wm_state_above,
+        m_net_wm_state_demands_attention,
         
         // window type
         m_net_wm_window_type,
         m_net_wm_window_type_dock,
         m_net_wm_window_type_desktop,
         m_net_wm_window_type_splash,
+        m_net_wm_window_type_normal,
 
         // window actions
         m_net_wm_allowed_actions,
@@ -283,11 +285,13 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                  */
                 win.setDecoration(FluxboxWindow::DECOR_NONE);
                 win.setMovable(false);
+            } else if (atoms[l] == m_net_wm_window_type_normal) {
+                // do nothing, this is ..normal..
             }
 
         }
         XFree(data);
-    }
+    } 
 
     setupState(win);
 
@@ -938,6 +942,7 @@ void Ewmh::createAtoms() {
     m_net_wm_window_type_dock = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DOCK", False);
     m_net_wm_window_type_desktop = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
     m_net_wm_window_type_splash = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_SPLASH", False);
+    m_net_wm_window_type_normal = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
 
     // state atom and the supported state atoms
     m_net_wm_state = XInternAtom(disp, "_NET_WM_STATE", False);
@@ -952,6 +957,7 @@ void Ewmh::createAtoms() {
     m_net_wm_state_above = XInternAtom(disp, "_NET_WM_STATE_ABOVE", False);
     m_net_wm_state_below = XInternAtom(disp, "_NET_WM_STATE_BELOW", False);
     m_net_wm_state_modal = XInternAtom(disp, "_NET_WM_STATE_MODAL", False);
+    m_net_wm_state_demands_attention = XInternAtom(disp, "_NET_WM_STATE_DEMANDS_ATTENTION", False);
 
     // allowed actions
     m_net_wm_allowed_actions = XInternAtom(disp, "_NET_WM_ALLOWED_ACTIONS", False);
@@ -1012,7 +1018,6 @@ void Ewmh::setFullscreen(FluxboxWindow &win, bool value) {
 
 // set window state
 void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
-
     if (state == m_net_wm_state_sticky) { // STICKY
         if (value && !win.isStuck() ||
             (!value && win.isStuck()))
@@ -1051,7 +1056,13 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
             win.moveToLayer(Layer::ABOVE_DOCK);
         else
             win.moveToLayer(Layer::NORMAL);
+    } else if (state == m_net_wm_state_demands_attention) {
+        if (value) // if add attention
+            m_demands_attention.addAttention(win);
+        else // erase it
+            m_demands_attention.update(&win.attentionSig());
     }
+
     // Note: state == net_wm_state_modal, We should not change it
 }
 
