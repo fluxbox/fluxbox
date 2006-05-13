@@ -1158,6 +1158,8 @@ void FluxboxWindow::updateTitleFromClient(WinClient &client) {
         m_labelbuttons[&client]->setText(client.title());
         if (&client == m_client)
             frame().setFocusTitle(client.title());
+
+        titleSig().notify();
     }
 }
 
@@ -2515,7 +2517,6 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         client.updateIconTitle();
     case XA_WM_NAME:
         updateTitleFromClient(client);
-        titleSig().notify();
         break;
 
     case XA_WM_NORMAL_HINTS: {
