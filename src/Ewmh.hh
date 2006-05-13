@@ -23,6 +23,7 @@
 
 #include "AtomHandler.hh"
 #include "FbTk/FbString.hh"
+#include "AttentionNoticeHandler.hh"
 
 #include <X11/Xatom.h>
 #include <vector>
@@ -109,6 +110,7 @@ private:
         m_net_wm_window_type_dock,
         m_net_wm_window_type_desktop,
         m_net_wm_window_type_splash,
+        m_net_wm_window_type_normal,
 
         // states
         m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
@@ -120,6 +122,7 @@ private:
         m_net_wm_state_below,
         m_net_wm_state_above,
         m_net_wm_state_modal,
+        m_net_wm_state_demands_attention,
 
         // allowed actions
         m_net_wm_allowed_actions,
@@ -150,5 +153,5 @@ private:
     void saveState(FluxboxWindow &win, WindowState *state);
 
     FbTk::FbString getUTF8Property(Atom property);
-
+    AttentionNoticeHandler m_demands_attention;
 };
