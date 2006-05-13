@@ -105,9 +105,13 @@ private:
     void updateSizing();
 
     /// render single button that holds win
-    void renderWindow(FluxboxWindow &win);
+    //    void renderWindow(FluxboxWindow &win);
     /// render single button, and probably apply changes (clear)
-    void renderButton(IconButton &button, bool clear = true);
+    /// @param button the button to render
+    /// @param clear if the window should be cleared first
+    /// @param focusOption -1 = use window focus, 0 = render no focus, 1 = render focus
+    void renderButton(IconButton &button, bool clear = true,
+                      int focusOption = -1);
     /// render all buttons
     void renderTheme();
     void renderTheme(unsigned char alpha);
