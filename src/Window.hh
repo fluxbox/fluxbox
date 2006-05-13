@@ -378,6 +378,7 @@ public:
     const FbTk::Subject &dieSig() const { return m_diesig; }
     FbTk::Subject &focusSig() { return m_focussig; }
     FbTk::Subject &titleSig() { return m_titlesig; }
+    FbTk::Subject &attentionSig() { return m_attentionsig; }
     /** @} */ // end group signals
 
     void reconfigTheme();
@@ -450,7 +451,8 @@ private:
     void associateClient(WinClient &client);
 
     // state and hint signals
-    WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig, m_focussig, m_titlesig;
+    WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, 
+        m_diesig, m_focussig, m_titlesig, m_attentionsig;
 
     class ThemeListener: public FbTk::Observer {
     public:
