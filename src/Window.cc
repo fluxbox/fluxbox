@@ -1655,6 +1655,9 @@ void FluxboxWindow::maximize(int type) {
     if (isShaded())
         shade();
 
+    if (isResizing())
+        stopResizing();
+
     int head = screen().getHead(frame().window());
     int new_x = frame().x(),
         new_y = frame().y(),
@@ -1730,7 +1733,12 @@ void FluxboxWindow::maximize(int type) {
     m_last_resize_y = new_y;
     m_last_resize_w = new_w;
     m_last_resize_h = new_h;
+    
+    ResizeCorner old_resize_corner = m_resize_corner;
+    m_resize_corner = NOCORNER;
     fixsize();
+    m_resize_corner = old_resize_corner;
+
     moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
 }
 /**

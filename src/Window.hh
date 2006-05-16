@@ -135,6 +135,7 @@ public:
     };
 
     enum ResizeCorner {
+        NOCORNER,
         LEFTTOP,
         LEFTBOTTOM,
         RIGHTBOTTOM,
