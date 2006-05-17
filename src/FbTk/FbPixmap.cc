@@ -369,7 +369,7 @@ void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
             unsigned long *data;
 
             if (XGetWindowProperty(display(),
-                                   RootWindow(display(), i),
+                                   RootWindow(display(), screen_num),
                                    root_prop_atoms[i],
                                    0l, 1l,
                                    False, XA_PIXMAP,
@@ -437,7 +437,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
             checkAtoms();
             if (XGetWindowProperty(display(),
                                    RootWindow(display(), i),
-                                   root_prop_atoms[i],
+                                   root_prop_atoms[prop],
                                    0l, 1l,
                                    False, XA_PIXMAP,
                                    &real_type, &real_format,
