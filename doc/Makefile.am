@@ -7,7 +7,7 @@ MAINTAINERCLEANFILES = Makefile.in
 man_MANS = fluxbox.1 fbsetroot.1 fbrun.1 fbsetbg.1 \
 	startfluxbox.1 fluxstyle.1 fbrun.1 
 EXTRA_DIST=fluxbox.1.in fbsetroot.1 fbrun.1 startfluxbox.1 fbsetbg.1 \
-	fluxstyle.1.in Coding_style
+	fluxstyle.1.in CODESTYLE
 distclean-local:
 	rm -f *\~
 
