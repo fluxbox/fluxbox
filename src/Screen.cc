@@ -161,7 +161,7 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 
 class TabPlacementMenuItem: public FbTk::MenuItem {
 public:
-    TabPlacementMenuItem(const char * label, BScreen &screen, 
+    TabPlacementMenuItem(FbTk::FbString & label, BScreen &screen, 
                          FbWinFrame::TabPlacement place, 
                          FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd),
@@ -363,7 +363,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     fprintf(stderr, _FBTEXT(Screen, ManagingScreen,
                             "BScreen::BScreen: managing screen %d "
                             "using visual 0x%lx, depth %d\n", 
-                            "informational message saying screen number (%d), visual (%lx), and colour depth (%d)"),
+                            "informational message saying screen number (%d), visual (%lx), and colour depth (%d)").c_str(),
             screenNumber(), XVisualIDFromVisual(rootWindow().visual()),
             rootWindow().depth());
 
@@ -703,7 +703,7 @@ FbTk::Menu *BScreen::createMenu(const std::string &label) {
                                   imageControl(), 
                                   *layerManager().getLayer(Layer::MENU));
     if (!label.empty())
-        menu->setLabel(label.c_str());
+        menu->setLabel(label);
 
     return menu;
 }
@@ -712,12 +712,12 @@ FbTk::Menu *BScreen::createToggleMenu(const std::string &label) {
                                       imageControl(), 
                                       *layerManager().getLayer(Layer::MENU));
     if (!label.empty())
-        menu->setLabel(label.c_str());
+        menu->setLabel(label);
 
     return menu;
 }
 
-void BScreen::addExtraWindowMenu(const char *label, FbTk::Menu *menu) {
+void BScreen::addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu) {
     menu->setInternalMenu();
     menu->disableTitle();
     m_extramenus.push_back(std::make_pair(label, menu));
@@ -1541,7 +1541,7 @@ void BScreen::initMenu() {
 }
 
 
-void BScreen::addConfigMenu(const char *label, FbTk::Menu &menu) {
+void BScreen::addConfigMenu(const FbTk::FbString &label, FbTk::Menu &menu) {
     m_configmenu_list.push_back(std::make_pair(label, &menu));
     setupConfigmenu(*m_configmenu.get());
 }
@@ -1587,10 +1587,10 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     // create focus menu
     // we don't set this to internal menu so will 
     // be deleted toghether with the parent
-    const char *focusmenu_label = _FBTEXT(Configmenu, FocusModel,
+    FbTk::FbString focusmenu_label = _FBTEXT(Configmenu, FocusModel,
                                           "Focus Model", 
                                           "Method used to give focus to windows");
-    FbTk::Menu *focus_menu = createMenu(focusmenu_label ? focusmenu_label : "");
+    FbTk::Menu *focus_menu = createMenu(focusmenu_label);
 
 #define _BOOLITEM(m,a, b, c, d, e, f) (m).insert(new BoolMenuItem(_FBTEXT(a, b, c, d), e, f))
                              
@@ -1630,11 +1630,11 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     // BEGIN tab menu
 
-    const char *tabmenu_label = _FBTEXT(Configmenu, TabMenu,
+    FbTk::FbString tabmenu_label = _FBTEXT(Configmenu, TabMenu,
                                         "Tab Options", 
                                         "heading for tab-related options");
-    FbTk::Menu *tab_menu = createMenu(tabmenu_label ? tabmenu_label : "");
-    const char *tabplacement_label = _FBTEXT(Menu, Placement, "Placement", "Title of Placement menu");
+    FbTk::Menu *tab_menu = createMenu(tabmenu_label);
+    FbTk::FbString tabplacement_label = _FBTEXT(Menu, Placement, "Placement", "Title of Placement menu");
     FbTk::Menu *tabplacement_menu = createToggleMenu(tabplacement_label);
 
     tab_menu->insert(tabplacement_label, tabplacement_menu);
@@ -1653,7 +1653,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     tab_menu->insert(tab_width_item);
 
 
-    typedef pair<const char*, FbWinFrame::TabPlacement> PlacementP;
+    typedef pair<FbTk::FbString, FbWinFrame::TabPlacement> PlacementP;
     typedef list<PlacementP> Placements;
     Placements place_menu;
 
@@ -1672,15 +1672,10 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     size_t i=0;
     while (!place_menu.empty()) {
         i++;
-        const char *str = place_menu.front().first;
+        FbTk::FbString &str = place_menu.front().first;
         FbWinFrame::TabPlacement placement = place_menu.front().second;
 
-        if (str == 0) {
-            tabplacement_menu->insert("");
-            tabplacement_menu->setItemEnabled(i, false);
-        } else {
-            tabplacement_menu->insert(new TabPlacementMenuItem(str, *this, placement, save_and_reconftabs));
-        }
+        tabplacement_menu->insert(new TabPlacementMenuItem(str, *this, placement, save_and_reconftabs));
         place_menu.pop_front();
     }
     tabplacement_menu->updateMenu();
@@ -1738,10 +1733,10 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     if (FbTk::Transparent::haveRender() ||
         FbTk::Transparent::haveComposite()) {
 
-        const char *alphamenu_label = _FBTEXT(Configmenu, Transparency,
+        FbTk::FbString alphamenu_label = _FBTEXT(Configmenu, Transparency,
                                           "Transparency", 
                                            "Menu containing various transparency options");
-        FbTk::Menu *alpha_menu = createMenu(alphamenu_label ? alphamenu_label : "");
+        FbTk::Menu *alpha_menu = createMenu(alphamenu_label);
 
         if (FbTk::Transparent::haveComposite(true)) {
             alpha_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, ForcePseudoTrans,
@@ -1869,7 +1864,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     sprintf(label,
             _FBTEXT(Screen, GeometryFormat,
                     "W: %4d x H: %4d",
-                    "Format for width and height window, %4d for width, and %4d for height"),
+                    "Format for width and height window, %4d for width, and %4d for height").c_str(),
             gx, gy);
 
     m_geom_window.clear();
@@ -1935,7 +1930,7 @@ void BScreen::renderGeomWindow() {
 
     sprintf(label,
             _FBTEXT(Screen, GeometryFormat,
-            "W: %4d x H: %4d", "Representative maximum sized text for width and height dialog"),
+            "W: %4d x H: %4d", "Representative maximum sized text for width and height dialog").c_str(),
             0, 0);
 
     int geom_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;

@@ -98,7 +98,7 @@ public:
 
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
-    typedef std::list<std::pair<const char *, FbTk::Menu *> > ExtraMenus;
+    typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > ExtraMenus;
 
     BScreen(FbTk::ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
@@ -213,7 +213,7 @@ public:
     // for extras to add menus.
     // These menus will be marked internal,
     // and deleted when the window dies (as opposed to Screen
-    void addExtraWindowMenu(const char *label, FbTk::Menu *menu);
+    void addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu);
     void removeExtraWindowMenu(FbTk::Menu *menu);
 
     /// hide all windowmenus except the given one (if given)
@@ -358,7 +358,7 @@ public:
     // for extras to add menus. These menus must be marked
     // internal for their safety, and __the extension__ must
     // delete and remove the menu itself (opposite to Window)
-    void addConfigMenu(const char *label, FbTk::Menu &menu);
+    void addConfigMenu(const FbTk::FbString &label, FbTk::Menu &menu);
     void removeConfigMenu(FbTk::Menu &menu);
 
 
@@ -410,7 +410,7 @@ private:
 
     typedef std::list<FbTk::Menu *> Rootmenus;
     typedef std::list<Netizen *> Netizens;
-    typedef std::list<std::pair<const char *, FbTk::Menu *> > Configmenus;
+    typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > Configmenus;
 
 
     Rootmenus m_rootmenu_list;

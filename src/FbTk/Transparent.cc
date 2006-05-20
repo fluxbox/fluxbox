@@ -234,7 +234,7 @@ void Transparent::setDest(Drawable dest, int screen_num) {
         if (format == 0) {
             _FB_USES_NLS;
             cerr<<"FbTk::Transparent: ";
-            fprintf(stderr, _FBTKTEXT(Error, NoRenderVisualFormat, "Failed to find format for screen(%d)", "XRenderFindVisualFormat failed... include %d for screen number"), screen_num);
+            fprintf(stderr, _FBTKTEXT(Error, NoRenderVisualFormat, "Failed to find format for screen(%d)", "XRenderFindVisualFormat failed... include %d for screen number").c_str(), screen_num);
             cerr<<endl;
         }
         m_dest_pic = XRenderCreatePicture(disp, dest, format, 0, 0);
@@ -273,7 +273,7 @@ void Transparent::setSource(Drawable source, int screen_num) {
         if (format == 0) {
             _FB_USES_NLS;
             cerr<<"FbTk::Transparent: ";
-            fprintf(stderr, _FBTKTEXT(Error, NoRenderVisualFormat, "Failed to find format for screen(%d)", "XRenderFindVisualFormat failed... include %d for screen number"), screen_num);
+            fprintf(stderr, _FBTKTEXT(Error, NoRenderVisualFormat, "Failed to find format for screen(%d)", "XRenderFindVisualFormat failed... include %d for screen number").c_str(), screen_num);
             cerr<<endl;
         }
         m_src_pic = XRenderCreatePicture(disp, m_source, format,

@@ -159,14 +159,11 @@ void RootTheme::reconfigTheme() {
     // if the background theme item was not loaded
         
     if (!m_background_loaded) {
-        const char *warning_msg = 
+        cerr<<"Fluxbox: "<<
             _FBTEXT(Common, BackgroundWarning,
                     "There is no background option specified in this style."
                     " Please consult the manual or read the FAQ.",
-                    "Background missing warning");
-
-        cerr<<"Fluxbox: "<<warning_msg<<endl;
-        
+                    "Background missing warning")<<endl;
     } else {
         // handle background option in style
         std::string filename = m_background->filename();

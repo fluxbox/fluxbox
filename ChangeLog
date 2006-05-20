@@ -1,5 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/05/21:
+   * Improve native language support handling, especially relating
+     to codesets (Simon)
+     *** Please report any oddness (Esp regressions) in native text
+     - Makefile.am can now specify several target codesets
+     - generated-*.m files are automatically generated, but not on 
+       every build, only on new additions.
+     - I18N::getMessage now returns FbString's
+     - Menu labels are passed as FbString&e s, not char *s.
+     nls/*/Makefile.am nls/*/generated*.m
+     src/ ... lots of files (most things menu or translation-related)
 *06/05/17:
    * Fix transparency on multiple screens & possibly bad root bg atom
      reading (Simon)

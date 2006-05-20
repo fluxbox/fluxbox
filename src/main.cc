@@ -228,7 +228,7 @@ int main(int argc, char **argv) {
                            "-log <filename>\t\t\tlog output to file.\n"
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
-                           "Main usage string. Please lay it out nicely. There is one %s that is given the version"),
+                           "Main usage string. Please lay it out nicely. There is one %s that is given the version").c_str(),
                    __fluxbox_version, "2001-2006");
             exit(0);
         } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {

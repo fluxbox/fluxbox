@@ -1,30 +1,46 @@
 # nls/el_GR/Makefile.am for Fluxbox - www.fluxbox.org
 
 THE_LANG = el_GR
+SRC_CODESET = utf8
+DEST_CODESETS = utf8 UTF-8
 
 LOCALE_PATH = @LOCALE_PATH@
 NLSTEST = @NLS@
-CLEANFILES = fluxbox.cat
-MAINTAINERCLEANFILES = Makefile.in 
 MFILES = Translation.m
-EXTRA_DIST= $(MFILES)
+GENERATED_MFILES = $(patsubst %,generated-%.m,$(DEST_CODESETS))
+MAINTAINERCLEANFILES = Makefile.in $(GENERATED_MFILES)
+CATFILES = $(patsubst %,fluxbox-%.cat,$(DEST_CODESETS))
 
-all-local: fluxbox.cat
-install-data-local: fluxbox.cat
+# We distribute the generated files so that users don't need iconv
+EXTRA_DIST= $(MFILES) $(GENERATED_MFILES)
+CLEANFILES = $(CATFILES)
+
+all-local: $(CATFILES)
+install-data-local: $(CATFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		echo "Installing catalog in $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG)"; \
-		$(mkinstalldirs) $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG); \
-		$(INSTALL_DATA) fluxbox.cat $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG); \
+		for codeset in $(DEST_CODESETS); do \
+			echo "Installing catalog in $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG).$${codeset}"; \
+			$(mkinstalldirs) $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG).$${codeset}; \
+			$(INSTALL_DATA) fluxbox-$${codeset}.cat $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG).$${codeset}/fluxbox.cat; \
+		done; \
 	fi
+
+# not part of the normal build process
+translations: $(GENERATED_MFILES)
+
+generated-%.m: Translation.m
+	iconv -f $(SRC_CODESET) -t $* Translation.m | sed s/$(SRC_CODESET)/$*/ > $@
 
 uninstall-local:
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		rm -f $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG)/fluxbox.cat; \
-		rmdir $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG); \
+		for codeset in $(DEST_CODESETS); do \
+			rm -f $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG).$${codeset}/fluxbox.cat; \
+			rmdir $(DESTDIR)$(LOCALE_PATH)/$(THE_LANG).$${codeset}; \
+		done; \
 	fi
 
-fluxbox.cat: Translation.m
+fluxbox-%.cat: generated-%.m Translation.m
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		$(gencat_cmd) fluxbox.cat Translation.m; \
+		echo "Creating catfile for $*"; \
+		$(gencat_cmd) fluxbox-$*.cat generated-$*.m; \
 	fi
-

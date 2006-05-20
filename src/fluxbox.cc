@@ -234,12 +234,12 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     _FB_USES_NLS;
     if (s_singleton != 0)
-        throw string(_FBTEXT(Fluxbox, FatalSingleton, "Fatal! There can only one instance of fluxbox class.", "Error displayed on weird error where an instance of the Fluxbox class already exists!"));
+        throw _FBTEXT(Fluxbox, FatalSingleton, "Fatal! There can only one instance of fluxbox class.", "Error displayed on weird error where an instance of the Fluxbox class already exists!");
 
     if (display() == 0) {
-        throw string(_FBTEXT(Fluxbox, NoDisplay,
-                             "Can not connect to X server.\nMake sure you started X before you start Fluxbox.",
-                             "Error message when no X display appears to exist"));
+        throw _FBTEXT(Fluxbox, NoDisplay,
+                      "Can not connect to X server.\nMake sure you started X before you start Fluxbox.",
+                      "Error message when no X display appears to exist");
     }
 
     Display *disp = FbTk::App::instance()->display();
@@ -367,9 +367,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
 
     if (m_screen_list.empty()) {
-        throw string(_FBTEXT(Fluxbox, ErrorNoScreens,
+        throw _FBTEXT(Fluxbox, ErrorNoScreens,
                              "Couldn't find screens to manage.\nMake sure you don't have another window manager running.", 
-                             "Error message when no unmanaged screens found - usually means another window manager is running"));
+                             "Error message when no unmanaged screens found - usually means another window manager is running");
     }
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
@@ -596,7 +596,7 @@ void Fluxbox::setupConfigFiles() {
         if (mkdir(dirname.c_str(), 0700)) {
             fprintf(stderr, _FBTEXT(Fluxbox, ErrorCreatingDirectory,
                                     "Can't create %s directory", 
-                                    "Can't create a directory, one %s for directory name"), 
+                                    "Can't create a directory, one %s for directory name").c_str(), 
                     dirname.c_str());
             cerr<<endl;
             return;
@@ -1156,19 +1156,17 @@ void Fluxbox::handleSignal(int signum) {
         break;
     default:
         fprintf(stderr,
-                _FBTEXT(BaseDisplay, SignalCaught, "%s:      signal %d caught\n", "signal catch debug message. Include %s for command and %d for signal number"),
+                _FBTEXT(BaseDisplay, SignalCaught, "%s:      signal %d caught\n", "signal catch debug message. Include %s for command and %d for signal number").c_str(),
                 m_argv[0], signum);
 
         if (! m_starting && ! re_enter) {
             re_enter = 1;
-            fprintf(stderr,
-                    _FBTEXT(BaseDisplay, ShuttingDown, "Shutting Down\n", "Quitting because of signal, end with newline"));
+            cerr<<_FBTEXT(BaseDisplay, ShuttingDown, "Shutting Down\n", "Quitting because of signal, end with newline");
             shutdown();
         }
 
 
-        fprintf(stderr,
-                _FBTEXT(BaseDisplay, Aborting, "Aborting... dumping core\n", "Aboring and dumping core, end with newline"));
+        cerr<<_FBTEXT(BaseDisplay, Aborting, "Aborting... dumping core\n", "Aboring and dumping core, end with newline");
         abort();
         break;
     }

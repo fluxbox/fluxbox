@@ -30,8 +30,8 @@
 
 namespace FbTk {
 
-MenuIcon::MenuIcon(const std::string &filename, const std::string &label, int screen_num):
-    MenuItem(label.c_str()),
+MenuIcon::MenuIcon(const std::string &filename, FbString &label, int screen_num):
+    MenuItem(label),
     m_filename(filename) {
     FbTk::PixmapWithMask *pm = Image::load(filename.c_str(), screen_num);
     if (pm != 0) {

@@ -28,10 +28,10 @@
 
 #include "FbTk/StringUtil.hh"
 
-RootCmdMenuItem::RootCmdMenuItem(const std::string &label, 
+RootCmdMenuItem::RootCmdMenuItem(const FbTk::FbString &label, 
                              const std::string &filename,
                              const std::string &cmd):
-    FbTk::MenuItem(label.c_str()), 
+    FbTk::MenuItem(label), 
     m_filename(filename) {
     
       FbTk::RefCount<FbTk::Command> 

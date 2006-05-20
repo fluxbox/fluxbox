@@ -83,7 +83,7 @@ void SendToMenu::update(FbTk::Subject *subj) {
         FbTk::RefCount<FbTk::Command> sendto_cmd(new SendToCmd(i, false));
         FbTk::RefCount<FbTk::Command> sendto_follow_cmd(new SendToCmd(i, true));
         
-        FbTk::MultiButtonMenuItem* item = new FbTk::MultiButtonMenuItem(3, wlist[i]->name().c_str());
+        FbTk::MultiButtonMenuItem* item = new FbTk::MultiButtonMenuItem(3, wlist[i]->name());
         item->setCommand(1, sendto_cmd);
         item->setCommand(2, sendto_follow_cmd);
         item->setCommand(3, sendto_cmd);

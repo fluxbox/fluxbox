@@ -39,7 +39,7 @@ LayerMenu::LayerMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
     struct {
         int set;
         int base;
-        const char *default_str;
+        FbTk::FbString default_str;
         int layernum;
     } layer_menuitems[]  = {
         //TODO: nls

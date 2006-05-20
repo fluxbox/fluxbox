@@ -863,7 +863,7 @@ void Toolbar::setupMenus() {
     }
 #endif // XINERAMA
 
-    typedef pair<const char*, Toolbar::Placement> PlacementP;
+    typedef pair<FbTk::FbString, Toolbar::Placement> PlacementP;
     typedef list<PlacementP> Placements;
     Placements place_menu;
 
@@ -874,9 +874,9 @@ void Toolbar::setupMenus() {
     place_menu.push_back(PlacementP(_FBTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), Toolbar::LEFTBOTTOM));
     place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Toolbar::BOTTOMLEFT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Toolbar::TOPCENTER));
-    place_menu.push_back(PlacementP((const char *)0, Toolbar::TOPLEFT));
-    place_menu.push_back(PlacementP((const char *)0, Toolbar::TOPLEFT));
-    place_menu.push_back(PlacementP((const char *)0, Toolbar::TOPLEFT));
+    place_menu.push_back(PlacementP("", Toolbar::TOPLEFT));
+    place_menu.push_back(PlacementP("", Toolbar::TOPLEFT));
+    place_menu.push_back(PlacementP("", Toolbar::TOPLEFT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Toolbar::BOTTOMCENTER));
     place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Toolbar::TOPRIGHT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, RightTop, "Right Top", "Right Top"), Toolbar::RIGHTTOP));
@@ -888,10 +888,10 @@ void Toolbar::setupMenus() {
     placementMenu().setMinimumSublevels(3);
     // create items in sub menu
     for (size_t i=0; i<15; ++i) {
-        const char *str = place_menu.front().first;
+        FbTk::FbString &str = place_menu.front().first;
         Toolbar::Placement placement = place_menu.front().second;
 
-        if (str == 0) {
+        if (str == "") {
             placementMenu().insert("");
             placementMenu().setItemEnabled(i, false);
         } else {

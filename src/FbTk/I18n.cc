@@ -75,7 +75,7 @@ I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
 #ifdef 	HAVE_SETLOCALE
     //make sure we don't get 0 to m_locale string
     char *temp = setlocale(LC_MESSAGES, "");
-    m_locale = ( temp ?  temp : ""); 
+    m_locale = ( temp ?  temp : "");
     if (m_locale.empty()) {
         cerr<<"Warning: Failed to set locale, reverting to \"C\""<<endl;
 #endif // HAVE_SETLOCALE
@@ -90,9 +90,9 @@ I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
         // MB_CUR_MAX returns the size of a char in the current locale
         if (MB_CUR_MAX > 1)
             m_multibyte = true;
-		
+
         // truncate any encoding off the end of the locale
-				
+
         // remove everything after @
         string::size_type index = m_locale.find('@');
         if (index != string::npos)
@@ -150,12 +150,17 @@ void I18n::openCatalog(const char *catalog) {
 }
 
 
-const char *I18n::getMessage(int set_number, int message_number, 
+FbString I18n::getMessage(int set_number, int message_number, 
                              const char *default_message) const {
 
 #if defined(NLS) && defined(HAVE_CATGETS)
-    if (m_catalog_fd != (nl_catd)-1)
-        return (const char *) catgets(m_catalog_fd, set_number, message_number, default_message);
+    if (m_catalog_fd != (nl_catd)-1) {
+        const char *ret = catgets(m_catalog_fd, set_number, message_number, default_message);
+        if (ret == default_message || ret == NULL)
+            return default_message; // don't recode the default
+
+        return FbStringUtil::LocaleStrToFb(ret);
+    }
     else
 #endif // NLS && HAVE_CATGETS
         return default_message;

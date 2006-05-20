@@ -29,8 +29,8 @@
 
 #include "FbTk/StringUtil.hh"
 
-StyleMenuItem::StyleMenuItem(const std::string &label, const std::string &filename):
-    FbTk::MenuItem(label.c_str()), 
+StyleMenuItem::StyleMenuItem(const FbTk::FbString &label, const std::string &filename):
+    FbTk::MenuItem(label), 
     m_filename(filename) {
     // perform shell style ~ home directory expansion
     // and insert style      

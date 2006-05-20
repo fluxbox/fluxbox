@@ -34,7 +34,7 @@ namespace FbTk {
 
 class MenuIcon: public MenuItem {
 public:
-    MenuIcon(const std::string &filename, const std::string &label, int screen_num);
+    MenuIcon(const std::string &filename, FbString &label, int screen_num);
     void draw(FbDrawable &drawable, 
               const MenuTheme &theme,
               bool highlight,

@@ -44,10 +44,10 @@ std::string appendIntValue(const std::string &label, int value) {
 
 };
 
-IntResMenuItem::IntResMenuItem(const char *label, FbTk::Resource<int> &res, int min_val, int max_val, FbTk::Menu &host_menu):
+IntResMenuItem::IntResMenuItem(const FbTk::FbString &label, FbTk::Resource<int> &res, int min_val, int max_val, FbTk::Menu &host_menu):
     FbTk::MenuItem(label, host_menu), m_org_label(FbTk::MenuItem::label()),
         m_max(max_val), m_min(min_val), m_res(res) { 
-        setLabel(appendIntValue(m_org_label, *m_res).c_str());
+        setLabel(appendIntValue(m_org_label, *m_res));
 }
 
 void IntResMenuItem::click(int button, int time) {
@@ -72,7 +72,7 @@ void IntResMenuItem::click(int button, int time) {
         *m_res = m_min;
 
     // update label
-    setLabel(appendIntValue(m_org_label, *m_res).c_str());
+    setLabel(appendIntValue(m_org_label, *m_res));
     // call other commands
     FbTk::MenuItem::click(button, time);
 

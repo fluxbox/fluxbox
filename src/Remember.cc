@@ -66,7 +66,7 @@ bool getuint(const char *val, unsigned int &ret) {
 
 class RememberMenuItem : public FbTk::MenuItem {
 public:
-    RememberMenuItem(const char *label,
+    RememberMenuItem(const FbTk::FbString &label,
                      Remember::Attribute attrib) :
         FbTk::MenuItem(label),
         m_attrib(attrib) {

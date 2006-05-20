@@ -34,7 +34,7 @@
 
 class FocusModelMenuItem : public FbTk::MenuItem {
 public:
-    FocusModelMenuItem(const char *label, FocusControl &focus_control, 
+    FocusModelMenuItem(const FbTk::FbString &label, FocusControl &focus_control, 
                        FocusControl::FocusModel model,
                        FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), 
@@ -55,7 +55,7 @@ private:
 
 class TabFocusModelMenuItem : public FbTk::MenuItem {
 public:
-    TabFocusModelMenuItem(const char *label, 
+    TabFocusModelMenuItem(const FbTk::FbString &label, 
                           FocusControl &focus_control,
                           FocusControl::TabFocusModel model, 
                           FbTk::RefCount<FbTk::Command> &cmd):

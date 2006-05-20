@@ -30,7 +30,7 @@
 /// Changes an resource integer value between min and max
 class IntResMenuItem: public FbTk::MenuItem {
 public:
-    IntResMenuItem(const char *label, FbTk::Resource<int> &res, int min_val, int max_val, FbTk::Menu &host_menu);
+    IntResMenuItem(const FbTk::FbString &label, FbTk::Resource<int> &res, int min_val, int max_val, FbTk::Menu &host_menu);
 
     void click(int button, int time);
 

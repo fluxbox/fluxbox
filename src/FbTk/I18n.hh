@@ -30,6 +30,8 @@
 // TODO: FIXME
 #include "../../nls/fluxbox-nls.hh"
 
+#include "FbString.hh"
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif // HAVE_CONFIG_H
@@ -93,7 +95,7 @@ public:
     inline bool multibyte() const { return m_multibyte; }
     inline const nl_catd &getCatalogFd() const { return m_catalog_fd; }
 
-    const char *getMessage(int set_number, int message_number, 
+    FbString getMessage(int set_number, int message_number, 
                            const char *default_messsage = 0) const;
     void openCatalog(const char *catalog);
 private:

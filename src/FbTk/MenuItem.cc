@@ -284,7 +284,7 @@ unsigned int MenuItem::height(const MenuTheme &theme) const {
 unsigned int MenuItem::width(const MenuTheme &theme) const {
     // textwidth + bevel width on each side of the text
     const unsigned int icon_width = height(theme);
-    const unsigned int normal = theme.frameFont().textWidth(label().c_str(), label().size()) +
+    const unsigned int normal = theme.frameFont().textWidth(label(), label().size()) +
                                 2 * (theme.bevelWidth() + icon_width);
     return m_icon.get() == 0 ? normal : normal + icon_width;
 }

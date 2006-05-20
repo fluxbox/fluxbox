@@ -40,6 +40,7 @@
 #include "FbPixmap.hh"
 #include "MenuTheme.hh"
 #include "Timer.hh"
+#include "FbString.hh"
 
 namespace FbTk {
 
@@ -65,11 +66,11 @@ public:
     */
     //@{
     /// add a menu item with a label and a command
-    int insert(const char *label, RefCount<Command> &cmd, int pos=-1);
+    int insert(const FbString &label, RefCount<Command> &cmd, int pos=-1);
     /// add empty menu item
-    int insert(const char *label, int pos=-1);
+    int insert(const FbString &label, int pos=-1);
     /// add submenu
-    int insert(const char *label, Menu *submenu, int pos= -1);
+    int insert(const FbString &label, Menu *submenu, int pos= -1);
     /// add menu item
     int insert(MenuItem *item, int pos=-1);
     /// remove an item
@@ -113,7 +114,7 @@ public:
     void grabInputFocus();
     virtual void reconfigure();
     /// set label string
-    void setLabel(const char *labelstr);
+    void setLabel(const FbString &labelstr);
     /// move menu to x,y
     void move(int x, int y);
     virtual void updateMenu(int active_index = -1);

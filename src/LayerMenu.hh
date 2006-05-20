@@ -41,11 +41,11 @@ public:
 /// this class holds the layermenu items
 class LayerMenuItem : public FbTk::MenuItem {
 public:
-    LayerMenuItem(const char *label, LayerObject *object, int layernum,
+    LayerMenuItem(const FbTk::FbString &label, LayerObject *object, int layernum,
                   FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_object(object), m_layernum(layernum) {}
 
-    LayerMenuItem(const char *label, LayerObject *object, int layernum):
+    LayerMenuItem(const FbTk::FbString &label, LayerObject *object, int layernum):
         FbTk::MenuItem(label), m_object(object), m_layernum(layernum) {}
 
     bool isEnabled() const { return m_object->layerNumber() != m_layernum; }

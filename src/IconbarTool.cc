@@ -205,7 +205,7 @@ namespace {
 
 class ToolbarModeMenuItem : public FbTk::MenuItem {
 public:
-    ToolbarModeMenuItem(const char *label, IconbarTool &handler, 
+    ToolbarModeMenuItem(const FbTk::FbString &label, IconbarTool &handler, 
                         IconbarTool::Mode mode, 
                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
@@ -223,7 +223,7 @@ private:
 
 class ToolbarAlignMenuItem: public FbTk::MenuItem {
 public:
-    ToolbarAlignMenuItem(const char *label, IconbarTool &handler, 
+    ToolbarAlignMenuItem(const FbTk::FbString &label, IconbarTool &handler, 
                         Container::Alignment mode, 
                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
@@ -409,7 +409,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_menu.setInternalMenu();
 
     // add iconbar menu to toolbar menu
-    menu.insert(m_menu.label().c_str(), &m_menu);
+    menu.insert(m_menu.label(), &m_menu);
 
     // setup signals
     theme.reconfigSig().attach(this);

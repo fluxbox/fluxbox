@@ -26,11 +26,10 @@
 #define STYLEMENUITEM_HH
 
 #include "FbTk/MenuItem.hh"
-#include <string>
 
 class StyleMenuItem: public FbTk::MenuItem {
 public:
-    StyleMenuItem(const std::string &label, const std::string &filename);
+    StyleMenuItem(const FbTk::FbString &label, const std::string &filename);
     bool isSelected() const;
 private:
     const std::string m_filename;

@@ -196,11 +196,11 @@ private:
 
 class SlitDirMenuItem: public FbTk::MenuItem {
 public:
-    SlitDirMenuItem(const char *label, Slit &slit, FbTk::RefCount<FbTk::Command> &cmd)
+    SlitDirMenuItem(const FbTk::FbString &label, Slit &slit, FbTk::RefCount<FbTk::Command> &cmd)
         :FbTk::MenuItem(label,cmd), 
          m_slit(slit), 
-         m_label(label ? label : "") { 
-        setLabel(m_label.c_str()); // update label
+         m_label(label) { 
+        setLabel(m_label); // update label
     }
 
     void click(int button, int time) {
@@ -209,19 +209,19 @@ public:
             m_slit.setDirection(Slit::VERTICAL);
         else
             m_slit.setDirection(Slit::HORIZONTAL);
-        setLabel(m_label.c_str());
+        setLabel(m_label);
         FbTk::MenuItem::click(button, time);
     }
 
-    void setLabel(const char *label) {
+    void setLabel(const FbTk::FbString &label) {
         _FB_USES_NLS;
-        m_label = (label ? label : "");
+        m_label = (label);
         std::string reallabel = m_label + " " + 
             ( m_slit.direction() == Slit::HORIZONTAL ? 
               
               _FBTEXT(Align, Horizontal, "Horizontal", "Horizontal"):
               _FBTEXT(Align, Vertical,   "Vertical",   "Vertical"));
-        FbTk::MenuItem::setLabel(reallabel.c_str());
+        FbTk::MenuItem::setLabel(reallabel);
     }
 private:
     Slit &m_slit;
@@ -230,7 +230,7 @@ private:
 
 class PlaceSlitMenuItem: public FbTk::MenuItem {
 public:
-    PlaceSlitMenuItem(const char *label, Slit &slit, Slit::Placement place, FbTk::RefCount<FbTk::Command> &cmd):
+    PlaceSlitMenuItem(const FbTk::FbString &label, Slit &slit, Slit::Placement place, FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_slit(slit), m_place(place) {
      
     }
@@ -1298,7 +1298,7 @@ void Slit::setupMenu() {
     m_clientlist_menu.setInternalMenu();
     m_slitmenu.setInternalMenu();
    
-    typedef pair<const char *, Slit::Placement> PlacementP;
+    typedef pair<FbTk::FbString, Slit::Placement> PlacementP;
     typedef list<PlacementP> Placements;
     Placements place_menu;
 
@@ -1307,7 +1307,7 @@ void Slit::setupMenu() {
     place_menu.push_back(PlacementP(_FBTEXT(Align, LeftCenter, "Left Center", "Left Center"), Slit::LEFTCENTER));
     place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Slit::BOTTOMLEFT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Slit::TOPCENTER));
-    place_menu.push_back(PlacementP((const char *)0, Slit::TOPLEFT));
+    place_menu.push_back(PlacementP("", Slit::TOPLEFT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Slit::BOTTOMCENTER));
     place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Slit::TOPRIGHT));
     place_menu.push_back(PlacementP(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Slit::RIGHTCENTER));
@@ -1316,10 +1316,10 @@ void Slit::setupMenu() {
 
     // create items in sub menu
     for (size_t i=0; i<9; ++i) {
-        const char *str = place_menu.front().first;
+        const FbTk::FbString &str = place_menu.front().first;
         Slit::Placement placement = place_menu.front().second;
 
-        if (str == 0) {
+        if (str == "") {
             placement_menu->insert("");
             placement_menu->setItemEnabled(i, false);
         } else {

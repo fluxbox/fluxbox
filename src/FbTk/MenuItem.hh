@@ -27,6 +27,7 @@
 #include "RefCount.hh"
 #include "Command.hh"
 #include "PixmapWithMask.hh"
+#include "FbString.hh"
 
 #include <string>
 #include <memory>
@@ -49,8 +50,8 @@ public:
           m_toggle_item(false)
     { }
     explicit MenuItem(
-             const char *label)
-        : m_label(label ? label : ""),
+        const FbString &label)
+        : m_label(label),
           m_menu(0),
           m_submenu(0),
           m_enabled(true),
@@ -58,8 +59,8 @@ public:
           m_toggle_item(false)
     { }
 
-    MenuItem(const char *label, Menu &host_menu)
-        : m_label(label ? label : ""),
+    MenuItem(const FbString &label, Menu &host_menu)
+        : m_label(label),
           m_menu(&host_menu),
           m_submenu(0),
           m_enabled(true),
@@ -67,8 +68,8 @@ public:
           m_toggle_item(false)
     { }
     /// create a menu item with a specific command to be executed on click
-    MenuItem(const char *label, RefCount<Command> &cmd, Menu *menu = 0):
-        m_label(label ? label : ""),
+    MenuItem(const FbString &label, RefCount<Command> &cmd, Menu *menu = 0):
+        m_label(label),
         m_menu(menu),
         m_submenu(0),
         m_command(cmd),
@@ -78,8 +79,8 @@ public:
 		
     }
 
-    MenuItem(const char *label, Menu *submenu, Menu *host_menu = 0)
-        : m_label(label ? label : "")
+    MenuItem(const FbString &label, Menu *submenu, Menu *host_menu = 0)
+        : m_label(label)
         , m_menu(host_menu)
         , m_submenu(submenu)
         , m_enabled(true)
@@ -91,7 +92,7 @@ public:
     inline void setCommand(RefCount<Command> &cmd) { m_command = cmd; }
     virtual inline void setSelected(bool selected) { m_selected = selected; }
     virtual inline void setEnabled(bool enabled) { m_enabled = enabled; }
-    virtual inline void setLabel(const char *label) { m_label = (label ? label : ""); }
+    virtual inline void setLabel(const FbString &label) { m_label = label; }
     virtual inline void setToggleItem(bool val) { m_toggle_item = val; }
     void setIcon(const std::string &filename, int screen_num);
     virtual Menu *submenu() { return m_submenu; }
@@ -130,7 +131,7 @@ public:
     Menu *menu() { return m_menu; }
 	
 private:
-    std::string m_label; ///< label of this item
+    FbString m_label; ///< label of this item
     Menu *m_menu; ///< the menu we live in
     Menu *m_submenu; ///< a submenu, 0 if we don't have one
     RefCount<Command> m_command; ///< command to be executed

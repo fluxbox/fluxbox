@@ -29,7 +29,7 @@
 
 class RootCmdMenuItem: public FbTk::MenuItem {
 public:
-    RootCmdMenuItem(const std::string &label, 
+    RootCmdMenuItem(const FbTk::FbString &label, 
                   const std::string &filename,
                   const std::string &cmd = "fbsetbg");
     bool isSelected() const;

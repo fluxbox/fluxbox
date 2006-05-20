@@ -29,13 +29,13 @@
 /// a bool menu item
 class BoolMenuItem: public FbTk::MenuItem {
 public:
-    BoolMenuItem(const char *label, bool &item, 
+    BoolMenuItem(const FbTk::FbString &label, bool &item, 
                  FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_item(item) { 
         FbTk::MenuItem::setSelected(m_item);
         setToggleItem(true);
     }
-    BoolMenuItem(const char *label, bool &item):
+    BoolMenuItem(const FbTk::FbString &label, bool &item):
         FbTk::MenuItem(label), m_item(item) {
         FbTk::MenuItem::setSelected(m_item);
     }

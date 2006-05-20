@@ -41,10 +41,10 @@
 template <typename ItemType> 
 class XineramaHeadMenuItem : public FbTk::MenuItem {
 public:
-    XineramaHeadMenuItem(const char *label, ItemType &object, int headnum,
+    XineramaHeadMenuItem(const FbTk::FbString &label, ItemType &object, int headnum,
                   FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label,cmd), m_object(object), m_headnum(headnum) {}
-    XineramaHeadMenuItem(const char *label, ItemType &object, int headnum):
+    XineramaHeadMenuItem(const FbTk::FbString &label, ItemType &object, int headnum):
         FbTk::MenuItem(label), m_object(object), m_headnum(headnum) {}
 
     bool isEnabled() const { return m_object.getOnHead() != m_headnum; } 
@@ -64,7 +64,7 @@ template <typename ItemType>
 class XineramaHeadMenu : public FbMenu {
 public:
     XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
-                     FbTk::XLayer &layer, ItemType &item, const char * title = 0);
+                     FbTk::XLayer &layer, ItemType &item, const FbTk::FbString & title = "");
 
 private:
     ItemType &m_object;
@@ -73,12 +73,11 @@ private:
 
 template <typename ItemType>
 XineramaHeadMenu<ItemType>::XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
-                               FbTk::XLayer &layer, ItemType &item, const char * title):
+                               FbTk::XLayer &layer, ItemType &item, const FbTk::FbString & title):
     FbMenu(tm, imgctrl, layer), 
     m_object(item) 
 {
-    if (title)
-        setLabel(title);
+    setLabel(title);
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
                                      *Fluxbox::instance(), 
                                      &Fluxbox::save_rc));
