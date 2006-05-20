@@ -79,10 +79,10 @@ void catclose(nl_catd cat);
 
 #define _FB_USES_NLS
 #define _FBTEXT(msgset, msgid, default_text, description) \
-    default_text
+    std::string(default_text)
 
 #define _FBTKTEXT(msgset, msgid, default_text, description) \
-    default_text
+    std::string(default_text)
 
 #endif // defined NLS
 
