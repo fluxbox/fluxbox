@@ -31,6 +31,8 @@
 #include "FbString.hh"
 #include "config.h"
 
+#include <stdio.h>
+
 #ifdef HAVE_ICONV
 #include <iconv.h>
 #endif // HAVE_ICONV
