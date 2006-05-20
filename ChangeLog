@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/05/21:
+   * Fix background of external tabs when label background is 
+     ParentRelative (Simon)
+     FbWinFrame.cc
    * Improve native language support handling, especially relating
      to codesets (Simon)
      *** Please report any oddness (Esp regressions) in native text

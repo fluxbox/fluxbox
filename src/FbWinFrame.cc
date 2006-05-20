@@ -1182,11 +1182,19 @@ void FbWinFrame::renderTabContainer() {
         return;
     }
 
-    render(m_theme.labelFocusTexture(), m_tabcontainer_focused_color, 
+    const FbTk::Texture *tc_focused = &m_theme.labelFocusTexture();
+    const FbTk::Texture *tc_unfocused = &m_theme.labelUnfocusTexture();
+
+    if (m_tabmode == EXTERNAL && tc_focused->type() & FbTk::Texture::PARENTRELATIVE)
+        tc_focused = &m_theme.titleFocusTexture();
+    if (m_tabmode == EXTERNAL && tc_unfocused->type() & FbTk::Texture::PARENTRELATIVE)
+        tc_unfocused = &m_theme.titleUnfocusTexture();
+
+    render(*tc_focused, m_tabcontainer_focused_color, 
            m_tabcontainer_focused_pm,
            m_tab_container.width(), m_tab_container.height(), m_tab_container.orientation());
 
-    render(m_theme.labelUnfocusTexture(), m_tabcontainer_unfocused_color, 
+    render(*tc_unfocused, m_tabcontainer_unfocused_color, 
            m_tabcontainer_unfocused_pm,
            m_tab_container.width(), m_tab_container.height(), m_tab_container.orientation());
 
