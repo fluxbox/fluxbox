@@ -66,6 +66,7 @@ using std::string;
 namespace FbTk {
 
 void NLSInit(const char *catalog) {
+    FbStringUtil::init();
     I18n *i18n = I18n::instance();
     i18n->openCatalog(catalog);
 }

@@ -54,6 +54,11 @@ static int iconv_convs[CONVSIZE];
 
 /// Initialise all of the iconv conversion descriptors
 void init() {
+    static bool s_init = false;
+    if (s_init)
+        return;
+    s_init = true;
+
     iconv_convs = new iconv_t[CONVSIZE];
 
     setlocale(LC_CTYPE, "");
