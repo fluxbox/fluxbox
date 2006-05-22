@@ -249,13 +249,19 @@ void FbWindow::setEventMask(long mask) {
 
 void FbWindow::clear() {
     XClearWindow(display(), m_window);
+    if (m_lastbg_pm == ParentRelative && m_renderer)
+        m_renderer->renderForeground(*this, *this);
+
 }
 
 void FbWindow::clearArea(int x, int y,
                          unsigned int width, unsigned int height,
                          bool exposures) {
     // TODO: probably could call renderForeground here (with x,y,w,h)
-    XClearArea(display(), window(), x, y, width, height, exposures);
+    if (m_lastbg_pm == ParentRelative && m_renderer)
+        FbWindow::clear();
+    else
+        XClearArea(display(), window(), x, y, width, height, exposures);
 }
 
 // If override_is_offset, then dest_override is a pixmap located at the_x, the_y

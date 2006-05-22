@@ -1,5 +1,8 @@
-(Format: Year/Month/Day)
+ (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/05/22:
+   * Fix handling of ParentRelative background (Simon)
+     FbWindow.cc
 *06/05/21:
    * Fix build on cygwin (iconv const error) (Simon)
      FbTk/FbString.cc

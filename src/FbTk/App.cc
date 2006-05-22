@@ -59,8 +59,7 @@ App::~App() {
 
         Font::shutdown();
         Image::shutdown();
-        FbStringUtil::shutdown();
-        
+
         XCloseDisplay(m_display);
         m_display = 0;
     }

@@ -303,6 +303,8 @@ int main(int argc, char **argv) {
     if (errbuf != 0)
         cerr.rdbuf(errbuf);
 
+    FbTk::FbStringUtil::shutdown();
+
     if (restarting) {
         const char *arg = restart_argument.c_str();
         if (arg) {

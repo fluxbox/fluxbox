@@ -56,10 +56,8 @@ static int iconv_convs[CONVSIZE];
 
 /// Initialise all of the iconv conversion descriptors
 void init() {
-    static bool s_init = false;
-    if (s_init)
+    if (iconv_convs != 0)
         return;
-    s_init = true;
 
     iconv_convs = new iconv_t[CONVSIZE];
 
@@ -92,6 +90,8 @@ void init() {
 }
 
 void shutdown() {
+    if (iconv_convs == 0)
+        return;
 #ifdef HAVE_ICONV
     for (int i=0; i < CONVSIZE; ++i) 
         if (iconv_convs[i] != (iconv_t)(-1))
@@ -99,7 +99,7 @@ void shutdown() {
 #endif // HAVE_ICONV
 
     delete[] iconv_convs;
-
+    iconv_convs = 0;
 }
 
 
