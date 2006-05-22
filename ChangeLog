@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/05/21:
+   * Fix build on cygwin (iconv const error) (Simon)
+     FbTk/FbString.cc
    * Fix background of external tabs when label background is 
      ParentRelative (Simon)
      FbWinFrame.cc

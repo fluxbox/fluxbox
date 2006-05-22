@@ -132,7 +132,7 @@ std::string recode(iconv_t cd,
     size_t insize = in.size();
     size_t outsize = insize;
     char * out = (char *) malloc(outsize * sizeof(char)); // need realloc
-    char * outptr = out;
+    char * out_ptr = out;
 
     size_t inbytesleft = insize;
     size_t outbytesleft = outsize;
@@ -143,7 +143,13 @@ std::string recode(iconv_t cd,
 
     while (again) {
         again = false;
-        result = iconv(cd, &in_ptr, &inbytesleft, &outptr, &outbytesleft);
+
+#ifdef HAVE_CONST_ICONV
+        result = iconv(cd, (const char**)(&in_ptr), &inbytesleft, &out_ptr, &outbytesleft);
+#else
+        result = iconv(cd, &in_ptr, &inbytesleft, &out_ptr, &outbytesleft);
+#endif  // HAVE_CONST_ICONV
+
         if (result == (size_t)(-1)) {
             switch(errno) {
             case EILSEQ:
@@ -160,7 +166,7 @@ std::string recode(iconv_t cd,
                 if (out != NULL)
                     again = true;
                 outbytesleft += insize;
-                outptr = out + outsize - outbytesleft;
+                out_ptr = out + outsize - outbytesleft;
                 break;
             default:
                 // something else broke
