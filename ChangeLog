@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/05/23:
+   * Spanish Translation of the new manpage (thanx Guillermo Patterer)
+     doc/asciidoc/fluxbox.es.txt
 *06/05/22:
    * Fix handling of ParentRelative background (Simon)
      FbWindow.cc

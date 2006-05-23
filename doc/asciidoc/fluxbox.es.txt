@@ -1,0 +1,1602 @@
+fluxbox(1)
+=========
+fluxgen <fluxgen@fluxbox.org>
+v0.9.14,
+
+NAME
+------
+Fluxbox - Un liviano manejador de ventanas para el X Windowing System
+
+SYNOPSIS
+--------
+
+'fluxbox' [\-vhi] [\-rc archivo_rc] [\-l archivo_log] [\-d display] [\-screens scr,scr]
+
+DESCRIPCION
+-----------
+Fluxbox provee decoraciones de ventanas configurables, un menu root para lanzar 
+aplicaciones y una barra de tareas que muestra el nombre del 'workspace' actual, 
+la aplicacion activa y la hora actual. Tambien hay un menu de workspace para 
+agregar o remover espacios de trabajo. La 'slit' puede ser usada para 'dockear' 
+pequenias aplicaciones, por ej.: la mayoria de las bbtools pueden usar la slit.
+
+Fluxbox puede iconificar las ventanas a la barra de tareas, agregando la ventana 
+al submenu 'Icons' del menu workspace. Con un click reapareceran las ventanas 
+iconificadas. Doble-click en la barra de titulo de una ventana la 'foldeara' 
+(shade), por ej.: desaparecera la ventana y quedara visible solamente la barra 
+de titulo.
+
+Fluxbox usa su propia clase de graficos para renderizar sus imagenes al vuelo. 
+Mediante el uso de 'estilos' se puede determinar en gran nivel la apariencia de 
+un escritorio. Los estilos de Fluxbox son compatibles con los de Blackbox 0.65 o 
+versiones anteriores, de modo que los usuarios que esten migrando aun pueden 
+usar sus temas favoritos.
+
+Fluxbox cumple con la mayoria de las especificaciones Extended Window Manager 
+Hints (EWMH), asi como otros numerosos standards de Window Hinting. Esto permite 
+a todos los window managers que las cumplen proveer una interfaz comun para 
+caracteristicas standard usadas por aplicaciones y utilidades de escritorio.
+
+OPCIONES
+----------
+Fluxbox reconoce las siguientes lineas de comandos:
+
+-d display |-display display::
+    Inicia fluxbox en el 'display' especificado.
+    Los programas iniciados por Fluxbox tendran el mismo valor de la variable 
+    de entorno DISPLAY.
+-h | -help::
+    Muestra las opciones de lineas de comandos y sale.
+-i | -info::
+    Muestra informacion util concerniente a las opciones por defecto y las 
+    compiladas.
+-l logfile::
+    Iniciando Fluxbox con esta opcion creara un archivo en el que se guardara un 
+    'log' de los eventos.
+-rc archivo rc::
+    Usa otro archivo rc que el por defecto "~/.fluxbox/init".
+-version
+    Muestra la version de Fluxbox instalada.
+
+INICIANDO FLUXBOX
+-----------------
+Fluxbox viene con un programa llamado startfluxbox(8) localizado generalmente
+donde se instalo Fluxbox. Este script nos provee con muchas opciones
+y variables que pueden ser indicadas cuando al inicio de Fluxbox. Para utilizarlo
+cuando se inicia Fluxbox, se debe colocar 'exec startfluxbox' como ultimo comando 
+en el ~/.xinitrc o ~/.xsession del usuario (dependiendo de las distribuciones y 
+del display manager que se utilice), asumiendo que la localizacion de fluxbox(1)
+y startfluxbox(8) estan en el $PATH del 'shell'. Tambien hay que notar que tal vez
+haya que crear el archivo ~/.xinitrc o tal vez el setup use ~/.xsession. Para mas
+informacion ver el manual del shell.
+
+Usando 'fluxbox -i' se veran las opciones por defecto utilizadas por Fluxbox.
+Estas son las que busca al inicio. En la lista de 'Defaults:' la ubicacion de
+archivo menu, ahi se puede proveer un menu comun para todos los usuarios.
+
+Saliendo o reiniciando, Fluxbox guardara las configuraciones del usuario en
+el archivo ~/.fluxbox/init. Los recursos en este archivo pueden ser editados a 
+mano. Fluxbox tambien tiene muchas herramientas para modificar esto. Hay que
+mirar en el menu principal una vez que Fluxbox ha iniciado para encontrar
+diferentes maneras de administrar la sesion.
+
+USANDO FLUXBOX
+--------------
+Cuando se usa Fluxbox por primera vez, los usuarios acostumbrados a ambientes de
+escritorios completos tales como KDE o Gnome pueden quedar un poco sorprendidos
+por el contenido de pantalla minimo. Fluxbox esta diseniado para ser rapido y
+potente, asi que puede llevar un poco de tiempo acostumbrarse, sin embargo los
+resultados que se pueden obtener valen la pena.
+Daremos un sumario rapido de las cosas comunes en esta seccion. De todas maneras
+recomendamos que consulte las secciones referenciadas de este manual para 
+posterior desarrollo de su entendimiento de lo que puede hacer con Fluxbox.
+
+Root Window (ventana principal)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Observando el escritorio de Fluxbox inmediatamente despues del startup
+generalmente se vera solo una cosa: la barra de tareas (Toolbar). Si se hace 
+click derecho (boton 3 del mouse) en algun lugar vacio se podra acceder al 
+RootMenu (menu principal), con un click del boton del medio (boton 2 del mouse) 
+en el escritorio muestra el WorkspaceMenu (menu de escritorio).
+
+RootMenu y WorkspaceMenu
+~~~~~~~~~~~~~~~~~~~~~~~~
+Desde el RootMenu se pueden lanzar aplicaciones y configurar Fluxbox. El
+WorkspaceMenu muestra todas las ventanas y en que escritorios estan. Vea la 
+seccion MENUS para saber como personalizar estos.
+
+Toolbar
+~~~~~~~
+La Toolbar contiene hasta ocho campos/herramientas:
+
+- *Workspace Name*:
+    Nombre del escritorio actual
+- *Iconbar*:
+    Muestra las ventanas
+- *System Tray*:
+    Area para 'applets'
+- *Clock*:
+    Hora y fecha
+- *Workspace Arrows*:
+    'Flechas' para cambiar de escritorio
+- *Window Arrows*:
+    'Flechas' para cambiar de ventana
+
+Los contenidos de la Toolbar pueden ser configurados en el archivo 'init'.
+Hablaremos sobre este archivo en gran extension en la seccion RECURSOS.
+
+Slit
+~~~~
+Inicialmente no se podra ver la Slit. Esta ahi, es solo que aun no esta siendo
+utilizada. La Slit confunde a algunos al principio. Hay que pensar en ella como un
+'muelle' (dock) al que se pueden anclar pequenios programas. Si se han mirado 
+capturas de pantalla en el sitio oficial de Fluxbox probablemente se hayan notado
+pequenias aplicaciones en el borde de algunas de las pantallas. Estas muy 
+probablemente estaban 'dockeadas' en la Slit. Para aprender mas sobre la Slit hay
+una seccion entera mas adelante que entra en detalle acerca de las opciones de que
+dispone.
+
+Layers
+~~~~~~
+Fluxbox maneja las siguientes Layers (capas)
+* Above Dock
+* Dock
+* Top
+* Normal
+* Bottom
+* Desktop
+
+Las ventanas en una capa mas alta aparecen sobre las que estan en una mas baja.
+Estas capas pueden ser usadas en ventanas de aplicaciones, en la Slit o en la 
+Toolbar. Se pueden asignar aplicaciones a una cierta capa especificandolo en el 
+archivo apps. Hablaremos sobre el archivo 'apps' en la seccion APLICACIONES.
+Se discutira en mas detalle sobre las capas en la seccion LAYERS.
+
+Focus Model
+~~~~~~~~~~~
+La ventana que esta enfocada es la que recibe los eventos de teclado y mouse. El
+tipo de enfocado (Focus Model) es seleccionable via menu de Configuracion 
+localizado en el RootMenu. Discutiremos sobre los diferentes modos de enfocado en 
+la seccion FOCUS MODEL.
+
+Ventanas
+~~~~~~~~
+Un click izquierdo del mouse en cualquier parte del borde de la ventana la 
+'elevara' sobre las otras. Manteniendo apretado el boton y arrastrando la 
+desplazara a otra parte del escritorio. Arrastrando los 'grips' de tamanio en las
+esquinas inferiores izquierda y derecha cambiaran el tamanio de la ventana. 
+Click del medio en un borde o la barra de titulo inmediatamente la 'bajara'. Click
+derecho en un borde o la barra de titulo muestra el WindowMenu. Los comandos en
+este menu en particular se comentan en detalle en la seccion MENUS.
+
+Tabs
+~~~~
+Fluxbox permite que las ventanas sean 'agrupadas' haciendo click con el boton del
+medio en la barra de titulo y luego arrastrando y soltando en otra ventana. De
+esta manera las barras de título se convertiran en pestanias permitiendo al usuario
+seleccionar cada ventana individualmente. Este metodo nos permite poner multiples
+aplicaciones en una sola localizacion en el escritorio, y hacer muchas operaciones
+(por ej. mover o cambiar de tamanio) a todas las ventanas del grupo.
+
+Miscelaneas
+~~~~~~~~~~~
+Cuando se quiere arrastrar una ventana, pero no se puede ver el borde inferior o la
+barra de titulo se puede apretar (y sostener!)
+
+	ALT + Boton Izquierdo del Mouse (Boton 1)
+
+y moverla a cualquier parte del espacio de trabajo actual. Esta combinacion de teclas
+puede ser usada tambien para traer el frente ventanas parcialmente visibles.
+
+La combinacion
+
+	ALT + Boton Derecho del Mouse (Boton 3)
+
+permitira cambiar el tamanio de la ventana. Esto puede se deshabilitado en el archivo
+'init' (por defecto ~/.fluxbox/init) con:
+
+	session.session0.useMod1: <logica>
+
+MENUS
+~~~~~
+Fluxbox instala un archivo de menu por defecto en /user/local/share/fluxbox/menu.
+Para confirmar esto podemos usar el comando fluxbox -i desde una terminal. Por 
+supuesto este menu puede ser modificado para todos los usuarios de una sola vez,
+pero tambien es posible crear un menu individual para cada usuario. Por convencion
+los usuarios crean su archivo menu en ~/.fluxbox. Una vez que hemos creado nuestro
+propia menu, querremos asegurarnos que indicamos adecuadamente su localizacion en
+nuestro archivo 'init' asi fluxbox sabra donde buscar. El valor que debemos agregar 
+o cambiar es:
+
+	session.session0.menuFile: <archivo_menu>
+
+Para que este cambio tenga efecto debemos reiniciar Fluxbox. Nos aseguramos que
+nuestro menu sea utilizable, luego elegimos 'Restar' del menu root. Este reinicio es
+necesario solamente si hacemos cambios al archivo 'init', de otra manera alcanza con
+'Reload config'. Una recarga del menu tambien puede ser forzada enviando una senial
+SIGUSR2 (ver la seccion SENIALES).
+
+Menu Root
+~~~~~~~~~
+El menu root es donde se pueden cambiar diferentes aspectos de fluxbox simplemente
+haciendo click en un item del mismo. La mayoria de los cambios en este menu
+tambien se pueden hacer en el archivo 'init'. Sin embargo es mucho mas facil 
+cambiar ciertas opciones sin tener que abrir un editor de texto y buscar el
+recurso. En el menu root generalmente se tiene un submenu llamado'fluxbox menu' o 
+'settings', donde se encontrara una cantidad de opciones diferentes. Le echaremos
+una mirada a la mayoria, si no a todas, aqui.
+
+- *Configure*:
+	El proximo nivel bajo este menu es donde se pueden indicar ciertas
+	opciones y realmente empezar a personalizar el 'look and feel' del 
+	escritorio.
+
+- *System Styles*:
+	Aca es donde se encuentra la lista de los estilos estandar. Se puede 
+	seleccionar uno de ellos con un simple click. Es probable que se tenga
+	que recargar la configuracion o reiniciar para que cada elemento grafico
+	corresponda al nuevo estilo. Los estilos de sistema estan localizados en
+	/usr/local/share/fluxbox/styles de acuerdo a una instalacion por defecto.
+	Cabe recordar que se puede confirmar esto con fluxbox -i.
+
+- *User Styles*:
+	~/.fluxbox/styles es la ubicacion donde se almacenaran los estilos nuevos
+	que se consigan de Internet. Si se crean estilos propios tambien es este
+	el directorio donde colocarlos (siguiendo los 'standards' descriptos en 
+	fluxstyle(1)).
+
+- *Workspace List*:
+	Esta es una lista de los espacios de trabajo configurados en 'init'. Si
+	hay programas ejecutandose en alguno de los 'escritorios' apareceran
+	listados un nivel mas abajo.
+
+- *Tools*:
+	Aparecen listadas diferentes herramientas que se pueden utilizar. Se puede
+	renombrar ventanas o regenerar el menu.
+
+- *Window*:
+	Permite cambiar el manejador de ventanas (aparece solamente si se tienen 
+	instalados otros manejadores de ventanas o ambientes de escritorio).
+
+- *Lock Screen*:
+	Bloquea la pantalla...
+
+- *Fluxbox Command*:
+	Una pequenia linea de comandos aparecera donde se podra ingresar un comando
+	Fluxbox.
+
+- *Reload Config*:
+	Se utiliza para recargar cualquier archivo de menu o estilo. Es solo una
+	re-lectura basica de los archivos usados por Fluxbox.
+
+- *Restart*:
+	Reinicia todo, esto relee archivos y redibuja elementos graficos.
+
+- *Exit*:
+	Sale de fluxbox y termina el servidor X.
+
+Menu de Configuracion
+~~~~~~~~~~~~~~~~~~~~~
+Este menu ofrece la oportunidad de configurar fluxbox. Tambien puede ser hecho 
+editando el archivo init, pero es mas facil y mas rapido para la mayoria de los
+usuarios hacerlo desde el menu.
+
+- *Focus Model*:
+	Por favor leer la seccion FOCUS MODEL al final de este manual.
+
+- *Slit*:
+	Este menu puede ser abierto clickeando sobre la Slit (si esta visible).
+
+- *Layer*:
+	Mirar dentro de este submenu las distintas prioridades de Layer.
+
+- *Auto Hide*:
+	Si esta activado, la slit desaparecera luego de cierto tiempo y se 
+	escondera de la vista del usuario. Se puede hacer aparecer si se mueve el
+	mouse hacia el borde del escritorio donde la slit esta posicionada.
+
+- *Maximize Over*:
+	Si activado, todas las ventanas al ser maximizadas se estiraran hasta pasar
+	por encima o por debajo de la slit. De otro modo seran limitadas por el 
+	borde de esta.
+
+- *Alpha*:
+	Cambiando este valor la slit se volvera mas o menos transparente (solamente 
+	su decoracion, no las aplicaciones en ella). 0 (transparente) - 255 (opaco)
+
+- *Slit Direction*:
+	Alterando este valor se indicara la direccion de la slit para ordenar las
+	aplicaciones cargadas en la slit. No hay efecto con solo una aplicacion.
+
+- *Clients*:
+	Este submenu nos deja reordenar las aplicaciones corriendo en la slit. Se
+	pueden esconder deseleccionandolas en la lista que las muestra. Esto no
+	matara la aplicacion. Se hacen aparecer seleccionandolas en la lista. La
+	opcion "Save Slitlist" guarda el nuevo orden en el archivo 'slitlist'
+	localizado en ~/.fluxbox (util si se reordenan las aplicaciones con las
+	opciones 'Cycle Up' y 'Cycle Down').
+
+- *Toolbar*:
+	Observar la parte de la seccion TOOLBAR denominada "Configuracion a traves del 
+	menu de la Barra de Herramientas".
+
+- *Image dithering*:
+	Activa o desactiva el dithering de imagenes.
+
+- *Opaque Window Moving*:
+	Si esta activado, se vera el contenido de la ventana mientras se la arrastra.
+	De otro modo se vera solo el borde durante el movimiento.
+
+- *Full Maximization*:
+	Activando esta opcion actuara sobre las configuraciones por separado de la 
+	slit y la toolbar. Las ventanas siempre se maximizaran por encima o por 
+	debajo de ellas.
+
+- *Focus New Window*:
+	Si activado, cada nueva ventana que se abra aparecera enfocada.
+
+- *Focus Last Window on Workspace*:
+	Enfoca la ultima ventana cuando se vuelve a un espacio de trabajo.
+
+- *Workspace warping*:
+	Activar esta opcion permite arrastrar ventanas de un escritorio hacia otro.
+
+- *Desktop MouseWhell Switching*:
+	Con esta opción se puede cambiar de escritorio haciendo girar la rueda del 
+	mouse sobre la toolbar o sobre el fondo de escritorio.
+
+- *Decorate transient windows*:
+	Cuando se selecciona esta opción todas las ventanas temporales tienen borde
+	y 'grips'.
+
+- *Click Raises*:
+	Cuando activada, un click en cualquier parte de la ventana (incluida la 
+	decoracion) la traera al frente. De otro modo solamente se podra hacer con 
+	un click en la barra de titulo.
+
+- *Transparency*:
+	Permite configurar la transparencia para el menu y las ventanas enfocadas y
+	desenfocadas.
+
+Menu Window
+~~~~~~~~~~~
+Este menu es mostrado cuando se hace click derecho sobre la barra de titulo o el 
+borde de una ventana. Las opciones disponibles son:
+
+- *Send To...*:
+	Manda una ventana a otro escritorio. Cuando se selecciona el escritorio con
+	click del medio, Fluxbox nos enviara junto con la aplicacion al espacio
+	seleccionado.
+
+- *Shade*:
+	Hace un 'shade' a la ventana (muestra solamente la barra de titulo).
+
+- *Iconify*:
+	Iconifica la ventana. El 'icono' puede encontrarse en el submenu Icons del 
+	menu workspace asi como en la toolbar (si se ha seleccionado un modo para la
+	toolbar que muestre los iconos.
+
+- *Maximize*:
+	(Des)Maximiza la ventana. Dependiendo de la configuracion de la toolbar y de
+	la slit, la maximizacion puede cubrirlas. Se pueden usar los diferentes 
+	botones del mouse para diferentes aspectos de la funcion Maximize.
+		
+		* Boton 1  (Des)Maximiza normalmente.
+		* Boton 2  (Des)Maximiza la ventana verticalmente.
+		* Boton 3  (Des)Maximiza la ventana horizontalmente.
+
+- *Raise*:
+	Trae la ventana al frente.
+
+- *Lower*:
+	Envia la ventana al fondo.
+
+- *Stick*:
+	(De)Stickea la ventana. Una ventana stickeada es mostrada en todos los
+	escritorios al mismo tiempo.
+
+- *Next Client*:
+	Activa el proximo cliente en este grupo de ventanas.
+
+- *Prev Client*:
+	Activa el cliente anterior en este grupo de ventanas.
+
+- *Layer...*:
+	Cambia la capa de esta ventana.
+
+- *Remember...*:
+	Especifica que configuracion de ventana debe ser almacenada en el archivo
+	apps, cubierto mas adelante en la seccion APLICACIONES.
+
+- *Close*:
+	Cierra la aplicacion.
+
+Menu Workspace
+~~~~~~~~~~~~~~
+El menu Workspace puede encontrarse clickeando con el boton del medio en el fondo de 
+escritorio. Aparecera un menu dando la opcion de agregar o quitar un escritorio.
+Tambien se veran los escritorios listados, un menu por debajo se veran los programas
+que estan ejecutandose en los respectivos espacios de trabajo. Por ultimo pero no menos
+importante se vera el menu Icons que muestra las aplicaciones que han sido iconificadas.
+
+Comportamiento de los menus
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Dicho comportamiento puede ser configurado en el archivo 'init' con las siguientes
+entradas (el valor por defecto para ambas es 0):
+
+	session.screen0.menuDelay: <msec>
+	session.screen0.menuDelayClose: <msec>
+
+Sintaxis del Menu
+~~~~~~~~~~~~~~~~~
+Existen hasta cuatro campos en una linea de menu. Son de la forma:
+
+	[tag] (nombre|etiqueta) {comando|nombre_del_archivo} </ruta/al/icono>
+
+Los tags reconocidos son:
+
+[begin] (etiqueta);;
+	Le indica a fluxbox donde inicia a analizar el menu. Este tag es requerido
+	para que Fluxbox lea el archivo de menu. Si no lo puede encontrar sera
+	usado el menu por defecto.
+
+[end];;
+	Le dice a Fluxbox que es el final de un menu. Puede ser tanto un submenu
+	como el Menu root. Debe haber por lo menos uno de estos tags que se 
+	corresponda con el tag requerido [begin].
+
+[exec] (etiqueta) {comando};;
+	Inserta un comando en el menu. Cuando se selecciona este item en el menu
+	Fluxbox ejecuta el comando.
+
+[exit] (etiqueta);;
+	Inserta un item que sale de Fluxbox. Cualquier ventana abierta es 
+	redireccionada a la ventana root y se cierra.
+
+[include] (nombre-de-archivo-o-directorio);;
+	Analiza el archivo especificado por nombre en linea con el menu
+	actual. El nombre puede ser la ruta completa al archivo, o puede empezar
+	con ~/, el cual sera buscado en el directorio home del usuario. Si la 
+	ruta es un directorio entonces todos los archivos que contenga seran
+	incluidos.
+
+[nop] (etiqueta);;
+	Inserta un item no operacional en el menu actual. Esto puede ser usado para
+	ayudar a dar formato al menu dividiendolo en bloques o secciones si asi se
+	desea. Este tag soporta una etiqueta pero no es necesaria, en tal caso se
+	obtendra un item en blanco.
+
+[separator];;
+	Esto creara una bonita linea de separacion. Util para dividir secciones de una
+	manera vistosa.
+
+[style] (etiqueta) \{nombre_de_archivo\};;
+	Le dice a Fluxbox que inserte un item que, cuando seleccionado, lee el
+	estilo nombrado en nombre_de_archivo y aplica las nuevas texturas, colores y
+	fuentes a la sesion ejecutandose actualmente.
+
+[stylesmenu] (directorio);;
+	Lee todos los nombres de archivo dentro del directorio especificado, asumiendo 
+	que todos son archivos de estilo validos, y crea items del menu dentro del
+	menu actual para cada archivo, que, cuando seleccionados por el usuario	
+	aplicaran el estilo elegido a la sesion actual. Las etiquetas que son creadas
+	en el menu son los nombres de los archivos de estilos.
+
+[stylesdir] (etiquteta) \{titulo_del_menu\};;
+	Crea un entrada de submenu con etiqueta (que es tambien el titulo del nuevo
+	submenu), e inserta en ese submenu todos los nombres de archivo en el
+	directorio especificado, asumiendo que todos son archivos validos de estilo
+	(los directorios son ignorados) en la misma manera que el comando [stylesmenu].
+	Tanto [stylesdir] como [stylesmenu] hacen posible instalar estilos sin editar
+	el archivo init.
+
+[submenu] (etiqueta) \{titulo_de_menu\};;
+	Este comando le dice a Fluxbox que cree y analice un nuevo menu. Este menu
+	es insertado como submenu dentro de menu principal. Estos menus son analizados
+	recursivamente, de modo que no hay limite para el numero de niveles o submenus
+	anidados que se puedan tener. El titulo del nuevo menu es opcional, si no se
+	especifica ninguno el titulo del menu sera el mismo que el de la etiqueta.
+	Es requerido el tag [end] para finalizar el submenu.
+
+[reconfig] (label);;
+	Cuando seleccionado este item relee el estilo actual y el archivo de menu y
+	aplica cualquier cambio. Es util para crear un nuevo tema o estilo sin que haya 
+	que reiniciar fluxbox cada vez que guardamos algun cambio. Sin embargo
+	Fluxbox relee el menu automaticamente cada vez que cambia.
+
+[restart] (etiqueta) \{comando\};;
+	Le dice a Fluxbox que reinicie. Si se provee un comando sale y ejecuta el comando
+	(el cual es habitualmente el nombre de otro window manager). Si el comando es
+	omitido Fluxbox se reinicia a si mismo.
+
+[config] (label);;
+	Inserta submenu Fluxbox nativo, conteniendo numerosas opciones de configuracion
+	relacionadas a la localizacion de ventanas, estilo de foco, estilo de
+	movimiento de ventana, etc.
+
+[wallpaper] (etiqueta);;
+	Este item nos permite enlistar nuestros fondos de pantalla. Esta hecho para
+	trabajar junto con fbsetbg(1) y permite con un simple click en una imagen
+	cambiar de fondo. Se nota? Fluxbox lo hace facil...
+
+[workspaces] (etiqueta);;
+	Le dice a Fluxbox que inserte un enlace al menu workspaces directamente a nuestro
+	menu. Particularmente util para los usuarios que no pueden acceder a dicho menu
+	directamente (por ej.: si no se tiene un mouse de tres botones es bastante
+	dificil clickear con el boton del medio para que nos lo muestre).
+
+Cualquier linea que empiece con un '#' o '!' es considerada un comentario e ignorada por
+Fluxbox. Tambien, en los campos etiqueta/comando/nombre_de_archivo se puede usar cualquier
+caracter. Usando '\' se inserta una barra invertida literal en los campos
+etiqueta/comando/nombre_de_archivo.
+
+-----------------------------------------------------------------------
+   Menu Ejemplo
+     # menu de Fluxbox
+     [begin] (Fluxbox)
+       [exec] (rxvt) {rxvt -ls} </usr/X11R6/share/icons/terminal.xpm>
+       [exec] (netscape) {netscape -install}
+       [exec] (The GIMP) {gimp}
+       [exec] (XV) {xv}
+       [exec] (Vim) {rxvt -geometry 132x60 -name VIM -e screen vim}
+       [exec] (Mutt) {rxvt -name mutt -e mutt}
+       [submenu] (mozilla)
+         [exec] (navegador) {mozilla -browser}
+         [exec] (noticias) {mozilla -news}
+         [exec] (correo) {mozilla -mail}
+         [exec] (edit) {mozilla -edit}
+         [exec] (compose) {mozilla -compose}
+       [end]
+       [submenu] (Window Manager)
+         [exec] (Editar Menus) {nedit ~/.fluxbox/menu}
+         [submenu] (Estilo) {Que estilo?}
+           [stylesdir] (~/.fluxbox/styles)
+           [stylesmenu] (Fluxbox Styles) {@pkgdatadir@/styles}
+         [end]
+         [config] (Opciones de configuracion)
+         [reconfig] (Reconfigurar)
+         [restart] (Reiniciar)
+       [end]
+       [exit] (Salir)
+     [end]
+-----------------------------------------------------------------------
+
+TOOLBAR
+-------
+La toolbar (barra de tareas) es un area donde Fluxbox muestra informacion, como un
+reloj, el identificador de workspaces (espacios de trabajo o escritorios), una
+systemtray (bandeja del sistema) u una taskbar (llamada iconbar) que puede contener
+los programas en ejecucion. El color, aspecto, fuente, etc, son definidos en el 
+estilo y no pueden ser definidos como configuraciones globales.
+
+Las partes de la toolbar pueden ser activadas o desactivadas en el archivo 'init'
+con los argumentos definidos a continuacion:
+
+	session.screen0.toolbar.tools
+
+El orden y la cantidad de herramientas son libremente seleccionables y deben estar
+separadas por comas.Ej.:
+
+	session.screen0.toolbar.tools: workspacename, systemtray, iconbar, clock
+
+las posibles partes o herramientas de la toolbar son:
+
+- *Clock*:
+	Mostrara el area donde apareceran de acuerdo a la especificacion del formato
+	listado en "man strftime".
+
+- *Iconbar*:
+	Esta es el area que contiene todas las ventanas (todas las aplicaciones en
+	ejecucion, todas las ventanas minimizadas o tal vez ninguna ventana, todo
+	dependiendo de la configuracion de la toolbar.
+
+- *Systemtray*:
+	La Systemtray (bandeja del sistema) puede contener aplicaciones que estan hechas
+	para correr sobre ella.
+
+- *WorkspaceName*:
+	Muestra el nombre del espacio de trabajo actual.
+
+- *PrevWorkspace*:
+	Muestra una flecha que permite cambiar al Workspace siguiente que se encuentra a 
+	la izquierda del actual. Lo mismo que MouseWheelDown con "Desktop MouseWheel 
+	Switching" activado.
+
+- *NextWorkspace*:
+	Muestra una flecha que permite cambiar al siguiente Workspace a la derecha del
+	actual. Lo mismo que MouseWheelUp con "Desktop MouseWheel Switching" activado.
+
+- *PrevWindow*:
+	Muestra una flecha que permite enfocar la ventana visible anterior en el 
+	workspace actual.
+
+- *NextWindow*:
+	Muestra una flecha que permite enfocar la ventana visible posterior en el
+	workspace actual.
+
+La Toolbar puede ser configurada de dos maneras. Tanto a traves de el Menu de 
+configuracion de la misma, el cual es accesible desde el Menu de Configuracion en el
+Root-Menu o con click derecho sobre Nombre de Workspace/Flechas/Reloj en la toolbar, o 
+editando el archivo Init a mano (Observar la seccion RESOURCES para mas informacion sobre
+como hacerlo.
+
+
+Configuracion a traves del menu de la Barra de Herramientas.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Todos los cambios tienen efecto mientras trabajas y puedes notarlo de inmediato, 
+exceptuando cambios en el "Alpha de la barra de herramientas" (toolbar Alpha) , que 
+necesita que se reinicie fluxbox para que los cambios tengan efecto.
+
+- *Visible*:
+	Setea la barra de herramientas en modo visible o invisible (bueno, esto deberia 
+	ser mas que obvio ;) )
+  
+	session.screen0.toolbar.visible: <booleana>
+
+- *Auto hide*:
+	Si esta variable es seteada la barra de herramientas va a desaparecer despues de 
+	un tiempo definido cuando el puntero del mouse salga del area de la barra de 
+	herramientas. La barra va a aparecer cuando el mouse entre en la zona restante de 
+	los bordes de la barra de herramientas. El tiempo de espera puede ser seteado en 
+	init.
+
+	session.screen0.toolbar.autoHide: <booleana>
+	session.autoRaiseDelay: <int>
+
+- *Toolbar width percentage*:
+	Setea el ancho de la barra de herramienta en forma de porcentaje. Use el boton 
+	izquierdo del mouse para disminuir y el boton derecho para incrementar el valor. 
+	El valor puede variar entre 0 y 100.
+
+	session.screen0.toolbar.widthPercent: <int>
+
+- *Maximize Over*:
+	Esta opcion permitira a las ventanas ser maximizadas sobre la barra de herramientas. 
+	Con esta opcion deshabilitada solo se "dockearan" en el borde de la barra.
+	Para usar esta opcion, la opcion de "Full Maximization" de la configuracion de 
+	fluxbox menu debera estar deshabilitada, de otra manera esta opcion "Maximize over" 
+	no funcionara.
+
+	session.screen0.toolbar.maxOver: <booleana>
+	session.screen0.fullMaximization: <booleana>
+
+-*Layer...*:
+	Esta opcion configura la capa donde la barra de herramientas es seteada. Con esta 
+	misma uno puede configurar la barra de herramientas para que este siempre arriba de 
+	todo con "Always on top"
+
+	session.screen0.toolbar.layer: <layer>
+
+-*Placement*:
+	Configura el lugar donde la  barra de herramientas se encontrara, arriba, abajo, 
+	con una alineacion de derecha, izquierda o en el centro.
+
+	session.screen0.toolbar.alpha: <int>
+
+-*Alpha*:
+	Esta opcion configura el valor alpha (transparencia) para la barra de herramientas. 
+	Use el boton izquierdo del mouse para disminuir y el derecho para incrementar el 
+	valor. 0 es invisible y 255 es sin ninguna transparencia (color solido).
+
+	session.screen0.toolbar.alpha: <int>
+
+-*Iconbar Mode*:
+      
+	Especifica el modo de la barra de iconos "iconbar":
+      
+	-None:
+		No mostrara ninguna ventana
+	-Icons:
+		Solo mostrara las ventanas de todos los escritorios que estan minimizadas.
+	-NoIcons:
+		Solo mostrara las ventanas de todos los escritorios que no estan minimizadas.
+	-WorkspaceIcons:
+		Solo mostrara las ventanas del escritorio en donde se encuentra que esten 
+		minimizadas.
+	-WorkspaceNoIcons:
+		Solo mostrara las ventanas del escritorio en donde se encuentra que no esten 
+		minimizadas.
+	-Workspace:
+		Mostrara todas las ventanas del escritorio en donde se encuentra.
+	-All WIndows:    		        
+		Mostrara todas las ventanas de todos los escritorios.
+
+	session.screen0.iconbar.mode: <mode>
+
+-*Alignment*:
+
+	-Left:
+		Todos los iconos y ventanas seran alineados segun el ancho seteado en init.
+	-Relative:
+		Todos los iconos y ventanas seran arreglados para que la barra de iconos 
+		siempre este completa.
+	-Right:
+		Todos los iconos y ventanas seran alineados segun el ancho seteado en init.
+
+	session.screen0.iconbar.aligment: <alignment>
+	session.screen0.iconbar.iconWidth: <int>
+
+
+-*Show Pictures*:
+	Si esta variable esta habilitada la barra de iconos mostrara los iconos de las 
+	aplicaciones , si esta posee alguno.
+
+	session.screen0.iconbar.usePixmap: <booleana>
+
+-*Clock*:
+	Deja que cambies el estilo de la hora entre 00:00am - 12:00pm y 00:00-24:00.
+
+-*Edit Clock Format*:
+	Clickeando esta opcion abrira una pequenia ventana en la cual el el formato de 
+	hora podra ser modificado de acuerdo a 'man strftime'.
+
+	session.screen0.strftimeFormat: <formato>
+
+
+RESOURCES
+~~~~~~~~~
+
+Usualmente el archivo de resource ~/.fluxbox/init es creado y mantenido por Fluxbox.
+Uno puede usar el menu [config] para setear la mayoria de estas opciones. Sin embargo, 
+nosotros vamos a contemplar todas las opciones disponibles de resource para el usuario.
+Si editas este archivo mientras estas corriendo Fluxbox, deberas reiniciar el mismo para 
+que carguen las opciones de resource.
+
+Cuando estamos corriendo Fluxbox en un ambiente de multiples escritorios la screen0 puede
+ser tambien screen1, screenN, etc. Uno puede customizar el comportamiento de Fluxbox en cada
+uno de los escritorios. A continuacion damos un ejemplo favorito de Fluxbox documentation 
+manager:
+
+-------------------------------------------------------
+	session.screen0.toolbar.onTop: False
+	session.screen0.toolbar.autoHide: True
+	session.screen0.toolbar.placement: BottomCenter
+	session.screen0.toolbar.widthPercent: 42
+	session.screen0.slit.onTop: False
+	session.screen0.slit.autoHide: True
+	session.screen0.slit.placement: TopLeft
+	session.screen0.slit.direction: Vertical
+	session.screen0.strftimeFormat: %I:%M %p
+	session.screen1.toolbar.onTop: True
+	session.screen1.slit.autoHide: False
+	session.screen1.slit.placement: CenterRight
+	session.screen1.slit.direction: Vertical
+	session.screen1.strftimeFormat: %a %d %R [%s]
+-------------------------------------------------------
+
+Aqui estan los resources que estan actualmente disponibles:
+
+    session.screen0.menu.alpha: <entero>
+    session.screen0.slit.alpha: <entero>
+    session.screen0.toolbar.alpha: <entero>
+    session.screen0.window.focus.alpha: <entero>
+    session.screen0.window.unfocus.alpha: <entero>
+    	Estos resources estan disponibles para que el usuario pueda configurar
+	diferentes niveles de transparencia para diferentes componentes
+	de Fluxbox. Cada uno acepta un valor entre 0-255 siendo 255 el
+	mas opaco y 0 completamente transparente. El default es 255.
+
+    session.screen0.slit.autoHide: <booleana>
+    session.screen0.toolbar.autoHide: <booleana>
+    	El resource autoHide permite al usuario que configure el comportamiento
+	de la barra de herramientas  y el slit. Este comportamiento puede ser
+	que estos desaparezcan cuando estos no estan siendo activamente usados
+	por el usuario, o que permanezcan visibles todo el tiempo. Default <booleana>
+
+	
+    session.screen0.desktopwheeling: <booleana>
+    session.screen0.toolbar.wheeling: <booleana>	
+	Esto marca la posibilidad de utlizar el scroll del mouse del usuario.
+	Configurando estos valores a '<booleana>' (true o false) permite que el usuario 
+	pueda literalmente navegar entre escritorios o aplicaciones en la barra de 
+	herramientas. Default: <booleana>
+
+    session.screen0.slit.layer: <layer>
+    session.screen0.toolbar.layer: <layer
+	Con estos dos resources, uno puede marcar las capas en que uno quiere
+	que aparezcan la barra de herramientas y el slit. Por favor lea la 
+	seccion de LAYER para mas informacion. 
+    
+    session.screen0.slit.onTop: <booleana>
+    session.screen0.toolbar.onTop: <booleana>
+	Un usuario puede configurar si la barra de herramientas o el slit 
+	siempre estan en el frente de la pantalla. Configurando estos 
+	resources va a llevar a la barra de herramientas y el slit por
+	encima de todas las otras ventanas. Por defecto: False
+
+    session.screen0.slit.placement: <posicion>
+    session.screen0.toolbar.placement: <posicion>
+	Esto permite al usuario poner el split y la barra de herramientas
+	donde el usuario desee. Las opciones disponibles son:
+	 -   BottomCenter
+	 -   BottomLeft
+	 -   BottomRight 
+	 -   LeftCenter
+	 -   RightCenter
+	 -   TopCenter
+	 -   TopLeft
+   
+    session.screen0.slit.maxOver: <booleana>
+    session.screen0.toolbar.maxOver: <booleana>
+    	Seteando estas a '<booleana>' permitira la ventana de aplicacion 
+	maximizarse completamente. configurando estas a '<booleana>' permitira
+	a la slit y la barra de herramientas conservar sus correspondientes
+	territorios y siempre seran visibles cuando una aplicacion sea
+	maximizada. El default es: <booleana>
+
+    
+    session.screen0.toolbar.height: <entero>
+	Setea la altura de la barra de herramientas. Default: 0
+    	Si el valor es seteado a 0, el archivo de estilo <style> va a tomar
+	control sobre la altura de la barra de herramientas.  Es posible
+	cambiar el tamanio de la misma seteandola con un valor > 0.
+	
+   session.screen0.toolbar.visible: <booleana>	
+        El usuario puede setear si quiere o no una barra de herramientas
+	visible en la pantalla. Configurando la variable a '<booleana>' remueve
+	la barra de herramientas de la pantalla. Esto tambien depende
+	obviamente de que si fue o no compilada la barra de herramientas
+	cuando se compilo fluxbox. El default es que la barra sea visible.
+
+   session.screen0.toolbar.widthPercent: <entero>
+   	Esta variable permite configurar el ancho (largo) de la barra de
+	herramientas. El default es: 100
+
+   session.screen0.toolbar.tools: <tools>
+   	Esto especifica las herramientas en la barra de herramientas. Para mas
+	informacion leer la seccion TOOLBAR en este manual para una
+	descripcion detallada de cada una de estas herramientas.
+	Las posibles herramientas son::
+	-   clock
+        -   iconbar
+        -   nextwindow
+        -   prevwindow
+        -   nextworkspace
+        -   prevworkspace
+        -   systemtray
+        -   workspacename
+	
+   session.screen0.slit.onhead: <entero>
+   session.screen0.toolbar.onhead: <entero>
+   	Para aquellos usuarios  que tienen sistemas de doble cabeza <varios
+	monitores>, puede setear esta variable al numero de pantalla en el
+	cual quieren ver el slit y la barra de herramientas. Default: 0
+
+   session.screen0.iconbar.iconWidth: 70
+   session.screen0.iconbar.mode: <mode>
+	Este valor es seteado en el menu de Iconbar Mode. Las opciones
+	disponibles son:: 
+   	 -   All Windows
+	 -   Icons
+	 -   None
+	 -   Workspace
+	 -   WorkspaceIcons
+			 
+   session.screen0.iconbar.usePixmap: <booleana>
+   	Esto tambien es seteado en el menu de Iconbar Mode. Cuando ponemos
+	esta variable en '<booleana>' mostrara los iconos nativos de las
+	aplicaciones. El Default: <booleana>
+
+   session.screen0.iconbar.iconTextPadding: 10l
+   session.screen0.iconbar.deiconifyMode: Current
+   session.screen0.iconbar.wheelMode: Screen
+   session.screen0.iconbar.alignment: <position>
+   	Este valor deberia cambiarse en el menu Iconbar Mode.
+	El default es: Relative (relativo)
+
+	Opciones Disponibles:
+	-   Left: ancho, alineado izquierda
+	-   Relative
+	-   Right: ancho, alineado derecha
+
+   session.screen0.iconbar.clientWidth: <entero>
+   	Usado para especificar el ancho de alineacion izquierda/derecha del
+	boton Iconbar. Default: 0
+
+   session.screen0.overlay.lineWidth: 1
+   session.screen0.overlay.lineStyle: LineSolid
+   session.screen0.overlay.joinStyle: JoinMiter
+   session.screen0.overlay.capStyle: CapNotLast
+   session.screen0.slit.direction: Vertical
+   session.screen0.strftimeFormat: <fecha>
+   	Esto ajusta la forma en que la hora es mostrada en la barra de
+	herramientas. El formato usado es strftime(3). default %I %M %p
+
+
+   session.screen0.tab.alignment: Left
+   session.screen0.tab.height: 16
+   session.screen0.tab.placement: Top
+   session.screen0.tab.rotatevertical: True
+   session.screen0.tab.width: 64
+   session.screen0.followModel: Ignore
+   session.screen0.rowPlacementDirection: LeftToRight
+   session.screen0.colPlacementDirection: TopToBottom
+   session.screen0.resizeMode: Bottom
+   session.screen0.focusModel: ClickToFocus
+   session.screen0.autoRaise: <booleana>
+   session.screen0.clickRaises: <booleana>
+   session.screen0.workspacewarping: <booleana>
+   session.screen0.showwindowposition: <booleana>
+	Configurando estas opciones a '<booleana>' muestra al usuario, en una
+	pequenia ventana, la posicion exacta de la ventana mientras el usuario
+	esta arrastrandola. Permite un posicionamiento preciso de la ventana
+	en la pantalla. Default: <booleana>
+
+   session.screen0.decorateTransient: <booleana>
+   session.screen0.showposinsidewindow: <booleana>
+   session.screen0.menuMode: Delay
+   session.screen0.focusNewWindows: <booleana>
+   session.screen0.workspaceNames: workspace1, workspaceN
+	Aqui es donde el usuario puede nombrar sus ventanas de trabajo
+	<workspaces>. De todos modos, es recomendable que utilice la herramienta
+	disponible en el Menu de Configuracion para hacer esto. Default: one,
+	two, three, four.
+
+   session.screen0.menuDelayClose: 0
+	Esta variable marca el tiempo de demora en milisegundos que el usuario
+	quiere que el menu permanezca visible despues de que ha movido el
+	mouse de arriba. Default: 0
+	
+   session.screen0.edgeSnapThreshold: <entero>
+  	Cuando movemos una ventana en la pantalla, Fluxbox es capaz de pegarla
+	al borde de la pantalla para "facil posicionamiento". Esta variable le
+	dice a Fluxbox la distancia en pixels de cuando la ventana va a saltar
+	al borde. Default : 0
+
+   session.screen0.windowPlacement: RowSmartPlacement
+
+   session.screen0.fullMaximization: <booleana>
+   session.screen0.sloppywindowgrouping: <booleana>
+   session.screen0.rootCommand: <command>
+   	Esto sobreescribe el rootCommand del estilo. Cuando esta variable esta
+	seteada va a mantener el fondo de pantalla, mas halla de lo que  cualquier
+	estilo tenga configurado. NOTA: Este comando puede ser peligroso. Por
+	favor este seguro de lo que esta haciendo cuando configure esta
+	variable a otro valor distinto de un comando de fondo de pantalla.
+
+   session.screen0.imageDither: <booleana>
+   session.screen0.opaqueMove: <booleana>
+	Determina el nivel de visibilidad de la aplicacion cuando esta siendo
+	arrastrada. Default: True
+
+   session.screen0.menuDelay: <msec>
+   session.screen0.workspaces: <entero>
+	Determina el numero de ambientes de trabajos <ventanas> que el usuario quiere.
+	Default: 4
+
+   session.screen0.focusLastWindow: <booleana>
+   session.screen0.windowMenu:
+
+   session.appsFile: <ubicacion>
+   session.groupFile: <ubicacion>
+   session.keyFile: <ubicacion>
+   session.menuFile: <ubicacion>
+   session.slitlistFile: <ubicacion>
+   session.styleFile: <ubicacion>
+	Todas estas variables de configuracion requieren una direccion a su
+	recurso especifico.  Aqui es cuando podes especificar diferentes
+	archivos. La mayoria de las configuraciones por default estaran en el
+	directorio ~/.fluxbox.
+   
+   session.autoRaiseDelay: <entero>
+   	Ajusta el retraso en milisegundos que toma las ventanas enfocadas
+	levantarse cuando tienen la opcion Autoraise marcada. 
+	El default es 250.
+   
+   session.cacheLife: <entero>
+	Esto le dice a Fluxbox cuando tiempo (en minutos) los pixmaps no
+	usados van a permanecer en la memoria del servidor X. Default: 5
+	
+   session.cacheMax: <entero>
+	Esto le dice a Fluxbox cuanta memoria (en kb) puede usar para guardar
+	pixmaps cacheados en el servidor X. Si tu maquina tiene poca memoria
+	disponible, podes disminuir este valor. Default: 200
+	
+   session.colorsPerChannel: <entero>
+	Esto le dice a Fluxbox cuantos colores debe tomar del servidor X en
+	pantallas con pseudo-colores. Un canal seria rojo , verde o azul.
+	Fluxbox guarda estas variables y las mantiene siempre disponibles.
+	El valor debe estar siempre entre 2 y 6. Cuando se ejecuta Fluxbox en una
+	pantalla de 8bpp, debe setear este componente a 4. El default es 4.
+	
+   session.doubleClickInterval: <entero>
+	Ajusta el tiempo en milisegundos que Fluxbox considera doble-click
+	a dos clicks consecutivos. El default es 250.
+
+   session.forcePseudoTransparency: <booleana>
+   session.focusTabMinWidth: 0
+   session.iconbar: <booleana>
+   	Configura este valor a 'true' o 'false' para habilitar o
+	deshabilitar que la barra de herramientas de Fluxbox muestre ventanas
+	iconificadas. El default es: true
+
+   session.ignoreBorder: <booleana>
+   session.imageDither: <booleana>
+	Setear a 'true' o 'false', respectivamente, para habilitar o
+	deshabilitar la agitacion en las imagenes <dithering>. Solo es
+	necesario en sistemas con una profundidad de color de 8bpp o inferior.
+	Default: <booleana>
+
+   session.numLayers: 13
+   session.opaqueMove: <booleana>
+	Cuando estas moviendo una ventana, con esta variable en 'true',
+	dibujara el contenido de la ventana mientras se mueve. (Esto disminuye el
+	rendimiento en sistemas con poco recursos). Si el valor es 'true' solo
+	dibujara el recuadro del borde de la ventana. Default: true
+
+   session.tabs: <booleana>
+   session.tabPadding: 0
+   session.tabsAttachArea: Window
+   session.titlebar.left: Stick
+   session.titlebar.right: Minimize Maximize Close
+   session.updateDelayTime: 0
+   session.useMod1: <booleana>
+
+KEYS
+----
+Se puede customizar (personalizar) las combinaciones de teclas en Fdateluxbox a traves del
+archivo ~/.fluxbox/keys. El archivo toma la forma de:
+
+	<modificador> <tecla> :[...] <operacion>
+
+Como se vera en el ejemplo de mas abajo, Mod1 es la tecla ALT y Mod4 es una de las tres 
+teclas extras en los teclados pc104 que esta marcada con el logo de una empresa muy
+conocida.
+Las lineas que comienzan con '#' o '!' se consideran comentarios y no son interpretadas 
+por Fluxbox.
+
+	------------------------------
+	# Fluxbox keys file.
+	Mod1 Tab :NextWindow
+	Mod1 Shift Tab :PrevWindow
+	Mod1 F1 :Workspace 1
+	Mod1 F2 :Workspace 2
+	Mod1 F3 :Workspace 3
+	Mod1 F4 :Workspace 4
+	Mod1 F5 :Workspace 5
+	Mod1 F6 :Workspace 6
+	Mod1 F7 :Workspace 7
+	Mod1 F8 :Workspace 8
+	Mod1 F9 :Workspace 9
+	Mod4 b :PrevWorkspace
+	Mod4 c :Minimize
+	Mod4 r :ExecCommand rxvt
+	Mod4 v :NextWorkspace
+	Mod4 x :Close
+	Mod4 m :RootMenu
+	Control n Mod1 n :NextTab
+	------------------------------
+
+Como se puede observar en la ultima linea, las 'keybindings' pueden ser
+encadenadas al estilo de las combinaciones de Emacs.
+
+Algunas cosas que hay que saber:
+- Los comandos distinguen mayusculas de minusculas.
+- La numeracion de los workspaces empieza en "1".
+- Algunos comandos tienen sinonimos
+- El espacio entre la ultima tecla y :Comando es obligatorio.
+
+Aqui van los comandos de Fluxbox para usar con teclas:
+
+Comandos del manejador de ventanas
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Restart <argumento>
+- Quit
+- Reconfigure
+- SetStyle <argumento>
+- ExecCommand <argumento>
+
+Comandos de la ventana en foco
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Minimize
+- MinimizeWindow
+- Iconify
+- Maximize
+- MaximizeWindow
+- MaximizeHorizontal
+- MaximizeVertical
+- ResizeTo <ancho> <altura>
+- Resize <delta-ancho> <delta-altura>
+- ResizeHorizontal <delta-ancho>
+- ResizeVertical <delta-altura>
+- MoveTo <x> <y>
+- Move <delta-x> <delta-y>
+- MoveRight <delta-x>
+- MoveLeft <delta-x>
+- MoveUp <delta-y>
+- MoveDown <delta-y>
+- Raise
+- Lower
+- Close
+- Shade
+- ShadeWindow
+- Stick
+- StickWindow
+- ToggleDecor
+- SendToWorkspace <numero>
+- SentToWorkspace <numero>
+- KillWindow
+- NextTab
+- PrevTab
+- MoveTabLeft
+- MoveTabRight
+- DetachClient
+
+Comandos de Workspace
+~~~~~~~~~~~~~~~~~~~~~
+- NextWorkspace
+- PrevWorkspace
+- RightWorkspace <por-numero>
+- LeftWorkspace <por-numero>
+- Workspace <numero>
+- NextWindow <bitmask>
+- PrevWindow <bitmask>
+- NextGroup <por-numero>
+- PrevGroup <por-numero>
+- ArrangeWindows
+- ShowDesktop (Iconifica todas las ventanas)
+- RootMenu
+- WorkspaceMenu
+- WindowMenu
+- SetWorkspaceName <nombre>
+
+Comandos especiales
+~~~~~~~~~~~~~~~~~~~~
+- MacroCmd
+- ReloadStyle
+- SetResourceValue <resourcename> <resource> value
+- BindKey <key><value>: <action>
+
+Un par de cosas
+~~~~~~~~~~~~~~~
+- SentToWorkspace:
+	Nos enviara junto con la ventana al workspace seleccionado.
+	SendToWorkspace solo envia la ventana.
+
+- Los parametros PrevWindow/NextWindow toman valores enteros:
+    0 o no especificado = comportamiento Default/actual - no se saltea
+    1 = Ignorar las Tabs de mas abajo
+    2 = Ingnorar las ventanas 'Stickeadas'
+    3 = Ignorar las Tabs de mas abajo/ventanas 'Stickeadas'
+    4 = Ignorar las ventanas foldeadas
+    5 = Ignorar las Tabs de mas abajo/ventanas foldeadas
+    6 = Ignorar ventanas stickeadas/foldeadas
+    7 = Ignorar las tabs de mas abajo/ventanas stickeadas/foldeadas
+
+- Bindkey agregara una combinacion de teclas y una accion al archivo keys.
+
+- El valor 'delta' significa la diferencia entre el valor actual y configuracion solicitada.
+De modo que si tenemos una ventana con un ancho de 100 pixels, podemos setear
+
+----------------------------
+Mod1 r :ResizeHorizontal 10
+----------------------------
+
+y cuando usamos esa combinacion incrementara el tamanio de la ventana a 110 pixels. Si hemos 
+usado
+
+----------------------------
+Mod1 r :ResizeHorizontal -10
+----------------------------
+
+el tamanio ha disminuido 10 pixels llevando la ventana a 90 pixels.
+
+- Los comandos Resize no necesariamente cambian el numero de pixels. De modo que muchas
+  terminales usaran el tamanio de un caracter como la unidad para cambiar el tamanio. La
+  mayoria de las aplicaciones sin embargo usaran pixels.
+
+- MacroCmd:
+
+--------------------------------------
+Mod1 r MacroCmd: {command1} {command2}
+--------------------------------------
+
+permite ejecutar mas de un comando con una sola combinacion. Los mismos se ejecutaran de
+modo serial.
+
+LAYERS
+------
+La layers (capas) afectan el modo en que las ventanas se solapan unas a otras en la 
+pantalla. Las ventanas en una capa mas alta apareceran por encima de aquellas en una mas
+baja, sea que esten en foco o no. Por defecto, Fluxbox usa 13 capas, empezando desde 1 
+(la mas alta). El numero de capas puede ser cambiado usando el siguiente recurso:
+
+	session.numLayers: <entero>
+
+Hay dos maneras de asignar una ventana a una capa diferente. Cuando la ventana esta abierta,
+se puede seleccionar la capa en el submenu 'Layer ...' del menu de ventana. El menu da seis
+opciones para la capa, los cuales Fluxbox maneja por nombre. Los nombres son (de la capa mas
+alta a la mas baja):
+
+* 2  - Above Dock
+* 4  - Dock
+* 6  - Top
+* 8  - Normal
+* 10 - Bottom
+* 12 - Desktop
+
+La otra manera es indicar la capa para una ventana en al archivo 'apps'. Este metodo es
+indicado en la seccion APLICACIONES.
+
+FOCUS MODEL
+-----------
+Focus Model (modelo de foco) define como las ventanas obtienen foco. (Por ej. convertirse 
+en la ventana activa, la que recibe los eventos de teclado y mouse). El Focus Model puede 
+ser cambiado en el menu de configuracion (generalmente ubicado bajo el menu 'fluxbox', en 
+el menu 'root').
+
+Hay dos aspectos principales del modo de enfocado: como las ventanas ganan foco y como las 
+tabs (pestanias) ganan foco. Cada uno tiene dos opciones: el foco sigue al mouse y al click 
+para enfocar. Que el foco sigue al mouse significa que las ventanas ganaran foco cuando el 
+mouse pase sobre ellas. Click para enfocar significa que las ventanas ganaran foco cuando 
+reciben un click del mouse.
+
+Por lo tanto, hay cuatro opciones principales cuando se elige el modelo de foco. Se debe 
+elegir una de las dos primeras y una de las dos ultimas. Estas son:
+
+- *Click To Focus*: 
+	click para enfocar las ventanas
+- *Mouse Focus*: 
+	el foco de las ventanas sigue el movimiento del mouse
+- *ClickTabFocus*:
+	click para enfocar las pestanias
+- *MouseTabFocus*:
+	el foco de las pestanias sigue el movimiento del mouse
+
+Hay una opcion mas en el menu de Focus Model. Se llama AutoRaise. Cuando AutoRaise esta
+habilitada las ventanas enfocadas apareceran por encima de otras ventanas en la misma 
+capa. Cuando esta deshabilitada se debe alzar explicitamente una ventana en foco usando
+el menu 'Window' o una combinacion de teclas.
+
+ESTILOS
+-------
+Fluxbox permite usar archivos especializados (estilos) que contienen recursos de las X(1) 
+para especificar colores, texturas, pixmaps y fuentes, y por lo tanto el aspecto de los
+bordes de ventanas, menus y la barra de tareas.
+
+La instalacion de Fluxbox por defecto provee algunos de estos archivos de estilos.
+Ver fluxstyle(1) para conocer el creciente numero de componentes de estilos.
+
+APLICACIONES
+------------
+Es posible forzar una aplicacion para que siempre tenga las mismas dimensiones, posicion, 
+y otras configuraciones cuando es lanzada por primera vez. Esto se hace usando el submenu 
+'Remember ...' del menu 'window', o directamente usando el archivo ~/.fluxbox/apps. Se debe 
+tener cuidado de editar el archivo apps cuando Fluxbox no se esta ejecutando, de otro modo
+nuestros cambios seran sobreescritos. A continuacion se listan las entradas validas para
+el mencionado archivo. El submenu 'Remember ...' tiene entradas para la mayoria de las 
+opciones que se almacenan en 'apps' para cargarse la proxima vez.
+
+El formato de una linea en 'apps' es:
+
+------------------------------------
+[app] (aplicacion) {count - opcional}
+	[Propiedad1]  {valor1}
+	[Propiedad2]  {valor2}
+	...
+[end]
+------------------------------------
+
+Cada 'aplicacion' puede ser una cadena o una expresion regular. Por defecto el nombre se
+hace coincidir con una propiedad de ventana WM_CLASS (la primer cadena en ella, llamada
+"instancia"). Se puede emparejar contra el titulo, nombre de instancia (por defecto),
+nombre de clase o rol (la propiedad WM_WINDOW_ROLE) especificandola explicitamente. Tambien
+se puede especificar multiples coincidencias, de las cuales TODAS deben coincidir con las 
+propiedades a ser aplicadas. Si una 'count' es suministrada entre llaves al final de la
+linea de la aplicacion entonces la entrada coincidira con, como mucho, con la dada cantidad 
+en cualquier momento (por defecto coincidiran todas las ventanas que encajen en dicho perfil).
+
+-------------------------------------------------------------------
+# coincidir una xterm estandar
+[app] (xterm)
+
+# coincidir con una xterm iniciada como: xterm -nombre myshell
+[app] (myshell)
+
+# coincidir con cualquier ventana de Firefox (el nombre de la instancia es "Gecko")
+[app] (class=Firefox-bin) {1}
+
+# coincidir con la ventana 'buddy list' de gaim
+[app] (role=buddy_list)
+
+# coincidir en una ventana rdesktop en un host determinado
+[app] (title=rdesktop - nombre_de_host.*)
+-------------------------------------------------------------------
+
+Las siguientes son las propiedades que pueden ser definidas en cada entrada [app].
+Cada nombre debe estar encerrado entre corchetes, y valor generalmente entre llaves:
+
+- [Workspace] \{0-N\}:
+	Fuerza la aplicacion a que se habra en un workspace especificado. Los
+	workspaces se indican con numero empezando desde 0.
+
+- [Dimensions] \{Ancho Alto\}:
+	Abre la aplicacion con la altura y ancho especificados, en pixels.
+
+- [Position] (*punto de referencia*) {X Y}
+	Posiciona la aplicacion en un punto determinado:
+     +
+	* WINCENTER
+	* CENTER
+	* UPPERLEFT
+	* UPPERRIGHT
+	* LOWERLEFT
+	* LOWERRIGHT
+     +
+
+	Opcionalmente se de pueden especificar los valores realativos de X e Y. 
+	UPERLEFT localiza la esquina superior izquierda en las coordenadas de 
+	pantalla (0,0). Si se especifica LOWERRIGHT, entonces la esquina inferior
+	derecha de la ventana se posicionara en la esquina inferior derecha de la 
+	pantalla. CENTER coloca la esquina superior izquierda en el centro de la
+	pantalla (WINCENTER actua como el resto - posiciona el centro de la ventana
+	relativo la centro de la pantalla).
+
+- [Layer] {numero_de_capa}:
+	Especifica la capa en que se abrira la ventana (por numero). Cada capa
+	tiene un numero. Las capas con nombre son: 2-AboveDock, 4-Dock, 6-Top, 
+	8-Normal, 10-Bottom, 12-Desktop.
+
+- [Shaded] {yes|no}:
+	La ventana inicia foldedada (enrollada) o desenrrollada.
+
+- [Tab] {yes|no}:
+	Indica si esta ventana puede ser agrupada en pestanias con otras.
+
+- [IconHidden] {yes|no}:
+    Esconde la aplicacion de la barra de iconos.
+
+- [FocusHidden] {yes|no}:
+	Esconde la aplicacion de la lista de ciclo de ventanas usando la 
+	combinacion de teclas Next/PrevWindow
+
+- [Hidden] {yes|no}:
+	es ambas [IconHidden] mas [FocusHidden]
+
+- [Deco] {NONE|NORMAL|TOOL|TINY|BORDER}:
+	Especifica el estado de decoracion. Hay muchos sets de decoracion 
+	predefinidos:
+
+	o   NORMAL - decoraciones estandard
+	o   NONE - sin decoraciones
+	o   BORDER - como NONE solo que mantiene el borde de X window
+	o   TINY - Barra de titulo con boton de iconificar
+	o   TOOL - solamente barra de titulo
+	
+	Tambien puede ser usada una mascara de bit para un control mas fino.
+	los bits son (de "1" a 1<<10): barra de titulo, grips de manipulacion, borde,
+	boton de iconificar, boton de maximizar, boton de cerrar, menu activado,
+	boton pegajoso, boton de foldeo, solapas activadas, foco activado.
+
+- [Sticky] {si|no}:
+	Si la ventana inicialmente esta en modo pegajoso (aparece en todos los escritorios) 
+	o no.
+
+- [Jump] {si|no}:
+	Saltar a un workspace. Esto es util solamente si 'Workspace tambien esta activado'.
+	El workspace es cambiado al que tiene la aplicacion que esta siendo lanzada.
+
+- [Close] {si|no}:
+	Guarda la configuracion al salir. Por defecto, las configuraciones de aplicacion
+	no son guardadas cuando se cierra la ventana.
+
+El archivo apps tambien permite especificar aplicaciones que deben ser iniciadas en el 
+inicio de fluxbox usando las lineas [startup] (opciones) {aplicacion}. En opciones se 
+puede especificar la pantalla, no el workspace en que la aplicacion debe ser iniciada.
+Startup todavia no es configurable a traves del menu.
+
+Finalmente, se puede configurar las ventanas para que se agrupen usando 'apps'. Esto se
+logra con expresiones regulares usando:
+
+	[app] (propiedad=expresion) ... {numero}
+
+Propiedad puede ser uno de los siguientes tags:
+
+o   name - el nombre de la ventana (el primer campo de WM_CLASS)
+o   class - clase de la ventana (el segundo campo de WM_CLASS)
+o   title - titulo de la ventana (propiedad WM_NAME)
+o   role - rol de la ventana (la propiedad WM_WINDOW_ROLE)
+
+Si no se especifica ninguna 'propiedad', es asumida la propiedad name. Podemos
+averiguar los valores de estos campos para una ventana particular ejecutando xprop.
+
+Tambien se puede colocar el tag [group] alrededor de varias tags [app] con el tag [end]
+para indicar el final del grupo. Tambien podemos especificar dimensiones, posiciones,
+etc. para el grupo como para las entradas app normales. A continuacion se lista un
+corto ejemplo de un archivo 'apps':
+
+-----------------------------------------------------------
+[startup] {xterm}
+# coincidir con cualquiera que termine en term, hasta dos instancias
+[app] (.*[tT]erm) {2}
+# coincidir con cualquiera que tenga 'gaim' en el titulo
+[app] (title=.*gaim.*)
+[app] (kate)
+	[Dimensions]  (WINCENTER) {1022 747}
+	[Position]    {0 0}
+	[Close]       {yes}
+[end]
+[app] (konqueror)
+	[Workspace]   {1}
+	[Dimensions]  {1006 749}
+	[Position]    {16 0}
+	[Jump]        {yes}
+[end]
+# iniciar todas las aterm sin decoraciones de ventana
+[app] (aterm)
+	[Deco]        {NONE}
+[end]
+# un grupo con todas las ventanas denominadas "special-term",
+# aparece en layer 4 (abajo)
+[group]
+[app] (special-term)
+	[Layer] {4}
+[end]
+-----------------------------------------------------------
+
+Los parametros en el archivo apps distinguen mayusculas de minusculas. Los nombres
+de las aplicaciones son tomados del primer atributo WM_CLASS de X window por defecto
+(WM_NAME = title, WM_WINDOW_ROLE = role). Se puede ver este atributo usando el
+comando xprop. Las ventanas temporales no son afectadas por las configuraciones de 
+aplicaciones. Se debe tener cuidado cuando se usan expresiones regulares. Si no se 
+esta familiarizado con ellas se puede desactivar esta caracteristica especificando
+--disable-regexp during configure. Entonces se haran coincidir lineas de texto plano.
+
+GRUPOS
+------
+Desde la version 0.1.11, Fluxbox tiene una funcion llamada autogrouping, mediante la 
+cual las agrupaciones son agrupadas juntas si estan en el mismo grupo. NOTA: esta
+funcion esta en desuso desde la version 0.9.1 en favor del agrupamiento usando el archivo
+apps, ya que es mucho mas potente.
+
+Se pueden crear grupos simplemente editando el archivo ~/.fluxbox/groups. Este archivo 
+el siguiente formato:
+
+		<aplicacion1> <aplicacion2> <aplicacion3> <...> <aplicacionN>
+
+donde los elementos pueden ser encontrados con el siguiente comando:
+
+	------------------
+	$> xprop WM_CLASS
+	------------------
+
+Solo se tipea este comando en una terminal y se usa el mouse para clickear en la 
+aplicacion deseada y nos dira que escribir como elemento (usar los primeros dos 
+nombres que devuelva). Cada linea forma un grupo diferente. por ej.:
+
+	----------------
+	Navigator nedit
+	xterm
+	----------------
+
+Esto creara dos grupos, uno con netscape y nedit y otro con xterm. La nueva ventana
+solamente se agrupara con otras ventanas en el mismo workspace y con la ultima ventana
+enfocada.
+
+LA SLIT
+-------
+La slit es una marco de ventana especial de FLuxbox que puede contener aplicaciones 
+dockeables, por ej. 'bbtools' o 'wmapps'.
+
+Cuando las aplicaciones se ejecutan en la slit no tienen bordes de ventana propios;
+en cambio estan enmarcadas en la slit, y estan siempre visibles en el workspace actual.
+
+Se puede hacer click con el boton 3 del mouse en el borde de ventana de la slit para 
+obtener un menu para determinar su posicion, si las aplicaciones contenidas deben estar
+agrupadas horizontal o verticalmente y si la slit debe auto ocultarse cuando el mouse no
+esta sobre ella.
+
+La mayoria de las aplicaciones dockeables usan la opcion -w para correr en la slit. Por
+ejemplo podriamos poner lo siguiente en ~/.xinitrc:
+
+	--------------
+	bbmail -w &
+	bbpager -w &
+	wmdrawer &
+	exec fluxbox
+	--------------
+
+NOTA:
+Tambien se puede poner todo esto el script startfluxbox(8). de esta manera en en 
+~/.xinitrc pondriamos solamente la linea 'exec startfluxbox'.
+
+Para usar la slit debe estar compilada con fluxbox. Esta es la opcion por defecto.
+
+Archivo Slitlist
+----------------
+El archivo slitlist de Fluxbox esta disponible para aquellos que usan dockapps en la
+slit. Esto ayuda a Fluxbox a rastrear el *orden* de los dockapps que se quieren iniciar.
+El archivo esta localizado generalmente en ~/.fluxbox/slitlist
+
+Un procedimiento simple para obtener la secuencia de la slit del modo que queremos es el 
+siguiente:
+
+	1. Ejecutamos Fluxbox sin iniciar ningun dockapp.
+	2. Ejecutamos los dockapps individualmente en el orden que queremos.
+	3. Agregamos los dockapps en nuestro script auto-inicio (si tenemos uno), o mejor aun,
+     	     los agregamos al script startfluxbox(8).
+
+Esta secuencia sera guardada por defecto en ~/.fluxbox/slitlist y sera mantenida en futuras
+versiones de Fluxbox.
+
+Los usuarios son libres de editar manualmente el archivo slitlist. Es una simple lista de nombres
+de ventanas, una por dockapp. Al igual que el archivo init no deberia ser editado mientras se
+esta ejecutando Fluxbox. De otro modo los cambios podrian sobreescribirse.
+
+El usuario tambien tiene la opcion de elegir una ruta diferente para slitlist. La siguiente
+es la componente del archivo init que deber ser cambiado
+
+   session.session0.slitlistfile: <ruta_al_archivo>
+
+ENTORNO
+-------
+HOME::
+	Fluxbox usa HOME para encontrar su archivo .fluxbox/init y para resolver los nombres de 
+	archivo y de directorio.
+
+DISPLAY::
+	Cuando no se ha especificado otro display en la linea de comandos, Fluxbox iniciara en
+	el display indicado en esta variable.
+
+Fluxbox tambien puede tomar ventaja de otras variables de entorno si son seteadas antes de que
+inicie. Por ejemplo, si $XTERM es seteada, entonces Fluxbox permitira que $XTERM sea usada en
+los archivos keys y menu. Entonces podriamos hacer:
+
+	---------------------------
+	Mod1 x :ExecCommand $XTERM
+	---------------------------
+
+Las formas de usar esto de manera practica e 'inteligente' son interminables.
+
+SENIALES
+-------
+Fluxbox reconoce las siguiente seniales:
+
+- SIGHUP  Fluxbox carga la configuracion.
+- SIGUSR1 Fuerza la recarga de la configuracion.
+- SIGUSR2 Fuerza la recarga del archivo menu.
+
+AUTOR Y CREDITOS
+----------------
+Fluxbox es escrito y mantenido por Henrik Kinnunen <fluxgen@fluxbox.org>,
+Simon Bowden <rathnor@fluxbox.org> y Mathias Gumz <akira@fluxbox.org>;
+con contribuciones y parches hechos por muchos individuos alrededor del mundo.
+
+Blackbox fue escrito y mantenido por Brad Hughes <blackbox@alug.org> y Jeff Raven <jraven@psu.edu>
+
+Sitio oficial de Fluxbox: http://www.fluxbox.org
+
+Temas compatibles:
+-   http://boxwhore.org
+-   http://themes.freshmeat.net
+
+Este manpage es el trabajo combinado de:
+
+- Curt Micol <asenchi@asenchi.com> (>fluxbox-0.9.11)
+
+- Tobias Klausmann <klausman@users.sourceforge.net> (<=fluxbox-0.9.11)
+- Grupert <grubert@users.sourceforge.net> (fluxbox)
+
+- Matthew Hawkins <matt@mh.dropbear.id.au> (blackbox)
+- Wilbert Berendsen <wbsoft@xs4all.nl> (blackbox)
+
+Traduccion al espaniol realizada por:
+
+- Guillermo Patterer <gmpatterer@gmail.com>
+- Matias Brutti <matiasbrutti@gmail.com>
+
+Por razones de compatibilidad se han omitido todos los caracteres especiales, por ej. acentos,
+especificos del idioma espaniol. De esta manera nos aseguramos que este manpage se vea lo mejor
+posible.
+
+- Muchos otros lenguajes podrian estar disponible si algun voluntario estuviera dispuesto.
+
+BUGS
+----
+Si se encuentran bugs, por favor visitar el canal de irc #fluxbox en irc.freenode.net.
+O pueden suscribirse a alguna de las listas de correo. Se puede encontrar mas informacion
+en el sitio web oficial.
+
+VER TAMBIEN
+-----------
+bsetroot(8) fbsetbg(8) fbrun(8) fluxstyle(8)
