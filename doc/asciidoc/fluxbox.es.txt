@@ -1,7 +1,7 @@
 fluxbox(1)
 =========
 fluxgen <fluxgen@fluxbox.org>
-v0.9.14,
+v0.9.15, Marzo 18 de 2006
 
 NAME
 ------
@@ -9,24 +9,31 @@ Fluxbox - Un liviano manejador de ventanas para el X Windowing System
 
 SYNOPSIS
 --------
+'fluxbox' [-v | -version]
+          [-h | -help]
+          [-i | -info]
+'fluxbox' [-rc rcfile]
+          [-log logfile]
+          [-display display]
+          [-screen scr,scr|all]
+          [-verbose]
 
-'fluxbox' [\-vhi] [\-rc archivo_rc] [\-l archivo_log] [\-d display] [\-screens scr,scr]
 
 DESCRIPCION
 -----------
-Fluxbox provee decoraciones de ventanas configurables, un menu root para lanzar 
+fluxbox(1) provee decoraciones de ventanas configurables, un menu root para lanzar 
 aplicaciones y una barra de tareas que muestra el nombre del 'workspace' actual, 
 la aplicacion activa y la hora actual. Tambien hay un menu de workspace para 
 agregar o remover espacios de trabajo. La 'slit' puede ser usada para 'dockear' 
 pequenias aplicaciones, por ej.: la mayoria de las bbtools pueden usar la slit.
 
-Fluxbox puede iconificar las ventanas a la barra de tareas, agregando la ventana 
+fluxbox(1) puede iconificar las ventanas a la barra de tareas, agregando la ventana 
 al submenu 'Icons' del menu workspace. Con un click reapareceran las ventanas 
 iconificadas. Doble-click en la barra de titulo de una ventana la 'foldeara' 
 (shade), por ej.: desaparecera la ventana y quedara visible solamente la barra 
 de titulo.
 
-Fluxbox usa su propia clase de graficos para renderizar sus imagenes al vuelo. 
+fluxbox(1) usa su propia clase de graficos para renderizar sus imagenes al vuelo. 
 Mediante el uso de 'estilos' se puede determinar en gran nivel la apariencia de 
 un escritorio. Los estilos de Fluxbox son compatibles con los de Blackbox 0.65 o 
 versiones anteriores, de modo que los usuarios que esten migrando aun pueden 
@@ -39,7 +46,6 @@ caracteristicas standard usadas por aplicaciones y utilidades de escritorio.
 
 OPCIONES
 ----------
-Fluxbox reconoce las siguientes lineas de comandos:
 
 -d display |-display display::
     Inicia fluxbox en el 'display' especificado.
@@ -60,7 +66,7 @@ Fluxbox reconoce las siguientes lineas de comandos:
 
 INICIANDO FLUXBOX
 -----------------
-Fluxbox viene con un programa llamado startfluxbox(8) localizado generalmente
+fluxbox(1) viene con un programa llamado startfluxbox(8) localizado generalmente
 donde se instalo Fluxbox. Este script nos provee con muchas opciones
 y variables que pueden ser indicadas cuando al inicio de Fluxbox. Para utilizarlo
 cuando se inicia Fluxbox, se debe colocar 'exec startfluxbox' como ultimo comando 
@@ -70,7 +76,7 @@ y startfluxbox(8) estan en el $PATH del 'shell'. Tambien hay que notar que tal v
 haya que crear el archivo ~/.xinitrc o tal vez el setup use ~/.xsession. Para mas
 informacion ver el manual del shell.
 
-Usando 'fluxbox -i' se veran las opciones por defecto utilizadas por Fluxbox.
+Usando 'fluxbox -i' se veran las opciones por defecto utilizadas por fluxbox(1).
 Estas son las que busca al inicio. En la lista de 'Defaults:' la ubicacion de
 archivo menu, ahi se puede proveer un menu comun para todos los usuarios.
 
@@ -176,7 +182,8 @@ medio en la barra de titulo y luego arrastrando y soltando en otra ventana. De
 esta manera las barras de título se convertiran en pestanias permitiendo al usuario
 seleccionar cada ventana individualmente. Este metodo nos permite poner multiples
 aplicaciones en una sola localizacion en el escritorio, y hacer muchas operaciones
-(por ej. mover o cambiar de tamanio) a todas las ventanas del grupo.
+(por ej. mover o cambiar de tamanio) a todas las ventanas del grupo. Las opciones
+se detallan en la seccion TAB OPTIONS
 
 Miscelaneas
 ~~~~~~~~~~~
@@ -283,6 +290,10 @@ usuarios hacerlo desde el menu.
 
 - *Focus Model*:
 	Por favor leer la seccion FOCUS MODEL al final de este manual.
+
+- *Tab Options*:
+	Nos permite configurar las propiedades de las 'tabs'. Se detalla en la
+	seccion TAB OPTIONS.
 
 - *Slit*:
 	Este menu puede ser abierto clickeando sobre la Slit (si esta visible).
@@ -1248,6 +1259,40 @@ habilitada las ventanas enfocadas apareceran por encima de otras ventanas en la 
 capa. Cuando esta deshabilitada se debe alzar explicitamente una ventana en foco usando
 el menu 'Window' o una combinacion de teclas.
 
+TAB OPTIONS
+-----------
+Esta seccion del menu de configuracion de fluxbox nos permite configurar muchas de las 
+caracteristicas de las tabs. Dentro de ella hay tres opciones principales:
+
+- *Placement*:
+    se puede elegir donde deben estar ubicadas las tabs externas. Las opciones son
+
+	* Top Left: las tabs se encuentran a la izquierda del borde superior de la ventana.
+	* Top Right: las tabs se encuentran a la derecha del borde superior de la ventana.
+	* Left Top: las tabs se encuentran en la parte superior del borde izquierdo de la ventana.
+	* Right Top: las tabs se encuentran en la parte superior del borde derecho de la ventana.
+	* Left Bottom: las tabs se encuentran en la parte inferior del borde izquierdo de la ventana.
+	* Right Bottom: las tabs se encuentran en la parte inferior del borde derecho de la ventana.
+	* Bottom Left: las tabs se encuentran a la izquierda del borde inferior de la ventana.
+	* Bottom Right: las tabs se encuentran a la derecha del borde inferior de la ventana.
+
+    para que estas opciones funcionen la opcion 'Tabs in Titlebar' debe estar desactivada.
+
+- *Tabs in Titlebar*:
+    cuando esta opcion esta activada las tabs estan fijas en la barra de titulo y su ancho varia 
+    de acuerdo a la cantidad de ventanas agrupadas.
+
+- *External Tab Width*:
+    especifica en pixels el ancho de las tabs externas.
+
+Como la mayoría de las configuraciones de fluxbox(1) esto se puede hacer editando el archivo init.
+Los recursos que debemos buscar son:
+
+    session.screen0.tabs.intitlebar:	<booleana>
+    session.screen0.tab.width:	        <entero>
+    session.screen0.tab.placement:	<direccion>
+
+
 ESTILOS
 -------
 Fluxbox permite usar archivos especializados (estilos) que contienen recursos de las X(1) 
@@ -1600,3 +1645,4 @@ en el sitio web oficial.
 VER TAMBIEN
 -----------
 bsetroot(8) fbsetbg(8) fbrun(8) fluxstyle(8)
+

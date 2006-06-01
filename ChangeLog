@@ -1,5 +1,7 @@
  (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/06/01:
+   * Update of new manpage (thanx Guillermo Patterer)
 *06/05/23:
    * Spanish Translation of the new manpage (thanx Guillermo Patterer)
      doc/asciidoc/fluxbox.es.txt

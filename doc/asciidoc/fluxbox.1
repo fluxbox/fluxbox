@@ -2,7 +2,7 @@
 .\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
 .\" Instead of manually editing it, you probably should edit the DocBook XML
 .\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "FLUXBOX" "1" "04/28/2006" "" ""
+.TH "FLUXBOX" "1" "06/01/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -105,7 +105,7 @@ The window that has the focus is the one that receives key and mouse events. The
 .SS "Windows"
 A left click (mouse button 1) on any part of the window's border will raise it. Dragging then moves the window to another part of the desktop. Dragging the resize grips at the left and right bottom corners resizes the window. Middle clicking on a border or titlebar will immediately lower the window. Right clicking on a border or titlebar pops the Window menu up. The commands in this menu alone are discussed in detail in the Window Menu section of MENUS.
 .SS "Tabs"
-fluxbox allows windows to be `grouped' by middle clicking and holding on a window's title bar and dragging it onto another window. This will `tab' the titlebars, allowing you the user to select each window individually. This `tabbing' allows you to put multiple applications in one location on the desktop, and do several operations (for example, moving or resizing) to all windows in the group.
+fluxbox allows windows to be `grouped' by middle clicking and holding on a window's title bar and dragging it onto another window. This will `tab' the titlebars, allowing you the user to select each window individually. This `tabbing' allows you to put multiple applications in one location on the desktop, and do several operations (for example, moving or resizing) to all windows in the group. Options are discussed in TAB OPTIONS section
 .SS "Miscellaneous"
 When you want to drag a window, but cannot see either the bottom handle or its titlebar you can press (and hold!)
 .sp
@@ -183,6 +183,9 @@ This menu offers the opportunity to set up fluxbox. It ca also achieved by editi
 .TP 3
 \(bu
 \fBFocus Model\fR: Please read the FOCUS MODEL section at the end of this manual.
+.TP
+\(bu
+\fBTab Options\fR: Lets you configure the properties of tabs. Detailed in TAB OPTIONS section.
 .TP
 \(bu
 \fBSlit\fR: This Menu can be opened by right clicking the slit (if visible).
@@ -1141,6 +1144,54 @@ Thus, there are four main options when choosing a focus model. You should choose
 \(bu
 \fBMouseTabFocus\fR: tab focus follows mouse
 There is one more option in the focus model menu. It is called AutoRaise. When AutoRaise is enabled, focused windows will appear on top of other windows in the same layer. When AutoRaise is disabled, you must explicitly raise a focused window, using the window menu or keybinding.
+.SH "TAB OPTIONS"
+This section of fluxbox configuration menu lets you configure many features of tabs. Inside of it there are three main options:
+.TP 3
+\(bu
+\fBPlacement\fR: you can choose where the external tabs must be positioned. The options are:
+.RS
+.TP 3
+\(bu
+Top Left: tabs are located on the left side of the top border of the window.
+.TP
+\(bu
+Top Right: tabs are located on the right side of the top border of the window.
+.TP
+\(bu
+Left Top: tabs are located on the top part of the left border of the window.
+.TP
+\(bu
+Right Top: tabs are located on the top part of the right border of the window.
+.TP
+\(bu
+Left Bottom: tabs are located on the bottom part of the left border of the window.
+.TP
+\(bu
+Right Bottom: tabs are located on the bottom part of the right border of the window.
+.TP
+\(bu
+Bottom Left: tabs are located on the left side of the bottom border of the window.
+.TP
+\(bu
+Bottom Right: tabs are located on the right side of the bottom border of the window.
+.sp
+.nf
+for this options to work 'Tabs in Titlebar' must be off.
+.fi
+.RE
+.TP
+\(bu
+\fBTabs in Titlebar\fR: when this option is on tabs are fixed in window titlebar and its width varies according to the amount of windows grouped.
+.TP
+\(bu
+\fBExternal Tab Width\fR: it specifies in pixels the width of external tabs.
+As most Fluxbox configurations this can be done by editing the init file. The resources that you should look at are:
+.sp
+.nf
+session.screen0.tabs.intitlebar:    <boolean>
+session.screen0.tab.width:          <integer>
+session.screen0.tab.placement:      <direction>
+.fi
 .SH "STYLES"
 fluxbox enables you to use specialized files that contain X(1) resources to specify colors, textures, pixmaps and fonts, and thus the overall look of your window borders, menus and the toolbar.
 .sp

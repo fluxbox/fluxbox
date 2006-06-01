@@ -184,7 +184,7 @@ window's title bar and dragging it onto another window. This will `tab'
 the titlebars, allowing you the user to select each window individually.
 This `tabbing' allows you to put multiple applications in one location on
 the desktop, and do several operations (for example, moving or resizing)
-to all windows in the group.
+to all windows in the group. Options are discussed in TAB OPTIONS section
 
 Miscellaneous
 ~~~~~~~~~~~~~
@@ -297,6 +297,10 @@ editing the init file, but this is a easier and faster way to most users.
 
 - *Focus Model*:
     Please read the FOCUS MODEL section at the end of this manual.
+
+- *Tab Options*:
+    Lets you configure the properties of tabs. Detailed in TAB OPTIONS
+    section.
 
 - *Slit*:
     This Menu can be opened by right clicking the slit (if visible).
@@ -1269,6 +1273,41 @@ AutoRaise is enabled, focused windows will appear on top of other windows in
 the same layer. When AutoRaise is disabled, you must explicitly raise a focused
 window, using the window menu or keybinding.
 
+TAB OPTIONS
+-----------
+This section of fluxbox configuration menu lets you configure many features of 
+tabs. Inside of it there are three main options:
+
+- *Placement*:
+    you can choose where the external tabs must be positioned. The options are:
+
+	* Top Left: tabs are located on the left side of the top border of the window.
+	* Top Right: tabs are located on the right side of the top border of the window.
+	* Left Top: tabs are located on the top part of the left border of the window.
+	* Right Top: tabs are located on the top part of the right border of the window.
+	* Left Bottom: tabs are located on the bottom part of the left border of the window.
+	* Right Bottom: tabs are located on the bottom part of the right border of the window.
+	* Bottom Left: tabs are located on the left side of the bottom border of the window.
+	* Bottom Right: tabs are located on the right side of the bottom border of the window.
+
+    for this options to work 'Tabs in Titlebar' must be off.
+
+- *Tabs in Titlebar*:
+    when this option is on tabs are fixed in window titlebar and its width varies according
+    to the amount of windows grouped.
+
+- *External Tab Width*:
+    it specifies in pixels the width of external tabs.
+
+As most Fluxbox configurations this can be done by editing the init file. The resources
+that you should look at are:
+
+    session.screen0.tabs.intitlebar:	<boolean>
+    session.screen0.tab.width:	        <integer>
+    session.screen0.tab.placement:	<direction>
+
+
+
 STYLES
 ------
 fluxbox enables you to use specialized files that contain X(1) resources to
@@ -1612,3 +1651,4 @@ information can be found on the official website.
 SEE ALSO
 --------
 bsetroot(1) fbsetbg(1) fbrun(1) fluxstyle(1)
+
