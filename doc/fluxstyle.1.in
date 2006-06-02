@@ -368,19 +368,19 @@ Everything you need to make your menu look pretty.
 menu.bevelWidth:                <integer>
 menu.borderColor:               <color>
 menu.borderWidth:               <integer>
-menu.bullet:
-menu.bullet.position:
-menu.frame: <texture type>
-menu.frame.color:  <color>
-menu.frame.colorTo: <color>
+menu.bullet:                    <{empty|square|triangle|diamond}>
+menu.bullet.position:           <{left|right}>
+menu.frame:                     <texture type>
+menu.frame.color:               <color>
+menu.frame.colorTo:             <color>
 menu.frame.disableColor:        <color>
 menu.frame.font:                <font>
 menu.frame.justify:             <{Left|Right|Center}>
 menu.frame.pixmap:              <filename>
 menu.frame.textColor:           <color>
-menu.hilite: <texture type>
-menu.hilite.color:  <color>
-menu.hilite.colorTo: <color>
+menu.hilite:                    <texture type>
+menu.hilite.color:              <color>
+menu.hilite.colorTo:            <color>
 menu.hilite.pixmap:             <filename>
 menu.hilite.textColor:          <color>
 menu.itemHeight:                <integer>
