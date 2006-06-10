@@ -248,7 +248,7 @@ Website: http://www.fluxbox.org/\n\n\
 -help\t\t\t\tdisplay this help text and exit.\n\n
 14 warning: couldn't set environment variable 'DISPLAY'
 
-$set 20
+$set 20 #layers
 
 1 Above Dock
 2 Bottom
