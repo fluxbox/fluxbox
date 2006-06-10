@@ -82,7 +82,7 @@ $set 6 #FbTkError
 14 Løbet tør for hukommelse under allokering af grøn buffer.
 15 Løbet tør for hukommelse under allokering af rød buffer.
 16 Kunne ikke læse tema-object
-17 uunderstøttet visual
+17 Uunderstøttet visual
 18 Sætter standardværdi
 
 $set 7 #Fluxbox
@@ -136,8 +136,8 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-1 BScreen::BScreen: der opstod en fejl under X-server-forespørgsel.\n	en anden window manager kører allerede på display
-2 W: %4d x H: %4d
+1 BScreen::BScreen: der opstod en fejl under forespørgsel til X server.\n	en anden window manager kører allerede på display
+2 B: %4d x H: %4d
 3 BScreen::BScreen: håndterer skærm %d med visual 0x%lx, dybde %d\n
 
 $set 13 #Slit
@@ -152,11 +152,12 @@ $set 13 #Slit
 $set 14 #Toolbar
 
 1 Rediger skrivebordets navn
-3 Alle vinduer
-4 Ikoner
+2 Vinduer vist i væjktøjsbjælken
+3 Alle
+4 Minimerede
 5 Ingen
-6 Skrivebord
-7 Skrivebordsikoner
+6 På skrivebord
+7 Minimerede på skrivebord
 8 Værktøjsbjælkelag
 10 Værktøjsbjælkens placering
 11 Værktøjsbjælke
@@ -164,6 +165,8 @@ $set 14 #Toolbar
 14 Ur: 12 timer
 15 Rediger tidsformat
 16 Vis billeder
+17 Ikke-minimerede
+18 Ikke-minimerede på skrivebord
 
 $set 15 #Window
 
@@ -218,7 +221,7 @@ $set 19 #main
 -log <filename>\t\t\tlog output til fil.\n\
 -help\t\t\t\tvis denne hjælp og afslut.\n\n
 
-$set 20
+$set 20 #layers
 
 1 Over dok
 2 Nederst
