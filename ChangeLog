@@ -1,6 +1,19 @@
  (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/06/10:
+   * Fixed resize box bug.
+     The text used to determine the size used space, which could have
+     different width than characters on some fonts.
+     (Thanks Thanks Scott Kuhl)
+   * Pressing shift while pressing enter in menu item will fake a 
+     right mouse button press. Usefull when inc/decrease alpha/size in menu. 
+     (Thanks _markt)
+     src/FbTk/Menu.cc 
+   * Added docs for session.titlebar.left/right.
+     Added docs about middle click on workspace menu.
+     Improved danish translation.
+     (Thanks Jonas Koelker)
+     doc/asciidoc/fluxbox.txt
    * Fix building on machines without iconv [sf.net #1499402] (Simon)
      FbTk/FbString.cc
    * Fix some external tab alignment on shade (Simon)
