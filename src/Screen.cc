@@ -1814,7 +1814,7 @@ void BScreen::showPosition(int x, int y) {
     }
 
     char label[256];
-    sprintf(label, "X: %4d x Y: %4d", x, y);
+    sprintf(label, "X:%5d x Y:%5d", x, y);
 
     m_pos_window.clear();
 
@@ -1930,7 +1930,7 @@ void BScreen::renderGeomWindow() {
 
     sprintf(label,
             _FBTEXT(Screen, GeometryFormat,
-            "W: %4d x H: %4d", "Representative maximum sized text for width and height dialog").c_str(),
+            "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog").c_str(),
             0, 0);
 
     int geom_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
@@ -1972,7 +1972,7 @@ void BScreen::renderGeomWindow() {
 void BScreen::renderPosWindow() {
 
     int pos_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
-    int pos_w = winFrameTheme().font().textWidth("0: 0000 x 0: 0000", 17) + winFrameTheme().bevelWidth()*2;
+    int pos_w = winFrameTheme().font().textWidth("0:00000 x 0:00000", 17) + winFrameTheme().bevelWidth()*2;
     m_pos_window.resize(pos_w, pos_h);
 
     m_pos_window.setBorderWidth(winFrameTheme().border().width());
