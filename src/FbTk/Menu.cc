@@ -1141,7 +1141,10 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         // send fake button 1 click
         if (validIndex(m_which_press) && 
             isItemEnabled(m_which_press)) {
-            menuitems[m_which_press]->click(1, event.time);
+            if (event.state & ShiftMask)
+                menuitems[m_which_press]->click(3, event.time);
+            else
+                menuitems[m_which_press]->click(1, event.time);
             itemSelected(1, m_which_press);
             m_need_update = true;
             updateMenu();
