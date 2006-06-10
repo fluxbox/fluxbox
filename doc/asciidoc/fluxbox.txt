@@ -431,12 +431,14 @@ border of a window. The options available are:
 
 Workspace Menu
 ~~~~~~~~~~~~~~
-The workspace menu can be found by middle clicking on the background.  A
-menu will popup giving you the option to add or remove a workspace.  You
-will also see your workspaces listed there, in a lower menu under these
-the programs that are running on those respective workspaces will be
-displayed. Last but not least you will notice the Icons menu.  This is for
-applications which have been `iconified'.
+The workspace menu can be found by middle clicking on the background.
+A menu will popup giving you the option to add or remove a workspace.
+You will also see your workspaces listed there; middle clicking on a
+workspace name will take you to that workspace, whereas clicking on a
+window name in one of the per-workspace submenus will take you to the
+workspace that window is on, and select the window. Last but not least
+you will notice the Icons menu.  This is for applications which have
+been `iconified'.
 
 Menu Behavior
 ~~~~~~~~~~~~~
