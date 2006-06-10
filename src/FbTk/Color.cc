@@ -116,7 +116,7 @@ bool Color::validColorString(const char *color_string, int screen) {
     return XParseColor(disp, colm, color_string_tmp.c_str(), &color) != 0;
 }
 
-Color &Color::operator  = (const Color &col_copy) {
+Color &Color::operator = (const Color &col_copy) {
     // check for aliasing
     if (this == &col_copy)
         return *this;
@@ -144,8 +144,6 @@ void Color::copy(const Color &col_copy) {
         setPixel(col_copy.pixel());
         return;
     }
-
-    free();
 		
     allocate(col_copy.red()*0xFF, 
              col_copy.green()*0xFF,
@@ -168,6 +166,7 @@ void Color::allocate(unsigned short red, unsigned short green, unsigned short bl
         _FB_USES_NLS;
         cerr<<"FbTk::Color: "<<_FBTKTEXT(Error, ColorAllocation, "Allocation error.", "XAllocColor failed...")<<endl;
     } else {
+        free();
         setRGB(maxValue(color.red),
                maxValue(color.green),
                maxValue(color.blue));
