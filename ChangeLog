@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/06/10:
+   * Fix some external tab alignment on shade (Simon)
+     FbWinFrame.cc
+   * Fix container size rounding for right alignment (Simon)
+     Container.cc
 *06/06/01:
    * Update of new manpage (thanx Guillermo Patterer)
 *06/05/23:

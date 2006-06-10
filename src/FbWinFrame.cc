@@ -348,6 +348,7 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT0) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT0);
         m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setMaxTotalSize(m_window.width());
         tabx = x();
         taby = y() - yOffset();
         break;
@@ -355,6 +356,7 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT0) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT0);
         m_tab_container.setAlignment(Container::RIGHT);
+        m_tab_container.setMaxTotalSize(m_window.width());
         tabx = x() + width() - m_tab_container.width();
         taby = y() - yOffset();
         break;
@@ -362,6 +364,7 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT270) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT270);
         m_tab_container.setAlignment(Container::RIGHT);
+        m_tab_container.setMaxTotalSize(m_window.height());
         tabx = x() - xOffset();
         taby = y();
         break;
@@ -369,6 +372,7 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT270) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT270);
         m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setMaxTotalSize(m_window.height());
         tabx = x() - xOffset();
         taby = y() + height() - m_tab_container.height();
         break;
@@ -376,6 +380,7 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT90) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT90);
         m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setMaxTotalSize(m_window.height());
         tabx = x() + width() + m_window.borderWidth();
         taby = y();
         break;
@@ -383,6 +388,7 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT90) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT90);
         m_tab_container.setAlignment(Container::RIGHT);
+        m_tab_container.setMaxTotalSize(m_window.height());
         tabx = x() + width() + m_window.borderWidth();
         taby = y() + height() - m_tab_container.height();
         break;
@@ -390,6 +396,7 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT0) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT0);
         m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setMaxTotalSize(m_window.width());
         tabx = x();
         taby = y() + height() + m_window.borderWidth();
         break;
@@ -397,6 +404,7 @@ void FbWinFrame::alignTabs() {
         if (orig_orient != FbTk::ROT0) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT0);
         m_tab_container.setAlignment(Container::RIGHT);
+        m_tab_container.setMaxTotalSize(m_window.width());
         tabx = x() + width() - m_tab_container.width();
         taby = y() + height() + m_window.borderWidth();
         break;
@@ -404,7 +412,6 @@ void FbWinFrame::alignTabs() {
 
     unsigned int w = m_window.width(), h = m_window.height();
     translateSize(m_tab_container.orientation(), w, h);
-    m_tab_container.setMaxTotalSize(w);
 
     if (m_tab_container.orientation() != orig_orient ||
         m_tab_container.maxWidthPerClient() != orig_tabwidth) {
@@ -417,6 +424,9 @@ void FbWinFrame::alignTabs() {
     }
 
     if (m_tab_container.parent()->window() != m_screen.rootWindow().window()) {
+        // because the label might be using the same cached pixmap as tab container!
+        renderTitlebar();
+        applyTitlebar();
         m_tab_container.reparent(m_screen.rootWindow(), tabx, taby);
         m_layeritem.addWindow(m_tab_container);
     } else {

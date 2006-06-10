@@ -272,35 +272,10 @@ void Container::setMaxTotalSize(unsigned int size) {
     if (m_max_total_size == size)
         return;
 
-    unsigned int old = m_max_total_size;
     m_max_total_size = size;
 
     repositionItems();
     return;
-
-    if (m_max_total_size && width() > m_max_total_size) {
-        resize(m_max_total_size, height());
-    } else if (!m_max_total_size && old) { // going from restricted to unrestricted
-        repositionItems();
-    } else {
-        // this is a bit of duplication from repositionItems
-        // for when we are allowed to grow ourself
-        Alignment align = alignment();
-        size_t num_items = m_item_list.size();
-        if (m_max_total_size && (align == RIGHT || align == LEFT) &&
-            num_items) { 
-            unsigned int max_width_per_client = maxWidthPerClient();
-            unsigned int borderW = m_item_list.front()->borderWidth();
-            
-            unsigned int preferred_width = (max_width_per_client + borderW) * num_items - borderW;
-
-            if (preferred_width > m_max_total_size)
-                preferred_width = m_max_total_size;
-
-            if (preferred_width != width())
-                repositionItems();
-        }
-    }
 }
 
 void Container::setAlignment(Container::Alignment a) {
@@ -401,7 +376,6 @@ void Container::repositionItems() {
             total_width = m_max_total_size;
             if (m_max_total_size > ((num_items - 1)*borderW)) { // don't go negative with unsigned nums
                 max_width_per_client = ( m_max_total_size - (num_items - 1)*borderW ) / num_items;
-                total_width = (max_width_per_client + borderW) * num_items - borderW;
             } else
                 max_width_per_client = 1;
         }
@@ -429,7 +403,11 @@ void Container::repositionItems() {
     ItemList::iterator it = m_item_list.begin();
     const ItemList::iterator it_end = m_item_list.end();
 
-    int rounding_error = total_width - ((max_width_per_client + borderW)* num_items - borderW);
+    int rounding_error = 0;
+
+    if (align == RELATIVE || total_width == m_max_total_size) {
+        rounding_error = total_width - ((max_width_per_client + borderW)* num_items - borderW);
+    }
 
     int next_x = -borderW; // zero so the border of the first shows
     int extra = 0;
@@ -443,10 +421,16 @@ void Container::repositionItems() {
     unsigned int tmpw, tmph;
     for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {
         // we only need to do error stuff with alignment RELATIVE
-        if (rounding_error != 0 && align == RELATIVE) {
+        // OR with max_total_size triggered
+        if (rounding_error) {
             --rounding_error;
             extra = 1;
+            //counter for different direction
+            if (align == RIGHT && !extra)
+                --next_x;
         } else {
+            if (extra && align == RIGHT) // last extra
+                ++next_x;
             extra = 0;
         }
         // rotate the x and y coords
