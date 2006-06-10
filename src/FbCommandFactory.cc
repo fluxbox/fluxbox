@@ -136,6 +136,7 @@ FbCommandFactory::FbCommandFactory() {
         "taketoworkspace",
         "taketonextworkspace",
         "taketoprevworkspace",
+        "togglecmd",
         "toggledecor",
         "windowmenu",
         "workspace",
@@ -449,12 +450,15 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
 
       while (true) {
         parse_pos+= err;
-        err= FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + parse_pos,
-                                              '{', '}', " \t\n", true);
+        err= FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + 
+                                                parse_pos,
+                                                '{', '}', " \t\n", true);
         if ( err > 0 ) {
           std::string c, a;
-          std::string::size_type first_pos = FbTk::StringUtil::removeFirstWhitespace(cmd);
-          std::string::size_type second_pos= cmd.find_first_of(" \t", first_pos);
+          std::string::size_type first_pos = 
+              FbTk::StringUtil::removeFirstWhitespace(cmd);
+          std::string::size_type second_pos = 
+              cmd.find_first_of(" \t", first_pos);
           if (second_pos != std::string::npos) {
             a= cmd.substr(second_pos);
             FbTk::StringUtil::removeFirstWhitespace(a);
@@ -467,8 +471,44 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
             FbTk::RefCount<FbTk::Command> rfbcmd(fbcmd);
             macro->add(rfbcmd);
           }
-        }
-        else
+        } else
+          break;
+      }
+
+      if ( macro->size() > 0 )
+        return macro;
+
+      delete macro;
+    } else if (command == "togglecmd") {
+      std::string cmd;
+      int   err= 0;
+      int   parse_pos= 0;
+      FbTk::ToggleCommand* macro= new FbTk::ToggleCommand();
+
+      while (true) {
+        parse_pos+= err;
+        err= FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + 
+                                                parse_pos,
+                                                '{', '}', " \t\n", true);
+        if ( err > 0 ) {
+          std::string c, a;
+          std::string::size_type first_pos = 
+              FbTk::StringUtil::removeFirstWhitespace(cmd);
+          std::string::size_type second_pos= 
+              cmd.find_first_of(" \t", first_pos);
+          if (second_pos != std::string::npos) {
+            a= cmd.substr(second_pos);
+            FbTk::StringUtil::removeFirstWhitespace(a);
+            cmd.erase(second_pos);
+          }
+          c= FbTk::StringUtil::toLower(cmd);
+
+          FbTk::Command* fbcmd= stringToCommand(c,a);
+          if (fbcmd) {
+            FbTk::RefCount<FbTk::Command> rfbcmd(fbcmd);
+            macro->add(rfbcmd);
+          }
+        } else
           break;
       }
 

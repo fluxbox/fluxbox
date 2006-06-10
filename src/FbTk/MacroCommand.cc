@@ -38,6 +38,24 @@ void MacroCommand::execute() {
         m_commandlist[i]->execute();
 }
 
+ToggleCommand::ToggleCommand() {
+    m_state = 0;
+}
+
+void ToggleCommand::add(RefCount<Command> &com) {
+    m_commandlist.push_back(com);
+}
+
+size_t ToggleCommand::size() const {
+    return m_commandlist.size();
+}
+
+void ToggleCommand::execute() {
+    m_commandlist[m_state]->execute();
+    if (++m_state >= m_commandlist.size())
+        m_state = 0;
+}
+
 }; // end namespace FbTk
 
 

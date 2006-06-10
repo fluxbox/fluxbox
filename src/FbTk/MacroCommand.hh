@@ -42,6 +42,19 @@ private:
     std::vector<RefCount<Command> > m_commandlist;
 };
 
+/// executes one command at a time
+class ToggleCommand:public Command {
+public:
+    ToggleCommand();
+    void add(RefCount<Command> &com);
+    size_t size() const;
+    virtual void execute();
+
+private:
+    std::vector<RefCount<Command> > m_commandlist;
+    size_t m_state;
+};
+
 } // end namespace FbTk
 
 #endif // FBTK_MACROCOMMAND_HH
