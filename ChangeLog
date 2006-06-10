@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/06/10:
+   * Fix building on machines without iconv [sf.net #1499402] (Simon)
+     FbTk/FbString.cc
    * Fix some external tab alignment on shade (Simon)
      FbWinFrame.cc
    * Fix container size rounding for right alignment (Simon)

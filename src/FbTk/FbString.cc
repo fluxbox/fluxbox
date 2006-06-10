@@ -56,14 +56,14 @@ static int iconv_convs[CONVSIZE];
 
 /// Initialise all of the iconv conversion descriptors
 void init() {
+    setlocale(LC_CTYPE, "");
+
+#ifdef HAVE_ICONV
     if (iconv_convs != 0)
         return;
 
     iconv_convs = new iconv_t[CONVSIZE];
 
-    setlocale(LC_CTYPE, "");
-
-#ifdef HAVE_ICONV
 #ifdef CODESET
     std::string locale_codeset = nl_langinfo(CODESET);
 #else // openbsd doesnt have this (yet?)
@@ -90,16 +90,17 @@ void init() {
 }
 
 void shutdown() {
+#ifdef HAVE_ICONV
     if (iconv_convs == 0)
         return;
-#ifdef HAVE_ICONV
+
     for (int i=0; i < CONVSIZE; ++i) 
         if (iconv_convs[i] != (iconv_t)(-1))
             iconv_close(iconv_convs[i]);
-#endif // HAVE_ICONV
 
     delete[] iconv_convs;
     iconv_convs = 0;
+#endif // HAVE_ICONV
 }
 
 
