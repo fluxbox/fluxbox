@@ -1,13 +1,21 @@
  (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/06/10:
+   * Added new command: ToggleCmd
+     Works like a macro but executes the commands one at the time in order.
+     Example:
+     Mod1 T :ToggleCmd {Exec xterm} {NextWindow}
+     When Mod1 T is press the first time it will start xterm, the second time
+     it will do NextWindow. When it reaches end it will start at the beginning.
+     (Thanks Mark Tiefenbruck)
+     src/FbCommandFactory.cc, src/FbTk/MacroCommand.{hh,cc}
    * Fixed resize box bug.
      The text used to determine the size used space, which could have
      different width than characters on some fonts.
      (Thanks Thanks Scott Kuhl)
    * Pressing shift while pressing enter in menu item will fake a 
      right mouse button press. Usefull when inc/decrease alpha/size in menu. 
-     (Thanks _markt)
+     (Thanks Mark Tiefenbruck)
      src/FbTk/Menu.cc 
    * Added docs for session.titlebar.left/right.
      Added docs about middle click on workspace menu.
@@ -52,7 +60,7 @@ Changes for 0.9.16:
    * Fix bug with horizontal maximisation when quadrant resizing (Mathias)
      Window.hh/cc
 *06/05/13:
-   * Fixed some title redraw issues (Thanks _markt)
+   * Fixed some title redraw issues (Thanks Mark Tiefenbruck)
      WinClient.cc, Window.cc
    * Added support for _NET_WM_STATE_DEMANDS_ATTENTION . (Henrik)
      When this state is set fluxbox will start flashing 
@@ -171,7 +179,7 @@ Changes for 0.9.16:
      nls/da_DK/Translation.m
    * Fixes to Mouse Focus (thanks Scott Kuhl; skuhl AT cs utah edu)
      Window.cc
-   * Allow ~ in "background" pixmap options (Simon + thanks_markt)
+   * Allow ~ in "background" pixmap options (Simon + thanks Mark Tiefenbruck)
      RootTheme.cc
    * Windows keep relative position in ArrangeWindows (Mathias)
      WorkspaceCmd.cc
@@ -230,7 +238,7 @@ Changes for 0.9.16:
      ClientPattern.cc Container.cc FbWinFrame.cc IconButton.cc IconbarTool.cc
      ScreenPlacement.hh ScreenResources.cc ToolFactory.cc Toolbar.cc
      Window.cc  FbTk/... FbPixmap.hh/cc Menu.hh Text.hh TextBox.hh/cc
-   * signedness fix in Container moveItem (thanks _markt)
+   * signedness fix in Container moveItem (thanks Mark Tiefenbruck)
      Container.cc
    * Vertical toolbar (Simon)
      Toolbar.cc ToolbarItem.hh/cc IconbarTool.hh/cc IconButton.hh/cc
@@ -302,7 +310,7 @@ Changes for 0.9.16:
    * Fix crash when deiconifying stuck windows with Follow mode (Simon)
      IconButton.cc
    * Don't Follow stuck windows on deiconify, since they're stuck 
-     (thanks _markt)
+     (thanks Mark Tiefenbruck)
      IconButton.cc
 *06/03/26:
    * Related to external (Simon)
@@ -330,7 +338,7 @@ Changes for 0.9.16:
    * Fixed apps filename on save (Thanks mal at komcept com)
      Remember.cc
 *06/03/23:
-   * Fixed duplicate ClickToFocus menu item (Thanks _markt)
+   * Fixed duplicate ClickToFocus menu item (Thanks Mark Tiefenbruck)
    * Fix some tab stacking alignment and rendering on tab resize (Simon)
      (and very minor tidying)
      FbWinFrame.cc FbTk/XLayer.cc FbTk/XLayerItem.hh/cc
