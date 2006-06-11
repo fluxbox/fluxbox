@@ -32,6 +32,7 @@
 #include "FbTk/Timer.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/SignalHandler.hh"
+#include "AttentionNoticeHandler.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -207,6 +208,8 @@ public:
     // screen we are watching for modifier changes
     BScreen *watchingScreen() { return m_watching_screen; }
     const XEvent &lastEvent() const { return m_last_event; }
+
+    AttentionNoticeHandler &attentionHandler() { return m_attention_handler; }
     
 private:
 
@@ -314,6 +317,8 @@ private:
     const char *m_RC_PATH;
     const char *m_RC_INIT_FILE;
     Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
+
+    AttentionNoticeHandler m_attention_handler;
 };
 
 

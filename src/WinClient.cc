@@ -514,6 +514,15 @@ void WinClient::updateWMHints() {
         else
             m_icon_mask = 0;
 
+        if (m_win && m_win->isInitialized()) {
+            if (wmhint->flags & XUrgencyHint) {
+                Fluxbox::instance()->attentionHandler().addAttention(*m_win);
+            } else {
+                Fluxbox::instance()->attentionHandler().
+                    update(&(m_win->attentionSig()));
+            }
+        }
+
         XFree(wmhint);
     }
 }

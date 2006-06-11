@@ -153,5 +153,4 @@ private:
     void saveState(FluxboxWindow &win, WindowState *state);
 
     FbTk::FbString getUTF8Property(Atom property);
-    AttentionNoticeHandler m_demands_attention;
 };

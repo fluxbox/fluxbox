@@ -1057,10 +1057,12 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
         else
             win.moveToLayer(Layer::NORMAL);
     } else if (state == m_net_wm_state_demands_attention) {
-        if (value) // if add attention
-            m_demands_attention.addAttention(win);
-        else // erase it
-            m_demands_attention.update(&win.attentionSig());
+        if (value) { // if add attention
+            Fluxbox::instance()->attentionHandler().addAttention(win);
+        } else { // erase it
+            Fluxbox::instance()->attentionHandler().
+                update(&win.attentionSig());
+        }
     }
 
     // Note: state == net_wm_state_modal, We should not change it
