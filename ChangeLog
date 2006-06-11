@@ -1,5 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 0.9.16:
+*06/06/11:
+   * Added support for urgency hint.
+     This make apps, that support this hint, flash the titlebar and iconbar
+     when they want attention.
+     For example gaim.
+     (Thanks Mark Tiefenbruck)
+     fluxbox.hh, Ewmh.hh/cc, WinClient.cc
 *06/06/10:
    * Added new command: ToggleCmd
      Works like a macro but executes the commands one at the time in order.
