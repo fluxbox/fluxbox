@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 0.9.16:
 *06/06/11:
+   * Added support for _NET_WM_MOVERESIZE (Henrik)
+     Ewmh.hh/cc, Window.hh/cc
    * Added support for urgency hint.
      This make apps, that support this hint, flash the titlebar and iconbar
      when they want attention.

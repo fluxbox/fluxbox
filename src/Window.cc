@@ -1158,8 +1158,6 @@ void FluxboxWindow::updateTitleFromClient(WinClient &client) {
         m_labelbuttons[&client]->setText(client.title());
         if (&client == m_client)
             frame().setFocusTitle(client.title());
-
-        titleSig().notify();
     }
 }
 
@@ -1734,7 +1732,7 @@ void FluxboxWindow::maximize(int type) {
     m_last_resize_w = new_w;
     m_last_resize_h = new_h;
     
-    ResizeCorner old_resize_corner = m_resize_corner;
+    ResizeDirection old_resize_corner = m_resize_corner;
     m_resize_corner = NOCORNER;
     fixsize();
     m_resize_corner = old_resize_corner;
@@ -2525,6 +2523,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         client.updateIconTitle();
     case XA_WM_NAME:
         updateTitleFromClient(client);
+        titleSig().notify();
         break;
 
     case XA_WM_NORMAL_HINTS: {
@@ -2774,12 +2773,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         !isResizing()) {
 
         if (! isMoving()) {
-            startMoving(me.window);
-            // save first event point
-            m_last_resize_x = me.x_root;
-            m_last_resize_y = me.y_root;
-            m_button_grab_x = me.x_root - frame().x() - frame().window().borderWidth();
-            m_button_grab_y = me.y_root - frame().y() - frame().window().borderWidth();
+            startMoving(me.x_root, me.y_root);
         } else {
             int dx = me.x_root - m_button_grab_x,
                 dy = me.y_root - m_button_grab_y;
@@ -2854,22 +2848,33 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
           int cx = frame().width() / 2;
           int cy = frame().height() / 2;
-
+          ResizeDirection resize_corner = RIGHTBOTTOM;
           if (me.window == frame().gripRight())
-              m_resize_corner = RIGHTBOTTOM;
+              resize_corner = RIGHTBOTTOM;
           else if (me.window == frame().gripLeft())
-              m_resize_corner = LEFTBOTTOM;
+              resize_corner = LEFTBOTTOM;
           else if (screen().getResizeModel() != BScreen::QUADRANTRESIZE) {
               if (screen().getResizeModel() == BScreen::CENTERRESIZE)
-                  m_resize_corner = ALLCORNERS;
+                  resize_corner = ALLCORNERS;
               else
-                  m_resize_corner = RIGHTBOTTOM;
+                  resize_corner = RIGHTBOTTOM;
           } else if (me.x < cx)
-              m_resize_corner = (me.y < cy) ? LEFTTOP : LEFTBOTTOM;
+              resize_corner = (me.y < cy) ? LEFTTOP : LEFTBOTTOM;
           else
-              m_resize_corner = (me.y < cy) ? RIGHTTOP : RIGHTBOTTOM;
+              resize_corner = (me.y < cy) ? RIGHTTOP : RIGHTBOTTOM;
 
-          startResizing(me.window, me.x, me.y);
+
+          // We are grabbing frame window in startResizing 
+          // we need to translate coordinates to it.
+          int start_x = me.x, start_y = me.y;
+          Window child;
+          XTranslateCoordinates(display,
+                                me.window, fbWindow().window(),
+                                start_x, start_y,
+                                &start_x, &start_y,
+                                &child);
+
+          startResizing(start_x, start_y, resize_corner);
 
         } else if (resizing) {
 
@@ -3236,9 +3241,15 @@ void FluxboxWindow::setDecorationMask(unsigned int mask) {
     applyDecorations();
 }
 
-void FluxboxWindow::startMoving(Window win) {
+void FluxboxWindow::startMoving(int x, int y) {
     if (s_num_grabs > 0)
         return;
+
+    // save first event point
+    m_last_resize_x = x;
+    m_last_resize_y = y;
+    m_button_grab_x = x - frame().x() - frame().window().borderWidth();
+    m_button_grab_y = y - frame().y() - frame().window().borderWidth();
 
     moving = true;
     maximized = MAX_NONE;
@@ -3498,10 +3509,12 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 }
 
 
-void FluxboxWindow::startResizing(Window win, int x, int y) {
+void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
 
     if (s_num_grabs > 0 || isShaded() || isIconic() )
         return;
+
+    m_resize_corner = dir;
 
     resizing = true;
     maximized = MAX_NONE;
@@ -3511,7 +3524,8 @@ void FluxboxWindow::startResizing(Window win, int x, int y) {
                            (m_resize_corner == RIGHTBOTTOM) ? frame().theme().lowerRightAngleCursor() :
                                                             frame().theme().lowerLeftAngleCursor();
 
-    grabPointer(win, false, ButtonMotionMask | ButtonReleaseMask,
+    grabPointer(fbWindow().window(),
+                false, ButtonMotionMask | ButtonReleaseMask,
                 GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime);
 
     int gx = 0, gy = 0;

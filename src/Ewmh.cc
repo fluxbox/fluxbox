@@ -166,7 +166,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_workarea,
         m_net_restack_window,
 
-        //        m_net_wm_moveresize,
+        m_net_wm_moveresize,
         
 
         // desktop properties
@@ -672,7 +672,9 @@ void Ewmh::updateHints(FluxboxWindow &win) {
 }
 
 void Ewmh::updateWorkspace(FluxboxWindow &win) {
-    long workspace = win.isInitialized() ? win.workspaceNumber() : win.screen().currentWorkspaceID();
+    long workspace = win.isInitialized() ?
+        win.workspaceNumber() : 
+        win.screen().currentWorkspaceID();
 
     if (win.isStuck())
         workspace = -1; // appear on all desktops/workspaces
@@ -713,7 +715,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // which doesn't apply here (so borrow the variable :) )
         screen = &fbwin->screen();
         // valid workspace number?
-        if (static_cast<unsigned int>(ce.data.l[0]) < screen->numberOfWorkspaces())
+        if (static_cast<unsigned int>
+            (ce.data.l[0]) < screen->numberOfWorkspaces())
             screen->sendToWorkspace(ce.data.l[0], fbwin, false);
 
         return true;
@@ -846,8 +849,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
         return true;
 
-    } /* Still in progress...
-        else if (ce.message_type == m_net_wm_moveresize) {
+    } else if (ce.message_type == m_net_wm_moveresize) {
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
         // data.l[0] = x_root 
@@ -855,10 +857,6 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // data.l[2] = direction
         // data.l[3] = button
         // data.l[4] = source indication
-        cerr<<"("<<ce.data.l[0]<<", "<<ce.data.l[1]<<")"<<endl;
-        cerr<<"dir="<<ce.data.l[2]<<endl;
-        cerr<<"button="<<ce.data.l[3]<<endl;
-        cerr<<"source="<<ce.data.l[4]<<endl;
         switch (ce.data.l[2] ) {
         case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:
         case _NET_WM_MOVERESIZE_SIZE_TOP:
@@ -883,7 +881,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         }
         return true;
     }
-      */
+
     // we didn't handle the ce.message_type here
     return false;
 }
@@ -929,7 +927,7 @@ void Ewmh::createAtoms() {
     m_net_moveresize_window = XInternAtom(disp, "_NET_MOVERESIZE_WINDOW", False);
     m_net_restack_window = XInternAtom(disp, "_NET_RESTACK_WINDOW", False);
 
-    // TODO: implement this one
+
     m_net_wm_moveresize = XInternAtom(disp, "_NET_WM_MOVERESIZE", False);
 
     m_net_properties = XInternAtom(disp, "_NET_PROPERTIES", False);

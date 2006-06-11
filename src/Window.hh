@@ -134,13 +134,18 @@ public:
         DECORM_LAST     = (1<<11) // useful for getting "All"
     };
 
-    enum ResizeCorner {
-        NOCORNER,
-        LEFTTOP,
-        LEFTBOTTOM,
-        RIGHTBOTTOM,
-        RIGHTTOP,
-        ALLCORNERS
+
+     enum ResizeDirection {
+         NOCORNER = -1, 
+         LEFTTOP  = 0,
+         TOP      = 1,
+         RIGHTTOP = 2,
+         RIGHT    = 3,
+         RIGHTBOTTOM  = 4,
+         BOTTOM       = 5,        
+         LEFTBOTTOM   = 6,
+         LEFT         = 7,
+         ALLCORNERS   = 8
     };
 
     typedef struct _blackbox_hints {
@@ -274,6 +279,26 @@ public:
 
     unsigned int decorationMask() const;
     void setDecorationMask(unsigned int mask);
+    /**
+     * Start moving process, grabs the pointer and draws move rectangle
+     * @param x position of pointer
+     * @param y position of pointer
+     */
+    void startMoving(int x, int y);
+    /**
+     * Stop moving process
+     * @param interrupted whether the move was interrupted by hide or destroy
+     */
+    void stopMoving(bool interrupted = false);
+    /**
+     * Starts resizing process
+     * @param x start position
+     * @param y start position
+     * @param dir the resize direction
+     */
+    void startResizing(int x, int y, ResizeDirection dir);
+    /// stops the resizing
+    void stopResizing(bool interrupted = false);
 
     /**
        @name accessors
@@ -410,10 +435,6 @@ private:
     void updateClientLeftWindow();
     void grabButtons();
 
-    void startMoving(Window win);
-    void stopMoving(bool interrupted = false);
-    void startResizing(Window win, int x, int y);
-    void stopResizing(bool interrupted = false);
     /// try to attach current attaching client to a window at pos x, y
     void attachTo(int x, int y, bool interrupted = false);
 
@@ -452,8 +473,13 @@ private:
     void associateClient(WinClient &client);
 
     // state and hint signals
-    WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, 
-        m_diesig, m_focussig, m_titlesig, m_attentionsig;
+    WinSubject m_hintsig, 
+        m_statesig, 
+        m_layersig, 
+        m_workspacesig, 
+        m_diesig, m_focussig,
+        m_titlesig,
+        m_attentionsig;
 
     class ThemeListener: public FbTk::Observer {
     public:
@@ -524,7 +550,7 @@ private:
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
 
-    ResizeCorner m_resize_corner;
+    ResizeDirection m_resize_corner;
 
     static int s_num_grabs; ///< number of XGrabPointer's
 };
