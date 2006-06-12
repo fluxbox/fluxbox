@@ -1,49 +1,72 @@
-News in 0.9.15:
-    * Added styleOverlay resource 
-       * session.styleOverlay: ~/.fluxbox/overlay
-       Style settings in this file override any settings from a
-       regular style
-    * New theme item:
-       * background: <texture option>
-       * background.pixmap: <image filename>
-       * background.color: <color>
-       * background.colorTo: <color>
-       The background.pixmap filename will be sent to "fbsetbg"
-       which in turn sets the background.
-       The following options will be available for the background.pixmap:
-         - tiled 
-         - centered
-       For example:
-         background: tiled
-         background.pixmap: someimage.png
-       and it can also generate a normal texture:
-         background: gradient
-         background.color: blue
-         background.colorTo: green
-       The rootCommand in the style is now obsolete and if the 
-       "background" item is not found in the style then the default
-       background will be green and with a warning text.
-    * Added new resize mode: Center 
+News in 1.0rc:
+   * Added support for following atoms:
+       _NET_WM_MOVERESIZE
+       _NET_WM_STATE_DEMANDS_ATTENTION (flashing titlebar/iconbar) 
+       _NET_WM_ALLOWED_ACTIONS 
+       _NET_WM_ACTION_
+       _NET_WM_STATE_MODAL
+       _NET_WM_WINDOW_TYPE_SPLASH
+       _NET_RESTACK_WINDOW
+      For a complete list of supported net wm atoms 
+      go to: http://www.fluxbox.org/docs/ewmh-support.html
+   * Added new commands:
+     * ToggleCmd
+       Works like a macro but executes the commands one at the time in order.
        Example:
-       session.screen0.resizeMode: Center
-       This mode will move all corners at the same time with 
-       equal distance.
-    * Resources changes for titlebar:
-      The titlebar is now configured by setting:
-      * session.screen<num>.titlebar.left
-      * session.screen<num>.titlebar.right
-    * nls changes:
-       * Updated ko_KR
-       * Added zh_CN, nb_NO
+       Mod1 T :ToggleCmd {Exec xterm} {NextWindow}
+       When Mod1 T is press the first time it will start xterm, the second time
+       it will do NextWindow. When it reaches end it will start at the beginning.
+     * CloseAllWindows
+       Closes all windows.
+   * Supports urgency hint ( flashing titlebar/iconbar )
+   * Pressing shift while pressing enter in menu item will fake a right mouse
+     button press. Useful for increase/decrease values in menu.
+   * Updated documentation
+   * Flashing titlebar/iconbar when the window depamands attention with urgency 
+     hint or using _NET_WM_STATE_DEMANDS_ATTENTION.
+     The blink rate can be configured with the following resource:
+     session.screen0.demandsAttentionTimeout: <timeout in milliseconds>
+     Default value is 500.
+     If the value is zero this feature will be disabled.
+   * Better UTF-8 handling
+   * fbrun: Move the cursor to the end when tab completing
+     (rfe #1333003, patch #1475578)
+   * Added option to reverse desktop wheeling (patch #1034287)
+     session.screen0.reversewheeling: true|false
+   * Vertical toolbar is back.
+   * Provide "Key Modes"
+     - New action in keys file:
+         Modifier Key :Keymode <Name> <End Modifier> <End Key>
+       Will define a keybinding namespace activated by the given mod/key 
+       combination. The End Modifier and key are optional. They define 
+       the key combination that quits the given key mode. They default 
+       to just 'Escape'.
+     - New keys file optional prefix:
+         <Name>: Modifier Key :Command
+       will only work when the <Name> keymode is activated.
+     - <Name> is  "default" if not specified - so:
+        **default commands will not be activated inside another keymode**
+     - Handy Example:
+        Mod1 X :KeyMode XNest
+        XNest: Mod1 X :KeyMode default
+       Will switch to XNest keymode when you press Alt-X. Then the 
+       default bindings will not be caught by normal fluxbox, and will 
+       pass through to an Xnested one! Groovy... Alt-X will switch back 
+       to normal.
 Bug fixes:
-    * #1409775 gcc4.1 problems
-    * #1327878 Appending backslash to () and [] characters in the apps file
-    * #1417688 remember apps keeps incrementing vertical dimension
-    * #1307877 fbsetbg did not create ~/.fluxbox/lastwallpaper
-    * #1335255 (Gentoo #110197) fbgm had some globbing related probs 
-    * #1267076 cygwin link problems
-    * Fix for stuck icons
-    * Fixed memory leak when XCreateImage fails in XFontImp
-    * _net_wm_state_hidden
-
+   * Fixed resize box bug, it had wrong size in some cases.
+   * Fixed bug with horizontal maximisation when quadrant resizing
+   * Fixed memory leaks & other errors in Menu code
+   * Fixed crash when toolbar disabled
+   * Fix build on amd64
+   * Fix crash when deiconifying stuck windows with Follow mode
+   * Fixed apps filename on save
+   * #1475268(patch) Fix occasional highlighting of menu nops+separators
+   * #1474722(patch) Focus singular windows on a workspace
+   * #1499402 Fix building on machines without iconv
+   * #1113668 Fix workspace menu corruption when window title changes
+   * #1359442 Fix system tray resize looping/livelock
+   * #1467871 Fix type of last_release_time, affected double click functions
+     on 64-bit platforms
+   * #1454204 Fix compile error in Theme.cc
 See ChangeLog for more details
