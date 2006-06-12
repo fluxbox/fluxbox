@@ -1,4 +1,7 @@
 News in 1.0rc:
+   * External tabs are back.
+      - option in Configure menu to enable/disable
+        No restart required.
    * Added support for following atoms:
        _NET_WM_MOVERESIZE
        _NET_WM_STATE_DEMANDS_ATTENTION (flashing titlebar/iconbar) 
