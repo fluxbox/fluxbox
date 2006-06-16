@@ -1,8 +1,10 @@
  (Format: Year/Month/Day)
-Changes for 1.0rc:
-*06/06/11:
+Changes for 1.0rc2:
+*06/06/16:
    * Fix crash when closing a window while cycling (Mark)
      FocusControl.cc
+Changes for 1.0rc:
+*06/06/11:
    * Added support for _NET_WM_MOVERESIZE (Henrik)
      Ewmh.hh/cc, Window.hh/cc
    * Added support for urgency hint.
