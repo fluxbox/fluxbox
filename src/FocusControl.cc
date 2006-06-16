@@ -365,9 +365,10 @@ void FocusControl::removeClient(WinClient &client) {
     m_focused_list.remove(&client);
     m_creation_order_list.remove(&client);
 
-    if (cyc == &client)
+    if (cyc == &client) {
+        m_cycling_window = m_creation_order_list.end();
         stopCyclingFocus();
-
+    }
 }
 
 /**
