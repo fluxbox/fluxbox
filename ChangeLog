@@ -1,8 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/18:
+   * Updated german translation (Thanks Michael Bueker m.bueker at berlin de)
+     nls/de_DE/Translation.m
 *06/06/16:
    * Fix crash when closing a window while cycling (Mark)
      FocusControl.cc
+-------------------------------------------------------------
 Changes for 1.0rc:
 *06/06/11:
    * Added support for _NET_WM_MOVERESIZE (Henrik)
