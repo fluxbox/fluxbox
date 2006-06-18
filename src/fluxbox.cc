@@ -1847,3 +1847,11 @@ void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
                   screen.rootWindow().window(), True,
                   GrabModeAsync, GrabModeAsync, CurrentTime);
 }
+
+void Fluxbox::updateFrameExtents(FluxboxWindow &win) {
+    AtomHandlerContainerIt it = m_atomhandler.begin();
+    AtomHandlerContainerIt it_end = m_atomhandler.end();
+    for (; it != it_end; ++it ) {
+        (*it).first->updateFrameExtents(win);
+    }
+}

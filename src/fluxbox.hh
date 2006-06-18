@@ -182,6 +182,8 @@ public:
      * @param old_screen the old screen if any, can be the same as new screen
      */
     void updateFocusedWindow(BScreen *screen, BScreen *old_screen);
+    /// todo, remove this. just temporary
+    void updateFrameExtents(FluxboxWindow &win);
 
     void attachSignals(FluxboxWindow &win);
     void attachSignals(WinClient &winclient);

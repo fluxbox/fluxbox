@@ -140,6 +140,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_wm_window_type_dock,
         m_net_wm_window_type_desktop,
         m_net_wm_window_type_splash,
+        m_net_wm_window_type_dialog,
         m_net_wm_window_type_normal,
 
         // window actions
@@ -168,6 +169,7 @@ void Ewmh::initForScreen(BScreen &screen) {
 
         m_net_wm_moveresize,
         
+        m_net_frame_extents,
 
         // desktop properties
         m_net_wm_desktop,
@@ -259,7 +261,6 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 // we also assume it shouldn't be visible in any toolbar
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
-                break;
             } else if (atoms[l] == m_net_wm_window_type_desktop) {
                 /*
                  * _NET_WM_WINDOW_TYPE_DESKTOP indicates a "false desktop" window
@@ -284,14 +285,28 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                  * is starting up.
                  */
                 win.setDecoration(FluxboxWindow::DECOR_NONE);
+                win.setFocusHidden(true);
+                win.setIconHidden(true);
                 win.setMovable(false);
             } else if (atoms[l] == m_net_wm_window_type_normal) {
                 // do nothing, this is ..normal..
+            } else if (atoms[l] == m_net_wm_window_type_dialog) {
+                // dialog windows should not be tabable
+                win.setTabable(false);
             }
 
         }
         XFree(data);
-    } 
+    } else {
+        // if _NET_WM_WINDOW_TYPE not set and this window 
+        // has transient_for the type must be set to _NET_WM_WINDOW_TYPE_DIALOG 
+        if ( win.winClient().isTransient() ) {
+            win.winClient().
+                changeProperty(m_net_wm_window_type, 
+                               XA_ATOM, 32, PropModeReplace,
+                               (unsigned char*)&m_net_wm_window_type_dialog, 1);
+        }
+    }
 
     setupState(win);
 
@@ -305,8 +320,11 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
             win.setWorkspace(desktop);
 
         XFree(data);
-    } else 
+    } else {
         updateWorkspace(win);
+    }
+
+    updateFrameExtents(win);
 
 }
 
@@ -940,6 +958,7 @@ void Ewmh::createAtoms() {
     m_net_wm_window_type_dock = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DOCK", False);
     m_net_wm_window_type_desktop = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
     m_net_wm_window_type_splash = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_SPLASH", False);
+    m_net_wm_window_type_dialog = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DIALOG", False);
     m_net_wm_window_type_normal = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
 
     // state atom and the supported state atoms
@@ -975,6 +994,8 @@ void Ewmh::createAtoms() {
     m_net_wm_icon = XInternAtom(disp, "_NET_WM_ICON", False);
     m_net_wm_pid = XInternAtom(disp, "_NET_WM_PID", False);
     m_net_wm_handled_icons = XInternAtom(disp, "_NET_WM_HANDLED_ICONS", False);
+
+    m_net_frame_extents = XInternAtom(disp, "_NET_FRAME_EXTENTS", False);
 
     m_net_wm_ping = XInternAtom(disp, "_NET_WM_PING", False);
     utf8_string = XInternAtom(disp, "UTF8_STRING", False);
@@ -1220,6 +1241,23 @@ void Ewmh::setupState(FluxboxWindow &win) {
     }
 }
 
+void Ewmh::updateFrameExtents(FluxboxWindow &win) {
+    int extents[4];
+    extents[0] = win.frame().x();
+    extents[1] = win.frame().x() + win.frame().width();
+    extents[2] = win.frame().y();
+    extents[3] = win.frame().y() + win.frame().height();
+
+    FluxboxWindow::ClientList::iterator it = win.clientList().begin();
+    FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
+    for (; it != it_end; ++it) {
+        (*it)->changeProperty(m_net_frame_extents,
+                              XA_CARDINAL, 32, PropModeReplace,
+                              (unsigned char *)extents, 4);
+    }
+}
+
+
 Ewmh::WindowState::WindowState(int t_x, int t_y,
                                unsigned int t_width,
                                unsigned int t_height,
@@ -1254,4 +1292,5 @@ void Ewmh::clearState(FluxboxWindow &win) {
 void Ewmh::saveState(FluxboxWindow &win, WindowState *state) {
     m_savedstate[&win] = state;
 }
+
 

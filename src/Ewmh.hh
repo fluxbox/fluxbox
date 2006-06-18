@@ -64,6 +64,7 @@ public:
 
     void setFullscreen(FluxboxWindow &win, bool value);
 
+    void updateFrameExtents(FluxboxWindow &win);
 private:
 
     typedef struct WindowState {
@@ -82,6 +83,7 @@ private:
     void updateActions(FluxboxWindow &win);
 
     void setupState(FluxboxWindow &win);
+
 
     // root window properties
     Atom m_net_supported, 
@@ -110,6 +112,7 @@ private:
         m_net_wm_window_type_dock,
         m_net_wm_window_type_desktop,
         m_net_wm_window_type_splash,
+        m_net_wm_window_type_dialog,
         m_net_wm_window_type_normal,
 
         // states
@@ -137,7 +140,9 @@ private:
         m_net_wm_action_close,
 
         m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
-        m_net_wm_handled_icons;
+        m_net_wm_handled_icons,
+
+        m_net_frame_extents;
 
     // application protocols
     Atom m_net_wm_ping;

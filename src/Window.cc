@@ -3900,6 +3900,10 @@ void FluxboxWindow::sendConfigureNotify(bool send_to_netizens) {
             screen().updateNetizenConfigNotify(event);
         }
     } // end for
+
+    if (send_to_netizens) {
+        Fluxbox::instance()->updateFrameExtents(*this);
+    }
 }
 
 

@@ -53,7 +53,7 @@ public:
     virtual void updateState(FluxboxWindow &win) = 0;
     virtual void updateHints(FluxboxWindow &win) = 0;
     virtual void updateLayer(FluxboxWindow &win) = 0;
-
+    virtual void updateFrameExtents(FluxboxWindow &win) { }
     virtual bool checkClientMessage(const XClientMessageEvent &ce, 
                                     BScreen * screen, WinClient * const winclient) = 0;
 
