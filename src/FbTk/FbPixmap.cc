@@ -234,8 +234,8 @@ void FbPixmap::rotate(FbTk::Orientation orient) {
 
         // set start, end and direction based on rotation
         // NOTE that startx etc are in the direction of the OLD pixmap
-        unsigned int startx, starty;
-        int dirx, diry;
+        unsigned int startx = 0, starty = 0;
+        int dirx = 0, diry = 0;
         switch (orient) {
         case ROT90:
             startx = neww-1;
