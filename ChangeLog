@@ -1,6 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/18:
+   * Fixed bug #1507754 iconbar text was not updated to match titlebar (Henrik)
+     WinClient.cc
+   * Added support for _NET_WM_WINDOW_TYPE_DIALOG and
+     _NET_FRAME_EXTENTS (Henrik)
+     src/Ewmh.hh/cc, fluxbox.hh/cc, Window.cc
    * Updated german translation (Thanks Michael Bueker m.bueker at berlin de)
      nls/de_DE/Translation.m
 *06/06/16:
