@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/20:
+   * Fix window placement when apps remembers size but not location (Simon)
+     Window.cc
 *06/06/19:
    * Add EUC-KR to ko_KR encodings (Simon)
      nls/ko_KR/ Makefile.am generated-EUC-KR.m

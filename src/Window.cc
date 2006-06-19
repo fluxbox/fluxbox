@@ -1288,7 +1288,14 @@ void FluxboxWindow::move(int x, int y, int gravity) {
 }
 
 void FluxboxWindow::resize(unsigned int width, unsigned int height) {
+    int old_x = m_old_pos_x;
+
     moveResize(frame().x(), frame().y(), width, height);
+
+    // magic to detect if moved during initialisation
+    // we restore the old state, because we were a resize, not a moveResize!
+    if (!isInitialized())
+        m_old_pos_x = old_x;
 }
 
 // send_event is just an override
