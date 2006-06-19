@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/19:
+   * Try ignoring NotifyUngrab EnterNotify events for focus (Simon)
+     - should fix incorrect focus reverts when menus etc closed with 
+       mouse focus, but possibly have side effects, do tell...)
+     Window.cc
    * Fix menu placement issue with (vertical) xinerama (Simon)
      - note, doesn't fix "submenus open on wrong screen" issue, that requires
        some more serious data movement.

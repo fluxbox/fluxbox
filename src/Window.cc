@@ -3013,7 +3013,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
 
     // ignore grab activates, or if we're not visible
-    if (ev.mode == NotifyGrab ||
+    if (ev.mode == NotifyGrab || ev.mode == NotifyUngrab ||
         !isVisible()) {
         return;
     }
