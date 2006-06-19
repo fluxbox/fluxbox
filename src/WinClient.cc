@@ -355,7 +355,6 @@ void WinClient::setTitle(FbTk::FbString &title) {
     m_title_override = true;
     if (m_win)
         m_win->updateTitleFromClient(*this);
-    m_title_override = false;
 }
 
 void WinClient::setIconTitle(FbTk::FbString &icon_title) {

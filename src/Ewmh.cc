@@ -220,6 +220,9 @@ void Ewmh::setupClient(WinClient &winclient) {
     if (!newtitle.empty()) {
         winclient.setIconTitle(newtitle);
     }
+
+    if ( winclient.fbwindow() )
+        winclient.fbwindow()->titleSig().notify();
 }
 
 void Ewmh::setupFrame(FluxboxWindow &win) {
@@ -913,11 +916,15 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
         FbTk::FbString newtitle = winclient.textProperty(the_property);
         if (!newtitle.empty())
             winclient.setTitle(newtitle);
+        if (winclient.fbwindow())
+            winclient.fbwindow()->titleSig().notify();
         return true;
     } else if (the_property == m_net_wm_icon_name) {
         FbTk::FbString newtitle = winclient.textProperty(the_property);
         if (!newtitle.empty())
             winclient.setIconTitle(newtitle);
+        if (winclient.fbwindow())
+            winclient.fbwindow()->titleSig().notify();
         return true;
     }
 
