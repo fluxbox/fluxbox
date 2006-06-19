@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/19:
+   * Fix bug #1507671, clock not updating on multiple screens (Simon)
+     - time() and gettimeofday() are inconsistent, only use gettimeofday
+     - clean up Timer stuff a bit, fixed some other bugs
+     FbTk/Timer.hh/cc ClockTool.cc
 *06/06/18:
    * Fixed bug #1507754 iconbar text was not updated to match titlebar (Henrik)
      WinClient.cc

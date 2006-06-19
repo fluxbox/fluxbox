@@ -45,6 +45,7 @@
 #else
   #include <time.h>
 #endif
+#include <sys/time.h>
 #include <string>
 #include <typeinfo>
 
@@ -242,7 +243,9 @@ unsigned int ClockTool::height() const {
 
 void ClockTool::updateTime() {
     // update clock
-    time_t the_time = time(0);
+    timeval now;
+    gettimeofday(&now, 0);
+    time_t the_time = now.tv_sec;
 
     if (the_time != -1) {
         char time_string[255];

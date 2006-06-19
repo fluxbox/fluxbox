@@ -98,6 +98,15 @@ void Timer::stop() {
     removeTimer(this); //remove us from the list
 }
 
+void Timer::makeEndTime(timeval &tm) const {
+    tm.tv_sec = m_start.tv_sec + m_timeout.tv_sec;
+    tm.tv_usec = m_start.tv_usec + m_timeout.tv_usec;
+    if (tm.tv_usec >= 1000000) {
+        tm.tv_usec -= 1000000;
+        tm.tv_sec++;
+    }
+}
+
 
 void Timer::fireTimeout() {
     if (*m_handler)
@@ -111,65 +120,60 @@ void Timer::updateTimers(int fd) {
     FD_ZERO(&rfds);
     FD_SET(fd, &rfds);
 
+    bool overdue = false;
   
     if (!m_timerlist.empty()) {
         gettimeofday(&now, 0);
 
-        tm.tv_sec = tm.tv_usec = 0l;
-
         Timer *timer = m_timerlist.front();
 
-        const timeval &start = timer->getStartTime();
-        const timeval &length = timer->getTimeout();
-        tm.tv_sec = start.tv_sec +
-            length.tv_sec - now.tv_sec;
-        tm.tv_usec = start.tv_usec +
-            length.tv_usec - now.tv_usec;
+        timer->makeEndTime(tm);
 
-        while (tm.tv_usec >= 1000000) {
-            tm.tv_sec++;
-            tm.tv_usec -= 1000000;
-        }
+        tm.tv_sec -= now.tv_sec;
+        tm.tv_usec -= now.tv_usec;
 
         while (tm.tv_usec < 0) {
             if (tm.tv_sec > 0) {
                 tm.tv_sec--;
                 tm.tv_usec += 1000000;
             } else {
+                overdue = true;
                 tm.tv_usec = 0;
                 break;
             }
         }
 
-        if (tm.tv_sec < 0) {
+        if (tm.tv_sec < 0) { // usec zero-ed above if negative
             tm.tv_sec = 0;
             tm.tv_usec = 0;
+            overdue = true;
         }
 
         timeout = &tm;
     }
 
-    if (select(fd + 1, &rfds, 0, 0, timeout) != 0)
+    if (!overdue && select(fd + 1, &rfds, 0, 0, timeout) != 0)
         // didn't time out! x events pending
         return;
 
     TimerList::iterator it;
 
-    // someone set the date of the machine BACK
-    // so we have to adjust the start_time
-    static time_t last_time = time(0);
-    if (time(0) < last_time) {
-    
-        time_t delta = time(0) - last_time;
-
-        for (it = m_timerlist.begin(); it != m_timerlist.end(); it++) {
-            (*it)->m_start.tv_sec += delta;
-        }
-    }
-
-
     // check for timer timeout
     gettimeofday(&now, 0);
+
+    // someone set the date of the machine BACK
+    // so we have to adjust the start_time
+    static time_t last_time = 0;
+    if (now.tv_sec < last_time) {
+    
+        time_t delta = last_time - now.tv_sec;
+
+        for (it = m_timerlist.begin(); it != m_timerlist.end(); it++) {
+            (*it)->m_start.tv_sec -= delta;
+        }
+    }
+    last_time = now.tv_sec;
+
 
     //must check end ...the timer might remove
     //it self from the list (should be fixed in the future)
@@ -177,13 +181,8 @@ void Timer::updateTimers(int fd) {
         //This is to make sure we don't get an invalid iterator
         //when we do fireTimeout
         Timer &t = *(*it);
-        const timeval &start = t.getStartTime();
-        const timeval &length = t.getTimeout();
 
-        tm.tv_sec = start.tv_sec +
-            length.tv_sec;
-        tm.tv_usec = start.tv_usec +
-            length.tv_usec;
+        t.makeEndTime(tm);
 
         if (((now.tv_sec < tm.tv_sec) ||
              (now.tv_sec == tm.tv_sec && now.tv_usec < tm.tv_usec)))
@@ -192,15 +191,10 @@ void Timer::updateTimers(int fd) {
         t.fireTimeout();
         // restart the current timer so that the start time is updated
         if (! t.doOnce()) {
-            if (t.getInterval() != 0) {
-                it = m_timerlist.erase(it);
-            }
+            // must erase so that it's put into the right place in the list
+            it = m_timerlist.erase(it);
+            t.m_timing = false;
             t.start();
-
-            // Note that this mustn't be done if we're deleting the
-            // entry from the list, so therefore it's not in the update
-            // section of the for loop
-            it++;
         } else {
             // Since the default stop behaviour results in the timer
             // being removed, we must remove it here, so that the iterator
@@ -211,15 +205,14 @@ void Timer::updateTimers(int fd) {
         }
     }
 
-    last_time = time(0);
 }
 
 void Timer::addTimer(Timer *timer) {
     assert(timer);
     int interval = timer->getInterval();
     // interval timers have their timeout change every time they are started!
+    timeval tm;
     if (interval != 0) {
-        timeval tm;
         tm.tv_sec = timer->getStartTime().tv_sec;
         tm.tv_usec = timer->getStartTime().tv_usec;
 
@@ -233,13 +226,19 @@ void Timer::addTimer(Timer *timer) {
         timer->setTimeout(tm);
     }
 
+    // set timeval to the time-of-trigger
+    timer->makeEndTime(tm);
+
+    // timer list is sorted by trigger time (i.e. start plus timeout)
     TimerList::iterator it = m_timerlist.begin();
     TimerList::iterator it_end = m_timerlist.end();
-    int index = 0;
-    for (; it != it_end; ++it, ++index) {
-        if (((*it)->getTimeout().tv_sec > timer->getTimeout().tv_sec) ||
-            (((*it)->getTimeout().tv_sec == timer->getTimeout().tv_sec) &&
-             ((*it)->getTimeout().tv_usec >= timer->getTimeout().tv_usec))) {
+    for (; it != it_end; ++it) {
+        timeval trig;
+        (*it)->makeEndTime(trig);
+
+        if ((trig.tv_sec > tm.tv_sec) ||
+            (trig.tv_sec == tm.tv_sec &&
+             trig.tv_usec >= tm.tv_usec)) {
             break;
         }
     }

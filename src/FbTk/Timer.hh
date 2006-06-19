@@ -74,12 +74,14 @@ public:
     /// update all timers
     static void updateTimers(int file_descriptor);
 
-    inline int isTiming() const { return m_timing; }
-    inline int getInterval() const { return m_interval; }
-    inline int doOnce() const { return m_once; }
+    int isTiming() const { return m_timing; }
+    int getInterval() const { return m_interval; }
     
-    inline const timeval &getTimeout() const { return m_timeout; }
-    inline const timeval &getStartTime() const { return m_start; }
+    int doOnce() const { return m_once; }
+    
+    const timeval &getTimeout() const { return m_timeout; }
+    const timeval &getStartTime() const { return m_start; }
+    void makeEndTime(timeval &tm) const;
 
 protected:
     /// force a timeout
@@ -92,7 +94,7 @@ private:
     static void removeTimer(Timer *timer);
 	
     typedef std::list<Timer *> TimerList;
-    static TimerList m_timerlist; ///< list of all timers
+    static TimerList m_timerlist; ///< list of all timers, sorted by next trigger time (start + timeout)
 	
     RefCount<Command> m_handler; ///< what to do on a timeout
 	
