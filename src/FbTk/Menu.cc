@@ -1075,8 +1075,8 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
         m_shifted = true;
     }
 
-    if (y() + height() + 2*theme().borderWidth() > m_screen_height) {
-        menu.y_shift = m_screen_height - height() - 2*theme().borderWidth();
+    if (y() + height() + 2*theme().borderWidth() > m_screen_y + m_screen_height) {
+        menu.y_shift = m_screen_y + m_screen_height - height() - 2*theme().borderWidth();
         m_shifted = true;
     } else if (y() + (signed) theme().titleHeight() < 0) {
         menu.y_shift = 0; // -theme().borderWidth();;

@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/19:
+   * Fix menu placement issue with (vertical) xinerama (Simon)
+     - note, doesn't fix "submenus open on wrong screen" issue, that requires
+       some more serious data movement.
+     FbTk/Menu.cc
    * Fix bug #1507671, clock not updating on multiple screens (Simon)
      - time() and gettimeofday() are inconsistent, only use gettimeofday
      - clean up Timer stuff a bit, fixed some other bugs
