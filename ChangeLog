@@ -1,5 +1,13 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/21:
+   * Fix nls file location. nls wouldn't have worked, why did no-one say?
+     (Simon)
+     - Need a couple more fixes too:
+       * Messages output on stdout/err need to be in local encoding
+       * Check for existence of catalog file, if not exist, try opening an
+         iconv for UTF-8, and loading that one instead.
+     FbTk/I18n.cc
 *06/06/20:
    * Fix window placement when apps remembers size but not location (Simon)
      Window.cc

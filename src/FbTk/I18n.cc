@@ -98,10 +98,6 @@ I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
         string::size_type index = m_locale.find('@');
         if (index != string::npos)
             m_locale.erase(index); //erase all characters starting at index 				
-        // remove everything after .		
-        index = m_locale.find('.');
-        if (index != string::npos) 
-            m_locale.erase(index); //erase all characters starting at index 
         // remove everything before =		
         index = m_locale.find('=');
         if (index != string::npos) 
