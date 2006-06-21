@@ -1,14 +1,15 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/21:
-   * Fix nls (Simon
-     - file location waas wrong. nls wouldn't have worked, why did no-one say? 
+   * Fix nls (Simon)
+     - file location was wrong. nls wouldn't have worked, why did no-one say? 
      - Messages output on stdout/err now properly in local encoding
      - Check for existence of catalog file, if it doesn't exist, and we can
        convert from UTF-8, try loading that one instead.
      - bunch of files changed due to macro name change:
        + Use _FB_XTEXT if the text will go out to X (for X fonts)
        + Use _FB_CONSOLETEXT if the text will go to console (stdout/err)
+     - add tab options and some other missing bits to C translation
      FbTk/I18n.hh/cc (+anything with _FB_TEXT)
 *06/06/20:
    * Fix window placement when apps remembers size but not location (Simon)
