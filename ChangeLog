@@ -1,6 +1,7 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/21:
+   * Fix de_DE translation (thanks Michael Bueker)
    * Fix nls (Simon)
      - file location was wrong. nls wouldn't have worked, why did no-one say? 
      - Messages output on stdout/err now properly in local encoding

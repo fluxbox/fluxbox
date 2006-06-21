@@ -2,20 +2,20 @@ $ codeset=ISO-8859-15
 
 $set 1 #Align
 
-1 Unten mitte
+1 Unten mittig
 2 Unten links
 3 Unten rechts
 4 Horizontal
 5 Links
 6 Links unten
-7 Links mitte
+7 Links mittig
 8 Links oben
 9 Relativ
 10 Rechts
 11 Rechts unten
-12 Rechts mitte
+12 Rechts mittig
 13 Rechts oben
-14 Oben mitte
+14 Oben mittig
 15 Oben links
 16 Oben rechts
 17 Vertikal
@@ -34,16 +34,19 @@ $set 3 #Common
 4 Einkompilierte Optionen
 5 Compiler
 6 Compilerversion
-7 Init-Datei
-8 Tastendefinitionsdatei
-10 Menüdatei
-11 Stildatei (Theme)
+7            Start (init)
+8 Tastendefinition (keys)
+9                    nls
+10             Menü (menu)
+11            Stil (style)
 12 Standardeinstellungen
 13 deaktiviert
 14 Fehler
 15 Fluxbox-Version
 16 Durch maximierte Fenster verdecken
+17 SVN-Revision
 18 Sichtbar
+19 In diesem Stil ist keine Hintergrundoption angegeben.\nBitte lesen Sie die Dokumentation und FAQ.
 
 $set 4 #Configmenu
 
@@ -66,6 +69,9 @@ $set 4 #Configmenu
 18 Transparenz
 19 Alpha-Transparenz fokussierter Fenster
 20 Alpha-Transparenz nicht fokussierter Fenster
+21 Tab-Einstellungen
+22 Tabs in der Titelleiste
+23 Breite für externe Tabs
 
 $set 5 #Ewmh
 
@@ -76,31 +82,31 @@ $set 6 #FbTkError
 1 Warnung! Höhe > 3200, setze Höhe = 3200
 2 Warnung! Breite > 3200, setze Breite = 3200
 3 Warnung: Kann Fallback-Schriftart nicht laden
-4 Fehler beim Zuweisen
-5 Kann Pixmap nicht erzeugen
-6 Kann XImage nicht erzeugen
-7 Fehler beim Lesen
-8 Warnung: Kann kein gültiges Format für Alpha-Transparenz finden.
-9 Warnung: Kann Alpha-Bild nicht erzeugen.
-10 Warnung: Kann Alpha-Pixmap nicht erzeugen.
-11 Kann kein Format für screen(%d) finden
-12 Kein Speicher mehr frei
-13 Kein Speicher mehr frei für 'blue buffer'.
-14 Kein Speicher mehr frei für 'green buffer'.
-15 Kein Speicher mehr frei für 'red buffer'.
-16 Kann Stil- (Theme-) Eintrag nicht lesen
-17 Nicht unterstütztes visual
+4 Allocation error.
+5 Error creating pixmap
+6 Can't create XImage
+7 Failed to read
+8 Warning: Failed to find valid format for alpha.
+9 Warning: Failed to create alpha picture.
+10 Warning: Failed to create alpha pixmap.
+11 Failed to find format for screen(%d)
+12 Out of memory
+13 Out of memory while allocating blue buffer.
+14 Out of memory while allocating green buffer.
+15 Out of memory while allocating red buffer.
+16 Failed to read theme item
+17 unsupported visual
 18 Benutze Standardeinstellung
 
 $set 7 #Fluxbox
 
-1 Dateiname der Konfigurationsdatei ist ungültig!
+1 Dateiname der Konfigurationsdatei (rc) ist ungültig!
 2 Kann groupfile nicht laden
 3 Kann database nicht laden
 4 Versuche es erneut mit
-5 Warnung! Kann keinen screen finden, um das Fenster darzustellen!
+5 Warnung! Kann keinen Screen finden, um das Fenster darzustellen!
 6 Kann Verzeichnis %s nicht anlegen
-7 Kann keine screens zur Verwaltung finden.\nLäuft bereits ein anderer Windowmanager?
+7 Kann keine Screens zur Verwaltung finden.\nLäuft bereits ein anderer Windowmanager?
 8 Fehler beim Parsen des regulären Ausdrucks
 9 Fataler Fehler! Es darf nur eine Instanz der Fluxbox-Klasse geben
 10 Kann nicht zum X-Server verbinden.\nX muss vor Fluxbox gestartet werden.
@@ -113,9 +119,9 @@ $set 8 #Gnome
 
 $set 9 #Keys
 
-1 Tasten: Fehler in Zeile
-2 Tasten: Kann Tasten nicht sauber zuweisen!
-3 Tasten: Ungültige Taste/Sondertaste (Modifier) in Zeile
+1 Tastendefinition (keys): Fehler in Zeile
+2 Tastendefinition (keys): Kann Tasten nicht sauber zuweisen!
+3 Tastendefinition (keys): Ungültige Taste/Sondertaste (Modifier) in Zeile
 
 $set 10 #Menu
 
@@ -132,22 +138,23 @@ $set 10 #Menu
 $set 11 #Remember
 
 1 Dekoration
-2 Dimension
-3 Gehe zu Desktop
+2 Maße
+3 Gehe zu Arbeitsfläche
 4 Ebene
 5 Einstellungen merken...
 6 Position
-7 Beim Schliessen speichern
+7 Beim Schließen speichern
 8 Aufgerollt
 9 Auf allen Desktops sichtbar
 10 Unbekannter apps-Eintrag
-11 Momentaner Desktop
+11 Arbeitsfläche
+12 Monitor
 
 $set 12 #Screen
 
-1 BScreen::BScreen: Ein Fehler beim Verbinden zum X-Server ist aufgetreten.\nEin anderer Windowmanager läuft bereits auf dem Display 
+1 BScreen::BScreen: Fehler bei der Verbindung zum X-Server.\nEin anderer Windowmanager läuft bereits auf dem Display 
 2 B: %4d x H: %4d
-3 BScreen::BScreen: Verwalte screen %d mit visual 0x%lx, Farbtiefe %d\n
+3 BScreen::BScreen: Verwalte Screen %d mit Visual 0x%lx, Farbtiefe %d\n
 
 $set 13 #Slit
 
@@ -163,13 +170,13 @@ $set 13 #Slit
 
 $set 14 #Toolbar
 
-1 Momentanen Desktopnamen ändern
-2 Iconleisten-Modus
+1 Arbeitsfläche umbenennen
+2 Symbolleisten-Modus
 3 Alle Fenster
-4 Alle Fenster (nur minimierte)
+4 Symbole
 5 Keine
-6 Aktueller Desktop (alle Fenster)
-7 Aktueller Desktop (nur minimierte)
+6 Arbeitsfläche: Alle Fenster
+7 Arbeitsfläche: Symbole
 8 Ebene für Toolbar
 9 Toolbar auf Monitor
 10 Toolbar-Platzierung
@@ -179,6 +186,8 @@ $set 14 #Toolbar
 14 Uhr: 12-Stunden-Format
 15 Uhrzeitformat bearbeiten
 16 Programm-Icons anzeigen
+17 Keine Symbole
+18 Arbeitsfläche: Keine Symbole
 
 $set 15 #Window
 
@@ -186,35 +195,36 @@ $set 15 #Window
 
 $set 16 #Windowmenu
 
-1 Schliessen
+1 Schließen
 2 Minimieren
 3 Ebene
-4 Nach Hinten
+4 Nach hinten
 5 Maximieren
-6 Nach Vorne
+6 Nach vorne
 7 Verschieben nach ...
 8 Aufrollen
 9 Auf allen Desktops sichtbar
 10 Kill
 
 $set 17 #Workspace
-1 Desktop %d
-2 Desktops
-3 Neuer Desktop
-4 Letzten Desktop entfernen
+
+1 Arbeitsfläche %d
+2 Arbeitsflächen
+3 Neue Arbeitsfläche
+4 Letzte Arbeitsfläche entfernen
 
 $set 18 #fbsetroot
 
-1 Fehler: Eins der Folgenden muss angegeben werden: -solid, -mod, -gradient\n
+1 Fehler: Eines der Folgenden muss angegeben werden: -solid, -mod, -gradient\n
 2 Konnte Pixmap-Atome nicht erstellen, gebe auf!
 3 -display <string>        Verbindung anzeigen\n\
--mod <x> <y>             Modula-Raster\n\
--foreground, -fg <Farbe> Modula-Hintergrundfarbe\n\
--background, -bg <Farbe> Modula-Vorderghrundfarbe\n\n\
--gradient <Textur>       Farbverlauftextur\n\
+-mod <x> <y>             Modulo-Raster\n\
+-foreground, -fg <Farbe> Modulo-Vordergrundfarbe\n\
+-background, -bg <Farbe> Modulo-Hintergrundfarbe\n\n\
+-gradient <Textur>       Textur für Farbverlauf\n\
 -from <Farbe>            Anfangsfarbe für Farbverlauf\n\
 -to <Farbe>              Endfarbe für Farbverlauf\n\n\
--solid <Farbe>           Feste Farbe\n\n\
+-solid <Farbe>           Einfarbig\n\n\
 -help                    Diese Hilfe anzeigen und beenden\n
 
 $set 19 #main
@@ -233,13 +243,16 @@ $set 19 #main
 12 Fehler: '-screen' braucht ein Argument
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tBenutze ein anderes $DISPLAY.\n\
+-screen <all|int,int,int>\tNur auf angegebenen Screens laufen.\n\
 -rc <string>\t\t\tBenutze eine andere Init-Datei.\n\
 -version\t\t\tZeige Version an.\n\
 -info\t\t\t\tZeige nützliche Informationen an.\n\
 -log <filename>\t\t\tSchreibe Log in Datei.\n\
 -help\t\t\t\tZeige diese Hilfe an.\n\n
+14 Warnung: Konnte Umgebungsvaribale 'DISPLAY' nicht setzen
 
 $set 20 #LayerSet
+
 1 Über Dock
 2 Unten
 3 Desktop

@@ -79,12 +79,12 @@ $set 5 #Ewmh
 
 $set 6 #FbTkError
 
-1 Warning! Height > 3200 setting Height = 3200
-2 Warning! Width > 3200 setting Width = 3200
+1 Warning! Height > 3200, setting Height = 3200
+2 Warning! Width > 3200, setting Width = 3200
 3 Warning: can't load fallback font
 4 Allocation error.
 5 Error creating pixmap
-6 Cant create XImage
+6 Can't create XImage
 7 Failed to read
 8 Warning: Failed to find valid format for alpha.
 9 Warning: Failed to create alpha picture.
@@ -105,7 +105,7 @@ $set 7 #Fluxbox
 3 Failed to load database
 4 Retrying with
 5 Warning! Could not find screen to map window on!
-6 Can't create %s directory
+6 Can't create directory %s
 7 Couldn't find screens to manage.\nMake sure you don't have another window manager running.
 8 Error parsing regular expression
 9 Fatal! There can only one instance of fluxbox class.
@@ -170,7 +170,7 @@ $set 13 #Slit
 
 $set 14 #Toolbar
 
-1 Edit current workspace name
+1 Rename current workspace
 2 Iconbar Mode
 3 All Windows
 4 Icons
