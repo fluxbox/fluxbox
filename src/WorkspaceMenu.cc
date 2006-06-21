@@ -115,8 +115,8 @@ void WorkspaceMenu::init(BScreen &screen) {
 
     removeAll();
 
-    setLabel(_FBTEXT(Workspace, MenuTitle, "Workspaces", "Title of main workspace menu"));
-    insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
+    setLabel(_FB_XTEXT(Workspace, MenuTitle, "Workspaces", "Title of main workspace menu"));
+    insert(_FB_XTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
            MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
     insert(new FbTk::MenuSeparator());
     // for each workspace add workspace name and it's menu to our workspace menu
@@ -150,11 +150,11 @@ void WorkspaceMenu::init(BScreen &screen) {
     RefCount<Command> start_edit(CommandParser::instance().parseLine("setworkspacenamedialog"));
 
     insert(new FbTk::MenuSeparator());
-    insert(_FBTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 
+    insert(_FB_XTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 
            new_workspace_cmd);
-    insert(_FBTEXT(Toolbar, EditWkspcName, "Edit current workspace name", "Edit current workspace name"),
+    insert(_FB_XTEXT(Toolbar, EditWkspcName, "Edit current workspace name", "Edit current workspace name"),
            start_edit);
-    insert(_FBTEXT(Workspace, RemoveLast, "Remove Last", "Remove the last workspace"), 
+    insert(_FB_XTEXT(Workspace, RemoveLast, "Remove Last", "Remove the last workspace"), 
           remove_last_cmd);
     
     updateMenu();

@@ -68,20 +68,36 @@ void catclose(nl_catd cat);
     FbTk::I18n &i18n = *FbTk::I18n::instance()
 
 // ignore the description, it's for helping translators
-#define _FBTEXT(msgset, msgid, default_text, description) \
-    i18n.getMessage(FBNLS::msgset ## Set, FBNLS::msgset ## msgid, default_text)
-    
+
+// Text for X
+#define _FB_XTEXT(msgset, msgid, default_text, description) \
+    i18n.getMessage(FBNLS::msgset ## Set, FBNLS::msgset ## msgid, default_text, true)
+
+// Text for console    
+#define _FB_CONSOLETEXT(msgset, msgid, default_text, description) \
+    i18n.getMessage(FBNLS::msgset ## Set, FBNLS::msgset ## msgid, default_text, false)
+
 // This ensure that FbTk nls stuff is in a kind of namespace of its own
-#define _FBTKTEXT( msgset, msgid, default_text, description) \
-    i18n.getMessage(FBNLS::FbTk ## msgset ## Set, FBNLS::FbTk ## msgset ## msgid, default_text)
+#define _FBTK_XTEXT( msgset, msgid, default_text, description) \
+    i18n.getMessage(FBNLS::FbTk ## msgset ## Set, FBNLS::FbTk ## msgset ## msgid, default_text, true)
+
+#define _FBTK_CONSOLETEXT( msgset, msgid, default_text, description) \
+    i18n.getMessage(FBNLS::FbTk ## msgset ## Set, FBNLS::FbTk ## msgset ## msgid, default_text, false)
 
 #else // no NLS
 
 #define _FB_USES_NLS
-#define _FBTEXT(msgset, msgid, default_text, description) \
+
+#define _FB_XTEXT(msgset, msgid, default_text, description) \
     std::string(default_text)
 
-#define _FBTKTEXT(msgset, msgid, default_text, description) \
+#define _FB_CONSOLETEXT(msgset, msgid, default_text, description) \
+    std::string(default_text)
+
+#define _FBTK_XTEXT(msgset, msgid, default_text, description) \
+    std::string(default_text)
+
+#define _FBTK_CONSOLETEXT(msgset, msgid, default_text, description) \
     std::string(default_text)
 
 #endif // defined NLS
@@ -96,14 +112,16 @@ public:
     inline const nl_catd &getCatalogFd() const { return m_catalog_fd; }
 
     FbString getMessage(int set_number, int message_number, 
-                           const char *default_messsage = 0) const;
+                           const char *default_messsage = 0, bool translate_fb = false) const;
+
     void openCatalog(const char *catalog);
 private:
     I18n();
     ~I18n();
     std::string m_locale;
-    bool m_multibyte;
+    bool m_multibyte, m_utf8_translate;
     nl_catd m_catalog_fd;
+
 
 };
 

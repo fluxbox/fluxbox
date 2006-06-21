@@ -38,6 +38,7 @@
 #endif // _GNU_SOURCE
 
 #include "I18n.hh"
+#include "FileUtil.hh"
 
 #include <X11/Xlocale.h>
 
@@ -72,7 +73,7 @@ void NLSInit(const char *catalog) {
 }
 
 
-I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
+I18n::I18n():m_multibyte(false), m_utf8_translate(false), m_catalog_fd((nl_catd)(-1)) {
 #ifdef 	HAVE_SETLOCALE
     //make sure we don't get 0 to m_locale string
     char *temp = setlocale(LC_MESSAGES, "");
@@ -122,12 +123,32 @@ I18n *I18n::instance() {
 
 void I18n::openCatalog(const char *catalog) {
 #if defined(NLS) && defined(HAVE_CATOPEN)
-	
+
     string catalog_filename = LOCALEPATH;
     catalog_filename += '/';
     catalog_filename += m_locale;
     catalog_filename += '/';
     catalog_filename += catalog;
+
+    if (!FileUtil::isRegularFile(catalog_filename.c_str()) && m_locale != "C" && FbStringUtil::haveUTF8()) {
+        // try the UTF-8 catalog, this also picks up situations where
+        // the codeset somehow isn't specified
+
+        // remove everything after @
+        string::size_type index = m_locale.find('.');
+        // erase all characters starting at index
+        if (index != string::npos)
+            m_locale.erase(index); 
+
+        m_locale.append(".UTF-8");
+        m_utf8_translate = true;
+
+        catalog_filename = LOCALEPATH;
+        catalog_filename += '/';
+        catalog_filename += m_locale;
+        catalog_filename += '/';
+        catalog_filename += catalog;
+    }
 
 #ifdef MCLoadBySet
     m_catalog_fd = catopen(catalog_filename.c_str(), MCLoadBySet);
@@ -147,16 +168,29 @@ void I18n::openCatalog(const char *catalog) {
 }
 
 
+// Translate_FB means it'll become an FbString that goes to X for Fonts, 
+// No translate means it stays in the local encoding, for printing to the
+// console.
 FbString I18n::getMessage(int set_number, int message_number, 
-                             const char *default_message) const {
+                             const char *default_message, bool translate_fb) const {
 
 #if defined(NLS) && defined(HAVE_CATGETS)
     if (m_catalog_fd != (nl_catd)-1) {
         const char *ret = catgets(m_catalog_fd, set_number, message_number, default_message);
+        // can't translate, leave it in raw ascii (utf-8 compatible)
         if (ret == default_message || ret == NULL)
-            return default_message; // don't recode the default
+            return default_message;
 
-        return FbStringUtil::LocaleStrToFb(ret);
+        if (!m_utf8_translate && translate_fb) 
+            // Local input, UTF-8 output
+            return FbStringUtil::LocaleStrToFb(ret);
+        else if (m_utf8_translate && !translate_fb)
+            // UTF-8 input, local output
+            return FbStringUtil::FbStrToLocale(ret);
+        else 
+            // UTF-8 input, UTF-8 output OR
+            // local input, local output
+            return ret;
     }
     else
 #endif // NLS && HAVE_CATGETS

@@ -164,7 +164,7 @@ void Color::allocate(unsigned short red, unsigned short green, unsigned short bl
 	
     if (!XAllocColor(disp, DefaultColormap(disp, screen), &color)) {
         _FB_USES_NLS;
-        cerr<<"FbTk::Color: "<<_FBTKTEXT(Error, ColorAllocation, "Allocation error.", "XAllocColor failed...")<<endl;
+        cerr<<"FbTk::Color: "<<_FBTK_CONSOLETEXT(Error, ColorAllocation, "Allocation error.", "XAllocColor failed...")<<endl;
     } else {
         free();
         setRGB(maxValue(color.red),

@@ -660,7 +660,7 @@ void ImageControl::createColorTable() {
 
     default:
         _FB_USES_NLS;
-        cerr<<"FbTk::ImageControl: "<<_FBTKTEXT(Error, UnsupportedVisual, "Unsupported visual", "A visual is a technical term in X")<<endl;
+        cerr<<"FbTk::ImageControl: "<<_FBTK_CONSOLETEXT(Error, UnsupportedVisual, "Unsupported visual", "A visual is a technical term in X")<<endl;
         break;
     }
 }

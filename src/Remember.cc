@@ -129,25 +129,25 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
     }
     */
     _FB_USES_NLS;
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Workspace, "Workspace", "Remember Workspace"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Workspace, "Workspace", "Remember Workspace"),
                                       Remember::REM_WORKSPACE));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"),
                                       Remember::REM_JUMPWORKSPACE));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Head, "Head", "Remember Head"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Head, "Head", "Remember Head"),
                                       Remember::REM_HEAD));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - with width and height"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - with width and height"),
                                       Remember::REM_DIMENSIONS));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"),
                                       Remember::REM_POSITION));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Sticky, "Sticky", "Remember Sticky"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Sticky, "Sticky", "Remember Sticky"),
                                       Remember::REM_STUCKSTATE));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Decorations, "Decorations", "Remember window decorations"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Decorations, "Decorations", "Remember window decorations"),
                                       Remember::REM_DECOSTATE));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
                                       Remember::REM_SHADEDSTATE));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Layer, "Layer", "Remember Layer"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Layer, "Layer", "Remember Layer"),
                                       Remember::REM_LAYER));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
                                       Remember::REM_SAVEONCLOSE));
 
     menu->updateMenu();
@@ -463,7 +463,7 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
             } else if (strcasecmp(str_key.c_str(), "end") == 0) {
                 return row;
             } else {
-                cerr << _FBTEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
+                cerr << _FB_CONSOLETEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
             }
             if (had_error) {
                 cerr<<"Error parsing apps entry: ("<<line<<")"<<endl;
@@ -1083,7 +1083,7 @@ void Remember::updateClientClose(WinClient &winclient) {
 void Remember::initForScreen(BScreen &screen) {
     // All windows get the remember menu.
     _FB_USES_NLS;
-    screen.addExtraWindowMenu(_FBTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
+    screen.addExtraWindowMenu(_FB_XTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
                               createRememberMenu(screen));
 
 }

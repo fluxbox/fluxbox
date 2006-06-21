@@ -70,11 +70,11 @@ FbTk::FbString getWMName(Window window) {
             XFree(text_prop.value);
 
         } else { // default name
-            name = FbTk::FbStringUtil::LocaleStrToFb(_FBTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME"));
+            name = _FB_XTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
         }
     } else {
         // default name
-        name = FbTk::FbStringUtil::LocaleStrToFb(_FBTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME"));
+        name = _FB_XTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
     }
 
     return name;

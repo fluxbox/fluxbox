@@ -147,7 +147,7 @@ namespace {
 
 int anotherWMRunning(Display *display, XErrorEvent *) {
     _FB_USES_NLS;
-    cerr<<_FBTEXT(Screen, AnotherWMRunning, 
+    cerr<<_FB_CONSOLETEXT(Screen, AnotherWMRunning, 
                   "BScreen::BScreen: an error occured while querying the X server.\n"
                   "	another window manager already running on display ",
                   "Message when another WM is found already active on all screens")
@@ -360,7 +360,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 	
     _FB_USES_NLS;
 	
-    fprintf(stderr, _FBTEXT(Screen, ManagingScreen,
+    fprintf(stderr, _FB_CONSOLETEXT(Screen, ManagingScreen,
                             "BScreen::BScreen: managing screen %d "
                             "using visual 0x%lx, depth %d\n", 
                             "informational message saying screen number (%d), visual (%lx), and colour depth (%d)").c_str(),
@@ -428,7 +428,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // own resources we must do this.
     fluxbox->load_rc(*this);
 
-    m_configmenu.reset(createMenu(_FBTEXT(Menu, Configuration, 
+    m_configmenu.reset(createMenu(_FB_XTEXT(Menu, Configuration, 
                                   "Configuration", "Title of configuration menu")));
     setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
@@ -1525,15 +1525,15 @@ void BScreen::initMenu() {
 
     if (m_rootmenu.get() == 0) {
         _FB_USES_NLS;
-        m_rootmenu.reset(createMenu(_FBTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
+        m_rootmenu.reset(createMenu(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
         FbTk::RefCount<FbTk::Command> restart_fb(CommandParser::instance().parseLine("restart"));
         FbTk::RefCount<FbTk::Command> exit_fb(CommandParser::instance().parseLine("exit"));
         FbTk::RefCount<FbTk::Command> execute_xterm(CommandParser::instance().parseLine("exec xterm"));
         m_rootmenu->setInternalMenu();
         m_rootmenu->insert("xterm", execute_xterm);
-        m_rootmenu->insert(_FBTEXT(Menu, Restart, "Restart", "Restart command"),
+        m_rootmenu->insert(_FB_XTEXT(Menu, Restart, "Restart", "Restart command"),
                            restart_fb);
-        m_rootmenu->insert(_FBTEXT(Menu, Exit, "Exit", "Exit command"),
+        m_rootmenu->insert(_FB_XTEXT(Menu, Exit, "Exit", "Exit command"),
                            exit_fb);
     }
 
@@ -1587,16 +1587,16 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     // create focus menu
     // we don't set this to internal menu so will 
     // be deleted toghether with the parent
-    FbTk::FbString focusmenu_label = _FBTEXT(Configmenu, FocusModel,
+    FbTk::FbString focusmenu_label = _FB_XTEXT(Configmenu, FocusModel,
                                           "Focus Model", 
                                           "Method used to give focus to windows");
     FbTk::Menu *focus_menu = createMenu(focusmenu_label);
 
-#define _BOOLITEM(m,a, b, c, d, e, f) (m).insert(new BoolMenuItem(_FBTEXT(a, b, c, d), e, f))
+#define _BOOLITEM(m,a, b, c, d, e, f) (m).insert(new BoolMenuItem(_FB_XTEXT(a, b, c, d), e, f))
                              
 
 #define _FOCUSITEM(a, b, c, d, e) \
-    focus_menu->insert(new FocusModelMenuItem(_FBTEXT(a, b, c, d), focusControl(), \
+    focus_menu->insert(new FocusModelMenuItem(_FB_XTEXT(a, b, c, d), focusControl(), \
                                               e, save_and_reconfigure))
 
     _FOCUSITEM(Configmenu, ClickFocus,
@@ -1615,7 +1615,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                                  save_and_reconfigure));
     
 
-    focus_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, 
+    focus_menu->insert(new BoolMenuItem(_FB_XTEXT(Configmenu, 
                                                 AutoRaise,
                                                 "Auto Raise",
                                                 "Auto Raise windows on sloppy"),
@@ -1630,11 +1630,11 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     // BEGIN tab menu
 
-    FbTk::FbString tabmenu_label = _FBTEXT(Configmenu, TabMenu,
+    FbTk::FbString tabmenu_label = _FB_XTEXT(Configmenu, TabMenu,
                                         "Tab Options", 
                                         "heading for tab-related options");
     FbTk::Menu *tab_menu = createMenu(tabmenu_label);
-    FbTk::FbString tabplacement_label = _FBTEXT(Menu, Placement, "Placement", "Title of Placement menu");
+    FbTk::FbString tabplacement_label = _FB_XTEXT(Menu, Placement, "Placement", "Title of Placement menu");
     FbTk::Menu *tabplacement_menu = createToggleMenu(tabplacement_label);
 
     tab_menu->insert(tabplacement_label, tabplacement_menu);
@@ -1644,7 +1644,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               *resource.default_internal_tabs, save_and_reconftabs);
 
     FbTk::MenuItem *tab_width_item =
-            new IntResMenuItem(_FBTEXT(Configmenu, ExternalTabWidth, 
+            new IntResMenuItem(_FB_XTEXT(Configmenu, ExternalTabWidth, 
                                        "External Tab Width",
                                        "Width of external-style tabs"),
                                resource.tab_width, 10, 3000, /* silly number */
@@ -1658,14 +1658,14 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     Placements place_menu;
 
     // menu is 2 wide, 2 down
-    place_menu.push_back(PlacementP(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftTop, "Left Top", "Left Top"), FbWinFrame::LEFTTOP));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), FbWinFrame::LEFTBOTTOM));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, RightTop, "Right Top", "Right Top"), FbWinFrame::RIGHTTOP));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), FbWinFrame::RIGHTBOTTOM));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), FbWinFrame::LEFTTOP));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), FbWinFrame::LEFTBOTTOM));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightTop, "Right Top", "Right Top"), FbWinFrame::RIGHTTOP));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), FbWinFrame::RIGHTBOTTOM));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT));
 
     tabplacement_menu->setMinimumSublevels(2);
     // create items in sub menu
@@ -1733,20 +1733,20 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     if (FbTk::Transparent::haveRender() ||
         FbTk::Transparent::haveComposite()) {
 
-        FbTk::FbString alphamenu_label = _FBTEXT(Configmenu, Transparency,
+        FbTk::FbString alphamenu_label = _FB_XTEXT(Configmenu, Transparency,
                                           "Transparency", 
                                            "Menu containing various transparency options");
         FbTk::Menu *alpha_menu = createMenu(alphamenu_label);
 
         if (FbTk::Transparent::haveComposite(true)) {
-            alpha_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, ForcePseudoTrans,
+            alpha_menu->insert(new BoolMenuItem(_FB_XTEXT(Configmenu, ForcePseudoTrans,
                                "Force Pseudo-Transparency", 
                                "When composite is available, still use old pseudo-transparency"),
                     Fluxbox::instance()->getPseudoTrans(), save_and_reconfigure));
         }
 
         FbTk::MenuItem *focused_alpha_item =
-            new IntResMenuItem(_FBTEXT(Configmenu, FocusedAlpha, 
+            new IntResMenuItem(_FB_XTEXT(Configmenu, FocusedAlpha, 
                                        "Focused Window Alpha",
                                        "Transparency level of the focused window"),
                     resource.focused_alpha, 0, 255, *alpha_menu);
@@ -1754,7 +1754,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         alpha_menu->insert(focused_alpha_item);
 
         FbTk::MenuItem *unfocused_alpha_item = 
-            new IntResMenuItem(_FBTEXT(Configmenu, 
+            new IntResMenuItem(_FB_XTEXT(Configmenu, 
                                        UnfocusedAlpha, 
                                        "Unfocused Window Alpha", 
                                        "Transparency level of unfocused windows"),
@@ -1764,7 +1764,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         alpha_menu->insert(unfocused_alpha_item);
 
         FbTk::MenuItem *menu_alpha_item = 
-            new IntResMenuItem(_FBTEXT(Configmenu, MenuAlpha, 
+            new IntResMenuItem(_FB_XTEXT(Configmenu, MenuAlpha, 
                                        "Menu Alpha", "Transparency level of menu"),
                     resource.menu_alpha, 0, 255, *alpha_menu);
         menu_alpha_item->setCommand(saverc_cmd);
@@ -1862,7 +1862,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     _FB_USES_NLS;
 
     sprintf(label,
-            _FBTEXT(Screen, GeometryFormat,
+            _FB_XTEXT(Screen, GeometryFormat,
                     "W: %4d x H: %4d",
                     "Format for width and height window, %4d for width, and %4d for height").c_str(),
             gx, gy);
@@ -1929,7 +1929,7 @@ void BScreen::renderGeomWindow() {
     _FB_USES_NLS;
 
     sprintf(label,
-            _FBTEXT(Screen, GeometryFormat,
+            _FB_XTEXT(Screen, GeometryFormat,
             "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog").c_str(),
             0, 0);
 

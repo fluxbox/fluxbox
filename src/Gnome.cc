@@ -167,7 +167,7 @@ void Gnome::updateClientList(BScreen &screen) {
     Window *wl = new Window[num];
     if (wl == 0) {
         _FB_USES_NLS;
-        cerr<<_FBTEXT(Gnome, OutOfMemoryClientList, "Fatal: Out of memory, can't allocate for GNOME client list", "")<<endl;
+        cerr<<_FB_CONSOLETEXT(Gnome, OutOfMemoryClientList, "Fatal: Out of memory, can't allocate for GNOME client list", "")<<endl;
         return;
     }
 

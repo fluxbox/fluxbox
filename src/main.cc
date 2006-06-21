@@ -62,41 +62,84 @@
 using namespace std;
 void showInfo(ostream &ostr) {
     _FB_USES_NLS;
-    ostr<<_FBTEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")<<": "<<__fluxbox_version<<endl;
+    ostr<<_FB_CONSOLETEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")<<": "<<__fluxbox_version<<endl;
 
     if (strlen(svnversion()) > 0)
-        ostr << _FBTEXT(Common, SvnRevision, "SVN Revision", "Revision number in SVN repositary") << ": " << svnversion() << endl;
+        ostr << _FB_CONSOLETEXT(Common, SvnRevision, "SVN Revision", "Revision number in SVN repositary") << ": " << svnversion() << endl;
 #if defined(__DATE__) && defined(__TIME__)
-    ostr<<_FBTEXT(Common, Compiled, "Compiled", "Time fluxbox was compiled")<<": "<<__DATE__<<" "<<__TIME__<<endl;
+    ostr<<_FB_CONSOLETEXT(Common, Compiled, "Compiled", "Time fluxbox was compiled")<<": "<<__DATE__<<" "<<__TIME__<<endl;
 #endif
 #ifdef __fluxbox_compiler
-    ostr<<_FBTEXT(Common, Compiler, "Compiler", "Compiler used to build fluxbox")<<": "<<__fluxbox_compiler<<endl;
+    ostr<<_FB_CONSOLETEXT(Common, Compiler, "Compiler", "Compiler used to build fluxbox")<<": "<<__fluxbox_compiler<<endl;
 #endif // __fluxbox_compiler
 #ifdef __fluxbox_compiler_version
-    ostr<<_FBTEXT(Common, CompilerVersion, "Compiler version", "Compiler version used to build fluxbox")<<": "<<__fluxbox_compiler_version<<endl;    
+    ostr<<_FB_CONSOLETEXT(Common, CompilerVersion, "Compiler version", "Compiler version used to build fluxbox")<<": "<<__fluxbox_compiler_version<<endl;    
 #endif // __fluxbox_compiler_version
 
-    ostr<<endl<<_FBTEXT(Common, Defaults, "Defaults", "Default values compiled in")<<":"<<endl;
+    ostr<<endl<<_FB_CONSOLETEXT(Common, Defaults, "Defaults", "Default values compiled in")<<":"<<endl;
 
-    ostr<<_FBTEXT(Common, DefaultMenuFile, "    menu", "default menu file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTMENU<<endl;
-    ostr<<_FBTEXT(Common, DefaultStyle, "   style", "default style (right aligned - make sure same width as other default values)")<<": "<<DEFAULTSTYLE<<endl;
+    ostr<<_FB_CONSOLETEXT(Common, DefaultMenuFile, "    menu", "default menu file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTMENU<<endl;
+    ostr<<_FB_CONSOLETEXT(Common, DefaultStyle, "   style", "default style (right aligned - make sure same width as other default values)")<<": "<<DEFAULTSTYLE<<endl;
 
-    ostr<<_FBTEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTKEYSFILE<<endl;
-    ostr<<_FBTEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")<<": "<<DEFAULT_INITFILE<<endl;
+    ostr<<_FB_CONSOLETEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTKEYSFILE<<endl;
+    ostr<<_FB_CONSOLETEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")<<": "<<DEFAULT_INITFILE<<endl;
 
 #ifdef NLS
-    ostr<<_FBTEXT(Common, DefaultLocalePath, "    nls", "location for localization files (right aligned - make sure same width as other default values)")<<": "<<LOCALEPATH<<endl;
+    ostr<<_FB_CONSOLETEXT(Common, DefaultLocalePath, "    nls", "location for localization files (right aligned - make sure same width as other default values)")<<": "<<LOCALEPATH<<endl;
 #endif
 
     const char NOT[] = "-";
     ostr<<endl<<
-        _FBTEXT(Common, CompiledOptions, "Compiled options", "Options used when compiled")
+        _FB_CONSOLETEXT(Common, CompiledOptions, "Compiled options", "Options used when compiled")
         <<" ("<<NOT<<" => "<<
-        _FBTEXT(Common, Disabled, "disabled", "option is turned off")<<"): "<<endl<<
+        _FB_CONSOLETEXT(Common, Disabled, "disabled", "option is turned off")<<"): "<<endl<<
+
+/**** NOTE: This list is in alphabetical order! ****/
+
 #ifndef DEBUG
         NOT<<
 #endif // DEBUG
         "DEBUG"<<endl<<
+
+#ifndef USE_NEWWMSPEC
+        NOT<<
+#endif // USE_NEWWMSPEC
+        "EWMH"<<endl<<
+
+#ifndef USE_GNOME
+        NOT<<
+#endif // USE_GNOME
+        "GNOME"<<endl<<
+
+#ifndef HAVE_IMLIB2
+        NOT<<
+#endif // HAVE_IMLIB2
+        "IMLIB2"<<endl<<
+
+#ifndef KDE
+        NOT<<
+#endif // KDE
+        "KDE"<<endl<<
+
+#ifndef NLS
+        NOT<<
+#endif // NLS
+        "NLS"<<endl<<
+
+#ifndef REMEMBER
+        NOT<<
+#endif // REMEMBER
+        "REMEMBER"<<endl<<
+
+#ifndef HAVE_XRENDER
+        NOT<<
+#endif // HAVE_XRENDER
+        "RENDER"<<endl<<
+
+#ifndef SHAPE
+        NOT<<
+#endif // SHAPE
+        "SHAPE"<<endl<<
 
 #ifndef SLIT
         NOT<<
@@ -108,60 +151,27 @@ void showInfo(ostream &ostr) {
 #endif // USE_TOOLBAR
         "TOOLBAR"<<endl<<
 
-#ifndef HAVE_XPM
-        NOT<<
-#endif // HAVE_XPM
-        "XPM"<<endl<<
-
-#ifndef HAVE_IMLIB2
-        NOT<<
-#endif // HAVE_IMLIB2
-        "IMLIB2"<<endl<<
-
-#ifndef USE_GNOME
-        NOT<<
-#endif // USE_GNOME
-        "GNOME"<<endl<<
-
-#ifndef KDE
-        NOT<<
-#endif // KDE
-        "KDE"<<endl<<
-
-#ifndef USE_NEWWMSPEC
-        NOT<<
-#endif // USE_NEWWMSPEC
-        "EWMH"<<endl<<
-
-#ifndef REMEMBER
-        NOT<<
-#endif // REMEMBER
-        "REMEMBER"<<endl<<
-
-#ifndef SHAPE
-        NOT<<
-#endif // SHAPE
-        "SHAPE"<<endl<<
-
 #ifndef USE_XFT
         NOT<<
 #endif // USE_XFT
         "XFT"<<endl<<
-
-#ifndef USE_XMB
-        NOT<<
-#endif // USE_XMB
-        "XMB"<<endl<<
 
 #ifndef XINERAMA
         NOT<<
 #endif // XINERAMA
         "XINERAMA"<<endl<<
 
-#ifndef HAVE_XRENDER
+#ifndef USE_XMB
         NOT<<
-#endif // HAVE_XRENDER
-        "RENDER"<<endl<<
+#endif // USE_XMB
+        "XMB"<<endl<<
+
+#ifndef HAVE_XPM
+        NOT<<
+#endif // HAVE_XPM
+        "XPM"<<endl<<
+
+
         endl;
 }
 
@@ -180,7 +190,7 @@ int main(int argc, char **argv) {
             // look for alternative rc file to use
 
             if ((++i) >= argc) {
-                cerr<<_FBTEXT(main, RCRequiresArg,
+                cerr<<_FB_CONSOLETEXT(main, RCRequiresArg,
                               "error: '-rc' requires an argument", "the -rc option requires a file argument")<<endl;;	
                 exit(1);
             }
@@ -191,7 +201,7 @@ int main(int argc, char **argv) {
             // set by the environment variable DISPLAY
 
             if ((++i) >= argc) {
-                cerr<<_FBTEXT(main, DISPLAYRequiresArg,
+                cerr<<_FB_CONSOLETEXT(main, DISPLAYRequiresArg,
                               "error: '-display' requires an argument",
                               "")<<endl;
                 exit(1);
@@ -200,7 +210,7 @@ int main(int argc, char **argv) {
             session_display = argv[i];
             std::string display_env = "DISPLAY=" + session_display;
             if (putenv(const_cast<char *>(display_env.c_str()))) {
-                cerr<<_FBTEXT(main, WarnDisplayEnv,
+                cerr<<_FB_CONSOLETEXT(main, WarnDisplayEnv,
                                 "warning: couldn't set environment variable 'DISPLAY'",
                               "")<<endl;
                 perror("putenv()");
@@ -211,13 +221,13 @@ int main(int argc, char **argv) {
             exit(0);
         } else if (strcmp(argv[i], "-log") == 0 ) {
             if (i + 1 >= argc) {
-                cerr<<_FBTEXT(main, LOGRequiresArg, "error: '-log' needs an argument", "")<<endl;
+                cerr<<_FB_CONSOLETEXT(main, LOGRequiresArg, "error: '-log' needs an argument", "")<<endl;
                 exit(1);
             }
             log_filename = argv[++i];
         } else if (strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
             // print program usage and command line options
-            printf(_FBTEXT(main, Usage,
+            printf(_FB_CONSOLETEXT(main, Usage,
                            "Fluxbox %s : (c) %s Henrik Kinnunen\n"
                            "Website: http://www.fluxbox.org/\n\n"
                            "-display <string>\t\tuse display connection.\n"
@@ -252,9 +262,9 @@ int main(int argc, char **argv) {
 
     // setup log file
     if (log_file) {
-        cerr<<_FBTEXT(main, LoggingTo, "Logging to", "Logging to a file")<<": "<<log_filename<<endl;
+        cerr<<_FB_CONSOLETEXT(main, LoggingTo, "Logging to", "Logging to a file")<<": "<<log_filename<<endl;
         log_file<<"------------------------------------------"<<endl;
-        log_file<<_FBTEXT(main, LogFile, "Log File", "")<<": "<<log_filename<<endl;
+        log_file<<_FB_CONSOLETEXT(main, LogFile, "Log File", "")<<": "<<log_filename<<endl;
         showInfo(log_file);
         log_file<<"------------------------------------------"<<endl;
         // setup log to use cout and cerr stream
@@ -270,19 +280,19 @@ int main(int argc, char **argv) {
         exitcode = EXIT_SUCCESS;
 
     } catch (std::out_of_range &oor) {
-        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorOutOfRange, "Out of range", "Error message")<<": "<<oor.what()<<endl;
+        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorOutOfRange, "Out of range", "Error message")<<": "<<oor.what()<<endl;
     } catch (std::runtime_error &re) {
-        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorRuntime, "Runtime error", "Error message")<<": "<<re.what()<<endl;
+        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorRuntime, "Runtime error", "Error message")<<": "<<re.what()<<endl;
     } catch (std::bad_cast &bc) {
-        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorBadCast, "Bad cast", "Error message")<<": "<<bc.what()<<endl; 
+        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorBadCast, "Bad cast", "Error message")<<": "<<bc.what()<<endl; 
     } catch (std::bad_alloc &ba) {
-        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorBadAlloc, "Bad Alloc", "Error message")<<": "<<ba.what()<<endl;
+        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorBadAlloc, "Bad Alloc", "Error message")<<": "<<ba.what()<<endl;
     } catch (std::exception &e) {
-        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorStandardException, "Standard Exception", "Error message")<<": "<<e.what()<<endl;
+        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorStandardException, "Standard Exception", "Error message")<<": "<<e.what()<<endl;
     } catch (std::string error_str) {
-        cerr<<_FBTEXT(Common, Error, "Error", "Error message header")<<": "<<error_str<<endl;
+        cerr<<_FB_CONSOLETEXT(Common, Error, "Error", "Error message header")<<": "<<error_str<<endl;
     } catch (...) {
-        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorUnknown, "Unknown error", "Error message")<<"."<<endl;
+        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorUnknown, "Unknown error", "Error message")<<"."<<endl;
         abort();
     }
 

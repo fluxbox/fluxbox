@@ -43,12 +43,12 @@ LayerMenu::LayerMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
         int layernum;
     } layer_menuitems[]  = {
         //TODO: nls
-        {0, 0, _FBTEXT(Layer, AboveDock, "Above Dock", "Layer above dock"), Layer::ABOVE_DOCK},
-        {0, 0, _FBTEXT(Layer, Dock, "Dock", "Layer dock"), Layer::DOCK},
-        {0, 0, _FBTEXT(Layer, Top, "Top", "Layer top"), Layer::TOP},
-        {0, 0, _FBTEXT(Layer, Normal, "Normal", "Layer normal"), Layer::NORMAL},
-        {0, 0, _FBTEXT(Layer, Bottom, "Bottom", "Layer bottom"), Layer::BOTTOM},
-        {0, 0, _FBTEXT(Layer, Desktop, "Desktop", "Layer desktop"), Layer::DESKTOP},
+        {0, 0, _FB_XTEXT(Layer, AboveDock, "Above Dock", "Layer above dock"), Layer::ABOVE_DOCK},
+        {0, 0, _FB_XTEXT(Layer, Dock, "Dock", "Layer dock"), Layer::DOCK},
+        {0, 0, _FB_XTEXT(Layer, Top, "Top", "Layer top"), Layer::TOP},
+        {0, 0, _FB_XTEXT(Layer, Normal, "Normal", "Layer normal"), Layer::NORMAL},
+        {0, 0, _FB_XTEXT(Layer, Bottom, "Bottom", "Layer bottom"), Layer::BOTTOM},
+        {0, 0, _FB_XTEXT(Layer, Desktop, "Desktop", "Layer desktop"), Layer::DESKTOP},
     };
     
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbCommands::SaveResources());

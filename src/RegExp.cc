@@ -64,7 +64,7 @@ m_regex(0) {
         errstr = new char[size];
 
         regerror(ret, m_regex, errstr, size);
-        cerr<<_FBTEXT(Fluxbox, ErrorRegexp, "Error parsing regular expression", "Error parsing regular expression (following)")<<": "<<errstr<<endl;
+        cerr<<_FB_CONSOLETEXT(Fluxbox, ErrorRegexp, "Error parsing regular expression", "Error parsing regular expression (following)")<<": "<<errstr<<endl;
         delete [] errstr;
         delete m_regex; // I don't think I regfree a failed compile?
         m_regex = 0;

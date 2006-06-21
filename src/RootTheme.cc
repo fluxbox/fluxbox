@@ -160,7 +160,7 @@ void RootTheme::reconfigTheme() {
         
     if (!m_background_loaded) {
         cerr<<"Fluxbox: "<<
-            _FBTEXT(Common, BackgroundWarning,
+            _FB_CONSOLETEXT(Common, BackgroundWarning,
                     "There is no background option specified in this style."
                     " Please consult the manual or read the FAQ.",
                     "Background missing warning")<<endl;

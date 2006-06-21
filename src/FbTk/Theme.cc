@@ -190,7 +190,7 @@ void ThemeManager::loadTheme(Theme &tm) {
             if (!tm.fallback(*resource)) {
                 if (verbose()) {
                     _FB_USES_NLS;
-                    cerr<<_FBTKTEXT(Error, ThemeItem, "Failed to read theme item", "When reading a style, couldn't read a specific item (following)")<<": "<<resource->name()<<endl;
+                    cerr<<_FBTK_CONSOLETEXT(Error, ThemeItem, "Failed to read theme item", "When reading a style, couldn't read a specific item (following)")<<": "<<resource->name()<<endl;
                 }
                 resource->setDefaultValue();
             }

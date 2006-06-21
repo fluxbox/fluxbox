@@ -219,8 +219,8 @@ public:
         std::string reallabel = m_label + " " + 
             ( m_slit.direction() == Slit::HORIZONTAL ? 
               
-              _FBTEXT(Align, Horizontal, "Horizontal", "Horizontal"):
-              _FBTEXT(Align, Vertical,   "Vertical",   "Vertical"));
+              _FB_XTEXT(Align, Horizontal, "Horizontal", "Horizontal"):
+              _FB_XTEXT(Align, Vertical,   "Vertical",   "Vertical"));
         FbTk::MenuItem::setLabel(reallabel);
     }
 private:
@@ -294,7 +294,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     scr.resizeSig().attach(this);
     scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
 
-    scr.addConfigMenu(_FBTEXT(Slit, Slit, "Slit", "The Slit"), m_slitmenu);
+    scr.addConfigMenu(_FB_XTEXT(Slit, Slit, "Slit", "The Slit"), m_slitmenu);
 
     frame.pixmap = None;
     // move the frame out of sight for a moment
@@ -322,7 +322,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                                     getLayer(Layer::MENU), 
                                     this,
                                     true));
-    m_layermenu->setLabel(_FBTEXT(Slit, Layer, "Slit Layer", "Title of Slit Layer Menu"));
+    m_layermenu->setLabel(_FB_XTEXT(Slit, Layer, "Slit Layer", "Title of Slit Layer Menu"));
 
     moveToLayer((*m_rc_layernum).getNum());
 
@@ -1162,12 +1162,12 @@ void Slit::updateClientmenu() {
 
     // clear old items
     m_clientlist_menu.removeAll();
-    m_clientlist_menu.setLabel(_FBTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"));
+    m_clientlist_menu.setLabel(_FB_XTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"));
 
     FbTk::RefCount<FbTk::Command> cycle_up(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsUp));
     FbTk::RefCount<FbTk::Command> cycle_down(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsDown));
-    m_clientlist_menu.insert(_FBTEXT(Slit, CycleUp, "Cycle Up", "Cycle clients upwards"), cycle_up);
-    m_clientlist_menu.insert(_FBTEXT(Slit, CycleDown, "Cycle Down", "Cycle clients downwards"), cycle_down);
+    m_clientlist_menu.insert(_FB_XTEXT(Slit, CycleUp, "Cycle Up", "Cycle clients upwards"), cycle_up);
+    m_clientlist_menu.insert(_FB_XTEXT(Slit, CycleDown, "Cycle Down", "Cycle clients downwards"), cycle_down);
 
     m_clientlist_menu.insert(new FbTk::MenuSeparator());
 
@@ -1180,7 +1180,7 @@ void Slit::updateClientmenu() {
 
     m_clientlist_menu.insert(new FbTk::MenuSeparator());
     FbTk::RefCount<FbTk::Command> savecmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::saveClientList));
-    m_clientlist_menu.insert(_FBTEXT(Slit, 
+    m_clientlist_menu.insert(_FB_XTEXT(Slit, 
                                      SaveSlitList,
                                      "Save SlitList", "Saves the current order in the slit"), 
                              savecmd);
@@ -1242,37 +1242,37 @@ void Slit::setupMenu() {
     
 
     // setup base menu
-    m_slitmenu.setLabel(_FBTEXT(Slit, Slit, "Slit", "The Slit"));
-    m_slitmenu.insert(_FBTEXT(Menu, Placement, "Placement", "Title of Placement menu"),
+    m_slitmenu.setLabel(_FB_XTEXT(Slit, Slit, "Slit", "The Slit"));
+    m_slitmenu.insert(_FB_XTEXT(Menu, Placement, "Placement", "Title of Placement menu"),
                       placement_menu);
 
-    m_slitmenu.insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), m_layermenu.get());
+    m_slitmenu.insert(_FB_XTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), m_layermenu.get());
 
 #ifdef XINERAMA
     if (screen().hasXinerama()) {
-        m_slitmenu.insert(_FBTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
+        m_slitmenu.insert(_FB_XTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
                           new XineramaHeadMenu<Slit>(
                               screen().menuTheme(),
                               screen(),
                               screen().imageControl(),
                               *screen().layerManager().getLayer(::Layer::MENU),
                               *this,
-                              _FBTEXT(Slit, OnHead, "Slit on Head", "Title of Slits On Head menu")
+                              _FB_XTEXT(Slit, OnHead, "Slit on Head", "Title of Slits On Head menu")
                               ));
     }
 #endif //XINERAMA
 
-    m_slitmenu.insert(new BoolMenuItem(_FBTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
+    m_slitmenu.insert(new BoolMenuItem(_FB_XTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
                                        *m_rc_auto_hide,
                                        save_and_reconfigure_slit));
 
-    m_slitmenu.insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"), 
+    m_slitmenu.insert(new BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"), 
                                        *m_rc_maximize_over, 
                                        save_and_reconfigure_slit));
 
     // this saves resources and clears the slit window to update alpha value
     FbTk::MenuItem *alpha_menuitem = 
-        new IntResMenuItem(_FBTEXT(Common, Alpha, "Alpha", "Transparency level"),
+        new IntResMenuItem(_FB_XTEXT(Common, Alpha, "Alpha", "Transparency level"),
                            m_rc_alpha,
                            0, 255, m_slitmenu);
     // setup command for alpha value
@@ -1285,14 +1285,14 @@ void Slit::setupMenu() {
 
     m_slitmenu.insert(alpha_menuitem);
 
-    m_slitmenu.insert(new SlitDirMenuItem(_FBTEXT(Slit, Direction, "Slit Direction", "Orientation of slit"), 
+    m_slitmenu.insert(new SlitDirMenuItem(_FB_XTEXT(Slit, Direction, "Slit Direction", "Orientation of slit"), 
                                           *this,
                                           save_and_reconfigure));
-    m_slitmenu.insert(_FBTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);
+    m_slitmenu.insert(_FB_XTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);
     m_slitmenu.updateMenu();
 
     // setup sub menu
-    placement_menu->setLabel(_FBTEXT(Slit, Placement, "Slit Placement", "Slit Placement"));
+    placement_menu->setLabel(_FB_XTEXT(Slit, Placement, "Slit Placement", "Slit Placement"));
     placement_menu->setMinimumSublevels(3);
     m_layermenu->setInternalMenu();
     m_clientlist_menu.setInternalMenu();
@@ -1303,15 +1303,15 @@ void Slit::setupMenu() {
     Placements place_menu;
 
     // menu is 3 wide, 5 down
-    place_menu.push_back(PlacementP(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), Slit::TOPLEFT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftCenter, "Left Center", "Left Center"), Slit::LEFTCENTER));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Slit::BOTTOMLEFT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Slit::TOPCENTER));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), Slit::TOPLEFT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), Slit::LEFTCENTER));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Slit::BOTTOMLEFT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopCenter, "Top Center", "Top Center"), Slit::TOPCENTER));
     place_menu.push_back(PlacementP("", Slit::TOPLEFT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Slit::BOTTOMCENTER));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Slit::TOPRIGHT));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Slit::RIGHTCENTER));
-    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Slit::BOTTOMRIGHT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Slit::BOTTOMCENTER));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), Slit::TOPRIGHT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightCenter, "Right Center", "Right Center"), Slit::RIGHTCENTER));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Slit::BOTTOMRIGHT));
     
 
     // create items in sub menu

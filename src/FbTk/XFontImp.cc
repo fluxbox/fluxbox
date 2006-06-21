@@ -149,7 +149,7 @@ void XFontImp::rotate(FbTk::Orientation orient) {
     XRotFontStruct *rotfont = m_rotfonts[orient];
 
     if (rotfont == 0) {
-        cerr<<"RotFont: "<<_FBTKTEXT(Error, OutOfMemory, "Out of memory", "Something couldn't allocate memory")<<endl;
+        cerr<<"RotFont: "<<_FBTK_CONSOLETEXT(Error, OutOfMemory, "Out of memory", "Something couldn't allocate memory")<<endl;
         return;
     }
    
@@ -215,7 +215,7 @@ void XFontImp::rotate(FbTk::Orientation orient) {
                                   vert_w, vert_h, 8, 0);
 
         if (I1 == None) {				
-            cerr << "RotFont: " << _FBTKTEXT(Error, CreateXImage, 
+            cerr << "RotFont: " << _FBTK_CONSOLETEXT(Error, CreateXImage, 
                                          "Can't create XImage", 
                                          "XCreateImage failed for some reason")
                  << "." << endl;
@@ -257,7 +257,7 @@ void XFontImp::rotate(FbTk::Orientation orient) {
                           (char *)bitdata, bit_w, bit_h, 8, 0); 
 
         if (I2 == None) {
-            cerr << "XFontImp: " <<_FBTKTEXT(Error, CreateXImage,
+            cerr << "XFontImp: " <<_FBTK_CONSOLETEXT(Error, CreateXImage,
                                           "Can't create XImage",
                                           "XCreateImage failed for some reason") 
                  << "." << endl;

@@ -374,10 +374,9 @@ void Workspace::setName(const std::string &name) {
         _FB_USES_NLS;
         char tname[128];
         sprintf(tname, 
-                _FBTEXT(Workspace, DefaultNameFormat, 
+                _FB_XTEXT(Workspace, DefaultNameFormat, 
                         "Workspace %d", "Default workspace names, with a %d for the workspace number").c_str(),
                 m_id + 1); //m_id starts at 0
-        m_name = FbTk::FbStringUtil::LocaleStrToFb(tname);
     }
     
     screen().updateWorkspaceNamesAtom();

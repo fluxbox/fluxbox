@@ -50,7 +50,7 @@ IconMenu::IconMenu(BScreen &screen):
            getLayer(Layer::MENU)) {
 
     _FB_USES_NLS;
-    setLabel(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"));
+    setLabel(_FB_XTEXT(Menu, Icons, "Icons", "Iconic windows menu title"));
     screen.iconListSig().attach(this);
     updateItems(*this, screen);
 }

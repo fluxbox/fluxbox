@@ -87,8 +87,8 @@ bool ResourceManager::load(const char *filename) {
             resource->setFromString(value.addr);
         else {
             _FB_USES_NLS;
-            cerr<<_FBTKTEXT(Error, FailedRead, "Failed to read", "Couldn't load a resource (following)")<<": "<<resource->name()<<endl;
-            cerr<<_FBTKTEXT(Error, UsingDefault, "Setting default value", "Falling back to default value for resource")<<endl;
+            cerr<<_FBTK_CONSOLETEXT(Error, FailedRead, "Failed to read", "Couldn't load a resource (following)")<<": "<<resource->name()<<endl;
+            cerr<<_FBTK_CONSOLETEXT(Error, UsingDefault, "Setting default value", "Falling back to default value for resource")<<endl;
             resource->setDefaultValue();
         }
     }

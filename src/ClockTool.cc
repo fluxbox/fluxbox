@@ -58,9 +58,9 @@ public:
         if (m_tool.timeFormat().find("%k") != std::string::npos ||
             m_tool.timeFormat().find("%H") != std::string::npos ||
             m_tool.timeFormat().find("%T") != std::string::npos)
-            setLabel( _FBTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
+            setLabel( _FB_XTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
         else
-            setLabel( _FBTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
+            setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
     }
 
     void click(int button, int time) {
@@ -107,9 +107,9 @@ public:
             if (m_tool.timeFormat().find("%k") != std::string::npos ||
                 m_tool.timeFormat().find("%H") != std::string::npos ||
                 m_tool.timeFormat().find("%T") != std::string::npos)
-                setLabel( _FBTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
+                setLabel( _FB_XTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
             else
-                setLabel( _FBTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
+                setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
         
         } // else some other strange format...so we don't do anything
         FbTk::MenuItem::click(button, time);
@@ -166,7 +166,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     item->setCommand(saverc);
     menu.insert(item);
     FbTk::RefCount<FbTk::Command> editformat_cmd(new EditClockFormatCmd());
-    menu.insert(_FBTEXT(Toolbar, ClockEditFormat,   "Edit Clock Format",   "edit Clock Format") , editformat_cmd);
+    menu.insert(_FB_XTEXT(Toolbar, ClockEditFormat,   "Edit Clock Format",   "edit Clock Format") , editformat_cmd);
 
 
     update(0);

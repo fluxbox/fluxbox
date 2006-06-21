@@ -34,11 +34,11 @@ $set 3 #Common
 4 Compiled options
 5 Compiler
 6 Compiler version
-7 init
-8 keys
-9 nls
-10 menu
-11 style
+7     init
+8     keys
+9      nls
+10     menu
+11    style
 12 Defaults
 13 disabled
 14 Error
@@ -46,6 +46,7 @@ $set 3 #Common
 16 Maximize Over
 17 SVN Revision
 18 Visible
+19 There is no background option specified in this style.\nPlease consult the manual or read the FAQ.
 
 $set 4 #Configmenu
 

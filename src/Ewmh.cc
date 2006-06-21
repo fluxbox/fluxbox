@@ -382,7 +382,7 @@ void Ewmh::updateClientList(BScreen &screen) {
     Window *wl = FB_new_nothrow Window[num];
     if (wl == 0) {
         _FB_USES_NLS;
-        cerr<<_FBTEXT(Ewmh, OutOfMemoryClientList, 
+        cerr<<_FB_CONSOLETEXT(Ewmh, OutOfMemoryClientList, 
                       "Fatal: Out of memory, can't allocate for EWMH client list", "")<<endl;
         return;
     }
