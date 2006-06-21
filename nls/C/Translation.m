@@ -69,6 +69,9 @@ $set 4 #Configmenu
 18 Transparency
 19 Focused Window Alpha
 20 Unfocused Window Alpha
+21 Tab Options
+22 Tabs in Titlebar
+23 External Tab Width
 
 $set 5 #Ewmh
 
