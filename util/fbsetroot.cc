@@ -120,7 +120,7 @@ fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
 
     if ((mod + sol + grd) != true) {
         _FB_USES_NLS;
-        cerr << _FBTEXT(fbsetroot, MustSpecify, 
+        cerr << _FB_CONSOLETEXT(fbsetroot, MustSpecify, 
                     "Error: must specify one of: -solid, -mod, -gradient\n",
                     "user didn't give one of the required options") << endl;
 
@@ -195,7 +195,7 @@ void fbsetroot::setRootAtoms(Pixmap pixmap, int screen) {
 
     if (atom_root == None || atom_eroot == None) {
         _FB_USES_NLS;
-        cerr<<_FBTEXT(fbsetroot, NoPixmapAtoms, "Couldn't create pixmap atoms, giving up!", "Couldn't create atoms to point at root pixmap")<<endl;
+        cerr<<_FB_CONSOLETEXT(fbsetroot, NoPixmapAtoms, "Couldn't create pixmap atoms, giving up!", "Couldn't create atoms to point at root pixmap")<<endl;
         exit(1);
     }
 
@@ -382,7 +382,7 @@ void fbsetroot::usage(int exit_code) {
     cout << m_app_name << " 2.3 : (c) 2003-2006 Fluxbox Development Team" << endl;
     cout << m_app_name << " 2.1 : (c) 2002 Claes Nasten" << endl;
     cout << m_app_name << " 2.0 : (c) 1997-2000 Brad Hughes\n" << endl;
-    cout << _FBTEXT(fbsetroot, Usage,
+    cout << _FB_CONSOLETEXT(fbsetroot, Usage,
                   "  -display <string>        display connection\n"
                   "  -mod <x> <y>             modula pattern\n"
                   "  -foreground, -fg <color> modula foreground color\n"
@@ -409,7 +409,7 @@ int main(int argc, char **argv) {
 
             if ((++i) >= argc) {
                 _FB_USES_NLS;
-                cerr<<_FBTEXT(main, DISPLAYRequiresArg,
+                cerr<<_FB_CONSOLETEXT(main, DISPLAYRequiresArg,
                               "error: '-display' requires an argument",
                               "option requires an argument")<<endl;
 
