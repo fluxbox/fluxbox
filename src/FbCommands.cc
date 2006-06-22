@@ -71,7 +71,7 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
             return;
         }
     }
-    
+
     Window root_ret; // not used
     Window window_ret; // not used
 
@@ -86,9 +86,9 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
     int borderw = menu.fbwindow().borderWidth();
     int head = screen.getHead(rx, ry);
 
-    pair<int, int> m = 
+    pair<int, int> m =
         screen.clampToHead(head,
-                           rx - menu.width() / 2, 
+                           rx - menu.width() / 2,
                            ry - menu.titleWindow().height() / 2,
                            menu.width() + 2*borderw,
                            menu.height() + 2*borderw);
@@ -98,7 +98,7 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
                    screen.getHeadY(head),
                    screen.getHeadWidth(head),
                    screen.getHeadHeight(head));
-    
+
     menu.show();
     menu.grabInputFocus();
 }
@@ -122,7 +122,7 @@ void ExecuteCmd::execute() {
 
 int ExecuteCmd::run() {
     pid_t pid = fork();
-    if (pid) 
+    if (pid)
         return pid;
 
     std::string displaystring("DISPLAY=");
@@ -149,8 +149,17 @@ int ExecuteCmd::run() {
     return pid; // compiler happy -> we are happy ;)
 }
 
+SetModKeyCmd::SetModKeyCmd(const std::string& modkey) : m_modkey(modkey) { }
+
+void SetModKeyCmd::execute() {
+    Fluxbox::instance()->setModKey(m_modkey.c_str());
+    Fluxbox::instance()->save_rc();
+    // TODO: we need a better way to do this ...
+    Fluxbox::instance()->reconfigure();
+}
+
 ExportCmd::ExportCmd(const std::string& name, const std::string& value) :
-    m_name(name), m_value(value) { 
+    m_name(name), m_value(value) {
 }
 
 void ExportCmd::execute() {
@@ -161,9 +170,9 @@ void ExportCmd::execute() {
     static std::set<char*> stored;
     char* newenv = new char[m_name.size() + m_value.size() + 2];
     if (newenv) {
-    
+
         char* oldenv = getenv(m_name.c_str());
-        
+
         // oldenv points to the value .. we have to go back a bit
         if (oldenv && stored.find(oldenv - (m_name.size() + 1)) != stored.end())
             oldenv -= (m_name.size() + 1);
@@ -221,7 +230,7 @@ SetStyleCmd::SetStyleCmd(const std::string &filename):m_filename(filename) {
 void SetStyleCmd::execute() {
     Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
     Fluxbox::instance()->save_rc();
-    FbTk::ThemeManager::instance().load(m_filename, 
+    FbTk::ThemeManager::instance().load(m_filename,
                                         Fluxbox::instance()->getStyleOverlayFilename());
 }
 
@@ -302,8 +311,8 @@ void CommandDialogCmd::execute() {
     win->show();
 }
 
-    
-SetResourceValueCmd::SetResourceValueCmd(const std::string &resname, 
+
+SetResourceValueCmd::SetResourceValueCmd(const std::string &resname,
                                          const std::string &value):
     m_resname(resname),
     m_value(value) {
@@ -334,13 +343,13 @@ void BindKeyCmd::execute() {
         if (Fluxbox::instance()->keys()->addBinding(m_keybind)) {
             ofstream ofile(Fluxbox::instance()->keys()->filename().c_str(), ios::app);
             if (!ofile)
-                return;            
+                return;
             ofile<<m_keybind<<endl;
         }
     }
 }
 
-DeiconifyCmd::DeiconifyCmd(Mode mode, 
+DeiconifyCmd::DeiconifyCmd(Mode mode,
                            Destination dest) : m_mode(mode), m_dest(dest) { }
 
 void DeiconifyCmd::execute() {
@@ -356,12 +365,12 @@ void DeiconifyCmd::execute() {
     const bool change_ws= m_dest == ORIGIN;
 
     switch(m_mode) {
-        
+
     case ALL:
     case ALLWORKSPACE:
         for(; it != itend; it++) {
             old_workspace_num= (*it)->workspaceNumber();
-            if (m_mode == ALL || old_workspace_num == workspace_num || 
+            if (m_mode == ALL || old_workspace_num == workspace_num ||
                 (*it)->isStuck()) {
                 if (m_dest == ORIGIN || m_dest == ORIGINQUIET)
                     screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
@@ -378,7 +387,7 @@ void DeiconifyCmd::execute() {
             old_workspace_num= (*it)->workspaceNumber();
             if(m_mode == LAST || old_workspace_num == workspace_num ||
                (*it)->isStuck()) {
-                if ((m_dest == ORIGIN || m_dest == ORIGINQUIET) && 
+                if ((m_dest == ORIGIN || m_dest == ORIGINQUIET) &&
                     m_mode != LASTWORKSPACE)
                     screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
                 else
@@ -389,5 +398,5 @@ void DeiconifyCmd::execute() {
         break;
     };
 }
-    
+
 }; // end namespace FbCommands

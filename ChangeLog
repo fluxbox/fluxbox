@@ -1,5 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/22:
+   * new Resource: session.modKey: <modkey> (thanks Jim Ramsay i dot am at jimramsay dot com)
+     new Command: SetModKey <modkey>
+     eg: session.modKey: Mod4   allows to use the winkey to resize and move
+     windows and have Mod1 (Alt) free for using blender or Maya.
+     FbCommands.cc Window.cc fluxbox.hh FbCommandFactory.cc FbCommands.hh fluxbox.cc
+     doc/fluxbox.1.in
 *06/06/21:
    * Fix de_DE translation (thanks Michael Bueker)
    * Fix nls (Simon)

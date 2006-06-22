@@ -42,7 +42,6 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/Image.hh"
 #include "FbTk/FileUtil.hh"
-#include "FbTk/KeyUtil.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
 #include "FbTk/StringUtil.hh"
@@ -56,6 +55,7 @@
 #include "FbTk/Transparent.hh"
 #include "FbTk/Select2nd.hh"
 #include "FbTk/Compose.hh"
+#include "FbTk/KeyUtil.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -160,8 +160,8 @@ using namespace FbTk;
 namespace {
 
 Window last_bad_window = None;
- 
-// *** NOTE: if you want to debug here the X errors are 
+
+// *** NOTE: if you want to debug here the X errors are
 //     coming from, you should turn on the XSynchronise call below
 int handleXErrors(Display *d, XErrorEvent *e) {
     if (e->error_code == BadWindow)
@@ -215,7 +215,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
       m_rc_auto_raise_delay(m_resourcemanager, 250, "session.autoRaiseDelay", "Session.AutoRaiseDelay"),
-      m_rc_use_mod1(m_resourcemanager, true, "session.useMod1", "Session.UseMod1"),
+      m_rc_mod_key(m_resourcemanager, "Mod1", "session.modKey", "Session.ModKey"),
       m_masked_window(0),
       m_mousescreen(0),
       m_keyscreen(0),
@@ -347,7 +347,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
             vector<int> scrtmp;
             int scrnr = 0;
             FbTk::StringUtil::stringtok(vals, m_argv[i], ",:");
-            for (vector<string>::iterator scrit = vals.begin(); 
+            for (vector<string>::iterator scrit = vals.begin();
                  scrit != vals.end(); scrit++) {
                 scrnr = atoi(scrit->c_str());
                 if (scrnr >= 0 && scrnr < ScreenCount(disp))
@@ -358,17 +358,17 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                 swap(scrtmp, screens);
         }
     }
-    
+
     // init all "screens"
     for(size_t s = 0; s < screens.size(); s++)
         initScreen(screens[s]);
-    
+
     XAllowEvents(disp, ReplayPointer, CurrentTime);
 
 
     if (m_screen_list.empty()) {
         throw _FB_CONSOLETEXT(Fluxbox, ErrorNoScreens,
-                             "Couldn't find screens to manage.\nMake sure you don't have another window manager running.", 
+                             "Couldn't find screens to manage.\nMake sure you don't have another window manager running.",
                              "Error message when no unmanaged screens found - usually means another window manager is running");
     }
 
@@ -388,7 +388,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     m_resourcemanager.unlock();
     ungrab();
- 
+
 #ifdef DEBUG
     if (m_resourcemanager.lockDepth() != 0)
         cerr<<"--- resource manager lockdepth = "<<m_resourcemanager.lockDepth()<<endl;
@@ -439,7 +439,7 @@ Fluxbox::~Fluxbox() {
 
 
 int Fluxbox::initScreen(int scrnr) {
-    
+
     Display* disp = display();
     char scrname[128], altscrname[128];
     sprintf(scrname, "session.screen%d", scrnr);
@@ -453,7 +453,7 @@ int Fluxbox::initScreen(int scrnr) {
         delete screen;
         return 0;
     }
-    
+
     // add to our list
     m_screen_list.push_back(screen);
 
@@ -595,8 +595,8 @@ void Fluxbox::setupConfigFiles() {
         // create directory with perm 700
         if (mkdir(dirname.c_str(), 0700)) {
             fprintf(stderr, _FB_CONSOLETEXT(Fluxbox, ErrorCreatingDirectory,
-                                    "Can't create %s directory", 
-                                    "Can't create a directory, one %s for directory name").c_str(), 
+                                    "Can't create %s directory",
+                                    "Can't create a directory, one %s for directory name").c_str(),
                     dirname.c_str());
             cerr<<endl;
             return;
@@ -658,7 +658,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
     } else if (e->type == PropertyNotify) {
         m_last_time = e->xproperty.time;
         // check transparency atoms if it's a root pm
-        
+
         BScreen *screen = searchScreen(e->xproperty.window);
         if (screen) {
             FbTk::FbPixmap::rootwinPropertyNotify(screen->screenNumber(), e->xproperty.atom);
@@ -966,7 +966,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 
     BScreen *screen = searchScreen(ue.event);
-    
+
     if (ue.event != ue.window && (!screen || !ue.send_event)) {
         return;
     }
@@ -996,7 +996,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
         }
 
     // according to http://tronche.com/gui/x/icccm/sec-4.html#s-4.1.4
-    // a XWithdrawWindow is 
+    // a XWithdrawWindow is
     //   1) unmapping the window (which leads to the upper branch
     //   2) sends an synthetic unampevent (which is handled below)
     } else if (screen && ue.send_event) {
@@ -1108,7 +1108,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             // won't mask anything if it isn't a mod
             unsigned int state = FbTk::KeyUtil::instance().isolateModifierMask(ke.state);
             state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
-            
+
             if ((m_watch_keyrelease & state) == 0) {
 
                 m_watching_screen->notifyReleasedKeys(ke);
@@ -1217,7 +1217,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                     (*it).first->updateLayer(win);
             }
         } else if ((&(win.dieSig())) == changedsub) { // window death signal
-            
+
             for (AtomHandlerContainerIt it= m_atomhandler.begin();
                 it != m_atomhandler.end(); ++it) {
                 if ((*it).first->update())
@@ -1585,7 +1585,7 @@ void Fluxbox::load_rc(BScreen &screen) {
 
         string values(value.addr);
         BScreen::WorkspaceNames names;
-        
+
         StringUtil::removeTrailingWhitespace(values);
         StringUtil::removeFirstWhitespace(values);
         StringUtil::stringtok<BScreen::WorkspaceNames>(names, values, ",");
@@ -1703,7 +1703,7 @@ bool Fluxbox::menuTimestampsChanged() const {
     std::list<MenuTimestamp *>::const_iterator it = m_menu_timestamps.begin();
     std::list<MenuTimestamp *>::const_iterator it_end = m_menu_timestamps.end();
     for (; it != it_end; ++it) {
-        
+
         time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp((*it)->filename.c_str());
 
         if (timestamp >= 0) {
@@ -1743,11 +1743,11 @@ void Fluxbox::rereadMenu(bool show_after_reread) {
 
 
 void Fluxbox::real_rereadMenu() {
-    
+
     clearMenuFilenames();
-    
-    for_each(m_screen_list.begin(), 
-             m_screen_list.end(), 
+
+    for_each(m_screen_list.begin(),
+             m_screen_list.end(),
              mem_fun(&BScreen::rereadMenu));
 
     if(m_show_menu_after_reread) {
@@ -1806,7 +1806,7 @@ void Fluxbox::timed_reconfigure() {
 }
 
 bool Fluxbox::validateClient(const WinClient *client) const {
-    WinClientMap::const_iterator it = 
+    WinClientMap::const_iterator it =
         find_if(m_window_search.begin(),
                 m_window_search.end(),
                 Compose(bind2nd(equal_to<WinClient *>(), client),
@@ -1834,7 +1834,7 @@ void Fluxbox::updateFocusedWindow(BScreen *screen, BScreen *old_screen) {
 }
 
 void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
-    
+
     if (mods == 0) {
         cerr<<"WARNING: attempt to grab without modifiers!"<<endl;
         return;
@@ -1853,5 +1853,24 @@ void Fluxbox::updateFrameExtents(FluxboxWindow &win) {
     AtomHandlerContainerIt it_end = m_atomhandler.end();
     for (; it != it_end; ++it ) {
         (*it).first->updateFrameExtents(win);
+    }
+}
+
+unsigned int Fluxbox::getModKey() const {
+    if (!(m_rc_mod_key->c_str()))
+        return 0;
+    else
+        return FbTk::KeyUtil::instance().getModifier(m_rc_mod_key->c_str());
+}
+
+void Fluxbox::setModKey(const char* modkeyname) {
+
+    if (!modkeyname)
+        return;
+
+    unsigned int modkey = FbTk::KeyUtil::instance().getModifier(modkeyname);
+
+    if (modkey > 0) {
+        m_rc_mod_key = modkeyname;
     }
 }

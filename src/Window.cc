@@ -98,41 +98,43 @@ void grabButton(unsigned int button,
     const int capslock = KeyUtil::instance().capslock();
     const int scrolllock = KeyUtil::instance().scrolllock();
 
-    // Grab with Mod1 and with all lock modifiers
+    // Grab with modkey and with all lock modifiers
     // (num, scroll and caps)
 
+    unsigned int modkey = Fluxbox::instance()->getModKey();
+
     //numlock
-    XGrabButton(display, button, Mod1Mask|numlock, window, True,
+    XGrabButton(display, button, modkey|numlock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
     //scrolllock
-    XGrabButton(display, button, Mod1Mask|scrolllock, window, True,
+    XGrabButton(display, button, modkey|scrolllock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
     //capslock
-    XGrabButton(display, button, Mod1Mask|capslock, window, True,
+    XGrabButton(display, button, modkey|capslock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
     //capslock+numlock
-    XGrabButton(display, Button1, Mod1Mask|capslock|numlock, window, True,
+    XGrabButton(display, Button1, modkey|capslock|numlock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
     //capslock+scrolllock
-    XGrabButton(display, button, Mod1Mask|capslock|scrolllock, window, True,
+    XGrabButton(display, button, modkey|capslock|scrolllock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
     //capslock+numlock+scrolllock
-    XGrabButton(display, button, Mod1Mask|capslock|numlock|scrolllock, window,
+    XGrabButton(display, button, modkey|capslock|numlock|scrolllock, window,
                 True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
     //numlock+scrollLock
-    XGrabButton(display, button, Mod1Mask|numlock|scrolllock, window, True,
+    XGrabButton(display, button, modkey|numlock|scrolllock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
@@ -1108,20 +1110,23 @@ void FluxboxWindow::grabButtons() {
     XGrabButton(display, Button1, AnyModifier,
                 frame().window().window(), True, ButtonPressMask,
                 GrabModeSync, GrabModeSync, None, None);
-    XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame().window().window());
+    XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask,
+                  frame().window().window());
 
-    if (Fluxbox::instance()->useMod1()) {
-        XGrabButton(display, Button1, Mod1Mask, frame().window().window(), True,
+    unsigned int modkey = Fluxbox::instance()->getModKey();
+
+    if (modkey) {
+        XGrabButton(display, Button1, modkey, frame().window().window(), True,
                     ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                     GrabModeAsync, None, frame().theme().moveCursor());
 
         //----grab with "all" modifiers
         grabButton(Button1, frame().window().window(), frame().theme().moveCursor());
 
-        XGrabButton(display, Button2, Mod1Mask, frame().window().window(), True,
+        XGrabButton(display, Button2, modkey, frame().window().window(), True,
                     ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);
 
-        XGrabButton(display, Button3, Mod1Mask, frame().window().window(), True,
+        XGrabButton(display, Button3, modkey, frame().window().window(), True,
                     ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                     GrabModeAsync, None, None);
 
@@ -1738,7 +1743,7 @@ void FluxboxWindow::maximize(int type) {
     m_last_resize_y = new_y;
     m_last_resize_w = new_w;
     m_last_resize_h = new_h;
-    
+
     ResizeDirection old_resize_corner = m_resize_corner;
     m_resize_corner = NOCORNER;
     fixsize();
@@ -2684,7 +2689,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     // check frame events first
     frame().buttonPressEvent(be);
 
-    if (be.button == 1 || (be.button == 3 && be.state == Mod1Mask)) {
+    if (be.button == 1 || (be.button == 3 &&
+                           be.state == Fluxbox::instance()->getModKey())) {
         if ( (! focused) ) { //check focus
             setInputFocus();
         }
@@ -2721,7 +2727,7 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
     else if (m_attaching_tab)
         attachTo(re.x_root, re.y_root);
     else if (re.window == frame().window()) {
-        if (re.button == 2 && re.state == Mod1Mask)
+        if (re.button == 2 && re.state == Fluxbox::instance()->getModKey())
             ungrabPointer(CurrentTime);
         else
             frame().buttonReleaseEvent(re);
@@ -2743,7 +2749,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                             || frame().window() == me.window);
 
     if (Fluxbox::instance()->getIgnoreBorder()
-        && !(me.state & Mod1Mask) // really should check for exact matches
+        && !(me.state & Fluxbox::instance()->getModKey()) // really should check for exact matches
         && !(isMoving() || isResizing() || m_attaching_tab != 0)) {
         int borderw = frame().window().borderWidth();
         //!! TODO(tabs): the below test ought to be in FbWinFrame
@@ -2871,7 +2877,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
               resize_corner = (me.y < cy) ? RIGHTTOP : RIGHTBOTTOM;
 
 
-          // We are grabbing frame window in startResizing 
+          // We are grabbing frame window in startResizing
           // we need to translate coordinates to it.
           int start_x = me.x, start_y = me.y;
           Window child;

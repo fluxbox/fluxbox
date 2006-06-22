@@ -44,7 +44,10 @@
   #include <stdio.h>
 #endif
 
-using namespace std;
+using std::string;
+using std::vector;
+using std::cerr;
+using std::endl;
 
 // autoregister this module to command parser
 FbCommandFactory FbCommandFactory::s_autoreg;
@@ -60,7 +63,7 @@ FbCommandFactory::FbCommandFactory() {
         "arrangewindows",
         "bindkey",
         "close",
-		"closeallwindows",
+        "closeallwindows",
         "commanddialog",
         "deiconify",
         "detachclient",
@@ -122,6 +125,7 @@ FbCommandFactory::FbCommandFactory() {
         "sendtoprevworkspace",
         "setenv",
         "sethead",
+        "setmodkey",
         "setstyle",
         "setworkspacename",
         "setworkspacenamedialog",
@@ -186,16 +190,23 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new ExitFluxboxCmd();
     else if (command == "setenv" || command == "export") {
 
-        std::string name = arguments;
+        string name = arguments;
         FbTk::StringUtil::removeFirstWhitespace(name);
         FbTk::StringUtil::removeTrailingWhitespace(name);
         size_t pos = name.find_first_of(command == "setenv" ? " \t" : "=");
-        if (pos == std::string::npos || pos == name.size())
+        if (pos == string::npos || pos == name.size())
             return 0;
-        
-        std::string value = name.substr(pos + 1);
+
+        string value = name.substr(pos + 1);
         name = name.substr(0, pos);
         return new ExportCmd(name, value);
+    }
+    else if (command == "setmodkey") {
+        string modkey(arguments);
+        FbTk::StringUtil::removeFirstWhitespace(modkey);
+        FbTk::StringUtil::removeTrailingWhitespace(modkey);
+
+        return new SetModKeyCmd(modkey);
     }
     else if (command == "quit")
         return new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), &Fluxbox::shutdown);
@@ -233,7 +244,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "maximizehorizontal")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal);
     else if (command == "resize") {
-        FbTk_istringstream is(arguments.c_str()); 
+        FbTk_istringstream is(arguments.c_str());
         int dx = 0, dy = 0;
         is >> dx >> dy;
         return new ResizeCmd(dx, dy);
@@ -249,19 +260,19 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "resizevertical")
         return new ResizeCmd(0,atoi(arguments.c_str()));
     else if (command == "moveto") {
-        typedef std::vector<std::string> StringTokens;
+        typedef vector<string> StringTokens;
         StringTokens tokens;
         FbTk::StringUtil::stringtok<StringTokens>(tokens, arguments);
-    
+
         if (tokens.size() < 2) {
             cerr<<"*** WARNING: missing arguments for MoveTo\n";
             return NULL;
         }
-        
+
         unsigned int refc = MoveToCmd::UPPER|MoveToCmd::LEFT;
         int dx = 0;
         int dy = 0;
-       
+
         if (tokens[0][0] == '*')
             refc |= MoveToCmd::IGNORE_X;
         else
@@ -271,17 +282,17 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
             refc |= MoveToCmd::IGNORE_Y;
         else
             dy = atoi(tokens[1].c_str());
-        
+
         if (tokens.size() >= 3) {
             tokens[2] = FbTk::StringUtil::toLower(tokens[2]);
             if (tokens[2] == "left" || tokens[2] == "upperleft" || tokens[2] == "lowerleft") {
                 refc |= MoveToCmd::LEFT;
-                refc &= ~MoveToCmd::RIGHT;   
+                refc &= ~MoveToCmd::RIGHT;
             } else if (tokens[2] == "right" || tokens[2] == "upperright" || tokens[2] == "lowerright") {
                 refc |= MoveToCmd::RIGHT;
                 refc &= ~MoveToCmd::LEFT;
-            } 
-            
+            }
+
             if (tokens[2] == "upper" || tokens[2] == "upperleft" || tokens[2] == "upperright") {
                 refc |= MoveToCmd::UPPER;
                 refc &= ~MoveToCmd::LOWER;
@@ -290,8 +301,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
                 refc &= ~MoveToCmd::UPPER;
             }
         }
-        
-        return new MoveToCmd(dx, dy, refc);    
+
+        return new MoveToCmd(dx, dy, refc);
     }
     else if (command == "move") {
         FbTk_istringstream is(arguments.c_str());
@@ -328,14 +339,14 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "sethead")
         return new SetHeadCmd(atoi(arguments.c_str()));
     else if (command == "sendtoworkspace")
-		// workspaces appear 1-indexed to the user, hence the minus 1
+        // workspaces appear 1-indexed to the user, hence the minus 1
         return new SendToWorkspaceCmd(getint(arguments.c_str(), 1) - 1);
     else if (command == "sendtonextworkspace")
         return new SendToNextWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "sendtoprevworkspace")
         return new SendToPrevWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "taketoworkspace")
-		// workspaces appear 1-indexed to the user, hence the minus 1
+        // workspaces appear 1-indexed to the user, hence the minus 1
         return new TakeToWorkspaceCmd(getint(arguments.c_str(), 1) - 1);
     else if (command == "taketonextworkspace")
         return new TakeToNextWorkspaceCmd(getint(arguments.c_str(), 1));
@@ -357,7 +368,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::detachCurrentClient);
     else if (command == "windowmenu")
         return new CurrentWindowCmd(&FluxboxWindow::popupMenu);
-    // 
+    //
     // Workspace commands
     //
     else if (command == "nextworkspace")
@@ -369,12 +380,12 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "leftworkspace")
         return new LeftWorkspaceCmd(getint(arguments.c_str(), 1));
     else if (command == "workspace")
-		// workspaces appear 1-indexed to the user, hence the minus 1
+        // workspaces appear 1-indexed to the user, hence the minus 1
         return new JumpToWorkspaceCmd(getint(arguments.c_str(), 1) - 1);
     else if (command.substr(0, 9) == "workspace" && command[9] >= '0' && command[9] <= '9') {
         cerr<<"*** WARNING: 'Workspace<n>' actions are deprecated! Use 'Workspace <n>' instead"<<endl;
         return new JumpToWorkspaceCmd(getint(command.substr(9).c_str(), 1) - 1);
-        
+
     } else if (command == "nextwindow")
         return new NextWindowCmd(atoi(arguments.c_str()));
     else if (command == "prevwindow")
@@ -421,7 +432,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         if (iss.fail())
             mode="lastworkspace";
         mode= FbTk::StringUtil::toLower(mode);
-        
+
         iss >> d;
         if (iss.fail())
             d="current";
@@ -432,9 +443,9 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
           dest= DeiconifyCmd::ORIGINQUIET;
         else
           dest= DeiconifyCmd::CURRENT;
-          
+
         if ( mode == "all" )
-            return new DeiconifyCmd(DeiconifyCmd::ALL, dest); 
+            return new DeiconifyCmd(DeiconifyCmd::ALL, dest);
         else if ( mode == "allworkspace" )
             return new DeiconifyCmd(DeiconifyCmd::ALLWORKSPACE, dest);
         else if ( mode == "last" )
@@ -443,23 +454,23 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
             return new DeiconifyCmd(DeiconifyCmd::LASTWORKSPACE, dest);
 
     } else if (command == "macrocmd") {
-      std::string cmd;
+      string cmd;
       int   err= 0;
       int   parse_pos= 0;
       FbTk::MacroCommand* macro= new FbTk::MacroCommand();
 
       while (true) {
         parse_pos+= err;
-        err= FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + 
+        err= FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() +
                                                 parse_pos,
                                                 '{', '}', " \t\n", true);
         if ( err > 0 ) {
-          std::string c, a;
-          std::string::size_type first_pos = 
+          string c, a;
+          string::size_type first_pos =
               FbTk::StringUtil::removeFirstWhitespace(cmd);
-          std::string::size_type second_pos = 
+          string::size_type second_pos =
               cmd.find_first_of(" \t", first_pos);
-          if (second_pos != std::string::npos) {
+          if (second_pos != string::npos) {
             a= cmd.substr(second_pos);
             FbTk::StringUtil::removeFirstWhitespace(a);
             cmd.erase(second_pos);
@@ -480,23 +491,23 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
 
       delete macro;
     } else if (command == "togglecmd") {
-      std::string cmd;
+      string cmd;
       int   err= 0;
       int   parse_pos= 0;
       FbTk::ToggleCommand* macro= new FbTk::ToggleCommand();
 
       while (true) {
         parse_pos+= err;
-        err= FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + 
+        err= FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() +
                                                 parse_pos,
                                                 '{', '}', " \t\n", true);
         if ( err > 0 ) {
-          std::string c, a;
-          std::string::size_type first_pos = 
+          string c, a;
+          string::size_type first_pos =
               FbTk::StringUtil::removeFirstWhitespace(cmd);
-          std::string::size_type second_pos= 
+          string::size_type second_pos=
               cmd.find_first_of(" \t", first_pos);
-          if (second_pos != std::string::npos) {
+          if (second_pos != string::npos) {
             a= cmd.substr(second_pos);
             FbTk::StringUtil::removeFirstWhitespace(a);
             cmd.erase(second_pos);

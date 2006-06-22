@@ -291,11 +291,16 @@ drag it around.
 You can also use Alt + button 1 to raise a partially visible window.
 Finally, Alt + button 2 lowers a window, and Alt + button 3 resizes the window.
 .PP
-This can be disabled in the resource file
+This can be disabled or changed to a different modifier in the resource file
 .I ~/.fluxbox/init
-with 
+with:
 .TP
-session.useMod1: \fItrue\fR or \fIfalse\fR
+session.modKey: <modifier>
+(Default: Mod1)
+.TP
+Where <modifier> is one of:
+\fIMod1\fR (Alt), \fIMod4\fR ('Windows' key), \fIControl\fR, or \fINone\fR
+(disables)
 .SH MENU FILE
 A default menu file is installed in
 .IR @pkgdatadir@/menu .

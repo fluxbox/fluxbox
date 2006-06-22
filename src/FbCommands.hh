@@ -96,6 +96,14 @@ private:
     std::string m_filename;
 };
 
+class SetModKeyCmd: public FbTk::Command {
+public:
+    explicit SetModKeyCmd(const std::string& modkey);
+    void execute();
+private:
+    std::string m_modkey;
+};
+
 class KeyModeCmd: public FbTk::Command {
 public:
     explicit KeyModeCmd(const std::string &arguments);
