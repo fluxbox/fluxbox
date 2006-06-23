@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/23:
+   * Make startfluxbox aware of --program-prefix and --program-suffix (Mark)
+     configure.in util/Makefile.am util/startfluxbox.in
 *06/06/22:
    * new Resource: session.modKey: <modkey> (thanks Jim Ramsay i dot am at jimramsay dot com)
      new Command: SetModKey <modkey>

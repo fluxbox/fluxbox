@@ -11,6 +11,9 @@ MAINTAINERCLEANFILES=	Makefile.in
 EXTRA_DIST=		fbsetbg fluxbox-generate_menu.in \
 				startfluxbox.in
 
+PROGRAM_PREFIX=@program_prefix@
+PROGRAM_SUFFIX=@program_suffix@
+
 all-local:	startfluxbox
 
 clean-local:
@@ -22,6 +25,8 @@ fbsetroot.o: 	fbsetroot.cc ../config.h $(srcdir)/fbsetroot.hh \
 startfluxbox: 	startfluxbox.in
 		@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" \
 		            -e "s,@pkgbindir@,$(bindir),g" \
+		            -e "s,@pkgprefix@,$(PROGRAM_PREFIX:NONE=),g" \
+		            -e "s,@pkgsuffix@,$(PROGRAM_SUFFIX:NONE=),g" \
 				$(srcdir)/startfluxbox.in > startfluxbox
 		-chmod 755 startfluxbox
 

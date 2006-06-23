@@ -44,10 +44,10 @@ else
 #
 # This sets a black background
 
-@pkgbindir@/fbsetroot -solid black
+@pkgbindir@/@pkgprefix@fbsetroot@pkgsuffix@ -solid black
 
 # This shows the fluxbox-splash-screen
-# fbsetbg -C @pkgdatadir@/splash.jpg
+# @pkgprefix@fbsetbg@pkgsuffix@ -C @pkgdatadir@/splash.jpg
 
 # Other examples. Check man xset for details.
 #
@@ -79,9 +79,9 @@ else
 # And last but not least we start fluxbox.
 # Because it is the last app you have to run it with ''exec'' before it.
 
-exec @pkgbindir@/fluxbox
+exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@
 # or if you want to keep a log:
-# exec @pkgbindir@/fluxbox -log "$HOME/.fluxbox/log"
+# exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@ -log "$HOME/.fluxbox/log"
 EOF
     ) > "$startup"
     fi

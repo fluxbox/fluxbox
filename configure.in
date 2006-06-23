@@ -592,6 +592,9 @@ AC_ARG_WITH(
 AC_DEFINE_UNQUOTED(LOCALEPATH, "$LOCALE_PATH", "location for nls files")
 AC_SUBST(LOCALE_PATH)
 
+AC_SUBST(program_prefix)
+AC_SUBST(program_suffix)
+
 dnl Determine the return type of signal handlers
 AC_TYPE_SIGNAL
 
