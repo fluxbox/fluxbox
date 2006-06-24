@@ -153,6 +153,11 @@ void FbWindow::setBackgroundPixmap(Pixmap bg_pixmap) {
     updateBackground(false);
 }
 
+void FbWindow::invalidateBackground() {
+    m_lastbg_pm = None;
+    m_lastbg_color_set = false;
+}
+
 void FbWindow::updateBackground(bool only_if_alpha) {
     Pixmap newbg = m_lastbg_pm;
     unsigned char alpha = 255;

@@ -159,7 +159,9 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
         m_tab_container.setOrientation(FbTk::ROT0);
         if (m_tab_container.parent()->window() == m_screen.rootWindow().window()) {
             m_layeritem.removeWindow(m_tab_container);
+            m_tab_container.hide();
             m_tab_container.reparent(m_titlebar, m_label.x(), m_label.y());
+            m_tab_container.invalidateBackground();
             m_tab_container.resize(m_label.width(), m_label.height());
             m_tab_container.raise();
         }
@@ -424,10 +426,8 @@ void FbWinFrame::alignTabs() {
     }
 
     if (m_tab_container.parent()->window() != m_screen.rootWindow().window()) {
-        // because the label might be using the same cached pixmap as tab container!
-        renderTitlebar();
-        applyTitlebar();
         m_tab_container.reparent(m_screen.rootWindow(), tabx, taby);
+        m_label.clear();
         m_layeritem.addWindow(m_tab_container);
     } else {
         m_tab_container.move(tabx, taby);
@@ -1000,12 +1000,15 @@ void FbWinFrame::reconfigure() {
 
         // we do handle settings whether on or not so that if they get toggled
         // then things are ok...
+        m_handle.invalidateBackground();
         m_handle.moveResize(-handle_bw, ypos,
                             m_window.width(), grip_height);
 
+        m_grip_left.invalidateBackground();
         m_grip_left.moveResize(-handle_bw, -handle_bw,
                                grip_width, grip_height);
 
+        m_grip_right.invalidateBackground();
         m_grip_right.moveResize(m_handle.width() - grip_width - handle_bw, -handle_bw,
                                 grip_width, grip_height);
 
@@ -1089,6 +1092,7 @@ void FbWinFrame::reconfigureTitlebar() {
     // if the titlebar grows in size, make sure the whole window does too
     if (orig_height != title_height) 
         m_window.resize(m_window.width(), m_window.height()-orig_height+title_height);
+    m_titlebar.invalidateBackground();
     m_titlebar.moveResize(-m_titlebar.borderWidth(), -m_titlebar.borderWidth(),
                           m_window.width(), title_height);
 
@@ -1097,6 +1101,8 @@ void FbWinFrame::reconfigureTitlebar() {
     unsigned int button_size = buttonHeight();
     m_button_size = button_size;
     for (size_t i=0; i < m_buttons_left.size(); i++, next_x += button_size + m_bevel) {
+        // probably on theme reconfigure, leave bg alone for now
+        m_buttons_left[i]->invalidateBackground();
         m_buttons_left[i]->moveResize(next_x, m_bevel, 
                                       button_size, button_size);
     }
@@ -1114,8 +1120,10 @@ void FbWinFrame::reconfigureTitlebar() {
     if (space_left <= 0)
         space_left = 1;
 
+    m_label.invalidateBackground();
     m_label.moveResize(next_x, m_bevel, space_left, button_size);
 
+    m_tab_container.invalidateBackground();
     if (m_tabmode == INTERNAL)
         m_tab_container.moveResize(next_x, m_bevel,
                                    space_left, button_size);
@@ -1134,6 +1142,7 @@ void FbWinFrame::reconfigureTitlebar() {
     // finaly set new buttons to the right
     for (size_t i=0; i < m_buttons_right.size(); 
          ++i, next_x += button_size + m_bevel) {
+        m_buttons_right[i]->invalidateBackground();
         m_buttons_right[i]->moveResize(next_x, m_bevel,
                                        button_size, button_size);
     }

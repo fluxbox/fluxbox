@@ -502,6 +502,14 @@ void Container::parentMoved() {
         (*it)->parentMoved();
 }
 
+void Container::invalidateBackground() {
+    FbTk::FbWindow::invalidateBackground();
+    ItemList::iterator it = m_item_list.begin();
+    ItemList::iterator it_end = m_item_list.end();
+    for (; it != it_end; ++it)
+        (*it)->invalidateBackground();
+}
+
 void Container::clear() {
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();
@@ -513,6 +521,8 @@ void Container::clear() {
 void Container::setOrientation(FbTk::Orientation orient) {
     if (m_orientation == orient)
         return;
+
+    FbTk::FbWindow::invalidateBackground();
 
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();

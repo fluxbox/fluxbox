@@ -63,8 +63,10 @@ void TextButton::setJustify(FbTk::Justify just) {
 }
 
 bool TextButton::setOrientation(FbTk::Orientation orient) {
-    if (!m_font->validOrientation(orient))
+    if (orient == m_orientation
+        || !m_font->validOrientation(orient))
         return false;
+    invalidateBackground();
 
     if ((m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) &&
         (orient == FbTk::ROT90 || orient == FbTk::ROT270) ||
@@ -76,8 +78,7 @@ bool TextButton::setOrientation(FbTk::Orientation orient) {
     } else {
         m_orientation = orient;
     }
-    updateBackground(false);
-    clear();
+
     return true;
 }
 

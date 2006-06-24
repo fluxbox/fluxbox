@@ -84,6 +84,7 @@ public:
     bool tryButtonReleaseEvent(XButtonEvent &event);
 
     void parentMoved();
+    void invalidateBackground();
 
     /// accessors
     inline Alignment alignment() const { return m_align; }

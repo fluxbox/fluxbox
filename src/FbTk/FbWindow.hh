@@ -74,6 +74,8 @@ public:
     virtual ~FbWindow();
     virtual void setBackgroundColor(const FbTk::Color &bg_color);
     virtual void setBackgroundPixmap(Pixmap bg_pixmap);
+    // call when background is freed, and new one not ready yet
+    virtual void invalidateBackground();
     virtual void setBorderColor(const FbTk::Color &border_color);
     virtual void setBorderWidth(unsigned int size);
     /// set window name ("title")
