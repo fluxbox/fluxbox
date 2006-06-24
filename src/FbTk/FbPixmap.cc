@@ -54,18 +54,18 @@ Atom FbPixmap::root_prop_atoms[] = {
 
 FbPixmap::FbPixmap():m_pm(0),
                      m_width(0), m_height(0),
-                     m_depth(0) {
+                     m_depth(0), m_dont_free(false) {
 }
 
 FbPixmap::FbPixmap(const FbPixmap &the_copy):FbDrawable(), m_pm(0),
                                              m_width(0), m_height(0),
-                                             m_depth(0){
+                                             m_depth(0), m_dont_free(false) {
     copy(the_copy);
 }
 
 FbPixmap::FbPixmap(Pixmap pm):m_pm(0),
                               m_width(0), m_height(0),
-                              m_depth(0) {
+                              m_depth(0), m_dont_free(false) {
     if (pm == 0)
         return;
     // assign X pixmap to this
@@ -76,7 +76,7 @@ FbPixmap::FbPixmap(const FbDrawable &src,
                    unsigned int width, unsigned int height,
                    unsigned int depth):m_pm(0),
                               m_width(0), m_height(0),
-                              m_depth(0) {
+                              m_depth(0), m_dont_free(false) {
 
     create(src.drawable(), width, height, depth);
 }
@@ -85,7 +85,7 @@ FbPixmap::FbPixmap(Drawable src,
                    unsigned int width, unsigned int height,
                    unsigned int depth):m_pm(0),
                               m_width(0), m_height(0),
-                              m_depth(0) {
+                              m_depth(0), m_dont_free(false) {
 
     create(src, width, height, depth);
 }
@@ -470,10 +470,13 @@ void FbPixmap::checkAtoms() {
 }
 
 void FbPixmap::free() {
-    if (m_pm != 0) {
+    if (!m_dont_free && m_pm != 0)
         XFreePixmap(display(), m_pm);
-        m_pm = 0;
-    }
+
+    /* note: m_dont_free shouldnt be required anywhere else,
+       because then free() isn't being called appropriately! */
+    m_dont_free = false;
+    m_pm = 0;
     m_width = 0;
     m_height = 0;
     m_depth = 0;

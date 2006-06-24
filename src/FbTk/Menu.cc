@@ -470,11 +470,11 @@ void Menu::updateMenu(int active_index) {
 
     if (!theme().selectedPixmap().pixmap().drawable()) {
         int hw = theme().itemHeight() / 2;
-        m_theme.setSelectedPixmap(m_image_ctrl.renderImage(hw, hw, theme().hiliteTexture()));
+        m_theme.setSelectedPixmap(m_image_ctrl.renderImage(hw, hw, theme().hiliteTexture()), true);
 
         if (!theme().highlightSelectedPixmap().pixmap().drawable()) {
             int hw = theme().itemHeight() / 2;
-            m_theme.setHighlightSelectedPixmap(m_image_ctrl.renderImage(hw, hw, theme().frameTexture()));
+            m_theme.setHighlightSelectedPixmap(m_image_ctrl.renderImage(hw, hw, theme().frameTexture()), true);
         }
     }
 

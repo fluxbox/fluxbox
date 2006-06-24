@@ -77,11 +77,18 @@ public:
                 unsigned int width, unsigned int height,
                 unsigned int depth);
 
+    /* Will be reset to false whenever this pixmap is reassigned */
+    void dontFree() { m_dont_free = true; }
+
 private:
     void free();
+
     Pixmap m_pm;
     unsigned int m_width, m_height;
     unsigned int m_depth;
+
+    // if pixmap not *owned* by this object (eg assigned from cache object)
+    bool m_dont_free;
 
     /// Functions relating to the maintenance of root window pixmap caching
     static void checkAtoms();

@@ -126,8 +126,17 @@ public:
     inline const FbTk::Color &borderColor() const { return *m_border_color; }
 
     // special override
-    inline void setSelectedPixmap(Pixmap pm) { m_selected_pixmap->pixmap() = pm; }
-    inline void setHighlightSelectedPixmap(Pixmap pm) { m_hl_selected_pixmap->pixmap() = pm; }
+    inline void setSelectedPixmap(Pixmap pm, bool is_imagecached) {
+        m_selected_pixmap->pixmap() = pm; 
+        if (is_imagecached)
+            m_selected_pixmap->pixmap().dontFree();
+    }
+
+    inline void setHighlightSelectedPixmap(Pixmap pm, bool is_imagecached) {
+        m_hl_selected_pixmap->pixmap() = pm; 
+        if (is_imagecached)
+            m_hl_selected_pixmap->pixmap().dontFree();
+    }
 
 private:
     FbTk::ThemeItem<FbTk::Color> t_text, f_text, h_text, d_text;

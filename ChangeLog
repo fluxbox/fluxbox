@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/24:
+   * Fix bug #1362463, menu selection pixmaps disappear (Simon)
+     - pixmap from image cache was put into FbPixmap, which freed it.
+     FbPixmap.hh/cc MenuTheme.hh Menu.cc
 *06/06/23:
    * Make startfluxbox aware of --program-prefix and --program-suffix (Mark)
      configure.in util/Makefile.am util/startfluxbox.in
