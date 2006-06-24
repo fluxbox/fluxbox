@@ -650,6 +650,18 @@ void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
         applyActiveLabel(*m_current_label);
 }
 
+void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn, bool value) {
+    if (btn.parent() != &m_tab_container)
+        return;
+
+    if (value)
+        applyFocusLabel(btn);
+    else
+        applyUnfocusLabel(btn);
+
+    btn.clear();
+}
+
 void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
 
     win.setBorderWidth(0);

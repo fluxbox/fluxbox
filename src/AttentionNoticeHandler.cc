@@ -23,7 +23,7 @@
 
 #include "AttentionNoticeHandler.hh"
 
-#include "Window.hh"
+#include "WinClient.hh"
 #include "Screen.hh"
 #include "STLUtil.hh"
 
@@ -34,14 +34,16 @@
 namespace {
 class ToggleFrameFocusCmd: public FbTk::Command {
 public:
-    ToggleFrameFocusCmd(FluxboxWindow &win):
-        m_win(win) {}
+    ToggleFrameFocusCmd(WinClient &client):
+        m_client(client) {}
     void execute() {
-        m_win.frame().setFocus( ! m_win.frame().focused() );
-        m_win.attentionSig().notify();
+        m_state ^= true;
+        m_client.fbwindow()->setLabelButtonFocus(m_client, m_state);
+        m_client.fbwindow()->setAttentionState(m_state);
     }
 private:
-    FluxboxWindow& m_win;
+    WinClient& m_client;
+    bool m_state;
 };
 
 } // end anonymous namespace 
@@ -51,27 +53,27 @@ AttentionNoticeHandler::~AttentionNoticeHandler() {
     STLUtil::destroyAndClearSecond(m_attentions);
 }
 
-void AttentionNoticeHandler::addAttention(FluxboxWindow &win) {
-    // no need to add already focused window
-    if (win.isFocused())
+void AttentionNoticeHandler::addAttention(WinClient &client) {
+    // no need to add already active client
+    if (client.fbwindow()->isFocused() && &client.fbwindow()->winClient() == &client)
         return;
 
     // Already have a notice for it?
-    NoticeMap::iterator it = m_attentions.find(&win);
+    NoticeMap::iterator it = m_attentions.find(&client);
     if (it != m_attentions.end()) {
         return; 
     }
 
     using namespace FbTk;
 
-    ResourceManager &res = win.screen().resourceManager();
-    std::string res_name = win.screen().name() + ".demandsAttentionTimeout";
-    std::string res_alt_name = win.screen().name() + ".DemandsAttentionTimeout";
+    ResourceManager &res = client.screen().resourceManager();
+    std::string res_name = client.screen().name() + ".demandsAttentionTimeout";
+    std::string res_alt_name = client.screen().name() + ".DemandsAttentionTimeout";
     Resource<int> *timeout_res = dynamic_cast<Resource<int>* >(res.findResource(res_name));
     if (timeout_res == 0) {
         // no resource, create one and add it to managed resources
         timeout_res = new FbTk::Resource<int>(res, 500, res_name, res_alt_name);
-        win.screen().addManagedResource(timeout_res);
+        client.screen().addManagedResource(timeout_res);
     }
     // disable if timeout is zero
     if (**timeout_res == 0) 
@@ -82,25 +84,25 @@ void AttentionNoticeHandler::addAttention(FluxboxWindow &win) {
     timeval timeout;
     timeout.tv_sec = 0;
     timeout.tv_usec = **timeout_res * 1000;
-    RefCount<Command> cmd(new ToggleFrameFocusCmd(win));
+    RefCount<Command> cmd(new ToggleFrameFocusCmd(client));
     timer->setCommand(cmd);
     timer->setTimeout(timeout); 
     timer->fireOnce(false); // will repeat until window has focus
     timer->start();
 
-    m_attentions[&win] = timer; 
+    m_attentions[&client] = timer; 
     // attach signals that will make notice go away
-    win.dieSig().attach(this);
-    win.focusSig().attach(this);
+    client.dieSig().attach(this);
+    client.focusSig().attach(this);
 }
 
 void AttentionNoticeHandler::update(FbTk::Subject *subj) {
 
     // all signals results in destruction of the notice
 
-    FluxboxWindow::WinSubject *winsubj = 
-        static_cast<FluxboxWindow::WinSubject*>(subj);
-    delete m_attentions[&winsubj->win()];
-    m_attentions.erase(&winsubj->win());
+    WinClient::WinClientSubj *winsubj = 
+        static_cast<WinClient::WinClientSubj *>(subj);
+    delete m_attentions[&winsubj->winClient()];
+    m_attentions.erase(&winsubj->winClient());
 }
 

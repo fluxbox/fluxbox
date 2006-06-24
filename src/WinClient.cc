@@ -74,7 +74,8 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_blackbox_hint(0),
                      m_mwm_hint(0),
                      m_focus_mode(F_PASSIVE),
-                     m_diesig(*this), m_screen(screen), 
+                     m_diesig(*this), m_focussig(*this),
+                     m_screen(screen), 
                      m_strut(0) {
     updateWMProtocols();
     updateBlackboxHints();
@@ -516,10 +517,10 @@ void WinClient::updateWMHints() {
 
         if (m_win && m_win->isInitialized()) {
             if (wmhint->flags & XUrgencyHint) {
-                Fluxbox::instance()->attentionHandler().addAttention(*m_win);
+                Fluxbox::instance()->attentionHandler().addAttention(*this);
             } else {
                 Fluxbox::instance()->attentionHandler().
-                    update(&(m_win->attentionSig()));
+                    update(&m_focussig);
             }
         }
 

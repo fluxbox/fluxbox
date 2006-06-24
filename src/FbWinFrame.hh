@@ -150,6 +150,8 @@ public:
     void moveLabelButtonRightOf(FbTk::TextButton &btn, const FbTk::TextButton &dest);
     /// which button is to be rendered focused
     void setLabelButtonFocus(FbTk::TextButton &btn);
+    /// specify focus state of button
+    void setLabelButtonFocus(FbTk::TextButton &btn, bool value);
     /// attach a client window for client area
     void setClientWindow(FbTk::FbWindow &win);
     /// remove attached client window

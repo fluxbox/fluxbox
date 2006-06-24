@@ -117,6 +117,8 @@ public:
     const BScreen &screen() const { return m_screen; }
     /// notifies when this client dies
     FbTk::Subject &dieSig() { return m_diesig; }
+    /// notifies when this client becomes focused
+    FbTk::Subject &focusSig() { return m_focussig; }
 
     inline WinClient *transientFor() { return transient_for; }
     inline const WinClient *transientFor() const { return transient_for; }
@@ -211,6 +213,7 @@ private:
     int m_focus_mode;
 
     WinClientSubj m_diesig;
+    WinClientSubj m_focussig;
     BScreen &m_screen;
 
     Strut *m_strut;

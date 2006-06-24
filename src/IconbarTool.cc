@@ -601,7 +601,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
             IconButton *button = findButton(winsubj->win());
             if (button) {
                 renderButton(*button, true, 
-                             winsubj->win().frame().focused() ? 1 : 0);
+                             winsubj->win().getAttentionState());
             }
             return;
         } else {

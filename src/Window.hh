@@ -178,6 +178,9 @@ public:
     bool removeClient(WinClient &client);
     /// set new current client and raise it
     bool setCurrentClient(WinClient &client, bool setinput = true);
+    void setLabelButtonFocus(WinClient &client, bool value = true);
+    void setAttentionState(bool value);
+    bool getAttentionState() { return m_attention_state; }
     WinClient *findClient(Window win);
     void nextClient();
     void prevClient();
@@ -500,6 +503,7 @@ private:
 
     WinClient *m_attaching_tab;
 
+    bool m_attention_state;
     BScreen &m_screen; /// screen on which this window exist
     FbTk::Timer m_timer;
     Display *display; /// display connection

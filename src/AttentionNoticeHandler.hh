@@ -27,7 +27,7 @@
 
 #include <map>
 
-class FluxboxWindow;
+class WinClient;
 
 namespace FbTk {
 class Timer;
@@ -41,11 +41,11 @@ class AttentionNoticeHandler: public FbTk::Observer {
 public:
     ~AttentionNoticeHandler();
 
-    typedef std::map<FluxboxWindow*, FbTk::Timer*> NoticeMap;
-    /// Adds a window that requires attention,
-    /// will fail if the window is already focused
-    void addAttention(FluxboxWindow &win); 
-    /// removes the window from the attention map
+    typedef std::map<WinClient*, FbTk::Timer*> NoticeMap;
+    /// Adds a client that requires attention,
+    /// will fail if the client is already active
+    void addAttention(WinClient &client); 
+    /// removes the client from the attention map
     void update(FbTk::Subject *subj);
     
 private:

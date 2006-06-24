@@ -1065,6 +1065,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
 
     m_client = &client;
     m_client->raise();
+    m_client->focusSig().notify();
     titleSig().notify();
 
 #ifdef DEBUG
@@ -1079,6 +1080,19 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     }
 
     return false;
+}
+
+void FluxboxWindow::setLabelButtonFocus(WinClient &client, bool value) {
+    // make sure it's in our list
+    if (client.fbwindow() != this)
+        return;
+
+    frame().setLabelButtonFocus(*m_labelbuttons[&client], value);
+}
+
+void FluxboxWindow::setAttentionState(bool value) {
+    m_attention_state = value;
+    m_attentionsig.notify();
 }
 
 bool FluxboxWindow::isGroupable() const {
@@ -2095,8 +2109,11 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     }
 
     // did focus change? notify listeners
-    if (was_focused != focus)
+    if (was_focused != focus) {
         m_focussig.notify();
+        if (m_client)
+            m_client->focusSig().notify();
+    }
 }
 
 
