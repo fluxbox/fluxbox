@@ -126,24 +126,17 @@ FbPixmap &FbPixmap::operator = (Pixmap pm) {
 }
 
 void FbPixmap::copy(const FbPixmap &the_copy) {
-
-    bool create_new = false;
-
-    if (the_copy.width() != width() ||
-        the_copy.height() != height() ||
-        the_copy.depth() != depth() ||
-        drawable() == 0)
-        create_new = true;
-
-    if (create_new)
-        free();
+    /* This function previously retained the old pixmap and copied in
+       the new contents if they had the same dimensions.
+       This broke the image cache, so we don't do that now. If you want to
+       do it, then you'll need to invalidate all copies of this pixmap in
+       the cache */
+    free();
 
     if (the_copy.drawable() != 0) {
-        if (create_new) {
-            create(the_copy.drawable(),
-                   the_copy.width(), the_copy.height(),
-                   the_copy.depth());
-        }
+        create(the_copy.drawable(),
+               the_copy.width(), the_copy.height(),
+               the_copy.depth());
 
         if (drawable()) {
             GContext gc(drawable());

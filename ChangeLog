@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/25:
+   * Fix [ 1512046 ] "window.label.unfocus.pixmap" doesn't update (Simon)
+     - FbPixmap::copy was keeping the same pixmap if they had same 
+       dimensions. This effectively broke the image cache.
+     FbPixmap.cc
    * Explicitly map NoSymbol to keycode 0 (thanks Julien Trolet)
      (seems to be assigned to several keycodes)
      FbTk/KeyUtil.cc

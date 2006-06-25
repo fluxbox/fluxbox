@@ -1204,7 +1204,6 @@ void FbWinFrame::renderTitlebar() {
            m_label_unfocused_pm,
            m_label.width(), m_label.height());
 
-    renderButtons();
 }
 
 void FbWinFrame::renderTabContainer() {
@@ -1240,6 +1239,8 @@ void FbWinFrame::renderTabContainer() {
     render(m_theme.labelActiveTexture(), m_labelbutton_active_color, 
            m_labelbutton_active_pm,
            m_tab_container.width(), m_tab_container.height(), m_tab_container.orientation());
+
+    renderButtons();
 
 }
 
@@ -1591,7 +1592,7 @@ void FbWinFrame::applyActiveLabel(FbTk::TextButton &button) {
     button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
 
     if (m_labelbutton_active_pm != 0) {
-            button.setBackgroundPixmap(m_labelbutton_active_pm);
+        button.setBackgroundPixmap(m_labelbutton_active_pm);
     } else
         button.setBackgroundColor(m_labelbutton_active_color);
 
