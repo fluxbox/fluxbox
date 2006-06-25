@@ -130,6 +130,9 @@ std::string recode(iconv_t cd,
     if (in.empty()) 
         return "";
 
+    if (cd == ((iconv_t)(-1)))
+        return in; // can't convert
+
     size_t insize = in.size();
     size_t outsize = insize;
     char * out = (char *) malloc(outsize * sizeof(char)); // need realloc
