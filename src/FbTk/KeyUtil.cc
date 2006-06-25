@@ -172,8 +172,10 @@ void KeyUtil::grabKey(unsigned int key, unsigned int mod) {
 unsigned int KeyUtil::getKey(const char *keystr) {
     if (!keystr)
         return 0;
-    return XKeysymToKeycode(App::instance()->display(),
-                            XStringToKeysym(keystr));
+    KeySym sym = XStringToKeysym(keystr);
+    if (sym==NoSymbol)
+        return 0;
+    return XKeysymToKeycode(App::instance()->display(), sym);
 }
 
 

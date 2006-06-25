@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/25:
+   * Explicitly map NoSymbol to keycode 0 (thanks Julien Trolet)
+     (seems to be assigned to several keycodes)
+     FbTk/KeyUtil.cc
    * Menu aware of text encodings (Simon)
      - new menu file options: 
          [encoding] {CODESET}
