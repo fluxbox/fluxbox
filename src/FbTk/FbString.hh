@@ -27,6 +27,11 @@
 
 #include <string>
 
+#include "config.h"
+#ifdef HAVE_ICONV
+#include <iconv.h>
+#endif // HAVE_ICONV
+
 namespace FbTk {
 
 // Use this type for things converted to our internal encoding (UTF-8)
