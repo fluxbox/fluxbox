@@ -773,7 +773,10 @@ void FluxboxWindow::detachCurrentClient() {
     // should only operate if we had more than one client
     if (numClients() <= 1)
         return;
+    WinClient &client = *m_client;
     detachClient(*m_client);
+    if (client.fbwindow() != 0)
+        client.fbwindow()->show();
 }
 
 /// removes client from client list, does not create new fluxboxwindow for it

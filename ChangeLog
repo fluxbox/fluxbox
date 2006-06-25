@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/25:
+   * Fix DetachClient key command so new window is visible (Mark)
+     Window.cc
 *06/06/24:
    * Make Urgency Hint flash the correct tab in a group (Mark)
      Ewmh.cc Window.cc/hh WinClient.cc/hh FbWinFrame.cc/hh IconbarTool.cc
