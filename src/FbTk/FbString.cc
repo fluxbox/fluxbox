@@ -54,6 +54,8 @@ static iconv_t *iconv_convs = 0;
 static int iconv_convs[CONVSIZE];
 #endif // HAVE_ICONV
 
+static std::string locale_codeset;
+
 /// Initialise all of the iconv conversion descriptors
 void init() {
     setlocale(LC_CTYPE, "");
@@ -65,9 +67,9 @@ void init() {
     iconv_convs = new iconv_t[CONVSIZE];
 
 #ifdef CODESET
-    std::string locale_codeset = nl_langinfo(CODESET);
+    locale_codeset = nl_langinfo(CODESET);
 #else // openbsd doesnt have this (yet?)
-    std::string locale_codeset = "";
+    locale_codeset = "";
     std::string locale = setlocale(LC_CTYPE, NULL);
     size_t pos = locale.find('.');
     if (pos != std::string::npos) 
@@ -228,5 +230,48 @@ bool haveUTF8() {
 
 
 }; // end namespace StringUtil
+
+StringConvertor::StringConvertor(EncodingTarget target): m_iconv((iconv_t)(-1)) {
+#ifdef HAVE_ICONV
+    if (target == ToLocaleStr)
+        m_destencoding = FbStringUtil::locale_codeset;
+    else
+        m_destencoding = "UTF-8";
+#endif
+}
+
+StringConvertor::~StringConvertor() {
+#ifdef HAVE_ICONV
+    if (m_iconv != ((iconv_t)-1))
+        iconv_close(m_iconv);
+#endif
+}
+
+bool StringConvertor::setSource(const std::string &encoding) {
+#ifdef HAVE_ICONV
+    std::string tempenc = encoding;
+    if (encoding == "")
+        tempenc = FbStringUtil::locale_codeset;
+
+    iconv_t newiconv = iconv_open(m_destencoding.c_str(), tempenc.c_str());
+    if (newiconv == ((iconv_t)(-1)))
+        return false;
+    else {
+        iconv_close(m_iconv);
+        m_iconv = newiconv;
+        return true;
+    }
+#else
+    return false;
+#endif
+}
+    
+std::string StringConvertor::recode(const std::string &src) {
+#ifdef HAVE_ICONV
+    return FbStringUtil::recode(m_iconv, src);
+#else
+    return src;
+#endif
+}
 
 }; // end namespace FbTk

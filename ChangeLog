@@ -1,6 +1,16 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/25:
+   * Menu aware of text encodings (Simon)
+     - new menu file options: 
+         [encoding] {CODESET}
+           ...
+         [endencoding]
+     - All distributions are encouraged to use these inside any 
+       auto-generated menu files, so that they are independent of user 
+       encoding.
+     - Encoding defaults to user's current encoding
+     MenuCreator.hh/cc FbTk/FbString.hh/cc nls/fluxbox-nls.hh C/Translation.m
    * Fix crash when unable to convert between local and utf-8 encodings (Simon)
      FbTk/FbString.cc
    * Fix DetachClient key command so new window is visible (Mark)

@@ -52,6 +52,26 @@ std::string FbStrToLocale(const FbString &src);
 bool haveUTF8();
 
 } // namespace FbStringUtil
+
+class StringConvertor {
+public:
+
+    enum EncodingTarget { ToFbString, ToLocaleStr };
+
+    StringConvertor(EncodingTarget target);
+    ~StringConvertor();
+
+    bool setSource(const std::string &encoding);
+    void reset() { m_iconv = ((iconv_t)(-1)); }
+
+    std::string recode(const std::string &src);
+
+private:
+    iconv_t m_iconv;
+
+    std::string m_destencoding;
+};
+
 } // namespace FbTk
 
 #endif // FBTK_FBSTRING_HH

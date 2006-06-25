@@ -134,6 +134,7 @@ $set 10 #Menu
 7 Placement
 8 Reload Config
 9 Restart
+10 Warning: unbalanced [encoding] tags
 
 $set 11 #Remember
 

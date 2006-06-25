@@ -131,6 +131,7 @@ enum {
 	MenuPlacement = 7,
 	MenuReconfigure = 8,
 	MenuRestart = 9,
+	MenuErrorEndEncoding = 10,
 
 	RememberSet = 11,
 	RememberDecorations = 1,

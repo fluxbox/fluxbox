@@ -55,6 +55,11 @@
 #include <iostream>
 using namespace std;
 
+std::list<std::string> MenuCreator::encoding_stack;
+std::list<size_t> MenuCreator::stacksize_stack;
+
+FbTk::StringConvertor MenuCreator::m_stringconvertor(FbTk::StringConvertor::ToFbString);
+
 static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
                             const std::string &directory) {
     // perform shell style ~ home directory expansion
@@ -131,8 +136,9 @@ class ParseItem {
 public:
     explicit ParseItem(FbTk::Menu *menu):m_menu(menu) {}
 
-    inline void load(Parser &p) {
+    inline void load(Parser &p, FbTk::StringConvertor &m_labelconvertor) {
         p>>m_key>>m_label>>m_cmd>>m_icon;
+        m_label.second = m_labelconvertor.recode(m_label.second);
     }
     inline const std::string &icon() const { return m_icon.second; }
     inline const std::string &command() const { return m_cmd.second; }
@@ -158,20 +164,20 @@ public:
     }
 };
 
-static void translateMenuItem(Parser &parse, ParseItem &item);
+static void translateMenuItem(Parser &parse, ParseItem &item, FbTk::StringConvertor &labelconvertor);
 
 
-static void parseMenu(Parser &pars, FbTk::Menu &menu) {
+static void parseMenu(Parser &pars, FbTk::Menu &menu, FbTk::StringConvertor &label_convertor) {
     ParseItem pitem(&menu);
     while (!pars.eof()) {
-        pitem.load(pars);
+        pitem.load(pars, label_convertor);
         if (pitem.key() == "end")
             return;
-        translateMenuItem(pars, pitem);
+        translateMenuItem(pars, pitem, label_convertor);
     }
 }
 
-static void translateMenuItem(Parser &parse, ParseItem &pitem) {
+static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConvertor &labelconvertor) {
     if (pitem.menu() == 0)
         throw string("translateMenuItem: We must have a menu in ParseItem!");
 
@@ -256,14 +262,12 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
                         (filelist[file_index][0] != '.') &&
                         (thisfile[thisfile.length() - 1] != '~')) {
                     MenuCreator::createFromFile(thisfile, menu, false);
-                    Fluxbox::instance()->saveMenuFilename(thisfile.c_str());
                 }
             }
 
         } else {
             // inject this file into the current menu
             MenuCreator::createFromFile(newfile, menu, false);
-            Fluxbox::instance()->saveMenuFilename(newfile.c_str());
         }
 
         safe_counter--;
@@ -280,7 +284,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         else
             submenu->setLabel(str_label);
 
-        parseMenu(parse, *submenu);
+        parseMenu(parse, *submenu, labelconvertor);
         submenu->updateMenu();
         menu.insert(str_label, submenu);
         // save to screen list so we can delete it later
@@ -310,6 +314,10 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         }
     } else if (str_key == "separator") {
         menu.insert(new FbTk::MenuSeparator());
+    } else if (str_key == "encoding") {
+        MenuCreator::startEncoding(str_cmd);
+    } else if (str_key == "endencoding") {
+        MenuCreator::endEncoding();
     }
     else { // ok, if we didn't find any special menu item we try with command parser
         // we need to attach command with arguments so command parser can parse it
@@ -337,11 +345,11 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
 }
 
 
-static void parseWindowMenu(Parser &parse, FbTk::Menu &menu) {
+static void parseWindowMenu(Parser &parse, FbTk::Menu &menu, FbTk::StringConvertor &labelconvertor) {
 
     ParseItem pitem(&menu);
     while (!parse.eof()) {
-        pitem.load(parse);
+        pitem.load(parse, labelconvertor);
         if (MenuCreator::createWindowMenuItem(pitem.key(), pitem.label(), menu))
             continue;
 
@@ -349,12 +357,12 @@ static void parseWindowMenu(Parser &parse, FbTk::Menu &menu) {
             return;
         } else if (pitem.key() == "submenu") {
             FbTk::Menu *submenu = MenuCreator::createMenu(pitem.label(), menu.screenNumber());
-            parseWindowMenu(parse, *submenu);
+            parseWindowMenu(parse, *submenu, labelconvertor);
             submenu->updateMenu();
             menu.insert(pitem.label(), submenu);
 
         } else { // try non window menu specific stuff
-            translateMenuItem(parse, pitem);
+            translateMenuItem(parse, pitem, labelconvertor);
         }
     }
 }
@@ -373,11 +381,11 @@ FbTk::Menu *MenuCreator::createMenu(const std::string &label, int screen_number)
     return menu;
 }
 
-bool getStart(FbMenuParser &parser, std::string &label) {
+bool getStart(FbMenuParser &parser, std::string &label, FbTk::StringConvertor &labelconvertor) {
     ParseItem pitem(0);
     while (!parser.eof()) {
         // get first begin line
-        pitem.load(parser);
+        pitem.load(parser, labelconvertor);
         if (pitem.key() == "begin") {
             break;
         }
@@ -391,19 +399,22 @@ bool getStart(FbMenuParser &parser, std::string &label) {
 
 FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_number, bool require_begin) {
     std::string real_filename = FbTk::StringUtil::expandFilename(filename);
+    Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
+
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
         return 0;
 
-    Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
-
     std::string label;
-    if (require_begin && !getStart(parser, label))
+    if (require_begin && !getStart(parser, label, m_stringconvertor))
         return 0;
 
     FbTk::Menu *menu = createMenu(label, screen_number);
-    if (menu != 0)
-        parseMenu(parser, *menu);
+    if (menu != 0) {
+        startFile();
+        parseMenu(parser, *menu, m_stringconvertor);
+        endFile();
+    }
 
     return menu;
 }
@@ -418,10 +429,13 @@ bool MenuCreator::createFromFile(const std::string &filename,
         return false;
 
     std::string label;
-    if (require_begin && !getStart(parser, label))
+    if (require_begin && !getStart(parser, label, m_stringconvertor))
         return false;
 
-    parseMenu(parser, inject_into);
+    startFile();
+    parseMenu(parser, inject_into, m_stringconvertor);
+    endFile();
+
     return true;
 }
 
@@ -436,10 +450,13 @@ bool MenuCreator::createWindowMenuFromFile(const std::string &filename,
 
     std::string label;
 
-    if (require_begin && !getStart(parser, label))
+    if (require_begin && !getStart(parser, label, m_stringconvertor))
         return false;
 
-    parseWindowMenu(parser, inject_into);
+    startFile();
+    parseWindowMenu(parser, inject_into, m_stringconvertor);
+    endFile();
+
     return true;
 }
 
@@ -580,3 +597,70 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
 
     return true;
 }
+
+/* push our encoding-stacksize onto the stack */
+void MenuCreator::startFile() {
+    if (encoding_stack.empty())
+        m_stringconvertor.setSource("");
+    stacksize_stack.push_back(encoding_stack.size());
+}
+
+/**
+ * Pop necessary encodings from the stack
+ * (and endEncoding the final one) to our matching encoding-stacksize.
+ */
+void MenuCreator::endFile() {
+    size_t target_size = stacksize_stack.back();
+    size_t curr_size = encoding_stack.size();
+
+    if (target_size != curr_size) {
+        _FB_USES_NLS;
+        cerr<<_FB_CONSOLETEXT(Menu, ErrorEndEncoding, "Warning: unbalanced [encoding] tags", "User menu file had unbalanced [encoding] tags")<<endl;
+    }
+
+    for (; curr_size > (target_size+1); --curr_size)
+        encoding_stack.pop_back();
+
+    if (curr_size == (target_size+1)) 
+        endEncoding();
+
+    stacksize_stack.pop_back();
+}
+
+/**
+ * Push the encoding onto the stack, and make it active.
+ */
+void MenuCreator::startEncoding(const std::string &encoding) {
+    // we push it regardless of whether it's valid, since we
+    // need to stay balanced with the endEncodings.
+    encoding_stack.push_back(encoding);
+
+    // this won't change if it doesn't succeed
+    m_stringconvertor.setSource(encoding);
+}
+
+/**
+ * Pop the encoding from the stack, unless we are at our stacksize limit.
+ * Restore the previous (valid) encoding.
+ */
+void MenuCreator::endEncoding() {
+    size_t min_size = stacksize_stack.back();
+    if (encoding_stack.size() <= min_size) {
+        // TODO: nls
+        _FB_USES_NLS;
+        cerr<<_FB_CONSOLETEXT(Menu, ErrorEndEncoding, "Warning: unbalanced [encoding] tags", "User menu file had unbalanced [encoding] tags")<<endl;
+        return;
+    }
+
+    encoding_stack.pop_back();
+    m_stringconvertor.reset();
+
+    std::list<std::string>::reverse_iterator it = encoding_stack.rbegin();
+    std::list<std::string>::reverse_iterator it_end = encoding_stack.rend();
+    while (it != it_end && !m_stringconvertor.setSource(*it))
+        ++it;
+
+    if (it == it_end)
+        m_stringconvertor.setSource("");
+}
+
