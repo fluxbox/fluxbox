@@ -3209,8 +3209,10 @@ void FluxboxWindow::applyDecorations(bool initial) {
     }
 
     frame().reconfigure();
-    if (!initial && client_move)
+    if (!initial && client_move) {
+        Fluxbox::instance()->updateFrameExtents(*this);
         sendConfigureNotify();
+    }
 
 }
 
@@ -3936,9 +3938,6 @@ void FluxboxWindow::sendConfigureNotify(bool send_to_netizens) {
         }
     } // end for
 
-    if (send_to_netizens) {
-        Fluxbox::instance()->updateFrameExtents(*this);
-    }
 }
 
 

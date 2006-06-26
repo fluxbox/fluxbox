@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/26:
+   * Fix _NET_FRAME_EXTENTS implementation (Simon)
+     Ewmh.cc Window.cc Screen.cc FbWinFrame.hh
    * Fix FocusHidden (Mark)
      Window.cc/hh
 *06/06/25:

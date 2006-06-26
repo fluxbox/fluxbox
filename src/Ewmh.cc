@@ -1249,11 +1249,16 @@ void Ewmh::setupState(FluxboxWindow &win) {
 }
 
 void Ewmh::updateFrameExtents(FluxboxWindow &win) {
+    /* Frame extents are basically the amount the window manager frame 
+       protrudes from the client window, on left, right, top, bottom
+       (it is independent of window position).
+     */
     int extents[4];
-    extents[0] = win.frame().x();
-    extents[1] = win.frame().x() + win.frame().width();
-    extents[2] = win.frame().y();
-    extents[3] = win.frame().y() + win.frame().height();
+    // our frames currently don't protrude from left/right
+    extents[0] = 0;
+    extents[1] = 0;
+    extents[2] = win.frame().titlebarHeight();
+    extents[3] = win.frame().handleHeight();
 
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();

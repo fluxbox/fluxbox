@@ -233,7 +233,8 @@ public:
     inline bool isShaded() const { return m_shaded; }
     inline FbWinFrameTheme &theme() const { return m_theme; }
     /// @return titlebar height
-    unsigned int titlebarHeight() const { return m_titlebar.height(); }
+    unsigned int titlebarHeight() const { return (m_use_titlebar?m_titlebar.height()+m_window.borderWidth():0); }
+    unsigned int handleHeight() const { return (m_use_handle?m_handle.height()+m_window.borderWidth():0); }
     /// @return size of button
     unsigned int buttonHeight() const;
     bool externalTabMode() const { return m_tabmode == EXTERNAL && m_use_tabs; }

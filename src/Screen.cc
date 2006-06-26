@@ -696,6 +696,24 @@ void BScreen::update(FbTk::Subject *subj) {
 
     renderGeomWindow();
     renderPosWindow();
+
+    Fluxbox *fluxbox = Fluxbox::instance();
+
+    // and update frame extents on theme changes
+    Workspaces::iterator w_it = getWorkspacesList().begin();
+    const Workspaces::iterator w_it_end = getWorkspacesList().end();
+    for (; w_it != w_it_end; ++w_it) {
+        Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
+        const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
+        for (; win_it != win_it_end; ++win_it)
+            fluxbox->updateFrameExtents(**win_it);
+    }
+
+    Icons::iterator it = iconList().begin();
+    const Icons::iterator it_end = iconList().end();
+    for (; it != it_end; ++it)
+        fluxbox->updateFrameExtents(**it);
+    
 }
 
 FbTk::Menu *BScreen::createMenu(const std::string &label) {
@@ -749,7 +767,7 @@ void BScreen::hideMenus() {
 #endif // SLIT
 
     // hide icon menus
-    if (iconList().size()) {
+    if (!iconList().empty()) {
         Icons::iterator it = iconList().begin();
         const Icons::iterator it_end = iconList().end();
         for (; it != it_end; ++it)
@@ -764,7 +782,7 @@ void BScreen::hideWindowMenus(const FluxboxWindow* except) {
     Workspaces::iterator w_it = getWorkspacesList().begin();
     const Workspaces::iterator w_it_end = getWorkspacesList().end();
     for (; w_it != w_it_end; ++w_it) {
-        if ((*w_it)->windowList().size()) {
+        if (!(*w_it)->windowList().empty()) {
             Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
             const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
             for (; win_it != win_it_end; ++win_it) {
@@ -895,7 +913,7 @@ void BScreen::reconfigureTabs() {
     Workspaces::iterator w_it = getWorkspacesList().begin();
     const Workspaces::iterator w_it_end = getWorkspacesList().end();
     for (; w_it != w_it_end; ++w_it) {
-        if ((*w_it)->windowList().size()) {
+        if (!(*w_it)->windowList().empty()) {
             Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
             const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
             for (; win_it != win_it_end; ++win_it) {
@@ -1517,7 +1535,7 @@ void BScreen::initMenu() {
         m_rootmenu.reset(createMenu(""));
 
     Fluxbox * const fb = Fluxbox::instance();
-    if (fb->getMenuFilename().size() > 0) {
+    if (!fb->getMenuFilename().empty()) {
         m_rootmenu.reset(MenuCreator::createFromFile(fb->getMenuFilename(),
                                                      screenNumber(), true));
 
