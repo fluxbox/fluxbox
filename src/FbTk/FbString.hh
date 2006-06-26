@@ -67,12 +67,20 @@ public:
     ~StringConvertor();
 
     bool setSource(const std::string &encoding);
-    void reset() { m_iconv = ((iconv_t)(-1)); }
+    void reset() {
+#ifdef HAVE_ICONV
+ m_iconv = ((iconv_t)(-1));
+#endif
+    }
 
     std::string recode(const std::string &src);
 
 private:
+#ifdef HAVE_ICONV
     iconv_t m_iconv;
+#else
+    int m_iconv;
+#endif
 
     std::string m_destencoding;
 };

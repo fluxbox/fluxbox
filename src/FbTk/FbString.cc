@@ -231,14 +231,18 @@ bool haveUTF8() {
 
 }; // end namespace StringUtil
 
-StringConvertor::StringConvertor(EncodingTarget target): m_iconv((iconv_t)(-1)) {
+StringConvertor::StringConvertor(EncodingTarget target): 
 #ifdef HAVE_ICONV
+    m_iconv((iconv_t)(-1)) {
     if (target == ToLocaleStr)
         m_destencoding = FbStringUtil::locale_codeset;
     else
         m_destencoding = "UTF-8";
-#endif
 }
+#else
+     m_iconv(-1) {}
+#endif
+
 
 StringConvertor::~StringConvertor() {
 #ifdef HAVE_ICONV
