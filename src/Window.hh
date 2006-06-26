@@ -317,7 +317,7 @@ public:
     inline void setMovable(bool movable) { functions.move = movable; }
     inline void setResizable(bool resizable) { functions.resize = resizable; }
 
-    inline bool isFocusHidden() const { return (m_blackbox_attrib.flags & ATTRIB_HIDDEN); }
+    inline bool isFocusHidden() const { return m_focus_hidden; }
     inline bool isIconHidden() const { return m_icon_hidden; }
     inline bool isManaged() const { return m_initialized; }
     inline bool isInitialized() const { return m_initialized; }
@@ -543,6 +543,7 @@ private:
 
     bool m_shaped; ///< if the window is shaped with a mask
     bool m_icon_hidden;  ///< if the window is in the iconbar
+    bool m_focus_hidden; ///< if the window is in the NextWindow list
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button

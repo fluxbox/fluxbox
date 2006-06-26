@@ -311,6 +311,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_toggled_decos(false),
     m_shaped(false),
     m_icon_hidden(false),
+    m_focus_hidden(false),
     m_old_pos_x(0), m_old_pos_y(0),
     m_old_width(1),  m_old_height(1),
     m_last_button_x(0),  m_last_button_y(0),
@@ -2073,6 +2074,7 @@ void FluxboxWindow::moveToLayer(int layernum) {
 }
 
 void FluxboxWindow::setFocusHidden(bool value) {
+    m_focus_hidden = value;
     if (isInitialized())
         m_statesig.notify();
 }

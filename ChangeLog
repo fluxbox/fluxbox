@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/26:
+   * Fix FocusHidden (Mark)
+     Window.cc/hh
 *06/06/25:
    * Fix [ 1512046 ] "window.label.unfocus.pixmap" doesn't update (Simon)
      - FbPixmap::copy was keeping the same pixmap if they had same 
