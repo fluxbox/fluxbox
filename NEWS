@@ -1,80 +1,25 @@
-News in 1.0rc:
-    * External tabs are back.
-       - option in Configure menu to enable/disable
-         No restart required.
-    * Added support for following atoms:
-        _NET_WM_MOVERESIZE
-        _NET_WM_STATE_DEMANDS_ATTENTION (flashing titlebar/iconbar) 
-        _NET_WM_ALLOWED_ACTIONS 
-        _NET_WM_ACTION_
-        _NET_WM_STATE_MODAL
-        _NET_WM_WINDOW_TYPE_SPLASH
-        _NET_RESTACK_WINDOW
-       For a complete list of supported net wm atoms 
-       go to: http://www.fluxbox.org/docs/ewmh-support.html
-    * Added new commands:
-      * ToggleCmd
-        Works like a macro but executes the commands one at the time in order.
-        Example:
-        Mod1 T :ToggleCmd {Exec xterm} {NextWindow}
-        When Mod1 T is press the first time it will start xterm, the second time
-        it will do NextWindow. When it reaches end it will start at the beginning.
-      * CloseAllWindows
-        Closes all windows.
-    * Supports urgency hint ( flashing titlebar/iconbar )
-    * Pressing shift while pressing enter in menu item will fake a right mouse
-      button press. Useful for increase/decrease values in menu.
-    * Updated documentation
-    * Flashing titlebar/iconbar when the window demands attention with urgency 
-      hint or using _NET_WM_STATE_DEMANDS_ATTENTION.
-      The blink rate can be configured with the following resource:
-      session.screen0.demandsAttentionTimeout: <timeout in milliseconds>
-      Default value is 500.
-      If the value is zero this feature will be disabled.
-    * Better UTF-8 handling
-    * fbrun: Move the cursor to the end when tab completing
-      (rfe #1333003, patch #1475578)
-    * Added option to reverse desktop wheeling (patch #1034287)
-      session.screen0.reversewheeling: true|false
-    * Vertical toolbar is back.
-    * Provide "Key Modes"
-      - New action in keys file:
-          Modifier Key :KeyMode <Name> <End Modifier> <End Key>
-        Will define a key binding namespace activated by the given mod/key 
-        combination. The End Modifier and key are optional. They define 
-        the key combination that quits the given key mode. They default 
-        to just 'Escape'.
-      - New keys file optional prefix:
-          <Name>: Modifier Key :Command
-        will only work when the <Name> keymode is activated.
-      - <Name> is  "default" if not specified - so:
-         **default commands will not be activated inside another keymode**
-      - Handy Example:
-         Mod1 X :KeyMode XNest
-         XNest: Mod1 X :KeyMode default
-        Will switch to XNest keymode when you press Alt-X. Then the 
-        default bindings will not be caught by normal fluxbox, and will 
-        pass through to an Xnested one! Groovy... Alt-X will switch back 
-        to normal.
+News in 1.0rc2:
+    * New resource/command
+       * session.modKey: <modkey> 
+       * command SetModKey <modkey>
+       eg: session.modKey: Mod4   allows to use the winkey to resize and move
+       windows and have Mod1 (Alt) free for using blender or Maya.
+    * Updated de_DE translation
+    * Added EUC-KR to ko_KR encodings
+    * startfluxbox aware of --program-prefix and --program-suffix
+    * More ewmh support: _NET_WM_WINDOW_TYPE_DIALOG and  
+      _NET_FRAME_EXTENTS are now supported.
 Bug fixes:
-    * #1475268(patch) Fix occasional highlighting of menu nops+separators
-    * #1474722(patch) Focus singular windows on a workspace
-    * #1499402 Fix building on machines without iconv
-    * #1113668 Fix workspace menu corruption when window title changes
-    * #1359442 Fix system tray resize looping/livelock
-    * #1467871 Fix type of last_release_time, affected double click functions
-      on 64-bit platforms
-    * #1454204 Fix compile error in Theme.cc
-    * Fixed resize box bug, it had wrong size in some cases.
-    * Fixed bug with horizontal maximization when quadrant resizing
-    * Fixed transparency on multiple screens & possibly bad root bg atom reading
-    * Fixed memory leaks & other errors in Menu code
-    * Fixed crash when toolbar disabled
-    * Fix build on amd64
-    * Fixed crash when deiconify stuck windows with Follow mode
-    * Fixed apps filename on save
-    * Fix to slit transparency 
-    * Fix resizing of client window when autogroup from apps
+    * #1507754, iconbar text was not updated to match titlebar
+    * #1362463, menu selection pixmaps disappear 
+    * #1507671, clock not updating on multiple screens
+    * #1512046, "window.label.unfocus.pixmap" doesn't update
+    * Fixed slit menu so it closes when you press escape
+    * Fixed crash when unable to convert between local and utf-8 encodings
+    * Make Urgency Hint flash the correct tab in a group
+    * Window placement when apps remembers size but not location 
+    * Menu placement issue with (vertical) xinerama
+    * nls fixes
 
 See ChangeLog for more details.
 
