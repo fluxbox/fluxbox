@@ -30,7 +30,6 @@ namespace FbTk {
 
 namespace StringUtil {
 
-char *strdup(const char *);
 
 /// Similar to `strstr' but this function ignores the case of both strings
 const char *strcasestr(const char *str, const char *ptn);

@@ -61,7 +61,7 @@ using namespace std;
 namespace {
 
 bool getuint(const char *val, unsigned int &ret) {
-    return (sscanf(val, "%ui", &ret) == 1);
+    return (sscanf(val, "%u", &ret) == 1);
 }
 
 class RememberMenuItem : public FbTk::MenuItem {
@@ -263,9 +263,8 @@ Remember::~Remember() {
     }
 
     std::set<Application *>::iterator ait = all_apps.begin(); // no duplicates
-    while (ait != all_apps.end()) {
+    for (; ait != all_apps.end(); ++ait) {
         delete (*ait);
-        ++ait;
     }
 
     s_instance = 0;
@@ -380,7 +379,7 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
                     app.rememberLayer(l);
             } else if (strcasecmp(str_key.c_str(), "Dimensions") == 0) {
                 unsigned int h,w;
-                if (sscanf(str_label.c_str(), "%i %i", &w, &h) == 2)
+                if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2)
                     app.rememberDimensions(w, h);
                 else
                     had_error = true;
@@ -404,7 +403,7 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
                         }
                     }
 
-                if (!had_error && sscanf(str_label.c_str(), "%i %i", &x, &y) == 2) 
+                if (!had_error && sscanf(str_label.c_str(), "%u %u", &x, &y) == 2) 
                     app.rememberPosition(x, y, r);
                 else
                     had_error = true;
@@ -501,12 +500,11 @@ Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlis
             }
 
             // forward
-            while (it != it_end && it->second == ret) {
-                tmpit = it;
-                ++it;
-                delete tmpit->first;
-                patlist->erase(tmpit);
+            for(; it != it_end && it->second == ret; ++it) {
+                delete it->first;
             }
+            patlist->erase(patlist->begin(), it);
+
             return ret;
         }
     }
@@ -643,9 +641,8 @@ void Remember::reconfigure() {
     }
 
     std::set<Application *>::iterator ait = old_apps.begin(); // no duplicates
-    while (ait != old_apps.end()) {
+    for (; ait != old_apps.end(); ++ait) {
         delete (*ait);
-        ++ait;
     }
 
     delete old_pats;
@@ -1062,7 +1059,7 @@ void Remember::updateClientClose(WinClient &winclient) {
 
     if (app && (app->save_on_close_remember && app->save_on_close)) {
 
-        for (int attrib = 0; attrib <= REM_LASTATTRIB; attrib++) {
+        for (int attrib = 0; attrib < REM_LASTATTRIB; attrib++) {
             if (isRemembered(winclient, (Attribute) attrib)) {
                 rememberAttrib(winclient, (Attribute) attrib);
             }
@@ -1091,9 +1088,8 @@ void Remember::initForScreen(BScreen &screen) {
 void Remember::updateFrameClose(FluxboxWindow &win) {
     // scan all applications and remove this fbw if it is a recorded group
     Patterns::iterator it = m_pats->begin();
-    while (it != m_pats->end()) {
+    for (; it != m_pats->end(); ++it) {
         if (&win == it->second->group)
             it->second->group = 0;
-        ++it;
     }
 }

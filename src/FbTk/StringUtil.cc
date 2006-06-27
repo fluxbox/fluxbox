@@ -58,18 +58,6 @@ namespace FbTk {
 namespace StringUtil {
 
 /**
-   Takes a pointer to string *s as an argument,
-   creates a new string n, copies s to n and
-   returns a pointer to n.
-*/
-char *strdup(const char *s) {
-    int l = strlen(s) + 1;
-    char *n = new char[l];
-    strncpy(n, s, l);
-    return n;
-}
-
-/**
    Tries to find a string in another and
    ignoring the case of the characters
    Returns 0 on success else pointer to str.
