@@ -1018,6 +1018,7 @@ void Slit::buttonPressEvent(XButtonEvent &e) {
 
             m_slitmenu.move(x, y);
             m_slitmenu.show();
+            m_slitmenu.grabInputFocus();
         } else
             m_slitmenu.hide();
     }
