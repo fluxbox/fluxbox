@@ -9,6 +9,16 @@ News in 1.0rc2:
     * startfluxbox aware of --program-prefix and --program-suffix
     * More ewmh support: _NET_WM_WINDOW_TYPE_DIALOG and  
       _NET_FRAME_EXTENTS are now supported.
+    * Native Language Support:
+      * Was broken in 1.0rc
+      * New menu items to specify encoding of enclosed labels:
+          [encoding] {UTF-8}
+            ... (menu) ...
+          [endencoding]
+        We recommend that all automatic menu generation programs use this
+        around their output to ensure portability between user locale
+        settings.
+      * Automatic conversion for unknown encodings (if supported by host)
 Bug fixes:
     * #1507754, iconbar text was not updated to match titlebar
     * #1362463, menu selection pixmaps disappear 
