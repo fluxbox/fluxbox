@@ -1068,6 +1068,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (client.fbwindow() != this)
         return false;
 
+    m_screen.focusControl().setScreenFocusedWindow(client);
     m_client = &client;
     m_client->raise();
     m_client->focusSig().notify();

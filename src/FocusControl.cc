@@ -87,9 +87,9 @@ void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
     FocusedWindows *window_list = (opts & CYCLELINEAR) ? &m_creation_order_list : &m_focused_list;
     if (!m_cycling_focus) {
         m_cycling_focus = true;
-        if ((opts & CYCLELINEAR) && m_cycling_window != m_focused_list.end()) {
+        if (opts & CYCLELINEAR) {
             m_cycling_creation_order = true;
-            m_cycling_window = find(window_list->begin(),window_list->end(),*m_cycling_window);
+            m_cycling_window = find(window_list->begin(),window_list->end(),s_focused_window);
         } else {
             m_cycling_creation_order = (opts & CYCLELINEAR);
             m_cycling_window = window_list->begin();

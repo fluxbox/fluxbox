@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/28:
+   * Fixed more focus issues with linear cycling and tabbed windows (Mark)
+     Window.cc FocusControl.cc Screen.cc
    * Fixed some focus issues on detach and restart (Mark)
      Window.cc FocusControl.cc/hh Screen.cc
 *06/06/27:
