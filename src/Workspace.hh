@@ -52,8 +52,6 @@ public:
               unsigned int workspaceid = 0);
     ~Workspace();
 
-    void setLastFocusedWindow(FluxboxWindow *w);
-
     /// Set workspace name
     void setName(const std::string &name);
     /// Deiconify all windows on this workspace
@@ -71,9 +69,6 @@ public:
 
     BScreen &screen() { return m_screen; }
     const BScreen &screen() const { return m_screen; }
-
-    FluxboxWindow *lastFocusedWindow() { return m_lastfocus; }
-    const FluxboxWindow *lastFocusedWindow() const { return m_lastfocus; }
 
     FbTk::Menu &menu() { return m_clientmenu; }
     const FbTk::Menu &menu() const { return m_clientmenu; }
@@ -97,7 +92,6 @@ private:
     void placeWindow(FluxboxWindow &win);
 
     BScreen &m_screen;
-    FluxboxWindow *m_lastfocus;
     FbMenu m_clientmenu;
 
     typedef std::vector<std::string> Group;

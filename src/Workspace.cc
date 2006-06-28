@@ -135,7 +135,6 @@ Workspace::GroupList Workspace::m_groups;
 Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, 
                      const std::string &name, unsigned int id):
     m_screen(scrn),
-    m_lastfocus(0),
     m_clientmenu(scrn.menuTheme(), scrn.imageControl(),
                  *scrn.layerManager().getLayer(Layer::MENU)),
     m_layermanager(layermanager),
@@ -149,14 +148,6 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager,
 
 
 Workspace::~Workspace() {
-}
-
-void Workspace::setLastFocusedWindow(FluxboxWindow *win) {
-    // make sure we have this window in the list
-    if (std::find(m_windowlist.begin(), m_windowlist.end(), win) != m_windowlist.end())
-        m_lastfocus = win;
-    else
-        m_lastfocus = 0;
 }
 
 void Workspace::addWindow(FluxboxWindow &w, bool place) {
@@ -197,10 +188,6 @@ int Workspace::removeWindow(FluxboxWindow *w, bool still_alive) {
     // detach from signals
     w->titleSig().detach(this);
 
-    if (m_lastfocus == w) {
-        m_lastfocus = 0;
-    }
-
     if (w->isFocused() && still_alive)
         FocusControl::unfocusWindow(w->winClient(), true, true);
 	
@@ -211,10 +198,6 @@ int Workspace::removeWindow(FluxboxWindow *w, bool still_alive) {
         m_windowlist.erase(erase_it);
 
     updateClientmenu();
-
-    if (m_lastfocus == w || m_windowlist.empty())
-        m_lastfocus = 0;
-
 
     if (!w->isStuck()) {
         FluxboxWindow::ClientList::iterator client_it = 
