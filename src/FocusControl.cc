@@ -38,6 +38,7 @@ using std::endl;
 using std::string;
 
 WinClient *FocusControl::s_focused_window = 0;
+FluxboxWindow *FocusControl::s_focused_fbwindow = 0;
 
 FocusControl::FocusControl(BScreen &screen):
     m_screen(screen),
@@ -473,37 +474,34 @@ void FocusControl::setFocusedWindow(WinClient *client) {
     cerr<<"Current Focused window = "<<s_focused_window<<endl;
     cerr<<"------------------"<<endl;
 #endif // DEBUG
-    
-    WinClient *old_client = 0;
 
     // Update the old focused client to non focus
     // check if s_focused_window is valid
     if (s_focused_window != 0 &&
         Fluxbox::instance()->validateClient(s_focused_window)) {
 
-        old_client = s_focused_window;
-        if (old_client->fbwindow()) {
-            FluxboxWindow *old_win = old_client->fbwindow();
-            
-            if (!client || client->fbwindow() != old_win)
-                old_win->setFocusFlag(false);
-        }
+        if (!client ||
+            s_focused_fbwindow && client->fbwindow() != s_focused_fbwindow)
+            s_focused_fbwindow->setFocusFlag(false);
 
     } else {
         s_focused_window = 0;
+        s_focused_fbwindow = 0;
     }
 
 
     if (client && client->fbwindow() && !client->fbwindow()->isIconic()) {
         // screen should be ok
-        FluxboxWindow *win = client->fbwindow();        
+        s_focused_fbwindow = client->fbwindow();        
         s_focused_window = client;     // update focused window
-        win->setCurrentClient(*client, 
+        s_focused_fbwindow->setCurrentClient(*client, 
                               false); // don't set inputfocus
-        win->setFocusFlag(true); // set focus flag
+        s_focused_fbwindow->setFocusFlag(true); // set focus flag
 
-    } else
+    } else {
         s_focused_window = 0;
+        s_focused_fbwindow = 0;
+    }
 
     // update AtomHandlers and/or other stuff...
     Fluxbox::instance()->updateFocusedWindow(screen, old_screen);

@@ -120,6 +120,7 @@ private:
     WinClient *m_cycling_last;
 
     static WinClient *s_focused_window;
+    static FluxboxWindow *s_focused_fbwindow;
 };
 
 #endif // FOCUSCONTROL_HH

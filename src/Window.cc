@@ -766,7 +766,6 @@ bool FluxboxWindow::detachClient(WinClient &client) {
     // otherwise this wouldn't be here (refer numClients() <= 1 return)
     client.setFluxboxWindow(screen().createWindow(client));
     m_client->raise();
-    setInputFocus();
     return true;
 }
 
@@ -776,8 +775,10 @@ void FluxboxWindow::detachCurrentClient() {
         return;
     WinClient &client = *m_client;
     detachClient(*m_client);
-    if (client.fbwindow() != 0)
+    if (client.fbwindow() != 0) {
         client.fbwindow()->show();
+        FocusControl::setFocusedWindow(&client);
+    }
 }
 
 /// removes client from client list, does not create new fluxboxwindow for it
@@ -3660,6 +3661,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
             if (client.fbwindow() != 0) {
                 client.fbwindow()->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
                 client.fbwindow()->show();
+                FocusControl::setFocusedWindow(&client);
             }
         } else if( attach_to_win == this && attach_to_win->isTabable()) {
             //reording of tabs within a frame

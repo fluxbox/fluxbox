@@ -1361,6 +1361,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     if ((win = findGroupLeft(*winclient)) != 0) {
         win->attachClient(*winclient);
         Fluxbox::instance()->attachSignals(*winclient);
+        focusControl().addFocusBack(*winclient);
     } else {
 
         Fluxbox::instance()->attachSignals(*winclient);
