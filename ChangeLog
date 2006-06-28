@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/28:
+   * Linear cycling wasn't affecting normal cycling order (Mark)
+     WorkspaceCmd.cc
    * Little cleanup of dead functions (Mark)
      Workspace.cc/hh
    * Fixed more focus issues with linear cycling and tabbed windows (Mark)
