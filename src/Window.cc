@@ -3662,6 +3662,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
                 client.fbwindow()->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
                 client.fbwindow()->show();
                 FocusControl::setFocusedWindow(&client);
+                client.fbwindow()->setInputFocus();
             }
         } else if( attach_to_win == this && attach_to_win->isTabable()) {
             //reording of tabs within a frame
