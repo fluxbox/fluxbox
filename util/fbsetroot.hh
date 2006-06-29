@@ -43,11 +43,11 @@ public:
     void setRootAtoms(Pixmap pixmap, int screen);
 
 private:
-    FbTk::ImageControl **img_ctrl;
-    Pixmap *pixmaps;
+    FbTk::ImageControl *img_ctrl;
+    Pixmap *pixmap;
+    int screen;
 
     char *fore, *back, *grad;
-    int num_screens;
     char *m_app_name;
 };
 

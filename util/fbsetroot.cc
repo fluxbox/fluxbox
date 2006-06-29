@@ -55,18 +55,16 @@ using namespace std;
 fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
     : FbTk::App(dpy_name), m_app_name(argv[0]) {
 
-    pixmaps = (Pixmap *) 0;
+    pixmap = (Pixmap *) 0;
+    screen = DefaultScreen(FbTk::App::instance()->display());
     grad = fore = back = (char *) 0;
 
     bool mod = false, sol = false, grd = false;
-    int mod_x = 0, mod_y = 0, i = 0;
+    int mod_x = 0, mod_y = 0, i = 1;
 
-    img_ctrl = new FbTk::ImageControl*[ScreenCount(display())];
-    for (; i < ScreenCount(display()); i++) {
-        img_ctrl[i] = new FbTk::ImageControl(i, true);
-    }
+    img_ctrl = new FbTk::ImageControl(screen);
 
-    for (i = 1; i < argc; i++) {
+    for (; i < argc; i++) {
         if (! strcmp("-help", argv[i])) {
             usage();
 
@@ -127,8 +125,6 @@ fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
         exit(2);
     }
 
-    num_screens = ScreenCount(display());
- 
     if (sol && fore)
         solid();
     else if (mod && mod_x && mod_y && fore && back)
@@ -144,18 +140,13 @@ fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
 fbsetroot::~fbsetroot() {
     XKillClient(display(), AllTemporary);
 
-    if (pixmaps) { // should always be true
+    if (pixmap) { // should always be true
         XSetCloseDownMode(display(), RetainTemporary);
 
-        delete [] pixmaps;
+        delete pixmap;
     }
 
-    if (img_ctrl != 0) {
-        for (int i=0; i < num_screens; i++)
-            delete img_ctrl[i];
-
-        delete [] img_ctrl;
-    } 
+    delete img_ctrl;
 }
 
 /**
@@ -209,34 +200,27 @@ void fbsetroot::setRootAtoms(Pixmap pixmap, int screen) {
    Draws pixmaps with a single color 
 */
 void fbsetroot::solid() {
-    register int screen = 0;
+    FbTk::Color c(fore, screen);
+    if (! c.isAllocated())
+        c.setPixel(BlackPixel(display(), screen));
 
-    pixmaps = new Pixmap[ScreenCount(display())];
+    FbRootWindow root(screen);
 
-    for (; screen < ScreenCount(display()); screen++) {
+    FbTk::GContext gc(root);
+    gc.setForeground(c);
 
-        FbTk::Color c(fore, screen);
-        if (! c.isAllocated())
-            c.setPixel(BlackPixel(display(), screen));
+    pixmap = new Pixmap(XCreatePixmap(display(), 
+                                      root.window(),
+                                      root.width(), root.height(),
+                                      root.depth()));
 
-        FbRootWindow root(screen);
+    XFillRectangle(display(), *pixmap, gc.gc(), 0, 0,
+                   root.width(), root.height());
 
-        FbTk::GContext gc(root);
-        gc.setForeground(c);
+    setRootAtoms(*pixmap, screen);
 
-        pixmaps[screen] = XCreatePixmap(display(), 
-                                        root.window(),
-                                        root.width(), root.height(),
-                                        root.depth());
-
-        XFillRectangle(display(), pixmaps[screen], gc.gc(), 0, 0,
-                       root.width(), root.height());
-
-        setRootAtoms(pixmaps[screen], screen);
-
-        root.setBackgroundPixmap(pixmaps[screen]);
-        root.clear();
-    }
+    root.setBackgroundPixmap(*pixmap);
+    root.clear();
 }
 
 /**
@@ -245,77 +229,73 @@ void fbsetroot::solid() {
 */
 void fbsetroot::modula(int x, int y) {
     char data[32];
-    long pattern;
+    long pattern = 0;
 
-    register int screen, i;
+    register int i;
 
-    pixmaps = new Pixmap[ScreenCount(display())];
+    FbRootWindow root(screen);
 
-    for (pattern = 0, screen = 0; screen < ScreenCount(display()); screen++) {
-        FbRootWindow root(screen);
-
-        for (i = 0; i < 16; i++) {
-            pattern <<= 1;
-            if ((i % x) == 0)
-                pattern |= 0x0001;
-        }
-
-        for (i = 0; i < 16; i++) {
-            if ((i %  y) == 0) {
-                data[(i * 2)] = (char) 0xff;
-                data[(i * 2) + 1] = (char) 0xff;
-            } else {
-                data[(i * 2)] = pattern & 0xff;
-                data[(i * 2) + 1] = (pattern >> 8) & 0xff;
-            }
-        }
-
-
-        Pixmap bitmap, r_bitmap;
-
-
-        bitmap = XCreateBitmapFromData(display(),
-                                       root.window(), data, 16, 16);
-
-        // bitmap used as tile, needs to have the same depth as background pixmap
-        r_bitmap = XCreatePixmap(display(),
-                                 root.window(), 16, 16,
-                                 root.depth());
-
-        FbTk::Color f(fore, screen), b(back, screen);
-
-        if (! f.isAllocated())
-            f.setPixel(WhitePixel(display(), screen));
-        if (! b.isAllocated())
-            b.setPixel(BlackPixel(display(), screen));
-
-        FbTk::GContext gc(root);
-
-        gc.setForeground(f);
-        gc.setBackground(b);
-
-        // copying bitmap to the one going to be used as tile
-        XCopyPlane(display(), bitmap, r_bitmap, gc.gc(),
-                   0, 0, 16, 16, 0, 0, 1l);
-
-        gc.setTile(r_bitmap);
-        gc.setFillStyle(FillTiled);
-
-        pixmaps[screen] = XCreatePixmap(display(), 
-                                        root.window(),
-                                        root.width(), root.height(),
-                                        root.depth());
-
-        XFillRectangle(display(), pixmaps[screen], gc.gc(), 0, 0,
-                       root.width(), root.height());
-
-        setRootAtoms(pixmaps[screen], screen);
-        root.setBackgroundPixmap(pixmaps[screen]);
-        root.clear();
-
-        XFreePixmap(display(), bitmap);
-        XFreePixmap(display(), r_bitmap);
+    for (i = 0; i < 16; i++) {
+        pattern <<= 1;
+        if ((i % x) == 0)
+            pattern |= 0x0001;
     }
+
+    for (i = 0; i < 16; i++) {
+        if ((i %  y) == 0) {
+            data[(i * 2)] = (char) 0xff;
+            data[(i * 2) + 1] = (char) 0xff;
+        } else {
+            data[(i * 2)] = pattern & 0xff;
+            data[(i * 2) + 1] = (pattern >> 8) & 0xff;
+        }
+    }
+
+
+    Pixmap bitmap, r_bitmap;
+
+
+    bitmap = XCreateBitmapFromData(display(),
+                                   root.window(), data, 16, 16);
+
+    // bitmap used as tile, needs to have the same depth as background pixmap
+    r_bitmap = XCreatePixmap(display(),
+                             root.window(), 16, 16,
+                             root.depth());
+
+    FbTk::Color f(fore, screen), b(back, screen);
+
+    if (! f.isAllocated())
+        f.setPixel(WhitePixel(display(), screen));
+    if (! b.isAllocated())
+        b.setPixel(BlackPixel(display(), screen));
+
+    FbTk::GContext gc(root);
+
+    gc.setForeground(f);
+    gc.setBackground(b);
+
+    // copying bitmap to the one going to be used as tile
+    XCopyPlane(display(), bitmap, r_bitmap, gc.gc(),
+               0, 0, 16, 16, 0, 0, 1l);
+
+    gc.setTile(r_bitmap);
+    gc.setFillStyle(FillTiled);
+
+    pixmap = new Pixmap(XCreatePixmap(display(), 
+                                      root.window(),
+                                      root.width(), root.height(),
+                                      root.depth()));
+
+    XFillRectangle(display(), *pixmap, gc.gc(), 0, 0,
+                   root.width(), root.height());
+
+    setRootAtoms(*pixmap, screen);
+    root.setBackgroundPixmap(*pixmap);
+    root.clear();
+
+    XFreePixmap(display(), bitmap);
+    XFreePixmap(display(), r_bitmap);
 }
 
 /**
@@ -326,52 +306,48 @@ void fbsetroot::gradient() {
     // get crashed somewhere on the way causing apps like XChat chrashing
     // as the pixmap has been destroyed
     Pixmap tmp;
-    pixmaps = new Pixmap[ScreenCount(display())];
     // we must insert gradient text
     string texture_value = grad ? grad : "solid";
     texture_value.insert(0, "gradient ");
     FbTk::Texture texture;
     texture.setFromString(texture_value.c_str());
-    
-    for (int screen = 0; screen < ScreenCount(display()); screen++) {
-        FbRootWindow root(screen);
+
+    FbRootWindow root(screen);
 
 
-        FbTk::GContext gc(root);
-        texture.color().setFromString(fore, screen);
-        texture.colorTo().setFromString(back, screen);
+    FbTk::GContext gc(root);
+    texture.color().setFromString(fore, screen);
+    texture.colorTo().setFromString(back, screen);
 
 
-        if (! texture.color().isAllocated())
-            texture.color().setPixel(WhitePixel(display(), screen));
+    if (! texture.color().isAllocated())
+        texture.color().setPixel(WhitePixel(display(), screen));
 
-        if (! texture.colorTo().isAllocated())
-            texture.colorTo().setPixel(BlackPixel(display(), screen));
+    if (! texture.colorTo().isAllocated())
+        texture.colorTo().setPixel(BlackPixel(display(), screen));
 
-        tmp = img_ctrl[screen]->renderImage(root.width(), root.height(), 
-                                            texture);
+    tmp = img_ctrl->renderImage(root.width(), root.height(), texture);
 
-        pixmaps[screen] = XCreatePixmap(display(), 
-                                        root.window(),
-                                        root.width(), root.height(),
-                                        root.depth());
+    pixmap = new Pixmap(XCreatePixmap(display(), 
+                                      root.window(),
+                                      root.width(), root.height(),
+                                      root.depth()));
 
-        
-        XCopyArea(display(), tmp, pixmaps[screen], gc.gc(), 0, 0,
-                  root.width(), root.height(),
-                  0, 0);
 
-        setRootAtoms(pixmaps[screen], screen);
+    XCopyArea(display(), tmp, *pixmap, gc.gc(), 0, 0,
+              root.width(), root.height(),
+              0, 0);
 
-        root.setBackgroundPixmap(pixmaps[screen]);
-        root.clear();
+    setRootAtoms(*pixmap, screen);
 
-        if (! (root.visual()->c_class & 1)) {
-            img_ctrl[screen]->removeImage(tmp);
-            img_ctrl[screen]->cleanCache();
-        }
+    root.setBackgroundPixmap(*pixmap);
+    root.clear();
 
+    if (! (root.visual()->c_class & 1)) {
+        img_ctrl->removeImage(tmp);
+        img_ctrl->cleanCache();
     }
+
 }
 
 /**

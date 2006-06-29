@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
 *06/06/29:
+   * Make fbsetroot set one screen at a time (Mark)
+     util/fbsetroot.cc/hh
    * Fix fbsetroot segfault when DISPLAY is unset (Mark)
      util/fbsetroot.cc
 *06/06/28:
