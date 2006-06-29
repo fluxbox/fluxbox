@@ -101,7 +101,9 @@ public:
     // like revertFocus, but specifically related to this window (transients etc)
     static void unfocusWindow(WinClient &client, bool full_revert = true, bool unfocus_frame = false);
     static void setFocusedWindow(WinClient *focus_to);
+    static void setFocusedFbWindow(FluxboxWindow *focus_to) { s_focused_fbwindow = focus_to; }
     static WinClient *focusedWindow() { return s_focused_window; }
+    static FluxboxWindow *focusedFbWindow() { return s_focused_fbwindow; }
 private:
 
     BScreen &m_screen;

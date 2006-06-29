@@ -1227,8 +1227,8 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             // make sure each workspace get this
             BScreen &scr = win.screen();
             scr.removeWindow(&win);
-            if (FocusControl::focusedWindow() == &win.winClient())
-                FocusControl::setFocusedWindow(0);
+            if (FocusControl::focusedFbWindow() == &win)
+                FocusControl::setFocusedFbWindow(0);
 
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
             for (AtomHandlerContainerIt it= m_atomhandler.begin();

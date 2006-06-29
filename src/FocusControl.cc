@@ -480,8 +480,7 @@ void FocusControl::setFocusedWindow(WinClient *client) {
     if (s_focused_window != 0 &&
         Fluxbox::instance()->validateClient(s_focused_window)) {
 
-        if (!client ||
-            s_focused_fbwindow && client->fbwindow() != s_focused_fbwindow)
+        if (!client && s_focused_fbwindow)
             s_focused_fbwindow->setFocusFlag(false);
 
     } else {
