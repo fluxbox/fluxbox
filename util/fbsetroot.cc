@@ -399,6 +399,7 @@ int main(int argc, char **argv) {
     try {
         fbsetroot app(argc, argv, display_name);
     } catch (std::string error_str) {
+        _FB_USES_NLS;
         cerr<<_FB_CONSOLETEXT(Common, Error, "Error", "Error message header")<<": "<<error_str<<endl;
     }
 
