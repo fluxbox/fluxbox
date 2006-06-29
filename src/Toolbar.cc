@@ -780,7 +780,6 @@ void Toolbar::updateVisibleState() {
 
 void Toolbar::toggleHidden() {
 
-
     // toggle hidden
     m_hidden = ! m_hidden;
     if (isHidden())
@@ -789,9 +788,8 @@ void Toolbar::toggleHidden() {
         frame.window.move(frame.x, frame.y);
         ItemList::iterator item_it = m_item_list.begin();
         ItemList::iterator item_it_end = m_item_list.end();
-        for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
+        for ( ; item_it != item_it_end; ++item_it)
             (*item_it)->parentMoved();
-        }
     }
 
 }
