@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/06/29:
+   * Fix fbsetroot segfault when DISPLAY is unset (Mark)
+     util/fbsetroot.cc
 *06/06/28:
    * Linear cycling wasn't affecting normal cycling order (Mark)
      WorkspaceCmd.cc

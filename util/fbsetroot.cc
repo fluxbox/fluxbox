@@ -419,8 +419,12 @@ int main(int argc, char **argv) {
             display_name = argv[i];
         }
     }
- 
-    fbsetroot app(argc, argv, display_name);
- 
+
+    try {
+        fbsetroot app(argc, argv, display_name);
+    } catch (std::string error_str) {
+        cerr<<_FB_CONSOLETEXT(Common, Error, "Error", "Error message header")<<": "<<error_str<<endl;
+    }
+
     return (0);
 }
