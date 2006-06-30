@@ -1621,26 +1621,6 @@ void Fluxbox::load_rc(BScreen &screen) {
     }
 }
 
-void Fluxbox::loadRootCommand(BScreen &screen)	{
-
-    string dbfile(getRcFilename());
-
-    XrmDatabaseHelper database(dbfile.c_str());
-    if (!*database)
-        database = XrmGetFileDatabase(DEFAULT_INITFILE);
-
-    XrmValue value;
-    char *value_type, name_lookup[1024], class_lookup[1024];
-    sprintf(name_lookup, "session.screen%d.rootCommand", screen.screenNumber());
-    sprintf(class_lookup, "Session.Screen%d.RootCommand", screen.screenNumber());
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        screen.saveRootCommand(value.addr==0 ? "": value.addr);
-    } else
-        screen.saveRootCommand("");
-
-}
-
 void Fluxbox::reload_rc() {
     load_rc();
     reconfigure();

@@ -151,8 +151,6 @@ public:
 
     void shutdown();
     void load_rc(BScreen &scr);
-    void loadRootCommand(BScreen &scr);
-    void loadTitlebar();
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
     void saveStyleOverlayFilename(const char *val) { m_rc_styleoverlayfile = (val == 0 ? "" : val); }
     void saveMenuFilename(const char *);
