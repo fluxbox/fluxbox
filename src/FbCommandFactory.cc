@@ -186,7 +186,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SaveResources();
     else if (command == "execcommand" || command == "execute" || command == "exec")
         return new ExecuteCmd(arguments); // execute command on key screen
-    else if (command == "exit")
+    else if (command == "exit" || command == "quit")
         return new ExitFluxboxCmd();
     else if (command == "setenv" || command == "export") {
 
@@ -208,8 +208,6 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
 
         return new SetModKeyCmd(modkey);
     }
-    else if (command == "quit")
-        return new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), &Fluxbox::shutdown);
     else if (command == "commanddialog") // run specified fluxbox command
         return new CommandDialogCmd();
     else if (command == "bindkey")

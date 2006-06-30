@@ -95,8 +95,6 @@ public:
     void handleEvent(XEvent &event);
     //@}
 	
-    /// enter edit mode on workspace label
-    void edit();
     void reconfigure();
     void setPlacement(Placement where);
 
