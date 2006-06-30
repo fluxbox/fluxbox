@@ -1717,11 +1717,6 @@ bool Fluxbox::menuTimestampsChanged() const {
     return false;
 }
 
-void Fluxbox::checkMenu() {
-    if (menuTimestampsChanged())
-        rereadMenu();
-}
-
 void Fluxbox::hideExtraMenus(BScreen &screen) {
 
 #ifdef USE_TOOLBAR

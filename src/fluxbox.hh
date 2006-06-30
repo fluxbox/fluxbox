@@ -172,7 +172,6 @@ public:
     void reconfigure();
     void rereadMenu(bool show_after_reread = false);
     /// reloads the menus if the timestamps changed
-    void checkMenu();
 
     void hideExtraMenus(BScreen &screen);
 
