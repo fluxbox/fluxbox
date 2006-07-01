@@ -38,8 +38,10 @@ public:
     Pointer *operator * () const { return get(); } 
     Pointer *operator -> () const { return get(); }
     Pointer *get() const { return m_data; }
+#ifdef NOT_USED
     /// @return number of referenses
     unsigned int usedBy() const { return (m_refcount != 0 ? *m_refcount : 0); }
+#endif
 private:
     /// increase referense count
     void incRefCount();

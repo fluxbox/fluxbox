@@ -128,7 +128,9 @@ public:
     int colorsPerChannel() const { return *m_rc_colors_per_channel; }
     int getNumberOfLayers() const { return *m_rc_numlayers; }
     int getTabsPadding() const { return *m_rc_tabs_padding; }
+#ifdef NOT_USED
     int getFocusedTabMinWidth() const { return *m_rc_focused_tab_min_width; }
+#endif
 
     // class to store layer numbers (special Resource type)
     // we have a special resource type because we need to be able to name certain layers

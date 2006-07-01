@@ -308,8 +308,6 @@ public:
     */
     //@{
     
-    // @return NormalState | IconicState | WithdrawnState
-    unsigned int getWmState() const { return m_current_state; }
     // whether this window can be tabbed with other windows,
     // and others tabbed with it
     inline void setTabable(bool tabable) { functions.tabable = tabable; }

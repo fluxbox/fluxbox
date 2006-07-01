@@ -71,10 +71,14 @@ public:
     inline FbTk::Font &font() const { return *m_font; }
     inline FbTk::Orientation orientation() const { return m_orientation; }
     unsigned int textWidth() const;
+#ifdef NOT_USED
     unsigned int textHeight() const;
+#endif
     int bevel() const { return m_bevel; }
+#ifdef NOT_USED
     unsigned int leftPadding() const { return m_left_padding; }
     unsigned int rightPadding() const { return m_right_padding; }
+#endif
 
     void renderForeground(FbWindow &win, FbDrawable &drawable);
 

@@ -131,7 +131,6 @@ public:
     virtual void clearWindow();
 #ifdef NOT_USED
     void setActiveIndex(int index) { m_active_index = index; }
-#endif
     /*@}*/
 	
     /**
@@ -139,6 +138,7 @@ public:
     */
     //@{
     inline int activeIndex() const { return m_active_index; }
+#endif
     inline bool isTorn() const { return m_torn; }
     inline bool isVisible() const { return m_visible; }
     inline int screenNumber() const { return menu.window.screenNumber(); }

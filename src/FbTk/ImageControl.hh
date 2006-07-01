@@ -48,7 +48,9 @@ public:
     virtual ~ImageControl();
 
     inline bool doDither() const { return m_dither; }
+#ifdef NOT_USED
     inline int bitsPerPixel() const { return bits_per_pixel; }
+#endif
     inline int depth() const { return m_screen_depth; }
     inline int colorsPerChannel() const	{ return m_colors_per_channel; }
     inline int screenNumber() const { return m_screen_num; }

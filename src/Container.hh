@@ -96,8 +96,6 @@ public:
     inline const Item& selected() const { return m_selected; }
     inline Item selected() { return m_selected; }
     unsigned int maxWidthPerClient() const;
-    unsigned int maxTotalSize() const { return m_max_total_size; }
-    inline unsigned int maxHeightPerClient() const { return (empty() ? height() : height()/size()); }    
     inline bool updateLock() const { return m_update_lock; }
 
     void for_each(std::mem_fun_t<void, FbTk::FbWindow> function);

@@ -139,10 +139,12 @@ unsigned int TextButton::textWidth() const {
     return font().textWidth(text().data(), text().size());
 }
 
+#ifdef NOT_USED
 unsigned int TextButton::textHeight() const {
     return font().height();
 
 }
+#endif
 
 void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
     // (win should always be *this, no need to check)

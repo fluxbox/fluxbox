@@ -120,7 +120,6 @@ public:
     inline const BScreen &screen() const { return m_screen; }
     inline unsigned int width() const { return frame.window.width(); }
     inline unsigned int height() const { return frame.window.height(); }
-    inline unsigned int exposedHeight() const { return doAutoHide() ? frame.bevel_w : frame.height; }
     inline int x() const { return isHidden() ? frame.x_hidden : frame.x; }
     inline int y() const { return isHidden() ? frame.y_hidden : frame.y; }
     inline Placement placement() const { return *m_rc_placement; }
