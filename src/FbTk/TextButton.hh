@@ -44,7 +44,9 @@ public:
     bool setOrientation(FbTk::Orientation orient);
     void setText(const std::string &text);
     void setFont(FbTk::Font &font);
+#ifdef NOT_USED
     void setBevel(int bevel);
+#endif
     void setTextPadding(unsigned int padding);
     void setTextPaddingLeft(unsigned int leftpadding);
     void setTextPaddingRight(unsigned int rightpadding);

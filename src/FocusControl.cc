@@ -223,24 +223,6 @@ WinClient *FocusControl::lastFocusedWindow(FluxboxWindow &group, WinClient *igno
     return 0;
 }
 
-void FocusControl::raiseFocus() {
-    bool have_focused = false;
-
-    // set have_focused if the currently focused window 
-    // is on this screen
-    if (focusedWindow()) {
-        if (focusedWindow()->screen().screenNumber() == m_screen.screenNumber()) {
-            have_focused = true;
-        }
-    }
-
-    // if we have a focused window on this screen and
-    // number of windows is greater than one raise the focused window
-    if (m_screen.currentWorkspace()->numberOfWindows() > 1 && have_focused)
-        focusedWindow()->raise();
-
-}
-
 void FocusControl::setScreenFocusedWindow(WinClient &win_client) {
 
      // raise newly focused window to the top of the focused list

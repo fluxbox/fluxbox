@@ -214,7 +214,6 @@ public:
     // These menus will be marked internal,
     // and deleted when the window dies (as opposed to Screen
     void addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu);
-    void removeExtraWindowMenu(FbTk::Menu *menu);
 
     /// hide all windowmenus except the given one (if given)
     void hideWindowMenus(const FluxboxWindow* except= 0);
@@ -222,7 +221,6 @@ public:
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
 
     void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
-    void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
 
     void saveTabPlacement(FbWinFrame::TabPlacement place) { *resource.tab_placement = place; }
 
@@ -347,7 +345,6 @@ public:
     /// create window frame for client window and attach it
     FluxboxWindow *createWindow(Window clientwin);
     FluxboxWindow *createWindow(WinClient &client);
-    void setupWindowActions(FluxboxWindow &win);
     /// request workspace space, i.e "don't maximize over this area"
     Strut *requestStrut(int head, int left, int right, int top, int bottom);
     /// remove requested space and destroy strut

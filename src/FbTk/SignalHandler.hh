@@ -54,11 +54,13 @@ public:
         @param oldhandler_ret return handler to old sighandler
     */
     bool registerHandler(int signum, SignalEventHandler *eh, SignalEventHandler **oldhandler_ret = 0);
+#ifdef NOT_USED
     /**
        removes the signum handler
        @param signum signal number
     */
     void removeHandler(int signum);
+#endif
 private:
     SignalHandler();
 

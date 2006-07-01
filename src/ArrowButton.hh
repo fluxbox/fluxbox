@@ -44,8 +44,6 @@ public:
     void enterNotifyEvent(XCrossingEvent &ce);
     void leaveNotifyEvent(XCrossingEvent &ce);
 
-    void setMouseMotionHandler(FbTk::EventHandler *eh) { m_mouse_handler = eh; }
-
     void updateTheme(const FbTk::Theme &theme);
 private:
     void drawArrow();

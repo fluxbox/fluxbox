@@ -84,8 +84,6 @@ public:
     void hide();
     void setAlignment(Container::Alignment a);
     void setMode(Mode mode);
-    void setDeiconifyMode(DeiconifyMode mode);
-    void setWheelMode(WheelMode mode);
     void parentMoved() { m_icon_container.parentMoved(); }
 
     unsigned int width() const;

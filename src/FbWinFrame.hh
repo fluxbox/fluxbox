@@ -279,8 +279,6 @@ private:
     void applyActiveLabel(FbTk::TextButton &button);
     void applyButtons(); // only called within applyTitlebar
 
-    void getActiveLabelPixmap(Pixmap &label_pm, Pixmap &title_pm,
-                              FbTk::Color &label_color, FbTk::Color &title_color);
     void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                FbTk::Color &label_color, FbTk::Color &title_color);
 

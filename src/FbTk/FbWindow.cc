@@ -449,9 +449,11 @@ void FbWindow::setCursor(Cursor cur) {
     XDefineCursor(display(), window(), cur);
 }
 
+#ifdef NOT_USED
 void FbWindow::unsetCursor() {
     XUndefineCursor(display(), window());
 }
+#endif
 
 void FbWindow::reparent(const FbWindow &parent, int x, int y, bool continuing) {
     XReparentWindow(display(), window(), parent.window(), x, y);

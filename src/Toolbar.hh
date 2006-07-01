@@ -136,7 +136,6 @@ private:
     void rearrangeItems();
     void deleteItems();
 
-    void updateIconbarGraphics();
     void setupMenus();
     void clearStrut();
     void updateStrut();

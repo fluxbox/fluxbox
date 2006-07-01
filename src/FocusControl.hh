@@ -72,7 +72,6 @@ public:
     void prevFocus(int options) { cycleFocus(options, true); }
     void nextFocus(int options) { cycleFocus(options, false); }
     void cycleFocus(int options, bool cycle_reverse);
-    void raiseFocus();
 
     void setScreenFocusedWindow(WinClient &win_client);
     void setFocusModel(FocusModel model);

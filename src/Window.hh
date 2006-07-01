@@ -452,8 +452,6 @@ private:
     void saveBlackboxAttribs();
     void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1);
 
-    void restoreGravity();
-    void setGravityOffsets();
     void setState(unsigned long stateval, bool setting_up);
 
     // modifies left and top if snap is necessary

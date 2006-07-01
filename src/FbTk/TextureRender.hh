@@ -84,7 +84,6 @@ private:
     void cdgradient();
     void pcgradient();
     //@}
-    void makeGradientBuffers();
 
     ImageControl &control;
     bool interlaced;

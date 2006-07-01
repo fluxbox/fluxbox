@@ -153,7 +153,9 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
         evhand->keyPressEvent(ev.xkey);
     break;
     case KeyRelease:
+#ifdef NOT_USED
         evhand->keyReleaseEvent(ev.xkey);
+#endif
     break;
     case ButtonPress:
         evhand->buttonPressEvent(ev.xbutton);

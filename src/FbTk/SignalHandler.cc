@@ -62,10 +62,12 @@ bool SignalHandler::registerHandler(int signum, SignalEventHandler *eh,
     return true;
 }
 
+#ifdef NOT_USED
 void SignalHandler::removeHandler(int signum) {
     if (signum < NSIG)
         s_signal_handler[signum] = 0; // clear handler pointer
 }
+#endif
 
 void SignalHandler::handleSignal(int signum) {
     if (signum >= NSIG)

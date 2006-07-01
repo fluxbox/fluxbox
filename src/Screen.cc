@@ -744,18 +744,6 @@ void BScreen::addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu) 
     m_windowmenu->setInternalMenu();
 }
 
-void BScreen::removeExtraWindowMenu(FbTk::Menu *menu) {
-    ExtraMenus::iterator it = find_if(m_extramenus.begin(),
-                                      m_extramenus.end(),
-                                      FbTk::Compose(bind2nd(equal_to<FbTk::Menu *>(), menu),
-                                                    FbTk::Select2nd<ExtraMenus::value_type>()));
-    if (it != m_extramenus.end())
-        m_extramenus.erase(it);
-    // recreate window menu
-    m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
-    m_windowmenu->setInternalMenu();
-}
-
 void BScreen::hideMenus() {
     // hide extra menus
     Fluxbox::instance()->hideExtraMenus(*this);

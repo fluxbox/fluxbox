@@ -140,8 +140,10 @@ public:
     void setInputFocus(int revert_to, int time);
     /// defines a cursor for this window
     void setCursor(Cursor cur);
+#ifdef NOT_USED
     /// uses the parents cursor instead
     void unsetCursor();
+#endif
     void reparent(const FbWindow &parent, int x, int y, bool continuing = true);
 
     bool property(Atom property,

@@ -98,12 +98,14 @@ void TextButton::setFont(FbTk::Font &font) {
     font.validOrientation(m_orientation); // load the orientation!
 }
 
+#ifdef NOT_USED
 /// set bevel and redraw text
 void TextButton::setBevel(int bevel) {
     if (m_bevel == bevel)
         return;
     m_bevel = bevel;
 }
+#endif
 
 void TextButton::setTextPaddingLeft(unsigned int leftpadding) {
     m_left_padding = leftpadding;

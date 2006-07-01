@@ -511,20 +511,6 @@ void IconbarTool::setMode(Mode mode) {
     renderTheme();
 }
 
-void IconbarTool::setDeiconifyMode(DeiconifyMode mode) {
-    if (mode == *m_deiconify_mode)
-        return;
-
-    *m_deiconify_mode = mode;
-}
-
-void IconbarTool::setWheelMode(WheelMode mode) {
-    if (mode == *m_wheel_mode)
-        return;
-    *m_wheel_mode = mode;
-}
-
-
 unsigned int IconbarTool::width() const {
     return m_icon_container.width();
 }

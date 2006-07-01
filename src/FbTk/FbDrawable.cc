@@ -89,11 +89,13 @@ void FbDrawable::fillPolygon(GC gc, XPoint *points, int npoints,
                  shape, mode);
 }
 
+#ifdef NOT_USED
 void FbDrawable::drawPoint(GC gc, int x, int y) {
     if (drawable() == 0 || gc == 0)
         return;    
     XDrawPoint(s_display, drawable(), gc, x, y);
 }
+#endif
 
 XImage *FbDrawable::image(int x, int y, unsigned int width, unsigned int height) const {
     return XGetImage(s_display, drawable(), 

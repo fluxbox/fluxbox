@@ -61,12 +61,11 @@ void Container::moveResize(int x, int y,
     repositionItems();
 }
 
-/*
+#ifdef NOT_USED
 void Container::move(int x, int y) {
     FbTk::FbWindow::move(x, y);
     // no need to reposition
 }
-*/
 
 void Container::insertItems(ItemList &item_list, int pos) {
 
@@ -96,6 +95,7 @@ void Container::insertItems(ItemList &item_list, int pos) {
     // update position
     repositionItems();
 }
+#endif
 
 void Container::insertItem(Item item, int pos) {
     if (find(item) != -1)

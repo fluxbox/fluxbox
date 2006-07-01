@@ -73,7 +73,6 @@ public:
     void hide() { frame.window.hide(); }
     void setDirection(Direction dir);
     void setPlacement(Placement place);
-    void setAutoHide(bool val);
     void addClient(Window clientwin);
     void removeClient(Window clientwin, bool remap = true);
     void reconfigure();

@@ -152,11 +152,8 @@ public:
     void shutdown();
     void load_rc(BScreen &scr);
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
-    void saveStyleOverlayFilename(const char *val) { m_rc_styleoverlayfile = (val == 0 ? "" : val); }
     void saveMenuFilename(const char *);
     void clearMenuFilenames();
-    void saveTitlebarFilename(const char *);
-    void saveSlitlistFilename(const char *val) { m_rc_slitlistfile = (val == 0 ? "" : val); }
     void saveWindowSearch(Window win, WinClient *winclient);
     // some windows relate to the group, not the client, so we record separately
     // searchWindow on these windows will give the active client in the group

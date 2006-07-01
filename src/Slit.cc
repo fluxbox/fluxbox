@@ -1205,17 +1205,6 @@ void Slit::saveClientList() {
     }
 }
 
-void Slit::setAutoHide(bool val) {
-    *m_rc_auto_hide = val;
-    if (doAutoHide()) {
-        if (! m_timer.isTiming()) {
-            if (m_slitmenu.isVisible())
-                m_timer.fireOnce(false);
-            m_timer.start();
-        }
-    }
-}
-
 void Slit::setupMenu() {
     _FB_USES_NLS;
     using namespace FbTk;

@@ -79,8 +79,10 @@ public:
     void removeAll();
     inline void setInternalMenu(bool val = true) { m_internal_menu = val; }
     inline void setAlignment(Alignment a) { m_alignment = a; }
+#ifdef NOT_USED
     inline void setTorn() { m_torn = true; }
     inline void removeParent() { if (m_internal_menu) m_parent = 0; }
+#endif
     /// raise this window
     virtual void raise();
     /// lower this window
@@ -127,7 +129,9 @@ public:
     /// hide menu
     virtual void hide();
     virtual void clearWindow();
+#ifdef NOT_USED
     void setActiveIndex(int index) { m_active_index = index; }
+#endif
     /*@}*/
 	
     /**

@@ -48,7 +48,9 @@ public:
     virtual void fillPolygon(GC gc, XPoint *points, int npoints,
                              int shape, int mode);
 
+#ifdef NOT_USED
     virtual void drawPoint(GC gc, int x, int y);
+#endif
 
     virtual XImage *image(int x, int y, unsigned int width, unsigned int height) const;
 

@@ -70,11 +70,15 @@ public:
     void removeImage(Pixmap thepix);
     void colorTables(const unsigned char **, const unsigned char **, const unsigned char **,
                      int *, int *, int *, int *, int *, int *) const;
+#ifdef NOT_USED
     void getXColorTable(XColor **, int *);
+#endif
     void getGradientBuffers(unsigned int, unsigned int,
                             unsigned int **, unsigned int **);
     void setDither(bool d) { m_dither = d; }
+#ifdef NOT_USED
     void setColorsPerChannel(int cpc);
+#endif
 
     void cleanCache();
 private:

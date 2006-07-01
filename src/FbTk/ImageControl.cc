@@ -311,12 +311,12 @@ void ImageControl::colorTables(const unsigned char **rmt, const unsigned char **
     if (bbit) *bbit = blue_bits;
 }
 
-
+#ifdef NOT_USED
 void ImageControl::getXColorTable(XColor **c, int *n) {
     if (c) *c = m_colors;
     if (n) *n = m_num_colors;
 }
-
+#endif
 
 void ImageControl::getGradientBuffers(unsigned int w,
                                       unsigned int h,
@@ -373,14 +373,14 @@ void ImageControl::installRootColormap() {
     XUngrabServer(disp);
 }
 
-
+#ifdef NOT_USED
 void ImageControl::setColorsPerChannel(int cpc) {
     if (cpc < 2) cpc = 2;
     if (cpc > 6) cpc = 6;
 
     m_colors_per_channel = cpc;
 }
-
+#endif
 
 unsigned long ImageControl::getSqrt(unsigned int x) const {
     if (! sqrt_table) {

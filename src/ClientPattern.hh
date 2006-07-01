@@ -67,7 +67,6 @@ public:
     bool addTerm(const std::string &str, WinProperty prop);
 
     inline void addMatch() { ++m_nummatches; }
-    inline void delMatch() { --m_nummatches; }
 
     inline bool operator == (const WinClient &win) const {
         return match(win);
