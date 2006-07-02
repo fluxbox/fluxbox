@@ -110,7 +110,6 @@ public:
 
     bool isRootColormapInstalled() const { return root_colormap_installed; }
     bool isScreenManaged() const { return managed; }
-    bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
     bool isWorkspaceWarping() const { return *resource.workspace_warping; }
     bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
     bool isReverseWheeling() const { return *resource.reverse_wheeling; }
@@ -435,7 +434,7 @@ private:
                        const std::string &altscrname);
 
         FbTk::Resource<bool> image_dither, opaque_move, full_max,
-            sloppy_window_grouping, workspace_warping,
+            workspace_warping,
             desktop_wheeling, reverse_wheeling, show_window_pos,            
             antialias, auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> rootcommand;		
