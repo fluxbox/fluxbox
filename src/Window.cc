@@ -495,14 +495,17 @@ void FluxboxWindow::init() {
         decorations.tab = false; //no tab for this window
     }
 
-    associateClientWindow(true, wattrib.x, wattrib.y, wattrib.width, wattrib.height);
 
+    if (m_client->normal_hint_flags & (PPosition|USPosition)) {
+        frame().gravityTranslate(wattrib.x, wattrib.y, m_client->gravity(), m_client->old_bw, false);
+    }
+
+    associateClientWindow(true, wattrib.x, wattrib.y, wattrib.width, wattrib.height, m_client->gravity(), m_client->old_bw);
 
     Fluxbox::instance()->attachSignals(*this);
 
     // this window is managed, we are now allowed to modify actual state
     m_initialized = true;
-
 
     applyDecorations(true);
 
@@ -514,10 +517,9 @@ void FluxboxWindow::init() {
         m_workspace_number = screen().currentWorkspaceID();
 
     bool place_window = (m_old_pos_x == 0);
-    if (fluxbox.isStartup() || m_client->isTransient() ||
-        m_client->normal_hint_flags & (PPosition|USPosition)) {
 
-        frame().gravityTranslate(wattrib.x, wattrib.y, m_client->gravity(), false);
+    if (fluxbox.isStartup() || m_client->isTransient() || 
+        m_client->normal_hint_flags & (PPosition|USPosition)) {
 
         if (! fluxbox.isStartup()) {
 
@@ -534,10 +536,12 @@ void FluxboxWindow::init() {
             place_window = false;
 
     }
+/*
     if (wattrib.width <= 0)
         wattrib.width = 1;
     if (wattrib.height <= 0)
         wattrib.height = 1;
+*/
 
 
 
@@ -1109,17 +1113,18 @@ bool FluxboxWindow::isGroupable() const {
 
 void FluxboxWindow::associateClientWindow(bool use_attrs,
                                           int x, int y,
-                                          unsigned int width, unsigned int height) {
-    m_client->setBorderWidth(0);
+                                          unsigned int width, unsigned int height,
+                                          int gravity, unsigned int client_bw) {
     updateTitleFromClient(*m_client);
     updateIconNameFromClient(*m_client);
 
     if (use_attrs)
         frame().moveResizeForClient(x, y,
-                                    width, height);
+                                    width, height, gravity, client_bw);
     else
         frame().resizeForClient(m_client->width(), m_client->height());
 
+    frame().setActiveGravity(m_client->gravity(), m_client->old_bw);
     frame().setClientWindow(*m_client);
 }
 
@@ -1308,8 +1313,8 @@ void FluxboxWindow::updateBlackboxHintsFromClient(const WinClient &client) {
     }
 }
 
-void FluxboxWindow::move(int x, int y, int gravity) {
-    moveResize(x, y, frame().width(), frame().height(), gravity);
+void FluxboxWindow::move(int x, int y) {
+    moveResize(x, y, frame().width(), frame().height());
 }
 
 void FluxboxWindow::resize(unsigned int width, unsigned int height) {
@@ -1325,15 +1330,11 @@ void FluxboxWindow::resize(unsigned int width, unsigned int height) {
 
 // send_event is just an override
 void FluxboxWindow::moveResize(int new_x, int new_y,
-                               unsigned int new_width, unsigned int new_height, int gravity, bool send_event) {
+                               unsigned int new_width, unsigned int new_height, bool send_event) {
 
     // magic to detect if moved during initialisation
     if (!isInitialized())
         m_old_pos_x = 1;
-
-    if (gravity != ForgetGravity) {
-        frame().gravityTranslate(new_x, new_y, gravity, false);
-    }
 
     send_event = send_event || (frame().x() != new_x || frame().y() != new_y);
 
@@ -1370,12 +1371,12 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
 }
 
 void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
-                               unsigned int new_width, unsigned int new_height, int gravity) {
+                               unsigned int new_width, unsigned int new_height, int gravity, unsigned int client_bw) {
 
     // magic to detect if moved during initialisation
     if (!isInitialized())
         m_old_pos_x = 1;
-    frame().moveResizeForClient(new_x, new_y, new_width, new_height, true, true, gravity);
+    frame().moveResizeForClient(new_x, new_y, new_width, new_height, true, true, gravity, client_bw);
     setFocusFlag(focused);
     shaded = false;
     sendConfigureNotify();
@@ -2660,13 +2661,16 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         (cr.value_mask & CWY)) {
         cx = cr.x;
         cy = cr.y;
-        frame().gravityTranslate(cx, cy, client->gravity(), false);
+        frame().gravityTranslate(cx, cy, client->gravity(), client->old_bw, false);
+        frame().setActiveGravity(client->gravity(), client->old_bw);
     } else if (cr.value_mask & CWX) {
         cx = cr.x;
-        frame().gravityTranslate(cx, ignore, client->gravity(), false);
+        frame().gravityTranslate(cx, ignore, client->gravity(), client->old_bw, false);
+        frame().setActiveGravity(client->gravity(), client->old_bw);
     } else if (cr.value_mask & CWY) {
         cy = cr.y;
-        frame().gravityTranslate(ignore, cy, client->gravity(), false);
+        frame().gravityTranslate(ignore, cy, client->gravity(), client->old_bw, false);
+        frame().setActiveGravity(client->gravity(), client->old_bw);
     }
 
     if (cr.value_mask & CWWidth)
@@ -3160,20 +3164,21 @@ void FluxboxWindow::setDecoration(Decoration decoration, bool apply) {
 void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
 
-    int grav_x=0, grav_y=0;
-    // negate gravity
-    frame().gravityTranslate(grav_x, grav_y, -m_client->gravity(), false);
-
     unsigned int border_width = 0;
     if (decorations.border)
         border_width = frame().theme().border().width();
 
     bool client_move = false;
 
+    // borderWidth setting handles its own gravity
     if (initial || frame().window().borderWidth() != border_width) {
         client_move = true;
         frame().setBorderWidth(border_width);
     }
+
+    int grav_x=0, grav_y=0;
+    // negate gravity
+    frame().gravityTranslate(grav_x, grav_y, -m_client->gravity(), m_client->old_bw, false);
 
     // tab deocration only affects if we're external
     // must do before the setTabMode in case it goes
@@ -3202,7 +3207,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
         client_move |= frame().hideHandle();
 
     // apply gravity once more
-    frame().gravityTranslate(grav_x, grav_y, m_client->gravity(), false);
+    frame().gravityTranslate(grav_x, grav_y, m_client->gravity(), m_client->old_bw, false);
 
     // if the location changes, shift it
     if (grav_x != 0 || grav_y != 0) {
@@ -3337,7 +3342,7 @@ void FluxboxWindow::stopMoving(bool interrupted) {
         }
         fluxbox->ungrab();
     } else if (!interrupted) {
-        moveResize(frame().x(), frame().y(), frame().width(), frame().height(), ForgetGravity, true);
+        moveResize(frame().x(), frame().y(), frame().width(), frame().height(), true);
         frame().notifyMoved(true);
     }
 
@@ -3680,7 +3685,7 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
     client->setEventMask(NoEventMask);
 
     int wx = frame().x(), wy = frame().y(); // not actually used here
-    frame().gravityTranslate(wx, wy, -client->gravity(), true); // negative to invert
+    frame().gravityTranslate(wx, wy, -client->gravity(), client->old_bw, true); // negative to invert
 
     // Why was this hide done? It broke vncviewer (and mplayer?),
     // since it would reparent when going fullscreen.

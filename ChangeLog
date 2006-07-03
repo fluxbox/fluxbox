@@ -1,6 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/07/03:
+   * fix+improve handling of window gravity, was very broken (Simon)
+     - caused (among others) windows with gravity set to get relocated 
+       on close.
+     - gravity is now taken into account on style change
+     FbWinFrame.hh/cc Window.hh/cc Ewmh.cc
    * make our default locale, init, menu, and style paths properly
      expand PREFIX in the make install stage, so that make prefix=elsewhere
      works properly (Simon)

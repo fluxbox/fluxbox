@@ -240,13 +240,13 @@ public:
     void restore(WinClient *client, bool remap);
     void restore(bool remap);
     /// move frame to x, y
-    void move(int x, int y, int gravity = ForgetGravity);
+    void move(int x, int y);
     /// resize frame to width, height
     void resize(unsigned int width, unsigned int height);
     /// move and resize frame to pox x,y and size width, height
-    void moveResize(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity, bool send_event = false);
+    void moveResize(int x, int y, unsigned int width, unsigned int height, bool send_event = false);
     /// move to pos x,y and resize client window to size width, height
-    void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity);
+    void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity, unsigned int client_bw = 0);
     void setWorkspace(int n);
     void changeBlackboxHints(const BlackboxHints &bh);
     void updateFunctions();
@@ -448,7 +448,7 @@ private:
     void updateBlackboxHintsFromClient(const WinClient &client);
     void updateRememberStateFromClient(WinClient &client);
     void saveBlackboxAttribs();
-    void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1);
+    void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1, int gravity = ForgetGravity, unsigned int client_bw = 0);
 
     void setState(unsigned long stateval, bool setting_up);
 

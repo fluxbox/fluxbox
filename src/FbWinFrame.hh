@@ -96,20 +96,20 @@ public:
     inline bool isVisible() const { return m_visible; }
     /// shade frame (ie resize to titlebar size)
     void shade();
-    void move(int x, int y, int win_gravity=ForgetGravity);
-    void resize(unsigned int width, unsigned int height, int win_gravity=ForgetGravity);
+    void move(int x, int y);
+    void resize(unsigned int width, unsigned int height);
     /// resize client to specified size and resize frame to it
-    void resizeForClient(unsigned int width, unsigned int height, int win_gravity=ForgetGravity);
+    void resizeForClient(unsigned int width, unsigned int height, int win_gravity=ForgetGravity, unsigned int client_bw = 0);
 
     // for when there needs to be an atomic move+resize operation
     void moveResizeForClient(int x, int y, 
                              unsigned int width, unsigned int height, 
-                             bool move = true, bool resize = true, int win_gravity=ForgetGravity);
+                             bool move = true, bool resize = true, int win_gravity=ForgetGravity, unsigned int client_bw = 0);
 
     // can elect to ignore move or resize (mainly for use of move/resize individual functions
     void moveResize(int x, int y, 
                     unsigned int width, unsigned int height, 
-                    bool move = true, bool resize = true, int win_gravity=ForgetGravity);
+                    bool move = true, bool resize = true);
 
     // move without transparency or special effects (generally when dragging)
     void quietMoveResize(int x, int y, 
@@ -173,9 +173,8 @@ public:
 
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation
-    void gravityTranslate(int &x, int &y, int win_gravity, bool move_frame = false);
-    //use width and height given instead of the real values, allows figuring out where to place a window before doing a moveResize
-    void gravityTranslate(int &x, int &y, unsigned int width, unsigned int height, int win_gravity, bool move_frame = false);
+    void gravityTranslate(int &x, int &y, int win_gravity, unsigned int client_bw, bool move_frame = false);
+    void setActiveGravity(int gravity, unsigned int orig_client_bw) { m_active_gravity = gravity; m_active_orig_client_bw = orig_client_bw; }
     void setBorderWidth(unsigned int borderW);
 
     /**
@@ -368,6 +367,10 @@ private:
     //@}
 
     TabMode m_tabmode;
+
+    // last gravity that this window was *actively* placed with
+    int m_active_gravity;
+    unsigned int m_active_orig_client_bw;
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
