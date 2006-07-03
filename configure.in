@@ -555,7 +555,7 @@ AC_ARG_WITH(
   menu,
   [  --with-menu=path        location menu file (PREFIX/share/fluxbox/menu)],
   DEFAULT_MENU=$with_menu,
-  DEFAULT_MENU=$prefix/share/fluxbox/menu
+  DEFAULT_MENU=\$\(prefix\)/share/fluxbox/menu
 )
 AC_SUBST(DEFAULT_MENU)
 
@@ -563,7 +563,7 @@ AC_ARG_WITH(
   style,
   [  --with-style=path       style by default   (PREFIX/share/fluxbox/styles/Meta)],
   DEFAULT_STYLE=$with_style,
-  DEFAULT_STYLE=$prefix/share/fluxbox/styles/Meta
+  DEFAULT_STYLE=\$\(prefix\)/share/fluxbox/styles/Meta
 )
 AC_SUBST(DEFAULT_STYLE)
 
@@ -571,7 +571,7 @@ AC_ARG_WITH(
   keys,
   [  --with-keys=path        location keys file (PREFIX/share/fluxbox/keys)],
   DEFAULT_KEYS=$with_keys,
-  DEFAULT_KEYS=$prefix/share/fluxbox/keys
+  DEFAULT_KEYS=\$\(prefix\)/share/fluxbox/keys
 )
 AC_SUBST(DEFAULT_KEYS)
 
@@ -579,7 +579,7 @@ AC_ARG_WITH(
   init,
   [  --with-init=path        location init file (PREFIX/share/fluxbox/init)],
   DEFAULT_INIT=$with_init,
-  DEFAULT_INIT=$prefix/share/fluxbox/init
+  DEFAULT_INIT=\$\(prefix\)/share/fluxbox/init
 )
 AC_SUBST(DEFAULT_INIT)
 
@@ -587,7 +587,7 @@ AC_ARG_WITH(
   locale,
   [  --with-locale=path      location for nls files (PREFIX/share/fluxbox/nls)],
   LOCALE_PATH=$with_locale_path,
-  LOCALE_PATH=$prefix/share/fluxbox/nls
+  LOCALE_PATH=\$\(prefix\)/share/fluxbox/nls
 )
 AC_DEFINE_UNQUOTED(LOCALEPATH, "$LOCALE_PATH", "location for nls files")
 AC_SUBST(LOCALE_PATH)
