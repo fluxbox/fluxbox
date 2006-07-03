@@ -583,13 +583,16 @@ AC_ARG_WITH(
 )
 AC_SUBST(DEFAULT_INIT)
 
+# we have to expand locale_path in the config.h file, but NOT in the makefiles!
 AC_ARG_WITH(
   locale,
   [  --with-locale=path      location for nls files (PREFIX/share/fluxbox/nls)],
-  LOCALE_PATH=$with_locale_path,
+  LOCALE_PATH=$with_locale_path
+  AC_DEFINE_UNQUOTED(LOCALEPATH, "$LOCALE_PATH", "location for nls files")
+  ,
   LOCALE_PATH=\$\(prefix\)/share/fluxbox/nls
+  AC_DEFINE_UNQUOTED(LOCALEPATH, "$prefix/share/fluxbox/nls", "location for nls files")
 )
-AC_DEFINE_UNQUOTED(LOCALEPATH, "$LOCALE_PATH", "location for nls files")
 AC_SUBST(LOCALE_PATH)
 
 AC_SUBST(program_prefix)
