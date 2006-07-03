@@ -1135,7 +1135,8 @@ void Fluxbox::handleSignal(int signum) {
 
     switch (signum) {
     case SIGCHLD: // we don't want the child process to kill us
-        waitpid(-1, 0, WNOHANG | WUNTRACED);
+        // more than one process may have terminated
+        while (waitpid(-1, 0, WNOHANG | WUNTRACED) > 0);
         break;
     case SIGHUP:
         restart();

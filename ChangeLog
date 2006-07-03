@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc2:
+*06/07/03:
+   * call waitpid() on SIGCHLD until no more children (thanks Devin/dlab)
+     sf.net #1514843, #1447782 - fluxbox leaves zombies
+     fluxbox.cc
 *06/07/02:
    * Updated documentation (Mark)
 *06/06/29:
