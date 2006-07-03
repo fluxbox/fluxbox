@@ -1,8 +1,11 @@
-.\" ** You probably do not want to edit this file directly **
-.\" It was generated using the DocBook XSL Stylesheets (version 1.69.1).
-.\" Instead of manually editing it, you probably should edit the DocBook XML
-.\" source for it and then use the DocBook XSL Stylesheets to regenerate it.
-.TH "FLUXBOX" "1" "06/01/2006" "" ""
+.\"     Title: fluxbox
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.70.1 <http://docbook.sf.net/>
+.\"      Date: 07/03/2006
+.\"    Manual: 
+.\"    Source: 
+.\"
+.TH "FLUXBOX" "1" "07/03/2006" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -10,357 +13,404 @@
 .SH "NAME"
 fluxbox \- A lightweight window manager for the X Windowing System
 .SH "SYNOPSIS"
-\fIfluxbox\fR [\-v | \-version] [\-h | \-help] [\-i | \-info] \fIfluxbox\fR [\-rc rcfile] [\-log logfile] [\-display display] [\-screen scr,scr|all] [\-verbose]
+\fIfluxbox\fR [\-v | \-version] [\-h | \-help] [\-i | \-info] \fIfluxbox\fR [\-rc rcfile] [\-log logfile] [\-display display] [\-screen scr,scr|all] [\-verbose].sp
 .SH "DESCRIPTION"
-fluxbox(1) provides configurable window decorations, a root menu to launch applications and a toolbar that shows the current workspace name, a set of application names and the current time. There is also a workspace menu to add or remove workspaces. The `slit' can be used to dock small applications, e.g. most of the bbtools can use slit.
-.sp
-fluxbox(1) can iconify windows to the toolbar, in addition to adding the window to the \fIIcons\fR submenu of the workspace menu. One click and they reappear. A double\-click on the titlebar of the window will \fIshade\fR it, i.e. the window will disappear, only the titlebar remains visible.
-.sp
-fluxbox(1) uses its own graphics class to render its images on the fly. By using style files, you can determine in great detail how your desktop looks. fluxbox styles are compatible with those of Blackbox 0.65 or earlier versions, so users migrating can still use their current favourite themes.
-.sp
-fluxbox(1) supports the majority of the Extended Window Manager Hints (EWMH) specification, as well as numerous other Window Hinting standards. This allows all compliant window managers to provide a common interface to standard features used by applications and desktop utilities.
+fluxbox(1) provides configurable window decorations, a root menu to launch applications and a toolbar that shows the current workspace name, a set of application names and the current time. There is also a workspace menu to add or remove workspaces. The `slit' can be used to dock small applications; e.g. most of the bbtools can use the slit..sp
+fluxbox(1) can iconify windows to the toolbar, in addition to adding the window to the \fIIcons\fR submenu of the workspace menu. One click and they reappear. A double\-click on the titlebar of the window will \fIshade\fR it; i.e. the window will disappear, and only the titlebar will remain visible..sp
+fluxbox(1) uses its own graphics class to render its images on the fly. By using style files, you can determine in great detail how your desktop looks. fluxbox styles are compatible with those of Blackbox 0.65 or earlier versions, so users migrating can still use their current favourite themes..sp
+fluxbox(1) supports the majority of the Extended Window Manager Hints (EWMH) specification, as well as numerous other Window Hinting standards. This allows all compliant window managers to provide a common interface to standard features used by applications and desktop utilities..sp
 .SH "OPTIONS"
-.TP
+.TP 3n
 \-display display
 Start fluxbox on the specified display. Programs started by fluxbox will share the DISPLAY environment variable also.
-.TP
+.TP 3n
 \-h, \-help
 Display command line options.
-.TP
+.TP 3n
 \-i, \-info
 Display useful information concerning the defaults and compiled\-in options.
-.TP
+.TP 3n
 \-log logfile
 Starting fluxbox with this option will designate a file in which you want to log events to.
-.TP
+.TP 3n
 \-rc rcfile
 Use a different config file other than the default ~/.fluxbox/init.
-.TP
+.TP 3n
 \-v, \-version
 The version of fluxbox installed.
-.TP
+.TP 3n
 \-screen scr,scr|all
 Run on specified screens only or all (by default).
-.TP
+.TP 3n
 \-verbose
 Print more information in process.
 .SH "STARTING FLUXBOX"
-fluxbox(1) comes with a program called startfluxbox(8) usually located wherever you installed fluxbox. This script provides you with many options and variables that can be set when starting fluxbox. To actually call fluxbox and begin using it, you should place "exec startfluxbox" in your ~/.xinitrc or ~/.xsession (depending on your distributions and/or display manager) as the last executed command. This is assuming that the location of fluxbox(1) and startfluxbox(8) are in your shell's $PATH. Also note that you may need to create the /.xinitrc file or your setup may use /.xsession instead, depending on your X setup. For more information on your shell, please visit your shell's manual page.
-.sp
-By using fluxbox \-i you'll see the defaults used by fluxbox(1). These are what fluxbox looks for upon startup. In the list of `Defaults:' you'll see a menu file location, this is where you can provide a system\-wide menu file for your users.
-.sp
-On exit or restart, fluxbox will save user defaults in the file ~/.fluxbox/init. Resources in this file can be edited by hand. fluxbox also has many tools to edit these, look through the main menu once fluxbox has started to find different ways of managing your session.
+fluxbox(1) comes with a program called startfluxbox(8) usually located wherever you installed fluxbox. This script provides you with many options and variables that can be set when starting fluxbox. To actually call fluxbox and begin using it, you should place "exec startfluxbox" in your ~/.xinitrc or ~/.xsession (depending on your distribution and/or display manager) as the last executed command. This is assuming that the location of fluxbox(1) and startfluxbox(8) are in your shell's $PATH. Also note that you may need to create the /.xinitrc file or your setup may use /.xsession instead, depending on your X setup. For more information on your shell, please visit your shell's manual page..sp
+By using fluxbox \-i you'll see the defaults used by fluxbox(1). These are what fluxbox looks for upon startup. In the list of `Defaults:' you'll see a menu file location, this is where you can provide a system\-wide menu file for your users..sp
+On exit or restart, fluxbox will save user defaults in the file ~/.fluxbox/init. Resources in this file can be edited by hand. fluxbox also has many tools to edit these; look through the main menu once fluxbox has started to find different ways of managing your session..sp
 .SH "USING FLUXBOX"
-When using fluxbox for the first time, users who are more accustomed to full desktop environments such as KDE or Gnome may be a little surprised by the minimal screen content. fluxbox is designed to be fast and powerful, so it may take a bit of getting used to \(em however, the rewards are worthwhile. user. We'll give a quick summary of the common things in this section. However, we recommend that you consult the referenced sections of this manual to further develop your understanding of what you can do with fluxbox.
+When using fluxbox for the first time, users who are more accustomed to full desktop environments such as KDE or Gnome may be a little surprised by the minimal screen content. fluxbox is designed to be fast and powerful, so it may take a bit of getting used to \(em however, the rewards are worthwhile..sp
+In this section, we'll give a quick summary of the common things. However, we recommend that you consult the referenced sections of this manual to further develop your understanding of what you can do with fluxbox..sp
 .SS "Root Window (Main)"
-Looking at the fluxbox desktop immediately after startup you'll generally see only one thing: The toolbar. If you were to right click (mouse button 3) somewhere else blank, you would be able to access the RootMenu, a middle click (mouse button 2) on the desktop shows you the WorkspaceMenu.
+Looking at the fluxbox desktop immediately after startup you'll generally see only one thing: the toolbar. If you right click (mouse button 3) somewhere on the desktop, you can access the RootMenu. A middle click (mouse button 2) on the desktop shows you the WorkspaceMenu..sp
+.\" end of SS subsection "Root Window (Main)"
 .SS "RootMenu and WorkspaceMenu"
-From the RootMenu you can launch applications and configure fluxbox. The WorkspaceMenu shows all windows and on which workspaces they are. See section MENUS on how to customize these menus.
+From the RootMenu you can launch applications and configure fluxbox. The WorkspaceMenu shows all windows and on which workspaces they are. See section MENUS on how to customize these menus..sp
+.\" end of SS subsection "RootMenu and WorkspaceMenu"
 .SS "Toolbar"
-The toolbar contains up to eight fields/tools:
-.TP 3
+The toolbar contains any combination of the following tools:.sp
+.TP 3n
 \(bu
+
 \fBWorkspace Name\fR: Name of the current visible workspace
-.TP
+.TP 3n
 \(bu
-\fBIconbar\fR: Show Windows
-.TP
+
+\fBIconbar\fR: List of windows managed by fluxbox
+.TP 3n
 \(bu
+
 \fBSystem Tray\fR: Area for applets
-.TP
+.TP 3n
 \(bu
+
 \fBClock\fR: Date and Time
-.TP
+.TP 3n
 \(bu
+
 \fBWorkspace Arrows\fR: Previous/Next Workspace
-.TP
+.TP 3n
 \(bu
+
 \fBWindow Arrows\fR: Previous/Next Application Window
-The contents of the toolbar can be configured in the `init' file, we discuss the `init' file at great length in the RESOURCES section.
+.sp
+.RE
+The contents of the toolbar can be configured in the `init' file. We discuss the `init' file at great length in the RESOURCES section..sp
+.\" end of SS subsection "Toolbar"
 .SS "Slit"
-Initially you won't be able to see the slit. It is there, it just isn't being utilized yet. The slit confuses some people initially. Think of it as a dock where you can place smaller programs. If you've looked at any screenshots on the official fluxbox web site you'll have noticed some small programs on the edge of some of the screens. These were more than likely those docked programs in the slit. To learn more about the slit, we have an entire section below that goes into detail about the options you have.
+Initially you won't be able to see the slit. It is there, but it isn't being used yet. The slit confuses some people initially. Think of it as a dock where you can place smaller programs. If you've looked at any screenshots on the official fluxbox web site, you will have noticed some small programs on the edge of some of the screens. These were more than likely docked programs in the slit. To learn more about the slit, we have an entire section below that goes into detail about the options you have..sp
+.\" end of SS subsection "Slit"
 .SS "Layers"
-fluxbox manages the following layers (from highest to lowest layer):
-.TP 3
+fluxbox manages the following layers (from highest to lowest):.sp
+.TP 3n
 \(bu
 Above Dock
-.TP
+.TP 3n
 \(bu
 Dock
-.TP
+.TP 3n
 \(bu
 Top
-.TP
+.TP 3n
 \(bu
 Normal
-.TP
+.TP 3n
 \(bu
 Bottom
-.TP
+.TP 3n
 \(bu
 Desktop
-Windows on a higher layer will always appear above those on a lower one. These layers can be used on application windows, the slit or the toolbar. You can assign applications to a certain layer by specifying it in the `apps' file. We discuss the `apps' file in the APPLICATIONS section. We discuss layers in more detail in the LAYERS section.
-.SS "Focus Model"
-The window that has the focus is the one that receives key and mouse events. The focus model is selectable via the Configuration menu located in the root menu. We'll discuss the different types of focus below in the FOCUS MODEL section.
-.SS "Windows"
-A left click (mouse button 1) on any part of the window's border will raise it. Dragging then moves the window to another part of the desktop. Dragging the resize grips at the left and right bottom corners resizes the window. Middle clicking on a border or titlebar will immediately lower the window. Right clicking on a border or titlebar pops the Window menu up. The commands in this menu alone are discussed in detail in the Window Menu section of MENUS.
-.SS "Tabs"
-fluxbox allows windows to be `grouped' by middle clicking and holding on a window's title bar and dragging it onto another window. This will `tab' the titlebars, allowing you the user to select each window individually. This `tabbing' allows you to put multiple applications in one location on the desktop, and do several operations (for example, moving or resizing) to all windows in the group. Options are discussed in TAB OPTIONS section
-.SS "Miscellaneous"
-When you want to drag a window, but cannot see either the bottom handle or its titlebar you can press (and hold!)
 .sp
+.RE
+Windows on a higher layer will always appear above those on a lower one. These layers can be used on application windows, the slit or the toolbar. You can assign applications to a certain layer by specifying it in the `apps' file or through the WindowMenu. We discuss the `apps' file in the APPLICATIONS section. We discuss the WindowMenu in the MENUS section. We discuss layers in more detail in the LAYERS section..sp
+.\" end of SS subsection "Layers"
+.SS "Focus Model"
+The window that has the focus is the one that receives key and mouse events. The focus model is selectable via the Configuration menu located in the root menu. We'll discuss the different types of focus below in the FOCUS MODEL section..sp
+.\" end of SS subsection "Focus Model"
+.SS "Windows"
+A left click (mouse button 1) on any part of the window's border will raise it. Dragging then moves the window to another part of the desktop. A right click and drag on the border resizes the window. Dragging the resize grips at the left and right bottom corners also will resize the window. Middle clicking on a border or titlebar will immediately lower the window. Right clicking on the titlebar opens the Window menu. The commands unique to this menu are discussed in detail in the Window Menu section of MENUS..sp
+.\" end of SS subsection "Windows"
+.SS "Tabs"
+fluxbox allows windows to be `grouped' by middle clicking and holding on a window's tab and dragging it onto another window. This `tabbing' allows you to put multiple applications in one location on the desktop and do several operations (for example, moving or resizing) to all windows in the group. By default, tabs are located just above the window, but they may be embedded in the titlebar or moved to other locations on the outside of the window. Configuration is discussed in TAB OPTIONS section..sp
+.\" end of SS subsection "Tabs"
+.SS "Miscellaneous"
+When you want to drag a window, but cannot see either the bottom handle or its titlebar you can press (and hold!).sp
+.sp
+.RS 3n
 .nf
 ALT + Left Mousebutton (mouse button 1)
 .fi
-and move it anywhere in the current workspace. This key combination can also be used to raise a partially visible window.
+.RE
+and move it anywhere in the current workspace. This key combination can also be used to raise a partially visible window..sp
+The key combination.sp
 .sp
-The key combination
-.sp
+.RS 3n
 .nf
 ALT + Right Mousebutton (mouse button 3)
 .fi
-will allow you to resize the window. These can be disabled in the resource file with:
+.RE
+will allow you to resize the window. This behavior can be altered in the init file with:.sp
 .sp
+.RS 3n
 .nf
-session.session0.useMod1: <boolean>
+session.modKey: <modifier>
 .fi
-You can also alter how resizing is done. By default, you drag the bottom right corner. You can drag the corner closest to the mouse pointer instead if you set
+.RE
+You can also alter how resizing is done. By default, you drag the bottom right corner. You can drag the corner closest to the mouse pointer instead if you set.sp
 .sp
+.RS 3n
 .nf
 session.screen0.resizeMode: Quadrant
 .fi
-or all corners at the same time if you set it to:
+.RE
+or all corners at the same time if you set it to:.sp
 .sp
+.RS 3n
 .nf
 session.screen0.resizeMode: Center
 .fi
+.RE
+.\" end of SS subsection "Miscellaneous"
 .SH "MENUS"
-fluxbox installs a default menu file in @pkgdatadir@/menu. You can also use fluxbox \-i to confirm this action. Of course this system\-wide menu can be customized for all users at once, but it is also possible to create an individual menu file for each user. By convention, users create a menu file in ~/.fluxbox . Once you've created your own menu file, you'll want to make sure that you properly declare this location in your `init' file so that fluxbox knows where to look. The value you'll want to add or change is:
+fluxbox installs a default menu file in @pkgdatadir@/menu. You can also use fluxbox \-i to confirm this action. Of course this system\-wide menu can be customized for all users at once, but it is also possible to create an individual menu file for each user. By convention, users create a menu file in ~/.fluxbox/menu . Once you've created your own menu file, you'll want to make sure that you properly declare this location in your `init' file so that fluxbox knows where to look. The value you'll want to add or change is:.sp
 .sp
+.RS 3n
 .nf
 session.menuFile: <menufile>
 .fi
-For this change to take effect, fluxbox must be restarted. Be sure that your menu is usable, then choose `Restart' from the default fluxbox root menu. This restart is only necessary if you make changes to the `init' file, otherwise a `Reload Config' is acceptable. A menu reload can also be forced by sending SIGUSR2 signal (see the SIGNALS section).
+.RE
+For this change to take effect, fluxbox must be restarted. Be sure that your menu is usable, then choose `Restart' from the default fluxbox root menu. This restart is only necessary if you make changes to the `init' file; otherwise, fluxbox will automatically detect your changes..sp
 .SS "Root Menu"
-The root menu is where you can change different aspects of fluxbox by simply clicking on a menu item. Most of the changes in this menu can also be done in the `init' file. However it makes it very easy to change certain options without having to open up an editor and find the resource. In the root menu, you usually have a `fluxbox menu' or `Settings' submenu, where you will find lots of different options. We'll take a look at most, if not all, of those here.
-.TP 3
+The root menu is where you can change different aspects of fluxbox by simply clicking on a menu item. Most of the changes in this menu can also be done in the `init' file. However it makes it very easy to change certain options without having to open up an editor and find the resource. In the root menu, you usually have a `fluxbox menu' or `Settings' submenu, where you will find lots of different options. We'll take a look at most, if not all, of those here..sp
+.TP 3n
 \(bu
+
 \fBConfigure\fR: The next level under this menu is where you can set certain resources and really begin to customize the look and feel of your desktop.
-.TP
+.TP 3n
 \(bu
+
 \fBSystem Styles\fR: This is where the standard styles are listed. You can select one of these by clicking on it. You may have to `reload' the config or `restart' to get every graphical element to change to the new style. System styles are located in @pkgdatadir@/styles/ upon a default install. Remember that you can confirm this with fluxbox \-i.
-.TP
+.TP 3n
 \(bu
+
 \fBUser Styles\fR: ~/.fluxbox/styles This is the location where you will store new styles that you grab from the Internet. If you create your own styles this is also where you will put yours (provided that you follow the
 \fIstandards\fR
 described in fluxstyle(1)).
-.TP
+.TP 3n
 \(bu
+
 \fBWorkspace List\fR: This is a list of the workspaces configured in your `init' file. If there are programs running on any of the workspaces, they will be listed one level down.
-.TP
+.TP 3n
 \(bu
+
 \fBTools\fR: Listed here are different tools that you can use. You can rename your workspace, run programs from a command line or regenerate your menu.
-.TP
+.TP 3n
 \(bu
+
 \fBWindow\fR: Allows you to switch your window manager. (Only listed if you have other window managers/desktop environments installed.)
-.TP
+.TP 3n
 \(bu
+
 \fBLock Screen\fR: Locks the screen\&...
-.TP
+.TP 3n
 \(bu
+
 \fBfluxbox Command\fR: A little Commandline will popup where you can enter a fluxbox command.
-.TP
+.TP 3n
 \(bu
+
 \fBReload Config\fR: Use this to reload any menu files or style files. Just a basic re\-read of the files by a running fluxbox.
-.TP
+.TP 3n
 \(bu
-\fBRestart\fR: Restart the whole darn thing, this rereads files and redraws all graphical elements.
-.TP
+
+\fBRestart\fR: Restart the whole darn thing. This starts a completely new fluxbox process, rereads files and redraws all graphical elements. Running applications will remain open, however.
+.TP 3n
 \(bu
-*Exit: Exits fluxbox and shuts down the X Window server.
+*Exit: Exits fluxbox and probably shuts down the X Window server.
+.\" end of SS subsection "Root Menu"
 .SS "Configuration Menu"
-This menu offers the opportunity to set up fluxbox. It ca also achieved by editing the init file, but this is a easier and faster way to most users.
-.TP 3
+This menu offers the opportunity to set up fluxbox. It contains many options from the init file, but this is an easier and faster way for most users..sp
+.TP 3n
 \(bu
+
 \fBFocus Model\fR: Please read the FOCUS MODEL section at the end of this manual.
-.TP
+.TP 3n
 \(bu
+
 \fBTab Options\fR: Lets you configure the properties of tabs. Detailed in TAB OPTIONS section.
-.TP
+.TP 3n
 \(bu
-\fBSlit\fR: This Menu can be opened by right clicking the slit (if visible).
-.TP
+
+\fBSlit\fR: This Menu can be opened by right clicking the slit (if visible). Find more information about this menu's options in the SLIT section.
+.TP 3n
 \(bu
-\fBPlacement\fR: This lets you set the position of the slit.
-.TP
-\(bu
-\fBLayer\fR: Look above for the layer priorities.
-.TP
-\(bu
-\fBAuto hide\fR: If enabled, the slit will disappear after a given amount of time and hide from the view of the user. You can make it appear if you move the mouse to the edge of the desktop where the slit is positioned.
-.TP
-\(bu
-\fBMaximize over\fR: If this is enabled, all windows, if you maximize them, will stretch over/under the slit. Otherwise the will be limited to the slit's edge.
-.TP
-\(bu
-\fBAlpha\fR: By changing the value the slit (only the decoration not the apps in the slit) will become transparent. 0 (transparent) \- 255 (opaque)
-.TP
-\(bu
-\fBSlit direction\fR: Changing the value will set the slit's direction for ordering apps sitting in the slit. There is no effect with only on application.
-.TP
-\(bu
-\fBClients\fR: This submenu lets you reorder the the applications running in the slit. You are able to hide apps from the slit by unselecting them in the list showing. This will not kill the app. You can make them appear by selecting them in the list. The "Save SlitList" option saves the new order to you slitlist located in ~/.fluxbox (useful if you reordered the apps with the cycle option).
-.TP
-\(bu
+
 \fBToolbar\fR: Please take a look at the "Configuration via the Toolbar Menu" part of the TOOLBAR section.
-.TP
+.TP 3n
 \(bu
+
 \fBImage Dithering\fR: Enable or disable dithering of images.
-.TP
+.TP 3n
 \(bu
+
 \fBOpaque Window Moving\fR: If enabled, you will see the window content while dragging it. Otherwise the window will be shown as a "border".
-.TP
+.TP 3n
 \(bu
+
 \fBFull Maximization\fR: Enabling this will override the separate settings for the slit/toolbar. Windows will always maximize over/under both of them.
-.TP
+.TP 3n
 \(bu
+
 \fBFocus New Window\fR: If enabled, a newly opened window will gain focus.
-.TP
+.TP 3n
 \(bu
-\fBFocus Last Window on Workspace\fR: This focuses the last window if switching back to a workspace if the option is enabled.
-.TP
+
+\fBFocus Last Window on Workspace\fR: This focuses the previous window when switching back to a workspace if the option is enabled.
+.TP 3n
 \(bu
-\fBWindows Warping\fR: If enabled, you can drag windows from one to another workspace.
-.TP
+
+\fBWindows Warping\fR: If enabled, you can drag windows from one workspace to another.
+.TP 3n
 \(bu
+
 \fBDesktop MouseWheel Switching\fR: You will be able to change the workspace with your mousewheel if used on the desktop or over the toolbar if the option is enabled.
-.TP
+.TP 3n
 \(bu
+
 \fBDecorate Transient Windows\fR: With this option enabled all temporary windows will have a border and grips.
-.TP
+.TP 3n
 \(bu
+
 \fBClick Raises\fR: If enabled a click anywhere on a window area (including the decorations) will raise it. Otherwise you can only raise it by clicking the titlebar.
-.TP
+.TP 3n
 \(bu
-\fBTransparency\fR: This sets the transparency for an focused, unfocused window and the menu.
+
+\fBTransparency\fR: This sets the transparency for a focused, unfocused window and the menu.
+.\" end of SS subsection "Configuration Menu"
 .SS "Window Menu"
-The Window menu is displayed when you right click on the titlebar or border of a window. The options available are:
-.TP 3
+The Window menu is displayed when you right click on the titlebar of a window. The options available are:.sp
+.TP 3n
 \(bu
+
 \fBSend To\&...\fR: Send window to another workspace. When you select the workspace with a middle click, fluxbox will send you along with the application to the selected workspace.
-.TP
+.TP 3n
 \(bu
+
 \fBShade\fR: Shade the window (display the titlebar only).
-.TP
+.TP 3n
 \(bu
+
 \fBIconify\fR: Iconify window. The `icon' can be found in the Icons submenu of the workspace menu as well as in the toolbar (if a Toolbar mode showing Icons is selected).
-.TP
+.TP 3n
 \(bu
+
 \fBMaximize\fR: (Un)Maximize window. Depending on your toolbar and slit configuration, maximize may cover them. You can use the different mouse buttons for different aspects of maximize function.
-.RS
-.TP 3
+.RS 3n
+.TP 3n
 \(bu
 Button 1 (Un)Maximize as normal.
-.TP
+.TP 3n
 \(bu
 Button 2 (Un)Maximize window vertically.
-.TP
+.TP 3n
 \(bu
 Button 3 (Un)Maximize window horizontally.
 .RE
-.TP
+.TP 3n
 \(bu
+
 \fBRaise\fR: Raise the window.
-.TP
+.TP 3n
 \(bu
+
 \fBLower\fR: Lower the window.
-.TP
+.TP 3n
 \(bu
+
 \fBStick\fR: (Un)Stick window. A `stuck' window will always be displayed on all workspaces.
-.TP
+.TP 3n
 \(bu
-\fBNext Client\fR: Activate the next client in this window's group.
-.TP
-\(bu
-\fBPrev Client\fR: Activate the previous client in this window's group.
-.TP
-\(bu
+
 \fBLayer\&...\fR: Change the layer of this window.
-.TP
+.TP 3n
 \(bu
+
 \fBRemember\&...\fR: Specify which window settings should be stored in the apps file, covered later on in the APPLICATIONS section.
-.TP
+.TP 3n
 \(bu
+
 \fBClose\fR: Close the application softly.
+.\" end of SS subsection "Window Menu"
 .SS "Workspace Menu"
-The workspace menu can be found by middle clicking on the background. A menu will popup giving you the option to add or remove a workspace. You will also see your workspaces listed there, in a lower menu under these the programs that are running on those respective workspaces will be displayed. Last but not least you will notice the Icons menu. This is for applications which have been `iconified'.
+The workspace menu can be found by middle clicking on the background. A menu will popup giving you the option to add or remove a workspace. You will also see your workspaces listed there; middle clicking on a workspace name will take you to that workspace, whereas clicking on a window name in one of the per\-workspace submenus will take you to the workspace that window is on, and select the window. Last but not least you will notice the Icons menu. This is for applications which have been `iconified'..sp
+.\" end of SS subsection "Workspace Menu"
 .SS "Menu Behavior"
-The behavior of the submenus in a menu can be configured in the `init' file, with the following entries (default for both is 0):
+The behavior of the submenus in a menu can be configured in the `init' file, with the following entries (default for both is 0):.sp
 .sp
+.RS 3n
 .nf
 session.screen0.menuDelay: <msec>
 session.screen0.menuDelayClose: <msec>
 .fi
+.RE
+.\" end of SS subsection "Menu Behavior"
 .SS "Menu Syntax"
-There are up to four fields in a menu line. They are of the form:
+There are up to four fields in a menu line. They are of the form:.sp
 .sp
+.RS 3n
 .nf
 [tag] (label|filename) {command|filename} <icon file>
 .fi
-The supported tags are:
-.TP
+.RE
+The supported tags are:.sp
+.TP 3n
 [begin] (label)
-This tells fluxbox to start parsing the menu file. This tag is required for fluxbox to read your menu file. If it cannot find it, the system default menu is used in it's place.
-.TP
+This tells fluxbox to start parsing the menu file. This tag is required for fluxbox to read your menu file. If it cannot find it, the system default menu is used in its place.
+.TP 3n
 [end]
 This tells fluxbox that it is at the end of a menu. This can either be a submenu or the main root menu. There must be at least one of these tags in your menu to correspond to the required [begin] tag.
-.TP
+.TP 3n
 [exec] (label) {command}
 Inserts a command item into the menu. When you select the menu item from the menu, fluxbox runs
 \fIcommand\fR.
-.TP
+.TP 3n
 [exit] (label)
 Inserts an item that shuts down and exits fluxbox. Any open windows are reparented to the root window before fluxbox exits.
-.TP
+.TP 3n
 [include] (file\-or\-directory\-name)
 Parses the file specified by filename inline with the current menu. The filename can be the full path to a file or it can begin with ~/, which will be expanded into your home directory. If the path is a directory, then all files in the directory are included.
-.TP
+.TP 3n
 [nop] (label)
 Insert a non\-operational item into the current menu. This can be used to help format the menu into blocks or sections if so desired. This tag does support a label, but one is not required in which case a blank item will be used instead.
-.TP
+.TP 3n
 [separator]
 This will create a nice separation line. Useful for splitting up sections in a
 \fIpretty\fR
 way.
-.TP
+.TP 3n
 [style] (label) {filename}
 This tells fluxbox to insert an item that, when selected, reads style file named filename and apply the new textures, colors and fonts to the current running session.
-.TP
+.TP 3n
 [stylesmenu] (directory)
 Reads all filenames from the specified directory, assuming that they are all valid style files, and creates menu items in the current menu for every filename, that, when selected by the user will apply the selected style file to the current session. The labels that are created in the menu are the filenames of the style files.
-.TP
+.TP 3n
 [stylesdir] (label) {directory}
 Creates a submenu entry with label (that is also the title of the new submenu), and inserts in that submenu all filenames in the specified directory, assuming that they are all valid style files (directories are ignored) in the same way as the [stylesdir] command does. Both [stylesdir] and [stylesmenu] commands make it possible to install style files without editing your init file.
-.TP
+.TP 3n
 [submenu] (label) {menutitle}
 This tells fluxbox to create and parse a new menu. This menu is inserted as a submenu into the parent menu. These menus are parsed recursively, so there is no limit to the number of levels or nested submenus you can have. The title for the new menu is optional, if none is supplied, the new menu's title is the same as the item label. An [end] tag is required to end the submenu.
-.TP
+.TP 3n
 [reconfig] (label)
 When selected this item re\-reads the current style and menu files and applies any changes. This is useful for creating a new style or theme, as you don't have to constantly restart fluxbox every time you save your style. However, fluxbox automatically rereads the menu whenever it changes.
-.TP
+.TP 3n
 [restart] (label) {command}
 This tells fluxbox to restart. If command is supplied, it shuts down and runs the command (which is commonly the name of another window manager). If the command is omitted, fluxbox restarts itself.
-.TP
+.TP 3n
 [config] (label)
 Inserts a fluxbox native submenu item, containing numerous configuration options concerning window placement, focus style, window moving style, etc.
-.TP
+.TP 3n
 [wallpaper] (label)
 This allows you to list your backgrounds. This tag is built in to use fbsetbg(1) and allows you to simply click on an image to set your wallpaper. See? fluxbox makes it easy\&...
-.TP
+.TP 3n
+[wallpapermenu] (directory) {command}
+This inserts a menu item to set the wallpaper for each file in the given directory. The command is optional and defaults to fbsetbg.
+.TP 3n
 [workspaces] (label)
 This tells fluxbox to insert a link to the workspaces menu directly into your menu. This is handy for those users who can't access the workspace menu directly (e.g. if you don't have a 3 button mouse, it is rather hard to middle click to show the workspace menu).
-Any line that starts with a \fI#\fR or \fI!\fR is considered a comment and ignored by fluxbox. Also, in the label/command/filename fields you can escape any character. Using \fI\\\fR inserts a literal back\-slash into the label/command/filename field.
+Any line that starts with a \fI#\fR or \fI!\fR is considered a comment and ignored by fluxbox. Also, in the label/command/filename fields you can escape any character. Using \fI\\\\\fR inserts a literal back\-slash into the label/command/filename field..sp
+Here is an example menu file:.sp
 .sp
+.RS 3n
 .nf
 # fluxbox menu file
 [begin] (fluxbox)
@@ -390,171 +440,234 @@ Any line that starts with a \fI#\fR or \fI!\fR is considered a comment and ignor
     [exit] (Log Out)
 [end]
 .fi
+.RE
+.\" end of SS subsection "Menu Syntax"
 .SH "TOOLBAR"
-The toolbar is a small area to display information by fluxbox like a clock, the identifier for the workspaces, a system tray or a taskbar (iconbar) that can contain the running programs. The color, look, font etc. is defined in the the style and can't be defined as a global setting.
+The toolbar is a small area to display information like a clock, workspace name, a system tray or a taskbar (iconbar) that can contain the running programs. The color, look, font etc. is defined in the the style and can't be defined as a global setting (except with the style overlay)..sp
+The tools in the toolbar can be enabled/disabled in the init file with the arguments given to the line:.sp
 .sp
-The parts of the Toolbar can be enabled/disabled in the Init\-File with the arguments given to the line:
-.sp
+.RS 3n
 .nf
 session.screen0.toolbar.tools
 .fi
-The order and the count of the Tools is freely selectable and has to be separated by a ",". E.g.:
+.RE
+The order and number of tools is freely selectable, but they must be separated by a ",". E.g.:.sp
 .sp
+.RS 3n
 .nf
 session.screen0.toolbar.tools: workspacename, systemtray, iconbar, clock
 .fi
-The possible parts (Tools) of the Toolbar are:
-.TP 3
+.RE
+The possible tools are:.sp
+.TP 3n
 \(bu
+
 \fBClock\fR: This will show an area to display a clock and the date according to the format specification listed in "man strtftime"
-.TP
+.TP 3n
 \(bu
+
 \fBIconbar\fR: This is the area that contains all windows (all running applications, all minimized windows or maybe no window, all depending on the Toolbar Settings).
-.TP
+.TP 3n
 \(bu
-\fBSystemtray\fR: The Systemtray can hold Applications that are made to sit in it.
-.TP
+
+\fBSystemtray\fR: The Systemtray can hold applications that are made to use it.
+.TP 3n
 \(bu
-\fBWorkspaceName\fR: This displays the name of the actual name of the Workspace.
-.TP
+
+\fBWorkspaceName\fR: This displays the name of the current workspace.
+.TP 3n
 \(bu
-\fBPrevWorkspace\fR: This displays an arrow that allows to switch to the next Workspace left of the actual. Same as MouseWheelDown with "Desktop MouseWheel Switching" enabled.
-.TP
+
+\fBPrevWorkspace\fR: This displays an arrow that allows to switch to the workspace left of the current one. Same as MouseWheelDown with "Desktop MouseWheel Switching" enabled.
+.TP 3n
 \(bu
-\fBNextWorkspace\fR: This displays an arrow that allows to switch to the next Workspace right of the actual. Same as MouseWheelUp with "Desktop MouseWheel Switching" enabled.
-.TP
+
+\fBNextWorkspace\fR: This displays an arrow that allows to switch to the workspace right of the current one. Same as MouseWheelUp with "Desktop MouseWheel Switching" enabled.
+.TP 3n
 \(bu
-\fBPrevWindow\fR: This displays an arrow that allows to gain focus of the previous visible window on the actual workspace.
-.TP
+
+\fBPrevWindow\fR: This displays an arrow that switches focus to the previous visible window on the current workspace.
+.TP 3n
 \(bu
-\fBNextWindow\fR: This displays an arrow that allows to gain focus of the next visible window on the actual workspace.
-The Toolbar can be configured in two ways. Either through the Configure\-Menu for the Toolbar, which is accessable in the Configuration Part of the Root\-Menu or with a right\-click on the Workspace Name/Arrows/Clock in the Toolbar, or by editing the Init\-File by hand (Check the RESOURCES section for more information about that).
-.SS "Configuration via the Toolbar Menu"
-All Changes work on the fly and you can notice them immediately, except for a change of the "Toolbar Alpha", that needs a restart to make the change visible:
-.TP 3
-\(bu
-\fBVisible\fR: Sets the toolbar either to visible or invisible (Well, this should be obvious).
+
+\fBNextWindow\fR: This displays an arrow that switches focus to the next visible window on the current workspace.
 .sp
+.RE
+Other aspects of the toolbar can be configured in two ways: through the toolbar menu, which is accessable in the Configuration part of the RootMenu or with a right click on the edge the toolbar, or by editing the init file (see the RESOURCES section for more information about that)..sp
+.SS "Configuration via the Toolbar Menu"
+All changes take effect immediately, except for a change of the "Toolbar Alpha", which needs a restart to make the change visible. Here are the settings:.sp
+.TP 3n
+\(bu
+
+\fBVisible\fR: Sets the toolbar either to visible or invisible.
+.sp
+.RS 3n
 .nf
 session.screen0.toolbar.visible: <boolean>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
-\fBAuto hide\fR: If this is enabled the toolbar will disappear after a defined time when the mouse\-pointer leaves the area of the toolbar. It will slide in when the cursor hits the remaining edge of the toolbar. The delay\-time can be set in init.
+
+\fBAuto hide\fR: If this is enabled the toolbar will disappear after a defined time when the mouse pointer leaves the toolbar. It will slide in when the cursor hits the remaining edge of the toolbar.
 .sp
+.RS 3n
 .nf
 session.screen0.toolbar.autoHide: <boolean>
 session.autoRaiseDelay: <int>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
-\fBToolbar width percentage\fR: Sets the width of the toolbar in percent. Use the left mouse button to decrease and the right mouse\-button to increase the value. The value can be from 0\-100.
+
+\fBToolbar width percentage\fR: Sets the width of the toolbar in percent. Use the left mouse button to decrease and the right mouse\-button to increase the value. The value can be from 1\-100.
 .sp
+.RS 3n
 .nf
 session.screen0.toolbar.widthPercent: <int>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
-\fBMaximize Over\fR: Enabling this option will prevent windows from maximizing over the toolbar. With this switched on they will only dock to the edge of the bar. To use this option, "Full Maximization" from the fluxbox Configuration menu has to be DISABLED. Otherwise this option will not work.
+
+\fBMaximize Over\fR: Enabling this option will prevent windows from maximizing over the toolbar. With this switched on they will only expand to the edge of the bar. To use this option, "Full Maximization" from the Configuration menu must be DISABLED. Otherwise this option will not work.
 .sp
+.RS 3n
 .nf
 session.screen0.toolbar.maxOver: <boolean>
 session.screen0.fullMaximization: <boolean>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
+
 \fBLayer\&...\fR: This sets the layer on which the toolbar is set. With this you can set the toolbar to "Always on top".
 .sp
+.RS 3n
 .nf
 session.screen0.toolbar.layer: <layer>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
-\fBPlacement\fR: Sets the toolbar to either the top or the bottom edge of the screen with a left, right or center alignment
+
+\fBPlacement\fR: Sets the toolbar to any edge of the screen, either centered or aligned with a corner.
 .sp
+.RS 3n
 .nf
 session.screen0.toolbar.placement: <direction>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
-\fBAlpha\fR: This sets the alpha value for the toolbar. Use the left mouse\-button to decrease and the right mouse\-button to increase the value. 0 is invisible, 255 is not transparent at all.
+
+\fBAlpha\fR: This sets the alpha value for the toolbar. Use the left mouse button to decrease and the right mouse button to increase the value. 0 is invisible, 255 is not transparent at all.
 .sp
+.RS 3n
 .nf
 session.screen0.toolbar.alpha: <int>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
+
 \fBIconbar Mode\fR:
 .sp
+.RS 3n
 .nf
 Specifies the mode of the iconbar:
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
-\fBNone\fR: will show not a single window
-.TP
+
+\fBNone\fR: will not show any windows
+.TP 3n
 \(bu
-\fBIcons\fR: will only show the windows of all workspaces that are minimized (iconified)
-.TP
+
+\fBIcons\fR: shows windows from all workspaces that are minimized (iconified)
+.TP 3n
 \(bu
-\fBNoIcons\fR: will only show the windows of all workspaces that are not minimized (iconified)
-.TP
+
+\fBNoIcons\fR: shows windows from all workspaces that are not minimized (iconified)
+.TP 3n
 \(bu
-\fBWorkspaceIcons\fR: will only show the windows of the current workspace that are minimized (iconified)
-.TP
+
+\fBWorkspaceIcons\fR: shows windows from the current workspace that are minimized (iconified)
+.TP 3n
 \(bu
-\fBWorkspaceNoIcons\fR: will only show the windows of the current workspace that are not minimized (iconified)
-.TP
+
+\fBWorkspaceNoIcons\fR: shows windows from the current workspace that are not minimized (iconified)
+.TP 3n
 \(bu
-\fBWorkspace\fR: will show all windows of the current workspace
-.TP
+
+\fBWorkspace\fR: shows all windows from the current workspace
+.TP 3n
 \(bu
-\fBAll Windows\fR: will show all windows of all workspaces
+
+\fBAll Windows\fR: shows all windows from all workspaces
 .sp
+.RS 3n
 .nf
 session.screen0.iconbar.mode: <mode>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
+
 \fBAlignment\fR:
-.TP
+.TP 3n
 \(bu
-\fBLeft\fR: all Icons/Windows will be left aligned according to the width set in init
-.TP
+
+\fBLeft\fR: all icons will be left\-aligned with the width set in the init file
+.TP 3n
 \(bu
-\fBRelative\fR: all Icons/Windows will be averaged so that the iconbar will always be completely filled
-.TP
+
+\fBRelative\fR: all icons will be sized evenly to fill the iconbar completely
+.TP 3n
 \(bu
-\fBRight\fR: all Icons/Windows will be left aligned according to the width set in init
+
+\fBRight\fR: all icons will be right\-aligned with the width set in the init file
 .sp
+.RS 3n
 .nf
 session.screen0.iconbar.alignment: <alignment>
 session.screen0.iconbar.iconWidth: <int>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
-\fBShow Pictures\fR: If enabled the iconbar will show the Application's Icon (if it is available)
+
+\fBShow Pictures\fR: If enabled the iconbar will show the application's icon (if provided by the application)
 .sp
+.RS 3n
 .nf
 session.screen0.iconbar.usePixmap: <boolean>
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
-\fBClock\fR: Lets you switch between the 00:00am \- 12:00pm and 00:00\-24:00 notation
-.TP
+
+\fBClock\fR: Lets you switch between the 00:00am \- 11:59pm and 00:00 \- 23:59 notation
+.TP 3n
 \(bu
-\fBEdit Clock Format\fR: clicking this entry will pop up a little window in which the clock format according to
+
+\fBEdit Clock Format\fR: clicking this entry will pop up a little window in which the clock format can be set according to
 \fIman strftime\fR
-can be set.
+(or
+\fIman date\fR).
 .sp
+.RS 3n
 .nf
 session.screen0.strftimeFormat: <format>
 .fi
+.RE
+.\" end of SS subsection "Configuration via the Toolbar Menu"
 .SH "RESOURCES"
-Usually the ~/.fluxbox/init resource file is created and maintained by fluxbox itself. You can use the [config] menu to set most of these options. However, we'll cover all of the resource options that are available to the user. If you edit this file while fluxbox is running, you must `restart' as to reload the resource options.
+Usually the ~/.fluxbox/init resource file is created and maintained by fluxbox itself. You can use the [config] menu to set most of these options. However, we'll cover all of the resource options that are available to the user. If you edit this file while fluxbox is running, you must `restart' to reload the resource options..sp
+When running fluxbox in a multiple desktop environment the screen0 key can also be screen1, screen2, etc. You can customize the behavior of fluxbox on each desktop accordingly. Here is an example, and a favorite of the fluxbox documentation manager:.sp
 .sp
-When running fluxbox in a multiple desktop environment the screen0 key can also be screen1, screenN etc. You can customize the behaviour of fluxbox on each desktop accordingly. Here is an example, and a favourite of the fluxbox documentation manager:
-.sp
+.RS 3n
 .nf
 session.screen0.toolbar.onTop: False
 session.screen0.toolbar.autoHide: True
@@ -571,84 +684,83 @@ session.screen1.slit.placement: CenterRight
 session.screen1.slit.direction: Vertical
 session.screen1.strftimeFormat: %a %d %R [%s]
 .fi
-Here are the resources that are currently available:
+.RE
+Here are the resources that are currently available:.sp
 .sp
+.RS 3n
 .nf
 session.screen0.window.focus.alpha: <integer>
 session.screen0.window.unfocus.alpha: <integer>
-      These resources are available to the user to set different lev\-
-      els of transparency for different components of fluxbox.  Each
-      one accepts a value between 0\-255, 255 being opaque and 0 being
-      completely transparent. Default: 255
+      These resources are available to the user to set different levels of
+      transparency for different components of fluxbox. Each one accepts a value
+      between 0\-255, 255 being opaque and 0 being completely transparent.
+      Default: 255
 
 session.screen0.slit.autoHide: <boolean>
 session.screen0.toolbar.autoHide: <boolean>
-      The autoHide resources allow the user to set the behaviour of
-      the toolbar and slit.  This behaviour can be that they disappear
-      when they are not being used actively by the user, or they
-      remain visible at all times.  Default: <boolean>
+      The autoHide resources allow the user to set the behavior of the toolbar
+      and slit. This behavior can be that they disappear when they are not being
+      used actively by the user, or they remain visible at all times. Default:
+      False
 
 session.screen0.desktopwheeling: <boolean>
 session.screen0.toolbar.wheeling: <boolean>
-      These set the ability to utilize the users mouse scroll wheel.
-      Setting these values to `<boolean>' allows the user to essentially
-      scroll through workspaces or applications on the toolbar.
-      Default: <boolean>
+      These set the ability to utilize the user's scroll wheel to change the
+      current workspace. Default: True
 
 session.screen0.slit.layer: <layer>
 session.screen0.toolbar.layer: <layer>
-      With these two resources, you can set the layer you want the
-      toolbar and the slit to appear on.  Please read the LAYER sec\-
-      tion for more information.  Default: Desktop
+      With these two resources, you can set the layer you want the toolbar and
+      the slit to appear on. Please read the LAYER section for more information.
+      Default: Desktop
 
 session.screen0.slit.onTop: <boolean>
 session.screen0.toolbar.onTop: <boolean>
-      A user can set whether or not the toolbar or slit are always on
-      top of the screen.  Setting these resources will put the slit
-      and toolbar above everything visible in the window.  Default:
-      False
+      A user can set whether or not the toolbar or slit are always on top of the
+      screen. Setting these resources will put the slit and toolbar above
+      everything visible on the workspace. Default: False
 
 session.screen0.slit.placement: <placement>
 session.screen0.toolbar.placement: <placement>
-      These allow a user to place the slit and toolbar where ever they
-      like.  Possible options are:
+      These allow users to place the slit and toolbar where they like. Possible
+      options are:
       \-   BottomCenter
       \-   BottomLeft
       \-   BottomRight
+      \-   LeftBottom
       \-   LeftCenter
+      \-   LeftTop
+      \-   RightBottom
       \-   RightCenter
+      \-   RightTop
       \-   TopCenter
       \-   TopLeft
       \-   TopRight
 
 session.screen0.slit.maxOver: <boolean>
 session.screen0.toolbar.maxOver: <boolean>
-      Setting these to `<boolean>' will allow application windows to maximize
-      over the complete screen.  Setting to `<boolean>' allows the slit and
-      toolbar to hold their territory and will always be visible when an
-      application is maximized. Default: <boolean>
+      Setting these to True will allow application windows to maximize over the
+      complete screen. Setting to False allows the slit and toolbar to hold
+      their territory and will always be visible when an application is
+      maximized. Default: False
 
 session.screen0.toolbar.height: <integer>
-      Set the height of the toolbar.  Default: 0
-  If the value is set to 0, the style file will gain control over the
-  toolbar height. It is possible to set a fixed height by changing it in
-  the init to something >0.
+      Set the height of the toolbar. If the value is set to 0, the style file
+      will gain control over the toolbar height. It is possible to set a fixed
+      height by changing this value to something greater than 0. Default: 0
 
 session.screen0.toolbar.visible: <boolean>
-      The user can set whether they want to have a toolbar on screen at
-      all.  Setting to `<boolean>' removes the toolbar from the screen. This
-      ultimately depends on whether or not the toolbar was compiled into
-      the fluxbox build. The default is that the toolbar will be visible.
-      Default: <boolean>
+      The user can set whether they want to have a toolbar on screen at all.
+      Setting to False removes the toolbar from the screen. Default: True
 
 session.screen0.toolbar.widthPercent: <integer>
-      This resource sets the width of the toolbar on the screen to
-      integer. Default: 100
+      This resource sets the width percentage of the toolbar on the screen.
+      Default: 65
 
 session.screen0.toolbar.tools: <tools>
-      This resource specifies the tools plugged into the toolbar. Read
-      the TOOLBAR section in this manual for a description of each of
-      these. Possible tools::
+      This resource specifies the tools plugged into the toolbar. Read the
+      TOOLBAR section in this manual for a description of each of these.
+      Possible tools::
       \-   clock
       \-   iconbar
       \-   nextwindow
@@ -660,96 +772,169 @@ session.screen0.toolbar.tools: <tools>
 
 session.screen0.slit.onhead: <integer>
 session.screen0.toolbar.onhead: <integer>
-      For those that have dual head systems, users can set this value
-      to the number of the screen where they would like to see the
-      slit and toolbar. Default: 0
+      For those that use xinerama, users can set this value to the number of the
+      head where they would like to see the slit and toolbar. Default: 0
 
-session.screen0.iconbar.iconWidth: 70
 session.screen0.iconbar.mode: <mode>
-      This value is set in the Iconbar Mode menu.  The available
-      options are::
+      This value is set in the Iconbar Mode menu. The available options are::
       \-   All Windows
       \-   Icons
+      \-   NoIcons
       \-   None
       \-   Workspace
       \-   WorkspaceIcons
+      \-   WorkspaceNoIcons
 
 session.screen0.iconbar.usePixmap: <boolean>
-      This is also set in the Iconbar Mode menu.  When set to `<boolean>'
-      this will show the native icon of applications.  Default: <boolean>
+      This is also set in the Iconbar Mode menu. When set to True, this will
+      show the native icon of applications. Default: True
 
-session.screen0.iconbar.iconTextPadding: 10l
-session.screen0.iconbar.deiconifyMode: Current
-session.screen0.iconbar.wheelMode: Screen
+session.screen0.iconbar.iconTextPadding: <integer>
+      This specifies the space between the window title and the edge of the
+      button. Default: 10
+
+session.screen0.iconbar.deiconifyMode: Current|Follow|Semifollow
+      This specifies what should happen when you click on an iconbar button for
+      a window in another workspace. `Current' moves the window to the current
+      workspace. `Follow' switches to the window's workspace. `Semifollow' acts
+      like `Current' for minimized windows and like `Follow' for the rest.
+      Default: Current
+
+session.screen0.iconbar.wheelMode: Screen|On|Off
+      This defines the behavior for scrolling on the iconbar. `Screen' uses the
+      value set in session.screen0.desktopWheeling . `On' means scrolling on the
+      iconbar will change the current workspace. `Off' means scrolling on the
+      iconbar will do nothing. Default: Screen
+
 session.screen0.iconbar.alignment: <position>
       This value should be changed in the Iconbar Mode menu.  Default:
       Relative
 
       Available options:
       \-   Left: Fixed width, aligned left
-      \-   Relative
+      \-   Relative: Width varies to fill the iconbar
       \-   Right: Fixed width, aligned right
 
-session.screen0.iconbar.clientWidth: <integer>
-      Used to specify the iconbar button width for Left/Right align\-
-      ment.  Default: 0
+session.screen0.iconbar.iconWidth: <integer>
+      Used to specify the iconbar button width for Left/Right alignment.
+      Default: 70
 
 session.screen0.overlay.lineWidth: 1
 session.screen0.overlay.lineStyle: LineSolid
 session.screen0.overlay.joinStyle: JoinMiter
 session.screen0.overlay.capStyle: CapNotLast
-session.screen0.slit.direction: Vertical
+      These are options for how fluxbox draws lines. See
+      `man XSetLineAttributes' for more details. Defaults: listed above
+
+session.screen0.slit.direction: Vertical|Horizontal
+      This specifies whether clients in the slit are arranged horizontally or
+      vertically. Default: Vertical
+
 session.screen0.strftimeFormat: <date>
-      This adjusts the way the current time is displayed in the tool\-
-      bar.  The strftime(3) format is used.  Default: %I:%M %p
+      This adjusts the way the current time is displayed in the toolbar. The
+      strftime(3) format is used. Default: %I:%M %p
 
-session.screen0.tab.alignment: Left
-session.screen0.tab.height: 16
-session.screen0.tab.placement: Top
-session.screen0.tab.rotatevertical: True
-session.screen0.tab.width: 64
-session.screen0.followModel: Ignore
-session.screen0.rowPlacementDirection: LeftToRight
-session.screen0.colPlacementDirection: TopToBottom
+session.screen0.tabs.intitlebar: <boolean>
+      This specifies whether tabs should be embedded in the titlebar or placed
+      outside the window. Default: False
+
+session.screen0.tab.placement: <placement>
+      This specifies where external tabs will appear on the window. Default:
+      TopLeft
+
+session.screen0.tab.width: <integer>
+      This specifies the width of external tabs in pixels. Default: 64
+
+session.screen0.followModel: Ignore|Follow|Current
+      This specifies the behavior when a window on another workspace requests to
+      become the active window. `Ignore' does nothing. `Follow' moves to the
+      window's workspace. `Current' moves the window to the current workspace.
+      Default: Ignore
+
 session.screen0.resizeMode: Bottom|Quadrant|Center
-      Setting this resource to 'Quadrant' makes resizing by ALT +
-      Right Mousebutton (mouse button 3) grab the corner closest
-      to the mouse pointer instead of the bottom right corner.
-      'Center' resizes all corners at the same time.
+      Setting this resource to `Quadrant' makes resizing by ALT + Right
+      Mousebutton (mouse button 3) grab the corner closest to the mouse pointer
+      instead of the bottom right corner. `Center' resizes all corners at the
+      same time. Default: Bottom
 
-session.screen0.focusModel: ClickToFocus
+session.screen0.focusModel: ClickToFocus|MouseFocus
+      This controls how windows gain focus via the mouse. With `ClickToFocus',
+      the user must click on the window. With `MouseFocus', windows gain focus
+      whenever the mouse moves over them. Default: ClickToFocus
+
 session.screen0.autoRaise: <boolean>
+      When True, this setting automatically raises any window that gains focus.
+      Default: False
+
+session.autoRaiseDelay: <integer>
+      Adjusts the delay (in milli\-sec) before focused windows will raise
+      when using the Autoraise option. Default: 250
+
 session.screen0.clickRaises: <boolean>
+      This setting allows a user to click anywhere on a window to bring it on
+      top of other windows. Otherwise, only the titlebar will work. Default:
+      True
+
 session.screen0.workspacewarping: <boolean>
+      This setting enables a user to change workspaces by dragging a window
+      across the edge of the screen. Default: True
+
 session.screen0.showwindowposition: <boolean>
-      Setting this resource to `<boolean>' shows the user, in a little window,
+      Setting this resource to True shows the user, in a little window,
       the exact position of the application window while the user is
       dragging it. Allows a precise placement of windows on a screen.
-      Default: <boolean>
+      Default: True
 
 session.screen0.decorateTransient: <boolean>
-session.screen0.showposinsidewindow: <boolean>
-session.screen0.menuMode: Delay
-session.screen0.focusNewWindows: <boolean>
-session.screen0.workspaceNames: workspace1, workspaceN
-      Here is where the user can name their workspaces. However it is
-      recommended to use the tool available in the Configuration Menu to
-      set these. Default: one, two, three, four
+      This controls whether or not transient windows get window decorations,
+      such as a titlebar. Default: False
+
+session.screen0.menuMode: Delay|Click
+      This setting controls the circumstances under which submenus open. With
+      `Click', the user must click on the menu item in order for the submenu to
+      open. With `Delay', submenus open when the mouse hovers over the menu
+      item. Default: Delay
+
+session.screen0.menuDelay: <integer>
+      This sets the delay in milliseconds for submenus to open with the previous
+      option set to `Delay'. Default: 0
 
 session.screen0.menuDelayClose: 0
-      This value sets the delay (in milli\-sec) that you would like the
-      menu to remain visible after you've clicked out of it. Default: 0
+      This value sets the delay in milliseconds that you would like the menu to
+      remain visible after you've clicked out of it. Default: 0
+
+session.screen0.focusNewWindows: <boolean>
+      This sets whether or not new windows will become focused automatically.
+      Default: True
+
+session.screen0.workspaceNames: <names>
+      Here is where the user can name their workspaces. However it is
+      recommended to use the tool available in the Configuration Menu to set
+      these. Default: one, two, three, four
 
 session.screen0.edgeSnapThreshold: <integer>
-      When moving a window across your screen, fluxbox is able to have it
-      `snap' to the edges of the screen for easy placement. This variable
-      tells fluxbox the distance (in pixels) at which the window will jump
-      to the edge. Default: 0
+      When moving a window across your screen, fluxbox is able to have it `snap'
+      to the edges of the screen and other windows for easy placement. This
+      variable tells fluxbox the distance (in pixels) at which the window will
+      jump to the edge. Default: 0
 
-session.screen0.windowPlacement: RowSmartPlacement
+session.screen0.windowPlacement: <placement strategy>
+      This resource specifies where to place new windows when not otherwise
+      specified (by the program or the `apps' file, for example). Here are the
+      options:
+      \- RowSmartPlacement: tries to place windows in rows without overlapping
+      \- ColSmartPlacement: tries to place windows in columns without overlapping
+      \- CascadePlacement: places windows below the titlebar of the previous one
+      \- UnderMousePlacement: places new windows underneath the mouse
+      Default: RowSmartPlacement
+
+session.screen0.rowPlacementDirection: LeftToRight|RightToLeft
+session.screen0.colPlacementDirection: TopToBottom|BottomToTop
 
 session.screen0.fullMaximization: <boolean>
-session.screen0.sloppywindowgrouping: <boolean>
+      If this setting is enabled, windows will maximize over the toolbar and
+      slit, no matter what their individual settings are. Default: True
+
 session.screen0.rootCommand: <command>
       This overrides the styles rootCommand. When this value is set, it
       will keep your background the same, regardless of what any style
@@ -758,16 +943,22 @@ session.screen0.rootCommand: <command>
       this resource to a value other than a desktop wallpaper command.
 
 session.screen0.imageDither: <boolean>
+      This controls whether or not fluxbox created dithered images. Default:
+      False
+
 session.screen0.opaqueMove: <boolean>
       Sets the visibility level of application windows while being
       dragged. Default: <boolean>
 
-session.screen0.menuDelay: <msec>
 session.screen0.workspaces: <integer>
       Set this to the number of workspaces the users wants. Default: 4
 
 session.screen0.focusLastWindow: <boolean>
-session.screen0.windowMenu:
+      This controls whether or not to focus the last focused window when
+      switching workspaces. Default: True
+
+session.screen0.windowMenu: <blank>|<location>
+      This specifies the location of a user\-defined window menu. Default: blank
 
 session.appsFile: <location>
 session.groupFile: <location>
@@ -775,68 +966,81 @@ session.keyFile: <location>
 session.menuFile: <location>
 session.slitlistFile: <location>
 session.styleFile: <location>
-      All of these resources require a pathname to their specific
-      requests.This is where you can specify different files. Most of
-      the defaults will be located in the users ~/.fluxbox directory.
-
-session.autoRaiseDelay: <integer>
-      Adjusts the delay (in milli\-sec) before focused windows will raise
-      when using the Autoraise option. Default: 250
+      All of these resources require a pathname to their specific files. This is
+      where you can specify different files. Most of the defaults will be
+      located in the user's ~/.fluxbox directory.
 
 session.cacheLife: <integer>
-      This tells fluxbox how long (in minutes) unused pixmaps may stay in
-      the X server's memory. Default: 5
+      This tells fluxbox how long (in minutes) unused pixmaps may stay in the X
+      server's memory. Default: 5
 
 session.cacheMax: <integer>
-      This tells fluxbox how much memory (in Kb) it may use to store
-      cached pixmaps on the X server. If your machine runs short of
-      memory, you may lower this value. Default: 200
+      This tells fluxbox how much memory (in Kb) it may use to store cached
+      pixmaps on the X server. If your machine runs short of memory, you may
+      lower this value. Default: 200
 
 session.colorsPerChannel: <integer>
       This tells fluxbox how many colors to take from the X server on
-      pseudo\-color displays.  A channel would be red, green, or blue.
-      fluxbox will allocate this variable ^ 3 and make them always
-      available. Value must be between 2\-6. When you run fluxbox on an
-      8bpp display, you must set this resource to 4. Default: 4
+      pseudo\-color displays. A channel would be red, green, or blue. fluxbox
+      will allocate this variable ^ 3 and make them always available. Value must
+      be between 2\-6. When you run fluxbox on an 8bpp display, you must set this
+      resource to 4. Default: 4
 
 session.doubleClickInterval: <integer>
-      Adjust the delay (in milli\-sec) between mouse clicks for fluxbox
-      to consider a double click.  Default: 250
+      Adjust the delay in milliseconds between mouse clicks for fluxbox to
+      consider a double click. Default: 250
 
 session.forcePseudoTransparency: <boolean>
-session.focusTabMinWidth: 0
+      If you have Xorg's composite extension enabled, this setting will force
+      the menu, windows, toolbar, and slit to use pseudo\-transparency instead of
+      true transparency. Default: False
+
 session.iconbar: <boolean>
       Set this value to `<boolean>' or `<boolean>' to enable or disable fluxbox
       using the toolbar to display iconified windows. Default: <boolean>
 
 session.ignoreBorder: <boolean>
-session.imageDither: <boolean>
-      Set `<boolean>' or `<boolean>', respectively, to enable or disable dithering
-      of images. Only necessary on systems with small colour depths (8bpp
-      or less). Default: <boolean>
+      When using MouseFocus, don't change focus when the mouse hovers over the
+      window border. Default: False
 
-session.numLayers: 13
+session.numLayers: <integer>
+      This controls how many layers fluxbox should have. Default: 13
+
 session.opaqueMove: <boolean>
-      When moving a window, setting this to `<boolean>' will draw the window
-      contents as it moves (this is nasty on slow systems). If `<boolean>' it
-      will only draw an outline of the window border. Default: <boolean>
+      When moving a window, setting this to True will draw the window
+      contents as it moves (this is nasty on slow systems). If False, it
+      will only draw an outline of the window border. Default: False
 
-session.tabs: <boolean>
-session.tabPadding: 0
-session.tabsAttachArea: Window
+session.tabPadding: <integer>
+      This specifies the spacing between tabs. Default: 0
+
+session.tabsAttachArea: Window|Titlebar
+      With this set to `Window', windows may be grouped by dragging one tab with
+      the middle mouse button and dropping it anywhere on another window. With
+      `Titlebar', the user must drop the tab on the target window's titlebar.
+      Default: True
+
 session.titlebar.left: Stick
 session.titlebar.right: Minimize Maximize Close
-session.updateDelayTime: 0
-session.useMod1: <boolean>
+      The icons to place in the titlebar of decorated windows. The available
+      options are Close, Maximize, MenuIcon, Minimize, Shade, and Stick.
+
+session.modKey: <modifier>
+      This specifies which modifier to use to drag and resize windows without
+      clicking on the border or titlebar. Default: Mod1
 .fi
+.RE
 .SH "KEYS"
-You can customize fluxbox's key handling through the ~/.fluxbox/keys file. The file takes the format of:
+You can customize fluxbox's key handling through the ~/.fluxbox/keys file. The file takes the format of:.sp
 .sp
+.RS 3n
 .nf
-<modifier> <key> :[...] <operation>
+[keymode:] <modifier> <key> :<command> <operation>
 .fi
-In the example below, Mod1 is the \fIALT\fR key on the PC keyboard and Mod4 is one of the three extra keys on a pc104 branded with a familiar company logo. Lines beginning with a \fI#\fR or \fI!\fR are considered comments and unread by fluxbox.
+.RE
+In the example below, Mod1 is the \fIALT\fR key on the PC keyboard and Mod4 is one of the three extra keys on a pc104 branded with a familiar company logo. Lines beginning with a \fI#\fR or \fI!\fR are considered comments and unread by fluxbox..sp
 .sp
+.RS 3n
 .nf
 # fluxbox keys file.
 Mod1 Tab :NextWindow
@@ -858,349 +1062,429 @@ Mod4 x :Close
 Mod4 m :RootMenu
 Control n Mod1 n :NextTab
 .fi
-As you can see from the last line, keybindings can be chained in a fashion similar to Emacs keybindings.
-.sp
-Some things to know: \- Commands are case\-insensitive. \- Workspace numbering starts at "1". \- Some commands have synonyms. \- The space between the last key and the :Command is mandatory.
-.sp
-Here are fluxbox key commands to use:
+.RE
+As you can see from the last line, keybindings can be chained in a fashion similar to Emacs keybindings..sp
+Some things to know: \- Commands are case\-insensitive. \- Workspace numbering starts at "1". \- Some commands have synonyms. \- The space between the last key and the :Command is mandatory..sp
+Here are fluxbox key commands to use:.sp
 .SS "Window Manager Commands"
-.TP 3
+.TP 3n
 \(bu
 Restart <argument>
-.TP
+.TP 3n
 \(bu
 Quit
-.TP
+.TP 3n
 \(bu
 Reconfigure
-.TP
+.TP 3n
 \(bu
 SetStyle <argument>
-.TP
+.TP 3n
 \(bu
 ExecCommand <argument>
+.\" end of SS subsection "Window Manager Commands"
 .SS "Currently Focused Window Commands"
-.TP 3
+.TP 3n
 \(bu
 Minimize
-.TP
+.TP 3n
 \(bu
 MinimizeWindow
-.TP
+.TP 3n
 \(bu
 Iconify
-.TP
+.TP 3n
 \(bu
 Maximize
-.TP
+.TP 3n
 \(bu
 MaximizeWindow
-.TP
+.TP 3n
 \(bu
 MaximizeHorizontal
-.TP
+.TP 3n
 \(bu
 MaximizeVertical
-.TP
+.TP 3n
 \(bu
 ResizeTo <width> <height>
-.TP
+.TP 3n
 \(bu
 Resize <delta\-width> <delta\-height>
-.TP
+.TP 3n
 \(bu
 ResizeHorizontal <delta\-width>
-.TP
+.TP 3n
 \(bu
 ResizeVertical <delta\-height>
-.TP
+.TP 3n
 \(bu
 MoveTo <x> <y>
-.TP
+.TP 3n
 \(bu
 Move <delta\-x> <delta\-y>
-.TP
+.TP 3n
 \(bu
 MoveRight <delta\-x>
-.TP
+.TP 3n
 \(bu
 MoveLeft <delta\-x>
-.TP
+.TP 3n
 \(bu
 MoveUp <delta\-y>
-.TP
+.TP 3n
 \(bu
 MoveDown <delta\-y>
-.TP
+.TP 3n
 \(bu
 Raise
-.TP
+.TP 3n
 \(bu
 Lower
-.TP
+.TP 3n
 \(bu
 Close
-.TP
+.TP 3n
 \(bu
 Shade
-.TP
+.TP 3n
 \(bu
 ShadeWindow
-.TP
+.TP 3n
 \(bu
 Stick
-.TP
+.TP 3n
 \(bu
 StickWindow
-.TP
+.TP 3n
 \(bu
 ToggleDecor
-.TP
+.TP 3n
 \(bu
 TakeToWorkspace <number>
-.TP
+.TP 3n
 \(bu
 TakeToNextWorkspace <offset>
-.TP
+.TP 3n
 \(bu
 TakeToPrevWorkspace <offset>
-.TP
+.TP 3n
 \(bu
 SendToWorkspace <number>
-.TP
+.TP 3n
 \(bu
 SendToNextWorkspace <offset>
-.TP
+.TP 3n
 \(bu
 SendToPrevWorkspace <offset>
-.TP
+.TP 3n
 \(bu
 KillWindow
-.TP
+.TP 3n
 \(bu
 NextTab
-.TP
+.TP 3n
 \(bu
 PrevTab
-.TP
+.TP 3n
 \(bu
 MoveTabLeft
-.TP
+.TP 3n
 \(bu
 MoveTabRight
-.TP
+.TP 3n
 \(bu
 DetachClient
+.\" end of SS subsection "Currently Focused Window Commands"
 .SS "Workspace Commands"
-.TP 3
+.TP 3n
 \(bu
 NextWorkspace
-.TP
+.TP 3n
 \(bu
 PrevWorkspace
-.TP
+.TP 3n
 \(bu
 RightWorkspace <by\-number>
-.TP
+.TP 3n
 \(bu
 LeftWorkspace <by\-number>
-.TP
+.TP 3n
 \(bu
 Workspace <number>
-.TP
+.TP 3n
 \(bu
 NextWindow <bitmask>
-.TP
+.TP 3n
 \(bu
 PrevWindow <bitmask>
-.TP
+.TP 3n
 \(bu
 NextGroup <by\-number>
-.TP
+.TP 3n
 \(bu
 PrevGroup <by\-number>
-.TP
+.TP 3n
+\(bu
+FocusLeft
+.TP 3n
+\(bu
+FocusRight
+.TP 3n
+\(bu
+FocusUp
+.TP 3n
+\(bu
+FocusDown
+.TP 3n
 \(bu
 ArrangeWindows
-.TP
+.TP 3n
 \(bu
 ShowDesktop (Iconifies all windows)
-.TP
+.TP 3n
+\(bu
+Deiconify all|allworkspace|last|lastworkspace current|origin|originquiet
+.TP 3n
 \(bu
 RootMenu
-.TP
+.TP 3n
 \(bu
 WorkspaceMenu
-.TP
+.TP 3n
 \(bu
 WindowMenu
-.TP
+.TP 3n
 \(bu
 SetWorkspaceName <name>
+.\" end of SS subsection "Workspace Commands"
 .SS "Special Commands"
-.TP 3
+.TP 3n
 \(bu
 MacroCmd
-.TP
+.TP 3n
+\(bu
+ToggleCmd
+.TP 3n
 \(bu
 ReloadStyle
-.TP
+.TP 3n
 \(bu
 SetResourceValue <resourcename> <resource> value
-.TP
+.TP 3n
 \(bu
 BindKey <key><value>: <action>
+.TP 3n
+\(bu
+KeyMode <keymode name> <return key sequence>
+.TP 3n
+\(bu
+SetModKey <modifier>
+.\" end of SS subsection "Special Commands"
 .SS "Couple of things"
-.TP 3
+.TP 3n
 \(bu
 TakeToWorkspace: Will send you along with the window to the selected workspace. SendToWorkspace just sends the window.
-.TP
+.TP 3n
 \(bu
-TakeToNextWorkspace <offset>: Will send you and the window to workspace number <current offset>; that is, move you and the window <offset> spaces to the right (offset defaults to 1). SendToNextWorkspace does the same, except that it only sends the window (as for SendToWorkspace). TakeToPrevWorkspace and SendToPrevWorkspace work similarly, except moving to the previous windows, not the next one.
-.TP
+TakeToNextWorkspace <offset>: Will send you and the window to workspace number <current offset>; that is, move you and the window <offset> spaces to the right (offset defaults to 1). SendToNextWorkspace does the same, except that it only sends the window (as for SendToWorkspace). TakeToPrevWorkspace and SendToPrevWorkspace work similarly, except moving to the previous workspaces, not the next ones.
+.TP 3n
 \(bu
 PrevWindow/NextWindow parameters take an integer: 0 or unspecified = Default/current behavior \- most recently used. 1 = Groups instead of Windows \- only visit one tab in each group 2 = Skip stuck windows 4 = Skip shaded windows 8 = Switch between windows `linearly'; that is, if you repeatedly press the NextWindow key, you will walk through all windows in the, order that they were opened, instead of switching back and forth between the most recently focused windows.
 .sp
+.RS 3n
 .nf
 To combine any of these effects, add the corresponding numbers.
 For instance, 14 means switch linearly, skipping stuck and shaded
 windows.
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
 Bindkey will append key string and action to your keys file and bind the key.
-.TP
+.TP 3n
+\(bu
+KeyMode allows you to have different keybindings that aren't all active at the same time. For instance, you can use `KeyMode Xnest' to switch to the `Xnest' key mode, which will disable all of your key bindings that don't have `Xnest:
+\fI before them and will enable all the ones that do. <return key sequence> will then return you to the `default\fR
+key mode. If not provided, this defaults to the escape key.
+.TP 3n
 \(bu
 The
 \fIdelta\fR
 value means the difference between the current setting and the requested setting. So if you have a window that is 100 pixels wide, you could set
 .sp
+.RE
+.sp
+.RS 3n
 .nf
 Mod1 r :ResizeHorizontal 10
 .fi
-and when you use that key it would increase the size of your window to 110 pixels. If you had used
+.RE
+and when you use that key it would increase the size of your window to 110 pixels. If you had used.sp
 .sp
+.RS 3n
 .nf
 Mod1 R :ResizeHorizontal \-10
 .fi
-then it would have decreased the size by 10, setting it to 90 pixels.
-.TP 3
+.RE
+then it would have decreased the size by 10, setting it to 90 pixels..sp
+.TP 3n
 \(bu
 Resize commands do not necessarily change the number of pixels. For instance, many terminals will use the size of a character as the resize unit. Most applications, however, use pixels.
-.TP
+.TP 3n
 \(bu
 MacroCmd:
 .sp
-.nf
-Mod1 r MacroCmd: {command1} {command2}
-.fi
+.RE
 .sp
+.RS 3n
+.nf
+Mod1 r :MacroCmd {command1} {command2}
+.fi
+.RE
+.sp
+.RS 3n
 .nf
 allows you to execute more than one command with one keybinding. The commands
 will be executed in serial.
 .fi
-.SH "LAYERS"
-Layers affect the way that windows will overlap each other on the screen. Windows on a higher layer will always appear above those on a lower one, whether they are focused or not. By default, fluxbox uses 13 layers, starting from 1 (highest). The number of layers can be changed by using the following resource:
+.RE
+.TP 3n
+\(bu
+ToggleCmd:
 .sp
+.RE
+.sp
+.RS 3n
+.nf
+Mod1 t :ToggleCmd {command1} {command2}
+.fi
+.RE
+.sp
+.RS 3n
+.nf
+alternates between the given commands each time you press Mod1 + t.
+.fi
+.RE
+.\" end of SS subsection "Couple of things"
+.SH "LAYERS"
+Layers affect the way that windows will overlap each other on the screen. Windows on a higher layer will always appear above those on a lower one, whether they are focused or not. By default, fluxbox uses 13 layers, starting from 1 (highest). The number of layers can be changed by using the following resource:.sp
+.sp
+.RS 3n
 .nf
 session.numLayers: <integer>
 .fi
-There are two ways to assign a window to a different layer. When the window is open, you may select the layer in the `Layer \&...' submenu of the window menu. The menu gives six choices for the layer, which fluxbox manages by name. The names are (from highest to lowest layer):
-.TP 3
+.RE
+There are two ways to assign a window to a different layer. When the window is open, you may select the layer in the `Layer \&...' submenu of the window menu. The menu gives six choices for the layer, which fluxbox manages by name. The names are (from highest to lowest layer):.sp
+.TP 3n
 \(bu
 2 \- Above Dock
-.TP
+.TP 3n
 \(bu
 4 \- Dock
-.TP
+.TP 3n
 \(bu
 6 \- Top
-.TP
+.TP 3n
 \(bu
 8 \- Normal
-.TP
+.TP 3n
 \(bu
 10 \- Bottom
-.TP
+.TP 3n
 \(bu
 12 \- Desktop
-The other way to set the layer for a window is through the `apps' file. This method is described in the APPLICATIONS section.
+.sp
+.RE
+The other way to set the layer for a window is through the `apps' file. This method is described in the APPLICATIONS section..sp
 .SH "FOCUS MODEL"
-The Focus Model defines how windows gain focus (i.e. become the active window, which receives keyboard and mouse events). The focus model can be changed in the configuration menu (usually located under \fIfluxbox menu\fR in the Root Menu.
-.sp
-There are two main aspects of the focus model: how windows gain focus and how tabs gain focus. Each of these has two options: focus follows mouse and click to focus. Focus follows mouse means that windows will gain focus when the mouse hovers over them. Click to focus means that windows will gain focus when the mouse clicks on them.
-.sp
-Thus, there are four main options when choosing a focus model. You should choose one of the first two and one of the last two. They are:
-.TP 3
+The Focus Model defines how windows gain focus (i.e. become the active window, which receives keyboard and mouse events). The focus model can be changed in the configuration menu (usually located under \fIfluxbox menu\fR in the Root Menu..sp
+There are two main aspects of the focus model: how windows gain focus and how tabs gain focus. Each of these has two options: focus follows mouse and click to focus. Focus follows mouse means that windows will gain focus when the mouse hovers over them. Click to focus means that windows will gain focus when the mouse clicks on them..sp
+Thus, there are four main options when choosing a focus model. You should choose one of the first two and one of the last two. They are:.sp
+.TP 3n
 \(bu
+
 \fBClick To Focus\fR: click to focus windows
-.TP
+.TP 3n
 \(bu
+
 \fBMouse Focus\fR: window focus follows mouse
-.TP
+.TP 3n
 \(bu
+
 \fBClickTabFocus\fR: click to focus tabs
-.TP
+.TP 3n
 \(bu
+
 \fBMouseTabFocus\fR: tab focus follows mouse
-There is one more option in the focus model menu. It is called AutoRaise. When AutoRaise is enabled, focused windows will appear on top of other windows in the same layer. When AutoRaise is disabled, you must explicitly raise a focused window, using the window menu or keybinding.
+.sp
+.RE
+There is one more option in the focus model menu. It is called AutoRaise. When AutoRaise is enabled, focused windows will appear on top of other windows in the same layer. When AutoRaise is disabled, you must explicitly raise a focused window, using the window menu or keybinding..sp
 .SH "TAB OPTIONS"
-This section of fluxbox configuration menu lets you configure many features of tabs. Inside of it there are three main options:
-.TP 3
+This section of fluxbox configuration menu lets you configure many features of tabs. Inside of it there are three main options:.sp
+.TP 3n
 \(bu
-\fBPlacement\fR: you can choose where the external tabs must be positioned. The options are:
-.RS
-.TP 3
+
+\fBPlacement\fR: You can choose where the external tabs must be positioned. The options are:
+.RS 3n
+.TP 3n
 \(bu
 Top Left: tabs are located on the left side of the top border of the window.
-.TP
+.TP 3n
 \(bu
 Top Right: tabs are located on the right side of the top border of the window.
-.TP
+.TP 3n
 \(bu
 Left Top: tabs are located on the top part of the left border of the window.
-.TP
+.TP 3n
 \(bu
 Right Top: tabs are located on the top part of the right border of the window.
-.TP
+.TP 3n
 \(bu
 Left Bottom: tabs are located on the bottom part of the left border of the window.
-.TP
+.TP 3n
 \(bu
 Right Bottom: tabs are located on the bottom part of the right border of the window.
-.TP
+.TP 3n
 \(bu
 Bottom Left: tabs are located on the left side of the bottom border of the window.
-.TP
+.TP 3n
 \(bu
 Bottom Right: tabs are located on the right side of the bottom border of the window.
 .sp
+.RS 3n
 .nf
-for this options to work 'Tabs in Titlebar' must be off.
+For these options to work 'Tabs in Titlebar' must be off.
 .fi
 .RE
-.TP
+.RE
+.TP 3n
 \(bu
-\fBTabs in Titlebar\fR: when this option is on tabs are fixed in window titlebar and its width varies according to the amount of windows grouped.
-.TP
+
+\fBTabs in Titlebar\fR: When this option is on, tabs are fixed in window titlebar and the width varies according to the amount of windows grouped.
+.TP 3n
 \(bu
-\fBExternal Tab Width\fR: it specifies in pixels the width of external tabs.
-As most Fluxbox configurations this can be done by editing the init file. The resources that you should look at are:
+
+\fBExternal Tab Width\fR: This specifies in pixels the width of external tabs.
 .sp
+.RE
+As most Fluxbox configurations this can be done by editing the init file. The resources that you should look at are:.sp
+.sp
+.RS 3n
 .nf
-session.screen0.tabs.intitlebar:    <boolean>
-session.screen0.tab.width:          <integer>
-session.screen0.tab.placement:      <direction>
+session.screen0.tabs.intitlebar: <boolean>
+session.screen0.tab.width: <integer>
+session.screen0.tab.placement: <direction>
 .fi
+.RE
 .SH "STYLES"
-fluxbox enables you to use specialized files that contain X(1) resources to specify colors, textures, pixmaps and fonts, and thus the overall look of your window borders, menus and the toolbar.
-.sp
-The default installation of fluxbox provides some of these style files. See fluxstyle(1) to accommodate the growing number of style components.
+fluxbox enables you to use specialized files that contain X(1) resources to specify colors, textures, pixmaps and fonts, and thus the overall look of your window borders, menus and the toolbar..sp
+The default installation of fluxbox provides some of these style files. See fluxstyle(1) to accommodate the growing number of style components..sp
 .SH "APPLICATIONS"
-It is possible to force an application to always have the same dimensions, position, and other settings when it is first launched. This is done using either the window\-menu `Remember\&...\fI submenu, or by directly using the ~/.fluxbox/apps file. Be careful to edit the apps file manually only when fluxbox is not running. Otherwise your changes will be overwritten. Following is a listing of the valid entries for the `apps\fR file. The `Remember\&...\fI submenu has entries for most options that stores the current state in the `apps\fR file for loading next time.
+It is possible to force an application to always have the same dimensions, position, and other settings when it is first launched. This is done using either the window\-menu `Remember\&...\fI submenu, or by directly using the ~/.fluxbox/apps file. Be careful about editing the apps file while fluxbox is running. Your changes may be overwritten. Following is a listing of the valid entries for the `apps\fR file. The `Remember\&...\fI submenu has entries for most options that store the current state in the `apps\fR file for future use..sp
+The format of a line in the `apps' file is:.sp
 .sp
-The format of a line in the `apps' file is:
-.sp
+.RS 3n
 .nf
 [app] (app\-name) {count \- optional}
     [Property1]  {value1}
@@ -1208,8 +1492,10 @@ The format of a line in the `apps' file is:
     ...
 [end]
 .fi
-Each app\-name can be a string, or a regular expression. By default the name is matched against a windows WM_CLASS property (the first string in it, called the "instance"). You can match against the title, instance name (default), class name, or role (the WM_WINDOW_ROLE property) by explicitly specifying it. You can also specify multiple matches, which must ALL match for the properties to be applied. If a count is supplied in curly brackets at the end of the app line, then the entry will only match at most count at any time (default is to match all matching windows).
+.RE
+Each app\-name can be a string, or a regular expression. By default the name is matched against a window's WM_CLASS property (the first string in it, called the "instance"). You can match against the title, instance name (default), class name, or role (the WM_WINDOW_ROLE property) by explicitly specifying it. You can also specify multiple matches, which must ALL match for the properties to be applied. If a count is supplied in curly brackets at the end of the app line, then the entry will only match at most that many at any time (default is to match all matching windows)..sp
 .sp
+.RS 3n
 .nf
 # match a standard xterm
 [app] (xterm)
@@ -1221,37 +1507,41 @@ Each app\-name can be a string, or a regular expression. By default the name is 
 [app] (role=buddy_list)
 # match an rdesktop window to a particular host
 [app] (title=rdesktop \- hostname.*)
+# match gaim IRC windows
+[app] (gaim) (title=#.*)
 .fi
-The following are the properties that can be defined in each [app] entry. Each name must be enclosed in square brackets, and the value is generally in curly brackets:
-.TP 3
+.RE
+The following are the properties that can be defined in each [app] entry. Each name must be enclosed in square brackets, and the value is generally in curly brackets:.sp
+.TP 3n
 \(bu
 [Workspace] {0\-N}: Forces the application to open on the workspace specified. Workspaces are set by number, beginning with 0.
-.TP
+.TP 3n
 \(bu
 [Dimensions] {Width Height}: Open the application with the specified width and height, in pixels.
-.TP
+.TP 3n
 \(bu
 [Position] (\fBrefspot\fR)) {X Y}: Position the application at a particular spot:
-.RS
-.TP 3
+.RS 3n
+.TP 3n
 \(bu
 WINCENTER
-.TP
+.TP 3n
 \(bu
 CENTER
-.TP
+.TP 3n
 \(bu
 UPPERLEFT
-.TP
+.TP 3n
 \(bu
 UPPERRIGHT
-.TP
+.TP 3n
 \(bu
 LOWERLEFT
-.TP
+.TP 3n
 \(bu
 LOWERRIGHT
 .sp
+.RS 3n
 .nf
 You can optionally specify what X and Y are relative to. By default the
 upper left corner is placed at screen coordinates (X, Y). If you specify
@@ -1262,28 +1552,30 @@ acts like the rest \- positions the center of the window relative to the
 center of the screen).
 .fi
 .RE
-.TP
+.RE
+.TP 3n
 \(bu
 Specify the layer to open the window on (by number). Each layer has a number. The named ones are: 2\-AboveDock, 4\-Dock, 6\-Top, 8\-Normal, 10\-Bottom, 12\-Desktop.
-.TP
+.TP 3n
 \(bu
 [Shaded] {yes|no}: The window is started shaded, or not.
-.TP
+.TP 3n
 \(bu
 [Tab] {yes|no}: Whether this window can be tabbed with others.
-.TP
+.TP 3n
 \(bu
 [IconHidden] {yes|no}: Hides the app from the icon bar
-.TP
+.TP 3n
 \(bu
 [FocusHidden] {yes|no}: Hides the app from the window cycling list used Next/PrevWindow key bindings.
-.TP
+.TP 3n
 \(bu
 [Hidden] {yes|no}: is both [IconHidden] plus [FocusHidden]
-.TP
+.TP 3n
 \(bu
 [Deco] {NONE|NORMAL|TOOL|TINY|BORDER}: Specify the decoration state. There are several predefined dec\- oration sets:
 .sp
+.RS 3n
 .nf
 o   NORMAL \- standard decorations
 o   NONE \- no decorations
@@ -1291,37 +1583,41 @@ o   BORDER \- like NONE except keep the X window border
 o   TINY \- titlebar with an iconify button
 o   TOOL \- titlebar only
 .fi
+.RE
 .sp
+.RS 3n
 .nf
 A bitmask can also be used for fine\-grained control.  The bits are (from
 "1" to 1<<10): titlebar, handle/grips, border, iconify button, maximize
 button, close button, menu enabled, sticky button, shade button, tabbing
 enabled, focus enabled.
 .fi
-.TP
+.RE
+.TP 3n
 \(bu
 [Sticky] {yes|no}: Whether the window is initially stuck or not.
-.TP
+.TP 3n
 \(bu
 [Jump] {yes|no}: Jump to workspace. This one is only useful if `Workspace' is set too. The workspace is changed to the workspace containing the application being launched.
-.TP
+.TP 3n
 \(bu
 [Close] {yes|no}: Save settings on close. By default, application settings are not saved when a window is closed. Set this option if you want previous settings to be saved when the window is closed.
-The apps file also allows you to specify applications that should be started could be used to specify the screen, not the workspace, on which the application should be started. Startup is not yet setable by menu.
 .sp
-Finally, you can set windows to group together by using the `apps' file. This is achieved with either regular expressions using:
+.RE
+The apps file also allows you to specify applications that should be started could be used to specify the screen, not the workspace, on which the application should be started..sp
+Finally, you can set windows to group together by using the `apps' file. This can be achieved with regular expressions using:.sp
 .sp
+.RS 3n
 .nf
 [app] (property=expr) ... {number}
 .fi
-Property can be one of the following tags:
+.RE
+Property can be one of the following tags:.sp
+o name \- the name of the window (the first field of WM_CLASS) o class \- class of the window (the second field of WM_CLASS) o title \- title of the window ( WM_NAME property) o role \- role of the window (the WM_WINDOW_ROLE property).sp
+If no `property' is specified, the name property is assumed. You can find out the value for these fields for a particular window by running xprop(1)..sp
+You can also place [group] tag around several [app] tags, with an [end] tag to indicate the end of the group. You can also specify dimensions, positions, etc. for the group as for normal app entries. Here is a short example of an `apps' file:.sp
 .sp
-o name \- the name of the window (the first field of WM_CLASS) o class \- class of the window (the second field of WM_CLASS) o title \- title of the window ( WM_NAME property) o role \- role of the window (the WM_WINDOW_ROLE property)
-.sp
-If no `property' is specified, the name property is assumed. You can find out the value for these fields for a particular window by running xprop(1).
-.sp
-You can also place [group] tag around several [app] tags, with an [end] tag to indicate the end of the group. You can also specify dimensions, positions, etc. for the group as for normal app entries. Here is a short example of an `apps' file:
-.sp
+.RS 3n
 .nf
     [startup] {xterm}
     # match anything ending with term, up to 2 instances
@@ -1343,120 +1639,149 @@ You can also place [group] tag around several [app] tags, with an [end] tag to i
     [app] (aterm)
         [Deco]        {NONE}
     [end]
-    # a group with all windows called "special\-term",
+    # a group with the gimp dock and toolbox
     # appears on layer 4 (bottom)
     [group]
-    [app] (special\-term)
+      [app] (gimp) (role=gimp\-dock)
+      [app] (gimp) (role=gimp\-toolbox)
         [Layer] {4}
     [end]
 .fi
-Parameters in the `apps' file are case\-sensitive. Application names are taken from the first X window WM_CLASS attribute by default (WM_NAME = title, WM_WINDOW_ROLE = role). You can see this attribute by using the xprop command. Transient windows are not affected by application settings. Take care when using regular expressions. If you are not familiar with regular expressions you can disable this feature by specifying \-\-disable\-regexp during configure. Plain strings will then be matched.
+.RE
+Parameters in the `apps' file are case\-sensitive. Application names are taken from the first X window WM_CLASS attribute by default (WM_NAME = title, WM_WINDOW_ROLE = role). You can see this attribute by using the xprop command. Transient windows are not affected by application settings. Take care when using regular expressions. If you are not familiar with regular expressions you can disable this feature by specifying \-\-disable\-regexp during configure. Plain strings will then be matched..sp
 .SH "GROUPS"
-Since version 0.1.11, fluxbox has a feature called autogrouping, that is apps are automatically grouped together if they are in the same group. NOTE: that this feature is deprecated since version 0.9.1 in favor of grouping using the `apps' file, since it is much more powerful.
+Since version 0.1.11, fluxbox has a feature called autogrouping, that is apps are automatically grouped together if they are in the same group. NOTE: this feature is deprecated since version 0.9.1 in favor of grouping using the `apps' file, since it is much more powerful..sp
+You can create groups simply by editing the ~/.fluxbox/groups file. This file takes the format of:.sp
 .sp
-You can create groups simply by editing the ~/.fluxbox/groups file. This file takes the format of:
-.sp
+.RS 3n
 .nf
 <app1> <app2> <app3> <...> <appN>
 .fi
-where elements can be found with this command:
+.RE
+where elements can be found with this command:.sp
 .sp
+.RS 3n
 .nf
 $> xprop WM_CLASS
 .fi
-Just type this command into a terminal and use the mouse to click on the desired app and it will tell you what to write as an element (use the first of the two names returned). Each line forms a different group, e.g.:
+.RE
+Just type this command into a terminal and use the mouse to click on the desired app and it will tell you what to write as an element (use the first of the two names returned). Each line forms a different group, e.g.:.sp
 .sp
+.RS 3n
 .nf
 Navigator nedit
 xterm
 .fi
-This will create two groups, one with netscape and nedit, and one with xterm. The new window will only group itself to other windows on the same workspace and to the last window that was focused.
+.RE
+This will create two groups, one with netscape and nedit, and one with xterm. The new window will only group itself to other windows on the same workspace and to the last window that was focused..sp
 .SH "THE SLIT"
-The slit is a special fluxbox window frame that can contain dockable applications, e.g. \fIbbtools\fR or \fIwmapps\fR.
+The slit is a special fluxbox window frame that can contain dockable applications, e.g. \fIbbtools\fR or \fIwmapps\fR..sp
+When applications are run in the slit they have no window borders of their own; instead they are framed in the slit, and they are always visible in the current workspace..sp
+Most dockable applications use the \-w option to run in the slit. For example, you could put in your ~/.xinitrc:.sp
 .sp
-When applications are run in the slit they have no window borders of their own; instead they are framed in the slit, and they are always visible in the current workspace.
-.sp
-You can click button 3 on the edge of the slit window to get a menu to determine its position, whether its contained applications should be grouped horizontally or vertically and whether the slit should hide itself when the mouse moves away.
-.sp
-Most dockable applications use the \-w option to run in the slit. For example, you could put in your ~/.xinitrc:
-.sp
+.RS 3n
 .nf
 bbmail \-w &
 bbpager \-w &
 wmdrawer &
 exec fluxbox
 .fi
-NOTE: You can also put all of these in the startfluxbox(8) script. This way you would only need to specify: exec startfluxbox in your ~/.xinitrc.
-.sp
-To use the slit you must have it compiled into fluxbox, this is the default action.
+.RE
+NOTE: You can also put all of these in the startfluxbox(8) script. This way you would only need to specify: exec startfluxbox in your ~/.xinitrc..sp
+To use the slit you must have it compiled into fluxbox. This is the default setting..sp
+.SH "SLIT MENU"
+You can right click on the edge of the slit window to get a menu to configure its position, whether its contained applications should be grouped horizontally or vertically and whether the slit should hide itself when the mouse moves away. The slit menu items are described in more detail below:.sp
+.TP 3n
+\(bu
+
+\fBPlacement\fR: This lets you set the position of the slit.
+.TP 3n
+\(bu
+
+\fBLayer\fR: Look above for the layer priorities.
+.TP 3n
+\(bu
+
+\fBAuto hide\fR: If enabled, the slit will disappear after a given amount of time and hide from the view of the user. You can make it appear if you move the mouse to the edge of the desktop where the slit is positioned.
+.TP 3n
+\(bu
+
+\fBMaximize over\fR: If this is enabled, all windows, if you maximize them, will stretch over/under the slit. Otherwise the will be limited to the slit's edge.
+.TP 3n
+\(bu
+
+\fBAlpha\fR: By changing the value the slit (only the decoration not the apps in the slit) will become transparent. 0 (transparent) \- 255 (opaque)
+.TP 3n
+\(bu
+
+\fBSlit direction\fR: Changing the value will set the slit's direction for ordering apps sitting in the slit. There is no effect with only on application.
+.TP 3n
+\(bu
+
+\fBClients\fR: This submenu lets you reorder the the applications running in the slit. You are able to hide apps from the slit by unselecting them in the list showing. This will not kill the app. You can make them appear by selecting them in the list. The "Save SlitList" option saves the new order to you slitlist located in ~/.fluxbox (useful if you reordered the apps with the cycle option).
 .SH "SLITLIST FILE"
-fluxbox's slitlist file is available for those that use dockapps in the slit. This file helps fluxbox keep track of the \fBorder\fR of the dockapps that you want started. The file is generally located in ~/.fluxbox/slitlist
+fluxbox's slitlist file is available for those that use dockapps in the slit. This file helps fluxbox keep track of the \fBorder\fR of the dockapps when in the slit. The file is generally located at ~/.fluxbox/slitlist.sp
+A simple procedure for getting the slit sequences the way you like it is: 1. Run fluxbox with no pre\-loaded dockapps 2. Run dockapps individually in the order you want them 3. Add dockapps to your auto\-run script, or better yet your startfluxbox(8) script..sp
+This sequence will be saved by default to ~/.fluxbox/slitlist and will be remembered for future instances of fluxbox..sp
+Users are free to manually edit the slitlist file. It is a simple list of window names, as given by xprop(1), one per dockapp. Similar to the init file it should not be edited while fluxbox is running. Otherwise changes may get overwritten..sp
+The user also has the option of choosing a different path for the slitlist file. The following is the init file component that needs to be changed:.sp
 .sp
-A simple procedure for getting the slit sequences the way you like it is: 1. Run fluxbox with no pre\-loaded dockapps 2. Run dockapps individually in the order you want them 3. Add dockapps to your auto\-run script, or better yet your startfluxbox(8) script.
-.sp
-This sequence will be saved by default to ~/.fluxbox/slitlist and will be maintained in future versions of fluxbox.
-.sp
-Users are free to manually edit the slitlist file. It is a simple list of window names, one per dockapp. Similar to the init file it should not be edited while fluxbox is running. Otherwise changes may get overwritten.
-.sp
-The user also has the option of choosing a different path for the slit list file. The following is the init file component that needs changed:
-.sp
+.RS 3n
 .nf
 session.session0.slitlistFile: <filename>
 .fi
+.RE
 .SH "ENVIRONMENT"
-.TP
+.TP 3n
 HOME
-fluxbox uses HOME to find it's .fluxbox/init file, and to resolve style file and \-directory names.
-.TP
+fluxbox uses HOME to find the .fluxbox/init file and to resolve style file and \-directory names.
+.TP 3n
 DISPLAY
 When no other display was given on the command line, fluxbox will start on the display specified by this variable.
-fluxbox can also take advantage of other environment variables if they are set before fluxbox is started. For example, if $XTERM is set, then fluxbox will allow $XTERM to be used in keys and menu files. So one can do:
+fluxbox can also take advantage of other environment variables if they are set before fluxbox is started. For example, if $TERM is set, then it will be available whenever fluxbox uses the shell, such as certain commands in the keys and menu files. So one can do:.sp
 .sp
+.RS 3n
 .nf
-Mod1 x ExecCommand :$XTERM
+Mod1 x ExecCommand :$TERM
 .fi
-The way of using this in a clever way are endless.
+.RE
+For more information about environment variables, see your shell's manual..sp
 .SH "SIGNALS"
-fluxbox has the following signals and upon receipt of:
-.TP 3
+fluxbox responds to the following signals:.sp
+.TP 3n
 \(bu
 SIGHUP fluxbox loads the configuration.
-.TP
+.TP 3n
 \(bu
 SIGUSR1 Forces reloading of configuration.
-.TP
+.TP 3n
 \(bu
 SIGUSR2 Forces reloading of menu file.
 .SH "AUTHOR AND CREDITS"
-fluxbox is written and maintained by Henrik Kinnunen <fluxgen at fluxbox org>, Simon Bowden <rathnor at fluxbox org> and Mathias Gumz <akira at fluxbox org>. with contributions and patches merged from many individuals around the world.
-.sp
-Blackbox was written and maintained by Brad Hughes <blackbox at alug org> and Jeff Raven <jraven at psu edu>.
-.sp
-The Official fluxbox website: http://www.fluxbox.org
-.sp
-Many compatible themes: \- http://boxwhore.org \- http://themes.freshmeat.net/
-.sp
-This manpage is the combined work of:
-.TP 3
+fluxbox is written and maintained by Henrik Kinnunen <fluxgen at fluxbox org>, Simon Bowden <rathnor at fluxbox org>, Mathias Gumz <akira at fluxbox org>, and Mark Tiefenbruck <mark at fluxbox org>, with contributions and patches merged from many individuals around the world..sp
+Blackbox was written and maintained by Brad Hughes <blackbox at alug org> and Jeff Raven <jraven at psu edu>..sp
+The Official fluxbox website: http://www.fluxbox.org.sp
+Many compatible themes: \- http://boxwhore.org \- http://themes.freshmeat.net/.sp
+This manpage is the combined work of:.sp
+.TP 3n
 \(bu
 Curt Micol <asenchi at asenchi com> (>fluxbox\-0.9.11)
-.TP
+.TP 3n
 \(bu
 Tobias Klausmann <klausman at users sourceforge net> (<=fluxbox\-0.9.11)
-.TP
+.TP 3n
 \(bu
 Grubert <grubert at users sourceforge net> (fluxbox)
-.TP
+.TP 3n
 \(bu
 Matthew Hawkins <matt at mh dropbear id au> (blackbox)
-.TP
+.TP 3n
 \(bu
 Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
-.TP
+.TP 3n
 \(bu
 Numerous other languages could be available if someone jumps in.
 .SH "BUGS"
-If you find any bugs, please visit the #fluxbox irc channel on irc.freenode.net. Or you may subscribe to one of the mailinglists. More information can be found on the official website.
+If you find any bugs, please visit the #fluxbox irc channel on irc.freenode.net or submit them to the bug tracker at http://sf.net/projects/fluxbox . Or you may subscribe to one of the mailinglists. More information can be found on the official website..sp
 .SH "SEE ALSO"
-bsetroot(1) fbsetbg(1) fbrun(1) fluxstyle(1)
-.sp
+bsetroot(1) fbsetbg(1) fbrun(1) fluxstyle(1).sp
