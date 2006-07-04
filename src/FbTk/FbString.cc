@@ -261,7 +261,8 @@ bool StringConvertor::setSource(const std::string &encoding) {
     if (newiconv == ((iconv_t)(-1)))
         return false;
     else {
-        iconv_close(m_iconv);
+        if (m_iconv != ((iconv_t)-1))
+            iconv_close(m_iconv);
         m_iconv = newiconv;
         return true;
     }
