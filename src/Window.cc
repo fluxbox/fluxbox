@@ -2478,9 +2478,16 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         setState(NormalState, false);
 
-        if (client->isTransient() || screen().focusControl().focusNew())
+        if (client->isTransient())
             setCurrentClient(*client, true);
-        else
+        else if (screen().focusControl().focusNew()) {
+            FluxboxWindow *cur = FocusControl::focusedFbWindow();
+            if (cur && cur->isFullscreen()) {
+                setFocusFlag(false);
+                Fluxbox::instance()->attentionHandler().addAttention(*client);
+            } else
+                setCurrentClient(*client, true);
+        } else
             setFocusFlag(false);
 
         iconic = false;

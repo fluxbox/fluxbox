@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/04:
+   * New windows don't steal focus from fullscreen windows; instead, flash the
+     titlebar and iconbar button (Mark)
+     Window.cc
 *06/07/03:
    * fix+improve handling of window gravity, was very broken (Simon)
      - caused (among others) windows with gravity set to get relocated 
