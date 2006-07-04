@@ -311,6 +311,7 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
                     cerr<<__FILE__<<"("<<__FUNCTION__<<"): window ("<<*wit<<") attaching window ("<<&win<<")"<<endl;
 #endif // DEBUG
                     (*wit)->attachClient(win.winClient());
+                    (*wit)->raise();
                     return true; // grouping done
                 
                 }
