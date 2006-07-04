@@ -39,8 +39,6 @@ public:
     void reconfigTheme();
     bool fallback(FbTk::ThemeItem_base &item);
 
-    void setAntialias(bool antialias);
-
     TextTheme &focusedText()  { return m_focused_text; }
     TextTheme &unfocusedText() { return m_unfocused_text; }
 

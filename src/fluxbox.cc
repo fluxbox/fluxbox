@@ -202,8 +202,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
       m_rc_tabs_padding(m_resourcemanager, 0, "session.tabPadding", "Session.TabPadding"),
-      m_rc_focused_tab_min_width(m_resourcemanager, 0, "session.focusTabMinWidth",
-              "Session.FocusTabMinWidth"),
       m_rc_stylefile(m_resourcemanager, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
       m_rc_styleoverlayfile(m_resourcemanager, "~/.fluxbox/overlay", "session.styleOverlay", "Session.StyleOverlay"),
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),

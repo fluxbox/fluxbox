@@ -118,7 +118,6 @@ public:
     bool doOpaqueMove() const { return *resource.opaque_move; }
     bool doFullMax() const { return *resource.full_max; }
     bool doShowWindowPos() const { return *resource.show_window_pos; }
-    bool antialias() const { return *resource.antialias; }
     bool decorateTransient() const { return *resource.decorate_transient; }
     const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
     FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
@@ -436,7 +435,7 @@ private:
         FbTk::Resource<bool> image_dither, opaque_move, full_max,
             workspace_warping,
             desktop_wheeling, reverse_wheeling, show_window_pos,            
-            antialias, auto_raise, click_raises, decorate_transient;
+            auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> rootcommand;		
         FbTk::Resource<ResizeModel> resize_model;
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
