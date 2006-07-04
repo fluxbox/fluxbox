@@ -495,11 +495,6 @@ void FluxboxWindow::init() {
         decorations.tab = false; //no tab for this window
     }
 
-
-    if (m_client->normal_hint_flags & (PPosition|USPosition)) {
-        frame().gravityTranslate(wattrib.x, wattrib.y, m_client->gravity(), m_client->old_bw, false);
-    }
-
     associateClientWindow(true, wattrib.x, wattrib.y, wattrib.width, wattrib.height, m_client->gravity(), m_client->old_bw);
 
     Fluxbox::instance()->attachSignals(*this);
@@ -543,8 +538,6 @@ void FluxboxWindow::init() {
         wattrib.height = 1;
 */
 
-
-
     // if we're a transient then we should be on the same layer as our parent
     if (m_client->isTransient() &&
         m_client->transientFor()->fbwindow() &&
@@ -561,9 +554,13 @@ void FluxboxWindow::init() {
     }
 #endif // DEBUG
 
+    int real_width = frame().width();
+    int real_height = frame().height() - frame().titlebarHeight() - frame().handleHeight();
+    m_client->applySizeHints(real_width, real_height);
+    real_height += frame().titlebarHeight() + frame().handleHeight();
 
     if (!place_window)
-        moveResize(frame().x(), frame().y(), frame().width(), frame().height());
+        moveResize(frame().x(), frame().y(), real_width, real_height);
 
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
     setWorkspace(m_workspace_number);
@@ -1376,7 +1373,7 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
     // magic to detect if moved during initialisation
     if (!isInitialized())
         m_old_pos_x = 1;
-    frame().moveResizeForClient(new_x, new_y, new_width, new_height, true, true, gravity, client_bw);
+    frame().moveResizeForClient(new_x, new_y, new_width, new_height, gravity, client_bw);
     setFocusFlag(focused);
     shaded = false;
     sendConfigureNotify();

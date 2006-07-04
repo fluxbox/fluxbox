@@ -241,7 +241,7 @@ void FbWinFrame::resize(unsigned int width, unsigned int height) {
 }
 
 // need an atomic moveresize where possible
-void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned int height, bool move, bool resize, int win_gravity, unsigned int client_bw) {
+void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int win_gravity, unsigned int client_bw, bool move, bool resize) {
     // total height for frame
 
     if (resize) // these fns check if the elements are "on"
@@ -253,7 +253,7 @@ void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned 
 }
 
 void FbWinFrame::resizeForClient(unsigned int width, unsigned int height, int win_gravity, unsigned int client_bw) {
-    moveResizeForClient(0, 0, width, height, false, true, win_gravity, client_bw);
+    moveResizeForClient(0, 0, width, height, win_gravity, client_bw, false, true);
 }
 
 void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height, bool move, bool resize) {

@@ -104,7 +104,7 @@ public:
     // for when there needs to be an atomic move+resize operation
     void moveResizeForClient(int x, int y, 
                              unsigned int width, unsigned int height, 
-                             bool move = true, bool resize = true, int win_gravity=ForgetGravity, unsigned int client_bw = 0);
+                             int win_gravity=ForgetGravity, unsigned int client_bw = 0, bool move = true, bool resize = true);
 
     // can elect to ignore move or resize (mainly for use of move/resize individual functions
     void moveResize(int x, int y, 

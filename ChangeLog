@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/07/04:
+   * Fix some sizing issues from gravity change patch (Simon)
+     FbWinFrame.hh/cc Window.cc
    * Auto-grouped windows using groups file didn't raise (Thanks ac2dc, bug
      #1449608)
      Workspace.cc
