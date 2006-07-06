@@ -458,18 +458,8 @@ void FocusControl::setFocusedWindow(WinClient *client) {
 #endif // DEBUG
 
     // Update the old focused client to non focus
-    // check if s_focused_window is valid
-    if (s_focused_window != 0 &&
-        Fluxbox::instance()->validateClient(s_focused_window)) {
-
-        if (!client && s_focused_fbwindow)
-            s_focused_fbwindow->setFocusFlag(false);
-
-    } else {
-        s_focused_window = 0;
-        s_focused_fbwindow = 0;
-    }
-
+    if (s_focused_fbwindow)
+        s_focused_fbwindow->setFocusFlag(false);
 
     if (client && client->fbwindow() && !client->fbwindow()->isIconic()) {
         // screen should be ok

@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/06:
+   * Still trying to get the focus right: bug #1517750 (Mark)
+     FocusControl.cc Window.cc Screen.cc
 *06/07/05:
    * Fix crash on startup on some platforms (Simon)
      FbTk/FbString.cc

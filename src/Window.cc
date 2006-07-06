@@ -703,11 +703,9 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     m_workspacesig.notify();
     m_layersig.notify();
 
-    if (was_focused != 0) {
+    if (was_focused != 0)
         // already has focus, we're just assuming the state of the old window
-        setCurrentClient(*was_focused, false);
-        frame().setFocus(true);
-    }
+        FocusControl::setFocusedWindow(&client);
 
     frame().reconfigure();
 
@@ -776,10 +774,8 @@ void FluxboxWindow::detachCurrentClient() {
         return;
     WinClient &client = *m_client;
     detachClient(*m_client);
-    if (client.fbwindow() != 0) {
+    if (client.fbwindow() != 0)
         client.fbwindow()->show();
-        FocusControl::setFocusedWindow(&client);
-    }
 }
 
 /// removes client from client list, does not create new fluxboxwindow for it
