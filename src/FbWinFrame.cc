@@ -225,6 +225,9 @@ void FbWinFrame::shade() {
         m_height_before_shade = m_window.height();
         m_window.resize(m_window.width(), m_titlebar.height());
         alignTabs();
+        // need to update our shape
+        if ( m_shape.get() )
+            m_shape->update(); 
     } else { // should be unshaded
         m_window.resize(m_width_before_shade, m_height_before_shade);
         reconfigure();
