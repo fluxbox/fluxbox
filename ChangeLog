@@ -4,7 +4,7 @@ Changes for 1.0rc3:
    * Fixed bug #1069909, Incorrect window dimensions (Henrik)
      It created strut even if it didnt have any clients
      Slit.cc
-   * Fixed bug #1491571, Round corners bad rendered (Henrik)
+   * Fixed bug #1491571, Round corners badly rendered (Henrik)
      Update shape in FbWinFrame after a shade()
      FbWinFrame.cc
    * Changing between internal and external tabs didn't affect iconified
