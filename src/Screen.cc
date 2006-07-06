@@ -910,6 +910,15 @@ void BScreen::reconfigureTabs() {
             }
         }
     }
+    Icons::iterator icon_it = m_icon_list.begin();
+    Icons::iterator icon_it_end = m_icon_list.end();
+    for (; icon_it != icon_it_end; ++icon_it) {
+        (*icon_it)->frame().updateTabProperties();
+        if (*resource.default_internal_tabs)
+            (*icon_it)->frame().setTabMode(FbWinFrame::INTERNAL);
+        else
+            (*icon_it)->frame().setTabMode(FbWinFrame::EXTERNAL);
+    }
 }
 
 
