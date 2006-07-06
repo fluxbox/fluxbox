@@ -359,7 +359,9 @@ void Slit::updateStrut() {
     bool had_strut = m_strut ? true : false;
     clearStrut();
     // no need for area if we're autohiding or set maximize over
-    if (doAutoHide() || *m_rc_maximize_over) {
+    // or if we dont have any clients
+    if (doAutoHide() || *m_rc_maximize_over ||
+        clients().empty()) {
         // update screen area if we had a strut before
         if (had_strut)
             screen().updateAvailableWorkspaceArea();
