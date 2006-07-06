@@ -148,11 +148,6 @@ void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
     m_cycling_window = it;
 }
 
-void FocusControl::addFocusFront(WinClient &client) {
-    m_focused_list.push_front(&client);
-    m_creation_order_list.push_back(&client);
-}
-
 void FocusControl::addFocusBack(WinClient &client) {
     m_focused_list.push_back(&client);
     m_creation_order_list.push_back(&client);
