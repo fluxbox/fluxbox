@@ -1375,8 +1375,6 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     // always put on end of focused list, if it gets focused it'll get pushed up
     // there is only the one win client at this stage
     focusControl().addFocusBack(*winclient);
-    if (focusControl().focusNew())
-        FocusControl::setFocusedWindow(winclient);
 
     // we also need to check if another window expects this window to the left
     // and if so, then join it.
@@ -1416,7 +1414,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     }
 
     if (focusControl().focusNew() || FocusControl::focusedWindow() == &client)
-        FocusControl::setFocusedWindow(&client);
+        win->setInputFocus();
 
     m_clientlist_sig.notify();
 

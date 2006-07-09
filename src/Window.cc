@@ -2470,17 +2470,14 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         setState(NormalState, false);
 
-        if (client->isTransient())
+        FluxboxWindow *cur = FocusControl::focusedFbWindow();
+        if (client->isTransient() ||
+            m_screen.currentWorkspace()->numberOfWindows() == 1 ||
+            m_screen.focusControl().focusNew() && !(cur && cur->isFullscreen()))
             setCurrentClient(*client, true);
-        else if (screen().focusControl().focusNew()) {
-            FluxboxWindow *cur = FocusControl::focusedFbWindow();
-            if (cur && cur->isFullscreen()) {
-                setFocusFlag(false);
-                Fluxbox::instance()->attentionHandler().addAttention(*client);
-            } else
-                setCurrentClient(*client, true);
-        } else
-            setFocusFlag(false);
+        else if (m_screen.focusControl().focusNew())
+            Fluxbox::instance()->attentionHandler().addAttention(*client);
+
 
         iconic = false;
 
