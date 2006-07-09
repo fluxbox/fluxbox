@@ -831,14 +831,17 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
         // ce.data.l[0] = gravity and flags
-        // ce.data.l[1] = x
-        // ce.data.l[2] = y
-        // ce.data.l[3] = width
-        // ce.data.l[4] = height
-        // TODO: flags
+        int x = (ce.data.l[0] & 0x0100) ? ce.data.l[1] :
+            winclient->fbwindow()->x();
+        int y = (ce.data.l[0] & 0x0200) ? ce.data.l[2] :
+            winclient->fbwindow()->y();
+        unsigned int width = (ce.data.l[0] & 0x0400) ? ce.data.l[3] :
+            winclient->fbwindow()->width();
+        unsigned int height = (ce.data.l[0] & 0x0800) ? ce.data.l[4] :
+            winclient->fbwindow()->height();
         int win_gravity=ce.data.l[0] & 0xFF;
-        winclient->fbwindow()->moveResizeForClient(ce.data.l[1], ce.data.l[2],
-                                          ce.data.l[3], ce.data.l[4], win_gravity, winclient->old_bw);
+        winclient->fbwindow()->moveResizeForClient(x, y, width, height,
+            win_gravity, winclient->old_bw);
         return true;
     } else if (ce.message_type == m_net_restack_window) {
 #ifndef DEBUG
