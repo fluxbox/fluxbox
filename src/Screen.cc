@@ -1413,8 +1413,9 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
         return 0;
     }
 
+    // can't setInputFocus yet and mapNotifyEvent doesn't happen for the client
     if (focusControl().focusNew() || FocusControl::focusedWindow() == &client)
-        win->setInputFocus();
+        FocusControl::setFocusedWindow(&client);
 
     m_clientlist_sig.notify();
 

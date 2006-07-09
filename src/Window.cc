@@ -764,7 +764,6 @@ bool FluxboxWindow::detachClient(WinClient &client) {
     // m_client must be valid as there should be at least one other window
     // otherwise this wouldn't be here (refer numClients() <= 1 return)
     client.setFluxboxWindow(screen().createWindow(client));
-    m_client->raise();
     return true;
 }
 
