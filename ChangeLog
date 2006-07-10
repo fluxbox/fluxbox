@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/10:
+   * Next/PrevWindow toolbar buttons break MouseFocus: bug #1519913 (Mark)
+     WorkspaceCmd.cc FocusControl.cc
 *06/07/08:
    * Fix implementation of _NET_MOVERESIZE_WINDOW (Mark)
      Ewmh.cc

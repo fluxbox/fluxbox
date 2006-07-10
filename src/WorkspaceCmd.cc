@@ -60,7 +60,7 @@ void NextWindowCmd::execute() {
                 screen->focusControl().nextFocus(m_option);
             }
         } else
-            screen->focusControl().nextFocus(m_option);
+            screen->focusControl().nextFocus(m_option | FocusControl::CYCLELINEAR);
     }
 }
 
@@ -82,7 +82,7 @@ void PrevWindowCmd::execute() {
                 screen->focusControl().prevFocus(m_option);
             }
         } else
-            screen->focusControl().nextFocus(m_option);
+            screen->focusControl().nextFocus(m_option | FocusControl::CYCLELINEAR);
     }
 }
 
