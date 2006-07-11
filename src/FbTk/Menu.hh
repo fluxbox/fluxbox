@@ -154,7 +154,9 @@ public:
     inline unsigned int height() const { return menu.window.height(); }
     inline size_t numberOfItems() const { return menuitems.size(); }
     inline int currentSubmenu() const { return m_which_sub; } 
+#ifdef NOT_USED
     bool hasSubmenu(unsigned int index) const;
+#endif
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
     bool isItemSelectable(unsigned int index) const;

@@ -747,7 +747,7 @@ void Menu::drawSubmenu(unsigned int index) {
 
 }
 
-
+#ifdef NOT_USED
 bool Menu::hasSubmenu(unsigned int index) const {
     if (index >= menuitems.size()) //boundary check
         return false;
@@ -757,7 +757,7 @@ bool Menu::hasSubmenu(unsigned int index) const {
 	
     return true;	
 }
-
+#endif // NOT_USED
 
 int Menu::drawItem(FbDrawable &drawable, unsigned int index,
                    bool highlight, bool exclusive_drawable) {
