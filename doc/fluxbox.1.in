@@ -289,7 +289,6 @@ When you want to drag a window, but cannot see either the bottom handle or its
 titlebar, you can press Alt + button 1 anywhere in the window and then
 drag it around.
 You can also use Alt + button 1 to raise a partially visible window.
-Finally, Alt + button 2 lowers a window, and Alt + button 3 resizes the window.
 .PP
 This can be disabled or changed to a different modifier in the resource file
 .I ~/.fluxbox/init
