@@ -1057,11 +1057,8 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
     FbTk::App::instance()->sync(false);
 
-    WinClient *focused_client = FocusControl::focusedWindow();
-    FluxboxWindow *focused = 0;
-    if (focused_client)
-        focused = focused_client->fbwindow();
-        
+    FluxboxWindow *focused = FocusControl::focusedFbWindow();
+
     if (focused && focused->isMoving()) {
         if (doOpaqueMove())
             reassociateWindow(focused, id, true);
@@ -1113,12 +1110,8 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (! m_current_workspace || id >= m_workspaces_list.size())
         return;
 
-    if (!win) {
-        WinClient *client = FocusControl::focusedWindow();
-        if (client) 
-            win = client->fbwindow();
-    }
-
+    if (!win)
+        win = FocusControl::focusedFbWindow();
 
     FbTk::App::instance()->sync(false);
 

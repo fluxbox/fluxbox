@@ -91,11 +91,9 @@ void DirFocusCmd::execute() {
     if (screen == 0)
         return;
 
-    WinClient *client = FocusControl::focusedWindow();
-    if (client == 0 || client->fbwindow() == 0)
-        return;
-
-    screen->focusControl().dirFocus(*client->fbwindow(), m_dir);
+    FluxboxWindow *win = FocusControl::focusedFbWindow();
+    if (win)
+        screen->focusControl().dirFocus(*win, m_dir);
 }
 
 void NextWorkspaceCmd::execute() {
