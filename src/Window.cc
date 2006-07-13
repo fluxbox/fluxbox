@@ -513,21 +513,18 @@ void FluxboxWindow::init() {
 
     bool place_window = (m_old_pos_x == 0);
 
-    if (fluxbox.isStartup() || m_client->isTransient() || 
+    if (fluxbox.isStartup())
+        place_window = false;
+    else if (m_client->isTransient() || 
         m_client->normal_hint_flags & (PPosition|USPosition)) {
 
-        if (! fluxbox.isStartup()) {
+        int real_x = frame().x();
+        int real_y = frame().y();
 
-            int real_x = frame().x();
-            int real_y = frame().y();
-
-            if (real_x >= 0 &&
-                real_y + frame().y() >= 0 &&
-                real_x <= (signed) screen().width() &&
-                real_y <= (signed) screen().height())
-                place_window = false;
-
-        } else
+        if (real_x >= 0 &&
+            real_y + frame().y() >= 0 &&
+            real_x <= (signed) screen().width() &&
+            real_y <= (signed) screen().height())
             place_window = false;
 
     }
