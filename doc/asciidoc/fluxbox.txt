@@ -830,7 +830,8 @@ session.screen0.toolbar.tools: <tools>
 session.screen0.slit.onhead: <integer>
 session.screen0.toolbar.onhead: <integer>
       For those that use xinerama, users can set this value to the number of the
-      head where they would like to see the slit and toolbar. Default: 0
+      head where they would like to see the slit and toolbar, starting from 1.
+      Setting this to 0 will ignore xinerama information. Default: 0
 
 session.screen0.iconbar.mode: <mode>
       This value is set in the Iconbar Mode menu. The available options are::
