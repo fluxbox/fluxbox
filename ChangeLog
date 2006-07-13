@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/07/13:
+   * Remove some redundant code for loading styles (Mark)
+     fluxbox.cc Screen.cc RootTheme.cc/hh
    * Fix background: random (Mark)
      RootTheme.cc
 *06/07/10:

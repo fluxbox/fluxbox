@@ -291,8 +291,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // HAVE_RANDR
 
     load_rc();
-    // setup theme manager to have our style file ready to be scanned
-    FbTk::ThemeManager::instance().load(getStyleFilename(), getStyleOverlayFilename());
 
     // setup atom handlers before we create any windows
 #ifdef REMEMBER

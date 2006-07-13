@@ -442,11 +442,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // else the focus label doesn't get updated
     // So we lock root theme temporary so it doesn't uses RootTheme::reconfigTheme
     // This must be fixed in the future.
-    m_root_theme->lock(true);
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
                                         fluxbox->getStyleOverlayFilename(),
                                         m_root_theme->screenNum());
-    m_root_theme->lock(false);
     m_root_theme->setLineAttributes(*resource.gc_line_width,
                                     *resource.gc_line_style,
                                     *resource.gc_cap_style,

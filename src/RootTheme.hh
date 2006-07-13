@@ -61,14 +61,11 @@ public:
         m_opgc.setLineAttributes(width, line_style, cap_style, join_style);
     }
     
-    //!! TODO we should need this later
-    void lock(bool value) { m_lock = value; }
 private:
     BackgroundItem *m_background;///< background image/texture
     FbTk::GContext m_opgc;
     const std::string &m_root_command;
     FbTk::ImageControl &m_image_ctrl; ///< image control for rendering background texture
-    bool m_lock; ///< reconfigure lock
     bool m_background_loaded; ///< whether or not the background is present in the style file
 
 };
