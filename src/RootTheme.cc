@@ -180,8 +180,6 @@ void RootTheme::reconfigTheme() {
                 options += "-t ";
             if (strstr(m_background->options().c_str(), "centered") != 0)
                 options += "-c ";
-            if (strstr(m_background->options().c_str(), "random") != 0)
-                options += "-r ";
             if (strstr(m_background->options().c_str(), "aspect") != 0)
                 options += "-a ";
             
@@ -192,6 +190,11 @@ void RootTheme::reconfigTheme() {
             FbCommands::ExecuteCmd exec(commandargs, screenNum());
             exec.execute();
 
+        } else if (FbTk::FileUtil::isDirectory(filename.c_str()) &&
+                strstr(m_background->options().c_str(), "random") != 0) {
+            std::string commandargs = "fbsetbg -r " + filename;
+            FbCommands::ExecuteCmd exec(commandargs, screenNum());
+            exec.execute();
         } else {
             // render normal texture with fbsetroot
 
