@@ -62,6 +62,7 @@ public:
         CYCLESKIPSTUCK = 0x02, 
         CYCLESKIPSHADED = 0x04,
         CYCLELINEAR = 0x08, 
+        CYCLESKIPICONIC = 0x10,
         CYCLEDEFAULT = 0x00 
     };
 
@@ -117,6 +118,7 @@ private:
     FocusedWindows::iterator m_cycling_window;
     bool m_cycling_focus;
     bool m_cycling_creation_order;
+    bool m_was_iconic;
     WinClient *m_cycling_last;
 
     static WinClient *s_focused_window;

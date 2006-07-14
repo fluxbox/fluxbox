@@ -55,7 +55,7 @@ void NextWindowCmd::execute() {
             else {
                 // if stacked cycling, then set a watch for
                 // the release of exactly these modifiers
-                if (!fb->watchingScreen())
+                if (screen != fb->watchingScreen())
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
                 screen->focusControl().nextFocus(m_option);
             }
@@ -77,7 +77,7 @@ void PrevWindowCmd::execute() {
             else {
                 // if stacked cycling, then set a watch for
                 // the release of exactly these modifiers
-                if (!fb->watchingScreen())
+                if (screen != fb->watchingScreen())
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
                 screen->focusControl().prevFocus(m_option);
             }

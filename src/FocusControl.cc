@@ -57,6 +57,7 @@ FocusControl::FocusControl(BScreen &screen):
                 screen.name()+".focusNewWindows", 
                 screen.altName()+".FocusNewWindows"),
     m_cycling_focus(false),
+    m_was_iconic(false),
     m_cycling_last(0) {
 
     m_cycling_window = m_focused_list.end();
@@ -73,38 +74,29 @@ bool doSkipWindow(const WinClient &winclient, int opts) {
     (opts & FocusControl::CYCLEGROUPS) != 0 && win->winClient().window() != winclient.window() ||
     // skip if shaded
     (opts & FocusControl::CYCLESKIPSHADED) != 0 && win->isShaded() || 
+    // skip if iconic
+    (opts & FocusControl::CYCLESKIPICONIC) != 0 && win->isIconic() ||
     // skip if hidden
     win->isFocusHidden()
     ); 
 }
 
 void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
-    int num_windows = m_screen.currentWorkspace()->numberOfWindows();
-	
-    if (num_windows < 1)
-        return;
 
     FocusedWindows *window_list = (opts & CYCLELINEAR) ? &m_creation_order_list : &m_focused_list;
     if (!m_cycling_focus) {
-        if (Fluxbox::instance()->watchingScreen())
+        if (&m_screen == Fluxbox::instance()->watchingScreen())
             m_cycling_focus = true;
-        if (opts & CYCLELINEAR) {
-            m_cycling_creation_order = true;
-            m_cycling_window = find(window_list->begin(),window_list->end(),s_focused_window);
-        } else {
-            m_cycling_creation_order = (opts & CYCLELINEAR);
-            m_cycling_window = window_list->begin();
-        }
+        m_cycling_window = find(window_list->begin(),window_list->end(),s_focused_window);
+        m_cycling_creation_order = (opts & CYCLELINEAR);
+        m_was_iconic = false;
         m_cycling_last = 0;
     } else {
         // already cycling, so restack to put windows back in their proper order
         m_screen.layerManager().restack();
         if (m_cycling_creation_order ^ (bool)(opts & CYCLELINEAR)) {
             m_cycling_creation_order ^= true;
-            if (m_cycling_window != m_focused_list.end() && m_cycling_window != m_creation_order_list.end())
-                m_cycling_window = find(window_list->begin(),window_list->end(),*m_cycling_window);
-            else
-                m_cycling_window = window_list->begin();
+            m_cycling_window = find(window_list->begin(),window_list->end(),*m_cycling_window);
         }
     }
     // if it is stacked, we want the highest window in the focused list
@@ -116,16 +108,18 @@ void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
     while (true) {
         if (cycle_reverse && it == it_begin)
             it = it_end;
-        cycle_reverse ? --it : ++it;
-        if (it == it_end)
+        else if (!cycle_reverse && it == it_end)
             it = it_begin;
+        else
+            cycle_reverse ? --it : ++it;
         // give up [do nothing] if we reach the current focused again
-        if ((*it) == (*m_cycling_window))
+        if (it == m_cycling_window)
             break;
+        if (it == it_end)
+            continue;
 
         FluxboxWindow *fbwin = (*it)->fbwindow();
-        if (fbwin && !fbwin->isIconic() &&
-            (fbwin->isStuck() 
+        if (fbwin && (fbwin->isStuck() 
              || fbwin->workspaceNumber() == m_screen.currentWorkspaceID())) {
             // either on this workspace, or stuck
 
@@ -140,6 +134,9 @@ void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
                         m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
                     }
                     m_cycling_last = &last_client;
+                    if (m_was_iconic)
+                        (*m_cycling_window)->fbwindow()->iconify();
+                    m_was_iconic = fbwin->isIconic();
                 }
                 fbwin->tempRaise();
                 break;
@@ -362,6 +359,8 @@ void FocusControl::removeClient(WinClient &client) {
  */
 void FocusControl::revertFocus(BScreen &screen) {
 
+    if (screen.focusControl().isCycling())
+        return;
     // Relevant resources:
     // resource.focus_last = whether we focus last focused when changing workspace
     // BScreen::FocusModel = sloppy, click, whatever

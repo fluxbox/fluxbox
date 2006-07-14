@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/14:
+   * Fix a possible bug with window cycling on multiple screens (Mark)
+     fluxbox.cc WorkspaceCmd.cc
+   * Include minimized windows when "alt-tabbing", added 16 to the
+      Next/PrevWindow bitmask to disable the behavior (Mark)
+      FocusControl.cc/hh
 *06/07/13:
    * Remove some redundant code for loading styles (Mark)
      fluxbox.cc Screen.cc RootTheme.cc/hh

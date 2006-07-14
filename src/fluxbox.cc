@@ -1811,6 +1811,8 @@ void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
         cerr<<"WARNING: attempt to grab without modifiers!"<<endl;
         return;
     }
+    if (m_watching_screen)
+        m_watching_screen->focusControl().stopCyclingFocus();
     m_watching_screen = &screen;
 
     // just make sure we are saving the mods with any other flags (xkb)
