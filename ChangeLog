@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/16:
+   * Fix a bug in Transparent.cc, (Henrik)
+    #1362913 Fluxbox core dumps on Solaris 
+    FbTk/Transparent.cc
 *06/07/14:
    * Fix a possible bug with window cycling on multiple screens (Mark)
      fluxbox.cc WorkspaceCmd.cc
