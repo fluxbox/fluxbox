@@ -85,9 +85,16 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_visible(false),
     m_button_pm(0),
     m_tabmode(screen.getDefaultInternalTabs()?INTERNAL:EXTERNAL),
+    m_active_gravity(0),
+    m_active_orig_client_bw(0),
     m_need_render(true),
+    m_button_size(1),
+    m_width_before_shade(1),
+    m_height_before_shade(1),
+    m_double_click_time(0),
     m_themelistener(*this),
-    m_shape(new Shape(m_window, theme.shapePlace())) {
+    m_shape(new Shape(m_window, theme.shapePlace())),
+    m_disable_shape(false) {
     m_theme.reconfigSig().attach(&m_themelistener);
     init();
 }
@@ -244,7 +251,11 @@ void FbWinFrame::resize(unsigned int width, unsigned int height) {
 }
 
 // need an atomic moveresize where possible
-void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int win_gravity, unsigned int client_bw, bool move, bool resize) {
+void FbWinFrame::moveResizeForClient(int x, int y, 
+                                     unsigned int width, unsigned int height, 
+                                     int win_gravity, 
+                                     unsigned int client_bw, 
+                                     bool move, bool resize) {
     // total height for frame
 
     if (resize) // these fns check if the elements are "on"
@@ -255,7 +266,8 @@ void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned 
     moveResize(x, y, width, height, move, resize);
 }
 
-void FbWinFrame::resizeForClient(unsigned int width, unsigned int height, int win_gravity, unsigned int client_bw) {
+void FbWinFrame::resizeForClient(unsigned int width, unsigned int height, 
+                                 int win_gravity, unsigned int client_bw) {
     moveResizeForClient(0, 0, width, height, win_gravity, client_bw, false, true);
 }
 
@@ -1650,7 +1662,8 @@ private:
 // this function translates its arguments according to win_gravity
 // if win_gravity is negative, it does an inverse translation
 // This function should be used when a window is mapped/unmapped/pos configured
-void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, unsigned int client_bw, bool move_frame) {
+void FbWinFrame::gravityTranslate(int &x, int &y, 
+                                  int win_gravity, unsigned int client_bw, bool move_frame) {
     bool invert = false;
     if (win_gravity < 0) {
         invert = true;
