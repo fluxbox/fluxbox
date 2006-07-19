@@ -1789,6 +1789,7 @@ void BScreen::shutdown() {
     rootWindow().setEventMask(NoEventMask);
     FbTk::App::instance()->sync(false);
     m_shutdown = true;
+    m_focus_control->shutdown();
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
              mem_fun(&Workspace::shutdown));

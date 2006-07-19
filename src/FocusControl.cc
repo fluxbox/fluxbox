@@ -219,7 +219,8 @@ WinClient *FocusControl::lastFocusedWindow(FluxboxWindow &group, WinClient *igno
 void FocusControl::setScreenFocusedWindow(WinClient &win_client) {
 
      // raise newly focused window to the top of the focused list
-    if (!m_cycling_focus) { // don't change the order if we're cycling
+     // don't change the order if we're cycling or shutting down
+    if (!m_cycling_focus && !win_client.screen().isShuttingdown()) {
         m_focused_list.remove(&win_client);
         m_focused_list.push_front(&win_client);
         m_cycling_window = m_focused_list.begin();
@@ -334,6 +335,9 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
 }
 
 void FocusControl::removeClient(WinClient &client) {
+    if (client.screen().isShuttingdown())
+        return;
+
     WinClient *cyc = 0;
     if (m_cycling_window != m_focused_list.end() && m_cycling_window != m_creation_order_list.end())
         cyc = *m_cycling_window;
@@ -344,6 +348,14 @@ void FocusControl::removeClient(WinClient &client) {
     if (cyc == &client) {
         m_cycling_window = m_creation_order_list.end();
         stopCyclingFocus();
+    }
+}
+
+void FocusControl::shutdown() {
+    FocusedWindows::iterator it = m_focused_list.begin();
+    for (; it != m_focused_list.end(); ++it) {
+        if (*it && (*it)->fbwindow())
+            (*it)->fbwindow()->restore(*it, true);
     }
 }
 

@@ -95,6 +95,7 @@ public:
     WinClient *lastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client);
 
     void removeClient(WinClient &client);
+    void shutdown();
 
     static void revertFocus(BScreen &screen);
     // like revertFocus, but specifically related to this window (transients etc)

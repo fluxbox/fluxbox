@@ -377,8 +377,6 @@ void Workspace::setName(const std::string &name) {
 void Workspace::shutdown() {
     // note: when the window dies it'll remove it self from the list
     while (!m_windowlist.empty()) {
-        // restore with remap on all clients in that window
-        m_windowlist.back()->restore(true); 
         //delete window (the window removes it self from m_windowlist)
         delete m_windowlist.back(); 
     }
