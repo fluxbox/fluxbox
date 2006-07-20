@@ -623,6 +623,8 @@ Window WinClient::getGroupLeftWindow() const {
 
 
 void WinClient::setGroupLeftWindow(Window win) {
+    if (m_screen.isShuttingdown())
+        return;
     Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
     changeProperty(group_left_hint, XA_WINDOW, 32, 
                    PropModeReplace, (unsigned char *) &win, 1);

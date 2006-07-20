@@ -327,8 +327,8 @@ public:
     // grouping - we want ordering, so we can either search for a 
     // group to the left, or to the right (they'll be different if
     // they exist).
-    FluxboxWindow *findGroupLeft(WinClient &winclient);
-    FluxboxWindow *findGroupRight(WinClient &winclient);
+    WinClient *findGroupLeft(WinClient &winclient);
+    WinClient *findGroupRight(WinClient &winclient);
 
     // notify netizens
     void updateNetizenCurrentWorkspace();

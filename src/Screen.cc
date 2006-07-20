@@ -1343,7 +1343,8 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
     // check if it should be grouped with something else
     FluxboxWindow *win;
-    if ((win = findGroupLeft(*winclient)) != 0) {
+    WinClient *other;
+    if ((other = findGroupLeft(*winclient)) && (win = other->fbwindow())) {
         win->attachClient(*winclient);
         Fluxbox::instance()->attachSignals(*winclient);
     } else {
@@ -1369,11 +1370,10 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
     // we also need to check if another window expects this window to the left
     // and if so, then join it.
-    FluxboxWindow *otherwin = 0;
-    // TODO: does this do the right stuff focus-wise?
-    if ((otherwin = findGroupRight(*winclient)) && otherwin != win) {
-        win->attachClient(otherwin->winClient());
-    }
+    if ((other = findGroupRight(*winclient)) && other->fbwindow() != win)
+        win->attachClient(*other);
+    else if (other)
+        win->moveClientRightOf(*other, *winclient);
 
     m_clientlist_sig.notify();
 
@@ -2034,10 +2034,10 @@ void BScreen::updateSize() {
 
 
 /**
- * Find the group of windows to this window's left
+ * Find the winclient to this window's left
  * So, we check the leftgroup hint, and see if we know any windows
  */
-FluxboxWindow *BScreen::findGroupLeft(WinClient &winclient) {
+WinClient *BScreen::findGroupLeft(WinClient &winclient) {
     Window w = winclient.getGroupLeftWindow();
     if (w == None)
         return 0;
@@ -2051,13 +2051,10 @@ FluxboxWindow *BScreen::findGroupLeft(WinClient &winclient) {
         // something is not consistent
         return 0;
 
-    if (have_client)
-        return have_client->fbwindow();
-    else
-        return 0;
+    return have_client;
 }
 
-FluxboxWindow *BScreen::findGroupRight(WinClient &winclient) {
+WinClient *BScreen::findGroupRight(WinClient &winclient) {
     Groupables::iterator it = m_expecting_groups.find(winclient.window());
     if (it == m_expecting_groups.end())
         return 0;
@@ -2073,8 +2070,9 @@ FluxboxWindow *BScreen::findGroupRight(WinClient &winclient) {
         other->getGroupLeftWindow() != None)
         return 0;
 
-    return other->fbwindow();
+    return other;
 }
+
 void BScreen::initXinerama() {
 #ifdef XINERAMA
     Display *display = FbTk::App::instance()->display();

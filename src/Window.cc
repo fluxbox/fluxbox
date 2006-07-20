@@ -628,6 +628,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     WinClient *was_focused = 0;
     WinClient *focused_win = FocusControl::focusedWindow();
 
+    WinClient *other = m_screen.findGroupLeft(client);
     // get the current window on the end of our client list
     Window leftwin = None;
     if (!clientList().empty())
@@ -691,6 +692,9 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
         m_clientlist.push_back(&client);
+
+        if (other && other->fbwindow() == this)
+            moveClientRightOf(client, *other);
     }
 
     // make sure that the state etc etc is updated for the new client
