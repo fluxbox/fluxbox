@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/07/20:
+   * Fix _NET_WM_MOVERESIZE, bug #1525542 (Mark)
+     Ewmh.cc
    * Properly revert focus when two windows close simultaneously (Mark)
      WinClient.cc/hh FbTk/FbWindow.hh fluxbox.cc Window.cc
 *06/07/19:

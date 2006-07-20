@@ -891,9 +891,13 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
         case _NET_WM_MOVERESIZE_SIZE_LEFT:
         case _NET_WM_MOVERESIZE_SIZE_KEYBOARD:
-            winclient->fbwindow()->startResizing(ce.data.l[0], ce.data.l[1],
-                                                 static_cast<FluxboxWindow::ResizeDirection>
-                                                 (ce.data.l[2]));
+            // startResizing uses relative coordinates
+            winclient->fbwindow()->startResizing(ce.data.l[0] -
+                winclient->fbwindow()->x() -
+                winclient->fbwindow()->frame().window().borderWidth(),
+                ce.data.l[1] - winclient->fbwindow()->y() -
+                winclient->fbwindow()->frame().window().borderWidth(),
+                static_cast<FluxboxWindow::ResizeDirection>(ce.data.l[2]));
             break;
         case _NET_WM_MOVERESIZE_MOVE:
         case _NET_WM_MOVERESIZE_MOVE_KEYBOARD:
