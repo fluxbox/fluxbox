@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/20:
+   * Properly revert focus when two windows close simultaneously (Mark)
+     WinClient.cc/hh FbTk/FbWindow.hh fluxbox.cc Window.cc
 *06/07/19:
    * Preserve order of focused windows on restart (Mark)
      Workspace.cc Screen.cc FocusControl.cc/hh

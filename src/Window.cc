@@ -2112,7 +2112,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     if (was_focused != focus) {
         m_focussig.notify();
         if (m_client)
-            m_client->focusSig().notify();
+            m_client->receivedFocus();
     }
 }
 

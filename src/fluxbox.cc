@@ -1297,12 +1297,12 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 
         // This is where we revert focus on window close
         // NOWHERE ELSE!!!
-        if (FocusControl::focusedWindow() == &client)
+        if (FocusControl::focusedWindow() == &client) {
             FocusControl::unfocusWindow(client);
-
-        // failed to revert focus?
-        if (FocusControl::focusedWindow() == &client)
+            // make sure nothing else uses this window before focus reverts
             FocusControl::setFocusedWindow(0);
+        } else if (!FocusControl::focusedWindow() && client.isWaitingFocus())
+            FocusControl::revertFocus(screen);
     }
 }
 
