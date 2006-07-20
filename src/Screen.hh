@@ -286,7 +286,7 @@ public:
     void showPosition(int x, int y);
     void hidePosition();
     /// show geomentry with "width x height"-text, not size of window
-    void showGeometry(unsigned int width, unsigned int height);
+    void showGeometry(int width, int height);
     void hideGeometry();
 
     void notifyReleasedKeys(XKeyEvent &ke);

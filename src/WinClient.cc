@@ -842,11 +842,15 @@ void WinClient::applySizeHints(int &width, int &height,
 
     // enforce incremental size limits, wrt base size
     // only calculate this if we really need to
-    i = (width - base_width) / width_inc;
-    width = i*width_inc + base_width;
+    i = (width - static_cast<signed>(base_width)) / 
+        static_cast<signed>(width_inc);
+    width = i*static_cast<signed>(width_inc) +
+        static_cast<signed>(base_width);
 
-    j = (height - base_height) / height_inc;
-    height = j*height_inc + base_height;
+    j = (height - static_cast<signed>(base_height)) /
+        static_cast<signed>(height_inc);
+    height = j*static_cast<signed>(height_inc) +
+        static_cast<signed>(base_height);
 
     if (display_width)
         *display_width = i;
