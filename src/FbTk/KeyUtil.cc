@@ -62,7 +62,7 @@ KeyUtil &KeyUtil::instance() {
 
 
 KeyUtil::KeyUtil()
-    : m_modmap(0)
+    : m_modmap(0), m_capslock(0), m_numlock(0), m_scrolllock(0)
 {
     init();
 }

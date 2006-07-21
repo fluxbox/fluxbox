@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/21:
+   * Stop using fixed values for num/caps/scroll lock, and ignore scroll lock
+     as a modifier (Mark)
+     FbTk/KeyUtil.cc/hh
 *06/07/20:
    * Fix _NET_WM_MOVERESIZE, bug #1525404 (Mark)
      Ewmh.cc

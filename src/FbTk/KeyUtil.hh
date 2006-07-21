@@ -67,7 +67,7 @@ public:
     */
     unsigned int cleanMods(unsigned int mods) {
         //remove numlock, capslock and scrolllock
-         return mods & ~(capslock() | numlock() );
+         return mods & ~(capslock() | numlock() | scrolllock());
     }
 
     /** 
@@ -83,9 +83,9 @@ public:
        @return corresponding modifier mask
     */
     static unsigned int keycodeToModmask(unsigned int keycode);
-    int numlock() const { return Mod2Mask; } //m_numlock; }
-    int capslock() const { return LockMask; } //m_capslock; }
-    int scrolllock() const { return Mod5Mask; } //m_scrolllock; }
+    int numlock() const { return m_numlock; }
+    int capslock() const { return m_capslock; }
+    int scrolllock() const { return m_scrolllock; }
 
 private:
     void loadModmap();
