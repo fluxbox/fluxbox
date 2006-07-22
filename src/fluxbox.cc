@@ -194,7 +194,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_resourcemanager(rcfilename, true),
       // TODO: shouldn't need a separate one for screen
       m_screen_rm(m_resourcemanager),
-      m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
       m_rc_ignoreborder(m_resourcemanager, false, "session.ignoreBorder", "Session.IgnoreBorder"),
       m_rc_pseudotrans(m_resourcemanager, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
       m_rc_colors_per_channel(m_resourcemanager, 4,

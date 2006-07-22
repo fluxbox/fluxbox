@@ -239,7 +239,7 @@ private:
 
     //--- Resources
 
-    FbTk::Resource<bool> m_rc_tabs, m_rc_ignoreborder;
+    FbTk::Resource<bool> m_rc_ignoreborder;
     FbTk::Resource<bool> m_rc_pseudotrans;
     FbTk::Resource<int> m_rc_colors_per_channel, m_rc_numlayers,
         m_rc_double_click_interval,
