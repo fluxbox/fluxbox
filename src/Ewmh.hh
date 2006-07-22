@@ -99,7 +99,8 @@ private:
         m_net_supporting_wm_check, 
         m_net_virtual_roots, 
         m_net_moveresize_window,
-        m_net_restack_window;
+        m_net_restack_window,
+        m_net_request_frame_extents;
 
     // root window messages
     Atom m_net_close_window, m_net_wm_moveresize;

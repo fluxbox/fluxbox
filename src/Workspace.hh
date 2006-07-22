@@ -58,7 +58,7 @@ public:
     void showAll();
     void hideAll(bool interrupt_moving);
     /// Iconify all windows on this workspace
-    void removeAll();
+    void removeAll(unsigned int dest);
     void reconfigure();
     void shutdown();
 

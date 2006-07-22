@@ -1031,7 +1031,7 @@ int BScreen::removeLastWorkspace() {
     if (m_current_workspace->workspaceID() == wkspc->workspaceID())
         changeWorkspaceID(m_current_workspace->workspaceID() - 1);
 
-    wkspc->removeAll();
+    wkspc->removeAll(wkspc->workspaceID()-1);
 
     //remove last workspace
     m_workspaces_list.pop_back();		

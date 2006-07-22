@@ -30,6 +30,7 @@
 #include "Layer.hh"
 #include "WinClientUtil.hh"
 #include "fluxbox.hh"
+#include "FbWinFrameTheme.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/FbWindow.hh"
@@ -61,7 +62,8 @@ enum EwmhMoveResizeDirection {
     _NET_WM_MOVERESIZE_SIZE_LEFT        =  7,
     _NET_WM_MOVERESIZE_MOVE             =  8,   // movement only 
     _NET_WM_MOVERESIZE_SIZE_KEYBOARD    =  9,   // size via keyboard
-    _NET_WM_MOVERESIZE_MOVE_KEYBOARD    = 10 
+    _NET_WM_MOVERESIZE_MOVE_KEYBOARD    = 10,   // move via keyboard
+    _NET_WM_MOVERESIZE_CANCEL           = 11    // cancel operation
 };
 
 Ewmh::Ewmh() {
@@ -166,6 +168,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_moveresize_window,
         m_net_workarea,
         m_net_restack_window,
+        m_net_request_frame_extents,
 
         m_net_wm_moveresize,
         
@@ -310,6 +313,13 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                                (unsigned char*)&m_net_wm_window_type_dialog, 1);
         }
     }
+
+    /*
+     * NOT YET IMPLEMENTED:
+     *   _NET_WM_WINDOW_TYPE_TOOLBAR
+     *   _NET_WM_WINDOW_TYPE_MENU
+     *   _NET_WM_WINDOW_TYPE_UTILITY
+     */
 
     setupState(win);
 
@@ -872,6 +882,24 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
 
         return true;
+    } else if (ce.message_type == m_net_request_frame_extents) {
+        if (!screen)
+            return true;
+        FbWinFrameTheme &theme = screen->winFrameTheme();
+        int title_h = theme.titleHeight() ||
+            theme.font().height() + 2*theme.bevelWidth() + 2;
+        title_h += theme.border().width();
+        int handle_h = theme.handleWidth() + theme.border().width();
+        int extents[4];
+        // our frames currently don't protrude from left/right
+        extents[0] = 0;
+        extents[1] = 0;
+        extents[2] = title_h;
+        extents[3] = handle_h;
+
+        XChangeProperty(FbTk::App::instance()->display(), ce.window,
+            m_net_frame_extents, XA_CARDINAL, 32, PropModeReplace,
+            (unsigned char *)extents, 4);
 
     } else if (ce.message_type == m_net_wm_moveresize) {
         if (winclient == 0 || winclient->fbwindow() == 0)
@@ -902,6 +930,12 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         case _NET_WM_MOVERESIZE_MOVE:
         case _NET_WM_MOVERESIZE_MOVE_KEYBOARD:
             winclient->fbwindow()->startMoving(ce.data.l[0], ce.data.l[1]);
+            break;
+        case _NET_WM_MOVERESIZE_CANCEL:
+            if (winclient->fbwindow()->isMoving())
+                winclient->fbwindow()->stopMoving(true);
+            if (winclient->fbwindow()->isResizing())
+                winclient->fbwindow()->stopResizing(true);
             break;
         default:
             cerr << "Ewmh: Unknown move/resize direction: " << ce.data.l[2] << endl;
@@ -958,6 +992,8 @@ void Ewmh::createAtoms() {
     m_net_close_window = XInternAtom(disp, "_NET_CLOSE_WINDOW", False);
     m_net_moveresize_window = XInternAtom(disp, "_NET_MOVERESIZE_WINDOW", False);
     m_net_restack_window = XInternAtom(disp, "_NET_RESTACK_WINDOW", False);
+    m_net_request_frame_extents = XInternAtom(disp,
+        "_NET_REQUEST_FRAME_EXTENTS", False);
 
 
     m_net_wm_moveresize = XInternAtom(disp, "_NET_WM_MOVERESIZE", False);

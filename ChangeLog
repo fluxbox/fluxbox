@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/22:
+   * Ewmh compliance updates: (Mark)
+     - implemented _NET_WM_MOVERESIZE_CANCEL (new in version 1.4.draft-1)
+     - move windows to last remaining workspace when a workspace is removed
+     - implemented _NET_REQUEST_FRAME_EXTENTS
+     Ewmh.cc/hh Workspace.cc/hh Screen.cc
 *06/07/21:
    * Stop using fixed values for num/caps/scroll lock, and ignore scroll lock
      as a modifier (Mark)

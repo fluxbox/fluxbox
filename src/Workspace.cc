@@ -229,11 +229,11 @@ void Workspace::hideAll(bool interrupt_moving) {
 }
 
 
-void Workspace::removeAll() {
+void Workspace::removeAll(unsigned int dest) {
     Windows::iterator it = m_windowlist.begin();
     Windows::const_iterator it_end = m_windowlist.end();
     for (; it != it_end; ++it)
-        (*it)->iconify();
+        m_screen.sendToWorkspace(dest, *it, false);
 }
 
 
