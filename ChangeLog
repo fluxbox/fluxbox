@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/23:
+   * Use a timer to make sure focus always reverts if possible (Mark)
+     fluxbox.cc/hh and reverse patch from 06/07/20
 *06/07/22:
    * Ewmh compliance updates: (Mark)
      - implemented _NET_WM_MOVERESIZE_CANCEL (new in version 1.4.draft-1)

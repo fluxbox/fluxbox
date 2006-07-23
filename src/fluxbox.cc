@@ -221,6 +221,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_masked(0),
       m_rc_file(rcfilename ? rcfilename : ""),
       m_argv(argv), m_argc(argc),
+      m_revert_screen(0),
       m_starting(true),
       m_restarting(false),
       m_shutdown(false),
@@ -273,6 +274,13 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_reconfig_timer.setTimeout(to);
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
+
+    // set a timer to revert focus on FocusOut, in case no FocusIn arrives
+    FbTk::RefCount<FbTk::Command> revert_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::revert_focus));
+    m_revert_timer.setCommand(revert_cmd);
+    m_revert_timer.setTimeout(to);
+    m_revert_timer.fireOnce(true);
+
     // XSynchronize(disp, True);
 
     s_singleton = this;
@@ -681,9 +689,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
                 break; // found the screen, no more search
             }
         }
-
-        if (screen != 0)
-            FocusControl::revertFocus(*screen);
     }
 
     // try FbTk::EventHandler first
@@ -877,9 +882,12 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #endif // DEBUG
         } else if (winclient && winclient == FocusControl::focusedWindow() &&
                    (winclient->fbwindow() == 0
-                    || !winclient->fbwindow()->isMoving()))
+                    || !winclient->fbwindow()->isMoving())) {
             // we don't unfocus a moving window
             FocusControl::setFocusedWindow(0);
+            m_revert_screen = &winclient->screen();
+            m_revert_timer.start();
+        }
     }
 	break;
     case ClientMessage:
@@ -1300,8 +1308,9 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             FocusControl::unfocusWindow(client);
             // make sure nothing else uses this window before focus reverts
             FocusControl::setFocusedWindow(0);
-        } else if (!FocusControl::focusedWindow() && client.isWaitingFocus())
-            FocusControl::revertFocus(screen);
+            m_revert_screen = &screen;
+            m_revert_timer.start();
+        }
     }
 }
 
@@ -1774,6 +1783,11 @@ void Fluxbox::timed_reconfigure() {
         real_rereadMenu();
 
     m_reconfigure_wait = m_reread_menu_wait = false;
+}
+
+void Fluxbox::revert_focus() {
+    if (m_revert_screen && !FocusControl::focusedWindow())
+        FocusControl::revertFocus(*m_revert_screen);
 }
 
 bool Fluxbox::validateClient(const WinClient *client) const {

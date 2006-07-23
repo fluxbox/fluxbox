@@ -53,9 +53,6 @@ public:
     bool sendFocus(); // returns whether we sent a message or not 
                       // i.e. whether we assume the focus will get taken
     bool acceptsFocus() const; // will this window accept focus (according to hints)
-    void setInputFocus(int revert_to, int time);
-    inline bool isWaitingFocus() { return m_waiting_focus; }
-    void receivedFocus() { m_waiting_focus = false; m_focussig.notify(); }
     void sendClose(bool forceful = false);
     // not aware of anything that makes this false at present
     inline bool isClosable() const { return true; }
@@ -200,7 +197,6 @@ private:
     // or indicates that we are modal if don't have any transients
     int m_modal;
     bool send_focus_message, send_close_message;
-    bool m_waiting_focus;
 
     int m_win_gravity;
 

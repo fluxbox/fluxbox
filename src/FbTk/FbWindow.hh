@@ -137,7 +137,7 @@ public:
     }
     virtual void lower();
     virtual void raise();
-    virtual void setInputFocus(int revert_to, int time);
+    void setInputFocus(int revert_to, int time);
     /// defines a cursor for this window
     void setCursor(Cursor cur);
 #ifdef NOT_USED

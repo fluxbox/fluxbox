@@ -66,7 +66,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_modal(0),
                      send_focus_message(false),
                      send_close_message(false),
-                     m_waiting_focus(false),
                      m_win_gravity(0),
                      m_title(""), m_icon_title(""),
                      m_class_name(""), m_instance_name(""),
@@ -187,11 +186,6 @@ bool WinClient::sendFocus() {
     // send focus msg
     XSendEvent(display(), window(), false, NoEventMask, &ce);
     return true;
-}
-
-void WinClient::setInputFocus(int revert_to, int time) {
-    FbTk::FbWindow::setInputFocus(revert_to, time);
-    m_waiting_focus = true;
 }
 
 void WinClient::sendClose(bool forceful) {
