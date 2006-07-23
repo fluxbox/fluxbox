@@ -1033,6 +1033,14 @@ int BScreen::removeLastWorkspace() {
 
     wkspc->removeAll(wkspc->workspaceID()-1);
 
+    Icons::iterator it = iconList().begin();
+    const Icons::iterator it_end = iconList().end();
+    for (; it != it_end; ++it) {
+        if ((*it)->workspaceNumber() == wkspc->workspaceID())
+            (*it)->setWorkspace(wkspc->workspaceID()-1);
+    }
+    m_clientlist_sig.notify();
+
     //remove last workspace
     m_workspaces_list.pop_back();		
 
