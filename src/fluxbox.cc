@@ -679,13 +679,12 @@ void Fluxbox::handleEvent(XEvent * const e) {
         FbTk::Menu::focused()->window() == e->xfocus.window) {
 
         // find screen num
-        BScreen *screen = 0;
         ScreenList::iterator it = m_screen_list.begin();
         ScreenList::iterator it_end = m_screen_list.end();
         for (; it != it_end; ++it) {
             if ( (*it)->screenNumber() ==
                  FbTk::Menu::focused()->fbwindow().screenNumber()) {
-                screen = (*it);
+                FocusControl::revertFocus(**it);
                 break; // found the screen, no more search
             }
         }
@@ -1786,7 +1785,8 @@ void Fluxbox::timed_reconfigure() {
 }
 
 void Fluxbox::revert_focus() {
-    if (m_revert_screen && !FocusControl::focusedWindow())
+    if (m_revert_screen && !FocusControl::focusedWindow() &&
+        !FbTk::Menu::focused())
         FocusControl::revertFocus(*m_revert_screen);
 }
 
