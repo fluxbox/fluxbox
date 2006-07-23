@@ -2101,7 +2101,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     if (focus != frame().focused())
         frame().setFocus(focus);
 
-    if (screen().doAutoRaise()) {
+    if (screen().doAutoRaise() && !screen().focusControl().isCycling()) {
         if (focused)
             m_timer.start();
         else

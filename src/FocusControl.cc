@@ -91,13 +91,9 @@ void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
         m_cycling_creation_order = (opts & CYCLELINEAR);
         m_was_iconic = false;
         m_cycling_last = 0;
-    } else {
-        // already cycling, so restack to put windows back in their proper order
-        m_screen.layerManager().restack();
-        if (m_cycling_creation_order ^ (bool)(opts & CYCLELINEAR)) {
-            m_cycling_creation_order ^= true;
-            m_cycling_window = find(window_list->begin(),window_list->end(),*m_cycling_window);
-        }
+    } else if (m_cycling_creation_order ^ (bool)(opts & CYCLELINEAR)) {
+        m_cycling_creation_order ^= true;
+        m_cycling_window = find(window_list->begin(),window_list->end(),*m_cycling_window);
     }
     // if it is stacked, we want the highest window in the focused list
     // that is on the same workspace
@@ -130,6 +126,10 @@ void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
                 // moved onto a new fbwin
                 if (!m_cycling_last || m_cycling_last->fbwindow() != fbwin) {
                     if (m_cycling_last) {
+                        // already cycling, so restack to put windows back in
+                        // their proper order
+                        m_screen.layerManager().restack();
+
                         // set back to orig current Client in that fbwin
                         m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
                     }
@@ -137,8 +137,8 @@ void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
                     if (m_was_iconic)
                         (*m_cycling_window)->fbwindow()->iconify();
                     m_was_iconic = fbwin->isIconic();
+                    fbwin->tempRaise();
                 }
-                fbwin->tempRaise();
                 break;
             }
         }
