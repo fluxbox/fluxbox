@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/07/25:
+   * Fix so that focus doesn't revert away from command dialogs (Mark)
+     fluxbox.cc/hh CommandDialog.cc
    * Fix background style item so that it works when the previous style
      didn't have one set (Mark)
      Screen.cc RootTheme.hh

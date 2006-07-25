@@ -186,6 +186,7 @@ public:
 
     void timed_reconfigure();
     void revert_focus();
+    void setShowingDialog(bool value) { m_showing_dialog = value; }
 
     bool isStartup() const { return m_starting; }
     bool isRestarting() const { return m_restarting; }
@@ -293,6 +294,7 @@ private:
     ///< when we execute reconfig command we must wait until next event round
     FbTk::Timer m_reconfig_timer, m_revert_timer;
     BScreen *m_revert_screen;
+    bool m_showing_dialog;
 
     std::auto_ptr<Keys> m_key;
 

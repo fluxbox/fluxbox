@@ -222,6 +222,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_file(rcfilename ? rcfilename : ""),
       m_argv(argv), m_argc(argc),
       m_revert_screen(0),
+      m_showing_dialog(false),
       m_starting(true),
       m_restarting(false),
       m_shutdown(false),
@@ -1786,7 +1787,7 @@ void Fluxbox::timed_reconfigure() {
 
 void Fluxbox::revert_focus() {
     if (m_revert_screen && !FocusControl::focusedWindow() &&
-        !FbTk::Menu::focused())
+        !FbTk::Menu::focused() && !m_showing_dialog)
         FocusControl::revertFocus(*m_revert_screen);
 }
 

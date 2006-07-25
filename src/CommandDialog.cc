@@ -29,6 +29,7 @@
 #include "WinClient.hh"
 #include "CommandParser.hh"
 #include "FocusControl.hh"
+#include "fluxbox.hh"
 
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
@@ -74,6 +75,7 @@ void CommandDialog::show() {
     FbTk::FbWindow::show();
     m_textbox.setInputFocus();
     m_label.clear();
+    Fluxbox::instance()->setShowingDialog(true);
     // resize to correct width, which should be the width of label text
     // no need to truncate label text in this dialog
     // but if label text size < 200 we set 200
@@ -88,6 +90,7 @@ void CommandDialog::show() {
 
 void CommandDialog::hide() {
     FbTk::FbWindow::hide();
+    Fluxbox::instance()->setShowingDialog(false);
 
     // return focus to fluxbox window
     if (FocusControl::focusedFbWindow())
