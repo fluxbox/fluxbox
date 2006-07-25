@@ -884,6 +884,8 @@ void BScreen::reconfigure() {
     // notify objects that the screen is reconfigured
     m_reconfigure_sig.notify();
 
+    m_root_theme->setLoaded();
+
     // Reload style
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
                                         fluxbox->getStyleOverlayFilename(),

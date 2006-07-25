@@ -51,6 +51,7 @@ public:
 
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
+    void setLoaded() { m_background_loaded = true; }
 
     GC opGC() const { return m_opgc.gc(); }
 
