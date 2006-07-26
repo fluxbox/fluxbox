@@ -564,7 +564,7 @@ void Menu::hide() {
             p = p->m_parent;
         
         p->internal_hide();
-    } else // if we dont have a parent then do hide here
+    } else if (!m_torn) // if we dont have a parent then do hide here
         internal_hide();
 
 }
@@ -898,7 +898,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
         }
 
         if (re.button == 3)
-            hide();
+            internal_hide();
 			
     } else if (re.window == menu.frame) {
 			
