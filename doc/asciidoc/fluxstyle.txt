@@ -1,0 +1,184 @@
+fluxstyle(1)
+============
+Henrik Kinnunen <fluxgen@fluxbox.org>
+v1.0rc2 26th July 2006
+
+NAME
+----
+fluxstyle - A comprehensive look at styles/themes for fluxbox.
+
+SYNOPSIS
+--------
+
+DESCRIPTION
+-----------
+What is a Style?
+
+Styles, sometimes referred to as Themes, are a graphical overlay for the
+fluxbox(1) window manager. If you wanted to get to know fluxbox, the styles
+would be the 'look' of the 'look and feel'.
+
+Styles are simple ASCII text files that tell Fluxbox how to generate the
+appearance of different components of the window manager. The default
+installation of fluxbox is shipped with many classic examples that show a
+great deal of what one could do. To use one of the standard styles navigate to
+the 'System Styles' menu under your main fluxbox menu.
+
+fluxbox uses it's own graphics class to render its images on the fly. By using
+styles you can determine, at a great level, of configurability what your
+desktop will look like. Since fluxbox was derived from flackbox many often
+wonder if old themes will work on the latest releases of flackbox. Well they
+basically do, but you will have to tune them since the fluxbox code has
+changed quite a bit since the initial grab.
+
+STRUCTURE
+---------
+A style is made up of a few major components which then have their own
+sub-directives. The major components are as follows:
+
+The 'window.\*' directives control the appearance of the window frames,
+window.tab.* controls the appearance of the window tabs, 'menu.\*' controls
+the appearance of the popup menu that you see when you right click on the
+desktop. 'toolbar.\*' is the bar you will see at the top or bottom of your
+screen. Finally the 'slit.\*' has options you can use to customize the
+appearance of the slit. However if you don't set the slit directives
+specifically, the slit's appearance is controlled by the toolbar
+directives instead.
+
+To understand how the style mechanism works, it is nice to know a little about
+how X11 resources work. X11 resources consist of a key and a value. The key is
+constructed of several smaller keys (sometimes referred to as children),
+delimited by a period (.). Keys may also contain an asterisk (\*)
+to serve as a wildcard, which means that one line of text will match
+several keys. This is useful for styles that are based on one or two
+colors.
+
+A more complete reference to this can be found in X(7), section 'RESOURCES'.
+
+LOCATION
+--------
+There are many places to store your styles, the most common is in your
+'~/.fluxbox/styles' directory. The initial installation will place the default
+styles in '/usr/share/fluxbox/styles' providing a basic usable configuration.
+
+When creating your own style, create a directory (normally the name of your
+style) in '~/.fluxbox/styles/' (If the 'styles' directory doesn't exist,
+create that also). While there isn't an official structure, it is
+common to create a directory named after your style and place your
+pixmaps directory (if required) in there along with a file called
+theme.cfg (may also be named style.cfg). This file is where you will
+construct your style using the components covered later in this manual
+page. An example of steps taken when beginning a style project of your
+own may look like:
+
+    $ cd
+    $ mkdir -p ~/.fluxbox/styles/YourStyle/pixmaps
+    $ cd ~/.fluxbox/styles/YourStyle
+    $ nano theme.cfg
+
+Output of a packaged style should look like the following:
+
+    $ cd
+    $ tar -tjvf YourStyle.tar.bz2
+     .fluxbox/styles/YourStyle/theme.cfg
+     .fluxbox/styles/YourStyle/pixmaps
+     .fluxbox/styles/YourStyle/pixmaps/stick.xpm
+     ...
+
+Of course, all of these are just preferences, Fluxbox allows for the
+customization of many things, including how you handle your styles. Just
+remember, however, that if you plan to distribute your style you may find
+some community bickering if you don't follow practices. :)
+
+CREATING YOUR STYLE
+-------------------
+As discussed above, Fluxbox allows you to configure its four main components:
+the toolbar, menus, slit and window decorations. Remember that you can
+customize the slit with its own directives, otherwise the slit will take the
+appearance of the toolbar.
+
+Here are some quick examples to illustrate basic syntax:
+
+    toolbar.clock.color: green
+
+This sets the color resource of the toolbar clock to 'green'. Another example:
+
+    menu*color:     rgb:3/4/5
+
+This sets the color resource of the menu and all of its 'children' to
+`rgb:3/4/5'. (For a description of color names, see X(1).) So this one also
+applies to 'menu.title.color' and 'menu.frame.color'. And with
+
+    *font:  -b&h-lucida-medium-r-normal-*-*-140-*
+
+you set the font resource for all keys to this font name all at once (For
+information about the fonts installed on your system, you can use a
+program like xfontsel(1), gtkfontsel, or xlsfonts(1).)
+
+In the last example you will notice the wildcard (\*) before font. In a Fluxbox
+style you can set a value with a wild card. The example means that every font
+in the style will be what is specified. You can do this with any
+component/value. For example if you wanted all of the text to be one color you
+would do:
+
+    *textColor:  rgb:3/4/5
+
+This means that you can setup a very simple style with very few properties.
+See the EXAMPLES below for an example of this in practice. Fluxbox also allows
+you to override wildcards in your style. Lets take our example above and add
+an override for the toolbar.clock.textColor component:
+
+    *textColor: rgb:3/4/5
+    toolbar.clock.textColor: rgb:255/0/0
+
+With that all of the text will be 'rgb:3/4/5' except the toolbar clock text
+which will be 'rgb:255/0/0'.
+
+Now what makes fluxbox so spectacular is its ability to render textures on the
+fly. A texture is a fillpattern that you see on some styles. Texture
+descriptions are specified directly to the key that they should apply to,
+e.g.:
+
+    toolbar.clock:  Raised Gradient Diagonal Bevel1
+    toolbar.clock.color:    rgb:8/6/4
+    toolbar.clock.colorTo:  rgb:4/3/2
+
+Don't worry, we will explain what these mean. A texture description consists
+of up to five fields, which are as follows:
+
+.Flat | Raised | Sunken
+gives the component either a flat, raised or sunken appearance.
+
+.Gradient | Solid
+tells Fluxbox to draw either a solid color or a gradient texture.
+
+.Horizontal | Vertical | Diagonal | Crossdiagonal | Pipecross | Elliptic | Rectangle | Pyramid
+Select one of these texture types. They only work when *Gradient* is specified.
+
+.Interlaced
+tells fluxbox to interlace the texture (darken every other line). This option
+is most commonly used with gradiented textures, but from fluxbox version
+0.60.3 on, it also works in solid textures.
+
+.Bevel1 | Bevel2
+tells fluxbox which type of bevel to use. Bevel1 is the default bevel. The
+shading is placed on the edge of the image. Bevel2 is an alternative. The
+shading is placed one pixel in from the edge of the image.
+
+Instead of a texture description, also the option *ParentRelative* is available,
+which makes the component appear as a part of its parent, e.g. totally
+transparent.
+
+Or for even more possibilities Pixmap. If pixmap texture is specified (it
+might not be necessary on every occasion) the pixmap file is specified
+in a separate pixmap resource.
+
+    toolbar.clock: pixmap
+    toolbar.clock.pixmap: clock_background.xpm
+
+This feature might need some investigation, reports say that sometimes the
+resources color and colorTo must be set and then they may not be set.
+
+All gradiented textures are composed of two color values: the 'color' and
+'colorTo' resources. When *Interlaced* is used in *Solid* mode, the 'colorTo'
+resource is used to find the interlacing color.

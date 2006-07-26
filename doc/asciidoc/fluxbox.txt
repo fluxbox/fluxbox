@@ -1,7 +1,7 @@
 fluxbox(1)
 ==========
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v0.9.15, 18th March 2006
+v1.0rc2, 26th July 2006
 
 NAME
 ----
