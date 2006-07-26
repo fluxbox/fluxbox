@@ -1728,6 +1728,10 @@ void FluxboxWindow::maximize(int type) {
             m_old_height = new_h;
             new_y = screen().maxTop(head);
             new_h = screen().maxBottom(head) - new_y - 2*frame().window().borderWidth();
+            if (!screen().getMaxOverTabs()) {
+                new_y += yOffset();
+                new_h -= heightOffset();
+            }
         }
         maximized ^= MAX_VERT;
     }
@@ -1747,6 +1751,10 @@ void FluxboxWindow::maximize(int type) {
             m_old_width = new_w;
             new_x = screen().maxLeft(head);
             new_w = screen().maxRight(head) - new_x - 2*frame().window().borderWidth();
+            if (!screen().getMaxOverTabs()) {
+                new_x += xOffset();
+                new_w -= widthOffset();
+            }
         }
         maximized ^= MAX_HORZ;
     }

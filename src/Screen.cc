@@ -287,6 +287,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                  altscrname+".overlay.CapStyle"),
     scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
     scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
+    max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
     default_internal_tabs(rm, false /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
     
 
@@ -1656,6 +1657,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     _BOOLITEM(*tab_menu,Configmenu, TabsInTitlebar,
               "Tabs in Titlebar", "Tabs in Titlebar",
               *resource.default_internal_tabs, save_and_reconftabs);
+    tab_menu->insert(new BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
+              "Maximize Over", "Maximize over this thing when maximizing"),
+              *resource.max_over_tabs, save_and_reconfigure));
 
     FbTk::MenuItem *tab_width_item =
             new IntResMenuItem(_FB_XTEXT(Configmenu, ExternalTabWidth, 
