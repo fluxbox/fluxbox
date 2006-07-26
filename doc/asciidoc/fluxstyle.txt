@@ -182,3 +182,10 @@ resources color and colorTo must be set and then they may not be set.
 All gradiented textures are composed of two color values: the 'color' and
 'colorTo' resources. When *Interlaced* is used in *Solid* mode, the 'colorTo'
 resource is used to find the interlacing color.
+
+A WORD ABOUT FONTS
+------------------
+We should comment about fonts before we move on to the complete component
+list. fluxbox supports different options for text. These options currently
+include bold, halo and shadow. To set these do this: fontname-size:options for
+any of the font components in the style file. For example:
