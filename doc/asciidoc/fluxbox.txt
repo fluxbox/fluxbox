@@ -1550,8 +1550,8 @@ of an `apps' file:
     # match anything with `gaim' in the title
     [app] (title=.*gaim.*)
     [app] (kate)
-        [Dimensions]  (WINCENTER) {1022 747}
-        [Position]    {0 0}
+        [Dimensions]  {1022 747}
+        [Position]    (WINCENTER) {0 0}
         [Close]       {yes}
     [end]
     [app] (konqueror)
