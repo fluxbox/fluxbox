@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/07/26:
+   * Updated pt_PT translations (Thanx Antonio Gomes)
+     nls/pt_PT/Translation.m
    * Added resource and menu item for maximizing over external tabs (Mark)
      Screen.cc/hh Window.cc
 *06/07/25:
