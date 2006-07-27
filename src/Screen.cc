@@ -569,10 +569,19 @@ void BScreen::initWindows() {
     Fluxbox *fluxbox = Fluxbox::instance();
 
     // manage shown windows
-    // complexity: O(n^2) if we have lots of transients to transient_for
-    // but usually O(n)
     Window transient_for = 0;
-    for (unsigned int i = 0; i < nchild; ++i) {
+    bool safety_flag = false;
+    unsigned int num_transients = 0;
+    for (unsigned int i = 0; i <= nchild; ++i) {
+        if (i == nchild) {
+            if (num_transients) {
+                nchild = num_transients;
+                i = num_transients = 0;
+                safety_flag = true;
+            } else
+                break;
+        }
+
         if (children[i] == None)
             continue;
         else if (!fluxbox->validateWindow(children[i])) {
@@ -584,33 +593,18 @@ void BScreen::initWindows() {
         }
 
         // if we have a transient_for window and it isn't created yet...
-        // postpone creation of this window and find transient_for window
-        // in the list and swap place with it so we can create transient_for window
-        // first
+        // postpone creation of this window until after all others
         if (XGetTransientForHint(disp, children[i], &transient_for) &&
-            fluxbox->searchWindow(transient_for) == 0) {
-            // search forward for transient_for
-            // and swap place with it so it gets created first
-            unsigned int j = i + 1;
-            for (; j < nchild; ++j) {
-                if (children[j] == transient_for) {
-                    swap(children[i], children[j]);
-                    break;
-                }
-            }
-            // reevaluate window
-            if (!fluxbox->validateWindow(children[i]))
-                continue;
+            fluxbox->searchWindow(transient_for) == 0 && !safety_flag) {
+            // add this window back to the beginning of the list of children
+            children[num_transients] = children[i];
+            num_transients++;
 
 #ifdef DEBUG
-            cerr<<"BScreen::initWindows(): j = "<<j<<" i = "<<i<<" nchild = "<<nchild<<endl;
-
-            if (j < nchild)
-                cerr<<"BScreen::initWindows(): postpone creation of 0x"<<hex<<children[j]<<dec<<endl;
-            else
-                cerr<<"BScreen::initWindows(): postpone creation of 0x"<<hex<<children[i]<<dec<<endl;
+            cerr<<"BScreen::initWindows(): postpone creation of 0x"<<hex<<children[i]<<dec<<endl;
             cerr<<"BScreen::initWindows(): transient_for = 0x"<<hex<<transient_for<<dec<<endl;
 #endif // DEBUG
+            continue;
         }
 
 

@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/27:
+   * Don't change the order of creating windows with transients on restart.
+     Rather, just move the transient to the end of the list. This preserves the
+     focused order and also reduces the complexity to O(n). (Mark)
+     Screen.cc
 *06/07/26:
    * Fixed torn menus so they don't close on exec items (Mark)
      FbTk/Menu.cc
