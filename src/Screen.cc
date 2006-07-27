@@ -575,9 +575,10 @@ void BScreen::initWindows() {
     for (unsigned int i = 0; i <= nchild; ++i) {
         if (i == nchild) {
             if (num_transients) {
+                if (num_transients == nchild)
+                    safety_flag = true;
                 nchild = num_transients;
                 i = num_transients = 0;
-                safety_flag = true;
             } else
                 break;
         }
