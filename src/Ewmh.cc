@@ -31,6 +31,7 @@
 #include "WinClientUtil.hh"
 #include "fluxbox.hh"
 #include "FbWinFrameTheme.hh"
+#include "FocusControl.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/FbWindow.hh"
@@ -366,29 +367,10 @@ void Ewmh::updateClientClose(WinClient &winclient){
 }
 
 void Ewmh::updateClientList(BScreen &screen) {
-    size_t num=0;
 
-    BScreen::Workspaces::const_iterator workspace_it =
-        screen.getWorkspacesList().begin();
-    const BScreen::Workspaces::const_iterator workspace_it_end =
-        screen.getWorkspacesList().end();
-    for (; workspace_it != workspace_it_end; ++workspace_it) {
-        Workspace::Windows::iterator win_it =
-            (*workspace_it)->windowList().begin();
-        Workspace::Windows::iterator win_it_end =
-            (*workspace_it)->windowList().end();
-        for (; win_it != win_it_end; ++win_it) {
-            num += (*win_it)->numClients();
-        }
+    std::list<WinClient *> creation_order_list = screen.focusControl().creationOrderList();
 
-    }
-    // and count icons
-    BScreen::Icons::const_iterator icon_it = screen.iconList().begin();
-    BScreen::Icons::const_iterator icon_it_end = screen.iconList().end();
-    for (; icon_it != icon_it_end; ++icon_it) {
-        num += (*icon_it)->numClients();
-    }
-
+    size_t num = creation_order_list.size();
     Window *wl = FB_new_nothrow Window[num];
     if (wl == 0) {
         _FB_USES_NLS;
@@ -397,39 +379,12 @@ void Ewmh::updateClientList(BScreen &screen) {
         return;
     }
 
-    //start the iterator from begining
-    workspace_it = screen.getWorkspacesList().begin();
     int win=0;
-    for (; workspace_it != workspace_it_end; ++workspace_it) {
+    std::list<WinClient *>::iterator client_it = creation_order_list.begin();
+    std::list<WinClient *>::iterator client_it_end = creation_order_list.end();
+    for (; client_it != client_it_end; ++client_it)
+        wl[win++] = (*client_it)->window();
 
-        // Fill in array of window ID's
-        Workspace::Windows::const_iterator it =
-            (*workspace_it)->windowList().begin();
-        Workspace::Windows::const_iterator it_end =
-            (*workspace_it)->windowList().end();
-        for (; it != it_end; ++it) {
-            if ((*it)->numClients() == 1) {
-                wl[win++] = (*it)->clientWindow();
-            } else {
-                // add every client in fluxboxwindow to list window list
-                std::list<WinClient *>::iterator client_it =
-                    (*it)->clientList().begin();
-                std::list<WinClient *>::iterator client_it_end =
-                    (*it)->clientList().end();
-                for (; client_it != client_it_end; ++client_it)
-                    wl[win++] = (*client_it)->window();
-            }
-        }
-    }
-
-    // plus iconified windows
-    icon_it = screen.iconList().begin();
-    for (; icon_it != icon_it_end; ++icon_it) {
-        FluxboxWindow::ClientList::iterator client_it = (*icon_it)->clientList().begin();
-        FluxboxWindow::ClientList::iterator client_it_end = (*icon_it)->clientList().end();
-        for (; client_it != client_it_end; ++client_it)
-            wl[win++] = (*client_it)->window();
-    }
     //number of windows to show in client list
     num = win;
 
@@ -703,9 +658,7 @@ void Ewmh::updateHints(FluxboxWindow &win) {
 }
 
 void Ewmh::updateWorkspace(FluxboxWindow &win) {
-    long workspace = win.isInitialized() ?
-        win.workspaceNumber() : 
-        win.screen().currentWorkspaceID();
+    long workspace = win.workspaceNumber();
 
     if (win.isStuck())
         workspace = -1; // appear on all desktops/workspaces

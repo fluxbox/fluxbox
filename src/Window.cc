@@ -424,7 +424,7 @@ void FluxboxWindow::init() {
 
     m_last_focus_time.tv_sec = m_last_focus_time.tv_usec = 0;
 
-    m_blackbox_attrib.workspace = m_workspace_number = ~0;
+    m_blackbox_attrib.workspace = m_workspace_number = m_screen.currentWorkspaceID();
 
     m_blackbox_attrib.flags = m_blackbox_attrib.attrib = m_blackbox_attrib.stack = 0;
     m_blackbox_attrib.premax_x = m_blackbox_attrib.premax_y = 0;
