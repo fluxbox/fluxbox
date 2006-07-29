@@ -970,7 +970,7 @@ void Remember::setupFrame(FluxboxWindow &win) {
     if (app->workspace_remember) {
         // we use setWorkspace and not reassoc because we're still initialising
         win.setWorkspace(app->workspace);
-        if (app->jumpworkspace_remember)
+        if (app->jumpworkspace_remember && !Fluxbox::instance()->isStartup())
             screen.changeWorkspaceID(app->workspace);
     }
 

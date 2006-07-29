@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/07/29:
+   * Don't jump to remembered apps on restart (Mark)
+     Remember.cc
    * Make _NET_CLIENT_LIST report windows in creation order - still need to fix
      _NET_CLIENT_LIST_STACKING (Mark)
      FocusControl.hh Ewmh.cc
@@ -53,8 +55,8 @@ Changes for 1.0rc3:
    * Fix a possible bug with window cycling on multiple screens (Mark)
      fluxbox.cc WorkspaceCmd.cc
    * Include minimized windows when "alt-tabbing", added 16 to the
-      Next/PrevWindow bitmask to disable the behavior (Mark)
-      FocusControl.cc/hh
+     Next/PrevWindow bitmask to disable the behavior (Mark)
+     FocusControl.cc/hh
 *06/07/13:
    * Remove some redundant code for loading styles (Mark)
      fluxbox.cc Screen.cc RootTheme.cc/hh
