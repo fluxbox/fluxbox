@@ -72,6 +72,8 @@ $set 4 #Configmenu
 21 Tab Options
 22 Tabs in Titlebar
 23 External Tab Width
+24 Click Tab Focus
+25 Mouse Tab Focus
 
 $set 5 #Ewmh
 
