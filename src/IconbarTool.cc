@@ -348,15 +348,14 @@ inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
 }
 
 void removeDuplicate(const IconbarTool::IconList &iconlist, std::list<FluxboxWindow *> &windowlist) {
-    IconbarTool::IconList::const_iterator win_it = iconlist.begin();
-    IconbarTool::IconList::const_iterator win_it_end = iconlist.end();
+    IconbarTool::IconList::const_iterator icon_it = iconlist.begin();
+    IconbarTool::IconList::const_iterator icon_it_end = iconlist.end();
     std::list<FluxboxWindow *>::iterator remove_it = windowlist.end();
-    for (; win_it != win_it_end; ++win_it)
-        remove_it = remove(windowlist.begin(), remove_it, &(*win_it)->win());
+    for (; icon_it != icon_it_end; ++icon_it)
+        remove_it = remove(windowlist.begin(), remove_it, &(*icon_it)->win());
 
     // remove already existing windows
     windowlist.erase(remove_it, windowlist.end());
-    windowlist.unique();
 }
 
 }; // end anonymous namespace
@@ -486,22 +485,8 @@ void IconbarTool::setMode(Mode mode) {
     deleteIcons();
 
     // update mode
-    switch (mode) {
-    case NONE: // nothing
-        break;
-    case ICONS: // all icons from all workspaces
-    case WORKSPACEICONS: // all icons on current workspace
-        updateIcons();
-        break;
-    case WORKSPACENOICONS:
-    case WORKSPACE: // all windows and all icons on current workspace
-        updateWorkspace();
-        break;
-    case NOICONS:
-    case ALLWINDOWS: // all windows and all icons from all workspaces
-        updateAllWindows();
-        break;
-    };
+    if (mode != NONE)
+        updateList();
 
     // unlock graphics update
     m_icon_container.setUpdateLock(false);
@@ -614,23 +599,9 @@ void IconbarTool::update(FbTk::Subject *subj) {
         deleteIcons();
 
     // ok, we got some signal that we need to update our iconbar container
-    switch (mode()) {
-    case NONE:
+    if (mode() == NONE)
         return;
-        break;
-    case ICONS:        
-    case WORKSPACEICONS:
-        updateIcons();
-        break;
-    case WORKSPACENOICONS:
-    case WORKSPACE:
-        updateWorkspace();
-        break;
-    case NOICONS:
-    case ALLWINDOWS:
-        updateAllWindows();
-        break;
-    }
+    updateList();
 
     // unlock container and update graphics
     m_icon_container.setUpdateLock(false);
@@ -894,78 +865,27 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     win.attentionSig().attach(this);
 }
 
-void IconbarTool::updateIcons() {
-    std::list<FluxboxWindow *> itemlist;
-    // add icons to the itemlist    
-    BScreen::Icons::iterator icon_it = m_screen.iconList().begin();
-    BScreen::Icons::iterator icon_it_end = m_screen.iconList().end();
-    for (; icon_it != icon_it_end; ++icon_it) {
-        if (mode() == ICONS)
-            itemlist.push_back(*icon_it);
-        else if (mode() == WORKSPACEICONS && 
-                   ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID() ||
-                    (*icon_it)->isStuck()))
-            itemlist.push_back(*icon_it);
+void IconbarTool::updateList() {
+    std::list<WinClient *> ordered_list =
+        m_screen.focusControl().creationOrderList();
+    std::list<WinClient *>::iterator it = ordered_list.begin();
+    std::list<WinClient *>::iterator it_end = ordered_list.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->fbwindow() && checkAddWindow(mode(), *(*it)->fbwindow()) &&
+            !checkDuplicate(*(*it)->fbwindow()))
+            addWindow(*(*it)->fbwindow());
     }
-    removeDuplicate(m_icon_list, itemlist);
-    addList(itemlist);    
-}
-
-void IconbarTool::updateWorkspace() {
-    std::list<FluxboxWindow *> itemlist;
-    // add current workspace windows
-    Workspace &space = *m_screen.currentWorkspace();
-    Workspace::Windows::iterator win_it = space.windowList().begin();
-    Workspace::Windows::iterator win_it_end = space.windowList().end();
-    for (; win_it != win_it_end; ++win_it) {
-        if (checkAddWindow(mode(), **win_it))
-            itemlist.push_back(*win_it);
-    }
-
-    // add icons from current workspace
-    if (mode() != WORKSPACENOICONS) {
-        BScreen::Icons::iterator icon_it =  m_screen.iconList().begin();
-        BScreen::Icons::iterator icon_it_end =  m_screen.iconList().end();
-        for (; icon_it != icon_it_end; ++icon_it) {
-            if ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID() ||
-                (*icon_it)->isStuck())
-                itemlist.push_back(*icon_it);
-        }
-    }
-
-    removeDuplicate(m_icon_list, itemlist);
-    addList(itemlist);
-}
-
-
-void IconbarTool::updateAllWindows() {
-    std::list<FluxboxWindow *> full_list;
-    // for each workspace add clients to full list
-    BScreen::Workspaces::iterator workspace_it = m_screen.getWorkspacesList().begin();
-    BScreen::Workspaces::iterator workspace_it_end = m_screen.getWorkspacesList().end();
-    for (; workspace_it != workspace_it_end; ++workspace_it) {
-        full_list.insert(full_list.end(),
-                         (*workspace_it)->windowList().begin(),
-                         (*workspace_it)->windowList().end());
-    }
-    // add icons
-    if(mode() != NOICONS && mode() != WORKSPACENOICONS) {
-        full_list.insert(full_list.end(),
-                         m_screen.iconList().begin(),
-                         m_screen.iconList().end());
-    }
-
-    removeDuplicate(m_icon_list, full_list);
-    addList(full_list);
-}
-
-void IconbarTool::addList(std::list<FluxboxWindow *> &winlist) {
-    // ok, now we should have a list of icons that we need to add
-    std::list<FluxboxWindow *>::iterator it = winlist.begin();
-    std::list<FluxboxWindow *>::iterator it_end = winlist.end();
-    for (; it != it_end; ++it)
-        addWindow(**it);
     renderTheme();
+}
+
+bool IconbarTool::checkDuplicate(FluxboxWindow &win) {
+    IconList::iterator it = m_icon_list.begin();
+    IconList::iterator it_end = m_icon_list.end();
+    for (; it != it_end; ++it) {
+        if (&win == &(*it)->win())
+            return true;
+    }
+    return false;
 }
 
 void IconbarTool::timedRender() {

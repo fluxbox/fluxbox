@@ -120,13 +120,9 @@ private:
     /// add a single window 
     void addWindow(FluxboxWindow &win);
     /// add icons to the list
-    void updateIcons();
-    /// add normal windows to the list
-    void updateWorkspace();
-    /// add all windows to the list
-    void updateAllWindows();
-    /// add a list of windows 
-    void addList(std::list<FluxboxWindow *> &winlist);
+    void updateList();
+    /// check if window is already in the list
+    bool checkDuplicate(FluxboxWindow &win);
     /// so we can update current window without flicker
     void timedRender();
 

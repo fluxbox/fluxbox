@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/07/30:
+   * List windows in iconbar in creation order (Mark)
+     IconbarTool.cc/hh
 *06/07/29:
    * Don't jump to remembered apps on restart (Mark)
      Remember.cc
