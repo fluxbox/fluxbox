@@ -508,6 +508,9 @@ void FluxboxWindow::init() {
 
     restoreAttributes();
 
+    if (m_workspace_number < 0 || m_workspace_number >= screen().numberOfWorkspaces())
+        m_workspace_number = screen().currentWorkspaceID();
+
     bool place_window = (m_old_pos_x == 0);
 
     if (fluxbox.isStartup())
