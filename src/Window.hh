@@ -318,7 +318,6 @@ public:
     inline bool isFocusHidden() const { return m_focus_hidden; }
     inline bool isIconHidden() const { return m_icon_hidden; }
     inline bool isManaged() const { return m_initialized; }
-    inline bool isInitialized() const { return m_initialized; }
     inline bool isFocused() const { return focused; }
     bool isVisible() const;
     inline bool isIconic() const { return iconic; }

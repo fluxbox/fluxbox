@@ -508,9 +508,6 @@ void FluxboxWindow::init() {
 
     restoreAttributes();
 
-    if (m_workspace_number < 0 || m_workspace_number >= screen().numberOfWorkspaces())
-        m_workspace_number = screen().currentWorkspaceID();
-
     bool place_window = (m_old_pos_x == 0);
 
     if (fluxbox.isStartup())
@@ -560,7 +557,6 @@ void FluxboxWindow::init() {
         moveResize(frame().x(), frame().y(), real_width, real_height);
 
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
-    setWorkspace(m_workspace_number);
 
     if (maximized && functions.maximize) { // start maximized
         // This will set it to the appropriate style of maximisation
@@ -1317,7 +1313,7 @@ void FluxboxWindow::resize(unsigned int width, unsigned int height) {
 
     // magic to detect if moved during initialisation
     // we restore the old state, because we were a resize, not a moveResize!
-    if (!isInitialized())
+    if (!m_initialized)
         m_old_pos_x = old_x;
 }
 
@@ -1326,7 +1322,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
                                unsigned int new_width, unsigned int new_height, bool send_event) {
 
     // magic to detect if moved during initialisation
-    if (!isInitialized())
+    if (!m_initialized)
         m_old_pos_x = 1;
 
     send_event = send_event || (frame().x() != new_x || frame().y() != new_y);
@@ -1367,7 +1363,7 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
                                unsigned int new_width, unsigned int new_height, int gravity, unsigned int client_bw) {
 
     // magic to detect if moved during initialisation
-    if (!isInitialized())
+    if (!m_initialized)
         m_old_pos_x = 1;
     frame().moveResizeForClient(new_x, new_y, new_width, new_height, gravity, client_bw);
     setFocusFlag(focused);
@@ -1804,7 +1800,7 @@ void FluxboxWindow::setWorkspace(int n) {
     m_blackbox_attrib.workspace = m_workspace_number;
 
     // notify workspace change
-    if (isInitialized() && !stuck && old_wkspc != m_workspace_number) {
+    if (m_initialized && !stuck && old_wkspc != m_workspace_number) {
 #ifdef DEBUG
         cerr<<this<<" notify workspace signal"<<endl;
 #endif // DEBUG
@@ -1818,7 +1814,7 @@ void FluxboxWindow::setLayerNum(int layernum) {
     m_blackbox_attrib.flags |= ATTRIB_STACK;
     m_blackbox_attrib.stack = layernum;
 
-    if (isInitialized()) {
+    if (m_initialized) {
         saveBlackboxAttribs();
 
 #ifdef DEBUG
@@ -1835,7 +1831,7 @@ void FluxboxWindow::shade() {
         return;
 
     // we're toggling, so if they're equal now, we need to change it
-    if (isInitialized() && m_frame.isShaded() == shaded)
+    if (m_initialized && m_frame.isShaded() == shaded)
         frame().shade();
 
     if (shaded) {
@@ -1843,14 +1839,14 @@ void FluxboxWindow::shade() {
         m_blackbox_attrib.flags ^= ATTRIB_SHADED;
         m_blackbox_attrib.attrib ^= ATTRIB_SHADED;
 
-        if (isInitialized())
+        if (m_initialized)
             setState(NormalState, false);
     } else {
         shaded = true;
         m_blackbox_attrib.flags |= ATTRIB_SHADED;
         m_blackbox_attrib.attrib |= ATTRIB_SHADED;
         // shading is the same as iconic
-        if (isInitialized())
+        if (m_initialized)
             setState(IconicState, false);
     }
 
@@ -1886,7 +1882,7 @@ void FluxboxWindow::stick() {
 
     }
 
-    if (isInitialized()) {
+    if (m_initialized) {
         setState(m_current_state, false);
         // notify since some things consider "stuck" to be a pseudo-workspace
         m_workspacesig.notify();
@@ -1958,7 +1954,7 @@ void FluxboxWindow::raiseLayer() {
     if (layerNum() == ::Layer::MENU + 1)
         return;
 
-    if (!isInitialized()) {
+    if (!m_initialized) {
         m_layernum++;
         return;
     }
@@ -1995,7 +1991,7 @@ void FluxboxWindow::raiseLayer() {
 }
 
 void FluxboxWindow::lowerLayer() {
-    if (!isInitialized()) {
+    if (!m_initialized) {
         if (m_layernum > 0)
             m_layernum--;
         return;
@@ -2042,7 +2038,7 @@ void FluxboxWindow::moveToLayer(int layernum) {
         layernum = ::Layer::MENU + 1;
     }
 
-    if (!isInitialized()) {
+    if (!m_initialized) {
         m_layernum = layernum;
         return;
     }
@@ -2079,13 +2075,13 @@ void FluxboxWindow::moveToLayer(int layernum) {
 
 void FluxboxWindow::setFocusHidden(bool value) {
     m_focus_hidden = value;
-    if (isInitialized())
+    if (m_initialized)
         m_statesig.notify();
 }
 
 void FluxboxWindow::setIconHidden(bool value) {
     m_icon_hidden= value;
-    if (isInitialized())
+    if (m_initialized)
         m_statesig.notify();
 }
 

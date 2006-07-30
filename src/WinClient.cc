@@ -515,7 +515,7 @@ void WinClient::updateWMHints() {
         else
             m_icon_mask = 0;
 
-        if (m_win && m_win->isInitialized()) {
+        if (m_win) {
             if (wmhint->flags & XUrgencyHint) {
                 Fluxbox::instance()->attentionHandler().addAttention(*this);
             } else {
