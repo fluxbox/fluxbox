@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/08/02:
+   * Update _NET_WORKAREA on screen dimension change (Mark)
+     Screen.cc
    * Fix ClickTabFocus and MouseTabFocus in nls (Thanks Antonio Gomes)
      Screen.cc
 *06/07/30:

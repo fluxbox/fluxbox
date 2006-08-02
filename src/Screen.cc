@@ -2038,6 +2038,7 @@ void BScreen::updateSize() {
 
     // send resize notify
     m_resize_sig.notify();
+    m_workspace_area_sig.notify();
 }
 
 
