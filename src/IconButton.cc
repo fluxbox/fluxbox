@@ -77,21 +77,21 @@ public:
         // if the workspace is changed.
         FluxboxWindow &win = m_win;
         if(win.isIconic() || !win.isFocused()) {
-            switch(m_tool.deiconifyMode()) {
-            case IconbarTool::SEMIFOLLOW:
+            switch(win.screen().getUserFollowModel()) {
+            case BScreen::SEMIFOLLOW_ACTIVE_WINDOW:
                 if (win.isIconic()) {
                     win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
                 } else {
                     win.screen().changeWorkspaceID(win.workspaceNumber());
                 }
                 break;
-            case IconbarTool::CURRENT:
+            case BScreen::FETCH_ACTIVE_WINDOW:
                 win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
                 break;
-            case IconbarTool::FOLLOW:
-            default:
+            case BScreen::FOLLOW_ACTIVE_WINDOW:
                 if (!win.isStuck())
                     win.screen().changeWorkspaceID(win.workspaceNumber());
+            default:
                 break;
             };
             win.raiseAndFocus();

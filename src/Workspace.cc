@@ -104,15 +104,22 @@ public:
             return;
         FluxboxWindow &win = *m_client.fbwindow();
 
-        // fetch the window to the current workspace
-        if (button == 2 && win.screen().currentWorkspaceID() != win.workspaceNumber()) {
+        if (win.screen().currentWorkspaceID() != win.workspaceNumber()) {
             win.menu().hide();
-            win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win, true);
-        } else { // warp to the workspace of the window
-            win.screen().changeWorkspaceID(win.workspaceNumber()); 
-            win.setCurrentClient(m_client);
-            win.raiseAndFocus();
+            BScreen::FollowModel model = win.screen().getUserFollowModel();
+            if (model == BScreen::IGNORE_OTHER_WORKSPACES)
+                return;
+            // fetch the window to the current workspace
+            else if ((button == 3) ^ (model == BScreen::FETCH_ACTIVE_WINDOW ||
+                win.isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW)) {
+                win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win, true);
+                return;
+            }
+            // warp to the workspace of the window
+            win.screen().changeWorkspaceID(win.workspaceNumber());
         }
+        win.setCurrentClient(m_client);
+        win.raiseAndFocus();
     }
 
     const std::string &label() const { return m_client.title(); }

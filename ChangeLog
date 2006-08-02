@@ -1,6 +1,20 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/08/02:
+   * Rename session.screen*.iconbar.deiconifyMode to
+     session.screen*.userFollowModel (Mark)
+     This resource is used for:
+     - clicking a window on a different workspace in the iconbar
+     - _NET_ACTIVE_WINDOW messages where the source is a pager
+     - clicking a client in the workspace menu (and the opposite is used for
+       right clicks)
+     Possible values are:
+     - Follow: go to the workspace of the selected window
+     - Current: bring the window to the current workspace
+     - SemiFollow: act like Current for iconified windows, else Follow
+     - Ignore: leave it alone
+     Screen.cc/hh ScreenResources.cc/hh IconbarTool.cc/hh IconButton.cc Ewmh.cc
+     Workspace.cc
    * Update _NET_WORKAREA on screen dimension change (Mark)
      Screen.cc
    * Fix ClickTabFocus and MouseTabFocus in nls (Thanks Antonio Gomes)

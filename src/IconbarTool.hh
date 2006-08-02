@@ -56,13 +56,6 @@ public:
         ALLWINDOWS ///< all windows and all icons from all workspaces
     };
 
-    /// deiconfiy mode for iconbuttons
-    enum DeiconifyMode {
-        CURRENT, ///< raise the window on the current workspace
-        FOLLOW, ///< raise the window on the workspace it was iconified from
-        SEMIFOLLOW, ///< like current for iconified windows, and like follow for others
-    };
-    
     /// wheeling on iconbutton
     enum WheelMode { 
       OFF, ///< no wheeling, default mode
@@ -91,7 +84,6 @@ public:
     unsigned int borderWidth() const;
 
     Mode mode() const { return *m_rc_mode; }
-    DeiconifyMode deiconifyMode() const { return *m_deiconify_mode; }
     WheelMode wheelMode() const { return *m_wheel_mode; }
 
     void setOrientation(FbTk::Orientation orient);
@@ -138,7 +130,6 @@ private:
 
     IconList m_icon_list;
     FbTk::Resource<Mode> m_rc_mode;
-    FbTk::Resource<DeiconifyMode> m_deiconify_mode;
     FbTk::Resource<WheelMode> m_wheel_mode;
     FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode

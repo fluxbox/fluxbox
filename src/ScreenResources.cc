@@ -88,6 +88,9 @@ std::string FbTk::Resource<BScreen::FollowModel>::getString() const {
     case BScreen::FETCH_ACTIVE_WINDOW:
         return std::string("Current");
         break;
+    case BScreen::SEMIFOLLOW_ACTIVE_WINDOW:
+        return std::string("SemiFollow");
+        break;
     case BScreen::IGNORE_OTHER_WORKSPACES:
     default: 
         return std::string("Ignore");
@@ -105,6 +108,8 @@ setFromString(char const *strval) {
              strcasecmp(strval, "CurrentWorkspace") == 0 ||
              strcasecmp(strval, "Fetch") == 0)
         m_value = BScreen::FETCH_ACTIVE_WINDOW;
+    else if (strcasecmp(strval, "SemiFollow") == 0)
+        m_value = BScreen::SEMIFOLLOW_ACTIVE_WINDOW;
     else
         setDefaultValue();
 }

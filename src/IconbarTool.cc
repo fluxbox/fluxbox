@@ -74,39 +74,6 @@ void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
 }
 
 template<>
-void FbTk::Resource<IconbarTool::DeiconifyMode>::setDefaultValue() {
-    m_value = IconbarTool::FOLLOW;
-}
-
-template<>
-void FbTk::Resource<IconbarTool::DeiconifyMode>::setFromString(const char* strval) {
-    if (strncasecmp(strval, "Current", strlen("Current")) == 0)
-        m_value = IconbarTool::CURRENT;
-    else if (strncasecmp(strval, "Follow", strlen("Follow")) == 0)
-        m_value = IconbarTool::FOLLOW;
-    else if (strncasecmp(strval, "SemiFollow", strlen("SemiFollow")) == 0)
-        m_value = IconbarTool::SEMIFOLLOW;
-    else
-        setDefaultValue();
-}
-
-template<>
-std::string FbTk::Resource<IconbarTool::DeiconifyMode>::getString() const {
-    switch (m_value) {
-    case IconbarTool::SEMIFOLLOW:
-        return std::string("SemiFollow");
-        break;
-    case IconbarTool::CURRENT:
-        return std::string("Current");
-        break;
-    case IconbarTool::FOLLOW:
-    default:
-        return std::string("Follow");
-        break;
-    };
-}
-
-template<>
 void FbTk::Resource<IconbarTool::WheelMode>::setDefaultValue() {
     m_value = IconbarTool::SCREEN;
 }
@@ -373,9 +340,6 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_empty_pm(0),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
-    m_deiconify_mode(screen.resourceManager(), FOLLOW,
-                     screen.name() + ".iconbar.deiconifyMode",
-                     screen.name() + ".iconbar.DeiconifyMode"),
     m_wheel_mode(screen.resourceManager(), OFF,
                  screen.name() + ".iconbar.wheelMode",
                  screen.name() + ".iconbar.WheelMode"),
