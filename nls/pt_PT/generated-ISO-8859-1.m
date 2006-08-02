@@ -72,6 +72,8 @@ $set 4 #Configmenu
 21 Opções de Abas
 22 Abas na Barra de Título
 23 Dimensão de Abas Externas
+24 Foco na Aba Quando Apontada
+25 Foco na Aba Quando Clicada
 
 $set 5 #Ewmh
 
