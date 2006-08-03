@@ -24,10 +24,10 @@ installation of fluxbox is shipped with many classic examples that show a
 great deal of what one could do. To use one of the standard styles navigate to
 the 'System Styles' menu under your main fluxbox menu.
 
-fluxbox uses it's own graphics class to render its images on the fly. By using
-styles you can determine, at a great level, of configurability what your
-desktop will look like. Since fluxbox was derived from flackbox many often
-wonder if old themes will work on the latest releases of flackbox. Well they
+fluxbox uses its own graphics class to render its images on the fly. By using
+styles you can determine, at a great level of configurability, what your
+desktop will look like. Since fluxbox was derived from blackbox many often
+wonder if old themes will work on the latest releases of fluxbox. Well they
 basically do, but you will have to tune them since the fluxbox code has
 changed quite a bit since the initial grab.
 
@@ -116,7 +116,7 @@ information about the fonts installed on your system, you can use a
 program like xfontsel(1), gtkfontsel, or xlsfonts(1).)
 
 In the last example you will notice the wildcard (\*) before font. In a Fluxbox
-style you can set a value with a wild card. The example means that every font
+style you can set a value with a wildcard. The example means that every font
 in the style will be what is specified. You can do this with any
 component/value. For example if you wanted all of the text to be one color you
 would do:
@@ -157,8 +157,8 @@ Select one of these texture types. They only work when *Gradient* is specified.
 
 .Interlaced
 tells fluxbox to interlace the texture (darken every other line). This option
-is most commonly used with gradiented textures, but from fluxbox version
-0.60.3 on, it also works in solid textures.
+is most commonly used with gradiented textures, but it also works in solid
+textures.
 
 .Bevel1 | Bevel2
 tells fluxbox which type of bevel to use. Bevel1 is the default bevel. The

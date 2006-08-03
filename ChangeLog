@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/08/03:
+   * Updated documentation (Mark)
+     fluxbox.txt fluxstyle.txt
 *06/08/02:
    * Rename session.screen*.iconbar.deiconifyMode to
      session.screen*.userFollowModel (Mark)
