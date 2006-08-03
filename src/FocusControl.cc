@@ -163,7 +163,9 @@ void FocusControl::stopCyclingFocus() {
     // in which case we'll do a proper revert focus
     if (m_cycling_creation_order && m_cycling_window != m_creation_order_list.end())
         m_cycling_window = find(m_focused_list.begin(),m_focused_list.end(),*m_cycling_window);
-    if (m_cycling_window != m_focused_list.end() && m_cycling_window != m_creation_order_list.end()) {
+    if (m_cycling_window != m_focused_list.end() &&
+        m_cycling_window != m_creation_order_list.end() &&
+        (*m_cycling_window)->fbwindow()->isVisible()) {
         WinClient *client = *m_cycling_window;
         m_focused_list.erase(m_cycling_window);
         m_focused_list.push_front(client);
