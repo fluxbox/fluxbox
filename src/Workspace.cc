@@ -104,7 +104,8 @@ public:
             return;
         FluxboxWindow &win = *m_client.fbwindow();
 
-        if (win.screen().currentWorkspaceID() != win.workspaceNumber()) {
+        if (win.screen().currentWorkspaceID() != win.workspaceNumber() &&
+            !win.isStuck()) {
             win.menu().hide();
             BScreen::FollowModel model = win.screen().getUserFollowModel();
             if (model == BScreen::IGNORE_OTHER_WORKSPACES)

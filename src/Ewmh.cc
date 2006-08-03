@@ -773,7 +773,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             // if the raised window is on a different workspace
             // we do what the user wish: 
             //   either ignore|go to that workspace|get the window
-            if (fbwin->screen().currentWorkspaceID() != fbwin->workspaceNumber()) {
+            if (fbwin->screen().currentWorkspaceID() != fbwin->workspaceNumber()
+                && !fbwin->isStuck()) {
                 BScreen::FollowModel model = (ce.data.l[0] == 2) ?
                     fbwin->screen().getUserFollowModel() :
                     fbwin->screen().getFollowModel();
