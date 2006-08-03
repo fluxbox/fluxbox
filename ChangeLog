@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/08/03:
+   * Added support for negative arguments to the `Tab' key command to count
+     backwards from the last tab in the group (Mark)
+     CurrentWindowCmd.cc
    * Updated documentation (Mark)
      fluxbox.txt fluxstyle.txt
 *06/08/02:
