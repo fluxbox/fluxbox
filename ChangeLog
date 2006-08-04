@@ -1,7 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/08/04:
-   * Update spanish translations (thanks Guillermo Patterer)
+   * Updated portuguese translations (thanks Fábio C. P. Navarro)
+     nls/pt_BR
+   * Updated spanish translations (thanks Guillermo Patterer)
      nls/es_ES nls/es_AR
 *06/08/03:
    * Don't raise a window after cycling if it has been minimized (Mark)
