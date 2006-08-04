@@ -28,25 +28,25 @@ $set 2 #BaseDisplay
 
 $set 3 #Common
 
-1 Alpha-Transparenz
+1 Transparenz (Alpha)
 2 Automatisch verstecken
 3 Kompiliert am
 4 Einkompilierte Optionen
 5 Compiler
 6 Compilerversion
-7            Start (init)
-8 Tastendefinition (keys)
-9                    nls
-10             Menü (menu)
-11            Stil (style)
-12 Standardeinstellungen
+7       init
+8       keys
+9        nls
+10       menu
+11      style
+12 Standardeinstellungen/-Dateien\n
 13 deaktiviert
 14 Fehler
-15 Fluxbox-Version
-16 Durch maximierte Fenster verdecken
-17 SVN-Revision
+15 Fluxbox Version
+16 Von maximierten Fenstern verdecken
+17 SVN Revision
 18 Sichtbar
-19 In diesem Stil ist keine Hintergrundoption angegeben.\nBitte lesen Sie die Dokumentation und FAQ.
+19 In diesem Style ist keine Hintergrundoption angegeben.\nBitte lesen Sie die Dokumentation und die FAQ.
 
 $set 4 #Configmenu
 
@@ -54,24 +54,26 @@ $set 4 #Configmenu
 2 Automatisches Hervorheben
 3 Klick holt in den Vordergrund
 4 Klick fokussiert
-5 Flüchtige (transient) Fenster dekorieren
+5 Flüchtige (Dialoge) Fenster dekorieren
 6 Desktop mit Mausrad wechseln
 7 Fenster nach Desktopwechsel fokussieren
 8 Fokustyp
 9 Neue Fenster fokussieren
 10 Vollständig Maximieren
-11 Bild-Dithering
+11 Bilddithering
 12 Fensterinhalt beim Verschieben zeigen
-14 Mausfokus
+14 Fokus folgt Mouse
 15 Fenster über Desktopgrenzen verschieben
-16 Erzwinge Pseudo-Transparenz
-17 Alpha-Transparenz für Menü
+16 Erzwinge Pseudotransparenz
+17 Alphatransparenz für Menü
 18 Transparenz
-19 Alpha-Transparenz fokussierter Fenster
-20 Alpha-Transparenz nicht fokussierter Fenster
+19 Alphatransparenz fokussierter Fenster
+20 Alphatransparenz  nicht fokussierter Fenster
 21 Tab-Einstellungen
 22 Tabs in der Titelleiste
 23 Breite für externe Tabs
+24 Klick fokussiert Tab
+25 Tabfokus folgt Mouse
 
 $set 5 #Ewmh
 
@@ -82,20 +84,20 @@ $set 6 #FbTkError
 1 Warnung! Höhe > 3200, setze Höhe = 3200
 2 Warnung! Breite > 3200, setze Breite = 3200
 3 Warnung: Kann Fallback-Schriftart nicht laden
-4 Allocation error.
-5 Error creating pixmap
-6 Can't create XImage
-7 Failed to read
-8 Warning: Failed to find valid format for alpha.
-9 Warning: Failed to create alpha picture.
-10 Warning: Failed to create alpha pixmap.
-11 Failed to find format for screen(%d)
-12 Out of memory
-13 Out of memory while allocating blue buffer.
-14 Out of memory while allocating green buffer.
-15 Out of memory while allocating red buffer.
-16 Failed to read theme item
-17 unsupported visual
+4 Fehler bei der Speicherbelegung.
+5 Fehler bei der Pixmaperstellung
+6 Kann XImage nicht erstellen
+7 Fehler beim Lesen
+8 Warnung: Kein gültiges Format für den Alphawert gefunden.
+9 Warnung: Fehler beim Erstellen des Alphabilds.
+10 Warnung: Fehler beim Erstellen des Alphapixmaps.
+11 Fehler beim Finden eines Formats for den Bildschirm(%d)
+12 Kein Speicher mehr frei
+13 Kein Speicher mehr frei während der Zuordnung des Blauen Puffers.
+14 Kein Speicher mehr frei während der Zuordnung des Grünen Puffers.
+15 Kein Speicher mehr frei während der Zuordnung des Roten Puffers.
+16 Kann Bestandteil des styles nicht lesen.
+17 nicht unterstützte Visualisierung
 18 Benutze Standardeinstellung
 
 $set 7 #Fluxbox
@@ -119,14 +121,14 @@ $set 8 #Gnome
 
 $set 9 #Keys
 
-1 Tastendefinition (keys): Fehler in Zeile
-2 Tastendefinition (keys): Kann Tasten nicht sauber zuweisen!
-3 Tastendefinition (keys): Ungültige Taste/Sondertaste (Modifier) in Zeile
+1 keys: Fehler in Zeile
+2 keys: Kann Tasten nicht sauber zuweisen!
+3 keys: Ungültige Taste/Sondertaste (Modifier) in Zeile
 
 $set 10 #Menu
 
 1 Konfiguration
-2 Fluxbox-Standardmenü
+2 Fluxbox Standardmenü
 3 Beenden
 4 Icons
 5 Ebene
@@ -134,12 +136,13 @@ $set 10 #Menu
 7 Platzierung
 8 Konfiguration neu laden
 9 Neu starten
+10 Warnung: seltsame, unvollständige oder gar falsche [encoding] marke im Menü
 
 $set 11 #Remember
 
 1 Dekoration
 2 Maße
-3 Gehe zu Arbeitsfläche
+3 Wechsle zu Arbeitsfläche
 4 Ebene
 5 Einstellungen merken...
 6 Position
@@ -159,19 +162,19 @@ $set 12 #Screen
 $set 13 #Slit
 
 1 Aktive Slit-Programme
-2 Eine Position nach unten
-3 Eine Position nach oben
-4 Slit-Ausrichtung
+2 Nach oben rotieren
+3 Nach unten rotieren
+4 Slit Ausrichtung
 5 Ebene für Slit
 6 Slit auf Monitor
-7 Slit-Platzierung
+7 Slit Platzierung
 8 Slit
 9 SlitList speichern
 
 $set 14 #Toolbar
 
-1 Arbeitsfläche umbenennen
-2 Symbolleisten-Modus
+1 Aktuelle Arbeitsfläche umbenennen
+2 Symbolleistenmodus
 3 Alle Fenster
 4 Symbole
 5 Keine
@@ -179,12 +182,12 @@ $set 14 #Toolbar
 7 Arbeitsfläche: Symbole
 8 Ebene für Toolbar
 9 Toolbar auf Monitor
-10 Toolbar-Platzierung
+10 Toolbar Platzierung
 11 Toolbar
-12 Toolbar-Größe (Prozent)
+12 Toolbar Länge (Prozent)
 13 Uhr: 24-Stunden-Format
 14 Uhr: 12-Stunden-Format
-15 Uhrzeitformat bearbeiten
+15 Uhrformat bearbeiten
 16 Programm-Icons anzeigen
 17 Keine Symbole
 18 Arbeitsfläche: Keine Symbole
@@ -201,7 +204,7 @@ $set 16 #Windowmenu
 4 Nach hinten
 5 Maximieren
 6 Nach vorne
-7 Verschieben nach ...
+7 Verschieben nach...
 8 Aufrollen
 9 Auf allen Desktops sichtbar
 10 Kill
@@ -215,8 +218,8 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 Fehler: Eines der Folgenden muss angegeben werden: -solid, -mod, -gradient\n
-2 Konnte Pixmap-Atome nicht erstellen, gebe auf!
+1 Fehler: Einer der folgenden Parameter muss angegeben werden: -solid, -mod, -gradient\n
+2 Konnte Pixmap-Atome nicht erstellen, ich häng mich auf!
 3 -display <string>        Verbindung anzeigen\n\
 -mod <x> <y>             Modulo-Raster\n\
 -foreground, -fg <Farbe> Modulo-Vordergrundfarbe\n\
@@ -230,21 +233,22 @@ $set 18 #fbsetroot
 $set 19 #main
 
 1 Fehler: '-display' braucht ein Argument
-2 Bad Alloc
-3 Bad cast
-4 Out of range
-5 Runtime error
-6 Standard Exception
+2 Schlechte Speicherzuweisung
+3 Böse Typenkonvertierung
+4 Ausser Reichweite
+5 Laufzeitfehler
+6 Standardausnahme
 7 Unbekannter Fehler
-8 Fehler: '-log' braucht ein Argument
-9 Log-Datei
+8 Fehler: '-log' benötigt ein Argument
+9 Log Datei
 10 Schreibe Log in
-11 Fehler: '-rc' braucht ein Argument
-12 Fehler: '-screen' braucht ein Argument
+11 Fehler: '-rc' benötigt ein Argument
+12 Fehler: '-screen' benötigt ein Argument
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+Webseite: http://www.fluxbox.org/\n\n\
 -display <string>\t\tBenutze ein anderes $DISPLAY.\n\
 -screen <all|int,int,int>\tNur auf angegebenen Screens laufen.\n\
--rc <string>\t\t\tBenutze eine andere Init-Datei.\n\
+-rc <string>\t\t\tBenutze eine andere Init Datei.\n\
 -version\t\t\tZeige Version an.\n\
 -info\t\t\t\tZeige nützliche Informationen an.\n\
 -log <filename>\t\t\tSchreibe Log in Datei.\n\
@@ -259,5 +263,6 @@ $set 20 #LayerSet
 4 Dock
 5 Normal
 6 Oben
+
 
 
