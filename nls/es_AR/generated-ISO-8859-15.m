@@ -28,7 +28,7 @@ $set 2 #BaseDisplay
 
 $set 3 #Common
 
-1 Alfa
+1 Alfa 
 2 Auto ocultar
 3 Compilado
 4 Opciones compiladas
@@ -72,7 +72,7 @@ $set 4 #Configmenu
 19 Alfa de ventana enfocada
 20 Alfa de ventana desenfocada
 21 Opciones de solapas
-22 Solapas en barra de título
+22 solapas en barra de título
 23 Ancho de solapas externas
 24 Click sobre la solapa enfoca
 25 Mouse sobre la solapa enfoca

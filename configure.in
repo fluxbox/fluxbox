@@ -644,6 +644,7 @@ nls/cs_CZ/Makefile
 nls/da_DK/Makefile
 nls/de_DE/Makefile
 nls/el_GR/Makefile
+nls/es_AR/Makefile
 nls/es_ES/Makefile
 nls/et_EE/Makefile
 nls/fr_FR/Makefile

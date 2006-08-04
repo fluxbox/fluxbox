@@ -1,4 +1,4 @@
-$ codeset=ISO-8859-15
+$ codeset=UTF-8
 
 $set 1 #Align
 
@@ -24,16 +24,16 @@ $set 2 #BaseDisplay
 
 1 Abortando... volcando nucleo\n
 2 Apagando\n
-3 %s:       seÒal %d capturada\n
+3 %s:       se√±al %d capturada\n
 
 $set 3 #Common
 
-1 Alfa
+1 Alfa 
 2 Auto ocultar
 3 Compilado
 4 Opciones compiladas
 5 Compilador
-6 VersiÛn del compilador
+6 Versi√≥n del compilador
 7      init
 8      keys
 9       nls
@@ -42,26 +42,26 @@ $set 3 #Common
 12 Opciones por defecto
 13 desactivado
 14 Error
-15 VersiÛn de Fluxbox
+15 Versi√≥n de Fluxbox
 16 Maximizar por encima
-17 RevisiÛn de SVN
+17 Revisi√≥n de SVN
 18 Visible
-19 No hay una opciÛn de fondo especificada en este estilo.\nPor vafor consulte el manual o lea las FAQ.
+19 No hay una opci√≥n de fondo especificada en este estilo.\nPor vafor consulte el manual o lea las FAQ.
 
 
 $set 4 #Configmenu
 
 1 Anti alias
-2 Elevar autom·ticamente las ventanas
+2 Elevar autom√°ticamente las ventanas
 3 Seleccionar para elevar
 4 Seleccionar para enfocar
 5 Decorar las ventanas transitivas
 6 Cambiar de escritorio con la rueda del mouse
-7 Enfocar ˙ltima ventana en el cambio de escritorio
+7 Enfocar √∫ltima ventana en el cambio de escritorio
 8 Modelo de enfoque
 9 Enfocar ventanas nuevas
-10 MaximizaciÛn total
-11 SimulaciÛn de colores en im·genes
+10 Maximizaci√≥n total
+11 Simulaci√≥n de colores en im√°genes
 12 Movimiento opaco de ventanas
 13 Enfoque semi descuidado
 14 El mouse enfoca
@@ -72,7 +72,7 @@ $set 4 #Configmenu
 19 Alfa de ventana enfocada
 20 Alfa de ventana desenfocada
 21 Opciones de solapas
-22 Solapas en barra de tÌtulo
+22 solapas en barra de t√≠tulo
 23 Ancho de solapas externas
 24 Click sobre la solapa enfoca
 25 Mouse sobre la solapa enfoca
@@ -83,39 +83,39 @@ $set 5 #Ewmh
 
 $set 6 #FbTkError
 
-1 °AtenciÛn! Altura > 3200, estableciendo Altura = 3200
-2 °AtenciÛn! Ancho > 3200, estableciendo Ancho = 3200
-3 AtenciÛn: no se puede cargar la fuente
-4 Error de asignaciÛn
+1 ¬°Atenci√≥n! Altura > 3200, estableciendo Altura = 3200
+2 ¬°Atenci√≥n! Ancho > 3200, estableciendo Ancho = 3200
+3 Atenci√≥n: no se puede cargar la fuente
+4 Error de asignaci√≥n
 5 Error creando el pixmap
 6 No se puede crear XImage
 7 Error de lectura
-8 AtenciÛn: No se puede encontrar un formato v·lido para el alfa
-9 AtenciÛn: Error al crear la imagen alfa
-10 AtenciÛn: Error al crear el pixmap alfa
+8 Atenci√≥n: No se puede encontrar un formato v√°lido para el alfa
+9 Atenci√≥n: Error al crear la imagen alfa
+10 Atenci√≥n: Error al crear el pixmap alfa
 11 No se puede encontrar un formato de pantalla(%d)
 12 Sin memoria
 13 Sin memoria mientras se asignaba buffer azul.
 14 Sin memoria mientras se asignaba buffer verde.
 15 Sin memoria mientras se asignaba buffer rojo.
-16 Error de lectura en Ìtem de tema
+16 Error de lectura en √≠tem de tema
 17 visual no soportada
 18 Estableciendo el valor por defecto
 
 $set 7 #Fluxbox
 
-1 nombre de archivo rc inv·lido
+1 nombre de archivo rc inv√°lido
 2 Error al cargar archivo group
 3 Error al cargar la base de datos
 4 Reintentando con
-5 AtenciÛn! No se puede encontrar pantalla para mapear la ventana
+5 Atenci√≥n! No se puede encontrar pantalla para mapear la ventana
 6 No se puede crear el directorio %s
-7 No se pudieron encontrar pantallas para manejar.\Aseg˙rese que no tiene otro gestor de ventanas ejecut·ndose
-8 Error interpretando expresiÛn regular
-9 Fatal! SÛlo puede haber una instancia de clase de FLuxbox
-10 No se puede conectar con el servidor X.\Aseg˙rese de iniciar las X antes de iniciar Fluxbox
-11 AtenciÛn: el servidor X no soporta sus locales
-12 AtenciÛn: no se pueden establecer modificadores de locales
+7 No se pudieron encontrar pantallas para manejar.\Aseg√∫rese que no tiene otro gestor de ventanas ejecut√°ndose
+8 Error interpretando expresi√≥n regular
+9 Fatal! S√≥lo puede haber una instancia de clase de FLuxbox
+10 No se puede conectar con el servidor X.\Aseg√∫rese de iniciar las X antes de iniciar Fluxbox
+11 Atenci√≥n: el servidor X no soporta sus locales
+12 Atenci√≥n: no se pueden establecer modificadores de locales
 
 $set 8 #Gnome
 
@@ -123,22 +123,22 @@ $set 8 #Gnome
 
 $set 9 #Keys
 
-1 Keys: Error en la lÌnea
-2 Keys: Error al emerger el ·rbol de teclas!
-3 Keys: Tecla/modificador inv·lido la lÌnea
+1 Keys: Error en la l√≠nea
+2 Keys: Error al emerger el √°rbol de teclas!
+3 Keys: Tecla/modificador inv√°lido la l√≠nea
 
 $set 10 #Menu
 
-1 ConfiguraciÛn
-2 Men˙ Fluxbox por defecto
+1 Configuraci√≥n
+2 Men√∫ Fluxbox por defecto
 3 Salir
 4 Iconos
 5 Capa...
 6 A la cabeza...
-7 UbicaciÛn
-8 Recargar configuraciÛn
+7 Ubicaci√≥n
+8 Recargar configuraci√≥n
 9 Reiniciar
-10 AtenciÛn: etiquetas desbalanceadas [codificaciÛn]
+10 Atenci√≥n: etiquetas desbalanceadas [codificaci√≥n]
 
 $set 11 #Remember
 
@@ -147,7 +147,7 @@ $set 11 #Remember
 3 Saltar al escritorio
 4 Capa
 5 Recordar...
-6 PosiciÛn
+6 Posici√≥n
 7 Guardar al cerrar
 8 Enrollado
 9 Pegajoso
@@ -157,7 +157,7 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-1 BScreen::BScreen: OcurriÛnun error al consultar al servidor X.\n
+1 BScreen::BScreen: Ocurri√≥nun error al consultar al servidor X.\n
 2 W: %4d x H: %4d
 3 BScreen::BScreen: manejando pantalla %d usando visual 0x%lx, profundidad %d\n
 
@@ -166,10 +166,10 @@ $set 13 #Slit
 1 Clientes
 2 Ciclar hacia abajo
 3 Ciclar hacia arriba
-4 DirecciÛn de slit
+4 Direcci√≥n de slit
 5 Capa de slit
 6 Slit a la cabeza
-7 UbicaciÛn de slit
+7 Ubicaci√≥n de slit
 8 Slit
 9 Guardar lista de slit
 
@@ -184,13 +184,13 @@ $set 14 #Toolbar
 7 Iconos del escritorio
 8 Capa de la barra de herramientas
 9 Toolbar a la cabeza
-10 UbicaciÛn de la barra de herramientas
+10 Ubicaci√≥n de la barra de herramientas
 11 Barra de herramientas
 12 Porcentaje de ancho de la barra de herramientas
 13 Reloj: 24h
 14 Reloj: 12h
 15 Editar el formato de reloj
-16 Mostrar im·genes
+16 Mostrar im√°genes
 17 Sin iconos
 18 No mostrar los iconos del escritorio
 
@@ -216,20 +216,20 @@ $set 17 #Workspace
 1 Escritorio %d
 2 Escritorios
 3 Escritorio nuevo
-4 Quitar el ˙ltimo escritorio
+4 Quitar el √∫ltimo escritorio
 
 $set 18 #fbsetroot
 
 1 error: es necesario especifiar uno de: -solid, -mod, -gradient\n
 2 No se pudieron crear los atomos de pixmaps, me rindo!
-3 -display <string>        conexiÛn a un display\n\
--mod <x> <y>             diseÒo de modula\n\
+3 -display <string>        conexi√≥n a un display\n\
+-mod <x> <y>             dise√±o de modula\n\
 -foreground, -fg <color> color de primer plano\n\
 -background, -bg <color> color de fondo\n\n\
 -gradient <texture>      gradiente de textura\n\
 -from <color>            color inicial del gradiente\n\
 -to <color>              color final del gradiente\n\
--solid <color>           color sÛlido\n\n\
+-solid <color>           color s√≥lido\n\n\
 -help                    mostrar este texto de ayuda y salir\n
 
 $set 19 #main
@@ -237,7 +237,7 @@ $set 19 #main
 1 error: '-display' requiere un argumento
 4 Fuera de rango
 5 Error de rutina
-6 ExecepciÛn est·ndar
+6 Execepci√≥n est√°ndar
 7 Error desconocido
 8 error: '-log' requiere un argumento
 9 Archivo de registro
@@ -248,11 +248,11 @@ $set 19 #main
 -display <string>\t\tusar conexion a un diplay.\n\
 -screen <all|int,int,int>\tejecutar solamente en pantallas especificadas.\n\
 -rc <string>\t\t\tusar archivo de recursos alternativo.\n\
--version\t\t\tmostrar versiÛn y salir.\n\
--info\t\t\t\tmostrar informaciÛn ˙til.\n\
+-version\t\t\tmostrar versi√≥n y salir.\n\
+-info\t\t\t\tmostrar informaci√≥n √∫til.\n\
 -log <filename>\t\t\tregistrar salidas en archivo.\n\
 -help\t\t\t\tmostrar esta ayuda y salir.\n\n
-14 atenciÛn: no se pudo establecer la variable de entorno 'DISPLAY'
+14 atenci√≥n: no se pudo establecer la variable de entorno 'DISPLAY'
 
 $set 20 #layers
 
