@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/08/04:
+   * Updated spanish translations (thanks bobbens)
+     nls/es_ES
    * Updated german translations (thanks tenner)
      nls/de_DE
    * Updated portuguese translations (thanks Fábio C. P. Navarro)
