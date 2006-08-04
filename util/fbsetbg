@@ -59,9 +59,10 @@ command="`basename \"$0\"`"
 # Functions
 display_usage() {
     cat << EOF
-Usage: $command [-u/-U [wallpapersetter]] [-fFcCtTaA /path/to/wallpaper]
-                [-r/-R /path/to/wallpaperdirectory]
-                [-b/-B fbsetrootoptions] [-l] [-h] [-i] [-p]
+Usage: $command [-u/-U [wallpapersetter]] [-fFcCtTaA] /path/to/wallpaper
+       $command [-u/-U [wallpapersetter]] [-fFcCtTaA] -r/-R /path/to/wallpaperdirectory
+       $command [-b/-B fbsetrootoptions]
+       $command [-lhip]
 Use \`\`$command -h'' for a complete help message.
 
 EOF
@@ -73,7 +74,7 @@ display_help() {
 
 Options:
 
-    -f  Set fullscreen wallpaper.
+    -f  Set fullscreen wallpaper (default).
     -c  Set centered wallpaper.
     -t  Set tiled wallpaper.
     -a  Set maximized wallpaper, preserving aspect.
@@ -181,8 +182,8 @@ remembercommand() {
     # Make dir/../../path/file.jpg work
     case $wallpaper in
         # no spaces allowed between the varname and '|'
-        /*) echo $option'|'$wallpaper'|'$DISPLAY >> $lastwallpaper ;;
-        *)  echo $option'|'$PWD/$wallpaper'|'$DISPLAY >> $lastwallpaper ;;
+        /*) echo $option $option2'|'$wallpaper'|'$DISPLAY >> $lastwallpaper ;;
+        *)  echo $option $option2'|'$PWD/$wallpaper'|'$DISPLAY >> $lastwallpaper ;;
     esac
 }
 
@@ -240,33 +241,25 @@ while [ $# -gt 0 ]; do
         -d|-i) debug=true
             break ;;
         -a) option='$aspect'
-            wallpaper=$2
-            break ;;
+            shift ;;
         -f) option='$full'
-            wallpaper=$2
-            break ;;
+            shift ;;
         -c) option='$center'
-            wallpaper=$2
-            break ;;
+            shift ;;
         -t) option='$tile'
-            wallpaper=$2
-            break ;;
+            shift ;;
         -A) option='$aspect'
-            wallpaper=$2
             remember=false
-            break ;;
+            shift ;;
         -F) option='$full'
-            wallpaper=$2
             remember=false
-            break ;;
+            shift ;;
         -C) option='$center'
-            wallpaper=$2
             remember=false
-            break ;;
+            shift ;;
         -T) option='$tile'
-            wallpaper=$2
             remember=false
-            break ;;
+            shift ;;
         -b) option=fbsetroot
             shift
             wallpaper=$*
@@ -276,16 +269,20 @@ while [ $# -gt 0 ]; do
             wallpaper=$*
             remember=false
             break ;;
-        -r) option=random
+        -r) option2=$option
+            option=random
             wallpaper=$2 # in this case it's a dir
             break ;;
-        -R) option=random
+        -R) option2=$option
+            option=random
             wallpaper=$2 # in this case it's a dir
             remember=false
             break ;;
         -l)
             if [ -r "$lastwallpaper" ]; then
                 option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
+                option2=`echo $option|cut -d' ' -f2`
+                option=`echo $option|cut -d' ' -f1`
                 wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
                 if [ -z "$wallpaper" ]; then
                     option=`grep "|${DISPLAY}.0$"    $lastwallpaper|cut -d'|' -f1`
@@ -461,7 +458,7 @@ if [ "$debug" = true ]; then
 fi
 
 option=${option:='$full'}
-
+option2=${option2:='$full'}
 
 
 if [ -z "$DISPLAY" ]; then
@@ -505,7 +502,7 @@ if [ "$option" = random ]; then
         remember=false
         #set -x
         wallpaper="$wallpaperdir/`ls \"$wallpaperdir\"|sed -n ${wallpapernumber}p`"
-        option='$aspect' # have to choose something...
+        option=$option2 # have to choose something...
     else
         message "Invalid random wallpaper directory specified."
         exit 1

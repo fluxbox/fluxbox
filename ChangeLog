@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/08/04:
+   * Allow aspect/centered/tiled options with random background in fbsetbg
+     (thanks Julien Trolet)
+     util/fbsetbg
    * Don't re-apply remembered settings on restart if they are set as window
      properties (Mark)
      Remember.cc Screen.cc Window.cc
