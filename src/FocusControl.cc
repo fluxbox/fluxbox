@@ -460,8 +460,8 @@ void FocusControl::setFocusedWindow(WinClient *client) {
 #ifdef DEBUG
     cerr<<"------------------"<<endl;
     cerr<<"Setting Focused window = "<<client<<endl;
-    if (client != 0 && client->fbwindow() != 0)
-        cerr<<"title: "<<client->fbwindow()->title()<<endl;
+    if (client != 0)
+        cerr<<"title: "<<client->title()<<endl;
     cerr<<"Current Focused window = "<<s_focused_window<<endl;
     cerr<<"------------------"<<endl;
 #endif // DEBUG
