@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/08/04:
+   * Don't re-apply remembered settings on restart if they are set as window
+     properties (Mark)
+     Remember.cc Screen.cc Window.cc
    * Updated spanish translations (thanks bobbens)
      nls/es_ES
    * Updated german translations (thanks tenner)

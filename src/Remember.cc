@@ -962,25 +962,37 @@ void Remember::setupFrame(FluxboxWindow &win) {
     if (app == 0)
         return; // nothing to do
 
+    // first, set the options that aren't preserved as window properties on
+    // restart, then return if fluxbox is starting up -- we want restart to
+    // disturb the current window state as little as possible
     if (app->is_grouped && app->group == 0)
         app->group = &win;
+
+    if (app->focushiddenstate_remember)
+        win.setFocusHidden(true);
+    if (app->iconhiddenstate_remember)
+        win.setIconHidden(true);
+    if (app->layer_remember)
+        win.moveToLayer(app->layer);
+    if (app->decostate_remember)
+        win.setDecorationMask(app->decostate);
+
+    // now check if fluxbox is starting up
+    if (Fluxbox::instance()->isStartup())
+        return;
 
     BScreen &screen = winclient.screen();
 
     if (app->workspace_remember) {
         // we use setWorkspace and not reassoc because we're still initialising
         win.setWorkspace(app->workspace);
-        if (app->jumpworkspace_remember && !Fluxbox::instance()->isStartup())
+        if (app->jumpworkspace_remember)
             screen.changeWorkspaceID(app->workspace);
     }
 
     if (app->head_remember) {
         win.screen().setOnHead<FluxboxWindow>(win, app->head);
     }
-
-    if (app->decostate_remember)
-        win.setDecorationMask(app->decostate);
-
 
     if (app->dimensions_remember)
         win.resize(app->w, app->h);
@@ -1032,13 +1044,6 @@ void Remember::setupFrame(FluxboxWindow &win) {
         if (win.isStuck() && !app->stuckstate ||
             !win.isStuck() && app->stuckstate)
             win.stick(); // toggles
-    if (app->focushiddenstate_remember)
-        win.setFocusHidden(true);
-    if (app->iconhiddenstate_remember)
-        win.setIconHidden(true);
-
-    if (app->layer_remember)
-        win.moveToLayer(app->layer);
 
 }
 

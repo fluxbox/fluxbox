@@ -1379,7 +1379,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     // and if so, then join it.
     if ((other = findGroupRight(*winclient)) && other->fbwindow() != win)
         win->attachClient(*other);
-    else if (other)
+    else if (other) // should never happen
         win->moveClientRightOf(*other, *winclient);
 
     m_clientlist_sig.notify();
