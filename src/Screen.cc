@@ -2073,11 +2073,9 @@ WinClient *BScreen::findGroupRight(WinClient &winclient) {
     WinClient *other = it->second;
     m_expecting_groups.erase(it); // don't expect it anymore
 
-    // forget about it if it isn't the left-most client in the group, plus
-    // it must have the atom set on it (i.e. previously encountered by fluxbox)
-    // for us to check our expecting
-    if (!winclient.hasGroupLeftWindow() ||
-        other->getGroupLeftWindow() != None)
+    // forget about it if it isn't the left-most client in the group
+    Window leftwin = other->getGroupLeftWindow();
+    if (leftwin != None && leftwin != winclient.window())
         return 0;
 
     return other;

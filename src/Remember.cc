@@ -965,7 +965,8 @@ void Remember::setupFrame(FluxboxWindow &win) {
     // first, set the options that aren't preserved as window properties on
     // restart, then return if fluxbox is starting up -- we want restart to
     // disturb the current window state as little as possible
-    if (app->is_grouped && app->group == 0)
+    Window leftwin = winclient.getGroupLeftWindow();
+    if (app->is_grouped && app->group == 0 && leftwin == None)
         app->group = &win;
 
     if (app->focushiddenstate_remember)

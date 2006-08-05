@@ -386,7 +386,8 @@ void FluxboxWindow::init() {
 
     assert(m_client);
     m_client->setFluxboxWindow(this);
-    m_client->setGroupLeftWindow(None); // nothing to the left.
+    if (!m_client->hasGroupLeftWindow())
+        m_client->setGroupLeftWindow(None); // nothing to the left.
 
     // check for shape extension and whether the window is shaped
     m_shaped = false;
