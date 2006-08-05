@@ -382,7 +382,9 @@ FluxboxWindow::~FluxboxWindow() {
 void FluxboxWindow::init() {
     m_attaching_tab = 0;
     // magic to detect if moved by hints
-    m_old_pos_x = 0;
+    // don't use 0, since setting maximized or fullscreen on the window will set
+    // this to 0
+    m_old_pos_x = m_screen.width();
 
     assert(m_client);
     m_client->setFluxboxWindow(this);
@@ -512,7 +514,7 @@ void FluxboxWindow::init() {
     if (m_workspace_number < 0 || m_workspace_number >= screen().numberOfWorkspaces())
         m_workspace_number = screen().currentWorkspaceID();
 
-    bool place_window = (m_old_pos_x == 0);
+    bool place_window = (m_old_pos_x == static_cast<signed>(m_screen.width()));
 
     if (fluxbox.isStartup())
         place_window = false;
