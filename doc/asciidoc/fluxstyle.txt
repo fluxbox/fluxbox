@@ -189,3 +189,300 @@ We should comment about fonts before we move on to the complete component
 list. fluxbox supports different options for text. These options currently
 include bold, halo and shadow. To set these do this: fontname-size:options for
 any of the font components in the style file. For example:
+
+   menu.title.font: sans-8:bold,shadow
+
+The latest versions of Fluxbox (> 0.9.8) also support different values for
+these text options.  The  possibilities  are  as  follows:
+
+   --------
+   Shadow color=<colorname> offsetx=<integer> offsety=<integer> Halo color=<colorâ\u20acname>
+   --------
+
+For the case of completeness, here are some real world examples:
+
+   *.font: Verdana-10:bold,shadow:offsetx=2;offsety=4;color=green
+   *.font: Verdana-10:halo:color=blue
+
+Of course this could all be placed on one line.  Also note that for the offset
+options,  negative  integers are allowed.
+
+FONT PROBLEMS
+~~~~~~~~~~~~~
+If  you have problems installing fonts or getting them to work, you should read
+the docs page at xfree.org. Here is a link to one of these:
+http://xfree.org/4.3.0/fonts2.html#3.
+
+FULL COMPONENT LIST
+-------------------
+Here is the exhaustive component list for Fluxbox styles.  Each one is listed
+with  their  type  of  value required. Comments  in  a style file are preceded
+with an exclamation point (!) which we also use here so that these can be pasted
+into a new theme.cfg to be customized appropiately.  Please note that in order
+to keep  styles  consistent  it  is  often the practice of stylists to provide
+all of the theme-items in their style file even if they are not used.  This allows
+the user the ease of changing different components.
+
+WINDOW OPTIONS
+--------------
+Many, many things you can do with window design in Fluxbox, below are your options.
+Have fun.
+
+           -----------------------------------------
+           window.bevelWidth:              <integer>
+           window.borderColor:             <color>
+           window.borderWidth:             <integer>
+           window.button.focus: <texture type>
+           window.button.focus.color:  <color>
+           window.button.focus.colorTo: <color>
+           window.button.focus.picColor:   <color>
+           window.button.focus.pixmap:     <filename>
+           window.button.pressed: <texture type>
+           window.button.pressed.color:  <color>
+           window.button.pressed.colorTo: <color>
+           window.button.pressed.pixmap:   <filename>
+           window.button.unfocus:          <texture type>
+           window.button.unfocus.color:    <color>
+           window.button.unfocus.colorTo:  <color>
+           window.button.unfocus.picColor: <color>
+           window.button.unfocus.pixmap:   <filename>
+           window.close.pixmap:            <filename>
+           window.close.pressed.pixmap:    <filename>
+           window.close.unfocus.pixmap:    <filename>
+           window.font:                    <font>
+           window.frame.focusColor:        <color>
+           window.frame.unfocusColor:      <color>
+           window.grip.focus: <texture type>
+           window.grip.focus.color:  <color>
+           window.grip.focus.colorTo: <color>
+           window.grip.focus.pixmap:       <filename>
+           window.grip.unfocus: <texture type>
+           window.grip.unfocus.color:  <color>
+           window.grip.unfocus.colorTo: <color>
+           window.grip.unfocus.pixmap:     <filename>
+           window.handle.focus:            <texture type>
+           window.handle.focus.color:      <color>
+           window.handle.focus.colorTo:    <color>
+           window.handle.focus.pixmap:     <filename>
+           window.handle.unfocus:          <texture type>
+           window.handle.unfocus.color:    <color>
+           window.handle.unfocus.colorTo:  <color>
+           window.handle.unfocus.pixmap:   <filename>
+           window.handleWidth:             <integer>
+           window.iconify.pixmap:          <filename>
+           window.iconify.pressed.pixmap:  <filename>
+           window.iconify.unfocus.pixmap:  <filename>
+           window.justify:                 <{Left|Right|Center}>
+           window.label.active:            <texture type>
+           window.label.active.textColor:  <color>
+           window.label.focus:             <texture type>
+           window.label.focus.color:       <color>
+           window.label.focus.colorTo:     <color>
+           window.label.focus.pixmap:      <filename>
+           window.label.unfocus:           <texture type>
+           window.label.unfocus.color:     <color>
+           window.label.unfocus.colorTo:   <color>
+           window.label.unfocus.pixmap:    <filename>
+           window.label.focus.textColor: <color>
+           window.label.unfocus.textColor: <color>
+           window.maximize.pixmap: <filename>
+           window.maximize.pressed.pixmap: <filename>
+           window.maximize.unfocus.pixmap: <filename>
+           window.roundCorners:            <{Top|Bottom}{Left|Right}>
+           window.shade.pixmap: <filename>
+           window.shade.pressed.pixmap: <filename>
+           window.shade.unfocus.pixmap:    <filename>
+           window.stick.pixmap: <filename>
+           window.stick.pressed.pixmap: <filename>
+           window.stick.unfocus.pixmap:    <filename>
+           window.stuck.pixmap: <filename>
+           window.stuck.unfocus.pixmap: <filename>
+           window.title.focus:             <texture type>
+           window.title.focus.color:       <color>
+           window.title.focus.colorTo:     <color>
+           window.title.focus.pixmap:      <filename>
+           window.title.height:            <integer>
+           window.title.unfocus:           <texture type>
+           window.title.unfocus.color:     <color>
+           window.title.unfocus.colorTo:   <color>
+           window.title.unfocus.pixmap:    <filename>
+           -----------------------------------------
+
+MENU OPTIONS
+------------
+Everything you need to make your menu look pretty.
+
+           -----------------------------------------
+           menu.bevelWidth:                <integer>
+           menu.borderColor:               <color>
+           menu.borderWidth:               <integer>
+           menu.bullet:                    <{empty|square|triangle|diamond}>
+           menu.bullet.position:           <{left|right}>
+           menu.frame:                     <texture type>
+           menu.frame.color:               <color>
+           menu.frame.colorTo:             <color>
+           menu.frame.disableColor:        <color>
+           menu.frame.font:                <font>
+           menu.frame.justify:             <{Left|Right|Center}>
+           menu.frame.pixmap:              <filename>
+           menu.frame.textColor:           <color>
+           menu.hilite:                    <texture type>
+           menu.hilite.color:              <color>
+           menu.hilite.colorTo:            <color>
+           menu.hilite.pixmap:             <filename>
+           menu.hilite.textColor:          <color>
+           menu.itemHeight:                <integer>
+           menu.title:                     <texture type>
+           menu.title.color:               <color>
+           menu.title.colorTo:             <color>
+           menu.title.font: <font>
+           menu.title.pixmap:              <filename>
+           menu.title.textColor:           <color>
+           menu.title.justify:             <{Left|Right|Center}>
+           menu.titleHeight:               <integer>
+           menu.roundCorners:              <{Top|Bottom}{Left|Right}>
+           menu.selected.pixmap: <filename>
+           menu.submenu.pixmap:            <filename>
+           menu.unselected.pixmap: <filename>
+           -----------------------------------------
+
+ROOT COMMAND
+------------
+Rarely are you going to want to use this option.  There is a command that is similar
+that is  used  in the init file.  It is bad style to use this in your style as it
+forces the user to use your background. So note that it is good practice to leave
+this blank or out of the style altogether.
+
+   rootCommand: <string>
+
+SLIT
+----
+Here are all of the options for the slit.
+
+           -----------------------------------------
+           slit: <texture type>
+           slit.bevelWidth: <integer>
+           slit.borderColor: <color>
+           slit.borderWidth:               <integer>
+           slit.color:                     <color>
+           slit.colorTo:                   <color>
+           slit.pixmap:                    <filename>
+           -----------------------------------------
+
+TOOLBAR OPTIONS
+---------------
+Below you will find all of the configuration possibilities for the toolbar.
+The list is pretty extensive and offers you many options to make your toolbar
+look just the way you want it.
+
+           -----------------------------------------
+           toolbar: <texture type>
+           toolbar.bevelWidth:             <integer (0-255)>
+           toolbar.borderColor:            <color>
+           toolbar.borderWidth:            <integer>
+           toolbar.button.scale:           <integer>
+           toolbar.color:  <color>
+           toolbar.colorTo: <color>
+           toolbar.clock: <texture type>
+           toolbar.clock.borderColor:      <color>
+           toolbar.clock.borderWidth:      <integer>
+           toolbar.clock.font:             <font>
+           toolbar.clock.justify:          <{Left|Right|Center}>
+           toolbar.clock.pixmap:  <filename>
+           toolbar.clock.color:  <color>
+           toolbar.clock.colorTo: <color>
+           toolbar.clock.textColor:        <color>
+           toolbar.height:                 <integer>
+           toolbar.iconbar.focused: <texture type>
+           toolbar.iconbar.focused.color:  <color>
+           toolbar.iconbar.focused.colorTo:<color>
+           toolbar.iconbar.focused.pixmap: <filename>
+           toolbar.iconbar.unfocused: <texture type>
+           toolbar.iconbar.unfocused.color:  <color>
+           toolbar.iconbar.unfocused.colorTo: <color>
+           toolbar.iconbar.unfocused.pixmap:       <filename>
+           toolbar.iconbar.empty: <texture type>
+           toolbar.iconbar.empty.color:  <color>
+           toolbar.iconbar.empty.colorTo: <color>
+           toolbar.iconbar.empty.pixmap:   <filename>
+           toolbar.iconbar.focused.borderColor: <color>
+           toolbar.iconbar.focused.borderWidth:    <integer>
+           toolbar.iconbar.unfocused.borderColor: <color>
+           toolbar.iconbar.unfocused.borderWidth:  <integer>
+           toolbar.iconbar.borderColor: <color>
+           toolbar.iconbar.borderWidth:            <integer>
+           toolbar.iconbar.focused.font: <font>
+           toolbar.iconbar.focused.justify:        <{Left|Right|Center}>
+           toolbar.iconbar.focused.textColor: <color>
+           toolbar.iconbar.unfocused.font: <font>
+           toolbar.iconbar.unfocused.justify:      <{Left|Right|Center}>
+           toolbar.iconbar.unfocused.textColor: <color>
+           toolbar.pixmap:                 <filename>
+           toolbar.shaped:                 <boolean>
+           toolbar.workspace.font:         <font>
+           toolbar.workspace.justify:      <{Left|Right|Center}>
+           toolbar.workspace.textColor:    <color>
+           toolbar.workspace:              <texture type>
+           toolbar.workspace.borderColor:  <color>
+           toolbar.workspace.borderWidth:  <integer>
+           toolbar.workspace.color:        <color>
+           toolbar.workspace.colorTo:      <color>
+           toolbar.workspace.pixmap:       <filename>
+           -----------------------------------------
+
+EXAMPLES
+--------
+This list may seem intimidating, but remember, when you create your own style you
+can easily set a majority of these keys with a single component. For an example
+of this:
+
+           -----------------------------------------
+           *color: slategrey
+           *colorTo:       darkslategrey
+           *unfocus.color: darkslategrey
+           *unfocus.colorTo:       black
+           *textColor:     white
+           *unfocus.textColor:     lightgrey
+           *font:  lucidasans-10
+           -----------------------------------------
+
+This sets nice defaults for many components.
+
+COLOR FORMATS
+-------------
+These are the color formats for styles:
+
+           #000000 (Hexadecimal)
+           rgb:<0-255>/<0-255>/<0-255>
+
+      See /usr/X11R6/lib/X11/rgb.txt for an explaination.
+
+AUTHOR and CREDITS
+------------------
+Blackbox was written and maintained by Brad Hughes <blackbox@alug.org>
+and Jeff Raven <jraven@psu.edu>,
+
+Fluxbox is written and maintained by Henrik Kinnunen <fluxgen@linuxmail.org>
+with contributions and patches merged from many individuals around the world.
+
+The Official Fluxbox website: http://www.fluxbox.org/
+
+Fluxmod  was  a  Fluxbox community site where you could find many new styles
+that work with this version of Fluxbox and take advantage of all the new features.
+However, fluxmod is no more, but itâ\u20ac\u2122s maintainer still dabbles in style creation.
+You can find his site here: http://www.ikaro.dk
+
+You can also find more styles here: http://themes.freshmeat.net/
+
+This manpage was composed from various resources including the official documentation,
+fluxbox(1) man page and numerous other resources by Curt "Asenchi" Micol.  If you
+notice any errors or problems with this page, please  contact him here:
+<asenchi@asenchi.com> and using the great contributions of
+<grubert@users.sourceâ\u20acforge.net>.  Numerous other languages could be available if
+someone jumps in.
+
+SEE ALSO
+--------
+fluxbox(1) fbsetbg(1) fbsetroot(1)
+
+fluxstyle(1)
