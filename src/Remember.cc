@@ -1049,6 +1049,9 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
 void Remember::setupClient(WinClient &winclient) {
 
+    if (Fluxbox::instance()->isStartup())
+        return; // don't mess up windows on restart
+
     Application *app = find(winclient);
     if (app == 0)
         return; // nothing to do
