@@ -329,6 +329,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_focus_control(new FocusControl(*this)),
     m_placement_strategy(new ScreenPlacement(*this)),
     m_xinerama_headinfo(0),
+    m_restart(false),
     m_shutdown(false) {
 
 
@@ -352,6 +353,19 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         delete m_placement_strategy; m_placement_strategy = 0;
         delete m_focus_control; m_focus_control = 0;
         return;
+    }
+
+    // check if we're the first EWMH compliant window manager on this screen
+    Atom wm_check = XInternAtom(disp, "_NET_SUPPORTING_WM_CHECK", False);
+    Atom xa_ret_type;
+    int ret_format;
+    unsigned long ret_nitems, ret_bytes_after;
+    unsigned char *ret_prop;
+    if (XGetWindowProperty(disp, m_root_window.window(), wm_check, 0l, 1l,
+            False, XA_WINDOW, &xa_ret_type, &ret_format, &ret_nitems,
+            &ret_bytes_after, &ret_prop) == Success) {
+        m_restart = (ret_prop != NULL);
+        XFree(ret_prop);
     }
 
     // TODO fluxgen: check if this is the right place
@@ -533,6 +547,10 @@ BScreen::~BScreen() {
     delete m_focus_control;
     delete m_placement_strategy;
 
+}
+
+bool BScreen::isRestart() {
+    return Fluxbox::instance()->isStartup() && m_restart;
 }
 
 void BScreen::initWindows() {

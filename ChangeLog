@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/08/06:
+   * Distinguish between startup and restart (Mark)
+     Screen.cc/hh Remember.cc
 *06/08/05:
    * Don't call placement strategy on maximized or fullscreen windows (Mark)
      Window.cc

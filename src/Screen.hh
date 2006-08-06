@@ -247,6 +247,7 @@ public:
     const std::string &name() const { return m_name; }
     const std::string &altName() const { return m_altname; }
     bool isShuttingdown() const { return m_shutdown; }
+    bool isRestart();
 
     PlacementStrategy &placementStrategy() { return *m_placement_strategy; }
     const PlacementStrategy &placementStrategy() const { return *m_placement_strategy; }
@@ -485,7 +486,7 @@ private:
         int x, y, width, height;        
     } *m_xinerama_headinfo;
 
-    bool m_shutdown;
+    bool m_restart, m_shutdown;
 };
 
 

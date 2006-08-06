@@ -963,7 +963,7 @@ void Remember::setupFrame(FluxboxWindow &win) {
         return; // nothing to do
 
     // first, set the options that aren't preserved as window properties on
-    // restart, then return if fluxbox is starting up -- we want restart to
+    // restart, then return if fluxbox is restarting -- we want restart to
     // disturb the current window state as little as possible
     Window leftwin = winclient.getGroupLeftWindow();
     if (app->is_grouped && app->group == 0 && leftwin == None)
@@ -978,11 +978,11 @@ void Remember::setupFrame(FluxboxWindow &win) {
     if (app->decostate_remember)
         win.setDecorationMask(app->decostate);
 
-    // now check if fluxbox is starting up
-    if (Fluxbox::instance()->isStartup())
-        return;
-
     BScreen &screen = winclient.screen();
+
+    // now check if fluxbox is restarting
+    if (screen.isRestart())
+        return;
 
     if (app->workspace_remember) {
         // we use setWorkspace and not reassoc because we're still initialising
@@ -1050,7 +1050,7 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
 void Remember::setupClient(WinClient &winclient) {
 
-    if (Fluxbox::instance()->isStartup())
+    if (winclient.screen().isRestart())
         return; // don't mess up windows on restart
 
     Application *app = find(winclient);
