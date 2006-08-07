@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/08/07:
+   * Documented background style option (Mark)
+     doc/asciidoc/fluxstyle.txt
 *06/08/06:
    * Distinguish between startup and restart (Mark)
      Screen.cc/hh Remember.cc
