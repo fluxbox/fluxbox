@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/08/08:
+   * Fix some warnings in gcc 4.1 (Mark)
+     FbTk/FbPixmap.cc Screen.cc Window.cc WinClient.cc Ewmh.cc Gnome.cc
 *06/08/07:
    * Documented background style option (Mark)
      doc/asciidoc/fluxstyle.txt

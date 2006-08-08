@@ -1281,7 +1281,8 @@ bool BScreen::isKdeDockapp(Window client) const {
     bool iskdedockapp = false;
     Atom ajunk;
     int ijunk;
-    unsigned long *data = 0, uljunk;
+    unsigned char *data = 0;
+    unsigned long uljunk;
     Display *disp = FbTk::App::instance()->display();
     // Check if KDE v2.x dock applet
     if (XGetWindowProperty(disp, client,
@@ -1289,7 +1290,7 @@ bool BScreen::isKdeDockapp(Window client) const {
                                        "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False),
                            0l, 1l, False,
                            XA_WINDOW, &ajunk, &ijunk, &uljunk,
-                           &uljunk, (unsigned char **) &data) == Success) {
+                           &uljunk, &data) == Success) {
 					
         if (data)
             iskdedockapp = true;
@@ -1304,7 +1305,7 @@ bool BScreen::isKdeDockapp(Window client) const {
         if (XGetWindowProperty(disp, client,
                                kwm1, 0l, 1l, False,
                                kwm1, &ajunk, &ijunk, &uljunk,
-                               &uljunk, (unsigned char **) &data) == Success && data) {
+                               &uljunk, &data) == Success && data) {
             iskdedockapp = (data && data[0] != 0);
             XFree((void *) data);
             data = 0;

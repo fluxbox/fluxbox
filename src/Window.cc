@@ -2207,11 +2207,12 @@ bool FluxboxWindow::getState() {
     Atom atom_return;
     bool ret = false;
     int foo;
-    unsigned long *state, ulfoo, nitems;
+    unsigned char *state;
+    unsigned long ulfoo, nitems;
     if (!m_client->property(FbAtoms::instance()->getWMStateAtom(),
                              0l, 2l, false, FbAtoms::instance()->getWMStateAtom(),
                              &atom_return, &foo, &nitems, &ulfoo,
-                             (unsigned char **) &state) || !state)
+                             &state) || !state)
         return false;
 
     if (nitems >= 1) {
@@ -2239,18 +2240,20 @@ void FluxboxWindow::restoreAttributes() {
     Atom atom_return;
     int foo;
     unsigned long ulfoo, nitems;
+    unsigned char *data;
     FbAtoms *fbatoms = FbAtoms::instance();
 
     BlackboxAttributes *net;
     if (m_client->property(fbatoms->getFluxboxAttributesAtom(), 0l,
                            PropBlackboxAttributesElements, false,
                            fbatoms->getFluxboxAttributesAtom(), &atom_return, &foo,
-                           &nitems, &ulfoo, (unsigned char **) &net) &&
-        net) {
+                           &nitems, &ulfoo, &data) &&
+        data) {
         if (nitems != (unsigned)PropBlackboxAttributesElements) {
-            XFree(net);
+            XFree(data);
             return;
         }
+        net = (BlackboxAttributes *) data;
         m_blackbox_attrib.flags = net->flags;
         m_blackbox_attrib.attrib = net->attrib;
         m_blackbox_attrib.workspace = net->workspace;
@@ -2260,7 +2263,7 @@ void FluxboxWindow::restoreAttributes() {
         m_blackbox_attrib.premax_w = net->premax_w;
         m_blackbox_attrib.premax_h = net->premax_h;
 
-        XFree(static_cast<void *>(net));
+        XFree(data);
     } else
         return;
 
