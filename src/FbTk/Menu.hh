@@ -107,8 +107,6 @@ public:
     void buttonPressEvent(XButtonEvent &bp);
     void buttonReleaseEvent(XButtonEvent &br);
     void motionNotifyEvent(XMotionEvent &mn);
-    void enterNotifyEvent(XCrossingEvent &en);
-    void leaveNotifyEvent(XCrossingEvent &ce);
     void exposeEvent(XExposeEvent &ee);
     void keyPressEvent(XKeyEvent &ke);
     //@}
@@ -220,7 +218,6 @@ private:
     bool m_torn; ///< torn from parent
     bool m_internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
     bool m_title_vis; ///< title visibility
-    bool m_shifted; ///< if the menu is shifted to the other side of the parent
 	
     int m_which_sub, m_which_press, m_which_sbl;
     Alignment m_alignment;
@@ -230,8 +227,7 @@ private:
         FbTk::FbWindow window, frame, title;
 
         std::string label;
-        int x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
-            grab_x, grab_y;
+        int x_move, y_move, sublevels, persub, minsub, grab_x, grab_y;
 
         unsigned int frame_h, item_w;
     } menu;

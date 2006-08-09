@@ -101,17 +101,14 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
 
     m_title_vis = true;
 
-    m_shifted =
-        m_internal_menu =
+    m_internal_menu =
         m_moving =
         m_torn =
         m_visible = false;
 
 
 
-    menu.x_shift =
-        menu.y_shift =
-        menu.x_move =
+    menu.x_move =
         menu.y_move = 0;
 
     m_which_sub =
@@ -692,30 +689,25 @@ void Menu::drawSubmenu(unsigned int index) {
         int new_y;
 		
         if (m_alignment == ALIGNTOP) {
-            new_y = (((m_shifted) ? menu.y_shift : y()) +
-                     ((m_title_vis) ? theme().titleHeight() + menu.title.borderWidth() : 0) -
+            new_y = (y() + ((m_title_vis) ? theme().titleHeight() + menu.title.borderWidth() : 0) -
                      ((item->submenu()->m_title_vis) ?
                       item->submenu()->theme().titleHeight() + menu.window.borderWidth() : 0));
         } else {
-            new_y = (((m_shifted) ? menu.y_shift : y()) +
-                     (theme().itemHeight() * i) +
+            new_y = (y() + (theme().itemHeight() * i) +
                      ((m_title_vis) ? theme().titleHeight() + menu.window.borderWidth() : 0) -
                      ((item->submenu()->m_title_vis) ?
                       item->submenu()->theme().titleHeight() + menu.window.borderWidth() : 0));
         }
 			
         if (m_alignment == ALIGNBOTTOM &&
-            (new_y + item->submenu()->height()) > ((m_shifted) ? menu.y_shift :
-                                                   y()) + height()) {
-            new_y = (((m_shifted) ? menu.y_shift : y()) +
-                     height() - item->submenu()->height());
+            (new_y + item->submenu()->height()) > (y() + height())) {
+            new_y = (y() + height() - item->submenu()->height());
         }
 
         int borderw = item->submenu()->fbwindow().borderWidth();
 
         if ((new_x + item->submenu()->width()) + 2*borderw > m_screen_x + m_screen_width) {
-            new_x = ((m_shifted) ? menu.x_shift : x()) -
-                item->submenu()->width() - menu.window.borderWidth();
+            new_x = x() - item->submenu()->width() - menu.window.borderWidth();
         }
 			
         if (new_x < m_screen_x)
@@ -735,7 +727,7 @@ void Menu::drawSubmenu(unsigned int index) {
         item->submenu()->move(new_x, new_y);
         if (! m_moving)
             clearItem(index);
-		
+
         if (! item->submenu()->isVisible()) {
             item->showSubmenu();
             item->submenu()->raise();
@@ -1058,59 +1050,6 @@ void Menu::exposeEvent(XExposeEvent &ee) {
             }
         }
     }
-}
-
-
-void Menu::enterNotifyEvent(XCrossingEvent &ce) {
-
-    if (menu.frame != ce.window)
-        return;
-
-    menu.x_shift = x(), menu.y_shift = y();
-    if (x() + width() > m_screen_x + m_screen_width) {
-        menu.x_shift = m_screen_x + m_screen_width - width() - 2*theme().borderWidth();
-        m_shifted = true;
-    } else if (x() < 0) {
-        menu.x_shift = 0; //-theme().borderWidth();
-        m_shifted = true;
-    }
-
-    if (y() + height() + 2*theme().borderWidth() > m_screen_y + m_screen_height) {
-        menu.y_shift = m_screen_y + m_screen_height - height() - 2*theme().borderWidth();
-        m_shifted = true;
-    } else if (y() + (signed) theme().titleHeight() < 0) {
-        menu.y_shift = 0; // -theme().borderWidth();;
-        m_shifted = true;
-    }
-
-
-    if (m_shifted) {
-        menu.window.move(menu.x_shift, menu.y_shift);
-        menu.title.parentMoved();
-        menu.frame.parentMoved();
-        clearWindow();
-    }
-
-    if (validIndex(m_which_sub)) {
-        MenuItem *tmp = menuitems[m_which_sub];
-        if (tmp->submenu()->isVisible()) {
-            int sbl = (ce.x / menu.item_w), i = (ce.y / theme().itemHeight()),
-                w = (sbl * menu.persub) + i;
-
-            if (w != m_which_sub && (! tmp->submenu()->isTorn())) {
-                tmp->submenu()->internal_hide();
-
-                clearItem(m_which_sub); // not highlighted anymore
-                m_which_sub = -1;
-            }
-        }
-    }
-}
-
-void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
-    if (menu.frame != ce.window)
-        return;
-
 }
 
 void Menu::keyPressEvent(XKeyEvent &event) {
