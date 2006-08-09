@@ -359,7 +359,7 @@ void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
             Atom real_type;
             int real_format;
             unsigned long items_read, items_left;
-            unsigned char *data;
+            unsigned long *data;
 
             if (XGetWindowProperty(display(),
                                    RootWindow(display(), screen_num),
@@ -368,7 +368,7 @@ void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
                                    False, XA_PIXMAP,
                                    &real_type, &real_format,
                                    &items_read, &items_left,
-                                   &data) == Success) {
+                                   (unsigned char **) &data) == Success) {
                 if (real_format == 32 && items_read == 1) {
                     root_pm = (Pixmap) (*data);
                 }
@@ -410,7 +410,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
         Atom real_type;
         int real_format;
         unsigned long items_read, items_left;
-        unsigned char *data;
+        unsigned long *data;
 
         unsigned int prop = 0;
 
@@ -435,7 +435,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
                                    False, XA_PIXMAP,
                                    &real_type, &real_format,
                                    &items_read, &items_left,
-                                   &data) == Success) {
+                                   (unsigned char **) &data) == Success) {
                 if (real_format == 32 && items_read == 1) {
                     if (print_error && strcmp(root_prop_ids[prop], "_XSETROOT_ID") == 0) {
                         cerr<<error_message;

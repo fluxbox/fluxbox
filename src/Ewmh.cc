@@ -1138,10 +1138,10 @@ void Ewmh::updateStrut(WinClient &winclient) {
     Atom ret_type = 0;
     int fmt = 0;
     unsigned long nitems = 0, bytes_after = 0;
-    unsigned char *data = 0;
+    long *data = 0;
     if (winclient.property(m_net_wm_strut, 0, 4, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
-                                 &data) && data) {
+                                 (unsigned char **) &data) && data) {
 
         int head = winclient.screen().getHead(winclient);
         winclient.setStrut(winclient.screen().requestStrut(head, 

@@ -93,12 +93,11 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
-    long flags;
-    unsigned char *data = 0;
+    long flags, *data = 0;
 
     if (win.winClient().property(m_gnome_wm_win_state, 0, 1, False, XA_CARDINAL, 
                                  &ret_type, &fmt, &nitems, &bytes_after, 
-                                 &data) && data) {
+                                 (unsigned char **) &data) && data) {
         flags = *data;
         setState(&win, flags);
         XFree (data);
@@ -109,7 +108,7 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     // load gnome layer atom
     if (win.winClient().property(m_gnome_wm_win_layer, 0, 1, False, XA_CARDINAL, 
                                  &ret_type, &fmt, &nitems, &bytes_after, 
-                                 &data) && data) {
+                                 (unsigned char **) &data) && data) {
         flags = *data;
         setLayer(&win, flags);
         XFree (data);
@@ -120,7 +119,7 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     // load gnome workspace atom
     if (win.winClient().property(m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL, 
                                  &ret_type, &fmt, &nitems, &bytes_after, 
-                                 &data) && data) {
+                                 (unsigned char **) &data) && data) {
         unsigned int workspace_num = *data;
         if (win.workspaceNumber() != workspace_num) 
             win.setWorkspace(workspace_num);

@@ -411,7 +411,6 @@ void WinClient::updateBlackboxHints() {
     int format;
     Atom atom_return;
     unsigned long num, len;
-    unsigned char *data;
     FbAtoms *atoms = FbAtoms::instance();
 
     if (m_blackbox_hint) {
@@ -423,21 +422,19 @@ void WinClient::updateBlackboxHints() {
                  PropBlackboxHintsElements, False,
                  atoms->getFluxboxHintsAtom(), &atom_return,
                  &format, &num, &len,
-                 &data) &&
-        data) {
+                 (unsigned char **) &m_blackbox_hint) &&
+        m_blackbox_hint) {
 
         if (num != (unsigned)PropBlackboxHintsElements) {
-            XFree(data);
+            XFree(m_blackbox_hint);
             m_blackbox_hint = 0;
-        } else
-            m_blackbox_hint = (FluxboxWindow::BlackboxHints *) data;
+        }
     }
 }
 
 void WinClient::updateMWMHints() {
     int format;
     Atom atom_return;
-    unsigned char *data;
     unsigned long num = 0, len = 0;
 
     if (m_mwm_hint) {
@@ -450,14 +447,13 @@ void WinClient::updateMWMHints() {
                    PropMwmHintsElements, false,
                    motif_wm_hints, &atom_return,
                    &format, &num, &len,
-                   &data) &&
-          data)) {
+                   (unsigned char **) &m_mwm_hint) &&
+          m_mwm_hint)) {
         if (num != static_cast<unsigned int>(PropMwmHintsElements)) {
             XFree(m_mwm_hint);
             m_mwm_hint = 0;
             return;
         }
-        m_mwm_hint = (MwmHints *) data;
     }
 }
 
@@ -606,12 +602,12 @@ Window WinClient::getGroupLeftWindow() const {
     unsigned long num = 0, len = 0;
     Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
 
-    unsigned char *data = 0;
+    Window *data = 0;
     if (property(group_left_hint, 0,
                    1, false,
                    XA_WINDOW, &atom_return,
                    &format, &num, &len,
-                   &data) &&
+                   (unsigned char **) &data) &&
         data) {
         if (num != 1) {
             XFree(data);
@@ -642,12 +638,12 @@ bool WinClient::hasGroupLeftWindow() const {
     unsigned long num = 0, len = 0;
     Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
 
-    unsigned char *data = 0;
+    Window *data = 0;
     if (property(group_left_hint, 0,
                    1, false,
                    XA_WINDOW, &atom_return,
                    &format, &num, &len,
-                   &data) &&
+                   (unsigned char **) &data) &&
         data) {
             XFree(data);
             if (num != 1)
