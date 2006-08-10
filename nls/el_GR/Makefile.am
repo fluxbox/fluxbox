@@ -1,8 +1,8 @@
 # nls/el_GR/Makefile.am for Fluxbox - www.fluxbox.org
 
 THE_LANG = el_GR
-SRC_CODESET = utf8
-DEST_CODESETS = utf8 UTF-8
+SRC_CODESET = UTF-8
+DEST_CODESETS = UTF-8
 
 LOCALE_PATH = @LOCALE_PATH@
 NLSTEST = @NLS@

@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/08/10:
+   * Fix duplicated UTF-8 encoding in el_GR (thanks Slava Semushin)
+     nls/el_GR/Makefile.am
 *06/08/09:
    * Remove some old code that messed up placing submenus (Mark)
      FbTk/Menu.cc/hh
