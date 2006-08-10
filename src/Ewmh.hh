@@ -114,6 +114,8 @@ private:
         m_net_wm_window_type_desktop,
         m_net_wm_window_type_splash,
         m_net_wm_window_type_dialog,
+        m_net_wm_window_type_menu,
+        m_net_wm_window_type_toolbar,
         m_net_wm_window_type_normal,
 
         // states

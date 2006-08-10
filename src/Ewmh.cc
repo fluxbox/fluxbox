@@ -144,6 +144,8 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_wm_window_type_desktop,
         m_net_wm_window_type_splash,
         m_net_wm_window_type_dialog,
+        m_net_wm_window_type_menu,
+        m_net_wm_window_type_toolbar,
         m_net_wm_window_type_normal,
 
         // window actions
@@ -300,8 +302,19 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
             } else if (atoms[l] == m_net_wm_window_type_dialog) {
                 // dialog windows should not be tabable
                 win.setTabable(false);
+            } else if (atoms[l] == m_net_wm_window_type_menu ||
+                       atoms[l] == m_net_wm_window_type_toolbar) {
+                /*
+                 * _NET_WM_WINDOW_TYPE_TOOLBAR and _NET_WM_WINDOW_TYPE_MENU
+                 * indicate toolbar and pinnable menu windows, respectively
+                 * (i.e. toolbars and menus "torn off" from the main
+                 * application). Windows of this type may set the
+                 * WM_TRANSIENT_FOR hint indicating the main application window.
+                 */
+                win.setDecoration(FluxboxWindow::DECOR_NONE);
+                win.setIconHidden(true);
+                win.moveToLayer(Layer::ABOVE_DOCK);
             }
-
         }
         XFree(data);
     } else {
@@ -317,8 +330,6 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
 
     /*
      * NOT YET IMPLEMENTED:
-     *   _NET_WM_WINDOW_TYPE_TOOLBAR
-     *   _NET_WM_WINDOW_TYPE_MENU
      *   _NET_WM_WINDOW_TYPE_UTILITY
      */
 
@@ -971,6 +982,8 @@ void Ewmh::createAtoms() {
     m_net_wm_window_type_desktop = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
     m_net_wm_window_type_splash = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_SPLASH", False);
     m_net_wm_window_type_dialog = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+    m_net_wm_window_type_menu = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_MENU", False);
+    m_net_wm_window_type_toolbar = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
     m_net_wm_window_type_normal = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
 
     // state atom and the supported state atoms
