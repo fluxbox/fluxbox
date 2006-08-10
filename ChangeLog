@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/08/10:
+   * Fix crash in ClientPattern when more than one pattern in [app] line (Simon)
+     ClientPattern.cc
    * Implement _NET_WM_WINDOW_TYPE_MENU and _NET_WM_WINDOW_TYPE_TOOLBAR (Mark)
      Ewmh.cc/hh
    * Fix duplicated UTF-8 encoding in el_GR (thanks Slava Semushin)
