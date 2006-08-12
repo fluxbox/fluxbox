@@ -130,7 +130,7 @@ $set 10 #Menu
 1 Configuração
 2 Menu por Defeito do Fluxbox
 3 Sair
-4 Ícones
+4 Janelas Minimizadas
 5 Camada...
 6 No Monitor...
 7 Posicionamento
