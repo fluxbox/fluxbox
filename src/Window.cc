@@ -1651,6 +1651,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
         m_last_resize_y = m_old_pos_y;
         m_last_resize_w = m_old_width;
         m_last_resize_h = m_old_height;
+        m_resize_corner = NOCORNER;
         fixsize();
 
         moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
