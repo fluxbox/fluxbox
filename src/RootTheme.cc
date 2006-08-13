@@ -109,6 +109,7 @@ RootTheme::RootTheme(const std::string &root_command,
     m_opgc(RootWindow(FbTk::App::instance()->display(), image_control.screenNumber())),
     m_root_command(root_command),
     m_image_ctrl(image_control),
+    m_already_set(false),
     m_background_loaded(true) {
 
     Display *disp = FbTk::App::instance()->display();
@@ -136,6 +137,11 @@ bool RootTheme::fallback(FbTk::ThemeItem_base &item) {
 
 void RootTheme::reconfigTheme() {
     _FB_USES_NLS;
+
+    if (m_already_set)
+        return;
+    else
+        m_already_set = true;
 
     // if user specified background in the config then use it
     // instead of style background
