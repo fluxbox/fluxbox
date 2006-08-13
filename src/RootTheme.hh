@@ -68,8 +68,8 @@ private:
     FbTk::GContext m_opgc;
     const std::string &m_root_command;
     FbTk::ImageControl &m_image_ctrl; ///< image control for rendering background texture
-    bool m_background_loaded; ///< whether or not the background is present in the style file
     bool m_already_set;
+    bool m_background_loaded; ///< whether or not the background is present in the style file
 
 };
 
