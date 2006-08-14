@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/08/14:
+   * Fix minor menu separator highlight issue (Simon)
+     FbTk/Menu.cc
 *06/08/12:
    * Fix placement of restored fullscreen windows (Mark)
      Window.cc

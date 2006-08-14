@@ -1195,7 +1195,7 @@ void Menu::clearItem(int index, bool clear) {
     int sbl = index / menu.persub, i = index - (sbl * menu.persub);
     unsigned int item_w = menu.item_w, item_h = theme().itemHeight();
     int item_x = (sbl * item_w), item_y = (i * item_h);
-    bool highlight = (index == m_active_index);
+    bool highlight = (index == m_active_index && isItemSelectable(index));
 
     // don't highlight if moving, doesn't work with alpha on
     if (highlight && !m_moving) {
