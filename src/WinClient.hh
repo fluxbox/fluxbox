@@ -128,10 +128,6 @@ public:
 
     inline bool isModal() const { return m_modal > 0; }
 
-    inline bool operator == (const FluxboxWindow &win) const {
-        return (m_win == &win);
-    }
-
     const FbTk::FbPixmap &iconPixmap() const { return m_icon_pixmap; }
     const FbTk::FbPixmap &iconMask() const { return m_icon_mask; }
     const bool usePixmap() const { return m_icon_pixmap.drawable() != None; }
