@@ -991,46 +991,46 @@ case ${LC_ALL} in
         XUTILSMENU='Utilitare X'
         ;;
     es_ES*) # spanish locales
-# Ah my Spanish hero. Please help me update the translation
-# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
-# $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
-# email fbgm.diff to han@mijncomputer.nl
 
+        ABOUTITEM='Acerca'
+        BACKGROUNDMENU='Fondos'
         BACKGROUNDMENUTITLE='Seleccionar Fondo'
         BROWSERMENU='Navegadores'
+        BURNINGMENU='Herramientas de grabación'
         CONFIGUREMENU='Configurar'
         EDITORMENU='Editores'
+        EDUCATIONMENU='Educación'
         EXITITEM='Salir'
         FBSETTINGSMENU='Menú fluxbox'
+        FILEUTILSMENU='Utilidades'
+        FLUXBOXCOMMAND='Comandos de Fluxbox'
         GAMESMENU='Juegos'
         GNOMEMENUTEXT='Menús Gnome'
         GRAPHICMENU='Gráficos'
         KDEMENUTEXT='Menús KDE'
+        LOCKSCREEN='Bloquear Pantalla'
         MISCMENU='Varios'
         MULTIMEDIAMENU='Multimedia'
         MUSICMENU='Música'
         NETMENU='Red'
+        NEWS='Noticias'
         OFFICEMENU='Oficina'
+        RANDOMBACKGROUND='Fondo Aleatoreo'
+        REGENERATEMENU='Regenerar Menú'
         RELOADITEM='Reconfigurar'
         RESTARTITEM='Reiniciar'
+        RUNCOMMAND='Ejecutar'
+        SCREENSHOT='Captura de Pantalla'
         STYLEMENUTITLE='Escoge un Estilo...'
         SYSTEMSTYLES='Estilos del Sistema'
         TERMINALMENU='Terminales'
-        USERSTYLES='Estilos del Usuario'
-        WORKSPACEMENU='Lista de Escritorios'
-        XUTILSMENU='Utilidades X'
-        BACKGROUNDMENU='Fondos'
-        FILEUTILSMENU='Utilidades'
-        FLUXBOXCOMMAND='Comandos de Fluxbox'
-        LOCKSCREEN='Bloquear Pantalla'
-        RANDOMBACKGROUND='Fondo Aleatoreo'
-        REGENERATEMENU='Regenerar Menú'
-        RUNCOMMAND='Ejecutar'
-        SCREENSHOT='Captura de Pantalla'
         TOOLS='Herramienta'
+        USERSTYLES='Estilos del Usuario'
+        VIDEOMENU='Video'
         WINDOWMANAGERS='Gestores de Ventanas'
         WINDOWNAME='Nombre de Ventana'
+        WORKSPACEMENU='Lista de Escritorios'
+        XUTILSMENU='Utilidades X'
         ;;
     pl_PL*) # Polish locales
 # Ah my Russian hero. Please help me update the translation
@@ -1075,11 +1075,14 @@ case ${LC_ALL} in
         XUTILSMENU='Narzêdzia X'
         ;;
     pt_PT*) # Portuguese locales
+        ABOUTMENU="Sobre"
         BACKGROUNDMENU='Imagens de Fundo'
         BACKGROUNDMENUTITLE='Definir Imagem de Fundo'
         BROWSERMENU='Browsers'
+        BURNINGMENU='Ferramentas de Gravação'
         CONFIGUREMENU='Configuração'
         EDITORMENU='Editores'
+        EDUCATIONMENU='Educação'
         EXITITEM='Sair'
         FBSETTINGSMENU='Menu Fluxbox'
         FILEUTILSMENU='Utilitários de Ficheiros'
@@ -1093,6 +1096,7 @@ case ${LC_ALL} in
         MULTIMEDIAMENU='Multimédia'
         MUSICMENU='Áudio'
         NETMENU='Rede'
+        NEWS='Notícias'
         OFFICEMENU='Escritório'
         RANDOMBACKGROUND='Imagem Aleatória'
         REGENERATEMENU='Regenerar Menu'
@@ -1102,6 +1106,7 @@ case ${LC_ALL} in
         SCREENSHOT='Capturar Ecrã'
         STYLEMENUTITLE='Escolha um estilo...'
         SYSTEMSTYLES='Estilos do Sistema'
+        SYSTEMTOOLSMENU='Ferramentas de Sistema'
         TERMINALMENU='Terminais'
         TOOLS='Ferramentas'
         USERSTYLES='Estilos do Utilizador'
@@ -1590,7 +1595,8 @@ append_menu_end
 
 append_submenu "${EDUCATIONMENU}"
     normal_find celestia scilab geomview scigraphica oregano xcircuit electric \
-        pymol elem chemtool xdrawchem 
+        pymol elem chemtool xdrawchem stellarium   
+    find_it drgeo          append "[exec] (Dr. Geo) {drgeo}"
     find_it     R          append "[exec] (R) {${DEFAULT_TERM} -e R --gui=gnome}"
     cli_find maxima grace yacas octave gnuplot grass coq acl
 append_menu_end
@@ -1605,7 +1611,7 @@ append_menu_end
 append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${GRAPHICMENU}"
                normal_find gimp gimp2 gimp-2.2 inkscape sodipodi xv gqview showimg xpaint kpaint kiconedit \
-                   ee xzgv xscreensaver-demo xlock gphoto tuxpaint
+                   ee xzgv xscreensaver-demo xlock gphoto tuxpaint krita skencil
                find_it xnview           append "[exec] (xnview browser) {xnview -browser}"
                find_it blender          append "[exec] (blender) {blender -w}"
                find_it gears            append "[exec] (Mesa gears) {gears}"
@@ -1628,7 +1634,7 @@ append_submenu "${MULTIMEDIAMENU}"
 
        append_submenu "${XUTILSMENU}"
            normal_find xfontsel xman xload xbiff editres viewres xclock \
-               xmag wmagnify gkrellm gkrellm2 vmware portagemaster celestia
+               xmag wmagnify gkrellm gkrellm2 vmware portagemaster agave 
            find_it xrdb append "[exec] (Reload .Xdefaults) {xrdb -load $HOME/.Xdefaults}"
        append_menu_end
 append_menu_end
@@ -1682,7 +1688,8 @@ append_submenu "${GAMESMENU}"
         nethack-gnome pathological scummvm xqf \
         wesnoth canfeild ace_canfeild golf merlin chickens \
         supertux tuxdash  neverball cube_client blackjack \
-        doom doom3 quake4 blackshades gltron kpoker concentration torrent scramble kiki
+        doom doom3 quake4 blackshades gltron kpoker concentration \
+        torrent scramble kiki xmoto
     cli_find gnugo
 
     find_it et append "[exec] (Enemy Territory) {et}"

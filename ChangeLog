@@ -1,5 +1,7 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/08/27:
+   * Translations and addons to fbgm (thanks to Antonio Gomes)
 *06/08/14:
    * Fix minor menu separator highlight issue (Simon)
      FbTk/Menu.cc
