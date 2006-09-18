@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS= -I.. -I../FbTk -DDEBUG -DUSE_XFT -Wall -g -O2 ../FbTk/libFbTk.a
+CXXFLAGS= -I.. -I../FbTk -I../.. -DDEBUG -DUSE_XFT -Wall -g -O2 ../FbTk/libFbTk.a
 LIBS= 
 XFLAGS= -I/usr/X11R6/include
 XLIBS= -L/usr/X11R6/lib -lX11 -lXft -lXpm -lImlib2
