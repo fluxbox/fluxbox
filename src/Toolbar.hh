@@ -135,7 +135,7 @@ private:
     void rearrangeItems();
     void deleteItems();
 
-    void setupMenus();
+    void setupMenus(bool skip_new_placement=false);
     void clearStrut();
     void updateStrut();
     void updateAlpha();

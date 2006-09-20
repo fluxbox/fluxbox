@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/09/20:
+   * Fixed bug #1561482, (Henrik)
+     Crash when cicking on the workspacename to get the tbarmenu.
+     Fixed so it recreated toolbar menu if needed in  Toolbar::reconfigure.
+     src/Toolbar.cc/hh
    * fixed little issue in fbsetbg (Mathias)
      if someone has no wpsetters installed at all but only wants to use
      fbsetroot thru fbsetbg then the warning would pop up, telling her
