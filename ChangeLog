@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/09/20:
+   * fixed little issue in fbsetbg (Mathias)
+     if someone has no wpsetters installed at all but only wants to use
+     fbsetroot thru fbsetbg then the warning would pop up, telling her
+     to install a wpsetter .. which she doenst want
+     util/fbsetbg
 *06/08/27:
    * Translations and addons to fbgm (thanks to Antonio Gomes)
 *06/08/14:

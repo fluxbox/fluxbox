@@ -46,7 +46,7 @@
 # _NET_CURRENT_DESKTOP
 
 # The wallpapersetter is selected in this order
-wpsetters="${wpsetters:=Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg}" # broken icewmbg'
+wpsetters="${wpsetters:=fbsetroot Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg}" # broken icewmbg'
 lastwallpaper="${HOME}/.fluxbox/lastwallpaper"
 
 
@@ -357,6 +357,9 @@ standardok=\
 "$WPSETTER is a nice wallpapersetter. You won't have any problems."
 
 case $WPSETTER in
+    fbsetroot) 
+        debugstory="fbsetroot does not show any pictures."
+        ;;
     chbg)
         full='-once -mode maximize'
         tile='-once -mode tile'
