@@ -46,7 +46,7 @@
 # _NET_CURRENT_DESKTOP
 
 # The wallpapersetter is selected in this order
-wpsetters="${wpsetters:=fbsetroot Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg}" # broken icewmbg'
+wpsetters="${wpsetters:=Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg}" # broken icewmbg'
 lastwallpaper="${HOME}/.fluxbox/lastwallpaper"
 
 
@@ -194,6 +194,16 @@ debugfbsetbg() {
     exit 0
 }
 
+use_fbsetroot() {
+
+    fbsetroot $wallpaper
+    if [ ! "$remember" = false ]; then
+        remembercommand
+    fi
+    exit 0
+}
+
+
 if [ $# -eq 0 ]; then
     message "no options given"
     display_usage
@@ -263,11 +273,13 @@ while [ $# -gt 0 ]; do
         -b) option=fbsetroot
             shift
             wallpaper=$*
+            use_fbsetroot
             break ;;
         -B) option=fbsetroot
             shift
             wallpaper=$*
             remember=false
+            use_fbsetroot
             break ;;
         -r) option2=$option
             option=random
@@ -357,9 +369,6 @@ standardok=\
 "$WPSETTER is a nice wallpapersetter. You won't have any problems."
 
 case $WPSETTER in
-    fbsetroot) 
-        debugstory="fbsetroot does not show any pictures."
-        ;;
     chbg)
         full='-once -mode maximize'
         tile='-once -mode tile'
@@ -467,15 +476,6 @@ option2=${option2:='$full'}
 if [ -z "$DISPLAY" ]; then
     message "You are not connected to an X session\nPerhaps you should set the DISPLAY environment variable?"
     exit 1
-fi
-
-
-if [ "$option" = fbsetroot ]; then
-    fbsetroot $wallpaper
-    if [ ! "$remember" = false ]; then
-        remembercommand
-    fi
-    exit 0
 fi
 
 
