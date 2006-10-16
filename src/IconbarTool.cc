@@ -333,11 +333,11 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_screen(screen),
     m_icon_container(parent),
     m_theme(theme),
-    m_focused_pm(0),
-    m_unfocused_pm(0),
-    m_focused_err_pm(0),
-    m_unfocused_err_pm(0),
-    m_empty_pm(0),
+    m_focused_pm( screen.imageControl() ),
+    m_unfocused_pm( screen.imageControl() ),
+    m_focused_err_pm( screen.imageControl() ),
+    m_unfocused_err_pm( screen.imageControl() ),
+    m_empty_pm( screen.imageControl() ),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
     m_wheel_mode(screen.resourceManager(), OFF,
@@ -393,19 +393,6 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
 
 IconbarTool::~IconbarTool() {
     deleteIcons();
-
-    // remove cached images
-    if (m_focused_pm)
-        m_screen.imageControl().removeImage(m_focused_pm);
-    if (m_unfocused_pm)
-        m_screen.imageControl().removeImage(m_unfocused_pm);
-    if (m_focused_err_pm)
-        m_screen.imageControl().removeImage(m_focused_err_pm);
-    if (m_unfocused_err_pm)
-        m_screen.imageControl().removeImage(m_unfocused_err_pm);
-    if (m_empty_pm)
-        m_screen.imageControl().removeImage(m_empty_pm);
-
 }
 
 void IconbarTool::move(int x, int y) {
@@ -547,13 +534,14 @@ void IconbarTool::update(FbTk::Subject *subj) {
 
     bool remove_all = false; // if we should readd all windows    
 
-    if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject) && mode() != ALLWINDOWS) {
+    if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject) &&
+        mode() != ALLWINDOWS && mode() != ICONS ) {
         BScreen::ScreenSubject *screen_subj = static_cast<BScreen::ScreenSubject *>(subj);
         // current workspace sig
-        if (&m_screen.currentWorkspaceSig() == screen_subj &&
-            mode() != ALLWINDOWS && mode() != ICONS) {
+        if (&m_screen.currentWorkspaceSig() == screen_subj ) {
             remove_all = true; // remove and readd all windows
         }
+        
     }
 
     // lock graphic update
@@ -621,9 +609,7 @@ void IconbarTool::renderTheme() {
     // update button sizes before we get max width per client!
     updateSizing();
     
-    Pixmap tmp = m_focused_pm;
-    Pixmap err_tmp = m_focused_err_pm;
-    unsigned int icon_width, icon_height;
+    unsigned int icon_width = 0, icon_height = 0;
     unsigned int icon_width_off=0, icon_height_off=0;
     
     if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180) {
@@ -637,55 +623,41 @@ void IconbarTool::renderTheme() {
     }
 
     if (!m_theme.focusedTexture().usePixmap()) {
-        m_focused_pm = 0;
-        m_focused_err_pm = 0;
+        m_focused_pm.reset( 0 );
+        m_focused_err_pm.reset( 0 );
     } else {
-        m_focused_pm = m_screen.imageControl().renderImage(icon_width,
-                                                           icon_height,
-                                                           m_theme.focusedTexture(), orientation());
-        m_focused_err_pm = m_screen.imageControl().renderImage(icon_width+icon_width_off,
-                                                               icon_height+icon_height_off,
-                                                               m_theme.focusedTexture(), orientation());
+        m_focused_pm.reset( m_screen.imageControl().
+                            renderImage(icon_width, icon_height,
+                                        m_theme.focusedTexture(), orientation()) );
+        m_focused_err_pm.reset( m_screen.imageControl().
+                                renderImage(icon_width + icon_width_off,
+                                            icon_height + icon_height_off,
+                                            m_theme.focusedTexture(), orientation()) );
     }
         
-    if (tmp)
-        m_screen.imageControl().removeImage(tmp);
-    if (err_tmp)
-        m_screen.imageControl().removeImage(err_tmp);
-
-    tmp = m_unfocused_pm;
-    err_tmp = m_unfocused_err_pm;
-    
     if (!m_theme.unfocusedTexture().usePixmap()) {
-        m_unfocused_pm = 0;
-        m_unfocused_err_pm = 0;
+        m_unfocused_pm.reset( 0 );
+        m_unfocused_err_pm.reset( 0 );
     } else {
-        m_unfocused_pm = m_screen.imageControl().renderImage(icon_width,
-                                                             icon_height,
-                                                             m_theme.unfocusedTexture(), orientation());
-        m_unfocused_err_pm = m_screen.imageControl().renderImage(icon_width+icon_width_off,
-                                                                 icon_height+icon_height_off,
-                                                                 m_theme.unfocusedTexture(), orientation());
+        m_unfocused_pm.reset( m_screen.imageControl().
+                              renderImage(icon_width, icon_height,
+                                          m_theme.unfocusedTexture(), orientation()) );
+        m_unfocused_err_pm.reset( m_screen.imageControl().
+                                  renderImage(icon_width+icon_width_off,
+                                              icon_height+icon_height_off,
+                                              m_theme.unfocusedTexture(), orientation()) );
     }
-    if (tmp)
-        m_screen.imageControl().removeImage(tmp);
-    if (err_tmp)
-        m_screen.imageControl().removeImage(err_tmp);
 
     // if we dont have any icons then we should render empty texture
-    tmp = m_empty_pm;
     if (!m_theme.emptyTexture().usePixmap()) {
-        m_empty_pm = 0;
+        m_empty_pm.reset( 0 );
         m_icon_container.setBackgroundColor(m_theme.emptyTexture().color());
     } else {
-        m_empty_pm = m_screen.imageControl().renderImage(m_icon_container.width(),
-                                                         m_icon_container.height(),
-                                                         m_theme.emptyTexture(), orientation());
+        m_empty_pm.reset( m_screen.imageControl().
+                          renderImage(m_icon_container.width(), m_icon_container.height(),
+                                      m_theme.emptyTexture(), orientation()) );
         m_icon_container.setBackgroundPixmap(m_empty_pm);
     }
-
-    if (tmp)
-        m_screen.imageControl().removeImage(tmp);
 
     // set to zero so its consistent and not ugly
     m_icon_container.setBorderWidth(m_theme.border().width());
@@ -839,6 +811,7 @@ void IconbarTool::updateList() {
             !checkDuplicate(*(*it)->fbwindow()))
             addWindow(*(*it)->fbwindow());
     }
+
     renderTheme();
 }
 

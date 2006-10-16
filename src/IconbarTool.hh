@@ -29,6 +29,7 @@
 #include "Container.hh"
 #include "FbMenu.hh"
 
+#include "FbTk/CachedPixmap.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Menu.hh"
@@ -88,7 +89,9 @@ public:
 
     void setOrientation(FbTk::Orientation orient);
     Container::Alignment alignment() const { return m_icon_container.alignment(); }
+
 private:
+
     /// @return button associated with window
     IconButton *findButton(FluxboxWindow &win);
 
@@ -122,10 +125,10 @@ private:
     Container m_icon_container;
     IconbarTheme &m_theme;
     // cached pixmaps
-    Pixmap m_focused_pm, m_unfocused_pm;
+    FbTk::CachedPixmap m_focused_pm, m_unfocused_pm;
     // some are a fraction bigger due to rounding
-    Pixmap m_focused_err_pm, m_unfocused_err_pm;
-    Pixmap m_empty_pm; ///< pixmap for empty container
+    FbTk::CachedPixmap m_focused_err_pm, m_unfocused_err_pm;
+    FbTk::CachedPixmap m_empty_pm; ///< pixmap for empty container
 
 
     IconList m_icon_list;
