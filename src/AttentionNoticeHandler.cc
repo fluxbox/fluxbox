@@ -35,7 +35,8 @@ namespace {
 class ToggleFrameFocusCmd: public FbTk::Command {
 public:
     ToggleFrameFocusCmd(WinClient &client):
-        m_client(client) {}
+        m_client(client),
+        m_state(false) {}
     void execute() {
         m_state ^= true;
         m_client.fbwindow()->setLabelButtonFocus(m_client, m_state);
