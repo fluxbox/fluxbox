@@ -52,6 +52,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	MenuIcon.hh MenuIcon.cc \
 	stringstream.hh \
 	Select2nd.hh \
+	CachedPixmap.hh CachedPixmap.cc \
 	${xpm_SOURCE} \
 	${xft_SOURCE} \
 	${xmb_SOURCE} \
