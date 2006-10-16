@@ -29,7 +29,13 @@
 /// Displays a arrow on a button
 class ArrowButton: public FbTk::Button {
 public:
-    enum Type { LEFT, RIGHT, UP, DOWN};
+    /// type of arrow that should be drawn
+    enum Type { 
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    };
 
     ArrowButton(ArrowButton::Type arrow_type, const FbTk::FbWindow &parent,
                 int x, int y, 
