@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/10/27:
+   * Changed mode for .fluxbox/startup to 644 (Mathias)
+     some people on noexec-mounted partitions ran into problems
+     util/startfluxbox.in
+   * Small updates to the asciidoc-docs (Mathias)
    * Cosmetic patch from Slave Semushin
      Slit.cc Screen.cc Keys.cc main.cc ToolbarTheme.cc FbTk/MultLayers.cc
      FbTk/Transparent.cc FbTk/Resource.cc FbTk/Theme.cc FbTk/XLayer.cc

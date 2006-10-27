@@ -85,6 +85,6 @@ exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@
 EOF
     ) > "$startup"
     fi
-    chmod 755 "$startup"
+    chmod 644 "$startup"
     exec "$startup"
 fi
