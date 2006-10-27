@@ -89,7 +89,11 @@
 #include <map>
 #include <memory>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::vector;
+using std::ifstream;
 
 Keys::Keys():
     m_display(FbTk::App::instance()->display())
@@ -171,7 +175,7 @@ bool Keys::save(const char *filename) const {
     //    return true;
 }
 
-bool Keys::addBinding(const std::string &linebuffer) {
+bool Keys::addBinding(const string &linebuffer) {
 
     vector<string> val;
     // Parse arguments
@@ -187,7 +191,7 @@ bool Keys::addBinding(const std::string &linebuffer) {
     unsigned int key = 0, mod = 0;
     t_key *current_key=0, *last_key=0;
     size_t argc = 0;
-    std::string keyMode = "default:";
+    string keyMode = "default:";
 
     if (val[0][val[0].length()-1] == ':') {
         argc++;
@@ -213,21 +217,21 @@ bool Keys::addBinding(const std::string &linebuffer) {
                 // +[1-9]   - number between +1 and +9
                 // numbers 10 and above
                 //
-                if (val[argc].size() > 1 && (isdigit(val[argc][0]) && 
-                                             (isdigit(val[argc][1]) || val[argc][1] == 'x') || 
+                if (val[argc].size() > 1 && (isdigit(val[argc][0]) &&
+                                             (isdigit(val[argc][1]) || val[argc][1] == 'x') ||
                                              val[argc][0] == '+' && isdigit(val[argc][1])) ) {
-                        
+
                     key = strtoul(val[argc].c_str(), NULL, 0);
 
                     if (errno == EINVAL || errno == ERANGE)
                         key = 0;
 
                 } else // convert from string symbol
-                    key = FbTk::KeyUtil::getKey(val[argc].c_str()); 
+                    key = FbTk::KeyUtil::getKey(val[argc].c_str());
 
                 if (key == 0) {
-                    cerr<<_FB_CONSOLETEXT(Keys, InvalidKeyMod, 
-                                  "Keys: Invalid key/modifier on line", 
+                    cerr<<_FB_CONSOLETEXT(Keys, InvalidKeyMod,
+                                  "Keys: Invalid key/modifier on line",
                                   "A bad key/modifier string was found on line (number following)")<<" "<<
                         m_current_line<<"): "<<linebuffer<<endl;
                     return false;
@@ -391,7 +395,7 @@ bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
     return false;
 }
 
-void Keys::keyMode(std::string keyMode = "default") {
+void Keys::keyMode(string keyMode = "default") {
     keyspace_t::iterator it = m_map.find(keyMode + ":");
     if (it == m_map.end())
         m_keylist = m_map["default:"];

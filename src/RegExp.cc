@@ -33,7 +33,12 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
+using std::string;
+
+#ifdef USE_REGEXP
+using std::cerr;
+using std::endl;
+#endif // USE_REGEXP
 
 
 /********************************************************
@@ -42,7 +47,7 @@ using namespace std;
 
 // full_match is to say if we match on this regexp using the full string
 // or just a substring. Substrings aren't supported if not HAVE_REGEXP
-RegExp::RegExp(const std::string &str, bool full_match):
+RegExp::RegExp(const string &str, bool full_match):
 #ifdef USE_REGEXP
 m_regex(0) {
     string match;
@@ -83,7 +88,7 @@ RegExp::~RegExp() {
 #endif // USE_REGEXP
 }
 
-bool RegExp::match(const std::string &str) const {
+bool RegExp::match(const string &str) const {
 #ifdef USE_REGEXP
     if (m_regex)
         return regexec(m_regex, str.c_str(), 0, 0, 0) == 0;
@@ -97,7 +102,7 @@ bool RegExp::match(const std::string &str) const {
 
 bool RegExp::error() const {
 #ifdef USE_REGEXP
-    return m_regex == 0; 
+    return m_regex == 0;
 #else
     return m_str == "";
 #endif // USE_REGEXP

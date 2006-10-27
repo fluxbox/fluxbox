@@ -1,5 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/10/27:
+   * Cosmetic patch from Slave Semushin
+     Slit.cc Screen.cc Keys.cc main.cc ToolbarTheme.cc FbTk/MultLayers.cc
+     FbTk/Transparent.cc FbTk/Resource.cc FbTk/Theme.cc FbTk/XLayer.cc
+     FbTk/Image.cc FbTk/Color.cc FbTk/FbString.cc Remember.cc RegExp.cc
+     WinClient.cc Shape.cc ClientPattern.cc FbWinFrame.cc
+
 *06/10/16:
    * Added CachedPixmap (Henrik)
      FbTk/CachedPixmap.hh/cc

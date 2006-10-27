@@ -2,7 +2,7 @@
 // Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                     and Simon Bowden    (rathnor at users.sourceforge.net)
 // Copyright (c) 2002 Xavier Brouckaert
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -56,7 +56,17 @@
 #include <set>
 
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::list;
+using std::set;
+using std::make_pair;
+using std::ifstream;
+using std::ofstream;
+using std::hex;
+using std::dec;
+
 
 namespace {
 
@@ -254,7 +264,7 @@ Remember::~Remember() {
     // the patterns free the "Application"s
     // the client mapping shouldn't need cleaning
     Patterns::iterator it;
-    std::set<Application *> all_apps; // no duplicates
+    set<Application *> all_apps; // no duplicates
     while (!m_pats->empty()) {
         it = m_pats->begin();
         delete it->first; // ClientPattern
@@ -262,7 +272,7 @@ Remember::~Remember() {
         m_pats->erase(it);
     }
 
-    std::set<Application *>::iterator ait = all_apps.begin(); // no duplicates
+    set<Application *>::iterator ait = all_apps.begin(); // no duplicates
     for (; ait != all_apps.end(); ++ait) {
         delete (*ait);
     }
@@ -300,7 +310,7 @@ Application * Remember::add(WinClient &winclient) {
     return app;
 }
 
-int Remember::parseApp(std::ifstream &file, Application &app, std::string *first_line) {
+int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
     string line;
     _FB_USES_NLS;
     int row = 0;
@@ -346,13 +356,13 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
                 continue; //read next line
             if (strcasecmp(str_key.c_str(), "Workspace") == 0) {
                 unsigned int w;
-                if (getuint(str_label.c_str(), w)) 
+                if (getuint(str_label.c_str(), w))
                     app.rememberWorkspace(w);
                 else
                     had_error = true;
             } else if (strcasecmp(str_key.c_str(), "Head") == 0) {
                 unsigned int h;
-                if (getuint(str_label.c_str(), h)) 
+                if (getuint(str_label.c_str(), h))
                     app.rememberHead(h);
                 else
                     had_error = true;
@@ -403,7 +413,7 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
                         }
                     }
 
-                if (!had_error && sscanf(str_label.c_str(), "%u %u", &x, &y) == 2) 
+                if (!had_error && sscanf(str_label.c_str(), "%u %u", &x, &y) == 2)
                     app.rememberPosition(x, y, r);
                 else
                     had_error = true;
@@ -476,8 +486,8 @@ int Remember::parseApp(std::ifstream &file, Application &app, std::string *first
   This function is used to search for old instances of the same pattern
   (when reloading apps file). More than one pattern might match, but only
   if the application is the same (also note that they'll be adjacent).
-  We REMOVE and delete any matching patterns from the old list, as they're 
-  effectively moved into the new 
+  We REMOVE and delete any matching patterns from the old list, as they're
+  effectively moved into the new
 */
 
 Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlist, bool is_group) {
@@ -519,10 +529,11 @@ void Remember::reconfigure() {
     time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(apps_string.c_str());
     if (m_last_timestamp > 0 && m_last_timestamp == timestamp)
         return;
-            
+
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;
 #endif // DEBUG
+
     ifstream apps_file(apps_string.c_str());
 
     // we merge the old patterns with new ones
@@ -536,7 +547,7 @@ void Remember::reconfigure() {
             string line;
             int row = 0;
             bool in_group = false;
-            std::list<ClientPattern *> grouped_pats;
+            list<ClientPattern *> grouped_pats;
             while (getline(apps_file, line) && ! apps_file.eof()) {
                 row++;
                 FbTk::StringUtil::removeFirstWhitespace(line);
@@ -554,7 +565,7 @@ void Remember::reconfigure() {
                     if (!in_group) {
                         if ((err = pat->error()) == 0) {
                             Application *app = findMatchingPatterns(pat, old_pats, false);
-                            if (!app) 
+                            if (!app)
                                 app = new Application(false);
 
                             m_pats->push_back(make_pair(pat, app));
@@ -578,8 +589,8 @@ void Remember::reconfigure() {
                     // otherwise assume that it is the start of the attributes
                     Application *app = 0;
                     // search for a matching app
-                    std::list<ClientPattern *>::iterator it = grouped_pats.begin();
-                    std::list<ClientPattern *>::iterator it_end = grouped_pats.end();
+                    list<ClientPattern *>::iterator it = grouped_pats.begin();
+                    list<ClientPattern *>::iterator it_end = grouped_pats.end();
                     while (!app && it != it_end) {
                         app = findMatchingPatterns(*it, old_pats, true);
                         ++it;
@@ -617,9 +628,9 @@ void Remember::reconfigure() {
     // Clean up old state
     // can't just delete old patterns list. Need to delete the
     // patterns themselves, plus the applications!
-    
+
     Patterns::iterator it;
-    std::set<Application *> old_apps; // no duplicates
+    set<Application *> old_apps; // no duplicates
     while (!old_pats->empty()) {
         it = old_pats->begin();
         delete it->first; // ClientPattern
@@ -640,7 +651,7 @@ void Remember::reconfigure() {
         }
     }
 
-    std::set<Application *>::iterator ait = old_apps.begin(); // no duplicates
+    set<Application *>::iterator ait = old_apps.begin(); // no duplicates
     for (; ait != old_apps.end(); ++ait) {
         delete (*ait);
     }
@@ -667,7 +678,7 @@ void Remember::save() {
     Patterns::iterator it = m_pats->begin();
     Patterns::iterator it_end = m_pats->end();
 
-    std::set<Application *> grouped_apps; // no duplicates
+    set<Application *> grouped_apps; // no duplicates
 
     for (; it != it_end; ++it) {
         Application &a = *it->second;

@@ -59,8 +59,21 @@
 #include <stdexcept>
 #include <typeinfo>
 
-using namespace std;
-void showInfo(ostream &ostr) {
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::ostream;
+using std::ofstream;
+using std::streambuf;
+using std::auto_ptr;
+using std::out_of_range;
+using std::runtime_error;
+using std::bad_cast;
+using std::bad_alloc;
+using std::exception;
+
+static void showInfo(ostream &ostr) {
     _FB_USES_NLS;
     ostr<<_FB_CONSOLETEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")<<": "<<__fluxbox_version<<endl;
 
@@ -73,7 +86,7 @@ void showInfo(ostream &ostr) {
     ostr<<_FB_CONSOLETEXT(Common, Compiler, "Compiler", "Compiler used to build fluxbox")<<": "<<__fluxbox_compiler<<endl;
 #endif // __fluxbox_compiler
 #ifdef __fluxbox_compiler_version
-    ostr<<_FB_CONSOLETEXT(Common, CompilerVersion, "Compiler version", "Compiler version used to build fluxbox")<<": "<<__fluxbox_compiler_version<<endl;    
+    ostr<<_FB_CONSOLETEXT(Common, CompilerVersion, "Compiler version", "Compiler version used to build fluxbox")<<": "<<__fluxbox_compiler_version<<endl;
 #endif // __fluxbox_compiler_version
 
     ostr<<endl<<_FB_CONSOLETEXT(Common, Defaults, "Defaults", "Default values compiled in")<<":"<<endl;
@@ -177,9 +190,9 @@ void showInfo(ostream &ostr) {
 
 int main(int argc, char **argv) {
 
-    std::string session_display = "";
-    std::string rc_file;
-    std::string log_filename;
+    string session_display = "";
+    string rc_file;
+    string log_filename;
 
     FbTk::NLSInit("fluxbox.cat");
     _FB_USES_NLS;
@@ -191,7 +204,7 @@ int main(int argc, char **argv) {
 
             if ((++i) >= argc) {
                 cerr<<_FB_CONSOLETEXT(main, RCRequiresArg,
-                              "error: '-rc' requires an argument", "the -rc option requires a file argument")<<endl;;	
+                              "error: '-rc' requires an argument", "the -rc option requires a file argument")<<endl;
                 exit(1);
             }
 
@@ -208,7 +221,7 @@ int main(int argc, char **argv) {
             }
 
             session_display = argv[i];
-            std::string display_env = "DISPLAY=" + session_display;
+            string display_env = "DISPLAY=" + session_display;
             if (putenv(const_cast<char *>(display_env.c_str()))) {
                 cerr<<_FB_CONSOLETEXT(main, WarnDisplayEnv,
                                 "warning: couldn't set environment variable 'DISPLAY'",
@@ -252,7 +265,7 @@ int main(int argc, char **argv) {
 #ifdef __EMX__
     _chdir2(getenv("X11ROOT"));
 #endif // __EMX__
-    std::auto_ptr<Fluxbox> fluxbox;
+    auto_ptr<Fluxbox> fluxbox;
     int exitcode=EXIT_FAILURE;
 
     streambuf *outbuf = 0;
@@ -279,17 +292,17 @@ int main(int argc, char **argv) {
 
         exitcode = EXIT_SUCCESS;
 
-    } catch (std::out_of_range &oor) {
+    } catch (out_of_range &oor) {
         cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorOutOfRange, "Out of range", "Error message")<<": "<<oor.what()<<endl;
-    } catch (std::runtime_error &re) {
+    } catch (runtime_error &re) {
         cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorRuntime, "Runtime error", "Error message")<<": "<<re.what()<<endl;
-    } catch (std::bad_cast &bc) {
-        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorBadCast, "Bad cast", "Error message")<<": "<<bc.what()<<endl; 
-    } catch (std::bad_alloc &ba) {
+    } catch (bad_cast &bc) {
+        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorBadCast, "Bad cast", "Error message")<<": "<<bc.what()<<endl;
+    } catch (bad_alloc &ba) {
         cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorBadAlloc, "Bad Alloc", "Error message")<<": "<<ba.what()<<endl;
-    } catch (std::exception &e) {
+    } catch (exception &e) {
         cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorStandardException, "Standard Exception", "Error message")<<": "<<e.what()<<endl;
-    } catch (std::string error_str) {
+    } catch (string error_str) {
         cerr<<_FB_CONSOLETEXT(Common, Error, "Error", "Error message header")<<": "<<error_str<<endl;
     } catch (...) {
         cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorUnknown, "Unknown error", "Error message")<<"."<<endl;
@@ -297,11 +310,11 @@ int main(int argc, char **argv) {
     }
 
     bool restarting = false;
-    std::string restart_argument;
-    
+    string restart_argument;
+
     if (fluxbox.get()) {
         restarting = fluxbox->isRestarting();
-        restart_argument = fluxbox->getRestartArgument();   
+        restart_argument = fluxbox->getRestartArgument();
     }
 
     // destroy fluxbox

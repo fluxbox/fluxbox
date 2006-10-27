@@ -26,14 +26,16 @@
 #include "FbTk/App.hh"
 
 #include <iostream>
-using namespace std;
+#include <string>
+
+using std::string;
 
 ToolbarTheme::ToolbarTheme(int screen_num):
     FbTk::Theme(screen_num),
     m_toolbar(*this, "toolbar", "Toolbar"),
     m_border(*this, "toolbar", "Toolbar"),
     m_bevel_width(*this, "toolbar.bevelWidth", "Toolbar.BevelWidth"),
-    m_shape(*this, "toolbar.shaped", "Toolbar.Shaped"),    
+    m_shape(*this, "toolbar.shaped", "Toolbar.Shaped"),
     m_height(*this, "toolbar.height", "Toolbar.Height"),
     m_button_size(*this, "toolbar.button.size", "Toolbar.Button.Size") {
     // set default value
@@ -48,9 +50,9 @@ ToolbarTheme::~ToolbarTheme() {
 }
 
 bool ToolbarTheme::fallback(FbTk::ThemeItem_base &item) {
-    if (item.name().find(".borderWidth") != std::string::npos) {
+    if (item.name().find(".borderWidth") != string::npos) {
         return FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
-    } else if (item.name().find(".borderColor") != std::string::npos) {
+    } else if (item.name().find(".borderColor") != string::npos) {
         return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
     } else if (item.name() == "toolbar.bevelWidth") {
         return FbTk::ThemeManager::instance().loadItem(item, "bevelWidth", "BevelWidth");

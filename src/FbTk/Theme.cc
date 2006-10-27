@@ -39,7 +39,9 @@
 #include <iostream>
 #include <algorithm>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
 
 namespace FbTk {
 
@@ -49,8 +51,8 @@ struct LoadThemeHelper {
         m_tm.loadTheme(*tm);
     }
     void operator ()(ThemeManager::ThemeList &tmlist) {
-        
-        for_each(tmlist.begin(), tmlist.end(), 
+
+        for_each(tmlist.begin(), tmlist.end(),
                  *this);
         // send reconfiguration signal to theme and listeners
         ThemeManager::ThemeList::iterator it = tmlist.begin();
@@ -61,7 +63,7 @@ struct LoadThemeHelper {
         }
     }
 
-    ThemeManager &m_tm;    
+    ThemeManager &m_tm;
 };
 
 Theme::Theme(int screen_num):m_screen_num(screen_num) {
@@ -78,9 +80,9 @@ ThemeManager &ThemeManager::instance() {
 }
 
 ThemeManager::ThemeManager():
-    // max_screens: we initialize this later so we can set m_verbose 
+    // max_screens: we initialize this later so we can set m_verbose
     // without having a display connection
-    m_max_screens(-1), 
+    m_max_screens(-1),
     m_verbose(false),
     m_themelocation("") {
 
@@ -96,7 +98,7 @@ bool ThemeManager::registerTheme(Theme &tm) {
     if (m_max_screens < tm.screenNum() || tm.screenNum() < 0)
         return false;
     // TODO: use find and return false if it's already there
-    // instead of unique 
+    // instead of unique
 
     m_themes[tm.screenNum()].push_back(&tm);
     m_themes[tm.screenNum()].unique();
@@ -112,10 +114,10 @@ bool ThemeManager::unregisterTheme(Theme &tm) {
     return true;
 }
 
-bool ThemeManager::load(const std::string &filename, 
-                        const std::string &overlay_filename, int screen_num) {
-    std::string location = FbTk::StringUtil::expandFilename(filename);
-    std::string prefix = "";
+bool ThemeManager::load(const string &filename,
+                        const string &overlay_filename, int screen_num) {
+    string location = FbTk::StringUtil::expandFilename(filename);
+    string prefix = "";
 
     if (FileUtil::isDirectory(filename.c_str())) {
         prefix = location;
@@ -139,7 +141,7 @@ bool ThemeManager::load(const std::string &filename,
 
 
     if (!overlay_filename.empty()) {
-        std::string overlay_location = FbTk::StringUtil::expandFilename(overlay_filename);
+        string overlay_location = FbTk::StringUtil::expandFilename(overlay_filename);
         if (FileUtil::isRegularFile(overlay_location.c_str())) {
             XrmDatabaseHelper overlay_db;
             if (overlay_db.load(overlay_location.c_str())) {
@@ -204,7 +206,7 @@ bool ThemeManager::loadItem(ThemeItem_base &resource) {
 }
 
 /// handles resource item loading with specific name/altname
-bool ThemeManager::loadItem(ThemeItem_base &resource, const std::string &name, const std::string &alt_name) {
+bool ThemeManager::loadItem(ThemeItem_base &resource, const string &name, const string &alt_name) {
     XrmValue value;
     char *value_type;
     if (XrmGetResource(*m_database, name.c_str(),
@@ -217,7 +219,7 @@ bool ThemeManager::loadItem(ThemeItem_base &resource, const std::string &name, c
     return true;
 }
 
-std::string ThemeManager::resourceValue(const std::string &name, const std::string &altname) {
+string ThemeManager::resourceValue(const string &name, const string &altname) {
     XrmValue value;
     char *value_type;
     if (*m_database != 0 && XrmGetResource(*m_database, name.c_str(),
@@ -232,10 +234,10 @@ void ThemeManager::listItems() {
     ThemeList::iterator it = m_themelist.begin();
     ThemeList::iterator it_end = m_themelist.end();
     for (; it != it_end; ++it) {
-        std::list<ThemeItem_base *>::iterator item = (*it)->itemList().begin();
-        std::list<ThemeItem_base *>::iterator item_end = (*it)->itemList().end();
+        list<ThemeItem_base *>::iterator item = (*it)->itemList().begin();
+        list<ThemeItem_base *>::iterator item_end = (*it)->itemList().end();
         for (; item != item_end; ++item) {
-            
+
             if (typeid(**item) == typeid(ThemeItem<Texture>)) {
                 cerr<<(*item)->name()<<": <texture type>"<<endl;
                 cerr<<(*item)->name()<<".pixmap:  <filename>"<<endl;
@@ -249,7 +251,7 @@ void ThemeManager::listItems() {
                 cerr<<(*item)->name()<<": <boolean>"<<endl;
             } else if (typeid(**item) == typeid(ThemeItem<PixmapWithMask>)) {
                 cerr<<(*item)->name()<<": <filename>"<<endl;
-            }  else if (typeid(**item) == typeid(ThemeItem<std::string>)) {
+            }  else if (typeid(**item) == typeid(ThemeItem<string>)) {
                 cerr<<(*item)->name()<<": <string>"<<endl;
             } else if (typeid(**item) == typeid(ThemeItem<Font>)) {
                 cerr<<(*item)->name()<<": <font>"<<endl;
@@ -258,7 +260,7 @@ void ThemeManager::listItems() {
             }
         }
     }
-             
+
 }
 */
 }; // end namespace FbTk

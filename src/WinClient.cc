@@ -44,8 +44,16 @@
   #include <assert.h>
 #endif
 
-using namespace std;
+using std::string;
+using std::list;
+using std::mem_fun;
 
+#ifdef DEBUG
+using std::cerr;
+using std::endl;
+using std::hex;
+using std::dec;
+#endif // DEBUG
 
 WinClient::TransientWaitMap WinClient::s_transient_wait;
 
@@ -75,7 +83,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_mwm_hint(0),
                      m_focus_mode(F_PASSIVE),
                      m_diesig(*this), m_focussig(*this),
-                     m_screen(screen), 
+                     m_screen(screen),
                      m_strut(0) {
     updateWMProtocols();
     updateBlackboxHints();
@@ -86,7 +94,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
     updateTitle();
     updateIconTitle();
     Fluxbox::instance()->saveWindowSearch(win, this);
-    if (window_group != None) 
+    if (window_group != None)
         Fluxbox::instance()->saveGroupSearch(window_group, this);
 
     // search for this in transient waiting list
@@ -127,7 +135,7 @@ WinClient::~WinClient() {
         transient_for->transientList().remove(this);
         transient_for = 0;
     }
-    
+
     while (!transients.empty()) {
         transients.back()->transient_for = 0;
         transients.pop_back();
@@ -158,8 +166,8 @@ WinClient::~WinClient() {
 }
 
 bool WinClient::acceptsFocus() const {
-    return (m_focus_mode == F_LOCALLYACTIVE || 
-            m_focus_mode == F_PASSIVE || 
+    return (m_focus_mode == F_LOCALLYACTIVE ||
+            m_focus_mode == F_PASSIVE ||
             m_focus_mode == F_GLOBALLYACTIVE && send_focus_message);
 }
 
@@ -222,11 +230,11 @@ bool WinClient::getWMIconName(XTextProperty &textprop) const {
     return XGetWMName(display(), window(), &textprop);
 }
 
-const std::string &WinClient::getWMClassName() const {
+const string &WinClient::getWMClassName() const {
     return m_instance_name;
 }
 
-const std::string &WinClient::getWMClassClass() const {
+const string &WinClient::getWMClassClass() const {
     return m_class_name;
 }
 
@@ -236,15 +244,15 @@ void WinClient::updateWMClassHint() {
 #ifdef DEBUG
         cerr<<"WinClient: Failed to read class hint!"<<endl;
 #endif //DEBUG
-    } else {        
+    } else {
 
         if (ch.res_name != 0) {
             m_instance_name = const_cast<char *>(ch.res_name);
             XFree(ch.res_name);
             ch.res_name = 0;
-        } else 
+        } else
             m_instance_name = "";
-        
+
         if (ch.res_class != 0) {
             m_class_name = const_cast<char *>(ch.res_class);
             XFree(ch.res_class);
@@ -266,7 +274,7 @@ void WinClient::updateTransientInfo() {
     if (transientFor() != 0) {
         transientFor()->transientList().remove(this);
     }
-    
+
     transient_for = 0;
     // determine if this is a transient window
     Window win = 0;
@@ -284,24 +292,24 @@ void WinClient::updateTransientInfo() {
 #endif // DEBUG
         return;
     }
-	
+
     if (win != None && m_win->screen().rootWindow() == win) {
         // transient for root window... =  transient for group
         // I don't think we are group-aware yet
-        return; 
+        return;
     }
 
 
     transient_for = Fluxbox::instance()->searchWindow(win);
     // if we did not find a transient WinClient but still
-    // have a transient X window, then we have to put the 
+    // have a transient X window, then we have to put the
     // X transient_for window in a waiting list and update this clients transient
     // list later when the transient_for has a Winclient
     if (!transient_for) {
         // We might also already waiting for an old transient_for;
-        // 
+        //
         // this call fixes issue 2:
-        // If transients changes to new transient_for before the old transient_for is created. 
+        // If transients changes to new transient_for before the old transient_for is created.
         // (see comment in WinClient.hh)
         //
         removeTransientFromWaitingList();
@@ -335,11 +343,11 @@ void WinClient::updateTransientInfo() {
 
 
 void WinClient::updateTitle() {
-    // why 512? very very long wmnames seem to either 
+    // why 512? very very long wmnames seem to either
     // crash fluxbox or to make it have high cpuload
-    // see also: 
+    // see also:
     //    http://www.securityfocus.com/archive/1/382398/2004-11-24/2004-11-30/2
-    // 
+    //
     // TODO: - find out why this mostly happens when using xft-fonts
     //       - why other windowmanagers (pekwm/pwm3/openbox etc) are
     //         also influenced
@@ -492,7 +500,7 @@ void WinClient::updateWMHints() {
                     m_focus_mode = F_NOINPUT;
             }
         } else // InputHint not present: ignoring send_focus_message and assuming F_PASSIVE
-            m_focus_mode = F_PASSIVE; 
+            m_focus_mode = F_PASSIVE;
 
         if (wmhint->flags & StateHint)
             initial_state = wmhint->initial_state;
@@ -626,7 +634,7 @@ void WinClient::setGroupLeftWindow(Window win) {
     if (m_screen.isShuttingdown())
         return;
     Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
-    changeProperty(group_left_hint, XA_WINDOW, 32, 
+    changeProperty(group_left_hint, XA_WINDOW, 32,
                    PropModeReplace, (unsigned char *) &win, 1);
 }
 
@@ -672,7 +680,7 @@ bool WinClient::validateClient() const {
 
     XEvent e;
     if (( XCheckTypedWindowEvent(display(), window(), DestroyNotify, &e) ||
-          XCheckTypedWindowEvent(display(), window(), UnmapNotify, &e)) 
+          XCheckTypedWindowEvent(display(), window(), UnmapNotify, &e))
         && XPutBackEvent(display(), &e)) {
         Fluxbox::instance()->ungrab();
         return false;
@@ -681,7 +689,7 @@ bool WinClient::validateClient() const {
     return true;
 }
 
-void WinClient::setStrut(Strut *strut) {    
+void WinClient::setStrut(Strut *strut) {
     clearStrut();
     m_strut = strut;
 }
@@ -736,14 +744,14 @@ void WinClient::updateWMProtocols() {
    Note that its slightly simplified in that only the
    line gradient is given - this is because for aspect
    ratios, we always have the line going through the origin
-   
+
    * Based on this formula:
    http://astronomy.swin.edu.au/~pbourke/geometry/pointline/
 
    Note that a gradient from origin goes through ( grad , 1 )
  */
 
-void closestPointToLine(double &ret_x, double &ret_y, 
+void closestPointToLine(double &ret_x, double &ret_y,
                         double point_x, double point_y,
                         double gradient) {
     double u = (point_x * gradient + point_y) /
@@ -763,13 +771,13 @@ void closestPointToLine(double &ret_x, double &ret_y,
  *
  * See ICCCM section 4.1.2.3
  */
-void WinClient::applySizeHints(int &width, int &height, 
+void WinClient::applySizeHints(int &width, int &height,
                                int *display_width, int *display_height) {
 
     int i = width, j = height;
 
     // Check minimum size
-    if (width < 0 || width < static_cast<signed>(min_width)) 
+    if (width < 0 || width < static_cast<signed>(min_width))
         width = min_width;
 
     if (height < 0 || height < static_cast<signed>(min_height))
@@ -783,8 +791,8 @@ void WinClient::applySizeHints(int &width, int &height,
         height = max_height;
 
     // we apply aspect ratios before incrementals
-    // Too difficult to exactly satisfy both incremental+aspect 
-    // in most situations 
+    // Too difficult to exactly satisfy both incremental+aspect
+    // in most situations
     // (they really shouldn't happen at the same time anyway).
 
     /* aspect ratios are applied exclusive to the base_width
@@ -809,11 +817,11 @@ void WinClient::applySizeHints(int &width, int &height,
         double widthd = static_cast<double>(width - base_width);
         double heightd = static_cast<double>(height - base_height);
 
-        double min = static_cast<double>(min_aspect_x) / 
-            static_cast<double>(min_aspect_y); 
+        double min = static_cast<double>(min_aspect_x) /
+            static_cast<double>(min_aspect_y);
 
-        double max = static_cast<double>(max_aspect_x) / 
-            static_cast<double>(max_aspect_y); 
+        double max = static_cast<double>(max_aspect_x) /
+            static_cast<double>(max_aspect_y);
 
         double actual = widthd / heightd;
 
@@ -836,7 +844,7 @@ void WinClient::applySizeHints(int &width, int &height,
 
     // enforce incremental size limits, wrt base size
     // only calculate this if we really need to
-    i = (width - static_cast<signed>(base_width)) / 
+    i = (width - static_cast<signed>(base_width)) /
         static_cast<signed>(width_inc);
     width = i*static_cast<signed>(width_inc) +
         static_cast<signed>(base_width);
@@ -857,9 +865,9 @@ void WinClient::removeTransientFromWaitingList() {
 
     // holds the windows that dont have empty
     // transient waiting list
-    std::list<Window> remove_list;
+    list<Window> remove_list;
 
-    // The worst case complexity is huge, but since we usually do not (virtualy never) 
+    // The worst case complexity is huge, but since we usually do not (virtualy never)
     // have a large transient waiting list the time spent here is neglectable
     TransientWaitMap::iterator t_it = s_transient_wait.begin();
     TransientWaitMap::iterator t_it_end = s_transient_wait.end();
@@ -872,8 +880,8 @@ void WinClient::removeTransientFromWaitingList() {
     }
 
     // erase empty waiting lists
-    std::list<Window>::iterator it = remove_list.begin();
-    std::list<Window>::iterator it_end = remove_list.end();
+    list<Window>::iterator it = remove_list.begin();
+    list<Window>::iterator it_end = remove_list.end();
     for (; it != it_end; ++it)
         s_transient_wait.erase(*it);
 }

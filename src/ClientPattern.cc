@@ -47,10 +47,10 @@
 #endif
 
 // needed as well for index on some systems (e.g. solaris)
-#include <strings.h> 
+#include <strings.h>
 
+using std::string;
 
-using namespace std;
 
 ClientPattern::ClientPattern():
     m_matchlimit(0),
@@ -63,13 +63,13 @@ ClientPattern::ClientPattern(const char *str):
 {
     /* A rough grammar of a pattern is:
        PATTERN ::= MATCH+ LIMIT?
-       MATCH ::= '(' word ')' 
+       MATCH ::= '(' word ')'
                  | '(' propertyname '=' word ')'
        LIMIT ::= '{' number '}'
-                 
+
        i.e. one or more match definitions, followed by
             an optional limit on the number of apps to match to
-       
+
        Match definitions are enclosed in parentheses, and if no
        property name is given, then CLASSNAME is assumed.
        If no limit is specified, no limit is applied (i.e. limit = infinity)
@@ -81,7 +81,7 @@ ClientPattern::ClientPattern(const char *str):
     string match;
     int err = 1; // for starting first loop
     while (had_error == 0 && err > 0) {
-        err = FbTk::StringUtil::getStringBetween(match, 
+        err = FbTk::StringUtil::getStringBetween(match,
                                                  str + pos,
                                                  '(', ')', " \t\n", true);
         if (err > 0) {
@@ -115,7 +115,7 @@ ClientPattern::ClientPattern(const char *str):
                 }
             }
             pos += err;
-        } 
+        }
     }
     if (pos == 0 && had_error == 0) {
         // no match terms given, this is not allowed
@@ -125,7 +125,7 @@ ClientPattern::ClientPattern(const char *str):
     if (had_error == 0) {
         // otherwise, we check for a number
         string number;
-        err = FbTk::StringUtil::getStringBetween(number, 
+        err = FbTk::StringUtil::getStringBetween(number,
                                              str+pos,
                                              '{', '}');
         if (err > 0) {
@@ -134,7 +134,7 @@ ClientPattern::ClientPattern(const char *str):
             pos+=err;
         }
         // we don't care if there isn't one
-        
+
         // there shouldn't be anything else on the line
         match = str + pos;
         size_t uerr;// need a special type here
@@ -154,7 +154,7 @@ ClientPattern::ClientPattern(const char *str):
             m_terms.pop_back();
         }
     }
-} 
+}
 
 ClientPattern::~ClientPattern() {
     // delete all the terms
@@ -165,7 +165,7 @@ ClientPattern::~ClientPattern() {
 }
 
 // return a string representation of this pattern
-std::string ClientPattern::toString() const {
+string ClientPattern::toString() const {
     string pat;
     Terms::const_iterator it = m_terms.begin();
     Terms::const_iterator it_end = m_terms.end();
@@ -206,7 +206,7 @@ std::string ClientPattern::toString() const {
 
 // does this client match this pattern?
 bool ClientPattern::match(const WinClient &win) const {
-    if (m_matchlimit != 0 && m_nummatches >= m_matchlimit || 
+    if (m_matchlimit != 0 && m_nummatches >= m_matchlimit ||
         m_terms.empty())
         return false; // already matched out
 
@@ -225,7 +225,7 @@ bool ClientPattern::match(const WinClient &win) const {
 // add an expression to match against
 // The first argument is a regular expression, the second is the member
 // function that we wish to match against.
-bool ClientPattern::addTerm(const std::string &str, WinProperty prop) {
+bool ClientPattern::addTerm(const string &str, WinProperty prop) {
 
     Term *term = new Term(str, true);
     term->orig = str;
@@ -239,7 +239,7 @@ bool ClientPattern::addTerm(const std::string &str, WinProperty prop) {
     return true;
 }
 
-std::string ClientPattern::getProperty(WinProperty prop, const WinClient &client) const {
+string ClientPattern::getProperty(WinProperty prop, const WinClient &client) const {
     switch (prop) {
     case TITLE:
         return client.title();

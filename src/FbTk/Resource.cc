@@ -32,7 +32,9 @@
   #include <assert.h>
 #endif
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
 
 namespace FbTk {
 
@@ -55,7 +57,7 @@ ResourceManager::~ResourceManager() {
 bool ResourceManager::m_init = false;
 
 /**
-  reloads all resources from resourcefile 
+  reloads all resources from resourcefile
   @return true on success else false
 */
 bool ResourceManager::load(const char *filename) {
@@ -72,18 +74,18 @@ bool ResourceManager::load(const char *filename) {
         unlock();
         return false;
     }
-        
+
     XrmValue value;
     char *value_type;
-	
+
     //get list and go throu all the resources and load them
     ResourceList::iterator i = m_resourcelist.begin();
-    ResourceList::iterator i_end = m_resourcelist.end();	
+    ResourceList::iterator i_end = m_resourcelist.end();
     for (; i != i_end; ++i) {
-	
+
         Resource_base *resource = *i;
         if (XrmGetResource(**m_database, resource->name().c_str(),
-                           resource->altName().c_str(), &value_type, &value))			
+                           resource->altName().c_str(), &value_type, &value))
             resource->setFromString(value.addr);
         else {
             _FB_USES_NLS;
@@ -104,11 +106,11 @@ bool ResourceManager::load(const char *filename) {
 */
 bool ResourceManager::save(const char *filename, const char *mergefilename) {
     assert(filename);
-    
+
     // empty database
     XrmDatabaseHelper database;
 
-    string rc_string;	
+    string rc_string;
     ResourceList::iterator i = m_resourcelist.begin();
     ResourceList::iterator i_end = m_resourcelist.end();
     //write all resources to database
@@ -125,7 +127,7 @@ bool ResourceManager::save(const char *filename, const char *mergefilename) {
     if (mergefilename) {
         // force reload of file
         m_filename = mergefilename;
-        if (m_database) 
+        if (m_database)
             delete m_database;
         m_database = 0;
 
@@ -149,31 +151,31 @@ bool ResourceManager::save(const char *filename, const char *mergefilename) {
     return true;
 }
 
-Resource_base *ResourceManager::findResource(const std::string &resname) {
+Resource_base *ResourceManager::findResource(const string &resname) {
    // find resource name
     ResourceList::iterator i = m_resourcelist.begin();
     ResourceList::iterator i_end = m_resourcelist.end();
     for (; i != i_end; ++i) {
         if ((*i)->name() == resname ||
-            (*i)->altName() == resname) 
+            (*i)->altName() == resname)
             return *i;
     }
     return 0;
 }
 
-const Resource_base *ResourceManager::findResource(const std::string &resname) const {
+const Resource_base *ResourceManager::findResource(const string &resname) const {
    // find resource name
     ResourceList::const_iterator i = m_resourcelist.begin();
     ResourceList::const_iterator i_end = m_resourcelist.end();
     for (; i != i_end; ++i) {
         if ((*i)->name() == resname ||
-            (*i)->altName() == resname) 
+            (*i)->altName() == resname)
             return *i;
     }
     return 0;
 }
 
-string ResourceManager::resourceValue(const std::string &resname) const {
+string ResourceManager::resourceValue(const string &resname) const {
     const Resource_base *res = findResource(resname);
     if (res != 0)
         return res->getString();
@@ -181,7 +183,7 @@ string ResourceManager::resourceValue(const std::string &resname) const {
     return "";
 }
 
-void ResourceManager::setResourceValue(const std::string &resname, const std::string &value) {
+void ResourceManager::setResourceValue(const string &resname, const string &value) {
     Resource_base *res = findResource(resname);
     if (res != 0)
         res->setFromString(value.c_str());

@@ -1,6 +1,6 @@
 // Shape.cc
 // Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -28,6 +28,10 @@
 #include "FbTk/GContext.hh"
 #include "FbTk/FbPixmap.hh"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else
@@ -35,9 +39,6 @@
 #endif
 
 #include <X11/Xutil.h>
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -45,15 +46,16 @@
 
 #include <iostream>
 #include <algorithm>
-using namespace std;
+
+using std::min;
 
 namespace {
 
 FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
-    if (win.window() == 0 || place == 0 || 
+    if (win.window() == 0 || place == 0 ||
         win.width() < 3 || win.height() < 3)
         return 0;
-    
+
     static char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
     static char right_bits[] = { 0x03, 0x1f, 0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff};
     static char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
@@ -74,7 +76,7 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
         return 0;
 
     memset(data, 0xFF, data_size);
-    
+
     XImage *ximage = XCreateImage(disp,
                                   DefaultVisual(disp, win.screenNumber()),
                                   1,
@@ -96,20 +98,20 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
             }
         }
     }
-    
+
     if (place & Shape::TOPRIGHT) {
         for (int y=0; y<pixmap_height; y++) {
             for (int x=0; x<pixmap_width; x++) {
-                XPutPixel(ximage, x + win_width - pixmap_width, y, 
+                XPutPixel(ximage, x + win_width - pixmap_width, y,
                           (right_bits[y] & (0x01 << x)) ? 1 : 0);
-            }     
+            }
         }
     }
-    
+
     if (place & Shape::BOTTOMLEFT) {
         for (int y=0; y<pixmap_height; y++) {
             for (int x=0; x<pixmap_width; x++) {
-                XPutPixel(ximage, x, y + win_height - pixmap_height, 
+                XPutPixel(ximage, x, y + win_height - pixmap_height,
                           (bottom_left_bits[y] & (0x01 << x)) ? 1 : 0);
             }
         }
@@ -128,7 +130,7 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
 
 
     FbTk::GContext gc(*pm);
-        
+
     XPutImage(disp, pm->drawable(), gc.gc(), ximage, 0, 0, 0, 0,
               win_width, win_height);
 
@@ -177,7 +179,7 @@ void Shape::update() {
     }
 
     // the m_shape can be = 0 which will just reset the shape mask
-    // and make the window normal 
+    // and make the window normal
     XShapeCombineMask(FbTk::App::instance()->display(),
                       m_win->window(),
                       ShapeBounding,
@@ -197,7 +199,7 @@ void Shape::setWindow(FbTk::FbWindow &win) {
 
 void Shape::setShapeNotify(const FbTk::FbWindow &win) {
 #ifdef SHAPE
-    XShapeSelectInput(FbTk::App::instance()->display(), 
+    XShapeSelectInput(FbTk::App::instance()->display(),
                       win.window(), ShapeNotifyMask);
 #endif // SHAPE
 }
@@ -209,7 +211,7 @@ bool Shape::isShaped(const FbTk::FbWindow &win) {
     int not_used;
     unsigned int not_used2;
     XShapeQueryExtents(FbTk::App::instance()->display(),
-                       win.window(), 
+                       win.window(),
                        &shaped,  /// bShaped
                        &not_used, &not_used,  // xbs, ybs
                        &not_used2, &not_used2, // wbs, hbs

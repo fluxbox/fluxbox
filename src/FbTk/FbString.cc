@@ -40,7 +40,13 @@
 #include <locale.h>
 
 #include <iostream>
-using namespace std;
+
+using std::string;
+
+#ifdef DEBUG
+using std::cerr;
+using std::endl;
+#endif // DEBUG
 
 namespace FbTk {
 
@@ -54,7 +60,7 @@ static iconv_t *iconv_convs = 0;
 static int iconv_convs[CONVSIZE];
 #endif // HAVE_ICONV
 
-static std::string locale_codeset;
+static string locale_codeset;
 
 /// Initialise all of the iconv conversion descriptors
 void init() {
@@ -70,9 +76,9 @@ void init() {
     locale_codeset = nl_langinfo(CODESET);
 #else // openbsd doesnt have this (yet?)
     locale_codeset = "";
-    std::string locale = setlocale(LC_CTYPE, NULL);
+    string locale = setlocale(LC_CTYPE, NULL);
     size_t pos = locale.find('.');
-    if (pos != std::string::npos) 
+    if (pos != string::npos)
         locale_codeset = locale.substr(pos);
 #endif // CODESET
 
@@ -85,7 +91,7 @@ void init() {
     iconv_convs[FB2LOCALE] = iconv_open(locale_codeset.c_str(), "UTF-8");
     iconv_convs[LOCALE2FB] = iconv_open("UTF-8", locale_codeset.c_str());
 #else
-    for (int i=0; i < CONVSIZE; ++i) 
+    for (int i=0; i < CONVSIZE; ++i)
         iconv_convs[i] = 0;
 #endif // HAVE_ICONV
 
@@ -96,7 +102,7 @@ void shutdown() {
     if (iconv_convs == 0)
         return;
 
-    for (int i=0; i < CONVSIZE; ++i) 
+    for (int i=0; i < CONVSIZE; ++i)
         if (iconv_convs[i] != (iconv_t)(-1))
             iconv_close(iconv_convs[i]);
 
@@ -118,18 +124,18 @@ void shutdown() {
    @return the recoded string, or 0 on failure
 */
 
-/** 
+/**
   --NOTE--
   In the "C" locale, this will strip any high-bit characters
   because C means 7-bit ASCII charset. If you don't want this
   then you need to set your locale to something UTF-8, OR something
   ISO8859-1.
 */
-std::string recode(iconv_t cd,
-             const std::string &in) {
+string recode(iconv_t cd,
+             const string &in) {
 
     // If empty message, yes this can happen, return
-    if (in.empty()) 
+    if (in.empty())
         return "";
 
     if (cd == ((iconv_t)(-1)))
@@ -183,7 +189,7 @@ std::string recode(iconv_t cd,
     }
 
     // copy to our return string
-    std::string ret;
+    string ret;
     ret.append(out, outsize - outbytesleft);
 
     // reset the conversion descriptor
@@ -195,27 +201,27 @@ std::string recode(iconv_t cd,
     return ret;
 }
 #else
-std::string recode(int cd,
-             const std::string &str) {
+string recode(int cd,
+             const string &str) {
     return str;
 }
 #endif // HAVE_ICONV
 
-FbString XStrToFb(const std::string &src) {
+FbString XStrToFb(const string &src) {
     return recode(iconv_convs[X2FB], src);
 }
 
-std::string FbStrToX(const FbString &src) {
+string FbStrToX(const FbString &src) {
     return recode(iconv_convs[FB2X], src);
 }
 
 
 /// Handle thislocale string encodings (strings coming from userspace)
-FbString LocaleStrToFb(const std::string &src) {
+FbString LocaleStrToFb(const string &src) {
     return recode(iconv_convs[LOCALE2FB], src);
 }
 
-std::string FbStrToLocale(const FbString &src) {
+string FbStrToLocale(const FbString &src) {
     return recode(iconv_convs[FB2LOCALE], src);
 }
 
@@ -231,7 +237,7 @@ bool haveUTF8() {
 
 }; // end namespace StringUtil
 
-StringConvertor::StringConvertor(EncodingTarget target): 
+StringConvertor::StringConvertor(EncodingTarget target):
 #ifdef HAVE_ICONV
     m_iconv((iconv_t)(-1)) {
     if (target == ToLocaleStr)
@@ -251,9 +257,9 @@ StringConvertor::~StringConvertor() {
 #endif
 }
 
-bool StringConvertor::setSource(const std::string &encoding) {
+bool StringConvertor::setSource(const string &encoding) {
 #ifdef HAVE_ICONV
-    std::string tempenc = encoding;
+    string tempenc = encoding;
     if (encoding == "")
         tempenc = FbStringUtil::locale_codeset;
 
@@ -270,8 +276,8 @@ bool StringConvertor::setSource(const std::string &encoding) {
     return false;
 #endif
 }
-    
-std::string StringConvertor::recode(const std::string &src) {
+
+string StringConvertor::recode(const string &src) {
 #ifdef HAVE_ICONV
     return FbStringUtil::recode(m_iconv, src);
 #else

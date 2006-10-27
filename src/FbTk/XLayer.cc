@@ -27,8 +27,14 @@
 #include "App.hh"
 
 #include <iostream>
-using namespace std;
+
+using std::find;
 using namespace FbTk;
+
+#ifdef DEBUG
+using std::cerr;
+using std::endl;
+#endif // DEBUG
 
 XLayer::XLayer(MultLayers &manager, int layernum):
     m_manager(manager), m_layernum(layernum) {
@@ -51,7 +57,7 @@ void XLayer::restack() {
     it_end = itemList().end();
     Window *winlist = new Window[num_windows];
     size_t j=0;
-    
+
     // add all the windows from each item
     for (; it != it_end; ++it) {
         XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
@@ -87,13 +93,13 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     Window *winlist;
     size_t winnum, size, num = item->numWindows();
 
-    // if there are no windows provided for above us, 
+    // if there are no windows provided for above us,
     // then we must have to go right to the top of the stack
     if (!above) { // must need to go right to top
         if (item->getWindows().front()->window())
             XRaiseWindow(FbTk::App::instance()->display(), item->getWindows().front()->window());
 
-        // if this XLayerItem has more than one window, 
+        // if this XLayerItem has more than one window,
         // then we'll stack the rest in under the front one too
         // our size needs to be the number of windows in the group, since there isn't one above.
         if (num > 1) {
@@ -120,7 +126,7 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     XLayerItem::Windows::iterator it = item->getWindows().begin();
     XLayerItem::Windows::iterator it_end = item->getWindows().end();
     for (; it != it_end; ++it) {
-        if ((*it)->window()) 
+        if ((*it)->window())
             winlist[winnum++] = (*it)->window();
     }
 
@@ -128,7 +134,7 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     XRestackWindows(FbTk::App::instance()->display(), winlist, winnum);
 
     delete [] winlist;
-    
+
 }
 
 // We can't just use Restack here, because it won't do anything if they're
@@ -139,17 +145,17 @@ void XLayer::alignItem(XLayerItem &item) {
         return;
     }
 
-    // Note: some other things effectively assume that the window list is 
+    // Note: some other things effectively assume that the window list is
     // sorted from highest to lowest
     // get our item
-    iterator myit = std::find(itemList().begin(), itemList().end(), &item);
+    iterator myit = find(itemList().begin(), itemList().end(), &item);
     iterator it = myit;
 
     // go to the one above it in our layer (top is front, so we decrement)
     --it;
 
     // keep going until we find one that is currently visible to the user
-    while (it != itemList().begin() && !(*it)->visible()) 
+    while (it != itemList().begin() && !(*it)->visible())
         --it;
 
     if (it == itemList().begin() && !(*it)->visible())
@@ -166,7 +172,7 @@ XLayer::iterator XLayer::insert(XLayerItem &item, unsigned int pos) {
     if (pos != 0)
         cerr<<__FILE__<<"("<<__LINE__<<"): Insert using non-zero position not valid in XLayer"<<endl;
 #endif // DEBUG
-    
+
     itemList().push_front(&item);
     // restack below next window up
     stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
@@ -188,9 +194,9 @@ void XLayer::cycleUp() {
     // need to find highest visible window, and move it to bottom
     iterator it = itemList().begin();
     iterator it_end = itemList().end();
-    while (it != it_end && !(*it)->visible()) 
+    while (it != it_end && !(*it)->visible())
         ++it;
-    
+
     // if there is something to do
     if (it != it_end)
         lower(**it);
@@ -202,34 +208,34 @@ void XLayer::cycleDown() {
     // so use a reverse iterator, and the same logic as cycleUp()
     reverse_iterator it = itemList().rbegin();
     reverse_iterator it_end = itemList().rend();
-    while (it != it_end && !(*it)->visible()) 
+    while (it != it_end && !(*it)->visible())
         ++it;
-    
+
     // if there is something to do
     if (it != it_end)
         raise(**it);
-    
+
 }
 
 void XLayer::stepUp(XLayerItem &item) {
     // need to find next visible window upwards, and put it above that
 
-    if (&item == itemList().front()) 
+    if (&item == itemList().front())
         return; // nothing to do
 
     // TODO: is there a better way of doing this?
 
     // get our item
-    iterator myit = std::find(itemList().begin(), itemList().end(), &item);
+    iterator myit = find(itemList().begin(), itemList().end(), &item);
     iterator it = myit;
-    
+
     // go to the one above it in our layer (top is front, so we decrement)
     --it;
 
     // keep going until we find one that is currently visible to the user
-    while (it != itemList().begin() && !(*it)->visible()) 
+    while (it != itemList().begin() && !(*it)->visible())
         --it;
-    
+
     if (it == itemList().begin() && !(*it)->visible()) {
         // reached front item, but it wasn't visible, therefore it was already raised
     } else {
@@ -243,7 +249,7 @@ void XLayer::stepUp(XLayerItem &item) {
         if (it == itemList().begin()) {
             stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
         } else {
-            // otherwise go up one in this layer (i.e. above the one we want to go above) 
+            // otherwise go up one in this layer (i.e. above the one we want to go above)
             --it;
             // and stack below that.
             stackBelowItem(&item, *it);
@@ -255,11 +261,11 @@ void XLayer::stepDown(XLayerItem &item) {
     // need to find next visible window down, and put it below that
 
     // if we're already the bottom of the layer
-    if (&item == itemList().back()) 
+    if (&item == itemList().back())
         return; // nothing to do
 
     // get our position
-    iterator myit = std::find(itemList().begin(), itemList().end(), &item);
+    iterator myit = find(itemList().begin(), itemList().end(), &item);
     iterator it = myit;
 
     // go one below it (top is front, so we must increment)
@@ -267,7 +273,7 @@ void XLayer::stepDown(XLayerItem &item) {
     iterator it_end = itemList().end();
 
     // keep going down until we find a visible one
-    while (it != it_end && !(*it)->visible()) 
+    while (it != it_end && !(*it)->visible())
         it++;
 
     // if we didn't reach the end, then stack below the
@@ -283,7 +289,7 @@ void XLayer::raise(XLayerItem &item) {
     if (&item == itemList().front())
         return; // nothing to do
 
-    iterator it = std::find(itemList().begin(), itemList().end(), &item);
+    iterator it = find(itemList().begin(), itemList().end(), &item);
     if (it != itemList().end())
         itemList().erase(it);
     else {
@@ -295,7 +301,7 @@ void XLayer::raise(XLayerItem &item) {
 
     itemList().push_front(&item);
     stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
-    
+
 }
 
 void XLayer::tempRaise(XLayerItem &item) {
@@ -304,7 +310,7 @@ void XLayer::tempRaise(XLayerItem &item) {
     if (&item == itemList().front())
         return; // nothing to do
 
-    iterator it = std::find(itemList().begin(), itemList().end(), &item);
+    iterator it = find(itemList().begin(), itemList().end(), &item);
     if (it == itemList().end()) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): WARNING: raise on item not in layer["<<m_layernum<<"]"<<endl;
@@ -314,17 +320,17 @@ void XLayer::tempRaise(XLayerItem &item) {
 
     // don't add it back to the top
     stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
-    
+
 }
 
 void XLayer::lower(XLayerItem &item) {
     // assume already in this layer
 
     // is it already the lowest?
-    if (&item == itemList().back()) 
+    if (&item == itemList().back())
         return; // nothing to do
 
-    iterator it = std::find(itemList().begin(), itemList().end(), &item);
+    iterator it = find(itemList().begin(), itemList().end(), &item);
     if (it != itemList().end())
         // remove this item
         itemList().erase(it);
@@ -344,13 +350,13 @@ void XLayer::lower(XLayerItem &item) {
 
     // go up one so we have an object (which must exist, since at least this item is in the layer)
     it--;
-    
+
     // go down another one
     // must exist, otherwise our item must == itemList().back()
-    it--; 
+    it--;
 
     // and restack our window below that one.
-    stackBelowItem(&item, *it); 
+    stackBelowItem(&item, *it);
 }
 
 void XLayer::raiseLayer(XLayerItem &item) {
@@ -367,15 +373,15 @@ void XLayer::moveToLayer(XLayerItem &item, int layernum) {
 
 
 XLayerItem *XLayer::getLowestItem() {
-    if (itemList().empty()) 
+    if (itemList().empty())
         return 0;
-    else 
+    else
         return itemList().back();
 }
 
 XLayerItem *XLayer::getItemBelow(XLayerItem &item) {
     // get our iterator
-    iterator it = std::find(itemList().begin(), itemList().end(), &item);
+    iterator it = find(itemList().begin(), itemList().end(), &item);
 
     // go one lower
     it++;
@@ -389,12 +395,12 @@ XLayerItem *XLayer::getItemBelow(XLayerItem &item) {
 
 XLayerItem *XLayer::getItemAbove(XLayerItem &item) {
     // get our iterator
-    iterator it = std::find(itemList().begin(), itemList().end(), &item);
+    iterator it = find(itemList().begin(), itemList().end(), &item);
 
-    // if this is the beginning (top-most item), do nothing, otherwise give the next one up 
+    // if this is the beginning (top-most item), do nothing, otherwise give the next one up
     // the list (which must be there since we aren't the beginning)
     if (it == itemList().begin())
         return 0;
-    else        
+    else
         return *(--it);
 }

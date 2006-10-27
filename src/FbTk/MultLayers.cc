@@ -28,14 +28,13 @@
 #include "App.hh"
 
 #include <iostream>
-using namespace std;
 
 using namespace FbTk;
 
 MultLayers::MultLayers(int numlayers) :
-    m_lock(0) 
+    m_lock(0)
 {
-    for (int i=0; i < numlayers; ++i) 
+    for (int i=0; i < numlayers; ++i)
         m_layers.push_back(new XLayer(*this, i));
 }
 
@@ -48,7 +47,7 @@ MultLayers::~MultLayers() {
 
 
 XLayerItem *MultLayers::getLowestItemAboveLayer(int layernum) {
-    if (layernum >= static_cast<signed>(m_layers.size()) || layernum <= 0) 
+    if (layernum >= static_cast<signed>(m_layers.size()) || layernum <= 0)
         return 0;
 
     layernum--; // next one up
@@ -57,7 +56,7 @@ XLayerItem *MultLayers::getLowestItemAboveLayer(int layernum) {
         layernum--;
     return item;
 
-}    
+}
 
 XLayerItem *MultLayers::getItemBelow(XLayerItem &item) {
     XLayer &curr_layer = item.getLayer();
@@ -74,24 +73,24 @@ XLayerItem *MultLayers::getItemBelow(XLayerItem &item) {
     }
 
     return ret;
-}    
+}
 
 XLayerItem *MultLayers::getItemAbove(XLayerItem &item) {
     XLayer &curr_layer = item.getLayer();
-    
+
     // assume that the LayerItem does exist in a layer.
     XLayerItem *ret = curr_layer.getItemAbove(item);
 
     if (!ret) {
         ret = getLowestItemAboveLayer(curr_layer.getLayerNum());
-    }    
+    }
 
     return ret;
-}    
+}
 
 void MultLayers::addToTop(XLayerItem &item, int layernum) {
-    if (layernum < 0) 
-        layernum = 0; 
+    if (layernum < 0)
+        layernum = 0;
     else if (layernum >= static_cast<signed>(m_layers.size()))
         layernum = m_layers.size()-1;
 
@@ -106,7 +105,7 @@ void MultLayers::raise(XLayer &layer) {
     if (layernum >= static_cast<signed>(m_layers.size() - 1))
         // already on top
         return;
-    
+
     // not yet implemented
 }
 
@@ -116,7 +115,7 @@ void MultLayers::lower(XLayer &layer) {
     if (layernum == 0)
         // already on bottom
         return;
-    
+
     // not yet implemented
 }
 
@@ -143,16 +142,16 @@ void MultLayers::moveToLayer(XLayerItem &item, int layernum) {
         return;
 
     // clamp layer number
-    if (layernum < 0) 
-        layernum = 0; 
-    else if (layernum >= static_cast<signed>(m_layers.size())) 
+    if (layernum < 0)
+        layernum = 0;
+    else if (layernum >= static_cast<signed>(m_layers.size()))
         layernum = m_layers.size()-1;
-    // remove item from old layer and insert it into the 
+    // remove item from old layer and insert it into the
     item.setLayer(*m_layers[layernum]);
 }
 
 void MultLayers::restack() {
-    if (!isUpdatable()) 
+    if (!isUpdatable())
         return;
 
     int layernum=0, winnum=0, size = this->size();
@@ -162,13 +161,13 @@ void MultLayers::restack() {
 
         XLayer::ItemList::iterator it = m_layers[layernum]->getItemList().begin();
         XLayer::ItemList::iterator it_end = m_layers[layernum]->getItemList().end();
-        
+
         // add all windows from each layeritem in each layer
         for (; it != it_end; ++it) {
             XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
             XLayerItem::Windows::const_iterator wit_end = (*it)->getWindows().end();
             for (; wit != wit_end; ++wit) {
-                if ((*wit)->window()) 
+                if ((*wit)->window())
                     winlist[winnum++] = (*wit)->window();
             }
         }
