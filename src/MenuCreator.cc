@@ -53,15 +53,21 @@
 #include "FbTk/MenuIcon.hh"
 
 #include <iostream>
-using namespace std;
 
-std::list<std::string> MenuCreator::encoding_stack;
-std::list<size_t> MenuCreator::stacksize_stack;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::vector;
+using std::list;
+using std::less;
+
+list<string> MenuCreator::encoding_stack;
+list<size_t> MenuCreator::stacksize_stack;
 
 FbTk::StringConvertor MenuCreator::m_stringconvertor(FbTk::StringConvertor::ToFbString);
 
-static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
-                            const std::string &directory) {
+static void createStyleMenu(FbTk::Menu &parent, const string &label,
+                            const string &directory) {
     // perform shell style ~ home directory expansion
     string stylesdir(FbTk::StringUtil::expandFilename(directory));
 
@@ -72,15 +78,15 @@ static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
 
     // create a vector of all the filenames in the directory
     // add sort it
-    std::vector<std::string> filelist(dir.entries());
+    vector<string> filelist(dir.entries());
     for (size_t file_index = 0; file_index < dir.entries(); ++file_index)
         filelist[file_index] = dir.readFilename();
 
-    std::sort(filelist.begin(), filelist.end(), less<string>());
+    sort(filelist.begin(), filelist.end(), less<string>());
 
     // for each file in directory add filename and path to menu
     for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
-        std::string style(stylesdir + '/' + filelist[file_index]);
+        string style(stylesdir + '/' + filelist[file_index]);
         // add to menu only if the file is a regular file, and not a
         // .file or a backup~ file
         if ((FbTk::FileUtil::isRegularFile(style.c_str()) &&
@@ -140,10 +146,10 @@ public:
         p>>m_key>>m_label>>m_cmd>>m_icon;
         m_label.second = m_labelconvertor.recode(m_label.second);
     }
-    inline const std::string &icon() const { return m_icon.second; }
-    inline const std::string &command() const { return m_cmd.second; }
-    inline const std::string &label() const { return m_label.second; }
-    inline const std::string &key() const { return m_key.second; }
+    inline const string &icon() const { return m_icon.second; }
+    inline const string &command() const { return m_cmd.second; }
+    inline const string &label() const { return m_label.second; }
+    inline const string &key() const { return m_key.second; }
     inline FbTk::Menu *menu() { return m_menu; }
 private:
     Parser::Item m_key, m_label, m_cmd, m_icon;
@@ -182,9 +188,9 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
         throw string("translateMenuItem: We must have a menu in ParseItem!");
 
     FbTk::Menu &menu = *pitem.menu();
-    const std::string &str_key = pitem.key();
-    const std::string &str_cmd = pitem.command();
-    const std::string &str_label = pitem.label();
+    const string &str_key = pitem.key();
+    const string &str_cmd = pitem.command();
+    const string &str_label = pitem.label();
 
     const int screen_number = menu.screenNumber();
     _FB_USES_NLS;
@@ -250,13 +256,13 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
             // inject every file in this directory into the current menu
             FbTk::Directory dir(newfile.c_str());
 
-            std::vector<std::string> filelist(dir.entries());
+            vector<string> filelist(dir.entries());
             for (size_t file_index = 0; file_index < dir.entries(); ++file_index)
                 filelist[file_index] = dir.readFilename();
-            std::sort(filelist.begin(), filelist.end(), less<string>());
+            sort(filelist.begin(), filelist.end(), less<string>());
 
             for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
-                std::string thisfile(newfile + '/' + filelist[file_index]);
+                string thisfile(newfile + '/' + filelist[file_index]);
 
                 if (FbTk::FileUtil::isRegularFile(thisfile.c_str()) &&
                         (filelist[file_index][0] != '.') &&
@@ -367,7 +373,7 @@ static void parseWindowMenu(Parser &parse, FbTk::Menu &menu, FbTk::StringConvert
     }
 }
 
-FbTk::Menu *MenuCreator::createMenu(const std::string &label, int screen_number) {
+FbTk::Menu *MenuCreator::createMenu(const string &label, int screen_number) {
     BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
     if (screen == 0)
         return 0;
@@ -381,7 +387,7 @@ FbTk::Menu *MenuCreator::createMenu(const std::string &label, int screen_number)
     return menu;
 }
 
-bool getStart(FbMenuParser &parser, std::string &label, FbTk::StringConvertor &labelconvertor) {
+bool getStart(FbMenuParser &parser, string &label, FbTk::StringConvertor &labelconvertor) {
     ParseItem pitem(0);
     while (!parser.eof()) {
         // get first begin line
@@ -397,15 +403,15 @@ bool getStart(FbMenuParser &parser, std::string &label, FbTk::StringConvertor &l
     return true;
 }
 
-FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_number, bool require_begin) {
-    std::string real_filename = FbTk::StringUtil::expandFilename(filename);
+FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_number, bool require_begin) {
+    string real_filename = FbTk::StringUtil::expandFilename(filename);
     Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
 
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
         return 0;
 
-    std::string label;
+    string label;
     if (require_begin && !getStart(parser, label, m_stringconvertor))
         return 0;
 
@@ -420,15 +426,15 @@ FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_
 }
 
 
-bool MenuCreator::createFromFile(const std::string &filename,
+bool MenuCreator::createFromFile(const string &filename,
                                  FbTk::Menu &inject_into, bool require_begin) {
 
-    std::string real_filename = FbTk::StringUtil::expandFilename(filename);
+    string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
         return false;
 
-    std::string label;
+    string label;
     if (require_begin && !getStart(parser, label, m_stringconvertor))
         return false;
 
@@ -440,15 +446,15 @@ bool MenuCreator::createFromFile(const std::string &filename,
 }
 
 
-bool MenuCreator::createWindowMenuFromFile(const std::string &filename,
+bool MenuCreator::createWindowMenuFromFile(const string &filename,
                                            FbTk::Menu &inject_into,
                                            bool require_begin) {
-    std::string real_filename = FbTk::StringUtil::expandFilename(filename);
+    string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
         return false;
 
-    std::string label;
+    string label;
 
     if (require_begin && !getStart(parser, label, m_stringconvertor))
         return false;
@@ -461,7 +467,7 @@ bool MenuCreator::createWindowMenuFromFile(const std::string &filename,
 }
 
 
-FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num) {
+FbTk::Menu *MenuCreator::createMenuType(const string &type, int screen_num) {
     BScreen *screen = Fluxbox::instance()->findScreen(screen_num);
     if (screen == 0)
         return 0;
@@ -476,7 +482,7 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
         if (screen->windowMenuFilename().empty() ||
             ! createWindowMenuFromFile(screen->windowMenuFilename(), *menu, true)) {
             char *default_menu[] = {
-                "shade", 
+                "shade",
                 "stick",
                 "maximize",
                 "iconify",
@@ -499,8 +505,8 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
     return 0;
 }
 
-bool MenuCreator::createWindowMenuItem(const std::string &type,
-                                       const std::string &label,
+bool MenuCreator::createWindowMenuItem(const string &type,
+                                       const string &label,
                                        FbTk::Menu &menu) {
     typedef FbTk::RefCount<FbTk::Command> RefCmd;
     _FB_USES_NLS;
@@ -512,10 +518,10 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
         RefCmd maximize_cmd(new WindowCmd<void>(&FluxboxWindow::maximizeFull));
         RefCmd maximize_vert_cmd(new WindowCmd<void>(&FluxboxWindow::maximizeVertical));
         RefCmd maximize_horiz_cmd(new WindowCmd<void>(&FluxboxWindow::maximizeHorizontal));
-        FbTk::MultiButtonMenuItem *maximize_item = 
-            new FbTk::MultiButtonMenuItem(3, 
+        FbTk::MultiButtonMenuItem *maximize_item =
+            new FbTk::MultiButtonMenuItem(3,
                                           label.empty()?
-                                          _FB_XTEXT(Windowmenu, Maximize, 
+                                          _FB_XTEXT(Windowmenu, Maximize,
                                                   "Maximize", "Maximize the window"):
                                           label);
         // create maximize item with:
@@ -529,37 +535,37 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
     } else if (type == "iconify") {
         RefCmd iconify_cmd(new WindowCmd<void>(&FluxboxWindow::iconify));
         menu.insert(label.empty() ?
-                    _FB_XTEXT(Windowmenu, Iconify, 
+                    _FB_XTEXT(Windowmenu, Iconify,
                             "Iconify", "Iconify the window") :
                     label, iconify_cmd);
     } else if (type == "close") {
         RefCmd close_cmd(new WindowCmd<void>(&FluxboxWindow::close));
-        menu.insert(label.empty() ? 
-                    _FB_XTEXT(Windowmenu, Close, 
-                            "Close", "Close the window") : 
+        menu.insert(label.empty() ?
+                    _FB_XTEXT(Windowmenu, Close,
+                            "Close", "Close the window") :
                     label, close_cmd);
     } else if (type == "kill" || type == "killwindow") {
         RefCmd kill_cmd(new WindowCmd<void>(&FluxboxWindow::kill));
         menu.insert(label.empty() ?
-                    _FB_XTEXT(Windowmenu, Kill, 
+                    _FB_XTEXT(Windowmenu, Kill,
                             "Kill", "Kill the window"):
                     label, kill_cmd);
     } else if (type == "lower") {
         RefCmd lower_cmd(new WindowCmd<void>(&FluxboxWindow::lower));
-        menu.insert( label.empty() ? 
-                     _FB_XTEXT(Windowmenu, Lower, 
+        menu.insert( label.empty() ?
+                     _FB_XTEXT(Windowmenu, Lower,
                              "Lower", "Lower the window"):
                      label, lower_cmd);
     } else if (type == "raise") {
         RefCmd raise_cmd(new WindowCmd<void>(&FluxboxWindow::raise));
-        menu.insert(label.empty() ? 
-                    _FB_XTEXT(Windowmenu, Raise, 
+        menu.insert(label.empty() ?
+                    _FB_XTEXT(Windowmenu, Raise,
                             "Raise", "Raise the window"):
                     label, raise_cmd);
     } else if (type == "stick") {
         RefCmd stick_cmd(new WindowCmd<void>(&FluxboxWindow::stick));
-        menu.insert(label.empty() ? 
-                    _FB_XTEXT(Windowmenu, Stick, 
+        menu.insert(label.empty() ?
+                    _FB_XTEXT(Windowmenu, Stick,
                             "Stick", "Stick the window"):
                     label, stick_cmd);
     } else if (type == "extramenus") {
@@ -570,7 +576,7 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
             it->second->disableTitle();
             menu.insert(it->first, it->second);
         }
-        
+
     } else if (type == "sendto") {
         menu.insert(label.empty() ? _FB_XTEXT(Windowmenu, SendTo, "Send To...", "Send to menu item name"):
                     label, new SendToMenu(*Fluxbox::instance()->findScreen(menu.screenNumber())));
@@ -621,7 +627,7 @@ void MenuCreator::endFile() {
     for (; curr_size > (target_size+1); --curr_size)
         encoding_stack.pop_back();
 
-    if (curr_size == (target_size+1)) 
+    if (curr_size == (target_size+1))
         endEncoding();
 
     stacksize_stack.pop_back();
@@ -630,7 +636,7 @@ void MenuCreator::endFile() {
 /**
  * Push the encoding onto the stack, and make it active.
  */
-void MenuCreator::startEncoding(const std::string &encoding) {
+void MenuCreator::startEncoding(const string &encoding) {
     // we push it regardless of whether it's valid, since we
     // need to stay balanced with the endEncodings.
     encoding_stack.push_back(encoding);
@@ -646,7 +652,6 @@ void MenuCreator::startEncoding(const std::string &encoding) {
 void MenuCreator::endEncoding() {
     size_t min_size = stacksize_stack.back();
     if (encoding_stack.size() <= min_size) {
-        // TODO: nls
         _FB_USES_NLS;
         cerr<<_FB_CONSOLETEXT(Menu, ErrorEndEncoding, "Warning: unbalanced [encoding] tags", "User menu file had unbalanced [encoding] tags")<<endl;
         return;
@@ -655,8 +660,8 @@ void MenuCreator::endEncoding() {
     encoding_stack.pop_back();
     m_stringconvertor.reset();
 
-    std::list<std::string>::reverse_iterator it = encoding_stack.rbegin();
-    std::list<std::string>::reverse_iterator it_end = encoding_stack.rend();
+    list<string>::reverse_iterator it = encoding_stack.rbegin();
+    list<string>::reverse_iterator it_end = encoding_stack.rend();
     while (it != it_end && !m_stringconvertor.setSource(*it))
         ++it;
 

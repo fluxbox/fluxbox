@@ -49,25 +49,32 @@
 #include <typeinfo>
 #include <string>
 #include <iterator>
-using namespace std;
+
+using std::string;
+using std::list;
+
+#ifdef DEBUG
+using std::cerr;
+using std::endl;
+#endif // DEBUG
 
 namespace FbTk {
 
 template<>
 void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
-    if (strcasecmp(strval, "None") == 0) 
+    if (strcasecmp(strval, "None") == 0)
         m_value = IconbarTool::NONE;
-    else if (strcasecmp(strval, "Icons") == 0) 
+    else if (strcasecmp(strval, "Icons") == 0)
         m_value = IconbarTool::ICONS;
     else if (strcasecmp(strval, "NoIcons") == 0)
         m_value = IconbarTool::NOICONS;
-    else if (strcasecmp(strval, "WorkspaceIcons") == 0) 
+    else if (strcasecmp(strval, "WorkspaceIcons") == 0)
         m_value = IconbarTool::WORKSPACEICONS;
     else if (strcasecmp(strval, "WorkspaceNoIcons") == 0)
         m_value = IconbarTool::WORKSPACENOICONS;
-    else if (strcasecmp(strval, "Workspace") == 0) 
+    else if (strcasecmp(strval, "Workspace") == 0)
         m_value = IconbarTool::WORKSPACE;
-    else if (strcasecmp(strval, "AllWindows") == 0) 
+    else if (strcasecmp(strval, "AllWindows") == 0)
         m_value = IconbarTool::ALLWINDOWS;
     else
         setDefaultValue();
@@ -93,17 +100,17 @@ void FbTk::Resource<IconbarTool::WheelMode>::setFromString(const char* strval) {
 
 
 template<>
-std::string FbTk::Resource<IconbarTool::WheelMode>::getString() const {
+string FbTk::Resource<IconbarTool::WheelMode>::getString() const {
     switch(m_value) {
     case IconbarTool::ON:
-        return std::string("On");
+        return string("On");
         break;
     case IconbarTool::SCREEN:
-        return std::string("Screen");
+        return string("Screen");
         break;
     case IconbarTool::OFF:
     default:
-        return std::string("Off");
+        return string("Off");
     };
 }
 
@@ -172,8 +179,8 @@ namespace {
 
 class ToolbarModeMenuItem : public FbTk::MenuItem {
 public:
-    ToolbarModeMenuItem(const FbTk::FbString &label, IconbarTool &handler, 
-                        IconbarTool::Mode mode, 
+    ToolbarModeMenuItem(const FbTk::FbString &label, IconbarTool &handler,
+                        IconbarTool::Mode mode,
                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
     }
@@ -190,8 +197,8 @@ private:
 
 class ToolbarAlignMenuItem: public FbTk::MenuItem {
 public:
-    ToolbarAlignMenuItem(const FbTk::FbString &label, IconbarTool &handler, 
-                        Container::Alignment mode, 
+    ToolbarAlignMenuItem(const FbTk::FbString &label, IconbarTool &handler,
+                        Container::Alignment mode,
                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
     }
@@ -213,17 +220,17 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
     menu.setLabel(_FB_XTEXT(Toolbar, IconbarMode, "Iconbar Mode", "Menu title - chooses which set of icons are shown in the iconbar"));
 
     RefCount<Command> saverc_cmd(new FbCommands::SaveResources());
-    
 
-    menu.insert(new ToolbarModeMenuItem(_FB_XTEXT(Toolbar, IconbarModeNone, 
+
+    menu.insert(new ToolbarModeMenuItem(_FB_XTEXT(Toolbar, IconbarModeNone,
                                                 "None", "No icons are shown in the iconbar"),
-                    handler, 
+                    handler,
                     IconbarTool::NONE, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeIcons, 
+                    _FB_XTEXT(Toolbar, IconbarModeIcons,
                             "Icons", "Iconified windows from all workspaces are shown"),
-                    handler, 
+                    handler,
                     IconbarTool::ICONS, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
@@ -233,26 +240,26 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
                     IconbarTool::NOICONS, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeWorkspaceIcons, 
+                    _FB_XTEXT(Toolbar, IconbarModeWorkspaceIcons,
                             "WorkspaceIcons", "Iconified windows from this workspace are shown"),
                     handler,
                     IconbarTool::WORKSPACEICONS, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeWorkspaceNoIcons, 
+                    _FB_XTEXT(Toolbar, IconbarModeWorkspaceNoIcons,
                             "WorkspaceNoIcons", "No iconified windows from this workspace are shown"),
                     handler,
                     IconbarTool::WORKSPACENOICONS, saverc_cmd));
-    
+
     menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeWorkspace, 
+                    _FB_XTEXT(Toolbar, IconbarModeWorkspace,
                             "Workspace", "Normal and iconified windows from this workspace are shown"),
-                    handler, 
+                    handler,
                     IconbarTool::WORKSPACE, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
                     _FB_XTEXT(Toolbar, IconbarModeAllWindows, "All Windows", "All windows are shown"),
-                    handler, 
+                    handler,
                     IconbarTool::ALLWINDOWS, saverc_cmd));
 
     menu.insert(new FbTk::MenuSeparator());
@@ -276,7 +283,7 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 
     menu.updateMenu();
 }
-                
+
 inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
     bool ret_val = false;
     // just add the icons that are on the this workspace
@@ -314,10 +321,10 @@ inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
     return ret_val;
 }
 
-void removeDuplicate(const IconbarTool::IconList &iconlist, std::list<FluxboxWindow *> &windowlist) {
+void removeDuplicate(const IconbarTool::IconList &iconlist, list<FluxboxWindow *> &windowlist) {
     IconbarTool::IconList::const_iterator icon_it = iconlist.begin();
     IconbarTool::IconList::const_iterator icon_it_end = iconlist.end();
-    std::list<FluxboxWindow *>::iterator remove_it = windowlist.end();
+    list<FluxboxWindow *>::iterator remove_it = windowlist.end();
     for (; icon_it != icon_it_end; ++icon_it)
         remove_it = remove(windowlist.begin(), remove_it, &(*icon_it)->win());
 
@@ -359,13 +366,14 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     _FB_USES_NLS;
     using namespace FbTk;
     // setup use pixmap item to reconfig iconbar and save resource on click
-    MacroCommand *save_and_reconfig = new MacroCommand();   
+    MacroCommand *save_and_reconfig = new MacroCommand();
     RefCount<Command> reconfig(new SimpleCommand<IconbarTool>(*this, &IconbarTool::renderTheme));
     RefCount<Command> save(CommandParser::instance().parseLine("saverc"));
     save_and_reconfig->add(reconfig);
     save_and_reconfig->add(save);
     RefCount<Command> s_and_reconfig(save_and_reconfig);
-    m_menu.insert(new BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons, "Show Pictures", "chooses if little icons are shown next to title in the iconbar") , 
+    m_menu.insert(new BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
+                    "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
 	                *m_rc_use_pixmap, s_and_reconfig));
     m_menu.updateMenu();
     // must be internal menu, otherwise toolbar main menu tries to delete it.
@@ -459,12 +467,12 @@ unsigned int IconbarTool::borderWidth() const {
     return m_icon_container.borderWidth();
 }
 
-void IconbarTool::update(FbTk::Subject *subj) {    
+void IconbarTool::update(FbTk::Subject *subj) {
     // ignore updates if we're shutting down
     if (m_screen.isShuttingdown()) {
         m_screen.clientListSig().detach(this);
         m_screen.iconListSig().detach(this);
-        m_screen.currentWorkspaceSig().detach(this);        
+        m_screen.currentWorkspaceSig().detach(this);
         if (!m_icon_list.empty())
             deleteIcons();
         return;
@@ -512,7 +520,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
             return; // we don't need to update the entire list
         } else if (subj == &(winsubj->win().stateSig())) {
             if (!checkAddWindow(mode(), winsubj->win())) {
-                removeWindow(winsubj->win());            
+                removeWindow(winsubj->win());
                 renderTheme();
             }
 
@@ -522,7 +530,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
             // render with titlebar focus, on attention
             IconButton *button = findButton(winsubj->win());
             if (button) {
-                renderButton(*button, true, 
+                renderButton(*button, true,
                              winsubj->win().getAttentionState());
             }
             return;
@@ -532,7 +540,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
         }
     }
 
-    bool remove_all = false; // if we should readd all windows    
+    bool remove_all = false; // if we should readd all windows
 
     if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject) &&
         mode() != ALLWINDOWS && mode() != ICONS ) {
@@ -541,7 +549,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
         if (&m_screen.currentWorkspaceSig() == screen_subj ) {
             remove_all = true; // remove and readd all windows
         }
-        
+
     }
 
     // lock graphic update
@@ -559,7 +567,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
     m_icon_container.setUpdateLock(false);
     m_icon_container.update();
     m_icon_container.showSubwindows();
-    
+
     // another renderTheme we hopefully shouldn't need? These renders
     // should be done individually above
     // renderTheme();
@@ -588,13 +596,13 @@ void IconbarTool::updateSizing() {
     m_icon_container.setBorderWidth(m_theme.border().width());
 
     IconList::iterator icon_it = m_icon_list.begin();
-    const IconList::iterator icon_it_end = m_icon_list.end(); 
+    const IconList::iterator icon_it_end = m_icon_list.end();
     for (; icon_it != icon_it_end; ++icon_it) {
         if ((*icon_it)->win().isFocused())
             (*icon_it)->setBorderWidth(m_theme.focusedBorder().width());
         else // unfocused
             (*icon_it)->setBorderWidth(m_theme.unfocusedBorder().width());
-    }    
+    }
 
 }
 
@@ -608,10 +616,10 @@ void IconbarTool::renderTheme() {
 
     // update button sizes before we get max width per client!
     updateSizing();
-    
+
     unsigned int icon_width = 0, icon_height = 0;
     unsigned int icon_width_off=0, icon_height_off=0;
-    
+
     if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180) {
         icon_width = m_icon_container.maxWidthPerClient();
         icon_height = m_icon_container.height();
@@ -634,7 +642,7 @@ void IconbarTool::renderTheme() {
                                             icon_height + icon_height_off,
                                             m_theme.focusedTexture(), orientation()) );
     }
-        
+
     if (!m_theme.unfocusedTexture().usePixmap()) {
         m_unfocused_pm.reset( 0 );
         m_unfocused_err_pm.reset( 0 );
@@ -666,7 +674,7 @@ void IconbarTool::renderTheme() {
 
     // update buttons
     IconList::iterator icon_it = m_icon_list.begin();
-    const IconList::iterator icon_it_end = m_icon_list.end(); 
+    const IconList::iterator icon_it_end = m_icon_list.end();
     for (; icon_it != icon_it_end; ++icon_it) {
         renderButton(*(*icon_it));
     }
@@ -690,15 +698,15 @@ void IconbarTool::renderButton(IconButton &button, bool clear,
 //                        button.height() != m_icon_container.back()->height());
     }
 
-    if (focusOption == 1 || 
+    if (focusOption == 1 ||
         (focusOption == -1 &&
-         button.win().isFocused())) { 
-        
+         button.win().isFocused())) {
+
         // focused texture
         if (button.win().isFocused())
             m_icon_container.setSelected(m_icon_container.find(&button));
 
-        button.setGC(m_theme.focusedText().textGC());     
+        button.setGC(m_theme.focusedText().textGC());
         button.setFont(m_theme.focusedText().font());
         button.setJustify(m_theme.focusedText().justify());
         button.setBorderWidth(m_theme.focusedBorder().width());
@@ -709,7 +717,7 @@ void IconbarTool::renderButton(IconButton &button, bool clear,
         else if (wider_button && m_focused_err_pm != 0)
             button.setBackgroundPixmap(m_focused_err_pm);
         else
-            button.setBackgroundColor(m_theme.focusedTexture().color());        
+            button.setBackgroundColor(m_theme.focusedTexture().color());
 
     } else { // unfocused
         if (m_icon_container.selected() == &button)
@@ -755,7 +763,7 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
     }
 #ifdef DEBUG
     cerr<<"IconbarTool::"<<__FUNCTION__<<"( 0x"<<&win<<" title = "<<win.title()<<") found!"<<endl;
-#endif // DEBUG    
+#endif // DEBUG
     // detach from all signals
     win.focusSig().detach(this);
     win.dieSig().detach(this);
@@ -781,16 +789,16 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
 #ifdef DEBUG
     cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
 #endif // DEBUG
-    IconButton *button = new IconButton(*this, 
-                                        m_icon_container, 
-                                        m_theme.focusedText().font(), 
+    IconButton *button = new IconButton(*this,
+                                        m_icon_container,
+                                        m_theme.focusedText().font(),
                                         win);
-  
+
 
     button->setTextPadding(*m_rc_client_padding);
 
     renderButton(*button, false); // update the attributes, but don't clear it
-    m_icon_container.insertItem(button);    
+    m_icon_container.insertItem(button);
     m_icon_list.push_back(button);
 
     // dont forget to detach signal in removeWindow
@@ -802,10 +810,10 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
 }
 
 void IconbarTool::updateList() {
-    std::list<WinClient *> ordered_list =
+    list<WinClient *> ordered_list =
         m_screen.focusControl().creationOrderList();
-    std::list<WinClient *>::iterator it = ordered_list.begin();
-    std::list<WinClient *>::iterator it_end = ordered_list.end();
+    list<WinClient *>::iterator it = ordered_list.begin();
+    list<WinClient *>::iterator it_end = ordered_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && checkAddWindow(mode(), *(*it)->fbwindow()) &&
             !checkDuplicate(*(*it)->fbwindow()))

@@ -1,6 +1,6 @@
 // Font.cc
 // Copyright (c) 2002 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -32,7 +32,7 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-// for antialias 
+// for antialias
 #ifdef USE_XFT
 #include "XftFontImp.hh"
 #endif // USE_XFT
@@ -55,7 +55,6 @@
 #define __USE_GNU
 #endif //__USE_GNU
 
-#include <iostream> 
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else
@@ -79,8 +78,9 @@
   #include <stdlib.h>
 #endif
 
-using namespace std;
-
+using std::string;
+using std::map;
+using std::list;
 
 namespace {
 
@@ -89,12 +89,12 @@ namespace {
 #endif //HAVE_SETLOCALE
 
 // use to map <font1>|<font2>|<font3> => <fontthatworks>
-typedef std::map<std::string, std::string> StringMap;
+typedef map<string, string> StringMap;
 typedef StringMap::iterator StringMapIt;
 StringMap lookup_map;
 
 // stores <fontthatworks and the fontimp
-typedef std::map<std::string, FbTk::FontImp* > FontCache;
+typedef map<string, FbTk::FontImp* > FontCache;
 typedef FontCache::iterator FontCacheIt;
 FontCache font_cache;
 
@@ -114,7 +114,7 @@ void resetEffects(FbTk::Font& font) {
 
 namespace FbTk {
 
-bool Font::s_multibyte = false; 
+bool Font::s_multibyte = false;
 bool Font::s_utf8mode = false;
 
 
@@ -135,7 +135,7 @@ void Font::shutdown() {
 
 Font::Font(const char *name):
     m_fontimp(0),
-    m_shadow(false), m_shadow_color("black", DefaultScreen(App::instance()->display())), 
+    m_shadow(false), m_shadow_color("black", DefaultScreen(App::instance()->display())),
     m_shadow_offx(2), m_shadow_offy(2),
     m_halo(false), m_halo_color("white", DefaultScreen(App::instance()->display()))
 {
@@ -165,11 +165,11 @@ Font::Font(const char *name):
 Font::~Font() {
 }
 
-bool Font::load(const std::string &name) {
+bool Font::load(const string &name) {
 
     if (name.size() == 0)
         return false;
- 
+
     StringMapIt lookup_entry;
     FontCacheIt cache_entry;
 
@@ -181,13 +181,13 @@ bool Font::load(const std::string &name) {
         resetEffects(*this);
         return true;
      }
-    
+
     // split up the namelist
-    typedef std::list<std::string> StringList;
+    typedef list<string> StringList;
     typedef StringList::iterator StringListIt;
     StringList names;
     FbTk::StringUtil::stringtok<StringList>(names, name, "|");
-    
+
     StringListIt name_it;
     for (name_it = names.begin(); name_it != names.end(); name_it++) {
         FbTk::StringUtil::removeTrailingWhitespace(*name_it);
@@ -202,12 +202,12 @@ bool Font::load(const std::string &name) {
         }
 
         FontImp* tmp_font(0);
-        
+
 #ifdef USE_XFT
         if ((*name_it)[0] != '-')
             tmp_font = new XftFontImp(0, s_utf8mode);
 #endif // USE_XFT
-    
+
         if (!tmp_font) {
 #ifdef USE_XMB
             if (s_multibyte || s_utf8mode)
@@ -225,7 +225,7 @@ bool Font::load(const std::string &name) {
             resetEffects(*this);
             return true;
         }
-        
+
         delete tmp_font;
     }
 
@@ -244,7 +244,7 @@ int Font::ascent() const {
     return m_fontimp->ascent();
 }
 
-int Font::descent() const { 
+int Font::descent() const {
     return m_fontimp->descent();
 }
 
@@ -253,14 +253,14 @@ bool Font::validOrientation(FbTk::Orientation orient) {
 }
 
 void Font::drawText(const FbDrawable &w, int screen, GC gc,
-                    const FbString &text, size_t len, int x, int y, 
+                    const FbString &text, size_t len, int x, int y,
                     Orientation orient) const {
     if (text.empty() || len == 0)
         return;
 
     // so we don't end up in a loop with m_shadow
-    static bool first_run = true; 
-    
+    static bool first_run = true;
+
     // draw "effects" first
     if (first_run) {
         if (m_shadow) {
@@ -284,7 +284,7 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
 
     m_fontimp->drawText(w, screen, gc, text, len, x, y, orient);
 
-}	
+}
 
 };
 

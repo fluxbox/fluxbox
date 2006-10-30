@@ -49,7 +49,13 @@
 #include <fstream>
 #include <algorithm>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::fstream;
+using std::ifstream;
+using std::ofstream;
+using std::ios;
 
 FbRun::FbRun(int x, int y, size_t width):
     FbTk::TextBox(DefaultScreen(FbTk::App::instance()->display()),

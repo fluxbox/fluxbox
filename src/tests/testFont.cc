@@ -85,7 +85,6 @@ public:
         int by1 = 0;
         int bx2 = text_w;
         int by2 = 0;
-        int tmp;
 
         switch (m_orient) {
         case FbTk::ROT90:
@@ -98,6 +97,8 @@ public:
         case FbTk::ROT270:
             by2 = -bx2;
             bx2 = 0;
+            break;
+        default:
             break;
         }
 

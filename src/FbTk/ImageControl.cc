@@ -67,7 +67,9 @@
 
 #include <iostream>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::list;
 
 namespace FbTk {
 
@@ -175,7 +177,7 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
         for (; it != it_end; ++it) {
             if ((*it)->texture_pixmap == text.pixmap().drawable() &&
                 (*it)->orient == orient &&
-                (*it)->width == width && 
+                (*it)->width == width &&
                 (*it)->height == height &&
                 (*it)->texture == text.type()) {
                 (*it)->count++;
@@ -233,7 +235,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
     }
 
     // render new image
-    
+
     TextureRender image(*this, width, height, orient, m_colors, m_num_colors);
     pixmap = image.render(texture);
 
@@ -398,7 +400,7 @@ unsigned long ImageControl::getSqrt(unsigned int x) const {
 
 void ImageControl::cleanCache() {
     Display *disp = FbTk::App::instance()->display();
-    std::list<CacheList::iterator> deadlist;
+    list<CacheList::iterator> deadlist;
     CacheList::iterator it = cache.begin();
     CacheList::iterator it_end = cache.end();
     for (; it != it_end; ++it) {
@@ -411,8 +413,8 @@ void ImageControl::cleanCache() {
         }
     }
 
-    std::list<CacheList::iterator>::iterator dead_it = deadlist.begin();
-    std::list<CacheList::iterator>::iterator dead_it_end = deadlist.end();
+    list<CacheList::iterator>::iterator dead_it = deadlist.begin();
+    list<CacheList::iterator>::iterator dead_it_end = deadlist.end();
     for (; dead_it != dead_it_end; ++dead_it) {
         cache.erase(*dead_it);
     }

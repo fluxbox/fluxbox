@@ -27,7 +27,8 @@
 
 #include "Screen.hh"
 #include <string>
-using namespace std;
+
+using std::string;
 
 namespace FbTk {
 
@@ -53,17 +54,17 @@ void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setFromString(const char *str) {
 }
 
 template <>
-std::string FbTk::Resource<BScreen::ResizeModel>::getString() const {
+string FbTk::Resource<BScreen::ResizeModel>::getString() const {
     switch (m_value) {
     case BScreen::QUADRANTRESIZE:
-        return std::string("Quadrant");
+        return string("Quadrant");
     case BScreen::BOTTOMRESIZE:
-        return std::string("Bottom");
+        return string("Bottom");
     case BScreen::CENTERRESIZE:
-        return std::string("Center");
+        return string("Center");
     }
 
-    return std::string("Default");
+    return string("Default");
 }
 
 template<>
@@ -75,25 +76,25 @@ setFromString(char const *strval) {
         m_value = BScreen::QUADRANTRESIZE;
     } else if (strcasecmp(strval, "Center") == 0) {
         m_value = BScreen::CENTERRESIZE;
-    } else 
+    } else
         m_value = BScreen::DEFAULTRESIZE;
 }
 
 template<>
-std::string FbTk::Resource<BScreen::FollowModel>::getString() const {
+string FbTk::Resource<BScreen::FollowModel>::getString() const {
     switch (m_value) {
     case BScreen::FOLLOW_ACTIVE_WINDOW:
-        return std::string("Follow");
+        return string("Follow");
         break;
     case BScreen::FETCH_ACTIVE_WINDOW:
-        return std::string("Current");
+        return string("Current");
         break;
     case BScreen::SEMIFOLLOW_ACTIVE_WINDOW:
-        return std::string("SemiFollow");
+        return string("SemiFollow");
         break;
     case BScreen::IGNORE_OTHER_WORKSPACES:
-    default: 
-        return std::string("Ignore");
+    default:
+        return string("Ignore");
         break;
     }
 
@@ -104,7 +105,7 @@ void FbTk::Resource<BScreen::FollowModel>::
 setFromString(char const *strval) {
     if (strcasecmp(strval, "Follow") == 0)
         m_value = BScreen::FOLLOW_ACTIVE_WINDOW;
-    else if (strcasecmp(strval, "Current") == 0 || 
+    else if (strcasecmp(strval, "Current") == 0 ||
              strcasecmp(strval, "CurrentWorkspace") == 0 ||
              strcasecmp(strval, "Fetch") == 0)
         m_value = BScreen::FETCH_ACTIVE_WINDOW;
@@ -115,7 +116,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-std::string FbTk::Resource<FbTk::GContext::LineStyle>::getString() const {
+string FbTk::Resource<FbTk::GContext::LineStyle>::getString() const {
     switch(m_value) {
     case FbTk::GContext::LINESOLID:
         return "LineSolid";
@@ -132,20 +133,20 @@ std::string FbTk::Resource<FbTk::GContext::LineStyle>::getString() const {
 
 template<>
 void FbTk::Resource<FbTk::GContext::LineStyle>
-::setFromString(char const *strval) { 
+::setFromString(char const *strval) {
 
     if (strcasecmp(strval, "LineSolid") == 0 )
         m_value = FbTk::GContext::LINESOLID;
     else if (strcasecmp(strval, "LineOnOffDash") == 0 )
         m_value = FbTk::GContext::LINEONOFFDASH;
-    else if (strcasecmp(strval, "LineDoubleDash") == 0) 
+    else if (strcasecmp(strval, "LineDoubleDash") == 0)
         m_value = FbTk::GContext::LINEDOUBLEDASH;
     else
         setDefaultValue();
 }
 
 template<>
-std::string FbTk::Resource<FbTk::GContext::JoinStyle>::getString() const {
+string FbTk::Resource<FbTk::GContext::JoinStyle>::getString() const {
     switch(m_value) {
     case FbTk::GContext::JOINMITER:
         return "JoinMiter";
@@ -162,20 +163,20 @@ std::string FbTk::Resource<FbTk::GContext::JoinStyle>::getString() const {
 
 template<>
 void FbTk::Resource<FbTk::GContext::JoinStyle>
-::setFromString(char const *strval) { 
+::setFromString(char const *strval) {
 
     if (strcasecmp(strval, "JoinRound") == 0 )
         m_value = FbTk::GContext::JOINROUND;
     else if (strcasecmp(strval, "JoinMiter") == 0 )
         m_value = FbTk::GContext::JOINMITER;
-    else if (strcasecmp(strval, "JoinBevel") == 0) 
+    else if (strcasecmp(strval, "JoinBevel") == 0)
         m_value = FbTk::GContext::JOINBEVEL;
     else
         setDefaultValue();
 }
 
 template<>
-std::string FbTk::Resource<FbTk::GContext::CapStyle>::getString() const {
+string FbTk::Resource<FbTk::GContext::CapStyle>::getString() const {
     switch(m_value) {
     case FbTk::GContext::CAPNOTLAST:
         return "CapNotLast";
@@ -195,13 +196,13 @@ std::string FbTk::Resource<FbTk::GContext::CapStyle>::getString() const {
 
 template<>
 void FbTk::Resource<FbTk::GContext::CapStyle>
-::setFromString(char const *strval) { 
+::setFromString(char const *strval) {
 
     if (strcasecmp(strval, "CapNotLast") == 0 )
         m_value = FbTk::GContext::CAPNOTLAST;
     else if (strcasecmp(strval, "CapProjecting") == 0 )
         m_value = FbTk::GContext::CAPPROJECTING;
-    else if (strcasecmp(strval, "CapRound") == 0) 
+    else if (strcasecmp(strval, "CapRound") == 0)
         m_value = FbTk::GContext::CAPROUND;
     else if (strcasecmp(strval, "CapButt" ) == 0)
         m_value = FbTk::GContext::CAPBUTT;

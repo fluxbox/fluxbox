@@ -1,6 +1,6 @@
 // XFontImp.cc for FbTk fluxbox toolkit
 // Copyright (c) 2002 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -36,7 +36,11 @@
 #else
   #include <stdio.h>
 #endif
-using namespace std;
+
+using std::cerr;
+using std::endl;
+using std::string;
+using std::nothrow;
 
 namespace FbTk {
 
@@ -45,13 +49,13 @@ XFontImp::XFontImp(const char *fontname):m_fontstruct(0) {
         m_rotfonts[i] = 0;
 
     if (fontname != 0)
-        load(fontname);	
+        load(fontname);
 }
 
 XFontImp::~XFontImp() {
     if (m_fontstruct != 0)
         XFreeFont(App::instance()->display(), m_fontstruct);
-    
+
     for (int i = ROT0; i <= ROT270; ++i)
         if (m_rotfonts[i] != 0)
             freeRotFont(m_rotfonts[i]);
@@ -60,11 +64,11 @@ XFontImp::~XFontImp() {
 int XFontImp::ascent() const {
     if (m_fontstruct == 0)
         return 0;
-		
+
     return m_fontstruct->ascent;
 }
 
-bool XFontImp::load(const std::string &fontname) {
+bool XFontImp::load(const string &fontname) {
 
     XFontStruct *font = XLoadQueryFont(App::instance()->display(), fontname.c_str());
     if (font == 0)
@@ -91,8 +95,8 @@ void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &
         return;
     }
 
-    std::string localestr = text;
-    localestr.erase(len, std::string::npos);
+    string localestr = text;
+    localestr.erase(len, string::npos);
     localestr = FbStringUtil::FbStrToLocale(localestr);
 
     XSetFont(w.display(), gc, m_fontstruct->fid);
@@ -103,8 +107,8 @@ unsigned int XFontImp::textWidth(const FbString &text, unsigned int size) const 
     if (text.empty() || m_fontstruct == 0)
         return 0;
 
-    std::string localestr = text;
-    localestr.erase(size, std::string::npos);
+    string localestr = text;
+    localestr.erase(size, string::npos);
     localestr = FbStringUtil::FbStrToLocale(localestr);
 
     return XTextWidth(m_fontstruct, localestr.data(), localestr.size());
@@ -138,7 +142,7 @@ void XFontImp::rotate(FbTk::Orientation orient) {
 
     // create the depth 1 canvas bitmap
     FbTk::FbPixmap canvas(rootwin, boxlen, boxlen, 1);
- 
+
     // create graphic context for our canvas
     FbTk::GContext font_gc(canvas);
     font_gc.setBackground(None);
@@ -152,22 +156,22 @@ void XFontImp::rotate(FbTk::Orientation orient) {
         cerr<<"RotFont: "<<_FBTK_CONSOLETEXT(Error, OutOfMemory, "Out of memory", "Something couldn't allocate memory")<<endl;
         return;
     }
-   
+
     // determine which characters are defined in font
-    min_char = m_fontstruct->min_char_or_byte2; 
+    min_char = m_fontstruct->min_char_or_byte2;
     max_char = m_fontstruct->max_char_or_byte2;
- 
+
     // we only want printable chars
     if (min_char<32)
         min_char = 32;
     if (max_char>126)
         max_char = 126;
-     
+
     /* some overall font data ... */
     rotfont->min_char = min_char;
     rotfont->max_char = max_char;
     rotfont->max_ascent = m_fontstruct->max_bounds.ascent;
-    rotfont->max_descent = m_fontstruct->max_bounds.descent;   
+    rotfont->max_descent = m_fontstruct->max_bounds.descent;
     rotfont->height = rotfont->max_ascent + rotfont->max_descent;
 
     // font needs rotation
@@ -183,9 +187,9 @@ void XFontImp::rotate(FbTk::Orientation orient) {
         rotfont->per_char[ichar-32].width = m_fontstruct->per_char[index].width;
 
         // some space chars have zero body, but a bitmap can't have
-        if (!ascent && !descent)   
+        if (!ascent && !descent)
             ascent = rotfont->per_char[ichar-32].ascent =   1;
-        if (!lbearing && !rbearing) 
+        if (!lbearing && !rbearing)
             rbearing = rotfont->per_char[ichar-32].rbearing = 1;
 
         // glyph width and height when vertical
@@ -193,9 +197,9 @@ void XFontImp::rotate(FbTk::Orientation orient) {
         vert_h = ascent + descent;
 
         // width in bytes
-        vert_len = (vert_w-1)/8+1;   
+        vert_len = (vert_w-1)/8+1;
 
-        font_gc.setForeground(None);        
+        font_gc.setForeground(None);
         canvas.fillRectangle(font_gc.gc(),
                              0, 0,
                              boxlen, boxlen);
@@ -209,14 +213,14 @@ void XFontImp::rotate(FbTk::Orientation orient) {
         // reserve memory for first XImage
         vertdata = (unsigned char *)calloc((unsigned)(vert_len * vert_h), 1);
 
-        XImage *I1 = XCreateImage(dpy, DefaultVisual(dpy, screen), 
+        XImage *I1 = XCreateImage(dpy, DefaultVisual(dpy, screen),
                                   1, XYBitmap,
-                                  0, (char *)vertdata, 
+                                  0, (char *)vertdata,
                                   vert_w, vert_h, 8, 0);
 
-        if (I1 == None) {				
-            cerr << "RotFont: " << _FBTK_CONSOLETEXT(Error, CreateXImage, 
-                                         "Can't create XImage", 
+        if (I1 == None) {
+            cerr << "RotFont: " << _FBTK_CONSOLETEXT(Error, CreateXImage,
+                                         "Can't create XImage",
                                          "XCreateImage failed for some reason")
                  << "." << endl;
             free(vertdata);
@@ -228,19 +232,19 @@ void XFontImp::rotate(FbTk::Orientation orient) {
         I1->byte_order = I1->bitmap_bit_order = MSBFirst;
 
         // extract character from canvas
-        XGetSubImage(dpy, canvas.drawable(), 
+        XGetSubImage(dpy, canvas.drawable(),
                      boxlen/2, boxlen/2 - vert_h,
                      vert_w, vert_h, 1, XYPixmap, I1, 0, 0);
 
-        I1->format = XYBitmap; 
+        I1->format = XYBitmap;
 
         // width, height of rotated character
-        if (orient == ROT180) { 
+        if (orient == ROT180) {
             bit_w = vert_w;
-            bit_h = vert_h; 
+            bit_h = vert_h;
         } else {
             bit_w = vert_h;
-            bit_h = vert_w; 
+            bit_h = vert_w;
         }
 
         // width in bytes
@@ -254,12 +258,12 @@ void XFontImp::rotate(FbTk::Orientation orient) {
 
         // create the image
         XImage *I2 = XCreateImage(dpy, DefaultVisual(dpy, screen), 1, XYBitmap, 0,
-                          (char *)bitdata, bit_w, bit_h, 8, 0); 
+                          (char *)bitdata, bit_w, bit_h, 8, 0);
 
         if (I2 == None) {
             cerr << "XFontImp: " <<_FBTK_CONSOLETEXT(Error, CreateXImage,
                                           "Can't create XImage",
-                                          "XCreateImage failed for some reason") 
+                                          "XCreateImage failed for some reason")
                  << "." << endl;
             free(bitdata);
             delete rotfont;
@@ -280,9 +284,9 @@ void XFontImp::rotate(FbTk::Orientation orient) {
                     val = vertdata[(vert_h-j-1)*vert_len +
                                    (vert_w-i-1)/8] & (128>>((vert_w-i-1)%8));
                 } else {
-                    val = vertdata[(vert_h-i-1)*vert_len + j/8] & 
+                    val = vertdata[(vert_h-i-1)*vert_len + j/8] &
                         (128>>(j%8));
-                } 
+                }
                 if (val) {
                     bitdata[j*bit_len + i/8] = bitdata[j*bit_len + i/8] |
                         (128>>(i%8));
@@ -290,12 +294,12 @@ void XFontImp::rotate(FbTk::Orientation orient) {
             }
         }
 
-        // create this character's bitmap 
-        rotfont->per_char[ichar-32].glyph.bm = 
+        // create this character's bitmap
+        rotfont->per_char[ichar-32].glyph.bm =
             XCreatePixmap(dpy, rootwin, bit_w, bit_h, 1);
- 
-        // put the image into the bitmap 
-        XPutImage(dpy, rotfont->per_char[ichar-32].glyph.bm, 
+
+        // put the image into the bitmap
+        XPutImage(dpy, rotfont->per_char[ichar-32].glyph.bm,
                   font_gc.gc(), I2, 0, 0, 0, 0, bit_w, bit_h);
 
         // free the image and data
@@ -307,7 +311,7 @@ void XFontImp::rotate(FbTk::Orientation orient) {
 
 void XFontImp::freeRotFont(XRotFontStruct *rotfont) {
     // loop through each character and free its pixmap
-    for (int ichar = rotfont->min_char - 32; 
+    for (int ichar = rotfont->min_char - 32;
          ichar <= rotfont->max_char - 32; ++ichar) {
         XFreePixmap(App::instance()->display(), rotfont->per_char[ichar].glyph.bm);
     }
@@ -316,7 +320,7 @@ void XFontImp::freeRotFont(XRotFontStruct *rotfont) {
     rotfont = 0;
 }
 
-void XFontImp::drawRotText(Drawable w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const {            
+void XFontImp::drawRotText(Drawable w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const {
 
     Display *dpy = App::instance()->display();
     static GC my_gc = 0;
@@ -335,8 +339,8 @@ void XFontImp::drawRotText(Drawable w, int screen, GC gc, const FbString &text, 
     // vertical or upside down
 
     XSetFillStyle(dpy, my_gc, FillStippled);
-    std::string localestr = text;
-    localestr.erase(len, std::string::npos);
+    string localestr = text;
+    localestr.erase(len, string::npos);
     localestr = FbStringUtil::FbStrToLocale(localestr);
     const char *ctext = localestr.data();
     len = localestr.size();
@@ -351,30 +355,30 @@ void XFontImp::drawRotText(Drawable w, int screen, GC gc, const FbString &text, 
             // suitable offset
             if (orient == ROT270) {
                 xp = x-rotfont->per_char[ichar].ascent;
-                yp = y-rotfont->per_char[ichar].rbearing; 
+                yp = y-rotfont->per_char[ichar].rbearing;
             } else if (orient == ROT180) {
                 xp = x-rotfont->per_char[ichar].rbearing;
-                yp = y-rotfont->per_char[ichar].descent+1; 
+                yp = y-rotfont->per_char[ichar].descent+1;
             } else { // ROT90
                 xp = x-rotfont->per_char[ichar].descent;
-                yp = y+rotfont->per_char[ichar].lbearing; 
+                yp = y+rotfont->per_char[ichar].lbearing;
             }
-                   
+
             // draw the glyph
             XSetStipple(dpy, my_gc, rotfont->per_char[ichar].glyph.bm);
-    
+
             XSetTSOrigin(dpy, my_gc, xp, yp);
-      
+
             XFillRectangle(dpy, w, my_gc, xp, yp,
                            rotfont->per_char[ichar].glyph.bit_w,
                            rotfont->per_char[ichar].glyph.bit_h);
-    
+
             // advance position
             if (orient == ROT270)
                 y -= rotfont->per_char[ichar].width;
             else if (orient == ROT180)
                 x -= rotfont->per_char[ichar].width;
-            else 
+            else
                 y += rotfont->per_char[ichar].width;
         }
     }

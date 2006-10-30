@@ -35,7 +35,9 @@ extern  "C" {
 #include <string>
 #include <iostream>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
 
 void showUsage(const char *progname) {
     cerr<<"fbrun 1.5 : (c) 2002-2004 Henrik Kinnunen"<<endl;
@@ -81,7 +83,7 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "-text") == 0 && i+1 < argc) {
             text = argv[++i];
         } else if (strcmp(argv[i], "-w") == 0 && i+1 < argc) {
-            width = atoi(argv[++i]);			
+            width = atoi(argv[++i]);
             set_width = true;
         } else if (strcmp(argv[i], "-h") == 0 && i+1 < argc) {
             height = atoi(argv[++i]);
@@ -115,7 +117,7 @@ int main(int argc, char **argv) {
     }
 
     try {
-		
+
         FbTk::App application(display_name.c_str());
         FbRun fbrun;
 
@@ -131,7 +133,7 @@ int main(int argc, char **argv) {
         // get color
         FbTk::Color fg_color(foreground.c_str(), 0);
         FbTk::Color bg_color(background.c_str(), 0);
-		
+
         fbrun.setForegroundColor(fg_color);
         fbrun.setBackgroundColor(bg_color);
 
@@ -148,17 +150,17 @@ int main(int argc, char **argv) {
 
         fbrun.setTitle(title);
         fbrun.setText(text);
-	
+
         if (near_mouse) {
-            
+
             int wx, wy;
             unsigned int mask;
             Window ret_win;
             Window child_win;
-            
+
             Display* dpy = FbTk::App::instance()->display();
-            
-            if (XQueryPointer(dpy, DefaultRootWindow(dpy), 
+
+            if (XQueryPointer(dpy, DefaultRootWindow(dpy),
                               &ret_win, &child_win,
                               &x, &y, &wx, &wy, &mask)) {
 
@@ -202,12 +204,12 @@ int main(int argc, char **argv) {
                     y = root_y + root_h - fbrun.height();
             }
         }
-        
+
         if (set_pos)
             fbrun.move(x, y);
 
         fbrun.lockPosition(set_pos);
-		
+
         fbrun.show();
 
         application.eventLoop();

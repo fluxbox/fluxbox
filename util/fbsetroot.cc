@@ -50,7 +50,10 @@
 #endif
 #include <iostream>
 
-using namespace std;
+using std::cout;
+using std::cerr;
+using std::endl;
+using std::string;
 
 fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
     : FbTk::App(dpy_name), m_app_name(argv[0]) {
@@ -118,7 +121,7 @@ fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
 
     if ((mod + sol + grd) != true) {
         _FB_USES_NLS;
-        cerr << _FB_CONSOLETEXT(fbsetroot, MustSpecify, 
+        cerr << _FB_CONSOLETEXT(fbsetroot, MustSpecify,
                     "Error: must specify one of: -solid, -mod, -gradient\n",
                     "user didn't give one of the required options") << endl;
 
@@ -172,10 +175,10 @@ void fbsetroot::setRootAtoms(Pixmap pixmap, int screen) {
         if (type == XA_PIXMAP) {
             root.property(atom_eroot, 0L, 1L, False, AnyPropertyType,
                           &type, &format, &length, &after, &data_eroot);
-                
+
             if (data_root && data_eroot && type == XA_PIXMAP &&
                 *((Pixmap *) data_root) == *((Pixmap *) data_eroot)) {
-                    
+
                 XKillClient(display(), *((Pixmap *) data_root));
             }
         }
@@ -197,7 +200,7 @@ void fbsetroot::setRootAtoms(Pixmap pixmap, int screen) {
 }
 
 /**
-   Draws pixmaps with a single color 
+   Draws pixmaps with a single color
 */
 void fbsetroot::solid() {
     FbTk::Color c(fore, screen);
@@ -209,7 +212,7 @@ void fbsetroot::solid() {
     FbTk::GContext gc(root);
     gc.setForeground(c);
 
-    pixmap = new Pixmap(XCreatePixmap(display(), 
+    pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
                                       root.depth()));
@@ -282,7 +285,7 @@ void fbsetroot::modula(int x, int y) {
     gc.setTile(r_bitmap);
     gc.setFillStyle(FillTiled);
 
-    pixmap = new Pixmap(XCreatePixmap(display(), 
+    pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
                                       root.depth()));
@@ -328,7 +331,7 @@ void fbsetroot::gradient() {
 
     tmp = img_ctrl->renderImage(root.width(), root.height(), texture);
 
-    pixmap = new Pixmap(XCreatePixmap(display(), 
+    pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
                                       root.depth()));
@@ -376,9 +379,9 @@ void fbsetroot::usage(int exit_code) {
 int main(int argc, char **argv) {
     char *display_name = (char *) 0;
     int i = 1;
-  
+
     FbTk::NLSInit("fluxbox.cat");
-  
+
     for (; i < argc; i++) {
         if (! strcmp(argv[i], "-display")) {
             // check for -display option
@@ -398,7 +401,7 @@ int main(int argc, char **argv) {
 
     try {
         fbsetroot app(argc, argv, display_name);
-    } catch (std::string error_str) {
+    } catch (string error_str) {
         _FB_USES_NLS;
         cerr<<_FB_CONSOLETEXT(Common, Error, "Error", "Error message header")<<": "<<error_str<<endl;
     }

@@ -26,7 +26,7 @@
 
 #include <string>
 
-using namespace std;
+using std::string;
 
 FbAtoms *FbAtoms::s_singleton = 0;
 

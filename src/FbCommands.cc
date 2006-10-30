@@ -54,7 +54,12 @@
 #include <process.h> // for P_NOWAIT
 #endif // __EMX__
 
-using namespace std;
+using std::string;
+using std::pair;
+using std::set;
+using std::ofstream;
+using std::endl;
+using std::ios;
 
 namespace {
 
@@ -107,7 +112,7 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
 
 namespace FbCommands {
 
-ExecuteCmd::ExecuteCmd(const std::string &cmd, int screen_num):m_cmd(cmd), m_screen_num(screen_num) {
+ExecuteCmd::ExecuteCmd(const string &cmd, int screen_num):m_cmd(cmd), m_screen_num(screen_num) {
 
 }
 
@@ -125,7 +130,7 @@ int ExecuteCmd::run() {
     if (pid)
         return pid;
 
-    std::string displaystring("DISPLAY=");
+    string displaystring("DISPLAY=");
     displaystring += DisplayString(FbTk::App::instance()->display());
     char intbuff[64];
     int screen_num = m_screen_num;
@@ -149,7 +154,7 @@ int ExecuteCmd::run() {
     return pid; // compiler happy -> we are happy ;)
 }
 
-SetModKeyCmd::SetModKeyCmd(const std::string& modkey) : m_modkey(modkey) { }
+SetModKeyCmd::SetModKeyCmd(const string& modkey) : m_modkey(modkey) { }
 
 void SetModKeyCmd::execute() {
     Fluxbox::instance()->setModKey(m_modkey.c_str());
@@ -158,7 +163,7 @@ void SetModKeyCmd::execute() {
     Fluxbox::instance()->reconfigure();
 }
 
-ExportCmd::ExportCmd(const std::string& name, const std::string& value) :
+ExportCmd::ExportCmd(const string& name, const string& value) :
     m_name(name), m_value(value) {
 }
 
@@ -167,7 +172,7 @@ void ExportCmd::execute() {
     // the setenv()-routine is not everywhere available and
     // putenv() doesnt manage the strings in the environment
     // and hence we have to do that on our own to avoid memleaking
-    static std::set<char*> stored;
+    static set<char*> stored;
     char* newenv = new char[m_name.size() + m_value.size() + 2];
     if (newenv) {
 
@@ -203,7 +208,7 @@ void SaveResources::execute() {
     Fluxbox::instance()->save_rc();
 }
 
-RestartFluxboxCmd::RestartFluxboxCmd(const std::string &cmd):m_cmd(cmd){
+RestartFluxboxCmd::RestartFluxboxCmd(const string &cmd):m_cmd(cmd){
 }
 
 void RestartFluxboxCmd::execute() {
@@ -223,7 +228,7 @@ void ReloadStyleCmd::execute() {
     cmd.execute();
 }
 
-SetStyleCmd::SetStyleCmd(const std::string &filename):m_filename(filename) {
+SetStyleCmd::SetStyleCmd(const string &filename):m_filename(filename) {
 
 }
 
@@ -234,7 +239,7 @@ void SetStyleCmd::execute() {
                                         Fluxbox::instance()->getStyleOverlayFilename());
 }
 
-KeyModeCmd::KeyModeCmd(const std::string &arguments):m_keymode(arguments),m_end_args("None Escape") {
+KeyModeCmd::KeyModeCmd(const string &arguments):m_keymode(arguments),m_end_args("None Escape") {
     string::size_type second_pos = m_keymode.find_first_of(" \t", 0);
     if (second_pos != string::npos) {
         // ok we have arguments, parsing them here
@@ -267,7 +272,7 @@ void ShowWorkspaceMenuCmd::execute() {
 
 
 
-SetWorkspaceNameCmd::SetWorkspaceNameCmd(const std::string &name, int spaceid):
+SetWorkspaceNameCmd::SetWorkspaceNameCmd(const string &name, int spaceid):
     m_name(name), m_workspace(spaceid) { }
 
 void SetWorkspaceNameCmd::execute() {
@@ -312,8 +317,8 @@ void CommandDialogCmd::execute() {
 }
 
 
-SetResourceValueCmd::SetResourceValueCmd(const std::string &resname,
-                                         const std::string &value):
+SetResourceValueCmd::SetResourceValueCmd(const string &resname,
+                                         const string &value):
     m_resname(resname),
     m_value(value) {
 
@@ -336,7 +341,7 @@ void SetResourceValueDialogCmd::execute() {
     win->show();
 };
 
-BindKeyCmd::BindKeyCmd(const std::string &keybind):m_keybind(keybind) { }
+BindKeyCmd::BindKeyCmd(const string &keybind):m_keybind(keybind) { }
 
 void BindKeyCmd::execute() {
     if (Fluxbox::instance()->keys() != 0) {

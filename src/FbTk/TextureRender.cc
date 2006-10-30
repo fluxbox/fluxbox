@@ -39,7 +39,6 @@
 #else
   #include <stdio.h>
 #endif
-using namespace std;
 
 // mipspro has no new(nothrow)
 #if defined sgi && ! defined GCC
@@ -48,10 +47,16 @@ using namespace std;
 #define FB_new_nothrow new(std::nothrow)
 #endif
 
+using std::cerr;
+using std::endl;
+using std::string;
+using std::max;
+using std::min;
+
 namespace FbTk {
 
-TextureRender::TextureRender(ImageControl &imgctrl, 
-                             unsigned int w, unsigned int h, 
+TextureRender::TextureRender(ImageControl &imgctrl,
+                             unsigned int w, unsigned int h,
                              FbTk::Orientation orient,
                              XColor *_colors, size_t num_colors):
     control(imgctrl),
@@ -66,7 +71,7 @@ TextureRender::TextureRender(ImageControl &imgctrl,
 
     unsigned int texture_max_width = WidthOfScreen(ScreenOfDisplay(FbTk::App::instance()->display(), imgctrl.screenNumber())) * 2;
     unsigned int texture_max_height = HeightOfScreen(ScreenOfDisplay(FbTk::App::instance()->display(), imgctrl.screenNumber())) * 2;
-    
+
     _FB_USES_NLS;
     // clamp to "normal" size
     if (width > texture_max_width) {
@@ -83,14 +88,14 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     imgctrl.colorTables(&red_table, &green_table, &blue_table,
                         &red_offset, &green_offset, &blue_offset,
                         &red_bits, &green_bits, &blue_bits);
-	
+
 }
 
 
 TextureRender::~TextureRender() {
     if (red != 0) delete [] red;
     if (green != 0) delete [] green;
-    if (blue != 0) delete [] blue;	
+    if (blue != 0) delete [] blue;
 }
 
 
@@ -119,8 +124,8 @@ void TextureRender::allocateColorTables() {
     if (red == 0) {
         char sbuf[128];
         sprintf(sbuf, "%ld", (long int) size);
-        throw std::string("TextureRender::TextureRender(): " + 
-              std::string(_FBTK_CONSOLETEXT(Error, OutOfMemoryRed, "Out of memory while allocating red buffer.", "")) + string(sbuf));
+        throw string("TextureRender::TextureRender(): " +
+              string(_FBTK_CONSOLETEXT(Error, OutOfMemoryRed, "Out of memory while allocating red buffer.", "")) + string(sbuf));
     }
 
 
@@ -128,16 +133,16 @@ void TextureRender::allocateColorTables() {
     if (green == 0) {
         char sbuf[128];
         sprintf(sbuf, "%ld", (long int) size);
-        throw std::string("TextureRender::TextureRender(): " + 
-              std::string(_FBTK_CONSOLETEXT(Error, OutOfMemoryGreen, "Out of memory while allocating green buffer.", ""))+ string(sbuf));
+        throw string("TextureRender::TextureRender(): " +
+              string(_FBTK_CONSOLETEXT(Error, OutOfMemoryGreen, "Out of memory while allocating green buffer.", ""))+ string(sbuf));
     }
 
     blue = FB_new_nothrow unsigned char[size];
     if (blue == 0) {
         char sbuf[128];
         sprintf(sbuf, "%ld", (long int) size);
-        throw std::string("TextureRender::TextureRender(): " +
-              std::string(_FBTK_CONSOLETEXT(Error, OutOfMemoryBlue, "Out of memory while allocating blue buffer.", ""))+ string(sbuf));
+        throw string("TextureRender::TextureRender(): " +
+              string(_FBTK_CONSOLETEXT(Error, OutOfMemoryBlue, "Out of memory while allocating blue buffer.", ""))+ string(sbuf));
     }
 
 
@@ -146,7 +151,7 @@ void TextureRender::allocateColorTables() {
 Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
 
     FbPixmap pixmap(RootWindow(FbTk::App::instance()->display(),
-                               control.screenNumber()), 
+                               control.screenNumber()),
                     width, height,
                     control.depth());
 
@@ -157,7 +162,7 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
     }
 
 
-    FbTk::GContext gc(pixmap), 
+    FbTk::GContext gc(pixmap),
         hgc(pixmap), lgc(pixmap);
 
     gc.setForeground(texture.color());
@@ -166,9 +171,9 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
     hgc.setForeground(texture.hiColor());
 
     pixmap.fillRectangle(gc.gc(), 0, 0, width, height);
-	
+
     using namespace FbTk;
-	
+
     if (texture.type() & Texture::INTERLACED) {
         lgc.setForeground(texture.colorTo());
         register unsigned int i = 0;
@@ -181,7 +186,7 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
 
     if (texture.type() & Texture::BEVEL1) {
         if (texture.type() & Texture::RAISED) {
-            pixmap.drawLine(lgc.gc(), 
+            pixmap.drawLine(lgc.gc(),
                             0, height - 1, width - 1, height - 1);
             pixmap.drawLine(lgc.gc(),
                             width - 1, height - 1, width - 1, 0);
@@ -244,33 +249,33 @@ Pixmap TextureRender::renderGradient(const FbTk::Texture &texture) {
         from = &(texture.colorTo());
         to = &(texture.color());
 
-        if (! (texture.type() & Texture::INVERT)) 
+        if (! (texture.type() & Texture::INVERT))
             inverted = true;
     } else {
         from = &(texture.color());
         to = &(texture.colorTo());
 
-        if (texture.type() & Texture::INVERT) 
+        if (texture.type() & Texture::INVERT)
             inverted = true;
     }
 
     control.getGradientBuffers(width, height, &xtable, &ytable);
 
-    if (texture.type() & Texture::DIAGONAL) 
+    if (texture.type() & Texture::DIAGONAL)
         dgradient();
-    else if (texture.type() & Texture::ELLIPTIC) 
+    else if (texture.type() & Texture::ELLIPTIC)
         egradient();
-    else if (texture.type() & Texture::HORIZONTAL) 
+    else if (texture.type() & Texture::HORIZONTAL)
         hgradient();
-    else if (texture.type() & Texture::PYRAMID) 
+    else if (texture.type() & Texture::PYRAMID)
         pgradient();
-    else if (texture.type() & Texture::RECTANGLE) 
+    else if (texture.type() & Texture::RECTANGLE)
         rgradient();
-    else if (texture.type() & Texture::VERTICAL) 
+    else if (texture.type() & Texture::VERTICAL)
         vgradient();
-    else if (texture.type() & Texture::CROSSDIAGONAL) 
+    else if (texture.type() & Texture::CROSSDIAGONAL)
         cdgradient();
-    else if (texture.type() & Texture::PIPECROSS) 
+    else if (texture.type() & Texture::PIPECROSS)
         pcgradient();
 
     if (texture.type() & Texture::BEVEL1)
@@ -293,10 +298,10 @@ Pixmap TextureRender::renderPixmap(const FbTk::Texture &src_texture) {
     if (tmpw != src_texture.pixmap().width() ||
         tmph != src_texture.pixmap().height()) {
 
-        // copy src_texture's pixmap and 
+        // copy src_texture's pixmap and
         // scale/tile to fit our size
         FbPixmap new_pm(src_texture.pixmap());
- 
+
         if ((src_texture.type() & Texture::TILED)) {
             new_pm.tile(tmpw,tmph);
         } else {
@@ -336,14 +341,14 @@ XImage *TextureRender::renderXImage() {
     o = image->bits_per_pixel + ((image->byte_order == MSBFirst) ? 1 : 0);
 
     if (control.doDither()) {
-        unsigned char dither4[4][4] = { 
+        unsigned char dither4[4][4] = {
             {0, 4, 1, 5},
             {6, 2, 7, 3},
             {1, 5, 0, 4},
             {7, 3, 6, 2} };
 
 #ifdef ORDEREDPSEUDO
-        unsigned char dither8[8][8] = { 
+        unsigned char dither8[8][8] = {
             { 0, 32,  8, 40, 2,	34, 10, 42 },
             { 48, 16, 56, 24, 50, 18, 58, 26 },
             { 12, 44,  4, 36, 14, 46, 6, 38 },
@@ -711,7 +716,7 @@ return image;
 
 Pixmap TextureRender::renderPixmap() {
     Display *disp = FbTk::App::instance()->display();
-    FbPixmap pixmap(RootWindow(disp, control.screenNumber()), 
+    FbPixmap pixmap(RootWindow(disp, control.screenNumber()),
                     width, height, control.depth());
 
     if (pixmap.drawable() == None) {
@@ -1441,9 +1446,9 @@ void TextureRender::rgradient() {
         // normal rgradient
         for (yt = ytable, y = 0; y < height; y++, yt += 3) {
             for (xt = xtable, x = 0; x < width; x++) {
-                *(pr++) = (unsigned char) (tr - (rsign * std::max(*(xt++), *(yt))));
-                *(pg++) = (unsigned char) (tg - (gsign * std::max(*(xt++), *(yt + 1))));
-                *(pb++) = (unsigned char) (tb - (bsign * std::max(*(xt++), *(yt + 2))));
+                *(pr++) = (unsigned char) (tr - (rsign * max(*(xt++), *(yt))));
+                *(pg++) = (unsigned char) (tg - (gsign * max(*(xt++), *(yt + 1))));
+                *(pb++) = (unsigned char) (tb - (bsign * max(*(xt++), *(yt + 2))));
             }
         }
 
@@ -1454,32 +1459,32 @@ void TextureRender::rgradient() {
         for (yt = ytable, y = 0; y < height; y++, yt += 3) {
             for (xt = xtable, x = 0; x < width; x++) {
                 if (y & 1) {
-                    channel = (unsigned char) (tr - (rsign * std::max(*(xt++), *(yt))));
+                    channel = (unsigned char) (tr - (rsign * max(*(xt++), *(yt))));
                     channel2 = (channel >> 1) + (channel >> 2);
                     if (channel2 > channel) channel2 = 0;
                     *(pr++) = channel2;
 
-                    channel = (unsigned char) (tg - (gsign * std::max(*(xt++), *(yt + 1))));
+                    channel = (unsigned char) (tg - (gsign * max(*(xt++), *(yt + 1))));
                     channel2 = (channel >> 1) + (channel >> 2);
                     if (channel2 > channel) channel2 = 0;
                     *(pg++) = channel2;
 
-                    channel = (unsigned char) (tb - (bsign * std::max(*(xt++), *(yt + 2))));
+                    channel = (unsigned char) (tb - (bsign * max(*(xt++), *(yt + 2))));
                     channel2 = (channel >> 1) + (channel >> 2);
                     if (channel2 > channel) channel2 = 0;
                     *(pb++) = channel2;
                 } else {
-                    channel = (unsigned char) (tr - (rsign * std::max(*(xt++), *(yt))));
+                    channel = (unsigned char) (tr - (rsign * max(*(xt++), *(yt))));
                     channel2 = channel + (channel >> 3);
                     if (channel2 < channel) channel2 = ~0;
                     *(pr++) = channel2;
 
-                    channel = (unsigned char) (tg - (gsign * std::max(*(xt++), *(yt + 1))));
+                    channel = (unsigned char) (tg - (gsign * max(*(xt++), *(yt + 1))));
                     channel2 = channel + (channel >> 3);
                     if (channel2 < channel) channel2 = ~0;
                     *(pg++) = channel2;
 
-                    channel = (unsigned char) (tb - (bsign * std::max(*(xt++), *(yt + 2))));
+                    channel = (unsigned char) (tb - (bsign * max(*(xt++), *(yt + 2))));
                     channel2 = channel + (channel >> 3);
                     if (channel2 < channel) channel2 = ~0;
                     *(pb++) = channel2;
@@ -1675,9 +1680,9 @@ void TextureRender::pcgradient() {
         // normal pcgradient
         for (yt = ytable, y = 0; y < height; y++, yt += 3) {
             for (xt = xtable, x = 0; x < width; x++) {
-                *(pr++) = (unsigned char) (tr - (rsign * std::min(*(xt++), *(yt))));
-                *(pg++) = (unsigned char) (tg - (gsign * std::min(*(xt++), *(yt + 1))));
-                *(pb++) = (unsigned char) (tb - (bsign * std::min(*(xt++), *(yt + 2))));
+                *(pr++) = (unsigned char) (tr - (rsign * min(*(xt++), *(yt))));
+                *(pg++) = (unsigned char) (tg - (gsign * min(*(xt++), *(yt + 1))));
+                *(pb++) = (unsigned char) (tb - (bsign * min(*(xt++), *(yt + 2))));
             }
         }
 
@@ -1688,32 +1693,32 @@ void TextureRender::pcgradient() {
         for (yt = ytable, y = 0; y < height; y++, yt += 3) {
             for (xt = xtable, x = 0; x < width; x++) {
                 if (y & 1) {
-                    channel = (unsigned char) (tr - (rsign * std::min(*(xt++), *(yt))));
+                    channel = (unsigned char) (tr - (rsign * min(*(xt++), *(yt))));
                     channel2 = (channel >> 1) + (channel >> 2);
                     if (channel2 > channel) channel2 = 0;
                     *(pr++) = channel2;
 
-                    channel = (unsigned char) (tg - (bsign * std::min(*(xt++), *(yt + 1))));
+                    channel = (unsigned char) (tg - (bsign * min(*(xt++), *(yt + 1))));
                     channel2 = (channel >> 1) + (channel >> 2);
                     if (channel2 > channel) channel2 = 0;
                     *(pg++) = channel2;
 
-                    channel = (unsigned char) (tb - (gsign * std::min(*(xt++), *(yt + 2))));
+                    channel = (unsigned char) (tb - (gsign * min(*(xt++), *(yt + 2))));
                     channel2 = (channel >> 1) + (channel >> 2);
                     if (channel2 > channel) channel2 = 0;
                     *(pb++) = channel2;
                 } else {
-                    channel = (unsigned char) (tr - (rsign * std::min(*(xt++), *(yt))));
+                    channel = (unsigned char) (tr - (rsign * min(*(xt++), *(yt))));
                     channel2 = channel + (channel >> 3);
                     if (channel2 < channel) channel2 = ~0;
                     *(pr++) = channel2;
 
-                    channel = (unsigned char) (tg - (gsign * std::min(*(xt++), *(yt + 1))));
+                    channel = (unsigned char) (tg - (gsign * min(*(xt++), *(yt + 1))));
                     channel2 = channel + (channel >> 3);
                     if (channel2 < channel) channel2 = ~0;
                     *(pg++) = channel2;
 
-                    channel = (unsigned char) (tb - (bsign * std::min(*(xt++), *(yt + 2))));
+                    channel = (unsigned char) (tb - (bsign * min(*(xt++), *(yt + 2))));
                     channel2 = channel + (channel >> 3);
                     if (channel2 < channel) channel2 = ~0;
                     *(pb++) = channel2;

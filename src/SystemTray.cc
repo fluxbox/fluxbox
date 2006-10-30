@@ -36,7 +36,15 @@
 
 #include <string>
 
-using namespace std;
+using std::string;
+
+#ifdef DEBUG
+#include <iostream>
+using std::cerr;
+using std::endl;
+using std::hex;
+using std::dec;
+#endif // DEBUG
 
 /// helper class for tray windows, so we dont call XDestroyWindow
 class TrayWindow: public FbTk::FbWindow {
@@ -118,7 +126,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen
     // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
     char intbuff[16];
     sprintf(intbuff, "%d", m_window.screenNumber());
-    std::string atom_name("_NET_SYSTEM_TRAY_S");
+    string atom_name("_NET_SYSTEM_TRAY_S");
     atom_name += intbuff; // append number
 
     // get selection owner and see if it's free
@@ -240,7 +248,7 @@ bool SystemTray::clientMessage(const XClientMessageEvent &event) {
 
         int type = event.data.l[1];
         if (type == SYSTEM_TRAY_REQUEST_DOCK) {
-#ifndef DEBUG
+#ifdef DEBUG
             cerr<<"SystemTray::clientMessage(const XClientMessageEvent): SYSTEM_TRAY_REQUEST_DOCK"<<endl;
             cerr<<"window = event.data.l[2] = "<<event.data.l[2]<<endl;
 #endif // DEBUG
@@ -353,7 +361,7 @@ void SystemTray::handleEvent(XEvent &event) {
                 static_cast<unsigned int>(event.xconfigure.height) != (*it)->height()) {
                 // the position might differ so we update from our local
                 // copy of position
-                XMoveResizeWindow(FbTk::App::instance()->display(), (*it)->window(), 
+                XMoveResizeWindow(FbTk::App::instance()->display(), (*it)->window(),
                                   (*it)->x(), (*it)->y(),
                                   (*it)->width(), (*it)->height());
 

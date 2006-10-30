@@ -76,7 +76,9 @@
 #include <iterator>
 #include <typeinfo>
 
-using namespace std;
+using std::string;
+using std::pair;
+using std::list;
 
 namespace FbTk {
 
@@ -376,7 +378,7 @@ void Toolbar::reconfigure() {
 
     bool need_update = false;
     // parse and transform to lower case
-    std::list<std::string> tools;
+    list<string> tools;
     FbTk::StringUtil::stringtok(tools, *m_rc_tools, ", ");
     transform(tools.begin(),
               tools.end(),
@@ -427,7 +429,7 @@ void Toolbar::reconfigure() {
             // show all items
             frame.window.showSubwindows();
         }
-        
+
     } else { // just update the menu
         menu().reconfigure();
     }
@@ -542,7 +544,7 @@ void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
             screen().nextWorkspace(1);
         }
     } else if (re.button == 5) { //mousewheel scroll down
-        if(screen().isReverseWheeling()) {    
+        if(screen().isReverseWheeling()) {
             screen().nextWorkspace(1);
         } else {
             screen().prevWorkspace(1);
@@ -828,7 +830,7 @@ void Toolbar::setupMenus(bool skip_new_placement) {
     visible_macro->add(reconfig_toolbar);
     visible_macro->add(save_resources);
     RefCommand toggle_visible_cmd(visible_macro);
-    menu().insert(new BoolMenuItem(_FB_XTEXT(Common, Visible, 
+    menu().insert(new BoolMenuItem(_FB_XTEXT(Common, Visible,
                                              "Visible", "Whether this item is visible"),
                                    *m_rc_visible, toggle_visible_cmd));
 
@@ -837,9 +839,9 @@ void Toolbar::setupMenus(bool skip_new_placement) {
                                    *m_rc_auto_hide,
                                    reconfig_toolbar_and_save_resource));
 
-    MenuItem *toolbar_menuitem = 
-        new IntResMenuItem(_FB_XTEXT(Toolbar, WidthPercent, 
-                                     "Toolbar width percent", 
+    MenuItem *toolbar_menuitem =
+        new IntResMenuItem(_FB_XTEXT(Toolbar, WidthPercent,
+                                     "Toolbar width percent",
                                      "Percentage of screen width taken by toolbar"),
                            m_rc_width_percent,
                            0, 100, menu()); // min/max value
@@ -849,7 +851,7 @@ void Toolbar::setupMenus(bool skip_new_placement) {
     menu().insert(toolbar_menuitem);
 
     menu().insert(new BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
-                                             "Maximize Over", 
+                                             "Maximize Over",
                                              "Maximize over this thing when maximizing"),
                                    *m_rc_maximize_over,
                                    reconfig_toolbar_and_save_resource));
@@ -862,7 +864,7 @@ void Toolbar::setupMenus(bool skip_new_placement) {
                                                     screen().imageControl(),
                                                     *screen().layerManager().getLayer(::Layer::MENU),
                                                     *this,
-                                                    _FB_XTEXT(Toolbar, OnHead, "Toolbar on Head", 
+                                                    _FB_XTEXT(Toolbar, OnHead, "Toolbar on Head",
                                                               "Title of toolbar on head menu")));
     }
 #endif // XINERAMA
@@ -911,7 +913,7 @@ void Toolbar::setupMenus(bool skip_new_placement) {
 
     menu().insert(_FB_XTEXT(Menu, Placement, "Placement", "Title of Placement menu"), &placementMenu());
     placementMenu().updateMenu();
-    
+
 
     // this saves resources and clears the slit window to update alpha value
     FbTk::MenuItem *alpha_menuitem =

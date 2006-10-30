@@ -25,8 +25,11 @@
 #include "FbWindow.hh"
 #include "App.hh"
 
+#ifdef DEBUG
 #include <iostream>
-using namespace std;
+using std::cerr;
+using std::endl;
+#endif // DEBUG
 
 namespace FbTk {
 
@@ -180,13 +183,13 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
     break;
     };
 
-    // find out which window is the parent and 
+    // find out which window is the parent and
     // dispatch event
     Window root, parent_win, *children = 0;
     unsigned int num_children;
-    if (XQueryTree(FbTk::App::instance()->display(), win, 
+    if (XQueryTree(FbTk::App::instance()->display(), win,
                    &root, &parent_win, &children, &num_children) != 0) {
-        if (children != 0) 
+        if (children != 0)
             XFree(children);
 
         if (parent_win != 0 &&

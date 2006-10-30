@@ -1,6 +1,6 @@
 // MenuTheme.cc
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -23,13 +23,13 @@
 
 #include "MenuTheme.hh"
 #include "StringUtil.hh"
-#include <iostream>
-using namespace std;
+
+using std::string;
 
 namespace FbTk {
 
 template <>
-void FbTk::ThemeItem<Shape::ShapePlace>::load(const std::string *name, const std::string *altname) { }
+void FbTk::ThemeItem<Shape::ShapePlace>::load(const string *name, const string *altname) { }
 
 template <>
 void FbTk::ThemeItem<Shape::ShapePlace>::setDefaultValue() {

@@ -40,13 +40,17 @@
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
 
-#include <iostream>
 #include <memory>
 #include <stdexcept>
-using namespace std;
+
+using std::string;
+using std::vector;
+using std::auto_ptr;
+using std::less;
+using std::out_of_range;
 
 CommandDialog::CommandDialog(BScreen &screen,
-        const std::string &title, const std::string precommand) :
+        const string &title, const string precommand) :
     FbTk::FbWindow(screen.rootWindow().screenNumber(), 0, 0, 200, 1, ExposureMask),
     m_textbox(*this, screen.winFrameTheme().font(), ""),
     m_label(*this, screen.winFrameTheme().font(), title),
@@ -67,7 +71,7 @@ CommandDialog::~CommandDialog() {
         m_screen.imageControl().removeImage(m_pixmap);
 }
 
-void CommandDialog::setText(const std::string &text) {
+void CommandDialog::setText(const string &text) {
     m_textbox.setText(text);
 }
 
@@ -135,7 +139,7 @@ void CommandDialog::keyPressEvent(XKeyEvent &event) {
     if (ks == XK_Return) {
         hide(); // hide and return focus to a FluxboxWindow
         // create command from line
-        std::auto_ptr<FbTk::Command> cmd(CommandParser::instance().
+        auto_ptr<FbTk::Command> cmd(CommandParser::instance().
             parseLine(m_precommand + m_textbox.text()));
         if (cmd.get())
             cmd->execute();
@@ -168,7 +172,7 @@ void CommandDialog::tabComplete() {
 
         CommandParser::CommandFactoryMap::const_iterator it = CommandParser::instance().factorys().begin();
         const CommandParser::CommandFactoryMap::const_iterator it_end = CommandParser::instance().factorys().end();
-        std::vector<std::string> matches;
+        vector<string> matches;
         for (; it != it_end; ++it) {
             if ((*it).first.find(prefix) == 0) {
                 matches.push_back((*it).first);
@@ -177,12 +181,12 @@ void CommandDialog::tabComplete() {
 
         if (!matches.empty()) {
             // sort and apply larges match
-            std::sort(matches.begin(), matches.end(), less<string>());
+            sort(matches.begin(), matches.end(), less<string>());
             m_textbox.setText(m_textbox.text() + matches[0].substr(prefix.size()));
         } else
             XBell(FbTk::App::instance()->display(), 0);
 
-    } catch (std::out_of_range &oor) {
+    } catch (out_of_range &oor) {
         XBell(FbTk::App::instance()->display(), 0);
     }
 }

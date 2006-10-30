@@ -35,7 +35,10 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
-using namespace std;
+
+using std::string;
+using std::vector;
+
 using namespace FbTk;
 
 //-----------------------------------------------------------------
@@ -52,7 +55,7 @@ setFromString(const char* strval) {
 }
 
 template<>
-void FbTk::Resource<std::string>::
+void FbTk::Resource<string>::
 setFromString(const char *strval) {
     *this = strval;
 }
@@ -64,13 +67,13 @@ setFromString(char const *strval) {
 }
 
 template<>
-void FbTk::Resource<std::vector<WinButton::Type> >::
+void FbTk::Resource<vector<WinButton::Type> >::
 setFromString(char const *strval) {
-    vector<std::string> val;
+    vector<string> val;
     StringUtil::stringtok(val, strval);
     //clear old values
     m_value.clear();
-		
+
     for (size_t i = 0; i < val.size(); i++) {
         if (strcasecmp(val[i].c_str(), "Maximize")==0)
             m_value.push_back(WinButton::MAXIMIZE);
@@ -98,14 +101,14 @@ setFromString(char const *strval) {
 
 template<>
 void FbTk::Resource<unsigned int>::
-setFromString(const char *strval) {	
+setFromString(const char *strval) {
     if (sscanf(strval, "%ul", &m_value) != 1)
         setDefaultValue();
 }
 
 template<>
 void FbTk::Resource<long long>::
-setFromString(const char *strval) {	
+setFromString(const char *strval) {
     if (sscanf(strval, "%llu", &m_value) != 1)
         setDefaultValue();
 }
@@ -115,26 +118,26 @@ setFromString(const char *strval) {
 //---- manipulators for int, bool, and some enums with Resource ---
 //-----------------------------------------------------------------
 template<>
-std::string FbTk::Resource<bool>::
+string FbTk::Resource<bool>::
 getString() const {
-    return std::string(**this == true ? "true" : "false");
+    return string(**this == true ? "true" : "false");
 }
 
 template<>
-std::string FbTk::Resource<int>::
+string FbTk::Resource<int>::
 getString() const {
     char strval[256];
     sprintf(strval, "%d", **this);
-    return std::string(strval);
+    return string(strval);
 }
 
 template<>
-std::string FbTk::Resource<std::string>::
+string FbTk::Resource<string>::
 getString() const { return **this; }
 
 
 template<>
-std::string FbTk::Resource<std::vector<WinButton::Type> >::
+string FbTk::Resource<vector<WinButton::Type> >::
 getString() const {
     string retval;
     for (size_t i = 0; i < m_value.size(); i++) {
@@ -167,7 +170,7 @@ getString() const {
 }
 
 template<>
-std::string FbTk::Resource<Fluxbox::TabsAttachArea>::
+string FbTk::Resource<Fluxbox::TabsAttachArea>::
 getString() const {
     if (m_value == Fluxbox::ATTACH_AREA_TITLEBAR)
         return "Titlebar";
@@ -211,43 +214,43 @@ setFromString(const char *strval) {
         m_value = ::Layer::BOTTOM;
     else if (strcasecmp(strval, "Desktop") == 0)
         m_value = ::Layer::DESKTOP;
-    else 
+    else
         setDefaultValue();
 }
 
 
 template<>
-std::string FbTk::Resource<Layer>::
+string FbTk::Resource<Layer>::
 getString() const {
     switch (m_value.getNum()) {
     case Layer::MENU:
-        return std::string("Menu");
+        return string("Menu");
     case Layer::ABOVE_DOCK:
-        return std::string("AboveDock");
+        return string("AboveDock");
     case Layer::DOCK:
-        return std::string("Dock");
+        return string("Dock");
     case Layer::TOP:
-        return std::string("Top");
+        return string("Top");
     case Layer::NORMAL:
-        return std::string("Normal");
+        return string("Normal");
     case Layer::BOTTOM:
-        return std::string("Bottom");
+        return string("Bottom");
     case Layer::DESKTOP:
-        return std::string("Desktop");
+        return string("Desktop");
     default:
         char tmpstr[128];
         sprintf(tmpstr, "%d", m_value.getNum());
-        return std::string(tmpstr);
+        return string(tmpstr);
     }
 }
 
 template<>
 void FbTk::Resource<long>::
-setFromString(const char *strval) {   
+setFromString(const char *strval) {
     if (sscanf(strval, "%ld", &m_value) != 1)
         setDefaultValue();
 }
- 
+
 template<>
 string FbTk::Resource<long>::
 getString() const {

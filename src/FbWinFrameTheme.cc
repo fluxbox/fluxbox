@@ -26,10 +26,7 @@
 
 #include <X11/cursorfont.h>
 
-#include <iostream>
-using namespace std;
-
-FbWinFrameTheme::FbWinFrameTheme(int screen_num): 
+FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     FbTk::Theme(screen_num),
     m_label_focus(*this, "window.label.focus", "Window.Label.Focus"),
     m_label_unfocus(*this, "window.label.unfocus", "Window.Label.Unfocus"),
@@ -44,14 +41,14 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_button_focus(*this, "window.button.focus", "Window.Button.Focus"),
     m_button_unfocus(*this, "window.button.unfocus", "Window.Button.Unfocus"),
     m_button_pressed(*this, "window.button.pressed", "Window.Button.Pressed"),
-    
+
     m_grip_focus(*this, "window.grip.focus", "Window.Grip.Focus"),
     m_grip_unfocus(*this, "window.grip.unfocus", "Window.Grip.Unfocus"),
-  
+
     m_label_focus_color(*this, "window.label.focus.textColor", "Window.Label.Focus.TextColor"),
     m_label_unfocus_color(*this, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor"),
     m_label_active_color(*this, "window.label.active.textColor", "Window.Label.Active.TextColor"),
-    
+
     m_button_focus_color(*this, "window.button.focus.picColor", "Window.Button.Focus.PicColor"),
     m_button_unfocus_color(*this, "window.button.unfocus.picColor", "Window.Button.Unfocus.PicColor"),
 
@@ -103,7 +100,7 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
         *m_label_active = *m_label_unfocus;
         return true;
     } else if (item.name() == "window.label.active.textColor") {
-        return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus.textColor", 
+        return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus.textColor",
                                                        "Window.Label.Unfocus.TextColor");
     }
 

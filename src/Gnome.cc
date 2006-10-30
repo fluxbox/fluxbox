@@ -31,10 +31,17 @@
 #include "Layer.hh"
 #include "FbTk/I18n.hh"
 
-
 #include <iostream>
 #include <new>
-using namespace std;
+
+using std::cerr;
+using std::endl;
+using std::list;
+
+#ifdef DEBUG
+using std::hex;
+using std::dec;
+#endif // DEBUG
 
 Gnome::Gnome() {
     createAtoms();
@@ -45,7 +52,7 @@ Gnome::~Gnome() {
     // destroy gnome windows
     while (!m_gnomewindows.empty()) {
         XDestroyWindow(FbTk::App::instance()->display(), m_gnomewindows.back());
-        m_gnomewindows.pop_back();		
+        m_gnomewindows.pop_back();
     }
 }
 
@@ -56,12 +63,12 @@ void Gnome::initForScreen(BScreen &screen) {
     Window gnome_win = XCreateSimpleWindow(disp,
                                            screen.rootWindow().window(), 0, 0, 5, 5, 0, 0, 0);
     // supported WM check
-    screen.rootWindow().changeProperty(m_gnome_wm_supporting_wm_check, 
-                                       XA_WINDOW, 32, 
+    screen.rootWindow().changeProperty(m_gnome_wm_supporting_wm_check,
+                                       XA_WINDOW, 32,
                                        PropModeReplace, (unsigned char *) &gnome_win, 1);
 
-    XChangeProperty(disp, gnome_win, 
-                    m_gnome_wm_supporting_wm_check, 
+    XChangeProperty(disp, gnome_win,
+                    m_gnome_wm_supporting_wm_check,
                     XA_WINDOW, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 
     // supported gnome atoms
@@ -74,9 +81,9 @@ void Gnome::initForScreen(BScreen &screen) {
         m_gnome_wm_win_layer
     };
     //list atoms that we support
-    screen.rootWindow().changeProperty(m_gnome_wm_prot, 
+    screen.rootWindow().changeProperty(m_gnome_wm_prot,
                                        XA_ATOM, 32, PropModeReplace,
-                                       (unsigned char *)gnomeatomlist, 
+                                       (unsigned char *)gnomeatomlist,
                                        (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
 
     m_gnomewindows.push_back(gnome_win);
@@ -85,7 +92,7 @@ void Gnome::initForScreen(BScreen &screen) {
     updateWorkspaceNames(screen);
     updateWorkspaceCount(screen);
     updateCurrentWorkspace(screen);
-	
+
 }
 
 void Gnome::setupFrame(FluxboxWindow &win) {
@@ -95,8 +102,8 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     long flags, *data = 0;
 
-    if (win.winClient().property(m_gnome_wm_win_state, 0, 1, False, XA_CARDINAL, 
-                                 &ret_type, &fmt, &nitems, &bytes_after, 
+    if (win.winClient().property(m_gnome_wm_win_state, 0, 1, False, XA_CARDINAL,
+                                 &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
         flags = *data;
         setState(&win, flags);
@@ -106,8 +113,8 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     }
 
     // load gnome layer atom
-    if (win.winClient().property(m_gnome_wm_win_layer, 0, 1, False, XA_CARDINAL, 
-                                 &ret_type, &fmt, &nitems, &bytes_after, 
+    if (win.winClient().property(m_gnome_wm_win_layer, 0, 1, False, XA_CARDINAL,
+                                 &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
         flags = *data;
         setLayer(&win, flags);
@@ -117,11 +124,11 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     }
 
     // load gnome workspace atom
-    if (win.winClient().property(m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL, 
-                                 &ret_type, &fmt, &nitems, &bytes_after, 
+    if (win.winClient().property(m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL,
+                                 &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
         unsigned int workspace_num = *data;
-        if (win.workspaceNumber() != workspace_num) 
+        if (win.workspaceNumber() != workspace_num)
             win.setWorkspace(workspace_num);
         XFree (data);
     } else {
@@ -131,7 +138,7 @@ void Gnome::setupFrame(FluxboxWindow &win) {
 }
 
 
-bool Gnome::propertyNotify(WinClient &winclient, Atom the_property) { 
+bool Gnome::propertyNotify(WinClient &winclient, Atom the_property) {
     if (the_property == m_gnome_wm_win_state) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): _WIN_STATE"<<endl;
@@ -151,19 +158,19 @@ void Gnome::updateClientList(BScreen &screen) {
     size_t num=0;
 
     // count window clients in each workspace
-    BScreen::Workspaces::const_iterator workspace_it = 
+    BScreen::Workspaces::const_iterator workspace_it =
         screen.getWorkspacesList().begin();
-    BScreen::Workspaces::const_iterator workspace_it_end = 
+    BScreen::Workspaces::const_iterator workspace_it_end =
         screen.getWorkspacesList().end();
     for (; workspace_it != workspace_it_end; ++workspace_it) {
-        Workspace::Windows::iterator win_it = 
+        Workspace::Windows::iterator win_it =
             (*workspace_it)->windowList().begin();
-        Workspace::Windows::iterator win_it_end = 
+        Workspace::Windows::iterator win_it_end =
             (*workspace_it)->windowList().end();
         for (; win_it != win_it_end; ++win_it)
             num += (*win_it)->numClients();
     }
-	
+
     Window *wl = new Window[num];
     if (wl == 0) {
         _FB_USES_NLS;
@@ -175,19 +182,19 @@ void Gnome::updateClientList(BScreen &screen) {
     workspace_it = screen.getWorkspacesList().begin();
     int win=0;
     for (; workspace_it != workspace_it_end; ++workspace_it) {
-	
+
         // Fill in array of window ID's
-        Workspace::Windows::const_iterator it = 
+        Workspace::Windows::const_iterator it =
             (*workspace_it)->windowList().begin();
-        Workspace::Windows::const_iterator it_end = 
-            (*workspace_it)->windowList().end();		
+        Workspace::Windows::const_iterator it_end =
+            (*workspace_it)->windowList().end();
         for (; it != it_end; ++it) {
             // TODO!
             //check if the window don't want to be visible in the list
             //if (! ( (*it)->getGnomeHints() & WIN_STATE_HIDDEN) ) {
-            std::list<WinClient *>::iterator client_it = 
+            list<WinClient *>::iterator client_it =
                 (*it)->clientList().begin();
-            std::list<WinClient *>::iterator client_it_end = 
+            list<WinClient *>::iterator client_it_end =
                 (*it)->clientList().end();
             for (; client_it != client_it_end; ++client_it)
                 wl[win++] = (*client_it)->window();
@@ -196,10 +203,10 @@ void Gnome::updateClientList(BScreen &screen) {
     }
     //number of windows to show in client list
     num = win;
-    screen.rootWindow().changeProperty(m_gnome_wm_win_client_list, 
+    screen.rootWindow().changeProperty(m_gnome_wm_win_client_list,
                                        XA_WINDOW, 32,
                                        PropModeReplace, (unsigned char *)wl, num);
-	
+
     delete[] wl;
 }
 
@@ -208,14 +215,14 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
     size_t number_of_desks = screen.getWorkspaceNames().size();
     const BScreen::WorkspaceNames &workspace_names = screen.getWorkspaceNames();
     // convert our desktop names to a char * so we can send it
-    char *names[number_of_desks];		
-    
-    for (size_t i = 0; i < number_of_desks; i++) {		
+    char *names[number_of_desks];
+
+    for (size_t i = 0; i < number_of_desks; i++) {
         names[i] = new char[workspace_names[i].size() + 1];
         strcpy(names[i], workspace_names[i].c_str());
     }
 
-    XTextProperty  text;	
+    XTextProperty  text;
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
 			 &text, m_gnome_wm_win_workspace_names);
@@ -254,7 +261,7 @@ void Gnome::updateWorkspace(FluxboxWindow &win) {
     FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
     for (; client_it != client_it_end; ++client_it)
-        (*client_it)->changeProperty(m_gnome_wm_win_workspace, 
+        (*client_it)->changeProperty(m_gnome_wm_win_workspace,
                                        XA_CARDINAL, 32, PropModeReplace,
                                        (unsigned char *)&val, 1);
 }
@@ -268,12 +275,12 @@ void Gnome::updateState(FluxboxWindow &win) {
         state |= WIN_STATE_MINIMIZED;
     if (win.isShaded())
         state |= WIN_STATE_SHADED;
-	
+
     FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
     for (; client_it != client_it_end; ++client_it) {
         (*client_it)->changeProperty(m_gnome_wm_win_state,
-                                     XA_CARDINAL, 32, 
+                                     XA_CARDINAL, 32,
                                      PropModeReplace, (unsigned char *)&state, 1);
     }
 }
@@ -287,14 +294,14 @@ void Gnome::updateLayer(FluxboxWindow &win) {
     FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
     for (; client_it != client_it_end; ++client_it)
         (*client_it)->changeProperty(m_gnome_wm_win_layer,
-                                     XA_CARDINAL, 32, PropModeReplace, 
+                                     XA_CARDINAL, 32, PropModeReplace,
                                      (unsigned char *)&layernum, 1);
-    
+
 }
 
 void Gnome::updateHints(FluxboxWindow &win) {
     //TODO
-	
+
 }
 
 bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient) {
@@ -306,29 +313,26 @@ bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, 
              ce.data.l[0] >= 0 &&
              ce.data.l[0] < (signed)winclient->screen().numberOfWorkspaces()) {
             winclient->screen().changeWorkspaceID(ce.data.l[0]);
-					
+
         } else if (screen!=0 && //the message sent to root window?
                    ce.data.l[0] >= 0 &&
                    ce.data.l[0] < (signed)screen->numberOfWorkspaces())
             screen->changeWorkspaceID(ce.data.l[0]);
         return true;
     } else if (winclient == 0)
-        return false; 
-		
+        return false;
+
 
     if (ce.message_type == m_gnome_wm_win_state) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_STATE"<<endl;
-#endif // DEBUG
-			
-#ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): Mask of members to change:"<<
             hex<<ce.data.l[0]<<dec<<endl; // mask_of_members_to_change
         cerr<<"New members:"<<ce.data.l[1]<<endl;
 #endif // DEBUG
-	
+
         if (winclient && winclient->fbwindow()) {
-            //get new states			
+            //get new states
             int flag = ce.data.l[0] & ce.data.l[1];
             //don't update this when when we set new state
             disableUpdate();
@@ -368,7 +372,7 @@ void Gnome::setState(FluxboxWindow *win, int state) {
             win->stick();
     } else if (win->isStuck())
         win->stick();
-			
+
     if (state & WIN_STATE_MINIMIZED) {
 #ifdef DEBUG
         cerr<<"Gnome state: Minimized"<<endl;
@@ -394,12 +398,12 @@ void Gnome::setState(FluxboxWindow *win, int state) {
     }
 
 
-    /*   
+    /*
     if (state & WIN_STATE_MAXIMIZED_VERT)
         cerr<<"Maximize Vert"<<endl;
     if (state & WIN_STATE_MAXIMIZED_HORIZ)
         cerr<<"Maximize Horiz"<<endl;
- 
+
     if (state & WIN_STATE_HID_WORKSPACE)
         cerr<<"HID Workspace"<<endl;
     if (state & WIN_STATE_HID_TRANSIENT)
@@ -407,14 +411,14 @@ void Gnome::setState(FluxboxWindow *win, int state) {
     if (state & WIN_STATE_FIXED_POSITION)
         cerr<<"Fixed Position"<<endl;
     if (state & WIN_STATE_ARRANGE_IGNORE)
-        cerr<<"Arrange Ignore"<<endl;			
+        cerr<<"Arrange Ignore"<<endl;
     */
 }
 
 void Gnome::setLayer(FluxboxWindow *win, int layer) {
     if (!win) return;
-    
-    
+
+
     switch (layer) {
     case WIN_LAYER_DESKTOP:
 #ifdef DEBUG
@@ -433,7 +437,7 @@ void Gnome::setLayer(FluxboxWindow *win, int layer) {
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_NORMAL)"<<endl;
 #endif // DEBUG
         layer = Layer::NORMAL;
-        break;		
+        break;
     case WIN_LAYER_ONTOP:
 #ifdef DEBUG
         cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ONTOP)"<<endl;

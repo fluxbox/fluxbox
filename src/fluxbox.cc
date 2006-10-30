@@ -154,7 +154,21 @@ class Toolbar { };
 #include <algorithm>
 #include <typeinfo>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::vector;
+using std::list;
+using std::pair;
+using std::bind2nd;
+using std::mem_fun;
+using std::equal_to;
+
+#ifdef DEBUG
+using std::hex;
+using std::dec;
+#endif // DEBUG
+
 using namespace FbTk;
 
 namespace {
@@ -1348,7 +1362,7 @@ BScreen *Fluxbox::searchScreen(Window window) {
 }
 
 
-AtomHandler* Fluxbox::getAtomHandler(const std::string &name) {
+AtomHandler* Fluxbox::getAtomHandler(const string &name) {
     if ( name != "" ) {
         using namespace FbTk;
         AtomHandlerContainerIt it = find_if(m_atomhandler.begin(),
@@ -1360,7 +1374,7 @@ AtomHandler* Fluxbox::getAtomHandler(const std::string &name) {
     }
     return 0;
 }
-void Fluxbox::addAtomHandler(AtomHandler *atomh, const std::string &name) {
+void Fluxbox::addAtomHandler(AtomHandler *atomh, const string &name) {
     m_atomhandler[atomh]= name;;
 }
 
@@ -1514,7 +1528,7 @@ string Fluxbox::getRcFilename() {
 }
 
 /// Provides default filename of data file
-void Fluxbox::getDefaultDataFilename(char *name, std::string &filename) {
+void Fluxbox::getDefaultDataFilename(char *name, string &filename) {
     filename = string(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + name);
 }
 
@@ -1607,7 +1621,7 @@ void Fluxbox::load_rc(BScreen &screen) {
     sprintf(class_lookup, "Session.Screen%d.imageSearchPath", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value) && value.addr) {
-        std::vector<std::string> paths;
+        vector<string> paths;
         StringUtil::stringtok(paths, value.addr, ", ");
         for (size_t i = 0; i < paths.size(); ++i)
             FbTk::Image::addSearchPath(paths[i]);
@@ -1685,8 +1699,8 @@ BScreen *Fluxbox::findScreen(int id) {
 }
 
 bool Fluxbox::menuTimestampsChanged() const {
-    std::list<MenuTimestamp *>::const_iterator it = m_menu_timestamps.begin();
-    std::list<MenuTimestamp *>::const_iterator it_end = m_menu_timestamps.end();
+    list<MenuTimestamp *>::const_iterator it = m_menu_timestamps.begin();
+    list<MenuTimestamp *>::const_iterator it_end = m_menu_timestamps.end();
     for (; it != it_end; ++it) {
 
         time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp((*it)->filename.c_str());
@@ -1745,8 +1759,8 @@ void Fluxbox::saveMenuFilename(const char *filename) {
 
     bool found = false;
 
-    std::list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
-    std::list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
+    list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
+    list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
     for (; it != it_end; ++it) {
         if ((*it)->filename == filename) {
             found = true;

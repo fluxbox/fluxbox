@@ -30,9 +30,8 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <iostream>
-#include <string>
 
-using namespace std;
+using std::cerr;
 
 namespace FbTk {
 
@@ -245,7 +244,7 @@ void FbPixmap::rotate(FbTk::Orientation orient) {
         default: // kill warning
             break;
         }
-        
+
 
         // copy new area
         unsigned int srcx, srcy, destx, desty;
@@ -349,7 +348,7 @@ Pixmap FbPixmap::release() {
 }
 
 void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
-    if (!FbTk::Transparent::haveRender()) 
+    if (!FbTk::Transparent::haveRender())
         return;
 
     checkAtoms();
@@ -396,7 +395,7 @@ void FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
 
 Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
     /*
-      if (!FbTk::Transparent::haveRender()) 
+      if (!FbTk::Transparent::haveRender())
       return None;
     */
 
@@ -404,7 +403,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
     if (m_root_pixmaps && !force_update)
         return m_root_pixmaps[screen_num];
 
-    // else setup pixmap cache        
+    // else setup pixmap cache
     int numscreens = ScreenCount(display());
     for (int i=0; i < numscreens; ++i) {
         Atom real_type;

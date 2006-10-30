@@ -1,16 +1,24 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/10/30:
+   * Cosmetic patch from Slava Semushin
+     CommandDialog.cc Ewmh.cc FbCommands.cc FbAtoms.cc Xutil.cc Gnome.cc
+     MenuTheme.cc Window.cc Resources.cc tests/testFont.cc FbWinFrameTheme.cc
+     SystemTray.cc MenuCreator.cc FbTk/TextureRender.cc FbTk/XFontImp.cc
+     FbTk/EventManager.cc FbTk/Menu.cc FbTk/FbPixmap.cc FbTk/ImageControl.cc
+     FbTk/XmbFontImp.cc FbTk/Font.cc ScreenResources.cc fluxbox.cc
+     Workspace.cc Toolbar.cc IconbarTool.cc util/fbsetroot.cc
+     util/fbrun/FbRun.cc util/fbrun/main.cc
 *06/10/27:
    * Changed mode for .fluxbox/startup to 644 (Mathias)
      some people on noexec-mounted partitions ran into problems
      util/startfluxbox.in
    * Small updates to the asciidoc-docs (Mathias)
-   * Cosmetic patch from Slave Semushin
+   * Cosmetic patch from Slava Semushin
      Slit.cc Screen.cc Keys.cc main.cc ToolbarTheme.cc FbTk/MultLayers.cc
      FbTk/Transparent.cc FbTk/Resource.cc FbTk/Theme.cc FbTk/XLayer.cc
      FbTk/Image.cc FbTk/Color.cc FbTk/FbString.cc Remember.cc RegExp.cc
      WinClient.cc Shape.cc ClientPattern.cc FbWinFrame.cc
-
 *06/10/16:
    * Added CachedPixmap (Henrik)
      FbTk/CachedPixmap.hh/cc

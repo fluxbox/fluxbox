@@ -32,7 +32,13 @@
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <iostream>
-using namespace std;
+
+using std::string;
+
+#ifdef DEBUG
+using std::cerr;
+using std::endl;
+#endif // DEBUG
 
 namespace Xutil {
 
@@ -48,14 +54,14 @@ FbTk::FbString getWMName(Window window) {
     char **list;
     int num;
     _FB_USES_NLS;
-    std::string name;
+    string name;
 
     if (XGetWMName(display, window, &text_prop)) {
         if (text_prop.value && text_prop.nitems > 0) {
             if (text_prop.encoding != XA_STRING) {
-				
+
                 text_prop.nitems = strlen((char *) text_prop.value);
-				
+
                 if ((XmbTextPropertyToTextList(display, &text_prop,
                                                &list, &num) == Success) &&
                     (num > 0) && *list) {
@@ -63,7 +69,7 @@ FbTk::FbString getWMName(Window window) {
                     XFreeStringList(list);
                 } else
                     name = text_prop.value ? FbTk::FbStringUtil::XStrToFb((char *)text_prop.value) : "";
-					
+
             } else
                 name = text_prop.value ? FbTk::FbStringUtil::XStrToFb((char *)text_prop.value) : "";
 
@@ -82,19 +88,19 @@ FbTk::FbString getWMName(Window window) {
 
 
 // The name of this particular instance
-std::string getWMClassName(Window win) {
+string getWMClassName(Window win) {
     XClassHint ch;
-    std::string instance_name;
+    string instance_name;
 
     if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
 #ifdef DEBUG
         cerr<<"Xutil: Failed to read class hint!"<<endl;
 #endif //DEBUG
         instance_name = "";
-    } else {        
+    } else {
 
         XFree(ch.res_class);
-        
+
         if (ch.res_class != 0) {
             instance_name = const_cast<char *>(ch.res_name);
             XFree(ch.res_name);
@@ -108,19 +114,19 @@ std::string getWMClassName(Window win) {
 }
 
 // the name of the general class of the app
-std::string getWMClassClass(Window win) {
+string getWMClassClass(Window win) {
     XClassHint ch;
-    std::string class_name;
+    string class_name;
 
     if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
 #ifdef DEBUG
         cerr<<"Xutil: Failed to read class hint!"<<endl;
 #endif //DEBUG
         class_name = "";
-    } else {        
+    } else {
 
         XFree(ch.res_name);
-        
+
         if (ch.res_class != 0) {
             class_name = const_cast<char *>(ch.res_class);
             XFree(ch.res_class);

@@ -43,7 +43,10 @@
 #include <algorithm>
 #include <new>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::vector;
+using std::list;
 
 // mipspro has no new(nothrow)
 #if defined sgi && ! defined GCC
@@ -61,7 +64,7 @@ enum EwmhMoveResizeDirection {
     _NET_WM_MOVERESIZE_SIZE_BOTTOM      =  5,
     _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT  =  6,
     _NET_WM_MOVERESIZE_SIZE_LEFT        =  7,
-    _NET_WM_MOVERESIZE_MOVE             =  8,   // movement only 
+    _NET_WM_MOVERESIZE_MOVE             =  8,   // movement only
     _NET_WM_MOVERESIZE_SIZE_KEYBOARD    =  9,   // size via keyboard
     _NET_WM_MOVERESIZE_MOVE_KEYBOARD    = 10,   // move via keyboard
     _NET_WM_MOVERESIZE_CANCEL           = 11    // cancel operation
@@ -84,19 +87,19 @@ void Ewmh::initForScreen(BScreen &screen) {
     /* From Extended Window Manager Hints, draft 1.3:
      *
      * _NET_SUPPORTING_WM_CHECK
-     * 
-     * The Window Manager MUST set this property on the root window 
-     * to be the ID of a child window created by himself, to indicate 
-     * that a compliant window manager is active. The child window 
-     * MUST also have the _NET_SUPPORTING_WM_CHECK property set to 
-     * the ID of the child window. The child window MUST also have 
+     *
+     * The Window Manager MUST set this property on the root window
+     * to be the ID of a child window created by himself, to indicate
+     * that a compliant window manager is active. The child window
+     * MUST also have the _NET_SUPPORTING_WM_CHECK property set to
+     * the ID of the child window. The child window MUST also have
      * the _NET_WM_NAME property set to the name of the Window Manager.
-     * 
-     * Rationale: The child window is used to distinguish an active 
-     * Window Manager from a stale _NET_SUPPORTING_WM_CHECK property 
-     * that happens to point to another window. If the 
-     * _NET_SUPPORTING_WM_CHECK window on the client window is missing 
-     * or not properly set, clients SHOULD assume that no conforming 
+     *
+     * Rationale: The child window is used to distinguish an active
+     * Window Manager from a stale _NET_SUPPORTING_WM_CHECK property
+     * that happens to point to another window. If the
+     * _NET_SUPPORTING_WM_CHECK window on the client window is missing
+     * or not properly set, clients SHOULD assume that no conforming
      * Window Manager is present.
      */
 
@@ -137,7 +140,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_wm_state_below,
         m_net_wm_state_above,
         m_net_wm_state_demands_attention,
-        
+
         // window type
         m_net_wm_window_type,
         m_net_wm_window_type_dock,
@@ -174,7 +177,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_request_frame_extents,
 
         m_net_wm_moveresize,
-        
+
         m_net_frame_extents,
 
         // desktop properties
@@ -289,8 +292,8 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
 
             } else if (atoms[l] == m_net_wm_window_type_splash) {
                 /*
-                 * _NET_WM_WINDOW_TYPE_SPLASH indicates that the 
-                 * window is a splash screen displayed as an application 
+                 * _NET_WM_WINDOW_TYPE_SPLASH indicates that the
+                 * window is a splash screen displayed as an application
                  * is starting up.
                  */
                 win.setDecoration(FluxboxWindow::DECOR_NONE);
@@ -318,11 +321,11 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
         }
         XFree(data);
     } else {
-        // if _NET_WM_WINDOW_TYPE not set and this window 
-        // has transient_for the type must be set to _NET_WM_WINDOW_TYPE_DIALOG 
+        // if _NET_WM_WINDOW_TYPE not set and this window
+        // has transient_for the type must be set to _NET_WM_WINDOW_TYPE_DIALOG
         if ( win.winClient().isTransient() ) {
             win.winClient().
-                changeProperty(m_net_wm_window_type, 
+                changeProperty(m_net_wm_window_type,
                                XA_ATOM, 32, PropModeReplace,
                                (unsigned char*)&m_net_wm_window_type_dialog, 1);
         }
@@ -379,20 +382,20 @@ void Ewmh::updateClientClose(WinClient &winclient){
 
 void Ewmh::updateClientList(BScreen &screen) {
 
-    std::list<WinClient *> creation_order_list = screen.focusControl().creationOrderList();
+    list<WinClient *> creation_order_list = screen.focusControl().creationOrderList();
 
     size_t num = creation_order_list.size();
     Window *wl = FB_new_nothrow Window[num];
     if (wl == 0) {
         _FB_USES_NLS;
-        cerr<<_FB_CONSOLETEXT(Ewmh, OutOfMemoryClientList, 
+        cerr<<_FB_CONSOLETEXT(Ewmh, OutOfMemoryClientList,
                       "Fatal: Out of memory, can't allocate for EWMH client list", "")<<endl;
         return;
     }
 
     int win=0;
-    std::list<WinClient *>::iterator client_it = creation_order_list.begin();
-    std::list<WinClient *>::iterator client_it_end = creation_order_list.end();
+    list<WinClient *>::iterator client_it = creation_order_list.begin();
+    list<WinClient *>::iterator client_it_end = creation_order_list.end();
     for (; client_it != client_it_end; ++client_it)
         wl[win++] = (*client_it)->window();
 
@@ -594,11 +597,11 @@ void Ewmh::updateWorkarea(BScreen &screen) {
 }
 
 void Ewmh::updateState(FluxboxWindow &win) {
-    
+
 
     updateActions(win);
-    
-    typedef std::vector<unsigned int> StateVec;
+
+    typedef vector<unsigned int> StateVec;
 
     StateVec state;
 
@@ -622,7 +625,7 @@ void Ewmh::updateState(FluxboxWindow &win) {
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
     for (; it != it_end; ++it) {
-        
+
         // search the old states for _NET_WM_STATE_SKIP_PAGER and append it
         // to the current state, so it wont get deleted by us.
         StateVec client_state(state);
@@ -646,7 +649,7 @@ void Ewmh::updateState(FluxboxWindow &win) {
 
         if (!client_state.empty()) {
             (*it)->changeProperty(m_net_wm_state, XA_ATOM, 32, PropModeReplace,
-                                  reinterpret_cast<unsigned char*>(&client_state.front()), 
+                                  reinterpret_cast<unsigned char*>(&client_state.front()),
                                   client_state.size());
         } else
             (*it)->deleteProperty(m_net_wm_state);
@@ -782,7 +785,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             FluxboxWindow* fbwin = winclient->fbwindow();
 
             // if the raised window is on a different workspace
-            // we do what the user wish: 
+            // we do what the user wish:
             //   either ignore|go to that workspace|get the window
             if (fbwin->screen().currentWorkspaceID() != fbwin->workspaceNumber()
                 && !fbwin->isStuck()) {
@@ -801,7 +804,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
                 } // else we ignore it. my favourite mode :)
             }
             fbwin->raise();
-        } 
+        }
         winclient->focus();
         return true;
     } else if (ce.message_type == m_net_close_window) {
@@ -836,7 +839,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // ce.data.l[0] = source indication
         // ce.data.l[1] = sibling window
         // ce.data.l[2] = detail
-        
+
 
         WinClient *above_win = Fluxbox::instance()->searchWindow(ce.data.l[1]);
         if (above_win == 0 || above_win->fbwindow() == 0 ||
@@ -877,7 +880,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
     } else if (ce.message_type == m_net_wm_moveresize) {
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
-        // data.l[0] = x_root 
+        // data.l[0] = x_root
         // data.l[1] = y_root
         // data.l[2] = direction
         // data.l[3] = button
@@ -1030,7 +1033,7 @@ void Ewmh::createAtoms() {
 void Ewmh::setFullscreen(FluxboxWindow &win, bool value) {
     // fullscreen implies maximised, above dock layer,
     // and no decorations (or decorations offscreen)
-    // 
+    //
     // TODO: do we need the WindowState etc here anymore?
     //       FluxboxWindow::setFullscreen() remembering old values
     //       already and set them...
@@ -1157,8 +1160,8 @@ void Ewmh::updateStrut(WinClient &winclient) {
                                  (unsigned char **) &data) && data) {
 
         int head = winclient.screen().getHead(winclient);
-        winclient.setStrut(winclient.screen().requestStrut(head, 
-                           data[0], data[1], 
+        winclient.setStrut(winclient.screen().requestStrut(head,
+                           data[0], data[1],
                            data[2], data[3]));
         winclient.screen().updateAvailableWorkspaceArea();
     }
@@ -1172,17 +1175,17 @@ void Ewmh::updateActions(FluxboxWindow &win) {
      *
      * _NET_WM_ALLOWED_ACTIONS, ATOM[]
      *
-     * A list of atoms indicating user operations that the 
+     * A list of atoms indicating user operations that the
      * Window Manager supports for this window. Atoms present  in the
-     * list indicate allowed actions, atoms not present in the list 
-     * indicate actions that are not supported for this window. The 
-     * Window Manager MUST keep this property updated to reflect the 
+     * list indicate allowed actions, atoms not present in the list
+     * indicate actions that are not supported for this window. The
+     * Window Manager MUST keep this property updated to reflect the
      * actions which are currently "active" or "sensitive" for a window.
-     * Taskbars, Pagers, and other tools use _NET_WM_ALLOWED_ACTIONS to 
-     * decide which actions should be made available to the user. 
+     * Taskbars, Pagers, and other tools use _NET_WM_ALLOWED_ACTIONS to
+     * decide which actions should be made available to the user.
      */
-    
-    typedef std::vector<Atom> ActionsVector;
+
+    typedef vector<Atom> ActionsVector;
     ActionsVector actions;
     actions.reserve(10);
     // all windows can change desktop,
@@ -1190,7 +1193,7 @@ void Ewmh::updateActions(FluxboxWindow &win) {
     actions.push_back(m_net_wm_action_change_desktop);
     actions.push_back(m_net_wm_action_shade);
     actions.push_back(m_net_wm_action_stick);
-    
+
     if (win.isResizable())
         actions.push_back(m_net_wm_action_resize);
     if (win.isMoveable())
@@ -1225,7 +1228,7 @@ void Ewmh::updateActions(FluxboxWindow &win) {
     for (; it != it_end; ++it) {
         (*it)->changeProperty(m_net_wm_allowed_actions, XA_ATOM, 32, PropModeReplace,
                               reinterpret_cast<unsigned char*>(&actions.front()),
-                              actions.size());        
+                              actions.size());
     }
 
 }
@@ -1267,7 +1270,7 @@ void Ewmh::setupState(FluxboxWindow &win) {
 }
 
 void Ewmh::updateFrameExtents(FluxboxWindow &win) {
-    /* Frame extents are basically the amount the window manager frame 
+    /* Frame extents are basically the amount the window manager frame
        protrudes from the client window, on left, right, top, bottom
        (it is independent of window position).
      */

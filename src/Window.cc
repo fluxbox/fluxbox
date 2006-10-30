@@ -58,8 +58,8 @@
 #endif // SHAPE
 
 //use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
 #include <X11/Xatom.h>
@@ -84,8 +84,22 @@
 #include <functional>
 #include <algorithm>
 
-using namespace std;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::vector;
+using std::bind2nd;
+using std::mem_fun;
+using std::equal_to;
+using std::max;
+using std::swap;
+
 using namespace FbTk;
+
+#ifdef DEBUG
+using std::dec;
+using std::hex;
+#endif // DEBUG
 
 namespace {
 
@@ -439,7 +453,7 @@ void FluxboxWindow::init() {
     decorations.enabled = true;
 
     // set default values for decoration
-    decorations.menu = true;	//override menu option
+    decorations.menu = true; //override menu option
     // all decorations on by default
     decorations.titlebar = decorations.border = decorations.handle = true;
     decorations.maximize = decorations.close =
@@ -518,7 +532,7 @@ void FluxboxWindow::init() {
 
     if (fluxbox.isStartup())
         place_window = false;
-    else if (m_client->isTransient() || 
+    else if (m_client->isTransient() ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
 
         int real_x = frame().x();
@@ -640,15 +654,15 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     if (client.fbwindow() != 0) {
         FluxboxWindow *old_win = client.fbwindow(); // store old window
 
-	ClientList::iterator client_insert_pos = getClientInsertPosition(x, y);
-	FbTk::TextButton *button_insert_pos = NULL;
-	if (client_insert_pos != m_clientlist.end())
+    ClientList::iterator client_insert_pos = getClientInsertPosition(x, y);
+    FbTk::TextButton *button_insert_pos = NULL;
+    if (client_insert_pos != m_clientlist.end())
             button_insert_pos = m_labelbuttons[*client_insert_pos];
 
         // make sure we set new window search for each client
         ClientList::iterator client_it = old_win->clientList().begin();
         ClientList::iterator client_it_end = old_win->clientList().end();
-	for (; client_it != client_it_end; ++client_it) {
+    for (; client_it != client_it_end; ++client_it) {
             // reparent window to this
             frame().setClientWindow(**client_it);
             if ((*client_it) == focused_win)
@@ -665,7 +679,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
             associateClient(*(*client_it));
 
             //null if we want the new button at the end of the list
-	    if (x >= 0 && button_insert_pos)
+        if (x >= 0 && button_insert_pos)
                 frame().moveLabelButtonLeftOf(*m_labelbuttons[*client_it], *button_insert_pos);
 
             (*client_it)->saveBlackboxAttribs(m_blackbox_attrib);
@@ -673,8 +687,8 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
         // add client and move over all attached clients
         // from the old window to this list
-	m_clientlist.splice(client_insert_pos, old_win->m_clientlist);
-	updateClientLeftWindow();
+    m_clientlist.splice(client_insert_pos, old_win->m_clientlist);
+    updateClientLeftWindow();
         old_win->m_client = 0;
 
         delete old_win;
@@ -879,7 +893,7 @@ void FluxboxWindow::moveClientLeft() {
     // move client in clientlist to the left
     ClientList::iterator oldpos = find(m_clientlist.begin(), m_clientlist.end(), &winClient());
     ClientList::iterator newpos = oldpos; newpos--;
-    std::swap(*newpos, *oldpos);
+    swap(*newpos, *oldpos);
     frame().moveLabelButtonLeft(*m_labelbuttons[&winClient()]);
 
     updateClientLeftWindow();
@@ -893,13 +907,13 @@ void FluxboxWindow::moveClientRight() {
 
     ClientList::iterator oldpos = find(m_clientlist.begin(), m_clientlist.end(), &winClient());
     ClientList::iterator newpos = oldpos; newpos++;
-    std::swap(*newpos, *oldpos);
+    swap(*newpos, *oldpos);
     frame().moveLabelButtonRight(*m_labelbuttons[&winClient()]);
 
     updateClientLeftWindow();
 }
 
-//std::list<*WinClient>::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
+//list<*WinClient>::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
 FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
 
     int dest_x = 0, dest_y = 0;
@@ -2448,7 +2462,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
         if (wsp != 0 && isGroupable())
             destroyed = wsp->checkGrouping(*this);
 
-	// if we weren't grouped with another window we deiconify ourself
+        // if we weren't grouped with another window we deiconify ourself
         if (!destroyed && !iconic)
             deiconify(false);
 
@@ -2612,7 +2626,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
 
             if (changed)
                 setupWindow();
-    	}
+       }
 
         moveResize(frame().x(), frame().y(),
                    frame().width(), frame().height());
@@ -3116,10 +3130,10 @@ void FluxboxWindow::setDecoration(Decoration decoration, bool apply) {
             decorations.iconify = decorations.maximize =
             decorations.tab = false; //tab is also a decor
         decorations.menu = true; // menu is present
-	//	functions.iconify = functions.maximize = true;
-	//	functions.move = true;   // We need to move even without decor
-	//	functions.resize = true; // We need to resize even without decor
-	break;
+    //  functions.iconify = functions.maximize = true;
+    //  functions.move = true;   // We need to move even without decor
+    //  functions.resize = true; // We need to resize even without decor
+    break;
 
     default:
     case DECOR_NORMAL:
@@ -3128,7 +3142,7 @@ void FluxboxWindow::setDecoration(Decoration decoration, bool apply) {
             decorations.menu = decorations.tab = true;
         functions.resize = functions.move = functions.iconify =
             functions.maximize = true;
-	break;
+    break;
 
     case DECOR_TAB:
         decorations.border = decorations.iconify = decorations.maximize =
@@ -3136,21 +3150,21 @@ void FluxboxWindow::setDecoration(Decoration decoration, bool apply) {
         decorations.titlebar = decorations.handle = false;
         functions.resize = functions.move = functions.iconify =
             functions.maximize = true;
-	break;
+    break;
 
     case DECOR_TINY:
         decorations.titlebar = decorations.iconify = decorations.menu =
             functions.move = functions.iconify = decorations.tab = true;
         decorations.border = decorations.handle = decorations.maximize =
             functions.resize = functions.maximize = false;
-	break;
+    break;
 
     case DECOR_TOOL:
         decorations.titlebar = decorations.tab = decorations.menu = functions.move = true;
         decorations.iconify = decorations.border = decorations.handle =
             decorations.maximize = functions.resize = functions.maximize =
             functions.iconify = false;
-	break;
+    break;
     }
 
     // we might want to wait with apply decorations
@@ -3778,14 +3792,14 @@ Window FluxboxWindow::clientWindow() const  {
     return m_client->window();
 }
 
-const std::string &FluxboxWindow::title() const {
+const string &FluxboxWindow::title() const {
     static string empty_string("");
     if (m_client == 0)
         return empty_string;
     return m_client->title();
 }
 
-const std::string &FluxboxWindow::iconTitle() const {
+const string &FluxboxWindow::iconTitle() const {
     static string empty_string("");
     if (m_client == 0)
         return empty_string;
@@ -3992,10 +4006,10 @@ void FluxboxWindow::setupWindow() {
     // clear old buttons from frame
     frame().removeAllButtons();
 
-    typedef FbTk::Resource<std::vector<WinButton::Type> > WinButtonsResource;
+    typedef FbTk::Resource<vector<WinButton::Type> > WinButtonsResource;
 
-    std::string titlebar_name[2];
-    std::string titlebar_alt_name[2];
+    string titlebar_name[2];
+    string titlebar_alt_name[2];
     titlebar_name[0] = screen().name() + ".titlebar.left";
     titlebar_alt_name[0] = screen().altName() + ".Titlebar.Left";
     titlebar_name[1] = screen().name() + ".titlebar.right";
@@ -4050,7 +4064,7 @@ void FluxboxWindow::setupWindow() {
 
     for (size_t c = 0; c < 2 ; c++) {
         // get titlebar configuration for current side
-        const std::vector<WinButton::Type> &dir = *(*titlebar_side[c]);
+        const vector<WinButton::Type> &dir = *(*titlebar_side[c]);
 
         for (size_t i=0; i < dir.size(); ++i) {
             //create new buttons
@@ -4142,10 +4156,10 @@ void FluxboxWindow::setupWindow() {
     if (screen().getScrollReverse())
         reverse = 1;
 
-    if (StringUtil::toLower(screen().getScrollAction()) == std::string("shade")) {
+    if (StringUtil::toLower(screen().getScrollAction()) == string("shade")) {
         frame().setOnClickTitlebar(shade_on_cmd, 5 - reverse); // shade on mouse roll
         frame().setOnClickTitlebar(shade_off_cmd, 4 + reverse); // unshade if rolled oposite direction
-    } else if (StringUtil::toLower(screen().getScrollAction()) == std::string("nexttab")) {
+    } else if (StringUtil::toLower(screen().getScrollAction()) == string("nexttab")) {
         frame().setOnClickTitlebar(next_tab_cmd, 5 - reverse); // next tab
         frame().setOnClickTitlebar(prev_tab_cmd, 4 + reverse); // previous tab
     }
