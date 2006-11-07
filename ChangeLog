@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/11/07:
+   * Cosmetic patch from Slava Semushin
+     tests/texturetest.cc WorkspaceCmd.cc ToolbarTheme.cc FbTk/Layer.hh
+     FbTk/MultLayers.cc FbTk/Image.cc FbTk/TextBox.cc Shape.cc ClientPattern.cc
+     FbWinFrame.cc
+
 *06/10/30:
    * Cosmetic patch from Slava Semushin
      CommandDialog.cc Ewmh.cc FbCommands.cc FbAtoms.cc Xutil.cc Gnome.cc

@@ -25,7 +25,6 @@
 
 #include "FbTk/App.hh"
 
-#include <iostream>
 #include <string>
 
 using std::string;

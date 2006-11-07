@@ -42,8 +42,6 @@
 #include <algorithm>
 #include <X11/X.h>
 
-#include <iostream>
-
 using std::mem_fun;
 using std::string;
 

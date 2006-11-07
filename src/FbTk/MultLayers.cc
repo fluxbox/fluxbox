@@ -27,8 +27,6 @@
 #include "XLayerItem.hh"
 #include "App.hh"
 
-#include <iostream>
-
 using namespace FbTk;
 
 MultLayers::MultLayers(int numlayers) :

@@ -37,7 +37,6 @@
 #endif // HAVE_IMLIB2
 
 #include <list>
-#include <iostream>
 #include <set>
 
 using std::string;

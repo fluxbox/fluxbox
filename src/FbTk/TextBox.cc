@@ -35,8 +35,6 @@
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
 
-#include <iostream>
-
 namespace FbTk {
 
 TextBox::TextBox(int screen_num,

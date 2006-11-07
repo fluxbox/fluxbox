@@ -40,7 +40,6 @@
 #endif
 #include <algorithm>
 #include <functional>
-#include <iostream>
 
 void NextWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();

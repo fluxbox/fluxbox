@@ -44,7 +44,6 @@
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
-#include <iostream>
 #include <algorithm>
 
 using std::min;
