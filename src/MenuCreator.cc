@@ -27,7 +27,6 @@
 #include "Screen.hh"
 #include "CommandParser.hh"
 #include "fluxbox.hh"
-#include "CommandParser.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
 

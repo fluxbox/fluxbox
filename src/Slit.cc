@@ -65,9 +65,6 @@
 #include "FbTk/StringUtil.hh"
 #include "FbTk/I18n.hh"
 
-#include <algorithm>
-#include <iostream>
-
 #ifdef HAVE_SYS_STAT_H
 #include <sys/types.h>
 #include <sys/stat.h>

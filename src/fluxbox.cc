@@ -50,7 +50,6 @@
 #include "FbTk/XrmDatabaseHelper.hh"
 #include "FbTk/Command.hh"
 #include "FbTk/RefCount.hh"
-#include "FbTk/SimpleCommand.hh"
 #include "FbTk/CompareEqual.hh"
 #include "FbTk/Transparent.hh"
 #include "FbTk/Select2nd.hh"
@@ -330,10 +329,14 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     setupConfigFiles();
 
     if (! XSupportsLocale())
-        cerr<<_FB_CONSOLETEXT(Fluxbox, WarningLocale, "Warning: X server does not support locale", "XSupportsLocale returned false")<<endl;
+        cerr<<_FB_CONSOLETEXT(Fluxbox, WarningLocale, 
+                              "Warning: X server does not support locale", 
+                              "XSupportsLocale returned false")<<endl;
 
     if (XSetLocaleModifiers("") == 0)
-        cerr<<_FB_CONSOLETEXT(Fluxbox, WarningLocaleModifiers, "Warning: cannot set locale modifiers", "XSetLocaleModifiers returned false")<<endl;
+        cerr<<_FB_CONSOLETEXT(Fluxbox, WarningLocaleModifiers, 
+                              "Warning: cannot set locale modifiers", 
+                              "XSetLocaleModifiers returned false")<<endl;
 
 
 #ifdef HAVE_GETPID
@@ -353,7 +356,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     for (i = 1; i < m_argc; i++) {
         if (! strcmp(m_argv[i], "-screen")) {
             if ((++i) >= m_argc) {
-                cerr << _FB_CONSOLETEXT(main, ScreenRequiresArg, "error, -screen requires argument", "the -screen option requires a file argument") << endl;
+                cerr << _FB_CONSOLETEXT(main, ScreenRequiresArg, 
+                                        "error, -screen requires argument", 
+                                        "the -screen option requires a file argument") << endl;
                 exit(1);
             }
 

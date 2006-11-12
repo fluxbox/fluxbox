@@ -72,12 +72,6 @@
 
 #include <errno.h>
 
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-
 using std::string;
 using std::map;
 using std::list;

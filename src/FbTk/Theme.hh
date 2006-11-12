@@ -31,7 +31,6 @@
 #include <string>
 #include <list>
 #include <vector>
-#include <string>
 
 #include "XrmDatabaseHelper.hh"
 #include "Subject.hh"

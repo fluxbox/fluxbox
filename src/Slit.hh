@@ -36,7 +36,6 @@
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/XLayerItem.hh"
-#include "Layer.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
