@@ -1659,17 +1659,6 @@ void Fluxbox::reconfigure() {
 
 void Fluxbox::real_reconfigure() {
 
-    XrmDatabase new_fluxboxrc = (XrmDatabase) 0;
-
-    string dbfile(getRcFilename());
-    XrmDatabase old_fluxboxrc = XrmGetFileDatabase(dbfile.c_str());
-
-    XrmMergeDatabases(new_fluxboxrc, &old_fluxboxrc);
-    XrmPutFileDatabase(old_fluxboxrc, dbfile.c_str());
-
-    if (old_fluxboxrc)
-        XrmDestroyDatabase(old_fluxboxrc);
-
     ScreenList::iterator screen_it = m_screen_list.begin();
     ScreenList::iterator screen_it_end = m_screen_list.end();
     for (; screen_it != screen_it_end; ++screen_it)
