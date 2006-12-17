@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/12/17:
+   * Stop cycling focus when any other command is run, e.g. bug #1595336 (Mark)
+     fluxbox.cc WorkspaceCmd.cc
 *06/12/16:
    * Remove useless stuff from code that reloads configuration (Mark)
      fluxbox.cc

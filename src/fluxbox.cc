@@ -1113,12 +1113,22 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
     if (keyScreen() == 0 || mouseScreen() == 0)
         return;
 
+    BScreen *old_watching_screen = m_watching_screen;
+
     switch (ke.type) {
     case KeyPress:
-        if (m_key->doAction(ke))
+        // see if we need to keep watching for key releases
+        m_watching_screen = 0;
+        if (m_key->doAction(ke)) {
             XAllowEvents(FbTk::App::instance()->display(), AsyncKeyboard, CurrentTime);
-        else
+            // if we've done some action other than cycling focus
+            if (old_watching_screen && m_watching_screen != old_watching_screen)
+                old_watching_screen->notifyReleasedKeys(ke);
+        } else {
             XAllowEvents(FbTk::App::instance()->display(), ReplayKeyboard, CurrentTime);
+            // could still be cycling
+            m_watching_screen = old_watching_screen;
+        }
         break;
     case KeyRelease: {
         // we ignore most key releases unless we need to use
