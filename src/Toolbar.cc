@@ -721,7 +721,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPRIGHT | Shape::TOPLEFT);
         break;
     case LEFTCENTER:
-        orient = FbTk::ROT90;
+        orient = FbTk::ROT270;
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height)/2 - border_width;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
@@ -730,7 +730,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case LEFTTOP:
-        orient = FbTk::ROT90;
+        orient = FbTk::ROT270;
         frame.x = head_x;
         frame.y = head_y;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
@@ -739,7 +739,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case LEFTBOTTOM:
-        orient = FbTk::ROT90;
+        orient = FbTk::ROT270;
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
@@ -748,7 +748,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case RIGHTCENTER:
-        orient = FbTk::ROT270;
+        orient = FbTk::ROT90;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + (head_h - frame.height)/2 - border_width;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
@@ -757,7 +757,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
         break;
     case RIGHTTOP:
-        orient = FbTk::ROT270;
+        orient = FbTk::ROT90;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
@@ -766,7 +766,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
         break;
     case RIGHTBOTTOM:
-        orient = FbTk::ROT270;
+        orient = FbTk::ROT90;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
@@ -953,12 +953,12 @@ void Toolbar::rearrangeItems() {
     case LEFTTOP:
     case LEFTCENTER:
     case LEFTBOTTOM:
-        orient = FbTk::ROT90;
+        orient = FbTk::ROT270;
         break;
     case RIGHTTOP:
     case RIGHTCENTER:
     case RIGHTBOTTOM:
-        orient = FbTk::ROT270;
+        orient = FbTk::ROT90;
         break;
     default:
         orient = FbTk::ROT0;

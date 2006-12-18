@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/12/18:
+   * Rotate items in toolbar the same way as tabs (Mark)
+     Toolbar.cc
 *06/12/17:
    * Stop cycling focus when any other command is run, e.g. bug #1595336 (Mark)
      fluxbox.cc WorkspaceCmd.cc
