@@ -124,42 +124,42 @@ void KeyUtil::grabKey(unsigned int key, unsigned int mod) {
 		
         XGrabKey(display, key, mod,
                  root, True,
-                 GrabModeAsync, GrabModeSync);
+                 GrabModeAsync, GrabModeAsync);
 						
         // Grab with numlock, capslock and scrlock	
 
         //numlock	
         XGrabKey(display, key, mod|nummod,
                  root, True,
-                 GrabModeAsync, GrabModeSync);		
+                 GrabModeAsync, GrabModeAsync);		
         //scrolllock
         XGrabKey(display, key, mod|scrollmod,
                  root, True,
-                 GrabModeAsync, GrabModeSync);	
+                 GrabModeAsync, GrabModeAsync);	
         //capslock
         XGrabKey(display, key, mod|capsmod,
                  root, True,
-                 GrabModeAsync, GrabModeSync);
+                 GrabModeAsync, GrabModeAsync);
 	
         //capslock+numlock
         XGrabKey(display, key, mod|capsmod|nummod,
                  root, True,
-                 GrabModeAsync, GrabModeSync);
+                 GrabModeAsync, GrabModeAsync);
 
         //capslock+scrolllock
         XGrabKey(display, key, mod|capsmod|scrollmod,
                  root, True,
-                 GrabModeAsync, GrabModeSync);						
+                 GrabModeAsync, GrabModeAsync);						
 	
         //capslock+numlock+scrolllock
         XGrabKey(display, key, mod|capsmod|scrollmod|nummod,
                  root, True,
-                 GrabModeAsync, GrabModeSync);						
+                 GrabModeAsync, GrabModeAsync);						
 
         //numlock+scrollLock
         XGrabKey(display, key, mod|nummod|scrollmod,
                  root, True,
-                 GrabModeAsync, GrabModeSync);
+                 GrabModeAsync, GrabModeAsync);
 	
     }
 			

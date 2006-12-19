@@ -1,5 +1,16 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/12/19:
+   * Little simplification of data structure for keybindings (Mark)
+     Side effects:
+     - "Mod4 a b" now behaves like "Mod4 a None b" -- in fact, "None" is now
+       completely obsolete
+     - You can press "Escape" to cancel any Emacs-style keychain in progress
+       (unless it's bound to something else)
+     - If there is a conflict between bindings, the first one in the file wins
+     - Fixes handling of keychains like "Mod4 a Mod1 b"
+     - Should fix some issues with "None" modifier
+     Keys.cc/hh FbTk/KeyUtil.cc fluxbox.cc
 *06/12/18:
    * Rotate items in toolbar the same way as tabs (Mark)
      Toolbar.cc

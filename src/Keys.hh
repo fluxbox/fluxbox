@@ -116,18 +116,13 @@ private:
         keylist_t keylist;
     };
 
-    /**
-       merge two linked list
-       @return true on success, else false
-    */
-    bool mergeTree(t_key *newtree, t_key *basetree=0);
+    void setKeyMode(t_key *keyMode);
 
-    typedef std::map<std::string, keylist_t *> keyspace_t;
-    keylist_t *m_keylist;
+    typedef std::map<std::string, t_key *> keyspace_t;
+    t_key *m_keylist;
     keyspace_t m_map;
 
     Display *m_display;  ///< display connection
-    unsigned int m_current_line;
 };
 
 #endif // KEYS_HH

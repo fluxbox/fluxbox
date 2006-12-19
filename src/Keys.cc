@@ -94,6 +94,7 @@ using std::endl;
 using std::string;
 using std::vector;
 using std::ifstream;
+using std::pair;
 
 Keys::Keys():
     m_display(FbTk::App::instance()->display())
@@ -109,14 +110,8 @@ Keys::~Keys() {
 
 /// Destroys the keytree
 void Keys::deleteTree() {
-    for (keyspace_t::iterator map_it = m_map.begin(); map_it != m_map.end(); ++map_it) {
-        keylist_t::iterator it = map_it->second->begin();
-        const keylist_t::iterator it_end = map_it->second->end();
-        for ( ; it != it_end; it++)
-            delete *it;
-        map_it->second->clear();
+    for (keyspace_t::iterator map_it = m_map.begin(); map_it != m_map.end(); ++map_it)
         delete map_it->second;
-    }
     m_map.clear();
 }
 
@@ -129,13 +124,10 @@ bool Keys::load(const char *filename) {
     if (!filename)
         return false;
 
-    //ungrab all keys
-    FbTk::KeyUtil::ungrabKeys();
-
     //free memory of previous grabs
     deleteTree();
 
-    m_map["default:"] = new keylist_t;
+    m_map["default:"] = new t_key(0,0);
 
     FbTk::App::instance()->sync(false);
 
@@ -144,21 +136,25 @@ bool Keys::load(const char *filename) {
     if (!infile)
         return false; // faild to open file
 
-    m_current_line = 0;//current line, so we can tell the user where the fault is
+    unsigned int current_line = 0;//so we can tell the user where the fault is
 
     while (!infile.eof()) {
         string linebuffer;
 
         getline(infile, linebuffer);
 
-        m_current_line++;
+        current_line++;
 
-        addBinding(linebuffer);
+        if (!addBinding(linebuffer)) {
+            cerr<<_FB_CONSOLETEXT(Keys, InvalidKeyMod,
+                          "Keys: Invalid key/modifier on line",
+                          "A bad key/modifier string was found on line (number following)")<<" "<<
+                current_line<<"): "<<linebuffer<<endl;
+        }
     } // end while eof
 
-    m_current_line = 0;
     m_filename = filename;
-    m_keylist = m_map["default:"];
+    keyMode("default");
     return true;
 }
 
@@ -189,16 +185,16 @@ bool Keys::addBinding(const string &linebuffer) {
         return true; // still a valid line.
 
     unsigned int key = 0, mod = 0;
-    t_key *current_key=0, *last_key=0;
     size_t argc = 0;
-    string keyMode = "default:";
+    t_key *current_key=m_map["default:"];
+    t_key *first_new_keylist = current_key, *first_new_key=0;
 
     if (val[0][val[0].length()-1] == ':') {
         argc++;
         keyspace_t::iterator it = m_map.find(val[0]);
         if (it == m_map.end())
-            m_map[val[0]] = new keylist_t;
-        keyMode = val[0];
+            m_map[val[0]] = new t_key(0,0);
+        current_key = m_map[val[0]];
     }
     _FB_USES_NLS;
     // for each argument
@@ -209,9 +205,7 @@ bool Keys::addBinding(const string &linebuffer) {
             int tmpmod = FbTk::KeyUtil::getModifier(val[argc].c_str());
             if(tmpmod)
                 mod |= tmpmod; //If it's a modifier
-            else if (strcasecmp("NONE",val[argc].c_str()) == 0)
-                mod = 0;
-            else {
+            else if (strcasecmp("NONE",val[argc].c_str())) {
                 // keycode covers the following three two-byte cases:
                 // 0x       - hex
                 // +[1-9]   - number between +1 and +9
@@ -229,111 +223,86 @@ bool Keys::addBinding(const string &linebuffer) {
                 } else // convert from string symbol
                     key = FbTk::KeyUtil::getKey(val[argc].c_str());
 
-                if (key == 0) {
-                    cerr<<_FB_CONSOLETEXT(Keys, InvalidKeyMod,
-                                  "Keys: Invalid key/modifier on line",
-                                  "A bad key/modifier string was found on line (number following)")<<" "<<
-                        m_current_line<<"): "<<linebuffer<<endl;
+                if (key == 0)
                     return false;
-                }
-                if (!current_key) {
-                    current_key = new t_key(key, mod);
-                    last_key = current_key;
+                if (!first_new_key) {
+                    first_new_keylist = current_key;
+                    current_key = current_key->find(key, mod);
+                    if (!current_key) {
+                        first_new_key = new t_key(key, mod);
+                        current_key = first_new_key;
+                    } else if (*current_key->m_command) // already being used
+                        return false;
                 } else {
                     t_key *temp_key = new t_key(key, mod);
-                    last_key->keylist.push_back(temp_key);
-                    last_key = temp_key;
+                    current_key->keylist.push_back(temp_key);
+                    current_key = temp_key;
                 }
+                mod = 0;
+                key = 0;
             }
 
         } else { // parse command line
-            if (last_key == 0) {
-                cerr<<_FB_CONSOLETEXT(Keys, BadLine, "Keys: Error on line", "Error on line (number following)")<<": "<<m_current_line<<endl;
-                cerr<<"> "<<linebuffer<<endl;
+            if (!first_new_key)
+                return false;
+
+            const char *str = FbTk::StringUtil::strcasestr(linebuffer.c_str(),
+                    val[argc].c_str() + 1); // +1 to skip ':'
+            if (str)
+                current_key->m_command = CommandParser::instance().parseLine(str);
+
+            if (!str || *current_key->m_command == 0 || mod) {
+                delete first_new_key;
                 return false;
             }
-            bool ret_val = true;
-            const char *str =
-                FbTk::StringUtil::strcasestr(linebuffer.c_str(),
-                                             val[argc].c_str() + 1); // +1 to skip ':'
-            if (str == 0) {
-                cerr<<_FB_CONSOLETEXT(Keys, BadLine, "Keys: Error on line", "Error on line (number following)")<<": "<<m_current_line<<endl;
-                cerr<<"> "<<linebuffer<<endl;
-                ret_val = false;
-            } else {
 
-                last_key->m_command = CommandParser::instance().parseLine(str);
-
-                if (*last_key->m_command == 0) {
-                    cerr<<_FB_CONSOLETEXT(Keys, BadLine, "Keys: Error on line", "Error on line (number following)")<<": "<<m_current_line<<endl;
-                    cerr<<"> "<<linebuffer<<endl;
-                } else {
-                    // need to change keymode here so it doesn't get changed by CommandParser
-                    m_keylist = m_map[keyMode];
-                    // Add the keychain to list
-                    if (!mergeTree(current_key)) {
-                        cerr<<_FB_CONSOLETEXT(Keys, BadMerge, "Keys: Failed to merge keytree!", "relatively technical error message. Key bindings are stored in a tree structure")<<endl;
-                        ret_val = false;
-                    }
-                }
-            }
-            delete current_key;
-            current_key = 0;
-            last_key = 0;
-
-            return ret_val;
-
+            // success
+            first_new_keylist->keylist.push_back(first_new_key);
+            return true;
         }  // end if
     } // end for
 
     return false;
 }
 
-
-/**
- @return the KeyAction of the XKeyEvent; return false if not bound
-*/
+// return true if bound to a command, else false
 bool Keys::doAction(XKeyEvent &ke) {
 
     ke.state = FbTk::KeyUtil::instance().cleanMods(ke.state);
 
-    static struct t_key* next_key = 0;
-
-    if (!next_key) {
-        bool retval = false;
-        // need a local keylist, in case m_command->execute() changes it
-        keylist_t *keylist = m_keylist;
-        for (size_t i = 0; i < keylist->size(); i++) {
-            if (*(*keylist)[i] == ke) {
-                if ((*keylist)[i]->keylist.size()) {
-                    next_key = (*keylist)[i];
-                    return true; //still counts as being grabbed
-                }
-                if (*(*keylist)[i]->m_command != 0) {
-                    (*keylist)[i]->m_command->execute();
-                    retval = true;
-                }
-            }
-        }
-        return retval;
-    }
+    static t_key* next_key = m_keylist;
+    if (!next_key)
+        next_key = m_keylist;
     t_key *temp_key = next_key->find(ke);
-    if (temp_key) {
-        if (temp_key->keylist.size()) {
-            next_key = temp_key;
-            return true;
-        }
-        next_key = 0;
-        if (*temp_key->m_command == 0)
-            return false;
-        temp_key->m_command->execute();
+
+
+    // need to save this for emacs-style keybindings
+    static t_key *saved_keymode = 0;
+
+    if (temp_key && temp_key->keylist.size()) { // emacs-style
+        saved_keymode = m_keylist;
+        next_key = temp_key;
+        setKeyMode(next_key);
+        // grab "None Escape" to exit keychain in the middle
+        unsigned int esc = FbTk::KeyUtil::getKey("Escape");
+        FbTk::KeyUtil::grabKey(esc,0);
         return true;
     }
-    temp_key = next_key;
-    next_key = 0;
-    if (*temp_key->m_command == 0)
+    if (!temp_key || *temp_key->m_command == 0) {
+        next_key = 0;
+        if (saved_keymode) {
+            setKeyMode(saved_keymode);
+            saved_keymode = 0;
+        }
         return false;
+    }
     temp_key->m_command->execute();
+    if (saved_keymode) {
+        if (next_key == m_keylist) // don't reset keymode if command changed it
+            setKeyMode(saved_keymode);
+        saved_keymode = 0;
+    }
+    next_key = 0;
     return true;
 }
 
@@ -345,62 +314,21 @@ bool Keys::reconfigure(const char *filename) {
     return load(filename);
 }
 
-/**
- Merges two chains and binds new keys
- @return true on success else false.
-*/
-bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
-    size_t baselist_i = 0;
-    if (basetree==0) {
-        for (; baselist_i<m_keylist->size(); baselist_i++) {
-            if ((*m_keylist)[baselist_i]->mod == newtree->mod &&
-                (*m_keylist)[baselist_i]->key == newtree->key) {
-                if (newtree->keylist.size() && *(*m_keylist)[baselist_i]->m_command == 0) {
-                    //assumes the newtree only have one branch
-                    return mergeTree(newtree->keylist[0], (*m_keylist)[baselist_i]);
-                } else
-                    break;
-            }
-        }
-
-        if (baselist_i == m_keylist->size()) {
-            FbTk::KeyUtil::grabKey(newtree->key, newtree->mod);
-            m_keylist->push_back(new t_key(newtree));
-            if (newtree->keylist.size())
-                return mergeTree(newtree->keylist[0], m_keylist->back());
-            return true;
-        }
-
-    } else {
-        for (; baselist_i<basetree->keylist.size(); baselist_i++) {
-            if (basetree->keylist[baselist_i]->mod == newtree->mod &&
-                basetree->keylist[baselist_i]->key == newtree->key) {
-                if (newtree->keylist.size()) {
-                    //assumes the newtree only have on branch
-                    return mergeTree(newtree->keylist[0], basetree->keylist[baselist_i]);
-                } else
-                    return false;
-            }
-        }
-        //if it wasn't in the list grab the key and add it to the list
-        if (baselist_i==basetree->keylist.size()) {
-            FbTk::KeyUtil::grabKey(newtree->key, newtree->mod);
-            basetree->keylist.push_back(new t_key(newtree));
-            if (newtree->keylist.size())
-                return mergeTree(newtree->keylist[0], basetree->keylist.back());
-            return true;
-        }
-    }
-
-    return false;
-}
-
-void Keys::keyMode(string keyMode = "default") {
+void Keys::keyMode(string keyMode) {
     keyspace_t::iterator it = m_map.find(keyMode + ":");
     if (it == m_map.end())
-        m_keylist = m_map["default:"];
+        setKeyMode(m_map["default:"]);
     else
-        m_keylist = it->second;
+        setKeyMode(it->second);
+}
+
+void Keys::setKeyMode(t_key *keyMode) {
+    FbTk::KeyUtil::ungrabKeys();
+    keylist_t::iterator it = keyMode->keylist.begin();
+    keylist_t::iterator it_end = keyMode->keylist.end();
+    for (; it != it_end; ++it)
+        FbTk::KeyUtil::grabKey((*it)->key,(*it)->mod);
+    m_keylist = keyMode;
 }
 
 Keys::t_key::t_key(unsigned int key_, unsigned int mod_, FbTk::RefCount<FbTk::Command> command) {
@@ -416,12 +344,7 @@ Keys::t_key::t_key(t_key *k) {
 }
 
 Keys::t_key::~t_key() {
-    while (!keylist.empty()) {
-        t_key *k = keylist.back();
-        if (k != 0) { // make sure we don't have a bad key pointer
-            delete k;
-            keylist.pop_back();
-        }
-    }
-
+    for (keylist_t::iterator list_it = keylist.begin(); list_it != keylist.end(); ++list_it)
+        delete *list_it;
+    keylist.clear();
 }
