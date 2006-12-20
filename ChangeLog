@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/12/20:
+   * Fixed a few bugs with tabbed windows on restart (Mark)
+     Window.cc FocusControl.hh
 *06/12/19:
    * Little simplification of data structure for keybindings (Mark)
      Side effects:

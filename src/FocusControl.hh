@@ -95,6 +95,7 @@ public:
     WinClient *lastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client);
 
     FocusedWindows &creationOrderList() { return m_creation_order_list; }
+    FocusedWindows &focusedOrderList() { return m_focused_list; }
 
     void removeClient(WinClient &client);
     void shutdown();

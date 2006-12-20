@@ -641,8 +641,8 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
     // reparent client win to this frame
     frame().setClientWindow(client);
-    WinClient *was_focused = 0;
-    WinClient *focused_win = FocusControl::focusedWindow();
+    bool was_focused = false;
+    WinClient *focused_win = 0;
 
     // get the current window on the end of our client list
     Window leftwin = None;
@@ -654,19 +654,31 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     if (client.fbwindow() != 0) {
         FluxboxWindow *old_win = client.fbwindow(); // store old window
 
-    ClientList::iterator client_insert_pos = getClientInsertPosition(x, y);
-    FbTk::TextButton *button_insert_pos = NULL;
-    if (client_insert_pos != m_clientlist.end())
+        // figure out which client to raise at the end
+        if (FocusControl::focusedFbWindow() == old_win) {
+            was_focused = true;
+            focused_win = FocusControl::focusedWindow();
+        } else if (FocusControl::focusedFbWindow() != this) {
+            FocusControl::FocusedWindows focus_list =
+                    screen().focusControl().focusedOrderList();
+            FocusControl::FocusedWindows::iterator it = focus_list.begin();
+            for (; it != focus_list.end() && !focused_win; ++it) {
+                if ((*it)->fbwindow() == this || (*it)->fbwindow() == old_win)
+                    focused_win = *it;
+            }
+        }
+
+        ClientList::iterator client_insert_pos = getClientInsertPosition(x, y);
+        FbTk::TextButton *button_insert_pos = NULL;
+        if (client_insert_pos != m_clientlist.end())
             button_insert_pos = m_labelbuttons[*client_insert_pos];
 
         // make sure we set new window search for each client
         ClientList::iterator client_it = old_win->clientList().begin();
         ClientList::iterator client_it_end = old_win->clientList().end();
-    for (; client_it != client_it_end; ++client_it) {
+        for (; client_it != client_it_end; ++client_it) {
             // reparent window to this
             frame().setClientWindow(**client_it);
-            if ((*client_it) == focused_win)
-                was_focused = focused_win;
 
             moveResizeClient(**client_it,
                              frame().clientArea().x(),
@@ -679,7 +691,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
             associateClient(*(*client_it));
 
             //null if we want the new button at the end of the list
-        if (x >= 0 && button_insert_pos)
+            if (x >= 0 && button_insert_pos)
                 frame().moveLabelButtonLeftOf(*m_labelbuttons[*client_it], *button_insert_pos);
 
             (*client_it)->saveBlackboxAttribs(m_blackbox_attrib);
@@ -687,8 +699,8 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
         // add client and move over all attached clients
         // from the old window to this list
-    m_clientlist.splice(client_insert_pos, old_win->m_clientlist);
-    updateClientLeftWindow();
+        m_clientlist.splice(client_insert_pos, old_win->m_clientlist);
+        updateClientLeftWindow();
         old_win->m_client = 0;
 
         delete old_win;
@@ -702,8 +714,10 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
                          frame().clientArea().width(),
                          frame().clientArea().height());
 
-        if (&client == focused_win)
-            was_focused = focused_win;
+        if (&client == FocusControl::focusedWindow()) {
+            was_focused = true;
+            focused_win = &client;
+        }
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
         m_clientlist.push_back(&client);
@@ -716,13 +730,15 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     m_workspacesig.notify();
     m_layersig.notify();
 
-    if (was_focused != 0)
+    if (was_focused)
         // already has focus, we're just assuming the state of the old window
         FocusControl::setFocusedWindow(&client);
 
     frame().reconfigure();
 
     // keep the current window on top
+    if (focused_win)
+        m_client = focused_win;
     m_client->raise();
 }
 
@@ -777,6 +793,7 @@ bool FluxboxWindow::detachClient(WinClient &client) {
     // m_client must be valid as there should be at least one other window
     // otherwise this wouldn't be here (refer numClients() <= 1 return)
     client.setFluxboxWindow(screen().createWindow(client));
+    client.setGroupLeftWindow(None);
     return true;
 }
 
