@@ -146,6 +146,7 @@ bool Keys::load(const char *filename) {
         current_line++;
 
         if (!addBinding(linebuffer)) {
+            _FB_USES_NLS;
             cerr<<_FB_CONSOLETEXT(Keys, InvalidKeyMod,
                           "Keys: Invalid key/modifier on line",
                           "A bad key/modifier string was found on line (number following)")<<" "<<
@@ -196,7 +197,6 @@ bool Keys::addBinding(const string &linebuffer) {
             m_map[val[0]] = new t_key(0,0);
         current_key = m_map[val[0]];
     }
-    _FB_USES_NLS;
     // for each argument
     for (; argc < val.size(); argc++) {
 
