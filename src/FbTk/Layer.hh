@@ -41,18 +41,22 @@ public:
     virtual iterator insert(ItemType &item, unsigned int pos=0);
     /// remove item from list
     virtual void remove(ItemType &item);
+#ifdef NOT_USED
     /// cycle all item upwards
     virtual void cycleUp();
     /// cycle all items downwards
     virtual void cycleDown();
+#endif // NOT_USED
     /// move item to top
     virtual void raise(ItemType &item);
     /// move item to bottom
     virtual void lower(ItemType &item);
+#ifdef NOT_USED
     /// raise a specific item one step
     virtual void stepUp(ItemType &item);
     /// lower a specific item one step
     virtual void stepDown(ItemType &item);
+#endif // NOT_USED
     virtual void restack();
     /// @return layer item on specific position, on failure 0
     ItemType *getItem(unsigned int position);
@@ -93,6 +97,7 @@ void Layer<ItemType, Container>::remove(ItemType &item) {
         m_list.erase(it);
 }
 
+#ifdef NOT_USED
 template <typename ItemType, typename Container>
 void Layer<ItemType, Container>::cycleUp() {
     if (size() == 0)
@@ -157,6 +162,8 @@ void Layer<ItemType, Container>::stepDown(ItemType &item) {
     itemList().insert(new_pos, textitem);
     restack();
 }
+#endif // NOT_USED
+
 template <typename ItemType, typename Container>
 void Layer<ItemType, Container>::raise(ItemType &item) {
     if (&item == itemList().front()) // already at the bottom

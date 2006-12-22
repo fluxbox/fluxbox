@@ -63,12 +63,14 @@ public:
     iterator insert(XLayerItem &item, unsigned int pos=0);
     void remove(XLayerItem &item);
 
+#ifdef NOT_USED
     // move highest to bottom
     void cycleUp();
     void cycleDown();
     // just go above the next window up in the current layer (not all the way to the top)
     void stepUp(XLayerItem &item);
     void stepDown(XLayerItem &item);
+#endif // NOT_USED
 
     // bring to top of layer
     void raise(XLayerItem &item);

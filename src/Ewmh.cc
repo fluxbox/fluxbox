@@ -399,9 +399,6 @@ void Ewmh::updateClientList(BScreen &screen) {
     for (; client_it != client_it_end; ++client_it)
         wl[win++] = (*client_it)->window();
 
-    //number of windows to show in client list
-    num = win;
-
     /*  From Extended Window Manager Hints, draft 1.3:
      *
      * _NET_CLIENT_LIST, WINDOW[]/32

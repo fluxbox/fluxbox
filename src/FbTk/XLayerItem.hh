@@ -48,9 +48,11 @@ public:
     void lower();
     void tempRaise(); // this raise gets reverted by a restack()
 
+#ifdef NOT_USED
     // go above the next item visible in this layer
     void stepUp();
     void stepDown();
+#endif // NOT_USED
 
     // send to next layer up
     void raiseLayer();

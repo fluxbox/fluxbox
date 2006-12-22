@@ -34,8 +34,11 @@ public:
 
     virtual void raise() = 0;
     virtual void lower() = 0;
+
+#ifdef NOT_USED
     virtual void stepUp() = 0;
     virtual void stepDown() = 0;
+#endif // NOT_USED
 };
 
 } // end namespace FbTk

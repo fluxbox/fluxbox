@@ -190,6 +190,7 @@ void XLayer::remove(XLayerItem &item) {
     }
 }
 
+#ifdef NOT_USED
 void XLayer::cycleUp() {
     // need to find highest visible window, and move it to bottom
     iterator it = itemList().begin();
@@ -265,8 +266,7 @@ void XLayer::stepDown(XLayerItem &item) {
         return; // nothing to do
 
     // get our position
-    iterator myit = find(itemList().begin(), itemList().end(), &item);
-    iterator it = myit;
+    iterator it = find(itemList().begin(), itemList().end(), &item);
 
     // go one below it (top is front, so we must increment)
     it++;
@@ -282,6 +282,7 @@ void XLayer::stepDown(XLayerItem &item) {
         stackBelowItem(&item, *it);
     // if we did reach the end, then there are no visible windows, so we don't do anything
 }
+#endif // NOT_USED
 
 void XLayer::raise(XLayerItem &item) {
     // assume it is already in this layer
