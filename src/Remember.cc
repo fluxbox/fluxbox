@@ -772,7 +772,7 @@ void Remember::save() {
 
         if (a.focushiddenstate_remember || a.iconhiddenstate_remember) {
             if (a.focushiddenstate_remember && a.iconhiddenstate_remember &&
-                a.focushiddenstate && a.iconhiddenstate)
+                a.focushiddenstate == a.iconhiddenstate)
                 apps_file << "  [Hidden]\t{" << ((a.focushiddenstate)?"yes":"no") << "}" << endl;
             else if (a.focushiddenstate_remember) {
                 apps_file << "  [FocusHidden]\t{" << ((a.focushiddenstate)?"yes":"no") << "}" << endl;
@@ -981,9 +981,9 @@ void Remember::setupFrame(FluxboxWindow &win) {
         app->group = &win;
 
     if (app->focushiddenstate_remember)
-        win.setFocusHidden(true);
+        win.setFocusHidden(app->focushiddenstate);
     if (app->iconhiddenstate_remember)
-        win.setIconHidden(true);
+        win.setIconHidden(app->iconhiddenstate);
     if (app->layer_remember)
         win.moveToLayer(app->layer);
     if (app->decostate_remember)
@@ -998,7 +998,7 @@ void Remember::setupFrame(FluxboxWindow &win) {
     if (app->workspace_remember) {
         // we use setWorkspace and not reassoc because we're still initialising
         win.setWorkspace(app->workspace);
-        if (app->jumpworkspace_remember)
+        if (app->jumpworkspace_remember && app->jumpworkspace)
             screen.changeWorkspaceID(app->workspace);
     }
 
@@ -1070,6 +1070,9 @@ void Remember::setupClient(WinClient &winclient) {
 
     if (winclient.fbwindow() == 0 && app->is_grouped && app->group) {
         app->group->attachClient(winclient);
+        if (app->jumpworkspace_remember && app->jumpworkspace)
+            // jump to window, not saved workspace
+            winclient.screen().changeWorkspaceID(app->group->workspaceNumber());
     }
 }
 
