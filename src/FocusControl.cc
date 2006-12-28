@@ -190,11 +190,8 @@ WinClient *FocusControl::lastFocusedWindow(int workspace) {
     FocusedWindows::iterator it_end = m_focused_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() &&
-            (((int)(*it)->fbwindow()->workspaceNumber()) == workspace 
-             && !(*it)->fbwindow()->isIconic()
-             && (!(*it)->fbwindow()->isStuck() || (*it)->fbwindow()->isFocused())))
-            // only give focus to a stuck window if it is currently focused
-            // otherwise they tend to override normal workspace focus
+            ((((int)(*it)->fbwindow()->workspaceNumber()) == workspace ||
+             (*it)->fbwindow()->isStuck()) && !(*it)->fbwindow()->isIconic()))
             return *it;
     }
     return 0;

@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*06/12/28:
+   * Allow focus to revert to stuck windows (Mark)
+     FocusControl.cc
 *06/12/27:
    * Don't assume "Jump" and "*Hidden" say "yes" in apps file (Mark)
    * Jump to autogrouped windows on another workspace if set to do so in
