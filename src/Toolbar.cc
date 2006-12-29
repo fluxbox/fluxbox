@@ -640,7 +640,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     frame.width = (head_w - 2*border_width) * (*m_rc_width_percent) / 100;
     //!! TODO: change this
     // max height of each toolbar items font...
-    unsigned int max_height = m_tool_factory.maxFontHeight();
+    unsigned int max_height = m_tool_factory.maxFontHeight() + 2;
 
     if (theme().height() > 0)
         max_height = theme().height();
@@ -650,7 +650,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
     frame.height = max_height;
 
-    frame.height += 2;
     frame.height += (frame.bevel_w * 2);
 
     // should we flipp sizes?

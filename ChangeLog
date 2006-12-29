@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *06/12/28:
+   * Don't add 2 pixels to a specified toolbar height, bug #1528646 (Mark)
+     Toolbar.cc
+*06/12/28:
    * Allow focus to revert to stuck windows (Mark)
      FocusControl.cc
 *06/12/27:
