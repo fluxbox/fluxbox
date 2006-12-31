@@ -7,6 +7,9 @@ Changes for 1.0rc3:
      Similar fix for gnome current workspace... remember that XA_CARDINAL
      "32-bit" type is actually a "long array" argument (=64bit on 64 systems)
      Ewmh.cc Gnome.cc
+*06/12/31:
+   * Update toolbar visibility on reconfigure (Mark)
+     Toolbar.cc
 *06/12/28:
    * Don't add 2 pixels to a specified toolbar height, bug #1528646 (Mark)
      Toolbar.cc

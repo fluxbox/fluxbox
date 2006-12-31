@@ -367,7 +367,10 @@ void Toolbar::lower() {
 }
 
 void Toolbar::reconfigure() {
-    //    updateVisibleState();
+    // wait until after windows are drawn to show toolbar at startup
+    // otherwise, it looks ugly
+    if (!Fluxbox::instance()->isStartup())
+        updateVisibleState();
 
     if (!doAutoHide() && isHidden())
         toggleHidden();
