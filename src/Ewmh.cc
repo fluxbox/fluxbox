@@ -859,11 +859,11 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         if (!screen)
             return true;
         FbWinFrameTheme &theme = screen->winFrameTheme();
-        int title_h = theme.titleHeight() ||
+        long title_h = theme.titleHeight() ||
             theme.font().height() + 2*theme.bevelWidth() + 2;
         title_h += theme.border().width();
-        int handle_h = theme.handleWidth() + theme.border().width();
-        int extents[4];
+        long handle_h = theme.handleWidth() + theme.border().width();
+        long extents[4];
         // our frames currently don't protrude from left/right
         extents[0] = 0;
         extents[1] = 0;
@@ -1271,7 +1271,7 @@ void Ewmh::updateFrameExtents(FluxboxWindow &win) {
        protrudes from the client window, on left, right, top, bottom
        (it is independent of window position).
      */
-    int extents[4];
+    long extents[4];
     // our frames currently don't protrude from left/right
     extents[0] = 0;
     extents[1] = 0;

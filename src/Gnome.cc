@@ -235,7 +235,7 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
 }
 
 void Gnome::updateCurrentWorkspace(BScreen &screen) {
-    int workspace = screen.currentWorkspaceID();
+    long workspace = screen.currentWorkspaceID();
     screen.rootWindow().changeProperty(m_gnome_wm_win_workspace, XA_CARDINAL, 32, PropModeReplace,
                                        (unsigned char *)&workspace, 1);
 
