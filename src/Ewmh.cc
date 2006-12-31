@@ -462,12 +462,15 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     }
 
 #ifdef X_HAVE_UTF8_STRING
-    Xutf8TextListToTextProperty(FbTk::App::instance()->display(),
+    int code = Xutf8TextListToTextProperty(FbTk::App::instance()->display(),
                                 names, number_of_desks, XUTF8StringStyle, &text);
-    XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
-                     &text, m_net_desktop_names);
+    if (code != XNoMemory && code != XLocaleNotSupported) {
+        XSetTextProperty(FbTk::App::instance()->display(),
+                         screen.rootWindow().window(),
+                         &text, m_net_desktop_names);
 
-    XFree(text.value);
+        XFree(text.value);
+    }
 
 #else
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
