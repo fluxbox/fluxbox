@@ -1199,6 +1199,29 @@ void FluxboxWindow::reconfigure() {
 
     menu().reconfigure();
 
+    typedef FbTk::RefCount<FbTk::Command> CommandRef;
+    typedef FbTk::SimpleCommand<FluxboxWindow> WindowCmd;
+    CommandRef shade_on_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOn));
+    CommandRef shade_off_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOff));
+    CommandRef next_tab_cmd(new WindowCmd(*this, &FluxboxWindow::nextClient));
+    CommandRef prev_tab_cmd(new WindowCmd(*this, &FluxboxWindow::prevClient));
+    CommandRef null_cmd;
+
+    int reverse = 0;
+    if (screen().getScrollReverse())
+        reverse = 1;
+
+    if (StringUtil::toLower(screen().getScrollAction()) == string("shade")) {
+        frame().setOnClickTitlebar(shade_on_cmd, 5 - reverse); // shade on mouse roll
+        frame().setOnClickTitlebar(shade_off_cmd, 4 + reverse); // unshade if rolled oposite direction
+    } else if (StringUtil::toLower(screen().getScrollAction()) == string("nexttab")) {
+        frame().setOnClickTitlebar(next_tab_cmd, 5 - reverse); // next tab
+        frame().setOnClickTitlebar(prev_tab_cmd, 4 + reverse); // previous tab
+    } else {
+        frame().setOnClickTitlebar(null_cmd, 4);
+        frame().setOnClickTitlebar(null_cmd, 5);
+    }
+
 }
 
 /// update current client title and title in our frame

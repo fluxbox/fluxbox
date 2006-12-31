@@ -8,6 +8,8 @@ Changes for 1.0rc3:
      "32-bit" type is actually a "long array" argument (=64bit on 64 systems)
      Ewmh.cc Gnome.cc
 *06/12/31:
+   * Update window scroll action (and direction) on reconfigure (Mark)
+     Window.cc
    * Update toolbar visibility on reconfigure (Mark)
      Toolbar.cc
 *06/12/28:
