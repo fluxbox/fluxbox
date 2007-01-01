@@ -314,9 +314,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     load_rc();
 
     // setup atom handlers before we create any windows
-#ifdef REMEMBER
-    addAtomHandler(new Remember(), "remember"); // for remembering window attribs
-#endif // REMEMBER
 #ifdef USE_NEWWMSPEC
     addAtomHandler(new Ewmh(), "ewmh"); // for Extended window manager atom support
 #endif // USE_NEWWMSPEC
@@ -382,18 +379,43 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         }
     }
 
-    // init all "screens"
-    for(size_t s = 0; s < screens.size(); s++)
-        initScreen(screens[s]);
+    // create screens
+    for (size_t s = 0; s < screens.size(); s++) {
+        char scrname[128], altscrname[128];
+        sprintf(scrname, "session.screen%d", screens[s]);
+        sprintf(altscrname, "session.Screen%d", screens[s]);
+        BScreen *screen = new BScreen(m_screen_rm.lock(),
+                                      scrname, altscrname,
+                                      screens[s], getNumberOfLayers());
 
-    XAllowEvents(disp, ReplayPointer, CurrentTime);
+        // already handled
+        if (! screen->isScreenManaged()) {
+            delete screen;
+            continue;
+        }
 
+        // add to our list
+        m_screen_list.push_back(screen);
+    }
 
     if (m_screen_list.empty()) {
         throw _FB_CONSOLETEXT(Fluxbox, ErrorNoScreens,
                              "Couldn't find screens to manage.\nMake sure you don't have another window manager running.",
                              "Error message when no unmanaged screens found - usually means another window manager is running");
     }
+
+    // parse apps file after creating screens but before creating windows
+#ifdef REMEMBER
+        addAtomHandler(new Remember(), "remember"); // for remembering window attribs
+#endif // REMEMBER
+
+    // init all "screens"
+    ScreenList::iterator it = m_screen_list.begin();
+    ScreenList::iterator it_end = m_screen_list.end();
+    for(; it != it_end; ++it)
+        initScreen(*it);
+
+    XAllowEvents(disp, ReplayPointer, CurrentTime);
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
@@ -461,24 +483,9 @@ Fluxbox::~Fluxbox() {
 }
 
 
-int Fluxbox::initScreen(int scrnr) {
+void Fluxbox::initScreen(BScreen *screen) {
 
     Display* disp = display();
-    char scrname[128], altscrname[128];
-    sprintf(scrname, "session.screen%d", scrnr);
-    sprintf(altscrname, "session.Screen%d", scrnr);
-    BScreen *screen = new BScreen(m_screen_rm.lock(),
-                                  scrname, altscrname,
-                                  scrnr, getNumberOfLayers());
-
-    // already handled
-    if (! screen->isScreenManaged()) {
-        delete screen;
-        return 0;
-    }
-
-    // add to our list
-    m_screen_list.push_back(screen);
 
     // now we can create menus (which needs this screen to be in screen_list)
     screen->initMenus();
@@ -534,7 +541,6 @@ int Fluxbox::initScreen(int scrnr) {
         screen->slit()->show();
 #endif // SLIT
 
-    return 1;
 }
 
 

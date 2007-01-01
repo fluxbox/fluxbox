@@ -101,7 +101,7 @@ public:
     //WinClient *searchGroup(Window);
     WinClient *searchWindow(Window);
 
-    int initScreen(int screen_nr);
+    void initScreen(BScreen *screen);
     BScreen *searchScreen(Window w);
 
     unsigned int getDoubleClickInterval() const { return *m_rc_double_click_interval; }
