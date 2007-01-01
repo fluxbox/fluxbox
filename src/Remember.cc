@@ -577,7 +577,8 @@ void Remember::reconfigure() {
                     } else {
                         grouped_pats.push_back(pat);
                     }
-                } else if (pos > 0 && strcasecmp(key.c_str(), "startup") == 0) {
+                } else if (pos > 0 && strcasecmp(key.c_str(), "startup") == 0 &&
+                           Fluxbox::instance()->isStartup()) {
                     if (!handleStartupItem(line, pos)) {
                         cerr<<"Error reading apps file at line "<<row<<"."<<endl;
                     }
