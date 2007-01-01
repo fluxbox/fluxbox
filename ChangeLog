@@ -2,6 +2,8 @@
 Changes for 1.0rc3:
 *07/01/01:
    * Happy New Year!
+   * Don't draw style's menu icon pixmap underneath the program's icon (Mark)
+     WinButton.cc
    * Don't run [startup] items in apps file if fluxbox fails to start (Mark)
      fluxbox.cc/hh
    * Don't run [startup] items in apps file on reconfigure (Mark)

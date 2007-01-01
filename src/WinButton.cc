@@ -310,12 +310,13 @@ void WinButton::drawType() {
 
 void WinButton::clear() {
     FbTk::Button::clear();
-    
-    // ensure the m_listen_to has actually a client
-    if (m_type == MENUICON && !m_listen_to.empty() && (
-        !m_icon_pixmap.drawable() ||
-        (m_icon_pixmap.width() != width() - 4 || 
-         m_icon_pixmap.height() != height() - 4))) {
+    drawType();
+}
+
+void WinButton::update(FbTk::Subject *subj) {
+
+    // update the menu icon
+    if (m_type == MENUICON && !m_listen_to.empty()) {
        
         Display* display = m_listen_to.fbWindow().display();
         int screen = m_listen_to.screen().screenNumber();
@@ -334,41 +335,6 @@ void WinButton::clear() {
         
     }
 
-    drawType();
-}
-
-void WinButton::update(FbTk::Subject *subj) {
-
-    // just checking, if we the app provides a pixmap.
-    if (m_type == MENUICON && !m_listen_to.empty()) {
-        XWMHints* hints = XGetWMHints(m_listen_to.fbWindow().display(), 
-                                      m_listen_to.winClient().window());
-        if (hints == 0) {
-            m_icon_pixmap.release();
-            m_icon_mask.release();
-        } else {
-
-            // no pixmap
-            if (!((hints->flags & IconPixmapHint) && hints->icon_pixmap != 0))
-                m_icon_pixmap.release();
-
-            // pixmap has changed
-            if (hints->flags & IconPixmapHint && hints->icon_pixmap != 0 && 
-                    hints->icon_pixmap != m_icon_pixmap.drawable())
-                m_icon_pixmap.release();
-            
-            // no pixmap-mask
-            if (!(hints->flags & IconMaskHint))
-                m_icon_mask.release();
-
-            // pixmap-mask has changed
-            if (hints->flags & IconMaskHint && hints->icon_mask != m_icon_mask.drawable())
-                m_icon_mask.release();
-        }
-        
-        XFree(hints);
-    }
-    
     // pressed_pixmap isn't stateful in any current buttons, so no need
     // to potentially override that. Just make sure background pm is ok
     Pixmap my_pm = getBackgroundPixmap();
