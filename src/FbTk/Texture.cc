@@ -118,15 +118,15 @@ void Texture::calcHiLoColors(int screen_num) {
     xcol.red = (unsigned int) (m_color.red() +
                                (m_color.red() >> 1));
     if (xcol.red >= 0xff) xcol.red = 0xffff;
-    else xcol.red *= 0xff;
+    else xcol.red *= 0x101;
     xcol.green = (unsigned int) (m_color.green() +
                                  (m_color.green() >> 1));
     if (xcol.green >= 0xff) xcol.green = 0xffff;
-    else xcol.green *= 0xff;
+    else xcol.green *= 0x101;
     xcol.blue = (unsigned int) (m_color.blue() +
                                 (m_color.blue() >> 1));
     if (xcol.blue >= 0xff) xcol.blue = 0xffff;
-    else xcol.blue *= 0xff;
+    else xcol.blue *= 0x101;
 
     if (! XAllocColor(disp, colm, &xcol))
         xcol.pixel = 0;
@@ -135,13 +135,13 @@ void Texture::calcHiLoColors(int screen_num) {
 
     xcol.red =
         (unsigned int) ((m_color.red() >> 2) +
-			(m_color.red() >> 1)) * 0xff;
+			(m_color.red() >> 1)) * 0x101;
     xcol.green =
         (unsigned int) ((m_color.green() >> 2) +
-			(m_color.green() >> 1)) * 0xff;
+			(m_color.green() >> 1)) * 0x101;
     xcol.blue =
         (unsigned int) ((m_color.blue() >> 2) +
-			(m_color.blue() >> 1)) * 0xff;
+			(m_color.blue() >> 1)) * 0x101;
 
     if (! XAllocColor(disp, colm, &xcol))
         xcol.pixel = 0;

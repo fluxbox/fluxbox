@@ -148,9 +148,9 @@ void Color::copy(const Color &col_copy) {
         return;
     }
 
-    allocate(col_copy.red()*0xFF,
-             col_copy.green()*0xFF,
-             col_copy.blue()*0xFF,
+    allocate(col_copy.red()*0x101,
+             col_copy.green()*0x101,
+             col_copy.blue()*0x101,
              col_copy.m_screen);
 
 }
