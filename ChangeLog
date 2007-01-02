@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/02:
+   * Don't escape regular expression metacharacters in apps file, bug
+     #1595497 (Mark)
+     Remember.cc ClientPattern.cc
 *07/01/01:
    * Happy New Year!
    * Don't draw style's menu icon pixmap underneath the program's icon (Mark)

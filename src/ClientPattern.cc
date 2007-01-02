@@ -170,11 +170,6 @@ string ClientPattern::toString() const {
     for (; it != it_end; ++it) {
 
         pat.append(" (");
-        // replace special chars like ( ) and [ ] with \( \) and \[ \]
-        string orig = FbTk::StringUtil::replaceString((*it)->orig, "(", "\\(");
-        orig = FbTk::StringUtil::replaceString(orig, ")", "\\)");
-        orig = FbTk::StringUtil::replaceString(orig, "[", "\\[");
-        orig = FbTk::StringUtil::replaceString(orig, "]", "\\]");
 
         switch ((*it)->prop) {
         case NAME:
@@ -190,7 +185,7 @@ string ClientPattern::toString() const {
             pat.append("role=");
         }
 
-        pat.append(orig);
+        pat.append((*it)->orig);
         pat.append(")");
     }
 

@@ -302,8 +302,17 @@ Application* Remember::find(WinClient &winclient) {
 Application * Remember::add(WinClient &winclient) {
     ClientPattern *p = new ClientPattern();
     Application *app = new Application(false);
+
     // by default, we match against the WMClass of a window.
-    p->addTerm(p->getProperty(ClientPattern::NAME, winclient), ClientPattern::NAME);
+    string win_name = p->getProperty(ClientPattern::NAME, winclient);
+
+    // replace special chars like ( ) and [ ] with \( \) and \[ \]
+    win_name = FbTk::StringUtil::replaceString(win_name, "(", "\\(");
+    win_name = FbTk::StringUtil::replaceString(win_name, ")", "\\)");
+    win_name = FbTk::StringUtil::replaceString(win_name, "[", "\\[");
+    win_name = FbTk::StringUtil::replaceString(win_name, "]", "\\]");
+
+    p->addTerm(win_name, ClientPattern::NAME);
     m_clients[&winclient] = app;
     p->addMatch();
     m_pats->push_back(make_pair(p, app));
