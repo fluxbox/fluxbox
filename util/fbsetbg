@@ -131,28 +131,9 @@ Common tips to use with $command:
 EOF
 }
 
-# some which's have a reliable return code, some don't
-# Lets figure out which which we have.
-if which this_program_does_not_exist-no_really-aA1zZ9 >/dev/null 2>/dev/null; then
-    # can't rely on return value
-    find_it() {
-        file=`which $1 2> /dev/null`
-        if [ -x "$file" ]; then
-            if [ $# -gt 1 ]; then
-                shift
-                $*
-            fi
-            return 0
-        else
-            return 1
-        fi
-    }
-else
-    # can rely on return value
-    find_it() {
-        which $1 > /dev/null 2>&1 && shift && $*
-    }
-fi
+find_it() {
+    command -v $1 > /dev/null 2>&1 && shift && $*
+}
 
 message() {
 
@@ -349,7 +330,7 @@ if [ "$setterfromcommandline" != true ]; then
             if [ ! "$wpsetter" = Esetroot ]; then
                 WPSETTER=$wpsetter
                 break
-            elif ldd `which Esetroot`|grep libImlib 2>&1 > /dev/null; then
+            elif ldd `command -v Esetroot`|grep libImlib 2>&1 > /dev/null; then
                 WPSETTER=$wpsetter
                 break
             else

@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/02:
+   * Replace `which' in fbsetbg and fbgm with `command -v' (Mark)
+     util/fbsetbg fluxbox-generate_menu.in
    * Don't escape regular expression metacharacters in apps file, bug
      #1595497 (Mark)
      Remember.cc ClientPattern.cc
