@@ -1572,7 +1572,7 @@ append_submenu "${NETMENU}"
 
     append_submenu P2P
         normal_find gtk-gnutella lopster nicotine pyslsk xmule amule \
-            Valknut dcgui-qt dc_qt quickdc asami
+            valknut dcgui-qt dc_qt quickdc asami
         cli_find TekNap giFTcurs
     append_menu_end
 
