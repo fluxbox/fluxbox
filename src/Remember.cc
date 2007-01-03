@@ -169,7 +169,7 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
 bool handleStartupItem(const string &line, int offset) {
     int next = 0;
     string str;
-    unsigned int screen = 0;
+    unsigned int screen = Fluxbox::instance()->keyScreen()->screenNumber();
 
     // accept some options, for now only "screen=NN"
     // these option are given in parentheses before the command
@@ -206,15 +206,20 @@ bool handleStartupItem(const string &line, int offset) {
     if (next <= 0) {
         cerr<<"Error parsing [startup] at column "<<offset<<" - expecting {command}."<<endl;
         return false;
-    } else {
-        FbCommands::ExecuteCmd *tmp_exec_cmd = new FbCommands::ExecuteCmd(str, screen);
-#ifdef DEBUG
-        cerr<<"Executing startup command '"<<str<<"' on screen "<<screen<<endl;
-#endif // DEBUG
-        tmp_exec_cmd->execute();
-        delete tmp_exec_cmd;
-        return true;
     }
+
+    // don't run command if fluxbox is restarting
+    if (Fluxbox::instance()->findScreen(screen)->isRestart())
+        // the line was successfully read; we just didn't use it
+        return true;
+
+    FbCommands::ExecuteCmd *tmp_exec_cmd = new FbCommands::ExecuteCmd(str, screen);
+#ifdef DEBUG
+    cerr<<"Executing startup command '"<<str<<"' on screen "<<screen<<endl;
+#endif // DEBUG
+    tmp_exec_cmd->execute();
+    delete tmp_exec_cmd;
+    return true;
 };
 
 }; // end anonymous namespace

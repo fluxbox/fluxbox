@@ -1528,9 +1528,9 @@ curly brackets:
     be saved when the window is closed.
 
 The apps file also allows you to specify applications that should be started
-on fluxbox startup using [startup] (options) {application} lines. Options
-could be used to specify the screen, not the workspace, on which the
-application should be started.
+on fluxbox startup using [startup] (options) {command} lines. Currently, the
+only valid option is (screen=NN), where NN is the screen number on which the
+command should be run.
 
 Finally, you can set windows to group together by using the `apps' file.  This
 can be achieved with regular expressions using:

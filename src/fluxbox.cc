@@ -404,6 +404,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                              "Error message when no unmanaged screens found - usually means another window manager is running");
     }
 
+    m_keyscreen = m_mousescreen = m_screen_list.front();
+
     // parse apps file after creating screens but before creating windows
 #ifdef REMEMBER
         addAtomHandler(new Remember(), "remember"); // for remembering window attribs
@@ -416,8 +418,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         initScreen(*it);
 
     XAllowEvents(disp, ReplayPointer, CurrentTime);
-
-    m_keyscreen = m_mousescreen = m_screen_list.front();
 
     // setup theme manager to have our style file ready to be scanned
     FbTk::ThemeManager::instance().load(getStyleFilename(), getStyleOverlayFilename());
