@@ -946,6 +946,11 @@ session.screen0.decorateTransient: <boolean>
       This controls whether or not transient windows get window decorations,
       such as a titlebar. Default: False
 
+session.screen0.defaultDeco: <bitmask>
+      This specifies the default window decorations, according to the same
+      bitmask as used by the `[Deco]' option in the `apps' file, described later
+      in this document. Default: all bits set.
+
 session.screen0.menuMode: Delay|Click
       This setting controls the circumstances under which submenus open. With
       `Click', the user must click on the menu item in order for the submenu to

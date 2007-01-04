@@ -447,18 +447,8 @@ void FluxboxWindow::init() {
     m_blackbox_attrib.premax_x = m_blackbox_attrib.premax_y = 0;
     m_blackbox_attrib.premax_w = m_blackbox_attrib.premax_h = 0;
 
-    //use tab as default
-    decorations.tab = true;
-    // enable decorations
-    decorations.enabled = true;
-
-    // set default values for decoration
-    decorations.menu = true; //override menu option
-    // all decorations on by default
-    decorations.titlebar = decorations.border = decorations.handle = true;
-    decorations.maximize = decorations.close =
-        decorations.sticky = decorations.shade = decorations.tab = true;
-
+    // set default decorations but don't apply them
+    setDecorationMask(screen().defaultDeco(), false);
 
     functions.resize = functions.move = functions.iconify = functions.maximize = functions.close = functions.tabable = true;
     decorations.close = false;
@@ -3298,7 +3288,7 @@ unsigned int FluxboxWindow::decorationMask() const {
     return ret;
 }
 
-void FluxboxWindow::setDecorationMask(unsigned int mask) {
+void FluxboxWindow::setDecorationMask(unsigned int mask, bool apply) {
     decorations.titlebar = mask & DECORM_TITLEBAR;
     decorations.handle   = mask & DECORM_HANDLE;
     decorations.border   = mask & DECORM_BORDER;
@@ -3310,7 +3300,9 @@ void FluxboxWindow::setDecorationMask(unsigned int mask) {
     decorations.shade    = mask & DECORM_SHADE;
     decorations.tab      = mask & DECORM_TAB;
     decorations.enabled  = mask & DECORM_ENABLED;
-    applyDecorations();
+    // we don't want to do this during initialization
+    if (apply)
+        applyDecorations();
 }
 
 void FluxboxWindow::startMoving(int x, int y) {

@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/04:
+   * Added new resource for init file to control default window decorations:
+     session.screenN.defaultDeco: <bitmask>, where the bitmask corresponds
+     to the one used for [Deco] in the apps file (Mark)
+     Screen.cc/hh Window.cc/hh doc/asciidoc/fluxbox.txt
    * Move minimized windows to the back of the focused list (Mark)
      Window.cc FocusControl.cc/hh
 *07/01/03:

@@ -281,7 +281,7 @@ public:
     void toggleDecoration();
 
     unsigned int decorationMask() const;
-    void setDecorationMask(unsigned int mask);
+    void setDecorationMask(unsigned int mask, bool apply = true);
     /**
      * Start moving process, grabs the pointer and draws move rectangle
      * @param x position of pointer
