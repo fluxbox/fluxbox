@@ -60,19 +60,9 @@ public:
     void updateFrameClose(FluxboxWindow &win);
 
     void updateClientClose(WinClient &winclient);
-    
-
-    void setFullscreen(FluxboxWindow &win, bool value);
 
     void updateFrameExtents(FluxboxWindow &win);
 private:
-
-    typedef struct WindowState {
-        WindowState(int x, int y, unsigned int width, unsigned int height,
-                    int layer, unsigned int decor);
-        int x, y, layer;
-        unsigned int width, height, decor;
-    } WindowState;
 
     enum { STATE_REMOVE = 0, STATE_ADD = 1, STATE_TOGGLE = 2};
 
@@ -153,12 +143,6 @@ private:
     Atom utf8_string;
 
     std::vector<Window> m_windows;
-    typedef std::map<FluxboxWindow *, WindowState *> SavedState;
-    SavedState m_savedstate;
-
-    WindowState *getState(FluxboxWindow &win);
-    void clearState(FluxboxWindow &win);
-    void saveState(FluxboxWindow &win, WindowState *state);
 
     FbTk::FbString getUTF8Property(Atom property);
 };

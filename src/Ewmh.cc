@@ -357,7 +357,6 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
 }
 
 void Ewmh::updateFrameClose(FluxboxWindow &win) {
-    clearState(win);
 }
 
 void Ewmh::updateFocusedWindow(BScreen &screen, Window win) {
@@ -1029,40 +1028,6 @@ void Ewmh::createAtoms() {
     utf8_string = XInternAtom(disp, "UTF8_STRING", False);
 }
 
-
-void Ewmh::setFullscreen(FluxboxWindow &win, bool value) {
-    // fullscreen implies maximised, above dock layer,
-    // and no decorations (or decorations offscreen)
-    //
-    // TODO: do we need the WindowState etc here anymore?
-    //       FluxboxWindow::setFullscreen() remembering old values
-    //       already and set them...
-    //       only reason i can see is that the user manually
-    //       moved the (fullscreened) window
-    WindowState *saved_state = getState(win);
-    if (value) {
-        // fullscreen on
-        if (!saved_state) { // not already fullscreen
-            saved_state = new WindowState(win.x(), win.y(), win.width(),
-                                          win.height(), win.layerNum(), win.decorationMask());
-            saveState(win, saved_state);
-            win.setFullscreen(true);
-        }
-    } else { // turn off fullscreen
-        if (saved_state) { // no saved state, can't restore it
-            win.setFullscreen(false);
-            /*
-            win.setDecorationMask(saved_state->decor);
-            win.moveResize(saved_state->x, saved_state->y,
-                           saved_state->width, saved_state->height);
-            win.moveToLayer(saved_state->layer);
-            */
-            clearState(win);
-            saved_state = 0;
-        }
-    }
-}
-
 // set window state
 void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
     if (state == m_net_wm_state_sticky) { // STICKY
@@ -1084,7 +1049,7 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
         if ((value && !win.isFullscreen()) ||
             (!value && win.isFullscreen()))
-        setFullscreen(win, value);
+        win.setFullscreen(value);
     } else if (state == m_net_wm_state_hidden) { // minimized
         if (value && !win.isIconic())
             win.iconify();
@@ -1126,7 +1091,7 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
     } else if (state == m_net_wm_state_maximized_vert) { // maximized Vertical
         win.maximizeVertical();
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
-        setFullscreen(win, getState(win) == 0); // toggle current state
+        win.setFullscreen(!win.isFullscreen()); // toggle current state
     } else if (state == m_net_wm_state_hidden) { // minimized
         if(win.isIconic())
             win.deiconify();
@@ -1289,41 +1254,3 @@ void Ewmh::updateFrameExtents(FluxboxWindow &win) {
                               (unsigned char *)extents, 4);
     }
 }
-
-
-Ewmh::WindowState::WindowState(int t_x, int t_y,
-                               unsigned int t_width,
-                               unsigned int t_height,
-                               int t_layer, unsigned int t_decor) :
-    x(t_x), y(t_y),
-    layer(t_layer),
-    width(t_width),
-    height(t_height),
-    decor(t_decor)
-{}
-
-Ewmh::WindowState *Ewmh::getState(FluxboxWindow &win) {
-    SavedState::iterator it = m_savedstate.find(&win);
-    if (it == m_savedstate.end())
-        return 0;
-    else
-        return it->second;
-}
-
-void Ewmh::clearState(FluxboxWindow &win) {
-    WindowState *state = 0;
-    SavedState::iterator it = m_savedstate.find(&win);
-    if (it == m_savedstate.end())
-        return;
-
-    state = it->second;
-
-    m_savedstate.erase(it);
-    delete state;
-}
-
-void Ewmh::saveState(FluxboxWindow &win, WindowState *state) {
-    m_savedstate[&win] = state;
-}
-
-
