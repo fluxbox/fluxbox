@@ -154,7 +154,8 @@ void FocusControl::addFocusBack(WinClient &client) {
 // move all clients in given window to back of focused list
 void FocusControl::setFocusBack(FluxboxWindow *fbwin) {
     // do nothing if there are no windows open
-    if (m_focused_list.empty())
+    // don't change focus order while cycling
+    if (m_focused_list.empty() || isCycling())
         return;
 
     FocusedWindows::iterator it = m_focused_list.begin();

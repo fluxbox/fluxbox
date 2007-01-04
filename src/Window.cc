@@ -1536,6 +1536,7 @@ void FluxboxWindow::hide(bool interrupt_moving) {
 
     menu().hide();
     frame().hide();
+    setState(IconicState,false);
 }
 
 void FluxboxWindow::show() {
@@ -1553,8 +1554,6 @@ void FluxboxWindow::iconify() {
     m_blackbox_attrib.attrib |= ATTRIB_HIDDEN;
 
     iconic = true;
-
-    setState(IconicState, false);
 
     hide(true);
 
@@ -1897,16 +1896,10 @@ void FluxboxWindow::shade() {
         shaded = false;
         m_blackbox_attrib.flags ^= ATTRIB_SHADED;
         m_blackbox_attrib.attrib ^= ATTRIB_SHADED;
-
-        if (m_initialized)
-            setState(NormalState, false);
     } else {
         shaded = true;
         m_blackbox_attrib.flags |= ATTRIB_SHADED;
         m_blackbox_attrib.attrib |= ATTRIB_SHADED;
-        // shading is the same as iconic
-        if (m_initialized)
-            setState(IconicState, false);
     }
 
 }
@@ -2248,10 +2241,29 @@ void FluxboxWindow::setState(unsigned long new_state, bool setting_up) {
         state[0] = (unsigned long) m_current_state;
         state[1] = (unsigned long) None;
 
-        for_each(m_clientlist.begin(), m_clientlist.end(),
-                 FbTk::ChangeProperty(display, FbAtoms::instance()->getWMStateAtom(),
-                                      PropModeReplace,
-                                      (unsigned char *)state, 2));
+        FbTk::ChangeProperty chg(display, FbAtoms::instance()->getWMStateAtom(),
+                                 PropModeReplace, (unsigned char *)state, 2);
+
+        ClientList::iterator it = m_clientlist.begin();
+        ClientList::iterator it_end = m_clientlist.end();
+        for (; it != it_end; ++it) {
+            chg(*it);
+
+            // ICCCM Section 4.1.4:
+            // Once a client's window has left the Withdrawn state, the
+            // window will be mapped if it is in the Normal state and the
+            // window will be unmapped if it is in the Iconic state.
+            // Reparenting window managers must unmap the client's window when
+            // it is in the Iconic state, even if an ancestor window being
+            // unmapped renders the client's window unviewable. Conversely, if a
+            // reparenting window manager renders the client's window unviewable
+            // by unmapping an ancestor, the client's window is by definition in
+            // the Iconic state and must also be unmapped.
+            if (new_state == IconicState)
+                (*it)->hide();
+            else if (new_state == NormalState)
+                (*it)->show();
+        }
 
         saveBlackboxAttribs();
         //notify state changed
@@ -2565,6 +2577,23 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
     WinClient *client = findClient(ue.window);
     if (client == 0)
         return;
+
+    Atom atom_return;
+    bool ret = false;
+    int foo;
+    unsigned long *state, ulfoo, nitems;
+    if (client->property(FbAtoms::instance()->getWMStateAtom(),
+                         0l, 2l, false, FbAtoms::instance()->getWMStateAtom(),
+                         &atom_return, &foo, &nitems, &ulfoo,
+                         (unsigned char **) &state) && state) {
+
+        if (nitems >= 1 && static_cast<unsigned long>(state[0]) != WithdrawnState);
+            ret = true;
+
+        XFree(static_cast<void *>(state));
+        if (ret)
+            return;
+    }
 
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
