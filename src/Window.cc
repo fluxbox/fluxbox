@@ -748,44 +748,15 @@ bool FluxboxWindow::detachClient(WinClient &client) {
     if (client.fbwindow() != this || numClients() <= 1)
         return false;
 
-    // I'm not sure how to do this bit better
-    // we need to find the window we've got, and update the
-    // window to its right to have a left window set to the
-    // window which is to the left of the current.
-    // Think in terms of:
-    // window1 <- my_window <- window2
-    // we need to take out my_window, so update window2 leftwin to be window1
-
     Window leftwin = None;
-    ClientList::iterator client_it_end = clientList().end();
-    ClientList::iterator client_it = clientList().begin();
-    ClientList::iterator client_it_before = client_it_end;
-    ClientList::iterator client_it_after = clientList().begin();
-    if (!clientList().empty()) {
-        ++client_it_after;
-        if (clientList().front() == &client) {
-            leftwin = None;
-        } else {
-            ++client_it;
-            client_it_before = clientList().begin();
-            ++client_it_after;
+    ClientList::iterator client_it, client_it_after;
+    client_it = client_it_after =
+        find(clientList().begin(), clientList().end(), &client);
 
-            while (client_it != client_it_end) {
-                if (*client_it == &client) {
-                    break;
-                }
-                ++client_it_before;
-                ++client_it;
-                ++client_it_after;
-            }
-        }
-    }
+    if (client_it != clientList().begin())
+        leftwin = (*(--client_it))->window();
 
-    // update the leftwin of the window to the right
-    if (client_it_before != client_it_end)
-        leftwin = (*client_it_before)->window();
-
-    if (client_it_after != client_it_end)
+    if (++client_it_after != clientList().end())
         (*client_it_after)->setGroupLeftWindow(leftwin);
 
     removeClient(client);
@@ -2558,8 +2529,6 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 /**
    Unmaps frame window and client window if
    event.window == m_client->window
-   Returns true if *this should die
-   else false
 */
 void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
     WinClient *client = findClient(ue.window);
