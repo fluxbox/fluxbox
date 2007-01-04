@@ -1558,6 +1558,8 @@ void FluxboxWindow::iconify() {
 
     hide(true);
 
+    screen().focusControl().setFocusBack(this);
+
     ClientList::iterator client_it = m_clientlist.begin();
     const ClientList::iterator client_it_end = m_clientlist.end();
     for (; client_it != client_it_end; ++client_it) {

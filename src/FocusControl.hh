@@ -85,6 +85,7 @@ public:
     bool isMouseTabFocus() const { return tabFocusModel() == MOUSETABFOCUS; }
     bool isCycling() const { return m_cycling_focus; }
     void addFocusBack(WinClient &client);
+    void setFocusBack(FluxboxWindow *fbwin);
 
     FocusModel focusModel() const { return *m_focus_model; }
     TabFocusModel tabFocusModel() const { return *m_tab_focus_model; }

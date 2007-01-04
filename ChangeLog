@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/04:
+   * Move minimized windows to the back of the focused list (Mark)
+     Window.cc FocusControl.cc/hh
 *07/01/03:
    * Don't run [startup] items in apps file on fluxbox restart (Mark)
      Remember.cc fluxbox.cc
