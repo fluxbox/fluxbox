@@ -131,7 +131,7 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-2 Rộng: %4d x Cao: %4d
+2 Rộng: %04d x Cao: %04d
 
 $set 13 #Slit
 

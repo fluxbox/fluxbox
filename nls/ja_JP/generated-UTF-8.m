@@ -66,7 +66,7 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-2 幅: %4d x 高: %4d
+2 幅: %04d x 高: %04d
 
 $set 13 #Slit
 

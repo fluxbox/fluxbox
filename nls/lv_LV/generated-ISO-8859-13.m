@@ -65,7 +65,7 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-2 P: %4d x A: %4d
+2 P: %04d x A: %04d
 
 $set 13 #Slit
 

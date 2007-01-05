@@ -149,7 +149,7 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: querying the X serveræ¶åçéè¯¯.\n å¦å¤ä¸ä¸ªçªå£ç®¡çå¨æ­£è¿è¡,displayä¸º
-2 W: %4d x H: %4d
+2 W: %04d x H: %04d
 3 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
 
 $set 13 #Slit

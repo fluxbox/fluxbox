@@ -148,7 +148,7 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: памылка у часе зьвяртаньня да X-спаслужніку.\n	другі кіраўнік вокнамі ўжо выконваецца на гэтым дысплэі
-2 W: %4d x H: %4d
+2 W: %04d x H: %04d
 3 BScreen::BScreen: кіраваньне экранам %d карыстаючыся visual 0x%lx, глыбіня %d\n
 
 $set 13 #Slit

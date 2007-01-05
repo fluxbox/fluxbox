@@ -149,7 +149,7 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: querying the X server时发生错误.\n 另外一个窗口管理器正运行,display为
-2 W: %4d x H: %4d
+2 W: %04d x H: %04d
 3 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
 
 $set 13 #Slit
