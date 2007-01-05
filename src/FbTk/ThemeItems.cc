@@ -120,7 +120,7 @@ void ThemeItem<unsigned int>::load(const std::string *name, const std::string *a
 
 template <>
 void ThemeItem<Font>::setDefaultValue() {
-    if (!m_value.load("fixed")) {
+    if (!m_value.load("__DEFAULT__")) {
         cerr<<"ThemeItem<Font>: Warning! Failed to load default value 'fixed'"<<endl;
     } else {
         string effect(ThemeManager::instance().resourceValue(name()+".effect", altName()+".Effect"));

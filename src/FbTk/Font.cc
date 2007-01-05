@@ -197,21 +197,44 @@ bool Font::load(const string &name) {
 
         FontImp* tmp_font(0);
 
+        // Xft and X/Xmb fonts have different defaults
+        // (fixed doesn't really work right with Xft, especially rotated)
+
+        // HOWEVER, note that if a Xft-style font is requested (not start with "-"), and
+        // it turns out to be a bitmapped XFont, then Xft will load it, BUT it does not 
+        // currently (5jan2007) rotate bitmapped fonts (ok-ish), nor adjust the baseline for its
+        // lack of rotation (not ok: messes up placement). I can't see a neat way around this, 
+        // other than the user re-specifying their font explicitly in XFont form so we don't use the
+        // Xft backend.
+
+        std::string realname = *name_it;
+
 #ifdef USE_XFT
-        if ((*name_it)[0] != '-')
+        if ((*name_it)[0] != '-') {
+
+            if (*name_it == "__DEFAULT__")
+                realname = "monospace";
+
             tmp_font = new XftFontImp(0, s_utf8mode);
 #endif // USE_XFT
-
-        if (!tmp_font) {
-#ifdef USE_XMB
-            if (s_multibyte || s_utf8mode)
-                tmp_font = new XmbFontImp(0, s_utf8mode);
-            else // basic font implementation
-#endif // USE_XMB
-                tmp_font = new XFontImp();
         }
 
-        if (tmp_font && tmp_font->load((*name_it).c_str())) {
+        if (!tmp_font) {
+            if (*name_it == "__DEFAULT__")
+                realname = "fixed";
+
+#ifdef USE_XMB
+
+            if (s_multibyte || s_utf8mode) {
+                tmp_font = new XmbFontImp(0, s_utf8mode);
+            } else // basic font implementation
+#endif // USE_XMB
+    {
+               tmp_font = new XFontImp();
+    }
+        }
+
+        if (tmp_font && tmp_font->load(realname.c_str())) {
             lookup_map[name] = (*name_it);
             m_fontimp = tmp_font;
             font_cache[(*name_it)] = tmp_font;

@@ -56,7 +56,7 @@ public:
 
 
 
-    explicit Font(const char *name = "fixed");
+    explicit Font(const char *name = "__DEFAULT__");
     virtual ~Font();
     /**
         Load a font

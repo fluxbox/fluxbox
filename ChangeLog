@@ -1,5 +1,16 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/05:
+   * Change default Xft font to "monospace" (was "fixed") (Simon)
+     - The "fixed" font loads a bitmap Xfont
+     - Note that bitmap fonts do not rotate properly, and especially the 
+       baseline isn't adjusted for the lack of rotation. Thus we recommend
+       that if you are using a bitmapped font (e.g. artwiz), then specify it
+       using xfld style (-*-snap-*-*-* ...etc) so that fluxbox loads it with 
+       traditional XFont/XmbFont calls, resulting in correct placement and 
+       rotation.
+     FbTk/... Font.hh/cc XftFontImp.cc ThemeItems.cc
+     FbWinFrameTheme.cc
 *07/01/04:
    * Added new resource for init file to control default window decorations:
      session.screenN.defaultDeco: <bitmask>, where the bitmask corresponds

@@ -69,7 +69,7 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
 
     *m_title_height = 0;
     // set defaults
-    m_font->load("fixed");
+    m_font->load("__DEFAULT__");
 
     // create cursors
     Display *disp = FbTk::App::instance()->display();

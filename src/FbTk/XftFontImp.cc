@@ -63,8 +63,10 @@ bool XftFontImp::load(const std::string &name) {
     
     // destroy all old fonts and set new
     for (int r = ROT0; r <= ROT270; r++) 
-        if (m_xftfonts[r] != 0)
+        if (m_xftfonts[r] != 0) {
             XftFontClose(App::instance()->display(), m_xftfonts[r]);
+            m_xftfonts[r] = 0;
+        }
 
     m_xftfonts[ROT0] = newxftfont;
     m_name = name;
@@ -73,6 +75,7 @@ bool XftFontImp::load(const std::string &name) {
 }
 
 void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const {
+
     if (m_xftfonts[orient] == 0)
         return;
 
@@ -223,11 +226,10 @@ bool XftFontImp::validOrientation(FbTk::Orientation orient) {
     Display *disp = App::instance()->display();
 
     XftPattern * pattern = XftNameParse(m_name.c_str());
-    XftPatternAddMatrix(pattern, XFT_MATRIX, &matrix);
     XftResult result;
-    XftPattern * foundpat = XftFontMatch(disp, 0, pattern, &result);
-    XftPatternDestroy(pattern);
-    XftFont * new_font = XftFontOpenPattern(disp, foundpat);
+    pattern = XftFontMatch(disp, 0, pattern, &result);
+    XftPatternAddMatrix(pattern, XFT_MATRIX, &matrix);
+    XftFont * new_font = XftFontOpenPattern(disp, pattern);
 
     if (new_font == 0)
         return false;
