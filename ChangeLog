@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/05:
+   * Fix locale being applied to the clock. (Simon)
+     - Also fixed a likely locale-killer for BSDs (without nl_langinfo)
+     ClockTool.hh/cc FbTk/FbString.cc
    * Fix nls digit strings to prefix with zero "%4d" => "%04d" for proper 
      spacing (Simon)
      Screen.cc nls/fluxbox-nls.hh nls/*/*.m

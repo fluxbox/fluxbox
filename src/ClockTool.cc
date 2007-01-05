@@ -143,11 +143,19 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_screen(screen),
     m_pixmap(0),
     m_timeformat(screen.resourceManager(), std::string("%k:%M"), 
-                 screen.name() + ".strftimeFormat", screen.altName() + ".StrftimeFormat") {
+                 screen.name() + ".strftimeFormat", screen.altName() + ".StrftimeFormat"),
+    m_stringconvertor(FbTk::StringConvertor::ToFbString) {
     // attach signals
     theme.reconfigSig().attach(this);
 
-    _FB_USES_NLS;	
+    std::string time_locale = setlocale(LC_TIME, NULL);
+    size_t pos = time_locale.find('.');
+    if (pos != std::string::npos)
+        time_locale = time_locale.substr(pos+1);
+    if (!time_locale.empty())
+        m_stringconvertor.setSource(time_locale);
+
+    _FB_USES_NLS;
 
     // setup timer to check the clock every 0.01 second
     // if nothing has changed, it wont update the graphics
@@ -256,9 +264,13 @@ void ClockTool::updateTime() {
 
 #ifdef HAVE_STRFTIME
         time_string_len = strftime(time_string, 255, m_timeformat->c_str(), time_type);
-        if( time_string_len == 0 || m_button.text() == time_string)
+        if( time_string_len == 0)
             return;
-        m_button.setText(time_string);
+        std::string text = m_stringconvertor.recode(time_string);
+        if (m_button.text() == text)
+            return;
+
+        m_button.setText(text);
 
         unsigned int new_width = m_theme.font().textWidth(time_string, time_string_len) + 2;
         if (new_width > m_button.width()) {

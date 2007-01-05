@@ -32,6 +32,7 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Timer.hh"
+#include "FbTk/FbString.hh"
 
 #include <string>
 
@@ -83,6 +84,7 @@ private:
 
     FbTk::Resource<std::string> m_timeformat;
 
+    FbTk::StringConvertor m_stringconvertor;
 };
 
 #endif // CLOCKTOOL_HH

@@ -79,7 +79,7 @@ void init() {
     string locale = setlocale(LC_CTYPE, NULL);
     size_t pos = locale.find('.');
     if (pos != string::npos)
-        locale_codeset = locale.substr(pos);
+        locale_codeset = locale.substr(pos+1);
 #endif // CODESET
 
 #ifdef DEBUG
