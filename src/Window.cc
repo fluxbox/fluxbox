@@ -1931,8 +1931,10 @@ void FluxboxWindow::raise() {
         m_client->transientFor()->transientList().push_back(m_client);
     }
     // raise this window and every transient in it with this one last
-    if (client->fbwindow())
+    if (client->fbwindow()) {
         raiseFluxboxWindow(*client->fbwindow());
+        client->fbwindow()->setCurrentClient(*client, false);
+    }
 
 }
 

@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/05:
+   * When a client in an unfocused tab creates a transient window, set that
+     client to the active tab (Mark)
+     Window.cc
    * Window wasn't staying focused when dragging across workspaces with
      outline window moving (Mark)
      Window.cc
