@@ -153,6 +153,7 @@ enum {
 	ScreenAnotherWMRunning = 1,
 	ScreenGeometryFormat = 2,
 	ScreenManagingScreen = 3,
+	ScreenGeometrySpacing = 4,
 
 	SlitSet = 13,
 	SlitClientsMenu = 1,

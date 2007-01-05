@@ -3,7 +3,7 @@ Changes for 1.0rc3:
 *07/01/05:
    * Fix nls digit strings to prefix with zero "%4d" => "%04d" for proper 
      spacing (Simon)
-     nls/*/*.m
+     Screen.cc nls/fluxbox-nls.hh nls/*/*.m
    * Fix loading of rotated fonts on style change (Simon)
      FbTk/... FontImp.hh XftFontImp.hh/cc XmbFontImp.hh/cc XFontImp.hh/cc
    * Change default Xft font to "monospace" (was "fixed") (Simon)

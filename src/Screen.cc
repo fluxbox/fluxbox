@@ -1975,7 +1975,7 @@ void BScreen::renderGeomWindow() {
     _FB_USES_NLS;
 
     sprintf(label,
-            _FB_XTEXT(Screen, GeometryFormat,
+            _FB_XTEXT(Screen, GeometrySpacing,
             "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog").c_str(),
             0, 0);
 
