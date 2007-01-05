@@ -45,8 +45,10 @@ using std::nothrow;
 namespace FbTk {
 
 XFontImp::XFontImp(const char *fontname):m_fontstruct(0) {
-    for (int i = ROT0; i <= ROT270; ++i)
+    for (int i = ROT0; i <= ROT270; ++i) {
         m_rotfonts[i] = 0;
+        m_rotfonts_loaded[i] = false;
+    }
 
     if (fontname != 0)
         load(fontname);
@@ -78,19 +80,23 @@ bool XFontImp::load(const string &fontname) {
 
     m_fontstruct = font; //set new font
 
-    for (int i = ROT0; i <= ROT270; ++i)
-        if (m_rotfonts[i] != 0)
+    for (int i = ROT0; i <= ROT270; ++i) {
+        m_rotfonts_loaded[i] = false;
+        if (m_rotfonts[i] != 0) {
             freeRotFont(m_rotfonts[i]);
+            m_rotfonts[i] = 0;
+        }
+    }
 
     return true;
 }
 
-void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const {
+void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) {
     if (m_fontstruct == 0)
         return;
 
     // use roated font functions?
-    if (orient != ROT0 && m_rotfonts[orient] != 0) {
+    if (orient != ROT0 && validOrientation(orient)) {
         drawRotText(w.drawable(), screen, gc, text, len, x, y, orient);
         return;
     }
@@ -389,7 +395,12 @@ bool XFontImp::validOrientation(FbTk::Orientation orient) {
     if (orient == ROT0 || m_rotfonts[orient])
         return true;
 
+    if (m_rotfonts_loaded[orient])
+        return false; // load must have failed
+
+    m_rotfonts_loaded[orient] = true;
     rotate(orient);
+
     return m_rotfonts[orient] != 0;
 }
 

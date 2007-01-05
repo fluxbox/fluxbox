@@ -190,7 +190,7 @@ bool XmbFontImp::load(const string &fontname) {
 }
 
 void XmbFontImp::drawText(const FbDrawable &d, int screen, GC main_gc, const FbString &text,
-                          size_t len, int x, int y, FbTk::Orientation orient) const {
+                          size_t len, int x, int y, FbTk::Orientation orient) {
 
     if (m_fontset == 0)
         return;

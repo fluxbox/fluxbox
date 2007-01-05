@@ -36,8 +36,10 @@ namespace FbTk {
 XftFontImp::XftFontImp(const char *name, bool utf8):
     m_utf8mode(utf8), m_name("") {
 
-    for (int r = ROT0; r <= ROT270; r++) 
+    for (int r = ROT0; r <= ROT270; r++) {
         m_xftfonts[r] = 0;
+        m_xftfonts_loaded[r] = false;
+    }
 
     if (name != 0)
         load(name);
@@ -62,21 +64,24 @@ bool XftFontImp::load(const std::string &name) {
     }
     
     // destroy all old fonts and set new
-    for (int r = ROT0; r <= ROT270; r++) 
+    for (int r = ROT0; r <= ROT270; r++) {
+        m_xftfonts_loaded[r] = false;
         if (m_xftfonts[r] != 0) {
             XftFontClose(App::instance()->display(), m_xftfonts[r]);
             m_xftfonts[r] = 0;
         }
+    }
 
     m_xftfonts[ROT0] = newxftfont;
+    m_xftfonts_loaded[ROT0] = true;
     m_name = name;
 
     return true;
 }
 
-void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const {
+void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) {
 
-    if (m_xftfonts[orient] == 0)
+    if (!validOrientation(orient))
         return;
 
     // we adjust y slightly so that the baseline is in the right spot
@@ -212,8 +217,13 @@ bool XftFontImp::validOrientation(FbTk::Orientation orient) {
     if (orient == ROT0 || m_xftfonts[orient])
         return true;
 
+    if (m_xftfonts_loaded[orient])
+        return false; // m_xftfonts is zero here
+
     if (m_xftfonts[ROT0] == 0)
         return false;
+
+    m_xftfonts_loaded[orient] = true;
 
     // otherwise, try to load that orientation
     // radians is actually anti-clockwise, so we reverse it

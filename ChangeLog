@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/05:
+   * Fix loading of rotated fonts on style change (Simon)
+     FbTk/... FontImp.hh XftFontImp.hh/cc XmbFontImp.hh/cc XFontImp.hh/cc
    * Change default Xft font to "monospace" (was "fixed") (Simon)
      - The "fixed" font loads a bitmap Xfont
      - Note that bitmap fonts do not rotate properly, and especially the 
