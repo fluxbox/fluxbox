@@ -149,8 +149,9 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: feil ved spørring av X-tjeneren;\n	en annen vindusbehandler kjører allerede på visningsenheten
-2 B: %04d x H: %04d
+2 B: %4d x H: %4d
 3 BScreen::BScreen: kontrollerer skjerm %d ved hjelp av visuell 0x%lx, dybde %d\n
+4 B: %04d x H: %04d
 
 $set 13 #Slit
 

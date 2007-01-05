@@ -65,7 +65,8 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-2 L: %04d x H: %04d
+2 L: %4d x H: %4d
+4 L: %04d x H: %04d
 
 $set 13 #Slit
 

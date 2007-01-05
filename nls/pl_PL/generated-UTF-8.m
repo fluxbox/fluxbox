@@ -152,7 +152,8 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: wystąpił błąd podczas wysyłania zapytania do serwera X'ów.\nNa ekranie włączony jest już inny menedżer okien
-2 S: %04d x W: %04d
+2 S: %4d x W: %4d
+4 S: %04d x W: %04d
 
 3 BScreen::BScreen: używanie ekrany %d używam visuala 0x%lx, głębokość %d\n
 

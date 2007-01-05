@@ -152,7 +152,8 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: wyst±pi³ b³±d podczas wysy³ania zapytania do serwera X'ów.\nNa ekranie w³±czony jest ju¿ inny mened¿er okien
-2 S: %04d x W: %04d
+2 S: %4d x W: %4d
+4 S: %04d x W: %04d
 
 3 BScreen::BScreen: u¿ywanie ekrany %d u¿ywam visuala 0x%lx, g³êboko¶æ %d\n
 

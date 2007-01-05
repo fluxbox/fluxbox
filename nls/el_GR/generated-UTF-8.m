@@ -148,8 +148,9 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: an error occured while querying the X server.\n	another window manager already running on display
-2 W: %04d x H: %04d
+2 W: %4d x H: %4d
 3 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
+4 W: %04d x H: %04d
 
 $set 13 #Slit
 

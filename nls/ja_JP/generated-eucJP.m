@@ -66,7 +66,8 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-2 ษý: %04d x นโ: %04d
+2 ษý: %4d x นโ: %4d
+4 ษý: %04d x นโ: %04d
 
 $set 13 #Slit
 

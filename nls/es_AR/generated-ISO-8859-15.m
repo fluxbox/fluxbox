@@ -158,8 +158,9 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: Ocurriónun error al consultar al servidor X.\n
-2 W: %04d x H: %04d
+2 W: %4d x H: %4d
 3 BScreen::BScreen: manejando pantalla %d usando visual 0x%lx, profundidad %d\n
+4 W: %04d x H: %04d
 
 $set 13 #Slit
 

@@ -137,8 +137,9 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: der opstod en fejl under forespørgsel til X server.\n	en anden window manager kører allerede på display
-2 B: %04d x H: %04d
+2 B: %4d x H: %4d
 3 BScreen::BScreen: håndterer skærm %d med visual 0x%lx, dybde %d\n
+4 B: %04d x H: %04d
 
 $set 13 #Slit
 

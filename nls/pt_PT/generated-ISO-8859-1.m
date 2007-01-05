@@ -156,8 +156,9 @@ $set 11 #Remember
 $set 12 #Screen
 
 1 BScreen::BScreen: ocorreu um erro ao interrogar o servidor X.\n outro gestor de janelas está a correr
-2 L: %04d x A: %04d
+2 L: %4d x A: %4d
 3 BScreen::BScreen: gerindo ecrã %d usando visual 0x%lx, profundidade %d\n
+4 L: %04d x A: %04d
 
 $set 13 #Slit
 

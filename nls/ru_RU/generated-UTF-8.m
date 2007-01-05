@@ -101,7 +101,8 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-2 W: %04d x H: %04d
+2 W: %4d x H: %4d
+4 W: %04d x H: %04d
 
 $set 13 #Slit
 1 Клиенты

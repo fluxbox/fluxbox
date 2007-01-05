@@ -65,7 +65,8 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-2 Y: %04d x E: %04d
+2 Y: %4d x E: %4d
+4 Y: %04d x E: %04d
 
 $set 13 #Slit
 
