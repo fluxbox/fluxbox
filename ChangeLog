@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/05:
+   * Don't change focus to a window that doesn't accept focus (Mark)
+     FocusControl.cc
    * Only grab keybindings on screens managed by fluxbox (Mark)
      fluxbox.hh Keys.cc/hh FbTk/KeyUtil.cc/hh
    * Fix locale being applied to the clock. (Simon)

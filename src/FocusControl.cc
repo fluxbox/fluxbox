@@ -216,7 +216,8 @@ WinClient *FocusControl::lastFocusedWindow(int workspace) {
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() &&
             ((((int)(*it)->fbwindow()->workspaceNumber()) == workspace ||
-             (*it)->fbwindow()->isStuck()) && !(*it)->fbwindow()->isIconic()))
+             (*it)->fbwindow()->isStuck()) && (*it)->acceptsFocus() &&
+             !(*it)->fbwindow()->isIconic()))
             return *it;
     }
     return 0;
