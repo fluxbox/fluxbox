@@ -196,6 +196,9 @@ public:
     /// get screen from number
     BScreen *findScreen(int num);
 
+    typedef std::list<BScreen *> ScreenList;
+    const ScreenList screenList() const { return m_screen_list; }
+
     /// @return whether the timestamps on the menu changed
     bool menuTimestampsChanged() const;
     bool haveShape() const { return m_have_shape; }
@@ -269,7 +272,6 @@ private:
     std::multimap<Window, WinClient *> m_group_search;
 
     std::list<MenuTimestamp *> m_menu_timestamps;
-    typedef std::list<BScreen *> ScreenList;
     ScreenList m_screen_list;
 
     FluxboxWindow *m_masked_window;

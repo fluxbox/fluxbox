@@ -43,7 +43,7 @@ public:
     /**
        Grab the specified key
     */
-    static void grabKey(unsigned int key, unsigned int mod);
+    static void grabKey(unsigned int key, unsigned int mod, Window win);
 
     /**
        convert the string to the keysym
@@ -59,7 +59,7 @@ public:
     /**
        ungrabs all keys
      */
-    static void ungrabKeys();
+    static void ungrabKeys(Window win);
 
     /** 
         Strip out modifiers we want to ignore

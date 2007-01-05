@@ -24,6 +24,9 @@
 
 #include "Keys.hh"
 
+#include "fluxbox.hh"
+#include "Screen.hh"
+
 #include "FbTk/StringUtil.hh"
 #include "FbTk/App.hh"
 #include "FbTk/Command.hh"
@@ -99,12 +102,18 @@ using std::pair;
 Keys::Keys():
     m_display(FbTk::App::instance()->display())
 {
+    typedef std::list<BScreen *> ScreenList;
+    ScreenList screen_list = Fluxbox::instance()->screenList();
+    ScreenList::iterator it = screen_list.begin();
+    ScreenList::iterator it_end = screen_list.end();
+
+    for (; it != it_end; ++it)
+        m_window_list.push_back(RootWindow(m_display,(*it)->screenNumber()));
 
 }
 
 Keys::~Keys() {
-
-    FbTk::KeyUtil::ungrabKeys();
+    ungrabKeys();
     deleteTree();
 }
 
@@ -113,6 +122,22 @@ void Keys::deleteTree() {
     for (keyspace_t::iterator map_it = m_map.begin(); map_it != m_map.end(); ++map_it)
         delete map_it->second;
     m_map.clear();
+}
+
+void Keys::grabKey(unsigned int key, unsigned int mod) {
+    std::list<Window>::iterator it = m_window_list.begin();
+    std::list<Window>::iterator it_end = m_window_list.end();
+
+    for (; it != it_end; ++it)
+        FbTk::KeyUtil::grabKey(key, mod, *it);
+}
+
+void Keys::ungrabKeys() {
+    std::list<Window>::iterator it = m_window_list.begin();
+    std::list<Window>::iterator it_end = m_window_list.end();
+
+    for (; it != it_end; ++it)
+        FbTk::KeyUtil::ungrabKeys(*it);
 }
 
 /**
@@ -285,7 +310,7 @@ bool Keys::doAction(XKeyEvent &ke) {
         setKeyMode(next_key);
         // grab "None Escape" to exit keychain in the middle
         unsigned int esc = FbTk::KeyUtil::getKey("Escape");
-        FbTk::KeyUtil::grabKey(esc,0);
+        grabKey(esc,0);
         return true;
     }
     if (!temp_key || *temp_key->m_command == 0) {
@@ -323,11 +348,11 @@ void Keys::keyMode(string keyMode) {
 }
 
 void Keys::setKeyMode(t_key *keyMode) {
-    FbTk::KeyUtil::ungrabKeys();
+    ungrabKeys();
     keylist_t::iterator it = keyMode->keylist.begin();
     keylist_t::iterator it_end = keyMode->keylist.end();
     for (; it != it_end; ++it)
-        FbTk::KeyUtil::grabKey((*it)->key,(*it)->mod);
+        grabKey((*it)->key,(*it)->mod);
     m_keylist = keyMode;
 }
 

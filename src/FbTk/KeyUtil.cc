@@ -112,57 +112,51 @@ void KeyUtil::loadModmap() {
  Grabs a key with the modifier
  and with numlock,capslock and scrollock
 */
-void KeyUtil::grabKey(unsigned int key, unsigned int mod) {
+void KeyUtil::grabKey(unsigned int key, unsigned int mod, Window win) {
     Display *display = App::instance()->display();
     const unsigned int capsmod = instance().capslock();
     const unsigned int nummod = instance().numlock();
     const unsigned int scrollmod = instance().scrolllock();
-    
-    for (int screen=0; screen<ScreenCount(display); screen++) {
-		
-        Window root = RootWindow(display, screen);
-		
-        XGrabKey(display, key, mod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);
-						
-        // Grab with numlock, capslock and scrlock	
 
-        //numlock	
-        XGrabKey(display, key, mod|nummod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);		
-        //scrolllock
-        XGrabKey(display, key, mod|scrollmod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);	
-        //capslock
-        XGrabKey(display, key, mod|capsmod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);
-	
-        //capslock+numlock
-        XGrabKey(display, key, mod|capsmod|nummod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);
+    XGrabKey(display, key, mod,
+             win, True,
+             GrabModeAsync, GrabModeAsync);
 
-        //capslock+scrolllock
-        XGrabKey(display, key, mod|capsmod|scrollmod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);						
-	
-        //capslock+numlock+scrolllock
-        XGrabKey(display, key, mod|capsmod|scrollmod|nummod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);						
+    // Grab with numlock, capslock and scrlock
 
-        //numlock+scrollLock
-        XGrabKey(display, key, mod|nummod|scrollmod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);
-	
-    }
-			
+    //numlock
+    XGrabKey(display, key, mod|nummod,
+             win, True,
+             GrabModeAsync, GrabModeAsync);
+    //scrolllock
+    XGrabKey(display, key, mod|scrollmod,
+             win, True,
+             GrabModeAsync, GrabModeAsync);
+    //capslock
+    XGrabKey(display, key, mod|capsmod,
+             win, True,
+             GrabModeAsync, GrabModeAsync);
+
+    //capslock+numlock
+    XGrabKey(display, key, mod|capsmod|nummod,
+             win, True,
+             GrabModeAsync, GrabModeAsync);
+
+    //capslock+scrolllock
+    XGrabKey(display, key, mod|capsmod|scrollmod,
+             win, True,
+             GrabModeAsync, GrabModeAsync);
+
+    //capslock+numlock+scrolllock
+    XGrabKey(display, key, mod|capsmod|scrollmod|nummod,
+             win, True,
+             GrabModeAsync, GrabModeAsync);
+
+    //numlock+scrollLock
+    XGrabKey(display, key, mod|nummod|scrollmod,
+             win, True,
+             GrabModeAsync, GrabModeAsync);
+
 }
 
 /**
@@ -196,12 +190,9 @@ unsigned int KeyUtil::getModifier(const char *modstr) {
 }
 
 /// Ungrabs the keys
-void KeyUtil::ungrabKeys() {
+void KeyUtil::ungrabKeys(Window win) {
     Display * display = App::instance()->display();
-    for (int screen=0; screen<ScreenCount(display); screen++) {
-        XUngrabKey(display, AnyKey, AnyModifier,
-                   RootWindow(display, screen));		
-    }
+    XUngrabKey(display, AnyKey, AnyModifier, win);
 }
 
 unsigned int KeyUtil::keycodeToModmask(unsigned int keycode) {

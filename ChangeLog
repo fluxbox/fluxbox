@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/05:
+   * Only grab keybindings on screens managed by fluxbox (Mark)
+     fluxbox.hh Keys.cc/hh FbTk/KeyUtil.cc/hh
    * Fix locale being applied to the clock. (Simon)
      - Also fixed a likely locale-killer for BSDs (without nl_langinfo)
      ClockTool.hh/cc FbTk/FbString.cc

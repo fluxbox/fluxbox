@@ -26,6 +26,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <map>
 #include <X11/Xlib.h>
 
@@ -76,7 +77,8 @@ public:
 private:
     void deleteTree();
 
-    void bindKey(unsigned int key, unsigned int mod);
+    void grabKey(unsigned int key, unsigned int mod);
+    void ungrabKeys();
 
     std::string m_filename;
 
@@ -123,6 +125,7 @@ private:
     keyspace_t m_map;
 
     Display *m_display;  ///< display connection
+    std::list<Window> m_window_list;
 };
 
 #endif // KEYS_HH
