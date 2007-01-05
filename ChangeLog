@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/05:
+   * Fix placement of window menu with toolbar at the top of the screen,
+     and remove titlebar from window menu (Mark)
+     Window.cc IconButton.cc
    * Don't change focus to a window that doesn't accept focus (Mark)
      FocusControl.cc
    * Only grab keybindings on screens managed by fluxbox (Mark)

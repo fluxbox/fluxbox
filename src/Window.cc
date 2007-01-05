@@ -2333,8 +2333,10 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
 
     int head = screen().getHead(menu_x, menu_y);
 
-    // but not under screen
-    if (menu_y + menu().height() >= screen().maxBottom(head))
+    // but not off the screen
+    if (menu_y < static_cast<signed>(screen().maxTop(head)))
+        menu_y = screen().maxTop(head);
+    else if (menu_y + menu().height() >= screen().maxBottom(head))
         menu_y = screen().maxBottom(head) - menu().height() - 1 - menu().fbwindow().borderWidth();
 
     if (menu_x < static_cast<signed>(screen().maxLeft(head)))

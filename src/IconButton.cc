@@ -57,7 +57,6 @@ public:
     explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
     void execute() {
         m_win.screen().hideMenus();
-        m_win.menu().enableTitle();
         // get last button pos
         const XEvent &event = Fluxbox::instance()->lastEvent();
         int x = event.xbutton.x_root - (m_win.menu().width() / 2);
