@@ -3360,6 +3360,7 @@ void FluxboxWindow::stopMoving(bool interrupted) {
             if (m_workspace_number != screen().currentWorkspaceID()) {
                 screen().reassociateWindow(this, screen().currentWorkspaceID(), true);
                 frame().show();
+                setInputFocus();
             }
         }
         fluxbox->ungrab();

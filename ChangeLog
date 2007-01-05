@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/05:
+   * Window wasn't staying focused when dragging across workspaces with
+     outline window moving (Mark)
+     Window.cc
    * Fix placement of window menu with toolbar at the top of the screen,
      and remove titlebar from window menu (Mark)
      Window.cc IconButton.cc
