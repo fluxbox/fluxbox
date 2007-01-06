@@ -1099,13 +1099,17 @@ void Menu::keyPressEvent(XKeyEvent &event) {
 
 void Menu::reconfigure() {
 
-    if (FbTk::Transparent::haveComposite())
+    if (FbTk::Transparent::haveComposite()) {
         menu.window.setOpaque(alpha());
+        menu.title.setAlpha(255);
+        menu.frame.setAlpha(255);
+    } else {
+        menu.window.setOpaque(255);
+        menu.title.setAlpha(alpha());
+        menu.frame.setAlpha(alpha());
+    }
 
     m_need_update = true; // redraw items
-
-    menu.title.setAlpha(alpha());
-    menu.frame.setAlpha(alpha());
 
     menu.window.setBorderColor(theme().borderColor());
     menu.title.setBorderColor(theme().borderColor());

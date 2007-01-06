@@ -508,9 +508,11 @@ void FbWinFrame::setFocus(bool newvalue) {
     if (FbTk::Transparent::haveRender() && theme().focusedAlpha() != theme().unfocusedAlpha()) {
         unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
         if (FbTk::Transparent::haveComposite()) {
+            m_tab_container.setAlpha(255);
             m_window.setOpaque(alpha);
         } else {
             m_tab_container.setAlpha(alpha);
+            m_window.setOpaque(255);
         }
     }
 
@@ -521,9 +523,7 @@ void FbWinFrame::setFocus(bool newvalue) {
             applyActiveLabel(*m_current_label);
     }
 
-    applyTitlebar();
-    applyHandles();
-    applyTabContainer();
+    applyAll();
     clearAll();
 }
 
@@ -1053,6 +1053,18 @@ void FbWinFrame::reconfigure() {
 
     // render the theme
     if (isVisible()) {
+        // update transparency settings
+        if (FbTk::Transparent::haveRender()) {
+            unsigned char alpha =
+                (m_focused ? theme().focusedAlpha() : theme().unfocusedAlpha());
+            if (FbTk::Transparent::haveComposite()) {
+                m_tab_container.setAlpha(255);
+                m_window.setOpaque(alpha);
+            } else {
+                m_tab_container.setAlpha(alpha);
+                m_window.setOpaque(255);
+            }
+        }
         renderAll();
         applyAll();
         clearAll();
@@ -1390,13 +1402,6 @@ void FbWinFrame::applyButtons() {
 }
 
 void FbWinFrame::init() {
-
-    if (FbTk::Transparent::haveComposite()) {
-        if (m_focused)
-            m_window.setOpaque(theme().focusedAlpha());
-        else
-            m_window.setOpaque(theme().unfocusedAlpha());
-    }
 
     if (theme().handleWidth() == 0)
         m_use_handle = false;

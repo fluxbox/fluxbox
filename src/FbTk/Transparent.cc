@@ -112,6 +112,7 @@ namespace FbTk {
 bool Transparent::s_init = false;
 bool Transparent::s_render = false;
 bool Transparent::s_composite = false;
+bool Transparent::s_use_composite = false;
 
 void Transparent::init() {
     Display *disp = FbTk::App::instance()->display();
@@ -119,48 +120,35 @@ void Transparent::init() {
     int major_opcode, first_event, first_error;
     if (XQueryExtension(disp, "RENDER",
                         &major_opcode,
-                        &first_event, &first_error) == False) {
-        s_render = false;
-        s_composite = false;
-    } else { // we have RENDER support
+                        &first_event, &first_error)) {
+        // we have XRENDER support
         s_render = true;
 
         if (XQueryExtension(disp, "Composite",
                             &major_opcode,
-                            &first_event, &first_error) == False) {
-            s_composite = false;
-        } else { // we have Composite support
+                            &first_event, &first_error)) {
+            // we have Composite support
             s_composite = true;
+            s_use_composite = true;
         }
     }
     s_init = true;
 }
 
-void Transparent::usePseudoTransparent(bool no_composite) {
-    if (s_composite != no_composite)
-        return;
-
-    s_init = false;
-    init(); // only use render if we have it
-
-    if (no_composite)
-        s_composite = false;
+void Transparent::usePseudoTransparent(bool force) {
+    if (!s_init)
+        init();
+    s_use_composite = (!force && s_composite);
 }
 
 bool Transparent::haveComposite(bool for_real) {
-    if (for_real) {
-        Display *disp = FbTk::App::instance()->display();
-        int major_opcode, first_event, first_error;
+    if (!s_init)
+        init();
 
-        return (XQueryExtension(disp, "Composite",
-                               &major_opcode,
-                               &first_event, &first_error) == True);
-    } else {
-        if (!s_init)
-            init();
-
+    if (for_real)
         return s_composite;
-    }
+    else
+        return s_use_composite;
 }
 
 Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int screen_num):

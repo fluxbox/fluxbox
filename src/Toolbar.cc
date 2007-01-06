@@ -477,9 +477,12 @@ void Toolbar::reconfigure() {
     frame.window.setBorderWidth(theme().border().width());
 
     bool have_composite = FbTk::Transparent::haveComposite();
+    // have_composite could have changed, so we need to change both
     if (have_composite) {
         frame.window.setOpaque(alpha());
+        frame.window.setAlpha(255);
     } else {
+        frame.window.setOpaque(255);
         frame.window.setAlpha(alpha());
     }
     frame.window.clear();

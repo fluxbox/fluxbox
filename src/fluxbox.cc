@@ -1569,8 +1569,7 @@ void Fluxbox::load_rc() {
     if (m_rc_menufile->empty())
         m_rc_menufile.setDefaultValue();
 
-    if (FbTk::Transparent::haveComposite())
-        FbTk::Transparent::usePseudoTransparent(*m_rc_pseudotrans);
+    FbTk::Transparent::usePseudoTransparent(*m_rc_pseudotrans);
 
     if (!m_rc_slitlistfile->empty()) {
         *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);
@@ -1669,6 +1668,8 @@ void Fluxbox::reconfigure() {
 
 
 void Fluxbox::real_reconfigure() {
+
+    FbTk::Transparent::usePseudoTransparent(*m_rc_pseudotrans);
 
     ScreenList::iterator screen_it = m_screen_list.begin();
     ScreenList::iterator screen_it_end = m_screen_list.end();

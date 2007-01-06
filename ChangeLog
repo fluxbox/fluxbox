@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/06:
+   * Changing session.forcePseudotransparency no longer requires restart,
+     also a little code cleanup in FbTk/Transparent.cc/hh
+     (Mark)
+     Slit.cc Menu.cc Toolbar.cc FbWinFrame.cc fluxbox.cc
    * Move triangle drawing into a generic function in FbDrawable (Simon)
      Make submenu triangles in MenuItems proportional to the icon size
      (alternate implementation of sf.net patch #1526813)

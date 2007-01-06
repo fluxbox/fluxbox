@@ -53,7 +53,7 @@ public:
 
     static bool haveComposite(bool for_real = false);
     static bool haveRender() { if (!s_init) init(); return s_render; }
-    static void usePseudoTransparent(bool no_composite);
+    static void usePseudoTransparent(bool force);
 
 private:
     void freeAlpha();
@@ -67,6 +67,7 @@ private:
     static bool s_init;
     static bool s_render; ///< wheter we have RENDER support
     static bool s_composite; ///< wheter we have Composite support
+    static bool s_use_composite; ///< whether or not to use Composite
     static void init();
 };
 

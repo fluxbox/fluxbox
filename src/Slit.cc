@@ -707,10 +707,13 @@ void Slit::reconfigure() {
     if (tmp)
         image_ctrl.removeImage(tmp);
 
+    // could have changed types, so we must set both
     if (FbTk::Transparent::haveComposite()) {
+        frame.window.setAlpha(255);
         frame.window.setOpaque(*m_rc_alpha);
     } else {
         frame.window.setAlpha(*m_rc_alpha);
+        frame.window.setOpaque(255);
     }
     // reposition clears the bg
     reposition();
