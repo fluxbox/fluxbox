@@ -48,6 +48,20 @@ public:
     virtual void fillPolygon(GC gc, XPoint *points, int npoints,
                              int shape, int mode);
 
+    /// type of arrow that should be drawn
+    enum TriangleType { 
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN
+    };
+
+    // x, y, width and height define a space within which we're drawing a triangle
+    // scale defines number of triangles that'd fit in a space of 100 width x 100 height
+    // (i.e. 200 = half size, 300 = a third).
+
+    virtual void drawTriangle(GC gc, TriangleType type, int x, int y, unsigned int width, unsigned int height, int scale);
+
 #ifdef NOT_USED
     virtual void drawPoint(GC gc, int x, int y);
 #endif

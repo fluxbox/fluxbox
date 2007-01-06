@@ -112,9 +112,9 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
             return 0;
 
 		// TODO maybe direction of arrows should depend on toolbar layout ?
-        ArrowButton::Type arrow_type = ArrowButton::LEFT;
+        FbTk::FbDrawable::TriangleType arrow_type = FbTk::FbDrawable::UP;
         if (name == "nextworkspace")
-            arrow_type = ArrowButton::RIGHT;
+            arrow_type = FbTk::FbDrawable::DOWN;
 
         ArrowButton *win = new ArrowButton(arrow_type, parent,
                                            0, 0,
@@ -131,9 +131,9 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         if (*cmd == 0) // we need a command
             return 0;
 
-        ArrowButton::Type arrow_type = ArrowButton::LEFT;
+        FbTk::FbDrawable::TriangleType arrow_type = FbTk::FbDrawable::LEFT;
         if (name == "nextwindow")
-            arrow_type = ArrowButton::RIGHT;
+            arrow_type = FbTk::FbDrawable::RIGHT;
                     
         ArrowButton *win = new ArrowButton(arrow_type, parent,
                                            0, 0,

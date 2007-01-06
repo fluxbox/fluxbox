@@ -265,20 +265,21 @@ void WinButton::drawType() {
         break;
     case SHADE:
         
-        drawRectangle(gc(), 2, 2, width() - 5 - oddW, 2);
+    {
+        int size = width() - 5 - oddW;
+
+        drawRectangle(gc(), 2, 2, size, 2);
         
-        XPoint points[3];
-        if (m_listen_to.isShaded()) {
-            points[1].x = (width() / 2) - 3; points[1].y = 7;
-            points[2].x = (width() / 2) + 4 - oddW; points[2].y = 7;
-            points[0].x = (width() / 2); points[0].y = height() / 2 + 2;
-        } else {
-            points[0].x = (width() / 2); points[0].y = 6;
-            points[1].x = (width() / 2) - 4; points[1].y = height() / 2 + 2;
-            points[2].x = (width() / 2) + 4 - oddW; points[2].y = height() / 2 + 2;
-        }
-        fillPolygon(gc(), points, 3, Convex, CoordModeOrigin);
+        // draw a one-quarter triangle below the rectangle
+        drawTriangle(gc(), (m_listen_to.isShaded() ?
+                            FbTk::FbDrawable::DOWN:
+                            FbTk::FbDrawable::UP),
+                     4, 6, 
+                     size-2, size/2 - 1, 
+                     100);
+
         break;
+    }
     case MENUICON:
         if (m_icon_pixmap.drawable()) {
 

@@ -29,18 +29,11 @@
 /// Displays a arrow on a button
 class ArrowButton: public FbTk::Button {
 public:
-    /// type of arrow that should be drawn
-    enum Type { 
-        LEFT,
-        RIGHT,
-        UP,
-        DOWN
-    };
 
-    ArrowButton(ArrowButton::Type arrow_type, const FbTk::FbWindow &parent,
+    ArrowButton(FbTk::FbDrawable::TriangleType arrow_type, const FbTk::FbWindow &parent,
                 int x, int y, 
                 unsigned int width, unsigned int height);
-    ArrowButton(ArrowButton::Type arrow_type, int screen_num,
+    ArrowButton(FbTk::FbDrawable::TriangleType arrow_type, int screen_num,
                 int x, int y,
                 unsigned int width, unsigned int height);
     void clear();
@@ -53,7 +46,7 @@ public:
     void updateTheme(const FbTk::Theme &theme);
 private:
     void drawArrow();
-    Type m_arrow_type;
+    FbTk::FbDrawable::TriangleType m_arrow_type;
     FbTk::EventHandler *m_mouse_handler;
     int m_arrowscale;
 };

@@ -216,26 +216,13 @@ void MenuItem::draw(FbDrawable &draw,
                 break;
 
             case MenuTheme::TRIANGLE:
-                XPoint tri[3];
-
-                if (theme.bulletPos() == FbTk::RIGHT) {
-                    tri[0].x = sel_x + half_w - 2;
-                    tri[0].y = sel_y + half_w - 2;
-                    tri[1].x = 4;
-                    tri[1].y = 2;
-                    tri[2].x = -4;
-                    tri[2].y = 2;
-                } else { // point the other way
-                    tri[0].x = sel_x + half_w - 2;
-                    tri[0].y = sel_y + half_w;
-                    tri[1].x = 4;
-                    tri[1].y = 2;
-                    tri[2].x = 0;
-                    tri[2].y = -4;
-                }
-
-                draw.fillPolygon(gc, tri, 3, Convex,
-                                 CoordModePrevious);
+                    draw.drawTriangle(gc, ((theme.bulletPos() == FbTk::RIGHT)?
+                                           FbTk::FbDrawable::RIGHT:
+                                           FbTk::FbDrawable::LEFT),
+                                      sel_x, sel_y,
+                                      item_pm_height,
+                                      item_pm_height,
+                                      300); // 33% triangle
                 break;
 
             case MenuTheme::DIAMOND:

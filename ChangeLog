@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/06:
+   * Move triangle drawing into a generic function in FbDrawable (Simon)
+     Make submenu triangles in MenuItems proportional to the icon size
+     (alternate implementation of sf.net patch #1526813)
+     FbTk/... FbDrawable.hh/cc MenuItem.cc
+     ArrowButton.hh/cc WinButton.cc ToolFactory.cc
 *07/01/05:
    * When a client in an unfocused tab creates a transient window, set that
      client to the active tab (Mark)
