@@ -28,7 +28,7 @@ $set 2 #BaseDisplay
 
 $set 3 #Common
 
-1 Alfa
+1 Gjennomsiktighet
 2 Skjul automatisk
 3 Bygget
 4 Byggete alternativer
@@ -66,8 +66,8 @@ $set 4 #Configmenu
 16 Tving halvgjennomsiktighet
 17 Meny-alfa
 18 Gjennomsiktighet
-19 Alfa for vindu i fokus
-20 Alfa for vindu ute av fokus
+19 Gjennomsiktighet for vindu i fokus
+20 Gjennomsiktighet for vindu ute av fokus
 
 $set 5 #Ewmh
 
@@ -92,7 +92,7 @@ $set 6 #FbTkError
 15 Tom for minne ved tildeling av hurtigminen for rød.
 16 Klarte ikke lese temaelement
 17 visuell støttes ikke
-18 Setter standardverdi
+18 Angir standardverdi
 
 $set 7 #Fluxbox
 
@@ -151,7 +151,6 @@ $set 12 #Screen
 1 BScreen::BScreen: feil ved spørring av X-tjeneren;\n	en annen vindusbehandler kjører allerede på visningsenheten
 2 B: %4d x H: %4d
 3 BScreen::BScreen: kontrollerer skjerm %d ved hjelp av visuell 0x%lx, dybde %d\n
-4 B: %04d x H: %04d
 
 $set 13 #Slit
 
@@ -168,7 +167,7 @@ $set 13 #Slit
 $set 14 #Toolbar
 
 1 Rediger navnet på gjeldende arbeidsområde
-2 Iconbar Mode
+2 Ikonlinje-modus
 3 Alle vinduer
 4 Ikoner
 5 Ingen
@@ -195,7 +194,7 @@ $set 16 #Windowmenu
 1 Lukk
 2 Ikonifiser
 3 Lag
-4 Lower
+4 Senk
 5 Maksimer
 6 Hev
 7 Send til . . .
@@ -213,7 +212,7 @@ $set 17 #Workspace
 $set 18 #fbsetroot
 
 1 feil: må oppgi en av: -solid, -mod, -gradient\n
-2 Klarte ikke opprette pikselkartatomer, gir opp.
+2 Klarte ikke opprette bildekartatomer, gir opp.
 3 -display <streng>        tilkobling til visningsenhet\n\
 -mod <x> <y>             «modula»-mønster\n\
 -foreground, -fg <farge> «modula»-forgrunnsfarge\n\
@@ -227,8 +226,8 @@ $set 18 #fbsetroot
 $set 19 #main
 
 1 feil: «-display» krever et argument
-2 Bad Alloc
-3 Bad cast
+2 Feil tildeling
+3 Feil typeomforming
 4 Utenfor rekkevidde
 5 Kjøretidsfeil
 6 Standard Exception
@@ -237,8 +236,11 @@ $set 19 #main
 9 Loggfil
 10 Logger til
 11 feil: «-rc» krever et argument
-13 FluxBox %s: kopirett %s Henrik Kinnunen\n\n\
+12 feil: «-rc» krever et argument
+13 FluxBox %s: kopirett %s Henrik Kinnunen\n\
+Nettside: http://www.fluxbox.org/\n\n\
 -display <streng>\t\tbruk visningsenhetforbindelse.\n\
+-screen <alle|int,int,int>\tkjør kun på valgte skjermer.\n\
 -rc <streng>\t\t\tbruk alternativ ressursfil.\n\
 -version\t\t\tvis versjonnummer og avslutt.\n\
 -info\t\t\t\tvis litt nyttig informasjon.\n\
@@ -256,3 +258,5 @@ $set 20
 6 Topp
 
 
+
+ 	  	 

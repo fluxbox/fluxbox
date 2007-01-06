@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/06:
+   * Updated nb_NO translations (thanks emptydoor at users dot sf dot net)
+     nls/nb_NO/Translation.m
    * Changing session.forcePseudotransparency no longer requires restart,
      also a little code cleanup in FbTk/Transparent.cc/hh
      (Mark)
