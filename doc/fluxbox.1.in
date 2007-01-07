@@ -954,6 +954,10 @@ Remember the current sticky state.
 This one is only useful if 'Workspace' is set too.  The workspace is changed
 to the workspace containing the application being launched.
 .TP
+.B Alpha [Focused Unfocused]
+Focused and unfocused transparency alpha settings. Values should be in the 
+0-255 range, 0 being completely transparent and 255 opaque.
+.TP
 .B Save settings on close [yes|no]
 By default, application settings are not saved when a window is closed.  Set
 this option if you want previous settings to be saved when the window is closed.
