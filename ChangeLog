@@ -4,18 +4,18 @@ Changes for 1.0rc3:
    * Fix RefCount crash and Slit deconstruction ordering (Simon)
      RefCount.hh Slit.hh/cc
    * Support per-window transparency settings.
+      (Simon and thanks Julien Trolet, dmxen at sourceforge dot net)
+       sf.net patch #1511042, feature #1108692
       - new "Transparency" menu in the window menu
       - new apps file attribute: 
          [alpha] {int int} (or just {int})
         Where numbers represent focused and unfocused transparency, 
         respectively. One number only will be used for both.
       - Also, show toggle status for shade and stick in window menu.
-      (Simon and thanks Julien Trolet, dmxen at sourceforge dot net)
-       sf.net patch #1511042, feature #1108692
      fluxbox-nls.hh AlphaMenu.hh/cc BoolMenuItem.hh FbTk/Menu.hh 
      FbTk/MenuItem.hh FbTk/Resource.hh FbWinFrame.hh/cc IntResMenuItem.hh/cc
      MenuCreator.cc ObjectResource.hh Remember.hh/cc Screen.cc Slit.cc
-     Window.hh/cc Toolbar.cc Makefile.am
+     Window.hh/cc Toolbar.cc Makefile.am AlphaMenu.hh/cc ObjectResource.hh
 *07/01/06:
    * Updated nb_NO translations (thanks emptydoor at users dot sf dot net)
      nls/nb_NO/Translation.m
