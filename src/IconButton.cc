@@ -255,7 +255,6 @@ void IconButton::update(FbTk::Subject *subj) {
         FbTk::translateCoords(orientation(), iconx, icony, w, h);
         FbTk::translatePosition(orientation(), iconx, icony, neww, newh, 0);
         
-        neww = newh;
         m_icon_window.moveResize(iconx, icony, neww, newh);
 
         m_icon_pixmap.copy(m_win.iconPixmap().drawable(), DefaultDepth(display, screen), screen);

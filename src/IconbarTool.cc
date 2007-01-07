@@ -559,8 +559,6 @@ void IconbarTool::update(FbTk::Subject *subj) {
         deleteIcons();
 
     // ok, we got some signal that we need to update our iconbar container
-    if (mode() == NONE)
-        return;
     updateList();
 
     // unlock container and update graphics
