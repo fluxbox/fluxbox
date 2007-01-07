@@ -570,7 +570,12 @@ void IconbarTool::update(FbTk::Subject *subj) {
 
     // another renderTheme we hopefully shouldn't need? These renders
     // should be done individually above
-    // renderTheme();
+
+    // nope, we still need it (or at least I'm not bothering to fix it yet)
+    // a new IconButton doesn't get resized properly until the
+    // m_icon_container.update() above; then, it never runs drawText() again,
+    // so text can end up behind program icons
+    renderTheme();
 }
 
 IconButton *IconbarTool::findButton(FluxboxWindow &win) {
