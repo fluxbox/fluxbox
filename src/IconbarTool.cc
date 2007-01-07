@@ -430,6 +430,7 @@ void IconbarTool::hide() {
 void IconbarTool::setAlignment(Container::Alignment align) {
     *m_rc_alignment = align;
     update(0);
+    m_menu.reconfigure();
 }
 
 void IconbarTool::setMode(Mode mode) {
@@ -453,6 +454,8 @@ void IconbarTool::setMode(Mode mode) {
     m_icon_container.showSubwindows();
 
     renderTheme();
+
+    m_menu.reconfigure();
 }
 
 unsigned int IconbarTool::width() const {
@@ -505,8 +508,11 @@ void IconbarTool::update(FbTk::Subject *subj) {
             return;
         } else if (subj == &(winsubj->win().workspaceSig())) {
             // we can ignore this signal if we're in ALLWINDOWS mode
-            if (mode() == ALLWINDOWS)
+            // unless the window was focused and has nothing to revert to
+            if (mode() == ALLWINDOWS || mode() == ICONS || mode() == NOICONS) {
+                m_focus_timer.start();
                 return;
+            }
 
             // workspace changed for this window, and if it's not on current workspace we remove it
             if (m_screen.currentWorkspaceID() != winsubj->win().workspaceNumber()) {
@@ -543,7 +549,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
     bool remove_all = false; // if we should readd all windows
 
     if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject) &&
-        mode() != ALLWINDOWS && mode() != ICONS ) {
+        mode() != ALLWINDOWS && mode() != ICONS && mode() != NOICONS) {
         BScreen::ScreenSubject *screen_subj = static_cast<BScreen::ScreenSubject *>(subj);
         // current workspace sig
         if (&m_screen.currentWorkspaceSig() == screen_subj ) {
@@ -838,11 +844,15 @@ bool IconbarTool::checkDuplicate(FluxboxWindow &win) {
 
 void IconbarTool::timedRender() {
     WinClient *client = FocusControl::focusedWindow();
-    if (client == 0 || client->fbwindow() == 0)
+    IconButton *current_button = static_cast<IconButton *>(m_icon_container.selected());
+
+    if (client == 0 || client->fbwindow() == 0) {
+        if (current_button != 0)
+            renderButton(*current_button);
         return;
+    }
 
     IconButton *button = findButton(*client->fbwindow());
-    IconButton *current_button = static_cast<IconButton *>(m_icon_container.selected());
     // if old window is the same as the new focused window then ignore this render
     // else render old client and new client
     if (button == current_button)
