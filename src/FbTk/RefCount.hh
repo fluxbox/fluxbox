@@ -25,7 +25,6 @@
 namespace FbTk {
 
 /// holds a pointer with reference counting, similar to std:auto_ptr
-
 template <typename Pointer>
 class RefCount {
 public:
@@ -40,7 +39,7 @@ public:
     Pointer *operator -> () const { return get(); }
     Pointer *get() const { return m_data; }
 #ifdef NOT_USED
-    /// @return number of referenses
+    /// @return number of references
     unsigned int usedBy() const { return (m_refcount != 0 ? *m_refcount : 0); }
 #endif
 private:
@@ -48,43 +47,33 @@ private:
     void incRefCount();
     /// decrease reference count
     void decRefCount();
-    /// decrease refcount count
-    void decRefCountCount();
     Pointer *m_data; ///< data holder
     mutable unsigned int *m_refcount; ///< holds reference counting
-
-    // This one counts the number of active references pointing to the m_refcount data!
-    // when it reaches zero, *then* we can delete it, otherwise someone else might check it.
-    mutable unsigned int *m_refcount_count; ///< holds reference counting
 };
 
 // implementation
 
 template <typename Pointer>
-RefCount<Pointer>::RefCount():m_data(0), m_refcount(new unsigned int(0)), m_refcount_count(new unsigned int(1)) {
-
+RefCount<Pointer>::RefCount():m_data(0), m_refcount(new unsigned int(0)) {
+    incRefCount(); // it really counts how many things are storing m_refcount
 }
 
 template <typename Pointer>
 RefCount<Pointer>::RefCount(RefCount<Pointer> &copy):
     m_data(copy.m_data),
-    m_refcount(copy.m_refcount), 
-    m_refcount_count(copy.m_refcount_count) {
-    (*m_refcount_count)++;
+    m_refcount(copy.m_refcount) {
     incRefCount();
 }
 
 template <typename Pointer>
-RefCount<Pointer>::RefCount(Pointer *p):m_data(p), m_refcount(new unsigned int(0)), m_refcount_count(new unsigned int(1)) {
+RefCount<Pointer>::RefCount(Pointer *p):m_data(p), m_refcount(new unsigned int(0)) {
     incRefCount();
 }
 
 template <typename Pointer>
 RefCount<Pointer>::RefCount(const RefCount<Pointer> &copy):
     m_data(copy.m_data),
-    m_refcount(copy.m_refcount),
-    m_refcount_count(copy.m_refcount_count) {
-    (*m_refcount_count)++;
+    m_refcount(copy.m_refcount) {
     incRefCount();
 }
 
@@ -97,8 +86,6 @@ template <typename Pointer>
 RefCount<Pointer> &RefCount<Pointer>::operator = (const RefCount<Pointer> &copy) {
     decRefCount(); // dec current ref count
     m_refcount = copy.m_refcount; // set new ref count
-    m_refcount_count = copy.m_refcount_count;
-    (*m_refcount_count)++;
     m_data = copy.m_data; // set new data pointer
     incRefCount(); // inc new ref count 
     return *this;
@@ -109,35 +96,27 @@ RefCount<Pointer> &RefCount<Pointer>::operator = (Pointer *p) {
     decRefCount();
     m_data = p; // set data pointer
     m_refcount = new unsigned int(0); // create new counter
-    m_refcount_count = new unsigned int(1);
     incRefCount();
     return *this;
 }
 
 template <typename Pointer>
 void RefCount<Pointer>::decRefCount() {
-    if (m_refcount != 0) {
-        (*m_refcount)--;
-        if (*m_refcount == 0) { // destroy m_data and m_refcount if nobody else is using this
-            if (m_data != 0)
-                delete m_data;
-            m_data = 0;
-        }
-    }
-    decRefCountCount();
-}
-
-template <typename Pointer>
-void RefCount<Pointer>::decRefCountCount() {
-    if (*m_refcount_count == 0)
-        return; // shouldnt happen
-    (*m_refcount_count)--;
-    if (*m_refcount_count == 0) { 
+    if (m_refcount == 0)
+        return;
+    if (*m_refcount == 0) { // already zero, then delete refcount
         delete m_refcount;
-        delete m_refcount_count;
+        m_refcount = 0;
+        return;
     }
-    m_refcount = 0;
-    m_refcount_count = 0;
+    (*m_refcount)--;
+    if (*m_refcount == 0) { // destroy m_data and m_refcount if nobody else is using this
+        if (m_data != 0)
+            delete m_data;
+        m_data = 0;
+        delete m_refcount;
+        m_refcount = 0;
+    }
 }
 
 template <typename Pointer>
