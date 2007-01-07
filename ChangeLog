@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/07:
+   * Fix RefCount crash and Slit deconstruction ordering (Simon)
+     RefCount.hh Slit.hh/cc
    * Support per-window transparency settings.
       - new "Transparency" menu in the window menu
       - new apps file attribute: 

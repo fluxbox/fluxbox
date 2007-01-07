@@ -261,12 +261,12 @@ unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     : m_hidden(false),
       m_screen(scr),
-      m_slitmenu(scr.menuTheme(),
-                 scr.imageControl(),
-                 *scr.layerManager().getLayer(Layer::MENU)),
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
                         *scr.layerManager().getLayer(Layer::MENU)),
+      m_slitmenu(scr.menuTheme(),
+                 scr.imageControl(),
+                 *scr.layerManager().getLayer(Layer::MENU)),
       frame(scr.rootWindow()),
        //For KDE dock applets
       m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(),
