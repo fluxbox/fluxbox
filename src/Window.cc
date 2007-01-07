@@ -2849,12 +2849,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         if (! isMoving()) {
             startMoving(me.x_root, me.y_root);
         } else {
-            int dx = me.x_root - m_button_grab_x,
-                dy = me.y_root - m_button_grab_y;
-
-            dx -= frame().window().borderWidth();
-            dy -= frame().window().borderWidth();
-
             // Warp to next or previous workspace?, must have moved sideways some
             int moved_x = me.x_root - m_last_resize_x;
             // save last event point
@@ -2871,25 +2865,36 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     moved_x > 0) {
                     //warp right
                     new_id = (cur_id + 1) % screen().numberOfWorkspaces();
-                    dx = - me.x_root; // move mouse back to x=0
+                    m_last_resize_x = 0; // move mouse back to x=0
                 } else if (me.x_root <= warpPad &&
                            moved_x < 0) {
                     //warp left
                     new_id = (cur_id + screen().numberOfWorkspaces() - 1) % screen().numberOfWorkspaces();
-                    dx = screen().width() - me.x_root-1; // move mouse to screen width - 1
+                    m_last_resize_x = screen().width() - 1; // move mouse to screen width - 1
                 }
                 if (new_id != cur_id) {
 
-                    XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
+                    // remove motion events from queue to avoid repeated warps
+                    XEvent e;
+                    while (XCheckTypedEvent(display, MotionNotify, &e)) {
+                        // might as well update the y-coordinate
+                        m_last_resize_y = e.xmotion.y_root;
+                    }
+
+                    // move the pointer to (m_last_resize_x,m_last_resize_y)
+                    XWarpPointer(display, None, me.root, 0, 0, 0, 0,
+                                 m_last_resize_x, m_last_resize_y);
+
                     screen().changeWorkspaceID(new_id);
-
-                    m_last_resize_x = me.x_root + dx;
-
-                    // dx is the difference, so our new x is what it would  have been
-                    // without the warp, plus the difference.
-                    dx += me.x_root - m_button_grab_x;
                 }
             }
+
+            int dx = m_last_resize_x - m_button_grab_x,
+                dy = m_last_resize_y - m_button_grab_y;
+
+            dx -= frame().window().borderWidth();
+            dy -= frame().window().borderWidth();
+
             // dx = current left side, dy = current top
             doSnapping(dx, dy);
 

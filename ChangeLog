@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/07:
+   * Fixed workspace warping going crazy, bug #1467124 (Mark)
+     Window.cc
    * Fix little bug with iconbar rendering, bug #1549209 (Mark)
      IconbarTool.cc
    * Fix RefCount crash and Slit deconstruction ordering (Simon)
