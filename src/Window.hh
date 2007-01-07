@@ -201,6 +201,19 @@ public:
     void hide(bool interrupt_moving);
     void iconify();
     void deiconify(bool reassoc = true, bool do_raise = true);
+
+    // ------------------
+    // Per window transparency addons
+    unsigned char  getFocusedAlpha() const { return frame().getAlpha(true); }
+    unsigned char  getUnfocusedAlpha() const { return frame().getAlpha(false); }
+    void setFocusedAlpha(unsigned char alpha) { frame().setAlpha(true, alpha); }
+    void setUnfocusedAlpha(unsigned char alpha) { frame().setAlpha(false, alpha); }
+    void updateAlpha(bool focused, unsigned char alpha)  { frame().setAlpha(focused, alpha); }
+
+    bool getUseDefaultAlpha() const { return frame().getUseDefaultAlpha(); }
+    void setUseDefaultAlpha(bool default_alpha) { frame().setUseDefaultAlpha(default_alpha); }
+    // ------------------
+
     /// close current client
     void close();
     /// kill current client
@@ -225,6 +238,8 @@ public:
     void shadeOff();
     /// toggles sticky
     void stick();
+    /// toggles iconic
+    void toggleIconic();
     void raise();
     void lower();
     void tempRaise();
@@ -320,7 +335,9 @@ public:
     inline bool isManaged() const { return m_initialized; }
     inline bool isFocused() const { return focused; }
     bool isVisible() const;
+    inline bool isIconic() { return iconic; }
     inline bool isIconic() const { return iconic; }
+    inline bool isShaded() { return shaded; }
     inline bool isShaded() const { return shaded; }
     inline bool isFullscreen() const { return fullscreen; }
     inline bool isMaximized() const { return maximized == MAX_FULL; }

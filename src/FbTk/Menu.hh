@@ -116,7 +116,7 @@ public:
     /// set label string
     void setLabel(const FbString &labelstr);
     /// move menu to x,y
-    void move(int x, int y);
+    virtual void move(int x, int y);
     virtual void updateMenu(int active_index = -1);
     void setItemSelected(unsigned int index, bool val);
     void setItemEnabled(unsigned int index, bool val);

@@ -83,6 +83,7 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_use_handle(true),
     m_focused(false),
     m_visible(false),
+    m_use_default_alpha(2),
     m_button_pm(0),
     m_tabmode(screen.getDefaultInternalTabs()?INTERNAL:EXTERNAL),
     m_active_gravity(0),
@@ -91,6 +92,9 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_button_size(1),
     m_width_before_shade(1),
     m_height_before_shade(1),
+    m_shaded(false),
+    m_focused_alpha(0),
+    m_unfocused_alpha(0),
     m_double_click_time(0),
     m_themelistener(*this),
     m_shape(new Shape(m_window, theme.shapePlace())),
@@ -443,7 +447,7 @@ void FbWinFrame::alignTabs() {
 
 void FbWinFrame::notifyMoved(bool clear) {
     // not important if no alpha...
-    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    unsigned char alpha = getAlpha(m_focused);
     if (alpha == 255)
         return;
 
@@ -505,8 +509,8 @@ void FbWinFrame::setFocus(bool newvalue) {
 
     m_focused = newvalue;
 
-    if (FbTk::Transparent::haveRender() && theme().focusedAlpha() != theme().unfocusedAlpha()) {
-        unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    if (FbTk::Transparent::haveRender() && getAlpha(true) != getAlpha(false)) { // different alpha for focused and unfocused
+        unsigned char alpha = getAlpha(m_focused);
         if (FbTk::Transparent::haveComposite()) {
             m_tab_container.setAlpha(255);
             m_window.setOpaque(alpha);
@@ -525,6 +529,46 @@ void FbWinFrame::setFocus(bool newvalue) {
 
     applyAll();
     clearAll();
+}
+
+void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
+    if (m_use_default_alpha == 2)
+    {
+        /// Set basic defaults
+        m_focused_alpha = getAlpha(true);
+        m_unfocused_alpha = getAlpha(false);
+    }
+    m_use_default_alpha = 0;
+
+    if (focused)
+        m_focused_alpha = alpha;
+    else
+        m_unfocused_alpha = alpha;
+
+    if(m_focused == focused)
+        m_window.setOpaque(alpha);
+}
+
+unsigned char FbWinFrame::getAlpha(bool focused) const
+{
+  return getUseDefaultAlpha() ?
+        (focused ? theme().focusedAlpha() : theme().unfocusedAlpha())
+      : (focused ? m_focused_alpha        : m_unfocused_alpha);
+}
+
+void FbWinFrame::setUseDefaultAlpha(bool default_alpha)
+{
+    if (getUseDefaultAlpha() == default_alpha)
+        return;
+
+    if (!default_alpha && m_use_default_alpha == 2) {
+        m_focused_alpha = theme().focusedAlpha();
+        m_unfocused_alpha = theme().unfocusedAlpha();
+    }
+
+    m_use_default_alpha = default_alpha;
+
+    m_window.setOpaque(getAlpha(m_focused));
 }
 
 void FbWinFrame::setDoubleClickTime(unsigned int time) {
@@ -1056,7 +1100,7 @@ void FbWinFrame::reconfigure() {
         // update transparency settings
         if (FbTk::Transparent::haveRender()) {
             unsigned char alpha =
-                (m_focused ? theme().focusedAlpha() : theme().unfocusedAlpha());
+                getAlpha(m_focused);
             if (FbTk::Transparent::haveComposite()) {
                 m_tab_container.setAlpha(255);
                 m_window.setOpaque(alpha);
@@ -1281,7 +1325,7 @@ void FbWinFrame::applyTitlebar() {
     getCurrentFocusPixmap(label_pm, title_pm,
                           label_color, title_color);
 
-    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    unsigned char alpha = getAlpha (m_focused);
     m_titlebar.setAlpha(alpha);
     m_label.setAlpha(alpha);
 
@@ -1332,7 +1376,7 @@ void FbWinFrame::renderHandles() {
 
 void FbWinFrame::applyHandles() {
 
-    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    unsigned char alpha = getAlpha (m_focused);
     m_handle.setAlpha(alpha);
     m_grip_left.setAlpha(alpha);
     m_grip_right.setAlpha(alpha);
@@ -1452,7 +1496,7 @@ void FbWinFrame::applyButton(FbTk::Button &btn) {
         btn.setPressedColor(m_button_pressed_color);
 
     if (focused()) { // focused
-        btn.setAlpha(theme().focusedAlpha());
+        btn.setAlpha(getAlpha(true));
 
         btn.setGC(m_theme.buttonPicFocusGC());
         if (m_button_pm)
@@ -1460,7 +1504,7 @@ void FbWinFrame::applyButton(FbTk::Button &btn) {
         else
             btn.setBackgroundColor(m_button_color);
     } else { // unfocused
-        btn.setAlpha(theme().unfocusedAlpha());
+        btn.setAlpha(getAlpha(false));
 
         btn.setGC(m_theme.buttonPicUnfocusGC());
         if (m_button_unfocused_pm)
@@ -1513,7 +1557,7 @@ void FbWinFrame::getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
 }
 
 void FbWinFrame::applyTabContainer() {
-    m_tab_container.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    m_tab_container.setAlpha(getAlpha(m_focused));
 
     // do the parent container
     Pixmap tabcontainer_pm = None;
@@ -1608,7 +1652,7 @@ void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextFocusGC());
     button.setJustify(theme().justify());
-    button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    button.setAlpha(getAlpha(m_focused));
 
     if (m_labelbutton_focused_pm != 0) {
         button.setBackgroundPixmap(m_labelbutton_focused_pm);
@@ -1621,7 +1665,7 @@ void FbWinFrame::applyActiveLabel(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextActiveGC());
     button.setJustify(theme().justify());
-    button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    button.setAlpha(getAlpha(m_focused));
 
     if (m_labelbutton_active_pm != 0) {
         button.setBackgroundPixmap(m_labelbutton_active_pm);
@@ -1634,7 +1678,7 @@ void FbWinFrame::applyUnfocusLabel(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextUnfocusGC());
     button.setJustify(theme().justify());
-    button.setAlpha(m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    button.setAlpha(getAlpha(m_focused));
 
     if (m_labelbutton_unfocused_pm != 0) {
         button.setBackgroundPixmap(m_labelbutton_unfocused_pm);

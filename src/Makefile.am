@@ -100,7 +100,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Workspace.cc Workspace.hh \
 	FbCommands.hh FbCommands.cc LayerMenu.hh LayerMenu.cc \
 	Layer.hh \
-	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh FbMenu.cc \
+	IntResMenuItem.hh FbMenu.hh FbMenu.cc \
 	WinClient.hh WinClient.cc \
 	Strut.hh \
 	Xinerama.hh \
@@ -116,6 +116,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	TextTheme.hh TextTheme.cc \
 	BorderTheme.hh BorderTheme.cc \
 	CommandDialog.hh CommandDialog.cc SendToMenu.hh SendToMenu.cc \
+	AlphaMenu.hh AlphaMenu.cc ObjectResource.hh \
 	CompareWindow.hh \
 	Parser.hh Parser.cc FbMenuParser.hh FbMenuParser.cc \
 	StyleMenuItem.hh StyleMenuItem.cc \

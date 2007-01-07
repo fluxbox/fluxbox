@@ -38,6 +38,7 @@ public:
     BoolMenuItem(const FbTk::FbString &label, bool &item):
         FbTk::MenuItem(label), m_item(item) {
         FbTk::MenuItem::setSelected(m_item);
+        setToggleItem(true); 
     }
     bool isSelected() const { return m_item; }
     // toggle state
@@ -50,4 +51,30 @@ private:
     bool &m_item;
 };
 
-#endif // BOOLRESMENUITEM_HH
+/// a bool menu item
+template <typename Type>
+class BoolResMenuItem: public FbTk::MenuItem {
+public:
+    BoolResMenuItem(const FbTk::FbString &label, Type &res, 
+                 FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(label, cmd), m_res(res) { 
+        FbTk::MenuItem::setSelected(*m_res);
+        setToggleItem(true);
+    }
+    BoolResMenuItem(const FbTk::FbString &label, Type &res):
+        FbTk::MenuItem(label), m_res(res) {
+        FbTk::MenuItem::setSelected(*m_res);
+        setToggleItem(true);
+    }
+    bool isSelected() const { return *m_res; }
+    // toggle state
+    void click(int button, int time) { setSelected(!*m_res); FbTk::MenuItem::click(button, time); }
+    void setSelected(bool value) { 
+        m_res = value;
+        FbTk::MenuItem::setSelected(*m_res);
+    }
+private:
+    Type &m_res;
+};
+
+#endif // BOOLMENUITEM_HH

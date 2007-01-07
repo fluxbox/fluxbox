@@ -1276,7 +1276,7 @@ void Slit::setupMenu() {
 
     // this saves resources and clears the slit window to update alpha value
     FbTk::MenuItem *alpha_menuitem =
-        new IntResMenuItem(_FB_XTEXT(Common, Alpha, "Alpha", "Transparency level"),
+        new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Common, Alpha, "Alpha", "Transparency level"),
                            m_rc_alpha,
                            0, 255, m_slitmenu);
     // setup command for alpha value

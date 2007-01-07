@@ -49,6 +49,7 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/Select2nd.hh"
+#include "FbTk/Transparent.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -1501,6 +1502,13 @@ void FluxboxWindow::hide(bool interrupt_moving) {
 
 void FluxboxWindow::show() {
     frame().show();
+}
+
+void FluxboxWindow::toggleIconic() {
+    if (isIconic())
+        deiconify();
+    else
+        iconify();
 }
 
 /**

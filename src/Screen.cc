@@ -1689,7 +1689,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               *resource.max_over_tabs, save_and_reconfigure));
 
     FbTk::MenuItem *tab_width_item =
-            new IntResMenuItem(_FB_XTEXT(Configmenu, ExternalTabWidth,
+        new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Configmenu, ExternalTabWidth,
                                        "External Tab Width",
                                        "Width of external-style tabs"),
                                resource.tab_width, 10, 3000, /* silly number */
@@ -1791,7 +1791,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         }
 
         FbTk::MenuItem *focused_alpha_item =
-            new IntResMenuItem(_FB_XTEXT(Configmenu, FocusedAlpha,
+            new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Configmenu, FocusedAlpha,
                                        "Focused Window Alpha",
                                        "Transparency level of the focused window"),
                     resource.focused_alpha, 0, 255, *alpha_menu);
@@ -1799,7 +1799,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         alpha_menu->insert(focused_alpha_item);
 
         FbTk::MenuItem *unfocused_alpha_item =
-            new IntResMenuItem(_FB_XTEXT(Configmenu,
+            new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Configmenu,
                                        UnfocusedAlpha,
                                        "Unfocused Window Alpha",
                                        "Transparency level of unfocused windows"),
@@ -1809,7 +1809,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         alpha_menu->insert(unfocused_alpha_item);
 
         FbTk::MenuItem *menu_alpha_item =
-            new IntResMenuItem(_FB_XTEXT(Configmenu, MenuAlpha,
+            new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Configmenu, MenuAlpha,
                                        "Menu Alpha", "Transparency level of menu"),
                     resource.menu_alpha, 0, 255, *alpha_menu);
         menu_alpha_item->setCommand(saverc_cmd);

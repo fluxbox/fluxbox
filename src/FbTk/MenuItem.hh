@@ -90,21 +90,21 @@ public:
     virtual ~MenuItem() { }
 
     inline void setCommand(RefCount<Command> &cmd) { m_command = cmd; }
-    virtual inline void setSelected(bool selected) { m_selected = selected; }
-    virtual inline void setEnabled(bool enabled) { m_enabled = enabled; }
-    virtual inline void setLabel(const FbString &label) { m_label = label; }
-    virtual inline void setToggleItem(bool val) { m_toggle_item = val; }
+    virtual void setSelected(bool selected) { m_selected = selected; }
+    virtual void setEnabled(bool enabled) { m_enabled = enabled; }
+    virtual void setLabel(const FbString &label) { m_label = label; }
+    virtual void setToggleItem(bool val) { m_toggle_item = val; }
     void setIcon(const std::string &filename, int screen_num);
     virtual Menu *submenu() { return m_submenu; }
     /** 
         @name accessors
     */
     //@{
-    virtual inline const std::string &label() const { return m_label; }
+    virtual const std::string &label() const { return m_label; }
     virtual const Menu *submenu() const { return m_submenu; } 
-    virtual inline bool isEnabled() const { return m_enabled; }
-    virtual inline bool isSelected() const { return m_selected; }
-    virtual inline bool isToggleItem() const { return m_toggle_item; }
+    virtual bool isEnabled() const { return m_enabled; }
+    virtual bool isSelected() const { return m_selected; }
+    virtual bool isToggleItem() const { return m_toggle_item; }
     virtual unsigned int width(const MenuTheme &theme) const;
     virtual unsigned int height(const MenuTheme &theme) const;
     virtual void draw(FbDrawable &drawable, 

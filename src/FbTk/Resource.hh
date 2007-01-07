@@ -192,6 +192,7 @@ public:
     /// @return string value of resource
     std::string getString() const;
 
+    inline T& get() { return m_value; }
     inline T& operator*() { return m_value; }
     inline const T& operator*() const { return m_value; }
     inline T *operator->() { return &m_value; }

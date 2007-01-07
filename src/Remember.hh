@@ -58,6 +58,7 @@ public:
     inline void forgetJumpworkspace() { jumpworkspace_remember = false; }
     inline void forgetLayer() { layer_remember = false; }
     inline void forgetSaveOnClose() { save_on_close_remember = false; }
+    inline void forgetAlpha() { alpha_remember = false; }
 
     inline void rememberWorkspace(int ws)
         { workspace = ws; workspace_remember = true; }
@@ -85,6 +86,8 @@ public:
         { layer = layernum; layer_remember = true; }
     inline void rememberSaveOnClose(bool state)
         { save_on_close = state; save_on_close_remember = true; }
+    inline void rememberAlpha(int focused_a, int unfocused_a)
+        { focused_alpha = focused_a; unfocused_alpha = unfocused_a; alpha_remember = true; }
 
 
     bool workspace_remember;
@@ -102,6 +105,10 @@ public:
                            //                   1 - upperight
                            //                   2 - lowerleft
                            //                   3 - lowerright
+
+    bool alpha_remember;
+    int focused_alpha;
+    int unfocused_alpha;
 
     bool shadedstate_remember;
     bool shadedstate;
@@ -161,6 +168,7 @@ public:
         //REM_TABSTATE, ... external tabs disabled atm
         REM_WORKSPACE,
         REM_HEAD,
+        REM_ALPHA,
         REM_LASTATTRIB // not actually used
     };
 

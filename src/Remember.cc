@@ -40,6 +40,7 @@
 #include "FbTk/MenuItem.hh"
 #include "FbTk/App.hh"
 #include "FbTk/stringstream.hh"
+#include "FbTk/Transparent.hh"
 
 
 #include <X11/Xlib.h>
@@ -155,6 +156,10 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
                                       Remember::REM_DECOSTATE));
     menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
                                       Remember::REM_SHADEDSTATE));
+    if (FbTk::Transparent::haveComposite()
+        || FbTk::Transparent::haveRender())
+        menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Alpha, "Transparency", "Remember window tranparency settings"),
+                                          Remember::REM_ALPHA));
     menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Layer, "Layer", "Remember Layer"),
                                       Remember::REM_LAYER));
     menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
@@ -241,6 +246,7 @@ Application::Application(bool grouped)
         tabstate_remember =
         workspace_remember =
         head_remember =
+        alpha_remember =
         save_on_close_remember = false;
 }
 
@@ -477,6 +483,30 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                     else
                         had_error = 1;
                 }
+            } else if (strcasecmp(str_key.c_str(), "Alpha") == 0) {
+                int focused_a, unfocused_a;
+                if (sscanf(str_label.c_str(), "%i %i", &focused_a, &unfocused_a) == 2)
+                {
+                    // clamp;
+                    if (focused_a > 255)
+                        focused_a = 255;
+                    if (unfocused_a > 255)
+                        unfocused_a = 255;
+                    if (focused_a <= 0)
+                        focused_a = 0;
+                    if (unfocused_a <= 0)
+                        unfocused_a = 0;
+
+                    app.rememberAlpha(focused_a, unfocused_a);
+                } else if (sscanf(str_label.c_str(), "%i", &focused_a) == 1) {
+                    if (focused_a > 255)
+                        focused_a = 255;
+                    if (focused_a <= 0)
+                        focused_a = 0;
+                    app.rememberAlpha(focused_a, focused_a);
+                }
+                else
+                    had_error = 1;
             } else if (strcasecmp(str_key.c_str(), "Sticky") == 0) {
                 app.rememberStuckstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (strcasecmp(str_key.c_str(), "Jump") == 0) {
@@ -807,6 +837,12 @@ void Remember::save() {
         if (a.save_on_close_remember) {
             apps_file << "  [Close]\t{" << ((a.save_on_close)?"yes":"no") << "}" << endl;
         }
+        if (a.alpha_remember) {
+            if (a.focused_alpha == a.unfocused_alpha)
+                apps_file << "  [Alpha]\t{" << a.focused_alpha << "}" << endl;
+            else 
+                apps_file << "  [Alpha]\t{" << a.focused_alpha << " " << a.unfocused_alpha << "}" << endl;
+        }
         apps_file << "[end]" << endl;
     }
     apps_file.close();
@@ -860,6 +896,8 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
     case REM_SAVEONCLOSE:
         return app->save_on_close_remember;
         break;
+    case REM_ALPHA:
+        return app->alpha_remember;
     case REM_LASTATTRIB:
     default:
         return false; // should never get here
@@ -902,6 +940,9 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_STUCKSTATE:
         app->rememberStuckstate(win->isStuck());
+        break;
+    case REM_ALPHA:
+        app->rememberAlpha(win->frame().getAlpha(true), win->frame().getAlpha(false));
         break;
         //    case REM_TABSTATE:
         //        break;
@@ -957,6 +998,9 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
     case REM_SHADEDSTATE:
         app->forgetShadedstate();
         break;
+    case REM_ALPHA:
+        app->forgetAlpha();
+        break;
 //    case REM_TABSTATE:
 //        break;
     case REM_JUMPWORKSPACE:
@@ -1003,6 +1047,12 @@ void Remember::setupFrame(FluxboxWindow &win) {
         win.moveToLayer(app->layer);
     if (app->decostate_remember)
         win.setDecorationMask(app->decostate);
+
+    if (app->alpha_remember) {
+        win.frame().setUseDefaultAlpha(false);
+        win.frame().setAlpha(true,app->focused_alpha);
+        win.frame().setAlpha(false,app->unfocused_alpha);
+    }
 
     BScreen &screen = winclient.screen();
 

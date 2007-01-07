@@ -127,6 +127,13 @@ public:
     bool setTabMode(TabMode tabmode);
     inline void updateTabProperties() { alignTabs(); }
 
+    /// Alpha settings
+    void setAlpha(bool focused, unsigned char value);
+    unsigned char getAlpha(bool focused) const;
+
+    void setUseDefaultAlpha(bool use_default);
+    bool getUseDefaultAlpha() const { return m_use_default_alpha; }
+
     /// add a button to the left of the label
     void addLeftButton(FbTk::Button *btn);
     /// add a button to the right of the label
@@ -322,6 +329,8 @@ private:
     bool m_use_handle; ///< if we should use handle
     bool m_focused; ///< focused/unfocused mode
     bool m_visible; ///< if we are currently showing
+    unsigned char m_use_default_alpha;   
+    ///< do we use screen or window alpha settings ? (0 = window, 1 = default, 2 = default and window never set)
 
     /**
        @name pixmaps and colors for rendering
@@ -377,6 +386,8 @@ private:
     unsigned int m_width_before_shade,  ///< width before shade, so we can restore it when we unshade
         m_height_before_shade; ///< height before shade, so we can restore it when we unshade
     bool m_shaded; ///< wheter we're shaded or not
+    unsigned char  m_focused_alpha; ///< focused alpha value
+    unsigned char  m_unfocused_alpha; ///< unfocused alpha value
     unsigned int m_double_click_time; ///< the time period that's considerd to be a double click
     struct MouseButtonAction {
         FbTk::RefCount<FbTk::Command> click; ///< what to do when we release mouse button

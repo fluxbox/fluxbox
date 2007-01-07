@@ -148,6 +148,7 @@ enum {
 	RememberUnknown = 10,
 	RememberWorkspace = 11,
 	RememberHead = 12,
+	RememberAlpha = 13,
 
 	ScreenSet = 12,
 	ScreenAnotherWMRunning = 1,
@@ -200,6 +201,7 @@ enum {
 	WindowmenuShade = 8,
 	WindowmenuStick = 9,
 	WindowmenuKill = 10,
+	WindowmenuDefaultAlpha = 11,
 
 	WorkspaceSet = 17,
 	WorkspaceDefaultNameFormat = 1,

@@ -35,7 +35,9 @@
 #include "WorkspaceMenu.hh"
 #include "LayerMenu.hh"
 #include "SendToMenu.hh"
+#include "AlphaMenu.hh"
 #include "Layer.hh"
+#include "BoolMenuItem.hh"
 
 #include "FbMenuParser.hh"
 #include "StyleMenuItem.hh"
@@ -50,6 +52,7 @@
 #include "FbTk/FileUtil.hh"
 #include "FbTk/MenuSeparator.hh"
 #include "FbTk/MenuIcon.hh"
+#include "FbTk/Transparent.hh"
 
 #include <iostream>
 
@@ -155,7 +158,7 @@ private:
     FbTk::Menu *m_menu;
 };
 
-class MenuContext: public LayerObject {
+class MenuContext: public LayerObject, public AlphaObject {
 public:
     void moveToLayer(int layer_number) {
         if (WindowCmd<void>::window() == 0)
@@ -167,6 +170,43 @@ public:
             return -1;
         return WindowCmd<void>::window()->layerItem().getLayerNum();
     }
+
+    int getFocusedAlpha() const {
+        if (WindowCmd<void>::window() == 0)
+            return 255;
+        return WindowCmd<void>::window()->getFocusedAlpha();
+    }
+
+    int getUnfocusedAlpha() const {
+        if (WindowCmd<void>::window() == 0)
+            return 255;
+        return WindowCmd<void>::window()->getUnfocusedAlpha();
+    }
+
+    bool getUseDefaultAlpha() const { 
+        if (WindowCmd<void>::window() == 0)
+            return true;
+        return WindowCmd<void>::window()->getUseDefaultAlpha();
+    }
+
+    void setFocusedAlpha(int alpha) {
+        if (WindowCmd<void>::window() == 0)
+            return;
+        WindowCmd<void>::window()->setFocusedAlpha(alpha);
+    }
+
+    void setUnfocusedAlpha(int alpha) {
+        if (WindowCmd<void>::window() == 0)
+            return;
+        WindowCmd<void>::window()->setUnfocusedAlpha(alpha);
+    }
+
+    void setUseDefaultAlpha(bool use_default) {
+        if (WindowCmd<void>::window() == 0)
+            return;
+        WindowCmd<void>::window()->setUseDefaultAlpha(use_default);
+    }
+
 };
 
 static void translateMenuItem(Parser &parse, ParseItem &item, FbTk::StringConvertor &labelconvertor);
@@ -489,6 +529,7 @@ FbTk::Menu *MenuCreator::createMenuType(const string &type, int screen_num) {
                 "lower",
                 "sendto",
                 "layer",
+                "alpha",
                 "extramenus",
                 "separator",
                 "close",
@@ -510,9 +551,14 @@ bool MenuCreator::createWindowMenuItem(const string &type,
     typedef FbTk::RefCount<FbTk::Command> RefCmd;
     _FB_USES_NLS;
 
+    static MenuContext context;
+
     if (type == "shade") {
-        RefCmd shade_cmd(new WindowCmd<void>(&FluxboxWindow::shade));
-        menu.insert(label.empty()?_FB_XTEXT(Windowmenu, Shade, "Shade", "Shade the window"):label, shade_cmd);
+        static ObjectResource<FluxboxWindow, bool> res(&WindowCmd<void>::window, &FluxboxWindow::isShaded, &FluxboxWindow::shade, false);
+        menu.insert(new BoolResMenuItem<ObjectResource<FluxboxWindow, bool> >(
+                        label.empty()?_FB_XTEXT(Windowmenu, Shade, "Shade", "Shade the window"):label, 
+                        res));
+
     } else if (type == "maximize") {
         RefCmd maximize_cmd(new WindowCmd<void>(&FluxboxWindow::maximizeFull));
         RefCmd maximize_vert_cmd(new WindowCmd<void>(&FluxboxWindow::maximizeVertical));
@@ -532,41 +578,60 @@ bool MenuCreator::createWindowMenuItem(const string &type,
         maximize_item->setCommand(3, maximize_horiz_cmd);
         menu.insert(maximize_item);
     } else if (type == "iconify") {
-        RefCmd iconify_cmd(new WindowCmd<void>(&FluxboxWindow::iconify));
-        menu.insert(label.empty() ?
-                    _FB_XTEXT(Windowmenu, Iconify,
-                            "Iconify", "Iconify the window") :
-                    label, iconify_cmd);
+        static ObjectResource<FluxboxWindow, bool> res(&WindowCmd<void>::window, &FluxboxWindow::isIconic, &FluxboxWindow::toggleIconic, false);
+        menu.insert(new BoolResMenuItem<ObjectResource<FluxboxWindow, bool> >(
+                        label.empty() ?
+                        _FB_XTEXT(Windowmenu, Iconify,
+                                  "Iconify", "Iconify the window") :
+                        label, res));
     } else if (type == "close") {
         RefCmd close_cmd(new WindowCmd<void>(&FluxboxWindow::close));
         menu.insert(label.empty() ?
                     _FB_XTEXT(Windowmenu, Close,
-                            "Close", "Close the window") :
+                              "Close", "Close the window") :
                     label, close_cmd);
     } else if (type == "kill" || type == "killwindow") {
         RefCmd kill_cmd(new WindowCmd<void>(&FluxboxWindow::kill));
         menu.insert(label.empty() ?
                     _FB_XTEXT(Windowmenu, Kill,
-                            "Kill", "Kill the window"):
+                              "Kill", "Kill the window"):
                     label, kill_cmd);
     } else if (type == "lower") {
         RefCmd lower_cmd(new WindowCmd<void>(&FluxboxWindow::lower));
         menu.insert( label.empty() ?
                      _FB_XTEXT(Windowmenu, Lower,
-                             "Lower", "Lower the window"):
+                               "Lower", "Lower the window"):
                      label, lower_cmd);
     } else if (type == "raise") {
         RefCmd raise_cmd(new WindowCmd<void>(&FluxboxWindow::raise));
         menu.insert(label.empty() ?
                     _FB_XTEXT(Windowmenu, Raise,
-                            "Raise", "Raise the window"):
+                              "Raise", "Raise the window"):
                     label, raise_cmd);
+
     } else if (type == "stick") {
-        RefCmd stick_cmd(new WindowCmd<void>(&FluxboxWindow::stick));
-        menu.insert(label.empty() ?
-                    _FB_XTEXT(Windowmenu, Stick,
-                            "Stick", "Stick the window"):
-                    label, stick_cmd);
+        static ObjectResource<FluxboxWindow, bool> res(&WindowCmd<void>::window, &FluxboxWindow::isStuck, &FluxboxWindow::stick, false);
+        menu.insert(new BoolResMenuItem<ObjectResource<FluxboxWindow, bool> >(
+                        label.empty() ?
+                        _FB_XTEXT(Windowmenu, Stick,
+                                  "Stick", "Stick the window"):
+                        label, res));
+#ifdef HAVE_XRENDER
+    } else if (type == "alpha") {
+        if (FbTk::Transparent::haveComposite() || 
+            FbTk::Transparent::haveRender()) {
+            BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
+            if (screen == 0)
+                return false;
+
+            menu.insert(label.empty() ? _FB_XTEXT(Configmenu, Transparency, "Transparency",
+                                                  "Menu containing various transparency options"): label,
+                        new AlphaMenu(screen->menuTheme(),
+                                      screen->imageControl(),
+                                      *screen->layerManager().getLayer(Layer::MENU),
+                                      context));
+        }
+#endif // HAVE_XRENDER
     } else if (type == "extramenus") {
         BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
         BScreen::ExtraMenus::iterator it = screen->extraWindowMenus().begin();
@@ -583,8 +648,6 @@ bool MenuCreator::createWindowMenuItem(const string &type,
         BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
         if (screen == 0)
             return false;
-
-        static MenuContext context;
 
         FbTk::Menu *submenu = new LayerMenu(screen->menuTheme(),
                                             screen->imageControl(),
