@@ -313,14 +313,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     load_rc();
 
-    // setup atom handlers before we create any windows
-#ifdef USE_NEWWMSPEC
-    addAtomHandler(new Ewmh(), "ewmh"); // for Extended window manager atom support
-#endif // USE_NEWWMSPEC
-#ifdef USE_GNOME
-    addAtomHandler(new Gnome(), "gnome"); // for gnome 1 atom support
-#endif //USE_GNOME
-
     grab();
 
     setupConfigFiles();
@@ -410,6 +402,15 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #ifdef REMEMBER
         addAtomHandler(new Remember(), "remember"); // for remembering window attribs
 #endif // REMEMBER
+    // ewmh handler needs to be added after apps file handler, or else some
+    // window properties are set incorrectly on new windows
+    // this dependency should probably be made more robust
+#ifdef USE_NEWWMSPEC
+    addAtomHandler(new Ewmh(), "ewmh"); // for Extended window manager atom support
+#endif // USE_NEWWMSPEC
+#ifdef USE_GNOME
+    addAtomHandler(new Gnome(), "gnome"); // for gnome 1 atom support
+#endif //USE_GNOME
 
     // init all "screens"
     ScreenList::iterator it = m_screen_list.begin();
