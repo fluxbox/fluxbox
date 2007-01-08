@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/08:
+   * Fix another 64-bit window property (Mark/Simon)
+     FbTk/FbWindow.cc
 *07/01/07:
    * Update Iconbar Mode menu when updating settings (Mark)
      IconbarTool.cc

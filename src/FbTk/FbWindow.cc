@@ -553,7 +553,7 @@ long FbWindow::eventMask() const {
 void FbWindow::setOpaque(unsigned char alpha) {
 #ifdef HAVE_XRENDER
     static Atom m_alphaatom = XInternAtom(display(), "_NET_WM_WINDOW_OPACITY", False);
-    unsigned int opacity = alpha * 0x1010101;
+    unsigned long opacity = alpha * 0x1010101;
     changeProperty(m_alphaatom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1l);
 #endif // HAVE_XRENDER
 }
