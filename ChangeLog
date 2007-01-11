@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/11:
+   * Added option to :Minimize key command to lower all windows in the same
+     layer as the focused window -- syntax is `:Minimize (layer)' (Mark)
+     FbCommandFactory.cc WorkspaceCmd.cc/hh
 *07/01/08:
    * Fix another 64-bit window property (Mark/Simon)
      FbTk/FbWindow.cc

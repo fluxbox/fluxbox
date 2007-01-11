@@ -255,6 +255,19 @@ void ShowDesktopCmd::execute() {
                   std::mem_fun(&FluxboxWindow::iconify));
 }
 
+void MinimizeLayerCmd::execute() {
+    FluxboxWindow *win = FocusControl::focusedFbWindow();
+    if (!win)
+        return;
+
+    Workspace::Windows windows(win->screen().currentWorkspace()->windowList());
+    Workspace::Windows::iterator it = windows.begin(), it_end = windows.end();
+    for (; it != it_end; ++it) {
+        if (win->layerNum() == (*it)->layerNum())
+            (*it)->iconify();
+    }
+}
+
 void CloseAllWindowsCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)

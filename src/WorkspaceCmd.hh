@@ -104,6 +104,10 @@ public:
     void execute();
 };
 
+class MinimizeLayerCmd: public FbTk::Command {
+public:
+    void execute();
+};
 
 class CloseAllWindowsCmd: public FbTk::Command {
 public:

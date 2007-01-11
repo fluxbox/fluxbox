@@ -233,9 +233,15 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     //
     else if (command == "fullscreen")
         return new FullscreenCmd();
-    else if (command == "minimizewindow" || command == "minimize" || command == "iconify")
-        return new CurrentWindowCmd(&FluxboxWindow::iconify);
-    else if (command == "maximizewindow" || command == "maximize")
+    else if (command == "minimizewindow" || command == "minimize" || command == "iconify") {
+        string cmd;
+        if (FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() +
+                                               0, '(', ')', " \t\n", true)
+            && cmd == "layer")
+            return new MinimizeLayerCmd();
+        else
+            return new CurrentWindowCmd(&FluxboxWindow::iconify);
+    } else if (command == "maximizewindow" || command == "maximize")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeFull);
     else if (command == "maximizevertical")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeVertical);
