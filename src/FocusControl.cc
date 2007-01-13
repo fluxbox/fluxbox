@@ -50,9 +50,6 @@ FocusControl::FocusControl(BScreen &screen):
                       CLICKTABFOCUS, 
                       screen.name()+".tabFocusModel", 
                       screen.altName()+".TabFocusModel"),
-    m_focus_last(screen.resourceManager(), true, 
-                 screen.name()+".focusLastWindow", 
-                 screen.altName()+".FocusLastWindow"),
     m_focus_new(screen.resourceManager(), true, 
                 screen.name()+".focusNewWindows", 
                 screen.altName()+".FocusNewWindows"),
@@ -398,15 +395,12 @@ void FocusControl::revertFocus(BScreen &screen) {
 
     if (screen.focusControl().isCycling())
         return;
-    // Relevant resources:
-    // resource.focus_last = whether we focus last focused when changing workspace
-    // BScreen::FocusModel = sloppy, click, whatever
+
     WinClient *next_focus = 
         screen.focusControl().lastFocusedWindow(screen.currentWorkspaceID());
 
     // if setting focus fails, or isn't possible, fallback correctly
-    if (!(next_focus && next_focus->fbwindow() &&
-          next_focus->fbwindow()->setCurrentClient(*next_focus, true))) {
+    if (!(next_focus && next_focus->focus())) {
         setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
         switch (screen.focusControl().focusModel()) {
         case FocusControl::MOUSEFOCUS:

@@ -284,8 +284,7 @@ public:
     explicit SetClientCmd(WinClient &client):m_client(client) {
     }
     void execute() {
-        if (m_client.fbwindow() != 0)
-            m_client.fbwindow()->setCurrentClient(m_client);
+        m_client.focus();
     }
 private:
     WinClient &m_client;
@@ -439,8 +438,6 @@ void FluxboxWindow::init() {
     frame().setEventHandler(*this);
 
     frame().resize(m_client->width(), m_client->height());
-
-    m_last_focus_time.tv_sec = m_last_focus_time.tv_usec = 0;
 
     m_blackbox_attrib.workspace = m_workspace_number = m_screen.currentWorkspaceID();
 
@@ -1453,7 +1450,7 @@ bool FluxboxWindow::setInputFocus() {
             cerr<<__FUNCTION__<<": transient 0x"<<(*it)<<endl;
 #endif // DEBUG
             if ((*it)->isModal())
-                return (*it)->fbwindow()->setCurrentClient(**it, true);
+                return (*it)->focus();
         }
     }
 
@@ -2129,7 +2126,6 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 #endif // DEBUG
     // Record focus timestamp for window cycling enhancements
     if (focused) {
-        gettimeofday(&m_last_focus_time, 0);
         screen().focusControl().setScreenFocusedWindow(*m_client);
     }
 

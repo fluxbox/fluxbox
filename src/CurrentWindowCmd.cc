@@ -93,7 +93,7 @@ void GoToTabCmd::real_execute() {
 
     while (--num > 0) ++it;
 
-    fbwindow().setCurrentClient(**it, true);
+    (*it)->focus();
 }
 
 void WindowHelperCmd::execute() {

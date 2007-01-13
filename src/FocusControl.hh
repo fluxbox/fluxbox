@@ -89,7 +89,6 @@ public:
 
     FocusModel focusModel() const { return *m_focus_model; }
     TabFocusModel tabFocusModel() const { return *m_tab_focus_model; }
-    bool focusLast() const { return *m_focus_last; }
     bool focusNew() const { return *m_focus_new; }
 
     WinClient *lastFocusedWindow(int workspace);
@@ -114,7 +113,7 @@ private:
 
     FbTk::Resource<FocusModel> m_focus_model;    
     FbTk::Resource<TabFocusModel> m_tab_focus_model;
-    FbTk::Resource<bool> m_focus_last, m_focus_new;
+    FbTk::Resource<bool> m_focus_new;
 
     // This list keeps the order of window focusing for this screen
     // Screen global so it works for sticky windows too.

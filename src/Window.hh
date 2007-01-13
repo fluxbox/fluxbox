@@ -426,8 +426,6 @@ public:
 
     void reconfigTheme();
 
-    const timeval &lastFocusTime() const { return m_last_focus_time;}
-
     //@}
 
     class WinSubject: public FbTk::Subject {
@@ -520,8 +518,6 @@ private:
     FbTk::Timer m_timer;
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;
-
-    timeval m_last_focus_time;
 
     int m_button_grab_x, m_button_grab_y; // handles last button press event for move
     int m_last_resize_x, m_last_resize_y; // handles last button press event for resize
