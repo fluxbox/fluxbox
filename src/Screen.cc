@@ -1751,15 +1751,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         cerr<<e.what()<<endl;
     }
 
-    try {
-        _BOOLITEM(menu, Configmenu, FocusLast,
-                  "Focus Last Window on Workspace", "Focus Last Window on Workspace",
-                  *resourceManager().getResource<bool>(name() + ".focusLastWindow"),
-                  saverc_cmd);
-    } catch (FbTk::ResourceException e) {
-        cerr<<e.what()<<endl;
-    }
-
     _BOOLITEM(menu, Configmenu, WorkspaceWarping,
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
