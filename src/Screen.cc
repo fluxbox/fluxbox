@@ -1129,7 +1129,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
     currentWorkspace()->showAll();
 
-    if (focused && (focused->isStuck() || focused->isMoving()))
+    if (focused && focused->isMoving())
         focused->setInputFocus();
     else
         FocusControl::revertFocus(*this);

@@ -1053,7 +1053,8 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (client.fbwindow() != this)
         return false;
 
-    m_screen.focusControl().setScreenFocusedWindow(client);
+    if (&client != m_client)
+        m_screen.focusControl().setScreenFocusedWindow(client);
     m_client = &client;
     m_client->raise();
     m_client->focusSig().notify();
@@ -1432,6 +1433,11 @@ bool FluxboxWindow::setInputFocus() {
 
     if (! m_client->validateClient())
         return false;
+
+    // this needs to be here rather than setFocusFlag because
+    // FocusControl::revertFocus will return before FocusIn events arrive
+    m_screen.focusControl().setScreenFocusedWindow(*m_client);
+
 #ifdef DEBUG
     cerr<<"FluxboxWindow::"<<__FUNCTION__<<" isModal() = "<<m_client->isModal()<<endl;
     cerr<<"FluxboxWindow::"<<__FUNCTION__<<" transient size = "<<m_client->transients.size()<<endl;
@@ -2124,10 +2130,6 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 #ifdef DEBUG
     cerr<<"FluxboxWindow("<<title()<<")::setFocusFlag("<<focus<<")"<<endl;
 #endif // DEBUG
-    // Record focus timestamp for window cycling enhancements
-    if (focused) {
-        screen().focusControl().setScreenFocusedWindow(*m_client);
-    }
 
     installColormap(focus);
 

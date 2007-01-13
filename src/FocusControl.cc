@@ -39,6 +39,7 @@ using std::string;
 
 WinClient *FocusControl::s_focused_window = 0;
 FluxboxWindow *FocusControl::s_focused_fbwindow = 0;
+bool FocusControl::s_reverting = false;
 
 FocusControl::FocusControl(BScreen &screen):
     m_screen(screen),
@@ -242,7 +243,7 @@ void FocusControl::setScreenFocusedWindow(WinClient &win_client) {
 
      // raise newly focused window to the top of the focused list
      // don't change the order if we're cycling or shutting down
-    if (!m_cycling_focus && !win_client.screen().isShuttingdown()) {
+    if (!isCycling() && !m_screen.isShuttingdown() && !s_reverting) {
         m_focused_list.remove(&win_client);
         m_focused_list.push_front(&win_client);
         m_cycling_window = m_focused_list.begin();
@@ -396,6 +397,8 @@ void FocusControl::revertFocus(BScreen &screen) {
     if (screen.focusControl().isCycling())
         return;
 
+    FocusControl::s_reverting = true;
+
     WinClient *next_focus = 
         screen.focusControl().lastFocusedWindow(screen.currentWorkspaceID());
 
@@ -412,6 +415,8 @@ void FocusControl::revertFocus(BScreen &screen) {
             break;
         }
     }
+
+    FocusControl::s_reverting = false;
 }
 
 /*

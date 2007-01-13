@@ -127,6 +127,7 @@ private:
 
     static WinClient *s_focused_window;
     static FluxboxWindow *s_focused_fbwindow;
+    static bool s_reverting;
 };
 
 #endif // FOCUSCONTROL_HH

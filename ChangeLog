@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/13:
+   * Only change focus order when user specifically focuses a window (Mark)
+     Screen.cc Window.cc FocusControl.cc/hh
 *07/01/11:
    * Added option to :Minimize key command to lower all windows in the same
      layer as the focused window -- syntax is `:Minimize (layer)' (Mark)
