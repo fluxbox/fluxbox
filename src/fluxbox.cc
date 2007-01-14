@@ -1129,8 +1129,11 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
         if (!m_key->doAction(ke)) // could still be cycling
             m_watching_screen = old_watching_screen;
         else if (old_watching_screen &&
-                 m_watching_screen != old_watching_screen)
+                 m_watching_screen != old_watching_screen) {
             old_watching_screen->notifyReleasedKeys(ke);
+            if (!m_watching_screen)
+                XUngrabKeyboard(FbTk::App::instance()->display(), CurrentTime);
+        }
         break;
     case KeyRelease: {
         // we ignore most key releases unless we need to use
@@ -1852,6 +1855,8 @@ void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
 
     // just make sure we are saving the mods with any other flags (xkb)
     m_watch_keyrelease = FbTk::KeyUtil::instance().isolateModifierMask(mods);
+    // TODO: it's possible (and happens to me sometimes) for the mods to be
+    // released before we grab the keyboard -- not sure of a good way to fix it
     XGrabKeyboard(FbTk::App::instance()->display(),
                   screen.rootWindow().window(), True,
                   GrabModeAsync, GrabModeAsync, CurrentTime);

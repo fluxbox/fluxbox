@@ -9,6 +9,8 @@ Changes for 1.0rc3:
      - fixed bug with style backgrounds not getting set when changing styles
      - updated default styles to be valid wrt background options
      RootTheme.cc/hh Screen.cc FbTk/Theme.hh
+   * Minor fix for window cycling on multiple screens (Mark)
+     fluxbox.cc
 *07/01/13:
    * Only change focus order when user specifically focuses a window (Mark)
      Screen.cc Window.cc FocusControl.cc/hh
