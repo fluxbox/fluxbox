@@ -51,8 +51,6 @@ public:
 
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
-    // little hack to deal with reconfigures -- should be fixed
-    void setLoaded() { m_background_loaded = true; m_already_set = false; }
 
     GC opGC() const { return m_opgc.gc(); }
 
@@ -68,8 +66,6 @@ private:
     FbTk::GContext m_opgc;
     const std::string &m_root_command;
     FbTk::ImageControl &m_image_ctrl; ///< image control for rendering background texture
-    bool m_already_set;
-    bool m_background_loaded; ///< whether or not the background is present in the style file
 
 };
 

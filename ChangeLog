@@ -1,5 +1,14 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/14:
+   * Several changes for background style option: (Mark)
+     - now support `background: mod' to coincide with fbsetroot -mod --
+       In addition to `background.color' and `background.colorTo', this option
+       must also set `background.modX' and `background.modY' to integers
+     - added `background: none' for styles that do not include a background
+     - fixed bug with style backgrounds not getting set when changing styles
+     - updated default styles to be valid wrt background options
+     RootTheme.cc/hh Screen.cc FbTk/Theme.hh
 *07/01/13:
    * Only change focus order when user specifically focuses a window (Mark)
      Screen.cc Window.cc FocusControl.cc/hh

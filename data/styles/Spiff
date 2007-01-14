@@ -104,6 +104,10 @@ bevelWidth:                     1
 borderWidth:                    1
 handleWidth:                    3
 
-rootCommand:                    fbsetroot -mod 2 2 -fg rgb:48/50/68 -bg rgb:50/58/70
+background:                     mod
+background.modX:                2
+background.modY:                2
+background.color:               rgb:50/58/70
+background.colorTo:             rgb:48/50/68
 
 *Font:  lucidasans-10

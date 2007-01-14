@@ -68,11 +68,11 @@ public:
     /// specialized
     void setDefaultValue(); 
     /// specialized
-    void setFromString(const char *strval);
+    virtual void setFromString(const char *strval);
     /// specialized
     // name and altname may be different to the primary ones (e.g. from fallback)
     // if they are null, then the original name is used
-    void load(const std::string *name = 0, const std::string *altname = 0);
+    virtual void load(const std::string *name = 0, const std::string *altname = 0);
     /**
        @name access operators
     */

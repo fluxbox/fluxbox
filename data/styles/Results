@@ -107,7 +107,11 @@ borderWidth:                    1
 bevelWidth:                     2
 handleWidth:                    4
 
-rootCommand:                    fbsetroot -mod 4 4 -fg rgb:6/6/5c -bg grey20
+background:                     mod
+background.modX:                4
+background.modY:                4
+background.color:               grey20
+background.colorTo:             rgb:6/6/5c
 
 ! for the bbtools
 menuFont:                       lucidasans-10

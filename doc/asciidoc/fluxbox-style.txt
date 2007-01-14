@@ -348,15 +348,23 @@ Everything you need to make your menu look pretty.
 
 BACKGROUND
 ------------
-Rarely are you going to want to use this option. There is a command that is
-similar that is used in the init file. It is bad style to use this in your
-style, as it forces the user to use your background. So note that it is good
-practice to leave this blank or out of the style altogether.
+Every style must specify the background option. If you don't want your style to
+change the user's background, then use `background: none'. The options
+`centered', `aspect', `tiled', and `fullscreen' require the `background.pixmap'
+resource to contain a valid file name. The `random' option requires
+`background.pixmap' to contain a valid directory name. For these options,
+fluxbox(1) will call fbsetbg(1) to set the background. The options `gradient',
+`solid', and `mod' all require `background.color' to be set. `gradient' and
+`mod' both require `background.colorTo'. `mod' requires `background.modX' and
+`background.modY' to be set as well. These options will be passed to
+fbsetroot(1) to set the background.
 
-   background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>
-   background.pixmap: <file (or directory for random)>
+   background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>|mod|none
+   background.pixmap: <file or directory>
    background.color: <color>
    background.colorTo: <color>
+   background.modX: <integer>
+   background.modY: <integer>
 
 SLIT
 ----

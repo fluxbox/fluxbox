@@ -131,4 +131,8 @@ bevelWidth:                          2
 borderWidth:                         2
 handleWidth:                         3
 
-!rootCommand:                         fbsetroot -mod 5 5 -fg rgb:62/70/85 -bg rgb:52/60/75
+background:                          mod
+background.modX:                     5
+background.modY:                     5
+background.color:                    rgb:52/60/75
+background.colorTo:                  rgb:62/70/85

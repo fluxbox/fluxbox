@@ -104,7 +104,11 @@ bevelWidth:			2
 borderWidth:			1
 handleWidth:			5
 
-!rootCommand:	                fbsetroot -mod 4 4 -bg rgb:10/18/20 -fg rgb:30/38/40
+background:	                mod
+background.modX:		4
+background.modY:		4
+background.color:		rgb:10/18/20
+background.colorTo:		rgb:30/38/40
 
 *Font:	                        -*-lucidatypewriter-medium-r-*-*-*-100-*-*-*-*-*-*
 !*Font:                         vera-7
