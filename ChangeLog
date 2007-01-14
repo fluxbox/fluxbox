@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/14:
+   * Stay on the same workspace after a restart (Mark)
+     Screen.cc
    * Properly 'properly fix' shaded and stuck windows on restart -- i.e. allow
      windows to deiconify themselves the rest of the time (Mark)
      Window.cc

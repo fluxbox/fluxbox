@@ -460,8 +460,21 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
 
-    // start with workspace 0
-    changeWorkspaceID(0);
+    // check which desktop we should start on
+    unsigned int first_desktop = 0;
+    if (m_restart) {
+        Atom net_desktop = XInternAtom(disp, "_NET_CURRENT_DESKTOP", False);
+        // other arguments are already defined above
+        if (XGetWindowProperty(disp, m_root_window.window(), net_desktop, 0l,
+                1l, False, XA_CARDINAL, &xa_ret_type, &ret_format, &ret_nitems,
+                &ret_bytes_after, &ret_prop) == Success) {
+            if (ret_prop && (unsigned int) *ret_prop < (unsigned) nr_ws)
+                first_desktop = (unsigned int) *ret_prop;
+            XFree(ret_prop);
+        }
+    }
+
+    changeWorkspaceID(first_desktop);
     updateNetizenWorkspaceCount();
 
     // we need to load win frame theme before we create any fluxbox window
