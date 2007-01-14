@@ -2479,7 +2479,8 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
             destroyed = wsp->checkGrouping(*this);
 
         // if we weren't grouped with another window we deiconify ourself
-        if (!destroyed && !iconic)
+        // make sure iconified windows stay that way on fluxbox start
+        if (!destroyed && !(iconic && Fluxbox::instance()->isStartup()))
             deiconify(false);
 
     }

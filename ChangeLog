@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/14:
+   * Properly 'properly fix' shaded and stuck windows on restart -- i.e. allow
+     windows to deiconify themselves the rest of the time (Mark)
+     Window.cc
    * Several changes for background style option: (Mark)
      - now support `background: mod' to coincide with fbsetroot -mod --
        In addition to `background.color' and `background.colorTo', this option
