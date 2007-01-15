@@ -56,20 +56,22 @@ public:
         if (time - last_time <= 200)
             inc_val = 5;
 
-
         last_time = time;
-        
-        if ((button == 4 || button == 3)&& *m_res < m_max) // scroll up
-            m_res.get() += inc_val;
-        else if ((button == 5 || button == 1) && *m_res > m_min) // scroll down
-            m_res.get() -= inc_val;
-        
-        // clamp value
-        if (*m_res > m_max)
-            m_res.get() = m_max;
-        else if (*m_res < m_min)
-            m_res.get() = m_min;
-        
+
+        // make sure values stay within bounds _before_ we try to set m_res
+        // otherwise, this may cause bugs (say, with casting to unsigned char)
+        if ((button == 4 || button == 3) && *m_res < m_max) { // up
+            if (*m_res + inc_val < m_max)
+                m_res.get() += inc_val;
+            else
+                m_res.get() = m_max;
+        } else if ((button == 5 || button == 1) && *m_res > m_min) { // down
+            if (*m_res - inc_val >= m_min)
+                m_res.get() -= inc_val;
+            else
+                m_res.get() = m_min;
+        }
+
         // update label
         updateLabel();
         // call other commands
@@ -86,7 +88,7 @@ public:
     void updateLabel() {
         setLabel(appendIntValue(m_org_label, *m_res));
     }
-        
+
 private:
     std::string m_org_label; ///< original label
     const int m_max; ///< maximum value the integer can have

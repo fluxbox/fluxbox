@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/15:
+   * Prevent per-window alpha menu from scrolling past 0 or 255 (Mark)
+     IntResMenuItem.hh
    * Fix rootmenu disappearing on reconfigure (Mark)
      Screen.cc
 *07/01/14:
