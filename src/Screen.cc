@@ -862,55 +862,21 @@ void BScreen::reconfigure() {
         }
     }
 
+    // if timestamp hasn't changed, then just a reconfigure is fine
+    // and that seems to happen somewhere else, anyway
+    if (fluxbox->menuTimestampsChanged()) {
+        // all bets are off, so just hide the menu and reset the filenames
+        fluxbox->clearMenuFilenames();
+        m_rootmenu->hide();
+        rereadMenu();
+    }
+
     //reconfigure menus
     m_workspacemenu->reconfigure();
     m_configmenu->reconfigure();
     // recreate window menu
     m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
     m_windowmenu->setInternalMenu();
-
-    // We need to check to see if the timestamps
-    // changed before we actually can restore the menus
-    // in the same way, since we can't really say if
-    // any submenu is in the same place as before if the
-    // menu changed.
-
-    // if timestamp changed then no restoring
-    bool restore_menus = ! fluxbox->menuTimestampsChanged();
-
-    // destroy old timestamps
-    fluxbox->clearMenuFilenames();
-
-    // save submenu index so we can restore them afterwards
-    vector<int> remember_sub;
-    if (restore_menus) {
-        FbTk::Menu *menu = m_rootmenu.get();
-        while (menu) {
-            int r = menu->currentSubmenu();
-            if (r < 0) break;
-            remember_sub.push_back(r);
-            menu = menu->find(r)->submenu();
-        }
-    }
-
-    rereadMenu();
-
-    if (restore_menus) {
-        // restore submenus, no timestamp changed
-        FbTk::Menu *menu = m_rootmenu.get();
-        for (size_t i = 0; i < remember_sub.size(); i++ ) {
-            int sub = remember_sub[i];
-            if (!menu || sub < 0)
-                break;
-            FbTk::MenuItem *item = menu->find(sub);
-            if (item != 0) {
-                menu->drawSubmenu(sub);
-                menu = item->submenu();
-            } else
-                menu = 0;
-
-        }
-    }
 
     // reconfigure workspaces
     for_each(m_workspaces_list.begin(),

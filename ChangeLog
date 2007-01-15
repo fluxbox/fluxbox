@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/15:
+   * Fix rootmenu disappearing on reconfigure (Mark)
+     Screen.cc
 *07/01/14:
    * Stay on the same workspace after a restart (Mark)
      Screen.cc
