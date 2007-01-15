@@ -554,8 +554,8 @@ TOOLBAR
 -------
 The toolbar is a small area to display information like a clock, workspace name,
 a system tray or a taskbar (iconbar) that can contain the running programs. The
-color, look, font etc. is defined in the the style and can't be defined as a
-global setting (except with the style overlay).
+color, look, font etc. is defined in the style and can't be defined as a global
+setting (except with the style overlay).
 
 The tools in the toolbar can be enabled/disabled in the init file with the
 arguments given to the line:
@@ -1389,8 +1389,8 @@ tabs. Inside of it there are three main options:
 - *External Tab Width*:
     This specifies in pixels the width of external tabs.
 
-As most Fluxbox configurations this can be done by editing the init file. The
-resources that you should look at are:
+As with most Fluxbox configurations, these options can be changed by editing the
+init file. The resources that you should look at are:
 
     session.screen0.tabs.intitlebar: <boolean>
     session.screen0.tab.width: <integer>
@@ -1405,9 +1405,12 @@ window borders, menus and the toolbar.
 The default installation of fluxbox provides some of these style files. See
 fluxstyle(1) to accommodate the growing number of style components.
 
+STYLE OVERLAY
+-------------
 In addition to the style file, the overlay file, whose location is specified by
-session.screen0.styleOverlay can be used to set style resources that override
-the current style.
+session.screen0.styleOverlay (default: ~/.fluxbox/overlay ) can be used to set
+style resources that override all styles. For more information about which parts
+of fluxbox can be controlled by the overlay file, see fluxstyle(1).
 
 APPLICATIONS
 ------------
