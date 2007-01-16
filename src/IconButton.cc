@@ -30,6 +30,7 @@
 #include "Window.hh"
 #include "WinClient.hh"
 #include "CommandParser.hh"
+#include "WindowCmd.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -56,6 +57,11 @@ class ShowMenu: public FbTk::Command {
 public:
     explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
     void execute() {
+        // hide the menu if it's already showing for this FluxboxWindow
+        if (m_win.menu().isVisible() && WindowCmd<void>::window() == &m_win) {
+            m_win.screen().hideMenus();
+            return;
+        }
         m_win.screen().hideMenus();
         // get last button pos
         const XEvent &event = Fluxbox::instance()->lastEvent();
@@ -146,15 +152,6 @@ IconButton::IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent,
 
     RefCmd next_workspace(new ::WheelWorkspaceCmd(tool, m_win, "nextworkspace"));
     RefCmd prev_workspace(new ::WheelWorkspaceCmd(tool, m_win, "prevworkspace"));
-
-    //!! TODO: There're some issues with MacroCommand when
-    //         this object dies when the last macrocommand is executed (focused cmd)
-    //         In iconbar mode Icons
-    //
-    //    RefCmd hidemenus(new FbTk::SimpleCommand<BScreen>(win.screen(), &BScreen::hideMenus));
-    //    FbTk::MacroCommand *focus_macro = new FbTk::MacroCommand();
-    //    focus_macro->add(hidemenus);
-    //    focus_macro->add(focus);
     
     RefCmd focus_cmd(new ::FocusCommand(tool, m_win));
     RefCmd menu_cmd(new ::ShowMenu(m_win));

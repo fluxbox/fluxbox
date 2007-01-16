@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/16:
+   * Make right-clicking on iconbar button behave the same way as tabs (Mark)
+     IconButton.cc
    * Don't force user to reconfigure manually in order to apply menu and
      default window transparency changes; instead, in order to conserve system
      resources, do it a half-second after the user stops changing them (Mark)
