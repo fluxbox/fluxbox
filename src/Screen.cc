@@ -193,6 +193,28 @@ private:
     FbWinFrame::TabPlacement m_place;
 };
 
+// this might be useful elsewhere, but I'll leave it here for now
+class DelayedCmd: public FbTk::Command {
+public:
+    DelayedCmd(FbTk::RefCount<FbTk::Command> &cmd) {
+        timeval to;
+        to.tv_sec = 0;
+        to.tv_usec = 500000; // 1/2 second
+        m_timer.setTimeout(to);
+        m_timer.setCommand(cmd);
+        m_timer.fireOnce(true);
+    }
+    void execute() {
+        // if it's already started, restart it; otherwise, just start it
+        // we want this to execute 1/2 second after the last click
+        if (m_timer.isTiming())
+            m_timer.stop();
+        m_timer.start();
+    }
+private:
+    FbTk::Timer m_timer;
+};
+
 } // end anonymous namespace
 
 
@@ -817,8 +839,6 @@ void BScreen::hideWindowMenus(const FluxboxWindow* except) {
         }
     }
 }
-
-
 
 void BScreen::reconfigure() {
     Fluxbox *fluxbox = Fluxbox::instance();
@@ -1758,12 +1778,17 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                     Fluxbox::instance()->getPseudoTrans(), save_and_reconfigure));
         }
 
+        // in order to save system resources, don't save or reconfigure alpha
+        // settings until after the user is done changing them
+        FbTk::RefCount<FbTk::Command> delayed_save_and_reconf(
+            new ::DelayedCmd(save_and_reconfigure));
+
         FbTk::MenuItem *focused_alpha_item =
             new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Configmenu, FocusedAlpha,
                                        "Focused Window Alpha",
                                        "Transparency level of the focused window"),
                     resource.focused_alpha, 0, 255, *alpha_menu);
-        focused_alpha_item->setCommand(saverc_cmd);
+        focused_alpha_item->setCommand(delayed_save_and_reconf);
         alpha_menu->insert(focused_alpha_item);
 
         FbTk::MenuItem *unfocused_alpha_item =
@@ -1773,14 +1798,14 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                        "Transparency level of unfocused windows"),
 
                     resource.unfocused_alpha, 0, 255, *alpha_menu);
-        unfocused_alpha_item->setCommand(saverc_cmd);
+        unfocused_alpha_item->setCommand(delayed_save_and_reconf);
         alpha_menu->insert(unfocused_alpha_item);
 
         FbTk::MenuItem *menu_alpha_item =
             new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Configmenu, MenuAlpha,
                                        "Menu Alpha", "Transparency level of menu"),
                     resource.menu_alpha, 0, 255, *alpha_menu);
-        menu_alpha_item->setCommand(saverc_cmd);
+        menu_alpha_item->setCommand(delayed_save_and_reconf);
         alpha_menu->insert(menu_alpha_item);
 
         alpha_menu->updateMenu();
