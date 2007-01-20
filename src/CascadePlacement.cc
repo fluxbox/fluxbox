@@ -31,8 +31,8 @@ CascadePlacement::CascadePlacement(const BScreen &screen) {
     m_cascade_x = new int[screen.numHeads() + 1];
     m_cascade_y = new int[screen.numHeads() + 1];
     for (int i=0; i < screen.numHeads() + 1; i++) {
-        m_cascade_x[i] = 32 + screen.getHeadX(i);
-        m_cascade_y[i] = 32 + screen.getHeadY(i);
+        m_cascade_x[i] = 32 + screen.maxLeft(i);
+        m_cascade_y[i] = 32 + screen.maxTop(i);
     }
 
 }
@@ -52,11 +52,10 @@ bool CascadePlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlis
     int head_top = (signed) win.screen().maxTop(head);
     int head_bot = (signed) win.screen().maxBottom(head);
 
-    if ((m_cascade_x[head] > ((head_left + head_right) / 2)) ||
-        (m_cascade_y[head] > ((head_top + head_bot) / 2))) {
-        m_cascade_x[head] = head_left + 32;
-        m_cascade_y[head] = head_top + 32;
-    }
+    if (m_cascade_x[head] > ((head_left + head_right) / 2))
+        m_cascade_x[head] = head_left;
+    if (m_cascade_y[head] > ((head_top + head_bot) / 2))
+        m_cascade_y[head] = head_top;
 
     place_x = m_cascade_x[head];
     place_y = m_cascade_y[head];

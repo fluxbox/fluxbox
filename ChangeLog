@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/20:
+   * Don't place windows over toolbar at the top of the screen (Mark)
+     CascadePlacement.cc
 *07/01/16:
    * Make right-clicking on iconbar button behave the same way as tabs (Mark)
      IconButton.cc
