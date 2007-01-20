@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/20:
+   * Make sure styles don't change the lastwallpaper in fbsetbg (Mark)
+     RootTheme.cc
    * Let styles override rootCommand in init file -- for the old behavior, add
      `background: none' to the overlay file (Mark)
      RootTheme.cc/hh Screen.cc

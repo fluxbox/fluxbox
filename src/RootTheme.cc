@@ -208,16 +208,16 @@ void RootTheme::reconfigTheme() {
     filename = FbTk::StringUtil::expandFilename(filename);
     if (FbTk::FileUtil::isRegularFile(filename.c_str())) {
         // parse options
-        std::string options;
+        std::string options = "-F ";
         if (strstr(m_background->options().c_str(), "tiled") != 0)
-            options += "-t ";
+            options = "-T ";
         if (strstr(m_background->options().c_str(), "centered") != 0)
-            options += "-c ";
+            options = "-C ";
         if (strstr(m_background->options().c_str(), "aspect") != 0)
-            options += "-a ";
+            options = "-A ";
             
         // compose wallpaper application "fbsetbg" with argumetns
-        std::string commandargs = "fbsetbg " + options + " " + filename;
+        std::string commandargs = "fbsetbg " + options + filename;
 
         // call command with options
         FbCommands::ExecuteCmd exec(commandargs, screenNum());
@@ -225,7 +225,7 @@ void RootTheme::reconfigTheme() {
 
     } else if (FbTk::FileUtil::isDirectory(filename.c_str()) &&
             strstr(m_background->options().c_str(), "random") != 0) {
-        std::string commandargs = "fbsetbg -r " + filename;
+        std::string commandargs = "fbsetbg -R " + filename;
         FbCommands::ExecuteCmd exec(commandargs, screenNum());
         exec.execute();
     } else {
