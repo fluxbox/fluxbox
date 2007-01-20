@@ -998,11 +998,11 @@ session.screen0.fullMaximization: <boolean>
       slit, no matter what their individual settings are. Default: True
 
 session.screen0.rootCommand: <command>
-      This overrides the styles rootCommand. When this value is set, it
-      will keep your background the same, regardless of what any style
-      would like your background to be. NOTE: Setting this command can be
-      dangerous. Please make sure you know what you are doing when setting
-      this resource to a value other than a desktop wallpaper command.
+      This runs a command when fluxbox starts, intended for setting a default
+      background. If you want to override backgrounds set by styles, you should
+      add `background: none' to your overlay. NOTE: Setting this command can be
+      dangerous. Please make sure you know what you are doing when setting this
+      resource to a value other than a desktop wallpaper command.
 
 session.screen0.imageDither: <boolean>
       This controls whether or not fluxbox created dithered images. Default:
