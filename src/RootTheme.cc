@@ -85,29 +85,11 @@ public:
             (mod_y.length() == 2 && (mod_y[1] < '0' || mod_y[1] > '9')))
             mod_y = "1";
 
-        // check if any of our values have changed
-        if (mod_x != m_mod_x) {
-            m_changed = true;
-            m_mod_x = mod_x;
-        }
-        if (mod_y != m_mod_y) {
-            m_changed = true;
-            m_mod_y = mod_y;
-        }
-        // these aren't quite right, but I don't care
-        if (color_name != m_color) {
-            m_changed = true;
-            m_color = color_name;
-        }
-        if (colorto_name != m_color_to) {
-            m_changed = true;
-            m_color_to = colorto_name;
-        }
-
         // remove whitespace from filename
         FbTk::StringUtil::removeFirstWhitespace(pixmap_name);
         FbTk::StringUtil::removeTrailingWhitespace(pixmap_name);
 
+        // check if the background has been changed
         if (mod_x != m_mod_x || mod_y != m_mod_y || pixmap_name != m_filename ||
                 color_name != m_color || colorto_name != m_color_to) {
             m_changed = true;
@@ -159,12 +141,10 @@ private:
 };
 
 
-RootTheme::RootTheme(const std::string &root_command,
-                     FbTk::ImageControl &image_control):
+RootTheme::RootTheme(FbTk::ImageControl &image_control):
     FbTk::Theme(image_control.screenNumber()),
     m_background(new BackgroundItem(*this, "background", "Background")),
     m_opgc(RootWindow(FbTk::App::instance()->display(), image_control.screenNumber())),
-    m_root_command(root_command),
     m_image_ctrl(image_control) {
 
     Display *disp = FbTk::App::instance()->display();
@@ -207,18 +187,9 @@ void RootTheme::reconfigTheme() {
 
     m_background->setApplied();
 
-    // if user specified background in the config then use it
-    // instead of style background
-    if (!m_root_command.empty()) {
-        FbCommands::ExecuteCmd cmd(m_root_command, screenNum());
-        cmd.execute();
-        return;
-    }
-
     // style doesn't wish to change the background
     if (strstr(m_background->options().c_str(), "none") != 0)
         return;
-
 
     //
     // Else parse background from style 

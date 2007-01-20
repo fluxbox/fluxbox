@@ -45,8 +45,7 @@ public:
     /// constructor
     /// @param resmanager resource manager for finding specific resources
     /// @param image_control for rendering background texture
-    RootTheme(const std::string &root_command,
-              FbTk::ImageControl &image_control);
+    RootTheme(FbTk::ImageControl &image_control);
     ~RootTheme();
 
     bool fallback(FbTk::ThemeItem_base &item);
@@ -64,7 +63,6 @@ public:
 private:
     BackgroundItem *m_background;///< background image/texture
     FbTk::GContext m_opgc;
-    const std::string &m_root_command;
     FbTk::ImageControl &m_image_ctrl; ///< image control for rendering background texture
 
 };

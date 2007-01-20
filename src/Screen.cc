@@ -62,7 +62,7 @@
 #include "CommandParser.hh"
 #include "AtomHandler.hh"
 #include "HeadArea.hh"
-
+#include "FbCommands.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/Subject.hh"
@@ -430,7 +430,13 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     imageControl().installRootColormap();
     root_colormap_installed = true;
 
-    m_root_theme.reset(new RootTheme(*resource.rootcommand, imageControl()));
+    // if user specified background in the config then use it
+    if (!resource.rootcommand->empty()) {
+        FbCommands::ExecuteCmd cmd(*resource.rootcommand, screenNumber());
+        cmd.execute();
+    }
+
+    m_root_theme.reset(new RootTheme(imageControl()));
 
     m_windowtheme->setFocusedAlpha(*resource.focused_alpha);
     m_windowtheme->setUnfocusedAlpha(*resource.unfocused_alpha);
@@ -505,7 +511,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     //    FbTk::ThemeManager::instance().loadTheme(*m_windowtheme.get());
     //!! TODO: For some strange reason we must load everything,
     // else the focus label doesn't get updated
-    // So we lock root theme temporary so it doesn't uses RootTheme::reconfigTheme
     // This must be fixed in the future.
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
                                         fluxbox->getStyleOverlayFilename(),

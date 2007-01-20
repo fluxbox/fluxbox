@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/20:
+   * Let styles override rootCommand in init file -- for the old behavior, add
+     `background: none' to the overlay file (Mark)
+     RootTheme.cc/hh Screen.cc
    * Don't place windows over toolbar at the top of the screen (Mark)
      CascadePlacement.cc
 *07/01/16:
