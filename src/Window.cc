@@ -3724,8 +3724,10 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
     XChangeSaveSet(display, client->window(), SetModeDelete);
     client->setEventMask(NoEventMask);
 
-    int wx = frame().x(), wy = frame().y(); // not actually used here
-    frame().gravityTranslate(wx, wy, -client->gravity(), client->old_bw, true); // negative to invert
+    int wx = frame().x(), wy = frame().y();
+    // don't move the frame, in case there are other tabs in it
+    // just set the new coordinates on the reparented window
+    frame().gravityTranslate(wx, wy, -client->gravity(), client->old_bw, false); // negative to invert
 
     // Why was this hide done? It broke vncviewer (and mplayer?),
     // since it would reparent when going fullscreen.
@@ -3744,7 +3746,7 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
 
 #endif // DEBUG
         // reparent to root window
-        client->reparent(screen().rootWindow(), frame().x(), frame().y(), false);
+        client->reparent(screen().rootWindow(), wx, wy, false);
 
         if (!remap)
             client->hide();

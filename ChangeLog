@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/21:
+   * Little fix for closing tabs with non-default gravity (Mark)
+     Window.cc
    * Several fixes for menu behavior (Mark)
      - always give focus to the menu with the highlighted item
      - revert focus to menu when no other windows will take it
