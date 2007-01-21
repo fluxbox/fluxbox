@@ -34,6 +34,7 @@
 #include "Screen.hh"
 
 #include "Container.hh"
+#include "WinButton.hh"
 
 #ifdef SHAPE
 #include "Shape.hh"
@@ -1490,6 +1491,12 @@ void FbWinFrame::init() {
    Setups upp background, pressed pixmap/color of the button to current theme
 */
 void FbWinFrame::applyButton(FbTk::Button &btn) {
+    // need to update button first, or it might override this on theme change
+    if (typeid(btn) == typeid(WinButton)) {
+        WinButton *tmp = static_cast<WinButton *>(&btn);
+        tmp->update(0);
+    }
+
     if (m_button_pressed_pm)
         btn.setPressedPixmap(m_button_pressed_pm);
     else
