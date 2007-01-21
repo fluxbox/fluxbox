@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/21:
+   * Several fixes for menu behavior (Mark)
+     - always give focus to the menu with the highlighted item
+     - revert focus to menu when no other windows will take it
+     - don't reopen closed submenus when moving the menu
+     FocusControl.cc FbTk/Menu.cc/hh
 *07/01/20:
    * Make sure styles don't change the lastwallpaper in fbsetbg (Mark)
      RootTheme.cc

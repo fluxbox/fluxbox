@@ -73,7 +73,7 @@ using std::endl;
 
 namespace FbTk {
 
-static Menu *shown = 0;
+Menu *Menu::shown = 0;
 
 Menu *Menu::s_focused = 0;
 
@@ -365,12 +365,14 @@ void Menu::enterSubmenu() {
 }
 
 void Menu::enterParent() {
-    if (!validIndex(m_which_press) || parent() == 0)
+    if (parent() == 0)
         return;
 
-    Menu *submenu = menuitems[m_which_press]->submenu();
-    if (submenu)
-        submenu->internal_hide();
+    if (validIndex(m_which_press)) {
+        Menu *submenu = menuitems[m_which_press]->submenu();
+        if (submenu)
+            submenu->internal_hide();
+    }
 
     m_active_index = -1;
     //clearItem(m_which_press);
@@ -570,6 +572,13 @@ void Menu::hide() {
 }
 
 void Menu::grabInputFocus() {
+    // if there's a submenu open, focus it instead
+    if (validIndex(m_which_sub) &&
+            menuitems[m_which_sub]->submenu()->isVisible()) {
+        menuitems[m_which_sub]->submenu()->grabInputFocus();
+        return;
+    }
+
     s_focused = this;
 
     // grab input focus
@@ -632,7 +641,8 @@ void Menu::move(int x, int y) {
     if (alpha() < 255)
         clearWindow();
 
-    if (m_which_sub != -1)
+    if (validIndex(m_which_sub) &&
+            menuitems[m_which_sub]->submenu()->isVisible())
         drawSubmenu(m_which_sub);
 }
 
@@ -846,6 +856,10 @@ void Menu::handleEvent(XEvent &event) {
     } else if (event.type == FocusIn) {
         if (s_focused != this)
             s_focused = this;
+        // if there's a submenu open, focus it instead
+        if (validIndex(m_which_sub) &&
+                menuitems[m_which_sub]->submenu()->isVisible())
+            menuitems[m_which_sub]->submenu()->grabInputFocus();
     }
 }
 
@@ -881,7 +895,8 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
         if (m_moving) {
             m_moving = false;
 
-            if (m_which_sub != -1)
+            if (validIndex(m_which_sub) &&
+                    menuitems[m_which_sub]->submenu()->isVisible())
                 drawSubmenu(m_which_sub);
 
             if (alpha() < 255) {
@@ -933,7 +948,8 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             // clear current highlighted item
             clearItem(m_active_index);
 
-            if (m_which_sub >= 0)
+            if (validIndex(m_which_sub) &&
+                    menuitems[m_which_sub]->submenu()->isVisible())
                 drawSubmenu(m_which_sub);
         } else {
             // we dont call ::move here 'cause we dont want to update transparency

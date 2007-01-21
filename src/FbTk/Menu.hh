@@ -160,6 +160,7 @@ public:
     bool isItemSelectable(unsigned int index) const;
     inline const MenuTheme &theme() const { return m_theme; }
     inline unsigned char alpha() const { return theme().alpha(); }
+    inline static Menu *shownMenu() { return shown; }
     inline static Menu *focused() { return s_focused; }
     /// @return menuitem at index
     inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
@@ -235,6 +236,7 @@ private:
     int m_active_index; ///< current highlighted index
 
     Drawable m_root_pm;
+    static Menu *shown; ///< used for determining if there's a menu open at all
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
     bool m_need_update;
     Timer m_submenu_timer;

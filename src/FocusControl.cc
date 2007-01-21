@@ -405,14 +405,20 @@ void FocusControl::revertFocus(BScreen &screen) {
     // if setting focus fails, or isn't possible, fallback correctly
     if (!(next_focus && next_focus->focus())) {
         setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
-        switch (screen.focusControl().focusModel()) {
-        case FocusControl::MOUSEFOCUS:
-            XSetInputFocus(screen.rootWindow().display(),
-                           PointerRoot, None, CurrentTime);
-            break;
-        case FocusControl::CLICKFOCUS:
-            screen.rootWindow().setInputFocus(RevertToPointerRoot, CurrentTime);
-            break;
+        // if there's a menu open, focus it
+        if (FbTk::Menu::shownMenu())
+            FbTk::Menu::shownMenu()->grabInputFocus();
+        else {
+            switch (screen.focusControl().focusModel()) {
+            case FocusControl::MOUSEFOCUS:
+                XSetInputFocus(screen.rootWindow().display(),
+                               PointerRoot, None, CurrentTime);
+                break;
+            case FocusControl::CLICKFOCUS:
+                screen.rootWindow().setInputFocus(RevertToPointerRoot,
+                                                  CurrentTime);
+                break;
+            }
         }
     }
 
