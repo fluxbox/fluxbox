@@ -765,6 +765,17 @@ session.screen0.toolbar.wheeling: <boolean>
       These set the ability to utilize the user's scroll wheel to change the
       current workspace. Default: True
 
+session.screen0.windowScrollAction: shade|nexttab
+      This allows you to execute a command by scrolling on the titlebar of a
+      window. For `shade', scrolling down will shade the window, and scrolling
+      up will unshade it. For `nexttab', scrolling down will focus the next tab,
+      and scrolling up will focus the previous one. Default: <blank>
+
+session.screen0.reversewheeling: <boolean>
+session.screen0.windowScrollReverse: <boolean>
+      These switch the roles of scrolling up and scrolling down for the previous
+      two sets of resources. Default: False
+
 session.screen0.slit.layer: <layer>
 session.screen0.toolbar.layer: <layer>
       With these two resources, you can set the layer you want the toolbar and
