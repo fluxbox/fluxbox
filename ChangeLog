@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/24:
+   * Detect user's shell from environment rather than assuming /bin/sh (Mark)
+     FbCommands.cc
 *07/01/21:
    * Allow transparency in window buttons, so they show the titlebar underneath
      instead of black (Mark)

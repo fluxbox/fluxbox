@@ -143,12 +143,18 @@ int ExecuteCmd::run() {
 
     sprintf(intbuff, "%d", screen_num);
 
+    // get shell path from the environment
+    // this process exits immediately, so we don't have to worry about memleaks
+    char *shell = getenv("SHELL");
+    if (!shell)
+        shell = "/bin/sh";
+
     // remove last number of display and add screen num
     displaystring.erase(displaystring.size()-1);
     displaystring += intbuff;
     setsid();
     putenv(const_cast<char *>(displaystring.c_str()));
-    execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), static_cast<void*>(NULL));
+    execl(shell, shell, "-c", m_cmd.c_str(), static_cast<void*>(NULL));
     exit(0);
 
     return pid; // compiler happy -> we are happy ;)
