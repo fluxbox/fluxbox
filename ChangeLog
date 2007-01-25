@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/25:
+   * Don't raise any windows above OverrideRedirect windows, otherwise they
+     eventually get pushed to the bottomm, bug #1447583 (Mark)
 *07/01/24:
    * Detect user's shell from environment rather than assuming /bin/sh (Mark)
      FbCommands.cc

@@ -90,37 +90,23 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     if (!m_manager.isUpdatable())
         return;
 
-    Window *winlist;
-    size_t winnum, size, num = item->numWindows();
-
     // if there are no windows provided for above us,
-    // then we must have to go right to the top of the stack
+    // then we must restack the entire layer
+    // we can't do XRaiseWindow because a restack then causes OverrideRedirect
+    // windows to get pushed to the bottom
     if (!above) { // must need to go right to top
-        if (item->getWindows().front()->window())
-            XRaiseWindow(FbTk::App::instance()->display(), item->getWindows().front()->window());
-
-        // if this XLayerItem has more than one window,
-        // then we'll stack the rest in under the front one too
-        // our size needs to be the number of windows in the group, since there isn't one above.
-        if (num > 1) {
-            winnum = 0;
-            // stack relative to top one (just raised)
-            size = num;
-            winlist = new Window[size];
-        } else {
-            // we've raised the window, nothing else to do
-            return;
-        }
-    } else {
-        // We do have a window to stack below
-
-        // so we put it on top, and fill the rest of the array with the ones to go below it.
-        winnum = 1;
-        size = num+1;
-        winlist = new Window[size];
-        // assume that above's window exists
-        winlist[0] = above->getWindows().back()->window();
+        restack();
+        return;
     }
+
+    Window *winlist;
+    size_t winnum = 1, size = item->numWindows()+1;
+
+    // We do have a window to stack below
+    // so we put it on top, and fill the rest of the array with the ones to go below it.
+    winlist = new Window[size];
+    // assume that above's window exists
+    winlist[0] = above->getWindows().back()->window();
 
     // fill the rest of the array
     XLayerItem::Windows::iterator it = item->getWindows().begin();
