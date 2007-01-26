@@ -1986,81 +1986,11 @@ void FluxboxWindow::tempRaise() {
 
 
 void FluxboxWindow::raiseLayer() {
-    // don't let it up to menu layer
-    if (layerNum() == ::Layer::MENU + 1)
-        return;
-
-    if (!m_initialized) {
-        m_layernum++;
-        return;
-    }
-
-    // get root window
-    WinClient *client = getRootTransientFor(m_client);
-
-    // if we don't have any root window use this as root
-    if (client == 0)
-        client = m_client;
-
-    FluxboxWindow *win = client->fbwindow();
-    if (!win) return;
-
-    if (!win->isIconic())
-        screen().updateNetizenWindowRaise(client->window());
-
-    win->layerItem().raiseLayer();
-
-    // remember number just in case a transient happens to revisit this window
-    int layer_num = win->layerItem().getLayerNum();
-    win->setLayerNum(layer_num);
-
-    WinClient::TransientList::const_iterator it = client->transientList().begin();
-    WinClient::TransientList::const_iterator it_end = client->transientList().end();
-    for (; it != it_end; ++it) {
-        win = (*it)->fbwindow();
-        if (win && !win->isIconic()) {
-            screen().updateNetizenWindowRaise((*it)->window());
-            win->layerItem().moveToLayer(layer_num);
-            win->setLayerNum(layer_num);
-        }
-    }
+    moveToLayer(m_layernum-1);
 }
 
 void FluxboxWindow::lowerLayer() {
-    if (!m_initialized) {
-        if (m_layernum > 0)
-            m_layernum--;
-        return;
-    }
-
-    // get root window
-    WinClient *client = getRootTransientFor(m_client);
-
-    // if we don't have any root window use this as root
-    if (client == 0)
-        client = m_client;
-
-    FluxboxWindow *win = client->fbwindow();
-    if (!win) return;
-
-    if (!win->isIconic()) {
-        screen().updateNetizenWindowLower(client->window());
-    }
-    win->layerItem().lowerLayer();
-    // remember number just in case a transient happens to revisit this window
-    int layer_num = win->layerItem().getLayerNum();
-    win->setLayerNum(layer_num);
-
-    WinClient::TransientList::const_iterator it = client->transientList().begin();
-    WinClient::TransientList::const_iterator it_end = client->transientList().end();
-    for (; it != it_end; ++it) {
-        win = (*it)->fbwindow();
-        if (win && !win->isIconic()) {
-            screen().updateNetizenWindowLower((*it)->window());
-            win->layerItem().moveToLayer(layer_num);
-            win->setLayerNum(layer_num);
-        }
-    }
+    moveToLayer(m_layernum+1);
 }
 
 
@@ -2070,14 +2000,16 @@ void FluxboxWindow::moveToLayer(int layernum) {
 #endif // DEBUG
 
     // don't let it set its layer into menu area
-    if (layernum <= ::Layer::MENU) {
+    if (layernum <= ::Layer::MENU)
         layernum = ::Layer::MENU + 1;
-    }
+    else if (layernum >= Fluxbox::instance()->getNumberOfLayers())
+        layernum = Fluxbox::instance()->getNumberOfLayers()-1;
 
-    if (!m_initialized) {
+    if (!m_initialized)
         m_layernum = layernum;
+
+    if (m_layernum == layernum)
         return;
-    }
 
     // get root window
     WinClient *client = getRootTransientFor(m_client);
@@ -2090,7 +2022,10 @@ void FluxboxWindow::moveToLayer(int layernum) {
     if (!win) return;
 
     if (!win->isIconic()) {
-        screen().updateNetizenWindowRaise(client->window());
+        if (layernum > m_layernum)
+            screen().updateNetizenWindowRaise(client->window());
+        else
+            screen().updateNetizenWindowLower(client->window());
     }
     win->layerItem().moveToLayer(layernum);
     // remember number just in case a transient happens to revisit this window

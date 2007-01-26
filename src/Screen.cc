@@ -1131,13 +1131,11 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
     currentWorkspace()->showAll();
 
-    if (focused && focused->isMoving())
+    if (focused && focused->isMoving()) {
         focused->setInputFocus();
-    else
-        FocusControl::revertFocus(*this);
-
-    if (focused && focused->isMoving())
         focused->resumeMoving();
+    } else
+        FocusControl::revertFocus(*this);
 
     updateNetizenCurrentWorkspace();
     FbTk::App::instance()->sync(false);
