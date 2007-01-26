@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/01/26:
+   * Opening a window on a different workspace with Focus New Windows enabled
+     should focus the window when you get to that workspace -- as a free bonus,
+     stacking order should be more stable on fluxbox restart (Mark)
+     Screen.cc FocusControl.cc/hh
 *07/01/25:
    * Don't raise any windows above OverrideRedirect windows, otherwise they
      eventually get pushed to the bottomm, bug #1447583 (Mark)

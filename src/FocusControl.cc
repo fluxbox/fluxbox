@@ -149,6 +149,11 @@ void FocusControl::addFocusBack(WinClient &client) {
     m_creation_order_list.push_back(&client);
 }
 
+void FocusControl::addFocusFront(WinClient &client) {
+    m_focused_list.push_front(&client);
+    m_creation_order_list.push_back(&client);
+}
+
 // move all clients in given window to back of focused list
 void FocusControl::setFocusBack(FluxboxWindow *fbwin) {
     // do nothing if there are no windows open
@@ -375,8 +380,9 @@ void FocusControl::removeClient(WinClient &client) {
 }
 
 void FocusControl::shutdown() {
-    FocusedWindows::iterator it = m_focused_list.begin();
-    for (; it != m_focused_list.end(); ++it) {
+    // restore windows backwards so they get put back correctly on restart
+    FocusedWindows::reverse_iterator it = m_focused_list.rbegin();
+    for (; it != m_focused_list.rend(); ++it) {
         if (*it && (*it)->fbwindow())
             (*it)->fbwindow()->restore(*it, true);
     }
