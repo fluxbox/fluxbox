@@ -408,6 +408,9 @@ void Menu::updateMenu(int active_index) {
         menu.item_w = (ii > menu.item_w ? ii : menu.item_w);
     }
 
+    if (menu.item_w < 1)
+        menu.item_w = 1;
+
     if (!menuitems.empty()) {
         menu.sublevels = 1;
 
@@ -436,12 +439,8 @@ void Menu::updateMenu(int active_index) {
         new_height += theme().titleHeight() + ((menu.frame_h > 0)?menu.title.borderWidth():0);
 
 
-    if (new_width == 0) {
-        if (menu.item_w > 0)
-            new_width = menu.item_w;
-        else
-            new_width = 1;
-    }
+    if (new_width == 0)
+        new_width = menu.item_w;
 
     if (new_height < 1)
         new_height = 1;
@@ -530,7 +529,7 @@ void Menu::updateMenu(int active_index) {
 
 void Menu::show() {
 
-    if (isVisible())
+    if (isVisible() || !menuitems.size())
         return;
 
     m_visible = true;

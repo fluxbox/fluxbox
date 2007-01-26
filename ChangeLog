@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/01/26:
+   * Fix default workspace names, and don't show empty menus (Mark)
+     Workspace.cc FbTk/Menu.cc
    * Opening a window on a different workspace with Focus New Windows enabled
      should focus the window when you get to that workspace -- as a free bonus,
      stacking order should be more stable on fluxbox restart (Mark)

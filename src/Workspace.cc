@@ -376,6 +376,7 @@ void Workspace::setName(const string &name) {
                 _FB_XTEXT(Workspace, DefaultNameFormat,
                         "Workspace %d", "Default workspace names, with a %d for the workspace number").c_str(),
                 m_id + 1); //m_id starts at 0
+        m_name = tname;
     }
 
     screen().updateWorkspaceNamesAtom();
