@@ -510,7 +510,8 @@ void FbWinFrame::setFocus(bool newvalue) {
 
     m_focused = newvalue;
 
-    if (FbTk::Transparent::haveRender() && getAlpha(true) != getAlpha(false)) { // different alpha for focused and unfocused
+    if (FbTk::Transparent::haveRender() && 
+        getAlpha(true) != getAlpha(false)) { // different alpha for focused and unfocused
         unsigned char alpha = getAlpha(m_focused);
         if (FbTk::Transparent::haveComposite()) {
             m_tab_container.setAlpha(255);
@@ -533,8 +534,7 @@ void FbWinFrame::setFocus(bool newvalue) {
 }
 
 void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
-    if (m_use_default_alpha == 2)
-    {
+    if (m_use_default_alpha == 2) {
         /// Set basic defaults
         m_focused_alpha = getAlpha(true);
         m_unfocused_alpha = getAlpha(false);
@@ -546,7 +546,7 @@ void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
     else
         m_unfocused_alpha = alpha;
 
-    if(m_focused == focused)
+    if (m_focused == focused)
         m_window.setOpaque(alpha);
 }
 
