@@ -249,7 +249,9 @@ void FocusControl::setScreenFocusedWindow(WinClient &win_client) {
 
      // raise newly focused window to the top of the focused list
      // don't change the order if we're cycling or shutting down
-    if (!isCycling() && !m_screen.isShuttingdown() && !s_reverting) {
+     // don't change on startup, as it may add windows that aren't listed yet
+    if (!isCycling() && !m_screen.isShuttingdown() && !s_reverting &&
+            !Fluxbox::instance()->isStartup()) {
         m_focused_list.remove(&win_client);
         m_focused_list.push_front(&win_client);
         m_cycling_window = m_focused_list.begin();
