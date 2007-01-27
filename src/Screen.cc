@@ -1404,7 +1404,8 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     }
 
     // add the window to the focus list
-    if (focusControl().focusNew())
+    // always add to front on startup to keep the focus order the same
+    if (focusControl().focusNew() || Fluxbox::instance()->isStartup())
         focusControl().addFocusFront(*winclient);
     else
         focusControl().addFocusBack(*winclient);
@@ -1435,7 +1436,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
 
 #ifdef SLIT
     if (win->initialState() == WithdrawnState && slit() != 0) {
-        slit()->addClient(win->clientWindow());
+        slit()->addClient(client.window());
     }
 #endif // SLIT
 
@@ -1445,8 +1446,11 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
         return 0;
     }
 
-    // can't setInputFocus yet and mapNotifyEvent doesn't happen for the client
-    if (focusControl().focusNew() || FocusControl::focusedWindow() == &client)
+    win->show();
+    // don't ask me why, but client doesn't seem to keep focus in new window
+    // and we don't seem to get a FocusIn event from setInputFocus
+    if ((focusControl().focusNew() || FocusControl::focusedWindow() == &client)
+            && win->setInputFocus())
         FocusControl::setFocusedWindow(&client);
 
     m_clientlist_sig.notify();

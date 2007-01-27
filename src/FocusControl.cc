@@ -193,6 +193,7 @@ void FocusControl::stopCyclingFocus() {
         m_cycling_window = find(m_focused_list.begin(),m_focused_list.end(),*m_cycling_window);
     if (m_cycling_window != m_focused_list.end() &&
         m_cycling_window != m_creation_order_list.end() &&
+        (*m_cycling_window)->fbwindow() &&
         (*m_cycling_window)->fbwindow()->isVisible()) {
         WinClient *client = *m_cycling_window;
         m_focused_list.erase(m_cycling_window);

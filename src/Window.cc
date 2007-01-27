@@ -104,57 +104,6 @@ using std::hex;
 
 namespace {
 
-void grabButton(unsigned int button,
-                Window window, Cursor cursor) {
-
-    static Display *display = App::instance()->display();
-
-    const int numlock = KeyUtil::instance().numlock();
-    const int capslock = KeyUtil::instance().capslock();
-    const int scrolllock = KeyUtil::instance().scrolllock();
-
-    // Grab with modkey and with all lock modifiers
-    // (num, scroll and caps)
-
-    unsigned int modkey = Fluxbox::instance()->getModKey();
-
-    //numlock
-    XGrabButton(display, button, modkey|numlock, window, True,
-                ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                GrabModeAsync, None, cursor);
-    //scrolllock
-    XGrabButton(display, button, modkey|scrolllock, window, True,
-                ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                GrabModeAsync, None, cursor);
-
-    //capslock
-    XGrabButton(display, button, modkey|capslock, window, True,
-                ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                GrabModeAsync, None, cursor);
-
-    //capslock+numlock
-    XGrabButton(display, Button1, modkey|capslock|numlock, window, True,
-                ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                GrabModeAsync, None, cursor);
-
-    //capslock+scrolllock
-    XGrabButton(display, button, modkey|capslock|scrolllock, window, True,
-                ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                GrabModeAsync, None, cursor);
-
-    //capslock+numlock+scrolllock
-    XGrabButton(display, button, modkey|capslock|numlock|scrolllock, window,
-                True,
-                ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                GrabModeAsync, None, cursor);
-
-    //numlock+scrollLock
-    XGrabButton(display, button, modkey|numlock|scrolllock, window, True,
-                ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                GrabModeAsync, None, cursor);
-
-}
-
 // X event scanner for enter/leave notifies - adapted from twm
 typedef struct scanargs {
     Window w;
@@ -402,8 +351,7 @@ void FluxboxWindow::init() {
 
     assert(m_client);
     m_client->setFluxboxWindow(this);
-    if (!m_client->hasGroupLeftWindow())
-        m_client->setGroupLeftWindow(None); // nothing to the left.
+    m_client->setGroupLeftWindow(None); // nothing to the left.
 
     // check for shape extension and whether the window is shaped
     m_shaped = false;
@@ -702,10 +650,10 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
                          frame().clientArea().width(),
                          frame().clientArea().height());
 
-        if (&client == FocusControl::focusedWindow()) {
-            was_focused = true;
+        // right now, this block only happens with new windows or on restart
+        if (screen().focusControl().focusNew() ||
+                Fluxbox::instance()->isStartup())
             focused_win = &client;
-        }
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
         m_clientlist.push_back(&client);
@@ -718,16 +666,15 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     m_workspacesig.notify();
     m_layersig.notify();
 
-    if (was_focused)
-        // already has focus, we're just assuming the state of the old window
+    if (was_focused) {
+        // don't ask me why, but client doesn't seem to keep focus in new window
+        // and we don't seem to get a FocusIn event from setInputFocus
+        setCurrentClient(client);
         FocusControl::setFocusedWindow(&client);
+    } else if (focused_win)
+        setCurrentClient(*focused_win, false);
 
     frame().reconfigure();
-
-    // keep the current window on top
-    if (focused_win)
-        m_client = focused_win;
-    m_client->raise();
 }
 
 
@@ -748,11 +695,7 @@ bool FluxboxWindow::detachClient(WinClient &client) {
         (*client_it_after)->setGroupLeftWindow(leftwin);
 
     removeClient(client);
-
-    // m_client must be valid as there should be at least one other window
-    // otherwise this wouldn't be here (refer numClients() <= 1 return)
-    client.setFluxboxWindow(screen().createWindow(client));
-    client.setGroupLeftWindow(None);
+    screen().createWindow(client);
     return true;
 }
 
@@ -1123,22 +1066,16 @@ void FluxboxWindow::grabButtons() {
     unsigned int modkey = Fluxbox::instance()->getModKey();
 
     if (modkey) {
-        XGrabButton(display, Button1, modkey, frame().window().window(), True,
-                    ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                    GrabModeAsync, None, frame().theme().moveCursor());
-
         //----grab with "all" modifiers
-        grabButton(Button1, frame().window().window(), frame().theme().moveCursor());
+        FbTk::KeyUtil::grabButton(Button1, modkey, frame().window().window(),
+            ButtonReleaseMask | ButtonMotionMask, frame().theme().moveCursor());
 
         XGrabButton(display, Button2, modkey, frame().window().window(), True,
                     ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);
 
-        XGrabButton(display, Button3, modkey, frame().window().window(), True,
-                    ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-                    GrabModeAsync, None, None);
-
         //---grab with "all" modifiers
-        grabButton(Button3, frame().window().window(), None);
+        FbTk::KeyUtil::grabButton(Button3, modkey, frame().window().window(),
+            ButtonReleaseMask | ButtonMotionMask);
     }
 }
 
@@ -3641,9 +3578,6 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
             // since just detached, move relative to old location
             if (client.fbwindow() != 0) {
                 client.fbwindow()->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
-                client.fbwindow()->show();
-                FocusControl::setFocusedWindow(&client);
-                client.fbwindow()->setInputFocus();
             }
         } else if( attach_to_win == this && attach_to_win->isTabable()) {
             //reording of tabs within a frame

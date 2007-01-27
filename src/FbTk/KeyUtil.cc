@@ -118,44 +118,29 @@ void KeyUtil::grabKey(unsigned int key, unsigned int mod, Window win) {
     const unsigned int nummod = instance().numlock();
     const unsigned int scrollmod = instance().scrolllock();
 
-    XGrabKey(display, key, mod,
-             win, True,
-             GrabModeAsync, GrabModeAsync);
+    // Grab with numlock, capslock and scrlock
+    for (int i = 0; i < 8; i++) {
+        XGrabKey(display, key, mod | (i & 1 ? capsmod : 0) |
+                 (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
+                 win, True, GrabModeAsync, GrabModeAsync);
+    }
+
+}
+
+void KeyUtil::grabButton(unsigned int button, unsigned int mod, Window win,
+                         unsigned int event_mask, Cursor cursor) {
+    Display *display = App::instance()->display();
+    const unsigned int capsmod = instance().capslock();
+    const unsigned int nummod = instance().numlock();
+    const unsigned int scrollmod = instance().scrolllock();
 
     // Grab with numlock, capslock and scrlock
-
-    //numlock
-    XGrabKey(display, key, mod|nummod,
-             win, True,
-             GrabModeAsync, GrabModeAsync);
-    //scrolllock
-    XGrabKey(display, key, mod|scrollmod,
-             win, True,
-             GrabModeAsync, GrabModeAsync);
-    //capslock
-    XGrabKey(display, key, mod|capsmod,
-             win, True,
-             GrabModeAsync, GrabModeAsync);
-
-    //capslock+numlock
-    XGrabKey(display, key, mod|capsmod|nummod,
-             win, True,
-             GrabModeAsync, GrabModeAsync);
-
-    //capslock+scrolllock
-    XGrabKey(display, key, mod|capsmod|scrollmod,
-             win, True,
-             GrabModeAsync, GrabModeAsync);
-
-    //capslock+numlock+scrolllock
-    XGrabKey(display, key, mod|capsmod|scrollmod|nummod,
-             win, True,
-             GrabModeAsync, GrabModeAsync);
-
-    //numlock+scrollLock
-    XGrabKey(display, key, mod|nummod|scrollmod,
-             win, True,
-             GrabModeAsync, GrabModeAsync);
+    for (int i = 0; i < 8; i++) {
+        XGrabButton(display, button, mod | (i & 1 ? capsmod : 0) |
+                    (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
+                    win, True, event_mask, GrabModeAsync, GrabModeAsync,
+                    None, cursor);
+    }
 
 }
 

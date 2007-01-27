@@ -44,6 +44,8 @@ public:
        Grab the specified key
     */
     static void grabKey(unsigned int key, unsigned int mod, Window win);
+    static void grabButton(unsigned int button, unsigned int mod, Window win,
+                           unsigned int event_mask, Cursor cursor = None);
 
     /**
        convert the string to the keysym
