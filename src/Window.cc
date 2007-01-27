@@ -49,7 +49,6 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/Select2nd.hh"
-#include "FbTk/Transparent.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -295,7 +294,8 @@ FluxboxWindow::~FluxboxWindow() {
         WindowCmd<void>::setWindow(0);
 
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<", "<<title()<<")"<<endl;
+    const char* title = m_client ? m_client->title().c_str() : "" ;
+    cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<","<<title<<")"<<endl;
     cerr<<__FILE__<<"("<<__LINE__<<"): num clients = "<<numClients()<<endl;
     cerr<<__FILE__<<"("<<__LINE__<<"): curr client = "<<m_client<<endl;
     cerr<<__FILE__<<"("<<__LINE__<<"): m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
@@ -448,7 +448,10 @@ void FluxboxWindow::init() {
         decorations.tab = false; //no tab for this window
     }
 
-    associateClientWindow(true, wattrib.x, wattrib.y, wattrib.width, wattrib.height, m_client->gravity(), m_client->old_bw);
+    associateClientWindow(true, 
+                          wattrib.x, wattrib.y, 
+                          wattrib.width, wattrib.height, 
+                          m_client->gravity(), m_client->old_bw);
 
     Fluxbox::instance()->attachSignals(*this);
 
@@ -3669,7 +3672,11 @@ FbTk::Menu &FluxboxWindow::menu() {
 
 const FbTk::FbPixmap &FluxboxWindow::iconPixmap() const { return m_client->iconPixmap(); }
 const FbTk::FbPixmap &FluxboxWindow::iconMask() const { return m_client->iconMask(); }
-const bool FluxboxWindow::usePixmap() const { return m_client->usePixmap(); }
+
+const bool FluxboxWindow::usePixmap() const { 
+    return m_client ? m_client->usePixmap() : false; 
+}
+
 const bool FluxboxWindow::useMask() const { return m_client->useMask(); }
 
 const FbTk::Menu &FluxboxWindow::menu() const {
@@ -3686,15 +3693,16 @@ Window FluxboxWindow::clientWindow() const  {
     return m_client->window();
 }
 
+
 const string &FluxboxWindow::title() const {
-    static string empty_string("");
+    static string empty_string;
     if (m_client == 0)
         return empty_string;
     return m_client->title();
 }
 
 const string &FluxboxWindow::iconTitle() const {
-    static string empty_string("");
+    static string empty_string;
     if (m_client == 0)
         return empty_string;
     return m_client->iconTitle();
