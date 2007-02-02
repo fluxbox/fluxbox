@@ -123,6 +123,7 @@ FbCommandFactory::FbCommandFactory() {
         "sendtoworkspace",
         "sendtonextworkspace",
         "sendtoprevworkspace",
+        "setalpha",
         "setenv",
         "sethead",
         "setmodkey",
@@ -247,7 +248,29 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::maximizeVertical);
     else if (command == "maximizehorizontal")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal);
-    else if (command == "resize") {
+    else if (command == "setalpha") {
+        typedef vector<string> StringTokens;
+        StringTokens tokens;
+        FbTk::StringUtil::stringtok<StringTokens>(tokens, arguments);
+
+        int focused, unfocused;
+        bool relative, un_rel;
+
+        if (tokens.empty()) { // set default alpha
+            focused = unfocused = 256;
+            relative = un_rel = false;
+        } else {
+            relative = un_rel = (tokens[0][0] == '+' || tokens[0][0] == '-');
+            focused = unfocused = atoi(tokens[0].c_str());
+        }
+
+        if (tokens.size() > 1) { // set different unfocused alpha
+            un_rel = (tokens[1][0] == '+' || tokens[1][0] == '-');
+            unfocused = atoi(tokens[1].c_str());
+        }
+
+        return new SetAlphaCmd(focused, relative, unfocused, un_rel);
+    } else if (command == "resize") {
         FbTk_istringstream is(arguments.c_str());
         int dx = 0, dy = 0;
         is >> dx >> dy;

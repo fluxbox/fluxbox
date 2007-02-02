@@ -173,3 +173,33 @@ FullscreenCmd::FullscreenCmd() { }
 void FullscreenCmd::real_execute() {
     fbwindow().setFullscreen(!fbwindow().isFullscreen());
 }
+
+SetAlphaCmd::SetAlphaCmd(int focused, bool relative,
+                         int unfocused, bool un_relative) :
+    m_focus(focused), m_unfocus(unfocused),
+    m_relative(relative), m_un_relative(un_relative) { }
+
+void SetAlphaCmd::real_execute() {
+    if (m_focus == 256 && m_unfocus == 256) {
+        // made up signal to return to default
+        fbwindow().setUseDefaultAlpha(true);
+        return;
+    }
+
+    int new_alpha;
+    if (m_relative) {
+        new_alpha = fbwindow().getFocusedAlpha() + m_focus;
+        if (new_alpha < 0) new_alpha = 0;
+        if (new_alpha > 255) new_alpha = 255;
+        fbwindow().setFocusedAlpha(new_alpha);
+    } else
+        fbwindow().setFocusedAlpha(m_focus);
+
+    if (m_un_relative) {
+        new_alpha = fbwindow().getUnfocusedAlpha() + m_unfocus;
+        if (new_alpha < 0) new_alpha = 0;
+        if (new_alpha > 255) new_alpha = 255;
+        fbwindow().setUnfocusedAlpha(new_alpha);
+    } else
+        fbwindow().setUnfocusedAlpha(m_unfocus);
+}

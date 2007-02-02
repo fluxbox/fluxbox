@@ -1,5 +1,16 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/02/02:
+   * Update window transparency immediately when using pseudotransparency,
+     also introduced new key command: SetAlpha [[+-]<int> [[+-]<int>]] (Mark)
+     - with no arguments, returns the focused window to default settings
+     - with one argument, changes both focused and unfocused settings the same
+       way
+     - with two arguments, the first changes the focused alpha, and the second
+       changes the unfocused alpha
+     E.g. SetAlpha 127 +5 will set the focused alpha to 127 and increment the
+     unfocused alpha by 5 (until it reaches 255)
+     FbWinFrame.cc FbCommandFactory.cc CurrentWindowCmd.cc/hh
 *07/01/26:
    * Fix default workspace names, and don't show empty menus (Mark)
      Workspace.cc FbTk/Menu.cc

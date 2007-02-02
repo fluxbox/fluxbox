@@ -197,4 +197,14 @@ public:
 protected:
     void real_execute();
 };
+
+class SetAlphaCmd: public WindowHelperCmd {
+public:
+    SetAlphaCmd(int focus, bool rel, int unfocus, bool unrel);
+protected:
+    void real_execute();
+private:
+    int m_focus, m_unfocus;
+    int m_relative, m_un_relative;
+};
 #endif // CURRENTWINDOWCMD_HH

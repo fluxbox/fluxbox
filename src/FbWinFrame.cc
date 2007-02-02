@@ -546,8 +546,15 @@ void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
     else
         m_unfocused_alpha = alpha;
 
-    if (m_focused == focused)
-        m_window.setOpaque(alpha);
+    if (m_focused == focused) {
+        if (FbTk::Transparent::haveComposite())
+            m_window.setOpaque(alpha);
+        else {
+            // don't need to setAlpha, since apply updates them anyway
+            applyAll();
+            clearAll();
+        }
+    }
 }
 
 unsigned char FbWinFrame::getAlpha(bool focused) const
@@ -569,7 +576,13 @@ void FbWinFrame::setUseDefaultAlpha(bool default_alpha)
 
     m_use_default_alpha = default_alpha;
 
-    m_window.setOpaque(getAlpha(m_focused));
+    if (FbTk::Transparent::haveComposite())
+        m_window.setOpaque(getAlpha(m_focused));
+    else {
+        // don't need to setAlpha, since apply updates them anyway
+        applyAll();
+        clearAll();
+    }
 }
 
 void FbWinFrame::setDoubleClickTime(unsigned int time) {
