@@ -44,17 +44,17 @@ public:
     /// override for drawing
     void exposeEvent(XExposeEvent &event);
     void buttonReleaseEvent(XButtonEvent &event);
-    void buttonPressEvent(XButtonEvent &event);
     void setBackgroundPixmap(Pixmap pm);
     void setPressedPixmap(Pixmap pm);
     void setBackgroundColor(const FbTk::Color &color);
     void setPressedColor(const FbTk::Color &color);
-    
+
+    Pixmap getBackgroundPixmap() const;
+    Pixmap getPressedPixmap() const;
     /// override for redrawing
     void clear();
     void update(FbTk::Subject *subj);
 private:
-    void drawIcon(FbTk::FbPixmap icon, FbTk::FbPixmap mask);
     void drawType();
     Type m_type; ///< the button type
     const FluxboxWindow &m_listen_to;
@@ -62,6 +62,6 @@ private:
 
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;
-
-    bool m_override_bg;
+    
+    bool overrode_bg, overrode_pressed;
 };

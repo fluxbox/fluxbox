@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/02/02:
+   * Reverted patch from svn 4684, allowing transparency in window buttons,
+     until we get it working with titlebar transparency, since the old buggy
+     behavior at least didn't break settings already in use (Mark)
+     FbWinFrame.cc WinButton.cc/hh
    * Update window transparency immediately when using pseudotransparency,
      also introduced new key command: SetAlpha [[+-]<int> [[+-]<int>]] (Mark)
      - with no arguments, returns the focused window to default settings
@@ -25,9 +29,6 @@ Changes for 1.0rc3:
    * Detect user's shell from environment rather than assuming /bin/sh (Mark)
      FbCommands.cc
 *07/01/21:
-   * Allow transparency in window buttons, so they show the titlebar underneath
-     instead of black (Mark)
-     WinButton.cc/hh FbWinFrame.cc
    * Little fix for closing tabs with non-default gravity (Mark)
      Window.cc
    * Several fixes for menu behavior (Mark)
