@@ -188,34 +188,6 @@ default, tabs are located just above the window, but they may be embedded in the
 titlebar or moved to other locations on the outside of the window. Configuration
 is discussed in TAB OPTIONS section.
 
-Miscellaneous
-~~~~~~~~~~~~~
-When you want to drag a window, but cannot see either the bottom handle or
-its titlebar you can press (and hold!)
-
-    ALT + Left Mousebutton (mouse button 1)
-
-and move it anywhere in the current workspace. This key combination can
-also be used to raise a partially visible window.
-
-The key combination
-
-    ALT + Right Mousebutton (mouse button 3)
-
-will allow you to resize the window. This behavior can be altered in the init
-file with:
-
-    session.modKey: <modifier>
-
-You can also alter how resizing is done. By default, you drag the bottom right
-corner. You can drag the corner closest to the mouse pointer instead if you set
-
-    session.screen0.resizeMode: Quadrant
-
-or all corners at the same time if you set it to:
-
-    session.screen0.resizeMode: Center
-
 MENUS
 -----
 fluxbox installs a default menu file in @pkgdatadir@/menu. You can also use
@@ -718,32 +690,12 @@ RESOURCES
 Usually the ~/.fluxbox/init resource file is created and maintained by fluxbox
 itself. You can use the [config] menu to set most of these options. However,
 we'll cover all of the resource options that are available to the user. If you
-edit this file while fluxbox is running, you must `restart' to reload the
+edit this file while fluxbox is running, you must `reconfigure' to reload the
 resource options.
 
 When running fluxbox in a multiple desktop environment the screen0 key can also
 be screen1, screen2, etc. You can customize the behavior of fluxbox on each
-desktop accordingly. Here is an example, and a favorite of the fluxbox
-documentation manager:
-
-.................................................
-session.screen0.toolbar.onTop: False
-session.screen0.toolbar.autoHide: True
-session.screen0.toolbar.placement: BottomCenter
-session.screen0.toolbar.widthPercent: 42
-session.screen0.slit.onTop: False
-session.screen0.slit.autoHide: True
-session.screen0.slit.placement: TopLeft
-session.screen0.slit.direction: Vertical
-session.screen0.strftimeFormat: %I:%M %p
-session.screen1.toolbar.onTop: True
-session.screen1.slit.autoHide: False
-session.screen1.slit.placement: CenterRight
-session.screen1.slit.direction: Vertical
-session.screen1.strftimeFormat: %a %d %R [%s]
-.................................................
-
-Here are the resources that are currently available:
+desktop accordingly. Here are the resources that are currently available:
 
 ................................................................................
 session.screen0.window.focus.alpha: <integer>
@@ -781,12 +733,6 @@ session.screen0.toolbar.layer: <layer>
       With these two resources, you can set the layer you want the toolbar and
       the slit to appear on. Please read the LAYER section for more information.
       Default: Desktop
-
-session.screen0.slit.onTop: <boolean>
-session.screen0.toolbar.onTop: <boolean>
-      A user can set whether or not the toolbar or slit are always on top of the
-      screen. Setting these resources will put the slit and toolbar above
-      everything visible on the workspace. Default: False
 
 session.screen0.slit.placement: <placement>
 session.screen0.toolbar.placement: <placement>
@@ -913,17 +859,16 @@ session.screen0.userFollowModel: <model>
       This specifies the behavior when a window on another workspace becomes the
       active window. The former is used when an application asks to focus the
       window, and the latter is used when the window is activated due to user
-      actions, such as clicking in the iconbar, menu, or pager. `Ignore' does
+      actions, such as clicking in the iconbar, menu, or a pager. `Ignore' does
       nothing. `Follow' moves to the window's workspace. `Current' moves the
       window to the current workspace. `SemiFollow' acts like `Current' for
       iconified windows and like `Follow' otherwise. Defaults: Ignore and
       Follow, respectively.
 
 session.screen0.resizeMode: Bottom|Quadrant|Center
-      Setting this resource to `Quadrant' makes resizing by ALT + Right
-      Mousebutton (mouse button 3) grab the corner closest to the mouse pointer
-      instead of the bottom right corner. `Center' resizes all corners at the
-      same time. Default: Bottom
+      Setting this resource to `Quadrant' makes resizing by using the modkey
+      grab the corner closest to the mouse pointer instead of the bottom right
+      corner. `Center' resizes all corners at the same time. Default: Bottom
 
 session.screen0.focusModel: ClickToFocus|MouseFocus
       This controls how windows gain focus via the mouse. With `ClickToFocus',
@@ -954,13 +899,14 @@ session.screen0.showwindowposition: <boolean>
       Default: True
 
 session.screen0.decorateTransient: <boolean>
-      This controls whether or not transient windows get window decorations,
-      such as a titlebar. Default: False
+      This controls whether or not transient windows get certain window
+      decorations, currently the maximize button and handle.
+      Default: False
 
 session.screen0.defaultDeco: <bitmask>
       This specifies the default window decorations, according to the same
-      bitmask as used by the `[Deco]' option in the `apps' file, described later
-      in this document. Default: all bits set.
+      bitmask as used by the `[Deco]' option in the `apps' file, described in
+      the APPLICATIONS section. Default: all bits set.
 
 session.screen0.menuMode: Delay|Click
       This setting controls the circumstances under which submenus open. With
@@ -1003,6 +949,9 @@ session.screen0.windowPlacement: <placement strategy>
 
 session.screen0.rowPlacementDirection: LeftToRight|RightToLeft
 session.screen0.colPlacementDirection: TopToBottom|BottomToTop
+      These settings control the direction in which windows are tiled using the
+      RowSmartPlacement and ColSmartPlacement strategies described above.
+      Default: LeftToRight/TopToBottom
 
 session.screen0.fullMaximization: <boolean>
       If this setting is enabled, windows will maximize over the toolbar and
@@ -1011,9 +960,10 @@ session.screen0.fullMaximization: <boolean>
 session.screen0.rootCommand: <command>
       This runs a command when fluxbox starts, intended for setting a default
       background. If you want to override backgrounds set by styles, you should
-      add `background: none' to your overlay. NOTE: Setting this command can be
-      dangerous. Please make sure you know what you are doing when setting this
-      resource to a value other than a desktop wallpaper command.
+      add `background: none' to your style overlay (see section STYLE OVERLAY).
+      NOTE: Setting this command can be dangerous. Please make sure you know
+      what you are doing when setting this resource to a value other than a
+      desktop wallpaper command.
 
 session.screen0.imageDither: <boolean>
       This controls whether or not fluxbox created dithered images. Default:
@@ -1025,10 +975,6 @@ session.screen0.opaqueMove: <boolean>
 
 session.screen0.workspaces: <integer>
       Set this to the number of workspaces the users wants. Default: 4
-
-session.screen0.focusLastWindow: <boolean>
-      This controls whether or not to focus the last focused window when
-      switching workspaces. Default: True
 
 session.screen0.windowMenu: <blank>|<location>
       This specifies the location of a user-defined window menu. Default: blank
@@ -1069,13 +1015,9 @@ session.forcePseudoTransparency: <boolean>
       the menu, windows, toolbar, and slit to use pseudo-transparency instead of
       true transparency. Default: False
 
-session.iconbar: <boolean>
-      Set this value to `<boolean>' or `<boolean>' to enable or disable fluxbox
-      using the toolbar to display iconified windows. Default: <boolean>
-
 session.ignoreBorder: <boolean>
-      When using MouseFocus, don't change focus when the mouse hovers over the
-      window border. Default: False
+      This configures the ability to move windows by dragging the border.
+      Default: False
 
 session.numLayers: <integer>
       This controls how many layers fluxbox should have. Default: 13
@@ -1092,7 +1034,7 @@ session.tabsAttachArea: Window|Titlebar
       With this set to `Window', windows may be grouped by dragging one tab with
       the middle mouse button and dropping it anywhere on another window. With
       `Titlebar', the user must drop the tab on the target window's titlebar.
-      Default: True
+      Default: Window
 
 session.titlebar.left: Stick
 session.titlebar.right: Minimize Maximize Close
@@ -1100,8 +1042,9 @@ session.titlebar.right: Minimize Maximize Close
       options are Close, Maximize, MenuIcon, Minimize, Shade, and Stick.
 
 session.modKey: <modifier>
-      This specifies which modifier to use to drag and resize windows without
-      clicking on the border or titlebar. Default: Mod1
+      This specifies a modifier to use to drag and resize windows without
+      clicking on the border or titlebar. For example, Alt + Left click will
+      move windows, and Alt + Right click will resize. Default: Mod1
 
 ................................................................................
 
