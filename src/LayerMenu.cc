@@ -65,3 +65,10 @@ LayerMenu::LayerMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
     }
     updateMenu();
 }
+
+// update which items appear disabled whenever we show the menu
+void LayerMenu::show() {
+    frameWindow().updateBackground(false);
+    clearWindow();
+    FbTk::Menu::show();
+}

@@ -245,7 +245,7 @@ public:
     void tempRaise();
     void raiseLayer();
     void lowerLayer();
-    void moveToLayer(int layernum);
+    void moveToLayer(int layernum, bool force = false);
     void setFocusHidden(bool value);
     void setIconHidden(bool value);
     void reconfigure();

@@ -497,7 +497,7 @@ void FluxboxWindow::init() {
         m_client->transientFor()->fbwindow() != this)
         layerItem().setLayer(m_client->transientFor()->fbwindow()->layerItem().getLayer());
     else // if no parent then set default layer
-        moveToLayer(m_layernum);
+        moveToLayer(m_layernum, m_layernum != ::Layer::NORMAL);
 #ifdef DEBUG
     cerr<<"FluxboxWindow::init("<<title()<<") transientFor: "<<
         m_client->transientFor()<<endl;
@@ -1934,7 +1934,7 @@ void FluxboxWindow::lowerLayer() {
 }
 
 
-void FluxboxWindow::moveToLayer(int layernum) {
+void FluxboxWindow::moveToLayer(int layernum, bool force) {
 #ifdef DEBUG
     cerr<<"FluxboxWindow("<<title()<<")::moveToLayer("<<layernum<<")"<<endl;
 #endif // DEBUG
@@ -1948,7 +1948,7 @@ void FluxboxWindow::moveToLayer(int layernum) {
     if (!m_initialized)
         m_layernum = layernum;
 
-    if (m_layernum == layernum)
+    if (m_layernum == layernum && !force)
         return;
 
     // get root window
@@ -1963,9 +1963,9 @@ void FluxboxWindow::moveToLayer(int layernum) {
 
     if (!win->isIconic()) {
         if (layernum > m_layernum)
-            screen().updateNetizenWindowRaise(client->window());
-        else
             screen().updateNetizenWindowLower(client->window());
+        else
+            screen().updateNetizenWindowRaise(client->window());
     }
     win->layerItem().moveToLayer(layernum);
     // remember number just in case a transient happens to revisit this window

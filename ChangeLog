@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/02/04:
+   * Layer wasn't set properly on remembered windows, and the layer menu
+     wasn't getting updated properly, bugs #1535304, #1572683, #1646740
+     (Mark)
+     Window.cc/hh LayerMenu.cc/hh
    * Clicking on the edge of a button didn't work, bugs #1060891, #1517747
      (Mark)
      FbTk/Button.cc
