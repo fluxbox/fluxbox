@@ -118,8 +118,9 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
     // hence the mark_if_deleted mechanism so that we can
     // update our state after the command
     if (event.button > 0 && event.button <= 5 &&
-        event.x > 0 && event.x < static_cast<signed>(width()) &&
-        event.y > 0 && event.y < static_cast<signed>(height()) &&
+        // I'm not quite sure why we get events with e.g. y == height, but we do
+        event.x >= 0 && event.x <= static_cast<signed>(width()) &&
+        event.y >= 0 && event.y <= static_cast<signed>(height()) &&
         m_onclick[event.button -1].get() != 0)
         m_onclick[event.button - 1]->execute();
 
