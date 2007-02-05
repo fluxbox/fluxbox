@@ -1,5 +1,14 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/02/05:
+   * Made some changes to the way autogrouping in the apps file works (Mark)
+     - Introduced new syntax [group] (workspace) to group new windows only with
+       windows on the current workspace
+     - Fixed an unreported bug with grouping windows on multiple screens
+     - Groups are now associated with clients rather than windows, so they
+       will be more robust when attaching or detaching tabs and when restarting
+       fluxbox
+     Remember.cc/hh
 *07/02/04:
    * Layer wasn't set properly on remembered windows, and the layer menu
      wasn't getting updated properly, bugs #1535304, #1572683, #1646740

@@ -44,7 +44,7 @@ class ClientPattern;
 
 class Application {
 public:
-    Application(bool grouped);
+    Application(int grouped);
     inline void forgetWorkspace() { workspace_remember = false; }
     inline void forgetHead() { head_remember = false; }
     inline void forgetDimensions() { dimensions_remember = false; }
@@ -137,8 +137,14 @@ public:
     bool save_on_close_remember;
     bool save_on_close;
 
-    bool is_grouped;
-    FluxboxWindow *group;
+    enum {
+        IS_GROUPED = 0x01,
+        MATCH_WORKSPACE = 0x02
+        // MATCH_HEAD, STUCK, ICONIFIED, etc.?
+        // this will probably evolve into a ClientPattern as soon as they
+        // match things like currentworkspace
+    };
+    int is_grouped;
 
 };
 
@@ -201,6 +207,7 @@ public:
 
     Application* find(WinClient &winclient);
     Application* add(WinClient &winclient);
+    FluxboxWindow* findGroup(Application *, BScreen &screen);
 
     void reconfigure(); // was load
     void save();
@@ -214,7 +221,6 @@ public:
     // Functions we actually use
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient);
-    void updateFrameClose(FluxboxWindow &win);
     void updateClientClose(WinClient &winclient);
 
     void initForScreen(BScreen &screen);
@@ -233,6 +239,7 @@ public:
     void updateState(FluxboxWindow &win) {}
     void updateHints(FluxboxWindow &win) {}
     void updateLayer(FluxboxWindow &win) {}
+    void updateFrameClose(FluxboxWindow &win) {}
 
     bool checkClientMessage(const XClientMessageEvent &ce, 
         BScreen * screen, WinClient * const winclient) { return false; }
@@ -247,7 +254,7 @@ private:
     // optionally can give a line to read before the first (lookahead line)
     int parseApp(std::ifstream &file, Application &app, std::string *first_line = 0);
 
-    Application *findMatchingPatterns(ClientPattern *pat, Patterns *patlist, bool is_group);
+    Application *findMatchingPatterns(ClientPattern *pat, Patterns *patlist, int is_group);
 
     std::auto_ptr<Patterns> m_pats;
     Clients m_clients;

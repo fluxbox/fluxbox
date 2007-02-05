@@ -1510,9 +1510,10 @@ If no `property' is specified, the name property is assumed. You can find out
 the value for these fields for a particular window by running xprop(1).
 
 You can also place [group] tag around several [app] tags, with an [end] tag to
-indicate the end of the group. You can also specify dimensions, positions,
-etc. for the group as for normal app entries. Here is a short example
-of an `apps' file:
+indicate the end of the group. If you place (workspace) after the [group] tag, a
+new window will only get grouped with other windows on the current workspace.
+You can also specify dimensions, positions, etc. for the group as for normal app
+entries. Here is a short example of an `apps' file:
 
 .........................................................
     [startup] {xterm}

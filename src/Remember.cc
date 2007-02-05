@@ -230,9 +230,8 @@ bool handleStartupItem(const string &line, int offset) {
 }; // end anonymous namespace
 
 
-Application::Application(bool grouped)
-    : is_grouped(grouped),
-      group(0)
+Application::Application(int grouped)
+    : is_grouped(grouped)
 {
     decostate_remember =
         dimensions_remember =
@@ -312,7 +311,7 @@ Application* Remember::find(WinClient &winclient) {
 
 Application * Remember::add(WinClient &winclient) {
     ClientPattern *p = new ClientPattern();
-    Application *app = new Application(false);
+    Application *app = new Application(0);
 
     // by default, we match against the WMClass of a window.
     string win_name = p->getProperty(ClientPattern::NAME, winclient);
@@ -534,7 +533,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
   effectively moved into the new
 */
 
-Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlist, bool is_group) {
+Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlist, int is_group) {
     Patterns::iterator it = patlist->begin();
     Patterns::iterator it_end = patlist->end();
     for (; it != it_end; ++it) {
@@ -590,7 +589,7 @@ void Remember::reconfigure() {
         if (!apps_file.eof()) {
             string line;
             int row = 0;
-            bool in_group = false;
+            int in_group = 0;
             list<ClientPattern *> grouped_pats;
             while (getline(apps_file, line) && ! apps_file.eof()) {
                 row++;
@@ -606,11 +605,11 @@ void Remember::reconfigure() {
 
                 if (pos > 0 && strcasecmp(key.c_str(), "app") == 0) {
                     ClientPattern *pat = new ClientPattern(line.c_str() + pos);
-                    if (!in_group) {
+                    if (in_group == 0) {
                         if ((err = pat->error()) == 0) {
-                            Application *app = findMatchingPatterns(pat, old_pats, false);
+                            Application *app = findMatchingPatterns(pat, old_pats, 0);
                             if (!app)
-                                app = new Application(false);
+                                app = new Application(0);
 
                             m_pats->push_back(make_pair(pat, app));
                             row += parseApp(apps_file, *app);
@@ -629,7 +628,12 @@ void Remember::reconfigure() {
                     // save the item even if it was bad (aren't we nice)
                     m_startups.push_back(line.substr(pos));
                 } else if (pos > 0 && strcasecmp(key.c_str(), "group") == 0) {
-                    in_group = true;
+                    in_group = Application::IS_GROUPED;
+                    pos = FbTk::StringUtil::getStringBetween(key,
+                                                             line.c_str() + pos,
+                                                             '(', ')');
+                    if (pos > 0 && strcasecmp(key.c_str(), "workspace") == 0)
+                        in_group |= Application::MATCH_WORKSPACE;
                 } else if (in_group) {
                     // otherwise assume that it is the start of the attributes
                     Application *app = 0;
@@ -637,12 +641,12 @@ void Remember::reconfigure() {
                     list<ClientPattern *>::iterator it = grouped_pats.begin();
                     list<ClientPattern *>::iterator it_end = grouped_pats.end();
                     while (!app && it != it_end) {
-                        app = findMatchingPatterns(*it, old_pats, true);
+                        app = findMatchingPatterns(*it, old_pats, in_group);
                         ++it;
                     }
 
                     if (!app)
-                        app = new Application(true);
+                        app = new Application(in_group);
 
                     while (!grouped_pats.empty()) {
                         // associate all the patterns with this app
@@ -656,7 +660,7 @@ void Remember::reconfigure() {
                     if (!(pos>0 && strcasecmp(key.c_str(), "end") == 0)) {
                         row += parseApp(apps_file, *app, &line);
                     }
-                    in_group = false;
+                    in_group = 0;
                 } else
                     cerr<<"Error in apps file on line "<<row<<"."<<endl;
 
@@ -733,7 +737,11 @@ void Remember::save() {
                 continue;
             grouped_apps.insert(&a);
             // otherwise output this whole group
-            apps_file << "[group]" << endl;
+            apps_file << "[group]";
+            if (a.is_grouped & Application::MATCH_WORKSPACE)
+                apps_file << " (workspace)";
+            apps_file << endl;
+
             Patterns::iterator git = m_pats->begin();
             Patterns::iterator git_end = m_pats->end();
             for (; git != git_end; git++) {
@@ -1035,9 +1043,6 @@ void Remember::setupFrame(FluxboxWindow &win) {
     // first, set the options that aren't preserved as window properties on
     // restart, then return if fluxbox is restarting -- we want restart to
     // disturb the current window state as little as possible
-    Window leftwin = winclient.getGroupLeftWindow();
-    if (app->is_grouped && app->group == 0 && leftwin == None)
-        app->group = &win;
 
     if (app->focushiddenstate_remember)
         win.setFocusHidden(app->focushiddenstate);
@@ -1133,12 +1138,35 @@ void Remember::setupClient(WinClient &winclient) {
     if (app == 0)
         return; // nothing to do
 
-    if (winclient.fbwindow() == 0 && app->is_grouped && app->group) {
-        app->group->attachClient(winclient);
+    FluxboxWindow *group;
+    if (winclient.fbwindow() == 0 && app->is_grouped &&
+        (group = findGroup(app, winclient.screen()))) {
+        group->attachClient(winclient);
         if (app->jumpworkspace_remember && app->jumpworkspace)
             // jump to window, not saved workspace
-            winclient.screen().changeWorkspaceID(app->group->workspaceNumber());
+            winclient.screen().changeWorkspaceID(group->workspaceNumber());
     }
+}
+
+FluxboxWindow *Remember::findGroup(Application *app, BScreen &screen) {
+    if (!app || !app->is_grouped)
+        return 0;
+
+    // find the first client associated with the app and return its fbwindow
+    Clients::iterator it = m_clients.begin();
+    Clients::iterator it_end = m_clients.end();
+    for (; it != it_end; ++it) {
+        if (it->second == app && it->first->fbwindow() &&
+            &screen == &it->first->screen() &&
+            (!(app->is_grouped & Application::MATCH_WORKSPACE) ||
+             it->first->fbwindow()->workspaceNumber() ==
+             screen.currentWorkspaceID()))
+
+            return it->first->fbwindow();
+    }
+
+    // there weren't any open, but that's ok
+    return 0;
 }
 
 void Remember::updateClientClose(WinClient &winclient) {
@@ -1171,13 +1199,4 @@ void Remember::initForScreen(BScreen &screen) {
     screen.addExtraWindowMenu(_FB_XTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
                               createRememberMenu(screen));
 
-}
-
-void Remember::updateFrameClose(FluxboxWindow &win) {
-    // scan all applications and remove this fbw if it is a recorded group
-    Patterns::iterator it = m_pats->begin();
-    for (; it != m_pats->end(); ++it) {
-        if (&win == it->second->group)
-            it->second->group = 0;
-    }
 }
