@@ -877,7 +877,7 @@ session.screen0.focusModel: ClickToFocus|MouseFocus
       
 session.screen0.autoRaise: <boolean>
       When True, this setting automatically raises any window that gains focus.
-      Default: False
+      Default: True
 
 session.autoRaiseDelay: <integer>
       Adjusts the delay (in milli-sec) before focused windows will raise
@@ -955,7 +955,7 @@ session.screen0.colPlacementDirection: TopToBottom|BottomToTop
 
 session.screen0.fullMaximization: <boolean>
       If this setting is enabled, windows will maximize over the toolbar and
-      slit, no matter what their individual settings are. Default: True
+      slit, no matter what their individual settings are. Default: False
 
 session.screen0.rootCommand: <command>
       This runs a command when fluxbox starts, intended for setting a default
