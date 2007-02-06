@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/02/06:
+   * Wrong window was being raised when attaching an unfocused window (Mark)
+     Window.cc
    * Make selecting `close' from the workspace menu close the correct client,
      rather than the active tab in the window -- selecting `close' from right
      clicking on a tab is still wrong, as there are complications (Mark)

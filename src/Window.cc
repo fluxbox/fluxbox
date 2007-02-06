@@ -676,6 +676,10 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
         FocusControl::setFocusedWindow(&client);
     } else if (focused_win)
         setCurrentClient(*focused_win, false);
+    else
+        // reparenting puts the new client on top, but the old client is keeping
+        // the focus, so we raise it
+        m_client->raise();
 
     frame().reconfigure();
 }
