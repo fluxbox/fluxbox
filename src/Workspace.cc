@@ -102,7 +102,7 @@ public:
     const FbTk::Menu *submenu() const { return &m_client.screen().windowMenu(); }
 
     void showSubmenu() {
-        WindowCmd<void>::setWindow(m_client.fbwindow());
+        WindowCmd<void>::setClient(&m_client);
         FbTk::MenuItem::showSubmenu();
     }
 

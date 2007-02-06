@@ -26,14 +26,27 @@
 
 #include "FbTk/Command.hh"
 #include "Window.hh"
+#include "WinClient.hh"
 
 /// holds context for WindowCmd
 class WindowCmd_base {
 public:
-    static void setWindow(FluxboxWindow *win) { s_win = win; }
+    // some window commands (e.g. close, kill, detach) need to know which client
+    // the command refers to, so we store it here as well, in case it is not the
+    // current client (selected from workspace menu, for example)
+    static void setWindow(FluxboxWindow *win) {
+        s_win = win;
+        s_client = (win ? &win->winClient() : 0);
+    }
+    static void setClient(WinClient *client) {
+        s_client = client;
+        s_win = (client ? client->fbwindow() : 0);
+    }
     static FluxboxWindow *window() { return s_win; }
+    static WinClient *client() { return s_client; }
 protected:
     static FluxboxWindow *s_win;
+    static WinClient *s_client;
 };
 
 

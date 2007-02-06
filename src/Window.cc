@@ -3870,12 +3870,16 @@ void FluxboxWindow::sendConfigureNotify(bool send_to_netizens) {
 
 
 void FluxboxWindow::close() {
-    if (m_client)
+    if (WindowCmd<void>::window() == this && WindowCmd<void>::client())
+        WindowCmd<void>::client()->sendClose(false);
+    else if (m_client)
         m_client->sendClose(false);
 }
 
 void FluxboxWindow::kill() {
-    if (m_client)
+    if (WindowCmd<void>::window() == this && WindowCmd<void>::client())
+        WindowCmd<void>::client()->sendClose(true);
+    else if (m_client)
         m_client->sendClose(true);
 }
 

@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/02/06:
+   * Make selecting `close' from the workspace menu close the correct client,
+     rather than the active tab in the window -- selecting `close' from right
+     clicking on a tab is still wrong, as there are complications (Mark)
+     WindowCmd.cc/hh Window.cc Workspace.cc
 *07/02/05:
    * Made some changes to the way autogrouping in the apps file works (Mark)
      - Introduced new syntax [group] (workspace) to group new windows only with
