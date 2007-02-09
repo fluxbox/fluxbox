@@ -114,6 +114,7 @@ Keys::Keys():
 
 Keys::~Keys() {
     ungrabKeys();
+    ungrabButtons();
     deleteTree();
 }
 
@@ -140,6 +141,23 @@ void Keys::ungrabKeys() {
         FbTk::KeyUtil::ungrabKeys(*it);
 }
 
+void Keys::grabButton(unsigned int button, unsigned int mod) {
+    std::list<Window>::iterator it = m_window_list.begin();
+    std::list<Window>::iterator it_end = m_window_list.end();
+
+    for (; it != it_end; ++it)
+        FbTk::KeyUtil::grabButton(button, mod, *it,
+                                  ButtonPressMask|ButtonReleaseMask);
+}
+
+void Keys::ungrabButtons() {
+    std::list<Window>::iterator it = m_window_list.begin();
+    std::list<Window>::iterator it_end = m_window_list.end();
+
+    for (; it != it_end; ++it)
+        FbTk::KeyUtil::ungrabButtons(*it);
+}
+
 /**
     Load and grab keys
     TODO: error checking
@@ -152,7 +170,7 @@ bool Keys::load(const char *filename) {
     //free memory of previous grabs
     deleteTree();
 
-    m_map["default:"] = new t_key(0,0);
+    m_map["default:"] = new t_key(0,0,0,0);
 
     FbTk::App::instance()->sync(false);
 
@@ -211,6 +229,7 @@ bool Keys::addBinding(const string &linebuffer) {
         return true; // still a valid line.
 
     unsigned int key = 0, mod = 0;
+    int type = 0, context = 0;
     size_t argc = 0;
     t_key *current_key=m_map["default:"];
     t_key *first_new_keylist = current_key, *first_new_key=0;
@@ -219,7 +238,7 @@ bool Keys::addBinding(const string &linebuffer) {
         argc++;
         keyspace_t::iterator it = m_map.find(val[0]);
         if (it == m_map.end())
-            m_map[val[0]] = new t_key(0,0);
+            m_map[val[0]] = new t_key(0,0,0,0);
         current_key = m_map[val[0]];
     }
     // for each argument
@@ -230,41 +249,53 @@ bool Keys::addBinding(const string &linebuffer) {
             int tmpmod = FbTk::KeyUtil::getModifier(val[argc].c_str());
             if(tmpmod)
                 mod |= tmpmod; //If it's a modifier
+            else if (strcasecmp("ondesktop", val[argc].c_str()) == 0)
+                context |= ON_DESKTOP;
             else if (strcasecmp("NONE",val[argc].c_str())) {
+                // check if it's a mouse button
+                if (!strcasecmp(val[argc].substr(0,5).c_str(), "mouse") &&
+                        val[argc].length() > 5) {
+                    type = ButtonPress;
+                    key = atoi(val[argc].substr(5,val[argc].length()-5).c_str());
                 // keycode covers the following three two-byte cases:
                 // 0x       - hex
                 // +[1-9]   - number between +1 and +9
                 // numbers 10 and above
                 //
-                if (val[argc].size() > 1 && (isdigit(val[argc][0]) &&
-                                             (isdigit(val[argc][1]) || val[argc][1] == 'x') ||
-                                             val[argc][0] == '+' && isdigit(val[argc][1])) ) {
+                } else if (val[argc].size() > 1 && (isdigit(val[argc][0]) &&
+                           (isdigit(val[argc][1]) || val[argc][1] == 'x') ||
+                           val[argc][0] == '+' && isdigit(val[argc][1])) ) {
 
                     key = strtoul(val[argc].c_str(), NULL, 0);
+                    type = KeyPress;
 
                     if (errno == EINVAL || errno == ERANGE)
                         key = 0;
 
-                } else // convert from string symbol
+                } else { // convert from string symbol
                     key = FbTk::KeyUtil::getKey(val[argc].c_str());
+                    type = KeyPress;
+                }
 
                 if (key == 0)
                     return false;
                 if (!first_new_key) {
                     first_new_keylist = current_key;
-                    current_key = current_key->find(key, mod);
+                    current_key = current_key->find(type, mod, key, context);
                     if (!current_key) {
-                        first_new_key = new t_key(key, mod);
+                        first_new_key = new t_key(type, mod, key, context);
                         current_key = first_new_key;
                     } else if (*current_key->m_command) // already being used
                         return false;
                 } else {
-                    t_key *temp_key = new t_key(key, mod);
+                    t_key *temp_key = new t_key(type, mod, key, context);
                     current_key->keylist.push_back(temp_key);
                     current_key = temp_key;
                 }
                 mod = 0;
                 key = 0;
+                type = 0;
+                context = 0;
             }
 
         } else { // parse command line
@@ -291,36 +322,43 @@ bool Keys::addBinding(const string &linebuffer) {
 }
 
 // return true if bound to a command, else false
-bool Keys::doAction(XKeyEvent &ke) {
-
-    ke.state = FbTk::KeyUtil::instance().cleanMods(ke.state);
+bool Keys::doAction(int type, unsigned int mods, unsigned int key) {
 
     static t_key* next_key = m_keylist;
     if (!next_key)
         next_key = m_keylist;
-    t_key *temp_key = next_key->find(ke);
 
+    mods = FbTk::KeyUtil::instance().cleanMods(mods);
+    // at the moment, any key/button that gets here is on root window
+    // context will need to be added as an argument to doAction, though
+    t_key *temp_key = next_key->find(type, mods, key, ON_DESKTOP|GLOBAL);
 
     // need to save this for emacs-style keybindings
     static t_key *saved_keymode = 0;
 
+    // grab "None Escape" to exit keychain in the middle
+    unsigned int esc = FbTk::KeyUtil::getKey("Escape");
+
     if (temp_key && temp_key->keylist.size()) { // emacs-style
-        saved_keymode = m_keylist;
+        if (!saved_keymode)
+            saved_keymode = m_keylist;
         next_key = temp_key;
         setKeyMode(next_key);
-        // grab "None Escape" to exit keychain in the middle
-        unsigned int esc = FbTk::KeyUtil::getKey("Escape");
         grabKey(esc,0);
         return true;
     }
     if (!temp_key || *temp_key->m_command == 0) {
-        next_key = 0;
-        if (saved_keymode) {
-            setKeyMode(saved_keymode);
-            saved_keymode = 0;
+        if (type == KeyPress && key == esc && mods == 0) {
+            // if we're in the middle of an emacs-style keychain, exit it
+            next_key = 0;
+            if (saved_keymode) {
+                setKeyMode(saved_keymode);
+                saved_keymode = 0;
+            }
         }
         return false;
     }
+
     temp_key->m_command->execute();
     if (saved_keymode) {
         if (next_key == m_keylist) // don't reset keymode if command changed it
@@ -349,22 +387,33 @@ void Keys::keyMode(string keyMode) {
 
 void Keys::setKeyMode(t_key *keyMode) {
     ungrabKeys();
+    ungrabButtons();
     keylist_t::iterator it = keyMode->keylist.begin();
     keylist_t::iterator it_end = keyMode->keylist.end();
-    for (; it != it_end; ++it)
-        grabKey((*it)->key,(*it)->mod);
+    for (; it != it_end; ++it) {
+        if ((*it)->type == KeyPress)
+            grabKey((*it)->key,(*it)->mod);
+        else if ((*it)->context == GLOBAL)
+            grabButton((*it)->key,(*it)->mod);
+        // we must use root window's event mask to get ON_DESKTOP events
+    }
     m_keylist = keyMode;
 }
 
-Keys::t_key::t_key(unsigned int key_, unsigned int mod_, FbTk::RefCount<FbTk::Command> command) {
+Keys::t_key::t_key(int type_, unsigned int mod_, unsigned int key_,
+                   int context_, FbTk::RefCount<FbTk::Command> command) {
     key = key_;
     mod = mod_;
+    type = type_;
+    context = context_ ? context_ : GLOBAL;
     m_command = command;
 }
 
 Keys::t_key::t_key(t_key *k) {
     key = k->key;
     mod = k->mod;
+    type = k->type;
+    context = k->context;
     m_command = k->m_command;
 }
 

@@ -77,6 +77,7 @@ FbCommandFactory::FbCommandFactory() {
         "focusleft",
         "focusright",
         "fullscreen",
+        "hidemenus",
         "iconify",
         "keymode",
         "killwindow",
@@ -433,6 +434,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new ArrangeWindowsCmd();
     else if (command == "showdesktop")
         return new ShowDesktopCmd();
+    else if (command == "hidemenus")
+        return new HideMenuCmd();
     else if (command == "rootmenu")
         return new ShowRootMenuCmd();
     else if (command == "workspacemenu")

@@ -2060,7 +2060,7 @@ void BScreen::renderPosWindow() {
 /**
    Called when a set of watched modifiers has been released
 */
-void BScreen::notifyReleasedKeys(XKeyEvent &ke) {
+void BScreen::notifyReleasedKeys() {
     focusControl().stopCyclingFocus();
 }
 

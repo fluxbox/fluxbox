@@ -38,6 +38,21 @@
 class Keys:private FbTk::NotCopyable  {
 public:
 
+    // contexts for events
+    // it's ok if there is overlap; it will be worked out in t_key::find()
+    // eventHandlers should submit bitwise-or of contexts the event happened in
+    enum {
+        GLOBAL = 0x01,
+        ON_DESKTOP = 0x02,
+        ON_TOOLBAR = 0x04,
+        ON_ICONBUTTON = 0x08,
+        ON_TITLEBAR = 0x10,
+        ON_WINDOW = 0x20,
+        ON_TAB = 0x40,
+        ON_SLIT = 0x80
+        // and so on...
+    };
+
     /**
        Constructor
        @param display display connection
@@ -65,7 +80,7 @@ public:
     /**
        do action from XKeyEvent; return false if not bound to anything
     */
-    bool doAction(XKeyEvent &ke);
+    bool doAction(int type, unsigned int mods, unsigned int key);
 
     /**
        Reload configuration from filename
@@ -79,6 +94,8 @@ private:
 
     void grabKey(unsigned int key, unsigned int mod);
     void ungrabKeys();
+    void grabButton(unsigned int button, unsigned int mod);
+    void ungrabButtons();
 
     std::string m_filename;
 
@@ -87,33 +104,27 @@ private:
 
     class t_key {
     public:
-        t_key(unsigned int key, unsigned int mod,
+        t_key(int type, unsigned int mod, unsigned int key, int context,
               FbTk::RefCount<FbTk::Command> command = FbTk::RefCount<FbTk::Command>(0));
         t_key(t_key *k);
         ~t_key();
 
-        t_key *find(unsigned int key_, unsigned int mod_) {
+        t_key *find(int type_, unsigned int mod_, unsigned int key_,
+                    int context_) {
             for (size_t i = 0; i < keylist.size(); i++) {
-                if (keylist[i]->key == key_ && keylist[i]->mod == FbTk::KeyUtil::instance().isolateModifierMask(mod_))
-                    return keylist[i];
-            }
-            return 0;
-        }
-        t_key *find(XKeyEvent &ke) {
-            for (size_t i = 0; i < keylist.size(); i++) {
-                if (keylist[i]->key == ke.keycode &&
-                        keylist[i]->mod == FbTk::KeyUtil::instance().isolateModifierMask(ke.state))
+                if (keylist[i]->type == type_ && keylist[i]->key == key_ &&
+                    (keylist[i]->context & context_) > 0 && keylist[i]->mod ==
+                    FbTk::KeyUtil::instance().isolateModifierMask(mod_))
                     return keylist[i];
             }
             return 0;
         }
 
-        bool operator == (XKeyEvent &ke) const {
-            return (mod == FbTk::KeyUtil::instance().isolateModifierMask(ke.state) && key == ke.keycode);
-        }
 
         FbTk::RefCount<FbTk::Command> m_command;
-        unsigned int key;
+        int context; // ON_TITLEBAR, etc.: bitwise-or of all desired contexts
+        int type; // KeyPress or ButtonPress
+        unsigned int key; // key code or button number
         unsigned int mod;
         keylist_t keylist;
     };

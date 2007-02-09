@@ -138,7 +138,7 @@ void KeyUtil::grabButton(unsigned int button, unsigned int mod, Window win,
     for (int i = 0; i < 8; i++) {
         XGrabButton(display, button, mod | (i & 1 ? capsmod : 0) |
                     (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
-                    win, True, event_mask, GrabModeAsync, GrabModeAsync,
+                    win, False, event_mask, GrabModeAsync, GrabModeAsync,
                     None, cursor);
     }
 
@@ -178,6 +178,11 @@ unsigned int KeyUtil::getModifier(const char *modstr) {
 void KeyUtil::ungrabKeys(Window win) {
     Display * display = App::instance()->display();
     XUngrabKey(display, AnyKey, AnyModifier, win);
+}
+
+void KeyUtil::ungrabButtons(Window win) {
+    Display * display = App::instance()->display();
+    XUngrabButton(display, AnyButton, AnyModifier, win);
 }
 
 unsigned int KeyUtil::keycodeToModmask(unsigned int keycode) {

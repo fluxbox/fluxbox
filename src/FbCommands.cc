@@ -260,6 +260,15 @@ void KeyModeCmd::execute() {
     Fluxbox::instance()->keys()->keyMode(m_keymode);
 }
 
+void HideMenuCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    screen->hideMenus();
+    if (screen->rootMenu().isVisible())
+        screen->rootMenu().hide();
+    if (screen->workspaceMenu().isVisible())
+        screen->workspaceMenu().hide();
+}
+
 void ShowRootMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)

@@ -42,44 +42,48 @@
 #include <functional>
 
 void NextWindowCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    Fluxbox *fb = Fluxbox::instance();
+    BScreen *screen = fb->keyScreen();
     if (screen != 0) {
-        Fluxbox *fb = Fluxbox::instance();
-        // special case for commands from key events
-        if (fb->lastEvent().type == KeyPress) {
-            unsigned int mods = FbTk::KeyUtil::instance().cleanMods(fb->lastEvent().xkey.state);
-            mods = FbTk::KeyUtil::instance().isolateModifierMask(mods);
-            if (mods == 0) // can't stacked cycle unless there is a mod to grab
-                screen->focusControl().nextFocus(m_option | FocusControl::CYCLELINEAR);
-            else {
-                // if stacked cycling, then set a watch for
-                // the release of exactly these modifiers
-                Fluxbox::instance()->watchKeyRelease(*screen, mods);
-                screen->focusControl().nextFocus(m_option);
-            }
-        } else
+        // get modifiers from event that causes this for focus order cycling
+        unsigned int mods = 0;
+        XEvent ev = fb->lastEvent();
+        if (ev.type == KeyPress) {
+            mods = FbTk::KeyUtil::instance().cleanMods(ev.xkey.state);
+        } else if (ev.type == ButtonPress) {
+            mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
+        }
+        if (mods == 0) // can't stacked cycle unless there is a mod to grab
             screen->focusControl().nextFocus(m_option | FocusControl::CYCLELINEAR);
+        else {
+            // if stacked cycling, then set a watch for
+            // the release of exactly these modifiers
+            fb->watchKeyRelease(*screen, mods);
+            screen->focusControl().nextFocus(m_option);
+        }
     }
 }
 
 void PrevWindowCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    Fluxbox *fb = Fluxbox::instance();
+    BScreen *screen = fb->keyScreen();
     if (screen != 0) {
-        Fluxbox *fb = Fluxbox::instance();
-        // special case for commands from key events
-        if (fb->lastEvent().type == KeyPress) {
-            unsigned int mods = FbTk::KeyUtil::instance().cleanMods(fb->lastEvent().xkey.state);
-            mods = FbTk::KeyUtil::instance().isolateModifierMask(mods);
-            if (mods == 0) // can't stacked cycle unless there is a mod to grab
-                screen->focusControl().prevFocus(m_option | FocusControl::CYCLELINEAR);
-            else {
-                // if stacked cycling, then set a watch for
-                // the release of exactly these modifiers
-                Fluxbox::instance()->watchKeyRelease(*screen, mods);
-                screen->focusControl().prevFocus(m_option);
-            }
-        } else
-            screen->focusControl().nextFocus(m_option | FocusControl::CYCLELINEAR);
+        // get modifiers from event that causes this for focus order cycling
+        unsigned int mods = 0;
+        XEvent ev = fb->lastEvent();
+        if (ev.type == KeyPress) {
+            mods = FbTk::KeyUtil::instance().cleanMods(ev.xkey.state);
+        } else if (ev.type == ButtonPress) {
+            mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
+        }
+        if (mods == 0) // can't stacked cycle unless there is a mod to grab
+            screen->focusControl().prevFocus(m_option | FocusControl::CYCLELINEAR);
+        else {
+            // if stacked cycling, then set a watch for
+            // the release of exactly these modifiers
+            fb->watchKeyRelease(*screen, mods);
+            screen->focusControl().prevFocus(m_option);
+        }
     }
 }
 

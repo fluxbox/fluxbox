@@ -62,6 +62,7 @@ public:
        ungrabs all keys
      */
     static void ungrabKeys(Window win);
+    static void ungrabButtons(Window win);
 
     /** 
         Strip out modifiers we want to ignore

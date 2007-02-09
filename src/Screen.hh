@@ -294,7 +294,7 @@ public:
     void showGeometry(int width, int height);
     void hideGeometry();
 
-    void notifyReleasedKeys(XKeyEvent &ke);
+    void notifyReleasedKeys();
 
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die

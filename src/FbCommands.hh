@@ -113,6 +113,11 @@ private:
     std::string m_end_args;
 };
 
+class HideMenuCmd: public FbTk::Command {
+public:
+    void execute();
+};
+
 class ShowRootMenuCmd: public FbTk::Command {
 public:
     void execute();

@@ -649,6 +649,28 @@ void Fluxbox::setupConfigFiles() {
     if (create_init)
         FbTk::FileUtil::copyFile(DEFAULT_INITFILE, init_file.c_str());
 
+#define CONFIG_VERSION 1
+    FbTk::Resource<int> config_version(m_resourcemanager, 0,
+            "session.configVersion", "Session.ConfigVersion");
+    if (*config_version < CONFIG_VERSION) {
+        // configs are out of date, so run fluxbox-update_configs
+
+        string commandargs = "fluxbox-update_configs -rc ";
+        commandargs += init_file;
+
+#ifdef HAVE_GETPID
+        // add the fluxbox pid so fbuc can have us reload rc if necessary
+        pid_t bpid = getpid();
+        char intbuff[64];
+        sprintf(intbuff, "%d", bpid);
+        commandargs += " -pid ";
+        commandargs += intbuff;
+#endif // HAVE_GETPID
+
+        FbCommands::ExecuteCmd fbuc(commandargs, 0);
+        fbuc.execute();
+    }
+
 }
 
 void Fluxbox::handleEvent(XEvent * const e) {
@@ -936,59 +958,28 @@ void Fluxbox::handleEvent(XEvent * const e) {
 }
 
 void Fluxbox::handleButtonEvent(XButtonEvent &be) {
+    m_last_time = be.time;
 
-    switch (be.type) {
-    case ButtonPress: {
-        m_last_time = be.time;
+    BScreen *screen = searchScreen(be.window);
+    if (be.type == ButtonRelease || !screen)
+        // no bindings for this type yet
+        return;
 
-        BScreen *screen = searchScreen(be.window);
-        if (screen == 0)
-            break; // end case
+    if (be.button == 1 && !screen->isRootColormapInstalled())
+        screen->imageControl().installRootColormap();
 
-        screen->hideMenus();
-
-        // strip num/caps/scroll-lock and
-        // see if we're using any other modifier,
-        // if we're we shouldn't show the root menu
-        // this could happen if we're resizing aterm for instance
-        if (FbTk::KeyUtil::instance().cleanMods(be.state) != 0)
-            return;
-
-        if (be.button == 1) {
-            if (! screen->isRootColormapInstalled())
-                screen->imageControl().installRootColormap();
-            // hide menus
-            if (screen->rootMenu().isVisible())
-                screen->rootMenu().hide();
-            if (screen->workspaceMenu().isVisible())
-                screen->workspaceMenu().hide();
-
-        } else if (be.button == 2) {
-            FbCommands::ShowWorkspaceMenuCmd cmd;
-            cmd.execute();
-        } else if (be.button == 3) {
-            FbCommands::ShowRootMenuCmd cmd;
-            cmd.execute();
-        } else if (screen->isDesktopWheeling() && be.button == 4) {
-            if(screen->isReverseWheeling()) {
-                screen->prevWorkspace(1);
-            } else {
-                screen->nextWorkspace(1);
-            }
-        } else if (screen->isDesktopWheeling() && be.button == 5) {
-            if(screen->isReverseWheeling()) {
-                screen->nextWorkspace(1);
-            } else {
-                screen->prevWorkspace(1);
-            }
-        }
-
-    } break;
-    case ButtonRelease:
-        m_last_time = be.time;
-        break;
-    default:
-        break;
+    // see if we need to keep watching for key releases
+    BScreen *old_watching_screen = m_watching_screen;
+    m_watching_screen = 0;
+    if (!m_key->doAction(be.type, be.state, be.button))
+        // no command run, so could still be cycling
+        m_watching_screen = old_watching_screen;
+    else if (old_watching_screen &&
+             m_watching_screen != old_watching_screen) {
+        // no longer need to watch old screen, so stop cycling
+        old_watching_screen->notifyReleasedKeys();
+        if (!m_watching_screen)
+            XUngrabKeyboard(FbTk::App::instance()->display(), CurrentTime);
     }
 }
 
@@ -1126,11 +1117,12 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
     case KeyPress:
         // see if we need to keep watching for key releases
         m_watching_screen = 0;
-        if (!m_key->doAction(ke)) // could still be cycling
+        if (!m_key->doAction(ke.type, ke.state, ke.keycode))
+            // no command run, so could still be cycling
             m_watching_screen = old_watching_screen;
         else if (old_watching_screen &&
                  m_watching_screen != old_watching_screen) {
-            old_watching_screen->notifyReleasedKeys(ke);
+            old_watching_screen->notifyReleasedKeys();
             if (!m_watching_screen)
                 XUngrabKeyboard(FbTk::App::instance()->display(), CurrentTime);
         }
@@ -1148,7 +1140,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 
             if ((m_watch_keyrelease & state) == 0) {
 
-                m_watching_screen->notifyReleasedKeys(ke);
+                m_watching_screen->notifyReleasedKeys();
                 XUngrabKeyboard(FbTk::App::instance()->display(), CurrentTime);
 
                 // once they are released, we drop the watch
