@@ -2485,12 +2485,10 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         bool changed = false;
         client.updateWMNormalHints();
 
-        if ((client.normal_hint_flags & PMinSize) &&
-            (client.normal_hint_flags & PMaxSize) &&
-            (client.min_width != old_min_width ||
-             client.max_width != old_max_width ||
-             client.min_height != old_min_height ||
-             client.max_height != old_max_height)) {
+        if (client.min_width != old_min_width ||
+            client.max_width != old_max_width ||
+            client.min_height != old_min_height ||
+            client.max_height != old_max_height) {
             if (client.max_width != 0 && client.max_width <= client.min_width &&
                 client.max_height != 0 && client.max_height <= client.min_height) {
                 if (decorations.maximize ||
@@ -2504,7 +2502,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
                 functions.maximize=false;
             } else {
                 // TODO: is broken while handled by FbW, needs to be in WinClient
-                if (! client.isTransient()) {
+                if (!client.isTransient() || screen().decorateTransient()) {
                     if (!decorations.maximize ||
                         !decorations.handle ||
                         !functions.maximize)

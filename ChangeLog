@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/02/10:
+   * MaxSize and MinSize hints weren't getting updated properly -- bug #1560803
+     (Mark + thanks Jim Ramsay)
+     Window.cc
    * Fixed a bug with `session.ignoreBorder: true' (Mark)
      Window.cc
    * Fixed a bug with resizing windows for clients when only the width is
