@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/02/10:
+   * Fixed a bug with resizing windows for clients when only the width is
+     specified (Mark)
+     Window.cc
 *07/02/09:
    * Introduced support for mouse buttons in the keys file (Mark)
      - Mouse buttons are bound to new `keys' Mouse1, Mouse2, etc.

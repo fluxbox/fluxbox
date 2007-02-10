@@ -2584,14 +2584,18 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         frame().setActiveGravity(client->gravity(), client->old_bw);
     }
 
-    if (cr.value_mask & CWWidth)
+    if (cr.value_mask & CWWidth) {
         cw = cr.width;
+        // we must set this now, or else window grows when height not specified
+        ch -= (frame().titlebarHeight() + frame().handleHeight());
+    }
 
     if (cr.value_mask & CWHeight)
         ch = cr.height;
 
     // whether we should send ConfigureNotify to netizens
     // the request is for client window so we resize the frame to it first
+    // NOTE: this might not work correctly if client actually requests that size
     if (frame().width() != cw || frame().height() != ch) {
         if (frame().x() != cx || frame().y() != cy)
             frame().moveResizeForClient(cx, cy, cw, ch);
