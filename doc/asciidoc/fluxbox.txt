@@ -901,7 +901,7 @@ session.screen0.showwindowposition: <boolean>
 session.screen0.decorateTransient: <boolean>
       This controls whether or not transient windows get certain window
       decorations, currently the maximize button and handle.
-      Default: False
+      Default: True
 
 session.screen0.defaultDeco: <bitmask>
       This specifies the default window decorations, according to the same
