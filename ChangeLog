@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/02/10:
+   * Fixed a bug with `session.ignoreBorder: true' (Mark)
+     Window.cc
    * Fixed a bug with resizing windows for clients when only the width is
      specified (Mark)
      Window.cc

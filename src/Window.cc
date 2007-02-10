@@ -2689,7 +2689,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                             || frame().label() == me.window
                             || frame().tabcontainer() == me.window
                             || frame().handle() == me.window
-                            || frame().window() == me.window);
+                            || frame().window() == me.window
+                               && !Fluxbox::instance()->getIgnoreBorder());
 
     if (Fluxbox::instance()->getIgnoreBorder()
         && !(me.state & Fluxbox::instance()->getModKey()) // really should check for exact matches
@@ -2800,10 +2801,16 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             screen().showPosition(dx, dy);
         } // end if moving
-    } else if (functions.resize &&
-               (((me.state & Button1Mask) && (me.window == frame().gripRight() ||
-                                              me.window == frame().gripLeft())) ||
-                me.window == frame().window())) {
+    } else if (isResizing() // if we're already resizing the window
+               || functions.resize
+                  // or if we're dragging one of the grips
+                  && ((me.state & Button1Mask)
+                      && (me.window == frame().gripRight()
+                          || me.window == frame().gripLeft())
+                      // or if we're right-click dragging the border
+                      || (me.state & Button3Mask)
+                         && me.window == frame().window()
+                         && !Fluxbox::instance()->getIgnoreBorder())) {
 
         if (! resizing) {
 
