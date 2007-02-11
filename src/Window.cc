@@ -2687,24 +2687,39 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                             || frame().label() == me.window
                             || frame().tabcontainer() == me.window
                             || frame().handle() == me.window
-                            || frame().window() == me.window
-                               && !Fluxbox::instance()->getIgnoreBorder());
+                            || frame().window() == me.window);
 
     if (Fluxbox::instance()->getIgnoreBorder()
         && !(me.state & Fluxbox::instance()->getModKey()) // really should check for exact matches
         && !(isMoving() || isResizing() || m_attaching_tab != 0)) {
         int borderw = frame().window().borderWidth();
         //!! TODO(tabs): the below test ought to be in FbWinFrame
+        // if mouse is currently on the window border, ignore it
         if ((me.x_root < (frame().x() + borderw) ||
             me.y_root < (frame().y() + borderw) ||
-            me.x_root > (frame().x() + (int)frame().width() + borderw) ||
-            me.y_root > (frame().y() + (int)frame().height() + borderw)) &&
-            ( !frame().externalTabMode() ||
-              (me.x_root < (frame().tabcontainer().x() + borderw) ||
-               me.y_root < (frame().tabcontainer().y() + borderw) ||
-               me.x_root > (frame().tabcontainer().x() + (int)frame().tabcontainer().width() + borderw) ||
-               me.y_root > (frame().tabcontainer().y() + (int)frame().tabcontainer().height() + borderw)
-                  )))
+            me.x_root >= (frame().x() + (int)frame().width() + borderw) ||
+            me.y_root >= (frame().y() + (int)frame().height() + borderw))
+            && (!frame().externalTabMode() ||
+                (me.x_root < (frame().tabcontainer().x() + borderw) ||
+                 me.y_root < (frame().tabcontainer().y() + borderw) ||
+                 me.x_root >= (frame().tabcontainer().x() +
+                         (int)frame().tabcontainer().width() + borderw) ||
+                 me.y_root >= (frame().tabcontainer().y() +
+                         (int)frame().tabcontainer().height() + borderw)))
+            // or if mouse was on border when it was last clicked
+            || (m_last_button_x < (frame().x() + borderw) ||
+                m_last_button_y < (frame().y() + borderw) ||
+                m_last_button_x >= (frame().x() +
+                         (int)frame().width() + borderw) ||
+                m_last_button_y >= (frame().y() +
+                         (int)frame().height() + borderw))
+            && (!frame().externalTabMode() ||
+                (m_last_button_x < (frame().tabcontainer().x() + borderw) ||
+                 m_last_button_y < (frame().tabcontainer().y() + borderw) ||
+                 m_last_button_x >= (frame().tabcontainer().x() +
+                         (int)frame().tabcontainer().width() + borderw) ||
+                 m_last_button_y >= (frame().tabcontainer().y() +
+                         (int)frame().tabcontainer().height() + borderw))))
             return;
     }
 
