@@ -2814,16 +2814,11 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             screen().showPosition(dx, dy);
         } // end if moving
-    } else if (isResizing() // if we're already resizing the window
-               || functions.resize
-                  // or if we're dragging one of the grips
-                  && ((me.state & Button1Mask)
-                      && (me.window == frame().gripRight()
-                          || me.window == frame().gripLeft())
-                      // or if we're right-click dragging the border
-                      || (me.state & Button3Mask)
-                         && me.window == frame().window()
-                         && !Fluxbox::instance()->getIgnoreBorder())) {
+    } else if (functions.resize &&
+               (((me.state & Button1Mask) &&
+                 (me.window == frame().gripRight() ||
+                  me.window == frame().gripLeft())) ||
+                me.window == frame().window())) {
 
         if (! resizing) {
 
