@@ -297,11 +297,6 @@ void SystemTray::addClient(Window win) {
         return;
     }
 
-    WinClient *winclient = Fluxbox::instance()->searchWindow(win);
-    if (winclient && winclient->fbwindow())
-        // remove client from FluxboxWindow first
-        winclient->fbwindow()->restore(winclient, false);
-
     FbTk::FbWindow *traywin = new TrayWindow(win);
 
 #ifdef DEBUG
@@ -403,8 +398,6 @@ void SystemTray::rearrangeClients() {
         (*client_it)->moveResize(x, y, h_rot0, h_rot0);
         (*client_it)->sendConfigureNotify(x, y, h_rot0, h_rot0);
     }
-
-    client_it = m_clients.begin();
 }
 
 void SystemTray::removeAllClients() {
