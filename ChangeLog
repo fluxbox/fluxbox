@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/02/17:
+   * Update workspace names on reconfigure, and don't overwrite workspace names
+     not being used (Mark)
+     fluxbox.cc Screen.cc
    * Fixed some issues with transients of inactive tabs (Mark)
      Window.cc
 *07/02/10:

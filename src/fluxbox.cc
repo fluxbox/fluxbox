@@ -1506,11 +1506,9 @@ void Fluxbox::save_rc() {
         sprintf(rc_string, "session.screen%d.workspaceNames: ", screen_number);
         string workspaces_string(rc_string);
 
-        for (unsigned int workspace=0; workspace < screen->numberOfWorkspaces(); workspace++) {
-            if (screen->getWorkspace(workspace)->name().size()!=0)
-                workspaces_string.append(FbTk::FbStringUtil::FbStrToLocale(screen->getWorkspace(workspace)->name()));
-            else
-                workspaces_string.append("Null");
+        const vector<string> names = screen->getWorkspaceNames();
+        for (size_t i=0; i < names.size(); i++) {
+            workspaces_string.append(FbTk::FbStringUtil::FbStrToLocale(names[i]));
             workspaces_string.append(",");
         }
 
