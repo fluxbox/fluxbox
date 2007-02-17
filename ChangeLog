@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/02/17:
+   * Slit was creating a strut even when it wasn't visible (Mark)
+     Slit.cc/hh
    * Update workspace names on reconfigure, and don't overwrite workspace names
      not being used (Mark)
      fluxbox.cc Screen.cc

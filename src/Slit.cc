@@ -259,7 +259,7 @@ unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
                                  EnterWindowMask | LeaveWindowMask | ExposureMask;
 
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
-    : m_hidden(false),
+    : m_hidden(false), m_visible(false),
       m_screen(scr),
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
@@ -369,8 +369,7 @@ void Slit::updateStrut() {
     clearStrut();
     // no need for area if we're autohiding or set maximize over
     // or if we dont have any clients
-    if (doAutoHide() || *m_rc_maximize_over ||
-        clients().empty()) {
+    if (doAutoHide() || *m_rc_maximize_over || !m_visible) {
         // update screen area if we had a strut before
         if (had_strut)
             screen().updateAvailableWorkspaceArea();
@@ -720,9 +719,9 @@ void Slit::reconfigure() {
 
     // did we actually use slit slots
     if (num_windows == 0)
-        frame.window.hide();
+        hide();
     else
-        frame.window.show();
+        show();
 
     int x = 0, y = 0;
     height_inc = false;

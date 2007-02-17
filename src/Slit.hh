@@ -68,8 +68,8 @@ public:
     Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();
 
-    void show() { frame.window.show(); }
-    void hide() { frame.window.hide(); }
+    void show() { frame.window.show(); m_visible = true; }
+    void hide() { frame.window.hide(); m_visible = false; }
     void setDirection(Direction dir);
     void setPlacement(Placement place);
     void addClient(Window clientwin);
@@ -139,7 +139,8 @@ private:
     void clearStrut();
     void updateStrut();
 
-    bool m_hidden;
+    // m_hidden is for autohide, m_visible is the FbWindow state
+    bool m_hidden, m_visible;
 
     BScreen &m_screen;
     FbTk::Timer m_timer;
