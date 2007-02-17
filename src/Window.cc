@@ -1887,11 +1887,11 @@ void FluxboxWindow::raise() {
     }
     // raise this window and every transient in it with this one last
     if (client->fbwindow()) {
-        raiseFluxboxWindow(*client->fbwindow());
         // doing this on startup messes up the focus order
         if (!Fluxbox::instance()->isStartup())
             // activate the client so the transient won't get pushed back down
             client->fbwindow()->setCurrentClient(*client, false);
+        raiseFluxboxWindow(*client->fbwindow());
     }
 
 }
@@ -1917,15 +1917,9 @@ void FluxboxWindow::tempRaise() {
     if (isIconic())
         deiconify();
 
-    // get root window
-    WinClient *client = getRootTransientFor(m_client);
-
-    // if we don't have any root window use this as root
-    if (client == 0)
-        client = m_client;
-
-    if (client->fbwindow())
-        tempRaiseFluxboxWindow(*client->fbwindow());
+    // the root transient will get raised when we stop cycling
+    // raising it here causes problems when it isn't the active tab
+    tempRaiseFluxboxWindow(*this);
 }
 
 

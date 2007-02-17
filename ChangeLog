@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/02/17:
+   * Fixed some issues with transients of inactive tabs (Mark)
+     Window.cc
 *07/02/10:
    * MaxSize and MinSize hints weren't getting updated properly -- bug #1560803
      (Mark + thanks Jim Ramsay)
