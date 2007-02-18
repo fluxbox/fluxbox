@@ -596,7 +596,6 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
         // figure out which client to raise at the end
         if (FocusControl::focusedFbWindow() == old_win) {
             was_focused = true;
-            focused_win = FocusControl::focusedWindow();
         } else if (FocusControl::focusedFbWindow() != this) {
             FocusControl::FocusedWindows focus_list =
                     screen().focusControl().focusedOrderList();

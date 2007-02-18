@@ -1764,9 +1764,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
               *resource.workspace_warping, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, DesktopWheeling,
-              "Desktop MouseWheel Switching", "Workspace switching using mouse wheel",
-              *resource.desktop_wheeling, saverc_cmd);
     _BOOLITEM(menu, Configmenu, DecorateTransient,
               "Decorate Transient Windows", "Decorate Transient Windows",
               *resource.decorate_transient, saverc_cmd);

@@ -970,8 +970,9 @@ session.screen0.imageDither: <boolean>
       False
 
 session.screen0.opaqueMove: <boolean>
-      Sets the visibility level of application windows while being
-      dragged. Default: <boolean>
+      When moving a window, setting this to True will draw the window
+      contents as it moves (this is nasty on slow systems). If False, it
+      will only draw an outline of the window border. Default: False
 
 session.screen0.workspaces: <integer>
       Set this to the number of workspaces the users wants. Default: 4
@@ -1021,11 +1022,6 @@ session.ignoreBorder: <boolean>
 
 session.numLayers: <integer>
       This controls how many layers fluxbox should have. Default: 13
-
-session.opaqueMove: <boolean>
-      When moving a window, setting this to True will draw the window
-      contents as it moves (this is nasty on slow systems). If False, it
-      will only draw an outline of the window border. Default: False
 
 session.tabPadding: <integer>
       This specifies the spacing between tabs. Default: 0
