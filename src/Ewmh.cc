@@ -328,6 +328,8 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 changeProperty(m_net_wm_window_type,
                                XA_ATOM, 32, PropModeReplace,
                                (unsigned char*)&m_net_wm_window_type_dialog, 1);
+            // and then we should treat it like a dialog
+            win.setTabable(false);
         }
     }
 

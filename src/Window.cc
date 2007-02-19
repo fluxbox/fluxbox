@@ -1887,7 +1887,8 @@ void FluxboxWindow::raise() {
     // raise this window and every transient in it with this one last
     if (client->fbwindow()) {
         // doing this on startup messes up the focus order
-        if (!Fluxbox::instance()->isStartup())
+        if (!Fluxbox::instance()->isStartup() && client->fbwindow() != this &&
+                &client->fbwindow()->winClient() != client)
             // activate the client so the transient won't get pushed back down
             client->fbwindow()->setCurrentClient(*client, false);
         raiseFluxboxWindow(*client->fbwindow());
