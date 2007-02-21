@@ -109,6 +109,8 @@ void Button::buttonPressEvent(XButtonEvent &event) {
 }
 
 void Button::buttonReleaseEvent(XButtonEvent &event) {
+    if (!m_pressed) // we don't want to pick up clicks from other widgets
+        return;
     m_pressed = false;
     bool update = false;
     bool been_deleted = false;
