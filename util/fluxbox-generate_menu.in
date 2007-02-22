@@ -124,13 +124,42 @@ fluxbox-generate_menu was brought to you by:
 EOF
 }
 
-find_it() {
-    command -v $1 > /dev/null 2>&1 && shift && "$@"
-}
+# some which's have a reliable return code, some don't
+# Lets figure out which which we have.
+if which this_program_does_not_exist-no_really-aA1zZ9 2> /dev/null 1> /dev/null; then
+    # can't rely on return value
+    find_it() {
+        file=`which $1 2> /dev/null`
+        if [ -x "$file" ]; then
+            if [ $# -gt 1 ]; then
+                shift
+                "$@"
+            fi
+            return 0
+        else
+            return 1
+        fi
+    }
 
-find_it_options() {
-    command -v $1 > /dev/null 2>&1
-}
+    find_it_options() {
+        file=`which $1 2> /dev/null`
+        if [ -x "$file" ]; then
+            return 0
+        else
+            return 1
+        fi
+    }
+
+else
+    # can rely on return value
+    find_it() {
+        which $1 > /dev/null 2>&1 && shift && "$@"
+    }
+
+    find_it_options() {
+        which $1 > /dev/null 2>&1
+    }
+fi
 
 #echo "replaceWithinString: $1, $2, $3" >&2
 #echo ${1//$2/$3} # causes error in BSD even though not used
@@ -182,7 +211,7 @@ convertIcon(){
     if [ -f "${entry_icon}" ]; then
         : echo "File exists. To overwrite, type: convert \"$1\" \"$entry_icon\"" >&2
     else
-        if command -v convert &> /dev/null; then
+        if which convert &> /dev/null; then
             convert "$1" "$entry_icon"
             # echo convert "$1" , "$entry_icon" >> $ICONMAPPING
         else
@@ -1349,7 +1378,7 @@ fi
 # prefix
 PREFIX="${PREFIX:=@PREFIX@}"
 if [  -z "${PREFIX}" -o ! -d "${PREFIX}" ]; then
-    PREFIX=`command -v fluxbox | sed 's,/bin/fluxbox$,,'`
+    PREFIX=`which fluxbox | sed 's,/bin/fluxbox$,,'`
 fi
 
 
