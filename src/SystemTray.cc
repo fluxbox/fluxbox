@@ -49,7 +49,24 @@ using std::dec;
 /// helper class for tray windows, so we dont call XDestroyWindow
 class TrayWindow: public FbTk::FbWindow {
 public:
-    TrayWindow(Window win):FbTk::FbWindow(win) { }
+    TrayWindow(Window win):FbTk::FbWindow(win), m_visible(false) {
+        setEventMask(PropertyChangeMask);
+    }
+    bool isVisible() { return m_visible; }
+    void show() {
+        if (!m_visible) {
+            m_visible = true;
+            FbTk::FbWindow::show();
+        }
+    }
+    void hide() {
+        if (m_visible) {
+            m_visible = false;
+            FbTk::FbWindow::hide();
+        }
+    }
+private:
+    bool m_visible;
 };
 
 /// handles clientmessage event and notifies systemtray
@@ -115,7 +132,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen
              SubstructureNotifyMask | SubstructureRedirectMask),
     m_theme(theme),
     m_screen(screen),
-    m_pixmap(0) {
+    m_pixmap(0), m_num_visible_clients(0) {
 
     FbTk::EventManager::instance()->add(*this, m_window);
     m_theme.reconfigSig().attach(this);
@@ -189,10 +206,9 @@ void SystemTray::resize(unsigned int width, unsigned int height) {
     if (width != m_window.width() ||
         height != m_window.height()) {
         m_window.resize(width, height);
-        if (!m_clients.empty()) {
+        if (m_num_visible_clients)
             rearrangeClients();
-            resizeSig().notify();
-        }
+        resizeSig().notify();
     }
 }
 
@@ -201,10 +217,9 @@ void SystemTray::moveResize(int x, int y,
     if (width != m_window.width() ||
         height != m_window.height()) {
         m_window.moveResize(x, y, width, height);
-        if (!m_clients.empty()) {
+        if (m_num_visible_clients)
             rearrangeClients();
-            resizeSig().notify();
-        }
+        resizeSig().notify();
     } else {
         move(x, y);
     }
@@ -224,14 +239,14 @@ unsigned int SystemTray::width() const {
     if (orientation() == FbTk::ROT90 || orientation() == FbTk::ROT270)
         return m_window.width();
 
-    return m_clients.size()* (height() - 2 * m_theme.border().width());
+    return m_num_visible_clients * (height() - 2 * m_theme.border().width());
 }
 
 unsigned int SystemTray::height() const {
     if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180)
         return m_window.height();
 
-    return m_clients.size()* (width() - 2 * m_theme.border().width());
+    return m_num_visible_clients * (width() - 2 * m_theme.border().width());
 }
 
 unsigned int SystemTray::borderWidth() const {
@@ -297,26 +312,18 @@ void SystemTray::addClient(Window win) {
         return;
     }
 
-    FbTk::FbWindow *traywin = new TrayWindow(win);
+    TrayWindow *traywin = new TrayWindow(win);
 
 #ifdef DEBUG
     cerr<<"SystemTray::addClient(Window): 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
-    if (m_clients.empty())
-        show();
 
     m_clients.push_back(traywin);
     FbTk::EventManager::instance()->add(*this, win);
     FbTk::EventManager::instance()->addParent(*this, window());
     XChangeSaveSet(FbTk::App::instance()->display(), win, SetModeInsert);
     traywin->reparent(m_window, 0, 0);
-    traywin->show();
-
-
-#ifdef DEBUG
-    cerr<<"SystemTray: number of clients = "<<m_clients.size()<<endl;
-#endif // DEBUG
-    rearrangeClients();
+    showClient(traywin);
 }
 
 void SystemTray::removeClient(Window win) {
@@ -327,15 +334,10 @@ void SystemTray::removeClient(Window win) {
 #ifdef DEBUG
     cerr<<__FILE__<<"(SystemTray::removeClient(Window)): 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
-    FbTk::FbWindow *traywin = *tray_it;
+    TrayWindow *traywin = *tray_it;
     m_clients.erase(tray_it);
+    hideClient(traywin);
     delete traywin;
-    resize(width(), height());
-    rearrangeClients();
-    if (m_clients.empty()) {
-        // so we send notify signal to parent
-        resizeSig().notify();
-    }
 }
 
 void SystemTray::exposeEvent(XExposeEvent &event) {
@@ -345,11 +347,15 @@ void SystemTray::exposeEvent(XExposeEvent &event) {
 void SystemTray::handleEvent(XEvent &event) {
     if (event.type == DestroyNotify) {
         removeClient(event.xdestroywindow.window);
+    } else if (event.type == ReparentNotify && event.xreparent.parent != m_window.window()) {
+        removeClient(event.xreparent.window);
     } else if (event.type == UnmapNotify && event.xany.send_event) {
         // we ignore server-generated events, which can occur
         // on restart. The ICCCM says that a client must send
         // a synthetic event for the withdrawn state
-        removeClient(event.xunmap.window);
+        ClientList::iterator it = findClient(event.xunmap.window);
+        if (it != m_clients.end())
+            hideClient(*it);
     } else if (event.type == ConfigureNotify) {
         // we got configurenotify from an client
         // check and see if we need to update it's size
@@ -373,6 +379,38 @@ void SystemTray::handleEvent(XEvent &event) {
             }
         }
 
+    } else if (event.type == PropertyNotify) {
+        ClientList::iterator it = findClient(event.xproperty.window);
+        if (it != m_clients.end()) {
+            Atom embed_info = XInternAtom(FbTk::App::instance()->display(),"_XEMBED_INFO",false);
+            if (event.xproperty.atom == embed_info) {
+
+/* Flags for _XEMBED_INFO */
+#define XEMBED_MAPPED                   (1 << 0)
+
+                TrayWindow *traywin = *it;
+                Atom actual_type;
+                int actual_format;
+                unsigned long nitems, bytes_after;
+                unsigned long *prop;
+                if (traywin->property(embed_info, 0l, 2l, false, embed_info,
+                    &actual_type, &actual_format, &nitems, &bytes_after,
+                    (unsigned char **) &prop)) {
+
+                    bool mapped = (bool)(static_cast<unsigned long>(prop[1]) & XEMBED_MAPPED);
+                    XFree(static_cast<void *>(prop));
+
+#ifdef DEBUG
+    cerr<<__FILE__<<"(SystemTray::handleEvent(XEvent)): XEMBED_MAPPED = "<<mapped<<endl;
+#endif // DEBUG
+
+                    if (mapped)
+                        showClient(traywin);
+                    else
+                        hideClient(traywin);
+                }
+            }
+        }
     }
 }
 
@@ -380,7 +418,7 @@ void SystemTray::rearrangeClients() {
     unsigned int w_rot0 = width(), h_rot0 = height();
     const unsigned int bw = m_theme.border().width();
     FbTk::translateSize(orientation(), w_rot0, h_rot0);
-    unsigned int trayw = m_clients.size()*h_rot0 + bw, trayh = h_rot0;
+    unsigned int trayw = m_num_visible_clients*h_rot0 + bw, trayh = h_rot0;
     FbTk::translateSize(orientation(), trayw, trayh);
     resize(trayw, trayh);
     update(0);
@@ -389,9 +427,11 @@ void SystemTray::rearrangeClients() {
     ClientList::iterator client_it = m_clients.begin();
     ClientList::iterator client_it_end = m_clients.end();
     int next_x = bw;
-    for (; client_it != client_it_end;
-         ++client_it, next_x += h_rot0+bw) {
+    for (; client_it != client_it_end; ++client_it) {
+        if (!(*client_it)->isVisible())
+            continue;
         int x = next_x, y = bw;
+        next_x += h_rot0+bw;
         translateCoords(orientation(), x, y, w_rot0, h_rot0);
         translatePosition(orientation(), x, y, h_rot0, h_rot0, 0);
 
@@ -409,6 +449,28 @@ void SystemTray::removeAllClients() {
         delete m_clients.back();
         m_clients.pop_back();
     }
+    m_num_visible_clients = 0;
+}
+
+void SystemTray::hideClient(TrayWindow *traywin) {
+    if (!traywin || !traywin->isVisible())
+        return;
+
+    traywin->hide();
+    m_num_visible_clients--;
+    rearrangeClients();
+}
+
+void SystemTray::showClient(TrayWindow *traywin) {
+    if (!traywin || traywin->isVisible())
+        return;
+
+    if (!m_num_visible_clients)
+        show();
+
+    traywin->show();
+    m_num_visible_clients++;
+    rearrangeClients();
 }
 
 void SystemTray::update(FbTk::Subject* subject) {
@@ -432,6 +494,8 @@ void SystemTray::update(FbTk::Subject* subject) {
 
             // maybe not the best solution (yet), force a refresh of the
             // background of the client
+            if (!(*client_it)->isVisible())
+                continue;
             (*client_it)->hide();
             (*client_it)->show();
         }

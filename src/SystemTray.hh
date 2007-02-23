@@ -37,6 +37,7 @@
 
 #include <list>
 
+class TrayWindow;
 class AtomHandler;
 
 class SystemTray: public ToolbarItem, public FbTk::EventHandler, public FbTk::Observer {
@@ -77,11 +78,13 @@ private:
 
     void update(FbTk::Subject *subj);
     
-    typedef std::list<FbTk::FbWindow *> ClientList;
+    typedef std::list<TrayWindow *> ClientList;
     ClientList::iterator findClient(Window win);
 
     void rearrangeClients();
     void removeAllClients();
+    void hideClient(TrayWindow *traywin);
+    void showClient(TrayWindow *traywin);
 
     FbTk::FbWindow m_window;
     ButtonTheme& m_theme;
@@ -91,6 +94,7 @@ private:
     std::auto_ptr<AtomHandler> m_handler;
 
     ClientList m_clients;
+    size_t m_num_visible_clients;
 };
 
 #endif // SYSTEMTRAY_HH
