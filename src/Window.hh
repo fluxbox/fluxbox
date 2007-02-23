@@ -342,6 +342,8 @@ public:
     inline bool isShaded() const { return shaded; }
     inline bool isFullscreen() const { return fullscreen; }
     inline bool isMaximized() const { return maximized == MAX_FULL; }
+    inline bool isMaximizedVert() const { return (bool)(maximized & MAX_VERT); }
+    inline bool isMaximizedHorz() const { return (bool)(maximized & MAX_HORZ); }
     inline bool isIconifiable() const { return functions.iconify; }
     inline bool isMaximizable() const { return functions.maximize; }
     inline bool isResizable() const { return functions.resize; }

@@ -606,6 +606,10 @@ void Ewmh::updateState(FluxboxWindow &win) {
 
     StateVec state;
 
+    if (win.isMaximizedHorz())
+        state.push_back(m_net_wm_state_maximized_horz);
+    if (win.isMaximizedVert())
+        state.push_back(m_net_wm_state_maximized_vert);
     if (win.isStuck())
         state.push_back(m_net_wm_state_sticky);
     if (win.isShaded())
