@@ -1743,6 +1743,9 @@ void FluxboxWindow::maximize(int type) {
     m_resize_corner = old_resize_corner;
 
     moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
+
+    // notify listeners that we changed state
+    stateSig().notify();
 }
 /**
  * Maximize window horizontal
