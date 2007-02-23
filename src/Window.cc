@@ -1098,6 +1098,7 @@ void FluxboxWindow::reconfigure() {
 
     frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
 
+    updateButtons();
     frame().reconfigure();
 
     menu().reconfigure();
@@ -3911,24 +3912,15 @@ void FluxboxWindow::setupWindow() {
     typedef RefCount<Command> CommandRef;
     typedef SimpleCommand<FluxboxWindow> WindowCmd;
 
-    CommandRef iconify_cmd(new WindowCmd(*this, &FluxboxWindow::iconify));
-    CommandRef maximize_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeFull));
-    CommandRef maximize_vert_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeVertical));
-    CommandRef maximize_horiz_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeHorizontal));
-    CommandRef close_cmd(new WindowCmd(*this, &FluxboxWindow::close));
     CommandRef shade_cmd(new WindowCmd(*this, &FluxboxWindow::shade));
     CommandRef shade_on_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOn));
     CommandRef shade_off_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOff));
     CommandRef next_tab_cmd(new WindowCmd(*this, &FluxboxWindow::nextClient));
     CommandRef prev_tab_cmd(new WindowCmd(*this, &FluxboxWindow::prevClient));
-    CommandRef raise_cmd(new WindowCmd(*this, &FluxboxWindow::raise));
     CommandRef lower_cmd(new WindowCmd(*this, &FluxboxWindow::lower));
     CommandRef raise_and_focus_cmd(new WindowCmd(*this, &FluxboxWindow::raiseAndFocus));
     CommandRef stick_cmd(new WindowCmd(*this, &FluxboxWindow::stick));
     CommandRef show_menu_cmd(new WindowCmd(*this, &FluxboxWindow::popupMenu));
-
-    // clear old buttons from frame
-    frame().removeAllButtons();
 
     typedef FbTk::Resource<vector<WinButton::Type> > WinButtonsResource;
 
@@ -3983,12 +3975,85 @@ void FluxboxWindow::setupWindow() {
         screen().addManagedResource(titlebar_side[i]);
     }
 
+    updateButtons();
 
+    // setup titlebar
+    frame().setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
+    frame().setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
+    frame().setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
+    frame().setOnClickTitlebar(lower_cmd, 2); // on release with button 2
 
+    int reverse = 0;
+    if (screen().getScrollReverse())
+        reverse = 1;
+
+    if (StringUtil::toLower(screen().getScrollAction()) == string("shade")) {
+        frame().setOnClickTitlebar(shade_on_cmd, 5 - reverse); // shade on mouse roll
+        frame().setOnClickTitlebar(shade_off_cmd, 4 + reverse); // unshade if rolled oposite direction
+    } else if (StringUtil::toLower(screen().getScrollAction()) == string("nexttab")) {
+        frame().setOnClickTitlebar(next_tab_cmd, 5 - reverse); // next tab
+        frame().setOnClickTitlebar(prev_tab_cmd, 4 + reverse); // previous tab
+    }
+
+    frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
+
+    // end setup frame
+
+}
+
+void FluxboxWindow::updateButtons() {
+    string titlebar_name[2];
+    titlebar_name[0] = screen().name() + ".titlebar.left";
+    titlebar_name[1] = screen().name() + ".titlebar.right";
+
+    typedef FbTk::Resource<vector<WinButton::Type> > WinButtonsResource;
+    WinButtonsResource *titlebar_side[2];
+    ResourceManager &rm = screen().resourceManager();
+
+    bool need_update = false;
+    // get resource for titlebar
+    for (int i=0; i < 2; ++i) {
+        titlebar_side[i] = dynamic_cast<WinButtonsResource *>(
+                            rm.findResource( titlebar_name[i] ) );
+
+        // check if we need to update our buttons
+        size_t new_size = (*titlebar_side[i])->size();
+        if (new_size != m_titlebar_buttons[i].size() || need_update)
+            need_update = true;
+        else {
+            for (int j=0; j < new_size && !need_update; j++) {
+                if ((*(*titlebar_side[i]))[j] != m_titlebar_buttons[i][j])
+                    need_update = true;
+            }
+        }
+                
+    }
+
+    if (!need_update)
+        return;
+
+    // clear old buttons from frame
+    frame().removeAllButtons();
+
+    using namespace FbTk;
+    typedef RefCount<Command> CommandRef;
+    typedef SimpleCommand<FluxboxWindow> WindowCmd;
+
+    CommandRef iconify_cmd(new WindowCmd(*this, &FluxboxWindow::iconify));
+    CommandRef maximize_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeFull));
+    CommandRef maximize_vert_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeVertical));
+    CommandRef maximize_horiz_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeHorizontal));
+    CommandRef close_cmd(new WindowCmd(*this, &FluxboxWindow::close));
+    CommandRef shade_cmd(new WindowCmd(*this, &FluxboxWindow::shade));
+    CommandRef stick_cmd(new WindowCmd(*this, &FluxboxWindow::stick));
+    CommandRef show_menu_cmd(new WindowCmd(*this, &FluxboxWindow::popupMenu));
+
+    WinButtonTheme &winbutton_theme = screen().winButtonTheme();
 
     for (size_t c = 0; c < 2 ; c++) {
         // get titlebar configuration for current side
         const vector<WinButton::Type> &dir = *(*titlebar_side[c]);
+        m_titlebar_buttons[c] = dir;
 
         for (size_t i=0; i < dir.size(); ++i) {
             //create new buttons
@@ -4069,31 +4134,7 @@ void FluxboxWindow::setupWindow() {
     } // end for c
 
     frame().reconfigure();
-
-    // setup titlebar
-    frame().setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
-    frame().setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
-    frame().setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
-    frame().setOnClickTitlebar(lower_cmd, 2); // on release with button 2
-
-    int reverse = 0;
-    if (screen().getScrollReverse())
-        reverse = 1;
-
-    if (StringUtil::toLower(screen().getScrollAction()) == string("shade")) {
-        frame().setOnClickTitlebar(shade_on_cmd, 5 - reverse); // shade on mouse roll
-        frame().setOnClickTitlebar(shade_off_cmd, 4 + reverse); // unshade if rolled oposite direction
-    } else if (StringUtil::toLower(screen().getScrollAction()) == string("nexttab")) {
-        frame().setOnClickTitlebar(next_tab_cmd, 5 - reverse); // next tab
-        frame().setOnClickTitlebar(prev_tab_cmd, 4 + reverse); // previous tab
-    }
-
-    frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
-
-    // end setup frame
-
 }
-
 
 /**
  * reconfigTheme: must be called after frame is reconfigured

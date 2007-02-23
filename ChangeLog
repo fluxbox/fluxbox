@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/02/23:
+   * Update titlebar buttons on reconfigure (Mark)
+     Window.cc/hh
 *07/02/22:
    * Make systemtray support XEMBED protocol (Mark)
      Systemtray.cc/hh

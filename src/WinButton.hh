@@ -21,6 +21,9 @@
 
 /// $Id$
 
+#ifndef WINBUTTON_HH
+#define WINBUTTON_HH
+
 #include "FbTk/Button.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/FbPixmap.hh"
@@ -65,3 +68,5 @@ private:
     
     bool overrode_bg, overrode_pressed;
 };
+
+#endif // WINBUTTON_HH

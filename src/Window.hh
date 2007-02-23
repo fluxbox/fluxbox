@@ -32,6 +32,7 @@
 #include "FbTk/EventHandler.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbWinFrame.hh"
+#include "WinButton.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -443,6 +444,7 @@ private:
     static const int PropBlackboxAttributesElements = 8;
 
     void setupWindow();
+    void updateButtons();
 
     void init();
     /// applies a shape mask to the window if it has one
@@ -543,6 +545,7 @@ private:
             maximize, close, menu, sticky, shade, tab, enabled;
     } decorations;
 
+    std::vector<WinButton::Type> m_titlebar_buttons[2];
     bool m_toggled_decos;
 
     struct _functions {
