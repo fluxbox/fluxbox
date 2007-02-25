@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/02/25:
+   * Update systemtray alpha along with toolbar alpha (Mark)
+     Systemtray.cc/hh
 *07/02/23:
    * Update EWMH state atom when maximizing windows (Mark)
      Window.cc

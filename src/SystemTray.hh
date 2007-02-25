@@ -69,7 +69,7 @@ public:
     int numClients() const { return m_clients.size(); }
     const FbTk::FbWindow &window() const { return m_window; }
 
-    inline void renderTheme(unsigned char alpha) {}
+    inline void renderTheme(unsigned char alpha) { m_window.setAlpha(alpha); update(0); }
     inline void updateSizing() {}
 
     void parentMoved() { m_window.parentMoved(); }

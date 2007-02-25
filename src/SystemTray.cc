@@ -486,18 +486,16 @@ void SystemTray::update(FbTk::Subject* subject) {
         m_window.setBackgroundPixmap(m_pixmap);
     }
 
-    // "themereconfigure"
-    if (subject) {
-        ClientList::iterator client_it = m_clients.begin();
-        ClientList::iterator client_it_end = m_clients.end();
-        for (; client_it != client_it_end; ++client_it) {
+    ClientList::iterator client_it = m_clients.begin();
+    ClientList::iterator client_it_end = m_clients.end();
+    for (; client_it != client_it_end; ++client_it) {
 
-            // maybe not the best solution (yet), force a refresh of the
-            // background of the client
-            if (!(*client_it)->isVisible())
-                continue;
-            (*client_it)->hide();
-            (*client_it)->show();
-        }
+        // maybe not the best solution (yet), force a refresh of the
+        // background of the client
+        if (!(*client_it)->isVisible())
+            continue;
+        (*client_it)->hide();
+        (*client_it)->show();
     }
+
 }
