@@ -292,6 +292,8 @@ unsigned int XmbFontImp::textWidth(const FbString &text, unsigned int len) const
 #endif // X_HAVE_UTF8_STRING
 
     string localestr = text;
+    if (len > localestr.length())
+        len = localestr.length();
     localestr.erase(len, string::npos);
     localestr = FbStringUtil::FbStrToLocale(localestr);
     XmbTextExtents(m_fontset, localestr.data(), localestr.size(),
