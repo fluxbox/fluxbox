@@ -320,7 +320,6 @@ void SystemTray::addClient(Window win) {
 
     m_clients.push_back(traywin);
     FbTk::EventManager::instance()->add(*this, win);
-    FbTk::EventManager::instance()->addParent(*this, window());
     XChangeSaveSet(FbTk::App::instance()->display(), win, SetModeInsert);
     traywin->reparent(m_window, 0, 0);
     showClient(traywin);
