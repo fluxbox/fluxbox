@@ -662,15 +662,7 @@ void Ewmh::updateState(FluxboxWindow &win) {
 }
 
 void Ewmh::updateLayer(FluxboxWindow &win) {
-    //!! TODO _NET_WM_WINDOW_TYPE
-    /*
-    if (win.getLayer() == Fluxbox::instance()->getAboveDockLayer()) {
-        // _NET_WM_STATE_BELOW
-
-    } else if (win.getLayer() == Fluxbox::instance()->getBottomLayer()) {
-        // _NET_WM_STATE_ABOVE
-    }
-    */
+    updateState(win);
 }
 
 void Ewmh::updateHints(FluxboxWindow &win) {

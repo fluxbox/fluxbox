@@ -965,6 +965,10 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         if (w == m_active_index)
             return;
 
+        // if another menu is focused, change focus to this one, so arrow keys
+        // work as expected
+        if (s_focused != this && s_focused != 0)
+            grabInputFocus();
 
         if (validIndex(m_active_index) && w != m_active_index) {
             int old_active_index = m_active_index;

@@ -339,7 +339,7 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key) {
     // grab "None Escape" to exit keychain in the middle
     unsigned int esc = FbTk::KeyUtil::getKey("Escape");
 
-    if (temp_key && temp_key->keylist.size()) { // emacs-style
+    if (temp_key && !temp_key->keylist.empty()) { // emacs-style
         if (!saved_keymode)
             saved_keymode = m_keylist;
         next_key = temp_key;

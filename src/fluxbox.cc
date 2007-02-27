@@ -733,7 +733,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
         for (; it != it_end; ++it) {
             if ( (*it)->screenNumber() ==
                  FbTk::Menu::focused()->fbwindow().screenNumber()) {
-                FocusControl::revertFocus(**it);
+                FocusControl::setFocusedWindow(0);
+                m_revert_screen = *it;
+                m_revert_timer.start();
                 break; // found the screen, no more search
             }
         }
