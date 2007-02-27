@@ -233,9 +233,15 @@ void ArrangeWindowsCmd::execute() {
             }
 
             if (normal_windows.size() > 1) {
-                (*closest)->moveResize(x_offs, y_offs, cal_width, cal_height);
+                (*closest)->moveResize(x_offs + (*closest)->xOffset(),
+			y_offs + (*closest)->yOffset(),
+			cal_width - (*closest)->widthOffset(),
+			cal_height - (*closest)->heightOffset());
             } else { // the last window gets everything that is left.
-                (*closest)->moveResize(x_offs, y_offs, screen->maxRight(head)-x_offs, cal_height);
+                (*closest)->moveResize(x_offs + (*closest)->xOffset(),
+			y_offs + (*closest)->yOffset(),
+			screen->maxRight(head) - x_offs - (*closest)->widthOffset(),
+			cal_height - (*closest)->heightOffset());
             }
 
             normal_windows.erase(closest);
