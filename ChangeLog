@@ -2,7 +2,7 @@
 Changes for 1.0rc3:
 *07/02/27:
    * Respect external tabs in ArrangeWindows (thanks to Tomas Janousek <tomi
-     at nomiz dot cz>
+     at nomi dot cz>
      WorkspaceCmd.cc
 *07/02/25:
    * Update systemtray alpha along with toolbar alpha (Mark)
