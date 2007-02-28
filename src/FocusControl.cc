@@ -275,10 +275,10 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
     FluxboxWindow *foundwin = 0;
     int weight = 999999, exposure = 0; // extreme values
     int borderW = m_screen.winFrameTheme().border().width(),
-        top = win.y(), 
-        bottom = win.y() + win.height() + 2*borderW,
-        left = win.x(),
-        right = win.x() + win.width() + 2*borderW;
+        top = win.y() + borderW, 
+        bottom = win.y() + win.height() + borderW,
+        left = win.x() + borderW,
+        right = win.x() + win.width() + borderW;
 
     Workspace::Windows &wins = m_screen.currentWorkspace()->windowList();
     Workspace::Windows::iterator it = wins.begin();
@@ -292,12 +292,12 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
         // we check things against an edge, and within the bounds (draw a picture)
         int edge=0, upper=0, lower=0, oedge=0, oupper=0, olower=0;
 
-        int otop = (*it)->y(), 
+        int otop = (*it)->y() + borderW, 
             // 2 * border = border on each side 
-            obottom = (*it)->y() + (*it)->height() + 2*borderW,
-            oleft = (*it)->x(),
+            obottom = (*it)->y() + (*it)->height() + borderW,
+            oleft = (*it)->x() + borderW,
             // 2 * border = border on each side
-            oright = (*it)->x() + (*it)->width() + 2*borderW;
+            oright = (*it)->x() + (*it)->width() + borderW;
 
         // check if they intersect
         switch (dir) {
