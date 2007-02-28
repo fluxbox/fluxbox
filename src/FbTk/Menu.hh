@@ -88,9 +88,9 @@ public:
     /// lower this window
     virtual void lower();
     /// select next item
-    void nextItem();
+    void nextItem(int failsafe = -1);
     /// select previous item
-    void prevItem();
+    void prevItem(int failsafe = -1);
     void enterSubmenu();
     void enterParent();
 
@@ -152,9 +152,7 @@ public:
     inline unsigned int height() const { return menu.window.height(); }
     inline size_t numberOfItems() const { return menuitems.size(); }
     inline int currentSubmenu() const { return m_which_sub; } 
-#ifdef NOT_USED
-    bool hasSubmenu(unsigned int index) const;
-#endif
+
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
     bool isItemSelectable(unsigned int index) const;
@@ -184,7 +182,6 @@ protected:
             titleWindow().raise();
     }
 
-    virtual void itemSelected(int button, unsigned int index) { }
     // renders item onto pm
     int drawItem(FbDrawable &pm, unsigned int index,
                  bool highlight = false,
@@ -220,7 +217,7 @@ private:
     bool m_internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
     bool m_title_vis; ///< title visibility
 	
-    int m_which_sub, m_which_press, m_which_sbl;
+    int m_which_sub;
     Alignment m_alignment;
 
     struct _menu {

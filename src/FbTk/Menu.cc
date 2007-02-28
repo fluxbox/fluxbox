@@ -114,9 +114,7 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     menu.x_move =
         menu.y_move = 0;
 
-    m_which_sub =
-        m_which_press =
-        m_which_sbl = -1;
+    m_which_sub = -1;
 
     menu.frame_pixmap =
         menu.title_pixmap =
@@ -273,94 +271,91 @@ void Menu::lower() {
     menu.window.lower();
 }
 
-void Menu::nextItem() {
+void Menu::nextItem(int failsafe) {
     if (menuitems.empty())
         return;
 
-    int old_which_press = m_which_press;
-    m_active_index = -1;
-    if (validIndex(old_which_press) &&
-        menuitems[old_which_press] != 0) {
-        if (menuitems[old_which_press]->submenu()) {
+    if (failsafe == -1)
+        failsafe = m_active_index;
+
+    int old_active_index = m_active_index;
+    m_active_index += 1;
+    if (!validIndex(m_active_index))
+        m_active_index = 0;
+
+    if (validIndex(old_active_index) &&
+        menuitems[old_active_index] != 0) {
+        if (menuitems[old_active_index]->submenu()) {
             // we need to do this explicitly on the menu.window
             // since it might hide the parent if we use Menu::hide
-            menuitems[old_which_press]->submenu()->internal_hide();
+            menuitems[old_active_index]->submenu()->internal_hide();
         }
-        clearItem(old_which_press);
+        clearItem(old_active_index);
     }
 
-    // restore old in case we changed m_which_press
-    m_which_press = old_which_press + 1;
-    if (!validIndex(m_which_press))
-        m_which_press = 0;
-
-
-    if (menuitems[m_which_press] == 0) {
+    if (menuitems[m_active_index] == 0) {
         m_active_index = -1;
         return;
     }
 
-    if (!isItemSelectable(m_which_press)) {
-        nextItem();
+    if (!isItemSelectable(m_active_index) && m_active_index != failsafe) {
+        nextItem(failsafe);
         return;
     }
 
-    m_active_index = m_which_press;
-
-    clearItem(m_which_press);
+    clearItem(m_active_index);
 
 }
 
-void Menu::prevItem() {
+void Menu::prevItem(int failsafe) {
     if (menuitems.empty())
         return;
 
-    int old_which_press = m_which_press;
-    m_active_index = -1;
-    if (validIndex(old_which_press)) {
-        if (menuitems[old_which_press]->submenu()) {
+    if (failsafe == -1)
+        failsafe = m_active_index;
+
+    int old_active_index = m_active_index;
+    m_active_index -= 1;
+    if (!validIndex(m_active_index))
+        m_active_index = menuitems.size() - 1;
+
+    if (validIndex(old_active_index)) {
+        if (menuitems[old_active_index]->submenu()) {
             // we need to do this explicitly on the menu.window
             // since it might hide the parent if we use Menu::hide
-            menuitems[old_which_press]->submenu()->internal_hide();
+            menuitems[old_active_index]->submenu()->internal_hide();
         }
-        clearItem(old_which_press);
+        clearItem(old_active_index);
     }
-    // restore old in case we changed m_which_press
-    m_which_press = old_which_press - 1;
 
-    if (!validIndex(m_which_press))
-        m_which_press = menuitems.size() - 1;
-
-    if (menuitems[m_which_press] == 0) {
+    if (menuitems[m_active_index] == 0) {
         m_active_index = -1;
         return;
     }
 
-    if (!isItemSelectable(m_which_press)) {
-        prevItem();
+    if (!isItemSelectable(m_active_index) && m_active_index != failsafe) {
+        prevItem(failsafe);
         return;
     }
 
-    m_active_index = m_which_press;
-
-    clearItem(m_which_press);
+    clearItem(m_active_index);
 
 }
 
 void Menu::enterSubmenu() {
-    if (!validIndex(m_which_press))
+    if (!validIndex(m_active_index))
         return;
 
-    Menu *submenu = menuitems[m_which_press]->submenu();
+    Menu *submenu = menuitems[m_active_index]->submenu();
     if (submenu == 0)
         return;
 
     if (submenu->menuitems.size() == 0)
         return;
 
-    drawSubmenu(m_which_press);
+    drawSubmenu(m_active_index);
     submenu->grabInputFocus();
-    submenu->m_which_press = -1; // so we land on 0 after nextItem()
+    submenu->m_active_index = -1; // so we land on 0 after nextItem()
     submenu->nextItem();
 }
 
@@ -368,15 +363,13 @@ void Menu::enterParent() {
     if (parent() == 0)
         return;
 
-    if (validIndex(m_which_press)) {
-        Menu *submenu = menuitems[m_which_press]->submenu();
+    if (validIndex(m_active_index)) {
+        Menu *submenu = menuitems[m_active_index]->submenu();
         if (submenu)
             submenu->internal_hide();
     }
 
     m_active_index = -1;
-    //clearItem(m_which_press);
-    m_which_press = -1; // dont select any in this
     // hide self
     m_visible = false;
     menu.window.hide();
@@ -619,7 +612,7 @@ void Menu::internal_hide() {
         shown = (Menu *) 0;
 
     m_torn = m_visible = false;
-    m_which_sub = m_which_press = m_which_sub = -1;
+    m_which_sub = -1;
 
     menu.window.hide();
 }
@@ -751,18 +744,6 @@ void Menu::drawSubmenu(unsigned int index) {
 
 }
 
-#ifdef NOT_USED
-bool Menu::hasSubmenu(unsigned int index) const {
-    if (index >= menuitems.size()) //boundary check
-        return false;
-
-    if (!menuitems[index]->submenu()) //has submenu?
-        return false;
-
-    return true;
-}
-#endif // NOT_USED
-
 int Menu::drawItem(FbDrawable &drawable, unsigned int index,
                    bool highlight, bool exclusive_drawable) {
 
@@ -872,9 +853,6 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
         int w = (sbl * menu.persub) + i;
 
         if (validIndex(w) && isItemSelectable(static_cast<unsigned int>(w))) {
-            m_which_press = i;
-            m_which_sbl = sbl;
-
             MenuItem *item = menuitems[w];
 
             if (item->submenu()) {
@@ -913,19 +891,19 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
 
         int sbl = (re.x / menu.item_w), i = (re.y / theme().itemHeight()),
             ix = sbl * menu.item_w, iy = i * theme().itemHeight(),
-            w = (sbl * menu.persub) + i,
-            p = (m_which_sbl * menu.persub) + m_which_press;
+            w = (sbl * menu.persub) + i;
 
         if (validIndex(w) && isItemSelectable(static_cast<unsigned int>(w))) {
-            if (p == w && isItemEnabled(w)) {
-                if (re.x > ix && re.x < (signed) (ix + menu.item_w) &&
-                    re.y > iy && re.y < (signed) (iy + theme().itemHeight())) {
-                    menuitems[w]->click(re.button, re.time);
-                    itemSelected(re.button, w);
-                }
+            if (m_active_index == w && isItemEnabled(w) &&
+                re.x > ix && re.x < (signed) (ix + menu.item_w) &&
+                re.y > iy && re.y < (signed) (iy + theme().itemHeight())) {
+                menuitems[w]->click(re.button, re.time);
             }
 
-            clearItem(p);
+            int old = m_active_index;
+            m_active_index = w;
+            clearItem(old);
+            clearItem(w);
         }
     }
 }
@@ -938,11 +916,6 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
         if (! m_moving) {
             // if not m_moving: start m_moving operation
-            if (m_parent && (! m_torn)) {
-                m_parent->m_which_sub = -1;
-                m_parent->clearItem(m_parent->m_which_sub);  // clear
-            }
-
             m_moving = m_torn = true;
             // clear current highlighted item
             clearItem(m_active_index);
@@ -962,7 +935,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             i = (me.y / theme().itemHeight()),
             w = (sbl * menu.persub) + i;
 
-        if (w == m_active_index)
+        if (w == m_active_index || !validIndex(w))
             return;
 
         // if another menu is focused, change focus to this one, so arrow keys
@@ -970,68 +943,36 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         if (s_focused != this && s_focused != 0)
             grabInputFocus();
 
-        if (validIndex(m_active_index) && w != m_active_index) {
-            int old_active_index = m_active_index;
-            m_active_index = -1;
-            MenuItem *item = menuitems[old_active_index];
+        MenuItem *itmp = menuitems[w];
+        if (itmp == 0)
+            return;
 
-            if (item != 0) {
+        if (itmp->isEnabled()) {
+            int old = m_active_index;
+            m_active_index = w;
+            clearItem(w);
+            clearItem(old);
 
-                clearItem(old_active_index);
-
-                if (item->submenu()) {
-                    if (item->submenu()->isVisible() &&
-                        !item->submenu()->isTorn()) {
-                        // setup hide timer for submenu
-                        item->submenu()->startHide();
-                        m_which_sub = -1;
-                    }
-                }
-
+            MenuItem *item = validIndex(m_which_sub) ? menuitems[m_which_sub] : 0;
+            if (item != 0 && item->submenu() && item->submenu()->isVisible() &&
+                !item->submenu()->isTorn()) {
+                // setup hide timer for submenu
+                item->submenu()->startHide();
             }
 
         }
 
-
-        m_which_press = i;
-        m_which_sbl = sbl;
-
-        m_active_index = -1;
-
-        if (!validIndex(w))
-            return;
-
-
-        MenuItem *itmp = menuitems[w];
-
-        m_active_index = w;
-
-        if (itmp == 0)
-            return;
-
-        if (itmp->submenu()) {
-            // if submenu,
-            // draw item highlighted and
+        if (itmp->submenu() && theme().menuMode() == MenuTheme::DELAY_OPEN) {
             // start submenu open delay
-
-            clearItem(w);
-
-            if (theme().menuMode() == MenuTheme::DELAY_OPEN) {
-                // setup show menu timer
-                timeval timeout;
-                timeout.tv_sec = 0;
-                timeout.tv_usec = theme().delayOpen() * 1000; // transformed to usec
-                m_submenu_timer.setTimeout(timeout);
-                m_submenu_timer.start();
-            }
-
+            timeval timeout;
+            timeout.tv_sec = 0;
+            timeout.tv_usec = theme().delayOpen() * 1000; // transformed to usec
+            m_submenu_timer.setTimeout(timeout);
+            m_submenu_timer.start();
         } else if (isItemSelectable(w)){
             // else normal menu item
             // draw highlighted
             m_submenu_timer.stop();
-            if (itmp->isEnabled()) {
-                clearItem(w);
-            }
         }
 
     }
@@ -1099,13 +1040,12 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Return:
         // send fake button 1 click
-        if (validIndex(m_which_press) &&
-            isItemEnabled(m_which_press)) {
+        if (validIndex(m_active_index) &&
+            isItemEnabled(m_active_index)) {
             if (event.state & ShiftMask)
-                menuitems[m_which_press]->click(3, event.time);
+                menuitems[m_active_index]->click(3, event.time);
             else
-                menuitems[m_which_press]->click(1, event.time);
-            itemSelected(1, m_which_press);
+                menuitems[m_active_index]->click(1, event.time);
             m_need_update = true;
             updateMenu();
         }
@@ -1143,12 +1083,9 @@ void Menu::reconfigure() {
 
 void Menu::openSubmenu() {
 
-    if (!isVisible() || ! validIndex(m_which_press) ||
-        ! validIndex(m_which_sbl))
-        return;
-
-    int item = m_which_sbl * menu.persub + m_which_press;
-    if (!validIndex(item) || !menuitems[item]->isEnabled())
+    int item = m_active_index;
+    if (!isVisible() || !validIndex(item) || !menuitems[item]->isEnabled() ||
+        s_focused != this && s_focused && s_focused->isVisible())
         return;
 
     clearItem(item);

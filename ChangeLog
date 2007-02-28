@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/02/28:
+   * Fixed some strange menu behaviors (Mark)
+     FbTk/Menu.cc/hh
 *07/02/27:
    * Respect external tabs in ArrangeWindows (thanks to Tomas Janousek <tomi
      at nomi dot cz>
