@@ -53,14 +53,19 @@ void NextWindowCmd::execute() {
         } else if (ev.type == ButtonPress) {
             mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
         }
+        int options = m_option;
         if (mods == 0) // can't stacked cycle unless there is a mod to grab
-            screen->focusControl().nextFocus(m_option | FocusControl::CYCLELINEAR);
-        else {
-            // if stacked cycling, then set a watch for
-            // the release of exactly these modifiers
+            options |= FocusControl::CYCLELINEAR;
+        else
+            // set a watch for the release of exactly these modifiers
             fb->watchKeyRelease(*screen, mods);
-            screen->focusControl().nextFocus(m_option);
-        }
+
+        FocusControl::FocusedWindows *win_list =
+            (options & FocusControl::CYCLELINEAR) ?
+                &screen->focusControl().creationOrderList() :
+                &screen->focusControl().focusedOrderList();
+        
+        screen->focusControl().cycleFocus(win_list, m_option);
     }
 }
 
@@ -76,14 +81,19 @@ void PrevWindowCmd::execute() {
         } else if (ev.type == ButtonPress) {
             mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
         }
+        int options = m_option;
         if (mods == 0) // can't stacked cycle unless there is a mod to grab
-            screen->focusControl().prevFocus(m_option | FocusControl::CYCLELINEAR);
-        else {
-            // if stacked cycling, then set a watch for
-            // the release of exactly these modifiers
+            options |= FocusControl::CYCLELINEAR;
+        else
+            // set a watch for the release of exactly these modifiers
             fb->watchKeyRelease(*screen, mods);
-            screen->focusControl().prevFocus(m_option);
-        }
+
+        FocusControl::FocusedWindows *win_list =
+            (options & FocusControl::CYCLELINEAR) ?
+                &screen->focusControl().creationOrderList() :
+                &screen->focusControl().focusedOrderList();
+        
+        screen->focusControl().cycleFocus(win_list, m_option, true);
     }
 }
 

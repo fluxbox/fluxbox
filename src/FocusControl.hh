@@ -68,11 +68,9 @@ public:
 
     explicit FocusControl(BScreen &screen);
 
-    void prevFocus() { cycleFocus(0, true); }
-    void nextFocus() { cycleFocus(0, false); }
-    void prevFocus(int options) { cycleFocus(options, true); }
-    void nextFocus(int options) { cycleFocus(options, false); }
-    void cycleFocus(int options, bool cycle_reverse);
+    void prevFocus() { cycleFocus(&m_focused_list, 0, true); }
+    void nextFocus() { cycleFocus(&m_focused_list, 0, false); }
+    void cycleFocus(FocusedWindows *winlist, int options, bool reverse = false);
 
     void setScreenFocusedWindow(WinClient &win_client);
     void setFocusModel(FocusModel model);
@@ -83,7 +81,7 @@ public:
     void dirFocus(FluxboxWindow &win, FocusDir dir);
     bool isMouseFocus() const { return focusModel() == MOUSEFOCUS; }
     bool isMouseTabFocus() const { return tabFocusModel() == MOUSETABFOCUS; }
-    bool isCycling() const { return m_cycling_focus; }
+    bool isCycling() const { return m_cycling_list != 0; }
     void addFocusBack(WinClient &client);
     void addFocusFront(WinClient &client);
     void setFocusBack(FluxboxWindow *fbwin);
@@ -120,10 +118,10 @@ private:
     // Screen global so it works for sticky windows too.
     FocusedWindows m_focused_list;
     FocusedWindows m_creation_order_list;
+
     FocusedWindows::iterator m_cycling_window;
-    bool m_cycling_focus;
-    bool m_cycling_creation_order;
-    bool m_was_iconic;
+    FocusedWindows *m_cycling_list;
+    WinClient *m_was_iconic;
     WinClient *m_cycling_last;
 
     static WinClient *s_focused_window;

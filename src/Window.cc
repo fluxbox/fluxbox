@@ -777,36 +777,14 @@ void FluxboxWindow::nextClient() {
     if (numClients() <= 1)
         return;
 
-    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), m_client);
-    WinClient *client = 0;
-    if (it == m_clientlist.end()) {
-        client = m_clientlist.front();
-    } else {
-        it++;
-        if (it == m_clientlist.end())
-            client = m_clientlist.front();
-        else
-            client = *it;
-    }
-    setCurrentClient(*client, true);
+    screen().focusControl().cycleFocus(&m_clientlist, 0);
 }
 
 void FluxboxWindow::prevClient() {
     if (numClients() <= 1)
         return;
 
-    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), m_client);
-    WinClient *client = 0;
-    if (it == m_clientlist.end()) {
-        client = m_clientlist.front();
-    } else {
-        if (it == m_clientlist.begin())
-            client = m_clientlist.back();
-        else
-            client = *(--it);
-    }
-
-    setCurrentClient(*client, true);
+    screen().focusControl().cycleFocus(&m_clientlist, 0, true);
 }
 
 
@@ -3909,8 +3887,6 @@ void FluxboxWindow::setupWindow() {
     // sets up our window
     // we allow both to be done at once to share the commands
 
-    WinButtonTheme &winbutton_theme = screen().winButtonTheme();
-
     using namespace FbTk;
     typedef RefCount<Command> CommandRef;
     typedef SimpleCommand<FluxboxWindow> WindowCmd;
@@ -4024,7 +4000,7 @@ void FluxboxWindow::updateButtons() {
         if (new_size != m_titlebar_buttons[i].size() || need_update)
             need_update = true;
         else {
-            for (int j=0; j < new_size && !need_update; j++) {
+            for (size_t j=0; j < new_size && !need_update; j++) {
                 if ((*(*titlebar_side[i]))[j] != m_titlebar_buttons[i][j])
                     need_update = true;
             }

@@ -54,7 +54,7 @@ FocusControl::FocusControl(BScreen &screen):
     m_focus_new(screen.resourceManager(), true, 
                 screen.name()+".focusNewWindows", 
                 screen.altName()+".FocusNewWindows"),
-    m_cycling_focus(false),
+    m_cycling_list(0),
     m_was_iconic(false),
     m_cycling_last(0) {
 
@@ -79,26 +79,25 @@ bool doSkipWindow(const WinClient &winclient, int opts) {
     ); 
 }
 
-void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
+void FocusControl::cycleFocus(FocusedWindows *window_list, int opts, bool cycle_reverse) {
 
-    FocusedWindows *window_list = (opts & CYCLELINEAR) ? &m_creation_order_list : &m_focused_list;
-    if (!m_cycling_focus) {
+    if (!m_cycling_list) {
         if (&m_screen == Fluxbox::instance()->watchingScreen())
-            m_cycling_focus = true;
-        m_cycling_window = find(window_list->begin(),window_list->end(),s_focused_window);
-        m_cycling_creation_order = (opts & CYCLELINEAR);
-        m_was_iconic = false;
+            // only set this when we're waiting for modifiers
+            m_cycling_list = window_list;
+        m_was_iconic = 0;
         m_cycling_last = 0;
-    } else if (m_cycling_creation_order ^ (bool)(opts & CYCLELINEAR)) {
-        m_cycling_creation_order ^= true;
-        m_cycling_window = find(window_list->begin(),window_list->end(),*m_cycling_window);
-    }
-    // if it is stacked, we want the highest window in the focused list
-    // that is on the same workspace
+    } else if (m_cycling_list != window_list)
+        m_cycling_list = window_list;
+
+    // too many things can go wrong with remembering this
+    m_cycling_window = find(window_list->begin(),window_list->end(),s_focused_window);
+
     FocusedWindows::iterator it = m_cycling_window;
     FocusedWindows::iterator it_begin = window_list->begin();
     FocusedWindows::iterator it_end = window_list->end();
 
+    // find the next window in the list that works
     while (true) {
         if (cycle_reverse && it == it_begin)
             it = it_end;
@@ -130,12 +129,18 @@ void FocusControl::cycleFocus(int opts, bool cycle_reverse) {
 
                         // set back to orig current Client in that fbwin
                         m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
+                        if (m_was_iconic == m_cycling_last) {
+                            s_reverting = true; // little hack
+                            m_cycling_last->fbwindow()->iconify();
+                            s_reverting = false;
+                        }
                     }
                     m_cycling_last = &last_client;
-                    if (m_was_iconic)
-                        (*m_cycling_window)->fbwindow()->iconify();
-                    m_was_iconic = fbwin->isIconic();
-                    fbwin->tempRaise();
+                    if (fbwin->isIconic())
+                        m_was_iconic = m_cycling_last;
+                    if (m_cycling_list)
+                        // else window will raise itself (if desired) on FocusIn
+                        fbwin->tempRaise();
                 }
                 break;
             }
@@ -158,7 +163,7 @@ void FocusControl::addFocusFront(WinClient &client) {
 void FocusControl::setFocusBack(FluxboxWindow *fbwin) {
     // do nothing if there are no windows open
     // don't change focus order while cycling
-    if (m_focused_list.empty() || isCycling())
+    if (m_focused_list.empty() || s_reverting)
         return;
 
     FocusedWindows::iterator it = m_focused_list.begin();
@@ -181,28 +186,24 @@ void FocusControl::setFocusBack(FluxboxWindow *fbwin) {
     
 void FocusControl::stopCyclingFocus() {
     // nothing to do
-    if (!m_cycling_focus)
+    if (m_cycling_list == 0)
         return;
 
-    m_cycling_focus = false;
+    FocusedWindows::iterator it_end = m_cycling_list->end();
     m_cycling_last = 0;
+    m_cycling_list = 0;
+
     // put currently focused window to top
     // the iterator may be invalid if the window died
     // in which case we'll do a proper revert focus
-    if (m_cycling_creation_order && m_cycling_window != m_creation_order_list.end())
-        m_cycling_window = find(m_focused_list.begin(),m_focused_list.end(),*m_cycling_window);
-    if (m_cycling_window != m_focused_list.end() &&
-        m_cycling_window != m_creation_order_list.end() &&
-        (*m_cycling_window)->fbwindow() &&
+    if (m_cycling_window != it_end && (*m_cycling_window)->fbwindow() &&
         (*m_cycling_window)->fbwindow()->isVisible()) {
         WinClient *client = *m_cycling_window;
-        m_focused_list.erase(m_cycling_window);
+        m_focused_list.remove(client);
         m_focused_list.push_front(client);
         client->fbwindow()->raise();
-    } else {
+    } else
         revertFocus(m_screen);
-    }
-
 }
 
 /**
@@ -254,7 +255,6 @@ void FocusControl::setScreenFocusedWindow(WinClient &win_client) {
             !Fluxbox::instance()->isStartup()) {
         m_focused_list.remove(&win_client);
         m_focused_list.push_front(&win_client);
-        m_cycling_window = m_focused_list.begin();
     }
 }
 
@@ -370,14 +370,14 @@ void FocusControl::removeClient(WinClient &client) {
         return;
 
     WinClient *cyc = 0;
-    if (m_cycling_window != m_focused_list.end() && m_cycling_window != m_creation_order_list.end())
+    if (m_cycling_list && m_cycling_window != m_cycling_list->end())
         cyc = *m_cycling_window;
 
     m_focused_list.remove(&client);
     m_creation_order_list.remove(&client);
 
     if (cyc == &client) {
-        m_cycling_window = m_creation_order_list.end();
+        m_cycling_window = m_cycling_list->end();
         stopCyclingFocus();
     }
 }
@@ -402,8 +402,7 @@ void FocusControl::shutdown() {
  * it gets a focusIn
  */
 void FocusControl::revertFocus(BScreen &screen) {
-
-    if (screen.focusControl().isCycling())
+    if (s_reverting)
         return;
 
     FocusControl::s_reverting = true;
