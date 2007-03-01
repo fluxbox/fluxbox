@@ -406,6 +406,7 @@ public:
     int numHeads() const { return m_xinerama_num_heads; }
 
     void initXinerama();
+    void clearHeads();
     /**
      * Determines head number for a position
      * @param x position in pixels on the screen

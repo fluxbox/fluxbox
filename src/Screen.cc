@@ -1909,6 +1909,9 @@ void BScreen::updateSize() {
     // send resize notify
     m_resize_sig.notify();
     m_workspace_area_sig.notify();
+
+    // move windows out of inactive heads
+    clearHeads();
 }
 
 
@@ -2018,6 +2021,22 @@ notactive:
     m_xinerama_num_heads = 0;
 #endif // XINERAMA
 
+}
+
+/* Move windows out of inactive heads */
+void BScreen::clearHeads() {
+    if (!hasXinerama()) return;
+
+    for (Workspaces::iterator i = m_workspaces_list.begin();
+	    i != m_workspaces_list.end(); i++) {
+	for (Workspace::Windows::iterator win = (*i)->windowList().begin();
+		win != (*i)->windowList().end(); win++) {
+	    if (getHead((*win)->fbWindow()) == 0) {
+                // first head is a safe bet here
+                (*win)->placeWindow(1);
+            }
+	}
+    }
 }
 
 int BScreen::getHead(int x, int y) const {
