@@ -1,5 +1,7 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+   * Added support for keypad enter key in menu (Mark)
+     FbTk/Menu.cc
 *07/02/28:
    * Fixed some strange menu behaviors (Mark)
      FbTk/Menu.cc/hh

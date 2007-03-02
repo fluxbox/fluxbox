@@ -1038,6 +1038,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
     case XK_Escape: // close menu
         hide();
         break;
+    case XK_KP_Enter:
     case XK_Return:
         // send fake button 1 click
         if (validIndex(m_active_index) &&
