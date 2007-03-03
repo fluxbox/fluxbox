@@ -56,6 +56,7 @@ public:
     ///@{
     inline const FbTk::Color &titleTextColor() const { return *t_text; }
     inline const FbTk::Color &frameTextColor() const { return *f_text; }
+    inline const FbTk::Color &frameUnderlineColor() const { return *u_text; }
     inline const FbTk::Color &highlightTextColor() const { return *h_text; }
     inline const FbTk::Color &disableTextColor() const { return *d_text; }
     ///@}
@@ -94,11 +95,13 @@ public:
     ///@{
     inline const GContext &titleTextGC() const { return t_text_gc; }
     inline const GContext &frameTextGC() const { return f_text_gc; }
+    inline const GContext &frameUnderlineGC() const { return u_text_gc; }
     inline const GContext &hiliteTextGC() const { return h_text_gc; }
     inline const GContext &disableTextGC() const { return d_text_gc; }
     inline const GContext &hiliteGC() const { return hilite_gc; }
     inline GContext &titleTextGC() { return t_text_gc; }
     inline GContext &frameTextGC() { return f_text_gc; }
+    inline GContext &frameUnderlineGC() { return u_text_gc; }
     inline GContext &hiliteTextGC() { return h_text_gc; }
     inline GContext &disableTextGC() { return d_text_gc; }
     inline GContext &hiliteGC() { return hilite_gc; }
@@ -139,7 +142,7 @@ public:
     }
 
 private:
-    FbTk::ThemeItem<FbTk::Color> t_text, f_text, h_text, d_text;
+    FbTk::ThemeItem<FbTk::Color> t_text, f_text, h_text, d_text, u_text;
     FbTk::ThemeItem<FbTk::Texture> title, frame, hilite;
     FbTk::ThemeItem<FbTk::Font> titlefont, framefont;
     FbTk::ThemeItem<FbTk::Justify> framefont_justify, titlefont_justify;
@@ -153,7 +156,7 @@ private:
     FbTk::ThemeItem<FbTk::PixmapWithMask> m_hl_bullet_pixmap, m_hl_selected_pixmap, m_hl_unselected_pixmap;
 
     Display *m_display;
-    FbTk::GContext t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
+    FbTk::GContext t_text_gc, f_text_gc, u_text_gc, h_text_gc, d_text_gc, hilite_gc;
 
     unsigned char m_alpha;
     MenuMode m_menumode;

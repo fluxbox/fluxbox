@@ -27,6 +27,7 @@
 #include "RefCount.hh"
 #include "Command.hh"
 #include "PixmapWithMask.hh"
+#include "ITypeAheadable.hh"
 #include "FbString.hh"
 
 #include <string>
@@ -39,7 +40,7 @@ class MenuTheme;
 class FbDrawable;
 
 ///   An interface for a menu item in Menu
-class MenuItem {
+class MenuItem : public FbTk::ITypeAheadable {
 public:
     MenuItem()
         : m_label(""),
@@ -105,6 +106,17 @@ public:
     virtual bool isEnabled() const { return m_enabled; }
     virtual bool isSelected() const { return m_selected; }
     virtual bool isToggleItem() const { return m_toggle_item; }
+    
+    // iType functions
+    virtual inline void setIndex(int index) { m_index = index; }
+    virtual inline int getIndex() { return m_index; }
+    inline const std::string &iTypeString() const { return m_label; }
+    virtual void drawLine(FbDrawable &draw,
+                      const MenuTheme &theme,
+                      size_t size,
+                      int text_x, int text_y,
+                      unsigned int width) const;
+
     virtual unsigned int width(const MenuTheme &theme) const;
     virtual unsigned int height(const MenuTheme &theme) const;
     virtual void draw(FbDrawable &drawable, 
@@ -137,6 +149,7 @@ private:
     RefCount<Command> m_command; ///< command to be executed
     bool m_enabled, m_selected;
     bool m_toggle_item;
+    int m_index;
 
     struct Icon {
         std::auto_ptr<PixmapWithMask> pixmap;

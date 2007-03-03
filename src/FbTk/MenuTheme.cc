@@ -44,6 +44,7 @@ MenuTheme::MenuTheme(int screen_num):
     f_text(*this, "menu.frame.textColor", "Menu.Frame.TextColor"),
     h_text(*this, "menu.hilite.textColor", "Menu.Hilite.TextColor"),
     d_text(*this, "menu.frame.disableColor", "Menu.Frame.DisableColor"),
+    u_text(*this, "menu.frame.underlineColor", "Menu.Frame.UnderlineColor"),
     title(*this, "menu.title", "Menu.Title"),
     frame(*this, "menu.frame", "Menu.Frame"),
     hilite(*this, "menu.hilite", "Menu.Hilite"),
@@ -67,6 +68,7 @@ MenuTheme::MenuTheme(int screen_num):
     m_display(FbTk::App::instance()->display()),
     t_text_gc(RootWindow(m_display, screen_num)),
     f_text_gc(RootWindow(m_display, screen_num)),
+    u_text_gc(RootWindow(m_display, screen_num)),
     h_text_gc(RootWindow(m_display, screen_num)),
     d_text_gc(RootWindow(m_display, screen_num)),
     hilite_gc(RootWindow(m_display, screen_num)),
@@ -91,6 +93,7 @@ MenuTheme::MenuTheme(int screen_num):
 
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);
+    u_text_gc.setForeground(*u_text);
     h_text_gc.setForeground(*h_text);
     d_text_gc.setForeground(*d_text);
     hilite_gc.setForeground(hilite->color());
@@ -127,6 +130,7 @@ void MenuTheme::reconfigTheme() {
 
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);
+    u_text_gc.setForeground(*u_text);
     h_text_gc.setForeground(*h_text);
     d_text_gc.setForeground(*d_text);
     hilite_gc.setForeground(hilite->color());

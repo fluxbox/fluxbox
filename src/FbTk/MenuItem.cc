@@ -38,6 +38,44 @@ void MenuItem::click(int button, int time) {
         m_command->execute();
 }
 
+void MenuItem::drawLine(FbDrawable &draw, const MenuTheme &theme, size_t size,
+                        int text_x, int text_y, unsigned int width) const {
+
+    unsigned int height = theme.itemHeight();
+    int bevelW = theme.bevelWidth();
+
+    int font_top = (height - theme.frameFont().height())/2;
+    int underline_height = font_top + theme.frameFont().ascent() + 2;
+    int bottom = height - bevelW - 1;
+    
+    text_y += bottom > underline_height ? underline_height : bottom;
+    int text_w = theme.frameFont().textWidth(m_label.c_str(), m_label.size());
+
+    // width of the searchstring
+    size = size > m_label.length() ? m_label.length() : size;
+    std::string search_string = m_label.substr(0,size);
+    int search_string_w = theme.frameFont().textWidth(search_string.c_str(), size);
+
+    // pay attention to the text justification
+    switch(theme.frameFontJustify()) {
+    case FbTk::LEFT:
+        text_x += bevelW + height + 1;
+        break;
+    case FbTk::RIGHT:
+        text_x += width - (height + bevelW + text_w);
+        break;
+    default: //center
+        text_x += ((width + 1 - text_w) / 2);
+        break;
+    }
+
+    // avoid drawing an ugly dot
+    if (size != 0)
+        draw.drawLine(theme.frameUnderlineGC().gc(),
+                      text_x, text_y, text_x + search_string_w, text_y);
+
+}
+
 void MenuItem::draw(FbDrawable &draw,
                     const MenuTheme &theme,
                     bool highlight, bool draw_foreground, bool draw_background,

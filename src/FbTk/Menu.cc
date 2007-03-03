@@ -110,6 +110,7 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
         m_visible = false;
 
 
+    m_type_ahead.init(menuitems);
 
     menu.x_move =
         menu.y_move = 0;
@@ -205,13 +206,22 @@ int Menu::insert(const FbString &label, Menu *submenu, int pos) {
 }
 
 int Menu::insert(MenuItem *item, int pos) {
+    if (item == 0)
+        return menuitems.size();
     if (pos == -1) {
+        item->setIndex(menuitems.size());
         menuitems.push_back(item);
     } else {
         menuitems.insert(menuitems.begin() + pos, item);
+        fixMenuItemIndices();
     }
     m_need_update = true; // we need to redraw the menu
     return menuitems.size();
+}
+
+void Menu::fixMenuItemIndices() {
+    for (size_t i = 0; i < menuitems.size(); i++)
+        menuitems[i]->setIndex(i);
 }
 
 int Menu::remove(unsigned int index) {
@@ -229,6 +239,9 @@ int Menu::remove(unsigned int index) {
 
     if (item) {
         menuitems.erase(it);
+        // avoid O(n^2) algorithm with removeAll()
+        if (index != menuitems.size())
+            fixMenuItemIndices();
 
         if (item->submenu() != 0) {
             Menu *tmp = item->submenu();
@@ -257,10 +270,8 @@ int Menu::remove(unsigned int index) {
 }
 
 void Menu::removeAll() {
-    while (!menuitems.empty()) {
-        remove(0);
-    }
-    m_need_update = true;
+    while (!menuitems.empty())
+        remove(menuitems.size()-1);
 }
 
 void Menu::raise() {
@@ -271,18 +282,46 @@ void Menu::lower() {
     menu.window.lower();
 }
 
-void Menu::nextItem(int failsafe) {
-    if (menuitems.empty())
+void Menu::cycleItems(bool reverse) {
+    Menuitems vec;
+    if (m_type_ahead.stringSize())
+        vec = m_matches;
+    else
+        vec = menuitems;
+
+    if (vec.size() < 1)
         return;
 
-    if (failsafe == -1)
-        failsafe = m_active_index;
+    // find the next item to select
+    // this algorithm assumes menuitems are sorted properly
+    int new_index = -1;
+    bool passed = !validIndex(m_active_index);
+    for (size_t i = 0; i < vec.size(); i++) {
+        if (!isItemSelectable(vec[i]->getIndex()) ||
+            vec[i]->getIndex() == m_active_index)
+            continue;
 
+        // determine whether or not we've passed the active index
+        if (!passed && vec[i]->getIndex() > m_active_index) {
+            if (reverse && new_index != -1)
+                break;
+            passed = true;
+        }
+
+        // decide if we want to keep this item
+        if (passed && !reverse) {
+            new_index = vec[i]->getIndex();
+            break;
+        } else if (reverse || new_index == -1)
+            new_index = vec[i]->getIndex();
+    }
+
+    if (new_index == -1)
+        return;
+
+    // clear the items and close any open submenus
     int old_active_index = m_active_index;
-    m_active_index += 1;
-    if (!validIndex(m_active_index))
-        m_active_index = 0;
-
+    m_active_index = new_index;
     if (validIndex(old_active_index) &&
         menuitems[old_active_index] != 0) {
         if (menuitems[old_active_index]->submenu()) {
@@ -292,54 +331,7 @@ void Menu::nextItem(int failsafe) {
         }
         clearItem(old_active_index);
     }
-
-    if (menuitems[m_active_index] == 0) {
-        m_active_index = -1;
-        return;
-    }
-
-    if (!isItemSelectable(m_active_index) && m_active_index != failsafe) {
-        nextItem(failsafe);
-        return;
-    }
-
-    clearItem(m_active_index);
-
-}
-
-void Menu::prevItem(int failsafe) {
-    if (menuitems.empty())
-        return;
-
-    if (failsafe == -1)
-        failsafe = m_active_index;
-
-    int old_active_index = m_active_index;
-    m_active_index -= 1;
-    if (!validIndex(m_active_index))
-        m_active_index = menuitems.size() - 1;
-
-    if (validIndex(old_active_index)) {
-        if (menuitems[old_active_index]->submenu()) {
-            // we need to do this explicitly on the menu.window
-            // since it might hide the parent if we use Menu::hide
-            menuitems[old_active_index]->submenu()->internal_hide();
-        }
-        clearItem(old_active_index);
-    }
-
-    if (menuitems[m_active_index] == 0) {
-        m_active_index = -1;
-        return;
-    }
-
-    if (!isItemSelectable(m_active_index) && m_active_index != failsafe) {
-        prevItem(failsafe);
-        return;
-    }
-
-    clearItem(m_active_index);
-
+    clearItem(new_index);
 }
 
 void Menu::enterSubmenu() {
@@ -356,7 +348,7 @@ void Menu::enterSubmenu() {
     drawSubmenu(m_active_index);
     submenu->grabInputFocus();
     submenu->m_active_index = -1; // so we land on 0 after nextItem()
-    submenu->nextItem();
+    submenu->cycleItems(false);
 }
 
 void Menu::enterParent() {
@@ -1024,34 +1016,59 @@ void Menu::keyPressEvent(XKeyEvent &event) {
 
     switch (ks) {
     case XK_Up:
-        prevItem();
+        resetTypeAhead();
+        cycleItems(true);
         break;
     case XK_Down:
-        nextItem();
+        resetTypeAhead();
+        cycleItems(false);
         break;
     case XK_Left: // enter parent if we have one
+        resetTypeAhead();
         enterParent();
         break;
     case XK_Right: // enter submenu if we have one
+        resetTypeAhead();
         enterSubmenu();
         break;
     case XK_Escape: // close menu
+        m_type_ahead.reset();
         hide();
+        break;
+    case XK_BackSpace:
+        m_type_ahead.putBackSpace();
+        drawTypeAheadItems();
         break;
     case XK_KP_Enter:
     case XK_Return:
-        // send fake button 1 click
+        resetTypeAhead();
         if (validIndex(m_active_index) &&
             isItemEnabled(m_active_index)) {
-            if (event.state & ShiftMask)
-                menuitems[m_active_index]->click(3, event.time);
-            else
-                menuitems[m_active_index]->click(1, event.time);
-            m_need_update = true;
-            updateMenu();
+            if (menuitems[m_active_index]->submenu() != 0)
+                enterSubmenu();
+            else {
+                // send fake button click
+                int button = (event.state & ShiftMask) ? 3 : 1;
+                find(m_active_index)->click(button, event.time);
+                m_need_update = true;
+                updateMenu();
+            }
         }
         break;
+    case XK_Tab:
+    case XK_ISO_Left_Tab:
+        m_type_ahead.seek();
+        cycleItems((bool)(event.state & ShiftMask));
+        drawTypeAheadItems();
+        break;
     default:
+        m_type_ahead.putCharacter(keychar[0]);
+        // if current item doesn't match new search string, find the next one
+        drawTypeAheadItems();
+        if (!m_matches.empty() && (!validIndex(m_active_index) ||
+            std::find(m_matches.begin(), m_matches.end(),
+                      find(m_active_index)) == m_matches.end()))
+            cycleItems(false);
         break;
     }
 }
@@ -1151,7 +1168,7 @@ void Menu::renderForeground(FbWindow &win, FbDrawable &drawable) {
 // thus sometimes it won't perform the actual clear operation
 // nothing in here should be rendered transparently
 // (unless you use a caching pixmap, which I think we should avoid)
-void Menu::clearItem(int index, bool clear) {
+void Menu::clearItem(int index, bool clear, int search_index) {
     if (!validIndex(index))
         return;
 
@@ -1160,9 +1177,16 @@ void Menu::clearItem(int index, bool clear) {
     int item_x = (sbl * item_w), item_y = (i * item_h);
     bool highlight = (index == m_active_index && isItemSelectable(index));
 
+    if (search_index < 0)
+        // find if we need to underline the item
+        search_index = std::find(m_matches.begin(), m_matches.end(),
+                                 find(index)) - m_matches.begin();
+
     // don't highlight if moving, doesn't work with alpha on
     if (highlight && !m_moving) {
         highlightItem(index);
+        if (search_index < (int)m_matches.size())
+            drawLine(index, m_type_ahead.stringSize());
         return;
     } else if (clear)
         menu.frame.clearArea(item_x, item_y, item_w, item_h);
@@ -1173,6 +1197,9 @@ void Menu::clearItem(int index, bool clear) {
     item->draw(menu.frame, theme(), highlight,
                true, false, item_x, item_y,
                item_w, item_h);
+
+    if (search_index < (int)m_matches.size())
+        drawLine(index, m_type_ahead.stringSize());
 }
 
 // Area must have been cleared before calling highlight
@@ -1204,6 +1231,38 @@ void Menu::highlightItem(int index) {
                         item_x, item_y,
                         item_w, item_h);
 
+}
+
+void Menu::resetTypeAhead() {
+    Menuitems vec = m_matches;
+    Menuitems::iterator it = vec.begin();
+    m_type_ahead.reset();
+    m_matches.clear();
+
+    for (; it != vec.end(); it++)
+        clearItem((*it)->getIndex(), true, 1);
+}
+
+void Menu::drawTypeAheadItems() {
+    // remove underlines from old matches
+    for (size_t i = 0; i < m_matches.size(); i++)
+        clearItem(m_matches[i]->getIndex(), true, m_matches.size());
+
+    m_matches = m_type_ahead.matched();
+    for (size_t j = 0; j < m_matches.size(); j++)
+        clearItem(m_matches[j]->getIndex(), false, j);
+}
+
+// underline menuitem[index] with respect to matchstringsize size
+void Menu::drawLine(int index, int size){
+    if (!validIndex(index))
+        return;
+
+    int sbl = index / menu.persub, i = index - (sbl * menu.persub);
+    int item_x = (sbl * menu.item_w), item_y = (i * theme().itemHeight());
+
+    FbTk::MenuItem *item = find(index);
+    item->drawLine(menu.frame, theme(), size, item_x, item_y, menu.item_w);
 }
 
 }; // end namespace FbTk

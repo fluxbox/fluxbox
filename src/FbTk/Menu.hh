@@ -41,6 +41,7 @@
 #include "MenuTheme.hh"
 #include "Timer.hh"
 #include "FbString.hh"
+#include "TypeAhead.hh"
 
 namespace FbTk {
 
@@ -87,10 +88,8 @@ public:
     virtual void raise();
     /// lower this window
     virtual void lower();
-    /// select next item
-    void nextItem(int failsafe = -1);
-    /// select previous item
-    void prevItem(int failsafe = -1);
+    /// cycle through menuitems
+    void cycleItems(bool reverse);
     void enterSubmenu();
     void enterParent();
 
@@ -186,7 +185,7 @@ protected:
     int drawItem(FbDrawable &pm, unsigned int index,
                  bool highlight = false,
                  bool exclusive_drawable = false);
-    void clearItem(int index, bool clear = true);
+    void clearItem(int index, bool clear = true, int search_index = -1);
     void highlightItem(int index);
     virtual void redrawTitle(FbDrawable &pm);
     virtual void redrawFrame(FbDrawable &pm);
@@ -208,6 +207,14 @@ private:
     Menu *m_parent;
     ImageControl &m_image_ctrl;
     Menuitems menuitems;
+
+    TypeAhead<Menuitems, MenuItem *> m_type_ahead;
+    Menuitems m_matches;
+
+    void resetTypeAhead();
+    void drawTypeAheadItems();
+    void drawLine(int index, int size);
+    void fixMenuItemIndices();
 
     int m_screen_x, m_screen_y;
     unsigned int m_screen_width, m_screen_height;

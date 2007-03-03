@@ -51,6 +51,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	MenuSeparator.hh MenuSeparator.cc \
 	MenuIcon.hh MenuIcon.cc \
 	stringstream.hh \
+	TypeAhead.hh SearchResult.hh SearchResult.cc ITypeAheadable.hh \
 	Select2nd.hh \
 	CachedPixmap.hh CachedPixmap.cc \
 	${xpm_SOURCE} \

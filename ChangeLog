@@ -1,5 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/03
+   * Added typeahead support to menus (Mathias, Mark + thanks Matteo Galiazzo)
+     - Added new style item menu.frame.underlineColor: <color> for displaying
+       matching items
+     FbTk/Menu.cc/hh MenuItem.cc/hh MenuTheme.cc/hh Makefile.am and added
+     FbTk/ITypeAheadable.hh TypeAhead.hh SearchResult.cc/hh
+*07/03/02
    * Added support for keypad enter key in menu (Mark)
      FbTk/Menu.cc
 *07/02/28:
