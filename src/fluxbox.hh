@@ -126,12 +126,7 @@ public:
     const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
     const std::string &getAppsFilename() const { return *m_rc_appsfile; }
     int colorsPerChannel() const { return *m_rc_colors_per_channel; }
-    int getNumberOfLayers() const { return *m_rc_numlayers; }
     int getTabsPadding() const { return *m_rc_tabs_padding; }
-
-    // class to store layer numbers (special Resource type)
-    // we have a special resource type because we need to be able to name certain layers
-    // a Resource<int> wouldn't allow this
 
 
     time_t getAutoRaiseDelay() const { return *m_rc_auto_raise_delay; }
@@ -246,7 +241,7 @@ private:
 
     FbTk::Resource<bool> m_rc_ignoreborder;
     FbTk::Resource<bool> m_rc_pseudotrans;
-    FbTk::Resource<int> m_rc_colors_per_channel, m_rc_numlayers,
+    FbTk::Resource<int> m_rc_colors_per_channel,
         m_rc_double_click_interval,
         m_rc_tabs_padding;
     FbTk::Resource<std::string> m_rc_stylefile,

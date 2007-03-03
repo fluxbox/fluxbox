@@ -211,7 +211,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_pseudotrans(m_resourcemanager, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
       m_rc_colors_per_channel(m_resourcemanager, 4,
                               "session.colorsPerChannel", "Session.ColorsPerChannel"),
-      m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
       m_rc_tabs_padding(m_resourcemanager, 0, "session.tabPadding", "Session.TabPadding"),
       m_rc_stylefile(m_resourcemanager, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
@@ -378,7 +377,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         sprintf(altscrname, "session.Screen%d", screens[s]);
         BScreen *screen = new BScreen(m_screen_rm.lock(),
                                       scrname, altscrname,
-                                      screens[s], getNumberOfLayers());
+                                      screens[s], ::Layer::NUM_LAYERS);
 
         // already handled
         if (! screen->isScreenManaged()) {

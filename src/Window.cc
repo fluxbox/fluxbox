@@ -1922,8 +1922,8 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
     // don't let it set its layer into menu area
     if (layernum <= ::Layer::MENU)
         layernum = ::Layer::MENU + 1;
-    else if (layernum >= Fluxbox::instance()->getNumberOfLayers())
-        layernum = Fluxbox::instance()->getNumberOfLayers()-1;
+    else if (layernum >= ::Layer::NUM_LAYERS)
+        layernum = ::Layer::NUM_LAYERS - 1;
 
     if (!m_initialized)
         m_layernum = layernum;

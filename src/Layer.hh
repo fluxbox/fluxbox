@@ -37,7 +37,8 @@ public:
         TOP = 6,
         NORMAL = 8,
         BOTTOM = 10,
-        DESKTOP = 12
+        DESKTOP = 12,
+        NUM_LAYERS = 13
     };
 
     explicit Layer(int i) : m_num(i) {};
