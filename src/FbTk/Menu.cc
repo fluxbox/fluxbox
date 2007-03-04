@@ -352,21 +352,10 @@ void Menu::enterSubmenu() {
 }
 
 void Menu::enterParent() {
-    if (parent() == 0)
-        return;
-
-    if (validIndex(m_active_index)) {
-        Menu *submenu = menuitems[m_active_index]->submenu();
-        if (submenu)
-            submenu->internal_hide();
-    }
-
-    m_active_index = -1;
-    // hide self
-    m_visible = false;
-    menu.window.hide();
+    internal_hide();
     // return focus to parent
-    parent()->grabInputFocus();
+    if (parent())
+        parent()->grabInputFocus();
 }
 
 void Menu::disableTitle() {
@@ -1038,6 +1027,11 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         hide();
         break;
     case XK_BackSpace:
+        if (m_type_ahead.stringSize() == 0) {
+            enterParent();
+            break;           
+        }    
+
         m_type_ahead.putBackSpace();
         drawTypeAheadItems();
         break;
@@ -1059,8 +1053,14 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Tab:
     case XK_ISO_Left_Tab:
-        m_type_ahead.seek();
-        cycleItems((bool)(event.state & ShiftMask));
+        if (validIndex(m_active_index) && isItemEnabled(m_active_index) &&
+            menuitems[m_active_index]->submenu() && m_matches.size() == 1) {
+            enterSubmenu();
+            m_type_ahead.reset();
+        } else {
+            m_type_ahead.seek();
+            cycleItems((bool)(event.state & ShiftMask));
+        }
         drawTypeAheadItems();
         break;
     default:
