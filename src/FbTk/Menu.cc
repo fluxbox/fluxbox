@@ -522,6 +522,8 @@ void Menu::show() {
     if (m_need_update)
         updateMenu();
 
+    m_type_ahead.reset();
+
     menu.window.showSubwindows();
     menu.window.show();
     raise();
