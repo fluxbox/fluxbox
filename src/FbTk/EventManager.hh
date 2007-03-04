@@ -43,6 +43,10 @@ public:
     void add(EventHandler &ev, Window win) { registerEventHandler(ev, win); }
     void remove(Window win) { unregisterEventHandler(win); }
 
+    bool grabKeyboard(EventHandler &ev, Window win);
+    void ungrabKeyboard();
+    EventHandler *grabbingKeyboard() { return m_grabbing_keyboard; }
+
     EventHandler *find(Window win);
 
     // Some events have the parent window as the xany.window
@@ -53,13 +57,14 @@ public:
     void unregisterEventHandler(Window win);
 
 private:
-    EventManager() { }
+    EventManager(): m_grabbing_keyboard(0) { }
     ~EventManager();
     void dispatch(Window win, XEvent &event, bool parent = false);
 
     typedef std::map<Window, EventHandler *> EventHandlerMap;
     EventHandlerMap m_eventhandlers;
     EventHandlerMap m_parent;
+    EventHandler *m_grabbing_keyboard;
 };
 
 } //end namespace FbTk

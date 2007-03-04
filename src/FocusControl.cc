@@ -30,6 +30,8 @@
 #include "fluxbox.hh"
 #include "FbWinFrameTheme.hh"
 
+#include "FbTk/EventManager.hh"
+
 #include <string>
 #include <iostream>
 
@@ -82,7 +84,7 @@ bool doSkipWindow(const WinClient &winclient, int opts) {
 void FocusControl::cycleFocus(FocusedWindows *window_list, int opts, bool cycle_reverse) {
 
     if (!m_cycling_list) {
-        if (&m_screen == Fluxbox::instance()->watchingScreen())
+        if (&m_screen == FbTk::EventManager::instance()->grabbingKeyboard())
             // only set this when we're waiting for modifiers
             m_cycling_list = window_list;
         m_was_iconic = 0;

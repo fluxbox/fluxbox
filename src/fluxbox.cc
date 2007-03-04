@@ -228,7 +228,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_masked_window(0),
       m_mousescreen(0),
       m_keyscreen(0),
-      m_watching_screen(0), m_watch_keyrelease(0),
       m_last_time(0),
       m_masked(0),
       m_rc_file(rcfilename ? rcfilename : ""),
@@ -746,7 +745,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
     switch (e->type) {
     case ButtonRelease:
     case ButtonPress:
-        handleButtonEvent(e->xbutton);
         break;
     case ConfigureRequest: {
 
@@ -894,7 +892,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case KeyRelease:
     case KeyPress:
-        handleKeyEvent(e->xkey);
 	break;
     case ColormapNotify: {
         BScreen *screen = searchScreen(e->xcolormap.window);
@@ -956,20 +953,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
     }
 
     }
-}
-
-void Fluxbox::handleButtonEvent(XButtonEvent &be) {
-    m_last_time = be.time;
-
-    BScreen *screen = searchScreen(be.window);
-    if (be.type == ButtonRelease || !screen)
-        // no bindings for this type yet
-        return;
-
-    if (be.button == 1 && !screen->isRootColormapInstalled())
-        screen->imageControl().installRootColormap();
-
-    m_key->doAction(be.type, be.state, be.button);
 }
 
 void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
@@ -1089,47 +1072,6 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
             (*it).first->checkClientMessage(ce, screen, winclient);
         }
 
-    }
-}
-
-/**
- Handles KeyRelease and KeyPress events
-*/
-void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
-
-    if (keyScreen() == 0 || mouseScreen() == 0)
-        return;
-
-    switch (ke.type) {
-    case KeyPress:
-        m_key->doAction(ke.type, ke.state, ke.keycode);
-        break;
-    case KeyRelease: {
-        // we ignore most key releases unless we need to use
-        // a release to stop something (e.g. window cycling).
-
-        // we notify if _all_ of the watched modifiers are released
-        if (m_watching_screen && m_watch_keyrelease) {
-            // mask the mod of the released key out
-            // won't mask anything if it isn't a mod
-            unsigned int state = FbTk::KeyUtil::instance().isolateModifierMask(ke.state);
-            state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
-
-            if ((m_watch_keyrelease & state) == 0) {
-
-                m_watching_screen->notifyReleasedKeys();
-                XUngrabKeyboard(FbTk::App::instance()->display(), CurrentTime);
-
-                // once they are released, we drop the watch
-                m_watching_screen = 0;
-                m_watch_keyrelease = 0;
-            }
-        }
-
-        break;
-    }
-    default:
-        break;
     }
 }
 
@@ -1808,28 +1750,6 @@ void Fluxbox::updateFocusedWindow(BScreen *screen, BScreen *old_screen) {
              it != m_atomhandler.end(); it++)
             (*it).first->updateFocusedWindow(*old_screen, 0);
     }
-}
-
-void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
-
-    if (mods == 0) {
-        cerr<<"WARNING: attempt to grab without modifiers!"<<endl;
-        return;
-    }
-    // just make sure we are saving the mods with any other flags (xkb)
-    m_watch_keyrelease = FbTk::KeyUtil::instance().isolateModifierMask(mods);
-
-    if (m_watching_screen == &screen)
-        return;
-    if (m_watching_screen)
-        m_watching_screen->focusControl().stopCyclingFocus();
-    m_watching_screen = &screen;
-
-    // TODO: it's possible (and happens to me sometimes) for the mods to be
-    // released before we grab the keyboard -- not sure of a good way to fix it
-    XGrabKeyboard(FbTk::App::instance()->display(),
-                  screen.rootWindow().window(), True,
-                  GrabModeAsync, GrabModeAsync, CurrentTime);
 }
 
 void Fluxbox::updateFrameExtents(FluxboxWindow &win) {

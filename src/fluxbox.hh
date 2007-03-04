@@ -141,8 +141,6 @@ public:
     void maskWindowEvents(Window w, FluxboxWindow *bw)
         { m_masked = w; m_masked_window = bw; }
 
-    void watchKeyRelease(BScreen &screen, unsigned int mods);
-
     void shutdown();
     void load_rc(BScreen &scr);
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
@@ -203,8 +201,6 @@ public:
     BScreen *mouseScreen() { return m_mousescreen; }
     // screen of window that last key event (i.e. focused window) went to
     BScreen *keyScreen() { return m_keyscreen; }
-    // screen we are watching for modifier changes
-    BScreen *watchingScreen() { return m_watching_screen; }
     const XEvent &lastEvent() const { return m_last_event; }
 
     AttentionNoticeHandler &attentionHandler() { return m_attention_handler; }
@@ -228,10 +224,8 @@ private:
     void handleEvent(XEvent *xe);
 
     void setupConfigFiles();
-    void handleButtonEvent(XButtonEvent &be);
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
-    void handleKeyEvent(XKeyEvent &ke);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 
@@ -272,8 +266,6 @@ private:
     FluxboxWindow *m_masked_window;
 
     BScreen *m_mousescreen, *m_keyscreen;
-    BScreen *m_watching_screen;
-    unsigned int m_watch_keyrelease;
 
     Atom m_fluxbox_pid;
 

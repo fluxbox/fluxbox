@@ -54,11 +54,11 @@ public:
     virtual void exposeEvent(XExposeEvent &) { }
     virtual void motionNotifyEvent(XMotionEvent &) { }
     virtual void keyPressEvent(XKeyEvent &) { }
-#ifdef NOT_USED
     virtual void keyReleaseEvent(XKeyEvent &) { }
-#endif
     virtual void leaveNotifyEvent(XCrossingEvent &) { }
     virtual void enterNotifyEvent(XCrossingEvent &) { }
+
+    virtual void notifyUngrabKeyboard() { }
 };
 
 } // end namespace FbTk

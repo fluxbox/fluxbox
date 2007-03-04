@@ -66,6 +66,26 @@ EventHandler *EventManager::find(Window win) {
     return m_eventhandlers[win];
 }
 
+bool EventManager::grabKeyboard(EventHandler &ev, Window win) {
+    if (m_grabbing_keyboard)
+        ungrabKeyboard();
+
+    int ret = XGrabKeyboard(App::instance()->display(), win, False,
+                            GrabModeAsync, GrabModeAsync, CurrentTime);
+
+    if (ret == Success) {
+        m_grabbing_keyboard = &ev;
+        return true;
+    }
+    return false;
+}
+
+void EventManager::ungrabKeyboard() {
+    XUngrabKeyboard(App::instance()->display(), CurrentTime);
+    if (m_grabbing_keyboard)
+        m_grabbing_keyboard->notifyUngrabKeyboard();
+    m_grabbing_keyboard = 0;
+}
 
 Window EventManager::getEventWindow(XEvent &ev) {
     // we only have cases for events that differ from xany
@@ -156,9 +176,7 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
         evhand->keyPressEvent(ev.xkey);
     break;
     case KeyRelease:
-#ifdef NOT_USED
         evhand->keyReleaseEvent(ev.xkey);
-#endif
     break;
     case ButtonPress:
         evhand->buttonPressEvent(ev.xbutton);

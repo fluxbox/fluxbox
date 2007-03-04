@@ -28,6 +28,7 @@
 #include "Screen.hh"
 
 #include "fluxbox.hh"
+#include "Keys.hh"
 #include "Window.hh"
 #include "Workspace.hh"
 #include "Netizen.hh"
@@ -364,6 +365,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_altname(altscreenname),
     m_focus_control(new FocusControl(*this)),
     m_placement_strategy(new ScreenPlacement(*this)),
+    m_cycling(false),
     m_xinerama_headinfo(0),
     m_restart(false),
     m_shutdown(false) {
@@ -416,7 +418,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
             screenNumber(), XVisualIDFromVisual(rootWindow().visual()),
             rootWindow().depth());
 
-
+    FbTk::EventManager *evm = FbTk::EventManager::instance();
+    evm->add(*this, rootWindow());
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
     // load this screens resources
@@ -537,6 +540,9 @@ BScreen::~BScreen() {
 
     if (! managed)
         return;
+
+    FbTk::EventManager *evm = FbTk::EventManager::instance();
+    evm->remove(rootWindow());
 
     if (m_rootmenu.get() != 0)
         m_rootmenu->removeAll();
@@ -778,6 +784,59 @@ void BScreen::update(FbTk::Subject *subj) {
     for (; it != it_end; ++it)
         fluxbox->updateFrameExtents(**it);
 
+}
+
+void BScreen::keyPressEvent(XKeyEvent &ke) {
+    Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode);
+}
+
+void BScreen::keyReleaseEvent(XKeyEvent &ke) {
+    if (!m_cycling)
+        return;
+
+    unsigned int state = FbTk::KeyUtil::instance().cleanMods(ke.state);
+    state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
+
+    if (!state) // all modifiers were released
+        FbTk::EventManager::instance()->ungrabKeyboard();
+}
+
+void BScreen::buttonPressEvent(XButtonEvent &be) {
+    if (be.button == 1 && !isRootColormapInstalled())
+        imageControl().installRootColormap();
+
+    Keys *keys = Fluxbox::instance()->keys();
+    keys->doAction(be.type, be.state, be.button);
+}
+
+void BScreen::notifyUngrabKeyboard() {
+    m_cycling = false;
+    focusControl().stopCyclingFocus();
+}
+
+void BScreen::cycleFocus(int options, bool reverse) {
+    // get modifiers from event that causes this for focus order cycling
+    XEvent ev = Fluxbox::instance()->lastEvent();
+    unsigned int mods = 0;
+    if (ev.type == KeyPress)
+        mods = FbTk::KeyUtil::instance().cleanMods(ev.xkey.state);
+    else if (ev.type == ButtonPress)
+        mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
+
+    if (!m_cycling && mods) {
+        m_cycling = true;
+        FbTk::EventManager::instance()->grabKeyboard(*this, rootWindow().window());
+    }
+
+    if (mods == 0) // can't stacked cycle unless there is a mod to grab
+        options |= FocusControl::CYCLELINEAR;
+
+    FocusControl::FocusedWindows *win_list =
+        (options & FocusControl::CYCLELINEAR) ?
+            &focusControl().creationOrderList() :
+            &focusControl().focusedOrderList();
+
+    focusControl().cycleFocus(win_list, options, reverse);
 }
 
 FbTk::Menu *BScreen::createMenu(const string &label) {
@@ -2052,16 +2111,6 @@ void BScreen::renderPosWindow() {
     if (tmp)
         imageControl().removeImage(tmp);
 
-}
-
-
-
-
-/**
-   Called when a set of watched modifiers has been released
-*/
-void BScreen::notifyReleasedKeys() {
-    focusControl().stopCyclingFocus();
 }
 
 void BScreen::updateSize() {

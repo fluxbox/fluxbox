@@ -32,6 +32,8 @@
 #include "MenuTheme.hh"
 #include "PlacementStrategy.hh"
 
+#include "FbTk/EventHandler.hh"
+#include "FbTk/TypeAhead.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/MultLayers.hh"
@@ -78,7 +80,8 @@ class Subject;
 /**
  Create workspaces, handles switching between workspaces and windows
  */
-class BScreen : public FbTk::Observer, private FbTk::NotCopyable {
+class BScreen: public FbTk::EventHandler, public FbTk::Observer,
+               private FbTk::NotCopyable {
 public:
     /// a window becomes active / focussed on a different workspace
     enum FollowModel { 
@@ -209,6 +212,13 @@ public:
 
     void update(FbTk::Subject *subj);
 
+    void keyPressEvent(XKeyEvent &ke);
+    void keyReleaseEvent(XKeyEvent &ke);
+    void buttonPressEvent(XButtonEvent &be);
+    void notifyUngrabKeyboard();
+
+    void cycleFocus(int opts, bool reverse);
+
     FbTk::Menu *createMenu(const std::string &label);
     FbTk::Menu *createToggleMenu(const std::string &label);
     void hideMenus();
@@ -293,8 +303,6 @@ public:
     /// show geomentry with "width x height"-text, not size of window
     void showGeometry(int width, int height);
     void hideGeometry();
-
-    void notifyReleasedKeys();
 
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
@@ -476,6 +484,8 @@ private:
     // window set, but that window wasn't present at the time
     typedef std::map<Window, WinClient *> Groupables;
     Groupables m_expecting_groups;
+
+    bool m_cycling;
 
     // Xinerama related private data
     bool m_xinerama_avail;

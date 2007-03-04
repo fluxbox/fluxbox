@@ -42,59 +42,15 @@
 #include <functional>
 
 void NextWindowCmd::execute() {
-    Fluxbox *fb = Fluxbox::instance();
-    BScreen *screen = fb->keyScreen();
-    if (screen != 0) {
-        // get modifiers from event that causes this for focus order cycling
-        unsigned int mods = 0;
-        XEvent ev = fb->lastEvent();
-        if (ev.type == KeyPress) {
-            mods = FbTk::KeyUtil::instance().cleanMods(ev.xkey.state);
-        } else if (ev.type == ButtonPress) {
-            mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
-        }
-        int options = m_option;
-        if (mods == 0) // can't stacked cycle unless there is a mod to grab
-            options |= FocusControl::CYCLELINEAR;
-        else
-            // set a watch for the release of exactly these modifiers
-            fb->watchKeyRelease(*screen, mods);
-
-        FocusControl::FocusedWindows *win_list =
-            (options & FocusControl::CYCLELINEAR) ?
-                &screen->focusControl().creationOrderList() :
-                &screen->focusControl().focusedOrderList();
-        
-        screen->focusControl().cycleFocus(win_list, m_option);
-    }
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0)
+        screen->cycleFocus(m_option, false);
 }
 
 void PrevWindowCmd::execute() {
-    Fluxbox *fb = Fluxbox::instance();
-    BScreen *screen = fb->keyScreen();
-    if (screen != 0) {
-        // get modifiers from event that causes this for focus order cycling
-        unsigned int mods = 0;
-        XEvent ev = fb->lastEvent();
-        if (ev.type == KeyPress) {
-            mods = FbTk::KeyUtil::instance().cleanMods(ev.xkey.state);
-        } else if (ev.type == ButtonPress) {
-            mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
-        }
-        int options = m_option;
-        if (mods == 0) // can't stacked cycle unless there is a mod to grab
-            options |= FocusControl::CYCLELINEAR;
-        else
-            // set a watch for the release of exactly these modifiers
-            fb->watchKeyRelease(*screen, mods);
-
-        FocusControl::FocusedWindows *win_list =
-            (options & FocusControl::CYCLELINEAR) ?
-                &screen->focusControl().creationOrderList() :
-                &screen->focusControl().focusedOrderList();
-        
-        screen->focusControl().cycleFocus(win_list, m_option, true);
-    }
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0)
+        screen->cycleFocus(m_option, true);
 }
 
 void DirFocusCmd::execute() {
