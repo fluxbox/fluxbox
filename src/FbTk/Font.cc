@@ -216,8 +216,8 @@ bool Font::load(const string &name) {
                 realname = "monospace";
 
             tmp_font = new XftFontImp(0, s_utf8mode);
-#endif // USE_XFT
         }
+#endif // USE_XFT
 
         if (!tmp_font) {
             if (*name_it == "__DEFAULT__")
