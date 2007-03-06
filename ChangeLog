@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/03/06:
+   * changed some handling of focusing/raising transient windows (Mark)
+     Window.cc FocusControl.cc
    * session.screen<N>.defaultDeco now allows same strings as apps file (Mark)
      Screen.cc/hh Window.cc Remember.cc/hh
 *07/03/03:
