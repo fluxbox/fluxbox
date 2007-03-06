@@ -25,6 +25,7 @@
 
 #include "FbRootWindow.hh"
 #include "FbCommands.hh"
+#include "Screen.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/Font.hh"
@@ -141,8 +142,9 @@ private:
 };
 
 
-RootTheme::RootTheme(FbTk::ImageControl &image_control):
+RootTheme::RootTheme(FbTk::ImageControl &image_control, BScreen *scrn):
     FbTk::Theme(image_control.screenNumber()),
+    m_screen(scrn),
     m_background(new BackgroundItem(*this, "background", "Background")),
     m_opgc(RootWindow(FbTk::App::instance()->display(), image_control.screenNumber())),
     m_image_ctrl(image_control) {
@@ -182,10 +184,8 @@ void RootTheme::reconfigTheme() {
         return;
     }
 
-    if (!m_background->changed())
+    if (!m_background->changed() || !m_screen)
         return;
-
-    m_background->setApplied();
 
     // style doesn't wish to change the background
     if (strstr(m_background->options().c_str(), "none") != 0)
@@ -196,7 +196,9 @@ void RootTheme::reconfigTheme() {
     //
 
     // root window helper
-    FbRootWindow rootwin(screenNum());
+    FbRootWindow &rootwin = m_screen->rootWindow();
+
+    m_background->setApplied();
 
     // handle background option in style
     std::string filename = m_background->filename();
