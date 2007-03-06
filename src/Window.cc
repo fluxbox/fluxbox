@@ -204,9 +204,6 @@ void tempRaiseFluxboxWindow(FluxboxWindow &win) {
     if (win.oplock) return;
     win.oplock = true;
 
-    if (!win.winClient().transientList().empty())
-        win.screen().layerManager().lock();
-
     if (!win.isIconic()) {
         // don't update netizen, as it is only temporary
         win.layerItem().tempRaise();
@@ -221,9 +218,6 @@ void tempRaiseFluxboxWindow(FluxboxWindow &win) {
             tempRaiseFluxboxWindow(*(*it)->fbwindow());
     }
     win.oplock = false;
-
-    if (!win.winClient().transientList().empty())
-        win.screen().layerManager().unlock();
 
 }
 

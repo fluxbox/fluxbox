@@ -399,9 +399,6 @@ void FocusControl::shutdown() {
  * last_focused is set to something if we want to make use of the
  * previously focused window (it must NOT be set focused now, it
  *   is probably dying).
- *
- * ignore_event means that it ignores the given event until
- * it gets a focusIn
  */
 void FocusControl::revertFocus(BScreen &screen) {
     if (s_reverting)
@@ -454,21 +451,6 @@ void FocusControl::unfocusWindow(WinClient &client,
     // go up the transient tree looking for a focusable window
 
     FluxboxWindow *fbwin = client.fbwindow();
-    if (fbwin == 0)
-        unfocus_frame = false;
-
-    WinClient *trans_parent = client.transientFor();
-    while (trans_parent) {
-        if (trans_parent->fbwindow() && // can't focus if no fbwin
-            (!unfocus_frame || trans_parent->fbwindow() != fbwin) && // can't be this window
-            trans_parent->fbwindow()->isVisible() &&
-            trans_parent->fbwindow()->setCurrentClient(*trans_parent, 
-                                                       s_focused_window == &client)) {
-            return;
-        }
-        trans_parent = trans_parent->transientFor();
-    }
-
     if (fbwin == 0)
         return; // nothing more we can do
 
