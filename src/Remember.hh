@@ -205,6 +205,8 @@ public:
     Remember();
     ~Remember();
 
+    static int getDecoFromString(const std::string &str);
+
     Application* find(WinClient &winclient);
     Application* add(WinClient &winclient);
     FluxboxWindow* findGroup(Application *, BScreen &screen);

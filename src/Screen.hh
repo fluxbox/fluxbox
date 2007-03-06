@@ -123,7 +123,7 @@ public:
     bool doFullMax() const { return *resource.full_max; }
     bool doShowWindowPos() const { return *resource.show_window_pos; }
     bool decorateTransient() const { return *resource.decorate_transient; }
-    unsigned int defaultDeco() const { return *resource.default_deco; }
+    const std::string &defaultDeco() const { return *resource.default_deco; }
     const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
     FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     // menus
@@ -449,7 +449,7 @@ private:
             workspace_warping,
             desktop_wheeling, reverse_wheeling, show_window_pos,            
             auto_raise, click_raises, decorate_transient;
-        FbTk::Resource<unsigned int> default_deco;
+        FbTk::Resource<std::string> default_deco;
         FbTk::Resource<std::string> rootcommand;
         FbTk::Resource<ResizeModel> resize_model;
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;

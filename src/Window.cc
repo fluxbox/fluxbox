@@ -394,10 +394,10 @@ void FluxboxWindow::init() {
     m_blackbox_attrib.premax_w = m_blackbox_attrib.premax_h = 0;
 
     // set default decorations but don't apply them
-    setDecorationMask(screen().defaultDeco(), false);
+    setDecorationMask(Remember::getDecoFromString(screen().defaultDeco()), false);
 
-    functions.resize = functions.move = functions.iconify = functions.maximize = functions.close = functions.tabable = true;
-    decorations.close = false;
+    functions.resize = functions.move = functions.iconify = functions.maximize
+    = functions.close = functions.tabable = true;
 
     if (m_client->getBlackboxHint() != 0)
         updateBlackboxHintsFromClient(*m_client);

@@ -290,6 +290,32 @@ Remember::~Remember() {
     s_instance = 0;
 }
 
+int Remember::getDecoFromString(const string &str_label) {
+    if (strcasecmp(str_label.c_str(), "NONE") == 0)
+        return 0;
+    if (strcasecmp(str_label.c_str(), "NORMAL") == 0)
+        return FluxboxWindow::DECORM_LAST - 1;
+    if (strcasecmp(str_label.c_str(), "TINY") == 0)
+        return FluxboxWindow::DECORM_TITLEBAR
+               | FluxboxWindow::DECORM_ICONIFY
+               | FluxboxWindow::DECORM_MENU
+               | FluxboxWindow::DECORM_TAB;
+    if (strcasecmp(str_label.c_str(), "TOOL") == 0)
+        return FluxboxWindow::DECORM_TITLEBAR
+               | FluxboxWindow::DECORM_MENU;
+    if (strcasecmp(str_label.c_str(), "BORDER") == 0)
+        return FluxboxWindow::DECORM_BORDER
+               | FluxboxWindow::DECORM_MENU;
+    if (strcasecmp(str_label.c_str(), "TAB") == 0)
+        return FluxboxWindow::DECORM_BORDER
+               | FluxboxWindow::DECORM_MENU
+               | FluxboxWindow::DECORM_TAB;
+    unsigned int mask;
+    if (getuint(str_label.c_str(), mask))
+        return mask;
+    return -1;
+}
+
 Application* Remember::find(WinClient &winclient) {
     // if it is already associated with a application, return that one
     // otherwise, check it against every pattern that we've got
@@ -448,40 +474,11 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
                 app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (strcasecmp(str_key.c_str(), "Deco") == 0) {
-                if (strcasecmp(str_label.c_str(), "NONE") == 0) {
-                    app.rememberDecostate((unsigned int) 0);
-                } else if (strcasecmp(str_label.c_str(), "NORMAL") == 0) {
-                    app.rememberDecostate((unsigned int) 0xfffffff);
-                } else if (strcasecmp(str_label.c_str(), "TINY") == 0) {
-                    app.rememberDecostate((unsigned int)
-                                          FluxboxWindow::DECORM_TITLEBAR
-                                          | FluxboxWindow::DECORM_ICONIFY
-                                          | FluxboxWindow::DECORM_MENU
-                                          | FluxboxWindow::DECORM_TAB
-                                          );
-                } else if (strcasecmp(str_label.c_str(), "TOOL") == 0) {
-                    app.rememberDecostate((unsigned int)
-                                          FluxboxWindow::DECORM_TITLEBAR
-                                          | FluxboxWindow::DECORM_MENU
-                                          );
-                } else if (strcasecmp(str_label.c_str(), "BORDER") == 0) {
-                    app.rememberDecostate((unsigned int)
-                                          FluxboxWindow::DECORM_BORDER
-                                          | FluxboxWindow::DECORM_MENU
-                                          );
-                } else if (strcasecmp(str_label.c_str(), "TAB") == 0) {
-                    app.rememberDecostate((unsigned int)
-                                          FluxboxWindow::DECORM_BORDER
-                                          | FluxboxWindow::DECORM_MENU
-                                          | FluxboxWindow::DECORM_TAB
-                                          );
-                } else {
-                    unsigned int mask;
-                    if (getuint(str_label.c_str(), mask))
-                        app.rememberDecostate(mask);
-                    else
-                        had_error = 1;
-                }
+                int deco = getDecoFromString(str_label);
+                if (deco == -1)
+                    had_error = 1;
+                else
+                    app.rememberDecostate((unsigned int)deco);
             } else if (strcasecmp(str_key.c_str(), "Alpha") == 0) {
                 int focused_a, unfocused_a;
                 if (sscanf(str_label.c_str(), "%i %i", &focused_a, &unfocused_a) == 2)
