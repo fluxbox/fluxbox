@@ -1,7 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/07:
+   * Fixed a little bug with reverting focus after closing menu (Mark)
+     FbTk/Menu.cc
 *07/03/06:
-   * changed some handling of focusing/raising transient windows (Mark)
+   * Changed some handling of focusing/raising transient windows (Mark)
      Window.cc FocusControl.cc
    * session.screen<N>.defaultDeco now allows same strings as apps file (Mark)
      Screen.cc/hh Window.cc Remember.cc/hh
