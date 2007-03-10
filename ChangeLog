@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/03/10:
+   * Fixed changing iconbar text padding requiring a toolbar refresh (Mark)
+     IconbarTool.cc
    * Fixed stealing focus from unmanaged windows (Mark)
      fluxbox.cc
 *07/03/07:

@@ -694,6 +694,7 @@ void IconbarTool::renderButton(IconButton &button, bool clear,
 
     button.setPixmap(*m_rc_use_pixmap);
     button.setAlpha(m_alpha);
+    button.setTextPadding(*m_rc_client_padding);
 
     // The last button is always the regular width
     bool wider_button = false;
@@ -803,8 +804,6 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
                                         m_theme.focusedText().font(),
                                         win);
 
-
-    button->setTextPadding(*m_rc_client_padding);
 
     renderButton(*button, false); // update the attributes, but don't clear it
     m_icon_container.insertItem(button);
