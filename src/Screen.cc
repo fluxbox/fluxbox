@@ -439,7 +439,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         cmd.execute();
     }
 
-    m_root_theme.reset(new RootTheme(imageControl(), this));
+    m_root_theme.reset(new RootTheme(imageControl()));
     m_root_theme->reconfigTheme();
 
     m_windowtheme->setFocusedAlpha(*resource.focused_alpha);

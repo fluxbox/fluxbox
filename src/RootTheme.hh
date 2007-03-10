@@ -46,7 +46,7 @@ public:
     /// constructor
     /// @param resmanager resource manager for finding specific resources
     /// @param image_control for rendering background texture
-    RootTheme(FbTk::ImageControl &image_control, BScreen *scrn = 0);
+    RootTheme(FbTk::ImageControl &image_control);
     ~RootTheme();
 
     bool fallback(FbTk::ThemeItem_base &item);
@@ -62,7 +62,6 @@ public:
     }
     
 private:
-    BScreen *m_screen;
     BackgroundItem *m_background;///< background image/texture
     FbTk::GContext m_opgc;
     FbTk::ImageControl &m_image_ctrl; ///< image control for rendering background texture

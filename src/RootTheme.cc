@@ -142,9 +142,8 @@ private:
 };
 
 
-RootTheme::RootTheme(FbTk::ImageControl &image_control, BScreen *scrn):
+RootTheme::RootTheme(FbTk::ImageControl &image_control):
     FbTk::Theme(image_control.screenNumber()),
-    m_screen(scrn),
     m_background(new BackgroundItem(*this, "background", "Background")),
     m_opgc(RootWindow(FbTk::App::instance()->display(), image_control.screenNumber())),
     m_image_ctrl(image_control) {
@@ -184,7 +183,7 @@ void RootTheme::reconfigTheme() {
         return;
     }
 
-    if (!m_background->changed() || !m_screen)
+    if (!m_background->changed())
         return;
 
     // style doesn't wish to change the background
@@ -194,9 +193,6 @@ void RootTheme::reconfigTheme() {
     //
     // Else parse background from style 
     //
-
-    // root window helper
-    FbRootWindow &rootwin = m_screen->rootWindow();
 
     m_background->setApplied();
 
@@ -263,7 +259,5 @@ void RootTheme::reconfigTheme() {
         FbCommands::ExecuteCmd exec(commandargs, screenNum());
         exec.execute();
     }
-
-    rootwin.clear();
 
 }

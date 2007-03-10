@@ -198,8 +198,7 @@ public:
     // map this window
     void show();
     // unmap this window
-    void hide() { hide(true); }
-    void hide(bool interrupt_moving);
+    void hide(bool interrupt_moving = true);
     void iconify();
     void deiconify(bool reassoc = true, bool do_raise = true);
 
