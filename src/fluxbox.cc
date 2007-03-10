@@ -1719,8 +1719,20 @@ void Fluxbox::timed_reconfigure() {
 }
 
 void Fluxbox::revert_focus() {
-    if (m_revert_screen && !FocusControl::focusedWindow() &&
-        !FbTk::Menu::focused() && !m_showing_dialog)
+    if (!m_revert_screen || FocusControl::focusedWindow() ||
+            FbTk::Menu::focused() || m_showing_dialog)
+        return;
+
+    Window win;
+    int revert;
+    Display *disp = display();
+
+    XGetInputFocus(disp, &win, &revert);
+
+    // we only want to revert focus if it's left dangling, as some other
+    // application may have set the focus to an unmanaged window
+    if (win == None || win == PointerRoot ||
+            win == m_revert_screen->rootWindow().window())
         FocusControl::revertFocus(*m_revert_screen);
 }
 

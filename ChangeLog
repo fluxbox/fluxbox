@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/10:
+   * Fixed stealing focus from unmanaged windows (Mark)
+     fluxbox.cc
 *07/03/07:
    * Fixed a little bug with reverting focus after closing menu (Mark)
      FbTk/Menu.cc
