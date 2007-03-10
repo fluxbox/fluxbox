@@ -732,7 +732,7 @@ session.screen0.slit.layer: <layer>
 session.screen0.toolbar.layer: <layer>
       With these two resources, you can set the layer you want the toolbar and
       the slit to appear on. Please read the LAYER section for more information.
-      Default: Desktop
+      Default: Dock
 
 session.screen0.slit.placement: <placement>
 session.screen0.toolbar.placement: <placement>
@@ -954,8 +954,9 @@ session.screen0.colPlacementDirection: TopToBottom|BottomToTop
       Default: LeftToRight/TopToBottom
 
 session.screen0.fullMaximization: <boolean>
-      If this setting is enabled, windows will maximize over the toolbar and
-      slit, no matter what their individual settings are. Default: False
+      If this setting is enabled, windows will maximize over the toolbar, slit,
+      and any other window that creates a strut, no matter what their individual
+      settings are. Default: False
 
 session.screen0.rootCommand: <command>
       This runs a command when fluxbox starts, intended for setting a default

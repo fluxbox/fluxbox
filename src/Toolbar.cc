@@ -229,7 +229,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
                        scrn.name() + ".toolbar.widthPercent", scrn.altName() + ".Toolbar.WidthPercent"),
     m_rc_alpha(scrn.resourceManager(), 255,
                        scrn.name() + ".toolbar.alpha", scrn.altName() + ".Toolbar.Alpha"),
-    m_rc_layernum(scrn.resourceManager(), Layer(Layer::DESKTOP),
+    m_rc_layernum(scrn.resourceManager(), Layer(Layer::DOCK),
                   scrn.name() + ".toolbar.layer", scrn.altName() + ".Toolbar.Layer"),
     m_rc_on_head(scrn.resourceManager(), 0,
                  scrn.name() + ".toolbar.onhead", scrn.altName() + ".Toolbar.onHead"),
