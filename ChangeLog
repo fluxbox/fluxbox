@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/03/10:
+   * Autogrouped windows weren't getting added to the workspace menu (Mark)
+     Screen.cc
    * Changed default toolbar layer to DOCK, as a large window could render
      fluxbox useless to a new user otherwise (Mark)
      Toolbar.cc doc/asciidoc/fluxbox.txt

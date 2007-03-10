@@ -1449,9 +1449,12 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     } else {
 
         Fluxbox::instance()->attachSignals(*winclient);
-        if (winclient->fbwindow()) // may have been set in an atomhandler
+        if (winclient->fbwindow()) { // may have been set in an atomhandler
             win = winclient->fbwindow();
-        else {
+            Workspace *workspace = getWorkspace(win->workspaceNumber());
+            if (workspace)
+                workspace->updateClientmenu();
+        } else {
             win = new FluxboxWindow(*winclient,
                                     winFrameTheme(),
                                     *layerManager().getLayer(Layer::NORMAL));
