@@ -1214,19 +1214,19 @@ void Menu::highlightItem(int index) {
 
     FbPixmap buffer = FbPixmap(menu.frame, item_w, item_h, menu.frame.depth());
 
-    if (menu.hilite_pixmap != ParentRelative) {
-        if (menu.hilite_pixmap) {
-            buffer.copyArea(menu.hilite_pixmap,
-                            theme().hiliteGC().gc(), 0, 0,
-                            0, 0,
-                            item_w, item_h);
-        } else {
-            buffer.fillRectangle(theme().hiliteGC().gc(),
-                                 0, 0, item_w, item_h);
-        }
-        menu.frame.updateTransparent(item_x, item_y, item_w, item_h, buffer.drawable(), true);
+    bool parent_rel = menu.hilite_pixmap == ParentRelative;
+    Pixmap pixmap = parent_rel ? menu.frame_pixmap : menu.hilite_pixmap;
+    int pixmap_x = parent_rel ? item_x : 0, pixmap_y = parent_rel ? item_y : 0;
+    if (pixmap) {
+        buffer.copyArea(pixmap,
+                        theme().hiliteGC().gc(), pixmap_x, pixmap_y,
+                        0, 0,
+                        item_w, item_h);
+    } else {
+        buffer.fillRectangle(theme().hiliteGC().gc(),
+                             0, 0, item_w, item_h);
     }
-
+    menu.frame.updateTransparent(item_x, item_y, item_w, item_h, buffer.drawable(), true);
 
     drawItem(buffer, index, true, true);
 

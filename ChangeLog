@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/11:
+   * Fixed display bug with ParentRelative menu highlight (thanks Julien Trolet)
+     FbTk/Menu.cc
 *07/03/10:
    * Autogrouped windows weren't getting added to the workspace menu (Mark)
      Screen.cc
