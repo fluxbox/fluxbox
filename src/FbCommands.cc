@@ -92,6 +92,7 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
     int borderw = menu.fbwindow().borderWidth();
     int head = screen.getHead(rx, ry);
 
+    menu.updateMenu();
     pair<int, int> m =
         screen.clampToHead(head,
                            rx - menu.width() / 2,
