@@ -28,6 +28,7 @@
 #include "Workspace.hh"
 #include "Window.hh"
 #include "Keys.hh"
+#include "MenuCreator.hh"
 
 #include "FbTk/Theme.hh"
 #include "FbTk/Menu.hh"
@@ -267,6 +268,16 @@ void HideMenuCmd::execute() {
         screen->rootMenu().hide();
     if (screen->workspaceMenu().isVisible())
         screen->workspaceMenu().hide();
+}
+
+ShowCustomMenuCmd::ShowCustomMenuCmd(const string &arguments) : custom_menu_file(arguments) {}
+
+void ShowCustomMenuCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+    ::showMenu(*screen, *MenuCreator::createFromFile(custom_menu_file,
+                            screen->screenNumber(), true));
 }
 
 void ShowRootMenuCmd::execute() {

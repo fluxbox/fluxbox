@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/16:
+   * Added key command to open a custom menu file (thanks Matteo Galiazzo)
+     - :CustomMenu /path/to/file
+     FbCommands.cc/hh FbCommandFactory.cc
 *07/03/11:
    * Fixed display bug with ParentRelative menu highlight (thanks Julien Trolet)
      FbTk/Menu.cc

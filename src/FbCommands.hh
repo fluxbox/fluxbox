@@ -118,6 +118,15 @@ public:
     void execute();
 };
 
+class ShowCustomMenuCmd: public FbTk::Command {
+public:
+    explicit ShowCustomMenuCmd(const std::string &arguments);
+    void execute();
+private:
+   std::string custom_menu_file;
+    
+};
+
 class ShowRootMenuCmd: public FbTk::Command {
 public:
     void execute();

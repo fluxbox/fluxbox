@@ -65,6 +65,7 @@ FbCommandFactory::FbCommandFactory() {
         "close",
         "closeallwindows",
         "commanddialog",
+        "custommenu",
         "deiconify",
         "detachclient",
         "export",
@@ -438,6 +439,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new HideMenuCmd();
     else if (command == "rootmenu")
         return new ShowRootMenuCmd();
+    else if (command == "custommenu")
+        return new ShowCustomMenuCmd(arguments.c_str());
     else if (command == "workspacemenu")
         return new ShowWorkspaceMenuCmd();
     else if (command == "setworkspacename") {
