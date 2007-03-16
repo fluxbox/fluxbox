@@ -472,7 +472,7 @@ private:
     // modifies left and top if snap is necessary
     void doSnapping(int &left, int &top);
     // user_w/h return the values that should be shown to the user
-    void fixsize(int *user_w = 0, int *user_h = 0);
+    void fixsize(int *user_w = 0, int *user_h = 0, bool maximizing = false);
     void moveResizeClient(WinClient &client, int x, int y, unsigned int width, unsigned int height);
     /// sends configurenotify to all clients
     void sendConfigureNotify(bool send_to_netizens = true);

@@ -772,7 +772,8 @@ void closestPointToLine(double &ret_x, double &ret_y,
  * See ICCCM section 4.1.2.3
  */
 void WinClient::applySizeHints(int &width, int &height,
-                               int *display_width, int *display_height) {
+                               int *display_width, int *display_height,
+                               bool maximizing) {
 
     int i = width, j = height;
 
@@ -810,6 +811,10 @@ void WinClient::applySizeHints(int &width, int &height,
      *  Consider that the aspect ratio is a line, and the current
      *  w/h is a point, so we're just using the formula for
      *  shortest distance from a point to a line!
+     *
+     * When maximizing, we must not increase any of the sizes, because we
+     * would end up with the window partly off a screen, so a simpler formula
+     * is used in that case.
      */
 
     if (min_aspect_y > 0 && max_aspect_y > 0 &&
@@ -829,10 +834,16 @@ void WinClient::applySizeHints(int &width, int &height,
             bool changed = false;
             if (actual < min) {
                 changed = true;
-                closestPointToLine(widthd, heightd, widthd, heightd, min);
+                if (maximizing)
+                    heightd = widthd / min;
+                else
+                    closestPointToLine(widthd, heightd, widthd, heightd, min);
             } else if (actual > max) {
                 changed = true;
-                closestPointToLine(widthd, heightd, widthd, heightd, max);
+                if (maximizing)
+                    widthd = heightd * max;
+                else
+                    closestPointToLine(widthd, heightd, widthd, heightd, max);
             }
 
             if (changed) {

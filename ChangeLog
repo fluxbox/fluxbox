@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/03/16:
+   * Maximizing a window with aspect ratio requirements was making windows too
+     large (thanks Tomas Janousek)
+     Window.cc/hh WinClient.cc/hh
    * Added key command to open a custom menu file (thanks Matteo Galiazzo)
      - :CustomMenu /path/to/file
      FbCommands.cc/hh FbCommandFactory.cc

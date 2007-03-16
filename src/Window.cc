@@ -1711,7 +1711,7 @@ void FluxboxWindow::maximize(int type) {
 
     ResizeDirection old_resize_corner = m_resize_corner;
     m_resize_corner = NOCORNER;
-    fixsize();
+    fixsize(0, 0, true);
     m_resize_corner = old_resize_corner;
 
     moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
@@ -3779,7 +3779,7 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
 }
 
 
-void FluxboxWindow::fixsize(int *user_w, int *user_h) {
+void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
     int titlebar_height = (decorations.titlebar ?
                            frame().titlebar().height()  +
                            frame().titlebar().borderWidth() : 0);
@@ -3795,7 +3795,7 @@ void FluxboxWindow::fixsize(int *user_w, int *user_h) {
     // dy = new height (w/o decorations), similarly
     int dh = m_last_resize_h - decoration_height;
 
-    m_client->applySizeHints(dw, dh, user_w, user_h);
+    m_client->applySizeHints(dw, dh, user_w, user_h, maximizing);
 
     // update last resize
     m_last_resize_w = dw;

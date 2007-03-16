@@ -90,7 +90,8 @@ public:
      * to the user when resizing.
      * We use pointers for display_* since they are optional.
      */
-    void applySizeHints(int &width, int &height, int *display_width = 0, int *display_height = 0);
+    void applySizeHints(int &width, int &height, int *display_width = 0,
+            int *display_height = 0, bool maximizing = false);
 
 
     void setGroupLeftWindow(Window win);
