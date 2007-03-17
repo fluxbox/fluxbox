@@ -1175,6 +1175,13 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         }
     }
 
+    // change workspace ID of stuck iconified windows, too
+    Icons::iterator icon_it = iconList().begin();
+    for (; icon_it != iconList().end(); ++icon_it) {
+        if ((*icon_it)->isStuck())
+            (*icon_it)->setWorkspace(id);
+    }
+
     currentWorkspace()->hideAll(false);
 
     // set new workspace

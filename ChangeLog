@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/17:
+   * Iconified, stuck windows weren't being moved to different workspaces (Mark)
+     Screen.cc
 *07/03/16:
    * Maximizing a window with aspect ratio requirements was making windows too
      large (thanks Tomas Janousek)
