@@ -928,9 +928,13 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         //!! Note: This is odd, why dont we need to substract border width on win->width() ?
         app->rememberDimensions(win->width(), win->height() - 2 * win->fbWindow().borderWidth());
         break;
-    case REM_POSITION:
-        app->rememberPosition(win->x(), win->y());
+    case REM_POSITION: {
+        int head = win->screen().getHead(win->fbWindow());
+        int head_x = win->screen().getHeadX(head);
+        int head_y = win->screen().getHeadY(head);
+        app->rememberPosition(win->x() - head_x, win->y() - head_y);
         break;
+    }
     case REM_FOCUSHIDDENSTATE:
         app->rememberFocusHiddenstate(win->isFocusHidden());
         break;

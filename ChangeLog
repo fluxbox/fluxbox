@@ -1,8 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/03/18:
+   * Changed position remembering so it only remembers position relative to the
+     current head (Mark)
+     Remember.cc
    * Fixed problem with new mouse binding code when using emacs keychains (Mark)
-     Keys.cc/hh
+     Keys.hh
 *07/03/17:
    * Iconified, stuck windows weren't being moved to different workspaces (Mark)
      Screen.cc
