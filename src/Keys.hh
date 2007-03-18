@@ -111,6 +111,8 @@ private:
 
         t_key *find(int type_, unsigned int mod_, unsigned int key_,
                     int context_) {
+            // t_key ctor sets context_ of 0 to GLOBAL, so we must here too
+            context_ = context_ ? context_ : GLOBAL;
             for (size_t i = 0; i < keylist.size(); i++) {
                 if (keylist[i]->type == type_ && keylist[i]->key == key_ &&
                     (keylist[i]->context & context_) > 0 && keylist[i]->mod ==
