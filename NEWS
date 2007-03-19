@@ -23,6 +23,15 @@ News in 1.0rc3:
         Where numbers represent focused and unfocused transparency, 
         respectively. One number only will be used for both.
       - Also, show toggle status for shade and stick in window menu.
+      * Introduced new key command: SetAlpha [[+-]<int> [[+-]<int>]]
+        - with no arguments, returns the focused window to default settings
+        - with one argument, changes both focused and unfocused settings the same
+          way
+        - with two arguments, the first changes the focused alpha, and the second
+          changes the unfocused alpha
+       E.g. SetAlpha 127 +5 will set the focused alpha to 127 and increment the
+      unfocused alpha by 5 (until it reaches 255)
+    
     * Added resource and menu item for maximizing over external tabs
     * Renamed session.screen*.iconbar.deiconifyMode to
        session.screen*.userFollowModel (Mark)
@@ -47,15 +56,6 @@ News in 1.0rc3:
       - added `background: none' for styles that do not include a background
       - fixed bug with style backgrounds not getting set when changing styles
       - updated default styles to be valid wrt background options
-    * Update window transparency immediately when using pseudotransparency,
-      also introduced new key command: SetAlpha [[+-]<int> [[+-]<int>]]
-      - with no arguments, returns the focused window to default settings
-      - with one argument, changes both focused and unfocused settings the same
-        way
-      - with two arguments, the first changes the focused alpha, and the second
-        changes the unfocused alpha
-       E.g. SetAlpha 127 +5 will set the focused alpha to 127 and increment the
-      unfocused alpha by 5 (until it reaches 255)
     *  Made some changes to the way autogrouping in the apps file works
       - Introduced new syntax [group] (workspace) to group new windows only with
         windows on the current workspace.
