@@ -883,11 +883,11 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                 re.x > ix && re.x < (signed) (ix + menu.item_w) &&
                 re.y > iy && re.y < (signed) (iy + theme().itemHeight())) {
                 menuitems[w]->click(re.button, re.time);
+            } else {
+                int old = m_active_index;
+                m_active_index = w;
+                clearItem(old);
             }
-
-            int old = m_active_index;
-            m_active_index = w;
-            clearItem(old);
             clearItem(w);
         }
     }

@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/03/19:
+   * Active menu item wasn't getting reset properly when menu closed (Mark)
+     FbTk/Menu.cc
    * Fixed some problems with toolbar sizing (Mark + thanks Julien Trolet)
      Toolbar.cc
 *07/03/18:
