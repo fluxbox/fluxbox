@@ -1,4 +1,12 @@
 News in 1.0rc3:
+    * Introduced support for mouse buttons in the keys file
+      - Mouse buttons are bound to new `keys' Mouse1, Mouse2, etc.
+      - Also a new modifier `OnDesktop' to specify actions that should take place
+        when you click on the desktop -- without this, mouse bindings are global
+    * Added a utility to the project that automatically updates configuration
+      files when we change the syntax -- your current mouse bindings on the
+      desktop will be added to your keys file automatically
+    * Introduced new command: HideMenus
     * More extended wm hints support:
       * _NET_WM_MOVERESIZE_CANCEL (new in version 1.4.draft-1),
       * _NET_REQUEST_FRAME_EXTENTS 
