@@ -976,7 +976,6 @@ void Toolbar::rearrangeItems() {
     ItemList::iterator item_it_end = m_item_list.end();
     int bevel_width = theme().bevelWidth();
     int fixed_width = bevel_width; // combined size of all fixed items
-    int fixed_items = 0; // number of fixed items
     int relative_items = 0;
     int last_bw = 0; // we show the largest border of adjoining items
     bool first = true;
@@ -1013,28 +1012,23 @@ void Toolbar::rearrangeItems() {
 
         if ((*item_it)->type() == ToolbarItem::FIXED) {
             fixed_width += tmpw;
-            fixed_items++;
         } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
-            fixed_width += tmph;
-            //if (bevel_width != 0) fixed_width -= 2*borderW;
-            fixed_items++;
+            fixed_width += height;
+            if (bevel_width)
+                fixed_width -= 2*(borderW + bevel_width);
         } else {
             relative_items++;
         }
     }
 
-    // calculate what's going to be le ft over to the relative sized items
+    // calculate what's going to be left over to the relative sized items
     int relative_width = 0;
     int rounding_error = 0;
-    if (fixed_items == 0) // no fixed items, then the rest is the entire width
-        relative_width = width;
-    else {
-        if (relative_items == 0)
-            relative_width = 0;
-        else { // size left after fixed items / number of relative items
-            relative_width = (width - fixed_width)/relative_items;
-            rounding_error = width - fixed_width - relative_items*(relative_width);
-        }
+    if (relative_items == 0)
+        relative_width = 0;
+    else { // size left after fixed items / number of relative items
+        relative_width = (width - fixed_width) / relative_items;
+        rounding_error = width - fixed_width - relative_items * relative_width;
     }
 
     // now move and resize the items
