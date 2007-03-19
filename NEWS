@@ -6,7 +6,9 @@ News in 1.0rc3:
     * Added a utility to the project that automatically updates configuration
       files when we change the syntax -- your current mouse bindings on the
       desktop will be added to your keys file automatically
-    * Introduced new command: HideMenus
+    * Introduced new key command: HideMenus
+    * Introduced a key command to display a menu stored in an arbitrary file:
+      CustomMenu /path/to/file
     * More extended wm hints support:
       * _NET_WM_MOVERESIZE_CANCEL (new in version 1.4.draft-1),
       * _NET_REQUEST_FRAME_EXTENTS 
