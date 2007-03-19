@@ -1,40 +1,114 @@
-News in 1.0rc2:
-    * New resource/command
-       * session.modKey: <modkey> 
-       * command SetModKey <modkey>
-       eg: session.modKey: Mod4   allows to use the winkey to resize and move
-       windows and have Mod1 (Alt) free for using blender or Maya.
-    * Updated de_DE translation
-    * Added EUC-KR to ko_KR encodings
-    * startfluxbox aware of --program-prefix and --program-suffix
-    * More ewmh support: _NET_WM_WINDOW_TYPE_DIALOG and  
-      _NET_FRAME_EXTENTS are now supported.
-    * Native Language Support:
-      * Was broken in 1.0rc
-      * New menu items to specify encoding of enclosed labels:
-          [encoding] {UTF-8}
-            ... (menu) ...
-          [endencoding]
-        We recommend that all automatic menu generation programs use this
-        around their output to ensure portability between user locale
-        settings.
-      * Automatic conversion for unknown encodings (if supported by host)
+News in 1.0rc3:
+    * More extended wm hints support:
+      * _NET_WM_MOVERESIZE_CANCEL (new in version 1.4.draft-1),
+      * _NET_REQUEST_FRAME_EXTENTS 
+      * _NET_WM_WINDOW_TYPE_MENU
+      * _NET_WM_WINDOW_TYPE_TOOLBAR
+    * Little simplification of data structure for keybindings (Mark)
+      Side effects:
+        - "Mod4 a b" now behaves like "Mod4 a None b" -- in fact, "None" is now
+           completely obsolete
+        - You can press "Escape" to cancel any Emacs-style keychain in progress
+          (unless it's bound to something else)
+        - If there is a conflict between bindings, the first one in the file wins
+        - Fixes handling of keychains like "Mod4 a Mod1 b"
+        - Should fix some issues with "None" modifier  
+    * Updated following translations:
+      pt_PT, es_ES, es_AR, pt_BR, de_DE, nb_NO
+    * Support per-window transparency settings.
+       ( sf.net patch #1511042, feature #1108692 )
+      - new "Transparency" menu in the window menu
+      - new apps file attribute: 
+         [alpha] {int int} (or just {int})
+        Where numbers represent focused and unfocused transparency, 
+        respectively. One number only will be used for both.
+      - Also, show toggle status for shade and stick in window menu.
+    * Added resource and menu item for maximizing over external tabs
+    * Renamed session.screen*.iconbar.deiconifyMode to
+       session.screen*.userFollowModel (Mark)
+       This resource is used for:
+        - clicking a window on a different workspace in the iconbar
+        - _NET_ACTIVE_WINDOW messages where the source is a pager
+        - clicking a client in the workspace menu (and the opposite is used for
+          right clicks)
+       Possible values are:
+        - Follow: go to the workspace of the selected window
+        - Current: bring the window to the current workspace
+        - SemiFollow: act like Current for iconified windows, else Follow
+        - Ignore: leave it alone
+    * Added support for negative arguments to the `Tab' key command to count
+      backwards from the last tab in the group
+    * Added option to :Minimize key command to lower all windows in the same
+      layer as the focused window,syntax is :Minimize (layer)
+    * Several changes for background style option:
+      - now support `background: mod' to coincide with fbsetroot -mod --
+        In addition to `background.color' and `background.colorTo', this option
+        must also set `background.modX' and `background.modY' to integers
+      - added `background: none' for styles that do not include a background
+      - fixed bug with style backgrounds not getting set when changing styles
+      - updated default styles to be valid wrt background options
+    * Update window transparency immediately when using pseudotransparency,
+      also introduced new key command: SetAlpha [[+-]<int> [[+-]<int>]]
+      - with no arguments, returns the focused window to default settings
+      - with one argument, changes both focused and unfocused settings the same
+        way
+      - with two arguments, the first changes the focused alpha, and the second
+        changes the unfocused alpha
+       E.g. SetAlpha 127 +5 will set the focused alpha to 127 and increment the
+      unfocused alpha by 5 (until it reaches 255)
+    *  Made some changes to the way autogrouping in the apps file works
+      - Introduced new syntax [group] (workspace) to group new windows only with
+        windows on the current workspace.
+    * XEMBED support for systemtray.
+    * Added typeahead support to menus (patch by Philipp Goedl, modified by Mark
+      and Matteo Galiazzo)
+      - Added new style item menu.frame.underlineColor: <color> for displaying
+        matching items
+    * session.screen<N>.defaultDeco now allows same strings as apps file
+
 Bug fixes:
-    * #1507754, iconbar text was not updated to match titlebar
-    * #1362463, menu selection pixmaps disappear 
-    * #1507671, clock not updating on multiple screens
-    * #1512046, "window.label.unfocus.pixmap" doesn't update
-    * Fixed slit menu so it closes when you press escape
-    * Fixed crash when unable to convert between local and utf-8 encodings
-    * Make Urgency Hint flash the correct tab in a group
-    * Window placement when apps remembers size but not location 
-    * Menu placement issue with (vertical) xinerama
-    * nls fixes
+    * #1437864, Buttons should only run a command if the mouse was clicked down 
+      on the same button
+    * #1560803, MaxSize and MinSize hints weren't getting updated properly
+    * #1535304, #1572683, #1646740, Layer wasn't set properly on remembered 
+      windows, and the layer menu wasn't getting updated properly,
+    * #1060891, #1517747, Clicking on the edge of a button didn't work
+    * #1595497, Don't escape regular expression metacharacters in apps file 
+    * #1621980, Fix data type of data passed to set _NET_FRAME_EXTENTS
+    * #1528646, Don't add 2 pixels to a specified toolbar height
+    * #1595336, Stop cycling focus when any other command is run
+    * #1561482, Crash when clicking on the workspacename to get the
+                toolbar menu.
+    * #1362913, core dumps on Solaris
+    * #1519913, Next/PrevWindow toolbar buttons break MouseFocus
+    * #1491571, Round corners badly rendered 
+    * #1449608, Auto-grouped windows using groups file didn't raise 
+    * #1069909, Incorrect window dimensions
+    * Changing between internal and external tabs didn't affect iconified
+      windows 
+    * Preserve order of focused windows on restart 
+    * Properly revert focus when two windows close simultaneously 
+    * Fixed nls digit strings to prefix with zero "%4d" => "%04d" for proper 
+      spacing
+    * Fix RefCount crash and Slit deconstruction ordering
+    * Detect user's shell from environment rather than assuming /bin/sh
+    * Fixed an unreported bug with grouping windows on multiple screens
+    * Fixed a bug with resizing windows for clients when only the width is
+      specified
+    * Fixed a bug with `session.ignoreBorder: true'
+    * Slit was creating a strut even when it wasn't visible
+    * Fixed display bug with ParentRelative menu highlight
+    ...and more, not listed here.
 
 See ChangeLog for more details.
 
-Before next release we need people to help us with translation.
-We also need people to report bugs and other issues with the changed setup.
-Do not forget to include language setting, OS and distribution in the report.
+This is the final release candidate.
+Next relase will be 1.0.0 stable.
+
+We need people to report bugs and other issues so we can make next 
+release the most stable release ever.
+
+Do not forget to include language setting, OS and distribution 
+when reporting bugs.
 
 
