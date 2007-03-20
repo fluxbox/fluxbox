@@ -1,5 +1,7 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/20:
+   * Updated doc/asciidoc/fluxbox.txt (Mathias)
 *07/03/19:
    * Active menu item wasn't getting reset properly when menu closed (Mark)
      FbTk/Menu.cc

@@ -1054,6 +1054,17 @@ In the example below, Mod1 is the 'ALT' key on the PC keyboard and Mod4 is one
 of the three extra keys on a pc104 branded with a familiar company logo. Lines
 beginning with a '#' or '!' are considered comments and unread by fluxbox.
 
+You can get a list of possible modifiers by calling 'xmodmap -pm'. This also
+shows you to which keys the modifiers are mapped. Additionally there is the
+'OnDesktop' modifier. To find valid keynames check the following files:
+
+    /usr/X11R6/include/X11/keysymdef.h
+    /usr/X11R6/lib/X11/XKeysymDB
+
+
+Furthermore you can use Mouse1, Mouse2, etc to define actions for your mouse
+buttons.
+
 ............................
 # fluxbox keys file.
 Mod1 Tab :NextWindow
@@ -1134,6 +1145,7 @@ Currently Focused Window Commands
 - MoveTabLeft
 - MoveTabRight
 - DetachClient
+- SetAlpha [[+-]<int> [[+-]<int>]]
 
 Workspace Commands
 ~~~~~~~~~~~~~~~~~~
@@ -1156,6 +1168,8 @@ Workspace Commands
 - RootMenu
 - WorkspaceMenu
 - WindowMenu
+- HideMenu
+- CustomMenu <path_to_file>
 - SetWorkspaceName <name>
 
 Special Commands
@@ -1170,6 +1184,14 @@ Special Commands
 
 Couple of things
 ~~~~~~~~~~~~~~~~
+- Exec:
+    fluxbox utilizes /bin/sh to start the commands. This means, that
+    you can use environment variables to do some tricks here. E.g:
+       :Exec $XTERM
+    This would fire up the term of your choice, if you set XTERM to
+    something usefull _before_ fluxbox starts, e.g. in the .fluxbox/startup
+    file.
+
 - TakeToWorkspace:
     Will send you along with the window to the selected workspace.
     SendToWorkspace just sends the window.
@@ -1210,7 +1232,7 @@ Couple of things
 requested setting. So if you have a window that is 100 pixels wide, you could
 set
 
-...........................
+..........................
 Mod1 r :ResizeHorizontal 10
 ............................
 
@@ -1243,6 +1265,15 @@ Mod1 t :ToggleCmd {command1} {command2}
 .......................................
 
   alternates between the given commands each time you press Mod1 + t.
+
+- SetAlpha [[+-]<int> [[+-]<int>]]:
+  Works on the currently focussed window. Given
+  * no arguments: reset to default alpha settings
+  * one argument: changes both focused and unfocused alpha settings 
+  * two arguments: first value becomes the focused alpha, second becomes
+    the unfocused alpha value.
+  E.g: SetAlpha 127 +5 will set the focused alpha to 127 and increment the
+  unfocused alpha by 5 (until it reaches 255)
 
 LAYERS
 ------
@@ -1482,6 +1513,10 @@ curly brackets:
     Save settings on close. By default, application settings are not saved
     when a window is closed. Set this option if you want previous settings to
     be saved when the window is closed.
+
+- [Alpha] {int [int]}
+    Where numbers represent focused and unfocused transparency, 
+    respectively. One number only will be used for both.
 
 The apps file also allows you to specify applications that should be started
 on fluxbox startup using [startup] (options) {command} lines. Currently, the
