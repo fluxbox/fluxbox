@@ -32,6 +32,7 @@
 #include "FbTk/EventHandler.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbWinFrame.hh"
+#include "Focusable.hh"
 #include "WinButton.hh"
 
 #include <X11/Xlib.h>
@@ -56,7 +57,7 @@ class Menu;
 }
 
 /// Creates the window frame and handles any window event for it
-class FluxboxWindow: public FbTk::EventHandler {
+class FluxboxWindow: public Focusable, public FbTk::EventHandler {
 public:
     /// Represents certain "preset" sets of decorations.
     enum Decoration {
@@ -192,8 +193,8 @@ public:
     void moveClientTo(WinClient &win, int x, int y);
     ClientList::iterator getClientInsertPosition(int x, int y);
 
-    bool setInputFocus();
-    void raiseAndFocus() { raise(); setInputFocus(); }
+    bool focus();
+    void raiseAndFocus() { raise(); focus(); }
     void setFocusFlag(bool flag);
     // map this window
     void show();
@@ -379,11 +380,9 @@ public:
 
     const FbTk::FbPixmap &iconPixmap() const;
     const FbTk::FbPixmap &iconMask() const;
-    const bool usePixmap() const;
-    const bool useMask() const;
-
     const std::string &title() const;
     const std::string &iconTitle() const;
+
     inline int x() const { return frame().x(); }
     inline int y() const { return frame().y(); }
     inline unsigned int width() const { return frame().width(); }

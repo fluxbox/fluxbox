@@ -1199,7 +1199,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     currentWorkspace()->showAll();
 
     if (focused && focused->isMoving()) {
-        focused->setInputFocus();
+        focused->focus();
         focused->resumeMoving();
     } else
         FocusControl::revertFocus(*this);
@@ -1241,7 +1241,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
         // change workspace ?
         if (changeWS && id != currentWorkspace()->workspaceID()) {
             changeWorkspaceID(id);
-            win->setInputFocus();
+            win->focus();
         }
 
     }
@@ -1520,7 +1520,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     // don't ask me why, but client doesn't seem to keep focus in new window
     // and we don't seem to get a FocusIn event from setInputFocus
     if ((focusControl().focusNew() || FocusControl::focusedWindow() == &client)
-            && win->setInputFocus())
+            && win->focus())
         FocusControl::setFocusedWindow(&client);
 
     m_clientlist_sig.notify();

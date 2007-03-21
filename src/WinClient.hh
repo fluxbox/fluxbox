@@ -24,6 +24,7 @@
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
 
+#include "Focusable.hh"
 #include "Window.hh"
 #include "Subject.hh"
 #include "FbWindow.hh"
@@ -35,7 +36,7 @@ class BScreen;
 class Strut;
 
 /// Holds client window info 
-class WinClient:public FbTk::FbWindow {
+class WinClient: public Focusable, public FbTk::FbWindow {
 public:
     typedef std::list<WinClient *> TransientList;
     // this structure only contains 3 elements... the Motif 2.0 structure contains
@@ -129,15 +130,6 @@ public:
 
     inline bool isModal() const { return m_modal > 0; }
 
-    const FbTk::FbPixmap &iconPixmap() const { return m_icon_pixmap; }
-    const FbTk::FbPixmap &iconMask() const { return m_icon_mask; }
-    const bool usePixmap() const { return m_icon_pixmap.drawable() != None; }
-    const bool useMask() const { return m_icon_mask.drawable() != None; }
-
-    inline const std::string &title() const { return m_title; }
-    inline const std::string &iconTitle() const { return m_icon_title; }
-    inline const FluxboxWindow *fbwindow() const { return m_win; }
-    inline FluxboxWindow *fbwindow() { return m_win; }
     inline int gravity() const { return m_win_gravity; }
 
     bool hasGroupLeftWindow() const;
@@ -188,8 +180,6 @@ private:
     /// removes client from any waiting list and clears empty waiting lists
     void removeTransientFromWaitingList();
 
-    FluxboxWindow *m_win;
-
     // number of transients which we are modal for
     // or indicates that we are modal if don't have any transients
     int m_modal;
@@ -197,12 +187,8 @@ private:
 
     int m_win_gravity;
 
-    std::string m_title, m_icon_title;
     std::string m_class_name, m_instance_name;
     bool m_title_override, m_icon_title_override;
-
-    FbTk::FbPixmap m_icon_pixmap;
-    FbTk::FbPixmap m_icon_mask;
 
     FluxboxWindow::BlackboxHints *m_blackbox_hint;
     MwmHints *m_mwm_hint;

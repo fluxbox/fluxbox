@@ -363,7 +363,7 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
     }
 
     if (foundwin) 
-        foundwin->setInputFocus();
+        foundwin->focus();
 
 }
 

@@ -239,6 +239,7 @@ int FluxboxWindow::s_num_grabs = 0;
 
 FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
                              FbTk::XLayer &layer):
+    Focusable(this),
     oplock(false),
     m_hintsig(*this),
     m_statesig(*this),
@@ -988,7 +989,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     // frame focused doesn't necessarily mean input focused
     frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
 
-    if (setinput && setInputFocus()) {
+    if (setinput && focus()) {
         return true;
     }
 
@@ -1319,7 +1320,7 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
 // tried. A FocusqIn event should eventually arrive for that
 // window if it actually got the focus, then setFocusedFlag is called,
 // which updates all the graphics etc
-bool FluxboxWindow::setInputFocus() {
+bool FluxboxWindow::focus() {
 
     if (((signed) (frame().x() + frame().width())) < 0) {
         if (((signed) (frame().y() + frame().height())) < 0) {
@@ -1523,7 +1524,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     // focus new, OR if it's the only window on the workspace
     if (was_iconic && (screen().focusControl().focusNew() || screen().currentWorkspace()->numberOfWindows() == 1))
-        setInputFocus();
+        focus();
 
 
     oplock = false;
@@ -2603,9 +2604,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
     if (be.button == 1 || (be.button == 3 &&
                            be.state == Fluxbox::instance()->getModKey())) {
-        if ( (! focused) ) { //check focus
-            setInputFocus();
-        }
+        if (!focused) //check focus
+            focus();
 
         if (frame().window().window() == be.window || frame().tabcontainer().window() == be.window) {
             if (screen().clickRaises())
@@ -2994,7 +2994,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);
 
             if ((!sa.leave || sa.inferior) && !screen().focusControl().isCycling() ) {
-                setInputFocus();
+                focus();
             }
         }
     }
@@ -3246,7 +3246,7 @@ void FluxboxWindow::stopMoving(bool interrupted) {
             if (m_workspace_number != screen().currentWorkspaceID()) {
                 screen().reassociateWindow(this, screen().currentWorkspaceID(), true);
                 frame().show();
-                setInputFocus();
+                focus();
             }
         }
         fluxbox->ungrab();
@@ -3282,7 +3282,7 @@ void FluxboxWindow::resumeMoving() {
 
     if (m_workspace_number == screen().currentWorkspaceID()) {
         frame().show();
-        setInputFocus();
+        focus();
     }
 
     FbTk::App::instance()->sync(false);
@@ -3664,14 +3664,13 @@ FbTk::Menu &FluxboxWindow::menu() {
     return screen().windowMenu();
 }
 
-const FbTk::FbPixmap &FluxboxWindow::iconPixmap() const { return m_client->iconPixmap(); }
-const FbTk::FbPixmap &FluxboxWindow::iconMask() const { return m_client->iconMask(); }
-
-const bool FluxboxWindow::usePixmap() const { 
-    return m_client ? m_client->usePixmap() : false; 
+const FbTk::FbPixmap &FluxboxWindow::iconPixmap() const {
+    return m_client->iconPixmap();
 }
 
-const bool FluxboxWindow::useMask() const { return m_client->useMask(); }
+const FbTk::FbPixmap &FluxboxWindow::iconMask() const {
+    return m_client->iconMask();
+}
 
 const FbTk::Menu &FluxboxWindow::menu() const {
     return screen().windowMenu();

@@ -57,7 +57,8 @@ using std::dec;
 
 WinClient::TransientWaitMap WinClient::s_transient_wait;
 
-WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::FbWindow(win),
+WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
+        Focusable(fbwin), FbTk::FbWindow(win),
                      transient_for(0),
                      window_group(0),
                      x(0), y(0), old_bw(0),
@@ -70,12 +71,10 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      initial_state(0),
                      normal_hint_flags(0),
                      wm_hint_flags(0),
-                     m_win(fbwin),
                      m_modal(0),
                      send_focus_message(false),
                      send_close_message(false),
                      m_win_gravity(0),
-                     m_title(""), m_icon_title(""),
                      m_class_name(""), m_instance_name(""),
                      m_title_override(false),
                      m_icon_title_override(false),
@@ -118,8 +117,8 @@ WinClient::~WinClient() {
 
     clearStrut();
 
-    if (m_win != 0)
-        m_win->removeClient(*this);
+    if (fbwindow() != 0)
+        fbwindow()->removeClient(*this);
 
     // this takes care of any focus issues
     m_diesig.notify();
@@ -161,8 +160,6 @@ WinClient::~WinClient() {
 
     if (window())
         fluxbox->removeWindowSearch(window());
-
-    m_win = 0;
 }
 
 bool WinClient::acceptsFocus() const {
@@ -264,9 +261,9 @@ void WinClient::updateWMClassHint() {
 
 void WinClient::updateTransientInfo() {
 #ifdef DEBUG
-    cerr<<__FUNCTION__<<": m_win = "<<m_win<<endl;
+    cerr<<__FUNCTION__<<": fbwindow() = "<<fbwindow()<<endl;
 #endif // DEBUG
-    if (m_win == 0)
+    if (fbwindow() == 0)
         return;
 
 
@@ -293,7 +290,7 @@ void WinClient::updateTransientInfo() {
         return;
     }
 
-    if (win != None && m_win->screen().rootWindow() == win) {
+    if (win != None && fbwindow()->screen().rootWindow() == win) {
         // transient for root window... =  transient for group
         // I don't think we are group-aware yet
         return;
@@ -336,7 +333,7 @@ void WinClient::updateTransientInfo() {
         transient_for->transientList().push_back(this);
 
         if (transientFor()->fbwindow() && transientFor()->fbwindow()->isStuck())
-            m_win->stick();
+            fbwindow()->stick();
     }
 
 }
@@ -362,8 +359,8 @@ void WinClient::updateTitle() {
 void WinClient::setTitle(FbTk::FbString &title) {
     m_title = title;
     m_title_override = true;
-    if (m_win)
-        m_win->updateTitleFromClient(*this);
+    if (fbwindow())
+        fbwindow()->updateTitleFromClient(*this);
 }
 
 void WinClient::setIconTitle(FbTk::FbString &icon_title) {
@@ -412,7 +409,7 @@ void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_
 }
 
 void WinClient::setFluxboxWindow(FluxboxWindow *win) {
-    m_win = win;
+    m_fbwin = win;
 }
 
 void WinClient::updateBlackboxHints() {
@@ -523,7 +520,7 @@ void WinClient::updateWMHints() {
         else
             m_icon_mask = 0;
 
-        if (m_win) {
+        if (fbwindow()) {
             if (wmhint->flags & XUrgencyHint) {
                 Fluxbox::instance()->attentionHandler().addAttention(*this);
             } else {
@@ -703,10 +700,10 @@ void WinClient::clearStrut() {
 }
 
 bool WinClient::focus() {
-    if (m_win == 0)
+    if (fbwindow() == 0)
         return false;
     else
-        return m_win->setCurrentClient(*this, true);
+        return fbwindow()->setCurrentClient(*this, true);
 }
 
 void WinClient::updateWMProtocols() {
@@ -730,8 +727,8 @@ void WinClient::updateWMProtocols() {
         }
 
         XFree(proto);
-        if (m_win)
-            m_win->updateFunctions();
+        if (fbwindow())
+            fbwindow()->updateFunctions();
 #ifdef DEBUG
     } else {
         cerr<<"Warning: Failed to read WM Protocols. "<<endl;
