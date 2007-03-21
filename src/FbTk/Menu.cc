@@ -48,6 +48,8 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
+#include <algorithm>
+
 #ifdef HAVE_CSTDIO
   #include <cstdio>
 #else
