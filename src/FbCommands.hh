@@ -28,6 +28,9 @@
 
 #include "Command.hh"
 
+#include "FbTk/RefCount.hh"
+#include "FbTk/Menu.hh"
+
 #include <string>
 
 namespace FbCommands {
@@ -124,7 +127,7 @@ public:
     void execute();
 private:
    std::string custom_menu_file;
-    
+   FbTk::RefCount<FbTk::Menu> m_menu;    
 };
 
 class ShowRootMenuCmd: public FbTk::Command {

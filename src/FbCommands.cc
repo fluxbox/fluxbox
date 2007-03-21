@@ -269,6 +269,8 @@ void HideMenuCmd::execute() {
         screen->rootMenu().hide();
     if (screen->workspaceMenu().isVisible())
         screen->workspaceMenu().hide();
+    if (FbTk::Menu::shownMenu())
+        FbTk::Menu::shownMenu()->hide();
 }
 
 ShowCustomMenuCmd::ShowCustomMenuCmd(const string &arguments) : custom_menu_file(arguments) {}
@@ -277,8 +279,9 @@ void ShowCustomMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
-    ::showMenu(*screen, *MenuCreator::createFromFile(custom_menu_file,
-                            screen->screenNumber(), true));
+    m_menu = MenuCreator::createFromFile(custom_menu_file,
+            screen->screenNumber(), true);
+    ::showMenu(*screen, **m_menu);
 }
 
 void ShowRootMenuCmd::execute() {
