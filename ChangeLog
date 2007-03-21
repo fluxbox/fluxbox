@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
 *07/03/21:
+   * HideMenus didn't work on CustomMenus, and also fixed a memleak with
+     CustomMenu (Mark + thanks Julien Trolet)
+     FbCommands.cc/hh
    * Added new command TypeAheadFocus (Mark)
      - syntax is the same as for NextWindow; when you run the command, you can
        start typing the title of the window, and it will gain focus; pressing
