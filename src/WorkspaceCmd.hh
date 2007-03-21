@@ -45,6 +45,14 @@ private:
     const int m_option;
 };
 
+class TypeAheadFocusCmd: public FbTk::Command {
+public:
+    explicit TypeAheadFocusCmd(int option): m_option(option) { }
+    void execute();
+private:
+    const int m_option;
+};
+
 class DirFocusCmd: public FbTk::Command {
 public:
     explicit DirFocusCmd(const FocusControl::FocusDir dir): m_dir(dir) { }

@@ -53,6 +53,20 @@ void PrevWindowCmd::execute() {
         screen->cycleFocus(m_option, true);
 }
 
+void TypeAheadFocusCmd::execute() {
+    Fluxbox *fb = Fluxbox::instance();
+    BScreen *screen = fb->keyScreen();
+    if (screen != 0) {
+        int options = m_option;
+        FocusControl::FocusedWindows *win_list =
+            (options & FocusControl::CYCLELINEAR) ?
+                &screen->focusControl().creationOrderList() :
+                &screen->focusControl().focusedOrderList();
+        
+        screen->startTypeAheadFocus(*win_list, m_option);
+    }
+}
+
 void DirFocusCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen == 0)

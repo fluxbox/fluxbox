@@ -1,5 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/21:
+   * Added new command TypeAheadFocus (Mark)
+     - syntax is the same as for NextWindow; when you run the command, you can
+       start typing the title of the window, and it will gain focus; pressing
+       tab will cycle through all matching entries using the options specified;
+       when you've found the window you want, just press return or escape
+     WinClient.hh Screen.cc/hh FbCommandFactory.cc WorkspaceCmd.cc/hh
 *07/03/20:
    * Updated doc/asciidoc/fluxbox.txt (Mathias)
 *07/03/19:

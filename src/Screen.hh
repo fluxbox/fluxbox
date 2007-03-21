@@ -217,6 +217,7 @@ public:
     void buttonPressEvent(XButtonEvent &be);
     void notifyUngrabKeyboard();
 
+    void startTypeAheadFocus(std::list<WinClient *> &winlist, int opts);
     void cycleFocus(int opts, bool reverse);
 
     FbTk::Menu *createMenu(const std::string &label);
@@ -485,7 +486,10 @@ private:
     typedef std::map<Window, WinClient *> Groupables;
     Groupables m_expecting_groups;
 
-    bool m_cycling;
+    bool m_cycling, m_typing_ahead;
+    int m_cycle_opts;
+    FbTk::TypeAhead<std::list<WinClient *>, WinClient *> m_type_ahead;
+    std::list<WinClient *> m_matches;
 
     // Xinerama related private data
     bool m_xinerama_avail;
