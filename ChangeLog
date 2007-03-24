@@ -1,5 +1,5 @@
  (Format: Year/Month/Day)
-Changes for 1.0rc3:
+Changes for 1.0:
 *07/03/24:
    * Fixed a little bug in fbsetbg (Mark)
      util/fbsetbg
@@ -9,6 +9,7 @@ Changes for 1.0rc3:
    * HideMenus didn't work on CustomMenus, and also fixed a memleak with
      CustomMenu (Mark + thanks Julien Trolet)
      FbCommands.cc/hh
+Changes for 1.0rc3:
 *07/03/20:
    * Updated doc/asciidoc/fluxbox.txt (Mathias)
 *07/03/19:
