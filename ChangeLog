@@ -1,7 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
 *07/03/24:
+   * Updated French translations (thanks Ulrich Etile)
+     nls/fr_FR/Translation.m
    * Fixed a little bug in fbsetbg (Mark)
+     util/fbsetbg
    * Added new key command GoToWindow (Mark)
      - Syntax is GoToWindow <int> [<bitmask>], where the int gives the position
        of the desired window with respect to a list of windows, and the bitmask
@@ -23,6 +26,7 @@ Changes for 1.1:
        tab will cycle through all matching entries using the options specified;
        when you've found the window you want, just press return or escape
      WinClient.hh Screen.cc/hh FbCommandFactory.cc WorkspaceCmd.cc/hh
+--------------------------------
 Changes for 1.0rc3
 *07/03/20:
    * Updated doc/asciidoc/fluxbox.txt (Mathias)
