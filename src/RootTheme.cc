@@ -174,14 +174,8 @@ bool RootTheme::fallback(FbTk::ThemeItem_base &item) {
 void RootTheme::reconfigTheme() {
     _FB_USES_NLS;
 
-    if (!m_background->loaded()) {
-        cerr<<"Fluxbox: "<<
-            _FB_CONSOLETEXT(Common, BackgroundWarning,
-                    "There is no background option specified in this style."
-                    " Please consult the manual or read the FAQ.",
-                    "Background missing warning")<<endl;
+    if (!m_background->loaded())
         return;
-    }
 
     if (!m_background->changed())
         return;
