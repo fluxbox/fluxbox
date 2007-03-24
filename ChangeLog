@@ -1,5 +1,5 @@
  (Format: Year/Month/Day)
-Changes for 1.0rc3:
+Changes for 1.1:
 *07/03/24:
    * Fixed a little bug in fbsetbg (Mark)
    * Added new key command GoToWindow (Mark)
@@ -23,6 +23,7 @@ Changes for 1.0rc3:
        tab will cycle through all matching entries using the options specified;
        when you've found the window you want, just press return or escape
      WinClient.hh Screen.cc/hh FbCommandFactory.cc WorkspaceCmd.cc/hh
+Changes for 1.0rc3
 *07/03/20:
    * Updated doc/asciidoc/fluxbox.txt (Mathias)
 *07/03/19:
