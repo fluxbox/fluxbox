@@ -362,7 +362,7 @@ bool Workspace::loadGroups(const string &filename) {
 }
 
 void Workspace::update(FbTk::Subject *subj) {
-    menu().updateMenu();
+    updateClientmenu();
 }
 
 
