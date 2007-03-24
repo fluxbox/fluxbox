@@ -78,6 +78,7 @@ FbCommandFactory::FbCommandFactory() {
         "focusleft",
         "focusright",
         "fullscreen",
+        "gotowindow",
         "hidemenus",
         "iconify",
         "keymode",
@@ -422,7 +423,12 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new PrevWindowCmd(atoi(arguments.c_str()));
     else if (command == "typeaheadfocus")
         return new TypeAheadFocusCmd(atoi(arguments.c_str()));
-    else if (command == "focusup")
+    else if (command == "gotowindow") {
+        FbTk_istringstream is(arguments.c_str());
+        int num = 0, options = 0;
+        is >> num >> options;
+        return new GoToWindowCmd(num, options);
+    } else if (command == "focusup")
         return new DirFocusCmd(FocusControl::FOCUSUP);
     else if (command == "focusdown")
         return new DirFocusCmd(FocusControl::FOCUSDOWN);

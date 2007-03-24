@@ -54,16 +54,37 @@ void PrevWindowCmd::execute() {
 }
 
 void TypeAheadFocusCmd::execute() {
-    Fluxbox *fb = Fluxbox::instance();
-    BScreen *screen = fb->keyScreen();
+    BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
-        int options = m_option;
-        FocusControl::FocusedWindows *win_list =
-            (options & FocusControl::CYCLELINEAR) ?
+        FocusControl::Focusables *win_list = 0;
+        if (m_option & FocusControl::CYCLEGROUPS) {
+            win_list = (m_option & FocusControl::CYCLELINEAR) ?
+                &screen->focusControl().creationOrderWinList() :
+                &screen->focusControl().focusedOrderWinList();
+        } else {
+            win_list = (m_option & FocusControl::CYCLELINEAR) ?
                 &screen->focusControl().creationOrderList() :
                 &screen->focusControl().focusedOrderList();
+        }
         
         screen->startTypeAheadFocus(*win_list, m_option);
+    }
+}
+
+void GoToWindowCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0) {
+        FocusControl::Focusables *win_list = 0;
+        if (m_option & FocusControl::CYCLEGROUPS) {
+            win_list = (m_option & FocusControl::CYCLELINEAR) ?
+                &screen->focusControl().creationOrderWinList() :
+                &screen->focusControl().focusedOrderWinList();
+        } else {
+            win_list = (m_option & FocusControl::CYCLELINEAR) ?
+                &screen->focusControl().creationOrderList() :
+                &screen->focusControl().focusedOrderList();
+        }
+        screen->focusControl().goToWindowNumber(win_list, m_num, m_option);
     }
 }
 

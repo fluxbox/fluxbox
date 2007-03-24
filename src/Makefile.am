@@ -136,7 +136,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	RowSmartPlacement.hh RowSmartPlacement.cc \
 	ScreenPlacement.hh ScreenPlacement.cc \
 	UnderMousePlacement.hh UnderMousePlacement.cc \
-	WinClientUtil.hh WinClientUtil.cc \
 	AttentionNoticeHandler.hh AttentionNoticeHandler.cc \
 	STLUtil.hh \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \

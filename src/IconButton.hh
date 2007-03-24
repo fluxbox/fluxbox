@@ -29,13 +29,12 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/TextButton.hh"
 
-class FluxboxWindow;
-class IconbarTool;
+class Focusable;
 
 class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
-    IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent, 
-               FbTk::Font &font, FluxboxWindow &window);
+    IconButton(const FbTk::FbWindow &parent, FbTk::Font &font,
+               Focusable &window);
     virtual ~IconButton();
 
     void exposeEvent(XExposeEvent &event);
@@ -50,8 +49,8 @@ public:
     void update(FbTk::Subject *subj);
     void setPixmap(bool use);
 
-    FluxboxWindow &win() { return m_win; }
-    const FluxboxWindow &win() const { return m_win; }
+    Focusable &win() { return m_win; }
+    const Focusable &win() const { return m_win; }
 
     bool setOrientation(FbTk::Orientation orient);
 
@@ -60,7 +59,7 @@ protected:
 private:
     void setupWindow();
 
-    FluxboxWindow &m_win;
+    Focusable &m_win;
     FbTk::FbWindow m_icon_window;
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;

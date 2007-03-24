@@ -53,6 +53,15 @@ private:
     const int m_option;
 };
 
+class GoToWindowCmd: public FbTk::Command {
+public:
+    GoToWindowCmd(int num, int option): m_num(num), m_option(option) { }
+    void execute();
+private:
+    const int m_num;
+    const int m_option;
+};
+
 class DirFocusCmd: public FbTk::Command {
 public:
     explicit DirFocusCmd(const FocusControl::FocusDir dir): m_dir(dir) { }

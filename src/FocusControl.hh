@@ -30,6 +30,7 @@
 
 class WinClient;
 class FluxboxWindow;
+class Focusable;
 class BScreen;
 
 /**
@@ -39,6 +40,7 @@ class BScreen;
 class FocusControl {
 public:
     typedef std::list<WinClient *> FocusedWindows;
+    typedef std::list<Focusable *> Focusables;
 
     enum FocusModel { 
         MOUSEFOCUS = 0, ///< focus follows 
@@ -70,7 +72,9 @@ public:
 
     void prevFocus() { cycleFocus(&m_focused_list, 0, true); }
     void nextFocus() { cycleFocus(&m_focused_list, 0, false); }
+    void cycleFocus(Focusables *winlist, int options, bool reverse = false);
     void cycleFocus(FocusedWindows *winlist, int options, bool reverse = false);
+    void goToWindowNumber(Focusables *winlist, int num, int options);
 
     void setScreenFocusedWindow(WinClient &win_client);
     void setFocusModel(FocusModel model);
@@ -84,19 +88,24 @@ public:
     bool isCycling() const { return m_cycling_list != 0; }
     void addFocusBack(WinClient &client);
     void addFocusFront(WinClient &client);
+    void addFocusWinBack(Focusable &win);
+    void addFocusWinFront(Focusable &win);
     void setFocusBack(FluxboxWindow *fbwin);
 
     FocusModel focusModel() const { return *m_focus_model; }
     TabFocusModel tabFocusModel() const { return *m_tab_focus_model; }
     bool focusNew() const { return *m_focus_new; }
 
-    WinClient *lastFocusedWindow(int workspace);
-    WinClient *lastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client);
+    Focusable *lastFocusedWindow(int workspace);
+    WinClient *lastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client = 0);
 
-    FocusedWindows &creationOrderList() { return m_creation_order_list; }
-    FocusedWindows &focusedOrderList() { return m_focused_list; }
+    Focusables &creationOrderList() { return m_creation_order_list; }
+    Focusables &focusedOrderList() { return m_focused_list; }
+    Focusables &creationOrderWinList() { return m_creation_order_win_list; }
+    Focusables &focusedOrderWinList() { return m_focused_win_list; }
 
     void removeClient(WinClient &client);
+    void removeWindow(Focusable &win);
     void shutdown();
 
     static void revertFocus(BScreen &screen);
@@ -116,12 +125,14 @@ private:
 
     // This list keeps the order of window focusing for this screen
     // Screen global so it works for sticky windows too.
-    FocusedWindows m_focused_list;
-    FocusedWindows m_creation_order_list;
+    Focusables m_focused_list;
+    Focusables m_creation_order_list;
+    Focusables m_focused_win_list;
+    Focusables m_creation_order_win_list;
 
-    FocusedWindows::iterator m_cycling_window;
-    FocusedWindows *m_cycling_list;
-    WinClient *m_was_iconic;
+    Focusables::iterator m_cycling_window;
+    Focusables *m_cycling_list;
+    Focusable *m_was_iconic;
     WinClient *m_cycling_last;
 
     static WinClient *s_focused_window;

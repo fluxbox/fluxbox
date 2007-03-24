@@ -25,12 +25,8 @@
 #include "IconButton.hh"
 #include "IconbarTool.hh"
 
-#include "fluxbox.hh"
 #include "Screen.hh"
-#include "Window.hh"
-#include "WinClient.hh"
-#include "CommandParser.hh"
-#include "WindowCmd.hh"
+#include "Focusable.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -49,123 +45,15 @@
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
-typedef FbTk::RefCount<FbTk::Command> RefCmd;
 
-namespace {
-
-class ShowMenu: public FbTk::Command {
-public:
-    explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
-    void execute() {
-        // hide the menu if it's already showing for this FluxboxWindow
-        if (m_win.menu().isVisible() && WindowCmd<void>::window() == &m_win) {
-            m_win.screen().hideMenus();
-            return;
-        }
-        m_win.screen().hideMenus();
-        // get last button pos
-        const XEvent &event = Fluxbox::instance()->lastEvent();
-        int x = event.xbutton.x_root - (m_win.menu().width() / 2);
-        int y = event.xbutton.y_root - (m_win.menu().height() / 2);
-        m_win.showMenu(x, y);
-    }
-private:
-    FluxboxWindow &m_win;
-};
-
-class FocusCommand: public FbTk::Command {
-public:
-    explicit FocusCommand(const IconbarTool& tool, FluxboxWindow &win) : 
-        m_win(win), m_tool(tool) { }
-    void execute() {
-        // this needs to be a local variable, as this object could be destroyed
-        // if the workspace is changed.
-        FluxboxWindow &win = m_win;
-        if(win.isIconic() || !win.isFocused()) {
-            switch(win.screen().getUserFollowModel()) {
-            case BScreen::SEMIFOLLOW_ACTIVE_WINDOW:
-                if (win.isIconic()) {
-                    win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
-                } else {
-                    win.screen().changeWorkspaceID(win.workspaceNumber());
-                }
-                break;
-            case BScreen::FETCH_ACTIVE_WINDOW:
-                win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
-                break;
-            case BScreen::FOLLOW_ACTIVE_WINDOW:
-                if (!win.isStuck())
-                    win.screen().changeWorkspaceID(win.workspaceNumber());
-            default:
-                break;
-            };
-            win.raiseAndFocus();
-       } else
-           win.iconify();
-    }
-
-private:
-    FluxboxWindow &m_win;
-    const IconbarTool& m_tool;
-};
-
-// simple forwarding of wheeling, but only 
-// if desktopwheeling is enabled
-class WheelWorkspaceCmd : public FbTk::Command {
-public:
-    explicit WheelWorkspaceCmd(const IconbarTool& tool, FluxboxWindow &win, const char* cmd) : 
-        m_win(win), m_cmd(CommandParser::instance().parseLine(cmd)), m_tool(tool) { }
-    void execute() {
-
-        switch(m_tool.wheelMode()) {
-        case IconbarTool::ON:
-            m_cmd->execute();
-            break;
-        case IconbarTool::SCREEN:
-            if(m_win.screen().isDesktopWheeling())
-                m_cmd->execute();
-            break;
-        case IconbarTool::OFF:
-        default:
-            break;
-        };
-    }
-
-private:
-    FluxboxWindow &m_win;
-    RefCmd m_cmd;
-    const IconbarTool& m_tool;
-};
-
-} // end anonymous namespace
-
-
-
-IconButton::IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent, 
-                       FbTk::Font &font, FluxboxWindow &win):
-    FbTk::TextButton(parent, font, win.winClient().title()),
+IconButton::IconButton(const FbTk::FbWindow &parent, FbTk::Font &font,
+                       Focusable &win):
+    FbTk::TextButton(parent, font, win.title()),
     m_win(win), 
     m_icon_window(*this, 1, 1, 1, 1, 
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_use_pixmap(true) {
 
-
-    RefCmd next_workspace(new ::WheelWorkspaceCmd(tool, m_win, "nextworkspace"));
-    RefCmd prev_workspace(new ::WheelWorkspaceCmd(tool, m_win, "prevworkspace"));
-    
-    RefCmd focus_cmd(new ::FocusCommand(tool, m_win));
-    RefCmd menu_cmd(new ::ShowMenu(m_win));
-    setOnClick(focus_cmd, 1);
-    setOnClick(menu_cmd, 3);
-    if(win.screen().isReverseWheeling()) {
-        setOnClick(next_workspace, 5);
-        setOnClick(prev_workspace, 4);
-    } else {
-        setOnClick(next_workspace, 4);
-        setOnClick(prev_workspace, 5);
-    }
-
-    m_win.hintSig().attach(this);
     m_win.titleSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);
@@ -226,10 +114,6 @@ void IconButton::update(FbTk::Subject *subj) {
     // we got signal that either title or 
     // icon pixmap was updated, 
     // so we refresh everything
-
-    // we need to check our client first
-    if (m_win.clientList().empty())
-        return;
 
     Display *display = FbTk::App::instance()->display();
 
@@ -298,13 +182,8 @@ void IconButton::update(FbTk::Subject *subj) {
 }
 
 void IconButton::setupWindow() {
-
     m_icon_window.clear();
-
-    if (!m_win.clientList().empty()) {
-        setText(m_win.winClient().title());
-        // draw with x offset and y offset
-    }
+    setText(m_win.title());
     FbTk::TextButton::clear();
 }
 

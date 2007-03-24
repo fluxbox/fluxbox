@@ -28,7 +28,6 @@
 #include "WinClient.hh"
 #include "Workspace.hh"
 #include "Layer.hh"
-#include "WinClientUtil.hh"
 #include "fluxbox.hh"
 #include "FbWinFrameTheme.hh"
 #include "FocusControl.hh"
@@ -383,7 +382,10 @@ void Ewmh::updateClientClose(WinClient &winclient){
 
 void Ewmh::updateClientList(BScreen &screen) {
 
-    list<WinClient *> creation_order_list = screen.focusControl().creationOrderList();
+    if (screen.isShuttingdown())
+        return;
+
+    list<Focusable *> creation_order_list = screen.focusControl().creationOrderList();
 
     size_t num = creation_order_list.size();
     Window *wl = FB_new_nothrow Window[num];
@@ -395,10 +397,13 @@ void Ewmh::updateClientList(BScreen &screen) {
     }
 
     int win=0;
-    list<WinClient *>::iterator client_it = creation_order_list.begin();
-    list<WinClient *>::iterator client_it_end = creation_order_list.end();
-    for (; client_it != client_it_end; ++client_it)
-        wl[win++] = (*client_it)->window();
+    list<Focusable *>::iterator client_it = creation_order_list.begin();
+    list<Focusable *>::iterator client_it_end = creation_order_list.end();
+    for (; client_it != client_it_end; ++client_it) {
+        WinClient *client = dynamic_cast<WinClient *>(*client_it);
+        if (client)
+            wl[win++] = client->window();
+    }
 
     /*  From Extended Window Manager Hints, draft 1.3:
      *
@@ -1167,7 +1172,7 @@ void Ewmh::updateActions(FluxboxWindow &win) {
         actions.push_back(m_net_wm_action_minimize);
 
     unsigned int max_width, max_height;
-    WinClientUtil::maxSize(win.clientList(), max_width, max_height);
+    win.maxSize(max_width, max_height);
 
     // if unlimited max width we can maximize horizontal
     if (max_width == 0) {

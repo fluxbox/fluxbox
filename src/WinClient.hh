@@ -29,7 +29,6 @@
 #include "Subject.hh"
 #include "FbWindow.hh"
 #include "FbTk/FbString.hh"
-#include "FbTk/ITypeAheadable.hh"
 
 #include <X11/Xutil.h>
 
@@ -37,8 +36,7 @@ class BScreen;
 class Strut;
 
 /// Holds client window info 
-class WinClient: public Focusable, public FbTk::ITypeAheadable,
-    public FbTk::FbWindow {
+class WinClient: public Focusable, public FbTk::FbWindow {
 public:
     typedef std::list<WinClient *> TransientList;
     // this structure only contains 3 elements... the Motif 2.0 structure contains
@@ -117,8 +115,6 @@ public:
     /// @return class member of class structure
     const std::string &getWMClassClass() const;
 
-    BScreen &screen() { return m_screen; }
-    const BScreen &screen() const { return m_screen; }
     /// notifies when this client dies
     FbTk::Subject &dieSig() { return m_diesig; }
     /// notifies when this client becomes focused
@@ -144,8 +140,6 @@ public:
 
     inline unsigned int maxWidth() const { return max_width; }
     inline unsigned int maxHeight() const { return max_height; }
-
-    const std::string &iTypeString() const { return m_title; }
 
     static const int PropBlackboxHintsElements = 5;
     static const int PropMwmHintsElements = 3;
@@ -200,7 +194,6 @@ private:
 
     WinClientSubj m_diesig;
     WinClientSubj m_focussig;
-    BScreen &m_screen;
 
     Strut *m_strut;
     // map transient_for X window to winclient transient 

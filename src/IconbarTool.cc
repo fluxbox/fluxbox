@@ -24,6 +24,8 @@
 
 #include "IconbarTool.hh"
 
+#include "fluxbox.hh"
+#include "WindowCmd.hh"
 #include "Screen.hh"
 #include "IconbarTheme.hh"
 #include "Window.hh"
@@ -331,6 +333,92 @@ void removeDuplicate(const IconbarTool::IconList &iconlist, list<FluxboxWindow *
     // remove already existing windows
     windowlist.erase(remove_it, windowlist.end());
 }
+
+typedef FbTk::RefCount<FbTk::Command> RefCmd;
+
+class ShowMenu: public FbTk::Command {
+public:
+    explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
+    void execute() {
+        // hide the menu if it's already showing for this FluxboxWindow
+        if (m_win.menu().isVisible() && WindowCmd<void>::window() == &m_win) {
+            m_win.screen().hideMenus();
+            return;
+        }
+        m_win.screen().hideMenus();
+        // get last button pos
+        const XEvent &event = Fluxbox::instance()->lastEvent();
+        int x = event.xbutton.x_root - (m_win.menu().width() / 2);
+        int y = event.xbutton.y_root - (m_win.menu().height() / 2);
+        m_win.showMenu(x, y);
+    }
+private:
+    FluxboxWindow &m_win;
+};
+
+class FocusCommand: public FbTk::Command {
+public:
+    explicit FocusCommand(const IconbarTool& tool, FluxboxWindow &win) : 
+        m_win(win), m_tool(tool) { }
+    void execute() {
+        // this needs to be a local variable, as this object could be destroyed
+        // if the workspace is changed.
+        FluxboxWindow &win = m_win;
+        if(win.isIconic() || !win.isFocused()) {
+            switch(win.screen().getUserFollowModel()) {
+            case BScreen::SEMIFOLLOW_ACTIVE_WINDOW:
+                if (win.isIconic()) {
+                    win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
+                } else {
+                    win.screen().changeWorkspaceID(win.workspaceNumber());
+                }
+                break;
+            case BScreen::FETCH_ACTIVE_WINDOW:
+                win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
+                break;
+            case BScreen::FOLLOW_ACTIVE_WINDOW:
+                if (!win.isStuck())
+                    win.screen().changeWorkspaceID(win.workspaceNumber());
+            default:
+                break;
+            };
+            win.raiseAndFocus();
+       } else
+           win.iconify();
+    }
+
+private:
+    FluxboxWindow &m_win;
+    const IconbarTool& m_tool;
+};
+
+// simple forwarding of wheeling, but only 
+// if desktopwheeling is enabled
+class WheelWorkspaceCmd : public FbTk::Command {
+public:
+    explicit WheelWorkspaceCmd(const IconbarTool& tool, FluxboxWindow &win, const char* cmd) : 
+        m_win(win), m_cmd(CommandParser::instance().parseLine(cmd)), m_tool(tool) { }
+    void execute() {
+
+        switch(m_tool.wheelMode()) {
+        case IconbarTool::ON:
+            m_cmd->execute();
+            break;
+        case IconbarTool::SCREEN:
+            if(m_win.screen().isDesktopWheeling())
+                m_cmd->execute();
+            break;
+        case IconbarTool::OFF:
+        default:
+            break;
+        };
+    }
+
+private:
+    FluxboxWindow &m_win;
+    RefCmd m_cmd;
+    const IconbarTool& m_tool;
+};
 
 }; // end anonymous namespace
 
@@ -779,8 +867,7 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
     win.dieSig().detach(this);
     win.workspaceSig().detach(this);
     win.stateSig().detach(this);
-    win.titleSig().detach(this);
-
+    win.attentionSig().detach(this);
 
     // remove from list and render theme again
     IconButton *button = *it;
@@ -799,11 +886,25 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
 #ifdef DEBUG
     cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
 #endif // DEBUG
-    IconButton *button = new IconButton(*this,
-                                        m_icon_container,
+    IconButton *button = new IconButton(m_icon_container,
                                         m_theme.focusedText().font(),
                                         win);
 
+
+    RefCmd next_workspace(new ::WheelWorkspaceCmd(*this, win, "nextworkspace"));
+    RefCmd prev_workspace(new ::WheelWorkspaceCmd(*this, win, "prevworkspace"));
+    
+    RefCmd focus_cmd(new ::FocusCommand(*this, win));
+    RefCmd menu_cmd(new ::ShowMenu(win));
+    button->setOnClick(focus_cmd, 1);
+    button->setOnClick(menu_cmd, 3);
+    if(win.screen().isReverseWheeling()) {
+        button->setOnClick(next_workspace, 5);
+        button->setOnClick(prev_workspace, 4);
+    } else {
+        button->setOnClick(next_workspace, 4);
+        button->setOnClick(prev_workspace, 5);
+    }
 
     renderButton(*button, false); // update the attributes, but don't clear it
     m_icon_container.insertItem(button);
@@ -818,10 +919,10 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
 }
 
 void IconbarTool::updateList() {
-    list<WinClient *> ordered_list =
-        m_screen.focusControl().creationOrderList();
-    list<WinClient *>::iterator it = ordered_list.begin();
-    list<WinClient *>::iterator it_end = ordered_list.end();
+    list<Focusable *> ordered_list =
+        m_screen.focusControl().creationOrderWinList();
+    list<Focusable *>::iterator it = ordered_list.begin();
+    list<Focusable *>::iterator it_end = ordered_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && checkAddWindow(mode(), *(*it)->fbwindow()) &&
             !checkDuplicate(*(*it)->fbwindow()))

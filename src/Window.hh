@@ -263,6 +263,7 @@ public:
     void moveResize(int x, int y, unsigned int width, unsigned int height, bool send_event = false);
     /// move to pos x,y and resize client window to size width, height
     void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity, unsigned int client_bw = 0);
+    void maxSize(unsigned int &width, unsigned int &height);
     void setWorkspace(int n);
     void changeBlackboxHints(const BlackboxHints &bh);
     void updateFunctions();
@@ -334,7 +335,6 @@ public:
     inline bool isFocusHidden() const { return m_focus_hidden; }
     inline bool isIconHidden() const { return m_icon_hidden; }
     inline bool isManaged() const { return m_initialized; }
-    inline bool isFocused() const { return focused; }
     bool isVisible() const;
     inline bool isIconic() { return iconic; }
     inline bool isIconic() const { return iconic; }
@@ -361,9 +361,6 @@ public:
     inline WinClient &winClient() { return *m_client; }
     inline const WinClient &winClient() const { return *m_client; }
 
-    inline const BScreen &screen() const { return m_screen; }
-    inline BScreen &screen() { return m_screen; }
-
     inline const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }
     inline FbTk::XLayerItem &layerItem() { return m_frame.layerItem(); }
 
@@ -378,6 +375,7 @@ public:
     const FbTk::FbWindow &parent() const { return m_parent; }
     FbTk::FbWindow &parent() { return m_parent; }
 
+    bool acceptsFocus() const;
     const FbTk::FbPixmap &iconPixmap() const;
     const FbTk::FbPixmap &iconMask() const;
     const std::string &title() const;
@@ -421,7 +419,6 @@ public:
     FbTk::Subject &dieSig() { return m_diesig; }
     const FbTk::Subject &dieSig() const { return m_diesig; }
     FbTk::Subject &focusSig() { return m_focussig; }
-    FbTk::Subject &titleSig() { return m_titlesig; }
     FbTk::Subject &attentionSig() { return m_attentionsig; }
     /** @} */ // end group signals
 
@@ -493,7 +490,6 @@ private:
         m_layersig, 
         m_workspacesig, 
         m_diesig, m_focussig,
-        m_titlesig,
         m_attentionsig;
 
     class ThemeListener: public FbTk::Observer {
@@ -509,14 +505,13 @@ private:
 
     // Window states
     bool moving, resizing, shaded, iconic,
-        focused, stuck, m_initialized, fullscreen;
+        stuck, m_initialized, fullscreen;
 
     int maximized;
 
     WinClient *m_attaching_tab;
 
     bool m_attention_state;
-    BScreen &m_screen; /// screen on which this window exist
     FbTk::Timer m_timer;
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;

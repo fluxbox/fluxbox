@@ -55,6 +55,7 @@
 #include <memory>
 #include <map>
 
+class Focusable;
 class FluxboxWindow;
 class Netizen;
 class FbWinFrameTheme;
@@ -217,7 +218,7 @@ public:
     void buttonPressEvent(XButtonEvent &be);
     void notifyUngrabKeyboard();
 
-    void startTypeAheadFocus(std::list<WinClient *> &winlist, int opts);
+    void startTypeAheadFocus(std::list<Focusable *> &winlist, int opts);
     void cycleFocus(int opts, bool reverse);
 
     FbTk::Menu *createMenu(const std::string &label);
@@ -488,8 +489,8 @@ private:
 
     bool m_cycling, m_typing_ahead;
     int m_cycle_opts;
-    FbTk::TypeAhead<std::list<WinClient *>, WinClient *> m_type_ahead;
-    std::list<WinClient *> m_matches;
+    FbTk::TypeAhead<std::list<Focusable *>, Focusable *> m_type_ahead;
+    std::list<Focusable *> m_matches;
 
     // Xinerama related private data
     bool m_xinerama_avail;

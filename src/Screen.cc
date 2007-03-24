@@ -853,8 +853,9 @@ void BScreen::notifyUngrabKeyboard() {
     focusControl().stopCyclingFocus();
 }
 
-void BScreen::startTypeAheadFocus(std::list<WinClient *> &winlist, int opts) {
+void BScreen::startTypeAheadFocus(std::list<Focusable *> &winlist, int opts) {
     m_type_ahead.init(winlist);
+    m_matches = winlist;
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     if (!m_typing_ahead && !m_cycling)
         evm->grabKeyboard(*this, rootWindow().window());
@@ -879,12 +880,19 @@ void BScreen::cycleFocus(int options, bool reverse) {
     if (mods == 0) // can't stacked cycle unless there is a mod to grab
         options |= FocusControl::CYCLELINEAR;
 
-    FocusControl::FocusedWindows *win_list =
-        (options & FocusControl::CYCLELINEAR) ?
+    FocusControl::Focusables *win_list = 0;
+    if (options & FocusControl::CYCLEGROUPS) {
+        win_list = (options & FocusControl::CYCLELINEAR) ?
+            &focusControl().creationOrderWinList() :
+            &focusControl().focusedOrderWinList();
+    } else {
+        win_list = (options & FocusControl::CYCLELINEAR) ?
             &focusControl().creationOrderList() :
             &focusControl().focusedOrderList();
+    }
 
     focusControl().cycleFocus(win_list, options, reverse);
+
 }
 
 FbTk::Menu *BScreen::createMenu(const string &label) {

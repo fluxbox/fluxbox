@@ -58,7 +58,7 @@ using std::dec;
 WinClient::TransientWaitMap WinClient::s_transient_wait;
 
 WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
-        Focusable(fbwin), FbTk::FbWindow(win),
+        Focusable(screen, fbwin), FbTk::FbWindow(win),
                      transient_for(0),
                      window_group(0),
                      x(0), y(0), old_bw(0),
@@ -82,7 +82,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      m_mwm_hint(0),
                      m_focus_mode(F_PASSIVE),
                      m_diesig(*this), m_focussig(*this),
-                     m_screen(screen),
                      m_strut(0) {
     updateWMProtocols();
     updateBlackboxHints();

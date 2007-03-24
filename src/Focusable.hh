@@ -23,18 +23,33 @@
 #define FOCUSABLE_HH
 
 #include "FbTk/FbPixmap.hh"
+#include "FbTk/ITypeAheadable.hh"
+#include "FbTk/Subject.hh"
 
 #include <string>
 
+class BScreen;
 class FluxboxWindow;
 
 // base class for any object that might be "focused"
-class Focusable {
+class Focusable: public FbTk::ITypeAheadable {
 public:
-    Focusable(FluxboxWindow *fbwin = 0): m_fbwin(fbwin) { }
+    Focusable(BScreen &scr, FluxboxWindow *fbwin = 0):
+        m_screen(scr), m_fbwin(fbwin),
+        m_focused(false), m_titlesig(*this) { }
     virtual ~Focusable() { }
 
     virtual bool focus() { return false; }
+
+    virtual bool isFocused() const { return m_focused; }
+    virtual bool acceptsFocus() const { return true; }
+
+    inline BScreen &screen() { return m_screen; }
+    inline const BScreen &screen() const { return m_screen; }
+
+    // for accessing window properties, like shaded, minimized, etc.
+    inline const FluxboxWindow *fbwindow() const { return m_fbwin; }
+    inline FluxboxWindow *fbwindow() { return m_fbwin; }
 
     // so we can make nice buttons, menu entries, etc.
     virtual const FbTk::FbPixmap &iconPixmap() const { return m_icon_pixmap; }
@@ -45,15 +60,30 @@ public:
 
     virtual const std::string &title() const { return m_title; }
     virtual const std::string &iconTitle() const { return m_icon_title; }
+    const std::string &iTypeString() const { return title(); }
 
-    // for accessing window properties, like shaded, minimized, etc.
-    inline const FluxboxWindow *fbwindow() const { return m_fbwin; }
-    inline FluxboxWindow *fbwindow() { return m_fbwin; }
+    class FocusSubject: public FbTk::Subject {
+    public:
+        FocusSubject(Focusable &w):m_win(w) { }
+        Focusable &win() { return m_win; }
+        const Focusable &win() const { return m_win; }
+    private:
+        Focusable &m_win;
+    };
+
+    // used for both title and icon changes
+    FbTk::Subject &titleSig() { return m_titlesig; }
+    const FbTk::Subject &titleSig() const { return m_titlesig; }
 
 protected:
+    BScreen &m_screen;
+    FluxboxWindow *m_fbwin;
+
+    bool m_focused;
     std::string m_title, m_icon_title;
     FbTk::FbPixmap m_icon_pixmap, m_icon_mask;
-    FluxboxWindow *m_fbwin;
+
+    FocusSubject m_titlesig;
 };
 
 #endif // FOCUSABLE_HH

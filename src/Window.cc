@@ -239,7 +239,7 @@ int FluxboxWindow::s_num_grabs = 0;
 
 FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
                              FbTk::XLayer &layer):
-    Focusable(this),
+    Focusable(client.screen(), this),
     oplock(false),
     m_hintsig(*this),
     m_statesig(*this),
@@ -247,15 +247,12 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_workspacesig(*this),
     m_diesig(*this),
     m_focussig(*this),
-    m_titlesig(*this),
     m_attentionsig(*this),
     m_themelistener(*this),
-    moving(false), resizing(false), shaded(false),
-    iconic(false), focused(false),
+    moving(false), resizing(false), shaded(false), iconic(false),
     stuck(false), m_initialized(false), fullscreen(false),
     maximized(MAX_NONE),
     m_attaching_tab(0),
-    m_screen(client.screen()),
     display(FbTk::App::instance()->display()),
     m_button_grab_x(0), m_button_grab_y(0),
     m_last_move_x(0), m_last_move_y(0),
@@ -281,6 +278,17 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     tm.reconfigSig().attach(&m_themelistener);
 
     init();
+
+    if (!isManaged())
+        return;
+
+    // add the window to the focus list
+    // always add to front on startup to keep the focus order the same
+    if (screen().focusControl().focusNew() || Fluxbox::instance()->isStartup())
+        screen().focusControl().addFocusWinFront(*this);
+    else
+        screen().focusControl().addFocusWinBack(*this);
+
 }
 
 
@@ -330,7 +338,9 @@ FluxboxWindow::~FluxboxWindow() {
         }
     }
 
-    // deal with extra menus
+    if (!screen().isShuttingdown())
+        screen().focusControl().removeWindow(*this);
+
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
 #endif // DEBUG
@@ -588,18 +598,8 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     if (client.fbwindow() != 0) {
         FluxboxWindow *old_win = client.fbwindow(); // store old window
 
-        // figure out which client to raise at the end
-        if (FocusControl::focusedFbWindow() == old_win) {
+        if (FocusControl::focusedFbWindow() == old_win)
             was_focused = true;
-        } else if (FocusControl::focusedFbWindow() != this) {
-            FocusControl::FocusedWindows focus_list =
-                    screen().focusControl().focusedOrderList();
-            FocusControl::FocusedWindows::iterator it = focus_list.begin();
-            for (; it != focus_list.end() && !focused_win; ++it) {
-                if ((*it)->fbwindow() == this || (*it)->fbwindow() == old_win)
-                    focused_win = *it;
-            }
-        }
 
         ClientList::iterator client_insert_pos = getClientInsertPosition(x, y);
         FbTk::TextButton *button_insert_pos = NULL;
@@ -668,13 +668,11 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
         // and we don't seem to get a FocusIn event from setInputFocus
         setCurrentClient(client);
         FocusControl::setFocusedWindow(&client);
-    } else if (focused_win)
-        setCurrentClient(*focused_win, false);
-    else
-        // reparenting puts the new client on top, but the old client is keeping
-        // the focus, so we raise it
-        m_client->raise();
-
+    } else {
+        WinClient *last = screen().focusControl().lastFocusedWindow(*this);
+        if (last)
+            setCurrentClient(*last, false);
+    }
     frame().reconfigure();
 }
 
@@ -975,8 +973,6 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (client.fbwindow() != this)
         return false;
 
-    if (&client != m_client)
-        m_screen.focusControl().setScreenFocusedWindow(client);
     m_client = &client;
     m_client->raise();
     m_client->focusSig().notify();
@@ -1063,7 +1059,7 @@ void FluxboxWindow::reconfigure() {
 
     applyDecorations();
 
-    setFocusFlag(focused);
+    setFocusFlag(m_focused);
 
     moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
@@ -1272,7 +1268,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
         }
 
         frame().moveResize(new_x, new_y, new_width, new_height);
-        setFocusFlag(focused);
+        setFocusFlag(m_focused);
 
         shaded = false;
         send_event = true;
@@ -1299,7 +1295,7 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
     if (!m_initialized)
         m_old_pos_x = 1;
     frame().moveResizeForClient(new_x, new_y, new_width, new_height, gravity, client_bw);
-    setFocusFlag(focused);
+    setFocusFlag(m_focused);
     shaded = false;
     sendConfigureNotify();
 
@@ -1312,8 +1308,26 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
 
 }
 
+void FluxboxWindow::maxSize(unsigned int &max_width, unsigned int &max_height) {
+    ClientList::const_iterator it = clientList().begin();
+    ClientList::const_iterator it_end = clientList().end();
+    max_width = (unsigned int) ~0; // unlimited
+    max_height = (unsigned int) ~0; // unlimited
+    for (; it != it_end; ++it) {
+        // special case for max height/width == 0
+        // 0 indicates unlimited size, so we skip them
+        // and set max size to 0 if max size == ~0 after the loop
+        if ((*it)->maxHeight() != 0)
+            max_height = std::min( (*it)->maxHeight(), max_height );
+        if ((*it)->maxWidth() != 0)
+            max_width = std::min( (*it)->maxWidth(), max_width );
+    }
 
-
+    if (max_width == (unsigned int) ~0)
+        max_width = 0;
+    if (max_height == (unsigned int) ~0)
+        max_height = 0;
+}
 
 // returns whether the focus was "set" to this window
 // it doesn't guarantee that it has focus, but says that we have
@@ -1976,7 +1990,7 @@ void FluxboxWindow::setIconHidden(bool value) {
 // so now we make it a focused frame etc
 void FluxboxWindow::setFocusFlag(bool focus) {
     bool was_focused = isFocused();
-    focused = focus;
+    m_focused = focus;
 #ifdef DEBUG
     cerr<<"FluxboxWindow("<<title()<<")::setFocusFlag("<<focus<<")"<<endl;
 #endif // DEBUG
@@ -1987,7 +2001,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
         frame().setFocus(focus);
 
     if (screen().doAutoRaise() && !screen().focusControl().isCycling()) {
-        if (focused)
+        if (m_focused)
             m_timer.start();
         else
             m_timer.stop();
@@ -2434,7 +2448,9 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
 
     case XA_WM_HINTS:
         client.updateWMHints();
-        hintSig().notify(); // notify listeners
+        titleSig().notify();
+        // nothing uses this yet
+        // hintSig().notify(); // notify listeners
         break;
 
     case XA_WM_ICON_NAME:
@@ -2604,7 +2620,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
     if (be.button == 1 || (be.button == 3 &&
                            be.state == Fluxbox::instance()->getModKey())) {
-        if (!focused) //check focus
+        if (!m_focused) //check focus
             focus();
 
         if (frame().window().window() == be.window || frame().tabcontainer().window() == be.window) {
@@ -3664,12 +3680,16 @@ FbTk::Menu &FluxboxWindow::menu() {
     return screen().windowMenu();
 }
 
+bool FluxboxWindow::acceptsFocus() const {
+    return (m_client ? m_client->acceptsFocus() : false);
+}
+
 const FbTk::FbPixmap &FluxboxWindow::iconPixmap() const {
-    return m_client->iconPixmap();
+    return (m_client ? m_client->iconPixmap() : m_icon_pixmap);
 }
 
 const FbTk::FbPixmap &FluxboxWindow::iconMask() const {
-    return m_client->iconMask();
+    return (m_client ? m_client->iconMask() : m_icon_mask);
 }
 
 const FbTk::Menu &FluxboxWindow::menu() const {
@@ -4086,7 +4106,6 @@ void FluxboxWindow::updateButtons() {
                                        dir[i],
                                        frame().titlebar(),
                                        0, 0, 10, 10);
-                hintSig().attach(winbtn);
                 titleSig().attach(winbtn);
                 winbtn->setOnClick(show_menu_cmd);
                 break;

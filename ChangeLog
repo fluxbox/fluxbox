@@ -1,5 +1,17 @@
  (Format: Year/Month/Day)
 Changes for 1.0rc3:
+*07/03/24:
+   * Added new key command GoToWindow (Mark)
+     - Syntax is GoToWindow <int> [<bitmask>], where the int gives the position
+       of the desired window with respect to a list of windows, and the bitmask
+       is the same as for NextWindow. A negative number for <int> will count
+       back from the end of the list.
+     - Particularly useful examples are GoToWindow <int> 9 and
+       GoToWindow <int> 25, which will focus the window at position <int> in the
+       iconbar modes Workspace and WorkspaceNoIcons, respectively.
+   * Fixed creation order window cycling with tabbed windows (Mark)
+   * Workspace Menu wasn't updating when windows changed titles (Mark)
+   * Some other minor changes/code cleanup (Mark)
 *07/03/21:
    * HideMenus didn't work on CustomMenus, and also fixed a memleak with
      CustomMenu (Mark + thanks Julien Trolet)
