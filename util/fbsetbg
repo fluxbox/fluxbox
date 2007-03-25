@@ -298,6 +298,8 @@ while [ $# -gt 0 ]; do
                 wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
                 if [ -z "$wallpaper" ]; then
                     option=`grep "|${DISPLAY}.0$"    $lastwallpaper|cut -d'|' -f1`
+                    option2=`echo $option|cut -d' ' -f2`
+                    option=`echo $option|cut -d' ' -f1`
                     wallpaper=`grep "|${DISPLAY}.0$" $lastwallpaper|cut -d'|' -f2`
                 fi
                 if [ -z "$wallpaper" ]; then
