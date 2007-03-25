@@ -33,6 +33,7 @@
 #include "FbWinFrameTheme.hh"
 #include "Screen.hh"
 
+#include "IconButton.hh"
 #include "Container.hh"
 
 #ifdef SHAPE
@@ -619,11 +620,9 @@ void FbWinFrame::removeAllButtons() {
     }
 }
 
-FbWinFrame::ButtonId FbWinFrame::createTab(const string &title, FbTk::Command *command,
-                                           int tabs_padding) {
-    FbTk::TextButton *button = new FbTk::TextButton(m_tab_container,
-                                                    theme().font(),
-                                                    title);
+IconButton *FbWinFrame::createTab(Focusable &client) {
+    IconButton *button = new IconButton(m_tab_container, theme().font(),
+                                        client);
 
     button->show();
     button->setEventMask(ExposureMask | ButtonPressMask |
@@ -631,10 +630,6 @@ FbWinFrame::ButtonId FbWinFrame::createTab(const string &title, FbTk::Command *c
                          EnterWindowMask);
     FbTk::EventManager::instance()->add(*button, button->window());
 
-    FbTk::RefCount<FbTk::Command> refcmd(command);
-    button->setOnClick(refcmd);
-
-    button->setTextPadding(tabs_padding);
     button->setJustify(theme().justify());
     button->setBorderColor(theme().border().color());
     button->setBorderWidth(m_window.borderWidth());
@@ -647,7 +642,7 @@ FbWinFrame::ButtonId FbWinFrame::createTab(const string &title, FbTk::Command *c
     return button;
 }
 
-void FbWinFrame::removeTab(ButtonId btn) {
+void FbWinFrame::removeTab(IconButton *btn) {
     if (btn == m_current_label)
         m_current_label = 0;
 

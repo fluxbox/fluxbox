@@ -291,7 +291,8 @@ Focusable *FocusControl::lastFocusedWindow(int workspace) {
  * Stuck, iconic etc don't matter within a group
  */
 WinClient *FocusControl::lastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client) {
-    if (m_focused_list.empty()) return 0;
+    if (m_focused_list.empty() || m_screen.isShuttingdown())
+        return 0;
 
     Focusables::iterator it = m_focused_list.begin();    
     Focusables::iterator it_end = m_focused_list.end();

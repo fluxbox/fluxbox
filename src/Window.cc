@@ -42,8 +42,8 @@
 #include "StringUtil.hh"
 #include "FocusControl.hh"
 #include "Layer.hh"
+#include "IconButton.hh"
 
-#include "FbTk/TextButton.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/EventManager.hh"
 #include "FbTk/KeyUtil.hh"
@@ -739,7 +739,7 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     evm.remove(client.window());
 
-    FbTk::TextButton *label_btn = m_labelbuttons[&client];
+    IconButton *label_btn = m_labelbuttons[&client];
     if (label_btn != 0) {
         frame().removeTab(label_btn);
         label_btn = 0;
@@ -1015,8 +1015,8 @@ void FluxboxWindow::associateClientWindow(bool use_attrs,
                                           int x, int y,
                                           unsigned int width, unsigned int height,
                                           int gravity, unsigned int client_bw) {
-    updateTitleFromClient(*m_client);
-    updateIconNameFromClient(*m_client);
+    m_client->updateTitle();
+    m_client->updateIconTitle();
 
     if (use_attrs)
         frame().moveResizeForClient(x, y,
@@ -1099,19 +1099,10 @@ void FluxboxWindow::reconfigure() {
 
 /// update current client title and title in our frame
 void FluxboxWindow::updateTitleFromClient(WinClient &client) {
-    client.updateTitle();
-    // compare old title with new and see if we need to update
-    // graphics
-    if (m_labelbuttons[&client]->text() != client.title()) {
-        m_labelbuttons[&client]->setText(client.title());
-        if (&client == m_client)
-            frame().setFocusTitle(client.title());
+    if (&client == m_client) {
+        frame().setFocusTitle(client.title());
+        titleSig().notify();
     }
-}
-
-/// update icon title from client
-void FluxboxWindow::updateIconNameFromClient(WinClient &client) {
-    client.updateIconTitle();
 }
 
 void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
@@ -2457,8 +2448,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         // update icon title and then do normal XA_WM_NAME stuff
         client.updateIconTitle();
     case XA_WM_NAME:
-        updateTitleFromClient(client);
-        titleSig().notify();
+        client.updateTitle();
         break;
 
     case XA_WM_NORMAL_HINTS: {
@@ -4191,13 +4181,14 @@ void FluxboxWindow::ungrabPointer(Time time) {
 
 void FluxboxWindow::associateClient(WinClient &client) {
 
-    FbWinFrame::ButtonId btn = frame().createTab(client.title(),
-                                                 new SetClientCmd(client),
-                                                 Fluxbox::instance()->getTabsPadding());
+    IconButton *btn = frame().createTab(client);
+
+    FbTk::RefCount<FbTk::Command> setcmd(new SetClientCmd(client));
+    btn->setOnClick(setcmd, 1);
+    btn->setTextPadding(Fluxbox::instance()->getTabsPadding());
+    btn->setPixmap(screen().getTabsUsePixmap());
 
     m_labelbuttons[&client] = btn;
-
-
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
 

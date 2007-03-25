@@ -353,11 +353,15 @@ void WinClient::updateTitle() {
         return;
 
     m_title = string(Xutil::getWMName(window()), 0, 512);
+    titleSig().notify();
+    if (fbwindow())
+        fbwindow()->updateTitleFromClient(*this);
 }
 
 void WinClient::setTitle(FbTk::FbString &title) {
     m_title = title;
     m_title_override = true;
+    titleSig().notify();
     if (fbwindow())
         fbwindow()->updateTitleFromClient(*this);
 }

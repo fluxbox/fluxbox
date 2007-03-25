@@ -42,6 +42,8 @@
 class Shape;
 class FbWinFrameTheme;
 class BScreen;
+class IconButton;
+class Focusable;
 
 namespace FbTk {
 class TextButton;
@@ -69,8 +71,6 @@ public:
         RIGHTBOTTOM, RIGHTTOP        
     };
 
-
-    typedef FbTk::TextButton *ButtonId; ///< defines a button id 
 
     /// create a top level window
     FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
@@ -141,10 +141,9 @@ public:
     /// remove all buttons from titlebar
     void removeAllButtons();
     /// adds a button to label window with specified title and command
-    ButtonId createTab(const std::string &title, FbTk::Command *cmd, int tab_padding);
-    //    void addLabelButton(FbTk::TextButton &btn);
+    IconButton *createTab(Focusable &client);
     /// removes a specific button from label window
-    void removeTab(ButtonId id);
+    void removeTab(IconButton *id);
     /// move label button to the left
     void moveLabelButtonLeft(FbTk::TextButton &btn);
     /// move label button to the right
@@ -322,7 +321,6 @@ private:
         m_buttons_right; ///< buttons to the right
     typedef std::list<FbTk::TextButton *> LabelList;
     FbTk::TextButton *m_current_label; ///< which client button is focused at the moment
-    std::string m_titletext; ///< text to be displayed int m_label
     int m_bevel;  ///< bevel between titlebar items and titlebar
     bool m_use_titlebar; ///< if we should use titlebar
     bool m_use_tabs; ///< if we should use tabs (turns them off in external mode only)

@@ -456,7 +456,6 @@ private:
     /// gets title string from client window and updates frame's title
     void updateTitleFromClient(WinClient &client);
     /// gets icon name from client window
-    void updateIconNameFromClient(WinClient &client);
     void updateMWMHintsFromClient(WinClient &client);
     void updateBlackboxHintsFromClient(const WinClient &client);
     void updateRememberStateFromClient(WinClient &client);
@@ -529,7 +528,7 @@ private:
 
     ClientList m_clientlist;
     WinClient *m_client; ///< current client
-    typedef std::map<WinClient *, FbTk::TextButton *> Client2ButtonMap;
+    typedef std::map<WinClient *, IconButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
 
     // just temporary solution

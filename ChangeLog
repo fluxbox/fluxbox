@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/03/25:
+   * Added new resource session.screen<N>.tabs.usePixmap that puts the window's
+     icon in the tab, if available. This is on by default. (Mark)
+     Window.cc FbWinFrame.cc/hh WinClient.cc Screen.cc/hh
 *07/03/24:
    * Updated French translations (thanks Ulrich Etile)
      nls/fr_FR/Translation.m
