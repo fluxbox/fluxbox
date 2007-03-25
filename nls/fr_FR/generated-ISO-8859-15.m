@@ -164,7 +164,7 @@ $set 14 #Toolbar
 1 Editer le nom du bureau
 2 Mode d'icônification
 3 Toutes les fenêtres
-3 Icônes
+4 Icônes
 5 Aucun
 6 Bureau
 7 Icônes du bureau
@@ -233,8 +233,8 @@ $set 19 #main
 11 erreur: '-rc' nécessite un argument
 12 erreur: 'screen' nécessite un argument
 Website: http://www.fluxbox.org/\n\n\
--display <chaîne de caractere>\t\utilise la connexion sur le display
--screen <tous|entier,entier,entier>\tfonctionne uniquement sur un écran spécifique
+-display <chaîne de caractere>\t\utilise la connexion sur le display\
+-screen <tous|entier,entier,entier>\tfonctionne uniquement sur un écran spécifique\
 -rc <chaîne>\t\t\tutilise un autre fichier de configuration.\n\
 -version\t\t\taffiche la version et quitte.\n\
 -info\t\t\t\taffiche quelques informations utiles.\n\
