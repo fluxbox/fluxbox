@@ -2585,7 +2585,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         case Above:
         case TopIf:
         default:
-            setCurrentClient(*client, false);
+            setCurrentClient(*client, m_focused);
             raise();
             break;
 
