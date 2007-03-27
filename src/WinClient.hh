@@ -82,6 +82,7 @@ public:
     void clearStrut();
 
     bool focus(); // calls Window->setCurrentClient to give focus to this client
+    const std::string &title() const;
 
     /**
      * Changes width and height to the nearest (lower) value
@@ -184,7 +185,7 @@ private:
 
     int m_win_gravity;
 
-    std::string m_class_name, m_instance_name;
+    std::string m_class_name, m_instance_name, m_icon_title;
     bool m_title_override, m_icon_title_override;
 
     FluxboxWindow::BlackboxHints *m_blackbox_hint;

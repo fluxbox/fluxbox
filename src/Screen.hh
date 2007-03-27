@@ -99,7 +99,7 @@ public:
         DEFAULTRESIZE = BOTTOMRESIZE };
 
 
-    typedef std::vector<FluxboxWindow *> Icons;
+    typedef std::list<FluxboxWindow *> Icons;
 
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
@@ -146,6 +146,7 @@ public:
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
     inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
+    inline const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
     inline const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
     inline const bool getTabsUsePixmap() const { return *resource.tabs_use_pixmap; }
     inline const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
@@ -469,9 +470,11 @@ private:
         FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
         FbTk::Resource<std::string> scroll_action;
         FbTk::Resource<bool> scroll_reverse;
+        FbTk::Resource<bool> clientmenu_use_pixmap;
         FbTk::Resource<bool> tabs_use_pixmap;
         FbTk::Resource<bool> max_over_tabs;
         FbTk::Resource<bool> default_internal_tabs;
+
 
     } resource;
 

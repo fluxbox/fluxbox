@@ -325,6 +325,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                  altscrname+".overlay.CapStyle"),
     scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
     scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
+    clientmenu_use_pixmap(rm, true, scrname+".clientMenu.usePixmap", altscrname+".ClientMenu.UsePixmap"),
     tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
     max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
     default_internal_tabs(rm, false /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
@@ -1154,7 +1155,7 @@ void BScreen::removeClient(WinClient &client) {
 int BScreen::addWorkspace() {
 
     bool save_name = getNameOfWorkspace(m_workspaces_list.size()) != "" ? false : true;
-    Workspace *wkspc = new Workspace(*this, m_layermanager,
+    Workspace *wkspc = new Workspace(*this,
                                      getNameOfWorkspace(m_workspaces_list.size()),
                                      m_workspaces_list.size());
     m_workspaces_list.push_back(wkspc);
@@ -1822,6 +1823,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     tab_menu->insert(new BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
               "Maximize Over", "Maximize over this thing when maximizing"),
               *resource.max_over_tabs, save_and_reconfigure));
+    tab_menu->insert(new BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
+              "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
+              *resource.tabs_use_pixmap, save_and_reconfigure));
 
     FbTk::MenuItem *tab_width_item =
         new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Configmenu, ExternalTabWidth,

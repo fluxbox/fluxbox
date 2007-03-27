@@ -28,7 +28,7 @@
 
 class ColSmartPlacement: public PlacementStrategy {
 public:
-    bool placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+    bool placeWindow(const std::list<FluxboxWindow *> &windowlist,
                      const FluxboxWindow &win, 
                      int &place_x, int &place_y);
 };

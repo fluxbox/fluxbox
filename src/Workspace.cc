@@ -30,13 +30,10 @@
 #include "Window.hh"
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
-#include "WindowCmd.hh"
 #include "FocusControl.hh"
 #include "PlacementStrategy.hh"
-#include "Layer.hh"
 
 #include "FbTk/I18n.hh"
-#include "FbTk/MenuItem.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/FbString.hh"
 
@@ -65,7 +62,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <iterator>
 
 using std::string;
 using std::vector;
@@ -76,83 +72,11 @@ using std::cerr;
 using std::endl;
 #endif // DEBUG
 
-namespace { // anonymous
-
-int countTransients(const WinClient &client) {
-    if (client.transientList().empty())
-        return 0;
-    // now go throu the entire tree and count transients
-    size_t ret = client.transientList().size();
-    WinClient::TransientList::const_iterator it = client.transientList().begin();
-    WinClient::TransientList::const_iterator it_end = client.transientList().end();
-    for (; it != it_end; ++it)
-        ret += countTransients(*(*it));
-
-    return ret;
-}
-
-class ClientMenuItem:public FbTk::MenuItem {
-public:
-    ClientMenuItem(WinClient &client):
-        FbTk::MenuItem(client.title().c_str(), &client.screen().windowMenu()),
-        m_client(client) {
-
-    }
-    FbTk::Menu *submenu() { return &m_client.screen().windowMenu(); }
-    const FbTk::Menu *submenu() const { return &m_client.screen().windowMenu(); }
-
-    void showSubmenu() {
-        WindowCmd<void>::setClient(&m_client);
-        FbTk::MenuItem::showSubmenu();
-    }
-
-    void click(int button, int time) {
-        if (m_client.fbwindow() == 0)
-            return;
-        FluxboxWindow &win = *m_client.fbwindow();
-
-        if (win.screen().currentWorkspaceID() != win.workspaceNumber() &&
-            !win.isStuck()) {
-            win.menu().hide();
-            BScreen::FollowModel model = win.screen().getUserFollowModel();
-            if (model == BScreen::IGNORE_OTHER_WORKSPACES)
-                return;
-            // fetch the window to the current workspace
-            else if ((button == 3) ^ (model == BScreen::FETCH_ACTIVE_WINDOW ||
-                win.isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW)) {
-                win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win, true);
-                return;
-            }
-            // warp to the workspace of the window
-            win.screen().changeWorkspaceID(win.workspaceNumber());
-        }
-        win.setCurrentClient(m_client);
-        win.raiseAndFocus();
-    }
-
-    const string &label() const { return m_client.title(); }
-    bool isSelected() const {
-        if (m_client.fbwindow() == 0)
-            return false;
-        if (m_client.fbwindow()->isFocused() == false)
-            return false;
-        return (&(m_client.fbwindow()->winClient()) == &m_client);
-
-    }
-private:
-    WinClient &m_client;
-};
-
-};
-
 Workspace::GroupList Workspace::m_groups;
 
-Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager,
-                     const string &name, unsigned int id):
+Workspace::Workspace(BScreen &scrn, const string &name, unsigned int id):
     m_screen(scrn),
-    m_clientmenu(scrn.menuTheme(), scrn.imageControl(),
-                 *scrn.layerManager().getLayer(Layer::MENU)),
-    m_layermanager(layermanager),
+    m_clientmenu(scrn, m_windowlist, &m_clientlist_sig),
     m_name(name),
     m_id(id) {
 
@@ -171,14 +95,12 @@ void Workspace::addWindow(FluxboxWindow &w, bool place) {
         return;
 
     w.setWorkspace(m_id);
-    // attach signals
-    w.titleSig().attach(this);
 
     if (place)
         placeWindow(w);
 
     m_windowlist.push_back(&w);
-    updateClientmenu();
+    m_clientlist_sig.notify();
 
     if (!w.isStuck()) {
         FluxboxWindow::ClientList::iterator client_it =
@@ -200,19 +122,11 @@ int Workspace::removeWindow(FluxboxWindow *w, bool still_alive) {
     if (w == 0)
         return -1;
 
-    // detach from signals
-    w->titleSig().detach(this);
-
     if (w->isFocused() && still_alive)
         FocusControl::unfocusWindow(w->winClient(), true, true);
 
-    // we don't remove it from the layermanager, as it may be being moved
-    Windows::iterator erase_it = remove(m_windowlist.begin(),
-                                        m_windowlist.end(), w);
-    if (erase_it != m_windowlist.end())
-        m_windowlist.erase(erase_it);
-
-    updateClientmenu();
+    m_windowlist.remove(w);
+    m_clientlist_sig.notify();
 
     if (!w->isStuck()) {
         FluxboxWindow::ClientList::iterator client_it =
@@ -361,11 +275,6 @@ bool Workspace::loadGroups(const string &filename) {
     return true;
 }
 
-void Workspace::update(FbTk::Subject *subj) {
-    updateClientmenu();
-}
-
-
 void Workspace::setName(const string &name) {
     if (!name.empty() && name != "") {
         m_name = name;
@@ -399,22 +308,7 @@ void Workspace::shutdown() {
 }
 
 void Workspace::updateClientmenu() {
-    // remove all items and then add them again
-    menu().removeAll();
-    // for each fluxboxwindow add every client in them to our clientlist
-    Windows::iterator win_it = m_windowlist.begin();
-    Windows::iterator win_it_end = m_windowlist.end();
-    for (; win_it != win_it_end; ++win_it) {
-        // add every client in this fluxboxwindow to menu
-        FluxboxWindow::ClientList::iterator client_it =
-            (*win_it)->clientList().begin();
-        FluxboxWindow::ClientList::iterator client_it_end =
-            (*win_it)->clientList().end();
-        for (; client_it != client_it_end; ++client_it)
-            menu().insert(new ClientMenuItem(*(*client_it)));
-    }
-
-    menu().updateMenu();
+    m_clientlist_sig.notify();
 }
 
 void Workspace::placeWindow(FluxboxWindow &win) {

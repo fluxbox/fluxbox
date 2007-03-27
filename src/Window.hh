@@ -376,10 +376,8 @@ public:
     FbTk::FbWindow &parent() { return m_parent; }
 
     bool acceptsFocus() const;
-    const FbTk::FbPixmap &iconPixmap() const;
-    const FbTk::FbPixmap &iconMask() const;
+    const FbTk::PixmapWithMask &icon() const;
     const std::string &title() const;
-    const std::string &iconTitle() const;
 
     inline int x() const { return frame().x(); }
     inline int y() const { return frame().y(); }

@@ -119,7 +119,7 @@ void IconButton::update(FbTk::Subject *subj) {
 
     int screen = m_win.screen().screenNumber();
 
-    if (m_use_pixmap && m_win.usePixmap()) {
+    if (m_use_pixmap && m_win.icon().pixmap().drawable() != None) {
         // setup icon window
         m_icon_window.show();
         unsigned int w = width();
@@ -138,7 +138,7 @@ void IconButton::update(FbTk::Subject *subj) {
         
         m_icon_window.moveResize(iconx, icony, neww, newh);
 
-        m_icon_pixmap.copy(m_win.iconPixmap().drawable(), DefaultDepth(display, screen), screen);
+        m_icon_pixmap.copy(m_win.icon().pixmap().drawable(), DefaultDepth(display, screen), screen);
         m_icon_pixmap.scale(m_icon_window.width(), m_icon_window.height());
 
         // rotate the icon or not?? lets go not for now, and see what they say...
@@ -153,8 +153,8 @@ void IconButton::update(FbTk::Subject *subj) {
         m_icon_pixmap = 0;
     }
 
-    if(m_use_pixmap && m_win.useMask()) {
-        m_icon_mask.copy(m_win.iconMask().drawable(), 0, 0);
+    if(m_icon_pixmap.drawable() && m_win.icon().mask().drawable() != None) {
+        m_icon_mask.copy(m_win.icon().mask().drawable(), 0, 0);
         m_icon_mask.scale(m_icon_pixmap.width(), m_icon_pixmap.height());
         m_icon_mask.rotate(orientation());
     } else
@@ -170,9 +170,6 @@ void IconButton::update(FbTk::Subject *subj) {
                       ShapeSet);
 
 #endif // SHAPE
-
-    if (subj == &(m_win.titleSig()))
-        setText(m_win.title());
 
     if (subj != 0) {
         setupWindow();

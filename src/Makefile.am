@@ -104,7 +104,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	WinClient.hh WinClient.cc \
 	Strut.hh \
 	Xinerama.hh \
-	IconMenuItem.hh \
 	Xutil.hh Xutil.cc \
 	CurrentWindowCmd.hh CurrentWindowCmd.cc \
 	WorkspaceCmd.hh WorkspaceCmd.cc \
@@ -122,7 +121,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	StyleMenuItem.hh StyleMenuItem.cc \
 	RootCmdMenuItem.hh RootCmdMenuItem.cc\
 	MenuCreator.hh MenuCreator.cc \
-	IconMenu.hh IconMenu.cc \
+	ClientMenu.hh ClientMenu.cc \
 	WorkspaceMenu.hh WorkspaceMenu.cc \
 	FocusModelMenuItem.hh \
 	ToggleMenu.hh \

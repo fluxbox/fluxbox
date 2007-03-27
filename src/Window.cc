@@ -1095,6 +1095,11 @@ void FluxboxWindow::reconfigure() {
         frame().setOnClickTitlebar(null_cmd, 5);
     }
 
+    Client2ButtonMap::iterator it = m_labelbuttons.begin(),
+                               it_end = m_labelbuttons.end();
+    for (; it != it_end; ++it)
+        it->second->setPixmap(screen().getTabsUsePixmap());
+
 }
 
 /// update current client title and title in our frame
@@ -3674,12 +3679,8 @@ bool FluxboxWindow::acceptsFocus() const {
     return (m_client ? m_client->acceptsFocus() : false);
 }
 
-const FbTk::FbPixmap &FluxboxWindow::iconPixmap() const {
-    return (m_client ? m_client->iconPixmap() : m_icon_pixmap);
-}
-
-const FbTk::FbPixmap &FluxboxWindow::iconMask() const {
-    return (m_client ? m_client->iconMask() : m_icon_mask);
+const FbTk::PixmapWithMask &FluxboxWindow::icon() const {
+    return (m_client ? m_client->icon() : m_icon);
 }
 
 const FbTk::Menu &FluxboxWindow::menu() const {
@@ -3702,13 +3703,6 @@ const string &FluxboxWindow::title() const {
     if (m_client == 0)
         return empty_string;
     return m_client->title();
-}
-
-const string &FluxboxWindow::iconTitle() const {
-    static string empty_string;
-    if (m_client == 0)
-        return empty_string;
-    return m_client->iconTitle();
 }
 
 int FluxboxWindow::initialState() const { return m_client->initial_state; }

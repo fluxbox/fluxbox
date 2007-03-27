@@ -27,7 +27,7 @@
 #include "Screen.hh"
 #include "ScreenPlacement.hh"
 
-bool RowSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+bool RowSmartPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
                                     const FluxboxWindow &win,
                                     int &place_x, int &place_y) {
 
@@ -95,9 +95,9 @@ bool RowSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
 
             next_x = test_x + change_x;
 
-            std::vector<FluxboxWindow *>::const_iterator win_it = 
+            std::list<FluxboxWindow *>::const_iterator win_it = 
                 windowlist.begin();
-            std::vector<FluxboxWindow *>::const_iterator win_it_end = 
+            std::list<FluxboxWindow *>::const_iterator win_it_end = 
                 windowlist.end();
 
             for (; win_it != win_it_end && placed; ++win_it) {

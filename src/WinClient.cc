@@ -234,6 +234,12 @@ const string &WinClient::getWMClassClass() const {
     return m_class_name;
 }
 
+const string &WinClient::title() const {
+    if (!fbwindow() || !fbwindow()->isIconic())
+        return m_title;
+    return m_icon_title;
+}
+
 void WinClient::updateWMClassHint() {
     XClassHint ch;
     if (XGetClassHint(display(), window(), &ch) == 0) {
@@ -369,6 +375,8 @@ void WinClient::setTitle(FbTk::FbString &title) {
 void WinClient::setIconTitle(FbTk::FbString &icon_title) {
     m_icon_title = icon_title;
     m_icon_title_override = true;
+    if (fbwindow() && fbwindow()->isIconic())
+        fbwindow()->updateTitleFromClient(*this);
 }
 
 void WinClient::updateIconTitle() {
@@ -401,6 +409,8 @@ void WinClient::updateIconTitle() {
     } else
         m_icon_title = title();
 
+    if (fbwindow() && fbwindow()->isIconic())
+        fbwindow()->updateTitleFromClient(*this);
 }
 
 void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs) {
@@ -514,14 +524,14 @@ void WinClient::updateWMHints() {
             window_group = None;
 
         if ((bool)(wmhint->flags & IconPixmapHint) && wmhint->icon_pixmap != 0)
-            m_icon_pixmap.copy(wmhint->icon_pixmap, 0, 0);
+            m_icon.pixmap().copy(wmhint->icon_pixmap, 0, 0);
         else
-            m_icon_pixmap = 0;
+            m_icon.pixmap().release();
 
         if ((bool)(wmhint->flags & IconMaskHint) && wmhint->icon_mask != 0)
-            m_icon_mask.copy(wmhint->icon_mask, 0, 0);
+            m_icon.mask().copy(wmhint->icon_mask, 0, 0);
         else
-            m_icon_mask = 0;
+            m_icon.mask().release();
 
         if (fbwindow()) {
             if (wmhint->flags & XUrgencyHint) {

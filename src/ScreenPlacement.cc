@@ -52,7 +52,7 @@ ScreenPlacement::ScreenPlacement(BScreen &screen):
 {
 }
 
-bool ScreenPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+bool ScreenPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
                                   const FluxboxWindow &win,
                                   int &place_x, int &place_y) {
 

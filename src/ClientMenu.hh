@@ -1,5 +1,5 @@
-// IconMenu.hh for Fluxbox
-// Copyright (c) 2004 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// ClientMenu.hh
+// Copyright (c) 2007 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,7 +13,7 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -21,18 +21,30 @@
 
 // $Id$
 
-#ifndef ICONMENU_HH
-#define ICONMENU_HH
+#ifndef CLIENTMENU_HH
+#define CLIENTMENU_HH
+
+#include <list>
 
 #include "FbMenu.hh"
 
 class BScreen;
+class FluxboxWindow;
 
-class IconMenu: public FbMenu {
+class ClientMenu: public FbMenu {
 public:
-    explicit IconMenu(BScreen &screen);
-    virtual ~IconMenu() { }
+
+    typedef std::list<FluxboxWindow *> Focusables;
+
+    ClientMenu(BScreen &screen, Focusables &clients, FbTk::Subject *refresh);
+
+private:
+
+    void refreshMenu();
     void update(FbTk::Subject *subj);
+
+    Focusables &m_list;
+    FbTk::Subject *m_refresh_sig;
 };
 
-#endif // ICONMENU_HH
+#endif // CLIENTMENU_HH

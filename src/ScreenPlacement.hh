@@ -62,7 +62,7 @@ public:
     virtual ~ScreenPlacement() {}
     /// placeWindow is guaranteed to succeed, ignore return value
     /// @return true
-    bool placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+    bool placeWindow(const std::list<FluxboxWindow *> &windowlist,
                      const FluxboxWindow &window,
                      int &place_x, int &place_y);
 

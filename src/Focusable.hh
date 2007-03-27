@@ -19,10 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id$
+
 #ifndef FOCUSABLE_HH
 #define FOCUSABLE_HH
 
-#include "FbTk/FbPixmap.hh"
+#include "FbTk/PixmapWithMask.hh"
 #include "FbTk/ITypeAheadable.hh"
 #include "FbTk/Subject.hh"
 
@@ -52,14 +54,8 @@ public:
     inline FluxboxWindow *fbwindow() { return m_fbwin; }
 
     // so we can make nice buttons, menu entries, etc.
-    virtual const FbTk::FbPixmap &iconPixmap() const { return m_icon_pixmap; }
-    virtual bool usePixmap() const { return iconPixmap().drawable() != None; }
-
-    virtual const FbTk::FbPixmap &iconMask() const { return m_icon_mask; }
-    virtual bool useMask() const { return iconMask().drawable() != None; }
-
+    virtual const FbTk::PixmapWithMask &icon() const { return m_icon; }
     virtual const std::string &title() const { return m_title; }
-    virtual const std::string &iconTitle() const { return m_icon_title; }
     const std::string &iTypeString() const { return title(); }
 
     class FocusSubject: public FbTk::Subject {
@@ -80,8 +76,8 @@ protected:
     FluxboxWindow *m_fbwin;
 
     bool m_focused;
-    std::string m_title, m_icon_title;
-    FbTk::FbPixmap m_icon_pixmap, m_icon_mask;
+    std::string m_title;
+    FbTk::PixmapWithMask m_icon;
 
     FocusSubject m_titlesig;
 };
