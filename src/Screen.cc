@@ -1135,6 +1135,9 @@ void BScreen::removeClient(WinClient &client) {
     for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
              mem_fun(&Workspace::updateClientmenu));
 
+    if (client.fbwindow() && client.fbwindow()->isIconic())
+        iconListSig().notify();
+
     using namespace FbTk;
 
     // remove any grouping this is expecting
