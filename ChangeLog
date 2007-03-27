@@ -3,7 +3,7 @@ Changes for 1.1:
 *07/03/27:
    * Added new resource session.screen<N>.clientMenu.usePixmap that puts the
      window's icon in the workspace and icons menus: default true. (Mark)
-     - For some reason, it doesn't work with shaped icons yet, but I've spent
+     - For some reason, it doesn't work with un-shaped icons yet, but I've spent
        way too many hours already trying to figure out why
    * Use IconTitle in iconbar for minimized windows (Mark)
 *07/03/25:
