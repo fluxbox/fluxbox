@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/03/28:
+   * Startup file wasn't being run properly when created the first time (Mark)
+     util/startfluxbox.in
 *07/03/24:
    * Updated French translations (thanks Ulrich Etile)
      nls/fr_FR/Translation.m

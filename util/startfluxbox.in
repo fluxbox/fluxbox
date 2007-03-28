@@ -86,5 +86,5 @@ EOF
     ) > "$startup"
     fi
     chmod 644 "$startup"
-    exec "$startup"
+    exec sh "$startup"
 fi
