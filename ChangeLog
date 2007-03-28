@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/03/28:
+   * Startup file wasn't being run properly when created the first time (Mark)
+     util/startfluxbox.in
 *07/03/27:
    * Added new resource session.screen<N>.clientMenu.usePixmap that puts the
      window's icon in the workspace and icons menus: default true. (Mark)
