@@ -669,9 +669,10 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
         setCurrentClient(client);
         FocusControl::setFocusedWindow(&client);
     } else {
-        WinClient *last = screen().focusControl().lastFocusedWindow(*this);
-        if (last)
-            setCurrentClient(*last, false);
+        if (!focused_win)
+            focused_win = screen().focusControl().lastFocusedWindow(*this);
+        if (focused_win)
+            setCurrentClient(*focused_win, false);
     }
     frame().reconfigure();
 }
