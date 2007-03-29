@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/03/29:
+   * Removed groups file; entries will be added to the apps file automatically
+     (Mark)
+   * Fixed a problem with programs starting in IconicState (Mark)
 *07/03/28:
    * Startup file wasn't being run properly when created the first time (Mark)
      util/startfluxbox.in

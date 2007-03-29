@@ -699,15 +699,9 @@ void BScreen::initWindows() {
                 continue;
             }
 
-            if (attrib.map_state != IsUnmapped) {
-                FluxboxWindow *win = createWindow(children[i]);
+            if (attrib.map_state != IsUnmapped)
+                createWindow(children[i]);
 
-                if (win) {
-                    XMapRequestEvent mre;
-                    mre.window = children[i];
-                    win->mapRequestEvent(mre);
-                }
-            }
         }
         children[i] = None; // we dont need this anymore, since we already created a window for it
     }

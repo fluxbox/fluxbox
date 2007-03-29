@@ -241,7 +241,7 @@ private:
     FbTk::Resource<std::string> m_rc_stylefile,
         m_rc_styleoverlayfile,
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
-        m_rc_groupfile, m_rc_appsfile;
+        m_rc_appsfile;
 
 
     FbTk::Resource<TabsAttachArea> m_rc_tabs_attach_area;

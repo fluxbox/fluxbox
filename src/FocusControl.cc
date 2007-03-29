@@ -220,6 +220,16 @@ void FocusControl::setFocusBack(FluxboxWindow *fbwin) {
     if (m_focused_list.empty() || s_reverting)
         return;
 
+    // if the window isn't already in this list, we could accidentally add it
+    Focusables::iterator win_begin = m_focused_win_list.begin(),
+                         win_end = m_focused_win_list.end();
+    Focusables::iterator win_it = find(win_begin, win_end, fbwin);
+    if (win_it == win_end)
+        return;
+
+    m_focused_win_list.erase(win_it);
+    m_focused_win_list.push_back(fbwin);
+
     Focusables::iterator it = m_focused_list.begin();
     // use back to avoid an infinite loop
     Focusables::iterator it_back = --m_focused_list.end();
@@ -236,9 +246,6 @@ void FocusControl::setFocusBack(FluxboxWindow *fbwin) {
         m_focused_list.push_back(*it);
         m_focused_list.erase(it);
     }
-
-    m_focused_win_list.remove(fbwin);
-    m_focused_win_list.push_back(fbwin);
 
 }
     

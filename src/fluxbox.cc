@@ -218,7 +218,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
       m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
       m_rc_slitlistfile(m_resourcemanager, "~/.fluxbox/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
-      m_rc_groupfile(m_resourcemanager, "~/.fluxbox/groups", "session.groupFile", "Session.GroupFile"),
       m_rc_appsfile(m_resourcemanager, "~/.fluxbox/apps", "session.appsFile", "Session.AppsFile"),
       m_rc_tabs_attach_area(m_resourcemanager, ATTACH_AREA_WINDOW, "session.tabsAttachArea", "Session.TabsAttachArea"),
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
@@ -781,7 +780,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #endif // DEBUG
 
         WinClient *winclient = searchWindow(e->xmaprequest.window);
-        FluxboxWindow *win = 0;
 
         if (! winclient) {
             BScreen *screen = 0;
@@ -807,15 +805,14 @@ void Fluxbox::handleEvent(XEvent * const e) {
             if (screen == 0) {
                 cerr<<"Fluxbox "<<_FB_CONSOLETEXT(Fluxbox, CantMapWindow, "Warning! Could not find screen to map window on!", "")<<endl;
             } else
-                win = screen->createWindow(e->xmaprequest.window);
+                screen->createWindow(e->xmaprequest.window);
 
         } else {
-            win = winclient->fbwindow();
+            // we don't handle MapRequest in FluxboxWindow::handleEvent
+            if (winclient->fbwindow())
+                winclient->fbwindow()->mapRequestEvent(e->xmaprequest);
         }
 
-        // we don't handle MapRequest in FluxboxWindow::handleEvent
-        if (win)
-            win->mapRequestEvent(e->xmaprequest);
     }
         break;
     case MapNotify:
@@ -1499,12 +1496,6 @@ void Fluxbox::load_rc() {
 
     if (m_rc_stylefile->empty())
         *m_rc_stylefile = DEFAULTSTYLE;
-
-    if (!Workspace::loadGroups(*m_rc_groupfile)) {
-#ifdef DEBUG
-        cerr<<_FB_CONSOLETEXT(Fluxbox, CantLoadGroupFile, "Failed to load groupfile", "Couldn't load the groupfile")<<": "<<*m_rc_groupfile<<endl;
-#endif // DEBUG
-    }
 }
 
 void Fluxbox::load_rc(BScreen &screen) {

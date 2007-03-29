@@ -61,18 +61,14 @@
 #endif
 
 #include <algorithm>
-#include <iostream>
 
 using std::string;
-using std::vector;
-using std::ifstream;
 
 #ifdef DEBUG
+#include <iostream>
 using std::cerr;
 using std::endl;
 #endif // DEBUG
-
-Workspace::GroupList Workspace::m_groups;
 
 Workspace::Workspace(BScreen &scrn, const string &name, unsigned int id):
     m_screen(scrn),
@@ -179,100 +175,6 @@ void Workspace::reconfigure() {
 
 size_t Workspace::numberOfWindows() const {
     return m_windowlist.size();
-}
-
-namespace {
-// helper class for checkGrouping
-class FindInGroup {
-public:
-    FindInGroup(const FluxboxWindow &w):m_w(w) { }
-    bool operator ()(const string &name) const {
-        return (name == m_w.winClient().getWMClassName());
-    }
-private:
-    const FluxboxWindow &m_w;
-};
-
-};
-
-//Note: this function doesn't check if the window is groupable
-bool Workspace::checkGrouping(FluxboxWindow &win) {
-    if (win.numClients() == 0)
-        return false;
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): Checking grouping. ("<<win.title()<<")"<<endl;
-#endif // DEBUG
-    if (!win.isGroupable()) { // make sure this window can hold a tab
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): window can't use a tab"<<endl;
-#endif // DEBUG
-        return false;
-    }
-
-    string instance_name = win.winClient().getWMClassName();
-
-    // go through every group and search for matching win instancename
-    GroupList::iterator g(m_groups.begin());
-    GroupList::iterator g_end(m_groups.end());
-    for (; g != g_end; ++g) {
-        Group::iterator name((*g).begin());
-        Group::iterator name_end((*g).end());
-        for (; name != name_end; ++name) {
-
-            if ((*name) != instance_name)
-                continue;
-
-            // find a window with the specific name
-            Windows::iterator wit(m_windowlist.begin());
-            Windows::iterator wit_end(m_windowlist.end());
-            for (; wit != wit_end; ++wit) {
-#ifdef DEBUG
-                cerr<<__FILE__<<" check group with : "<<(*wit)->winClient().getWMClassName()<<endl;
-#endif // DEBUG
-                if (find_if((*g).begin(),
-                            (*g).end(),
-                            FindInGroup(*(*wit))) != (*g).end()) {
-                    // make sure the window is groupable
-                    // and don't group with ourself
-                    if ( !(*wit)->isGroupable() || (*wit)->winClient().fbwindow() == &win)
-                        break; // try next name
-#ifdef DEBUG
-                    cerr<<__FILE__<<"("<<__FUNCTION__<<"): window ("<<*wit<<") attaching window ("<<&win<<")"<<endl;
-#endif // DEBUG
-                    (*wit)->attachClient(win.winClient());
-                    (*wit)->raise();
-                    return true; // grouping done
-
-                }
-
-            }
-
-        }
-
-    }
-
-    return false;
-}
-
-bool Workspace::loadGroups(const string &filename) {
-    string real_filename = FbTk::StringUtil::expandFilename(filename);
-    FbTk::StringUtil::removeTrailingWhitespace(real_filename);
-    ifstream infile(real_filename.c_str());
-    if (!infile)
-        return false;
-
-    m_groups.clear(); // erase old groups
-
-    // load new groups
-    while (!infile.eof()) {
-        string line;
-        vector<string> names;
-        getline(infile, line);
-        FbTk::StringUtil::stringtok(names, line);
-        m_groups.push_back(names);
-    }
-
-    return true;
 }
 
 void Workspace::setName(const string &name) {

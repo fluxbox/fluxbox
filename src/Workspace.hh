@@ -77,19 +77,11 @@ public:
     Windows &windowList() { return m_windowlist; }
 
     size_t numberOfWindows() const;
-    bool checkGrouping(FluxboxWindow &win);
-
-    static bool loadGroups(const std::string &filename);
 
 private:
     void placeWindow(FluxboxWindow &win);
 
     BScreen &m_screen;
-
-    typedef std::vector<std::string> Group;
-    typedef std::vector<Group> GroupList;
-
-    static GroupList m_groups; ///< handle auto groupings
 
     Windows m_windowlist;
     FbTk::Subject m_clientlist_sig;
