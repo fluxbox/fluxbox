@@ -235,7 +235,7 @@ const string &WinClient::getWMClassClass() const {
 }
 
 const string &WinClient::title() const {
-    if (!fbwindow() || !fbwindow()->isIconic())
+    if (!fbwindow() || !fbwindow()->isIconic() || m_icon_title.empty())
         return m_title;
     return m_icon_title;
 }
@@ -405,9 +405,9 @@ void WinClient::updateIconTitle() {
             if (text_prop.value)
                 XFree((char *) text_prop.value);
         } else
-            m_icon_title = title();
+            m_icon_title = "";
     } else
-        m_icon_title = title();
+        m_icon_title = "";
 
     if (fbwindow() && fbwindow()->isIconic())
         fbwindow()->updateTitleFromClient(*this);
