@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/03/30:
+   * Added fi_FI support (Thanks Pasi Juvonen, loudvr at yahoo ca)
+    nls/fi_FI/*, util/fluxbox-generate_menu.in
    * Changed syntax for window cycling (Mark)
      - Instead of a bitmask, the window cycling functions NextWindow,
        PrevWindow, TypeAheadFocus, and GoToWindow now take a list of options
