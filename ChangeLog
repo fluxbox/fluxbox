@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/03/30:
+   * Added fi_FI support (Thanks Pasi Juvonen, loudvr at yahoo ca)
+    nls/fi_FI/*, util/fluxbox-generate_menu.in
 *07/03/28:
    * Startup file wasn't being run properly when created the first time (Mark)
      util/startfluxbox.in
