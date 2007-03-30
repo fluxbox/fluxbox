@@ -24,7 +24,12 @@
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
+
+#include "FocusControl.hh"
+#include "Layer.hh"
+#include "Screen.hh"
 #include "WinClient.hh"
+#include "Workspace.hh"
 
 #include "FbTk/StringUtil.hh"
 #include "FbTk/App.hh"
@@ -73,54 +78,67 @@ ClientPattern::ClientPattern(const char *str):
        If no limit is specified, no limit is applied (i.e. limit = infinity)
     */
 
-    int had_error = 0;
+    bool had_error = false;
 
     int pos = 0;
     string match;
     int err = 1; // for starting first loop
-    while (had_error == 0 && err > 0) {
+    while (!had_error && err > 0) {
         err = FbTk::StringUtil::getStringBetween(match,
                                                  str + pos,
                                                  '(', ')', " \t\n", true);
         if (err > 0) {
-            size_t eq = match.find_first_of('=');
+            // need to determine the property used
+            string memstr, expr;
+            WinProperty prop;
+            string::size_type eq = match.find_first_of('=');
             if (eq == match.npos) {
-                if (!addTerm(match, NAME)) {
-                    had_error = pos + match.find_first_of('(') + 1;
-                    break;
-                }
+                memstr = match;
+                expr = "[current]";
             } else {
-                // need to determine the property used
-                string memstr, expr;
-                WinProperty prop;
                 memstr.assign(match, 0, eq); // memstr = our identifier
                 expr.assign(match, eq+1, match.length());
-                if (strcasecmp(memstr.c_str(), "name") == 0) {
-                    prop = NAME;
-                } else if (strcasecmp(memstr.c_str(), "class") == 0) {
-                    prop = CLASS;
-                } else if (strcasecmp(memstr.c_str(), "title") == 0) {
-                    prop = TITLE;
-                } else if (strcasecmp(memstr.c_str(), "role") == 0) {
-                    prop = ROLE;
-                } else {
-                    had_error = pos + match.find_first_of('(') + 1;
-                    break;
-                }
-                if (!addTerm(expr, prop)) {
-                    had_error = pos + ((str+pos) - index(str+pos, '=')) + 1;
-                    break;
-                }
             }
+            if (strcasecmp(memstr.c_str(), "name") == 0) {
+                prop = NAME;
+            } else if (strcasecmp(memstr.c_str(), "class") == 0) {
+                prop = CLASS;
+            } else if (strcasecmp(memstr.c_str(), "title") == 0) {
+                prop = TITLE;
+            } else if (strcasecmp(memstr.c_str(), "role") == 0) {
+                prop = ROLE;
+            } else if (strcasecmp(memstr.c_str(), "maximized") == 0) {
+                prop = MAXIMIZED;
+            } else if (strcasecmp(memstr.c_str(), "minimized") == 0) {
+                prop = MINIMIZED;
+            } else if (strcasecmp(memstr.c_str(), "shaded") == 0) {
+                prop = SHADED;
+            } else if (strcasecmp(memstr.c_str(), "stuck") == 0) {
+                prop = STUCK;
+            } else if (strcasecmp(memstr.c_str(), "focushidden") == 0) {
+                prop = FOCUSHIDDEN;
+            } else if (strcasecmp(memstr.c_str(), "iconhidden") == 0) {
+                prop = ICONHIDDEN;
+            } else if (strcasecmp(memstr.c_str(), "workspace") == 0) {
+                prop = WORKSPACE;
+            } else if (strcasecmp(memstr.c_str(), "head") == 0) {
+                prop = HEAD;
+            } else if (strcasecmp(memstr.c_str(), "layer") == 0) {
+                prop = LAYER;
+            } else {
+                prop = NAME;
+                expr = match;
+            }
+            had_error = !addTerm(expr, prop);
             pos += err;
         }
     }
-    if (pos == 0 && had_error == 0) {
+    if (pos == 0 && !had_error) {
         // no match terms given, this is not allowed
-        had_error = 1;
+        had_error = true;
     }
 
-    if (had_error == 0) {
+    if (!had_error) {
         // otherwise, we check for a number
         string number;
         err = FbTk::StringUtil::getStringBetween(number,
@@ -139,12 +157,11 @@ ClientPattern::ClientPattern(const char *str):
         uerr = match.find_first_not_of(" \t\n", pos);
         if (uerr != match.npos) {
             // found something, not good
-            had_error++;
+            had_error = true;
         }
     }
 
-    if (had_error > 0) {
-        m_matchlimit = had_error;
+    if (had_error) {
         // delete all the terms
         while (!m_terms.empty()) {
             Term * term = m_terms.back();
@@ -183,6 +200,34 @@ string ClientPattern::toString() const {
             break;
         case ROLE:
             pat.append("role=");
+            break;
+        case MAXIMIZED:
+            pat.append("maximized=");
+            break;
+        case MINIMIZED:
+            pat.append("minimized=");
+            break;
+        case SHADED:
+            pat.append("shaded=");
+            break;
+        case STUCK:
+            pat.append("stuck=");
+            break;
+        case FOCUSHIDDEN:
+            pat.append("focushidden=");
+            break;
+        case ICONHIDDEN:
+            pat.append("iconhidden=");
+            break;
+        case WORKSPACE:
+            pat.append("workspace=");
+            break;
+        case HEAD:
+            pat.append("head=");
+            break;
+        case LAYER:
+            pat.append("layer=");
+            break;
         }
 
         pat.append((*it)->orig);
@@ -198,9 +243,8 @@ string ClientPattern::toString() const {
 }
 
 // does this client match this pattern?
-bool ClientPattern::match(const WinClient &win) const {
-    if (m_matchlimit != 0 && m_nummatches >= m_matchlimit ||
-        m_terms.empty())
+bool ClientPattern::match(const Focusable &win) const {
+    if (m_matchlimit != 0 && m_nummatches >= m_matchlimit)
         return false; // already matched out
 
     // regmatch everything
@@ -209,7 +253,20 @@ bool ClientPattern::match(const WinClient &win) const {
     Terms::const_iterator it = m_terms.begin();
     Terms::const_iterator it_end = m_terms.end();
     for (; it != it_end; ++it) {
-        if (!(*it)->regexp.match(getProperty((*it)->prop, win)))
+        if ((*it)->orig == "[current]") {
+            // workspaces don't necessarily have unique names, so we want to
+            // compare numbers instead of strings
+            if ((*it)->prop == WORKSPACE && (!win.fbwindow() ||
+                    win.fbwindow()->workspaceNumber() !=
+                    win.screen().currentWorkspaceID()))
+                return false;
+            else {
+                WinClient *focused = FocusControl::focusedWindow();
+                if (!focused || getProperty((*it)->prop, win) != 
+                                getProperty((*it)->prop, *focused))
+                    return false;
+            }
+        } else if (!(*it)->regexp.match(getProperty((*it)->prop, win)))
             return false;
     }
     return true;
@@ -232,7 +289,11 @@ bool ClientPattern::addTerm(const string &str, WinProperty prop) {
     return true;
 }
 
-string ClientPattern::getProperty(WinProperty prop, const WinClient &client) const {
+string ClientPattern::getProperty(WinProperty prop,
+                                  const Focusable &client) const {
+    // we need this for some of the window properties
+    const FluxboxWindow *fbwin = client.fbwindow();
+
     switch (prop) {
     case TITLE:
         return client.title();
@@ -244,8 +305,44 @@ string ClientPattern::getProperty(WinProperty prop, const WinClient &client) con
         return client.getWMClassName();
         break;
     case ROLE:
-        Atom wm_role = XInternAtom(FbTk::App::instance()->display(), "WM_WINDOW_ROLE", False);
-        return client.textProperty(wm_role);
+        return client.getWMRole();
+        break;
+    case MAXIMIZED:
+        return (fbwin && fbwin->isMaximized()) ? "yes" : "no";
+        break;
+    case MINIMIZED:
+        return (fbwin && fbwin->isIconic()) ? "yes" : "no";
+        break;
+    case SHADED:
+        return (fbwin && fbwin->isShaded()) ? "yes" : "no";
+        break;
+    case STUCK:
+        return (fbwin && fbwin->isStuck()) ? "yes" : "no";
+        break;
+    case FOCUSHIDDEN:
+        return (fbwin && fbwin->isFocusHidden()) ? "yes" : "no";
+        break;
+    case ICONHIDDEN:
+        return (fbwin && fbwin->isIconHidden()) ? "yes" : "no";
+        break;
+    case WORKSPACE: {
+        if (!fbwin)
+            return "";
+        const Workspace *w = client.screen().getWorkspace(fbwin->workspaceNumber());
+        return w ? w->name() : "";
+        break;
+    }
+    case HEAD: {
+        if (!fbwin)
+            return "";
+        int head = client.screen().getHead(fbwin->fbWindow());
+        char tmpstr[128];
+        sprintf(tmpstr, "%d", head);
+        return std::string(tmpstr);
+        break;
+    }
+    case LAYER:
+        return fbwin ? ::Layer::getString(fbwin->layerNum()) : "";
         break;
     }
     return client.getWMClassName();

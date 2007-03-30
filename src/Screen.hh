@@ -55,6 +55,7 @@
 #include <memory>
 #include <map>
 
+class ClientPattern;
 class Focusable;
 class FluxboxWindow;
 class Netizen;
@@ -157,6 +158,9 @@ public:
     inline const Slit *slit() const { return m_slit.get(); }
 
     inline Workspace *getWorkspace(unsigned int w) { return ( w < m_workspaces_list.size() ? m_workspaces_list[w] : 0); }
+    inline const Workspace *getWorkspace(unsigned int w) const {
+        return (w < m_workspaces_list.size() ? m_workspaces_list[w] : 0);
+    }
     inline Workspace *currentWorkspace() { return m_current_workspace; }
     inline const Workspace *currentWorkspace() const { return m_current_workspace; }
 
@@ -220,8 +224,9 @@ public:
     void buttonPressEvent(XButtonEvent &be);
     void notifyUngrabKeyboard();
 
-    void startTypeAheadFocus(std::list<Focusable *> &winlist, int opts);
-    void cycleFocus(int opts, bool reverse);
+    void startTypeAheadFocus(std::list<Focusable *> &winlist,
+                             const ClientPattern *pat = 0);
+    void cycleFocus(int opts = 0, const ClientPattern *pat = 0, bool reverse = false);
 
     FbTk::Menu *createMenu(const std::string &label);
     FbTk::Menu *createToggleMenu(const std::string &label);
@@ -323,7 +328,7 @@ public:
     void initXinerama();
 
     int getHead(int x, int y) const;
-    int getHead(FbTk::FbWindow &win) const;
+    int getHead(const FbTk::FbWindow &win) const;
     int getCurrHead() const;
     int getHeadX(int head) const;
     int getHeadY(int head) const;
@@ -336,7 +341,7 @@ public:
     // magic to allow us to have "on head" placement (menu) without
     // the object really knowing about it.
     template <typename OnHeadObject>
-    int getOnHead(OnHeadObject &obj);
+    int getOnHead(OnHeadObject &obj) const;
 
     template <typename OnHeadObject>
     void setOnHead(OnHeadObject &obj, int head);
@@ -493,7 +498,7 @@ private:
     Groupables m_expecting_groups;
 
     bool m_cycling, m_typing_ahead;
-    int m_cycle_opts;
+    const ClientPattern *m_cycle_opts;
     FbTk::TypeAhead<std::list<Focusable *>, Focusable *> m_type_ahead;
     std::list<Focusable *> m_matches;
 

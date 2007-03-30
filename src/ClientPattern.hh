@@ -32,7 +32,7 @@
 #include <string>
 #include <list>
 
-class WinClient;
+class Focusable;
 
 /**
  * This class represents a "pattern" that we can match against a
@@ -53,10 +53,14 @@ public:
     /// @return a string representation of this pattern
     std::string toString() const;
 
-    enum WinProperty { TITLE, CLASS, NAME, ROLE };
+    enum WinProperty {
+        TITLE, CLASS, NAME, ROLE,
+        MAXIMIZED, MINIMIZED, SHADED, STUCK, FOCUSHIDDEN, ICONHIDDEN,
+        WORKSPACE, HEAD, LAYER
+    };
 
     /// Does this client match this pattern?
-    bool match(const WinClient &win) const;
+    bool match(const Focusable &win) const;
 
     /**
      * Add an expression to match against
@@ -68,7 +72,7 @@ public:
 
     inline void addMatch() { ++m_nummatches; }
 
-    inline bool operator == (const WinClient &win) const {
+    inline bool operator == (const Focusable &win) const {
         return match(win);
     }
 
@@ -79,9 +83,9 @@ public:
      * If there are no terms, then there is assumed to be an error
      * the column of the error is stored in m_matchlimit
      */
-    inline int error() const { return m_terms.empty() ? m_matchlimit : 0; }
+    inline int error() const { return m_terms.empty() ? 1 : 0; }
 
-    std::string getProperty(WinProperty prop, const WinClient &winclient) const;
+    std::string getProperty(WinProperty prop, const Focusable &winclient) const;
 
 private:
     /**

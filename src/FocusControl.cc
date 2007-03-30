@@ -23,6 +23,7 @@
 
 #include "FocusControl.hh"
 
+#include "ClientPattern.hh"
 #include "Screen.hh"
 #include "Window.hh"
 #include "WinClient.hh"
@@ -43,6 +44,22 @@ WinClient *FocusControl::s_focused_window = 0;
 FluxboxWindow *FocusControl::s_focused_fbwindow = 0;
 bool FocusControl::s_reverting = false;
 
+namespace {
+
+bool doSkipWindow(const Focusable &win, const ClientPattern *pat) {
+    const FluxboxWindow *fbwin = win.fbwindow();
+    if (!fbwin || fbwin->isFocusHidden())
+        return true; // skip if no fbwindow or if focushidden
+    if (pat && !pat->match(win))
+        return true; // skip if it doesn't match the pattern
+    if (fbwin->workspaceNumber() != win.screen().currentWorkspaceID() &&
+        !fbwin->isStuck())
+        return true; // for now, we only cycle through the current workspace
+    return false; // else don't skip
+}
+
+}; // end anonymous namespace
+    
 FocusControl::FocusControl(BScreen &screen):
     m_screen(screen),
     m_focus_model(screen.resourceManager(), 
@@ -64,43 +81,30 @@ FocusControl::FocusControl(BScreen &screen):
     
 }
 
-// true if the windows should be skiped else false
-bool doSkipWindow(const Focusable &winclient, int opts) {
-    const FluxboxWindow *win = winclient.fbwindow();
-    return (!win ||
-    // skip if stuck
-    (opts & FocusControl::CYCLESKIPSTUCK) != 0 && win->isStuck() || 
-    // skip if shaded
-    (opts & FocusControl::CYCLESKIPSHADED) != 0 && win->isShaded() || 
-    // skip if iconic
-    (opts & FocusControl::CYCLESKIPICONIC) != 0 && win->isIconic() ||
-    // skip if hidden
-    win->isFocusHidden()
-    ); 
-}
-
-void FocusControl::cycleFocus(FocusedWindows *window_list, int opts, bool cycle_reverse) {
+void FocusControl::cycleFocus(FocusedWindows &window_list,
+                              const ClientPattern *pat, bool cycle_reverse) {
     Focusables tmp_list;
-    FocusedWindows::iterator it = window_list->begin();
-    FocusedWindows::iterator it_end = window_list->end();
+    FocusedWindows::iterator it = window_list.begin();
+    FocusedWindows::iterator it_end = window_list.end();
     for (; it != it_end; ++it)
         tmp_list.push_back(*it);
-    cycleFocus(&tmp_list, opts, cycle_reverse);
+    cycleFocus(tmp_list, pat, cycle_reverse);
 }
 
-void FocusControl::cycleFocus(Focusables *window_list, int opts, bool cycle_reverse) {
+void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
+                              bool cycle_reverse) {
 
     if (!m_cycling_list) {
         if (&m_screen == FbTk::EventManager::instance()->grabbingKeyboard())
             // only set this when we're waiting for modifiers
-            m_cycling_list = window_list;
+            m_cycling_list = &window_list;
         m_was_iconic = 0;
         m_cycling_last = 0;
-    } else if (m_cycling_list != window_list)
-        m_cycling_list = window_list;
+    } else if (m_cycling_list != &window_list)
+        m_cycling_list = &window_list;
 
-    Focusables::iterator it_begin = window_list->begin();
-    Focusables::iterator it_end = window_list->end();
+    Focusables::iterator it_begin = window_list.begin();
+    Focusables::iterator it_end = window_list.end();
 
     // too many things can go wrong with remembering this
     m_cycling_window = find(it_begin, it_end, s_focused_window);
@@ -108,6 +112,8 @@ void FocusControl::cycleFocus(Focusables *window_list, int opts, bool cycle_reve
         m_cycling_window = find(it_begin, it_end, s_focused_fbwindow);
 
     Focusables::iterator it = m_cycling_window;
+    FluxboxWindow *fbwin = 0;
+    WinClient *last_client = 0;
 
     // find the next window in the list that works
     while (true) {
@@ -123,50 +129,54 @@ void FocusControl::cycleFocus(Focusables *window_list, int opts, bool cycle_reve
         if (it == it_end)
             continue;
 
-        FluxboxWindow *fbwin = (*it)->fbwindow();
-        if (fbwin && (fbwin->isStuck() 
-             || fbwin->workspaceNumber() == m_screen.currentWorkspaceID())) {
-            // either on this workspace, or stuck
+        fbwin = (*it)->fbwindow();
+        if (!fbwin)
+            continue;
 
-            // keep track of the originally selected window in a set
-            WinClient &last_client = fbwin->winClient();
+        // keep track of the originally selected window in a group
+        last_client = &fbwin->winClient();
 
-            if (! (doSkipWindow(**it, opts) || !(*it)->focus()) ) {
-                // moved onto a new fbwin
-                if (!m_cycling_last || m_cycling_last->fbwindow() != fbwin) {
-                    if (m_cycling_last) {
-                        // already cycling, so restack to put windows back in
-                        // their proper order
-                        m_screen.layerManager().restack();
+        // now we actually try to focus the window
+        if (!doSkipWindow(**it, pat) && (*it)->focus())
+            break;
+    }
 
-                        // set back to orig current Client in that fbwin
-                        m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
-                        if (m_was_iconic == m_cycling_last) {
-                            s_reverting = true; // little hack
-                            m_cycling_last->fbwindow()->iconify();
-                            s_reverting = false;
-                        }
-                    }
-                    m_cycling_last = &last_client;
-                    if (fbwin->isIconic())
-                        m_was_iconic = m_cycling_last;
-                    if (m_cycling_list)
-                        // else window will raise itself (if desired) on FocusIn
-                        fbwin->tempRaise();
-                }
-                break;
-            }
+    m_cycling_window = it;
+
+    // if we're still in the same fbwin, there's nothing else to do
+    if (m_cycling_last && m_cycling_last->fbwindow() == fbwin)
+        return;
+
+    // if we were already cycling, then restore the old state
+    if (m_cycling_last) {
+        m_screen.layerManager().restack();
+
+        // set back to originally selected window in that group
+        m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
+
+        if (m_was_iconic == m_cycling_last) {
+            s_reverting = true; // little hack
+            m_cycling_last->fbwindow()->iconify();
+            s_reverting = false;
         }
     }
-    m_cycling_window = it;
+
+    m_cycling_last = last_client;
+    if (fbwin->isIconic())
+        m_was_iconic = m_cycling_last;
+    if (m_cycling_list)
+        // else window will raise itself (if desired) on FocusIn
+        fbwin->tempRaise();
+
 }
 
-void FocusControl::goToWindowNumber(Focusables *winlist, int num, int options) {
-    if (num > 0 && winlist) {
-        Focusables::iterator it = winlist->begin();
-        Focusables::iterator it_end = winlist->end();
+void FocusControl::goToWindowNumber(Focusables &winlist, int num,
+                                    const ClientPattern *pat) {
+    if (num > 0) {
+        Focusables::iterator it = winlist.begin();
+        Focusables::iterator it_end = winlist.end();
         for (; it != it_end; ++it) {
-            if (!doSkipWindow(**it, options) && (*it)->acceptsFocus()) {
+            if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
                 --num;
                 if (!num) {
                     if ((*it)->fbwindow() && (*it)->fbwindow()->isIconic())
@@ -176,11 +186,11 @@ void FocusControl::goToWindowNumber(Focusables *winlist, int num, int options) {
                 }
             }
         }
-    } else if (num < 0 && winlist) {
-        Focusables::reverse_iterator it = winlist->rbegin();
-        Focusables::reverse_iterator it_end = winlist->rend();
+    } else if (num < 0) {
+        Focusables::reverse_iterator it = winlist.rbegin();
+        Focusables::reverse_iterator it_end = winlist.rend();
         for (; it != it_end; ++it) {
-            if (!doSkipWindow(**it, options) && (*it)->acceptsFocus()) {
+            if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
                 ++num;
                 if (!num) {
                     if ((*it)->fbwindow() && (*it)->fbwindow()->isIconic())

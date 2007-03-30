@@ -44,13 +44,13 @@
 void NextWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0)
-        screen->cycleFocus(m_option, false);
+        screen->cycleFocus(m_option, &m_pat, false);
 }
 
 void PrevWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0)
-        screen->cycleFocus(m_option, true);
+        screen->cycleFocus(m_option, &m_pat, true);
 }
 
 void TypeAheadFocusCmd::execute() {
@@ -67,7 +67,7 @@ void TypeAheadFocusCmd::execute() {
                 &screen->focusControl().focusedOrderList();
         }
         
-        screen->startTypeAheadFocus(*win_list, m_option);
+        screen->startTypeAheadFocus(*win_list, &m_pat);
     }
 }
 
@@ -84,7 +84,7 @@ void GoToWindowCmd::execute() {
                 &screen->focusControl().creationOrderList() :
                 &screen->focusControl().focusedOrderList();
         }
-        screen->focusControl().goToWindowNumber(win_list, m_num, m_option);
+        screen->focusControl().goToWindowNumber(*win_list, m_num, &m_pat);
     }
 }
 

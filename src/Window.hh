@@ -378,6 +378,9 @@ public:
     bool acceptsFocus() const;
     const FbTk::PixmapWithMask &icon() const;
     const std::string &title() const;
+    const std::string &getWMClassName() const; 
+    const std::string &getWMClassClass() const;
+    std::string getWMRole() const;
 
     inline int x() const { return frame().x(); }
     inline int y() const { return frame().y(); }

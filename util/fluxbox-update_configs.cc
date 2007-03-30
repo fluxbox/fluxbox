@@ -67,10 +67,15 @@ void save_all_files();
 int run_updates(int old_version, FbTk::ResourceManager rm) {
     int new_version = old_version;
 
+    FbTk::Resource<string> rc_keyfile(rm, "~/.fluxbox/keys",
+            "session.keyFile", "Session.KeyFile");
+    FbTk::Resource<string> rc_appsfile(rm, "~/.fluxbox/apps",
+            "session.appsFile", "Session.AppsFile");
+
+    string appsfilename = FbTk::StringUtil::expandFilename(*rc_appsfile);
+    string keyfilename = FbTk::StringUtil::expandFilename(*rc_keyfile);
+
     if (old_version < 1) { // add mouse events to keys file
-        FbTk::Resource<string> rc_keyfile(rm, "~/.fluxbox/keys",
-                "session.keyFile", "Session.KeyFile");
-        string keyfilename = FbTk::StringUtil::expandFilename(*rc_keyfile);
 
         string whole_keyfile = read_file(keyfilename);
         string new_keyfile = "";
@@ -111,12 +116,7 @@ int run_updates(int old_version, FbTk::ResourceManager rm) {
                 "session.groupFile", "Session.GroupFile");
         string groupfilename = FbTk::StringUtil::expandFilename(*rc_groupfile);
         string whole_groupfile = read_file(groupfilename);
-
-        FbTk::Resource<string> rc_appsfile(rm, "~/.fluxbox/apps",
-                "session.appsFile", "Session.AppsFile");
-        string appsfilename = FbTk::StringUtil::expandFilename(*rc_appsfile);
         string whole_appsfile = read_file(appsfilename);
-
         string new_appsfile = "";
 
         list<string> lines;
@@ -125,7 +125,7 @@ int run_updates(int old_version, FbTk::ResourceManager rm) {
         list<string>::iterator line_it = lines.begin();
         list<string>::iterator line_it_end = lines.end();
         for (; line_it != line_it_end; ++line_it) {
-            new_appsfile += "[group] (workspace)\n";
+            new_appsfile += "[group] (workspace=[current])\n";
 
             list<string> apps;
             FbTk::StringUtil::stringtok(apps, *line_it);

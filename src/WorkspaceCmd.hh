@@ -26,40 +26,49 @@
 #define WORKSPACECMD_HH
 #include "Command.hh"
 
+#include "ClientPattern.hh"
 #include "FocusControl.hh"
 
 
 class NextWindowCmd: public FbTk::Command {
 public:
-    explicit NextWindowCmd(int option):m_option(option) { }
+    explicit NextWindowCmd(int option, std::string &pat):
+            m_option(option), m_pat(pat.c_str()) { }
     void execute();
 private:
     const int m_option;
+    const ClientPattern m_pat;
 };
 
 class PrevWindowCmd: public FbTk::Command {
 public:
-    explicit PrevWindowCmd(int option):m_option(option) { }
+    explicit PrevWindowCmd(int option, std::string &pat): 
+            m_option(option), m_pat(pat.c_str()) { }
     void execute();
 private:
     const int m_option;
+    const ClientPattern m_pat;
 };
 
 class TypeAheadFocusCmd: public FbTk::Command {
 public:
-    explicit TypeAheadFocusCmd(int option): m_option(option) { }
+    explicit TypeAheadFocusCmd(int option, std::string &pat):
+            m_option(option), m_pat(pat.c_str()) { }
     void execute();
 private:
     const int m_option;
+    const ClientPattern m_pat;
 };
 
 class GoToWindowCmd: public FbTk::Command {
 public:
-    GoToWindowCmd(int num, int option): m_num(num), m_option(option) { }
+    GoToWindowCmd(int num, int option, std::string &pat):
+            m_num(num), m_option(option), m_pat(pat.c_str()) { }
     void execute();
 private:
     const int m_num;
     const int m_option;
+    const ClientPattern m_pat;
 };
 
 class DirFocusCmd: public FbTk::Command {

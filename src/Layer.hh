@@ -22,6 +22,9 @@
 #ifndef LAYER_HH
 #define LAYER_HH
 
+#include <string>
+using std::string;
+
 /** 
  * (This is not the layer->raise/lower handling stuff, @see FbTk::Layer)
  * Class to store layer numbers (special Resource type)
@@ -42,7 +45,53 @@ public:
     };
 
     explicit Layer(int i) : m_num(i) {};
+
+    static int getNumFromString(string &str) {
+        int tempnum = 0;
+        if (sscanf(str.c_str(), "%d", &tempnum) == 1)
+            return tempnum;
+        if (strcasecmp(str.c_str(), "Menu") == 0)
+            return ::Layer::MENU;
+        if (strcasecmp(str.c_str(), "AboveDock") == 0)
+            return ::Layer::ABOVE_DOCK;
+        if (strcasecmp(str.c_str(), "Dock") == 0)
+            return ::Layer::DOCK;
+        if (strcasecmp(str.c_str(), "Top") == 0)
+            return ::Layer::TOP;
+        if (strcasecmp(str.c_str(), "Normal") == 0)
+            return ::Layer::NORMAL;
+        if (strcasecmp(str.c_str(), "Bottom") == 0)
+            return ::Layer::BOTTOM;
+        if (strcasecmp(str.c_str(), "Desktop") == 0)
+            return ::Layer::DESKTOP;
+        return -1;
+    }
+
+    static string getString(int num) {
+        switch (num) {
+        case ::Layer::MENU:
+            return string("Menu");
+        case ::Layer::ABOVE_DOCK:
+            return string("AboveDock");
+        case ::Layer::DOCK:
+            return string("Dock");
+        case ::Layer::TOP:
+            return string("Top");
+        case ::Layer::NORMAL:
+            return string("Normal");
+        case ::Layer::BOTTOM:
+            return string("Bottom");
+        case ::Layer::DESKTOP:
+            return string("Desktop");
+        default:
+            char tmpstr[128];
+            sprintf(tmpstr, "%d", num);
+            return string(tmpstr);
+        }
+    }
+
     int getNum() const { return m_num; }
+    string getString() const { return getString(m_num); }
 
     Layer &operator=(int num) { m_num = num; return *this; }
 

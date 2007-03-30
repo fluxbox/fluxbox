@@ -810,7 +810,7 @@ void BScreen::keyPressEvent(XKeyEvent &ke) {
     case XK_Tab:
     case XK_ISO_Left_Tab:
         m_type_ahead.seek();
-        focusControl().cycleFocus(&m_matches, m_cycle_opts, (bool)(ke.state & ShiftMask));
+        focusControl().cycleFocus(m_matches, m_cycle_opts, (bool)(ke.state & ShiftMask));
         break;
     default:
         m_matches = m_type_ahead.putCharacter(keychar[0]);
@@ -818,7 +818,7 @@ void BScreen::keyPressEvent(XKeyEvent &ke) {
         if (!m_matches.empty() &&
             std::find(m_matches.begin(), m_matches.end(),
                       FocusControl::focusedWindow()) == m_matches.end())
-            focusControl().cycleFocus(&m_matches, m_cycle_opts);
+            focusControl().cycleFocus(m_matches, m_cycle_opts);
         break;
     }
 }
@@ -849,17 +849,18 @@ void BScreen::notifyUngrabKeyboard() {
     focusControl().stopCyclingFocus();
 }
 
-void BScreen::startTypeAheadFocus(std::list<Focusable *> &winlist, int opts) {
+void BScreen::startTypeAheadFocus(std::list<Focusable *> &winlist,
+                                  const ClientPattern *pat) {
     m_type_ahead.init(winlist);
     m_matches = winlist;
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     if (!m_typing_ahead && !m_cycling)
         evm->grabKeyboard(*this, rootWindow().window());
-    m_cycle_opts = opts;
+    m_cycle_opts = pat;
     m_typing_ahead = true;
 }
 
-void BScreen::cycleFocus(int options, bool reverse) {
+void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
     // get modifiers from event that causes this for focus order cycling
     XEvent ev = Fluxbox::instance()->lastEvent();
     unsigned int mods = 0;
@@ -887,7 +888,7 @@ void BScreen::cycleFocus(int options, bool reverse) {
             &focusControl().focusedOrderList();
     }
 
-    focusControl().cycleFocus(win_list, options, reverse);
+    focusControl().cycleFocus(*win_list, pat, reverse);
 
 }
 
@@ -2291,7 +2292,7 @@ int BScreen::getHead(int x, int y) const {
     return 0;
 }
 
-int BScreen::getHead(FbTk::FbWindow &win) const {
+int BScreen::getHead(const FbTk::FbWindow &win) const {
     if (hasXinerama())
         return getHead(win.x() + win.width()/2, win.y() + win.height()/2);
     else

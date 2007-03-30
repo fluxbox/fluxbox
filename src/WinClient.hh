@@ -111,10 +111,7 @@ public:
     bool getAttrib(XWindowAttributes &attr) const;
     bool getWMName(XTextProperty &textprop) const;
     bool getWMIconName(XTextProperty &textprop) const;
-    /// @return name member of class structure
-    const std::string &getWMClassName() const; 
-    /// @return class member of class structure
-    const std::string &getWMClassClass() const;
+    std::string getWMRole() const;
 
     /// notifies when this client dies
     FbTk::Subject &dieSig() { return m_diesig; }
@@ -185,7 +182,7 @@ private:
 
     int m_win_gravity;
 
-    std::string m_class_name, m_instance_name, m_icon_title;
+    std::string m_icon_title;
     bool m_title_override, m_icon_title_override;
 
     FluxboxWindow::BlackboxHints *m_blackbox_hint;

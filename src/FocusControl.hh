@@ -28,6 +28,7 @@
 
 #include "FbTk/Resource.hh"
 
+class ClientPattern;
 class WinClient;
 class FluxboxWindow;
 class Focusable;
@@ -61,20 +62,19 @@ public:
     // prevFocus/nextFocus option bits
     enum { 
         CYCLEGROUPS = 0x01, 
-        CYCLESKIPSTUCK = 0x02, 
-        CYCLESKIPSHADED = 0x04,
         CYCLELINEAR = 0x08, 
-        CYCLESKIPICONIC = 0x10,
-        CYCLEDEFAULT = 0x00 
     };
 
     explicit FocusControl(BScreen &screen);
 
-    void prevFocus() { cycleFocus(&m_focused_list, 0, true); }
-    void nextFocus() { cycleFocus(&m_focused_list, 0, false); }
-    void cycleFocus(Focusables *winlist, int options, bool reverse = false);
-    void cycleFocus(FocusedWindows *winlist, int options, bool reverse = false);
-    void goToWindowNumber(Focusables *winlist, int num, int options);
+    void prevFocus() { cycleFocus(m_focused_list, 0, true); }
+    void nextFocus() { cycleFocus(m_focused_list, 0, false); }
+    void cycleFocus(Focusables &winlist, const ClientPattern *pat = 0,
+                    bool reverse = false);
+    void cycleFocus(FocusedWindows &winlist, const ClientPattern *pat = 0,
+                    bool reverse = false);
+    void goToWindowNumber(Focusables &winlist, int num,
+                          const ClientPattern *pat = 0);
 
     void setScreenFocusedWindow(WinClient &win_client);
     void setFocusModel(FocusModel model);

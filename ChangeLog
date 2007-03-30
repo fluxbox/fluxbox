@@ -1,5 +1,22 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+   * Changed syntax for window cycling (Mark)
+     - Instead of a bitmask, the window cycling functions NextWindow,
+       PrevWindow, TypeAheadFocus, and GoToWindow now take a list of options
+       enclosed in {} followed by a pattern similar to those used in the apps
+       file.
+     - Examples:
+         * NextWindow {static groups} (shaded=yes) (name=xterm)
+           - cycles through all shaded xterms in creation order, only focusing
+             the active tab in the group
+         * GoToWindow 3 (title=[current])
+           - focuses the third client in last-focused order with the same title
+             as the currently focused window
+     - The options are: name, class, title, role, maximized, minimized, shaded,
+       stuck, focushidden (can't be disabled), iconhidden, workspace (matches
+       workspace names, not numbers), head (numbers), and layer (names)
+     - Parsing is a pain, so you'll have to update your keys file yourself for
+       now.
 *07/03/29:
    * Removed groups file; entries will be added to the apps file automatically
      (Mark)

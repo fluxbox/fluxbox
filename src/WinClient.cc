@@ -75,7 +75,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      send_focus_message(false),
                      send_close_message(false),
                      m_win_gravity(0),
-                     m_class_name(""), m_instance_name(""),
                      m_title_override(false),
                      m_icon_title_override(false),
                      m_blackbox_hint(0),
@@ -223,15 +222,13 @@ bool WinClient::getWMName(XTextProperty &textprop) const {
 }
 
 bool WinClient::getWMIconName(XTextProperty &textprop) const {
-    return XGetWMName(display(), window(), &textprop);
+    return XGetWMIconName(display(), window(), &textprop);
 }
 
-const string &WinClient::getWMClassName() const {
-    return m_instance_name;
-}
-
-const string &WinClient::getWMClassClass() const {
-    return m_class_name;
+string WinClient::getWMRole() const {
+    Atom wm_role = XInternAtom(FbTk::App::instance()->display(),
+                               "WM_WINDOW_ROLE", False);
+    return textProperty(wm_role);
 }
 
 const string &WinClient::title() const {
@@ -246,6 +243,7 @@ void WinClient::updateWMClassHint() {
 #ifdef DEBUG
         cerr<<"WinClient: Failed to read class hint!"<<endl;
 #endif //DEBUG
+        m_instance_name = m_class_name = "";
     } else {
 
         if (ch.res_name != 0) {

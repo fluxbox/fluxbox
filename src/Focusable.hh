@@ -38,6 +38,7 @@ class Focusable: public FbTk::ITypeAheadable {
 public:
     Focusable(BScreen &scr, FluxboxWindow *fbwin = 0):
         m_screen(scr), m_fbwin(fbwin),
+        m_instance_name("fluxbox"), m_class_name("fluxbox"),
         m_focused(false), m_titlesig(*this) { }
     virtual ~Focusable() { }
 
@@ -52,6 +53,11 @@ public:
     // for accessing window properties, like shaded, minimized, etc.
     inline const FluxboxWindow *fbwindow() const { return m_fbwin; }
     inline FluxboxWindow *fbwindow() { return m_fbwin; }
+
+    // for pattern matching
+    virtual const std::string &getWMClassClass() const { return m_class_name; }
+    virtual const std::string &getWMClassName() const { return m_instance_name; }
+    virtual std::string getWMRole() const { return "Focusable"; }
 
     // so we can make nice buttons, menu entries, etc.
     virtual const FbTk::PixmapWithMask &icon() const { return m_icon; }
@@ -75,8 +81,8 @@ protected:
     BScreen &m_screen;
     FluxboxWindow *m_fbwin;
 
+    std::string m_title, m_instance_name, m_class_name;
     bool m_focused;
-    std::string m_title;
     FbTk::PixmapWithMask m_icon;
 
     FocusSubject m_titlesig;

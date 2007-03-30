@@ -772,14 +772,14 @@ void FluxboxWindow::nextClient() {
     if (numClients() <= 1)
         return;
 
-    screen().focusControl().cycleFocus(&m_clientlist, 0);
+    screen().focusControl().cycleFocus(m_clientlist, 0);
 }
 
 void FluxboxWindow::prevClient() {
     if (numClients() <= 1)
         return;
 
-    screen().focusControl().cycleFocus(&m_clientlist, 0, true);
+    screen().focusControl().cycleFocus(m_clientlist, 0, true);
 }
 
 
@@ -1903,6 +1903,9 @@ void FluxboxWindow::lower() {
 }
 
 void FluxboxWindow::tempRaise() {
+    // Note: currently, this causes a problem with cycling through minimized
+    // clients if this window has more than one tab, since the window will not
+    // match isIconic() when the rest of the tabs get checked
     if (isIconic())
         deiconify();
 
@@ -3684,10 +3687,19 @@ Window FluxboxWindow::clientWindow() const  {
 
 
 const string &FluxboxWindow::title() const {
-    static string empty_string;
-    if (m_client == 0)
-        return empty_string;
-    return m_client->title();
+    return (m_client ? m_client->title() : m_title);
+}
+
+const std::string &FluxboxWindow::getWMClassName() const {
+    return (m_client ? m_client->getWMClassName() : m_instance_name);
+}
+
+const std::string &FluxboxWindow::getWMClassClass() const {
+    return (m_client ? m_client->getWMClassClass() : m_class_name);
+}
+
+std::string FluxboxWindow::getWMRole() const {
+    return (m_client ? m_client->getWMRole() : "FluxboxWindow");
 }
 
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
