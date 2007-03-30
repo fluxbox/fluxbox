@@ -227,7 +227,7 @@ bool WinClient::getWMName(XTextProperty &textprop) const {
 }
 
 bool WinClient::getWMIconName(XTextProperty &textprop) const {
-    return XGetWMName(display(), window(), &textprop);
+    return XGetWMIconName(display(), window(), &textprop);
 }
 
 const string &WinClient::getWMClassName() const {
