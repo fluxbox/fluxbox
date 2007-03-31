@@ -30,21 +30,31 @@
 
 class BScreen;
 class FluxboxWindow;
-
+/**
+ * A menu holding a set of client menus.
+ * @see WorkspaceMenu
+ */
 class ClientMenu: public FbMenu {
 public:
 
     typedef std::list<FluxboxWindow *> Focusables;
 
-    ClientMenu(BScreen &screen, Focusables &clients, FbTk::Subject *refresh);
+    /**
+     * @param screen the screen to show this menu on
+     * @param client a list of clients to show in this menu
+     * @param refresh the refresh subject to listen to
+     */
+    ClientMenu(BScreen &screen, 
+               Focusables &clients, FbTk::Subject *refresh);
 
 private:
-
+    /// refresh the entire menu
     void refreshMenu();
+    /// called when receiving a subject signal
     void update(FbTk::Subject *subj);
 
-    Focusables &m_list;
-    FbTk::Subject *m_refresh_sig;
+    Focusables &m_list; ///< clients 
+    FbTk::Subject *m_refresh_sig; ///< signal to listen to
 };
 
 #endif // CLIENTMENU_HH

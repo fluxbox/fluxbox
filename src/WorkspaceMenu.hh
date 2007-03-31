@@ -28,12 +28,21 @@
 
 class BScreen;
 
+/**
+ * A menu specific for workspace.
+ * Contains some simple workspace commands
+ * such as new/delete workspace and edit
+ * workspace name.
+ * It also contains client menus for all clients.
+ */
 class WorkspaceMenu: public FbMenu {
 public:
     explicit WorkspaceMenu(BScreen &screen);
     virtual ~WorkspaceMenu() { }
+    /// called when a subject is sending a signal
     void update(FbTk::Subject *subj);
 private:
+    /// initialize menu for the screen
     void init(BScreen &screen);
 };
 
