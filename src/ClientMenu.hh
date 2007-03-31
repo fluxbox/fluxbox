@@ -53,7 +53,7 @@ private:
     /// called when receiving a subject signal
     void update(FbTk::Subject *subj);
 
-    Focusables &m_list; ///< clients 
+    Focusables &m_list; ///< clients in the menu
     FbTk::Subject *m_refresh_sig; ///< signal to listen to
 };
 
