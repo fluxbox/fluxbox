@@ -55,6 +55,8 @@
 #include <memory>
 #include <map>
 
+class ClientPattern;
+class Focusable;
 class FluxboxWindow;
 class Netizen;
 class FbWinFrameTheme;
@@ -91,14 +93,16 @@ public:
         FETCH_ACTIVE_WINDOW ///< put that window to the current workspace 
     };
 
+    /// Different resize modes when resizing a window
     enum ResizeModel { 
-        BOTTOMRESIZE = 0, 
-        QUADRANTRESIZE, 
-        CENTERRESIZE,
-        DEFAULTRESIZE = BOTTOMRESIZE };
+        BOTTOMRESIZE = 0,  //< resizes from the bottom right corner
+        QUADRANTRESIZE,  //< resizes from one quadrant
+        CENTERRESIZE, //< resizes from center
+        DEFAULTRESIZE = BOTTOMRESIZE //< default resize mode is bottom
+    };
 
 
-    typedef std::vector<FluxboxWindow *> Icons;
+    typedef std::list<FluxboxWindow *> Icons;
 
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
@@ -145,39 +149,62 @@ public:
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
     inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
+    inline const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
     inline const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
+    inline const bool getTabsUsePixmap() const { return *resource.tabs_use_pixmap; }
     inline const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
 
     inline unsigned int getTabWidth() const { return *resource.tab_width; }
-
+    /// @return the slit, @see Slit
     inline Slit *slit() { return m_slit.get(); }
+    /// @return the slit, @see Slit
     inline const Slit *slit() const { return m_slit.get(); }
-
+    /**
+     * @param w the workspace number
+     * @return workspace for the given workspace number
+     */
     inline Workspace *getWorkspace(unsigned int w) { return ( w < m_workspaces_list.size() ? m_workspaces_list[w] : 0); }
+    /**
+     * @param w the workspace number
+     * @return workspace for the given workspace number
+     */
+    inline const Workspace *getWorkspace(unsigned int w) const {
+        return (w < m_workspaces_list.size() ? m_workspaces_list[w] : 0);
+    }
+    /// @return the current workspace
     inline Workspace *currentWorkspace() { return m_current_workspace; }
     inline const Workspace *currentWorkspace() const { return m_current_workspace; }
-
+    /// @return the workspace menu
     const FbTk::Menu &workspaceMenu() const { return *m_workspacemenu.get(); }
+    /// @return the workspace menu
     FbTk::Menu &workspaceMenu() { return *m_workspacemenu.get(); }
-
+    /// @return focus control handler
     const FocusControl &focusControl() const { return *m_focus_control; }
+    /// @return focus control handler
     FocusControl &focusControl() { return *m_focus_control; }
-
+    /// @return the current workspace id
     unsigned int currentWorkspaceID() const;
-    /*
-      maximum screen bounds for given window
+    /**
+
+     *
     */
+    /// @return maximum screen bound to the left for a specific xinerama head
     unsigned int maxLeft(int head) const;
+    /// @return maximum screen bound to the right for a specific xinerama head
     unsigned int maxRight(int head) const;
+    /// @return maximum screen bound at the top for the specified xinerama head
     unsigned int maxTop(int head) const;
+     /// @return maximum screen bound at bottom for the specified xinerama head
     unsigned int maxBottom(int head) const;
     /// @return true if window is kde dock app
     bool isKdeDockapp(Window win) const;
     /// @return true if dock app was added, else false
     bool addKdeDockapp(Window win);
-
+    /// @return screen width, @see rootWindow()
     unsigned int width() const { return rootWindow().width(); }
+    /// @return screen height, @see rootWindow()
     unsigned int height() const { return rootWindow().height(); }
+    /// @return number of the screen, @see rootWindow()
     int screenNumber() const { return rootWindow().screenNumber(); }
 
     /// @return number of workspaces
@@ -210,6 +237,7 @@ public:
     FbTk::Subject &resizeSig() { return m_resize_sig; }
     //@}
 
+    /// called when the screen receives a signal from a subject
     void update(FbTk::Subject *subj);
 
     void keyPressEvent(XKeyEvent &ke);
@@ -217,14 +245,42 @@ public:
     void buttonPressEvent(XButtonEvent &be);
     void notifyUngrabKeyboard();
 
-    void cycleFocus(int opts, bool reverse);
+    /**
+     * Prepares type a head focus
+     * @param winlist a list of focusables
+     * @param pat pattern to match windows with
+     */
+    void startTypeAheadFocus(std::list<Focusable *> &winlist,
+                             const ClientPattern *pat = 0);
+    /**
+     * Cycles focus of windows
+     * @param opts focus options
+     * @param pat specific pattern to match windows with
+     * @param reverse the order of cycling
+     */
+    void cycleFocus(int opts = 0, const ClientPattern *pat = 0, bool reverse = false);
 
+    /**
+     * Creates an empty menu with specified label
+     * @param label for the menu
+     * @return create menu
+     */
     FbTk::Menu *createMenu(const std::string &label);
+    /**
+     * Creates an empty toggle menu with a specific label
+     * @param label
+     * @return created menu
+     */
     FbTk::Menu *createToggleMenu(const std::string &label);
+
+    /// hides all menus that are visible on this screen
     void hideMenus();
-    // for extras to add menus.
-    // These menus will be marked internal,
-    // and deleted when the window dies (as opposed to Screen
+
+    /** 
+     * For extras to add menus.
+     * These menus will be marked internal,
+     * and deleted when the window dies (as opposed to Screen
+     */
     void addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu);
 
     /// hide all windowmenus except the given one (if given)
@@ -266,29 +322,71 @@ public:
     int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
+    /// go to next workspace ( right )
     void nextWorkspace() { nextWorkspace(1); }
+    /// go to previous workspace
     void prevWorkspace() { prevWorkspace(1); }
+    /**
+     * Jump forward to a workspace
+     * @param delta number of steps to jump
+     */
     void nextWorkspace(int delta);
+    /**
+     * Jump backwards to a workspace
+     * @param delta number of steps to jump
+     */
     void prevWorkspace(int delta);
+    /**
+     * Jump right to a workspace.
+     * @param delta number of steps to jump
+     */
     void rightWorkspace(int delta);
+    /**
+     * Jump left to a workspace
+     * @param delta number of steps to jump
+     */
     void leftWorkspace(int delta);
 
+    /// remove all workspace names 
     void removeWorkspaceNames();
+    /// update the workspace name atom
     void updateWorkspaceNamesAtom();
-	
+    /// add a workspace name to the end of the workspace name list
     void addWorkspaceName(const char *name);
+    /// add a Netizen window
     void addNetizen(Window win);
+    /// remove a netizen
     void removeNetizen(Window win);
+    /// add a window to the icon list
     void addIcon(FluxboxWindow *win);
+    /// remove a window from the icon list
     void removeIcon(FluxboxWindow *win);
-    // remove window
+    /// remove a window
     void removeWindow(FluxboxWindow *win);
+    /// remove a client
     void removeClient(WinClient &client);
-
+    /**
+     * Gets name of a specific workspace
+     * @param workspace the workspace number to get the name of
+     * @return name of the workspace
+     */
     std::string getNameOfWorkspace(unsigned int workspace) const;
+    /// changes workspace to specified id
     void changeWorkspaceID(unsigned int);
+    /**
+     * Sends a window to a workspace
+     * @param workspace the workspace id
+     * @param win the window to send
+     * @param changeworkspace whether current workspace should change
+     */
     void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, 
                          bool changeworkspace=true);
+    /**
+     * Reassociate a window to another workspace
+     * @param window the window to reassociate
+     * @param workspace_id id of the workspace
+     * @param ignore_sticky ignores any sticky windows
+     */
     void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, 
                            bool ignore_sticky);
 
@@ -303,7 +401,7 @@ public:
     /// show geomentry with "width x height"-text, not size of window
     void showGeometry(int width, int height);
     void hideGeometry();
-
+    
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
 
@@ -313,26 +411,40 @@ public:
     void updateSize();
 
     // Xinerama-related functions
+
+    /// @return true if xinerama is available
     bool hasXinerama() const { return m_xinerama_avail; }
+    /// @return umber of xinerama heads
     int numHeads() const { return m_xinerama_num_heads; }
 
     void initXinerama();
-
+    /**
+     * Determines head number for a position
+     * @param x position in pixels on the screen
+     * @param y position in pixels on the screen
+     * @return head number at this position
+     */
     int getHead(int x, int y) const;
-    int getHead(FbTk::FbWindow &win) const;
+    /// @return head number of window
+    int getHead(const FbTk::FbWindow &win) const;
+    /// @return the current head number
     int getCurrHead() const;
+    /// @return head x position
     int getHeadX(int head) const;
+    /// @return head y position
     int getHeadY(int head) const;
+    /// @return width of the head
     int getHeadWidth(int head) const;
+    /// @return height of the head
     int getHeadHeight(int head) const;
 
-    // returns the new (x,y) for a rectangle fitted on a head
+    ///  @return the new (x,y) for a rectangle fitted on a head
     std::pair<int,int> clampToHead(int head, int x, int y, int w, int h) const;
 
     // magic to allow us to have "on head" placement (menu) without
     // the object really knowing about it.
     template <typename OnHeadObject>
-    int getOnHead(OnHeadObject &obj);
+    int getOnHead(OnHeadObject &obj) const;
 
     template <typename OnHeadObject>
     void setOnHead(OnHeadObject &obj, int head);
@@ -355,6 +467,7 @@ public:
 
     /// create window frame for client window and attach it
     FluxboxWindow *createWindow(Window clientwin);
+    /// creates a window frame for a winclient. The client is attached to the window
     FluxboxWindow *createWindow(WinClient &client);
     /// request workspace space, i.e "don't maximize over this area"
     Strut *requestStrut(int head, int left, int right, int top, int bottom);
@@ -375,6 +488,9 @@ public:
     /// when screen dies
     void addManagedResource(FbTk::Resource_base *resource);
 
+    /**
+     * Used to emit different signals for the screen
+     */
     class ScreenSubject:public FbTk::Subject {
     public:
         ScreenSubject(BScreen &scr):m_scr(scr) { }
@@ -466,8 +582,11 @@ private:
         FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
         FbTk::Resource<std::string> scroll_action;
         FbTk::Resource<bool> scroll_reverse;
+        FbTk::Resource<bool> clientmenu_use_pixmap;
+        FbTk::Resource<bool> tabs_use_pixmap;
         FbTk::Resource<bool> max_over_tabs;
         FbTk::Resource<bool> default_internal_tabs;
+
 
     } resource;
 
@@ -485,7 +604,10 @@ private:
     typedef std::map<Window, WinClient *> Groupables;
     Groupables m_expecting_groups;
 
-    bool m_cycling;
+    bool m_cycling, m_typing_ahead;
+    const ClientPattern *m_cycle_opts;
+    FbTk::TypeAhead<std::list<Focusable *>, Focusable *> m_type_ahead;
+    std::list<Focusable *> m_matches;
 
     // Xinerama related private data
     bool m_xinerama_avail;
