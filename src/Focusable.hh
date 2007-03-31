@@ -33,7 +33,10 @@
 class BScreen;
 class FluxboxWindow;
 
-// base class for any object that might be "focused"
+/** 
+ * A Base class for any object that might be "focused".
+ * Such as FluxboxWindow, Menu etc
+ */
 class Focusable: public FbTk::ITypeAheadable {
 public:
     Focusable(BScreen &scr, FluxboxWindow *fbwin = 0):
@@ -41,51 +44,80 @@ public:
         m_instance_name("fluxbox"), m_class_name("fluxbox"),
         m_focused(false), m_titlesig(*this) { }
     virtual ~Focusable() { }
-
+    /**
+     * Take focus.
+     * @return true if the focuable took focus
+     */
     virtual bool focus() { return false; }
 
+    /// @return true if the focusable has input focus
     virtual bool isFocused() const { return m_focused; }
+    /// @return return true if it can be focused
     virtual bool acceptsFocus() const { return true; }
-
+    /// @return the screen in which this object resides
     inline BScreen &screen() { return m_screen; }
+    /// @return the screen in which this object resides
     inline const BScreen &screen() const { return m_screen; }
 
-    // for accessing window properties, like shaded, minimized, etc.
+    /**
+     *  For accessing window properties, like shaded, minimized, etc.
+     *  @return window context
+     */
     inline const FluxboxWindow *fbwindow() const { return m_fbwin; }
+    /**
+     *  For accessing window properties, like shaded, minimized, etc.
+     *  @return window context
+     */
     inline FluxboxWindow *fbwindow() { return m_fbwin; }
 
-    // for pattern matching
+    /// @return WM_CLASS class string (for pattern matching)
     virtual const std::string &getWMClassClass() const { return m_class_name; }
+    /// @return WM_CLASS name string (for pattern matching)
     virtual const std::string &getWMClassName() const { return m_instance_name; }
+    /// @return wm role string ( for pattern matching)
     virtual std::string getWMRole() const { return "Focusable"; }
 
     // so we can make nice buttons, menu entries, etc.
+    /// @return icon pixmap of the focusable
     virtual const FbTk::PixmapWithMask &icon() const { return m_icon; }
+    /// @return title string
     virtual const std::string &title() const { return m_title; }
+    /// @return type ahead string
     const std::string &iTypeString() const { return title(); }
-
+    /**
+     * Signaling object to attatch observers to.
+     */
     class FocusSubject: public FbTk::Subject {
     public:
-        FocusSubject(Focusable &w):m_win(w) { }
+        explicit FocusSubject(Focusable &w):m_win(w) { }
+        /// @return context focusable for this signal
         Focusable &win() { return m_win; }
+        /// @return context focusable for this signal
         const Focusable &win() const { return m_win; }
     private:
-        Focusable &m_win;
+        Focusable &m_win; //< the context
     };
 
-    // used for both title and icon changes
+    /**
+     * Used for both title and icon changes.
+     * @return title signal subject
+     */
     FbTk::Subject &titleSig() { return m_titlesig; }
+    /**
+     * Used for both title and icon changes.
+     * @return title signal subject
+     */
     const FbTk::Subject &titleSig() const { return m_titlesig; }
 
 protected:
-    BScreen &m_screen;
-    FluxboxWindow *m_fbwin;
+    BScreen &m_screen; //< the screen in which it works
+    FluxboxWindow *m_fbwin; //< the working fluxbox window
 
     std::string m_title, m_instance_name, m_class_name;
-    bool m_focused;
-    FbTk::PixmapWithMask m_icon;
+    bool m_focused; //< whether or not it has focus
+    FbTk::PixmapWithMask m_icon; //< icon pixmap with mask
 
-    FocusSubject m_titlesig;
+    FocusSubject m_titlesig; //< for signaling title and icon changes
 };
 
 #endif // FOCUSABLE_HH
