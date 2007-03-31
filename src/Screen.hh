@@ -88,17 +88,17 @@ public:
     /// a window becomes active / focussed on a different workspace
     enum FollowModel { 
         IGNORE_OTHER_WORKSPACES = 0, ///< who cares?
-        FOLLOW_ACTIVE_WINDOW, ///< go to that workspace
+        FOLLOW_ACTIVE_WINDOW,     ///< go to that workspace
         SEMIFOLLOW_ACTIVE_WINDOW, ///< fetch iconified windows, else follow
-        FETCH_ACTIVE_WINDOW ///< put that window to the current workspace 
+        FETCH_ACTIVE_WINDOW       ///< put that window to the current workspace 
     };
 
     /// Different resize modes when resizing a window
     enum ResizeModel { 
-        BOTTOMRESIZE = 0,  //< resizes from the bottom right corner
-        QUADRANTRESIZE,  //< resizes from one quadrant
-        CENTERRESIZE, //< resizes from center
-        DEFAULTRESIZE = BOTTOMRESIZE //< default resize mode is bottom
+        BOTTOMRESIZE = 0,            ///< resizes from the bottom right corner
+        QUADRANTRESIZE,              ///< resizes from one quadrant
+        CENTERRESIZE,                ///< resizes from center
+        DEFAULTRESIZE = BOTTOMRESIZE ///< default resize mode is bottom
     };
 
 

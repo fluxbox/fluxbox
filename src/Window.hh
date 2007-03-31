@@ -97,14 +97,14 @@ public:
 
     /// attributes for BlackboxHints
     enum Attrib {
-        ATTRIB_SHADED = 0x01,
-        ATTRIB_MAXHORIZ = 0x02,
-        ATTRIB_MAXVERT = 0x04,
-        ATTRIB_OMNIPRESENT = 0x08,
-        ATTRIB_WORKSPACE = 0x10,
-        ATTRIB_STACK = 0x20,
-        ATTRIB_DECORATION = 0x40,
-        ATTRIB_HIDDEN = 0x80,
+        ATTRIB_SHADED = 0x01,      ///< shaded
+        ATTRIB_MAXHORIZ = 0x02,    ///< maximized horizontal
+        ATTRIB_MAXVERT = 0x04,     ///< maximized vertical
+        ATTRIB_OMNIPRESENT = 0x08, ///< omnipresent (sticky)
+        ATTRIB_WORKSPACE = 0x10,   ///< workspace
+        ATTRIB_STACK = 0x20,       ///< stack
+        ATTRIB_DECORATION = 0x40,  ///< decorations 
+        ATTRIB_HIDDEN = 0x80,      ///< hidden
     };
 
     /**
@@ -136,7 +136,9 @@ public:
         DECORM_LAST     = (1<<11) // useful for getting "All"
     };
 
-
+    /**
+     * Resize direction while resizing
+     */
      enum ResizeDirection {
          NOCORNER = -1, 
          LEFTTOP  = 0,
@@ -149,12 +151,13 @@ public:
          LEFT         = 7,
          ALLCORNERS   = 8
     };
-
+    /// holds old blackbox specific hints
     typedef struct _blackbox_hints {
         unsigned long flags, attrib, workspace, stack;
         long decoration;
     } BlackboxHints;
 
+    /// holds old blackbox attributes
     typedef struct _blackbox_attributes {
         unsigned long flags, attrib, workspace, stack;
         long premax_x, premax_y;
