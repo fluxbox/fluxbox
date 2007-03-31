@@ -41,6 +41,25 @@
 #include <algorithm>
 #include <functional>
 
+void WindowListCmd::execute() {
+    if (m_pat.error()) {
+        m_cmd->execute();
+        return;
+    }
+
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0) {
+        FocusControl::Focusables *win_list = &screen->focusControl().creationOrderWinList();
+
+        FocusControl::Focusables::iterator it = win_list->begin(),
+                                           it_end = win_list->end();
+        for (; it != it_end; ++it) {
+            if (m_pat.match(**it) && (*it)->fbwindow())
+                m_cmd->execute(*(*it)->fbwindow());
+        }
+    }
+}
+
 void NextWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0)
@@ -264,19 +283,6 @@ void ShowDesktopCmd::execute() {
     std::for_each(windows.begin(),
                   windows.end(),
                   std::mem_fun(&FluxboxWindow::iconify));
-}
-
-void MinimizeLayerCmd::execute() {
-    FluxboxWindow *win = FocusControl::focusedFbWindow();
-    if (!win)
-        return;
-
-    Workspace::Windows windows(win->screen().currentWorkspace()->windowList());
-    Workspace::Windows::iterator it = windows.begin(), it_end = windows.end();
-    for (; it != it_end; ++it) {
-        if (win->layerNum() == (*it)->layerNum())
-            (*it)->iconify();
-    }
 }
 
 void CloseAllWindowsCmd::execute() {

@@ -1,5 +1,27 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/03/31:
+   * [group] tag in apps file may now have a pattern appended to it, and a new
+     window will only be automatically attached to the group if the group
+     matches that pattern -- e.g. [group] (workspace) (shaded=no) will only
+     automatically group with windows on the current workspace that are not
+     shaded (Mark)
+     Remember.cc/hh
+   * Lots of window commands now take a client pattern as an additional
+     argument, and the command will then be applied to all matching windows
+     (Mark)
+     - For example: `SendToWorkspace 2 (xterm)' will send all xterm windows to
+       workspace 2
+     - Here is the full list of affected commands (which is not to imply they
+       all necessarily make sense to do): Fullscreen, Minimize, Maximize,
+       MaximizeVertical, MaximizeHorizontal, SetAlpha, Resize, ResizeTo,
+       ResizeHorizontal, ResizeVertical, MoveTo, Move, MoveRight, MoveLeft,
+       MoveUp, MoveDown, Raise, RaiseLayer, Lower, LowerLayer, Close, Kill,
+       Shade, Stick, ToggleDecor, SetHead, Tab, SendToNextWorkspace,
+       SendToPrevWorkspace, TakeToNextWorkspace, TakeToPrevWorkspace,
+       SendToWorkspace, TakeToWorkspace, NextTab, PrevTab, MoveTabLeft,
+       MoveTabRight, DetachClient
+     WorkspaceCmd.cc/hh CurrentWindowCmd.cc/hh FbCommandFactory.cc
 *07/03/30:
    * Added fi_FI support (Thanks Pasi Juvonen, loudvr at yahoo ca)
     nls/fi_FI/*, util/fluxbox-generate_menu.in

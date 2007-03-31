@@ -27,8 +27,24 @@
 #include "Command.hh"
 
 #include "ClientPattern.hh"
+#include "CurrentWindowCmd.hh"
 #include "FocusControl.hh"
 
+#include "FbTk/RefCount.hh"
+
+class WindowHelperCmd;
+
+class WindowListCmd: public FbTk::Command {
+public:
+    WindowListCmd(FbTk::RefCount<WindowHelperCmd> cmd, const std::string &pat):
+            m_cmd(cmd), m_pat(pat.c_str()) { }
+
+    void execute();
+
+private:
+    FbTk::RefCount<WindowHelperCmd> m_cmd;
+    ClientPattern m_pat;
+};
 
 class NextWindowCmd: public FbTk::Command {
 public:
@@ -126,11 +142,6 @@ public:
 };
 
 class ShowDesktopCmd: public FbTk::Command {
-public:
-    void execute();
-};
-
-class MinimizeLayerCmd: public FbTk::Command {
 public:
     void execute();
 };
