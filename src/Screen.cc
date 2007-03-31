@@ -2234,7 +2234,7 @@ int BScreen::getHead(int x, int y) const {
     return 0;
 }
 
-int BScreen::getHead(FbTk::FbWindow &win) const {
+int BScreen::getHead(const FbTk::FbWindow &win) const {
     if (hasXinerama())
         return getHead(win.x() + win.width()/2, win.y() + win.height()/2);
     else

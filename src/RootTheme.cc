@@ -172,8 +172,6 @@ bool RootTheme::fallback(FbTk::ThemeItem_base &item) {
 }
 
 void RootTheme::reconfigTheme() {
-    _FB_USES_NLS;
-
     if (!m_background->loaded())
         return;
 

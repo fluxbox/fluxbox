@@ -149,9 +149,7 @@ public:
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
     inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
-    inline const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
     inline const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
-    inline const bool getTabsUsePixmap() const { return *resource.tabs_use_pixmap; }
     inline const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
 
     inline unsigned int getTabWidth() const { return *resource.tab_width; }
@@ -255,10 +253,9 @@ public:
     /**
      * Cycles focus of windows
      * @param opts focus options
-     * @param pat specific pattern to match windows with
      * @param reverse the order of cycling
      */
-    void cycleFocus(int opts = 0, const ClientPattern *pat = 0, bool reverse = false);
+    void cycleFocus(int opts = 0, bool reverse = false);
 
     /**
      * Creates an empty menu with specified label
@@ -582,8 +579,6 @@ private:
         FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
         FbTk::Resource<std::string> scroll_action;
         FbTk::Resource<bool> scroll_reverse;
-        FbTk::Resource<bool> clientmenu_use_pixmap;
-        FbTk::Resource<bool> tabs_use_pixmap;
         FbTk::Resource<bool> max_over_tabs;
         FbTk::Resource<bool> default_internal_tabs;
 
