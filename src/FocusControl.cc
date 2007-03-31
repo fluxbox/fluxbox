@@ -125,7 +125,7 @@ void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
             cycle_reverse ? --it : ++it;
         // give up [do nothing] if we reach the current focused again
         if (it == m_cycling_window)
-            break;
+            return;
         if (it == it_end)
             continue;
 
