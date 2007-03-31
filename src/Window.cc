@@ -2188,7 +2188,7 @@ void FluxboxWindow::restoreAttributes() {
 /**
    Show the window menu at pos mx, my
 */
-void FluxboxWindow::showMenu(int menu_x, int menu_y) {
+void FluxboxWindow::showMenu(int menu_x, int menu_y, WinClient *client) {
     // move menu directly under titlebar
 
     int head = screen().getHead(menu_x, menu_y);
@@ -2204,7 +2204,11 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
     else if (menu_x + static_cast<signed>(menu().width()) >= static_cast<signed>(screen().maxRight(head)))
         menu_x = screen().maxRight(head) - menu().width() - 1;
 
-    WindowCmd<void>::setWindow(this);
+    if (client && (client->fbwindow() == this))
+        WindowCmd<void>::setClient(client);
+    else
+        WindowCmd<void>::setWindow(this);
+
     menu().move(menu_x, menu_y);
     menu().show();
     menu().raise();
@@ -2223,13 +2227,34 @@ void FluxboxWindow::popupMenu() {
         return;
     }
 
+    /* Check if we're on a tab, we should make the menu for that tab */
+    WinClient *client = 0;
+    Window labelbutton = 0;
+    int dest_x = 0, dest_y = 0;
+    if (XTranslateCoordinates(FbTk::App::instance()->display(),
+                              parent().window(), frame().tabcontainer().window(),
+                              m_last_button_x, m_last_button_y, &dest_x, &dest_y,
+                              &labelbutton)) {
+
+        Client2ButtonMap::iterator it =
+            find_if(m_labelbuttons.begin(),
+                    m_labelbuttons.end(),
+                    Compose(bind2nd(equal_to<Window>(), labelbutton),
+                            Compose(mem_fun(&TextButton::window),
+                                    Select2nd<Client2ButtonMap::value_type>())));
+    
+        // label button not found
+        if (it != m_labelbuttons.end())
+            client = it->first;
+    }
+
     menu().disableTitle();
     int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
     if (!decorations.titlebar) // if we don't have any titlebar
         menu_y = 0;
     if (m_last_button_x < x() || m_last_button_x > x() + static_cast<signed>(width()))
         m_last_button_x = x();
-    showMenu(m_last_button_x, menu_y + frame().y());
+    showMenu(m_last_button_x, menu_y + frame().y(), client);
 }
 
 

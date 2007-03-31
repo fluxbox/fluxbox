@@ -266,7 +266,7 @@ public:
     void changeBlackboxHints(const BlackboxHints &bh);
     void updateFunctions();
     void restoreAttributes();
-    void showMenu(int mx, int my);
+    void showMenu(int mx, int my, WinClient *client = 0);
     // popup menu on last button press position
     void popupMenu();
 
