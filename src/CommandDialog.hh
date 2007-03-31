@@ -34,14 +34,25 @@
 
 class BScreen;
 
+/**
+ * Displays a fluxbox command dialog which executes fluxbox
+ * action commands.
+ */
 class CommandDialog: public FbTk::FbWindow, public FbTk::EventHandler {
 public:
     CommandDialog(BScreen &screen, const std::string &title,
                   const std::string pre_command = "");
     virtual ~CommandDialog();
-
+    
+    /// Sets the entry text.
     void setText(const std::string &text);
-    void setPostCommand(FbTk::RefCount<FbTk::Command> &postcommand) { m_postcommand = postcommand; }
+    /**
+     * Sets the command to be execute after the command is done.
+     * @param postcommand the command.
+     */
+    void setPostCommand(FbTk::RefCount<FbTk::Command> &postcommand) { 
+        m_postcommand = postcommand; 
+    }
     void show();
     void hide();
 
@@ -52,6 +63,7 @@ public:
     void keyPressEvent(XKeyEvent &event);
 
 protected:
+    /// expand the current word, using the history as a references
     virtual void tabComplete();
 
 private:
@@ -59,8 +71,8 @@ private:
     void render();
     void updateSizes();
 
-    FbTk::TextBox m_textbox;
-    FbTk::TextButton m_label;
+    FbTk::TextBox m_textbox; //< entry field
+    FbTk::TextButton m_label; //< text in the titlebar
     FbTk::GContext m_gc;
     FbTk::RefCount<FbTk::Command> m_postcommand; ///< command to do after the first command was issued (like reconfigure)
     BScreen &m_screen;
