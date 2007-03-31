@@ -1529,6 +1529,9 @@ fi
 DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
 DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
 
+if [ -z "$LAUNCHER" ]; then
+    LAUNCHER=fbrun
+fi
 
 # Start of menu
 cat << EOF > ${MENUFILENAME}

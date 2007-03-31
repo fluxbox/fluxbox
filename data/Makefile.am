@@ -33,6 +33,7 @@ menu: 			../util/fluxbox-generate_menu
 		PREFIX="${prefix}" \
 		MENUTITLE="Fluxbox-${VERSION}" \
 		INSTALL=Yes \
+		PATH="${PATH}:../util:../util/fbrun" \
 		../util/fluxbox-generate_menu
 
 ../util/fluxbox-generate_menu:

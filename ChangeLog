@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/03/31:
+   * Default value for $LAUNCHER, plus add util and util/fbrun to the 
+     PATH when generating install menu so it can find fbrun (Simon)
+     fluxbox-generate_menu.in Makefile.am data/Makefile.am
    * Make fluxbox-generate_menu emit [encoding] tags around all of its
      menus. Please check that it is the right encoding, I had to guess
      some as it wasn't recorded (Simon)
