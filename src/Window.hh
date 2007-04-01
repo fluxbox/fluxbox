@@ -183,33 +183,92 @@ public:
     bool removeClient(WinClient &client);
     /// set new current client and raise it
     bool setCurrentClient(WinClient &client, bool setinput = true);
+    /**
+     * Sets the label associated with the client to focused
+     * @param client the client associated with the label
+     * @param value the focus state
+     */
     void setLabelButtonFocus(WinClient &client, bool value = true);
+    /**
+     * Sets the attention state ("flashing")
+     * @see AttentionNoticeHandler
+     * @param value the new state value
+     */
     void setAttentionState(bool value);
+    /**
+     * Gets the attention state 
+     * @return current attiontion state
+     */
     bool getAttentionState() { return m_attention_state; }
+    /**
+     * Searches for a client 
+     * @param win the client X window
+     * @return pointer to client matching the window or NULL
+     */
     WinClient *findClient(Window win);
+    /// select next client
     void nextClient();
+    /// select previous client
     void prevClient();
+    /// move the current client to the left
     void moveClientLeft();
+    /// move the current client to the right
     void moveClientRight();
+    /**
+     * Move a client to the right of dest.
+     * @param win the client to move
+     * @param dest the left-of-client
+     */
     void moveClientRightOf(WinClient &win, WinClient &dest);
+    /**
+     * Move a client to the right of dest.
+     * @param win the client to move
+     * @param dest the left-of-client
+     */
     void moveClientLeftOf(WinClient &win, WinClient &dest);
+    /**
+     * Move client to place specified by pixel position
+     * @param win the client to move
+     * @param x position
+     * @param y position
+     */
     void moveClientTo(WinClient &win, int x, int y);
+    /**
+     * Calculates insertition position in the list by
+     * using pixel position x and y.
+     * @param x position
+     * @param y position
+     * @return iterator position for insertion
+     */
     ClientList::iterator getClientInsertPosition(int x, int y);
-
+    /**
+     * Take focus.
+     * @see Focusable
+     * @return true if it took focus.
+     */
     bool focus();
+    
+    /// Raises the window and takes focus (if possible).
     void raiseAndFocus() { raise(); focus(); }
+    /// sets the internal focus flag
     void setFocusFlag(bool flag);
-    // map this window
+    /// make this window visible
     void show();
-    // unmap this window
+    /// hide window
     void hide(bool interrupt_moving = true);
+    /// iconify window
     void iconify();
+    /**
+     * Deiconify window
+     * @param reassoc reassociate the window to the current workspace
+     * @param do_raise raise the window when its been deiconfied
+     */
     void deiconify(bool reassoc = true, bool do_raise = true);
 
     // ------------------
     // Per window transparency addons
-    unsigned char  getFocusedAlpha() const { return frame().getAlpha(true); }
-    unsigned char  getUnfocusedAlpha() const { return frame().getAlpha(false); }
+    unsigned char getFocusedAlpha() const { return frame().getAlpha(true); }
+    unsigned char getUnfocusedAlpha() const { return frame().getAlpha(false); }
     void setFocusedAlpha(unsigned char alpha) { frame().setAlpha(true, alpha); }
     void setUnfocusedAlpha(unsigned char alpha) { frame().setAlpha(false, alpha); }
     void updateAlpha(bool focused, unsigned char alpha)  { frame().setAlpha(focused, alpha); }
@@ -249,8 +308,11 @@ public:
     void tempRaise();
     void raiseLayer();
     void lowerLayer();
+    /// moves the window to a new layer
     void moveToLayer(int layernum, bool force = false);
+    /// sets the window focus hidden state
     void setFocusHidden(bool value);
+    /// sets the window icon hidden state
     void setIconHidden(bool value);
     void reconfigure();
 
@@ -266,11 +328,21 @@ public:
     void moveResize(int x, int y, unsigned int width, unsigned int height, bool send_event = false);
     /// move to pos x,y and resize client window to size width, height
     void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity, unsigned int client_bw = 0);
+    /**
+     * Determines maximum size using all clients that this window can have.
+     * @param width will be filled in with maximum width 
+     * @param height will be filled in with maximum height
+     */
     void maxSize(unsigned int &width, unsigned int &height);
     void setWorkspace(int n);
     void changeBlackboxHints(const BlackboxHints &bh);
     void updateFunctions();
     void restoreAttributes();
+    /**
+     * Show window meny at at given position
+     * @param mx position
+     * @param my position
+     */
     void showMenu(int mx, int my);
     // popup menu on last button press position
     void popupMenu();
@@ -553,14 +625,14 @@ private:
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
-    FbWinFrame m_frame;
+    FbWinFrame m_frame;  ///< the actuall window frame
 
     int m_layernum;
     int m_old_layernum;
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
 
-    ResizeDirection m_resize_corner;
+    ResizeDirection m_resize_corner; //< the current resize corner used while resizing
 
     static int s_num_grabs; ///< number of XGrabPointer's
 };
