@@ -155,15 +155,6 @@ public:
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
 
-
-    class WinClientSubj: public FbTk::Subject {
-    public:
-        explicit WinClientSubj(WinClient &client):m_winclient(client) { }
-        WinClient &winClient() { return m_winclient; }
-    private:
-        WinClient &m_winclient;
-    };
-
     enum FocusMode { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
 private:
