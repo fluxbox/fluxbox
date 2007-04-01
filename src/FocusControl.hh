@@ -42,72 +42,109 @@ class FocusControl {
 public:
     typedef std::list<WinClient *> FocusedWindows;
     typedef std::list<Focusable *> Focusables;
-
+    /// main focus model
     enum FocusModel { 
-        MOUSEFOCUS = 0, ///< focus follows 
-        CLICKFOCUS ///< focus on click
+        MOUSEFOCUS = 0, ///< focus follows mouse
+        CLICKFOCUS      ///< focus on click
     };
+    /// focus model for tabs
     enum TabFocusModel { 
         MOUSETABFOCUS = 0, ///< tab focus follows mouse
         CLICKTABFOCUS  ///< tab focus on click
     };
 
+    /// focus direction for windows
     enum FocusDir { 
-        FOCUSUP,
-        FOCUSDOWN,
-        FOCUSLEFT, 
-        FOCUSRIGHT 
+        FOCUSUP,    ///< window is above
+        FOCUSDOWN,  ///< window is down
+        FOCUSLEFT,  ///< window is left
+        FOCUSRIGHT  ///< window is right
     };
 
-    // prevFocus/nextFocus option bits
+    /// prevFocus/nextFocus option bits
     enum { 
-        CYCLEGROUPS = 0x01, 
-        CYCLELINEAR = 0x08, 
+        CYCLEGROUPS = 0x01,  //< cycle through groups
+        CYCLELINEAR = 0x08,  ///< linear cycle
     };
 
     explicit FocusControl(BScreen &screen);
-
+    /// cycle previous focuable 
     void prevFocus() { cycleFocus(m_focused_list, 0, true); }
+    /// cycle next focusable
     void nextFocus() { cycleFocus(m_focused_list, 0, false); }
+    /**
+     * Cycle focus for a set of windows.
+     * @param winlist the windowlist to cycle through
+     * @param pat pattern for matching focusables
+     * @param reverse reverse the cycle order
+     */
     void cycleFocus(Focusables &winlist, const ClientPattern *pat = 0,
                     bool reverse = false);
+    
+    /**
+     * Cycle focus for a set of windows.
+     * @param winlist the windowlist to cycle through
+     * @param pat pattern for matching focusables
+     * @param reverse reverse the cycle order
+     */
     void cycleFocus(FocusedWindows &winlist, const ClientPattern *pat = 0,
                     bool reverse = false);
     void goToWindowNumber(Focusables &winlist, int num,
                           const ClientPattern *pat = 0);
-
+    /// sets the focused window on a screen
     void setScreenFocusedWindow(WinClient &win_client);
+    /// sets the main focus model
     void setFocusModel(FocusModel model);
+    /// sets tab focus model
     void setTabFocusModel(TabFocusModel model);
-
+    /// stop cycling mode
     void stopCyclingFocus();
-
+    /** 
+     * Do directional focus mode.
+     * @param win current window
+     * @param dir direction from current window to focus.
+     */
     void dirFocus(FluxboxWindow &win, FocusDir dir);
+    /// @return true if focus mode is mouse focus
     bool isMouseFocus() const { return focusModel() == MOUSEFOCUS; }
+    /// @return true if tab focus mode is mouse tab focus
     bool isMouseTabFocus() const { return tabFocusModel() == MOUSETABFOCUS; }
+    /// @return true if cycling is in progress
     bool isCycling() const { return m_cycling_list != 0; }
+    /// Appends a client to the front of the focus list
     void addFocusBack(WinClient &client);
+    /// Appends a client to the front of the focus list
     void addFocusFront(WinClient &client);
     void addFocusWinBack(Focusable &win);
     void addFocusWinFront(Focusable &win);
     void setFocusBack(FluxboxWindow *fbwin);
-
+    /// @return main focus model
     FocusModel focusModel() const { return *m_focus_model; }
+    /// @return tab focus model
     TabFocusModel tabFocusModel() const { return *m_tab_focus_model; }
+    /// @return true if newly created windows are focused
     bool focusNew() const { return *m_focus_new; }
 
+    /// @return last focused client in a specific workspace, or NULL.
     Focusable *lastFocusedWindow(int workspace);
+
     WinClient *lastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client = 0);
 
+    /// @return focus list in creation order
     Focusables &creationOrderList() { return m_creation_order_list; }
+    /// @return the focus list in focused order
     Focusables &focusedOrderList() { return m_focused_list; }
     Focusables &creationOrderWinList() { return m_creation_order_win_list; }
     Focusables &focusedOrderWinList() { return m_focused_win_list; }
 
+    /// remove client from focus list
     void removeClient(WinClient &client);
+    /// remove window from focus list
     void removeWindow(Focusable &win);
+    /// starts terminating this control
     void shutdown();
 
+    /// do fallback focus for screen if normal focus control failed.
     static void revertFocus(BScreen &screen);
     // like revertFocus, but specifically related to this window (transients etc)
     static void unfocusWindow(WinClient &client, bool full_revert = true, bool unfocus_frame = false);
