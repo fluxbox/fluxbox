@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/04/01:
+   * Fixed a problem with windows being created in iconic state (Mark)
+     Window.cc Screen.cc fluxbox.cc
 *07/03/31:
    * Fix window menu context when opened by clicking on tab (Simon)
      sf.net bug #1652185

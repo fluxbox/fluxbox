@@ -533,7 +533,8 @@ void FluxboxWindow::init() {
     if (iconic) {
         iconic = false;
         iconify();
-    }
+    } else
+        deiconify(false);
 
     sendConfigureNotify();
     // no focus default
@@ -2336,28 +2337,11 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
         return;
     }
 
-    // rest of current state checking is in initialisation
-    if (m_current_state == WithdrawnState)
-        withdraw(true);
-    else {
+    // Note: this function never gets called from WithdrawnState
+    // initial state is handled in restoreAttributes() and init()
+    setCurrentClient(*client, false); // focus handled on MapNotify
+    deiconify(false);
 
-        // if this window was destroyed while autogrouping
-        bool destroyed = false;
-
-        // check WM_CLASS only when we changed state to NormalState from
-        // WithdrawnState (ICCC 4.1.2.5)
-        client->updateWMClassHint();
-
-        Workspace *wsp = screen().getWorkspace(m_workspace_number);
-        if (wsp != 0 && isGroupable())
-            destroyed = wsp->checkGrouping(*this);
-
-        // if we weren't grouped with another window we deiconify ourself
-        // make sure iconified windows stay that way on fluxbox start
-        if (!destroyed && !(iconic && Fluxbox::instance()->isStartup()))
-            deiconify(false);
-
-    }
 }
 
 

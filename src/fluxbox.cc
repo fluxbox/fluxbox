@@ -781,7 +781,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #endif // DEBUG
 
         WinClient *winclient = searchWindow(e->xmaprequest.window);
-        FluxboxWindow *win = 0;
 
         if (! winclient) {
             BScreen *screen = 0;
@@ -807,15 +806,14 @@ void Fluxbox::handleEvent(XEvent * const e) {
             if (screen == 0) {
                 cerr<<"Fluxbox "<<_FB_CONSOLETEXT(Fluxbox, CantMapWindow, "Warning! Could not find screen to map window on!", "")<<endl;
             } else
-                win = screen->createWindow(e->xmaprequest.window);
+                screen->createWindow(e->xmaprequest.window);
 
         } else {
-            win = winclient->fbwindow();
+            // we don't handle MapRequest in FluxboxWindow::handleEvent
+            if (winclient->fbwindow())
+                winclient->fbwindow()->mapRequestEvent(e->xmaprequest);
         }
 
-        // we don't handle MapRequest in FluxboxWindow::handleEvent
-        if (win)
-            win->mapRequestEvent(e->xmaprequest);
     }
         break;
     case MapNotify:

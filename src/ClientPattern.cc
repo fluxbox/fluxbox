@@ -173,7 +173,7 @@ string ClientPattern::toString() const {
 
         switch ((*it)->prop) {
         case NAME:
-            // do nothing -> this is the default
+            pat.append("name=");
             break;
         case CLASS:
             pat.append("class=");

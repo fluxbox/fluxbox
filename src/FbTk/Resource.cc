@@ -24,6 +24,7 @@
 #include "XrmDatabaseHelper.hh"
 #include "Resource.hh"
 #include "I18n.hh"
+#include "StringUtil.hh"
 
 #include <iostream>
 #ifdef HAVE_CASSERT
@@ -61,7 +62,7 @@ bool ResourceManager::m_init = false;
   @return true on success else false
 */
 bool ResourceManager::load(const char *filename) {
-    m_filename = filename;
+    m_filename = StringUtil::expandFilename(filename).c_str();
 
     // force reload (lock will ensure it exists)
     if (m_database) {
@@ -106,6 +107,7 @@ bool ResourceManager::load(const char *filename) {
 */
 bool ResourceManager::save(const char *filename, const char *mergefilename) {
     assert(filename);
+    filename = StringUtil::expandFilename(filename).c_str();
 
     // empty database
     XrmDatabaseHelper database;
