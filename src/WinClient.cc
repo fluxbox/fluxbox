@@ -80,7 +80,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      m_blackbox_hint(0),
                      m_mwm_hint(0),
                      m_focus_mode(F_PASSIVE),
-                     m_diesig(*this), m_focussig(*this),
                      m_strut(0) {
     updateWMProtocols();
     updateBlackboxHints();

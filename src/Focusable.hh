@@ -41,8 +41,8 @@ class Focusable: public FbTk::ITypeAheadable {
 public:
     Focusable(BScreen &scr, FluxboxWindow *fbwin = 0):
         m_screen(scr), m_fbwin(fbwin),
-        m_instance_name("fluxbox"), m_class_name("fluxbox"),
-        m_focused(false), m_titlesig(*this) { }
+        m_instance_name("fluxbox"), m_class_name("fluxbox"), m_focused(false),
+        m_titlesig(*this), m_focussig(*this), m_diesig(*this) { }
     virtual ~Focusable() { }
     /**
      * Take focus.
@@ -99,15 +99,18 @@ public:
     };
 
     /**
-     * Used for both title and icon changes.
-     * @return title signal subject
-     */
+       @name signals
+       @{
+    */
+    // Used for both title and icon changes.
     FbTk::Subject &titleSig() { return m_titlesig; }
-    /**
-     * Used for both title and icon changes.
-     * @return title signal subject
-     */
+    // Used for both title and icon changes.
     const FbTk::Subject &titleSig() const { return m_titlesig; }
+    FbTk::Subject &focusSig() { return m_focussig; }
+    const FbTk::Subject &focusSig() const { return m_focussig; }
+    FbTk::Subject &dieSig() { return m_diesig; }
+    const FbTk::Subject &dieSig() const { return m_diesig; }
+    /** @} */ // end group signals
 
 protected:
     BScreen &m_screen; //< the screen in which it works
@@ -117,7 +120,8 @@ protected:
     bool m_focused; //< whether or not it has focus
     FbTk::PixmapWithMask m_icon; //< icon pixmap with mask
 
-    FocusSubject m_titlesig; //< for signaling title and icon changes
+    // state and hint signals
+    FocusSubject m_titlesig, m_focussig, m_diesig;
 };
 
 #endif // FOCUSABLE_HH

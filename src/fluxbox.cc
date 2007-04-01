@@ -1121,73 +1121,94 @@ void Fluxbox::handleSignal(int signum) {
 
 void Fluxbox::update(FbTk::Subject *changedsub) {
     //TODO: fix signaling, this does not look good
+    FluxboxWindow *fbwin = 0;
+    WinClient *client = 0;
+
     if (typeid(*changedsub) == typeid(FluxboxWindow::WinSubject)) {
         FluxboxWindow::WinSubject *winsub = dynamic_cast<FluxboxWindow::WinSubject *>(changedsub);
-        FluxboxWindow &win = winsub->win();
-        if ((&(win.hintSig())) == changedsub) { // hint signal
-            for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                 it != m_atomhandler.end(); ++it) {
-                if ( (*it).first->update())
-                    (*it).first->updateHints(win);
-            }
-        } else if ((&(win.stateSig())) == changedsub) { // state signal
-            for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                 it != m_atomhandler.end(); ++it) {
-                if ((*it).first->update())
-                    (*it).first->updateState(win);
-            }
-            // if window changed to iconic state
-            // add to icon list
-            if (win.isIconic()) {
-                win.screen().addIcon(&win);
-                Workspace *space = win.screen().getWorkspace(win.workspaceNumber());
-                if (space != 0)
-                    space->removeWindow(&win, true);
-            }
+        fbwin = &winsub->win();
+    } else if (typeid(*changedsub) == typeid(Focusable::FocusSubject)) {
+        Focusable::FocusSubject *winsub = dynamic_cast<Focusable::FocusSubject *>(changedsub);
+        fbwin = winsub->win().fbwindow();
+        if (typeid(winsub->win()) == typeid(WinClient))
+            client = dynamic_cast<WinClient *>(&winsub->win());
+    }
 
-            if (win.isStuck()) {
-                // if we're sticky then reassociate window
-                // to all workspaces
-                BScreen &scr = win.screen();
-                if (scr.currentWorkspaceID() != win.workspaceNumber()) {
-                    scr.reassociateWindow(&win,
-                                          scr.currentWorkspaceID(),
-                                          true);
-                }
-            }
-        } else if ((&(win.layerSig())) == changedsub) { // layer signal
-
-            for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                 it != m_atomhandler.end(); ++it) {
-                if ((*it).first->update())
-                    (*it).first->updateLayer(win);
-            }
-        } else if ((&(win.dieSig())) == changedsub) { // window death signal
-
-            for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                it != m_atomhandler.end(); ++it) {
-                if ((*it).first->update())
-                    (*it).first->updateFrameClose(win);
-            }
-
-            // make sure each workspace get this
-            BScreen &scr = win.screen();
-            scr.removeWindow(&win);
-            if (FocusControl::focusedFbWindow() == &win)
-                FocusControl::setFocusedFbWindow(0);
-
-        } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
-            for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                 it != m_atomhandler.end(); ++it) {
-                if ((*it).first->update())
-                    (*it).first->updateWorkspace(win);
-            }
-        } else {
-#ifdef DEBUG
-            cerr<<__FILE__<<"("<<__LINE__<<"): WINDOW uncought signal from "<<&win<<endl;
-#endif // DEBUG
+    if (fbwin && &fbwin->stateSig() == changedsub) { // state signal
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
+             it != m_atomhandler.end(); ++it) {
+            if ((*it).first->update())
+                (*it).first->updateState(*fbwin);
+        }
+        // if window changed to iconic state
+        // add to icon list
+        if (fbwin->isIconic()) {
+            fbwin->screen().addIcon(fbwin);
+            Workspace *space = fbwin->screen().getWorkspace(fbwin->workspaceNumber());
+            if (space != 0)
+                space->removeWindow(fbwin, true);
         }
 
+        if (fbwin->isStuck()) {
+            // if we're sticky then reassociate window
+            // to all workspaces
+            BScreen &scr = fbwin->screen();
+            if (scr.currentWorkspaceID() != fbwin->workspaceNumber()) {
+                scr.reassociateWindow(fbwin,
+                                      scr.currentWorkspaceID(),
+                                      true);
+            }
+        }
+    } else if (fbwin && &fbwin->layerSig() == changedsub) { // layer signal
+        AtomHandlerContainerIt it= m_atomhandler.begin();
+        for (; it != m_atomhandler.end(); ++it) {
+            if ((*it).first->update())
+                (*it).first->updateLayer(*fbwin);
+        }
+    } else if (fbwin && &fbwin->dieSig() == changedsub) { // window death signal
+        AtomHandlerContainerIt it= m_atomhandler.begin();
+        for (; it != m_atomhandler.end(); ++it) {
+            if ((*it).first->update())
+                (*it).first->updateFrameClose(*fbwin);
+        }
+
+        // make sure each workspace get this
+        BScreen &scr = fbwin->screen();
+        scr.removeWindow(fbwin);
+        if (FocusControl::focusedFbWindow() == fbwin)
+            FocusControl::setFocusedFbWindow(0);
+    } else if (fbwin && &fbwin->workspaceSig() == changedsub) {  // workspace signal
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
+             it != m_atomhandler.end(); ++it) {
+            if ((*it).first->update())
+                (*it).first->updateWorkspace(*fbwin);
+        }
+    } else if (client && &client->dieSig() == changedsub) { // client death
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
+             it != m_atomhandler.end(); ++it) {
+            if ((*it).first->update())
+                (*it).first->updateClientClose(*client);
+        }
+
+        BScreen &screen = client->screen();
+
+        screen.removeClient(*client);
+        // finaly send notify signal
+        screen.updateNetizenWindowDel(client->window());
+
+        // At this point, we trust that this client is no longer in the
+        // client list of its frame (but it still has reference to the frame)
+        // We also assume that any remaining active one is the last focused one
+
+        // This is where we revert focus on window close
+        // NOWHERE ELSE!!!
+        if (FocusControl::focusedWindow() == client) {
+            FocusControl::unfocusWindow(*client);
+            // make sure nothing else uses this window before focus reverts
+            FocusControl::setFocusedWindow(0);
+            m_revert_screen = &screen;
+            m_revert_timer.start();
+        }
     } else if (typeid(*changedsub) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject *subj = dynamic_cast<BScreen::ScreenSubject *>(changedsub);
         BScreen &screen = subj->screen();
@@ -1221,37 +1242,6 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                 if ((*it).first->update())
                     (*it).first->updateClientList(screen);
             }
-        }
-    } else if (typeid(*changedsub) == typeid(WinClient::WinClientSubj)) {
-
-        WinClient::WinClientSubj *subj = dynamic_cast<WinClient::WinClientSubj *>(changedsub);
-        WinClient &client = subj->winClient();
-
-        // TODO: don't assume it is diesig (need to fix as soon as another signal appears)
-        for (AtomHandlerContainerIt it= m_atomhandler.begin();
-             it != m_atomhandler.end(); ++it) {
-            if ((*it).first->update())
-                (*it).first->updateClientClose(client);
-        }
-
-        BScreen &screen = client.screen();
-
-        screen.removeClient(client);
-        // finaly send notify signal
-        screen.updateNetizenWindowDel(client.window());
-
-        // At this point, we trust that this client is no longer in the
-        // client list of its frame (but it still has reference to the frame)
-        // We also assume that any remaining active one is the last focused one
-
-        // This is where we revert focus on window close
-        // NOWHERE ELSE!!!
-        if (FocusControl::focusedWindow() == &client) {
-            FocusControl::unfocusWindow(client);
-            // make sure nothing else uses this window before focus reverts
-            FocusControl::setFocusedWindow(0);
-            m_revert_screen = &screen;
-            m_revert_timer.start();
         }
     }
 }

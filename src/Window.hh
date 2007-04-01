@@ -420,9 +420,6 @@ public:
     const FbTk::Subject &hintSig() const { return m_hintsig; }
     FbTk::Subject &workspaceSig() { return m_workspacesig; }
     const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
-    FbTk::Subject &dieSig() { return m_diesig; }
-    const FbTk::Subject &dieSig() const { return m_diesig; }
-    FbTk::Subject &focusSig() { return m_focussig; }
     FbTk::Subject &attentionSig() { return m_attentionsig; }
     /** @} */ // end group signals
 
@@ -492,7 +489,6 @@ private:
         m_statesig, 
         m_layersig, 
         m_workspacesig, 
-        m_diesig, m_focussig,
         m_attentionsig;
 
     class ThemeListener: public FbTk::Observer {

@@ -41,7 +41,7 @@
 class IconbarTheme;
 class BScreen;
 class IconButton;
-class FluxboxWindow;
+class Focusable;
 
 class IconbarTool: public ToolbarItem, public FbTk::Observer {
 public:
@@ -93,12 +93,10 @@ public:
 private:
 
     /// @return button associated with window
-    IconButton *findButton(FluxboxWindow &win);
+    IconButton *findButton(Focusable &win);
 
     void updateSizing();
 
-    /// render single button that holds win
-    //    void renderWindow(FluxboxWindow &win);
     /// render single button, and probably apply changes (clear)
     /// @param button the button to render
     /// @param clear if the window should be cleared first
@@ -111,13 +109,13 @@ private:
     /// destroy all icons
     void deleteIcons();
     /// remove a single window
-    void removeWindow(FluxboxWindow &win);
+    void removeWindow(Focusable &win);
     /// add a single window 
-    void addWindow(FluxboxWindow &win);
+    void addWindow(Focusable &win);
     /// add icons to the list
     void updateList();
     /// check if window is already in the list
-    bool checkDuplicate(FluxboxWindow &win);
+    bool checkDuplicate(Focusable &win);
     /// so we can update current window without flicker
     void timedRender();
 

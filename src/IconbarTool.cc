@@ -287,51 +287,23 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 }
 
 inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
-    bool ret_val = false;
-    // just add the icons that are on the this workspace
-    switch (mode) {
-    case IconbarTool::NONE:
-        break;
-    case IconbarTool::ICONS:
-        if (win.isIconic())
-            ret_val = true;
-        break;
-    case IconbarTool::NOICONS:
-        if (!win.isIconic())
-            ret_val = true;
-        break;
-    case IconbarTool::WORKSPACEICONS:
-        if(win.workspaceNumber() == win.screen().currentWorkspaceID() &&
-           win.isIconic())
-            ret_val = true;
-        break;
-    case IconbarTool::WORKSPACENOICONS:
-        if (win.isIconic())
-            break;
-    case IconbarTool::WORKSPACE:
-        if (win.workspaceNumber() == win.screen().currentWorkspaceID())
-            ret_val = true;
-        break;
-    case IconbarTool::ALLWINDOWS:
-        ret_val = true;
-        break;
-    }
+    if (win.isIconHidden() || mode == IconbarTool::NONE)
+        return false;
 
-    if (win.isIconHidden())
-        ret_val = false;
+    if ((mode == IconbarTool::ICONS || mode == IconbarTool::WORKSPACEICONS) &&
+        !win.isIconic())
+        return false;
 
-    return ret_val;
-}
+    if ((mode == IconbarTool::NOICONS || mode == IconbarTool::WORKSPACENOICONS)
+        && win.isIconic())
+        return false;
 
-void removeDuplicate(const IconbarTool::IconList &iconlist, list<FluxboxWindow *> &windowlist) {
-    IconbarTool::IconList::const_iterator icon_it = iconlist.begin();
-    IconbarTool::IconList::const_iterator icon_it_end = iconlist.end();
-    list<FluxboxWindow *>::iterator remove_it = windowlist.end();
-    for (; icon_it != icon_it_end; ++icon_it)
-        remove_it = remove(windowlist.begin(), remove_it, &(*icon_it)->win());
+    if ((mode == IconbarTool::WORKSPACE || mode == IconbarTool::WORKSPACEICONS
+        || mode == IconbarTool::WORKSPACENOICONS) &&
+        win.workspaceNumber() != win.screen().currentWorkspaceID())
+        return false;
 
-    // remove already existing windows
-    windowlist.erase(remove_it, windowlist.end());
+    return true;
 }
 
 typedef FbTk::RefCount<FbTk::Command> RefCmd;
@@ -396,7 +368,8 @@ private:
 // if desktopwheeling is enabled
 class WheelWorkspaceCmd : public FbTk::Command {
 public:
-    explicit WheelWorkspaceCmd(const IconbarTool& tool, FluxboxWindow &win, const char* cmd) : 
+    explicit WheelWorkspaceCmd(const IconbarTool& tool, Focusable &win,
+                               const char* cmd) : 
         m_win(win), m_cmd(CommandParser::instance().parseLine(cmd)), m_tool(tool) { }
     void execute() {
 
@@ -415,7 +388,7 @@ public:
     }
 
 private:
-    FluxboxWindow &m_win;
+    Focusable &m_win;
     RefCmd m_cmd;
     const IconbarTool& m_tool;
 };
@@ -589,12 +562,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
     if (subj != 0 && typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
         // we handle everything except die signal here
         FluxboxWindow::WinSubject *winsubj = static_cast<FluxboxWindow::WinSubject *>(subj);
-        if (subj == &(winsubj->win().focusSig())) {
-            // start focus timer, so we can update without flicker
-            m_focus_timer.start();
-
-            return;
-        } else if (subj == &(winsubj->win().workspaceSig())) {
+        if (subj == &(winsubj->win().workspaceSig())) {
             // we can ignore this signal if we're in ALLWINDOWS mode
             // unless the window was focused and has nothing to revert to
             if (mode() == ALLWINDOWS || mode() == ICONS || mode() == NOICONS) {
@@ -608,16 +576,11 @@ void IconbarTool::update(FbTk::Subject *subj) {
                 renderTheme();
             }
             return;
-        } else if (subj == &(winsubj->win().dieSig())) { // die sig
-            removeWindow(winsubj->win());
-            renderTheme();
-            return; // we don't need to update the entire list
         } else if (subj == &(winsubj->win().stateSig())) {
             if (!checkAddWindow(mode(), winsubj->win())) {
                 removeWindow(winsubj->win());
                 renderTheme();
             }
-
             return;
 
         } else if (subj == &(winsubj->win().attentionSig())) {
@@ -631,6 +594,17 @@ void IconbarTool::update(FbTk::Subject *subj) {
         } else {
             // signal not handled
             return;
+        }
+    } else if (subj != 0 && typeid(*subj) == typeid(Focusable::FocusSubject)) {
+        Focusable::FocusSubject *winsubj = static_cast<Focusable::FocusSubject *>(subj);
+        if (subj == &(winsubj->win().focusSig())) {
+            // start focus timer, so we can update without flicker
+            m_focus_timer.start();
+            return;
+        } else if (subj == &(winsubj->win().dieSig())) { // die sig
+            removeWindow(winsubj->win());
+            renderTheme();
+            return; // we don't need to update the entire list
         }
     }
 
@@ -670,7 +644,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
     renderTheme();
 }
 
-IconButton *IconbarTool::findButton(FluxboxWindow &win) {
+IconButton *IconbarTool::findButton(Focusable &win) {
 
     IconList::iterator icon_it = m_icon_list.begin();
     IconList::iterator icon_it_end = m_icon_list.end();
@@ -681,14 +655,7 @@ IconButton *IconbarTool::findButton(FluxboxWindow &win) {
 
     return 0;
 }
-/*
-void IconbarTool::renderWindow(FluxboxWindow &win) {
-    IconButton *button = findButton(win);
-    if (button == 0)
-        return;
-    renderButton(*button);
-}
-*/
+
 void IconbarTool::updateSizing() {
     m_icon_container.setBorderWidth(m_theme.border().width());
 
@@ -847,7 +814,7 @@ void IconbarTool::deleteIcons() {
     }
 }
 
-void IconbarTool::removeWindow(FluxboxWindow &win) {
+void IconbarTool::removeWindow(Focusable &win) {
     // got window die signal, lets find and remove the window
     IconList::iterator it = m_icon_list.begin();
     IconList::iterator it_end = m_icon_list.end();
@@ -865,9 +832,11 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
     // detach from all signals
     win.focusSig().detach(this);
     win.dieSig().detach(this);
-    win.workspaceSig().detach(this);
-    win.stateSig().detach(this);
-    win.attentionSig().detach(this);
+    if (win.fbwindow()) {
+        win.fbwindow()->workspaceSig().detach(this);
+        win.fbwindow()->stateSig().detach(this);
+        win.fbwindow()->attentionSig().detach(this);
+    }
 
     // remove from list and render theme again
     IconButton *button = *it;
@@ -879,9 +848,10 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
 
 }
 
-void IconbarTool::addWindow(FluxboxWindow &win) {
-    // we just want windows that has clients
-    if (win.clientList().empty() || win.isIconHidden() )
+void IconbarTool::addWindow(Focusable &win) {
+    // we just want windows that have clients
+    FluxboxWindow *fbwin = win.fbwindow();
+    if (!fbwin || fbwin->clientList().empty() || fbwin->isIconHidden())
         return;
 #ifdef DEBUG
     cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
@@ -894,8 +864,8 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     RefCmd next_workspace(new ::WheelWorkspaceCmd(*this, win, "nextworkspace"));
     RefCmd prev_workspace(new ::WheelWorkspaceCmd(*this, win, "prevworkspace"));
     
-    RefCmd focus_cmd(new ::FocusCommand(*this, win));
-    RefCmd menu_cmd(new ::ShowMenu(win));
+    RefCmd focus_cmd(new ::FocusCommand(*this, *fbwin));
+    RefCmd menu_cmd(new ::ShowMenu(*fbwin));
     button->setOnClick(focus_cmd, 1);
     button->setOnClick(menu_cmd, 3);
     if(win.screen().isReverseWheeling()) {
@@ -913,9 +883,9 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     // dont forget to detach signal in removeWindow
     win.focusSig().attach(this);
     win.dieSig().attach(this);
-    win.workspaceSig().attach(this);
-    win.stateSig().attach(this);
-    win.attentionSig().attach(this);
+    fbwin->workspaceSig().attach(this);
+    fbwin->stateSig().attach(this);
+    fbwin->attentionSig().attach(this);
 }
 
 void IconbarTool::updateList() {
@@ -925,14 +895,14 @@ void IconbarTool::updateList() {
     list<Focusable *>::iterator it_end = ordered_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && checkAddWindow(mode(), *(*it)->fbwindow()) &&
-            !checkDuplicate(*(*it)->fbwindow()))
-            addWindow(*(*it)->fbwindow());
+            !checkDuplicate(**it))
+            addWindow(**it);
     }
 
     renderTheme();
 }
 
-bool IconbarTool::checkDuplicate(FluxboxWindow &win) {
+bool IconbarTool::checkDuplicate(Focusable &win) {
     IconList::iterator it = m_icon_list.begin();
     IconList::iterator it_end = m_icon_list.end();
     for (; it != it_end; ++it) {

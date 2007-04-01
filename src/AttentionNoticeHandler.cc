@@ -101,9 +101,9 @@ void AttentionNoticeHandler::update(FbTk::Subject *subj) {
 
     // all signals results in destruction of the notice
 
-    WinClient::WinClientSubj *winsubj = 
-        static_cast<WinClient::WinClientSubj *>(subj);
-    delete m_attentions[&winsubj->winClient()];
-    m_attentions.erase(&winsubj->winClient());
+    Focusable::FocusSubject *winsubj = 
+        static_cast<Focusable::FocusSubject *>(subj);
+    delete m_attentions[&winsubj->win()];
+    m_attentions.erase(&winsubj->win());
 }
 
