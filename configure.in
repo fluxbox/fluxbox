@@ -642,12 +642,17 @@ nls/be_BY/Makefile
 nls/bg_BG/Makefile
 nls/cs_CZ/Makefile
 nls/da_DK/Makefile
+nls/de_AT/Makefile
+nls/de_CH/Makefile
 nls/de_DE/Makefile
 nls/el_GR/Makefile
+nls/en_GB/Makefile
+nls/en_US/Makefile
 nls/es_AR/Makefile
 nls/es_ES/Makefile
 nls/et_EE/Makefile
 nls/fi_FI/Makefile
+nls/fr_CH/Makefile
 nls/fr_FR/Makefile
 nls/it_IT/Makefile
 nls/ja_JP/Makefile
