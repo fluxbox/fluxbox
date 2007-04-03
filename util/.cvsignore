@@ -1,7 +1,0 @@
-.deps
-.libs
-Makefile
-Makefile.in
-bsetroot
-startfluxbox
-fluxbox-generate_menu
