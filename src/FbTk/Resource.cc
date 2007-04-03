@@ -107,7 +107,15 @@ bool ResourceManager::load(const char *filename) {
 */
 bool ResourceManager::save(const char *filename, const char *mergefilename) {
     assert(filename);
-    filename = StringUtil::expandFilename(filename).c_str();
+
+    // these must be local variables; otherwise, the memory gets released by
+    // std::string, causing weird issues
+    string file_str = StringUtil::expandFilename(filename), mergefile_str;
+    filename = file_str.c_str();
+    if (mergefilename) {
+        mergefile_str = StringUtil::expandFilename(mergefilename);
+        mergefilename = mergefile_str.c_str();
+    }
 
     // empty database
     XrmDatabaseHelper database;

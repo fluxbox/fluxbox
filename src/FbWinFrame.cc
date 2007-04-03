@@ -526,7 +526,7 @@ void FbWinFrame::setFocus(bool newvalue) {
         if (newvalue) // focused
             applyFocusLabel(*m_current_label);
         else // unfocused
-            applyActiveLabel(*m_current_label);
+            applyUnfocusLabel(*m_current_label);
     }
 
     applyAll();
@@ -706,7 +706,7 @@ void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
     if (m_focused)
         applyFocusLabel(*m_current_label);
     else
-        applyActiveLabel(*m_current_label);
+        applyUnfocusLabel(*m_current_label);
 }
 
 void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn, bool value) {
@@ -1315,10 +1315,6 @@ void FbWinFrame::renderTabContainer() {
            m_labelbutton_unfocused_pm,
            m_tab_container.width(), m_tab_container.height(), m_tab_container.orientation());
 
-    render(m_theme.labelActiveTexture(), m_labelbutton_active_color,
-           m_labelbutton_active_pm,
-           m_tab_container.width(), m_tab_container.height(), m_tab_container.orientation());
-
     renderButtons();
 
 }
@@ -1468,7 +1464,7 @@ void FbWinFrame::init() {
     m_title_focused_pm = m_title_unfocused_pm = 0;
     m_label_focused_pm = m_label_unfocused_pm = 0;
     m_tabcontainer_focused_pm = m_tabcontainer_unfocused_pm = 0;
-    m_labelbutton_focused_pm = m_labelbutton_unfocused_pm = m_labelbutton_active_pm = 0;
+    m_labelbutton_focused_pm = m_labelbutton_unfocused_pm = 0;
     m_handle_focused_pm = m_handle_unfocused_pm = 0;
     m_button_pm = m_button_unfocused_pm = m_button_pressed_pm = 0;
     m_grip_unfocused_pm = m_grip_focused_pm = 0;
@@ -1592,12 +1588,9 @@ void FbWinFrame::applyTabContainer() {
     Container::ItemList::iterator btn_it_end = m_tab_container.end();
     for (; btn_it != btn_it_end; ++btn_it) {
         FbTk::TextButton *btn = static_cast<FbTk::TextButton *>(*btn_it);
-        if (btn == m_current_label) {
-            if (m_focused)
-                applyFocusLabel(*btn);
-            else
-                applyActiveLabel(*btn);
-        } else
+        if (btn == m_current_label && m_focused)
+            applyFocusLabel(*btn);
+        else
             applyUnfocusLabel(*btn);
     }
 }
@@ -1669,19 +1662,6 @@ void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
 
 }
 
-void FbWinFrame::applyActiveLabel(FbTk::TextButton &button) {
-
-    button.setGC(theme().labelTextActiveGC());
-    button.setJustify(theme().justify());
-    button.setAlpha(getAlpha(m_focused));
-
-    if (m_labelbutton_active_pm != 0) {
-        button.setBackgroundPixmap(m_labelbutton_active_pm);
-    } else
-        button.setBackgroundColor(m_labelbutton_active_color);
-
-}
-
 void FbWinFrame::applyUnfocusLabel(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextUnfocusGC());
@@ -1693,27 +1673,6 @@ void FbWinFrame::applyUnfocusLabel(FbTk::TextButton &button) {
     } else
         button.setBackgroundColor(m_labelbutton_unfocused_color);
 
-}
-
-namespace {
-class IgnoreEvent {
-public:
-    typedef void result_type;
-    typedef Window argument_type;
-    explicit IgnoreEvent(long eventmask):
-        m_display(FbTk::App::instance()->display()),
-        m_event_mask(eventmask) {
-    }
-
-    void operator()(Window win) const {
-        static XEvent event;
-        while (XCheckWindowEvent(m_display, win, m_event_mask, &event))
-            continue;
-    }
-private:
-    Display *m_display;
-    long m_event_mask;
-};
 }
 
 // this function translates its arguments according to win_gravity

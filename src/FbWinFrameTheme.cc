@@ -30,7 +30,6 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     FbTk::Theme(screen_num),
     m_label_focus(*this, "window.label.focus", "Window.Label.Focus"),
     m_label_unfocus(*this, "window.label.unfocus", "Window.Label.Unfocus"),
-    m_label_active(*this, "window.label.active", "Window.Label.Active"),
 
     m_title_focus(*this, "window.title.focus", "Window.Title.Focus"),
     m_title_unfocus(*this, "window.title.unfocus", "Window.Title.Unfocus"),
@@ -47,7 +46,6 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
 
     m_label_focus_color(*this, "window.label.focus.textColor", "Window.Label.Focus.TextColor"),
     m_label_unfocus_color(*this, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor"),
-    m_label_active_color(*this, "window.label.active.textColor", "Window.Label.Active.TextColor"),
 
     m_button_focus_color(*this, "window.button.focus.picColor", "Window.Button.Focus.PicColor"),
     m_button_unfocus_color(*this, "window.button.unfocus.picColor", "Window.Button.Unfocus.PicColor"),
@@ -61,7 +59,6 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_border(*this, "window", "Window"), // for window.border*
     m_label_text_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_label_text_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
-    m_label_text_active_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_button_pic_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_button_pic_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_focused_alpha(255),
@@ -95,14 +92,6 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
         return FbTk::ThemeManager::instance().loadItem(item, "bevelWidth", "bevelWidth");
     else if (item.name() == "window.handleWidth")
         return FbTk::ThemeManager::instance().loadItem(item, "handleWidth", "HandleWidth");
-    else if (item.name() == "window.label.active") {
-        // copy texture
-        *m_label_active = *m_label_unfocus;
-        return true;
-    } else if (item.name() == "window.label.active.textColor") {
-        return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus.textColor",
-                                                       "Window.Label.Unfocus.TextColor");
-    }
 
     return false;
 }
@@ -120,7 +109,6 @@ void FbWinFrameTheme::reconfigTheme() {
 
     m_label_text_focus_gc.setForeground(*m_label_focus_color);
     m_label_text_unfocus_gc.setForeground(*m_label_unfocus_color);
-    m_label_text_active_gc.setForeground(*m_label_active_color);
     m_button_pic_focus_gc.setForeground(*m_button_focus_color);
     m_button_pic_unfocus_gc.setForeground(*m_button_unfocus_color);
 }
