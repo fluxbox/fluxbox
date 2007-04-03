@@ -282,7 +282,6 @@ private:
     void applyTabContainer(); // and label buttons
     void applyFocusLabel(FbTk::TextButton &button);
     void applyUnfocusLabel(FbTk::TextButton &button);
-    void applyActiveLabel(FbTk::TextButton &button);
     void applyButtons(); // only called within applyTitlebar
 
     void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
@@ -355,8 +354,6 @@ private:
     FbTk::Color m_labelbutton_focused_color; ///< color for focused label
     Pixmap m_labelbutton_unfocused_pm; ///< pixmap for unfocused label
     FbTk::Color m_labelbutton_unfocused_color; ///< color for unfocused label
-    Pixmap m_labelbutton_active_pm; ///< pixmap for active label
-    FbTk::Color m_labelbutton_active_color; ///< color for active label
     
     FbTk::Color m_handle_focused_color, m_handle_unfocused_color;
     Pixmap m_handle_focused_pm, m_handle_unfocused_pm;
