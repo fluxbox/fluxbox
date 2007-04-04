@@ -49,14 +49,12 @@ public:
     const FbTk::Texture &focusedTexture() const { return *m_focused_texture; }
     const FbTk::Texture &unfocusedTexture() const { return *m_unfocused_texture; }
     const FbTk::Texture &emptyTexture() const { return *m_empty_texture; }
-    inline unsigned char alpha() const { return *m_alpha; }
 
 private:
     FbTk::ThemeItem<FbTk::Texture> m_focused_texture, m_unfocused_texture, m_empty_texture;
     BorderTheme m_focused_border, m_unfocused_border, m_border;
     TextTheme m_focused_text, m_unfocused_text;
-    std::string m_name;
-    FbTk::ThemeItem<int> m_alpha;
+    std::string m_name, m_altname;
 };
 
 #endif  // ICONBARTHEME_HH

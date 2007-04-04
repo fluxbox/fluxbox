@@ -30,10 +30,11 @@
 #include "FbTk/TextButton.hh"
 
 class Focusable;
+class IconbarTheme;
 
 class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
-    IconButton(const FbTk::FbWindow &parent, FbTk::Font &font,
+    IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
                Focusable &window);
     virtual ~IconButton();
 
@@ -64,6 +65,8 @@ private:
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;
     bool m_use_pixmap;
+
+    IconbarTheme &m_theme;
 };
 
 #endif // ICONBUTTON_HH

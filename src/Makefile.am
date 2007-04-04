@@ -74,7 +74,7 @@ TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \
 	ToolbarTheme.hh ToolbarTheme.cc ToolbarItem.hh ToolbarItem.cc \
 	ClockTool.hh ClockTool.cc \
 	WorkspaceNameTool.hh WorkspaceNameTool.cc WorkspaceNameTheme.hh \
-	IconbarTool.hh IconbarTool.cc IconbarTheme.hh IconbarTheme.cc \
+	IconbarTool.hh IconbarTool.cc \
 	ToolTheme.hh ToolTheme.cc \
 	SystemTray.hh SystemTray.cc \
 	GenericTool.hh GenericTool.cc \
@@ -136,6 +136,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	UnderMousePlacement.hh UnderMousePlacement.cc \
 	AttentionNoticeHandler.hh AttentionNoticeHandler.cc \
 	IconButton.hh IconButton.cc \
+	IconbarTheme.hh IconbarTheme.cc \
 	STLUtil.hh \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${TOOLBAR_SOURCE}

@@ -37,8 +37,7 @@ IconbarTheme::IconbarTheme(int screen_num,
     m_border(*this, name, altname),
     m_focused_text(*this, name + ".focused", altname + ".Focused"),
     m_unfocused_text(*this, name + ".unfocused", altname + ".Unfocused"),
-    m_name(name),
-    m_alpha(*this, name+".alpha", altname+".Alpha") {
+    m_name(name), m_altname(altname) {
 
     FbTk::ThemeManager::instance().loadTheme(*this);
 
@@ -58,6 +57,7 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
     using namespace FbTk;
     ThemeManager &tm = ThemeManager::instance();
 
+    // TODO: fix fallbacks for "focused" vs. "focus"
     if (&m_focused_texture == &item) {
         return (tm.loadItem(item, "window.label.focus", "Window.Label.Focus") ||
                 tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel"));
@@ -91,11 +91,6 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
 
     } else if (item.name() == m_name + ".unfocused.textColor") {
         return tm.loadItem(item, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor");
-    } else if (item.name() == m_name + ".alpha") {
-        if (!tm.loadItem(item, "toolbar.alpha", "Toolbar.Alpha")) {
-            *m_alpha = 255;
-        }
-        return true;
     }
  
     return false;

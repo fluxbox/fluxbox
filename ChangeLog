@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/04/03:
+   * Added window.label.(un)focused.font to styles (Mark)
+     FbWinFrame.cc
 *07/03/31:
    * [group] tag in apps file may now have a pattern appended to it, and a new
      window will only be automatically attached to the group if the group

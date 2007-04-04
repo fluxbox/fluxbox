@@ -24,6 +24,7 @@
 
 #include "IconButton.hh"
 #include "IconbarTool.hh"
+#include "IconbarTheme.hh"
 
 #include "Screen.hh"
 #include "Focusable.hh"
@@ -46,13 +47,14 @@
 #endif // SHAPE
 
 
-IconButton::IconButton(const FbTk::FbWindow &parent, FbTk::Font &font,
+IconButton::IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
                        Focusable &win):
-    FbTk::TextButton(parent, font, win.title()),
+    FbTk::TextButton(parent, theme.focusedText().font(), win.title()),
     m_win(win), 
     m_icon_window(*this, 1, 1, 1, 1, 
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
-    m_use_pixmap(true) {
+    m_use_pixmap(true),
+    m_theme(theme) {
 
     m_win.titleSig().attach(this);
     

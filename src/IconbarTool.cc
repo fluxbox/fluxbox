@@ -856,10 +856,7 @@ void IconbarTool::addWindow(Focusable &win) {
 #ifdef DEBUG
     cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
 #endif // DEBUG
-    IconButton *button = new IconButton(m_icon_container,
-                                        m_theme.focusedText().font(),
-                                        win);
-
+    IconButton *button = new IconButton(m_icon_container, m_theme, win);
 
     RefCmd next_workspace(new ::WheelWorkspaceCmd(*this, win, "nextworkspace"));
     RefCmd prev_workspace(new ::WheelWorkspaceCmd(*this, win, "prevworkspace"));
