@@ -87,14 +87,14 @@ public:
     */
     static unsigned int keycodeToModmask(unsigned int keycode);
     int numlock() const { return m_numlock; }
-    int capslock() const { return m_capslock; }
+    int capslock() const { return LockMask; }
     int scrolllock() const { return m_scrolllock; }
 
 private:
     void loadModmap();
 
     XModifierKeymap *m_modmap;
-    int m_capslock, m_numlock, m_scrolllock;
+    int m_numlock, m_scrolllock;
     static std::auto_ptr<KeyUtil> s_keyutil;
 };
 

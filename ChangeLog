@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/04/05:
+   * Adjusted detection of Caps Lock key (Mark)
+     FbTk/KeyUtil.cc/hh
 *07/04/01:
    * Fixed a problem with windows being created in iconic state (Mark)
      Window.cc Screen.cc fluxbox.cc

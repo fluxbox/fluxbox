@@ -62,7 +62,7 @@ KeyUtil &KeyUtil::instance() {
 
 
 KeyUtil::KeyUtil()
-    : m_modmap(0), m_capslock(0), m_numlock(0), m_scrolllock(0)
+    : m_modmap(0), m_numlock(0), m_scrolllock(0)
 {
     init();
 }
@@ -93,9 +93,9 @@ void KeyUtil::loadModmap() {
                     m_modmap->modifiermap[realkey], 0);
 
             switch (ks) {
-            case XK_Caps_Lock:
-                m_capslock = modlist[i].mask;
-                break;
+            // we just want to clean the Lock modifier, not specifically the
+            // XK_Caps_Lock key
+            // the others tend to vary from distro to distro, though
             case XK_Scroll_Lock:
                 m_scrolllock = modlist[i].mask;
                 break;
@@ -114,13 +114,12 @@ void KeyUtil::loadModmap() {
 */
 void KeyUtil::grabKey(unsigned int key, unsigned int mod, Window win) {
     Display *display = App::instance()->display();
-    const unsigned int capsmod = instance().capslock();
     const unsigned int nummod = instance().numlock();
     const unsigned int scrollmod = instance().scrolllock();
 
     // Grab with numlock, capslock and scrlock
     for (int i = 0; i < 8; i++) {
-        XGrabKey(display, key, mod | (i & 1 ? capsmod : 0) |
+        XGrabKey(display, key, mod | (i & 1 ? LockMask : 0) |
                  (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
                  win, True, GrabModeAsync, GrabModeAsync);
     }
@@ -130,13 +129,12 @@ void KeyUtil::grabKey(unsigned int key, unsigned int mod, Window win) {
 void KeyUtil::grabButton(unsigned int button, unsigned int mod, Window win,
                          unsigned int event_mask, Cursor cursor) {
     Display *display = App::instance()->display();
-    const unsigned int capsmod = instance().capslock();
     const unsigned int nummod = instance().numlock();
     const unsigned int scrollmod = instance().scrolllock();
 
     // Grab with numlock, capslock and scrlock
     for (int i = 0; i < 8; i++) {
-        XGrabButton(display, button, mod | (i & 1 ? capsmod : 0) |
+        XGrabButton(display, button, mod | (i & 1 ? LockMask : 0) |
                     (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
                     win, False, event_mask, GrabModeAsync, GrabModeAsync,
                     None, cursor);
