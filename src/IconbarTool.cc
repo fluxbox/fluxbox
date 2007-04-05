@@ -401,10 +401,6 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_screen(screen),
     m_icon_container(parent),
     m_theme(theme),
-    m_focused_pm( screen.imageControl() ),
-    m_unfocused_pm( screen.imageControl() ),
-    m_focused_err_pm( screen.imageControl() ),
-    m_unfocused_err_pm( screen.imageControl() ),
     m_empty_pm( screen.imageControl() ),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
@@ -694,32 +690,6 @@ void IconbarTool::renderTheme() {
         icon_height_off = 1;
     }
 
-    if (!m_theme.focusedTexture().usePixmap()) {
-        m_focused_pm.reset( 0 );
-        m_focused_err_pm.reset( 0 );
-    } else {
-        m_focused_pm.reset( m_screen.imageControl().
-                            renderImage(icon_width, icon_height,
-                                        m_theme.focusedTexture(), orientation()) );
-        m_focused_err_pm.reset( m_screen.imageControl().
-                                renderImage(icon_width + icon_width_off,
-                                            icon_height + icon_height_off,
-                                            m_theme.focusedTexture(), orientation()) );
-    }
-
-    if (!m_theme.unfocusedTexture().usePixmap()) {
-        m_unfocused_pm.reset( 0 );
-        m_unfocused_err_pm.reset( 0 );
-    } else {
-        m_unfocused_pm.reset( m_screen.imageControl().
-                              renderImage(icon_width, icon_height,
-                                          m_theme.unfocusedTexture(), orientation()) );
-        m_unfocused_err_pm.reset( m_screen.imageControl().
-                                  renderImage(icon_width+icon_width_off,
-                                              icon_height+icon_height_off,
-                                              m_theme.unfocusedTexture(), orientation()) );
-    }
-
     // if we dont have any icons then we should render empty texture
     if (!m_theme.emptyTexture().usePixmap()) {
         m_empty_pm.reset( 0 );
@@ -747,21 +717,10 @@ void IconbarTool::renderTheme() {
 void IconbarTool::renderButton(IconButton &button, bool clear,
                                int focusOption) {
 
+    button.renderTextures();
     button.setPixmap(*m_rc_use_pixmap);
     button.setAlpha(m_alpha);
     button.setTextPadding(*m_rc_client_padding);
-
-    // The last button is always the regular width
-    bool wider_button = false;
-    if (!m_icon_container.empty()) {
-        if (button.orientation() == FbTk::ROT0 || button.orientation() == FbTk::ROT180)
-            wider_button = button.width() != m_icon_container.back()->width();
-        else
-            wider_button = button.height() != m_icon_container.back()->height();
-//            wider_button = (button.width() != m_icon_container.maxWidthPerClient() || // height to cover both orients
-
-//                        button.height() != m_icon_container.back()->height());
-    }
 
     if (focusOption == 1 ||
         (focusOption == -1 &&
@@ -776,13 +735,7 @@ void IconbarTool::renderButton(IconButton &button, bool clear,
         button.setJustify(m_theme.focusedText().justify());
         button.setBorderWidth(m_theme.focusedBorder().width());
         button.setBorderColor(m_theme.focusedBorder().color());
-
-        if (!wider_button && m_focused_pm != 0)
-            button.setBackgroundPixmap(m_focused_pm);
-        else if (wider_button && m_focused_err_pm != 0)
-            button.setBackgroundPixmap(m_focused_err_pm);
-        else
-            button.setBackgroundColor(m_theme.focusedTexture().color());
+        button.updateBackground();
 
     } else { // unfocused
         if (m_icon_container.selected() == &button)
@@ -793,13 +746,8 @@ void IconbarTool::renderButton(IconButton &button, bool clear,
         button.setJustify(m_theme.unfocusedText().justify());
         button.setBorderWidth(m_theme.unfocusedBorder().width());
         button.setBorderColor(m_theme.unfocusedBorder().color());
+        button.updateBackground();
 
-        if (!wider_button && m_unfocused_pm != 0)
-            button.setBackgroundPixmap(m_unfocused_pm);
-        else if (wider_button && m_unfocused_err_pm != 0)
-            button.setBackgroundPixmap(m_unfocused_err_pm);
-        else
-            button.setBackgroundColor(m_theme.unfocusedTexture().color());
     }
 
     if (clear)

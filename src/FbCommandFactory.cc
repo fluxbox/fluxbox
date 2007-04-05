@@ -317,7 +317,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         FbTk::RefCount<WindowHelperCmd> cmd;
         if (command == "resizeto")
             cmd = new ResizeToCmd(dx, dy);
-        else if (command == "resizeto")
+        else
             cmd = new ResizeCmd(dx, dy);
 
         return new WindowListCmd(cmd, pat);

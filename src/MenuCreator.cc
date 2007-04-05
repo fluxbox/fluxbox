@@ -465,8 +465,9 @@ FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_numbe
 
 bool MenuCreator::createFromFile(const string &filename,
                                  FbTk::Menu &inject_into, bool require_begin) {
-
     string real_filename = FbTk::StringUtil::expandFilename(filename);
+    Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
+
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
         return false;

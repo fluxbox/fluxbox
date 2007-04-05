@@ -25,6 +25,7 @@
 
 #include "Window.hh"
 #include "fluxbox.hh"
+#include "FocusControl.hh"
 #include "Screen.hh"
 #include "FbAtoms.hh"
 
@@ -714,6 +715,12 @@ bool WinClient::focus() {
         return false;
     else
         return fbwindow()->setCurrentClient(*this, true);
+}
+
+bool WinClient::isFocused() const {
+    return (fbwindow() ?
+        fbwindow()->isFocused() && &fbwindow()->winClient() == this :
+        false);
 }
 
 void WinClient::updateWMProtocols() {

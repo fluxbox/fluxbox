@@ -30,12 +30,13 @@
 #include "Focusable.hh"
 
 #include "FbTk/App.hh"
-#include "FbTk/SimpleCommand.hh"
-#include "FbTk/EventManager.hh"
-#include "FbTk/MacroCommand.hh"
 #include "FbTk/Command.hh"
-#include "FbTk/RefCount.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/ImageControl.hh"
+#include "FbTk/MacroCommand.hh"
 #include "FbTk/Menu.hh"
+#include "FbTk/RefCount.hh"
+#include "FbTk/SimpleCommand.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -54,7 +55,9 @@ IconButton::IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_icon_window(*this, 1, 1, 1, 1, 
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_use_pixmap(true),
-    m_theme(theme) {
+    m_theme(theme),
+    m_focused_pm(win.screen().imageControl()),
+    m_unfocused_pm(win.screen().imageControl()) {
 
     m_win.titleSig().attach(this);
     
@@ -110,6 +113,39 @@ void IconButton::setPixmap(bool use) {
         m_use_pixmap = use;
         update(0);
     }
+}
+
+void IconButton::updateBackground() {
+    // TODO: this ignores attention state, which isn't in Focusable.hh yet
+    if (m_win.isFocused()) {
+        if (m_focused_pm != 0)
+            setBackgroundPixmap(m_focused_pm);
+        else
+            setBackgroundColor(m_theme.focusedTexture().color());
+    } else {
+        if (m_unfocused_pm != 0)
+            setBackgroundPixmap(m_unfocused_pm);
+        else
+            setBackgroundColor(m_theme.unfocusedTexture().color());
+    }
+}
+
+void IconButton::renderTextures() {
+
+    if (m_theme.focusedTexture().usePixmap())
+        m_focused_pm.reset(m_win.screen().imageControl().renderImage(
+                            width(), height(), m_theme.focusedTexture(),
+                            orientation()));
+    else
+        m_focused_pm.reset(0);
+
+    if (m_theme.unfocusedTexture().usePixmap())
+        m_unfocused_pm.reset(m_win.screen().imageControl().renderImage(
+                              width(), height(), m_theme.unfocusedTexture(),
+                              orientation()));
+    else
+        m_unfocused_pm.reset( 0 );
+
 }
 
 void IconButton::update(FbTk::Subject *subj) {

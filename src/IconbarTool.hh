@@ -122,10 +122,6 @@ private:
     BScreen &m_screen;
     Container m_icon_container;
     IconbarTheme &m_theme;
-    // cached pixmaps
-    FbTk::CachedPixmap m_focused_pm, m_unfocused_pm;
-    // some are a fraction bigger due to rounding
-    FbTk::CachedPixmap m_focused_err_pm, m_unfocused_err_pm;
     FbTk::CachedPixmap m_empty_pm; ///< pixmap for empty container
 
 

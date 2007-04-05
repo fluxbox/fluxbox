@@ -25,6 +25,7 @@
 #ifndef ICONBUTTON_HH
 #define ICONBUTTON_HH
 
+#include "FbTk/CachedPixmap.hh"
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/TextButton.hh"
@@ -47,6 +48,9 @@ public:
                     unsigned int width, unsigned int height);
     void resize(unsigned int width, unsigned int height);
 
+    void renderTextures();
+    void updateBackground();
+
     void update(FbTk::Subject *subj);
     void setPixmap(bool use);
 
@@ -67,6 +71,8 @@ private:
     bool m_use_pixmap;
 
     IconbarTheme &m_theme;
+    // cached pixmaps
+    FbTk::CachedPixmap m_focused_pm, m_unfocused_pm;
 };
 
 #endif // ICONBUTTON_HH

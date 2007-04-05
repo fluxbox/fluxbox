@@ -82,6 +82,7 @@ public:
     void clearStrut();
 
     bool focus(); // calls Window->setCurrentClient to give focus to this client
+    bool isFocused() const;
     const std::string &title() const;
 
     /**

@@ -692,7 +692,7 @@ void FbWinFrame::moveLabelButtonRightOf(FbTk::TextButton &btn, const FbTk::TextB
     m_tab_container.moveItem(&btn, movement);
 }
 
-void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
+void FbWinFrame::setLabelButtonFocus(IconButton &btn) {
     if (&btn == currentLabel() || btn.parent() != &m_tab_container)
         return;
 
@@ -709,7 +709,7 @@ void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
         applyUnfocusLabel(*m_current_label);
 }
 
-void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn, bool value) {
+void FbWinFrame::setLabelButtonFocus(IconButton &btn, bool value) {
     if (btn.parent() != &m_tab_container)
         return;
 
@@ -1307,14 +1307,6 @@ void FbWinFrame::renderTabContainer() {
            m_tabcontainer_unfocused_pm,
            m_tab_container.width(), m_tab_container.height(), m_tab_container.orientation());
 
-    render(m_theme.iconbarTheme().focusedTexture(), m_labelbutton_focused_color,
-           m_labelbutton_focused_pm,
-           m_tab_container.width(), m_tab_container.height(), m_tab_container.orientation());
-
-    render(m_theme.iconbarTheme().unfocusedTexture(), m_labelbutton_unfocused_color,
-           m_labelbutton_unfocused_pm,
-           m_tab_container.width(), m_tab_container.height(), m_tab_container.orientation());
-
     renderButtons();
 
 }
@@ -1464,7 +1456,6 @@ void FbWinFrame::init() {
     m_title_focused_pm = m_title_unfocused_pm = 0;
     m_label_focused_pm = m_label_unfocused_pm = 0;
     m_tabcontainer_focused_pm = m_tabcontainer_unfocused_pm = 0;
-    m_labelbutton_focused_pm = m_labelbutton_unfocused_pm = 0;
     m_handle_focused_pm = m_handle_unfocused_pm = 0;
     m_button_pm = m_button_unfocused_pm = m_button_pressed_pm = 0;
     m_grip_unfocused_pm = m_grip_focused_pm = 0;
@@ -1587,7 +1578,7 @@ void FbWinFrame::applyTabContainer() {
     Container::ItemList::iterator btn_it = m_tab_container.begin();
     Container::ItemList::iterator btn_it_end = m_tab_container.end();
     for (; btn_it != btn_it_end; ++btn_it) {
-        FbTk::TextButton *btn = static_cast<FbTk::TextButton *>(*btn_it);
+        IconButton *btn = static_cast<IconButton *>(*btn_it);
         if (btn == m_current_label && m_focused)
             applyFocusLabel(*btn);
         else
@@ -1649,31 +1640,25 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
 
 }
 
-void FbWinFrame::applyFocusLabel(FbTk::TextButton &button) {
+void FbWinFrame::applyFocusLabel(IconButton &button) {
 
     button.setGC(theme().iconbarTheme().focusedText().textGC());
     button.setFont(theme().iconbarTheme().focusedText().font());
     button.setJustify(theme().justify());
     button.setAlpha(getAlpha(m_focused));
-
-    if (m_labelbutton_focused_pm != 0) {
-        button.setBackgroundPixmap(m_labelbutton_focused_pm);
-    } else
-        button.setBackgroundColor(m_labelbutton_focused_color);
+    button.renderTextures();
+    button.updateBackground();
 
 }
 
-void FbWinFrame::applyUnfocusLabel(FbTk::TextButton &button) {
+void FbWinFrame::applyUnfocusLabel(IconButton &button) {
 
     button.setGC(theme().iconbarTheme().unfocusedText().textGC());
     button.setFont(theme().iconbarTheme().unfocusedText().font());
     button.setJustify(theme().justify());
     button.setAlpha(getAlpha(m_focused));
-
-    if (m_labelbutton_unfocused_pm != 0) {
-        button.setBackgroundPixmap(m_labelbutton_unfocused_pm);
-    } else
-        button.setBackgroundColor(m_labelbutton_unfocused_color);
+    button.renderTextures();
+    button.updateBackground();
 
 }
 
