@@ -1,5 +1,15 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/04/06:
+   * More changes to theme handling (Mark)
+     - introduced window.label.(un)focused.{justify,border{Color,Width}},
+       which fallback to window.label.{justify,border{Color,Width}} before
+       window.{justify,border{Color,Width}}
+     - this has the backwards-incompatible effect that
+       toolbar.iconbar.(un)focused.* fallback first to toolbar.iconbar.* and
+       then to window.label.*
+     FbWinFrame.cc/hh IconbarTool.cc/hh IconButton.cc/hh IconbarTheme.cc
+     FbWinFrameTheme.cc/hh
 *07/04/03:
    * Added window.label.(un)focused.font to styles (Mark)
      FbWinFrame.cc

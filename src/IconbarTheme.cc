@@ -63,22 +63,30 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
                 tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel"));
 
     } else if (&m_unfocused_texture == &item) {
-        return (tm.loadItem(item, "window.label.unfocus", "Window.Label.Unfocus") ||
-                tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel"));
+        return (tm.loadItem(item, "window.label.unfocus",
+                "Window.Label.Unfocus") ||
+                tm.loadItem(item, "toolbar.windowLabel",
+                "toolbar.windowLabel"));
     } else if (&m_empty_texture == &item) {
-        return (tm.loadItem(item, m_focused_texture.name(), m_focused_texture.altName()) || 
-                tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel") ||
-                tm.loadItem(item, "toolbar", "toolbar")
-            ); 
+        return (tm.loadItem(item, m_focused_texture.name(),
+                m_focused_texture.altName()) ||
+                tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel")
+                || tm.loadItem(item, "toolbar", "toolbar")); 
     } else if (item.name() == m_name + ".focused.borderWidth" ||
                item.name() == m_name + ".unfocused.borderWidth")
         // don't fallback for base border, for theme backwards compatibility
-        return tm.loadItem(item, "borderWidth", "BorderWidth");
+        return (tm.loadItem(item, m_name + ".borderWidth",
+                            m_altname + ".BorderWidth") ||
+                tm.loadItem(item, "window.borderWidth", "Window.BorderWidth") ||
+                tm.loadItem(item, "borderWidth", "BorderWidth"));
 
     else if (item.name() == m_name + ".focused.borderColor" ||
              item.name() == m_name + ".unfocused.borderColor")
 
-        return tm.loadItem(item, "borderColor", "BorderColor");
+        return (tm.loadItem(item, m_name + ".borderColor",
+                            m_altname + ".BorderColor") ||
+                tm.loadItem(item, "window.borderColor", "Window.BorderColor") ||
+                tm.loadItem(item, "borderColor", "BorderColor"));
 
     else if (item.name() == m_name + ".focused.font" ||
              item.name() == m_name + ".unfocused.font")
@@ -91,6 +99,10 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
 
     } else if (item.name() == m_name + ".unfocused.textColor") {
         return tm.loadItem(item, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor");
+    } else if (item.name() == m_name + ".focused.justify" ||
+               item.name() == m_name + ".unfocused.justify") {
+        return (tm.loadItem(item, m_name + ".justify", m_altname + ".Justify")
+                || tm.loadItem(item, "window.justify", "Window.Justify"));
     }
  
     return false;

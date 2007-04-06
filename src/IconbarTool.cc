@@ -582,10 +582,8 @@ void IconbarTool::update(FbTk::Subject *subj) {
         } else if (subj == &(winsubj->win().attentionSig())) {
             // render with titlebar focus, on attention
             IconButton *button = findButton(winsubj->win());
-            if (button) {
-                renderButton(*button, true,
-                             winsubj->win().getAttentionState());
-            }
+            if (button)
+                renderButton(*button, true);
             return;
         } else {
             // signal not handled
@@ -657,12 +655,8 @@ void IconbarTool::updateSizing() {
 
     IconList::iterator icon_it = m_icon_list.begin();
     const IconList::iterator icon_it_end = m_icon_list.end();
-    for (; icon_it != icon_it_end; ++icon_it) {
-        if ((*icon_it)->win().isFocused())
-            (*icon_it)->setBorderWidth(m_theme.focusedBorder().width());
-        else // unfocused
-            (*icon_it)->setBorderWidth(m_theme.unfocusedBorder().width());
-    }
+    for (; icon_it != icon_it_end; ++icon_it)
+        (*icon_it)->reconfigTheme();
 
 }
 
@@ -677,79 +671,43 @@ void IconbarTool::renderTheme() {
     // update button sizes before we get max width per client!
     updateSizing();
 
-    unsigned int icon_width = 0, icon_height = 0;
-    unsigned int icon_width_off=0, icon_height_off=0;
-
-    if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180) {
-        icon_width = m_icon_container.maxWidthPerClient();
-        icon_height = m_icon_container.height();
-        icon_width_off = 1;
-    } else {
-        icon_width = m_icon_container.width();
-        icon_height = m_icon_container.maxWidthPerClient();
-        icon_height_off = 1;
-    }
-
     // if we dont have any icons then we should render empty texture
     if (!m_theme.emptyTexture().usePixmap()) {
         m_empty_pm.reset( 0 );
         m_icon_container.setBackgroundColor(m_theme.emptyTexture().color());
     } else {
-        m_empty_pm.reset( m_screen.imageControl().
-                          renderImage(m_icon_container.width(), m_icon_container.height(),
-                                      m_theme.emptyTexture(), orientation()) );
+        m_empty_pm.reset(m_screen.imageControl().
+                          renderImage(m_icon_container.width(),
+                                      m_icon_container.height(),
+                                      m_theme.emptyTexture(), orientation()));
         m_icon_container.setBackgroundPixmap(m_empty_pm);
     }
 
-    // set to zero so its consistent and not ugly
-    m_icon_container.setBorderWidth(m_theme.border().width());
-    m_icon_container.setBorderColor(m_theme.border().color());
     m_icon_container.setAlpha(m_alpha);
 
     // update buttons
     IconList::iterator icon_it = m_icon_list.begin();
     const IconList::iterator icon_it_end = m_icon_list.end();
-    for (; icon_it != icon_it_end; ++icon_it) {
+    for (; icon_it != icon_it_end; ++icon_it)
         renderButton(*(*icon_it));
-    }
+
 }
 
-void IconbarTool::renderButton(IconButton &button, bool clear,
-                               int focusOption) {
+void IconbarTool::renderButton(IconButton &button, bool clear) {
 
-    button.renderTextures();
     button.setPixmap(*m_rc_use_pixmap);
-    button.setAlpha(m_alpha);
     button.setTextPadding(*m_rc_client_padding);
 
-    if (focusOption == 1 ||
-        (focusOption == -1 &&
-         button.win().isFocused())) {
+    if (button.win().isFocused()) {
 
         // focused texture
         if (button.win().isFocused())
             m_icon_container.setSelected(m_icon_container.find(&button));
 
-        button.setGC(m_theme.focusedText().textGC());
-        button.setFont(m_theme.focusedText().font());
-        button.setJustify(m_theme.focusedText().justify());
-        button.setBorderWidth(m_theme.focusedBorder().width());
-        button.setBorderColor(m_theme.focusedBorder().color());
-        button.updateBackground();
+    } else if (m_icon_container.selected() == &button)
+        m_icon_container.setSelected(-1);
 
-    } else { // unfocused
-        if (m_icon_container.selected() == &button)
-            m_icon_container.setSelected(-1);
-
-        button.setGC(m_theme.unfocusedText().textGC());
-        button.setFont(m_theme.unfocusedText().font());
-        button.setJustify(m_theme.unfocusedText().justify());
-        button.setBorderWidth(m_theme.unfocusedBorder().width());
-        button.setBorderColor(m_theme.unfocusedBorder().color());
-        button.updateBackground();
-
-    }
-
+    button.reconfigTheme();
     if (clear)
         button.clear(); // the clear also updates transparent
 }

@@ -279,8 +279,6 @@ private:
     void applyTitlebar();
     void applyHandles();
     void applyTabContainer(); // and label buttons
-    void applyFocusLabel(IconButton &button);
-    void applyUnfocusLabel(IconButton &button);
     void applyButtons(); // only called within applyTitlebar
 
     void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,

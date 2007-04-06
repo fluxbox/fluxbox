@@ -47,7 +47,6 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_button_unfocus_color(*this, "window.button.unfocus.picColor", "Window.Button.Unfocus.PicColor"),
 
     m_font(*this, "window.font", "Window.Font"),
-    m_textjustify(*this, "window.justify", "Window.Justify"),
     m_shape_place(*this, "window.roundCorners", "Window.RoundCorners"),
     m_title_height(*this, "window.title.height", "Window.Title.Height"),
     m_bevel_width(*this, "window.bevelWidth", "Window.BevelWidth"),

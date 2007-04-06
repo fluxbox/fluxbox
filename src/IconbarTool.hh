@@ -100,9 +100,7 @@ private:
     /// render single button, and probably apply changes (clear)
     /// @param button the button to render
     /// @param clear if the window should be cleared first
-    /// @param focusOption -1 = use window focus, 0 = render no focus, 1 = render focus
-    void renderButton(IconButton &button, bool clear = true,
-                      int focusOption = -1);
+    void renderButton(IconButton &button, bool clear = true);
     /// render all buttons
     void renderTheme();
     void renderTheme(unsigned char alpha);

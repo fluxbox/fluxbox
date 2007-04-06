@@ -522,12 +522,8 @@ void FbWinFrame::setFocus(bool newvalue) {
         }
     }
 
-    if (currentLabel()) {
-        if (newvalue) // focused
-            applyFocusLabel(*m_current_label);
-        else // unfocused
-            applyUnfocusLabel(*m_current_label);
-    }
+    if (currentLabel())
+        m_current_label->reconfigTheme();
 
     applyAll();
     clearAll();
@@ -630,7 +626,7 @@ IconButton *FbWinFrame::createTab(Focusable &client) {
                          EnterWindowMask);
     FbTk::EventManager::instance()->add(*button, button->window());
 
-    button->setJustify(theme().justify());
+    button->setJustify(theme().iconbarTheme().unfocusedText().justify());
     button->setBorderColor(theme().border().color());
     button->setBorderWidth(m_window.borderWidth());
 
@@ -698,26 +694,18 @@ void FbWinFrame::setLabelButtonFocus(IconButton &btn) {
 
     // render label buttons
     if (currentLabel() != 0)
-        applyUnfocusLabel(*m_current_label);
+        m_current_label->reconfigTheme();
 
     m_current_label = &btn; // current focused button
     m_label.setText(btn.text());
-
-    if (m_focused)
-        applyFocusLabel(*m_current_label);
-    else
-        applyUnfocusLabel(*m_current_label);
+    btn.reconfigTheme();
 }
 
 void FbWinFrame::setLabelButtonFocus(IconButton &btn, bool value) {
     if (btn.parent() != &m_tab_container)
         return;
 
-    if (value)
-        applyFocusLabel(btn);
-    else
-        applyUnfocusLabel(btn);
-
+    btn.reconfigTheme();
     btn.clear();
 }
 
@@ -1326,8 +1314,12 @@ void FbWinFrame::applyTitlebar() {
     m_label.setAlpha(alpha);
 
     if (m_tabmode != INTERNAL) {
-        m_label.setGC(m_focused?theme().iconbarTheme().focusedText().textGC():theme().iconbarTheme().unfocusedText().textGC());
-        m_label.setJustify(theme().justify());
+        m_label.setGC(m_focused ?
+                      theme().iconbarTheme().focusedText().textGC() :
+                      theme().iconbarTheme().unfocusedText().textGC());
+        m_label.setJustify(m_focused ?
+                           theme().iconbarTheme().focusedText().justify() :
+                           theme().iconbarTheme().unfocusedText().justify());
 
         if (label_pm != 0)
             m_label.setBackgroundPixmap(label_pm);
@@ -1579,10 +1571,7 @@ void FbWinFrame::applyTabContainer() {
     Container::ItemList::iterator btn_it_end = m_tab_container.end();
     for (; btn_it != btn_it_end; ++btn_it) {
         IconButton *btn = static_cast<IconButton *>(*btn_it);
-        if (btn == m_current_label && m_focused)
-            applyFocusLabel(*btn);
-        else
-            applyUnfocusLabel(*btn);
+        btn->reconfigTheme();
     }
 }
 
@@ -1618,15 +1607,6 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
     gripRight().setBorderWidth(border_width);
     gripRight().setBorderColor(theme().border().color());
 
-    // and the labelbuttons
-    Container::ItemList::iterator btn_it = m_tab_container.begin();
-    Container::ItemList::iterator btn_it_end = m_tab_container.end();
-    for (; btn_it != btn_it_end; ++btn_it) {
-        (*btn_it)->setBorderWidth(border_width);
-        (*btn_it)->setBorderColor(theme().border().color());
-    }
-    m_tab_container.update();
-
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);
 
@@ -1637,28 +1617,6 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
     // if the location changes, shift it
     if (grav_x != 0 || grav_y != 0)
         move(grav_x + x(), grav_y + y());
-
-}
-
-void FbWinFrame::applyFocusLabel(IconButton &button) {
-
-    button.setGC(theme().iconbarTheme().focusedText().textGC());
-    button.setFont(theme().iconbarTheme().focusedText().font());
-    button.setJustify(theme().justify());
-    button.setAlpha(getAlpha(m_focused));
-    button.renderTextures();
-    button.updateBackground();
-
-}
-
-void FbWinFrame::applyUnfocusLabel(IconButton &button) {
-
-    button.setGC(theme().iconbarTheme().unfocusedText().textGC());
-    button.setFont(theme().iconbarTheme().unfocusedText().font());
-    button.setJustify(theme().justify());
-    button.setAlpha(getAlpha(m_focused));
-    button.renderTextures();
-    button.updateBackground();
 
 }
 

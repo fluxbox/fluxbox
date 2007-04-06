@@ -67,8 +67,6 @@ public:
     //@}
     FbTk::Font &font() { return *m_font; }
 
-    FbTk::Justify justify() const { return *m_textjustify; }
-
     GC buttonPicFocusGC() const { return m_button_pic_focus_gc.gc(); }
     GC buttonPicUnfocusGC() const { return m_button_pic_unfocus_gc.gc(); }
 
@@ -104,7 +102,6 @@ private:
     FbTk::ThemeItem<FbTk::Color> m_button_focus_color, m_button_unfocus_color;
     
     FbTk::ThemeItem<FbTk::Font> m_font;
-    FbTk::ThemeItem<FbTk::Justify> m_textjustify;
     FbTk::ThemeItem<Shape::ShapePlace> m_shape_place;
 
     FbTk::ThemeItem<int> m_title_height, m_bevel_width, m_handle_width;

@@ -115,22 +115,7 @@ void IconButton::setPixmap(bool use) {
     }
 }
 
-void IconButton::updateBackground() {
-    // TODO: this ignores attention state, which isn't in Focusable.hh yet
-    if (m_win.isFocused()) {
-        if (m_focused_pm != 0)
-            setBackgroundPixmap(m_focused_pm);
-        else
-            setBackgroundColor(m_theme.focusedTexture().color());
-    } else {
-        if (m_unfocused_pm != 0)
-            setBackgroundPixmap(m_unfocused_pm);
-        else
-            setBackgroundColor(m_theme.unfocusedTexture().color());
-    }
-}
-
-void IconButton::renderTextures() {
+void IconButton::reconfigTheme() {
 
     if (m_theme.focusedTexture().usePixmap())
         m_focused_pm.reset(m_win.screen().imageControl().renderImage(
@@ -145,6 +130,35 @@ void IconButton::renderTextures() {
                               orientation()));
     else
         m_unfocused_pm.reset( 0 );
+
+    setAlpha(parent()->alpha());
+
+    // TODO: this ignores attention state, which isn't in Focusable.hh yet
+    if (m_win.isFocused()) {
+        if (m_focused_pm != 0)
+            setBackgroundPixmap(m_focused_pm);
+        else
+            setBackgroundColor(m_theme.focusedTexture().color());
+
+        setGC(m_theme.focusedText().textGC());
+        setFont(m_theme.focusedText().font());
+        setJustify(m_theme.focusedText().justify());
+        setBorderWidth(m_theme.focusedBorder().width());
+        setBorderColor(m_theme.focusedBorder().color());
+
+    } else {
+        if (m_unfocused_pm != 0)
+            setBackgroundPixmap(m_unfocused_pm);
+        else
+            setBackgroundColor(m_theme.unfocusedTexture().color());
+
+        setGC(m_theme.unfocusedText().textGC());
+        setFont(m_theme.unfocusedText().font());
+        setJustify(m_theme.unfocusedText().justify());
+        setBorderWidth(m_theme.unfocusedBorder().width());
+        setBorderColor(m_theme.unfocusedBorder().color());
+
+    }
 
 }
 

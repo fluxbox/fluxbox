@@ -48,8 +48,7 @@ public:
                     unsigned int width, unsigned int height);
     void resize(unsigned int width, unsigned int height);
 
-    void renderTextures();
-    void updateBackground();
+    void reconfigTheme();
 
     void update(FbTk::Subject *subj);
     void setPixmap(bool use);
