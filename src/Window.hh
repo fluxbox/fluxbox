@@ -184,23 +184,6 @@ public:
     /// set new current client and raise it
     bool setCurrentClient(WinClient &client, bool setinput = true);
     /**
-     * Sets the label associated with the client to focused
-     * @param client the client associated with the label
-     * @param value the focus state
-     */
-    void setLabelButtonFocus(WinClient &client, bool value = true);
-    /**
-     * Sets the attention state ("flashing")
-     * @see AttentionNoticeHandler
-     * @param value the new state value
-     */
-    void setAttentionState(bool value);
-    /**
-     * Gets the attention state 
-     * @return current attiontion state
-     */
-    bool getAttentionState() { return m_attention_state; }
-    /**
      * Searches for a client 
      * @param win the client X window
      * @return pointer to client matching the window or NULL
@@ -492,7 +475,6 @@ public:
     const FbTk::Subject &hintSig() const { return m_hintsig; }
     FbTk::Subject &workspaceSig() { return m_workspacesig; }
     const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
-    FbTk::Subject &attentionSig() { return m_attentionsig; }
     /** @} */ // end group signals
 
     void reconfigTheme();
@@ -560,8 +542,7 @@ private:
     WinSubject m_hintsig, 
         m_statesig, 
         m_layersig, 
-        m_workspacesig, 
-        m_attentionsig;
+        m_workspacesig;
 
     class ThemeListener: public FbTk::Observer {
     public:
@@ -582,7 +563,6 @@ private:
 
     WinClient *m_attaching_tab;
 
-    bool m_attention_state;
     FbTk::Timer m_timer;
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;

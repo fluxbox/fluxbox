@@ -41,8 +41,10 @@ class Focusable: public FbTk::ITypeAheadable {
 public:
     Focusable(BScreen &scr, FluxboxWindow *fbwin = 0):
         m_screen(scr), m_fbwin(fbwin),
-        m_instance_name("fluxbox"), m_class_name("fluxbox"), m_focused(false),
-        m_titlesig(*this), m_focussig(*this), m_diesig(*this) { }
+        m_instance_name("fluxbox"), m_class_name("fluxbox"),
+        m_focused(false), m_attention_state(false),
+        m_titlesig(*this), m_focussig(*this), m_diesig(*this),
+        m_attentionsig(*this) { }
     virtual ~Focusable() { }
     /**
      * Take focus.
@@ -54,6 +56,14 @@ public:
     virtual bool isFocused() const { return m_focused; }
     /// @return return true if it can be focused
     virtual bool acceptsFocus() const { return true; }
+
+    /// @return true if icon button should appear focused
+    inline bool getAttentionState() const { return m_attention_state; }
+    /// @set the attention state
+    virtual void setAttentionState(bool value) {
+        m_attention_state = value; attentionSig().notify();
+    }
+
     /// @return the screen in which this object resides
     inline BScreen &screen() { return m_screen; }
     /// @return the screen in which this object resides
@@ -110,6 +120,8 @@ public:
     const FbTk::Subject &focusSig() const { return m_focussig; }
     FbTk::Subject &dieSig() { return m_diesig; }
     const FbTk::Subject &dieSig() const { return m_diesig; }
+    FbTk::Subject &attentionSig() { return m_attentionsig; }
+    const FbTk::Subject &attentionSig() const { return m_attentionsig; }
     /** @} */ // end group signals
 
 protected:
@@ -118,10 +130,11 @@ protected:
 
     std::string m_title, m_instance_name, m_class_name;
     bool m_focused; //< whether or not it has focus
+    bool m_attention_state; //< state of icon button while demanding attention
     FbTk::PixmapWithMask m_icon; //< icon pixmap with mask
 
     // state and hint signals
-    FocusSubject m_titlesig, m_focussig, m_diesig;
+    FocusSubject m_titlesig, m_focussig, m_diesig, m_attentionsig;
 };
 
 #endif // FOCUSABLE_HH

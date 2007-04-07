@@ -522,9 +522,6 @@ void FbWinFrame::setFocus(bool newvalue) {
         }
     }
 
-    if (currentLabel())
-        m_current_label->reconfigTheme();
-
     applyAll();
     clearAll();
 }
@@ -626,25 +623,14 @@ IconButton *FbWinFrame::createTab(Focusable &client) {
                          EnterWindowMask);
     FbTk::EventManager::instance()->add(*button, button->window());
 
-    button->setJustify(theme().iconbarTheme().unfocusedText().justify());
-    button->setBorderColor(theme().border().color());
-    button->setBorderWidth(m_window.borderWidth());
-
     m_tab_container.insertItem(button);
-
-    if (currentLabel() == 0)
-        setLabelButtonFocus(*button);
 
     return button;
 }
 
 void FbWinFrame::removeTab(IconButton *btn) {
-    if (btn == m_current_label)
-        m_current_label = 0;
-
     if (m_tab_container.removeItem(btn))
         delete btn;
-
 }
 
 
@@ -689,24 +675,9 @@ void FbWinFrame::moveLabelButtonRightOf(FbTk::TextButton &btn, const FbTk::TextB
 }
 
 void FbWinFrame::setLabelButtonFocus(IconButton &btn) {
-    if (&btn == currentLabel() || btn.parent() != &m_tab_container)
-        return;
-
-    // render label buttons
-    if (currentLabel() != 0)
-        m_current_label->reconfigTheme();
-
-    m_current_label = &btn; // current focused button
-    m_label.setText(btn.text());
-    btn.reconfigTheme();
-}
-
-void FbWinFrame::setLabelButtonFocus(IconButton &btn, bool value) {
     if (btn.parent() != &m_tab_container)
         return;
-
-    btn.reconfigTheme();
-    btn.clear();
+    m_label.setText(btn.text());
 }
 
 void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
@@ -891,10 +862,6 @@ void FbWinFrame::removeEventHandler() {
 }
 
 void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
-    // we can ignore which window the event was generated for
-    if (event.window == m_label.window() && m_current_label)
-        event.window = m_current_label->window();
-
     m_tab_container.tryButtonPressEvent(event);
     if (event.window == m_grip_right.window() ||
         event.window == m_grip_left.window() ||
@@ -910,10 +877,6 @@ void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
 }
 
 void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
-    // we can ignore which window the event was generated for
-    if (event.window == m_label.window() && m_current_label)
-        event.window = m_current_label->window();
-
     // we continue even if a button got the event
     m_tab_container.tryButtonReleaseEvent(event);
 
@@ -1439,8 +1402,6 @@ void FbWinFrame::init() {
         m_use_handle = false;
 
     m_disable_shape = false;
-
-    m_current_label = 0; // no focused button at first
 
     m_handle.showSubwindows();
 

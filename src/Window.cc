@@ -245,7 +245,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_statesig(*this),
     m_layersig(*this),
     m_workspacesig(*this),
-    m_attentionsig(*this),
     m_themelistener(*this),
     moving(false), resizing(false), shaded(false), iconic(false),
     stuck(false), m_initialized(false), fullscreen(false),
@@ -985,24 +984,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     // frame focused doesn't necessarily mean input focused
     frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
 
-    if (setinput && focus()) {
-        return true;
-    }
-
-    return false;
-}
-
-void FluxboxWindow::setLabelButtonFocus(WinClient &client, bool value) {
-    // make sure it's in our list
-    if (client.fbwindow() != this)
-        return;
-
-    frame().setLabelButtonFocus(*m_labelbuttons[&client], value);
-}
-
-void FluxboxWindow::setAttentionState(bool value) {
-    m_attention_state = value;
-    m_attentionsig.notify();
+    return setinput && focus();
 }
 
 bool FluxboxWindow::isGroupable() const {
@@ -2008,6 +1990,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
     // did focus change? notify listeners
     if (was_focused != focus) {
+        m_attention_state = false;
         m_focussig.notify();
         if (m_client)
             m_client->focusSig().notify();

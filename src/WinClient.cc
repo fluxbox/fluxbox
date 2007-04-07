@@ -723,6 +723,12 @@ bool WinClient::isFocused() const {
         false);
 }
 
+void WinClient::setAttentionState(bool value) {
+    Focusable::setAttentionState(value);
+    if (fbwindow() && !fbwindow()->isFocused())
+        fbwindow()->setAttentionState(value);
+}
+
 void WinClient::updateWMProtocols() {
     Atom *proto = 0;
     int num_return = 0;

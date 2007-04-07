@@ -23,7 +23,7 @@
 
 #include "AttentionNoticeHandler.hh"
 
-#include "WinClient.hh"
+#include "Focusable.hh"
 #include "Screen.hh"
 #include "STLUtil.hh"
 
@@ -34,16 +34,15 @@
 namespace {
 class ToggleFrameFocusCmd: public FbTk::Command {
 public:
-    ToggleFrameFocusCmd(WinClient &client):
+    ToggleFrameFocusCmd(Focusable &client):
         m_client(client),
         m_state(false) {}
     void execute() {
         m_state ^= true;
-        m_client.fbwindow()->setLabelButtonFocus(m_client, m_state);
-        m_client.fbwindow()->setAttentionState(m_state);
+        m_client.setAttentionState(m_state);
     }
 private:
-    WinClient& m_client;
+    Focusable &m_client;
     bool m_state;
 };
 
@@ -54,9 +53,9 @@ AttentionNoticeHandler::~AttentionNoticeHandler() {
     STLUtil::destroyAndClearSecond(m_attentions);
 }
 
-void AttentionNoticeHandler::addAttention(WinClient &client) {
+void AttentionNoticeHandler::addAttention(Focusable &client) {
     // no need to add already active client
-    if (client.fbwindow()->isFocused() && &client.fbwindow()->winClient() == &client)
+    if (client.isFocused())
         return;
 
     // Already have a notice for it?
@@ -105,5 +104,6 @@ void AttentionNoticeHandler::update(FbTk::Subject *subj) {
         static_cast<Focusable::FocusSubject *>(subj);
     delete m_attentions[&winsubj->win()];
     m_attentions.erase(&winsubj->win());
+    winsubj->win().setAttentionState(false);
 }
 

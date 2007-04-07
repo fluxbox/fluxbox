@@ -28,7 +28,6 @@
 #include <map>
 
 class Focusable;
-class WinClient;
 
 namespace FbTk {
 class Timer;
@@ -45,7 +44,7 @@ public:
     typedef std::map<Focusable*, FbTk::Timer*> NoticeMap;
     /// Adds a client that requires attention,
     /// will fail if the client is already active
-    void addAttention(WinClient &client); 
+    void addAttention(Focusable &client); 
     /// removes the client from the attention map
     void update(FbTk::Subject *subj);
     

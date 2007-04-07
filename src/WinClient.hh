@@ -83,6 +83,7 @@ public:
 
     bool focus(); // calls Window->setCurrentClient to give focus to this client
     bool isFocused() const;
+    void setAttentionState(bool value);
     const std::string &title() const;
 
     /**

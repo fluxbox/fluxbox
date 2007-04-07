@@ -114,8 +114,6 @@ private:
     void updateList();
     /// check if window is already in the list
     bool checkDuplicate(Focusable &win);
-    /// so we can update current window without flicker
-    void timedRender();
 
     BScreen &m_screen;
     Container m_icon_container;
@@ -130,7 +128,6 @@ private:
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
-    FbTk::Timer m_focus_timer; ///< so we can update current window without flicker while changing attached clients
     FbMenu m_menu;
     unsigned char m_alpha;
 };

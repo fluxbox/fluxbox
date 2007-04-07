@@ -60,6 +60,8 @@ IconButton::IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_unfocused_pm(win.screen().imageControl()) {
 
     m_win.titleSig().attach(this);
+    m_win.focusSig().attach(this);
+    m_win.attentionSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);
 
@@ -129,12 +131,11 @@ void IconButton::reconfigTheme() {
                               width(), height(), m_theme.unfocusedTexture(),
                               orientation()));
     else
-        m_unfocused_pm.reset( 0 );
+        m_unfocused_pm.reset(0);
 
     setAlpha(parent()->alpha());
 
-    // TODO: this ignores attention state, which isn't in Focusable.hh yet
-    if (m_win.isFocused()) {
+    if (m_win.isFocused() || m_win.getAttentionState()) {
         if (m_focused_pm != 0)
             setBackgroundPixmap(m_focused_pm);
         else
@@ -163,12 +164,18 @@ void IconButton::reconfigTheme() {
 }
 
 void IconButton::update(FbTk::Subject *subj) {
+    // if the window's focus state changed, we need to update the background
+    if (subj == &m_win.focusSig() || subj == &m_win.attentionSig()) {
+        reconfigTheme();
+        clear();
+        return;
+    }
+
     // we got signal that either title or 
     // icon pixmap was updated, 
     // so we refresh everything
 
     Display *display = FbTk::App::instance()->display();
-
     int screen = m_win.screen().screenNumber();
 
     if (m_use_pixmap && m_win.icon().pixmap().drawable() != None) {
@@ -190,7 +197,8 @@ void IconButton::update(FbTk::Subject *subj) {
         
         m_icon_window.moveResize(iconx, icony, neww, newh);
 
-        m_icon_pixmap.copy(m_win.icon().pixmap().drawable(), DefaultDepth(display, screen), screen);
+        m_icon_pixmap.copy(m_win.icon().pixmap().drawable(),
+                           DefaultDepth(display, screen), screen);
         m_icon_pixmap.scale(m_icon_window.width(), m_icon_window.height());
 
         // rotate the icon or not?? lets go not for now, and see what they say...

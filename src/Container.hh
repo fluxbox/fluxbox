@@ -65,7 +65,6 @@ public:
     void moveItem(Item item, int movement); // wraps around
     bool moveItemTo(Item item, int x, int y);
     int find(ConstItem item);
-    void setSelected(int index);
     void setMaxSizePerClient(unsigned int size);
     void setMaxTotalSize(unsigned int size);
     void setAlignment(Alignment a);
@@ -93,8 +92,6 @@ public:
     inline FbTk::Orientation orientation() const { return m_orientation; }
     inline int size() const { return m_item_list.size(); }
     inline bool empty() const { return m_item_list.empty(); }
-    inline const Item& selected() const { return m_selected; }
-    inline Item selected() { return m_selected; }
     unsigned int maxWidthPerClient() const;
     inline bool updateLock() const { return m_update_lock; }
 
@@ -115,7 +112,6 @@ private:
     unsigned int m_max_size_per_client;
     unsigned int m_max_total_size;
     ItemList m_item_list;
-    Item m_selected;
     bool m_update_lock;
 };
 

@@ -444,15 +444,6 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     screen.clientListSig().attach(this);
     screen.iconListSig().attach(this);
     screen.currentWorkspaceSig().attach(this);
-    // setup focus timer
-
-    FbTk::RefCount<FbTk::Command> timer_cmd(new FbTk::SimpleCommand<IconbarTool>(*this, &IconbarTool::timedRender));
-    timeval to;
-    to.tv_sec = 0;
-    to.tv_usec = 1; // so it updates next event round
-    m_focus_timer.setCommand(timer_cmd);
-    m_focus_timer.setTimeout(to);
-    m_focus_timer.fireOnce(true);
 
 }
 
@@ -560,11 +551,8 @@ void IconbarTool::update(FbTk::Subject *subj) {
         FluxboxWindow::WinSubject *winsubj = static_cast<FluxboxWindow::WinSubject *>(subj);
         if (subj == &(winsubj->win().workspaceSig())) {
             // we can ignore this signal if we're in ALLWINDOWS mode
-            // unless the window was focused and has nothing to revert to
-            if (mode() == ALLWINDOWS || mode() == ICONS || mode() == NOICONS) {
-                m_focus_timer.start();
+            if (mode() == ALLWINDOWS || mode() == ICONS || mode() == NOICONS)
                 return;
-            }
 
             // workspace changed for this window, and if it's not on current workspace we remove it
             if (m_screen.currentWorkspaceID() != winsubj->win().workspaceNumber()) {
@@ -579,23 +567,13 @@ void IconbarTool::update(FbTk::Subject *subj) {
             }
             return;
 
-        } else if (subj == &(winsubj->win().attentionSig())) {
-            // render with titlebar focus, on attention
-            IconButton *button = findButton(winsubj->win());
-            if (button)
-                renderButton(*button, true);
-            return;
         } else {
             // signal not handled
             return;
         }
     } else if (subj != 0 && typeid(*subj) == typeid(Focusable::FocusSubject)) {
         Focusable::FocusSubject *winsubj = static_cast<Focusable::FocusSubject *>(subj);
-        if (subj == &(winsubj->win().focusSig())) {
-            // start focus timer, so we can update without flicker
-            m_focus_timer.start();
-            return;
-        } else if (subj == &(winsubj->win().dieSig())) { // die sig
+        if (subj == &(winsubj->win().dieSig())) { // die sig
             removeWindow(winsubj->win());
             renderTheme();
             return; // we don't need to update the entire list
@@ -697,16 +675,6 @@ void IconbarTool::renderButton(IconButton &button, bool clear) {
 
     button.setPixmap(*m_rc_use_pixmap);
     button.setTextPadding(*m_rc_client_padding);
-
-    if (button.win().isFocused()) {
-
-        // focused texture
-        if (button.win().isFocused())
-            m_icon_container.setSelected(m_icon_container.find(&button));
-
-    } else if (m_icon_container.selected() == &button)
-        m_icon_container.setSelected(-1);
-
     button.reconfigTheme();
     if (clear)
         button.clear(); // the clear also updates transparent
@@ -736,12 +704,10 @@ void IconbarTool::removeWindow(Focusable &win) {
     cerr<<"IconbarTool::"<<__FUNCTION__<<"( 0x"<<&win<<" title = "<<win.title()<<") found!"<<endl;
 #endif // DEBUG
     // detach from all signals
-    win.focusSig().detach(this);
     win.dieSig().detach(this);
     if (win.fbwindow()) {
         win.fbwindow()->workspaceSig().detach(this);
         win.fbwindow()->stateSig().detach(this);
-        win.fbwindow()->attentionSig().detach(this);
     }
 
     // remove from list and render theme again
@@ -784,11 +750,9 @@ void IconbarTool::addWindow(Focusable &win) {
     m_icon_list.push_back(button);
 
     // dont forget to detach signal in removeWindow
-    win.focusSig().attach(this);
     win.dieSig().attach(this);
     fbwin->workspaceSig().attach(this);
     fbwin->stateSig().attach(this);
-    fbwin->attentionSig().attach(this);
 }
 
 void IconbarTool::updateList() {
@@ -813,27 +777,6 @@ bool IconbarTool::checkDuplicate(Focusable &win) {
             return true;
     }
     return false;
-}
-
-void IconbarTool::timedRender() {
-    WinClient *client = FocusControl::focusedWindow();
-    IconButton *current_button = static_cast<IconButton *>(m_icon_container.selected());
-
-    if (client == 0 || client->fbwindow() == 0) {
-        if (current_button != 0)
-            renderButton(*current_button);
-        return;
-    }
-
-    IconButton *button = findButton(*client->fbwindow());
-    // if old window is the same as the new focused window then ignore this render
-    // else render old client and new client
-    if (button == current_button)
-        return;
-    if (button != 0)
-        renderButton(*button);
-    if (current_button != 0)
-        renderButton(*current_button);
 }
 
 void IconbarTool::setOrientation(FbTk::Orientation orient) {
