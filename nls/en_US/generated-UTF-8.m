@@ -2,265 +2,267 @@ $ codeset=UTF-8
 
 $set 1 #Align
 
-1 Alas keskelle
-2 Alas vasemmalle
-3 Alas oikealle
-4 Vaakasuoraan
-5 Vasemmalle
-6 Vasemmalle alas
-7 Vasemmalle keskelle
-8 Vasemmalle ylös
-9 Suhteellisesti
-10 Oikealle
-11 Oikealle alas
-12 Oikealle keskelle
-13 Oikealle ylös
-14 Ylös keskelle
-15 Ylös vasemmalle
-16 Ylös oikealle
-17 Pystysuoraan
+1 Bottom Center
+2 Bottom Left
+3 Bottom Right
+4 Horizontal
+5 Left
+6 Left Bottom
+7 Left Center
+8 Left Top
+9 Relative
+10 Right
+11 Right Bottom
+12 Right Center
+13 Right Top
+14 Top Center
+15 Top Left
+16 Top Right
+17 Vertical
 
 $set 2 #BaseDisplay
 
-1 Keskeytetään... kirjoitetaan muistivedos\n
-2 Suljetaan\n
-3 %s:      signaali %d siepattu\n
+1 Aborting... dumping core\n
+2 Shutting Down\n
+3 %s:      signal %d caught\n
 
 $set 3 #Common
 
-1 Alpha-arvo
-2 Piilota automaattisesti
-3 Käännetty
-4 Käännetyt vaihtoehdot
-5 Kääntäjä
-6 Kääntäjän versio
+1 Alpha
+2 Auto hide
+3 Compiled
+4 Compiled options
+5 Compiler
+6 Compiler version
 7     init
 8     keys
 9      nls
 10     menu
 11    style
-12 Oletukset
-13 pois käytöstä
-14 Virhe
-15 Fluxbox versio
-16 Peitä ikkunaa suurennettaessa
-17 SVN Revisio
-18 Näkyvissä
-19 Tälle tyylille ei ole määritetty taustaa.\nHae lisätietoja käsikirjasta ja UKK:sta.
+12 Defaults
+13 disabled
+14 Error
+15 Fluxbox version
+16 Maximize Over
+17 SVN Revision
+18 Visible
+19 There is no background option specified in this style.\nPlease consult the manual or read the FAQ.
 
 $set 4 #Configmenu
 
-1 Kirjasinten pehmennys
-2 Tuo ikkunat esiin automaattisesti
-3 Tuo ikkunat esiin napsauttamalla
-4 Valitse ikkuna napsauttamalla
-5 Kehystä tilapäiset ikkunat
-6 Vaihda työpöytää hiiren rullalla
-7 Valitse ikkuna työpöytää vaihdettaessa
-8 Ikkunan valitseminen
-9 Valitse aina uudet ikkunat
-10 Suurenna näytön kokoiseksi
-11 Kuvien pehmennys
-12 Näytä ikkunan sisältö siirrettäessä
-14 Valitse ikkuna osoittamalla
-15 Kiertävä työpöytälistaus
-16 Pakota pseudo-läpinäkyvyys
-17 Valikon alpha-arvo
-18 Läpinäkyvyys
-19 Valitun ikkunan alpha-arvo
-20 Valitsemattoman ikkunan alpha-arvo
-21 Välilehtien vaihtoehdot
-22 Välilehdet otsikkopalkissa
-23 Ulkoisten välilehtien leveys
-24 Valitse välilehti napsauttamalla
-25 Valitse välilehti osoittamalla
+1 AntiAlias
+2 Auto Raise
+3 Click Raises
+4 Click to Focus
+5 Decorate Transient Windows
+6 Desktop MouseWheel Switching
+7 Focus Window on Workspace Change
+8 Focus Model
+9 Focus New Windows
+10 Full Maximization
+11 Image Dithering
+12 Opaque Window Moving
+14 Mouse Focus
+15 Workspace Warping
+16 Force Pseudo-Transparency
+17 Menu Alpha
+18 Transparency
+19 Focused Window Alpha
+20 Unfocused Window Alpha
+21 Tab Options
+22 Tabs in Titlebar
+23 External Tab Width
+24 Click Tab Focus
+25 Mouse Tab Focus
 
 $set 5 #Ewmh
 
-1 Vakava virhe: Muistia ei voitu varata EWMH:n asiakaslistaukselle
+1 Fatal: Out of memory, can't allocate for EWMH client list
 
 $set 6 #FbTkError
 
-1 Varoitus! Korkeus > 3200, asetetaan Korkeus = 3200
-2 Varoitus! Leveys > 3200, asetetaan Leveys = 3200
-3 Varoitus: Varakirjaisinta ei voitu ladata
-4 Varausvirhe.
-5 Virhe rasterikuvaa luotaessa
-6 XImagea ei voi luoda
-7 Luku epäonnistui
-8 Varoitus: Alphalle ei löytynyt kelvollista formaattia.
-9 Varoitus: Alpha-kuvan luonti epäonnistui.
-10 Varoitus: Alpha-rasterikuvan luonti epäonnistui.
-11 Näytön (%d) alustus epäonnistui
-12 Muisti loppui
-13 Blue-puskurille ei voitu varata muistia.
-14 Green-puskurille ei voitu varata muistia.
-15 Red-puskurille ei voitu varata muistia.
-16 Teemakomponentin lukeminen epäonnistui
-17 Visual-arvo ei ole tuettujen arvojen joukossa
-18 Asetetaan oletusarvo
+1 Warning! Height > 3200, setting Height = 3200
+2 Warning! Width > 3200, setting Width = 3200
+3 Warning: can't load fallback font
+4 Allocation error.
+5 Error creating pixmap
+6 Can't create XImage
+7 Failed to read
+8 Warning: Failed to find valid format for alpha.
+9 Warning: Failed to create alpha picture.
+10 Warning: Failed to create alpha pixmap.
+11 Failed to find format for screen(%d)
+12 Out of memory
+13 Out of memory while allocating blue buffer.
+14 Out of memory while allocating green buffer.
+15 Out of memory while allocating red buffer.
+16 Failed to read theme item
+17 unsupported visual
+18 Setting default value
 
 $set 7 #Fluxbox
 
-1 Resurssitiedoston nimi ei ole kelvollinen!
-2 Group-tiedostoa ei voitu avata
-3 Tietokantaa ei voitu ladata
-4 Yritetään uudelleen
-5 Varoitus! Ikkunaa ei voitu kiinnittää mihinkään näyttöön!
-6 Hakemistoa %s ei voi luoda
-7 Hallittavaa näyttöä ei saatavilla.\nVarmista ettei toinen ikkunointiohjelma ole käynnissä.
-8 Virhe jäsennettäessä säännöllistä lauseketta
-9 Vakava virhe! Fluxbox-luokasta voi olla vain yksi ilmentymä.
-10 X-palvelimeen ei voitu yhdistää.\nKäynnistä X ennen Fluxboxia.
-11 Varoitus: X-palvelin ei tue maa-asetustoa
-12 Varoitus: Ei voitu asettaa maa-asetuston muokkaimia
+1 rc filename is invalid!
+2 Failed to load groupfile
+3 Failed to load database
+4 Retrying with
+5 Warning! Could not find screen to map window on!
+6 Can't create directory %s
+7 Couldn't find screens to manage.\nMake sure you don't have another window manager running.
+8 Error parsing regular expression
+9 Fatal! There can only one instance of fluxbox class.
+10 Can not connect to X server.\nMake sure you started X before you start Fluxbox.
+11 Warning: X server does not support locale
+12 Warning: cannot set locale modifiers
 
 $set 8 #Gnome
 
-1 Vakava virhe: Muistia ei voitu varata Gnomen asiakaslistaukselle
+1 Fatal: Out of memory, can't allocate for GNOME client list
 
 $set 9 #Keys
 
-1 Keys: Virhe rivillä
-2 Keys: Näppäimistöpuun yhdistäminen epäonnistui!
-3 Keys: Virheellinen näppäinarvo rivillä
+1 Keys: Error on line
+2 Keys: Failed to merge keytree!
+3 Keys: Invalid key/modifier on line
 
 $set 10 #Menu
 
-1 Asetukset
-2 Fluxboxin oletusvalikko
-3 Poistu
-4 Kuvakkeet
-5 Taso
-6 Näytöllä
-7 Sijoittuminen
-8 Uudelleenlataa asetukset
-9 Uudelleenkäynnistys
-10 Varoitus: Merkkausvirhe (tag)
+1 Configuration
+2 Fluxbox default menu
+3 Exit
+4 Icons
+5 Layer...
+6 On Head...
+7 Placement
+8 Reload Config
+9 Restart
+10 Warning: unbalanced [encoding] tags
 
 $set 11 #Remember
 
-1 Kehystys
-2 Koko
-3 Siirrä työalueelle
-4 Taso
-5 Muista käynnistettäessä
-6 Sijoittuminen
-7 Tallenna suljettaessa
-8 Varjostus
-9 Kiinnitys
-10 Tuntematon apps-tiedoston avain
-11 Työalue
-12 Näyttö
+1 Decorations
+2 Dimensions
+3 Jump to workspace
+4 Layer
+5 Remember...
+6 Position
+7 Save on close
+8 Shaded
+9 Sticky
+10 Unknown apps key
+11 Workspace
+12 Head
 
 $set 12 #Screen
 
-1 BScreen::BScreen: virhe X-palvelinta haettaessa.\ntoinen ikkunointiohjelma on jo käynnissä näytöllä
+1 BScreen::BScreen: an error occured while querying the X server.\n	another window manager already running on display
 2 W: %4d x H: %4d
-3 BScreen::BScreen: hallitaan näyttöä %d käyttäen arvoja visual 0x%lx, depth %d\n
+3 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
+4 W: %04d x H: %04d
 
 $set 13 #Slit
 
-1 Appletit
-2 Edellinen appletti
-3 Seuraava appletti
-4 Applettitelakan asento
-5 Taso
-6 Applettitelakka näytöllä
-7 Applettitelakan sijoittaminen
-8 Applettitelakka
-9 Tallenna applettitelakan asetukset
+1 Clients
+2 Cycle Down
+3 Cycle Up
+4 Slit Direction
+5 Slit Layer
+6 Slit on Head
+7 Slit Placement
+8 Slit
+9 Save SlitList
 
 $set 14 #Toolbar
 
-1 Uudelleennimeä nykyinen työalue
-2 Kuvakepalkin tila
-3 Kaikki ikkunat
-4 Kuvakkeet
-5 Ei mikään
-6 Työpöytä
-7 Työaluekuvakkeet
-8 Työkalupalkin taso
-9 Työkalupalkki näytöllä
-10 Työkalupalkin sijoittaminen
-11 Työkalupalkki
-12 Työkalupalkin leveys näytöllä prosentteina
-13 Kello 24h
-14 Kello 12h
-15 Muuta kellonajan esitystapaa
-16 Näytä kuvat
-17 Ei kuvakkeita
-18 Työalueet ilman kuvakkeita
+1 Rename current workspace
+2 Iconbar Mode
+3 All Windows
+4 Icons
+5 None
+6 Workspace
+7 WorkspaceIcons
+8 Toolbar Layer
+9 Toolbar on Head
+10 Toolbar Placement
+11 Toolbar
+12 Toolbar width percent
+13 Clock: 24h
+14 Clock: 12h
+15 Edit Clock Format
+16 Show Pictures
+17 NoIcons
+18 WorkspaceNoIcons
 
 $set 15 #Window
 
-1 Nimeämätön
+1 Unnamed
 
 $set 16 #Windowmenu
 
-1 Sulje
-2 Pienennä
-3 Valitse taso
-4 Taustalle
-5 Suurenna
-6 Esille
-7 Siirrä työalueelle
-8 Varjosta
-9 Kiinnitä
-10 Pakota sulkeminen
+1 Close
+2 Iconify
+3 Layer
+4 Lower
+5 Maximize
+6 Raise
+7 Send To ...
+8 Shade
+9 Stick
+10 Kill
 
 $set 17 #Workspace
 
-1 Työalue %d
-2 Työalueet
-3 Lisää työalue
-4 Poista viimeinen työalue
+1 Workspace %d
+2 Workspaces
+3 New Workspace
+4 Remove Last
 
 $set 18 #fbsetroot
 
-1 Virhe: käytä vähintään yhtä seuraavista valitsimista: -solid, -mod, -gradient\n
-2 Rasterikuvaa ei voitu luoda, lopetetaan!
-3 -display <string>        näyttö\n\
--mod <x> <y>             modula-kuvio\n\
--foreground, -fg <color> modula-taustaväri\n\
--background, -bg <color> modula-edustaväri\n\n\
--gradient <texture>      väriliu'un tekstuuri\n\
--from <color>            väriliu'un alkamisväri\n\
--to <color>              väriliu'un päättymisväri\n\n\
--solid <color>           yhtenäinen väri\n\n\
--help                    tulosta ainoastaan tämä ohje\n
+1 Error: must specify one of: -solid, -mod, -gradient\n
+2 Couldn't create pixmap atoms, giving up!
+3 -display <string>        display connection\n\
+-mod <x> <y>             modula pattern\n\
+-foreground, -fg <color> modula foreground color\n\
+-background, -bg <color> modula background color\n\n\
+-gradient <texture>      gradient texture\n\
+-from <color>            gradient start color\n\
+-to <color>              gradient end color\n\n\
+-solid <color>           solid color\n\n\
+-help                    print this help text and exit\n
 
 $set 19 #main
 
-1 virhe: '-display' vaatii määreen
-2 Lisämuistin varaaminen epäonnistui
-3 Epäonnistunut tyyppimuunnos
-4 Arvoalueen ulkopuolella
-5 Ajonaikainen virhe
-6 Vakiopoikkeus
-7 tuntematon virhe
-8 virhe: '-log' vaatii määreen
-9 Lokitiedosto
-10 Kirjoittaudutaan
-11 virhe: '-rc' vaatii määreen
-12 virhe: '-screen' vaatii määreen
+1 error: '-display' requires an argument
+2 Bad Alloc
+3 Bad cast
+4 Out of range
+5 Runtime error
+6 Standard Exception
+7 Unknown error
+8 error: '-log' needs an argument
+9 Log File
+10 Logging to
+11 error: '-rc' requires an argument
+12 error: '-screen' requires an argument
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
-Web-sivu: http://www.fluxbox.org/\n\n\
--display <string>\t\tmuuta $DISPLAY.\n\
--screen <all|int,int,int>\tsuorita vain määrätyillä näytöillä.\n\
--rc <string>\t\t\tkäytä vaihtoehtoista resurssitiedostoa.\n\
--version\t\t\ttulosta ainoastaan ohjelman versio.\n\
--info\t\t\t\tnäytä tietoja.\n\
--log <filename>\t\t\tkirjoita lokiin.\n\
--help\t\t\t\ttulosta vain tämä ohje.\n\n
-14 varoitus: 'DISPLAY' ympäristömuuttujaa ei voitu asettaa
+Website: http://www.fluxbox.org/\n\n\
+-display <string>\t\tuse display connection.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-rc <string>\t\t\tuse alternate resource file.\n\
+-version\t\t\tdisplay version and exit.\n\
+-info\t\t\t\tdisplay some useful information.\n\
+-log <filename>\t\t\tlog output to file.\n\
+-help\t\t\t\tdisplay this help text and exit.\n\n
+14 warning: couldn't set environment variable 'DISPLAY'
 
 $set 20 #layers
 
-1 Telakan päällä
-2 Alin
-3 Työalue
-4 Telakka
-5 Oletus
-6 Ylin
+1 Above Dock
+2 Bottom
+3 Desktop
+4 Dock
+5 Normal
+6 Top
+
 
