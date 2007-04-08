@@ -10,6 +10,10 @@ Changes for 1.1:
    * Buttons with different textures when pressed weren't getting reset
      properly (Mark)
      FbTk/Button.cc
+   * Only replace numbers with zeros when calculating clock width (Simon)
+     Otherwise width of things in proportional fonts can be way out.
+     sf.net bug #1545066.
+     ClockTool.cc
 *07/04/06:
    * More changes to theme handling (Mark)
      - introduced window.label.(un)focused.{justify,border{Color,Width}},

@@ -220,7 +220,17 @@ void ClockTool::update(FbTk::Subject *subj) {
     updateTime();
 
     // + 2 to make the entire text fit inside
-    std::string text(m_button.text().size() + 2, '0');
+    // we only replace numbers with zeros because everything else should be
+    // relatively static. If we replace all text with zeros then widths of
+    // proportional fonts with some strftime formats will be considerably off.
+    std::string text(m_button.text());
+
+    int textlen = text.size();
+    for (int i=0; i < textlen; ++i) {
+        if (isdigit(text[i])) // don't bother replacing zeros
+            text[i] = '0';
+    }
+    text.append("00"); // pad
 
     unsigned int new_width = m_button.width();
     unsigned int new_height = m_button.height();
