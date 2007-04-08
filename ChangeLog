@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/04/08:
+   * Only replace numbers with zeros when calculating clock width (Simon)
+     Otherwise width of things in proportional fonts can be way out.
+     sf.net bug #1545066.
+     ClockTool.cc
 *07/04/05:
    * Adjusted detection of Caps Lock key (Mark)
      FbTk/KeyUtil.cc/hh
