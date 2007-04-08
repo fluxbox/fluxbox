@@ -227,7 +227,7 @@ void ClockTool::update(FbTk::Subject *subj) {
 
     int textlen = text.size();    
     for (int i=0; i < textlen; ++i) {
-        if (text[i] > '0' && text[i] <= '9') // don't bother replacing zeros
+        if (isdigit(text[i])) // don't bother replacing zeros
             text[i] = '0';
     }
     text.append("00"); // pad
