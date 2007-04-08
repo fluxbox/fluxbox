@@ -129,11 +129,11 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
     if (!been_deleted) {
         mark_if_deleted = 0;
         if (m_background_pm) {
-            if (m_pressed_pm != 0) {
+            if (m_pressed_pm != 0 || m_pressed_color.isAllocated()) {
                 update = true;
                 setBackgroundPixmap(m_background_pm);
             }
-        } else if (m_pressed_color.isAllocated()) {
+        } else if (m_pressed_pm != 0 || m_pressed_color.isAllocated()) {
             update = true;
             setBackgroundColor(m_background_color);
         }

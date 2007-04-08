@@ -304,10 +304,6 @@ from the init file, but this is an easier and faster way for most users.
 - *Windows Warping*:
     If enabled, you can drag windows from one workspace to another.
 
-- *Desktop MouseWheel Switching*:
-    You will be able to change the workspace with your mousewheel if used on
-    the desktop or over the toolbar if the option is enabled.
-
 - *Decorate Transient Windows*:
     With this option enabled all temporary windows will have a border and
     grips.
@@ -558,13 +554,11 @@ The possible tools are:
 
 - *PrevWorkspace*:
     This displays an arrow that allows to switch to the workspace left of the
-    current one. Same as MouseWheelDown with "Desktop MouseWheel Switching"
-    enabled.
+    current one.
 
 - *NextWorkspace*:
     This displays an arrow that allows to switch to the workspace right of the
-    current one. Same as MouseWheelUp with "Desktop MouseWheel Switching"
-    enabled.
+    current one.
 
 - *PrevWindow*:
     This displays an arrow that switches focus to the previous visible window on
@@ -713,8 +707,7 @@ session.screen0.toolbar.autoHide: <boolean>
       False
 
 session.screen0.desktopwheeling: <boolean>
-session.screen0.toolbar.wheeling: <boolean>
-      These set the ability to utilize the user's scroll wheel to change the
+      This sets the ability to utilize the user's scroll wheel to change the
       current workspace. Default: True
 
 session.screen0.windowScrollAction: shade|nexttab
