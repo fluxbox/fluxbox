@@ -146,6 +146,42 @@ int run_updates(int old_version, FbTk::ResourceManager rm) {
         new_version = 2;
     }
 
+    if (old_version < 3) { // move toolbar wheeling to keys file
+        string whole_keyfile = read_file(keyfilename);
+        string new_keyfile = "";
+        // let's put our new keybindings first, so they're easy to find
+        new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
+        bool keep_changes = false;
+
+        // scrolling on toolbar needs to match user's toolbar wheeling settings
+        FbTk::Resource<string> rc_wheeling(rm, "Off",
+                                           "session.screen0.iconbar.wheelMode",
+                                           "Session.Screen0.Iconbar.WheelMode");
+        FbTk::Resource<bool> rc_screen(rm, true,
+                                       "session.screen0.desktopwheeling",
+                                       "Session.Screen0.DesktopWheeling");
+        FbTk::Resource<bool> rc_reverse(rm, false,
+                                        "session.screen0.reversewheeling",
+                                        "Session.Screen0.ReverseWheeling");
+        if (strcasecmp((*rc_wheeling).c_str(), "On") == 0 ||
+            (strcasecmp((*rc_wheeling).c_str(), "Screen") && *rc_screen)) {
+            keep_changes = true;
+            if (*rc_reverse) { // if you ask me, this should have been default
+                new_keyfile += "OnToolbar Mouse4 :prevWorkspace\n";
+                new_keyfile += "OnToolbar Mouse5 :nextWorkspace\n";
+            } else {
+                new_keyfile += "OnToolbar Mouse4 :nextWorkspace\n";
+                new_keyfile += "OnToolbar Mouse5 :prevWorkspace\n";
+            }
+        }
+        new_keyfile += "\n"; // just for good looks
+        new_keyfile += whole_keyfile; // don't forget user's old keybindings
+
+        if (keep_changes)
+            write_file(keyfilename, new_keyfile);
+        new_version = 3;
+    }
+
     return new_version;
 }
 

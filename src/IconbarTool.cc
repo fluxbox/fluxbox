@@ -83,40 +83,6 @@ void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
 }
 
 template<>
-void FbTk::Resource<IconbarTool::WheelMode>::setDefaultValue() {
-    m_value = IconbarTool::SCREEN;
-}
-
-
-template<>
-void FbTk::Resource<IconbarTool::WheelMode>::setFromString(const char* strval) {
-    if (strncasecmp(strval, "off", strlen("off")) == 0)
-        m_value = IconbarTool::OFF;
-    else if (strncasecmp(strval, "on", strlen("on")) == 0)
-        m_value = IconbarTool::ON;
-    else if (strncasecmp(strval, "screen", strlen("screen")) == 0)
-        m_value = IconbarTool::SCREEN;
-    else
-        setDefaultValue();
-}
-
-
-template<>
-string FbTk::Resource<IconbarTool::WheelMode>::getString() const {
-    switch(m_value) {
-    case IconbarTool::ON:
-        return string("On");
-        break;
-    case IconbarTool::SCREEN:
-        return string("Screen");
-        break;
-    case IconbarTool::OFF:
-    default:
-        return string("Off");
-    };
-}
-
-template<>
 void FbTk::Resource<Container::Alignment>::setDefaultValue() {
     m_value = Container::RELATIVE;
 }
@@ -330,67 +296,23 @@ private:
 
 class FocusCommand: public FbTk::Command {
 public:
-    explicit FocusCommand(const IconbarTool& tool, FluxboxWindow &win) : 
-        m_win(win), m_tool(tool) { }
+    explicit FocusCommand(Focusable &win): m_win(win) { }
     void execute() {
         // this needs to be a local variable, as this object could be destroyed
         // if the workspace is changed.
-        FluxboxWindow &win = m_win;
-        if(win.isIconic() || !win.isFocused()) {
-            switch(win.screen().getUserFollowModel()) {
-            case BScreen::SEMIFOLLOW_ACTIVE_WINDOW:
-                if (win.isIconic()) {
-                    win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
-                } else {
-                    win.screen().changeWorkspaceID(win.workspaceNumber());
-                }
-                break;
-            case BScreen::FETCH_ACTIVE_WINDOW:
-                win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
-                break;
-            case BScreen::FOLLOW_ACTIVE_WINDOW:
-                if (!win.isStuck())
-                    win.screen().changeWorkspaceID(win.workspaceNumber());
-            default:
-                break;
-            };
-            win.raiseAndFocus();
-       } else
-           win.iconify();
-    }
-
-private:
-    FluxboxWindow &m_win;
-    const IconbarTool& m_tool;
-};
-
-// simple forwarding of wheeling, but only 
-// if desktopwheeling is enabled
-class WheelWorkspaceCmd : public FbTk::Command {
-public:
-    explicit WheelWorkspaceCmd(const IconbarTool& tool, Focusable &win,
-                               const char* cmd) : 
-        m_win(win), m_cmd(CommandParser::instance().parseLine(cmd)), m_tool(tool) { }
-    void execute() {
-
-        switch(m_tool.wheelMode()) {
-        case IconbarTool::ON:
-            m_cmd->execute();
-            break;
-        case IconbarTool::SCREEN:
-            if(m_win.screen().isDesktopWheeling())
-                m_cmd->execute();
-            break;
-        case IconbarTool::OFF:
-        default:
-            break;
-        };
+        FluxboxWindow *fbwin = m_win.fbwindow();
+        if (!fbwin)
+            return;
+        if (m_win.isFocused())
+            fbwin->iconify();
+        else {
+            m_win.focus();
+            fbwin->raise();
+        }
     }
 
 private:
     Focusable &m_win;
-    RefCmd m_cmd;
-    const IconbarTool& m_tool;
 };
 
 }; // end anonymous namespace
@@ -404,9 +326,6 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_empty_pm( screen.imageControl() ),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
-    m_wheel_mode(screen.resourceManager(), OFF,
-                 screen.name() + ".iconbar.wheelMode",
-                 screen.name() + ".iconbar.WheelMode"),
     m_rc_alignment(screen.resourceManager(), Container::LEFT,
                    screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
     m_rc_client_width(screen.resourceManager(), 70,
@@ -730,20 +649,10 @@ void IconbarTool::addWindow(Focusable &win) {
 #endif // DEBUG
     IconButton *button = new IconButton(m_icon_container, m_theme, win);
 
-    RefCmd next_workspace(new ::WheelWorkspaceCmd(*this, win, "nextworkspace"));
-    RefCmd prev_workspace(new ::WheelWorkspaceCmd(*this, win, "prevworkspace"));
-    
-    RefCmd focus_cmd(new ::FocusCommand(*this, *fbwin));
+    RefCmd focus_cmd(new ::FocusCommand(win));
     RefCmd menu_cmd(new ::ShowMenu(*fbwin));
     button->setOnClick(focus_cmd, 1);
     button->setOnClick(menu_cmd, 3);
-    if(win.screen().isReverseWheeling()) {
-        button->setOnClick(next_workspace, 5);
-        button->setOnClick(prev_workspace, 4);
-    } else {
-        button->setOnClick(next_workspace, 4);
-        button->setOnClick(prev_workspace, 5);
-    }
 
     renderButton(*button, false); // update the attributes, but don't clear it
     m_icon_container.insertItem(button);

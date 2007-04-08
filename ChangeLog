@@ -1,5 +1,15 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/04/08:
+   * Added OnToolbar modifier to keys file (Mark)
+     Keys.cc/hh Toolbar.cc/hh Screen.cc/hh IconbarTool.cc fluxbox.cc
+   * Menu when clicking workspacename in toolbar wasn't getting focused (Mark)
+     ToolFactory.cc
+   * Removed followModel, since userFollowModel covers almost all cases (Mark)
+     IconbarTool.cc ClientMenu.cc Screen.cc/hh Ewmh.cc Window.cc
+   * Buttons with different textures when pressed weren't getting reset
+     properly (Mark)
+     FbTk/Button.cc
 *07/04/06:
    * More changes to theme handling (Mark)
      - introduced window.label.(un)focused.{justify,border{Color,Width}},

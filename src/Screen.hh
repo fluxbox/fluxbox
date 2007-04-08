@@ -119,8 +119,6 @@ public:
     bool isRootColormapInstalled() const { return root_colormap_installed; }
     bool isScreenManaged() const { return managed; }
     bool isWorkspaceWarping() const { return *resource.workspace_warping; }
-    bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
-    bool isReverseWheeling() const { return *resource.reverse_wheeling; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
     bool doOpaqueMove() const { return *resource.opaque_move; }
@@ -144,7 +142,6 @@ public:
 
     ResizeModel getResizeModel() const { return *resource.resize_model; }
 
-    inline FollowModel getFollowModel() const { return *resource.follow_model; }
     inline FollowModel getUserFollowModel() const { return *resource.user_follow_model; }
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
@@ -562,15 +559,14 @@ private:
                        const std::string &altscrname);
 
         FbTk::Resource<bool> image_dither, opaque_move, full_max,
-            workspace_warping,
-            desktop_wheeling, reverse_wheeling, show_window_pos,            
+            workspace_warping, show_window_pos,            
             auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> default_deco;
         FbTk::Resource<std::string> rootcommand;
         FbTk::Resource<ResizeModel> resize_model;
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
         FbTk::Resource<std::string> windowmenufile;
-        FbTk::Resource<FollowModel> follow_model, user_follow_model;
+        FbTk::Resource<FollowModel> user_follow_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
             unfocused_alpha, menu_alpha, menu_delay, menu_delay_close, tab_width;

@@ -40,27 +40,11 @@ public:
     ~ClientMenuItem() { m_client.titleSig().detach(menu()); }
 
     void click(int button, int time) {
-        if (m_client.fbwindow() == 0)
+        FluxboxWindow *fbwin = m_client.fbwindow();
+        if (fbwin == 0)
             return;
-        FluxboxWindow &win = *m_client.fbwindow();
-
-        if (win.screen().currentWorkspaceID() != win.workspaceNumber() &&
-            !win.isStuck()) {
-            win.menu().hide();
-            BScreen::FollowModel model = win.screen().getUserFollowModel();
-            if (model == BScreen::IGNORE_OTHER_WORKSPACES)
-                return;
-            // fetch the window to the current workspace
-            else if ((button == 3) ^ (model == BScreen::FETCH_ACTIVE_WINDOW ||
-                win.isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW)) {
-                win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win, true);
-                return;
-            }
-            // warp to the workspace of the window
-            win.screen().changeWorkspaceID(win.workspaceNumber());
-        }
         m_client.focus();
-        win.raise();
+        fbwin->raise();
     }
 
     const std::string &label() const { return m_client.title(); }

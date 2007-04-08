@@ -330,6 +330,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // HAVE_GETPID
 
 
+    // Create keybindings handler and load keys file
+    // Note: this needs to be done before creating screens
+    m_key.reset(new Keys);
+    m_key->load(StringUtil::expandFilename(*m_rc_keyfile).c_str());
+
     vector<int> screens;
     int i;
 
@@ -424,10 +429,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     sync(false);
 
     m_reconfigure_wait = m_reread_menu_wait = false;
-
-    // Create keybindings handler and load keys file
-    m_key.reset(new Keys);
-    m_key->load(StringUtil::expandFilename(*m_rc_keyfile).c_str());
 
     m_resourcemanager.unlock();
     ungrab();
@@ -646,7 +647,7 @@ void Fluxbox::setupConfigFiles() {
     if (create_init)
         FbTk::FileUtil::copyFile(DEFAULT_INITFILE, init_file.c_str());
 
-#define CONFIG_VERSION 1
+#define CONFIG_VERSION 3
     FbTk::Resource<int> config_version(m_resourcemanager, 0,
             "session.configVersion", "Session.ConfigVersion");
     if (*config_version < CONFIG_VERSION) {

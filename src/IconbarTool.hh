@@ -57,13 +57,6 @@ public:
         ALLWINDOWS ///< all windows and all icons from all workspaces
     };
 
-    /// wheeling on iconbutton
-    enum WheelMode { 
-      OFF, ///< no wheeling, default mode
-      ON,  ///< enabled wheeling
-      SCREEN ///< in perfect harmony with desktopwheeling-value
-    };
-
     IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, 
                 BScreen &screen, FbTk::Menu &menu);
     ~IconbarTool();
@@ -85,11 +78,11 @@ public:
     unsigned int borderWidth() const;
 
     Mode mode() const { return *m_rc_mode; }
-    WheelMode wheelMode() const { return *m_wheel_mode; }
 
     void setOrientation(FbTk::Orientation orient);
     Container::Alignment alignment() const { return m_icon_container.alignment(); }
 
+    const BScreen &screen() const { return m_screen; }
 private:
 
     /// @return button associated with window
@@ -123,7 +116,6 @@ private:
 
     IconList m_icon_list;
     FbTk::Resource<Mode> m_rc_mode;
-    FbTk::Resource<WheelMode> m_wheel_mode;
     FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text

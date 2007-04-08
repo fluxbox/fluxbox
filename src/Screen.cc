@@ -287,8 +287,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     opaque_move(rm, false, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
     full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
-    desktop_wheeling(rm, true, scrname+".desktopwheeling", altscrname+".DesktopWheeling"),
-    reverse_wheeling(rm, false, scrname+".reversewheeling", altscrname+".ReverseWheeling"),
     show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
@@ -298,7 +296,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     resize_model(rm, BOTTOMRESIZE, scrname+".resizeMode", altscrname+".ResizeMode"),
     tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
     windowmenufile(rm, "", scrname+".windowMenu", altscrname+".WindowMenu"),
-    follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
     user_follow_model(rm, FOLLOW_ACTIVE_WINDOW, scrname+".userFollowModel", altscrname+".UserFollowModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
@@ -422,6 +419,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->add(*this, rootWindow());
+    Keys *keys = Fluxbox::instance()->keys();
+    if (keys)
+        keys->registerWindow(rootWindow().window(),
+                             Keys::GLOBAL|Keys::ON_DESKTOP);
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
     // load this screens resources
@@ -546,6 +547,9 @@ BScreen::~BScreen() {
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->remove(rootWindow());
+    Keys *keys = Fluxbox::instance()->keys();
+    if (keys)
+        keys->unregisterWindow(rootWindow().window());
 
     if (m_rootmenu.get() != 0)
         m_rootmenu->removeAll();
@@ -785,7 +789,8 @@ void BScreen::update(FbTk::Subject *subj) {
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
     if (!m_typing_ahead) {
-        Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode);
+        Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
+                                              Keys::GLOBAL|Keys::ON_DESKTOP);
         return;
     }
 
@@ -839,7 +844,7 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
         imageControl().installRootColormap();
 
     Keys *keys = Fluxbox::instance()->keys();
-    keys->doAction(be.type, be.state, be.button);
+    keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP);
 }
 
 void BScreen::notifyUngrabKeyboard() {

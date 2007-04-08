@@ -1309,8 +1309,8 @@ void FluxboxWindow::maxSize(unsigned int &max_width, unsigned int &max_height) {
 
 // returns whether the focus was "set" to this window
 // it doesn't guarantee that it has focus, but says that we have
-// tried. A FocusqIn event should eventually arrive for that
-// window if it actually got the focus, then setFocusedFlag is called,
+// tried. A FocusIn event should eventually arrive for that
+// window if it actually got the focus, then setFocusFlag is called,
 // which updates all the graphics etc
 bool FluxboxWindow::focus() {
 
@@ -1342,6 +1342,20 @@ bool FluxboxWindow::focus() {
 
     if (! m_client->validateClient())
         return false;
+
+    if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck()) {
+        menu().hide();
+        BScreen::FollowModel model = screen().getUserFollowModel();
+        if (model == BScreen::IGNORE_OTHER_WORKSPACES)
+            return false;
+        // fetch the window to the current workspace
+        if (model == BScreen::FETCH_ACTIVE_WINDOW ||
+            (isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW))
+            screen().sendToWorkspace(screen().currentWorkspaceID(), this, true);
+        // warp to the workspace of the window
+        else
+            screen().changeWorkspaceID(workspaceNumber());
+    }
 
     // this needs to be here rather than setFocusFlag because
     // FocusControl::revertFocus will return before FocusIn events arrive
@@ -2310,6 +2324,22 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 
     // Note: this function never gets called from WithdrawnState
     // initial state is handled in restoreAttributes() and init()
+
+    // check what to do if window is on another workspace
+    if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck()) {
+        menu().hide();
+        BScreen::FollowModel model = screen().getUserFollowModel();
+        if (model == BScreen::IGNORE_OTHER_WORKSPACES)
+            return;
+        // fetch the window to the current workspace
+        if (model == BScreen::FETCH_ACTIVE_WINDOW ||
+            (isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW))
+            screen().sendToWorkspace(screen().currentWorkspaceID(), this, true);
+        // warp to the workspace of the window
+        else
+            screen().changeWorkspaceID(workspaceNumber());
+    }
+
     setCurrentClient(*client, false); // focus handled on MapNotify
     deiconify(false);
 
@@ -2330,8 +2360,6 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 #ifdef DEBUG
         cerr<<"FluxboxWindow::mapNotify: not override redirect ans visible!"<<endl;
 #endif // DEBUG
-        Fluxbox *fluxbox = Fluxbox::instance();
-        fluxbox->grab();
         if (! client->validateClient())
             return;
 
@@ -2345,17 +2373,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
         else if (m_screen.focusControl().focusNew())
             Fluxbox::instance()->attentionHandler().addAttention(*client);
 
-
         iconic = false;
-
-        // Auto-group from tab?
-        if (!client->isTransient()) {
-#ifdef DEBUG
-            cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO check grouping here"<<endl;
-#endif // DEBUG
-        }
-
-        fluxbox->ungrab();
     }
 }
 

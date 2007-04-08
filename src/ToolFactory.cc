@@ -65,7 +65,8 @@ public:
                                 m_tbar.screen().getHeadWidth(head),
                                 m_tbar.screen().getHeadHeight(head));
         m_tbar.menu().move(m.first, m.second);
-        m_tbar.menu().show();        
+        m_tbar.menu().show();
+        m_tbar.menu().grabInputFocus();
     }
 private:
     Toolbar &m_tbar;

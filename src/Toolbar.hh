@@ -88,7 +88,6 @@ public:
     */
     //@{
     void buttonPressEvent(XButtonEvent &be);
-    void buttonReleaseEvent(XButtonEvent &be);
     void enterNotifyEvent(XCrossingEvent &ce);
     void leaveNotifyEvent(XCrossingEvent &ce);
     void exposeEvent(XExposeEvent &ee);
