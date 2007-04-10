@@ -106,6 +106,7 @@ FbCommandFactory::FbCommandFactory() {
         "hidemenus",
         "iconify",
         "keymode",
+        "kill",
         "killwindow",
         "leftworkspace",
         "lower",
