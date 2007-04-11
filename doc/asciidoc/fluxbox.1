@@ -1,11 +1,11 @@
 .\"     Title: fluxbox
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.71.1 <http://docbook.sf.net/>
-.\"      Date: 03/20/2007
+.\"      Date: 04/11/2007
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "FLUXBOX" "1" "03/20/2007" "" ""
+.TH "FLUXBOX" "1" "04/11/2007" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -249,10 +249,6 @@ This menu offers the opportunity to set up fluxbox. It contains many options fro
 \(bu
 
 \fBWindows Warping\fR: If enabled, you can drag windows from one workspace to another.
-.TP 4
-\(bu
-
-\fBDesktop MouseWheel Switching\fR: You will be able to change the workspace with your mousewheel if used on the desktop or over the toolbar if the option is enabled.
 .TP 4
 \(bu
 
@@ -507,11 +503,11 @@ The possible tools are:
 .TP 4
 \(bu
 
-\fBPrevWorkspace\fR: This displays an arrow that allows to switch to the workspace left of the current one. Same as MouseWheelDown with "Desktop MouseWheel Switching" enabled.
+\fBPrevWorkspace\fR: This displays an arrow that allows to switch to the workspace left of the current one.
 .TP 4
 \(bu
 
-\fBNextWorkspace\fR: This displays an arrow that allows to switch to the workspace right of the current one. Same as MouseWheelUp with "Desktop MouseWheel Switching" enabled.
+\fBNextWorkspace\fR: This displays an arrow that allows to switch to the workspace right of the current one.
 .TP 4
 \(bu
 
@@ -714,8 +710,7 @@ session.screen0.toolbar.autoHide: <boolean>
       False
 
 session.screen0.desktopwheeling: <boolean>
-session.screen0.toolbar.wheeling: <boolean>
-      These set the ability to utilize the user's scroll wheel to change the
+      This sets the ability to utilize the user's scroll wheel to change the
       current workspace. Default: True
 
 session.screen0.windowScrollAction: shade|nexttab
