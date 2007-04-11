@@ -77,6 +77,8 @@ enum {
 	ConfigmenuExternalTabWidth = 23,
 	ConfigmenuMouseTabFocus = 24,
 	ConfigmenuClickTabFocus = 25,
+	ConfigmenuMaxMenu = 26,
+	ConfigmenuMaxIgnoreInc = 27,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,
