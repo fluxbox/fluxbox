@@ -1716,10 +1716,15 @@ void FluxboxWindow::maximize(int type) {
     m_last_resize_w = new_w;
     m_last_resize_h = new_h;
 
-    ResizeDirection old_resize_corner = m_resize_corner;
-    m_resize_corner = NOCORNER;
-    fixsize(0, 0, true);
-    m_resize_corner = old_resize_corner;
+    // frankly, that xterm bug was pretty obscure, and it's really annoying not
+    // being able to maximize my terminals, so we make an option
+    // but we do fix size hints when restoring the window to normal size
+    if (!screen().getMaxIgnoreIncrement() || !maximized) {
+        ResizeDirection old_resize_corner = m_resize_corner;
+        m_resize_corner = NOCORNER;
+        fixsize(0, 0, (maximized ? true : false));
+        m_resize_corner = old_resize_corner;
+    }
 
     moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
 

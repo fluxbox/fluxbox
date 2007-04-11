@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/04/11:
+   * Added resource session.screen<N>.maxIgnoreIncrement: <boolean>, to
+     disable size checking when maximizing a window (e.g. terminals) (Mark)
+     - Also added a new configuration submenu for maximize options, to be filled
+       at a later date
+     Screen.cc/hh Window.cc
 *07/04/08:
    * Added OnToolbar modifier to keys file (Mark)
      Keys.cc/hh Toolbar.cc/hh Screen.cc/hh IconbarTool.cc fluxbox.cc

@@ -65,6 +65,7 @@ IconButton::IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);
 
+    reconfigTheme();
     update(0);
 }
 

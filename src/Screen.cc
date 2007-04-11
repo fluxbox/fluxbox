@@ -286,6 +286,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     image_dither(rm, false, scrname+".imageDither", altscrname+".ImageDither"),
     opaque_move(rm, false, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
     full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
+    max_ignore_inc(rm, true, scrname+".maxIgnoreIncrement", altscrname+".MaxIgnoreIncrement"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
     show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
@@ -1809,6 +1810,25 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     // END focus menu
 
+    // BEGIN maximize menu
+
+    FbTk::FbString maxmenu_label = _FB_XTEXT(Configmenu, MaxMenu,
+            "Maximize Options", "heading for maximization options");
+    FbTk::Menu *maxmenu = createMenu(maxmenu_label);
+
+    _BOOLITEM(*maxmenu, Configmenu, FullMax,
+              "Full Maximization", "Maximise over slit, toolbar, etc",
+              *resource.full_max, saverc_cmd);
+    _BOOLITEM(*maxmenu, Configmenu, MaxIgnoreInc,
+              "Ignore Resize Increment",
+              "Maximizing Ignores Resize Increment (e.g. xterm)",
+              *resource.max_ignore_inc, saverc_cmd);
+
+    maxmenu->updateMenu();
+    menu.insert(maxmenu_label, maxmenu);
+
+    // END maximize menu
+
     // BEGIN tab menu
 
     FbTk::FbString tabmenu_label = _FB_XTEXT(Configmenu, TabMenu,
@@ -1881,9 +1901,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Opaque Window Moving",
               "Window Moving with whole window visible (as opposed to outline moving)",
               *resource.opaque_move, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, FullMax,
-              "Full Maximization", "Maximise over slit, toolbar, etc",
-              *resource.full_max, saverc_cmd);
     try {
         _BOOLITEM(menu, Configmenu, FocusNew,
                   "Focus New Windows", "Focus newly created windows",
