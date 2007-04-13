@@ -769,14 +769,32 @@ void FluxboxWindow::nextClient() {
     if (numClients() <= 1)
         return;
 
-    screen().focusControl().cycleFocus(m_clientlist, 0);
+    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(),
+                                   m_client);
+    if (it == m_clientlist.end())
+        return;
+
+    ++it;
+    if (it == m_clientlist.end())
+        it = m_clientlist.begin();
+
+    setCurrentClient(**it, isFocused());
 }
 
 void FluxboxWindow::prevClient() {
     if (numClients() <= 1)
         return;
 
-    screen().focusControl().cycleFocus(m_clientlist, 0, true);
+    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(),
+                                   m_client);
+    if (it == m_clientlist.end())
+        return;
+
+    if (it == m_clientlist.begin())
+        it = m_clientlist.end();
+    --it;
+
+    setCurrentClient(**it, isFocused());
 }
 
 
@@ -1356,6 +1374,9 @@ bool FluxboxWindow::focus() {
         else
             screen().changeWorkspaceID(workspaceNumber());
     }
+
+    if (isIconic())
+        deiconify();
 
     // this needs to be here rather than setFocusFlag because
     // FocusControl::revertFocus will return before FocusIn events arrive

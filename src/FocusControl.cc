@@ -81,16 +81,6 @@ FocusControl::FocusControl(BScreen &screen):
     
 }
 
-void FocusControl::cycleFocus(FocusedWindows &window_list,
-                              const ClientPattern *pat, bool cycle_reverse) {
-    Focusables tmp_list;
-    FocusedWindows::iterator it = window_list.begin();
-    FocusedWindows::iterator it_end = window_list.end();
-    for (; it != it_end; ++it)
-        tmp_list.push_back(*it);
-    cycleFocus(tmp_list, pat, cycle_reverse);
-}
-
 void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
                               bool cycle_reverse) {
 
@@ -114,6 +104,7 @@ void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
     Focusables::iterator it = m_cycling_window;
     FluxboxWindow *fbwin = 0;
     WinClient *last_client = 0;
+    WinClient *was_iconic = 0;
 
     // find the next window in the list that works
     while (true) {
@@ -135,13 +126,12 @@ void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
 
         // keep track of the originally selected window in a group
         last_client = &fbwin->winClient();
+        was_iconic = (fbwin->isIconic() ? last_client : 0);
 
         // now we actually try to focus the window
         if (!doSkipWindow(**it, pat) && (*it)->focus())
             break;
     }
-
-    m_cycling_window = it;
 
     // if we're still in the same fbwin, there's nothing else to do
     if (m_cycling_last && m_cycling_last->fbwindow() == fbwin)
@@ -161,12 +151,14 @@ void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
         }
     }
 
-    m_cycling_last = last_client;
-    if (fbwin->isIconic())
-        m_was_iconic = m_cycling_last;
-    if (m_cycling_list)
-        // else window will raise itself (if desired) on FocusIn
+    if (isCycling())
         fbwin->tempRaise();
+    else
+        fbwin->raise();
+
+    m_cycling_window = it;
+    m_cycling_last = last_client;
+    m_was_iconic = was_iconic;
 
 }
 
@@ -179,8 +171,6 @@ void FocusControl::goToWindowNumber(Focusables &winlist, int num,
             if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
                 --num;
                 if (!num) {
-                    if ((*it)->fbwindow() && (*it)->fbwindow()->isIconic())
-                        (*it)->fbwindow()->deiconify();
                     (*it)->focus();
                     return;
                 }
@@ -193,8 +183,6 @@ void FocusControl::goToWindowNumber(Focusables &winlist, int num,
             if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
                 ++num;
                 if (!num) {
-                    if ((*it)->fbwindow() && (*it)->fbwindow()->isIconic())
-                        (*it)->fbwindow()->deiconify();
                     (*it)->focus();
                     return;
                 }

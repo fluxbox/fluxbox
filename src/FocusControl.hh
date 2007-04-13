@@ -40,7 +40,6 @@ class BScreen;
  */
 class FocusControl {
 public:
-    typedef std::list<WinClient *> FocusedWindows;
     typedef std::list<Focusable *> Focusables;
     /// main focus model
     enum FocusModel { 
@@ -81,14 +80,6 @@ public:
     void cycleFocus(Focusables &winlist, const ClientPattern *pat = 0,
                     bool reverse = false);
     
-    /**
-     * Cycle focus for a set of windows.
-     * @param winlist the windowlist to cycle through
-     * @param pat pattern for matching focusables
-     * @param reverse reverse the cycle order
-     */
-    void cycleFocus(FocusedWindows &winlist, const ClientPattern *pat = 0,
-                    bool reverse = false);
     void goToWindowNumber(Focusables &winlist, int num,
                           const ClientPattern *pat = 0);
     /// sets the focused window on a screen
