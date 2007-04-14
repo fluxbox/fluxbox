@@ -1600,7 +1600,7 @@ append_submenu "${NETMENU}"
 
     append_submenu Mail
         normal_find sylpheed kmail evolution thunderbird mozilla-thunderbird \
-            sylpheed-claws
+            sylpheed-claws claws-mail
         cli_find mutt pine
     append_menu_end
 
@@ -1610,7 +1610,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IRC
-        normal_find xchat xchat-2 ksirc vyqchat lostirc logui konversation kvirc
+        normal_find xchat xchat-2 ksirc vyqchat lostirc logui konversation kvirc skype
         cli_find irssi epic4 weechat ninja
         find_it BitchX        append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}" || \
         find_it bitchx        append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
@@ -1619,16 +1619,24 @@ append_submenu "${NETMENU}"
 
     append_submenu P2P
         normal_find gtk-gnutella lopster nicotine pyslsk xmule amule \
-            valknut dcgui-qt dc_qt quickdc asami
+            valknut dcgui-qt dc_qt quickdc asami azureus
         cli_find TekNap giFTcurs
     append_menu_end
 
-    append_submenu ftp
+    append_submenu FTP
         normal_find gftp IglooFTP-PRO kbear
         cli_find ncftp pftp ftp lftp yafc
     append_menu_end
 
-    normal_find xnmap skype x3270
+	 append_submenu SMB
+	 	  normal_find	LinNeighborhood jags SambaSentinel
+	 append_menu_end
+
+	 append_submenu Portscan
+	 	  normal_find xnmap nmapfe
+	 append_menu_end
+
+    normal_find x3270
 
 append_menu_end
 
