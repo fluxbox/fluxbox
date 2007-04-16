@@ -1,11 +1,11 @@
-Fluxbox(1)
+fluxbox(1)
 ==========
-Henrik Kinnunen <fluxgen@Fluxbox.org>
-v1.0rc2, 26th July 2006
+Henrik Kinnunen <fluxgen@fluxbox.org>
+v1.0rc3, 16th April 2007
 
 NAME
 ----
-Fluxbox - Ein schneller, hochkonfigurierbarer Fenstermanager fuer X11
+fluxbox - Ein schneller, hochkonfigurierbarer Fenstermanager fuer X11
 
 SYNOPSIS
 --------
@@ -21,7 +21,7 @@ SYNOPSIS
 
 BESCHREIBUNG
 ------------
-Fluxbox(1) stellt unter anderem konfigurierbare Fensterverzierungen,
+fluxbox(1) stellt unter anderem konfigurierbare Fensterverzierungen,
 ein Menue zum starten von Anwendungen sowie eine Toolbar, welche
 den Namen der aktuellen Arbeitsflaeche, ausgewaehlte Fenster und
 die aktuelle Uhrzeit anzeigt. Ueber ein Arbeitsflaechenmenue koennen
@@ -29,20 +29,20 @@ Arbeitsflaechen hinzugefuegt, entfernt oder umbenannt werden.
 Der Slit ermoeglicht kleine Anwendungen anzudocken, als Beispiel
 seien die bbtools oder Dockapps genannt.
 
-Fluxbox(1) kann Fenster in die Toolbar minimieren und zusaetzlich
+fluxbox(1) kann Fenster in die Toolbar minimieren und zusaetzlich
 ins 'Icons' Untermenue des Arbeitsflaechenmenues hinzufuegen.
 Ein einziger Klick und die Fenster sind wieder da.
 Ein Doppelklick auf den Fenstertitel und das Fenster wird
 auf/abgerollt, will heissen: nur noch der Fenstertitel ist sichtbar.
 
-Fluxbox(1) verwendet eine eigene Graphikklasse um die benoetigten
+fluxbox(1) verwendet eine eigene Graphikklasse um die benoetigten
 Graphiken darzustellen. Mit Farbschemadateien kann der Nutzer
 den Desktop bis ins Detail persoenlich gestalten.
 Farbschemata von Blackbox 0.65 (oder aelter) koennen in
-Fluxbox verwendet werden, so dass bei einer Umstellung
+fluxbox verwendet werden, so dass bei einer Umstellung
 von blackbox das Aussehen genau gleich bleibt.
 
-Fluxbox(1) unterstuetzt weitgehend die EWMH Spezifikationen
+fluxbox(1) unterstuetzt weitgehend die EWMH Spezifikationen
 sowie andere Standards der Fensterverwaltung. Das ermoeglicht
 eine einheitliche Ansteuerung aller Fenstermanager und
 vereinfacht die Interoperabilitaet zwischen verschiedenen
@@ -51,63 +51,63 @@ Anwendungen, Werkzeugen und Desktops.
 OPTIONS
 -------
 -display display::
-    Startet Fluxbox auf der angegebenen Anzeige.
-    Von Fluxbox gestartete Anwendungen uebernehmen diese Einstellung
+    Startet fluxbox auf der angegebenen Anzeige.
+    Von fluxbox gestartete Anwendungen uebernehmen diese Einstellung
 -h, -help::
     Zeigt eine Kurzhilfe mit den typischen Optionen an
 -i, -info::
     Zeigt wichtige Informationen wie die Version sowie
     einkompilierte Funktionen an
 -log logfile::
-    Fluxbox wird das angegebene Logfile benutzen
+    fluxbox wird das angegebene Logfile benutzen
 -rc rcfile::
-    Fluxbox verwendet eine andere Konfigurationsdatei als ~/.fluxbox/init
+    fluxbox verwendet eine andere Konfigurationsdatei als ~/.fluxbox/init
 -v, -version::
     Zeigt die Versionsnummer an
 -screen scr,scr|all::
-    Fluxbox wird auf den angegebenen screens ausgefuehrt
+    fluxbox wird auf den angegebenen screens ausgefuehrt
 -verbose::
-    Fluxbox gibt waehrend der Laufzeit zusaetzliche Informationen aus
+    fluxbox gibt waehrend der Laufzeit zusaetzliche Informationen aus
 
 FLUXBOX STARTEN
 ---------------
-Fluxbox(1) bringt ein weiteres Programm namens startfluxbox(8) mit,
+fluxbox(1) bringt ein weiteres Programm namens startfluxbox(8) mit,
 welches sich ueblicherweise in dem selben Verzeichnis befindet
-wie Fluxbox selber. Dieses Skript ermoeglicht es, zusaetzliche
-Variablen und Optionen anzupassen. Fluxbox sollte ueber startfluxbox
+wie fluxbox selber. Dieses Skript ermoeglicht es, zusaetzliche
+Variablen und Optionen anzupassen. fluxbox sollte ueber startfluxbox
 gestartet werden, ergo kann man "exec startfluxbox" in der
 ~/.xinitrc oder ~/.xsession (je nach verwendeter Distribution
 oder verwendetem Desktopmanager) als letzten Befehl eintragen.
-Dabei muss sich startfluxbox und Fluxbox in $PATH befindet,
+Dabei muss sich startfluxbox und fluxbox in $PATH befindet,
 was ueblicherweise der Fall ist.
 
-Fluxbox -i zeigt die von Fluxbox(1) verwendeten Standarddateien
+fluxbox -i zeigt die von fluxbox(1) verwendeten Standarddateien
 und Optionen an. Diese Dateien koennen fuer Systemweite
 Einstellungen / Menues verwendet werden, die dann fuer alle
 Anwender gelten.
 
-Beim Beenden oder Neustarten speichert Fluxbox die
+Beim Beenden oder Neustarten speichert fluxbox die
 Anwendereinstellungen in der Datei ~/.fluxbox/init
 Die Einstellungen koennen von Hand mit einem Texteditor
-oder ueber die verschiedenen Fluxboxmenues konfiguriert werden.
+oder ueber die verschiedenen fluxboxmenues konfiguriert werden.
 
 FLUXBOX BENUTZEN
 ----------------
 Viele Nutzer, die sich eine Desktopumgebung wie Gnome oder KDE
-gewohnt sind, sind beim ersten Start von Fluxbox ein wenig
+gewohnt sind, sind beim ersten Start von fluxbox ein wenig
 ueberrascht, da sich fast nichts auf dem Bildschirm befindet.
-Fluxbox ist auf auf Schnelligkeit und Konfigurierbarkeit
+fluxbox ist auf auf Schnelligkeit und Konfigurierbarkeit
 getrimmt, ergo wird man sicher ein wenig Zeit brauchen um
 sich umzugewoehnen. Viele finden aber, dass sich der einmalige
 Zeitaufwand durchaus lohnt.
 
-Es folgt nun eine Kurzuebersicht ueber die allgemeinen Dinge in Fluxbox.
+Es folgt nun eine Kurzuebersicht ueber die allgemeinen Dinge in fluxbox.
 Wir empfehlen allerdings, dass man die entsprechenden Abschnitte in
 dieser Anleitung liest um sich mit den Details vertraut zu machen.
 
 Root Window (Main)
 ~~~~~~~~~~~~~~~~~
-Beim ersten Start von Fluxbox sieht man lediglich die Toolbar.
+Beim ersten Start von fluxbox sieht man lediglich die Toolbar.
 Ein Rechtsklick (dritter Mausknopf) auf den leeren Desktop
 bringt das RootMenue hervor.  Ein Klick auf den mittleren
 Mausknopf (zweiter Mausknopf, meist das Mausrad) bringt
@@ -116,7 +116,7 @@ das Arbeitsflaechenmenue hervor.
 RootMenue und das Arbeitsflaechenmenue
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Ueber das RootMenue kann man Anwendungen starten und
-Fluxbox konfigurieren. Das Arbeitsflaechenmenue zeigt alle
+fluxbox konfigurieren. Das Arbeitsflaechenmenue zeigt alle
 Fenster auf den einzelnen Arbeitsflaechen.
 Im Abschnitt MENUES steht wie die beiden Menues angepasst werden koennen.
 
@@ -129,7 +129,7 @@ In der Toolbar befindet sich eine Kombination aus folgenden Werkzeugen:
 - *Workspace Name*:
     Der Name der aktuellen Arbeitsflaeche
 - *Iconbar*:
-    Eine Liste der von Fluxbox verwalteten Fenster
+    Eine Liste der von fluxbox verwalteten Fenster
 - *System Tray*:
     Systemabschnitt fuer Applets
 - *Clock*:
@@ -152,14 +152,14 @@ ganzer Abschnitt gewidmet.
 Ebenen
 ~~~~~~
 Fenster auf einer hoeheren Ebene werden automatisch oberhalb
-von denen auf tieferen Ebenen platziert, unabhaengig vom 
+von denen auf tieferen Ebenen platziert, unabhaengig vom
 Fokus. Nebst den Fenstern koennen auch der Slit und die
 Toolbar auf eine Ebene gelegt werden. Anwendungen
 koennen mit Hilfe der `apps' Datei oder ueber das Fenstermenue
 einer Ebene zugewiesen werden. Mehr ueber die `apps' Datei steht
 im ANWENDUNGEN Abschnitt, mehr ueber das Fenstermenue im Abschnitt
 MENU. Die Ebenen werden im gleichnamigen Abschnitt genauer behandelt.
-Fluxbox platziert Fenster auf folgenden Ebenen:
+fluxbox platziert Fenster auf folgenden Ebenen:
 (von oben nach unten)
 
 * ueberDock
@@ -173,7 +173,7 @@ Fokustyp
 ~~~~~~~~
 Maus- und Tastatureingaben werden jeweils an das Fenster
 mit Fokus weitergegeben (Globale Tastenkuerzel ausgenommen).
-Ueber das Fluxboxmenue kann das Fokusverhalten festgelegt werden.
+Ueber das fluxboxmenue kann das Fokusverhalten festgelegt werden.
 Im Abschnitt FOKUS sind die verschiedenen Modelle genauer beschrieben.
 
 Fenster
@@ -189,19 +189,19 @@ welches im Abschnitt MENU genauer beschrieben wird.
 
 Reiter (Tabs)
 ~~~~~~~~~~~~~
-Fluxbox ermoeglicht es Fenster zu gruppieren, indem man
+fluxbox ermoeglicht es Fenster zu gruppieren, indem man
 ein Fenster mit der mittleren Maustaste packt und in
 ein anderes zieht. Dieses tabben ermoeglicht es
 mehrere Anwendungen an einem zentralen Ort zu haben
 und gleichzeitig zu verschieben/vergroessern/verkleinern.
 Standardmaessig werden die Reiter ausserhalb des Fensters
-angezeigt, sie koennen allerdings auch in den Fenstertitel 
+angezeigt, sie koennen allerdings auch in den Fenstertitel
 eingebettet werden. Die Konfiguration der Reiter wird
 im Abschnitt REITEROPTIONEN erlaeutert.
 
 MENU
 ----
-Fluxbox installiert eine Standard-Menuedatei unter @pkgdatadir/menu.
+fluxbox installiert eine Standard-Menuedatei unter @pkgdatadir/menu.
 Beim Aufruf von fluxbox -i wird diese mit Pfad angezeigt.
 Dieses Systemweite Menue gilt fuer alle Nutzer.
 Es ist natuerlich moeglich, dass jeder Nutzer seine eigene
@@ -213,24 +213,24 @@ Die Option dazu ist:
     session.menuFile: <menufile>
 
 Um eine Aenderung daran wirksam werden zu lassen, muss
-Fluxbox neu gestartet werden. Vorher sollte man
+fluxbox neu gestartet werden. Vorher sollte man
 sicherstellen, dass die Menuedatei korrekt ist und
-von Fluxbox verwendet werden kann.
+von fluxbox verwendet werden kann.
 Aenderungen in der Menuedatei selber erfordern
-keinen Neustart, sie werden von Fluxbox sofort uebernommen.
+keinen Neustart, sie werden von fluxbox sofort uebernommen.
 
-In saemtlichen Menues hat man die Moeglichkeiten von 
+In saemtlichen Menues hat man die Moeglichkeiten von
 typeahead, will heissen man kann Eintraege auch
 durch schreiben der ersten paar Buchstaben auswaehlen.
-Der aktuelle Eintrag wird dabei jeweils von Fluxbox
-unterstrichen. Die Tabulator-Taste oeffnet ein 
+Der aktuelle Eintrag wird dabei jeweils von fluxbox
+unterstrichen. Die Tabulator-Taste oeffnet ein
 Untermenue wenn die Zeichenfolge einmalig ist,
 backspace schliesst, wenn nichts getippt wurde,
-das aktuell geoeffnete Menue. 
+das aktuell geoeffnete Menue.
 
 Root Menu
 ~~~~~~~~~
-Das Rootmenue wird unter anderem verwendet, um Fluxbox zu
+Das Rootmenue wird unter anderem verwendet, um fluxbox zu
 konfigurieren. Die meisten Konfigurationen koennen auch
 von Hand in der `init' Datei durchgefuehrt werden.
 Allerdings ist die Verwendung des Rootmenues meist
@@ -240,7 +240,7 @@ Es folgen die wichtigsten Menuepunkte:
 
 - *Configure*:
     In dem Untermenue koennen die meisten Einstellungen bezueglich
-    dem Verhalten von Fluxbox und den Werkzeugen vorgenommen werden.
+    dem Verhalten von fluxbox und den Werkzeugen vorgenommen werden.
 
 - *System Styles*:
     Hier werden die Systemweiten Farbschemata gelistet.
@@ -253,7 +253,7 @@ Es folgen die wichtigsten Menuepunkte:
 
 - *User Styles*:
     Die Farbschemata, die sich unter
-    ~/.fluxbox/styles 
+    ~/.fluxbox/styles
     befinden werden hier aufgelistet.
 
 - *Workspace List*:
@@ -261,34 +261,34 @@ Es folgen die wichtigsten Menuepunkte:
     darauf befindenden Fenster auf
 
 - *Tools*:
-    Diverse kleine Werkzeuge die von Fluxbox mitgeliefert werden,
+    Diverse kleine Werkzeuge die von fluxbox mitgeliefert werden,
     zum Beispiel um eine Arbeitsflaeche umzubenennen.
 
 - *Window*:
     Kann verwendet werden um zu einem anderen Fenstermanager
-    oder einer Desktopumgebung umzuschalten. Fluxbox wird
+    oder einer Desktopumgebung umzuschalten. fluxbox wird
     dabei beendet, die Fenster aber nicht geschlossen.
 
 - *Lock Screen*:
     Sperrt den Bildschirm
 
-- *Fluxbox Command*:
+- *fluxbox Command*:
     Ein kleiner Dialog um einen Befehl auszufuehren
 
 - *Reload Config*:
     Liest die Konfigurationsdateien neu ein
 
 - *Restart*:
-    Startet Fluxbox neu. Saemtliche Konfigurationsdateien
+    Startet fluxbox neu. Saemtliche Konfigurationsdateien
     werden neu eingelesen, alle graphischen Elemente neu
     gezeichnet. Die Anwendungen werden dabei nicht geschlossen.
 
 - *Exit*:
-    Beendet Fluxbox und den X Server
+    Beendet fluxbox und den X Server
 
 Konfigurationsmenue
 ~~~~~~~~~~~~~~~~~~~
-Hier kann Fluxbox konfiguriert werden. Die Verwendung
+Hier kann fluxbox konfiguriert werden. Die Verwendung
 dieses Menues ist meist schneller als das editieren
 der init Datei und sollte von daher bevorzugt werden.
 Zudem entfaellt so die Moeglichkeit eines Tippfehlers.
@@ -313,11 +313,11 @@ Die Bezeichnungen sind: Deutsche uebersetzung / Original
 
 - *Fensterinhalt beim Verschieben anzeigen / Opaque Window Moving*:
     Falls eingeschaltet, wird beim Verschieben von Fenstern deren
-    Inhalt angezeigt, ansonsten nur der Fensterrahmen. Vor allem bei 
+    Inhalt angezeigt, ansonsten nur der Fensterrahmen. Vor allem bei
     langsamen Rechnern nuetzlich.
 
 - *Vollstaendig maximieren / Full Maximization*:
-    Maximiert Fenster auf volle Bildschirmgroesse, auch 
+    Maximiert Fenster auf volle Bildschirmgroesse, auch
     wenn sie dabei unter/ueber den Slit oder die Toolbar geraten.
 
 - *Neue Fenster fokussieren / Focus New Window*:
@@ -345,14 +345,14 @@ Die Bezeichnungen sind: Deutsche uebersetzung / Original
 
 Fenstermenue
 ~~~~~~~~~~~~
-Das Fenstermenue wird bei einem Rechtsklick auf den Fenstertitel 
-oder den Eintrag in der Toolbar angezeigt. Es enthaelt folgende Eintraege: 
+Das Fenstermenue wird bei einem Rechtsklick auf den Fenstertitel
+oder den Eintrag in der Toolbar angezeigt. Es enthaelt folgende Eintraege:
 (uebersetzt / Original)
 
 - *Senden an / Send To...*:
     Platziert das Fenster auf einer anderen Arbeitsflaeche.
     Wenn diese mit einem Mittelklick ausgewaehlt wird
-    wechselt Fluxbox sofort zu dieser Arbeitsflaeche.
+    wechselt fluxbox sofort zu dieser Arbeitsflaeche.
 
 - *Aufrollen / Shade*:
     Rollt das Fenster auf/ab (nur der Fenstertitel wird angezeigt).
@@ -434,7 +434,7 @@ Tags sind:
 [end];;
     Kennzeichnet den Schluss eines Menues oder Untermenues.
     Mindestens ein end tag muss vorhanden sein,
-    zusaetzlich muss jedes Untermenue mit einem end tag 
+    zusaetzlich muss jedes Untermenue mit einem end tag
     geschlossen weden.
 
 [exec] (Bezeichnung) \{Befehl\};;
@@ -442,7 +442,7 @@ Tags sind:
     Dies ist der haeufigste Eintrag.
 
 [exit] (Bezeichnung);;
-    Beendet Fluxbox.
+    Beendet fluxbox.
 
 [include] (Datei oder Verzeichnis);;
     Parst die angegebene Datei
@@ -451,9 +451,9 @@ Tags sind:
     Verzeichnis angegeben wird werden saemtliche Dateien darin verarbeitet.
 
 [nop] (Bezeichnung);;
-    Fuegt einen Dummy ein der keine Funktion hat. 
-    Kann verwendet werden um das Menue in Bloecken zu gruppieren. 
-    Wenn keine Bezeichnung angegeben wird setzt Fluxbox einfach
+    Fuegt einen Dummy ein der keine Funktion hat.
+    Kann verwendet werden um das Menue in Bloecken zu gruppieren.
+    Wenn keine Bezeichnung angegeben wird setzt fluxbox einfach
     eine Leerzeile im Menue.
 
 [separator];;
@@ -463,10 +463,10 @@ Tags sind:
     Fuegt ein Farbschema als Menueeintrag hinzu
 
 [stylesdir] (Bezeichnung) \{Verzeichnis\};;
-    Erstellt ein Untermenue mit dem Namen des angegebenen Bezeichners und 
+    Erstellt ein Untermenue mit dem Namen des angegebenen Bezeichners und
 	listet in diesem alle enhaltenen Dateien, die im angegebenen Verzeichnis
-	gefunden werden, als Farbschemata auf. 
-		
+	gefunden werden, als Farbschemata auf.
+
 [stylesmenu] (Verzeichnis);;
     Liest alle Dateien in dem Verzeichnis und listet sie als Farbschemata
 	auf, die ausgewaehlt werden koennen.
@@ -483,34 +483,34 @@ Tags sind:
     man ein Farbschema editiert und fluxbox nicht immer neu starten will.
 
 [restart] (Bezeichnung) \{Befehl\};;
-    Erstellt einen Menuepunkt der Fluxbox neu startet
-    oder, wenn ein Befehl angegeben, ist Fluxbox beendet
+    Erstellt einen Menuepunkt der fluxbox neu startet
+    oder, wenn ein Befehl angegeben, ist fluxbox beendet
     und den Befehl ausfuehrt. (Zum Beispiel um zu einem
     anderen Fenstermanager zu wechseln)
 
 [config] (Bezeichnung);;
-    Fuegt das Fluxbox Konfigurationsuntermenue hinzu
+    Fuegt das fluxbox Konfigurationsuntermenue hinzu
 
 [wallpapermenu] (Verzeichnis) \{Befehl\};;
     Listet alle (Bild)Dateien in dem angegebenen Verzeichnis als Menueintraege
 	auf. Der Befehl wird benutzt um das Bild als Hintergrund zu setzen.
-    Wenn kein Befehl angegeben wird nutzt Fluxbox fbsetbg(1)
+    Wenn kein Befehl angegeben wird nutzt fluxbox fbsetbg(1)
 
 [workspaces] (Bezeichnung);;
     Fuegt das Arbeitsflaechenmenue zum Menue hinzu,
-    praktisch fuer Leute die das Arbeitsflaechenmenue 
+    praktisch fuer Leute die das Arbeitsflaechenmenue
     nicht so aufrufen koennen. (Zweitastenmaus
     ohne Emulation des dritten Knopfes)
 
-Alle Zeilen die mit # oder ! beginnen werden von Fluxbox
+Alle Zeilen die mit # oder ! beginnen werden von fluxbox
 als Kommentar gesehen und ignoriert.
 Sonderzeichen koennen mit \ escaped werden.
 
 Ein Menue koennte zum Beispiel so aussehen:
 
 ------------------------------------------------------------------
-# Fluxbox menu file
-[begin] (Fluxbox)
+# fluxbox menu file
+[begin] (fluxbox)
     [exec] (rxvt) {rxvt -ls} </usr/X11R6/share/icons/terminal.xpm>
     [exec] (netscape) {netscape -install}
     [exec] (The GIMP) {gimp}
@@ -528,7 +528,7 @@ Ein Menue koennte zum Beispiel so aussehen:
         [exec] (Edit Menus) {nedit ~/.fluxbox/menu}
         [submenu] (Style) {Which Style?}
             [stylesdir] (~/.fluxbox/styles)
-            [stylesmenu] (Fluxbox Styles) {@pkgdatadir@/styles}
+            [stylesmenu] (fluxbox Styles) {@pkgdatadir@/styles}
         [end]
         [config] (Config Options)
         [reconfig] (Reconfigure)
@@ -543,7 +543,7 @@ TOOLBAR
 Die Toolbar ist ein Platzhalter fuer diverse Werkzeuge,
 wie zum Beispiel eine Uhr, die Anzeige der aktuellen
 Arbeitsflaeche, ein Systemabschnitt oder die Iconbar,
-welche von Fluxbox verwaltete Fenster anzeigt.
+welche von fluxbox verwaltete Fenster anzeigt.
 Ihr aussehen kann in dem Farbschema konfiguriert werden.
 
 Die einzelnen Werkzeuge koennen in der init Datei
@@ -567,13 +567,13 @@ Als Werkzeuge stehen zur Auswahl:
     entspricht dem von "man strtftime"
 
 - *iconbar*:
-    Zeigt die von Fluxbox verwalteten Fenster an. Je nach 
+    Zeigt die von fluxbox verwalteten Fenster an. Je nach
     Einstellung alle Fenster, nur minimierte Fenster
     oder nur die Fenster der aktuellen Arbeitsflaeche.
 
 - *systemtray*:
     Der Systemabschnitt, einige Applikationen koennen sich
-	in die Systemtray minimieren. Bekannt dafuer sind 
+	in die Systemtray minimieren. Bekannt dafuer sind
 	InstantMessenger wie Gaim/Kopete, Audioplayer wie amaroK
 	oder zum Beispiel Lautstaerkeregler.
 
@@ -596,16 +596,16 @@ Als Werkzeuge stehen zur Auswahl:
     Zeigt einen Knopf mit einem Pfeil an. Bei Klick wird
     das naechste sichtbare Fenster fokussiert.
 
-Alle anderen Dinge koennen auf zwei Arten konfiguriert werden: 
+Alle anderen Dinge koennen auf zwei Arten konfiguriert werden:
 mit einem Texteditor kann die init Datei manuell bearbeitet
 werden. Komfortabler ist das Toolbarmenue, welches mit einem
 Rechtsklick auf die Toolbar aufgerufen werden kann.
 
 Konfiguration ueber das Toolbarmenue
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Alle aenderungen werden von Fluxbox sofort uebernommen,
+Alle aenderungen werden von fluxbox sofort uebernommen,
 bis auf die Transparenzeinstellungen welche einen
-Neustart von Fluxbox erfordern:
+Neustart von fluxbox erfordern:
 (Die Eintraege stehen jeweils uebersetzt und als
 englisches Original, zudem ist die passende
 Zeile in der init Datei angegeben)
@@ -627,7 +627,7 @@ Zeile in der init Datei angegeben)
 - *Toolbar Laenge / Toolbar width percentage*:
     Gibt die Breite der Toolbar im Verhaeltnis zum
     Bildschirm an. Ein Linksklick verkleinert den Wert,
-    ein Rechtsklick erhoeht ihn. Alternativ kann das 
+    ein Rechtsklick erhoeht ihn. Alternativ kann das
 	Mausrad benutzt werden.
 
     session.screen0.Toolbar.widthPercent: <int>
@@ -697,7 +697,7 @@ Zeile in der init Datei angegeben)
 
 - *Programm-Icons anzeigen / Show Pictures*:
     Wenn diese Einstellung aktiv ist werden
-    die Icons (in diesem Fall Bilder) neben 
+    die Icons (in diesem Fall Bilder) neben
 	dem Programmnamen angezeigt.
 
     session.screen0.iconbar.usePixmap: <boolean>
@@ -715,13 +715,13 @@ Zeile in der init Datei angegeben)
 
 RESSOURCEN
 ----------
-Ueblicherweise wird die ~/.fluxbox/init Datei von Fluxbox 
+Ueblicherweise wird die ~/.fluxbox/init Datei von fluxbox
 erstellt und verwaltet. Fast alle Einstellungen koennen
 ueber das Konfigurationsmenue vorgenommen werden.
-Wenn die Datei von Hand editiert wird muss Fluxbox
+Wenn die Datei von Hand editiert wird muss fluxbox
 neu gestartet werden damit aenderungen uebernommen werden.
 
-Wenn Fluxbox auf mehreren Bildschirmen laeuft 
+Wenn fluxbox auf mehreren Bildschirmen laeuft
 muss screen0 je nach dem angepasst werden.
 Einstellungen koennen fuer jeden Bildschirm
 einzeln vorgenommen werden.
@@ -737,8 +737,8 @@ session.screen0.slit.alpha: <integer>
 session.screen0.Toolbar.alpha: <integer>
 session.screen0.window.focus.alpha: <integer>
 session.screen0.window.unfocus.alpha: <integer>
-    Mit diesen Zeilen kann die Transparenz der einzelnen 
-    Fluxboxkomponenten angepasst werden. Der Wert ist dabei
+    Mit diesen Zeilen kann die Transparenz der einzelnen
+    fluxboxkomponenten angepasst werden. Der Wert ist dabei
     eine Ganzzahl zwischen 0 und 255, wobei 0 vollstaendig
     transparent und 255 deaktivierte Transparenz bedeutet.
     Standardwert: 255
@@ -771,7 +771,7 @@ onTop Einstellungen
 
 session.screen0.slit.onTop: <boolean>
 session.screen0.Toolbar.onTop: <boolean>
-     Werden diese Einstellungen aktiviert befinden sich 
+     Werden diese Einstellungen aktiviert befinden sich
      Toolbar/Slit immer oberhalb aller anderer Fenster
      Standardwert: False
 
@@ -829,10 +829,10 @@ session.screen0.Toolbar.tools: <tools>
 
 session.screen0.slit.onhead: <integer>
 session.screen0.Toolbar.onhead: <integer>
-    Bestimmt bei Systemen mit mehreren Monitoren auf welchem 
+    Bestimmt bei Systemen mit mehreren Monitoren auf welchem
     sich die Toolbar/der Slit befinden
     Standardwert: 0
-	
+
 session.screen0.slit.direction: <alignment>
     Ausrichtung des Slits, Horizontal oder Vertikal
 
@@ -866,10 +866,10 @@ Reiter (tabs)
 
 session.screen0.tab.alignment: Left
     Anordnung der Reiter (tabs)
-	
+
 session.screen0.tab.height: 16
     Hoehe der Reiter (tabs)
-	
+
 session.screen0.tab.placement: <position>
 	Platzierung der Reiter (tabs)
 	moeglich ist:
@@ -918,7 +918,7 @@ session.screen0.workspacewarping: <boolean>
 
 session.screen0.showwindowposition: <boolean>
     Ist diese Option aktiviert wird beim Verschieben/Vergroessern
-    eines Fensters die momentane Position/Groesse in Form 
+    eines Fensters die momentane Position/Groesse in Form
     von  x/y eingeblendet
     Standardwert: true
 
@@ -931,16 +931,16 @@ session.screen0.strftimeFormat: <date>
     Standardwert: %I:%M %p
 
 session.screen0.windowPlacement: <Strategie>
-    Diese Option gibt an wie Fluxbox neue Fenster automatisch platzieren soll
+    Diese Option gibt an wie fluxbox neue Fenster automatisch platzieren soll
     RowSmartPlacement reiht die Fenster ueberlappend auf,
     ColSmartPlacement reiht sie ohne Ueberlappung nebeneinander,
-    CascadePlacement setzt es unter den Fenstertitel des letzten Fensters, 
+    CascadePlacement setzt es unter den Fenstertitel des letzten Fensters,
     UnderMousePlacement setzt sie unter die aktuelle Mausposition
     Standardwert: RowSmartPlacement
 
 session.screen0.rowPlacementDirection: LeftToRight|RightToLeft
 session.screen0.colPlacementDirection: TopToBottom|BottomToTop
-    Setzt die Richtung in der Fluxbox neue Fenster bei 
+    Setzt die Richtung in der fluxbox neue Fenster bei
     RowSmartPlacement respektive ColSmartPlacement setzen soll.
 
 session.screen0.workspaces: <integer>
@@ -963,7 +963,7 @@ session.doubleClickInterval: <integer>
 
 session.forcePseudoTransparency: <boolean>
     Erzwingt Pseudotransparenz ueber echte Transparenz
-    
+
 session.opaqueMove: <boolean>
     Anzeigen des Inhalts beim Verschieben eines Fensters.
     Sollte auf langsamen Systemen deaktiviert (false) werden
@@ -971,7 +971,7 @@ session.opaqueMove: <boolean>
 
 session.tabs: <boolean>
 session.tabsAttachArea: Window
-    Aktiviert/Deaktiviert Tabs und setzt sie 
+    Aktiviert/Deaktiviert Tabs und setzt sie
     innerhalb oder ausserhalb des Fensters
 
 session.titlebar.left: Stick
@@ -1004,13 +1004,13 @@ bewirkt, dass der Befehl bei direktem
 Druck auf <Taste> ausgefuehrt wird.
 
 Eine Liste der moeglichen Modtasten liefert 'xmodmap -pm'.
-Diese Zeigt auch welche Taste mit welchem Modifikator belegt ist. 
+Diese Zeigt auch welche Taste mit welchem Modifikator belegt ist.
 
 Neu koennen auch Maustasten (Mouse1, Mouse2 etc.) belegt werden.
 
 Eine keys Datei koennte so aussehen:
 ............................
-# Fluxbox keys file.
+# fluxbox keys file.
 OnDesktop Mouse1 :hideMenus
 OnDesktop Mouse2 :workspaceMenu
 OnDesktop Mouse3 :rootMenu
@@ -1038,21 +1038,21 @@ Mod4 x :Close
 Mod4 m :RootMenu
 Control n Mod1 n :NextTab
 ............................
- 
+
 Die letzte Zeile zeigt, dass auch Tastensketten
 wie zum Beispiel von Emacs bekannt verwendet
 werden koennen
- 
+
 Wichtig zu wissen:
     Befehle sind case-insensitive
     Die Arbeitsflaechen beginnen bei "1"
     Fuer diverse Befehle gibt es Synonyme.
     Der Abstand zwischen der letzten Taste und dem ":" ist zwingend.
- 
+
 Window-Manager-Befehle
 ~~~~~~~~~~~~~~~~~~~~~~
 
-- Restart <argument>    #Startet Fluxbox neu 
+- Restart <argument>    #Startet fluxbox neu
 - Quit   #Beendet fluxbox
 - Exit   #Beendet fluxbox
 - Reconfigure   #Liest die Konfiguration neu ein
@@ -1060,7 +1060,7 @@ Window-Manager-Befehle
 - SetStyle <argument>   #Schaltet zu dem gewaehlten Stil
 - ExecCommand <argument>   #Fuehrt einen Befehl aus
 - Exec <argument>   #Fuehrt einen Befehl aus
- 
+
 Befehle fuer das fokussierte Fenster
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1093,7 +1093,7 @@ Befehle fuer das fokussierte Fenster
 - StickWindow   #Schaltet den Klebezustand um
 - ToggleDecor   #Deaktiviert den Fensterrahmen
 - SendToWorkspace <Arbeitsflaeche>   #Verschiebt das Fenster auf Arbeitsflaeche
-- SendToNextWorkspace <nummer>   #Verschiebt das Fenster auf Flaeche + Nummer 
+- SendToNextWorkspace <nummer>   #Verschiebt das Fenster auf Flaeche + Nummer
 - SendToPrevWorkspace <number>   #Verschiebt das Fenster auf Flaeche - Nummer
 - TakeToWorkspace <num>   #Zeigt die neue Arbeitsfläche gleich an
 - KillWindow   #Forciert das Schliessen des Fensters (kill)
@@ -1102,7 +1102,7 @@ Befehle fuer das fokussierte Fenster
 - MoveTabLeft   #Verschiebt das Fenster nach links
 - MoveTabRight   #Verschiebt das Fenster nach rechts
 - DetachClient   #Loest das Fenster von einer Gruppe
-- SetHead <int>   #Verschiebt das Fenster auf Bildschirm <int> 
+- SetHead <int>   #Verschiebt das Fenster auf Bildschirm <int>
 
 Befehle fuer die Arbeitsflaeche
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1115,7 +1115,7 @@ Befehle fuer die Arbeitsflaeche
 - PrevWindow <bitmask>   #siehe weiter unten
 - ArrangeWindows   #Ordnet die Fenster nebeneinander an
 - ShowDesktop   #Minimiert alle Fenster der Arbeitsflaeche
-- RootMenu   #Zeigt das Fluxboxmenu an
+- RootMenu   #Zeigt das fluxboxmenu an
 - WorkspaceMenu   #Zeigt das Arbeitsflaechenmenu an
 - WindowMenu   #Zeigt das Fenstermenue an
 - SetWorkspaceName <name>   #Bennennt die aktuelle Arbeitslaeche um
@@ -1125,7 +1125,7 @@ Befehle fuer die Arbeitsflaeche
 - FocusDown   #Fokussiert das suedlich liegende Fenster
 - FocusLeft   #Fokussiert das westlich liegende Fenster
 - FocusRight   #Fokussiert das oestlich liegende Fenster
- 
+
 Spezielle Befehle
 ~~~~~~~~~~~~~~~~~
 - MacroCmd   #Befehlsreihen, MacroCmd \{command1\} \{command2\}...
@@ -1140,7 +1140,7 @@ Diverses
     fluxbox nutzt /bin/sh um Befehle auszuefuehren.
     Will heissen, dass man Umgebungsvariablen nutzen kann.
        :Exec $XTERM
-    Sartet zum Beispiel das der Variable $XTERM zugewiesene Terminal. 
+    Sartet zum Beispiel das der Variable $XTERM zugewiesene Terminal.
 
 - TakeToWorkspace:
     Sendet das Fenster an eine bestimmte Arbeitsflaeche und
@@ -1148,7 +1148,7 @@ Diverses
 
 - TakeToNextWorkspace <offset>:
     Sendet das Fenster an die aktuelle Arbeitsflaeche + Offset
-    und schaltet zu ebendieser um. 
+    und schaltet zu ebendieser um.
 
 - PrevWindow/NextWindow braucht eine Zahl als Parameter:
     0 oder nichts = aktuelles / Standardverhalten
@@ -1168,7 +1168,7 @@ Diverses
   bei dem alle Tastenzuweisungen, die nicht mit Xnest: beginnen,
   deaktiviert sind. <return key sequence> schaltet auf den Standardmodus.
 
-- Der Delta-Wert entspricht der Differenz zischen dem aktuellen 
+- Der Delta-Wert entspricht der Differenz zischen dem aktuellen
   und dem gewuenschten Wert.
   Nehmen wir an ein Fenster ist 100 Pixel breit
 
@@ -1214,7 +1214,7 @@ Eine Anwendung auf einer hoeheren Ebene liegt immer
 ueber einer Anwendung auf einer tieferen Ebene und
 ueberdeckt diese, selbst wenn die hintere den Fokus hat.
 
- 
+
 Es gibt zwei Moeglichkeiten die Ebene einer Anwendung
 festzulegen: Entweder ueber das Fenstermenue, welches
 6 Ebenen zur Auswahl bietet:
@@ -1227,7 +1227,7 @@ festzulegen: Entweder ueber das Fenstermenue, welches
 * 12 - Desktop
 
 Die andere Moeglichkeit ist die apps Datei, die
-weiter unten im Abschnitt ANWENDUNGEN 
+weiter unten im Abschnitt ANWENDUNGEN
 beschrieben wird.
 
 
@@ -1287,26 +1287,26 @@ konfiguriert werden. Er besteht aus 3 Optionen:
 
 FARBSCHEMATA
 ------------
-Das Aussehen von Fluxbox, also die Schriftart, die
+Das Aussehen von fluxbox, also die Schriftart, die
 Fensterdekoration inklusive Fenstertitel, Rahmen,
-Knoepfe, Menuefarbe, kann bis ins Detail angepasst 
+Knoepfe, Menuefarbe, kann bis ins Detail angepasst
 werden. Dafuer zustaendig sind Farbschemata, eigentlich
 ganz normale Textdateien die gewisse Informationen
 beinhalten. Naeheres dazu steht in der separaten
-Anleitung fluxstyle(1) 
+Anleitung fluxstyle(1)
 
 STYLE OVERLAY
 -------------
 Zusaetzlich zu dem Farbschema gibt es noch das Overlay, welches in der init
 Datei mit session.screen0.styleOverlay (standard: ~/.fluxbox/overlay )
 festgelegt ist. Darin koennen diverse Konfigurationen des
-Aussehens von Fluxbox so gesetzt werden, dass sie die Einstellungen 
+Aussehens von fluxbox so gesetzt werden, dass sie die Einstellungen
 in dem verwendeten Farbschema ueberschreiben. Mehr dazu steht
 auch in fluxstyle(1).
 
 ANWENDUNGEN
 -----------
-Fluxbox kann diverse Fenstereinstellungen dauerhaft
+fluxbox kann diverse Fenstereinstellungen dauerhaft
 speichern. Dazu wird die apps Datei benutzt.
 Diese kann entweder von Hand angepasst werden
 oder man fuegt die Eintraege ueber das Fenstermenue
@@ -1314,12 +1314,12 @@ der entsprechenden Anwendung hinzu.
 
 Das Format fuer Eintraege in der apps Datei sieht wie folgt aus:
 
-  [app] (Name der Anwendung) 
+  [app] (Name der Anwendung)
           [Einstellung1]  /{Wert1/}
           [Einstellung2]  /{Wert2/}
           ...
   [end]
- 
+
 Der Name kann dabei ein String oder ein regulaerer Ausdruck (RegExp) sein.
 Dabei koennen diverse Dinge als Name verwendet werden, unter anderem der
 im Fenstertitel erscheinende Name oder auch die "Rolle" des Fensters.
@@ -1331,31 +1331,31 @@ Diese Werte koennen sehr gut mit dem Programm xprop ausgelesen werden.
   [app] (xterm)
       ... Einstellungen ...
   [end]
- 
+
   # Ein XTerm mit speziell gesetztem Titel: (xterm -name myshell)
   [app] (myshell)
       ... Einstellungen ...
   [end]
- 
-  # Ein beliebiges Firefox Fenster 
+
+  # Ein beliebiges Firefox Fenster
   [app] (class=Firefox-bin) {1}
       ... Einstellungen ...
   [end]
- 
+
   # Die Kontaktliste von GAIM (allerdings nicht das Chatfenster)
   [app] (role=buddy_list)
       ... Einstellungen ...
   [end]
- 
+
   #Ein RDesktop Fenster zu einem bestimmten Host:
   [app] (title=rdesktop - hostname.*)
       ... Einstellungen ...
   [end]
- 
+
 *Einstellungen*
 
-Folgende Einstellungen koennen pro [app] Eintrag gemacht werden: 
-(Die Bezeichnung ist dabei in eckigen, der wert in 
+Folgende Einstellungen koennen pro [app] Eintrag gemacht werden:
+(Die Bezeichnung ist dabei in eckigen, der wert in
 geschweiften Klammern zu schreiben)
 
 - [Workspace] /{0-N/}
@@ -1371,14 +1371,14 @@ geschweiften Klammern zu schreiben)
            * UPPERLEFT Obere linke Ecke
            * UPPERRIGHT Obere rechte Ecke
            * LOWERLEFT Untere linke Ecke
-           * LOWERRIGHT Untere rechte Ecke 
+           * LOWERRIGHT Untere rechte Ecke
 	+
-    
-    Wird kein Referenzpunkt angegeben geht Fluxbox
+
+    Wird kein Referenzpunkt angegeben geht fluxbox
     von der linken oberen Ecke aus.
 
-- [Layer] 
-    Ebene auf der die Anwendung gestartet wird. 
+- [Layer]
+    Ebene auf der die Anwendung gestartet wird.
     (in Klammern die Originalnamen):
 	+
         * 2 - ueber Dock (AboveDock)
@@ -1386,26 +1386,26 @@ geschweiften Klammern zu schreiben)
         * 6 - Oben (Top)
         * 8 - Normal
         * 10 - Unten (Bottom)
-        * 12 - Desktop 
+        * 12 - Desktop
 	+
-	
+
 - [Shaded]
     Soll das Fenster aufgerollt gestartet werden
 
 - [Tab]
     Ist das Fenster tabbar
-    
+
 - [IconHidden]
     Soll das Fenster in der Fensterleiste gezeigt werden
 
 - [FocusHidden]
     Soll das Fenster von Prev/NextWindow ausgenommen werden
-    
+
 - [Hidden]
     Aktiviert sowohl [IconHidden] als auch [FocusHidden]
 
 - [Deco] /{NONE|NORMAL|TOOL|TINY|BORDER|TAB/}
-    Definiert aktive Fensterdekos 
+    Definiert aktive Fensterdekos
     +
         * NORMAL - Standarddekoration
         * NONE - Ohne Dekoration (Ohne Fenstertitel, ohne Rahmen)
@@ -1414,7 +1414,7 @@ geschweiften Klammern zu schreiben)
         * TOOL - Nur ein Fenstertitel
         * TAB - Wie NONE, allerdings werden externe Reiter (tabs) angezeigt
      +
-     
+
      Eine Bitmask kann fuer die Einstellung verwendet werden, die bits sind
      (von "1" bis 1<<10): Fenstertitel, handle/grips, Rahmen, minimieren,
      maximieren, schliessen, Menue aktiviert, Klebezustandsknopf, Aufrollknopf,
@@ -1497,11 +1497,11 @@ Slit verschoben zu werden. Beispiele sind
 bbmail -w &
 bbpager -w &
 wmdrawer &
-exec Fluxbox
+exec fluxbox
 ..............
- 
 
-Die Slitfunktionalitaet wird standardmaessig in Fluxbox
+
+Die Slitfunktionalitaet wird standardmaessig in fluxbox
 einkompiliert, kann aber entfernt werden.
 fluxbox -i gibt dabei aus ob sie einkompiliert wurde
 oder nicht.
@@ -1539,18 +1539,18 @@ Konfigurationsmoeglichkeiten bietet:
 - *Clients*:
     Mit diesem Untermenue koennen die einzelnen Applikationen
     im Slit geordnet oder ausgeblendet werden.
-    Die Einstellungen werden in der Datei slitlist 
+    Die Einstellungen werden in der Datei slitlist
     gespeichert.
 
 Slitlist
 --------
-In der Datei slitlist speichert Fluxbox die Reihenfolge 
+In der Datei slitlist speichert fluxbox die Reihenfolge
 der Applikationen in dem Slit.
 
 Diese Datei kann bei Bedarf von Hand editiert werden,
 sie ist eine einfache Liste der Fensternamen.
 Die Datei sollte nicht editiert werden waehrend
-Fluxbox laeuft, ansonsten koennten aenderungen
+fluxbox laeuft, ansonsten koennten aenderungen
 verlorengehen.
 
 In der init Datei kann auch eine andere
@@ -1561,42 +1561,42 @@ Datei als slitlist angegeben werden:
 UMGEBUNGSVARIABLEN
 ------------------
 HOME:
-    Fluxbox nutzt die HOME Variable um die .fluxbox/init Datei sowie
+    fluxbox nutzt die HOME Variable um die .fluxbox/init Datei sowie
     Verzeichnisse fuer Farbschemata zu finden
 
 DISPLAY:
     Wenn auf der Kommandozeile keine andere Anzeige angegeben
-    wird nutzt Fluxbox die in der Variable DISPLAY angegebene.
+    wird nutzt fluxbox die in der Variable DISPLAY angegebene.
 
 Andere Umgebungsvariablen koennen von Vorteil sein.
 Wenn zum Beispiel $TERM gesetzt ist, dann ist diese
-kann diese Variable von Fluxbox verwendet werden,
+kann diese Variable von fluxbox verwendet werden,
 zum Beispiel mit einem Eintrag in die keys Datei:
 
 ...........................
 Mod1 x ExecCommand :$TERM
 ...........................
 
-Weiteres zu Umgebungsvariablen steht in der manpage 
+Weiteres zu Umgebungsvariablen steht in der manpage
 der verwendeten Shell.
 
 SIGNALE
 -------
-Fluxbox reagiert auf folgende Signale:
+fluxbox reagiert auf folgende Signale:
 
-- SIGHUP   Fluxbox laedt die Konfiguration
+- SIGHUP   fluxbox laedt die Konfiguration
 - SIGUSR1  Erzwingt ein neues Einlesen der Konfiguration
 - SIGUSR2  Erzwingt ein neues Einlesen der Menuedatei
 
 AUTOR und DANKSAGUNGEN
 ----------------------
-Fluxbox wurde geschrieben und wird gepflegt von
+fluxbox wurde geschrieben und wird gepflegt von
 Henrik Kinnunen <fluxgen at fluxbox org>
 Simon Bowden <rathnor at fluxbox org>
 Mathias Gumz <akira at fluxbox org>
 Mark Tiefenbruck <mark at fluxbox org>
 
-Zudem tragen viele Leute weltweit mit 
+Zudem tragen viele Leute weltweit mit
 Patches, Bugreports, Uebersetzungen oder
 anderen Hilfestellungen zu dem Projekt bei.
 
@@ -1604,7 +1604,7 @@ Blackbox wurde geschrieben und verwaltet durch:
 Brad Hughes <blackbox at alug org>
 Jeff Raven <jraven at psu edu>
 
-Die offizielle Fluxbox Webseite: http://www.fluxbox.org
+Die offizielle fluxbox Webseite: http://www.fluxbox.org
 
 Viele Farbschemata findet man unter:
 -   http://boxwhore.org
@@ -1612,10 +1612,10 @@ Viele Farbschemata findet man unter:
 
 Diese Anleitung wurde geschrieben von:
 
-- Curt Micol <asenchi at asenchi com> (>Fluxbox-0.9.11)
+- Curt Micol <asenchi at asenchi com> (>fluxbox-0.9.11)
 
-- Tobias Klausmann <klausman at users sourceforge net> (<=Fluxbox-0.9.11)
-- Grubert <grubert at users sourceforge net> (Fluxbox)
+- Tobias Klausmann <klausman at users sourceforge net> (<=fluxbox-0.9.11)
+- Grubert <grubert at users sourceforge net> (fluxbox)
 
 - Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 - Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
@@ -1626,10 +1626,10 @@ Deutsche Uebersetzung der Anleitung:
 
 BUGS
 ----
-Fehler in Fluxbox koennen entweder im #fluxbox irc channel
-im irc.freenode.net Netzwerk oder noch besser direkt auf 
+Fehler in fluxbox koennen entweder im #fluxbox irc channel
+im irc.freenode.net Netzwerk oder noch besser direkt auf
 http://sf.net/projects/fluxbox gemeldet werden.
-Zudem gibt es mehrere Mailinglisten. Informationen 
+Zudem gibt es mehrere Mailinglisten. Informationen
 dazu gibt es auf der offiziellen Projektseite.
 
 SIEHE AUCH
