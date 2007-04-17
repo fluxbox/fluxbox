@@ -39,9 +39,11 @@
 #endif // HAVE_CONFIG_H
 
 
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif	// HAVE_CTYPE_H
+#ifdef HAVE_CCTYPE
+  #include <cctype>
+#else
+  #include <ctype.h>
+#endif	// HAVE_CCTYPE
 
 #ifdef HAVE_CSTDIO
   #include <cstdio>

@@ -30,9 +30,6 @@
 #include "NotCopyable.hh"
 #include "FbWindow.hh"
 
-#include <X11/Xlib.h>
-
-
 namespace FbTk {
 
 class XLayerItem : public LayerItem, private NotCopyable {

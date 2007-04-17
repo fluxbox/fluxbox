@@ -60,8 +60,6 @@ void catclose(nl_catd cat);
 
 #endif // HAVE_NL_TYPES_H
 
-#include <string>
-
 // Some defines to help out
 #ifdef NLS
 #define _FB_USES_NLS \

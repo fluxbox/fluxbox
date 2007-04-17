@@ -101,10 +101,6 @@ class Slit {};
 #include <sys/types.h>
 #endif // STDC_HEADERS
 
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif // HAVE_CTYPE_H
-
 #ifdef HAVE_UNISTD_H
 #include <sys/types.h>
 #include <unistd.h>

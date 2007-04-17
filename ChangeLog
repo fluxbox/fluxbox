@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/04/17:
+   * cosmetic changes (Mathias, thanks Slava Semushin)
+     configure.in Screen.cc Keys.cc main.cc FbTk/MenuItem.hh FbTk/Timer.hh
+     FbTk/XLayerItem.hh FbTk/ImageControl.cc FbTk/I18n.hh FbTk/FbWindow.hh
+      FbTk/XLayer.hh fluxbox.cc
 *07/04/11:
    * updated asciidoc-docs, (Mathias, thanks Christian Loosli for fluxbox.de.txt)
 *07/04/08:

@@ -61,10 +61,6 @@
   #include <stdio.h>
 #endif
 
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif // HAVE_CTYPE_H
-
 #include <iostream>
 
 using std::cerr;
