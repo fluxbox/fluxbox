@@ -480,7 +480,7 @@ void FluxboxWindow::init() {
         int real_y = frame().y();
 
         if (real_x >= 0 &&
-            real_y + frame().y() >= 0 &&
+            real_y >= 0 &&
             real_x <= (signed) screen().width() &&
             real_y <= (signed) screen().height())
             place_window = false;

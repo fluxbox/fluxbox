@@ -306,6 +306,9 @@ while [ $# -gt 0 ]; do
                     message "No previous wallpaper recorded for display ${DISPLAY}"
                     exit 1
                 fi
+                if [ "$option" = "fbsetroot" ]; then
+                    use_fbsetroot
+                fi
             else
                 message "No previous wallpaper recorded for display ${DISPLAY}"
                 exit 1
