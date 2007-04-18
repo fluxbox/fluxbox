@@ -76,9 +76,9 @@ public:
 
     int isTiming() const { return m_timing; }
     int getInterval() const { return m_interval; }
-    
+
     int doOnce() const { return m_once; }
-    
+
     const timeval &getTimeout() const { return m_timeout; }
     const timeval &getStartTime() const { return m_start; }
     void makeEndTime(timeval &tm) const;
@@ -92,12 +92,12 @@ private:
     static void addTimer(Timer *timer);
     /// remove a timer from the static list
     static void removeTimer(Timer *timer);
-	
+
     typedef std::list<Timer *> TimerList;
     static TimerList m_timerlist; ///< list of all timers, sorted by next trigger time (start + timeout)
-	
+
     RefCount<Command> m_handler; ///< what to do on a timeout
-	
+
     bool m_timing; ///< clock running?
     bool m_once;  ///< do timeout only once?
     int m_interval; ///< Is an interval-only timer (e.g. clock)
@@ -105,7 +105,6 @@ private:
 
     timeval m_start;    ///< start time
     timeval m_timeout; ///< time length
-
 };
 
 } // end namespace FbTk

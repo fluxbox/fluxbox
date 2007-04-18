@@ -39,21 +39,12 @@
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
 #ifdef HAVE_CSTDLIB
   #include <cstdlib>
 #else
   #include <stdlib.h>
 #endif
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -199,17 +190,18 @@ int main(int argc, char **argv) {
 
     int i;
     for (i = 1; i < argc; ++i) {
-        if (! strcmp(argv[i], "-rc")) {
+        string arg(argv[i]);
+        if (arg == "-rc") {
             // look for alternative rc file to use
 
             if ((++i) >= argc) {
                 cerr<<_FB_CONSOLETEXT(main, RCRequiresArg,
                               "error: '-rc' requires an argument", "the -rc option requires a file argument")<<endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
 
-            rc_file = argv[i];
-        } else if (! strcmp(argv[i], "-display")) {
+            rc_file = arg;
+        } else if (arg == "-display") {
             // check for -display option... to run on a display other than the one
             // set by the environment variable DISPLAY
 
@@ -217,10 +209,10 @@ int main(int argc, char **argv) {
                 cerr<<_FB_CONSOLETEXT(main, DISPLAYRequiresArg,
                               "error: '-display' requires an argument",
                               "")<<endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
 
-            session_display = argv[i];
+            session_display = arg;
             string display_env = "DISPLAY=" + session_display;
             if (putenv(const_cast<char *>(display_env.c_str()))) {
                 cerr<<_FB_CONSOLETEXT(main, WarnDisplayEnv,
@@ -228,17 +220,17 @@ int main(int argc, char **argv) {
                               "")<<endl;
                 perror("putenv()");
             }
-        } else if (strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0) {
+        } else if (arg == "-version" || arg == "-v") {
             // print current version string
-            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2006 Henrik Kinnunen " << endl << endl;
-            exit(0);
-        } else if (strcmp(argv[i], "-log") == 0 ) {
+            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2007 Henrik Kinnunen " << endl << endl;
+            exit(EXIT_SUCCESS);
+        } else if (arg == "-log") {
             if (i + 1 >= argc) {
                 cerr<<_FB_CONSOLETEXT(main, LOGRequiresArg, "error: '-log' needs an argument", "")<<endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
             log_filename = argv[++i];
-        } else if (strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
+        } else if (arg == "-help" || arg == "-h") {
             // print program usage and command line options
             printf(_FB_CONSOLETEXT(main, Usage,
                            "Fluxbox %s : (c) %s Henrik Kinnunen\n"
@@ -252,12 +244,12 @@ int main(int argc, char **argv) {
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
                            "Main usage string. Please lay it out nicely. There is one %s that is given the version").c_str(),
-                   __fluxbox_version, "2001-2006");
-            exit(0);
-        } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {
+                   __fluxbox_version, "2001-2007");
+            exit(EXIT_SUCCESS);
+        } else if (arg == "-info" || arg == "-i") {
             showInfo(cout);
-            exit(0);
-        } else if (strcmp(argv[i], "-verbose") == 0) {
+            exit(EXIT_SUCCESS);
+        } else if (arg == "-verbose") {
             FbTk::ThemeManager::instance().setVerbose(true);
         }
     }

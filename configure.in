@@ -16,7 +16,7 @@ dnl Locate required external software
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
-AM_PROG_LIBTOOL
+AC_PROG_RANLIB
 
 AC_CHECK_PROGS(regex_cmd, sed)
 if test x$regex_cmd = "x"; then

@@ -30,7 +30,6 @@
 #include "ITypeAheadable.hh"
 #include "FbString.hh"
 
-#include <string>
 #include <memory>
 
 namespace FbTk {

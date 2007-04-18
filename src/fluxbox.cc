@@ -134,21 +134,9 @@ class Toolbar { };
 #include <sys/stat.h>
 #endif // HAVE_SYS_STAT_H
 
-#ifdef  TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else // !TIME_WITH_SYS_TIME
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else // !HAVE_SYS_TIME_H
-#include <time.h>
-#endif // HAVE_SYS_TIME_H
-#endif // TIME_WITH_SYS_TIME
-
 #include <sys/wait.h>
 
 #include <iostream>
-#include <string>
 #include <memory>
 #include <algorithm>
 #include <typeinfo>

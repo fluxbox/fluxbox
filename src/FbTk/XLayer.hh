@@ -42,7 +42,7 @@ public:
 
     typedef std::list<XLayerItem *> ItemList;
     typedef std::list<XLayerItem *>::iterator iterator;
-    
+
     //typedef std::list<XLayerItem *>::reverse_iterator reverse_iterator;
 
     void setLayerNum(int layernum) { m_layernum = layernum; };
