@@ -281,6 +281,8 @@ void ShowCustomMenuCmd::execute() {
         return;
     m_menu = MenuCreator::createFromFile(custom_menu_file,
             screen->screenNumber(), true);
+    if (!m_menu.get())
+        return;
     ::showMenu(*screen, **m_menu);
 }
 
