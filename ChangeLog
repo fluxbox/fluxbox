@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/04/20:
+   * Fix slit's BOTTOMLEFT placement with xinerama (Thanks Tomas Janousek
+     <tomi@nomi.cz>)
+     Slit.cc
 *07/04/11:
    * Added resource session.screen<N>.maxIgnoreIncrement: <boolean>, to
      disable size checking when maximizing a window (e.g. terminals) (Mark)
