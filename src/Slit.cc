@@ -847,7 +847,7 @@ void Slit::reposition() {
 
     case BOTTOMLEFT:
         frame.x = head_x;
-        frame.y = head_h - frame.height - border_width*2;
+        frame.y = head_y + head_h - frame.height - border_width*2;
         if (direction() == VERTICAL) {
             frame.x_hidden = head_x + bevel_width -
                 border_width - frame.width;
