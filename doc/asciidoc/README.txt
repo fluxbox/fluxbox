@@ -1,7 +1,7 @@
 whats this? this is the attempt to write the documentation for 
 fluxbox in ascii-doc format. how does it work?
 
-well, we just edit fluxbox.txt from this directory. save it.
+well, just edit fluxbox.txt from this directory. save it.
 then we can produce pretty much any format we like:
 
 man:

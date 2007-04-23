@@ -1,7 +1,7 @@
 fluxstyle(1)
 ============
-Henrik Kinnunen <fluxgen@fluxbox(1).org>
-v1.0rc2 3rd October 2006
+Henrik Kinnunen <fluxgen@fluxbox.org>
+v1.0rc3 21th April 2007
 
 NAME
 ----
@@ -9,6 +9,7 @@ fluxstyle - A comprehensive look at styles/themes for fluxbox(1).
 
 SYNOPSIS
 --------
+This document describes various options available for fluxbox styles.
 
 DESCRIPTION
 -----------
@@ -59,7 +60,7 @@ LOCATION
 --------
 There are many places to store your styles, the most common is in your
 '~/.fluxbox/styles' directory. The initial installation will place the default
-styles in '/usr/share/fluxbox/styles' providing a basic usable configuration.
+styles in '@pkg_datadir@/styles' providing a basic usable configuration.
 
 When creating your own style, create a directory (normally the name of your
 style) in '~/.fluxbox/styles/' (If the 'styles' directory doesn't exist,
@@ -196,7 +197,7 @@ The latest versions of fluxbox(1) (> 0.9.8) also support different values for
 these text options.  The  possibilities  are  as  follows:
 
    --------
-   Shadow color=<colorname> offsetx=<integer> offsety=<integer> Halo color=<colorâ\u20acname>
+   Shadow color=<colorname> offsetx=<integer> offsety=<integer> Halo color=<colorname>
    --------
 
 For the case of completeness, here are some real world examples:
@@ -477,7 +478,7 @@ fluxbox(1) is written and maintained by Henrik Kinnunen <fluxgen@fluxbox.org>
 with contributions and patches merged from many individuals around the world.
 
 The Official fluxbox(1) website: http://www.fluxbox.org[]
-You can find a lot of styles here: http://fluxmod.org/[]
+You can find a lot of styles here: http://tenr.de/[]
 
 This manpage was composed from various resources including the official
 documentation, fluxbox(1) man page and numerous other resources by Curt

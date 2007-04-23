@@ -1,11 +1,11 @@
 fluxbox(1)
 =========
 fluxgen <fluxgen@fluxbox.org>
-v1.0rc3, Abril 16 de 2007
+v1.0rc3, Abril 21 de 2007
 
 NAME
 ------
-Fluxbox - Un liviano manejador de ventanas para el X Windowing System
+fluxbox - Un liviano manejador de ventanas para el X Windowing System
 
 SYNOPSIS
 --------
