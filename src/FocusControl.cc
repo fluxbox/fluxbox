@@ -313,13 +313,28 @@ void FocusControl::setScreenFocusedWindow(WinClient &win_client) {
 
      // raise newly focused window to the top of the focused list
      // don't change the order if we're cycling or shutting down
-     // don't change on startup, as it may add windows that aren't listed yet
-    if (!isCycling() && !m_screen.isShuttingdown() && !s_reverting &&
-            !Fluxbox::instance()->isStartup()) {
-        m_focused_list.remove(&win_client);
+    if (!isCycling() && !m_screen.isShuttingdown() && !s_reverting) {
+
+        // make sure client is in our list, or else we could end up adding it
+        Focusables::iterator it_begin = m_focused_list.begin(),
+                             it_end = m_focused_list.end();
+        Focusables::iterator it = find(it_begin, it_end, &win_client);
+        if (it == it_end)
+            return;
+
+        m_focused_list.erase(it);
         m_focused_list.push_front(&win_client);
-        m_focused_win_list.remove(win_client.fbwindow());
-        m_focused_win_list.push_front(win_client.fbwindow());
+
+        // also check the fbwindow
+        it_begin = m_focused_win_list.begin();
+        it_end = m_focused_win_list.end();
+        it = find(it_begin, it_end, win_client.fbwindow());
+
+        if (it != it_end) {
+            m_focused_win_list.erase(it);
+            m_focused_win_list.push_front(win_client.fbwindow());
+        }
+
     }
 }
 
@@ -465,9 +480,6 @@ void FocusControl::shutdown() {
 /**
  * This function is called whenever we aren't quite sure what
  * focus is meant to be, it'll make things right ;-)
- * last_focused is set to something if we want to make use of the
- * previously focused window (it must NOT be set focused now, it
- *   is probably dying).
  */
 void FocusControl::revertFocus(BScreen &screen) {
     if (s_reverting)
@@ -508,9 +520,8 @@ void FocusControl::revertFocus(BScreen &screen) {
  * If unfocus_frame is true, we won't focus anything in the same frame
  * as the client.
  *
- * So, we first prefer to choose a transient parent, then the last
- * client in this window, and if no luck (or unfocus_frame), then
- * we just use the normal revertFocus on the screen.
+ * So, we first prefer to choose the last client in this window, and if no luck
+ * (or unfocus_frame), then we just use the normal revertFocus on the screen.
  *
  * assumption: client has focus
  */

@@ -1,5 +1,15 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/04/23:
+   * Set IconicState on all unmapped clients and unmap clients with frames, as
+     per ICCCM 4.1.4 (Mark)
+     Screen.cc Window.cc FocusControl.cc
+   * Added ClientMenu key command, which pops up a menu of open windows, based
+     on a pattern match
+     - e.g. :ClientMenu (workspace=[current]) (minimized=no)
+     ClientMenu.cc FbCommands.cc/hh FbCommandFactory.cc
+   * Disabled resizing shaded windows (Mark)
+     FbWinFrame.cc Window.cc
 *07/04/20:
    * Fix slit's BOTTOMLEFT placement with xinerama (Thanks Tomas Janousek
      <tomi@nomi.cz>)

@@ -86,6 +86,7 @@ FbCommandFactory::FbCommandFactory() {
     const char* commands[] = {
         "arrangewindows",
         "bindkey",
+        "clientmenu",
         "close",
         "closeallwindows",
         "commanddialog",
@@ -523,6 +524,11 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
             args = arguments.c_str() + pos;
         parseNextWindowArgs(args, opts, pat);
         return new GoToWindowCmd(num, opts, pat);
+    } else if (command == "clientmenu") {
+        int opts;
+        string pat;
+        parseNextWindowArgs(arguments, opts, pat);
+        return new ShowClientMenuCmd(opts, pat);
     } else if (command == "focusup")
         return new DirFocusCmd(FocusControl::FOCUSUP);
     else if (command == "focusdown")

@@ -1129,9 +1129,6 @@ void BScreen::removeClient(WinClient &client) {
 
     focusControl().removeClient(client);
 
-    for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
-             mem_fun(&Workspace::updateClientmenu));
-
     if (client.fbwindow() && client.fbwindow()->isIconic())
         iconListSig().notify();
 
@@ -1276,30 +1273,21 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 
     FbTk::App::instance()->sync(false);
 
-    if (win && &win->screen() == this &&
-        (! win->isStuck())) {
-
-        // if iconified, deiconify it before we send it somewhere
-        if (win->isIconic())
-            win->deiconify();
-
-        // if the window isn't on current workspace, hide it
-        if (id != currentWorkspace()->workspaceID())
-            win->withdraw(true);
+    if (win && &win->screen() == this) {
 
         windowMenu().hide();
 
         reassociateWindow(win, id, true);
 
-        // if the window is on current workspace, show it.
+        // change workspace ?
+        if (changeWS)
+            changeWorkspaceID(id);
+
+        // if the window is on current workspace, show it; else hide it.
         if (id == currentWorkspace()->workspaceID())
             win->deiconify(false, false);
-
-        // change workspace ?
-        if (changeWS && id != currentWorkspace()->workspaceID()) {
-            changeWorkspaceID(id);
-            win->focus();
-        }
+        else
+            win->withdraw(true);
 
     }
 
@@ -1793,6 +1781,15 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         MouseTabFocus, "MouseTabFocus", "Hover over tab to focus windows"),
         focusControl(), FocusControl::MOUSETABFOCUS, save_and_reconfigure));
 
+    try {
+        focus_menu->insert(new BoolMenuItem(_FB_XTEXT(Configmenu, FocusNew,
+            "Focus New Windows", "Focus newly created windows"),
+            *m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
+            saverc_cmd));
+    } catch (FbTk::ResourceException e) {
+        cerr<<e.what()<<endl;
+    }
+
     focus_menu->insert(new BoolMenuItem(_FB_XTEXT(Configmenu,
                                                 AutoRaise,
                                                 "Auto Raise",
@@ -1897,15 +1894,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Opaque Window Moving",
               "Window Moving with whole window visible (as opposed to outline moving)",
               *resource.opaque_move, saverc_cmd);
-    try {
-        _BOOLITEM(menu, Configmenu, FocusNew,
-                  "Focus New Windows", "Focus newly created windows",
-                  *m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
-                  saverc_cmd);
-    } catch (FbTk::ResourceException e) {
-        cerr<<e.what()<<endl;
-    }
-
     _BOOLITEM(menu, Configmenu, WorkspaceWarping,
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",

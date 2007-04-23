@@ -527,10 +527,11 @@ void FluxboxWindow::init() {
         maximize(req_maximized);
     }
 
+    setFocusFlag(false); // update graphics before mapping
+
     if (stuck) {
         stuck = false;
         stick();
-        deiconify(); //we're omnipresent and visible
     }
 
     if (shaded) { // start shaded
@@ -541,12 +542,13 @@ void FluxboxWindow::init() {
     if (iconic) {
         iconic = false;
         iconify();
-    } else
-        deiconify(false);
+    } else {
+        iconic = true;
+        if (m_workspace_number == screen().currentWorkspaceID())
+            deiconify(false);
+    }
 
     sendConfigureNotify();
-    // no focus default
-    setFocusFlag(false);
 
     if (m_shaped)
         shape();
@@ -664,13 +666,13 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     if (was_focused) {
         // don't ask me why, but client doesn't seem to keep focus in new window
         // and we don't seem to get a FocusIn event from setInputFocus
-        setCurrentClient(client);
+        client.focus();
         FocusControl::setFocusedWindow(&client);
     } else {
         if (!focused_win)
             focused_win = screen().focusControl().lastFocusedWindow(*this);
         if (focused_win)
-            setCurrentClient(*focused_win, false);
+            focused_win->focus();
     }
     frame().reconfigure();
 }
@@ -1244,29 +1246,26 @@ void FluxboxWindow::resize(unsigned int width, unsigned int height) {
 
 // send_event is just an override
 void FluxboxWindow::moveResize(int new_x, int new_y,
-                               unsigned int new_width, unsigned int new_height, bool send_event) {
+                               unsigned int new_width, unsigned int new_height,
+                               bool send_event) {
 
     // magic to detect if moved during initialisation
     if (!m_initialized)
         m_old_pos_x = 1;
 
-    send_event = send_event || (frame().x() != new_x || frame().y() != new_y);
+    send_event = send_event || frame().x() != new_x || frame().y() != new_y;
 
-    if (new_width != frame().width() || new_height != frame().height()) {
+    if ((new_width != frame().width() || new_height != frame().height()) &&
+        isResizable() && !isShaded()) {
+
         if ((((signed) frame().width()) + new_x) < 0)
             new_x = 0;
         if ((((signed) frame().height()) + new_y) < 0)
             new_y = 0;
 
-        if (!isResizable()) {
-            new_width = width();
-            new_height = height();
-        }
-
         frame().moveResize(new_x, new_y, new_width, new_height);
         setFocusFlag(m_focused);
 
-        shaded = false;
         send_event = true;
     } else if (send_event)
         frame().move(new_x, new_y);
@@ -1362,10 +1361,13 @@ bool FluxboxWindow::focus() {
         return false;
 
     if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck()) {
-        menu().hide();
+
         BScreen::FollowModel model = screen().getUserFollowModel();
-        if (model == BScreen::IGNORE_OTHER_WORKSPACES)
+        if (model == BScreen::IGNORE_OTHER_WORKSPACES) {
+            Fluxbox::instance()->attentionHandler().addAttention(*this);
             return false;
+        }
+
         // fetch the window to the current workspace
         if (model == BScreen::FETCH_ACTIVE_WINDOW ||
             (isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW))
@@ -1375,8 +1377,17 @@ bool FluxboxWindow::focus() {
             screen().changeWorkspaceID(workspaceNumber());
     }
 
-    if (isIconic())
+    FluxboxWindow *cur = FocusControl::focusedFbWindow();
+    if (cur && cur != this && cur->isFullscreen()) {
+        Fluxbox::instance()->attentionHandler().addAttention(*this);
+        return false;
+    }
+
+    if (isIconic()) {
         deiconify();
+        m_focused = true; // signal to mapNotifyEvent to set focus when mapped
+        return true; // the window probably will get focused, just not yet
+    }
 
     // this needs to be here rather than setFocusFlag because
     // FocusControl::revertFocus will return before FocusIn events arrive
@@ -1443,8 +1454,11 @@ void FluxboxWindow::hide(bool interrupt_moving) {
             attachTo(0, 0, true);
     }
 
+    setState(IconicState, false);
+
     menu().hide();
     frame().hide();
+
 }
 
 void FluxboxWindow::show() {
@@ -1550,9 +1564,12 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     show();
 
     // focus new, OR if it's the only window on the workspace
-    if (was_iconic && (screen().focusControl().focusNew() || screen().currentWorkspace()->numberOfWindows() == 1))
-        focus();
-
+    // but not on startup: focus will be handled after creating everything
+    // we use m_focused as a signal to focus the window when mapped
+    if (was_iconic && !Fluxbox::instance()->isStartup() &&
+        (screen().focusControl().focusNew() || m_client->isTransient() ||
+         screen().currentWorkspace()->numberOfWindows() == 1))
+        m_focused = true;
 
     oplock = false;
 
@@ -1817,22 +1834,11 @@ void FluxboxWindow::shade() {
     if (m_initialized && m_frame.isShaded() == shaded)
         frame().shade();
 
-    if (shaded) {
-        shaded = false;
-        m_blackbox_attrib.flags ^= ATTRIB_SHADED;
-        m_blackbox_attrib.attrib ^= ATTRIB_SHADED;
+    shaded = !shaded;
+    m_blackbox_attrib.flags ^= ATTRIB_SHADED;
+    m_blackbox_attrib.attrib ^= ATTRIB_SHADED;
 
-        if (m_initialized)
-            setState(NormalState, false);
-    } else {
-        shaded = true;
-        m_blackbox_attrib.flags |= ATTRIB_SHADED;
-        m_blackbox_attrib.attrib |= ATTRIB_SHADED;
-        // shading is the same as iconic
-        if (m_initialized)
-            setState(IconicState, false);
-    }
-
+    // TODO: this should set IconicState, but then we can't focus the window
 }
 
 void FluxboxWindow::shadeOn() {
@@ -1851,19 +1857,9 @@ void FluxboxWindow::shadeOff() {
 
 void FluxboxWindow::stick() {
 
-    if (stuck) {
-        m_blackbox_attrib.flags ^= ATTRIB_OMNIPRESENT;
-        m_blackbox_attrib.attrib ^= ATTRIB_OMNIPRESENT;
-
-        stuck = false;
-
-    } else {
-        stuck = true;
-
-        m_blackbox_attrib.flags |= ATTRIB_OMNIPRESENT;
-        m_blackbox_attrib.attrib |= ATTRIB_OMNIPRESENT;
-
-    }
+    m_blackbox_attrib.flags ^= ATTRIB_OMNIPRESENT;
+    m_blackbox_attrib.attrib ^= ATTRIB_OMNIPRESENT;
+    stuck = !stuck;
 
     if (m_initialized) {
         setState(m_current_state, false);
@@ -2097,24 +2093,32 @@ void FluxboxWindow::saveBlackboxAttribs() {
  That'll happen when its mapped
  */
 void FluxboxWindow::setState(unsigned long new_state, bool setting_up) {
-    if (numClients() == 0)
+    m_current_state = new_state;
+    if (numClients() == 0 || setting_up)
         return;
 
-    m_current_state = new_state;
-    if (!setting_up) {
-        unsigned long state[2];
-        state[0] = (unsigned long) m_current_state;
-        state[1] = (unsigned long) None;
+    unsigned long state[2];
+    state[0] = (unsigned long) m_current_state;
+    state[1] = (unsigned long) None;
 
-        for_each(m_clientlist.begin(), m_clientlist.end(),
-                 FbTk::ChangeProperty(display, FbAtoms::instance()->getWMStateAtom(),
-                                      PropModeReplace,
-                                      (unsigned char *)state, 2));
+    for_each(m_clientlist.begin(), m_clientlist.end(),
+             FbTk::ChangeProperty(display,
+                                  FbAtoms::instance()->getWMStateAtom(),
+                                  PropModeReplace,
+                                  (unsigned char *)state, 2));
 
-        saveBlackboxAttribs();
-        //notify state changed
-        m_statesig.notify();
+    ClientList::iterator it = clientList().begin();
+    ClientList::iterator it_end = clientList().end();
+    for (; it != it_end; ++it) {
+        if (new_state == IconicState)
+            (*it)->hide();
+        else if (new_state == NormalState)
+            (*it)->show();
     }
+
+    saveBlackboxAttribs();
+    //notify state changed
+    m_statesig.notify();
 }
 
 bool FluxboxWindow::getState() {
@@ -2374,33 +2378,25 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 
 void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
     WinClient *client = findClient(ne.window);
-    if (client == 0)
+    if (!client || client != m_client)
         return;
-#ifdef DEBUG
-    cerr<<"FluxboxWindow::mapNotifyEvent: "
-        <<"ne.override_redirect = "<<ne.override_redirect
-        <<" isVisible() = "<<isVisible()<<endl;
-#endif // DEBUG
 
-    if (!ne.override_redirect && isVisible()) {
-#ifdef DEBUG
-        cerr<<"FluxboxWindow::mapNotify: not override redirect ans visible!"<<endl;
-#endif // DEBUG
-        if (! client->validateClient())
-            return;
+    if (ne.override_redirect || !isVisible() || !client->validateClient())
+        return;
 
+    iconic = false;
+
+    // setting state will cause all tabs to be mapped, but we only want the
+    // original tab to be focused
+    if (m_current_state != NormalState)
         setState(NormalState, false);
 
-        FluxboxWindow *cur = FocusControl::focusedFbWindow();
-        if (client->isTransient() ||
-            m_screen.currentWorkspace()->numberOfWindows() == 1 ||
-            m_screen.focusControl().focusNew() && !(cur && cur->isFullscreen()))
-            setCurrentClient(*client, true);
-        else if (m_screen.focusControl().focusNew())
-            Fluxbox::instance()->attentionHandler().addAttention(*client);
-
-        iconic = false;
+    // we use m_focused as a signal that this should be focused when mapped
+    if (isFocused()) {
+        m_focused = false;
+        focus();
     }
+
 }
 
 /**
@@ -2417,7 +2413,11 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): title="<<client->title()<<endl;
 #endif // DEBUG
 
-    restore(client, false);
+    // if window was in IconicState, then this event could have come from us
+    // unmapping the window -- but if send_event is set, then the client wants
+    // to be withdrawn
+    if (m_current_state == NormalState || ue.send_event)
+        restore(client, false);
 
 }
 
@@ -2776,7 +2776,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     XWarpPointer(display, None, me.root, 0, 0, 0, 0,
                                  m_last_resize_x, m_last_resize_y);
 
-                    screen().changeWorkspaceID(new_id);
+                    screen().sendToWorkspace(new_id, this, true);
                 }
             }
 

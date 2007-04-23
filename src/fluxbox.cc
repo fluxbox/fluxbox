@@ -459,6 +459,10 @@ Fluxbox::~Fluxbox() {
     }
     m_atomhandler.clear();
 
+    // this needs to be destroyed before screens; otherwise, menus stored in
+    // key commands cause a segfault when the XLayerItem is destroyed
+    m_key.reset(0);
+
     // destroy screens (after others, as they may do screen things)
     while (!m_screen_list.empty()) {
         delete m_screen_list.back();

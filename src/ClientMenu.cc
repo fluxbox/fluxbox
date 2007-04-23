@@ -36,7 +36,10 @@ class ClientMenuItem: public FbTk::MenuItem {
 public:
     ClientMenuItem(Focusable &client, ClientMenu &menu):
         FbTk::MenuItem(client.title().c_str(), menu),
-        m_client(client) { client.titleSig().attach(&menu); }
+        m_client(client) {
+            client.titleSig().attach(&menu);
+            client.dieSig().attach(&menu);
+        }
     ~ClientMenuItem() { m_client.titleSig().detach(menu()); }
 
     void click(int button, int time) {
@@ -45,6 +48,7 @@ public:
             return;
         m_client.focus();
         fbwin->raise();
+        menu()->hide();
     }
 
     const std::string &label() const { return m_client.title(); }
@@ -59,6 +63,9 @@ public:
             return false;
         return (&(m_client.fbwindow()->winClient()) == &m_client);
     }
+
+    // for updating menu when receiving a signal from client
+    Focusable *client() { return &m_client; }
 
 private:
     Focusable &m_client;
@@ -106,6 +113,29 @@ void ClientMenu::refreshMenu() {
 void ClientMenu::update(FbTk::Subject *subj) {
     if (subj == m_refresh_sig)
         refreshMenu();
-    else
+    else if (subj && typeid(*subj) == typeid(Focusable::FocusSubject)) {
+
+        Focusable::FocusSubject *fsubj = static_cast<Focusable::FocusSubject *>(subj);
+        Focusable &win = fsubj->win();
+
+        // find the corresponding menuitem
+        ClientMenuItem *cl_item = 0;
+        for (size_t i = 0; i < numberOfItems(); i++) {
+            FbTk::MenuItem *item = find(i);
+            if (item && typeid(*item) == typeid(ClientMenuItem)) {
+                cl_item = static_cast<ClientMenuItem *>(item);
+                if (cl_item->client() == &win)
+                    break;
+            }
+        }
+
+        // update accordingly
+        if (cl_item && fsubj == &win.dieSig())
+            remove(cl_item->getIndex());
+        else if (cl_item && fsubj == &win.titleSig())
+            // this could change the size of the menu, so do a full update
+            FbTk::Menu::update(subj);
+
+    } else
         FbTk::Menu::update(subj);
 }
