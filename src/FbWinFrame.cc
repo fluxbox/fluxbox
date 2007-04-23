@@ -90,7 +90,6 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_active_orig_client_bw(0),
     m_need_render(true),
     m_button_size(1),
-    m_width_before_shade(1),
     m_height_before_shade(1),
     m_shaded(false),
     m_focused_alpha(0),
@@ -232,7 +231,6 @@ void FbWinFrame::shade() {
     // toggle shade
     m_shaded = !m_shaded;
     if (m_shaded) { // i.e. should be shaded now
-        m_width_before_shade = m_window.width();
         m_height_before_shade = m_window.height();
         m_window.resize(m_window.width(), m_titlebar.height());
         alignTabs();
@@ -240,7 +238,7 @@ void FbWinFrame::shade() {
         if ( m_shape.get() )
             m_shape->update();
     } else { // should be unshaded
-        m_window.resize(m_width_before_shade, m_height_before_shade);
+        m_window.resize(m_window.width(), m_height_before_shade);
         reconfigure();
     }
 }
@@ -279,18 +277,12 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
     if (move && x == window().x() && y == window().y())
         move = false;
 
-    if (resize && width == FbWinFrame::width() && height == FbWinFrame::height())
+    if (resize && (m_shaded || width == FbWinFrame::width() &&
+                               height == FbWinFrame::height()))
         resize = false;
 
     if (!move && !resize)
         return;
-
-    if (resize && m_shaded) {
-        // update unshaded size if  we're in shaded state and just resize width
-        m_width_before_shade = width;
-        m_height_before_shade = height;
-        height = m_window.height();
-    }
 
     if (move && resize) {
         m_window.moveResize(x, y, width, height);

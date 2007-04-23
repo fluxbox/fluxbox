@@ -1252,29 +1252,26 @@ void FluxboxWindow::resize(unsigned int width, unsigned int height) {
 
 // send_event is just an override
 void FluxboxWindow::moveResize(int new_x, int new_y,
-                               unsigned int new_width, unsigned int new_height, bool send_event) {
+                               unsigned int new_width, unsigned int new_height,
+                               bool send_event) {
 
     // magic to detect if moved during initialisation
     if (!m_initialized)
         m_old_pos_x = 1;
 
-    send_event = send_event || (frame().x() != new_x || frame().y() != new_y);
+    send_event = send_event || frame().x() != new_x || frame().y() != new_y;
 
-    if (new_width != frame().width() || new_height != frame().height()) {
+    if ((new_width != frame().width() || new_height != frame().height()) &&
+        isResizable() && !isShaded()) {
+
         if ((((signed) frame().width()) + new_x) < 0)
             new_x = 0;
         if ((((signed) frame().height()) + new_y) < 0)
             new_y = 0;
 
-        if (!isResizable()) {
-            new_width = width();
-            new_height = height();
-        }
-
         frame().moveResize(new_x, new_y, new_width, new_height);
         setFocusFlag(focused);
 
-        shaded = false;
         send_event = true;
     } else if (send_event)
         frame().move(new_x, new_y);

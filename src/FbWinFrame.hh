@@ -380,8 +380,7 @@ private:
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
-    unsigned int m_width_before_shade,  ///< width before shade, so we can restore it when we unshade
-        m_height_before_shade; ///< height before shade, so we can restore it when we unshade
+    unsigned int m_height_before_shade; ///< height before shade, so we can restore it when we unshade
     bool m_shaded; ///< wheter we're shaded or not
     unsigned char  m_focused_alpha; ///< focused alpha value
     unsigned char  m_unfocused_alpha; ///< unfocused alpha value
