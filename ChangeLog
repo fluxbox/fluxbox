@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/04/24:
+   * Fixed a bug in parsing cli (Mathias, thanks to Steven Kah Hien Wong <steven at
+     zensaki dot com> for pointing out the issue)
+     src/main.cc
 *07/04/23:
    * Use asciidoc-generated manpages as the default from now on (Mathias)
    * Disabled resizing shaded windows (Mark)

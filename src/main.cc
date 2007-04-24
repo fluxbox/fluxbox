@@ -181,7 +181,7 @@ static void showInfo(ostream &ostr) {
 
 int main(int argc, char **argv) {
 
-    string session_display = "";
+    string session_display("");
     string rc_file;
     string log_filename;
 
@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
                 exit(EXIT_FAILURE);
             }
 
-            rc_file = arg;
+            rc_file = argv[i];
         } else if (arg == "-display") {
             // check for -display option... to run on a display other than the one
             // set by the environment variable DISPLAY
@@ -212,7 +212,7 @@ int main(int argc, char **argv) {
                 exit(EXIT_FAILURE);
             }
 
-            session_display = arg;
+            session_display = argv[i];
             string display_env = "DISPLAY=" + session_display;
             if (putenv(const_cast<char *>(display_env.c_str()))) {
                 cerr<<_FB_CONSOLETEXT(main, WarnDisplayEnv,
@@ -225,11 +225,11 @@ int main(int argc, char **argv) {
             cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2007 Henrik Kinnunen " << endl << endl;
             exit(EXIT_SUCCESS);
         } else if (arg == "-log") {
-            if (i + 1 >= argc) {
+            if (++i >= argc) {
                 cerr<<_FB_CONSOLETEXT(main, LOGRequiresArg, "error: '-log' needs an argument", "")<<endl;
                 exit(EXIT_FAILURE);
             }
-            log_filename = argv[++i];
+            log_filename = argv[i];
         } else if (arg == "-help" || arg == "-h") {
             // print program usage and command line options
             printf(_FB_CONSOLETEXT(main, Usage,
@@ -338,3 +338,4 @@ int main(int argc, char **argv) {
 
     return exitcode;
 }
+
