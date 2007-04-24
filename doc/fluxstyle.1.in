@@ -1,289 +1,197 @@
-.\" AT THE BOTTOM IS ADD ONS TO THE PAGE search /ADDITIONS
-.\" Manual page for Fluxbox Styles
+.\"     Title: fluxstyle
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.71.1 <http://docbook.sf.net/>
+.\"      Date: 04/21/2007
+.\"    Manual: 
+.\"    Source: 
 .\"
-.\" Fluxbox is Copyright (c) 2001-2004 Henrik Kinnunen
-
-.\" Copyright (c) 2003, 2004, Curt "Asenchi" Micol
-
-.\" Permission to use, copy, modify, and distribute this documentation for
-.\" any purpose with or without fee is hereby granted, provided that the
-.\" above copyright notice and this permission notice appear in all copies.
-
-.\" THE DOCUMENTATION IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
-.\" WARRANTIES WITH REGARD TO THIS DOCUMENTATION INCLUDING ALL IMPLIED
-.\" WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
-.\" AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
-.\" DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
-.\" PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
-.\" TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-.\" PERFORMANCE OF THIS DOCUMENTATION
-
-.\" Parts of the text are taken from websites and style
-.\" files on http://www.fluxbox.org and http://www.fluxmod.dk
-.\"
-.\" Created and Updated for version 0.9.7 by Curt Micol <asenchi@asenchi.com>
-
-.\" Define this: <blockquote><pre>
-.de EX
-.ne 5
-.if n .sp 1
-.if t .sp .5
+.TH "FLUXSTYLE" "1" "04/21/2007" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+fluxstyle \- A comprehensive look at styles/themes for fluxbox(1).
+.SH "SYNOPSIS"
+This document describes various options available for fluxbox styles.
+.sp
+.SH "DESCRIPTION"
+What is a Style?
+.sp
+Styles, sometimes referred to as Themes, are a graphical overlay for the fluxbox(1) window manager. If you wanted to get to know fluxbox, the styles would be the \fIlook\fR of the \fIlook and feel\fR.
+.sp
+Styles are simple ASCII text files that tell fluxbox(1) how to generate the appearance of different components of the window manager. The default installation of fluxbox(1) is shipped with many classic examples that show a great deal of what one could do. To use one of the standard styles navigate to the \fISystem Styles\fR menu under your main fluxbox(1) menu.
+.sp
+fluxbox(1) uses its own graphics class to render its images on the fly. By using styles you can determine, at a great level of configurability, what your desktop will look like. Since fluxbox(1) was derived from blackbox many often wonder if old themes will work on the latest releases of fluxbox(1). Well they basically do, but you will have to tune them since the fluxbox(1) code has changed quite a bit since the initial grab.
+.sp
+.SH "STRUCTURE"
+A style is made up of a few major components which then have their own sub\-directives. The major components are as follows:
+.sp
+The \fIwindow.*\fR directives control the appearance of the window frames, window.tab.* controls the appearance of the window tabs, \fImenu.*\fR controls the appearance of the popup menu that you see when you right click on the desktop. \fItoolbar.*\fR is the bar you will see at the top or bottom of your screen. Finally the \fIslit.*\fR has options you can use to customize the appearance of the slit. However if you don't set the slit directives specifically, the slit's appearance is controlled by the toolbar directives instead.
+.sp
+To understand how the style mechanism works, it is nice to know a little about how X11 resources work. X11 resources consist of a key and a value. The key is constructed of several smaller keys (sometimes referred to as children), delimited by a period (.). Keys may also contain an asterisk (*) to serve as a wildcard, which means that one line of text will match several keys. This is useful for styles that are based on one or two colors.
+.sp
+A more complete reference to this can be found in X(7), section \fIRESOURCES\fR.
+.sp
+.SH "LOCATION"
+There are many places to store your styles, the most common is in your \fI~/.fluxbox/styles\fR directory. The initial installation will place the default styles in \fI@pkg_datadir@/styles\fR providing a basic usable configuration.
+.sp
+When creating your own style, create a directory (normally the name of your style) in \fI~/.fluxbox/styles/\fR (If the \fIstyles\fR directory doesn't exist, create that also). While there isn't an official structure, it is common to create a directory named after your style and place your pixmaps directory (if required) in there along with a file called theme.cfg (may also be named style.cfg). This file is where you will construct your style using the components covered later in this manual page. An example of steps taken when beginning a style project of your own may look like:
+.sp
+.sp
+.RS 4
 .nf
-.in +.5i
-..
-.de EE
-.fi
-.in -.5i
-.if n .sp 1
-.if t .sp .5
-..
-
-.\" Begin actual page
-
-.TH fluxstyle 1 "November 29th, 2004" "0.9.10"
-.SH NAME
-fluxstyle \- A comprehensive look at styles/themes for Fluxbox
-.SH DESCRIPTION
-
-.\" Taken from the documentation
-
-.SS What is a Style?
-Styles, sometimes referred to as Themes, are a graphical overlay for the
-.IR Fluxbox(1)
-window manager.  If you wanted to get to know Fluxbox, the styles
-would be the 'look' of the 'look and feel'.
-.PP
-Styles are simple ASCII text files that tell Fluxbox how to generate the
-appearance of different components of the window manager.  The default
-installation of Fluxbox is shipped with many classic examples that show a
-great deal of what one could do.  To use one of the standard styles navigate
-to the 'System Styles' menu under your main Fluxbox menu.
-.PP
-Fluxbox uses it's own graphics class to render its images on the fly.  By
-using styles you can determine, at a great level, of configurability what your
-desktop will look like.  Since Fluxbox was derived from Blackbox many often
-wonder if old themes will work on the latest releases of Blackbox.  Well they
-basically do, but you will have to tune them since the Fluxbox code has
-changed quite a bit since the initial grab.
-
-.SH STRUCTURE
-A style is made up of a few major components which then have their own
-sub-directives.  The major components are as follows:
-.PP
-The
-.IR window.*
-directives control the appearance of the window frames,
-.IR window.tab.*
-controls the appearance of the window tabs,
-.IR menu.*
-controls the appearance of the popup menu that you see when you right click on
-the desktop.
-.IR toolbar.*
-is the bar you will see at the top or bottom of your screen. Finally the
-.IR slit.*
-has options you can use to customize the appearance of the slit.  However if
-you don't set the slit directives specifically, the slit's appearance is
-controlled by the toolbar directives instead.
-.PP
-To understand how the style mechanism works, it is nice to know a little about
-how X11 resources work.  X11 resources consist of a key and a value.  The key
-is constructed of several smaller keys (sometimes referred to as children),
-delimited by a period (.).  Keys may also contain an asterisk (*) to serve as
-a wildcard, which means that one line of text will match several keys.  This
-is useful for styles that are based on one or two colors.
-
-.SH LOCATION
-There are many places to store your styles, the most common is in your
-.IR ~/.fluxbox/styles
-directory.  The initial installation will place the default styles in
-.IR @pkgdatadir@/styles
-providing a basic usable configuration.
-.PP
-When creating your own style, create a directory (normally the name of your
-style) in
-.IR ~/.fluxbox/styles/
-(If the 'styles' directory doesn't exist, create that also).  While there
-isn't an official structure, it is common to create a directory named after
-your style and place your pixmaps directory (if required) in there along with
-a file called theme.cfg (may also be named style.cfg).  This file is where you
-will construct your style using the components covered later in this manual
-page.  An example of steps taken when beginning a style project of your own
-may look like:
-.EX
 $ cd
-$ mkdir -p ~/.fluxbox/styles/YourStyle/pixmaps
+$ mkdir \-p ~/.fluxbox/styles/YourStyle/pixmaps
 $ cd ~/.fluxbox/styles/YourStyle
 $ nano theme.cfg
-.EE
+.fi
+.RE
 Output of a packaged style should look like the following:
-.EX
+.sp
+.sp
+.RS 4
+.nf
 $ cd
-$ tar -tjvf YourStyle.tar.bz2
+$ tar \-tjvf YourStyle.tar.bz2
  .fluxbox/styles/YourStyle/theme.cfg
  .fluxbox/styles/YourStyle/pixmaps
  .fluxbox/styles/YourStyle/pixmaps/stick.xpm
  ...
-.EE
-Of course, all of these are just preferences, Fluxbox allows for the
-customization of many things, including how you handle your styles.  Just
-remember, however, that if you plan to distribute your style you may find some
-community bickering if you don't follow practices. :)
-
-.SH CREATING YOUR STYLE
-As discussed above, Fluxbox allows you to configure its four main components:
-the toolbar, menus, slit and window decorations.  Remember that you can
-customize the slit with its own directives, otherwise the slit will take the
-appearance of the toolbar.
-.PP
+.fi
+.RE
+Of course, all of these are just preferences, fluxbox(1) allows for the customization of many things, including how you handle your styles. Just remember, however, that if you plan to distribute your style you may find some community bickering if you don't follow practices. :)
+.sp
+.SH "CREATING YOUR STYLE"
+As discussed above, fluxbox(1) allows you to configure its four main components: the toolbar, menus, slit and window decorations. Remember that you can customize the slit with its own directives, otherwise the slit will take the appearance of the toolbar.
+.sp
 Here are some quick examples to illustrate basic syntax:
-.EX
+.sp
+.sp
+.RS 4
+.nf
 toolbar.clock.color: green
-.EE
-This sets the color resource of the toolbar clock to 'green'.  Another example:
-.EX
-menu*color:	rgb:3/4/5
-.EE
-This sets the color resource of the menu
-.I and all of its 'children'
-to `rgb:3/4/5'.  
-(For a description of color names, see
-.IR X (1).)
-So this one also applies to
-.IR menu.title.color " and " menu.frame.color .
-And with   
-.EX
-*font:  -b&h-lucida-medium-r-normal-*-*-140-*
-.EE
-you set the font resource for all keys to this font name all at once (For
-information about the fonts installed on your system, you can use a
-program like
-.IR xfontsel "(1), " gtkfontsel ", or " xlsfonts "(1).)"
-.PP
-In the last example you will notice the wildcard (*) before font.  In a
-Fluxbox style you can set a value with a wild card.  The example means that
-every font in the style will be what is specified.  You can do this with any
-component/value.  For example if you wanted all of the text to be one color
-you would do:
-.EX
+.fi
+.RE
+This sets the color resource of the toolbar clock to \fIgreen\fR. Another example:
+.sp
+.sp
+.RS 4
+.nf
+menu*color:     rgb:3/4/5
+.fi
+.RE
+This sets the color resource of the menu and all of its \fIchildren\fR to `rgb:3/4/5'. (For a description of color names, see X(1).) So this one also applies to \fImenu.title.color\fR and \fImenu.frame.color\fR. And with
+.sp
+.sp
+.RS 4
+.nf
+*font:  \-b&h\-lucida\-medium\-r\-normal\-*\-*\-140\-*
+.fi
+.RE
+you set the font resource for all keys to this font name all at once (For information about the fonts installed on your system, you can use a program like xfontsel(1), gtkfontsel, or xlsfonts(1).)
+.sp
+In the last example you will notice the wildcard (*) before font. In a Fluxbox style you can set a value with a wildcard. The example means that every font in the style will be what is specified. You can do this with any component/value. For example if you wanted all of the text to be one color you would do:
+.sp
+.sp
+.RS 4
+.nf
 *textColor:  rgb:3/4/5
-.EE
-This means that you can setup a very simple style with very few properties.
-See the
-.IR EXAMPLES
-below for an example of this in practice.  Fluxbox also allows you to override
-wildcards in your style.  Lets take our example above and add an override for
-the
-.IR toolbar.clock.textColor
-component:
-.EX
+.fi
+.RE
+This means that you can setup a very simple style with very few properties. See the EXAMPLES below for an example of this in practice. fluxbox(1) also allows you to override wildcards in your style. Lets take our example above and add an override for the toolbar.clock.textColor component:
+.sp
+.sp
+.RS 4
+.nf
 *textColor: rgb:3/4/5
 toolbar.clock.textColor: rgb:255/0/0
-.EE
-With that all of the text will be 'rgb:3/4/5' except the toolbar clock text
-which will be 'rgb:255/0/0'.
-.PP
-Now what makes Fluxbox so spectacular is its ability to render textures on the
-fly.  A texture is a fillpattern that you see on some styles.  Texture descriptions are specified directly to the key that they should
-apply to, e.g.:
-.ta \w'toolbar.clock.colorTo:\ 'u
-.EX
+.fi
+.RE
+With that all of the text will be \fIrgb:3/4/5\fR except the toolbar clock text which will be \fIrgb:255/0/0\fR.
+.sp
+Now what makes fluxbox(1) so spectacular is its ability to render textures on the fly. A texture is a fillpattern that you see on some styles. Texture descriptions are specified directly to the key that they should apply to, e.g.:
+.sp
+.sp
+.RS 4
+.nf
 toolbar.clock:  Raised Gradient Diagonal Bevel1
 toolbar.clock.color:    rgb:8/6/4
 toolbar.clock.colorTo:  rgb:4/3/2
-.EE
-Don't worry, we will explain what these mean. A texture description consists
-of up to five fields, which are as follows:
-.TP
-.B Flat | Raised | Sunken
-gives the component either a flat, raised or sunken appearance.
-.TP
-.B Gradient | Solid
-tells Fluxbox to draw either a solid color or a gradient texture.
-.TP
-.B Horizontal | Vertical | Diagonal | Crossdiagonal | Pipecross | Elliptic | Rectangle | Pyramid
-Select one of these texture types. They only work when
-.B Gradient
+.fi
+.RE
+Don't worry, we will explain what these mean. A texture description consists of up to five fields, which are as follows:
+.sp
+.PP
+\fBFlat | Raised | Sunken\fR. gives the component either a flat, raised or sunken appearance.
+.PP
+\fBGradient | Solid\fR. tells fluxbox(1) to draw either a solid color or a gradient texture.
+.PP
+\fBHorizontal | Vertical | Diagonal | Crossdiagonal | Pipecross | Elliptic | Rectangle | Pyramid\fR. Select one of these texture types. They only work when
+\fBGradient\fR
 is specified.
-.TP
-.B Interlaced
-tells Fluxbox to interlace the texture (darken every other line).
-This option is most commonly used with gradiented textures, but from Fluxbox
-version 0.60.3 on, it also works in solid textures.
-.TP
-.B Bevel1 | Bevel2
-tells Fluxbox which type of bevel to use.
-Bevel1 is the default bevel.
-The shading is placed on the edge of the image.
-Bevel2 is an alternative.
-The shading is placed one pixel in from the edge of the image.
 .PP
-Instead of a texture description, also the option
-.B ParentRelative
-is available, which makes the component appear as a part of its parent, e.g.
-totally transparent.
+\fBInterlaced\fR. tells fluxbox(1) to interlace the texture (darken every other line). This option is most commonly used with gradiented textures, but it also works in solid textures.
 .PP
-Or for even more possibilities
-.B Pixmap .
-If pixmap texture is specified (it might not be necessary on every occasion)
-the pixmap file is specified in a separate pixmap resource.
-.EX
+\fBBevel1 | Bevel2\fR. tells fluxbox(1) which type of bevel to use. Bevel1 is the default bevel. The shading is placed on the edge of the image. Bevel2 is an alternative. The shading is placed one pixel in from the edge of the image.
+Instead of a texture description, also the option \fBParentRelative\fR is available, which makes the component appear as a part of its parent, e.g. totally transparent.
+.sp
+Or for even more possibilities Pixmap. If pixmap texture is specified (it might not be necessary on every occasion) the pixmap file is specified in a separate pixmap resource.
+.sp
+.sp
+.RS 4
+.nf
 toolbar.clock: pixmap
-toolbar.clock.pixmap: .fluxbox/styles/mine/clock_background.xpm
-.EE
-This feature might need some investigation, reports say that sometimes
-the resources color and colorTo must be set and then they may not be set.
-.PP
-All gradiented textures are composed of two color values: the
-.IR color " and " colorTo " resources."
-When
-.B Interlaced
-is used in
-.B Solid
-mode, the
-.I colorTo
-resource is used to find the interlacing color.
-
-.SH A WORD ABOUT FONTS
-We should comment about fonts before we move on to the complete component
-list.  Fluxbox supports different options for text.  These options currently
-include bold, halo and shadow.  To set these do this:
-.IR fontname-size:options
-for any of the font components in the style file.  For example:
-.EX
-menu.title.font: sans-8:bold,shadow
-.EE
-The latest versions of Fluxbox (> 0.9.8) also support different values for
-these text options.  The possibilities are as follows:
-.B Shadow
-color=<colorname>
-offsetx=<integer>
-offsety=<integer>
-.B Halo
-color=<colorname>
+toolbar.clock.pixmap: clock_background.xpm
+.fi
+.RE
+This feature might need some investigation, reports say that sometimes the resources color and colorTo must be set and then they may not be set.
+.sp
+All gradiented textures are composed of two color values: the \fIcolor\fR and \fIcolorTo\fR resources. When \fBInterlaced\fR is used in \fBSolid\fR mode, the \fIcolorTo\fR resource is used to find the interlacing color.
+.sp
+.SH "A WORD ABOUT FONTS"
+We should comment about fonts before we move on to the complete component list. fluxbox(1) supports different options for text. These options currently include bold, halo and shadow. To set these do this: fontname\-size:options for any of the font components in the style file. For example:
+.sp
+.sp
+.RS 4
+.nf
+menu.title.font: sans\-8:bold,shadow
+.fi
+.RE
+The latest versions of fluxbox(1) (> 0.9.8) also support different values for these text options. The possibilities are as follows:
+.sp
+.sp
+.RS 4
+.nf
+\-\-\-\-\-\-\-\-
+Shadow color=<colorname> offsetx=<integer> offsety=<integer> Halo color=<colorname>
+\-\-\-\-\-\-\-\-
+.fi
+.RE
 For the case of completeness, here are some real world examples:
-.EX
-*.font: Verdana-10:bold,shadow:offsetx=2;offsety=4;color=green
-*.font: Verdana-10:halo:color=blue
-.EE
-Of course this could all be placed on one line.  Also note that for the offset
-options, negative integers are allowed.
-
-.SH FONT PROBLEMS
-If you have problems installing fonts or getting them to work, you should read the docs page at xfree.org.  Here is a link to one of these: http://xfree.org/4.3.0/fonts2.html#3.
-
-.SH FULL COMPONENT LIST
-Here is the exhaustive component list for Fluxbox styles.  Each one is listed
-with their type of value required.  Comments in a style file are preceded with
-an exclamation point (!) which we also use here so that these can be pasted
-into a new theme.cfg to be customized appropiately.  Please note that in order
-to keep styles consistent it is often the practice of stylists to provide all
-of the theme-items in their style file even if they are not used.  This allows
-the user the ease of changing different components.
-.PP
-.\" The comments also to be translated!
-.SS WINDOW OPTIONS
-Many, many things you can do with window design in Fluxbox, below are your options.  Have fun.
-.EX
+.sp
+.sp
+.RS 4
+.nf
+*.font: Verdana\-10:bold,shadow:offsetx=2;offsety=4;color=green
+*.font: Verdana\-10:halo:color=blue
+.fi
+.RE
+Of course this could all be placed on one line. Also note that for the offset options, negative integers are allowed.
+.sp
+.SS "FONT PROBLEMS"
+If you have problems installing fonts or getting them to work, you should read the docs page at xfree.org. Here is a link to one of these: \fIhttp://xfree.org/4.3.0/fonts2.html#3\fR
+.sp
+.SH "FULL COMPONENT LIST"
+Here is the exhaustive component list for fluxbox(1) styles. Each one is listed with their type of value required. Comments in a style file are preceded with an exclamation point (!) which we also use here so that these can be pasted into a new theme.cfg to be customized appropiately. Please note that in order to keep styles consistent it is often the practice of stylists to provide all of the theme\-items in their style file even if they are not used. This allows the user the ease of changing different components.
+.sp
+.SH "WINDOW OPTIONS"
+Many, many things you can do with window design in fluxbox(1), below are your options. Have fun.
+.sp
+.sp
+.RS 4
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 window.bevelWidth:              <integer>
 window.borderColor:             <color>
 window.borderWidth:             <integer>
@@ -361,10 +269,16 @@ window.title.unfocus:           <texture type>
 window.title.unfocus.color:     <color>
 window.title.unfocus.colorTo:   <color>
 window.title.unfocus.pixmap:    <filename>
-.EE
-.SS MENU OPTIONS
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.RE
+.SH "MENU OPTIONS"
 Everything you need to make your menu look pretty.
-.EX
+.sp
+.sp
+.RS 4
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 menu.bevelWidth:                <integer>
 menu.borderColor:               <color>
 menu.borderWidth:               <integer>
@@ -387,28 +301,39 @@ menu.itemHeight:                <integer>
 menu.title:                     <texture type>
 menu.title.color:               <color>
 menu.title.colorTo:             <color>
-menu.title.font: <font>
+menu.title.font:                <font>
 menu.title.pixmap:              <filename>
 menu.title.textColor:           <color>
 menu.title.justify:             <{Left|Right|Center}>
 menu.titleHeight:               <integer>
 menu.roundCorners:              <{Top|Bottom}{Left|Right}>
-menu.selected.pixmap: <filename>
+menu.selected.pixmap:           <filename>
 menu.submenu.pixmap:            <filename>
-menu.unselected.pixmap: <filename>
-.EE
-.SS ROOT COMMAND
-Rarely are you going to want to use this option.  There is a command that is
-similar that is used in the 
-.IR init
-file.  It is bad style to use this in your style as it forces the user to use
-your background. So note that it is good practice to leave this blank or out of the style altogether.
-.EX
-rootCommand: <string>
-.EE
-.SS SLIT
+menu.unselected.pixmap:         <filename>
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.RE
+.SH "BACKGROUND"
+Every style must specify the background option. If you don't want your style to change the user's background, then use `background: none'. The options `centered', `aspect', `tiled', and `fullscreen' require the `background.pixmap' resource to contain a valid file name. The `random' option requires `background.pixmap' to contain a valid directory name. For these options, fluxbox(1) will call fbsetbg(1) to set the background. The options `gradient', `solid', and `mod' all require `background.color' to be set. `gradient' and `mod' both require `background.colorTo'. `mod' requires `background.modX' and `background.modY' to be set as well. These options will be passed to fbsetroot(1) to set the background.
+.sp
+.sp
+.RS 4
+.nf
+background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>|mod|none
+background.pixmap: <file or directory>
+background.color: <color>
+background.colorTo: <color>
+background.modX: <integer>
+background.modY: <integer>
+.fi
+.RE
+.SH "SLIT"
 Here are all of the options for the slit.
-.EX
+.sp
+.sp
+.RS 4
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 slit: <texture type>
 slit.bevelWidth: <integer>
 slit.borderColor: <color>
@@ -416,12 +341,18 @@ slit.borderWidth:               <integer>
 slit.color:                     <color>
 slit.colorTo:                   <color>
 slit.pixmap:                    <filename>
-.EE
-.SS TOOLBAR OPTIONS
-Below you will find all of the configuration possibilities for the toolbar.  The list is pretty extensive and offers you many options to make your toolbar look just the way you want it.
-.EX
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.RE
+.SH "TOOLBAR OPTIONS"
+Below you will find all of the configuration possibilities for the toolbar. The list is pretty extensive and offers you many options to make your toolbar look just the way you want it.
+.sp
+.sp
+.RS 4
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 toolbar: <texture type>
-toolbar.bevelWidth:             <integer (0-255)>
+toolbar.bevelWidth:             <integer (0\-255)>
 toolbar.borderColor:            <color>
 toolbar.borderWidth:            <integer>
 toolbar.button.scale:           <integer>
@@ -472,82 +403,49 @@ toolbar.workspace.borderWidth:  <integer>
 toolbar.workspace.color:        <color>
 toolbar.workspace.colorTo:      <color>
 toolbar.workspace.pixmap:       <filename>
-.EE
-
-.SH EXAMPLES
-This list may seem intimidating, but remember, when you create your own style
-you can easily set a majority of these keys with a single component.  For an
-example of this:
-.EX
-.ta \w'*unfocus.textColor:\ 'u
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.RE
+.SH "EXAMPLES"
+This list may seem intimidating, but remember, when you create your own style you can easily set a majority of these keys with a single component. For an example of this:
+.sp
+.sp
+.RS 4
+.nf
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 *color: slategrey
 *colorTo:       darkslategrey
 *unfocus.color: darkslategrey
 *unfocus.colorTo:       black
 *textColor:     white
 *unfocus.textColor:     lightgrey
-*font:  lucidasans-10
-.EE
+*font:  lucidasans\-10
+\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.fi
+.RE
 This sets nice defaults for many components.
-
-.SH COLOR FORMATS
+.sp
+.SH "COLOR FORMATS"
 These are the color formats for styles:
-.EX
+.sp
+.sp
+.RS 4
+.nf
 #000000 (Hexadecimal)
-rgb:<0-255>/<0-255>/<0-255>
-.EE
+rgb:<0\-255>/<0\-255>/<0\-255>
+.fi
+.RE
 See /usr/X11R6/lib/X11/rgb.txt for an explaination.
-
-.SH AUTHOR and CREDITS
-Blackbox was written and maintained by Brad Hughes
-.nh \" hyphenation off
-<blackbox@alug.org>
-.hy \" on again
-and Jeff Raven
-.nh
-<jraven@psu.edu>,
-.hy
-.PP
-Fluxbox is written and maintained by Henrik Kinnunen
-.nh
-<fluxgen@linuxmail.org>
-.hy
-with contributions and patches merged from
-many individuals around the world.
-.PP
-The Official Fluxbox website:
-.nh
-.B http://www.fluxbox.org/
-.hy
-.PP
-Fluxmod was a Fluxbox community site where you could find many new styles that
-work with this version of Fluxbox and take advantage of all the new features.
-However, fluxmod is no more, but it's maintainer still dabbles in style
-creation.  You can find his site here:
-.nh
-.B http://www.ikaro.dk
-.hy
-.PP
-You can also find more styles here:
-.nh
-.B http://themes.freshmeat.net/
-.PP
-This manpage was composed from various resources including the official
-documentation,
-.IR fluxbox(1)
-man page and numerous other resources by Curt "Asenchi" Micol.  If you notice
-any errors or problems with this page, please contact him here:
-.nh
-<asenchi@asenchi.com>
-.hy 
-and using the great contributions of
-.hy
-<grubert@users.sourceforge.net>.
-.nh
-Numerous other languages could be available if someone jumps in.
-.SH SEE ALSO
-.IR fluxbox(1) 
-.IR fbsetbg(1)
-.IR fbsetroot(1)
-
-.\" ADDITIONS TO MAKE
+.sp
+.SH "AUTHOR AND CREDITS"
+Blackbox was written and maintained by Brad Hughes <blackbox@alug.org> and Jeff Raven <jraven@psu.edu>.
+.sp
+fluxbox(1) is written and maintained by Henrik Kinnunen <fluxgen@fluxbox.org> with contributions and patches merged from many individuals around the world.
+.sp
+The Official fluxbox(1) website: \fIhttp://www.fluxbox.org\fR You can find a lot of styles here: \fIhttp://tenr.de/\fR
+.sp
+This manpage was composed from various resources including the official documentation, fluxbox(1) man page and numerous other resources by Curt "Asenchi" Micol. If you notice any errors or problems with this page, please contact him here: <asenchi@asenchi.com> and using the great contributions of <grubert@users.sourceforge.net>. Numerous other languages could be available if someone jumps in.
+.sp
+.SH "SEE ALSO"
+fluxbox(1) fbsetbg(1) fbsetroot(1)
+.sp
