@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/04/24:
+   * Fixed a bug in parsing cli (Mathias, thanks to Steven Kah Hien Wong <steven
+     at zensaki dot com> for pointing out the issue)
+     src/main.cc
 *07/04/23:
    * Set IconicState on all unmapped clients and unmap clients with frames, as
      per ICCCM 4.1.4 (Mark)
