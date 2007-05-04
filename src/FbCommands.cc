@@ -424,8 +424,11 @@ void DeiconifyCmd::execute() {
     if (screen == 0)
         return;
 
-    BScreen::Icons::reverse_iterator it= screen->iconList().rbegin();
-    BScreen::Icons::reverse_iterator itend= screen->iconList().rend();
+    // we need to make a copy of the list of icons, or else our iterator can
+    // become invalid
+    BScreen::Icons icon_list = screen->iconList();
+    BScreen::Icons::iterator it = icon_list.begin();
+    BScreen::Icons::iterator itend= icon_list.end();
     unsigned int workspace_num= screen->currentWorkspaceID();
     unsigned int old_workspace_num;
 
