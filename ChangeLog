@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/05/04:
+   * Fixed infinite loop caused by deiconify command (Mark)
+     FbCommands.cc
 *07/04/24:
    * Fixed a bug in parsing cli (Mathias, thanks to Steven Kah Hien Wong <steven at
      zensaki dot com> for pointing out the issue)
