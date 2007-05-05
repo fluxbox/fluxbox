@@ -483,17 +483,17 @@ std::string FbWindow::textProperty(Atom property) const {
     } else if (text_prop.encoding == m_utf8string && text_prop.format == 8) {
 #ifdef X_HAVE_UTF8_STRING
         Xutf8TextPropertyToTextList(display(), &text_prop, &stringlist, &count);
-        if (count == 0)
+        if (count == 0 || stringlist == 0)
             return "";
 #else
-        if (XTextPropertyToStringList(&text_prop, &stringlist, &count) == 0 || count == 0)
+        if (XTextPropertyToStringList(&text_prop, &stringlist, &count) == 0 || count == 0 || stringlist == 0)
             return "";
 #endif
         ret = stringlist[0];
     } else {
         // still returns a "StringList" despite the different name
         XmbTextPropertyToTextList(display(), &text_prop, &stringlist, &count);
-        if (count == 0)
+        if (count == 0 || stringlist == 0)
             return "";
 
         ret = FbStringUtil::LocaleStrToFb(stringlist[0]);
