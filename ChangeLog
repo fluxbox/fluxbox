@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
 *07/05/12:
+   * Changed interpretation of Horizontal/Vertical maximization of a window that
+     is already maximized (Mark)
+     Window.cc
    * Fixed tabs disappearing with [Deco] {TAB} and tabs in titlebar (Mark)
      Window.cc Screen.cc
 *07/05/04:

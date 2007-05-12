@@ -1658,7 +1658,8 @@ void FluxboxWindow::setFullscreen(bool flag) {
 */
 void FluxboxWindow::maximize(int type) {
 
-    if (isFullscreen())
+    // doesn't make sense to maximize
+    if (isFullscreen() || type == MAX_NONE)
         return;
 
     if (isIconic())
@@ -1687,26 +1688,11 @@ void FluxboxWindow::maximize(int type) {
     // Worst case being that some action will toggle the wrong way, but
     // we still won't lose the state in that case.
 
-    // NOTE: There is one option to the way this works - what it does when
-    // fully maximised and maximise(vert, horz) is selected.
-    // There are 2 options here - either:
-    // 1) maximiseVertical results in a vertically (not horz) maximised window, or
-    // 2) " toggles vertical maximisation, thus resulting in a horizontally
-    //      maximised window.
-    //
-    // The current implementation uses style 1, to change this, removed the
-    // item corresponding to the [[ ]] comment
-
     // toggle maximize vertically?
     // when _don't_ we want to toggle?
-    // - type is horizontal maximise, [[and we aren't fully maximised]] or
-    // - [[ type is vertical maximise and we are fully maximised ]]
-    // - type is none and we are not vertically maximised, or
-    // - type is full and we are not horizontally maximised, but already vertically
-    if (!(type == MAX_HORZ && orig_max != MAX_FULL ||
-          type == MAX_VERT && orig_max == MAX_FULL ||
-          type == MAX_NONE && !(orig_max & MAX_VERT) ||
-          type == MAX_FULL && orig_max == MAX_VERT)) {
+    // - type is horizontal maximise, or
+    // - type is full and we are not maximised horz but already vertically
+    if (type != MAX_HORZ && !(type == MAX_FULL && orig_max == MAX_VERT)) {
         // already maximized in that direction?
         if (orig_max & MAX_VERT) {
             new_y = m_old_pos_y;
@@ -1725,10 +1711,7 @@ void FluxboxWindow::maximize(int type) {
     }
 
     // maximize horizontally?
-    if (!(type == MAX_VERT && orig_max != MAX_FULL ||
-          type == MAX_HORZ && orig_max == MAX_FULL ||
-          type == MAX_NONE && !(orig_max & MAX_HORZ) ||
-          type == MAX_FULL && orig_max == MAX_HORZ)) {
+    if (type != MAX_VERT && !(type == MAX_FULL && orig_max == MAX_HORZ)) {
         // already maximized in that direction?
         if (orig_max & MAX_HORZ) {
             new_x = m_old_pos_x;
@@ -1769,6 +1752,7 @@ void FluxboxWindow::maximize(int type) {
     // notify listeners that we changed state
     stateSig().notify();
 }
+
 /**
  * Maximize window horizontal
  */
@@ -3757,22 +3741,16 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
             want_max |= MAX_HORZ;
 
         if (want_max == MAX_NONE && maximized != MAX_NONE) {
-            maximize(MAX_NONE);
+            maximize(maximized);
         } else if (want_max == MAX_FULL && maximized != MAX_FULL) {
             maximize(MAX_FULL);
-            // horz and vert are a little trickier to morph
-        }
-            // to toggle vert
+        } else {
             // either we want vert and aren't
-            // or we want horizontal, and are vertically (or full) at present
-        if (want_max == MAX_VERT && !(maximized & MAX_VERT) ||
-            want_max == MAX_HORZ && (maximized & MAX_VERT)) {
-            maximize(MAX_VERT);
-        }
-        // note that if we want horz, it WONT be vert any more from above
-        if (want_max == MAX_HORZ && !(maximized & MAX_HORZ) ||
-            want_max == MAX_VERT && (maximized & MAX_HORZ)) {
-            maximize(MAX_HORZ);
+            // or we want horizontal and aren't
+            if (want_max == MAX_VERT ^ (bool)(maximized & MAX_VERT))
+                maximize(MAX_VERT);
+            if (want_max == MAX_HORZ ^ (bool)(maximized & MAX_HORZ))
+                maximize(MAX_HORZ);
         }
     }
 
