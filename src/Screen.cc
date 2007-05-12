@@ -1046,24 +1046,14 @@ void BScreen::reconfigureTabs() {
         if (!(*w_it)->windowList().empty()) {
             Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
             const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
-            for (; win_it != win_it_end; ++win_it) {
-                (*win_it)->frame().updateTabProperties();
-                if (*resource.default_internal_tabs)
-                    (*win_it)->frame().setTabMode(FbWinFrame::INTERNAL);
-                else
-                    (*win_it)->frame().setTabMode(FbWinFrame::EXTERNAL);
-            }
+            for (; win_it != win_it_end; ++win_it)
+                (*win_it)->applyDecorations();
         }
     }
     Icons::iterator icon_it = m_icon_list.begin();
     Icons::iterator icon_it_end = m_icon_list.end();
-    for (; icon_it != icon_it_end; ++icon_it) {
-        (*icon_it)->frame().updateTabProperties();
-        if (*resource.default_internal_tabs)
-            (*icon_it)->frame().setTabMode(FbWinFrame::INTERNAL);
-        else
-            (*icon_it)->frame().setTabMode(FbWinFrame::EXTERNAL);
-    }
+    for (; icon_it != icon_it_end; ++icon_it)
+        (*icon_it)->applyDecorations();
 }
 
 

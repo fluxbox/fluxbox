@@ -3122,8 +3122,10 @@ void FluxboxWindow::applyDecorations(bool initial) {
     if (decorations.titlebar) {
         bool change = frame().showTitlebar();
         client_move |= change;
-        if (change && screen().getDefaultInternalTabs()) {
+        if (screen().getDefaultInternalTabs()) {
             client_move |= frame().setTabMode(FbWinFrame::INTERNAL);
+        } else {
+            client_move |= frame().setTabMode(FbWinFrame::EXTERNAL);
         }
     } else {
         client_move |= frame().hideTitlebar();

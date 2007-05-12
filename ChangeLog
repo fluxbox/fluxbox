@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/05/12:
+   * Fixed tabs disappearing with [Deco] {TAB} and tabs in titlebar (Mark)
+     Window.cc Screen.cc
+*07/05/04:
    * Fixed infinite loop caused by deiconify command (Mark)
      FbCommands.cc
 *07/04/24:
