@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/05/13:
+   * Added new placement policies {Row,Col}MinOverlapPlacement. They behave the
+     same as {Row,Col}SmartPlacement when the window fits but fall back on
+     minimizing overlap with other windows instead of CascadePlacement (Mark)
+     MinOverlapPlacement.cc/hh ScreenPlacement.cc/hh
 *07/05/12:
    * Changed interpretation of Horizontal/Vertical maximization of a window that
      is already maximized (Mark)

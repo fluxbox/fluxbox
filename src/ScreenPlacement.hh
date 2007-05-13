@@ -43,8 +43,10 @@ class ScreenPlacement: public PlacementStrategy {
 public:
     enum PlacementPolicy { 
         ROWSMARTPLACEMENT, 
-        COLSMARTPLACEMENT,                            
-        CASCADEPLACEMENT, 
+        COLSMARTPLACEMENT,
+        COLMINOVERLAPPLACEMENT,
+        ROWMINOVERLAPPLACEMENT,
+        CASCADEPLACEMENT,
         UNDERMOUSEPLACEMENT
     };
 

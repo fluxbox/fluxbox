@@ -131,6 +131,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	PlacementStrategy.hh \
 	CascadePlacement.hh CascadePlacement.cc \
 	ColSmartPlacement.hh ColSmartPlacement.cc \
+	MinOverlapPlacement.hh MinOverlapPlacement.cc \
 	RowSmartPlacement.hh RowSmartPlacement.cc \
 	ScreenPlacement.hh ScreenPlacement.cc \
 	UnderMousePlacement.hh UnderMousePlacement.cc \
