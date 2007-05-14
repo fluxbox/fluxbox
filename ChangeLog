@@ -87,6 +87,10 @@ Changes for 1.1:
        SendToWorkspace, TakeToWorkspace, NextTab, PrevTab, MoveTabLeft,
        MoveTabRight, DetachClient
      WorkspaceCmd.cc/hh CurrentWindowCmd.cc/hh FbCommandFactory.cc
+   * Make fluxbox-generate_menu emit [encoding] tags around all of its
+     menus. Please check that it is the right encoding, I had to guess
+     some as it wasn't recorded (Simon)
+     util/fluxbox-generate_menu.in
 *07/03/30:
    * Added fi_FI support (Thanks Pasi Juvonen, loudvr at yahoo ca)
     nls/fi_FI/*, util/fluxbox-generate_menu.in
