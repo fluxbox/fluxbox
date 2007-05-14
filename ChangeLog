@@ -1,5 +1,7 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+   * Fixed bug with fluxbox-generate_menu -is (thanks Jim Ramsay)
+     util/fluxbox-generate_menu.in
 *07/05/12:
    * Changed interpretation of Horizontal/Vertical maximization of a window that
      is already maximized (Mark)

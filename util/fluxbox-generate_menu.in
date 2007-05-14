@@ -1326,22 +1326,22 @@ while [ $# -gt 0 ]; do
         -g) GNOMEMENU=yes; shift;;
         -in) NO_ICON=yes; shift;;
         -is) OTHER_ICONPATHS="
-                /usr/share/icons,
-                /usr/share/icons/mini,
-                /usr/share/pixmaps,
-                /usr/local/share/icons,
-                /usr/local/share/icons/mini,
-                /usr/local/share/pixmaps,
-                /usr/share/xclass/icons,
-                /usr/share/xclass/pixmaps,
-                /usr/local/share/xclass/icons,
-                /usr/local/share/xclass/pixmaps,
-                /usr/X11R6/share/icons/default/16x16,
-                /usr/X11R6/share/icons/kde/16x16,
-                /usr/X11R6/share/icons/hicolor/16x16,
-                /usr/local/X11R6/share/icons/default/16x16,
-                /usr/local/X11R6/share/icons/kde/16x16,
-                /usr/local/X11R6/share/icons/hicolor/16x16,
+                /usr/share/icons
+                /usr/share/icons/mini
+                /usr/share/pixmaps
+                /usr/local/share/icons
+                /usr/local/share/icons/mini
+                /usr/local/share/pixmaps
+                /usr/share/xclass/icons
+                /usr/share/xclass/pixmaps
+                /usr/local/share/xclass/icons
+                /usr/local/share/xclass/pixmaps
+                /usr/X11R6/share/icons/default/16x16
+                /usr/X11R6/share/icons/kde/16x16
+                /usr/X11R6/share/icons/hicolor/16x16
+                /usr/local/X11R6/share/icons/default/16x16
+                /usr/local/X11R6/share/icons/kde/16x16
+                /usr/local/X11R6/share/icons/hicolor/16x16
             "
             shift;;
         -ds) OTHER_DESKTOP_PATHS="
