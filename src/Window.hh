@@ -38,6 +38,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include <sys/time.h>
 #include <vector>
 #include <string>
 #include <memory>
@@ -337,6 +338,7 @@ public:
     */
     //@{
     void handleEvent(XEvent &event);
+    void keyPressEvent(XKeyEvent &ke);
     void buttonPressEvent(XButtonEvent &be);
     void buttonReleaseEvent(XButtonEvent &be);
     void motionNotifyEvent(XMotionEvent &me);
@@ -418,6 +420,8 @@ public:
     inline const ClientList &clientList() const { return m_clientlist; }
     inline WinClient &winClient() { return *m_client; }
     inline const WinClient &winClient() const { return *m_client; }
+
+    bool isTyping();
 
     inline const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }
     inline FbTk::XLayerItem &layerItem() { return m_frame.layerItem(); }
@@ -571,6 +575,8 @@ private:
     int m_last_resize_x, m_last_resize_y; // handles last button press event for resize
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
     unsigned int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
+
+    timeval m_last_keypress_time;
 
     unsigned int m_workspace_number;
     unsigned long m_current_state; // NormalState | IconicState | Withdrawn

@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/05/16:
+   * Added new resource session.screen<N>.noFocusWhileTypingDelay: <int> (Mark)
+     - specifies a time in milliseconds that new windows should not gain focus
+       while the user is typing in the focused window
+     Window.cc/hh Screen.cc/hh
 *07/05/13:
    * Added new placement policies {Row,Col}MinOverlapPlacement. They behave the
      same as {Row,Col}SmartPlacement when the window fits but fall back on

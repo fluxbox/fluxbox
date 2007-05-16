@@ -1363,10 +1363,8 @@ bool FluxboxWindow::focus() {
     if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck()) {
 
         BScreen::FollowModel model = screen().getUserFollowModel();
-        if (model == BScreen::IGNORE_OTHER_WORKSPACES) {
-            Fluxbox::instance()->attentionHandler().addAttention(*this);
+        if (model == BScreen::IGNORE_OTHER_WORKSPACES)
             return false;
-        }
 
         // fetch the window to the current workspace
         if (model == BScreen::FETCH_ACTIVE_WINDOW ||
@@ -1378,10 +1376,11 @@ bool FluxboxWindow::focus() {
     }
 
     FluxboxWindow *cur = FocusControl::focusedFbWindow();
-    if (cur && cur != this && cur->isFullscreen()) {
-        Fluxbox::instance()->attentionHandler().addAttention(*this);
+    WinClient *client = FocusControl::focusedWindow();
+    if (cur && client && cur != this &&
+        getRootTransientFor(m_client) != getRootTransientFor(client) &&
+        (cur->isFullscreen() || cur->isTyping()))
         return false;
-    }
 
     if (isIconic()) {
         deiconify();
@@ -1463,6 +1462,7 @@ void FluxboxWindow::hide(bool interrupt_moving) {
 
 void FluxboxWindow::show() {
     frame().show();
+    setState(NormalState, false);
 }
 
 void FluxboxWindow::toggleIconic() {
@@ -1484,8 +1484,6 @@ void FluxboxWindow::iconify() {
 
     iconic = true;
 
-    setState(IconicState, false);
-
     hide(true);
 
     screen().focusControl().setFocusBack(this);
@@ -1494,9 +1492,6 @@ void FluxboxWindow::iconify() {
     const ClientList::iterator client_it_end = m_clientlist.end();
     for (; client_it != client_it_end; ++client_it) {
         WinClient &client = *(*client_it);
-        client.setEventMask(NoEventMask);
-        client.hide();
-        client.setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
         if (client.transientFor() &&
             client.transientFor()->fbwindow()) {
             if (!client.transientFor()->fbwindow()->isIconic()) {
@@ -1535,19 +1530,10 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     m_blackbox_attrib.flags &= ~ATTRIB_HIDDEN;
     iconic = false;
 
-    setState(NormalState, false);
-
-    ClientList::iterator client_it = clientList().begin();
-    ClientList::iterator client_it_end = clientList().end();
-    for (; client_it != client_it_end; ++client_it) {
-        (*client_it)->setEventMask(NoEventMask);
-        (*client_it)->show();
-        (*client_it)->setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
-    }
-
     if (reassoc && !m_client->transients.empty()) {
         // deiconify all transients
-        client_it = clientList().begin();
+        ClientList::iterator client_it = clientList().begin();
+        ClientList::iterator client_it_end = clientList().end();
         for (; client_it != client_it_end; ++client_it) {
             //TODO: Can this get stuck in a loop?
             WinClient::TransientList::iterator trans_it =
@@ -1863,9 +1849,6 @@ void FluxboxWindow::raise() {
     // get root window
     WinClient *client = getRootTransientFor(m_client);
 
-    // if we don't have any root window use this as root
-    if (client == 0)
-        client = m_client;
     // if we have transient_for then we should put ourself last in
     // transients list so we get raised last and thus gets above the other transients
     if (m_client->transientFor() && m_client != m_client->transientFor()->transientList().back()) {
@@ -1893,10 +1876,6 @@ void FluxboxWindow::lower() {
 #endif // DEBUG
     // get root window
     WinClient *client = getRootTransientFor(m_client);
-
-    // if we don't have any root window use this as root
-    if (client == 0)
-        client = m_client;
 
     if (client->fbwindow())
         lowerFluxboxWindow(*client->fbwindow());
@@ -1943,10 +1922,6 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
 
     // get root window
     WinClient *client = getRootTransientFor(m_client);
-
-    // if we don't have any root window use this as root
-    if (client == 0)
-        client = m_client;
 
     FluxboxWindow *win = client->fbwindow();
     if (!win) return;
@@ -2094,10 +2069,12 @@ void FluxboxWindow::setState(unsigned long new_state, bool setting_up) {
     ClientList::iterator it = clientList().begin();
     ClientList::iterator it_end = clientList().end();
     for (; it != it_end; ++it) {
+        (*it)->setEventMask(NoEventMask);
         if (new_state == IconicState)
             (*it)->hide();
         else if (new_state == NormalState)
             (*it)->show();
+        (*it)->setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask | KeyPressMask);
     }
 
     saveBlackboxAttribs();
@@ -2376,7 +2353,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
         setState(NormalState, false);
 
     // we use m_focused as a signal that this should be focused when mapped
-    if (isFocused()) {
+    if (m_focused) {
         m_focused = false;
         focus();
     }
@@ -2397,11 +2374,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): title="<<client->title()<<endl;
 #endif // DEBUG
 
-    // if window was in IconicState, then this event could have come from us
-    // unmapping the window -- but if send_event is set, then the client wants
-    // to be withdrawn
-    if (m_current_state == NormalState || ue.send_event)
-        restore(client, false);
+    restore(client, false);
 
 }
 
@@ -2602,6 +2575,41 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
 
 }
 
+// keep track of last keypress in window, so we can decide not to focusNew
+void FluxboxWindow::keyPressEvent(XKeyEvent &ke) {
+    // if there's a modifier key down, the user probably expects the new window
+    if (FbTk::KeyUtil::instance().cleanMods(ke.state))
+        return;
+
+    // we need to ignore modifier keys themselves, too
+    KeySym ks;
+    char keychar[1];
+    XLookupString(&ke, keychar, 1, &ks, 0);
+    if (IsModifierKey(ks))
+        return;
+
+    // if the key was return/enter, the user probably expects the window
+    // e.g., typed the command in a terminal
+    if (ks == XK_KP_Enter || ks == XK_Return) {
+        // we'll actually reset the time for this one
+        m_last_keypress_time.tv_sec = 0;
+        return;
+    }
+
+    // otherwise, make a note that the user is typing
+    gettimeofday(&m_last_keypress_time, 0);
+}
+
+bool FluxboxWindow::isTyping() {
+    timeval now;
+    if (gettimeofday(&now, NULL) == -1)
+        return false;
+
+    unsigned int diff = 1000*(now.tv_sec - m_last_keypress_time.tv_sec);
+    diff += (now.tv_usec - m_last_keypress_time.tv_usec)/1000;
+
+    return (diff < screen().noFocusWhileTypingDelay());
+}
 
 void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_last_button_x = be.x_root;
