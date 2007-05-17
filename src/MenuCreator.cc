@@ -477,6 +477,9 @@ bool MenuCreator::createFromFile(const string &filename,
     if (require_begin && !getStart(parser, label, m_stringconvertor))
         return false;
 
+    // save menu filename, so we can check if it changes
+    Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
+
     startFile();
     parseMenu(parser, inject_into, m_stringconvertor);
     endFile();
