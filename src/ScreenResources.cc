@@ -84,6 +84,7 @@ template<>
 string FbTk::Resource<BScreen::FollowModel>::getString() const {
     switch (m_value) {
     case BScreen::FOLLOW_ACTIVE_WINDOW:
+    default:
         return string("Follow");
         break;
     case BScreen::FETCH_ACTIVE_WINDOW:
@@ -93,7 +94,6 @@ string FbTk::Resource<BScreen::FollowModel>::getString() const {
         return string("SemiFollow");
         break;
     case BScreen::IGNORE_OTHER_WORKSPACES:
-    default:
         return string("Ignore");
         break;
     }
@@ -111,6 +111,8 @@ setFromString(char const *strval) {
         m_value = BScreen::FETCH_ACTIVE_WINDOW;
     else if (strcasecmp(strval, "SemiFollow") == 0)
         m_value = BScreen::SEMIFOLLOW_ACTIVE_WINDOW;
+    else if (strcasecmp(strval, "Ignore") == 0)
+        m_value = BScreen::IGNORE_OTHER_WORKSPACES;
     else
         setDefaultValue();
 }
