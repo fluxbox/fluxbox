@@ -24,6 +24,12 @@
 
 #include <string>
 
+#ifdef HAVE_CCTYPE
+  #include <cctype>
+#else
+  #include <ctype.h>
+#endif // HAVE_CCTYPE
+
 namespace FbTk {
 
 // abstract base class providing access and validation
