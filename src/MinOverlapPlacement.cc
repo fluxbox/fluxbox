@@ -72,12 +72,14 @@ bool MinOverlapPlacement::placeWindow(
     for (; it != it_end; ++it) {
 
         // get the dimensions of the window
-        int bottom = (*it)->y() + (*it)->height() +
-            2*(*it)->frame().window().borderWidth();
-        int top = (*it)->y();
-        int right = (*it)->x() + (*it)->width() +
-            2*(*it)->frame().window().borderWidth();
-        int left = (*it)->x();
+        int left = (*it)->x() - (*it)->xOffset();
+        int top = (*it)->y() - (*it)->yOffset();
+        int right = left + (*it)->width() +
+            2*(*it)->frame().window().borderWidth() +
+            (*it)->widthOffset();
+        int bottom = top + (*it)->height() +
+            2*(*it)->frame().window().borderWidth() +
+            (*it)->heightOffset();
 
         // go through the list of regions
         // if this window overlaps that region and the new window still fits,
@@ -143,12 +145,14 @@ bool MinOverlapPlacement::placeWindow(
         for (; it != windowlist.rend(); ++it) {
 
             // get the dimensions of the window
-            int bottom = (*it)->y() + (*it)->height() +
-                2*(*it)->frame().window().borderWidth();
-            int top = (*it)->y();
-            int right = (*it)->x() + (*it)->width() +
-                2*(*it)->frame().window().borderWidth();
-            int left = (*it)->x();
+            int left = (*it)->x() - (*it)->xOffset();
+            int top = (*it)->y() - (*it)->yOffset();
+            int right = left + (*it)->width() +
+                2*(*it)->frame().window().borderWidth() +
+                (*it)->widthOffset();
+            int bottom = top + (*it)->height() +
+                2*(*it)->frame().window().borderWidth() +
+                (*it)->heightOffset();
 
             // get the coordinates of the overlap region
             int min_right = (right > reg_it->x + win_w) ?

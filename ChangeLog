@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/05/17:
+   * Fixed some window placement issues (thanks Tomas Janousek)
+     ScreenPlacement.cc
 *07/05/16:
    * Added new resource session.screen<N>.noFocusWhileTypingDelay: <int> (Mark)
      - specifies a time in milliseconds that new windows should not gain focus
