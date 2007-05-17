@@ -175,8 +175,8 @@ bool MinOverlapPlacement::placeWindow(
     }
 
     // place window
-    place_x = min_reg->x;
-    place_y = min_reg->y;
+    place_x = min_reg->x + win.xOffset();
+    place_y = min_reg->y + win.yOffset();
 
     return true;
 }
