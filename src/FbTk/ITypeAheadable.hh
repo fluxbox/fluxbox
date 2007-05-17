@@ -19,10 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id$
+
 #ifndef FBTK_ITYPEAHEADABLE_HH
 #define FBTK_ITYPEAHEADABLE_HH
 
 #include <string>
+
+#ifdef HAVE_CCTYPE
+  #include <cctype>
+#else
+  #include <ctype.h>
+#endif // HAVE_CCTYPE
 
 namespace FbTk {
 
