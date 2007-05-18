@@ -542,10 +542,9 @@ void FluxboxWindow::init() {
     if (iconic) {
         iconic = false;
         iconify();
-    } else {
+    } else if (m_workspace_number == screen().currentWorkspaceID()) {
         iconic = true;
-        if (m_workspace_number == screen().currentWorkspaceID())
-            deiconify(false);
+        deiconify(false);
     }
 
     sendConfigureNotify();

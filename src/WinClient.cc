@@ -389,14 +389,15 @@ void WinClient::updateIconTitle() {
         if (text_prop.value && text_prop.nitems > 0) {
             if (text_prop.encoding != XA_STRING) {
                 text_prop.nitems = strlen((char *) text_prop.value);
+                XmbTextPropertyToTextList(display(), &text_prop, &list, &num);
 
-                if (XmbTextPropertyToTextList(display(), &text_prop,
-                                               &list, &num) == Success &&
-                    num > 0 && *list) {
+                if (num > 0 && list)
                     m_icon_title = (char *)*list;
-                    XFreeStringList(list);
-                } else
+                else
                     m_icon_title = text_prop.value ? (char *)text_prop.value : "";
+                if (list)
+                    XFreeStringList(list);
+
             } else
                 m_icon_title = text_prop.value ? (char *)text_prop.value : "";
 
