@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/05/19:
+   * Fixed bug #1718112, memory leak in FbWindow::textProperty ( Henrik )
+     FbTk/FbWindow.cc
 *07/05/17:
    * Fixed some window placement issues (thanks Tomas Janousek)
      ScreenPlacement.cc
