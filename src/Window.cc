@@ -545,6 +545,9 @@ void FluxboxWindow::init() {
     } else if (m_workspace_number == screen().currentWorkspaceID()) {
         iconic = true;
         deiconify(false);
+        // check if we should prevent this window from gaining focus
+        if (!allowsFocusFromClient())
+            m_focused = false;
     }
 
     sendConfigureNotify();
