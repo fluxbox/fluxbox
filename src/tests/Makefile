@@ -24,6 +24,9 @@ testKeys:  testKeys.o
 testResource: Resourcetest.o Resource.o
 	${CXX} ${LIBS} ${XLIBS} Resourcetest.o Resource.o -o testResource
 
+testTitle: titletest.cc
+	${CXX} ${CXXFLAGS} ${LIBS} ${XLIBS} titletest.cc ../FbTk/libFbTk.a -o testTitle
+
 signaltest:
 	${COMPILE} ../FbTk/SignalHandler.o signaltest.cc -o signaltest
 
