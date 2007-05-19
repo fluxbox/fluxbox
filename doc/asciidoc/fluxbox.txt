@@ -843,6 +843,11 @@ session.screen0.userFollowModel: <model>
       `SemiFollow' acts like `Current' for minimized windows and like `Follow'
       otherwise. Default: Follow
 
+session.screen0.followModel: <model>
+      This specifies the behavior when a window on another workspace requests to
+      be focused. `Ignore' does nothing, and `Follow' uses the setting in
+      session.screen0.userFollowModel. Default: Ignore
+
 session.screen0.resizeMode: Bottom|Quadrant|Center
       Setting this resource to `Quadrant' makes resizing by using the modkey
       grab the corner closest to the mouse pointer instead of the bottom right

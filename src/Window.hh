@@ -231,7 +231,8 @@ public:
      * @return true if it took focus.
      */
     bool focus();
-    
+    bool allowsFocusFromClient();
+
     /// Raises the window and takes focus (if possible).
     void raiseAndFocus() { raise(); focus(); }
     /// sets the internal focus flag

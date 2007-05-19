@@ -1376,9 +1376,8 @@ bool FluxboxWindow::focus() {
 
     FluxboxWindow *cur = FocusControl::focusedFbWindow();
     WinClient *client = FocusControl::focusedWindow();
-    if (cur && client && cur != this &&
-        getRootTransientFor(m_client) != getRootTransientFor(client) &&
-        (cur->isFullscreen() || cur->isTyping()))
+    if (cur && client && cur != this && cur->isFullscreen() &&
+        getRootTransientFor(m_client) != getRootTransientFor(client))
         return false;
 
     if (isIconic()) {
@@ -2315,26 +2314,33 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     // Note: this function never gets called from WithdrawnState
     // initial state is handled in restoreAttributes() and init()
 
-    // check what to do if window is on another workspace
-    if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck()) {
-        menu().hide();
-        BScreen::FollowModel model = screen().getUserFollowModel();
-        if (model == BScreen::IGNORE_OTHER_WORKSPACES)
-            return;
-        // fetch the window to the current workspace
-        if (model == BScreen::FETCH_ACTIVE_WINDOW ||
-            (isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW))
-            screen().sendToWorkspace(screen().currentWorkspaceID(), this, true);
-        // warp to the workspace of the window
-        else
-            screen().changeWorkspaceID(workspaceNumber());
-    }
+    // if the user doesn't want the window, then ignore request
+    if (!allowsFocusFromClient())
+        return;
 
     setCurrentClient(*client, false); // focus handled on MapNotify
     deiconify(false);
 
 }
 
+bool FluxboxWindow::allowsFocusFromClient() {
+
+    // check what to do if window is on another workspace
+    if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck()) {
+        BScreen::FollowModel model = screen().getFollowModel();
+        if (model == BScreen::IGNORE_OTHER_WORKSPACES)
+            return false;
+    }
+
+    FluxboxWindow *cur = FocusControl::focusedFbWindow();
+    WinClient *client = FocusControl::focusedWindow();
+    if (cur && client && cur->isTyping() &&
+        getRootTransientFor(m_client) != getRootTransientFor(client))
+        return false;
+
+    return true;
+
+}
 
 void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
     WinClient *client = findClient(ne.window);

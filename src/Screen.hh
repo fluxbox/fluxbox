@@ -144,6 +144,7 @@ public:
     ResizeModel getResizeModel() const { return *resource.resize_model; }
 
     inline unsigned int noFocusWhileTypingDelay() const { return *resource.typing_delay; }
+    inline FollowModel getFollowModel() const { return *resource.follow_model; }
     inline FollowModel getUserFollowModel() const { return *resource.user_follow_model; }
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
@@ -569,7 +570,7 @@ private:
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<unsigned int> typing_delay;
-        FbTk::Resource<FollowModel> user_follow_model;
+        FbTk::Resource<FollowModel> follow_model, user_follow_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
             unfocused_alpha, menu_alpha, menu_delay, menu_delay_close, tab_width;

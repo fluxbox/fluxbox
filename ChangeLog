@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
 *07/05/19:
+   * Changed behavior of resource session.screen<N>.followModel (Mark)
+     - now only options are Ignore and Follow, the latter using the setting in
+       session.screen<N>.userFollowModel
+     Window.cc/hh Ewmh.cc Screen.cc/hh
    * Fixed bug #1718112, memory leak in FbWindow::textProperty ( Henrik )
      FbTk/FbWindow.cc
 *07/05/17:
@@ -54,8 +58,6 @@ Changes for 1.1:
      Keys.cc/hh Toolbar.cc/hh Screen.cc/hh IconbarTool.cc fluxbox.cc
    * Menu when clicking workspacename in toolbar wasn't getting focused (Mark)
      ToolFactory.cc
-   * Removed followModel, since userFollowModel covers almost all cases (Mark)
-     IconbarTool.cc ClientMenu.cc Screen.cc/hh Ewmh.cc Window.cc
    * Buttons with different textures when pressed weren't getting reset
      properly (Mark)
      FbTk/Button.cc
