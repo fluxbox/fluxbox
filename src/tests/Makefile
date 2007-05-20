@@ -51,6 +51,9 @@ testTexture: texturetest.cc
 testDemandAttention: testDemandAttention.cc
 	${COMPILE} testDemandAttention.cc ../FbTk/libFbTk.a -lXpm -o testDemandAttention
 
+testFullscreen: fullscreentest.cc
+	${COMPILE} fullscreentest.cc ../FbTk/libFbTk.a -o testFullscreen
+
 Parser.o: ../Parser.hh ../Parser.cc
 	${COMPILE} ${CXXFLAGS} -c ../Parser.cc
 
