@@ -79,6 +79,8 @@ enum {
 	ConfigmenuClickTabFocus = 25,
 	ConfigmenuMaxMenu = 26,
 	ConfigmenuMaxIgnoreInc = 27,
+	ConfigmenuMaxDisableMove = 28,
+	ConfigmenuMaxDisableResize = 29,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,

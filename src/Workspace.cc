@@ -124,15 +124,6 @@ int Workspace::removeWindow(FluxboxWindow *w, bool still_alive) {
     m_windowlist.remove(w);
     m_clientlist_sig.notify();
 
-    if (!w->isStuck()) {
-        FluxboxWindow::ClientList::iterator client_it =
-            w->clientList().begin();
-        FluxboxWindow::ClientList::iterator client_it_end =
-            w->clientList().end();
-        for (; client_it != client_it_end; ++client_it)
-            screen().updateNetizenWindowDel((*client_it)->window());
-    }
-
     return m_windowlist.size();
 }
 

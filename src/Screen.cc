@@ -283,6 +283,8 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     opaque_move(rm, false, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
     full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
     max_ignore_inc(rm, true, scrname+".maxIgnoreIncrement", altscrname+".MaxIgnoreIncrement"),
+    max_disable_move(rm, false, scrname+".maxDisableMove", altscrname+".MaxDisableMove"),
+    max_disable_resize(rm, false, scrname+".maxDisableResize", altscrname+".MaxDisableResize"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
     show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
@@ -1350,17 +1352,11 @@ void BScreen::updateNetizenWindowFocus() {
 
 
 void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
-
-    // update the list of clients
-    m_clientlist_sig.notify();
-
-    // and then send the signal to listeners
     Netizens::iterator it = m_netizen_list.begin();
     Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
         (*it)->sendWindowAdd(w, p);
     }
-
 }
 
 
@@ -1368,8 +1364,6 @@ void BScreen::updateNetizenWindowDel(Window w) {
     for_each(m_netizen_list.begin(),
              m_netizen_list.end(),
              bind2nd(mem_fun(&Netizen::sendWindowDel), w));
-
-    m_clientlist_sig.notify();
 }
 
 
@@ -1638,20 +1632,12 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
     if (w->isIconic()) {
         removeIcon(w);
         getWorkspace(wkspc_id)->addWindow(*w);
-        // client list need to notify now even though
-        // we didn't remove/add any window,
-        // so listeners that uses the client list to
-        // show whats on current/other workspace
-        // gets updated
-        m_clientlist_sig.notify();
     } else if (ignore_sticky || ! w->isStuck()) {
         // fresh windows have workspaceNumber == -1, which leads to
         // an invalid workspace (unsigned int)
         if (getWorkspace(w->workspaceNumber()))
             getWorkspace(w->workspaceNumber())->removeWindow(w, true);
         getWorkspace(wkspc_id)->addWindow(*w);
-        // see comment above
-        m_clientlist_sig.notify();
     }
 }
 
@@ -1808,6 +1794,12 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Ignore Resize Increment",
               "Maximizing Ignores Resize Increment (e.g. xterm)",
               *resource.max_ignore_inc, saverc_cmd);
+    _BOOLITEM(*maxmenu, Configmenu, MaxDisableMove,
+              "Disable Moving", "Don't Allow Moving While Maximized",
+              *resource.max_disable_move, saverc_cmd);
+    _BOOLITEM(*maxmenu, Configmenu, MaxDisableResize,
+              "Disable Resizing", "Don't Allow Resizing While Maximized",
+              *resource.max_disable_resize, saverc_cmd);
 
     maxmenu->updateMenu();
     menu.insert(maxmenu_label, maxmenu);

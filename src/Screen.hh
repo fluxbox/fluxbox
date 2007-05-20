@@ -124,6 +124,8 @@ public:
     bool doOpaqueMove() const { return *resource.opaque_move; }
     bool doFullMax() const { return *resource.full_max; }
     bool getMaxIgnoreIncrement() const { return *resource.max_ignore_inc; }
+    bool getMaxDisableMove() const { return *resource.max_disable_move; }
+    bool getMaxDisableResize() const { return *resource.max_disable_resize; }
     bool doShowWindowPos() const { return *resource.show_window_pos; }
     bool decorateTransient() const { return *resource.decorate_transient; }
     const std::string &defaultDeco() const { return *resource.default_deco; }
@@ -562,8 +564,9 @@ private:
                        const std::string &altscrname);
 
         FbTk::Resource<bool> image_dither, opaque_move, full_max,
-            max_ignore_inc, workspace_warping, show_window_pos,            
-            auto_raise, click_raises, decorate_transient;
+            max_ignore_inc, max_disable_move, max_disable_resize,
+            workspace_warping, show_window_pos, auto_raise, click_raises,
+            decorate_transient;
         FbTk::Resource<std::string> default_deco;
         FbTk::Resource<std::string> rootcommand;
         FbTk::Resource<ResizeModel> resize_model;

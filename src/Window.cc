@@ -1842,7 +1842,7 @@ void FluxboxWindow::stick() {
     stuck = !stuck;
 
     if (m_initialized) {
-        setState(m_current_state, false);
+        stateSig().notify();
         // notify since some things consider "stuck" to be a pseudo-workspace
         m_workspacesig.notify();
     }
@@ -3233,6 +3233,9 @@ void FluxboxWindow::startMoving(int x, int y) {
     if (s_num_grabs > 0)
         return;
 
+    if (isMaximized() && screen().getMaxDisableMove())
+        return;
+
     // save first event point
     m_last_resize_x = x;
     m_last_resize_y = y;
@@ -3501,6 +3504,9 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
 
     if (s_num_grabs > 0 || isShaded() || isIconic() )
+        return;
+
+    if (isMaximized() && screen().getMaxDisableResize())
         return;
 
     m_resize_corner = dir;

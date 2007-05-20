@@ -274,7 +274,7 @@ void FocusControl::stopCyclingFocus() {
  * is given.
  */
 Focusable *FocusControl::lastFocusedWindow(int workspace) {
-    if (m_focused_list.empty()) return 0;
+    if (m_focused_list.empty() || m_screen.isShuttingdown()) return 0;
     if (workspace < 0 || workspace >= (int) m_screen.numberOfWorkspaces())
         return m_focused_list.front();
 
@@ -472,8 +472,6 @@ void FocusControl::shutdown() {
     Focusables::reverse_iterator it = m_focused_list.rbegin();
     for (; it != m_focused_list.rend(); ++it) {
         WinClient *client = dynamic_cast<WinClient *>(*it);
-if (client)
-std::cerr << "FocusControl::shutdown: " << client->title() << std::endl;
         if (client && client->fbwindow())
             client->fbwindow()->restore(client, true);
     }
@@ -484,7 +482,7 @@ std::cerr << "FocusControl::shutdown: " << client->title() << std::endl;
  * focus is meant to be, it'll make things right ;-)
  */
 void FocusControl::revertFocus(BScreen &screen) {
-    if (s_reverting)
+    if (s_reverting || screen.isShuttingdown())
         return;
 
     FocusControl::s_reverting = true;
