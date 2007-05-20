@@ -1571,9 +1571,18 @@ void FluxboxWindow::setFullscreen(bool flag) {
         // clear decorations
         setDecorationMask(0);
 
+        // dont call Window::moveResize here, it might ignore the 
+        // resize if win state is not resizable; 
+        // instead we call frame resize directly
+        // (see tests/fullscreentest.cc)
+
         // be xinerama aware
-        moveResize(screen().getHeadX(head), screen().getHeadY(head),
-                   screen().getHeadWidth(head), screen().getHeadHeight(head));
+        frame().moveResize(screen().getHeadX(head), screen().getHeadY(head),
+                           screen().getHeadWidth(head), screen().getHeadHeight(head));
+        sendConfigureNotify();
+        m_last_resize_x = frame().x();
+        m_last_resize_y = frame().y();
+
         moveToLayer(::Layer::ABOVE_DOCK);
 
         fullscreen = true;
