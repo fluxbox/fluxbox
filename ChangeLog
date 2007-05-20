@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/05/20:
+   * Fixed bug #1717782, Bad fullscreen in ooimpress2  ( Henrik )
+     mwm hint had no-resize which made resizing with 
+     FluxboxWindow::setFullscreen impossible.
+     Window.cc
 *07/05/19:
    * Changed behavior of resource session.screen<N>.followModel (Mark)
      - now only options are Ignore and Follow, the latter using the setting in
