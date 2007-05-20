@@ -546,7 +546,7 @@ void FluxboxWindow::init() {
         iconic = true;
         deiconify(false);
         // check if we should prevent this window from gaining focus
-        if (!allowsFocusFromClient())
+        if (!allowsFocusFromClient() || Fluxbox::instance()->isStartup())
             m_focused = false;
     }
 
@@ -650,9 +650,10 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
                          frame().clientArea().height());
 
         // right now, this block only happens with new windows or on restart
-        if (screen().focusControl().focusNew() ||
-                Fluxbox::instance()->isStartup())
-            focused_win = &client;
+        if (screen().focusControl().focusNew() &&
+            !Fluxbox::instance()->isStartup())
+            was_focused = true;
+        focused_win = screen().focusControl().focusNew() ? &client : m_client;
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
         m_clientlist.push_back(&client);
@@ -674,7 +675,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
         if (!focused_win)
             focused_win = screen().focusControl().lastFocusedWindow(*this);
         if (focused_win)
-            focused_win->focus();
+            setCurrentClient(*focused_win, false);
     }
     frame().reconfigure();
 }
@@ -1553,9 +1554,8 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     // focus new, OR if it's the only window on the workspace
     // but not on startup: focus will be handled after creating everything
     // we use m_focused as a signal to focus the window when mapped
-    if (was_iconic && !Fluxbox::instance()->isStartup() &&
-        (screen().focusControl().focusNew() || m_client->isTransient() ||
-         screen().currentWorkspace()->numberOfWindows() == 1))
+    if (was_iconic && (screen().currentWorkspace()->numberOfWindows() == 1 ||
+        screen().focusControl().focusNew() || m_client->isTransient()))
         m_focused = true;
 
     oplock = false;

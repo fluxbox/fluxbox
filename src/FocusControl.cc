@@ -278,8 +278,8 @@ Focusable *FocusControl::lastFocusedWindow(int workspace) {
     if (workspace < 0 || workspace >= (int) m_screen.numberOfWorkspaces())
         return m_focused_list.front();
 
-    Focusables::iterator it = m_focused_win_list.begin();    
-    Focusables::iterator it_end = m_focused_win_list.end();
+    Focusables::iterator it = m_focused_list.begin();    
+    Focusables::iterator it_end = m_focused_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() &&
             ((((int)(*it)->fbwindow()->workspaceNumber()) == workspace ||
@@ -472,6 +472,8 @@ void FocusControl::shutdown() {
     Focusables::reverse_iterator it = m_focused_list.rbegin();
     for (; it != m_focused_list.rend(); ++it) {
         WinClient *client = dynamic_cast<WinClient *>(*it);
+if (client)
+std::cerr << "FocusControl::shutdown: " << client->title() << std::endl;
         if (client && client->fbwindow())
             client->fbwindow()->restore(client, true);
     }
@@ -487,7 +489,7 @@ void FocusControl::revertFocus(BScreen &screen) {
 
     FocusControl::s_reverting = true;
 
-    Focusable *next_focus = 
+    Focusable *next_focus =
         screen.focusControl().lastFocusedWindow(screen.currentWorkspaceID());
 
     // if setting focus fails, or isn't possible, fallback correctly
