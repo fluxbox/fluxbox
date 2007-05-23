@@ -650,10 +650,13 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
                          frame().clientArea().height());
 
         // right now, this block only happens with new windows or on restart
-        if (screen().focusControl().focusNew() &&
-            !Fluxbox::instance()->isStartup())
-            was_focused = true;
-        focused_win = screen().focusControl().focusNew() ? &client : m_client;
+        bool focus_new = screen().focusControl().focusNew();
+        bool is_startup = Fluxbox::instance()->isStartup();
+
+        // we use m_focused as a signal to focus the window when mapped
+        if (focus_new && !is_startup)
+            m_focused = true;
+        focused_win = (focus_new || is_startup) ? &client : m_client;
 
         client.saveBlackboxAttribs(m_blackbox_attrib);
         m_clientlist.push_back(&client);
