@@ -85,6 +85,7 @@ FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
     const char* commands[] = {
         "arrangewindows",
+	"attach",
         "bindkey",
         "clientmenu",
         "close",
@@ -487,6 +488,11 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         cerr<<"*** WARNING: 'Workspace<n>' actions are deprecated! Use 'Workspace <n>' instead"<<endl;
         return new JumpToWorkspaceCmd(getint(command.substr(9).c_str(), 1) - 1);
 
+    } else if (command == "attach") {
+        int opts; // not used
+        string pat;
+        parseNextWindowArgs(arguments, opts, pat);
+        return new AttachCmd(pat);
     } else if (command == "nextwindow") {
         int opts;
         string pat;

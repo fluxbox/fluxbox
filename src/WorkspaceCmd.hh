@@ -46,6 +46,14 @@ private:
     ClientPattern m_pat;
 };
 
+class AttachCmd: public FbTk::Command {
+public:
+    explicit AttachCmd(const std::string &pat): m_pat(pat.c_str()) { }
+    void execute();
+private:
+    const ClientPattern m_pat;
+};
+
 class NextWindowCmd: public FbTk::Command {
 public:
     explicit NextWindowCmd(int option, std::string &pat):

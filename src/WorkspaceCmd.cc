@@ -49,14 +49,34 @@ void WindowListCmd::execute() {
 
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
-        FocusControl::Focusables *win_list = &screen->focusControl().creationOrderWinList();
+        FocusControl::Focusables win_list(screen->focusControl().creationOrderWinList());
 
-        FocusControl::Focusables::iterator it = win_list->begin(),
-                                           it_end = win_list->end();
+        FocusControl::Focusables::iterator it = win_list.begin(),
+                                           it_end = win_list.end();
         for (; it != it_end; ++it) {
             if (m_pat.match(**it) && (*it)->fbwindow())
                 m_cmd->execute(*(*it)->fbwindow());
         }
+    }
+}
+
+void AttachCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0) {
+        FocusControl::Focusables win_list(screen->focusControl().focusedOrderWinList());
+
+        FocusControl::Focusables::iterator it = win_list.begin(),
+                                           it_end = win_list.end();
+        FluxboxWindow *first = 0;
+        for (; it != it_end; ++it) {
+            if (m_pat.match(**it) && (*it)->fbwindow()) {
+                if (first == 0)
+                    first = (*it)->fbwindow();
+                else
+                    first->attachClient((*it)->fbwindow()->winClient());
+            }
+        }
+                
     }
 }
 
