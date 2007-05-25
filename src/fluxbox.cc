@@ -544,8 +544,11 @@ void Fluxbox::eventLoop() {
 
             if (last_bad_window != None && e.xany.window == last_bad_window &&
                 e.type != DestroyNotify) { // we must let the actual destroys through
+                if (e.type == FocusOut)
+                    m_revert_timer.start();
 #ifdef DEBUG
-                cerr<<"Fluxbox::eventLoop(): removing bad window from event queue"<<endl;
+                else
+                    cerr<<"Fluxbox::eventLoop(): removing bad window from event queue"<<endl;
 #endif // DEBUG
             } else {
                 last_bad_window = None;
