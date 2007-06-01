@@ -84,6 +84,7 @@ void parseNextWindowArgs(const string &in, int &opts, string &pat) {
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
     const char* commands[] = {
+	"addworkspace",
         "arrangewindows",
 	"attach",
         "bindkey",
@@ -142,6 +143,7 @@ FbCommandFactory::FbCommandFactory() {
         "reconfig",
         "reconfigure",
         "reloadstyle",
+	"removelastworkspace",
         "resizeto",
         "resize",
         "resizehorizontal",
@@ -260,6 +262,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SetResourceValueCmd(name, value);
     } else if (command == "setresourcevaluedialog")
         return new SetResourceValueDialogCmd();
+    else if (command == "addworkspace")
+        return new AddWorkspaceCmd();
+    else if (command == "removelastworkspace")
+        return new RemoveLastWorkspaceCmd();
     //
     // Current focused window commands
     //

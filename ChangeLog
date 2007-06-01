@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/06/01:
+   * Added key commands AddWorkspace and RemoveLastWorkspace (Mark)
+     FbCommandFactory.cc WorkspaceCmd.cc/hh
 *07/05/23:
    * Added key command :Attach <pattern> which groups all windows matching the
      given pattern (Mark)
