@@ -146,8 +146,9 @@ void Workspace::hideAll(bool interrupt_moving) {
 
 
 void Workspace::removeAll(unsigned int dest) {
-    Windows::iterator it = m_windowlist.begin();
-    Windows::const_iterator it_end = m_windowlist.end();
+    Windows tmp_list(m_windowlist);
+    Windows::iterator it = tmp_list.begin();
+    Windows::const_iterator it_end = tmp_list.end();
     for (; it != it_end; ++it)
         m_screen.sendToWorkspace(dest, *it, false);
 }
