@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/06/01:
+   * Fixed infinite loop caused by removing the last workspace when it contains
+     windows (Mark)
+     Workspace.cc
 *07/05/20:
    * Fixed bug #1717782, Bad fullscreen in ooimpress2  ( Henrik )
      mwm hint had no-resize which made resizing with 
