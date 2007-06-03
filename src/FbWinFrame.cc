@@ -701,7 +701,8 @@ void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
     XChangeWindowAttributes(win.display(), win.window(), CWEventMask|CWDontPropagate, &attrib_set);
 
     m_clientarea.raise();
-    win.show();
+    if (isVisible())
+        win.show();
     win.raise();
     m_window.showSubwindows();
 
