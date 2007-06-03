@@ -1010,26 +1010,25 @@ void Slit::handleEvent(XEvent &event) {
     }
 }
 
-void Slit::buttonPressEvent(XButtonEvent &e) {
-    if (e.window != frame.window.window())
+void Slit::buttonPressEvent(XButtonEvent &be) {
+    if (be.window != frame.window.window())
         return;
 
-    if (e.button == Button3) {
+    if (be.button == Button3) {
         if (! m_slitmenu.isVisible()) {
-            int x = e.x_root - (m_slitmenu.width() / 2),
-                y = e.y_root - (m_slitmenu.height() / 2);
+            int head = screen().getHead(be.x_root, be.y_root);
+            int borderw = m_slitmenu.fbwindow().borderWidth();
+            pair<int, int> m = screen().clampToHead(head,
+                    be.x_root - (m_slitmenu.width() / 2),
+                    be.y_root - (m_slitmenu.titleWindow().height() / 2),
+                    m_slitmenu.width() + 2*borderw,
+                    m_slitmenu.height() + 2*borderw);
 
-            if (x < 0)
-                x = 0;
-            else if (x + m_slitmenu.width() > screen().width())
-                x = screen().width() - m_slitmenu.width();
-
-            if (y < 0)
-                y = 0;
-            else if (y + m_slitmenu.height() > screen().height())
-                y = screen().height() - m_slitmenu.height();
-
-            m_slitmenu.move(x, y);
+            m_slitmenu.setScreen(screen().getHeadX(head),
+                                 screen().getHeadY(head),
+                                 screen().getHeadWidth(head),
+                                 screen().getHeadHeight(head));
+            m_slitmenu.move(m.first, m.second);
             m_slitmenu.show();
             m_slitmenu.grabInputFocus();
         } else
