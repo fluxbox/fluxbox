@@ -23,8 +23,10 @@
 
 
 #include "FbMenu.hh"
-#include "MenuTheme.hh"
 
+#include "fluxbox.hh"
+#include "MenuTheme.hh"
+#include "Screen.hh"
 #include "Shape.hh"
 
 FbMenu::FbMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
@@ -54,3 +56,17 @@ void FbMenu::reconfigure() {
     FbTk::Menu::reconfigure();
 }
 
+void FbMenu::buttonReleaseEvent(XButtonEvent &be) {
+    BScreen *screen = Fluxbox::instance()->findScreen(screenNumber());
+    if (be.window == titleWindow() && isMoving() && screen) {
+        // menu stopped moving, so update head
+        int head = screen->getHead(be.x_root, be.y_root);
+        setScreen(screen->getHeadX(head),
+                  screen->getHeadY(head),
+                  screen->getHeadWidth(head),
+                  screen->getHeadHeight(head));
+    }
+
+    // now get on with the show
+    FbTk::Menu::buttonReleaseEvent(be);
+}

@@ -41,6 +41,7 @@ public:
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
     void reconfigure();
+    void buttonReleaseEvent(XButtonEvent &be);
 private:
     FbTk::XLayerItem m_layeritem;
     std::auto_ptr<Shape> m_shape;
