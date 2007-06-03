@@ -105,7 +105,7 @@ public:
     //@{
     void handleEvent(XEvent &event);
     void buttonPressEvent(XButtonEvent &bp);
-    void buttonReleaseEvent(XButtonEvent &br);
+    virtual void buttonReleaseEvent(XButtonEvent &br);
     void motionNotifyEvent(XMotionEvent &mn);
     void exposeEvent(XExposeEvent &ee);
     void keyPressEvent(XKeyEvent &ke);
@@ -139,6 +139,7 @@ public:
 #endif
     inline bool isTorn() const { return m_torn; }
     inline bool isVisible() const { return m_visible; }
+    inline bool isMoving() const { return m_moving; }
     inline int screenNumber() const { return menu.window.screenNumber(); }
     inline Window window() const { return menu.window.window(); }
     inline FbWindow &fbwindow() { return menu.window; }

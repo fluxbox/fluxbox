@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/06/04:
+   * Fix submenu placement with xinerama after moving the menu between heads,
+     bug #1479517 (Mark)
+     FbMenu.cc/hh FbTk/Menu.hh
 *07/06/03:
    * Deiconify when automatically tabbing to a minimized window with focus new
      windows on, bug #1716899 (Mark)
