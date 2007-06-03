@@ -919,7 +919,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
-        } else if (winclient && winclient == FocusControl::focusedWindow() &&
+        } else if (winclient && (winclient == FocusControl::focusedWindow() ||
+                                 FocusControl::focusedWindow() == 0) &&
                    (winclient->fbwindow() == 0
                     || !winclient->fbwindow()->isMoving())) {
             // we don't unfocus a moving window

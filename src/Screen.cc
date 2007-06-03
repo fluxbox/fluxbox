@@ -1267,24 +1267,36 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (!win)
         win = FocusControl::focusedFbWindow();
 
+    if (!win || &win->screen() != this)
+        return;
+
     FbTk::App::instance()->sync(false);
 
-    if (win && &win->screen() == this) {
+    windowMenu().hide();
+    reassociateWindow(win, id, true);
 
-        windowMenu().hide();
+    // change workspace ?
+    if (changeWS)
+        changeWorkspaceID(id);
 
-        reassociateWindow(win, id, true);
+    // if the window is on current workspace, show it; else hide it.
+    if (id == currentWorkspace()->workspaceID() && !win->isIconic())
+        win->deiconify(false, false);
+    else {
+        win->withdraw(true);
+        FocusControl::revertFocus(*this);
+    }
 
-        // change workspace ?
-        if (changeWS)
-            changeWorkspaceID(id);
-
-        // if the window is on current workspace, show it; else hide it.
-        if (id == currentWorkspace()->workspaceID())
-            win->deiconify(false, false);
-        else
-            win->withdraw(true);
-
+    // send all the transients too
+    FluxboxWindow::ClientList::iterator client_it = win->clientList().begin();
+    FluxboxWindow::ClientList::iterator client_it_end = win->clientList().end();
+    for (; client_it != client_it_end; ++client_it) {
+        WinClient::TransientList::const_iterator it = (*client_it)->transientList().begin();
+        WinClient::TransientList::const_iterator it_end = (*client_it)->transientList().end();
+        for (; it != it_end; ++it) {
+            if ((*it)->fbwindow())
+                sendToWorkspace(id, (*it)->fbwindow(), false);
+        }
     }
 
 }
