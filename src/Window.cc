@@ -668,9 +668,11 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
         // and we don't seem to get a FocusIn event from setInputFocus
         setCurrentClient(client);
         FocusControl::setFocusedWindow(&client);
-    } else if (focused_win)
+    } else if (focused_win) {
         setCurrentClient(*focused_win, false);
-    else
+        if (isIconic() && screen().focusControl().focusNew() && !Fluxbox::instance()->isStartup())
+            deiconify();
+    } else
         // reparenting puts the new client on top, but the old client is keeping
         // the focus, so we raise it
         m_client->raise();
@@ -1501,7 +1503,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
         (*client_it)->setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
     }
 
-    if (reassoc && !m_client->transients.empty()) {
+    if (reassoc) {
         // deiconify all transients
         client_it = clientList().begin();
         for (; client_it != client_it_end; ++client_it) {
@@ -2337,7 +2339,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 
 void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
     WinClient *client = findClient(ne.window);
-    if (client == 0)
+    if (client == 0 || client != m_client)
         return;
 #ifdef DEBUG
     cerr<<"FluxboxWindow::mapNotifyEvent: "

@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/06/03:
+   * Deiconify when automatically tabbing to a minimized window with focus new
+     windows on, bug #1716899 (Mark)
+     Window.cc FbWinFrame.cc
    * Submenus of slit menu were misbehaving with xinerama (Mark)
      Slit.cc
    * Also send transient windows when sending a window to another workspace, bug
