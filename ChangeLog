@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/06/03:
+   * Also send transient windows when sending a window to another workspace, bug
+     #1716900 (Mark)
+     Screen.cc
    * Only change layer to normal when removing _NET_WM_STATE_{ABOVE,BELOW} if
      the window is actually above/below the normal layer (thanks Jim Ramsay)
      Ewmh.cc

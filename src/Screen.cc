@@ -1199,31 +1199,41 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 
     FbTk::App::instance()->sync(false);
 
-    if (win && &win->screen() == this &&
-        (! win->isStuck())) {
+    if (!win || &win->screen() != this || win->isStuck())
+        return;
 
-        // if iconified, deiconify it before we send it somewhere
-        if (win->isIconic())
-            win->deiconify();
+    // if iconified, deiconify it before we send it somewhere
+    if (win->isIconic())
+        win->deiconify();
 
-        // if the window isn't on current workspace, hide it
-        if (id != currentWorkspace()->workspaceID())
-            win->withdraw(true);
+    // if the window isn't on current workspace, hide it
+    if (id != currentWorkspace()->workspaceID())
+        win->withdraw(true);
 
-        windowMenu().hide();
+    windowMenu().hide();
 
-        reassociateWindow(win, id, true);
+    reassociateWindow(win, id, true);
 
-        // if the window is on current workspace, show it.
-        if (id == currentWorkspace()->workspaceID())
-            win->deiconify(false, false);
+    // if the window is on current workspace, show it.
+    if (id == currentWorkspace()->workspaceID())
+        win->deiconify(false, false);
 
-        // change workspace ?
-        if (changeWS && id != currentWorkspace()->workspaceID()) {
-            changeWorkspaceID(id);
-            win->setInputFocus();
+    // change workspace ?
+    if (changeWS && id != currentWorkspace()->workspaceID()) {
+        changeWorkspaceID(id);
+        win->setInputFocus();
+    }
+
+    // send all the transients too
+    FluxboxWindow::ClientList::iterator client_it = win->clientList().begin();
+    FluxboxWindow::ClientList::iterator client_it_end = win->clientList().end();
+    for (; client_it != client_it_end; ++client_it) {
+        WinClient::TransientList::const_iterator it = (*client_it)->transientList().begin();
+        WinClient::TransientList::const_iterator it_end = (*client_it)->transientList().end();
+        for (; it != it_end; ++it) {
+            if ((*it)->fbwindow())
+                sendToWorkspace(id, (*it)->fbwindow(), false);
         }
-
     }
 
 }
