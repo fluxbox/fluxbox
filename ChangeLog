@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
 *07/06/03:
+   * Submenus of slit menu were misbehaving with xinerama (Mark)
+     Slit.cc
    * Also send transient windows when sending a window to another workspace, bug
      #1716900 (Mark)
      Screen.cc
