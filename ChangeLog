@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/06/03:
+   * Only change layer to normal when removing _NET_WM_STATE_{ABOVE,BELOW} if
+     the window is actually above/below the normal layer (thanks Jim Ramsay)
+     Ewmh.cc
 *07/06/01:
    * Added key commands AddWorkspace and RemoveLastWorkspace (Mark)
      FbCommandFactory.cc WorkspaceCmd.cc/hh

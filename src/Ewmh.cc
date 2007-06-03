@@ -1043,13 +1043,12 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
     } else if (state == m_net_wm_state_below) {  // bottom layer
         if (value)
             win.moveToLayer(Layer::BOTTOM);
-        else
+        else if (win.layerNum() > Layer::NORMAL)
             win.moveToLayer(Layer::NORMAL);
-
     } else if (state == m_net_wm_state_above) { // above layer
         if (value)
             win.moveToLayer(Layer::ABOVE_DOCK);
-        else
+        else if (win.layerNum() < Layer::NORMAL)
             win.moveToLayer(Layer::NORMAL);
     } else if (state == m_net_wm_state_demands_attention) {
         if (value) { // if add attention
