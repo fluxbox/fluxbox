@@ -34,7 +34,6 @@ class Ewmh:public AtomHandler {
 public:
 
     Ewmh();
-    ~Ewmh();
     void initForScreen(BScreen &screen);
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient);
@@ -141,8 +140,6 @@ private:
     Atom m_net_wm_ping;
 
     Atom utf8_string;
-
-    std::vector<Window> m_windows;
 
     FbTk::FbString getUTF8Property(Atom property);
 };

@@ -73,13 +73,6 @@ Ewmh::Ewmh() {
     createAtoms();
 }
 
-Ewmh::~Ewmh() {
-    while (!m_windows.empty()) {
-        XDestroyWindow(FbTk::App::instance()->display(), m_windows.back());
-        m_windows.pop_back();
-    }
-}
-
 void Ewmh::initForScreen(BScreen &screen) {
     Display *disp = FbTk::App::instance()->display();
 
@@ -102,14 +95,9 @@ void Ewmh::initForScreen(BScreen &screen) {
      * Window Manager is present.
      */
 
-    Window wincheck = XCreateSimpleWindow(disp,
-                                          screen.rootWindow().window(),
-                                          -10, -10, 5, 5, 0, 0, 0);
+    Window wincheck = screen.dummyWindow().window();
 
     if (wincheck != None) {
-        // store the window so we can delete it later
-        m_windows.push_back(wincheck);
-
         screen.rootWindow().changeProperty(m_net_supporting_wm_check, XA_WINDOW, 32,
                                            PropModeReplace, (unsigned char *) &wincheck, 1);
         XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,

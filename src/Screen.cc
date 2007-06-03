@@ -359,6 +359,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  0, 0, 10, 10,
                  false,  // override redirect
                  true), // save under
+    m_dummy_window(scrn, -1, -1, 1, 1, 0, true, false, CopyFromParent,
+                   InputOnly),
     resource(rm, screenname, altscreenname),
     m_resource_manager(rm),
     m_name(screenname),

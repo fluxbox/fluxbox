@@ -309,6 +309,9 @@ public:
     FbRootWindow &rootWindow() { return m_root_window; }
     const FbRootWindow &rootWindow() const { return m_root_window; }
 
+    FbTk::FbWindow &dummyWindow() { return m_dummy_window; }
+    const FbTk::FbWindow &dummyWindow() const { return m_dummy_window; }
+
     FbTk::MultLayers &layerManager() { return m_layermanager; }
     const FbTk::MultLayers &layerManager() const { return m_layermanager; }
     FbTk::ResourceManager &resourceManager() { return m_resource_manager; }
@@ -557,7 +560,7 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
-    FbTk::FbWindow m_geom_window, m_pos_window;
+    FbTk::FbWindow m_geom_window, m_pos_window, m_dummy_window;
 
     struct ScreenResource {
         ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
