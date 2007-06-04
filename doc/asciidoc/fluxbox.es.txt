@@ -525,7 +525,7 @@ Los tags reconocidos son:
     relacionadas a la localizacion de ventanas, estilo de foco, estilo de
     movimiento de ventana, etc.
 
-[wallpaper] (etiqueta);;
+[wallpapers] (etiqueta);;
     Este item nos permite enlistar nuestros fondos de pantalla. Esta hecho para
     trabajar junto con fbsetbg(1) y permite con un simple click en una imagen
     cambiar de fondo. Se nota? Fluxbox lo hace facil...

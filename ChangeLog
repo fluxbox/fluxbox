@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/06/04:
+   * Fix fluxbox.1.in, and asciidoc, menu command is "wallpapers" not
+     "wallpaper". asciidoc manpages are stale.
    * Fix submenu placement with xinerama after moving the menu between heads,
      bug #1479517 (Mark)
      FbMenu.cc/hh FbTk/Menu.hh

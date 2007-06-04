@@ -496,6 +496,9 @@ Tags sind:
 	auf. Der Befehl wird benutzt um das Bild als Hintergrund zu setzen.
     Wenn kein Befehl angegeben wird nutzt fluxbox fbsetbg(1)
 
+[wallpapers] (label);;
+    Synonym für wallpapermenu.
+
 [workspaces] (Bezeichnung);;
     Fuegt das Arbeitsflaechenmenue zum Menue hinzu,
     praktisch fuer Leute die das Arbeitsflaechenmenue
