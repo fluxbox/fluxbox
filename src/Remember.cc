@@ -1132,8 +1132,10 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
 void Remember::setupClient(WinClient &winclient) {
 
-    if (winclient.screen().isRestart())
-        return; // don't mess up windows on restart
+    // leave windows alone on restart
+    // don't apply settings to transient windows
+    if (winclient.screen().isRestart() || winclient.transientFor())
+        return;
 
     Application *app = find(winclient);
     if (app == 0)

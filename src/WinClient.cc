@@ -107,6 +107,11 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
         // clear transient waiting list for this window
         s_transient_wait.erase(win);
     }
+
+    // also check if this window is a transient
+    // this needs to be done before creating an fbwindow, so this doesn't get
+    // tabbed using the apps file
+    updateTransientInfo();
 }
 
 WinClient::~WinClient() {
@@ -263,13 +268,6 @@ void WinClient::updateWMClassHint() {
 }
 
 void WinClient::updateTransientInfo() {
-#ifdef DEBUG
-    cerr<<__FUNCTION__<<": m_win = "<<m_win<<endl;
-#endif // DEBUG
-    if (m_win == 0)
-        return;
-
-
     // remove this from parent
     if (transientFor() != 0) {
         transientFor()->transientList().remove(this);
@@ -293,7 +291,7 @@ void WinClient::updateTransientInfo() {
         return;
     }
 
-    if (win != None && m_win->screen().rootWindow() == win) {
+    if (win != None && screen().rootWindow() == win) {
         // transient for root window... =  transient for group
         // I don't think we are group-aware yet
         return;
@@ -334,9 +332,6 @@ void WinClient::updateTransientInfo() {
         // we need to add ourself to the right client in
         // the transientFor() window so we search client
         transient_for->transientList().push_back(this);
-
-        if (transientFor()->fbwindow() && transientFor()->fbwindow()->isStuck())
-            m_win->stick();
     }
 
 }

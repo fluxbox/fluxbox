@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/06/08:
+   * Fix transient windows getting tabbed from apps file and not changing layers
+     when main window is in a lowered tab (Mark)
+     WinClient.cc Window.cc Remember.cc
 *07/06/06:
    * Fix to avoid rogue instances of /bin/sh after forking away programs (Mathias)
      util/fbrun/FbRun.cc src/FbCommands.cc
