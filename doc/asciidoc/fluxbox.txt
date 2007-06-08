@@ -466,7 +466,7 @@ The supported tags are:
     Inserts a fluxbox native submenu item, containing numerous configuration
     options concerning window placement, focus style, window moving style, etc.
 
-[wallpaper] (label);;
+[wallpapers] (label);;
     This allows you to list your backgrounds. This tag is built in to use
     fbsetbg(1) and allows you to simply click on an image to set your wallpaper.
     See? fluxbox makes it easy...

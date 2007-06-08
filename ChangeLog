@@ -4,7 +4,12 @@ Changes for 1.1:
    * Fix transient windows getting tabbed from apps file and not changing layers
      when main window is in a lowered tab (Mark)
      WinClient.cc Window.cc Remember.cc
+*07/06/06:
+   * Fix to avoid rogue instances of /bin/sh after forking programs (Mathias)
+     util/fbrun/FbRun.cc src/FbCommands.cc
 *07/06/04:
+   * Fix fluxbox.1.in, and asciidoc, menu command is "wallpapers" not
+     "wallpaper". asciidoc manpages are stale.
    * Fix submenu placement with xinerama after moving the menu between heads,
      bug #1479517 (Mark)
      FbMenu.cc/hh FbTk/Menu.hh
