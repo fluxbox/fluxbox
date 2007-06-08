@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
+*07/06/08:
+   * Fix transient windows getting tabbed from apps file and not changing layers
+     when main window is in a lowered tab (Mark)
+     WinClient.cc Window.cc Remember.cc
 *07/06/04:
    * Fix submenu placement with xinerama after moving the menu between heads,
      bug #1479517 (Mark)

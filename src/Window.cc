@@ -432,8 +432,9 @@ void FluxboxWindow::init() {
     /* Read state above here, apply state below here. */
     /**************************************************/
 
-    // update transient infomation
-    m_client->updateTransientInfo();
+    if (m_client->transientFor() && m_client->transientFor()->fbwindow() &&
+        m_client->transientFor()->fbwindow()->isStuck())
+        stick();
 
     // adjust the window decorations based on transience and window sizes
     if (m_client->isTransient() && !screen().decorateTransient()) {
@@ -1855,6 +1856,19 @@ void FluxboxWindow::stick() {
         m_workspacesig.notify();
     }
 
+    ClientList::iterator client_it = clientList().begin();
+    ClientList::iterator client_it_end = clientList().end();
+    for (; client_it != client_it_end; ++client_it) {
+
+        WinClient::TransientList::const_iterator it = (*client_it)->transientList().begin();
+        WinClient::TransientList::const_iterator it_end = (*client_it)->transientList().end();
+        for (; it != it_end; ++it) {
+            if ((*it)->fbwindow() && (*it)->fbwindow()->isStuck() != stuck)
+                (*it)->fbwindow()->stick();
+        }
+
+    }
+
 }
 
 
@@ -1955,16 +1969,24 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
     layernum = win->layerItem().getLayerNum();
     win->setLayerNum(layernum);
 
-    WinClient::TransientList::const_iterator it = client->transientList().begin();
-    WinClient::TransientList::const_iterator it_end = client->transientList().end();
-    for (; it != it_end; ++it) {
-        win = (*it)->fbwindow();
-        if (win && !win->isIconic()) {
-            screen().updateNetizenWindowRaise((*it)->window());
-            win->layerItem().moveToLayer(layernum);
-            win->setLayerNum(layernum);
+    // move all the transients, too
+    ClientList::iterator client_it = win->clientList().begin();
+    ClientList::iterator client_it_end = win->clientList().end();
+    for (; client_it != client_it_end; ++client_it) {
+
+        WinClient::TransientList::const_iterator it = (*client_it)->transientList().begin();
+        WinClient::TransientList::const_iterator it_end = (*client_it)->transientList().end();
+        for (; it != it_end; ++it) {
+            FluxboxWindow *fbwin = (*it)->fbwindow();
+            if (fbwin && !fbwin->isIconic()) {
+                screen().updateNetizenWindowRaise((*it)->window());
+                fbwin->layerItem().moveToLayer(layernum);
+                fbwin->setLayerNum(layernum);
+            }
         }
+
     }
+
 }
 
 void FluxboxWindow::setFocusHidden(bool value) {
