@@ -156,11 +156,9 @@ int ExecuteCmd::run() {
     displaystring.erase(displaystring.size()-1);
     displaystring += intbuff;
 
-    std::string exec_cmd = "exec " + m_cmd;
-
     setsid();
     putenv(const_cast<char *>(displaystring.c_str()));
-    execl(shell, shell, "-c", exec_cmd.c_str(), static_cast<void*>(NULL));
+    execl(shell, shell, "-c", m_cmd.c_str(), static_cast<void*>(NULL));
     exit(0);
 
     return pid; // compiler happy -> we are happy ;)

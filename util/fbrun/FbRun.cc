@@ -124,10 +124,8 @@ void FbRun::run(const std::string &command) {
         if (!shell)
             shell = "/bin/sh";
 
-        std::string exec_cmd = "exec " + command;
-
         setsid();
-        execl(shell, shell, "-c", exec_cmd.c_str(), static_cast<void*>(NULL));
+        execl(shell, shell, "-c", command.c_str(), static_cast<void*>(NULL));
         exit(0); //exit child
     }
 
