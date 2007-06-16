@@ -396,7 +396,7 @@ void FluxboxWindow::init() {
     m_blackbox_attrib.premax_w = m_blackbox_attrib.premax_h = 0;
 
     // set default decorations but don't apply them
-    setDecorationMask(Remember::getDecoFromString(screen().defaultDeco()), false);
+    setDecorationMask(getDecoMaskFromString(screen().defaultDeco()), false);
 
     functions.resize = functions.move = functions.iconify = functions.maximize
     = functions.close = functions.tabable = true;
@@ -4253,4 +4253,30 @@ void FluxboxWindow::associateClient(WinClient &client) {
     evm.add(*this, btn->window()); // we take care of button events for this
     evm.add(*this, client.window());
     client.setFluxboxWindow(this);
+}
+
+int FluxboxWindow::getDecoMaskFromString(const string &str_label) {
+    if (strcasecmp(str_label.c_str(), "NONE") == 0)
+        return 0;
+    if (strcasecmp(str_label.c_str(), "NORMAL") == 0)
+        return FluxboxWindow::DECORM_LAST - 1;
+    if (strcasecmp(str_label.c_str(), "TINY") == 0)
+        return FluxboxWindow::DECORM_TITLEBAR
+               | FluxboxWindow::DECORM_ICONIFY
+               | FluxboxWindow::DECORM_MENU
+               | FluxboxWindow::DECORM_TAB;
+    if (strcasecmp(str_label.c_str(), "TOOL") == 0)
+        return FluxboxWindow::DECORM_TITLEBAR
+               | FluxboxWindow::DECORM_MENU;
+    if (strcasecmp(str_label.c_str(), "BORDER") == 0)
+        return FluxboxWindow::DECORM_BORDER
+               | FluxboxWindow::DECORM_MENU;
+    if (strcasecmp(str_label.c_str(), "TAB") == 0)
+        return FluxboxWindow::DECORM_BORDER
+               | FluxboxWindow::DECORM_MENU
+               | FluxboxWindow::DECORM_TAB;
+    unsigned int mask = atoi(str_label.c_str());
+    if (mask)
+        return mask;
+    return -1;
 }
