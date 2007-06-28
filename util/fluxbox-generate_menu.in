@@ -1318,6 +1318,7 @@ testoption() {
     esac
 }
 
+BACKUPOPTIONS=$@
 # Get options.
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -1636,7 +1637,7 @@ append_submenu "${NETMENU}"
 	 	  normal_find xnmap nmapfe
 	 append_menu_end
 
-    normal_find x3270
+    normal_find x3270 wpa_gui
 
 append_menu_end
 
@@ -1650,7 +1651,7 @@ append_menu_end
 
 append_submenu "${EDUCATIONMENU}"
     normal_find celestia scilab geomview scigraphica oregano xcircuit electric \
-        pymol elem chemtool xdrawchem stellarium   
+        pymol elem chemtool xdrawchem gperiodic stellarium   
     find_it drgeo          append "[exec] (Dr. Geo) {drgeo}"
     find_it     R          append "[exec] (R) {${DEFAULT_TERM} -e R --gui=gnome}"
     cli_find maxima grace yacas octave gnuplot grass coq acl
@@ -1704,26 +1705,29 @@ append_submenu "${OFFICEMENU}"
     # older <=1.1.3 apparently have stuff like swriter, not sowriter
     for ext in s so oo xoo; do
         find_it ${ext}ffice2 && (
-            find_it ${ext}ffice2   append "[exec] (Open Office 2)      {${ext}ffice2}"
-            find_it ${ext}base2    append "[exec] (OO Base 2)          {${ext}base2}"
-            find_it ${ext}calc2    append "[exec] (OO Calc 2)          {${ext}calc2}"
-            find_it ${ext}writer2  append "[exec] (OO Writer 2)        {${ext}writer2}"
-            find_it ${ext}web2     append "[exec] (OO Web 2)           {${ext}web2}"
-            find_it ${ext}html2    append "[exec] (OO HTML 2)          {${ext}html2}"
-            find_it ${ext}impress2 append "[exec] (OO Impress 2)       {${ext}impress2}"
-            find_it ${ext}draw2    append "[exec] (OO Draw 2)          {${ext}draw2}"
-            find_it ${ext}math2    append "[exec] (OO Math 2)          {${ext}math2}"
-            find_it ${ext}fromtemplate2  append "[exec] (OO Templates 2) {${ext}fromtemplate2}"
+            find_it ${ext}ffice2        append "[exec] (Open Office 2)  {${ext}ffice2}"
+            find_it ${ext}base2         append "[exec] (OO Base 2)      {${ext}base2}"
+            find_it ${ext}calc2         append "[exec] (OO Calc 2)      {${ext}calc2}"
+            find_it ${ext}writer2       append "[exec] (OO Writer 2)    {${ext}writer2}"
+            find_it ${ext}web2          append "[exec] (OO Web 2)       {${ext}web2}"
+            find_it ${ext}html2         append "[exec] (OO HTML 2)      {${ext}html2}"
+            find_it ${ext}impress2      append "[exec] (OO Impress 2)   {${ext}impress2}"
+            find_it ${ext}draw2         append "[exec] (OO Draw 2)      {${ext}draw2}"
+            find_it ${ext}math2         append "[exec] (OO Math 2)      {${ext}math2}"
+            find_it ${ext}fromtemplate2 append "[exec] (OO Templates 2) {${ext}fromtemplate2}"
         )
         find_it ${ext}ffice && (
-            find_it ${ext}ffice   append "[exec] (Open Office)      {${ext}ffice}"
-            find_it ${ext}calc    append "[exec] (OO Calc)          {${ext}calc}"
-            find_it ${ext}writer  append "[exec] (OO Writer)        {${ext}writer}"
-            find_it ${ext}impress append "[exec] (OO Impress)       {${ext}impress}"
-            find_it ${ext}draw    append "[exec] (OO Draw)          {${ext}draw}"
-            find_it ${ext}math    append "[exec] (OO Math)          {${ext}math}"
-            find_it ${ext}padmin  append "[exec] (OO Printer Admin) {${ext}padmin}"
-            find_it mrproject      append "[exec] (Mr.Project)       {mrproject}"
+            find_it ${ext}ffice        append "[exec] (Open Office)      {${ext}ffice}"
+            find_it ${ext}base         append "[exec] (OO Base)          {${ext}base}"
+            find_it ${ext}calc         append "[exec] (OO Calc)          {${ext}calc}"
+            find_it ${ext}writer       append "[exec] (OO Writer)        {${ext}writer}"
+            find_it ${ext}web          append "[exec] (OO Web)           {${ext}web}"
+            find_it ${ext}impress      append "[exec] (OO Impress)       {${ext}impress}"
+            find_it ${ext}draw         append "[exec] (OO Draw)          {${ext}draw}"
+            find_it ${ext}math         append "[exec] (OO Math)          {${ext}math}"
+            find_it ${ext}fromtemplate append "[exec] (OO Templates)     {${ext}fromtemplate}"
+            find_it ${ext}padmin       append "[exec] (OO Printer Admin) {${ext}padmin}"
+            find_it mrproject          append "[exec] (Mr.Project)       {mrproject}"
         )
     done
 
@@ -1845,7 +1849,7 @@ append_submenu "${FBSETTINGSMENU}"
 
     append "[workspaces] (${WORKSPACEMENU})"
 
-    append_submenu ${TOOLS}
+    append_submenu "${TOOLS}"
         normal_find fluxconf fluxkeys fluxmenu
         find_it fbpanel append "[exec] (Fluxbox panel) {fbpanel}"
         # if gxmessage exitst use it; else use xmessage
@@ -1858,12 +1862,12 @@ append_submenu "${FBSETTINGSMENU}"
         find_it ${LAUNCHER} append "[exec] (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
-        find_it fluxbox-generate_menu append "[exec] (${REGENERATEMENU}) {fluxbox-generate_menu}"
+        find_it fluxbox-generate_menu append "[exec] (${REGENERATEMENU}) {fluxbox-generate_menu ${BACKUPOPTIONS}}"
     append_menu_end
 
-    append_submenu ${WINDOWMANAGERS}
+    append_submenu "${WINDOWMANAGERS}"
     #hard to properly maintain since there are so many exceptions to the rule.
-    for wm in icewm ion kde sawfish enlightenment fvwm openbox evilwm waimea xfce pekwm xfce4 fvwm2 blackbox ; do
+    for wm in mwm twm wmii beryl compiz metacity icewm ion kde sawfish enlightenment fvwm openbox evilwm waimea xfce pekwm xfce4 fvwm2 blackbox ; do
         find_it start${wm} append "[restart] (${wm}) {start${wm}}" ||\
             find_it ${wm} append "[restart] (${wm}) {${wm}}"
     done
