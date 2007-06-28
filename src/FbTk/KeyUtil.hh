@@ -69,8 +69,9 @@ public:
         @return the cleaned state number
     */
     unsigned int cleanMods(unsigned int mods) {
-        //remove numlock, capslock and scrolllock
-         return mods & ~(capslock() | numlock() | scrolllock());
+        // remove numlock, capslock, and scrolllock
+        // and anything beyond Button5Mask
+        return mods & ~(capslock() | numlock() | scrolllock()) & ((1<<13) - 1);
     }
 
     /** 
