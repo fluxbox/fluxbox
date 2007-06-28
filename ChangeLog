@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/06/28:
+   * Added some missing Open Office entries and window managers, plus some other
+     minor changes in fluxbox-generate_menu
+     fluxbox-generate_menu.in
 *07/06/16:
    * Fixed compile error with --disable-remember (Mark)
      Window.cc/hh Remember.cc/hh
