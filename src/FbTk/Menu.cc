@@ -67,6 +67,9 @@
 #endif
 #include <typeinfo>
 
+#include <algorithm>
+
+
 #ifdef DEBUG
 #include <iostream>
 using std::cout;

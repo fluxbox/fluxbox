@@ -44,6 +44,11 @@
 
 
 #include <X11/Xlib.h>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE

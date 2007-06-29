@@ -1,5 +1,7 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/06/29:
+   * Updates for compiling with gcc 4.3 (thanks Dmitry E. Oboukhov)
 *07/06/28:
    * Strip off additional bits in event state set by Xorg, bug #1736252 (Mark)
      FbTk/KeyUtil.hh

@@ -42,6 +42,11 @@
 #include <iostream>
 #include <algorithm>
 #include <new>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 using std::cerr;
 using std::endl;

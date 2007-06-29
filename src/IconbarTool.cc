@@ -49,6 +49,11 @@
 #include <typeinfo>
 #include <string>
 #include <iterator>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 using std::string;
 using std::list;

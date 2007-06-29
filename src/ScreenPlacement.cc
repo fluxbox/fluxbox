@@ -34,6 +34,11 @@
 
 #include <iostream>
 #include <exception>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 using std::cerr;
 using std::endl;
 

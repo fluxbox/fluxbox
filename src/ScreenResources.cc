@@ -27,6 +27,11 @@
 
 #include "Screen.hh"
 #include <string>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 using std::string;
 

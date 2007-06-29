@@ -45,6 +45,11 @@
 #else
   #include <stdlib.h>
 #endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 
 #ifdef HAVE_CONFIG_H

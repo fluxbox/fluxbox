@@ -36,6 +36,14 @@
 #else
   #include <stdio.h>
 #endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+
+#include <algorithm>
+
 
 using std::cerr;
 using std::endl;
