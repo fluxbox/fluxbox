@@ -44,6 +44,11 @@
 #else
   #include <assert.h>
 #endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 using std::string;
 using std::list;

@@ -75,6 +75,11 @@
 
 #include <iostream>
 #include <algorithm>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 using std::string;
 using std::pair;

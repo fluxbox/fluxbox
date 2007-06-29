@@ -25,6 +25,11 @@
 #include "App.hh"
 
 #include <string>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 namespace {
 

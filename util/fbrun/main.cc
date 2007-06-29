@@ -34,6 +34,16 @@ extern  "C" {
 
 #include <string>
 #include <iostream>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
 
 using std::cerr;
 using std::endl;

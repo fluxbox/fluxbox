@@ -32,6 +32,11 @@
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <iostream>
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 using std::string;
 

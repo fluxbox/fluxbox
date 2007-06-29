@@ -39,6 +39,11 @@
 #else
   #include <stdio.h>
 #endif
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 // mipspro has no new(nothrow)
 #if defined sgi && ! defined GCC
