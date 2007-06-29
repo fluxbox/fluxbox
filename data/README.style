@@ -315,7 +315,7 @@ handleWidth:                    4
 menuFont:                       lucidasans-10
 titleFont:                      lucidasans-bold-10
 
-rootCommand:                    bsetroot -mod 4 4 -fg rgb:6/6/5c -bg grey20
+rootCommand:                    fbsetroot -mod 4 4 -fg rgb:6/6/5c -bg grey20
 ...
 
 Alright!  Our style is finished.  Let's see how the sucker looks.  First we
