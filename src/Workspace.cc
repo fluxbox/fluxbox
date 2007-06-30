@@ -326,8 +326,10 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
 #ifdef DEBUG
                     cerr<<__FILE__<<"("<<__FUNCTION__<<"): window ("<<*wit<<") attaching window ("<<&win<<")"<<endl;
 #endif // DEBUG
-                    (*wit)->attachClient(win.winClient());
-                    (*wit)->raise();
+                    WinClient &client = win.winClient();
+                    (*wit)->attachClient(client);
+                    if (client.screen().focusControl().focusNew())
+                        (*wit)->setCurrentClient(client);
                     return true; // grouping done
 
                 }

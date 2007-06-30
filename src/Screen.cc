@@ -1465,6 +1465,10 @@ FluxboxWindow *BScreen::createWindow(Window client) {
                 delete win;
                 return 0;
             }
+
+            Workspace *workspace = getWorkspace(win->workspaceNumber());
+            if (workspace && !Fluxbox::instance()->isStartup())
+                workspace->checkGrouping(*win);
         }
     }
 

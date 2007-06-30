@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/06/30:
+   * Fixed the groups file, even though it's deprecated (Mark)
+     Workspace.cc Screen.cc
    * Fix _NET_WM_STATE_DEMANDS_ATTENTION with tabbed windows, #1732392 (Mark)
      Ewmh.cc/hh
 *07/06/29:
