@@ -1418,10 +1418,13 @@ bool FluxboxWindow::focus() {
 #ifdef DEBUG
             cerr<<__FUNCTION__<<": transient 0x"<<(*it)<<endl;
 #endif // DEBUG
-            if ((*it)->isModal())
+            if ((*it)->isStateModal())
                 return (*it)->focus();
         }
     }
+
+    if (m_client->isModal())
+        return false;
 
     bool ret = false;
 

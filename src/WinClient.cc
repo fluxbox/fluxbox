@@ -77,7 +77,8 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      initial_state(0),
                      normal_hint_flags(0),
                      wm_hint_flags(0),
-                     m_modal(0),
+                     m_modal_count(0),
+                     m_modal(false),
                      send_focus_message(false),
                      send_close_message(false),
                      m_win_gravity(0),
@@ -133,13 +134,14 @@ WinClient::~WinClient() {
 
     Fluxbox *fluxbox = Fluxbox::instance();
 
-
     //
     // clear transients and transient_for
     //
     if (transient_for != 0) {
         assert(transient_for != this);
         transient_for->transientList().remove(this);
+        if (m_modal)
+            transient_for->removeModal();
         transient_for = 0;
     }
 
@@ -276,6 +278,8 @@ void WinClient::updateTransientInfo() {
     // remove this from parent
     if (transientFor() != 0) {
         transientFor()->transientList().remove(this);
+        if (m_modal)
+            transientFor()->removeModal();
     }
 
     transient_for = 0;
@@ -337,6 +341,8 @@ void WinClient::updateTransientInfo() {
         // we need to add ourself to the right client in
         // the transientFor() window so we search client
         transient_for->transientList().push_back(this);
+        if (m_modal)
+            transient_for->addModal();
     }
 
 }
@@ -672,16 +678,21 @@ bool WinClient::hasGroupLeftWindow() const {
     return false;
 }
 
-void WinClient::addModal() {
-    ++m_modal;
-    if (transient_for)
-        transient_for->addModal();
-}
+void WinClient::setStateModal(bool state) {
+    if (state == m_modal)
+        return;
 
-void WinClient::removeModal() {
-    --m_modal;
-    if (transient_for)
-        transient_for->removeModal();
+    m_modal = state;
+    if (transient_for) {
+        if (state)
+            transient_for->addModal();
+        else
+            transient_for->removeModal();
+    }
+
+    // TODO: we're not implementing the following part of EWMH spec:
+    // "if WM_TRANSIENT_FOR is not set or set to the root window the dialog is
+    //  modal for its window group."
 }
 
 bool WinClient::validateClient() const {

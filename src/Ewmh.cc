@@ -622,7 +622,7 @@ void Ewmh::updateState(FluxboxWindow &win) {
         state.push_back(m_net_wm_state_skip_taskbar);
     if (win.isFullscreen())
         state.push_back(m_net_wm_state_fullscreen);
-    if (win.winClient().isModal())
+    if (win.winClient().isStateModal())
         state.push_back(m_net_wm_state_modal);
 
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
@@ -1004,10 +1004,14 @@ void Ewmh::createAtoms() {
     utf8_string = XInternAtom(disp, "UTF8_STRING", False);
 }
 
-// wrapper for avoiding changing every AtomHandler to include an unnecessary
-// parameter, although we need it for _NET_WM_STATE_DEMANDS_ATTENTION
+// wrapper for real setState, since most operations don't need the client
 void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
     setState(win, state, value, win.winClient());
+}
+
+// wrapper for real toggleState, since most operations don't need the client
+void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
+    toggleState(win, state, win.winClient());
 }
 
 // set window state
@@ -1057,13 +1061,14 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value,
             Fluxbox::instance()->attentionHandler().
                 update(&client.focusSig());
         }
+    } else if (state == m_net_wm_state_modal) {
+        client.setStateModal(value);
     }
 
-    // Note: state == net_wm_state_modal, We should not change it
 }
 
 // toggle window state
-void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
+void Ewmh::toggleState(FluxboxWindow &win, Atom state, WinClient &client) {
     if (state == m_net_wm_state_sticky) { // sticky
         win.stick();
     } else if (state == m_net_wm_state_shaded){ // shaded
@@ -1092,6 +1097,8 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
             win.moveToLayer(Layer::NORMAL);
         else
             win.moveToLayer(Layer::ABOVE_DOCK);
+    } else if (state == m_net_wm_state_modal) { // modal
+        client.setStateModal(!client.isStateModal());
     }
 
 }
