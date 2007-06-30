@@ -70,6 +70,7 @@ private:
     void setState(FluxboxWindow &win, Atom state, bool value,
                   WinClient &client);
     void toggleState(FluxboxWindow &win, Atom state);
+    void toggleState(FluxboxWindow &win, Atom state, WinClient &client);
     void createAtoms();
     void updateStrut(WinClient &winclient);
     void updateActions(FluxboxWindow &win);

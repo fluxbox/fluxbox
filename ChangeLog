@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/06/30:
+   * Fixed implementation of _NET_WM_STATE_MODAL (Mark)
+     Ewmh.cc/hh WinClient.cc/hh Window.cc
    * Fixed the groups file, even though it's deprecated (Mark)
      Workspace.cc Screen.cc
    * Fix _NET_WM_STATE_DEMANDS_ATTENTION with tabbed windows, #1732392 (Mark)

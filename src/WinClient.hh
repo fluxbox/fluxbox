@@ -57,9 +57,6 @@ public:
     // not aware of anything that makes this false at present
     inline bool isClosable() const { return true; }
 
-    void addModal(); // some transient of ours (or us) is modal
-    void removeModal(); // some transient (or us) is no longer modal
-
     /// updates from wm class hints
     void updateWMClassHint();
     void updateWMProtocols();
@@ -127,7 +124,9 @@ public:
     inline const TransientList &transientList() const { return transients; }
     inline bool isTransient() const { return transient_for != 0; }
 
-    inline bool isModal() const { return m_modal > 0; }
+    inline bool isModal() const { return m_modal_count > 0; }
+    inline bool isStateModal() const { return m_modal; }
+    void setStateModal(bool state);
 
     const FbTk::FbPixmap &iconPixmap() const { return m_icon_pixmap; }
     const FbTk::FbPixmap &iconMask() const { return m_icon_mask; }
@@ -188,11 +187,16 @@ private:
     /// removes client from any waiting list and clears empty waiting lists
     void removeTransientFromWaitingList();
 
+    // some transient of ours (or us) is modal
+    void addModal() { ++m_modal_count; }
+    // some transient (or us) is no longer modal
+    void removeModal() { --m_modal_count; }
+
     FluxboxWindow *m_win;
 
     // number of transients which we are modal for
-    // or indicates that we are modal if don't have any transients
-    int m_modal;
+    int m_modal_count;
+    bool m_modal;
     bool send_focus_message, send_close_message;
 
     int m_win_gravity;
