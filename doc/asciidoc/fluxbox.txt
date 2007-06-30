@@ -827,7 +827,7 @@ session.screen0.strftimeFormat: <date>
 
 session.screen0.tabs.intitlebar: <boolean>
       This specifies whether tabs should be embedded in the titlebar or placed
-      outside the window. Default: False
+      outside the window. Default: True
 
 session.screen0.tab.placement: <placement>
       This specifies where external tabs will appear on the window. Default:
