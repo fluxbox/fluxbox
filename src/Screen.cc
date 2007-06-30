@@ -327,7 +327,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
     scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
     max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
-    default_internal_tabs(rm, false /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
+    default_internal_tabs(rm, true /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
 
 
 }
