@@ -67,6 +67,8 @@ private:
     enum { STATE_REMOVE = 0, STATE_ADD = 1, STATE_TOGGLE = 2};
 
     void setState(FluxboxWindow &win, Atom state, bool value);
+    void setState(FluxboxWindow &win, Atom state, bool value,
+                  WinClient &client);
     void toggleState(FluxboxWindow &win, Atom state);
     void createAtoms();
     void updateStrut(WinClient &winclient);

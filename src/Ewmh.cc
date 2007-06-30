@@ -729,11 +729,11 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // ce.data.l[1] = the first property to alter
         // ce.data.l[2] = second property to alter (can be zero)
         if (ce.data.l[0] == STATE_REMOVE) {
-            setState(win, ce.data.l[1], false);
-            setState(win, ce.data.l[2], false);
+            setState(win, ce.data.l[1], false, *winclient);
+            setState(win, ce.data.l[2], false, *winclient);
         } else if (ce.data.l[0] == STATE_ADD) {
-            setState(win, ce.data.l[1], true);
-            setState(win, ce.data.l[2], true);
+            setState(win, ce.data.l[1], true, *winclient);
+            setState(win, ce.data.l[2], true, *winclient);
         } else if (ce.data.l[0] == STATE_TOGGLE) {
             toggleState(win, ce.data.l[1]);
             toggleState(win, ce.data.l[2]);
@@ -1031,8 +1031,15 @@ void Ewmh::createAtoms() {
     utf8_string = XInternAtom(disp, "UTF8_STRING", False);
 }
 
-// set window state
+// wrapper for avoiding changing every AtomHandler to include an unnecessary
+// parameter, although we need it for _NET_WM_STATE_DEMANDS_ATTENTION
 void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
+    setState(win, state, value, win.winClient());
+}
+
+// set window state
+void Ewmh::setState(FluxboxWindow &win, Atom state, bool value,
+                    WinClient &client) {
     if (state == m_net_wm_state_sticky) { // STICKY
         if (value && !win.isStuck() ||
             (!value && win.isStuck()))
@@ -1072,10 +1079,10 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
             win.moveToLayer(Layer::NORMAL);
     } else if (state == m_net_wm_state_demands_attention) {
         if (value) { // if add attention
-            Fluxbox::instance()->attentionHandler().addAttention(win.winClient());
+            Fluxbox::instance()->attentionHandler().addAttention(client);
         } else { // erase it
             Fluxbox::instance()->attentionHandler().
-                update(&win.winClient().focusSig());
+                update(&client.focusSig());
         }
     }
 
