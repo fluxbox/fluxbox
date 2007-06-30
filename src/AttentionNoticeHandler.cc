@@ -98,6 +98,10 @@ void AttentionNoticeHandler::addAttention(Focusable &client) {
 
 void AttentionNoticeHandler::update(FbTk::Subject *subj) {
 
+    // we need to be able to get the window
+    if (typeid(*subj) != typeid(Focusable::FocusSubject))
+        return;
+
     // all signals results in destruction of the notice
 
     Focusable::FocusSubject *winsubj = 
