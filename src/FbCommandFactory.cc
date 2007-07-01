@@ -60,6 +60,7 @@ static int getint(const char *str, int defaultvalue) {
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
     const char* commands[] = {
+        "addworkspace",
         "arrangewindows",
         "bindkey",
         "close",
@@ -115,6 +116,7 @@ FbCommandFactory::FbCommandFactory() {
         "reconfig",
         "reconfigure",
         "reloadstyle",
+        "removelastworkspace",
         "resizeto",
         "resize",
         "resizehorizontal",
@@ -232,6 +234,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SetResourceValueCmd(name, value);
     } else if (command == "setresourcevaluedialog")
         return new SetResourceValueDialogCmd();
+    else if (command == "addworkspace")
+        return new AddWorkspaceCmd();
+    else if (command == "removelastworkspace")
+        return new RemoveLastWorkspaceCmd();
     //
     // Current focused window commands
     //

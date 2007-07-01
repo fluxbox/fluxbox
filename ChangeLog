@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/07/01:
+   * Added keycommands :AddWorkspace and :RemoveLastWorkspace (Mark)
+     WorkspaceCmd.cc/hh FbCommandFactory.cc
    * More fixes for _NET_WM_STATE_MODAL and _NET_WM_STATE_DEMANDS_ATTENTION,
      plus a minor fix for pixmap styles (Mark)
      Ewmh.cc Window.cc AttentionNoticeHandler.cc/hh WinClient.cc

@@ -53,6 +53,16 @@ private:
     const FocusControl::FocusDir m_dir;
 };
 
+class AddWorkspaceCmd: public FbTk::Command {
+public:
+    void execute();
+};
+
+class RemoveLastWorkspaceCmd: public FbTk::Command {
+public:
+    void execute();
+};
+
 class NextWorkspaceCmd: public FbTk::Command {
 public:
     explicit NextWorkspaceCmd(int option):m_option(option) { }

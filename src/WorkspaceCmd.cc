@@ -63,6 +63,18 @@ void DirFocusCmd::execute() {
         screen->focusControl().dirFocus(*win, m_dir);
 }
 
+void AddWorkspaceCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen != 0)
+        screen->addWorkspace();
+}
+
+void RemoveLastWorkspaceCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen != 0)
+        screen->removeLastWorkspace();
+}
+
 void NextWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
