@@ -622,21 +622,25 @@ void Ewmh::updateState(FluxboxWindow &win) {
         state.push_back(m_net_wm_state_skip_taskbar);
     if (win.isFullscreen())
         state.push_back(m_net_wm_state_fullscreen);
-    if (win.winClient().isStateModal())
-        state.push_back(m_net_wm_state_modal);
 
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
     for (; it != it_end; ++it) {
 
-        // search the old states for _NET_WM_STATE_SKIP_PAGER and append it
-        // to the current state, so it wont get deleted by us.
         StateVec client_state(state);
         Atom ret_type;
         int fmt;
         unsigned long nitems, bytes_after;
         unsigned char *data = 0;
 
+        // set client-specific state
+        if ((*it)->isStateModal())
+            client_state.push_back(m_net_wm_state_modal);
+        if (Fluxbox::instance()->attentionHandler().isDemandingAttention(**it))
+            client_state.push_back(m_net_wm_state_demands_attention);
+
+        // search the old states for _NET_WM_STATE_SKIP_PAGER and append it
+        // to the current state, so it wont get deleted by us.
         (*it)->property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  &data);

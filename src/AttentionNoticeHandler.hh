@@ -47,6 +47,8 @@ public:
     void addAttention(Focusable &client); 
     /// removes the client from the attention map
     void update(FbTk::Subject *subj);
+
+    bool isDemandingAttention(Focusable &client);
     
 private:
     NoticeMap m_attentions;

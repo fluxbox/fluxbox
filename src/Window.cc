@@ -1002,6 +1002,11 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (client.fbwindow() != this)
         return false;
 
+    IconButton *button = m_labelbuttons[&client];
+    // in case the window is being destroyed, but this should never happen
+    if (!button)
+        return false;
+
     m_client = &client;
     m_client->raise();
     m_client->focusSig().notify();
@@ -1009,10 +1014,10 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
 
 #ifdef DEBUG
     cerr<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
-        m_labelbuttons[m_client]<<endl;
+        button<<endl;
 #endif // DEBUG
     // frame focused doesn't necessarily mean input focused
-    frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
+    frame().setLabelButtonFocus(*button);
 
     return setinput && focus();
 }
@@ -2379,8 +2384,7 @@ bool FluxboxWindow::allowsFocusFromClient() {
 
     FluxboxWindow *cur = FocusControl::focusedFbWindow();
     WinClient *client = FocusControl::focusedWindow();
-    if (cur && client && cur->isTyping() && (!client->window_group ||
-        client->window_group != m_client->window_group) &&
+    if (cur && client && cur->isTyping() &&
         getRootTransientFor(m_client) != getRootTransientFor(client))
         return false;
 

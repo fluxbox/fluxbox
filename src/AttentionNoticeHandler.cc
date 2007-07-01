@@ -23,7 +23,7 @@
 
 #include "AttentionNoticeHandler.hh"
 
-#include "Focusable.hh"
+#include "Window.hh"
 #include "Screen.hh"
 #include "STLUtil.hh"
 
@@ -94,12 +94,16 @@ void AttentionNoticeHandler::addAttention(Focusable &client) {
     // attach signals that will make notice go away
     client.dieSig().attach(this);
     client.focusSig().attach(this);
+
+    // update _NET_WM_STATE atom
+    if (client.fbwindow())
+        client.fbwindow()->stateSig().notify();
 }
 
 void AttentionNoticeHandler::update(FbTk::Subject *subj) {
 
     // we need to be able to get the window
-    if (typeid(*subj) != typeid(Focusable::FocusSubject))
+    if (!subj || typeid(*subj) != typeid(Focusable::FocusSubject))
         return;
 
     // all signals results in destruction of the notice
@@ -109,5 +113,14 @@ void AttentionNoticeHandler::update(FbTk::Subject *subj) {
     delete m_attentions[&winsubj->win()];
     m_attentions.erase(&winsubj->win());
     winsubj->win().setAttentionState(false);
+
+    // update _NET_WM_STATE atom
+    FluxboxWindow *fbwin = winsubj->win().fbwindow();
+    if (fbwin && winsubj != &winsubj->win().dieSig())
+        fbwin->stateSig().notify();
+
 }
 
+bool AttentionNoticeHandler::isDemandingAttention(Focusable &client) {
+    return m_attentions.find(&client) != m_attentions.end();
+}

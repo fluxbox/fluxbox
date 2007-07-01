@@ -67,7 +67,8 @@ WinButtonTheme::~WinButtonTheme() {
 void WinButtonTheme::reconfigTheme() {
     // rescale the pixmaps to match frame theme height
 
-    unsigned int size = m_frame_theme.titleHeight();
+    unsigned int size = m_frame_theme.titleHeight()
+                        - 2 * m_frame_theme.bevelWidth();;
     if (m_frame_theme.titleHeight() == 0) {
         // calculate height from font and border width to scale pixmaps
         size = m_frame_theme.font().height() + 2;
