@@ -129,14 +129,6 @@ WinClient::~WinClient() {
 
     clearStrut();
 
-    if (m_win != 0)
-        m_win->removeClient(*this);
-
-    // this takes care of any focus issues
-    m_diesig.notify();
-
-    Fluxbox *fluxbox = Fluxbox::instance();
-
     //
     // clear transients and transient_for
     //
@@ -152,6 +144,15 @@ WinClient::~WinClient() {
         transients.back()->transient_for = 0;
         transients.pop_back();
     }
+
+    if (m_win != 0)
+        m_win->removeClient(*this);
+
+    // this takes care of any focus issues
+    m_diesig.notify();
+
+    Fluxbox *fluxbox = Fluxbox::instance();
+
     // This fixes issue 1 (see WinClient.hh):
     // If transients die before the transient_for is created
     removeTransientFromWaitingList();

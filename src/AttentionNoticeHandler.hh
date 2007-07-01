@@ -47,6 +47,8 @@ public:
     void addAttention(WinClient &client); 
     /// removes the client from the attention map
     void update(FbTk::Subject *subj);
+
+    bool isDemandingAttention(WinClient &client);
     
 private:
     NoticeMap m_attentions;

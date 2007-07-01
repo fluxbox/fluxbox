@@ -978,6 +978,11 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (client.fbwindow() != this)
         return false;
 
+    FbTk::TextButton *button = m_labelbuttons[&client];
+    // in case the window is being destroyed, but this should never happen
+    if (!button)
+        return false;
+
     if (&client != m_client)
         m_screen.focusControl().setScreenFocusedWindow(client);
     m_client = &client;
@@ -987,10 +992,10 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
 
 #ifdef DEBUG
     cerr<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
-        m_labelbuttons[m_client]<<endl;
+        button<<endl;
 #endif // DEBUG
     // frame focused doesn't necessarily mean input focused
-    frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
+    frame().setLabelButtonFocus(*button);
 
     if (setinput && setInputFocus()) {
         return true;

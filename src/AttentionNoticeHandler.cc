@@ -95,9 +95,17 @@ void AttentionNoticeHandler::addAttention(WinClient &client) {
     // attach signals that will make notice go away
     client.dieSig().attach(this);
     client.focusSig().attach(this);
+
+    // update _NET_WM_STATE atom
+    if (client.fbwindow())
+        client.fbwindow()->stateSig().notify();
 }
 
 void AttentionNoticeHandler::update(FbTk::Subject *subj) {
+
+    // we need to be able to get the window
+    if (typeid(*subj) != typeid(WinClient::WinClientSubj))
+        return;
 
     // all signals results in destruction of the notice
 
@@ -105,5 +113,13 @@ void AttentionNoticeHandler::update(FbTk::Subject *subj) {
         static_cast<WinClient::WinClientSubj *>(subj);
     delete m_attentions[&winsubj->winClient()];
     m_attentions.erase(&winsubj->winClient());
+
+    // update _NET_WM_STATE atom
+    FluxboxWindow *fbwin = winsubj->winClient().fbwindow();
+    if (fbwin && winsubj != &winsubj->winClient().dieSig())
+        fbwin->stateSig().notify();
 }
 
+bool AttentionNoticeHandler::isDemandingAttention(WinClient &client) {
+    return m_attentions.find(&client) != m_attentions.end();
+}

@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/07/01:
+   * More fixes for _NET_WM_STATE_MODAL and _NET_WM_STATE_DEMANDS_ATTENTION,
+     plus a minor fix for pixmap styles (Mark)
+     Ewmh.cc Window.cc AttentionNoticeHandler.cc/hh WinClient.cc
+     WinButtonTheme.cc
 *07/06/30:
    * Fixed implementation of _NET_WM_STATE_MODAL (Mark)
      Ewmh.cc/hh WinClient.cc/hh Window.cc
