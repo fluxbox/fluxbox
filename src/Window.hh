@@ -389,6 +389,11 @@ public:
     inline unsigned int width() const { return frame().width(); }
     inline unsigned int height() const { return frame().height(); }
 
+    int normalX() const;
+    int normalY() const;
+    unsigned int normalWidth() const;
+    unsigned int normalHeight() const;
+
     inline int xOffset() const { return frame().xOffset(); }
     inline int yOffset() const { return frame().yOffset(); }
     inline int widthOffset() const { return frame().widthOffset(); }

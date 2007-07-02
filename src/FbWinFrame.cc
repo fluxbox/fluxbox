@@ -1766,6 +1766,12 @@ void FbWinFrame::gravityTranslate(int &x, int &y,
     }
 }
 
+unsigned int FbWinFrame::normalHeight() const {
+    if (m_shaded)
+        return m_height_before_shade;
+    return height();
+}
+
 int FbWinFrame::widthOffset() const {
     if (m_tabmode != EXTERNAL || !m_use_tabs)
         return 0;
