@@ -203,6 +203,7 @@ public:
     inline int y() const { return m_window.y(); }
     inline unsigned int width() const { return m_window.width(); }
     inline unsigned int height() const { return m_window.height(); }
+    unsigned int normalHeight() const;
 
     // extra bits for tabs
     int xOffset() const;

@@ -3782,6 +3782,32 @@ std::string FluxboxWindow::getWMRole() const {
     return (m_client ? m_client->getWMRole() : "FluxboxWindow");
 }
 
+int FluxboxWindow::normalX() const {
+    if (maximized & MAX_HORZ)
+        return m_old_pos_x;
+    return x();
+}
+
+int FluxboxWindow::normalY() const {
+    if (maximized & MAX_VERT)
+        return m_old_pos_y;
+    return y();
+}
+
+unsigned int FluxboxWindow::normalWidth() const {
+    if (maximized & MAX_HORZ)
+        return m_old_width;
+    return width();
+}
+
+unsigned int FluxboxWindow::normalHeight() const {
+    if (maximized & MAX_VERT)
+        return m_old_height;
+    if (shaded)
+        return frame().normalHeight();
+    return height();
+}
+
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
 void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
