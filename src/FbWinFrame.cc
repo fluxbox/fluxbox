@@ -789,10 +789,11 @@ bool FbWinFrame::showHandle() {
     if (m_use_handle || theme().handleWidth() == 0)
         return false;
 
+    m_use_handle = true;
+
     // weren't previously rendered...
     renderHandles();
-
-    m_use_handle = true;
+    applyHandles();
 
     m_handle.show();
     m_handle.showSubwindows(); // shows grips

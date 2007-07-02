@@ -169,16 +169,15 @@ void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
 
 void FocusControl::goToWindowNumber(Focusables &winlist, int num,
                                     const ClientPattern *pat) {
+    Focusable *last_matched = 0;
     if (num > 0) {
         Focusables::iterator it = winlist.begin();
         Focusables::iterator it_end = winlist.end();
         for (; it != it_end; ++it) {
             if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
                 --num;
-                if (!num) {
-                    (*it)->focus();
-                    return;
-                }
+                last_matched = *it;
+                if (!num) break;
             }
         }
     } else if (num < 0) {
@@ -187,13 +186,12 @@ void FocusControl::goToWindowNumber(Focusables &winlist, int num,
         for (; it != it_end; ++it) {
             if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
                 ++num;
-                if (!num) {
-                    (*it)->focus();
-                    return;
-                }
+                last_matched = *it;
+                if (!num) break;
             }
         }
     }
+    if (last_matched) last_matched->focus();
 }
 
 void FocusControl::addFocusBack(WinClient &client) {

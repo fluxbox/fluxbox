@@ -94,9 +94,10 @@ void TakeToPrevWorkspaceCmd::real_execute() {
 }
 
 void GoToTabCmd::real_execute() {
-    int num = m_tab_num + (m_tab_num > 0 ? 0 : fbwindow().numClients() + 1);
-    if (num < 1 || num > fbwindow().numClients())
-        return;
+    int num = m_tab_num;
+    if (num < 0) num += fbwindow().numClients() + 1;
+    if (num < 1) num = 1;
+    if (num > fbwindow().numClients()) num = fbwindow().numClients();
 
     FluxboxWindow::ClientList::iterator it = fbwindow().clientList().begin();
 
