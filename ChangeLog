@@ -1,6 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/07/02:
+   * Fixed handle rendering when switching from a style without them (Mark)
+     FbWinFrame.cc
+   * Changed :Tab <int> key command so that the last tab is focused if <int> is
+     larger than the number of tabs (or first if <int> is negative and |<int>|
+     is too large) (Mark)
+     CurrentWindowCmd.cc
    * Fixed some rendering problems when toolbar item borderwidth is too large
      and toolbar bevelwidth is set (Mark)
      Toolbar.cc
