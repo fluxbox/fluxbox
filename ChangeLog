@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/07/02:
+   * Fixed some rendering problems when toolbar item borderwidth is too large
+     and toolbar bevelwidth is set (Mark)
+     Toolbar.cc
+   * Moved the `Transparency' submenu next to the rest of the submenus (Mark)
+     Screen.cc
 *07/07/01:
    * Added keycommands :AddWorkspace and :RemoveLastWorkspace (Mark)
      WorkspaceCmd.cc/hh FbCommandFactory.cc
