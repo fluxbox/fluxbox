@@ -1885,29 +1885,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     menu.insert(tabmenu_label, tab_menu);
 
-    Configmenus::iterator it = m_configmenu_list.begin();
-    Configmenus::iterator it_end = m_configmenu_list.end();
-    for (; it != it_end; ++it)
-        menu.insert(it->first, it->second);
-
-    _BOOLITEM(menu, Configmenu, ImageDithering,
-              "Image Dithering", "Image Dithering",
-              *resource.image_dither, save_and_reconfigure);
-    _BOOLITEM(menu, Configmenu, OpaqueMove,
-              "Opaque Window Moving",
-              "Window Moving with whole window visible (as opposed to outline moving)",
-              *resource.opaque_move, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, WorkspaceWarping,
-              "Workspace Warping",
-              "Workspace Warping - dragging windows to the edge and onto the next workspace",
-              *resource.workspace_warping, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, DecorateTransient,
-              "Decorate Transient Windows", "Decorate Transient Windows",
-              *resource.decorate_transient, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, ClickRaises,
-              "Click Raises", "Click Raises",
-              *resource.click_raises, saverc_cmd);
-
 #ifdef HAVE_XRENDER
     if (FbTk::Transparent::haveRender() ||
         FbTk::Transparent::haveComposite()) {
@@ -1958,6 +1935,30 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         menu.insert(alphamenu_label, alpha_menu);
     }
 #endif // HAVE_XRENDER
+
+    Configmenus::iterator it = m_configmenu_list.begin();
+    Configmenus::iterator it_end = m_configmenu_list.end();
+    for (; it != it_end; ++it)
+        menu.insert(it->first, it->second);
+
+    _BOOLITEM(menu, Configmenu, ImageDithering,
+              "Image Dithering", "Image Dithering",
+              *resource.image_dither, save_and_reconfigure);
+    _BOOLITEM(menu, Configmenu, OpaqueMove,
+              "Opaque Window Moving",
+              "Window Moving with whole window visible (as opposed to outline moving)",
+              *resource.opaque_move, saverc_cmd);
+    _BOOLITEM(menu, Configmenu, WorkspaceWarping,
+              "Workspace Warping",
+              "Workspace Warping - dragging windows to the edge and onto the next workspace",
+              *resource.workspace_warping, saverc_cmd);
+    _BOOLITEM(menu, Configmenu, DecorateTransient,
+              "Decorate Transient Windows", "Decorate Transient Windows",
+              *resource.decorate_transient, saverc_cmd);
+    _BOOLITEM(menu, Configmenu, ClickRaises,
+              "Click Raises", "Click Raises",
+              *resource.click_raises, saverc_cmd);
+
 #undef _BOOLITEM
 
     // finaly update menu

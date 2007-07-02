@@ -1034,6 +1034,7 @@ void Toolbar::rearrangeItems() {
             (*item_it)->hide();
             // make sure it still gets told the toolbar height
             tmpw = 1; tmph = height - 2*(bevel_width+borderW);
+            if (tmph >= (1<<30)) tmph = 1;
             FbTk::translateSize(orient, tmpw, tmph);
             (*item_it)->resize(tmpw, tmph);  // width of 0 changes to 1 anyway
             continue;
@@ -1070,6 +1071,8 @@ void Toolbar::rearrangeItems() {
             tmpw = itemw;
             tmph = height - size_offset;
         }
+        if (tmpw >= (1<<30)) tmpw = 1;
+        if (tmph >= (1<<30)) tmph = 1;
         next_x += tmpw + bevel_width;
         if (bevel_width != 0)
             next_x += 2*borderW;
