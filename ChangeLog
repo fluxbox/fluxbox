@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/07/02:
+   * Enabled Xinerama and Imlib2 support by default (Mark)
+     configure.in
    * Fixed handle rendering when switching from a style without them (Mark)
      FbWinFrame.cc
    * Changed :Tab <int> key command so that the last tab is focused if <int> is
