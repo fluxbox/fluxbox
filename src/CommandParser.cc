@@ -62,7 +62,7 @@ CommandParser &CommandParser::instance() {
     return *s_singleton;
 }
 
-FbTk::Command *CommandParser::parseLine(const std::string &line) {
+FbTk::Command *CommandParser::parseLine(const std::string &line, bool trusted) {
 
     // parse arguments and command
     string command = line;
@@ -83,13 +83,14 @@ FbTk::Command *CommandParser::parseLine(const std::string &line) {
     // we didn't find any matching command in default commands,
     // so we search in the command creators modules for a 
     // matching command string
-    return toCommand(command, arguments);
+    return toCommand(command, arguments, trusted);
 
 }
 
-FbTk::Command *CommandParser::toCommand(const std::string &command_str, const std::string &arguments) {
+FbTk::Command *CommandParser::toCommand(const std::string &command_str,
+        const std::string &arguments, bool trusted) {
     if (m_commandfactorys[command_str] != 0)
-        return m_commandfactorys[command_str]->stringToCommand(command_str, arguments);
+        return m_commandfactorys[command_str]->stringToCommand(command_str, arguments, trusted);
 
     return 0;
 }

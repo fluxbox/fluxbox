@@ -149,6 +149,7 @@ public:
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
     inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
+    inline const bool allowRemoteActions() const { return *resource.allow_remote_actions; }
     inline const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
     inline const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
 
@@ -582,6 +583,7 @@ private:
         FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
         FbTk::Resource<std::string> scroll_action;
         FbTk::Resource<bool> scroll_reverse;
+        FbTk::Resource<bool> allow_remote_actions;
         FbTk::Resource<bool> max_over_tabs;
         FbTk::Resource<bool> default_internal_tabs;
 

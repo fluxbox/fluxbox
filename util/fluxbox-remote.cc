@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    Atom fbcmd_atom = XInternAtom(disp, "_FLUXBOX_COMMAND", False);
+    Atom fbcmd_atom = XInternAtom(disp, "_FLUXBOX_ACTION", False);
     Window root = DefaultRootWindow(disp);
 
     char *str = argv[1];

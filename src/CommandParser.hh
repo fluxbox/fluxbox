@@ -41,7 +41,8 @@ public:
     CommandFactory();
     virtual ~CommandFactory();
     virtual FbTk::Command *stringToCommand(const std::string &command, 
-                                           const std::string &arguments) = 0;
+                                           const std::string &arguments,
+                                           bool trusted) = 0;
 protected:
     void addCommand(const std::string &value);
 };
@@ -52,7 +53,7 @@ public:
     typedef std::map<std::string, CommandFactory *> CommandFactoryMap;
 
     /// @return parses and returns a command matching the line
-    FbTk::Command *parseLine(const std::string &line);
+    FbTk::Command *parseLine(const std::string &line, bool trusted = true);
 
     CommandParser();
 
@@ -70,7 +71,7 @@ private:
 
     /// search for a command in our command factory map
     FbTk::Command *toCommand(const std::string &command,
-                             const std::string &arguments);
+                             const std::string &arguments, bool trusted);
     
     CommandFactoryMap m_commandfactorys; ///< a string to factory map
 

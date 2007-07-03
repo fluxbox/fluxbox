@@ -27,7 +27,7 @@
 class FbCommandFactory: public CommandFactory {
 public:
     FbTk::Command *stringToCommand(const std::string &command, 
-                                   const std::string &arguments);
+                                   const std::string &arguments, bool trusted);
 
 private:
     FbCommandFactory();
