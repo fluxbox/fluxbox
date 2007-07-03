@@ -1,6 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/07/03:
+   * Added utility fluxbox-remote, which takes one argument and has fluxbox
+     execute it just like in the keys file (Mark)
+     Screen.cc util/fluxbox-remote.cc util/Makefile.am
+   * Update systemtray and KDE dockapps in slit when background changes (Mark)
+     Screen.cc/hh Systemtray.cc Slit.cc FbTk/FbPixmap.cc/hh
    * Fixed resource usage due to Skype 1.4, bug #1745678 (Mark)
      FbTk/FbPixmap.cc
 *07/07/02:

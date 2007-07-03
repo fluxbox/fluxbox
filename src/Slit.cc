@@ -306,6 +306,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     // attach to theme and root window change signal
     m_slit_theme->reconfigSig().attach(this);
     scr.resizeSig().attach(this);
+    scr.bgChangeSig().attach(this);
     scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
 
     scr.addConfigMenu(_FB_XTEXT(Slit, Slit, "Slit", "The Slit"), m_slitmenu);
@@ -662,6 +663,13 @@ void Slit::reconfigure() {
         // client created window?
         if ((*client_it)->window() != None && (*client_it)->visible()) {
             num_windows++;
+
+            // get the dockapps to update their backgrounds
+            if (screen().isKdeDockapp((*client_it)->window())) {
+                (*client_it)->hide();
+                (*client_it)->show();
+            }
+
             if (height_inc) {
                 // increase height of slit for each client (VERTICAL mode)
                 frame.height += (*client_it)->height() + bevel_width;

@@ -233,11 +233,13 @@ public:
     /// reconfigure signal
     FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
     FbTk::Subject &resizeSig() { return m_resize_sig; }
+    FbTk::Subject &bgChangeSig() { return m_bg_change_sig; }
     //@}
 
     /// called when the screen receives a signal from a subject
     void update(FbTk::Subject *subj);
 
+    void propertyNotify(Atom atom);
     void keyPressEvent(XKeyEvent &ke);
     void keyReleaseEvent(XKeyEvent &ke);
     void buttonPressEvent(XButtonEvent &be);
@@ -513,7 +515,8 @@ private:
         m_workspace_area_sig, ///< workspace area changed signal
         m_currentworkspace_sig, ///< current workspace signal
         m_reconfigure_sig, ///< reconfigure signal
-        m_resize_sig; ///< resize signal
+        m_resize_sig, ///< resize signal
+        m_bg_change_sig; ///< background change signal
 		
     FbTk::MultLayers m_layermanager;
 	
