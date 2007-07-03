@@ -24,15 +24,21 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 int main(int argc, char **argv) {
 
-    if (argc <= 1)
-        return 1;
+    if (argc <= 1) {
+        printf("fluxbox-remote <fluxbox-command>\n");
+        return EXIT_SUCCESS;
+    }
 
     Display *disp = XOpenDisplay(NULL);
-    if (!disp)
-        return 1;
+    if (!disp) {
+        perror("error, can't open display.");
+        return EXIT_FAILURE;
+    }
 
     Atom fbcmd_atom = XInternAtom(disp, "_FLUXBOX_COMMAND", False);
     Window root = DefaultRootWindow(disp);
@@ -44,6 +50,8 @@ int main(int argc, char **argv) {
     XCloseDisplay(disp);
 
     if (ret == Success)
-        return 0;
-    return 1;
+        return EXIT_SUCCESS;
+
+    return EXIT_FAILURE;
 }
+
