@@ -201,12 +201,12 @@ FbCommandFactory::FbCommandFactory() {
 }
 
 FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
-                                                 const std::string &arguments) {
+        const std::string &arguments, bool trusted) {
     using namespace FbCommands;
     //
     // WM commands
     //
-    if (command == "restart")
+    if (command == "restart" && trusted)
         return new RestartFluxboxCmd(arguments);
     else if (command == "reconfigure" || command == "reconfig")
         return new ReconfigureFluxboxCmd();
@@ -218,11 +218,12 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new KeyModeCmd(arguments);
     else if (command == "saverc")
         return new SaveResources();
-    else if (command == "execcommand" || command == "execute" || command == "exec")
+    else if (command == "execcommand" || command == "execute" || command == "exec") {
+        if (!trusted) return 0;
         return new ExecuteCmd(arguments); // execute command on key screen
-    else if (command == "exit" || command == "quit")
+    } else if (command == "exit" || command == "quit")
         return new ExitFluxboxCmd();
-    else if (command == "setenv" || command == "export") {
+    else if ((command == "setenv" || command == "export") && trusted) {
 
         string name = arguments;
         FbTk::StringUtil::removeFirstWhitespace(name);
@@ -244,9 +245,9 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     }
     else if (command == "commanddialog") // run specified fluxbox command
         return new CommandDialogCmd();
-    else if (command == "bindkey")
+    else if (command == "bindkey" && trusted)
         return new BindKeyCmd(arguments);
-    else if (command == "setresourcevalue") {
+    else if (command == "setresourcevalue" && trusted) {
         // we need to parse arguments as:
         // <remove whitespace here><resname><one whitespace><value>
         string name = arguments;
@@ -628,7 +629,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
           }
           c= FbTk::StringUtil::toLower(cmd);
 
-          FbTk::Command* fbcmd= stringToCommand(c,a);
+          FbTk::Command* fbcmd= stringToCommand(c,a,trusted);
           if (fbcmd) {
             FbTk::RefCount<FbTk::Command> rfbcmd(fbcmd);
             macro->add(rfbcmd);
@@ -665,7 +666,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
           }
           c= FbTk::StringUtil::toLower(cmd);
 
-          FbTk::Command* fbcmd= stringToCommand(c,a);
+          FbTk::Command* fbcmd= stringToCommand(c,a,trusted);
           if (fbcmd) {
             FbTk::RefCount<FbTk::Command> rfbcmd(fbcmd);
             macro->add(rfbcmd);

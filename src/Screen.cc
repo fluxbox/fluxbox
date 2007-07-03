@@ -328,6 +328,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                  altscrname+".overlay.CapStyle"),
     scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
     scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
+    allow_remote_actions(rm, false, scrname+".allowRemoteActions", altscrname+".AllowRemoteActions"),
     clientmenu_use_pixmap(rm, true, scrname+".clientMenu.usePixmap", altscrname+".ClientMenu.UsePixmap"),
     tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
     max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
@@ -798,8 +799,8 @@ void BScreen::update(FbTk::Subject *subj) {
 
 void BScreen::propertyNotify(Atom atom) {
     static Atom fbcmd_atom = XInternAtom(FbTk::App::instance()->display(),
-                                         "_FLUXBOX_COMMAND", False);
-    if (atom == fbcmd_atom) {
+                                         "_FLUXBOX_ACTION", False);
+    if (allowRemoteActions() && atom == fbcmd_atom) {
         Atom xa_ret_type;
         int ret_format;
         unsigned long ret_nitems, ret_bytes_after;
@@ -816,7 +817,7 @@ void BScreen::propertyNotify(Atom atom) {
                     &ret_bytes_after, (unsigned char **)&str);
             }
 
-            FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine(str));
+            FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine(str, false));
             if (cmd.get())
                 cmd->execute();
             XFree(str);
