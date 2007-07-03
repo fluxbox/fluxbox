@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/07/03:
+   * Fixed resource usage due to Skype 1.4, bug #1745678 (Mark)
+     FbTk/FbPixmap.cc
 *07/07/02:
    * Remember original size/position in apps file for shaded or maximized
      windows (Mark)

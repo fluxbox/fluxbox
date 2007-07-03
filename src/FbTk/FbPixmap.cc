@@ -166,13 +166,14 @@ void FbPixmap::copy(Pixmap pm, unsigned int depth, int screen_num) {
     unsigned int border_width, bpp;
     unsigned int new_width, new_height;
 
-    XGetGeometry(display(),
-                 pm,
-                 &root,
-                 &x, &y,
-                 &new_width, &new_height,
-                 &border_width,
-                 &bpp);
+    if (!XGetGeometry(display(),
+                      pm,
+                      &root,
+                      &x, &y,
+                      &new_width, &new_height,
+                      &border_width,
+                      &bpp))
+        return;
 
     if (depth == 0)
         depth = bpp;
