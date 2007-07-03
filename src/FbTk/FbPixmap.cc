@@ -353,9 +353,10 @@ Pixmap FbPixmap::release() {
     return ret;
 }
 
-void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
+// returns whether or not the background was changed
+bool FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
     if (!FbTk::Transparent::haveRender())
-        return;
+        return false;
 
     checkAtoms();
     for (int i=0; root_prop_ids[i] != 0; ++i) {
@@ -379,14 +380,16 @@ void FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
                 }
                 XFree(data);
                 if (root_pm != None)
-                    setRootPixmap(screen_num, root_pm);
+                    return setRootPixmap(screen_num, root_pm);
             }
-            break;
+            return false;
         }
     }
+    return false;
 }
 
-void FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
+// returns whether or not the background was changed
+bool FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
     if (!m_root_pixmaps) {
         m_root_pixmaps = new Pixmap[ScreenCount(display())];
         for (int i=0; i < ScreenCount(display()); ++i)
@@ -396,7 +399,9 @@ void FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
     if (m_root_pixmaps[screen_num] != pm) {
         m_root_pixmaps[screen_num] = pm;
         FbWindow::updatedAlphaBackground(screen_num);
+        return true;
     }
+    return false;
 }
 
 Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {

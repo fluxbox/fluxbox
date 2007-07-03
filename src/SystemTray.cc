@@ -136,6 +136,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen
 
     FbTk::EventManager::instance()->add(*this, m_window);
     m_theme.reconfigSig().attach(this);
+    screen.bgChangeSig().attach(this);
 
     Fluxbox* fluxbox = Fluxbox::instance();
     Display *disp = fluxbox->display();

@@ -70,8 +70,8 @@ public:
     inline unsigned int depth() const { return m_depth; }
 
     static Pixmap getRootPixmap(int screen_num, bool force_update=false);
-    static void setRootPixmap(int screen_num, Pixmap pm);
-    static void rootwinPropertyNotify(int screen_num, Atom atom);
+    static bool setRootPixmap(int screen_num, Pixmap pm);
+    static bool rootwinPropertyNotify(int screen_num, Atom atom);
 
     void create(Drawable src,
                 unsigned int width, unsigned int height,

@@ -348,6 +348,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_currentworkspace_sig(*this), // current workspace signal
     m_reconfigure_sig(*this), // reconfigure signal
     m_resize_sig(*this),
+    m_bg_change_sig(*this),
     m_layermanager(num_layers),
     m_windowtheme(new FbWinFrameTheme(scrn)),
     // the order of windowtheme and winbutton theme is important
@@ -793,6 +794,37 @@ void BScreen::update(FbTk::Subject *subj) {
     for (; it != it_end; ++it)
         fluxbox->updateFrameExtents(**it);
 
+}
+
+void BScreen::propertyNotify(Atom atom) {
+    static Atom fbcmd_atom = XInternAtom(FbTk::App::instance()->display(),
+                                         "_FLUXBOX_COMMAND", False);
+    if (atom == fbcmd_atom) {
+        Atom xa_ret_type;
+        int ret_format;
+        unsigned long ret_nitems, ret_bytes_after;
+        char *str;
+        if (rootWindow().property(fbcmd_atom, 0l, 64l,
+                True, XA_STRING, &xa_ret_type, &ret_format, &ret_nitems,
+                &ret_bytes_after, (unsigned char **)&str) && str) {
+
+            if (ret_bytes_after) {
+                XFree(str);
+                long len = 64 + (ret_bytes_after + 3)/4;
+                rootWindow().property(fbcmd_atom, 0l, len,
+                    True, XA_STRING, &xa_ret_type, &ret_format, &ret_nitems,
+                    &ret_bytes_after, (unsigned char **)&str);
+            }
+
+            FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine(str));
+            if (cmd.get())
+                cmd->execute();
+            XFree(str);
+
+        }
+    // TODO: this doesn't belong in FbPixmap
+    } else if (FbTk::FbPixmap::rootwinPropertyNotify(screenNumber(), atom))
+        m_bg_change_sig.notify();
 }
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
@@ -1408,7 +1440,6 @@ void BScreen::updateNetizenConfigNotify(XEvent &e) {
 
 bool BScreen::isKdeDockapp(Window client) const {
     //Check and see if client is KDE dock applet.
-    //If so add to Slit
     bool iskdedockapp = false;
     Atom ajunk;
     int ijunk;

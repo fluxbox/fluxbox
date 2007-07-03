@@ -706,7 +706,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
         BScreen *screen = searchScreen(e->xproperty.window);
         if (screen) {
-            FbTk::FbPixmap::rootwinPropertyNotify(screen->screenNumber(), e->xproperty.atom);
+            screen->propertyNotify(e->xproperty.atom);
         }
     }
 

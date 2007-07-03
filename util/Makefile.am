@@ -2,13 +2,14 @@
 SUBDIRS=		fbrun
 INCLUDES= 		-I$(top_srcdir)/src -I$(top_srcdir)/src/FbTk
 bin_SCRIPTS= 		fbsetbg fluxbox-generate_menu startfluxbox
-bin_PROGRAMS=		fbsetroot fluxbox-update_configs
+bin_PROGRAMS=		fbsetroot fluxbox-update_configs fluxbox-remote
 fbsetroot_SOURCES=	fbsetroot.cc fbsetroot.hh
 fbsetroot_LDADD=../src/FbRootWindow.o ../src/FbAtoms.o \
 			../src/FbTk/libFbTk.a
 fluxbox_update_configs_SOURCES=	fluxbox-update_configs.cc
 fluxbox_update_configs_LDADD=	../src/defaults.o ../src/Resources.o \
 			../src/FbTk/libFbTk.a
+fluxbox_remote_SOURCES=	fluxbox-remote.cc
 
 MAINTAINERCLEANFILES=	Makefile.in
 EXTRA_DIST=		fbsetbg fluxbox-generate_menu.in \
@@ -27,6 +28,8 @@ fbsetroot.o: 	fbsetroot.cc ../config.h $(srcdir)/fbsetroot.hh \
 
 fluxbox-update_configs.o:	fluxbox-update_configs.cc ../config.h \
 			$(top_srcdir)/src/defaults.hh
+
+fluxbox-remote.o:	fluxbox-remote.cc
 
 startfluxbox: 	startfluxbox.in
 		@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" \
