@@ -114,13 +114,14 @@ FbPixmap &FbPixmap::operator = (Pixmap pm) {
     Window root;
     int x, y;
     unsigned int border_width, bpp;
-    XGetGeometry(display(),
-                 pm,
-                 &root,
-                 &x, &y,
-                 &m_width, &m_height,
-                 &border_width,
-                 &bpp);
+    if (!XGetGeometry(display(),
+                      pm,
+                      &root,
+                      &x, &y,
+                      &m_width, &m_height,
+                      &border_width,
+                      &bpp))
+        return *this;
 
     m_depth = bpp;
 

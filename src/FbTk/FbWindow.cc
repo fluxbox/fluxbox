@@ -582,10 +582,10 @@ void FbWindow::updateGeometry() {
 
     Window root;
     unsigned int border_width, depth;
-    XGetGeometry(display(), m_window, &root, &m_x, &m_y,
-                 (unsigned int *)&m_width, (unsigned int *)&m_height,
-                 &border_width, &depth);
-    m_depth = depth;
+    if (XGetGeometry(display(), m_window, &root, &m_x, &m_y,
+                     (unsigned int *)&m_width, (unsigned int *)&m_height,
+                     &border_width, &depth))
+        m_depth = depth;
 }
 
 void FbWindow::create(Window parent, int x, int y,
