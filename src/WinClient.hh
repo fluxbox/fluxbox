@@ -93,7 +93,7 @@ public:
      */
     void applySizeHints(int &width, int &height, int *display_width = 0,
             int *display_height = 0, bool maximizing = false);
-
+    bool checkSizeHints(unsigned int width, unsigned int height);
 
     void setGroupLeftWindow(Window win);
 

@@ -905,6 +905,31 @@ void WinClient::applySizeHints(int &width, int &height,
         *display_height = j;
 }
 
+// check if the given width and height satisfy the size hints
+bool WinClient::checkSizeHints(unsigned int width, unsigned int height) {
+    if (width < min_width || height < min_height)
+        return false;
+
+    if (width > max_width || height > max_height)
+        return false;
+
+    if ((width - base_width) % width_inc != 0)
+        return false;
+
+    if ((height - base_height) % height_inc != 0)
+        return false;
+
+    double ratio = (double)width / (double)height;
+
+    if (min_aspect_y > 0 && (double)min_aspect_x / (double)min_aspect_y > ratio)
+        return false;
+
+    if (max_aspect_y > 0 && (double)max_aspect_x / (double)max_aspect_y < ratio)
+        return false;
+
+    return true;
+}
+
 void WinClient::removeTransientFromWaitingList() {
 
     // holds the windows that dont have empty

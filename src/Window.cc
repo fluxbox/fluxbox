@@ -2570,6 +2570,15 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     int cx = frame().x(), cy = frame().y(), ignore = 0;
     unsigned int cw = frame().width(), ch = frame().height();
 
+    // if this is not m_client and m_client has resize_inc, make sure the new
+    // size would be ok with m_client
+    if (client != m_client && cr.value_mask & CWWidth &&
+        cr.value_mask & CWHeight &&
+        !m_client->checkSizeHints(cr.width, cr.height)) {
+        sendConfigureNotify();
+        return;
+    }
+
     if (cr.value_mask & CWBorderWidth)
         client->old_bw = cr.border_width;
 
