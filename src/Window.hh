@@ -514,6 +514,8 @@ private:
     };
     ThemeListener m_themelistener;
 
+    time_t m_creation_time;
+
     // Window states
     bool moving, resizing, shaded, iconic,
         focused, stuck, m_initialized, fullscreen;

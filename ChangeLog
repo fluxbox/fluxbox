@@ -1,5 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/07/06:
+   * When saving window information, use the class name instead of instance name
+     by default (Mark)
+     Remember.cc
+   * Prevent apps (e.g. MPlayer) from moving/resizing just after creation if the
+     position/size is saved in the apps file (Mark)
+     Window.cc/hh
 *07/07/03:
    * Avoid some problems with tabbed windows and resize increments (Mark)
      Window.cc WinClient.cc/hh
