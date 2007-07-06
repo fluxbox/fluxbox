@@ -246,6 +246,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_layersig(*this),
     m_workspacesig(*this),
     m_themelistener(*this),
+    m_creation_time(0),
     moving(false), resizing(false), shaded(false), iconic(false),
     stuck(false), m_initialized(false), fullscreen(false),
     maximized(MAX_NONE),
@@ -550,6 +551,10 @@ void FluxboxWindow::init() {
         if (!allowsFocusFromClient() || Fluxbox::instance()->isStartup())
             m_focused = false;
     }
+
+    struct timeval now;
+    gettimeofday(&now, NULL);
+    m_creation_time = now.tv_sec;
 
     sendConfigureNotify();
 
@@ -2567,22 +2572,48 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     if (client == 0 || isIconic())
         return;
 
-    int cx = frame().x(), cy = frame().y(), ignore = 0;
-    unsigned int cw = frame().width(), ch = frame().height();
+    int old_x = frame().x(), old_y = frame().y();
+    unsigned int old_w = frame().width();
+    unsigned int old_h = frame().height() - frame().titlebarHeight()
+                       + frame().handleHeight();
+    int cx = old_x, cy = old_y, ignore = 0;
+    unsigned int cw = old_w, ch = old_h;
 
     // make sure the new width/height would be ok with all clients, or else they
     // could try to resize the window back and forth
-    if (client != m_client &&
-        cr.value_mask & CWWidth && cr.value_mask & CWHeight) {
+    if (cr.value_mask & CWWidth || cr.value_mask & CWHeight) {
+        int new_w = (cr.value_mask & CWWidth) ? cr.width : cw;
+        int new_h = (cr.value_mask & CWHeight) ? cr.height : ch;
         ClientList::iterator it = clientList().begin();
         ClientList::iterator it_end = clientList().end();
         for (; it != it_end; ++it) {
-            if (!m_client->checkSizeHints(cr.width, cr.height)) {
+            if (*it != client && !(*it)->checkSizeHints(new_w, new_h)) {
                 sendConfigureNotify();
                 return;
             }
         }
     }
+
+#ifdef REMEMBER
+    // don't let misbehaving clients (e.g. MPlayer) move/resize their windows
+    // just after creation if the user has a saved position/size
+    if (m_creation_time) {
+        struct timeval now;
+        gettimeofday(&now, NULL);
+
+        if (now.tv_sec > m_creation_time + 1)
+            m_creation_time = 0;
+        else {
+            if (Remember::instance().isRemembered(*client,
+                                                  Remember::REM_DIMENSIONS))
+                cr.value_mask = cr.value_mask & ~(CWWidth | CWHeight);
+
+            if (Remember::instance().isRemembered(*client,
+                                                  Remember::REM_POSITION))
+                cr.value_mask = cr.value_mask & ~(CWX | CWY);
+        }
+    }
+#endif // REMEMBER
 
     if (cr.value_mask & CWBorderWidth)
         client->old_bw = cr.border_width;
@@ -2603,24 +2634,20 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         frame().setActiveGravity(client->gravity(), client->old_bw);
     }
 
-    if (cr.value_mask & CWWidth) {
+    if (cr.value_mask & CWWidth)
         cw = cr.width;
-        // we must set this now, or else window grows when height not specified
-        ch -= (frame().titlebarHeight() + frame().handleHeight());
-    }
 
     if (cr.value_mask & CWHeight)
         ch = cr.height;
 
     // whether we should send ConfigureNotify to netizens
     // the request is for client window so we resize the frame to it first
-    // NOTE: this might not work correctly if client actually requests that size
-    if (frame().width() != cw || frame().height() != ch) {
-        if (frame().x() != cx || frame().y() != cy)
+    if (old_w != cw || old_h != ch) {
+        if (old_x != cx || old_y != cy)
             frame().moveResizeForClient(cx, cy, cw, ch);
         else
             frame().resizeForClient(cw, ch);
-    } else if (frame().x() != cx || frame().y() != cy) {
+    } else if (old_x != cx || old_y != cy) {
         frame().move(cx, cy);
     }
 
