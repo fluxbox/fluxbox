@@ -355,6 +355,8 @@ public:
      */
     void leftWorkspace(int delta);
 
+    /// update workspace name for given workspace
+    void updateWorkspaceName(unsigned int w);
     /// remove all workspace names 
     void removeWorkspaceNames();
     /// update the workspace name atom

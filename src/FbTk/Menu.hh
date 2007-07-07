@@ -92,7 +92,6 @@ public:
     /// cycle through menuitems
     void cycleItems(bool reverse);
     void enterSubmenu();
-    void enterParent();
 
     void disableTitle();
     void enableTitle();
@@ -192,7 +191,7 @@ protected:
     virtual void redrawTitle(FbDrawable &pm);
     virtual void redrawFrame(FbDrawable &pm);
 
-    virtual void internal_hide();
+    virtual void internal_hide(bool first = true);
 
     virtual void update(FbTk::Subject *);
 
