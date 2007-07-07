@@ -1,5 +1,8 @@
 # data/Makefile.am for Fluxbox - an X11 Window manager
 
+PROGRAM_PREFIX=@program_prefix@
+PROGRAM_SUFFIX=@program_suffix@
+
 DEFAULT_MENU = @DEFAULT_MENU@
 DEFAULT_STYLE = @DEFAULT_STYLE@
 DEFAULT_KEYS = @DEFAULT_KEYS@
@@ -26,6 +29,8 @@ distclean-local:
 		rm -f *\~
 init: 			init.in
 	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" \
+			-e "s,@pkgprefix@,$(PROGRAM_PREFIX:NONE=),g" \
+			-e "s,@pkgsuffix@,$(PROGRAM_SUFFIX:NONE=),g" \
 			-e "s,@default_style@,$(DEFAULT_STYLE),g" $(srcdir)/init.in > init
 
 menu: 			../util/fluxbox-generate_menu

@@ -216,7 +216,6 @@ private:
 
     std::string getRcFilename();
     void load_rc();
-    void reload_rc();
 
     void real_rereadMenu();
     void real_reconfigure();
@@ -305,7 +304,7 @@ private:
     int m_randr_event_type; ///< the type number of randr event
     int m_shape_eventbase; ///< event base for shape events
     bool m_have_shape; ///< if shape is supported by server
-    const char *m_RC_PATH;
+    std::string m_RC_PATH;
     const char *m_RC_INIT_FILE;
     Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
 

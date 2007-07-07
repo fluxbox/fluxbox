@@ -171,6 +171,8 @@ size_t Workspace::numberOfWindows() const {
 
 void Workspace::setName(const string &name) {
     if (!name.empty() && name != "") {
+        if (name == m_name)
+            return;
         m_name = name;
     } else { //if name == 0 then set default name from nls
         _FB_USES_NLS;

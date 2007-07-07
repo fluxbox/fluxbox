@@ -2,7 +2,8 @@
 # $Id$
 
 command="`basename \"$0\"`"
-startup="$HOME/.fluxbox/startup"
+fluxdir="$HOME/.@pkgprefix@fluxbox@pkgsuffix@"
+startup="$fluxdir/startup"
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -28,8 +29,8 @@ if [ -x "$startup" ]; then
 elif [ -r "$startup" ]; then
     exec sh "$startup"
 else
-    if [ ! -d "$HOME/.fluxbox" ]; then
-        mkdir -p "$HOME/.fluxbox/backgrounds" "$HOME/.fluxbox/styles" "$HOME/.fluxbox/pixmaps"
+    if [ ! -d $fluxdir ]; then
+        mkdir -p "$fluxdir/backgrounds" "$fluxdir/styles" "$fluxdir/pixmaps"
     fi
     if [ ! -r "$startup" ]; then
         ( cat << EOF
@@ -81,7 +82,7 @@ else
 
 exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@
 # or if you want to keep a log:
-# exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@ -log "$HOME/.fluxbox/log"
+# exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@ -log "$fluxdir/log"
 EOF
     ) > "$startup"
     fi
