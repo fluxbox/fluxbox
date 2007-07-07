@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/07/07:
+   * Allow negative numbers in :Workspace <int> command, which counts backwards
+     from the last one (Mark)
    * Right clicking on a submenu didn't revert focus to its parent (Mark)
      FbTk/Menu.cc/hh
    * Pressing escape in a torn menu didn't work (Mark)

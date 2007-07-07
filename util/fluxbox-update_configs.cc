@@ -160,13 +160,15 @@ int main(int argc, char **argv) {
         }
     }
 
+    if (rc_filename.empty())
+        rc_filename = getenv("HOME") + string("/.fluxbox/init");
+
     FbTk::ResourceManager resource_manager(rc_filename.c_str(),false);
-    if (rc_filename.empty() || !resource_manager.load(rc_filename.c_str())) {
+    if (!resource_manager.load(rc_filename.c_str())) {
         // couldn't load rc file
-        if (!rc_filename.empty()) {
-            cerr<<_FB_CONSOLETEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "Failed trying to read rc file")<<":"<<rc_filename<<endl;
-            cerr<<_FB_CONSOLETEXT(Fluxbox, CantLoadRCFileTrying, "Retrying with", "Retrying rc file loading with (the following file)")<<": "<<DEFAULT_INITFILE<<endl;
-        }
+        cerr<<_FB_CONSOLETEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "Failed trying to read rc file")<<":"<<rc_filename<<endl;
+        cerr<<_FB_CONSOLETEXT(Fluxbox, CantLoadRCFileTrying, "Retrying with", "Retrying rc file loading with (the following file)")<<": "<<DEFAULT_INITFILE<<endl;
+
         // couldn't load default rc file, either
         if (!resource_manager.load(DEFAULT_INITFILE)) {
             cerr<<_FB_CONSOLETEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "")<<": "<<DEFAULT_INITFILE<<endl;
