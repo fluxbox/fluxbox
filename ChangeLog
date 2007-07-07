@@ -1,5 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/07/07:
+   * Right clicking on a submenu didn't revert focus to its parent (Mark)
+     FbTk/Menu.cc/hh
+   * Pressing escape in a torn menu didn't work (Mark)
+     FbTk/Menu.cc
+   * Save workspace names when changing through menu, bug #1748967 (Mark)
+     Workspace.cc Screen.cc/hh
 *07/07/06:
    * When saving window information, use the class name instead of instance name
      by default (Mark)

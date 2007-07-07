@@ -358,9 +358,6 @@ void Menu::enterSubmenu() {
 
 void Menu::enterParent() {
     internal_hide();
-    // return focus to parent
-    if (parent())
-        parent()->grabInputFocus();
 }
 
 void Menu::disableTitle() {
@@ -583,11 +580,11 @@ void Menu::redrawFrame(FbDrawable &drawable) {
 
 }
 
-void Menu::internal_hide() {
+void Menu::internal_hide(bool first) {
 
     if (validIndex(m_which_sub)) {
         MenuItem *tmp = menuitems[m_which_sub];
-        tmp->submenu()->internal_hide();
+        tmp->submenu()->internal_hide(false);
     }
 
     // if we have an active index we need to redraw it
@@ -596,11 +593,19 @@ void Menu::internal_hide() {
     m_active_index = -1;
     clearItem(old); // clear old area from highlight
 
-    if (shown && shown->menu.window == menu.window)
-        shown = (Menu *) 0;
+    if (shown && shown->menu.window == menu.window) {
+        if (m_parent && m_parent->isVisible())
+            shown = m_parent;
+        else
+            shown = (Menu *) 0;
+    }
 
     m_torn = m_visible = false;
     m_which_sub = -1;
+
+    if (first && m_parent && m_parent->isVisible() &&
+        s_focused && !s_focused->isVisible())
+        m_parent->grabInputFocus();
 
     menu.window.hide();
 }
@@ -1031,6 +1036,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Escape: // close menu
         m_type_ahead.reset();
+        m_torn = false;
         hide();
         break;
     case XK_BackSpace:

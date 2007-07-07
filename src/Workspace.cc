@@ -382,7 +382,7 @@ void Workspace::setName(const string &name) {
         m_name = tname;
     }
 
-    screen().updateWorkspaceNamesAtom();
+    screen().updateWorkspaceName(m_id);
 
     menu().setLabel(m_name);
     menu().updateMenu();

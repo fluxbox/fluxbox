@@ -1036,6 +1036,14 @@ void BScreen::rereadMenu() {
     m_rootmenu->reconfigure();
 }
 
+void BScreen::updateWorkspaceName(unsigned int w) {
+    Workspace *space = getWorkspace(w);
+    if (space) {
+        m_workspace_names[w] = space->name();
+        updateWorkspaceNamesAtom();
+        Fluxbox::instance()->save_rc();
+    }
+}
 
 void BScreen::removeWorkspaceNames() {
     m_workspace_names.clear();

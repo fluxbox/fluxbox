@@ -191,7 +191,7 @@ protected:
     virtual void redrawTitle(FbDrawable &pm);
     virtual void redrawFrame(FbDrawable &pm);
 
-    virtual void internal_hide();
+    virtual void internal_hide(bool first = true);
 
     void update(FbTk::Subject *);
 
