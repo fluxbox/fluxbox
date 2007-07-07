@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/07/07:
+   * Don't overwrite changes to init file on reconfigure (Mark)
+     Workspace.cc fluxbox.cc/hh
+   * Make things work a little better with configure script's --program-prefix
+     and --program-suffix options (Mark)
    * Allow negative numbers in :Workspace <int> command, which counts backwards
      from the last one (Mark)
    * Right clicking on a submenu didn't revert focus to its parent (Mark)

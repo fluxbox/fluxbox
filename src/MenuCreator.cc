@@ -24,6 +24,7 @@
 
 #include "MenuCreator.hh"
 
+#include "defaults.hh"
 #include "Screen.hh"
 #include "CommandParser.hh"
 #include "fluxbox.hh"
@@ -349,7 +350,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
     else if (str_key == "wallpapers" || str_key == "wallpapermenu" ||
              str_key == "rootcommands") {
          createRootCmdMenu(menu, str_label, str_label,
-                          str_cmd == "" ? "fbsetbg" : str_cmd);
+                          str_cmd == "" ? realProgramName("fbsetbg") : str_cmd);
     } // end of wallpapers
     else if (str_key == "workspaces") {
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);

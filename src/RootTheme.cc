@@ -23,6 +23,7 @@
 
 #include "RootTheme.hh"
 
+#include "defaults.hh"
 #include "FbRootWindow.hh"
 #include "FbCommands.hh"
 #include "Screen.hh"
@@ -212,7 +213,8 @@ void RootTheme::reconfigTheme() {
             options = "-A ";
             
         // compose wallpaper application "fbsetbg" with argumetns
-        std::string commandargs = "fbsetbg " + options + filename;
+        std::string commandargs = realProgramName("fbsetbg") + " " + options +
+                                  filename;
 
         // call command with options
         FbCommands::ExecuteCmd exec(commandargs, screenNum());
@@ -220,7 +222,8 @@ void RootTheme::reconfigTheme() {
 
     } else if (FbTk::FileUtil::isDirectory(filename.c_str()) &&
             strstr(m_background->options().c_str(), "random") != 0) {
-        std::string commandargs = "fbsetbg -R " + filename;
+        std::string commandargs = realProgramName("fbsetbg") + " -R " +
+                                  filename;
         FbCommands::ExecuteCmd exec(commandargs, screenNum());
         exec.execute();
     } else {
@@ -251,7 +254,7 @@ void RootTheme::reconfigTheme() {
             options += "-gradient '" + m_background->options() + "'";
         }
 
-        std::string commandargs = "fbsetroot " + options;
+        std::string commandargs = realProgramName("fbsetroot") + " " + options;
 
         FbCommands::ExecuteCmd exec(commandargs, screenNum());
         exec.execute();

@@ -23,6 +23,7 @@
 
 #include "RootCmdMenuItem.hh"
 
+#include "defaults.hh"
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 
@@ -33,9 +34,10 @@ RootCmdMenuItem::RootCmdMenuItem(const FbTk::FbString &label,
                              const std::string &cmd):
     FbTk::MenuItem(label), 
     m_filename(filename) {
-    
-      FbTk::RefCount<FbTk::Command> 
-        setwp_cmd(new FbCommands::ExecuteCmd(cmd + " \"" + m_filename + "\""));
+
+    std::string prog = cmd.empty() ? realProgramName("fbsetbg") : cmd;
+    FbTk::RefCount<FbTk::Command>
+        setwp_cmd(new FbCommands::ExecuteCmd(prog + " \"" + m_filename + "\""));
     setCommand(setwp_cmd);
     setToggleItem(true);
 }

@@ -28,6 +28,8 @@ DEFAULT_MENU=@DEFAULT_MENU@
 DEFAULT_STYLE=$(pkgdatadir)/styles/Clean
 DEFAULT_KEYSFILE=@DEFAULT_KEYS@
 DEFAULT_INITFILE=@DEFAULT_INIT@
+PROGRAM_PREFIX=@program_prefix@
+PROGRAM_SUFFIX=@program_suffix@
 
 AM_CPPFLAGS=-I$(srcdir)/FbTk
 
@@ -37,14 +39,25 @@ CONFIG_CLEAN_FILES = defaults.hh
 defaults.hh: Makefile
 	@( \
 		echo '// This file is generated from Makefile. Do not edit!'; \
+		echo '#include <string>'; \
+		echo ''; \
 		echo '#define DEFAULTMENU "$(DEFAULT_MENU)"'; \
 		echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"'; \
 		echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"'; \
 		echo '#define DEFAULT_INITFILE "$(DEFAULT_INITFILE)"'; \
+		echo '#define PROGRAM_PREFIX "$(PROGRAM_PREFIX:NONE=)"'; \
+		echo '#define PROGRAM_SUFFIX "$(PROGRAM_SUFFIX:NONE=)"'; \
+		echo 'std::string realProgramName(std::string name);'; \
 		echo 'const char* svnversion(void);' ) > defaults.hh
 
 defaults.cc: force
 	@( \
+		echo '#include "defaults.hh"'; \
+		echo ''; \
+		echo 'std::string realProgramName(std::string name) {'; \
+		echo '  return PROGRAM_PREFIX + name + PROGRAM_SUFFIX;'; \
+		echo '}'; \
+		echo ''; \
 		echo 'const char* svnversion(void) {'; \
 		echo '  return "'`(svnversion . | sed "s/[^0-9].*//") 2> /dev/null`'";';\
 		echo '}' ) > defaults_tmp.cc

@@ -202,12 +202,12 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
       m_rc_tabs_padding(m_resourcemanager, 0, "session.tabPadding", "Session.TabPadding"),
       m_rc_stylefile(m_resourcemanager, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
-      m_rc_styleoverlayfile(m_resourcemanager, "~/.fluxbox/overlay", "session.styleOverlay", "Session.StyleOverlay"),
+      m_rc_styleoverlayfile(m_resourcemanager, "~/." + realProgramName("fluxbox") + "/overlay", "session.styleOverlay", "Session.StyleOverlay"),
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
       m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
-      m_rc_slitlistfile(m_resourcemanager, "~/.fluxbox/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
-      m_rc_groupfile(m_resourcemanager, "~/.fluxbox/groups", "session.groupFile", "Session.GroupFile"),
-      m_rc_appsfile(m_resourcemanager, "~/.fluxbox/apps", "session.appsFile", "Session.AppsFile"),
+      m_rc_slitlistfile(m_resourcemanager, "~/." + realProgramName("fluxbox") + "/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
+      m_rc_groupfile(m_resourcemanager, "~/." + realProgramName("fluxbox") + "/groups", "session.groupFile", "Session.GroupFile"),
+      m_rc_appsfile(m_resourcemanager, "~/." + realProgramName("fluxbox") + "/apps", "session.appsFile", "Session.AppsFile"),
       m_rc_tabs_attach_area(m_resourcemanager, ATTACH_AREA_WINDOW, "session.tabsAttachArea", "Session.TabsAttachArea"),
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
@@ -227,7 +227,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_shutdown(false),
       m_server_grabs(0),
       m_randr_event_type(0),
-      m_RC_PATH("fluxbox"),
+      m_RC_PATH(realProgramName("fluxbox")),
       m_RC_INIT_FILE("init") {
 
     _FB_USES_NLS;
@@ -588,7 +588,7 @@ void Fluxbox::setupConfigFiles() {
 
     bool create_init = false, create_keys = false, create_menu = false;
 
-    string dirname = getenv("HOME") + string("/.") + string(m_RC_PATH) + "/";
+    string dirname = getenv("HOME") + string("/.") + m_RC_PATH + "/";
     string init_file, keys_file, menu_file, slitlist_file;
     init_file = dirname + m_RC_INIT_FILE;
     keys_file = dirname + "keys";
@@ -645,8 +645,8 @@ void Fluxbox::setupConfigFiles() {
     if (*config_version < CONFIG_VERSION) {
         // configs are out of date, so run fluxbox-update_configs
 
-        string commandargs = "fluxbox-update_configs -rc ";
-        commandargs += init_file;
+        string commandargs = realProgramName("fluxbox-update_configs");
+        commandargs += " -rc " + init_file;
 
 #ifdef HAVE_GETPID
         // add the fluxbox pid so fbuc can have us reload rc if necessary
@@ -1084,7 +1084,7 @@ void Fluxbox::handleSignal(int signum) {
         load_rc();
         break;
     case SIGUSR2:
-        reload_rc();
+        reconfigure();
         break;
     case SIGSEGV:
         abort();
@@ -1559,13 +1559,8 @@ void Fluxbox::load_rc(BScreen &screen) {
     }
 }
 
-void Fluxbox::reload_rc() {
-    load_rc();
-    reconfigure();
-}
-
-
 void Fluxbox::reconfigure() {
+    load_rc();
     m_reconfigure_wait = true;
     m_reconfig_timer.start();
 }

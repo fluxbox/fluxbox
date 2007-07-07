@@ -61,7 +61,7 @@ fi
 # Functions
 display_usage() {
     cat << EOF
-Usage: fluxbox-generate_menu [-kgrBh] [-t terminal] [-w url] [-b browser]
+Usage: @pkgprefix@fluxbox-generate_menu@pkgsuffix@ [-kgrBh] [-t terminal] [-w url] [-b browser]
          [-m menu-title] [-o /path] [-u /path] [-p /path] [-n /path] [-q /path]
          [-d /path ] [-ds] [-i /path] [-is]
 EOF
@@ -89,8 +89,8 @@ Options:
     -w  Homepage for console-browsers. Default is fluxbox.org
     -b  Favourite browser
     -m  Menu-title; default is "Fluxbox"
-    -o  Outputfile; default is ~/.fluxbox/menu
-    -u  user sub-menu; default is ~/.fluxbox/usermenu
+    -o  Outputfile; default is ~/.@pkgprefix@fluxbox@pkgsuffix@/menu
+    -u  user sub-menu; default is ~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu
 
     -h  Display this help
     -a  Display the authors of this script
@@ -103,8 +103,8 @@ Options:
 
 
 Files:
-    ~/.fluxbox/usermenu     your own submenu which will be included in the menu
-    ~/.fluxbox/menuconfig   rc file for fluxbox-generate_menu
+    ~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu     your own submenu which will be included in the menu
+    ~/.@pkgprefix@fluxbox@pkgsuffix@/menuconfig   rc file for fluxbox-generate_menu
 
 EOF
 }
@@ -112,7 +112,7 @@ EOF
 display_authors() {
     cat << EOF
 
-fluxbox-generate_menu was brought to you by:
+@pkgprefix@fluxbox-generate_menu@pkgsuffix@ was brought to you by:
 
     Henrik Kinnunen:    Project leader.
     Han Boetes:         Packaging, debugging and scripts.
@@ -326,7 +326,7 @@ searchForIcon(){
 
     # convert icon file, if needed
     if [ -f "$entry_icon" ] && [ -n "yes$ConvertIfNecessary" ]; then
-        entry_icon=`convertIcon "$entry_icon" "$HOME/.fluxbox/icons"`
+        entry_icon=`convertIcon "$entry_icon" "$USERFLUXDIR/icons"`
         # $dnlamVERBOSE echo ":::: $entry_icon" >&2
     fi
 
@@ -1201,20 +1201,22 @@ case ${LC_ALL} in
 esac
 
 # Set Defaults
-MENUFILENAME="${MENUFILENAME:=${HOME}/.fluxbox/menu}"
+USERFLUXDIR="${HOME}/.@pkgprefix@fluxbox@pkgsuffix@"
+MENUFILENAME="${MENUFILENAME:=${USERFLUXDIR}/menu}"
 MENUTITLE="${MENUTITLE:=Fluxbox}"
 HOMEPAGE="${HOMEPAGE:=fluxbox.org}"
-USERMENU="${USERMENU:=${HOME}/.fluxbox/usermenu}"
+USERMENU="${USERMENU:=${USERFLUXDIR}/usermenu}"
+MENUCONFIG="${MENUCONFIG:=${USERFLUXDIR}/menuconfig}"
 
 # Read the menuconfig file if it exists or else create it.
 # But not during install time, use envvar for sun
 if [ ! "${INSTALL}" = Yes ]; then
-    if [ -r ${HOME}/.fluxbox/menuconfig ]; then
-        . ${HOME}/.fluxbox/menuconfig
+    if [ -r ${MENUCONFIG} ]; then
+        . ${MENUCONFIG}
     else
         if [ ! "$WHOAMI" = root ]; then # this is only for users.
-            if touch ${HOME}/.fluxbox/menuconfig; then
-                cat << EOF > ${HOME}/.fluxbox/menuconfig
+            if touch ${MENUCONFIG}; then
+                cat << EOF > ${MENUCONFIG}
 # This file is read by fluxbox-generate_menu.  If you don't like a
 # default you can change it here.  Don't forget to remove the # in front
 # of the line.
@@ -1228,7 +1230,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 # MY_BROWSER=mozilla
 
 # Name of the outputfile
-# MENUFILENAME=${HOME}/.fluxbox/menu
+# MENUFILENAME=${USERFLUXDIR}/menu
 
 # MENUTITLE=\`fluxbox -version|cut -d " " -f-2\`
 
@@ -1236,7 +1238,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 # HOMEPAGE=fluxbox.org
 
 # location with your own menu-entries
-# USERMENU=~/.fluxbox/usermenu
+# USERMENU=~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu
 
 # Put the launcher you would like to use here
 # LAUNCHER=fbrun
@@ -1258,7 +1260,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 
 
 # Sepparate the list of background-dirs with semicolumns ':'
-# BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:@PREFIX@/share/fluxbox/backgrounds/:/usr/share/wallpapers"
+# BACKGROUND_DIRS="${USERFLUXDIR}/backgrounds/:@PREFIX@/share/fluxbox/backgrounds/:/usr/share/wallpapers"
 
 
 # --- Boolean variables.
@@ -1279,7 +1281,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 
 EOF
             else
-                echo "Warning: I couldn't create ${HOME}/.fluxbox/menuconfig" >&2
+                echo "Warning: I couldn't create ${MENUCONFIG}" >&2
             fi
         fi
     fi
@@ -1440,9 +1442,9 @@ done
 
 if [ -z "${INSTALL}" ] && [ -z "${NO_ICON}" ]; then
     # [ -z "$dnlamVERBOSE" ] && dnlamVERBOSE=": echo"   # for debugging
-    FB_ICONDIR="$HOME/.fluxbox/icons"
+    FB_ICONDIR="$USERFLUXDIR/icons"
     [ -r "$FB_ICONDIR" ] || mkdir "$FB_ICONDIR"
-    ICONMAPPING="$HOME/.fluxbox/iconmapping"
+    ICONMAPPING="$USERFLUXDIR/iconmapping"
 
     if [ "$GNOMEMENU" ] ; then
         OTHER_DESKTOP_PATHS="\"$HOME/.gnome/apps\" \"${GNOME_PREFIX}/share/gnome/apps\" $OTHER_DESKTOP_PATHS"
@@ -1483,7 +1485,7 @@ fi
 
 # directory for the backgrounds
 if [ -z "$BACKGROUND_DIRS" ]; then
-    BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:${PREFIX}/share/fluxbox/backgrounds/"
+    BACKGROUND_DIRS="${USERFLUXDIR}/backgrounds/:${PREFIX}/share/fluxbox/backgrounds/"
 fi
 
 # find the default terminal
@@ -1492,7 +1494,7 @@ if find_it_options $MY_TERM; then
 else
     [ -n "$MY_TERM" ] && echo "Warning: you chose an invalid term." >&2
     #The precise order is up for debate.
-    for term in Eterm urxvt urxvtc aterm rxvt wterm xterm konsole gnome-terminal; do
+    for term in Eterm urxvt urxvtc aterm mrxvt rxvt wterm konsole gnome-terminal xterm; do
         if find_it $term; then
             DEFAULT_TERM=$term
             break
@@ -1541,7 +1543,7 @@ cat << EOF > ${MENUFILENAME}
 # If you read this it means you want to edit this file manually, so here
 # are some useful tips:
 #
-# - You can add your own menu-entries to ~/.fluxbox/usermenu
+# - You can add your own menu-entries to ~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu
 #
 # - If you miss apps please let me know and I will add them for the next
 #   release.
@@ -1550,8 +1552,8 @@ cat << EOF > ${MENUFILENAME}
 #   makes things much more readable.
 #
 # - To prevent any other app from overwriting your menu
-#   you can change the menu name in .fluxbox/init to:
-#     session.menuFile: /home/you/.fluxbox/my-menu
+#   you can change the menu name in .@pkgprefix@fluxbox@pkgsuffix@/init to:
+#     session.menuFile: ${USERFLUXDIR}/my-menu
 
 EOF
 
@@ -1806,7 +1808,7 @@ append_submenu "${FBSETTINGSMENU}"
     append_menu_end
 
     append_menu "[submenu] (${USERSTYLES}) {${STYLEMENUTITLE}}"
-        append "[stylesdir] (~/.fluxbox/styles)"
+        append "[stylesdir] (~/.@pkgprefix@fluxbox@pkgsuffix@/styles)"
     append_menu_end
 
     # Backgroundmenu
@@ -1820,7 +1822,7 @@ append_submenu "${FBSETTINGSMENU}"
         NUMBER_OF_BACKGROUNDS=`find $BACKGROUND_DIRS -follow -type f 2> /dev/null|wc -l`
         if [ "$NUMBER_OF_BACKGROUNDS" -gt 0 ]; then
             append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
-            append "[exec] (${RANDOMBACKGROUND}) {fbsetbg -r ${HOME}/.fluxbox/backgrounds}"
+            append "[exec] (${RANDOMBACKGROUND}) {fbsetbg -r ${USERFLUXDIR}/backgrounds}"
             if [ "$NUMBER_OF_BACKGROUNDS" -gt 30 ]; then
                 menucounter=1 ; counter=1
                 append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
@@ -1862,7 +1864,7 @@ append_submenu "${FBSETTINGSMENU}"
         find_it ${LAUNCHER} append "[exec] (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
-        find_it fluxbox-generate_menu append "[exec] (${REGENERATEMENU}) {fluxbox-generate_menu ${BACKUPOPTIONS}}"
+        find_it $0 append "[exec] (${REGENERATEMENU}) {$0 ${BACKUPOPTIONS}}"
     append_menu_end
 
     append_submenu "${WINDOWMANAGERS}"
@@ -1908,13 +1910,13 @@ mv -f menu.tmp $MENUFILENAME
 
 if [ -z "$INSTALL" ]; then
     if [ -z "$CHECKINIT" ]; then
-        INITMENUFILENAME=`awk '/menuFile/ {print $2}' $HOME/.fluxbox/init`
+        INITMENUFILENAME=`awk '/menuFile/ {print $2}' $USERFLUXDIR/init`
         INITMENUFILENAME=`replaceWithinString "$INITMENUFILENAME" "~" "$HOME"`
         if [ ! "$INITMENUFILENAME" = "$MENUFILENAME" ]; then 
-            echo "Note: In $HOME/.fluxbox/init, your \"session.menuFile\" does not point to $MENUFILENAME but to $INITMENUFILENAME" >&2
+            echo "Note: In $USERFLUXDIR/init, your \"session.menuFile\" does not point to $MENUFILENAME but to $INITMENUFILENAME" >&2
         fi
     fi
     echo "Menu successfully generated: $MENUFILENAME"
     #echo "  Make sure \"session.menuFile: $MENUFILENAME\" is in $HOME/.fluxbox/init."
-    echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
+    echo 'Use @pkgprefix@fluxbox-generate_menu@pkgsuffix@ -h to read about all the latest features.'
 fi
