@@ -215,6 +215,17 @@ void Gnome::updateClientList(BScreen &screen) {
     delete[] wl;
 }
 
+void Gnome::updateClientClose(WinClient &client) {
+    if (client.screen().isShuttingdown()) {
+        XDeleteProperty(FbTk::App::instance()->display(), client.window(),
+                        m_gnome_wm_win_workspace);
+        XDeleteProperty(FbTk::App::instance()->display(), client.window(),
+                        m_gnome_wm_win_layer);
+        XDeleteProperty(FbTk::App::instance()->display(), client.window(),
+                        m_gnome_wm_win_state);
+    }
+}
+
 void Gnome::updateWorkspaceNames(BScreen &screen) {
 
     size_t number_of_desks = screen.getWorkspaceNames().size();

@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/07/08:
+   * Clean up state and workspace window properties on client close (Mark)
+     Ewmh.cc Gnome.cc/hh
 *07/07/07:
    * Don't overwrite changes to init file on reconfigure (Mark)
      Workspace.cc fluxbox.cc/hh

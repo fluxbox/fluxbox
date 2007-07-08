@@ -72,6 +72,7 @@ public:
     void updateWorkarea(BScreen &) { }
     void updateFocusedWindow(BScreen &, Window) { }
     void updateClientList(BScreen &screen);
+    void updateClientClose(WinClient &winclient);
     void updateWorkspaceNames(BScreen &screen);
     void updateCurrentWorkspace(BScreen &screen);
     void updateWorkspaceCount(BScreen &screen);
@@ -85,7 +86,6 @@ public:
 	
     // ignore these ones
     void updateFrameClose(FluxboxWindow &win) {}
-    void updateClientClose(WinClient &winclient) {}
     bool propertyNotify(WinClient &winclient, Atom the_property);
 
 private:
