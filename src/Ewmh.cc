@@ -369,8 +369,17 @@ void Ewmh::updateFocusedWindow(BScreen &screen, Window win) {
                                        (unsigned char *)&win, 1);
 }
 
+// EWMH says, regarding _NET_WM_STATE and _NET_WM_DESKTOP
+// The Window Manager should remove the property whenever a window is withdrawn
+// but it should leave the property in place when it is shutting down
 void Ewmh::updateClientClose(WinClient &winclient){
     updateClientList(winclient.screen());
+    if (!winclient.screen().isShuttingdown()) {
+        XDeleteProperty(FbTk::App::instance()->display(), winclient.window(),
+                        m_net_wm_state);
+        XDeleteProperty(FbTk::App::instance()->display(), winclient.window(),
+                        m_net_wm_desktop);
+    }
 }
 
 void Ewmh::updateClientList(BScreen &screen) {
