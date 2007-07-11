@@ -360,6 +360,12 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     Display *disp = m_root_window.display();
     Fluxbox *fluxbox = Fluxbox::instance();
 
+    // TODO fluxgen: check if this is the right place (it was not -lis)
+    //
+    // Create the first one, initXinerama will expand this if needed.
+    m_head_areas.resize(1);
+    m_head_areas[0] = new HeadArea();
+
     initXinerama();
 
     // setup error handler to catch "screen already managed by other wm"
@@ -401,9 +407,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         m_restart = (ret_prop != NULL);
         XFree(ret_prop);
     }
-
-    // TODO fluxgen: check if this is the right place
-    m_head_areas = new HeadArea[numHeads() ? numHeads() : 1];
 
 #ifdef HAVE_RANDR
     // setup RANDR for this screens root window
@@ -600,7 +603,8 @@ BScreen::~BScreen() {
     m_slit.reset(0);
 
     // TODO fluxgen: check if this is the right place
-    delete [] m_head_areas;
+    for (int i = 0; i < m_head_areas.size(); i++)
+        delete m_head_areas[i];
 
     delete m_focus_control;
     delete m_placement_strategy;
@@ -722,7 +726,12 @@ unsigned int BScreen::currentWorkspaceID() const {
 }
 
 const Strut* BScreen::availableWorkspaceArea(int head) const {
-    return m_head_areas[head ? head-1 : 0].availableWorkspaceArea();
+    if (head > numHeads()) {
+        /* May this ever happen? */
+        static Strut whole(-1 /* should never be used */, 0, width(), 0, height());
+        return &whole;
+    }
+    return m_head_areas[head ? head-1 : 0]->availableWorkspaceArea();
 }
 
 unsigned int BScreen::maxLeft(int head) const {
@@ -1412,7 +1421,7 @@ Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom)
 
     Strut* next = 0;
     for (int i = begin; i != end; i++) {
-        next = m_head_areas[i].requestStrut(i+1, left, right, top, bottom, next);
+        next = m_head_areas[i]->requestStrut(i+1, left, right, top, bottom, next);
     }
 
     return next;
@@ -1422,7 +1431,9 @@ void BScreen::clearStrut(Strut *str) {
     if (str->next())
         clearStrut(str->next());
     int head = str->head() ? str->head() - 1 : 0;
-    m_head_areas[head].clearStrut(str);
+    /* The number of heads may have changed, be careful. */
+    if (head < numHeads())
+        m_head_areas[head]->clearStrut(str);
     // str is invalid now
 }
 
@@ -1431,7 +1442,7 @@ void BScreen::updateAvailableWorkspaceArea() {
     bool updated = false;
 
     for (size_t i = 0; i < n; i++) {
-        updated = m_head_areas[i].updateAvailableWorkspaceArea() || updated;
+        updated = m_head_areas[i]->updateAvailableWorkspaceArea() || updated;
     }
 
     if (updated)
@@ -1886,6 +1897,9 @@ void BScreen::renderPosWindow() {
 }
 
 void BScreen::updateSize() {
+    // update xinerama layout
+    initXinerama();
+
     // force update geometry
     rootWindow().updateGeometry();
 
@@ -1945,6 +1959,8 @@ void BScreen::initXinerama() {
         cerr<<"BScreen::initXinerama(): dont have Xinerama"<<endl;
 #endif // DEBUG
         m_xinerama_avail = false;
+        if (m_xinerama_headinfo)
+            delete [] m_xinerama_headinfo;
         m_xinerama_headinfo = 0;
         m_xinerama_num_heads = 0;
         return;
@@ -1957,6 +1973,8 @@ void BScreen::initXinerama() {
     XineramaScreenInfo *screen_info;
     int number;
     screen_info = XineramaQueryScreens(display, &number);
+    if (m_xinerama_headinfo)
+        delete [] m_xinerama_headinfo;
     m_xinerama_headinfo = new XineramaHeadInfo[number];
     m_xinerama_num_heads = number;
     for (int i=0; i < number; i++) {
@@ -1969,6 +1987,18 @@ void BScreen::initXinerama() {
 #ifdef DEBUG
     cerr<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
 #endif // DEBUG
+
+    /* Reallocate to the new number of heads. */
+    int ha_num = numHeads() ? numHeads() : 1, ha_oldnum = m_head_areas.size();
+    if (ha_num > ha_oldnum) {
+        m_head_areas.resize(ha_num);
+        for (int i = ha_oldnum; i < ha_num; i++)
+            m_head_areas[i] = new HeadArea();
+    } else if (ha_num < ha_oldnum) {
+        for (int i = ha_num; i < ha_oldnum; i++)
+            delete m_head_areas[i];
+        m_head_areas.resize(ha_num);
+    }
 
 #else // XINERAMA
     // no xinerama
