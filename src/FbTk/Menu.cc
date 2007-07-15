@@ -600,7 +600,7 @@ void Menu::internal_hide(bool first) {
             shown = (Menu *) 0;
     }
 
-    m_torn = m_visible = false;
+    m_torn = m_visible = m_closing = false;
     m_which_sub = -1;
 
     if (first && m_parent && m_parent->isVisible() &&
@@ -835,12 +835,16 @@ void Menu::handleEvent(XEvent &event) {
         if (validIndex(m_which_sub) &&
                 menuitems[m_which_sub]->submenu()->isVisible())
             menuitems[m_which_sub]->submenu()->grabInputFocus();
-    }
+    } else if (event.type == LeaveNotify)
+        m_closing = false;
 }
 
 void Menu::buttonPressEvent(XButtonEvent &be) {
-    if (be.window == menu.title)
+    if (be.window == menu.title) {
         grabInputFocus();
+        m_closing = (be.button == 3);
+    } else
+        m_closing = false;
 
     if (be.window == menu.frame && menu.item_w != 0) {
 
@@ -879,7 +883,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             }
         }
 
-        if (re.button == 3)
+        if (re.button == 3 && m_closing)
             internal_hide();
 
     } else if (re.window == menu.frame) {

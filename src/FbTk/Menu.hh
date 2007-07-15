@@ -220,6 +220,7 @@ private:
     int m_screen_x, m_screen_y;
     unsigned int m_screen_width, m_screen_height;
     bool m_moving; ///< if we're moving/draging or not
+    bool m_closing; ///< if we're right clicking on the menu title
     bool m_visible; ///< menu visibility
     bool m_torn; ///< torn from parent
     bool m_internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
