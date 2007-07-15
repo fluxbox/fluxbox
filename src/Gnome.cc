@@ -216,7 +216,7 @@ void Gnome::updateClientList(BScreen &screen) {
 }
 
 void Gnome::updateClientClose(WinClient &client) {
-    if (client.screen().isShuttingdown()) {
+    if (!client.screen().isShuttingdown()) {
         XDeleteProperty(FbTk::App::instance()->display(), client.window(),
                         m_gnome_wm_win_workspace);
         XDeleteProperty(FbTk::App::instance()->display(), client.window(),
