@@ -73,16 +73,16 @@ public:
     explicit FocusControl(BScreen &screen);
 
     /// cycle previous focuable 
-    void prevFocus() { cycleFocus(&m_focused_list, 0, true); }
+    void prevFocus() { cycleFocus(m_focused_list, 0, true); }
     /// cycle next focusable
-    void nextFocus() { cycleFocus(&m_focused_list, 0, false); }
+    void nextFocus() { cycleFocus(m_focused_list, 0, false); }
     /**
      * Cycle focus for a set of windows.
      * @param winlist the windowlist to cycle through
      * @param options cycle options @see FocusOption
      * @param reverse reverse the cycle order
      */
-    void cycleFocus(FocusedWindows *winlist, int options, bool reverse = false);
+    void cycleFocus(FocusedWindows &winlist, int options, bool reverse = false);
     /// sets the focused window on a screen
     void setScreenFocusedWindow(WinClient &win_client);
     /// sets the main focus model

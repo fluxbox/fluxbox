@@ -865,7 +865,7 @@ void BScreen::cycleFocus(int options, bool reverse) {
             &focusControl().creationOrderList() :
             &focusControl().focusedOrderList();
 
-    focusControl().cycleFocus(win_list, options, reverse);
+    focusControl().cycleFocus(*win_list, options, reverse);
 }
 
 FbTk::Menu *BScreen::createMenu(const string &label) {

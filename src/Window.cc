@@ -780,14 +780,14 @@ void FluxboxWindow::nextClient() {
     if (numClients() <= 1)
         return;
 
-    screen().focusControl().cycleFocus(&m_clientlist, 0);
+    screen().focusControl().cycleFocus(m_clientlist, 0);
 }
 
 void FluxboxWindow::prevClient() {
     if (numClients() <= 1)
         return;
 
-    screen().focusControl().cycleFocus(&m_clientlist, 0, true);
+    screen().focusControl().cycleFocus(m_clientlist, 0, true);
 }
 
 
