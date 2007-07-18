@@ -1329,7 +1329,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (id == currentWorkspace()->workspaceID() && !win->isIconic())
         win->deiconify(false, false);
     else {
-        win->withdraw(true);
+        win->hide(true);
         FocusControl::revertFocus(*this);
     }
 

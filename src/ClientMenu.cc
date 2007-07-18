@@ -46,9 +46,14 @@ public:
         FluxboxWindow *fbwin = m_client.fbwindow();
         if (fbwin == 0)
             return;
+
+        // this MenuItem object can get destroyed as a result of focus(), so we
+        // must get a local copy of the parent menu
+        FbTk::Menu *parent = menu();
+
         m_client.focus();
         fbwin->raise();
-        menu()->hide();
+        parent->hide();
     }
 
     const std::string &label() const { return m_client.title(); }

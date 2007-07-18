@@ -111,6 +111,7 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
 
     m_internal_menu =
         m_moving =
+        m_closing =
         m_torn =
         m_visible = false;
 

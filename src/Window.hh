@@ -266,8 +266,6 @@ public:
     void close();
     /// kill current client
     void kill();
-    /// set the window in withdrawn state
-    void withdraw(bool interrupt_moving);
     /// set fullscreen
     void setFullscreen(bool flag);
     /// toggle maximize

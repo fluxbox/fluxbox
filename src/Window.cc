@@ -1389,7 +1389,7 @@ bool FluxboxWindow::focus() {
         // fetch the window to the current workspace
         if (model == BScreen::FETCH_ACTIVE_WINDOW ||
             (isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW))
-            screen().sendToWorkspace(screen().currentWorkspaceID(), this, true);
+            screen().sendToWorkspace(screen().currentWorkspaceID(), this, false);
         // warp to the workspace of the window
         else
             screen().changeWorkspaceID(workspaceNumber());
@@ -1584,18 +1584,6 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     if (do_raise)
         raise();
-}
-
-/**
- Set window in withdrawn state
-*/
-void FluxboxWindow::withdraw(bool interrupt_moving) {
-#ifdef DEBUG
-    cerr<<"FluxboxWindow::"<<__FUNCTION__<<": this = "<<this<<endl;
-#endif // DEBUG
-    iconic = false;
-
-    hide(interrupt_moving);
 }
 
 /** setFullscreen mode:
@@ -3901,7 +3889,7 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
         screen().reassociateWindow(this, net.workspace, true);
 
         if (screen().currentWorkspaceID() != net.workspace)
-            withdraw(true);
+            hide(true);
         else
             deiconify();
     }

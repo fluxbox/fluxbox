@@ -140,7 +140,7 @@ void Workspace::hideAll(bool interrupt_moving) {
     Windows::reverse_iterator it_end = m_windowlist.rend();
     for (; it != it_end; ++it) {
         if (! (*it)->isStuck())
-            (*it)->withdraw(interrupt_moving);
+            (*it)->hide(interrupt_moving);
     }
 }
 
