@@ -123,7 +123,11 @@ void FocusControl::cycleFocus(FocusedWindows &window_list, int opts, bool cycle_
             continue;
 
         fbwin = (*it)->fbwindow();
-        if (!fbwin)
+        // make sure the window is on the same workspace,
+        // unless its sticky, which is ok
+        if (!fbwin || 
+            ( fbwin->workspaceNumber() != m_screen.currentWorkspaceID() &&
+              ! fbwin->isStuck()))
             continue;
 
         // keep track of the originally selected window in a group
