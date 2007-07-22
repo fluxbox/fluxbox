@@ -1437,7 +1437,7 @@ void FluxboxWindow::hide(bool interrupt_moving) {
     menu().hide();
     frame().hide();
 
-    if (isFocused())
+    if (FocusControl::focusedFbWindow() == this)
         FocusControl::setFocusedWindow(0);
 }
 
