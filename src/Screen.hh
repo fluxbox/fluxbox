@@ -58,7 +58,6 @@
 class ClientPattern;
 class Focusable;
 class FluxboxWindow;
-class Netizen;
 class FbWinFrameTheme;
 class RootTheme;
 class WinButtonTheme;
@@ -363,10 +362,6 @@ public:
     void updateWorkspaceNamesAtom();
     /// add a workspace name to the end of the workspace name list
     void addWorkspaceName(const char *name);
-    /// add a Netizen window
-    void addNetizen(Window win);
-    /// remove a netizen
-    void removeNetizen(Window win);
     /// add a window to the icon list
     void addIcon(FluxboxWindow *win);
     /// remove a window from the icon list
@@ -465,16 +460,6 @@ public:
     WinClient *findGroupLeft(WinClient &winclient);
     WinClient *findGroupRight(WinClient &winclient);
 
-    // notify netizens
-    void updateNetizenCurrentWorkspace();
-    void updateNetizenWorkspaceCount();
-    void updateNetizenWindowFocus();
-    void updateNetizenWindowAdd(Window, unsigned long);
-    void updateNetizenWindowDel(Window);
-    void updateNetizenConfigNotify(XEvent &ev);
-    void updateNetizenWindowRaise(Window);
-    void updateNetizenWindowLower(Window);
-
     /// create window frame for client window and attach it
     FluxboxWindow *createWindow(Window clientwin);
     /// creates a window frame for a winclient. The client is attached to the window
@@ -544,12 +529,10 @@ private:
     ExtraMenus m_extramenus;
 
     typedef std::list<FbTk::Menu *> Rootmenus;
-    typedef std::list<Netizen *> Netizens;
     typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > Configmenus;
 
 
     Rootmenus m_rootmenu_list;
-    Netizens m_netizen_list;
     Configmenus m_configmenu_list;
     Icons m_icon_list;
 

@@ -501,11 +501,6 @@ void Slit::addClient(Window w) {
 
     if (XGetWMProtocols(disp, w, &proto, &num_return)) {
 
-        for (int i = 0; i < num_return; ++i) {
-            if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
-                screen().addNetizen(w);
-        }
-
         XFree((void *) proto);
 #ifdef DEBUG
     } else {
@@ -587,8 +582,6 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
         m_client_list.remove(client);
     else // Clear the window info, but keep around to help future sorting?
         client->initialize();
-
-    screen().removeNetizen(client->window());
 
     if (remap && client->window() != 0) {
         Display *disp = FbTk::App::instance()->display();

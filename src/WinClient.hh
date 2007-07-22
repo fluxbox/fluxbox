@@ -70,7 +70,6 @@ public:
     /// updates transient window information
     void updateTransientInfo();
 
-    void updateBlackboxHints();
     void updateMWMHints();
     void updateWMHints();
     void updateWMNormalHints();
@@ -129,13 +128,11 @@ public:
     Window getGroupLeftWindow() const;
 
     inline int getFocusMode() const { return m_focus_mode; }
-    inline const FluxboxWindow::BlackboxHints *getBlackboxHint() const { return m_blackbox_hint; }
     inline const MwmHints *getMwmHint() const { return m_mwm_hint; }
 
     inline unsigned int maxWidth() const { return max_width; }
     inline unsigned int maxHeight() const { return max_height; }
 
-    static const int PropBlackboxHintsElements = 5;
     static const int PropMwmHintsElements = 3;
 
     /**
@@ -177,7 +174,6 @@ private:
     std::string m_icon_title;
     bool m_title_override, m_icon_title_override;
 
-    FluxboxWindow::BlackboxHints *m_blackbox_hint;
     MwmHints *m_mwm_hint;
 
     int m_focus_mode;

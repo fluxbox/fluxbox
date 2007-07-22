@@ -60,35 +60,6 @@ void FbAtoms::initAtoms() {
     xa_wm_take_focus = XInternAtom(display, "WM_TAKE_FOCUS", False);
     motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
 
-    blackbox_hints = XInternAtom(display, "_BLACKBOX_HINTS", False);
     blackbox_attributes = XInternAtom(display, "_BLACKBOX_ATTRIBUTES", False);
-    blackbox_change_attributes =
-        XInternAtom(display, "_BLACKBOX_CHANGE_ATTRIBUTES", False);
-
-    blackbox_structure_messages =
-        XInternAtom(display, "_BLACKBOX_STRUCTURE_MESSAGES", False);
-    blackbox_notify_startup =
-        XInternAtom(display, "_BLACKBOX_NOTIFY_STARTUP", False);
-    blackbox_notify_window_add =
-        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_ADD", False);
-    blackbox_notify_window_del =
-        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_DEL", False);
-    blackbox_notify_current_workspace =
-        XInternAtom(display, "_BLACKBOX_NOTIFY_CURRENT_WORKSPACE", False);
-    blackbox_notify_workspace_count =
-        XInternAtom(display, "_BLACKBOX_NOTIFY_WORKSPACE_COUNT", False);
-    blackbox_notify_window_focus =
-        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_FOCUS", False);
-    blackbox_notify_window_raise =
-        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_RAISE", False);
-    blackbox_notify_window_lower =
-        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_LOWER", False);
-
-    blackbox_change_workspace =
-        XInternAtom(display, "_BLACKBOX_CHANGE_WORKSPACE", False);
-    blackbox_change_window_focus =
-        XInternAtom(display, "_BLACKBOX_CHANGE_WINDOW_FOCUS", False);
-    blackbox_cycle_window_focus =
-        XInternAtom(display, "_BLACKBOX_CYCLE_WINDOW_FOCUS", False);
 
 }

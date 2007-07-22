@@ -152,11 +152,6 @@ public:
          LEFT         = 7,
          ALLCORNERS   = 8
     };
-    /// holds old blackbox specific hints
-    typedef struct _blackbox_hints {
-        unsigned long flags, attrib, workspace, stack;
-        long decoration;
-    } BlackboxHints;
 
     /// holds old blackbox attributes
     typedef struct _blackbox_attributes {
@@ -318,7 +313,6 @@ public:
      */
     void maxSize(unsigned int &width, unsigned int &height);
     void setWorkspace(int n);
-    void changeBlackboxHints(const BlackboxHints &bh);
     void updateFunctions();
     void restoreAttributes();
     /**
@@ -521,7 +515,6 @@ private:
     void updateTitleFromClient(WinClient &client);
     /// gets icon name from client window
     void updateMWMHintsFromClient(WinClient &client);
-    void updateBlackboxHintsFromClient(const WinClient &client);
     void updateRememberStateFromClient(WinClient &client);
     void saveBlackboxAttribs();
     void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1, int gravity = ForgetGravity, unsigned int client_bw = 0);
@@ -534,7 +527,7 @@ private:
     void fixsize(int *user_w = 0, int *user_h = 0, bool maximizing = false);
     void moveResizeClient(WinClient &client, int x, int y, unsigned int width, unsigned int height);
     /// sends configurenotify to all clients
-    void sendConfigureNotify(bool send_to_netizens = true);
+    void sendConfigureNotify();
 
     static void grabPointer(Window grab_window,
                      Bool owner_events,

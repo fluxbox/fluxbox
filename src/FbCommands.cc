@@ -153,7 +153,7 @@ int ExecuteCmd::run() {
 
     // get shell path from the environment
     // this process exits immediately, so we don't have to worry about memleaks
-    char *shell = getenv("SHELL");
+    const char *shell = getenv("SHELL");
     if (!shell)
         shell = "/bin/sh";
 

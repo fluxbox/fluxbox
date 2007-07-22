@@ -101,7 +101,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh \
 	Keys.cc Keys.hh main.cc \
-	Netizen.cc Netizen.hh \
 	RootTheme.hh RootTheme.cc \
 	FbRootWindow.hh FbRootWindow.cc \
 	Screen.cc Screen.hh ScreenResources.cc \

@@ -147,7 +147,6 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
         win.screen().layerManager().lock();
 
     if (!win.isIconic()) {
-        win.screen().updateNetizenWindowRaise(win.clientWindow());
         win.layerItem().raise();
     }
 
@@ -182,7 +181,6 @@ void lowerFluxboxWindow(FluxboxWindow &win) {
         win.screen().layerManager().lock();
 
     if (!win.isIconic()) {
-        win.screen().updateNetizenWindowLower(win.clientWindow());
         win.layerItem().lower();
     }
 
@@ -205,7 +203,6 @@ void tempRaiseFluxboxWindow(FluxboxWindow &win) {
     win.oplock = true;
 
     if (!win.isIconic()) {
-        // don't update netizen, as it is only temporary
         win.layerItem().tempRaise();
     }
 
@@ -402,10 +399,7 @@ void FluxboxWindow::init() {
     functions.resize = functions.move = functions.iconify = functions.maximize
     = functions.close = functions.tabable = true;
 
-    if (m_client->getBlackboxHint() != 0)
-        updateBlackboxHintsFromClient(*m_client);
-    else
-        updateMWMHintsFromClient(*m_client);
+    updateMWMHintsFromClient(*m_client);
 
     //!!
     // fetch client size and placement
@@ -1212,43 +1206,6 @@ void FluxboxWindow::updateFunctions() {
         setupWindow();
 }
 
-void FluxboxWindow::updateBlackboxHintsFromClient(const WinClient &client) {
-    const FluxboxWindow::BlackboxHints *hint = client.getBlackboxHint();
-    if (!hint) return;
-
-    if (hint->flags & ATTRIB_SHADED)
-        shaded = (hint->attrib & ATTRIB_SHADED);
-
-    if (hint->flags & ATTRIB_HIDDEN)
-        iconic = (hint->attrib & ATTRIB_HIDDEN);
-
-    if ((hint->flags & ATTRIB_MAXHORIZ) &&
-        (hint->flags & ATTRIB_MAXVERT))
-        maximized = ((hint->attrib &
-                      (ATTRIB_MAXHORIZ |
-                       ATTRIB_MAXVERT)) ? MAX_FULL : MAX_NONE);
-    else if (hint->flags & ATTRIB_MAXVERT)
-        maximized = ((hint->attrib &
-                      ATTRIB_MAXVERT) ? MAX_VERT : MAX_NONE);
-    else if (hint->flags & ATTRIB_MAXHORIZ)
-        maximized = ((hint->attrib &
-                      ATTRIB_MAXHORIZ) ? MAX_HORZ : MAX_NONE);
-
-    if (hint->flags & ATTRIB_OMNIPRESENT)
-        stuck = (hint->attrib & ATTRIB_OMNIPRESENT);
-
-    if (hint->flags & ATTRIB_WORKSPACE)
-        m_workspace_number = hint->workspace;
-
-    if (hint->flags & ATTRIB_STACK)
-        m_workspace_number = hint->stack;
-
-    if (hint->flags & ATTRIB_DECORATION) {
-        m_old_decoration = static_cast<Decoration>(hint->decoration);
-        setDecoration(m_old_decoration, false);
-    }
-}
-
 void FluxboxWindow::move(int x, int y) {
     moveResize(x, y, frame().width(), frame().height());
 }
@@ -1503,9 +1460,6 @@ void FluxboxWindow::iconify() {
     if (isIconic()) // no need to iconify if we're already
         return;
 
-    m_blackbox_attrib.flags |= ATTRIB_HIDDEN;
-    m_blackbox_attrib.attrib |= ATTRIB_HIDDEN;
-
     iconic = true;
 
     hide(true);
@@ -1551,7 +1505,6 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     bool was_iconic = iconic;
 
-    m_blackbox_attrib.flags &= ~ATTRIB_HIDDEN;
     iconic = false;
 
     if (reassoc && !m_client->transients.empty()) {
@@ -1786,9 +1739,6 @@ void FluxboxWindow::setWorkspace(int n) {
 
     m_workspace_number = n;
 
-    m_blackbox_attrib.flags |= ATTRIB_WORKSPACE;
-    m_blackbox_attrib.workspace = m_workspace_number;
-
     // notify workspace change
     if (m_initialized && !stuck && old_wkspc != m_workspace_number) {
 #ifdef DEBUG
@@ -1825,8 +1775,6 @@ void FluxboxWindow::shade() {
         frame().shade();
 
     shaded = !shaded;
-    m_blackbox_attrib.flags ^= ATTRIB_SHADED;
-    m_blackbox_attrib.attrib ^= ATTRIB_SHADED;
 
     // TODO: this should set IconicState, but then we can't focus the window
 }
@@ -1847,8 +1795,6 @@ void FluxboxWindow::shadeOff() {
 
 void FluxboxWindow::stick() {
 
-    m_blackbox_attrib.flags ^= ATTRIB_OMNIPRESENT;
-    m_blackbox_attrib.attrib ^= ATTRIB_OMNIPRESENT;
     stuck = !stuck;
 
     if (m_initialized) {
@@ -1959,12 +1905,6 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
     FluxboxWindow *win = client->fbwindow();
     if (!win) return;
 
-    if (!win->isIconic()) {
-        if (layernum > m_layernum)
-            screen().updateNetizenWindowLower(client->window());
-        else
-            screen().updateNetizenWindowRaise(client->window());
-    }
     win->layerItem().moveToLayer(layernum);
     // remember number just in case a transient happens to revisit this window
     layernum = win->layerItem().getLayerNum();
@@ -1980,7 +1920,6 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
         for (; it != it_end; ++it) {
             FluxboxWindow *fbwin = (*it)->fbwindow();
             if (fbwin && !fbwin->isIconic()) {
-                screen().updateNetizenWindowRaise((*it)->window());
                 fbwin->layerItem().moveToLayer(layernum);
                 fbwin->setLayerNum(layernum);
             }
@@ -2185,23 +2124,6 @@ void FluxboxWindow::restoreAttributes() {
     } else
         return;
 
-    if (m_blackbox_attrib.flags & ATTRIB_SHADED &&
-        m_blackbox_attrib.attrib & ATTRIB_SHADED)
-        shaded = true;
-
-    if (m_blackbox_attrib.flags & ATTRIB_HIDDEN &&
-        m_blackbox_attrib.attrib & ATTRIB_HIDDEN) {
-        iconic = true;
-    }
-
-    if (( m_blackbox_attrib.workspace != screen().currentWorkspaceID()) &&
-        ( m_blackbox_attrib.workspace < screen().numberOfWorkspaces()))
-        m_workspace_number = m_blackbox_attrib.workspace;
-
-    if (m_blackbox_attrib.flags & ATTRIB_OMNIPRESENT &&
-        m_blackbox_attrib.attrib & ATTRIB_OMNIPRESENT)
-        stuck = true;
-
     if (m_blackbox_attrib.flags & ATTRIB_STACK) {
         //!! TODO check value?
         m_layernum = m_blackbox_attrib.stack;
@@ -2209,21 +2131,10 @@ void FluxboxWindow::restoreAttributes() {
 
     if ((m_blackbox_attrib.flags & ATTRIB_MAXHORIZ) ||
         (m_blackbox_attrib.flags & ATTRIB_MAXVERT)) {
-        int x = m_blackbox_attrib.premax_x, y = m_blackbox_attrib.premax_y;
-        unsigned int w = m_blackbox_attrib.premax_w, h = m_blackbox_attrib.premax_h;
-        maximized = MAX_NONE;
-        if ((m_blackbox_attrib.flags & ATTRIB_MAXHORIZ) &&
-            (m_blackbox_attrib.flags & ATTRIB_MAXVERT))
-            maximized = MAX_FULL;
-        else if (m_blackbox_attrib.flags & ATTRIB_MAXVERT)
-            maximized = MAX_VERT;
-        else if (m_blackbox_attrib.flags & ATTRIB_MAXHORIZ)
-            maximized = MAX_HORZ;
-
-        m_blackbox_attrib.premax_x = x;
-        m_blackbox_attrib.premax_y = y;
-        m_blackbox_attrib.premax_w = w;
-        m_blackbox_attrib.premax_h = h;
+        m_blackbox_attrib.premax_x = m_blackbox_attrib.premax_x;
+        m_blackbox_attrib.premax_y = m_blackbox_attrib.premax_y;
+        m_blackbox_attrib.premax_w = m_blackbox_attrib.premax_w;
+        m_blackbox_attrib.premax_h = m_blackbox_attrib.premax_h;
     }
 
 }
@@ -2535,14 +2446,6 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
             updateMWMHintsFromClient(client);
             updateRememberStateFromClient(client);
             applyDecorations(); // update decorations (if they changed)
-        } else if (atom == fbatoms->getFluxboxHintsAtom()) {
-            client.updateBlackboxHints();
-            updateBlackboxHintsFromClient(client);
-            if (client.getBlackboxHint() != 0 &&
-                (client.getBlackboxHint()->flags & ATTRIB_DECORATION)) {
-                updateRememberStateFromClient(client);
-                applyDecorations(); // update decoration
-            }
         }
         break;
     }
@@ -2628,7 +2531,6 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     if (cr.value_mask & CWHeight)
         ch = cr.height;
 
-    // whether we should send ConfigureNotify to netizens
     // the request is for client window so we resize the frame to it first
     if (old_w != cw || old_h != ch) {
         if (old_x != cx || old_y != cy)
@@ -3839,75 +3741,6 @@ unsigned int FluxboxWindow::normalHeight() const {
 
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
-void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
-    if ((net.flags & ATTRIB_SHADED) &&
-        ((m_blackbox_attrib.attrib & ATTRIB_SHADED) !=
-         (net.attrib & ATTRIB_SHADED)))
-        shade();
-
-    if ((net.flags & ATTRIB_HIDDEN) &&
-        ((m_blackbox_attrib.attrib & ATTRIB_HIDDEN) !=
-         (net.attrib & ATTRIB_HIDDEN))) {
-        bool want_iconic = net.attrib & ATTRIB_HIDDEN;
-        if (!iconic && want_iconic)
-            iconify();
-        else if (iconic && !want_iconic)
-            deiconify();
-    }
-
-    if (net.flags & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)) {
-        // make maximise look like the net maximise flags
-        int want_max = MAX_NONE;
-
-        if (net.flags & ATTRIB_MAXVERT)
-            want_max |= MAX_VERT;
-        if (net.flags & ATTRIB_MAXHORIZ)
-            want_max |= MAX_HORZ;
-
-        if (want_max == MAX_NONE && maximized != MAX_NONE) {
-            maximize(maximized);
-        } else if (want_max == MAX_FULL && maximized != MAX_FULL) {
-            maximize(MAX_FULL);
-        } else {
-            // either we want vert and aren't
-            // or we want horizontal and aren't
-            if (want_max == MAX_VERT ^ (bool)(maximized & MAX_VERT))
-                maximize(MAX_VERT);
-            if (want_max == MAX_HORZ ^ (bool)(maximized & MAX_HORZ))
-                maximize(MAX_HORZ);
-        }
-    }
-
-    if ((net.flags & ATTRIB_OMNIPRESENT) &&
-        ((m_blackbox_attrib.attrib & ATTRIB_OMNIPRESENT) !=
-         (net.attrib & ATTRIB_OMNIPRESENT)))
-        stick();
-
-    if ((net.flags & ATTRIB_WORKSPACE) &&
-        (m_workspace_number !=  net.workspace)) {
-
-        screen().reassociateWindow(this, net.workspace, true);
-
-        if (screen().currentWorkspaceID() != net.workspace)
-            hide(true);
-        else
-            deiconify();
-    }
-
-    if (net.flags & ATTRIB_STACK) {
-        if ((unsigned int) m_layernum != net.stack) {
-            moveToLayer(net.stack);
-        }
-    }
-
-    if (net.flags & ATTRIB_DECORATION) {
-        m_old_decoration = static_cast<Decoration>(net.decoration);
-        setDecoration(m_old_decoration);
-    }
-
-}
-
-
 void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
     int titlebar_height = (decorations.titlebar ?
                            frame().titlebar().height()  +
@@ -3952,7 +3785,7 @@ void FluxboxWindow::moveResizeClient(WinClient &client, int x, int y,
                       frame().clientArea().height());
 }
 
-void FluxboxWindow::sendConfigureNotify(bool send_to_netizens) {
+void FluxboxWindow::sendConfigureNotify() {
     ClientList::iterator client_it = m_clientlist.begin();
     ClientList::iterator client_it_end = m_clientlist.end();
     for (; client_it != client_it_end; ++client_it) {
@@ -3970,23 +3803,6 @@ void FluxboxWindow::sendConfigureNotify(bool send_to_netizens) {
                      frame().clientArea().width(),
                      frame().clientArea().height());
 
-        if (send_to_netizens) {
-            XEvent event;
-            event.type = ConfigureNotify;
-
-            event.xconfigure.display = display;
-            event.xconfigure.event = client.window();
-            event.xconfigure.window = client.window();
-            event.xconfigure.x = frame().x() + frame().clientArea().x();
-            event.xconfigure.y = frame().y() + frame().clientArea().y();
-            event.xconfigure.width = client.width();
-            event.xconfigure.height = client.height();
-            event.xconfigure.border_width = client.old_bw;
-            event.xconfigure.above = frame().window().window();
-            event.xconfigure.override_redirect = false;
-
-            screen().updateNetizenConfigNotify(event);
-        }
     } // end for
 
 }

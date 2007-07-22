@@ -84,12 +84,10 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      m_win_gravity(0),
                      m_title_override(false),
                      m_icon_title_override(false),
-                     m_blackbox_hint(0),
                      m_mwm_hint(0),
                      m_focus_mode(F_PASSIVE),
                      m_strut(0) {
     updateWMProtocols();
-    updateBlackboxHints();
     updateMWMHints();
     updateWMHints();
     updateWMNormalHints();
@@ -156,8 +154,6 @@ WinClient::~WinClient() {
     s_transient_wait.erase(window());
 
 
-    screen().removeNetizen(window());
-
     if (window_group != 0) {
         fluxbox->removeGroupSearch(window_group);
         window_group = 0;
@@ -165,9 +161,6 @@ WinClient::~WinClient() {
 
     if (m_mwm_hint != 0)
         XFree(m_mwm_hint);
-
-    if (m_blackbox_hint != 0)
-        XFree(m_blackbox_hint);
 
     if (window())
         fluxbox->removeWindowSearch(window());
@@ -429,31 +422,6 @@ void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_
 
 void WinClient::setFluxboxWindow(FluxboxWindow *win) {
     m_fbwin = win;
-}
-
-void WinClient::updateBlackboxHints() {
-    int format;
-    Atom atom_return;
-    unsigned long num, len;
-    FbAtoms *atoms = FbAtoms::instance();
-
-    if (m_blackbox_hint) {
-        XFree(m_blackbox_hint);
-        m_blackbox_hint = 0;
-    }
-
-    if (property(atoms->getFluxboxHintsAtom(), 0,
-                 PropBlackboxHintsElements, False,
-                 atoms->getFluxboxHintsAtom(), &atom_return,
-                 &format, &num, &len,
-                 (unsigned char **) &m_blackbox_hint) &&
-        m_blackbox_hint) {
-
-        if (num != (unsigned)PropBlackboxHintsElements) {
-            XFree(m_blackbox_hint);
-            m_blackbox_hint = 0;
-        }
-    }
 }
 
 void WinClient::updateMWMHints() {
@@ -752,14 +720,11 @@ void WinClient::updateWMProtocols() {
         // defaults
         send_focus_message = false;
         send_close_message = false;
-        // could be added to netizens twice...
         for (int i = 0; i < num_return; ++i) {
             if (proto[i] == fbatoms->getWMDeleteAtom())
                 send_close_message = true;
             else if (proto[i] == fbatoms->getWMTakeFocusAtom())
                 send_focus_message = true;
-            else if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
-                screen().addNetizen(window());
         }
 
         XFree(proto);

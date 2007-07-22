@@ -1021,41 +1021,6 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
             winclient->fbwindow()->iconify();
         if (ce.data.l[0] == NormalState)
             winclient->fbwindow()->deiconify();
-    } else if (ce.message_type == m_fbatoms->getFluxboxChangeWorkspaceAtom()) {
-        BScreen *screen = searchScreen(ce.window);
-
-        if (screen && ce.data.l[0] >= 0 &&
-            ce.data.l[0] < (signed)screen->numberOfWorkspaces())
-            screen->changeWorkspaceID(ce.data.l[0]);
-
-    } else if (ce.message_type == m_fbatoms->getFluxboxChangeWindowFocusAtom()) {
-        WinClient *winclient = searchWindow(ce.window);
-        if (winclient) {
-            FluxboxWindow *win = winclient->fbwindow();
-            if (win && win->isVisible())
-                win->setCurrentClient(*winclient, true);
-        }
-    } else if (ce.message_type == m_fbatoms->getFluxboxCycleWindowFocusAtom()) {
-        BScreen *screen = searchScreen(ce.window);
-
-        if (screen) {
-            if (! ce.data.l[0])
-                screen->focusControl().prevFocus();
-            else
-                screen->focusControl().nextFocus();
-        }
-    } else if (ce.message_type == m_fbatoms->getFluxboxChangeAttributesAtom()) {
-        WinClient *winclient = searchWindow(ce.window);
-        FluxboxWindow *win = 0;
-        if (winclient && (win = winclient->fbwindow()) && winclient->validateClient()) {
-            FluxboxWindow::BlackboxHints net;
-            net.flags = ce.data.l[0];
-            net.attrib = ce.data.l[1];
-            net.workspace = ce.data.l[2];
-            net.stack = ce.data.l[3];
-            net.decoration = static_cast<int>(ce.data.l[4]);
-            win->changeBlackboxHints(net);
-        }
     } else {
         WinClient *winclient = searchWindow(ce.window);
         BScreen *screen = searchScreen(ce.window);
@@ -1190,8 +1155,6 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         BScreen &screen = client->screen();
 
         screen.removeClient(*client);
-        // finaly send notify signal
-        screen.updateNetizenWindowDel(client->window());
 
         // At this point, we trust that this client is no longer in the
         // client list of its frame (but it still has reference to the frame)
@@ -1720,7 +1683,6 @@ bool Fluxbox::validateClient(const WinClient *client) const {
 
 void Fluxbox::updateFocusedWindow(BScreen *screen, BScreen *old_screen) {
     if (screen != 0) {
-        screen->updateNetizenWindowFocus();
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++) {
             (*it).first->updateFocusedWindow(*screen, (FocusControl::focusedWindow() ?
@@ -1730,7 +1692,6 @@ void Fluxbox::updateFocusedWindow(BScreen *screen, BScreen *old_screen) {
     }
 
     if (old_screen && old_screen != screen) {
-        old_screen->updateNetizenWindowFocus();
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++)
             (*it).first->updateFocusedWindow(*old_screen, 0);

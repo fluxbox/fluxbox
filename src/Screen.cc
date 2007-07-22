@@ -31,7 +31,6 @@
 #include "Keys.hh"
 #include "Window.hh"
 #include "Workspace.hh"
-#include "Netizen.hh"
 
 #include "Layer.hh"
 #include "FocusControl.hh"
@@ -520,7 +519,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     }
 
     changeWorkspaceID(first_desktop);
-    updateNetizenWorkspaceCount();
 
     // we need to load win frame theme before we create any fluxbox window
     // and after we've load the resources
@@ -595,7 +593,6 @@ BScreen::~BScreen() {
     removeWorkspaceNames();
     using namespace STLUtil;
     destroyAndClear(m_workspaces_list);
-    destroyAndClear(m_netizen_list);
     destroyAndClear(m_managed_resources);
 
     //why not destroyAndClear(m_icon_list); ?
@@ -1204,8 +1201,6 @@ int BScreen::addWorkspace() {
 
     saveWorkspaces(m_workspaces_list.size());
 
-    updateNetizenWorkspaceCount();
-
     return m_workspaces_list.size();
 
 }
@@ -1233,7 +1228,6 @@ int BScreen::removeLastWorkspace() {
     //remove last workspace
     m_workspaces_list.pop_back();
 
-    updateNetizenWorkspaceCount();
     saveWorkspaces(m_workspaces_list.size());
     // must be deleted after we send notify!!
     // so we dont get bad pointers somewhere
@@ -1300,7 +1294,6 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     } else
         FocusControl::revertFocus(*this);
 
-    updateNetizenCurrentWorkspace();
     FbTk::App::instance()->sync(false);
 
 }
@@ -1347,105 +1340,6 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 
 }
 
-
-void BScreen::addNetizen(Window win) {
-    Netizen *net = new Netizen(*this, win);
-    m_netizen_list.push_back(net);
-
-    net->sendWorkspaceCount();
-    net->sendCurrentWorkspace();
-
-    // send all windows to netizen
-    Workspaces::iterator it = m_workspaces_list.begin();
-    Workspaces::iterator it_end = m_workspaces_list.end();
-    for (; it != it_end; ++it) {
-        Workspace::Windows::iterator win_it = (*it)->windowList().begin();
-        Workspace::Windows::iterator win_it_end = (*it)->windowList().end();
-        for (; win_it != win_it_end; ++win_it) {
-            net->sendWindowAdd((*win_it)->clientWindow(),
-                               (*it)->workspaceID());
-        }
-    }
-
-    Window f = ((FocusControl::focusedWindow()) ?
-		FocusControl::focusedWindow()->window() : None);
-    net->sendWindowFocus(f);
-}
-
-void BScreen::removeNetizen(Window w) {
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it) {
-        if ((*it)->window() == w) {
-            Netizen *n = *it;
-            delete n;
-            m_netizen_list.erase(it);
-            break;
-        }
-    }
-}
-
-
-void BScreen::updateNetizenCurrentWorkspace() {
-    m_currentworkspace_sig.notify();
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             mem_fun(&Netizen::sendCurrentWorkspace));
-}
-
-
-void BScreen::updateNetizenWorkspaceCount() {
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             mem_fun(&Netizen::sendWorkspaceCount));
-    m_workspacecount_sig.notify();
-}
-
-
-void BScreen::updateNetizenWindowFocus() {
-    Window f = ((FocusControl::focusedWindow()) ?
-                FocusControl::focusedWindow()->window() : None);
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             bind2nd(mem_fun(&Netizen::sendWindowFocus), f));
-}
-
-
-void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it) {
-        (*it)->sendWindowAdd(w, p);
-    }
-}
-
-
-void BScreen::updateNetizenWindowDel(Window w) {
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             bind2nd(mem_fun(&Netizen::sendWindowDel), w));
-}
-
-
-void BScreen::updateNetizenWindowRaise(Window w) {
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             bind2nd(mem_fun(&Netizen::sendWindowRaise), w));
-}
-
-
-void BScreen::updateNetizenWindowLower(Window w) {
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             bind2nd(mem_fun(&Netizen::sendWindowLower), w));
-}
-
-void BScreen::updateNetizenConfigNotify(XEvent &e) {
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it)
-        (*it)->sendConfigNotify(e);
-}
 
 bool BScreen::isKdeDockapp(Window client) const {
     //Check and see if client is KDE dock applet.

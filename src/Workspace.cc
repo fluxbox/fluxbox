@@ -98,15 +98,6 @@ void Workspace::addWindow(FluxboxWindow &w, bool place) {
     m_windowlist.push_back(&w);
     m_clientlist_sig.notify();
 
-    if (!w.isStuck()) {
-        FluxboxWindow::ClientList::iterator client_it =
-            w.clientList().begin();
-        FluxboxWindow::ClientList::iterator client_it_end =
-            w.clientList().end();
-        for (; client_it != client_it_end; ++client_it)
-            screen().updateNetizenWindowAdd((*client_it)->window(), m_id);
-    }
-
 }
 
 // still_alive is true if the window will continue to exist after
