@@ -1404,7 +1404,7 @@ string Fluxbox::getRcFilename() {
 }
 
 /// Provides default filename of data file
-void Fluxbox::getDefaultDataFilename(char *name, string &filename) {
+void Fluxbox::getDefaultDataFilename(const char *name, string &filename) const {
     filename = string(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + name);
 }
 

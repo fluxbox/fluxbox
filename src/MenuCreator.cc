@@ -523,7 +523,7 @@ FbTk::Menu *MenuCreator::createMenuType(const string &type, int screen_num) {
         menu->disableTitle(); // not titlebar
         if (screen->windowMenuFilename().empty() ||
             ! createWindowMenuFromFile(screen->windowMenuFilename(), *menu, true)) {
-            char *default_menu[] = {
+            const char *default_menu[] = {
                 "shade",
                 "stick",
                 "maximize",

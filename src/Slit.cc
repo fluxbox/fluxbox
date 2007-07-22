@@ -59,7 +59,6 @@
 #include "SlitTheme.hh"
 #include "SlitClient.hh"
 #include "Xutil.hh"
-#include "FbAtoms.hh"
 #include "FbTk/App.hh"
 #include "FbTk/MenuSeparator.hh"
 #include "FbTk/StringUtil.hh"
@@ -497,7 +496,6 @@ void Slit::addClient(Window w) {
 
     Atom *proto = 0;
     int num_return = 0;
-    FbAtoms *fbatoms = FbAtoms::instance();
 
     if (XGetWMProtocols(disp, w, &proto, &num_return)) {
 

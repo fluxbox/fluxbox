@@ -34,7 +34,7 @@
 namespace {
 
 struct t_modlist{
-    char *str;
+    const char *str;
     unsigned int mask;
     bool operator == (const char *modstr) const {
         return  (strcasecmp(str, modstr) == 0 && mask !=0);

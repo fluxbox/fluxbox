@@ -1296,6 +1296,8 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
     FbTk::App::instance()->sync(false);
 
+    m_currentworkspace_sig.notify();
+
 }
 
 
