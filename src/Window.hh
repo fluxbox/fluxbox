@@ -538,7 +538,6 @@ private:
     unsigned int m_workspace_number;
     unsigned long m_current_state; // NormalState | IconicState | Withdrawn
 
-    Decoration m_old_decoration;
     unsigned int m_old_decoration_mask;
 
     ClientList m_clientlist;

@@ -262,7 +262,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_last_resize_h(1), m_last_resize_w(1),
     m_workspace_number(0),
     m_current_state(0),
-    m_old_decoration(DECOR_NORMAL),
     m_old_decoration_mask(0),
     m_client(&client),
     m_toggled_decos(false),
@@ -1243,8 +1242,7 @@ void FluxboxWindow::updateBlackboxHintsFromClient(const WinClient &client) {
         m_workspace_number = hint->stack;
 
     if (hint->flags & ATTRIB_DECORATION) {
-        m_old_decoration = static_cast<Decoration>(hint->decoration);
-        setDecoration(m_old_decoration, false);
+        setDecoration(static_cast<Decoration>(hint->decoration), false);
     }
 }
 
@@ -1577,8 +1575,10 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         frame().setUseShape(false);
 
-        m_old_decoration_mask = decorationMask();
-        m_old_layernum =layerNum();
+        if (!m_toggled_decos)
+            m_old_decoration_mask = decorationMask();
+
+        m_old_layernum = layerNum();
         m_old_pos_x = frame().x();
         m_old_pos_y = frame().y();
         m_old_width = frame().width();
@@ -1609,8 +1609,14 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         fullscreen = false;
 
-        setDecorationMask(m_old_decoration_mask);
         frame().setUseShape(!m_shaped);
+        if (m_toggled_decos) {
+            if (m_old_decoration_mask & DECORM_TITLEBAR)
+                setDecoration(DECOR_NONE);
+            else
+                setDecoration(DECOR_NORMAL);
+        } else
+            setDecorationMask(m_old_decoration_mask);
 
         // ensure we apply the sizehints here, otherwise some
         // apps (eg xterm) end up a little bit .. crappy (visually)
@@ -1624,7 +1630,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
         moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
         moveToLayer(m_old_layernum);
 
-        m_old_decoration_mask = 0;
         m_old_layernum = ::Layer::NORMAL;
 
         stateSig().notify();
@@ -3205,22 +3210,20 @@ void FluxboxWindow::applyDecorations(bool initial) {
 
 void FluxboxWindow::toggleDecoration() {
     //don't toggle decor if the window is shaded
-    if (isShaded())
+    if (isShaded() || isFullscreen())
         return;
 
-    m_toggled_decos= true;
+    m_toggled_decos = !m_toggled_decos;
 
-    if (decorations.enabled) { //remove decorations
-        decorations.enabled = false;
-        setDecoration(DECOR_NONE);
-    } else { //revert back to old decoration
-        decorations.enabled = true;
-        if (m_old_decoration == DECOR_NONE) { // make sure something happens
+    if (m_toggled_decos) {
+        m_old_decoration_mask = decorationMask();
+        if (decorations.titlebar)
+            setDecoration(DECOR_NONE);
+        else
             setDecoration(DECOR_NORMAL);
-        } else {
-            setDecoration(m_old_decoration);
-        }
-    }
+    } else
+        setDecorationMask(m_old_decoration_mask);
+
 }
 
 unsigned int FluxboxWindow::decorationMask() const {
@@ -3866,8 +3869,7 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
     }
 
     if (net.flags & ATTRIB_DECORATION) {
-        m_old_decoration = static_cast<Decoration>(net.decoration);
-        setDecoration(m_old_decoration);
+        setDecoration(static_cast<Decoration>(net.decoration));
     }
 
 }

@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/07/24:
+   * Don't allow ToggleDecor with fullscreen windows, and make it show
+     decorations for windows that don't have a titlebar by default (Mark)
+     Window.cc/hh
 *07/07/08:
    * Clean up state and workspace window properties on client close (Mark)
      Ewmh.cc Gnome.cc/hh

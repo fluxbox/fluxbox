@@ -52,7 +52,7 @@ ImageImlib2::ImageImlib2() {
 
     // TODO: this are the potential candidates,
     //       choose only sane ones. open for discussion
-    static char* format_list[] = {
+    static const char* format_list[] = {
         "PNG",                               // pngloader
         "JPEG", "JPG", "JFI", "JFIF",        // jpegloader
 //        "TIFF", "TIF",                       // tiffloader
@@ -67,7 +67,7 @@ ImageImlib2::ImageImlib2() {
         NULL
     };
 
-    char** format = NULL;
+    const char** format = NULL;
     for(format = format_list; *format != NULL; format++) {
         Image::registerType(*format, *this);
     }

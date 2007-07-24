@@ -321,9 +321,13 @@ int main(int argc, char **argv) {
     FbTk::FbStringUtil::shutdown();
 
     if (restarting) {
+        const char *shell = getenv("SHELL");
+        if (!shell)
+            shell = "/bin/sh";
+
         const char *arg = restart_argument.c_str();
         if (arg) {
-            execlp(arg, arg, (char *) NULL);
+            execlp(shell, shell, "-c", arg, (char *) NULL);
             perror(arg);
         }
 
