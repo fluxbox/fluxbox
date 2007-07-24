@@ -254,7 +254,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_last_resize_h(1), m_last_resize_w(1),
     m_workspace_number(0),
     m_current_state(0),
-    m_old_decoration(DECOR_NORMAL),
     m_old_decoration_mask(0),
     m_client(&client),
     m_toggled_decos(false),
@@ -1558,8 +1557,10 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         frame().setUseShape(false);
 
-        m_old_decoration_mask = decorationMask();
-        m_old_layernum =layerNum();
+        if (!m_toggled_decos)
+            m_old_decoration_mask = decorationMask();
+
+        m_old_layernum = layerNum();
         m_old_pos_x = frame().x();
         m_old_pos_y = frame().y();
         m_old_width = frame().width();
@@ -1590,8 +1591,14 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         fullscreen = false;
 
-        setDecorationMask(m_old_decoration_mask);
         frame().setUseShape(!m_shaped);
+        if (m_toggled_decos) {
+            if (m_old_decoration_mask & DECORM_TITLEBAR)
+                setDecorationMask(DECOR_NONE);
+            else
+                setDecorationMask(DECOR_NORMAL);
+        } else
+            setDecorationMask(m_old_decoration_mask);
 
         // ensure we apply the sizehints here, otherwise some
         // apps (eg xterm) end up a little bit .. crappy (visually)
@@ -1605,7 +1612,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
         moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
         moveToLayer(m_old_layernum);
 
-        m_old_decoration_mask = 0;
         m_old_layernum = ::Layer::NORMAL;
 
         stateSig().notify();
@@ -3013,61 +3019,6 @@ void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
     //installColormap(false);
 }
 
-// TODO: functions should not be affected by decoration
-void FluxboxWindow::setDecoration(Decoration decoration, bool apply) {
-    switch (decoration) {
-    case DECOR_NONE:
-        decorations.titlebar = decorations.border = decorations.handle =
-            decorations.iconify = decorations.maximize =
-            decorations.tab = false; //tab is also a decor
-        decorations.menu = true; // menu is present
-    //  functions.iconify = functions.maximize = true;
-    //  functions.move = true;   // We need to move even without decor
-    //  functions.resize = true; // We need to resize even without decor
-    break;
-
-    default:
-    case DECOR_NORMAL:
-        decorations.titlebar = decorations.border = decorations.handle =
-            decorations.iconify = decorations.maximize =
-            decorations.menu = decorations.tab = true;
-        functions.resize = functions.move = functions.iconify =
-            functions.maximize = true;
-    break;
-
-    case DECOR_TAB:
-        decorations.border = decorations.iconify = decorations.maximize =
-            decorations.menu = decorations.tab = true;
-        decorations.titlebar = decorations.handle = false;
-        functions.resize = functions.move = functions.iconify =
-            functions.maximize = true;
-    break;
-
-    case DECOR_TINY:
-        decorations.titlebar = decorations.iconify = decorations.menu =
-            functions.move = functions.iconify = decorations.tab = true;
-        decorations.border = decorations.handle = decorations.maximize =
-            functions.resize = functions.maximize = false;
-    break;
-
-    case DECOR_TOOL:
-        decorations.titlebar = decorations.tab = decorations.menu = functions.move = true;
-        decorations.iconify = decorations.border = decorations.handle =
-            decorations.maximize = functions.resize = functions.maximize =
-            functions.iconify = false;
-    break;
-    }
-
-    // we might want to wait with apply decorations
-    if (apply)
-        applyDecorations();
-
-    //!! TODO: make sure this is correct
-    // is this reconfigure necessary???
-    //    reconfigure();
-
-}
-
 // commit current decoration values to actual displayed things
 void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
@@ -3135,22 +3086,20 @@ void FluxboxWindow::applyDecorations(bool initial) {
 
 void FluxboxWindow::toggleDecoration() {
     //don't toggle decor if the window is shaded
-    if (isShaded())
+    if (isShaded() || isFullscreen())
         return;
 
-    m_toggled_decos= true;
+    m_toggled_decos = !m_toggled_decos;
 
-    if (decorations.enabled) { //remove decorations
-        decorations.enabled = false;
-        setDecoration(DECOR_NONE);
-    } else { //revert back to old decoration
-        decorations.enabled = true;
-        if (m_old_decoration == DECOR_NONE) { // make sure something happens
-            setDecoration(DECOR_NORMAL);
-        } else {
-            setDecoration(m_old_decoration);
-        }
-    }
+    if (m_toggled_decos) {
+        m_old_decoration_mask = decorationMask();
+        if (decorations.titlebar)
+            setDecorationMask(DECOR_NONE);
+        else
+            setDecorationMask(DECOR_NORMAL);
+    } else //revert back to old decoration
+        setDecorationMask(m_old_decoration_mask);
+
 }
 
 unsigned int FluxboxWindow::decorationMask() const {
@@ -3354,7 +3303,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     // we only care about the left/top etc that includes borders
     int borderW = 0;
 
-    if (decorationMask() & (DECORM_ENABLED|DECORM_BORDER|DECORM_HANDLE))
+    if (decorationMask() & (DECORM_BORDER|DECORM_HANDLE))
         borderW = frame().window().borderWidth();
 
     int top = orig_top; // orig include the borders
@@ -3426,7 +3375,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
         if ((*it) == this)
             continue; // skip myself
 
-        bw = (*it)->decorationMask() & (DECORM_ENABLED|DECORM_BORDER|DECORM_HANDLE) ?
+        bw = (*it)->decorationMask() & (DECORM_BORDER|DECORM_HANDLE) ?
                 (*it)->frame().window().borderWidth() : 0;
 
         snapToWindow(dx, dy, left, right, top, bottom,
@@ -4135,24 +4084,17 @@ void FluxboxWindow::associateClient(WinClient &client) {
 
 int FluxboxWindow::getDecoMaskFromString(const string &str_label) {
     if (strcasecmp(str_label.c_str(), "NONE") == 0)
-        return 0;
+        return DECOR_NONE;
     if (strcasecmp(str_label.c_str(), "NORMAL") == 0)
-        return FluxboxWindow::DECORM_LAST - 1;
+        return DECOR_NORMAL;
     if (strcasecmp(str_label.c_str(), "TINY") == 0)
-        return FluxboxWindow::DECORM_TITLEBAR
-               | FluxboxWindow::DECORM_ICONIFY
-               | FluxboxWindow::DECORM_MENU
-               | FluxboxWindow::DECORM_TAB;
+        return DECOR_TINY;
     if (strcasecmp(str_label.c_str(), "TOOL") == 0)
-        return FluxboxWindow::DECORM_TITLEBAR
-               | FluxboxWindow::DECORM_MENU;
+        return DECOR_TOOL;
     if (strcasecmp(str_label.c_str(), "BORDER") == 0)
-        return FluxboxWindow::DECORM_BORDER
-               | FluxboxWindow::DECORM_MENU;
+        return DECOR_BORDER;
     if (strcasecmp(str_label.c_str(), "TAB") == 0)
-        return FluxboxWindow::DECORM_BORDER
-               | FluxboxWindow::DECORM_MENU
-               | FluxboxWindow::DECORM_TAB;
+        return DECOR_TAB;
     unsigned int mask = atoi(str_label.c_str());
     if (mask)
         return mask;

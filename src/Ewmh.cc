@@ -276,7 +276,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
                 win.moveToLayer(Layer::DESKTOP);
-                win.setDecorationMask(0);
+                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
                 win.setTabable(false);
                 win.setMovable(false);
                 win.setResizable(false);
@@ -288,7 +288,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                  * window is a splash screen displayed as an application
                  * is starting up.
                  */
-                win.setDecoration(FluxboxWindow::DECOR_NONE);
+                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
                 win.setMovable(false);
@@ -306,7 +306,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                  * application). Windows of this type may set the
                  * WM_TRANSIENT_FOR hint indicating the main application window.
                  */
-                win.setDecoration(FluxboxWindow::DECOR_NONE);
+                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
                 win.setIconHidden(true);
                 win.moveToLayer(Layer::ABOVE_DOCK);
             }

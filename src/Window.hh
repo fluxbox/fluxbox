@@ -60,15 +60,6 @@ class Menu;
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow: public Focusable, public FbTk::EventHandler {
 public:
-    /// Represents certain "preset" sets of decorations.
-    enum Decoration {
-        DECOR_NONE=0, ///< no decor at all
-        DECOR_NORMAL, ///< normal normal
-        DECOR_TINY,   ///< tiny decoration
-        DECOR_TOOL,   ///< decor tool
-        DECOR_TAB     ///< decor tab (border + tab)
-    };
-
     /// Motif wm Hints
     enum {
         MwmHintsFunctions   = (1l << 0), ///< use motif wm functions
@@ -135,6 +126,15 @@ public:
         DECORM_TAB      = (1<<9),
         DECORM_ENABLED  = (1<<10),
         DECORM_LAST     = (1<<11) // useful for getting "All"
+    };
+
+    enum Decoration {
+        DECOR_NONE = 0,
+        DECOR_NORMAL = DECORM_LAST - 1,
+        DECOR_TINY = DECORM_TITLEBAR|DECORM_ICONIFY|DECORM_MENU|DECORM_TAB,
+        DECOR_TOOL = DECORM_TITLEBAR|DECORM_MENU,
+        DECOR_BORDER = DECORM_BORDER|DECORM_MENU,
+        DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
     };
 
     /**
@@ -346,7 +346,6 @@ public:
     void leaveNotifyEvent(XCrossingEvent &ev);
     //@}
 
-    void setDecoration(Decoration decoration, bool apply = true);
     void applyDecorations(bool initial = false);
     void toggleDecoration();
 
@@ -581,7 +580,6 @@ private:
     unsigned int m_workspace_number;
     unsigned long m_current_state; // NormalState | IconicState | Withdrawn
 
-    Decoration m_old_decoration;
     unsigned int m_old_decoration_mask;
 
     ClientList m_clientlist;
