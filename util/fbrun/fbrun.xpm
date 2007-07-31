@@ -1,5 +1,5 @@
 /* XPM */
-static char * fbrun_xpm[] = {
+static const char * fbrun_xpm[] = {
 "32 32 433 2",
 "  	c None",
 ". 	c #000000",

@@ -115,7 +115,9 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
 XFontSet createFontSet(const char *fontname, bool& utf8mode) {
     Display *display = FbTk::App::instance()->display();
     XFontSet fs;
-    char **missing, *def = "-";
+    char **missing;
+    const char *constdef = "-";
+    char *def = const_cast<char *>(constdef);
     int nmissing;
     string orig_locale = "";
 
