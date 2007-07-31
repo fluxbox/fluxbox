@@ -297,8 +297,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
             } else if (atoms[l] == m_net_wm_window_type_dialog) {
                 // dialog windows should not be tabable
                 win.setTabable(false);
-            } else if (atoms[l] == m_net_wm_window_type_menu ||
-                       atoms[l] == m_net_wm_window_type_toolbar) {
+            } else if (atoms[l] == m_net_wm_window_type_menu) {
                 /*
                  * _NET_WM_WINDOW_TYPE_TOOLBAR and _NET_WM_WINDOW_TYPE_MENU
                  * indicate toolbar and pinnable menu windows, respectively
@@ -306,6 +305,10 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                  * application). Windows of this type may set the
                  * WM_TRANSIENT_FOR hint indicating the main application window.
                  */
+                win.setDecorationMask(FluxboxWindow::DECOR_TINY);
+                win.setIconHidden(true);
+                win.moveToLayer(Layer::ABOVE_DOCK);
+            } else if (atoms[l] == m_net_wm_window_type_toolbar) {
                 win.setDecorationMask(FluxboxWindow::DECOR_NONE);
                 win.setIconHidden(true);
                 win.moveToLayer(Layer::ABOVE_DOCK);

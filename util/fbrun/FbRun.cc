@@ -79,8 +79,8 @@ FbRun::FbRun(int x, int y, size_t width):
     XClassHint *class_hint = XAllocClassHint();
     if (class_hint == 0)
         throw string("Out of memory");
-    class_hint->res_name = "fbrun";
-    class_hint->res_class = "FbRun";
+    class_hint->res_name = const_cast<char *>("fbrun");
+    class_hint->res_class = const_cast<char *>("FbRun");
     XSetClassHint(m_display, window(), class_hint);
 
     XFree(class_hint);
@@ -89,7 +89,7 @@ FbRun::FbRun(int x, int y, size_t width):
     Pixmap pm;
     XpmCreatePixmapFromData(m_display,
                             window(),
-                            fbrun_xpm,
+                            const_cast<char **>(fbrun_xpm),
                             &pm,
                             &mask,
                             0); // attribs
@@ -120,7 +120,7 @@ void FbRun::run(const std::string &command) {
     // fork and execute program
     if (!fork()) {
 
-        char *shell = getenv("SHELL");
+        const char *shell = getenv("SHELL");
         if (!shell)
             shell = "/bin/sh";
 
