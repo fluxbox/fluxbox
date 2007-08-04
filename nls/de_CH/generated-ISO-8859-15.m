@@ -152,6 +152,7 @@ $set 11 #Remember
 10 Unbekannter apps-Eintrag
 11 Arbeitsfläche
 12 Monitor
+13 Transparenz
 
 $set 12 #Screen
 
@@ -209,6 +210,7 @@ $set 16 #Windowmenu
 8 Aufrollen
 9 Auf allen Desktops sichtbar
 10 Kill
+11 Benutze Standardeinstellung
 
 $set 17 #Workspace
 
@@ -264,6 +266,5 @@ $set 20 #LayerSet
 4 Dock
 5 Normal
 6 Oben
-
 
 
