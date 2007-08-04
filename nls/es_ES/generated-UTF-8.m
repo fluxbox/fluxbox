@@ -48,7 +48,6 @@ $set 3 #Common
 18 Visible
 19 No hay una opción de fondo especificada en este estilo.\nPor vafor consulte el manual o lea las FAQ.
 
-
 $set 4 #Configmenu
 
 1 Anti alias
@@ -63,7 +62,6 @@ $set 4 #Configmenu
 10 Maximización total
 11 Simulación de colores en imágenes
 12 Movimiento opaco de ventanas
-13 Enfoque semi descuidado
 14 El mouse enfoca
 15 Workspace Warping
 16 Forzar pseudo transparencias
@@ -154,6 +152,7 @@ $set 11 #Remember
 10 Tecla desconocida de aplicaciones
 11 Escritorio
 12 Cabeza
+13 Transparencia
 
 $set 12 #Screen
 
@@ -211,6 +210,7 @@ $set 16 #Windowmenu
 8 Enrollar
 9 Fijar
 10 Matar
+11 Utilizar valores por defecto
 
 $set 17 #Workspace
 
@@ -248,6 +248,7 @@ $set 19 #main
 11 error: '-rc' requiere un argumento
 12 error: '-screen' requiere un argumento
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+Página web: http://www.fluxbox.org/\n\n\
 -display <string>\t\tutilizar conexion a un diplay.\n\
 -screen <all|int,int,int>\tejecutar solamente en pantallas especificadas.\n\
 -rc <string>\t\t\tusar archivo de recursos alternativo.\n\
@@ -265,3 +266,5 @@ $set 20 #layers
 4 Dock
 5 Normal
 6 Arriba
+
+

@@ -152,6 +152,7 @@ $set 11 #Remember
 10 Tecla de Aplicação Desconhecido
 11 Área de Trabalho
 12 Monitor
+13 Transparência
 
 $set 12 #Screen
 
@@ -209,6 +210,7 @@ $set 16 #Windowmenu
 8 Enrolar
 9 Sempre Visível
 10 Matar
+11 Usar Valores Padrão
 
 $set 17 #Workspace
 
