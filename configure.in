@@ -590,7 +590,7 @@ AC_SUBST(DEFAULT_INIT)
 AC_ARG_WITH(
   locale,
   [  --with-locale=path      location for nls files (PREFIX/share/fluxbox/nls)],
-  LOCALE_PATH=$with_locale_path
+  LOCALE_PATH=$with_locale
   AC_DEFINE_UNQUOTED(LOCALEPATH, "$LOCALE_PATH", "location for nls files")
   ,
   LOCALE_PATH=\$\(prefix\)/share/fluxbox/nls
