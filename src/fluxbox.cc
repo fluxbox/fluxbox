@@ -254,6 +254,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     SignalHandler &sigh = SignalHandler::instance();
     sigh.registerHandler(SIGSEGV, this);
     sigh.registerHandler(SIGFPE, this);
+    sigh.registerHandler(SIGPIPE, this); // e.g. output sent to grep
     sigh.registerHandler(SIGTERM, this);
     sigh.registerHandler(SIGINT, this);
     sigh.registerHandler(SIGCHLD, this);
@@ -1059,6 +1060,7 @@ void Fluxbox::handleSignal(int signum) {
         break;
     case SIGFPE:
     case SIGINT:
+    case SIGPIPE:
     case SIGTERM:
         shutdown();
         break;
