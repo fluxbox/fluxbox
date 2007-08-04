@@ -5,6 +5,7 @@ Changes for 1.0.0:
      - Thanks tenner (de_*)
      - Thanks bobbens (es_ES)
      - Thanks me (C/en_US/en_GB)
+     - Thanks izhirahider (pt_*)
      ?/Translation.m
    * Fix System Tray restart issues (Simon)
      (including gaim/pidgin crash-on-restart)
