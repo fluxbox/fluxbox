@@ -449,16 +449,18 @@ FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_numbe
     if (!parser.isLoaded())
         return 0;
 
+    startFile();
     string label;
-    if (require_begin && !getStart(parser, label, m_stringconvertor))
+    if (require_begin && !getStart(parser, label, m_stringconvertor)) {
+        endFile();
         return 0;
+    }
 
     FbTk::Menu *menu = createMenu(label, screen_number);
-    if (menu != 0) {
-        startFile();
+    if (menu != 0)
         parseMenu(parser, *menu, m_stringconvertor);
-        endFile();
-    }
+
+    endFile();
 
     return menu;
 }
@@ -472,14 +474,16 @@ bool MenuCreator::createFromFile(const string &filename,
     if (!parser.isLoaded())
         return false;
 
+    startFile();
     string label;
-    if (require_begin && !getStart(parser, label, m_stringconvertor))
+    if (require_begin && !getStart(parser, label, m_stringconvertor)) {
+        endFile();
         return false;
+    }
 
     // save menu filename, so we can check if it changes
     Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
 
-    startFile();
     parseMenu(parser, inject_into, m_stringconvertor);
     endFile();
 
@@ -497,10 +501,12 @@ bool MenuCreator::createWindowMenuFromFile(const string &filename,
 
     string label;
 
-    if (require_begin && !getStart(parser, label, m_stringconvertor))
-        return false;
-
     startFile();
+    if (require_begin && !getStart(parser, label, m_stringconvertor)) {
+        endFile();
+        return false;
+    }
+
     parseWindowMenu(parser, inject_into, m_stringconvertor);
     endFile();
 
