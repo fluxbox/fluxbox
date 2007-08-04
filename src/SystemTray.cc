@@ -52,6 +52,7 @@ public:
     TrayWindow(Window win):FbTk::FbWindow(win), m_visible(false) {
         setEventMask(PropertyChangeMask);
     }
+
     bool isVisible() { return m_visible; }
     void show() {
         if (!m_visible) {
@@ -65,6 +66,7 @@ public:
             FbTk::FbWindow::hide();
         }
     }
+
 private:
     bool m_visible;
 };
@@ -132,9 +134,11 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen
              SubstructureNotifyMask | SubstructureRedirectMask),
     m_theme(theme),
     m_screen(screen),
-    m_pixmap(0), m_num_visible_clients(0) {
-
+    m_pixmap(0), m_num_visible_clients(0),
+    m_selection_owner(m_window, 0, 0, 1, 1, SubstructureNotifyMask, false, false, CopyFromParent, InputOnly) {
+    
     FbTk::EventManager::instance()->add(*this, m_window);
+    FbTk::EventManager::instance()->add(*this, m_selection_owner);
     m_theme.reconfigSig().attach(this);
     screen.bgChangeSig().attach(this);
 
@@ -162,7 +166,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen
     cerr<<__FILE__<<"(SystemTray(const FbTk::FbWindow)): SETTING OWNER!"<<endl;
 #endif // DEBUG
     // set owner
-    XSetSelectionOwner(disp, tray_atom, m_window.window(), CurrentTime);
+    XSetSelectionOwner(disp, tray_atom, m_selection_owner.window(), CurrentTime);
 
     m_handler.reset(new SystemTrayHandler(*this));
 
@@ -190,7 +194,20 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen
 
 SystemTray::~SystemTray() {
     // remove us, else fluxbox might delete the memory too
-    Fluxbox::instance()->removeAtomHandler(m_handler.get());
+    Fluxbox* fluxbox = Fluxbox::instance();
+    fluxbox->removeAtomHandler(m_handler.get());
+    Display *disp = fluxbox->display();
+    // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
+    char intbuff[16];
+    sprintf(intbuff, "%d", m_window.screenNumber());
+    string atom_name("_NET_SYSTEM_TRAY_S");
+    atom_name += intbuff; // append number
+
+    // get selection owner and see if it's free
+    Atom tray_atom = XInternAtom(disp, atom_name.c_str(), False);
+
+    // Properly give up selection.
+    XSetSelectionOwner(disp, tray_atom, None, CurrentTime);
     removeAllClients();
 
     if (m_pixmap)
@@ -323,10 +340,11 @@ void SystemTray::addClient(Window win) {
     FbTk::EventManager::instance()->add(*this, win);
     XChangeSaveSet(FbTk::App::instance()->display(), win, SetModeInsert);
     traywin->reparent(m_window, 0, 0);
+    traywin->addToSaveSet();
     showClient(traywin);
 }
 
-void SystemTray::removeClient(Window win) {
+void SystemTray::removeClient(Window win, bool destroyed) {
     ClientList::iterator tray_it = findClient(win);
     if (tray_it == m_clients.end())
         return;
@@ -336,7 +354,11 @@ void SystemTray::removeClient(Window win) {
 #endif // DEBUG
     TrayWindow *traywin = *tray_it;
     m_clients.erase(tray_it);
-    hideClient(traywin);
+    if (!destroyed) {
+        traywin->setEventMask(NoEventMask);
+        traywin->removeFromSaveSet();
+    }
+    hideClient(traywin, destroyed);
     delete traywin;
 }
 
@@ -346,9 +368,9 @@ void SystemTray::exposeEvent(XExposeEvent &event) {
 
 void SystemTray::handleEvent(XEvent &event) {
     if (event.type == DestroyNotify) {
-        removeClient(event.xdestroywindow.window);
+        removeClient(event.xdestroywindow.window, true);
     } else if (event.type == ReparentNotify && event.xreparent.parent != m_window.window()) {
-        removeClient(event.xreparent.window);
+        removeClient(event.xreparent.window, false);
     } else if (event.type == UnmapNotify && event.xany.send_event) {
         // we ignore server-generated events, which can occur
         // on restart. The ICCCM says that a client must send
@@ -443,20 +465,23 @@ void SystemTray::rearrangeClients() {
 void SystemTray::removeAllClients() {
     BScreen *screen = Fluxbox::instance()->findScreen(window().screenNumber());
     while (!m_clients.empty()) {
+        m_clients.back()->setEventMask(NoEventMask);
+        m_clients.back()->hide();
         if (screen)
             m_clients.back()->reparent(screen->rootWindow(), 0, 0);
-        m_clients.back()->hide();
+        m_clients.back()->removeFromSaveSet();
         delete m_clients.back();
         m_clients.pop_back();
     }
     m_num_visible_clients = 0;
 }
 
-void SystemTray::hideClient(TrayWindow *traywin) {
+void SystemTray::hideClient(TrayWindow *traywin, bool destroyed) {
     if (!traywin || !traywin->isVisible())
         return;
 
-    traywin->hide();
+    if (!destroyed)
+        traywin->hide();
     m_num_visible_clients--;
     rearrangeClients();
 }

@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/08/05:
+   * Fix System Tray restart issues (Simon)
+     (including gaim/pidgin crash-on-restart)
+     src/SystemTray.hh/cc src/FbTk/FbWindow.hh/cc 
 *07/07/31:
    * Change _NET_WM_WINDOW_TYPE_MENU to use TINY decoration type (Mark)
      Ewmh.cc

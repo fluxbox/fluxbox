@@ -556,6 +556,14 @@ void FbWindow::deleteProperty(Atom property) {
     XDeleteProperty(display(), m_window, property);
 }
 
+void FbWindow::addToSaveSet() {
+    XAddToSaveSet(display(), m_window);
+}
+
+void FbWindow::removeFromSaveSet() {
+    XRemoveFromSaveSet(display(), m_window);
+}
+
 int FbWindow::screenNumber() const {
     return m_screen_num;
 }

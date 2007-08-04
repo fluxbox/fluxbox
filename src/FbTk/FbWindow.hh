@@ -165,6 +165,9 @@ public:
 
     std::string textProperty(Atom property) const;
 
+    void addToSaveSet();
+    void removeFromSaveSet();
+
     /// @return parent FbWindow
     const FbWindow *parent() const { return m_parent; }
     /// @return real X window

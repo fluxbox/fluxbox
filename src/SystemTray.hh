@@ -60,7 +60,7 @@ public:
     void handleEvent(XEvent &event);
 
     void addClient(Window win);
-    void removeClient(Window win);
+    void removeClient(Window win, bool destroyed);
 
     unsigned int width() const;
     unsigned int height() const;
@@ -83,7 +83,7 @@ private:
 
     void rearrangeClients();
     void removeAllClients();
-    void hideClient(TrayWindow *traywin);
+    void hideClient(TrayWindow *traywin, bool destroyed = false);
     void showClient(TrayWindow *traywin);
 
     FbTk::FbWindow m_window;
@@ -95,6 +95,10 @@ private:
 
     ClientList m_clients;
     size_t m_num_visible_clients;
+
+    // gaim/pidgin seems to barf if the selection is not an independent window.
+    // I suspect it's an interacton with parent relationship and gdk window caching.
+    FbTk::FbWindow m_selection_owner;
 };
 
 #endif // SYSTEMTRAY_HH
