@@ -15,6 +15,7 @@ Changes for 1.0.0:
      ?/Translation.m
    * Fix System Tray restart issues (Simon)
      (including gaim/pidgin crash-on-restart)
+     sf.net #1524098, #1633718 (and older?)
      src/SystemTray.hh/cc src/FbTk/FbWindow.hh/cc 
 *07/07/31:
    * Change _NET_WM_WINDOW_TYPE_MENU to use TINY decoration type (Mark)
