@@ -152,6 +152,7 @@ $set 11 #Remember
 10 Unknown apps key
 11 Workspace
 12 Head
+13 Transparency
 
 $set 12 #Screen
 
@@ -209,6 +210,7 @@ $set 16 #Windowmenu
 8 Shade
 9 Stick
 10 Kill
+11 Use Defaults
 
 $set 17 #Workspace
 
