@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/08/05:
+   * Fix menu heading encoding (Simon) 
+     sf.net bug #1712583: NLS:Non-latin characters displayed incorrectly in menu title
+     MenuCreator.cc
    * Fix error passing --with-locale path in ./configure (Simon)
      sf.net bug #1708859
      configure.in
