@@ -48,6 +48,9 @@ public:
 
     /// assignment operator
     XrmDatabaseHelper& operator=(const XrmDatabase& database) {
+        if (database == m_database) // assignment to self
+            return *this;
+
         if (m_database!=0)
             close();
         m_database = database; 
