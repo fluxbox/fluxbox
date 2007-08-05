@@ -318,15 +318,22 @@ Application * Remember::add(WinClient &winclient) {
     ClientPattern *p = new ClientPattern();
     Application *app = new Application(0);
 
-    // by default, we match against the WMClass of a window.
+    // by default, we match against the WMClass of a window (instance and class strings)
+    string win_name  = p->getProperty(ClientPattern::NAME,  winclient);
     string win_class = p->getProperty(ClientPattern::CLASS, winclient);
 
     // replace special chars like ( ) and [ ] with \( \) and \[ \]
+    win_name = FbTk::StringUtil::replaceString(win_name, "(", "\\(");
+    win_name = FbTk::StringUtil::replaceString(win_name, ")", "\\)");
+    win_name = FbTk::StringUtil::replaceString(win_name, "[", "\\[");
+    win_name = FbTk::StringUtil::replaceString(win_name, "]", "\\]");
+
     win_class = FbTk::StringUtil::replaceString(win_class, "(", "\\(");
     win_class = FbTk::StringUtil::replaceString(win_class, ")", "\\)");
     win_class = FbTk::StringUtil::replaceString(win_class, "[", "\\[");
     win_class = FbTk::StringUtil::replaceString(win_class, "]", "\\]");
 
+    p->addTerm(win_name,  ClientPattern::NAME);
     p->addTerm(win_class, ClientPattern::CLASS);
     m_clients[&winclient] = app;
     p->addMatch();
