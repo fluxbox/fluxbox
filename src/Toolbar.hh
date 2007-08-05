@@ -31,6 +31,10 @@
 #include "ToolTheme.hh"
 #include "Layer.hh"
 
+#ifdef XINERAMA
+#include "Xinerama.hh"
+#endif // XINERAMA
+
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Observer.hh"
@@ -159,6 +163,9 @@ private:
     FbTk::XLayerItem m_layeritem; ///< layer item, must be declared before layermenu
     LayerMenu m_layermenu;
     FbMenu m_placementmenu, m_toolbarmenu;
+#ifdef XINERAMA
+    XineramaHeadMenu<Toolbar> *m_xineramaheadmenu;
+#endif // XINERAMA
 
 
     // themes

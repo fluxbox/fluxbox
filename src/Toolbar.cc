@@ -35,10 +35,6 @@
 #include "Screen.hh"
 #include "WindowCmd.hh"
 
-#ifdef XINERAMA
-#include "Xinerama.hh"
-#endif // XINERAMA
-
 #include "Strut.hh"
 #include "FbTk/CommandParser.hh"
 #include "Layer.hh"
@@ -216,6 +212,9 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_toolbarmenu(scrn.menuTheme(),
                   scrn.imageControl(),
                   *scrn.layerManager().getLayer(Layer::MENU)),
+#ifdef XINERAMA
+    m_xineramaheadmenu(0),
+#endif // XINERAMA
     m_theme(scrn.screenNumber()),
     m_tool_factory(scrn),
     m_strut(0),
@@ -629,6 +628,10 @@ void Toolbar::update(FbTk::Subject *subj) {
     else
         reconfigure();
 
+#ifdef XINERAMA
+    if (subj == &m_screen.resizeSig() && m_xineramaheadmenu)
+        m_xineramaheadmenu->reloadHeads();
+#endif // XINERAMA
 }
 
 void Toolbar::setPlacement(Toolbar::Placement where) {
@@ -872,6 +875,7 @@ void Toolbar::setupMenus(bool skip_new_placement) {
 #ifdef XINERAMA
     if (screen().hasXinerama()) {
         menu().insert(_FB_XTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
+                      m_xineramaheadmenu =
                       new XineramaHeadMenu<Toolbar>(screen().menuTheme(),
                                                     screen(),
                                                     screen().imageControl(),
