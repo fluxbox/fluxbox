@@ -141,7 +141,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_wm_state_fullscreen,
         m_net_wm_state_hidden,
         m_net_wm_state_skip_taskbar,
-//        m_net_wm_state_modal,
+        m_net_wm_state_modal,
         m_net_wm_state_below,
         m_net_wm_state_above,
         m_net_wm_state_demands_attention,
