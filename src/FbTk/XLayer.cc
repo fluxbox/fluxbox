@@ -53,8 +53,6 @@ void XLayer::restack() {
     // each LayerItem can contain several windows
     iterator it = itemList().begin();
     iterator it_end = itemList().end();
-    it = itemList().begin();
-    it_end = itemList().end();
     Window *winlist = new Window[num_windows];
     size_t j=0;
 

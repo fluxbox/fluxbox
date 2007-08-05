@@ -305,7 +305,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                  * application). Windows of this type may set the
                  * WM_TRANSIENT_FOR hint indicating the main application window.
                  */
-                win.setDecorationMask(FluxboxWindow::DECOR_TINY);
+                win.setDecorationMask(FluxboxWindow::DECOR_TOOL);
                 win.setIconHidden(true);
                 win.moveToLayer(Layer::ABOVE_DOCK);
             } else if (atoms[l] == m_net_wm_window_type_toolbar) {
