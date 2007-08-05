@@ -76,6 +76,18 @@ using std::dec;
 
 namespace {
 
+// replace special chars like ( ) and [ ] with \( \) and \[ \]
+static string escapeRememberChars(string str) {
+    if (str.empty())
+        return str;
+
+    str = FbTk::StringUtil::replaceString(str, "(", "\\(");
+    str = FbTk::StringUtil::replaceString(str, ")", "\\)");
+    str = FbTk::StringUtil::replaceString(str, "[", "\\[");
+    str = FbTk::StringUtil::replaceString(str, "]", "\\]");
+    return str;
+}
+
 bool getuint(const char *val, unsigned int &ret) {
     return (sscanf(val, "%u", &ret) == 1);
 }
@@ -319,22 +331,14 @@ Application * Remember::add(WinClient &winclient) {
     Application *app = new Application(0);
 
     // by default, we match against the WMClass of a window (instance and class strings)
-    string win_name  = p->getProperty(ClientPattern::NAME,  winclient);
-    string win_class = p->getProperty(ClientPattern::CLASS, winclient);
-
-    // replace special chars like ( ) and [ ] with \( \) and \[ \]
-    win_name = FbTk::StringUtil::replaceString(win_name, "(", "\\(");
-    win_name = FbTk::StringUtil::replaceString(win_name, ")", "\\)");
-    win_name = FbTk::StringUtil::replaceString(win_name, "[", "\\[");
-    win_name = FbTk::StringUtil::replaceString(win_name, "]", "\\]");
-
-    win_class = FbTk::StringUtil::replaceString(win_class, "(", "\\(");
-    win_class = FbTk::StringUtil::replaceString(win_class, ")", "\\)");
-    win_class = FbTk::StringUtil::replaceString(win_class, "[", "\\[");
-    win_class = FbTk::StringUtil::replaceString(win_class, "]", "\\]");
+    string win_name  = ::escapeRememberChars(p->getProperty(ClientPattern::NAME,  winclient));
+    string win_class = ::escapeRememberChars(p->getProperty(ClientPattern::CLASS, winclient));
+    string win_role  = ::escapeRememberChars(p->getProperty(ClientPattern::ROLE,  winclient));
 
     p->addTerm(win_name,  ClientPattern::NAME);
     p->addTerm(win_class, ClientPattern::CLASS);
+    if (!win_role.empty())
+        p->addTerm(win_role, ClientPattern::ROLE);
     m_clients[&winclient] = app;
     p->addMatch();
     m_pats->push_back(make_pair(p, app));

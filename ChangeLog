@@ -1,9 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/08/05:
-   * When saving window info for rememberm use class name AND instance name.
-     This should fix firefox/thunderbird issues, but note that mplayer (nogui)
-     sets the vo driver name as the instance name. (Simon)
+   * When saving window info for rememberm use class name AND instance name,
+     AND role if present. (Simon)
+     - This should fix firefox/thunderbird issues, but note that mplayer
+       (nogui) sets the vo driver name as the instance name.
      Remember.cc
    * Fix menu heading encoding (Simon) 
      sf.net bug #1712583: NLS:Non-latin characters displayed incorrectly in menu title
