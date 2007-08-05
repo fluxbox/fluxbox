@@ -138,18 +138,18 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
     if (win.oplock)
         return;
 
-    win.oplock = true;
+    if (win.isIconic())
+        return;
 
+    win.oplock = true;
 
     // we need to lock actual restacking so that raising above active transient
     // won't do anything nasty
     if (!win.winClient().transientList().empty())
         win.screen().layerManager().lock();
 
-    if (!win.isIconic()) {
-        win.screen().updateNetizenWindowRaise(win.clientWindow());
-        win.layerItem().raise();
-    }
+    win.screen().updateNetizenWindowRaise(win.clientWindow());
+    win.layerItem().raise();
 
     // for each transient do raise
 
@@ -174,6 +174,9 @@ void lowerFluxboxWindow(FluxboxWindow &win) {
     if (win.oplock)
         return;
 
+    if (win.isIconic())
+        return;
+
     win.oplock = true;
 
     // we need to lock actual restacking so that raising above active transient
@@ -181,18 +184,18 @@ void lowerFluxboxWindow(FluxboxWindow &win) {
     if (!win.winClient().transientList().empty())
         win.screen().layerManager().lock();
 
-    if (!win.isIconic()) {
-        win.screen().updateNetizenWindowLower(win.clientWindow());
-        win.layerItem().lower();
-    }
-
-    WinClient::TransientList::const_iterator it = win.winClient().transientList().begin();
-    WinClient::TransientList::const_iterator it_end = win.winClient().transientList().end();
+    // lower the windows from the top down, so they don't change stacking order
+    WinClient::TransientList::const_reverse_iterator it = win.winClient().transientList().rbegin();
+    WinClient::TransientList::const_reverse_iterator it_end = win.winClient().transientList().rend();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && !(*it)->fbwindow()->isIconic())
             // TODO: should we also check if it is the active client?
             lowerFluxboxWindow(*(*it)->fbwindow());
     }
+
+    win.screen().updateNetizenWindowLower(win.clientWindow());
+    win.layerItem().lower();
+
     win.oplock = false;
     if (!win.winClient().transientList().empty())
         win.screen().layerManager().unlock();
