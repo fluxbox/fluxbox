@@ -6,12 +6,12 @@ $set 1 #Align
 2 Abajo a la izquierda
 3 Abajo a la derecha
 4 Horizontal
-5 Izquierda
+5 A la izquierda
 6 A la izquierda abajo
 7 A la izquierda al centro
 8 A la izquierda arriba
 9 Relativo
-10 Derecha
+10 A la derecha
 11 A la derecha abajo
 12 A la derecha al centro
 13 A la derecha arriba
@@ -28,7 +28,7 @@ $set 2 #BaseDisplay
 
 $set 3 #Common
 
-1 Alfa 
+1 Alfa
 2 Auto ocultar
 3 Compilado
 4 Opciones compiladas
@@ -48,7 +48,6 @@ $set 3 #Common
 18 Visible
 19 No hay una opción de fondo especificada en este estilo.\nPor vafor consulte el manual o lea las FAQ.
 
-
 $set 4 #Configmenu
 
 1 Anti alias
@@ -63,7 +62,6 @@ $set 4 #Configmenu
 10 Maximización total
 11 Simulación de colores en imágenes
 12 Movimiento opaco de ventanas
-13 Enfoque semi descuidado
 14 El mouse enfoca
 15 Workspace Warping
 16 Forzar pseudo transparencias
@@ -72,7 +70,7 @@ $set 4 #Configmenu
 19 Alfa de ventana enfocada
 20 Alfa de ventana desenfocada
 21 Opciones de solapas
-22 solapas en barra de título
+22 Solapas en barra de título
 23 Ancho de solapas externas
 24 Click sobre la solapa enfoca
 25 Mouse sobre la solapa enfoca
@@ -86,14 +84,14 @@ $set 6 #FbTkError
 1 ¡Atención! Altura > 3200, estableciendo Altura = 3200
 2 ¡Atención! Ancho > 3200, estableciendo Ancho = 3200
 3 Atención: no se puede cargar la fuente
-4 Error de asignación
+4 Error de asignación.
 5 Error creando el pixmap
 6 No se puede crear XImage
 7 Error de lectura
 8 Atención: No se puede encontrar un formato válido para el alfa
 9 Atención: Error al crear la imagen alfa
 10 Atención: Error al crear el pixmap alfa
-11 No se puede encontrar un formato de pantalla(%d)
+11 No se puede encontrar un formato para la pantalla(%d)
 12 Sin memoria
 13 Sin memoria mientras se asignaba buffer azul.
 14 Sin memoria mientras se asignaba buffer verde.
@@ -110,22 +108,22 @@ $set 7 #Fluxbox
 4 Reintentando con
 5 Atención! No se puede encontrar pantalla para mapear la ventana
 6 No se puede crear el directorio %s
-7 No se pudieron encontrar pantallas para manejar.\Asegúrese que no tiene otro gestor de ventanas ejecutándose
+7 No se pudieron encontrar pantallas para manejar.\nAsegúrese que no tiene otro gestor de ventanas ejecutándose
 8 Error interpretando expresión regular
-9 Fatal! Sólo puede haber una instancia de clase de FLuxbox
-10 No se puede conectar con el servidor X.\Asegúrese de iniciar las X antes de iniciar Fluxbox
+9 Error Fatal! Sólo puede haber una instancia de clase de FLuxbox.
+10 No se puede conectar con el servidor X.\nAsegúrese de iniciar las X antes de iniciar Fluxbox
 11 Atención: el servidor X no soporta sus locales
 12 Atención: no se pueden establecer modificadores de locales
 
 $set 8 #Gnome
 
-1 Fatal: Sin memoria, no se puede asignar la lista de clientes de GNOME
+1 Error Fatal: Sin memoria, no se puede asignar la lista de clientes de GNOME
 
 $set 9 #Keys
 
 1 Keys: Error en la línea
-2 Keys: Error al emerger el árbol de teclas!
-3 Keys: Tecla/modificador inválido la línea
+2 Keys: Error al unir el árbol de teclas!
+3 Keys: Tecla/modificador inválido en la línea
 
 $set 10 #Menu
 
@@ -138,7 +136,7 @@ $set 10 #Menu
 7 Ubicación
 8 Recargar configuración
 9 Reiniciar
-10 Atención: etiquetas desbalanceadas [codificación]
+10 Atención: etiquetas desbalanceadas de [codificación]
 
 $set 11 #Remember
 
@@ -154,12 +152,13 @@ $set 11 #Remember
 10 Tecla desconocida de aplicaciones
 11 Escritorio
 12 Cabeza
+13 Transparencia
 
 $set 12 #Screen
 
-1 BScreen::BScreen: Ocurriónun error al consultar al servidor X.\n
+1 BScreen::BScreen: Ocurrió un error al consultar al servidor X.\n     ya existe un window manager connectado al display
 2 W: %4d x H: %4d
-3 BScreen::BScreen: manejando pantalla %d usando visual 0x%lx, profundidad %d\n
+3 BScreen::BScreen: manejando pantalla %d utilizando visual 0x%lx, profundidad %d\n
 4 W: %04d x H: %04d
 
 $set 13 #Slit
@@ -211,6 +210,7 @@ $set 16 #Windowmenu
 8 Enrollar
 9 Fijar
 10 Matar
+11 Utilizar valores por defecto
 
 $set 17 #Workspace
 
@@ -221,9 +221,9 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 error: es necesario especifiar uno de: -solid, -mod, -gradient\n
+1 Error: es necesario especifiar uno de: -solid, -mod, -gradient\n
 2 No se pudieron crear los atomos de pixmaps, me rindo!
-3 -display <string>        conexión a un display\n\
+3 -display <string>        conectar a un display\n\
 -mod <x> <y>             diseño de modula\n\
 -foreground, -fg <color> color de primer plano\n\
 -background, -bg <color> color de fondo\n\n\
@@ -236,6 +236,8 @@ $set 18 #fbsetroot
 $set 19 #main
 
 1 error: '-display' requiere un argumento
+2 Asignación Inválida
+3 Molde Inválido
 4 Fuera de rango
 5 Error de rutina
 6 Execepción estándar
@@ -246,7 +248,8 @@ $set 19 #main
 11 error: '-rc' requiere un argumento
 12 error: '-screen' requiere un argumento
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
--display <string>\t\tusar conexion a un diplay.\n\
+Página web: http://www.fluxbox.org/\n\n\
+-display <string>\t\tutilizar conexion a un diplay.\n\
 -screen <all|int,int,int>\tejecutar solamente en pantallas especificadas.\n\
 -rc <string>\t\t\tusar archivo de recursos alternativo.\n\
 -version\t\t\tmostrar versión y salir.\n\
@@ -263,4 +266,5 @@ $set 20 #layers
 4 Dock
 5 Normal
 6 Arriba
+
 
