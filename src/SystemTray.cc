@@ -49,11 +49,12 @@ using std::dec;
 /// helper class for tray windows, so we dont call XDestroyWindow
 class TrayWindow: public FbTk::FbWindow {
 public:
-    TrayWindow(Window win):FbTk::FbWindow(win), m_visible(false) {
+    TrayWindow(Window win, bool using_xembed):FbTk::FbWindow(win), m_visible(false), m_xembedded(using_xembed) {
         setEventMask(PropertyChangeMask);
     }
 
     bool isVisible() { return m_visible; }
+    bool isXEmbedded() { return m_xembedded; }
     void show() {
         if (!m_visible) {
             m_visible = true;
@@ -67,8 +68,33 @@ public:
         }
     }
 
+/* Flags for _XEMBED_INFO */
+#define XEMBED_MAPPED                   (1 << 0)
+
+    bool getMappedDefault() const {
+        Atom actual_type;
+        int actual_format;
+        unsigned long nitems, bytes_after;
+        unsigned long *prop;
+        bool mapped = false;
+        Atom embed_info = SystemTray::getXEmbedInfoAtom();
+        if (property(embed_info, 0l, 2l, false, embed_info,
+                     &actual_type, &actual_format, &nitems, &bytes_after,
+                     (unsigned char **) &prop) && prop != 0) {
+            mapped = (bool)(static_cast<unsigned long>(prop[1]) & XEMBED_MAPPED);
+            XFree(static_cast<void *>(prop));
+
+#ifdef DEBUG
+            cerr<<__FILE__<<"(SystemTray::TrayWindow::getMappedDefault(): XEMBED_MAPPED = "<<mapped<<endl;
+#endif // DEBUG
+
+        }
+        return true;
+    }
+
 private:
     bool m_visible;
+    bool m_xembedded; // using xembed protocol? (i.e. unmap when done)
 };
 
 /// handles clientmessage event and notifies systemtray
@@ -104,7 +130,7 @@ public:
             return;
         winclient.setEventMask(StructureNotifyMask |
                                SubstructureNotifyMask | EnterWindowMask);
-        m_tray.addClient(winclient.window());
+        m_tray.addClient(winclient.window(), false);
 
     };
 
@@ -183,7 +209,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen
     ce.xclient.format = 32;
     ce.xclient.data.l[0] = CurrentTime; // timestamp
     ce.xclient.data.l[1] = tray_atom; // manager selection atom
-    ce.xclient.data.l[2] = m_window.window(); // the window owning the selection
+    ce.xclient.data.l[2] = m_selection_owner.window(); // the window owning the selection
     ce.xclient.data.l[3] = 0l; // selection specific data
     ce.xclient.data.l[4] = 0l; // selection specific data
 
@@ -275,9 +301,9 @@ bool SystemTray::clientMessage(const XClientMessageEvent &event) {
     static const int SYSTEM_TRAY_REQUEST_DOCK  =  0;
     //    static const int SYSTEM_TRAY_BEGIN_MESSAGE =  1;
     //    static const int SYSTEM_TRAY_CANCEL_MESSAGE = 2;
+    static Atom systray_opcode_atom = XInternAtom(FbTk::App::instance()->display(), "_NET_SYSTEM_TRAY_OPCODE", False);
 
-    if (event.message_type ==
-        XInternAtom(FbTk::App::instance()->display(), "_NET_SYSTEM_TRAY_OPCODE", False)) {
+    if (event.message_type == systray_opcode_atom) {
 
         int type = event.data.l[1];
         if (type == SYSTEM_TRAY_REQUEST_DOCK) {
@@ -285,7 +311,7 @@ bool SystemTray::clientMessage(const XClientMessageEvent &event) {
             cerr<<"SystemTray::clientMessage(const XClientMessageEvent): SYSTEM_TRAY_REQUEST_DOCK"<<endl;
             cerr<<"window = event.data.l[2] = "<<event.data.l[2]<<endl;
 #endif // DEBUG
-            addClient(event.data.l[2]);
+            addClient(event.data.l[2], true);
         }
         /*
         else if (type == SYSTEM_TRAY_BEGIN_MESSAGE)
@@ -312,7 +338,7 @@ SystemTray::ClientList::iterator SystemTray::findClient(Window win) {
     return it;
 }
 
-void SystemTray::addClient(Window win) {
+void SystemTray::addClient(Window win, bool using_xembed) {
     if (win == 0)
         return;
 
@@ -320,17 +346,17 @@ void SystemTray::addClient(Window win) {
     if (it != m_clients.end())
         return;
 
+    Display *disp = Fluxbox::instance()->display();
     // make sure we have the same screen number
     XWindowAttributes attr;
     attr.screen = 0;
-    if (XGetWindowAttributes(FbTk::App::instance()->display(),
-                             win, &attr) != 0 &&
+    if (XGetWindowAttributes(disp, win, &attr) != 0 &&
         attr.screen != 0 &&
         XScreenNumberOfScreen(attr.screen) != window().screenNumber()) {
         return;
     }
 
-    TrayWindow *traywin = new TrayWindow(win);
+    TrayWindow *traywin = new TrayWindow(win, using_xembed);
 
 #ifdef DEBUG
     cerr<<"SystemTray::addClient(Window): 0x"<<hex<<win<<dec<<endl;
@@ -338,10 +364,31 @@ void SystemTray::addClient(Window win) {
 
     m_clients.push_back(traywin);
     FbTk::EventManager::instance()->add(*this, win);
-    XChangeSaveSet(FbTk::App::instance()->display(), win, SetModeInsert);
     traywin->reparent(m_window, 0, 0);
     traywin->addToSaveSet();
-    showClient(traywin);
+
+    if (using_xembed) {
+        static Atom xembed_atom = XInternAtom(disp, "_XEMBED", False);
+
+#define XEMBED_EMBEDDED_NOTIFY		0
+        // send embedded message
+        XEvent ce;
+        ce.xclient.type = ClientMessage;
+        ce.xclient.message_type = xembed_atom;
+        ce.xclient.display = disp;
+        ce.xclient.window = win;
+        ce.xclient.format = 32;
+        ce.xclient.data.l[0] = CurrentTime; // timestamp
+        ce.xclient.data.l[1] = XEMBED_EMBEDDED_NOTIFY;
+        ce.xclient.data.l[2] = 0l; // The protocol version we support
+        ce.xclient.data.l[3] = m_window.window(); // the window owning the selection
+        ce.xclient.data.l[4] = 0l; // unused
+
+        XSendEvent(disp, win, false, NoEventMask, &ce);
+    }
+
+    if (traywin->getMappedDefault())
+        showClient(traywin);
 }
 
 void SystemTray::removeClient(Window win, bool destroyed) {
@@ -404,36 +451,15 @@ void SystemTray::handleEvent(XEvent &event) {
     } else if (event.type == PropertyNotify) {
         ClientList::iterator it = findClient(event.xproperty.window);
         if (it != m_clients.end()) {
-            Atom embed_info = XInternAtom(FbTk::App::instance()->display(),"_XEMBED_INFO",false);
-            if (event.xproperty.atom == embed_info) {
-
-/* Flags for _XEMBED_INFO */
-#define XEMBED_MAPPED                   (1 << 0)
-
-                TrayWindow *traywin = *it;
-                Atom actual_type;
-                int actual_format;
-                unsigned long nitems, bytes_after;
-                unsigned long *prop;
-                if (traywin->property(embed_info, 0l, 2l, false, embed_info,
-                    &actual_type, &actual_format, &nitems, &bytes_after,
-                    (unsigned char **) &prop)) {
-
-                    bool mapped = (bool)(static_cast<unsigned long>(prop[1]) & XEMBED_MAPPED);
-                    XFree(static_cast<void *>(prop));
-
-#ifdef DEBUG
-    cerr<<__FILE__<<"(SystemTray::handleEvent(XEvent)): XEMBED_MAPPED = "<<mapped<<endl;
-#endif // DEBUG
-
-                    if (mapped)
-                        showClient(traywin);
-                    else
-                        hideClient(traywin);
-                }
+            if (event.xproperty.atom == getXEmbedInfoAtom()) {
+                if ((*it)->getMappedDefault())
+                    showClient(*it);
+                else
+                    hideClient(*it);
             }
         }
-    }
+    } 
+
 }
 
 void SystemTray::rearrangeClients() {
@@ -465,12 +491,16 @@ void SystemTray::rearrangeClients() {
 void SystemTray::removeAllClients() {
     BScreen *screen = Fluxbox::instance()->findScreen(window().screenNumber());
     while (!m_clients.empty()) {
-        m_clients.back()->setEventMask(NoEventMask);
-        m_clients.back()->hide();
+        TrayWindow * traywin = m_clients.back();
+        traywin->setEventMask(NoEventMask);
+
+        if (traywin->isXEmbedded())
+            traywin->hide();
+
         if (screen)
-            m_clients.back()->reparent(screen->rootWindow(), 0, 0);
-        m_clients.back()->removeFromSaveSet();
-        delete m_clients.back();
+            traywin->reparent(screen->rootWindow(), 0, 0, false);
+        traywin->removeFromSaveSet();
+        delete traywin;
         m_clients.pop_back();
     }
     m_num_visible_clients = 0;
@@ -523,4 +553,9 @@ void SystemTray::update(FbTk::Subject* subject) {
         (*client_it)->show();
     }
 
+}
+
+Atom SystemTray::getXEmbedInfoAtom() {
+static Atom theatom =  XInternAtom(Fluxbox::instance()->display(), "_XEMBED_INFO", False);
+return theatom;
 }

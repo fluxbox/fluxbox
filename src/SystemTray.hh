@@ -59,7 +59,7 @@ public:
     void exposeEvent(XExposeEvent &event);
     void handleEvent(XEvent &event);
 
-    void addClient(Window win);
+    void addClient(Window win, bool using_xembed);
     void removeClient(Window win, bool destroyed);
 
     unsigned int width() const;
@@ -73,6 +73,8 @@ public:
     inline void updateSizing() {}
 
     void parentMoved() { m_window.parentMoved(); }
+
+    static Atom getXEmbedInfoAtom();
 
 private:
 
@@ -99,6 +101,7 @@ private:
     // gaim/pidgin seems to barf if the selection is not an independent window.
     // I suspect it's an interacton with parent relationship and gdk window caching.
     FbTk::FbWindow m_selection_owner;
+
 };
 
 #endif // SYSTEMTRAY_HH

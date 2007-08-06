@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/08/06:
+   * Fix KDE Dockapps on restart (dont unmap), and some minor tweaks (Simon)
+     SystemTray.hh/cc
 *07/08/05:
    * When saving window info for rememberm use class name AND instance name,
      AND role if present. (Simon)
