@@ -470,8 +470,16 @@ void Toolbar::reconfigure() {
         m_window_pm = 0;
         frame.window.setBackgroundColor(theme().toolbar().color());
     } else {
-        m_window_pm = screen().imageControl().renderImage(frame.window.width(), frame.window.height(),
-                                                          theme().toolbar());
+        FbTk::Orientation orient = FbTk::ROT0;
+        Toolbar::Placement where = *m_rc_placement;
+        if (where == LEFTCENTER || where == LEFTTOP || where == LEFTBOTTOM)
+            orient = FbTk::ROT270;
+        if (where == RIGHTCENTER || where == RIGHTTOP || where == RIGHTBOTTOM)
+            orient = FbTk::ROT90;
+
+        m_window_pm = screen().imageControl().renderImage(
+                          frame.window.width(), frame.window.height(),
+                          theme().toolbar(), orient);
         frame.window.setBackgroundPixmap(m_window_pm);
     }
     if (tmp)
