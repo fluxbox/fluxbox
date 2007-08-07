@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/08/07:
+   * Rotate toolbar background texture along with toolbar, bug #1694959 (Mark)
+     Toolbar.cc
 *07/08/06:
    * Fix KDE Dockapps on restart (dont unmap), and some minor tweaks (Simon)
      SystemTray.hh/cc
