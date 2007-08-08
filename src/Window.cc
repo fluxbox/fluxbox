@@ -568,6 +568,11 @@ void FluxboxWindow::shape() {
 #ifdef SHAPE
     if (m_shaped) {
         XShapeCombineShape(display,
+                           frame().window().window(), ShapeClip,
+                           0, frame().clientArea().y(), // xOff, yOff
+                           m_client->window(),
+                           ShapeClip, ShapeSet);
+        XShapeCombineShape(display,
                            frame().window().window(), ShapeBounding,
                            0, frame().clientArea().y(), // xOff, yOff
                            m_client->window(),
@@ -2249,6 +2254,10 @@ void FluxboxWindow::handleEvent(XEvent &event) {
                 m_shaped = false;
                 // set no shape
                 XShapeCombineMask(display,
+                                  frame().window().window(), ShapeClip,
+                                  0, 0,
+                                  None, ShapeSet);
+                XShapeCombineMask(display,
                                   frame().window().window(), ShapeBounding,
                                   0, 0,
                                   None, ShapeSet);
@@ -3080,10 +3089,11 @@ void FluxboxWindow::applyDecorations(bool initial) {
     }
 
     frame().reconfigure();
-    if (!initial && client_move) {
+    if (client_move)
         Fluxbox::instance()->updateFrameExtents(*this);
+
+    if (!initial && client_move)
         sendConfigureNotify();
-    }
 
 }
 

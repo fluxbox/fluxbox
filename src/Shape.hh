@@ -53,14 +53,20 @@ public:
     void setWindow(FbTk::FbWindow &win);
     unsigned int width() const;
     unsigned int height() const;
+    unsigned int clipWidth() const;
+    unsigned int clipHeight() const;
     // sets shape notify mask
     static void setShapeNotify(const FbTk::FbWindow &win);
     /// @return true if window has shape
     static bool isShaped(const FbTk::FbWindow &win);
 private:
+    FbTk::FbPixmap *createShape(bool clipshape); // true for clip, false for bounding
+
     FbTk::FbWindow *m_win; ///< window to be shaped
-    std::auto_ptr<FbTk::FbPixmap> m_shape; ///< our shape pixmap
+    std::auto_ptr<FbTk::FbPixmap> m_clipshape; ///< our shape pixmap
+    std::auto_ptr<FbTk::FbPixmap> m_boundingshape; ///< our shape pixmap
     int m_shapeplaces; ///< places to shape
+
 };
 
 #endif // SHAPE_HH
