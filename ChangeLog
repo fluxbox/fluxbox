@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/08/09:
+   * Fix shaping handling, stage 1, (Simon)
+     - do borders properly with rounded corners
+     - propagate client clip mask as well as bounding mask
+     Shape.hh/cc Window.cc
 *07/08/07:
    * Rotate toolbar background texture along with toolbar, bug #1694959 (Mark)
      Toolbar.cc

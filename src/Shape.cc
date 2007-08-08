@@ -48,11 +48,10 @@
 
 using std::min;
 
-namespace {
-
-FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
-    if (win.window() == 0 || place == 0 ||
-        win.width() < 3 || win.height() < 3)
+// ignore_border basically means do clip shape instead of bounding shape
+FbTk::FbPixmap *Shape::createShape(bool ignore_border) {
+    if (m_win->window() == 0 || m_shapeplaces == 0 ||
+        m_win->width() < 3 || m_win->height() < 3)
         return 0;
 
     static char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
@@ -60,9 +59,9 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
     static char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
     static char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
 
-    const int borderw = win.borderWidth();
-    const int win_width = win.width() + 2*borderw;
-    const int win_height = win.height() + 2*borderw;
+    const int borderw = m_win->borderWidth();
+    const int win_width = m_win->width() + (ignore_border?0:2*borderw);
+    const int win_height = m_win->height() + (ignore_border?0:2*borderw);
     const int pixmap_width = min(8, win_width);
     const int pixmap_height = min(8, win_height);
 
@@ -77,7 +76,7 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
     memset(data, 0xFF, data_size);
 
     XImage *ximage = XCreateImage(disp,
-                                  DefaultVisual(disp, win.screenNumber()),
+                                  DefaultVisual(disp, m_win->screenNumber()),
                                   1,
                                   XYPixmap, 0,
                                   data,
@@ -90,7 +89,7 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
 
     // shape corners
 
-    if (place & Shape::TOPLEFT) {
+    if (m_shapeplaces & Shape::TOPLEFT) {
         for (int y=0; y<pixmap_height; y++) {
             for (int x=0; x<pixmap_width; x++) {
                 XPutPixel(ximage, x, y, (left_bits[y] & (0x01 << x)) ? 1 : 0);
@@ -98,7 +97,7 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
         }
     }
 
-    if (place & Shape::TOPRIGHT) {
+    if (m_shapeplaces & Shape::TOPRIGHT) {
         for (int y=0; y<pixmap_height; y++) {
             for (int x=0; x<pixmap_width; x++) {
                 XPutPixel(ximage, x + win_width - pixmap_width, y,
@@ -107,7 +106,7 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
         }
     }
 
-    if (place & Shape::BOTTOMLEFT) {
+    if (m_shapeplaces & Shape::BOTTOMLEFT) {
         for (int y=0; y<pixmap_height; y++) {
             for (int x=0; x<pixmap_width; x++) {
                 XPutPixel(ximage, x, y + win_height - pixmap_height,
@@ -116,7 +115,7 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
         }
     }
 
-    if (place & Shape::BOTTOMRIGHT) {
+    if (m_shapeplaces & Shape::BOTTOMRIGHT) {
         for (int y=0; y<pixmap_height; y++) {
             for (int x=0; x<pixmap_width; x++) {
                 XPutPixel(ximage, x + win_width - pixmap_width, y + win_height - pixmap_height,
@@ -125,7 +124,7 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
         }
     }
 
-    FbTk::FbPixmap *pm = new FbTk::FbPixmap(win, win_width, win_height, 1);
+    FbTk::FbPixmap *pm = new FbTk::FbPixmap(*m_win, win_width, win_height, 1);
 
 
     FbTk::GContext gc(*pm);
@@ -139,13 +138,12 @@ FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
 
 }
 
-} // end anonymous namespace
-
 Shape::Shape(FbTk::FbWindow &win, int shapeplaces):
     m_win(&win),
     m_shapeplaces(shapeplaces) {
 
-    m_shape.reset(createShape(win, shapeplaces));
+    m_clipshape.reset(createShape(true));
+    m_boundingshape.reset(createShape(false));
 }
 
 Shape::~Shape() {
@@ -155,11 +153,20 @@ Shape::~Shape() {
         // Reset shape of window
         XShapeCombineMask(FbTk::App::instance()->display(),
                           m_win->window(),
-                          ShapeBounding,
+                          ShapeClip,
                           0, 0,
                           0,
                           ShapeSet);
-    }
+        // Reset shape of window
+        if (m_boundingshape.get()) {
+            XShapeCombineMask(FbTk::App::instance()->display(),
+                              m_win->window(),
+                              ShapeBounding,
+                              0, 0,
+                              0,
+                              ShapeSet);
+        }
+            }
 #endif // SHAPE
 }
 
@@ -171,19 +178,38 @@ void Shape::update() {
     if (m_win == 0 || m_win->window() == 0)
         return;
 #ifdef SHAPE
-    if (m_shape.get() == 0 ||
-        m_win->width() != width() ||
-        m_win->height() != height()) {
-        m_shape.reset(createShape(*m_win, m_shapeplaces));
+    if (m_clipshape.get() == 0 ||
+        m_win->width() != clipWidth() ||
+        m_win->height() != clipHeight()) {
+        m_clipshape.reset(createShape(true));
+    }
+    if (m_boundingshape.get() == 0 ||
+        (m_win->width()+m_win->borderWidth()*2) != width() ||
+        (m_win->height()+m_win->borderWidth()*2) != height()) {
+        if (m_win->borderWidth() != 0)
+            m_boundingshape.reset(createShape(false));
+        else 
+            m_boundingshape.reset(0);
+
     }
 
-    // the m_shape can be = 0 which will just reset the shape mask
+    // the m_shape can be = 0 which will just raeset the shape mask
+    // and make the window normal
+    XShapeCombineMask(FbTk::App::instance()->display(),
+                      m_win->window(),
+                      ShapeClip,
+                      0, 0,
+                      (m_clipshape.get() != 0)? m_clipshape->drawable() : 0,
+                      ShapeSet);
+
+    // the m_shape can be = 0 which will just raeset the shape mask
     // and make the window normal
     XShapeCombineMask(FbTk::App::instance()->display(),
                       m_win->window(),
                       ShapeBounding,
                       -m_win->borderWidth(), -m_win->borderWidth(),
-                      m_shape.get() ? m_shape->drawable() : 0,
+                      (m_boundingshape.get() != 0)? m_boundingshape->drawable() :
+                      ((m_clipshape.get() != 0)? m_clipshape->drawable(): 0),
                       ShapeSet);
 
 
@@ -223,9 +249,17 @@ bool Shape::isShaped(const FbTk::FbWindow &win) {
 }
 
 unsigned int Shape::width() const {
-    return m_shape.get() ? m_shape->width() : 0;
+    return m_boundingshape.get() ? m_boundingshape->width() : 0;
 }
 
 unsigned int Shape::height() const {
-    return m_shape.get() ? m_shape->height() : 0;
+    return m_boundingshape.get() ? m_boundingshape->height() : 0;
+}
+
+unsigned int Shape::clipWidth() const {
+    return m_clipshape.get() ? m_clipshape->width() : 0;
+}
+
+unsigned int Shape::clipHeight() const {
+    return m_clipshape.get() ? m_clipshape->height() : 0;
 }
