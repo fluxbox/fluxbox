@@ -96,8 +96,8 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_unfocused_alpha(0),
     m_double_click_time(0),
     m_themelistener(*this),
-    m_shape(new Shape(m_window, theme.shapePlace())),
-    m_disable_shape(false) {
+    m_shape(m_window, theme.shapePlace()),
+    m_disable_themeshape(false) {
     m_theme.reconfigSig().attach(&m_themelistener);
     init();
 }
@@ -210,7 +210,7 @@ void FbWinFrame::show() {
 
     if (m_need_render) {
         renderAll();
-        applyAll();
+         applyAll();
         clearAll();
     }
 
@@ -235,8 +235,7 @@ void FbWinFrame::shade() {
         m_window.resize(m_window.width(), m_titlebar.height());
         alignTabs();
         // need to update our shape
-        if ( m_shape.get() )
-            m_shape->update();
+        m_shape.update();
     } else { // should be unshaded
         m_window.resize(m_window.width(), m_height_before_shade);
         reconfigure();
@@ -1122,26 +1121,28 @@ void FbWinFrame::reconfigure() {
         m_need_render = true;
     }
 
-    if (m_shape.get() && theme().shapePlace() == Shape::NONE  || m_disable_shape)
-        m_shape.reset(0);
-    else if (m_shape.get() == 0 && theme().shapePlace() != Shape::NONE)
-        m_shape.reset(new Shape(window(), theme().shapePlace()));
-    else if (m_shape.get())
-        m_shape->setPlaces(theme().shapePlace());
+    if (m_disable_themeshape)
+        m_shape.setPlaces(Shape::NONE);
+    else
+        m_shape.setPlaces(theme().shapePlace());
 
-    if (m_shape.get())
-        m_shape->update();
+    m_shape.setShapeOffsets(0, titlebarHeight());
 
     // titlebar stuff rendered already by reconftitlebar
 }
 
 void FbWinFrame::setUseShape(bool value) {
-    m_disable_shape = !value;
+    m_disable_themeshape = !value;
 
-    if (m_shape.get() && m_disable_shape)
-        m_shape.reset(0);
-    else if (m_shape.get() == 0 && !m_disable_shape)
-        m_shape.reset(new Shape(window(), theme().shapePlace()));
+    if (m_disable_themeshape)
+        m_shape.setPlaces(Shape::NONE);
+    else
+        m_shape.setPlaces(theme().shapePlace());
+
+}
+
+void FbWinFrame::setShapingClient(FbTk::FbWindow *win, bool always_update) {
+    m_shape.setShapeSource(win, 0, titlebarHeight(), always_update);
 }
 
 unsigned int FbWinFrame::buttonHeight() const {
@@ -1452,7 +1453,7 @@ void FbWinFrame::init() {
     if (theme().handleWidth() == 0)
         m_use_handle = false;
 
-    m_disable_shape = false;
+    m_disable_themeshape = false;
 
     m_current_label = 0; // no focused button at first
 

@@ -33,6 +33,7 @@
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/TextButton.hh"
 #include "Container.hh"
+#include "Shape.hh"
 
 #include <vector>
 #include <list>
@@ -197,6 +198,8 @@ public:
  
     void reconfigure();
     void setUseShape(bool value);
+    void setShapingClient(FbTk::FbWindow *win, bool always_update);
+    void updateShape() { m_shape.update(); }
 
     /**
        @name accessors
@@ -403,9 +406,9 @@ private:
         FbWinFrame &m_frame;
     };
     ThemeListener m_themelistener;
-    std::auto_ptr<Shape> m_shape;
-    bool m_disable_shape;
+    Shape m_shape;
 
+    bool m_disable_themeshape;
 };
 
 #endif // FBWINFRAME_HH

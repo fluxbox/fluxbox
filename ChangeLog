@@ -1,6 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/08/09:
+   * Fix shaping handling, stage 2, (Simon)
+     - rewrite the core of the Shape handling so that it properly 
+       merges client and frame shapes. Fixes all sorts of odd shaping
+       behaviour, and incidentally xeyes now gets a visible frame 
+       (not having the frame was actually a bug).
+     Shape.hh/cc FbWinFrame.hh/cc Window.hh/cc
    * Fix shaping handling, stage 1, (Simon)
      - do borders properly with rounded corners
      - propagate client clip mask as well as bounding mask

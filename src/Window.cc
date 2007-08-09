@@ -268,7 +268,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_old_decoration_mask(0),
     m_client(&client),
     m_toggled_decos(false),
-    m_shaped(false),
     m_icon_hidden(false),
     m_focus_hidden(false),
     m_old_pos_x(0), m_old_pos_y(0),
@@ -350,15 +349,9 @@ void FluxboxWindow::init() {
     m_client->setFluxboxWindow(this);
     m_client->setGroupLeftWindow(None); // nothing to the left.
 
-    // check for shape extension and whether the window is shaped
-    m_shaped = false;
-
     if (Fluxbox::instance()->haveShape()) {
         Shape::setShapeNotify(winClient());
-        m_shaped = Shape::isShaped(winClient());
     }
-
-    frame().setUseShape(!m_shaped);
 
     //!! TODO init of client should be better
     // we don't want to duplicate code here and in attachClient
@@ -548,35 +541,11 @@ void FluxboxWindow::init() {
     // no focus default
     setFocusFlag(false);
 
-    if (m_shaped)
-        shape();
-
     setupWindow();
 
     FbTk::App::instance()->sync(false);
 
 }
-
-/// apply shape to this window
-void FluxboxWindow::shape() {
-#ifdef SHAPE
-    if (m_shaped) {
-        XShapeCombineShape(display,
-                           frame().window().window(), ShapeClip,
-                           0, frame().clientArea().y(), // xOff, yOff
-                           m_client->window(),
-                           ShapeClip, ShapeSet);
-        XShapeCombineShape(display,
-                           frame().window().window(), ShapeBounding,
-                           0, frame().clientArea().y(), // xOff, yOff
-                           m_client->window(),
-                           ShapeBounding, ShapeSet);
-        XFlush(display);
-    }
-#endif // SHAPE
-
-}
-
 
 /// attach a client to this window and destroy old window
 void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
@@ -995,8 +964,10 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (!button)
         return false;
 
-    if (&client != m_client)
+    if (&client != m_client) {
         m_screen.focusControl().setScreenFocusedWindow(client);
+        frame().setShapingClient(&client, false);
+    }
     m_client = &client;
     m_client->raise();
     m_client->focusSig().notify();
@@ -1041,6 +1012,8 @@ void FluxboxWindow::associateClientWindow(bool use_attrs,
                                           int gravity, unsigned int client_bw) {
     updateTitleFromClient(*m_client);
     updateIconNameFromClient(*m_client);
+
+    frame().setShapingClient(m_client, false);
 
     if (use_attrs)
         frame().moveResizeForClient(x, y,
@@ -1299,7 +1272,6 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
         sendConfigureNotify();
     }
 
-    shape();
 
     if (!moving) {
         m_last_resize_x = new_x;
@@ -1318,8 +1290,6 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
     setFocusFlag(focused);
     shaded = false;
     sendConfigureNotify();
-
-    shape();
 
     if (!moving) {
         m_last_resize_x = new_x;
@@ -1617,7 +1587,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         fullscreen = false;
 
-        frame().setUseShape(!m_shaped);
+        frame().setUseShape(true);
         if (m_toggled_decos) {
             if (m_old_decoration_mask & DECORM_TITLEBAR)
                 setDecoration(DECOR_NONE);
@@ -2342,24 +2312,10 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 #endif // DEBUG
             XShapeEvent *shape_event = (XShapeEvent *)&event;
 
-            if (shape_event->kind != ShapeBounding)
-                break;
-
-            if (shape_event->shaped) {
-                m_shaped = true;
-                shape();
-            } else {
-                m_shaped = false;
-                // set no shape
-                XShapeCombineMask(display,
-                                  frame().window().window(), ShapeClip,
-                                  0, 0,
-                                  None, ShapeSet);
-                XShapeCombineMask(display,
-                                  frame().window().window(), ShapeBounding,
-                                  0, 0,
-                                  None, ShapeSet);
-            }
+            if (shape_event->shaped)
+                frame().setShapingClient(m_client, true);
+            else
+                frame().setShapingClient(0, true);
 
             FbTk::App::instance()->sync(false);
             break;
