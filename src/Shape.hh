@@ -24,12 +24,14 @@
 #ifndef SHAPE_HH
 #define SHAPE_HH
 
+#include "FbTk/FbPixmap.hh"
+
 #include <X11/Xlib.h>
 #include <memory>
+#include <vector>
 
 namespace FbTk {
 class FbWindow;
-class FbPixmap;
 }
 
 /// creates round corners on windows
@@ -51,6 +53,10 @@ public:
     void update(); 
     /// assign a new window
     void setWindow(FbTk::FbWindow &win);
+    /// Assign a window to merge our shape with.
+    /// (note that this is currently specific to frames)
+    void setShapeSource(FbTk::FbWindow *win, int xoff, int yoff, bool always_update);
+    void setShapeOffsets(int xoff, int yoff);
     unsigned int width() const;
     unsigned int height() const;
     unsigned int clipWidth() const;
@@ -60,11 +66,21 @@ public:
     /// @return true if window has shape
     static bool isShaped(const FbTk::FbWindow &win);
 private:
-    FbTk::FbPixmap *createShape(bool clipshape); // true for clip, false for bounding
-
     FbTk::FbWindow *m_win; ///< window to be shaped
-    std::auto_ptr<FbTk::FbPixmap> m_clipshape; ///< our shape pixmap
-    std::auto_ptr<FbTk::FbPixmap> m_boundingshape; ///< our shape pixmap
+    FbTk::FbWindow *m_shapesource; ///< window to pull shape from
+    int m_shapesource_xoff, m_shapesource_yoff;
+
+    void initCorners(int screen_num);
+
+    struct CornerPixmaps {
+        FbTk::FbPixmap topleft;
+        FbTk::FbPixmap topright;
+        FbTk::FbPixmap botleft;
+        FbTk::FbPixmap botright;
+    };
+
+    // unfortunately, we need a separate pixmap per screen
+    static std::vector<CornerPixmaps> s_corners;
     int m_shapeplaces; ///< places to shape
 
 };

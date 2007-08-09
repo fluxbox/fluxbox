@@ -501,8 +501,6 @@ private:
     void updateButtons();
 
     void init();
-    /// applies a shape mask to the window if it has one
-    void shape();
     void updateClientLeftWindow();
     void grabButtons();
 
@@ -602,7 +600,6 @@ private:
         bool resize, move, iconify, maximize, close, tabable;
     } functions;
 
-    bool m_shaped; ///< if the window is shaped with a mask
     bool m_icon_hidden;  ///< if the window is in the iconbar
     bool m_focus_hidden; ///< if the window is in the NextWindow list
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized

@@ -48,25 +48,13 @@
 
 using std::min;
 
-// ignore_border basically means do clip shape instead of bounding shape
-FbTk::FbPixmap *Shape::createShape(bool ignore_border) {
-    if (m_win->window() == 0 || m_shapeplaces == 0 ||
-        m_win->width() < 3 || m_win->height() < 3)
-        return 0;
-
-    static char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
-    static char right_bits[] = { 0x03, 0x1f, 0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff};
-    static char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
-    static char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
-
-    const int borderw = m_win->borderWidth();
-    const int win_width = m_win->width() + (ignore_border?0:2*borderw);
-    const int win_height = m_win->height() + (ignore_border?0:2*borderw);
-    const int pixmap_width = min(8, win_width);
-    const int pixmap_height = min(8, win_height);
+namespace {
+/* rows is an array of 8 bytes, i.e. 8x8 bits */
+Pixmap makePixmap(FbTk::FbWindow &drawable, const unsigned char rows[]) {
 
     Display *disp = FbTk::App::instance()->display();
-    const size_t data_size = win_width * win_height;
+
+    const size_t data_size = 8 * 8;
     // we use calloc here so we get consistent C alloc/free with XDestroyImage
     // and no warnings in valgrind :)
     char *data = (char *)calloc(data_size, sizeof (char));
@@ -76,74 +64,50 @@ FbTk::FbPixmap *Shape::createShape(bool ignore_border) {
     memset(data, 0xFF, data_size);
 
     XImage *ximage = XCreateImage(disp,
-                                  DefaultVisual(disp, m_win->screenNumber()),
+                                  DefaultVisual(disp, drawable.screenNumber()),
                                   1,
                                   XYPixmap, 0,
                                   data,
-                                  win_width, win_height,
+                                  8, 8,
                                   32, 0);
     if (ximage == 0)
         return 0;
 
     XInitImage(ximage);
 
-    // shape corners
-
-    if (m_shapeplaces & Shape::TOPLEFT) {
-        for (int y=0; y<pixmap_height; y++) {
-            for (int x=0; x<pixmap_width; x++) {
-                XPutPixel(ximage, x, y, (left_bits[y] & (0x01 << x)) ? 1 : 0);
-            }
+    for (int y=0; y<8; y++) {
+        for (int x=0; x<8; x++) {
+            XPutPixel(ximage, x, y, (rows[y] & (0x01 << x)) ? 0 : 1); // inverted, it is subtracted
         }
     }
 
-    if (m_shapeplaces & Shape::TOPRIGHT) {
-        for (int y=0; y<pixmap_height; y++) {
-            for (int x=0; x<pixmap_width; x++) {
-                XPutPixel(ximage, x + win_width - pixmap_width, y,
-                          (right_bits[y] & (0x01 << x)) ? 1 : 0);
-            }
-        }
-    }
+    FbTk::FbPixmap pm(drawable, 8, 8, 1);
+    FbTk::GContext gc(pm);
 
-    if (m_shapeplaces & Shape::BOTTOMLEFT) {
-        for (int y=0; y<pixmap_height; y++) {
-            for (int x=0; x<pixmap_width; x++) {
-                XPutPixel(ximage, x, y + win_height - pixmap_height,
-                          (bottom_left_bits[y] & (0x01 << x)) ? 1 : 0);
-            }
-        }
-    }
-
-    if (m_shapeplaces & Shape::BOTTOMRIGHT) {
-        for (int y=0; y<pixmap_height; y++) {
-            for (int x=0; x<pixmap_width; x++) {
-                XPutPixel(ximage, x + win_width - pixmap_width, y + win_height - pixmap_height,
-                          (bottom_right_bits[y] & (0x01 << x)) ? 1 : 0);
-            }
-        }
-    }
-
-    FbTk::FbPixmap *pm = new FbTk::FbPixmap(*m_win, win_width, win_height, 1);
-
-
-    FbTk::GContext gc(*pm);
-
-    XPutImage(disp, pm->drawable(), gc.gc(), ximage, 0, 0, 0, 0,
-              win_width, win_height);
+    XPutImage(disp, pm.drawable(), gc.gc(), ximage, 0, 0, 0, 0,
+              8, 8);
 
     XDestroyImage(ximage);
 
-    return pm;
-
+    return pm.release();
 }
+
+};
+
+std::vector<Shape::CornerPixmaps> Shape::s_corners;
 
 Shape::Shape(FbTk::FbWindow &win, int shapeplaces):
     m_win(&win),
+    m_shapesource(0),
+    m_shapesource_xoff(0),
+    m_shapesource_yoff(0),
     m_shapeplaces(shapeplaces) {
 
-    m_clipshape.reset(createShape(true));
-    m_boundingshape.reset(createShape(false));
+#ifdef SHAPE
+    initCorners(win.screenNumber());
+#endif
+
+    update();
 }
 
 Shape::~Shape() {
@@ -157,17 +121,30 @@ Shape::~Shape() {
                           0, 0,
                           0,
                           ShapeSet);
-        // Reset shape of window
-        if (m_boundingshape.get()) {
-            XShapeCombineMask(FbTk::App::instance()->display(),
-                              m_win->window(),
-                              ShapeBounding,
-                              0, 0,
-                              0,
-                              ShapeSet);
-        }
-            }
+        XShapeCombineMask(FbTk::App::instance()->display(),
+                          m_win->window(),
+                          ShapeBounding,
+                          0, 0,
+                          0,
+                          ShapeSet);
+    }
 #endif // SHAPE
+}
+
+void Shape::initCorners(int screen_num) {
+    if (s_corners.size() == 0)
+        s_corners.resize(ScreenCount(FbTk::App::instance()->display()));
+ 
+    static const unsigned char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
+    static const unsigned char right_bits[] = { 0x03, 0x1f, 0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff};
+    static const unsigned char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
+    static const unsigned char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
+
+    s_corners[screen_num].topleft = ::makePixmap(*m_win, left_bits);
+    s_corners[screen_num].topright = ::makePixmap(*m_win, right_bits);
+    s_corners[screen_num].botleft = ::makePixmap(*m_win, bottom_left_bits);
+    s_corners[screen_num].botright = ::makePixmap(*m_win, bottom_right_bits);
+
 }
 
 void Shape::setPlaces(int shapeplaces) {
@@ -177,41 +154,144 @@ void Shape::setPlaces(int shapeplaces) {
 void Shape::update() {
     if (m_win == 0 || m_win->window() == 0)
         return;
+
 #ifdef SHAPE
-    if (m_clipshape.get() == 0 ||
-        m_win->width() != clipWidth() ||
-        m_win->height() != clipHeight()) {
-        m_clipshape.reset(createShape(true));
+    /**
+     * Set the client's shape in position,
+     * or wipe the shape and return.
+     */
+    Display *display = FbTk::App::instance()->display();
+    int bw = m_win->borderWidth();
+    int width = m_win->width();
+    int height = m_win->height();
+
+    if (m_shapesource == 0 && m_shapeplaces == 0) {
+        /* clear the shape and return */
+        XShapeCombineMask(display,
+                          m_win->window(), ShapeClip,
+                          0, 0,
+                          None, ShapeSet);
+        XShapeCombineMask(display,
+                          m_win->window(), ShapeBounding,
+                          0, 0,
+                          None, ShapeSet);
+        return;
     }
-    if (m_boundingshape.get() == 0 ||
-        (m_win->width()+m_win->borderWidth()*2) != width() ||
-        (m_win->height()+m_win->borderWidth()*2) != height()) {
-        if (m_win->borderWidth() != 0)
-            m_boundingshape.reset(createShape(false));
-        else 
-            m_boundingshape.reset(0);
 
+    XRectangle rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.width = width;
+    rect.height = height;
+
+    XShapeCombineRectangles(display,
+                            m_win->window(), ShapeClip,
+                            0, 0, /* offsets */
+                            &rect, 
+                            1,    /* number of rectangles */
+                            ShapeSet, /* op */
+                            2     /* ordering: YXSorted... only 1: doesn't matter */ );
+
+    rect.x = -bw;
+    rect.y = -bw;
+    rect.width = width+2*bw;
+    rect.height = height+2*bw;
+
+    XShapeCombineRectangles(display,
+                            m_win->window(), ShapeBounding,
+                            0, 0, /* offsets */
+                            &rect, 
+                            1,    /* number of rectangles */
+                            ShapeSet, /* op */
+                            2     /* ordering: YXSorted... only 1: doesn't matter */ );
+
+    if (m_shapesource != 0) {
+
+        /*
+          Copy the shape from the source.
+          We achieve this by subtracting the client-area size from the shape, and then
+          unioning in the client's mask.
+        */
+        rect.x = m_shapesource_xoff;
+        rect.y = m_shapesource_yoff;
+        rect.width = m_shapesource->width();
+        rect.height = m_shapesource->height();
+
+        XShapeCombineRectangles(display,
+                                m_win->window(), ShapeClip,
+                                0, 0, /* offsets */
+                                &rect, 
+                                1,    /* number of rectangles */
+                                ShapeSubtract, /* op */
+                                2     /* ordering: YXSorted... only 1: doesn't matter */ );
+
+        XShapeCombineShape(display,
+                           m_win->window(), ShapeClip,
+                           rect.x, rect.y, // xOff, yOff
+                           m_shapesource->window(),
+                           ShapeClip, ShapeUnion);
+
+        /* 
+           Now the bounding rectangle. Note that the frame has a shared border with the region above the 
+           client (i.e. titlebar), so we don't want to wipe the shared border, hence the adjustments.
+        */
+        rect.x = m_shapesource_xoff; // note that the full bounding region is already offset by a -borderwidth!
+        rect.y = m_shapesource_yoff;
+        rect.width = m_shapesource->width(); // we don't wipe the outer bounding region [i think]
+        rect.height = m_shapesource->height();
+
+        // we want to delete the client area, dont care about borders really
+        XShapeCombineRectangles(display,
+                                m_win->window(), ShapeBounding,
+                                0, 0, /* offsets */
+                                &rect, 
+                                1,    /* number of rectangles */
+                                ShapeSubtract, /* op */
+                                2     /* ordering: YXSorted... only 1: doesn't matter */ );
+
+        XShapeCombineShape(display,
+                           m_win->window(), ShapeBounding,
+                           rect.x , rect.y, // xOff, yOff
+                           m_shapesource->window(),
+                           ShapeBounding, ShapeUnion);
     }
 
-    // the m_shape can be = 0 which will just raeset the shape mask
-    // and make the window normal
-    XShapeCombineMask(FbTk::App::instance()->display(),
-                      m_win->window(),
-                      ShapeClip,
-                      0, 0,
-                      (m_clipshape.get() != 0)? m_clipshape->drawable() : 0,
-                      ShapeSet);
 
-    // the m_shape can be = 0 which will just raeset the shape mask
-    // and make the window normal
-    XShapeCombineMask(FbTk::App::instance()->display(),
-                      m_win->window(),
-                      ShapeBounding,
-                      -m_win->borderWidth(), -m_win->borderWidth(),
-                      (m_boundingshape.get() != 0)? m_boundingshape->drawable() :
-                      ((m_clipshape.get() != 0)? m_clipshape->drawable(): 0),
-                      ShapeSet);
+    CornerPixmaps &corners = s_corners[m_win->screenNumber()];
+#define SHAPECORNER(corner, x, y, shapekind)            \
+    XShapeCombineMask(FbTk::App::instance()->display(), \
+                      m_win->window(),                  \
+                      shapekind,                        \
+                      x, y,                             \
+                      corners.corner.drawable(),      \
+                      ShapeSubtract); 
 
+    /**
+     * Set the top corners if the y offset is nonzero.
+     */
+    if (m_shapesource == 0 || m_shapesource_yoff != 0) {
+        if (m_shapeplaces & TOPLEFT) {
+            SHAPECORNER(topleft, 0, 0, ShapeClip);
+            SHAPECORNER(topleft, -bw, -bw, ShapeBounding);
+        }
+        if (m_shapeplaces & TOPRIGHT) {
+            SHAPECORNER(topright, width-8, 0, ShapeClip);
+            SHAPECORNER(topright, width+bw-8, -bw, ShapeBounding);
+        }
+    }
+
+    // note that the bottom corners y-vals are offset by 8 (the height of the corner pixmaps)
+    if (m_shapesource == 0 || (m_shapesource_yoff+(signed) m_shapesource->height()) < height
+        || m_shapesource_yoff >= height /* shaded */) {
+        if (m_shapeplaces & BOTTOMLEFT) {
+            SHAPECORNER(botleft, 0, height-8, ShapeClip);
+            SHAPECORNER(botleft, -bw, height+bw-8, ShapeBounding);
+        }
+        if (m_shapeplaces & BOTTOMRIGHT) {
+            SHAPECORNER(botright, width-8, height-8, ShapeClip);
+            SHAPECORNER(botright, width+bw-8, height+bw-8, ShapeBounding);
+        }
+    }
 
 #endif // SHAPE
 
@@ -219,6 +299,41 @@ void Shape::update() {
 
 void Shape::setWindow(FbTk::FbWindow &win) {
     m_win = &win;
+    update();
+}
+
+/**
+ * set the shape source to the given window.
+ * This is purely for client windows at the moment, where the offsets and height/width of the 
+ * target window and the source window are used to determine whether to shape a given corner.
+ *
+ * (note: xoffset will always be zero, and widths always match, so we ignore those)
+ * 
+ * i.e. if the yoffset is not zero, then the top corners are shaped.
+ * if the target height is bigger than the source plus yoffset, then the bottom corners are
+ * shaped.
+ *
+ * If *either* the top or bottom corners are not shaped due to this, but a shape source window
+ * is given, then the bounding shape has the borders alongside the source window deleted, otherwise
+ * they are left hanging outside the client's shape.
+ */
+void Shape::setShapeSource(FbTk::FbWindow *win, int xoff, int yoff, bool always_update) {
+    if (win != 0 && !isShaped(*win)) {
+        win = 0;
+        if (m_shapesource == 0 && !always_update)
+            return;
+    }
+
+    // even if source is same, want to update the shape on it
+    m_shapesource = win;
+    m_shapesource_xoff = xoff;
+    m_shapesource_yoff = yoff;
+    update();
+}
+
+void Shape::setShapeOffsets(int xoff, int yoff) {
+    m_shapesource_xoff = xoff;
+    m_shapesource_yoff = yoff;
     update();
 }
 
@@ -248,18 +363,3 @@ bool Shape::isShaped(const FbTk::FbWindow &win) {
     return (shaped != 0 ? true : false);
 }
 
-unsigned int Shape::width() const {
-    return m_boundingshape.get() ? m_boundingshape->width() : 0;
-}
-
-unsigned int Shape::height() const {
-    return m_boundingshape.get() ? m_boundingshape->height() : 0;
-}
-
-unsigned int Shape::clipWidth() const {
-    return m_clipshape.get() ? m_clipshape->width() : 0;
-}
-
-unsigned int Shape::clipHeight() const {
-    return m_clipshape.get() ? m_clipshape->height() : 0;
-}
