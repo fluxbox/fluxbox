@@ -1,8 +1,8 @@
 # nls/zh_CN/Makefile.am for Fluxbox - www.fluxbox.org
 
 THE_LANG = zh_CN
-SRC_CODESET = ISO-8859-1
-DEST_CODESETS = ISO-8859-1 UTF-8
+SRC_CODESET = UTF-8
+DEST_CODESETS = UTF-8 GB2312 BIG5
 
 LOCALE_PATH = @LOCALE_PATH@
 NLSTEST = @NLS@
@@ -29,7 +29,7 @@ install-data-local: $(CATFILES)
 translations: $(GENERATED_MFILES)
 
 generated-%.m: Translation.m
-	iconv -f $(SRC_CODESET) -t $* Translation.m | sed s/$(SRC_CODESET)/$*/ > $@
+	iconv -c -f $(SRC_CODESET) -t $* Translation.m | sed s/$(SRC_CODESET)/$*/ > $@
 
 uninstall-local:
 	@if test x$(NLSTEST) = "x-DNLS"; then \
