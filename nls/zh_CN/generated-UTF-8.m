@@ -1,4 +1,4 @@
-$ codeset=ISO-8859-1
+$ codeset=UTF-8
 
 $set 1 #Align
 
@@ -10,8 +10,8 @@ $set 1 #Align
 6 左下方
 7 左侧居中
 8 左上方
-9 附着
-10 右
+9 扩展
+10 靠右
 11 右下方
 12 右侧居中
 13 右上方
@@ -28,86 +28,92 @@ $set 2 #BaseDisplay
 
 $set 3 #Common
 
-1 Alpha
+1 Alpha值
 2 自动隐藏
-3 编译
+3 编译时间
 4 编译选项
 5 编译器
 6 编译器版本
-7 初始化
-8 键绑订
-9 国际化字体
-10 菜单
-11 样式
-12 默认
+7 	初始化
+8 	键绑订
+9 	本地语言支持
+10 	菜单
+11 	样式
+12 默认配置
 13 禁用
 14 错误
 15 Fluxbox版本
-16 Maximize Over
-17 SVN发行号
+16 最大化时盖过
+17 SVN修订版本号
 18 可见
+19 该主题未定义任何背景。\n请参考手册或阅读FAQ。
 
 $set 4 #Configmenu
 
 1 反锯齿
-2 自动缩放
-3 Click Raises
-4 Click to Focus
-5 Decorate Transient Windows
-6 鼠标滑轮更换桌面
+2 自动提升
+3 点击提升
+4 点击聚焦
+5 装饰临时窗口
+6 鼠标滚轮切换工作区
 7 Focus Window on Workspace Change
-8 Focus Model
-9 Focus New Windows
-10 Full Maximization
-11 Image Dithering
-12 Opaque Window Moving
-14 Mouse Focus
-15 Workspace Warping
-16 Force Pseudo-Transparency
-17 Menu Alpha
+8 聚焦模式
+9 聚焦新窗口
+10 完全最大化
+11 图像仿色
+12 移动时显示窗口内容
+14 鼠标聚焦
+15 工作区回旋
+16 强制伪透明
+17 菜单Alpha值
 18 透明
-19 Focused Window Alpha
-20 Unfocused Window Alpha
+19 聚焦窗口Alpha值
+20 非聚焦窗口Alpha值
+21 标签选项
+22 标签置于标题栏内
+23 外置标签宽度
+24 点击聚焦标签
+25 鼠标聚焦标签
 
 $set 5 #Ewmh
 
-1 错误: 内存不足,不能分配内存给EWMH client list
+1 致命错误: 内存不足,无法为EWMH client list分配内存
 
 $set 6 #FbTkError
 
-1 警告Warning! Height > 3200 setting Height = 3200
-2 警告Warning! Width > 3200 setting Width = 3200
+1 警告！ Height > 3200 ，设置 Height = 3200
+2 警告！ Width > 3200 ，设置 Width = 3200
 3 警告: 不能加载备用字体
-4 分配出错
-5 Error creating pixmap
-6 Cant create XImage
-7 Failed to read
-8 Warning: Failed to find valid format for alpha.
-9 Warning: Failed to create alpha picture.
-10 Warning: Failed to create alpha pixmap.
-11 Failed to find format for screen(%d)
-12 Out of memory
-13 Out of memory while allocating blue buffer.
-14 Out of memory while allocating green buffer.
-15 Out of memory while allocating red buffer.
-16 Failed to read theme item
-17 unsupported visual
-18 Setting default value
+4 分配错误。
+5 创建像素映射出错
+6 无法创建XImage
+7 读取失败
+8 警告：无法为alpha找到有效格式。
+9 警告：创建alpha图片失败。
+10 警告：创建alpha像素映射失败。
+11 查找屏幕格式失败(%d)
+12 内存不足
+13 内存不足，无法分配给blue buffer。
+14 内存不足，无法分配给green buffer。
+15 内存不足，无法分配给red buffer。
+16 读取主题项目失败
+17 不支持图像模式
+18 设置默认值
 
 $set 7 #Fluxbox
 
-1 rc文件无效!
-2 Failed to load groupfile
-3 Failed to load database
+1 无效的rc文件名!
+2 加载组文件失败
+3 加载数据库失败
 4 Retrying with
-5 Warning! Could not find screen to map window on!
-6 Can't create %s directory
-7 Couldn't find screens to manage.\nMake sure you don't have another window manager running.
-8 Error parsing regular expression
-9 Fatal! There can only one instance of fluxbox class.
-10 Can not connect to X server.\nMake sure you started X before you start Fluxbox.
-11 Warning: X server does not support locale
-12 Warning: cannot set locale modifiers
+5 警告！无法找到屏幕来绘制窗口！
+6 无法创建 %s 目录
+7 无法找到需要控制的屏幕。\n请确保没有其他窗口管理器正在运行。
+8 语法规则解析错误
+9 致命错误！fluxbox类只能有一个实例。
+10 无法连接X server。\n请确保你开启Fluxbox之前开启了X。
+11 警告：X server不支持locale
+12 警告：无法设置locale modifiers
 
 $set 8 #Gnome
 
@@ -126,94 +132,95 @@ $set 10 #Menu
 3 退出
 4 图标
 5 层次...
-6 On Head...
-7 替换
+6 位于监视器...
+7 位置
 8 重新加载配置文件
-9 重启动
+9 重启Fluxbox
+10 警告：[encoding]标签不对称
 
 $set 11 #Remember
 
-1 Decorations
-2 Dimensions
-3 Jump to workspace
+1 装饰
+2 尺寸
+3 跳至工作区
 4 层
-5 Remember...
-6 Position
-7 Save on close
-8 Shaded
-9 Sticky
+5 记住...
+6 位置
+7 关闭时保存
+8 卷起
+9 粘住
 10 未知按键
-11 Workspace
-12 Head
+11 工作区
+12 监视器
 
 $set 12 #Screen
 
-1 BScreen::BScreen: querying the X server时发生错误.\n 另外一个窗口管理器正运行,display为
+1 BScreen::BScreen: 询问X server时发生错误.\n 另外一个窗口管理器正运行,display为
 2 W: %4d x H: %4d
-3 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
+3 BScreen::BScreen: 控制屏幕 %d 使用图像模式 0x%lx, 色彩深度 %d\n
 4 W: %04d x H: %04d
 
 $set 13 #Slit
 
 1 Clients
-2 Cycle Down
-3 Cycle Up
-4 Slit Direction
-5 Slit Layer
-6 Slit on Head
-7 Slit Placement
+2 下卷
+3 上卷
+4 Slit方向
+5 Slit层次
+6 Slit位于监视器
+7 Slit位置
 8 Slit
-9 Save SlitList
+9 保存Slit列表
 
 $set 14 #Toolbar
 
-1 Edit current workspace name
-2 Iconbar Mode
-3 All Windows
-4 Icons
-5 None
-6 工作区Workspace
-7 工作区所有任务并显示图标
-8 Toolbar Layer
-9 Toolbar on Head
-10 Toolbar Placement
+1 重命名当前工作区
+2 图标栏模式
+3 所有窗口
+4 所有最小化的窗口
+5 无
+6 当前工作区所有窗口
+7 当前工作区所有最小化的窗口
+8 工具栏层次
+9 工具栏位于监视器
+10 工具栏位置
 11 工具栏
-12 工具栏宽度
-13 时钟采用24小时格式
-14 时钟采用12小时格式
-15 修改时间显示格式
-16 显示图片
-17 不显示图标
-18 工作区所有任务无图标
+12 工具栏宽度百分比
+13 时钟：24小时格式
+14 时钟：12小时格式
+15 编辑时间显示格式
+16 显示图标
+17 所有未最小化的窗口
+18 当前工作区所有未最小化的窗口
 
 $set 15 #Window
 
-1 Unnamed
+1 未命名
 
 $set 16 #Windowmenu
 
 1 关闭
 2 最小化
-3 Layer
-4 Lower
+3 层次
+4 降低
 5 最大化
-6 Raise
+6 提升
 7 发送到...
-8 Shade
-9 卷起
-10 杀掉
+8 卷起
+9 粘住
+10 杀死
 
 $set 17 #Workspace
 
 1 工作区 %d
 2 工作区
 3 新建工作区
-4 移出最后工作区
+4 移除最后一个工作区
 
 $set 18 #fbsetroot
 
-1 错误: 必须指定:: -solid, -mod, -gradient其中的一个.\n
-2 Couldn't create pixmap atoms, giving up!
+1 错误: 必须指定: -solid, -mod, -gradient 三个参数中的一个.\n
+2 无法创建pixmap atoms，放弃！
 3 -display <string>        display connection\n\
 -mod <x> <y>             modula pattern\n\
 -foreground, -fg <color> modula foreground color\n\
@@ -231,7 +238,7 @@ $set 19 #main
 3 Bad cast
 4 超出显示范围
 5 运行时错误
-6 Standard Exception
+6 标准例外
 7 未知错误
 8 错误: '-log'需要一个参数
 9 日志文件
@@ -240,22 +247,22 @@ $set 19 #main
 12 错误: '-screen'需要一个参数
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
 主页: http://www.fluxbox.org/\n\n\
--display <string>\t\t指定display连接.\n\
--screen <all|int,int,int>\t在特定的screens上显示.\n\
--rc <string>\t\t\t使用指定的资源文件.\n\
--version\t\t\t显示版本号.\n\
--info\t\t\t\t显示fluxbox相关信息.\n\
--log <filename>\t\t\t将输出记录到文件中.\n\
--help\t\t\t\t显示帮助信息.\n\n
-14 警告: 不能读取环境变量'DISPLAY'
+-display <string>\t\t指定display连接。\n\
+-screen <all|int,int,int>\t在特定的屏幕上显示。\n\
+-rc <string>\t\t\t使用指定的资源文件。\n\
+-version\t\t\t显示版本号然后退出。\n\
+-info\t\t\t\t显示一些有用的信息。\n\
+-log <filename>\t\t\t将输出记录到文件中。\n\
+-help\t\t\t\t显示这则帮助信息然后退出。\n\n
+14 警告: 无法设置环境变量'DISPLAY'
 
 $set 20
 
-1 Above Dock
-2 下方
+1 在Dock之上
+2 底部
 3 桌面
 4 Dock
-5 普通模式
-6 上方
+5 普通
+6 顶部
 
 
