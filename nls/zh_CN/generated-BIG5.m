@@ -2,59 +2,59 @@ $ codeset=ISO-8859-1
 
 $set 1 #Align
 
-1 ä¸‹æ–¹å±…ä¸­
-2 å·¦ä¸‹æ–¹
-3 å³ä¸‹æ–¹
-4 æ°´å¹³
-5 é å·¦
-6 å·¦ä¸‹æ–¹
-7 å·¦ä¾§å±…ä¸­
-8 å·¦ä¸Šæ–¹
-9 é™„ç€
-10 å³
-11 å³ä¸‹æ–¹
-12 å³ä¾§å±…ä¸­
-13 å³ä¸Šæ–¹
-14 ä¸Šæ–¹å±…ä¸­
-15 å·¦ä¸Šæ–¹
-16 å·¦ä¸Šæ–¹
-17 å‚ç›´
+1 ¤U¤è©~¤¤
+2 ¥ª¤U¤è
+3 ¥k¤U¤è
+4 ¤ô¥­
+5 ¾a¥ª
+6 ¥ª¤U¤è
+7 ¥ª©~¤¤
+8 ¥ª¤W¤è
+9 ªş
+10 ¥k
+11 ¥k¤U¤è
+12 ¥k©~¤¤
+13 ¥k¤W¤è
+14 ¤W¤è©~¤¤
+15 ¥ª¤W¤è
+16 ¥ª¤W¤è
+17 ««ª½
 
 $set 2 #BaseDisplay
 
-1 é€€å‡º... å­˜å‚¨å´©æºƒæ–‡ä»¶\n
-2 å…³é—­\n
-3 %s:      æ•è·ä¿¡å· %d\n
+1 °h¥X... ¦s±Y¤å¥ó\n
+2 \n
+3 %s:      ®·«H %d\n
 
 $set 3 #Common
 
 1 Alpha
-2 è‡ªåŠ¨éšè—
-3 ç¼–è¯‘
-4 ç¼–è¯‘é€‰é¡¹
-5 ç¼–è¯‘å™¨
-6 ç¼–è¯‘å™¨ç‰ˆæœ¬
-7 åˆå§‹åŒ–
-8 é”®ç»‘è®¢
-9 å›½é™…åŒ–å­—ä½“
-10 èœå•
-11 æ ·å¼
-12 é»˜è®¤
-13 ç¦ç”¨
-14 é”™è¯¯
-15 Fluxboxç‰ˆæœ¬
+2 ¦ÛÂÃ
+3 
+4 
+5 ¾¹
+6 ¾¹ª©¥»
+7 ªì©l¤Æ
+8 
+9 ¤Æ¦rÊ^
+10 µæ
+11 ¦¡
+12 Àq
+13 ¸T¥Î
+14 
+15 Fluxboxª©¥»
 16 Maximize Over
-17 SVNå‘è¡Œå·
-18 å¯è§
+17 SVN¦æ
+18 ¥i
 
 $set 4 #Configmenu
 
-1 åé”¯é½¿
-2 è‡ªåŠ¨ç¼©æ”¾
+1 ¤Ï
+2 ¦Û©ñ
 3 Click Raises
 4 Click to Focus
 5 Decorate Transient Windows
-6 é¼ æ ‡æ»‘è½®æ›´æ¢æ¡Œé¢
+6 ¹«·Æ§ó®à­±
 7 Focus Window on Workspace Change
 8 Focus Model
 9 Focus New Windows
@@ -65,20 +65,20 @@ $set 4 #Configmenu
 15 Workspace Warping
 16 Force Pseudo-Transparency
 17 Menu Alpha
-18 é€æ˜
+18 ³z©ú
 19 Focused Window Alpha
 20 Unfocused Window Alpha
 
 $set 5 #Ewmh
 
-1 é”™è¯¯: å†…å­˜ä¸è¶³,ä¸èƒ½åˆ†é…å†…å­˜ç»™EWMH client list
+1 : ¦s¤£¨¬,¤£¯à¤À°t¦sEWMH client list
 
 $set 6 #FbTkError
 
-1 è­¦å‘ŠWarning! Height > 3200 setting Height = 3200
-2 è­¦å‘ŠWarning! Width > 3200 setting Width = 3200
-3 è­¦å‘Š: ä¸èƒ½åŠ è½½å¤‡ç”¨å­—ä½“
-4 åˆ†é…å‡ºé”™
+1 Äµ§iWarning! Height > 3200 setting Height = 3200
+2 Äµ§iWarning! Width > 3200 setting Width = 3200
+3 Äµ§i: ¤£¯à¥[¥Î¦rÊ^
+4 ¤À°t¥X
 5 Error creating pixmap
 6 Cant create XImage
 7 Failed to read
@@ -96,7 +96,7 @@ $set 6 #FbTkError
 
 $set 7 #Fluxbox
 
-1 rcæ–‡ä»¶æ— æ•ˆ!
+1 rc¤å¥ó®Ä!
 2 Failed to load groupfile
 3 Failed to load database
 4 Retrying with
@@ -111,7 +111,7 @@ $set 7 #Fluxbox
 
 $set 8 #Gnome
 
-1 é”™è¯¯: å†…å­˜ä¸è¶³, æ— æ³•ä¸ºGNOME client liståˆ†é…å†…å­˜
+1 : ¦s¤£¨¬, ªkGNOME client list¤À°t¦s
 
 $set 9 #Keys
 
@@ -121,34 +121,34 @@ $set 9 #Keys
 
 $set 10 #Menu
 
-1 é…ç½®
-2 Fluxboxé»˜è®¤èœå•
-3 é€€å‡º
-4 å›¾æ ‡
-5 å±‚æ¬¡...
+1 °t¸m
+2 FluxboxÀqµæ
+3 °h¥X
+4 
+5 ¦¸...
 6 On Head...
-7 æ›¿æ¢
-8 é‡æ–°åŠ è½½é…ç½®æ–‡ä»¶
-9 é‡å¯åŠ¨
+7 ´À
+8 ­«·s¥[°t¸m¤å¥ó
+9 ­«
 
 $set 11 #Remember
 
 1 Decorations
 2 Dimensions
 3 Jump to workspace
-4 å±‚
+4 
 5 Remember...
 6 Position
 7 Save on close
 8 Shaded
 9 Sticky
-10 æœªçŸ¥æŒ‰é”®
+10 ¥¼ª¾«ö
 11 Workspace
 12 Head
 
 $set 12 #Screen
 
-1 BScreen::BScreen: querying the X serveræ—¶å‘ç”Ÿé”™è¯¯.\n å¦å¤–ä¸€ä¸ªçª—å£ç®¡ç†å™¨æ­£è¿è¡Œ,displayä¸º
+1 BScreen::BScreen: querying the X server¥Í.\n ¥t¥~¤@µ¡¤fºŞ²z¾¹¥¿¦æ,display
 2 W: %4d x H: %4d
 3 BScreen::BScreen: managing screen %d using visual 0x%lx, depth %d\n
 4 W: %04d x H: %04d
@@ -172,19 +172,19 @@ $set 14 #Toolbar
 3 All Windows
 4 Icons
 5 None
-6 å·¥ä½œåŒºWorkspace
-7 å·¥ä½œåŒºæ‰€æœ‰ä»»åŠ¡å¹¶æ˜¾ç¤ºå›¾æ ‡
+6 ¤u§@Workspace
+7 ¤u§@©Ò¦³¥ô¦}¥Ü
 8 Toolbar Layer
 9 Toolbar on Head
 10 Toolbar Placement
-11 å·¥å…·æ 
-12 å·¥å…·æ å®½åº¦
-13 æ—¶é’Ÿé‡‡ç”¨24å°æ—¶æ ¼å¼
-14 æ—¶é’Ÿé‡‡ç”¨12å°æ—¶æ ¼å¼
-15 ä¿®æ”¹æ—¶é—´æ˜¾ç¤ºæ ¼å¼
-16 æ˜¾ç¤ºå›¾ç‰‡
-17 ä¸æ˜¾ç¤ºå›¾æ ‡
-18 å·¥ä½œåŒºæ‰€æœ‰ä»»åŠ¡æ— å›¾æ ‡
+11 ¤u¨ã
+12 ¤u¨ã«×
+13 ªö¥Î24¤p®æ¦¡
+14 ªö¥Î12¤p®æ¦¡
+15 ­×§ï¥Ü®æ¦¡
+16 ¥Ü¤ù
+17 ¤£¥Ü
+18 ¤u§@©Ò¦³¥ô
 
 $set 15 #Window
 
@@ -192,27 +192,27 @@ $set 15 #Window
 
 $set 16 #Windowmenu
 
-1 å…³é—­
-2 æœ€å°åŒ–
+1 
+2 ³Ì¤p¤Æ
 3 Layer
 4 Lower
-5 æœ€å¤§åŒ–
+5 ³Ì¤j¤Æ
 6 Raise
-7 å‘é€åˆ°...
+7 °e¨ì...
 8 Shade
-9 å·èµ·
-10 æ€æ‰
+9 ¨÷°_
+10 ±¼
 
 $set 17 #Workspace
 
-1 å·¥ä½œåŒº %d
-2 å·¥ä½œåŒº
-3 æ–°å»ºå·¥ä½œåŒº
-4 ç§»å‡ºæœ€åå·¥ä½œåŒº
+1 ¤u§@ %d
+2 ¤u§@
+3 ·s«Ø¤u§@
+4 ²¾¥X³Ì¦Z¤u§@
 
 $set 18 #fbsetroot
 
-1 é”™è¯¯: å¿…é¡»æŒ‡å®š:: -solid, -mod, -gradientå…¶ä¸­çš„ä¸€ä¸ª.\n
+1 : ¥²«ü©w:: -solid, -mod, -gradient¨ä¤¤ªº¤@.\n
 2 Couldn't create pixmap atoms, giving up!
 3 -display <string>        display connection\n\
 -mod <x> <y>             modula pattern\n\
@@ -222,40 +222,40 @@ $set 18 #fbsetroot
 -from <color>            gradient start color\n\
 -to <color>              gradient end color\n\n\
 -solid <color>           solid color\n\n\
--help                    æ˜¾ç¤ºå¸®åŠ©ä¿¡æ¯\n
+-help                    ¥Ü§U«H®§\n
 
 $set 19 #main
 
-1 é”™è¯¯: '-display'éœ€è¦ä¸€ä¸ªå‚æ•°
+1 : '-display'»İ­n¤@
 2 Bad Alloc
 3 Bad cast
-4 è¶…å‡ºæ˜¾ç¤ºèŒƒå›´
-5 è¿è¡Œæ—¶é”™è¯¯
+4 ¶W¥X¥Ü­S
+5 ¦æ
 6 Standard Exception
-7 æœªçŸ¥é”™è¯¯
-8 é”™è¯¯: '-log'éœ€è¦ä¸€ä¸ªå‚æ•°
-9 æ—¥å¿—æ–‡ä»¶
-10 è®°å½•æ—¥å¿—åˆ°
-11 é”™è¯¯: '-rc'éœ€è¦ä¸€ä¸ªå‚æ•°
-12 é”™è¯¯: '-screen'éœ€è¦ä¸€ä¸ªå‚æ•°
+7 ¥¼ª¾
+8 : '-log'»İ­n¤@
+9 ¤é§Ó¤å¥ó
+10 ¤é§Ó¨ì
+11 : '-rc'»İ­n¤@
+12 : '-screen'»İ­n¤@
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
-ä¸»é¡µ: http://www.fluxbox.org/\n\n\
--display <string>\t\tæŒ‡å®šdisplayè¿æ¥.\n\
--screen <all|int,int,int>\tåœ¨ç‰¹å®šçš„screensä¸Šæ˜¾ç¤º.\n\
--rc <string>\t\t\tä½¿ç”¨æŒ‡å®šçš„èµ„æºæ–‡ä»¶.\n\
--version\t\t\tæ˜¾ç¤ºç‰ˆæœ¬å·.\n\
--info\t\t\t\tæ˜¾ç¤ºfluxboxç›¸å…³ä¿¡æ¯.\n\
--log <filename>\t\t\tå°†è¾“å‡ºè®°å½•åˆ°æ–‡ä»¶ä¸­.\n\
--help\t\t\t\tæ˜¾ç¤ºå¸®åŠ©ä¿¡æ¯.\n\n
-14 è­¦å‘Š: ä¸èƒ½è¯»å–ç¯å¢ƒå˜é‡'DISPLAY'
+¥D: http://www.fluxbox.org/\n\n\
+-display <string>\t\t«ü©wdisplay±µ.\n\
+-screen <all|int,int,int>\t¦b¯S©wªºscreens¤W¥Ü.\n\
+-rc <string>\t\t\t¨Ï¥Î«ü©wªº·½¤å¥ó.\n\
+-version\t\t\t¥Üª©¥».\n\
+-info\t\t\t\t¥Üfluxbox¬Û«H®§.\n\
+-log <filename>\t\t\t¥X¨ì¤å¥ó¤¤.\n\
+-help\t\t\t\t¥Ü§U«H®§.\n\n
+14 Äµ§i: ¤£¯à¨ú¹Ò¶q'DISPLAY'
 
 $set 20
 
 1 Above Dock
-2 ä¸‹æ–¹
-3 æ¡Œé¢
+2 ¤U¤è
+3 ®à­±
 4 Dock
-5 æ™®é€šæ¨¡å¼
-6 ä¸Šæ–¹
+5 ´¶³q¼Ò¦¡
+6 ¤W¤è
 
 
