@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/08/11:
+   * Updated Swedish translation sv_SE ( Henrik )
+     sv_SE/Translation.m
 *07/08/10:
    * Update Chinese translation zh_CN, thanks yhlfh
      zh_CN/Translation.m
