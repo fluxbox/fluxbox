@@ -12,7 +12,7 @@ SUBDIRS= 		styles
 CLEANFILES= 		menu menu.in menu.pre menu.bak init
 MAINTAINERCLEANFILES= 	Makefile.in
 pkgdata_DATA= 		keys menu init
-EXTRA_DIST= 		keys init.in README.style README.menu README
+EXTRA_DIST= 		keys init.in
 all-local: 		menu init
 install-pkgdataDATA:
 	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"

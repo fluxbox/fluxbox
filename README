@@ -1,4 +1,4 @@
-This is a development version of Fluxbox.
+This is a stable version of Fluxbox.
 
 Fluxbox is a fork of the original Blackbox 0.61.1 sourcecode with
 different goals.
@@ -20,15 +20,14 @@ Compile and Install:
 
 Configuration options:
 
-  For KDE slitsupport (default): (Allows kde tray icons to be placed in systray inside the toolbar)
+For KDE slitsupport (default, does not require any kde libraries):
+( Allows kde tray icons to be placed in systray inside the toolbar )
     ./configure --enable-kde
 
-  For Gnome support (default):
+  For Gnome support ( default, does not require any gnome libraries ):
     ./configure --enable-gnome
 
   Use ./configure --help to see the full list of options
-
-
 
 For former blackbox users:
 
@@ -66,15 +65,13 @@ Thanks:
 
   Blackbox team
 
-  aleczapka, skarin, Perc, xfs, skypher and skywarper for bugtesting.
+  People at #fluxbox on the irc.freenode.net irc-network.
 
   skypher of openprojects for bugtesting and providing fluxbox with
     themes: Clean CleanColor Makro, Carbondioxide and MerleyKay.
 
-  People at #fluxbox on the irc.freenode.net irc-network.
 
-  And all the people who sent bugfixes/patches.
+  And all the people who sent bugfixes/patches and helped us making
+  Fluxbox a better application.
 
 
-This software is OSI Certified Open Source Software.
-OSI Certified is a certification mark of the Open Source Initiative.

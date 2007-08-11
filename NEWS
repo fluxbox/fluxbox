@@ -1,124 +1,57 @@
-News in 1.0rc3:
-    * Introduced support for mouse buttons in the keys file
-      - Mouse buttons are bound to new `keys' Mouse1, Mouse2, etc.
-      - Also a new modifier `OnDesktop' to specify actions that should take place
-        when you click on the desktop -- without this, mouse bindings are global
-    * Added a utility to the project that automatically updates configuration
-      files when we change the syntax -- your current mouse bindings on the
-      desktop will be added to your keys file automatically
-    * Introduced new key command: HideMenus
-    * Introduced a key command to display a menu stored in an arbitrary file:
-      CustomMenu /path/to/file
-    * More extended wm hints support:
-      * _NET_WM_MOVERESIZE_CANCEL (new in version 1.4.draft-1),
-      * _NET_REQUEST_FRAME_EXTENTS 
-      * _NET_WM_WINDOW_TYPE_MENU
-      * _NET_WM_WINDOW_TYPE_TOOLBAR
-    * Little simplification of data structure for keybindings (Mark)
-      Side effects:
-        - "Mod4 a b" now behaves like "Mod4 a None b" -- in fact, "None" is now
-           completely obsolete
-        - You can press "Escape" to cancel any Emacs-style keychain in progress
-          (unless it's bound to something else)
-        - If there is a conflict between bindings, the first one in the file wins
-        - Fixes handling of keychains like "Mod4 a Mod1 b"
-        - Should fix some issues with "None" modifier  
-    * Updated following translations:
-      pt_PT, es_ES, es_AR, pt_BR, de_DE, nb_NO
-    * Support per-window transparency settings.
-       ( sf.net patch #1511042, feature #1108692 )
-      - new "Transparency" menu in the window menu
-      - new apps file attribute: 
-         [alpha] {int int} (or just {int})
-        Where numbers represent focused and unfocused transparency, 
-        respectively. One number only will be used for both.
-      - Also, show toggle status for shade and stick in window menu.
-      * Introduced new key command: SetAlpha [[+-]<int> [[+-]<int>]]
-        - with no arguments, returns the focused window to default settings
-        - with one argument, changes both focused and unfocused settings the same
-          way
-        - with two arguments, the first changes the focused alpha, and the second
-          changes the unfocused alpha
-       E.g. SetAlpha 127 +5 will set the focused alpha to 127 and increment the
-      unfocused alpha by 5 (until it reaches 255)
-    
-    * Added resource and menu item for maximizing over external tabs
-    * Renamed session.screen*.iconbar.deiconifyMode to
-       session.screen*.userFollowModel (Mark)
-       This resource is used for:
-        - clicking a window on a different workspace in the iconbar
-        - _NET_ACTIVE_WINDOW messages where the source is a pager
-        - clicking a client in the workspace menu (and the opposite is used for
-          right clicks)
-       Possible values are:
-        - Follow: go to the workspace of the selected window
-        - Current: bring the window to the current workspace
-        - SemiFollow: act like Current for iconified windows, else Follow
-        - Ignore: leave it alone
-    * Added support for negative arguments to the `Tab' key command to count
-      backwards from the last tab in the group
-    * Added option to :Minimize key command to lower all windows in the same
-      layer as the focused window,syntax is :Minimize (layer)
-    * Several changes for background style option:
-      - now support `background: mod' to coincide with fbsetroot -mod --
-        In addition to `background.color' and `background.colorTo', this option
-        must also set `background.modX' and `background.modY' to integers
-      - added `background: none' for styles that do not include a background
-      - fixed bug with style backgrounds not getting set when changing styles
-      - updated default styles to be valid wrt background options
-    *  Made some changes to the way autogrouping in the apps file works
-      - Introduced new syntax [group] (workspace) to group new windows only with
-        windows on the current workspace.
-    * XEMBED support for systemtray.
-    * Added typeahead support to menus (patch by Philipp Goedl, modified by Mark
-      and Matteo Galiazzo)
-      - Added new style item menu.frame.underlineColor: <color> for displaying
-        matching items
-    * session.screen<N>.defaultDeco now allows same strings as apps file
+News in 1.0:
+    * Fixed shape handling, now shaped corners have border.
+    * Allow negative numbers in command "Workspace"
+    * Added utility fluxbox-remote
+      * Allows script access to most fluxbox commands;
+        Support must be turned on in the init file with
+        session.screen<N>.allowRemoteActions; the syntax is, e.g.,
+        fluxbox-remote "CustomMenu ~/.fluxbox/custommenu"
+    * Added keycommands :AddWorkspace and :RemoveLastWorkspace
+    * Added some missing Open Office entries and window managers,
+      plus some other minor changes in fluxbox-generate_menu
+    * Updated languages:
+      sv_SE, zh_CN, de_*, es_ES, es_AR, en_US, en_GB, pt_*
+      fi_FI, fr_FR
 
 Bug fixes:
-    * #1437864, Buttons should only run a command if the mouse was clicked down 
-      on the same button
-    * #1560803, MaxSize and MinSize hints weren't getting updated properly
-    * #1535304, #1572683, #1646740, Layer wasn't set properly on remembered 
-      windows, and the layer menu wasn't getting updated properly,
-    * #1060891, #1517747, Clicking on the edge of a button didn't work
-    * #1595497, Don't escape regular expression metacharacters in apps file 
-    * #1621980, Fix data type of data passed to set _NET_FRAME_EXTENTS
-    * #1528646, Don't add 2 pixels to a specified toolbar height
-    * #1595336, Stop cycling focus when any other command is run
-    * #1561482, Crash when clicking on the workspacename to get the
-                toolbar menu.
-    * #1362913, core dumps on Solaris
-    * #1519913, Next/PrevWindow toolbar buttons break MouseFocus
-    * #1491571, Round corners badly rendered 
-    * #1449608, Auto-grouped windows using groups file didn't raise 
-    * #1069909, Incorrect window dimensions
-    * Changing between internal and external tabs didn't affect iconified
-      windows 
-    * Preserve order of focused windows on restart 
-    * Properly revert focus when two windows close simultaneously 
-    * Fixed nls digit strings to prefix with zero "%4d" => "%04d" for proper 
-      spacing
-    * Fix RefCount crash and Slit deconstruction ordering
-    * Detect user's shell from environment rather than assuming /bin/sh
-    * Fixed an unreported bug with grouping windows on multiple screens
-    * Fixed a bug with resizing windows for clients when only the width is
-      specified
-    * Fixed a bug with `session.ignoreBorder: true'
-    * Slit was creating a strut even when it wasn't visible
-    * Fixed display bug with ParentRelative menu highlight
-    ...and more, not listed here.
+    * #1694959 Rotate toolbar background texture along with toolbar
+    * #1712583 Non-latin characters displayed incorrectly in menu title
+    * #1708859 Fix error passing --with-locale path in ./configure
+    * #1524098 #1633718, System tray restart issue
+               ( gaim/pidgin crash on restart )
+    * #1748967 Save workspace names when changing through menu
+    * #1745678 Fixed resource usage due to Skype 1.4
+    * #1736252 Strip off additional bits in event state set by Xorg
+    * #1716899 Deiconify when automatically tabbing to a minimized
+               window with focus new windows on
+    * #1479517 Fix submenu placement with xinerama after moving the
+               menu between heads
+    * #1716900 Also send transient windows when sending a window to
+               another workspace
+    * #1717782 Bad fullscreen in ooimpress2
+    * #1718112 memory leak in FbWindow::textProperty
+    * #1545066 Only replace numbers with zeros when calculating clock
+               width
+    * #1652185 Fix window menu context when opened by clicking on tab
+    * Workspace Menu wasn't updating when windows changed titles
+    * HideMenus didn't work on CustomMenus, and also fixed a memleak with
+      CustomMenu
+    * Fix to avoid rogue instances of /bin/sh after forking away programs
+    * Fixed some rendering problems when toolbar item borderwidth is
+      too large and toolbar bevelwidth is set
+    * Right clicking on a submenu didn't revert focus to its parent
+    * Pressing escape in a torn menu didn't work
+    * Updates for compiling with gcc 4.3
+    * Fixed compile error with --disable-remember
+    * Fix transient windows getting tabbed from apps file and not
+      changing layers when main window is in a lowered tab
+    * Fixed some window placement issues
+    * Fixed bug with fluxbox-generate_menu -is
+    * Fixed infinite loop caused by deiconify command
+    * Fixed a bug in parsing cli
+    * Fix slit.onhead with BOTTOMLEFT placement
+    * Fixed crash when CustomMenu command doesn't point to a file
 
-See ChangeLog for more details.
-
-This is the final release candidate.
-Next relase will be 1.0.0 stable.
-
-We need people to report bugs and other issues so we can make next 
-release the most stable release ever.
-
-Do not forget to include language setting, OS and distribution 
-when reporting bugs.
+  See ChangeLog for more details.
 
 

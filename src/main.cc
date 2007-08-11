@@ -222,7 +222,7 @@ int main(int argc, char **argv) {
             }
         } else if (arg == "-version" || arg == "-v") {
             // print current version string
-            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2007 Henrik Kinnunen " << endl << endl;
+            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2007 Fluxbox Team " << endl << endl;
             exit(EXIT_SUCCESS);
         } else if (arg == "-log") {
             if (++i >= argc) {

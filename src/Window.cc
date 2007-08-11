@@ -2400,8 +2400,10 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
                 functions.resize = true;
             }
 
-            if (changed)
+            if (changed) {
                 setupWindow();
+                applyDecorations();
+            }
        }
 
         moveResize(frame().x(), frame().y(),
