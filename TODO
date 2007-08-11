@@ -1,34 +1,6 @@
 --------- Code:
-* Check FluxboxWindow::toggleDecor
-  Needs cleaning and check functions that uses this one. Should function 
-  struct really be affected by this function.
-* Fix some kind of "global" double click interval.  see IntResMenuItem.cc
 
 --------- Features:
-* you type a key and then you have a little menu which lets you 
-  choose a window to group with the one where you are
-* Finnish (Finland) translation
-* "Iconify group"/group commands in Windowmenu
-* Call and navigate menus from the keyboard (bind a menu to a key
-  and use arrows to navigate)
-* Dynamic tag width. Currently I know of two options - constant width
-  and dividing the full window width. I like it better when the width is
-  enough to show all the title, as long as the aggregation of all tabs
-  doesn't exceed the frame's width (see PWM for example)
-* Unique names (e.g, the second xterm title will be "xterm <2>", as in
-  emacs), needed for the next wish:
-* "Goto Frame" as Emacs C-x b, that show completions in the bar
-* mouse button configure
-* better group handling - possibly a structure to hold information about a
-  tabgroup, so you can set a win property with a unique identifier and
-  ordering, so that groups can be reconstructed on restart, and also set
-  on launch somehow. Possibly related would be fixing it so it remembers
-  which member of a tabgroup is the focused one, and set that
-  appropriately when necessary (eg currently, unsticking a group will
-  revert the focus to the "first" window in the group, instead of the
-  focused one).
-
-
 
 
 Next Generation:
