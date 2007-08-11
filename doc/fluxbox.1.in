@@ -66,7 +66,7 @@ Run on specified screens only or all (by default).
 Print more information in process.
 .RE
 .SH "STARTING FLUXBOX"
-fluxbox(1) comes with a program called startfluxbox(8) usually located wherever you installed fluxbox. This script provides you with many options and variables that can be set when starting fluxbox. To actually call fluxbox and begin using it, you should place "exec startfluxbox" in your /.xinitrc or /.xsession (depending on your distribution and/or display manager) as the last executed command. This is assuming that the location of fluxbox(1) and startfluxbox(8) are in your shell's $PATH. Also note that you may need to create the /.xinitrc file or your setup may use /.xsession instead, depending on your X setup. For more information on your shell, please visit your shell's manual page.
+fluxbox(1) comes with a program called startfluxbox(8) usually located wherever you installed fluxbox. This script provides you with many options and variables that can be set when starting fluxbox. To actually call fluxbox and begin using it, you should place "exec startfluxbox" in your ~/.xinitrc or ~/.xsession (depending on your distribution and/or display manager) as the last executed command. This is assuming that the location of fluxbox(1) and startfluxbox(8) are in your shell's $PATH. Also note that you may need to create the ~/.xinitrc file or your setup may use ~/.xsession instead, depending on your X setup. For more information on your shell, please visit your shell's manual page.
 .sp
 By using fluxbox \-i you'll see the defaults used by fluxbox(1). These are what fluxbox looks for upon startup. In the list of `Defaults:' you'll see a menu file location, this is where you can provide a system\-wide menu file for your users.
 .sp
@@ -190,7 +190,7 @@ described in fluxstyle(1)).
 .TP 4
 \(bu
 
-\fBLock Screen\fR: Locks the screen\&...
+\fBLock Screen\fR: Locks the screen.
 .TP 4
 \(bu
 
@@ -202,10 +202,10 @@ described in fluxstyle(1)).
 .TP 4
 \(bu
 
-\fBRestart\fR: Restart the whole darn thing. This starts a completely new fluxbox process, rereads files and redraws all graphical elements. Running applications will remain open, however.
+\fBRestart\fR: Restarts the windowmanager. This starts a completely new fluxbox process, rereads files and redraws all graphical elements. Running applications will remain open, however.
 .TP 4
 \(bu
-*Exit: Exits fluxbox and probably shuts down the X Window server.
+\fBExit\fR: Exits fluxbox and shuts down the X Window server.
 .SS "Configuration Menu"
 This menu offers the opportunity to set up fluxbox. It contains many options from the init file, but this is an easier and faster way for most users.
 .sp
@@ -519,7 +519,7 @@ The possible tools are:
 Other aspects of the toolbar can be configured in two ways: through the toolbar menu, which is accessable in the Configuration part of the RootMenu or with a right click on the edge the toolbar, or by editing the init file (see the RESOURCES section for more information about that).
 .sp
 .SS "Configuration via the Toolbar Menu"
-All changes take effect immediately, except for a change of the "Toolbar Alpha", which needs a restart to make the change visible. Here are the settings:
+All changes take effect immediately, which needs a restart to make the change visible. Here are the settings:
 .sp
 .TP 4
 \(bu
@@ -1715,36 +1715,6 @@ You can also place [group] tag around several [app] tags, with an [end] tag to i
 .RE
 Parameters in the `apps' file are case\-sensitive. Application names are taken from the first X window WM_CLASS attribute by default (WM_NAME = title, WM_WINDOW_ROLE = role). You can see this attribute by using the xprop command. Transient windows are not affected by application settings. Take care when using regular expressions. If you are not familiar with regular expressions you can disable this feature by specifying \-\-disable\-regexp during configure. Plain strings will then be matched.
 .sp
-.SH "GROUPS"
-Since version 0.1.11, fluxbox has a feature called autogrouping, that is apps are automatically grouped together if they are in the same group. NOTE: this feature is deprecated since version 0.9.1 in favor of grouping using the `apps' file, since it is much more powerful.
-.sp
-You can create groups simply by editing the ~/.fluxbox/groups file. This file takes the format of:
-.sp
-.sp
-.RS 4
-.nf
-<app1> <app2> <app3> <...> <appN>
-.fi
-.RE
-where elements can be found with this command:
-.sp
-.sp
-.RS 4
-.nf
-$> xprop WM_CLASS
-.fi
-.RE
-Just type this command into a terminal and use the mouse to click on the desired app and it will tell you what to write as an element (use the first of the two names returned). Each line forms a different group, e.g.:
-.sp
-.sp
-.RS 4
-.nf
-Navigator nedit
-xterm
-.fi
-.RE
-This will create two groups, one with netscape and nedit, and one with xterm. The new window will only group itself to other windows on the same workspace and to the last window that was focused.
-.sp
 .SH "THE SLIT"
 The slit is a special fluxbox window frame that can contain dockable applications, e.g. \fIbbtools\fR or \fIwmapps\fR.
 .sp
@@ -1852,8 +1822,6 @@ fluxbox is written and maintained by Henrik Kinnunen <fluxgen at fluxbox org>, S
 Blackbox was written and maintained by Brad Hughes <blackbox at alug org> and Jeff Raven <jraven at psu edu>.
 .sp
 The Official fluxbox website: http://www.fluxbox.org
-.sp
-Many compatible themes: \- http://boxwhore.org \- http://themes.freshmeat.net/
 .sp
 This manpage is the combined work of:
 .sp
