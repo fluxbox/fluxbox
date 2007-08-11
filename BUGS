@@ -2,19 +2,8 @@ Known bugs and missing features that will be fixed in future version:
 
 BUGS:
 
-  * Reported issues with gvim windows that have different sized fonts.
-    -> Tabbing them together makes them fight over the window size, and
-       thus shrink to minimum
-
-  * Some builds/distros seem to require all supported locales to be
-    installed to build properly (e.g. mdk, gentoo reported), this ok?
-
-Other TODO:
-
-FAQ items for:
-
   * "My window (e.g. mplayer/xmms) stops updating with non-opaque
     window moving.
-    - outline moving does this, it's not a bug, etc etc.
+    - Current implementation of outline moving does this, it's not a bug.
 
 
