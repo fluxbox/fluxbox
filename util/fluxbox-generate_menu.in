@@ -1596,7 +1596,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IM
-        normal_find gaim kopete gnomemeeting sim kadu psi amsn aim ayttm everybuddy gabber ymessenger
+        normal_find pidgin gaim kopete gnomemeeting sim kadu psi amsn aim ayttm everybuddy gabber ymessenger
         find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
         cli_find centericq micq
     append_menu_end
