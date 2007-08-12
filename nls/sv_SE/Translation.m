@@ -44,7 +44,9 @@ $set 4 #Configmenu
 
 1 Kantutjämning
 2 Höj automatiskt
+3 Klick höjer fönstret
 4 Klicka för fokus
+5 Dekorera transienta fönster
 7 Fokusera fönster vid skrivbordsbyte
 8 Fokusmodell
 9 Fokus på nya fönster
@@ -67,7 +69,7 @@ $set 4 #Configmenu
 
 $set 5 #Ewmh
 
-1 Slut på minne, kan inte allokera minne för EWMH klientlista.
+1 Slut på minne, kan inte allokera minne för EWMH klientlista. 
 
 $set 6 #FbTkError
 
@@ -112,7 +114,7 @@ $set 9 #Keys
 
 1 Keys: Fel på rad
 2 Keys: Misslyckades att slå ihop keytree!
-3 Keys: Felaktig tangent/modifierare på rad
+3 Keys: Felaktig tangent/modifierare på rad 
 
 $set 10 #Menu
 
@@ -166,7 +168,7 @@ $set 13 #Slit
 $set 14 #Toolbar
 
 1 Ändra namn på skrivbordet
-2 Ikonrads läge
+2 Ikonradsläge
 3 Alla fönster
 4 Ikoner
 5 Inga
@@ -175,7 +177,7 @@ $set 14 #Toolbar
 9 Verktygsrads lager
 10 Verktygslistens placering
 11 Verktygslist
-12 Verktygsraden bredd i procent
+12 Verktygsradens bredd i procent
 13 Klocka i 24h format
 14 Klocka i 12h format
 15 Ändra klockformat
@@ -234,7 +236,7 @@ $set 19 #main
 
 $set 20 #layers
 
-1 Äver dock
+1 Över dock
 2 Längst ner
 3 Arbetsyta
 4 Dock
