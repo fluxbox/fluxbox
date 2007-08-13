@@ -62,7 +62,7 @@ $set 4 #Configmenu
 10 Vollständig Maximieren
 11 Bilddithering
 12 Fensterinhalt beim Verschieben zeigen
-14 Fokus folgt Mouse
+14 Fokus folgt Maus
 15 Fenster über Desktopgrenzen verschieben
 16 Erzwinge Pseudotransparenz
 17 Alphatransparenz für Menü
@@ -73,7 +73,7 @@ $set 4 #Configmenu
 22 Tabs in der Titelleiste
 23 Breite für externe Tabs
 24 Klick fokussiert Tab
-25 Tabfokus folgt Mouse
+25 Tabfokus folgt Maus
 
 $set 5 #Ewmh
 
@@ -148,7 +148,7 @@ $set 11 #Remember
 6 Position
 7 Beim Schließen speichern
 8 Aufgerollt
-9 Auf allen Desktops sichtbar
+9 Klebend
 10 Unbekannter apps-Eintrag
 11 Arbeitsfläche
 12 Monitor
