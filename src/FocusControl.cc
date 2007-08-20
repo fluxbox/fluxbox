@@ -421,10 +421,12 @@ void FocusControl::revertFocus(BScreen &screen) {
     if (s_reverting)
         return;
 
-    FocusControl::s_reverting = true;
-
     WinClient *next_focus = 
         screen.focusControl().lastFocusedWindow(screen.currentWorkspaceID());
+
+    if (next_focus && next_focus->fbwindow() &&
+        next_focus->fbwindow()->isStuck())
+        FocusControl::s_reverting = true;
 
     // if setting focus fails, or isn't possible, fallback correctly
     if (!(next_focus && next_focus->focus())) {

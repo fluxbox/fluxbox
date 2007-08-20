@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/08/20:
+   * Fix some focus issues with moving windows between workspaces (Mark)
+     FocusControl.cc
 *07/08/12:
    * Updated de_* translations, #1767986 ( Thanks Christian Loosli )
 *07/08/11:
