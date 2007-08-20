@@ -488,13 +488,16 @@ void FocusControl::revertFocus(BScreen &screen) {
     if (s_reverting || screen.isShuttingdown())
         return;
 
-    FocusControl::s_reverting = true;
-
     Focusable *next_focus =
         screen.focusControl().lastFocusedWindow(screen.currentWorkspaceID());
 
+    if (next_focus && next_focus->fbwindow() &&
+        next_focus->fbwindow()->isStuck())
+        FocusControl::s_reverting = true;
+
     // if setting focus fails, or isn't possible, fallback correctly
     if (!(next_focus && next_focus->focus())) {
+
         setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
         // if there's a menu open, focus it
         if (FbTk::Menu::shownMenu())
