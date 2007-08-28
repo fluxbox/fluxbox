@@ -2673,9 +2673,13 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
 
-    if ((re.button == 1) && (re.state & Mod1Mask) && !screen().clickRaises())
+    if ((re.button == 1) && (re.state & Fluxbox::instance()->getModKey()) 
+         && !screen().clickRaises()) {
+
         if (!isMoving())
             raise();
+
+    }
 
     if (isMoving())
         stopMoving();
