@@ -506,7 +506,7 @@ void Menu::updateMenu(int active_index) {
 
 void Menu::show() {
 
-    if (isVisible() || !menuitems.size())
+    if (isVisible() || menuitems.empty())
         return;
 
     m_visible = true;

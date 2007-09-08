@@ -34,8 +34,11 @@
 namespace FbTk {
 
 void MenuItem::click(int button, int time) {
-    if (m_command.get() != 0)
-        m_command->execute();
+    if (m_command.get() != 0) {
+        // we need a local variable, since the command may destroy this object
+        RefCount<Command> tmp(m_command);
+        tmp->execute();
+    }
 }
 
 void MenuItem::drawLine(FbDrawable &draw, const MenuTheme &theme, size_t size,

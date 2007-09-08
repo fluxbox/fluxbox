@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/09/07:
+   * Fix crash when changing toolbar visibility, #1786765 (Mark)
+     FbTk/MenuItem.cc
 *07/08/27:
    * Fix hardcoded Mod1, use ModKey() now (Mathias)
      Window.cc
