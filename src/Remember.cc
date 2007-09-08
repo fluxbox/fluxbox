@@ -387,7 +387,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
 
             bool had_error = false;
 
-            if (!str_key.size())
+            if (str_key.empty())
                 continue; //read next line
             if (strcasecmp(str_key.c_str(), "Workspace") == 0) {
                 unsigned int w;

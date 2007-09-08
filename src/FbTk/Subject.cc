@@ -64,7 +64,7 @@ void Subject::notify() {
     m_notify_mode = false;
 
     // remove dead observers
-    if (m_dead_observers.size()) {
+    if (!m_dead_observers.empty()) {
         std::for_each(m_dead_observers.begin(),
                       m_dead_observers.end(),
                       std::bind1st(std::mem_fun(&Subject::detach), this));

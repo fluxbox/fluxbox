@@ -323,7 +323,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
         if (submenu == 0)
             return;
 
-        if (str_cmd.size())
+        if (!str_cmd.empty())
             submenu->setLabel(str_cmd);
         else
             submenu->setLabel(str_label);
