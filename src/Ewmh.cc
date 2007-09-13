@@ -265,6 +265,8 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 // we also assume it shouldn't be visible in any toolbar
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
+                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
+                win.moveToLayer(Layer::DOCK);
             } else if (atoms[l] == m_net_wm_window_type_desktop) {
                 /*
                  * _NET_WM_WINDOW_TYPE_DESKTOP indicates a "false desktop" window
