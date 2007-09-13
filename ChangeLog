@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/09/13:
+   * Move dock windows to Dock layer and remove decorations (Mark)
+     Ewmh.cc
 *07/09/09:
    * Added support for Slovak language ( Thanks Martin Lukac )
      nls/sk_SK/*
