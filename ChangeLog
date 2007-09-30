@@ -1,6 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/09/30:
+   * Removed some old styles ( Henrik )
+     Clean, Cthulhain, Spiff, Carbondioxide, Rampage, Minimal
+   * Added new styles: ( Thanks Sven Michel )
+     ostrich zimek_darkblue, zimek_green, zimek_bisque,
+     carp, arch, bora_black, bora_blue, bora_green, green_tea
    * Load menu and workspacemenu mouse bindings if error when loading
      initial key bindings. Else can't get to menu to reload config (Simon)
      Keys.hh/cc

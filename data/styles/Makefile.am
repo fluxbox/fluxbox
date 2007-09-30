@@ -1,11 +1,14 @@
-# data/styles/Makefile.am for Blackbox 0.61.x  - an X11 Window manager
-SUBDIRS=Emerge BlueFlux
+SUBDIRS=Emerge BlueFlux bora_black bora_blue bora_green \
+	zimek_bisque zimek_darkblue zimek_green \
+	arch carp ostrich green_tea
+
 styledir = $(pkgdatadir)/styles
 MAINTAINERCLEANFILES = Makefile.in
 
-style_DATA = Makro MerleyKay Clean Artwiz Cthulhain Flux Minimal \
-	Nyz Operation Outcomes Rampage Results Shade Spiff LemonSpace \
-	Twice Carbondioxide qnx-photon BlueNight Meta
+style_DATA = Makro MerleyKay Artwiz Flux \
+	Nyz Operation Outcomes Results Shade LemonSpace \
+	Twice qnx-photon BlueNight Meta
+
 EXTRA_DIST=$(style_DATA)
 
 uninstall-local:
