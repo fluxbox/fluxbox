@@ -97,6 +97,9 @@ private:
     void grabButton(unsigned int button, unsigned int mod);
     void ungrabButtons();
 
+    // Load default keybindings for when there are errors loading the initial one
+    void loadDefaults();
+
     std::string m_filename;
 
     class t_key;

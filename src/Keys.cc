@@ -166,22 +166,32 @@ void Keys::ungrabButtons() {
     @return true on success else false
 */
 bool Keys::load(const char *filename) {
-    if (!filename)
-        return false;
+    // an intentionally empty file will still have one root mapping
+    bool firstload = m_map.empty();
 
-    //free memory of previous grabs
+    if (!filename) {
+        if (firstload)
+            loadDefaults();
+        return false;
+    }
+
+    FbTk::App::instance()->sync(false);
+
+    // open the file
+    ifstream infile(filename);
+    if (!infile) {
+        if (firstload)
+            loadDefaults();
+
+        return false; // failed to open file
+    }
+
+    // free memory of previous grabs
     deleteTree();
 
     m_map["default:"] = new t_key(0,0,0,0);
 
-    FbTk::App::instance()->sync(false);
-
-    //open the file
-    ifstream infile(filename);
-    if (!infile)
-        return false; // faild to open file
-
-    unsigned int current_line = 0;//so we can tell the user where the fault is
+    unsigned int current_line = 0; //so we can tell the user where the fault is
 
     while (!infile.eof()) {
         string linebuffer;
@@ -202,6 +212,21 @@ bool Keys::load(const char *filename) {
     m_filename = filename;
     keyMode("default");
     return true;
+}
+
+/**
+ * Load critical key/mouse bindings for when there are fatal errors reading the keyFile.
+ */
+void Keys::loadDefaults() {
+#ifdef DEBUG
+    cerr<<"Loading default key bindings"<<endl;
+#endif
+    deleteTree();
+    m_map["default:"] = new t_key(0,0,0,0);
+    addBinding("OnDesktop Mouse1 :HideMenus");
+    addBinding("OnDesktop Mouse2 :WorkspaceMenu");
+    addBinding("OnDesktop Mouse3 :RootMenu");
+    keyMode("default");
 }
 
 bool Keys::save(const char *filename) const {

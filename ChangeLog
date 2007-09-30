@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/09/30:
+   * Load menu and workspacemenu mouse bindings if error when loading
+     initial key bindings. Else can't get to menu to reload config (Simon)
+     Keys.hh/cc
 *07/09/20:
    * Updated ru_RU ( Thanks Slava Semushin )
 *07/09/13:
