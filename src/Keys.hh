@@ -98,6 +98,9 @@ private:
     void ungrabButtons();
     void grabWindow(Window win);
 
+    // Load default keybindings for when there are errors loading the initial one
+    void loadDefaults();
+
     std::string m_filename;
 
     class t_key;
