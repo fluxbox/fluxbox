@@ -63,7 +63,7 @@ display_usage() {
     cat << EOF
 Usage: @pkgprefix@fluxbox-generate_menu@pkgsuffix@ [-kgrBh] [-t terminal] [-w url] [-b browser]
          [-m menu-title] [-o /path] [-u /path] [-p /path] [-n /path] [-q /path]
-         [-d /path ] [-ds] [-i /path] [-is]
+         [-d /path ] [-ds] [-i /path] [-is] [-su]
 EOF
 }
 
@@ -76,6 +76,7 @@ Options:
     -k  Insert a kde menu
     -g  Add a gnome menu
     -B  enable backgrounds menu
+    -su enable sudo commands
     -r  Don't remove empty menu-entries; for templates
 
     -d  other path(s) to recursively search for *.desktop files
@@ -531,6 +532,14 @@ cli_find() {
     done
 }
 
+sudo_find() {
+    [ "${DOSUDO}" = yes ] || return
+    while [ "$1" ]; do
+        find_it $1     append "[exec]   ($1 (as root)) {${DEFAULT_TERM} -e sudo $1}"
+        shift
+    done
+}
+
 clean_up() {
 [ -f "$ICONMAPPING" ] && rm -f "$ICONMAPPING"
 
@@ -606,7 +615,7 @@ case ${LC_ALL} in
 # Ah my Russian hero. Please help me update the translation
 # $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
 # $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# $ diff -u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
         MENU_ENCODING=KOI8-R
@@ -733,7 +742,7 @@ case ${LC_ALL} in
 # Ah my Swedish hero. Please help me update the translation
 # $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
 # $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# $ diff -u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
         MENU_ENCODING=ISO-8859-1
@@ -856,7 +865,7 @@ case ${LC_ALL} in
 # Ah my Japanese hero. Please help me update the translation
 # $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
 # $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# $ diff -u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
         MENU_ENCODING=eucJP
@@ -899,7 +908,7 @@ case ${LC_ALL} in
 # Ah my french hero. Please help me update the translation
 # $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
 # $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# $ diff -u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
         MENU_ENCODING=ISO-8859-15
@@ -980,7 +989,7 @@ case ${LC_ALL} in
 # Ah my Romanian hero. Please help me update the translation
 # $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
 # $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# $ diff -u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
         MENU_ENCODING=ISO-8859-15
@@ -1068,7 +1077,7 @@ case ${LC_ALL} in
 # Ah my Russian hero. Please help me update the translation
 # $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
 # $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# $ diff -u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
         MENU_ENCODING=ISO-8859-2
@@ -1207,6 +1216,7 @@ MENUTITLE="${MENUTITLE:=Fluxbox}"
 HOMEPAGE="${HOMEPAGE:=fluxbox.org}"
 USERMENU="${USERMENU:=${USERFLUXDIR}/usermenu}"
 MENUCONFIG="${MENUCONFIG:=${USERFLUXDIR}/menuconfig}"
+DOSUDO="no"
 
 # Read the menuconfig file if it exists or else create it.
 # But not during install time, use envvar for sun
@@ -1275,6 +1285,9 @@ if [ ! "${INSTALL}" = Yes ]; then
 
 # Include gnome-menus
 # GNOMEMENU=yes
+
+# enable sudo commands
+# DOSUDO=yes
 
 # Don't cleanup the menu
 # REMOVE=no
@@ -1376,6 +1389,7 @@ while [ $# -gt 0 ]; do
         -m) MENUTITLE=${2}; testoption sk $1 $2; shift 2;;
         -w) HOMEPAGE=${2}; testoption sk $1 $2; shift 2;;
         -u) USERMENU=${2}; testoption fl $1 $2; shift 2;;
+	-su) DOSUDO=yes; shift;;
         -r) REMOVE=no; shift;;
         -h) display_help ; exit 0 ;;
         -a) display_authors ; exit 0 ;;
@@ -1631,13 +1645,14 @@ append_submenu "${NETMENU}"
         cli_find ncftp pftp ftp lftp yafc
     append_menu_end
 
-	 append_submenu SMB
-	 	  normal_find	LinNeighborhood jags SambaSentinel
-	 append_menu_end
+    append_submenu SMB
+      normal_find LinNeighborhood jags SambaSentinel
+    append_menu_end
 
-	 append_submenu Portscan
-	 	  normal_find xnmap nmapfe
-	 append_menu_end
+    append_submenu Analyzer
+	  normal_find xnmap nmapfe wireshark ettercap
+	  sudo_find xnmap nmapfe wireshark ettercap
+    append_menu_end
 
     normal_find x3270 wpa_gui
 
@@ -1680,7 +1695,7 @@ append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${MUSICMENU}"
                normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gnome-alsamixer gmix kmix kscd \
                    grecord kmidi xplaycd soundtracker grip easytag audacity \
-                   zinf rhythmbox kaboodle beep-media-player amarok
+                   zinf rhythmbox kaboodle beep-media-player amarok tagtool
                cli_find cdcd cplay alsamixer orpheus mp3blaster
        append_menu_end
 
@@ -1750,8 +1765,8 @@ append_submenu "${GAMESMENU}"
         wesnoth canfeild ace_canfeild golf merlin chickens \
         supertux tuxdash  neverball cube_client blackjack \
         doom doom3 quake4 blackshades gltron kpoker concentration \
-        torrent scramble kiki xmoto
-    cli_find gnugo
+        torrent scramble kiki xmoto warsow wormux
+    cli_find gnugo xgame
 
     find_it et append "[exec] (Enemy Territory) {et}"
     find_it ut append "[exec] (Unreal Tournament) {ut}"

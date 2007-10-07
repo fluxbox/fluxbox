@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
+*07/10/07:
+   * minor addons to fbgm (Thanks Patrik Wenger <paddor at gmail dot com>)
+     util/fluxbox-generate_menu.in
 *07/09/30:
    * Removed some old styles ( Henrik )
      Clean, Cthulhain, Spiff, Carbondioxide, Rampage, Minimal
