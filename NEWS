@@ -1,7 +1,7 @@
-News in 1.0:
+News in 1.0.0:
     * New styles:
       ostrich zimek_darkblue, zimek_green, zimek_bisque,
-      carp, arch, bora_black, bora_blue, bora_green, green_tea
+      carp, arch, bora_black, bora_blue, bora_green, green_tea, bloe
     * Fixed shape handling, now shaped corners have border.
     * Allow negative numbers in command "Workspace"
     * Added utility fluxbox-remote 
@@ -14,7 +14,7 @@ News in 1.0:
       plus some other minor changes in fluxbox-generate_menu
     * Updated languages: 
       sv_SE, zh_CN, de_*, es_ES, es_AR, en_US, en_GB, pt_*
-      fi_FI, fr_FR
+      fi_FI, fr_FR, ru_RU
 
 Bug fixes:
     * #1694959 Rotate toolbar background texture along with toolbar
