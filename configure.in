@@ -566,7 +566,7 @@ AC_ARG_WITH(
   style,
   [  --with-style=path       style by default   (PREFIX/share/fluxbox/styles/Meta)],
   DEFAULT_STYLE=$with_style,
-  DEFAULT_STYLE=\$\(prefix\)/share/fluxbox/styles/Meta
+  DEFAULT_STYLE=\$\(prefix\)/share/fluxbox/styles/bloe
 )
 AC_SUBST(DEFAULT_STYLE)
 
@@ -637,6 +637,19 @@ data/styles/BlueFlux/Makefile
 data/styles/BlueFlux/pixmaps/Makefile
 data/styles/Emerge/Makefile
 data/styles/Emerge/pixmaps/Makefile
+data/styles/arch/Makefile
+data/styles/arch/pixmaps/Makefile
+data/styles/zimek_bisque/Makefile
+data/styles/zimek_darkblue/Makefile
+data/styles/zimek_green/Makefile
+data/styles/ostrich/Makefile
+data/styles/green_tea/Makefile
+data/styles/bora_black/Makefile
+data/styles/bora_blue/Makefile
+data/styles/bora_green/Makefile
+data/styles/carp/Makefile
+data/styles/bloe/Makefile
+data/styles/bloe/pixmaps/Makefile
 doc/Makefile
 doc/ru/Makefile
 nls/Makefile
