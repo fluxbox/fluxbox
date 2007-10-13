@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1:
-*07/10/13: deiconify windows via :Deiconify in reverse order (Mathias)
+*07/10/13:
+   * MERGED BRANCH TO TRUNK: THIS BRANCH IS NO LONGER BEING USED (Mark)
+   * deiconify windows via :Deiconify in reverse order (Mathias)
      FbCommands.cc
 *07/06/08:
    * Fix transient windows getting tabbed from apps file and not changing layers
