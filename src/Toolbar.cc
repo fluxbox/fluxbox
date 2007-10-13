@@ -33,6 +33,7 @@
 #include "ToolbarTheme.hh"
 
 #include "fluxbox.hh"
+#include "Keys.hh"
 #include "Screen.hh"
 #include "IntResMenuItem.hh"
 #include "BoolMenuItem.hh"
@@ -279,6 +280,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     scrn.resourceManager().unlock();
     // setup to listen to child events
     FbTk::EventManager::instance()->addParent(*this, window());
+    Fluxbox::instance()->keys()->registerWindow(window().window(),
+                                                Keys::ON_TOOLBAR);
     // get everything together
     reconfigure();
     // this gets done by the screen later as it loads
@@ -286,6 +289,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
 }
 
 Toolbar::~Toolbar() {
+    Fluxbox::instance()->keys()->unregisterWindow(window().window());
     FbTk::EventManager::instance()->remove(window());
     // remove menu items before we delete tools so we dont end up
     // with dangling pointers to old submenu items (internal menus)
@@ -520,6 +524,11 @@ void Toolbar::reconfigure() {
 
 
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
+    if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
+                                              Keys::ON_TOOLBAR))
+        return;
+    if (be.button == 1)
+        raise();
     if (be.button != 3)
         return;
 
@@ -545,25 +554,6 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
     } else
         menu().hide();
 
-}
-
-
-void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
-    if (re.button == 1) {
-        raise();
-    } else if (re.button == 4) { //mousewheel scroll up
-        if(screen().isReverseWheeling()) {
-            screen().prevWorkspace(1);
-        } else {
-            screen().nextWorkspace(1);
-        }
-    } else if (re.button == 5) { //mousewheel scroll down
-        if(screen().isReverseWheeling()) {
-            screen().nextWorkspace(1);
-        } else {
-            screen().prevWorkspace(1);
-        }
-    }
 }
 
 void Toolbar::enterNotifyEvent(XCrossingEvent &not_used) {

@@ -31,7 +31,6 @@
 #include "Keys.hh"
 #include "Window.hh"
 #include "Workspace.hh"
-#include "Netizen.hh"
 
 #include "Layer.hh"
 #include "FocusControl.hh"
@@ -287,9 +286,10 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     image_dither(rm, false, scrname+".imageDither", altscrname+".ImageDither"),
     opaque_move(rm, false, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
     full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
+    max_ignore_inc(rm, true, scrname+".maxIgnoreIncrement", altscrname+".MaxIgnoreIncrement"),
+    max_disable_move(rm, false, scrname+".maxDisableMove", altscrname+".MaxDisableMove"),
+    max_disable_resize(rm, false, scrname+".maxDisableResize", altscrname+".MaxDisableResize"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
-    desktop_wheeling(rm, true, scrname+".desktopwheeling", altscrname+".DesktopWheeling"),
-    reverse_wheeling(rm, false, scrname+".reversewheeling", altscrname+".ReverseWheeling"),
     show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
@@ -299,6 +299,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     resize_model(rm, BOTTOMRESIZE, scrname+".resizeMode", altscrname+".ResizeMode"),
     tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
     windowmenufile(rm, "", scrname+".windowMenu", altscrname+".WindowMenu"),
+    typing_delay(rm, 0, scrname+".noFocusWhileTypingDelay", altscrname+".NoFocusWhileTypingDelay"),
     follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
     user_follow_model(rm, FOLLOW_ACTIVE_WINDOW, scrname+".userFollowModel", altscrname+".UserFollowModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
@@ -327,6 +328,8 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
     scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
     allow_remote_actions(rm, false, scrname+".allowRemoteActions", altscrname+".AllowRemoteActions"),
+    clientmenu_use_pixmap(rm, true, scrname+".clientMenu.usePixmap", altscrname+".ClientMenu.UsePixmap"),
+    tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
     max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
     default_internal_tabs(rm, true /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
 
@@ -362,13 +365,15 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  0, 0, 10, 10,
                  false,  // override redirect
                  true), // save under
+    m_dummy_window(scrn, -1, -1, 1, 1, 0, true, false, CopyFromParent,
+                   InputOnly),
     resource(rm, screenname, altscreenname),
     m_resource_manager(rm),
     m_name(screenname),
     m_altname(altscreenname),
     m_focus_control(new FocusControl(*this)),
     m_placement_strategy(new ScreenPlacement(*this)),
-    m_cycling(false),
+    m_cycling(false), m_typing_ahead(false), m_cycle_opts(0),
     m_xinerama_headinfo(0),
     m_restart(false),
     m_shutdown(false) {
@@ -423,6 +428,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->add(*this, rootWindow());
+    Keys *keys = Fluxbox::instance()->keys();
+    if (keys)
+        keys->registerWindow(rootWindow().window(),
+                             Keys::GLOBAL|Keys::ON_DESKTOP);
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
     // load this screens resources
@@ -510,7 +519,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     }
 
     changeWorkspaceID(first_desktop);
-    updateNetizenWorkspaceCount();
 
     // we need to load win frame theme before we create any fluxbox window
     // and after we've load the resources
@@ -547,6 +555,9 @@ BScreen::~BScreen() {
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->remove(rootWindow());
+    Keys *keys = Fluxbox::instance()->keys();
+    if (keys)
+        keys->unregisterWindow(rootWindow().window());
 
     if (m_rootmenu.get() != 0)
         m_rootmenu->removeAll();
@@ -582,7 +593,6 @@ BScreen::~BScreen() {
     removeWorkspaceNames();
     using namespace STLUtil;
     destroyAndClear(m_workspaces_list);
-    destroyAndClear(m_netizen_list);
     destroyAndClear(m_managed_resources);
 
     //why not destroyAndClear(m_icon_list); ?
@@ -816,7 +826,44 @@ void BScreen::propertyNotify(Atom atom) {
 }
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
-    Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode);
+    if (!m_typing_ahead) {
+        Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
+                                              Keys::GLOBAL|Keys::ON_DESKTOP);
+        return;
+    }
+
+    KeySym ks;
+    char keychar[1];
+    XLookupString(&ke, keychar, 1, &ks, 0);
+    // a modifier key by itself doesn't do anything
+    if (IsModifierKey(ks))
+        return;
+
+    switch (ks) {
+    case XK_Escape:
+    case XK_KP_Enter:
+    case XK_Return:
+        m_type_ahead.reset();
+        FbTk::EventManager::instance()->ungrabKeyboard();
+        break;
+    case XK_BackSpace:
+        m_type_ahead.putBackSpace();
+        m_matches = m_type_ahead.matched();
+        break;
+    case XK_Tab:
+    case XK_ISO_Left_Tab:
+        m_type_ahead.seek();
+        focusControl().cycleFocus(m_matches, m_cycle_opts, (bool)(ke.state & ShiftMask));
+        break;
+    default:
+        m_matches = m_type_ahead.putCharacter(keychar[0]);
+        // if focused win doesn't match new search string, find the next one
+        if (!m_matches.empty() &&
+            std::find(m_matches.begin(), m_matches.end(),
+                      FocusControl::focusedWindow()) == m_matches.end())
+            focusControl().cycleFocus(m_matches, m_cycle_opts);
+        break;
+    }
 }
 
 void BScreen::keyReleaseEvent(XKeyEvent &ke) {
@@ -835,15 +882,28 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
         imageControl().installRootColormap();
 
     Keys *keys = Fluxbox::instance()->keys();
-    keys->doAction(be.type, be.state, be.button);
+    keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP);
 }
 
 void BScreen::notifyUngrabKeyboard() {
     m_cycling = false;
+    m_typing_ahead = false;
+    m_type_ahead.reset();
     focusControl().stopCyclingFocus();
 }
 
-void BScreen::cycleFocus(int options, bool reverse) {
+void BScreen::startTypeAheadFocus(std::list<Focusable *> &winlist,
+                                  const ClientPattern *pat) {
+    m_type_ahead.init(winlist);
+    m_matches = winlist;
+    FbTk::EventManager *evm = FbTk::EventManager::instance();
+    if (!m_typing_ahead && !m_cycling)
+        evm->grabKeyboard(*this, rootWindow().window());
+    m_cycle_opts = pat;
+    m_typing_ahead = true;
+}
+
+void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
     // get modifiers from event that causes this for focus order cycling
     XEvent ev = Fluxbox::instance()->lastEvent();
     unsigned int mods = 0;
@@ -852,7 +912,7 @@ void BScreen::cycleFocus(int options, bool reverse) {
     else if (ev.type == ButtonPress)
         mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
 
-    if (!m_cycling && mods) {
+    if (!m_cycling && !m_typing_ahead && mods) {
         m_cycling = true;
         FbTk::EventManager::instance()->grabKeyboard(*this, rootWindow().window());
     }
@@ -860,12 +920,19 @@ void BScreen::cycleFocus(int options, bool reverse) {
     if (mods == 0) // can't stacked cycle unless there is a mod to grab
         options |= FocusControl::CYCLELINEAR;
 
-    FocusControl::FocusedWindows *win_list =
-        (options & FocusControl::CYCLELINEAR) ?
+    FocusControl::Focusables *win_list = 0;
+    if (options & FocusControl::CYCLEGROUPS) {
+        win_list = (options & FocusControl::CYCLELINEAR) ?
+            &focusControl().creationOrderWinList() :
+            &focusControl().focusedOrderWinList();
+    } else {
+        win_list = (options & FocusControl::CYCLELINEAR) ?
             &focusControl().creationOrderList() :
             &focusControl().focusedOrderList();
+    }
 
-    focusControl().cycleFocus(*win_list, options, reverse);
+    focusControl().cycleFocus(*win_list, pat, reverse);
+
 }
 
 FbTk::Menu *BScreen::createMenu(const string &label) {
@@ -1101,8 +1168,8 @@ void BScreen::removeClient(WinClient &client) {
 
     focusControl().removeClient(client);
 
-    for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
-             mem_fun(&Workspace::updateClientmenu));
+    if (client.fbwindow() && client.fbwindow()->isIconic())
+        iconListSig().notify();
 
     using namespace FbTk;
 
@@ -1124,7 +1191,7 @@ void BScreen::removeClient(WinClient &client) {
 int BScreen::addWorkspace() {
 
     bool save_name = getNameOfWorkspace(m_workspaces_list.size()) != "" ? false : true;
-    Workspace *wkspc = new Workspace(*this, m_layermanager,
+    Workspace *wkspc = new Workspace(*this,
                                      getNameOfWorkspace(m_workspaces_list.size()),
                                      m_workspaces_list.size());
     m_workspaces_list.push_back(wkspc);
@@ -1133,8 +1200,6 @@ int BScreen::addWorkspace() {
         addWorkspaceName(wkspc->name().c_str()); //update names
 
     saveWorkspaces(m_workspaces_list.size());
-
-    updateNetizenWorkspaceCount();
 
     return m_workspaces_list.size();
 
@@ -1163,7 +1228,6 @@ int BScreen::removeLastWorkspace() {
     //remove last workspace
     m_workspaces_list.pop_back();
 
-    updateNetizenWorkspaceCount();
     saveWorkspaces(m_workspaces_list.size());
     // must be deleted after we send notify!!
     // so we dont get bad pointers somewhere
@@ -1225,13 +1289,14 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     currentWorkspace()->showAll();
 
     if (focused && focused->isMoving()) {
-        focused->setInputFocus();
+        focused->focus();
         focused->resumeMoving();
     } else
         FocusControl::revertFocus(*this);
 
-    updateNetizenCurrentWorkspace();
     FbTk::App::instance()->sync(false);
+
+    m_currentworkspace_sig.notify();
 
 }
 
@@ -1243,31 +1308,24 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (!win)
         win = FocusControl::focusedFbWindow();
 
-    FbTk::App::instance()->sync(false);
-
-    if (!win || &win->screen() != this || win->isStuck())
+    if (!win || &win->screen() != this)
         return;
 
-    // if iconified, deiconify it before we send it somewhere
-    if (win->isIconic())
-        win->deiconify();
-
-    // if the window isn't on current workspace, hide it
-    if (id != currentWorkspace()->workspaceID())
-        win->withdraw(true);
+    FbTk::App::instance()->sync(false);
 
     windowMenu().hide();
-
     reassociateWindow(win, id, true);
 
-    // if the window is on current workspace, show it.
-    if (id == currentWorkspace()->workspaceID())
-        win->deiconify(false, false);
-
     // change workspace ?
-    if (changeWS && id != currentWorkspace()->workspaceID()) {
+    if (changeWS)
         changeWorkspaceID(id);
-        win->setInputFocus();
+
+    // if the window is on current workspace, show it; else hide it.
+    if (id == currentWorkspace()->workspaceID() && !win->isIconic())
+        win->deiconify(false, false);
+    else {
+        win->hide(true);
+        FocusControl::revertFocus(*this);
     }
 
     // send all the transients too
@@ -1284,113 +1342,6 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 
 }
 
-
-void BScreen::addNetizen(Window win) {
-    Netizen *net = new Netizen(*this, win);
-    m_netizen_list.push_back(net);
-
-    net->sendWorkspaceCount();
-    net->sendCurrentWorkspace();
-
-    // send all windows to netizen
-    Workspaces::iterator it = m_workspaces_list.begin();
-    Workspaces::iterator it_end = m_workspaces_list.end();
-    for (; it != it_end; ++it) {
-        Workspace::Windows::iterator win_it = (*it)->windowList().begin();
-        Workspace::Windows::iterator win_it_end = (*it)->windowList().end();
-        for (; win_it != win_it_end; ++win_it) {
-            net->sendWindowAdd((*win_it)->clientWindow(),
-                               (*it)->workspaceID());
-        }
-    }
-
-    Window f = ((FocusControl::focusedWindow()) ?
-		FocusControl::focusedWindow()->window() : None);
-    net->sendWindowFocus(f);
-}
-
-void BScreen::removeNetizen(Window w) {
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it) {
-        if ((*it)->window() == w) {
-            Netizen *n = *it;
-            delete n;
-            m_netizen_list.erase(it);
-            break;
-        }
-    }
-}
-
-
-void BScreen::updateNetizenCurrentWorkspace() {
-    m_currentworkspace_sig.notify();
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             mem_fun(&Netizen::sendCurrentWorkspace));
-}
-
-
-void BScreen::updateNetizenWorkspaceCount() {
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             mem_fun(&Netizen::sendWorkspaceCount));
-    m_workspacecount_sig.notify();
-}
-
-
-void BScreen::updateNetizenWindowFocus() {
-    Window f = ((FocusControl::focusedWindow()) ?
-                FocusControl::focusedWindow()->window() : None);
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             bind2nd(mem_fun(&Netizen::sendWindowFocus), f));
-}
-
-
-void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
-
-    // update the list of clients
-    m_clientlist_sig.notify();
-
-    // and then send the signal to listeners
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it) {
-        (*it)->sendWindowAdd(w, p);
-    }
-
-}
-
-
-void BScreen::updateNetizenWindowDel(Window w) {
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             bind2nd(mem_fun(&Netizen::sendWindowDel), w));
-
-    m_clientlist_sig.notify();
-}
-
-
-void BScreen::updateNetizenWindowRaise(Window w) {
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             bind2nd(mem_fun(&Netizen::sendWindowRaise), w));
-}
-
-
-void BScreen::updateNetizenWindowLower(Window w) {
-    for_each(m_netizen_list.begin(),
-             m_netizen_list.end(),
-             bind2nd(mem_fun(&Netizen::sendWindowLower), w));
-}
-
-void BScreen::updateNetizenConfigNotify(XEvent &e) {
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it)
-        (*it)->sendConfigNotify(e);
-}
 
 bool BScreen::isKdeDockapp(Window client) const {
     //Check and see if client is KDE dock applet.
@@ -1505,10 +1456,6 @@ FluxboxWindow *BScreen::createWindow(Window client) {
                 delete win;
                 return 0;
             }
-
-            Workspace *workspace = getWorkspace(win->workspaceNumber());
-            if (workspace && !Fluxbox::instance()->isStartup())
-                workspace->checkGrouping(*win);
         }
     }
 
@@ -1559,7 +1506,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     // don't ask me why, but client doesn't seem to keep focus in new window
     // and we don't seem to get a FocusIn event from setInputFocus
     if ((focusControl().focusNew() || FocusControl::focusedWindow() == &client)
-            && win->setInputFocus())
+            && win->focus())
         FocusControl::setFocusedWindow(&client);
 
     m_clientlist_sig.notify();
@@ -1640,20 +1587,12 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
     if (w->isIconic()) {
         removeIcon(w);
         getWorkspace(wkspc_id)->addWindow(*w);
-        // client list need to notify now even though
-        // we didn't remove/add any window,
-        // so listeners that uses the client list to
-        // show whats on current/other workspace
-        // gets updated
-        m_clientlist_sig.notify();
     } else if (ignore_sticky || ! w->isStuck()) {
         // fresh windows have workspaceNumber == -1, which leads to
         // an invalid workspace (unsigned int)
         if (getWorkspace(w->workspaceNumber()))
             getWorkspace(w->workspaceNumber())->removeWindow(w, true);
         getWorkspace(wkspc_id)->addWindow(*w);
-        // see comment above
-        m_clientlist_sig.notify();
     }
 }
 
@@ -1775,6 +1714,15 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         MouseTabFocus, "MouseTabFocus", "Hover over tab to focus windows"),
         focusControl(), FocusControl::MOUSETABFOCUS, save_and_reconfigure));
 
+    try {
+        focus_menu->insert(new BoolMenuItem(_FB_XTEXT(Configmenu, FocusNew,
+            "Focus New Windows", "Focus newly created windows"),
+            *m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
+            saverc_cmd));
+    } catch (FbTk::ResourceException e) {
+        cerr<<e.what()<<endl;
+    }
+
     focus_menu->insert(new BoolMenuItem(_FB_XTEXT(Configmenu,
                                                 AutoRaise,
                                                 "Auto Raise",
@@ -1787,6 +1735,31 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     menu.insert(focusmenu_label, focus_menu);
 
     // END focus menu
+
+    // BEGIN maximize menu
+
+    FbTk::FbString maxmenu_label = _FB_XTEXT(Configmenu, MaxMenu,
+            "Maximize Options", "heading for maximization options");
+    FbTk::Menu *maxmenu = createMenu(maxmenu_label);
+
+    _BOOLITEM(*maxmenu, Configmenu, FullMax,
+              "Full Maximization", "Maximise over slit, toolbar, etc",
+              *resource.full_max, saverc_cmd);
+    _BOOLITEM(*maxmenu, Configmenu, MaxIgnoreInc,
+              "Ignore Resize Increment",
+              "Maximizing Ignores Resize Increment (e.g. xterm)",
+              *resource.max_ignore_inc, saverc_cmd);
+    _BOOLITEM(*maxmenu, Configmenu, MaxDisableMove,
+              "Disable Moving", "Don't Allow Moving While Maximized",
+              *resource.max_disable_move, saverc_cmd);
+    _BOOLITEM(*maxmenu, Configmenu, MaxDisableResize,
+              "Disable Resizing", "Don't Allow Resizing While Maximized",
+              *resource.max_disable_resize, saverc_cmd);
+
+    maxmenu->updateMenu();
+    menu.insert(maxmenu_label, maxmenu);
+
+    // END maximize menu
 
     // BEGIN tab menu
 
@@ -1805,6 +1778,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     tab_menu->insert(new BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
               "Maximize Over", "Maximize over this thing when maximizing"),
               *resource.max_over_tabs, save_and_reconfigure));
+    tab_menu->insert(new BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
+              "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
+              *resource.tabs_use_pixmap, save_and_reconfigure));
 
     FbTk::MenuItem *tab_width_item =
         new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Configmenu, ExternalTabWidth,
@@ -1908,18 +1884,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Opaque Window Moving",
               "Window Moving with whole window visible (as opposed to outline moving)",
               *resource.opaque_move, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, FullMax,
-              "Full Maximization", "Maximise over slit, toolbar, etc",
-              *resource.full_max, saverc_cmd);
-    try {
-        _BOOLITEM(menu, Configmenu, FocusNew,
-                  "Focus New Windows", "Focus newly created windows",
-                  *m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
-                  saverc_cmd);
-    } catch (FbTk::ResourceException e) {
-        cerr<<e.what()<<endl;
-    }
-
     _BOOLITEM(menu, Configmenu, WorkspaceWarping,
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
@@ -1978,7 +1942,7 @@ void BScreen::showPosition(int x, int y) {
 
     winFrameTheme().font().drawText(m_pos_window,
                                     screenNumber(),
-                                    winFrameTheme().labelTextFocusGC(),
+                                    winFrameTheme().iconbarTheme().focusedText().textGC(),
                                     label, strlen(label),
                                     winFrameTheme().bevelWidth(),
                                     winFrameTheme().bevelWidth() +
@@ -2030,7 +1994,7 @@ void BScreen::showGeometry(int gx, int gy) {
     //!! TODO: geom window again?! repeated
     winFrameTheme().font().drawText(m_geom_window,
                                     screenNumber(),
-                                    winFrameTheme().labelTextFocusGC(),
+                                    winFrameTheme().iconbarTheme().focusedText().textGC(),
                                     label, strlen(label),
                                     winFrameTheme().bevelWidth(),
                                     winFrameTheme().bevelWidth() +
@@ -2101,7 +2065,7 @@ void BScreen::renderGeomWindow() {
 
     Pixmap tmp = geom_pixmap;
 
-    if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+    if (winFrameTheme().iconbarTheme().focusedTexture().type() & FbTk::Texture::PARENTRELATIVE) {
         if (!winFrameTheme().titleFocusTexture().usePixmap()) {
             geom_pixmap = None;
             m_geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
@@ -2111,12 +2075,12 @@ void BScreen::renderGeomWindow() {
             m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
-        if (!winFrameTheme().labelFocusTexture().usePixmap()) {
+        if (!winFrameTheme().iconbarTheme().focusedTexture().usePixmap()) {
             geom_pixmap = None;
-            m_geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
+            m_geom_window.setBackgroundColor(winFrameTheme().iconbarTheme().focusedTexture().color());
         } else {
             geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
-                                                     winFrameTheme().labelFocusTexture());
+                                                     winFrameTheme().iconbarTheme().focusedTexture());
             m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
@@ -2139,7 +2103,7 @@ void BScreen::renderPosWindow() {
 
     Pixmap tmp = pos_pixmap;
 
-    if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+    if (winFrameTheme().iconbarTheme().focusedTexture().type() & FbTk::Texture::PARENTRELATIVE) {
         if (!winFrameTheme().titleFocusTexture().usePixmap()) {
             pos_pixmap = None;
             m_pos_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
@@ -2149,12 +2113,12 @@ void BScreen::renderPosWindow() {
             m_pos_window.setBackgroundPixmap(pos_pixmap);
         }
     } else {
-        if (!winFrameTheme().labelFocusTexture().usePixmap()) {
+        if (!winFrameTheme().iconbarTheme().focusedTexture().usePixmap()) {
             pos_pixmap = None;
-            m_pos_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
+            m_pos_window.setBackgroundColor(winFrameTheme().iconbarTheme().focusedTexture().color());
         } else {
             pos_pixmap = imageControl().renderImage(m_pos_window.width(), m_pos_window.height(),
-                                                     winFrameTheme().labelFocusTexture());
+                                                     winFrameTheme().iconbarTheme().focusedTexture());
             m_pos_window.setBackgroundPixmap(pos_pixmap);
         }
     }

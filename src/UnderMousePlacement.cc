@@ -27,7 +27,7 @@
 #include "Screen.hh"
 #include "Window.hh"
 
-bool UnderMousePlacement::placeWindow(const std::vector<FluxboxWindow *> &list,
+bool UnderMousePlacement::placeWindow(const std::list<FluxboxWindow *> &list,
                                       const FluxboxWindow &win,
                                       int &place_x, int &place_y) {
 

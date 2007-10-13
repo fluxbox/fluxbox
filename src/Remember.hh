@@ -29,6 +29,9 @@
 #define REMEMBER_HH
 
 #include "AtomHandler.hh"
+#include "ClientPattern.hh"
+
+#include "FbTk/RefCount.hh"
 
 #include <fstream>
 #include <map>
@@ -40,11 +43,10 @@
 class FluxboxWindow;
 class BScreen;
 class WinClient;
-class ClientPattern;
 
 class Application {
 public:
-    Application(int grouped);
+    Application(bool grouped, ClientPattern *pat = 0);
     inline void forgetWorkspace() { workspace_remember = false; }
     inline void forgetHead() { head_remember = false; }
     inline void forgetDimensions() { dimensions_remember = false; }
@@ -137,14 +139,8 @@ public:
     bool save_on_close_remember;
     bool save_on_close;
 
-    enum {
-        IS_GROUPED = 0x01,
-        MATCH_WORKSPACE = 0x02
-        // MATCH_HEAD, STUCK, ICONIFIED, etc.?
-        // this will probably evolve into a ClientPattern as soon as they
-        // match things like currentworkspace
-    };
-    int is_grouped;
+    bool is_grouped;
+    FbTk::RefCount<ClientPattern> group_pattern;
 
 };
 
@@ -254,7 +250,8 @@ private:
     // optionally can give a line to read before the first (lookahead line)
     int parseApp(std::ifstream &file, Application &app, std::string *first_line = 0);
 
-    Application *findMatchingPatterns(ClientPattern *pat, Patterns *patlist, int is_group);
+    Application *findMatchingPatterns(ClientPattern *pat, Patterns *patlist,
+            bool is_group, ClientPattern *match_pat = 0);
 
     std::auto_ptr<Patterns> m_pats;
     Clients m_clients;

@@ -56,8 +56,8 @@ FbTk::FbString getWMName(Window window) {
 
     XTextProperty text_prop;
     text_prop.value = 0;
-    char **list;
-    int num;
+    char **list = 0;
+    int num = 0;
     _FB_USES_NLS;
     string name;
 
@@ -66,14 +66,15 @@ FbTk::FbString getWMName(Window window) {
             if (text_prop.encoding != XA_STRING) {
 
                 text_prop.nitems = strlen((char *) text_prop.value);
+                XmbTextPropertyToTextList(display, &text_prop, &list, &num);
 
-                if ((XmbTextPropertyToTextList(display, &text_prop,
-                                               &list, &num) == Success) &&
-                    (num > 0) && *list) {
+                if (num > 0 && list != 0)
                     name = FbTk::FbStringUtil::LocaleStrToFb(static_cast<char *>(*list));
-                    XFreeStringList(list);
-                } else
+                else
                     name = text_prop.value ? FbTk::FbStringUtil::XStrToFb((char *)text_prop.value) : "";
+
+                if (list)
+                    XFreeStringList(list);
 
             } else
                 name = text_prop.value ? FbTk::FbStringUtil::XStrToFb((char *)text_prop.value) : "";

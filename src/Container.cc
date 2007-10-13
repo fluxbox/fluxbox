@@ -36,7 +36,6 @@ Container::Container(const FbTk::FbWindow &parent):
     m_align(RELATIVE),
     m_max_size_per_client(60),
     m_max_total_size(0),
-    m_selected(0),
     m_update_lock(false) {
     FbTk::EventManager::instance()->add(*this, *this);
 }
@@ -215,9 +214,6 @@ bool Container::removeItem(int index) {
     for (; index != 0; ++it, --index)
         continue;
 
-    if (*it == selected())
-        m_selected = 0;
-
     m_item_list.erase(it);
 
     repositionItems();
@@ -225,7 +221,6 @@ bool Container::removeItem(int index) {
 }
 
 void Container::removeAll() {
-    m_selected = 0;
     m_item_list.clear();
     if (!m_update_lock) {
         clear();
@@ -246,19 +241,6 @@ int Container::find(ConstItem item) {
         return -1;
 
     return index;
-}
-
-void Container::setSelected(int pos) {
-    if (pos < 0 || pos >= size())
-        m_selected = 0;
-    else {
-        ItemList::iterator it = m_item_list.begin();
-        for (; pos != 0; --pos, ++it)
-            continue;
-        m_selected = *it;
-        // caller does any graphics stuff if appropriate
-    }
-        
 }
 
 void Container::setMaxSizePerClient(unsigned int size) {

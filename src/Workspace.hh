@@ -25,30 +25,24 @@
 #ifndef     WORKSPACE_HH
 #define     WORKSPACE_HH
 
+#include "ClientMenu.hh"
 
-
-#include "FbMenu.hh"
-
-#include "FbTk/MultLayers.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/NotCopyable.hh"
 
 #include <string>
-#include <vector>
 #include <list>
 
 class BScreen;
 class FluxboxWindow;
-class WinClient;
 
 /**
  * Handles a single workspace
  */
-class Workspace:private FbTk::NotCopyable, private FbTk::Observer {
+class Workspace: private FbTk::NotCopyable {
 public:
-    typedef std::vector<FluxboxWindow *> Windows;
+    typedef std::list<FluxboxWindow *> Windows;
 
-    Workspace(BScreen &screen, FbTk::MultLayers &layermanager, const std::string &name,
+    Workspace(BScreen &screen, const std::string &name,
               unsigned int workspaceid = 0);
     ~Workspace();
 
@@ -83,24 +77,15 @@ public:
     Windows &windowList() { return m_windowlist; }
 
     size_t numberOfWindows() const;
-    bool checkGrouping(FluxboxWindow &win);
-
-    static bool loadGroups(const std::string &filename);
 
 private:
-    void update(FbTk::Subject *subj);
     void placeWindow(FluxboxWindow &win);
 
     BScreen &m_screen;
-    FbMenu m_clientmenu;
 
-    typedef std::vector<std::string> Group;
-    typedef std::vector<Group> GroupList;
-
-    static GroupList m_groups; ///< handle auto groupings
-
-    FbTk::MultLayers &m_layermanager;
     Windows m_windowlist;
+    FbTk::Subject m_clientlist_sig;
+    ClientMenu m_clientmenu;
 
     std::string m_name;  ///< name of this workspace
     unsigned int m_id;    ///< id, obsolete, this should be in BScreen

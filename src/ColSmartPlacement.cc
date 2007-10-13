@@ -27,7 +27,7 @@
 #include "ScreenPlacement.hh"
 #include "Window.hh"
 
-bool ColSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+bool ColSmartPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
                                     const FluxboxWindow &win,
                                     int &place_x, int &place_y) {
 
@@ -85,9 +85,9 @@ bool ColSmartPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowli
 
             next_y = test_y + change_y;
 
-            std::vector<FluxboxWindow *>::const_iterator it = 
+            std::list<FluxboxWindow *>::const_iterator it = 
                 windowlist.begin();
-            std::vector<FluxboxWindow *>::const_iterator it_end = 
+            std::list<FluxboxWindow *>::const_iterator it_end = 
                 windowlist.end();
             for (; it != it_end && placed; ++it) {
                 int curr_x = (*it)->x() - (*it)->xOffset();

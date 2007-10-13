@@ -24,21 +24,19 @@
 
 #include "IconButton.hh"
 #include "IconbarTool.hh"
+#include "IconbarTheme.hh"
 
-#include "fluxbox.hh"
 #include "Screen.hh"
-#include "Window.hh"
-#include "WinClient.hh"
-#include "CommandParser.hh"
-#include "WindowCmd.hh"
+#include "Focusable.hh"
 
 #include "FbTk/App.hh"
-#include "FbTk/SimpleCommand.hh"
-#include "FbTk/EventManager.hh"
-#include "FbTk/MacroCommand.hh"
 #include "FbTk/Command.hh"
-#include "FbTk/RefCount.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/ImageControl.hh"
+#include "FbTk/MacroCommand.hh"
 #include "FbTk/Menu.hh"
+#include "FbTk/RefCount.hh"
+#include "FbTk/SimpleCommand.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -49,127 +47,25 @@
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
-typedef FbTk::RefCount<FbTk::Command> RefCmd;
 
-namespace {
-
-class ShowMenu: public FbTk::Command {
-public:
-    explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
-    void execute() {
-        // hide the menu if it's already showing for this FluxboxWindow
-        if (m_win.menu().isVisible() && WindowCmd<void>::window() == &m_win) {
-            m_win.screen().hideMenus();
-            return;
-        }
-        m_win.screen().hideMenus();
-        // get last button pos
-        const XEvent &event = Fluxbox::instance()->lastEvent();
-        int x = event.xbutton.x_root - (m_win.menu().width() / 2);
-        int y = event.xbutton.y_root - (m_win.menu().height() / 2);
-        m_win.showMenu(x, y);
-    }
-private:
-    FluxboxWindow &m_win;
-};
-
-class FocusCommand: public FbTk::Command {
-public:
-    explicit FocusCommand(const IconbarTool& tool, FluxboxWindow &win) : 
-        m_win(win), m_tool(tool) { }
-    void execute() {
-        // this needs to be a local variable, as this object could be destroyed
-        // if the workspace is changed.
-        FluxboxWindow &win = m_win;
-        if(win.isIconic() || !win.isFocused()) {
-            switch(win.screen().getUserFollowModel()) {
-            case BScreen::SEMIFOLLOW_ACTIVE_WINDOW:
-                if (win.isIconic()) {
-                    win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
-                } else {
-                    win.screen().changeWorkspaceID(win.workspaceNumber());
-                }
-                break;
-            case BScreen::FETCH_ACTIVE_WINDOW:
-                win.screen().sendToWorkspace(win.screen().currentWorkspaceID(), &win);
-                break;
-            case BScreen::FOLLOW_ACTIVE_WINDOW:
-                if (!win.isStuck())
-                    win.screen().changeWorkspaceID(win.workspaceNumber());
-            default:
-                break;
-            };
-            win.raiseAndFocus();
-       } else
-           win.iconify();
-    }
-
-private:
-    FluxboxWindow &m_win;
-    const IconbarTool& m_tool;
-};
-
-// simple forwarding of wheeling, but only 
-// if desktopwheeling is enabled
-class WheelWorkspaceCmd : public FbTk::Command {
-public:
-    explicit WheelWorkspaceCmd(const IconbarTool& tool, FluxboxWindow &win, const char* cmd) : 
-        m_win(win), m_cmd(CommandParser::instance().parseLine(cmd)), m_tool(tool) { }
-    void execute() {
-
-        switch(m_tool.wheelMode()) {
-        case IconbarTool::ON:
-            m_cmd->execute();
-            break;
-        case IconbarTool::SCREEN:
-            if(m_win.screen().isDesktopWheeling())
-                m_cmd->execute();
-            break;
-        case IconbarTool::OFF:
-        default:
-            break;
-        };
-    }
-
-private:
-    FluxboxWindow &m_win;
-    RefCmd m_cmd;
-    const IconbarTool& m_tool;
-};
-
-} // end anonymous namespace
-
-
-
-IconButton::IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent, 
-                       FbTk::Font &font, FluxboxWindow &win):
-    FbTk::TextButton(parent, font, win.winClient().title()),
+IconButton::IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
+                       Focusable &win):
+    FbTk::TextButton(parent, theme.focusedText().font(), win.title()),
     m_win(win), 
     m_icon_window(*this, 1, 1, 1, 1, 
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
-    m_use_pixmap(true) {
+    m_use_pixmap(true),
+    m_theme(theme),
+    m_focused_pm(win.screen().imageControl()),
+    m_unfocused_pm(win.screen().imageControl()) {
 
-
-    RefCmd next_workspace(new ::WheelWorkspaceCmd(tool, m_win, "nextworkspace"));
-    RefCmd prev_workspace(new ::WheelWorkspaceCmd(tool, m_win, "prevworkspace"));
-    
-    RefCmd focus_cmd(new ::FocusCommand(tool, m_win));
-    RefCmd menu_cmd(new ::ShowMenu(m_win));
-    setOnClick(focus_cmd, 1);
-    setOnClick(menu_cmd, 3);
-    if(win.screen().isReverseWheeling()) {
-        setOnClick(next_workspace, 5);
-        setOnClick(prev_workspace, 4);
-    } else {
-        setOnClick(next_workspace, 4);
-        setOnClick(prev_workspace, 5);
-    }
-
-    m_win.hintSig().attach(this);
     m_win.titleSig().attach(this);
+    m_win.focusSig().attach(this);
+    m_win.attentionSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);
 
+    reconfigTheme();
     update(0);
 }
 
@@ -222,20 +118,68 @@ void IconButton::setPixmap(bool use) {
     }
 }
 
+void IconButton::reconfigTheme() {
+
+    if (m_theme.focusedTexture().usePixmap())
+        m_focused_pm.reset(m_win.screen().imageControl().renderImage(
+                            width(), height(), m_theme.focusedTexture(),
+                            orientation()));
+    else
+        m_focused_pm.reset(0);
+
+    if (m_theme.unfocusedTexture().usePixmap())
+        m_unfocused_pm.reset(m_win.screen().imageControl().renderImage(
+                              width(), height(), m_theme.unfocusedTexture(),
+                              orientation()));
+    else
+        m_unfocused_pm.reset(0);
+
+    setAlpha(parent()->alpha());
+
+    if (m_win.isFocused() || m_win.getAttentionState()) {
+        if (m_focused_pm != 0)
+            setBackgroundPixmap(m_focused_pm);
+        else
+            setBackgroundColor(m_theme.focusedTexture().color());
+
+        setGC(m_theme.focusedText().textGC());
+        setFont(m_theme.focusedText().font());
+        setJustify(m_theme.focusedText().justify());
+        setBorderWidth(m_theme.focusedBorder().width());
+        setBorderColor(m_theme.focusedBorder().color());
+
+    } else {
+        if (m_unfocused_pm != 0)
+            setBackgroundPixmap(m_unfocused_pm);
+        else
+            setBackgroundColor(m_theme.unfocusedTexture().color());
+
+        setGC(m_theme.unfocusedText().textGC());
+        setFont(m_theme.unfocusedText().font());
+        setJustify(m_theme.unfocusedText().justify());
+        setBorderWidth(m_theme.unfocusedBorder().width());
+        setBorderColor(m_theme.unfocusedBorder().color());
+
+    }
+
+}
+
 void IconButton::update(FbTk::Subject *subj) {
+    // if the window's focus state changed, we need to update the background
+    if (subj == &m_win.focusSig() || subj == &m_win.attentionSig()) {
+        reconfigTheme();
+        clear();
+        return;
+    }
+
     // we got signal that either title or 
     // icon pixmap was updated, 
     // so we refresh everything
 
-    // we need to check our client first
-    if (m_win.clientList().empty())
-        return;
-
     Display *display = FbTk::App::instance()->display();
-
     int screen = m_win.screen().screenNumber();
 
-    if (m_use_pixmap && m_win.usePixmap()) {
+    if (m_use_pixmap && m_win.icon().pixmap().drawable() != None) {
         // setup icon window
         m_icon_window.show();
         unsigned int w = width();
@@ -254,7 +198,8 @@ void IconButton::update(FbTk::Subject *subj) {
         
         m_icon_window.moveResize(iconx, icony, neww, newh);
 
-        m_icon_pixmap.copy(m_win.iconPixmap().drawable(), DefaultDepth(display, screen), screen);
+        m_icon_pixmap.copy(m_win.icon().pixmap().drawable(),
+                           DefaultDepth(display, screen), screen);
         m_icon_pixmap.scale(m_icon_window.width(), m_icon_window.height());
 
         // rotate the icon or not?? lets go not for now, and see what they say...
@@ -269,8 +214,8 @@ void IconButton::update(FbTk::Subject *subj) {
         m_icon_pixmap = 0;
     }
 
-    if(m_use_pixmap && m_win.useMask()) {
-        m_icon_mask.copy(m_win.iconMask().drawable(), 0, 0);
+    if(m_icon_pixmap.drawable() && m_win.icon().mask().drawable() != None) {
+        m_icon_mask.copy(m_win.icon().mask().drawable(), 0, 0);
         m_icon_mask.scale(m_icon_pixmap.width(), m_icon_pixmap.height());
         m_icon_mask.rotate(orientation());
     } else
@@ -287,9 +232,6 @@ void IconButton::update(FbTk::Subject *subj) {
 
 #endif // SHAPE
 
-    if (subj == &(m_win.titleSig()))
-        setText(m_win.title());
-
     if (subj != 0) {
         setupWindow();
     } else {
@@ -298,13 +240,8 @@ void IconButton::update(FbTk::Subject *subj) {
 }
 
 void IconButton::setupWindow() {
-
     m_icon_window.clear();
-
-    if (!m_win.clientList().empty()) {
-        setText(m_win.winClient().title());
-        // draw with x offset and y offset
-    }
+    setText(m_win.title());
     FbTk::TextButton::clear();
 }
 

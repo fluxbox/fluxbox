@@ -41,7 +41,7 @@
 class IconbarTheme;
 class BScreen;
 class IconButton;
-class FluxboxWindow;
+class Focusable;
 
 class IconbarTool: public ToolbarItem, public FbTk::Observer {
 public:
@@ -55,13 +55,6 @@ public:
         WORKSPACENOICONS, ///< non iconified workspaces on current workspaces
         WORKSPACE, ///< all windows and all icons on current workspace
         ALLWINDOWS ///< all windows and all icons from all workspaces
-    };
-
-    /// wheeling on iconbutton
-    enum WheelMode { 
-      OFF, ///< no wheeling, default mode
-      ON,  ///< enabled wheeling
-      SCREEN ///< in perfect harmony with desktopwheeling-value
     };
 
     IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, 
@@ -85,60 +78,48 @@ public:
     unsigned int borderWidth() const;
 
     Mode mode() const { return *m_rc_mode; }
-    WheelMode wheelMode() const { return *m_wheel_mode; }
 
     void setOrientation(FbTk::Orientation orient);
     Container::Alignment alignment() const { return m_icon_container.alignment(); }
 
+    const BScreen &screen() const { return m_screen; }
 private:
 
     /// @return button associated with window
-    IconButton *findButton(FluxboxWindow &win);
+    IconButton *findButton(Focusable &win);
 
     void updateSizing();
 
-    /// render single button that holds win
-    //    void renderWindow(FluxboxWindow &win);
     /// render single button, and probably apply changes (clear)
     /// @param button the button to render
     /// @param clear if the window should be cleared first
-    /// @param focusOption -1 = use window focus, 0 = render no focus, 1 = render focus
-    void renderButton(IconButton &button, bool clear = true,
-                      int focusOption = -1);
+    void renderButton(IconButton &button, bool clear = true);
     /// render all buttons
     void renderTheme();
     void renderTheme(unsigned char alpha);
     /// destroy all icons
     void deleteIcons();
     /// remove a single window
-    void removeWindow(FluxboxWindow &win);
+    void removeWindow(Focusable &win);
     /// add a single window 
-    void addWindow(FluxboxWindow &win);
+    void addWindow(Focusable &win);
     /// add icons to the list
     void updateList();
     /// check if window is already in the list
-    bool checkDuplicate(FluxboxWindow &win);
-    /// so we can update current window without flicker
-    void timedRender();
+    bool checkDuplicate(Focusable &win);
 
     BScreen &m_screen;
     Container m_icon_container;
     IconbarTheme &m_theme;
-    // cached pixmaps
-    FbTk::CachedPixmap m_focused_pm, m_unfocused_pm;
-    // some are a fraction bigger due to rounding
-    FbTk::CachedPixmap m_focused_err_pm, m_unfocused_err_pm;
     FbTk::CachedPixmap m_empty_pm; ///< pixmap for empty container
 
 
     IconList m_icon_list;
     FbTk::Resource<Mode> m_rc_mode;
-    FbTk::Resource<WheelMode> m_wheel_mode;
     FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
-    FbTk::Timer m_focus_timer; ///< so we can update current window without flicker while changing attached clients
     FbMenu m_menu;
     unsigned char m_alpha;
 };

@@ -49,7 +49,8 @@ class MenuItem;
 class ImageControl;
 
 ///   Base class for menus
-class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer, protected FbTk::Observer {
+class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer,
+            public FbTk::Observer {
 public:
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
     enum { RIGHT = 1, LEFT };
@@ -91,7 +92,6 @@ public:
     /// cycle through menuitems
     void cycleItems(bool reverse);
     void enterSubmenu();
-    void enterParent();
 
     void disableTitle();
     void enableTitle();
@@ -193,7 +193,7 @@ protected:
 
     virtual void internal_hide(bool first = true);
 
-    void update(FbTk::Subject *);
+    virtual void update(FbTk::Subject *);
 
 private: 
 

@@ -25,17 +25,18 @@
 #ifndef ICONBUTTON_HH
 #define ICONBUTTON_HH
 
+#include "FbTk/CachedPixmap.hh"
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/TextButton.hh"
 
-class FluxboxWindow;
-class IconbarTool;
+class Focusable;
+class IconbarTheme;
 
 class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
-    IconButton(const IconbarTool& tool, const FbTk::FbWindow &parent, 
-               FbTk::Font &font, FluxboxWindow &window);
+    IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
+               Focusable &window);
     virtual ~IconButton();
 
     void exposeEvent(XExposeEvent &event);
@@ -47,11 +48,13 @@ public:
                     unsigned int width, unsigned int height);
     void resize(unsigned int width, unsigned int height);
 
+    void reconfigTheme();
+
     void update(FbTk::Subject *subj);
     void setPixmap(bool use);
 
-    FluxboxWindow &win() { return m_win; }
-    const FluxboxWindow &win() const { return m_win; }
+    Focusable &win() { return m_win; }
+    const Focusable &win() const { return m_win; }
 
     bool setOrientation(FbTk::Orientation orient);
 
@@ -60,11 +63,15 @@ protected:
 private:
     void setupWindow();
 
-    FluxboxWindow &m_win;
+    Focusable &m_win;
     FbTk::FbWindow m_icon_window;
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;
     bool m_use_pixmap;
+
+    IconbarTheme &m_theme;
+    // cached pixmaps
+    FbTk::CachedPixmap m_focused_pm, m_unfocused_pm;
 };
 
 #endif // ICONBUTTON_HH

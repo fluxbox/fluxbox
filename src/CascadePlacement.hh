@@ -34,7 +34,7 @@ class CascadePlacement: public PlacementStrategy,
 public:
     explicit CascadePlacement(const BScreen &screen);
     ~CascadePlacement();
-    bool placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+    bool placeWindow(const std::list<FluxboxWindow *> &windowlist,
                      const FluxboxWindow &window,
                      int &place_x, int &place_y);
 private:

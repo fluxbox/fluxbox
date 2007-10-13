@@ -103,6 +103,8 @@ public:
 
         if (!m_search_results.empty())
             fillValues(m_search_results.back().result(), last_matched);
+        else
+            return *m_ref;
         return last_matched;
     }
 

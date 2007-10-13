@@ -29,8 +29,10 @@
 #include "Command.hh"
 
 #include "FbTk/RefCount.hh"
-#include "FbTk/Menu.hh"
+#include "ClientMenu.hh"
+#include "ClientPattern.hh"
 
+#include <list>
 #include <string>
 
 namespace FbCommands {
@@ -119,6 +121,18 @@ private:
 class HideMenuCmd: public FbTk::Command {
 public:
     void execute();
+};
+
+class ShowClientMenuCmd: public FbTk::Command {
+public:
+    ShowClientMenuCmd(int option, std::string &pat):
+            m_option(option), m_pat(pat.c_str()) { }
+    void execute();
+private:
+    const int m_option;
+    const ClientPattern m_pat;
+    std::list<FluxboxWindow *> m_list;
+    FbTk::RefCount<ClientMenu> m_menu;
 };
 
 class ShowCustomMenuCmd: public FbTk::Command {

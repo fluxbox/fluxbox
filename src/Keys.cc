@@ -101,18 +101,7 @@ using std::vector;
 using std::ifstream;
 using std::pair;
 
-Keys::Keys():
-    m_display(FbTk::App::instance()->display())
-{
-    typedef std::list<BScreen *> ScreenList;
-    ScreenList screen_list = Fluxbox::instance()->screenList();
-    ScreenList::iterator it = screen_list.begin();
-    ScreenList::iterator it_end = screen_list.end();
-
-    for (; it != it_end; ++it)
-        m_window_list.push_back(RootWindow(m_display,(*it)->screenNumber()));
-
-}
+Keys::Keys(): m_display(FbTk::App::instance()->display()) { }
 
 Keys::~Keys() {
     ungrabKeys();
@@ -127,37 +116,69 @@ void Keys::deleteTree() {
     m_map.clear();
 }
 
+// keys are only grabbed in global context
 void Keys::grabKey(unsigned int key, unsigned int mod) {
-    std::list<Window>::iterator it = m_window_list.begin();
-    std::list<Window>::iterator it_end = m_window_list.end();
+    WindowMap::iterator it = m_window_map.begin();
+    WindowMap::iterator it_end = m_window_map.end();
 
-    for (; it != it_end; ++it)
-        FbTk::KeyUtil::grabKey(key, mod, *it);
+    for (; it != it_end; ++it) {
+        if ((it->second & Keys::GLOBAL) > 0)
+            FbTk::KeyUtil::grabKey(key, mod, it->first);
+    }
 }
 
+// keys are only grabbed in global context
 void Keys::ungrabKeys() {
-    std::list<Window>::iterator it = m_window_list.begin();
-    std::list<Window>::iterator it_end = m_window_list.end();
+    WindowMap::iterator it = m_window_map.begin();
+    WindowMap::iterator it_end = m_window_map.end();
 
-    for (; it != it_end; ++it)
-        FbTk::KeyUtil::ungrabKeys(*it);
+    for (; it != it_end; ++it) {
+        if ((it->second & Keys::GLOBAL) > 0)
+            FbTk::KeyUtil::ungrabKeys(it->first);
+    }
 }
 
-void Keys::grabButton(unsigned int button, unsigned int mod) {
-    std::list<Window>::iterator it = m_window_list.begin();
-    std::list<Window>::iterator it_end = m_window_list.end();
+// ON_DESKTOP context doesn't need to be grabbed
+void Keys::grabButton(unsigned int button, unsigned int mod, int context) {
+    WindowMap::iterator it = m_window_map.begin();
+    WindowMap::iterator it_end = m_window_map.end();
 
-    for (; it != it_end; ++it)
-        FbTk::KeyUtil::grabButton(button, mod, *it,
-                                  ButtonPressMask|ButtonReleaseMask);
+    for (; it != it_end; ++it) {
+        if ((context & it->second & ~Keys::ON_DESKTOP) > 0)
+            FbTk::KeyUtil::grabButton(button, mod, it->first,
+                                      ButtonPressMask|ButtonReleaseMask);
+    }
 }
 
 void Keys::ungrabButtons() {
-    std::list<Window>::iterator it = m_window_list.begin();
-    std::list<Window>::iterator it_end = m_window_list.end();
+    WindowMap::iterator it = m_window_map.begin();
+    WindowMap::iterator it_end = m_window_map.end();
 
     for (; it != it_end; ++it)
-        FbTk::KeyUtil::ungrabButtons(*it);
+        FbTk::KeyUtil::ungrabButtons(it->first);
+}
+
+void Keys::grabWindow(Window win) {
+    if (!m_keylist)
+        return;
+
+    // make sure the window is in our list
+    WindowMap::iterator win_it = m_window_map.find(win);
+    if (win_it == m_window_map.end())
+        return;
+
+    keylist_t::iterator it = m_keylist->keylist.begin();
+    keylist_t::iterator it_end = m_keylist->keylist.end();
+    for (; it != it_end; ++it) {
+        // keys are only grabbed in global context
+        if ((win_it->second & Keys::GLOBAL) > 0 && (*it)->type == KeyPress)
+            FbTk::KeyUtil::grabKey((*it)->key, (*it)->mod, win);
+        // ON_DESKTOP buttons don't need to be grabbed
+        else if ((win_it->second & (*it)->context & ~Keys::ON_DESKTOP) > 0 &&
+                 (*it)->type == ButtonPress)
+            FbTk::KeyUtil::grabButton((*it)->key, (*it)->mod, win,
+                                      ButtonPressMask|ButtonReleaseMask);
+    }
 }
 
 /**
@@ -278,6 +299,8 @@ bool Keys::addBinding(const string &linebuffer) {
                 mod |= tmpmod; //If it's a modifier
             else if (strcasecmp("ondesktop", val[argc].c_str()) == 0)
                 context |= ON_DESKTOP;
+            else if (strcasecmp("ontoolbar", val[argc].c_str()) == 0)
+                context |= ON_TOOLBAR;
             else if (strcasecmp("NONE",val[argc].c_str())) {
                 // check if it's a mouse button
                 if (!strcasecmp(val[argc].substr(0,5).c_str(), "mouse") &&
@@ -349,16 +372,15 @@ bool Keys::addBinding(const string &linebuffer) {
 }
 
 // return true if bound to a command, else false
-bool Keys::doAction(int type, unsigned int mods, unsigned int key) {
+bool Keys::doAction(int type, unsigned int mods, unsigned int key,
+                    int context) {
 
     static t_key* next_key = m_keylist;
     if (!next_key)
         next_key = m_keylist;
 
     mods = FbTk::KeyUtil::instance().cleanMods(mods);
-    // at the moment, any key/button that gets here is on root window
-    // context will need to be added as an argument to doAction, though
-    t_key *temp_key = next_key->find(type, mods, key, ON_DESKTOP|GLOBAL);
+    t_key *temp_key = next_key->find(type, mods, key, context);
 
     // need to save this for emacs-style keybindings
     static t_key *saved_keymode = 0;
@@ -396,6 +418,19 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key) {
     return true;
 }
 
+/// adds the window to m_window_map, so we know to grab buttons on it
+void Keys::registerWindow(Window win, int context) {
+    m_window_map[win] = context;
+    grabWindow(win);
+}
+
+/// remove the window from the window map, probably being deleted
+void Keys::unregisterWindow(Window win) {
+    FbTk::KeyUtil::ungrabKeys(win);
+    FbTk::KeyUtil::ungrabButtons(win);
+    m_window_map.erase(win);
+}
+
 /**
  deletes the tree and load configuration
  returns true on success else false
@@ -419,14 +454,13 @@ void Keys::setKeyMode(t_key *keyMode) {
     keylist_t::iterator it_end = keyMode->keylist.end();
     for (; it != it_end; ++it) {
         if ((*it)->type == KeyPress)
-            grabKey((*it)->key,(*it)->mod);
-        else if ((*it)->context == GLOBAL)
-            grabButton((*it)->key,(*it)->mod);
-        // we must use root window's event mask to get ON_DESKTOP events
+            grabKey((*it)->key, (*it)->mod);
+        else
+            grabButton((*it)->key, (*it)->mod, (*it)->context);
     }
     m_keylist = keyMode;
 }
-
+            
 Keys::t_key::t_key(int type_, unsigned int mod_, unsigned int key_,
                    int context_, FbTk::RefCount<FbTk::Command> command) {
     key = key_;

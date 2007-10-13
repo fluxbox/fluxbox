@@ -24,7 +24,7 @@
 #ifndef PLACEMENTSTRATEGY_HH
 #define PLACEMENTSTRATEGY_HH
 
-#include <vector>
+#include <list>
 
 class FluxboxWindow;
 
@@ -37,7 +37,7 @@ struct PlacementStrategy {
      * @param place_y y placement of specific strategy
      * @return true if the strategy found a placement for the window
      */
-    virtual bool placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+    virtual bool placeWindow(const std::list<FluxboxWindow *> &windowlist,
                              const FluxboxWindow &win,
                              int &place_x, int &place_y) = 0;
     virtual ~PlacementStrategy() { }

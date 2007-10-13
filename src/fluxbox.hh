@@ -196,7 +196,7 @@ public:
     bool menuTimestampsChanged() const;
     bool haveShape() const { return m_have_shape; }
     int shapeEventbase() const { return m_shape_eventbase; }
-    void getDefaultDataFilename(const char *name, std::string &);
+    void getDefaultDataFilename(const char *name, std::string &) const;
     // screen mouse was in at last key event
     BScreen *mouseScreen() { return m_mousescreen; }
     // screen of window that last key event (i.e. focused window) went to
@@ -240,7 +240,7 @@ private:
     FbTk::Resource<std::string> m_rc_stylefile,
         m_rc_styleoverlayfile,
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
-        m_rc_groupfile, m_rc_appsfile;
+        m_rc_appsfile;
 
 
     FbTk::Resource<TabsAttachArea> m_rc_tabs_attach_area;

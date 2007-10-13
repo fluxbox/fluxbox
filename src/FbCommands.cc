@@ -25,6 +25,7 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "CommandDialog.hh"
+#include "FocusControl.hh"
 #include "Workspace.hh"
 #include "Window.hh"
 #include "Keys.hh"
@@ -277,6 +278,35 @@ void HideMenuCmd::execute() {
         screen->workspaceMenu().hide();
     if (FbTk::Menu::shownMenu())
         FbTk::Menu::shownMenu()->hide();
+}
+
+void ShowClientMenuCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    // TODO: ClientMenu only accepts lists of FluxboxWindows for now
+    FocusControl::Focusables *win_list = 0;
+//    if (m_option & FocusControl::CYCLEGROUPS) {
+        win_list = (m_option & FocusControl::CYCLELINEAR) ?
+            &screen->focusControl().creationOrderWinList() :
+            &screen->focusControl().focusedOrderWinList();
+/*    } else {
+        win_list = (m_option & FocusControl::CYCLELINEAR) ?
+            &screen->focusControl().creationOrderList() :
+            &screen->focusControl().focusedOrderList();
+    } */
+
+    m_list.clear();
+    FocusControl::Focusables::iterator it = win_list->begin(),
+                                       it_end = win_list->end();
+    for (; it != it_end; ++it) {
+        if (typeid(**it) == typeid(FluxboxWindow) && m_pat.match(**it))
+            m_list.push_back(static_cast<FluxboxWindow *>(*it));
+    }
+
+    m_menu = new ClientMenu(*screen, m_list, 0);
+    ::showMenu(*screen, **m_menu);
 }
 
 ShowCustomMenuCmd::ShowCustomMenuCmd(const string &arguments) : custom_menu_file(arguments) {}

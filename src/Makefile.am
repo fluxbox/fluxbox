@@ -87,9 +87,8 @@ TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \
 	ToolbarTheme.hh ToolbarTheme.cc ToolbarItem.hh ToolbarItem.cc \
 	ClockTool.hh ClockTool.cc \
 	WorkspaceNameTool.hh WorkspaceNameTool.cc WorkspaceNameTheme.hh \
-	IconbarTool.hh IconbarTool.cc IconbarTheme.hh IconbarTheme.cc \
+	IconbarTool.hh IconbarTool.cc \
 	ToolTheme.hh ToolTheme.cc \
-	IconButton.hh IconButton.cc \
 	SystemTray.hh SystemTray.cc \
 	GenericTool.hh GenericTool.cc \
 	ButtonTool.hh ButtonTool.cc ButtonTheme.hh ButtonTheme.cc \
@@ -102,7 +101,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh \
 	Keys.cc Keys.hh main.cc \
-	Netizen.cc Netizen.hh \
 	RootTheme.hh RootTheme.cc \
 	FbRootWindow.hh FbRootWindow.cc \
 	Screen.cc Screen.hh ScreenResources.cc \
@@ -117,7 +115,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	WinClient.hh WinClient.cc \
 	Strut.hh \
 	Xinerama.hh \
-	IconMenuItem.hh \
 	Xutil.hh Xutil.cc \
 	CurrentWindowCmd.hh CurrentWindowCmd.cc \
 	WorkspaceCmd.hh WorkspaceCmd.cc \
@@ -135,7 +132,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	StyleMenuItem.hh StyleMenuItem.cc \
 	RootCmdMenuItem.hh RootCmdMenuItem.cc\
 	MenuCreator.hh MenuCreator.cc \
-	IconMenu.hh IconMenu.cc \
+	ClientMenu.hh ClientMenu.cc \
 	WorkspaceMenu.hh WorkspaceMenu.cc \
 	FocusModelMenuItem.hh \
 	ToggleMenu.hh \
@@ -146,11 +143,13 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	PlacementStrategy.hh \
 	CascadePlacement.hh CascadePlacement.cc \
 	ColSmartPlacement.hh ColSmartPlacement.cc \
+	MinOverlapPlacement.hh MinOverlapPlacement.cc \
 	RowSmartPlacement.hh RowSmartPlacement.cc \
 	ScreenPlacement.hh ScreenPlacement.cc \
 	UnderMousePlacement.hh UnderMousePlacement.cc \
-	WinClientUtil.hh WinClientUtil.cc \
 	AttentionNoticeHandler.hh AttentionNoticeHandler.cc \
+	IconButton.hh IconButton.cc \
+	IconbarTheme.hh IconbarTheme.cc \
 	STLUtil.hh \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${TOOLBAR_SOURCE}

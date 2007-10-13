@@ -42,7 +42,7 @@ CascadePlacement::~CascadePlacement() {
     delete [] m_cascade_y;
 }
 
-bool CascadePlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+bool CascadePlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
                                    const FluxboxWindow &win,
                                    int &place_x, int &place_y) {
 

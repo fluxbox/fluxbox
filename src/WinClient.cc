@@ -25,6 +25,7 @@
 
 #include "Window.hh"
 #include "fluxbox.hh"
+#include "FocusControl.hh"
 #include "Screen.hh"
 #include "FbAtoms.hh"
 
@@ -62,7 +63,8 @@ using std::dec;
 
 WinClient::TransientWaitMap WinClient::s_transient_wait;
 
-WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::FbWindow(win),
+WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
+        Focusable(screen, fbwin), FbTk::FbWindow(win),
                      transient_for(0),
                      window_group(0),
                      x(0), y(0), old_bw(0),
@@ -75,24 +77,17 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      initial_state(0),
                      normal_hint_flags(0),
                      wm_hint_flags(0),
-                     m_win(fbwin),
                      m_modal_count(0),
                      m_modal(false),
                      send_focus_message(false),
                      send_close_message(false),
                      m_win_gravity(0),
-                     m_title(""), m_icon_title(""),
-                     m_class_name(""), m_instance_name(""),
                      m_title_override(false),
                      m_icon_title_override(false),
-                     m_blackbox_hint(0),
                      m_mwm_hint(0),
                      m_focus_mode(F_PASSIVE),
-                     m_diesig(*this), m_focussig(*this),
-                     m_screen(screen),
                      m_strut(0) {
     updateWMProtocols();
-    updateBlackboxHints();
     updateMWMHints();
     updateWMHints();
     updateWMNormalHints();
@@ -145,8 +140,8 @@ WinClient::~WinClient() {
         transients.pop_back();
     }
 
-    if (m_win != 0)
-        m_win->removeClient(*this);
+    if (fbwindow() != 0)
+        fbwindow()->removeClient(*this);
 
     // this takes care of any focus issues
     m_diesig.notify();
@@ -159,8 +154,6 @@ WinClient::~WinClient() {
     s_transient_wait.erase(window());
 
 
-    screen().removeNetizen(window());
-
     if (window_group != 0) {
         fluxbox->removeGroupSearch(window_group);
         window_group = 0;
@@ -169,13 +162,8 @@ WinClient::~WinClient() {
     if (m_mwm_hint != 0)
         XFree(m_mwm_hint);
 
-    if (m_blackbox_hint != 0)
-        XFree(m_blackbox_hint);
-
     if (window())
         fluxbox->removeWindowSearch(window());
-
-    m_win = 0;
 }
 
 bool WinClient::acceptsFocus() const {
@@ -243,12 +231,16 @@ bool WinClient::getWMIconName(XTextProperty &textprop) const {
     return XGetWMIconName(display(), window(), &textprop);
 }
 
-const string &WinClient::getWMClassName() const {
-    return m_instance_name;
+string WinClient::getWMRole() const {
+    Atom wm_role = XInternAtom(FbTk::App::instance()->display(),
+                               "WM_WINDOW_ROLE", False);
+    return textProperty(wm_role);
 }
 
-const string &WinClient::getWMClassClass() const {
-    return m_class_name;
+const string &WinClient::title() const {
+    if (!fbwindow() || !fbwindow()->isIconic() || m_icon_title.empty())
+        return m_title;
+    return m_icon_title;
 }
 
 void WinClient::updateWMClassHint() {
@@ -257,6 +249,7 @@ void WinClient::updateWMClassHint() {
 #ifdef DEBUG
         cerr<<"WinClient: Failed to read class hint!"<<endl;
 #endif //DEBUG
+        m_instance_name = m_class_name = "";
     } else {
 
         if (ch.res_name != 0) {
@@ -364,18 +357,24 @@ void WinClient::updateTitle() {
         return;
 
     m_title = string(Xutil::getWMName(window()), 0, 512);
+    titleSig().notify();
+    if (fbwindow())
+        fbwindow()->updateTitleFromClient(*this);
 }
 
 void WinClient::setTitle(FbTk::FbString &title) {
     m_title = title;
     m_title_override = true;
-    if (m_win)
-        m_win->updateTitleFromClient(*this);
+    titleSig().notify();
+    if (fbwindow())
+        fbwindow()->updateTitleFromClient(*this);
 }
 
 void WinClient::setIconTitle(FbTk::FbString &icon_title) {
     m_icon_title = icon_title;
     m_icon_title_override = true;
+    if (fbwindow() && fbwindow()->isIconic())
+        fbwindow()->updateTitleFromClient(*this);
 }
 
 void WinClient::updateIconTitle() {
@@ -390,24 +389,27 @@ void WinClient::updateIconTitle() {
         if (text_prop.value && text_prop.nitems > 0) {
             if (text_prop.encoding != XA_STRING) {
                 text_prop.nitems = strlen((char *) text_prop.value);
+                XmbTextPropertyToTextList(display(), &text_prop, &list, &num);
 
-                if (XmbTextPropertyToTextList(display(), &text_prop,
-                                               &list, &num) == Success &&
-                    num > 0 && *list) {
+                if (num > 0 && list)
                     m_icon_title = (char *)*list;
-                    XFreeStringList(list);
-                } else
+                else
                     m_icon_title = text_prop.value ? (char *)text_prop.value : "";
+                if (list)
+                    XFreeStringList(list);
+
             } else
                 m_icon_title = text_prop.value ? (char *)text_prop.value : "";
 
             if (text_prop.value)
                 XFree((char *) text_prop.value);
         } else
-            m_icon_title = title();
+            m_icon_title = "";
     } else
-        m_icon_title = title();
+        m_icon_title = "";
 
+    if (fbwindow() && fbwindow()->isIconic())
+        fbwindow()->updateTitleFromClient(*this);
 }
 
 void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs) {
@@ -419,32 +421,7 @@ void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_
 }
 
 void WinClient::setFluxboxWindow(FluxboxWindow *win) {
-    m_win = win;
-}
-
-void WinClient::updateBlackboxHints() {
-    int format;
-    Atom atom_return;
-    unsigned long num, len;
-    FbAtoms *atoms = FbAtoms::instance();
-
-    if (m_blackbox_hint) {
-        XFree(m_blackbox_hint);
-        m_blackbox_hint = 0;
-    }
-
-    if (property(atoms->getFluxboxHintsAtom(), 0,
-                 PropBlackboxHintsElements, False,
-                 atoms->getFluxboxHintsAtom(), &atom_return,
-                 &format, &num, &len,
-                 (unsigned char **) &m_blackbox_hint) &&
-        m_blackbox_hint) {
-
-        if (num != (unsigned)PropBlackboxHintsElements) {
-            XFree(m_blackbox_hint);
-            m_blackbox_hint = 0;
-        }
-    }
+    m_fbwin = win;
 }
 
 void WinClient::updateMWMHints() {
@@ -521,16 +498,16 @@ void WinClient::updateWMHints() {
             window_group = None;
 
         if ((bool)(wmhint->flags & IconPixmapHint) && wmhint->icon_pixmap != 0)
-            m_icon_pixmap.copy(wmhint->icon_pixmap, 0, 0);
+            m_icon.pixmap().copy(wmhint->icon_pixmap, 0, 0);
         else
-            m_icon_pixmap = 0;
+            m_icon.pixmap().release();
 
         if ((bool)(wmhint->flags & IconMaskHint) && wmhint->icon_mask != 0)
-            m_icon_mask.copy(wmhint->icon_mask, 0, 0);
+            m_icon.mask().copy(wmhint->icon_mask, 0, 0);
         else
-            m_icon_mask = 0;
+            m_icon.mask().release();
 
-        if (m_win) {
+        if (fbwindow()) {
             if (wmhint->flags & XUrgencyHint) {
                 Fluxbox::instance()->attentionHandler().addAttention(*this);
             } else {
@@ -715,10 +692,22 @@ void WinClient::clearStrut() {
 }
 
 bool WinClient::focus() {
-    if (m_win == 0)
+    if (fbwindow() == 0)
         return false;
     else
-        return m_win->setCurrentClient(*this, true);
+        return fbwindow()->setCurrentClient(*this, true);
+}
+
+bool WinClient::isFocused() const {
+    return (fbwindow() ?
+        fbwindow()->isFocused() && &fbwindow()->winClient() == this :
+        false);
+}
+
+void WinClient::setAttentionState(bool value) {
+    Focusable::setAttentionState(value);
+    if (fbwindow() && !fbwindow()->isFocused())
+        fbwindow()->setAttentionState(value);
 }
 
 void WinClient::updateWMProtocols() {
@@ -731,19 +720,16 @@ void WinClient::updateWMProtocols() {
         // defaults
         send_focus_message = false;
         send_close_message = false;
-        // could be added to netizens twice...
         for (int i = 0; i < num_return; ++i) {
             if (proto[i] == fbatoms->getWMDeleteAtom())
                 send_close_message = true;
             else if (proto[i] == fbatoms->getWMTakeFocusAtom())
                 send_focus_message = true;
-            else if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
-                screen().addNetizen(window());
         }
 
         XFree(proto);
-        if (m_win)
-            m_win->updateFunctions();
+        if (fbwindow())
+            fbwindow()->updateFunctions();
 #ifdef DEBUG
     } else {
         cerr<<"Warning: Failed to read WM Protocols. "<<endl;

@@ -202,23 +202,10 @@ getString() const {
 template<>
 void FbTk::Resource<Layer>::
 setFromString(const char *strval) {
-    int tempnum = 0;
-    if (sscanf(strval, "%d", &tempnum) == 1)
+    string str(strval);
+    int tempnum = ::Layer::getNumFromString(str);
+    if (tempnum >= 0 && tempnum < ::Layer::NUM_LAYERS)
         m_value = tempnum;
-    else if (strcasecmp(strval, "Menu") == 0)
-        m_value = ::Layer::MENU;
-    else if (strcasecmp(strval, "AboveDock") == 0)
-        m_value = ::Layer::ABOVE_DOCK;
-    else if (strcasecmp(strval, "Dock") == 0)
-        m_value = ::Layer::DOCK;
-    else if (strcasecmp(strval, "Top") == 0)
-        m_value = ::Layer::TOP;
-    else if (strcasecmp(strval, "Normal") == 0)
-        m_value = ::Layer::NORMAL;
-    else if (strcasecmp(strval, "Bottom") == 0)
-        m_value = ::Layer::BOTTOM;
-    else if (strcasecmp(strval, "Desktop") == 0)
-        m_value = ::Layer::DESKTOP;
     else
         setDefaultValue();
 }
@@ -227,26 +214,7 @@ setFromString(const char *strval) {
 template<>
 string FbTk::Resource<Layer>::
 getString() const {
-    switch (m_value.getNum()) {
-    case Layer::MENU:
-        return string("Menu");
-    case Layer::ABOVE_DOCK:
-        return string("AboveDock");
-    case Layer::DOCK:
-        return string("Dock");
-    case Layer::TOP:
-        return string("Top");
-    case Layer::NORMAL:
-        return string("Normal");
-    case Layer::BOTTOM:
-        return string("Bottom");
-    case Layer::DESKTOP:
-        return string("Desktop");
-    default:
-        char tmpstr[128];
-        sprintf(tmpstr, "%d", m_value.getNum());
-        return string(tmpstr);
-    }
+    return ::Layer::getString(m_value.getNum());
 }
 
 template<>

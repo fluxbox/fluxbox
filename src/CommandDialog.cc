@@ -98,7 +98,7 @@ void CommandDialog::hide() {
 
     // return focus to fluxbox window
     if (FocusControl::focusedFbWindow())
-        FocusControl::focusedFbWindow()->setInputFocus();
+        FocusControl::focusedFbWindow()->focus();
 
 }
 
@@ -193,12 +193,12 @@ void CommandDialog::tabComplete() {
 
 void CommandDialog::render() {
     Pixmap tmp = m_pixmap;
-    if (!m_screen.winFrameTheme().labelFocusTexture().usePixmap()) {
-        m_label.setBackgroundColor(m_screen.winFrameTheme().labelFocusTexture().color());
+    if (!m_screen.winFrameTheme().iconbarTheme().focusedTexture().usePixmap()) {
+        m_label.setBackgroundColor(m_screen.winFrameTheme().iconbarTheme().focusedTexture().color());
         m_pixmap = 0;
     } else {
         m_pixmap = m_screen.imageControl().renderImage(m_label.width(), m_label.height(),
-                                                       m_screen.winFrameTheme().labelFocusTexture());
+                                                       m_screen.winFrameTheme().iconbarTheme().focusedTexture());
         m_label.setBackgroundPixmap(m_pixmap);
     }
 
@@ -213,7 +213,7 @@ void CommandDialog::init() {
     // setup label
     // we listen to motion notify too
     m_label.setEventMask(m_label.eventMask() | ButtonPressMask | ButtonMotionMask);
-    m_label.setGC(m_screen.winFrameTheme().labelTextFocusGC());
+    m_label.setGC(m_screen.winFrameTheme().iconbarTheme().focusedText().textGC());
     m_label.show();
 
     // setup text box

@@ -32,11 +32,13 @@
 #include "FbTk/EventHandler.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbWinFrame.hh"
+#include "Focusable.hh"
 #include "WinButton.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include <sys/time.h>
 #include <vector>
 #include <string>
 #include <memory>
@@ -56,17 +58,8 @@ class Menu;
 }
 
 /// Creates the window frame and handles any window event for it
-class FluxboxWindow: public FbTk::EventHandler {
+class FluxboxWindow: public Focusable, public FbTk::EventHandler {
 public:
-    /// Represents certain "preset" sets of decorations.
-    enum Decoration {
-        DECOR_NONE=0, ///< no decor at all
-        DECOR_NORMAL, ///< normal normal
-        DECOR_TINY,   ///< tiny decoration
-        DECOR_TOOL,   ///< decor tool
-        DECOR_TAB     ///< decor tab (border + tab)
-    };
-
     /// Motif wm Hints
     enum {
         MwmHintsFunctions   = (1l << 0), ///< use motif wm functions
@@ -96,14 +89,14 @@ public:
 
     /// attributes for BlackboxHints
     enum Attrib {
-        ATTRIB_SHADED = 0x01,
-        ATTRIB_MAXHORIZ = 0x02,
-        ATTRIB_MAXVERT = 0x04,
-        ATTRIB_OMNIPRESENT = 0x08,
-        ATTRIB_WORKSPACE = 0x10,
-        ATTRIB_STACK = 0x20,
-        ATTRIB_DECORATION = 0x40,
-        ATTRIB_HIDDEN = 0x80,
+        ATTRIB_SHADED = 0x01,      ///< shaded
+        ATTRIB_MAXHORIZ = 0x02,    ///< maximized horizontal
+        ATTRIB_MAXVERT = 0x04,     ///< maximized vertical
+        ATTRIB_OMNIPRESENT = 0x08, ///< omnipresent (sticky)
+        ATTRIB_WORKSPACE = 0x10,   ///< workspace
+        ATTRIB_STACK = 0x20,       ///< stack
+        ATTRIB_DECORATION = 0x40,  ///< decorations 
+        ATTRIB_HIDDEN = 0x80,      ///< hidden
     };
 
     /**
@@ -135,7 +128,18 @@ public:
         DECORM_LAST     = (1<<11) // useful for getting "All"
     };
 
+    enum Decoration {
+        DECOR_NONE = 0,
+        DECOR_NORMAL = DECORM_LAST - 1,
+        DECOR_TINY = DECORM_TITLEBAR|DECORM_ICONIFY|DECORM_MENU|DECORM_TAB,
+        DECOR_TOOL = DECORM_TITLEBAR|DECORM_MENU,
+        DECOR_BORDER = DECORM_BORDER|DECORM_MENU,
+        DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
+    };
 
+    /**
+     * Resize direction while resizing
+     */
      enum ResizeDirection {
          NOCORNER = -1, 
          LEFTTOP  = 0,
@@ -149,11 +153,7 @@ public:
          ALLCORNERS   = 8
     };
 
-    typedef struct _blackbox_hints {
-        unsigned long flags, attrib, workspace, stack;
-        long decoration;
-    } BlackboxHints;
-
+    /// holds old blackbox attributes
     typedef struct _blackbox_attributes {
         unsigned long flags, attrib, workspace, stack;
         long premax_x, premax_y;
@@ -179,33 +179,76 @@ public:
     bool removeClient(WinClient &client);
     /// set new current client and raise it
     bool setCurrentClient(WinClient &client, bool setinput = true);
-    void setLabelButtonFocus(WinClient &client, bool value = true);
-    void setAttentionState(bool value);
-    bool getAttentionState() { return m_attention_state; }
+    /**
+     * Searches for a client 
+     * @param win the client X window
+     * @return pointer to client matching the window or NULL
+     */
     WinClient *findClient(Window win);
+    /// select next client
     void nextClient();
+    /// select previous client
     void prevClient();
+    /// move the current client to the left
     void moveClientLeft();
+    /// move the current client to the right
     void moveClientRight();
+    /**
+     * Move a client to the right of dest.
+     * @param win the client to move
+     * @param dest the left-of-client
+     */
     void moveClientRightOf(WinClient &win, WinClient &dest);
+    /**
+     * Move a client to the right of dest.
+     * @param win the client to move
+     * @param dest the left-of-client
+     */
     void moveClientLeftOf(WinClient &win, WinClient &dest);
+    /**
+     * Move client to place specified by pixel position
+     * @param win the client to move
+     * @param x position
+     * @param y position
+     */
     void moveClientTo(WinClient &win, int x, int y);
+    /**
+     * Calculates insertition position in the list by
+     * using pixel position x and y.
+     * @param x position
+     * @param y position
+     * @return iterator position for insertion
+     */
     ClientList::iterator getClientInsertPosition(int x, int y);
+    /**
+     * Take focus.
+     * @see Focusable
+     * @return true if it took focus.
+     */
+    bool focus();
+    bool allowsFocusFromClient();
 
-    bool setInputFocus();
-    void raiseAndFocus() { raise(); setInputFocus(); }
+    /// Raises the window and takes focus (if possible).
+    void raiseAndFocus() { raise(); focus(); }
+    /// sets the internal focus flag
     void setFocusFlag(bool flag);
-    // map this window
+    /// make this window visible
     void show();
-    // unmap this window
+    /// hide window
     void hide(bool interrupt_moving = true);
+    /// iconify window
     void iconify();
+    /**
+     * Deiconify window
+     * @param reassoc reassociate the window to the current workspace
+     * @param do_raise raise the window when its been deiconfied
+     */
     void deiconify(bool reassoc = true, bool do_raise = true);
 
     // ------------------
     // Per window transparency addons
-    unsigned char  getFocusedAlpha() const { return frame().getAlpha(true); }
-    unsigned char  getUnfocusedAlpha() const { return frame().getAlpha(false); }
+    unsigned char getFocusedAlpha() const { return frame().getAlpha(true); }
+    unsigned char getUnfocusedAlpha() const { return frame().getAlpha(false); }
     void setFocusedAlpha(unsigned char alpha) { frame().setAlpha(true, alpha); }
     void setUnfocusedAlpha(unsigned char alpha) { frame().setAlpha(false, alpha); }
     void updateAlpha(bool focused, unsigned char alpha)  { frame().setAlpha(focused, alpha); }
@@ -218,8 +261,6 @@ public:
     void close();
     /// kill current client
     void kill();
-    /// set the window in withdrawn state
-    void withdraw(bool interrupt_moving);
     /// set fullscreen
     void setFullscreen(bool flag);
     /// toggle maximize
@@ -245,8 +286,11 @@ public:
     void tempRaise();
     void raiseLayer();
     void lowerLayer();
+    /// moves the window to a new layer
     void moveToLayer(int layernum, bool force = false);
+    /// sets the window focus hidden state
     void setFocusHidden(bool value);
+    /// sets the window icon hidden state
     void setIconHidden(bool value);
     void reconfigure();
 
@@ -262,11 +306,21 @@ public:
     void moveResize(int x, int y, unsigned int width, unsigned int height, bool send_event = false);
     /// move to pos x,y and resize client window to size width, height
     void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity, unsigned int client_bw = 0);
+    /**
+     * Determines maximum size using all clients that this window can have.
+     * @param width will be filled in with maximum width 
+     * @param height will be filled in with maximum height
+     */
+    void maxSize(unsigned int &width, unsigned int &height);
     void setWorkspace(int n);
-    void changeBlackboxHints(const BlackboxHints &bh);
     void updateFunctions();
     void restoreAttributes();
-    void showMenu(int mx, int my, WinClient *client = 0);
+    /**
+     * Show window meny at at given position
+     * @param mx position
+     * @param my position
+     */
+    void showMenu(int mx, int my);
     // popup menu on last button press position
     void popupMenu();
 
@@ -277,6 +331,7 @@ public:
     */
     //@{
     void handleEvent(XEvent &event);
+    void keyPressEvent(XKeyEvent &ke);
     void buttonPressEvent(XButtonEvent &be);
     void buttonReleaseEvent(XButtonEvent &be);
     void motionNotifyEvent(XMotionEvent &me);
@@ -291,7 +346,6 @@ public:
     void leaveNotifyEvent(XCrossingEvent &ev);
     //@}
 
-    void setDecoration(Decoration decoration, bool apply = true);
     void applyDecorations(bool initial = false);
     void toggleDecoration();
 
@@ -333,7 +387,6 @@ public:
     inline bool isFocusHidden() const { return m_focus_hidden; }
     inline bool isIconHidden() const { return m_icon_hidden; }
     inline bool isManaged() const { return m_initialized; }
-    inline bool isFocused() const { return focused; }
     bool isVisible() const;
     inline bool isIconic() { return iconic; }
     inline bool isIconic() const { return iconic; }
@@ -360,8 +413,7 @@ public:
     inline WinClient &winClient() { return *m_client; }
     inline const WinClient &winClient() const { return *m_client; }
 
-    inline const BScreen &screen() const { return m_screen; }
-    inline BScreen &screen() { return m_screen; }
+    bool isTyping();
 
     inline const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }
     inline FbTk::XLayerItem &layerItem() { return m_frame.layerItem(); }
@@ -377,13 +429,13 @@ public:
     const FbTk::FbWindow &parent() const { return m_parent; }
     FbTk::FbWindow &parent() { return m_parent; }
 
-    const FbTk::FbPixmap &iconPixmap() const;
-    const FbTk::FbPixmap &iconMask() const;
-    const bool usePixmap() const;
-    const bool useMask() const;
-
+    bool acceptsFocus() const;
+    const FbTk::PixmapWithMask &icon() const;
     const std::string &title() const;
-    const std::string &iconTitle() const;
+    const std::string &getWMClassName() const; 
+    const std::string &getWMClassClass() const;
+    std::string getWMRole() const;
+
     inline int x() const { return frame().x(); }
     inline int y() const { return frame().y(); }
     inline unsigned int width() const { return frame().width(); }
@@ -425,11 +477,6 @@ public:
     const FbTk::Subject &hintSig() const { return m_hintsig; }
     FbTk::Subject &workspaceSig() { return m_workspacesig; }
     const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
-    FbTk::Subject &dieSig() { return m_diesig; }
-    const FbTk::Subject &dieSig() const { return m_diesig; }
-    FbTk::Subject &focusSig() { return m_focussig; }
-    FbTk::Subject &titleSig() { return m_titlesig; }
-    FbTk::Subject &attentionSig() { return m_attentionsig; }
     /** @} */ // end group signals
 
     void reconfigTheme();
@@ -464,9 +511,7 @@ private:
     /// gets title string from client window and updates frame's title
     void updateTitleFromClient(WinClient &client);
     /// gets icon name from client window
-    void updateIconNameFromClient(WinClient &client);
     void updateMWMHintsFromClient(WinClient &client);
-    void updateBlackboxHintsFromClient(const WinClient &client);
     void updateRememberStateFromClient(WinClient &client);
     void saveBlackboxAttribs();
     void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1, int gravity = ForgetGravity, unsigned int client_bw = 0);
@@ -479,7 +524,7 @@ private:
     void fixsize(int *user_w = 0, int *user_h = 0, bool maximizing = false);
     void moveResizeClient(WinClient &client, int x, int y, unsigned int width, unsigned int height);
     /// sends configurenotify to all clients
-    void sendConfigureNotify(bool send_to_netizens = true);
+    void sendConfigureNotify();
 
     static void grabPointer(Window grab_window,
                      Bool owner_events,
@@ -496,10 +541,7 @@ private:
     WinSubject m_hintsig, 
         m_statesig, 
         m_layersig, 
-        m_workspacesig, 
-        m_diesig, m_focussig,
-        m_titlesig,
-        m_attentionsig;
+        m_workspacesig;
 
     class ThemeListener: public FbTk::Observer {
     public:
@@ -516,14 +558,12 @@ private:
 
     // Window states
     bool moving, resizing, shaded, iconic,
-        focused, stuck, m_initialized, fullscreen;
+        stuck, m_initialized, fullscreen;
 
     int maximized;
 
     WinClient *m_attaching_tab;
 
-    bool m_attention_state;
-    BScreen &m_screen; /// screen on which this window exist
     FbTk::Timer m_timer;
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;
@@ -533,6 +573,8 @@ private:
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
     unsigned int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
 
+    timeval m_last_keypress_time;
+
     unsigned int m_workspace_number;
     unsigned long m_current_state; // NormalState | IconicState | Withdrawn
 
@@ -540,7 +582,7 @@ private:
 
     ClientList m_clientlist;
     WinClient *m_client; ///< current client
-    typedef std::map<WinClient *, FbTk::TextButton *> Client2ButtonMap;
+    typedef std::map<WinClient *, IconButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
 
     // just temporary solution
@@ -564,14 +606,14 @@ private:
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
-    FbWinFrame m_frame;
+    FbWinFrame m_frame;  ///< the actuall window frame
 
     int m_layernum;
     int m_old_layernum;
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
 
-    ResizeDirection m_resize_corner;
+    ResizeDirection m_resize_corner; //< the current resize corner used while resizing
 
     static int s_num_grabs; ///< number of XGrabPointer's
 };

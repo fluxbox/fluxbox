@@ -357,10 +357,6 @@ void Menu::enterSubmenu() {
     submenu->cycleItems(false);
 }
 
-void Menu::enterParent() {
-    internal_hide();
-}
-
 void Menu::disableTitle() {
     setTitleVisibility(false);
 }
@@ -1033,7 +1029,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Left: // enter parent if we have one
         resetTypeAhead();
-        enterParent();
+        internal_hide();
         break;
     case XK_Right: // enter submenu if we have one
         resetTypeAhead();
@@ -1046,7 +1042,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_BackSpace:
         if (m_type_ahead.stringSize() == 0) {
-            enterParent();
+            internal_hide();
             break;           
         }    
 

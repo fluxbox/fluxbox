@@ -43,6 +43,8 @@
 class Shape;
 class FbWinFrameTheme;
 class BScreen;
+class IconButton;
+class Focusable;
 
 namespace FbTk {
 class TextButton;
@@ -70,8 +72,6 @@ public:
         RIGHTBOTTOM, RIGHTTOP        
     };
 
-
-    typedef FbTk::TextButton *ButtonId; ///< defines a button id 
 
     /// create a top level window
     FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
@@ -142,10 +142,9 @@ public:
     /// remove all buttons from titlebar
     void removeAllButtons();
     /// adds a button to label window with specified title and command
-    ButtonId createTab(const std::string &title, FbTk::Command *cmd, int tab_padding);
-    //    void addLabelButton(FbTk::TextButton &btn);
+    IconButton *createTab(Focusable &client);
     /// removes a specific button from label window
-    void removeTab(ButtonId id);
+    void removeTab(IconButton *id);
     /// move label button to the left
     void moveLabelButtonLeft(FbTk::TextButton &btn);
     /// move label button to the right
@@ -157,9 +156,7 @@ public:
     //move the first label button to the right of the second
     void moveLabelButtonRightOf(FbTk::TextButton &btn, const FbTk::TextButton &dest);
     /// which button is to be rendered focused
-    void setLabelButtonFocus(FbTk::TextButton &btn);
-    /// specify focus state of button
-    void setLabelButtonFocus(FbTk::TextButton &btn, bool value);
+    void setLabelButtonFocus(IconButton &btn);
     /// attach a client window for client area
     void setClientWindow(FbTk::FbWindow &win);
     /// remove attached client window
@@ -238,7 +235,7 @@ public:
     inline FbTk::FbWindow &gripLeft() { return m_grip_left; }
     inline const FbTk::FbWindow &gripRight() const { return m_grip_right; }
     inline FbTk::FbWindow &gripRight() { return m_grip_right; }
-    inline const FbTk::TextButton *currentLabel() const { return m_current_label; }
+    inline const IconButton *currentLabel() const { return m_current_label; }
     inline bool focused() const { return m_focused; }
     inline bool isShaded() const { return m_shaded; }
     inline FbWinFrameTheme &theme() const { return m_theme; }
@@ -284,8 +281,6 @@ private:
     void applyTitlebar();
     void applyHandles();
     void applyTabContainer(); // and label buttons
-    void applyFocusLabel(FbTk::TextButton &button);
-    void applyUnfocusLabel(FbTk::TextButton &button);
     void applyButtons(); // only called within applyTitlebar
 
     void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
@@ -324,8 +319,7 @@ private:
     ButtonList m_buttons_left, ///< buttons to the left
         m_buttons_right; ///< buttons to the right
     typedef std::list<FbTk::TextButton *> LabelList;
-    FbTk::TextButton *m_current_label; ///< which client button is focused at the moment
-    std::string m_titletext; ///< text to be displayed int m_label
+    IconButton *m_current_label; ///< which client button is focused at the moment
     int m_bevel;  ///< bevel between titlebar items and titlebar
     bool m_use_titlebar; ///< if we should use titlebar
     bool m_use_tabs; ///< if we should use tabs (turns them off in external mode only)
@@ -354,11 +348,6 @@ private:
     Pixmap m_tabcontainer_unfocused_pm; ///< pixmap for unfocused tab container
     FbTk::Color m_tabcontainer_unfocused_color; ///< color for unfocused tab container
 
-    Pixmap m_labelbutton_focused_pm; ///< pixmap for focused label
-    FbTk::Color m_labelbutton_focused_color; ///< color for focused label
-    Pixmap m_labelbutton_unfocused_pm; ///< pixmap for unfocused label
-    FbTk::Color m_labelbutton_unfocused_color; ///< color for unfocused label
-    
     FbTk::Color m_handle_focused_color, m_handle_unfocused_color;
     Pixmap m_handle_focused_pm, m_handle_unfocused_pm;
     

@@ -24,6 +24,7 @@
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
 
+#include "Focusable.hh"
 #include "Window.hh"
 #include "Subject.hh"
 #include "FbWindow.hh"
@@ -35,7 +36,7 @@ class BScreen;
 class Strut;
 
 /// Holds client window info 
-class WinClient:public FbTk::FbWindow {
+class WinClient: public Focusable, public FbTk::FbWindow {
 public:
     typedef std::list<WinClient *> TransientList;
     // this structure only contains 3 elements... the Motif 2.0 structure contains
@@ -69,7 +70,6 @@ public:
     /// updates transient window information
     void updateTransientInfo();
 
-    void updateBlackboxHints();
     void updateMWMHints();
     void updateWMHints();
     void updateWMNormalHints();
@@ -78,6 +78,9 @@ public:
     void clearStrut();
 
     bool focus(); // calls Window->setCurrentClient to give focus to this client
+    bool isFocused() const;
+    void setAttentionState(bool value);
+    const std::string &title() const;
 
     /**
      * Changes width and height to the nearest (lower) value
@@ -106,17 +109,7 @@ public:
     bool getAttrib(XWindowAttributes &attr) const;
     bool getWMName(XTextProperty &textprop) const;
     bool getWMIconName(XTextProperty &textprop) const;
-    /// @return name member of class structure
-    const std::string &getWMClassName() const; 
-    /// @return class member of class structure
-    const std::string &getWMClassClass() const;
-
-    BScreen &screen() { return m_screen; }
-    const BScreen &screen() const { return m_screen; }
-    /// notifies when this client dies
-    FbTk::Subject &dieSig() { return m_diesig; }
-    /// notifies when this client becomes focused
-    FbTk::Subject &focusSig() { return m_focussig; }
+    std::string getWMRole() const;
 
     inline WinClient *transientFor() { return transient_for; }
     inline const WinClient *transientFor() const { return transient_for; }
@@ -128,15 +121,6 @@ public:
     inline bool isStateModal() const { return m_modal; }
     void setStateModal(bool state);
 
-    const FbTk::FbPixmap &iconPixmap() const { return m_icon_pixmap; }
-    const FbTk::FbPixmap &iconMask() const { return m_icon_mask; }
-    const bool usePixmap() const { return m_icon_pixmap.drawable() != None; }
-    const bool useMask() const { return m_icon_mask.drawable() != None; }
-
-    inline const std::string &title() const { return m_title; }
-    inline const std::string &iconTitle() const { return m_icon_title; }
-    inline const FluxboxWindow *fbwindow() const { return m_win; }
-    inline FluxboxWindow *fbwindow() { return m_win; }
     inline int gravity() const { return m_win_gravity; }
 
     bool hasGroupLeftWindow() const;
@@ -144,14 +128,11 @@ public:
     Window getGroupLeftWindow() const;
 
     inline int getFocusMode() const { return m_focus_mode; }
-    inline const FluxboxWindow::BlackboxHints *getBlackboxHint() const { return m_blackbox_hint; }
     inline const MwmHints *getMwmHint() const { return m_mwm_hint; }
 
     inline unsigned int maxWidth() const { return max_width; }
     inline unsigned int maxHeight() const { return max_height; }
 
-
-    static const int PropBlackboxHintsElements = 5;
     static const int PropMwmHintsElements = 3;
 
     /**
@@ -172,15 +153,6 @@ public:
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
 
-
-    class WinClientSubj: public FbTk::Subject {
-    public:
-        explicit WinClientSubj(WinClient &client):m_winclient(client) { }
-        WinClient &winClient() { return m_winclient; }
-    private:
-        WinClient &m_winclient;
-    };
-
     enum FocusMode { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
 private:
@@ -192,8 +164,6 @@ private:
     // some transient (or us) is no longer modal
     void removeModal() { --m_modal_count; }
 
-    FluxboxWindow *m_win;
-
     // number of transients which we are modal for
     int m_modal_count;
     bool m_modal;
@@ -201,21 +171,12 @@ private:
 
     int m_win_gravity;
 
-    std::string m_title, m_icon_title;
-    std::string m_class_name, m_instance_name;
+    std::string m_icon_title;
     bool m_title_override, m_icon_title_override;
 
-    FbTk::FbPixmap m_icon_pixmap;
-    FbTk::FbPixmap m_icon_mask;
-
-    FluxboxWindow::BlackboxHints *m_blackbox_hint;
     MwmHints *m_mwm_hint;
 
     int m_focus_mode;
-
-    WinClientSubj m_diesig;
-    WinClientSubj m_focussig;
-    BScreen &m_screen;
 
     Strut *m_strut;
     // map transient_for X window to winclient transient 

@@ -31,8 +31,7 @@
 #include "Window.hh"
 #include "WindowCmd.hh"
 
-#include "FbMenu.hh"
-#include "IconMenu.hh"
+#include "ClientMenu.hh"
 #include "WorkspaceMenu.hh"
 #include "LayerMenu.hh"
 #include "SendToMenu.hh"
@@ -52,7 +51,6 @@
 #include "FbTk/StringUtil.hh"
 #include "FbTk/FileUtil.hh"
 #include "FbTk/MenuSeparator.hh"
-#include "FbTk/MenuIcon.hh"
 #include "FbTk/Transparent.hh"
 
 #include <iostream>
@@ -470,8 +468,8 @@ FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_numbe
 
 bool MenuCreator::createFromFile(const string &filename,
                                  FbTk::Menu &inject_into, bool require_begin) {
-
     string real_filename = FbTk::StringUtil::expandFilename(filename);
+
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
         return false;
@@ -521,7 +519,8 @@ FbTk::Menu *MenuCreator::createMenuType(const string &type, int screen_num) {
     if (screen == 0)
         return 0;
     if (type == "iconmenu") {
-        return new IconMenu(*screen);
+        return new ClientMenu(*screen, screen->iconList(),
+                              &screen->iconListSig());
     } else if (type == "workspacemenu") {
         return new WorkspaceMenu(*screen);
     } else if (type == "windowmenu") {

@@ -1,8 +1,5 @@
-// Netizen.hh for Fluxbox 
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
-//
-// Netizen.hh for Blackbox - An X11 Window Manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// ClientMenu.hh
+// Copyright (c) 2007 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -22,37 +19,42 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef	 NETIZEN_HH
-#define	 NETIZEN_HH
+// $Id$
 
-#include <X11/Xlib.h>
+#ifndef CLIENTMENU_HH
+#define CLIENTMENU_HH
+
+#include <list>
+
+#include "FbMenu.hh"
 
 class BScreen;
-
-class Netizen {
+class FluxboxWindow;
+/**
+ * A menu holding a set of client menus.
+ * @see WorkspaceMenu
+ */
+class ClientMenu: public FbMenu {
 public:
-    Netizen(const BScreen &scr, Window w);
 
-    inline Window window() const { return m_window; }
+    typedef std::list<FluxboxWindow *> Focusables;
 
-    void sendWorkspaceCount();
-    void sendCurrentWorkspace();
+    /**
+     * @param screen the screen to show this menu on
+     * @param client a list of clients to show in this menu
+     * @param refresh the refresh subject to listen to
+     */
+    ClientMenu(BScreen &screen, 
+               Focusables &clients, FbTk::Subject *refresh);
 
-    void sendWindowFocus(Window w);
-    void sendWindowAdd(Window w, unsigned long wkspc);
-    void sendWindowDel(Window w);
-    void sendWindowRaise(Window w);
-    void sendWindowLower(Window w);
-
-    void sendConfigNotify(XEvent &xe);
 private:
-    const BScreen &m_screen;
-    Display *m_display; ///< display connection
-    Window m_window;
-    XEvent event;
+    /// refresh the entire menu
+    void refreshMenu();
+    /// called when receiving a subject signal
+    void update(FbTk::Subject *subj);
 
+    Focusables &m_list; ///< clients in the menu
+    FbTk::Subject *m_refresh_sig; ///< signal to listen to
 };
 
-
-#endif // _NETIZEN_HH_
-
+#endif // CLIENTMENU_HH

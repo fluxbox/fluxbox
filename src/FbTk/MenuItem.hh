@@ -101,6 +101,9 @@ public:
     */
     //@{
     virtual const std::string &label() const { return m_label; }
+    virtual const PixmapWithMask *icon() const {
+        return m_icon.get() ? m_icon->pixmap.get() : 0;
+    }
     virtual const Menu *submenu() const { return m_submenu; } 
     virtual bool isEnabled() const { return m_enabled; }
     virtual bool isSelected() const { return m_selected; }

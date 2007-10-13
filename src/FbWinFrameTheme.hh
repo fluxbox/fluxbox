@@ -33,6 +33,7 @@
 #include "FbTk/GContext.hh"
 
 #include "BorderTheme.hh"
+#include "IconbarTheme.hh"
 #include "Shape.hh"
 
 class FbWinFrameTheme: public FbTk::Theme {
@@ -43,9 +44,6 @@ public:
        @name textures
     */
     //@{
-    const FbTk::Texture &labelFocusTexture() const { return *m_label_focus; }
-    const FbTk::Texture &labelUnfocusTexture() const { return *m_label_unfocus; }
-    const FbTk::ThemeItem<FbTk::Texture> &label() const { return m_label_unfocus; }
     const FbTk::Texture &titleFocusTexture() const { return *m_title_focus; }
     const FbTk::Texture &titleUnfocusTexture() const { return *m_title_unfocus; }
 
@@ -64,18 +62,11 @@ public:
        @name colors
     */
     //@{
-    const FbTk::Color &labelFocusColor() const { return *m_label_focus_color; }
-    const FbTk::Color &labelUnfocusColor() const { return *m_label_unfocus_color; }
-
     const FbTk::Color &buttonFocuscolor() const { return *m_button_focus_color; }
     const FbTk::Color &buttonUnfocuscolor() const { return *m_button_unfocus_color; }
     //@}
     FbTk::Font &font() { return *m_font; }
 
-    FbTk::Justify justify() const { return *m_textjustify; }
-
-    GC labelTextFocusGC() const { return m_label_text_focus_gc.gc(); }
-    GC labelTextUnfocusGC() const { return m_label_text_unfocus_gc.gc(); }
     GC buttonPicFocusGC() const { return m_button_pic_focus_gc.gc(); }
     GC buttonPicUnfocusGC() const { return m_button_pic_unfocus_gc.gc(); }
 
@@ -100,24 +91,22 @@ public:
     void setFocusedAlpha(unsigned char alpha) { m_focused_alpha = alpha; }
     void setUnfocusedAlpha(unsigned char alpha) { m_unfocused_alpha = alpha; }
 
+    IconbarTheme &iconbarTheme() { return m_iconbar_theme; }
+
 private:
-    FbTk::ThemeItem<FbTk::Texture> m_label_focus, m_label_unfocus;
     FbTk::ThemeItem<FbTk::Texture> m_title_focus, m_title_unfocus;
     FbTk::ThemeItem<FbTk::Texture> m_handle_focus, m_handle_unfocus;
     FbTk::ThemeItem<FbTk::Texture> m_button_focus, m_button_unfocus, m_button_pressed;
     FbTk::ThemeItem<FbTk::Texture> m_grip_focus, m_grip_unfocus;
 
-    FbTk::ThemeItem<FbTk::Color> m_label_focus_color, m_label_unfocus_color;
     FbTk::ThemeItem<FbTk::Color> m_button_focus_color, m_button_unfocus_color;
     
     FbTk::ThemeItem<FbTk::Font> m_font;
-    FbTk::ThemeItem<FbTk::Justify> m_textjustify;
     FbTk::ThemeItem<Shape::ShapePlace> m_shape_place;
 
     FbTk::ThemeItem<int> m_title_height, m_bevel_width, m_handle_width;
     BorderTheme m_border;
 
-    FbTk::GContext m_label_text_focus_gc, m_label_text_unfocus_gc;
     FbTk::GContext m_button_pic_focus_gc, m_button_pic_unfocus_gc;
 
     Cursor m_cursor_move;
@@ -127,6 +116,8 @@ private:
     Cursor m_cursor_upper_right_angle;
     unsigned char m_focused_alpha;
     unsigned char m_unfocused_alpha;
+
+    IconbarTheme m_iconbar_theme;
 };
 
 #endif // FBWINFRAMETHEME_HH

@@ -93,27 +93,32 @@ void MenuItem::draw(FbDrawable &draw,
     // Icon
     //
     if (draw_background) {
-        if (m_icon.get() != 0 && m_icon->pixmap.get() != 0) {
+        if (icon() != 0) {
+            // copy pixmap, so we don't resize the original
+            FbPixmap tmp_pixmap, tmp_mask;
+            tmp_pixmap.copy(icon()->pixmap());
+            tmp_mask.copy(icon()->mask());
+
             // scale pixmap to right size
-            if (height - 2*theme.bevelWidth() != m_icon->pixmap->height() &&
-                !m_icon->filename.empty()) {
+            if (height - 2*theme.bevelWidth() != tmp_pixmap.height()) {
                 unsigned int scale_size = height - 2*theme.bevelWidth();
-                m_icon->pixmap->scale(scale_size, scale_size);
+                tmp_pixmap.scale(scale_size, scale_size);
+                tmp_mask.scale(scale_size, scale_size);
             }
 
-            if (m_icon->pixmap->pixmap().drawable() != 0) {
+            if (tmp_pixmap.drawable() != 0) {
                 GC gc = theme.frameTextGC().gc();
                 int icon_x = x + theme.bevelWidth();
                 int icon_y = y + theme.bevelWidth();
                 // enable clip mask
-                XSetClipMask(disp, gc, m_icon->pixmap->mask().drawable());
+                XSetClipMask(disp, gc, tmp_mask.drawable());
                 XSetClipOrigin(disp, gc, icon_x, icon_y);
 
-                draw.copyArea(m_icon->pixmap->pixmap().drawable(),
+                draw.copyArea(tmp_pixmap.drawable(),
                               gc,
                               0, 0,
                               icon_x, icon_y,
-                              m_icon->pixmap->width(), m_icon->pixmap->height());
+                              tmp_pixmap.width(), tmp_pixmap.height());
 
                 // restore clip mask
                 XSetClipMask(disp, gc, None);

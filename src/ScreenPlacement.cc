@@ -25,6 +25,7 @@
 
 
 #include "RowSmartPlacement.hh"
+#include "MinOverlapPlacement.hh"
 #include "UnderMousePlacement.hh"
 #include "ColSmartPlacement.hh"
 #include "CascadePlacement.hh"
@@ -57,7 +58,7 @@ ScreenPlacement::ScreenPlacement(BScreen &screen):
 {
 }
 
-bool ScreenPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist,
+bool ScreenPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
                                   const FluxboxWindow &win,
                                   int &place_x, int &place_y) {
 
@@ -72,6 +73,10 @@ bool ScreenPlacement::placeWindow(const std::vector<FluxboxWindow *> &windowlist
             break;
         case COLSMARTPLACEMENT:
             m_strategy.reset(new ColSmartPlacement());
+            break;
+        case ROWMINOVERLAPPLACEMENT:
+        case COLMINOVERLAPPLACEMENT:
+            m_strategy.reset(new MinOverlapPlacement(*m_placement_policy));
             break;
         case CASCADEPLACEMENT:
             m_strategy.reset(new CascadePlacement(win.screen()));
@@ -143,6 +148,10 @@ void FbTk::Resource<ScreenPlacement::PlacementPolicy>::setFromString(const char 
         *(*this) = ScreenPlacement::ROWSMARTPLACEMENT;
     else if (strcasecmp("ColSmartPlacement", str) == 0)
         *(*this) = ScreenPlacement::COLSMARTPLACEMENT;
+    else if (strcasecmp("RowMinOverlapPlacement", str) == 0)
+        *(*this) = ScreenPlacement::ROWMINOVERLAPPLACEMENT;
+    else if (strcasecmp("ColMinOverlapPlacement", str) == 0)
+        *(*this) = ScreenPlacement::COLMINOVERLAPPLACEMENT;
     else if (strcasecmp("UnderMousePlacement", str) == 0)
         *(*this) = ScreenPlacement::UNDERMOUSEPLACEMENT;
     else if (strcasecmp("CascadePlacement", str) == 0)
@@ -158,6 +167,10 @@ std::string FbTk::Resource<ScreenPlacement::PlacementPolicy>::getString() const 
         return "RowSmartPlacement";
     case ScreenPlacement::COLSMARTPLACEMENT:
         return "ColSmartPlacement";
+    case ScreenPlacement::ROWMINOVERLAPPLACEMENT:
+        return "RowMinOverlapPlacement";
+    case ScreenPlacement::COLMINOVERLAPPLACEMENT:
+        return "ColMinOverlapPlacement";
     case ScreenPlacement::UNDERMOUSEPLACEMENT:
         return "UnderMousePlacement";
     case ScreenPlacement::CASCADEPLACEMENT:

@@ -58,7 +58,6 @@
 class ClientPattern;
 class Focusable;
 class FluxboxWindow;
-class Netizen;
 class FbWinFrameTheme;
 class RootTheme;
 class WinButtonTheme;
@@ -88,17 +87,17 @@ public:
     /// a window becomes active / focussed on a different workspace
     enum FollowModel { 
         IGNORE_OTHER_WORKSPACES = 0, ///< who cares?
-        FOLLOW_ACTIVE_WINDOW, ///< go to that workspace
+        FOLLOW_ACTIVE_WINDOW,     ///< go to that workspace
         SEMIFOLLOW_ACTIVE_WINDOW, ///< fetch iconified windows, else follow
-        FETCH_ACTIVE_WINDOW ///< put that window to the current workspace 
+        FETCH_ACTIVE_WINDOW       ///< put that window to the current workspace 
     };
 
     /// Different resize modes when resizing a window
     enum ResizeModel { 
-        BOTTOMRESIZE = 0,  //< resizes from the bottom right corner
-        QUADRANTRESIZE,  //< resizes from one quadrant
-        CENTERRESIZE, //< resizes from center
-        DEFAULTRESIZE = BOTTOMRESIZE //< default resize mode is bottom
+        BOTTOMRESIZE = 0,            ///< resizes from the bottom right corner
+        QUADRANTRESIZE,              ///< resizes from one quadrant
+        CENTERRESIZE,                ///< resizes from center
+        DEFAULTRESIZE = BOTTOMRESIZE ///< default resize mode is bottom
     };
 
 
@@ -119,12 +118,13 @@ public:
     bool isRootColormapInstalled() const { return root_colormap_installed; }
     bool isScreenManaged() const { return managed; }
     bool isWorkspaceWarping() const { return *resource.workspace_warping; }
-    bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
-    bool isReverseWheeling() const { return *resource.reverse_wheeling; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
     bool doOpaqueMove() const { return *resource.opaque_move; }
     bool doFullMax() const { return *resource.full_max; }
+    bool getMaxIgnoreIncrement() const { return *resource.max_ignore_inc; }
+    bool getMaxDisableMove() const { return *resource.max_disable_move; }
+    bool getMaxDisableResize() const { return *resource.max_disable_resize; }
     bool doShowWindowPos() const { return *resource.show_window_pos; }
     bool decorateTransient() const { return *resource.decorate_transient; }
     const std::string &defaultDeco() const { return *resource.default_deco; }
@@ -144,13 +144,16 @@ public:
 
     ResizeModel getResizeModel() const { return *resource.resize_model; }
 
+    inline unsigned int noFocusWhileTypingDelay() const { return *resource.typing_delay; }
     inline FollowModel getFollowModel() const { return *resource.follow_model; }
     inline FollowModel getUserFollowModel() const { return *resource.user_follow_model; }
 
     inline const std::string &getScrollAction() const { return *resource.scroll_action; }
     inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
     inline const bool allowRemoteActions() const { return *resource.allow_remote_actions; }
+    inline const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
     inline const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
+    inline const bool getTabsUsePixmap() const { return *resource.tabs_use_pixmap; }
     inline const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
 
     inline unsigned int getTabWidth() const { return *resource.tab_width; }
@@ -256,9 +259,10 @@ public:
     /**
      * Cycles focus of windows
      * @param opts focus options
+     * @param pat specific pattern to match windows with
      * @param reverse the order of cycling
      */
-    void cycleFocus(int opts = 0, bool reverse = false);
+    void cycleFocus(int opts = 0, const ClientPattern *pat = 0, bool reverse = false);
 
     /**
      * Creates an empty menu with specified label
@@ -306,6 +310,9 @@ public:
 
     FbRootWindow &rootWindow() { return m_root_window; }
     const FbRootWindow &rootWindow() const { return m_root_window; }
+
+    FbTk::FbWindow &dummyWindow() { return m_dummy_window; }
+    const FbTk::FbWindow &dummyWindow() const { return m_dummy_window; }
 
     FbTk::MultLayers &layerManager() { return m_layermanager; }
     const FbTk::MultLayers &layerManager() const { return m_layermanager; }
@@ -355,10 +362,6 @@ public:
     void updateWorkspaceNamesAtom();
     /// add a workspace name to the end of the workspace name list
     void addWorkspaceName(const char *name);
-    /// add a Netizen window
-    void addNetizen(Window win);
-    /// remove a netizen
-    void removeNetizen(Window win);
     /// add a window to the icon list
     void addIcon(FluxboxWindow *win);
     /// remove a window from the icon list
@@ -457,16 +460,6 @@ public:
     WinClient *findGroupLeft(WinClient &winclient);
     WinClient *findGroupRight(WinClient &winclient);
 
-    // notify netizens
-    void updateNetizenCurrentWorkspace();
-    void updateNetizenWorkspaceCount();
-    void updateNetizenWindowFocus();
-    void updateNetizenWindowAdd(Window, unsigned long);
-    void updateNetizenWindowDel(Window);
-    void updateNetizenConfigNotify(XEvent &ev);
-    void updateNetizenWindowRaise(Window);
-    void updateNetizenWindowLower(Window);
-
     /// create window frame for client window and attach it
     FluxboxWindow *createWindow(Window clientwin);
     /// creates a window frame for a winclient. The client is attached to the window
@@ -536,12 +529,10 @@ private:
     ExtraMenus m_extramenus;
 
     typedef std::list<FbTk::Menu *> Rootmenus;
-    typedef std::list<Netizen *> Netizens;
     typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > Configmenus;
 
 
     Rootmenus m_rootmenu_list;
-    Netizens m_netizen_list;
     Configmenus m_configmenu_list;
     Icons m_icon_list;
 
@@ -558,21 +549,22 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
-    FbTk::FbWindow m_geom_window, m_pos_window;
+    FbTk::FbWindow m_geom_window, m_pos_window, m_dummy_window;
 
     struct ScreenResource {
         ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
                        const std::string &altscrname);
 
         FbTk::Resource<bool> image_dither, opaque_move, full_max,
-            workspace_warping,
-            desktop_wheeling, reverse_wheeling, show_window_pos,            
-            auto_raise, click_raises, decorate_transient;
+            max_ignore_inc, max_disable_move, max_disable_resize,
+            workspace_warping, show_window_pos, auto_raise, click_raises,
+            decorate_transient;
         FbTk::Resource<std::string> default_deco;
         FbTk::Resource<std::string> rootcommand;
         FbTk::Resource<ResizeModel> resize_model;
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
         FbTk::Resource<std::string> windowmenufile;
+        FbTk::Resource<unsigned int> typing_delay;
         FbTk::Resource<FollowModel> follow_model, user_follow_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
@@ -586,6 +578,8 @@ private:
         FbTk::Resource<std::string> scroll_action;
         FbTk::Resource<bool> scroll_reverse;
         FbTk::Resource<bool> allow_remote_actions;
+        FbTk::Resource<bool> clientmenu_use_pixmap;
+        FbTk::Resource<bool> tabs_use_pixmap;
         FbTk::Resource<bool> max_over_tabs;
         FbTk::Resource<bool> default_internal_tabs;
 

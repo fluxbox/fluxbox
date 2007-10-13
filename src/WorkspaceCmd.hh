@@ -26,23 +26,73 @@
 #define WORKSPACECMD_HH
 #include "Command.hh"
 
+#include "ClientPattern.hh"
+#include "CurrentWindowCmd.hh"
 #include "FocusControl.hh"
 
+#include "FbTk/RefCount.hh"
+
+class WindowHelperCmd;
+
+class WindowListCmd: public FbTk::Command {
+public:
+    WindowListCmd(FbTk::RefCount<WindowHelperCmd> cmd, const std::string &pat):
+            m_cmd(cmd), m_pat(pat.c_str()) { }
+
+    void execute();
+
+private:
+    FbTk::RefCount<WindowHelperCmd> m_cmd;
+    ClientPattern m_pat;
+};
+
+class AttachCmd: public FbTk::Command {
+public:
+    explicit AttachCmd(const std::string &pat): m_pat(pat.c_str()) { }
+    void execute();
+private:
+    const ClientPattern m_pat;
+};
 
 class NextWindowCmd: public FbTk::Command {
 public:
-    explicit NextWindowCmd(int option):m_option(option) { }
+    explicit NextWindowCmd(int option, std::string &pat):
+            m_option(option), m_pat(pat.c_str()) { }
     void execute();
 private:
     const int m_option;
+    const ClientPattern m_pat;
 };
 
 class PrevWindowCmd: public FbTk::Command {
 public:
-    explicit PrevWindowCmd(int option):m_option(option) { }
+    explicit PrevWindowCmd(int option, std::string &pat): 
+            m_option(option), m_pat(pat.c_str()) { }
     void execute();
 private:
     const int m_option;
+    const ClientPattern m_pat;
+};
+
+class TypeAheadFocusCmd: public FbTk::Command {
+public:
+    explicit TypeAheadFocusCmd(int option, std::string &pat):
+            m_option(option), m_pat(pat.c_str()) { }
+    void execute();
+private:
+    const int m_option;
+    const ClientPattern m_pat;
+};
+
+class GoToWindowCmd: public FbTk::Command {
+public:
+    GoToWindowCmd(int num, int option, std::string &pat):
+            m_num(num), m_option(option), m_pat(pat.c_str()) { }
+    void execute();
+private:
+    const int m_num;
+    const int m_option;
+    const ClientPattern m_pat;
 };
 
 class DirFocusCmd: public FbTk::Command {
@@ -110,11 +160,6 @@ public:
 };
 
 class ShowDesktopCmd: public FbTk::Command {
-public:
-    void execute();
-};
-
-class MinimizeLayerCmd: public FbTk::Command {
 public:
     void execute();
 };

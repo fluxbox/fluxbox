@@ -31,17 +31,24 @@
 
 #include "FocusControl.hh"
 
-CurrentWindowCmd::CurrentWindowCmd(Action act):m_action(act) { }
-
-void CurrentWindowCmd::execute() {
-    FluxboxWindow *win = FocusControl::focusedFbWindow();
-    if (win)
-        (win->*m_action)();
+void WindowHelperCmd::execute() {
+    m_win = 0;
+    if (FocusControl::focusedFbWindow()) // guarantee that fbwindow() exists too
+        real_execute();
 }
 
+void WindowHelperCmd::execute(FluxboxWindow &win) {
+    m_win = &win;
+    real_execute();
+}
 
-void KillWindowCmd::real_execute() {
-    winclient().sendClose(true);
+FluxboxWindow &WindowHelperCmd::fbwindow() {
+    // will exist from execute above
+    return (m_win ? *m_win : *FocusControl::focusedFbWindow());
+}
+
+void CurrentWindowCmd::real_execute() {
+    (fbwindow().*m_action)();
 }
 
 void SetHeadCmd::real_execute() {
@@ -54,13 +61,14 @@ void SendToWorkspaceCmd::real_execute() {
 
 void SendToNextWorkspaceCmd::real_execute() {
     const int ws_nr =
-        ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) %
+        ( fbwindow().workspaceNumber() + m_workspace_num ) %
           fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
 }
 
 void SendToPrevWorkspaceCmd::real_execute() {
-    int ws_nr = fbwindow().screen().currentWorkspaceID() - m_workspace_num;
+    int ws_nr = (fbwindow().workspaceNumber() - m_workspace_num) %
+        fbwindow().screen().numberOfWorkspaces();
     if ( ws_nr < 0 )
         ws_nr += fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
@@ -72,13 +80,14 @@ void TakeToWorkspaceCmd::real_execute() {
 
 void TakeToNextWorkspaceCmd::real_execute() {
     unsigned int workspace_num=
-        ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) %
+        ( fbwindow().workspaceNumber() + m_workspace_num ) %
           fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
 }
 
 void TakeToPrevWorkspaceCmd::real_execute() {
-    int workspace_num= fbwindow().screen().currentWorkspaceID() - m_workspace_num;
+    int workspace_num = (fbwindow().workspaceNumber() - m_workspace_num) %
+        fbwindow().screen().numberOfWorkspaces();
     if ( workspace_num < 0 )
         workspace_num += fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
@@ -95,21 +104,6 @@ void GoToTabCmd::real_execute() {
     while (--num > 0) ++it;
 
     (*it)->focus();
-}
-
-void WindowHelperCmd::execute() {
-    if (FocusControl::focusedFbWindow()) // guarantee that fbwindow() exists too
-        real_execute();
-}
-
-WinClient &WindowHelperCmd::winclient() {
-    // will exist from execute above
-    return *FocusControl::focusedWindow();
-}
-
-FluxboxWindow &WindowHelperCmd::fbwindow() {
-    // will exist from execute above
-    return *FocusControl::focusedFbWindow();
 }
 
 MoveCmd::MoveCmd(const int step_size_x, const int step_size_y) :

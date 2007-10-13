@@ -1,9 +1,136 @@
  (Format: Year/Month/Day)
-Changes for 1.0.0:
+Changes for 1.0.1:
 *07/10/13:
+   * Merged pre-devel branch; see all Changes since 1.0.0 (Mark)
    * Updated ru_RU (Thanks Konstantin Shashkin)
-   * Deiconify windows via :Deiconify in reverse order (Mathias)
+   * deiconify windows via :Deiconify in reverse order (Mathias)
      FbCommands.cc
+*07/05/23:
+   * Added key command :Attach <pattern> which groups all windows matching the
+     given pattern (Mark)
+     FbCommandFactory.cc WorkspaceCmd.cc/hh
+*07/05/20:
+   * Added resources session.screen<N>.maxDisable{Move,Resize}: <boolean>, which
+     prevent maximized windows from being moved/resized (Mark)
+     Window.cc Screen.cc/hh nls/fluxbox-nls.hh
+*07/05/19:
+   * Changed behavior of resource session.screen<N>.followModel (Mark)
+     - now only options are Ignore and Follow, the latter using the setting in
+       session.screen<N>.userFollowModel
+     Window.cc/hh Ewmh.cc Screen.cc/hh
+*07/05/16:
+   * Added new resource session.screen<N>.noFocusWhileTypingDelay: <int> (Mark)
+     - specifies a time in milliseconds that new windows should not gain focus
+       while the user is typing in the focused window
+     Window.cc/hh Screen.cc/hh
+*07/05/13:
+   * Added new placement policies {Row,Col}MinOverlapPlacement. They behave the
+     same as {Row,Col}SmartPlacement when the window fits but fall back on
+     minimizing overlap with other windows instead of CascadePlacement (Mark)
+     MinOverlapPlacement.cc/hh ScreenPlacement.cc/hh
+*07/04/23:
+   * Set IconicState on all unmapped clients and unmap clients with frames, as
+     per ICCCM 4.1.4 (Mark)
+     Screen.cc Window.cc FocusControl.cc
+   * Added ClientMenu key command, which pops up a menu of open windows, based
+     on a pattern match
+     - e.g. :ClientMenu (workspace=[current]) (minimized=no)
+     ClientMenu.cc FbCommands.cc/hh FbCommandFactory.cc
+*07/04/11:
+   * Added resource session.screen<N>.maxIgnoreIncrement: <boolean>, to
+     disable size checking when maximizing a window (e.g. terminals) (Mark)
+     - Also added a new configuration submenu for maximize options, to be filled
+       at a later date
+     Screen.cc/hh Window.cc
+*07/04/08:
+   * Added OnToolbar modifier to keys file (Mark)
+     Keys.cc/hh Toolbar.cc/hh Screen.cc/hh IconbarTool.cc fluxbox.cc
+*07/04/06:
+   * More changes to theme handling (Mark)
+     - introduced window.label.(un)focused.{justify,border{Color,Width}},
+       which fallback to window.label.{justify,border{Color,Width}} before
+       window.{justify,border{Color,Width}}
+     - this has the backwards-incompatible effect that
+       toolbar.iconbar.(un)focused.* fallback first to toolbar.iconbar.* and
+       then to window.label.*
+     FbWinFrame.cc/hh IconbarTool.cc/hh IconButton.cc/hh IconbarTheme.cc
+     FbWinFrameTheme.cc/hh
+*07/04/03:
+   * Added window.label.(un)focused.font to styles (Mark)
+     FbWinFrame.cc
+*07/03/31:
+   * [group] tag in apps file may now have a pattern appended to it, and a new
+     window will only be automatically attached to the group if the group
+     matches that pattern -- e.g. [group] (workspace) (shaded=no) will only
+     automatically group with windows on the current workspace that are not
+     shaded (Mark)
+     Remember.cc/hh
+   * Lots of window commands now take a client pattern as an additional
+     argument, and the command will then be applied to all matching windows
+     (Mark)
+     - For example: `SendToWorkspace 2 (xterm)' will send all xterm windows to
+       workspace 2
+     - Here is the full list of affected commands (which is not to imply they
+       all necessarily make sense to do): Fullscreen, Minimize, Maximize,
+       MaximizeVertical, MaximizeHorizontal, SetAlpha, Resize, ResizeTo,
+       ResizeHorizontal, ResizeVertical, MoveTo, Move, MoveRight, MoveLeft,
+       MoveUp, MoveDown, Raise, RaiseLayer, Lower, LowerLayer, Close, Kill,
+       Shade, Stick, ToggleDecor, SetHead, Tab, SendToNextWorkspace,
+       SendToPrevWorkspace, TakeToNextWorkspace, TakeToPrevWorkspace,
+       SendToWorkspace, TakeToWorkspace, NextTab, PrevTab, MoveTabLeft,
+       MoveTabRight, DetachClient
+     WorkspaceCmd.cc/hh CurrentWindowCmd.cc/hh FbCommandFactory.cc
+*07/03/30:
+   * Changed syntax for window cycling (Mark)
+     - Instead of a bitmask, the window cycling functions NextWindow,
+       PrevWindow, TypeAheadFocus, and GoToWindow now take a list of options
+       enclosed in {} followed by a pattern similar to those used in the apps
+       file.
+     - Examples:
+         * NextWindow {static groups} (shaded=yes) (name=xterm)
+           - cycles through all shaded xterms in creation order, only focusing
+             the active tab in the group
+         * GoToWindow 3 (title=[current])
+           - focuses the third client in last-focused order with the same title
+             as the currently focused window
+     - The options are: name, class, title, role, maximized, minimized, shaded,
+       stuck, focushidden (can't be disabled), iconhidden, workspace (matches
+       workspace names, not numbers), head (numbers), and layer (names)
+     - Parsing is a pain, so you'll have to update your keys file yourself for
+       now.
+*07/03/29:
+   * Removed groups file; entries will be added to the apps file automatically
+     (Mark)
+   * Fixed a problem with programs starting in IconicState (Mark)
+*07/03/27:
+   * Added new resource session.screen<N>.clientMenu.usePixmap that puts the
+     window's icon in the workspace and icons menus: default true. (Mark)
+     - For some reason, it doesn't work with un-shaped icons yet, but I've spent
+       way too many hours already trying to figure out why
+   * Use IconTitle in iconbar for minimized windows (Mark)
+*07/03/25:
+   * Added new resource session.screen<N>.tabs.usePixmap that puts the window's
+     icon in the tab, if available. This is on by default. (Mark)
+     Window.cc FbWinFrame.cc/hh WinClient.cc Screen.cc/hh
+*07/03/24:
+   * Added new key command GoToWindow (Mark)
+     - Syntax is GoToWindow <int> [<bitmask>], where the int gives the position
+       of the desired window with respect to a list of windows, and the bitmask
+       is the same as for NextWindow. A negative number for <int> will count
+       back from the end of the list.
+     - Particularly useful examples are GoToWindow <int> 9 and
+       GoToWindow <int> 25, which will focus the window at position <int> in the
+       iconbar modes Workspace and WorkspaceNoIcons, respectively.
+   * Fixed creation order window cycling with tabbed windows (Mark)
+*07/03/21:
+   * Added new command TypeAheadFocus (Mark)
+     - syntax is the same as for NextWindow; when you run the command, you can
+       start typing the title of the window, and it will gain focus; pressing
+       tab will cycle through all matching entries using the options specified;
+       when you've found the window you want, just press return or escape
+     WinClient.hh Screen.cc/hh FbCommandFactory.cc WorkspaceCmd.cc/hh
+--------------------------------
+Changes for 1.0.0:
 *07/10/08:
    * Changed default style to bloe
 *07/10/07:

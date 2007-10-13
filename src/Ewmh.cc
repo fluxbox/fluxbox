@@ -28,7 +28,6 @@
 #include "WinClient.hh"
 #include "Workspace.hh"
 #include "Layer.hh"
-#include "WinClientUtil.hh"
 #include "fluxbox.hh"
 #include "FbWinFrameTheme.hh"
 #include "FocusControl.hh"
@@ -79,13 +78,6 @@ Ewmh::Ewmh() {
     createAtoms();
 }
 
-Ewmh::~Ewmh() {
-    while (!m_windows.empty()) {
-        XDestroyWindow(FbTk::App::instance()->display(), m_windows.back());
-        m_windows.pop_back();
-    }
-}
-
 void Ewmh::initForScreen(BScreen &screen) {
     Display *disp = FbTk::App::instance()->display();
 
@@ -108,14 +100,9 @@ void Ewmh::initForScreen(BScreen &screen) {
      * Window Manager is present.
      */
 
-    Window wincheck = XCreateSimpleWindow(disp,
-                                          screen.rootWindow().window(),
-                                          -10, -10, 5, 5, 0, 0, 0);
+    Window wincheck = screen.dummyWindow().window();
 
     if (wincheck != None) {
-        // store the window so we can delete it later
-        m_windows.push_back(wincheck);
-
         screen.rootWindow().changeProperty(m_net_supporting_wm_check, XA_WINDOW, 32,
                                            PropModeReplace, (unsigned char *) &wincheck, 1);
         XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,
@@ -278,7 +265,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 // we also assume it shouldn't be visible in any toolbar
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
-                win.setDecoration(FluxboxWindow::DECOR_NONE);
+                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
                 win.moveToLayer(Layer::DOCK);
             } else if (atoms[l] == m_net_wm_window_type_desktop) {
                 /*
@@ -291,7 +278,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
                 win.moveToLayer(Layer::DESKTOP);
-                win.setDecorationMask(0);
+                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
                 win.setTabable(false);
                 win.setMovable(false);
                 win.setResizable(false);
@@ -303,7 +290,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                  * window is a splash screen displayed as an application
                  * is starting up.
                  */
-                win.setDecoration(FluxboxWindow::DECOR_NONE);
+                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
                 win.setMovable(false);
@@ -320,11 +307,11 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                  * application). Windows of this type may set the
                  * WM_TRANSIENT_FOR hint indicating the main application window.
                  */
-                win.setDecoration(FluxboxWindow::DECOR_TOOL);
+                win.setDecorationMask(FluxboxWindow::DECOR_TOOL);
                 win.setIconHidden(true);
                 win.moveToLayer(Layer::ABOVE_DOCK);
             } else if (atoms[l] == m_net_wm_window_type_toolbar) {
-                win.setDecoration(FluxboxWindow::DECOR_NONE);
+                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
                 win.setIconHidden(true);
                 win.moveToLayer(Layer::ABOVE_DOCK);
             }
@@ -402,7 +389,10 @@ void Ewmh::updateClientClose(WinClient &winclient){
 
 void Ewmh::updateClientList(BScreen &screen) {
 
-    list<WinClient *> creation_order_list = screen.focusControl().creationOrderList();
+    if (screen.isShuttingdown())
+        return;
+
+    list<Focusable *> creation_order_list = screen.focusControl().creationOrderList();
 
     size_t num = creation_order_list.size();
     Window *wl = FB_new_nothrow Window[num];
@@ -414,10 +404,13 @@ void Ewmh::updateClientList(BScreen &screen) {
     }
 
     int win=0;
-    list<WinClient *>::iterator client_it = creation_order_list.begin();
-    list<WinClient *>::iterator client_it_end = creation_order_list.end();
-    for (; client_it != client_it_end; ++client_it)
-        wl[win++] = (*client_it)->window();
+    list<Focusable *>::iterator client_it = creation_order_list.begin();
+    list<Focusable *>::iterator client_it_end = creation_order_list.end();
+    for (; client_it != client_it_end; ++client_it) {
+        WinClient *client = dynamic_cast<WinClient *>(*client_it);
+        if (client)
+            wl[win++] = client->window();
+    }
 
     /*  From Extended Window Manager Hints, draft 1.3:
      *
@@ -800,32 +793,12 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             return true;
         // ce.window = window to focus
 
-        if (winclient->fbwindow()) {
-
-            FluxboxWindow* fbwin = winclient->fbwindow();
-
-            // if the raised window is on a different workspace
-            // we do what the user wish:
-            //   either ignore|go to that workspace|get the window
-            if (fbwin->screen().currentWorkspaceID() != fbwin->workspaceNumber()
-                && !fbwin->isStuck()) {
-                BScreen::FollowModel model = (ce.data.l[0] == 2) ?
-                    fbwin->screen().getUserFollowModel() :
-                    fbwin->screen().getFollowModel();
-                if (model == BScreen::FOLLOW_ACTIVE_WINDOW) {
-                    fbwin->screen().changeWorkspaceID(fbwin->workspaceNumber());
-                } else if (model == BScreen::FETCH_ACTIVE_WINDOW) {
-                    fbwin->screen().sendToWorkspace(fbwin->screen().currentWorkspaceID(), fbwin);
-                } else if (model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW) {
-                    if (fbwin->isIconic())
-                        fbwin->screen().sendToWorkspace(fbwin->screen().currentWorkspaceID(), fbwin);
-                    else
-                        fbwin->screen().changeWorkspaceID(fbwin->workspaceNumber());
-                } // else we ignore it. my favourite mode :)
-            }
-            fbwin->raise();
+        // ce.data.l[0] == 2 means the request came from a pager
+        if (winclient->fbwindow() && (ce.data.l[0] == 2 ||
+            winclient->fbwindow()->allowsFocusFromClient())) {
+            winclient->focus();
+            winclient->fbwindow()->raise();
         }
-        winclient->focus();
         return true;
     } else if (ce.message_type == m_net_close_window) {
         if (winclient == 0)
@@ -1203,7 +1176,7 @@ void Ewmh::updateActions(FluxboxWindow &win) {
         actions.push_back(m_net_wm_action_minimize);
 
     unsigned int max_width, max_height;
-    WinClientUtil::maxSize(win.clientList(), max_width, max_height);
+    win.maxSize(max_width, max_height);
 
     // if unlimited max width we can maximize horizontal
     if (max_width == 0) {

@@ -25,7 +25,6 @@
 #define KEYS_HH
 
 #include <string>
-#include <vector>
 #include <list>
 #include <map>
 #include <X11/Xlib.h>
@@ -53,11 +52,7 @@ public:
         // and so on...
     };
 
-    /**
-       Constructor
-       @param display display connection
-       @param filename file to load, default none
-    */
+    /// constructor
     explicit Keys();
     /// destructor
     ~Keys();
@@ -80,7 +75,12 @@ public:
     /**
        do action from XKeyEvent; return false if not bound to anything
     */
-    bool doAction(int type, unsigned int mods, unsigned int key);
+    bool doAction(int type, unsigned int mods, unsigned int key, int context);
+
+    /// register a window so that proper keys/buttons get grabbed on it
+    void registerWindow(Window win, int context);
+    /// unregister window
+    void unregisterWindow(Window win);
 
     /**
        Reload configuration from filename
@@ -94,8 +94,9 @@ private:
 
     void grabKey(unsigned int key, unsigned int mod);
     void ungrabKeys();
-    void grabButton(unsigned int button, unsigned int mod);
+    void grabButton(unsigned int button, unsigned int mod, int context);
     void ungrabButtons();
+    void grabWindow(Window win);
 
     // Load default keybindings for when there are errors loading the initial one
     void loadDefaults();
@@ -103,7 +104,7 @@ private:
     std::string m_filename;
 
     class t_key;
-    typedef std::vector<t_key*> keylist_t;
+    typedef std::list<t_key*> keylist_t;
 
     class t_key {
     public:
@@ -116,11 +117,12 @@ private:
                     int context_) {
             // t_key ctor sets context_ of 0 to GLOBAL, so we must here too
             context_ = context_ ? context_ : GLOBAL;
-            for (size_t i = 0; i < keylist.size(); i++) {
-                if (keylist[i]->type == type_ && keylist[i]->key == key_ &&
-                    (keylist[i]->context & context_) > 0 && keylist[i]->mod ==
+            keylist_t::iterator it = keylist.begin(), it_end = keylist.end();
+            for (; it != it_end; it++) {
+                if ((*it)->type == type_ && (*it)->key == key_ &&
+                    ((*it)->context & context_) > 0 && (*it)->mod ==
                     FbTk::KeyUtil::instance().isolateModifierMask(mod_))
-                    return keylist[i];
+                    return *it;
             }
             return 0;
         }
@@ -141,7 +143,9 @@ private:
     keyspace_t m_map;
 
     Display *m_display;  ///< display connection
-    std::list<Window> m_window_list;
+
+    typedef std::map<Window, int> WindowMap;
+    WindowMap m_window_map;
 };
 
 #endif // KEYS_HH

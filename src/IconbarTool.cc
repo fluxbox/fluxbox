@@ -24,6 +24,8 @@
 
 #include "IconbarTool.hh"
 
+#include "fluxbox.hh"
+#include "WindowCmd.hh"
 #include "Screen.hh"
 #include "IconbarTheme.hh"
 #include "Window.hh"
@@ -83,40 +85,6 @@ void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
         m_value = IconbarTool::ALLWINDOWS;
     else
         setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<IconbarTool::WheelMode>::setDefaultValue() {
-    m_value = IconbarTool::SCREEN;
-}
-
-
-template<>
-void FbTk::Resource<IconbarTool::WheelMode>::setFromString(const char* strval) {
-    if (strncasecmp(strval, "off", strlen("off")) == 0)
-        m_value = IconbarTool::OFF;
-    else if (strncasecmp(strval, "on", strlen("on")) == 0)
-        m_value = IconbarTool::ON;
-    else if (strncasecmp(strval, "screen", strlen("screen")) == 0)
-        m_value = IconbarTool::SCREEN;
-    else
-        setDefaultValue();
-}
-
-
-template<>
-string FbTk::Resource<IconbarTool::WheelMode>::getString() const {
-    switch(m_value) {
-    case IconbarTool::ON:
-        return string("On");
-        break;
-    case IconbarTool::SCREEN:
-        return string("Screen");
-        break;
-    case IconbarTool::OFF:
-    default:
-        return string("Off");
-    };
 }
 
 template<>
@@ -290,52 +258,67 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 }
 
 inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
-    bool ret_val = false;
-    // just add the icons that are on the this workspace
-    switch (mode) {
-    case IconbarTool::NONE:
-        break;
-    case IconbarTool::ICONS:
-        if (win.isIconic())
-            ret_val = true;
-        break;
-    case IconbarTool::NOICONS:
-        if (!win.isIconic())
-            ret_val = true;
-        break;
-    case IconbarTool::WORKSPACEICONS:
-        if(win.workspaceNumber() == win.screen().currentWorkspaceID() &&
-           win.isIconic())
-            ret_val = true;
-        break;
-    case IconbarTool::WORKSPACENOICONS:
-        if (win.isIconic())
-            break;
-    case IconbarTool::WORKSPACE:
-        if (win.workspaceNumber() == win.screen().currentWorkspaceID())
-            ret_val = true;
-        break;
-    case IconbarTool::ALLWINDOWS:
-        ret_val = true;
-        break;
+    if (win.isIconHidden() || mode == IconbarTool::NONE)
+        return false;
+
+    if ((mode == IconbarTool::ICONS || mode == IconbarTool::WORKSPACEICONS) &&
+        !win.isIconic())
+        return false;
+
+    if ((mode == IconbarTool::NOICONS || mode == IconbarTool::WORKSPACENOICONS)
+        && win.isIconic())
+        return false;
+
+    if ((mode == IconbarTool::WORKSPACE || mode == IconbarTool::WORKSPACEICONS
+        || mode == IconbarTool::WORKSPACENOICONS) &&
+        win.workspaceNumber() != win.screen().currentWorkspaceID())
+        return false;
+
+    return true;
+}
+
+typedef FbTk::RefCount<FbTk::Command> RefCmd;
+
+class ShowMenu: public FbTk::Command {
+public:
+    explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
+    void execute() {
+        // hide the menu if it's already showing for this FluxboxWindow
+        if (m_win.menu().isVisible() && WindowCmd<void>::window() == &m_win) {
+            m_win.screen().hideMenus();
+            return;
+        }
+        m_win.screen().hideMenus();
+        // get last button pos
+        const XEvent &event = Fluxbox::instance()->lastEvent();
+        int x = event.xbutton.x_root - (m_win.menu().width() / 2);
+        int y = event.xbutton.y_root - (m_win.menu().height() / 2);
+        m_win.showMenu(x, y);
+    }
+private:
+    FluxboxWindow &m_win;
+};
+
+class FocusCommand: public FbTk::Command {
+public:
+    explicit FocusCommand(Focusable &win): m_win(win) { }
+    void execute() {
+        // this needs to be a local variable, as this object could be destroyed
+        // if the workspace is changed.
+        FluxboxWindow *fbwin = m_win.fbwindow();
+        if (!fbwin)
+            return;
+        if (m_win.isFocused())
+            fbwin->iconify();
+        else {
+            m_win.focus();
+            fbwin->raise();
+        }
     }
 
-    if (win.isIconHidden())
-        ret_val = false;
-
-    return ret_val;
-}
-
-void removeDuplicate(const IconbarTool::IconList &iconlist, list<FluxboxWindow *> &windowlist) {
-    IconbarTool::IconList::const_iterator icon_it = iconlist.begin();
-    IconbarTool::IconList::const_iterator icon_it_end = iconlist.end();
-    list<FluxboxWindow *>::iterator remove_it = windowlist.end();
-    for (; icon_it != icon_it_end; ++icon_it)
-        remove_it = remove(windowlist.begin(), remove_it, &(*icon_it)->win());
-
-    // remove already existing windows
-    windowlist.erase(remove_it, windowlist.end());
-}
+private:
+    Focusable &m_win;
+};
 
 }; // end anonymous namespace
 
@@ -345,16 +328,9 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_screen(screen),
     m_icon_container(parent),
     m_theme(theme),
-    m_focused_pm( screen.imageControl() ),
-    m_unfocused_pm( screen.imageControl() ),
-    m_focused_err_pm( screen.imageControl() ),
-    m_unfocused_err_pm( screen.imageControl() ),
     m_empty_pm( screen.imageControl() ),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
-    m_wheel_mode(screen.resourceManager(), OFF,
-                 screen.name() + ".iconbar.wheelMode",
-                 screen.name() + ".iconbar.WheelMode"),
     m_rc_alignment(screen.resourceManager(), Container::LEFT,
                    screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
     m_rc_client_width(screen.resourceManager(), 70,
@@ -392,15 +368,6 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     screen.clientListSig().attach(this);
     screen.iconListSig().attach(this);
     screen.currentWorkspaceSig().attach(this);
-    // setup focus timer
-
-    FbTk::RefCount<FbTk::Command> timer_cmd(new FbTk::SimpleCommand<IconbarTool>(*this, &IconbarTool::timedRender));
-    timeval to;
-    to.tv_sec = 0;
-    to.tv_usec = 1; // so it updates next event round
-    m_focus_timer.setCommand(timer_cmd);
-    m_focus_timer.setTimeout(to);
-    m_focus_timer.fireOnce(true);
 
 }
 
@@ -506,18 +473,10 @@ void IconbarTool::update(FbTk::Subject *subj) {
     if (subj != 0 && typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
         // we handle everything except die signal here
         FluxboxWindow::WinSubject *winsubj = static_cast<FluxboxWindow::WinSubject *>(subj);
-        if (subj == &(winsubj->win().focusSig())) {
-            // start focus timer, so we can update without flicker
-            m_focus_timer.start();
-
-            return;
-        } else if (subj == &(winsubj->win().workspaceSig())) {
+        if (subj == &(winsubj->win().workspaceSig())) {
             // we can ignore this signal if we're in ALLWINDOWS mode
-            // unless the window was focused and has nothing to revert to
-            if (mode() == ALLWINDOWS || mode() == ICONS || mode() == NOICONS) {
-                m_focus_timer.start();
+            if (mode() == ALLWINDOWS || mode() == ICONS || mode() == NOICONS)
                 return;
-            }
 
             // workspace changed for this window, and if it's not on current workspace we remove it
             if (m_screen.currentWorkspaceID() != winsubj->win().workspaceNumber()) {
@@ -525,29 +484,23 @@ void IconbarTool::update(FbTk::Subject *subj) {
                 renderTheme();
             }
             return;
-        } else if (subj == &(winsubj->win().dieSig())) { // die sig
-            removeWindow(winsubj->win());
-            renderTheme();
-            return; // we don't need to update the entire list
         } else if (subj == &(winsubj->win().stateSig())) {
             if (!checkAddWindow(mode(), winsubj->win())) {
                 removeWindow(winsubj->win());
                 renderTheme();
             }
-
             return;
 
-        } else if (subj == &(winsubj->win().attentionSig())) {
-            // render with titlebar focus, on attention
-            IconButton *button = findButton(winsubj->win());
-            if (button) {
-                renderButton(*button, true,
-                             winsubj->win().getAttentionState());
-            }
-            return;
         } else {
             // signal not handled
             return;
+        }
+    } else if (subj != 0 && typeid(*subj) == typeid(Focusable::FocusSubject)) {
+        Focusable::FocusSubject *winsubj = static_cast<Focusable::FocusSubject *>(subj);
+        if (subj == &(winsubj->win().dieSig())) { // die sig
+            removeWindow(winsubj->win());
+            renderTheme();
+            return; // we don't need to update the entire list
         }
     }
 
@@ -587,7 +540,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
     renderTheme();
 }
 
-IconButton *IconbarTool::findButton(FluxboxWindow &win) {
+IconButton *IconbarTool::findButton(Focusable &win) {
 
     IconList::iterator icon_it = m_icon_list.begin();
     IconList::iterator icon_it_end = m_icon_list.end();
@@ -598,25 +551,14 @@ IconButton *IconbarTool::findButton(FluxboxWindow &win) {
 
     return 0;
 }
-/*
-void IconbarTool::renderWindow(FluxboxWindow &win) {
-    IconButton *button = findButton(win);
-    if (button == 0)
-        return;
-    renderButton(*button);
-}
-*/
+
 void IconbarTool::updateSizing() {
     m_icon_container.setBorderWidth(m_theme.border().width());
 
     IconList::iterator icon_it = m_icon_list.begin();
     const IconList::iterator icon_it_end = m_icon_list.end();
-    for (; icon_it != icon_it_end; ++icon_it) {
-        if ((*icon_it)->win().isFocused())
-            (*icon_it)->setBorderWidth(m_theme.focusedBorder().width());
-        else // unfocused
-            (*icon_it)->setBorderWidth(m_theme.unfocusedBorder().width());
-    }
+    for (; icon_it != icon_it_end; ++icon_it)
+        (*icon_it)->reconfigTheme();
 
 }
 
@@ -631,127 +573,33 @@ void IconbarTool::renderTheme() {
     // update button sizes before we get max width per client!
     updateSizing();
 
-    unsigned int icon_width = 0, icon_height = 0;
-    unsigned int icon_width_off=0, icon_height_off=0;
-
-    if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180) {
-        icon_width = m_icon_container.maxWidthPerClient();
-        icon_height = m_icon_container.height();
-        icon_width_off = 1;
-    } else {
-        icon_width = m_icon_container.width();
-        icon_height = m_icon_container.maxWidthPerClient();
-        icon_height_off = 1;
-    }
-
-    if (!m_theme.focusedTexture().usePixmap()) {
-        m_focused_pm.reset( 0 );
-        m_focused_err_pm.reset( 0 );
-    } else {
-        m_focused_pm.reset( m_screen.imageControl().
-                            renderImage(icon_width, icon_height,
-                                        m_theme.focusedTexture(), orientation()) );
-        m_focused_err_pm.reset( m_screen.imageControl().
-                                renderImage(icon_width + icon_width_off,
-                                            icon_height + icon_height_off,
-                                            m_theme.focusedTexture(), orientation()) );
-    }
-
-    if (!m_theme.unfocusedTexture().usePixmap()) {
-        m_unfocused_pm.reset( 0 );
-        m_unfocused_err_pm.reset( 0 );
-    } else {
-        m_unfocused_pm.reset( m_screen.imageControl().
-                              renderImage(icon_width, icon_height,
-                                          m_theme.unfocusedTexture(), orientation()) );
-        m_unfocused_err_pm.reset( m_screen.imageControl().
-                                  renderImage(icon_width+icon_width_off,
-                                              icon_height+icon_height_off,
-                                              m_theme.unfocusedTexture(), orientation()) );
-    }
-
     // if we dont have any icons then we should render empty texture
     if (!m_theme.emptyTexture().usePixmap()) {
         m_empty_pm.reset( 0 );
         m_icon_container.setBackgroundColor(m_theme.emptyTexture().color());
     } else {
-        m_empty_pm.reset( m_screen.imageControl().
-                          renderImage(m_icon_container.width(), m_icon_container.height(),
-                                      m_theme.emptyTexture(), orientation()) );
+        m_empty_pm.reset(m_screen.imageControl().
+                          renderImage(m_icon_container.width(),
+                                      m_icon_container.height(),
+                                      m_theme.emptyTexture(), orientation()));
         m_icon_container.setBackgroundPixmap(m_empty_pm);
     }
 
-    // set to zero so its consistent and not ugly
-    m_icon_container.setBorderWidth(m_theme.border().width());
-    m_icon_container.setBorderColor(m_theme.border().color());
     m_icon_container.setAlpha(m_alpha);
 
     // update buttons
     IconList::iterator icon_it = m_icon_list.begin();
     const IconList::iterator icon_it_end = m_icon_list.end();
-    for (; icon_it != icon_it_end; ++icon_it) {
+    for (; icon_it != icon_it_end; ++icon_it)
         renderButton(*(*icon_it));
-    }
+
 }
 
-void IconbarTool::renderButton(IconButton &button, bool clear,
-                               int focusOption) {
+void IconbarTool::renderButton(IconButton &button, bool clear) {
 
     button.setPixmap(*m_rc_use_pixmap);
-    button.setAlpha(m_alpha);
     button.setTextPadding(*m_rc_client_padding);
-
-    // The last button is always the regular width
-    bool wider_button = false;
-    if (!m_icon_container.empty()) {
-        if (button.orientation() == FbTk::ROT0 || button.orientation() == FbTk::ROT180)
-            wider_button = button.width() != m_icon_container.back()->width();
-        else
-            wider_button = button.height() != m_icon_container.back()->height();
-//            wider_button = (button.width() != m_icon_container.maxWidthPerClient() || // height to cover both orients
-
-//                        button.height() != m_icon_container.back()->height());
-    }
-
-    if (focusOption == 1 ||
-        (focusOption == -1 &&
-         button.win().isFocused())) {
-
-        // focused texture
-        if (button.win().isFocused())
-            m_icon_container.setSelected(m_icon_container.find(&button));
-
-        button.setGC(m_theme.focusedText().textGC());
-        button.setFont(m_theme.focusedText().font());
-        button.setJustify(m_theme.focusedText().justify());
-        button.setBorderWidth(m_theme.focusedBorder().width());
-        button.setBorderColor(m_theme.focusedBorder().color());
-
-        if (!wider_button && m_focused_pm != 0)
-            button.setBackgroundPixmap(m_focused_pm);
-        else if (wider_button && m_focused_err_pm != 0)
-            button.setBackgroundPixmap(m_focused_err_pm);
-        else
-            button.setBackgroundColor(m_theme.focusedTexture().color());
-
-    } else { // unfocused
-        if (m_icon_container.selected() == &button)
-            m_icon_container.setSelected(-1);
-
-        button.setGC(m_theme.unfocusedText().textGC());
-        button.setFont(m_theme.unfocusedText().font());
-        button.setJustify(m_theme.unfocusedText().justify());
-        button.setBorderWidth(m_theme.unfocusedBorder().width());
-        button.setBorderColor(m_theme.unfocusedBorder().color());
-
-        if (!wider_button && m_unfocused_pm != 0)
-            button.setBackgroundPixmap(m_unfocused_pm);
-        else if (wider_button && m_unfocused_err_pm != 0)
-            button.setBackgroundPixmap(m_unfocused_err_pm);
-        else
-            button.setBackgroundColor(m_theme.unfocusedTexture().color());
-    }
-
+    button.reconfigTheme();
     if (clear)
         button.clear(); // the clear also updates transparent
 }
@@ -764,7 +612,7 @@ void IconbarTool::deleteIcons() {
     }
 }
 
-void IconbarTool::removeWindow(FluxboxWindow &win) {
+void IconbarTool::removeWindow(Focusable &win) {
     // got window die signal, lets find and remove the window
     IconList::iterator it = m_icon_list.begin();
     IconList::iterator it_end = m_icon_list.end();
@@ -780,12 +628,11 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
     cerr<<"IconbarTool::"<<__FUNCTION__<<"( 0x"<<&win<<" title = "<<win.title()<<") found!"<<endl;
 #endif // DEBUG
     // detach from all signals
-    win.focusSig().detach(this);
     win.dieSig().detach(this);
-    win.workspaceSig().detach(this);
-    win.stateSig().detach(this);
-    win.titleSig().detach(this);
-
+    if (win.fbwindow()) {
+        win.fbwindow()->workspaceSig().detach(this);
+        win.fbwindow()->stateSig().detach(this);
+    }
 
     // remove from list and render theme again
     IconButton *button = *it;
@@ -797,46 +644,46 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
 
 }
 
-void IconbarTool::addWindow(FluxboxWindow &win) {
-    // we just want windows that has clients
-    if (win.clientList().empty() || win.isIconHidden() )
+void IconbarTool::addWindow(Focusable &win) {
+    // we just want windows that have clients
+    FluxboxWindow *fbwin = win.fbwindow();
+    if (!fbwin || fbwin->clientList().empty() || fbwin->isIconHidden())
         return;
 #ifdef DEBUG
     cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
 #endif // DEBUG
-    IconButton *button = new IconButton(*this,
-                                        m_icon_container,
-                                        m_theme.focusedText().font(),
-                                        win);
+    IconButton *button = new IconButton(m_icon_container, m_theme, win);
 
+    RefCmd focus_cmd(new ::FocusCommand(win));
+    RefCmd menu_cmd(new ::ShowMenu(*fbwin));
+    button->setOnClick(focus_cmd, 1);
+    button->setOnClick(menu_cmd, 3);
 
     renderButton(*button, false); // update the attributes, but don't clear it
     m_icon_container.insertItem(button);
     m_icon_list.push_back(button);
 
     // dont forget to detach signal in removeWindow
-    win.focusSig().attach(this);
     win.dieSig().attach(this);
-    win.workspaceSig().attach(this);
-    win.stateSig().attach(this);
-    win.attentionSig().attach(this);
+    fbwin->workspaceSig().attach(this);
+    fbwin->stateSig().attach(this);
 }
 
 void IconbarTool::updateList() {
-    list<WinClient *> ordered_list =
-        m_screen.focusControl().creationOrderList();
-    list<WinClient *>::iterator it = ordered_list.begin();
-    list<WinClient *>::iterator it_end = ordered_list.end();
+    list<Focusable *> ordered_list =
+        m_screen.focusControl().creationOrderWinList();
+    list<Focusable *>::iterator it = ordered_list.begin();
+    list<Focusable *>::iterator it_end = ordered_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && checkAddWindow(mode(), *(*it)->fbwindow()) &&
-            !checkDuplicate(*(*it)->fbwindow()))
-            addWindow(*(*it)->fbwindow());
+            !checkDuplicate(**it))
+            addWindow(**it);
     }
 
     renderTheme();
 }
 
-bool IconbarTool::checkDuplicate(FluxboxWindow &win) {
+bool IconbarTool::checkDuplicate(Focusable &win) {
     IconList::iterator it = m_icon_list.begin();
     IconList::iterator it_end = m_icon_list.end();
     for (; it != it_end; ++it) {
@@ -844,27 +691,6 @@ bool IconbarTool::checkDuplicate(FluxboxWindow &win) {
             return true;
     }
     return false;
-}
-
-void IconbarTool::timedRender() {
-    WinClient *client = FocusControl::focusedWindow();
-    IconButton *current_button = static_cast<IconButton *>(m_icon_container.selected());
-
-    if (client == 0 || client->fbwindow() == 0) {
-        if (current_button != 0)
-            renderButton(*current_button);
-        return;
-    }
-
-    IconButton *button = findButton(*client->fbwindow());
-    // if old window is the same as the new focused window then ignore this render
-    // else render old client and new client
-    if (button == current_button)
-        return;
-    if (button != 0)
-        renderButton(*button);
-    if (current_button != 0)
-        renderButton(*current_button);
 }
 
 void IconbarTool::setOrientation(FbTk::Orientation orient) {

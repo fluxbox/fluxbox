@@ -321,15 +321,15 @@ void WinButton::update(FbTk::Subject *subj) {
        
         Display* display = m_listen_to.fbWindow().display();
         int screen = m_listen_to.screen().screenNumber();
-        if (m_listen_to.usePixmap()) {
-             m_icon_pixmap.copy(m_listen_to.iconPixmap().drawable(), 
+        if (m_listen_to.icon().pixmap().drawable() != None) {
+             m_icon_pixmap.copy(m_listen_to.icon().pixmap().drawable(), 
                                 DefaultDepth(display, screen), screen);
              m_icon_pixmap.scale(width() - 4, height() - 4);
         } else
             m_icon_pixmap.release();
             
-        if (m_listen_to.useMask()) {
-            m_icon_mask.copy(m_listen_to.iconMask().drawable(), 0, 0);
+        if (m_listen_to.icon().mask().drawable() != None) {
+            m_icon_mask.copy(m_listen_to.icon().mask().drawable(), 0, 0);
             m_icon_mask.scale(width() - 4, height() - 4);
         } else
             m_icon_mask.release();

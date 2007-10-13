@@ -28,36 +28,33 @@
 #include "Command.hh"
 
 class FluxboxWindow;
-class WinClient;
-
-/// command that calls FluxboxWindow::<the function> on execute()
-/// similar to FbTk::SimpleCommand<T>
-class CurrentWindowCmd: public FbTk::Command {
-public:
-    typedef void (FluxboxWindow::* Action)();
-    explicit CurrentWindowCmd(Action action);
-    void execute();
-private:
-    Action m_action;
-};
 
 /// helper class for window commands
 /// calls real_execute if there's a focused window or a window in button press/release window
 class WindowHelperCmd: public FbTk::Command {
 public:
+    explicit WindowHelperCmd(FluxboxWindow *win = 0): m_win(win) { }
+
     void execute();
+    void execute(FluxboxWindow &fbwin);
 
 protected:
-
-    WinClient &winclient();
     FluxboxWindow &fbwindow();
     virtual void real_execute() = 0;
 
+private:
+    FluxboxWindow *m_win;
 };
 
-class KillWindowCmd: public WindowHelperCmd {
-protected:
+/// command that calls FluxboxWindow::<the function> on execute()
+/// similar to FbTk::SimpleCommand<T>
+class CurrentWindowCmd: public WindowHelperCmd {
+public:
+    typedef void (FluxboxWindow::* Action)();
+    explicit CurrentWindowCmd(Action action): m_action(action) { }
     void real_execute();
+private:
+    Action m_action;
 };
 
 class SetHeadCmd : public WindowHelperCmd {

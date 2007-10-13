@@ -247,8 +247,8 @@ bool handleStartupItem(const string &line, int offset) {
 }; // end anonymous namespace
 
 
-Application::Application(int grouped)
-    : is_grouped(grouped)
+Application::Application(bool grouped, ClientPattern *pat)
+    : is_grouped(grouped), group_pattern(pat)
 {
     decostate_remember =
         dimensions_remember =
@@ -328,7 +328,7 @@ Application* Remember::find(WinClient &winclient) {
 
 Application * Remember::add(WinClient &winclient) {
     ClientPattern *p = new ClientPattern();
-    Application *app = new Application(0);
+    Application *app = new Application(false);
 
     // by default, we match against the WMClass of a window (instance and class strings)
     string win_name  = ::escapeRememberChars(p->getProperty(ClientPattern::NAME,  winclient));
@@ -520,11 +520,13 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
   effectively moved into the new
 */
 
-Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlist, int is_group) {
+Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlist, bool is_group, ClientPattern *match_pat) {
     Patterns::iterator it = patlist->begin();
     Patterns::iterator it_end = patlist->end();
     for (; it != it_end; ++it) {
-        if (it->first->equals(*pat) && is_group == it->second->is_grouped) {
+        if (it->first->equals(*pat) && is_group == it->second->is_grouped &&
+            ((match_pat == 0 && *it->second->group_pattern == 0) ||
+             (match_pat && match_pat->equals(**it->second->group_pattern)))) {
             Application *ret = it->second;
 
             // find any previous or subsequent matching ones and delete
@@ -576,7 +578,8 @@ void Remember::reconfigure() {
         if (!apps_file.eof()) {
             string line;
             int row = 0;
-            int in_group = 0;
+            bool in_group = false;
+            ClientPattern *pat = 0;
             list<ClientPattern *> grouped_pats;
             while (getline(apps_file, line) && ! apps_file.eof()) {
                 row++;
@@ -592,11 +595,11 @@ void Remember::reconfigure() {
 
                 if (pos > 0 && strcasecmp(key.c_str(), "app") == 0) {
                     ClientPattern *pat = new ClientPattern(line.c_str() + pos);
-                    if (in_group == 0) {
+                    if (!in_group) {
                         if ((err = pat->error()) == 0) {
-                            Application *app = findMatchingPatterns(pat, old_pats, 0);
+                            Application *app = findMatchingPatterns(pat, old_pats, false);
                             if (!app)
-                                app = new Application(0);
+                                app = new Application(false);
 
                             m_pats->push_back(make_pair(pat, app));
                             row += parseApp(apps_file, *app);
@@ -615,12 +618,9 @@ void Remember::reconfigure() {
                     // save the item even if it was bad (aren't we nice)
                     m_startups.push_back(line.substr(pos));
                 } else if (pos > 0 && strcasecmp(key.c_str(), "group") == 0) {
-                    in_group = Application::IS_GROUPED;
-                    pos = FbTk::StringUtil::getStringBetween(key,
-                                                             line.c_str() + pos,
-                                                             '(', ')');
-                    if (pos > 0 && strcasecmp(key.c_str(), "workspace") == 0)
-                        in_group |= Application::MATCH_WORKSPACE;
+                    in_group = true;
+                    if (line.find('(') != string::npos)
+                        pat = new ClientPattern(line.c_str() + pos);
                 } else if (in_group) {
                     // otherwise assume that it is the start of the attributes
                     Application *app = 0;
@@ -628,12 +628,12 @@ void Remember::reconfigure() {
                     list<ClientPattern *>::iterator it = grouped_pats.begin();
                     list<ClientPattern *>::iterator it_end = grouped_pats.end();
                     while (!app && it != it_end) {
-                        app = findMatchingPatterns(*it, old_pats, in_group);
+                        app = findMatchingPatterns(*it, old_pats, in_group, pat);
                         ++it;
                     }
 
                     if (!app)
-                        app = new Application(in_group);
+                        app = new Application(in_group, pat);
 
                     while (!grouped_pats.empty()) {
                         // associate all the patterns with this app
@@ -647,7 +647,7 @@ void Remember::reconfigure() {
                     if (!(pos>0 && strcasecmp(key.c_str(), "end") == 0)) {
                         row += parseApp(apps_file, *app, &line);
                     }
-                    in_group = 0;
+                    in_group = false;
                 } else
                     cerr<<"Error in apps file on line "<<row<<"."<<endl;
 
@@ -725,8 +725,8 @@ void Remember::save() {
             grouped_apps.insert(&a);
             // otherwise output this whole group
             apps_file << "[group]";
-            if (a.is_grouped & Application::MATCH_WORKSPACE)
-                apps_file << " (workspace)";
+            if (*a.group_pattern)
+                apps_file << " " << a.group_pattern->toString();
             apps_file << endl;
 
             Patterns::iterator git = m_pats->begin();
@@ -1151,10 +1151,7 @@ FluxboxWindow *Remember::findGroup(Application *app, BScreen &screen) {
     for (; it != it_end; ++it) {
         if (it->second == app && it->first->fbwindow() &&
             &screen == &it->first->screen() &&
-            (!(app->is_grouped & Application::MATCH_WORKSPACE) ||
-             it->first->fbwindow()->workspaceNumber() ==
-             screen.currentWorkspaceID()))
-
+            (!*app->group_pattern || app->group_pattern->match(*it->first)))
             return it->first->fbwindow();
     }
 
