@@ -1,7 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.0:
 *07/10/13:
-   * deiconify windows via :Deiconify in reverse order (Mathias)
+   * Updated ru_RU (Thanks Konstantin Shashkin)
+   * Deiconify windows via :Deiconify in reverse order (Mathias)
      FbCommands.cc
 *07/10/08:
    * Changed default style to bloe
