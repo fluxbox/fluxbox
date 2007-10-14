@@ -60,7 +60,7 @@ ClientPattern::ClientPattern():
     m_nummatches(0) {}
 
 // parse the given pattern (to end of line)
-ClientPattern::ClientPattern(const char *str):
+ClientPattern::ClientPattern(const char *str, bool default_no_transient):
     m_matchlimit(0),
     m_nummatches(0)
 {
@@ -107,6 +107,9 @@ ClientPattern::ClientPattern(const char *str):
                 prop = TITLE;
             } else if (strcasecmp(memstr.c_str(), "role") == 0) {
                 prop = ROLE;
+            } else if (strcasecmp(memstr.c_str(), "transient") == 0) {
+                prop = TRANSIENT;
+                default_no_transient = false;
             } else if (strcasecmp(memstr.c_str(), "maximized") == 0) {
                 prop = MAXIMIZED;
             } else if (strcasecmp(memstr.c_str(), "minimized") == 0) {
@@ -137,6 +140,9 @@ ClientPattern::ClientPattern(const char *str):
         // no match terms given, this is not allowed
         had_error = true;
     }
+
+    if (default_no_transient)
+        had_error = !addTerm("no", TRANSIENT);
 
     if (!had_error) {
         // otherwise, we check for a number
@@ -200,6 +206,9 @@ string ClientPattern::toString() const {
             break;
         case ROLE:
             pat.append("role=");
+            break;
+        case TRANSIENT:
+            pat.append("transient=");
             break;
         case MAXIMIZED:
             pat.append("maximized=");
@@ -306,6 +315,9 @@ string ClientPattern::getProperty(WinProperty prop,
         break;
     case ROLE:
         return client.getWMRole();
+        break;
+    case TRANSIENT:
+        return client.isTransient() ? "yes" : "no";
         break;
     case MAXIMIZED:
         return (fbwin && fbwin->isMaximized()) ? "yes" : "no";

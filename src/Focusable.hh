@@ -84,8 +84,11 @@ public:
     virtual const std::string &getWMClassClass() const { return m_class_name; }
     /// @return WM_CLASS name string (for pattern matching)
     virtual const std::string &getWMClassName() const { return m_instance_name; }
-    /// @return wm role string ( for pattern matching)
+    /// @return wm role string (for pattern matching)
     virtual std::string getWMRole() const { return "Focusable"; }
+
+    /// @return whether this window is a transient (for pattern matching)
+    virtual bool isTransient() const { return false; }
 
     // so we can make nice buttons, menu entries, etc.
     /// @return icon pixmap of the focusable

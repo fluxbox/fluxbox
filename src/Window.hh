@@ -435,6 +435,7 @@ public:
     const std::string &getWMClassName() const; 
     const std::string &getWMClassClass() const;
     std::string getWMRole() const;
+    bool isTransient() const;
 
     inline int x() const { return frame().x(); }
     inline int y() const { return frame().y(); }

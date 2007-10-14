@@ -3636,6 +3636,10 @@ std::string FluxboxWindow::getWMRole() const {
     return (m_client ? m_client->getWMRole() : "FluxboxWindow");
 }
 
+bool FluxboxWindow::isTransient() const {
+    return (m_client && m_client->isTransient());
+}
+
 int FluxboxWindow::normalX() const {
     if (maximized & MAX_HORZ)
         return m_old_pos_x;

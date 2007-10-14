@@ -339,6 +339,7 @@ Application * Remember::add(WinClient &winclient) {
     p->addTerm(win_class, ClientPattern::CLASS);
     if (!win_role.empty())
         p->addTerm(win_role, ClientPattern::ROLE);
+    p->addTerm(winclient.isTransient() ? "yes" : "no", ClientPattern::TRANSIENT);
     m_clients[&winclient] = app;
     p->addMatch();
     m_pats->push_back(make_pair(p, app));
@@ -594,7 +595,7 @@ void Remember::reconfigure() {
                                                              '[', ']');
 
                 if (pos > 0 && strcasecmp(key.c_str(), "app") == 0) {
-                    ClientPattern *pat = new ClientPattern(line.c_str() + pos);
+                    ClientPattern *pat = new ClientPattern(line.c_str() + pos, true);
                     if (!in_group) {
                         if ((err = pat->error()) == 0) {
                             Application *app = findMatchingPatterns(pat, old_pats, false);
@@ -620,7 +621,7 @@ void Remember::reconfigure() {
                 } else if (pos > 0 && strcasecmp(key.c_str(), "group") == 0) {
                     in_group = true;
                     if (line.find('(') != string::npos)
-                        pat = new ClientPattern(line.c_str() + pos);
+                        pat = new ClientPattern(line.c_str() + pos, true);
                 } else if (in_group) {
                     // otherwise assume that it is the start of the attributes
                     Application *app = 0;
@@ -1020,13 +1021,6 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
 
 void Remember::setupFrame(FluxboxWindow &win) {
     WinClient &winclient = win.winClient();
-    // we don't touch the window if it is a transient
-    // of something else
-
-
-    if (winclient.transientFor())
-        return;
-
     Application *app = find(winclient);
     if (app == 0)
         return; // nothing to do
@@ -1123,8 +1117,7 @@ void Remember::setupFrame(FluxboxWindow &win) {
 void Remember::setupClient(WinClient &winclient) {
 
     // leave windows alone on restart
-    // don't apply settings to transient windows
-    if (winclient.screen().isRestart() || winclient.transientFor())
+    if (winclient.screen().isRestart())
         return;
 
     Application *app = find(winclient);

@@ -4,6 +4,9 @@ OnDesktop Mouse3 :RootMenu
 OnDesktop Mouse4 :NextWorkspace
 OnDesktop Mouse5 :PrevWorkspace
 
+OnToolbar Mouse4 :NextWorkspace
+OnToolbar Mouse5 :PrevWorkspace
+
 Mod1 Tab :NextWindow
 Mod1 Shift Tab :PrevWindow
 Mod1 F1 :Workspace 1

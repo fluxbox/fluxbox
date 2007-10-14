@@ -706,20 +706,15 @@ session.screen0.toolbar.autoHide: <boolean>
       used actively by the user, or they remain visible at all times. Default:
       False
 
-session.screen0.desktopwheeling: <boolean>
-      This sets the ability to utilize the user's scroll wheel to change the
-      current workspace. Default: True
-
 session.screen0.windowScrollAction: shade|nexttab
       This allows you to execute a command by scrolling on the titlebar of a
       window. For `shade', scrolling down will shade the window, and scrolling
       up will unshade it. For `nexttab', scrolling down will focus the next tab,
       and scrolling up will focus the previous one. Default: <blank>
 
-session.screen0.reversewheeling: <boolean>
 session.screen0.windowScrollReverse: <boolean>
-      These switch the roles of scrolling up and scrolling down for the previous
-      two sets of resources. Default: False
+      This switches the role of scrolling up and scrolling down for the previous
+      resource. Default: False
 
 session.screen0.slit.layer: <layer>
 session.screen0.toolbar.layer: <layer>
@@ -802,12 +797,6 @@ session.screen0.iconbar.iconTextPadding: <integer>
       This specifies the space between the window title and the edge of the
       button. Default: 10
 
-session.screen0.iconbar.wheelMode: Screen|On|Off
-      This defines the behavior for scrolling on the iconbar. `Screen' uses the
-      value set in session.screen0.desktopWheeling . `On' means scrolling on the
-      iconbar will change the current workspace. `Off' means scrolling on the
-      iconbar will do nothing. Default: Screen
-
 session.screen0.iconbar.alignment: <position>
       This value should be changed in the Iconbar Mode menu.  Default:
       Relative
@@ -847,16 +836,17 @@ session.screen0.tab.placement: <placement>
 session.screen0.tab.width: <integer>
       This specifies the width of external tabs in pixels. Default: 64
 
-session.screen0.followModel: <model>
 session.screen0.userFollowModel: <model>
       This specifies the behavior when a window on another workspace becomes the
-      active window. The former is used when an application asks to focus the
-      window, and the latter is used when the window is activated due to user
-      actions, such as clicking in the iconbar, menu, or a pager. `Ignore' does
-      nothing. `Follow' moves to the window's workspace. `Current' moves the
-      window to the current workspace. `SemiFollow' acts like `Current' for
-      iconified windows and like `Follow' otherwise. Defaults: Ignore and
-      Follow, respectively.
+      active window. `Ignore' does nothing. `Follow' moves to the window's
+      workspace. `Current' moves the window to the current workspace.
+      `SemiFollow' acts like `Current' for minimized windows and like `Follow'
+      otherwise. Default: Follow
+
+session.screen0.followModel: <model>
+      This specifies the behavior when a window on another workspace requests to
+      be focused. `Ignore' does nothing, and `Follow' uses the setting in
+      session.screen0.userFollowModel. Default: Ignore
 
 session.screen0.resizeMode: Bottom|Quadrant|Center
       Setting this resource to `Quadrant' makes resizing by using the modkey

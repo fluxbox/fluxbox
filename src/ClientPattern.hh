@@ -46,7 +46,7 @@ public:
      * apps file. the bool value returns the character at which
      * there was a parse problem, or -1.
      */
-    explicit ClientPattern(const char * str);
+    explicit ClientPattern(const char * str, bool default_no_transient = false);
 
     ~ClientPattern();
 
@@ -54,7 +54,7 @@ public:
     std::string toString() const;
 
     enum WinProperty {
-        TITLE, CLASS, NAME, ROLE,
+        TITLE, CLASS, NAME, ROLE, TRANSIENT,
         MAXIMIZED, MINIMIZED, SHADED, STUCK, FOCUSHIDDEN, ICONHIDDEN,
         WORKSPACE, HEAD, LAYER
     };
