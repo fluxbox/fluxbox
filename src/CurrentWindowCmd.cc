@@ -61,16 +61,18 @@ void SendToWorkspaceCmd::real_execute() {
 
 void SendToNextWorkspaceCmd::real_execute() {
     const int ws_nr =
-        ( fbwindow().workspaceNumber() + m_workspace_num ) %
+        ( fbwindow().workspaceNumber() + m_delta ) %
           fbwindow().screen().numberOfWorkspaces();
     fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
 }
 
 void SendToPrevWorkspaceCmd::real_execute() {
-    int ws_nr = (fbwindow().workspaceNumber() - m_workspace_num) %
-        fbwindow().screen().numberOfWorkspaces();
+    int ws_nr = (fbwindow().workspaceNumber() - m_delta );
     if ( ws_nr < 0 )
         ws_nr += fbwindow().screen().numberOfWorkspaces();
+
+    ws_nr = ws_nr % fbwindow().screen().numberOfWorkspaces();
+
     fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
 }
 
@@ -79,18 +81,20 @@ void TakeToWorkspaceCmd::real_execute() {
 }
 
 void TakeToNextWorkspaceCmd::real_execute() {
-    unsigned int workspace_num=
-        ( fbwindow().workspaceNumber() + m_workspace_num ) %
+    unsigned int ws_nr =
+        ( fbwindow().workspaceNumber() + m_delta) %
           fbwindow().screen().numberOfWorkspaces();
-    fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
+    fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow());
 }
 
 void TakeToPrevWorkspaceCmd::real_execute() {
-    int workspace_num = (fbwindow().workspaceNumber() - m_workspace_num) %
-        fbwindow().screen().numberOfWorkspaces();
-    if ( workspace_num < 0 )
-        workspace_num += fbwindow().screen().numberOfWorkspaces();
-    fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
+    int ws_nr = (fbwindow().workspaceNumber() - m_delta);
+    if ( ws_nr < 0 )
+        ws_nr += fbwindow().screen().numberOfWorkspaces();
+
+    ws_nr = ws_nr % fbwindow().screen().numberOfWorkspaces();
+
+    fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow());
 }
 
 void GoToTabCmd::real_execute() {

@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/10/14:
+   * Bugfix for SendToPrevWorkspace/TakeToPrevWorkspace (Mathias)
+     CurrentWindowCmd.cc/hh
 *07/10/13:
    * Merged pre-devel branch; see all Changes since 1.0.0 (Mark)
    * Updated ru_RU (Thanks Konstantin Shashkin)

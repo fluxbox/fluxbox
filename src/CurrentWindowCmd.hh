@@ -77,20 +77,20 @@ private:
 
 class SendToNextWorkspaceCmd: public WindowHelperCmd {
 public:
-    explicit SendToNextWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }
+    explicit SendToNextWorkspaceCmd(int delta):m_delta(delta) { }
 protected:
     void real_execute();
 private:
-    const int m_workspace_num;
+    const int m_delta;
 };
 
 class SendToPrevWorkspaceCmd: public WindowHelperCmd {
 public:
-    explicit SendToPrevWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }
+    explicit SendToPrevWorkspaceCmd(int delta):m_delta(delta) { }
 protected:
     void real_execute();
 private:
-    const int m_workspace_num;
+    const int m_delta;
 };
 
 class TakeToWorkspaceCmd : public WindowHelperCmd {
@@ -104,20 +104,20 @@ private:
 
 class TakeToNextWorkspaceCmd : public WindowHelperCmd {
 public:
-    explicit TakeToNextWorkspaceCmd(int workspace_num) : m_workspace_num(workspace_num) { }
+    explicit TakeToNextWorkspaceCmd(int delta) : m_delta(delta) { }
 protected:
     void real_execute();
 private:
-    const int m_workspace_num;
+    const int m_delta;
 };
 
 class TakeToPrevWorkspaceCmd : public WindowHelperCmd {
 public:
-    explicit TakeToPrevWorkspaceCmd(int workspace_num) : m_workspace_num(workspace_num) { }
+    explicit TakeToPrevWorkspaceCmd(int delta) : m_delta(delta) { }
 protected:
     void real_execute();
 private:
-    const int m_workspace_num;
+    const int m_delta;
 };
 
 
