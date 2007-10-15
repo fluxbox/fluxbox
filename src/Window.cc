@@ -28,6 +28,7 @@
 
 #include "WinClient.hh"
 #include "fluxbox.hh"
+#include "Keys.hh"
 #include "Screen.hh"
 #include "FbWinFrameTheme.hh"
 #include "FbAtoms.hh"
@@ -285,12 +286,17 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     else
         screen().focusControl().addFocusWinBack(*this);
 
+    Fluxbox::instance()->keys()->registerWindow(frame().window().window(),
+                                                Keys::ON_WINDOW);
+
 }
 
 
 FluxboxWindow::~FluxboxWindow() {
     if (WindowCmd<void>::window() == this)
         WindowCmd<void>::setWindow(0);
+
+    Fluxbox::instance()->keys()->unregisterWindow(frame().window().window());
 
 #ifdef DEBUG
     const char* title = m_client ? m_client->title().c_str() : "" ;
@@ -2575,6 +2581,13 @@ bool FluxboxWindow::isTyping() {
 void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_last_button_x = be.x_root;
     m_last_button_y = be.y_root;
+
+    // check keys file first
+    WindowCmd<void>::setWindow(this);
+    if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
+                                              Keys::ON_WINDOW)) {
+        return;
+    }
 
     // check frame events first
     frame().buttonPressEvent(be);

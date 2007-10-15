@@ -26,6 +26,7 @@
 
 #include "fluxbox.hh"
 #include "Window.hh"
+#include "WindowCmd.hh"
 #include "Screen.hh"
 #include "WinClient.hh"
 
@@ -33,7 +34,7 @@
 
 void WindowHelperCmd::execute() {
     m_win = 0;
-    if (FocusControl::focusedFbWindow()) // guarantee that fbwindow() exists too
+    if (WindowCmd<void>::window() || FocusControl::focusedFbWindow())
         real_execute();
 }
 
@@ -44,7 +45,11 @@ void WindowHelperCmd::execute(FluxboxWindow &win) {
 
 FluxboxWindow &WindowHelperCmd::fbwindow() {
     // will exist from execute above
-    return (m_win ? *m_win : *FocusControl::focusedFbWindow());
+    if (m_win)
+        return *m_win;
+    FluxboxWindow *tmp = WindowCmd<void>::window();
+    if (tmp) return *tmp;
+    return *FocusControl::focusedFbWindow();
 }
 
 void CurrentWindowCmd::real_execute() {

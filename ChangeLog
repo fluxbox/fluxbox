@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/10/15:
+   * Added OnWindow modifier to keys file (Mark)
+     Keys.cc Window.cc Screen.cc CurrentWindowCmd.cc
 *07/10/14:
    * Added support for transient windows in window patterns, e.g.
      (transient=yes|no), defaulting to "no" for the apps file (Mark)

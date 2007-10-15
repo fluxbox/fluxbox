@@ -301,6 +301,8 @@ bool Keys::addBinding(const string &linebuffer) {
                 context |= ON_DESKTOP;
             else if (strcasecmp("ontoolbar", val[argc].c_str()) == 0)
                 context |= ON_TOOLBAR;
+            else if (strcasecmp("onwindow", val[argc].c_str()) == 0)
+                context |= ON_WINDOW;
             else if (strcasecmp("NONE",val[argc].c_str())) {
                 // check if it's a mouse button
                 if (!strcasecmp(val[argc].substr(0,5).c_str(), "mouse") &&

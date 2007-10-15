@@ -30,6 +30,7 @@
 #include "fluxbox.hh"
 #include "Keys.hh"
 #include "Window.hh"
+#include "WindowCmd.hh"
 #include "Workspace.hh"
 
 #include "Layer.hh"
@@ -827,6 +828,7 @@ void BScreen::propertyNotify(Atom atom) {
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
     if (!m_typing_ahead) {
+        WindowCmd<void>::setWindow(FocusControl::focusedFbWindow());
         Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
                                               Keys::GLOBAL|Keys::ON_DESKTOP);
         return;
@@ -882,6 +884,7 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
         imageControl().installRootColormap();
 
     Keys *keys = Fluxbox::instance()->keys();
+    WindowCmd<void>::setWindow(FocusControl::focusedFbWindow());
     keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP);
 }
 
