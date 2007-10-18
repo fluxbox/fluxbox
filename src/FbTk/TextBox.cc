@@ -203,7 +203,10 @@ void TextBox::buttonPressEvent(XButtonEvent &event) {
         int delta = width();
         int tmp = 0;
         for(i = m_start_pos; i <= m_end_pos; i++) {
-            tmp = abs(event.x - font().textWidth(m_text.c_str() + m_start_pos, i - m_start_pos));
+            tmp = abs(static_cast<int>
+                      (event.x - font().
+                       textWidth(m_text.c_str() + m_start_pos, 
+                                 i - m_start_pos)));
 
             if (tmp < delta) {
                 delta = tmp;

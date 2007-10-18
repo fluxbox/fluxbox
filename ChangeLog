@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/10/18:
+   * Fixed gcc 2.96 compile problem ( Thanks rumpole at hotmail )
+     bug #1809786
+     src/FbTk/TextBox.cc
 *07/10/15:
    * Added OnWindow modifier to keys file (Mark)
      Keys.cc Window.cc Screen.cc CurrentWindowCmd.cc
