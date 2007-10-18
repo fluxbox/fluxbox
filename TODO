@@ -1,10 +1,22 @@
---------- Code:
+*** Xinerama ***
+A new kind of mode: "keep on head"
+Which states all newly created windows should be placed on a specific head.
 
---------- Features:
+
+Action: Move all ( or one specific ) windows from one head to another.
+This is usefull if a head is disabled for some reason. 
 
 
-Next Generation:
-* Rewrites:
+Focus cycling: Cycle through heads focusables.
+Which heads focusables should be be in the focus cycle should be determined by
+mouse position ( kind of "sloppy focus" ) or a "fixed" boolean variable set
+through setresource command.
+
+******
+
+*** Rewrites ***
   - Menu
   - Toolbar
   - Signal system
+
+******
