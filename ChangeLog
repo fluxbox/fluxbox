@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/10/21:
+   * Allow decorations bitmask to be specified using '0x' (Mark)
+     Window.cc
 *07/10/18:
    * Fixed gcc 2.96 compile problem ( Thanks rumpole at hotmail )
      bug #1809786

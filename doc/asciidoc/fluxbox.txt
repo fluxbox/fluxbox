@@ -886,10 +886,10 @@ session.screen0.decorateTransient: <boolean>
       decorations, currently the maximize button and handle.
       Default: True
 
-session.screen0.defaultDeco: <bitmask>
+session.screen0.defaultDeco: <string>
       This specifies the default window decorations, according to the same
-      bitmask as used by the `[Deco]' option in the `apps' file, described in
-      the APPLICATIONS section. Default: all bits set.
+      options available to the `[Deco]' option in the `apps' file, described in
+      the APPLICATIONS section. Default: NORMAL.
 
 session.screen0.menuMode: Delay|Click
       This setting controls the circumstances under which submenus open. With

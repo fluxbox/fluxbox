@@ -4086,8 +4086,9 @@ int FluxboxWindow::getDecoMaskFromString(const string &str_label) {
         return DECOR_BORDER;
     if (strcasecmp(str_label.c_str(), "TAB") == 0)
         return DECOR_TAB;
-    unsigned int mask = atoi(str_label.c_str());
-    if (mask)
-        return mask;
-    return -1;
+    int mask = -1;
+    if (str_label.size() > 1 && str_label[0] == '0' && str_label[1] == 'x' ||
+        str_label.size() > 0 && isdigit(str_label[0]))
+        mask = strtol(str_label.c_str(), NULL, 0);
+    return mask;
 }
