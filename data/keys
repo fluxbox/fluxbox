@@ -7,6 +7,9 @@ OnDesktop Mouse5 :PrevWorkspace
 OnToolbar Mouse4 :NextWorkspace
 OnToolbar Mouse5 :PrevWorkspace
 
+OnWindow Mod1 Mouse1 :StartMoving
+OnWindow Mod1 Mouse3 :StartResizing
+
 Mod1 Tab :NextWindow
 Mod1 Shift Tab :PrevWindow
 Mod1 F1 :Workspace 1

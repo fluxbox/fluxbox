@@ -848,11 +848,6 @@ session.screen0.followModel: <model>
       be focused. `Ignore' does nothing, and `Follow' uses the setting in
       session.screen0.userFollowModel. Default: Ignore
 
-session.screen0.resizeMode: Bottom|Quadrant|Center
-      Setting this resource to `Quadrant' makes resizing by using the modkey
-      grab the corner closest to the mouse pointer instead of the bottom right
-      corner. `Center' resizes all corners at the same time. Default: Bottom
-
 session.screen0.focusModel: ClickToFocus|MouseFocus
       This controls how windows gain focus via the mouse. With `ClickToFocus',
       the user must click on the window. With `MouseFocus', windows gain focus
@@ -1018,11 +1013,6 @@ session.titlebar.right: Minimize Maximize Close
       The icons to place in the titlebar of decorated windows. The available
       options are Close, Maximize, MenuIcon, Minimize, Shade, and Stick.
 
-session.modKey: <modifier>
-      This specifies a modifier to use to drag and resize windows without
-      clicking on the border or titlebar. For example, Alt + Left click will
-      move windows, and Alt + Right click will resize. Default: Mod1
-
 ................................................................................
 
 
@@ -1163,7 +1153,6 @@ Special Commands
 - SetResourceValue <resourcename> <resource> value
 - BindKey <key><value>: <action>
 - KeyMode <keymode name> <return key sequence>
-- SetModKey <modifier>
 
 Couple of things
 ~~~~~~~~~~~~~~~~

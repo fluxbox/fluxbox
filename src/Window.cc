@@ -1039,20 +1039,6 @@ void FluxboxWindow::grabButtons() {
     XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask,
                   frame().window().window());
 
-    unsigned int modkey = Fluxbox::instance()->getModKey();
-
-    if (modkey) {
-        //----grab with "all" modifiers
-        FbTk::KeyUtil::grabButton(Button1, modkey, frame().window().window(),
-            ButtonReleaseMask | ButtonMotionMask, frame().theme().moveCursor());
-
-        XGrabButton(display, Button2, modkey, frame().window().window(), True,
-                    ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);
-
-        //---grab with "all" modifiers
-        FbTk::KeyUtil::grabButton(Button3, modkey, frame().window().window(),
-            ButtonReleaseMask | ButtonMotionMask);
-    }
 }
 
 
@@ -2592,8 +2578,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     // check frame events first
     frame().buttonPressEvent(be);
 
-    if (be.button == 1 || (be.button == 3 &&
-                           be.state == Fluxbox::instance()->getModKey())) {
+    if (be.button == 1) {
         if (!m_focused) //check focus
             focus();
 
@@ -2618,28 +2603,14 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
 
-    if ((re.button == 1) && (re.state & Fluxbox::instance()->getModKey())
-         && !screen().clickRaises()) {
-
-        if (!isMoving())
-            raise();
-
-    }
-
     if (isMoving())
         stopMoving();
     else if (isResizing())
         stopResizing();
     else if (m_attaching_tab)
         attachTo(re.x_root, re.y_root);
-    else if (re.window == frame().window()) {
-        if (re.button == 2 && re.state == Fluxbox::instance()->getModKey())
-            ungrabPointer(CurrentTime);
-        else
-            frame().buttonReleaseEvent(re);
-    } else {
+    else
         frame().buttonReleaseEvent(re);
-    }
 }
 
 
@@ -2654,9 +2625,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                             || frame().handle() == me.window
                             || frame().window() == me.window);
 
-    if (Fluxbox::instance()->getIgnoreBorder()
-        && !(me.state & Fluxbox::instance()->getModKey()) // really should check for exact matches
-        && !(isMoving() || isResizing() || m_attaching_tab != 0)) {
+    if (Fluxbox::instance()->getIgnoreBorder() && m_attaching_tab == 0
+        && !(isMoving() || isResizing())) {
         int borderw = frame().window().borderWidth();
         //!! TODO(tabs): the below test ought to be in FbWinFrame
         // if mouse is currently on the window border, ignore it
@@ -2787,23 +2757,13 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
         if (! resizing) {
 
-          int cx = frame().width() / 2;
-          int cy = frame().height() / 2;
           ResizeDirection resize_corner = RIGHTBOTTOM;
           if (me.window == frame().gripRight())
               resize_corner = RIGHTBOTTOM;
           else if (me.window == frame().gripLeft())
               resize_corner = LEFTBOTTOM;
-          else if (screen().getResizeModel() != BScreen::QUADRANTRESIZE) {
-              if (screen().getResizeModel() == BScreen::CENTERRESIZE)
-                  resize_corner = ALLCORNERS;
-              else
-                  resize_corner = RIGHTBOTTOM;
-          } else if (me.x < cx)
-              resize_corner = (me.y < cy) ? LEFTTOP : LEFTBOTTOM;
-          else
-              resize_corner = (me.y < cy) ? RIGHTTOP : RIGHTBOTTOM;
-
+          else // dragging border of window, so choose nearest corner
+              resize_corner = getResizeDirection(me.x, me.y, QUADRANTRESIZE);
 
           // We are grabbing frame window in startResizing
           // we need to translate coordinates to it.
@@ -3404,6 +3364,31 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
 }
 
+FluxboxWindow::ResizeDirection FluxboxWindow::getResizeDirection(int x, int y,
+                                   ResizeModel model) {
+    int cx = frame().width() / 2;
+    int cy = frame().height() / 2;
+    if (model == CENTERRESIZE)
+        return ALLCORNERS;
+    if (model == NEARESTEDGERESIZE) {
+        if (abs(cy - abs(y - cy)) > abs(cx - abs(x - cx))) // y is nearest
+            return (y > cy) ? BOTTOM : TOP;
+        return (x > cx) ? RIGHT : LEFT;
+    }
+    if (model == QUADRANTRESIZE) {
+        if (x < cx)
+            return (y < cy) ? LEFTTOP : LEFTBOTTOM;
+        return (y < cy) ? RIGHTTOP : RIGHTBOTTOM;
+    }
+    if (model == TOPLEFTRESIZE) return LEFTTOP;
+    if (model == TOPRESIZE) return TOP;
+    if (model == TOPRIGHTRESIZE) return RIGHTTOP;
+    if (model == LEFTRESIZE) return LEFT;
+    if (model == RIGHTRESIZE) return RIGHT;
+    if (model == BOTTOMLEFTRESIZE) return LEFTBOTTOM;
+    if (model == BOTTOMRESIZE) return BOTTOM;
+    return RIGHTBOTTOM;
+}
 
 void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
 

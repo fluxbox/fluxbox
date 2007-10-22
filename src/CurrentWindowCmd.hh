@@ -26,8 +26,7 @@
 #define CURRENTWINDOWCMD_HH
 
 #include "Command.hh"
-
-class FluxboxWindow;
+#include "Window.hh"
 
 /// helper class for window commands
 /// calls real_execute if there's a focused window or a window in button press/release window
@@ -129,6 +128,24 @@ protected:
     void real_execute();
 private:
     const int m_tab_num;
+};
+
+// begin moving with mouse
+class StartMovingCmd: public WindowHelperCmd {
+public:
+    StartMovingCmd() { }
+protected:
+    void real_execute();
+};
+
+// begin resizing with mouse
+class StartResizingCmd: public WindowHelperCmd {
+public:
+    explicit StartResizingCmd(FluxboxWindow::ResizeModel mode):m_mode(mode) { }
+protected:
+    void real_execute();
+private:
+    const FluxboxWindow::ResizeModel m_mode;
 };
 
 // move cmd, relative position

@@ -137,6 +137,22 @@ public:
         DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
     };
 
+    /// Different resize modes when resizing a window
+    enum ResizeModel { 
+        QUADRANTRESIZE,                   ///< resizes from one quadrant
+        CENTERRESIZE,                     ///< resizes from center
+        NEARESTEDGERESIZE,                ///< resizes the nearest edge
+        TOPLEFTRESIZE,                    ///< resizes top left corner
+        TOPRESIZE,                        ///< resizes top edge
+        TOPRIGHTRESIZE,                   ///< resizes top right corner
+        LEFTRESIZE,                       ///< resizes left edge
+        RIGHTRESIZE,                      ///< resizes right edge
+        BOTTOMLEFTRESIZE,                 ///< resizes bottom left corner
+        BOTTOMRESIZE,                     ///< resizes bottom edge
+        BOTTOMRIGHTRESIZE,                ///< resizes bottom right corner
+        DEFAULTRESIZE = BOTTOMRIGHTRESIZE ///< default resize mode
+    };
+
     /**
      * Resize direction while resizing
      */
@@ -369,6 +385,8 @@ public:
      * @param dir the resize direction
      */
     void startResizing(int x, int y, ResizeDirection dir);
+    /// determine which edge or corner to resize
+    ResizeDirection getResizeDirection(int x, int y, ResizeModel model);
     /// stops the resizing
     void stopResizing(bool interrupted = false);
 

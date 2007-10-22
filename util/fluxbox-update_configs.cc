@@ -182,6 +182,38 @@ int run_updates(int old_version, FbTk::ResourceManager rm) {
         new_version = 3;
     }
 
+    if (old_version < 4) { // move modkey to keys file
+        string whole_keyfile = read_file(keyfilename);
+        string new_keyfile = "";
+        // let's put our new keybindings first, so they're easy to find
+        new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
+
+        // need to match user's resize model
+        FbTk::Resource<string> rc_mode(rm, "Bottom",
+                                           "session.screen0.resizeMode",
+                                           "Session.Screen0.ResizeMode");
+        FbTk::Resource<string> rc_modkey(rm, "Mod1",
+                                       "session.modKey",
+                                       "Session.ModKey");
+
+        new_keyfile += "OnWindow " + *rc_modkey + " Mouse1 :StartMoving\n";
+        if (strcasecmp((*rc_mode).c_str(), "Quadrant") == 0) {
+            new_keyfile += "OnWindow " + *rc_modkey +
+                           " Mouse3 :StartResizing NearestCorner\n";
+        } else if (strcasecmp((*rc_mode).c_str(), "Center") == 0) {
+            new_keyfile += "OnWindow " + *rc_modkey +
+                           " Mouse3 :StartResizing Center\n";
+        } else {
+            new_keyfile += "OnWindow " + *rc_modkey +
+                           "StartResizing BottomRight\n";
+        }
+        new_keyfile += "\n"; // just for good looks
+        new_keyfile += whole_keyfile; // don't forget user's old keybindings
+
+        write_file(keyfilename, new_keyfile);
+        new_version = 4;
+    }
+
     return new_version;
 }
 

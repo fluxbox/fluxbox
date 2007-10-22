@@ -158,7 +158,6 @@ FbCommandFactory::FbCommandFactory() {
         "setalpha",
         "setenv",
         "sethead",
-        "setmodkey",
         "setstyle",
         "setworkspacename",
         "setworkspacenamedialog",
@@ -167,6 +166,8 @@ FbCommandFactory::FbCommandFactory() {
         "shade",
         "shadewindow",
         "showdesktop",
+        "startmoving",
+        "startresizing",
         "stick",
         "stickwindow",
         "tab",
@@ -235,15 +236,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         string value = name.substr(pos + 1);
         name = name.substr(0, pos);
         return new ExportCmd(name, value);
-    }
-    else if (command == "setmodkey") {
-        string modkey(arguments);
-        FbTk::StringUtil::removeFirstWhitespace(modkey);
-        FbTk::StringUtil::removeTrailingWhitespace(modkey);
-
-        return new SetModKeyCmd(modkey);
-    }
-    else if (command == "commanddialog") // run specified fluxbox command
+    } else if (command == "commanddialog") // run specified fluxbox command
         return new CommandDialogCmd();
     else if (command == "bindkey" && trusted)
         return new BindKeyCmd(arguments);
@@ -307,6 +300,38 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
             pat = arguments.c_str() + pos;
 
         return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new SetAlphaCmd(focused, relative, unfocused, un_rel)), pat);
+    } else if (command == "startmoving")
+        return new StartMovingCmd();
+    else if (command == "startresizing") {
+        FluxboxWindow::ResizeModel mode = FluxboxWindow::DEFAULTRESIZE;
+        vector<string> tokens;
+        FbTk::StringUtil::stringtok<vector<string> >(tokens, arguments);
+        if (!tokens.empty()) {
+            string arg = FbTk::StringUtil::toLower(tokens[0]);
+            if (arg == "nearestcorner")
+                mode = FluxboxWindow::QUADRANTRESIZE;
+            else if (arg == "nearestedge")
+                mode = FluxboxWindow::NEARESTEDGERESIZE;
+            else if (arg == "center")
+                mode = FluxboxWindow::CENTERRESIZE;
+            else if (arg == "topleft")
+                mode = FluxboxWindow::TOPLEFTRESIZE;
+            else if (arg == "top")
+                mode = FluxboxWindow::TOPRESIZE;
+            else if (arg == "topright")
+                mode = FluxboxWindow::TOPRIGHTRESIZE;
+            else if (arg == "left")
+                mode = FluxboxWindow::LEFTRESIZE;
+            else if (arg == "right")
+                mode = FluxboxWindow::RIGHTRESIZE;
+            else if (arg == "bottomleft")
+                mode = FluxboxWindow::BOTTOMLEFTRESIZE;
+            else if (arg == "bottom")
+                mode = FluxboxWindow::BOTTOMRESIZE;
+            else if (arg == "bottomright")
+                mode = FluxboxWindow::BOTTOMRIGHTRESIZE;
+        }
+        return new StartResizingCmd(mode);
     } else if (command == "resize" || command == "resizeto" ||
                command == "resizehorizontal" || command == "resizevertical") {
         FbTk_istringstream is(arguments.c_str());

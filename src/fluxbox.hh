@@ -135,9 +135,6 @@ public:
     unsigned int getCacheMax() const { return *m_rc_cache_max; }
 
 
-    unsigned int getModKey() const;
-    void setModKey(const char*);
-
     void maskWindowEvents(Window w, FluxboxWindow *bw)
         { m_masked = w; m_masked_window = bw; }
 
@@ -246,7 +243,6 @@ private:
     FbTk::Resource<TabsAttachArea> m_rc_tabs_attach_area;
     FbTk::Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
     FbTk::Resource<time_t> m_rc_auto_raise_delay;
-    FbTk::Resource<std::string> m_rc_mod_key;
 
     typedef std::map<Window, WinClient *> WinClientMap;
     WinClientMap m_window_search;

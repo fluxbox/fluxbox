@@ -115,6 +115,26 @@ void GoToTabCmd::real_execute() {
     (*it)->focus();
 }
 
+void StartMovingCmd::real_execute() {
+    const XEvent &last = Fluxbox::instance()->lastEvent();
+    if (last.type == ButtonPress) {
+        const XButtonEvent &be = last.xbutton;
+        fbwindow().startMoving(be.x_root, be.y_root);
+    }
+}
+
+void StartResizingCmd::real_execute() {
+    const XEvent &last = Fluxbox::instance()->lastEvent();
+    if (last.type == ButtonPress) {
+        const XButtonEvent &be = last.xbutton;
+        int x = be.x_root - fbwindow().x()
+                - fbwindow().frame().window().borderWidth();
+        int y = be.y_root - fbwindow().y()
+                - fbwindow().frame().window().borderWidth();
+        fbwindow().startResizing(x, y, fbwindow().getResizeDirection(x, y, m_mode));
+    }
+}
+
 MoveCmd::MoveCmd(const int step_size_x, const int step_size_y) :
   m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 

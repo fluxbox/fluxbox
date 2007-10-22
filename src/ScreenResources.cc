@@ -58,33 +58,6 @@ void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setFromString(const char *str) {
         setDefaultValue();
 }
 
-template <>
-string FbTk::Resource<BScreen::ResizeModel>::getString() const {
-    switch (m_value) {
-    case BScreen::QUADRANTRESIZE:
-        return string("Quadrant");
-    case BScreen::BOTTOMRESIZE:
-        return string("Bottom");
-    case BScreen::CENTERRESIZE:
-        return string("Center");
-    }
-
-    return string("Default");
-}
-
-template<>
-void FbTk::Resource<BScreen::ResizeModel>::
-setFromString(char const *strval) {
-    if (strcasecmp(strval, "Bottom") == 0) {
-        m_value = BScreen::BOTTOMRESIZE;
-    } else if (strcasecmp(strval, "Quadrant") == 0) {
-        m_value = BScreen::QUADRANTRESIZE;
-    } else if (strcasecmp(strval, "Center") == 0) {
-        m_value = BScreen::CENTERRESIZE;
-    } else
-        m_value = BScreen::DEFAULTRESIZE;
-}
-
 template<>
 string FbTk::Resource<BScreen::FollowModel>::getString() const {
     switch (m_value) {

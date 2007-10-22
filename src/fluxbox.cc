@@ -211,7 +211,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
       m_rc_auto_raise_delay(m_resourcemanager, 250, "session.autoRaiseDelay", "Session.AutoRaiseDelay"),
-      m_rc_mod_key(m_resourcemanager, "Mod1", "session.modKey", "Session.ModKey"),
       m_masked_window(0),
       m_mousescreen(0),
       m_keyscreen(0),
@@ -643,7 +642,7 @@ void Fluxbox::setupConfigFiles() {
     if (create_init)
         FbTk::FileUtil::copyFile(DEFAULT_INITFILE, init_file.c_str());
 
-#define CONFIG_VERSION 3
+#define CONFIG_VERSION 4
     FbTk::Resource<int> config_version(m_resourcemanager, 0,
             "session.configVersion", "Session.ConfigVersion");
     if (*config_version < CONFIG_VERSION) {
@@ -1705,24 +1704,5 @@ void Fluxbox::updateFrameExtents(FluxboxWindow &win) {
     AtomHandlerContainerIt it_end = m_atomhandler.end();
     for (; it != it_end; ++it ) {
         (*it).first->updateFrameExtents(win);
-    }
-}
-
-unsigned int Fluxbox::getModKey() const {
-    if (!(m_rc_mod_key->c_str()))
-        return 0;
-    else
-        return FbTk::KeyUtil::instance().getModifier(m_rc_mod_key->c_str());
-}
-
-void Fluxbox::setModKey(const char* modkeyname) {
-
-    if (!modkeyname)
-        return;
-
-    unsigned int modkey = FbTk::KeyUtil::instance().getModifier(modkeyname);
-
-    if (modkey > 0) {
-        m_rc_mod_key = modkeyname;
     }
 }

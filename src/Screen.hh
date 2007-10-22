@@ -92,14 +92,6 @@ public:
         FETCH_ACTIVE_WINDOW       ///< put that window to the current workspace 
     };
 
-    /// Different resize modes when resizing a window
-    enum ResizeModel { 
-        BOTTOMRESIZE = 0,            ///< resizes from the bottom right corner
-        QUADRANTRESIZE,              ///< resizes from one quadrant
-        CENTERRESIZE,                ///< resizes from center
-        DEFAULTRESIZE = BOTTOMRESIZE ///< default resize mode is bottom
-    };
-
 
     typedef std::list<FluxboxWindow *> Icons;
 
@@ -141,8 +133,6 @@ public:
     const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
     
     FbWinFrame::TabPlacement getTabPlacement() const { return *resource.tab_placement; }
-
-    ResizeModel getResizeModel() const { return *resource.resize_model; }
 
     inline unsigned int noFocusWhileTypingDelay() const { return *resource.typing_delay; }
     inline FollowModel getFollowModel() const { return *resource.follow_model; }
@@ -561,7 +551,6 @@ private:
             decorate_transient;
         FbTk::Resource<std::string> default_deco;
         FbTk::Resource<std::string> rootcommand;
-        FbTk::Resource<ResizeModel> resize_model;
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<unsigned int> typing_delay;

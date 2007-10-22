@@ -169,15 +169,6 @@ int ExecuteCmd::run() {
     return pid; // compiler happy -> we are happy ;)
 }
 
-SetModKeyCmd::SetModKeyCmd(const string& modkey) : m_modkey(modkey) { }
-
-void SetModKeyCmd::execute() {
-    Fluxbox::instance()->setModKey(m_modkey.c_str());
-    Fluxbox::instance()->save_rc();
-    // TODO: we need a better way to do this ...
-    Fluxbox::instance()->reconfigure();
-}
-
 ExportCmd::ExportCmd(const string& name, const string& value) :
     m_name(name), m_value(value) {
 }
