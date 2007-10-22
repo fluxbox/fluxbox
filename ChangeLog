@@ -1,6 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/10/22:
+   * Added option "mouse" to client pattern ( Henrik )
+     This is usefull for xinerama. For example:
+     Mod1 Tab :NextWindow (head=[mouse]) 
+     This will cycle focus through windows that are on the same head as 
+     the mouse pointer.
+     ClientPattern.cc
    * Fixed crash bug at restart. ( Henrik )
      Window.cc
    * Replaced modKey with new commands StartMoving and StartResizing (Mark)

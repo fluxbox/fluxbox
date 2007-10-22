@@ -275,6 +275,25 @@ bool ClientPattern::match(const Focusable &win) const {
                                 getProperty((*it)->prop, *focused))
                     return false;
             }
+        } else if ((*it)->prop == HEAD &&
+                   (*it)->orig == "[mouse]") {
+            // use the mouse position to determine which
+            // head to compare the window to
+            int x, y;
+            int win_x, win_y; // not used
+            Window root, child; // not used
+            unsigned int mask; // not used
+            if ( ! XQueryPointer(FbTk::App::instance()->display(),
+                                 win.screen().rootWindow().window(),
+                                 &root, &child, &x, &y,
+                                 &win_x, &win_y, &mask) ) {
+                return false;
+            }
+            char num[32];
+            sprintf(num, "%d", win.screen().getHead(x, y));
+            if (getProperty((*it)->prop, win) != num)
+                return false;
+
         } else if (!(*it)->regexp.match(getProperty((*it)->prop, win)))
             return false;
     }
