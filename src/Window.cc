@@ -295,8 +295,11 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
 FluxboxWindow::~FluxboxWindow() {
     if (WindowCmd<void>::window() == this)
         WindowCmd<void>::setWindow(0);
+    if ( Fluxbox::instance()->keys() != 0 ) {
+        Fluxbox::instance()->keys()->
+            unregisterWindow(frame().window().window());
+    }
 
-    Fluxbox::instance()->keys()->unregisterWindow(frame().window().window());
 
 #ifdef DEBUG
     const char* title = m_client ? m_client->title().c_str() : "" ;

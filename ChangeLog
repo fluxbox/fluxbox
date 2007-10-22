@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/10/22:
+   * Fixed crash bug at restart. ( Henrik )
+     Window.cc
    * Replaced modKey with new commands StartMoving and StartResizing (Mark)
      - your keys file should be updated automatically
      - they must be used with a mouse button, or they won't work
