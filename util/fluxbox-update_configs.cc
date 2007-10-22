@@ -205,7 +205,7 @@ int run_updates(int old_version, FbTk::ResourceManager rm) {
                            " Mouse3 :StartResizing Center\n";
         } else {
             new_keyfile += "OnWindow " + *rc_modkey +
-                           "StartResizing BottomRight\n";
+                           " Mouse3 :StartResizing BottomRight\n";
         }
         new_keyfile += "\n"; // just for good looks
         new_keyfile += whole_keyfile; // don't forget user's old keybindings
