@@ -537,17 +537,16 @@ void FluxboxWindow::init() {
             m_focused = false;
     }
 
-    // maximization won't work if we think the window is fullscreen
-    bool tmp_fullscreen = fullscreen;
-    fullscreen = false;
+    if (fullscreen) {
+        fullscreen = false;
+        setFullscreen(true);
+    }
+
     if (maximized) {
         int tmp = maximized;
         maximized = MAX_NONE;
         setMaximizedState(tmp);
     }
-
-    if (tmp_fullscreen)
-        setFullscreen(true);
 
 
     struct timeval now;
@@ -1596,8 +1595,8 @@ void FluxboxWindow::setFullscreen(bool flag) {
 */
 void FluxboxWindow::maximize(int type) {
 
-    // doesn't make sense to maximize
-    if (isFullscreen() || type == MAX_NONE)
+    // nothing to do
+    if (type == MAX_NONE)
         return;
 
     int new_max = maximized;
@@ -1618,14 +1617,11 @@ void FluxboxWindow::maximize(int type) {
 
 void FluxboxWindow::setMaximizedState(int type) {
 
-    if (!m_initialized) {
-        // this will interfere with the window getting placed, so we delay it
+    if (!m_initialized || isFullscreen() || type == maximized) {
+        // this will interfere with window placement, so we delay it
         maximized = type;
         return;
     }
-
-    if (isFullscreen() || type == maximized)
-        return;
 
     if (isShaded())
         shade();
