@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/10/23:
+   * Adding/removing workspaces wasn't updating menu (Mark)
+     Screen.cc
    * Support remembering maximized, minimized, and fullscreen state (Mark)
      - [Maximized] {yes|no|horz|vert}
      - [Minimized] {yes|no}

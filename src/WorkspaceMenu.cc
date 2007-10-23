@@ -95,7 +95,7 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
                                                                                    wkspc->name().c_str(),
                                                                                    &wkspc->menu());
                 FbTk::RefCount<FbTk::Command> jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
-                mb_menu->setCommand(2, jump_cmd);
+                mb_menu->setCommand(3, jump_cmd);
                 insert(mb_menu, workspace + IDX_AFTER_ICONS);
             }
 

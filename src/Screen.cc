@@ -1202,6 +1202,7 @@ int BScreen::addWorkspace() {
         addWorkspaceName(wkspc->name().c_str()); //update names
 
     saveWorkspaces(m_workspaces_list.size());
+    workspaceCountSig().notify();
 
     return m_workspaces_list.size();
 
@@ -1231,6 +1232,7 @@ int BScreen::removeLastWorkspace() {
     m_workspaces_list.pop_back();
 
     saveWorkspaces(m_workspaces_list.size());
+    workspaceCountSig().notify();
     // must be deleted after we send notify!!
     // so we dont get bad pointers somewhere
     // while processing the notify signal
