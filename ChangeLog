@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/10/23:
+   * Allow negated patterns, e.g. (name!=xterm) (Mark)
+     ClientPattern.cc/hh
 *07/10/22:
    * Added option "mouse" to client pattern ( Henrik )
      This is usefull for xinerama. For example:

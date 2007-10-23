@@ -68,7 +68,7 @@ public:
      * @param prop is the member function that we wish to match against
      * @return false if the regexp wasn't valid
      */
-    bool addTerm(const std::string &str, WinProperty prop);
+    bool addTerm(const std::string &str, WinProperty prop, bool negate = false);
 
     inline void addMatch() { ++m_nummatches; }
 
@@ -99,6 +99,7 @@ private:
         std::string orig;
         RegExp regexp;
         WinProperty prop;
+        bool negate;
     };
 
 

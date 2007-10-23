@@ -99,6 +99,11 @@ ClientPattern::ClientPattern(const char *str, bool default_no_transient):
                 memstr.assign(match, 0, eq); // memstr = our identifier
                 expr.assign(match, eq+1, match.length());
             }
+            bool negate = false;
+            if (!memstr.empty() && memstr[memstr.length()-1] == '!') {
+                negate = true;
+                memstr.assign(memstr, 0, memstr.length()-1);
+            }
             if (strcasecmp(memstr.c_str(), "name") == 0) {
                 prop = NAME;
             } else if (strcasecmp(memstr.c_str(), "class") == 0) {
@@ -132,7 +137,7 @@ ClientPattern::ClientPattern(const char *str, bool default_no_transient):
                 prop = NAME;
                 expr = match;
             }
-            had_error = !addTerm(expr, prop);
+            had_error = !addTerm(expr, prop, negate);
             pos += err;
         }
     }
@@ -266,13 +271,15 @@ bool ClientPattern::match(const Focusable &win) const {
             // workspaces don't necessarily have unique names, so we want to
             // compare numbers instead of strings
             if ((*it)->prop == WORKSPACE && (!win.fbwindow() ||
-                    win.fbwindow()->workspaceNumber() !=
-                    win.screen().currentWorkspaceID()))
+                !((*it)->negate ^
+                  (win.fbwindow()->workspaceNumber() ==
+                   win.screen().currentWorkspaceID()))))
                 return false;
             else {
                 WinClient *focused = FocusControl::focusedWindow();
-                if (!focused || getProperty((*it)->prop, win) != 
-                                getProperty((*it)->prop, *focused))
+                if (!focused || !((*it)->negate ^
+                    (getProperty((*it)->prop, win) ==
+                     getProperty((*it)->prop, *focused))))
                     return false;
             }
         } else if ((*it)->prop == HEAD &&
@@ -291,10 +298,11 @@ bool ClientPattern::match(const Focusable &win) const {
             }
             char num[32];
             sprintf(num, "%d", win.screen().getHead(x, y));
-            if (getProperty((*it)->prop, win) != num)
+            if (!(*it)->negate ^ (getProperty((*it)->prop, win) == num))
                 return false;
 
-        } else if (!(*it)->regexp.match(getProperty((*it)->prop, win)))
+        } else if (!(*it)->negate ^
+                   (*it)->regexp.match(getProperty((*it)->prop, win)))
             return false;
     }
     return true;
@@ -303,11 +311,12 @@ bool ClientPattern::match(const Focusable &win) const {
 // add an expression to match against
 // The first argument is a regular expression, the second is the member
 // function that we wish to match against.
-bool ClientPattern::addTerm(const string &str, WinProperty prop) {
+bool ClientPattern::addTerm(const string &str, WinProperty prop, bool negate) {
 
     Term *term = new Term(str, true);
     term->orig = str;
     term->prop = prop;
+    term->negate = negate;
 
     if (term->regexp.error()) {
         delete term;
@@ -386,7 +395,8 @@ bool ClientPattern::equals(const ClientPattern &pat) const {
     Terms::const_iterator other_it = pat.m_terms.begin();
     Terms::const_iterator other_it_end = pat.m_terms.end();
     for (; it != it_end && other_it != other_it_end; ++it, ++other_it) {
-        if ((*it)->orig != (*other_it)->orig)
+        if ((*it)->orig != (*other_it)->orig ||
+            (*it)->negate != (*other_it)->negate)
             return false;
     }
     if (it != it_end || other_it != other_it_end)
