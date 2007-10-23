@@ -47,6 +47,7 @@ class WinClient;
 class Application {
 public:
     Application(bool grouped, ClientPattern *pat = 0);
+    void reset();
     inline void forgetWorkspace() { workspace_remember = false; }
     inline void forgetHead() { head_remember = false; }
     inline void forgetDimensions() { dimensions_remember = false; }
@@ -61,6 +62,9 @@ public:
     inline void forgetLayer() { layer_remember = false; }
     inline void forgetSaveOnClose() { save_on_close_remember = false; }
     inline void forgetAlpha() { alpha_remember = false; }
+    inline void forgetMinimizedstate() { minimizedstate_remember = false; }
+    inline void forgetMaximizedstate() { maximizedstate_remember = false; }
+    inline void forgetFullscreenstate() { fullscreenstate_remember = false; }
 
     inline void rememberWorkspace(int ws)
         { workspace = ws; workspace_remember = true; }
@@ -90,7 +94,12 @@ public:
         { save_on_close = state; save_on_close_remember = true; }
     inline void rememberAlpha(int focused_a, int unfocused_a)
         { focused_alpha = focused_a; unfocused_alpha = unfocused_a; alpha_remember = true; }
-
+    inline void rememberMinimizedstate(bool state)
+        { minimizedstate = state; minimizedstate_remember = true; }
+    inline void rememberMaximizedstate(int state)
+        { maximizedstate = state; maximizedstate_remember = true; }
+    inline void rememberFullscreenstate(bool state)
+        { fullscreenstate = state; fullscreenstate_remember = true; }
 
     bool workspace_remember;
     unsigned int workspace;
@@ -139,6 +148,15 @@ public:
     bool save_on_close_remember;
     bool save_on_close;
 
+    bool minimizedstate_remember;
+    bool minimizedstate;
+
+    bool maximizedstate_remember;
+    int maximizedstate;
+
+    bool fullscreenstate_remember;
+    bool fullscreenstate;
+
     bool is_grouped;
     FbTk::RefCount<ClientPattern> group_pattern;
 
@@ -171,6 +189,9 @@ public:
         REM_WORKSPACE,
         REM_HEAD,
         REM_ALPHA,
+        REM_MINIMIZEDSTATE,
+        REM_MAXIMIZEDSTATE,
+        REM_FULLSCREENSTATE,
         REM_LASTATTRIB // not actually used
     };
 

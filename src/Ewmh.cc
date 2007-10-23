@@ -1044,13 +1044,11 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value,
             (!value && win.isShaded()))
             win.shade();
     }  else if (state == m_net_wm_state_maximized_horz ) { // maximized Horizontal
-        if ((value && !win.isMaximized()) ||
-            (!value && win.isMaximized()))
-        win.maximizeHorizontal();
+        if (value ^ win.isMaximizedHorz())
+            win.maximizeHorizontal();
     } else if (state == m_net_wm_state_maximized_vert) { // maximized Vertical
-        if ((value && !win.isMaximized()) ||
-            (!value && win.isMaximized()))
-        win.maximizeVertical();
+        if (value ^ win.isMaximizedVert())
+            win.maximizeVertical();
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
         if ((value && !win.isFullscreen()) ||
             (!value && win.isFullscreen()))

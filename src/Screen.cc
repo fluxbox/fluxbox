@@ -2325,17 +2325,3 @@ pair<int,int> BScreen::clampToHead(int head, int x, int y, int w, int h) const {
 
     return make_pair(x,y);
 }
-
-// TODO: when toolbar gets its resources moved into Toolbar.hh/cc, then
-// this can be gone and a consistent interface for the two used
-// on the actual objects
-
-template<>
-void BScreen::setOnHead<FluxboxWindow>(FluxboxWindow& win, int head) {
-    if (head > 0 && head <= numHeads()) {
-        int current_head = getHead(win.fbWindow());
-        win.move(getHeadX(head) + win.frame().x() - getHeadX(current_head),
-                 getHeadY(head) + win.frame().y() - getHeadY(current_head));
-    }
-}
-

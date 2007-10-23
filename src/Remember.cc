@@ -173,6 +173,12 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
                                       Remember::REM_DECOSTATE));
     menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
                                       Remember::REM_SHADEDSTATE));
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Minimized, "Minimized", "Remember minimized"),
+                                      Remember::REM_MINIMIZEDSTATE));
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Maximized, "Maximized", "Remember maximized"),
+                                      Remember::REM_MAXIMIZEDSTATE));
+    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Fullscreen, "Fullscreen", "Remember fullscreen"),
+                                      Remember::REM_FULLSCREENSTATE));
     if (FbTk::Transparent::haveComposite()
         || FbTk::Transparent::haveRender())
         menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Alpha, "Transparency", "Remember window tranparency settings"),
@@ -250,6 +256,10 @@ bool handleStartupItem(const string &line, int offset) {
 Application::Application(bool grouped, ClientPattern *pat)
     : is_grouped(grouped), group_pattern(pat)
 {
+    reset();
+}
+
+void Application::reset() {
     decostate_remember =
         dimensions_remember =
         focushiddenstate_remember =
@@ -263,6 +273,9 @@ Application::Application(bool grouped, ClientPattern *pat)
         workspace_remember =
         head_remember =
         alpha_remember =
+        minimizedstate_remember =
+        maximizedstate_remember =
+        fullscreenstate_remember =
         save_on_close_remember = false;
 }
 
@@ -496,6 +509,19 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                     had_error = 1;
             } else if (strcasecmp(str_key.c_str(), "Sticky") == 0) {
                 app.rememberStuckstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "Minimized") == 0) {
+                app.rememberMinimizedstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (strcasecmp(str_key.c_str(), "Maximized") == 0) {
+                if (strcasecmp(str_label.c_str(), "yes") == 0)
+                    app.rememberMaximizedstate(FluxboxWindow::MAX_FULL);
+                else if (strcasecmp(str_label.c_str(), "horz") == 0)
+                    app.rememberMaximizedstate(FluxboxWindow::MAX_HORZ);
+                else if (strcasecmp(str_label.c_str(), "vert") == 0)
+                    app.rememberMaximizedstate(FluxboxWindow::MAX_VERT);
+                else
+                    app.rememberMaximizedstate(FluxboxWindow::MAX_NONE);
+            } else if (strcasecmp(str_key.c_str(), "Fullscreen") == 0) {
+                app.rememberFullscreenstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (strcasecmp(str_key.c_str(), "Jump") == 0) {
                 app.rememberJumpworkspace((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (strcasecmp(str_key.c_str(), "Close") == 0) {
@@ -599,7 +625,9 @@ void Remember::reconfigure() {
                     if (!in_group) {
                         if ((err = pat->error()) == 0) {
                             Application *app = findMatchingPatterns(pat, old_pats, false);
-                            if (!app)
+                            if (app)
+                                app->reset();
+                            else
                                 app = new Application(false);
 
                             m_pats->push_back(make_pair(pat, app));
@@ -824,6 +852,30 @@ void Remember::save() {
         if (a.stuckstate_remember) {
             apps_file << "  [Sticky]\t{" << ((a.stuckstate)?"yes":"no") << "}" << endl;
         }
+        if (a.minimizedstate_remember) {
+            apps_file << "  [Minimized]\t{" << ((a.minimizedstate)?"yes":"no") << "}" << endl;
+        }
+        if (a.maximizedstate_remember) {
+            apps_file << "  [Maximized]\t{";
+            switch (a.maximizedstate) {
+            case FluxboxWindow::MAX_FULL:
+                apps_file << "yes" << "}" << endl;
+                break;
+            case FluxboxWindow::MAX_HORZ:
+                apps_file << "horz" << "}" << endl;
+                break;
+            case FluxboxWindow::MAX_VERT:
+                apps_file << "vert" << "}" << endl;
+                break;
+            case FluxboxWindow::MAX_NONE:
+            default:
+                apps_file << "no" << "}" << endl;
+                break;
+            }
+        }
+        if (a.fullscreenstate_remember) {
+            apps_file << "  [Fullscreen]\t{" << ((a.fullscreenstate)?"yes":"no") << "}" << endl;
+        }
         if (a.jumpworkspace_remember) {
             apps_file << "  [Jump]\t{" << ((a.jumpworkspace)?"yes":"no") << "}" << endl;
         }
@@ -873,6 +925,15 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
         break;
     case REM_STUCKSTATE:
         return app->stuckstate_remember;
+        break;
+    case REM_MINIMIZEDSTATE:
+        return app->minimizedstate_remember;
+        break;
+    case REM_MAXIMIZEDSTATE:
+        return app->maximizedstate_remember;
+        break;
+    case REM_FULLSCREENSTATE:
+        return app->fullscreenstate_remember;
         break;
     case REM_DECOSTATE:
         return app->decostate_remember;
@@ -941,6 +1002,15 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_STUCKSTATE:
         app->rememberStuckstate(win->isStuck());
         break;
+    case REM_MINIMIZEDSTATE:
+        app->rememberMinimizedstate(win->isIconic());
+        break;
+    case REM_MAXIMIZEDSTATE:
+        app->rememberMaximizedstate(win->maximizedState());
+        break;
+    case REM_FULLSCREENSTATE:
+        app->rememberFullscreenstate(win->isFullscreen());
+        break;
     case REM_ALPHA:
         app->rememberAlpha(win->frame().getAlpha(true), win->frame().getAlpha(false));
         break;
@@ -991,6 +1061,15 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_STUCKSTATE:
         app->forgetStuckstate();
+        break;
+    case REM_MINIMIZEDSTATE:
+        app->forgetMinimizedstate();
+        break;
+    case REM_MAXIMIZEDSTATE:
+        app->forgetMaximizedstate();
+        break;
+    case REM_FULLSCREENSTATE:
+        app->forgetFullscreenstate();
         break;
     case REM_DECOSTATE:
         app->forgetDecostate();
@@ -1058,7 +1137,7 @@ void Remember::setupFrame(FluxboxWindow &win) {
     }
 
     if (app->head_remember) {
-        win.screen().setOnHead<FluxboxWindow>(win, app->head);
+        win.setOnHead(app->head);
     }
 
     if (app->dimensions_remember)
@@ -1112,6 +1191,22 @@ void Remember::setupFrame(FluxboxWindow &win) {
             !win.isStuck() && app->stuckstate)
             win.stick(); // toggles
 
+    if (app->minimizedstate_remember) {
+        // if inconsistent...
+        // this one doesn't actually work, but I can't imagine needing it
+        if (win.isIconic() && !app->minimizedstate)
+            win.deiconify();
+        else if (!win.isIconic() && app->minimizedstate)
+            win.iconify();
+    }
+
+    // I can't really test the "no" case of this
+    if (app->maximizedstate_remember)
+        win.setMaximizedState(app->maximizedstate);
+
+    // I can't really test the "no" case of this
+    if (app->fullscreenstate_remember)
+        win.setFullscreen(app->fullscreenstate);
 }
 
 void Remember::setupClient(WinClient &winclient) {

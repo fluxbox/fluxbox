@@ -1,6 +1,13 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/10/23:
+   * Support remembering maximized, minimized, and fullscreen state (Mark)
+     - [Maximized] {yes|no|horz|vert}
+     - [Minimized] {yes|no}
+     - [Fullscreen] {yes|no}
+     - also fixed window placement when remembering head but not position
+     Window.cc/hh Remember.cc/hh Screen.cc/hh Ewmh.cc fluxbox-nls.hh
+     CurrentWindowCmd.cc
    * Allow negated patterns, e.g. (name!=xterm) (Mark)
      ClientPattern.cc/hh
 *07/10/22:

@@ -281,6 +281,8 @@ public:
     void setFullscreen(bool flag);
     /// toggle maximize
     void maximize(int type = MAX_FULL);
+    /// sets the maximized state
+    void setMaximizedState(int type);
     /// maximizes the window horizontal
     void maximizeHorizontal();
     /// maximizes the window vertical
@@ -304,6 +306,7 @@ public:
     void lowerLayer();
     /// moves the window to a new layer
     void moveToLayer(int layernum, bool force = false);
+    void setOnHead(int head);
     /// sets the window focus hidden state
     void setFocusHidden(bool value);
     /// sets the window icon hidden state
@@ -414,6 +417,7 @@ public:
     inline bool isMaximized() const { return maximized == MAX_FULL; }
     inline bool isMaximizedVert() const { return (bool)(maximized & MAX_VERT); }
     inline bool isMaximizedHorz() const { return (bool)(maximized & MAX_HORZ); }
+    inline int maximizedState() const { return maximized; }
     inline bool isIconifiable() const { return functions.iconify; }
     inline bool isMaximizable() const { return functions.maximize; }
     inline bool isResizable() const { return functions.resize; }
@@ -626,6 +630,8 @@ private:
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
     FbWinFrame m_frame;  ///< the actuall window frame
+
+    bool m_placed; ///< determine whether or not we should place the window
 
     int m_layernum;
     int m_old_layernum;

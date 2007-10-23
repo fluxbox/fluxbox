@@ -57,7 +57,7 @@ void CurrentWindowCmd::real_execute() {
 }
 
 void SetHeadCmd::real_execute() {
-    fbwindow().screen().setOnHead(fbwindow(), m_head);
+    fbwindow().setOnHead(m_head);
 }
 
 void SendToWorkspaceCmd::real_execute() {

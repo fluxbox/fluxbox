@@ -267,6 +267,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_old_width(1),  m_old_height(1),
     m_last_button_x(0),  m_last_button_y(0),
     m_frame(client.screen(), tm, client.screen().imageControl(), layer, 0, 0, 100, 100),
+    m_placed(false),
     m_layernum(layer.getLayerNum()),
     m_old_layernum(0),
     m_parent(client.screen().rootWindow()),
@@ -354,10 +355,6 @@ FluxboxWindow::~FluxboxWindow() {
 
 void FluxboxWindow::init() {
     m_attaching_tab = 0;
-    // magic to detect if moved by hints
-    // don't use 0, since setting maximized or fullscreen on the window will set
-    // this to 0
-    m_old_pos_x = m_screen.width();
 
     assert(m_client);
     m_client->setFluxboxWindow(this);
@@ -469,10 +466,8 @@ void FluxboxWindow::init() {
     if (m_workspace_number >= screen().numberOfWorkspaces())
         m_workspace_number = screen().currentWorkspaceID();
 
-    bool place_window = (m_old_pos_x == static_cast<signed>(m_screen.width()));
-
     if (fluxbox.isStartup())
-        place_window = false;
+        m_placed = true;
     else if (m_client->isTransient() ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
 
@@ -483,7 +478,7 @@ void FluxboxWindow::init() {
             real_y >= 0 &&
             real_x <= (signed) screen().width() &&
             real_y <= (signed) screen().height())
-            place_window = false;
+            m_placed = true;
 
     }
 /*
@@ -514,18 +509,10 @@ void FluxboxWindow::init() {
     m_client->applySizeHints(real_width, real_height);
     real_height += frame().titlebarHeight() + frame().handleHeight();
 
-    if (!place_window)
+    if (m_placed)
         moveResize(frame().x(), frame().y(), real_width, real_height);
 
-    screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
-
-    if (maximized && functions.maximize) { // start maximized
-        // This will set it to the appropriate style of maximisation
-        int req_maximized = maximized;
-        // NOTE: don't manually change maximized ANYWHERE else, it isn't safe
-        maximized = MAX_NONE; // it is not maximized now
-        maximize(req_maximized);
-    }
+    screen().getWorkspace(m_workspace_number)->addWindow(*this, !m_placed);
 
     setFocusFlag(false); // update graphics before mapping
 
@@ -549,6 +536,19 @@ void FluxboxWindow::init() {
         if (!allowsFocusFromClient() || Fluxbox::instance()->isStartup())
             m_focused = false;
     }
+
+    // maximization won't work if we think the window is fullscreen
+    bool tmp_fullscreen = fullscreen;
+    fullscreen = false;
+    if (maximized) {
+        int tmp = maximized;
+        maximized = MAX_NONE;
+        setMaximizedState(tmp);
+    }
+
+    if (tmp_fullscreen)
+        setFullscreen(true);
+
 
     struct timeval now;
     gettimeofday(&now, NULL);
@@ -1185,14 +1185,10 @@ void FluxboxWindow::move(int x, int y) {
 }
 
 void FluxboxWindow::resize(unsigned int width, unsigned int height) {
-    int old_x = m_old_pos_x;
-
+    // don't set window as placed, since we're only resizing
+    bool placed = m_placed;
     moveResize(frame().x(), frame().y(), width, height);
-
-    // magic to detect if moved during initialisation
-    // we restore the old state, because we were a resize, not a moveResize!
-    if (!m_initialized)
-        m_old_pos_x = old_x;
+    m_placed = placed;
 }
 
 // send_event is just an override
@@ -1200,10 +1196,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
                                unsigned int new_width, unsigned int new_height,
                                bool send_event) {
 
-    // magic to detect if moved during initialisation
-    if (!m_initialized)
-        m_old_pos_x = 1;
-
+    m_placed = true;
     send_event = send_event || frame().x() != new_x || frame().y() != new_y;
 
     if ((new_width != frame().width() || new_height != frame().height()) &&
@@ -1236,9 +1229,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
 void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
                                unsigned int new_width, unsigned int new_height, int gravity, unsigned int client_bw) {
 
-    // magic to detect if moved during initialisation
-    if (!m_initialized)
-        m_old_pos_x = 1;
+    m_placed = true;
     frame().moveResizeForClient(new_x, new_y, new_width, new_height, gravity, client_bw);
     setFocusFlag(m_focused);
     shaded = false;
@@ -1517,12 +1508,15 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 */
 void FluxboxWindow::setFullscreen(bool flag) {
 
+    if (!m_initialized) {
+        // this will interfere with window placement, so we delay it
+        fullscreen = flag;
+        return;
+    }
+
     const int head = screen().getHead(fbWindow());
 
     if (flag && !isFullscreen()) {
-
-        if (isIconic())
-            deiconify();
 
         if (isShaded())
             shade();
@@ -1533,10 +1527,12 @@ void FluxboxWindow::setFullscreen(bool flag) {
             m_old_decoration_mask = decorationMask();
 
         m_old_layernum = layerNum();
-        m_old_pos_x = frame().x();
-        m_old_pos_y = frame().y();
-        m_old_width = frame().width();
-        m_old_height = frame().height();
+        if (!maximized) {
+            m_old_pos_x = frame().x();
+            m_old_pos_y = frame().y();
+            m_old_width = frame().width();
+            m_old_height = frame().height();
+        }
 
         // clear decorations
         setDecorationMask(0);
@@ -1586,7 +1582,12 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         m_old_layernum = ::Layer::NORMAL;
 
-        stateSig().notify();
+        if (maximized) {
+            int tmp = maximized;
+            maximized = MAX_NONE;
+            setMaximizedState(tmp);
+        } else
+            stateSig().notify();
     }
 }
 
@@ -1599,8 +1600,32 @@ void FluxboxWindow::maximize(int type) {
     if (isFullscreen() || type == MAX_NONE)
         return;
 
-    if (isIconic())
-        deiconify();
+    int new_max = maximized;
+
+    // toggle maximize vertically?
+    // when _don't_ we want to toggle?
+    // - type is horizontal maximise, or
+    // - type is full and we are not maximised horz but already vertically
+    if (type != MAX_HORZ && !(type == MAX_FULL && maximized == MAX_VERT))
+        new_max ^= MAX_VERT;
+
+    // maximize horizontally?
+    if (type != MAX_VERT && !(type == MAX_FULL && maximized == MAX_HORZ))
+        new_max ^= MAX_HORZ;
+
+    setMaximizedState(new_max);
+}
+
+void FluxboxWindow::setMaximizedState(int type) {
+
+    if (!m_initialized) {
+        // this will interfere with the window getting placed, so we delay it
+        maximized = type;
+        return;
+    }
+
+    if (isFullscreen() || type == maximized)
+        return;
 
     if (isShaded())
         shade();
@@ -1614,8 +1639,6 @@ void FluxboxWindow::maximize(int type) {
         new_w = frame().width(),
         new_h = frame().height();
 
-    int orig_max = maximized;
-
     // These evaluate whether we need to TOGGLE the value for that field
     // Why? If maximize is only set to zero outside this,
     // and we only EVER toggle them, then:
@@ -1626,12 +1649,9 @@ void FluxboxWindow::maximize(int type) {
     // we still won't lose the state in that case.
 
     // toggle maximize vertically?
-    // when _don't_ we want to toggle?
-    // - type is horizontal maximise, or
-    // - type is full and we are not maximised horz but already vertically
-    if (type != MAX_HORZ && !(type == MAX_FULL && orig_max == MAX_VERT)) {
+    if ((maximized ^ type) & MAX_VERT) {
         // already maximized in that direction?
-        if (orig_max & MAX_VERT) {
+        if (maximized & MAX_VERT) {
             new_y = m_old_pos_y;
             new_h = m_old_height;
         } else {
@@ -1647,10 +1667,10 @@ void FluxboxWindow::maximize(int type) {
         maximized ^= MAX_VERT;
     }
 
-    // maximize horizontally?
-    if (type != MAX_VERT && !(type == MAX_FULL && orig_max == MAX_HORZ)) {
+    // toggle maximize horizontally?
+    if ((maximized ^ type) & MAX_HORZ) {
         // already maximized in that direction?
-        if (orig_max & MAX_HORZ) {
+        if (maximized & MAX_HORZ) {
             new_x = m_old_pos_x;
             new_w = m_old_width;
         } else {
@@ -1710,7 +1730,6 @@ void FluxboxWindow::maximizeVertical() {
 void FluxboxWindow::maximizeFull() {
     maximize(MAX_FULL);
 }
-
 
 void FluxboxWindow::setWorkspace(int n) {
     unsigned int old_wkspc = m_workspace_number;
@@ -4079,4 +4098,14 @@ int FluxboxWindow::getDecoMaskFromString(const string &str_label) {
         str_label.size() > 0 && isdigit(str_label[0]))
         mask = strtol(str_label.c_str(), NULL, 0);
     return mask;
+}
+
+void FluxboxWindow::setOnHead(int head) {
+    if (head > 0 && head <= screen().numHeads()) {
+        int cur = screen().getHead(fbWindow());
+        bool placed = m_placed;
+        move(screen().getHeadX(head) + frame().x() - screen().getHeadX(cur),
+             screen().getHeadY(head) + frame().y() - screen().getHeadY(cur));
+        m_placed = placed;
+    }
 }

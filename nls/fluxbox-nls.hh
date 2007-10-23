@@ -153,6 +153,9 @@ enum {
 	RememberWorkspace = 11,
 	RememberHead = 12,
 	RememberAlpha = 13,
+        RememberMinimized = 14,
+        RememberMaximized = 15,
+        RememberFullscreen = 16,
 
 	ScreenSet = 12,
 	ScreenAnotherWMRunning = 1,

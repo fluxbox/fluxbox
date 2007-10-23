@@ -441,9 +441,6 @@ public:
     template <typename OnHeadObject>
     int getOnHead(OnHeadObject &obj) const;
 
-    template <typename OnHeadObject>
-    void setOnHead(OnHeadObject &obj, int head);
-
     // grouping - we want ordering, so we can either search for a 
     // group to the left, or to the right (they'll be different if
     // they exist).
