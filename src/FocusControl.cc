@@ -458,6 +458,7 @@ void FocusControl::removeClient(WinClient &client) {
 
     m_focused_list.remove(&client);
     m_creation_order_list.remove(&client);
+    client.screen().clientListSig().notify();
 
     if (cyc == &client) {
         m_cycling_window = m_cycling_list->end();
@@ -468,6 +469,7 @@ void FocusControl::removeClient(WinClient &client) {
 void FocusControl::removeWindow(Focusable &win) {
     m_focused_win_list.remove(&win);
     m_creation_order_win_list.remove(&win);
+    win.screen().clientListSig().notify();
 }
 
 void FocusControl::shutdown() {
