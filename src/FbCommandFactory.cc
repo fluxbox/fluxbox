@@ -176,7 +176,6 @@ FbCommandFactory::FbCommandFactory() {
         "taketoprevworkspace",
         "togglecmd",
         "toggledecor",
-        "typeaheadfocus",
         "windowmenu",
         "workspace",
         /* NOTE: The following are DEPRECATED and subject to removal */
@@ -547,11 +546,6 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         parseNextWindowArgs(arguments, opts, pat);
         opts |= FocusControl::CYCLEGROUPS;
         return new PrevWindowCmd(opts, pat);
-    } else if (command == "typeaheadfocus") {
-        int opts;
-        string pat;
-        parseNextWindowArgs(arguments, opts, pat);
-        return new TypeAheadFocusCmd(opts, pat);
     } else if (command == "gotowindow") {
         int num, opts;
         string args, pat;

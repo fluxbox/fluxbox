@@ -23,6 +23,7 @@
 
 #include "MinOverlapPlacement.hh"
 
+#include "FocusControl.hh"
 #include "Window.hh"
 #include "Screen.hh"
 
@@ -34,19 +35,30 @@ MinOverlapPlacement::MinOverlapPlacement(ScreenPlacement::PlacementPolicy policy
     s_policy = policy;
 }
 
-bool MinOverlapPlacement::placeWindow(
-        const std::list<FluxboxWindow *> &windowlist,
-        const FluxboxWindow &win, int &place_x, int &place_y) {
+bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
+                                      int &place_x, int &place_y) {
+
+    std::list<FluxboxWindow *> windowlist;
+    const std::list<Focusable *> focusables =
+            win.screen().focusControl().focusedOrderWinList();
+    std::list<Focusable *>::const_iterator foc_it = focusables.begin(),
+                                           foc_it_end = focusables.end();
+    unsigned int workspace = win.workspaceNumber();
+    for (; foc_it != foc_it_end; ++foc_it) {
+        // make sure it's a FluxboxWindow
+        if (*foc_it == (*foc_it)->fbwindow() &&
+            (workspace == (*foc_it)->fbwindow()->workspaceNumber() ||
+             (*foc_it)->fbwindow()->isStuck()))
+            windowlist.push_back((*foc_it)->fbwindow());
+    }
 
     // view (screen + head) constraints
-    int head = (signed) win.getOnHead();
     int head_left = (signed) win.screen().maxLeft(head);
     int head_right = (signed) win.screen().maxRight(head);
     int head_top = (signed) win.screen().maxTop(head);
     int head_bot = (signed) win.screen().maxBottom(head);
 
-    const ScreenPlacement &screen_placement = 
-        dynamic_cast<const ScreenPlacement &>(win.screen().placementStrategy());
+    const ScreenPlacement &screen_placement = win.screen().placementStrategy();
     s_row_dir = screen_placement.rowDirection();
     s_col_dir = screen_placement.colDirection();
 
@@ -70,6 +82,7 @@ bool MinOverlapPlacement::placeWindow(
     std::list<FluxboxWindow *>::const_reverse_iterator it = windowlist.rbegin(),
                                                    it_end = windowlist.rend();
     for (; it != it_end; ++it) {
+        if (*it == &win) continue;
 
         // get the dimensions of the window
         int left = (*it)->x() - (*it)->xOffset();

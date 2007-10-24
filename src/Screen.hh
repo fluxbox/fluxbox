@@ -30,10 +30,8 @@
 #include "FbWinFrame.hh"
 #include "FbRootWindow.hh"
 #include "MenuTheme.hh"
-#include "PlacementStrategy.hh"
 
 #include "FbTk/EventHandler.hh"
-#include "FbTk/TypeAhead.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/MultLayers.hh"
@@ -67,7 +65,7 @@ class Strut;
 class Slit;
 class HeadArea;
 class FocusControl;
-class PlacementStrategy;
+class ScreenPlacement;
 
 namespace FbTk {
 class Menu;
@@ -240,13 +238,6 @@ public:
     void notifyUngrabKeyboard();
 
     /**
-     * Prepares type a head focus
-     * @param winlist a list of focusables
-     * @param pat pattern to match windows with
-     */
-    void startTypeAheadFocus(std::list<Focusable *> &winlist,
-                             const ClientPattern *pat = 0);
-    /**
      * Cycles focus of windows
      * @param opts focus options
      * @param pat specific pattern to match windows with
@@ -313,8 +304,8 @@ public:
     bool isShuttingdown() const { return m_shutdown; }
     bool isRestart();
 
-    PlacementStrategy &placementStrategy() { return *m_placement_strategy; }
-    const PlacementStrategy &placementStrategy() const { return *m_placement_strategy; }
+    ScreenPlacement &placementStrategy() { return *m_placement_strategy; }
+    const ScreenPlacement &placementStrategy() const { return *m_placement_strategy; }
     
     int addWorkspace();
     int removeLastWorkspace();
@@ -579,17 +570,15 @@ private:
     const std::string m_name, m_altname;
 
     FocusControl *m_focus_control;
-    PlacementStrategy *m_placement_strategy;
+    ScreenPlacement *m_placement_strategy;
 
     // This is a map of windows to clients for clients that had a left
     // window set, but that window wasn't present at the time
     typedef std::map<Window, WinClient *> Groupables;
     Groupables m_expecting_groups;
 
-    bool m_cycling, m_typing_ahead;
+    bool m_cycling;
     const ClientPattern *m_cycle_opts;
-    FbTk::TypeAhead<std::list<Focusable *>, Focusable *> m_type_ahead;
-    std::list<Focusable *> m_matches;
 
     // Xinerama related private data
     bool m_xinerama_avail;

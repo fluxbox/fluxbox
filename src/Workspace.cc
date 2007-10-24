@@ -85,15 +85,12 @@ Workspace::Workspace(BScreen &scrn, const string &name, unsigned int id):
 Workspace::~Workspace() {
 }
 
-void Workspace::addWindow(FluxboxWindow &w, bool place) {
+void Workspace::addWindow(FluxboxWindow &w) {
     // we don't need to add a window that already exist in our list
     if (find(m_windowlist.begin(), m_windowlist.end(), &w) != m_windowlist.end())
         return;
 
     w.setWorkspace(m_id);
-
-    if (place)
-        placeWindow(w);
 
     m_windowlist.push_back(&w);
     m_clientlist_sig.notify();
@@ -196,15 +193,4 @@ void Workspace::shutdown() {
 
 void Workspace::updateClientmenu() {
     m_clientlist_sig.notify();
-}
-
-void Workspace::placeWindow(FluxboxWindow &win) {
-    int place_x, place_y;
-    // we ignore the return value,
-    // the screen placement strategy is guaranteed to succeed.
-    screen().placementStrategy().placeWindow(m_windowlist,
-                                             win,
-                                             place_x, place_y);
-
-    win.moveResize(place_x, place_y, win.width(), win.height());
 }

@@ -44,6 +44,7 @@
 #include "FocusControl.hh"
 #include "Layer.hh"
 #include "IconButton.hh"
+#include "ScreenPlacement.hh"
 
 #include "FbTk/Compose.hh"
 #include "FbTk/EventManager.hh"
@@ -452,20 +453,6 @@ void FluxboxWindow::init() {
                           wattrib.width, wattrib.height, 
                           m_client->gravity(), m_client->old_bw);
 
-    Fluxbox::instance()->attachSignals(*this);
-
-    // this window is managed, we are now allowed to modify actual state
-    m_initialized = true;
-
-    applyDecorations(true);
-
-    grabButtons();
-
-    restoreAttributes();
-
-    if (m_workspace_number >= screen().numberOfWorkspaces())
-        m_workspace_number = screen().currentWorkspaceID();
-
     if (fluxbox.isStartup())
         m_placed = true;
     else if (m_client->isTransient() ||
@@ -480,9 +467,23 @@ void FluxboxWindow::init() {
             real_y <= (signed) screen().height())
             m_placed = true;
 
-    } else if (!m_placed) {
+    } else
         setOnHead(screen().getCurrHead());
-    }
+
+    Fluxbox::instance()->attachSignals(*this);
+
+    // this window is managed, we are now allowed to modify actual state
+    m_initialized = true;
+
+    applyDecorations(true);
+
+    grabButtons();
+
+    restoreAttributes();
+
+    if (m_workspace_number >= screen().numberOfWorkspaces())
+        m_workspace_number = screen().currentWorkspaceID();
+
 /*
     if (wattrib.width <= 0)
         wattrib.width = 1;
@@ -514,7 +515,8 @@ void FluxboxWindow::init() {
     if (m_placed)
         moveResize(frame().x(), frame().y(), real_width, real_height);
 
-    screen().getWorkspace(m_workspace_number)->addWindow(*this, !m_placed);
+    if (!m_placed) placeWindow(getOnHead());
+    screen().getWorkspace(m_workspace_number)->addWindow(*this);
 
     setFocusFlag(false); // update graphics before mapping
 
@@ -4119,4 +4121,12 @@ void FluxboxWindow::setOnHead(int head) {
              screen().getHeadY(head) + frame().y() - screen().getHeadY(cur));
         m_placed = placed;
     }
+}
+
+void FluxboxWindow::placeWindow(int head) {
+    int place_x, place_y;
+    // we ignore the return value,
+    // the screen placement strategy is guaranteed to succeed.
+    screen().placementStrategy().placeWindow(*this, head, place_x, place_y);
+    move(place_x, place_y);
 }

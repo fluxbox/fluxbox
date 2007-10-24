@@ -57,7 +57,7 @@ public:
     void shutdown();
 
     /// Add @a win to this workspace, placing it if @a place is true
-    void addWindow(FluxboxWindow &win, bool place = false);
+    void addWindow(FluxboxWindow &win);
     int removeWindow(FluxboxWindow *win, bool still_alive);
     void updateClientmenu();
 

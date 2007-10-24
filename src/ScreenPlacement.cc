@@ -58,8 +58,7 @@ ScreenPlacement::ScreenPlacement(BScreen &screen):
 {
 }
 
-bool ScreenPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
-                                  const FluxboxWindow &win,
+bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
                                   int &place_x, int &place_y) {
 
 
@@ -88,7 +87,6 @@ bool ScreenPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
     }
 
     // view (screen + head) constraints
-    int head = (signed) win.getOnHead();
     int head_left = (signed) win.screen().maxLeft(head);
     int head_right = (signed) win.screen().maxRight(head);
     int head_top = (signed) win.screen().maxTop(head);
@@ -100,9 +98,7 @@ bool ScreenPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
 
     bool placed = false;
     try {
-        placed = m_strategy->placeWindow(windowlist,
-                                         win,
-                                         place_x, place_y);
+        placed = m_strategy->placeWindow(win, head, place_x, place_y);
     } catch (std::bad_cast cast) {
         // This should not happen. 
         // If for some reason we change the PlacementStrategy in Screen
@@ -117,9 +113,7 @@ bool ScreenPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
         if (m_fallback_strategy.get() == 0)
             m_fallback_strategy.reset(new CascadePlacement(win.screen()));
 
-        m_fallback_strategy->placeWindow(windowlist,
-                                         win,
-                                         place_x, place_y);
+        m_fallback_strategy->placeWindow(win, head, place_x, place_y);
     }
 
 

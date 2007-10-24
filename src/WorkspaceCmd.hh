@@ -74,16 +74,6 @@ private:
     const ClientPattern m_pat;
 };
 
-class TypeAheadFocusCmd: public FbTk::Command {
-public:
-    explicit TypeAheadFocusCmd(int option, std::string &pat):
-            m_option(option), m_pat(pat.c_str()) { }
-    void execute();
-private:
-    const int m_option;
-    const ClientPattern m_pat;
-};
-
 class GoToWindowCmd: public FbTk::Command {
 public:
     GoToWindowCmd(int num, int option, std::string &pat):

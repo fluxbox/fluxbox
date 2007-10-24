@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/10/24:
+   * Introduced (workspacename=...) for pattern matching and changed
+     (workspace=...) to use the workspace number, indexed from 0 (Mark)
+     ClientPattern.cc/hh
    * Reenabled raising window if window was moved by mouse by 0 pixels (Mathias)
      Window.cc
 *07/10/23:

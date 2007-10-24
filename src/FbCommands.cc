@@ -277,7 +277,7 @@ void ShowClientMenuCmd::execute() {
         return;
 
     // TODO: ClientMenu only accepts lists of FluxboxWindows for now
-    FocusControl::Focusables *win_list = 0;
+    const FocusControl::Focusables *win_list = 0;
 //    if (m_option & FocusControl::CYCLEGROUPS) {
         win_list = (m_option & FocusControl::CYCLELINEAR) ?
             &screen->focusControl().creationOrderWinList() :
@@ -289,8 +289,8 @@ void ShowClientMenuCmd::execute() {
     } */
 
     m_list.clear();
-    FocusControl::Focusables::iterator it = win_list->begin(),
-                                       it_end = win_list->end();
+    FocusControl::Focusables::const_iterator it = win_list->begin(),
+                                             it_end = win_list->end();
     for (; it != it_end; ++it) {
         if (typeid(**it) == typeid(FluxboxWindow) && m_pat.match(**it))
             m_list.push_back(static_cast<FluxboxWindow *>(*it));

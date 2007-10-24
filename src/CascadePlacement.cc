@@ -27,14 +27,12 @@
 #include "Screen.hh"
 
 CascadePlacement::CascadePlacement(const BScreen &screen) {
-    // +1 ?
     m_cascade_x = new int[screen.numHeads() + 1];
     m_cascade_y = new int[screen.numHeads() + 1];
     for (int i=0; i < screen.numHeads() + 1; i++) {
-        m_cascade_x[i] = 32 + screen.maxLeft(i);
-        m_cascade_y[i] = 32 + screen.maxTop(i);
+        m_cascade_x[i] = screen.maxRight(i);
+        m_cascade_y[i] = screen.maxBottom(i);
     }
-
 }
 
 CascadePlacement::~CascadePlacement() {
@@ -42,11 +40,9 @@ CascadePlacement::~CascadePlacement() {
     delete [] m_cascade_y;
 }
 
-bool CascadePlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
-                                   const FluxboxWindow &win,
+bool CascadePlacement::placeWindow(const FluxboxWindow &win, int head,
                                    int &place_x, int &place_y) {
 
-    int head = (signed) win.getOnHead();
     int head_left = (signed) win.screen().maxLeft(head);
     int head_right = (signed) win.screen().maxRight(head);
     int head_top = (signed) win.screen().maxTop(head);

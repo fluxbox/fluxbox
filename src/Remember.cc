@@ -551,12 +551,13 @@ Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlis
     Patterns::iterator it = patlist->begin();
     Patterns::iterator it_end = patlist->end();
     for (; it != it_end; ++it) {
-        if (it->first->equals(*pat) && is_group == it->second->is_grouped &&
+        if (*it->first == *pat && is_group == it->second->is_grouped &&
             ((match_pat == 0 && *it->second->group_pattern == 0) ||
-             (match_pat && match_pat->equals(**it->second->group_pattern)))) {
+             (match_pat && *match_pat == **it->second->group_pattern))) {
             Application *ret = it->second;
 
-            // find any previous or subsequent matching ones and delete
+            if (!is_group) return ret;
+            // find the rest of the group and remove it from the list
 
             // rewind
             Patterns::iterator tmpit = it;

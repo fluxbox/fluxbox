@@ -309,6 +309,7 @@ public:
     int getOnHead() const;
     void setOnHead(int head);
     /// sets the window focus hidden state
+    void placeWindow(int head);
     void setFocusHidden(bool value);
     /// sets the window icon hidden state
     void setIconHidden(bool value);

@@ -30,8 +30,7 @@ class MinOverlapPlacement: public PlacementStrategy {
 public:
     MinOverlapPlacement(ScreenPlacement::PlacementPolicy policy);
 
-    bool placeWindow(const std::list<FluxboxWindow *> &windowlist,
-                     const FluxboxWindow &win,
+    bool placeWindow(const FluxboxWindow &win, int head,
                      int &place_x, int &place_y);
 
 private:
@@ -50,7 +49,6 @@ private:
 
         // do all STL set implementations use this for sorting?
         bool operator <(const Region &o) const {
-            // for now, I'm assuming RowSmartPlacement, so y is more important
             switch (MinOverlapPlacement::s_policy) {
                 case ScreenPlacement::ROWMINOVERLAPPLACEMENT:
                     // if we're making rows, y-value is most important

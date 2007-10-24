@@ -129,6 +129,8 @@ ClientPattern::ClientPattern(const char *str, bool default_no_transient):
                 prop = ICONHIDDEN;
             } else if (strcasecmp(memstr.c_str(), "workspace") == 0) {
                 prop = WORKSPACE;
+            } else if (strcasecmp(memstr.c_str(), "workspacename") == 0) {
+                prop = WORKSPACENAME;
             } else if (strcasecmp(memstr.c_str(), "head") == 0) {
                 prop = HEAD;
             } else if (strcasecmp(memstr.c_str(), "layer") == 0) {
@@ -236,6 +238,9 @@ string ClientPattern::toString() const {
         case WORKSPACE:
             pat.append("workspace=");
             break;
+        case WORKSPACENAME:
+            pat.append("workspacename=");
+            break;
         case HEAD:
             pat.append("head=");
             break;
@@ -268,20 +273,11 @@ bool ClientPattern::match(const Focusable &win) const {
     Terms::const_iterator it_end = m_terms.end();
     for (; it != it_end; ++it) {
         if ((*it)->orig == "[current]") {
-            // workspaces don't necessarily have unique names, so we want to
-            // compare numbers instead of strings
-            if ((*it)->prop == WORKSPACE && (!win.fbwindow() ||
-                !((*it)->negate ^
-                  (win.fbwindow()->workspaceNumber() ==
-                   win.screen().currentWorkspaceID()))))
+            WinClient *focused = FocusControl::focusedWindow();
+            if (!focused || !((*it)->negate ^
+                (getProperty((*it)->prop, win) ==
+                 getProperty((*it)->prop, *focused))))
                 return false;
-            else {
-                WinClient *focused = FocusControl::focusedWindow();
-                if (!focused || !((*it)->negate ^
-                    (getProperty((*it)->prop, win) ==
-                     getProperty((*it)->prop, *focused))))
-                    return false;
-            }
         } else if ((*it)->prop == HEAD &&
                    (*it)->orig == "[mouse]") {
             int mouse_head = win.screen().getCurrHead();
@@ -315,8 +311,7 @@ bool ClientPattern::addTerm(const string &str, WinProperty prop, bool negate) {
     return true;
 }
 
-string ClientPattern::getProperty(WinProperty prop,
-                                  const Focusable &client) const {
+string ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
     // we need this for some of the window properties
     const FluxboxWindow *fbwin = client.fbwindow();
 
@@ -357,6 +352,14 @@ string ClientPattern::getProperty(WinProperty prop,
     case WORKSPACE: {
         if (!fbwin)
             return "";
+        char tmpstr[128];
+        sprintf(tmpstr, "%d", fbwin->workspaceNumber());
+        return std::string(tmpstr);
+        break;
+    }
+    case WORKSPACENAME: {
+        if (!fbwin)
+            return "";
         const Workspace *w = client.screen().getWorkspace(fbwin->workspaceNumber());
         return w ? w->name() : "";
         break;
@@ -377,7 +380,7 @@ string ClientPattern::getProperty(WinProperty prop,
     return client.getWMClassName();
 }
 
-bool ClientPattern::equals(const ClientPattern &pat) const {
+bool ClientPattern::operator ==(const ClientPattern &pat) const {
     // we require the terms to be identical (order too)
     Terms::const_iterator it = m_terms.begin();
     Terms::const_iterator it_end = m_terms.end();

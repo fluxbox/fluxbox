@@ -56,7 +56,7 @@ public:
     enum WinProperty {
         TITLE, CLASS, NAME, ROLE, TRANSIENT,
         MAXIMIZED, MINIMIZED, SHADED, STUCK, FOCUSHIDDEN, ICONHIDDEN,
-        WORKSPACE, HEAD, LAYER
+        WORKSPACE, WORKSPACENAME, HEAD, LAYER
     };
 
     /// Does this client match this pattern?
@@ -72,12 +72,8 @@ public:
 
     inline void addMatch() { ++m_nummatches; }
 
-    inline bool operator == (const Focusable &win) const {
-        return match(win);
-    }
-
     // whether this pattern has identical matching criteria
-    bool equals(const ClientPattern &pat) const;
+    bool operator ==(const ClientPattern &pat) const;
 
     /**
      * If there are no terms, then there is assumed to be an error
@@ -85,7 +81,7 @@ public:
      */
     inline int error() const { return m_terms.empty() ? 1 : 0; }
 
-    std::string getProperty(WinProperty prop, const Focusable &winclient) const;
+    static std::string getProperty(WinProperty prop, const Focusable &client);
 
 private:
     /**

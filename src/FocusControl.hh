@@ -77,10 +77,10 @@ public:
      * @param pat pattern for matching focusables
      * @param reverse reverse the cycle order
      */
-    void cycleFocus(Focusables &winlist, const ClientPattern *pat = 0,
+    void cycleFocus(const Focusables &winlist, const ClientPattern *pat = 0,
                     bool reverse = false);
     
-    void goToWindowNumber(Focusables &winlist, int num,
+    void goToWindowNumber(const Focusables &winlist, int num,
                           const ClientPattern *pat = 0);
     /// sets the focused window on a screen
     void setScreenFocusedWindow(WinClient &win_client);
@@ -122,11 +122,11 @@ public:
     WinClient *lastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client = 0);
 
     /// @return focus list in creation order
-    Focusables &creationOrderList() { return m_creation_order_list; }
+    const Focusables &creationOrderList() const { return m_creation_order_list; }
     /// @return the focus list in focused order
-    Focusables &focusedOrderList() { return m_focused_list; }
-    Focusables &creationOrderWinList() { return m_creation_order_win_list; }
-    Focusables &focusedOrderWinList() { return m_focused_win_list; }
+    const Focusables &focusedOrderList() const { return m_focused_list; }
+    const Focusables &creationOrderWinList() const { return m_creation_order_win_list; }
+    const Focusables &focusedOrderWinList() const { return m_focused_win_list; }
 
     /// remove client from focus list
     void removeClient(WinClient &client);
@@ -158,8 +158,8 @@ private:
     Focusables m_focused_win_list;
     Focusables m_creation_order_win_list;
 
-    Focusables::iterator m_cycling_window;
-    Focusables *m_cycling_list;
+    Focusables::const_iterator m_cycling_window;
+    const Focusables *m_cycling_list;
     Focusable *m_was_iconic;
     WinClient *m_cycling_last;
 

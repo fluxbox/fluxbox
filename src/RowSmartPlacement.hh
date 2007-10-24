@@ -28,8 +28,7 @@
 
 class RowSmartPlacement: public PlacementStrategy {
 public:
-    bool placeWindow(const std::list<FluxboxWindow *> &windowlist,
-                     const FluxboxWindow &win,
+    bool placeWindow(const FluxboxWindow &win, int head,
                      int &place_x, int &place_y);
 };
 

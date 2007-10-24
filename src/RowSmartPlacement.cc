@@ -23,26 +23,38 @@
 
 #include "RowSmartPlacement.hh"
 
+#include "FocusControl.hh"
 #include "Window.hh"
 #include "Screen.hh"
 #include "ScreenPlacement.hh"
 
-bool RowSmartPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
-                                    const FluxboxWindow &win,
+bool RowSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
                                     int &place_x, int &place_y) {
+
+    std::list<FluxboxWindow *> windowlist;
+    const std::list<Focusable *> focusables =
+            win.screen().focusControl().focusedOrderWinList();
+    std::list<Focusable *>::const_iterator foc_it = focusables.begin(),
+                                           foc_it_end = focusables.end();
+    unsigned int workspace = win.workspaceNumber();
+    for (; foc_it != foc_it_end; ++foc_it) {
+        // make sure it's a FluxboxWindow
+        if (*foc_it == (*foc_it)->fbwindow() &&
+            (workspace == (*foc_it)->fbwindow()->workspaceNumber() ||
+             (*foc_it)->fbwindow()->isStuck()))
+            windowlist.push_back((*foc_it)->fbwindow());
+    }
 
     bool placed = false;
     int next_x, next_y;
     
     // view (screen + head) constraints
-    int head = (signed) win.getOnHead();
     int head_left = (signed) win.screen().maxLeft(head);
     int head_right = (signed) win.screen().maxRight(head);
     int head_top = (signed) win.screen().maxTop(head);
     int head_bot = (signed) win.screen().maxBottom(head);
 
-    const ScreenPlacement &screen_placement = 
-        dynamic_cast<const ScreenPlacement &>(win.screen().placementStrategy());
+    const ScreenPlacement &screen_placement = win.screen().placementStrategy();
 
     bool top_bot = 
         screen_placement.colDirection() == ScreenPlacement::TOPBOTTOM;
@@ -102,6 +114,7 @@ bool RowSmartPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist
 
             for (; win_it != win_it_end && placed; ++win_it) {
                 FluxboxWindow &window = **win_it;
+                if (&window == &win) continue;
 
                 int curr_x = window.x() - window.xOffset(); // minus offset to get back up to fake place
                 int curr_y = window.y() - window.yOffset();

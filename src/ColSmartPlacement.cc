@@ -23,16 +23,29 @@
 
 #include "ColSmartPlacement.hh"
 
+#include "FocusControl.hh"
 #include "Screen.hh"
 #include "ScreenPlacement.hh"
 #include "Window.hh"
 
-bool ColSmartPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist,
-                                    const FluxboxWindow &win,
+bool ColSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
                                     int &place_x, int &place_y) {
 
+    std::list<FluxboxWindow *> windowlist;
+    const std::list<Focusable *> focusables =
+            win.screen().focusControl().focusedOrderWinList();
+    std::list<Focusable *>::const_iterator foc_it = focusables.begin(),
+                                           foc_it_end = focusables.end();
+    unsigned int workspace = win.workspaceNumber();
+    for (; foc_it != foc_it_end; ++foc_it) {
+        // make sure it's a FluxboxWindow
+        if (*foc_it == (*foc_it)->fbwindow() &&
+            (workspace == (*foc_it)->fbwindow()->workspaceNumber() ||
+             (*foc_it)->fbwindow()->isStuck()))
+            windowlist.push_back((*foc_it)->fbwindow());
+    }
+
     // xinerama head constraints
-    int head = (signed) win.getOnHead();
     int head_left = (signed) win.screen().maxLeft(head);
     int head_right = (signed) win.screen().maxRight(head);
     int head_top = (signed) win.screen().maxTop(head);
@@ -40,8 +53,7 @@ bool ColSmartPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist
 
     bool placed = false;
     int next_x, next_y;
-    const ScreenPlacement &screen_placement = 
-        dynamic_cast<const ScreenPlacement &>(win.screen().placementStrategy());
+    const ScreenPlacement &screen_placement = win.screen().placementStrategy();
 
     bool top_bot = screen_placement.colDirection() == ScreenPlacement::TOPBOTTOM;
     bool left_right = screen_placement.rowDirection() == ScreenPlacement::LEFTRIGHT;
@@ -90,6 +102,7 @@ bool ColSmartPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist
             std::list<FluxboxWindow *>::const_iterator it_end = 
                 windowlist.end();
             for (; it != it_end && placed; ++it) {
+                if (*it == &win) continue;
                 int curr_x = (*it)->x() - (*it)->xOffset();
                 int curr_y = (*it)->y() - (*it)->yOffset();
                 int curr_w = (*it)->width()  + (*it)->fbWindow().borderWidth()*2 + (*it)->widthOffset();

@@ -373,7 +373,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_altname(altscreenname),
     m_focus_control(new FocusControl(*this)),
     m_placement_strategy(new ScreenPlacement(*this)),
-    m_cycling(false), m_typing_ahead(false), m_cycle_opts(0),
+    m_cycling(false), m_cycle_opts(0),
     m_xinerama_headinfo(0),
     m_restart(false),
     m_shutdown(false) {
@@ -826,45 +826,9 @@ void BScreen::propertyNotify(Atom atom) {
 }
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
-    if (!m_typing_ahead) {
-        WindowCmd<void>::setWindow(FocusControl::focusedFbWindow());
-        Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
-                                              Keys::GLOBAL|Keys::ON_DESKTOP);
-        return;
-    }
-
-    KeySym ks;
-    char keychar[1];
-    XLookupString(&ke, keychar, 1, &ks, 0);
-    // a modifier key by itself doesn't do anything
-    if (IsModifierKey(ks))
-        return;
-
-    switch (ks) {
-    case XK_Escape:
-    case XK_KP_Enter:
-    case XK_Return:
-        m_type_ahead.reset();
-        FbTk::EventManager::instance()->ungrabKeyboard();
-        break;
-    case XK_BackSpace:
-        m_type_ahead.putBackSpace();
-        m_matches = m_type_ahead.matched();
-        break;
-    case XK_Tab:
-    case XK_ISO_Left_Tab:
-        m_type_ahead.seek();
-        focusControl().cycleFocus(m_matches, m_cycle_opts, (bool)(ke.state & ShiftMask));
-        break;
-    default:
-        m_matches = m_type_ahead.putCharacter(keychar[0]);
-        // if focused win doesn't match new search string, find the next one
-        if (!m_matches.empty() &&
-            std::find(m_matches.begin(), m_matches.end(),
-                      FocusControl::focusedWindow()) == m_matches.end())
-            focusControl().cycleFocus(m_matches, m_cycle_opts);
-        break;
-    }
+    WindowCmd<void>::setWindow(FocusControl::focusedFbWindow());
+    Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
+                                          Keys::GLOBAL|Keys::ON_DESKTOP);
 }
 
 void BScreen::keyReleaseEvent(XKeyEvent &ke) {
@@ -889,20 +853,7 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
 
 void BScreen::notifyUngrabKeyboard() {
     m_cycling = false;
-    m_typing_ahead = false;
-    m_type_ahead.reset();
     focusControl().stopCyclingFocus();
-}
-
-void BScreen::startTypeAheadFocus(std::list<Focusable *> &winlist,
-                                  const ClientPattern *pat) {
-    m_type_ahead.init(winlist);
-    m_matches = winlist;
-    FbTk::EventManager *evm = FbTk::EventManager::instance();
-    if (!m_typing_ahead && !m_cycling)
-        evm->grabKeyboard(*this, rootWindow().window());
-    m_cycle_opts = pat;
-    m_typing_ahead = true;
 }
 
 void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
@@ -914,7 +865,7 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
     else if (ev.type == ButtonPress)
         mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
 
-    if (!m_cycling && !m_typing_ahead && mods) {
+    if (!m_cycling && mods) {
         m_cycling = true;
         FbTk::EventManager::instance()->grabKeyboard(*this, rootWindow().window());
     }
@@ -922,7 +873,7 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
     if (mods == 0) // can't stacked cycle unless there is a mod to grab
         options |= FocusControl::CYCLELINEAR;
 
-    FocusControl::Focusables *win_list = 0;
+    const FocusControl::Focusables *win_list = 0;
     if (options & FocusControl::CYCLEGROUPS) {
         win_list = (options & FocusControl::CYCLELINEAR) ?
             &focusControl().creationOrderWinList() :

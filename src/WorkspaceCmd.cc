@@ -92,28 +92,10 @@ void PrevWindowCmd::execute() {
         screen->cycleFocus(m_option, &m_pat, true);
 }
 
-void TypeAheadFocusCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
-    if (screen != 0) {
-        FocusControl::Focusables *win_list = 0;
-        if (m_option & FocusControl::CYCLEGROUPS) {
-            win_list = (m_option & FocusControl::CYCLELINEAR) ?
-                &screen->focusControl().creationOrderWinList() :
-                &screen->focusControl().focusedOrderWinList();
-        } else {
-            win_list = (m_option & FocusControl::CYCLELINEAR) ?
-                &screen->focusControl().creationOrderList() :
-                &screen->focusControl().focusedOrderList();
-        }
-        
-        screen->startTypeAheadFocus(*win_list, &m_pat);
-    }
-}
-
 void GoToWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
-        FocusControl::Focusables *win_list = 0;
+        const FocusControl::Focusables *win_list = 0;
         if (m_option & FocusControl::CYCLEGROUPS) {
             win_list = (m_option & FocusControl::CYCLELINEAR) ?
                 &screen->focusControl().creationOrderWinList() :

@@ -34,8 +34,7 @@ class CascadePlacement: public PlacementStrategy,
 public:
     explicit CascadePlacement(const BScreen &screen);
     ~CascadePlacement();
-    bool placeWindow(const std::list<FluxboxWindow *> &windowlist,
-                     const FluxboxWindow &window,
+    bool placeWindow(const FluxboxWindow &window, int head,
                      int &place_x, int &place_y);
 private:
     int *m_cascade_x; ///< need a cascade for each head (Xinerama)

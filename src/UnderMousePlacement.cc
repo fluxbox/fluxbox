@@ -27,8 +27,7 @@
 #include "Screen.hh"
 #include "Window.hh"
 
-bool UnderMousePlacement::placeWindow(const std::list<FluxboxWindow *> &list,
-                                      const FluxboxWindow &win,
+bool UnderMousePlacement::placeWindow(const FluxboxWindow &win, int head,
                                       int &place_x, int &place_y) {
 
     int root_x, root_y, ignore_i;
@@ -51,7 +50,6 @@ bool UnderMousePlacement::placeWindow(const std::list<FluxboxWindow *> &list,
     int test_y = root_y - (win_h / 2);
 
     // keep the window inside the screen
-    int head = (signed) win.getOnHead();
     int head_left = (signed) win.screen().maxLeft(head);
     int head_right = (signed) win.screen().maxRight(head);
     int head_top = (signed) win.screen().maxTop(head);

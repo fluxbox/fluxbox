@@ -86,8 +86,8 @@ FocusControl::FocusControl(BScreen &screen):
     
 }
 
-void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
-                              bool cycle_reverse) {
+void FocusControl::cycleFocus(const Focusables &window_list,
+                              const ClientPattern *pat, bool cycle_reverse) {
 
     if (!m_cycling_list) {
         if (&m_screen == FbTk::EventManager::instance()->grabbingKeyboard())
@@ -98,15 +98,15 @@ void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
     } else if (m_cycling_list != &window_list)
         m_cycling_list = &window_list;
 
-    Focusables::iterator it_begin = window_list.begin();
-    Focusables::iterator it_end = window_list.end();
+    Focusables::const_iterator it_begin = window_list.begin();
+    Focusables::const_iterator it_end = window_list.end();
 
     // too many things can go wrong with remembering this
     m_cycling_window = find(it_begin, it_end, s_focused_window);
     if (m_cycling_window == it_end)
         m_cycling_window = find(it_begin, it_end, s_focused_fbwindow);
 
-    Focusables::iterator it = m_cycling_window;
+    Focusables::const_iterator it = m_cycling_window;
     FluxboxWindow *fbwin = 0;
     WinClient *last_client = 0;
     WinClient *was_iconic = 0;
@@ -167,12 +167,12 @@ void FocusControl::cycleFocus(Focusables &window_list, const ClientPattern *pat,
 
 }
 
-void FocusControl::goToWindowNumber(Focusables &winlist, int num,
+void FocusControl::goToWindowNumber(const Focusables &winlist, int num,
                                     const ClientPattern *pat) {
     Focusable *last_matched = 0;
     if (num > 0) {
-        Focusables::iterator it = winlist.begin();
-        Focusables::iterator it_end = winlist.end();
+        Focusables::const_iterator it = winlist.begin();
+        Focusables::const_iterator it_end = winlist.end();
         for (; it != it_end; ++it) {
             if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
                 --num;
@@ -181,8 +181,8 @@ void FocusControl::goToWindowNumber(Focusables &winlist, int num,
             }
         }
     } else if (num < 0) {
-        Focusables::reverse_iterator it = winlist.rbegin();
-        Focusables::reverse_iterator it_end = winlist.rend();
+        Focusables::const_reverse_iterator it = winlist.rbegin();
+        Focusables::const_reverse_iterator it_end = winlist.rend();
         for (; it != it_end; ++it) {
             if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
                 ++num;
@@ -255,7 +255,7 @@ void FocusControl::stopCyclingFocus() {
     if (m_cycling_list == 0)
         return;
 
-    Focusables::iterator it_end = m_cycling_list->end();
+    Focusables::const_iterator it_end = m_cycling_list->end();
     m_cycling_last = 0;
     m_cycling_list = 0;
 
