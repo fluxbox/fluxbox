@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/10/24:
+   * Reenabled raising window if window was moved by mouse by 0 pixels (Mathias)
+     Window.cc
 *07/10/23:
    * Adding/removing workspaces wasn't updating menu (Mark)
      Screen.cc

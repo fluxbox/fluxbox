@@ -3159,6 +3159,15 @@ void FluxboxWindow::stopMoving(bool interrupted) {
 
     fluxbox->maskWindowEvents(0, 0);
 
+    // if no real movement happend -> raise if clickrais is disabled
+    if (m_last_move_x - frame().x() == 0 && 
+            m_last_move_y - frame().y() == 0 &&
+            !screen().clickRaises()) {
+
+        raise();
+    }
+
+
     if (! screen().doOpaqueMove()) {
         parent().drawRectangle(screen().rootTheme().opGC(),
                                m_last_move_x, m_last_move_y,
