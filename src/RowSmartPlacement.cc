@@ -35,7 +35,7 @@ bool RowSmartPlacement::placeWindow(const std::list<FluxboxWindow *> &windowlist
     int next_x, next_y;
     
     // view (screen + head) constraints
-    int head = (signed) win.screen().getCurrHead();
+    int head = (signed) win.getOnHead();
     int head_left = (signed) win.screen().maxLeft(head);
     int head_right = (signed) win.screen().maxRight(head);
     int head_top = (signed) win.screen().maxTop(head);

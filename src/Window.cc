@@ -480,6 +480,8 @@ void FluxboxWindow::init() {
             real_y <= (signed) screen().height())
             m_placed = true;
 
+    } else if (!m_placed) {
+        setOnHead(screen().getCurrHead());
     }
 /*
     if (wattrib.width <= 0)
@@ -4094,6 +4096,10 @@ int FluxboxWindow::getDecoMaskFromString(const string &str_label) {
         str_label.size() > 0 && isdigit(str_label[0]))
         mask = strtol(str_label.c_str(), NULL, 0);
     return mask;
+}
+
+int FluxboxWindow::getOnHead() const {
+    return screen().getHead(fbWindow());
 }
 
 void FluxboxWindow::setOnHead(int head) {

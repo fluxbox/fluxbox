@@ -306,6 +306,7 @@ public:
     void lowerLayer();
     /// moves the window to a new layer
     void moveToLayer(int layernum, bool force = false);
+    int getOnHead() const;
     void setOnHead(int head);
     /// sets the window focus hidden state
     void setFocusHidden(bool value);
