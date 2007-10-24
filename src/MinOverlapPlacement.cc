@@ -155,7 +155,7 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
 
         int overlap = 0;
         it = windowlist.rbegin();
-        for (; it != windowlist.rend(); ++it) {
+        for (; it != it_end; ++it) {
 
             // get the dimensions of the window
             int left = (*it)->x() - (*it)->xOffset();
