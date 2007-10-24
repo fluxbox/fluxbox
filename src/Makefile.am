@@ -151,6 +151,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	IconButton.hh IconButton.cc \
 	IconbarTheme.hh IconbarTheme.cc \
 	STLUtil.hh \
+	Focusable.hh \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${TOOLBAR_SOURCE}
 
