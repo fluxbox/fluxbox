@@ -127,7 +127,7 @@ static Bool queueScanner(Display *, XEvent *e, char *args) {
 
 /// returns the deepest transientFor, asserting against a close loop
 WinClient *getRootTransientFor(WinClient *client) {
-    while (client->transientFor()) {
+    while (client && client->transientFor()) {
         assert(client != client->transientFor());
         client = client->transientFor();
     }
@@ -1317,12 +1317,6 @@ bool FluxboxWindow::focus() {
             screen().changeWorkspaceID(workspaceNumber());
     }
 
-    FluxboxWindow *cur = FocusControl::focusedFbWindow();
-    WinClient *client = FocusControl::focusedWindow();
-    if (cur && client && cur != this && cur->isFullscreen() &&
-        getRootTransientFor(m_client) != getRootTransientFor(client))
-        return false;
-
     if (isIconic()) {
         deiconify();
         m_focused = true; // signal to mapNotifyEvent to set focus when mapped
@@ -1893,7 +1887,7 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
     if (!m_initialized)
         m_layernum = layernum;
 
-    if (m_layernum == layernum && !force)
+    if (m_layernum == layernum && !force || !m_client)
         return;
 
     // get root window
@@ -1942,6 +1936,8 @@ void FluxboxWindow::setIconHidden(bool value) {
 // window has actually RECEIVED focus (got a FocusIn event)
 // so now we make it a focused frame etc
 void FluxboxWindow::setFocusFlag(bool focus) {
+    if (!m_client) return;
+
     bool was_focused = isFocused();
     m_focused = focus;
 #ifdef DEBUG
@@ -1950,10 +1946,17 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
     installColormap(focus);
 
+    if (fullscreen && !focus)
+        moveToLayer(m_old_layernum);
+    if (fullscreen && focus)
+        moveToLayer(::Layer::ABOVE_DOCK);
+
     if (focus != frame().focused())
         frame().setFocus(focus);
 
-    if (screen().doAutoRaise() && !screen().focusControl().isCycling()) {
+    if (screen().focusControl().isCycling())
+        tempRaise();
+    else if (screen().doAutoRaise()) {
         if (m_focused)
             m_timer.start();
         else

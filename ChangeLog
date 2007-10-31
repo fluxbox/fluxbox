@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/10/31:
+   * Move fullscreen windows to normal layer when they lose focus (Mark)
+     Window.cc FocusControl.cc
 *07/10/24:
    * Fixed some gcc 2.96 compile issues ( Henrik )
      Layer.hh, MinOverlapPlacement.cc, Workspace.cc

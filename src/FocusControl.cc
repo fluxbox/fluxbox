@@ -156,9 +156,7 @@ void FocusControl::cycleFocus(const Focusables &window_list,
         }
     }
 
-    if (isCycling())
-        fbwin->tempRaise();
-    else
+    if (!isCycling())
         fbwin->raise();
 
     m_cycling_window = it;
