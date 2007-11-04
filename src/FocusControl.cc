@@ -189,7 +189,11 @@ void FocusControl::goToWindowNumber(const Focusables &winlist, int num,
             }
         }
     }
-    if (last_matched) last_matched->focus();
+    if (last_matched) {
+        last_matched->focus();
+        if (last_matched->fbwindow())
+            last_matched->fbwindow()->raise();
+    }
 }
 
 void FocusControl::addFocusBack(WinClient &client) {

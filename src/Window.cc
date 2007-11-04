@@ -1059,6 +1059,7 @@ void FluxboxWindow::reconfigure() {
     grabButtons();
 
     frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
+    m_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
 
     updateButtons();
     frame().reconfigure();
