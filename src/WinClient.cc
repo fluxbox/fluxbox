@@ -168,8 +168,7 @@ WinClient::~WinClient() {
 
 bool WinClient::acceptsFocus() const {
     return (m_focus_mode == F_LOCALLYACTIVE ||
-            m_focus_mode == F_PASSIVE ||
-            m_focus_mode == F_GLOBALLYACTIVE && send_focus_message);
+            m_focus_mode == F_PASSIVE);
 }
 
 bool WinClient::sendFocus() {
