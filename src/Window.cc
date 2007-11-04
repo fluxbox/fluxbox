@@ -1355,10 +1355,9 @@ bool FluxboxWindow::focus() {
 
     bool ret = false;
 
-    if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE ||
-        m_client->getFocusMode() == WinClient::F_PASSIVE) {
+    if (m_client->acceptsFocus()) {
 
-        m_client->setInputFocus(RevertToPointerRoot, CurrentTime);
+        m_client->setInputFocus(RevertToParent, CurrentTime);
 
         FbTk::App *app = FbTk::App::instance();
 
