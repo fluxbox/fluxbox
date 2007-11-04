@@ -1954,7 +1954,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     if (focus != frame().focused())
         frame().setFocus(focus);
 
-    if (screen().focusControl().isCycling())
+    if (focus && screen().focusControl().isCycling())
         tempRaise();
     else if (screen().doAutoRaise()) {
         if (m_focused)
@@ -2486,7 +2486,13 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
 
         if (now.tv_sec > m_creation_time + 1)
             m_creation_time = 0;
-        else {
+        else if (Remember::instance().isRemembered(*client,
+                         Remember::REM_MAXIMIZEDSTATE) ||
+                 Remember::instance().isRemembered(*client,
+                         Remember::REM_FULLSCREENSTATE)) {
+            cr.value_mask = cr.value_mask & ~(CWWidth | CWHeight);
+            cr.value_mask = cr.value_mask & ~(CWX | CWY);
+        } else {
             if (Remember::instance().isRemembered(*client,
                                                   Remember::REM_DIMENSIONS))
                 cr.value_mask = cr.value_mask & ~(CWWidth | CWHeight);

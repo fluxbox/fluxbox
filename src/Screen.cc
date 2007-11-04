@@ -1201,6 +1201,13 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
     FbTk::App::instance()->sync(false);
 
+    // set new workspace
+    Workspace *old = currentWorkspace();
+    m_current_workspace = getWorkspace(id);
+
+    // we show new workspace first in order to appear faster
+    currentWorkspace()->showAll();
+
     FluxboxWindow *focused = FocusControl::focusedFbWindow();
 
     if (focused && focused->isMoving()) {
@@ -1227,27 +1234,13 @@ void BScreen::changeWorkspaceID(unsigned int id) {
             (*icon_it)->setWorkspace(id);
     }
 
-    currentWorkspace()->hideAll(false);
-
-    // set new workspace
-    m_current_workspace = getWorkspace(id);
-
-    // This is a little tricks to reduce flicker
-    // this way we can set focus pixmap on frame before we show it
-    // and using ExposeEvent to redraw without flicker
-    /*
-    WinClient *win = getLastFocusedWindow(currentWorkspaceID());
-    if (win && win->fbwindow())
-        win->fbwindow()->setFocusFlag(true);
-    */
-
-    currentWorkspace()->showAll();
-
     if (focused && focused->isMoving()) {
         focused->focus();
         focused->resumeMoving();
     } else
         FocusControl::revertFocus(*this);
+
+    old->hideAll(false);
 
     FbTk::App::instance()->sync(false);
 
