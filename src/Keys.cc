@@ -27,6 +27,7 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 
+#include "FbTk/EventManager.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/App.hh"
 #include "FbTk/Command.hh"
@@ -392,7 +393,8 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
 
     // if focus changes, windows will get NotifyWhileGrabbed,
     // which they tend to ignore
-    if (temp_key && type == KeyPress)
+    if (temp_key && type == KeyPress &&
+        !FbTk::EventManager::instance()->grabbingKeyboard())
         XUngrabKeyboard(Fluxbox::instance()->display(), CurrentTime);
 
     if (temp_key && !temp_key->keylist.empty()) { // emacs-style
