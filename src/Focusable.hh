@@ -46,6 +46,17 @@ public:
         m_titlesig(*this), m_focussig(*this), m_diesig(*this),
         m_attentionsig(*this) { }
     virtual ~Focusable() { }
+
+    enum WindowType {
+        TYPE_NORMAL,
+        TYPE_DOCK,
+        TYPE_DESKTOP,
+        TYPE_SPLASH,
+        TYPE_DIALOG,
+        TYPE_MENU,
+        TYPE_TOOLBAR
+    };
+
     /**
      * Take focus.
      * @return true if the focuable took focus
@@ -86,6 +97,9 @@ public:
     virtual const std::string &getWMClassName() const { return m_instance_name; }
     /// @return wm role string (for pattern matching)
     virtual std::string getWMRole() const { return "Focusable"; }
+
+    /// @return window type
+    virtual WindowType getWindowType() const { return TYPE_NORMAL; }
 
     /// @return whether this window is a transient (for pattern matching)
     virtual bool isTransient() const { return false; }

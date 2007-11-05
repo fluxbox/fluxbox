@@ -64,9 +64,7 @@ public:
 
     // override the title with this
     void setTitle(FbTk::FbString &title);
-    void setIconTitle(FbTk::FbString &icon_title);
     void updateTitle();
-    void updateIconTitle();
     /// updates transient window information
     void updateTransientInfo();
 
@@ -80,7 +78,7 @@ public:
     bool focus(); // calls Window->setCurrentClient to give focus to this client
     bool isFocused() const;
     void setAttentionState(bool value);
-    const std::string &title() const;
+    const std::string &title() const { return m_title; }
 
     /**
      * Changes width and height to the nearest (lower) value
@@ -110,6 +108,8 @@ public:
     bool getWMName(XTextProperty &textprop) const;
     bool getWMIconName(XTextProperty &textprop) const;
     std::string getWMRole() const;
+    Focusable::WindowType getWindowType() const { return m_window_type; }
+    void setWindowType(Focusable::WindowType type) { m_window_type = type; }
 
     inline WinClient *transientFor() { return transient_for; }
     inline const WinClient *transientFor() const { return transient_for; }
@@ -127,7 +127,6 @@ public:
     // grouping is tracked by remembering the window to the left in the group
     Window getGroupLeftWindow() const;
 
-    inline int getFocusMode() const { return m_focus_mode; }
     inline const MwmHints *getMwmHint() const { return m_mwm_hint; }
 
     inline unsigned int maxWidth() const { return max_width; }
@@ -152,9 +151,6 @@ public:
         base_width, base_height;
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
-
-    enum FocusMode { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
-
 private:
     /// removes client from any waiting list and clears empty waiting lists
     void removeTransientFromWaitingList();
@@ -167,16 +163,14 @@ private:
     // number of transients which we are modal for
     int m_modal_count;
     bool m_modal;
-    bool send_focus_message, send_close_message;
+    bool accepts_input, send_focus_message, send_close_message;
 
     int m_win_gravity;
 
-    std::string m_icon_title;
-    bool m_title_override, m_icon_title_override;
+    bool m_title_override;
 
+    Focusable::WindowType m_window_type;
     MwmHints *m_mwm_hint;
-
-    int m_focus_mode;
 
     Strut *m_strut;
     // map transient_for X window to winclient transient 

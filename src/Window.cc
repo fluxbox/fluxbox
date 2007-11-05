@@ -453,6 +453,8 @@ void FluxboxWindow::init() {
                           wattrib.width, wattrib.height, 
                           m_client->gravity(), m_client->old_bw);
 
+    setWindowType(m_client->getWindowType());
+
     if (fluxbox.isStartup())
         m_placed = true;
     else if (m_client->isTransient() ||
@@ -1021,7 +1023,6 @@ void FluxboxWindow::associateClientWindow(bool use_attrs,
                                           unsigned int width, unsigned int height,
                                           int gravity, unsigned int client_bw) {
     m_client->updateTitle();
-    m_client->updateIconTitle();
 
     frame().setShapingClient(m_client, false);
 
@@ -1353,26 +1354,7 @@ bool FluxboxWindow::focus() {
     if (m_client->isModal())
         return false;
 
-    bool ret = false;
-
-    if (m_client->acceptsFocus()) {
-
-        m_client->setInputFocus(RevertToParent, CurrentTime);
-
-        FbTk::App *app = FbTk::App::instance();
-
-        XFlush(app->display());
-
-        m_client->sendFocus();
-
-        app->sync(false);
-
-        ret = true;
-    } else {
-        ret = m_client->sendFocus();
-    }
-
-    return ret;
+    return m_client->sendFocus();
 }
 
 // don't hide the frame directly, use this function
@@ -2129,14 +2111,6 @@ void FluxboxWindow::restoreAttributes() {
         m_layernum = m_blackbox_attrib.stack;
     }
 
-    if ((m_blackbox_attrib.flags & ATTRIB_MAXHORIZ) ||
-        (m_blackbox_attrib.flags & ATTRIB_MAXVERT)) {
-        m_blackbox_attrib.premax_x = m_blackbox_attrib.premax_x;
-        m_blackbox_attrib.premax_y = m_blackbox_attrib.premax_y;
-        m_blackbox_attrib.premax_w = m_blackbox_attrib.premax_w;
-        m_blackbox_attrib.premax_h = m_blackbox_attrib.premax_h;
-    }
-
 }
 
 /**
@@ -2369,8 +2343,9 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         break;
 
     case XA_WM_ICON_NAME:
-        // update icon title and then do normal XA_WM_NAME stuff
-        client.updateIconTitle();
+        // we don't use icon title, since many apps don't update it,
+        // and we don't show icons anyway
+        break;
     case XA_WM_NAME:
         client.updateTitle();
         break;
@@ -2610,7 +2585,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     frame().buttonPressEvent(be);
 
     if (be.button == 1) {
-        if (!m_focused) //check focus
+        if (!m_focused && acceptsFocus()) //check focus
             focus();
 
         if (frame().window().window() == be.window || frame().tabcontainer().window() == be.window) {
@@ -2968,7 +2943,8 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         ev.window == m_client->window() ||
         client) {
 
-        if (screen().focusControl().isMouseFocus() && !isFocused()) {
+        if (screen().focusControl().isMouseFocus() && !isFocused() &&
+            acceptsFocus() && getWindowType() != Focusable::TYPE_DESKTOP) {
 
             // check that there aren't any subsequent leave notify events in the
             // X event queue
@@ -3138,7 +3114,6 @@ void FluxboxWindow::startMoving(int x, int y) {
     m_button_grab_y = y - frame().y() - frame().window().borderWidth();
 
     moving = true;
-    maximized = MAX_NONE;
 
     Fluxbox *fluxbox = Fluxbox::instance();
     // grabbing (and masking) on the root window allows us to
@@ -3674,6 +3649,10 @@ std::string FluxboxWindow::getWMRole() const {
     return (m_client ? m_client->getWMRole() : "FluxboxWindow");
 }
 
+Focusable::WindowType FluxboxWindow::getWindowType() const {
+    return (m_client ? m_client->getWindowType() : Focusable::TYPE_NORMAL);
+}
+
 bool FluxboxWindow::isTransient() const {
     return (m_client && m_client->isTransient());
 }
@@ -4138,4 +4117,73 @@ void FluxboxWindow::placeWindow(int head) {
     // the screen placement strategy is guaranteed to succeed.
     screen().placementStrategy().placeWindow(*this, head, place_x, place_y);
     move(place_x, place_y);
+}
+
+void FluxboxWindow::setWindowType(Focusable::WindowType type) {
+    switch (type) {
+    case Focusable::TYPE_DOCK:
+        /* From Extended Window Manager Hints, draft 1.3:
+         *
+         * _NET_WM_WINDOW_TYPE_DOCK indicates a dock or panel feature.
+         * Typically a Window Manager would keep such windows on top
+         * of all other windows.
+         *
+         */
+        setFocusHidden(true);
+        setIconHidden(true);
+        setDecorationMask(DECOR_NONE);
+        moveToLayer(::Layer::DOCK);
+        break;
+    case Focusable::TYPE_DESKTOP:
+        /*
+         * _NET_WM_WINDOW_TYPE_DESKTOP indicates a "false desktop" window
+         * We let it be the size it wants, but it gets no decoration,
+         * is hidden in the toolbar and window cycling list, plus
+         * windows don't tab with it and is right on the bottom.
+         */
+        setFocusHidden(true);
+        setIconHidden(true);
+        moveToLayer(::Layer::DESKTOP);
+        setDecorationMask(DECOR_NONE);
+        setTabable(false);
+        setMovable(false);
+        setResizable(false);
+        stick();
+        break;
+    case Focusable::TYPE_SPLASH:
+        /*
+         * _NET_WM_WINDOW_TYPE_SPLASH indicates that the
+         * window is a splash screen displayed as an application
+         * is starting up.
+         */
+        setDecorationMask(DECOR_NONE);
+        setFocusHidden(true);
+        setIconHidden(true);
+        setMovable(false);
+        break;
+    case Focusable::TYPE_DIALOG:
+        setTabable(false);
+        break;
+    case Focusable::TYPE_MENU:
+    case Focusable::TYPE_TOOLBAR:
+        /*
+         * _NET_WM_WINDOW_TYPE_TOOLBAR and _NET_WM_WINDOW_TYPE_MENU
+         * indicate toolbar and pinnable menu windows, respectively
+         * (i.e. toolbars and menus "torn off" from the main
+         * application). Windows of this type may set the
+         * WM_TRANSIENT_FOR hint indicating the main application window.
+         */
+        setDecorationMask(DECOR_TOOL);
+        setIconHidden(true);
+        moveToLayer(::Layer::ABOVE_DOCK);
+        break;
+    case Focusable::TYPE_NORMAL:
+    default:
+        break;
+    }
+
+    /*
+     * NOT YET IMPLEMENTED:
+     *   _NET_WM_WINDOW_TYPE_UTILITY
+     */
 }

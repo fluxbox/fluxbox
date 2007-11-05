@@ -459,6 +459,8 @@ public:
     const std::string &getWMClassName() const; 
     const std::string &getWMClassClass() const;
     std::string getWMRole() const;
+    Focusable::WindowType getWindowType() const;
+    void setWindowType(Focusable::WindowType type);
     bool isTransient() const;
 
     inline int x() const { return frame().x(); }

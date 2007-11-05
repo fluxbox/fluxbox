@@ -79,13 +79,13 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      wm_hint_flags(0),
                      m_modal_count(0),
                      m_modal(false),
+                     accepts_input(false),
                      send_focus_message(false),
                      send_close_message(false),
                      m_win_gravity(0),
                      m_title_override(false),
-                     m_icon_title_override(false),
+                     m_window_type(Focusable::TYPE_NORMAL),
                      m_mwm_hint(0),
-                     m_focus_mode(F_PASSIVE),
                      m_strut(0) {
     updateWMProtocols();
     updateMWMHints();
@@ -93,7 +93,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
     updateWMNormalHints();
     updateWMClassHint();
     updateTitle();
-    updateIconTitle();
     Fluxbox::instance()->saveWindowSearch(win, this);
     if (window_group != None)
         Fluxbox::instance()->saveGroupSearch(window_group, this);
@@ -167,11 +166,17 @@ WinClient::~WinClient() {
 }
 
 bool WinClient::acceptsFocus() const {
-    return (m_focus_mode == F_LOCALLYACTIVE ||
-            m_focus_mode == F_PASSIVE);
+    return ((accepts_input || send_focus_message) &&
+            // focusing fbpanel messes up quite a few things
+            m_window_type != Focusable::TYPE_DOCK &&
+            m_window_type != Focusable::TYPE_SPLASH);
 }
 
 bool WinClient::sendFocus() {
+    if (accepts_input) {
+        setInputFocus(RevertToParent, CurrentTime);
+        return true;
+    }
     if (!send_focus_message)
         return false;
 #ifdef DEBUG
@@ -234,12 +239,6 @@ string WinClient::getWMRole() const {
     Atom wm_role = XInternAtom(FbTk::App::instance()->display(),
                                "WM_WINDOW_ROLE", False);
     return textProperty(wm_role);
-}
-
-const string &WinClient::title() const {
-    if (!fbwindow() || !fbwindow()->isIconic() || m_icon_title.empty())
-        return m_title;
-    return m_icon_title;
 }
 
 void WinClient::updateWMClassHint() {
@@ -369,48 +368,6 @@ void WinClient::setTitle(FbTk::FbString &title) {
         fbwindow()->updateTitleFromClient(*this);
 }
 
-void WinClient::setIconTitle(FbTk::FbString &icon_title) {
-    m_icon_title = icon_title;
-    m_icon_title_override = true;
-    if (fbwindow() && fbwindow()->isIconic())
-        fbwindow()->updateTitleFromClient(*this);
-}
-
-void WinClient::updateIconTitle() {
-    if (m_icon_title_override)
-        return;
-
-    XTextProperty text_prop;
-    char **list = 0;
-    int num = 0;
-
-    if (getWMIconName(text_prop)) {
-        if (text_prop.value && text_prop.nitems > 0) {
-            if (text_prop.encoding != XA_STRING) {
-                text_prop.nitems = strlen((char *) text_prop.value);
-                XmbTextPropertyToTextList(display(), &text_prop, &list, &num);
-
-                if (num > 0 && list)
-                    m_icon_title = (char *)*list;
-                else
-                    m_icon_title = text_prop.value ? (char *)text_prop.value : "";
-                if (list)
-                    XFreeStringList(list);
-
-            } else
-                m_icon_title = text_prop.value ? (char *)text_prop.value : "";
-
-            if (text_prop.value)
-                XFree((char *) text_prop.value);
-        } else
-            m_icon_title = "";
-    } else
-        m_icon_title = "";
-
-    if (fbwindow() && fbwindow()->isIconic())
-        fbwindow()->updateTitleFromClient(*this);
-}
-
 void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs) {
     changeProperty(FbAtoms::instance()->getFluxboxAttributesAtom(),
                    XA_CARDINAL, 32, PropModeReplace,
@@ -450,11 +407,10 @@ void WinClient::updateMWMHints() {
 
 void WinClient::updateWMHints() {
     XWMHints *wmhint = XGetWMHints(display(), window());
-    if (! wmhint) {
-        m_focus_mode = F_PASSIVE;
-        window_group = None;
-        initial_state = NormalState;
-    } else {
+    accepts_input = true;
+    window_group = None;
+    initial_state = NormalState;
+    if (wmhint) {
         wm_hint_flags = wmhint->flags;
         /*
          * ICCCM 4.1.7
@@ -467,34 +423,16 @@ void WinClient::updateWMHints() {
          * Globally Active   False         Present
          *---------------------------------------------
          * Here: WM_TAKE_FOCUS = send_focus_message
-         *       Input Field   = wmhint->input
-         *       Input Model   = m_focus_mode
+         *       Input Field   = accepts_input
          */
-        if (wmhint->flags & InputHint) {
-            if (wmhint->input) {
-                if (send_focus_message)
-                    m_focus_mode = F_LOCALLYACTIVE;
-                else
-                    m_focus_mode = F_PASSIVE;
-            } else {
-                if (send_focus_message)
-                    m_focus_mode = F_GLOBALLYACTIVE;
-                else
-                    m_focus_mode = F_NOINPUT;
-            }
-        } else // InputHint not present: ignoring send_focus_message and assuming F_PASSIVE
-            m_focus_mode = F_PASSIVE;
+        if (wmhint->flags & InputHint)
+            accepts_input = (bool)wmhint->input;
 
         if (wmhint->flags & StateHint)
             initial_state = wmhint->initial_state;
-        else
-            initial_state = NormalState;
 
-        if (wmhint->flags & WindowGroupHint) {
-            if (! window_group)
-                window_group = wmhint->window_group;
-        } else
-            window_group = None;
+        if (wmhint->flags & WindowGroupHint && !window_group)
+            window_group = wmhint->window_group;
 
         if ((bool)(wmhint->flags & IconPixmapHint) && wmhint->icon_pixmap != 0)
             m_icon.pixmap().copy(wmhint->icon_pixmap, 0, 0);

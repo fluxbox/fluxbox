@@ -214,19 +214,9 @@ void Ewmh::setupClient(WinClient &winclient) {
     updateStrut(winclient);
 
     FbTk::FbString newtitle = winclient.textProperty(m_net_wm_name);
-    if (!newtitle.empty()) {
+    if (!newtitle.empty())
         winclient.setTitle(newtitle);
-    }
-    newtitle = winclient.textProperty(m_net_wm_icon_name);
-    if (!newtitle.empty()) {
-        winclient.setIconTitle(newtitle);
-    }
 
-    if ( winclient.fbwindow() )
-        winclient.fbwindow()->titleSig().notify();
-}
-
-void Ewmh::setupFrame(FluxboxWindow &win) {
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
@@ -248,94 +238,58 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
      *
      */
 
-    win.winClient().property(m_net_wm_window_type, 0, 0x7fffffff, False, XA_ATOM,
-                             &ret_type, &fmt, &nitems, &bytes_after,
-                             &data);
+    winclient.property(m_net_wm_window_type, 0, 0x7fffffff, False, XA_ATOM,
+                       &ret_type, &fmt, &nitems, &bytes_after,
+                       &data);
+    Focusable::WindowType type = Focusable::TYPE_NORMAL;
     if (data) {
         Atom *atoms = (unsigned long *)data;
         for (unsigned long l = 0; l < nitems; ++l) {
-            /* From Extended Window Manager Hints, draft 1.3:
-             *
-             * _NET_WM_WINDOW_TYPE_DOCK indicates a dock or panel feature.
-             * Typically a Window Manager would keep such windows on top
-             * of all other windows.
-             *
+            if (atoms[l] == m_net_wm_window_type_dock)
+                type = Focusable::TYPE_DOCK;
+            else if (atoms[l] == m_net_wm_window_type_desktop)
+                type = Focusable::TYPE_DESKTOP;
+            else if (atoms[l] == m_net_wm_window_type_splash)
+                type = Focusable::TYPE_SPLASH;
+            else if (atoms[l] == m_net_wm_window_type_dialog)
+                type = Focusable::TYPE_DIALOG;
+            else if (atoms[l] == m_net_wm_window_type_menu)
+                type = Focusable::TYPE_MENU;
+            else if (atoms[l] == m_net_wm_window_type_toolbar)
+                type = Focusable::TYPE_TOOLBAR;
+            else if (atoms[l] != m_net_wm_window_type_normal)
+                continue;
+            /*
+             * NOT YET IMPLEMENTED:
+             *   _NET_WM_WINDOW_TYPE_UTILITY
              */
-            if (atoms[l] == m_net_wm_window_type_dock) {
-                // we also assume it shouldn't be visible in any toolbar
-                win.setFocusHidden(true);
-                win.setIconHidden(true);
-                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
-                win.moveToLayer(Layer::DOCK);
-            } else if (atoms[l] == m_net_wm_window_type_desktop) {
-                /*
-                 * _NET_WM_WINDOW_TYPE_DESKTOP indicates a "false desktop" window
-                 * We let it be the size it wants, but it gets no decoration,
-                 * is hidden in the toolbar and window cycling list, plus
-                 * windows don't tab with it and is right on the bottom.
-                 */
-
-                win.setFocusHidden(true);
-                win.setIconHidden(true);
-                win.moveToLayer(Layer::DESKTOP);
-                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
-                win.setTabable(false);
-                win.setMovable(false);
-                win.setResizable(false);
-                win.stick();
-
-            } else if (atoms[l] == m_net_wm_window_type_splash) {
-                /*
-                 * _NET_WM_WINDOW_TYPE_SPLASH indicates that the
-                 * window is a splash screen displayed as an application
-                 * is starting up.
-                 */
-                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
-                win.setFocusHidden(true);
-                win.setIconHidden(true);
-                win.setMovable(false);
-            } else if (atoms[l] == m_net_wm_window_type_normal) {
-                // do nothing, this is ..normal..
-            } else if (atoms[l] == m_net_wm_window_type_dialog) {
-                // dialog windows should not be tabable
-                win.setTabable(false);
-            } else if (atoms[l] == m_net_wm_window_type_menu) {
-                /*
-                 * _NET_WM_WINDOW_TYPE_TOOLBAR and _NET_WM_WINDOW_TYPE_MENU
-                 * indicate toolbar and pinnable menu windows, respectively
-                 * (i.e. toolbars and menus "torn off" from the main
-                 * application). Windows of this type may set the
-                 * WM_TRANSIENT_FOR hint indicating the main application window.
-                 */
-                win.setDecorationMask(FluxboxWindow::DECOR_TOOL);
-                win.setIconHidden(true);
-                win.moveToLayer(Layer::ABOVE_DOCK);
-            } else if (atoms[l] == m_net_wm_window_type_toolbar) {
-                win.setDecorationMask(FluxboxWindow::DECOR_NONE);
-                win.setIconHidden(true);
-                win.moveToLayer(Layer::ABOVE_DOCK);
-            }
+            break;
         }
         XFree(data);
-    } else {
+    } else if (winclient.isTransient()) {
         // if _NET_WM_WINDOW_TYPE not set and this window
         // has transient_for the type must be set to _NET_WM_WINDOW_TYPE_DIALOG
-        if ( win.winClient().isTransient() ) {
-            win.winClient().
+        if (winclient.isTransient()) {
+            type = Focusable::TYPE_DIALOG;
+            winclient.
                 changeProperty(m_net_wm_window_type,
                                XA_ATOM, 32, PropModeReplace,
                                (unsigned char*)&m_net_wm_window_type_dialog, 1);
-            // and then we should treat it like a dialog
-            win.setTabable(false);
+
         }
     }
+    winclient.setWindowType(type);
 
-    /*
-     * NOT YET IMPLEMENTED:
-     *   _NET_WM_WINDOW_TYPE_UTILITY
-     */
 
+}
+
+void Ewmh::setupFrame(FluxboxWindow &win) {
     setupState(win);
+
+    Atom ret_type;
+    int fmt;
+    unsigned long nitems, bytes_after;
+    unsigned char *data = 0;
 
     if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
@@ -929,11 +883,7 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
             winclient.fbwindow()->titleSig().notify();
         return true;
     } else if (the_property == m_net_wm_icon_name) {
-        FbTk::FbString newtitle = winclient.textProperty(the_property);
-        if (!newtitle.empty())
-            winclient.setIconTitle(newtitle);
-        if (winclient.fbwindow())
-            winclient.fbwindow()->titleSig().notify();
+        // we don't use icon title, since we don't show icons
         return true;
     }
 

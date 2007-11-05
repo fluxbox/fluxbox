@@ -301,9 +301,12 @@ void ShowDesktopCmd::execute() {
         return;
 
     Workspace::Windows windows(screen->currentWorkspace()->windowList());
-    std::for_each(windows.begin(),
-                  windows.end(),
-                  std::mem_fun(&FluxboxWindow::iconify));
+    Workspace::Windows::iterator it = windows.begin(),
+                                 it_end = windows.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->getWindowType() != Focusable::TYPE_DESKTOP)
+            (*it)->iconify();
+    }
 }
 
 void CloseAllWindowsCmd::execute() {

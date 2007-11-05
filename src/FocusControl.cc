@@ -167,32 +167,17 @@ void FocusControl::cycleFocus(const Focusables &window_list,
 
 void FocusControl::goToWindowNumber(const Focusables &winlist, int num,
                                     const ClientPattern *pat) {
-    Focusable *last_matched = 0;
-    if (num > 0) {
-        Focusables::const_iterator it = winlist.begin();
-        Focusables::const_iterator it_end = winlist.end();
-        for (; it != it_end; ++it) {
-            if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
-                --num;
-                last_matched = *it;
-                if (!num) break;
+    Focusables::const_iterator it = winlist.begin();
+    Focusables::const_iterator it_end = winlist.end();
+    for (; it != it_end && num; ++it) {
+        if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
+            num > 0 ? --num : ++num;
+            if (!num) {
+                (*it)->focus();
+                if ((*it)->fbwindow())
+                    (*it)->fbwindow()->raise();
             }
         }
-    } else if (num < 0) {
-        Focusables::const_reverse_iterator it = winlist.rbegin();
-        Focusables::const_reverse_iterator it_end = winlist.rend();
-        for (; it != it_end; ++it) {
-            if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
-                ++num;
-                last_matched = *it;
-                if (!num) break;
-            }
-        }
-    }
-    if (last_matched) {
-        last_matched->focus();
-        if (last_matched->fbwindow())
-            last_matched->fbwindow()->raise();
     }
 }
 
@@ -371,7 +356,7 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
         if ((*it) == &win 
             || (*it)->isIconic() 
             || (*it)->isFocusHidden() 
-            || !(*it)->winClient().acceptsFocus()) 
+            || !(*it)->acceptsFocus()) 
             continue; // skip self
         
         // we check things against an edge, and within the bounds (draw a picture)
