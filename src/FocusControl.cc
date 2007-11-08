@@ -435,31 +435,31 @@ void FocusControl::removeClient(WinClient &client) {
     if (client.screen().isShuttingdown())
         return;
 
-    m_focused_list.remove(&client);
-    m_creation_order_list.remove(&client);
-    client.screen().clientListSig().notify();
-
     if (m_cycling_list && m_cycling_window != m_cycling_list->end() &&
         *m_cycling_window == &client) {
         m_cycling_window = m_cycling_list->end();
         stopCyclingFocus();
     } else if (m_cycling_last == &client)
         m_cycling_last = 0;
+
+    m_focused_list.remove(&client);
+    m_creation_order_list.remove(&client);
+    client.screen().clientListSig().notify();
 }
 
 void FocusControl::removeWindow(Focusable &win) {
     if (win.screen().isShuttingdown())
         return;
 
-    m_focused_win_list.remove(&win);
-    m_creation_order_win_list.remove(&win);
-    win.screen().clientListSig().notify();
-
     if (m_cycling_list && m_cycling_window != m_cycling_list->end() &&
         *m_cycling_window == &win) {
         m_cycling_window = m_cycling_list->end();
         stopCyclingFocus();
     }
+
+    m_focused_win_list.remove(&win);
+    m_creation_order_win_list.remove(&win);
+    win.screen().clientListSig().notify();
 }
 
 void FocusControl::shutdown() {
