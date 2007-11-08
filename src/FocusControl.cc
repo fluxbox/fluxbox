@@ -137,6 +137,7 @@ void FocusControl::cycleFocus(const Focusables &window_list,
         if (!doSkipWindow(**it, pat) && (*it)->focus())
             break;
     }
+    m_cycling_window = it;
 
     // if we're still in the same fbwin, there's nothing else to do
     if (m_cycling_last && m_cycling_last->fbwindow() == fbwin)
@@ -159,7 +160,6 @@ void FocusControl::cycleFocus(const Focusables &window_list,
     if (!isCycling())
         fbwin->raise();
 
-    m_cycling_window = it;
     m_cycling_last = last_client;
     m_was_iconic = was_iconic;
 
@@ -242,18 +242,14 @@ void FocusControl::stopCyclingFocus() {
     if (m_cycling_list == 0)
         return;
 
-    Focusables::const_iterator it_end = m_cycling_list->end();
     m_cycling_last = 0;
     m_cycling_list = 0;
 
     // put currently focused window to top
-    // the iterator may be invalid if the window died
-    // in which case we'll do a proper revert focus
-    if (m_cycling_window != it_end && (*m_cycling_window)->fbwindow() &&
-        (*m_cycling_window)->fbwindow()->isVisible()) {
-        (*m_cycling_window)->fbwindow()->raise();
-        if (s_focused_window)
-            setScreenFocusedWindow(*s_focused_window);
+    if (s_focused_window) {
+        setScreenFocusedWindow(*s_focused_window);
+        if (s_focused_fbwindow)
+            s_focused_fbwindow->raise();
     } else
         revertFocus(m_screen);
 }
@@ -439,24 +435,31 @@ void FocusControl::removeClient(WinClient &client) {
     if (client.screen().isShuttingdown())
         return;
 
-    Focusable *cyc = 0;
-    if (m_cycling_list && m_cycling_window != m_cycling_list->end())
-        cyc = *m_cycling_window;
-
     m_focused_list.remove(&client);
     m_creation_order_list.remove(&client);
     client.screen().clientListSig().notify();
 
-    if (cyc == &client) {
+    if (m_cycling_list && m_cycling_window != m_cycling_list->end() &&
+        *m_cycling_window == &client) {
         m_cycling_window = m_cycling_list->end();
         stopCyclingFocus();
-    }
+    } else if (m_cycling_last == &client)
+        m_cycling_last = 0;
 }
 
 void FocusControl::removeWindow(Focusable &win) {
+    if (win.screen().isShuttingdown())
+        return;
+
     m_focused_win_list.remove(&win);
     m_creation_order_win_list.remove(&win);
     win.screen().clientListSig().notify();
+
+    if (m_cycling_list && m_cycling_window != m_cycling_list->end() &&
+        *m_cycling_window == &win) {
+        m_cycling_window = m_cycling_list->end();
+        stopCyclingFocus();
+    }
 }
 
 void FocusControl::shutdown() {

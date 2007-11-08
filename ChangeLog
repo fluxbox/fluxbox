@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/11/08:
+   * Fix crash when cycling focus and window closes, bug #1787345 (Mark)
+     FocusControl.cc
 *07/11/04:
    * Update autoraise delay on reconfigure (Mark)
      Window.cc
