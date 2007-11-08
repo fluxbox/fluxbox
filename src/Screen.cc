@@ -1218,8 +1218,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     }
 
     // reassociate all windows that are stuck to the new workspace
-    Workspace *wksp = currentWorkspace();
-    Workspace::Windows wins = wksp->windowList();
+    Workspace::Windows wins = old->windowList();
     Workspace::Windows::iterator it = wins.begin();
     for (; it != wins.end(); ++it) {
         if ((*it)->isStuck()) {
