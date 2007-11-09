@@ -1155,8 +1155,6 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 
         BScreen &screen = client->screen();
 
-        screen.removeClient(*client);
-
         // At this point, we trust that this client is no longer in the
         // client list of its frame (but it still has reference to the frame)
         // We also assume that any remaining active one is the last focused one
@@ -1170,6 +1168,8 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             m_revert_screen = &screen;
             m_revert_timer.start();
         }
+
+        screen.removeClient(*client);
     } else if (typeid(*changedsub) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject *subj = dynamic_cast<BScreen::ScreenSubject *>(changedsub);
         BScreen &screen = subj->screen();
