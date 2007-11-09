@@ -162,6 +162,8 @@ void IconButton::reconfigTheme() {
 
     }
 
+    updateBackground(false);
+
 }
 
 void IconButton::update(FbTk::Subject *subj) {
