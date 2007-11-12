@@ -31,6 +31,7 @@
 #include "FbTk/RefCount.hh"
 #include "ClientMenu.hh"
 #include "ClientPattern.hh"
+#include "FocusableList.hh"
 
 #include <list>
 #include <string>
@@ -118,7 +119,7 @@ public:
 class ShowClientMenuCmd: public FbTk::Command {
 public:
     ShowClientMenuCmd(int option, std::string &pat):
-            m_option(option), m_pat(pat.c_str()) { }
+            m_option(option|FocusableList::LIST_GROUPS), m_pat(pat.c_str()) { }
     void execute();
 private:
     const int m_option;

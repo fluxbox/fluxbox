@@ -514,6 +514,7 @@ void Fluxbox::initScreen(BScreen *screen) {
 
     // attach screen signals to this
     screen->currentWorkspaceSig().attach(this);
+    screen->focusedWindowSig().attach(this);
     screen->workspaceCountSig().attach(this);
     screen->workspaceNamesSig().attach(this);
     screen->workspaceAreaSig().attach(this);
@@ -642,7 +643,7 @@ void Fluxbox::setupConfigFiles() {
     if (create_init)
         FbTk::FileUtil::copyFile(DEFAULT_INITFILE, init_file.c_str());
 
-#define CONFIG_VERSION 4
+#define CONFIG_VERSION 5
     FbTk::Resource<int> config_version(m_resourcemanager, 0,
             "session.configVersion", "Session.ConfigVersion");
     if (*config_version < CONFIG_VERSION) {
@@ -1191,6 +1192,14 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                 if ((*it).first->update())
                     (*it).first->updateCurrentWorkspace(screen);
             }
+        } else if ((&(screen.focusedWindowSig())) == changedsub) {
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
+                 it != m_atomhandler.end(); it++) {
+                (*it).first->updateFocusedWindow(screen,
+                        (FocusControl::focusedWindow() ?
+                         FocusControl::focusedWindow()->window() :
+                         0));
+            }
         } else if ((&(screen.workspaceAreaSig())) == changedsub) {
             for (AtomHandlerContainerIt it= m_atomhandler.begin();
                  it != m_atomhandler.end(); ++it) {
@@ -1680,23 +1689,6 @@ bool Fluxbox::validateClient(const WinClient *client) const {
                 Compose(bind2nd(equal_to<WinClient *>(), client),
                         Select2nd<WinClientMap::value_type>()));
     return it != m_window_search.end();
-}
-
-void Fluxbox::updateFocusedWindow(BScreen *screen, BScreen *old_screen) {
-    if (screen != 0) {
-        for (AtomHandlerContainerIt it= m_atomhandler.begin();
-             it != m_atomhandler.end(); it++) {
-            (*it).first->updateFocusedWindow(*screen, (FocusControl::focusedWindow() ?
-                                                       FocusControl::focusedWindow()->window() :
-                                                       0));
-        }
-    }
-
-    if (old_screen && old_screen != screen) {
-        for (AtomHandlerContainerIt it= m_atomhandler.begin();
-             it != m_atomhandler.end(); it++)
-            (*it).first->updateFocusedWindow(*old_screen, 0);
-    }
 }
 
 void Fluxbox::updateFrameExtents(FluxboxWindow &win) {

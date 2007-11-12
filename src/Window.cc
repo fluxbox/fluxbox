@@ -1405,7 +1405,7 @@ void FluxboxWindow::iconify() {
 
     hide(true);
 
-    screen().focusControl().setFocusBack(this);
+    screen().focusControl().setFocusBack(*this);
 
     ClientList::iterator client_it = m_clientlist.begin();
     const ClientList::iterator client_it_end = m_clientlist.end();
@@ -2038,10 +2038,6 @@ void FluxboxWindow::setState(unsigned long new_state, bool setting_up) {
             (*it)->show();
         (*it)->setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask | KeyPressMask);
     }
-
-    saveBlackboxAttribs();
-    //notify state changed
-    m_statesig.notify();
 }
 
 bool FluxboxWindow::getState() {

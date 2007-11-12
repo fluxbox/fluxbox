@@ -162,12 +162,6 @@ public:
     /// handle any system signal sent to the application
     void handleSignal(int signum);
     void update(FbTk::Subject *changed);
-    /**
-     * Sends update signal to atomhandlers,
-     * @param screen the new screen
-     * @param old_screen the old screen if any, can be the same as new screen
-     */
-    void updateFocusedWindow(BScreen *screen, BScreen *old_screen);
     /// todo, remove this. just temporary
     void updateFrameExtents(FluxboxWindow &win);
 

@@ -27,6 +27,7 @@
 #include <list>
 
 #include "FbTk/Resource.hh"
+#include "FocusableList.hh"
 
 class ClientPattern;
 class WinClient;
@@ -60,12 +61,6 @@ public:
         FOCUSRIGHT  ///< window is right
     };
 
-    /// prevFocus/nextFocus option bits
-    enum { 
-        CYCLEGROUPS = 0x01,  //< cycle through groups
-        CYCLELINEAR = 0x08,  ///< linear cycle
-    };
-
     explicit FocusControl(BScreen &screen);
     /// cycle previous focuable 
     void prevFocus() { cycleFocus(m_focused_list, 0, true); }
@@ -77,10 +72,10 @@ public:
      * @param pat pattern for matching focusables
      * @param reverse reverse the cycle order
      */
-    void cycleFocus(const Focusables &winlist, const ClientPattern *pat = 0,
+    void cycleFocus(const FocusableList &winlist, const ClientPattern *pat = 0,
                     bool reverse = false);
     
-    void goToWindowNumber(const Focusables &winlist, int num,
+    void goToWindowNumber(const FocusableList &winlist, int num,
                           const ClientPattern *pat = 0);
     /// sets the focused window on a screen
     void setScreenFocusedWindow(WinClient &win_client);
@@ -108,7 +103,7 @@ public:
     void addFocusFront(WinClient &client);
     void addFocusWinBack(Focusable &win);
     void addFocusWinFront(Focusable &win);
-    void setFocusBack(FluxboxWindow *fbwin);
+    void setFocusBack(FluxboxWindow &fbwin);
     /// @return main focus model
     FocusModel focusModel() const { return *m_focus_model; }
     /// @return tab focus model
@@ -122,11 +117,11 @@ public:
     WinClient *lastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client = 0);
 
     /// @return focus list in creation order
-    const Focusables &creationOrderList() const { return m_creation_order_list; }
+    const FocusableList &creationOrderList() const { return m_creation_order_list; }
     /// @return the focus list in focused order
-    const Focusables &focusedOrderList() const { return m_focused_list; }
-    const Focusables &creationOrderWinList() const { return m_creation_order_win_list; }
-    const Focusables &focusedOrderWinList() const { return m_focused_win_list; }
+    const FocusableList &focusedOrderList() const { return m_focused_list; }
+    const FocusableList &creationOrderWinList() const { return m_creation_order_win_list; }
+    const FocusableList &focusedOrderWinList() const { return m_focused_win_list; }
 
     /// remove client from focus list
     void removeClient(WinClient &client);
@@ -153,13 +148,13 @@ private:
 
     // This list keeps the order of window focusing for this screen
     // Screen global so it works for sticky windows too.
-    Focusables m_focused_list;
-    Focusables m_creation_order_list;
-    Focusables m_focused_win_list;
-    Focusables m_creation_order_win_list;
+    FocusableList m_focused_list;
+    FocusableList m_creation_order_list;
+    FocusableList m_focused_win_list;
+    FocusableList m_creation_order_win_list;
 
     Focusables::const_iterator m_cycling_window;
-    const Focusables *m_cycling_list;
+    const FocusableList *m_cycling_list;
     Focusable *m_was_iconic;
     WinClient *m_cycling_last;
 

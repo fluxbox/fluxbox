@@ -346,6 +346,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_workspacenames_sig(*this), // workspace names signal
     m_workspace_area_sig(*this), // workspace area signal
     m_currentworkspace_sig(*this), // current workspace signal
+    m_focusedwindow_sig(*this), // focused window signal
     m_reconfigure_sig(*this), // reconfigure signal
     m_resize_sig(*this),
     m_bg_change_sig(*this),
@@ -871,19 +872,10 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
     }
 
     if (mods == 0) // can't stacked cycle unless there is a mod to grab
-        options |= FocusControl::CYCLELINEAR;
+        options |= FocusableList::STATIC_ORDER;
 
-    const FocusControl::Focusables *win_list = 0;
-    if (options & FocusControl::CYCLEGROUPS) {
-        win_list = (options & FocusControl::CYCLELINEAR) ?
-            &focusControl().creationOrderWinList() :
-            &focusControl().focusedOrderWinList();
-    } else {
-        win_list = (options & FocusControl::CYCLELINEAR) ?
-            &focusControl().creationOrderList() :
-            &focusControl().focusedOrderList();
-    }
-
+    const FocusableList *win_list =
+        FocusableList::getListFromOptions(*this, options);
     focusControl().cycleFocus(*win_list, pat, reverse);
 
 }

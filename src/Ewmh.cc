@@ -345,7 +345,8 @@ void Ewmh::updateClientList(BScreen &screen) {
     if (screen.isShuttingdown())
         return;
 
-    list<Focusable *> creation_order_list = screen.focusControl().creationOrderList();
+    list<Focusable *> creation_order_list =
+            screen.focusControl().creationOrderList().clientList();
 
     size_t num = creation_order_list.size();
     Window *wl = FB_new_nothrow Window[num];

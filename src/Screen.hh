@@ -222,6 +222,8 @@ public:
     FbTk::Subject &workspaceAreaSig() { return m_workspace_area_sig; }
     /// current workspace signal
     FbTk::Subject &currentWorkspaceSig() { return m_currentworkspace_sig; }
+    /// focused window signal
+    FbTk::Subject &focusedWindowSig() { return m_focusedwindow_sig; }
     /// reconfigure signal
     FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
     FbTk::Subject &resizeSig() { return m_resize_sig; }
@@ -488,6 +490,7 @@ private:
         m_workspacenames_sig, ///< workspace names signal 
         m_workspace_area_sig, ///< workspace area changed signal
         m_currentworkspace_sig, ///< current workspace signal
+        m_focusedwindow_sig, ///< focused window signal
         m_reconfigure_sig, ///< reconfigure signal
         m_resize_sig, ///< resize signal
         m_bg_change_sig; ///< background change signal

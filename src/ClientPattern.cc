@@ -274,9 +274,19 @@ bool ClientPattern::match(const Focusable &win) const {
     for (; it != it_end; ++it) {
         if ((*it)->orig == "[current]") {
             WinClient *focused = FocusControl::focusedWindow();
-            if (!focused || !((*it)->negate ^
-                (getProperty((*it)->prop, win) ==
-                 getProperty((*it)->prop, *focused))))
+            if ((*it)->prop == WORKSPACE) {
+                char tmpstr[128];
+                sprintf(tmpstr, "%d", win.screen().currentWorkspaceID());
+                if (!(*it)->negate ^ (getProperty((*it)->prop, win) == tmpstr))
+                    return false;
+            } else if ((*it)->prop == WORKSPACENAME) {
+                const Workspace *w = win.screen().currentWorkspace();
+                if (!w || (!(*it)->negate ^
+                           (getProperty((*it)->prop, win) == w->name())))
+                    return false;
+            } else if (!focused || (!(*it)->negate ^
+                                    (getProperty((*it)->prop, win) ==
+                                     getProperty((*it)->prop, *focused))))
                 return false;
         } else if ((*it)->prop == HEAD &&
                    (*it)->orig == "[mouse]") {
@@ -291,6 +301,26 @@ bool ClientPattern::match(const Focusable &win) const {
             return false;
     }
     return true;
+}
+
+bool ClientPattern::dependsOnFocusedWindow() const {
+    Terms::const_iterator it = m_terms.begin(), it_end = m_terms.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->prop != WORKSPACE && (*it)->prop != WORKSPACENAME &&
+            (*it)->orig == "[current]")
+            return true;
+    }
+    return false;
+}
+
+bool ClientPattern::dependsOnCurrentWorkspace() const {
+    Terms::const_iterator it = m_terms.begin(), it_end = m_terms.end();
+    for (; it != it_end; ++it) {
+        if (((*it)->prop == WORKSPACE || (*it)->prop == WORKSPACENAME) &&
+            (*it)->orig == "[current]")
+            return true;
+    }
+    return false;
 }
 
 // add an expression to match against

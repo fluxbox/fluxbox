@@ -62,6 +62,12 @@ public:
     /// Does this client match this pattern?
     bool match(const Focusable &win) const;
 
+    /// Does this pattern depend on the focused window?
+    bool dependsOnFocusedWindow() const;
+
+    /// Does this pattern depend on the current workspace?
+    bool dependsOnCurrentWorkspace() const;
+
     /**
      * Add an expression to match against
      * @param str is a regular expression

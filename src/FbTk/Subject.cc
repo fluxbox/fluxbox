@@ -58,16 +58,22 @@ void Subject::detach(Observer *obj) {
 }
 
 void Subject::notify() {
-    m_notify_mode = true;
-    std::for_each(m_observerlist.begin(), m_observerlist.end(),
-                  std::bind2nd(std::mem_fun(&Observer::update), this));
-    m_notify_mode = false;
+    ObserverList::iterator it = m_observerlist.begin(),
+                           it_end = m_observerlist.end();
+    for (; it != it_end; ++it) {
+        m_notify_mode = true;
+        (*it)->update(this);
+        ObserverList::iterator d_it = m_dead_observers.begin(),
+                               d_it_end = m_dead_observers.end();
+        m_notify_mode = false;
 
-    // remove dead observers
-    if (!m_dead_observers.empty()) {
-        std::for_each(m_dead_observers.begin(),
-                      m_dead_observers.end(),
-                      std::bind1st(std::mem_fun(&Subject::detach), this));
+        // there might be dead observers later in the list, so we must remove
+        // them now
+        for (; d_it != d_it_end; ++d_it) {
+             if (*d_it == *it)
+                 --it; // don't invalidate our iterator
+             detach(*d_it);
+        }
         m_dead_observers.clear();
     }
 }

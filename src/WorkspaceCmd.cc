@@ -49,7 +49,7 @@ void WindowListCmd::execute() {
 
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
-        FocusControl::Focusables win_list(screen->focusControl().creationOrderWinList());
+        FocusControl::Focusables win_list(screen->focusControl().creationOrderWinList().clientList());
 
         FocusControl::Focusables::iterator it = win_list.begin(),
                                            it_end = win_list.end();
@@ -63,7 +63,7 @@ void WindowListCmd::execute() {
 void AttachCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
-        FocusControl::Focusables win_list(screen->focusControl().focusedOrderWinList());
+        FocusControl::Focusables win_list(screen->focusControl().focusedOrderWinList().clientList());
 
         FocusControl::Focusables::iterator it = win_list.begin(),
                                            it_end = win_list.end();
@@ -95,16 +95,8 @@ void PrevWindowCmd::execute() {
 void GoToWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
-        const FocusControl::Focusables *win_list = 0;
-        if (m_option & FocusControl::CYCLEGROUPS) {
-            win_list = (m_option & FocusControl::CYCLELINEAR) ?
-                &screen->focusControl().creationOrderWinList() :
-                &screen->focusControl().focusedOrderWinList();
-        } else {
-            win_list = (m_option & FocusControl::CYCLELINEAR) ?
-                &screen->focusControl().creationOrderList() :
-                &screen->focusControl().focusedOrderList();
-        }
+        const FocusableList *win_list =
+            FocusableList::getListFromOptions(*screen, m_option);
         screen->focusControl().goToWindowNumber(*win_list, m_num, &m_pat);
     }
 }

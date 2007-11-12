@@ -1,5 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/11/12:
+   * Allow arbitrary window patterns for the iconbar mode (Mark)
+     - Note: for now, if you match against the current head of a window, it will
+       not be updated as expected in the toolbar
+     ClientPattern.cc/hh FocusControl.cc/hh IconbarTool.cc/hh FbTk/Subject.cc
+     fluxbox.cc, added FocusableList.cc/hh
 *07/11/08:
    * Fix crash when cycling focus and window closes, bug #1787345 (Mark)
      FocusControl.cc

@@ -24,6 +24,7 @@
 
 #include "FbCommandFactory.hh"
 
+#include "FocusableList.hh"
 #include "CurrentWindowCmd.hh"
 #include "FbCommands.hh"
 #include "Window.hh"
@@ -57,26 +58,6 @@ namespace {
 static int getint(const char *str, int defaultvalue) {
     sscanf(str, "%d", &defaultvalue);
     return defaultvalue;
-}
-
-void parseNextWindowArgs(const string &in, int &opts, string &pat) {
-    string options;
-    int err = FbTk::StringUtil::getStringBetween(options, in.c_str(), '{', '}');
-
-    // the rest of the string is a ClientPattern
-    pat = in.c_str() + err;
-
-    // now parse the options
-    vector<string> args;
-    FbTk::StringUtil::stringtok(args, options);
-    vector<string>::iterator it = args.begin(), it_end = args.end();
-    opts = 0;
-    for (; it != it_end; ++it) {
-        if (strcasecmp((*it).c_str(), "static") == 0)
-            opts |= FocusControl::CYCLELINEAR;
-        else if (strcasecmp((*it).c_str(), "groups") == 0)
-            opts |= FocusControl::CYCLEGROUPS;
-    }
 }
 
 }; // end anonymous namespace
@@ -522,29 +503,29 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     } else if (command == "attach") {
         int opts; // not used
         string pat;
-        parseNextWindowArgs(arguments, opts, pat);
+        FocusableList::parseArgs(arguments, opts, pat);
         return new AttachCmd(pat);
     } else if (command == "nextwindow") {
         int opts;
         string pat;
-        parseNextWindowArgs(arguments, opts, pat);
+        FocusableList::parseArgs(arguments, opts, pat);
         return new NextWindowCmd(opts, pat);
     } else if (command == "nextgroup") {
         int opts;
         string pat;
-        parseNextWindowArgs(arguments, opts, pat);
-        opts |= FocusControl::CYCLEGROUPS;
+        FocusableList::parseArgs(arguments, opts, pat);
+        opts |= FocusableList::LIST_GROUPS;
         return new NextWindowCmd(opts, pat);
     } else if (command == "prevwindow") {
         int opts;
         string pat;
-        parseNextWindowArgs(arguments, opts, pat);
+        FocusableList::parseArgs(arguments, opts, pat);
         return new PrevWindowCmd(opts, pat);
     } else if (command == "prevgroup") {
         int opts;
         string pat;
-        parseNextWindowArgs(arguments, opts, pat);
-        opts |= FocusControl::CYCLEGROUPS;
+        FocusableList::parseArgs(arguments, opts, pat);
+        opts |= FocusableList::LIST_GROUPS;
         return new PrevWindowCmd(opts, pat);
     } else if (command == "gotowindow") {
         int num, opts;
@@ -554,12 +535,12 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         string::size_type pos = arguments.find_first_of("({");
         if (pos != string::npos && pos != arguments.size())
             args = arguments.c_str() + pos;
-        parseNextWindowArgs(args, opts, pat);
+        FocusableList::parseArgs(args, opts, pat);
         return new GoToWindowCmd(num, opts, pat);
     } else if (command == "clientmenu") {
         int opts;
         string pat;
-        parseNextWindowArgs(arguments, opts, pat);
+        FocusableList::parseArgs(arguments, opts, pat);
         return new ShowClientMenuCmd(opts, pat);
     } else if (command == "focusup")
         return new DirFocusCmd(FocusControl::FOCUSUP);

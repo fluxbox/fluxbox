@@ -28,6 +28,7 @@
 #include "ToolbarItem.hh"
 #include "Container.hh"
 #include "FbMenu.hh"
+#include "FocusableList.hh"
 
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/Observer.hh"
@@ -36,7 +37,7 @@
 
 #include <X11/Xlib.h>
 
-#include <list>
+#include <map>
 
 class IconbarTheme;
 class BScreen;
@@ -45,17 +46,7 @@ class Focusable;
 
 class IconbarTool: public ToolbarItem, public FbTk::Observer {
 public:
-    typedef std::list<IconButton *> IconList;
-    /// iconbar mode
-    enum Mode {
-        NONE, ///< no icons
-        ICONS,  ///< all icons from all workspaces
-        NOICONS, ///< all noniconified windows from all workspaces
-        WORKSPACEICONS,  ///< icons on current workspace
-        WORKSPACENOICONS, ///< non iconified workspaces on current workspaces
-        WORKSPACE, ///< all windows and all icons on current workspace
-        ALLWINDOWS ///< all windows and all icons from all workspaces
-    };
+    typedef std::map<Focusable *, IconButton *> IconMap;
 
     IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, 
                 BScreen &screen, FbTk::Menu &menu);
@@ -70,23 +61,20 @@ public:
     void show();
     void hide();
     void setAlignment(Container::Alignment a);
-    void setMode(Mode mode);
+    void setMode(std::string mode);
     void parentMoved() { m_icon_container.parentMoved(); }
 
     unsigned int width() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
 
-    Mode mode() const { return *m_rc_mode; }
+    std::string mode() const { return *m_rc_mode; }
 
     void setOrientation(FbTk::Orientation orient);
     Container::Alignment alignment() const { return m_icon_container.alignment(); }
 
     const BScreen &screen() const { return m_screen; }
 private:
-
-    /// @return button associated with window
-    IconButton *findButton(Focusable &win);
 
     void updateSizing();
 
@@ -99,14 +87,16 @@ private:
     void renderTheme(unsigned char alpha);
     /// destroy all icons
     void deleteIcons();
+    /// add or move a single window
+    void insertWindow(Focusable &win, int pos = -2);
     /// remove a single window
     void removeWindow(Focusable &win);
-    /// add a single window 
-    void addWindow(Focusable &win);
+    /// make a button for the window
+    IconButton *makeButton(Focusable &win);
+    /// remove all windows and add again
+    void reset();
     /// add icons to the list
     void updateList();
-    /// check if window is already in the list
-    bool checkDuplicate(Focusable &win);
 
     BScreen &m_screen;
     Container m_icon_container;
@@ -114,8 +104,10 @@ private:
     FbTk::CachedPixmap m_empty_pm; ///< pixmap for empty container
 
 
-    IconList m_icon_list;
-    FbTk::Resource<Mode> m_rc_mode;
+    std::auto_ptr<FocusableList> m_winlist;
+    IconMap m_icons;
+    std::string m_mode;
+    FbTk::Resource<std::string> m_rc_mode;
     FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text

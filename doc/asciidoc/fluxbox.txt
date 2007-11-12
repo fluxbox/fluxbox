@@ -779,15 +779,10 @@ session.screen0.toolbar.onhead: <integer>
       head where they would like to see the slit and toolbar, starting from 1.
       Setting this to 0 will ignore xinerama information. Default: 0
 
-session.screen0.iconbar.mode: <mode>
-      This value is set in the Iconbar Mode menu. The available options are::
-      -   All Windows
-      -   Icons
-      -   NoIcons
-      -   None
-      -   Workspace
-      -   WorkspaceIcons
-      -   WorkspaceNoIcons
+session.screen0.iconbar.mode: <pattern>
+      This determines which windows will be displayed in the iconbar. Any window
+      pattern available to the Next/PrevWindow keybindings is acceptable.
+      Default: {static groups} (workspace)
 
 session.screen0.iconbar.usePixmap: <boolean>
       This is also set in the Iconbar Mode menu. When set to True, this will

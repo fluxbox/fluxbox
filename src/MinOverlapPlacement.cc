@@ -40,7 +40,7 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
 
     std::list<FluxboxWindow *> windowlist;
     const std::list<Focusable *> focusables =
-            win.screen().focusControl().focusedOrderWinList();
+            win.screen().focusControl().focusedOrderWinList().clientList();
     std::list<Focusable *>::const_iterator foc_it = focusables.begin(),
                                            foc_it_end = focusables.end();
     unsigned int workspace = win.workspaceNumber();

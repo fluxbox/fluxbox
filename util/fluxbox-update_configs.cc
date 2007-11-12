@@ -64,7 +64,7 @@ string read_file(string filename);
 void write_file(string filename, string &contents);
 void save_all_files();
 
-int run_updates(int old_version, FbTk::ResourceManager rm) {
+int run_updates(int old_version, FbTk::ResourceManager &rm) {
     int new_version = old_version;
 
     FbTk::Resource<string> rc_keyfile(rm, "~/.fluxbox/keys",
@@ -212,6 +212,31 @@ int run_updates(int old_version, FbTk::ResourceManager rm) {
 
         write_file(keyfilename, new_keyfile);
         new_version = 4;
+    }
+
+    if (old_version < 5) { // window patterns for iconbar
+        // this needs to survive after going out of scope
+        // it won't get freed, but that's ok
+        FbTk::Resource<string> *rc_mode =
+            new FbTk::Resource<string>(rm, "Workspace",
+                                       "session.screen0.iconbar.mode",
+                                       "Session.Screen0.Iconbar.Mode");
+        if (strcasecmp((**rc_mode).c_str(), "None") == 0)
+            *rc_mode = "none";
+        else if (strcasecmp((**rc_mode).c_str(), "Icons") == 0)
+            *rc_mode = "{static groups} (minimized=yes)";
+        else if (strcasecmp((**rc_mode).c_str(), "NoIcons") == 0)
+            *rc_mode = "{static groups} (minimized=no)";
+        else if (strcasecmp((**rc_mode).c_str(), "WorkspaceIcons") == 0)
+            *rc_mode = "{static groups} (minimized=yes) (workspace)";
+        else if (strcasecmp((**rc_mode).c_str(), "WorkspaceNoIcons") == 0)
+            *rc_mode = "{static groups} (minimized=no) (workspace)";
+        else if (strcasecmp((**rc_mode).c_str(), "AllWindows") == 0)
+            *rc_mode = "{static groups}";
+        else
+            *rc_mode = "{static groups} (workspace)";
+
+        new_version = 5;
     }
 
     return new_version;

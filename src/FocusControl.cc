@@ -78,15 +78,17 @@ FocusControl::FocusControl(BScreen &screen):
     m_focus_new(screen.resourceManager(), true, 
                 screen.name()+".focusNewWindows", 
                 screen.altName()+".FocusNewWindows"),
+    m_focused_list(screen), m_creation_order_list(screen),
+    m_focused_win_list(screen), m_creation_order_win_list(screen),
     m_cycling_list(0),
     m_was_iconic(false),
     m_cycling_last(0) {
 
-    m_cycling_window = m_focused_win_list.end();
+    m_cycling_window = m_focused_list.clientList().end();
     
 }
 
-void FocusControl::cycleFocus(const Focusables &window_list,
+void FocusControl::cycleFocus(const FocusableList &window_list,
                               const ClientPattern *pat, bool cycle_reverse) {
 
     if (!m_cycling_list) {
@@ -98,8 +100,8 @@ void FocusControl::cycleFocus(const Focusables &window_list,
     } else if (m_cycling_list != &window_list)
         m_cycling_list = &window_list;
 
-    Focusables::const_iterator it_begin = window_list.begin();
-    Focusables::const_iterator it_end = window_list.end();
+    Focusables::const_iterator it_begin = window_list.clientList().begin();
+    Focusables::const_iterator it_end = window_list.clientList().end();
 
     // too many things can go wrong with remembering this
     m_cycling_window = find(it_begin, it_end, s_focused_window);
@@ -165,10 +167,10 @@ void FocusControl::cycleFocus(const Focusables &window_list,
 
 }
 
-void FocusControl::goToWindowNumber(const Focusables &winlist, int num,
+void FocusControl::goToWindowNumber(const FocusableList &winlist, int num,
                                     const ClientPattern *pat) {
-    Focusables::const_iterator it = winlist.begin();
-    Focusables::const_iterator it_end = winlist.end();
+    Focusables::const_iterator it = winlist.clientList().begin();
+    Focusables::const_iterator it_end = winlist.clientList().end();
     for (; it != it_end && num; ++it) {
         if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
             num > 0 ? --num : ++num;
@@ -182,61 +184,43 @@ void FocusControl::goToWindowNumber(const Focusables &winlist, int num,
 }
 
 void FocusControl::addFocusBack(WinClient &client) {
-    m_focused_list.push_back(&client);
-    m_creation_order_list.push_back(&client);
+    m_focused_list.pushBack(client);
+    m_creation_order_list.pushBack(client);
 }
 
 void FocusControl::addFocusFront(WinClient &client) {
-    m_focused_list.push_front(&client);
-    m_creation_order_list.push_back(&client);
+    m_focused_list.pushFront(client);
+    m_creation_order_list.pushBack(client);
 }
 
 void FocusControl::addFocusWinBack(Focusable &win) {
-    m_focused_win_list.push_back(&win);
-    m_creation_order_win_list.push_back(&win);
+    m_focused_win_list.pushBack(win);
+    m_creation_order_win_list.pushBack(win);
 }
 
 void FocusControl::addFocusWinFront(Focusable &win) {
-    m_focused_win_list.push_front(&win);
-    m_creation_order_win_list.push_back(&win);
+    m_focused_win_list.pushFront(win);
+    m_creation_order_win_list.pushBack(win);
 }
 
 // move all clients in given window to back of focused list
-void FocusControl::setFocusBack(FluxboxWindow *fbwin) {
+void FocusControl::setFocusBack(FluxboxWindow &fbwin) {
     // do nothing if there are no windows open
     // don't change focus order while cycling
     if (m_focused_list.empty() || s_reverting)
         return;
 
-    // if the window isn't already in this list, we could accidentally add it
-    Focusables::iterator win_begin = m_focused_win_list.begin(),
-                         win_end = m_focused_win_list.end();
-    Focusables::iterator win_it = find(win_begin, win_end, fbwin);
-    if (win_it == win_end)
-        return;
+    m_focused_win_list.moveToBack(fbwin);
 
-    m_focused_win_list.erase(win_it);
-    m_focused_win_list.push_back(fbwin);
-
-    Focusables::iterator it = m_focused_list.begin();
-    // use back to avoid an infinite loop
-    Focusables::iterator it_back = --m_focused_list.end();
-
-    while (it != it_back) {
-        if ((*it)->fbwindow() == fbwin) {
-            m_focused_list.push_back(*it);
-            it = m_focused_list.erase(it);
-        } else
-            ++it;
+    // we need to move its clients to the back while preserving their order
+    Focusables list = m_focused_list.clientList();
+    Focusables::iterator it = list.begin(), it_end = list.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->fbwindow() == &fbwin)
+            m_focused_list.moveToBack(**it);
     }
-    // move the last one, if necessary, in order to preserve focus order
-    if ((*it)->fbwindow() == fbwin) {
-        m_focused_list.push_back(*it);
-        m_focused_list.erase(it);
-    }
-
 }
-    
+
 void FocusControl::stopCyclingFocus() {
     // nothing to do
     if (m_cycling_list == 0)
@@ -262,10 +246,10 @@ void FocusControl::stopCyclingFocus() {
 Focusable *FocusControl::lastFocusedWindow(int workspace) {
     if (m_focused_list.empty() || m_screen.isShuttingdown()) return 0;
     if (workspace < 0 || workspace >= (int) m_screen.numberOfWorkspaces())
-        return m_focused_list.front();
+        return m_focused_list.clientList().front();
 
-    Focusables::iterator it = m_focused_list.begin();    
-    Focusables::iterator it_end = m_focused_list.end();
+    Focusables::iterator it = m_focused_list.clientList().begin();    
+    Focusables::iterator it_end = m_focused_list.clientList().end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() &&
             ((((int)(*it)->fbwindow()->workspaceNumber()) == workspace ||
@@ -285,8 +269,8 @@ WinClient *FocusControl::lastFocusedWindow(FluxboxWindow &group, WinClient *igno
     if (m_focused_list.empty() || m_screen.isShuttingdown())
         return 0;
 
-    Focusables::iterator it = m_focused_list.begin();    
-    Focusables::iterator it_end = m_focused_list.end();
+    Focusables::iterator it = m_focused_list.clientList().begin();
+    Focusables::iterator it_end = m_focused_list.clientList().end();
     for (; it != it_end; ++it) {
         if (((*it)->fbwindow() == &group) &&
             (*it) != ignore_client)
@@ -300,27 +284,9 @@ void FocusControl::setScreenFocusedWindow(WinClient &win_client) {
      // raise newly focused window to the top of the focused list
      // don't change the order if we're cycling or shutting down
     if (!isCycling() && !m_screen.isShuttingdown() && !s_reverting) {
-
-        // make sure client is in our list, or else we could end up adding it
-        Focusables::iterator it_begin = m_focused_list.begin(),
-                             it_end = m_focused_list.end();
-        Focusables::iterator it = find(it_begin, it_end, &win_client);
-        if (it == it_end)
-            return;
-
-        m_focused_list.erase(it);
-        m_focused_list.push_front(&win_client);
-
-        // also check the fbwindow
-        it_begin = m_focused_win_list.begin();
-        it_end = m_focused_win_list.end();
-        it = find(it_begin, it_end, win_client.fbwindow());
-
-        if (it != it_end) {
-            m_focused_win_list.erase(it);
-            m_focused_win_list.push_front(win_client.fbwindow());
-        }
-
+        m_focused_list.moveToFront(win_client);
+        if (win_client.fbwindow())
+            m_focused_win_list.moveToFront(*win_client.fbwindow());
     }
 }
 
@@ -435,15 +401,15 @@ void FocusControl::removeClient(WinClient &client) {
     if (client.screen().isShuttingdown())
         return;
 
-    if (m_cycling_list && m_cycling_window != m_cycling_list->end() &&
+    if (isCycling() && m_cycling_window != m_cycling_list->clientList().end() &&
         *m_cycling_window == &client) {
-        m_cycling_window = m_cycling_list->end();
+        m_cycling_window = m_cycling_list->clientList().end();
         stopCyclingFocus();
     } else if (m_cycling_last == &client)
         m_cycling_last = 0;
 
-    m_focused_list.remove(&client);
-    m_creation_order_list.remove(&client);
+    m_focused_list.remove(client);
+    m_creation_order_list.remove(client);
     client.screen().clientListSig().notify();
 }
 
@@ -451,21 +417,21 @@ void FocusControl::removeWindow(Focusable &win) {
     if (win.screen().isShuttingdown())
         return;
 
-    if (m_cycling_list && m_cycling_window != m_cycling_list->end() &&
+    if (isCycling() && m_cycling_window != m_cycling_list->clientList().end() &&
         *m_cycling_window == &win) {
-        m_cycling_window = m_cycling_list->end();
+        m_cycling_window = m_cycling_list->clientList().end();
         stopCyclingFocus();
     }
 
-    m_focused_win_list.remove(&win);
-    m_creation_order_win_list.remove(&win);
+    m_focused_win_list.remove(win);
+    m_creation_order_win_list.remove(win);
     win.screen().clientListSig().notify();
 }
 
 void FocusControl::shutdown() {
     // restore windows backwards so they get put back correctly on restart
-    Focusables::reverse_iterator it = m_focused_list.rbegin();
-    for (; it != m_focused_list.rend(); ++it) {
+    Focusables::reverse_iterator it = m_focused_list.clientList().rbegin();
+    for (; it != m_focused_list.clientList().rend(); ++it) {
         WinClient *client = dynamic_cast<WinClient *>(*it);
         if (client && client->fbwindow())
             client->fbwindow()->restore(client, true);
@@ -582,7 +548,10 @@ void FocusControl::setFocusedWindow(WinClient *client) {
     }
 
     // update AtomHandlers and/or other stuff...
-    Fluxbox::instance()->updateFocusedWindow(screen, old_screen);
+    if (screen)
+        screen->focusedWindowSig().notify();
+    if (old_screen && screen != old_screen)
+        old_screen->focusedWindowSig().notify();
 }
 
 ////////////////////// FocusControl RESOURCES
