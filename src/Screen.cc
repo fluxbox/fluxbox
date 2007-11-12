@@ -1185,7 +1185,7 @@ int BScreen::removeLastWorkspace() {
 }
 
 
-void BScreen::changeWorkspaceID(unsigned int id) {
+void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
 
     if (! m_current_workspace || id >= m_workspaces_list.size() ||
         id == m_current_workspace->workspaceID())
@@ -1228,7 +1228,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     if (focused && focused->isMoving()) {
         focused->focus();
         focused->resumeMoving();
-    } else
+    } else if (revert)
         FocusControl::revertFocus(*this);
 
     old->hideAll(false);
@@ -1257,7 +1257,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 
     // change workspace ?
     if (changeWS)
-        changeWorkspaceID(id);
+        changeWorkspaceID(id, false);
 
     // if the window is on current workspace, show it; else hide it.
     if (id == currentWorkspace()->workspaceID() && !win->isIconic())

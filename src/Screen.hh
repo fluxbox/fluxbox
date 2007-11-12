@@ -360,7 +360,7 @@ public:
      */
     std::string getNameOfWorkspace(unsigned int workspace) const;
     /// changes workspace to specified id
-    void changeWorkspaceID(unsigned int);
+    void changeWorkspaceID(unsigned int, bool revert = true);
     /**
      * Sends a window to a workspace
      * @param workspace the workspace id

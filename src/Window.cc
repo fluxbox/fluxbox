@@ -1316,7 +1316,7 @@ bool FluxboxWindow::focus() {
             screen().sendToWorkspace(screen().currentWorkspaceID(), this, false);
         // warp to the workspace of the window
         else
-            screen().changeWorkspaceID(workspaceNumber());
+            screen().changeWorkspaceID(workspaceNumber(), false);
     }
 
     if (isIconic()) {
