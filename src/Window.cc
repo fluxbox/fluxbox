@@ -996,6 +996,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (!button)
         return false;
 
+    WinClient *old = m_client;
     m_client = &client;
     m_client->raise();
     m_client->focusSig().notify();
@@ -1009,7 +1010,11 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     frame().setLabelButtonFocus(*button);
     frame().setShapingClient(&client, false);
 
-    return setinput && focus();
+    bool ret = setinput && focus();
+    if (setinput)
+        // restore old client until focus event comes
+        m_client = old;
+    return ret;
 }
 
 bool FluxboxWindow::isGroupable() const {
