@@ -1407,6 +1407,7 @@ void FluxboxWindow::iconify() {
         return;
 
     iconic = true;
+    m_statesig.notify();
 
     hide(true);
 
@@ -1452,6 +1453,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     bool was_iconic = iconic;
 
     iconic = false;
+    m_statesig.notify();
 
     if (reassoc && !m_client->transients.empty()) {
         // deiconify all transients
