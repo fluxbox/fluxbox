@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/11/16:
+   * Using ToggleDecor from Deco=TAB should hide tabs (thanks Tomas Janousek)
+     Window.cc
 *07/11/12:
    * Allow arbitrary window patterns for the iconbar mode (Mark)
      - Note: for now, if you match against the current head of a window, it will

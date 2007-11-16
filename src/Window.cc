@@ -1547,7 +1547,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         frame().setUseShape(true);
         if (m_toggled_decos) {
-            if (m_old_decoration_mask & DECORM_TITLEBAR)
+            if (m_old_decoration_mask & (DECORM_TITLEBAR | DECORM_TAB))
                 setDecorationMask(DECOR_NONE);
             else
                 setDecorationMask(DECOR_NORMAL);
@@ -3050,7 +3050,7 @@ void FluxboxWindow::toggleDecoration() {
 
     if (m_toggled_decos) {
         m_old_decoration_mask = decorationMask();
-        if (decorations.titlebar)
+        if (decorations.titlebar | decorations.tab)
             setDecorationMask(DECOR_NONE);
         else
             setDecorationMask(DECOR_NORMAL);
