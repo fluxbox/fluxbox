@@ -65,9 +65,10 @@ static int getint(const char *str, int defaultvalue) {
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
     const char* commands[] = {
-	"addworkspace",
+        "activate",
+        "addworkspace",
         "arrangewindows",
-	"attach",
+        "attach",
         "bindkey",
         "clientmenu",
         "close",
@@ -81,6 +82,7 @@ FbCommandFactory::FbCommandFactory() {
         "execcommand",
         "execute",
         "exit",
+        "focus",
         "focusup",
         "focusdown",
         "focusleft",
@@ -124,7 +126,7 @@ FbCommandFactory::FbCommandFactory() {
         "reconfig",
         "reconfigure",
         "reloadstyle",
-	"removelastworkspace",
+        "removelastworkspace",
         "resizeto",
         "resize",
         "resizehorizontal",
@@ -419,6 +421,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::lower)), arguments);
     else if (command == "lowerlayer")
         return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::lowerLayer)), arguments);
+    else if (command == "activate" || command == "focus")
+        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd((void (FluxboxWindow::*)())&FluxboxWindow::focus)), arguments);
     else if (command == "close")
         return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::close)), arguments);
     else if (command == "closeallwindows")

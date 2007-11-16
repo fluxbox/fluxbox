@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/11/16:
+   * Added new key command :Focus [<pattern>] that focuses a window (e.g., using
+     OnWindow or specified using a window pattern) (Mark, thanks Tomas Janousek)
+     FbCommandFactory.cc
    * Using ToggleDecor from Deco=TAB should hide tabs (thanks Tomas Janousek)
      Window.cc
 *07/11/12:
