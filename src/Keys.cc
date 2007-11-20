@@ -168,6 +168,7 @@ void Keys::grabWindow(Window win) {
     if (win_it == m_window_map.end())
         return;
 
+    m_handler_map[win]->grabButtons();
     keylist_t::iterator it = m_keylist->keylist.begin();
     keylist_t::iterator it_end = m_keylist->keylist.end();
     for (; it != it_end; ++it) {
@@ -428,8 +429,9 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
 }
 
 /// adds the window to m_window_map, so we know to grab buttons on it
-void Keys::registerWindow(Window win, int context) {
+void Keys::registerWindow(Window win, FbTk::EventHandler &h, int context) {
     m_window_map[win] = context;
+    m_handler_map[win] = &h;
     grabWindow(win);
 }
 
@@ -437,6 +439,7 @@ void Keys::registerWindow(Window win, int context) {
 void Keys::unregisterWindow(Window win) {
     FbTk::KeyUtil::ungrabKeys(win);
     FbTk::KeyUtil::ungrabButtons(win);
+    m_handler_map.erase(win);
     m_window_map.erase(win);
 }
 
@@ -459,6 +462,13 @@ void Keys::keyMode(string keyMode) {
 void Keys::setKeyMode(t_key *keyMode) {
     ungrabKeys();
     ungrabButtons();
+
+    // notify handlers that their buttons have been ungrabbed
+    HandlerMap::iterator h_it = m_handler_map.begin(),
+                         h_it_end  = m_handler_map.end();
+    for (; h_it != h_it_end; ++h_it)
+        h_it->second->grabButtons();
+
     keylist_t::iterator it = keyMode->keylist.begin();
     keylist_t::iterator it_end = keyMode->keylist.end();
     for (; it != it_end; ++it) {

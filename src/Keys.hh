@@ -34,6 +34,10 @@
 #include "FbTk/Command.hh"
 #include "FbTk/KeyUtil.hh"
 
+namespace FbTk {
+    class EventHandler;
+}
+
 class Keys:private FbTk::NotCopyable  {
 public:
 
@@ -78,7 +82,7 @@ public:
     bool doAction(int type, unsigned int mods, unsigned int key, int context);
 
     /// register a window so that proper keys/buttons get grabbed on it
-    void registerWindow(Window win, int context);
+    void registerWindow(Window win, FbTk::EventHandler &handler, int context);
     /// unregister window
     void unregisterWindow(Window win);
 
@@ -145,7 +149,9 @@ private:
     Display *m_display;  ///< display connection
 
     typedef std::map<Window, int> WindowMap;
+    typedef std::map<Window, FbTk::EventHandler*> HandlerMap;
     WindowMap m_window_map;
+    HandlerMap m_handler_map;
 };
 
 #endif // KEYS_HH

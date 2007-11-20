@@ -126,11 +126,11 @@ void FocusableList::update(FbTk::Subject *subj) {
         FocusableListSubject *fsubj =
             static_cast<FocusableListSubject *>(subj);
         if (subj == &m_parent->addSig()) {
+            attachSignals(*fsubj->win());
             if (m_pat->match(*fsubj->win())) {
                 insertFromParent(*fsubj->win());
                 m_addsig.notify(fsubj->win());
-            } else // we still want to watch it, in case it changes to match
-                attachSignals(*fsubj->win());
+            }
         } else if (subj == &m_parent->removeSig())
             remove(*fsubj->win());
         else if (subj == &m_parent->resetSig())

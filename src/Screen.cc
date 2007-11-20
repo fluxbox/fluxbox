@@ -431,7 +431,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     evm->add(*this, rootWindow());
     Keys *keys = Fluxbox::instance()->keys();
     if (keys)
-        keys->registerWindow(rootWindow().window(),
+        keys->registerWindow(rootWindow().window(), *this,
                              Keys::GLOBAL|Keys::ON_DESKTOP);
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 

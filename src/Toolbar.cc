@@ -280,7 +280,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     scrn.resourceManager().unlock();
     // setup to listen to child events
     FbTk::EventManager::instance()->addParent(*this, window());
-    Fluxbox::instance()->keys()->registerWindow(window().window(),
+    Fluxbox::instance()->keys()->registerWindow(window().window(), *this,
                                                 Keys::ON_TOOLBAR);
     // get everything together
     reconfigure();

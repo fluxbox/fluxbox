@@ -88,10 +88,6 @@ public:
     /// destroy frame
     ~FbWinFrame();
 
-    /// setup actions for titlebar
-    bool setOnClickTitlebar(FbTk::RefCount<FbTk::Command> &cmd, int button_num,
-                            bool double_click=false, bool pressed=false);
-
     void hide();
     void show();
     inline bool isVisible() const { return m_visible; }
@@ -124,7 +120,6 @@ public:
     /// set focus/unfocus style
     void setFocus(bool newvalue);
     inline void setFocusTitle(const std::string &str) { m_label.setText(str); }
-    void setDoubleClickTime(unsigned int time);
     bool setTabMode(TabMode tabmode);
     inline void updateTabProperties() { alignTabs(); }
 
@@ -186,8 +181,6 @@ public:
        @name Event handlers
     */
     //@{
-    void buttonPressEvent(XButtonEvent &event);
-    void buttonReleaseEvent(XButtonEvent &event);
     void exposeEvent(XExposeEvent &event);
     void configureNotifyEvent(XConfigureEvent &event);
     void handleEvent(XEvent &event);
@@ -377,13 +370,6 @@ private:
     bool m_shaded; ///< wheter we're shaded or not
     unsigned char  m_focused_alpha; ///< focused alpha value
     unsigned char  m_unfocused_alpha; ///< unfocused alpha value
-    unsigned int m_double_click_time; ///< the time period that's considerd to be a double click
-    struct MouseButtonAction {
-        FbTk::RefCount<FbTk::Command> click; ///< what to do when we release mouse button
-        FbTk::RefCount<FbTk::Command> click_pressed; ///< what to do when we press mouse button
-        FbTk::RefCount<FbTk::Command> double_click; ///< what to do when we double click
-    };
-    MouseButtonAction m_commands[5]; ///< hardcoded to five ... //!! TODO, change this
 
     class ThemeListener: public FbTk::Observer {
     public:

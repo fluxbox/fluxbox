@@ -96,7 +96,6 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_shaded(false),
     m_focused_alpha(0),
     m_unfocused_alpha(0),
-    m_double_click_time(0),
     m_themelistener(*this),
     m_shape(m_window, theme.shapePlace()),
     m_disable_themeshape(false) {
@@ -107,23 +106,6 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
 FbWinFrame::~FbWinFrame() {
     removeEventHandler();
     removeAllButtons();
-}
-
-bool FbWinFrame::setOnClickTitlebar(FbTk::RefCount<FbTk::Command> &ref, int mousebutton_num,
-                            bool double_click, bool pressed) {
-    // find mousebutton_num
-    if (mousebutton_num < 1 || mousebutton_num > 5)
-        return false;
-    if (double_click)
-        m_commands[mousebutton_num - 1].double_click = ref;
-    else {
-        if (pressed)
-            m_commands[mousebutton_num - 1].click_pressed = ref;
-        else
-            m_commands[mousebutton_num - 1].click = ref;
-    }
-
-    return true;
 }
 
 bool FbWinFrame::setTabMode(TabMode tabmode) {
@@ -570,10 +552,6 @@ void FbWinFrame::setUseDefaultAlpha(bool default_alpha)
     }
 }
 
-void FbWinFrame::setDoubleClickTime(unsigned int time) {
-    m_double_click_time = time;
-}
-
 void FbWinFrame::addLeftButton(FbTk::Button *btn) {
     if (btn == 0) // valid button?
         return;
@@ -685,7 +663,7 @@ void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
     win.reparent(m_window, 0, clientArea().y());
     // remask window so we get events
     win.setEventMask(PropertyChangeMask | StructureNotifyMask |
-                     FocusChangeMask);
+                     FocusChangeMask | KeyPressMask);
 
     m_window.setEventMask(ButtonPressMask | ButtonReleaseMask |
                           ButtonMotionMask | EnterWindowMask | SubstructureRedirectMask);
@@ -853,47 +831,6 @@ void FbWinFrame::removeEventHandler() {
     evm.remove(m_grip_left);
     evm.remove(m_window);
     evm.remove(m_clientarea);
-}
-
-void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
-    m_tab_container.tryButtonPressEvent(event);
-    if (event.window == m_grip_right.window() ||
-        event.window == m_grip_left.window() ||
-        event.window == m_clientarea.window() ||
-        event.window == m_window.window())
-        return;
-    // we handle only buttons 0 to 5
-    if (event.button > 5 || event.button < 1)
-        return;
-
-    if (*m_commands[event.button - 1].click_pressed)
-        m_commands[event.button - 1].click_pressed->execute();
-}
-
-void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
-    // we continue even if a button got the event
-    m_tab_container.tryButtonReleaseEvent(event);
-
-    if (event.window == m_grip_right.window() ||
-        event.window == m_grip_left.window() ||
-        event.window == m_clientarea.window() ||
-        event.window == m_handle.window() ||
-        event.window == m_window.window())
-        return;
-
-    if (event.button < 1 || event.button > 5)
-        return;
-
-    static Time last_release_time = 0;
-    bool double_click = (event.time - last_release_time <= m_double_click_time);
-    last_release_time = event.time;
-    int real_button = event.button - 1;
-
-    if (double_click && *m_commands[real_button].double_click)
-        m_commands[real_button].double_click->execute();
-    else if (*m_commands[real_button].click)
-        m_commands[real_button].click->execute();
-
 }
 
 void FbWinFrame::exposeEvent(XExposeEvent &event) {
@@ -1409,7 +1346,6 @@ void FbWinFrame::init() {
     m_button_pm = m_button_unfocused_pm = m_button_pressed_pm = 0;
     m_grip_unfocused_pm = m_grip_focused_pm = 0;
 
-    m_double_click_time = 200;
     m_button_size = 26;
 
     m_clientarea.setBorderWidth(0);

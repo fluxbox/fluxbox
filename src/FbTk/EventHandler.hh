@@ -59,6 +59,7 @@ public:
     virtual void enterNotifyEvent(XCrossingEvent &) { }
 
     virtual void notifyUngrabKeyboard() { }
+    virtual void grabButtons() { }
 };
 
 } // end namespace FbTk

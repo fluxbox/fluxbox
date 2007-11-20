@@ -289,7 +289,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
         screen().focusControl().addFocusWinBack(*this);
 
     Fluxbox::instance()->keys()->registerWindow(frame().window().window(),
-                                                Keys::ON_WINDOW);
+                                                *this, Keys::ON_WINDOW);
 
 }
 
@@ -478,8 +478,6 @@ void FluxboxWindow::init() {
     m_initialized = true;
 
     applyDecorations(true);
-
-    grabButtons();
 
     restoreAttributes();
 
@@ -1062,38 +1060,12 @@ void FluxboxWindow::reconfigure() {
 
     moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
-    grabButtons();
-
-    frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
     m_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
 
     updateButtons();
     frame().reconfigure();
 
     menu().reconfigure();
-
-    typedef FbTk::RefCount<FbTk::Command> CommandRef;
-    typedef FbTk::SimpleCommand<FluxboxWindow> WindowCmd;
-    CommandRef shade_on_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOn));
-    CommandRef shade_off_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOff));
-    CommandRef next_tab_cmd(new WindowCmd(*this, &FluxboxWindow::nextClient));
-    CommandRef prev_tab_cmd(new WindowCmd(*this, &FluxboxWindow::prevClient));
-    CommandRef null_cmd;
-
-    int reverse = 0;
-    if (screen().getScrollReverse())
-        reverse = 1;
-
-    if (StringUtil::toLower(screen().getScrollAction()) == string("shade")) {
-        frame().setOnClickTitlebar(shade_on_cmd, 5 - reverse); // shade on mouse roll
-        frame().setOnClickTitlebar(shade_off_cmd, 4 + reverse); // unshade if rolled oposite direction
-    } else if (StringUtil::toLower(screen().getScrollAction()) == string("nexttab")) {
-        frame().setOnClickTitlebar(next_tab_cmd, 5 - reverse); // next tab
-        frame().setOnClickTitlebar(prev_tab_cmd, 4 + reverse); // previous tab
-    } else {
-        frame().setOnClickTitlebar(null_cmd, 4);
-        frame().setOnClickTitlebar(null_cmd, 5);
-    }
 
     Client2ButtonMap::iterator it = m_labelbuttons.begin(),
                                it_end = m_labelbuttons.end();
@@ -2584,14 +2556,20 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         return;
     }
 
-    // check frame events first
-    frame().buttonPressEvent(be);
-
+    frame().tabcontainer().tryButtonPressEvent(be);
     if (be.button == 1) {
         if (!m_focused && acceptsFocus()) //check focus
             focus();
 
-        if (frame().window().window() == be.window || frame().tabcontainer().window() == be.window) {
+        // click on titlebar
+        if (frame().gripLeft().window() != be.window &&
+            frame().gripRight().window() != be.window &&
+            frame().clientArea().window() != be.window &&
+            frame().window() != be.window)
+            raise();
+
+        if (frame().window().window() == be.window ||
+            frame().tabcontainer().window() == be.window) {
             if (screen().clickRaises())
                 raise();
 #ifdef DEBUG
@@ -2618,8 +2596,44 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
         stopResizing();
     else if (m_attaching_tab)
         attachTo(re.x_root, re.y_root);
-    else
-        frame().buttonReleaseEvent(re);
+    else {
+        frame().tabcontainer().tryButtonReleaseEvent(re);
+        if (frame().gripLeft().window() == re.window ||
+            frame().gripRight().window() == re.window ||
+            frame().clientArea().window() == re.window ||
+            frame().handle().window() == re.window ||
+            frame().window() == re.window)
+            return;
+
+        static Time last_release_time = 0;
+        bool double_click = (re.time - last_release_time <=
+            Fluxbox::instance()->getDoubleClickInterval());
+        last_release_time = re.time;
+
+        if (re.button == 1 && double_click)
+            shade();
+        if (re.button == 3)
+            popupMenu();
+        if (re.button == 2)
+            lower();
+
+        unsigned int reverse = (screen().getScrollReverse() ? 1 : 0);
+        if (re.button == 4 || re.button == 5) {
+            if (StringUtil::toLower(screen().getScrollAction()) == "shade") {
+                if (re.button == 5 - reverse)
+                    shadeOn();
+                else
+                    shadeOff();
+            }
+            if (StringUtil::toLower(screen().getScrollAction()) == "nexttab") {
+                if (re.button == 5 - reverse)
+                    nextClient();
+                else
+                    prevClient();
+            }
+        }
+    }
+
 }
 
 
@@ -3774,19 +3788,6 @@ void FluxboxWindow::setupWindow() {
     // we allow both to be done at once to share the commands
 
     using namespace FbTk;
-    typedef RefCount<Command> CommandRef;
-    typedef SimpleCommand<FluxboxWindow> WindowCmd;
-
-    CommandRef shade_cmd(new WindowCmd(*this, &FluxboxWindow::shade));
-    CommandRef shade_on_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOn));
-    CommandRef shade_off_cmd(new WindowCmd(*this, &FluxboxWindow::shadeOff));
-    CommandRef next_tab_cmd(new WindowCmd(*this, &FluxboxWindow::nextClient));
-    CommandRef prev_tab_cmd(new WindowCmd(*this, &FluxboxWindow::prevClient));
-    CommandRef lower_cmd(new WindowCmd(*this, &FluxboxWindow::lower));
-    CommandRef raise_and_focus_cmd(new WindowCmd(*this, &FluxboxWindow::raiseAndFocus));
-    CommandRef stick_cmd(new WindowCmd(*this, &FluxboxWindow::stick));
-    CommandRef show_menu_cmd(new WindowCmd(*this, &FluxboxWindow::popupMenu));
-
     typedef FbTk::Resource<vector<WinButton::Type> > WinButtonsResource;
 
     string titlebar_name[2];
@@ -3841,26 +3842,6 @@ void FluxboxWindow::setupWindow() {
     }
 
     updateButtons();
-
-    // setup titlebar
-    frame().setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
-    frame().setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
-    frame().setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
-    frame().setOnClickTitlebar(lower_cmd, 2); // on release with button 2
-
-    int reverse = 0;
-    if (screen().getScrollReverse())
-        reverse = 1;
-
-    if (StringUtil::toLower(screen().getScrollAction()) == string("shade")) {
-        frame().setOnClickTitlebar(shade_on_cmd, 5 - reverse); // shade on mouse roll
-        frame().setOnClickTitlebar(shade_off_cmd, 4 + reverse); // unshade if rolled oposite direction
-    } else if (StringUtil::toLower(screen().getScrollAction()) == string("nexttab")) {
-        frame().setOnClickTitlebar(next_tab_cmd, 5 - reverse); // next tab
-        frame().setOnClickTitlebar(prev_tab_cmd, 4 + reverse); // previous tab
-    }
-
-    frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
 
     // end setup frame
 
