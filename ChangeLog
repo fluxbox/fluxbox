@@ -1,5 +1,23 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/11/22:
+   * Added conditional statements to key commands (Mark)
+     - for example, this will search for an open xterm window, cycle through
+       them if there are any, or else open one:
+       Mod4 t :If {Some Matches (xterm)} {NextWindow (xterm)} {Exec xterm}
+     - the syntax is :If {<test>} {<command if true>} {<command if false>}
+     - `Matches <pattern>' is currently the only test you can make; when used
+       alone, it tests the focused window or the clicked window for OnWindow
+       mouse events
+     - there are many ways to combine tests:
+       - `Some <test>' returns true if any open client matches <test>
+       - `Every <test>' returns true if every open client matches <test>
+       - `Not <test>' negates the value of <test>
+       - `Or {<test>} {<test>} ...' returns true if any of the tests is true
+       - `And {<test>} {<test>} ...' returns true if all of the tests are true
+       - `Xor {<test>} {<test>} ...' returns the boolean xor of the truth values
+     FbCommandFactory.cc CurrentWindowCmd.cc/hh WorkspaceCmd.cc/hh
+     FbTk/Command.hh FbTk/SimpleCommand.hh, added files FbTk/LogicCommands.cc/hh
 *07/11/16:
    * Added new key command :Focus [<pattern>] that focuses a window (e.g., using
      OnWindow or specified using a window pattern) (Mark, thanks Tomas Janousek)

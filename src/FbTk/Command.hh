@@ -31,6 +31,14 @@ public:
     virtual void execute() = 0;
 };
 
+/// Interface class for boolean commands
+class BoolCommand: public Command {
+public:
+    virtual ~BoolCommand() { }
+    virtual void execute() { bool_execute(); }
+    virtual bool bool_execute() = 0;
+};
+
 } // end namespace FbTk
 
 #endif // FBTK_COMMAND_HH

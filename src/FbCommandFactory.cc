@@ -34,6 +34,7 @@
 #include "Screen.hh"
 
 #include "FbTk/StringUtil.hh"
+#include "FbTk/LogicCommands.hh"
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/stringstream.hh"
 
@@ -50,6 +51,10 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
+using namespace FbTk;
+using FbTk::StringUtil::removeFirstWhitespace;
+using FbTk::StringUtil::toLower;
+
 // autoregister this module to command parser
 FbCommandFactory FbCommandFactory::s_autoreg;
 
@@ -58,6 +63,109 @@ namespace {
 static int getint(const char *str, int defaultvalue) {
     sscanf(str, "%d", &defaultvalue);
     return defaultvalue;
+}
+
+BoolCommand *parseBoolCommand(string &line, bool trusted) {
+    // parse arguments and command
+    string command = line;
+    string arguments;
+    string::size_type first_pos = removeFirstWhitespace(command);
+    FbTk::StringUtil::removeTrailingWhitespace(command);
+    string::size_type second_pos = command.find_first_of(" \t", first_pos);
+    if (second_pos != string::npos) {
+        // ok we have arguments, parsing them here
+        arguments = command.substr(second_pos);
+        removeFirstWhitespace(arguments);
+        command.erase(second_pos); // remove argument from command
+    }
+
+    // now we have parsed command and arguments
+    command = toLower(command);
+
+    if (command == "matches") {
+        return new MatchCmd(arguments);
+    } else if (command == "some") {
+        BoolCommand *boolcmd = parseBoolCommand(arguments, trusted);
+        if (!boolcmd)
+            return 0;
+        return new SomeCmd(RefCount<BoolCommand>(boolcmd));
+    } else if (command == "every") {
+        BoolCommand *boolcmd = parseBoolCommand(arguments, trusted);
+        if (!boolcmd)
+            return 0;
+        return new EveryCmd(RefCount<BoolCommand>(boolcmd));
+    } else if (command == "not") {
+        BoolCommand *boolcmd = parseBoolCommand(arguments, trusted);
+        if (!boolcmd)
+            return 0;
+        RefCount<BoolCommand> ref(boolcmd);
+        return new NotCommand(ref);
+    } else if (command == "and") {
+        int pos = 0, err = 0;
+        AndCommand *andcmd = new AndCommand();
+        string cmd;
+
+        while (true) {
+            RefCount<BoolCommand> tmp(0);
+            err = StringUtil::getStringBetween(cmd, arguments.c_str() + pos,
+                                               '{', '}', " \t\n", true);
+            pos += err;
+            if (err == 0)
+                break;
+
+            tmp = parseBoolCommand(cmd, trusted);
+            if (*tmp)
+                andcmd->add(tmp);
+        }
+
+        if (andcmd->size() > 0)
+            return andcmd;
+        delete andcmd;
+    } else if (command == "or") {
+        int pos = 0, err = 0;
+        OrCommand *orcmd = new OrCommand();
+        string cmd;
+
+        while (true) {
+            RefCount<BoolCommand> tmp(0);
+            err = StringUtil::getStringBetween(cmd, arguments.c_str() + pos,
+                                               '{', '}', " \t\n", true);
+            pos += err;
+            if (err == 0)
+                break;
+
+            tmp = parseBoolCommand(cmd, trusted);
+            if (*tmp)
+                orcmd->add(tmp);
+        }
+
+        if (orcmd->size() > 0)
+            return orcmd;
+        delete orcmd;
+    } else if (command == "xor") {
+        int pos = 0, err = 0;
+        XorCommand *xorcmd = new XorCommand();
+        string cmd;
+
+        while (true) {
+            RefCount<BoolCommand> tmp(0);
+            err = StringUtil::getStringBetween(cmd, arguments.c_str() + pos,
+                                               '{', '}', " \t\n", true);
+            pos += err;
+            if (err == 0)
+                break;
+
+            tmp = parseBoolCommand(cmd, trusted);
+            if (*tmp)
+                xorcmd->add(tmp);
+        }
+
+        if (xorcmd->size() > 0)
+            return xorcmd;
+        delete xorcmd;
+    }
+
+    return 0;
 }
 
 }; // end anonymous namespace
@@ -74,6 +182,7 @@ FbCommandFactory::FbCommandFactory() {
         "close",
         "closeallwindows",
         "commanddialog",
+        "cond",
         "custommenu",
         "deiconify",
         "detachclient",
@@ -91,6 +200,7 @@ FbCommandFactory::FbCommandFactory() {
         "gotowindow",
         "hidemenus",
         "iconify",
+        "if",
         "keymode",
         "kill",
         "killwindow",
@@ -246,15 +356,15 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     // Current focused window commands
     //
     else if (command == "fullscreen")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new FullscreenCmd()), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new FullscreenCmd()), arguments);
     else if (command == "minimizewindow" || command == "minimize" || command == "iconify")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::iconify)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::iconify)), arguments);
     else if (command == "maximizewindow" || command == "maximize")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::maximizeFull)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::maximizeFull)), arguments);
     else if (command == "maximizevertical")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::maximizeVertical)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::maximizeVertical)), arguments);
     else if (command == "maximizehorizontal")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal)), arguments);
     else if (command == "setalpha") {
         typedef vector<string> StringTokens;
         StringTokens tokens;
@@ -281,7 +391,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         if (pos != string::npos && pos != arguments.size())
             pat = arguments.c_str() + pos;
 
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new SetAlphaCmd(focused, relative, unfocused, un_rel)), pat);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new SetAlphaCmd(focused, relative, unfocused, un_rel)), pat);
     } else if (command == "startmoving")
         return new StartMovingCmd();
     else if (command == "startresizing") {
@@ -331,7 +441,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         if (pos != string::npos && pos != arguments.size())
             pat = arguments.c_str() + pos;
 
-        FbTk::RefCount<WindowHelperCmd> cmd;
+        FbTk::RefCount<FbTk::Command> cmd;
         if (command == "resizeto")
             cmd = new ResizeToCmd(dx, dy);
         else
@@ -386,7 +496,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         if (pos != string::npos && pos != arguments.size())
             pat = arguments.c_str() + pos;
 
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new MoveToCmd(dx, dy, refc)), pat);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new MoveToCmd(dx, dy, refc)), pat);
     } else if (command == "move" || command == "moveright" ||
                command == "moveleft" || command == "moveup" ||
                command == "movedown") {
@@ -412,29 +522,29 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         if (pos != string::npos && pos != arguments.size())
             pat = arguments.c_str() + pos;
 
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new MoveCmd(dx, dy)), pat);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new MoveCmd(dx, dy)), pat);
     } else if (command == "raise")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::raise)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::raise)), arguments);
     else if (command == "raiselayer")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::raiseLayer)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::raiseLayer)), arguments);
     else if (command == "lower")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::lower)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::lower)), arguments);
     else if (command == "lowerlayer")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::lowerLayer)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::lowerLayer)), arguments);
     else if (command == "activate" || command == "focus")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd((void (FluxboxWindow::*)())&FluxboxWindow::focus)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd((void (FluxboxWindow::*)())&FluxboxWindow::focus)), arguments);
     else if (command == "close")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::close)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::close)), arguments);
     else if (command == "closeallwindows")
         return new CloseAllWindowsCmd();
     else if (command == "killwindow" || command == "kill")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::kill)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::kill)), arguments);
     else if (command == "shade" || command == "shadewindow")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::shade)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::shade)), arguments);
     else if (command == "stick" || command == "stickwindow")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::stick)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::stick)), arguments);
     else if (command == "toggledecor")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::toggleDecoration)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::toggleDecoration)), arguments);
     else if (command == "sethead") {
         int num = 0;
         string pat;
@@ -443,7 +553,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         string::size_type pos = arguments.find('(');
         if (pos != string::npos && pos != arguments.size())
             pat = arguments.c_str() + pos;
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new SetHeadCmd(num)), pat);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new SetHeadCmd(num)), pat);
     } else if (command == "tab" || command == "sendtonextworkspace" ||
                command == "sendtoprevworkspace" ||
                command == "taketonextworkspace" ||
@@ -457,7 +567,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         string::size_type pos = arguments.find('(');
         if (pos != string::npos && pos != arguments.size())
             pat = arguments.c_str() + pos;
-        FbTk::RefCount<WindowHelperCmd> cmd;
+        FbTk::RefCount<FbTk::Command> cmd;
 
         if (command == "tab")
             cmd = new GoToTabCmd(num);
@@ -475,15 +585,15 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
             cmd = new TakeToWorkspaceCmd(num-1);
         return new WindowListCmd(cmd, pat);
     } else if (command == "nexttab")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::nextClient)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::nextClient)), arguments);
     else if (command == "prevtab")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::prevClient)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::prevClient)), arguments);
     else if (command == "movetableft")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::moveClientLeft)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::moveClientLeft)), arguments);
     else if (command == "movetabright")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::moveClientRight)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::moveClientRight)), arguments);
     else if (command == "detachclient")
-        return new WindowListCmd(FbTk::RefCount<WindowHelperCmd>(new CurrentWindowCmd(&FluxboxWindow::detachCurrentClient)), arguments);
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::detachCurrentClient)), arguments);
     else if (command == "windowmenu")
         return new CurrentWindowCmd(&FluxboxWindow::popupMenu);
     //
@@ -683,6 +793,36 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return macro;
 
       delete macro;
+    } else if (command == "if" || command == "cond") {
+        string cmd;
+        int err = 0, pos = 0;
+        RefCount<BoolCommand> cond(0);
+        RefCount<Command> t(0), f(0);
+
+        err = FbTk::StringUtil::getStringBetween(cmd, arguments.c_str(),
+                                                 '{', '}', " \t\n", true);
+        if (err > 0)
+            cond = parseBoolCommand(cmd, trusted);
+        if (err == 0 || *cond == 0)
+            return 0;
+
+        pos = err;
+        err = FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + pos,
+                                                 '{', '}', " \t\n", true);
+        if (err > 0)
+            t = CommandParser::instance().parseLine(cmd, trusted);
+        if (err == 0 || *t == 0)
+            return 0;
+
+        pos += err;
+        err = FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + pos,
+                                                 '{', '}', " \t\n", true);
+        if (err > 0)
+            f = CommandParser::instance().parseLine(cmd, trusted);
+        if (err == 0 || *f == 0)
+            return 0;
+
+        return new FbTk::IfCommand(cond, t, f);
     }
     return 0;
 }

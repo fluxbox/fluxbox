@@ -27,22 +27,30 @@
 
 #include "Command.hh"
 #include "Window.hh"
+#include "ClientPattern.hh"
 
 /// helper class for window commands
 /// calls real_execute if there's a focused window or a window in button press/release window
 class WindowHelperCmd: public FbTk::Command {
 public:
-    explicit WindowHelperCmd(FluxboxWindow *win = 0): m_win(win) { }
+    explicit WindowHelperCmd() { }
 
     void execute();
-    void execute(FluxboxWindow &fbwin);
 
 protected:
     FluxboxWindow &fbwindow();
     virtual void real_execute() = 0;
+};
 
-private:
-    FluxboxWindow *m_win;
+class WindowHelperBoolCmd: public FbTk::BoolCommand {
+public:
+    explicit WindowHelperBoolCmd() { }
+
+    bool bool_execute();
+
+protected:
+    FluxboxWindow &fbwindow();
+    virtual bool real_execute() = 0;
 };
 
 /// command that calls FluxboxWindow::<the function> on execute()
@@ -221,4 +229,14 @@ private:
     int m_focus, m_unfocus;
     int m_relative, m_un_relative;
 };
+
+class MatchCmd: public WindowHelperBoolCmd {
+public:
+    MatchCmd(const std::string &pat): m_pat(pat.c_str()) { };
+protected:
+    bool real_execute();
+private:
+    ClientPattern m_pat;
+};
+
 #endif // CURRENTWINDOWCMD_HH

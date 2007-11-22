@@ -39,6 +39,18 @@ private:
     Action m_action;
 };
 
+template <typename Receiver, typename ReturnType=bool>
+class SimpleBoolCommand: public BoolCommand {
+public:
+    typedef ReturnType (Receiver::* Action)();
+    SimpleBoolCommand(Receiver &r, Action a):
+        m_receiver(r), m_action(a) { }
+    bool bool_execute() { return (bool)(m_receiver.*m_action)(); }
+private:
+    Receiver &m_receiver;
+    Action m_action;
+};
+
 } // end namespace FbTk
 
 #endif // FBTK_SIMPLECOMMAND_HH

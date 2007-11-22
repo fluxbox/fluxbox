@@ -32,17 +32,37 @@
 
 #include "FbTk/RefCount.hh"
 
-class WindowHelperCmd;
-
 class WindowListCmd: public FbTk::Command {
 public:
-    WindowListCmd(FbTk::RefCount<WindowHelperCmd> cmd, const std::string &pat):
+    WindowListCmd(FbTk::RefCount<FbTk::Command> cmd, const std::string &pat):
             m_cmd(cmd), m_pat(pat.c_str()) { }
 
     void execute();
 
 private:
-    FbTk::RefCount<WindowHelperCmd> m_cmd;
+    FbTk::RefCount<FbTk::Command> m_cmd;
+    ClientPattern m_pat;
+};
+
+class SomeCmd: public FbTk::BoolCommand {
+public:
+    SomeCmd(FbTk::RefCount<FbTk::BoolCommand> cmd): m_cmd(cmd) { }
+
+    bool bool_execute();
+
+private:
+    FbTk::RefCount<FbTk::BoolCommand> m_cmd;
+    ClientPattern m_pat;
+};
+
+class EveryCmd: public FbTk::BoolCommand {
+public:
+    EveryCmd(FbTk::RefCount<FbTk::BoolCommand> cmd): m_cmd(cmd) { }
+
+    bool bool_execute();
+
+private:
+    FbTk::RefCount<FbTk::BoolCommand> m_cmd;
     ClientPattern m_pat;
 };
 

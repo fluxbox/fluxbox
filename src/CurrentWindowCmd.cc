@@ -33,20 +33,25 @@
 #include "FocusControl.hh"
 
 void WindowHelperCmd::execute() {
-    m_win = 0;
     if (WindowCmd<void>::window() || FocusControl::focusedFbWindow())
         real_execute();
 }
 
-void WindowHelperCmd::execute(FluxboxWindow &win) {
-    m_win = &win;
-    real_execute();
-}
-
 FluxboxWindow &WindowHelperCmd::fbwindow() {
     // will exist from execute above
-    if (m_win)
-        return *m_win;
+    FluxboxWindow *tmp = WindowCmd<void>::window();
+    if (tmp) return *tmp;
+    return *FocusControl::focusedFbWindow();
+}
+
+bool WindowHelperBoolCmd::bool_execute() {
+    if (WindowCmd<void>::window() || FocusControl::focusedFbWindow())
+        return real_execute();
+    return false;
+}
+
+FluxboxWindow &WindowHelperBoolCmd::fbwindow() {
+    // will exist from execute above
     FluxboxWindow *tmp = WindowCmd<void>::window();
     if (tmp) return *tmp;
     return *FocusControl::focusedFbWindow();
@@ -226,4 +231,8 @@ void SetAlphaCmd::real_execute() {
         fbwindow().setUnfocusedAlpha(new_alpha);
     } else
         fbwindow().setUnfocusedAlpha(m_unfocus);
+}
+
+bool MatchCmd::real_execute() {
+    return m_pat.match(fbwindow());
 }

@@ -30,6 +30,7 @@
 #include "fluxbox.hh"
 #include "WinClient.hh"
 #include "FocusControl.hh"
+#include "WindowCmd.hh"
 
 #include "FbTk/KeyUtil.hh"
 
@@ -54,10 +55,54 @@ void WindowListCmd::execute() {
         FocusControl::Focusables::iterator it = win_list.begin(),
                                            it_end = win_list.end();
         for (; it != it_end; ++it) {
-            if (m_pat.match(**it) && (*it)->fbwindow())
-                m_cmd->execute(*(*it)->fbwindow());
+            if (m_pat.match(**it) && (*it)->fbwindow()) {
+                WindowCmd<void>::setWindow((*it)->fbwindow());
+                m_cmd->execute();
+            }
         }
     }
+}
+
+bool SomeCmd::bool_execute() {
+    if (m_pat.error())
+        return m_cmd->bool_execute();
+
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0) {
+        FocusControl::Focusables win_list(screen->focusControl().creationOrderList().clientList());
+
+        FocusControl::Focusables::iterator it = win_list.begin(),
+                                           it_end = win_list.end();
+        for (; it != it_end; ++it) {
+            WinClient *client = dynamic_cast<WinClient *>(*it);
+            if (!client) continue;
+            WindowCmd<void>::setClient(client);
+            if (m_cmd->bool_execute())
+                return true;
+        }
+    }
+    return false;
+}
+
+bool EveryCmd::bool_execute() {
+    if (m_pat.error())
+        return m_cmd->bool_execute();
+
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0) {
+        FocusControl::Focusables win_list(screen->focusControl().creationOrderList().clientList());
+
+        FocusControl::Focusables::iterator it = win_list.begin(),
+                                           it_end = win_list.end();
+        for (; it != it_end; ++it) {
+            WinClient *client = dynamic_cast<WinClient *>(*it);
+            if (!client) continue;
+            WindowCmd<void>::setClient(client);
+            if (!m_cmd->bool_execute())
+                return false;
+        }
+    }
+    return true;
 }
 
 void AttachCmd::execute() {
