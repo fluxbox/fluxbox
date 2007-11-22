@@ -232,6 +232,7 @@ $set 19 #main
 10 Enregistrement du journal vers
 11 erreur: '-rc' nécessite un argument
 12 erreur: 'screen' nécessite un argument
+13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 Website: http://www.fluxbox.org/\n\n\
 -display <chaîne de caractere>\t\utilise la connexion sur le display\
 -screen <tous|entier,entier,entier>\tfonctionne uniquement sur un écran spécifique\
