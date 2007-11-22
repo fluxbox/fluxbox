@@ -64,9 +64,6 @@ void WindowListCmd::execute() {
 }
 
 bool SomeCmd::bool_execute() {
-    if (m_pat.error())
-        return m_cmd->bool_execute();
-
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
         FocusControl::Focusables win_list(screen->focusControl().creationOrderList().clientList());
@@ -85,9 +82,6 @@ bool SomeCmd::bool_execute() {
 }
 
 bool EveryCmd::bool_execute() {
-    if (m_pat.error())
-        return m_cmd->bool_execute();
-
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
         FocusControl::Focusables win_list(screen->focusControl().creationOrderList().clientList());

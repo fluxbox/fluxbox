@@ -50,6 +50,7 @@ public:
 
 protected:
     FluxboxWindow &fbwindow();
+    WinClient &winclient();
     virtual bool real_execute() = 0;
 };
 

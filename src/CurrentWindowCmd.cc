@@ -57,6 +57,13 @@ FluxboxWindow &WindowHelperBoolCmd::fbwindow() {
     return *FocusControl::focusedFbWindow();
 }
 
+WinClient &WindowHelperBoolCmd::winclient() {
+    // will exist from execute above
+    WinClient *tmp = WindowCmd<void>::client();
+    if (tmp) return *tmp;
+    return *FocusControl::focusedWindow();
+}
+
 void CurrentWindowCmd::real_execute() {
     (fbwindow().*m_action)();
 }
@@ -234,5 +241,5 @@ void SetAlphaCmd::real_execute() {
 }
 
 bool MatchCmd::real_execute() {
-    return m_pat.match(fbwindow());
+    return m_pat.match(winclient());
 }

@@ -52,7 +52,6 @@ public:
 
 private:
     FbTk::RefCount<FbTk::BoolCommand> m_cmd;
-    ClientPattern m_pat;
 };
 
 class EveryCmd: public FbTk::BoolCommand {
@@ -63,7 +62,6 @@ public:
 
 private:
     FbTk::RefCount<FbTk::BoolCommand> m_cmd;
-    ClientPattern m_pat;
 };
 
 class AttachCmd: public FbTk::Command {
