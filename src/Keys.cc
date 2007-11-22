@@ -307,10 +307,35 @@ bool Keys::addBinding(const string &linebuffer) {
                 context |= ON_WINDOW;
             else if (strcasecmp("NONE",val[argc].c_str())) {
                 // check if it's a mouse button
-                if (!strcasecmp(val[argc].substr(0,5).c_str(), "mouse") &&
-                        val[argc].length() > 5) {
+                if (strcasecmp("focusin", val[argc].c_str()) == 0) {
+                    context = ON_WINDOW;
+                    mod = key = 0;
+                    type = FocusIn;
+                } else if (strcasecmp("focusout", val[argc].c_str()) == 0) {
+                    context = ON_WINDOW;
+                    mod = key = 0;
+                    type = FocusOut;
+                } else if (strcasecmp("changeworkspace",
+                                      val[argc].c_str()) == 0) {
+                    context = ON_DESKTOP;
+                    mod = key = 0;
+                    type = FocusIn;
+                } else if (strcasecmp("mouseover", val[argc].c_str()) == 0) {
+                    type = EnterNotify;
+                    if (!(context & (ON_WINDOW|ON_TOOLBAR)))
+                        context |= ON_WINDOW;
+                    key = 0;
+                } else if (strcasecmp("mouseout", val[argc].c_str()) == 0) {
+                    type = LeaveNotify;
+                    if (!(context & (ON_WINDOW|ON_TOOLBAR)))
+                        context |= ON_WINDOW;
+                    key = 0;
+                } else if (strcasecmp(val[argc].substr(0,5).c_str(),
+                                      "mouse") == 0 &&
+                           val[argc].length() > 5) {
                     type = ButtonPress;
-                    key = atoi(val[argc].substr(5,val[argc].length()-5).c_str());
+                    key = atoi(val[argc].substr(5,
+                                                val[argc].length()-5).c_str());
                 // keycode covers the following three two-byte cases:
                 // 0x       - hex
                 // +[1-9]   - number between +1 and +9
@@ -331,7 +356,7 @@ bool Keys::addBinding(const string &linebuffer) {
                     type = KeyPress;
                 }
 
-                if (key == 0)
+                if (key == 0 && (type == KeyPress || type == ButtonPress))
                     return false;
                 if (!first_new_key) {
                     first_new_keylist = current_key;

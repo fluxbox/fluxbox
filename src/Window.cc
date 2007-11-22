@@ -1930,6 +1930,9 @@ void FluxboxWindow::setFocusFlag(bool focus) {
         m_focussig.notify();
         if (m_client)
             m_client->focusSig().notify();
+        WindowCmd<void>::setClient(m_client);
+        Fluxbox::instance()->keys()->doAction(focus ? FocusIn : FocusOut, 0, 0,
+                                              Keys::ON_WINDOW);
     }
 }
 
@@ -2942,6 +2945,12 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         return;
     }
 
+    if (ev.window == frame().window()) {
+        WindowCmd<void>::setWindow(this);
+        Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
+                                              Keys::ON_WINDOW);
+    }
+
     WinClient *client = 0;
     if (screen().focusControl().isMouseTabFocus()) {
         // determine if we're in a label button (tab)
@@ -2984,6 +2993,23 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
 }
 
 void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
+
+    // ignore grab activates, or if we're not visible
+    if (ev.mode == NotifyGrab || ev.mode == NotifyUngrab ||
+        !isVisible()) {
+        return;
+    }
+
+    // still inside?
+    if (ev.x_root > frame().x() && ev.y_root > frame().y() &&
+        ev.x_root <= (int)(frame().x() + frame().width()) &&
+        ev.y_root <= (int)(frame().y() + frame().height()))
+        return;
+
+    WindowCmd<void>::setWindow(this);
+    Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
+                                          Keys::ON_WINDOW);
+
     // I hope commenting this out is right - simon 21jul2003
     //if (ev.window == frame().window())
     //installColormap(false);

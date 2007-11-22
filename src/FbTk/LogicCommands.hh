@@ -38,10 +38,10 @@ public:
               RefCount<Command> &t, RefCount<Command> &f):
         m_cond(cond), m_t(t), m_f(f) { }
     void execute() {
-        if (m_cond->bool_execute())
-            m_t->execute();
-        else
-            m_f->execute();
+        if (m_cond->bool_execute()) {
+            if (*m_t) m_t->execute();
+        } else
+            if (*m_f) m_f->execute();
     }
 
 private:

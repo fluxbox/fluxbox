@@ -55,7 +55,8 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_imagectrl(imgctrl),
     m_window(theme.screenNum(), x, y, width, height,
              ButtonPressMask | ButtonReleaseMask |
-             ButtonMotionMask | EnterWindowMask, true),
+             ButtonMotionMask | EnterWindowMask |
+             LeaveWindowMask, true),
     m_layeritem(window(), layer),
     m_titlebar(m_window, 0, 0, 100, 16,
                ButtonPressMask | ButtonReleaseMask |
@@ -666,7 +667,8 @@ void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
                      FocusChangeMask | KeyPressMask);
 
     m_window.setEventMask(ButtonPressMask | ButtonReleaseMask |
-                          ButtonMotionMask | EnterWindowMask | SubstructureRedirectMask);
+                          ButtonMotionMask | EnterWindowMask |
+                          LeaveWindowMask | SubstructureRedirectMask);
 
     XFlush(win.display());
 

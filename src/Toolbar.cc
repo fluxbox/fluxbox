@@ -556,7 +556,9 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 
 }
 
-void Toolbar::enterNotifyEvent(XCrossingEvent &not_used) {
+void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
+    Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0,
+                                          Keys::ON_TOOLBAR);
     if (! doAutoHide()) {
         if (isHidden())
             toggleHidden();
@@ -573,11 +575,14 @@ void Toolbar::enterNotifyEvent(XCrossingEvent &not_used) {
 }
 
 void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
-    if (! doAutoHide())
-        return;
     // still inside?
     if (event.x_root > x() && event.x_root <= (int)(x() + width()) &&
         event.y_root > y() && event.y_root <= (int)(y() + height()))
+        return;
+
+    Fluxbox::instance()->keys()->doAction(event.type, event.state, 0,
+                                          Keys::ON_TOOLBAR);
+    if (! doAutoHide())
         return;
 
     if (isHidden()) {

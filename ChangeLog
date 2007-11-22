@@ -1,6 +1,20 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/11/22:
+   * Added some new special keys to the keys file: FocusIn, FocusOut, MouseOver,
+     MouseOut, ChangeWorkspace (Mark)
+     - FocusIn/FocusOut correspond to a window gaining or losing focus, e.g. the
+       following will raise all xterms when one gains focus:
+       FocusIn :If {Matches (xterm)} {Raise (xterm)} {}
+     - MouseOver/MouseOut correspond to the mouse moving over the window or
+       toolbar (when used with OnToolbar) -- OnDesktop not yet supported, e.g.
+       the following will unshade a window when you move your mouse over it with
+       alt pressed:
+       Mod1 MouseOver :If {Matches (shaded=yes)} {Shade} {}
+     - ChangeWorkspace corresponds to the workspace being changed, e.g. the
+       following will set a different wallpaper for each workspace:
+       ChangeWorkspace :Exec fbsetbg ~/.fluxbox/bg$(xprop -root _NET_CURRENT_DESKTOP | awk '{print $3}').png
+     Keys.cc Window.cc Screen.cc Toolbar.cc
    * Added translations for zh_TW (thanks Wei-Lun Chao)
    * Fix division by 0 error when resize increments are set to 0 by an
      application, bug #1836182

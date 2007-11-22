@@ -1237,6 +1237,8 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
 
     m_currentworkspace_sig.notify();
 
+    // do this after atom handlers, so scripts can access new workspace number
+    Fluxbox::instance()->keys()->doAction(FocusIn, 0, 0, Keys::ON_DESKTOP);
 }
 
 

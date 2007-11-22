@@ -809,17 +809,16 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         pos = err;
         err = FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + pos,
                                                  '{', '}', " \t\n", true);
-        if (err > 0)
-            t = CommandParser::instance().parseLine(cmd, trusted);
-        if (err == 0 || *t == 0)
+        if (err == 0)
             return 0;
+        t = CommandParser::instance().parseLine(cmd, trusted);
 
         pos += err;
         err = FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + pos,
                                                  '{', '}', " \t\n", true);
         if (err > 0)
             f = CommandParser::instance().parseLine(cmd, trusted);
-        if (err == 0 || *f == 0)
+        if (err == 0 || *t == 0 && *f == 0)
             return 0;
 
         return new FbTk::IfCommand(cond, t, f);
