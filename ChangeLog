@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/11/22:
+   * Fix division by 0 error when resize increments are set to 0 by an
+     application, bug #1836182
+     WinClient.cc
    * Added conditional statements to key commands (Mark)
      - for example, this will search for an open xterm window, cycle through
        them if there are any, or else open one:

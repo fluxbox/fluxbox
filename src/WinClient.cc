@@ -508,6 +508,11 @@ void WinClient::updateWMNormalHints() {
         } else
             width_inc = height_inc = 1;
 
+        if (width_inc == 0)
+            width_inc = 1;
+        if (height_inc == 0)
+            height_inc = 1;
+
         if (sizehint.flags & PAspect) {
             min_aspect_x = sizehint.min_aspect.x;
             min_aspect_y = sizehint.min_aspect.y;
