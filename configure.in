@@ -688,4 +688,5 @@ nls/tr_TR/Makefile
 nls/uk_UA/Makefile
 nls/vi_VN/Makefile
 nls/zh_CN/Makefile
+nls/zh_TW/Makefile
 )

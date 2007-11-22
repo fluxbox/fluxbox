@@ -1,6 +1,7 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/11/22:
+   * Added translations for zh_TW (thanks Wei-Lun Chao)
    * Fix division by 0 error when resize increments are set to 0 by an
      application, bug #1836182
      WinClient.cc
