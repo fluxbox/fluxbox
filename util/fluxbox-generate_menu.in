@@ -1210,7 +1210,7 @@ case ${LC_ALL} in
 esac
 
 # Set Defaults
-USERFLUXDIR="${HOME}/.@pkgprefix@fluxbox@pkgsuffix@"
+USERFLUXDIR="\${HOME}/.@pkgprefix@fluxbox@pkgsuffix@"
 MENUFILENAME="${MENUFILENAME:=${USERFLUXDIR}/menu}"
 MENUTITLE="${MENUTITLE:=Fluxbox}"
 HOMEPAGE="${HOMEPAGE:=fluxbox.org}"
@@ -1708,7 +1708,7 @@ append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${XUTILSMENU}"
            normal_find xfontsel xman xload xbiff editres viewres xclock \
                xmag wmagnify gkrellm gkrellm2 vmware portagemaster agave 
-           find_it xrdb append "[exec] (Reload .Xdefaults) {xrdb -load $HOME/.Xdefaults}"
+           find_it xrdb append "[exec] (Reload .Xdefaults) {xrdb -load \$HOME/.Xdefaults}"
        append_menu_end
 append_menu_end
 
@@ -1879,7 +1879,7 @@ append_submenu "${FBSETTINGSMENU}"
         find_it ${LAUNCHER} append "[exec] (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
-        find_it $0 append "[exec] (${REGENERATEMENU}) {$0 ${BACKUPOPTIONS}}"
+        find_it $0 append "[exec] (${REGENERATEMENU}) {@pkgprefix@fluxbox-generate_menu@pkgsuffix@ ${BACKUPOPTIONS}}"
     append_menu_end
 
     append_submenu "${WINDOWMANAGERS}"
