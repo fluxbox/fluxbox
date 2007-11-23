@@ -433,8 +433,7 @@ void DeiconifyCmd::execute() {
                 (*it)->isStuck()) {
                 if (m_dest == ORIGIN || m_dest == ORIGINQUIET)
                     screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
-                else
-                    (*it)->deiconify(false);
+                (*it)->deiconify(false);
             }
         }
         break;

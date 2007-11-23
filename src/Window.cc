@@ -1415,9 +1415,17 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     if (oplock) return;
     oplock = true;
 
-    if (iconic || reassoc) {
-        screen().reassociateWindow(this, screen().currentWorkspace()->workspaceID(), false);
-    } else if (moving || m_workspace_number != screen().currentWorkspace()->workspaceID()) {
+    if (iconic &&
+        m_workspace_number != screen().currentWorkspace()->workspaceID()) {
+        // reassociate first, so it gets removed from screen's icon list
+        screen().reassociateWindow(this, m_workspace_number, false);
+        iconic = false;
+        return;
+    }
+
+    if (iconic || reassoc)
+        screen().reassociateWindow(this, screen().currentWorkspaceID(), false);
+    else if (moving || m_workspace_number != screen().currentWorkspaceID()) {
         oplock = false;
         return;
     }

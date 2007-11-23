@@ -1263,7 +1263,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 
     // if the window is on current workspace, show it; else hide it.
     if (id == currentWorkspace()->workspaceID() && !win->isIconic())
-        win->deiconify(false, false);
+        win->show();
     else {
         win->hide(true);
         FocusControl::revertFocus(*this);
