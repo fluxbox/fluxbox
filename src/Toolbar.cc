@@ -35,6 +35,7 @@
 #include "fluxbox.hh"
 #include "Keys.hh"
 #include "Screen.hh"
+#include "WindowCmd.hh"
 #include "IntResMenuItem.hh"
 #include "BoolMenuItem.hh"
 
@@ -524,6 +525,7 @@ void Toolbar::reconfigure() {
 
 
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
+    WindowCmd<void>::setWindow(0);
     if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
                                               Keys::ON_TOOLBAR))
         return;
@@ -557,6 +559,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 }
 
 void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
+    WindowCmd<void>::setWindow(0);
     Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0,
                                           Keys::ON_TOOLBAR);
     if (! doAutoHide()) {

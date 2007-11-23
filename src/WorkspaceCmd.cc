@@ -54,12 +54,15 @@ void WindowListCmd::execute() {
 
         FocusControl::Focusables::iterator it = win_list.begin(),
                                            it_end = win_list.end();
+        // save old value, so we can restore it later
+        WinClient *old = WindowCmd<void>::client();
         for (; it != it_end; ++it) {
             if (m_pat.match(**it) && (*it)->fbwindow()) {
                 WindowCmd<void>::setWindow((*it)->fbwindow());
                 m_cmd->execute();
             }
         }
+        WindowCmd<void>::setClient(old);
     }
 }
 
@@ -70,6 +73,8 @@ bool SomeCmd::bool_execute() {
 
         FocusControl::Focusables::iterator it = win_list.begin(),
                                            it_end = win_list.end();
+        // save old value, so we can restore it later
+        WinClient *old = WindowCmd<void>::client();
         for (; it != it_end; ++it) {
             WinClient *client = dynamic_cast<WinClient *>(*it);
             if (!client) continue;
@@ -77,6 +82,7 @@ bool SomeCmd::bool_execute() {
             if (m_cmd->bool_execute())
                 return true;
         }
+        WindowCmd<void>::setClient(old);
     }
     return false;
 }
@@ -88,6 +94,8 @@ bool EveryCmd::bool_execute() {
 
         FocusControl::Focusables::iterator it = win_list.begin(),
                                            it_end = win_list.end();
+        // save old value, so we can restore it later
+        WinClient *old = WindowCmd<void>::client();
         for (; it != it_end; ++it) {
             WinClient *client = dynamic_cast<WinClient *>(*it);
             if (!client) continue;
@@ -95,6 +103,7 @@ bool EveryCmd::bool_execute() {
             if (!m_cmd->bool_execute())
                 return false;
         }
+        WindowCmd<void>::setClient(old);
     }
     return true;
 }
