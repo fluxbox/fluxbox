@@ -411,7 +411,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
     // lock graphic update
     m_icon_container.setUpdateLock(true);
 
-    if (typeid(*subj) == typeid(FocusableList::FocusableListSubject)) {
+    if (subj && typeid(*subj) == typeid(FocusableList::FocusableListSubject)) {
         FocusableList::FocusableListSubject *fsubj =
             static_cast<FocusableList::FocusableListSubject *>(subj);
         if (subj == &m_winlist->addSig())
