@@ -4,17 +4,17 @@ $set 1 #Align
 
 1 Alt orta
 2 Sol alt
-3 Sað üst
+3 SaÄ Ã¼st
 4 Yatay
 6 Orta sol
 7 Sol orta
-8 Sol üst
-11 Sað orta
-12 Orta sað
-13 Sað üst
-14 Üst orta
-15 Sol üst
-16 Sað üst
+8 Sol Ã¼st
+11 SaÄ orta
+12 Orta saÄ
+13 SaÄ Ã¼st
+14 Ãst orta
+15 Sol Ã¼st
+16 SaÄ Ã¼st
 17 Dikey
 
 $set 2 #BaseDisplay
@@ -26,17 +26,17 @@ $set 3 #Common
 
 $set 4 #Configmenu
 
-2 Otomatik Göster
-4 Hizalamak için týkla
-7 Masaüstü deðiþiminde pencereyi hizala
+2 Otomatik GÃ¶ster
+4 Hizalamak iÃ§in tÄ±kla
+7 MasaÃ¼stÃ¼ deÄiÅiminde pencereyi hizala
 8 Hizalama
 9 Yeni Pencereleri Hizala
-10 Ekraný Kapla
-11 Resim oluþturulmasý
-12 Donuk Pencere Taþýnmasý
-13 Aynýlarý Hizala
-14 Yavaþ Hizala
-15 Masaüstü Sapmasý
+10 EkranÄ± Kapla
+11 Resim oluÅturulmasÄ±
+12 Donuk Pencere TaÅÄ±nmasÄ±
+13 AynÄ±larÄ± Hizala
+14 YavaÅ Hizala
+15 MasaÃ¼stÃ¼ SapmasÄ±
 
 $set 5 #Ewmh
 
@@ -55,10 +55,10 @@ $set 9 #Keys
 
 $set 10 #Menu
 
-3 Çýk
-4 Ýkonlar
-7 Yerleþim
-9 Yeniden Baþlat
+3 ÃÄ±k
+4 Ä°konlar
+7 YerleÅim
+9 Yeniden BaÅlat
 
 $set 11 #Remember
 
@@ -70,61 +70,61 @@ $set 12 #Screen
 
 $set 13 #Slit
 
-4 Slit yönü
-7 Slit yerleþimi
+4 Slit yÃ¶nÃ¼
+7 Slit yerleÅimi
 8 Slit
 
 $set 14 #Toolbar
 
-1 Masaüstü ismini deðiþtir
-10 Araç Çubuðu Yerleþimi
-11 Araç Çubuðu
+1 MasaÃ¼stÃ¼ ismini deÄiÅtir
+10 AraÃ§ ÃubuÄu YerleÅimi
+11 AraÃ§ ÃubuÄu
 
 $set 15 #Window
 
-1 Ýsimsiz
+1 Ä°simsiz
 
 $set 16 #Windowmenu
 
 1 Kapat
-2 Küçült
-4 Küçült
-5 Ekraný Kapla
-6 Göster
-7 Gönder ...
-8 Þekillendir
-9 Yapýþtýr
+2 KÃ¼Ã§Ã¼lt
+4 KÃ¼Ã§Ã¼lt
+5 EkranÄ± Kapla
+6 GÃ¶ster
+7 GÃ¶nder ...
+8 Åekillendir
+9 YapÄ±ÅtÄ±r
 
 $set 17 #Workspace
 
-1 Masaüstü %d
-2 Masaüstleri
-3 Yeni Masaüstü
-4 Son Masaüstünü Kaldýr
+1 MasaÃ¼stÃ¼ %d
+2 MasaÃ¼stleri
+3 Yeni MasaÃ¼stÃ¼
+4 Son MasaÃ¼stÃ¼nÃ¼ KaldÄ±r
 
 $set 18 #fbsetroot
 
-1 hata : -solid, -mod yada -gradient'den en az birisini belirlemek zorundasýnýz\n
-3 -display <metin>         baðlantýyý göster\n\
--mod <x> <y>             yerleþtirme\n\
--foreground, -fg <renk>  önplan rengi\n\
+1 hata : -solid, -mod yada -gradient'den en az birisini belirlemek zorundasÄ±nÄ±z\n
+3 -display <metin>         baÄlantÄ±yÄ± gÃ¶ster\n\
+-mod <x> <y>             yerleÅtirme\n\
+-foreground, -fg <renk>  Ã¶nplan rengi\n\
 -background, -bg <renk>  arkaplan rengi\n\n\
--gradient <doku>         geçiþ dokusu\n\
--from <renk>             geçiþ baþlama rengi\n\
--to <renk>               geçiþ bitiþ rengi\n\n\
+-gradient <doku>         geÃ§iÅ dokusu\n\
+-from <renk>             geÃ§iÅ baÅlama rengi\n\
+-to <renk>               geÃ§iÅ bitiÅ rengi\n\n\
 -solid <renk>            tek renk\n\n\
--help                    bu yardým iletisini gösterir\n
+-help                    bu yardÄ±m iletisini gÃ¶sterir\n
 
 $set 19 #main
 
-1 hata : '-display' bir argüman gerektirir
-11 hata : '-rc' bir argüman gerektirir
+1 hata : '-display' bir argÃ¼man gerektirir
+11 hata : '-rc' bir argÃ¼man gerektirir
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
--display <metin>\t\tekran baðlantýsý kullan.\n\
--rc <metin>\t\t\talternatif bir ayar kaynak dosyasý kullan.\n\
--version\t\t\tsürümü göster.\n\
+-display <metin>\t\tekran baÄlantÄ±sÄ± kullan.\n\
+-rc <metin>\t\t\talternatif bir ayar kaynak dosyasÄ± kullan.\n\
+-version\t\t\tsÃ¼rÃ¼mÃ¼ gÃ¶ster.\n\
 -info\t\t\t\tdisplay some useful information.\n\
 -log <filename>\t\t\tlog output to file.\n\
--help\t\t\t\tyardým ekraný.\n\n
+-help\t\t\t\tyardÄ±m ekranÄ±.\n\n
 
 
