@@ -1,8 +1,8 @@
 # nls/tr_TR/Makefile.am for Fluxbox - www.fluxbox.org
 
 THE_LANG = tr_TR
-SRC_CODESET = ISO-8859-1
-DEST_CODESETS = ISO-8859-1 UTF-8
+SRC_CODESET = UTF-8
+DEST_CODESETS = ISO-8859-9 UTF-8
 
 LOCALE_PATH = @LOCALE_PATH@
 NLSTEST = @NLS@
