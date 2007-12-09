@@ -79,7 +79,8 @@ public:
     /**
        do action from XKeyEvent; return false if not bound to anything
     */
-    bool doAction(int type, unsigned int mods, unsigned int key, int context);
+    bool doAction(int type, unsigned int mods, unsigned int key, int context,
+                  Time time = 0);
 
     /// register a window so that proper keys/buttons get grabbed on it
     void registerWindow(Window win, FbTk::EventHandler &handler, int context);
@@ -113,18 +114,19 @@ private:
     class t_key {
     public:
         t_key(int type, unsigned int mod, unsigned int key, int context,
-              FbTk::RefCount<FbTk::Command> command = FbTk::RefCount<FbTk::Command>(0));
+              bool isdouble);
         t_key(t_key *k);
         ~t_key();
 
         t_key *find(int type_, unsigned int mod_, unsigned int key_,
-                    int context_) {
+                    int context_, bool isdouble_) {
             // t_key ctor sets context_ of 0 to GLOBAL, so we must here too
             context_ = context_ ? context_ : GLOBAL;
             keylist_t::iterator it = keylist.begin(), it_end = keylist.end();
             for (; it != it_end; it++) {
                 if ((*it)->type == type_ && (*it)->key == key_ &&
-                    ((*it)->context & context_) > 0 && (*it)->mod ==
+                    ((*it)->context & context_) > 0 &&
+                    isdouble_ == (*it)->isdouble && (*it)->mod ==
                     FbTk::KeyUtil::instance().isolateModifierMask(mod_))
                     return *it;
             }
@@ -137,6 +139,7 @@ private:
         int type; // KeyPress or ButtonPress
         unsigned int key; // key code or button number
         unsigned int mod;
+        bool isdouble;
         keylist_t keylist;
     };
 

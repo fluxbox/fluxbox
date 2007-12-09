@@ -257,6 +257,8 @@ FbCommandFactory::FbCommandFactory() {
         "setresourcevalue",
         "setresourcevaluedialog",
         "shade",
+        "shadeon",
+        "shadeoff",
         "shadewindow",
         "showdesktop",
         "startmoving",
@@ -541,6 +543,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::kill)), arguments);
     else if (command == "shade" || command == "shadewindow")
         return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::shade)), arguments);
+    else if (command == "shadeon" )
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::shadeOn)), arguments);
+    else if (command == "shadeoff" )
+        return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::shadeOff)), arguments);
     else if (command == "stick" || command == "stickwindow")
         return new WindowListCmd(FbTk::RefCount<FbTk::Command>(new CurrentWindowCmd(&FluxboxWindow::stick)), arguments);
     else if (command == "toggledecor")

@@ -34,8 +34,8 @@
 #endif // HAVE_SIGNAL_H
 
 //use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
+#ifndef         _GNU_SOURCE
+#define         _GNU_SOURCE
 #endif // _GNU_SOURCE
 
 #ifdef HAVE_CSTRING
@@ -81,9 +81,9 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         string new_keyfile = "";
         // let's put our new keybindings first, so they're easy to find
         new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
-        new_keyfile += "OnDesktop Mouse1 :hideMenus\n";
-        new_keyfile += "OnDesktop Mouse2 :workspaceMenu\n";
-        new_keyfile += "OnDesktop Mouse3 :rootMenu\n";
+        new_keyfile += "OnDesktop Mouse1 :HideMenus\n";
+        new_keyfile += "OnDesktop Mouse2 :WorkspaceMenu\n";
+        new_keyfile += "OnDesktop Mouse3 :RootMenu\n";
 
         // scrolling on desktop needs to match user's desktop wheeling settings
         // hmmm, what are the odds that somebody wants this to be different on
@@ -97,11 +97,11 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
                                         "Session.Screen0.ReverseWheeling");
         if (*rc_wheeling) {
             if (*rc_reverse) { // if you ask me, this should have been default
-                new_keyfile += "OnDesktop Mouse4 :prevWorkspace\n";
-                new_keyfile += "OnDesktop Mouse5 :nextWorkspace\n";
+                new_keyfile += "OnDesktop Mouse4 :PrevWorkspace\n";
+                new_keyfile += "OnDesktop Mouse5 :NextWorkspace\n";
             } else {
-                new_keyfile += "OnDesktop Mouse4 :nextWorkspace\n";
-                new_keyfile += "OnDesktop Mouse5 :prevWorkspace\n";
+                new_keyfile += "OnDesktop Mouse4 :NextWorkspace\n";
+                new_keyfile += "OnDesktop Mouse5 :PrevWorkspace\n";
             }
         }
         new_keyfile += "\n"; // just for good looks
@@ -167,11 +167,11 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
             (strcasecmp((*rc_wheeling).c_str(), "Screen") && *rc_screen)) {
             keep_changes = true;
             if (*rc_reverse) { // if you ask me, this should have been default
-                new_keyfile += "OnToolbar Mouse4 :prevWorkspace\n";
-                new_keyfile += "OnToolbar Mouse5 :nextWorkspace\n";
+                new_keyfile += "OnToolbar Mouse4 :PrevWorkspace\n";
+                new_keyfile += "OnToolbar Mouse5 :NextWorkspace\n";
             } else {
-                new_keyfile += "OnToolbar Mouse4 :nextWorkspace\n";
-                new_keyfile += "OnToolbar Mouse5 :prevWorkspace\n";
+                new_keyfile += "OnToolbar Mouse4 :NextWorkspace\n";
+                new_keyfile += "OnToolbar Mouse5 :PrevWorkspace\n";
             }
         }
         new_keyfile += "\n"; // just for good looks
@@ -237,6 +237,43 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
             *rc_mode = "{static groups} (workspace)";
 
         new_version = 5;
+    }
+
+    if (old_version < 6) { // move titlebar actions to keys file
+        string whole_keyfile = read_file(keyfilename);
+        string new_keyfile = "";
+        // let's put our new keybindings first, so they're easy to find
+        new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
+        new_keyfile += "OnTitlebar Double Mouse1 :Shade\n";
+        new_keyfile += "OnTitlebar Mouse3 :Windowmenu\n";
+        new_keyfile += "OnTitlebar Mouse2 :Lower\n";
+
+        FbTk::Resource<bool> rc_reverse(rm, false,"session.screen0.reversewheeling", "Session.Screen0.ReverseWheeling");
+        FbTk::Resource<std::string>  scroll_action(rm, "", "session.screen0.windowScrollAction", "Session.Screen0.WindowScrollAction");
+        if (strcasecmp((*scroll_action).c_str(), "shade") == 0) {
+            if (*rc_reverse) {
+                new_keyfile += "OnTitlebar Mouse5 :ShadeOn\n";
+                new_keyfile += "OnTitlebar Mouse4 :ShadeOff\n";
+            } else {
+                new_keyfile += "OnTitlebar Mouse4 :ShadeOn\n";
+                new_keyfile += "OnTitlebar Mouse5 :ShadeOff\n";
+            }
+        } else if (strcasecmp((*scroll_action).c_str(), "nexttab") == 0) {
+            if (*rc_reverse) {
+                new_keyfile += "OnTitlebar Mouse5 :PrevTab\n";
+                new_keyfile += "OnTitlebar Mouse4 :NextTab\n";
+            } else {
+                new_keyfile += "OnTitlebar Mouse4 :PrevTab\n";
+                new_keyfile += "OnTitlebar Mouse5 :NextTab\n";
+            }
+        }
+
+        new_keyfile += "\n"; // just for good looks
+        new_keyfile += whole_keyfile; // don't forget user's old keybindings
+
+        write_file(keyfilename, new_keyfile);
+
+        new_version = 6;
     }
 
     return new_version;

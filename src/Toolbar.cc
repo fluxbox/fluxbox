@@ -527,7 +527,7 @@ void Toolbar::reconfigure() {
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
     WindowCmd<void>::setWindow(0);
     if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
-                                              Keys::ON_TOOLBAR))
+                                              Keys::ON_TOOLBAR, be.time))
         return;
     if (be.button == 1)
         raise();

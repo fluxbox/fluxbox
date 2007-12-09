@@ -849,7 +849,8 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
 
     Keys *keys = Fluxbox::instance()->keys();
     WindowCmd<void>::setWindow(FocusControl::focusedFbWindow());
-    keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP);
+    keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP,
+                   be.time);
 }
 
 void BScreen::notifyUngrabKeyboard() {

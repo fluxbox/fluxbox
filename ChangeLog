@@ -1,5 +1,16 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/09:
+   * Added OnTitlebar and Double modifiers to the keys file for clicks on the
+     titlebar and double clicks, respectively (Mark, thanks Matteo Galiazzo)
+     - For example, `OnTitlebar Double Mouse3 :Maximize' will maximize a window
+       when you double click on the titlebar with the right mouse button
+     - Note: if you have commands bound to both a single and double click, the
+       single click command will still be executed on the first half of a double
+       click
+     - Added new key commands ShadeOn and ShadeOff that set whether or not a
+       window is shaded, rather than toggling the current state
+       Window.cc Keys.cc/hh FbCommandFactory.cc
 *07/11/22:
    * Added some new special keys to the keys file: FocusIn, FocusOut, MouseOver,
      MouseOut, ChangeWorkspace (Mark)

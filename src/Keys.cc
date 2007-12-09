@@ -212,7 +212,7 @@ bool Keys::load(const char *filename) {
     // free memory of previous grabs
     deleteTree();
 
-    m_map["default:"] = new t_key(0,0,0,0);
+    m_map["default:"] = new t_key(0,0,0,0,false);
 
     unsigned int current_line = 0; //so we can tell the user where the fault is
 
@@ -245,7 +245,7 @@ void Keys::loadDefaults() {
     cerr<<"Loading default key bindings"<<endl;
 #endif
     deleteTree();
-    m_map["default:"] = new t_key(0,0,0,0);
+    m_map["default:"] = new t_key(0,0,0,0,false);
     addBinding("OnDesktop Mouse1 :HideMenus");
     addBinding("OnDesktop Mouse2 :WorkspaceMenu");
     addBinding("OnDesktop Mouse3 :RootMenu");
@@ -280,6 +280,7 @@ bool Keys::addBinding(const string &linebuffer) {
 
     unsigned int key = 0, mod = 0;
     int type = 0, context = 0;
+    bool isdouble = false;
     size_t argc = 0;
     t_key *current_key=m_map["default:"];
     t_key *first_new_keylist = current_key, *first_new_key=0;
@@ -288,7 +289,7 @@ bool Keys::addBinding(const string &linebuffer) {
         argc++;
         keyspace_t::iterator it = m_map.find(val[0]);
         if (it == m_map.end())
-            m_map[val[0]] = new t_key(0,0,0,0);
+            m_map[val[0]] = new t_key(0,0,0,0,false);
         current_key = m_map[val[0]];
     }
     // for each argument
@@ -305,6 +306,10 @@ bool Keys::addBinding(const string &linebuffer) {
                 context |= ON_TOOLBAR;
             else if (strcasecmp("onwindow", val[argc].c_str()) == 0)
                 context |= ON_WINDOW;
+            else if (strcasecmp("ontitlebar", val[argc].c_str()) == 0)
+                context |= ON_TITLEBAR;
+            else if (strcasecmp("double", val[argc].c_str()) == 0)
+                isdouble = true;
             else if (strcasecmp("NONE",val[argc].c_str())) {
                 // check if it's a mouse button
                 if (strcasecmp("focusin", val[argc].c_str()) == 0) {
@@ -358,16 +363,21 @@ bool Keys::addBinding(const string &linebuffer) {
 
                 if (key == 0 && (type == KeyPress || type == ButtonPress))
                     return false;
+                if (type != ButtonPress)
+                    isdouble = false;
                 if (!first_new_key) {
                     first_new_keylist = current_key;
-                    current_key = current_key->find(type, mod, key, context);
+                    current_key = current_key->find(type, mod, key, context,
+                                                    isdouble);
                     if (!current_key) {
-                        first_new_key = new t_key(type, mod, key, context);
+                        first_new_key = new t_key(type, mod, key, context,
+                                                  isdouble);
                         current_key = first_new_key;
                     } else if (*current_key->m_command) // already being used
                         return false;
                 } else {
-                    t_key *temp_key = new t_key(type, mod, key, context);
+                    t_key *temp_key = new t_key(type, mod, key, context,
+                                                isdouble);
                     current_key->keylist.push_back(temp_key);
                     current_key = temp_key;
                 }
@@ -375,6 +385,7 @@ bool Keys::addBinding(const string &linebuffer) {
                 key = 0;
                 type = 0;
                 context = 0;
+                isdouble = false;
             }
 
         } else { // parse command line
@@ -402,14 +413,40 @@ bool Keys::addBinding(const string &linebuffer) {
 
 // return true if bound to a command, else false
 bool Keys::doAction(int type, unsigned int mods, unsigned int key,
-                    int context) {
+                    int context, Time time) {
+
+    static Time last_button_time = 0;
+    static unsigned int last_button = 0;
+
+    // need to remember whether or not this is a double-click, e.g. when
+    // double-clicking on the titlebar when there's an OnWindow Double command
+    // we just don't update it if timestamp is the same
+    static bool double_click = false;
+
+    // actual value used for searching
+    bool isdouble = false;
+
+    if (type == ButtonPress) {
+        if (time > last_button_time)
+            double_click = (time - last_button_time <
+                Fluxbox::instance()->getDoubleClickInterval()) &&
+                last_button == key;
+        last_button_time = time;
+        last_button = key;
+        isdouble = double_click;
+    }
 
     static t_key* next_key = m_keylist;
     if (!next_key)
         next_key = m_keylist;
 
     mods = FbTk::KeyUtil::instance().cleanMods(mods);
-    t_key *temp_key = next_key->find(type, mods, key, context);
+    t_key *temp_key = next_key->find(type, mods, key, context, isdouble);
+
+    // just because we double-clicked doesn't mean we shouldn't look for single
+    // click commands
+    if (!temp_key && isdouble)
+        temp_key = next_key->find(type, mods, key, context, false);
 
     // need to save this for emacs-style keybindings
     static t_key *saved_keymode = 0;
@@ -506,12 +543,13 @@ void Keys::setKeyMode(t_key *keyMode) {
 }
             
 Keys::t_key::t_key(int type_, unsigned int mod_, unsigned int key_,
-                   int context_, FbTk::RefCount<FbTk::Command> command) {
+                   int context_, bool isdouble_) {
     key = key_;
     mod = mod_;
     type = type_;
     context = context_ ? context_ : GLOBAL;
-    m_command = command;
+    isdouble = isdouble_;
+    m_command = 0;
 }
 
 Keys::t_key::t_key(t_key *k) {
@@ -519,6 +557,7 @@ Keys::t_key::t_key(t_key *k) {
     mod = k->mod;
     type = k->type;
     context = k->context;
+    isdouble = k->isdouble;
     m_command = k->m_command;
 }
 

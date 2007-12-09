@@ -905,29 +905,27 @@ void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
 
 void FluxboxWindow::moveClientLeftOf(WinClient &win, WinClient &dest) {
 
-	frame().moveLabelButtonLeftOf(*m_labelbuttons[&win], *m_labelbuttons[&dest]);
+        frame().moveLabelButtonLeftOf(*m_labelbuttons[&win], *m_labelbuttons[&dest]);
 
-	ClientList::iterator it = find(m_clientlist.begin(),
-                                  m_clientlist.end(),
-                                  &win);
-	ClientList::iterator new_pos = find(m_clientlist.begin(),
-				       m_clientlist.end(),
-				       &dest);
+        ClientList::iterator it = find(m_clientlist.begin(),
+                                       m_clientlist.end(),
+                                       &win);
+        ClientList::iterator new_pos = find(m_clientlist.begin(),
+                                            m_clientlist.end(),
+                                            &dest);
 
-	// make sure we found them
-	if (it == m_clientlist.end() || new_pos==m_clientlist.end()) {
-		return;
-	}
-	//moving a button to the left of itself results in no change
-	if( new_pos == it) {
-		return;
-	}
-	//remove from list
-	m_clientlist.erase(it);
-	//insert on the new place
-	m_clientlist.insert(new_pos, &win);
+        // make sure we found them
+        if (it == m_clientlist.end() || new_pos==m_clientlist.end())
+            return;
+        //moving a button to the left of itself results in no change
+        if (new_pos == it)
+            return;
+        //remove from list
+        m_clientlist.erase(it);
+        //insert on the new place
+        m_clientlist.insert(new_pos, &win);
 
-	updateClientLeftWindow();
+        updateClientLeftWindow();
 }
 
 
@@ -2560,10 +2558,20 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_last_button_x = be.x_root;
     m_last_button_y = be.y_root;
 
+    bool onTitlebar = frame().gripLeft().window() != be.window &&
+        frame().gripRight().window() != be.window &&
+        frame().clientArea().window() != be.window &&
+        frame().window() != be.window;
+
+    if (onTitlebar && be.button == 1)
+        raise();
+
     // check keys file first
     WindowCmd<void>::setWindow(this);
-    if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
-                                              Keys::ON_WINDOW)) {
+    Keys *k = Fluxbox::instance()->keys();
+    if (onTitlebar && k->doAction(be.type, be.state, be.button,
+                                  Keys::ON_TITLEBAR, be.time) ||
+        k->doAction(be.type, be.state, be.button, Keys::ON_WINDOW, be.time)) {
         return;
     }
 
@@ -2571,13 +2579,6 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     if (be.button == 1) {
         if (!m_focused && acceptsFocus()) //check focus
             focus();
-
-        // click on titlebar
-        if (frame().gripLeft().window() != be.window &&
-            frame().gripRight().window() != be.window &&
-            frame().clientArea().window() != be.window &&
-            frame().window() != be.window)
-            raise();
 
         if (frame().window().window() == be.window ||
             frame().tabcontainer().window() == be.window) {
@@ -2607,43 +2608,8 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
         stopResizing();
     else if (m_attaching_tab)
         attachTo(re.x_root, re.y_root);
-    else {
+    else
         frame().tabcontainer().tryButtonReleaseEvent(re);
-        if (frame().gripLeft().window() == re.window ||
-            frame().gripRight().window() == re.window ||
-            frame().clientArea().window() == re.window ||
-            frame().handle().window() == re.window ||
-            frame().window() == re.window)
-            return;
-
-        static Time last_release_time = 0;
-        bool double_click = (re.time - last_release_time <=
-            Fluxbox::instance()->getDoubleClickInterval());
-        last_release_time = re.time;
-
-        if (re.button == 1 && double_click)
-            shade();
-        if (re.button == 3)
-            popupMenu();
-        if (re.button == 2)
-            lower();
-
-        unsigned int reverse = (screen().getScrollReverse() ? 1 : 0);
-        if (re.button == 4 || re.button == 5) {
-            if (StringUtil::toLower(screen().getScrollAction()) == "shade") {
-                if (re.button == 5 - reverse)
-                    shadeOn();
-                else
-                    shadeOff();
-            }
-            if (StringUtil::toLower(screen().getScrollAction()) == "nexttab") {
-                if (re.button == 5 - reverse)
-                    nextClient();
-                else
-                    prevClient();
-            }
-        }
-    }
 
 }
 
