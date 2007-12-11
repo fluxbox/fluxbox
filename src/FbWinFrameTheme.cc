@@ -69,6 +69,10 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_cursor_lower_right_angle = XCreateFontCursor(disp, XC_lr_angle);
     m_cursor_upper_right_angle = XCreateFontCursor(disp, XC_ur_angle);
     m_cursor_upper_left_angle = XCreateFontCursor(disp, XC_ul_angle);
+    m_cursor_left_side = XCreateFontCursor(disp, XC_left_side);
+    m_cursor_top_side = XCreateFontCursor(disp, XC_top_side);
+    m_cursor_right_side = XCreateFontCursor(disp, XC_right_side);
+    m_cursor_bottom_side = XCreateFontCursor(disp, XC_bottom_side);
 
     reconfigTheme();
 }

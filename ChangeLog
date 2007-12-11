@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/12/11:
+   * Added new resize modes for key command StartResizing: NearestEdge, Left,
+     Right, Top, Bottom (Mark)
+     Window.cc
    * Only allow one menu to be open at a time (Mark)
      FbTk/Menu.cc/hh
 *07/12/09:

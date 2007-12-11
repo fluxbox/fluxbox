@@ -78,6 +78,10 @@ public:
     inline Cursor lowerRightAngleCursor() const { return m_cursor_lower_right_angle; }
     inline Cursor upperLeftAngleCursor() const { return m_cursor_upper_left_angle; }
     inline Cursor upperRightAngleCursor() const { return m_cursor_upper_right_angle; }
+    inline Cursor leftSideCursor() const { return m_cursor_left_side; }
+    inline Cursor rightSideCursor() const { return m_cursor_right_side; }
+    inline Cursor topSideCursor() const { return m_cursor_top_side; }
+    inline Cursor bottomSideCursor() const { return m_cursor_bottom_side; }
 
     inline Shape::ShapePlace shapePlace() const { return *m_shape_place; }
     inline const BorderTheme &border() const { return m_border; }
@@ -114,6 +118,10 @@ private:
     Cursor m_cursor_lower_right_angle;
     Cursor m_cursor_upper_left_angle;
     Cursor m_cursor_upper_right_angle;
+    Cursor m_cursor_left_side;
+    Cursor m_cursor_right_side;
+    Cursor m_cursor_top_side;
+    Cursor m_cursor_bottom_side;
     unsigned char m_focused_alpha;
     unsigned char m_unfocused_alpha;
 

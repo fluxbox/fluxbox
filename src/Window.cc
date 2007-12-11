@@ -2788,20 +2788,23 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             int dx = me.x - m_button_grab_x;
             int dy = me.y - m_button_grab_y;
-            switch (m_resize_corner) {
-            case LEFTTOP:
-                 m_last_resize_w = frame().width() - dx;
-                 m_last_resize_x = frame().x() + dx;
-                 // no break, use code below too
-            case RIGHTTOP:
+            if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
+                m_resize_corner == LEFT) {
+                m_last_resize_w = frame().width() - dx;
+                m_last_resize_x = frame().x() + dx;
+            }
+            if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP ||
+                m_resize_corner == TOP) {
                 m_last_resize_h = frame().height() - dy;
                 m_last_resize_y = frame().y() + dy;
-                break;
-            case LEFTBOTTOM:
-                 m_last_resize_w = frame().width() - dx;
-                 m_last_resize_x = frame().x() + dx;
-                 break;
-            case ALLCORNERS:
+            }
+            if (m_resize_corner == LEFTBOTTOM || m_resize_corner == BOTTOM ||
+                m_resize_corner == RIGHTBOTTOM)
+                m_last_resize_h = frame().height() + dy;
+            if (m_resize_corner == RIGHTBOTTOM || m_resize_corner == RIGHTTOP ||
+                m_resize_corner == RIGHT)
+                m_last_resize_w = frame().width() + dx;
+            if (m_resize_corner == ALLCORNERS) {
                 // dx or dy must be at least 2
                 if (abs(dx) >= 2 || abs(dy) >= 2) {
                     // take max and make it even
@@ -2813,21 +2816,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     m_last_resize_x = frame().x() - diff/2;
                     m_last_resize_y = frame().y() - diff/2;
                 }
-                break;
-            default: // kill warning
-                break;
-            };
-
-            // if not on top or all corner then move bottom
-
-            if (!(m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP ||
-                  m_resize_corner == ALLCORNERS))
-                m_last_resize_h = frame().height() + dy;
-
-            // if not top or left bottom or all corners then move right side
-            if (!(m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
-                  m_resize_corner == ALLCORNERS))
-                m_last_resize_w = frame().width() + dx;
+            }
 
             fixsize(&gx, &gy);
 
@@ -3402,7 +3391,7 @@ FluxboxWindow::ResizeDirection FluxboxWindow::getResizeDirection(int x, int y,
     if (model == CENTERRESIZE)
         return ALLCORNERS;
     if (model == NEARESTEDGERESIZE) {
-        if (abs(cy - abs(y - cy)) > abs(cx - abs(x - cx))) // y is nearest
+        if (cy - abs(y - cy) < cx - abs(x - cx)) // y is nearest
             return (y > cy) ? BOTTOM : TOP;
         return (x > cx) ? RIGHT : LEFT;
     }
@@ -3437,6 +3426,10 @@ void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme().upperLeftAngleCursor() :
                            (m_resize_corner == RIGHTTOP) ? frame().theme().upperRightAngleCursor() :
                            (m_resize_corner == RIGHTBOTTOM) ? frame().theme().lowerRightAngleCursor() :
+                           (m_resize_corner == LEFT) ? frame().theme().leftSideCursor() :
+                           (m_resize_corner == RIGHT) ? frame().theme().rightSideCursor() :
+                           (m_resize_corner == TOP) ? frame().theme().topSideCursor() :
+                           (m_resize_corner == BOTTOM) ? frame().theme().bottomSideCursor() :
                                                             frame().theme().lowerLeftAngleCursor();
 
     grabPointer(fbWindow().window(),
@@ -3724,11 +3717,13 @@ void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
     m_last_resize_h = dh + decoration_height;
 
     // move X if necessary
-    if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM) {
+    if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
+        m_resize_corner == LEFT) {
         m_last_resize_x = frame().x() + frame().width() - m_last_resize_w;
     }
 
-    if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP) {
+    if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP ||
+        m_resize_corner == TOP) {
         m_last_resize_y = frame().y() + frame().height() - m_last_resize_h;
     }
 
