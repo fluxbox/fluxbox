@@ -217,10 +217,9 @@ public:
     void execute() {
         // hide the menu if it's already showing for this FluxboxWindow
         if (m_win.menu().isVisible() && WindowCmd<void>::window() == &m_win) {
-            m_win.screen().hideMenus();
+            m_win.menu().hide();
             return;
         }
-        m_win.screen().hideMenus();
         // get last button pos
         const XEvent &event = Fluxbox::instance()->lastEvent();
         int x = event.xbutton.x_root - (m_win.menu().width() / 2);

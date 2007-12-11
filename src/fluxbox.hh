@@ -157,8 +157,6 @@ public:
     void rereadMenu(bool show_after_reread = false);
     /// reloads the menus if the timestamps changed
 
-    void hideExtraMenus(BScreen &screen);
-
     /// handle any system signal sent to the application
     void handleSignal(int signum);
     void update(FbTk::Subject *changed);

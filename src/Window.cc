@@ -2595,8 +2595,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         } else if (frame().handle() == be.window)
             raise();
 
-        Fluxbox::instance()->hideExtraMenus(screen());
-        screen().hideWindowMenus(this);
+        menu().hide();
     }
 }
 

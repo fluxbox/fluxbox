@@ -260,18 +260,12 @@ public:
      */
     FbTk::Menu *createToggleMenu(const std::string &label);
 
-    /// hides all menus that are visible on this screen
-    void hideMenus();
-
     /** 
      * For extras to add menus.
      * These menus will be marked internal,
      * and deleted when the window dies (as opposed to Screen
      */
     void addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu);
-
-    /// hide all windowmenus except the given one (if given)
-    void hideWindowMenus(const FluxboxWindow* except= 0);
 
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
 

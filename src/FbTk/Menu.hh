@@ -124,7 +124,7 @@ public:
     /// show menu
     virtual void show();
     /// hide menu
-    virtual void hide();
+    virtual void hide(bool force = false);
     virtual void clearWindow();
 #ifdef NOT_USED
     void setActiveIndex(int index) { m_active_index = index; }
@@ -160,6 +160,7 @@ public:
     inline unsigned char alpha() const { return theme().alpha(); }
     inline static Menu *shownMenu() { return shown; }
     inline static Menu *focused() { return s_focused; }
+    static void hideShownMenu(bool force = true);
     /// @return menuitem at index
     inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
     inline MenuItem *find(unsigned int index) { return menuitems[index]; }

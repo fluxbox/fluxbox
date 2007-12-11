@@ -50,7 +50,6 @@ class ShowMenuAboveToolbar: public FbTk::Command {
 public:
     explicit ShowMenuAboveToolbar(Toolbar &tbar):m_tbar(tbar) { }
     void execute() {
-        m_tbar.screen().hideMenus();
         // get last button pos
         const XEvent &event = Fluxbox::instance()->lastEvent();
         int head = m_tbar.screen().getHead(event.xbutton.x_root, event.xbutton.y_root);

@@ -1581,19 +1581,6 @@ bool Fluxbox::menuTimestampsChanged() const {
     return false;
 }
 
-void Fluxbox::hideExtraMenus(BScreen &screen) {
-
-#ifdef USE_TOOLBAR
-        // hide toolbar that matches screen
-        for (size_t toolbar = 0; toolbar < m_toolbars.size(); ++toolbar) {
-            if (&(m_toolbars[toolbar]->screen()) == &screen)
-                m_toolbars[toolbar]->menu().hide();
-        }
-
-#endif // USE_TOOLBAR
-
-}
-
 void Fluxbox::rereadMenu(bool show_after_reread) {
     m_reread_menu_wait = true;
     m_show_menu_after_reread = show_after_reread;

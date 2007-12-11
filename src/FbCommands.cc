@@ -261,14 +261,7 @@ void KeyModeCmd::execute() {
 }
 
 void HideMenuCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->mouseScreen();
-    screen->hideMenus();
-    if (screen->rootMenu().isVisible())
-        screen->rootMenu().hide();
-    if (screen->workspaceMenu().isVisible())
-        screen->workspaceMenu().hide();
-    if (FbTk::Menu::shownMenu())
-        FbTk::Menu::shownMenu()->hide();
+    FbTk::Menu::hideShownMenu();
 }
 
 void ShowClientMenuCmd::execute() {

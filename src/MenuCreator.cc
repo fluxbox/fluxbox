@@ -256,8 +256,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
         // execute and hide menu
         using namespace FbTk;
         RefCount<Command> exec_cmd(CommandParser::instance().parseLine("exec " + str_cmd));
-        RefCount<Command> hide_menu(new SimpleCommand<FbTk::Menu>(menu,
-                                                                  &Menu::hide));
+        RefCount<Command> hide_menu(CommandParser::instance().parseLine("hidemenus"));
         MacroCommand *exec_and_hide = new FbTk::MacroCommand();
         exec_and_hide->add(hide_menu);
         exec_and_hide->add(exec_cmd);
@@ -266,8 +265,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
     } else if (str_key == "macrocmd") {
         using namespace FbTk;
         RefCount<Command> macro_cmd(CommandParser::instance().parseLine("macrocmd " + str_cmd));
-        RefCount<Command> hide_menu(new SimpleCommand<FbTk::Menu>(menu,
-                                                                  &Menu::hide));
+        RefCount<Command> hide_menu(CommandParser::instance().parseLine("hidemenus"));
         MacroCommand *exec_and_hide = new FbTk::MacroCommand();
         exec_and_hide->add(hide_menu);
         exec_and_hide->add(macro_cmd);

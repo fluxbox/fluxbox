@@ -909,43 +909,6 @@ void BScreen::addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu) 
     m_windowmenu->setInternalMenu();
 }
 
-void BScreen::hideMenus() {
-    // hide extra menus
-    Fluxbox::instance()->hideExtraMenus(*this);
-
-#ifdef SLIT
-    // hide slit menu
-    if (slit())
-        slit()->menu().hide();
-#endif // SLIT
-
-    // hide icon menus
-    if (!iconList().empty()) {
-        Icons::iterator it = iconList().begin();
-        const Icons::iterator it_end = iconList().end();
-        for (; it != it_end; ++it)
-            (*it)->menu().hide();
-    }
-    // hide all client menus
-    hideWindowMenus();
-
-}
-
-void BScreen::hideWindowMenus(const FluxboxWindow* except) {
-    Workspaces::iterator w_it = getWorkspacesList().begin();
-    const Workspaces::iterator w_it_end = getWorkspacesList().end();
-    for (; w_it != w_it_end; ++w_it) {
-        if (!(*w_it)->windowList().empty()) {
-            Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
-            const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
-            for (; win_it != win_it_end; ++win_it) {
-                if (*win_it != except)
-                    (*win_it)->menu().hide();
-            }
-        }
-    }
-}
-
 void BScreen::reconfigure() {
     Fluxbox *fluxbox = Fluxbox::instance();
 

@@ -207,7 +207,6 @@ int Menu::insert(const FbString &label, int pos) {
 }
 
 int Menu::insert(const FbString &label, Menu *submenu, int pos) {
-    submenu->m_parent = this;
     return insert(new MenuItem(label, submenu), pos);
 }
 
@@ -516,32 +515,24 @@ void Menu::show() {
     menu.window.show();
     raise();
 
-    if (! m_parent && shown != this) {
-        if (shown && (! shown->m_torn))
-            shown->hide();
-
-        shown = this;
-    }
+    if (shown && shown != this && shown != m_parent)
+        shown->hide(true);
+    shown = this;
 
 }
 
 
-void Menu::hide() {
+void Menu::hide(bool force) {
 
-    if (!isVisible())
+    if (!isVisible() || m_torn && !force)
         return;
 
-    // if not m_torn and parent is m_visible, go to first parent
-    // and hide it
-    if (!m_torn && m_parent && m_parent->isVisible()) {
-        Menu *p = m_parent;
+    // if parent is visible, go to first parent and hide it
+    Menu *p = this;
+    while (p->m_parent && p->m_parent->isVisible())
+        p = p->m_parent;
 
-        while ((! p->m_torn) && p->m_parent && p->m_parent->isVisible())
-            p = p->m_parent;
-
-        p->internal_hide();
-    } else if (!m_torn) // if we dont have a parent then do hide here
-        internal_hide();
+    p->internal_hide();
 
 }
 
@@ -590,7 +581,7 @@ void Menu::internal_hide(bool first) {
     m_active_index = -1;
     clearItem(old); // clear old area from highlight
 
-    if (shown && shown->menu.window == menu.window) {
+    if (shown == this) {
         if (m_parent && m_parent->isVisible())
             shown = m_parent;
         else
@@ -604,6 +595,7 @@ void Menu::internal_hide(bool first) {
         s_focused && !s_focused->isVisible())
         m_parent->grabInputFocus();
 
+    m_parent = 0;
     menu.window.hide();
 }
 
@@ -1279,6 +1271,11 @@ void Menu::drawLine(int index, int size){
 
     FbTk::MenuItem *item = find(index);
     item->drawLine(menu.frame, theme(), size, item_x, item_y, menu.item_w);
+}
+
+void Menu::hideShownMenu(bool force) {
+    if (shown)
+        shown->hide(force);
 }
 
 }; // end namespace FbTk
