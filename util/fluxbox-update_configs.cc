@@ -245,7 +245,7 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         // let's put our new keybindings first, so they're easy to find
         new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
         new_keyfile += "OnTitlebar Double Mouse1 :Shade\n";
-        new_keyfile += "OnTitlebar Mouse3 :Windowmenu\n";
+        new_keyfile += "OnTitlebar Mouse3 :WindowMenu\n";
         new_keyfile += "OnTitlebar Mouse2 :Lower\n";
 
         FbTk::Resource<bool> rc_reverse(rm, false,"session.screen0.reversewheeling", "Session.Screen0.ReverseWheeling");

@@ -15,7 +15,6 @@ session.screen0.fullMaximization:	False
 session.screen0.edgeSnapThreshold:	0
 session.screen0.rowPlacementDirection:	LeftToRight
 session.screen0.workspaces:	4
-session.screen0.focusLastWindow:	True
 session.screen0.colPlacementDirection:	TopToBottom
 session.screen0.windowPlacement:	RowSmartPlacement
 session.screen0.tab.width:	64
@@ -31,4 +30,4 @@ session.colorsPerChannel:	4
 session.doubleClickInterval:	250
 session.cacheMax:	200
 session.imageDither:	True
-session.configVersion:	5
+session.configVersion:	6
