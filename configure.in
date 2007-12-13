@@ -564,7 +564,7 @@ AC_SUBST(DEFAULT_MENU)
 
 AC_ARG_WITH(
   style,
-  [  --with-style=path       style by default   (PREFIX/share/fluxbox/styles/Meta)],
+  [  --with-style=path       style by default   (PREFIX/share/fluxbox/styles/bloe)],
   DEFAULT_STYLE=$with_style,
   DEFAULT_STYLE=\$\(prefix\)/share/fluxbox/styles/bloe
 )
