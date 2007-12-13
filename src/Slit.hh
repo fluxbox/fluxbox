@@ -177,7 +177,7 @@ private:
     FbTk::Resource<Slit::Placement> m_rc_placement;
     FbTk::Resource<Slit::Direction> m_rc_direction;
     FbTk::Resource<int> m_rc_alpha, m_rc_on_head;
-    FbTk::Resource<Layer> m_rc_layernum;
+    FbTk::Resource<class Layer> m_rc_layernum;
 };
 
 

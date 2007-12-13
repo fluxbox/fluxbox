@@ -178,7 +178,7 @@ private:
     FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over, m_rc_visible;
     FbTk::Resource<int> m_rc_width_percent;
     FbTk::Resource<int> m_rc_alpha;
-    FbTk::Resource<Layer> m_rc_layernum;
+    FbTk::Resource<class Layer> m_rc_layernum;
     FbTk::Resource<int> m_rc_on_head;
     FbTk::Resource<Placement> m_rc_placement;
     FbTk::Resource<int> m_rc_height;

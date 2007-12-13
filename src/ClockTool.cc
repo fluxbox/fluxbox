@@ -26,7 +26,7 @@
 
 #include "ToolTheme.hh"
 #include "Screen.hh"
-#include "CommandParser.hh"
+#include "FbTk/CommandRegistry.hh"
 #include "CommandDialog.hh"
 #include "fluxbox.hh"
 
@@ -128,7 +128,7 @@ public:
 
         CommandDialog *dialog = new CommandDialog(*screen, "Edit Clock Format", 
                                                   "SetResourceValue " + resourcename + " ");
-        FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine("reconfigure"));
+        FbTk::RefCount<FbTk::Command> cmd(FbTk::CommandRegistry::instance().parseLine("reconfigure"));
         dialog->setPostCommand(cmd);
         dialog->setText(screen->resourceManager().resourceValue(resourcename));
         dialog->show();
@@ -169,7 +169,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_button.setGC(m_theme.textGC());
 
     // setup menu
-    FbTk::RefCount<FbTk::Command> saverc(CommandParser::instance().parseLine("saverc"));
+    FbTk::RefCount<FbTk::Command> saverc(FbTk::CommandRegistry::instance().parseLine("saverc"));
     FbTk::MenuItem *item = new ClockMenuItem(*this);
     item->setCommand(saverc);
     menu.insert(item);

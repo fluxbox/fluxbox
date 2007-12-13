@@ -32,7 +32,7 @@
  */
 class ToggleMenu: public FbMenu {
 public:
-    ToggleMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
+    ToggleMenu(class MenuTheme &tm, FbTk::ImageControl &imgctrl,
                FbTk::XLayer &layer):FbMenu(tm, imgctrl, layer)
     {}
     virtual ~ToggleMenu() {}

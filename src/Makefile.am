@@ -118,8 +118,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Xutil.hh Xutil.cc \
 	CurrentWindowCmd.hh CurrentWindowCmd.cc \
 	WorkspaceCmd.hh WorkspaceCmd.cc \
-	CommandParser.hh CommandParser.cc \
-	FbCommandFactory.hh FbCommandFactory.cc \
 	Shape.hh Shape.cc \
 	MenuTheme.hh MenuTheme.cc \
 	Container.hh Container.cc \
@@ -156,4 +154,4 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	${REMEMBER_SOURCE} ${TOOLBAR_SOURCE}
 
 
-LDADD=FbTk/libFbTk.a defaults.$(OBJEXT)
+LDADD=FbTk/libFbTk.a FbTk/LogicCommands.o defaults.$(OBJEXT)

@@ -32,7 +32,7 @@
 #include "FbTk/App.hh"
 #include "FbTk/Command.hh"
 
-#include "CommandParser.hh"
+#include "FbTk/CommandRegistry.hh"
 #include "FbTk/I18n.hh"
 
 #ifdef HAVE_CONFIG_H
@@ -395,7 +395,7 @@ bool Keys::addBinding(const string &linebuffer) {
             const char *str = FbTk::StringUtil::strcasestr(linebuffer.c_str(),
                     val[argc].c_str() + 1); // +1 to skip ':'
             if (str)
-                current_key->m_command = CommandParser::instance().parseLine(str);
+                current_key->m_command = FbTk::CommandRegistry::instance().parseLine(str);
 
             if (!str || *current_key->m_command == 0 || mod) {
                 delete first_new_key;

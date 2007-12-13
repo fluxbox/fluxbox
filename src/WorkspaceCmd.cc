@@ -33,6 +33,8 @@
 #include "WindowCmd.hh"
 
 #include "FbTk/KeyUtil.hh"
+#include "FbTk/CommandRegistry.hh"
+#include "FbTk/stringstream.hh"
 
 #ifdef HAVE_CMATH
   #include <cmath>
@@ -41,6 +43,8 @@
 #endif
 #include <algorithm>
 #include <functional>
+
+using std::string;
 
 void WindowListCmd::execute() {
     if (m_pat.error()) {
@@ -65,6 +69,20 @@ void WindowListCmd::execute() {
         WindowCmd<void>::setClient(old);
     }
 }
+
+FbTk::BoolCommand *SomeCmd::parse(const string &command, const string &args,
+                                  bool trusted) {
+    BoolCommand *boolcmd =
+            FbTk::CommandRegistry::instance().parseBoolLine(args, trusted);
+    if (!boolcmd)
+        return 0;
+    if (command == "some")
+        return new SomeCmd(FbTk::RefCount<FbTk::BoolCommand>(boolcmd));
+    return new EveryCmd(FbTk::RefCount<FbTk::BoolCommand>(boolcmd));
+}
+
+REGISTER_BOOLCOMMAND_PARSER(some, SomeCmd::parse);
+REGISTER_BOOLCOMMAND_PARSER(every, SomeCmd::parse);
 
 bool SomeCmd::bool_execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
@@ -108,6 +126,37 @@ bool EveryCmd::bool_execute() {
     return true;
 }
 
+namespace {
+
+FbTk::Command *parseWindowList(const string &command,
+                               const string &args, bool trusted) {
+    int opts;
+    string pat;
+    FocusableList::parseArgs(args, opts, pat);
+    if (command == "attach")
+        return new AttachCmd(pat);
+    else if (command == "nextwindow")
+        return new NextWindowCmd(opts, pat);
+    else if (command == "nextgroup") {
+        opts |= FocusableList::LIST_GROUPS;
+        return new NextWindowCmd(opts, pat);
+    } else if (command == "prevwindow")
+        return new PrevWindowCmd(opts, pat);
+    else if (command == "prevgroup") {
+        opts |= FocusableList::LIST_GROUPS;
+        return new PrevWindowCmd(opts, pat);
+    }
+    return 0;
+}
+
+REGISTER_COMMAND_PARSER(attach, parseWindowList);
+REGISTER_COMMAND_PARSER(nextwindow, parseWindowList);
+REGISTER_COMMAND_PARSER(nextgroup, parseWindowList);
+REGISTER_COMMAND_PARSER(prevwindow, parseWindowList);
+REGISTER_COMMAND_PARSER(prevgroup, parseWindowList);
+
+}; // end anonymous namespace
+
 void AttachCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
@@ -140,6 +189,21 @@ void PrevWindowCmd::execute() {
         screen->cycleFocus(m_option, &m_pat, true);
 }
 
+FbTk::Command *GoToWindowCmd::parse(const string &command,
+                                    const string &arguments, bool trusted) {
+    int num, opts;
+    string args, pat;
+    FbTk_istringstream iss(arguments.c_str());
+    iss >> num;
+    string::size_type pos = arguments.find_first_of("({");
+    if (pos != string::npos && pos != arguments.size())
+        args = arguments.c_str() + pos;
+    FocusableList::parseArgs(args, opts, pat);
+    return new GoToWindowCmd(num, opts, pat);
+}
+
+REGISTER_COMMAND_PARSER(gotowindow, GoToWindowCmd::parse);
+
 void GoToWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
@@ -148,6 +212,24 @@ void GoToWindowCmd::execute() {
         screen->focusControl().goToWindowNumber(*win_list, m_num, &m_pat);
     }
 }
+
+FbTk::Command *DirFocusCmd::parse(const string &command,
+                                  const string &args, bool trusted) {
+    if (command == "focusup")
+        return new DirFocusCmd(FocusControl::FOCUSUP);
+    else if (command == "focusdown")
+        return new DirFocusCmd(FocusControl::FOCUSDOWN);
+    else if (command == "focusleft")
+        return new DirFocusCmd(FocusControl::FOCUSLEFT);
+    else if (command == "focusright")
+        return new DirFocusCmd(FocusControl::FOCUSRIGHT);
+    return 0;
+}
+
+REGISTER_COMMAND_PARSER(focusup, DirFocusCmd::parse);
+REGISTER_COMMAND_PARSER(focusdown, DirFocusCmd::parse);
+REGISTER_COMMAND_PARSER(focusleft, DirFocusCmd::parse);
+REGISTER_COMMAND_PARSER(focusright, DirFocusCmd::parse);
 
 void DirFocusCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
@@ -159,17 +241,50 @@ void DirFocusCmd::execute() {
         screen->focusControl().dirFocus(*win, m_dir);
 }
 
+REGISTER_COMMAND(addworkspace, AddWorkspaceCmd);
+
 void AddWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
         screen->addWorkspace();
 }
 
+REGISTER_COMMAND(removelastworkspace, RemoveLastWorkspaceCmd);
+
 void RemoveLastWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
         screen->removeLastWorkspace();
 }
+
+namespace {
+
+FbTk::Command *parseIntCmd(const string &command, const string &args,
+                           bool trusted) {
+    int num = 1;
+    FbTk_istringstream iss(args.c_str());
+    iss >> num;
+    if (command == "nextworkspace")
+        return new NextWorkspaceCmd(num);
+    else if (command == "prevworkspace")
+        return new PrevWorkspaceCmd(num);
+    else if (command == "rightworkspace")
+        return new RightWorkspaceCmd(num);
+    else if (command == "leftworkspace")
+        return new LeftWorkspaceCmd(num);
+    else if (command == "workspace")
+        // workspaces appear 1-indexed to the user, hence the minus 1
+        return new JumpToWorkspaceCmd(num - 1);
+    return 0;
+}
+
+REGISTER_COMMAND_PARSER(nextworkspace, parseIntCmd);
+REGISTER_COMMAND_PARSER(prevworkspace, parseIntCmd);
+REGISTER_COMMAND_PARSER(rightworkspace, parseIntCmd);
+REGISTER_COMMAND_PARSER(leftworkspace, parseIntCmd);
+REGISTER_COMMAND_PARSER(workspace, parseIntCmd);
+
+}; // end anonymous namespace
 
 void NextWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -210,6 +325,7 @@ void JumpToWorkspaceCmd::execute() {
     }
 }
 
+REGISTER_COMMAND(arrangewindows, ArrangeWindowsCmd);
 
 /**
   try to arrange the windows on the current workspace in a 'clever' way.
@@ -335,6 +451,8 @@ void ArrangeWindowsCmd::execute() {
     }
 }
 
+REGISTER_COMMAND(showdesktop, ShowDesktopCmd);
+
 void ShowDesktopCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
@@ -348,6 +466,8 @@ void ShowDesktopCmd::execute() {
             (*it)->iconify();
     }
 }
+
+REGISTER_COMMAND(closeallwindows, CloseAllWindowsCmd);
 
 void CloseAllWindowsCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();

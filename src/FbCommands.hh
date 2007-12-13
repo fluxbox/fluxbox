@@ -57,6 +57,8 @@ class ExportCmd : public FbTk::Command {
 public:
     ExportCmd(const std::string& name, const std::string& value);
     void execute();
+    static FbTk::Command *parse(const std::string &command,
+                                const std::string &args, bool trusted);
 private:
     std::string m_name;
     std::string m_value;
@@ -121,6 +123,8 @@ public:
     ShowClientMenuCmd(int option, std::string &pat):
             m_option(option|FocusableList::LIST_GROUPS), m_pat(pat.c_str()) { }
     void execute();
+    static FbTk::Command *parse(const std::string &command,
+                                const std::string &args, bool trusted);
 private:
     const int m_option;
     const ClientPattern m_pat;
@@ -208,6 +212,8 @@ public:
     DeiconifyCmd(Mode mode= LASTWORKSPACE,
                  Destination dest= CURRENT);
     void execute();
+    static FbTk::Command *parse(const std::string &command,
+                                const std::string &args, bool trusted);
 private:
     Mode m_mode;
     Destination m_dest;

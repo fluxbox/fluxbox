@@ -27,7 +27,7 @@
 #include "Workspace.hh"
 #include "WorkspaceCmd.hh"
 #include "MenuCreator.hh"
-#include "CommandParser.hh"
+#include "FbTk/CommandRegistry.hh"
 #include "FbCommands.hh"
 #include "Layer.hh"
 
@@ -147,7 +147,7 @@ void WorkspaceMenu::init(BScreen &screen) {
     remove_workspace_macro->add(saverc_cmd);
     RefCount<Command> remove_last_cmd(remove_workspace_macro);
 
-    RefCount<Command> start_edit(CommandParser::instance().parseLine("setworkspacenamedialog"));
+    RefCount<Command> start_edit(FbTk::CommandRegistry::instance().parseLine("setworkspacenamedialog"));
 
     insert(new FbTk::MenuSeparator());
     insert(_FB_XTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 

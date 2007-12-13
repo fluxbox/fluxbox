@@ -23,7 +23,55 @@
 
 #include "MacroCommand.hh"
 
+#include "CommandRegistry.hh"
+#include "StringUtil.hh"
+
+#include <string>
+
 namespace FbTk {
+
+namespace {
+
+template <typename M>
+M *addCommands(M *macro, const std::string &args, bool trusted) {
+
+    std::string cmd;
+    int err = 0;
+    int pos = 0;
+
+    while (true) {
+        RefCount<Command> next(0);
+        pos += err;
+        err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
+                                           '{', '}', " \t\n", true);
+        if (err == 0)
+            break;
+        if (err > 0)
+            next = CommandRegistry::instance().parseLine(cmd, trusted);
+        if (*next != 0)
+            macro->add(next);
+    }
+
+    if (macro->size() > 0)
+        return macro;
+
+    delete macro;
+    return 0;
+}
+
+Command *parseMacroCmd(const std::string &command, const std::string &args,
+                       bool trusted) {
+    if (command == "macrocmd")
+        return addCommands<MacroCommand>(new MacroCommand, args, trusted);
+    else if (command == "togglecmd")
+        return addCommands<ToggleCommand>(new ToggleCommand, args, trusted);
+    return 0;
+}
+
+REGISTER_COMMAND_PARSER(macrocmd, parseMacroCmd);
+REGISTER_COMMAND_PARSER(togglecmd, parseMacroCmd);
+
+}; // end anonymous namespace
 
 void MacroCommand::add(RefCount<Command> &com) {
     m_commandlist.push_back(com);

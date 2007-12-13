@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/13:
+   * Moved command parsing code all over the place -- expect any patches that
+     add new commands to be broken (Mark, Simon)
+     Added FbTk/CommandRegistry.cc/hh
+     Removed FbCommandFactory.cc/hh CommandParser.cc/hh
 *07/12/11:
    * Added new resize modes for key command StartResizing: NearestEdge, Left,
      Right, Top, Bottom (Mark)

@@ -27,6 +27,7 @@
 #include "Command.hh"
 #include "RefCount.hh"
 
+#include <string>
 #include <vector>
 
 namespace FbTk {
@@ -43,7 +44,8 @@ public:
         } else
             if (*m_f) m_f->execute();
     }
-
+    static Command *parse(const std::string &cmd, const std::string &args,
+                          bool trusted);
 private:
     RefCount<BoolCommand> m_cond;
     RefCount<Command> m_t, m_f;

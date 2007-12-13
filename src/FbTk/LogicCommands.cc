@@ -23,7 +23,100 @@
 
 #include "LogicCommands.hh"
 
+#include "CommandRegistry.hh"
+#include "StringUtil.hh"
+
+using FbTk::StringUtil::removeFirstWhitespace;
+using FbTk::StringUtil::toLower;
+using std::string;
+
 namespace FbTk {
+
+namespace {
+
+template <typename M>
+M *addCommands(M *macro, const string &args, bool trusted) {
+    int pos = 0, err = 0;
+    string cmd;
+
+    while (true) {
+        RefCount<BoolCommand> tmp(0);
+        err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
+                                           '{', '}', " \t\n", true);
+        pos += err;
+        if (err == 0)
+            break;
+
+        tmp = CommandRegistry::instance().parseBoolLine(cmd, trusted);
+        if (*tmp)
+            macro->add(tmp);
+    }
+
+    if (macro->size() > 0)
+        return macro;
+    delete macro;
+    return 0;
+}
+
+BoolCommand *parseLogicCommand(const string &command, const string &args,
+                               bool trusted) {
+    if (command == "not") {
+        BoolCommand *boolcmd =
+                CommandRegistry::instance().parseBoolLine(args, trusted);
+        if (!boolcmd)
+            return 0;
+        RefCount<BoolCommand> ref(boolcmd);
+        return new NotCommand(ref);
+    } else if (command == "and")
+        return addCommands<AndCommand>(new AndCommand(), args, trusted);
+    else if (command == "or")
+        return addCommands<OrCommand>(new OrCommand(), args, trusted);
+    else if (command == "xor")
+        return addCommands<XorCommand>(new XorCommand(), args, trusted);
+    return 0;
+}
+
+REGISTER_BOOLCOMMAND_PARSER(not, parseLogicCommand);
+REGISTER_BOOLCOMMAND_PARSER(and, parseLogicCommand);
+REGISTER_BOOLCOMMAND_PARSER(or, parseLogicCommand);
+REGISTER_BOOLCOMMAND_PARSER(xor, parseLogicCommand);
+
+}; // end anonymous namespace
+
+Command *IfCommand::parse(const std::string &command, const std::string &args,
+                          bool trusted) {
+    std::string cmd;
+    int err = 0, pos = 0;
+    RefCount<BoolCommand> cond(0);
+    RefCount<Command> t(0), f(0);
+
+    err = StringUtil::getStringBetween(cmd, args.c_str(),
+                                       '{', '}', " \t\n", true);
+    if (err > 0)
+        cond = CommandRegistry::instance().parseBoolLine(cmd, trusted);
+    if (err == 0 || *cond == 0)
+        return 0;
+
+    pos = err;
+    err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
+                                       '{', '}', " \t\n", true);
+    if (err == 0)
+        return 0;
+    t = CommandRegistry::instance().parseLine(cmd, trusted);
+
+    pos += err;
+    err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
+                                       '{', '}', " \t\n", true);
+    if (err > 0)
+        f = CommandRegistry::instance().parseLine(cmd, trusted);
+    if (err == 0 || *t == 0 && *f == 0)
+        return 0;
+
+    return new IfCommand(cond, t, f);
+}
+
+REGISTER_COMMAND_PARSER(if, IfCommand::parse);
+REGISTER_COMMAND_PARSER(cond, IfCommand::parse);
 
 void OrCommand::add(RefCount<BoolCommand> &com) {
     m_commandlist.push_back(com);

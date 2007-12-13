@@ -26,7 +26,7 @@
 
 #include "defaults.hh"
 #include "Screen.hh"
-#include "CommandParser.hh"
+#include "FbTk/CommandRegistry.hh"
 #include "fluxbox.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
@@ -247,7 +247,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
         else
             menu.insert(str_label, submenu);
     } else if (str_key == "exit") { // exit
-        FbTk::RefCount<FbTk::Command> exit_cmd(CommandParser::instance().parseLine("exit"));
+        FbTk::RefCount<FbTk::Command> exit_cmd(FbTk::CommandRegistry::instance().parseLine("exit"));
         if (str_label.empty())
             menu.insert(_FB_XTEXT(Menu, Exit, "Exit", "Exit Command"), exit_cmd);
         else
@@ -255,8 +255,8 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
     } else if (str_key == "exec") {
         // execute and hide menu
         using namespace FbTk;
-        RefCount<Command> exec_cmd(CommandParser::instance().parseLine("exec " + str_cmd));
-        RefCount<Command> hide_menu(CommandParser::instance().parseLine("hidemenus"));
+        RefCount<Command> exec_cmd(FbTk::CommandRegistry::instance().parseLine("exec " + str_cmd));
+        RefCount<Command> hide_menu(FbTk::CommandRegistry::instance().parseLine("hidemenus"));
         MacroCommand *exec_and_hide = new FbTk::MacroCommand();
         exec_and_hide->add(hide_menu);
         exec_and_hide->add(exec_cmd);
@@ -264,8 +264,8 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
         menu.insert(str_label, exec_and_hide_cmd);
     } else if (str_key == "macrocmd") {
         using namespace FbTk;
-        RefCount<Command> macro_cmd(CommandParser::instance().parseLine("macrocmd " + str_cmd));
-        RefCount<Command> hide_menu(CommandParser::instance().parseLine("hidemenus"));
+        RefCount<Command> macro_cmd(FbTk::CommandRegistry::instance().parseLine("macrocmd " + str_cmd));
+        RefCount<Command> hide_menu(FbTk::CommandRegistry::instance().parseLine("hidemenus"));
         MacroCommand *exec_and_hide = new FbTk::MacroCommand();
         exec_and_hide->add(hide_menu);
         exec_and_hide->add(macro_cmd);
@@ -364,7 +364,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
     else { // ok, if we didn't find any special menu item we try with command parser
         // we need to attach command with arguments so command parser can parse it
         string line = str_key + " " + str_cmd;
-        FbTk::RefCount<FbTk::Command> command(CommandParser::instance().parseLine(line));
+        FbTk::RefCount<FbTk::Command> command(FbTk::CommandRegistry::instance().parseLine(line));
         if (*command != 0) {
             // special NLS default labels
             if (str_label.empty()) {

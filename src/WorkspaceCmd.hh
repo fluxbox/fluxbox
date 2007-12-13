@@ -32,6 +32,8 @@
 
 #include "FbTk/RefCount.hh"
 
+#include <string>
+
 class WindowListCmd: public FbTk::Command {
 public:
     WindowListCmd(FbTk::RefCount<FbTk::Command> cmd, const std::string &pat):
@@ -49,6 +51,8 @@ public:
     SomeCmd(FbTk::RefCount<FbTk::BoolCommand> cmd): m_cmd(cmd) { }
 
     bool bool_execute();
+    static FbTk::BoolCommand *parse(const std::string &command,
+                                    const std::string &args, bool trusted);
 
 private:
     FbTk::RefCount<FbTk::BoolCommand> m_cmd;
@@ -97,6 +101,8 @@ public:
     GoToWindowCmd(int num, int option, std::string &pat):
             m_num(num), m_option(option), m_pat(pat.c_str()) { }
     void execute();
+    static FbTk::Command *parse(const std::string &command,
+                                const std::string &args, bool trusted);
 private:
     const int m_num;
     const int m_option;
@@ -107,6 +113,8 @@ class DirFocusCmd: public FbTk::Command {
 public:
     explicit DirFocusCmd(const FocusControl::FocusDir dir): m_dir(dir) { }
     void execute();
+    static FbTk::Command *parse(const std::string &command,
+                                const std::string &args, bool trusted);
 private:
     const FocusControl::FocusDir m_dir;
 };

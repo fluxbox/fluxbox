@@ -16,6 +16,7 @@ imlib2_SOURCE= ImageImlib2.hh ImageImlib2.cc
 endif
 
 libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
+	CommandRegistry.hh CommandRegistry.cc \
 	FileUtil.hh FileUtil.cc \
 	EventHandler.hh EventManager.hh EventManager.cc \
 	FbWindow.hh FbWindow.cc Font.cc Font.hh FontImp.hh \

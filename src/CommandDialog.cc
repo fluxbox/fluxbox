@@ -27,7 +27,7 @@
 #include "Screen.hh"
 #include "FbWinFrameTheme.hh"
 #include "WinClient.hh"
-#include "CommandParser.hh"
+#include "FbTk/CommandRegistry.hh"
 #include "FocusControl.hh"
 #include "fluxbox.hh"
 
@@ -139,7 +139,7 @@ void CommandDialog::keyPressEvent(XKeyEvent &event) {
     if (ks == XK_Return) {
         hide(); // hide and return focus to a FluxboxWindow
         // create command from line
-        auto_ptr<FbTk::Command> cmd(CommandParser::instance().
+        auto_ptr<FbTk::Command> cmd(FbTk::CommandRegistry::instance().
             parseLine(m_precommand + m_textbox.text()));
         if (cmd.get())
             cmd->execute();
@@ -170,8 +170,8 @@ void CommandDialog::tabComplete() {
             return;
         }
 
-        CommandParser::CommandFactoryMap::const_iterator it = CommandParser::instance().factorys().begin();
-        const CommandParser::CommandFactoryMap::const_iterator it_end = CommandParser::instance().factorys().end();
+        FbTk::CommandRegistry::CreatorMap::const_iterator it = FbTk::CommandRegistry::instance().commandMap().begin();
+        const FbTk::CommandRegistry::CreatorMap::const_iterator it_end = FbTk::CommandRegistry::instance().commandMap().end();
         vector<string> matches;
         for (; it != it_end; ++it) {
             if ((*it).first.find(prefix) == 0) {

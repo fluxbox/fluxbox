@@ -33,7 +33,7 @@
 #include "Workspace.hh"
 #include "FbMenu.hh"
 #include "BoolMenuItem.hh"
-#include "CommandParser.hh"
+#include "FbTk/CommandRegistry.hh"
 #include "WinClient.hh"
 #include "FocusControl.hh"
 #include "FbCommands.hh"
@@ -282,7 +282,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     // setup use pixmap item to reconfig iconbar and save resource on click
     MacroCommand *save_and_reconfig = new MacroCommand();
     RefCount<Command> reconfig(new SimpleCommand<IconbarTool>(*this, &IconbarTool::renderTheme));
-    RefCount<Command> save(CommandParser::instance().parseLine("saverc"));
+    RefCount<Command> save(FbTk::CommandRegistry::instance().parseLine("saverc"));
     save_and_reconfig->add(reconfig);
     save_and_reconfig->add(save);
     RefCount<Command> s_and_reconfig(save_and_reconfig);

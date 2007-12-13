@@ -36,7 +36,7 @@
 #include "WorkspaceNameTheme.hh"
 #include "ButtonTheme.hh"
 
-#include "CommandParser.hh"
+#include "FbTk/CommandRegistry.hh"
 #include "Screen.hh"
 #include "Toolbar.hh"
 #include "fluxbox.hh"
@@ -107,7 +107,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
     } else if (name == "nextworkspace" || 
                name == "prevworkspace") {
 
-        FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine(name));
+        FbTk::RefCount<FbTk::Command> cmd(FbTk::CommandRegistry::instance().parseLine(name));
         if (*cmd == 0) // we need a command
             return 0;
 
@@ -127,7 +127,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
     } else if (name == "nextwindow" || 
                name == "prevwindow") {
 
-        FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine(name));
+        FbTk::RefCount<FbTk::Command> cmd(FbTk::CommandRegistry::instance().parseLine(name));
         if (*cmd == 0) // we need a command
             return 0;
 

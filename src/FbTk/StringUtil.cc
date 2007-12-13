@@ -233,6 +233,18 @@ string::size_type removeTrailingWhitespace(string &str) {
     return first_pos;
 }
 
+void getFirstWord(const std::string &in, std::string &word, std::string &rest) {
+    word = in;
+    string::size_type first_pos = StringUtil::removeFirstWhitespace(word);
+    string::size_type second_pos = word.find_first_of(" \t", first_pos);
+    if (second_pos != string::npos) {
+        rest = word.substr(second_pos);
+        word.erase(second_pos);
+        removeFirstWhitespace(rest);
+        removeTrailingWhitespace(rest);
+    }
+}
+
 }; // end namespace StringUtil
 
 }; // end namespace FbTk
