@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/12/13:
+   * Close menus only when they lose focus (Mark)
+     MenuCreator.cc FbTk/Menu.cc
    * Moved command parsing code all over the place -- expect any patches that
      add new commands to be broken (Mark, Simon)
      Added FbTk/CommandRegistry.cc/hh

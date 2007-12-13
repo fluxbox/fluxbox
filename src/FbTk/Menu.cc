@@ -815,6 +815,8 @@ void Menu::handleEvent(XEvent &event) {
     if (event.type == FocusOut) {
         if (s_focused == this)
             s_focused = 0;
+        if (shown == this && !m_torn)
+            hide();
     // I don't know why, but I get a FocusIn event when closing the menu with
     // the mouse over it -- probably an xorg bug, but it's easy to address here
     } else if (event.type == FocusIn && m_visible) {

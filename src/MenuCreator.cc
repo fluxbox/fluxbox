@@ -256,21 +256,11 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
         // execute and hide menu
         using namespace FbTk;
         RefCount<Command> exec_cmd(FbTk::CommandRegistry::instance().parseLine("exec " + str_cmd));
-        RefCount<Command> hide_menu(FbTk::CommandRegistry::instance().parseLine("hidemenus"));
-        MacroCommand *exec_and_hide = new FbTk::MacroCommand();
-        exec_and_hide->add(hide_menu);
-        exec_and_hide->add(exec_cmd);
-        RefCount<Command> exec_and_hide_cmd(exec_and_hide);
-        menu.insert(str_label, exec_and_hide_cmd);
+        menu.insert(str_label, exec_cmd);
     } else if (str_key == "macrocmd") {
         using namespace FbTk;
         RefCount<Command> macro_cmd(FbTk::CommandRegistry::instance().parseLine("macrocmd " + str_cmd));
-        RefCount<Command> hide_menu(FbTk::CommandRegistry::instance().parseLine("hidemenus"));
-        MacroCommand *exec_and_hide = new FbTk::MacroCommand();
-        exec_and_hide->add(hide_menu);
-        exec_and_hide->add(macro_cmd);
-        RefCount<Command> exec_and_hide_cmd(exec_and_hide);
-        menu.insert(str_label, exec_and_hide_cmd);
+        menu.insert(str_label, macro_cmd);
     } else if (str_key == "style") {	// style
         menu.insert(new StyleMenuItem(str_label, str_cmd));
     } else if (str_key == "config") {
