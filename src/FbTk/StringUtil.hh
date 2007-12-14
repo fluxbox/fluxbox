@@ -64,7 +64,7 @@ std::string basename(const std::string &basename);
 std::string::size_type removeFirstWhitespace(std::string &str);
 std::string::size_type removeTrailingWhitespace(std::string &str);
 
-/// removes the first part of a string and returns the two pieces
+/// splits input at first non-leading whitespace and returns both parts
 void getFirstWord(const std::string &in, std::string &first, std::string &rest);
 
 /// Breaks a string into tokens

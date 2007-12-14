@@ -53,6 +53,8 @@ Command *CommandRegistry::parseLine(const string &line, bool trusted) const {
     // parse args and command
     string command, args;
     StringUtil::getFirstWord(line, command, args);
+    StringUtil::removeFirstWhitespace(args);
+    StringUtil::removeTrailingWhitespace(args);
 
     // now we have parsed command and args
     command = StringUtil::toLower(command);
@@ -63,6 +65,8 @@ BoolCommand *CommandRegistry::parseBoolLine(const string &line, bool trusted) co
     // parse args and command
     string command, args;
     StringUtil::getFirstWord(line, command, args);
+    StringUtil::removeFirstWhitespace(args);
+    StringUtil::removeTrailingWhitespace(args);
 
     // now we have parsed command and args
     command = StringUtil::toLower(command);

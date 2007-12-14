@@ -214,8 +214,7 @@ string basename(const string &filename) {
 
 string::size_type removeFirstWhitespace(string &str) {
     string::size_type first_pos = str.find_first_not_of(" \t");
-    if (first_pos != string::npos)
-        str.erase(0, first_pos);
+    str.erase(0, first_pos);
     return first_pos;
 }
 
@@ -223,13 +222,9 @@ string::size_type removeFirstWhitespace(string &str) {
 string::size_type removeTrailingWhitespace(string &str) {
     // strip trailing whitespace
     string::size_type first_pos = str.find_last_not_of(" \t");
-    if (first_pos != string::npos) {
-        string::size_type last_pos = str.find_first_of(" \t", first_pos);
-        while (last_pos != string::npos) {
-            str.erase(last_pos);
-            last_pos = str.find_first_of(" \t", last_pos);
-        }
-    }
+    string::size_type last_pos = str.find_first_of(" \t", first_pos);
+    if (last_pos != string::npos)
+        str.erase(last_pos);
     return first_pos;
 }
 
@@ -240,8 +235,6 @@ void getFirstWord(const std::string &in, std::string &word, std::string &rest) {
     if (second_pos != string::npos) {
         rest = word.substr(second_pos);
         word.erase(second_pos);
-        removeFirstWhitespace(rest);
-        removeTrailingWhitespace(rest);
     }
 }
 
