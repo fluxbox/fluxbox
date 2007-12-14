@@ -45,6 +45,12 @@
   #include <stdlib.h>
 #endif
 
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
