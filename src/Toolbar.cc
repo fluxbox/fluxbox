@@ -44,7 +44,7 @@
 #endif // XINERAMA
 
 #include "Strut.hh"
-#include "FbTk/CommandRegistry.hh"
+#include "FbTk/ObjectRegistry.hh"
 #include "Layer.hh"
 
 #include "FbTk/I18n.hh"
@@ -823,7 +823,7 @@ void Toolbar::setupMenus(bool skip_new_placement) {
                               "Toolbar", "Title of Toolbar menu"));
 
     RefCommand reconfig_toolbar(new ToolbarCommand(*this, &Toolbar::reconfigure));
-    RefCommand save_resources(FbTk::CommandRegistry::instance().parseLine("saverc"));
+    RefCommand save_resources(FbTk::ObjectRegistry<Command>::instance().parse("saverc"));
     MacroCommand *toolbar_menuitem_macro = new MacroCommand();
     toolbar_menuitem_macro->add(reconfig_toolbar);
     toolbar_menuitem_macro->add(save_resources);

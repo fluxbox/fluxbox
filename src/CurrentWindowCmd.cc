@@ -31,12 +31,14 @@
 #include "WinClient.hh"
 
 #include "FocusControl.hh"
-#include "FbTk/CommandRegistry.hh"
+#include "FbTk/ObjectRegistry.hh"
 #include "FbTk/stringstream.hh"
 #include "FbTk/StringUtil.hh"
 
 #include <string>
 #include <vector>
+
+using FbTk::Command;
 
 namespace {
 
@@ -89,35 +91,35 @@ FbTk::Command *createCurrentWindowCmd(const std::string &command,
     return 0;
 }
 
-REGISTER_COMMAND_PARSER(minimizewindow, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(minimize, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(iconify, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(maximizewindow, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(maximize, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(maximizevertical, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(maximizehorizontal, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(raise, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(raiselayer, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(lower, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(lowerlayer, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(activate, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(focus, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(close, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(killwindow, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(kill, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(shade, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(shadewindow, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(shadeon, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(shadeoff, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(stick, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(stickwindow, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(toggledecor, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(nexttab, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(prevtab, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(movetableft, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(movetabright, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(detachclient, createCurrentWindowCmd);
-REGISTER_COMMAND_PARSER(windowmenu, createCurrentWindowCmd);
+REGISTER_OBJECT_PARSER(minimizewindow, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(minimize, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(iconify, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(maximizewindow, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(maximize, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(maximizevertical, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(maximizehorizontal, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(raise, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(raiselayer, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(lower, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(lowerlayer, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(activate, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(focus, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(close, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(killwindow, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(kill, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(shade, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(shadewindow, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(shadeon, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(shadeoff, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(stick, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(stickwindow, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(toggledecor, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(nexttab, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(prevtab, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(movetableft, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(movetabright, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(detachclient, createCurrentWindowCmd, Command);
+REGISTER_OBJECT_PARSER(windowmenu, createCurrentWindowCmd, Command);
 
 }; // end anonymous namespace
 
@@ -184,14 +186,14 @@ FbTk::Command *parseIntCmd(const string &command, const string &args,
     return 0;
 }
 
-REGISTER_COMMAND_PARSER(sethead, parseIntCmd);
-REGISTER_COMMAND_PARSER(tab, parseIntCmd);
-REGISTER_COMMAND_PARSER(sendtonextworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(sendtoprevworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(taketonextworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(taketoprevworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(sendtoworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(taketoworkspace, parseIntCmd);
+REGISTER_OBJECT_PARSER(sethead, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(tab, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(sendtonextworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(sendtoprevworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(taketonextworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(taketoprevworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(sendtoworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(taketoworkspace, parseIntCmd, Command);
 
 }; // end anonymous namespace
 
@@ -254,7 +256,7 @@ void GoToTabCmd::real_execute() {
     (*it)->focus();
 }
 
-REGISTER_COMMAND(startmoving, StartMovingCmd);
+REGISTER_OBJECT(startmoving, StartMovingCmd, Command);
 
 void StartMovingCmd::real_execute() {
     const XEvent &last = Fluxbox::instance()->lastEvent();
@@ -297,7 +299,7 @@ FbTk::Command *StartResizingCmd::parse(const string &cmd, const string &args,
     return new StartResizingCmd(mode);
 }
 
-REGISTER_COMMAND_PARSER(startresizing, StartResizingCmd::parse);
+REGISTER_OBJECT_PARSER(startresizing, StartResizingCmd::parse, Command);
 
 void StartResizingCmd::real_execute() {
     const XEvent &last = Fluxbox::instance()->lastEvent();
@@ -332,11 +334,11 @@ FbTk::Command *MoveCmd::parse(const string &command, const string &args,
     return new MoveCmd(dx, dy);
 }
 
-REGISTER_COMMAND_PARSER(move, MoveCmd::parse);
-REGISTER_COMMAND_PARSER(moveright, MoveCmd::parse);
-REGISTER_COMMAND_PARSER(moveleft, MoveCmd::parse);
-REGISTER_COMMAND_PARSER(moveup, MoveCmd::parse);
-REGISTER_COMMAND_PARSER(movedown, MoveCmd::parse);
+REGISTER_OBJECT_PARSER(move, MoveCmd::parse, Command);
+REGISTER_OBJECT_PARSER(moveright, MoveCmd::parse, Command);
+REGISTER_OBJECT_PARSER(moveleft, MoveCmd::parse, Command);
+REGISTER_OBJECT_PARSER(moveup, MoveCmd::parse, Command);
+REGISTER_OBJECT_PARSER(movedown, MoveCmd::parse, Command);
 
 MoveCmd::MoveCmd(const int step_size_x, const int step_size_y) :
   m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
@@ -364,10 +366,10 @@ FbTk::Command *ResizeCmd::parse(const string &command, const string &args,
     return new ResizeCmd(dx, dy);
 }
 
-REGISTER_COMMAND_PARSER(resize, ResizeCmd::parse);
-REGISTER_COMMAND_PARSER(resizeto, ResizeCmd::parse);
-REGISTER_COMMAND_PARSER(resizehorizontal, ResizeCmd::parse);
-REGISTER_COMMAND_PARSER(resizevertical, ResizeCmd::parse);
+REGISTER_OBJECT_PARSER(resize, ResizeCmd::parse, Command);
+REGISTER_OBJECT_PARSER(resizeto, ResizeCmd::parse, Command);
+REGISTER_OBJECT_PARSER(resizehorizontal, ResizeCmd::parse, Command);
+REGISTER_OBJECT_PARSER(resizevertical, ResizeCmd::parse, Command);
 
 ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
     m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
@@ -428,7 +430,7 @@ FbTk::Command *MoveToCmd::parse(const string &cmd, const string &args,
 
 }
 
-REGISTER_COMMAND_PARSER(moveto, MoveToCmd::parse);
+REGISTER_OBJECT_PARSER(moveto, MoveToCmd::parse, Command);
 
 MoveToCmd::MoveToCmd(const int step_size_x, const int step_size_y, const unsigned int refc) :
     m_step_size_x(step_size_x), m_step_size_y(step_size_y), m_refc(refc) { }
@@ -465,7 +467,7 @@ void ResizeToCmd::real_execute() {
         fbwindow().resize(m_step_size_x, m_step_size_y);
 }
 
-REGISTER_COMMAND(fullscreen, FullscreenCmd);
+REGISTER_OBJECT(fullscreen, FullscreenCmd, Command);
 
 FullscreenCmd::FullscreenCmd() { }
 void FullscreenCmd::real_execute() {
@@ -497,7 +499,7 @@ FbTk::Command *SetAlphaCmd::parse(const string &command, const string &args,
     return new SetAlphaCmd(focused, relative, unfocused, un_rel);
 }
 
-REGISTER_COMMAND_PARSER(setalpha, SetAlphaCmd::parse);
+REGISTER_OBJECT_PARSER(setalpha, SetAlphaCmd::parse, Command);
 
 SetAlphaCmd::SetAlphaCmd(int focused, bool relative,
                          int unfocused, bool un_relative) :
@@ -529,7 +531,7 @@ void SetAlphaCmd::real_execute() {
         fbwindow().setUnfocusedAlpha(m_unfocus);
 }
 
-REGISTER_BOOLCOMMAND_WITH_ARGS(matches, MatchCmd);
+REGISTER_OBJECT_WITH_ARGS_NSBASE(matches, MatchCmd, FbTk, BoolCommand);
 
 bool MatchCmd::real_execute() {
     return m_pat.match(winclient());

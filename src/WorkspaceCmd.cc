@@ -33,7 +33,7 @@
 #include "WindowCmd.hh"
 
 #include "FbTk/KeyUtil.hh"
-#include "FbTk/CommandRegistry.hh"
+#include "FbTk/ObjectRegistry.hh"
 #include "FbTk/stringstream.hh"
 
 #ifdef HAVE_CMATH
@@ -45,6 +45,8 @@
 #include <functional>
 
 using std::string;
+using FbTk::Command;
+using FbTk::BoolCommand;
 
 void WindowListCmd::execute() {
     if (m_pat.error()) {
@@ -72,8 +74,9 @@ void WindowListCmd::execute() {
 
 FbTk::BoolCommand *SomeCmd::parse(const string &command, const string &args,
                                   bool trusted) {
-    BoolCommand *boolcmd =
-            FbTk::CommandRegistry::instance().parseBoolLine(args, trusted);
+    FbTk::BoolCommand *boolcmd =
+            FbTk::ObjectRegistry<FbTk::BoolCommand>::instance().parse(args,
+                                                                      trusted);
     if (!boolcmd)
         return 0;
     if (command == "some")
@@ -81,8 +84,8 @@ FbTk::BoolCommand *SomeCmd::parse(const string &command, const string &args,
     return new EveryCmd(FbTk::RefCount<FbTk::BoolCommand>(boolcmd));
 }
 
-REGISTER_BOOLCOMMAND_PARSER(some, SomeCmd::parse);
-REGISTER_BOOLCOMMAND_PARSER(every, SomeCmd::parse);
+REGISTER_OBJECT_PARSER(some, SomeCmd::parse, BoolCommand);
+REGISTER_OBJECT_PARSER(every, SomeCmd::parse, BoolCommand);
 
 bool SomeCmd::bool_execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
@@ -149,11 +152,11 @@ FbTk::Command *parseWindowList(const string &command,
     return 0;
 }
 
-REGISTER_COMMAND_PARSER(attach, parseWindowList);
-REGISTER_COMMAND_PARSER(nextwindow, parseWindowList);
-REGISTER_COMMAND_PARSER(nextgroup, parseWindowList);
-REGISTER_COMMAND_PARSER(prevwindow, parseWindowList);
-REGISTER_COMMAND_PARSER(prevgroup, parseWindowList);
+REGISTER_OBJECT_PARSER(attach, parseWindowList, Command);
+REGISTER_OBJECT_PARSER(nextwindow, parseWindowList, Command);
+REGISTER_OBJECT_PARSER(nextgroup, parseWindowList, Command);
+REGISTER_OBJECT_PARSER(prevwindow, parseWindowList, Command);
+REGISTER_OBJECT_PARSER(prevgroup, parseWindowList, Command);
 
 }; // end anonymous namespace
 
@@ -202,7 +205,7 @@ FbTk::Command *GoToWindowCmd::parse(const string &command,
     return new GoToWindowCmd(num, opts, pat);
 }
 
-REGISTER_COMMAND_PARSER(gotowindow, GoToWindowCmd::parse);
+REGISTER_OBJECT_PARSER(gotowindow, GoToWindowCmd::parse, Command);
 
 void GoToWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
@@ -226,10 +229,10 @@ FbTk::Command *DirFocusCmd::parse(const string &command,
     return 0;
 }
 
-REGISTER_COMMAND_PARSER(focusup, DirFocusCmd::parse);
-REGISTER_COMMAND_PARSER(focusdown, DirFocusCmd::parse);
-REGISTER_COMMAND_PARSER(focusleft, DirFocusCmd::parse);
-REGISTER_COMMAND_PARSER(focusright, DirFocusCmd::parse);
+REGISTER_OBJECT_PARSER(focusup, DirFocusCmd::parse, Command);
+REGISTER_OBJECT_PARSER(focusdown, DirFocusCmd::parse, Command);
+REGISTER_OBJECT_PARSER(focusleft, DirFocusCmd::parse, Command);
+REGISTER_OBJECT_PARSER(focusright, DirFocusCmd::parse, Command);
 
 void DirFocusCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
@@ -241,7 +244,7 @@ void DirFocusCmd::execute() {
         screen->focusControl().dirFocus(*win, m_dir);
 }
 
-REGISTER_COMMAND(addworkspace, AddWorkspaceCmd);
+REGISTER_OBJECT(addworkspace, AddWorkspaceCmd, Command);
 
 void AddWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -249,7 +252,7 @@ void AddWorkspaceCmd::execute() {
         screen->addWorkspace();
 }
 
-REGISTER_COMMAND(removelastworkspace, RemoveLastWorkspaceCmd);
+REGISTER_OBJECT(removelastworkspace, RemoveLastWorkspaceCmd, Command);
 
 void RemoveLastWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -278,11 +281,11 @@ FbTk::Command *parseIntCmd(const string &command, const string &args,
     return 0;
 }
 
-REGISTER_COMMAND_PARSER(nextworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(prevworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(rightworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(leftworkspace, parseIntCmd);
-REGISTER_COMMAND_PARSER(workspace, parseIntCmd);
+REGISTER_OBJECT_PARSER(nextworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(prevworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(rightworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(leftworkspace, parseIntCmd, Command);
+REGISTER_OBJECT_PARSER(workspace, parseIntCmd, Command);
 
 }; // end anonymous namespace
 
@@ -325,7 +328,7 @@ void JumpToWorkspaceCmd::execute() {
     }
 }
 
-REGISTER_COMMAND(arrangewindows, ArrangeWindowsCmd);
+REGISTER_OBJECT(arrangewindows, ArrangeWindowsCmd, Command);
 
 /**
   try to arrange the windows on the current workspace in a 'clever' way.
@@ -451,7 +454,7 @@ void ArrangeWindowsCmd::execute() {
     }
 }
 
-REGISTER_COMMAND(showdesktop, ShowDesktopCmd);
+REGISTER_OBJECT(showdesktop, ShowDesktopCmd, Command);
 
 void ShowDesktopCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -467,7 +470,7 @@ void ShowDesktopCmd::execute() {
     }
 }
 
-REGISTER_COMMAND(closeallwindows, CloseAllWindowsCmd);
+REGISTER_OBJECT(closeallwindows, CloseAllWindowsCmd, Command);
 
 void CloseAllWindowsCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();

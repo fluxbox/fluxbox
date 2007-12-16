@@ -23,7 +23,7 @@
 
 #include "MacroCommand.hh"
 
-#include "CommandRegistry.hh"
+#include "ObjectRegistry.hh"
 #include "StringUtil.hh"
 
 #include <string>
@@ -47,7 +47,7 @@ M *addCommands(M *macro, const std::string &args, bool trusted) {
         if (err == 0)
             break;
         if (err > 0)
-            next = CommandRegistry::instance().parseLine(cmd, trusted);
+            next = ObjectRegistry<Command>::instance().parse(cmd, trusted);
         if (*next != 0)
             macro->add(next);
     }
@@ -68,8 +68,8 @@ Command *parseMacroCmd(const std::string &command, const std::string &args,
     return 0;
 }
 
-REGISTER_COMMAND_PARSER(macrocmd, parseMacroCmd);
-REGISTER_COMMAND_PARSER(togglecmd, parseMacroCmd);
+REGISTER_OBJECT_PARSER(macrocmd, parseMacroCmd, Command);
+REGISTER_OBJECT_PARSER(togglecmd, parseMacroCmd, Command);
 
 }; // end anonymous namespace
 

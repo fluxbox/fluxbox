@@ -60,7 +60,7 @@
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
 #include "Strut.hh"
-#include "FbTk/CommandRegistry.hh"
+#include "FbTk/ObjectRegistry.hh"
 #include "AtomHandler.hh"
 #include "HeadArea.hh"
 #include "FbCommands.hh"
@@ -815,7 +815,7 @@ void BScreen::propertyNotify(Atom atom) {
                     &ret_bytes_after, (unsigned char **)&str);
             }
 
-            FbTk::RefCount<FbTk::Command> cmd(FbTk::CommandRegistry::instance().parseLine(str, false));
+            FbTk::RefCount<FbTk::Command> cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse(str, false));
             if (cmd.get())
                 cmd->execute();
             XFree(str);
@@ -1531,9 +1531,9 @@ void BScreen::initMenu() {
     if (m_rootmenu.get() == 0) {
         _FB_USES_NLS;
         m_rootmenu.reset(createMenu(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
-        FbTk::RefCount<FbTk::Command> restart_fb(FbTk::CommandRegistry::instance().parseLine("restart"));
-        FbTk::RefCount<FbTk::Command> exit_fb(FbTk::CommandRegistry::instance().parseLine("exit"));
-        FbTk::RefCount<FbTk::Command> execute_xterm(FbTk::CommandRegistry::instance().parseLine("exec xterm"));
+        FbTk::RefCount<FbTk::Command> restart_fb(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("restart"));
+        FbTk::RefCount<FbTk::Command> exit_fb(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("exit"));
+        FbTk::RefCount<FbTk::Command> execute_xterm(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("exec xterm"));
         m_rootmenu->setInternalMenu();
         m_rootmenu->insert("xterm", execute_xterm);
         m_rootmenu->insert(_FB_XTEXT(Menu, Restart, "Restart", "Restart command"),
@@ -1578,7 +1578,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
                                                  *Fluxbox::instance(),
                                                  &Fluxbox::save_rc));
-    FbTk::RefCount<FbTk::Command> reconf_cmd(FbTk::CommandRegistry::instance().parseLine("reconfigure"));
+    FbTk::RefCount<FbTk::Command> reconf_cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("reconfigure"));
 
     FbTk::RefCount<FbTk::Command> reconftabs_cmd(new FbTk::SimpleCommand<BScreen>(
                                                  *this,

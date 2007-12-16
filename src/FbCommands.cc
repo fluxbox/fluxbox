@@ -33,7 +33,7 @@
 
 #include "FbTk/Theme.hh"
 #include "FbTk/Menu.hh"
-#include "FbTk/CommandRegistry.hh"
+#include "FbTk/ObjectRegistry.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/stringstream.hh"
 
@@ -123,9 +123,11 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
 
 namespace FbCommands {
 
-REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(exec, FbCommands::ExecuteCmd);
-REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(execute, FbCommands::ExecuteCmd);
-REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(execcommand, FbCommands::ExecuteCmd);
+using FbTk::Command;
+
+REGISTER_UNTRUSTED_OBJECT_WITH_ARGS(exec, FbCommands::ExecuteCmd, Command);
+REGISTER_UNTRUSTED_OBJECT_WITH_ARGS(execute, FbCommands::ExecuteCmd, Command);
+REGISTER_UNTRUSTED_OBJECT_WITH_ARGS(execcommand, FbCommands::ExecuteCmd, Command);
 
 ExecuteCmd::ExecuteCmd(const string &cmd, int screen_num):m_cmd(cmd), m_screen_num(screen_num) {
 
@@ -193,9 +195,9 @@ FbTk::Command *ExportCmd::parse(const string &command, const string &args,
     return new ExportCmd(name, value);
 }
 
-REGISTER_COMMAND_PARSER(setenv, ExportCmd::parse);
-REGISTER_COMMAND_PARSER(export, ExportCmd::parse);
-REGISTER_COMMAND_PARSER(setresourcevalue, ExportCmd::parse);
+REGISTER_OBJECT_PARSER(setenv, ExportCmd::parse, Command);
+REGISTER_OBJECT_PARSER(export, ExportCmd::parse, Command);
+REGISTER_OBJECT_PARSER(setresourcevalue, ExportCmd::parse, Command);
 
 ExportCmd::ExportCmd(const string& name, const string& value) :
     m_name(name), m_value(value) {
@@ -233,20 +235,20 @@ void ExportCmd::execute() {
     }
 }
 
-REGISTER_COMMAND(exit, FbCommands::ExitFluxboxCmd);
-REGISTER_COMMAND(quit, FbCommands::ExitFluxboxCmd);
+REGISTER_OBJECT(exit, FbCommands::ExitFluxboxCmd, Command);
+REGISTER_OBJECT(quit, FbCommands::ExitFluxboxCmd, Command);
 
 void ExitFluxboxCmd::execute() {
     Fluxbox::instance()->shutdown();
 }
 
-REGISTER_COMMAND(saverc, FbCommands::SaveResources);
+REGISTER_OBJECT(saverc, FbCommands::SaveResources, Command);
 
 void SaveResources::execute() {
     Fluxbox::instance()->save_rc();
 }
 
-REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(restart, FbCommands::RestartFluxboxCmd);
+REGISTER_UNTRUSTED_OBJECT_WITH_ARGS(restart, FbCommands::RestartFluxboxCmd, Command);
 
 RestartFluxboxCmd::RestartFluxboxCmd(const string &cmd):m_cmd(cmd){
 }
@@ -258,21 +260,21 @@ void RestartFluxboxCmd::execute() {
         Fluxbox::instance()->restart(m_cmd.c_str());
 }
 
-REGISTER_COMMAND(reconfigure, FbCommands::ReconfigureFluxboxCmd);
-REGISTER_COMMAND(reconfig, FbCommands::ReconfigureFluxboxCmd);
+REGISTER_OBJECT(reconfigure, FbCommands::ReconfigureFluxboxCmd, Command);
+REGISTER_OBJECT(reconfig, FbCommands::ReconfigureFluxboxCmd, Command);
 
 void ReconfigureFluxboxCmd::execute() {
     Fluxbox::instance()->reconfigure();
 }
 
-REGISTER_COMMAND(reloadstyle, FbCommands::ReloadStyleCmd);
+REGISTER_OBJECT(reloadstyle, FbCommands::ReloadStyleCmd, Command);
 
 void ReloadStyleCmd::execute() {
     SetStyleCmd cmd(Fluxbox::instance()->getStyleFilename());
     cmd.execute();
 }
 
-REGISTER_COMMAND_WITH_ARGS(setstyle, FbCommands::SetStyleCmd);
+REGISTER_OBJECT_WITH_ARGS(setstyle, FbCommands::SetStyleCmd, Command);
 
 SetStyleCmd::SetStyleCmd(const string &filename):m_filename(filename) {
 
@@ -285,7 +287,7 @@ void SetStyleCmd::execute() {
                                         Fluxbox::instance()->getStyleOverlayFilename());
 }
 
-REGISTER_COMMAND_WITH_ARGS(keymode, FbCommands::KeyModeCmd);
+REGISTER_OBJECT_WITH_ARGS(keymode, FbCommands::KeyModeCmd, Command);
 
 KeyModeCmd::KeyModeCmd(const string &arguments):m_keymode(arguments),m_end_args("None Escape") {
     string::size_type second_pos = m_keymode.find_first_of(" \t", 0);
@@ -302,7 +304,7 @@ void KeyModeCmd::execute() {
     Fluxbox::instance()->keys()->keyMode(m_keymode);
 }
 
-REGISTER_COMMAND(hidemenus, FbCommands::HideMenuCmd);
+REGISTER_OBJECT(hidemenus, FbCommands::HideMenuCmd, Command);
 
 void HideMenuCmd::execute() {
     FbTk::Menu::hideShownMenu();
@@ -316,7 +318,7 @@ FbTk::Command *ShowClientMenuCmd::parse(const string &command,
     return new ShowClientMenuCmd(opts, pat);
 }
 
-REGISTER_COMMAND_PARSER(clientmenu, ShowClientMenuCmd::parse);
+REGISTER_OBJECT_PARSER(clientmenu, ShowClientMenuCmd::parse, Command);
 
 void ShowClientMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -339,7 +341,7 @@ void ShowClientMenuCmd::execute() {
     ::showMenu(*screen, **m_menu);
 }
 
-REGISTER_COMMAND_WITH_ARGS(custommenu, FbCommands::ShowCustomMenuCmd);
+REGISTER_OBJECT_WITH_ARGS(custommenu, FbCommands::ShowCustomMenuCmd, Command);
 
 ShowCustomMenuCmd::ShowCustomMenuCmd(const string &arguments) : custom_menu_file(arguments) {}
 
@@ -354,7 +356,7 @@ void ShowCustomMenuCmd::execute() {
     ::showMenu(*screen, **m_menu);
 }
 
-REGISTER_COMMAND(rootmenu, FbCommands::ShowRootMenuCmd);
+REGISTER_OBJECT(rootmenu, FbCommands::ShowRootMenuCmd, Command);
 
 void ShowRootMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -364,7 +366,7 @@ void ShowRootMenuCmd::execute() {
     ::showMenu(*screen, screen->rootMenu());
 }
 
-REGISTER_COMMAND(workspacemenu, FbCommands::ShowWorkspaceMenuCmd);
+REGISTER_OBJECT(workspacemenu, FbCommands::ShowWorkspaceMenuCmd, Command);
 
 void ShowWorkspaceMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -374,7 +376,7 @@ void ShowWorkspaceMenuCmd::execute() {
     ::showMenu(*screen, screen->workspaceMenu());
 }
 
-REGISTER_COMMAND_WITH_ARGS(setworkspacename, FbCommands::SetWorkspaceNameCmd);
+REGISTER_OBJECT_WITH_ARGS(setworkspacename, FbCommands::SetWorkspaceNameCmd, Command);
 
 SetWorkspaceNameCmd::SetWorkspaceNameCmd(const string &name, int spaceid):
     m_name(name), m_workspace(spaceid) {
@@ -403,7 +405,7 @@ void SetWorkspaceNameCmd::execute() {
     Fluxbox::instance()->save_rc();
 }
 
-REGISTER_COMMAND(setworkspacenamedialog, FbCommands::WorkspaceNameDialogCmd);
+REGISTER_OBJECT(setworkspacenamedialog, FbCommands::WorkspaceNameDialogCmd, Command);
 
 void WorkspaceNameDialogCmd::execute() {
 
@@ -416,7 +418,7 @@ void WorkspaceNameDialogCmd::execute() {
     win->show();
 }
 
-REGISTER_COMMAND(commanddialog, FbCommands::CommandDialogCmd);
+REGISTER_OBJECT(commanddialog, FbCommands::CommandDialogCmd, Command);
 
 void CommandDialogCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -443,7 +445,7 @@ void SetResourceValueCmd::execute() {
     Fluxbox::instance()->save_rc();
 }
 
-REGISTER_COMMAND(setresourcevaluedialog, FbCommands::SetResourceValueDialogCmd);
+REGISTER_OBJECT(setresourcevaluedialog, FbCommands::SetResourceValueDialogCmd, Command);
 
 void SetResourceValueDialogCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -454,7 +456,7 @@ void SetResourceValueDialogCmd::execute() {
     win->show();
 };
 
-REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(bindkey, FbCommands::BindKeyCmd);
+REGISTER_UNTRUSTED_OBJECT_WITH_ARGS(bindkey, FbCommands::BindKeyCmd, Command);
 
 BindKeyCmd::BindKeyCmd(const string &keybind):m_keybind(keybind) { }
 
@@ -502,7 +504,7 @@ FbTk::Command *DeiconifyCmd::parse(const string &command, const string &args,
     return new DeiconifyCmd(DeiconifyCmd::LASTWORKSPACE, dest);
 }
 
-REGISTER_COMMAND_PARSER(deiconify, DeiconifyCmd::parse);
+REGISTER_OBJECT_PARSER(deiconify, DeiconifyCmd::parse, Command);
 
 DeiconifyCmd::DeiconifyCmd(Mode mode,
                            Destination dest) : m_mode(mode), m_dest(dest) { }

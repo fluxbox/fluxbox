@@ -23,7 +23,7 @@
 
 #include "LogicCommands.hh"
 
-#include "CommandRegistry.hh"
+#include "ObjectRegistry.hh"
 #include "StringUtil.hh"
 
 using FbTk::StringUtil::removeFirstWhitespace;
@@ -47,7 +47,7 @@ M *addCommands(M *macro, const string &args, bool trusted) {
         if (err == 0)
             break;
 
-        tmp = CommandRegistry::instance().parseBoolLine(cmd, trusted);
+        tmp = ObjectRegistry<BoolCommand>::instance().parse(cmd, trusted);
         if (*tmp)
             macro->add(tmp);
     }
@@ -62,7 +62,7 @@ BoolCommand *parseLogicCommand(const string &command, const string &args,
                                bool trusted) {
     if (command == "not") {
         BoolCommand *boolcmd =
-                CommandRegistry::instance().parseBoolLine(args, trusted);
+                ObjectRegistry<BoolCommand>::instance().parse(args, trusted);
         if (!boolcmd)
             return 0;
         RefCount<BoolCommand> ref(boolcmd);
@@ -76,10 +76,10 @@ BoolCommand *parseLogicCommand(const string &command, const string &args,
     return 0;
 }
 
-REGISTER_BOOLCOMMAND_PARSER(not, parseLogicCommand);
-REGISTER_BOOLCOMMAND_PARSER(and, parseLogicCommand);
-REGISTER_BOOLCOMMAND_PARSER(or, parseLogicCommand);
-REGISTER_BOOLCOMMAND_PARSER(xor, parseLogicCommand);
+REGISTER_OBJECT_PARSER(not, parseLogicCommand, BoolCommand);
+REGISTER_OBJECT_PARSER(and, parseLogicCommand, BoolCommand);
+REGISTER_OBJECT_PARSER(or, parseLogicCommand, BoolCommand);
+REGISTER_OBJECT_PARSER(xor, parseLogicCommand, BoolCommand);
 
 }; // end anonymous namespace
 
@@ -93,7 +93,7 @@ Command *IfCommand::parse(const std::string &command, const std::string &args,
     err = StringUtil::getStringBetween(cmd, args.c_str(),
                                        '{', '}', " \t\n", true);
     if (err > 0)
-        cond = CommandRegistry::instance().parseBoolLine(cmd, trusted);
+        cond = ObjectRegistry<BoolCommand>::instance().parse(cmd, trusted);
     if (err == 0 || *cond == 0)
         return 0;
 
@@ -102,21 +102,21 @@ Command *IfCommand::parse(const std::string &command, const std::string &args,
                                        '{', '}', " \t\n", true);
     if (err == 0)
         return 0;
-    t = CommandRegistry::instance().parseLine(cmd, trusted);
+    t = ObjectRegistry<Command>::instance().parse(cmd, trusted);
 
     pos += err;
     err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
                                        '{', '}', " \t\n", true);
     if (err > 0)
-        f = CommandRegistry::instance().parseLine(cmd, trusted);
+        f = ObjectRegistry<Command>::instance().parse(cmd, trusted);
     if (err == 0 || *t == 0 && *f == 0)
         return 0;
 
     return new IfCommand(cond, t, f);
 }
 
-REGISTER_COMMAND_PARSER(if, IfCommand::parse);
-REGISTER_COMMAND_PARSER(cond, IfCommand::parse);
+REGISTER_OBJECT_PARSER(if, IfCommand::parse, Command);
+REGISTER_OBJECT_PARSER(cond, IfCommand::parse, Command);
 
 void OrCommand::add(RefCount<BoolCommand> &com) {
     m_commandlist.push_back(com);
