@@ -91,6 +91,8 @@ MenuTheme::MenuTheme(int screen_num):
     *m_bevel_width = 0;
     *m_border_width = 0;
 
+    ThemeManager::instance().loadTheme(*this);
+
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);
     u_text_gc.setForeground(*u_text);
@@ -98,7 +100,6 @@ MenuTheme::MenuTheme(int screen_num):
     d_text_gc.setForeground(*d_text);
     hilite_gc.setForeground(hilite->color());
 
-    ThemeManager::instance().loadTheme(*this);
 }
 
 MenuTheme::~MenuTheme() {
