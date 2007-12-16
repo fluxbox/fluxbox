@@ -31,6 +31,7 @@ ToolTheme::ToolTheme(int screen_num, const std::string &name, const std::string 
     m_border(*this, name, altname),
     m_alpha(255) {
 
+    FbTk::ThemeManager::instance().loadTheme(*this);
 }
 
 ToolTheme::~ToolTheme() {

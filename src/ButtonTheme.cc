@@ -39,6 +39,7 @@ ButtonTheme::ButtonTheme(int screen_num,
     m_name(name),
     m_fallbackname(extra_fallback), m_altfallbackname(extra_fallback_alt) {
 
+    FbTk::ThemeManager::instance().loadTheme(*this);
 }
 
 bool ButtonTheme::fallback(FbTk::ThemeItem_base &item) {

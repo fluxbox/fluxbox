@@ -34,6 +34,7 @@ SlitTheme::SlitTheme(int screen_num):FbTk::Theme(screen_num),
     m_border_color.setDefaultValue();
     // default texture type
     m_texture->setType(FbTk::Texture::SOLID);
+    FbTk::ThemeManager::instance().loadTheme(*this);
 }
 
 

@@ -55,4 +55,5 @@ void FbTk::ThemeItem<Shape::ShapePlace>::setFromString(const char *str) {
 MenuTheme::MenuTheme(int screen_num):FbTk::MenuTheme(screen_num),
                                      m_shapeplace(*this, "menu.roundCorners", "Menu.RoundCorners") {
     *m_shapeplace = Shape::NONE;
+    FbTk::ThemeManager::instance().loadTheme(*this);
 }

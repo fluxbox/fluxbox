@@ -525,12 +525,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // and after we've load the resources
     // else we get some bad handle/grip height/width
     //    FbTk::ThemeManager::instance().loadTheme(*m_windowtheme.get());
-    //!! TODO: For some strange reason we must load everything,
-    // else the focus label doesn't get updated
-    // This must be fixed in the future.
-    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
-                                        fluxbox->getStyleOverlayFilename(),
-                                        m_root_theme->screenNum());
     m_root_theme->setLineAttributes(*resource.gc_line_width,
                                     *resource.gc_line_style,
                                     *resource.gc_cap_style,

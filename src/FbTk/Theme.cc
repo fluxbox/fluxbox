@@ -97,12 +97,14 @@ bool ThemeManager::registerTheme(Theme &tm) {
     // valid screen num?
     if (m_max_screens < tm.screenNum() || tm.screenNum() < 0)
         return false;
-    // TODO: use find and return false if it's already there
-    // instead of unique
 
-    m_themes[tm.screenNum()].push_back(&tm);
-    m_themes[tm.screenNum()].unique();
-    return true;
+    ThemeList::const_iterator it = m_themes[tm.screenNum()].begin(),
+                              it_end = m_themes[tm.screenNum()].end();
+    if (std::find(it, it_end, &tm) == it_end) {
+        m_themes[tm.screenNum()].push_back(&tm);
+        return true;
+    }
+    return false;
 }
 
 bool ThemeManager::unregisterTheme(Theme &tm) {

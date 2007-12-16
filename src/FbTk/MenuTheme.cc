@@ -98,6 +98,7 @@ MenuTheme::MenuTheme(int screen_num):
     d_text_gc.setForeground(*d_text);
     hilite_gc.setForeground(hilite->color());
 
+    ThemeManager::instance().loadTheme(*this);
 }
 
 MenuTheme::~MenuTheme() {

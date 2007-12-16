@@ -58,6 +58,7 @@ WinButtonTheme::WinButtonTheme(int screen_num, FbWinFrameTheme &frame_theme):
     m_stuck_unfocus_pm(*this, "window.stuck.unfocus.pixmap", "Window.Stuck.Unfocus.Pixmap"),
     m_frame_theme(frame_theme) {
 
+    FbTk::ThemeManager::instance().loadTheme(*this);
 }
 
 WinButtonTheme::~WinButtonTheme() {

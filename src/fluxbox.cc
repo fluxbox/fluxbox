@@ -318,6 +318,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // HAVE_GETPID
 
 
+    // setup theme manager to have our style file ready to be scanned
+    FbTk::ThemeManager::instance().load(getStyleFilename(), getStyleOverlayFilename());
+
     // Create keybindings handler and load keys file
     // Note: this needs to be done before creating screens
     m_key.reset(new Keys);
@@ -409,9 +412,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         initScreen(*it);
 
     XAllowEvents(disp, ReplayPointer, CurrentTime);
-
-    // setup theme manager to have our style file ready to be scanned
-    FbTk::ThemeManager::instance().load(getStyleFilename(), getStyleOverlayFilename());
 
     //XSynchronize(disp, False);
     sync(false);

@@ -159,6 +159,7 @@ RootTheme::RootTheme(FbTk::ImageControl &image_control):
     m_opgc.setFunction(GXxor);
     m_opgc.setSubwindowMode(IncludeInferiors);
     m_opgc.setLineAttributes(1, LineSolid, CapNotLast, JoinMiter);
+    FbTk::ThemeManager::instance().loadTheme(*this);
 }
 
 RootTheme::~RootTheme() {

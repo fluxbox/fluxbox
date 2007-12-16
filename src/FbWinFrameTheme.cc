@@ -74,6 +74,7 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_cursor_right_side = XCreateFontCursor(disp, XC_right_side);
     m_cursor_bottom_side = XCreateFontCursor(disp, XC_bottom_side);
 
+    FbTk::ThemeManager::instance().loadTheme(*this);
     reconfigTheme();
 }
 

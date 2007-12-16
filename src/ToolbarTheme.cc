@@ -42,6 +42,7 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     *m_shape = false;
     *m_height = 0;
     *m_button_size = -1;
+    FbTk::ThemeManager::instance().loadTheme(*this);
 }
 
 ToolbarTheme::~ToolbarTheme() {
