@@ -212,7 +212,7 @@ bool handleStartupItem(const string &line, int offset) {
         if (pos > 0) {
             option = str.substr(0, pos);
             if (strcasecmp(option.c_str(), "screen") == 0) {
-                error = getuint(str.c_str() + pos + 1, screen);
+                error = !getuint(str.c_str() + pos + 1, screen);
             } else {
                 error = true;
             }

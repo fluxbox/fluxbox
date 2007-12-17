@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/17:
+   * Fix startup items in apps file with specified screen number, bug #1843325
+     (thanks Martin)
+     Remember.cc
 *07/12/14:
    * Fix compiling with gcc 4.3 (thanks Dmitry E. Oboukhov)
      main.cc
