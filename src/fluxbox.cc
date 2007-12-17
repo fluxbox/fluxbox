@@ -1495,17 +1495,6 @@ void Fluxbox::load_rc(BScreen &screen) {
 
     }
 
-    FbTk::Image::removeAllSearchPaths();
-    sprintf(name_lookup, "session.screen%d.imageSearchPath", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.imageSearchPath", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value) && value.addr) {
-        vector<string> paths;
-        StringUtil::stringtok(paths, value.addr, ", ");
-        for (size_t i = 0; i < paths.size(); ++i)
-            FbTk::Image::addSearchPath(paths[i]);
-    }
-
     if (!dbfile.empty()) {
         if (!m_screen_rm.load(dbfile.c_str())) {
             cerr<<_FB_CONSOLETEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "Failed trying to read rc file")<<":"<<dbfile<<endl;
