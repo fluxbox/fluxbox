@@ -124,7 +124,7 @@ public:
     /// show menu
     virtual void show();
     /// hide menu
-    virtual void hide();
+    virtual void hide(bool force = false);
     virtual void clearWindow();
 #ifdef NOT_USED
     void setActiveIndex(int index) { m_active_index = index; }

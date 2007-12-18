@@ -515,24 +515,28 @@ void Menu::show() {
     menu.window.show();
     raise();
 
-    if (shown && shown != this && shown != m_parent)
+    if (shown && shown != this)
         shown->hide();
     shown = this;
 
 }
 
 
-void Menu::hide() {
+void Menu::hide(bool force) {
 
     if (!isVisible())
         return;
 
     // if parent is visible, go to first parent and hide it
     Menu *p = this;
-    while (p->m_parent && p->m_parent->isVisible())
-        p = p->m_parent;
-
-    p->internal_hide();
+    while (p && p->isVisible()) {
+        Menu *tmp = p->m_parent;
+        if (force || !p->m_torn)
+            p->internal_hide();
+        else
+            p->m_parent = 0;
+        p = tmp;
+    }
 
 }
 
@@ -570,12 +574,10 @@ void Menu::redrawFrame(FbDrawable &drawable) {
 
 void Menu::internal_hide(bool first) {
 
-    if (!first && m_torn)
-        return;
-
     if (validIndex(m_which_sub)) {
         MenuItem *tmp = menuitems[m_which_sub];
-        tmp->submenu()->internal_hide(false);
+        if (tmp && tmp->submenu() && tmp->submenu()->isVisible())
+            tmp->submenu()->internal_hide(false);
     }
 
     // if we have an active index we need to redraw it
@@ -719,6 +721,7 @@ void Menu::drawSubmenu(unsigned int index) {
             clearItem(index);
 
         if (! item->submenu()->isVisible()) {
+            shown = item->submenu();
             item->showSubmenu();
             item->submenu()->raise();
         }
@@ -908,6 +911,8 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         if (! m_moving) {
             // if not m_moving: start m_moving operation
             m_moving = m_torn = true;
+            if (m_parent)
+                m_parent->m_which_sub = -1;
             // clear current highlighted item
             clearItem(m_active_index);
 
@@ -1033,7 +1038,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
     case XK_Escape: // close menu
         m_type_ahead.reset();
         m_torn = false;
-        hide();
+        hide(true);
         break;
     case XK_BackSpace:
         if (m_type_ahead.stringSize() == 0) {
