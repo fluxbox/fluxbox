@@ -498,6 +498,16 @@ void FluxboxWindow::init() {
         layerItem().setLayer(m_client->transientFor()->fbwindow()->layerItem().getLayer());
     else // if no parent then set default layer
         moveToLayer(m_layernum, m_layernum != ::Layer::NORMAL);
+    
+    // transients should be on the same workspace as parent
+    if (m_client->isTransient() &&
+        m_client->transientFor()->fbwindow() &&
+        m_client->transientFor()->fbwindow() != this) {
+        m_workspace_number =
+                m_client->transientFor()->fbwindow()->workspaceNumber();
+    }
+    
+    
 #ifdef DEBUG
     cerr<<"FluxboxWindow::init("<<title()<<") transientFor: "<<
         m_client->transientFor()<<endl;
