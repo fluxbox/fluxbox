@@ -30,12 +30,13 @@
 #include "App.hh"
 #include "StringUtil.hh"
 #include "Menu.hh"
+#include <X11/keysym.h>
 
 namespace FbTk {
 
-void MenuItem::click(int button, int time) {
+void MenuItem::click(int button, int time, unsigned int mods) {
     if (m_command.get() != 0) {
-        if (m_menu && m_close_on_click)
+        if (m_menu && m_close_on_click && (mods & ControlMask) == 0)
             m_menu->hide();
         // we need a local variable, since the command may destroy this object
         RefCount<Command> tmp(m_command);

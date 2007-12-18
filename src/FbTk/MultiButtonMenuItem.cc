@@ -52,7 +52,7 @@ void MultiButtonMenuItem::setCommand(int button, FbTk::RefCount<FbTk::Command> &
     m_button_exe[button - 1] = cmd;
 }
 
-void MultiButtonMenuItem::click(int button, int time) {
+void MultiButtonMenuItem::click(int button, int time, unsigned int mods) {
     if (button <= 0 || button > static_cast<signed>(buttons()) || buttons() == 0)
         return;
 

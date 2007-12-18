@@ -64,17 +64,18 @@ public:
     AlphaMenuSelectItem(const FbTk::FbString &label, AlphaObject *object, AlphaMenu &parent):
         FbTk::MenuItem(label), m_object(object), m_parent(parent) {
         setToggleItem(true);
+        setCloseOnClick(false);
     }
 
     bool isSelected() const { return m_object->getUseDefaultAlpha(); }
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         bool newval = !m_object->getUseDefaultAlpha();
         m_object->setUseDefaultAlpha(newval);
         // items 1 and 2 (the focused/unfocused values) are only enabled if we don't use default values
         m_parent.setItemEnabled(1, !newval);
         m_parent.setItemEnabled(2, !newval);
         m_parent.show(); // cheat to refreshing the window
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 
     void updateLabel() {

@@ -50,9 +50,9 @@ public:
         FbTk::MenuItem(label), m_object(object), m_layernum(layernum) {}
 
     bool isEnabled() const { return m_object->layerNumber() != m_layernum; }
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         m_object->moveToLayer(m_layernum);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
     
 private:

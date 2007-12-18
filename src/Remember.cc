@@ -99,6 +99,7 @@ public:
         FbTk::MenuItem(label),
         m_attrib(attrib) {
         setToggleItem(true);
+        setCloseOnClick(false);
     }
 
     bool isSelected() const {
@@ -123,7 +124,7 @@ public:
             return false;
     }
 
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         // reconfigure only does stuff if the apps file has changed
         Remember::instance().reconfigure();
         if (WindowCmd<void>::window() != 0) {
@@ -134,7 +135,7 @@ public:
             }
         }
         Remember::instance().save();
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 
 private:

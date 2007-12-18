@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/18:
+   * Holding control while clicking on a menu item will now keep the menu open (Mark)
+     FbTk/Menu.cc MenuItem.cc/hh
 *07/12/17:
    * Fix startup items in apps file with specified screen number, bug #1843325
      (thanks Martin)

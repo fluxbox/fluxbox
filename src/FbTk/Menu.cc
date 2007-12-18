@@ -888,7 +888,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             if (m_active_index == w && isItemEnabled(w) &&
                 re.x > ix && re.x < (signed) (ix + menu.item_w) &&
                 re.y > iy && re.y < (signed) (iy + theme().itemHeight())) {
-                menuitems[w]->click(re.button, re.time);
+                menuitems[w]->click(re.button, re.time, re.state);
             } else {
                 int old = m_active_index;
                 m_active_index = w;
@@ -1054,7 +1054,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
             else {
                 // send fake button click
                 int button = (event.state & ShiftMask) ? 3 : 1;
-                find(m_active_index)->click(button, event.time);
+                find(m_active_index)->click(button, event.time, event.state);
                 m_need_update = true;
                 updateMenu();
             }

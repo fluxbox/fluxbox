@@ -48,9 +48,9 @@ public:
         FbTk::MenuItem(label), m_object(object), m_headnum(headnum) {}
 
     bool isEnabled() const { return m_object.getOnHead() != m_headnum; } 
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         m_object.saveOnHead(m_headnum);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
     
 private:

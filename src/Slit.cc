@@ -184,6 +184,7 @@ public:
         setCommand(cmd);
         FbTk::MenuItem::setSelected(client.visible());
         setToggleItem(true);
+        setCloseOnClick(false);
     }
     const string &label() const {
         return m_client.matchName();
@@ -191,7 +192,7 @@ public:
     bool isSelected() const {
         return m_client.visible();
     }
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         if (button == 4 || button == 2) { // wheel up
             m_slit.clientUp(&m_client);
         } else if (button == 5 || button == 3) { // wheel down
@@ -199,7 +200,7 @@ public:
         } else {
             m_client.setVisible(!m_client.visible());
             FbTk::MenuItem::setSelected(m_client.visible());
-            FbTk::MenuItem::click(button, time);
+            FbTk::MenuItem::click(button, time, mods);
         }
     }
 private:
@@ -214,16 +215,17 @@ public:
          m_slit(slit),
          m_label(label) {
         setLabel(m_label); // update label
+        setCloseOnClick(false);
     }
 
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         // toggle direction
         if (m_slit.direction() == Slit::HORIZONTAL)
             m_slit.setDirection(Slit::VERTICAL);
         else
             m_slit.setDirection(Slit::HORIZONTAL);
         setLabel(m_label);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 
     void setLabel(const FbTk::FbString &label) {
@@ -245,12 +247,12 @@ class PlaceSlitMenuItem: public FbTk::MenuItem {
 public:
     PlaceSlitMenuItem(const FbTk::FbString &label, Slit &slit, Slit::Placement place, FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_slit(slit), m_place(place) {
-
+        setCloseOnClick(false);
     }
     bool isEnabled() const { return m_slit.placement() != m_place; }
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         m_slit.setPlacement(m_place);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 private:
     Slit &m_slit;

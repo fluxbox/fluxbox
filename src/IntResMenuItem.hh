@@ -49,7 +49,7 @@ public:
         return ret;
     }
 
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         static int last_time = -201;
         int inc_val = 1;
         // check double click
@@ -76,7 +76,7 @@ public:
         // update label
         updateLabel();
         // call other commands
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
         
         // show new value, which for us means forcing a full menu update
         // since the text is drawn onto the background!

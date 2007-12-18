@@ -61,9 +61,10 @@ public:
             setLabel( _FB_XTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
         else
             setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
+        setCloseOnClick(false);
     }
 
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         std::string newformat = m_tool.timeFormat();
         size_t pos = newformat.find("%k");
         std::string newstr;
@@ -112,7 +113,7 @@ public:
                 setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
         
         } // else some other strange format...so we don't do anything
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 private:
     ClockTool &m_tool;

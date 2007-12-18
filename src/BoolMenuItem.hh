@@ -44,7 +44,10 @@ public:
     }
     bool isSelected() const { return m_item; }
     // toggle state
-    void click(int button, int time) { setSelected(!m_item); FbTk::MenuItem::click(button, time); }
+    void click(int button, int time, unsigned int mods) {
+        setSelected(!m_item);
+        FbTk::MenuItem::click(button, time, mods);
+    }
     void setSelected(bool value) { 
         m_item = value;
         FbTk::MenuItem::setSelected(m_item);

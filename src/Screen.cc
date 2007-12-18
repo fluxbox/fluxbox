@@ -181,12 +181,14 @@ public:
                          FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd),
         m_screen(screen),
-        m_place(place) { }
+        m_place(place) {
+        setCloseOnClick(false);
+    }
 
     bool isEnabled() const { return m_screen.getTabPlacement() != m_place; }
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         m_screen.saveTabPlacement(m_place);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 
 

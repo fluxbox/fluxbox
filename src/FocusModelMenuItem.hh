@@ -39,13 +39,15 @@ public:
                        FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), 
         m_focus_control(focus_control), 
-        m_focusmodel(model) { }
+        m_focusmodel(model) {
+        setCloseOnClick(false);
+    }
 
     bool isEnabled() const { return m_focus_control.focusModel() != m_focusmodel; }
 
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         m_focus_control.setFocusModel(m_focusmodel);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 
 private:
@@ -61,13 +63,15 @@ public:
                           FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), 
         m_focus_control(focus_control), 
-        m_tabfocusmodel(model) { }
+        m_tabfocusmodel(model) {
+        setCloseOnClick(false);
+    }
 
     bool isEnabled() const { return m_focus_control.tabFocusModel() != m_tabfocusmodel; }
 
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         m_focus_control.setTabFocusModel(m_tabfocusmodel);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 
 private:

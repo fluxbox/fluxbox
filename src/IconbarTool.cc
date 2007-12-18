@@ -108,11 +108,12 @@ public:
                         string mode,
                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
+        setCloseOnClick(false);
     }
     bool isEnabled() const { return m_handler.mode() != m_mode; }
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         m_handler.setMode(m_mode);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 
 private:
@@ -126,11 +127,12 @@ public:
                         Container::Alignment mode,
                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
+        setCloseOnClick(false);
     }
     bool isEnabled() const { return m_handler.alignment() != m_mode; }
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         m_handler.setAlignment(m_mode);
-        FbTk::MenuItem::click(button, time);
+        FbTk::MenuItem::click(button, time, mods);
     }
 
 private:

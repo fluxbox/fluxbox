@@ -38,7 +38,7 @@ public:
     /// sets command to specified button
     void setCommand(int button, FbTk::RefCount<FbTk::Command> &cmd);
     /// executes command for the button click
-    virtual void click(int button, int time);
+    virtual void click(int button, int time, unsigned int mods);
     /// @return number of buttons this instance handles
     inline unsigned int buttons() const { return m_buttons; }
 

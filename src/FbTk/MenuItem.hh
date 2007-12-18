@@ -138,7 +138,7 @@ public:
        @param button the button number
        @param time the time stamp 
     */
-    virtual void click(int button, int time);
+    virtual void click(int button, int time, unsigned int mods);
     /// must use this to show submenu to ensure consistency for object like window menu in ClientMenu (see Workspace.cc)
     virtual void showSubmenu();
     RefCount<Command> &command() { return m_command; }

@@ -27,6 +27,7 @@
 #include "Screen.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
+#include <X11/keysym.h>
 
 #include "FbTk/MenuItem.hh"
 
@@ -42,7 +43,7 @@ public:
         }
     ~ClientMenuItem() { m_client.titleSig().detach(menu()); }
 
-    void click(int button, int time) {
+    void click(int button, int time, unsigned int mods) {
         FluxboxWindow *fbwin = m_client.fbwindow();
         if (fbwin == 0)
             return;
@@ -53,7 +54,8 @@ public:
 
         m_client.focus();
         fbwin->raise();
-        parent->hide();
+        if ((mods & ControlMask) == 0)
+            parent->hide();
     }
 
     const std::string &label() const { return m_client.title(); }
