@@ -2570,6 +2570,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
     bool onTitlebar = frame().gripLeft().window() != be.window &&
         frame().gripRight().window() != be.window &&
+        frame().handle().window() != be.window &&
         frame().clientArea().window() != be.window &&
         frame().window() != be.window;
 
