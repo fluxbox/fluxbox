@@ -39,6 +39,7 @@ StyleMenuItem::StyleMenuItem(const FbTk::FbString &label, const std::string &fil
                      SetStyleCmd(m_filename));
     setCommand(setstyle_cmd);
     setToggleItem(true);
+    setCloseOnClick(false);
 }
 
 

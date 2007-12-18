@@ -199,15 +199,15 @@ Menu::~Menu() {
 }
 
 int Menu::insert(const FbString &label, RefCount<Command> &cmd, int pos) {
-    return insert(new MenuItem(label, cmd), pos);
+    return insert(new MenuItem(label, cmd, this), pos);
 }
 
 int Menu::insert(const FbString &label, int pos) {
-    return insert(new MenuItem(label), pos);
+    return insert(new MenuItem(label, *this), pos);
 }
 
 int Menu::insert(const FbString &label, Menu *submenu, int pos) {
-    return insert(new MenuItem(label, submenu), pos);
+    return insert(new MenuItem(label, submenu, this), pos);
 }
 
 int Menu::insert(MenuItem *item, int pos) {
@@ -516,15 +516,15 @@ void Menu::show() {
     raise();
 
     if (shown && shown != this && shown != m_parent)
-        shown->hide(true);
+        shown->hide();
     shown = this;
 
 }
 
 
-void Menu::hide(bool force) {
+void Menu::hide() {
 
-    if (!isVisible() || m_torn && !force)
+    if (!isVisible())
         return;
 
     // if parent is visible, go to first parent and hide it
@@ -569,6 +569,9 @@ void Menu::redrawFrame(FbDrawable &drawable) {
 }
 
 void Menu::internal_hide(bool first) {
+
+    if (!first && m_torn)
+        return;
 
     if (validIndex(m_which_sub)) {
         MenuItem *tmp = menuitems[m_which_sub];
@@ -815,8 +818,6 @@ void Menu::handleEvent(XEvent &event) {
     if (event.type == FocusOut) {
         if (s_focused == this)
             s_focused = 0;
-        if (shown == this && !m_torn)
-            hide();
     // I don't know why, but I get a FocusIn event when closing the menu with
     // the mouse over it -- probably an xorg bug, but it's easy to address here
     } else if (event.type == FocusIn && m_visible) {
@@ -1275,9 +1276,9 @@ void Menu::drawLine(int index, int size){
     item->drawLine(menu.frame, theme(), size, item_x, item_y, menu.item_w);
 }
 
-void Menu::hideShownMenu(bool force) {
+void Menu::hideShownMenu() {
     if (shown)
-        shown->hide(force);
+        shown->hide();
 }
 
 }; // end namespace FbTk

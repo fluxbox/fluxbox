@@ -35,6 +35,8 @@ namespace FbTk {
 
 void MenuItem::click(int button, int time) {
     if (m_command.get() != 0) {
+        if (m_menu && m_close_on_click)
+            m_menu->hide();
         // we need a local variable, since the command may destroy this object
         RefCount<Command> tmp(m_command);
         tmp->execute();

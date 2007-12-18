@@ -37,6 +37,7 @@ public:
         FbTk::MenuItem(label, host_menu), m_org_label(FbTk::MenuItem::label()),
         m_max(max_val), m_min(min_val), m_res(res) { 
         updateLabel();
+        setCloseOnClick(false);
     }
 
     /* Utility, but doesn't get found in anonymous namespace? */

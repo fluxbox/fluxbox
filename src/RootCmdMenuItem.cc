@@ -40,6 +40,7 @@ RootCmdMenuItem::RootCmdMenuItem(const FbTk::FbString &label,
         setwp_cmd(new FbCommands::ExecuteCmd(prog + " \"" + m_filename + "\""));
     setCommand(setwp_cmd);
     setToggleItem(true);
+    setCloseOnClick(false);
 }
 
 

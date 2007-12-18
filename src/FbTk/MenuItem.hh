@@ -47,15 +47,16 @@ public:
           m_submenu(0),
           m_enabled(true),
           m_selected(false),
+          m_close_on_click(true),
           m_toggle_item(false)
     { }
-    explicit MenuItem(
-        const FbString &label)
+    explicit MenuItem(const FbString &label)
         : m_label(label),
           m_menu(0),
           m_submenu(0),
           m_enabled(true),
           m_selected(false),
+          m_close_on_click(true),
           m_toggle_item(false)
     { }
 
@@ -65,26 +66,28 @@ public:
           m_submenu(0),
           m_enabled(true),
           m_selected(false),
+          m_close_on_click(true),
           m_toggle_item(false)
     { }
     /// create a menu item with a specific command to be executed on click
-    MenuItem(const FbString &label, RefCount<Command> &cmd, Menu *menu = 0):
-        m_label(label),
-        m_menu(menu),
-        m_submenu(0),
-        m_command(cmd),
-        m_enabled(true),
-        m_selected(false),
-        m_toggle_item(false) {
-		
-    }
+    MenuItem(const FbString &label, RefCount<Command> &cmd, Menu *menu = 0)
+        : m_label(label),
+          m_menu(menu),
+          m_submenu(0),
+          m_command(cmd),
+          m_enabled(true),
+          m_selected(false),
+          m_close_on_click(true),
+          m_toggle_item(false)
+    { }
 
     MenuItem(const FbString &label, Menu *submenu, Menu *host_menu = 0)
-        : m_label(label)
-        , m_menu(host_menu)
-        , m_submenu(submenu)
-        , m_enabled(true)
-        , m_selected(false),
+        : m_label(label),
+          m_menu(host_menu),
+          m_submenu(submenu),
+          m_enabled(true),
+          m_selected(false),
+          m_close_on_click(true),
           m_toggle_item(false)
     { }
     virtual ~MenuItem() { }
@@ -94,6 +97,7 @@ public:
     virtual void setEnabled(bool enabled) { m_enabled = enabled; }
     virtual void setLabel(const FbString &label) { m_label = label; }
     virtual void setToggleItem(bool val) { m_toggle_item = val; }
+    void setCloseOnClick(bool val) { m_close_on_click = val; }
     void setIcon(const std::string &filename, int screen_num);
     virtual Menu *submenu() { return m_submenu; }
     /** 
@@ -150,7 +154,7 @@ private:
     Menu *m_submenu; ///< a submenu, 0 if we don't have one
     RefCount<Command> m_command; ///< command to be executed
     bool m_enabled, m_selected;
-    bool m_toggle_item;
+    bool m_close_on_click, m_toggle_item;
     int m_index;
 
     struct Icon {

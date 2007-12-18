@@ -34,11 +34,13 @@ public:
         FbTk::MenuItem(label, cmd), m_item(item) { 
         FbTk::MenuItem::setSelected(m_item);
         setToggleItem(true);
+        setCloseOnClick(false);
     }
     BoolMenuItem(const FbTk::FbString &label, bool &item):
         FbTk::MenuItem(label), m_item(item) {
         FbTk::MenuItem::setSelected(m_item);
-        setToggleItem(true); 
+        setToggleItem(true);
+        setCloseOnClick(false);
     }
     bool isSelected() const { return m_item; }
     // toggle state
