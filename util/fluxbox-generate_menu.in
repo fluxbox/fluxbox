@@ -1899,7 +1899,7 @@ append_submenu "${FBSETTINGSMENU}"
     append "[commanddialog] (${FLUXBOXCOMMAND})"
     append "[reconfig] (${RELOADITEM})"
     append "[restart] (${RESTARTITEM})"
-    append "[exec] (${ABOUTITEM}) {(fluxbox -v; fluxbox -info | sed 1d) 2> /dev/null | xmessage -file - -center}"
+    append "[exec] (${ABOUTITEM}) {(fluxbox -v; fluxbox -info | sed 1d) | xmessage -file - -center}"
     append "[separator]"
     append "[exit] (${EXITITEM})"
 
