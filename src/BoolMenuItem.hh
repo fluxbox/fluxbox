@@ -65,15 +65,20 @@ public:
         FbTk::MenuItem(label, cmd), m_res(res) { 
         FbTk::MenuItem::setSelected(*m_res);
         setToggleItem(true);
+        setCloseOnClick(false);
     }
     BoolResMenuItem(const FbTk::FbString &label, Type &res):
         FbTk::MenuItem(label), m_res(res) {
         FbTk::MenuItem::setSelected(*m_res);
         setToggleItem(true);
+        setCloseOnClick(false);
     }
     bool isSelected() const { return *m_res; }
     // toggle state
-    void click(int button, int time) { setSelected(!*m_res); FbTk::MenuItem::click(button, time); }
+    void click(int button, int time, unsigned int mods) {
+        setSelected(!*m_res);
+        FbTk::MenuItem::click(button, time, mods);
+    }
     void setSelected(bool value) { 
         m_res = value;
         FbTk::MenuItem::setSelected(*m_res);
