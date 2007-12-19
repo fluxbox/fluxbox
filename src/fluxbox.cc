@@ -391,19 +391,19 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
-    // parse apps file after creating screens but before creating windows
-#ifdef REMEMBER
-        addAtomHandler(new Remember(), "remember"); // for remembering window attribs
-#endif // REMEMBER
-    // ewmh handler needs to be added after apps file handler, or else some
-    // window properties are set incorrectly on new windows
-    // this dependency should probably be made more robust
 #ifdef USE_NEWWMSPEC
     addAtomHandler(new Ewmh(), "ewmh"); // for Extended window manager atom support
 #endif // USE_NEWWMSPEC
 #ifdef USE_GNOME
     addAtomHandler(new Gnome(), "gnome"); // for gnome 1 atom support
 #endif //USE_GNOME
+    // parse apps file after creating screens (so we can tell if it's a restart
+    // for [startup] items) but before creating windows
+    // this needs to be after ewmh and gnome, so state atoms don't get
+    // overwritten before they're applied
+#ifdef REMEMBER
+        addAtomHandler(new Remember(), "remember"); // for remembering window attribs
+#endif // REMEMBER
 
     // init all "screens"
     ScreenList::iterator it = m_screen_list.begin();

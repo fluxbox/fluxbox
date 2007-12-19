@@ -562,6 +562,7 @@ void FluxboxWindow::init() {
         setMaximizedState(tmp);
     }
 
+    m_workspacesig.notify();
 
     struct timeval now;
     gettimeofday(&now, NULL);
