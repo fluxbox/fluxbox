@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/19:
+   * Don't let transient windows steal focus from other programs (Mark)
+     Window.cc
 *07/12/18:
    * NLS entries for Mouse Tab Focus and Click Tab Focus were switched - please
      make sure they're right now in your language, bug #1786566 (Mark)

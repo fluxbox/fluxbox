@@ -2246,7 +2246,7 @@ bool FluxboxWindow::allowsFocusFromClient() {
 
     FluxboxWindow *cur = FocusControl::focusedFbWindow();
     WinClient *client = FocusControl::focusedWindow();
-    if (cur && client && cur->isTyping() &&
+    if (cur && client && (m_client->isTransient() || cur->isTyping()) &&
         getRootTransientFor(m_client) != getRootTransientFor(client))
         return false;
 
