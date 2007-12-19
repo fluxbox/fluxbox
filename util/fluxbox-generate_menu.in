@@ -1210,7 +1210,7 @@ case ${LC_ALL} in
 esac
 
 # Set Defaults
-USERFLUXDIR="\${HOME}/.@pkgprefix@fluxbox@pkgsuffix@"
+USERFLUXDIR="${HOME}/.@pkgprefix@fluxbox@pkgsuffix@"
 MENUFILENAME="${MENUFILENAME:=${USERFLUXDIR}/menu}"
 MENUTITLE="${MENUTITLE:=Fluxbox}"
 HOMEPAGE="${HOMEPAGE:=fluxbox.org}"
@@ -1566,8 +1566,8 @@ cat << EOF > ${MENUFILENAME}
 #   makes things much more readable.
 #
 # - To prevent any other app from overwriting your menu
-#   you can change the menu name in .@pkgprefix@fluxbox@pkgsuffix@/init to:
-#     session.menuFile: ${USERFLUXDIR}/my-menu
+#   you can change the menu name in ~/.@pkgprefix@fluxbox@pkgsuffix@/init to:
+#     session.menuFile: ~/.@pkgprefix@fluxbox@pkgsuffix@/my-menu
 
 EOF
 
