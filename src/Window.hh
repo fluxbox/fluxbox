@@ -256,10 +256,9 @@ public:
     void iconify();
     /**
      * Deiconify window
-     * @param reassoc reassociate the window to the current workspace
      * @param do_raise raise the window when its been deiconfied
      */
-    void deiconify(bool reassoc = true, bool do_raise = true);
+    void deiconify(bool do_raise = true);
 
     // ------------------
     // Per window transparency addons

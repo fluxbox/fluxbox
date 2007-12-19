@@ -396,7 +396,7 @@ void Gnome::setState(FluxboxWindow *win, int state) {
         if (win->isIconic())
             win->iconify();
     } else if (win->isIconic())
-        win->deiconify(true, true);
+        win->deiconify(true);
 
     if (state & WIN_STATE_SHADED) {
 #ifdef DEBUG

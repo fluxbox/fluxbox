@@ -545,7 +545,7 @@ void FluxboxWindow::init() {
         iconify();
     } else if (m_workspace_number == screen().currentWorkspaceID()) {
         iconic = true;
-        deiconify(false);
+        deiconify();
         // check if we should prevent this window from gaining focus
         if (!allowsFocusFromClient() || Fluxbox::instance()->isStartup())
             m_focused = false;
@@ -1416,57 +1416,41 @@ void FluxboxWindow::iconify() {
     // focus revert is done elsewhere (based on signal)
 }
 
-void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
-    if (numClients() == 0)
+void FluxboxWindow::deiconify(bool do_raise) {
+    if (numClients() == 0 || !iconic || oplock)
         return;
 
-    if (oplock) return;
     oplock = true;
 
-    if (iconic &&
-        m_workspace_number != screen().currentWorkspace()->workspaceID()) {
-        // reassociate first, so it gets removed from screen's icon list
-        screen().reassociateWindow(this, m_workspace_number, false);
-        iconic = false;
-        return;
-    }
-
-    if (iconic || reassoc)
-        screen().reassociateWindow(this, screen().currentWorkspaceID(), false);
-    else if (moving || m_workspace_number != screen().currentWorkspaceID()) {
-        oplock = false;
-        return;
-    }
-
-    bool was_iconic = iconic;
-
+    // reassociate first, so it gets removed from screen's icon list
+    screen().reassociateWindow(this, m_workspace_number, false);
     iconic = false;
     m_statesig.notify();
 
-    if (reassoc && !m_client->transients.empty()) {
-        // deiconify all transients
-        ClientList::iterator client_it = clientList().begin();
-        ClientList::iterator client_it_end = clientList().end();
-        for (; client_it != client_it_end; ++client_it) {
-            //TODO: Can this get stuck in a loop?
-            WinClient::TransientList::iterator trans_it =
-                (*client_it)->transientList().begin();
-            WinClient::TransientList::iterator trans_it_end =
-                (*client_it)->transientList().end();
-            for (; trans_it != trans_it_end; ++trans_it) {
-                if ((*trans_it)->fbwindow())
-                    (*trans_it)->fbwindow()->deiconify(true, false);
-            }
+    // deiconify all transients
+    ClientList::iterator client_it = clientList().begin();
+    ClientList::iterator client_it_end = clientList().end();
+    for (; client_it != client_it_end; ++client_it) {
+        WinClient::TransientList::iterator trans_it =
+            (*client_it)->transientList().begin();
+        WinClient::TransientList::iterator trans_it_end =
+            (*client_it)->transientList().end();
+        for (; trans_it != trans_it_end; ++trans_it) {
+            if ((*trans_it)->fbwindow())
+                (*trans_it)->fbwindow()->deiconify(false);
         }
     }
+
+    if (m_workspace_number != screen().currentWorkspaceID())
+        return;
 
     show();
 
     // focus new, OR if it's the only window on the workspace
     // but not on startup: focus will be handled after creating everything
     // we use m_focused as a signal to focus the window when mapped
-    if (was_iconic && (screen().currentWorkspace()->numberOfWindows() == 1 ||
-        screen().focusControl().focusNew() || m_client->isTransient()))
+    if (screen().currentWorkspace()->numberOfWindows() == 1 ||
+        screen().focusControl().focusNew() || m_client->isTransient())
         m_focused = true;
 
     oplock = false;
@@ -2231,7 +2215,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
         return;
 
     setCurrentClient(*client, false); // focus handled on MapNotify
-    deiconify(false);
+    deiconify();
 
 }
 
