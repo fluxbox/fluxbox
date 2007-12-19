@@ -119,7 +119,7 @@ void Workspace::showAll() {
     Windows::iterator it = m_windowlist.begin();
     Windows::iterator it_end = m_windowlist.end();
     for (; it != it_end; ++it)
-        (*it)->deiconify(false, false);
+        (*it)->show();
 }
 
 

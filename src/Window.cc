@@ -1789,7 +1789,7 @@ void FluxboxWindow::stick() {
 
 void FluxboxWindow::raise() {
     if (isIconic())
-        deiconify();
+        return;;
 #ifdef DEBUG
     cerr<<"FluxboxWindow("<<title()<<")::raise()[layer="<<layerNum()<<"]"<<endl;
 #endif // DEBUG
@@ -1817,7 +1817,7 @@ void FluxboxWindow::raise() {
 
 void FluxboxWindow::lower() {
     if (isIconic())
-        deiconify();
+        return;
 #ifdef DEBUG
     cerr<<"FluxboxWindow("<<title()<<")::lower()"<<endl;
 #endif // DEBUG
