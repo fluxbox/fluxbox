@@ -1016,10 +1016,16 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     frame().setLabelButtonFocus(*button);
     frame().setShapingClient(&client, false);
 
+    setinput = setinput || m_focused && !screen().focusControl().isCycling();
     bool ret = setinput && focus();
-    if (setinput)
+    if (setinput) {
         // restore old client until focus event comes
         m_client = old;
+        if (!ret && old) {
+            old->raise();
+            titleSig().notify();
+        }
+    }
     return ret;
 }
 
