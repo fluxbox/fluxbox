@@ -1397,20 +1397,11 @@ void FluxboxWindow::iconify() {
     const ClientList::iterator client_it_end = m_clientlist.end();
     for (; client_it != client_it_end; ++client_it) {
         WinClient &client = *(*client_it);
-        if (client.transientFor() &&
-            client.transientFor()->fbwindow()) {
-            if (!client.transientFor()->fbwindow()->isIconic()) {
-                client.transientFor()->fbwindow()->iconify();
-            }
-        }
-
-        if (!client.transientList().empty()) {
-            WinClient::TransientList::iterator it = client.transientList().begin();
-            WinClient::TransientList::iterator it_end = client.transientList().end();
-            for (; it != it_end; it++)
-                if ((*it)->fbwindow())
-                    (*it)->fbwindow()->iconify();
-        }
+        WinClient::TransientList::iterator it = client.transientList().begin();
+        WinClient::TransientList::iterator it_end = client.transientList().end();
+        for (; it != it_end; it++)
+            if ((*it)->fbwindow())
+                (*it)->fbwindow()->iconify();
     }
 
     // focus revert is done elsewhere (based on signal)
