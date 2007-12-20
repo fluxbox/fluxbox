@@ -35,6 +35,7 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/ObjectRegistry.hh"
 #include "FbTk/stringstream.hh"
+#include "FbTk/StringUtil.hh"
 
 #ifdef HAVE_CMATH
   #include <cmath>
@@ -43,30 +44,58 @@
 #endif
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 using std::string;
 using FbTk::Command;
 using FbTk::BoolCommand;
 
-void WindowListCmd::execute() {
-    if (m_pat.error()) {
-        m_cmd->execute();
-        return;
+REGISTER_OBJECT_PARSER(map, WindowListCmd::parse, Command);
+REGISTER_OBJECT_PARSER(foreach, WindowListCmd::parse, Command);
+
+FbTk::Command *WindowListCmd::parse(const string &command, const string &args,
+                                    bool trusted) {
+    FbTk::Command *cmd = 0;
+    FbTk::BoolCommand *filter = 0;
+    std::vector<string> tokens;
+    int opts;
+    string pat;
+
+    FbTk::StringUtil::stringTokensBetween(tokens, args, pat, '{', '}');
+    if (tokens.empty())
+        return 0;
+
+    cmd = FbTk::ObjectRegistry<Command>::instance().parse(tokens[0], trusted);
+    if (!cmd)
+        return 0;
+
+    if (tokens.size() > 1) {
+        FocusableList::parseArgs(tokens[1], opts, pat);
+
+        filter = FbTk::ObjectRegistry<BoolCommand>::instance().parse(pat,
+                                                                     trusted);
     }
 
+    return new WindowListCmd(FbTk::RefCount<Command>(cmd), opts,
+                             FbTk::RefCount<BoolCommand>(filter));
+}
+
+void WindowListCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
-        FocusControl::Focusables win_list(screen->focusControl().creationOrderWinList().clientList());
+        FocusableList::Focusables win_list(FocusableList::getListFromOptions(*screen, m_opts)->clientList());
 
-        FocusControl::Focusables::iterator it = win_list.begin(),
-                                           it_end = win_list.end();
+        FocusableList::Focusables::iterator it = win_list.begin(),
+                                            it_end = win_list.end();
         // save old value, so we can restore it later
         WinClient *old = WindowCmd<void>::client();
         for (; it != it_end; ++it) {
-            if (m_pat.match(**it) && (*it)->fbwindow()) {
+            if (typeid(**it) == typeid(FluxboxWindow))
                 WindowCmd<void>::setWindow((*it)->fbwindow());
+            else if (typeid(**it) == typeid(WinClient))
+                WindowCmd<void>::setClient(dynamic_cast<WinClient *>(*it));
+            if (!*m_filter || m_filter->bool_execute())
                 m_cmd->execute();
-            }
         }
         WindowCmd<void>::setClient(old);
     }

@@ -67,6 +67,27 @@ std::string::size_type removeTrailingWhitespace(std::string &str);
 /// splits input at first non-leading whitespace and returns both parts
 void getFirstWord(const std::string &in, std::string &first, std::string &rest);
 
+template <typename Container>
+static void stringTokensBetween(Container &container, const std::string &in,
+        std::string &rest, char first, char last,
+        const char *ok_chars = " \t\n", bool allow_nesting = true) {
+
+    std::string token;
+    int err = 0, pos = 0;
+
+    while (true) {
+        err = getStringBetween(token, in.c_str() + pos, first, last, ok_chars,
+                               allow_nesting);
+        if (err == 0)
+            break;
+        container.push_back(token);
+        pos += err;
+    }
+
+    rest = in.c_str() + pos;
+
+}
+
 /// Breaks a string into tokens
 template <typename Container>
 static void

@@ -1,5 +1,15 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/20:
+   * Added new key command :ForEach (or :Map) (Mark)
+     - :ForEach {<command>} [{ [{<list opts>}] [<bool command>] }]
+     - For example, the following command will shade all windows on the current
+       workspace: ForEach {shade} {{groups} Matches (workspace=[current])}
+     - <list opts> can be any combination of `static' and `groups' where static
+       means windows are listed in creation order, and groups means individual
+       tabs are not considered separately
+     - This replaces syntax such as `:Minimize (layer)', which no longer works
+     WorkspaceCmd.cc/hh
 *07/12/19:
    * Don't let transient windows steal focus from other programs (Mark)
      Window.cc

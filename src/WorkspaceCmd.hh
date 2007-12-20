@@ -36,14 +36,18 @@
 
 class WindowListCmd: public FbTk::Command {
 public:
-    WindowListCmd(FbTk::RefCount<FbTk::Command> cmd, const std::string &pat):
-            m_cmd(cmd), m_pat(pat.c_str()) { }
+    WindowListCmd(FbTk::RefCount<FbTk::Command> cmd, int opts,
+                  FbTk::RefCount<FbTk::BoolCommand> filter):
+            m_cmd(cmd), m_opts(opts), m_filter(filter) { }
 
     void execute();
+    static FbTk::Command *parse(const std::string &command,
+                                const std::string &args, bool trusted);
 
 private:
     FbTk::RefCount<FbTk::Command> m_cmd;
-    ClientPattern m_pat;
+    int m_opts;
+    FbTk::RefCount<FbTk::BoolCommand> m_filter;
 };
 
 class SomeCmd: public FbTk::BoolCommand {

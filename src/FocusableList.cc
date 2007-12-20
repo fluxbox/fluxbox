@@ -38,10 +38,11 @@ using std::vector;
 
 void FocusableList::parseArgs(const string &in, int &opts, string &pat) {
     string options;
-    int err = FbTk::StringUtil::getStringBetween(options, in.c_str(), '{', '}');
+    int err = FbTk::StringUtil::getStringBetween(options, in.c_str(), '{', '}',
+                                                 " \t\n");
 
     // the rest of the string is a ClientPattern
-    pat = in.c_str() + err;
+    pat = in.c_str() + (err > 0 ? err : 0);
 
     // now parse the options
     vector<string> args;
