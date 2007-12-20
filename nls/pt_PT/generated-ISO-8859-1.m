@@ -44,7 +44,7 @@ $set 3 #Common
 14 Erro
 15 Versão do Fluxbox
 16 Maximizar Sobre
-17 Revisão SVN
+17 Revisão GIT
 18 Visível
 19 Não existe opção de Fundo neste tema.\nConsulte o manual ou as FAQ.
 

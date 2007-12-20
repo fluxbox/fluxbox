@@ -39,7 +39,7 @@ $set 3 #Common
 14 Erreur
 15 Version de Fluxbox
 16 Maximiser
-17 Révision SVN
+17 Révision GIT
 18 Visible
 19 Aucune option d'arrière plan n'a été spécifié dans ce style.\nVeuillez consulter le manuel ou bien liser la FAQ.
 

@@ -37,7 +37,7 @@ $set 3 #Common
 14 Fejl
 15 Fluxbox version
 16 Maksimer over
-17 SVN Revision
+17 GIT Revision
 18 Synlig
 
 $set 4 #Configmenu

@@ -59,7 +59,7 @@ defaults.cc: force
 		echo '}'; \
 		echo ''; \
 		echo 'const char* svnversion(void) {'; \
-		echo '  return "'`(svnversion . | sed "s/[^0-9].*//") 2> /dev/null`'";';\
+		echo '  return "'`cat ../.git/refs/heads/master`'";';\
 		echo '}' ) > defaults_tmp.cc
 	@if ! cmp defaults_tmp.cc defaults.cc ; then cp defaults_tmp.cc defaults.cc; fi
 	@rm defaults_tmp.cc

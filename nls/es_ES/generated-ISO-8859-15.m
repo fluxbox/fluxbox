@@ -44,7 +44,7 @@ $set 3 #Common
 14 Error
 15 Versión de Fluxbox
 16 Maximizar por encima
-17 Revisión de SVN
+17 Revisión de GIT
 18 Visible
 19 No hay una opción de fondo especificada en este estilo.\nPor vafor consulte el manual o lea las FAQ.
 

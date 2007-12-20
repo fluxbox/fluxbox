@@ -44,7 +44,7 @@ $set 3 #Common
 14 Virhe
 15 Fluxbox versio
 16 Peit‰ ikkunaa suurennettaessa
-17 SVN Revisio
+17 GIT Revisio
 18 N‰kyviss‰
 19 T‰lle tyylille ei ole m‰‰ritetty taustaa.\nHae lis‰tietoja k‰sikirjasta ja UKK:sta.
 

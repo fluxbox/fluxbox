@@ -44,7 +44,7 @@ $set 3 #Common
 14 Fehler
 15 Fluxbox Version
 16 Von maximierten Fenstern verdecken
-17 SVN Revision
+17 GIT Revision
 18 Sichtbar
 19 In diesem Style ist keine Hintergrundoption angegeben.\nBitte lesen Sie die Dokumentation und die FAQ.
 

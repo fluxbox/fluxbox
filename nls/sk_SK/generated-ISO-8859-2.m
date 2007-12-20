@@ -44,7 +44,7 @@ $set 3 #Common
 14 Chyba
 15 Verzia Fluxboxu
 16 Maximalizova» nad v¹etkými oknami
-17 Revízia SVN
+17 Revízia GIT
 18 Viditeµné
 19 V tomto ¹týle nie je uvedené ¾iadne pozadie.\nPrezrite si prosím manuál alebo preèítajte Èasto kladené otázky.
 

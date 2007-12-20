@@ -44,7 +44,7 @@ $set 3 #Common
 14 
 15 Fluxbox版本
 16 最大化
-17 SVN修版本
+17 GIT修版本
 18 可
 19 主未定任何背景。\n考手或FAQ。
 

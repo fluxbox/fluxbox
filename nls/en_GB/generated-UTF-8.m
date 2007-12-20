@@ -44,7 +44,7 @@ $set 3 #Common
 14 Error
 15 Fluxbox version
 16 Maximize Over
-17 SVN Revision
+17 GIT Revision
 18 Visible
 19 There is no background option specified in this style.\nPlease consult the manual or read the FAQ.
 

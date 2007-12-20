@@ -44,7 +44,7 @@ $set 3 #Common
 14 Feil
 15 FluxBox-versjon
 16 Maksimer over
-17 SVN-revisjon
+17 GIT-revisjon
 18 Synlig
 
 $set 4 #Configmenu

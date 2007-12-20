@@ -44,7 +44,7 @@ $set 3 #Common
 14 Valg
 15 Fluxbox versjon
 16 Forstørr over
-17 SVN versjon
+17 GIT versjon
 18 Synlig
 
 
