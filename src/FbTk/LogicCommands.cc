@@ -26,6 +26,8 @@
 #include "ObjectRegistry.hh"
 #include "StringUtil.hh"
 
+#include <vector>
+
 using FbTk::StringUtil::removeFirstWhitespace;
 using FbTk::StringUtil::toLower;
 using std::string;
@@ -36,20 +38,16 @@ namespace {
 
 template <typename M>
 M *addCommands(M *macro, const string &args, bool trusted) {
-    int pos = 0, err = 0;
-    string cmd;
+    std::string blah;
+    std::vector<std::string> cmds;
+    StringUtil::stringTokensBetween(cmds, args, blah, '{', '}');
+    RefCount<BoolCommand> cmd(0);
 
-    while (true) {
-        RefCount<BoolCommand> tmp(0);
-        err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
-                                           '{', '}', " \t\n", true);
-        pos += err;
-        if (err == 0)
-            break;
-
-        tmp = ObjectRegistry<BoolCommand>::instance().parse(cmd, trusted);
-        if (*tmp)
-            macro->add(tmp);
+    std::vector<std::string>::iterator it = cmds.begin(), it_end = cmds.end();
+    for (; it != it_end; ++it) {
+        cmd = ObjectRegistry<BoolCommand>::instance().parse(*it, trusted);
+        if (*cmd)
+            macro->add(cmd);
     }
 
     if (macro->size() > 0)
@@ -85,31 +83,23 @@ REGISTER_OBJECT_PARSER(xor, parseLogicCommand, BoolCommand);
 
 Command *IfCommand::parse(const std::string &command, const std::string &args,
                           bool trusted) {
-    std::string cmd;
-    int err = 0, pos = 0;
+    std::string blah;
+    std::vector<std::string> cmds;
     RefCount<BoolCommand> cond(0);
     RefCount<Command> t(0), f(0);
 
-    err = StringUtil::getStringBetween(cmd, args.c_str(),
-                                       '{', '}', " \t\n", true);
-    if (err > 0)
-        cond = ObjectRegistry<BoolCommand>::instance().parse(cmd, trusted);
-    if (err == 0 || *cond == 0)
+    StringUtil::stringTokensBetween(cmds, args, blah, '{', '}');
+    if (cmds.size() < 3)
         return 0;
 
-    pos = err;
-    err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
-                                       '{', '}', " \t\n", true);
-    if (err == 0)
+    cond = ObjectRegistry<BoolCommand>::instance().parse(cmds[0], trusted);
+    if (*cond == 0)
         return 0;
-    t = ObjectRegistry<Command>::instance().parse(cmd, trusted);
 
-    pos += err;
-    err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
-                                       '{', '}', " \t\n", true);
-    if (err > 0)
-        f = ObjectRegistry<Command>::instance().parse(cmd, trusted);
-    if (err == 0 || *t == 0 && *f == 0)
+    t = ObjectRegistry<Command>::instance().parse(cmds[1], trusted);
+    if (cmds.size() >= 3)
+        f = ObjectRegistry<Command>::instance().parse(cmds[2], trusted);
+    if (*t == 0 && *f == 0)
         return 0;
 
     return new IfCommand(cond, t, f);

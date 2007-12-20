@@ -26,6 +26,7 @@
 #include "ObjectRegistry.hh"
 #include "StringUtil.hh"
 
+#include <list>
 #include <string>
 
 namespace FbTk {
@@ -35,21 +36,16 @@ namespace {
 template <typename M>
 M *addCommands(M *macro, const std::string &args, bool trusted) {
 
-    std::string cmd;
-    int err = 0;
-    int pos = 0;
+    std::string blah;
+    std::list<std::string> cmds;
+    StringUtil::stringTokensBetween(cmds, args, blah, '{', '}');
+    RefCount<Command> cmd(0);
 
-    while (true) {
-        RefCount<Command> next(0);
-        pos += err;
-        err = StringUtil::getStringBetween(cmd, args.c_str() + pos,
-                                           '{', '}', " \t\n", true);
-        if (err == 0)
-            break;
-        if (err > 0)
-            next = ObjectRegistry<Command>::instance().parse(cmd, trusted);
-        if (*next != 0)
-            macro->add(next);
+    std::list<std::string>::iterator it = cmds.begin(), it_end = cmds.end();
+    for (; it != it_end; ++it) {
+        cmd = ObjectRegistry<Command>::instance().parse(*it, trusted);
+        if (*cmd)
+            macro->add(cmd);
     }
 
     if (macro->size() > 0)
