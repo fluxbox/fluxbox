@@ -79,19 +79,19 @@ MenuTheme::MenuTheme(int screen_num):
     m_real_title_height(*m_title_height),
     m_real_item_height(*m_item_height)
 { 
-    m_real_item_height = std::max(*m_item_height, frameFont().height() + 2*bevelWidth());
-    m_real_title_height = std::max(*m_title_height,
-                                   titleFont().height() + 2*bevelWidth());
-
-    m_real_item_height = m_real_item_height == 0 ? 1 : m_real_item_height;
-    m_real_title_height = m_real_title_height == 0 ? 1 : m_real_title_height;
-
     // set default values
     *m_border_width = 0;
     *m_bevel_width = 0;
     *m_border_width = 0;
 
     ThemeManager::instance().loadTheme(*this);
+
+    m_real_item_height = std::max(*m_item_height, frameFont().height() + 2*bevelWidth());
+    m_real_title_height = std::max(*m_title_height,
+                                   titleFont().height() + 2*bevelWidth());
+
+    m_real_item_height = m_real_item_height == 0 ? 1 : m_real_item_height;
+    m_real_title_height = m_real_title_height == 0 ? 1 : m_real_title_height;
 
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);
