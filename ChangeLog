@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/21:
+   * Added new key command :StartTabbing (Mark)
+     Window.cc/hh CurrentWindowCmd.cc/hh
 *07/12/20:
    * Added new key command :ForEach (or :Map) (Mark)
      - :ForEach {<command>} [{ [{<list opts>}] [<bool command>] }]

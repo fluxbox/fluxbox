@@ -15,6 +15,9 @@ OnToolbar Mouse5 :PrevWorkspace
 OnWindow Mod1 Mouse1 :StartMoving
 OnWindow Mod1 Mouse3 :StartResizing
 
+# middle click a window's titlebar and drag to attach windows
+OnTitlebar Mouse2 :StartTabbing
+
 # double click on the titlebar to shade
 OnTitlebar Double Mouse1 :Shade
 

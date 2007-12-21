@@ -159,6 +159,14 @@ private:
     const FluxboxWindow::ResizeModel m_mode;
 };
 
+// begin tabbing with mouse
+class StartTabbingCmd: public WindowHelperCmd {
+public:
+    StartTabbingCmd() { }
+protected:
+    void real_execute();
+};
+
 // move cmd, relative position
 class MoveCmd: public WindowHelperCmd {
 public:

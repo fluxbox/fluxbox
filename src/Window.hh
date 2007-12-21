@@ -393,6 +393,8 @@ public:
     ResizeDirection getResizeDirection(int x, int y, ResizeModel model);
     /// stops the resizing
     void stopResizing(bool interrupted = false);
+    /// starts tabbing
+    void startTabbing(const XButtonEvent &be);
 
     /**
        @name accessors

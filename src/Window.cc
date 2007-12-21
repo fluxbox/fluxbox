@@ -2611,11 +2611,10 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         me.window = frame().window().window();
     }
 
-    bool inside_titlebar = (frame().titlebar() == me.window
-                            || frame().label() == me.window
-                            || frame().tabcontainer() == me.window
-                            || frame().handle() == me.window
-                            || frame().window() == me.window);
+    bool inside_titlebar = frame().gripLeft().window() != me.window &&
+        frame().gripRight().window() != me.window &&
+        frame().clientArea().window() != me.window &&
+        frame().window() != me.window;
 
     if (Fluxbox::instance()->getIgnoreBorder() && m_attaching_tab == 0
         && !(isMoving() || isResizing())) {
@@ -2650,24 +2649,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             return;
     }
 
-    WinClient *client = 0;
-    if (!inside_titlebar) {
-        // determine if we're in titlebar
-        Client2ButtonMap::iterator it =
-            find_if(m_labelbuttons.begin(),
-                    m_labelbuttons.end(),
-                    Compose(bind2nd(equal_to<Window>(), me.window),
-                            Compose(mem_fun(&TextButton::window),
-                                    Select2nd<Client2ButtonMap::value_type>())));
-        if (it != m_labelbuttons.end()) {
-            inside_titlebar = true;
-            client = (*it).first;
-        }
-    }
-
-    if ((me.state & Button1Mask) && functions.move &&
-        inside_titlebar &&
-        !isResizing()) {
+    if (moving || (me.state & Button1Mask) && functions.move &&
+        inside_titlebar && !isResizing() && m_attaching_tab == 0) {
 
         if (! isMoving()) {
             startMoving(me.x_root, me.y_root);
@@ -2741,7 +2724,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             screen().showPosition(dx, dy);
         } // end if moving
-    } else if (functions.resize &&
+    } else if (resizing || m_attaching_tab == 0 && functions.resize &&
                (((me.state & Button1Mask) &&
                  (me.window == frame().gripRight() ||
                   me.window == frame().gripLeft())) ||
@@ -2833,61 +2816,25 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 screen().showGeometry(gx, gy);
             }
         }
-    } else if (functions.tabable &&
-               (me.state & Button2Mask) && inside_titlebar && (client != 0 || m_attaching_tab != 0)) {
+    } else if (m_attaching_tab != 0) {
         //
         // drag'n'drop code for tabs
         //
-        FbTk::TextButton &active_button = *m_labelbuttons[(m_attaching_tab==0)?client:m_attaching_tab];
 
-        if (m_attaching_tab == 0) {
-            if (s_num_grabs > 0)
-                return;
-            // start drag'n'drop for tab
-            m_attaching_tab = client;
-            grabPointer(me.window, False, ButtonMotionMask |
-                        ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                        None, frame(). theme().moveCursor(), CurrentTime);
-            // relative position on button
-            m_button_grab_x = me.x;
-            m_button_grab_y = me.y;
-            // last known root mouse position
-            m_last_move_x = me.x_root - me.x;
-            m_last_move_y = me.y_root - me.y;
-            // hijack extra vars for initial grab location
-            m_last_resize_x = me.x_root;
-            m_last_resize_y = me.y_root;
+        // we already grabed and started to drag'n'drop tab
+        // so we update drag'n'drop-rectangle
+        int dx = me.x_root - m_button_grab_x, dy = me.y_root - m_button_grab_y;
 
-            Fluxbox::instance()->grab();
+        parent().drawRectangle(screen().rootTheme().opGC(),
+                               m_last_move_x, m_last_move_y,
+                               m_last_resize_w, m_last_resize_h);
+        parent().drawRectangle(screen().rootTheme().opGC(),
+                               dx, dy,
+                               m_last_resize_w, m_last_resize_h);
 
-            parent().drawRectangle(screen().rootTheme().opGC(),
-                                   m_last_move_x, m_last_move_y,
-                                   active_button.width(),
-                                   active_button.height());
-
-            menu().hide();
-        } else {
-            // we already grabed and started to drag'n'drop tab
-            // so we update drag'n'drop-rectangle
-            int dx = me.x_root - m_button_grab_x, dy = me.y_root - m_button_grab_y;
-
-            //erase rectangle
-            parent().drawRectangle(screen().rootTheme().opGC(),
-                                   m_last_move_x, m_last_move_y,
-                                   active_button.width(),
-                                   active_button.height());
-
-
-            // redraw rectangle at new pos
-            m_last_move_x = dx;
-            m_last_move_y = dy;
-            parent().drawRectangle(screen().rootTheme().opGC(),
-                                   m_last_move_x, m_last_move_y,
-                                   active_button.width(),
-                                   active_button.height());
-
-
-        }
+        // change remembered position of rectangle
+        m_last_move_x = dx;
+        m_last_move_y = dy;
     }
 
 }
@@ -3116,7 +3063,7 @@ void FluxboxWindow::startMoving(int x, int y) {
     Fluxbox *fluxbox = Fluxbox::instance();
     // grabbing (and masking) on the root window allows us to
     // freely map and unmap the window we're moving.
-    grabPointer(screen().rootWindow().window(), False, Button1MotionMask |
+    grabPointer(screen().rootWindow().window(), False, ButtonMotionMask |
                 ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
                 screen().rootWindow().window(), frame().theme().moveCursor(), CurrentTime);
 
@@ -3467,14 +3414,64 @@ void FluxboxWindow::stopResizing(bool interrupted) {
     ungrabPointer(CurrentTime);
 }
 
+void FluxboxWindow::startTabbing(const XButtonEvent &be) {
+
+    if (s_num_grabs > 0)
+        return;
+
+    m_attaching_tab = 0;
+    // determine if we're in titlebar
+    Client2ButtonMap::iterator it =
+        find_if(m_labelbuttons.begin(),
+                m_labelbuttons.end(),
+                Compose(bind2nd(equal_to<Window>(), be.window),
+                        Compose(mem_fun(&TextButton::window),
+                                Select2nd<Client2ButtonMap::value_type>())));
+    if (it != m_labelbuttons.end())
+        m_attaching_tab = it->first;
+
+    // start drag'n'drop for tab
+    grabPointer(be.window, False, ButtonMotionMask |
+                ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
+                None, frame().theme().moveCursor(), CurrentTime);
+
+    // relative position on the button
+    m_button_grab_x = be.x;
+    m_button_grab_y = be.y;
+    // position of the button
+    m_last_move_x = be.x_root - be.x;
+    m_last_move_y = be.y_root - be.y;
+    // hijack extra vars for initial grab location
+    m_last_resize_x = be.x_root;
+    m_last_resize_y = be.y_root;
+
+    Fluxbox::instance()->grab();
+
+    if (m_attaching_tab) {
+        FbTk::TextButton &active_button = *m_labelbuttons[m_attaching_tab];
+        m_last_resize_w = active_button.width();
+        m_last_resize_h = active_button.height();
+    } else {
+        m_attaching_tab = m_client;
+        unsigned int bw = 2*frame().window().borderWidth()-1;
+        m_last_resize_w = frame().width() + bw;
+        m_last_resize_h = frame().height() + bw;
+    }
+
+    parent().drawRectangle(screen().rootTheme().opGC(),
+                           m_last_move_x, m_last_move_y,
+                           m_last_resize_w, m_last_resize_h);
+
+    menu().hide();
+}
+
 void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
     if (m_attaching_tab == 0)
         return;
 
     parent().drawRectangle(screen().rootTheme().opGC(),
                            m_last_move_x, m_last_move_y,
-                           m_labelbuttons[m_attaching_tab]->width(),
-                           m_labelbuttons[m_attaching_tab]->height());
+                           m_last_resize_w, m_last_resize_h);
 
     ungrabPointer(CurrentTime);
 

@@ -275,6 +275,19 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         new_version = 6;
     }
 
+    if (old_version < 7) { // added StartTabbing command
+        string whole_keyfile = read_file(keyfilename);
+        string new_keyfile = "";
+        // let's put our new keybindings first, so they're easy to find
+        new_keyfile += "# start tabbing windows together\n";
+        new_keyfile += "OnTitlebar Mouse2 :StartTabbing\n\n";
+        new_keyfile += whole_keyfile; // don't forget user's old keybindings
+
+        write_file(keyfilename, new_keyfile);
+
+        new_version = 7;
+    }
+
     return new_version;
 }
 

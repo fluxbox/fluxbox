@@ -313,6 +313,16 @@ void StartResizingCmd::real_execute() {
     }
 }
 
+REGISTER_OBJECT(starttabbing, StartTabbingCmd, Command);
+
+void StartTabbingCmd::real_execute() {
+    const XEvent &last = Fluxbox::instance()->lastEvent();
+    if (last.type == ButtonPress) {
+        const XButtonEvent &be = last.xbutton;
+        fbwindow().startTabbing(be);
+    }
+}
+
 FbTk::Command *MoveCmd::parse(const string &command, const string &args,
                               bool trusted) {
     FbTk_istringstream is(args.c_str());
