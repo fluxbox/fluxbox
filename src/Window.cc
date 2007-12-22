@@ -628,7 +628,8 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
             if (x >= 0 && button_insert_pos)
                 frame().moveLabelButtonLeftOf(*m_labelbuttons[*client_it], *button_insert_pos);
 
-            (*client_it)->saveBlackboxAttribs(m_blackbox_attrib);
+            (*client_it)->saveBlackboxAttribs(m_blackbox_attrib,
+                                              PropBlackboxAttributesElements);
         }
 
         // add client and move over all attached clients
@@ -657,7 +658,8 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
             m_focused = true;
         focused_win = (focus_new || is_startup) ? &client : m_client;
 
-        client.saveBlackboxAttribs(m_blackbox_attrib);
+        client.saveBlackboxAttribs(m_blackbox_attrib,
+                                   PropBlackboxAttributesElements);
         m_clientlist.push_back(&client);
     }
 
@@ -1087,14 +1089,6 @@ void FluxboxWindow::reconfigure() {
     for (; it != it_end; ++it)
         it->second->setPixmap(screen().getTabsUsePixmap());
 
-}
-
-/// update current client title and title in our frame
-void FluxboxWindow::updateTitleFromClient(WinClient &client) {
-    if (&client == m_client) {
-        frame().setFocusTitle(client.title());
-        titleSig().notify();
-    }
 }
 
 void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
@@ -2917,6 +2911,20 @@ void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
     //installColormap(false);
 }
 
+void FluxboxWindow::update(FbTk::Subject *subj) {
+    if (subj && typeid(*subj) == typeid(Focusable::FocusSubject)) {
+        Focusable::FocusSubject &fsubj =
+                static_cast<Focusable::FocusSubject &>(*subj);
+        Focusable &win = fsubj.win();
+
+        if (&fsubj == &win.titleSig() && &win == m_client) {
+            frame().setFocusTitle(win.title());
+            titleSig().notify();
+        }
+
+    }
+}
+
 // commit current decoration values to actual displayed things
 void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
@@ -4043,6 +4051,7 @@ void FluxboxWindow::associateClient(WinClient &client) {
     evm.add(*this, btn->window()); // we take care of button events for this
     evm.add(*this, client.window());
     client.setFluxboxWindow(this);
+    client.titleSig().attach(this);
 }
 
 int FluxboxWindow::getDecoMaskFromString(const string &str_label) {

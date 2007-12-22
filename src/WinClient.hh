@@ -94,7 +94,7 @@ public:
 
     void setGroupLeftWindow(Window win);
 
-    void saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs);
+    void saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs, int nelements);
     void setFluxboxWindow(FluxboxWindow *win);
 
     // does this client have a pending unmap or destroy event?

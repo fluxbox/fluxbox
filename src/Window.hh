@@ -29,6 +29,7 @@
 
 #include "FbTk/Timer.hh"
 #include "FbTk/Subject.hh"
+#include "FbTk/Observer.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbWinFrame.hh"
@@ -58,7 +59,8 @@ class Menu;
 }
 
 /// Creates the window frame and handles any window event for it
-class FluxboxWindow: public Focusable, public FbTk::EventHandler {
+class FluxboxWindow: public Focusable, public FbTk::Observer,
+        public FbTk::EventHandler {
 public:
     /// Motif wm Hints
     enum {
@@ -366,6 +368,9 @@ public:
     void leaveNotifyEvent(XCrossingEvent &ev);
     //@}
 
+    /// handle Subject notifications
+    void update(FbTk::Subject *subj);
+
     void applyDecorations(bool initial = false);
     void toggleDecoration();
 
@@ -536,9 +541,6 @@ private:
     void attachTo(int x, int y, bool interrupted = false);
 
     bool getState();
-    /// gets title string from client window and updates frame's title
-    void updateTitleFromClient(WinClient &client);
-    /// gets icon name from client window
     void updateMWMHintsFromClient(WinClient &client);
     void updateRememberStateFromClient(WinClient &client);
     void saveBlackboxAttribs();
@@ -612,9 +614,6 @@ private:
     WinClient *m_client; ///< current client
     typedef std::map<WinClient *, IconButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
-
-    // just temporary solution
-    friend class WinClient;
 
     struct _decorations {
         bool titlebar, handle, border, iconify,
