@@ -2447,6 +2447,12 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         }
     }
 
+    // don't allow moving/resizing fullscreen or maximized windows
+    if (isFullscreen() || isMaximizedHorz() && screen().getMaxIgnoreIncrement())
+        cr.value_mask = cr.value_mask & ~(CWWidth | CWX);
+    if (isFullscreen() || isMaximizedVert() && screen().getMaxIgnoreIncrement())
+        cr.value_mask = cr.value_mask & ~(CWHeight | CWY);
+
 #ifdef REMEMBER
     // don't let misbehaving clients (e.g. MPlayer) move/resize their windows
     // just after creation if the user has a saved position/size
