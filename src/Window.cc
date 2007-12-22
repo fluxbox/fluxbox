@@ -1499,11 +1499,11 @@ void FluxboxWindow::setFullscreen(bool flag) {
         m_last_resize_x = frame().x();
         m_last_resize_y = frame().y();
 
-        moveToLayer(::Layer::ABOVE_DOCK);
-
         fullscreen = true;
 
-        stateSig().notify();
+        setFullscreenLayer();
+        if (!isFocused())
+            screen().focusedWindowSig().attach(this);
 
     } else if (!flag && isFullscreen()) {
 
@@ -1539,6 +1539,21 @@ void FluxboxWindow::setFullscreen(bool flag) {
         } else
             stateSig().notify();
     }
+}
+
+void FluxboxWindow::setFullscreenLayer() {
+
+    FluxboxWindow *foc = FocusControl::focusedFbWindow();
+    // if another window on the same head is focused, make sure we can see it
+    if (isFocused() || !foc || &foc->screen() != &screen() ||
+        getOnHead() != foc->getOnHead()) {
+        moveToLayer(::Layer::ABOVE_DOCK);
+    } else {
+        moveToLayer(m_old_layernum);
+        lower();
+    }
+    stateSig().notify();
+
 }
 
 /**
@@ -1899,10 +1914,15 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
     installColormap(focus);
 
+    // if we're fullscreen and another window gains focus on the same head,
+    // then we need to let the user see it
     if (fullscreen && !focus)
-        moveToLayer(m_old_layernum);
-    if (fullscreen && focus)
+        screen().focusedWindowSig().attach(this);
+
+    if (fullscreen && focus) {
         moveToLayer(::Layer::ABOVE_DOCK);
+        screen().focusedWindowSig().detach(this);
+    }
 
     if (focus != frame().focused())
         frame().setFocus(focus);
@@ -2922,6 +2942,11 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
             titleSig().notify();
         }
 
+    } else if (subj && typeid(*subj) == typeid(BScreen::ScreenSubject)) {
+        if (subj == &screen().focusedWindowSig()) {
+            if (FocusControl::focusedFbWindow())
+                setFullscreenLayer();
+        }
     }
 }
 

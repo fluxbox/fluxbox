@@ -547,6 +547,8 @@ private:
     void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1, int gravity = ForgetGravity, unsigned int client_bw = 0);
 
     void setState(unsigned long stateval, bool setting_up);
+    /// set the layer of a fullscreen window
+    void setFullscreenLayer();
 
     // modifies left and top if snap is necessary
     void doSnapping(int &left, int &top);
