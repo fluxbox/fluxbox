@@ -749,7 +749,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
         // ce.data.l[0] == 2 means the request came from a pager
         if (winclient->fbwindow() && (ce.data.l[0] == 2 ||
-            winclient->fbwindow()->allowsFocusFromClient())) {
+            winclient->fbwindow()->focusRequestFromClient(*winclient))) {
             winclient->focus();
             winclient->fbwindow()->raise();
         }

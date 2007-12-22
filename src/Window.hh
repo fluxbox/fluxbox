@@ -244,7 +244,7 @@ public:
      * @return true if it took focus.
      */
     bool focus();
-    bool allowsFocusFromClient();
+    bool focusRequestFromClient(WinClient &from);
 
     /// Raises the window and takes focus (if possible).
     void raiseAndFocus() { raise(); focus(); }

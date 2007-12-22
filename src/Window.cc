@@ -545,10 +545,12 @@ void FluxboxWindow::init() {
         iconify();
     } else if (m_workspace_number == screen().currentWorkspaceID()) {
         iconic = true;
-        deiconify();
+        deiconify(false);
         // check if we should prevent this window from gaining focus
-        if (!allowsFocusFromClient() || Fluxbox::instance()->isStartup())
-            m_focused = false;
+        m_focused = false; // deiconify sets this
+        if (!Fluxbox::instance()->isStartup() &&
+            screen().focusControl().focusNew())
+            m_focused = focusRequestFromClient(*m_client);
     }
 
     if (fullscreen) {
@@ -655,7 +657,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
         // we use m_focused as a signal to focus the window when mapped
         if (focus_new && !is_startup)
-            m_focused = true;
+            m_focused = focusRequestFromClient(client);
         focused_win = (focus_new || is_startup) ? &client : m_client;
 
         client.saveBlackboxAttribs(m_blackbox_attrib,
@@ -1008,7 +1010,8 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     WinClient *old = m_client;
     m_client = &client;
     m_client->raise();
-    m_client->focusSig().notify();
+    if (setinput != m_focused || setinput && m_client != old)
+        m_client->focusSig().notify();
     titleSig().notify();
 
 #ifdef DEBUG
@@ -1019,7 +1022,6 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     frame().setLabelButtonFocus(*button);
     frame().setShapingClient(&client, false);
 
-    setinput = setinput || m_focused && !screen().focusControl().isCycling();
     bool ret = setinput && focus();
     if (setinput) {
         // restore old client until focus event comes
@@ -2222,31 +2224,34 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     // Note: this function never gets called from WithdrawnState
     // initial state is handled in restoreAttributes() and init()
 
-    // if the user doesn't want the window, then ignore request
-    if (!allowsFocusFromClient())
-        return;
+    if (screen().focusControl().focusNew())
+        m_focused = focusRequestFromClient(*client);
 
     setCurrentClient(*client, false); // focus handled on MapNotify
     deiconify();
 
 }
 
-bool FluxboxWindow::allowsFocusFromClient() {
+bool FluxboxWindow::focusRequestFromClient(WinClient &from) {
 
+    if (from.fbwindow() != this)
+        return false;
+
+    bool ret = true;
     // check what to do if window is on another workspace
-    if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck()) {
-        BScreen::FollowModel model = screen().getFollowModel();
-        if (model == BScreen::IGNORE_OTHER_WORKSPACES)
-            return false;
-    }
+    if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck() &&
+        screen().getFollowModel() == BScreen::IGNORE_OTHER_WORKSPACES)
+        ret = false;
 
     FluxboxWindow *cur = FocusControl::focusedFbWindow();
     WinClient *client = FocusControl::focusedWindow();
-    if (cur && client && (m_client->isTransient() || cur->isTyping()) &&
-        getRootTransientFor(m_client) != getRootTransientFor(client))
-        return false;
+    if (ret && cur && getRootTransientFor(&from) != getRootTransientFor(client))
+        ret = !(cur->isFullscreen() && getOnHead() == cur->getOnHead()) &&
+              !cur->isTyping();
 
-    return true;
+    if (!ret)
+        Fluxbox::instance()->attentionHandler().addAttention(from);
+    return ret;
 
 }
 
@@ -2509,8 +2514,15 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         case Above:
         case TopIf:
         default:
-            setCurrentClient(*client, m_focused);
-            raise();
+            if (isFocused() && focusRequestFromClient(*client) ||
+                !FocusControl::focusedWindow()) {
+                setCurrentClient(*client, true);
+                raise();
+            } else if (getRootTransientFor(client) ==
+                         getRootTransientFor(FocusControl::focusedWindow())) {
+                setCurrentClient(*client, false);
+                raise();
+            }
             break;
 
         case Below:
