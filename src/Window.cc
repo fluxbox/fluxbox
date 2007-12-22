@@ -549,8 +549,11 @@ void FluxboxWindow::init() {
         // check if we should prevent this window from gaining focus
         m_focused = false; // deiconify sets this
         if (!Fluxbox::instance()->isStartup() &&
-            screen().focusControl().focusNew())
+            screen().focusControl().focusNew()) {
             m_focused = focusRequestFromClient(*m_client);
+            if (!m_focused)
+                lower();
+        }
     }
 
     if (fullscreen) {
@@ -2224,11 +2227,15 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     // Note: this function never gets called from WithdrawnState
     // initial state is handled in restoreAttributes() and init()
 
-    if (screen().focusControl().focusNew())
-        m_focused = focusRequestFromClient(*client);
-
     setCurrentClient(*client, false); // focus handled on MapNotify
     deiconify();
+
+    if (screen().focusControl().focusNew()) {
+        m_focused = false; // deiconify sets this
+        m_focused = focusRequestFromClient(*client);
+        if (!m_focused)
+            lower();
+    }
 
 }
 
