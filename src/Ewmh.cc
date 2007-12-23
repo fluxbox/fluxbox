@@ -811,8 +811,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         FbWinFrameTheme &theme = screen->winFrameTheme();
         long title_h = theme.titleHeight() ||
             theme.font().height() + 2*theme.bevelWidth() + 2;
-        title_h += theme.border().width();
-        long handle_h = theme.handleWidth() + theme.border().width();
+        title_h += theme.border(true).width();
+        long handle_h = theme.handleWidth() + theme.border(true).width();
         long extents[4];
         // our frames currently don't protrude from left/right
         extents[0] = 0;

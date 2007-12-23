@@ -1943,8 +1943,8 @@ void BScreen::renderGeomWindow() {
     int geom_w = winFrameTheme().font().textWidth(label, strlen(label)) + winFrameTheme().bevelWidth()*2;
     m_geom_window.resize(geom_w, geom_h);
 
-    m_geom_window.setBorderWidth(winFrameTheme().border().width());
-    m_geom_window.setBorderColor(winFrameTheme().border().color());
+    m_geom_window.setBorderWidth(winFrameTheme().border(true).width());
+    m_geom_window.setBorderColor(winFrameTheme().border(true).color());
 
 
     Pixmap tmp = geom_pixmap;
@@ -1981,8 +1981,8 @@ void BScreen::renderPosWindow() {
     int pos_w = winFrameTheme().font().textWidth("0:00000 x 0:00000", 17) + winFrameTheme().bevelWidth()*2;
     m_pos_window.resize(pos_w, pos_h);
 
-    m_pos_window.setBorderWidth(winFrameTheme().border().width());
-    m_pos_window.setBorderColor(winFrameTheme().border().color());
+    m_pos_window.setBorderWidth(winFrameTheme().border(true).width());
+    m_pos_window.setBorderColor(winFrameTheme().border(true).color());
 
 
     Pixmap tmp = pos_pixmap;

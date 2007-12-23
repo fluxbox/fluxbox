@@ -127,7 +127,7 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
     if (tabmode == EXTERNAL) {
         m_label.show();
         m_tab_container.setBorderWidth(m_window.borderWidth());
-        m_tab_container.setBorderColor(theme().border().color());
+        m_tab_container.setBorderColor(theme().border(m_focused).color());
         m_tab_container.setEventMask(
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |
@@ -497,6 +497,12 @@ void FbWinFrame::setFocus(bool newvalue) {
             m_window.setOpaque(255);
         }
     }
+
+    if (m_decoration_mask & DECORM_BORDER &&
+        (theme().border(true).width() != theme().border(false).width() ||
+         theme().border(true).color().pixel() !=
+         theme().border(false).color().pixel()))
+        setBorderWidth(theme().border(newvalue).width());
 
     applyAll();
     clearAll();
@@ -1487,21 +1493,21 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
         bw_changes += static_cast<signed>(border_width - handle().borderWidth());
 
     window().setBorderWidth(border_width);
-    window().setBorderColor(theme().border().color());
+    window().setBorderColor(theme().border(m_focused).color());
 
     setTabMode(NOTSET);
 
     titlebar().setBorderWidth(border_width);
-    titlebar().setBorderColor(theme().border().color());
+    titlebar().setBorderColor(theme().border(m_focused).color());
 
     handle().setBorderWidth(border_width);
-    handle().setBorderColor(theme().border().color());
+    handle().setBorderColor(theme().border(m_focused).color());
 
     gripLeft().setBorderWidth(border_width);
-    gripLeft().setBorderColor(theme().border().color());
+    gripLeft().setBorderColor(theme().border(m_focused).color());
 
     gripRight().setBorderWidth(border_width);
-    gripRight().setBorderColor(theme().border().color());
+    gripRight().setBorderColor(theme().border(m_focused).color());
 
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);

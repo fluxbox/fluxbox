@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/23:
+   * Added new style items window.(un)focus.border{Width,Color} (Mark)
+     FbWinFrameTheme.cc/hh FbWinFrame.cc
 *07/12/21:
    * Added new key command :StartTabbing (Mark)
      Window.cc/hh CurrentWindowCmd.cc/hh

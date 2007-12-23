@@ -2981,7 +2981,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
 
     unsigned int border_width = 0;
     if (decorations.border)
-        border_width = frame().theme().border().width();
+        border_width = frame().theme().border(m_focused).width();
 
     bool client_move = false;
 
@@ -4032,7 +4032,7 @@ void FluxboxWindow::updateButtons() {
 void FluxboxWindow::reconfigTheme() {
 
     m_frame.setBorderWidth(decorations.border ?
-                           frame().theme().border().width() : 0);
+                           frame().theme().border(m_focused).width() : 0);
     if (decorations.handle && frame().theme().handleWidth() != 0)
         frame().showHandle();
     else

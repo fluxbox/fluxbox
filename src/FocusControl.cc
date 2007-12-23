@@ -306,7 +306,7 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
     
     FluxboxWindow *foundwin = 0;
     int weight = 999999, exposure = 0; // extreme values
-    int borderW = m_screen.winFrameTheme().border().width(),
+    int borderW = win.frame().window().borderWidth(),
         top = win.y() + borderW, 
         bottom = win.y() + win.height() + borderW,
         left = win.x() + borderW,

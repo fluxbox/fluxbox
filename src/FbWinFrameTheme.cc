@@ -51,7 +51,8 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_title_height(*this, "window.title.height", "Window.Title.Height"),
     m_bevel_width(*this, "window.bevelWidth", "Window.BevelWidth"),
     m_handle_width(*this, "window.handleWidth", "Window.handleWidth"),
-    m_border(*this, "window", "Window"), // for window.border*
+    m_border_focus(*this, "window.focus", "Window.Focus"),
+    m_border_unfocus(*this, "window.unfocus", "Window.Unfocus"),
     m_button_pic_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_button_pic_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_focused_alpha(255),
@@ -83,10 +84,13 @@ FbWinFrameTheme::~FbWinFrameTheme() {
 }
 
 bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
-    if (item.name() == "window.borderWidth")
-        return FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
-    else if (item.name() == "window.borderColor")
-        return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
+    if (item.name() == "window.focus.borderWidth" ||
+        item.name() == "window.unfocus.borderWidth")
+        return FbTk::ThemeManager::instance().loadItem(item, "window.borderWidth", "Window.BorderWidth") ||
+               FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
+    else if (item.name() == "window.focus.borderColor" || item.name() == "window.unfocus.borderColor")
+        return FbTk::ThemeManager::instance().loadItem(item, "window.borderColor", "Window.BorderColor") ||
+               FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
     else if (item.name() == "window.bevelWidth")
         return FbTk::ThemeManager::instance().loadItem(item, "bevelWidth", "bevelWidth");
     else if (item.name() == "window.handleWidth")
