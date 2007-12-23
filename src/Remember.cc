@@ -814,25 +814,25 @@ void Remember::save() {
                 apps_file << "  [Deco]\t{NONE}" << endl;
                 break;
             case (0xffffffff):
-            case (FluxboxWindow::DECORM_LAST - 1):
+            case (FbWinFrame::DECORM_LAST - 1):
                 apps_file << "  [Deco]\t{NORMAL}" << endl;
                 break;
-            case (FluxboxWindow::DECORM_TITLEBAR
-                  | FluxboxWindow::DECORM_ICONIFY
-                  | FluxboxWindow::DECORM_MENU):
+            case (FbWinFrame::DECORM_TITLEBAR
+                  | FbWinFrame::DECORM_ICONIFY
+                  | FbWinFrame::DECORM_MENU):
                 apps_file << "  [Deco]\t{TOOL}" << endl;
                 break;
-            case (FluxboxWindow::DECORM_TITLEBAR
-                  | FluxboxWindow::DECORM_MENU):
+            case (FbWinFrame::DECORM_TITLEBAR
+                  | FbWinFrame::DECORM_MENU):
                 apps_file << "  [Deco]\t{TINY}" << endl;
                 break;
-            case (FluxboxWindow::DECORM_BORDER
-                  | FluxboxWindow::DECORM_MENU):
+            case (FbWinFrame::DECORM_BORDER
+                  | FbWinFrame::DECORM_MENU):
                 apps_file << "  [Deco]\t{BORDER}" << endl;
                 break;
-            case (FluxboxWindow::DECORM_BORDER
-                  | FluxboxWindow::DECORM_MENU
-                  | FluxboxWindow::DECORM_TAB):
+            case (FbWinFrame::DECORM_BORDER
+                  | FbWinFrame::DECORM_MENU
+                  | FbWinFrame::DECORM_TAB):
                 apps_file << "  [Deco]\t{TAB}" << endl;
                 break;
             default:

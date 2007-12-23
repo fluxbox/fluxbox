@@ -81,6 +81,7 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
                  ButtonMotionMask | ExposureMask |
                  EnterWindowMask | LeaveWindowMask),
     m_bevel(1),
+    m_decoration_mask(DECOR_NORMAL),
     m_use_titlebar(true),
     m_use_tabs(true),
     m_use_handle(true),

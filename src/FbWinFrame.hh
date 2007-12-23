@@ -72,6 +72,34 @@ public:
         RIGHTBOTTOM, RIGHTTOP        
     };
 
+    /**
+       This enumeration represents individual decoration
+       attributes, they can be OR-d together to get a mask.
+       Useful for saving.
+    */
+    enum DecorationMask {
+        DECORM_TITLEBAR = (1<<0),
+        DECORM_HANDLE   = (1<<1),
+        DECORM_BORDER   = (1<<2),
+        DECORM_ICONIFY  = (1<<3),
+        DECORM_MAXIMIZE = (1<<4),
+        DECORM_CLOSE    = (1<<5),
+        DECORM_MENU     = (1<<6),
+        DECORM_STICKY   = (1<<7),
+        DECORM_SHADE    = (1<<8),
+        DECORM_TAB      = (1<<9),
+        DECORM_ENABLED  = (1<<10),
+        DECORM_LAST     = (1<<11) // useful for getting "All"
+    };
+
+    enum Decoration {
+        DECOR_NONE = 0,
+        DECOR_NORMAL = DECORM_LAST - 1,
+        DECOR_TINY = DECORM_TITLEBAR|DECORM_ICONIFY|DECORM_MENU|DECORM_TAB,
+        DECOR_TOOL = DECORM_TITLEBAR|DECORM_MENU,
+        DECOR_BORDER = DECORM_BORDER|DECORM_MENU,
+        DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
+    };
 
     /// create a top level window
     FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
@@ -161,6 +189,7 @@ public:
     /// remove any handler for the windows
     void removeEventHandler();
 
+    void setDecorationMask(unsigned int mask) { m_decoration_mask = mask; }
     // these return true/false for if something changed
     bool hideTitlebar();
     bool showTitlebar();
@@ -314,6 +343,7 @@ private:
     typedef std::list<FbTk::TextButton *> LabelList;
     IconButton *m_current_label; ///< which client button is focused at the moment
     int m_bevel;  ///< bevel between titlebar items and titlebar
+    unsigned int m_decoration_mask; ///< bitmask of applied decorations
     bool m_use_titlebar; ///< if we should use titlebar
     bool m_use_tabs; ///< if we should use tabs (turns them off in external mode only)
     bool m_use_handle; ///< if we should use handle

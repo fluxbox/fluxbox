@@ -110,34 +110,6 @@ public:
         MAX_VERT = 2, ///< maximize vertical
         MAX_FULL = 3  ///< maximize full
     };
-    /**
-       This enumeration represents individual decoration
-       attributes, they can be OR-d together to get a mask.
-       Useful for saving.
-    */
-    enum DecorationMask {
-        DECORM_TITLEBAR = (1<<0),
-        DECORM_HANDLE   = (1<<1),
-        DECORM_BORDER   = (1<<2),
-        DECORM_ICONIFY  = (1<<3),
-        DECORM_MAXIMIZE = (1<<4),
-        DECORM_CLOSE    = (1<<5),
-        DECORM_MENU     = (1<<6),
-        DECORM_STICKY   = (1<<7),
-        DECORM_SHADE    = (1<<8),
-        DECORM_TAB      = (1<<9),
-        DECORM_ENABLED  = (1<<10),
-        DECORM_LAST     = (1<<11) // useful for getting "All"
-    };
-
-    enum Decoration {
-        DECOR_NONE = 0,
-        DECOR_NORMAL = DECORM_LAST - 1,
-        DECOR_TINY = DECORM_TITLEBAR|DECORM_ICONIFY|DECORM_MENU|DECORM_TAB,
-        DECOR_TOOL = DECORM_TITLEBAR|DECORM_MENU,
-        DECOR_BORDER = DECORM_BORDER|DECORM_MENU,
-        DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
-    };
 
     /// Different resize modes when resizing a window
     enum ResizeModel { 
