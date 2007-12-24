@@ -252,8 +252,9 @@ doSearchLoop(){
             iconNOext="${temp_icon%%.*}"
             [ -d "$ICONPATH" ] && for ICONEXT in .xpm .png .gif ; do
                 ## echo "::: $ICONPATH/$iconNOext$ICONEXT" >> $ICONMAPPING
-                if [ -f "$ICONPATH/$iconNOext$ICONEXT" ]; then
-                    echo "$ICONPATH/$iconNOext$ICONEXT"
+                realpath=`find "$ICONPATH" -type f -name "$iconNOext$ICONEXT" | head -n 1`
+                if [ -n "$realpath" ]; then
+                    echo $realpath
                     return 0;
                 fi
             done
