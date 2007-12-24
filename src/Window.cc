@@ -2435,7 +2435,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     int old_x = frame().x(), old_y = frame().y();
     unsigned int old_w = frame().width();
     unsigned int old_h = frame().height() - frame().titlebarHeight()
-                       + frame().handleHeight();
+                       - frame().handleHeight();
     int cx = old_x, cy = old_y, ignore = 0;
     unsigned int cw = old_w, ch = old_h;
 
@@ -2447,10 +2447,8 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         ClientList::iterator it = clientList().begin();
         ClientList::iterator it_end = clientList().end();
         for (; it != it_end; ++it) {
-            if (*it != client && !(*it)->checkSizeHints(new_w, new_h)) {
-                sendConfigureNotify();
-                return;
-            }
+            if (*it != client && !(*it)->checkSizeHints(new_w, new_h))
+                cr.value_mask = cr.value_mask & ~(CWWidth | CWHeight);
         }
     }
 
