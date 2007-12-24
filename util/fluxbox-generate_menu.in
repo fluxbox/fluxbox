@@ -1409,7 +1409,7 @@ fi
 PREFIX="${PREFIX:=@PREFIX@}"
 if [  -z "${PREFIX}" -o ! -d "${PREFIX}" ]; then
     hash @pkgprefix@fluxbox@pkgsuffix@
-    PREFIX=`hash -t @pkgprefix@fluxbox@pkgsuffix@ | sed 's,/bin/@pkgprefix@fluxbox@pkgsuffix@$,,'`
+    PREFIX=`hash | grep @pkgprefix@fluxbox@pkgsuffix@ | sed 's,.*\t/,/,' | sed 's,/bin/@pkgprefix@fluxbox@pkgsuffix@$,,'`
 fi
 
 
