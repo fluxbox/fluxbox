@@ -51,7 +51,7 @@ WHOAMI=`whoami`
 [ "$WHOAMI" = root ] && PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
 
 # Check for Imlib2-support
-if fluxbox -info 2> /dev/null | grep -q "^IMLIB"; then
+if @pkgprefix@fluxbox@pkgsuffix@ -info 2> /dev/null | grep -q "^IMLIB"; then
     PNG_ICONS="yes"
 else
     # better assume to assume "no"
@@ -110,6 +110,7 @@ Files:
 EOF
 }
 
+#'
 display_authors() {
     cat << EOF
 
@@ -125,42 +126,13 @@ display_authors() {
 EOF
 }
 
-# some which's have a reliable return code, some don't
-# Lets figure out which which we have.
-if which this_program_does_not_exist-no_really-aA1zZ9 2> /dev/null 1> /dev/null; then
-    # can't rely on return value
-    find_it() {
-        file=`which $1 2> /dev/null`
-        if [ -x "$file" ]; then
-            if [ $# -gt 1 ]; then
-                shift
-                "$@"
-            fi
-            return 0
-        else
-            return 1
-        fi
-    }
+find_it() {
+    [ -n "$1" ] && hash $1 2> /dev/null && shift && "$@"
+}
 
-    find_it_options() {
-        file=`which $1 2> /dev/null`
-        if [ -x "$file" ]; then
-            return 0
-        else
-            return 1
-        fi
-    }
-
-else
-    # can rely on return value
-    find_it() {
-        which $1 > /dev/null 2>&1 && shift && "$@"
-    }
-
-    find_it_options() {
-        which $1 > /dev/null 2>&1
-    }
-fi
+find_it_options() {
+    [ -n "$1" ] && hash $1 2> /dev/null
+}
 
 #echo "replaceWithinString: $1, $2, $3" >&2
 #echo ${1//$2/$3} # causes error in BSD even though not used
@@ -212,7 +184,7 @@ convertIcon(){
     if [ -f "${entry_icon}" ]; then
         : echo "File exists. To overwrite, type: convert \"$1\" \"$entry_icon\"" >&2
     else
-        if which convert &> /dev/null; then
+        if hash convert 2> /dev/null; then
             convert "$1" "$entry_icon"
             # echo convert "$1" , "$entry_icon" >> $ICONMAPPING
         else
@@ -1243,7 +1215,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 # Name of the outputfile
 # MENUFILENAME=${USERFLUXDIR}/menu
 
-# MENUTITLE=\`fluxbox -version|cut -d " " -f-2\`
+# MENUTITLE=\`@pkgprefix@fluxbox@pkgsuffix@ -version|cut -d " " -f-2\`
 
 # standard url for console-browsers
 # HOMEPAGE=fluxbox.org
@@ -1252,7 +1224,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 # USERMENU=~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu
 
 # Put the launcher you would like to use here
-# LAUNCHER=fbrun
+# LAUNCHER=@pkgprefix@fbrun@pkgsuffix@
 # LAUNCHER=fbgm
 
 # Options for fbrun
@@ -1436,7 +1408,8 @@ fi
 # prefix
 PREFIX="${PREFIX:=@PREFIX@}"
 if [  -z "${PREFIX}" -o ! -d "${PREFIX}" ]; then
-    PREFIX=`which fluxbox | sed 's,/bin/fluxbox$,,'`
+    hash @pkgprefix@fluxbox@pkgsuffix@
+    PREFIX=`hash -t @pkgprefix@fluxbox@pkgsuffix@ | sed 's,/bin/@pkgprefix@fluxbox@pkgsuffix@$,,'`
 fi
 
 
@@ -1510,7 +1483,7 @@ else
     [ -n "$MY_TERM" ] && echo "Warning: you chose an invalid term." >&2
     #The precise order is up for debate.
     for term in Eterm urxvt urxvtc aterm mrxvt rxvt wterm konsole gnome-terminal xterm; do
-        if find_it $term; then
+        if find_it_options $term; then
             DEFAULT_TERM=$term
             break
         fi
@@ -1538,7 +1511,7 @@ else
     [ -n "$MY_BROWSER" ] && echo "Warning: you chose an invalid browser." >&2
     #The precise order is up for debate.
     for browser in firefox mozilla-firefox mozilla-firebird MozillaFirebird opera skipstone mozilla seamonkey galeon konqueror dillo netscape w3m amaya links lynx; do
-        if find_it $browser; then
+        if find_it_options $browser; then
             DEFAULT_BROWSER=$browser
             break
         fi
@@ -1548,7 +1521,7 @@ DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
 DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
 
 if [ -z "$LAUNCHER" ]; then
-    LAUNCHER=fbrun
+    LAUNCHER=@pkgprefix@fbrun@pkgsuffix@
 fi
 
 # Start of menu
@@ -1830,7 +1803,7 @@ append_submenu "${FBSETTINGSMENU}"
     # Backgroundmenu
     addbackground() {
                 picturename=`basename "$1"`
-                append "[exec] (${picturename%.???}) {fbsetbg -a \"$1\" }"
+                append "[exec] (${picturename%.???}) {@pkgprefix@fbsetbg@pkgsuffix@ -a \"$1\" }"
     }
 
     if [ "$BACKGROUNDMENUITEM" = yes ]; then
@@ -1838,7 +1811,7 @@ append_submenu "${FBSETTINGSMENU}"
         NUMBER_OF_BACKGROUNDS=`find $BACKGROUND_DIRS -follow -type f 2> /dev/null|wc -l`
         if [ "$NUMBER_OF_BACKGROUNDS" -gt 0 ]; then
             append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
-            append "[exec] (${RANDOMBACKGROUND}) {fbsetbg -r ${USERFLUXDIR}/backgrounds}"
+            append "[exec] (${RANDOMBACKGROUND}) {@pkgprefix@fbsetbg@pkgsuffix@ -r ${USERFLUXDIR}/backgrounds}"
             if [ "$NUMBER_OF_BACKGROUNDS" -gt 30 ]; then
                 menucounter=1 ; counter=1
                 append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
@@ -1880,7 +1853,7 @@ append_submenu "${FBSETTINGSMENU}"
         find_it ${LAUNCHER} append "[exec] (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
-        find_it $0 append "[exec] (${REGENERATEMENU}) {@pkgprefix@fluxbox-generate_menu@pkgsuffix@ ${BACKUPOPTIONS}}"
+        find_it @pkgprefix@fluxbox-generate_menu@pkgsuffix@ append "[exec] (${REGENERATEMENU}) {@pkgprefix@fluxbox-generate_menu@pkgsuffix@ ${BACKUPOPTIONS}}"
     append_menu_end
 
     append_submenu "${WINDOWMANAGERS}"
@@ -1900,7 +1873,7 @@ append_submenu "${FBSETTINGSMENU}"
     append "[commanddialog] (${FLUXBOXCOMMAND})"
     append "[reconfig] (${RELOADITEM})"
     append "[restart] (${RESTARTITEM})"
-    append "[exec] (${ABOUTITEM}) {(fluxbox -v; fluxbox -info | sed 1d) | xmessage -file - -center}"
+    append "[exec] (${ABOUTITEM}) {(@pkgprefix@fluxbox@pkgsuffix@ -v; @pkgprefix@fluxbox@pkgsuffix@ -info | sed 1d) | xmessage -file - -center}"
     append "[separator]"
     append "[exit] (${EXITITEM})"
 
@@ -1933,6 +1906,6 @@ if [ -z "$INSTALL" ]; then
         fi
     fi
     echo "Menu successfully generated: $MENUFILENAME"
-    #echo "  Make sure \"session.menuFile: $MENUFILENAME\" is in $HOME/.fluxbox/init."
+    #echo "  Make sure \"session.menuFile: $MENUFILENAME\" is in $HOME/.@pkgprefix@fluxbox@pkgsuffix@/init."
     echo 'Use @pkgprefix@fluxbox-generate_menu@pkgsuffix@ -h to read about all the latest features.'
 fi
