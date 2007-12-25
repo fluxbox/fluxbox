@@ -69,7 +69,7 @@ FbWindow::FbWindow(int screen_num,
                    long eventmask,
                    bool override_redirect,
                    bool save_unders,
-                   int depth,
+                   unsigned int depth,
                    int class_type):
     FbDrawable(),
     m_parent(0),
@@ -89,7 +89,7 @@ FbWindow::FbWindow(const FbWindow &parent,
                    long eventmask,
                    bool override_redirect,
                    bool save_unders,
-                   int depth, int class_type):
+                   unsigned int depth, int class_type):
     m_parent(&parent),
     m_screen_num(parent.screenNumber()),
     m_destroy(true),
@@ -599,7 +599,7 @@ void FbWindow::updateGeometry() {
 void FbWindow::create(Window parent, int x, int y,
                       unsigned int width, unsigned int height,
                       long eventmask, bool override_redirect,
-                      bool save_unders, int depth, int class_type) {
+                      bool save_unders, unsigned int depth, int class_type) {
 
 
     m_border_width = 0;

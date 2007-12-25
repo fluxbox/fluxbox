@@ -58,7 +58,7 @@ public:
              int x, int y, unsigned int width, unsigned int height, long eventmask, 
              bool overrride_redirect = false,
              bool save_unders = false,
-             int depth = CopyFromParent, 
+             unsigned int depth = CopyFromParent, 
              int class_type = InputOutput);
 
     FbWindow(const FbWindow &parent,
@@ -67,7 +67,7 @@ public:
              long eventmask, 
              bool overrride_redirect = false,
              bool save_unders = false,
-             int depth = CopyFromParent, 
+             unsigned int depth = CopyFromParent, 
              int class_type = InputOutput);
 
     virtual ~FbWindow();
@@ -179,7 +179,7 @@ public:
     inline unsigned int width() const { return m_width; }
     inline unsigned int height() const { return m_height; }
     inline unsigned int borderWidth() const { return m_border_width; }
-    inline int depth() const { return m_depth; }
+    inline unsigned int depth() const { return m_depth; }
     unsigned char alpha() const;
     int screenNumber() const;
     long eventMask() const;
@@ -218,7 +218,7 @@ private:
                 long eventmask, 
                 bool override_redirect, 
                 bool save_unders,
-                int depth, 
+                unsigned int depth, 
                 int class_type);
 
     const FbWindow *m_parent; ///< parent FbWindow
@@ -227,7 +227,7 @@ private:
     int m_x, m_y; ///< position of window
     unsigned int m_width, m_height;  ///< size of window
     unsigned int m_border_width; ///< border size
-    int m_depth; ///< bit depth
+    unsigned int m_depth; ///< bit depth
     bool m_destroy; ///< wheter the x window was created before
     std::auto_ptr<FbTk::Transparent> m_transparent;
     bool m_lastbg_color_set;

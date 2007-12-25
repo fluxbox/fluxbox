@@ -114,7 +114,7 @@ void MenuItem::draw(FbDrawable &draw,
                 int icon_x = x + theme.bevelWidth();
                 int icon_y = y + theme.bevelWidth();
                 // enable clip mask
-                XSetClipMask(disp, gc, tmp_mask.drawable());
+                XSetClipMask(disp, gc, None); //tmp_mask.drawable());
                 XSetClipOrigin(disp, gc, icon_x, icon_y);
 
                 draw.copyArea(tmp_pixmap.drawable(),
