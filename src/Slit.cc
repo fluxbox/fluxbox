@@ -515,19 +515,12 @@ void Slit::addClient(Window w) {
 
     XWindowAttributes attrib;
 
-#ifdef KDE
     if (screen().isKdeDockapp(w))
         client->resize(24, 24);
-    else
-#endif // KDE
-
-        {
-            if (XGetWindowAttributes(disp, client->window(), &attrib)) {
-                client->resize(attrib.width, attrib.height);
-            } else { // set default size if we failed to get window attributes
-                client->resize(64, 64);
-            }
-        }
+    else if (XGetWindowAttributes(disp, client->window(), &attrib))
+        client->resize(attrib.width, attrib.height);
+    else // set default size if we failed to get window attributes
+        client->resize(64, 64);
 
     // disable border for client window
     XSetWindowBorderWidth(disp, client->window(), 0);

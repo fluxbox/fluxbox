@@ -126,11 +126,6 @@ static void showInfo(ostream &ostr) {
 #endif // HAVE_IMLIB2
         "IMLIB2"<<endl<<
 
-#ifndef KDE
-        NOT<<
-#endif // KDE
-        "KDE"<<endl<<
-
 #ifndef NLS
         NOT<<
 #endif // NLS

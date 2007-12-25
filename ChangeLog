@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/12/25:
+   * Removed KDE configure option, since it didn't do anything (Mark)
+     configure.in config.h.in main.cc
    * Added resource session.screen<N>.slit.acceptKdeDockapps: <boolean> (Mark)
      Screen.cc Slit.cc/hh
 *07/12/23:
