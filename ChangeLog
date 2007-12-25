@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*07/12/25:
+   * Added resource session.screen<N>.slit.acceptKdeDockapps: <boolean> (Mark)
+     Screen.cc Slit.cc/hh
 *07/12/23:
    * Added new style items window.(un)focus.border{Width,Color} (Mark)
      FbWinFrameTheme.cc/hh FbWinFrame.cc

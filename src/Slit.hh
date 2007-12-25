@@ -112,6 +112,7 @@ public:
     int layerNumber() const { return m_layeritem->getLayerNum(); }
 
     inline bool isHidden() const { return m_hidden; }
+    inline bool acceptKdeDockapp() const { return *m_rc_kde_dockapp; }
     inline bool doAutoHide() const { return *m_rc_auto_hide; }
     inline Direction direction() const { return *m_rc_direction; }
     inline Placement placement() const { return *m_rc_placement; }
@@ -173,7 +174,7 @@ private:
     static unsigned int s_eventmask;
     Strut *m_strut;
 
-    FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over;
+    FbTk::Resource<bool> m_rc_kde_dockapp, m_rc_auto_hide, m_rc_maximize_over;
     FbTk::Resource<Slit::Placement> m_rc_placement;
     FbTk::Resource<Slit::Direction> m_rc_direction;
     FbTk::Resource<int> m_rc_alpha, m_rc_on_head;

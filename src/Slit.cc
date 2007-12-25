@@ -286,6 +286,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_strut(0),
       // resources
       // lock in first resource
+      m_rc_kde_dockapp(scr.resourceManager(), true,
+                       scr.name() + ".slit.acceptKdeDockapps", scr.altName() + ".Slit.AcceptKdeDockapps"),
       m_rc_auto_hide(scr.resourceManager().lock(), false,
                      scr.name() + ".slit.autoHide", scr.altName() + ".Slit.AutoHide"),
       // TODO: this resource name must change
@@ -440,6 +442,9 @@ void Slit::addClient(Window w) {
 #endif // DEBUG
     // Can't add non existent window
     if (w == None)
+        return;
+
+    if (!acceptKdeDockapp() && screen().isKdeDockapp(w))
         return;
 
     // Look for slot in client list by name

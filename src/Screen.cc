@@ -1278,7 +1278,7 @@ bool BScreen::addKdeDockapp(Window client) {
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     if (handler == 0) {
 #ifdef SLIT
-        if (slit() != 0)
+        if (slit() != 0 && slit()->acceptKdeDockapp())
             slit()->addClient(client);
         else
 #endif // SLIT
@@ -1311,7 +1311,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     if (winclient->initial_state == WithdrawnState) {
         delete winclient;
 #ifdef SLIT
-        if (slit())
+        if (slit() && !isKdeDockapp(client))
             slit()->addClient(client);
 #endif // SLIT
         return 0;
