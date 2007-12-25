@@ -74,6 +74,10 @@ $set 4 #Configmenu
 23 Breite für externe Tabs
 24 Klick fokussiert Tab
 25 Tabfokus folgt Maus
+26 Maximierungseinstellungen
+27 Resize-Increment nicht beachten
+28 Position fixieren
+29 Größe fixieren
 
 $set 5 #Ewmh
 

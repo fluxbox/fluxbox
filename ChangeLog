@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
 *07/12/25:
+   * Updated german translations for maximization menu (thanks Christian Loosli)
+     nls/de_*/Translation.m
    * Removed KDE configure option, since it didn't do anything (Mark)
      configure.in config.h.in main.cc
    * Added resource session.screen<N>.slit.acceptKdeDockapps: <boolean> (Mark)

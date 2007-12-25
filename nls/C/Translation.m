@@ -74,6 +74,10 @@ $set 4 #Configmenu
 23 External Tab Width
 24 Click Tab Focus
 25 Mouse Tab Focus
+26 Maximize Options
+27 Ignore Resize Increment
+28 Disable Moving
+29 Disable Resizing
 
 $set 5 #Ewmh
 
