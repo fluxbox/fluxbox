@@ -264,6 +264,9 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_toggled_decos(false),
     m_icon_hidden(false),
     m_focus_hidden(false),
+    m_focus_new(screen().focusControl().focusNew()),
+    m_mouse_focus(screen().focusControl().isMouseFocus()),
+    m_click_focus(true),
     m_old_pos_x(0), m_old_pos_y(0),
     m_old_width(1),  m_old_height(1),
     m_last_button_x(0),  m_last_button_y(0),
@@ -548,8 +551,7 @@ void FluxboxWindow::init() {
         deiconify(false);
         // check if we should prevent this window from gaining focus
         m_focused = false; // deiconify sets this
-        if (!Fluxbox::instance()->isStartup() &&
-            screen().focusControl().focusNew()) {
+        if (!Fluxbox::instance()->isStartup() && m_focus_new) {
             m_focused = focusRequestFromClient(*m_client);
             if (!m_focused)
                 lower();
@@ -655,13 +657,12 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
                          frame().clientArea().height());
 
         // right now, this block only happens with new windows or on restart
-        bool focus_new = screen().focusControl().focusNew();
         bool is_startup = Fluxbox::instance()->isStartup();
 
         // we use m_focused as a signal to focus the window when mapped
-        if (focus_new && !is_startup)
+        if (m_focus_new && !is_startup)
             m_focused = focusRequestFromClient(client);
-        focused_win = (focus_new || is_startup) ? &client : m_client;
+        focused_win = (m_focus_new || is_startup) ? &client : m_client;
 
         client.saveBlackboxAttribs(m_blackbox_attrib,
                                    PropBlackboxAttributesElements);
@@ -1447,7 +1448,7 @@ void FluxboxWindow::deiconify(bool do_raise) {
     // but not on startup: focus will be handled after creating everything
     // we use m_focused as a signal to focus the window when mapped
     if (screen().currentWorkspace()->numberOfWindows() == 1 ||
-        screen().focusControl().focusNew() || m_client->isTransient())
+        m_focus_new || m_client->isTransient())
         m_focused = true;
 
     oplock = false;
@@ -2230,7 +2231,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     setCurrentClient(*client, false); // focus handled on MapNotify
     deiconify();
 
-    if (screen().focusControl().focusNew()) {
+    if (m_focus_new) {
         m_focused = false; // deiconify sets this
         m_focused = focusRequestFromClient(*client);
         if (!m_focused)
@@ -2607,7 +2608,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
     frame().tabcontainer().tryButtonPressEvent(be);
     if (be.button == 1) {
-        if (!m_focused && acceptsFocus()) //check focus
+        if (!m_focused && acceptsFocus() && m_click_focus) //check focus
             focus();
 
         if (frame().window().window() == be.window ||
@@ -2908,8 +2909,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         ev.window == m_client->window() ||
         client) {
 
-        if (screen().focusControl().isMouseFocus() && !isFocused() &&
-            acceptsFocus() && getWindowType() != Focusable::TYPE_DESKTOP) {
+        if (m_mouse_focus && !isFocused() && acceptsFocus()) {
 
             // check that there aren't any subsequent leave notify events in the
             // X event queue
@@ -4157,6 +4157,9 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
          */
         setFocusHidden(true);
         setIconHidden(true);
+        setFocusNew(false);
+        setMouseFocus(false);
+        setClickFocus(false);
         setDecorationMask(FbWinFrame::DECOR_NONE);
         moveToLayer(::Layer::DOCK);
         break;
@@ -4169,6 +4172,8 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
          */
         setFocusHidden(true);
         setIconHidden(true);
+        setFocusNew(false);
+        setMouseFocus(false);
         moveToLayer(::Layer::DESKTOP);
         setDecorationMask(FbWinFrame::DECOR_NONE);
         setTabable(false);
@@ -4185,6 +4190,9 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
         setDecorationMask(FbWinFrame::DECOR_NONE);
         setFocusHidden(true);
         setIconHidden(true);
+        setFocusNew(false);
+        setMouseFocus(false);
+        setClickFocus(false);
         setMovable(false);
         break;
     case Focusable::TYPE_DIALOG:

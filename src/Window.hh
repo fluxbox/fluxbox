@@ -286,6 +286,12 @@ public:
     void setFocusHidden(bool value);
     /// sets the window icon hidden state
     void setIconHidden(bool value);
+    /// sets whether or not the window normally gets focus when mapped
+    void setFocusNew(bool value) { m_focus_new = value; }
+    /// sets whether or not the window gets focused with mouse
+    void setMouseFocus(bool value) { m_mouse_focus = value; }
+    /// sets whether or not the window gets focused with click
+    void setClickFocus(bool value) { m_click_focus = value; }
     void reconfigure();
 
 
@@ -603,6 +609,9 @@ private:
 
     bool m_icon_hidden;  ///< if the window is in the iconbar
     bool m_focus_hidden; ///< if the window is in the NextWindow list
+    bool m_focus_new;    ///< if the window is normally focused when mapped
+    bool m_mouse_focus;  ///< if the window is focused with EnterNotify
+    bool m_click_focus;  ///< if the window is focused by clicking
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
