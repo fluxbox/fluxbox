@@ -114,14 +114,30 @@ void MenuItem::draw(FbDrawable &draw,
                 int icon_x = x + theme.bevelWidth();
                 int icon_y = y + theme.bevelWidth();
                 // enable clip mask
-                XSetClipMask(disp, gc, None); //tmp_mask.drawable());
+                XSetClipMask(disp, gc, tmp_mask.drawable());
                 XSetClipOrigin(disp, gc, icon_x, icon_y);
 
-                draw.copyArea(tmp_pixmap.drawable(),
-                              gc,
-                              0, 0,
-                              icon_x, icon_y,
-                              tmp_pixmap.width(), tmp_pixmap.height());
+                if (draw.depth() == tmp_pixmap.depth()) {
+                    draw.copyArea(tmp_pixmap.drawable(),
+                                  gc,
+                                  0, 0,
+                                  icon_x, icon_y,
+                                  tmp_pixmap.width(), tmp_pixmap.height());
+                } else { // TODO: wrong in soon-to-be-common circumstances
+                    XGCValues backup;
+                    XGetGCValues(draw.display(), gc, GCForeground|GCBackground,
+                                 &backup);
+                    XSetForeground(draw.display(), gc,
+                                   Color("black", theme.screenNum()).pixel());
+                    XSetBackground(draw.display(), gc,
+                                   Color("white", theme.screenNum()).pixel());
+                    XCopyPlane(draw.display(), tmp_pixmap.drawable(),
+                               draw.drawable(), gc,
+                               0, 0, tmp_pixmap.width(), tmp_pixmap.height(),
+                               icon_x, icon_y, 1);
+                    XSetForeground(draw.display(), gc, backup.foreground);
+                    XSetBackground(draw.display(), gc, backup.background);
+                }
 
                 // restore clip mask
                 XSetClipMask(disp, gc, None);
