@@ -283,7 +283,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
 
     // add the window to the focus list
     // always add to front on startup to keep the focus order the same
-    if (screen().focusControl().focusNew() || Fluxbox::instance()->isStartup())
+    if (m_focused || Fluxbox::instance()->isStartup())
         screen().focusControl().addFocusWinFront(*this);
     else
         screen().focusControl().addFocusWinBack(*this);

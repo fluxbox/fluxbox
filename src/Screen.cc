@@ -1345,7 +1345,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
     // add the window to the focus list
     // always add to front on startup to keep the focus order the same
-    if (focusControl().focusNew() || Fluxbox::instance()->isStartup())
+    if (win->isFocused() || Fluxbox::instance()->isStartup())
         focusControl().addFocusFront(*winclient);
     else
         focusControl().addFocusBack(*winclient);
