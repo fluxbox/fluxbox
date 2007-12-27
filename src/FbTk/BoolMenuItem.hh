@@ -1,5 +1,5 @@
-// BoolMenuItem.hh for Fluxbox Window Manager
-// Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// BoolMenuItem.hh for FbTk
+// Copyright (c) 2003 - 2007 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,24 +19,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
-#ifndef BOOLMENUITEM_HH
-#define BOOLMENUITEM_HH
+#ifndef FBTK_BOOLMENUITEM_HH
+#define FBTK_BOOLMENUITEM_HH
 
 #include "MenuItem.hh"
+#include "Accessor.hh"
+
+namespace FbTk {
 
 /// a bool menu item
 class BoolMenuItem: public FbTk::MenuItem {
 public:
-    BoolMenuItem(const FbTk::FbString &label, bool &item, 
+    BoolMenuItem(const FbTk::FbString &label, Accessor<bool> &item, 
                  FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_item(item) { 
         FbTk::MenuItem::setSelected(m_item);
         setToggleItem(true);
         setCloseOnClick(false);
     }
-    BoolMenuItem(const FbTk::FbString &label, bool &item):
+    BoolMenuItem(const FbTk::FbString &label, Accessor<bool> &item):
         FbTk::MenuItem(label), m_item(item) {
         FbTk::MenuItem::setSelected(m_item);
         setToggleItem(true);
@@ -53,38 +54,9 @@ public:
         FbTk::MenuItem::setSelected(m_item);
     }
 private:
-    bool &m_item;
+    Accessor<bool> &m_item;
 };
 
-/// a bool menu item
-template <typename Type>
-class BoolResMenuItem: public FbTk::MenuItem {
-public:
-    BoolResMenuItem(const FbTk::FbString &label, Type &res, 
-                 FbTk::RefCount<FbTk::Command> &cmd):
-        FbTk::MenuItem(label, cmd), m_res(res) { 
-        FbTk::MenuItem::setSelected(*m_res);
-        setToggleItem(true);
-        setCloseOnClick(false);
-    }
-    BoolResMenuItem(const FbTk::FbString &label, Type &res):
-        FbTk::MenuItem(label), m_res(res) {
-        FbTk::MenuItem::setSelected(*m_res);
-        setToggleItem(true);
-        setCloseOnClick(false);
-    }
-    bool isSelected() const { return *m_res; }
-    // toggle state
-    void click(int button, int time, unsigned int mods) {
-        setSelected(!*m_res);
-        FbTk::MenuItem::click(button, time, mods);
-    }
-    void setSelected(bool value) { 
-        m_res = value;
-        FbTk::MenuItem::setSelected(*m_res);
-    }
-private:
-    Type &m_res;
-};
+}; // end namespace FbTk
 
-#endif // BOOLMENUITEM_HH
+#endif // FBTK_BOOLMENUITEM_HH

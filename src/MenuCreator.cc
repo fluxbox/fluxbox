@@ -37,7 +37,6 @@
 #include "SendToMenu.hh"
 #include "AlphaMenu.hh"
 #include "Layer.hh"
-#include "BoolMenuItem.hh"
 
 #include "FbMenuParser.hh"
 #include "StyleMenuItem.hh"
@@ -45,6 +44,7 @@
 
 #include "FbTk/I18n.hh"
 #include "FbTk/MultiButtonMenuItem.hh"
+#include "FbTk/BoolMenuItem.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -157,7 +157,7 @@ private:
     FbTk::Menu *m_menu;
 };
 
-class MenuContext: public LayerObject, public AlphaObject {
+class MenuContext: public LayerObject {
 public:
     void moveToLayer(int layer_number) {
         if (WindowCmd<void>::window() == 0)
@@ -168,42 +168,6 @@ public:
         if (WindowCmd<void>::window() == 0)
             return -1;
         return WindowCmd<void>::window()->layerItem().getLayerNum();
-    }
-
-    int getFocusedAlpha() const {
-        if (WindowCmd<void>::window() == 0)
-            return 255;
-        return WindowCmd<void>::window()->getFocusedAlpha();
-    }
-
-    int getUnfocusedAlpha() const {
-        if (WindowCmd<void>::window() == 0)
-            return 255;
-        return WindowCmd<void>::window()->getUnfocusedAlpha();
-    }
-
-    bool getUseDefaultAlpha() const { 
-        if (WindowCmd<void>::window() == 0)
-            return true;
-        return WindowCmd<void>::window()->getUseDefaultAlpha();
-    }
-
-    void setFocusedAlpha(int alpha) {
-        if (WindowCmd<void>::window() == 0)
-            return;
-        WindowCmd<void>::window()->setFocusedAlpha(alpha);
-    }
-
-    void setUnfocusedAlpha(int alpha) {
-        if (WindowCmd<void>::window() == 0)
-            return;
-        WindowCmd<void>::window()->setUnfocusedAlpha(alpha);
-    }
-
-    void setDefaultAlpha() {
-        if (WindowCmd<void>::window() == 0)
-            return;
-        WindowCmd<void>::window()->setDefaultAlpha();
     }
 
 };
@@ -551,8 +515,8 @@ bool MenuCreator::createWindowMenuItem(const string &type,
     static MenuContext context;
 
     if (type == "shade") {
-        static ObjectResource<FluxboxWindow, bool> res(&WindowCmd<void>::window, &FluxboxWindow::isShaded, &FluxboxWindow::shade, false);
-        menu.insert(new BoolResMenuItem<ObjectResource<FluxboxWindow, bool> >(
+        static WindowAccessor<bool> res(&FluxboxWindow::isShaded, &FluxboxWindow::setShaded, false);
+        menu.insert(new FbTk::BoolMenuItem(
                         label.empty()?_FB_XTEXT(Windowmenu, Shade, "Shade", "Shade the window"):label, 
                         res));
 
@@ -575,8 +539,8 @@ bool MenuCreator::createWindowMenuItem(const string &type,
         maximize_item->setCommand(3, maximize_horiz_cmd);
         menu.insert(maximize_item);
     } else if (type == "iconify") {
-        static ObjectResource<FluxboxWindow, bool> res(&WindowCmd<void>::window, &FluxboxWindow::isIconic, &FluxboxWindow::toggleIconic, false);
-        menu.insert(new BoolResMenuItem<ObjectResource<FluxboxWindow, bool> >(
+        static WindowAccessor<bool> res(&FluxboxWindow::isIconic, &FluxboxWindow::setIconic, false);
+        menu.insert(new FbTk::BoolMenuItem(
                         label.empty() ?
                         _FB_XTEXT(Windowmenu, Iconify,
                                   "Iconify", "Iconify the window") :
@@ -607,8 +571,8 @@ bool MenuCreator::createWindowMenuItem(const string &type,
                     label, raise_cmd);
 
     } else if (type == "stick") {
-        static ObjectResource<FluxboxWindow, bool> res(&WindowCmd<void>::window, &FluxboxWindow::isStuck, &FluxboxWindow::stick, false);
-        menu.insert(new BoolResMenuItem<ObjectResource<FluxboxWindow, bool> >(
+        static WindowAccessor<bool> res(&FluxboxWindow::isStuck, &FluxboxWindow::setStuck, false);
+        menu.insert(new FbTk::BoolMenuItem(
                         label.empty() ?
                         _FB_XTEXT(Windowmenu, Stick,
                                   "Stick", "Stick the window"):
@@ -625,8 +589,7 @@ bool MenuCreator::createWindowMenuItem(const string &type,
                                                   "Menu containing various transparency options"): label,
                         new AlphaMenu(screen->menuTheme(),
                                       screen->imageControl(),
-                                      *screen->layerManager().getLayer(Layer::MENU),
-                                      context));
+                                      *screen->layerManager().getLayer(Layer::MENU)));
         }
 #endif // HAVE_XRENDER
     } else if (type == "extramenus") {

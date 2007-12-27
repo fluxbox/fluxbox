@@ -264,8 +264,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_toggled_decos(false),
     m_icon_hidden(false),
     m_focus_hidden(false),
-    m_focus_new(screen().focusControl(), &FocusControl::focusNew),
-    m_mouse_focus(screen().focusControl(), &FocusControl::isMouseFocus),
+    m_focus_new(BoolAcc(screen().focusControl(), &FocusControl::focusNew)),
+    m_mouse_focus(BoolAcc(screen().focusControl(), &FocusControl::isMouseFocus)),
     m_click_focus(true),
     m_old_pos_x(0), m_old_pos_y(0),
     m_old_width(1),  m_old_height(1),
@@ -1745,17 +1745,18 @@ void FluxboxWindow::shade() {
 }
 
 void FluxboxWindow::shadeOn() {
-
     if (!shaded)
         shade();
-
 }
 
 void FluxboxWindow::shadeOff() {
-
     if (shaded)
         shade();
+}
 
+void FluxboxWindow::setShaded(bool val) {
+    if (val != shaded)
+        shade();
 }
 
 void FluxboxWindow::stick() {
@@ -1783,6 +1784,17 @@ void FluxboxWindow::stick() {
 
 }
 
+void FluxboxWindow::setStuck(bool val) {
+    if (val != stuck)
+        stick();
+}
+
+void FluxboxWindow::setIconic(bool val) {
+    if (val && isIconic())
+        deiconify();
+    if (!val && !isIconic())
+        iconify();
+}
 
 void FluxboxWindow::raise() {
     if (isIconic())

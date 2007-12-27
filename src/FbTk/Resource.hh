@@ -25,6 +25,7 @@
 #define FBTK_RESOURCE_HH
 
 #include "NotCopyable.hh"
+#include "Accessor.hh"
 
 #include <string>
 #include <list>
@@ -160,23 +161,22 @@ private:
 
 /// Real resource class
 /**
- * usage: Resource<int> someresource(resourcemanager, 10, "someresourcename", "somealternativename"); \n
- * and then implement setFromString and getString \n
- * example: \n
- * template <> \n
- * void Resource<int>::setFromString(const char *str) { \n
- *   *(*this) = atoi(str); \n
+ * usage: Resource<int> someresource(resourcemanager, 10, "someresourcename", "somealternativename");
+ * and then implement setFromString and getString
+ * example:
+ * template <>
+ * void Resource<int>::setFromString(const char *str) {
+ *   *(*this) = atoi(str);
  * }
  */
 template <typename T>
-class Resource:public Resource_base
-{
+class Resource:public Resource_base, public Accessor<T> {
 public:	
     typedef T Type;
     Resource(ResourceManager &rm, T val, 
              const std::string &name, const std::string &altname):
 	Resource_base(name, altname),
-	m_value(val), m_defaultval(val),
+        m_value(val), m_defaultval(val),
 	m_rm(rm) {
         m_rm.addResource(*this); // add this to resource handler
     }
@@ -192,6 +192,7 @@ public:
     /// @return string value of resource
     std::string getString() const;
 
+    inline operator T() const { return m_value; }
     inline T& get() { return m_value; }
     inline T& operator*() { return m_value; }
     inline const T& operator*() const { return m_value; }

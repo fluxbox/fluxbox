@@ -16,7 +16,7 @@ imlib2_SOURCE= ImageImlib2.hh ImageImlib2.cc
 endif
 
 libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
-	ObjectRegistry.hh DefaultValue.hh \
+	ObjectRegistry.hh Accessor.hh DefaultValue.hh \
 	FileUtil.hh FileUtil.cc \
 	EventHandler.hh EventManager.hh EventManager.cc \
 	FbWindow.hh FbWindow.cc Font.cc Font.hh FontImp.hh \
@@ -25,6 +25,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	LogicCommands.hh LogicCommands.cc \
 	MacroCommand.hh MacroCommand.cc \
 	Menu.hh Menu.cc MenuItem.hh MenuItem.cc \
+	BoolMenuItem.hh IntMenuItem.hh \
 	MultiButtonMenuItem.hh MultiButtonMenuItem.cc \
 	MenuTheme.hh MenuTheme.cc NotCopyable.hh \
 	RefCount.hh SimpleCommand.hh SignalHandler.cc SignalHandler.hh \

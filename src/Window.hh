@@ -270,10 +270,16 @@ public:
     void shadeOn();
     /// unshades window
     void shadeOff();
+    /// sets shaded state
+    void setShaded(bool val);
     /// toggles sticky
     void stick();
+    /// sets stuck state
+    void setStuck(bool val);
     /// toggles iconic
     void toggleIconic();
+    /// sets iconic state
+    void setIconic(bool val);
     void raise();
     void lower();
     void tempRaise();
@@ -611,10 +617,11 @@ private:
 
     bool m_icon_hidden;  ///< if the window is in the iconbar
     bool m_focus_hidden; ///< if the window is in the NextWindow list
+    typedef FbTk::ConstObjectAccessor<bool, FocusControl> BoolAcc;
     /// if the window is normally focused when mapped
-    FbTk::DefaultAccessor<bool, FocusControl> m_focus_new;
+    FbTk::DefaultValue<bool, BoolAcc> m_focus_new;
     /// if the window is focused with EnterNotify
-    FbTk::DefaultAccessor<bool, FocusControl> m_mouse_focus;
+    FbTk::DefaultValue<bool, BoolAcc> m_mouse_focus;
     bool m_click_focus;  ///< if the window is focused by clicking
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state

@@ -38,7 +38,6 @@
 #include "Screen.hh"
 #include "ImageControl.hh"
 #include "RefCount.hh"
-#include "BoolMenuItem.hh"
 #include "EventManager.hh"
 #include "SimpleCommand.hh"
 #include "MacroCommand.hh"
@@ -50,7 +49,6 @@
 #include "FbTk/Theme.hh"
 #include "FbMenu.hh"
 #include "Transparent.hh"
-#include "IntResMenuItem.hh"
 
 #ifdef XINERAMA
 #include "Xinerama.hh"
@@ -63,6 +61,8 @@
 #include "FbTk/MenuSeparator.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/I18n.hh"
+#include "FbTk/BoolMenuItem.hh"
+#include "FbTk/IntMenuItem.hh"
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/types.h>
@@ -1268,17 +1268,17 @@ void Slit::setupMenu() {
     }
 #endif //XINERAMA
 
-    m_slitmenu.insert(new BoolMenuItem(_FB_XTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
-                                       *m_rc_auto_hide,
+    m_slitmenu.insert(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
+                                       m_rc_auto_hide,
                                        save_and_reconfigure_slit));
 
-    m_slitmenu.insert(new BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
-                                       *m_rc_maximize_over,
+    m_slitmenu.insert(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
+                                       m_rc_maximize_over,
                                        save_and_reconfigure_slit));
 
     // this saves resources and clears the slit window to update alpha value
     FbTk::MenuItem *alpha_menuitem =
-        new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Common, Alpha, "Alpha", "Transparency level"),
+        new FbTk::IntMenuItem(_FB_XTEXT(Common, Alpha, "Alpha", "Transparency level"),
                            m_rc_alpha,
                            0, 255, m_slitmenu);
     // setup command for alpha value

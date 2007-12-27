@@ -22,58 +22,32 @@
 #ifndef FBTK_DEFAULTVALUE_HH
 #define FBTK_DEFAULTVALUE_HH
 
+#include "Accessor.hh"
+
 namespace FbTk {
 
-// classes for overriding default values without having to listen for changes
-template <typename T>
-class DefaultValue {
+// class for overriding default values and restoring them later
+
+// Ret = type of value that gets returned
+// Def = type of default value -- may be Accessor<Ret> &, for example
+template <typename Ret, typename Def=Ret &>
+class DefaultValue: public Accessor<Ret> {
 public:
-    DefaultValue(const T &def):
+    DefaultValue(const Def def):
         m_default(def), m_actual(def), m_use_default(true) { }
 
-    inline const T &get() const { return m_use_default ? m_default : m_actual; }
-    inline void set(const T &val) { m_use_default = false; m_actual = val; }
     inline void restoreDefault() { m_use_default = true; }
     inline bool isDefault() const { return m_use_default; }
 
-    inline DefaultValue<T> &operator =(const T &val) {
-        set(val); return *this;
+    inline DefaultValue<Ret, Def> &operator =(const Ret &val) {
+        m_use_default = false; m_actual = val; return *this;
     }
 
-    inline operator T() const { return get(); }
+    inline operator Ret() const { return m_use_default ? m_default : m_actual; }
 
 private:
-    const T &m_default;
-    T m_actual;
-    bool m_use_default;
-};
-
-// designed for use with built-in types T, thus no need to return references
-template <typename T, typename Receiver>
-class DefaultAccessor {
-public:
-    typedef T (Receiver:: *Accessor)() const;
-    DefaultAccessor(const Receiver &r, Accessor a):
-        m_receiver(r), m_accessor(a), m_actual((r.*a)()),
-        m_use_default(true) { }
-
-    inline const T get() const {
-        return m_use_default ? (m_receiver.*m_accessor)() : m_actual;
-    }
-    inline void set(const T &val) { m_use_default = false; m_actual = val; }
-    inline void restoreDefault() { m_use_default = true; }
-    inline bool isDefault() const { return m_use_default; }
-
-    inline DefaultAccessor<T, Receiver> &operator =(const T &val) {
-        set(val); return *this;
-    }
-
-    inline operator T() const { return get(); }
-
-private:
-    const Receiver &m_receiver;
-    Accessor m_accessor;
-    T m_actual;
+    const Def m_default;
+    Ret m_actual;
     bool m_use_default;
 };
 

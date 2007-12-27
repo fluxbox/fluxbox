@@ -96,7 +96,6 @@ TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \
 endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
-	BoolMenuItem.hh \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh \
@@ -111,7 +110,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Workspace.cc Workspace.hh \
 	FbCommands.hh FbCommands.cc LayerMenu.hh LayerMenu.cc \
 	Layer.hh \
-	IntResMenuItem.hh FbMenu.hh FbMenu.cc \
+	FbMenu.hh FbMenu.cc \
 	WinClient.hh WinClient.cc \
 	Strut.hh \
 	Xinerama.hh \

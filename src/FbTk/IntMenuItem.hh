@@ -1,5 +1,5 @@
-// IntResMenuItem.hh for Fluxbox Window Manager
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// IntMenuItem.hh for FbTk
+// Copyright (c) 2003-2007 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,21 +19,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
-#ifndef INTRESMENUITEM_HH
-#define INTRESMENUITEM_HH
+#ifndef FBTK_INTMENUITEM_HH
+#define FBTK_INTMENUITEM_HH
 
 #include "MenuItem.hh"
-#include "Resource.hh"
+#include "Accessor.hh"
 
 #include <string>
 
+namespace FbTk {
+
 /// Changes an resource integer value between min and max
-template <typename Type>
-class IntResMenuItem: public FbTk::MenuItem {
+class IntMenuItem: public FbTk::MenuItem {
 public:
-    IntResMenuItem(const FbTk::FbString &label, Type &res, int min_val, int max_val, FbTk::Menu &host_menu) :
+    IntMenuItem(const FbTk::FbString &label, Accessor<int> &res,
+                   int min_val, int max_val, FbTk::Menu &host_menu) :
         FbTk::MenuItem(label, host_menu), m_org_label(FbTk::MenuItem::label()),
         m_max(max_val), m_min(min_val), m_res(res) { 
         updateLabel();
@@ -61,16 +61,16 @@ public:
 
         // make sure values stay within bounds _before_ we try to set m_res
         // otherwise, this may cause bugs (say, with casting to unsigned char)
-        if ((button == 4 || button == 3) && *m_res < m_max) { // up
-            if (*m_res + inc_val < m_max)
-                m_res.get() += inc_val;
+        if ((button == 4 || button == 3) && m_res < m_max) { // up
+            if (m_res + inc_val < m_max)
+                m_res = m_res + inc_val;
             else
-                m_res.get() = m_max;
-        } else if ((button == 5 || button == 1) && *m_res > m_min) { // down
-            if (*m_res - inc_val >= m_min)
-                m_res.get() -= inc_val;
+                m_res = m_max;
+        } else if ((button == 5 || button == 1) && m_res > m_min) { // down
+            if (m_res - inc_val >= m_min)
+                m_res = m_res - inc_val;
             else
-                m_res.get() = m_min;
+                m_res = m_min;
         }
 
         // update label
@@ -87,14 +87,16 @@ public:
     }
 
     void updateLabel() {
-        setLabel(appendIntValue(m_org_label, *m_res));
+        setLabel(appendIntValue(m_org_label, m_res));
     }
 
 private:
     std::string m_org_label; ///< original label
     const int m_max; ///< maximum value the integer can have
     const int m_min; ///< minimum value the integer can have
-    Type &m_res; ///< resource item to be changed
+    Accessor<int> &m_res; ///< resource item to be changed
 };
 
-#endif // INTRESMENUITEM_HH
+}; // end namespace FbTk
+
+#endif // FBTK_INTMENUITEM_HH

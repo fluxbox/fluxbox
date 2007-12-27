@@ -26,56 +26,40 @@
 #define ALPHAMENU_HH
 
 #include "ToggleMenu.hh"
+#include "WindowCmd.hh"
 #include "FbTk/MenuItem.hh"
-#include "ObjectResource.hh"
-
-class AlphaObject {
-public:
-
-    virtual int getFocusedAlpha() const = 0;
-    virtual int getUnfocusedAlpha() const = 0;
-    virtual bool getUseDefaultAlpha() const = 0;
-
-    virtual void setFocusedAlpha(int alpha) = 0;
-    virtual void setUnfocusedAlpha(int alpha) = 0;
-    virtual void setDefaultAlpha() = 0;
-
-    virtual ~AlphaObject() {};
-};
-
 
 class AlphaMenu : public ToggleMenu {
 public:
     AlphaMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
-              FbTk::XLayer &layer, AlphaObject &object);
+              FbTk::XLayer &layer);
 
     // we override these to update the menu when the active window changes
     void move(int x, int y);
     void show();
-
-    ObjectResource<AlphaObject, int> m_focused_alpha_resource;
-    ObjectResource<AlphaObject, int> m_unfocused_alpha_resource;
-
 };
 
 class AlphaMenuSelectItem : public FbTk::MenuItem {
 
 public:
-    AlphaMenuSelectItem(const FbTk::FbString &label, AlphaObject *object, AlphaMenu &parent):
-        FbTk::MenuItem(label), m_object(object), m_parent(parent) {
+    AlphaMenuSelectItem(const FbTk::FbString &label, AlphaMenu &parent):
+        FbTk::MenuItem(label), m_parent(parent) {
         setToggleItem(true);
         setCloseOnClick(false);
     }
 
-    bool isSelected() const { return m_object->getUseDefaultAlpha(); }
+    bool isSelected() const {
+        static ConstWindowAccessor<bool> s_is_default(&FluxboxWindow::getUseDefaultAlpha, true);
+        return s_is_default;
+    }
     void click(int button, int time, unsigned int mods) {
-        m_object->setDefaultAlpha();
+        static WindowCmd<void> s_set_default(&FluxboxWindow::setDefaultAlpha);
+        s_set_default.execute();
         m_parent.show(); // cheat to refreshing the window
         FbTk::MenuItem::click(button, time, mods);
     }
 
 private:
-    AlphaObject *m_object;
     AlphaMenu &m_parent;
 };
 

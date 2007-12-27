@@ -25,6 +25,7 @@
 #define WINDOWCMD_HH
 
 #include "FbTk/Command.hh"
+#include "FbTk/Accessor.hh"
 #include "Window.hh"
 #include "WinClient.hh"
 
@@ -64,5 +65,49 @@ private:
     Action m_action;
 };
 
+/// accesses values in current window
+template <typename Ret, typename Def=Ret>
+class WindowAccessor: public FbTk::Accessor<Ret> {
+public:
+    typedef Ret (FluxboxWindow:: *Getter)() const;
+    typedef void (FluxboxWindow:: *Setter)(Ret);
+    WindowAccessor(Getter g, Setter s, Def def):
+            m_getter(g), m_setter(s), m_def(def) { }
+
+    inline operator Ret() const {
+        FluxboxWindow *fbwin = WindowCmd<void>::window();
+        return fbwin ? (fbwin->*m_getter)() : m_def;
+    }
+    inline FbTk::Accessor<Ret> &operator =(const Ret &val) {
+        FluxboxWindow *fbwin = WindowCmd<void>::window();
+        if (fbwin)
+            (fbwin->*m_setter)(val);
+        return *this;
+    }
+
+private:
+    Getter m_getter;
+    Setter m_setter;
+    Def m_def;
+};
+
+/// same as above but only reads
+template <typename Ret, typename Def=Ret>
+class ConstWindowAccessor: public FbTk::Accessor<Ret> {
+public:
+    typedef Ret (FluxboxWindow:: *Getter)() const;
+    ConstWindowAccessor(Getter g, Def def):
+            m_getter(g), m_def(def) { }
+
+    inline operator Ret() const {
+        FluxboxWindow *fbwin = WindowCmd<void>::window();
+        return fbwin ? (fbwin->*m_getter)() : m_def;
+    }
+    inline FbTk::Accessor<Ret> &operator =(const Ret &val) { return *this; }
+
+private:
+    Getter m_getter;
+    Def m_def;
+};
 
 #endif // WINDOWCMD_HH

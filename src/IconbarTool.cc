@@ -32,7 +32,6 @@
 #include "IconButton.hh"
 #include "Workspace.hh"
 #include "FbMenu.hh"
-#include "BoolMenuItem.hh"
 #include "FbTk/ObjectRegistry.hh"
 #include "WinClient.hh"
 #include "FocusControl.hh"
@@ -43,6 +42,7 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/Menu.hh"
 #include "FbTk/MenuItem.hh"
+#include "FbTk/BoolMenuItem.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/ImageControl.hh"
@@ -288,9 +288,9 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     save_and_reconfig->add(reconfig);
     save_and_reconfig->add(save);
     RefCount<Command> s_and_reconfig(save_and_reconfig);
-    m_menu.insert(new BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
+    m_menu.insert(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
                     "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
-	                *m_rc_use_pixmap, s_and_reconfig));
+                           m_rc_use_pixmap, s_and_reconfig));
     m_menu.updateMenu();
     // must be internal menu, otherwise toolbar main menu tries to delete it.
     m_menu.setInternalMenu();

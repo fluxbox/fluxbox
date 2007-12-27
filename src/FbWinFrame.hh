@@ -400,8 +400,9 @@ private:
     unsigned int m_height_before_shade; ///< height before shade, so we can restore it when we unshade
     bool m_shaded; ///< wheter we're shaded or not
     /// alpha values
-    FbTk::DefaultAccessor<unsigned char, FbWinFrameTheme> m_focused_alpha;
-    FbTk::DefaultAccessor<unsigned char, FbWinFrameTheme> m_unfocused_alpha;
+    typedef FbTk::ConstObjectAccessor<unsigned char, FbWinFrameTheme> AlphaAcc;
+    FbTk::DefaultValue<unsigned char, AlphaAcc> m_focused_alpha;
+    FbTk::DefaultValue<unsigned char, AlphaAcc> m_unfocused_alpha;
 
     class ThemeListener: public FbTk::Observer {
     public:

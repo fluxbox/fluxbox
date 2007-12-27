@@ -36,8 +36,6 @@
 #include "Keys.hh"
 #include "Screen.hh"
 #include "WindowCmd.hh"
-#include "IntResMenuItem.hh"
-#include "BoolMenuItem.hh"
 
 #ifdef XINERAMA
 #include "Xinerama.hh"
@@ -54,6 +52,8 @@
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Transparent.hh"
+#include "FbTk/BoolMenuItem.hh"
+#include "FbTk/IntMenuItem.hh"
 
 
 // use GNU extensions
@@ -835,17 +835,17 @@ void Toolbar::setupMenus(bool skip_new_placement) {
     visible_macro->add(reconfig_toolbar);
     visible_macro->add(save_resources);
     RefCommand toggle_visible_cmd(visible_macro);
-    menu().insert(new BoolMenuItem(_FB_XTEXT(Common, Visible,
+    menu().insert(new FbTk::BoolMenuItem(_FB_XTEXT(Common, Visible,
                                              "Visible", "Whether this item is visible"),
-                                   *m_rc_visible, toggle_visible_cmd));
+                                   m_rc_visible, toggle_visible_cmd));
 
-    menu().insert(new BoolMenuItem(_FB_XTEXT(Common, AutoHide,
+    menu().insert(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoHide,
                                              "Auto hide", "Toggle auto hide of toolbar"),
-                                   *m_rc_auto_hide,
+                                   m_rc_auto_hide,
                                    reconfig_toolbar_and_save_resource));
 
     MenuItem *toolbar_menuitem =
-        new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Toolbar, WidthPercent,
+        new FbTk::IntMenuItem(_FB_XTEXT(Toolbar, WidthPercent,
                                      "Toolbar width percent",
                                      "Percentage of screen width taken by toolbar"),
                            m_rc_width_percent,
@@ -855,10 +855,10 @@ void Toolbar::setupMenus(bool skip_new_placement) {
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);
     menu().insert(toolbar_menuitem);
 
-    menu().insert(new BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
+    menu().insert(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
                                              "Maximize Over",
                                              "Maximize over this thing when maximizing"),
-                                   *m_rc_maximize_over,
+                                   m_rc_maximize_over,
                                    reconfig_toolbar_and_save_resource));
     menu().insert(_FB_XTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), &layerMenu());
 #ifdef XINERAMA
@@ -922,7 +922,7 @@ void Toolbar::setupMenus(bool skip_new_placement) {
 
     // this saves resources and clears the slit window to update alpha value
     FbTk::MenuItem *alpha_menuitem =
-        new IntResMenuItem< FbTk::Resource<int> >(_FB_XTEXT(Common, Alpha, "Alpha", "Transparency level"),
+        new FbTk::IntMenuItem(_FB_XTEXT(Common, Alpha, "Alpha", "Transparency level"),
                            m_rc_alpha,
                            0, 255, menu());
     // setup command for alpha value

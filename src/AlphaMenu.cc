@@ -25,23 +25,26 @@
 #include "AlphaMenu.hh"
 
 #include "Window.hh"
+#include "WindowCmd.hh"
 #include "Screen.hh"
 #include "Workspace.hh"
 #include "WindowCmd.hh"
 #include "fluxbox.hh"
 #include "Layer.hh"
-#include "IntResMenuItem.hh"
+#include "FbTk/IntMenuItem.hh"
 
 #include "FbTk/I18n.hh"
 #include "Window.hh"
-#include "WindowCmd.hh"
 
 AlphaMenu::AlphaMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
-                     FbTk::XLayer &layer, AlphaObject &object):
-    ToggleMenu(tm, imgctrl, layer),
-    m_focused_alpha_resource(&object, &AlphaObject::getFocusedAlpha, &AlphaObject::setFocusedAlpha, 255),
-    m_unfocused_alpha_resource(&object, &AlphaObject::getUnfocusedAlpha, &AlphaObject::setUnfocusedAlpha, 255)
+                     FbTk::XLayer &layer):
+    ToggleMenu(tm, imgctrl, layer)
 {
+
+    static WindowAccessor<int> m_focused_alpha((WindowAccessor<int>::Getter)&FluxboxWindow::getFocusedAlpha,
+            (WindowAccessor<int>::Setter)&FluxboxWindow::setFocusedAlpha, 255);
+    static WindowAccessor<int> m_unfocused_alpha((WindowAccessor<int>::Getter)&FluxboxWindow::getUnfocusedAlpha,
+            (WindowAccessor<int>::Setter)&FluxboxWindow::setUnfocusedAlpha, 255);
 
     _FB_USES_NLS;
 
@@ -53,7 +56,7 @@ AlphaMenu::AlphaMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
                   "Transparency level of the focused window");
 
     FbTk::MenuItem *focused_alpha_item =
-        new IntResMenuItem< ObjectResource<AlphaObject, int> >(focused_alpha_label, m_focused_alpha_resource, 0, 255, *this);
+        new FbTk::IntMenuItem(focused_alpha_label, m_focused_alpha, 0, 255, *this);
     insert(focused_alpha_item);
 
     const FbTk::FbString unfocused_alpha_label =
@@ -62,14 +65,14 @@ AlphaMenu::AlphaMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
                   "Transparency level of unfocused windows");
 
     FbTk::MenuItem *unfocused_alpha_item =
-        new IntResMenuItem< ObjectResource<AlphaObject, int> >(unfocused_alpha_label, m_unfocused_alpha_resource, 0, 255, *this);
+        new FbTk::IntMenuItem(unfocused_alpha_label, m_unfocused_alpha, 0, 255, *this);
     insert(unfocused_alpha_item);
 
     const FbTk::FbString usedefault_label = _FB_XTEXT(Windowmenu, DefaultAlpha,
                                                       "Use Defaults",
                                                       "Default transparency settings for this window");
     FbTk::MenuItem *usedefault_item =
-        new AlphaMenuSelectItem(usedefault_label, &object, *this);
+        new AlphaMenuSelectItem(usedefault_label, *this);
     insert(usedefault_item);
 
     updateMenu();
@@ -81,8 +84,8 @@ void AlphaMenu::move(int x, int y) {
 
     if (isVisible()) {
         // TODO: hardcoding the indices is a bad idea
-        ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(0))->updateLabel();
-        ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(1))->updateLabel();
+        ((FbTk::IntMenuItem *)find(0))->updateLabel();
+        ((FbTk::IntMenuItem *)find(1))->updateLabel();
         frameWindow().updateBackground(false);
         FbTk::Menu::clearWindow();
     }
@@ -90,8 +93,8 @@ void AlphaMenu::move(int x, int y) {
     
 void AlphaMenu::show() {
     // TODO: hardcoding the indices is a bad idea
-    ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(0))->updateLabel();
-    ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(1))->updateLabel();
+    ((FbTk::IntMenuItem *)find(0))->updateLabel();
+    ((FbTk::IntMenuItem *)find(1))->updateLabel();
     frameWindow().updateBackground(false);
     FbTk::Menu::clearWindow();
 
