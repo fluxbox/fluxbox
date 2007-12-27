@@ -519,7 +519,7 @@ SetAlphaCmd::SetAlphaCmd(int focused, bool relative,
 void SetAlphaCmd::real_execute() {
     if (m_focus == 256 && m_unfocus == 256) {
         // made up signal to return to default
-        fbwindow().setUseDefaultAlpha(true);
+        fbwindow().setDefaultAlpha();
         return;
     }
 

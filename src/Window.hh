@@ -245,7 +245,7 @@ public:
     void updateAlpha(bool focused, unsigned char alpha)  { frame().setAlpha(focused, alpha); }
 
     bool getUseDefaultAlpha() const { return frame().getUseDefaultAlpha(); }
-    void setUseDefaultAlpha(bool default_alpha) { frame().setUseDefaultAlpha(default_alpha); }
+    void setDefaultAlpha() { frame().setDefaultAlpha(); }
     // ------------------
 
     /// close current client

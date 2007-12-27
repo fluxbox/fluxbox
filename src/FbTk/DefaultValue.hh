@@ -34,7 +34,7 @@ public:
     inline const T &get() const { return m_use_default ? m_default : m_actual; }
     inline void set(const T &val) { m_use_default = false; m_actual = val; }
     inline void restoreDefault() { m_use_default = true; }
-    inline void isDefault() const { return m_use_default; }
+    inline bool isDefault() const { return m_use_default; }
 
     inline DefaultValue<T> &operator =(const T &val) {
         set(val); return *this;
@@ -62,7 +62,7 @@ public:
     }
     inline void set(const T &val) { m_use_default = false; m_actual = val; }
     inline void restoreDefault() { m_use_default = true; }
-    inline void isDefault() const { return m_use_default; }
+    inline bool isDefault() const { return m_use_default; }
 
     inline DefaultAccessor<T, Receiver> &operator =(const T &val) {
         set(val); return *this;

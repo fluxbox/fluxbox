@@ -38,7 +38,7 @@ public:
 
     virtual void setFocusedAlpha(int alpha) = 0;
     virtual void setUnfocusedAlpha(int alpha) = 0;
-    virtual void setUseDefaultAlpha(bool use_default) = 0;
+    virtual void setDefaultAlpha() = 0;
 
     virtual ~AlphaObject() {};
 };
@@ -69,20 +69,9 @@ public:
 
     bool isSelected() const { return m_object->getUseDefaultAlpha(); }
     void click(int button, int time, unsigned int mods) {
-        bool newval = !m_object->getUseDefaultAlpha();
-        m_object->setUseDefaultAlpha(newval);
-        // items 1 and 2 (the focused/unfocused values) are only enabled if we don't use default values
-        m_parent.setItemEnabled(1, !newval);
-        m_parent.setItemEnabled(2, !newval);
+        m_object->setDefaultAlpha();
         m_parent.show(); // cheat to refreshing the window
         FbTk::MenuItem::click(button, time, mods);
-    }
-
-    void updateLabel() {
-        bool val = m_object->getUseDefaultAlpha();
-        m_parent.setItemEnabled(1, !val);
-        m_parent.setItemEnabled(2, !val);
-        m_parent.updateMenu();
     }
 
 private:

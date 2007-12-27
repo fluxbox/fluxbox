@@ -200,10 +200,10 @@ public:
         WindowCmd<void>::window()->setUnfocusedAlpha(alpha);
     }
 
-    void setUseDefaultAlpha(bool use_default) {
+    void setDefaultAlpha() {
         if (WindowCmd<void>::window() == 0)
             return;
-        WindowCmd<void>::window()->setUseDefaultAlpha(use_default);
+        WindowCmd<void>::window()->setDefaultAlpha();
     }
 
 };

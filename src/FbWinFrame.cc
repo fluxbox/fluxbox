@@ -87,7 +87,6 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_use_handle(true),
     m_focused(false),
     m_visible(false),
-    m_use_default_alpha(2),
     m_button_pm(0),
     m_tabmode(screen.getDefaultInternalTabs()?INTERNAL:EXTERNAL),
     m_active_gravity(0),
@@ -96,8 +95,8 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_button_size(1),
     m_height_before_shade(1),
     m_shaded(false),
-    m_focused_alpha(0),
-    m_unfocused_alpha(0),
+    m_focused_alpha(theme, &FbWinFrameTheme::focusedAlpha),
+    m_unfocused_alpha(theme, &FbWinFrameTheme::unfocusedAlpha),
     m_themelistener(*this),
     m_shape(m_window, theme.shapePlace()),
     m_disable_themeshape(false) {
@@ -509,55 +508,40 @@ void FbWinFrame::setFocus(bool newvalue) {
 }
 
 void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
-    if (m_use_default_alpha == 2) {
-        /// Set basic defaults
-        m_focused_alpha = getAlpha(true);
-        m_unfocused_alpha = getAlpha(false);
-    }
-    m_use_default_alpha = 0;
-
     if (focused)
         m_focused_alpha = alpha;
     else
         m_unfocused_alpha = alpha;
 
-    if (m_focused == focused) {
-        if (FbTk::Transparent::haveComposite())
-            m_window.setOpaque(alpha);
-        else {
-            // don't need to setAlpha, since apply updates them anyway
-            applyAll();
-            clearAll();
-        }
-    }
+    if (m_focused == focused)
+        applyAlpha();
 }
 
-unsigned char FbWinFrame::getAlpha(bool focused) const
-{
-  return getUseDefaultAlpha() ?
-        (focused ? theme().focusedAlpha() : theme().unfocusedAlpha())
-      : (focused ? m_focused_alpha        : m_unfocused_alpha);
-}
-
-void FbWinFrame::setUseDefaultAlpha(bool default_alpha)
-{
-    if (getUseDefaultAlpha() == default_alpha)
-        return;
-
-    if (!default_alpha && m_use_default_alpha == 2) {
-        m_focused_alpha = theme().focusedAlpha();
-        m_unfocused_alpha = theme().unfocusedAlpha();
-    }
-
-    m_use_default_alpha = default_alpha;
-
+void FbWinFrame::applyAlpha() {
+    unsigned char alpha = getAlpha(m_focused);
     if (FbTk::Transparent::haveComposite())
-        m_window.setOpaque(getAlpha(m_focused));
+        m_window.setOpaque(alpha);
     else {
         // don't need to setAlpha, since apply updates them anyway
         applyAll();
         clearAll();
     }
+}
+
+unsigned char FbWinFrame::getAlpha(bool focused) const {
+  return focused ? m_focused_alpha : m_unfocused_alpha;
+}
+
+void FbWinFrame::setDefaultAlpha() {
+    if (getUseDefaultAlpha())
+        return;
+    m_focused_alpha.restoreDefault();
+    m_unfocused_alpha.restoreDefault();
+    applyAlpha();
+}
+
+bool FbWinFrame::getUseDefaultAlpha() const {
+    return m_focused_alpha.isDefault() && m_unfocused_alpha.isDefault();
 }
 
 void FbWinFrame::addLeftButton(FbTk::Button *btn) {

@@ -1120,7 +1120,7 @@ void Remember::setupFrame(FluxboxWindow &win) {
         win.setDecorationMask(app->decostate);
 
     if (app->alpha_remember) {
-        win.frame().setUseDefaultAlpha(false);
+        win.frame().setDefaultAlpha();
         win.frame().setAlpha(true,app->focused_alpha);
         win.frame().setAlpha(false,app->unfocused_alpha);
     }

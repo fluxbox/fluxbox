@@ -47,13 +47,6 @@ AlphaMenu::AlphaMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
 
     // build menu...
 
-    const FbTk::FbString usedefault_label = _FB_XTEXT(Windowmenu, DefaultAlpha,
-                                                      "Use Defaults",
-                                                      "Default transparency settings for this window");
-    FbTk::MenuItem *usedefault_item =
-        new AlphaMenuSelectItem(usedefault_label, &object, *this);
-    insert(usedefault_item);
-
     const FbTk::FbString focused_alpha_label = 
         _FB_XTEXT(Configmenu, FocusedAlpha,
                   "Focused Window Alpha",
@@ -72,6 +65,13 @@ AlphaMenu::AlphaMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
         new IntResMenuItem< ObjectResource<AlphaObject, int> >(unfocused_alpha_label, m_unfocused_alpha_resource, 0, 255, *this);
     insert(unfocused_alpha_item);
 
+    const FbTk::FbString usedefault_label = _FB_XTEXT(Windowmenu, DefaultAlpha,
+                                                      "Use Defaults",
+                                                      "Default transparency settings for this window");
+    FbTk::MenuItem *usedefault_item =
+        new AlphaMenuSelectItem(usedefault_label, &object, *this);
+    insert(usedefault_item);
+
     updateMenu();
 }
 
@@ -80,18 +80,18 @@ void AlphaMenu::move(int x, int y) {
     FbTk::Menu::move(x, y);
 
     if (isVisible()) {
-        ((AlphaMenuSelectItem *)find(0))->updateLabel();
+        // TODO: hardcoding the indices is a bad idea
+        ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(0))->updateLabel();
         ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(1))->updateLabel();
-        ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(2))->updateLabel();
         frameWindow().updateBackground(false);
         FbTk::Menu::clearWindow();
     }
 }
     
 void AlphaMenu::show() {
-    ((AlphaMenuSelectItem *)find(0))->updateLabel();
+    // TODO: hardcoding the indices is a bad idea
+    ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(0))->updateLabel();
     ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(1))->updateLabel();
-    ((IntResMenuItem< ObjectResource<AlphaObject, int> >*)find(2))->updateLabel();
     frameWindow().updateBackground(false);
     FbTk::Menu::clearWindow();
 

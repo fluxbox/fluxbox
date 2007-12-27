@@ -32,6 +32,7 @@
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/TextButton.hh"
+#include "FbTk/DefaultValue.hh"
 #include "Container.hh"
 #include "Shape.hh"
 
@@ -153,10 +154,11 @@ public:
 
     /// Alpha settings
     void setAlpha(bool focused, unsigned char value);
+    void applyAlpha();
     unsigned char getAlpha(bool focused) const;
 
-    void setUseDefaultAlpha(bool use_default);
-    bool getUseDefaultAlpha() const { return m_use_default_alpha; }
+    void setDefaultAlpha();
+    bool getUseDefaultAlpha() const;
 
     /// add a button to the left of the label
     void addLeftButton(FbTk::Button *btn);
@@ -349,7 +351,6 @@ private:
     bool m_use_handle; ///< if we should use handle
     bool m_focused; ///< focused/unfocused mode
     bool m_visible; ///< if we are currently showing
-    unsigned char m_use_default_alpha;   
     ///< do we use screen or window alpha settings ? (0 = window, 1 = default, 2 = default and window never set)
 
     /**
@@ -398,8 +399,9 @@ private:
     int m_button_size; ///< size for all titlebar buttons
     unsigned int m_height_before_shade; ///< height before shade, so we can restore it when we unshade
     bool m_shaded; ///< wheter we're shaded or not
-    unsigned char  m_focused_alpha; ///< focused alpha value
-    unsigned char  m_unfocused_alpha; ///< unfocused alpha value
+    /// alpha values
+    FbTk::DefaultAccessor<unsigned char, FbWinFrameTheme> m_focused_alpha;
+    FbTk::DefaultAccessor<unsigned char, FbWinFrameTheme> m_unfocused_alpha;
 
     class ThemeListener: public FbTk::Observer {
     public:
