@@ -92,6 +92,7 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     m_screen_height(DisplayHeight(FbTk::App::instance()->display(), tm.screenNum())),
     m_alignment(ALIGNDONTCARE),
     m_active_index(-1),
+    m_shape(new Shape(fbwindow(), tm.shapePlaces())),
     m_need_update(true) {
     // setup timers
 
@@ -496,6 +497,7 @@ void Menu::updateMenu(int active_index) {
 
     clearWindow();
     m_need_update = false;
+    m_shape->update();
 }
 
 
@@ -563,6 +565,7 @@ void Menu::clearWindow() {
     for (size_t i = 0; i < menuitems.size(); i++) {
         clearItem(i, false);   // no clear
     }
+    m_shape->update();
 }
 
 void Menu::redrawFrame(FbDrawable &drawable) {
@@ -1091,6 +1094,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
 
 
 void Menu::reconfigure() {
+    m_shape->setPlaces(theme().shapePlaces());
 
     if (FbTk::Transparent::haveComposite()) {
         menu.window.setOpaque(alpha());

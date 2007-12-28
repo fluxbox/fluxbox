@@ -30,7 +30,6 @@
 
 namespace FbTk {
 class MenuTheme;
-class Shape;
 }
 
 /// a layered and shaped menu
@@ -38,16 +37,12 @@ class FbMenu:public FbTk::Menu {
 public:
     FbMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer);
-    virtual ~FbMenu();
-    void updateMenu(int index = -1);
-    void clearWindow();
+    virtual ~FbMenu() { }
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
-    void reconfigure();
     void buttonReleaseEvent(XButtonEvent &be);
 private:
     FbTk::XLayerItem m_layeritem;
-    std::auto_ptr<FbTk::Shape> m_shape;
 };
 
 #endif // FBMENU_HH

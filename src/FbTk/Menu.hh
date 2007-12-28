@@ -203,13 +203,12 @@ private:
     void startHide();
     void stopHide();
 
-
-    typedef std::vector<MenuItem *> Menuitems;
     MenuTheme &m_theme;
     Menu *m_parent;
     ImageControl &m_image_ctrl;
-    Menuitems menuitems;
 
+    typedef std::vector<MenuItem *> Menuitems;
+    Menuitems menuitems;
     TypeAhead<Menuitems, MenuItem *> m_type_ahead;
     Menuitems m_matches;
 
@@ -241,6 +240,8 @@ private:
     } menu;
 
     int m_active_index; ///< current highlighted index
+
+    std::auto_ptr<FbTk::Shape> m_shape;
 
     Drawable m_root_pm;
     static Menu *shown; ///< used for determining if there's a menu open at all

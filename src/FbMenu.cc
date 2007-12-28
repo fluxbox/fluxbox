@@ -25,36 +25,13 @@
 #include "FbMenu.hh"
 
 #include "fluxbox.hh"
-#include "FbTk/MenuTheme.hh"
 #include "Screen.hh"
-
-#include "FbTk/Shape.hh"
 
 FbMenu::FbMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer):
     FbTk::Menu(tm, imgctrl), 
-    m_layeritem(fbwindow(), layer),
-    m_shape(new FbTk::Shape(fbwindow(), tm.shapePlaces())) {
-    
-}
+    m_layeritem(fbwindow(), layer) {
 
-FbMenu::~FbMenu() {
-
-}
-
-void FbMenu::updateMenu(int index) {
-    FbTk::Menu::updateMenu(index);
-    m_shape->update();
-}
-
-void FbMenu::clearWindow() {
-    FbTk::Menu::clearWindow();
-    m_shape->update();
-}
-
-void FbMenu::reconfigure() {
-    m_shape->setPlaces(theme().shapePlaces());
-    FbTk::Menu::reconfigure();
 }
 
 void FbMenu::buttonReleaseEvent(XButtonEvent &be) {
