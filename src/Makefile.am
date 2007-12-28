@@ -78,9 +78,8 @@ if GNOME
 gnome_SOURCE= Gnome.hh Gnome.cc
 endif
 if REMEMBER_SRC
-# For now we only want regexp if we have remember
 REMEMBER_SOURCE= Remember.hh Remember.cc \
-	RegExp.hh RegExp.cc ClientPattern.hh ClientPattern.cc
+	ClientPattern.hh ClientPattern.cc
 endif
 if TOOLBAR_SRC
 TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \

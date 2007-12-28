@@ -26,7 +26,7 @@
 #ifndef CLIENTPATTERN_HH
 #define CLIENTPATTERN_HH
 
-#include "RegExp.hh"
+#include "FbTk/RegExp.hh"
 #include "NotCopyable.hh"
 
 #include <string>
@@ -99,7 +99,7 @@ private:
     struct Term {
         Term(const std::string &regstr, bool full_match) :regexp(regstr, full_match){};
         std::string orig;
-        RegExp regexp;
+        FbTk::RegExp regexp;
         WinProperty prop;
         bool negate;
     };

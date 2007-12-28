@@ -41,6 +41,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	XLayer.cc XLayer.hh XLayerItem.cc XLayerItem.hh \
 	Resource.hh Resource.cc \
 	StringUtil.hh StringUtil.cc Parser.hh Parser.cc \
+	RegExp.hh RegExp.cc \
 	FbString.hh FbString.cc \
 	Subject.hh Subject.cc Observer.hh Observer.cc \
 	Transparent.hh Transparent.cc \

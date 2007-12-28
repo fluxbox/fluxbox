@@ -1,4 +1,4 @@
-// RegExp.hh for Fluxbox Window Manager
+// RegExp.hh for FbTk
 // Copyright (c) 2002 Xavier Brouckaert
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
@@ -21,10 +21,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
-#ifndef REGEXP_HH
-#define REGEXP_HH
+#ifndef FBTK_REGEXP_HH
+#define FBTK_REGEXP_HH
 
 #include "NotCopyable.hh"
 
@@ -43,9 +41,9 @@
 #include <regex.h>
 #endif // USE_REGEXP
 
-class WinClient;
+namespace FbTk {
 
-class RegExp:private FbTk::NotCopyable {
+class RegExp: private NotCopyable {
 public:
     RegExp(const std::string &str, bool full_match = true);
     ~RegExp();
@@ -63,4 +61,6 @@ private:
 
 };
 
-#endif // REGEXP_HH
+}; // end namespace FbTk
+
+#endif // FBTK_REGEXP_HH

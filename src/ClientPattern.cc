@@ -23,7 +23,6 @@
 // $Id$
 
 #include "ClientPattern.hh"
-#include "RegExp.hh"
 
 #include "FocusControl.hh"
 #include "Layer.hh"

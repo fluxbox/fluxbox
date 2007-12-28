@@ -1,4 +1,4 @@
-// RegExp.cc for Fluxbox Window Manager
+// RegExp.cc for FbTk
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
@@ -20,10 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "RegExp.hh"
-#include "FbTk/I18n.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -40,10 +37,7 @@ using std::cerr;
 using std::endl;
 #endif // USE_REGEXP
 
-
-/********************************************************
- * RegExp *
- **********/
+namespace FbTk {
 
 // full_match is to say if we match on this regexp using the full string
 // or just a substring. Substrings aren't supported if not HAVE_REGEXP
@@ -62,15 +56,6 @@ m_regex(0) {
     m_regex = new regex_t;
     int ret = regcomp(m_regex, match.c_str(), REG_NOSUB | REG_EXTENDED);
     if (ret != 0) {
-        char *errstr = 0;
-        _FB_USES_NLS;
-        // gives us the length of the string
-        unsigned int size = regerror(ret, m_regex, errstr, 0);
-        errstr = new char[size];
-
-        regerror(ret, m_regex, errstr, size);
-        cerr<<_FB_CONSOLETEXT(Fluxbox, ErrorRegexp, "Error parsing regular expression", "Error parsing regular expression (following)")<<": "<<errstr<<endl;
-        delete [] errstr;
         delete m_regex; // I don't think I regfree a failed compile?
         m_regex = 0;
     }
@@ -107,3 +92,5 @@ bool RegExp::error() const {
     return m_str == "";
 #endif // USE_REGEXP
 }
+
+}; // end namespace FbTk
