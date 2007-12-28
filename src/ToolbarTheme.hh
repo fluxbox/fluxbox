@@ -27,8 +27,7 @@
 #include "FbTk/Theme.hh"
 #include "FbTk/Texture.hh"
 #include "FbTk/Color.hh"
-
-#include "BorderTheme.hh"
+#include "FbTk/BorderTheme.hh"
 
 /// toolbar theme class container
 class ToolbarTheme: public FbTk::Theme {
@@ -39,7 +38,7 @@ public:
     void reconfigTheme();
     
 
-    inline const BorderTheme &border() const { return m_border; }
+    inline const FbTk::BorderTheme &border() const { return m_border; }
     inline const FbTk::Texture &toolbar() const { return *m_toolbar; }
 
     bool fallback(FbTk::ThemeItem_base &item);
@@ -50,7 +49,7 @@ public:
     inline int buttonSize() const { return *m_button_size; }
 private:
     FbTk::ThemeItem<FbTk::Texture> m_toolbar;
-    BorderTheme m_border;
+    FbTk::BorderTheme m_border;
 
     FbTk::ThemeItem<int> m_bevel_width;
     FbTk::ThemeItem<bool> m_shape;

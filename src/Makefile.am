@@ -120,8 +120,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Shape.hh Shape.cc \
 	MenuTheme.hh MenuTheme.cc \
 	Container.hh Container.cc \
-	TextTheme.hh TextTheme.cc \
-	BorderTheme.hh BorderTheme.cc \
 	CommandDialog.hh CommandDialog.cc SendToMenu.hh SendToMenu.cc \
 	AlphaMenu.hh AlphaMenu.cc ObjectResource.hh \
 	CompareWindow.hh \

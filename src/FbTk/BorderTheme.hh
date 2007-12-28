@@ -20,26 +20,28 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
+#ifndef FBTK_BORDERTHEME_HH
+#define FBTK_BORDERTHEME_HH
 
-#ifndef BORDERTHEME_HH
-#define BORDERTHEME_HH
+#include "Theme.hh"
+#include "Color.hh"
 
-#include "FbTk/Theme.hh"
-#include "FbTk/Color.hh"
+namespace FbTk {
 
 /// helper class for border theme items
 class BorderTheme {
 public:
-    BorderTheme(FbTk::Theme &theme, const std::string &name, const std::string &altname);
+    BorderTheme(Theme &theme, const std::string &name, const std::string &altname);
     virtual ~BorderTheme() { }
 
     int width() const { return *m_width; }
-    const FbTk::Color &color() const { return *m_color; }
+    const Color &color() const { return *m_color; }
 
 private:
-    FbTk::ThemeItem<int> m_width;
-    FbTk::ThemeItem<FbTk::Color> m_color;
+    ThemeItem<int> m_width;
+    ThemeItem<Color> m_color;
 };
 
-#endif // BORDERTHEME_HH
+}; // end namespace FbTk
+
+#endif // FBTK_BORDERTHEME_HH

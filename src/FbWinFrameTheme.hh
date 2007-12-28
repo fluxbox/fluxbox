@@ -29,10 +29,10 @@
 #include "FbTk/Text.hh"
 #include "FbTk/Color.hh"
 #include "FbTk/Theme.hh"
+#include "FbTk/BorderTheme.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/GContext.hh"
 
-#include "BorderTheme.hh"
 #include "IconbarTheme.hh"
 #include "Shape.hh"
 
@@ -84,7 +84,7 @@ public:
     inline Cursor bottomSideCursor() const { return m_cursor_bottom_side; }
 
     inline Shape::ShapePlace shapePlace() const { return *m_shape_place; }
-    inline const BorderTheme &border(bool focus) const { return (focus ? m_border_focus : m_border_unfocus); }
+    inline const FbTk::BorderTheme &border(bool focus) const { return (focus ? m_border_focus : m_border_unfocus); }
 
     unsigned int titleHeight() const { return *m_title_height; }
     unsigned int bevelWidth() const { return *m_bevel_width; }
@@ -109,7 +109,7 @@ private:
     FbTk::ThemeItem<Shape::ShapePlace> m_shape_place;
 
     FbTk::ThemeItem<int> m_title_height, m_bevel_width, m_handle_width;
-    BorderTheme m_border_focus, m_border_unfocus;
+    FbTk::BorderTheme m_border_focus, m_border_unfocus;
 
     FbTk::GContext m_button_pic_focus_gc, m_button_pic_unfocus_gc;
 

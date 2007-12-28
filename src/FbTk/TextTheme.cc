@@ -20,31 +20,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "TextTheme.hh"
 
-#include "FbTk/App.hh"
+#include "App.hh"
 
 #include <X11/Xlib.h>
 
-TextTheme::TextTheme(FbTk::Theme &theme,
+namespace FbTk {
+
+TextTheme::TextTheme(Theme &theme,
                      const std::string &name, const std::string &altname):
     m_font(theme, name + ".font", altname + ".Font"),
     m_text_color(theme, name + ".textColor", altname + ".TextColor"),
     m_justify(theme, name + ".justify", altname + ".Justify"),
-    m_text_gc(RootWindow(FbTk::App::instance()->display(), theme.screenNum())) {
-    *m_justify = FbTk::LEFT;
+    m_text_gc(RootWindow(App::instance()->display(), theme.screenNum())) {
+    *m_justify = LEFT;
     // set default values
     m_text_color->setFromString("white", theme.screenNum());
 
     update();
 }
 
-TextTheme::~TextTheme() {
-
-}
-
 void TextTheme::update() {
     m_text_gc.setForeground(*m_text_color);
 }
+
+}; // end namespace FbTk

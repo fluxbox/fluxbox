@@ -1,4 +1,4 @@
-// BorderTheme.cc
+// TextTheme.hh
 // Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
@@ -20,15 +20,36 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
+#ifndef FBTK_TEXTTHEME_HH
+#define FBTK_TEXTTHEME_HH
 
-#include "BorderTheme.hh"
+#include "Theme.hh"
+#include "Font.hh"
+#include "Color.hh"
+#include "Text.hh"
+#include "GContext.hh"
 
-BorderTheme::BorderTheme(FbTk::Theme &theme, const std::string &name,
-                         const std::string &altname):
-    m_width(theme, name + ".borderWidth", altname + ".BorderWidth"),
-    m_color(theme, name + ".borderColor", altname + ".BorderColor") {
-    // set default values
-    *m_width = 0;
-    m_color->setFromString("black", theme.screenNum());
-}
+namespace FbTk {
+
+class TextTheme {
+public:
+    TextTheme(Theme &theme, const std::string &name, const std::string &altname);
+    virtual ~TextTheme() { }
+
+    void update();
+
+    Font &font() { return *m_font; }
+    const Font &font() const { return *m_font; }
+    const Color &textColor() const { return *m_text_color; }
+    Justify justify() const { return *m_justify; }
+    GC textGC() const { return m_text_gc.gc(); }
+private:
+    ThemeItem<Font> m_font;
+    ThemeItem<Color> m_text_color;
+    ThemeItem<Justify> m_justify;
+    GContext m_text_gc;
+};
+
+}; // end namespace FbTk
+
+#endif // FBTK_TEXTTHEME_HH

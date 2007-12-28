@@ -26,18 +26,15 @@
 #define TOOLTHEME_HH
 
 
-#include "TextTheme.hh"
-#include "BorderTheme.hh"
-
+#include "FbTk/TextTheme.hh"
+#include "FbTk/BorderTheme.hh"
 #include "FbTk/Texture.hh"
 
 #include <X11/Xlib.h>
 #include <string>
 
-class ToolbarTheme;
-
 /// Handles toolbar item theme for text and texture
-class ToolTheme: public FbTk::Theme, public TextTheme {
+class ToolTheme: public FbTk::Theme, public FbTk::TextTheme {
 public:
     ToolTheme(int screen_num, const std::string &name, const std::string &altname);
     virtual ~ToolTheme();
@@ -47,7 +44,7 @@ public:
     void reconfigTheme();
     // textures
     const FbTk::Texture &texture() const { return *m_texture; }
-    const BorderTheme &border() const { return m_border; }
+    const FbTk::BorderTheme &border() const { return m_border; }
     inline unsigned char alpha() const { return m_alpha; }
     inline void setAlpha(unsigned char alpha) { m_alpha = alpha; }
 
@@ -56,7 +53,7 @@ protected:
 
 private:
     FbTk::ThemeItem<FbTk::Texture> m_texture;
-    BorderTheme m_border;
+    FbTk::BorderTheme m_border;
     unsigned char m_alpha;
 };
 

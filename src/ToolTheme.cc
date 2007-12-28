@@ -26,7 +26,7 @@
 
 ToolTheme::ToolTheme(int screen_num, const std::string &name, const std::string &altname):
     FbTk::Theme(screen_num),
-    TextTheme(*this, name, altname),
+    FbTk::TextTheme(*this, name, altname),
     m_texture(*this, name, altname),
     m_border(*this, name, altname),
     m_alpha(255) {
