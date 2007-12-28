@@ -1,4 +1,4 @@
-// STLUtil.cc for fluxbox
+// STLUtil.cc for FbTk
 // Copyright (c) 2006 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,13 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
-
-#ifndef STLUTIL_HH
-#define STLUTIL_HH
+#ifndef FBTK_STLUTIL_HH
+#define FBTK_STLUTIL_HH
 
 /// contains useful utilities for STL 
+namespace FbTk {
 namespace STLUtil {
 
 /// calls delete on each item in the container and then clears the container
@@ -51,6 +49,7 @@ void destroyAndClearSecond(A &a) {
     a.clear();
 }
 
-};
+}; // end namespace STLUtil
+}; // end namespace FbTk
 
 #endif // STLUTIL_Hh

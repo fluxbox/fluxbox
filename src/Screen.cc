@@ -37,8 +37,6 @@
 #include "FocusControl.hh"
 #include "ScreenPlacement.hh"
 
-#include "STLUtil.hh"
-
 // themes
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
@@ -79,6 +77,7 @@
 #include "FbTk/Select2nd.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/FbString.hh"
+#include "FbTk/STLUtil.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -588,7 +587,7 @@ BScreen::~BScreen() {
         imageControl().removeImage(pos_pixmap);
 
     removeWorkspaceNames();
-    using namespace STLUtil;
+    using namespace FbTk::STLUtil;
     destroyAndClear(m_workspaces_list);
     destroyAndClear(m_managed_resources);
 

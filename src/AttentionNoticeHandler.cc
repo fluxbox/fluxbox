@@ -25,8 +25,8 @@
 
 #include "Window.hh"
 #include "Screen.hh"
-#include "STLUtil.hh"
 
+#include "FbTk/STLUtil.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
@@ -50,7 +50,7 @@ private:
 
 
 AttentionNoticeHandler::~AttentionNoticeHandler() {
-    STLUtil::destroyAndClearSecond(m_attentions);
+    FbTk::STLUtil::destroyAndClearSecond(m_attentions);
 }
 
 void AttentionNoticeHandler::addAttention(Focusable &client) {

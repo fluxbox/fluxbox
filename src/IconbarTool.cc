@@ -37,8 +37,8 @@
 #include "FocusControl.hh"
 #include "FbCommands.hh"
 #include "Layer.hh"
-#include "STLUtil.hh"
 
+#include "FbTk/STLUtil.hh"
 #include "FbTk/I18n.hh"
 #include "FbTk/Menu.hh"
 #include "FbTk/MenuItem.hh"
@@ -523,7 +523,7 @@ void IconbarTool::renderButton(IconButton &button, bool clear) {
 
 void IconbarTool::deleteIcons() {
     m_icon_container.removeAll();
-    STLUtil::destroyAndClearSecond(m_icons);
+    FbTk::STLUtil::destroyAndClearSecond(m_icons);
 }
 
 void IconbarTool::removeWindow(Focusable &win) {
