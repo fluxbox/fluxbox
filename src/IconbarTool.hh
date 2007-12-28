@@ -26,10 +26,10 @@
 #define ICONBARTOOL_HH
 
 #include "ToolbarItem.hh"
-#include "Container.hh"
 #include "FbMenu.hh"
 #include "FocusableList.hh"
 
+#include "FbTk/Container.hh"
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/Resource.hh"
@@ -60,7 +60,7 @@ public:
     void update(FbTk::Subject *subj);
     void show();
     void hide();
-    void setAlignment(Container::Alignment a);
+    void setAlignment(FbTk::Container::Alignment a);
     void setMode(std::string mode);
     void parentMoved() { m_icon_container.parentMoved(); }
 
@@ -71,7 +71,7 @@ public:
     std::string mode() const { return *m_rc_mode; }
 
     void setOrientation(FbTk::Orientation orient);
-    Container::Alignment alignment() const { return m_icon_container.alignment(); }
+    FbTk::Container::Alignment alignment() const { return m_icon_container.alignment(); }
 
     const BScreen &screen() const { return m_screen; }
 private:
@@ -99,7 +99,7 @@ private:
     void updateList();
 
     BScreen &m_screen;
-    Container m_icon_container;
+    FbTk::Container m_icon_container;
     IconbarTheme &m_theme;
     FbTk::CachedPixmap m_empty_pm; ///< pixmap for empty container
 
@@ -108,7 +108,7 @@ private:
     IconMap m_icons;
     std::string m_mode;
     FbTk::Resource<std::string> m_rc_mode;
-    FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
+    FbTk::Resource<FbTk::Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not

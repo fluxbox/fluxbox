@@ -33,7 +33,7 @@
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/DefaultValue.hh"
-#include "Container.hh"
+#include "FbTk/Container.hh"
 #include "Shape.hh"
 
 #include <vector>
@@ -246,8 +246,8 @@ public:
     inline const FbTk::FbWindow &label() const { return m_label; }
     inline FbTk::FbWindow &label() { return m_label; }
 
-    inline const Container &tabcontainer() const { return m_tab_container; }
-    inline Container &tabcontainer() { return m_tab_container; }
+    inline const FbTk::Container &tabcontainer() const { return m_tab_container; }
+    inline FbTk::Container &tabcontainer() { return m_tab_container; }
     
     /// @return clientarea window
     inline const FbTk::FbWindow &clientArea() const { return m_clientarea; }
@@ -332,7 +332,7 @@ private:
     FbTk::XLayerItem m_layeritem;
 
     FbTk::FbWindow m_titlebar; ///<  titlebar window
-    Container      m_tab_container; ///< Holds tabs
+    FbTk::Container m_tab_container; ///< Holds tabs
     FbTk::TextButton m_label; ///< holds title
     FbTk::FbWindow m_handle; ///< handle between grips
     FbTk::FbWindow m_grip_right,  ///< rightgrip

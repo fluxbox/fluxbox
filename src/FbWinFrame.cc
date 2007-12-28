@@ -29,12 +29,11 @@
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/Transparent.hh"
-#include "CompareWindow.hh"
+#include "FbTk/CompareEqual.hh"
 #include "FbWinFrameTheme.hh"
 #include "Screen.hh"
 
 #include "IconButton.hh"
-#include "Container.hh"
 
 #ifdef SHAPE
 #include "Shape.hh"
@@ -150,7 +149,7 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
     } else {
         m_tab_container.setUpdateLock(true);
 
-        m_tab_container.setAlignment(Container::RELATIVE);
+        m_tab_container.setAlignment(FbTk::Container::RELATIVE);
         m_tab_container.setOrientation(FbTk::ROT0);
         if (m_tab_container.parent()->window() == m_screen.rootWindow().window()) {
             m_layeritem.removeWindow(m_tab_container);
@@ -336,7 +335,7 @@ void FbWinFrame::alignTabs() {
     case TOPLEFT:
         if (orig_orient != FbTk::ROT0) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT0);
-        m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setAlignment(FbTk::Container::LEFT);
         m_tab_container.setMaxTotalSize(m_window.width());
         tabx = x();
         taby = y() - yOffset();
@@ -344,7 +343,7 @@ void FbWinFrame::alignTabs() {
     case TOPRIGHT:
         if (orig_orient != FbTk::ROT0) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT0);
-        m_tab_container.setAlignment(Container::RIGHT);
+        m_tab_container.setAlignment(FbTk::Container::RIGHT);
         m_tab_container.setMaxTotalSize(m_window.width());
         tabx = x() + width() - m_tab_container.width();
         taby = y() - yOffset();
@@ -352,7 +351,7 @@ void FbWinFrame::alignTabs() {
     case LEFTTOP:
         if (orig_orient != FbTk::ROT270) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT270);
-        m_tab_container.setAlignment(Container::RIGHT);
+        m_tab_container.setAlignment(FbTk::Container::RIGHT);
         m_tab_container.setMaxTotalSize(m_window.height());
         tabx = x() - xOffset();
         taby = y();
@@ -360,7 +359,7 @@ void FbWinFrame::alignTabs() {
     case LEFTBOTTOM:
         if (orig_orient != FbTk::ROT270) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT270);
-        m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setAlignment(FbTk::Container::LEFT);
         m_tab_container.setMaxTotalSize(m_window.height());
         tabx = x() - xOffset();
         taby = y() + height() - m_tab_container.height();
@@ -368,7 +367,7 @@ void FbWinFrame::alignTabs() {
     case RIGHTTOP:
         if (orig_orient != FbTk::ROT90) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT90);
-        m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setAlignment(FbTk::Container::LEFT);
         m_tab_container.setMaxTotalSize(m_window.height());
         tabx = x() + width() + m_window.borderWidth();
         taby = y();
@@ -376,7 +375,7 @@ void FbWinFrame::alignTabs() {
     case RIGHTBOTTOM:
         if (orig_orient != FbTk::ROT90) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT90);
-        m_tab_container.setAlignment(Container::RIGHT);
+        m_tab_container.setAlignment(FbTk::Container::RIGHT);
         m_tab_container.setMaxTotalSize(m_window.height());
         tabx = x() + width() + m_window.borderWidth();
         taby = y() + height() - m_tab_container.height();
@@ -384,7 +383,7 @@ void FbWinFrame::alignTabs() {
     case BOTTOMLEFT:
         if (orig_orient != FbTk::ROT0) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT0);
-        m_tab_container.setAlignment(Container::LEFT);
+        m_tab_container.setAlignment(FbTk::Container::LEFT);
         m_tab_container.setMaxTotalSize(m_window.width());
         tabx = x();
         taby = y() + height() + m_window.borderWidth();
@@ -392,7 +391,7 @@ void FbWinFrame::alignTabs() {
     case BOTTOMRIGHT:
         if (orig_orient != FbTk::ROT0) m_tab_container.hide();
         m_tab_container.setOrientation(FbTk::ROT0);
-        m_tab_container.setAlignment(Container::RIGHT);
+        m_tab_container.setAlignment(FbTk::Container::RIGHT);
         m_tab_container.setMaxTotalSize(m_window.width());
         tabx = x() + width() - m_tab_container.width();
         taby = y() + height() + m_window.borderWidth();
@@ -1453,8 +1452,8 @@ void FbWinFrame::applyTabContainer() {
         m_tab_container.setBackgroundColor(*tabcontainer_color);
 
     // and the labelbuttons in it
-    Container::ItemList::iterator btn_it = m_tab_container.begin();
-    Container::ItemList::iterator btn_it_end = m_tab_container.end();
+    FbTk::Container::ItemList::iterator btn_it = m_tab_container.begin();
+    FbTk::Container::ItemList::iterator btn_it_end = m_tab_container.end();
     for (; btn_it != btn_it_end; ++btn_it) {
         IconButton *btn = static_cast<IconButton *>(*btn_it);
         btn->reconfigTheme();

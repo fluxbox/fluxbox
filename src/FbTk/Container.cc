@@ -20,24 +20,26 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "Container.hh"
 
-#include "FbTk/Button.hh"
-#include "FbTk/EventManager.hh"
-#include "CompareWindow.hh"
+#include "Button.hh"
+#include "EventManager.hh"
+#include "CompareEqual.hh"
 
 #include <algorithm>
 
-Container::Container(const FbTk::FbWindow &parent):
-    FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), 
-    m_orientation(FbTk::ROT0),
+namespace FbTk {
+
+typedef CompareEqual_base<FbWindow, Window> CompareWindow;
+
+Container::Container(const FbWindow &parent):
+    FbWindow(parent, 0, 0, 1, 1, ExposureMask),
+    m_orientation(ROT0),
     m_align(RELATIVE),
     m_max_size_per_client(60),
     m_max_total_size(0),
     m_update_lock(false) {
-    FbTk::EventManager::instance()->add(*this, *this);
+    EventManager::instance()->add(*this, *this);
 }
 
 Container::~Container() {
@@ -46,26 +48,21 @@ Container::~Container() {
 
 void Container::resize(unsigned int width, unsigned int height) {
     // do we need to resize?
-    if (FbTk::FbWindow::width() == width &&
-        FbTk::FbWindow::height() == height)
+    if (FbWindow::width() == width &&
+        FbWindow::height() == height)
         return;
 
-    FbTk::FbWindow::resize(width, height);
+    FbWindow::resize(width, height);
     repositionItems();
 }
 
 void Container::moveResize(int x, int y,
                            unsigned int width, unsigned int height) {
-    FbTk::FbWindow::moveResize(x, y, width, height);
+    FbWindow::moveResize(x, y, width, height);
     repositionItems();
 }
 
 #ifdef NOT_USED
-void Container::move(int x, int y) {
-    FbTk::FbWindow::move(x, y);
-    // no need to reposition
-}
-
 void Container::insertItems(ItemList &item_list, int pos) {
 
     // make sure all items have parent == this
@@ -136,11 +133,11 @@ void Container::moveItem(Item item, int movement) {
     if (newindex < 0) // neg wrap
         newindex += size;
 
-    ItemList::iterator it = std::find(m_item_list.begin(), 
-                                      m_item_list.end(), 
+    ItemList::iterator it = std::find(m_item_list.begin(),
+                                      m_item_list.end(),
                                       item);
     m_item_list.erase(it);
-    
+
     for (it = m_item_list.begin(); newindex >= 0; ++it, --newindex) {
         if (newindex == 0) {
             break;
@@ -177,7 +174,7 @@ bool Container::moveItemTo(Item item, int x, int y) {
 
     ItemList::iterator it = find_if(m_item_list.begin(),
                                     m_item_list.end(),
-                                    CompareWindow(&FbTk::FbWindow::window,
+                                    CompareWindow(&FbWindow::window,
                                                   itemwin));
     // not found :(
     if (it == m_item_list.end())
@@ -278,7 +275,7 @@ bool Container::tryExposeEvent(XExposeEvent &event) {
 
     ItemList::iterator it = find_if(m_item_list.begin(),
                                     m_item_list.end(),
-                                    CompareWindow(&FbTk::FbWindow::window,
+                                    CompareWindow(&FbWindow::window,
                                                   event.window));
     // not found :(
     if (it == m_item_list.end())
@@ -296,7 +293,7 @@ bool Container::tryButtonPressEvent(XButtonEvent &event) {
 
     ItemList::iterator it = find_if(m_item_list.begin(),
                                     m_item_list.end(),
-                                    CompareWindow(&FbTk::FbWindow::window,
+                                    CompareWindow(&FbWindow::window,
                                                   event.window));
     // not found :(
     if (it == m_item_list.end())
@@ -314,7 +311,7 @@ bool Container::tryButtonReleaseEvent(XButtonEvent &event) {
 
     ItemList::iterator it = find_if(m_item_list.begin(),
                                     m_item_list.end(),
-                                    CompareWindow(&FbTk::FbWindow::window,
+                                    CompareWindow(&FbWindow::window,
                                                   event.window));
     // not found :(
     if (it == m_item_list.end())
@@ -341,7 +338,7 @@ void Container::repositionItems() {
     unsigned int height;
 
     // unrotate
-    if (m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) {
+    if (m_orientation == ROT0 || m_orientation == ROT180) {
         total_width = cur_width = width();
         height = this->height();
     } else {
@@ -361,22 +358,21 @@ void Container::repositionItems() {
             } else
                 max_width_per_client = 1;
         }
-    
         if (total_width != cur_width) {
             // calling Container::resize here risks infinite loops
             unsigned int neww = total_width, newh = height;
             translateSize(m_orientation, neww, newh);
-            if (align == RIGHT && m_orientation != FbTk::ROT270 || align == LEFT && m_orientation == FbTk::ROT270) {
+            if (align == RIGHT && m_orientation != ROT270 || align == LEFT && m_orientation == ROT270) {
                 int deltax = 0;
                 int deltay = 0;
-                if (m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180)
+                if (m_orientation == ROT0 || m_orientation == ROT180)
                     deltax = - (total_width - cur_width);
                 else
                     deltay = - (total_width - cur_width);
 
-                FbTk::FbWindow::moveResize(x() + deltax, y() + deltay, neww, newh);
+                FbWindow::moveResize(x() + deltax, y() + deltay, neww, newh);
             } else {
-                FbTk::FbWindow::resize(neww, newh);
+                FbWindow::resize(neww, newh);
             }
         }
     }
@@ -421,9 +417,9 @@ void Container::repositionItems() {
         tmpw = max_width_per_client + extra;
         tmph = height;
 
-        FbTk::translateCoords(m_orientation, tmpx, tmpy, total_width, height);
-        FbTk::translatePosition(m_orientation, tmpx, tmpy, tmpw, tmph, borderW);
-        FbTk::translateSize(m_orientation, tmpw, tmph);
+        translateCoords(m_orientation, tmpx, tmpy, total_width, height);
+        translatePosition(m_orientation, tmpx, tmpy, tmpw, tmph, borderW);
+        translateSize(m_orientation, tmpw, tmph);
 
         // resize each clients including border in size
         (*it)->moveResize(tmpx, tmpy,
@@ -462,14 +458,14 @@ unsigned int Container::maxWidthPerClient() const {
     return 1;
 }
 
-void Container::for_each(std::mem_fun_t<void, FbTk::FbWindow> function) {
+void Container::for_each(std::mem_fun_t<void, FbWindow> function) {
     std::for_each(m_item_list.begin(),
                   m_item_list.end(),
                   function);
 }
 
 void Container::setAlpha(unsigned char alpha) {
-    FbTk::FbWindow::setAlpha(alpha);
+    FbWindow::setAlpha(alpha);
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();
     for (; it != it_end; ++it)
@@ -477,7 +473,7 @@ void Container::setAlpha(unsigned char alpha) {
 }
 
 void Container::parentMoved() {
-    FbTk::FbWindow::parentMoved();
+    FbWindow::parentMoved();
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();
     for (; it != it_end; ++it)
@@ -485,7 +481,7 @@ void Container::parentMoved() {
 }
 
 void Container::invalidateBackground() {
-    FbTk::FbWindow::invalidateBackground();
+    FbWindow::invalidateBackground();
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();
     for (; it != it_end; ++it)
@@ -500,21 +496,21 @@ void Container::clear() {
 
 }
 
-void Container::setOrientation(FbTk::Orientation orient) {
+void Container::setOrientation(Orientation orient) {
     if (m_orientation == orient)
         return;
 
-    FbTk::FbWindow::invalidateBackground();
+    FbWindow::invalidateBackground();
 
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();
     for (; it != it_end; ++it)
         (*it)->setOrientation(orient);
 
-    if ((m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) &&
-        (orient == FbTk::ROT90 || orient == FbTk::ROT270) ||
-        (m_orientation == FbTk::ROT90 || m_orientation == FbTk::ROT270) &&
-        (orient == FbTk::ROT0 || orient == FbTk::ROT180)) {
+    if ((m_orientation == ROT0 || m_orientation == ROT180) &&
+        (orient == ROT90 || orient == ROT270) ||
+        (m_orientation == ROT90 || m_orientation == ROT270) &&
+        (orient == ROT0 || orient == ROT180)) {
         // flip width and height
         m_orientation = orient;
         resize(height(), width());
@@ -524,3 +520,5 @@ void Container::setOrientation(FbTk::Orientation orient) {
     }
 
 }
+
+}; // end namespace FbTk

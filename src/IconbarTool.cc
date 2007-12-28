@@ -69,31 +69,31 @@ using std::endl;
 namespace FbTk {
 
 template<>
-void FbTk::Resource<Container::Alignment>::setDefaultValue() {
-    m_value = Container::RELATIVE;
+void FbTk::Resource<FbTk::Container::Alignment>::setDefaultValue() {
+    m_value = FbTk::Container::RELATIVE;
 }
 
 template<>
-string FbTk::Resource<Container::Alignment>::getString() const {
+string FbTk::Resource<FbTk::Container::Alignment>::getString() const {
     switch (m_value) {
-    case Container::LEFT:
+    case FbTk::Container::LEFT:
         return string("Left");
-    case Container::RIGHT:
+    case FbTk::Container::RIGHT:
         return string("Right");
-    case Container::RELATIVE:
+    case FbTk::Container::RELATIVE:
         return string("Relative");
     }
     return string("Left");
 }
 
 template<>
-void FbTk::Resource<Container::Alignment>::setFromString(const char *str) {
+void FbTk::Resource<FbTk::Container::Alignment>::setFromString(const char *str) {
     if (strcasecmp(str, "Left") == 0)
-        m_value = Container::LEFT;
+        m_value = FbTk::Container::LEFT;
     else if (strcasecmp(str, "Right") == 0)
-        m_value = Container::RIGHT;
+        m_value = FbTk::Container::RIGHT;
     else if (strcasecmp(str, "Relative") == 0)
-        m_value = Container::RELATIVE;
+        m_value = FbTk::Container::RELATIVE;
     else
         setDefaultValue();
 }
@@ -124,7 +124,7 @@ private:
 class ToolbarAlignMenuItem: public FbTk::MenuItem {
 public:
     ToolbarAlignMenuItem(const FbTk::FbString &label, IconbarTool &handler,
-                        Container::Alignment mode,
+                        FbTk::Container::Alignment mode,
                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
         setCloseOnClick(false);
@@ -137,7 +137,7 @@ public:
 
 private:
     IconbarTool &m_handler;
-    Container::Alignment m_mode;
+    FbTk::Container::Alignment m_mode;
 };
 
 void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
@@ -194,17 +194,17 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
     menu.insert(new ToolbarAlignMenuItem(
                     _FB_XTEXT(Align, Left, "Left", "Align to the left"),
                     handler,
-                    Container::LEFT, saverc_cmd));
+                    FbTk::Container::LEFT, saverc_cmd));
 
     menu.insert(new ToolbarAlignMenuItem(
                     _FB_XTEXT(Align, Relative, "Relative", "Align relative to the width"),
                     handler,
-                    Container::RELATIVE, saverc_cmd));
+                    FbTk::Container::RELATIVE, saverc_cmd));
 
     menu.insert(new ToolbarAlignMenuItem(
                     _FB_XTEXT(Align, Right, "Right", "Align to the right"),
                     handler,
-                    Container::RIGHT, saverc_cmd));
+                    FbTk::Container::RIGHT, saverc_cmd));
 
     menu.insert(new FbTk::MenuSeparator());
 
@@ -266,7 +266,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_mode("none"),
     m_rc_mode(screen.resourceManager(), "{static groups} (workspace)",
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
-    m_rc_alignment(screen.resourceManager(), Container::LEFT,
+    m_rc_alignment(screen.resourceManager(), FbTk::Container::LEFT,
                    screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
     m_rc_client_width(screen.resourceManager(), 70,
                    screen.name() + ".iconbar.iconWidth", screen.altName() + ".Iconbar.IconWidth"),
@@ -331,7 +331,7 @@ void IconbarTool::hide() {
     m_icon_container.hide();
 }
 
-void IconbarTool::setAlignment(Container::Alignment align) {
+void IconbarTool::setAlignment(FbTk::Container::Alignment align) {
     *m_rc_alignment = align;
     update(0);
     m_menu.reconfigure();

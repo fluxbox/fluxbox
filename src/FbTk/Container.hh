@@ -20,35 +20,33 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
+#ifndef FBTK_CONTAINER_HH
+#define FBTK_CONTAINER_HH
 
-#ifndef CONTAINER_HH
-#define CONTAINER_HH
-
-#include "FbTk/FbWindow.hh"
-#include "FbTk/EventHandler.hh"
-#include "FbTk/NotCopyable.hh"
-#include "FbTk/Text.hh" // for Orientation
-
-namespace FbTk {
-    class Button;
-}
+#include "FbWindow.hh"
+#include "EventHandler.hh"
+#include "NotCopyable.hh"
+#include "Text.hh" // for Orientation
 
 #include <list>
 #include <functional>
 
-class Container:public FbTk::FbWindow, public FbTk::EventHandler, private FbTk::NotCopyable {
+namespace FbTk {
+
+class Button;
+
+class Container: public FbWindow, public EventHandler, private NotCopyable {
 public:
     // LEFT, RIGHT => fixed total width, fixed icon size
     // RELATIVE => fixed total width, relative/variable icon size
     enum Alignment { LEFT, RELATIVE, RIGHT };
-    typedef FbTk::Button * Item;
-    typedef const FbTk::Button * ConstItem;
+    typedef Button * Item;
+    typedef const Button * ConstItem;
     typedef std::list<Item> ItemList;
 
-    explicit Container(const FbTk::FbWindow &parent);
+    explicit Container(const FbWindow &parent);
     virtual ~Container();
-    
+
     // manipulators
 
     void resize(unsigned int width, unsigned int height);
@@ -68,7 +66,7 @@ public:
     void setMaxSizePerClient(unsigned int size);
     void setMaxTotalSize(unsigned int size);
     void setAlignment(Alignment a);
-    void setOrientation(FbTk::Orientation orient);
+    void setOrientation(Orientation orient);
 
     Item back() { return m_item_list.back(); }
 
@@ -89,13 +87,13 @@ public:
 
     /// accessors
     inline Alignment alignment() const { return m_align; }
-    inline FbTk::Orientation orientation() const { return m_orientation; }
+    inline Orientation orientation() const { return m_orientation; }
     inline int size() const { return m_item_list.size(); }
     inline bool empty() const { return m_item_list.empty(); }
     unsigned int maxWidthPerClient() const;
     inline bool updateLock() const { return m_update_lock; }
 
-    void for_each(std::mem_fun_t<void, FbTk::FbWindow> function);
+    void for_each(std::mem_fun_t<void, FbWindow> function);
     void setAlpha(unsigned char alpha); // set alpha on all windows
 
     ItemList::iterator begin() { return m_item_list.begin(); }
@@ -106,7 +104,7 @@ public:
 private:
     void repositionItems();
 
-    FbTk::Orientation m_orientation;
+    Orientation m_orientation;
 
     Alignment m_align;
     unsigned int m_max_size_per_client;
@@ -115,5 +113,6 @@ private:
     bool m_update_lock;
 };
 
-#endif // CONTAINER_HH
+}; // end namespace FbTk
 
+#endif // FBTK_CONTAINER_HH
