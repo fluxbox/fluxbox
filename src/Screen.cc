@@ -39,7 +39,7 @@
 
 // themes
 #include "FbWinFrameTheme.hh"
-#include "MenuTheme.hh"
+#include "FbTk/MenuTheme.hh"
 #include "RootTheme.hh"
 #include "WinButtonTheme.hh"
 #include "SlitTheme.hh"
@@ -357,7 +357,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // because winbutton need to rescale the pixmaps in winbutton theme
     // after fbwinframe have resized them
     m_winbutton_theme(new WinButtonTheme(scrn, *m_windowtheme)),
-    m_menutheme(new MenuTheme(scrn)),
+    m_menutheme(new FbTk::MenuTheme(scrn)),
     m_root_window(scrn),
     m_geom_window(m_root_window,
                   0, 0, 10, 10,

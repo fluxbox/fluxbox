@@ -29,8 +29,8 @@
 
 #include "FbWinFrame.hh"
 #include "FbRootWindow.hh"
-#include "MenuTheme.hh"
 
+#include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Subject.hh"
@@ -279,8 +279,8 @@ public:
 
     FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
     const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
-    MenuTheme &menuTheme() { return *m_menutheme.get(); }
-    const MenuTheme &menuTheme() const { return *m_menutheme.get(); }
+    FbTk::MenuTheme &menuTheme() { return *m_menutheme.get(); }
+    const FbTk::MenuTheme &menuTheme() const { return *m_menutheme.get(); }
     const RootTheme &rootTheme() const { return *m_root_theme.get(); }
     WinButtonTheme &winButtonTheme() { return *m_winbutton_theme.get(); }
     const WinButtonTheme &winButtonTheme() const { return *m_winbutton_theme.get(); }
@@ -520,7 +520,7 @@ private:
 
     std::auto_ptr<FbWinFrameTheme> m_windowtheme;
     std::auto_ptr<WinButtonTheme> m_winbutton_theme;
-    std::auto_ptr<MenuTheme> m_menutheme;
+    std::auto_ptr<FbTk::MenuTheme> m_menutheme;
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;

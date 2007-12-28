@@ -27,6 +27,7 @@
 #include "Theme.hh"
 #include "Color.hh"
 #include "Font.hh"
+#include "Shape.hh"
 #include "Texture.hh"
 #include "Text.hh"
 #include "Subject.hh"
@@ -35,7 +36,7 @@
 
 namespace FbTk {
 
-class MenuTheme:public FbTk::Theme {
+class MenuTheme:public Theme {
 public:
     //!! TODO
     // this isn't actually used with a theme item
@@ -54,40 +55,40 @@ public:
        @name text colors
     */
     ///@{
-    inline const FbTk::Color &titleTextColor() const { return *t_text; }
-    inline const FbTk::Color &frameTextColor() const { return *f_text; }
-    inline const FbTk::Color &frameUnderlineColor() const { return *u_text; }
-    inline const FbTk::Color &highlightTextColor() const { return *h_text; }
-    inline const FbTk::Color &disableTextColor() const { return *d_text; }
+    inline const Color &titleTextColor() const { return *t_text; }
+    inline const Color &frameTextColor() const { return *f_text; }
+    inline const Color &frameUnderlineColor() const { return *u_text; }
+    inline const Color &highlightTextColor() const { return *h_text; }
+    inline const Color &disableTextColor() const { return *d_text; }
     ///@}
     /**
        @name textures
     */
     ///@{
-    inline const FbTk::Texture &titleTexture() const { return *title; }
-    inline const FbTk::Texture &frameTexture() const { return *frame; }
-    inline const FbTk::Texture &hiliteTexture() const { return *hilite; }
+    inline const Texture &titleTexture() const { return *title; }
+    inline const Texture &frameTexture() const { return *frame; }
+    inline const Texture &hiliteTexture() const { return *hilite; }
     ///@}
 
-    inline const FbTk::PixmapWithMask &bulletPixmap() const { return *m_bullet_pixmap; }
-    inline const FbTk::PixmapWithMask &selectedPixmap() const { return *m_selected_pixmap; }
-    inline const FbTk::PixmapWithMask &unselectedPixmap() const { return *m_unselected_pixmap; }
+    inline const PixmapWithMask &bulletPixmap() const { return *m_bullet_pixmap; }
+    inline const PixmapWithMask &selectedPixmap() const { return *m_selected_pixmap; }
+    inline const PixmapWithMask &unselectedPixmap() const { return *m_unselected_pixmap; }
 
-    inline const FbTk::PixmapWithMask &highlightBulletPixmap() const { return *m_hl_bullet_pixmap; }
-    inline const FbTk::PixmapWithMask &highlightSelectedPixmap() const { return *m_hl_selected_pixmap; }
-    inline const FbTk::PixmapWithMask &highlightUnselectedPixmap() const { return *m_hl_unselected_pixmap; }
+    inline const PixmapWithMask &highlightBulletPixmap() const { return *m_hl_bullet_pixmap; }
+    inline const PixmapWithMask &highlightSelectedPixmap() const { return *m_hl_selected_pixmap; }
+    inline const PixmapWithMask &highlightUnselectedPixmap() const { return *m_hl_unselected_pixmap; }
     /**
        @name fonts
     */
     ///@{
-    inline const FbTk::Font &titleFont() const { return *titlefont; }
-    inline FbTk::Font &titleFont() { return *titlefont; }
-    inline const FbTk::Font &frameFont() const { return *framefont; }
-    inline FbTk::Font &frameFont() { return *framefont; }
+    inline const Font &titleFont() const { return *titlefont; }
+    inline Font &titleFont() { return *titlefont; }
+    inline const Font &frameFont() const { return *framefont; }
+    inline Font &frameFont() { return *framefont; }
     ///@}
 
-    inline FbTk::Justify frameFontJustify() const { return *framefont_justify; }
-    inline FbTk::Justify titleFontJustify() const { return *titlefont_justify; }
+    inline Justify frameFontJustify() const { return *framefont_justify; }
+    inline Justify titleFontJustify() const { return *titlefont_justify; }
 	
     /**
        @name graphic contexts
@@ -107,7 +108,7 @@ public:
     inline GContext &hiliteGC() { return hilite_gc; }
     ///@}
     inline BulletType bullet() const { return *m_bullet; }
-    inline FbTk::Justify bulletPos() const { return *bullet_pos; }
+    inline Justify bulletPos() const { return *bullet_pos; }
 
     inline unsigned int titleHeight() const { return m_real_title_height; }
     inline unsigned int itemHeight() const { return m_real_item_height; }
@@ -126,7 +127,8 @@ public:
     inline int delayOpen() const { return m_delayopen; }
     inline int delayClose() const { return m_delayclose; }
     
-    inline const FbTk::Color &borderColor() const { return *m_border_color; }
+    inline const Color &borderColor() const { return *m_border_color; }
+    inline Shape::ShapePlace shapePlaces() const { return *m_shapeplace; }
 
     // special override
     inline void setSelectedPixmap(Pixmap pm, bool is_imagecached) {
@@ -142,21 +144,22 @@ public:
     }
 
 private:
-    FbTk::ThemeItem<FbTk::Color> t_text, f_text, h_text, d_text, u_text;
-    FbTk::ThemeItem<FbTk::Texture> title, frame, hilite;
-    FbTk::ThemeItem<FbTk::Font> titlefont, framefont;
-    FbTk::ThemeItem<FbTk::Justify> framefont_justify, titlefont_justify;
-    FbTk::ThemeItem<FbTk::Justify> bullet_pos; 
-    FbTk::ThemeItem<BulletType> m_bullet;
-    FbTk::ThemeItem<unsigned int> m_title_height, m_item_height;
-    FbTk::ThemeItem<unsigned int> m_border_width;
-    FbTk::ThemeItem<unsigned int> m_bevel_width;
-    FbTk::ThemeItem<FbTk::Color> m_border_color;
-    FbTk::ThemeItem<FbTk::PixmapWithMask> m_bullet_pixmap, m_selected_pixmap, m_unselected_pixmap;
-    FbTk::ThemeItem<FbTk::PixmapWithMask> m_hl_bullet_pixmap, m_hl_selected_pixmap, m_hl_unselected_pixmap;
+    ThemeItem<Color> t_text, f_text, h_text, d_text, u_text;
+    ThemeItem<Texture> title, frame, hilite;
+    ThemeItem<Font> titlefont, framefont;
+    ThemeItem<Justify> framefont_justify, titlefont_justify;
+    ThemeItem<Justify> bullet_pos; 
+    ThemeItem<BulletType> m_bullet;
+    ThemeItem<Shape::ShapePlace> m_shapeplace;
+    ThemeItem<unsigned int> m_title_height, m_item_height;
+    ThemeItem<unsigned int> m_border_width;
+    ThemeItem<unsigned int> m_bevel_width;
+    ThemeItem<Color> m_border_color;
+    ThemeItem<PixmapWithMask> m_bullet_pixmap, m_selected_pixmap, m_unselected_pixmap;
+    ThemeItem<PixmapWithMask> m_hl_bullet_pixmap, m_hl_selected_pixmap, m_hl_unselected_pixmap;
 
     Display *m_display;
-    FbTk::GContext t_text_gc, f_text_gc, u_text_gc, h_text_gc, d_text_gc, hilite_gc;
+    GContext t_text_gc, f_text_gc, u_text_gc, h_text_gc, d_text_gc, hilite_gc;
 
     unsigned char m_alpha;
     MenuMode m_menumode;

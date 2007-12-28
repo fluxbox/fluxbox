@@ -36,7 +36,7 @@
 #include "FbTk/I18n.hh"
 #include "Window.hh"
 
-AlphaMenu::AlphaMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
+AlphaMenu::AlphaMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
                      FbTk::XLayer &layer):
     ToggleMenu(tm, imgctrl, layer)
 {

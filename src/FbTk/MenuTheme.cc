@@ -54,6 +54,7 @@ MenuTheme::MenuTheme(int screen_num):
     titlefont_justify(*this, "menu.title.justify", "Menu.Title.Justify"),
     bullet_pos(*this, "menu.bullet.position", "Menu.Bullet.Position"),
     m_bullet(*this, "menu.bullet", "Menu.Bullet"),
+    m_shapeplace(*this, "menu.roundCorners", "Menu.RoundCorners"),
     m_title_height(*this, "menu.titleHeight", "Menu.TitleHeight"),
     m_item_height(*this, "menu.itemHeight", "Menu.ItemHeight"),
     m_border_width(*this, "menu.borderWidth", "Menu.BorderWidth"),
@@ -78,11 +79,12 @@ MenuTheme::MenuTheme(int screen_num):
     m_delayclose(0), // no delay as default
     m_real_title_height(*m_title_height),
     m_real_item_height(*m_item_height)
-{ 
+{
     // set default values
     *m_border_width = 0;
     *m_bevel_width = 0;
     *m_border_width = 0;
+    *m_shapeplace = FbTk::Shape::NONE;
 
     ThemeManager::instance().loadTheme(*this);
 

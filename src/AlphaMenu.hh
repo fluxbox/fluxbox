@@ -31,7 +31,7 @@
 
 class AlphaMenu : public ToggleMenu {
 public:
-    AlphaMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
+    AlphaMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
               FbTk::XLayer &layer);
 
     // we override these to update the menu when the active window changes

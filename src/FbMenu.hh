@@ -28,16 +28,15 @@
 #include "XLayerItem.hh"
 #include <memory>
 
-class MenuTheme;
-
 namespace FbTk {
+class MenuTheme;
 class Shape;
 }
 
 /// a layered and shaped menu
 class FbMenu:public FbTk::Menu {
 public:
-    FbMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
+    FbMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer);
     virtual ~FbMenu();
     void updateMenu(int index = -1);

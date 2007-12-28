@@ -25,12 +25,12 @@
 #include "FbMenu.hh"
 
 #include "fluxbox.hh"
-#include "MenuTheme.hh"
+#include "FbTk/MenuTheme.hh"
 #include "Screen.hh"
 
 #include "FbTk/Shape.hh"
 
-FbMenu::FbMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
+FbMenu::FbMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer):
     FbTk::Menu(tm, imgctrl), 
     m_layeritem(fbwindow(), layer),
@@ -53,7 +53,7 @@ void FbMenu::clearWindow() {
 }
 
 void FbMenu::reconfigure() {
-    m_shape->setPlaces(dynamic_cast<const MenuTheme&>(theme()).shapePlaces());
+    m_shape->setPlaces(theme().shapePlaces());
     FbTk::Menu::reconfigure();
 }
 
