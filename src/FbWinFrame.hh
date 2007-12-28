@@ -34,14 +34,13 @@
 #include "FbTk/TextButton.hh"
 #include "FbTk/DefaultValue.hh"
 #include "FbTk/Container.hh"
-#include "Shape.hh"
+#include "FbTk/Shape.hh"
 
 #include <vector>
 #include <list>
 #include <string>
 #include <memory>
 
-class Shape;
 class FbWinFrameTheme;
 class BScreen;
 class IconButton;
@@ -414,7 +413,7 @@ private:
         FbWinFrame &m_frame;
     };
     ThemeListener m_themelistener;
-    Shape m_shape;
+    FbTk::Shape m_shape;
 
     bool m_disable_themeshape;
 };

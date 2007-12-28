@@ -32,9 +32,9 @@
 #include "FbTk/BorderTheme.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/GContext.hh"
+#include "FbTk/Shape.hh"
 
 #include "IconbarTheme.hh"
-#include "Shape.hh"
 
 class FbWinFrameTheme: public FbTk::Theme {
 public:
@@ -83,7 +83,7 @@ public:
     inline Cursor topSideCursor() const { return m_cursor_top_side; }
     inline Cursor bottomSideCursor() const { return m_cursor_bottom_side; }
 
-    inline Shape::ShapePlace shapePlace() const { return *m_shape_place; }
+    inline FbTk::Shape::ShapePlace shapePlace() const { return *m_shape_place; }
     inline const FbTk::BorderTheme &border(bool focus) const { return (focus ? m_border_focus : m_border_unfocus); }
 
     unsigned int titleHeight() const { return *m_title_height; }
@@ -106,7 +106,7 @@ private:
     FbTk::ThemeItem<FbTk::Color> m_button_focus_color, m_button_unfocus_color;
     
     FbTk::ThemeItem<FbTk::Font> m_font;
-    FbTk::ThemeItem<Shape::ShapePlace> m_shape_place;
+    FbTk::ThemeItem<FbTk::Shape::ShapePlace> m_shape_place;
 
     FbTk::ThemeItem<int> m_title_height, m_bevel_width, m_handle_width;
     FbTk::BorderTheme m_border_focus, m_border_unfocus;

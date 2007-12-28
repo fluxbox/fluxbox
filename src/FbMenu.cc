@@ -27,13 +27,14 @@
 #include "fluxbox.hh"
 #include "MenuTheme.hh"
 #include "Screen.hh"
-#include "Shape.hh"
+
+#include "FbTk/Shape.hh"
 
 FbMenu::FbMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer):
     FbTk::Menu(tm, imgctrl), 
     m_layeritem(fbwindow(), layer),
-    m_shape(new Shape(fbwindow(), tm.shapePlaces())) {
+    m_shape(new FbTk::Shape(fbwindow(), tm.shapePlaces())) {
     
 }
 

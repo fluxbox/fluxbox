@@ -32,6 +32,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	RefCount.hh SimpleCommand.hh SignalHandler.cc SignalHandler.hh \
 	Text.hh Text.cc \
 	Texture.cc Texture.hh TextureRender.hh TextureRender.cc \
+	Shape.hh Shape.cc \
 	Theme.hh Theme.cc ThemeItems.cc Timer.hh Timer.cc \
 	XFontImp.cc XFontImp.hh \
 	Button.hh Button.cc \

@@ -19,14 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "Shape.hh"
 
-#include "FbTk/FbWindow.hh"
-#include "FbTk/App.hh"
-#include "FbTk/GContext.hh"
-#include "FbTk/FbPixmap.hh"
+#include "FbWindow.hh"
+#include "App.hh"
+#include "GContext.hh"
+#include "FbPixmap.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -48,11 +46,13 @@
 
 using std::min;
 
+namespace FbTk {
+
 namespace {
 /* rows is an array of 8 bytes, i.e. 8x8 bits */
-Pixmap makePixmap(FbTk::FbWindow &drawable, const unsigned char rows[]) {
+Pixmap makePixmap(FbWindow &drawable, const unsigned char rows[]) {
 
-    Display *disp = FbTk::App::instance()->display();
+    Display *disp = App::instance()->display();
 
     const size_t data_size = 8 * 8;
     // we use calloc here so we get consistent C alloc/free with XDestroyImage
@@ -81,8 +81,8 @@ Pixmap makePixmap(FbTk::FbWindow &drawable, const unsigned char rows[]) {
         }
     }
 
-    FbTk::FbPixmap pm(drawable, 8, 8, 1);
-    FbTk::GContext gc(pm);
+    FbPixmap pm(drawable, 8, 8, 1);
+    GContext gc(pm);
 
     XPutImage(disp, pm.drawable(), gc.gc(), ximage, 0, 0, 0, 0,
               8, 8);
@@ -96,7 +96,7 @@ Pixmap makePixmap(FbTk::FbWindow &drawable, const unsigned char rows[]) {
 
 std::vector<Shape::CornerPixmaps> Shape::s_corners;
 
-Shape::Shape(FbTk::FbWindow &win, int shapeplaces):
+Shape::Shape(FbWindow &win, int shapeplaces):
     m_win(&win),
     m_shapesource(0),
     m_shapesource_xoff(0),
@@ -115,13 +115,13 @@ Shape::~Shape() {
 #ifdef SHAPE
     if (m_win != 0 && m_win->window()) {
         // Reset shape of window
-        XShapeCombineMask(FbTk::App::instance()->display(),
+        XShapeCombineMask(App::instance()->display(),
                           m_win->window(),
                           ShapeClip,
                           0, 0,
                           0,
                           ShapeSet);
-        XShapeCombineMask(FbTk::App::instance()->display(),
+        XShapeCombineMask(App::instance()->display(),
                           m_win->window(),
                           ShapeBounding,
                           0, 0,
@@ -133,17 +133,17 @@ Shape::~Shape() {
 
 void Shape::initCorners(int screen_num) {
     if (s_corners.size() == 0)
-        s_corners.resize(ScreenCount(FbTk::App::instance()->display()));
+        s_corners.resize(ScreenCount(App::instance()->display()));
  
     static const unsigned char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
     static const unsigned char right_bits[] = { 0x03, 0x1f, 0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff};
     static const unsigned char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
     static const unsigned char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
 
-    s_corners[screen_num].topleft = ::makePixmap(*m_win, left_bits);
-    s_corners[screen_num].topright = ::makePixmap(*m_win, right_bits);
-    s_corners[screen_num].botleft = ::makePixmap(*m_win, bottom_left_bits);
-    s_corners[screen_num].botright = ::makePixmap(*m_win, bottom_right_bits);
+    s_corners[screen_num].topleft = makePixmap(*m_win, left_bits);
+    s_corners[screen_num].topright = makePixmap(*m_win, right_bits);
+    s_corners[screen_num].botleft = makePixmap(*m_win, bottom_left_bits);
+    s_corners[screen_num].botright = makePixmap(*m_win, bottom_right_bits);
 
 }
 
@@ -160,7 +160,7 @@ void Shape::update() {
      * Set the client's shape in position,
      * or wipe the shape and return.
      */
-    Display *display = FbTk::App::instance()->display();
+    Display *display = App::instance()->display();
     int bw = m_win->borderWidth();
     int width = m_win->width();
     int height = m_win->height();
@@ -259,7 +259,7 @@ void Shape::update() {
 
     CornerPixmaps &corners = s_corners[m_win->screenNumber()];
 #define SHAPECORNER(corner, x, y, shapekind)            \
-    XShapeCombineMask(FbTk::App::instance()->display(), \
+    XShapeCombineMask(App::instance()->display(), \
                       m_win->window(),                  \
                       shapekind,                        \
                       x, y,                             \
@@ -297,7 +297,7 @@ void Shape::update() {
 
 }
 
-void Shape::setWindow(FbTk::FbWindow &win) {
+void Shape::setWindow(FbWindow &win) {
     m_win = &win;
     update();
 }
@@ -317,7 +317,7 @@ void Shape::setWindow(FbTk::FbWindow &win) {
  * is given, then the bounding shape has the borders alongside the source window deleted, otherwise
  * they are left hanging outside the client's shape.
  */
-void Shape::setShapeSource(FbTk::FbWindow *win, int xoff, int yoff, bool always_update) {
+void Shape::setShapeSource(FbWindow *win, int xoff, int yoff, bool always_update) {
     if (win != 0 && !isShaped(*win)) {
         win = 0;
         if (m_shapesource == 0 && !always_update)
@@ -337,20 +337,20 @@ void Shape::setShapeOffsets(int xoff, int yoff) {
     update();
 }
 
-void Shape::setShapeNotify(const FbTk::FbWindow &win) {
+void Shape::setShapeNotify(const FbWindow &win) {
 #ifdef SHAPE
-    XShapeSelectInput(FbTk::App::instance()->display(),
+    XShapeSelectInput(App::instance()->display(),
                       win.window(), ShapeNotifyMask);
 #endif // SHAPE
 }
 
-bool Shape::isShaped(const FbTk::FbWindow &win) {
+bool Shape::isShaped(const FbWindow &win) {
     int shaped = 0;
 
 #ifdef SHAPE
     int not_used;
     unsigned int not_used2;
-    XShapeQueryExtents(FbTk::App::instance()->display(),
+    XShapeQueryExtents(App::instance()->display(),
                        win.window(),
                        &shaped,  /// bShaped
                        &not_used, &not_used,  // xbs, ybs
@@ -363,3 +363,4 @@ bool Shape::isShaped(const FbTk::FbWindow &win) {
     return (shaped != 0 ? true : false);
 }
 
+}; // end namespace FbTk

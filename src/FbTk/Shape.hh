@@ -19,12 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #ifndef SHAPE_HH
 #define SHAPE_HH
 
-#include "FbTk/FbPixmap.hh"
+#include "FbPixmap.hh"
 
 #include <X11/Xlib.h>
 #include <memory>
@@ -32,7 +30,6 @@
 
 namespace FbTk {
 class FbWindow;
-}
 
 /// creates round corners on windows
 class Shape {
@@ -45,38 +42,38 @@ public:
         TOPLEFT = 0x08
     };
 
-    Shape(FbTk::FbWindow &win, int shapeplaces);
+    Shape(FbWindow &win, int shapeplaces);
     ~Shape();
     /// set new shape places
     void setPlaces(int shapeplaces);
     /// update our shape
     void update(); 
     /// assign a new window
-    void setWindow(FbTk::FbWindow &win);
+    void setWindow(FbWindow &win);
     /// Assign a window to merge our shape with.
     /// (note that this is currently specific to frames)
-    void setShapeSource(FbTk::FbWindow *win, int xoff, int yoff, bool always_update);
+    void setShapeSource(FbWindow *win, int xoff, int yoff, bool always_update);
     void setShapeOffsets(int xoff, int yoff);
     unsigned int width() const;
     unsigned int height() const;
     unsigned int clipWidth() const;
     unsigned int clipHeight() const;
     // sets shape notify mask
-    static void setShapeNotify(const FbTk::FbWindow &win);
+    static void setShapeNotify(const FbWindow &win);
     /// @return true if window has shape
-    static bool isShaped(const FbTk::FbWindow &win);
+    static bool isShaped(const FbWindow &win);
 private:
-    FbTk::FbWindow *m_win; ///< window to be shaped
-    FbTk::FbWindow *m_shapesource; ///< window to pull shape from
+    FbWindow *m_win; ///< window to be shaped
+    FbWindow *m_shapesource; ///< window to pull shape from
     int m_shapesource_xoff, m_shapesource_yoff;
 
     void initCorners(int screen_num);
 
     struct CornerPixmaps {
-        FbTk::FbPixmap topleft;
-        FbTk::FbPixmap topright;
-        FbTk::FbPixmap botleft;
-        FbTk::FbPixmap botright;
+        FbPixmap topleft;
+        FbPixmap topright;
+        FbPixmap botleft;
+        FbPixmap botright;
     };
 
     // unfortunately, we need a separate pixmap per screen
@@ -84,5 +81,7 @@ private:
     int m_shapeplaces; ///< places to shape
 
 };
+
+}; // end namespace FbTk
 
 #endif // SHAPE_HH

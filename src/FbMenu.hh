@@ -29,7 +29,11 @@
 #include <memory>
 
 class MenuTheme;
+
+namespace FbTk {
 class Shape;
+}
+
 /// a layered and shaped menu
 class FbMenu:public FbTk::Menu {
 public:
@@ -44,7 +48,7 @@ public:
     void buttonReleaseEvent(XButtonEvent &be);
 private:
     FbTk::XLayerItem m_layeritem;
-    std::auto_ptr<Shape> m_shape;
+    std::auto_ptr<FbTk::Shape> m_shape;
 };
 
 #endif // FBMENU_HH

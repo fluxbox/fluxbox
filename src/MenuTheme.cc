@@ -24,36 +24,8 @@
 #include "MenuTheme.hh"
 #include "StringUtil.hh"
 
-using std::string;
-
-namespace FbTk {
-
-template <>
-void FbTk::ThemeItem<Shape::ShapePlace>::load(const string *name, const string *altname) { }
-
-template <>
-void FbTk::ThemeItem<Shape::ShapePlace>::setDefaultValue() {
-    *(*this) = Shape::NONE;
-}
-
-template <>
-void FbTk::ThemeItem<Shape::ShapePlace>::setFromString(const char *str) {
-    int places = 0;
-
-    if (StringUtil::strcasestr(str, "topleft") != 0)
-        places |= Shape::TOPLEFT;
-    if (StringUtil::strcasestr(str, "topright") != 0)
-        places |= Shape::TOPRIGHT;
-    if (StringUtil::strcasestr(str, "bottomleft") != 0)
-        places |= Shape::BOTTOMLEFT;
-    if (StringUtil::strcasestr(str, "bottomright") != 0)
-        places |= Shape::BOTTOMRIGHT;
-
-    *(*this) = static_cast<Shape::ShapePlace>(places);
-}
-} // end namespace FbTk
 MenuTheme::MenuTheme(int screen_num):FbTk::MenuTheme(screen_num),
                                      m_shapeplace(*this, "menu.roundCorners", "Menu.RoundCorners") {
-    *m_shapeplace = Shape::NONE;
+    *m_shapeplace = FbTk::Shape::NONE;
     FbTk::ThemeManager::instance().loadTheme(*this);
 }

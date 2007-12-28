@@ -37,6 +37,7 @@
 #include "GContext.hh"
 #include "PixmapWithMask.hh"
 #include "Image.hh"
+#include "Shape.hh"
 #include "StringUtil.hh"
 
 #include <string>
@@ -99,15 +100,15 @@ void ThemeItem<int>::setFromString(const char *str) {
         setDefaultValue();
 }
 template<>
-void FbTk::ThemeItem<bool>::load(const std::string *name, const std::string *altname) { }
+void ThemeItem<bool>::load(const std::string *name, const std::string *altname) { }
 
 template<>
-void FbTk::ThemeItem<bool>::setDefaultValue() {
+void ThemeItem<bool>::setDefaultValue() {
     *(*this) = false;
 }
 
 template<>
-void FbTk::ThemeItem<bool>::setFromString(char const *strval) {
+void ThemeItem<bool>::setFromString(char const *strval) {
     if (strcasecmp(strval, "true")==0)
         *(*this) = true;
     else
@@ -136,12 +137,12 @@ void ThemeItem<Font>::setDefaultValue() {
         string effect(ThemeManager::instance().resourceValue(name()+".effect", altName()+".Effect"));
         if (effect == "halo") {
             m_value.setHalo(true);
-            FbTk::Color halo_color(ThemeManager::instance().resourceValue(name()+".halo.color", altName()+".Halo.Color").c_str(), 
+            Color halo_color(ThemeManager::instance().resourceValue(name()+".halo.color", altName()+".Halo.Color").c_str(), 
                     theme().screenNum());
             m_value.setHaloColor(halo_color);
 
         } else if (effect == "shadow" ) {
-            FbTk::Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.color", altName()+".Shadow.Color").c_str(), 
+            Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.color", altName()+".Shadow.Color").c_str(), 
                     theme().screenNum());
             
             m_value.setShadow(true);
@@ -168,12 +169,12 @@ void ThemeItem<Font>::setFromString(const char *str) {
         string effect(ThemeManager::instance().resourceValue(name()+".effect", altName()+".Effect"));
         if (effect == "halo") {
             m_value.setHalo(true);
-            FbTk::Color halo_color(ThemeManager::instance().resourceValue(name()+".halo.color", altName()+".Halo.Color").c_str(), 
+            Color halo_color(ThemeManager::instance().resourceValue(name()+".halo.color", altName()+".Halo.Color").c_str(), 
                     theme().screenNum());
             m_value.setHaloColor(halo_color);
 
         } else if (effect == "shadow" ) {
-            FbTk::Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.color", altName()+".Shadow.Color").c_str(), 
+            Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.color", altName()+".Shadow.Color").c_str(), 
                     theme().screenNum());
             
             m_value.setShadow(true);
@@ -373,7 +374,29 @@ void ThemeItem<GContext::CapStyle>::setFromString(char const *strval) {
 template<>
 void ThemeItem<GContext::CapStyle>::load(const string *name, const string *altname) { }
 
+template <>
+void ThemeItem<Shape::ShapePlace>::load(const string *name, const string *altname) { }
 
+template <>
+void ThemeItem<Shape::ShapePlace>::setDefaultValue() {
+    *(*this) = Shape::NONE;
+}
+
+template <>
+void ThemeItem<Shape::ShapePlace>::setFromString(const char *str) {
+    int places = 0;
+
+    if (StringUtil::strcasestr(str, "topleft") != 0)
+        places |= Shape::TOPLEFT;
+    if (StringUtil::strcasestr(str, "topright") != 0)
+        places |= Shape::TOPRIGHT;
+    if (StringUtil::strcasestr(str, "bottomleft") != 0)
+        places |= Shape::BOTTOMLEFT;
+    if (StringUtil::strcasestr(str, "bottomright") != 0)
+        places |= Shape::BOTTOMRIGHT;
+
+    *(*this) = static_cast<Shape::ShapePlace>(places);
+}
 
 } // end namespace FbTk
 

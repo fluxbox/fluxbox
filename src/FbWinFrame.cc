@@ -35,10 +35,6 @@
 
 #include "IconButton.hh"
 
-#ifdef SHAPE
-#include "Shape.hh"
-#endif // SHAPE
-
 #include <algorithm>
 #include <X11/X.h>
 
@@ -999,7 +995,7 @@ void FbWinFrame::reconfigure() {
     }
 
     if (m_disable_themeshape)
-        m_shape.setPlaces(Shape::NONE);
+        m_shape.setPlaces(FbTk::Shape::NONE);
     else
         m_shape.setPlaces(theme().shapePlace());
 
@@ -1012,7 +1008,7 @@ void FbWinFrame::setUseShape(bool value) {
     m_disable_themeshape = !value;
 
     if (m_disable_themeshape)
-        m_shape.setPlaces(Shape::NONE);
+        m_shape.setPlaces(FbTk::Shape::NONE);
     else
         m_shape.setPlaces(theme().shapePlace());
 

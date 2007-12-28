@@ -25,15 +25,15 @@
 #define MENUTHEME_HH
 
 #include "FbTk/MenuTheme.hh"
-#include "Shape.hh"
+#include "FbTk/Shape.hh"
 
 /// this class extends FbTk MenuTheme and adds shape item
 class MenuTheme:public FbTk::MenuTheme {
 public:
     explicit MenuTheme(int screen_num);
-    Shape::ShapePlace shapePlaces() const { return *m_shapeplace; }
+    FbTk::Shape::ShapePlace shapePlaces() const { return *m_shapeplace; }
 private:
-    FbTk::ThemeItem<Shape::ShapePlace> m_shapeplace;
+    FbTk::ThemeItem<FbTk::Shape::ShapePlace> m_shapeplace;
 };
 
 #endif // MENUTHEME_HH

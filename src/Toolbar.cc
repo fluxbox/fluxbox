@@ -54,6 +54,7 @@
 #include "FbTk/Transparent.hh"
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
+#include "FbTk/Shape.hh"
 
 
 // use GNU extensions
@@ -64,8 +65,6 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif // HAVE_CONFIG_H
-
-#include "Shape.hh"
 
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
@@ -240,7 +239,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_rc_height(scrn.resourceManager(), 0, scrn.name() + ".toolbar.height", scrn.altName() + ".Toolbar.Height"),
     m_rc_tools(scrn.resourceManager(), "workspacename, prevworkspace, nextworkspace, iconbar, systemtray, prevwindow, nextwindow, clock",
                scrn.name() + ".toolbar.tools", scrn.altName() + ".Toolbar.Tools"),
-    m_shape(new Shape(frame.window, 0)),
+    m_shape(new FbTk::Shape(frame.window, 0)),
     m_resize_lock(false) {
     _FB_USES_NLS;
     // we need to get notified when the theme is reloaded
@@ -451,7 +450,7 @@ void Toolbar::reconfigure() {
     if (theme().shape() == false && m_shape.get())
         m_shape.reset(0);
     else if (theme().shape() && m_shape.get() == 0) {
-        m_shape.reset(new Shape(frame.window, 0));
+        m_shape.reset(new FbTk::Shape(frame.window, 0));
     }
 
     // recalibrate size
@@ -679,7 +678,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = head_x;
         frame.y_hidden = head_y + bevel_width - border_width - frame.height;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::BOTTOMRIGHT | Shape::BOTTOMLEFT);
+            m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
         break;
 
     case BOTTOMLEFT:
@@ -688,7 +687,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = head_x;
         frame.y_hidden = head_y + head_h - bevel_width - border_width;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPRIGHT | Shape::TOPLEFT);
+            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
         break;
 
     case TOPCENTER:
@@ -697,7 +696,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + bevel_width - border_width - frame.height;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::BOTTOMRIGHT | Shape::BOTTOMLEFT);
+            m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
         break;
     case TOPRIGHT:
         frame.x = head_x + head_w - frame.width - border_width*2;
@@ -705,7 +704,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + bevel_width - border_width - frame.height;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::BOTTOMRIGHT | Shape::BOTTOMLEFT);
+            m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
         break;
 
     case BOTTOMRIGHT:
@@ -714,7 +713,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + head_h - bevel_width - border_width;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPRIGHT | Shape::TOPLEFT);
+            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
         break;
 
     case BOTTOMCENTER: // default is BOTTOMCENTER
@@ -723,7 +722,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + head_h - bevel_width - border_width;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPRIGHT | Shape::TOPLEFT);
+            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
         break;
     case LEFTCENTER:
         orient = FbTk::ROT270;
@@ -732,7 +731,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
+            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
         break;
     case LEFTTOP:
         orient = FbTk::ROT270;
@@ -741,7 +740,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
+            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
         break;
     case LEFTBOTTOM:
         orient = FbTk::ROT270;
@@ -750,7 +749,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
+            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
         break;
     case RIGHTCENTER:
         orient = FbTk::ROT90;
@@ -759,7 +758,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
+            m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);
         break;
     case RIGHTTOP:
         orient = FbTk::ROT90;
@@ -768,7 +767,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
+            m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);
         break;
     case RIGHTBOTTOM:
         orient = FbTk::ROT90;
@@ -777,7 +776,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
         if (m_shape.get())
-            m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
+            m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);
         break;
     }
 
