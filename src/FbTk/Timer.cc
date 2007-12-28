@@ -24,7 +24,8 @@
 
 #include "Timer.hh"
 
-#include "Command.hh"
+#include "ObjectRegistry.hh"
+#include "StringUtil.hh"
 
 //use GNU extensions
 #ifndef	_GNU_SOURCE
@@ -244,6 +245,41 @@ void Timer::addTimer(Timer *timer) {
     }
     m_timerlist.insert(it, timer); 
 
+}
+
+Command *DelayedCmd::parse(const std::string &command,
+                           const std::string &args, bool trusted) {
+
+    std::string cmd_str;
+    int err = StringUtil::getStringBetween(cmd_str, args.c_str(), '{', '}');
+    if (err == 0)
+        return 0;
+
+    RefCount<Command> cmd(ObjectRegistry<Command>::instance().parse(cmd_str, trusted));
+    if (*cmd == 0)
+        return 0;
+
+    int delay = 200000;
+    StringUtil::fromString<int>(args.c_str() + err, delay);
+
+    return new DelayedCmd(cmd, delay);
+}
+
+REGISTER_OBJECT_PARSER(delay, DelayedCmd::parse, Command);
+
+DelayedCmd::DelayedCmd(RefCount<Command> &cmd, unsigned int timeout) {
+    timeval to; // defaults to 200ms
+    to.tv_sec = timeout/1000000;
+    to.tv_usec = timeout % 1000000;
+    m_timer.setTimeout(to);
+    m_timer.setCommand(cmd);
+    m_timer.fireOnce(true);
+}
+
+void DelayedCmd::execute() {
+    if (m_timer.isTiming())
+        m_timer.stop();
+    m_timer.start();
 }
 
 void Timer::removeTimer(Timer *timer) {

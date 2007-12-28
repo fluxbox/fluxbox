@@ -26,6 +26,8 @@
 
 #include <string>
 
+#include "stringstream.hh"
+
 namespace FbTk {
 
 namespace StringUtil {
@@ -66,6 +68,12 @@ std::string::size_type removeTrailingWhitespace(std::string &str);
 
 /// splits input at first non-leading whitespace and returns both parts
 void getFirstWord(const std::string &in, std::string &first, std::string &rest);
+
+template <typename T>
+void fromString(const char *in, T &out) {
+    FbTk_istringstream iss(in);
+    iss >> out;
+}
 
 template <typename Container>
 static void stringTokensBetween(Container &container, const std::string &in,

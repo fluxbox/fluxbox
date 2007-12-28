@@ -26,6 +26,7 @@
 #define	 FBTK_TIMER_HH
 
 #include "RefCount.hh"
+#include "Command.hh"
 
 #ifdef HAVE_CTIME
   #include <ctime>
@@ -33,6 +34,7 @@
   #include <time.h>
 #endif
 #include <list>
+#include <string>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -48,8 +50,6 @@
 #include <unistd.h>
 
 namespace FbTk {
-
-class Command;
 
 /**
 	Handles Timeout
@@ -107,7 +107,17 @@ private:
     timeval m_timeout; ///< time length
 };
 
+/// executes a command after a specified timeout
+class DelayedCmd: public Command {
+public:
+    DelayedCmd(RefCount<Command> &cmd, unsigned int timeout = 200000);
+    void execute();
+    static Command *parse(const std::string &command,
+                          const std::string &args, bool trusted);
+private:
+    Timer m_timer;
+};
+
 } // end namespace FbTk
 
 #endif // FBTK_TIMER_HH
-

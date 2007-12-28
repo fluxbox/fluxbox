@@ -196,28 +196,6 @@ private:
     FbWinFrame::TabPlacement m_place;
 };
 
-// this might be useful elsewhere, but I'll leave it here for now
-class DelayedCmd: public FbTk::Command {
-public:
-    DelayedCmd(FbTk::RefCount<FbTk::Command> &cmd) {
-        timeval to;
-        to.tv_sec = 0;
-        to.tv_usec = 500000; // 1/2 second
-        m_timer.setTimeout(to);
-        m_timer.setCommand(cmd);
-        m_timer.fireOnce(true);
-    }
-    void execute() {
-        // if it's already started, restart it; otherwise, just start it
-        // we want this to execute 1/2 second after the last click
-        if (m_timer.isTiming())
-            m_timer.stop();
-        m_timer.start();
-    }
-private:
-    FbTk::Timer m_timer;
-};
-
 } // end anonymous namespace
 
 
@@ -1724,7 +1702,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         // in order to save system resources, don't save or reconfigure alpha
         // settings until after the user is done changing them
         FbTk::RefCount<FbTk::Command> delayed_save_and_reconf(
-            new ::DelayedCmd(save_and_reconfigure));
+            new FbTk::DelayedCmd(save_and_reconfigure));
 
         FbTk::MenuItem *focused_alpha_item =
             new FbTk::IntMenuItem(_FB_XTEXT(Configmenu, FocusedAlpha,
