@@ -1,4 +1,4 @@
-// IconMenuItem.hh for Fluxbox Window Manager
+// Parser.hh for FbTk
 // Copyright (c) 2004 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
@@ -20,13 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
-#ifndef PARSER_HH
-#define PARSER_HH
+#ifndef FBTK_PARSER_HH
+#define FBTK_PARSER_HH
 
 #include <string>
 #include <utility>
+
+namespace FbTk {
 
 // interface class for a generic Parser
 class Parser {
@@ -47,5 +47,6 @@ public:
 
 };
 
+}; // end namespace FbTk
 
-#endif // PARSER_HH
+#endif // FBTK_PARSER_HH

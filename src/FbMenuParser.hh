@@ -25,11 +25,11 @@
 #ifndef FBMENUPARSER_HH
 #define FBMENUPARSER_HH
 
-#include "Parser.hh"
+#include "FbTk/Parser.hh"
 
 #include <fstream>
 
-class FbMenuParser: public Parser {
+class FbMenuParser: public FbTk::Parser {
 public:
     FbMenuParser():m_row(0), m_curr_pos(0), m_curr_token(TYPE) {}
     FbMenuParser(const std::string &filename):m_row(0), m_curr_pos(0),
@@ -38,8 +38,8 @@ public:
 
     bool open(const std::string &filename);
     void close() { m_file.close(); }
-    Parser &operator >> (Parser::Item &out);
-    Parser::Item nextItem();
+    FbTk::Parser &operator >> (FbTk::Parser::Item &out);
+    FbTk::Parser::Item nextItem();
 
     bool isLoaded() const { return m_file.is_open(); }
     bool eof() const { return m_file.eof(); }

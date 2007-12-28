@@ -1,4 +1,4 @@
-// Parser.cc
+// Parser.cc for FbTk
 // Copyright (c) 2004 - 2006 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "Parser.hh"
 
-const Parser::Item Parser::s_empty_item("", "");
+namespace FbTk {
+    const Parser::Item Parser::s_empty_item("", "");
+};

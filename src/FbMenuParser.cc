@@ -34,9 +34,9 @@ bool FbMenuParser::open(const std::string &filename) {
     return isLoaded();
 }
 
-Parser &FbMenuParser::operator >> (Parser::Item &out) {
+FbTk::Parser &FbMenuParser::operator >> (FbTk::Parser::Item &out) {
     if (eof()) {        
-        out = Parser::s_empty_item;
+        out = FbTk::Parser::s_empty_item;
         return *this; 
     }
 
@@ -65,7 +65,7 @@ Parser &FbMenuParser::operator >> (Parser::Item &out) {
         break;
     case DONE: // get new line and call this again
         if (!nextLine()) {
-            out = Parser::s_empty_item;
+            out = FbTk::Parser::s_empty_item;
             return *this;
         }
         return (*this)>>out;
@@ -86,7 +86,7 @@ Parser &FbMenuParser::operator >> (Parser::Item &out) {
         else if (m_curr_token == ICON)
             m_curr_token = DONE;
 
-        out = Parser::s_empty_item;
+        out = FbTk::Parser::s_empty_item;
         return *this;
     }
 
@@ -119,8 +119,8 @@ Parser &FbMenuParser::operator >> (Parser::Item &out) {
     return *this;
 }
 
-Parser::Item FbMenuParser::nextItem() {
-    Parser::Item item;
+FbTk::Parser::Item FbMenuParser::nextItem() {
+    FbTk::Parser::Item item;
     (*this)>>item;
     return item;
 }

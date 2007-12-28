@@ -143,7 +143,7 @@ class ParseItem {
 public:
     explicit ParseItem(FbTk::Menu *menu):m_menu(menu) {}
 
-    inline void load(Parser &p, FbTk::StringConvertor &m_labelconvertor) {
+    inline void load(FbTk::Parser &p, FbTk::StringConvertor &m_labelconvertor) {
         p>>m_key>>m_label>>m_cmd>>m_icon;
         m_label.second = m_labelconvertor.recode(m_label.second);
     }
@@ -153,7 +153,7 @@ public:
     inline const string &key() const { return m_key.second; }
     inline FbTk::Menu *menu() { return m_menu; }
 private:
-    Parser::Item m_key, m_label, m_cmd, m_icon;
+    FbTk::Parser::Item m_key, m_label, m_cmd, m_icon;
     FbTk::Menu *m_menu;
 };
 
@@ -172,10 +172,10 @@ public:
 
 };
 
-static void translateMenuItem(Parser &parse, ParseItem &item, FbTk::StringConvertor &labelconvertor);
+static void translateMenuItem(FbTk::Parser &parse, ParseItem &item, FbTk::StringConvertor &labelconvertor);
 
 
-static void parseMenu(Parser &pars, FbTk::Menu &menu, FbTk::StringConvertor &label_convertor) {
+static void parseMenu(FbTk::Parser &pars, FbTk::Menu &menu, FbTk::StringConvertor &label_convertor) {
     ParseItem pitem(&menu);
     while (!pars.eof()) {
         pitem.load(pars, label_convertor);
@@ -185,7 +185,7 @@ static void parseMenu(Parser &pars, FbTk::Menu &menu, FbTk::StringConvertor &lab
     }
 }
 
-static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConvertor &labelconvertor) {
+static void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::StringConvertor &labelconvertor) {
     if (pitem.menu() == 0)
         throw string("translateMenuItem: We must have a menu in ParseItem!");
 
@@ -315,8 +315,8 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
     } else if (str_key == "endencoding") {
         MenuCreator::endEncoding();
     }
-    else { // ok, if we didn't find any special menu item we try with command parser
-        // we need to attach command with arguments so command parser can parse it
+    else { // ok, if we didn't find any special menu item we try with command FbTk::Parser
+        // we need to attach command with arguments so command FbTk::Parser can parse it
         string line = str_key + " " + str_cmd;
         FbTk::RefCount<FbTk::Command> command(FbTk::ObjectRegistry<FbTk::Command>::instance().parse(line));
         if (*command != 0) {
@@ -341,7 +341,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem, FbTk::StringConve
 }
 
 
-static void parseWindowMenu(Parser &parse, FbTk::Menu &menu, FbTk::StringConvertor &labelconvertor) {
+static void parseWindowMenu(FbTk::Parser &parse, FbTk::Menu &menu, FbTk::StringConvertor &labelconvertor) {
 
     ParseItem pitem(&menu);
     while (!parse.eof()) {
