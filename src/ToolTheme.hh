@@ -45,8 +45,8 @@ public:
     // textures
     const FbTk::Texture &texture() const { return *m_texture; }
     const FbTk::BorderTheme &border() const { return m_border; }
-    inline unsigned char alpha() const { return m_alpha; }
-    inline void setAlpha(unsigned char alpha) { m_alpha = alpha; }
+    unsigned char alpha() const { return m_alpha; }
+    void setAlpha(unsigned char alpha) { m_alpha = alpha; }
 
 protected:
     FbTk::ThemeItem<FbTk::Texture> &textureTheme() { return m_texture; }

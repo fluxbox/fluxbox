@@ -37,8 +37,8 @@ template <typename T>
 class SimpleAccessor: public Accessor<T> {
 public:
     SimpleAccessor(T &val): m_val(val) { }
-    inline Accessor<T> &operator =(const T &val) { m_val = val; return *this; }
-    inline operator T() const { return m_val; }
+    Accessor<T> &operator =(const T &val) { m_val = val; return *this; }
+    operator T() const { return m_val; }
 
 private:
     T &m_val;
@@ -53,8 +53,8 @@ public:
     ObjectAccessor(Receiver &r, Getter g, Setter s):
         m_receiver(r), m_getter(g), m_setter(s) { }
 
-    inline operator T() const { return (m_receiver.*m_getter)(); }
-    inline Accessor<T> &operator =(const T &val) {
+    operator T() const { return (m_receiver.*m_getter)(); }
+    Accessor<T> &operator =(const T &val) {
         (m_receiver.*m_setter)(val); return *this;
     }
 
@@ -72,8 +72,8 @@ public:
     ConstObjectAccessor(const Receiver &r, Getter g):
         m_receiver(r), m_getter(g) { }
 
-    inline operator T() const { return (m_receiver.*m_getter)(); }
-    inline Accessor<T> &operator =(const T &val) { return *this; }
+    operator T() const { return (m_receiver.*m_getter)(); }
+    Accessor<T> &operator =(const T &val) { return *this; }
 
 private:
     const Receiver &m_receiver;

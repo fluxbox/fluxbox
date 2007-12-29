@@ -66,7 +66,7 @@ public:
     ThemeItem(FbTk::Theme &tm, const std::string &name, const std::string &altname);
     virtual ~ThemeItem();
     /// specialized
-    void setDefaultValue(); 
+    void setDefaultValue();
     /// specialized
     virtual void setFromString(const char *strval);
     /// specialized
@@ -77,10 +77,10 @@ public:
        @name access operators
     */
     /**@{*/
-    inline T& operator*() { return m_value; }
-    inline const T& operator*() const { return m_value; }
-    inline T *operator->() { return &m_value; }
-    inline const T *operator->() const { return &m_value; }
+    T& operator*() { return m_value; }
+    const T& operator*() const { return m_value; }
+    T *operator->() { return &m_value; }
+    const T *operator->() const { return &m_value; }
     /**@}*/
 
     FbTk::Theme &theme() { return m_tm; }
@@ -112,7 +112,7 @@ public:
     FbTk::Subject &reconfigSig() { return m_reconfig_sig; }
     const FbTk::Subject &reconfigSig() const { return m_reconfig_sig; }
 
-    
+
 private:
     const int m_screen_num;
 
@@ -131,7 +131,7 @@ public:
     typedef std::vector<ThemeList> ScreenThemeVector;
 
     static ThemeManager &instance();
-    /// load style file "filename" to screen 
+    /// load style file "filename" to screen
     bool load(const std::string &filename, const std::string &overlay_filename, int screen_num = -1);
     std::string resourceValue(const std::string &name, const std::string &altname);
     void loadTheme(Theme &tm);
@@ -149,9 +149,9 @@ private:
     ~ThemeManager() { }
 
     friend class FbTk::Theme; // so only theme can register itself in constructor
-    /// @return false if screen_num if out of 
+    /// @return false if screen_num if out of
     /// range or theme already registered, else true
-    bool registerTheme(FbTk::Theme &tm); 
+    bool registerTheme(FbTk::Theme &tm);
     /// @return false if theme isn't registred in the manager
     bool unregisterTheme(FbTk::Theme &tm);
     /// map each theme manager to a screen
@@ -167,7 +167,7 @@ private:
 
 
 template <typename T>
-ThemeItem<T>::ThemeItem(FbTk::Theme &tm, 
+ThemeItem<T>::ThemeItem(FbTk::Theme &tm,
                         const std::string &name, const std::string &altname):
     ThemeItem_base(name, altname),
     m_tm(tm) {

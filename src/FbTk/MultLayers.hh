@@ -59,9 +59,9 @@ public:
     XLayer *getLayer(size_t num);
     const XLayer *getLayer(size_t num) const;
 
-    inline bool isUpdatable() const { return m_lock == 0; }
-    inline void lock() { ++m_lock; }
-    inline void unlock() { if (--m_lock == 0) restack(); }
+    bool isUpdatable() const { return m_lock == 0; }
+    void lock() { ++m_lock; }
+    void unlock() { if (--m_lock == 0) restack(); }
 
 private:
     std::vector<XLayer *> m_layers;

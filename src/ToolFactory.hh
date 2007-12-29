@@ -48,8 +48,8 @@ public:
     ToolbarItem *create(const std::string &name, const FbTk::FbWindow &parent, Toolbar &tbar);
     void updateThemes();
     int maxFontHeight();
-    inline const BScreen &screen() const { return m_screen; }
-    inline BScreen &screen() { return m_screen; }
+    const BScreen &screen() const { return m_screen; }
+    BScreen &screen() { return m_screen; }
 
 private:
     BScreen &m_screen;

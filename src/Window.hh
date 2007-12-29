@@ -24,8 +24,8 @@
 
 // $Id$
 
-#ifndef	 WINDOW_HH
-#define	 WINDOW_HH
+#ifndef WINDOW_HH
+#define WINDOW_HH
 
 #include "FbTk/DefaultValue.hh"
 #include "FbTk/Timer.hh"
@@ -67,7 +67,7 @@ public:
     /// Motif wm Hints
     enum {
         MwmHintsFunctions   = (1l << 0), ///< use motif wm functions
-        MwmHintsDecorations	= (1l << 1) ///< use motif wm decorations
+        MwmHintsDecorations = (1l << 1) ///< use motif wm decorations
     };
 
     /// Motif wm functions
@@ -99,7 +99,7 @@ public:
         ATTRIB_OMNIPRESENT = 0x08, ///< omnipresent (sticky)
         ATTRIB_WORKSPACE = 0x10,   ///< workspace
         ATTRIB_STACK = 0x20,       ///< stack
-        ATTRIB_DECORATION = 0x40,  ///< decorations 
+        ATTRIB_DECORATION = 0x40,  ///< decorations
         ATTRIB_HIDDEN = 0x80,      ///< hidden
     };
 
@@ -114,7 +114,7 @@ public:
     };
 
     /// Different resize modes when resizing a window
-    enum ResizeModel { 
+    enum ResizeModel {
         QUADRANTRESIZE,                   ///< resizes from one quadrant
         CENTERRESIZE,                     ///< resizes from center
         NEARESTEDGERESIZE,                ///< resizes the nearest edge
@@ -133,13 +133,13 @@ public:
      * Resize direction while resizing
      */
      enum ResizeDirection {
-         NOCORNER = -1, 
+         NOCORNER = -1,
          LEFTTOP  = 0,
          TOP      = 1,
          RIGHTTOP = 2,
          RIGHT    = 3,
          RIGHTBOTTOM  = 4,
-         BOTTOM       = 5,        
+         BOTTOM       = 5,
          LEFTBOTTOM   = 6,
          LEFT         = 7,
          ALLCORNERS   = 8
@@ -172,7 +172,7 @@ public:
     /// set new current client and raise it
     bool setCurrentClient(WinClient &client, bool setinput = true);
     /**
-     * Searches for a client 
+     * Searches for a client
      * @param win the client X window
      * @return pointer to client matching the window or NULL
      */
@@ -316,7 +316,7 @@ public:
     void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity, unsigned int client_bw = 0);
     /**
      * Determines maximum size using all clients that this window can have.
-     * @param width will be filled in with maximum width 
+     * @param width will be filled in with maximum width
      * @param height will be filled in with maximum height
      */
     void maxSize(unsigned int &width, unsigned int &height);
@@ -391,55 +391,55 @@ public:
        @name accessors
     */
     //@{
-    
+
     // whether this window can be tabbed with other windows,
     // and others tabbed with it
-    inline void setTabable(bool tabable) { functions.tabable = tabable; }
-    inline bool isTabable() { return functions.tabable; }
-    inline void setMovable(bool movable) { functions.move = movable; }
-    inline void setResizable(bool resizable) { functions.resize = resizable; }
+    void setTabable(bool tabable) { functions.tabable = tabable; }
+    bool isTabable() { return functions.tabable; }
+    void setMovable(bool movable) { functions.move = movable; }
+    void setResizable(bool resizable) { functions.resize = resizable; }
 
-    inline bool isFocusHidden() const { return m_focus_hidden; }
-    inline bool isIconHidden() const { return m_icon_hidden; }
-    inline bool isManaged() const { return m_initialized; }
+    bool isFocusHidden() const { return m_focus_hidden; }
+    bool isIconHidden() const { return m_icon_hidden; }
+    bool isManaged() const { return m_initialized; }
     bool isVisible() const;
-    inline bool isIconic() { return iconic; }
-    inline bool isIconic() const { return iconic; }
-    inline bool isShaded() { return shaded; }
-    inline bool isShaded() const { return shaded; }
-    inline bool isFullscreen() const { return fullscreen; }
-    inline bool isMaximized() const { return maximized == MAX_FULL; }
-    inline bool isMaximizedVert() const { return (bool)(maximized & MAX_VERT); }
-    inline bool isMaximizedHorz() const { return (bool)(maximized & MAX_HORZ); }
-    inline int maximizedState() const { return maximized; }
-    inline bool isIconifiable() const { return functions.iconify; }
-    inline bool isMaximizable() const { return functions.maximize; }
-    inline bool isResizable() const { return functions.resize; }
-    inline bool isClosable() const { return functions.close; }
-    inline bool isMoveable() const { return functions.move; }
-    inline bool isStuck() const { return stuck; }
-    inline bool hasTitlebar() const { return decorations.titlebar; }
-    inline bool isMoving() const { return moving; }
-    inline bool isResizing() const { return resizing; }
+    bool isIconic() { return iconic; }
+    bool isIconic() const { return iconic; }
+    bool isShaded() { return shaded; }
+    bool isShaded() const { return shaded; }
+    bool isFullscreen() const { return fullscreen; }
+    bool isMaximized() const { return maximized == MAX_FULL; }
+    bool isMaximizedVert() const { return (bool)(maximized & MAX_VERT); }
+    bool isMaximizedHorz() const { return (bool)(maximized & MAX_HORZ); }
+    int maximizedState() const { return maximized; }
+    bool isIconifiable() const { return functions.iconify; }
+    bool isMaximizable() const { return functions.maximize; }
+    bool isResizable() const { return functions.resize; }
+    bool isClosable() const { return functions.close; }
+    bool isMoveable() const { return functions.move; }
+    bool isStuck() const { return stuck; }
+    bool hasTitlebar() const { return decorations.titlebar; }
+    bool isMoving() const { return moving; }
+    bool isResizing() const { return resizing; }
     bool isGroupable() const;
-    inline int numClients() const { return m_clientlist.size(); }
-    inline bool empty() const { return m_clientlist.empty(); }
-    inline ClientList &clientList() { return m_clientlist; }
-    inline const ClientList &clientList() const { return m_clientlist; }
-    inline WinClient &winClient() { return *m_client; }
-    inline const WinClient &winClient() const { return *m_client; }
+    int numClients() const { return m_clientlist.size(); }
+    bool empty() const { return m_clientlist.empty(); }
+    ClientList &clientList() { return m_clientlist; }
+    const ClientList &clientList() const { return m_clientlist; }
+    WinClient &winClient() { return *m_client; }
+    const WinClient &winClient() const { return *m_client; }
 
     bool isTyping();
 
-    inline const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }
-    inline FbTk::XLayerItem &layerItem() { return m_frame.layerItem(); }
+    const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }
+    FbTk::XLayerItem &layerItem() { return m_frame.layerItem(); }
 
     Window clientWindow() const;
 
     FbTk::FbWindow &fbWindow();
     const FbTk::FbWindow &fbWindow() const;
 
-    FbTk::Menu &menu(); 
+    FbTk::Menu &menu();
     const FbTk::Menu &menu() const;
 
     const FbTk::FbWindow &parent() const { return m_parent; }
@@ -448,27 +448,27 @@ public:
     bool acceptsFocus() const;
     const FbTk::PixmapWithMask &icon() const;
     const std::string &title() const;
-    const std::string &getWMClassName() const; 
+    const std::string &getWMClassName() const;
     const std::string &getWMClassClass() const;
     std::string getWMRole() const;
     Focusable::WindowType getWindowType() const;
     void setWindowType(Focusable::WindowType type);
     bool isTransient() const;
 
-    inline int x() const { return frame().x(); }
-    inline int y() const { return frame().y(); }
-    inline unsigned int width() const { return frame().width(); }
-    inline unsigned int height() const { return frame().height(); }
+    int x() const { return frame().x(); }
+    int y() const { return frame().y(); }
+    unsigned int width() const { return frame().width(); }
+    unsigned int height() const { return frame().height(); }
 
     int normalX() const;
     int normalY() const;
     unsigned int normalWidth() const;
     unsigned int normalHeight() const;
 
-    inline int xOffset() const { return frame().xOffset(); }
-    inline int yOffset() const { return frame().yOffset(); }
-    inline int widthOffset() const { return frame().widthOffset(); }
-    inline int heightOffset() const { return frame().heightOffset(); }
+    int xOffset() const { return frame().xOffset(); }
+    int yOffset() const { return frame().yOffset(); }
+    int widthOffset() const { return frame().widthOffset(); }
+    int heightOffset() const { return frame().heightOffset(); }
 
     unsigned int workspaceNumber() const { return m_workspace_number; }
 
@@ -481,8 +481,8 @@ public:
 
     int initialState() const;
 
-    inline FbWinFrame &frame() { return m_frame; }
-    inline const FbWinFrame &frame() const { return m_frame; }
+    FbWinFrame &frame() { return m_frame; }
+    const FbWinFrame &frame() const { return m_frame; }
 
     /**
        @name signals
@@ -556,9 +556,9 @@ private:
     void associateClient(WinClient &client);
 
     // state and hint signals
-    WinSubject m_hintsig, 
-        m_statesig, 
-        m_layersig, 
+    WinSubject m_hintsig,
+        m_statesig,
+        m_layersig,
         m_workspacesig;
 
     class ThemeListener: public FbTk::Observer {

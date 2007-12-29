@@ -40,7 +40,7 @@ public:
     /// executes command for the button click
     virtual void click(int button, int time, unsigned int mods);
     /// @return number of buttons this instance handles
-    inline unsigned int buttons() const { return m_buttons; }
+    unsigned int buttons() const { return m_buttons; }
 
 private:
     void init(int buttons);

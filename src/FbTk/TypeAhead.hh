@@ -30,7 +30,7 @@ namespace FbTk {
 
 template <typename Items, typename Item_Type>
 class TypeAhead {
-/*
+#if 0
 
 a class template can't be split into separate interface + implementation files, an interface summary is given here:
 
@@ -38,7 +38,7 @@ public:
     void init(Items const &items);
 
 // accessors:
-    inline int stringSize() const { return m_searchstr.size(); }
+    int stringSize() const { return m_searchstr.size(); }
     Items matched() const;
 
 // modifiers:
@@ -65,7 +65,7 @@ private:
     void doSearch(char to_test,
             BaseItems const &search,
             SearchResult &mySearchResult) const;
-*/
+#endif
 
 public:
     typedef std::vector < ITypeAheadable* > BaseItems;
@@ -75,7 +75,7 @@ public:
 
     void init(Items const &items) { m_ref = &items; }
 
-    inline size_t stringSize() const { return m_searchstr.size(); }
+    size_t stringSize() const { return m_searchstr.size(); }
 
     void seek() {
         if (!m_search_results.empty())

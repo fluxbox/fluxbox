@@ -69,27 +69,27 @@ public:
     virtual bool acceptsFocus() const { return true; }
 
     /// @return true if icon button should appear focused
-    inline bool getAttentionState() const { return m_attention_state; }
+    bool getAttentionState() const { return m_attention_state; }
     /// @set the attention state
     virtual void setAttentionState(bool value) {
         m_attention_state = value; attentionSig().notify();
     }
 
     /// @return the screen in which this object resides
-    inline BScreen &screen() { return m_screen; }
+    BScreen &screen() { return m_screen; }
     /// @return the screen in which this object resides
-    inline const BScreen &screen() const { return m_screen; }
+    const BScreen &screen() const { return m_screen; }
 
     /**
      *  For accessing window properties, like shaded, minimized, etc.
      *  @return window context
      */
-    inline const FluxboxWindow *fbwindow() const { return m_fbwin; }
+    const FluxboxWindow *fbwindow() const { return m_fbwin; }
     /**
      *  For accessing window properties, like shaded, minimized, etc.
      *  @return window context
      */
-    inline FluxboxWindow *fbwindow() { return m_fbwin; }
+    FluxboxWindow *fbwindow() { return m_fbwin; }
 
     /// @return WM_CLASS class string (for pattern matching)
     virtual const std::string &getWMClassClass() const { return m_class_name; }

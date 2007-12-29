@@ -24,8 +24,8 @@
 
 // $Id$
 
-#ifndef	 SCREEN_HH
-#define	 SCREEN_HH
+#ifndef SCREEN_HH
+#define SCREEN_HH
 
 #include "FbWinFrame.hh"
 #include "FbRootWindow.hh"
@@ -83,11 +83,11 @@ class BScreen: public FbTk::EventHandler, public FbTk::Observer,
                private FbTk::NotCopyable {
 public:
     /// a window becomes active / focussed on a different workspace
-    enum FollowModel { 
+    enum FollowModel {
         IGNORE_OTHER_WORKSPACES = 0, ///< who cares?
         FOLLOW_ACTIVE_WINDOW,     ///< go to that workspace
         SEMIFOLLOW_ACTIVE_WINDOW, ///< fetch iconified windows, else follow
-        FETCH_ACTIVE_WINDOW       ///< put that window to the current workspace 
+        FETCH_ACTIVE_WINDOW       ///< put that window to the current workspace
     };
 
 
@@ -129,41 +129,41 @@ public:
     FbTk::Menu &windowMenu() { return *m_windowmenu.get(); }
     ExtraMenus &extraWindowMenus() { return m_extramenus; }
     const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
-    
+
     FbWinFrame::TabPlacement getTabPlacement() const { return *resource.tab_placement; }
 
-    inline unsigned int noFocusWhileTypingDelay() const { return *resource.typing_delay; }
-    inline FollowModel getFollowModel() const { return *resource.follow_model; }
-    inline FollowModel getUserFollowModel() const { return *resource.user_follow_model; }
+    unsigned int noFocusWhileTypingDelay() const { return *resource.typing_delay; }
+    FollowModel getFollowModel() const { return *resource.follow_model; }
+    FollowModel getUserFollowModel() const { return *resource.user_follow_model; }
 
-    inline const std::string &getScrollAction() const { return *resource.scroll_action; }
-    inline const bool getScrollReverse() const { return *resource.scroll_reverse; }
-    inline const bool allowRemoteActions() const { return *resource.allow_remote_actions; }
-    inline const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
-    inline const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
-    inline const bool getTabsUsePixmap() const { return *resource.tabs_use_pixmap; }
-    inline const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
+    const std::string &getScrollAction() const { return *resource.scroll_action; }
+    const bool getScrollReverse() const { return *resource.scroll_reverse; }
+    const bool allowRemoteActions() const { return *resource.allow_remote_actions; }
+    const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
+    const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
+    const bool getTabsUsePixmap() const { return *resource.tabs_use_pixmap; }
+    const bool getMaxOverTabs() const { return *resource.max_over_tabs; }
 
-    inline unsigned int getTabWidth() const { return *resource.tab_width; }
+    unsigned int getTabWidth() const { return *resource.tab_width; }
     /// @return the slit, @see Slit
-    inline Slit *slit() { return m_slit.get(); }
+    Slit *slit() { return m_slit.get(); }
     /// @return the slit, @see Slit
-    inline const Slit *slit() const { return m_slit.get(); }
+    const Slit *slit() const { return m_slit.get(); }
     /**
      * @param w the workspace number
      * @return workspace for the given workspace number
      */
-    inline Workspace *getWorkspace(unsigned int w) { return ( w < m_workspaces_list.size() ? m_workspaces_list[w] : 0); }
+    Workspace *getWorkspace(unsigned int w) { return ( w < m_workspaces_list.size() ? m_workspaces_list[w] : 0); }
     /**
      * @param w the workspace number
      * @return workspace for the given workspace number
      */
-    inline const Workspace *getWorkspace(unsigned int w) const {
+    const Workspace *getWorkspace(unsigned int w) const {
         return (w < m_workspaces_list.size() ? m_workspaces_list[w] : 0);
     }
     /// @return the current workspace
-    inline Workspace *currentWorkspace() { return m_current_workspace; }
-    inline const Workspace *currentWorkspace() const { return m_current_workspace; }
+    Workspace *currentWorkspace() { return m_current_workspace; }
+    const Workspace *currentWorkspace() const { return m_current_workspace; }
     /// @return the workspace menu
     const FbTk::Menu &workspaceMenu() const { return *m_workspacemenu.get(); }
     /// @return the workspace menu
@@ -211,12 +211,12 @@ public:
     */
     //@{
     /// client list signal
-    FbTk::Subject &clientListSig() { return m_clientlist_sig; } 
+    FbTk::Subject &clientListSig() { return m_clientlist_sig; }
     /// icon list sig
     FbTk::Subject &iconListSig() { return m_iconlist_sig; }
     /// workspace count signal
     FbTk::Subject &workspaceCountSig() { return m_workspacecount_sig; }
-    /// workspace names signal 
+    /// workspace names signal
     FbTk::Subject &workspaceNamesSig() { return m_workspacenames_sig; }
     /// workspace area signal
     FbTk::Subject &workspaceAreaSig() { return m_workspace_area_sig; }
@@ -260,14 +260,14 @@ public:
      */
     FbTk::Menu *createToggleMenu(const std::string &label);
 
-    /** 
+    /**
      * For extras to add menus.
      * These menus will be marked internal,
      * and deleted when the window dies (as opposed to Screen
      */
     void addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu);
 
-    inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
+    int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
 
     void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
 
@@ -302,7 +302,7 @@ public:
 
     ScreenPlacement &placementStrategy() { return *m_placement_strategy; }
     const ScreenPlacement &placementStrategy() const { return *m_placement_strategy; }
-    
+
     int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
@@ -333,7 +333,7 @@ public:
 
     /// update workspace name for given workspace
     void updateWorkspaceName(unsigned int w);
-    /// remove all workspace names 
+    /// remove all workspace names
     void removeWorkspaceNames();
     /// update the workspace name atom
     void updateWorkspaceNamesAtom();
@@ -361,7 +361,7 @@ public:
      * @param win the window to send
      * @param changeworkspace whether current workspace should change
      */
-    void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, 
+    void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0,
                          bool changeworkspace=true);
     /**
      * Reassociate a window to another workspace
@@ -369,12 +369,12 @@ public:
      * @param workspace_id id of the workspace
      * @param ignore_sticky ignores any sticky windows
      */
-    void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, 
+    void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id,
                            bool ignore_sticky);
 
 
-    void reconfigure();	
-    void reconfigureTabs();	
+    void reconfigure();
+    void reconfigureTabs();
     void rereadMenu();
     void shutdown();
     /// show position window centered on the screen with "X x Y" text
@@ -383,11 +383,11 @@ public:
     /// show geomentry with "width x height"-text, not size of window
     void showGeometry(int width, int height);
     void hideGeometry();
-    
+
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
 
-    /// updates root window size and resizes/reconfigures screen clients 
+    /// updates root window size and resizes/reconfigures screen clients
     /// that depends on screen size (slit)
     /// (and maximized windows?)
     void updateSize();
@@ -428,7 +428,7 @@ public:
     template <typename OnHeadObject>
     int getOnHead(OnHeadObject &obj) const;
 
-    // grouping - we want ordering, so we can either search for a 
+    // grouping - we want ordering, so we can either search for a
     // group to the left, or to the right (they'll be different if
     // they exist).
     WinClient *findGroupLeft(WinClient &winclient);
@@ -441,7 +441,7 @@ public:
     /// request workspace space, i.e "don't maximize over this area"
     Strut *requestStrut(int head, int left, int right, int top, int bottom);
     /// remove requested space and destroy strut
-    void clearStrut(Strut *strut); 
+    void clearStrut(Strut *strut);
     /// updates max avaible area for the workspace
     void updateAvailableWorkspaceArea();
 
@@ -477,20 +477,20 @@ private:
 
     const Strut* availableWorkspaceArea(int head) const;
 
-    ScreenSubject 
+    ScreenSubject
     m_clientlist_sig,  ///< client signal
         m_iconlist_sig, ///< notify if a window gets iconified/deiconified
         m_workspacecount_sig, ///< workspace count signal
-        m_workspacenames_sig, ///< workspace names signal 
+        m_workspacenames_sig, ///< workspace names signal
         m_workspace_area_sig, ///< workspace area changed signal
         m_currentworkspace_sig, ///< current workspace signal
         m_focusedwindow_sig, ///< focused window signal
         m_reconfigure_sig, ///< reconfigure signal
         m_resize_sig, ///< resize signal
         m_bg_change_sig; ///< background change signal
-		
+
     FbTk::MultLayers m_layermanager;
-	
+
     bool root_colormap_installed, managed, geom_visible, pos_visible;
 
     GC opGC;
@@ -585,7 +585,7 @@ private:
     HeadArea *m_head_areas;
 
     struct XineramaHeadInfo {
-        int x, y, width, height;        
+        int x, y, width, height;
     } *m_xinerama_headinfo;
 
     bool m_restart, m_shutdown;

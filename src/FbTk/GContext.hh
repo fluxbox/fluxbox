@@ -53,7 +53,7 @@ public:
                    CAPROUND= CapRound,
                    CAPPROJECTING= CapProjecting
     } CapStyle;
-  
+
     /// for FbTk drawable
     explicit GContext(const FbTk::FbDrawable &drawable);
     /// for X drawable
@@ -61,81 +61,81 @@ public:
     GContext(Drawable d, const FbTk::GContext &gc);
     virtual ~GContext();
 
-    inline void setForeground(const FbTk::Color &color) {
+    void setForeground(const FbTk::Color &color) {
         setForeground(color.pixel());
     }
 
-    inline void setForeground(long pixel_value) {
+    void setForeground(long pixel_value) {
         XSetForeground(m_display, m_gc,
                        pixel_value);
     }
 
-    inline void setBackground(const FbTk::Color &color) {
+    void setBackground(const FbTk::Color &color) {
         setBackground(color.pixel());
     }
 
-    inline void setBackground(long pixel_value) {
+    void setBackground(long pixel_value) {
         XSetBackground(m_display, m_gc, pixel_value);
     }
 
-    inline void setTile(Drawable draw) {
+    void setTile(Drawable draw) {
         XSetTile(m_display, m_gc, draw);
     }
 
-    inline void setTile(const FbTk::FbPixmap &draw) {
+    void setTile(const FbTk::FbPixmap &draw) {
         setTile(draw.drawable());
     }
 
     /// not implemented
-    inline void setFont(const FbTk::Font &) {}
+    void setFont(const FbTk::Font &) {}
 
     /// set font id
-    inline void setFont(int fid) {
+    void setFont(int fid) {
         XSetFont(m_display, m_gc, fid);
     }
 #ifdef NOT_USED
-    inline void setClipMask(const FbTk::FbPixmap &mask) {
+    void setClipMask(const FbTk::FbPixmap &mask) {
         XSetClipMask(m_display, m_gc, mask.drawable());
     }
 
-    inline void setClipOrigin(int x, int y) {
+    void setClipOrigin(int x, int y) {
         XSetClipOrigin(m_display, m_gc, x, y);
     }
 #endif
-    inline void setGraphicsExposure(bool value) {
+    void setGraphicsExposure(bool value) {
         XSetGraphicsExposures(m_display, m_gc, value);
     }
 
-    inline void setFunction(int func) {
+    void setFunction(int func) {
         XSetFunction(m_display, m_gc, func);
     }
 
-    inline void setSubwindowMode(int mode) {
+    void setSubwindowMode(int mode) {
         XSetSubwindowMode(m_display, m_gc, mode);
     }
-    inline void setFillStyle(int style) {
+    void setFillStyle(int style) {
         XSetFillStyle(m_display, m_gc, style);
     }
 #ifdef NOT_USED
-    inline void setFillRule(int rule) {
+    void setFillRule(int rule) {
         XSetFillRule(m_display, m_gc, rule);
     }
 #endif
-    inline void setLineAttributes(unsigned int width, 
-                                  int line_style, 
-                                  int cap_style, 
+    void setLineAttributes(unsigned int width,
+                                  int line_style,
+                                  int cap_style,
                                   int join_style) {
 
         XSetLineAttributes(m_display, m_gc, width, line_style, cap_style, join_style);
     }
-      
+
 
     void copy(GC gc);
     void copy(const GContext &gc);
 
-    inline GContext &operator = (const GContext &copy_gc) { copy(copy_gc); return *this; }
-    inline GContext &operator = (GC copy_gc) { copy(copy_gc); return *this; }
-    inline GC gc() const { return m_gc; }
+    GContext &operator = (const GContext &copy_gc) { copy(copy_gc); return *this; }
+    GContext &operator = (GC copy_gc) { copy(copy_gc); return *this; }
+    GC gc() const { return m_gc; }
 
 private:
     GContext(const GContext &cont);

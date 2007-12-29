@@ -36,17 +36,16 @@ public:
     virtual ~ToolbarTheme();
 
     void reconfigTheme();
-    
 
-    inline const FbTk::BorderTheme &border() const { return m_border; }
-    inline const FbTk::Texture &toolbar() const { return *m_toolbar; }
+    const FbTk::BorderTheme &border() const { return m_border; }
+    const FbTk::Texture &toolbar() const { return *m_toolbar; }
 
     bool fallback(FbTk::ThemeItem_base &item);
 
-    inline int bevelWidth() const { return *m_bevel_width; }    
-    inline bool shape() const { return *m_shape; }
-    inline int height() const { return *m_height; }
-    inline int buttonSize() const { return *m_button_size; }
+    int bevelWidth() const { return *m_bevel_width; }    
+    bool shape() const { return *m_shape; }
+    int height() const { return *m_height; }
+    int buttonSize() const { return *m_button_size; }
 private:
     FbTk::ThemeItem<FbTk::Texture> m_toolbar;
     FbTk::BorderTheme m_border;

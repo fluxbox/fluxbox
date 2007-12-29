@@ -55,19 +55,19 @@ public:
     FbWindow(const FbWindow &win_copy);
 
     FbWindow(int screen_num,
-             int x, int y, unsigned int width, unsigned int height, long eventmask, 
+             int x, int y, unsigned int width, unsigned int height, long eventmask,
              bool overrride_redirect = false,
              bool save_unders = false,
-             unsigned int depth = CopyFromParent, 
+             unsigned int depth = CopyFromParent,
              int class_type = InputOutput);
 
     FbWindow(const FbWindow &parent,
-             int x, int y, 
-             unsigned int width, unsigned int height, 
-             long eventmask, 
+             int x, int y,
+             unsigned int width, unsigned int height,
+             long eventmask,
              bool overrride_redirect = false,
              bool save_unders = false,
-             unsigned int depth = CopyFromParent, 
+             unsigned int depth = CopyFromParent,
              int class_type = InputOutput);
 
     virtual ~FbWindow();
@@ -83,10 +83,10 @@ public:
     /// clear window with background pixmap or color
     virtual void clear();
     /// @param exposures wheter Expose event should be generated
-    virtual void clearArea(int x, int y, 
-                           unsigned int width, unsigned int height, 
+    virtual void clearArea(int x, int y,
+                           unsigned int width, unsigned int height,
                            bool exposures = false);
-    void updateTransparent(int x = -1, int y = -1, unsigned int width = 0, 
+    void updateTransparent(int x = -1, int y = -1, unsigned int width = 0,
                            unsigned int height = 0, Pixmap dest_override = None,
                            bool override_is_offset = false);
 
@@ -94,18 +94,18 @@ public:
 
     virtual FbWindow &operator = (const FbWindow &win);
     /// assign a new X window to this
-    virtual FbWindow &operator = (Window win);    
+    virtual FbWindow &operator = (Window win);
     virtual void hide();
     virtual void show();
     virtual void showSubwindows();
 
     /// Notify that the parent window was moved,
     /// thus the absolute position of this one moved
-    virtual inline void parentMoved() {
+    virtual void parentMoved() {
         updateBackground(true);
     }
 
-    virtual inline void move(int x, int y) {
+    virtual void move(int x, int y) {
         if (x == m_x && y == m_y)
             return;
         XMoveWindow(s_display, m_window, x, y);
@@ -114,7 +114,7 @@ public:
         updateBackground(true);
     }
 
-    virtual inline void resize(unsigned int width, unsigned int height) {
+    virtual void resize(unsigned int width, unsigned int height) {
         if (width == m_width && height == m_height)
             return;
         XResizeWindow(s_display, m_window, width, height);
@@ -123,7 +123,7 @@ public:
         updateBackground(false);
     }
 
-    virtual inline void moveResize(int x, int y, unsigned int width, unsigned int height) {
+    virtual void moveResize(int x, int y, unsigned int width, unsigned int height) {
         if (x == m_x && y == m_y && width == m_width && height == m_height)
             return;
         XMoveResizeWindow(s_display, m_window, x, y, width, height);
@@ -171,26 +171,26 @@ public:
     /// @return parent FbWindow
     const FbWindow *parent() const { return m_parent; }
     /// @return real X window
-    inline Window window() const { return m_window; }
+    Window window() const { return m_window; }
     /// @return drawable (the X window)
-    inline Drawable drawable() const { return window(); }
-    inline int x() const { return m_x; }
-    inline int y() const { return m_y; }
-    inline unsigned int width() const { return m_width; }
-    inline unsigned int height() const { return m_height; }
-    inline unsigned int borderWidth() const { return m_border_width; }
-    inline unsigned int depth() const { return m_depth; }
+    Drawable drawable() const { return window(); }
+    int x() const { return m_x; }
+    int y() const { return m_y; }
+    unsigned int width() const { return m_width; }
+    unsigned int height() const { return m_height; }
+    unsigned int borderWidth() const { return m_border_width; }
+    unsigned int depth() const { return m_depth; }
     unsigned char alpha() const;
     int screenNumber() const;
     long eventMask() const;
     Display *display() const { return s_display; }
 
     /// compare X window
-    inline bool operator == (Window win) const { return m_window == win; }	
-    inline bool operator != (Window win) const { return m_window != win; }
+    bool operator == (Window win) const { return m_window == win; }
+    bool operator != (Window win) const { return m_window != win; }
     /// compare two windows
-    inline bool operator == (const FbWindow &win) const { return m_window == win.m_window; }
-    inline bool operator != (const FbWindow &win) const { return m_window != win.m_window; }
+    bool operator == (const FbWindow &win) const { return m_window == win.m_window; }
+    bool operator != (const FbWindow &win) const { return m_window != win.m_window; }
 
     // used for composite
     void setOpaque(unsigned char alpha);
@@ -215,10 +215,10 @@ private:
     void setNew(Window win);
     /// creates a new X window
     void create(Window parent, int x, int y, unsigned int width, unsigned int height,
-                long eventmask, 
-                bool override_redirect, 
+                long eventmask,
+                bool override_redirect,
                 bool save_unders,
-                unsigned int depth, 
+                unsigned int depth,
                 int class_type);
 
     const FbWindow *m_parent; ///< parent FbWindow
@@ -250,11 +250,11 @@ class ChangeProperty {
 public:
     ChangeProperty(Display *disp, Atom prop, int mode,
                    unsigned char *state, int num):m_disp(disp),
-                                                  m_prop(prop), 
-                                                  m_state(state), 
-                                                  m_num(num), 
+                                                  m_prop(prop),
+                                                  m_state(state),
+                                                  m_num(num),
                                                   m_mode(mode){
-        
+
     }
     void operator () (FbTk::FbWindow *win) {
         XChangeProperty(m_disp, win->window(), m_prop, m_prop, 32, m_mode,

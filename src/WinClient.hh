@@ -56,7 +56,7 @@ public:
     bool acceptsFocus() const; // will this window accept focus (according to hints)
     void sendClose(bool forceful = false);
     // not aware of anything that makes this false at present
-    inline bool isClosable() const { return true; }
+    bool isClosable() const { return true; }
 
     /// updates from wm class hints
     void updateWMClassHint();
@@ -111,26 +111,26 @@ public:
     Focusable::WindowType getWindowType() const { return m_window_type; }
     void setWindowType(Focusable::WindowType type) { m_window_type = type; }
 
-    inline WinClient *transientFor() { return transient_for; }
-    inline const WinClient *transientFor() const { return transient_for; }
-    inline TransientList &transientList() { return transients; }
-    inline const TransientList &transientList() const { return transients; }
-    inline bool isTransient() const { return transient_for != 0; }
+    WinClient *transientFor() { return transient_for; }
+    const WinClient *transientFor() const { return transient_for; }
+    TransientList &transientList() { return transients; }
+    const TransientList &transientList() const { return transients; }
+    bool isTransient() const { return transient_for != 0; }
 
-    inline bool isModal() const { return m_modal_count > 0; }
-    inline bool isStateModal() const { return m_modal; }
+    bool isModal() const { return m_modal_count > 0; }
+    bool isStateModal() const { return m_modal; }
     void setStateModal(bool state);
 
-    inline int gravity() const { return m_win_gravity; }
+    int gravity() const { return m_win_gravity; }
 
     bool hasGroupLeftWindow() const;
     // grouping is tracked by remembering the window to the left in the group
     Window getGroupLeftWindow() const;
 
-    inline const MwmHints *getMwmHint() const { return m_mwm_hint; }
+    const MwmHints *getMwmHint() const { return m_mwm_hint; }
 
-    inline unsigned int maxWidth() const { return max_width; }
-    inline unsigned int maxHeight() const { return max_height; }
+    unsigned int maxWidth() const { return max_width; }
+    unsigned int maxHeight() const { return max_height; }
 
     static const int PropMwmHintsElements = 3;
 

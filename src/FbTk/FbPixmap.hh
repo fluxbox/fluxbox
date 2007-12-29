@@ -64,10 +64,10 @@ public:
     /// sets new pixmap
     FbPixmap &operator = (Pixmap pm);
 
-    inline Drawable drawable() const { return m_pm; }
-    inline unsigned int width() const { return m_width; }
-    inline unsigned int height() const { return m_height; }
-    inline unsigned int depth() const { return m_depth; }
+    Drawable drawable() const { return m_pm; }
+    unsigned int width() const { return m_width; }
+    unsigned int height() const { return m_height; }
+    unsigned int depth() const { return m_depth; }
 
     static Pixmap getRootPixmap(int screen_num, bool force_update=false);
     static bool setRootPixmap(int screen_num, Pixmap pm);

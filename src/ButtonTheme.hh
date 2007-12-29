@@ -41,10 +41,10 @@ public:
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
 
-    inline const FbTk::Texture &pressed() const { return *m_pressed_texture; }
-    inline GC gc() const { return m_gc.gc(); }
-    inline int scale() const { return *m_scale; } // scale factor for inside objects
-    inline const std::string &name() { return m_name; }
+    const FbTk::Texture &pressed() const { return *m_pressed_texture; }
+    GC gc() const { return m_gc.gc(); }
+    int scale() const { return *m_scale; } // scale factor for inside objects
+    const std::string &name() { return m_name; }
 
 private:
     FbTk::ThemeItem<FbTk::Color> m_pic_color;

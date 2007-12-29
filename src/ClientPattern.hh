@@ -42,7 +42,7 @@ class ClientPattern:private FbTk::NotCopyable {
 public:
     ClientPattern();
     /**
-     * Create the pattern from the given string as it would appear in the 
+     * Create the pattern from the given string as it would appear in the
      * apps file. the bool value returns the character at which
      * there was a parse problem, or -1.
      */
@@ -76,7 +76,7 @@ public:
      */
     bool addTerm(const std::string &str, WinProperty prop, bool negate = false);
 
-    inline void addMatch() { ++m_nummatches; }
+    void addMatch() { ++m_nummatches; }
 
     // whether this pattern has identical matching criteria
     bool operator ==(const ClientPattern &pat) const;
@@ -85,7 +85,7 @@ public:
      * If there are no terms, then there is assumed to be an error
      * the column of the error is stored in m_matchlimit
      */
-    inline int error() const { return m_terms.empty() ? 1 : 0; }
+    int error() const { return m_terms.empty() ? 1 : 0; }
 
     static std::string getProperty(WinProperty prop, const Focusable &client);
 
@@ -95,7 +95,7 @@ private:
      * We have a "term" in the whole expression which is the full pattern
      * we also need to keep track of the uncompiled regular expression
      * for final output
-     */    
+     */
     struct Term {
         Term(const std::string &regstr, bool full_match) :regexp(regstr, full_match){};
         std::string orig;

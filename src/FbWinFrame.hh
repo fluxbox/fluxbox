@@ -63,13 +63,13 @@ public:
     enum TabMode { NOTSET = 0, INTERNAL = 1, EXTERNAL };
 
    /// Toolbar placement on the screen
-    enum TabPlacement{ 
+    enum TabPlacement{
         // top and bottom placement
         TOPLEFT = 1, BOTTOMLEFT,
         TOPRIGHT, BOTTOMRIGHT,
         // left and right placement
         LEFTBOTTOM, LEFTTOP,
-        RIGHTBOTTOM, RIGHTTOP        
+        RIGHTBOTTOM, RIGHTTOP
     };
 
     /**
@@ -108,9 +108,9 @@ public:
                unsigned int width, unsigned int height);
 
 /*    /// create a frame window inside another FbWindow, NOT IMPLEMENTED!
-    FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
+    FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
                const FbTk::FbWindow &parent,
-               int x, int y, 
+               int x, int y,
                unsigned int width, unsigned int height);
 */
     /// destroy frame
@@ -118,7 +118,7 @@ public:
 
     void hide();
     void show();
-    inline bool isVisible() const { return m_visible; }
+    bool isVisible() const { return m_visible; }
     /// shade frame (ie resize to titlebar size)
     void shade();
     void move(int x, int y);
@@ -127,17 +127,17 @@ public:
     void resizeForClient(unsigned int width, unsigned int height, int win_gravity=ForgetGravity, unsigned int client_bw = 0);
 
     // for when there needs to be an atomic move+resize operation
-    void moveResizeForClient(int x, int y, 
-                             unsigned int width, unsigned int height, 
+    void moveResizeForClient(int x, int y,
+                             unsigned int width, unsigned int height,
                              int win_gravity=ForgetGravity, unsigned int client_bw = 0, bool move = true, bool resize = true);
 
     // can elect to ignore move or resize (mainly for use of move/resize individual functions
-    void moveResize(int x, int y, 
-                    unsigned int width, unsigned int height, 
+    void moveResize(int x, int y,
+                    unsigned int width, unsigned int height,
                     bool move = true, bool resize = true);
 
     // move without transparency or special effects (generally when dragging)
-    void quietMoveResize(int x, int y, 
+    void quietMoveResize(int x, int y,
                          unsigned int width, unsigned int height);
 
     /// some outside move/resize happened, and we need to notify all of our windows
@@ -147,9 +147,9 @@ public:
 
     /// set focus/unfocus style
     void setFocus(bool newvalue);
-    inline void setFocusTitle(const std::string &str) { m_label.setText(str); }
+    void setFocusTitle(const std::string &str) { m_label.setText(str); }
     bool setTabMode(TabMode tabmode);
-    inline void updateTabProperties() { alignTabs(); }
+    void updateTabProperties() { alignTabs(); }
 
     /// Alpha settings
     void setAlpha(bool focused, unsigned char value);
@@ -215,7 +215,7 @@ public:
     void configureNotifyEvent(XConfigureEvent &event);
     void handleEvent(XEvent &event);
     //@}
- 
+
     void reconfigure();
     void setUseShape(bool value);
     void setShapingClient(FbTk::FbWindow *win, bool always_update);
@@ -225,10 +225,10 @@ public:
        @name accessors
     */
     //@{
-    inline int x() const { return m_window.x(); }
-    inline int y() const { return m_window.y(); }
-    inline unsigned int width() const { return m_window.width(); }
-    inline unsigned int height() const { return m_window.height(); }
+    int x() const { return m_window.x(); }
+    int y() const { return m_window.y(); }
+    unsigned int width() const { return m_window.width(); }
+    unsigned int height() const { return m_window.height(); }
     unsigned int normalHeight() const;
 
     // extra bits for tabs
@@ -237,31 +237,31 @@ public:
     int widthOffset() const;
     int heightOffset() const;
 
-    inline const FbTk::FbWindow &window() const { return m_window; }
-    inline FbTk::FbWindow &window() { return m_window; }
+    const FbTk::FbWindow &window() const { return m_window; }
+    FbTk::FbWindow &window() { return m_window; }
     /// @return titlebar window
-    inline const FbTk::FbWindow &titlebar() const { return m_titlebar; }
-    inline FbTk::FbWindow &titlebar() { return m_titlebar; }
-    inline const FbTk::FbWindow &label() const { return m_label; }
-    inline FbTk::FbWindow &label() { return m_label; }
+    const FbTk::FbWindow &titlebar() const { return m_titlebar; }
+    FbTk::FbWindow &titlebar() { return m_titlebar; }
+    const FbTk::FbWindow &label() const { return m_label; }
+    FbTk::FbWindow &label() { return m_label; }
 
-    inline const FbTk::Container &tabcontainer() const { return m_tab_container; }
-    inline FbTk::Container &tabcontainer() { return m_tab_container; }
-    
+    const FbTk::Container &tabcontainer() const { return m_tab_container; }
+    FbTk::Container &tabcontainer() { return m_tab_container; }
+
     /// @return clientarea window
-    inline const FbTk::FbWindow &clientArea() const { return m_clientarea; }
-    inline FbTk::FbWindow &clientArea() { return m_clientarea; }
+    const FbTk::FbWindow &clientArea() const { return m_clientarea; }
+    FbTk::FbWindow &clientArea() { return m_clientarea; }
     /// @return handle window
-    inline const FbTk::FbWindow &handle() const { return m_handle; }
-    inline FbTk::FbWindow &handle() { return m_handle; }
-    inline const FbTk::FbWindow &gripLeft() const { return m_grip_left; }
-    inline FbTk::FbWindow &gripLeft() { return m_grip_left; }
-    inline const FbTk::FbWindow &gripRight() const { return m_grip_right; }
-    inline FbTk::FbWindow &gripRight() { return m_grip_right; }
-    inline const IconButton *currentLabel() const { return m_current_label; }
-    inline bool focused() const { return m_focused; }
-    inline bool isShaded() const { return m_shaded; }
-    inline FbWinFrameTheme &theme() const { return m_theme; }
+    const FbTk::FbWindow &handle() const { return m_handle; }
+    FbTk::FbWindow &handle() { return m_handle; }
+    const FbTk::FbWindow &gripLeft() const { return m_grip_left; }
+    FbTk::FbWindow &gripLeft() { return m_grip_left; }
+    const FbTk::FbWindow &gripRight() const { return m_grip_right; }
+    FbTk::FbWindow &gripRight() { return m_grip_right; }
+    const IconButton *currentLabel() const { return m_current_label; }
+    bool focused() const { return m_focused; }
+    bool isShaded() const { return m_shaded; }
+    FbWinFrameTheme &theme() const { return m_theme; }
     /// @return titlebar height
     unsigned int titlebarHeight() const { return (m_use_titlebar?m_titlebar.height()+m_window.borderWidth():0); }
     unsigned int handleHeight() const { return (m_use_handle?m_handle.height()+m_window.borderWidth():0); }
@@ -269,8 +269,8 @@ public:
     unsigned int buttonHeight() const;
     bool externalTabMode() const { return m_tabmode == EXTERNAL && m_use_tabs; }
 
-    inline const FbTk::XLayerItem &layerItem() const { return m_layeritem; }
-    inline FbTk::XLayerItem &layerItem() { return m_layeritem; }
+    const FbTk::XLayerItem &layerItem() const { return m_layeritem; }
+    FbTk::XLayerItem &layerItem() { return m_layeritem; }
 
     //@}
 
@@ -320,7 +320,7 @@ private:
 
     BScreen &m_screen;
 
-    FbWinFrameTheme &m_theme; ///< theme to be used 
+    FbWinFrameTheme &m_theme; ///< theme to be used
     FbTk::ImageControl &m_imagectrl; ///< Image control for rendering
     /**
        @name windows
@@ -373,9 +373,9 @@ private:
 
     FbTk::Color m_handle_focused_color, m_handle_unfocused_color;
     Pixmap m_handle_focused_pm, m_handle_unfocused_pm;
-    
 
-    Pixmap m_button_pm;  ///< normal button     
+
+    Pixmap m_button_pm;  ///< normal button
     FbTk::Color m_button_color; ///< normal color button
     Pixmap m_button_unfocused_pm; ///< unfocused button
     FbTk::Color m_button_unfocused_color; ///< unfocused color button

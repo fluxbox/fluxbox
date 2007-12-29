@@ -21,9 +21,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
-	
-#ifndef	 FBTK_TIMER_HH
-#define	 FBTK_TIMER_HH
+
+#ifndef FBTK_TIMER_HH
+#define FBTK_TIMER_HH
 
 #include "RefCount.hh"
 #include "Command.hh"
@@ -52,7 +52,7 @@
 namespace FbTk {
 
 /**
-	Handles Timeout
+    Handles Timeout
 */
 class Timer {
 public:
@@ -60,7 +60,7 @@ public:
     explicit Timer(RefCount<Command> &handler);
     virtual ~Timer();
 
-    inline void fireOnce(bool once) { m_once = once; }
+    void fireOnce(bool once) { m_once = once; }
     /// set timeout
     void setTimeout(time_t val);
     /// set timeout 

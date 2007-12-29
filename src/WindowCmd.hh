@@ -74,11 +74,11 @@ public:
     WindowAccessor(Getter g, Setter s, Def def):
             m_getter(g), m_setter(s), m_def(def) { }
 
-    inline operator Ret() const {
+    operator Ret() const {
         FluxboxWindow *fbwin = WindowCmd<void>::window();
         return fbwin ? (fbwin->*m_getter)() : m_def;
     }
-    inline FbTk::Accessor<Ret> &operator =(const Ret &val) {
+    FbTk::Accessor<Ret> &operator =(const Ret &val) {
         FluxboxWindow *fbwin = WindowCmd<void>::window();
         if (fbwin)
             (fbwin->*m_setter)(val);
@@ -99,11 +99,11 @@ public:
     ConstWindowAccessor(Getter g, Def def):
             m_getter(g), m_def(def) { }
 
-    inline operator Ret() const {
+    operator Ret() const {
         FluxboxWindow *fbwin = WindowCmd<void>::window();
         return fbwin ? (fbwin->*m_getter)() : m_def;
     }
-    inline FbTk::Accessor<Ret> &operator =(const Ret &val) { return *this; }
+    FbTk::Accessor<Ret> &operator =(const Ret &val) { return *this; }
 
 private:
     Getter m_getter;

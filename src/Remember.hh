@@ -48,57 +48,57 @@ class Application {
 public:
     Application(bool grouped, ClientPattern *pat = 0);
     void reset();
-    inline void forgetWorkspace() { workspace_remember = false; }
-    inline void forgetHead() { head_remember = false; }
-    inline void forgetDimensions() { dimensions_remember = false; }
-    inline void forgetPosition() { position_remember = false; }
-    inline void forgetShadedstate() { shadedstate_remember = false; }
-    inline void forgetTabstate() { tabstate_remember = false; }
-    inline void forgetDecostate() { decostate_remember = false; }
-    inline void forgetFocusHiddenstate() { focushiddenstate_remember= false; }
-    inline void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
-    inline void forgetStuckstate() { stuckstate_remember = false; }
-    inline void forgetJumpworkspace() { jumpworkspace_remember = false; }
-    inline void forgetLayer() { layer_remember = false; }
-    inline void forgetSaveOnClose() { save_on_close_remember = false; }
-    inline void forgetAlpha() { alpha_remember = false; }
-    inline void forgetMinimizedstate() { minimizedstate_remember = false; }
-    inline void forgetMaximizedstate() { maximizedstate_remember = false; }
-    inline void forgetFullscreenstate() { fullscreenstate_remember = false; }
+    void forgetWorkspace() { workspace_remember = false; }
+    void forgetHead() { head_remember = false; }
+    void forgetDimensions() { dimensions_remember = false; }
+    void forgetPosition() { position_remember = false; }
+    void forgetShadedstate() { shadedstate_remember = false; }
+    void forgetTabstate() { tabstate_remember = false; }
+    void forgetDecostate() { decostate_remember = false; }
+    void forgetFocusHiddenstate() { focushiddenstate_remember= false; }
+    void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
+    void forgetStuckstate() { stuckstate_remember = false; }
+    void forgetJumpworkspace() { jumpworkspace_remember = false; }
+    void forgetLayer() { layer_remember = false; }
+    void forgetSaveOnClose() { save_on_close_remember = false; }
+    void forgetAlpha() { alpha_remember = false; }
+    void forgetMinimizedstate() { minimizedstate_remember = false; }
+    void forgetMaximizedstate() { maximizedstate_remember = false; }
+    void forgetFullscreenstate() { fullscreenstate_remember = false; }
 
-    inline void rememberWorkspace(int ws)
+    void rememberWorkspace(int ws)
         { workspace = ws; workspace_remember = true; }
-    inline void rememberHead(int h)
+    void rememberHead(int h)
         { head = h; head_remember = true; }
-    inline void rememberDimensions(int width, int height)
+    void rememberDimensions(int width, int height)
         { w = width; h = height; dimensions_remember = true; }
-    inline void rememberFocusHiddenstate(bool state)
+    void rememberFocusHiddenstate(bool state)
         { focushiddenstate= state; focushiddenstate_remember= true; }
-    inline void rememberIconHiddenstate(bool state)
+    void rememberIconHiddenstate(bool state)
         { iconhiddenstate= state; iconhiddenstate_remember= true; }
-    inline void rememberPosition(int posx, int posy, unsigned char rfc= 0 )
+    void rememberPosition(int posx, int posy, unsigned char rfc= 0 )
         { x = posx; y = posy; refc = rfc; position_remember = true; }
-    inline void rememberShadedstate(bool state)
+    void rememberShadedstate(bool state)
         { shadedstate = state; shadedstate_remember = true; }
-    inline void rememberTabstate(bool state)
+    void rememberTabstate(bool state)
         { tabstate = state; tabstate_remember = true; }
-    inline void rememberDecostate(unsigned int state)
+    void rememberDecostate(unsigned int state)
         { decostate = state; decostate_remember = true; }
-    inline void rememberStuckstate(bool state)
+    void rememberStuckstate(bool state)
         { stuckstate = state; stuckstate_remember = true; }
-    inline void rememberJumpworkspace(bool state)
+    void rememberJumpworkspace(bool state)
         { jumpworkspace = state; jumpworkspace_remember = true; }
-    inline void rememberLayer(int layernum) 
+    void rememberLayer(int layernum) 
         { layer = layernum; layer_remember = true; }
-    inline void rememberSaveOnClose(bool state)
+    void rememberSaveOnClose(bool state)
         { save_on_close = state; save_on_close_remember = true; }
-    inline void rememberAlpha(int focused_a, int unfocused_a)
+    void rememberAlpha(int focused_a, int unfocused_a)
         { focused_alpha = focused_a; unfocused_alpha = unfocused_a; alpha_remember = true; }
-    inline void rememberMinimizedstate(bool state)
+    void rememberMinimizedstate(bool state)
         { minimizedstate = state; minimizedstate_remember = true; }
-    inline void rememberMaximizedstate(int state)
+    void rememberMaximizedstate(int state)
         { maximizedstate = state; maximizedstate_remember = true; }
-    inline void rememberFullscreenstate(bool state)
+    void rememberFullscreenstate(bool state)
         { fullscreenstate = state; fullscreenstate_remember = true; }
 
     bool workspace_remember;

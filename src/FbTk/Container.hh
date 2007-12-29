@@ -71,9 +71,9 @@ public:
     Item back() { return m_item_list.back(); }
 
     /// force update
-    inline void update() { repositionItems(); }
+    void update() { repositionItems(); }
     /// so we can add items without having an graphic update for each item
-    inline void setUpdateLock(bool value) { m_update_lock = value; }
+    void setUpdateLock(bool value) { m_update_lock = value; }
 
     /// event handler
     void exposeEvent(XExposeEvent &event);
@@ -86,12 +86,12 @@ public:
     void invalidateBackground();
 
     /// accessors
-    inline Alignment alignment() const { return m_align; }
-    inline Orientation orientation() const { return m_orientation; }
-    inline int size() const { return m_item_list.size(); }
-    inline bool empty() const { return m_item_list.empty(); }
+    Alignment alignment() const { return m_align; }
+    Orientation orientation() const { return m_orientation; }
+    int size() const { return m_item_list.size(); }
+    bool empty() const { return m_item_list.empty(); }
     unsigned int maxWidthPerClient() const;
-    inline bool updateLock() const { return m_update_lock; }
+    bool updateLock() const { return m_update_lock; }
 
     void for_each(std::mem_fun_t<void, FbWindow> function);
     void setAlpha(unsigned char alpha); // set alpha on all windows

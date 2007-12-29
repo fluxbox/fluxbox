@@ -66,10 +66,10 @@ public:
 
     void renderForeground(FbDrawable &drawable);
 
-    inline FbTk::Justify justify() const { return m_justify; }
-    inline const std::string &text() const { return m_text; }
-    inline FbTk::Font &font() const { return *m_font; }
-    inline FbTk::Orientation orientation() const { return m_orientation; }
+    FbTk::Justify justify() const { return m_justify; }
+    const std::string &text() const { return m_text; }
+    FbTk::Font &font() const { return *m_font; }
+    FbTk::Orientation orientation() const { return m_orientation; }
     unsigned int textWidth() const;
 #ifdef NOT_USED
     unsigned int textHeight() const;

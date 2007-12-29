@@ -8,24 +8,24 @@
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
 // the rights to use, copy, modify, merge, publish, distribute, sublicense,
-// and/or sell copies of the Software, and to permit persons to whom the 
+// and/or sell copies of the Software, and to permit persons to whom the
 // Software is furnished to do so, subject to the following conditions:
 //
-// The above copyright notice and this permission notice shall be included in 
-// all copies or substantial portions of the Software. 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL 
-// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-	
+
 /// $Id$
 
-#ifndef	 SLIT_HH
-#define	 SLIT_HH
+#ifndef SLIT_HH
+#define SLIT_HH
 
 
 #include "LayerMenu.hh"
@@ -54,7 +54,7 @@ class Layer;
 /// Handles dock apps
 class Slit: public FbTk::EventHandler, public FbTk::Observer, public LayerObject {
 public:
-    typedef std::list<SlitClient *> SlitClients;    
+    typedef std::list<SlitClient *> SlitClients;
     /**
        Client alignment
     */
@@ -100,7 +100,7 @@ public:
     //@}
 
     void update(FbTk::Subject *subj);
-	
+
     void moveToLayer(int layernum);
     void toggleHidden();
 
@@ -111,29 +111,29 @@ public:
 
     int layerNumber() const { return m_layeritem->getLayerNum(); }
 
-    inline bool isHidden() const { return m_hidden; }
-    inline bool acceptKdeDockapp() const { return *m_rc_kde_dockapp; }
-    inline bool doAutoHide() const { return *m_rc_auto_hide; }
-    inline Direction direction() const { return *m_rc_direction; }
-    inline Placement placement() const { return *m_rc_placement; }
-    inline int getOnHead() const { return *m_rc_on_head; }
+    bool isHidden() const { return m_hidden; }
+    bool acceptKdeDockapp() const { return *m_rc_kde_dockapp; }
+    bool doAutoHide() const { return *m_rc_auto_hide; }
+    Direction direction() const { return *m_rc_direction; }
+    Placement placement() const { return *m_rc_placement; }
+    int getOnHead() const { return *m_rc_on_head; }
     void saveOnHead(int head);
     FbTk::Menu &menu() { return m_slitmenu; }
 
-    inline const FbTk::FbWindow &window() const { return frame.window; }
+    const FbTk::FbWindow &window() const { return frame.window; }
 
-    inline int x() const { return (m_hidden ? frame.x_hidden : frame.x); }
-    inline int y() const { return (m_hidden ? frame.y_hidden : frame.y); }
+    int x() const { return (m_hidden ? frame.x_hidden : frame.x); }
+    int y() const { return (m_hidden ? frame.y_hidden : frame.y); }
 
-    inline unsigned int width() const { return frame.width; }
-    inline unsigned int height() const { return frame.height; }
+    unsigned int width() const { return frame.width; }
+    unsigned int height() const { return frame.height; }
     const SlitClients &clients() const { return m_client_list; }
     SlitClients &clients() { return m_client_list; }
 private:
     void updateAlpha();
     void clearWindow();
     void setupMenu();
-	
+
     void removeClient(SlitClient *client, bool remap, bool destroy);
     void loadClientList(const char *filename);
     void updateClientmenu();
@@ -153,9 +153,9 @@ private:
 
     struct frame {
         frame(const FbTk::FbWindow &parent):
-            window(parent, 0, 0, 10, 10, 
-                   SubstructureRedirectMask |  ButtonPressMask | 
-                   EnterWindowMask | LeaveWindowMask | ExposureMask, 
+            window(parent, 0, 0, 10, 10,
+                   SubstructureRedirectMask |  ButtonPressMask |
+                   EnterWindowMask | LeaveWindowMask | ExposureMask,
                    true),  // override redirect
             x(0), y(0), x_hidden(0), y_hidden(0),
         width(10), height(10) {}

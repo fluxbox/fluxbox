@@ -1,4 +1,4 @@
-// Color.hh for Fluxbox Window Manager 
+// Color.hh for Fluxbox Window Manager
 // Copyright (c) 2002 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // from Image.hh for Blackbox - an X11 Window manager
@@ -48,12 +48,12 @@ public:
     void setPixel(unsigned long pixel) { m_pixel = pixel; }
 
     Color &operator = (const Color &col_copy);
-	
-    inline bool isAllocated() const { return m_allocated; }
-    inline unsigned short red() const { return m_red; }
-    inline unsigned short green() const { return m_green; }
-    inline unsigned short blue() const { return m_blue; }
-    inline unsigned long pixel() const { return m_pixel; }
+
+    bool isAllocated() const { return m_allocated; }
+    unsigned short red() const { return m_red; }
+    unsigned short green() const { return m_green; }
+    unsigned short blue() const { return m_blue; }
+    unsigned long pixel() const { return m_pixel; }
 
     /// @return true if the color name in color_string is resolved, else false
     static bool validColorString(const char *color_string, int screen);
@@ -61,9 +61,9 @@ public:
 private:
     void free();
     void copy(const Color &col);
-    void allocate(unsigned short red, unsigned short green, 
+    void allocate(unsigned short red, unsigned short green,
                   unsigned short blue, int screen);
-    inline void setAllocated(bool a) { m_allocated = a; }
+    void setAllocated(bool a) { m_allocated = a; }
     void setRGB(unsigned short red, unsigned short green, unsigned short blue);
 
 

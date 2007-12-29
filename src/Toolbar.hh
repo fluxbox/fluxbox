@@ -24,8 +24,8 @@
 
 // $Id$
 
-#ifndef	 TOOLBAR_HH
-#define	 TOOLBAR_HH
+#ifndef TOOLBAR_HH
+#define TOOLBAR_HH
 
 #include "ToolbarTheme.hh"
 #include "LayerMenu.hh"
@@ -53,19 +53,19 @@ class ImageControl;
 class Shape;
 }
 
-///	The toolbar.
+/// The toolbar.
 /// Handles iconbar, workspace name view and clock view
 class Toolbar: public FbTk::EventHandler, public FbTk::Observer, public LayerObject {
 public:
-       
+
     /// Toolbar placement on the screen
-    enum Placement{ 
+    enum Placement{
         // top and bottom placement
         TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
         BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT,
         // left and right placement
         LEFTCENTER, LEFTBOTTOM, LEFTTOP,
-        RIGHTCENTER, RIGHTBOTTOM, RIGHTTOP        
+        RIGHTCENTER, RIGHTBOTTOM, RIGHTTOP
     };
 
     /// Create a toolbar on the screen with specific width
@@ -93,7 +93,7 @@ public:
     void exposeEvent(XExposeEvent &ee);
     void handleEvent(XEvent &event);
     //@}
-	
+
     void reconfigure();
     void setPlacement(Placement where);
 
@@ -101,35 +101,35 @@ public:
 
     int layerNumber() const { return const_cast<FbTk::XLayerItem &>(m_layeritem).getLayerNum(); }
 
-    inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
-    inline FbTk::Menu &menu() { return m_toolbarmenu; }
-    inline FbTk::Menu &placementMenu() { return m_placementmenu; }
-    inline const FbTk::Menu &placementMenu() const { return m_placementmenu; }
+    const FbTk::Menu &menu() const { return m_toolbarmenu; }
+    FbTk::Menu &menu() { return m_toolbarmenu; }
+    FbTk::Menu &placementMenu() { return m_placementmenu; }
+    const FbTk::Menu &placementMenu() const { return m_placementmenu; }
 
-    inline FbTk::Menu &layerMenu() { return m_layermenu; }
-    inline const FbTk::Menu &layerMenu() const { return m_layermenu; }
+    FbTk::Menu &layerMenu() { return m_layermenu; }
+    const FbTk::Menu &layerMenu() const { return m_layermenu; }
 
     /// are we hidden?
-    inline bool isHidden() const { return m_hidden; }
+    bool isHidden() const { return m_hidden; }
     /// do we auto hide the toolbar?
-    inline bool doAutoHide() const { return *m_rc_auto_hide; }
+    bool doAutoHide() const { return *m_rc_auto_hide; }
     ///	@return X window of the toolbar
-    inline const FbTk::FbWindow &window() const { return frame.window; }
-    inline BScreen &screen() { return m_screen; }
-    inline const BScreen &screen() const { return m_screen; }
-    inline unsigned int width() const { return frame.window.width(); }
-    inline unsigned int height() const { return frame.window.height(); }
-    inline int x() const { return isHidden() ? frame.x_hidden : frame.x; }
-    inline int y() const { return isHidden() ? frame.y_hidden : frame.y; }
-    inline Placement placement() const { return *m_rc_placement; }
+    const FbTk::FbWindow &window() const { return frame.window; }
+    BScreen &screen() { return m_screen; }
+    const BScreen &screen() const { return m_screen; }
+    unsigned int width() const { return frame.window.width(); }
+    unsigned int height() const { return frame.window.height(); }
+    int x() const { return isHidden() ? frame.x_hidden : frame.x; }
+    int y() const { return isHidden() ? frame.y_hidden : frame.y; }
+    Placement placement() const { return *m_rc_placement; }
     /// @return pointer to iconbar if it got one, else 0
-    inline const ToolbarTheme &theme() const { return m_theme; }
-    inline ToolbarTheme &theme() { return m_theme; }
+    const ToolbarTheme &theme() const { return m_theme; }
+    ToolbarTheme &theme() { return m_theme; }
     bool isVertical() const;
 
-    inline int getOnHead() const { return *m_rc_on_head; }
+    int getOnHead() const { return *m_rc_on_head; }
 
-    inline unsigned char alpha() const { return *m_rc_alpha; }
+    unsigned char alpha() const { return *m_rc_alpha; }
 private:
     void rearrangeItems();
     void deleteItems();
@@ -165,7 +165,7 @@ private:
 
     // themes
     ToolbarTheme m_theme;
-    
+
 
     typedef std::list<ToolbarItem *> ItemList;
     ItemList m_item_list;

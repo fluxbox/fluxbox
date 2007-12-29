@@ -62,7 +62,7 @@ public:
     unsigned int width() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
-    inline const std::string &timeFormat() const { return *m_timeformat; }
+    const std::string &timeFormat() const { return *m_timeformat; }
 
     void setOrientation(FbTk::Orientation orient);
 

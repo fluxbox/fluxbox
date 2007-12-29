@@ -52,7 +52,7 @@ public:
 
     const FbTk::Texture &buttonFocusTexture() const { return *m_button_focus; }
     const FbTk::Texture &buttonUnfocusTexture() const { return *m_button_unfocus; }
-    const FbTk::Texture &buttonPressedTexture() const { return *m_button_pressed; }    
+    const FbTk::Texture &buttonPressedTexture() const { return *m_button_pressed; }
 
     const FbTk::Texture &gripFocusTexture() const { return *m_grip_focus; }
     const FbTk::Texture &gripUnfocusTexture() const { return *m_grip_unfocus; }
@@ -73,18 +73,18 @@ public:
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
 
-    inline Cursor moveCursor() const { return m_cursor_move; }
-    inline Cursor lowerLeftAngleCursor() const { return m_cursor_lower_left_angle; }
-    inline Cursor lowerRightAngleCursor() const { return m_cursor_lower_right_angle; }
-    inline Cursor upperLeftAngleCursor() const { return m_cursor_upper_left_angle; }
-    inline Cursor upperRightAngleCursor() const { return m_cursor_upper_right_angle; }
-    inline Cursor leftSideCursor() const { return m_cursor_left_side; }
-    inline Cursor rightSideCursor() const { return m_cursor_right_side; }
-    inline Cursor topSideCursor() const { return m_cursor_top_side; }
-    inline Cursor bottomSideCursor() const { return m_cursor_bottom_side; }
+    Cursor moveCursor() const { return m_cursor_move; }
+    Cursor lowerLeftAngleCursor() const { return m_cursor_lower_left_angle; }
+    Cursor lowerRightAngleCursor() const { return m_cursor_lower_right_angle; }
+    Cursor upperLeftAngleCursor() const { return m_cursor_upper_left_angle; }
+    Cursor upperRightAngleCursor() const { return m_cursor_upper_right_angle; }
+    Cursor leftSideCursor() const { return m_cursor_left_side; }
+    Cursor rightSideCursor() const { return m_cursor_right_side; }
+    Cursor topSideCursor() const { return m_cursor_top_side; }
+    Cursor bottomSideCursor() const { return m_cursor_bottom_side; }
 
-    inline FbTk::Shape::ShapePlace shapePlace() const { return *m_shape_place; }
-    inline const FbTk::BorderTheme &border(bool focus) const { return (focus ? m_border_focus : m_border_unfocus); }
+    FbTk::Shape::ShapePlace shapePlace() const { return *m_shape_place; }
+    const FbTk::BorderTheme &border(bool focus) const { return (focus ? m_border_focus : m_border_unfocus); }
 
     unsigned int titleHeight() const { return *m_title_height; }
     unsigned int bevelWidth() const { return *m_bevel_width; }
@@ -104,7 +104,7 @@ private:
     FbTk::ThemeItem<FbTk::Texture> m_grip_focus, m_grip_unfocus;
 
     FbTk::ThemeItem<FbTk::Color> m_button_focus_color, m_button_unfocus_color;
-    
+
     FbTk::ThemeItem<FbTk::Font> m_font;
     FbTk::ThemeItem<FbTk::Shape::ShapePlace> m_shape_place;
 

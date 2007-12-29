@@ -92,7 +92,7 @@ public:
     { }
     virtual ~MenuItem() { }
 
-    inline void setCommand(RefCount<Command> &cmd) { m_command = cmd; }
+    void setCommand(RefCount<Command> &cmd) { m_command = cmd; }
     virtual void setSelected(bool selected) { m_selected = selected; }
     virtual void setEnabled(bool enabled) { m_enabled = enabled; }
     virtual void setLabel(const FbString &label) { m_label = label; }
@@ -100,7 +100,7 @@ public:
     void setCloseOnClick(bool val) { m_close_on_click = val; }
     void setIcon(const std::string &filename, int screen_num);
     virtual Menu *submenu() { return m_submenu; }
-    /** 
+    /**
         @name accessors
     */
     //@{
@@ -108,15 +108,15 @@ public:
     virtual const PixmapWithMask *icon() const {
         return m_icon.get() ? m_icon->pixmap.get() : 0;
     }
-    virtual const Menu *submenu() const { return m_submenu; } 
+    virtual const Menu *submenu() const { return m_submenu; }
     virtual bool isEnabled() const { return m_enabled; }
     virtual bool isSelected() const { return m_selected; }
     virtual bool isToggleItem() const { return m_toggle_item; }
-    
+
     // iType functions
-    virtual inline void setIndex(int index) { m_index = index; }
-    virtual inline int getIndex() { return m_index; }
-    inline const std::string &iTypeString() const { return m_label; }
+    virtual void setIndex(int index) { m_index = index; }
+    virtual int getIndex() { return m_index; }
+    const std::string &iTypeString() const { return m_label; }
     virtual void drawLine(FbDrawable &draw,
                       const MenuTheme &theme,
                       size_t size,
@@ -125,7 +125,7 @@ public:
 
     virtual unsigned int width(const MenuTheme &theme) const;
     virtual unsigned int height(const MenuTheme &theme) const;
-    virtual void draw(FbDrawable &drawable, 
+    virtual void draw(FbDrawable &drawable,
                       const MenuTheme &theme,
                       bool highlight,
                       // "foreground" is the transient bits - more likely to change
@@ -136,7 +136,7 @@ public:
     /**
        Called when the item was clicked with a specific button
        @param button the button number
-       @param time the time stamp 
+       @param time the time stamp
     */
     virtual void click(int button, int time, unsigned int mods);
     /// must use this to show submenu to ensure consistency for object like window menu in ClientMenu (see Workspace.cc)
@@ -147,7 +147,7 @@ public:
 
     void setMenu(Menu &menu) { m_menu = &menu; }
     Menu *menu() { return m_menu; }
-	
+
 private:
     FbString m_label; ///< label of this item
     Menu *m_menu; ///< the menu we live in

@@ -54,12 +54,12 @@ class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer,
 public:
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
     enum { RIGHT = 1, LEFT };
-	
+
     /**
        Bullet type
     */
     enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
-	
+
     Menu(MenuTheme &tm, ImageControl &imgctrl);
     virtual ~Menu();
 
@@ -79,11 +79,11 @@ public:
     int remove(unsigned int item);
     /// remove all items
     void removeAll();
-    inline void setInternalMenu(bool val = true) { m_internal_menu = val; }
-    inline void setAlignment(Alignment a) { m_alignment = a; }
+    void setInternalMenu(bool val = true) { m_internal_menu = val; }
+    void setAlignment(Alignment a) { m_alignment = a; }
 #ifdef NOT_USED
-    inline void setTorn() { m_torn = true; }
-    inline void removeParent() { if (m_internal_menu) m_parent = 0; }
+    void setTorn() { m_torn = true; }
+    void removeParent() { if (m_internal_menu) m_parent = 0; }
 #endif
     /// raise this window
     virtual void raise();
@@ -119,7 +119,7 @@ public:
     virtual void updateMenu(int active_index = -1);
     void setItemSelected(unsigned int index, bool val);
     void setItemEnabled(unsigned int index, bool val);
-    inline void setMinimumSublevels(int m) { menu.minsub = m; }
+    void setMinimumSublevels(int m) { menu.minsub = m; }
     virtual void drawSubmenu(unsigned int index);
     /// show menu
     virtual void show();
@@ -129,54 +129,54 @@ public:
 #ifdef NOT_USED
     void setActiveIndex(int index) { m_active_index = index; }
     /*@}*/
-	
+
     /**
        @name accessors
     */
     //@{
-    inline int activeIndex() const { return m_active_index; }
+    int activeIndex() const { return m_active_index; }
 #endif
-    inline bool isTorn() const { return m_torn; }
-    inline bool isVisible() const { return m_visible; }
-    inline bool isMoving() const { return m_moving; }
-    inline int screenNumber() const { return menu.window.screenNumber(); }
-    inline Window window() const { return menu.window.window(); }
-    inline FbWindow &fbwindow() { return menu.window; }
-    inline const FbWindow &fbwindow() const { return menu.window; }
-    inline FbWindow &titleWindow() { return menu.title; }
-    inline FbWindow &frameWindow() { return menu.frame; }
-    inline const std::string &label() const { return menu.label; }  
-    inline int x() const { return menu.window.x(); }
-    inline int y() const { return menu.window.y(); }
-    inline unsigned int width() const { return menu.window.width(); }
-    inline unsigned int height() const { return menu.window.height(); }
-    inline size_t numberOfItems() const { return menuitems.size(); }
-    inline int currentSubmenu() const { return m_which_sub; } 
+    bool isTorn() const { return m_torn; }
+    bool isVisible() const { return m_visible; }
+    bool isMoving() const { return m_moving; }
+    int screenNumber() const { return menu.window.screenNumber(); }
+    Window window() const { return menu.window.window(); }
+    FbWindow &fbwindow() { return menu.window; }
+    const FbWindow &fbwindow() const { return menu.window; }
+    FbWindow &titleWindow() { return menu.title; }
+    FbWindow &frameWindow() { return menu.frame; }
+    const std::string &label() const { return menu.label; }
+    int x() const { return menu.window.x(); }
+    int y() const { return menu.window.y(); }
+    unsigned int width() const { return menu.window.width(); }
+    unsigned int height() const { return menu.window.height(); }
+    size_t numberOfItems() const { return menuitems.size(); }
+    int currentSubmenu() const { return m_which_sub; }
 
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
     bool isItemSelectable(unsigned int index) const;
-    inline const MenuTheme &theme() const { return m_theme; }
-    inline unsigned char alpha() const { return theme().alpha(); }
-    inline static Menu *shownMenu() { return shown; }
-    inline static Menu *focused() { return s_focused; }
+    const MenuTheme &theme() const { return m_theme; }
+    unsigned char alpha() const { return theme().alpha(); }
+    static Menu *shownMenu() { return shown; }
+    static Menu *focused() { return s_focused; }
     static void hideShownMenu();
     /// @return menuitem at index
-    inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
-    inline MenuItem *find(unsigned int index) { return menuitems[index]; }
+    const MenuItem *find(unsigned int index) const { return menuitems[index]; }
+    MenuItem *find(unsigned int index) { return menuitems[index]; }
     //@}
     /// @return true if index is valid
-    inline bool validIndex(int index) const { return (index < static_cast<int>(numberOfItems()) && index >= 0); }
+    bool validIndex(int index) const { return (index < static_cast<int>(numberOfItems()) && index >= 0); }
 
-    inline Menu *parent() { return m_parent; }
-    inline const Menu *parent() const { return m_parent; }
+    Menu *parent() { return m_parent; }
+    const Menu *parent() const { return m_parent; }
 
     void renderForeground(FbWindow &win, FbDrawable &drawable);
 
 protected:
 
-    inline void setTitleVisibility(bool b) { 
-        m_title_vis = b; m_need_update = true; 
+    void setTitleVisibility(bool b) {
+        m_title_vis = b; m_need_update = true;
         if (!b)
             titleWindow().lower();
         else
@@ -196,7 +196,7 @@ protected:
 
     virtual void update(FbTk::Subject *);
 
-private: 
+private:
 
     void openSubmenu();
     void closeMenu();
@@ -225,7 +225,7 @@ private:
     bool m_torn; ///< torn from parent
     bool m_internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
     bool m_title_vis; ///< title visibility
-	
+
     int m_which_sub;
     Alignment m_alignment;
 

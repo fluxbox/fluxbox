@@ -38,8 +38,8 @@ public:
     // we should not assign a new window to this
     FbTk::FbWindow &operator = (Window win) { return *this; }
     void updateGeometry();
-    inline Visual *visual() const { return m_visual; }
-    inline Colormap colormap() const { return m_colormap; } 
+    Visual *visual() const { return m_visual; }
+    Colormap colormap() const { return m_colormap; } 
 
 private:
     Visual *m_visual;

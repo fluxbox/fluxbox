@@ -55,8 +55,8 @@ private:
 class Resource_base:private FbTk::NotCopyable
 {
 public:
-    virtual ~Resource_base() { };	
-	
+    virtual ~Resource_base() { };
+
     /// set from string value
     virtual void setFromString(char const *strval) = 0;
     /// set default value
@@ -64,18 +64,18 @@ public:
     /// get string value
     virtual std::string getString() const = 0;
     /// get alternative name of this resource
-    inline const std::string& altName() const { return m_altname; }
+    const std::string& altName() const { return m_altname; }
     /// get name of this resource
-    inline const std::string& name() const { return m_name; }
+    const std::string& name() const { return m_name; }
 
-protected:	
+protected:
     Resource_base(const std::string &name, const std::string &altname):
-	m_name(name), m_altname(altname)
-	{ }
+    m_name(name), m_altname(altname)
+    { }
 
 private:
     std::string m_name; ///< name of this resource
-    std::string m_altname; ///< alternative name 
+    std::string m_altname; ///< alternative name
 };
 
 template <typename T>
@@ -99,7 +99,7 @@ public:
     /// @return true on success
     virtual bool save(const char *filename, const char *mergefilename=0);
 
-    
+
 
     /// Add resource to list, only used in Resource<T>
     template <class T>
@@ -122,21 +122,21 @@ public:
     void setResourceValue(const std::string &resourcename, const std::string &value);
 
     /**
-     * Will search and cast the resource to Resource<Type>, 
+     * Will search and cast the resource to Resource<Type>,
      * it will throw exception if it fails
      * @return reference to resource type
      */
     template <typename ResourceType>
     Resource<ResourceType> &getResource(const std::string &resource);
 
-    // this marks the database as "in use" and will avoid reloading 
+    // this marks the database as "in use" and will avoid reloading
     // resources unless it is zero.
-    // It returns this resource manager. Useful for passing to 
+    // It returns this resource manager. Useful for passing to
     // constructors like Object(m_rm.lock())
     ResourceManager &lock();
     void unlock();
     // for debugging
-    inline int lockDepth() const { return m_db_lock; }
+    int lockDepth() const { return m_db_lock; }
     void dump() {
         ResourceList::iterator it = m_resourcelist.begin();
         ResourceList::iterator it_end = m_resourcelist.end();
@@ -171,33 +171,33 @@ private:
  */
 template <typename T>
 class Resource:public Resource_base, public Accessor<T> {
-public:	
+public:
     typedef T Type;
-    Resource(ResourceManager &rm, T val, 
+    Resource(ResourceManager &rm, T val,
              const std::string &name, const std::string &altname):
-	Resource_base(name, altname),
+    Resource_base(name, altname),
         m_value(val), m_defaultval(val),
-	m_rm(rm) {
+    m_rm(rm) {
         m_rm.addResource(*this); // add this to resource handler
     }
     virtual ~Resource() {
         m_rm.removeResource(*this); // remove this from resource handler
     }
 
-    inline void setDefaultValue() {  m_value = m_defaultval; }
+    void setDefaultValue() {  m_value = m_defaultval; }
     /// sets resource from string, specialized, must be implemented
     void setFromString(const char *strval);
-    inline Resource<T>& operator = (const T& newvalue) { m_value = newvalue;  return *this;}
+    Resource<T>& operator = (const T& newvalue) { m_value = newvalue;  return *this;}
     /// specialized, must be implemented
     /// @return string value of resource
     std::string getString() const;
 
-    inline operator T() const { return m_value; }
-    inline T& get() { return m_value; }
-    inline T& operator*() { return m_value; }
-    inline const T& operator*() const { return m_value; }
-    inline T *operator->() { return &m_value; }
-    inline const T *operator->() const { return &m_value; }
+    operator T() const { return m_value; }
+    T& get() { return m_value; }
+    T& operator*() { return m_value; }
+    const T& operator*() const { return m_value; }
+    T *operator->() { return &m_value; }
+    const T *operator->() const { return &m_value; }
 private:
     T m_value, m_defaultval;
     ResourceManager &m_rm;
@@ -233,17 +233,17 @@ void ResourceManager::addResource(Resource<T> &r) {
 
     unlock();
 }
-	
+
 
 template <typename ResourceType>
 Resource<ResourceType> &ResourceManager::getResource(const std::string &resname) {
     Resource_base *res = findResource(resname);
     if (res == 0) {
-        throw ResourceException("Could not find resource \"" + 
+        throw ResourceException("Could not find resource \"" +
                                 resname + "\"");
     }
 
-    Resource<ResourceType> *res_type = 
+    Resource<ResourceType> *res_type =
         dynamic_cast<Resource<ResourceType> *>(res);
     if (res_type == 0) {
         throw ResourceException("Could not convert resource \"" +

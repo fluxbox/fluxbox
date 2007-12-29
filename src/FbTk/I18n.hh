@@ -24,8 +24,8 @@
 
 // $Id$
 
-#ifndef	 I18N_HH
-#define	 I18N_HH
+#ifndef I18N_HH
+#define I18N_HH
 
 // TODO: FIXME
 #include "../../nls/fluxbox-nls.hh"
@@ -105,9 +105,9 @@ namespace FbTk {
 class I18n {
 public:
     static I18n *instance();
-    inline const char *getLocale() const { return m_locale.c_str(); }
-    inline bool multibyte() const { return m_multibyte; }
-    inline const nl_catd &getCatalogFd() const { return m_catalog_fd; }
+    const char *getLocale() const { return m_locale.c_str(); }
+    bool multibyte() const { return m_multibyte; }
+    const nl_catd &getCatalogFd() const { return m_catalog_fd; }
 
     FbString getMessage(int set_number, int message_number, 
                            const char *default_messsage = 0, bool translate_fb = false) const;

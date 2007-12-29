@@ -27,16 +27,16 @@
 
 class Strut {
 public:
-    Strut(int head, int left, int right, 
+    Strut(int head, int left, int right,
           int top, int bottom, Strut* next = 0)
-        :m_head(head), m_left(left), m_right(right), 
+        :m_head(head), m_left(left), m_right(right),
          m_top(top), m_bottom(bottom), m_next(next) { }
-    inline int head() const { return m_head; }
-    inline int left() const { return m_left; }
-    inline int right() const { return m_right; }
-    inline int bottom() const { return m_bottom; }
-    inline int top() const { return m_top; }
-    inline Strut* next() const { return m_next; }
+    int head() const { return m_head; }
+    int left() const { return m_left; }
+    int right() const { return m_right; }
+    int bottom() const { return m_bottom; }
+    int top() const { return m_top; }
+    Strut* next() const { return m_next; }
     bool operator == (const Strut &test) const {
         return (head() == test.head() &&
                 left() == test.left() &&

@@ -24,8 +24,8 @@
 
 // $Id$
 
-#ifndef	 FBTK_IMAGECONTROL_HH
-#define	 FBTK_IMAGECONTROL_HH
+#ifndef FBTK_IMAGECONTROL_HH
+#define FBTK_IMAGECONTROL_HH
 
 // actually, Text is rather tool like, that's where orientation comes from
 #include "Text.hh" 
@@ -47,14 +47,14 @@ public:
                   unsigned long cache_timeout = 300000l, unsigned long cache_max = 200l);
     virtual ~ImageControl();
 
-    inline bool doDither() const { return m_dither; }
+    bool doDither() const { return m_dither; }
 #ifdef NOT_USED
-    inline int bitsPerPixel() const { return bits_per_pixel; }
+    int bitsPerPixel() const { return bits_per_pixel; }
 #endif
-    inline int depth() const { return m_screen_depth; }
-    inline int colorsPerChannel() const	{ return m_colors_per_channel; }
-    inline int screenNumber() const { return m_screen_num; }
-    inline Visual *visual() const { return m_visual; }
+    int depth() const { return m_screen_depth; }
+    int colorsPerChannel() const	{ return m_colors_per_channel; }
+    int screenNumber() const { return m_screen_num; }
+    Visual *visual() const { return m_visual; }
     unsigned long getSqrt(unsigned int val) const;
 
     /**

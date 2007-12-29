@@ -34,17 +34,17 @@ public:
 
     static FbAtoms *instance();
 
-    inline Atom getWMChangeStateAtom() const { return xa_wm_change_state; }
-    inline Atom getWMStateAtom() const { return xa_wm_state; }
-    inline Atom getWMDeleteAtom() const { return xa_wm_delete_window; }
-    inline Atom getWMProtocolsAtom() const { return xa_wm_protocols; }
-    inline Atom getWMTakeFocusAtom() const { return xa_wm_take_focus; }
+    Atom getWMChangeStateAtom() const { return xa_wm_change_state; }
+    Atom getWMStateAtom() const { return xa_wm_state; }
+    Atom getWMDeleteAtom() const { return xa_wm_delete_window; }
+    Atom getWMProtocolsAtom() const { return xa_wm_protocols; }
+    Atom getWMTakeFocusAtom() const { return xa_wm_take_focus; }
 
-    inline Atom getMWMHintsAtom() const { return motif_wm_hints; }
+    Atom getMWMHintsAtom() const { return motif_wm_hints; }
 
     // these atoms are for normal app->WM interaction beyond the scope of the
     // ICCCM...
-    inline Atom getFluxboxAttributesAtom() const { return blackbox_attributes; }
+    Atom getFluxboxAttributesAtom() const { return blackbox_attributes; }
 
 private:
     void initAtoms();
@@ -54,7 +54,7 @@ private:
 
     Atom xa_wm_protocols, xa_wm_state,
         xa_wm_delete_window, xa_wm_take_focus, xa_wm_change_state;
-       
+
     bool m_init;
     static FbAtoms *s_singleton;
 };

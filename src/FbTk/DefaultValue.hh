@@ -36,14 +36,14 @@ public:
     DefaultValue(const Def def):
         m_default(def), m_actual(def), m_use_default(true) { }
 
-    inline void restoreDefault() { m_use_default = true; }
-    inline bool isDefault() const { return m_use_default; }
+    void restoreDefault() { m_use_default = true; }
+    bool isDefault() const { return m_use_default; }
 
-    inline DefaultValue<Ret, Def> &operator =(const Ret &val) {
+    DefaultValue<Ret, Def> &operator =(const Ret &val) {
         m_use_default = false; m_actual = val; return *this;
     }
 
-    inline operator Ret() const { return m_use_default ? m_default : m_actual; }
+    operator Ret() const { return m_use_default ? m_default : m_actual; }
 
 private:
     const Def m_default;

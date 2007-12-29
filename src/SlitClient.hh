@@ -40,14 +40,14 @@ public:
     /// For adding a placeholder
     explicit SlitClient(const char *name);
 
-    inline const std::string &matchName() const { return m_match_name; }
-    inline Window window() const { return m_window; }
-    inline Window clientWindow() const { return m_client_window; }
-    inline Window iconWindow() const { return m_icon_window; }
-    inline int x() const { return m_x; }
-    inline int y() const { return m_y; }
-    inline unsigned int width() const { return m_width; }
-    inline unsigned int height() const { return m_height; }
+    const std::string &matchName() const { return m_match_name; }
+    Window window() const { return m_window; }
+    Window clientWindow() const { return m_client_window; }
+    Window iconWindow() const { return m_icon_window; }
+    int x() const { return m_x; }
+    int y() const { return m_y; }
+    unsigned int width() const { return m_width; }
+    unsigned int height() const { return m_height; }
     bool visible() const { return m_visible; }
 
 

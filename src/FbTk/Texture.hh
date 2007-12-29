@@ -1,4 +1,4 @@
-// Texture.hh for Fluxbox Window Manager 
+// Texture.hh for Fluxbox Window Manager
 // Copyright (c) 2002-2003 Henrik Kinnunen (fluxbox<at>users.sourceforge.net)
 //
 // from Image.hh for Blackbox - an X11 Window manager
@@ -63,9 +63,9 @@ public:
         PIPECROSS =      0x01000,
         ELLIPTIC =       0x02000
     };
-	
+
     enum {
-        BEVEL1 =         0x04000, 
+        BEVEL1 =         0x04000,
         BEVEL2 =         0x08000, // bevel types
         INVERT =         0x10000, ///< inverted image
         PARENTRELATIVE = 0x20000,
@@ -78,7 +78,7 @@ public:
     void setType(unsigned long t) { m_type = t; }
     void addType(unsigned long t) { m_type |= t; }
     void setFromString(const char * const str);
-	
+
     Color &color() { return m_color; }
     Color &colorTo() { return m_color_to; }
     Color &hiColor() { return m_hicolor; }
@@ -93,8 +93,8 @@ public:
     const Color &hiColor() const { return m_hicolor; }
     const Color &loColor() const { return m_locolor; }
     const FbTk::FbPixmap &pixmap() const { return m_pixmap; }
-    inline unsigned long type() const { return m_type; }
-    inline bool usePixmap() const { return !( type() == (FLAT | SOLID) && pixmap().drawable() == 0); }
+    unsigned long type() const { return m_type; }
+    bool usePixmap() const { return !( type() == (FLAT | SOLID) && pixmap().drawable() == 0); }
 
 private:
     FbTk::Color m_color, m_color_to, m_hicolor, m_locolor;
