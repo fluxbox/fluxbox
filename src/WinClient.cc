@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <X11/Xatom.h>
 
 #ifdef HAVE_CASSERT
   #include <cassert>

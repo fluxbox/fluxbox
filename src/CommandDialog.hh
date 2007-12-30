@@ -27,12 +27,11 @@
 
 #include "FbTk/TextBox.hh"
 #include "FbTk/TextButton.hh"
-#include "FbTk/Font.hh"
 #include "FbTk/GContext.hh"
-#include "FbTk/Command.hh"
 #include "FbTk/RefCount.hh"
 
 class BScreen;
+class Command;
 
 /**
  * Displays a fluxbox command dialog which executes fluxbox

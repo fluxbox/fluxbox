@@ -45,6 +45,7 @@
 #include "SimpleCommand.hh"
 #include "FbPixmap.hh"
 
+#include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 

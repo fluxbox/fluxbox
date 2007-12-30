@@ -28,10 +28,10 @@
 
 #include <list>
 #include "Layer.hh"
-#include "MultLayers.hh"
 
 namespace FbTk {
 
+class MultLayers;
 class XLayerItem;
 
 class XLayer : public FbTk::Layer<XLayerItem, std::list<XLayerItem *> > {

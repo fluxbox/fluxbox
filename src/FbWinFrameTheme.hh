@@ -26,11 +26,9 @@
 
 #include "FbTk/Font.hh"
 #include "FbTk/Texture.hh"
-#include "FbTk/Text.hh"
 #include "FbTk/Color.hh"
 #include "FbTk/Theme.hh"
 #include "FbTk/BorderTheme.hh"
-#include "FbTk/Subject.hh"
 #include "FbTk/GContext.hh"
 #include "FbTk/Shape.hh"
 

@@ -25,6 +25,8 @@
 #include "XLayer.hh"
 #include "XLayerItem.hh"
 #include "App.hh"
+#include "FbWindow.hh"
+#include "MultLayers.hh"
 
 #include <iostream>
 

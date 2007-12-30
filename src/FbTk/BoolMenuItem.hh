@@ -23,9 +23,10 @@
 #define FBTK_BOOLMENUITEM_HH
 
 #include "MenuItem.hh"
-#include "Accessor.hh"
 
 namespace FbTk {
+
+class Accessor<class T>;
 
 /// a bool menu item
 class BoolMenuItem: public FbTk::MenuItem {

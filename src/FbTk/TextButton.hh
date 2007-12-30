@@ -26,7 +26,6 @@
 
 #include "Button.hh"
 #include "Text.hh"
-#include "FbPixmap.hh"
 
 #include <string>
 

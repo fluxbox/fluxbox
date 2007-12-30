@@ -24,6 +24,7 @@
 
 #include "MultiButtonMenuItem.hh"
 #include "PixmapWithMask.hh"
+#include "Command.hh"
 
 namespace FbTk {
 

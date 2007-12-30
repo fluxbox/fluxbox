@@ -34,10 +34,7 @@
 
 #include "FbWindow.hh"
 #include "EventHandler.hh"
-#include "RefCount.hh"
-#include "Command.hh"
 #include "Observer.hh"
-#include "FbPixmap.hh"
 #include "MenuTheme.hh"
 #include "Timer.hh"
 #include "FbString.hh"
@@ -45,8 +42,10 @@
 
 namespace FbTk {
 
+class Command;
 class MenuItem;
 class ImageControl;
+class RefCount<class T>;
 
 ///   Base class for menus
 class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer,

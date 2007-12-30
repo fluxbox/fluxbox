@@ -26,7 +26,6 @@
 
 #include "FbTk/Theme.hh"
 #include "FbTk/Texture.hh"
-#include "FbTk/Color.hh"
 #include "FbTk/BorderTheme.hh"
 
 /// toolbar theme class container

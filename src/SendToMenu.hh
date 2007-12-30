@@ -27,8 +27,6 @@
 
 #include "FbMenu.hh"
 
-#include "FbTk/Observer.hh"
-
 class BScreen;
 
 class SendToMenu:public FbMenu {

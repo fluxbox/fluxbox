@@ -28,7 +28,10 @@
 
 #include "FbTk/MenuItem.hh"
 #include "FbTk/RefCount.hh"
-#include "FbTk/Command.hh"
+
+namespace FbTk {
+class Command;
+}
 
 #include "FocusControl.hh"
 

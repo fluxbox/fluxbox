@@ -23,9 +23,11 @@
 #define FBTK_SEARCHRESULT_HH
 
 #include <vector>
-#include "ITypeAheadable.hh"
+#include <string>
 
 namespace FbTk {
+
+class ITypeAheadable;
 
 class SearchResult {
 public:

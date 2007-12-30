@@ -27,8 +27,6 @@
 #ifndef FBTK_COLOR_HH
 #define FBTK_COLOR_HH
 
-#include "NotCopyable.hh"
-
 namespace FbTk {
 
 /// Allocates rgb color and pixel value

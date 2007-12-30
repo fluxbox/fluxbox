@@ -24,9 +24,7 @@
 #ifndef PLACEMENTSTRATEGY_HH
 #define PLACEMENTSTRATEGY_HH
 
-#include <list>
-
-#include "Window.hh"
+class FluxboxWindow;
 
 struct PlacementStrategy {
     /**

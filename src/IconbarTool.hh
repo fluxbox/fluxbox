@@ -27,13 +27,11 @@
 
 #include "ToolbarItem.hh"
 #include "FbMenu.hh"
-#include "FocusableList.hh"
 
 #include "FbTk/Container.hh"
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/Resource.hh"
-#include "FbTk/Menu.hh"
 
 #include <X11/Xlib.h>
 
@@ -43,6 +41,7 @@ class IconbarTheme;
 class BScreen;
 class IconButton;
 class Focusable;
+class FocusableList;
 
 class IconbarTool: public ToolbarItem, public FbTk::Observer {
 public:

@@ -26,7 +26,6 @@
 
 #include "FbTk/Theme.hh"
 #include "FbTk/GContext.hh"
-#include "FbTk/Texture.hh"
 
 #include <X11/Xlib.h>
 

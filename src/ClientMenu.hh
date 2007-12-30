@@ -24,8 +24,6 @@
 #ifndef CLIENTMENU_HH
 #define CLIENTMENU_HH
 
-#include <list>
-
 #include "FbMenu.hh"
 
 class BScreen;

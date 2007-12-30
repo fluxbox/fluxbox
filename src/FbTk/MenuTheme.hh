@@ -30,7 +30,6 @@
 #include "Shape.hh"
 #include "Texture.hh"
 #include "Text.hh"
-#include "Subject.hh"
 #include "PixmapWithMask.hh"
 #include "GContext.hh"
 

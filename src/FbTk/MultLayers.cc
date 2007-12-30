@@ -26,6 +26,7 @@
 #include "XLayer.hh"
 #include "XLayerItem.hh"
 #include "App.hh"
+#include "FbWindow.hh"
 
 using namespace FbTk;
 

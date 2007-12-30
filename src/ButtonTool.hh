@@ -25,7 +25,8 @@
 #define BUTTONTOOL_HH
 
 #include "GenericTool.hh"
-#include "FbTk/Observer.hh"
+
+#include <X11/Xlib.h>
 
 class ButtonTheme;
 

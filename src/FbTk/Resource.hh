@@ -31,15 +31,11 @@
 #include <list>
 #include <iostream>
 
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
 #include <exception>
 #include <typeinfo>
 #include "XrmDatabaseHelper.hh"
 
 namespace FbTk {
-
-class XrmDatabaseHelper;
 
 class ResourceException: public std::exception {
 public:

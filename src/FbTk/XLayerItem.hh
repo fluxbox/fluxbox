@@ -28,9 +28,10 @@
 #include "LayerItem.hh"
 #include "XLayer.hh"
 #include "NotCopyable.hh"
-#include "FbWindow.hh"
 
 namespace FbTk {
+
+class FbWindow;
 
 class XLayerItem : public LayerItem, private NotCopyable {
 public:

@@ -24,7 +24,6 @@
 #define FBATOMS_HH
 
 #include <X11/Xlib.h>
-#include <X11/Xatom.h>
 
 /// atom handler for basic X atoms
 class FbAtoms {

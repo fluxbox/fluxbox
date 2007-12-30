@@ -26,7 +26,6 @@
 #define WORKSPACENAMETHEME_HH
 
 #include "ToolTheme.hh"
-#include "FbTk/Theme.hh"
 
 class WorkspaceNameTheme:public ToolTheme {
 public:

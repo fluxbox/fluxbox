@@ -24,6 +24,8 @@
 #include "KeyUtil.hh"
 #include "App.hh"
 
+#include <X11/keysym.h>
+
 #include <string>
 #ifdef HAVE_CSTRING
   #include <cstring>

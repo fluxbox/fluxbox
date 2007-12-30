@@ -21,12 +21,13 @@
 
 // $Id$
 
-#include "EventHandler.hh"
 #include <map>
+#include <X11/Xlib.h>
 
 namespace FbTk {
 
 class FbWindow;
+class EventHandler;
 
 /**
    singleton mediator for EventHandlers

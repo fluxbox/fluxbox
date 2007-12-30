@@ -30,7 +30,6 @@
 #include "FbTk/BorderTheme.hh"
 #include "FbTk/Texture.hh"
 
-#include <X11/Xlib.h>
 #include <string>
 
 /// Handles toolbar item theme for text and texture

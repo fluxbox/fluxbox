@@ -25,7 +25,6 @@
 
 #include "FbTk/FbString.hh"
 
-#include <string>
 #include <list>
 
 namespace FbTk {

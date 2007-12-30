@@ -25,8 +25,6 @@
 #define FBTK_TEXTBOX_HH
 
 #include "FbWindow.hh"
-#include "Color.hh"
-#include "Text.hh"
 #include "EventHandler.hh"
 
 #include <string>

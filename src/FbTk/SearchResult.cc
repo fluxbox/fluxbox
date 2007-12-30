@@ -20,7 +20,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "SearchResult.hh"
-#include <vector>
+#include "ITypeAheadable.hh"
 
 namespace FbTk {
 

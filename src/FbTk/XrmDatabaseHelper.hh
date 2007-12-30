@@ -25,7 +25,6 @@
 #ifndef FBTK_XRMDATABASEHELPER_HH
 #define FBTK_XRMDATABASEHELPER_HH
 
-#include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
 /**

@@ -38,6 +38,7 @@
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/XLayer.hh"
 
+#include <X11/Xatom.h>
 #include <iostream>
 #include <algorithm>
 #include <new>

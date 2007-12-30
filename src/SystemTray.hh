@@ -30,13 +30,13 @@
 #include "FbTk/Observer.hh"
 
 #include "ToolbarItem.hh"
-#include "ButtonTheme.hh"
-#include "Screen.hh"
 
 #include <X11/Xlib.h>
 
 #include <list>
 
+class BScreen;
+class ButtonTheme;
 class TrayWindow;
 class AtomHandler;
 

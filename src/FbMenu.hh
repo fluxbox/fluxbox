@@ -26,7 +26,6 @@
 
 #include "Menu.hh"
 #include "XLayerItem.hh"
-#include <memory>
 
 namespace FbTk {
 class MenuTheme;

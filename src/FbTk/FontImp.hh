@@ -24,12 +24,10 @@
 #ifndef FBTK_FONTIMP_HH
 #define FBTK_FONTIMP_HH
 
-#include "Color.hh"
-#include "Font.hh"
+#include "Text.hh"
+#include "FbString.hh"
 
 #include <X11/Xlib.h>
-
-#include <string>
 
 namespace FbTk {
 

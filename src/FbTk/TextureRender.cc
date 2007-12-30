@@ -32,6 +32,8 @@
 #include "GContext.hh"
 #include "I18n.hh"
 
+#include <X11/Xutil.h>
+
 #include <iostream>
 #include <string>
 #ifdef HAVE_CSTDIO

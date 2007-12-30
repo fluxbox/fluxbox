@@ -27,7 +27,6 @@
 #include "Command.hh"
 
 #include "ClientPattern.hh"
-#include "CurrentWindowCmd.hh"
 #include "FocusControl.hh"
 
 #include "FbTk/RefCount.hh"

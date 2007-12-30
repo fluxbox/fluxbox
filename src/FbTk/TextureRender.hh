@@ -27,15 +27,15 @@
 #ifndef FBTK_TEXTURRENDER_HH
 #define FBTK_TEXTURRENDER_HH
 
-#include "Texture.hh"
 #include "Text.hh"
 
 #include <X11/Xlib.h>
 
 namespace FbTk {
 
+class Color;
 class ImageControl;
-
+class Texture;
 
 /// Renders texture to pixmap
 /**

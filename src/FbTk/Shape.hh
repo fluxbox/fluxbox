@@ -25,7 +25,6 @@
 #include "FbPixmap.hh"
 
 #include <X11/Xlib.h>
-#include <memory>
 #include <vector>
 
 namespace FbTk {

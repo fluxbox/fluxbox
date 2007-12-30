@@ -29,7 +29,6 @@
 #include "FbTk/RefCount.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/Color.hh"
-#include "FbTk/FbPixmap.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/DefaultValue.hh"
@@ -47,10 +46,8 @@ class IconButton;
 class Focusable;
 
 namespace FbTk {
-class TextButton;
 class ImageControl;
 class Command;
-class Button;
 class Texture;
 class XLayer;
 }

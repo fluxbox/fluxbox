@@ -30,6 +30,7 @@
 #include "fluxbox.hh"
 #include "WinClient.hh"
 #include "Screen.hh"
+#include "ButtonTheme.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>

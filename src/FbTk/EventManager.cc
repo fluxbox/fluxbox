@@ -22,6 +22,7 @@
 // $Id$
 
 #include "EventManager.hh"
+#include "EventHandler.hh"
 #include "FbWindow.hh"
 #include "App.hh"
 

@@ -23,6 +23,7 @@
 
 #include "GenericTool.hh"
 #include "FbTk/FbWindow.hh"
+#include "ToolTheme.hh"
 
 #include <string>
 

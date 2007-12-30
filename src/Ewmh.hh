@@ -23,11 +23,6 @@
 
 #include "AtomHandler.hh"
 #include "FbTk/FbString.hh"
-#include "AttentionNoticeHandler.hh"
-
-#include <X11/Xatom.h>
-#include <vector>
-#include <map>
 
 /// Implementes Extended Window Manager Hints ( http://www.freedesktop.org/Standards/wm-spec )
 class Ewmh:public AtomHandler {

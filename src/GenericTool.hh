@@ -25,12 +25,13 @@
 #define GENERICTOOL_HH
 
 #include "ToolbarItem.hh"
-#include "ToolTheme.hh"
 
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/Observer.hh"
 
 #include <memory>
+
+class ToolTheme;
 
 namespace FbTk {
 class FbWindow;

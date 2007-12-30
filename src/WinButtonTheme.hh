@@ -24,7 +24,7 @@
 #ifndef WINBUTTONTHEME_HH
 #define WINBUTTONTHEME_HH
 
-#include "Theme.hh"
+#include "FbTk/Theme.hh"
 #include "FbTk/PixmapWithMask.hh"
 
 class FbWinFrameTheme;

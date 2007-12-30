@@ -25,7 +25,6 @@
 #define FBTK_FONT_HH
 
 #include <X11/Xlib.h>
-#include <X11/Xresource.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

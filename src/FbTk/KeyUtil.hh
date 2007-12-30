@@ -25,7 +25,6 @@
 #define FBTK_KEYUTIL_HH
 
 #include <X11/Xlib.h>
-#include <X11/keysym.h>
 
 #include <memory>
 

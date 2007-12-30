@@ -29,7 +29,6 @@
 #include "Text.hh" // for Orientation
 
 #include <list>
-#include <functional>
 
 namespace FbTk {
 

@@ -23,11 +23,12 @@
 #define FBTK_INTMENUITEM_HH
 
 #include "MenuItem.hh"
-#include "Accessor.hh"
 
 #include <string>
 
 namespace FbTk {
+
+class Accessor<class T>;
 
 /// Changes an resource integer value between min and max
 class IntMenuItem: public FbTk::MenuItem {
