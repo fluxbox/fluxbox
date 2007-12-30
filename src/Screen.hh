@@ -38,7 +38,6 @@
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/Observer.hh"
 
-#include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
 #ifdef HAVE_CSTDIO
@@ -46,7 +45,6 @@
 #else
   #include <stdio.h>
 #endif
-#include <string>
 #include <list>
 #include <vector>
 #include <fstream>

@@ -35,7 +35,7 @@ class EventHandler;
 class EventManager {
 public:	
     static EventManager *instance();
-	
+
     void handleEvent(XEvent &ev);
     // adds a parent to listen to the childrens events
     void addParent(EventHandler &ev, const FbWindow &parent);

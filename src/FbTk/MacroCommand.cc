@@ -27,7 +27,6 @@
 #include "StringUtil.hh"
 
 #include <list>
-#include <string>
 
 namespace FbTk {
 

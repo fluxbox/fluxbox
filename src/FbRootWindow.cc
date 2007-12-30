@@ -22,8 +22,8 @@
 // $Id$
 
 #include "FbRootWindow.hh"
-#include "App.hh"
 
+#include "FbTk/App.hh"
 #include <X11/Xutil.h>
 
 FbRootWindow::FbRootWindow(int screen_num):

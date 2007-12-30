@@ -39,7 +39,6 @@
 
 // themes
 #include "FbWinFrameTheme.hh"
-#include "FbTk/MenuTheme.hh"
 #include "RootTheme.hh"
 #include "WinButtonTheme.hh"
 #include "SlitTheme.hh"
@@ -80,8 +79,8 @@
 #include "FbTk/STLUtil.hh"
 
 //use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
 #ifdef HAVE_CONFIG_H

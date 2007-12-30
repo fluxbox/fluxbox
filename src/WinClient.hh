@@ -24,10 +24,8 @@
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
 
-#include "Focusable.hh"
 #include "Window.hh"
-#include "Subject.hh"
-#include "FbWindow.hh"
+#include "FbTk/FbWindow.hh"
 #include "FbTk/FbString.hh"
 
 #include <X11/Xutil.h>

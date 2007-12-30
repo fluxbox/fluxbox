@@ -26,7 +26,6 @@
 
 #include "StringUtil.hh"
 
-#include <string>
 #include <map>
 
 using std::string;

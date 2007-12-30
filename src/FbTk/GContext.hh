@@ -27,8 +27,6 @@
 #include "Color.hh"
 #include "FbPixmap.hh"
 
-#include <X11/Xlib.h>
-
 namespace FbTk {
 
 class FbDrawable;

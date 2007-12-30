@@ -25,7 +25,6 @@
 #define ROOTCMDMENUITEM_HH 
 
 #include "FbTk/MenuItem.hh"
-#include <string>
 
 class RootCmdMenuItem: public FbTk::MenuItem {
 public:

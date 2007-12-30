@@ -24,8 +24,8 @@
 
 // $Id$
 
-#ifndef	 FLUXBOX_HH
-#define	 FLUXBOX_HH
+#ifndef FLUXBOX_HH
+#define FLUXBOX_HH
 
 #include "FbTk/App.hh"
 #include "FbTk/Resource.hh"
@@ -34,7 +34,6 @@
 #include "FbTk/SignalHandler.hh"
 #include "AttentionNoticeHandler.hh"
 
-#include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
 #ifdef HAVE_CSTDIO
@@ -51,7 +50,7 @@
 #include <sys/time.h>
 #include <time.h>
 #else // !TIME_WITH_SYS_TIME
-#ifdef	HAVE_SYS_TIME_H
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #else // !HAVE_SYS_TIME_H
 #include <time.h>
@@ -73,9 +72,9 @@ class FbAtoms;
 class Toolbar;
 
 
-///	main class for the window manager.
+/// main class for the window manager.
 /**
-	singleton type
+    singleton type
 */
 class Fluxbox : public FbTk::App,
                 public FbTk::SignalEventHandler,

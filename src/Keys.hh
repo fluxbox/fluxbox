@@ -24,15 +24,15 @@
 #ifndef KEYS_HH
 #define KEYS_HH
 
-#include <string>
-#include <list>
-#include <map>
-#include <X11/Xlib.h>
-
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/Command.hh"
 #include "FbTk/KeyUtil.hh"
+
+#include <string>
+#include <list>
+#include <map>
+
 
 namespace FbTk {
     class EventHandler;

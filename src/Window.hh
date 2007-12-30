@@ -37,8 +37,6 @@
 #include "Focusable.hh"
 #include "WinButton.hh"
 
-#include <X11/Xlib.h>
-
 #include <sys/time.h>
 #include <vector>
 #include <string>

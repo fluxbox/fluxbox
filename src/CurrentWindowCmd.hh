@@ -25,7 +25,7 @@
 #ifndef CURRENTWINDOWCMD_HH
 #define CURRENTWINDOWCMD_HH
 
-#include "Command.hh"
+#include "FbTk/Command.hh"
 #include "Window.hh"
 #include "ClientPattern.hh"
 

@@ -32,19 +32,17 @@
 #include "Color.hh"
 #include "Text.hh"
 
-#include <X11/Xlib.h>
-
 namespace FbTk {
 
 class Theme;
 
-class Button:public FbTk::FbWindow, public EventHandler, 
+class Button:public FbTk::FbWindow, public EventHandler,
              private NotCopyable {
 public:
     Button(int screen_num, int x, int y, unsigned int width, unsigned int height);
     Button(const FbWindow &parent, int x, int y, unsigned int width, unsigned int height);
     virtual ~Button();
-	
+
     /// sets action when the button is clicked with #button mouse btn
     void setOnClick(RefCount<Command> &com, int button = 1);
 

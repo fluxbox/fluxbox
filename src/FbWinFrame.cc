@@ -68,9 +68,9 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
                  ButtonMotionMask | ExposureMask |
                  EnterWindowMask | LeaveWindowMask),
     m_grip_left(m_handle, 0, 0, 10, 4,
-		ButtonPressMask | ButtonReleaseMask |
-		ButtonMotionMask | ExposureMask |
-		EnterWindowMask | LeaveWindowMask),
+        ButtonPressMask | ButtonReleaseMask |
+        ButtonMotionMask | ExposureMask |
+        EnterWindowMask | LeaveWindowMask),
     m_clientarea(m_window, 0, 0, 100, 100,
                  ButtonPressMask | ButtonReleaseMask |
                  ButtonMotionMask | ExposureMask |

@@ -25,12 +25,12 @@
 #ifndef XINERAMA_HH
 #define XINERAMA_HH
 
-#include "MenuItem.hh"
 #include "FbMenu.hh"
-#include "RefCount.hh"
-#include "SimpleCommand.hh"
-
 #include "fluxbox.hh"
+
+#include "FbTk/RefCount.hh"
+#include "FbTk/SimpleCommand.hh"
+#include "FbTk/MenuItem.hh"
 
 // provides a generic way for giving an object a xinerama head menu
 // The object must have two functions:

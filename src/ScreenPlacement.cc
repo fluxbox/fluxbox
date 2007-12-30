@@ -23,7 +23,6 @@
 
 #include "ScreenPlacement.hh"
 
-
 #include "RowSmartPlacement.hh"
 #include "MinOverlapPlacement.hh"
 #include "UnderMousePlacement.hh"

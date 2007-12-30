@@ -26,8 +26,6 @@
 
 #include "FontImp.hh"
 
-#include <X11/Xlib.h>
-
 namespace FbTk {
 
 /// multibyte font implementation for FbTk

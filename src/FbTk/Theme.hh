@@ -28,12 +28,12 @@
 #ifndef FBTK_THEME_HH
 #define FBTK_THEME_HH
 
+#include "XrmDatabaseHelper.hh"
+#include "Subject.hh"
+
 #include <string>
 #include <list>
 #include <vector>
-
-#include "XrmDatabaseHelper.hh"
-#include "Subject.hh"
 
 namespace FbTk {
 

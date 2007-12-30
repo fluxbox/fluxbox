@@ -61,7 +61,7 @@ namespace FileUtil {
     bool copyFile(const char* from, const char* to);
 
 }; // end of File namespace
-    
+
 ///  Wrapper class for DIR * routines
 class Directory : private FbTk::NotCopyable {
 public:
@@ -70,19 +70,19 @@ public:
     const std::string &name() const { return m_name; }
     /// go to start of filelist
     void rewind();
-    /// gets next dirent info struct in directory and 
+    /// gets next dirent info struct in directory and
     /// jumps to next directory entry
     struct dirent * read();
     /// reads next filename in directory
     std::string readFilename();
     /// close directory
-    void close();    
+    void close();
     /// open directory
     /// @param dir the directory name
     bool open(const char *dir);
     /// @return number of entries in the directory
     size_t entries() const { return m_num_entries; }
-    
+
 private:
     std::string m_name;
     DIR *m_dir;

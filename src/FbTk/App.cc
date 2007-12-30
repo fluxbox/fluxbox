@@ -26,8 +26,6 @@
 
 #include "EventManager.hh"
 
-#include <string>
-
 namespace FbTk {
 
 App *App::s_app = 0;

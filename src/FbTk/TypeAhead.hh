@@ -23,7 +23,6 @@
 #define FBTK_TYPEAHEAD_HH
 
 #include "ITypeAheadable.hh"
-#include <vector>
 #include "SearchResult.hh"
 
 namespace FbTk {

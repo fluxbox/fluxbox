@@ -31,8 +31,6 @@
 
 #include "ToolbarItem.hh"
 
-#include <X11/Xlib.h>
-
 #include <list>
 
 class BScreen;

@@ -33,9 +33,9 @@ namespace FbTk {
 
 Display *GContext::m_display = 0;
 
-GContext::GContext(const FbTk::FbDrawable &drawable): 
+GContext::GContext(const FbTk::FbDrawable &drawable):
     m_gc(XCreateGC(drawable.display(), drawable.drawable(), 0, 0)) {
-    
+
     if (m_display == 0)
         m_display = drawable.display();
 
@@ -78,7 +78,7 @@ void GContext::copy(GC gc) {
 void GContext::copy(const GContext &gc) {
     // copy X gc
     copy(gc.gc());
-    
+
     //!! TODO: copy our extended gcontext
 
 }

@@ -30,8 +30,6 @@
 #include "FbTk/BorderTheme.hh"
 #include "FbTk/Texture.hh"
 
-#include <string>
-
 /// Handles toolbar item theme for text and texture
 class ToolTheme: public FbTk::Theme, public FbTk::TextTheme {
 public:

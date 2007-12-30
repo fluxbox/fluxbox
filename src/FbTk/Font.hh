@@ -63,15 +63,15 @@ public:
         loaded font
     */
     bool load(const std::string &name);
-    
+
     void setHalo(bool flag)   { m_halo = flag; if (m_halo) setShadow(false); }
     void setHaloColor(const Color& color) { m_halo_color = color; }
-    
+
     void setShadow(bool flag) { m_shadow = flag; if (m_shadow) setHalo(false); }
     void setShadowColor(const Color& color) { m_shadow_color = color; }
     void setShadowOffX(int offx) { m_shadow_offx = offx; }
     void setShadowOffY(int offy) { m_shadow_offy = offy; }
-    
+
     /**
        @param text text to check size
        @param size length of text in bytes
@@ -110,7 +110,7 @@ private:
 
     FbTk::FontImp* m_fontimp; ///< font implementation
     std::string m_fontstr; ///< font name
-    
+
     static bool s_multibyte; ///< if the fontimp should be a multibyte font
     static bool s_utf8mode; ///< should the font use utf8 font imp
 

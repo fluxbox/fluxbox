@@ -35,9 +35,6 @@
 #include "FbTk/stringstream.hh"
 #include "FbTk/StringUtil.hh"
 
-#include <string>
-#include <vector>
-
 using FbTk::Command;
 
 namespace {

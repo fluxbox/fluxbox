@@ -24,8 +24,6 @@
 
 #include "MenuItem.hh"
 
-#include <string>
-
 namespace FbTk {
 
 class Accessor<class T>;

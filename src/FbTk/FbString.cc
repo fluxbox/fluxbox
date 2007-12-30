@@ -20,7 +20,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
+// $Id$
+
+#include "FbString.hh"
 
 #ifdef HAVE_CERRNO
   #include <cerrno>
@@ -38,14 +40,8 @@
   #include <stdlib.h>
 #endif
 
-#include "FbString.hh"
-#include "config.h"
-
 #include <stdio.h>
 
-#ifdef HAVE_ICONV
-#include <iconv.h>
-#endif // HAVE_ICONV
 #include <langinfo.h>
 #include <locale.h>
 

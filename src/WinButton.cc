@@ -21,14 +21,13 @@
 
 /// $Id$
 
-#include <X11/Xlib.h>
 
 #include "WinButton.hh"
-#include "App.hh"
 #include "Window.hh"
 #include "Screen.hh"
 #include "WinClient.hh"
 #include "WinButtonTheme.hh"
+#include "FbTk/App.hh"
 #include "FbTk/Color.hh"
 
 #ifdef SHAPE
@@ -36,7 +35,7 @@
 #endif // SHAPE
 
 
-WinButton::WinButton(const FluxboxWindow &listen_to, 
+WinButton::WinButton(const FluxboxWindow &listen_to,
                      WinButtonTheme &theme,
                      Type buttontype, const FbTk::FbWindow &parent,
                      int x, int y,
@@ -63,7 +62,7 @@ void WinButton::buttonReleaseEvent(XButtonEvent &event) {
 // when someone else tries to set the background, we may override it
 void WinButton::setBackgroundPixmap(Pixmap pm) {
     Pixmap my_pm = getBackgroundPixmap();
-    
+
     if (my_pm != 0) {
         overrode_bg = true;
         pm = my_pm;
@@ -145,7 +144,7 @@ Pixmap WinButton::getBackgroundPixmap() const {
         else
             return m_theme.closeUnfocusPixmap().pixmap().drawable();
         break;
-    case SHADE: 
+    case SHADE:
         if (m_listen_to.isShaded()) {
             if (focused)
                 return m_theme.unshadePixmap().pixmap().drawable();
@@ -245,7 +244,7 @@ void WinButton::drawType() {
         }
         break;
     case CLOSE:
-        drawLine(gc(), 
+        drawLine(gc(),
                  2, 2,
                  width() - 3, height() - 3);
         // I can't figure out why this second one needs a y offset of 1?????
@@ -259,23 +258,23 @@ void WinButton::drawType() {
         // XFree86 Version 4.3.0.1 (Debian 4.3.0.dfsg.1-1 20040428170728)
         // (X Protocol Version 11, Revision 0, Release 6.6)
 
-        drawLine(gc(), 
+        drawLine(gc(),
                  2, height() - 3,
                  width() - 3, 2);
         break;
     case SHADE:
-        
+
     {
         int size = width() - 5 - oddW;
 
         drawRectangle(gc(), 2, 2, size, 2);
-        
+
         // draw a one-quarter triangle below the rectangle
         drawTriangle(gc(), (m_listen_to.isShaded() ?
                             FbTk::FbDrawable::DOWN:
                             FbTk::FbDrawable::UP),
-                     4, 6, 
-                     size-2, size/2 - 1, 
+                     4, 6,
+                     size-2, size/2 - 1,
                      100);
 
         break;
@@ -284,16 +283,16 @@ void WinButton::drawType() {
         if (m_icon_pixmap.drawable()) {
 
             if (m_icon_mask.drawable()) {
-                XSetClipMask(m_listen_to.fbWindow().display(), 
+                XSetClipMask(m_listen_to.fbWindow().display(),
                              gc(), m_icon_mask.drawable());
-                XSetClipOrigin(m_listen_to.fbWindow().display(), 
+                XSetClipOrigin(m_listen_to.fbWindow().display(),
                              gc(), 2, 2);
             }
-            
+
             copyArea(m_icon_pixmap.drawable(),
                      gc(),
-                     0, 0, 
-                     2, 2, 
+                     0, 0,
+                     2, 2,
                      m_icon_pixmap.width(), m_icon_pixmap.height());
 
             if (m_icon_mask.drawable())
@@ -318,22 +317,22 @@ void WinButton::update(FbTk::Subject *subj) {
 
     // update the menu icon
     if (m_type == MENUICON && !m_listen_to.empty()) {
-       
+
         Display* display = m_listen_to.fbWindow().display();
         int screen = m_listen_to.screen().screenNumber();
         if (m_listen_to.icon().pixmap().drawable() != None) {
-             m_icon_pixmap.copy(m_listen_to.icon().pixmap().drawable(), 
+             m_icon_pixmap.copy(m_listen_to.icon().pixmap().drawable(),
                                 DefaultDepth(display, screen), screen);
              m_icon_pixmap.scale(width() - 4, height() - 4);
         } else
             m_icon_pixmap.release();
-            
+
         if (m_listen_to.icon().mask().drawable() != None) {
             m_icon_mask.copy(m_listen_to.icon().mask().drawable(), 0, 0);
             m_icon_mask.scale(width() - 4, height() - 4);
         } else
             m_icon_mask.release();
-        
+
     }
 
     // pressed_pixmap isn't stateful in any current buttons, so no need
@@ -348,7 +347,6 @@ void WinButton::update(FbTk::Subject *subj) {
         if (p_pm != None)
             setPressedPixmap(p_pm);
     }
-        
 
     clear();
 }

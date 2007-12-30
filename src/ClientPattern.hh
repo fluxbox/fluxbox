@@ -27,9 +27,8 @@
 #define CLIENTPATTERN_HH
 
 #include "FbTk/RegExp.hh"
-#include "NotCopyable.hh"
+#include "FbTk/NotCopyable.hh"
 
-#include <string>
 #include <list>
 
 class Focusable;

@@ -62,7 +62,7 @@ public:
         WIN_HINTS_GROUP_TRANSIENT = (1<<3), // Reserved - definition is unclear
         WIN_HINTS_FOCUS_ON_CLICK  = (1<<4)  // app only accepts focus if clicked
     };
-	
+
     Gnome();
     ~Gnome();
     void initForScreen(BScreen &screen);
@@ -83,7 +83,7 @@ public:
     void updateWorkspace(FluxboxWindow &win);
 
     bool checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient);
-	
+
     // ignore these ones
     void updateFrameClose(FluxboxWindow &win) {}
     bool propertyNotify(WinClient &winclient, Atom the_property);
@@ -99,7 +99,7 @@ private:
         m_gnome_wm_win_workspace_count, m_gnome_wm_win_workspace_names,
         m_gnome_wm_win_client_list;
     Atom m_gnome_wm_prot;
-    Atom m_gnome_wm_supporting_wm_check;	
+    Atom m_gnome_wm_supporting_wm_check;
     std::vector<Window> m_gnomewindows;
 };
 

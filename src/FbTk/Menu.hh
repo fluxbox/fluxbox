@@ -24,20 +24,18 @@
 
 // $Id$
 
-#ifndef	 FBTK_MENU_HH
-#define	 FBTK_MENU_HH
+#ifndef FBTK_MENU_HH
+#define FBTK_MENU_HH
 
-#include <X11/Xlib.h>
 #include <vector>
-#include <string>
 #include <memory>
 
+#include "FbString.hh"
 #include "FbWindow.hh"
 #include "EventHandler.hh"
 #include "Observer.hh"
 #include "MenuTheme.hh"
 #include "Timer.hh"
-#include "FbString.hh"
 #include "TypeAhead.hh"
 
 namespace FbTk {

@@ -27,8 +27,6 @@
 #include "FbDrawable.hh"
 #include "Text.hh"
 
-#include <X11/Xlib.h>
-
 namespace FbTk {
 
 /// a wrapper for X Pixmap

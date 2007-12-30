@@ -27,7 +27,6 @@
 #include "NotCopyable.hh"
 
 #include <X11/Xlib.h>
-
 #include <string>
 
 class BScreen;

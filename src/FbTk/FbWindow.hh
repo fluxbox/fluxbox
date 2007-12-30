@@ -108,7 +108,7 @@ public:
     virtual void move(int x, int y) {
         if (x == m_x && y == m_y)
             return;
-        XMoveWindow(s_display, m_window, x, y);
+        XMoveWindow(display(), m_window, x, y);
         m_x = x;
         m_y = y;
         updateBackground(true);
@@ -117,7 +117,7 @@ public:
     virtual void resize(unsigned int width, unsigned int height) {
         if (width == m_width && height == m_height)
             return;
-        XResizeWindow(s_display, m_window, width, height);
+        XResizeWindow(display(), m_window, width, height);
         m_width = width;
         m_height = height;
         updateBackground(false);
@@ -126,7 +126,7 @@ public:
     virtual void moveResize(int x, int y, unsigned int width, unsigned int height) {
         if (x == m_x && y == m_y && width == m_width && height == m_height)
             return;
-        XMoveResizeWindow(s_display, m_window, x, y, width, height);
+        XMoveResizeWindow(display(), m_window, x, y, width, height);
         m_x = x;
         m_y = y;
         m_width = width;
@@ -183,7 +183,6 @@ public:
     unsigned char alpha() const;
     int screenNumber() const;
     long eventMask() const;
-    Display *display() const { return s_display; }
 
     /// compare X window
     bool operator == (Window win) const { return m_window == win; }

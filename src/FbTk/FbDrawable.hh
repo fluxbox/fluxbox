@@ -75,7 +75,7 @@ public:
     virtual unsigned int depth() const = 0;
     static Display *display() { return s_display; }
 protected:
-    static Display *s_display; // display connection // display connection
+    static Display *s_display; // display connection
 };
 
 } // end namespace FbTk

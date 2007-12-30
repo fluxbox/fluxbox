@@ -24,7 +24,7 @@
 #ifndef ARROWBUTTON_HH
 #define ARROWBUTTON_HH
 
-#include "Button.hh"
+#include "FbTk/Button.hh"
 
 /// Displays a arrow on a button
 class ArrowButton: public FbTk::Button {

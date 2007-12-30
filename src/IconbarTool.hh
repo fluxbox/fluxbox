@@ -33,8 +33,6 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/Resource.hh"
 
-#include <X11/Xlib.h>
-
 #include <map>
 
 class IconbarTheme;

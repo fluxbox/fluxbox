@@ -37,11 +37,9 @@
 #include "FbTk/Resource.hh"
 #include "FbTk/XLayerItem.hh"
 
-#include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
 #include <list>
-#include <string>
 #include <memory>
 
 class SlitTheme;

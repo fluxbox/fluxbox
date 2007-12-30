@@ -36,8 +36,6 @@
 #include "FbTk/Shape.hh"
 
 #include <vector>
-#include <list>
-#include <string>
 #include <memory>
 
 class FbWinFrameTheme;

@@ -1,6 +1,6 @@
 // RootTheme.cc
 // Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -57,7 +57,7 @@ public:
     BackgroundItem(FbTk::Theme &tm, const std::string &name, const std::string &altname):
         FbTk::ThemeItem<FbTk::Texture>(tm, name, altname),
         m_changed(false), m_loaded(false) {
-        
+
     }
 
     void load(const std::string *o_name = 0, const std::string *o_altname = 0) {
@@ -190,7 +190,7 @@ void RootTheme::reconfigTheme() {
         return;
 
     //
-    // Else parse background from style 
+    // Else parse background from style
     //
 
     m_background->setApplied();
@@ -200,7 +200,7 @@ void RootTheme::reconfigTheme() {
     FbTk::StringUtil::removeTrailingWhitespace(filename);
     FbTk::StringUtil::removeFirstWhitespace(filename);
     // if background argument is a file then
-    // parse image options and call image setting 
+    // parse image options and call image setting
     // command specified in the resources
     filename = FbTk::StringUtil::expandFilename(filename);
     if (FbTk::FileUtil::isRegularFile(filename.c_str())) {
@@ -212,7 +212,7 @@ void RootTheme::reconfigTheme() {
             options = "-C ";
         if (strstr(m_background->options().c_str(), "aspect") != 0)
             options = "-A ";
-            
+
         // compose wallpaper application "fbsetbg" with argumetns
         std::string commandargs = realProgramName("fbsetbg") + " " + options +
                                   filename;
@@ -231,12 +231,12 @@ void RootTheme::reconfigTheme() {
         // render normal texture with fbsetroot
 
 
-        // Make sure the color strings are valid, 
+        // Make sure the color strings are valid,
         // so we dont pass any `commands` that can be executed
-        bool color_valid = 
-            FbTk::Color::validColorString(m_background->colorString().c_str(), 
+        bool color_valid =
+            FbTk::Color::validColorString(m_background->colorString().c_str(),
                                           screenNum());
-        bool color_to_valid = 
+        bool color_to_valid =
             FbTk::Color::validColorString(m_background->colorToString().c_str(),
                                           screenNum());
 

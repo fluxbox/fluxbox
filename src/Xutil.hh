@@ -28,8 +28,6 @@
 #include <X11/Xlib.h>
 #include "FbTk/FbString.hh"
 
-#include <string>
-
 namespace Xutil {
 
 FbTk::FbString getWMName(Window window);

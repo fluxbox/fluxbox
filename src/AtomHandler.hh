@@ -40,7 +40,7 @@ public:
     virtual void setupFrame(FluxboxWindow &win) = 0;
     virtual void setupClient(WinClient &winclient) = 0;
 
-    virtual void updateFocusedWindow(BScreen &screen, Window win) = 0; 
+    virtual void updateFocusedWindow(BScreen &screen, Window win) = 0;
     virtual void updateClientList(BScreen &screen) = 0;
     virtual void updateWorkspaceNames(BScreen &screen) = 0;
     virtual void updateCurrentWorkspace(BScreen &screen) = 0;
@@ -54,7 +54,7 @@ public:
     virtual void updateHints(FluxboxWindow &win) = 0;
     virtual void updateLayer(FluxboxWindow &win) = 0;
     virtual void updateFrameExtents(FluxboxWindow &win) { }
-    virtual bool checkClientMessage(const XClientMessageEvent &ce, 
+    virtual bool checkClientMessage(const XClientMessageEvent &ce,
                                     BScreen * screen, WinClient * const winclient) = 0;
 
     virtual bool propertyNotify(WinClient &winclient, Atom the_property) = 0;
@@ -67,7 +67,7 @@ protected:
     AtomHandler():m_update(true) { }
 
     void disableUpdate() { m_update = false; }
-    void enableUpdate() { m_update = true; }	
+    void enableUpdate() { m_update = true; }
 private:
     bool m_update; ///< do we get update or not
 };

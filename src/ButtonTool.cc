@@ -22,10 +22,9 @@
 // $Id$
 
 #include "ButtonTool.hh"
-
+#include "ButtonTheme.hh"
 #include "FbTk/Button.hh"
 #include "FbTk/ImageControl.hh"
-#include "ButtonTheme.hh"
 
 ButtonTool::ButtonTool(FbTk::Button *button, 
                        ToolbarItem::Type type, 

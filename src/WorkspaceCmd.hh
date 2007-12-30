@@ -24,14 +24,11 @@
 
 #ifndef WORKSPACECMD_HH
 #define WORKSPACECMD_HH
-#include "Command.hh"
+#include "FbTk/Command.hh"
+#include "FbTk/RefCount.hh"
 
 #include "ClientPattern.hh"
 #include "FocusControl.hh"
-
-#include "FbTk/RefCount.hh"
-
-#include <string>
 
 class WindowListCmd: public FbTk::Command {
 public:

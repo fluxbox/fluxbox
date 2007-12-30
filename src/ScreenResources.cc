@@ -26,7 +26,6 @@
 // holds screen resource handling
 
 #include "Screen.hh"
-#include <string>
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else

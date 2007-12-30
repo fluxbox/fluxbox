@@ -26,17 +26,10 @@
 
 #include "FbTk/I18n.hh"
 #include "FbTk/App.hh"
-#include "FbTk/FbString.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
-#include <X11/Xlib.h>
 #include <iostream>
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
 
 using std::string;
 

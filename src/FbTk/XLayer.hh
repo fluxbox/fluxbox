@@ -26,8 +26,8 @@
 #ifndef FBTK_XLAYER_HH
 #define FBTK_XLAYER_HH
 
-#include <list>
 #include "Layer.hh"
+#include <list>
 
 namespace FbTk {
 

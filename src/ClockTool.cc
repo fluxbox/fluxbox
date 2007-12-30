@@ -46,13 +46,12 @@
   #include <time.h>
 #endif
 #include <sys/time.h>
-#include <string>
 #include <typeinfo>
 
 class ClockMenuItem: public FbTk::MenuItem {
 public:
     explicit ClockMenuItem(ClockTool &tool):
-        FbTk::MenuItem(""), m_tool(tool) { 
+        FbTk::MenuItem(""), m_tool(tool) {
         // determine 12/24 hour format
         _FB_USES_NLS;
         if (m_tool.timeFormat().find("%k") != std::string::npos ||
@@ -78,7 +77,7 @@ public:
             newstr = "%I";
         else if ((pos = newformat.find("%T")) != std::string::npos)
             newstr = "%r";
-        
+
         // 12 hour
         if (newstr.empty()) {
             clock24hour = false;
@@ -88,9 +87,9 @@ public:
                 newstr = "%H";
             else if ((pos = newformat.find("%r")) != std::string::npos)
                 newstr = "%T";
-            
+
         }
-        
+
         if (!newstr.empty()) {
 
             newformat.replace(pos, 2, newstr);
@@ -102,7 +101,7 @@ public:
                     newformat.erase(pos, 2);
             }
 
-        
+
             m_tool.setTimeFormat(newformat);
 
             if (m_tool.timeFormat().find("%k") != std::string::npos ||
@@ -111,7 +110,7 @@ public:
                 setLabel( _FB_XTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
             else
                 setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
-        
+
         } // else some other strange format...so we don't do anything
         FbTk::MenuItem::click(button, time, mods);
     }
@@ -127,7 +126,7 @@ public:
             return;
         std::string resourcename = screen->name() + ".strftimeFormat";
 
-        CommandDialog *dialog = new CommandDialog(*screen, "Edit Clock Format", 
+        CommandDialog *dialog = new CommandDialog(*screen, "Edit Clock Format",
                                                   "SetResourceValue " + resourcename + " ");
         FbTk::RefCount<FbTk::Command> cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("reconfigure"));
         dialog->setPostCommand(cmd);
@@ -143,7 +142,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_theme(theme),
     m_screen(screen),
     m_pixmap(0),
-    m_timeformat(screen.resourceManager(), std::string("%k:%M"), 
+    m_timeformat(screen.resourceManager(), std::string("%k:%M"),
                  screen.name() + ".strftimeFormat", screen.altName() + ".StrftimeFormat"),
     m_stringconvertor(FbTk::StringConvertor::ToFbString) {
     // attach signals
@@ -162,7 +161,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     // if nothing has changed, it wont update the graphics
     m_timer.setInterval(1);
     // m_timer.setTimeout(delay); // don't need to set timeout on interval timer
-    FbTk::RefCount<FbTk::Command> update_graphic(new FbTk::SimpleCommand<ClockTool>(*this, 
+    FbTk::RefCount<FbTk::Command> update_graphic(new FbTk::SimpleCommand<ClockTool>(*this,
                                                                                     &ClockTool::updateTime));
     m_timer.setCommand(update_graphic);
     m_timer.start();
@@ -248,7 +247,7 @@ void ClockTool::update(FbTk::Subject *subj) {
 
 }
 
-unsigned int ClockTool::borderWidth() const { 
+unsigned int ClockTool::borderWidth() const {
     return m_button.borderWidth();
 }
 
@@ -297,12 +296,12 @@ void ClockTool::updateTime() {
 // Just change things that affect the size
 void ClockTool::updateSizing() {
     m_button.setBorderWidth(m_theme.border().width());
-    // resizes if new timeformat 
+    // resizes if new timeformat
     update(0);
 }
 
 void ClockTool::reRender() {
-    if (m_pixmap) 
+    if (m_pixmap)
         m_screen.imageControl().removeImage(m_pixmap);
 
     if (m_theme.texture().usePixmap()) {

@@ -42,7 +42,7 @@ void FbDrawable::copyArea(Drawable src, GC gc,
                           unsigned int width, unsigned int height) {
     if (drawable() == 0 || src == 0 || gc == 0)
         return;
-    XCopyArea(s_display,
+    XCopyArea(display(),
               src, drawable(), gc,
               src_x, src_y,
               width, height,
@@ -53,27 +53,27 @@ void FbDrawable::fillRectangle(GC gc, int x, int y,
                                unsigned int width, unsigned int height) {
     if (drawable() == 0 || gc == 0)
         return;
-    XFillRectangle(s_display,
+    XFillRectangle(display(),
                    drawable(), gc,
                    x, y,
                    width, height);
 }
 
-void FbDrawable::drawRectangle(GC gc, int x, int y, 
+void FbDrawable::drawRectangle(GC gc, int x, int y,
                                unsigned int width, unsigned int height) {
     if (drawable() == 0 || gc == 0)
         return;
-    XDrawRectangle(s_display,
+    XDrawRectangle(display(),
                    drawable(), gc,
                    x, y,
                    width, height);
 }
 
-void FbDrawable::drawLine(GC gc, int start_x, int start_y, 
+void FbDrawable::drawLine(GC gc, int start_x, int start_y,
                           int end_x, int end_y) {
     if (drawable() == 0 || gc == 0)
         return;
-    XDrawLine(s_display,
+    XDrawLine(display(),
               drawable(),
               gc,
               start_x, start_y,
@@ -84,7 +84,7 @@ void FbDrawable::fillPolygon(GC gc, XPoint *points, int npoints,
                              int shape, int mode) {
     if (drawable() == 0 || gc == 0 || points == 0 || npoints == 0)
         return;
-    XFillPolygon(s_display,
+    XFillPolygon(display(),
                  drawable(), gc, points, npoints,
                  shape, mode);
 }
@@ -92,7 +92,7 @@ void FbDrawable::fillPolygon(GC gc, XPoint *points, int npoints,
 // x, y, width and height define a space within which we're drawing a triangle (centred)
 // scale defines number of triangles that'd fit in a space of 100 width x 100 height
 // (i.e. 200 = half size, 300 = a third). Its a bit backwards but it allows more flexibility
-void FbDrawable::drawTriangle(GC gc, FbDrawable::TriangleType type, 
+void FbDrawable::drawTriangle(GC gc, FbDrawable::TriangleType type,
                               int x, int y, unsigned int width, unsigned int height,
                               int scale) {
     if (drawable() == 0 || gc == 0 || width == 0 || height == 0)
@@ -141,7 +141,7 @@ void FbDrawable::drawTriangle(GC gc, FbDrawable::TriangleType type,
         pts[1].x = -ax/2+1; pts[1].y = -ay;
         pts[2].x = ax-1; pts[2].y = 0;
         break;
-  
+
     }
 
     // re-centre on the specified points
@@ -149,21 +149,21 @@ void FbDrawable::drawTriangle(GC gc, FbDrawable::TriangleType type,
     pts[0].y += y;
 
     fillPolygon(gc,
-                pts, 3, 
+                pts, 3,
                 Convex, CoordModePrevious);
 }
 
 #ifdef NOT_USED
 void FbDrawable::drawPoint(GC gc, int x, int y) {
     if (drawable() == 0 || gc == 0)
-        return;    
-    XDrawPoint(s_display, drawable(), gc, x, y);
+        return;
+    XDrawPoint(display(), drawable(), gc, x, y);
 }
 #endif
 
 XImage *FbDrawable::image(int x, int y, unsigned int width, unsigned int height) const {
-    return XGetImage(s_display, drawable(), 
-                     x, y, width, height, 
+    return XGetImage(display(), drawable(),
+                     x, y, width, height,
                      AllPlanes, // plane mask
                      ZPixmap);
 }

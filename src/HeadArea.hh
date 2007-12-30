@@ -22,10 +22,9 @@
 #ifndef HEADAREA_HH
 #define HEADAREA_HH
 
+#include "FbTk/NotCopyable.hh"
 #include <memory>
 #include <list>
-
-#include "FbTk/NotCopyable.hh"
 
 class Strut;
 
@@ -37,7 +36,7 @@ public:
     void clearStrut(Strut *str);
     bool updateAvailableWorkspaceArea();
     const Strut *availableWorkspaceArea() const {
-	return m_available_workspace_area.get();
+        return m_available_workspace_area.get();
     }
 
 private:

@@ -33,16 +33,16 @@ namespace FbTk {
 class ImageBase;
 class PixmapWithMask;
 
-/// loads images 
+/// loads images
 class Image {
 public:
-    
+
     /// called at FbTk::App creation time, init some internal stuff
     static void init();
 
     /// called at FbTk:App destruction time, frees stuff allocated by init()
     static void shutdown();
-    
+
     /// @return an instance of PixmapWithMask on success, 0 on failure
     static PixmapWithMask *load(const std::string &filename, int screen_num);
     /// for register file type and imagebase
@@ -67,7 +67,7 @@ private:
 
 /// common interface for all image classes
 class ImageBase {
-public:    
+public:
     virtual ~ImageBase() { Image::remove(*this); }
     virtual PixmapWithMask *load(const std::string &name, int screen_num) const = 0;
 };

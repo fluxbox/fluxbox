@@ -24,7 +24,7 @@
 #include "SlitClient.hh"
 
 #include "Screen.hh"
-#include "App.hh"
+#include "FbTk/App.hh"
 #include "Xutil.hh"
 
 #include <X11/Xutil.h>

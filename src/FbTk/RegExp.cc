@@ -27,7 +27,6 @@
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#include <string>
 #include <iostream>
 
 using std::string;

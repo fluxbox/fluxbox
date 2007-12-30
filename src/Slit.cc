@@ -36,19 +36,19 @@
 #endif // HAVE_CONFIG_H
 
 #include "Screen.hh"
-#include "ImageControl.hh"
-#include "RefCount.hh"
-#include "EventManager.hh"
-#include "SimpleCommand.hh"
+#include "FbTk/ImageControl.hh"
+#include "FbTk/RefCount.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/SimpleCommand.hh"
+#include "FbTk/Theme.hh"
+#include "FbTk/Transparent.hh"
 #include "MacroCommand.hh"
 #include "FbCommands.hh"
 #include "Layer.hh"
 #include "LayerMenu.hh"
 #include "XLayer.hh"
 #include "RootTheme.hh"
-#include "FbTk/Theme.hh"
 #include "FbMenu.hh"
-#include "Transparent.hh"
 
 #ifdef XINERAMA
 #include "Xinerama.hh"
@@ -70,7 +70,6 @@
 #endif // HAVE_SYS_STAT_H
 
 #include <X11/Xatom.h>
-#include <X11/Xlib.h>
 
 #include <iostream>
 #include <algorithm>

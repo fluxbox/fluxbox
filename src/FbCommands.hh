@@ -26,15 +26,12 @@
 #ifndef FBCOMMANDS_HH
 #define FBCOMMANDS_HH
 
-#include "Command.hh"
-
+#include "FbTk/Command.hh"
 #include "FbTk/RefCount.hh"
+
 #include "ClientMenu.hh"
 #include "ClientPattern.hh"
 #include "FocusableList.hh"
-
-#include <list>
-#include <string>
 
 namespace FbCommands {
 

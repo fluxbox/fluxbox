@@ -50,7 +50,6 @@
 #include "FbTk/MenuSeparator.hh"
 
 #include <typeinfo>
-#include <string>
 #include <iterator>
 #ifdef HAVE_CSTRING
   #include <cstring>

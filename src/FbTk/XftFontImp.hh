@@ -24,9 +24,9 @@
 #ifndef FBTK_XFTFONTIMP_HH
 #define FBTK_XFTFONTIMP_HH
 
-#include <X11/Xft/Xft.h>
 #include "FontImp.hh"
-#include <string>
+
+#include <X11/Xft/Xft.h>
 
 namespace FbTk {
 

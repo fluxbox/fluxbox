@@ -23,16 +23,15 @@
 
 #include "Gnome.hh"
 
-#include "App.hh"
+#include "FbTk/App.hh"
+#include "FbTk/I18n.hh"
 #include "Window.hh"
 #include "Screen.hh"
 #include "WinClient.hh"
 #include "Workspace.hh"
 #include "Layer.hh"
-#include "FbTk/I18n.hh"
 
 #include <iostream>
-#include <new>
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else

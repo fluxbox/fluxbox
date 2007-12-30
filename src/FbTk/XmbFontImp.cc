@@ -56,8 +56,6 @@
   #include <string.h>
 #endif
 
-#include <X11/Xlib.h>
-
 using std::string;
 
 namespace {

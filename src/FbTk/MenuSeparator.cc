@@ -1,7 +1,7 @@
 // MenuSeparator.cc for FbTk - Fluxbox ToolKit
 // Copyright (c) 2004 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden (rathnor at users.sourceforge.net)
-//                 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -30,7 +30,7 @@
 
 namespace FbTk {
 
-void MenuSeparator::draw(FbDrawable &drawable, 
+void MenuSeparator::draw(FbDrawable &drawable,
                          const MenuTheme &theme,
                          bool highlight, bool draw_foreground, bool draw_background,
                          int x, int y,

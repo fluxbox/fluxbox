@@ -43,7 +43,6 @@
 #include "FbTk/Transparent.hh"
 
 
-#include <X11/Xlib.h>
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else
@@ -51,14 +50,11 @@
 #endif
 
 //use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
 #include <iostream>
-#include <fstream>
-#include <string>
-#include <memory>
 #include <set>
 
 

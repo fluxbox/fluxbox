@@ -27,10 +27,6 @@
 #include "FbTk/Theme.hh"
 #include "FbTk/GContext.hh"
 
-#include <X11/Xlib.h>
-
-#include <string>
-
 class BackgroundItem;
 class BScreen;
 

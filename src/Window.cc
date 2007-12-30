@@ -40,12 +40,12 @@
 #include "WindowCmd.hh"
 #include "Remember.hh"
 #include "MenuCreator.hh"
-#include "StringUtil.hh"
 #include "FocusControl.hh"
 #include "Layer.hh"
 #include "IconButton.hh"
 #include "ScreenPlacement.hh"
 
+#include "FbTk/StringUtil.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/EventManager.hh"
 #include "FbTk/KeyUtil.hh"
@@ -3706,11 +3706,11 @@ const string &FluxboxWindow::title() const {
 }
 
 const std::string &FluxboxWindow::getWMClassName() const {
-    return (m_client ? m_client->getWMClassName() : m_instance_name);
+    return (m_client ? m_client->getWMClassName() : getWMClassName());
 }
 
 const std::string &FluxboxWindow::getWMClassClass() const {
-    return (m_client ? m_client->getWMClassClass() : m_class_name);
+    return (m_client ? m_client->getWMClassClass() : getWMClassClass());
 }
 
 std::string FluxboxWindow::getWMRole() const {

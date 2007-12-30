@@ -51,8 +51,8 @@
 IconButton::IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
                        Focusable &win):
     FbTk::TextButton(parent, theme.focusedText().font(), win.title()),
-    m_win(win), 
-    m_icon_window(*this, 1, 1, 1, 1, 
+    m_win(win),
+    m_icon_window(*this, 1, 1, 1, 1,
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_use_pixmap(true),
     m_theme(theme),
@@ -62,7 +62,7 @@ IconButton::IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_win.titleSig().attach(this);
     m_win.focusSig().attach(this);
     m_win.attentionSig().attach(this);
-    
+
     FbTk::EventManager::instance()->add(*this, m_icon_window);
 
     reconfigTheme();
@@ -174,8 +174,8 @@ void IconButton::update(FbTk::Subject *subj) {
         return;
     }
 
-    // we got signal that either title or 
-    // icon pixmap was updated, 
+    // we got signal that either title or
+    // icon pixmap was updated,
     // so we refresh everything
 
     Display *display = FbTk::App::instance()->display();
@@ -197,7 +197,7 @@ void IconButton::update(FbTk::Subject *subj) {
 
         FbTk::translateCoords(orientation(), iconx, icony, w, h);
         FbTk::translatePosition(orientation(), iconx, icony, neww, newh, 0);
-        
+
         m_icon_window.moveResize(iconx, icony, neww, newh);
 
         m_icon_pixmap.copy(m_win.icon().pixmap().drawable(),
@@ -254,7 +254,7 @@ void IconButton::drawText(int x, int y, FbTk::FbDrawable *drawable) {
     else
         FbTk::TextButton::drawText(1, y, drawable);
 }
-                          
+
 bool IconButton::setOrientation(FbTk::Orientation orient) {
     if (orientation() == orient)
         return true;

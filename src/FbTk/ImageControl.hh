@@ -33,7 +33,6 @@
 #include "Timer.hh"
 #include "NotCopyable.hh"
 
-#include <X11/Xlib.h>
 #include <list>
 
 namespace FbTk {

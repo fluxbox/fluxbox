@@ -35,7 +35,7 @@ LayerMenu::LayerMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
     ToggleMenu(tm, imgctrl, layer) {
     _FB_USES_NLS;
 
-    
+
     struct {
         int set;
         int base;
@@ -50,17 +50,17 @@ LayerMenu::LayerMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
         {0, 0, _FB_XTEXT(Layer, Bottom, "Bottom", "Layer bottom"), Layer::BOTTOM},
         {0, 0, _FB_XTEXT(Layer, Desktop, "Desktop", "Layer desktop"), Layer::DESKTOP},
     };
-    
+
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbCommands::SaveResources());
 
     for (size_t i=0; i < 6; ++i) {
         // TODO: fetch nls string
-        if (save_rc) {    
-            insert(new LayerMenuItem(layer_menuitems[i].default_str, 
+        if (save_rc) {
+            insert(new LayerMenuItem(layer_menuitems[i].default_str,
                                      object, layer_menuitems[i].layernum, saverc_cmd));
         } else {
-            insert(new LayerMenuItem(layer_menuitems[i].default_str, 
-                                     object, layer_menuitems[i].layernum));               
+            insert(new LayerMenuItem(layer_menuitems[i].default_str,
+                                     object, layer_menuitems[i].layernum));
         }
     }
     updateMenu();

@@ -34,8 +34,6 @@
 #include "FbTk/Timer.hh"
 #include "FbTk/FbString.hh"
 
-#include <string>
-
 class ToolTheme;
 class BScreen;
 
@@ -76,7 +74,7 @@ private:
     void updateSizing();
 
     FbTk::TextButton m_button;
-    
+
     const ToolTheme &m_theme;
     BScreen &m_screen;
     Pixmap m_pixmap;

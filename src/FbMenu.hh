@@ -24,8 +24,8 @@
 #ifndef FBMENU_HH
 #define FBMENU_HH
 
-#include "Menu.hh"
-#include "XLayerItem.hh"
+#include "FbTk/Menu.hh"
+#include "FbTk/XLayerItem.hh"
 
 namespace FbTk {
 class MenuTheme;
