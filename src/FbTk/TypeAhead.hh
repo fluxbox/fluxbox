@@ -32,7 +32,7 @@ template <typename Items, typename Item_Type>
 class TypeAhead {
 #if 0
 
-a class template can't be split into separate interface + implementation files, an interface summary is given here:
+// a class template can't be split into separate interface + implementation files, an interface summary is given here:
 
 public:
     void init(Items const &items);

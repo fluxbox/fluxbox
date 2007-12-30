@@ -32,7 +32,7 @@
 class ToolbarItem {
 public:
     /// size type in the toolbar
-    enum Type { 
+    enum Type {
         FIXED,  ///< the size can not be changed
         RELATIVE, ///< the size can be changed
         SQUARE ///< the size is fixed relative to the parent, and in both dimensions
@@ -54,7 +54,7 @@ public:
     // some items might be there, but effectively empty, so shouldn't appear
     virtual bool active() { return true; }
 
-    // Tools should NOT listen to theme changes - they'll get notified by 
+    // Tools should NOT listen to theme changes - they'll get notified by
     // the toolbar instead. Otherwise there are ordering problems.
     virtual void renderTheme(unsigned char alpha) = 0;
 
@@ -69,7 +69,7 @@ public:
     void setType(Type type) { m_type = type; }
     Type type() const { return m_type; }
 
-    inline FbTk::Orientation orientation() const { return m_orientation; }
+    FbTk::Orientation orientation() const { return m_orientation; }
     virtual void setOrientation(FbTk::Orientation orient) { m_orientation = orient; }
 
     class ToolbarItemSubject : public FbTk::Subject {};

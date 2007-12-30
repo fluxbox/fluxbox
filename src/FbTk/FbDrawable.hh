@@ -73,7 +73,7 @@ public:
     virtual unsigned int width() const = 0;
     virtual unsigned int height() const = 0;
     virtual unsigned int depth() const = 0;
-    static inline Display *display() { return s_display; }
+    static Display *display() { return s_display; }
 protected:
     static Display *s_display; // display connection // display connection
 };
