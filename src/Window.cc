@@ -1790,9 +1790,9 @@ void FluxboxWindow::setStuck(bool val) {
 }
 
 void FluxboxWindow::setIconic(bool val) {
-    if (val && isIconic())
+    if (!val && isIconic())
         deiconify();
-    if (!val && !isIconic())
+    if (val && !isIconic())
         iconify();
 }
 
