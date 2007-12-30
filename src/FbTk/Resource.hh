@@ -183,7 +183,7 @@ public:
     void setDefaultValue() {  m_value = m_defaultval; }
     /// sets resource from string, specialized, must be implemented
     void setFromString(const char *strval);
-    Resource<T>& operator = (const T& newvalue) { m_value = newvalue;  return *this;}
+    Accessor<T> &operator =(const T& newvalue) { m_value = newvalue; return *this;}
     /// specialized, must be implemented
     /// @return string value of resource
     std::string getString() const;
