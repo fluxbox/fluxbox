@@ -127,11 +127,6 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
                ButtonMotionMask | ExposureMask |
                EnterWindowMask | LeaveWindowMask);
 
-        XGrabButton(m_tab_container.display(), Button1, AnyModifier,
-                    m_tab_container.window(), True, ButtonPressMask,
-                    GrabModeSync, GrabModeSync, None, None);
-        XUngrabButton(m_tab_container.display(), Button1, Mod1Mask|Mod2Mask|Mod3Mask, m_tab_container.window());
-
         alignTabs();
 
         // TODO: tab position
