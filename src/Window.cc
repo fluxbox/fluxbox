@@ -2898,9 +2898,12 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
     }
 
     if (ev.window == frame().window()) {
+        // save old value, so we can restore it later
+        WinClient *old = WindowCmd<void>::client();
         WindowCmd<void>::setWindow(this);
         Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
                                               Keys::ON_WINDOW);
+        WindowCmd<void>::setClient(old);
     }
 
     WinClient *client = 0;
@@ -2957,9 +2960,12 @@ void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
         ev.y_root <= (int)(frame().y() + frame().height()))
         return;
 
+    // save old value, so we can restore it later
+    WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setWindow(this);
     Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
                                           Keys::ON_WINDOW);
+    WindowCmd<void>::setClient(old);
 
     // I hope commenting this out is right - simon 21jul2003
     //if (ev.window == frame().window())
