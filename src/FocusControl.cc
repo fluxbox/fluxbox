@@ -251,10 +251,9 @@ Focusable *FocusControl::lastFocusedWindow(int workspace) {
     Focusables::iterator it = m_focused_list.clientList().begin();    
     Focusables::iterator it_end = m_focused_list.clientList().end();
     for (; it != it_end; ++it) {
-        if ((*it)->fbwindow() &&
+        if ((*it)->fbwindow() && (*it)->acceptsFocus() &&
             ((((int)(*it)->fbwindow()->workspaceNumber()) == workspace ||
-             (*it)->fbwindow()->isStuck()) && (*it)->acceptsFocus() &&
-             !(*it)->fbwindow()->isIconic()))
+             (*it)->fbwindow()->isStuck()) && !(*it)->fbwindow()->isIconic()))
             return *it;
     }
     return 0;
@@ -531,7 +530,8 @@ void FocusControl::setFocusedWindow(WinClient *client) {
 #endif // DEBUG
 
     // Update the old focused client to non focus
-    if (s_focused_fbwindow)
+    if (s_focused_fbwindow &&
+        (!client || client->fbwindow() != s_focused_fbwindow))
         s_focused_fbwindow->setFocusFlag(false);
 
     if (client && client->fbwindow() && !client->fbwindow()->isIconic()) {

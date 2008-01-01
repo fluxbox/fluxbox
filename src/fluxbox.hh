@@ -166,7 +166,7 @@ public:
     void attachSignals(WinClient &winclient);
 
     void timed_reconfigure();
-    void revert_focus();
+    void revertFocus();
     void setShowingDialog(bool value) { m_showing_dialog = value; }
 
     bool isStartup() const { return m_starting; }
@@ -267,8 +267,7 @@ private:
     XEvent m_last_event;
 
     ///< when we execute reconfig command we must wait until next event round
-    FbTk::Timer m_reconfig_timer, m_revert_timer;
-    BScreen *m_revert_screen;
+    FbTk::Timer m_reconfig_timer;
     bool m_showing_dialog;
 
     std::auto_ptr<Keys> m_key;

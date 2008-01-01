@@ -1013,10 +1013,21 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
 
     WinClient *old = m_client;
     m_client = &client;
+
+    bool ret = setinput && focus();
+    if (setinput) {
+        m_client = old;
+        return ret;
+    }
+
     m_client->raise();
-    if (setinput != m_focused || setinput && m_client != old)
+    if (m_focused) {
         m_client->focusSig().notify();
-    titleSig().notify();
+        if (old)
+            old->focusSig().notify();
+    }
+    if (old != &client)
+        titleSig().notify();
 
 #ifdef DEBUG
     cerr<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
@@ -1025,16 +1036,6 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     // frame focused doesn't necessarily mean input focused
     frame().setLabelButtonFocus(*button);
     frame().setShapingClient(&client, false);
-
-    bool ret = setinput && focus();
-    if (setinput) {
-        // restore old client until focus event comes
-        m_client = old;
-        if (!ret && old) {
-            old->raise();
-            titleSig().notify();
-        }
-    }
     return ret;
 }
 

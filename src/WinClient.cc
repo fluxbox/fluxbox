@@ -140,6 +140,7 @@ WinClient::~WinClient() {
         transients.pop_back();
     }
 
+    accepts_input = send_focus_message = false;
     if (fbwindow() != 0)
         fbwindow()->removeClient(*this);
 
