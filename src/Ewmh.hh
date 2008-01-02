@@ -29,6 +29,8 @@ class Ewmh:public AtomHandler {
 public:
 
     Ewmh();
+    ~Ewmh();
+
     void initForScreen(BScreen &screen);
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient);
@@ -65,79 +67,13 @@ private:
                   WinClient &client);
     void toggleState(FluxboxWindow &win, Atom state);
     void toggleState(FluxboxWindow &win, Atom state, WinClient &client);
-    void createAtoms();
     void updateStrut(WinClient &winclient);
     void updateActions(FluxboxWindow &win);
 
     void setupState(FluxboxWindow &win);
 
-
-    // root window properties
-    Atom m_net_supported, 
-        m_net_client_list, 
-        m_net_client_list_stacking,
-        m_net_number_of_desktops, 
-        m_net_desktop_geometry, 
-        m_net_desktop_viewport,
-        m_net_current_desktop, 
-        m_net_desktop_names,
-        m_net_active_window, 
-        m_net_workarea,
-        m_net_supporting_wm_check, 
-        m_net_virtual_roots, 
-        m_net_moveresize_window,
-        m_net_restack_window,
-        m_net_request_frame_extents;
-
-    // root window messages
-    Atom m_net_close_window, m_net_wm_moveresize;
-
-    // application window properties
-    Atom m_net_properties, m_net_wm_name, m_net_wm_icon_name,
-        m_net_wm_desktop,
-        // types
-        m_net_wm_window_type,
-        m_net_wm_window_type_dock,
-        m_net_wm_window_type_desktop,
-        m_net_wm_window_type_splash,
-        m_net_wm_window_type_dialog,
-        m_net_wm_window_type_menu,
-        m_net_wm_window_type_toolbar,
-        m_net_wm_window_type_normal,
-
-        // states
-        m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
-        m_net_wm_state_maximized_horz, m_net_wm_state_maximized_vert,
-        m_net_wm_state_fullscreen,
-        m_net_wm_state_hidden,
-        m_net_wm_state_skip_taskbar,
-        m_net_wm_state_skip_pager,
-        m_net_wm_state_below,
-        m_net_wm_state_above,
-        m_net_wm_state_modal,
-        m_net_wm_state_demands_attention,
-
-        // allowed actions
-        m_net_wm_allowed_actions,
-        m_net_wm_action_move, 
-        m_net_wm_action_resize,
-        m_net_wm_action_minimize, 
-        m_net_wm_action_shade,
-        m_net_wm_action_stick, 
-        m_net_wm_action_maximize_horz, m_net_wm_action_maximize_vert,
-        m_net_wm_action_fullscreen, 
-        m_net_wm_action_change_desktop,
-        m_net_wm_action_close,
-
-        m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
-        m_net_wm_handled_icons,
-
-        m_net_frame_extents;
-
-    // application protocols
-    Atom m_net_wm_ping;
-
-    Atom utf8_string;
-
     FbTk::FbString getUTF8Property(Atom property);
+
+    class EwmhAtoms;
+    EwmhAtoms* m_net;
 };

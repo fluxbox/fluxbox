@@ -60,6 +60,169 @@ using std::list;
 #define FB_new_nothrow new(std::nothrow)
 #endif
 
+
+class Ewmh::EwmhAtoms {
+public:
+
+    EwmhAtoms() {
+        Display *disp = FbTk::App::instance()->display();
+
+        supported = XInternAtom(disp, "_NET_SUPPORTED", False);
+        client_list = XInternAtom(disp, "_NET_CLIENT_LIST", False);
+        client_list_stacking = XInternAtom(disp, "_NET_CLIENT_LIST_STACKING", False);
+        number_of_desktops = XInternAtom(disp, "_NET_NUMBER_OF_DESKTOPS", False);
+        desktop_geometry = XInternAtom(disp, "_NET_DESKTOP_GEOMETRY", False);
+        desktop_viewport = XInternAtom(disp, "_NET_DESKTOP_VIEWPORT", False);
+        current_desktop = XInternAtom(disp, "_NET_CURRENT_DESKTOP", False);
+        desktop_names = XInternAtom(disp, "_NET_DESKTOP_NAMES", False);
+        active_window = XInternAtom(disp, "_NET_ACTIVE_WINDOW", False);
+        workarea = XInternAtom(disp, "_NET_WORKAREA", False);
+        supporting_wm_check = XInternAtom(disp, "_NET_SUPPORTING_WM_CHECK", False);
+        virtual_roots = XInternAtom(disp, "_NET_VIRTUAL_ROOTS", False);
+
+        close_window = XInternAtom(disp, "_NET_CLOSE_WINDOW", False);
+        moveresize_window = XInternAtom(disp, "_NET_MOVERESIZE_WINDOW", False);
+        restack_window = XInternAtom(disp, "_NET_RESTACK_WINDOW", False);
+        request_frame_extents = XInternAtom(disp,
+                "_NET_REQUEST_FRAME_EXTENTS", False);
+
+
+        wm_moveresize = XInternAtom(disp, "_NET_WM_MOVERESIZE", False);
+
+        properties = XInternAtom(disp, "_NET_PROPERTIES", False);
+        wm_name = XInternAtom(disp, "_NET_WM_NAME", False);
+        wm_icon_name = XInternAtom(disp, "_NET_WM_ICON_NAME", False);
+        wm_desktop = XInternAtom(disp, "_NET_WM_DESKTOP", False);
+
+        // type atoms
+        wm_window_type = XInternAtom(disp, "_NET_WM_WINDOW_TYPE", False);
+        wm_window_type_dock = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DOCK", False);
+        wm_window_type_desktop = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
+        wm_window_type_splash = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_SPLASH", False);
+        wm_window_type_dialog = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DIALOG", False);
+        wm_window_type_menu = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_MENU", False);
+        wm_window_type_toolbar = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
+        wm_window_type_normal = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
+
+        // state atom and the supported state atoms
+        wm_state = XInternAtom(disp, "_NET_WM_STATE", False);
+        wm_state_sticky = XInternAtom(disp, "_NET_WM_STATE_STICKY", False);
+        wm_state_shaded = XInternAtom(disp, "_NET_WM_STATE_SHADED", False);
+        wm_state_maximized_horz = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
+        wm_state_maximized_vert = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+        wm_state_fullscreen = XInternAtom(disp, "_NET_WM_STATE_FULLSCREEN", False);
+        wm_state_hidden = XInternAtom(disp, "_NET_WM_STATE_HIDDEN", False);
+        wm_state_skip_taskbar = XInternAtom(disp, "_NET_WM_STATE_SKIP_TASKBAR", False);
+        wm_state_skip_pager = XInternAtom(disp, "_NET_WM_STATE_SKIP_PAGER", False);
+        wm_state_above = XInternAtom(disp, "_NET_WM_STATE_ABOVE", False);
+        wm_state_below = XInternAtom(disp, "_NET_WM_STATE_BELOW", False);
+        wm_state_modal = XInternAtom(disp, "_NET_WM_STATE_MODAL", False);
+        wm_state_demands_attention = XInternAtom(disp, "_NET_WM_STATE_DEMANDS_ATTENTION", False);
+
+        // allowed actions
+        wm_allowed_actions = XInternAtom(disp, "_NET_WM_ALLOWED_ACTIONS", False);
+        wm_action_move = XInternAtom(disp, "_NET_WM_ACTION_MOVE", False);
+        wm_action_resize = XInternAtom(disp, "_NET_WM_ACTION_RESIZE", False);
+        wm_action_minimize = XInternAtom(disp, "_NET_WM_ACTION_MINIMIZE", False);
+        wm_action_shade = XInternAtom(disp, "_NET_WM_ACTION_SHADE", False);
+        wm_action_stick = XInternAtom(disp, "_NET_WM_ACTION_STICK", False);
+        wm_action_maximize_horz = XInternAtom(disp, "_NET_WM_ACTION_MAXIMIZE_HORZ", False);
+        wm_action_maximize_vert = XInternAtom(disp, "_NET_WM_ACTION_MAXIMIZE_VERT", False);
+        wm_action_fullscreen = XInternAtom(disp, "_NET_WM_ACTION_FULLSCREEN", False);
+        wm_action_change_desktop = XInternAtom(disp, "_NET_WM_ACTION_CHANGE_DESKTOP", False);
+        wm_action_close = XInternAtom(disp, "_NET_WM_ACTION_CLOSE", False);
+
+        wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
+        wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
+        wm_icon = XInternAtom(disp, "_NET_WM_ICON", False);
+        wm_pid = XInternAtom(disp, "_NET_WM_PID", False);
+        wm_handled_icons = XInternAtom(disp, "_NET_WM_HANDLED_ICONS", False);
+
+        frame_extents = XInternAtom(disp, "_NET_FRAME_EXTENTS", False);
+
+        wm_ping = XInternAtom(disp, "_NET_WM_PING", False);
+        utf8_string = XInternAtom(disp, "UTF8_STRING", False);
+    };
+
+    // root window properties
+    Atom supported,
+         client_list,
+         client_list_stacking,
+         number_of_desktops,
+         desktop_geometry,
+         desktop_viewport,
+         current_desktop,
+         desktop_names,
+         active_window,
+         workarea,
+         supporting_wm_check,
+         virtual_roots,
+         moveresize_window,
+         restack_window,
+         request_frame_extents;
+
+    // root window messages
+    Atom close_window,
+         wm_moveresize;
+
+    // application window properties
+    Atom properties,
+         wm_name,
+         wm_icon_name,
+         wm_desktop,
+         // types
+         wm_window_type,
+         wm_window_type_dock,
+         wm_window_type_desktop,
+         wm_window_type_splash,
+         wm_window_type_dialog,
+         wm_window_type_menu,
+         wm_window_type_toolbar,
+         wm_window_type_normal,
+
+         // states
+         wm_state,
+         wm_state_sticky,
+         wm_state_shaded,
+         wm_state_maximized_horz,
+         wm_state_maximized_vert,
+         wm_state_fullscreen,
+         wm_state_hidden,
+         wm_state_skip_taskbar,
+         wm_state_skip_pager,
+         wm_state_below,
+         wm_state_above,
+         wm_state_modal,
+         wm_state_demands_attention,
+
+         // allowed actions
+         wm_allowed_actions,
+         wm_action_move,
+         wm_action_resize,
+         wm_action_minimize,
+         wm_action_shade,
+         wm_action_stick,
+         wm_action_maximize_horz,
+         wm_action_maximize_vert,
+         wm_action_fullscreen,
+         wm_action_change_desktop,
+         wm_action_close,
+
+         wm_strut,
+         wm_icon_geometry,
+         wm_icon,
+         wm_pid,
+         wm_handled_icons,
+
+         frame_extents;
+
+    // application protocols
+    Atom wm_ping;
+
+    Atom utf8_string;
+};
+
+
 enum EwmhMoveResizeDirection {
     _NET_WM_MOVERESIZE_SIZE_TOPLEFT    =   0,
     _NET_WM_MOVERESIZE_SIZE_TOP        =   1,
@@ -76,7 +239,11 @@ enum EwmhMoveResizeDirection {
 };
 
 Ewmh::Ewmh() {
-    createAtoms();
+    m_net = new EwmhAtoms;
+}
+
+Ewmh::~Ewmh() {
+    delete m_net;
 }
 
 void Ewmh::initForScreen(BScreen &screen) {
@@ -104,82 +271,82 @@ void Ewmh::initForScreen(BScreen &screen) {
     Window wincheck = screen.dummyWindow().window();
 
     if (wincheck != None) {
-        screen.rootWindow().changeProperty(m_net_supporting_wm_check, XA_WINDOW, 32,
+        screen.rootWindow().changeProperty(m_net->supporting_wm_check, XA_WINDOW, 32,
                                            PropModeReplace, (unsigned char *) &wincheck, 1);
-        XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,
+        XChangeProperty(disp, wincheck, m_net->supporting_wm_check, XA_WINDOW, 32,
                         PropModeReplace, (unsigned char *) &wincheck, 1);
 
-        XChangeProperty(disp, wincheck, m_net_wm_name, utf8_string, 8,
+        XChangeProperty(disp, wincheck, m_net->wm_name, m_net->utf8_string, 8,
                         PropModeReplace, (unsigned char *) "Fluxbox", strlen("Fluxbox"));
     }
 
     //set supported atoms
     Atom atomsupported[] = {
         // window properties
-        m_net_wm_strut,
-        m_net_wm_state,
-        m_net_wm_name,
-        m_net_wm_icon_name,
+        m_net->wm_strut,
+        m_net->wm_state,
+        m_net->wm_name,
+        m_net->wm_icon_name,
 
         // states that we support:
-        m_net_wm_state_sticky,
-        m_net_wm_state_shaded,
-        m_net_wm_state_maximized_horz,
-        m_net_wm_state_maximized_vert,
-        m_net_wm_state_fullscreen,
-        m_net_wm_state_hidden,
-        m_net_wm_state_skip_taskbar,
-        m_net_wm_state_modal,
-        m_net_wm_state_below,
-        m_net_wm_state_above,
-        m_net_wm_state_demands_attention,
+        m_net->wm_state_sticky,
+        m_net->wm_state_shaded,
+        m_net->wm_state_maximized_horz,
+        m_net->wm_state_maximized_vert,
+        m_net->wm_state_fullscreen,
+        m_net->wm_state_hidden,
+        m_net->wm_state_skip_taskbar,
+        m_net->wm_state_modal,
+        m_net->wm_state_below,
+        m_net->wm_state_above,
+        m_net->wm_state_demands_attention,
 
         // window type
-        m_net_wm_window_type,
-        m_net_wm_window_type_dock,
-        m_net_wm_window_type_desktop,
-        m_net_wm_window_type_splash,
-        m_net_wm_window_type_dialog,
-        m_net_wm_window_type_menu,
-        m_net_wm_window_type_toolbar,
-        m_net_wm_window_type_normal,
+        m_net->wm_window_type,
+        m_net->wm_window_type_dock,
+        m_net->wm_window_type_desktop,
+        m_net->wm_window_type_splash,
+        m_net->wm_window_type_dialog,
+        m_net->wm_window_type_menu,
+        m_net->wm_window_type_toolbar,
+        m_net->wm_window_type_normal,
 
         // window actions
-        m_net_wm_allowed_actions,
-        m_net_wm_action_move,
-        m_net_wm_action_resize,
-        m_net_wm_action_minimize,
-        m_net_wm_action_shade,
-        m_net_wm_action_stick,
-        m_net_wm_action_maximize_horz,
-        m_net_wm_action_maximize_vert,
-        m_net_wm_action_fullscreen,
-        m_net_wm_action_change_desktop,
-        m_net_wm_action_close,
+        m_net->wm_allowed_actions,
+        m_net->wm_action_move,
+        m_net->wm_action_resize,
+        m_net->wm_action_minimize,
+        m_net->wm_action_shade,
+        m_net->wm_action_stick,
+        m_net->wm_action_maximize_horz,
+        m_net->wm_action_maximize_vert,
+        m_net->wm_action_fullscreen,
+        m_net->wm_action_change_desktop,
+        m_net->wm_action_close,
 
         // root properties
-        m_net_client_list,
-        m_net_client_list_stacking,
-        m_net_number_of_desktops,
-        m_net_current_desktop,
-        m_net_active_window,
-        m_net_close_window,
-        m_net_moveresize_window,
-        m_net_workarea,
-        m_net_restack_window,
-        m_net_request_frame_extents,
+        m_net->client_list,
+        m_net->client_list_stacking,
+        m_net->number_of_desktops,
+        m_net->current_desktop,
+        m_net->active_window,
+        m_net->close_window,
+        m_net->moveresize_window,
+        m_net->workarea,
+        m_net->restack_window,
+        m_net->request_frame_extents,
 
-        m_net_wm_moveresize,
+        m_net->wm_moveresize,
 
-        m_net_frame_extents,
+        m_net->frame_extents,
 
         // desktop properties
-        m_net_wm_desktop,
-        m_net_desktop_names,
-        m_net_desktop_viewport,
-        m_net_desktop_geometry,
+        m_net->wm_desktop,
+        m_net->desktop_names,
+        m_net->desktop_viewport,
+        m_net->desktop_geometry,
 
-        m_net_supporting_wm_check
+        m_net->supporting_wm_check
     };
     /* From Extended Window Manager Hints, draft 1.3:
      *
@@ -194,7 +361,7 @@ void Ewmh::initForScreen(BScreen &screen) {
      * incompatible changes will not be made to the
      * hints (without being renamed).
      */
-    screen.rootWindow().changeProperty(m_net_supported, XA_ATOM, 32,
+    screen.rootWindow().changeProperty(m_net->supported, XA_ATOM, 32,
                                        PropModeReplace,
                                        (unsigned char *) &atomsupported,
                                        (sizeof atomsupported)/sizeof atomsupported[0]);
@@ -214,7 +381,7 @@ void Ewmh::initForScreen(BScreen &screen) {
 void Ewmh::setupClient(WinClient &winclient) {
     updateStrut(winclient);
 
-    FbTk::FbString newtitle = winclient.textProperty(m_net_wm_name);
+    FbTk::FbString newtitle = winclient.textProperty(m_net->wm_name);
     if (!newtitle.empty())
         winclient.setTitle(newtitle);
 
@@ -239,26 +406,26 @@ void Ewmh::setupClient(WinClient &winclient) {
      *
      */
 
-    winclient.property(m_net_wm_window_type, 0, 0x7fffffff, False, XA_ATOM,
+    winclient.property(m_net->wm_window_type, 0, 0x7fffffff, False, XA_ATOM,
                        &ret_type, &fmt, &nitems, &bytes_after,
                        &data);
     Focusable::WindowType type = Focusable::TYPE_NORMAL;
     if (data) {
         Atom *atoms = (unsigned long *)data;
         for (unsigned long l = 0; l < nitems; ++l) {
-            if (atoms[l] == m_net_wm_window_type_dock)
+            if (atoms[l] == m_net->wm_window_type_dock)
                 type = Focusable::TYPE_DOCK;
-            else if (atoms[l] == m_net_wm_window_type_desktop)
+            else if (atoms[l] == m_net->wm_window_type_desktop)
                 type = Focusable::TYPE_DESKTOP;
-            else if (atoms[l] == m_net_wm_window_type_splash)
+            else if (atoms[l] == m_net->wm_window_type_splash)
                 type = Focusable::TYPE_SPLASH;
-            else if (atoms[l] == m_net_wm_window_type_dialog)
+            else if (atoms[l] == m_net->wm_window_type_dialog)
                 type = Focusable::TYPE_DIALOG;
-            else if (atoms[l] == m_net_wm_window_type_menu)
+            else if (atoms[l] == m_net->wm_window_type_menu)
                 type = Focusable::TYPE_MENU;
-            else if (atoms[l] == m_net_wm_window_type_toolbar)
+            else if (atoms[l] == m_net->wm_window_type_toolbar)
                 type = Focusable::TYPE_TOOLBAR;
-            else if (atoms[l] != m_net_wm_window_type_normal)
+            else if (atoms[l] != m_net->wm_window_type_normal)
                 continue;
             /*
              * NOT YET IMPLEMENTED:
@@ -273,9 +440,9 @@ void Ewmh::setupClient(WinClient &winclient) {
         if (winclient.isTransient()) {
             type = Focusable::TYPE_DIALOG;
             winclient.
-                changeProperty(m_net_wm_window_type,
+                changeProperty(m_net->wm_window_type,
                                XA_ATOM, 32, PropModeReplace,
-                               (unsigned char*)&m_net_wm_window_type_dialog, 1);
+                               (unsigned char*)&m_net->wm_window_type_dialog, 1);
 
         }
     }
@@ -292,7 +459,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     unsigned char *data = 0;
 
-    if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL,
+    if (win.winClient().property(m_net->wm_desktop, 0, 1, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
         unsigned int desktop = static_cast<long>(*data);
@@ -323,7 +490,7 @@ void Ewmh::updateFocusedWindow(BScreen &screen, Window win) {
      * property set by the Window Manager.
      *
      */
-    screen.rootWindow().changeProperty(m_net_active_window,
+    screen.rootWindow().changeProperty(m_net->active_window,
                                        XA_WINDOW, 32,
                                        PropModeReplace,
                                        (unsigned char *)&win, 1);
@@ -335,9 +502,9 @@ void Ewmh::updateFocusedWindow(BScreen &screen, Window win) {
 void Ewmh::updateClientClose(WinClient &winclient){
     if (!winclient.screen().isShuttingdown()) {
         XDeleteProperty(FbTk::App::instance()->display(), winclient.window(),
-                        m_net_wm_state);
+                        m_net->wm_state);
         XDeleteProperty(FbTk::App::instance()->display(), winclient.window(),
-                        m_net_wm_desktop);
+                        m_net->wm_desktop);
     }
 }
 
@@ -380,10 +547,10 @@ void Ewmh::updateClientList(BScreen &screen) {
      * SHOULD be set and updated by the Window
      * Manager.
      */
-    screen.rootWindow().changeProperty(m_net_client_list,
+    screen.rootWindow().changeProperty(m_net->client_list,
                                        XA_WINDOW, 32,
                                        PropModeReplace, (unsigned char *)wl, num);
-    screen.rootWindow().changeProperty(m_net_client_list_stacking,
+    screen.rootWindow().changeProperty(m_net->client_list_stacking,
                                        XA_WINDOW, 32,
                                        PropModeReplace, (unsigned char *)wl, num);
 
@@ -435,7 +602,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     if (code != XNoMemory && code != XLocaleNotSupported) {
         XSetTextProperty(FbTk::App::instance()->display(),
                          screen.rootWindow().window(),
-                         &text, m_net_desktop_names);
+                         &text, m_net->desktop_names);
 
         XFree(text.value);
     }
@@ -443,7 +610,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
 #else
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
-			 &text, m_net_desktop_names);
+			 &text, m_net->desktop_names);
         XFree(text.value);
     }
 #endif
@@ -464,7 +631,7 @@ void Ewmh::updateCurrentWorkspace(BScreen &screen) {
      *
      */
     unsigned long workspace = screen.currentWorkspaceID();
-    screen.rootWindow().changeProperty(m_net_current_desktop,
+    screen.rootWindow().changeProperty(m_net->current_desktop,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)&workspace, 1);
@@ -481,7 +648,7 @@ void Ewmh::updateWorkspaceCount(BScreen &screen) {
      * desktops.
      */
     unsigned long numworkspaces = screen.numberOfWorkspaces();
-    screen.rootWindow().changeProperty(m_net_number_of_desktops,
+    screen.rootWindow().changeProperty(m_net->number_of_desktops,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)&numworkspaces, 1);
@@ -499,7 +666,7 @@ void Ewmh::updateViewPort(BScreen &screen) {
      *
      */
     long value[2] = {0, 0}; // we dont support large desktops
-    screen.rootWindow().changeProperty(m_net_desktop_viewport,
+    screen.rootWindow().changeProperty(m_net->desktop_viewport,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)value, 2);
@@ -519,7 +686,7 @@ void Ewmh::updateGeometry(BScreen &screen) {
      *
      */
     long value[2] = {screen.width(), screen.height()};
-    screen.rootWindow().changeProperty(m_net_desktop_geometry,
+    screen.rootWindow().changeProperty(m_net->desktop_geometry,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)value, 2);
@@ -555,7 +722,7 @@ void Ewmh::updateWorkarea(BScreen &screen) {
         coords[i + 3] = screen.maxBottom(0) - screen.maxTop(0);
 
     }
-    screen.rootWindow().changeProperty(m_net_workarea,
+    screen.rootWindow().changeProperty(m_net->workarea,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)coords,
@@ -574,23 +741,23 @@ void Ewmh::updateState(FluxboxWindow &win) {
     StateVec state;
 
     if (win.isMaximizedHorz())
-        state.push_back(m_net_wm_state_maximized_horz);
+        state.push_back(m_net->wm_state_maximized_horz);
     if (win.isMaximizedVert())
-        state.push_back(m_net_wm_state_maximized_vert);
+        state.push_back(m_net->wm_state_maximized_vert);
     if (win.isStuck())
-        state.push_back(m_net_wm_state_sticky);
+        state.push_back(m_net->wm_state_sticky);
     if (win.isShaded())
-        state.push_back(m_net_wm_state_shaded);
+        state.push_back(m_net->wm_state_shaded);
     if (win.layerNum() == Layer::BOTTOM)
-        state.push_back(m_net_wm_state_below);
+        state.push_back(m_net->wm_state_below);
     if (win.layerNum() == Layer::ABOVE_DOCK)
-        state.push_back(m_net_wm_state_above);
+        state.push_back(m_net->wm_state_above);
     if (win.isIconic())
-        state.push_back(m_net_wm_state_hidden);
+        state.push_back(m_net->wm_state_hidden);
     if (win.isIconHidden())
-        state.push_back(m_net_wm_state_skip_taskbar);
+        state.push_back(m_net->wm_state_skip_taskbar);
     if (win.isFullscreen())
-        state.push_back(m_net_wm_state_fullscreen);
+        state.push_back(m_net->wm_state_fullscreen);
 
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
@@ -604,31 +771,31 @@ void Ewmh::updateState(FluxboxWindow &win) {
 
         // set client-specific state
         if ((*it)->isStateModal())
-            client_state.push_back(m_net_wm_state_modal);
+            client_state.push_back(m_net->wm_state_modal);
         if (Fluxbox::instance()->attentionHandler().isDemandingAttention(**it))
-            client_state.push_back(m_net_wm_state_demands_attention);
+            client_state.push_back(m_net->wm_state_demands_attention);
 
         // search the old states for _NET_WM_STATE_SKIP_PAGER and append it
         // to the current state, so it wont get deleted by us.
-        (*it)->property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM,
+        (*it)->property(m_net->wm_state, 0, 0x7fffffff, False, XA_ATOM,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  &data);
         if (data) {
             Atom *old_states = (Atom *)data;
             for (unsigned long i=0; i < nitems; ++i) {
-                if (old_states[i] == m_net_wm_state_skip_pager) {
-                    client_state.push_back(m_net_wm_state_skip_pager);
+                if (old_states[i] == m_net->wm_state_skip_pager) {
+                    client_state.push_back(m_net->wm_state_skip_pager);
                 }
             }
             XFree(data);
         }
 
         if (!client_state.empty()) {
-            (*it)->changeProperty(m_net_wm_state, XA_ATOM, 32, PropModeReplace,
+            (*it)->changeProperty(m_net->wm_state, XA_ATOM, 32, PropModeReplace,
                                   reinterpret_cast<unsigned char*>(&client_state.front()),
                                   client_state.size());
         } else
-            (*it)->deleteProperty(m_net_wm_state);
+            (*it)->deleteProperty(m_net->wm_state);
     }
 }
 
@@ -648,7 +815,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
     for (; it != it_end; ++it) {
-        (*it)->changeProperty(m_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
+        (*it)->changeProperty(m_net->wm_desktop, XA_CARDINAL, 32, PropModeReplace,
                               (unsigned char *)&workspace, 1);
     }
 
@@ -659,7 +826,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
                               BScreen * screen, WinClient * const winclient) {
 
-    if (ce.message_type == m_net_wm_desktop) {
+    if (ce.message_type == m_net->wm_desktop) {
         // ce.data.l[0] = workspace number
         // valid window
 
@@ -686,7 +853,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             screen->sendToWorkspace(ce.data.l[0], fbwin, false);
 
         return true;
-    } else if (ce.message_type == m_net_wm_state) {
+    } else if (ce.message_type == m_net->wm_state) {
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
 
@@ -705,7 +872,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             toggleState(win, ce.data.l[2]);
         }
         return true;
-    } else if (ce.message_type == m_net_number_of_desktops) {
+    } else if (ce.message_type == m_net->number_of_desktops) {
         if (screen == 0)
             return true;
         // ce.data.l[0] = number of workspaces
@@ -731,7 +898,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         }
 
         return true;
-    } else if (ce.message_type == m_net_current_desktop) {
+    } else if (ce.message_type == m_net->current_desktop) {
         if (screen == 0)
             return true;
         // ce.data.l[0] = workspace number
@@ -741,7 +908,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             return true;
         screen->changeWorkspaceID(ce.data.l[0]);
         return true;
-    } else if (ce.message_type == m_net_active_window) {
+    } else if (ce.message_type == m_net->active_window) {
 
         // make sure we have a valid window
         if (winclient == 0)
@@ -755,13 +922,13 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             winclient->fbwindow()->raise();
         }
         return true;
-    } else if (ce.message_type == m_net_close_window) {
+    } else if (ce.message_type == m_net->close_window) {
         if (winclient == 0)
             return true;
         // ce.window = window to close (which in this case is the win argument)
         winclient->sendClose();
         return true;
-    } else if (ce.message_type == m_net_moveresize_window) {
+    } else if (ce.message_type == m_net->moveresize_window) {
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
         // ce.data.l[0] = gravity and flags
@@ -777,7 +944,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         winclient->fbwindow()->moveResizeForClient(x, y, width, height,
             win_gravity, winclient->old_bw);
         return true;
-    } else if (ce.message_type == m_net_restack_window) {
+    } else if (ce.message_type == m_net->restack_window) {
 #ifndef DEBUG
         cerr << "Ewmh: restack window" << endl;
 #endif // DEBUG
@@ -806,7 +973,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
 
         return true;
-    } else if (ce.message_type == m_net_request_frame_extents) {
+    } else if (ce.message_type == m_net->request_frame_extents) {
         if (!screen)
             return true;
         FbWinFrameTheme &theme = screen->winFrameTheme();
@@ -822,10 +989,10 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         extents[3] = handle_h;
 
         XChangeProperty(FbTk::App::instance()->display(), ce.window,
-            m_net_frame_extents, XA_CARDINAL, 32, PropModeReplace,
+            m_net->frame_extents, XA_CARDINAL, 32, PropModeReplace,
             (unsigned char *)extents, 4);
 
-    } else if (ce.message_type == m_net_wm_moveresize) {
+    } else if (ce.message_type == m_net->wm_moveresize) {
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
         // data.l[0] = x_root
@@ -874,103 +1041,22 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
 
 bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
-    if (the_property == m_net_wm_strut) {
+    if (the_property == m_net->wm_strut) {
         updateStrut(winclient);
         return true;
-    } else if (the_property == m_net_wm_name) {
+    } else if (the_property == m_net->wm_name) {
         FbTk::FbString newtitle = winclient.textProperty(the_property);
         if (!newtitle.empty())
             winclient.setTitle(newtitle);
         if (winclient.fbwindow())
             winclient.fbwindow()->titleSig().notify();
         return true;
-    } else if (the_property == m_net_wm_icon_name) {
+    } else if (the_property == m_net->wm_icon_name) {
         // we don't use icon title, since we don't show icons
         return true;
     }
 
     return false;
-}
-
-void Ewmh::createAtoms() {
-
-    Display *disp = FbTk::App::instance()->display();
-
-    m_net_supported = XInternAtom(disp, "_NET_SUPPORTED", False);
-    m_net_client_list = XInternAtom(disp, "_NET_CLIENT_LIST", False);
-    m_net_client_list_stacking = XInternAtom(disp, "_NET_CLIENT_LIST_STACKING", False);
-    m_net_number_of_desktops = XInternAtom(disp, "_NET_NUMBER_OF_DESKTOPS", False);
-    m_net_desktop_geometry = XInternAtom(disp, "_NET_DESKTOP_GEOMETRY", False);
-    m_net_desktop_viewport = XInternAtom(disp, "_NET_DESKTOP_VIEWPORT", False);
-    m_net_current_desktop = XInternAtom(disp, "_NET_CURRENT_DESKTOP", False);
-    m_net_desktop_names = XInternAtom(disp, "_NET_DESKTOP_NAMES", False);
-    m_net_active_window = XInternAtom(disp, "_NET_ACTIVE_WINDOW", False);
-    m_net_workarea = XInternAtom(disp, "_NET_WORKAREA", False);
-    m_net_supporting_wm_check = XInternAtom(disp, "_NET_SUPPORTING_WM_CHECK", False);
-    m_net_virtual_roots = XInternAtom(disp, "_NET_VIRTUAL_ROOTS", False);
-
-    m_net_close_window = XInternAtom(disp, "_NET_CLOSE_WINDOW", False);
-    m_net_moveresize_window = XInternAtom(disp, "_NET_MOVERESIZE_WINDOW", False);
-    m_net_restack_window = XInternAtom(disp, "_NET_RESTACK_WINDOW", False);
-    m_net_request_frame_extents = XInternAtom(disp,
-        "_NET_REQUEST_FRAME_EXTENTS", False);
-
-
-    m_net_wm_moveresize = XInternAtom(disp, "_NET_WM_MOVERESIZE", False);
-
-    m_net_properties = XInternAtom(disp, "_NET_PROPERTIES", False);
-    m_net_wm_name = XInternAtom(disp, "_NET_WM_NAME", False);
-    m_net_wm_icon_name = XInternAtom(disp, "_NET_WM_ICON_NAME", False);
-    m_net_wm_desktop = XInternAtom(disp, "_NET_WM_DESKTOP", False);
-
-    // type atoms
-    m_net_wm_window_type = XInternAtom(disp, "_NET_WM_WINDOW_TYPE", False);
-    m_net_wm_window_type_dock = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DOCK", False);
-    m_net_wm_window_type_desktop = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
-    m_net_wm_window_type_splash = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_SPLASH", False);
-    m_net_wm_window_type_dialog = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DIALOG", False);
-    m_net_wm_window_type_menu = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_MENU", False);
-    m_net_wm_window_type_toolbar = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_TOOLBAR", False);
-    m_net_wm_window_type_normal = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_NORMAL", False);
-
-    // state atom and the supported state atoms
-    m_net_wm_state = XInternAtom(disp, "_NET_WM_STATE", False);
-    m_net_wm_state_sticky = XInternAtom(disp, "_NET_WM_STATE_STICKY", False);
-    m_net_wm_state_shaded = XInternAtom(disp, "_NET_WM_STATE_SHADED", False);
-    m_net_wm_state_maximized_horz = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
-    m_net_wm_state_maximized_vert = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_VERT", False);
-    m_net_wm_state_fullscreen = XInternAtom(disp, "_NET_WM_STATE_FULLSCREEN", False);
-    m_net_wm_state_hidden = XInternAtom(disp, "_NET_WM_STATE_HIDDEN", False);
-    m_net_wm_state_skip_taskbar = XInternAtom(disp, "_NET_WM_STATE_SKIP_TASKBAR", False);
-    m_net_wm_state_skip_pager = XInternAtom(disp, "_NET_WM_STATE_SKIP_PAGER", False);
-    m_net_wm_state_above = XInternAtom(disp, "_NET_WM_STATE_ABOVE", False);
-    m_net_wm_state_below = XInternAtom(disp, "_NET_WM_STATE_BELOW", False);
-    m_net_wm_state_modal = XInternAtom(disp, "_NET_WM_STATE_MODAL", False);
-    m_net_wm_state_demands_attention = XInternAtom(disp, "_NET_WM_STATE_DEMANDS_ATTENTION", False);
-
-    // allowed actions
-    m_net_wm_allowed_actions = XInternAtom(disp, "_NET_WM_ALLOWED_ACTIONS", False);
-    m_net_wm_action_move = XInternAtom(disp, "_NET_WM_ACTION_MOVE", False);
-    m_net_wm_action_resize = XInternAtom(disp, "_NET_WM_ACTION_RESIZE", False);
-    m_net_wm_action_minimize = XInternAtom(disp, "_NET_WM_ACTION_MINIMIZE", False);
-    m_net_wm_action_shade = XInternAtom(disp, "_NET_WM_ACTION_SHADE", False);
-    m_net_wm_action_stick = XInternAtom(disp, "_NET_WM_ACTION_STICK", False);
-    m_net_wm_action_maximize_horz = XInternAtom(disp, "_NET_WM_ACTION_MAXIMIZE_HORZ", False);
-    m_net_wm_action_maximize_vert = XInternAtom(disp, "_NET_WM_ACTION_MAXIMIZE_VERT", False);
-    m_net_wm_action_fullscreen = XInternAtom(disp, "_NET_WM_ACTION_FULLSCREEN", False);
-    m_net_wm_action_change_desktop = XInternAtom(disp, "_NET_WM_ACTION_CHANGE_DESKTOP", False);
-    m_net_wm_action_close = XInternAtom(disp, "_NET_WM_ACTION_CLOSE", False);
-
-    m_net_wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
-    m_net_wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
-    m_net_wm_icon = XInternAtom(disp, "_NET_WM_ICON", False);
-    m_net_wm_pid = XInternAtom(disp, "_NET_WM_PID", False);
-    m_net_wm_handled_icons = XInternAtom(disp, "_NET_WM_HANDLED_ICONS", False);
-
-    m_net_frame_extents = XInternAtom(disp, "_NET_FRAME_EXTENTS", False);
-
-    m_net_wm_ping = XInternAtom(disp, "_NET_WM_PING", False);
-    utf8_string = XInternAtom(disp, "UTF8_STRING", False);
 }
 
 // wrapper for real setState, since most operations don't need the client
@@ -986,49 +1072,49 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
 // set window state
 void Ewmh::setState(FluxboxWindow &win, Atom state, bool value,
                     WinClient &client) {
-    if (state == m_net_wm_state_sticky) { // STICKY
+    if (state == m_net->wm_state_sticky) { // STICKY
         if (value && !win.isStuck() ||
             (!value && win.isStuck()))
             win.stick();
-    } else if (state == m_net_wm_state_shaded) { // SHADED
+    } else if (state == m_net->wm_state_shaded) { // SHADED
         if ((value && !win.isShaded()) ||
             (!value && win.isShaded()))
             win.shade();
-    }  else if (state == m_net_wm_state_maximized_horz ) { // maximized Horizontal
+    }  else if (state == m_net->wm_state_maximized_horz ) { // maximized Horizontal
         if (value ^ win.isMaximizedHorz())
             win.maximizeHorizontal();
-    } else if (state == m_net_wm_state_maximized_vert) { // maximized Vertical
+    } else if (state == m_net->wm_state_maximized_vert) { // maximized Vertical
         if (value ^ win.isMaximizedVert())
             win.maximizeVertical();
-    } else if (state == m_net_wm_state_fullscreen) { // fullscreen
+    } else if (state == m_net->wm_state_fullscreen) { // fullscreen
         if ((value && !win.isFullscreen()) ||
             (!value && win.isFullscreen()))
         win.setFullscreen(value);
-    } else if (state == m_net_wm_state_hidden) { // minimized
+    } else if (state == m_net->wm_state_hidden) { // minimized
         if (value && !win.isIconic())
             win.iconify();
         else if (!value && win.isIconic())
             win.deiconify();
-    } else if (state == m_net_wm_state_skip_taskbar) { // skip taskbar
+    } else if (state == m_net->wm_state_skip_taskbar) { // skip taskbar
         win.setIconHidden(value);
-    } else if (state == m_net_wm_state_below) {  // bottom layer
+    } else if (state == m_net->wm_state_below) {  // bottom layer
         if (value)
             win.moveToLayer(Layer::BOTTOM);
         else if (win.layerNum() > Layer::NORMAL)
             win.moveToLayer(Layer::NORMAL);
-    } else if (state == m_net_wm_state_above) { // above layer
+    } else if (state == m_net->wm_state_above) { // above layer
         if (value)
             win.moveToLayer(Layer::ABOVE_DOCK);
         else if (win.layerNum() < Layer::NORMAL)
             win.moveToLayer(Layer::NORMAL);
-    } else if (state == m_net_wm_state_demands_attention) {
+    } else if (state == m_net->wm_state_demands_attention) {
         if (value) { // if add attention
             Fluxbox::instance()->attentionHandler().addAttention(client);
         } else { // erase it
             Fluxbox::instance()->attentionHandler().
                 update(&client.focusSig());
         }
-    } else if (state == m_net_wm_state_modal) {
+    } else if (state == m_net->wm_state_modal) {
         client.setStateModal(value);
     }
 
@@ -1036,35 +1122,35 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value,
 
 // toggle window state
 void Ewmh::toggleState(FluxboxWindow &win, Atom state, WinClient &client) {
-    if (state == m_net_wm_state_sticky) { // sticky
+    if (state == m_net->wm_state_sticky) { // sticky
         win.stick();
-    } else if (state == m_net_wm_state_shaded){ // shaded
+    } else if (state == m_net->wm_state_shaded){ // shaded
         win.shade();
-    } else if (state == m_net_wm_state_maximized_horz ) { // maximized Horizontal
+    } else if (state == m_net->wm_state_maximized_horz ) { // maximized Horizontal
         win.maximizeHorizontal();
-    } else if (state == m_net_wm_state_maximized_vert) { // maximized Vertical
+    } else if (state == m_net->wm_state_maximized_vert) { // maximized Vertical
         win.maximizeVertical();
-    } else if (state == m_net_wm_state_fullscreen) { // fullscreen
+    } else if (state == m_net->wm_state_fullscreen) { // fullscreen
         win.setFullscreen(!win.isFullscreen()); // toggle current state
-    } else if (state == m_net_wm_state_hidden) { // minimized
+    } else if (state == m_net->wm_state_hidden) { // minimized
         if(win.isIconic())
             win.deiconify();
         else
             win.iconify();
-    } else if (state == m_net_wm_state_skip_taskbar) { // taskbar
+    } else if (state == m_net->wm_state_skip_taskbar) { // taskbar
         win.setIconHidden(!win.isIconHidden());
-    } else if (state == m_net_wm_state_below) { // bottom layer
+    } else if (state == m_net->wm_state_below) { // bottom layer
         if (win.layerNum() == Layer::BOTTOM)
             win.moveToLayer(Layer::NORMAL);
         else
             win.moveToLayer(Layer::BOTTOM);
 
-    } else if (state == m_net_wm_state_above) { // top layer
+    } else if (state == m_net->wm_state_above) { // top layer
         if (win.layerNum() == Layer::ABOVE_DOCK)
             win.moveToLayer(Layer::NORMAL);
         else
             win.moveToLayer(Layer::ABOVE_DOCK);
-    } else if (state == m_net_wm_state_modal) { // modal
+    } else if (state == m_net->wm_state_modal) { // modal
         client.setStateModal(!client.isStateModal());
     }
 
@@ -1076,7 +1162,7 @@ void Ewmh::updateStrut(WinClient &winclient) {
     int fmt = 0;
     unsigned long nitems = 0, bytes_after = 0;
     long *data = 0;
-    if (winclient.property(m_net_wm_strut, 0, 4, False, XA_CARDINAL,
+    if (winclient.property(m_net->wm_strut, 0, 4, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
 
@@ -1111,35 +1197,35 @@ void Ewmh::updateActions(FluxboxWindow &win) {
     actions.reserve(10);
     // all windows can change desktop,
     // be shaded or be sticky
-    actions.push_back(m_net_wm_action_change_desktop);
-    actions.push_back(m_net_wm_action_shade);
-    actions.push_back(m_net_wm_action_stick);
+    actions.push_back(m_net->wm_action_change_desktop);
+    actions.push_back(m_net->wm_action_shade);
+    actions.push_back(m_net->wm_action_stick);
 
     if (win.isResizable())
-        actions.push_back(m_net_wm_action_resize);
+        actions.push_back(m_net->wm_action_resize);
     if (win.isMoveable())
-        actions.push_back(m_net_wm_action_move);
+        actions.push_back(m_net->wm_action_move);
     if (win.isClosable())
-        actions.push_back(m_net_wm_action_close);
+        actions.push_back(m_net->wm_action_close);
     if (win.isIconifiable())
-        actions.push_back(m_net_wm_action_minimize);
+        actions.push_back(m_net->wm_action_minimize);
 
     unsigned int max_width, max_height;
     win.maxSize(max_width, max_height);
 
     // if unlimited max width we can maximize horizontal
     if (max_width == 0) {
-        actions.push_back(m_net_wm_action_maximize_horz);
+        actions.push_back(m_net->wm_action_maximize_horz);
     }
     // if unlimited max height we can maxmize vert
     if (max_height == 0) {
-        actions.push_back(m_net_wm_action_maximize_vert);
+        actions.push_back(m_net->wm_action_maximize_vert);
     }
 
     // if we have unlimited size in all directions we can have this window
     // in fullscreen mode
     if (max_height == 0 && max_width == 0) {
-        actions.push_back(m_net_wm_action_fullscreen);
+        actions.push_back(m_net->wm_action_fullscreen);
     }
 
 
@@ -1147,7 +1233,7 @@ void Ewmh::updateActions(FluxboxWindow &win) {
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
     for (; it != it_end; ++it) {
-        (*it)->changeProperty(m_net_wm_allowed_actions, XA_ATOM, 32, PropModeReplace,
+        (*it)->changeProperty(m_net->wm_allowed_actions, XA_ATOM, 32, PropModeReplace,
                               reinterpret_cast<unsigned char*>(&actions.front()),
                               actions.size());
     }
@@ -1178,7 +1264,7 @@ void Ewmh::setupState(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     unsigned char *data = 0;
 
-    win.winClient().property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM,
+    win.winClient().property(m_net->wm_state, 0, 0x7fffffff, False, XA_ATOM,
                              &ret_type, &fmt, &nitems, &bytes_after,
                              &data);
     if (data) {
@@ -1205,7 +1291,7 @@ void Ewmh::updateFrameExtents(FluxboxWindow &win) {
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
     for (; it != it_end; ++it) {
-        (*it)->changeProperty(m_net_frame_extents,
+        (*it)->changeProperty(m_net->frame_extents,
                               XA_CARDINAL, 32, PropModeReplace,
                               (unsigned char *)extents, 4);
     }

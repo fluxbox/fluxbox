@@ -395,7 +395,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     // this needs to be after ewmh and gnome, so state atoms don't get
     // overwritten before they're applied
 #ifdef REMEMBER
-        addAtomHandler(new Remember(), "remember"); // for remembering window attribs
+    addAtomHandler(new Remember(), "remember"); // for remembering window attribs
 #endif // REMEMBER
 
     // init all "screens"
