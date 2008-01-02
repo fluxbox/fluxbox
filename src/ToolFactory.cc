@@ -41,8 +41,6 @@
 #include "Toolbar.hh"
 #include "fluxbox.hh"
 
-#include "FbTk/FbWindow.hh"
-
 #include <utility>
 
 namespace {

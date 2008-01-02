@@ -244,29 +244,6 @@ private:
 
 bool operator == (Window win, const FbWindow &fbwin);
 
-/// helper class for some STL routines
-class ChangeProperty {
-public:
-    ChangeProperty(Display *disp, Atom prop, int mode,
-                   unsigned char *state, int num):m_disp(disp),
-                                                  m_prop(prop),
-                                                  m_state(state),
-                                                  m_num(num),
-                                                  m_mode(mode){
-
-    }
-    void operator () (FbTk::FbWindow *win) {
-        XChangeProperty(m_disp, win->window(), m_prop, m_prop, 32, m_mode,
-                        m_state, m_num);
-    }
-private:
-    Display *m_disp;
-    Atom m_prop;
-    unsigned char *m_state;
-    int m_num;
-    int m_mode;
-};
-
 /// Interface class to render FbWindow foregrounds.
 class FbWindowRenderer {
 public:

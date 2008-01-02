@@ -234,6 +234,30 @@ private:
     WinClient &m_client;
 };
 
+
+/// helper class for some STL routines
+class ChangeProperty {
+public:
+    ChangeProperty(Display *disp, Atom prop, int mode,
+                   unsigned char *state, int num):m_disp(disp),
+                                                  m_prop(prop),
+                                                  m_state(state),
+                                                  m_num(num),
+                                                  m_mode(mode){
+
+    }
+    void operator () (FbTk::FbWindow *win) {
+        XChangeProperty(m_disp, win->window(), m_prop, m_prop, 32, m_mode,
+                        m_state, m_num);
+    }
+private:
+    Display *m_disp;
+    Atom m_prop;
+    unsigned char *m_state;
+    int m_num;
+    int m_mode;
+};
+
 };
 
 
@@ -2012,7 +2036,7 @@ void FluxboxWindow::installColormap(bool install) {
  */
 void FluxboxWindow::saveBlackboxAttribs() {
     for_each(m_clientlist.begin(), m_clientlist.end(),
-             FbTk::ChangeProperty(
+             ChangeProperty(
                  display,
                  FbAtoms::instance()->getFluxboxAttributesAtom(),
                  PropModeReplace,
@@ -2036,7 +2060,7 @@ void FluxboxWindow::setState(unsigned long new_state, bool setting_up) {
     state[1] = (unsigned long) None;
 
     for_each(m_clientlist.begin(), m_clientlist.end(),
-             FbTk::ChangeProperty(display,
+             ChangeProperty(display,
                                   FbAtoms::instance()->getWMStateAtom(),
                                   PropModeReplace,
                                   (unsigned char *)state, 2));
