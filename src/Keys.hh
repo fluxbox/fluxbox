@@ -25,12 +25,9 @@
 #define KEYS_HH
 
 #include "FbTk/NotCopyable.hh"
-#include "FbTk/RefCount.hh"
-#include "FbTk/Command.hh"
 #include "FbTk/KeyUtil.hh"
 
 #include <string>
-#include <list>
 #include <map>
 
 
@@ -92,9 +89,14 @@ public:
        @return true on success, else false
     */
     bool reconfigure(const char *filename);
-    const std::string filename() const { return m_filename; }
-    void keyMode(std::string keyMode);
+    const std::string& filename() const { return m_filename; }
+    void keyMode(const std::string& keyMode);
 private:
+    class t_key; // helper class to build a 'keytree'
+    typedef std::map<std::string, t_key *> keyspace_t;
+    typedef std::map<Window, int> WindowMap;
+    typedef std::map<Window, FbTk::EventHandler*> HandlerMap;
+
     void deleteTree();
 
     void grabKey(unsigned int key, unsigned int mod);
@@ -105,54 +107,14 @@ private:
 
     // Load default keybindings for when there are errors loading the initial one
     void loadDefaults();
-
-    std::string m_filename;
-
-    class t_key;
-    typedef std::list<t_key*> keylist_t;
-
-    class t_key {
-    public:
-        t_key(int type, unsigned int mod, unsigned int key, int context,
-              bool isdouble);
-        t_key(t_key *k);
-        ~t_key();
-
-        t_key *find(int type_, unsigned int mod_, unsigned int key_,
-                    int context_, bool isdouble_) {
-            // t_key ctor sets context_ of 0 to GLOBAL, so we must here too
-            context_ = context_ ? context_ : GLOBAL;
-            keylist_t::iterator it = keylist.begin(), it_end = keylist.end();
-            for (; it != it_end; it++) {
-                if ((*it)->type == type_ && (*it)->key == key_ &&
-                    ((*it)->context & context_) > 0 &&
-                    isdouble_ == (*it)->isdouble && (*it)->mod ==
-                    FbTk::KeyUtil::instance().isolateModifierMask(mod_))
-                    return *it;
-            }
-            return 0;
-        }
-
-
-        FbTk::RefCount<FbTk::Command> m_command;
-        int context; // ON_TITLEBAR, etc.: bitwise-or of all desired contexts
-        int type; // KeyPress or ButtonPress
-        unsigned int key; // key code or button number
-        unsigned int mod;
-        bool isdouble;
-        keylist_t keylist;
-    };
-
     void setKeyMode(t_key *keyMode);
 
-    typedef std::map<std::string, t_key *> keyspace_t;
+
+    // member variables
+    std::string m_filename;
     t_key *m_keylist;
     keyspace_t m_map;
 
-    Display *m_display;  ///< display connection
-
-    typedef std::map<Window, int> WindowMap;
-    typedef std::map<Window, FbTk::EventHandler*> HandlerMap;
     WindowMap m_window_map;
     HandlerMap m_handler_map;
 };
