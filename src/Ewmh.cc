@@ -810,14 +810,14 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         if (!screen)
             return true;
         FbWinFrameTheme &theme = screen->winFrameTheme();
+        unsigned int bw = theme.border(true).width();
         long title_h = theme.titleHeight() ||
-            theme.font().height() + 2*theme.bevelWidth() + 2;
-        title_h += theme.border(true).width();
-        long handle_h = theme.handleWidth() + theme.border(true).width();
+            theme.font().height() + 2*theme.bevelWidth() + 2 + 2*bw;
+        long handle_h = theme.handleWidth() + 2*bw;
         long extents[4];
         // our frames currently don't protrude from left/right
-        extents[0] = 0;
-        extents[1] = 0;
+        extents[0] = bw;
+        extents[1] = bw;
         extents[2] = title_h;
         extents[3] = handle_h;
 
@@ -1195,16 +1195,18 @@ void Ewmh::updateFrameExtents(FluxboxWindow &win) {
        protrudes from the client window, on left, right, top, bottom
        (it is independent of window position).
      */
-    long extents[4];
-    // our frames currently don't protrude from left/right
-    extents[0] = 0;
-    extents[1] = 0;
-    extents[2] = win.frame().titlebarHeight();
-    extents[3] = win.frame().handleHeight();
 
     FluxboxWindow::ClientList::iterator it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
     for (; it != it_end; ++it) {
+        long extents[4];
+        // our frames currently don't protrude from left/right
+        int bw = win.frame().window().borderWidth() - (*it)->old_bw;
+        extents[0] = bw;
+        extents[1] = bw;
+        extents[2] = win.frame().titlebarHeight() + bw;
+        extents[3] = win.frame().handleHeight() + bw;
+
         (*it)->changeProperty(m_net_frame_extents,
                               XA_CARDINAL, 32, PropModeReplace,
                               (unsigned char *)extents, 4);
