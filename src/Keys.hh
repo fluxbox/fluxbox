@@ -25,8 +25,8 @@
 #define KEYS_HH
 
 #include "FbTk/NotCopyable.hh"
-#include "FbTk/KeyUtil.hh"
 
+#include <X11/Xlib.h>
 #include <string>
 #include <map>
 
