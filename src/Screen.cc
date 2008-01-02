@@ -77,6 +77,7 @@
 #include "FbTk/Compose.hh"
 #include "FbTk/FbString.hh"
 #include "FbTk/STLUtil.hh"
+#include "FbTk/KeyUtil.hh"
 
 //use GNU extensions
 #ifndef _GNU_SOURCE

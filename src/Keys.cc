@@ -31,7 +31,8 @@
 #include "FbTk/StringUtil.hh"
 #include "FbTk/App.hh"
 #include "FbTk/Command.hh"
-
+#include "FbTk/RefCount.hh"
+#include "FbTk/KeyUtil.hh"
 #include "FbTk/ObjectRegistry.hh"
 #include "FbTk/I18n.hh"
 
@@ -90,6 +91,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <list>
 #include <vector>
 #include <map>
 #include <memory>
@@ -101,7 +103,75 @@ using std::vector;
 using std::ifstream;
 using std::pair;
 
-Keys::Keys(): m_display(FbTk::App::instance()->display()) { }
+// helper class 'keytree'
+class Keys::t_key {
+public:
+
+    // typedefs
+    typedef std::list<t_key*> keylist_t;
+
+    // constructor / destructor
+    t_key(int type, unsigned int mod, unsigned int key, int context,
+          bool isdouble);
+    t_key(t_key *k);
+    ~t_key();
+
+    t_key *find(int type_, unsigned int mod_, unsigned int key_,
+                int context_, bool isdouble_) {
+        // t_key ctor sets context_ of 0 to GLOBAL, so we must here too
+        context_ = context_ ? context_ : GLOBAL;
+        keylist_t::iterator it = keylist.begin(), it_end = keylist.end();
+        for (; it != it_end; it++) {
+            if ((*it)->type == type_ && (*it)->key == key_ &&
+                ((*it)->context & context_) > 0 &&
+                isdouble_ == (*it)->isdouble && (*it)->mod ==
+                FbTk::KeyUtil::instance().isolateModifierMask(mod_))
+                return *it;
+        }
+        return 0;
+    }
+
+    // member variables
+ 
+    int type; // KeyPress or ButtonPress
+    unsigned int mod;
+    unsigned int key; // key code or button number
+    int context; // ON_TITLEBAR, etc.: bitwise-or of all desired contexts
+    bool isdouble;
+    FbTk::RefCount<FbTk::Command> m_command;
+
+    keylist_t keylist;
+};
+
+Keys::t_key::t_key(int type_, unsigned int mod_, unsigned int key_,
+                   int context_, bool isdouble_) :
+    type(type_),
+    mod(mod_),
+    key(key_),
+    context(context_),
+    isdouble(isdouble_),
+    m_command(0) {
+    context = context_ ? context_ : GLOBAL;
+}
+
+Keys::t_key::t_key(t_key *k) {
+    key = k->key;
+    mod = k->mod;
+    type = k->type;
+    context = k->context;
+    isdouble = k->isdouble;
+    m_command = k->m_command;
+}
+
+Keys::t_key::~t_key() {
+    for (keylist_t::iterator list_it = keylist.begin(); list_it != keylist.end(); ++list_it)
+        delete *list_it;
+    keylist.clear();
+}
+
+
+
+Keys::Keys() { }
 
 Keys::~Keys() {
     ungrabKeys();
@@ -168,8 +238,8 @@ void Keys::grabWindow(Window win) {
         return;
 
     m_handler_map[win]->grabButtons();
-    keylist_t::iterator it = m_keylist->keylist.begin();
-    keylist_t::iterator it_end = m_keylist->keylist.end();
+    t_key::keylist_t::iterator it = m_keylist->keylist.begin();
+    t_key::keylist_t::iterator it_end = m_keylist->keylist.end();
     for (; it != it_end; ++it) {
         // keys are only grabbed in global context
         if ((win_it->second & Keys::GLOBAL) > 0 && (*it)->type == KeyPress)
@@ -271,7 +341,7 @@ bool Keys::addBinding(const string &linebuffer) {
     FbTk::StringUtil::stringtok(val, linebuffer.c_str());
 
     // must have at least 1 argument
-    if (val.size() <= 0)
+    if (val.empty())
         return true; // empty lines are valid.
 
     if (val[0][0] == '#' || val[0][0] == '!' ) //the line is commented
@@ -345,7 +415,7 @@ bool Keys::addBinding(const string &linebuffer) {
                 // +[1-9]   - number between +1 and +9
                 // numbers 10 and above
                 //
-                } else if (val[argc].size() > 1 && (isdigit(val[argc][0]) &&
+                } else if (!val[argc].empty() && (isdigit(val[argc][0]) &&
                            (isdigit(val[argc][1]) || val[argc][1] == 'x') ||
                            val[argc][0] == '+' && isdigit(val[argc][1])) ) {
 
@@ -512,7 +582,7 @@ bool Keys::reconfigure(const char *filename) {
     return load(filename);
 }
 
-void Keys::keyMode(string keyMode) {
+void Keys::keyMode(const string& keyMode) {
     keyspace_t::iterator it = m_map.find(keyMode + ":");
     if (it == m_map.end())
         setKeyMode(m_map["default:"]);
@@ -530,8 +600,8 @@ void Keys::setKeyMode(t_key *keyMode) {
     for (; h_it != h_it_end; ++h_it)
         h_it->second->grabButtons();
 
-    keylist_t::iterator it = keyMode->keylist.begin();
-    keylist_t::iterator it_end = keyMode->keylist.end();
+    t_key::keylist_t::iterator it = keyMode->keylist.begin();
+    t_key::keylist_t::iterator it_end = keyMode->keylist.end();
     for (; it != it_end; ++it) {
         if ((*it)->type == KeyPress)
             grabKey((*it)->key, (*it)->mod);
@@ -540,28 +610,5 @@ void Keys::setKeyMode(t_key *keyMode) {
     }
     m_keylist = keyMode;
 }
-            
-Keys::t_key::t_key(int type_, unsigned int mod_, unsigned int key_,
-                   int context_, bool isdouble_) {
-    key = key_;
-    mod = mod_;
-    type = type_;
-    context = context_ ? context_ : GLOBAL;
-    isdouble = isdouble_;
-    m_command = 0;
-}
 
-Keys::t_key::t_key(t_key *k) {
-    key = k->key;
-    mod = k->mod;
-    type = k->type;
-    context = k->context;
-    isdouble = k->isdouble;
-    m_command = k->m_command;
-}
 
-Keys::t_key::~t_key() {
-    for (keylist_t::iterator list_it = keylist.begin(); list_it != keylist.end(); ++list_it)
-        delete *list_it;
-    keylist.clear();
-}
