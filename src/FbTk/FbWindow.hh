@@ -195,7 +195,8 @@ public:
     void setOpaque(unsigned char alpha);
 
     void setRenderer(FbWindowRenderer &renderer) { m_renderer = &renderer; }
-    void sendConfigureNotify(int x, int y, unsigned int width, unsigned int height);
+    void sendConfigureNotify(int x, int y, unsigned int width,
+                             unsigned int height, unsigned int bw = 0);
 
     /// forces full background change, recalcing of alpha values if necessary
     void updateBackground(bool only_if_alpha);
