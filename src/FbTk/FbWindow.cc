@@ -633,7 +633,8 @@ void FbWindow::create(Window parent, int x, int y,
 
 
 void FbWindow::sendConfigureNotify(int x, int y, 
-                                   unsigned int width, unsigned int height) {
+                                   unsigned int width, unsigned int height,
+                                   unsigned int bw) {
     Display *disp = FbTk::App::instance()->display();
     XEvent event;
     event.type = ConfigureNotify;
@@ -645,9 +646,7 @@ void FbWindow::sendConfigureNotify(int x, int y,
     event.xconfigure.y = y;
     event.xconfigure.width = width;
     event.xconfigure.height = height;
-    //!! TODO
-    event.xconfigure.border_width = 1;
-    //!! TODO
+    event.xconfigure.border_width = bw;
     event.xconfigure.above = None; 
     event.xconfigure.override_redirect = false;
 
