@@ -26,7 +26,7 @@
 #include "FbTk/Texture.hh"
 #include "FbTk/Color.hh"
 
-class SlitTheme:public FbTk::Theme {
+class SlitTheme: public FbTk::Theme, public FbTk::ThemeProxy<SlitTheme> {
 public:
     explicit SlitTheme(int screen_num);
 
@@ -37,6 +37,13 @@ public:
     const FbTk::Color &borderColor() const { return *m_border_color; }
     int borderWidth() const { return *m_border_width; }
     int bevelWidth() const { return *m_bevel_width; }
+
+    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+
+    virtual SlitTheme *operator ->() { return this; }
+    virtual const SlitTheme *operator ->() const { return this; }
+
 private:
     FbTk::ThemeItem<FbTk::Texture> m_texture;
     FbTk::ThemeItem<int> m_border_width, m_bevel_width;

@@ -36,7 +36,7 @@ public:
     TextTheme(Theme &theme, const std::string &name, const std::string &altname);
     virtual ~TextTheme() { }
 
-    void update();
+    void updateTextColor();
 
     Font &font() { return *m_font; }
     const Font &font() const { return *m_font; }

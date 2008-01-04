@@ -38,7 +38,7 @@ ToolTheme::~ToolTheme() {
 
 void ToolTheme::reconfigTheme() { 
     // update text theme
-    update();
+    updateTextColor();
 }
 
 bool ToolTheme::fallback(FbTk::ThemeItem_base &item) {

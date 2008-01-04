@@ -32,7 +32,8 @@
 
 #include "IconbarTheme.hh"
 
-class FbWinFrameTheme: public FbTk::Theme {
+class FbWinFrameTheme: public FbTk::Theme,
+                       public FbTk::ThemeProxy<FbWinFrameTheme> {
 public:
     explicit FbWinFrameTheme(int screen_num);
     ~FbWinFrameTheme();
@@ -92,6 +93,12 @@ public:
     void setUnfocusedAlpha(unsigned char alpha) { m_unfocused_alpha = alpha; }
 
     IconbarTheme &iconbarTheme() { return m_iconbar_theme; }
+
+    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+
+    virtual FbWinFrameTheme *operator ->() { return this; }
+    virtual const FbWinFrameTheme *operator ->() const { return this; }
 
 private:
     FbTk::ThemeItem<FbTk::Texture> m_title_focus, m_title_unfocus;

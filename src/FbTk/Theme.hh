@@ -118,6 +118,18 @@ private:
     FbTk::Subject m_reconfig_sig;
 };
 
+/// Proxy interface for themes, so they can be substituted dynamically
+template <class BaseTheme>
+class ThemeProxy {
+public:
+    virtual ~ThemeProxy() { }
+
+    virtual Subject &reconfigSig() = 0;
+    virtual const Subject &reconfigSig() const = 0;
+
+    virtual BaseTheme *operator ->() = 0;
+    virtual const BaseTheme *operator ->() const = 0;
+};
 
 /// Singleton theme manager
 /**

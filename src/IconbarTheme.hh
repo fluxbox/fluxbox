@@ -28,7 +28,7 @@
 #include "FbTk/Texture.hh"
 #include "FbTk/TextTheme.hh"
 
-class IconbarTheme:public FbTk::Theme {
+class IconbarTheme: public FbTk::Theme, public FbTk::ThemeProxy<IconbarTheme> {
 public:
     IconbarTheme(int screen_num, const std::string &name, const std::string &altname);
     virtual ~IconbarTheme();
@@ -46,6 +46,12 @@ public:
     const FbTk::Texture &focusedTexture() const { return *m_focused_texture; }
     const FbTk::Texture &unfocusedTexture() const { return *m_unfocused_texture; }
     const FbTk::Texture &emptyTexture() const { return *m_empty_texture; }
+
+    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+
+    virtual IconbarTheme *operator ->() { return this; }
+    virtual const IconbarTheme *operator ->() const { return this; }
 
 private:
     FbTk::ThemeItem<FbTk::Texture> m_focused_texture, m_unfocused_texture, m_empty_texture;

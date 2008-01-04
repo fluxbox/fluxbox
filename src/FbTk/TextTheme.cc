@@ -38,10 +38,10 @@ TextTheme::TextTheme(Theme &theme,
     // set default values
     m_text_color->setFromString("white", theme.screenNum());
 
-    update();
+    updateTextColor();
 }
 
-void TextTheme::update() {
+void TextTheme::updateTextColor() {
     m_text_gc.setForeground(*m_text_color);
 }
 

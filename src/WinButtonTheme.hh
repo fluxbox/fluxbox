@@ -27,7 +27,8 @@
 
 class FbWinFrameTheme;
 
-class WinButtonTheme: public FbTk::Theme {
+class WinButtonTheme: public FbTk::Theme,
+                      public FbTk::ThemeProxy<WinButtonTheme> {
 public:
     WinButtonTheme(int screen_num, FbWinFrameTheme &frame_theme);
     ~WinButtonTheme();
@@ -83,6 +84,12 @@ public:
     const FbTk::PixmapWithMask &titleFocusPixmap() const { return *m_title_focus_pm; }
     FbTk::PixmapWithMask &titleUnfocusPixmap() { return *m_title_unfocus_pm; }
     const FbTk::PixmapWithMask &titleUnfocusPixmap() const { return *m_title_unfocus_pm; }
+
+    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+
+    virtual WinButtonTheme *operator ->() { return this; }
+    virtual const WinButtonTheme *operator ->() const { return this; }
 
 private:
 

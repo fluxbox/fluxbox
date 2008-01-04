@@ -33,7 +33,7 @@
 
 namespace FbTk {
 
-class MenuTheme:public Theme {
+class MenuTheme: public Theme, public ThemeProxy<MenuTheme> {
 public:
     //!! TODO
     // this isn't actually used with a theme item
@@ -139,6 +139,12 @@ public:
         if (is_imagecached)
             m_hl_selected_pixmap->pixmap().dontFree();
     }
+
+    virtual Subject &reconfigSig() { return Theme::reconfigSig(); }
+    virtual const Subject &reconfigSig() const { return Theme::reconfigSig(); }
+
+    virtual MenuTheme *operator ->() { return this; }
+    virtual const MenuTheme *operator ->() const { return this; }
 
 private:
     ThemeItem<Color> t_text, f_text, h_text, d_text, u_text;

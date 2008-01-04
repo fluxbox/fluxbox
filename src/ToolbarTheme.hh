@@ -27,7 +27,7 @@
 #include "FbTk/BorderTheme.hh"
 
 /// toolbar theme class container
-class ToolbarTheme: public FbTk::Theme {
+class ToolbarTheme: public FbTk::Theme, public FbTk::ThemeProxy<ToolbarTheme> {
 public:
     explicit ToolbarTheme(int screen_num);
     virtual ~ToolbarTheme();
@@ -43,6 +43,13 @@ public:
     bool shape() const { return *m_shape; }
     int height() const { return *m_height; }
     int buttonSize() const { return *m_button_size; }
+
+    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+
+    virtual ToolbarTheme *operator ->() { return this; }
+    virtual const ToolbarTheme *operator ->() const { return this; }
+
 private:
     FbTk::ThemeItem<FbTk::Texture> m_toolbar;
     FbTk::BorderTheme m_border;

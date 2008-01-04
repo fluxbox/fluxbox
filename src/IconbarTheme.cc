@@ -58,8 +58,8 @@ IconbarTheme::~IconbarTheme() {
 
 
 void IconbarTheme::reconfigTheme() {
-    m_focused_text.update();
-    m_unfocused_text.update();
+    m_focused_text.updateTextColor();
+    m_unfocused_text.updateTextColor();
 }
 
 // fallback resources

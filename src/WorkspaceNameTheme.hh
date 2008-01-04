@@ -25,7 +25,8 @@
 
 #include "ToolTheme.hh"
 
-class WorkspaceNameTheme:public ToolTheme {
+class WorkspaceNameTheme: public ToolTheme,
+                          public FbTk::ThemeProxy<WorkspaceNameTheme> {
 public:
     WorkspaceNameTheme(int screen_num, 
                        const std::string &name, 
@@ -44,6 +45,13 @@ public:
 
         return ToolTheme::fallback(item);
     }
+
+    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+
+    virtual WorkspaceNameTheme *operator ->() { return this; }
+    virtual const WorkspaceNameTheme *operator ->() const { return this; }
+
 };
 
 #endif // WORKSPACENAMETHEME_HH

@@ -34,7 +34,7 @@ class ImageControl;
 }
 
 /// Contains border color, border size, bevel width and opGC for objects like geometry window in BScreen
-class RootTheme: public FbTk::Theme {
+class RootTheme: public FbTk::Theme, public FbTk::ThemeProxy<RootTheme> {
 public:
     /// constructor
     /// @param resmanager resource manager for finding specific resources
@@ -53,7 +53,13 @@ public:
                            int join_style) {
         m_opgc.setLineAttributes(width, line_style, cap_style, join_style);
     }
-    
+
+    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+
+    virtual RootTheme *operator ->() { return this; }
+    virtual const RootTheme *operator ->() const { return this; }
+
 private:
     BackgroundItem *m_background;///< background image/texture
     FbTk::GContext m_opgc;

@@ -27,7 +27,7 @@
 
 #include "FbTk/GContext.hh"
 
-class ButtonTheme: public ToolTheme {
+class ButtonTheme: public ToolTheme, public FbTk::ThemeProxy<ButtonTheme> {
 public:
     ButtonTheme(int screen_num, 
                 const std::string &name, const std::string &alt_name, 
@@ -42,6 +42,12 @@ public:
     GC gc() const { return m_gc.gc(); }
     int scale() const { return *m_scale; } // scale factor for inside objects
     const std::string &name() { return m_name; }
+
+    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+
+    virtual ButtonTheme *operator ->() { return this; }
+    virtual const ButtonTheme *operator ->() const { return this; }
 
 private:
     FbTk::ThemeItem<FbTk::Color> m_pic_color;
