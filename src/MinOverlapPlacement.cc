@@ -19,8 +19,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR (*it)
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "MinOverlapPlacement.hh"
 
 #include "FocusControl.hh"

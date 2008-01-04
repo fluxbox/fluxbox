@@ -19,8 +19,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "WindowCmd.hh"
 
 FluxboxWindow *WindowCmd_base::s_win = 0;

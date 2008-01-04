@@ -20,8 +20,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "ToolbarItem.hh"
 
 ToolbarItem::ToolbarItem(Type type):m_type(type), m_orientation(FbTk::ROT0) {

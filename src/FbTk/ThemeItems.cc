@@ -19,8 +19,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 /// @file ThemeItems.cc implements common theme items
 
 #ifndef THEMEITEMS_HH

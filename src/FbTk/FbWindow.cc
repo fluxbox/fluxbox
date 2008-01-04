@@ -19,8 +19,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "FbWindow.hh"
 #include "FbPixmap.hh"
 #include "FbString.hh"

@@ -21,8 +21,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
 #ifndef REMEMBER_HH

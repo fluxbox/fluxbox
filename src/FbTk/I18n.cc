@@ -22,8 +22,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 /* Note:
  * A good reference for the older non-gettext style I18n
  * functions is the "Locale tutorial"

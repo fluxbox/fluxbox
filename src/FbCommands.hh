@@ -19,8 +19,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
 #ifndef FBCOMMANDS_HH

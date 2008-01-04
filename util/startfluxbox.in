@@ -1,5 +1,4 @@
 #!/bin/sh
-# $Id$
 
 command="`basename \"$0\"`"
 fluxdir="$HOME/.@pkgprefix@fluxbox@pkgsuffix@"

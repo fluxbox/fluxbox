@@ -19,8 +19,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: menutest.cc 3700 2004-11-19 11:37:27Z mathias $
-
 #include "App.hh"
 #include "FbWindow.hh"
 #include "Font.hh"

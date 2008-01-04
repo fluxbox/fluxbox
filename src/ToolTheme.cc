@@ -20,8 +20,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "ToolTheme.hh"
 
 ToolTheme::ToolTheme(int screen_num, const std::string &name, const std::string &altname):

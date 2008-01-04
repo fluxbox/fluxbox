@@ -19,8 +19,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id$
-
 #include "ButtonTool.hh"
 #include "ButtonTheme.hh"
 #include "FbTk/Button.hh"
