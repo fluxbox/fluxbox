@@ -396,16 +396,6 @@ private:
     FbTk::DefaultValue<unsigned char, AlphaAcc> m_focused_alpha;
     FbTk::DefaultValue<unsigned char, AlphaAcc> m_unfocused_alpha;
 
-    class ThemeListener: public FbTk::Observer {
-    public:
-        ThemeListener(FbWinFrame &frame):m_frame(frame) { }
-        void update(FbTk::Subject *) {
-            m_frame.reconfigure();
-        }
-    private:
-        FbWinFrame &m_frame;
-    };
-    ThemeListener m_themelistener;
     FbTk::Shape m_shape;
 
     bool m_disable_themeshape;

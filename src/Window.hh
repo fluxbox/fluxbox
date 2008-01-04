@@ -556,17 +556,6 @@ private:
         m_layersig,
         m_workspacesig;
 
-    class ThemeListener: public FbTk::Observer {
-    public:
-        ThemeListener(FluxboxWindow &win):m_win(win) { }
-        void update(FbTk::Subject *) {
-            m_win.reconfigTheme();
-        }
-    private:
-        FluxboxWindow &m_win;
-    };
-    ThemeListener m_themelistener;
-
     time_t m_creation_time;
 
     // Window states

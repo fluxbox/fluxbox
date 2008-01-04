@@ -90,10 +90,8 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_shaded(false),
     m_focused_alpha(AlphaAcc(theme, &FbWinFrameTheme::focusedAlpha)),
     m_unfocused_alpha(AlphaAcc(theme, &FbWinFrameTheme::unfocusedAlpha)),
-    m_themelistener(*this),
     m_shape(m_window, theme.shapePlace()),
     m_disable_themeshape(false) {
-    m_theme.reconfigSig().attach(&m_themelistener);
     init();
 }
 

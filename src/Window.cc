@@ -269,7 +269,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_statesig(*this),
     m_layersig(*this),
     m_workspacesig(*this),
-    m_themelistener(*this),
     m_creation_time(0),
     moving(false), resizing(false), shaded(false), iconic(false),
     stuck(false), m_initialized(false), fullscreen(false),
@@ -299,7 +298,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_parent(client.screen().rootWindow()),
     m_resize_corner(RIGHTBOTTOM) {
 
-    tm.reconfigSig().attach(&m_themelistener);
+    tm.reconfigSig().attach(this);
 
     init();
 
@@ -3011,6 +3010,9 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
             if (FocusControl::focusedFbWindow())
                 setFullscreenLayer();
         }
+    } else if (subj == &frame().theme().reconfigSig()) {
+        reconfigTheme();
+        frame().reconfigure();
     }
 }
 
