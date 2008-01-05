@@ -62,7 +62,8 @@ private:
 /// Create a layer menu inside from the given menu 
 class LayerMenu : public ToggleMenu {
 public:
-    LayerMenu(class FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
+    LayerMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
+              FbTk::ImageControl &imgctrl,
               FbTk::XLayer &layer, LayerObject *item, bool save_rc);
     void show();
 };

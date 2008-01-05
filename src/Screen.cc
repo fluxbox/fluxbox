@@ -34,12 +34,6 @@
 #include "FocusControl.hh"
 #include "ScreenPlacement.hh"
 
-// themes
-#include "FbWinFrameTheme.hh"
-#include "RootTheme.hh"
-#include "WinButtonTheme.hh"
-#include "SlitTheme.hh"
-
 // menu items
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
@@ -451,7 +445,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     imageControl().setDither(*resource.image_dither);
 
-    winFrameTheme().reconfigSig().attach(this);// for geom window
+    winFrameTheme()->reconfigSig().attach(this);// for geom window
 
 
     geom_visible = false;
@@ -1799,13 +1793,13 @@ void BScreen::showPosition(int x, int y) {
 
     m_pos_window.clear();
 
-    winFrameTheme().font().drawText(m_pos_window,
+    winFrameTheme()->font().drawText(m_pos_window,
                                     screenNumber(),
-                                    winFrameTheme().iconbarTheme().focusedText().textGC(),
+                                    winFrameTheme()->iconbarTheme().focusedText().textGC(),
                                     label, strlen(label),
-                                    winFrameTheme().bevelWidth(),
-                                    winFrameTheme().bevelWidth() +
-                                    winFrameTheme().font().ascent());
+                                    winFrameTheme()->bevelWidth(),
+                                    winFrameTheme()->bevelWidth() +
+                                    winFrameTheme()->font().ascent());
 
 }
 
@@ -1851,13 +1845,13 @@ void BScreen::showGeometry(int gx, int gy) {
     m_geom_window.clear();
 
     //!! TODO: geom window again?! repeated
-    winFrameTheme().font().drawText(m_geom_window,
+    winFrameTheme()->font().drawText(m_geom_window,
                                     screenNumber(),
-                                    winFrameTheme().iconbarTheme().focusedText().textGC(),
+                                    winFrameTheme()->iconbarTheme().focusedText().textGC(),
                                     label, strlen(label),
-                                    winFrameTheme().bevelWidth(),
-                                    winFrameTheme().bevelWidth() +
-                                    winFrameTheme().font().ascent());
+                                    winFrameTheme()->bevelWidth(),
+                                    winFrameTheme()->bevelWidth() +
+                                    winFrameTheme()->font().ascent());
 }
 
 
@@ -1914,32 +1908,32 @@ void BScreen::renderGeomWindow() {
             "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog").c_str(),
             0, 0);
 
-    int geom_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
-    int geom_w = winFrameTheme().font().textWidth(label, strlen(label)) + winFrameTheme().bevelWidth()*2;
+    int geom_h = winFrameTheme()->font().height() + winFrameTheme()->bevelWidth()*2;
+    int geom_w = winFrameTheme()->font().textWidth(label, strlen(label)) + winFrameTheme()->bevelWidth()*2;
     m_geom_window.resize(geom_w, geom_h);
 
-    m_geom_window.setBorderWidth(winFrameTheme().border(true).width());
-    m_geom_window.setBorderColor(winFrameTheme().border(true).color());
+    m_geom_window.setBorderWidth(winFrameTheme()->border(true).width());
+    m_geom_window.setBorderColor(winFrameTheme()->border(true).color());
 
 
     Pixmap tmp = geom_pixmap;
 
-    if (winFrameTheme().iconbarTheme().focusedTexture().type() & FbTk::Texture::PARENTRELATIVE) {
-        if (!winFrameTheme().titleFocusTexture().usePixmap()) {
+    if (winFrameTheme()->iconbarTheme().focusedTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+        if (!winFrameTheme()->titleFocusTexture().usePixmap()) {
             geom_pixmap = None;
-            m_geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
+            m_geom_window.setBackgroundColor(winFrameTheme()->titleFocusTexture().color());
         } else {
             geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
-                                                     winFrameTheme().titleFocusTexture());
+                                                     winFrameTheme()->titleFocusTexture());
             m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
-        if (!winFrameTheme().iconbarTheme().focusedTexture().usePixmap()) {
+        if (!winFrameTheme()->iconbarTheme().focusedTexture().usePixmap()) {
             geom_pixmap = None;
-            m_geom_window.setBackgroundColor(winFrameTheme().iconbarTheme().focusedTexture().color());
+            m_geom_window.setBackgroundColor(winFrameTheme()->iconbarTheme().focusedTexture().color());
         } else {
             geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
-                                                     winFrameTheme().iconbarTheme().focusedTexture());
+                                                     winFrameTheme()->iconbarTheme().focusedTexture());
             m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
@@ -1952,32 +1946,32 @@ void BScreen::renderGeomWindow() {
 
 void BScreen::renderPosWindow() {
 
-    int pos_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
-    int pos_w = winFrameTheme().font().textWidth("0:00000 x 0:00000", 17) + winFrameTheme().bevelWidth()*2;
+    int pos_h = winFrameTheme()->font().height() + winFrameTheme()->bevelWidth()*2;
+    int pos_w = winFrameTheme()->font().textWidth("0:00000 x 0:00000", 17) + winFrameTheme()->bevelWidth()*2;
     m_pos_window.resize(pos_w, pos_h);
 
-    m_pos_window.setBorderWidth(winFrameTheme().border(true).width());
-    m_pos_window.setBorderColor(winFrameTheme().border(true).color());
+    m_pos_window.setBorderWidth(winFrameTheme()->border(true).width());
+    m_pos_window.setBorderColor(winFrameTheme()->border(true).color());
 
 
     Pixmap tmp = pos_pixmap;
 
-    if (winFrameTheme().iconbarTheme().focusedTexture().type() & FbTk::Texture::PARENTRELATIVE) {
-        if (!winFrameTheme().titleFocusTexture().usePixmap()) {
+    if (winFrameTheme()->iconbarTheme().focusedTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+        if (!winFrameTheme()->titleFocusTexture().usePixmap()) {
             pos_pixmap = None;
-            m_pos_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
+            m_pos_window.setBackgroundColor(winFrameTheme()->titleFocusTexture().color());
         } else {
             pos_pixmap = imageControl().renderImage(m_pos_window.width(), m_pos_window.height(),
-                                                    winFrameTheme().titleFocusTexture());
+                                                    winFrameTheme()->titleFocusTexture());
             m_pos_window.setBackgroundPixmap(pos_pixmap);
         }
     } else {
-        if (!winFrameTheme().iconbarTheme().focusedTexture().usePixmap()) {
+        if (!winFrameTheme()->iconbarTheme().focusedTexture().usePixmap()) {
             pos_pixmap = None;
-            m_pos_window.setBackgroundColor(winFrameTheme().iconbarTheme().focusedTexture().color());
+            m_pos_window.setBackgroundColor(winFrameTheme()->iconbarTheme().focusedTexture().color());
         } else {
             pos_pixmap = imageControl().renderImage(m_pos_window.width(), m_pos_window.height(),
-                                                     winFrameTheme().iconbarTheme().focusedTexture());
+                                                     winFrameTheme()->iconbarTheme().focusedTexture());
             m_pos_window.setBackgroundPixmap(pos_pixmap);
         }
     }

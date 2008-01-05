@@ -134,9 +134,10 @@ public:
 };
 
 ClockTool::ClockTool(const FbTk::FbWindow &parent,
-                     ToolTheme &theme, BScreen &screen, FbTk::Menu &menu):
+                     FbTk::ThemeProxy<ToolTheme> &theme, BScreen &screen,
+                     FbTk::Menu &menu):
     ToolbarItem(ToolbarItem::FIXED),
-    m_button(parent, theme.font(), ""),
+    m_button(parent, theme->font(), ""),
     m_theme(theme),
     m_screen(screen),
     m_pixmap(0),
@@ -164,7 +165,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_timer.setCommand(update_graphic);
     m_timer.start();
 
-    m_button.setGC(m_theme.textGC());
+    m_button.setGC(m_theme->textGC());
 
     // setup menu
     FbTk::RefCount<FbTk::Command> saverc(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("saverc"));
@@ -233,15 +234,12 @@ void ClockTool::update(FbTk::Subject *subj) {
     unsigned int new_width = m_button.width();
     unsigned int new_height = m_button.height();
     translateSize(orientation(), new_width, new_height);
-    new_width = m_theme.font().textWidth(text.c_str(), text.size());
+    new_width = m_theme->font().textWidth(text.c_str(), text.size());
     translateSize(orientation(), new_width, new_height);
     if (new_width != m_button.width() || new_height != m_button.height()) {
         resize(new_width, new_height);
         resizeSig().notify();
     }
-
-    if (subj != 0 && typeid(*subj) == typeid(ToolTheme))
-        renderTheme(m_button.alpha());
 
 }
 
@@ -280,7 +278,7 @@ void ClockTool::updateTime() {
 
         m_button.setText(text);
 
-        unsigned int new_width = m_theme.font().textWidth(time_string, time_string_len) + 2;
+        unsigned int new_width = m_theme->font().textWidth(time_string, time_string_len) + 2;
         if (new_width > m_button.width()) {
             resize(new_width, m_button.height());
             resizeSig().notify();
@@ -293,7 +291,7 @@ void ClockTool::updateTime() {
 
 // Just change things that affect the size
 void ClockTool::updateSizing() {
-    m_button.setBorderWidth(m_theme.border().width());
+    m_button.setBorderWidth(m_theme->border().width());
     // resizes if new timeformat
     update(0);
 }
@@ -302,25 +300,25 @@ void ClockTool::reRender() {
     if (m_pixmap)
         m_screen.imageControl().removeImage(m_pixmap);
 
-    if (m_theme.texture().usePixmap()) {
+    if (m_theme->texture().usePixmap()) {
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
-                                                       m_theme.texture(), orientation());
+                                                       m_theme->texture(), orientation());
         m_button.setBackgroundPixmap(m_pixmap);
     } else {
         m_pixmap = 0;
-        m_button.setBackgroundColor(m_theme.texture().color());
+        m_button.setBackgroundColor(m_theme->texture().color());
     }
 }
 
 
 void ClockTool::renderTheme(unsigned char alpha) {
     m_button.setAlpha(alpha);
-    m_button.setJustify(m_theme.justify());
+    m_button.setJustify(m_theme->justify());
 
     reRender();
 
-    m_button.setBorderWidth(m_theme.border().width());
-    m_button.setBorderColor(m_theme.border().color());
+    m_button.setBorderWidth(m_theme->border().width());
+    m_button.setBorderColor(m_theme->border().color());
     m_button.clear();
 }
 

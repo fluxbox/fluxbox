@@ -31,14 +31,14 @@
 #include <algorithm>
 
 WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent, 
-                                     ToolTheme &theme, BScreen &screen):
+        FbTk::ThemeProxy<ToolTheme> &theme, BScreen &screen):
     ToolbarItem(ToolbarItem::FIXED),
-    m_button(parent, theme.font(), "a workspace name"),
+    m_button(parent, theme->font(), "a workspace name"),
     m_theme(theme),
     m_screen(screen),
     m_pixmap(0) {
     // set text
-    m_button.setGC(m_theme.textGC());
+    m_button.setGC(m_theme->textGC());
     m_button.setText(m_screen.currentWorkspace()->name());
 
     // setup signals
@@ -88,7 +88,7 @@ unsigned int WorkspaceNameTool::width() const {
     BScreen::Workspaces::const_iterator it;
     for (it = workspaces.begin(); it != workspaces.end(); it++) {
         const std::string &name = (*it)->name();
-        max_size = std::max(m_theme.font().textWidth(name, name.size()), 
+        max_size = std::max(m_theme->font().textWidth(name, name.size()), 
                             max_size);
     }
     // so align text dont cut the last character
@@ -106,7 +106,7 @@ unsigned int WorkspaceNameTool::height() const {
     BScreen::Workspaces::const_iterator it;
     for (it = workspaces.begin(); it != workspaces.end(); it++) {
         const std::string &name = (*it)->name();
-        max_size = std::max(m_theme.font().textWidth(name, name.size()), 
+        max_size = std::max(m_theme->font().textWidth(name, name.size()), 
                             max_size);
     }
     // so align text dont cut the last character
@@ -128,31 +128,31 @@ void WorkspaceNameTool::hide() {
 }
 
 void WorkspaceNameTool::updateSizing() {
-    m_button.setBorderWidth(m_theme.border().width());
+    m_button.setBorderWidth(m_theme->border().width());
 }
 
 void WorkspaceNameTool::reRender() {
-    if (m_theme.texture().usePixmap()) {
+    if (m_theme->texture().usePixmap()) {
         if (m_pixmap) 
             m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
-                                                       m_theme.texture(), orientation());
+                                                       m_theme->texture(), orientation());
         m_button.setBackgroundPixmap(m_pixmap);
     }
 }
 
 void WorkspaceNameTool::renderTheme(unsigned char alpha) {
     
-    m_button.setJustify(m_theme.justify());
-    m_button.setBorderWidth(m_theme.border().width());
-    m_button.setBorderColor(m_theme.border().color());
+    m_button.setJustify(m_theme->justify());
+    m_button.setBorderWidth(m_theme->border().width());
+    m_button.setBorderColor(m_theme->border().color());
     m_button.setAlpha(alpha);
 
-    if (!m_theme.texture().usePixmap()) {
+    if (!m_theme->texture().usePixmap()) {
         if (m_pixmap)
             m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = 0;
-        m_button.setBackgroundColor(m_theme.texture().color());
+        m_button.setBackgroundColor(m_theme->texture().color());
     } else {
         reRender();
     }

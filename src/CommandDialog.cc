@@ -50,8 +50,8 @@ using std::out_of_range;
 CommandDialog::CommandDialog(BScreen &screen,
         const string &title, const string precommand) :
     FbTk::FbWindow(screen.rootWindow().screenNumber(), 0, 0, 200, 1, ExposureMask),
-    m_textbox(*this, screen.winFrameTheme().font(), ""),
-    m_label(*this, screen.winFrameTheme().font(), title),
+    m_textbox(*this, screen.winFrameTheme()->font(), ""),
+    m_label(*this, screen.winFrameTheme()->font(), title),
     m_gc(m_textbox),
     m_screen(screen),
     m_move_x(0),
@@ -190,12 +190,12 @@ void CommandDialog::tabComplete() {
 
 void CommandDialog::render() {
     Pixmap tmp = m_pixmap;
-    if (!m_screen.winFrameTheme().iconbarTheme().focusedTexture().usePixmap()) {
-        m_label.setBackgroundColor(m_screen.winFrameTheme().iconbarTheme().focusedTexture().color());
+    if (!m_screen.winFrameTheme()->iconbarTheme().focusedTexture().usePixmap()) {
+        m_label.setBackgroundColor(m_screen.winFrameTheme()->iconbarTheme().focusedTexture().color());
         m_pixmap = 0;
     } else {
         m_pixmap = m_screen.imageControl().renderImage(m_label.width(), m_label.height(),
-                                                       m_screen.winFrameTheme().iconbarTheme().focusedTexture());
+                                                       m_screen.winFrameTheme()->iconbarTheme().focusedTexture());
         m_label.setBackgroundPixmap(m_pixmap);
     }
 
@@ -210,7 +210,7 @@ void CommandDialog::init() {
     // setup label
     // we listen to motion notify too
     m_label.setEventMask(m_label.eventMask() | ButtonPressMask | ButtonMotionMask);
-    m_label.setGC(m_screen.winFrameTheme().iconbarTheme().focusedText().textGC());
+    m_label.setGC(m_screen.winFrameTheme()->iconbarTheme().focusedText().textGC());
     m_label.show();
 
     // setup text box

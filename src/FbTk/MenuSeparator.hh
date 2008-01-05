@@ -30,7 +30,7 @@ namespace FbTk {
 class MenuSeparator: public MenuItem {
 public:
     virtual void draw(FbDrawable &drawable,
-                      const MenuTheme &theme,
+                      const FbTk::ThemeProxy<MenuTheme> &theme,
                       bool highlight, bool draw_foreground, bool draw_background,
                       int x, int y,
                       unsigned int width, unsigned int height) const;

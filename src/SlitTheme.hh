@@ -41,8 +41,8 @@ public:
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
 
-    virtual SlitTheme *operator ->() { return this; }
-    virtual const SlitTheme *operator ->() const { return this; }
+    virtual SlitTheme &operator *() { return *this; }
+    virtual const SlitTheme &operator *() const { return *this; }
 
 private:
     FbTk::ThemeItem<FbTk::Texture> m_texture;

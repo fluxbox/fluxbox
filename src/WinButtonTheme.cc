@@ -27,7 +27,8 @@
 
 #include "FbWinFrameTheme.hh"
 
-WinButtonTheme::WinButtonTheme(int screen_num, FbWinFrameTheme &frame_theme):
+WinButtonTheme::WinButtonTheme(int screen_num,
+                               FbTk::ThemeProxy<FbWinFrameTheme> &frame_theme):
     FbTk::Theme(screen_num),
     m_close_pm(*this, "window.close.pixmap", "Window.Close.Pixmap"),
     m_close_unfocus_pm(*this, "window.close.unfocus.pixmap", "Window.Close.Unfocus.Pixmap"),
@@ -66,11 +67,11 @@ WinButtonTheme::~WinButtonTheme() {
 void WinButtonTheme::reconfigTheme() {
     // rescale the pixmaps to match frame theme height
 
-    unsigned int size = m_frame_theme.titleHeight()
-                        - 2 * m_frame_theme.bevelWidth();
-    if (m_frame_theme.titleHeight() == 0) {
+    unsigned int size = m_frame_theme->titleHeight()
+                        - 2 * m_frame_theme->bevelWidth();
+    if (m_frame_theme->titleHeight() == 0) {
         // calculate height from font and border width to scale pixmaps
-        size = m_frame_theme.font().height() + 2;
+        size = m_frame_theme->font().height() + 2;
 
     } // else  use specified height to scale pixmaps
 

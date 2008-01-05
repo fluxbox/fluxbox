@@ -61,8 +61,9 @@ private:
 template <typename ItemType>
 class XineramaHeadMenu : public FbMenu {
 public:
-    XineramaHeadMenu(FbTk::MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
-                     FbTk::XLayer &layer, ItemType &item, const FbTk::FbString & title = "");
+    XineramaHeadMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm, BScreen &screen,
+                     FbTk::ImageControl &imgctrl, FbTk::XLayer &layer,
+                     ItemType &item, const FbTk::FbString & title = "");
 
 private:
     ItemType &m_object;
@@ -70,8 +71,10 @@ private:
 
 
 template <typename ItemType>
-XineramaHeadMenu<ItemType>::XineramaHeadMenu(FbTk::MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
-                               FbTk::XLayer &layer, ItemType &item, const FbTk::FbString & title):
+XineramaHeadMenu<ItemType>::XineramaHeadMenu(
+        FbTk::ThemeProxy<FbTk::MenuTheme> &tm, BScreen &screen,
+        FbTk::ImageControl &imgctrl, FbTk::XLayer &layer, ItemType &item,
+        const FbTk::FbString & title):
     FbMenu(tm, imgctrl, layer), 
     m_object(item) 
 {

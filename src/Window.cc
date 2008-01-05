@@ -261,8 +261,8 @@ private:
 
 int FluxboxWindow::s_num_grabs = 0;
 
-FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
-                             FbTk::XLayer &layer):
+FluxboxWindow::FluxboxWindow(WinClient &client,
+        FbTk::ThemeProxy<FbWinFrameTheme> &tm, FbTk::XLayer &layer):
     Focusable(client.screen(), this),
     oplock(false),
     m_hintsig(*this),
@@ -401,8 +401,8 @@ void FluxboxWindow::init() {
     Fluxbox &fluxbox = *Fluxbox::instance();
 
     // setup cursors for resize grips
-    frame().gripLeft().setCursor(frame().theme().lowerLeftAngleCursor());
-    frame().gripRight().setCursor(frame().theme().lowerRightAngleCursor());
+    frame().gripLeft().setCursor(frame().theme()->lowerLeftAngleCursor());
+    frame().gripRight().setCursor(frame().theme()->lowerRightAngleCursor());
 
     associateClient(*m_client);
 
@@ -2777,12 +2777,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             doSnapping(dx, dy);
 
             if (! screen().doOpaqueMove()) {
-                parent().drawRectangle(screen().rootTheme().opGC(),
+                parent().drawRectangle(screen().rootTheme()->opGC(),
                                        m_last_move_x, m_last_move_y,
                                        frame().width() + 2*frame().window().borderWidth()-1,
                                        frame().height() + 2*frame().window().borderWidth()-1);
 
-                parent().drawRectangle(screen().rootTheme().opGC(),
+                parent().drawRectangle(screen().rootTheme()->opGC(),
                                        dx, dy,
                                        frame().width() + 2*frame().window().borderWidth()-1,
                                        frame().height() + 2*frame().window().borderWidth()-1);
@@ -2874,13 +2874,13 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 old_resize_h != m_last_resize_h ) {
 
                 // draw over old rect
-                parent().drawRectangle(screen().rootTheme().opGC(),
+                parent().drawRectangle(screen().rootTheme()->opGC(),
                                        old_resize_x, old_resize_y,
                                        old_resize_w - 1 + 2 * frame().window().borderWidth(),
                                        old_resize_h - 1 + 2 * frame().window().borderWidth());
 
                 // draw resize rectangle
-                parent().drawRectangle(screen().rootTheme().opGC(),
+                parent().drawRectangle(screen().rootTheme()->opGC(),
                                        m_last_resize_x, m_last_resize_y,
                                        m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
                                        m_last_resize_h - 1 + 2 * frame().window().borderWidth());
@@ -2897,10 +2897,10 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         // so we update drag'n'drop-rectangle
         int dx = me.x_root - m_button_grab_x, dy = me.y_root - m_button_grab_y;
 
-        parent().drawRectangle(screen().rootTheme().opGC(),
+        parent().drawRectangle(screen().rootTheme()->opGC(),
                                m_last_move_x, m_last_move_y,
                                m_last_resize_w, m_last_resize_h);
-        parent().drawRectangle(screen().rootTheme().opGC(),
+        parent().drawRectangle(screen().rootTheme()->opGC(),
                                dx, dy,
                                m_last_resize_w, m_last_resize_h);
 
@@ -3010,7 +3010,7 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
             if (FocusControl::focusedFbWindow())
                 setFullscreenLayer();
         }
-    } else if (subj == &frame().theme().reconfigSig()) {
+    } else if (subj == &frame().theme()->reconfigSig()) {
         reconfigTheme();
         frame().reconfigure();
     }
@@ -3022,7 +3022,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
 
     unsigned int border_width = 0;
     if (decorations.border)
-        border_width = frame().theme().border(m_focused).width();
+        border_width = frame().theme()->border(m_focused).width();
 
     bool client_move = false;
 
@@ -3165,7 +3165,7 @@ void FluxboxWindow::startMoving(int x, int y) {
     // freely map and unmap the window we're moving.
     grabPointer(screen().rootWindow().window(), False, ButtonMotionMask |
                 ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                screen().rootWindow().window(), frame().theme().moveCursor(), CurrentTime);
+                screen().rootWindow().window(), frame().theme()->moveCursor(), CurrentTime);
 
     if (menu().isVisible())
         menu().hide();
@@ -3176,7 +3176,7 @@ void FluxboxWindow::startMoving(int x, int y) {
     m_last_move_y = frame().y();
     if (! screen().doOpaqueMove()) {
         fluxbox->grab();
-        parent().drawRectangle(screen().rootTheme().opGC(),
+        parent().drawRectangle(screen().rootTheme()->opGC(),
                                frame().x(), frame().y(),
                                frame().width() + 2*frame().window().borderWidth()-1,
                                frame().height() + 2*frame().window().borderWidth()-1);
@@ -3200,7 +3200,7 @@ void FluxboxWindow::stopMoving(bool interrupted) {
 
 
     if (! screen().doOpaqueMove()) {
-        parent().drawRectangle(screen().rootTheme().opGC(),
+        parent().drawRectangle(screen().rootTheme()->opGC(),
                                m_last_move_x, m_last_move_y,
                                frame().width() + 2*frame().window().borderWidth()-1,
                                frame().height() + 2*frame().window().borderWidth()-1);
@@ -3230,7 +3230,7 @@ void FluxboxWindow::pauseMoving() {
         return;
     }
 
-    parent().drawRectangle(screen().rootTheme().opGC(),
+    parent().drawRectangle(screen().rootTheme()->opGC(),
                            m_last_move_x, m_last_move_y,
                            frame().width() + 2*frame().window().borderWidth()-1,
                            frame().height() + 2*frame().window().borderWidth()-1);
@@ -3250,7 +3250,7 @@ void FluxboxWindow::resumeMoving() {
 
     FbTk::App::instance()->sync(false);
 
-    parent().drawRectangle(screen().rootTheme().opGC(),
+    parent().drawRectangle(screen().rootTheme()->opGC(),
                            m_last_move_x, m_last_move_y,
                            frame().width() + 2*frame().window().borderWidth()-1,
                            frame().height() + 2*frame().window().borderWidth()-1);
@@ -3463,14 +3463,14 @@ void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
     resizing = true;
     maximized = MAX_NONE;
 
-    const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme().upperLeftAngleCursor() :
-                           (m_resize_corner == RIGHTTOP) ? frame().theme().upperRightAngleCursor() :
-                           (m_resize_corner == RIGHTBOTTOM) ? frame().theme().lowerRightAngleCursor() :
-                           (m_resize_corner == LEFT) ? frame().theme().leftSideCursor() :
-                           (m_resize_corner == RIGHT) ? frame().theme().rightSideCursor() :
-                           (m_resize_corner == TOP) ? frame().theme().topSideCursor() :
-                           (m_resize_corner == BOTTOM) ? frame().theme().bottomSideCursor() :
-                                                            frame().theme().lowerLeftAngleCursor();
+    const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme()->upperLeftAngleCursor() :
+                           (m_resize_corner == RIGHTTOP) ? frame().theme()->upperRightAngleCursor() :
+                           (m_resize_corner == RIGHTBOTTOM) ? frame().theme()->lowerRightAngleCursor() :
+                           (m_resize_corner == LEFT) ? frame().theme()->leftSideCursor() :
+                           (m_resize_corner == RIGHT) ? frame().theme()->rightSideCursor() :
+                           (m_resize_corner == TOP) ? frame().theme()->topSideCursor() :
+                           (m_resize_corner == BOTTOM) ? frame().theme()->bottomSideCursor() :
+                                                            frame().theme()->lowerLeftAngleCursor();
 
     grabPointer(fbWindow().window(),
                 false, ButtonMotionMask | ButtonReleaseMask,
@@ -3488,7 +3488,7 @@ void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
 
     screen().showGeometry(gx, gy);
 
-    parent().drawRectangle(screen().rootTheme().opGC(),
+    parent().drawRectangle(screen().rootTheme()->opGC(),
                        m_last_resize_x, m_last_resize_y,
                        m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
                        m_last_resize_h - 1 + 2 * frame().window().borderWidth());
@@ -3497,7 +3497,7 @@ void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
 void FluxboxWindow::stopResizing(bool interrupted) {
     resizing = false;
 
-    parent().drawRectangle(screen().rootTheme().opGC(),
+    parent().drawRectangle(screen().rootTheme()->opGC(),
                            m_last_resize_x, m_last_resize_y,
                            m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
                            m_last_resize_h - 1 + 2 * frame().window().borderWidth());
@@ -3533,7 +3533,7 @@ void FluxboxWindow::startTabbing(const XButtonEvent &be) {
     // start drag'n'drop for tab
     grabPointer(be.window, False, ButtonMotionMask |
                 ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                None, frame().theme().moveCursor(), CurrentTime);
+                None, frame().theme()->moveCursor(), CurrentTime);
 
     // relative position on the button
     m_button_grab_x = be.x;
@@ -3558,7 +3558,7 @@ void FluxboxWindow::startTabbing(const XButtonEvent &be) {
         m_last_resize_h = frame().height() + bw;
     }
 
-    parent().drawRectangle(screen().rootTheme().opGC(),
+    parent().drawRectangle(screen().rootTheme()->opGC(),
                            m_last_move_x, m_last_move_y,
                            m_last_resize_w, m_last_resize_h);
 
@@ -3569,7 +3569,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
     if (m_attaching_tab == 0)
         return;
 
-    parent().drawRectangle(screen().rootTheme().opGC(),
+    parent().drawRectangle(screen().rootTheme()->opGC(),
                            m_last_move_x, m_last_move_y,
                            m_last_resize_w, m_last_resize_h);
 
@@ -3978,7 +3978,7 @@ void FluxboxWindow::updateButtons() {
     CommandRef stick_cmd(new WindowCmd(*this, &FluxboxWindow::stick));
     CommandRef show_menu_cmd(new WindowCmd(*this, &FluxboxWindow::popupMenu));
 
-    WinButtonTheme &winbutton_theme = screen().winButtonTheme();
+    FbTk::ThemeProxy<WinButtonTheme> &winbutton_theme = screen().winButtonTheme();
 
     for (size_t c = 0; c < 2 ; c++) {
         // get titlebar configuration for current side
@@ -4073,8 +4073,8 @@ void FluxboxWindow::updateButtons() {
 void FluxboxWindow::reconfigTheme() {
 
     m_frame.setBorderWidth(decorations.border ?
-                           frame().theme().border(m_focused).width() : 0);
-    if (decorations.handle && frame().theme().handleWidth() != 0)
+                           frame().theme()->border(m_focused).width() : 0);
+    if (decorations.handle && frame().theme()->handleWidth() != 0)
         frame().showHandle();
     else
         frame().hideHandle();

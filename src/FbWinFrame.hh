@@ -46,6 +46,7 @@ class ImageControl;
 class Command;
 class Texture;
 class XLayer;
+template <class T> class ThemeProxy;
 }
 
 /// holds a window frame with a client window
@@ -95,7 +96,8 @@ public:
     };
 
     /// create a top level window
-    FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
+    FbWinFrame(BScreen &screen, FbTk::ThemeProxy<FbWinFrameTheme> &theme,
+               FbTk::ImageControl &imgctrl,
                FbTk::XLayer &layer,
                int x, int y,
                unsigned int width, unsigned int height);
@@ -254,7 +256,7 @@ public:
     const IconButton *currentLabel() const { return m_current_label; }
     bool focused() const { return m_focused; }
     bool isShaded() const { return m_shaded; }
-    FbWinFrameTheme &theme() const { return m_theme; }
+    FbTk::ThemeProxy<FbWinFrameTheme> &theme() const { return m_theme; }
     /// @return titlebar height
     unsigned int titlebarHeight() const { return (m_use_titlebar?m_titlebar.height()+m_window.borderWidth():0); }
     unsigned int handleHeight() const { return (m_use_handle?m_handle.height()+m_window.borderWidth():0); }
@@ -313,7 +315,7 @@ private:
 
     BScreen &m_screen;
 
-    FbWinFrameTheme &m_theme; ///< theme to be used
+    FbTk::ThemeProxy<FbWinFrameTheme> &m_theme; ///< theme to be used
     FbTk::ImageControl &m_imagectrl; ///< Image control for rendering
     /**
        @name windows

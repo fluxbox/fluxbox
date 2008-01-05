@@ -39,14 +39,16 @@
 using std::mem_fun;
 using std::string;
 
-FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
+FbWinFrame::FbWinFrame(BScreen &screen,
+                       FbTk::ThemeProxy<FbWinFrameTheme> &theme,
+                       FbTk::ImageControl &imgctrl,
                        FbTk::XLayer &layer,
                        int x, int y,
                        unsigned int width, unsigned int height):
     m_screen(screen),
     m_theme(theme),
     m_imagectrl(imgctrl),
-    m_window(theme.screenNum(), x, y, width, height,
+    m_window(theme->screenNum(), x, y, width, height,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | EnterWindowMask |
              LeaveWindowMask, true),
@@ -56,7 +58,7 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
                ButtonMotionMask | ExposureMask |
                EnterWindowMask | LeaveWindowMask),
     m_tab_container(m_titlebar),
-    m_label(m_titlebar, m_theme.font(), ""),
+    m_label(m_titlebar, m_theme->font(), ""),
     m_handle(m_window, 0, 0, 100, 5,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | ExposureMask |
@@ -88,9 +90,9 @@ FbWinFrame::FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageContr
     m_button_size(1),
     m_height_before_shade(1),
     m_shaded(false),
-    m_focused_alpha(AlphaAcc(theme, &FbWinFrameTheme::focusedAlpha)),
-    m_unfocused_alpha(AlphaAcc(theme, &FbWinFrameTheme::unfocusedAlpha)),
-    m_shape(m_window, theme.shapePlace()),
+    m_focused_alpha(AlphaAcc(*theme, &FbWinFrameTheme::focusedAlpha)),
+    m_unfocused_alpha(AlphaAcc(*theme, &FbWinFrameTheme::unfocusedAlpha)),
+    m_shape(m_window, theme->shapePlace()),
     m_disable_themeshape(false) {
     init();
 }
@@ -117,7 +119,7 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
     if (tabmode == EXTERNAL) {
         m_label.show();
         m_tab_container.setBorderWidth(m_window.borderWidth());
-        m_tab_container.setBorderColor(theme().border(m_focused).color());
+        m_tab_container.setBorderColor(theme()->border(m_focused).color());
         m_tab_container.setEventMask(
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |
@@ -484,10 +486,10 @@ void FbWinFrame::setFocus(bool newvalue) {
     }
 
     if (m_decoration_mask & DECORM_BORDER &&
-        (theme().border(true).width() != theme().border(false).width() ||
-         theme().border(true).color().pixel() !=
-         theme().border(false).color().pixel()))
-        setBorderWidth(theme().border(newvalue).width());
+        (theme()->border(true).width() != theme()->border(false).width() ||
+         theme()->border(true).color().pixel() !=
+         theme()->border(false).color().pixel()))
+        setBorderWidth(theme()->border(newvalue).width());
 
     applyAll();
     clearAll();
@@ -562,7 +564,7 @@ void FbWinFrame::removeAllButtons() {
 }
 
 IconButton *FbWinFrame::createTab(Focusable &client) {
-    IconButton *button = new IconButton(m_tab_container, theme().iconbarTheme(),
+    IconButton *button = new IconButton(m_tab_container, theme()->iconbarTheme(),
                                         client);
 
     button->show();
@@ -742,7 +744,7 @@ bool FbWinFrame::hideHandle() {
 }
 
 bool FbWinFrame::showHandle() {
-    if (m_use_handle || theme().handleWidth() == 0)
+    if (m_use_handle || theme()->handleWidth() == 0)
         return false;
 
     m_use_handle = true;
@@ -870,19 +872,19 @@ void FbWinFrame::reconfigure() {
     // negate gravity
     gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw, false);
 
-    m_bevel = theme().bevelWidth();
+    m_bevel = theme()->bevelWidth();
     // reconfigure can't set borderwidth, as it doesn't know
     // if it's meant to be borderless or not
 
     unsigned int orig_handle_h = handle().height();
-    if (m_use_handle && orig_handle_h != theme().handleWidth())
+    if (m_use_handle && orig_handle_h != theme()->handleWidth())
         m_window.resize(m_window.width(), m_window.height() -
-                        orig_handle_h + theme().handleWidth());
+                        orig_handle_h + theme()->handleWidth());
 
     handle().resize(handle().width(),
-                    theme().handleWidth());
+                    theme()->handleWidth());
     gripLeft().resize(buttonHeight(),
-                      theme().handleWidth());
+                      theme()->handleWidth());
     gripRight().resize(gripLeft().width(),
                        gripLeft().height());
 
@@ -988,7 +990,7 @@ void FbWinFrame::reconfigure() {
     if (m_disable_themeshape)
         m_shape.setPlaces(FbTk::Shape::NONE);
     else
-        m_shape.setPlaces(theme().shapePlace());
+        m_shape.setPlaces(theme()->shapePlace());
 
     m_shape.setShapeOffsets(0, titlebarHeight());
 
@@ -1001,7 +1003,7 @@ void FbWinFrame::setUseShape(bool value) {
     if (m_disable_themeshape)
         m_shape.setPlaces(FbTk::Shape::NONE);
     else
-        m_shape.setPlaces(theme().shapePlace());
+        m_shape.setPlaces(theme()->shapePlace());
 
 }
 
@@ -1038,10 +1040,10 @@ void FbWinFrame::reconfigureTitlebar() {
 
     int orig_height = m_titlebar.height();
     // resize titlebar to window size with font height
-    int title_height = m_theme.font().height() == 0 ? 16 :
-        m_theme.font().height() + m_bevel*2 + 2;
-    if (m_theme.titleHeight() != 0)
-        title_height = m_theme.titleHeight();
+    int title_height = theme()->font().height() == 0 ? 16 :
+        theme()->font().height() + m_bevel*2 + 2;
+    if (theme()->titleHeight() != 0)
+        title_height = theme()->titleHeight();
 
     // if the titlebar grows in size, make sure the whole window does too
     if (orig_height != title_height)
@@ -1128,21 +1130,21 @@ void FbWinFrame::renderTitlebar() {
     }
 
     // render pixmaps
-    render(m_theme.titleFocusTexture(), m_title_focused_color,
+    render(theme()->titleFocusTexture(), m_title_focused_color,
            m_title_focused_pm,
            m_titlebar.width(), m_titlebar.height());
 
-    render(m_theme.titleUnfocusTexture(), m_title_unfocused_color,
+    render(theme()->titleUnfocusTexture(), m_title_unfocused_color,
            m_title_unfocused_pm,
            m_titlebar.width(), m_titlebar.height());
 
     //!! TODO: don't render label if internal tabs
 
-    render(m_theme.iconbarTheme().focusedTexture(), m_label_focused_color,
+    render(theme()->iconbarTheme()->focusedTexture(), m_label_focused_color,
            m_label_focused_pm,
            m_label.width(), m_label.height());
 
-    render(m_theme.iconbarTheme().unfocusedTexture(), m_label_unfocused_color,
+    render(theme()->iconbarTheme()->unfocusedTexture(), m_label_unfocused_color,
            m_label_unfocused_pm,
            m_label.width(), m_label.height());
 
@@ -1154,13 +1156,13 @@ void FbWinFrame::renderTabContainer() {
         return;
     }
 
-    const FbTk::Texture *tc_focused = &m_theme.iconbarTheme().focusedTexture();
-    const FbTk::Texture *tc_unfocused = &m_theme.iconbarTheme().unfocusedTexture();
+    const FbTk::Texture *tc_focused = &theme()->iconbarTheme()->focusedTexture();
+    const FbTk::Texture *tc_unfocused = &theme()->iconbarTheme()->unfocusedTexture();
 
     if (m_tabmode == EXTERNAL && tc_focused->type() & FbTk::Texture::PARENTRELATIVE)
-        tc_focused = &m_theme.titleFocusTexture();
+        tc_focused = &theme()->titleFocusTexture();
     if (m_tabmode == EXTERNAL && tc_unfocused->type() & FbTk::Texture::PARENTRELATIVE)
-        tc_unfocused = &m_theme.titleUnfocusTexture();
+        tc_unfocused = &theme()->titleUnfocusTexture();
 
     render(*tc_focused, m_tabcontainer_focused_color,
            m_tabcontainer_focused_pm,
@@ -1190,11 +1192,11 @@ void FbWinFrame::applyTitlebar() {
 
     if (m_tabmode != INTERNAL) {
         m_label.setGC(m_focused ?
-                      theme().iconbarTheme().focusedText().textGC() :
-                      theme().iconbarTheme().unfocusedText().textGC());
+                      theme()->iconbarTheme()->focusedText().textGC() :
+                      theme()->iconbarTheme()->unfocusedText().textGC());
         m_label.setJustify(m_focused ?
-                           theme().iconbarTheme().focusedText().justify() :
-                           theme().iconbarTheme().unfocusedText().justify());
+                           theme()->iconbarTheme()->focusedText().justify() :
+                           theme()->iconbarTheme()->unfocusedText().justify());
 
         if (label_pm != 0)
             m_label.setBackgroundPixmap(label_pm);
@@ -1220,18 +1222,18 @@ void FbWinFrame::renderHandles() {
         return;
     }
 
-    render(m_theme.handleFocusTexture(), m_handle_focused_color,
+    render(theme()->handleFocusTexture(), m_handle_focused_color,
            m_handle_focused_pm,
            m_handle.width(), m_handle.height());
 
-    render(m_theme.handleUnfocusTexture(), m_handle_unfocused_color,
+    render(theme()->handleUnfocusTexture(), m_handle_unfocused_color,
            m_handle_unfocused_pm,
            m_handle.width(), m_handle.height());
 
-    render(m_theme.gripFocusTexture(), m_grip_focused_color, m_grip_focused_pm,
+    render(theme()->gripFocusTexture(), m_grip_focused_color, m_grip_focused_pm,
            m_grip_left.width(), m_grip_left.height());
 
-    render(m_theme.gripUnfocusTexture(), m_grip_unfocused_color,
+    render(theme()->gripUnfocusTexture(), m_grip_unfocused_color,
            m_grip_unfocused_pm,
            m_grip_left.width(), m_grip_left.height());
 
@@ -1286,15 +1288,15 @@ void FbWinFrame::renderButtons() {
         return;
     }
 
-    render(m_theme.buttonFocusTexture(), m_button_color,
+    render(theme()->buttonFocusTexture(), m_button_color,
            m_button_pm,
            m_button_size, m_button_size);
 
-    render(m_theme.buttonUnfocusTexture(), m_button_unfocused_color,
+    render(theme()->buttonUnfocusTexture(), m_button_unfocused_color,
            m_button_unfocused_pm,
            m_button_size, m_button_size);
 
-    render(m_theme.buttonPressedTexture(), m_button_pressed_color,
+    render(theme()->buttonPressedTexture(), m_button_pressed_color,
            m_button_pressed_pm,
            m_button_size, m_button_size);
 }
@@ -1310,7 +1312,7 @@ void FbWinFrame::applyButtons() {
 
 void FbWinFrame::init() {
 
-    if (theme().handleWidth() == 0)
+    if (theme()->handleWidth() == 0)
         m_use_handle = false;
 
     m_disable_themeshape = false;
@@ -1357,7 +1359,7 @@ void FbWinFrame::applyButton(FbTk::Button &btn) {
     if (focused()) { // focused
         btn.setAlpha(getAlpha(true));
 
-        btn.setGC(m_theme.buttonPicFocusGC());
+        btn.setGC(theme()->buttonPicFocusGC());
         if (m_button_pm)
             btn.setBackgroundPixmap(m_button_pm);
         else
@@ -1365,7 +1367,7 @@ void FbWinFrame::applyButton(FbTk::Button &btn) {
     } else { // unfocused
         btn.setAlpha(getAlpha(false));
 
-        btn.setGC(m_theme.buttonPicUnfocusGC());
+        btn.setGC(theme()->buttonPicUnfocusGC());
         if (m_button_unfocused_pm)
             btn.setBackgroundPixmap(m_button_unfocused_pm);
         else
@@ -1463,21 +1465,21 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
         bw_changes += static_cast<signed>(border_width - handle().borderWidth());
 
     window().setBorderWidth(border_width);
-    window().setBorderColor(theme().border(m_focused).color());
+    window().setBorderColor(theme()->border(m_focused).color());
 
     setTabMode(NOTSET);
 
     titlebar().setBorderWidth(border_width);
-    titlebar().setBorderColor(theme().border(m_focused).color());
+    titlebar().setBorderColor(theme()->border(m_focused).color());
 
     handle().setBorderWidth(border_width);
-    handle().setBorderColor(theme().border(m_focused).color());
+    handle().setBorderColor(theme()->border(m_focused).color());
 
     gripLeft().setBorderWidth(border_width);
-    gripLeft().setBorderColor(theme().border(m_focused).color());
+    gripLeft().setBorderColor(theme()->border(m_focused).color());
 
     gripRight().setBorderWidth(border_width);
-    gripRight().setBorderColor(theme().border(m_focused).color());
+    gripRight().setBorderColor(theme()->border(m_focused).color());
 
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);

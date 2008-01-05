@@ -29,8 +29,8 @@
 
 class AlphaMenu : public ToggleMenu {
 public:
-    AlphaMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
-              FbTk::XLayer &layer);
+    AlphaMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
+              FbTk::ImageControl &imgctrl, FbTk::XLayer &layer);
 
     // we override these to update the menu when the active window changes
     void move(int x, int y);

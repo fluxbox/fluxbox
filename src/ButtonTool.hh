@@ -36,7 +36,8 @@ class ImageControl;
 class ButtonTool: public GenericTool {
 public:
     ButtonTool(FbTk::Button *button, ToolbarItem::Type type, 
-               ButtonTheme &theme, FbTk::ImageControl &img_ctrl);
+               FbTk::ThemeProxy<ButtonTheme> &theme,
+               FbTk::ImageControl &img_ctrl);
     virtual ~ButtonTool();
 
 protected:

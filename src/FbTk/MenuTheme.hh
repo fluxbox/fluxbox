@@ -143,8 +143,8 @@ public:
     virtual Subject &reconfigSig() { return Theme::reconfigSig(); }
     virtual const Subject &reconfigSig() const { return Theme::reconfigSig(); }
 
-    virtual MenuTheme *operator ->() { return this; }
-    virtual const MenuTheme *operator ->() const { return this; }
+    virtual MenuTheme &operator *() { return *this; }
+    virtual const MenuTheme &operator *() const { return *this; }
 
 private:
     ThemeItem<Color> t_text, f_text, h_text, d_text, u_text;

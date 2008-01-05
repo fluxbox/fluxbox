@@ -31,9 +31,13 @@
 class BScreen;
 class ToolTheme;
 
+namespace FbTk {
+template <class T> class ThemeProxy;
+}
+
 class WorkspaceNameTool: public ToolbarItem, public FbTk::Observer {
 public:
-    WorkspaceNameTool(const FbTk::FbWindow &parent, ToolTheme &theme, BScreen &screen);
+    WorkspaceNameTool(const FbTk::FbWindow &parent, FbTk::ThemeProxy<ToolTheme> &theme, BScreen &screen);
     virtual ~WorkspaceNameTool();
 
     void move(int x, int y);
@@ -59,7 +63,7 @@ private:
     void reRender();
     void updateSizing();
     FbTk::TextButton m_button;
-    const ToolTheme &m_theme;
+    const FbTk::ThemeProxy<ToolTheme> &m_theme;
     BScreen &m_screen;
     Pixmap m_pixmap;
 };

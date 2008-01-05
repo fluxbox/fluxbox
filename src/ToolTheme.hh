@@ -47,8 +47,8 @@ public:
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
 
-    virtual ToolTheme *operator ->() { return this; }
-    virtual const ToolTheme *operator ->() const { return this; }
+    virtual ToolTheme &operator *() { return *this; }
+    virtual const ToolTheme &operator *() const { return *this; }
 
 protected:
     FbTk::ThemeItem<FbTk::Texture> &textureTheme() { return m_texture; }

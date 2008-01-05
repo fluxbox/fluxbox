@@ -36,10 +36,15 @@ class ButtonTheme;
 class TrayWindow;
 class AtomHandler;
 
+namespace FbTk {
+template <class T> class ThemeProxy;
+}
+
 class SystemTray: public ToolbarItem, public FbTk::EventHandler, public FbTk::Observer {
 public:
 
-    explicit SystemTray(const FbTk::FbWindow &parent, ButtonTheme &theme, BScreen& screen);
+    explicit SystemTray(const FbTk::FbWindow &parent,
+                        FbTk::ThemeProxy<ButtonTheme> &theme, BScreen& screen);
     virtual ~SystemTray();
 
     void move(int x, int y);
@@ -85,7 +90,7 @@ private:
     void showClient(TrayWindow *traywin);
 
     FbTk::FbWindow m_window;
-    ButtonTheme& m_theme;
+    FbTk::ThemeProxy<ButtonTheme> &m_theme;
     BScreen& m_screen;
     Pixmap m_pixmap;
 

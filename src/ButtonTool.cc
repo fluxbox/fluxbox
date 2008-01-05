@@ -26,9 +26,9 @@
 
 ButtonTool::ButtonTool(FbTk::Button *button, 
                        ToolbarItem::Type type, 
-                       ButtonTheme &theme,
+                       FbTk::ThemeProxy<ButtonTheme> &theme,
                        FbTk::ImageControl &img_ctrl):
-    GenericTool(button, type, theme),
+    GenericTool(button, type, dynamic_cast<FbTk::ThemeProxy<ToolTheme> &>(theme)),
     m_cache_pm(0),
     m_cache_pressed_pm(0),
     m_image_ctrl(img_ctrl) {
@@ -46,37 +46,37 @@ ButtonTool::~ButtonTool() {
 
 void ButtonTool::updateSizing() {
     FbTk::Button &btn = static_cast<FbTk::Button &>(window());
-    btn.setBorderWidth(theme().border().width());
+    btn.setBorderWidth(theme()->border().width());
 }
 
 void ButtonTool::renderTheme(unsigned char alpha) {
     FbTk::Button &btn = static_cast<FbTk::Button &>(window());
 
-    btn.setGC(static_cast<const ButtonTheme &>(theme()).gc());
-    btn.setBorderColor(theme().border().color());
-    btn.setBorderWidth(theme().border().width());
+    btn.setGC(static_cast<const ButtonTheme &>(*theme()).gc());
+    btn.setBorderColor(theme()->border().color());
+    btn.setBorderWidth(theme()->border().width());
     btn.setAlpha(alpha);
-    btn.updateTheme(static_cast<const FbTk::Theme &>(theme()));
+    btn.updateTheme(*theme());
 
     Pixmap old_pm = m_cache_pm;
-    if (!theme().texture().usePixmap()) {
+    if (!theme()->texture().usePixmap()) {
         m_cache_pm = 0;
-        btn.setBackgroundColor(theme().texture().color());
+        btn.setBackgroundColor(theme()->texture().color());
     } else {
         m_cache_pm = m_image_ctrl.renderImage(width(), height(),
-                                              theme().texture(), orientation());
+                                              theme()->texture(), orientation());
         btn.setBackgroundPixmap(m_cache_pm);
     }
     if (old_pm)
         m_image_ctrl.removeImage(old_pm);
 
     old_pm = m_cache_pressed_pm;
-    if (! static_cast<const ButtonTheme &>(theme()).pressed().usePixmap()) {
+    if (! static_cast<const ButtonTheme &>(*theme()).pressed().usePixmap()) {
         m_cache_pressed_pm = 0;
-        btn.setPressedColor(static_cast<const ButtonTheme &>(theme()).pressed().color());
+        btn.setPressedColor(static_cast<const ButtonTheme &>(*theme()).pressed().color());
     } else {
         m_cache_pressed_pm = m_image_ctrl.renderImage(width(), height(),
-                                                      static_cast<const ButtonTheme &>(theme()).pressed(), orientation());
+                                                      static_cast<const ButtonTheme &>(*theme()).pressed(), orientation());
         btn.setPressedPixmap(m_cache_pressed_pm);
     }
 

@@ -974,11 +974,11 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
     } else if (ce.message_type == m_net->request_frame_extents) {
         if (!screen)
             return true;
-        FbWinFrameTheme &theme = screen->winFrameTheme();
-        unsigned int bw = theme.border(true).width();
-        long title_h = theme.titleHeight() ||
-            theme.font().height() + 2*theme.bevelWidth() + 2 + 2*bw;
-        long handle_h = theme.handleWidth() + 2*bw;
+        FbTk::ThemeProxy<FbWinFrameTheme> &theme = screen->winFrameTheme();
+        unsigned int bw = theme->border(true).width();
+        long title_h = theme->titleHeight() ||
+            theme->font().height() + 2*theme->bevelWidth() + 2 + 2*bw;
+        long handle_h = theme->handleWidth() + 2*bw;
         long extents[4];
         // our frames currently don't protrude from left/right
         extents[0] = bw;

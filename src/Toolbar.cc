@@ -328,22 +328,22 @@ void Toolbar::updateStrut() {
     case TOPLEFT:
     case TOPCENTER:
     case TOPRIGHT:
-        top = height() + 2 * theme().border().width();
+        top = height() + 2 * theme()->border().width();
         break;
     case BOTTOMLEFT:
     case BOTTOMCENTER:
     case BOTTOMRIGHT:
-        bottom = height() + 2 * theme().border().width();
+        bottom = height() + 2 * theme()->border().width();
         break;
     case RIGHTTOP:
     case RIGHTCENTER:
     case RIGHTBOTTOM:
-        right = width() + 2 * theme().border().width();
+        right = width() + 2 * theme()->border().width();
         break;
     case LEFTTOP:
     case LEFTCENTER:
     case LEFTBOTTOM:
-        left = width() + 2 * theme().border().width();
+        left = width() + 2 * theme()->border().width();
         break;
     };
     m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);
@@ -442,12 +442,12 @@ void Toolbar::reconfigure() {
     if (doAutoHide())
         m_hide_timer.start();
 
-    frame.bevel_w = theme().bevelWidth();
+    frame.bevel_w = theme()->bevelWidth();
     // destroy shape if the theme wasn't specified with one,
     // or create one
-    if (theme().shape() == false && m_shape.get())
+    if (theme()->shape() == false && m_shape.get())
         m_shape.reset(0);
-    else if (theme().shape() && m_shape.get() == 0) {
+    else if (theme()->shape() && m_shape.get() == 0) {
         m_shape.reset(new FbTk::Shape(frame.window, 0));
     }
 
@@ -464,9 +464,9 @@ void Toolbar::reconfigure() {
 
     // render frame window
     Pixmap tmp = m_window_pm;
-    if (!theme().toolbar().usePixmap()) {
+    if (!theme()->toolbar().usePixmap()) {
         m_window_pm = 0;
-        frame.window.setBackgroundColor(theme().toolbar().color());
+        frame.window.setBackgroundColor(theme()->toolbar().color());
     } else {
         FbTk::Orientation orient = FbTk::ROT0;
         Toolbar::Placement where = *m_rc_placement;
@@ -477,14 +477,14 @@ void Toolbar::reconfigure() {
 
         m_window_pm = screen().imageControl().renderImage(
                           frame.window.width(), frame.window.height(),
-                          theme().toolbar(), orient);
+                          theme()->toolbar(), orient);
         frame.window.setBackgroundPixmap(m_window_pm);
     }
     if (tmp)
         screen().imageControl().removeImage(tmp);
 
-    frame.window.setBorderColor(theme().border().color());
-    frame.window.setBorderWidth(theme().border().width());
+    frame.window.setBorderColor(theme()->border().color());
+    frame.window.setBorderWidth(theme()->border().width());
 
     bool have_composite = FbTk::Transparent::haveComposite();
     // have_composite could have changed, so we need to change both
@@ -497,7 +497,7 @@ void Toolbar::reconfigure() {
     }
     frame.window.clear();
 
-    if (theme().shape() && m_shape.get())
+    if (theme()->shape() && m_shape.get())
         m_shape->update();
 
     ItemList::iterator item_it = m_item_list.begin();
@@ -637,16 +637,16 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_h = screen().getHeadHeight(head);
     }
 
-    int bevel_width = theme().bevelWidth();
-    int border_width = theme().border().width();
+    int bevel_width = theme()->bevelWidth();
+    int border_width = theme()->border().width();
 
     frame.width = (head_w - 2*border_width) * (*m_rc_width_percent) / 100;
     //!! TODO: change this
     // max height of each toolbar items font...
     unsigned int max_height = m_tool_factory.maxFontHeight() + 2;
 
-    if (theme().height() > 0)
-        max_height = theme().height();
+    if (theme()->height() > 0)
+        max_height = theme()->height();
 
     if (*m_rc_height > 0 && *m_rc_height < 100)
         max_height = *m_rc_height;
@@ -971,7 +971,7 @@ void Toolbar::rearrangeItems() {
     // calculate size for fixed items
     ItemList::iterator item_it = m_item_list.begin();
     ItemList::iterator item_it_end = m_item_list.end();
-    int bevel_width = theme().bevelWidth();
+    int bevel_width = theme()->bevelWidth();
     int fixed_width = bevel_width; // combined size of all fixed items
     int relative_items = 0;
     int last_bw = 0; // we show the largest border of adjoining items

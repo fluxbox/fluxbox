@@ -25,7 +25,7 @@
 #ifndef SLIT_HH
 #define SLIT_HH
 
-
+#include "SlitTheme.hh"
 #include "LayerMenu.hh"
 #include "Layer.hh"
 
@@ -40,7 +40,6 @@
 #include <list>
 #include <memory>
 
-class SlitTheme;
 class SlitClient;
 class BScreen;
 class FbMenu;
@@ -102,8 +101,8 @@ public:
 
     BScreen &screen() { return m_screen; }
     const BScreen &screen() const { return m_screen; }
-    SlitTheme &theme() { return *m_slit_theme.get(); }
-    const SlitTheme &theme() const { return *m_slit_theme.get(); }
+    FbTk::ThemeProxy<SlitTheme> &theme() { return *m_slit_theme.get(); }
+    const FbTk::ThemeProxy<SlitTheme> &theme() const { return *m_slit_theme.get(); }
 
     int layerNumber() const { return m_layeritem->getLayerNum(); }
 

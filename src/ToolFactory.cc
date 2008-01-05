@@ -84,8 +84,8 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
     ToolbarItem * item = 0;
 
     unsigned int button_size = 24;
-    if (tbar.theme().buttonSize() > 0)
-        button_size = tbar.theme().buttonSize();
+    if (tbar.theme()->buttonSize() > 0)
+        button_size = tbar.theme()->buttonSize();
 
     if (name == "workspacename") {
         WorkspaceNameTool *witem = new WorkspaceNameTool(parent,

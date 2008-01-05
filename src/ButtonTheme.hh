@@ -46,8 +46,8 @@ public:
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
 
-    virtual ButtonTheme *operator ->() { return this; }
-    virtual const ButtonTheme *operator ->() const { return this; }
+    virtual ButtonTheme &operator *() { return *this; }
+    virtual const ButtonTheme &operator *() const { return *this; }
 
 private:
     FbTk::ThemeItem<FbTk::Color> m_pic_color;

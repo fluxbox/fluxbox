@@ -30,9 +30,10 @@
  */
 class ToggleMenu: public FbMenu {
 public:
-    ToggleMenu(class FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
-               FbTk::XLayer &layer):FbMenu(tm, imgctrl, layer)
-    {}
+    ToggleMenu(class FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
+               FbTk::ImageControl &imgctrl, FbTk::XLayer &layer):
+        FbMenu(tm, imgctrl, layer) { }
+
     virtual ~ToggleMenu() {}
     void buttonReleaseEvent(XButtonEvent &ev) {
 

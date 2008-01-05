@@ -252,7 +252,8 @@ private:
 
 }; // end anonymous namespace
 
-IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
+IconbarTool::IconbarTool(const FbTk::FbWindow &parent,
+                         FbTk::ThemeProxy<IconbarTheme> &theme,
                          BScreen &screen, FbTk::Menu &menu):
     ToolbarItem(ToolbarItem::RELATIVE),
     m_screen(screen),
@@ -467,7 +468,7 @@ void IconbarTool::reset() {
 }
 
 void IconbarTool::updateSizing() {
-    m_icon_container.setBorderWidth(m_theme.border().width());
+    m_icon_container.setBorderWidth(m_theme->border().width());
 
     IconMap::iterator icon_it = m_icons.begin();
     const IconMap::iterator icon_it_end = m_icons.end();
@@ -488,14 +489,14 @@ void IconbarTool::renderTheme() {
     updateSizing();
 
     // if we dont have any icons then we should render empty texture
-    if (!m_theme.emptyTexture().usePixmap()) {
+    if (!m_theme->emptyTexture().usePixmap()) {
         m_empty_pm.reset( 0 );
-        m_icon_container.setBackgroundColor(m_theme.emptyTexture().color());
+        m_icon_container.setBackgroundColor(m_theme->emptyTexture().color());
     } else {
         m_empty_pm.reset(m_screen.imageControl().
                           renderImage(m_icon_container.width(),
                                       m_icon_container.height(),
-                                      m_theme.emptyTexture(), orientation()));
+                                      m_theme->emptyTexture(), orientation()));
         m_icon_container.setBackgroundPixmap(m_empty_pm);
     }
 

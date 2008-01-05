@@ -55,7 +55,7 @@ public:
     */
     enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
 
-    Menu(MenuTheme &tm, ImageControl &imgctrl);
+    Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl);
     virtual ~Menu();
 
     /**
@@ -151,8 +151,9 @@ public:
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
     bool isItemSelectable(unsigned int index) const;
-    const MenuTheme &theme() const { return m_theme; }
-    unsigned char alpha() const { return theme().alpha(); }
+    FbTk::ThemeProxy<MenuTheme> &theme() { return m_theme; }
+    const FbTk::ThemeProxy<MenuTheme> &theme() const { return m_theme; }
+    unsigned char alpha() const { return theme()->alpha(); }
     static Menu *shownMenu() { return shown; }
     static Menu *focused() { return s_focused; }
     static void hideShownMenu();
@@ -198,7 +199,7 @@ private:
     void startHide();
     void stopHide();
 
-    MenuTheme &m_theme;
+    FbTk::ThemeProxy<MenuTheme> &m_theme;
     Menu *m_parent;
     ImageControl &m_image_ctrl;
 

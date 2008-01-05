@@ -121,8 +121,8 @@ public:
     int y() const { return isHidden() ? frame.y_hidden : frame.y; }
     Placement placement() const { return *m_rc_placement; }
     /// @return pointer to iconbar if it got one, else 0
-    const ToolbarTheme &theme() const { return m_theme; }
-    ToolbarTheme &theme() { return m_theme; }
+    const FbTk::ThemeProxy<ToolbarTheme> &theme() const { return m_theme; }
+    FbTk::ThemeProxy<ToolbarTheme> &theme() { return m_theme; }
     bool isVertical() const;
 
     int getOnHead() const { return *m_rc_on_head; }

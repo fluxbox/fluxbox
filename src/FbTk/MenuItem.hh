@@ -35,6 +35,7 @@ namespace FbTk {
 class Menu;
 class MenuTheme;
 class FbDrawable;
+template <class T> class ThemeProxy;
 
 ///   An interface for a menu item in Menu
 class MenuItem : public FbTk::ITypeAheadable {
@@ -116,21 +117,21 @@ public:
     virtual int getIndex() { return m_index; }
     const std::string &iTypeString() const { return m_label; }
     virtual void drawLine(FbDrawable &draw,
-                      const MenuTheme &theme,
+                      const FbTk::ThemeProxy<MenuTheme> &theme,
                       size_t size,
                       int text_x, int text_y,
                       unsigned int width) const;
 
-    virtual unsigned int width(const MenuTheme &theme) const;
-    virtual unsigned int height(const MenuTheme &theme) const;
+    virtual unsigned int width(const FbTk::ThemeProxy<MenuTheme> &theme) const;
+    virtual unsigned int height(const FbTk::ThemeProxy<MenuTheme> &theme) const;
     virtual void draw(FbDrawable &drawable,
-                      const MenuTheme &theme,
+                      const FbTk::ThemeProxy<MenuTheme> &theme,
                       bool highlight,
                       // "foreground" is the transient bits - more likely to change
                       bool draw_foreground, bool draw_background,
                       int x, int y,
                       unsigned int width, unsigned int height) const;
-    virtual void updateTheme(const MenuTheme &theme);
+    virtual void updateTheme(const FbTk::ThemeProxy<MenuTheme> &theme);
     /**
        Called when the item was clicked with a specific button
        @param button the button number

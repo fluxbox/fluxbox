@@ -49,8 +49,8 @@ public:
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
 
-    virtual WorkspaceNameTheme *operator ->() { return this; }
-    virtual const WorkspaceNameTheme *operator ->() const { return this; }
+    virtual WorkspaceNameTheme &operator *() { return *this; }
+    virtual const WorkspaceNameTheme &operator *() const { return *this; }
 
 };
 

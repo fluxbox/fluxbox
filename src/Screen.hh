@@ -27,6 +27,9 @@
 
 #include "FbWinFrame.hh"
 #include "FbRootWindow.hh"
+#include "RootTheme.hh"
+#include "WinButtonTheme.hh"
+#include "FbWinFrameTheme.hh"
 
 #include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
@@ -52,9 +55,6 @@
 class ClientPattern;
 class Focusable;
 class FluxboxWindow;
-class FbWinFrameTheme;
-class RootTheme;
-class WinButtonTheme;
 class WinClient;
 class Workspace;
 class Strut;
@@ -273,13 +273,13 @@ public:
 
     void saveMenu(FbTk::Menu &menu) { m_rootmenu_list.push_back(&menu); }
 
-    FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
-    const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
-    FbTk::MenuTheme &menuTheme() { return *m_menutheme.get(); }
-    const FbTk::MenuTheme &menuTheme() const { return *m_menutheme.get(); }
-    const RootTheme &rootTheme() const { return *m_root_theme.get(); }
-    WinButtonTheme &winButtonTheme() { return *m_winbutton_theme.get(); }
-    const WinButtonTheme &winButtonTheme() const { return *m_winbutton_theme.get(); }
+    FbTk::ThemeProxy<FbWinFrameTheme> &winFrameTheme() { return *m_windowtheme.get(); }
+    const FbTk::ThemeProxy<FbWinFrameTheme> &winFrameTheme() const { return *m_windowtheme.get(); }
+    FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() { return *m_menutheme.get(); }
+    const FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() const { return *m_menutheme.get(); }
+    const FbTk::ThemeProxy<RootTheme> &rootTheme() const { return *m_root_theme.get(); }
+    FbTk::ThemeProxy<WinButtonTheme> &winButtonTheme() { return *m_winbutton_theme.get(); }
+    const FbTk::ThemeProxy<WinButtonTheme> &winButtonTheme() const { return *m_winbutton_theme.get(); }
 
     FbRootWindow &rootWindow() { return m_root_window; }
     const FbRootWindow &rootWindow() const { return m_root_window; }

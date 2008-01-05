@@ -50,8 +50,8 @@ public:
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
 
-    virtual IconbarTheme *operator ->() { return this; }
-    virtual const IconbarTheme *operator ->() const { return this; }
+    virtual IconbarTheme &operator *() { return *this; }
+    virtual const IconbarTheme &operator *() const { return *this; }
 
 private:
     FbTk::ThemeItem<FbTk::Texture> m_focused_texture, m_unfocused_texture, m_empty_texture;

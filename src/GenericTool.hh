@@ -33,12 +33,14 @@ class ToolTheme;
 
 namespace FbTk {
 class FbWindow;
+template <class T> class ThemeProxy;
 }
 
 /// helper class for simple tools, i.e buttons etc
 class GenericTool: public ToolbarItem, public FbTk::Observer, private FbTk::NotCopyable {
 public:
-    GenericTool(FbTk::FbWindow *new_window, ToolbarItem::Type type, ToolTheme &theme);
+    GenericTool(FbTk::FbWindow *new_window, ToolbarItem::Type type,
+                FbTk::ThemeProxy<ToolTheme> &theme);
     virtual ~GenericTool();
     void move(int x, int y);
     void resize(unsigned int x, unsigned int y);
@@ -53,7 +55,7 @@ public:
 
     void parentMoved();
 
-    const ToolTheme &theme() const { return m_theme; }
+    const FbTk::ThemeProxy<ToolTheme> &theme() const { return m_theme; }
     FbTk::FbWindow &window() { return *m_window; }
     const FbTk::FbWindow &window() const { return *m_window; }
 
@@ -64,7 +66,7 @@ private:
     void update(FbTk::Subject *subj);
     
     std::auto_ptr<FbTk::FbWindow> m_window;
-    ToolTheme &m_theme;
+    FbTk::ThemeProxy<ToolTheme> &m_theme;
 };
 
 #endif // GENERICTOOL_HH

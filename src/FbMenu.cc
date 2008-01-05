@@ -24,8 +24,8 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 
-FbMenu::FbMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
-           FbTk::XLayer &layer):
+FbMenu::FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
+               FbTk::ImageControl &imgctrl, FbTk::XLayer &layer):
     FbTk::Menu(tm, imgctrl), 
     m_layeritem(fbwindow(), layer) {
 

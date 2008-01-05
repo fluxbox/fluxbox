@@ -127,8 +127,10 @@ public:
     virtual Subject &reconfigSig() = 0;
     virtual const Subject &reconfigSig() const = 0;
 
-    virtual BaseTheme *operator ->() = 0;
-    virtual const BaseTheme *operator ->() const = 0;
+    virtual BaseTheme &operator *() = 0;
+    virtual const BaseTheme &operator *() const = 0;
+    virtual BaseTheme *operator ->() { return &(**this); }
+    virtual const BaseTheme *operator ->() const { return &(**this); }
 };
 
 /// Singleton theme manager

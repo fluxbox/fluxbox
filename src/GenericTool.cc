@@ -26,7 +26,7 @@
 #include <string>
 
 GenericTool::GenericTool(FbTk::FbWindow *new_window, ToolbarItem::Type type,
-                         ToolTheme &theme):
+                         FbTk::ThemeProxy<ToolTheme> &theme):
     ToolbarItem(type),
     m_window(new_window),
     m_theme(theme) {

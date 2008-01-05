@@ -31,10 +31,14 @@
 class Focusable;
 class IconbarTheme;
 
+namespace FbTk {
+template <class T> class ThemeProxy;
+}
+
 class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
-    IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
-               Focusable &window);
+    IconButton(const FbTk::FbWindow &parent,
+               FbTk::ThemeProxy<IconbarTheme> &theme, Focusable &window);
     virtual ~IconButton();
 
     void exposeEvent(XExposeEvent &event);
@@ -67,7 +71,7 @@ private:
     FbTk::FbPixmap m_icon_mask;
     bool m_use_pixmap;
 
-    IconbarTheme &m_theme;
+    FbTk::ThemeProxy<IconbarTheme> &m_theme;
     // cached pixmaps
     FbTk::CachedPixmap m_focused_pm, m_unfocused_pm;
 };

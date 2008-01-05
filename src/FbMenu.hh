@@ -32,7 +32,7 @@ class MenuTheme;
 /// a layered and shaped menu
 class FbMenu:public FbTk::Menu {
 public:
-    FbMenu(FbTk::MenuTheme &tm, FbTk::ImageControl &imgctrl,
+    FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer);
     virtual ~FbMenu() { }
     void raise() { m_layeritem.raise(); }

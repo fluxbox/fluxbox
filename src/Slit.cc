@@ -304,7 +304,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     _FB_USES_NLS;
 
     // attach to theme and root window change signal
-    m_slit_theme->reconfigSig().attach(this);
+    theme().reconfigSig().attach(this);
     scr.resizeSig().attach(this);
     scr.bgChangeSig().attach(this);
     scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
@@ -634,7 +634,7 @@ void Slit::reconfigure() {
     // Need to count windows because not all client list entries
     // actually correspond to mapped windows.
     int num_windows = 0;
-    const int bevel_width = theme().bevelWidth();
+    const int bevel_width = theme()->bevelWidth();
     // determine width or height increase
     bool height_inc = false;
     switch (direction()) {
@@ -686,8 +686,8 @@ void Slit::reconfigure() {
 
     Display *disp = FbTk::App::instance()->display();
 
-    frame.window.setBorderWidth(theme().borderWidth());
-    frame.window.setBorderColor(theme().borderColor());
+    frame.window.setBorderWidth(theme()->borderWidth());
+    frame.window.setBorderColor(theme()->borderColor());
 
     Pixmap tmp = frame.pixmap;
     FbTk::ImageControl &image_ctrl = screen().imageControl();
@@ -817,8 +817,8 @@ void Slit::reposition() {
         head_h = screen().height();
     }
 
-    int border_width = theme().borderWidth();
-    int bevel_width = theme().bevelWidth();
+    int border_width = theme()->borderWidth();
+    int bevel_width = theme()->bevelWidth();
     // make sure at leaste one pixel is visible
     if (border_width >= bevel_width)
         bevel_width = border_width + 1;

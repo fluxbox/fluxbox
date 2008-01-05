@@ -151,8 +151,7 @@ public:
 
     /// create a window from a client
     FluxboxWindow(WinClient &client,
-                  FbWinFrameTheme &tm,
-                  FbTk::XLayer &layer);
+                  FbTk::ThemeProxy<FbWinFrameTheme> &tm, FbTk::XLayer &layer);
 
     virtual ~FluxboxWindow();
 

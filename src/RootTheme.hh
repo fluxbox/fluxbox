@@ -57,8 +57,8 @@ public:
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
 
-    virtual RootTheme *operator ->() { return this; }
-    virtual const RootTheme *operator ->() const { return this; }
+    virtual RootTheme &operator *() { return *this; }
+    virtual const RootTheme &operator *() const { return *this; }
 
 private:
     BackgroundItem *m_background;///< background image/texture

@@ -39,11 +39,13 @@ namespace FbTk {
 class ImageControl;
 class Subject;
 class Menu;
+template <class T> class ThemeProxy;
 }
 
 class ClockTool:public ToolbarItem, public FbTk::Observer {
 public:
-    ClockTool(const FbTk::FbWindow &parent, ToolTheme &theme, BScreen &screen, FbTk::Menu &menu);
+    ClockTool(const FbTk::FbWindow &parent, FbTk::ThemeProxy<ToolTheme> &theme,
+              BScreen &screen, FbTk::Menu &menu);
     virtual ~ClockTool();
 
     void move(int x, int y);
@@ -73,7 +75,7 @@ private:
 
     FbTk::TextButton m_button;
 
-    const ToolTheme &m_theme;
+    const FbTk::ThemeProxy<ToolTheme> &m_theme;
     BScreen &m_screen;
     Pixmap m_pixmap;
     FbTk::Timer m_timer;

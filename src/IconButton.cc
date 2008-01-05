@@ -46,9 +46,9 @@
 #endif // SHAPE
 
 
-IconButton::IconButton(const FbTk::FbWindow &parent, IconbarTheme &theme,
-                       Focusable &win):
-    FbTk::TextButton(parent, theme.focusedText().font(), win.title()),
+IconButton::IconButton(const FbTk::FbWindow &parent,
+        FbTk::ThemeProxy<IconbarTheme> &theme, Focusable &win):
+    FbTk::TextButton(parent, theme->focusedText().font(), win.title()),
     m_win(win),
     m_icon_window(*this, 1, 1, 1, 1,
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
@@ -118,16 +118,16 @@ void IconButton::setPixmap(bool use) {
 
 void IconButton::reconfigTheme() {
 
-    if (m_theme.focusedTexture().usePixmap())
+    if (m_theme->focusedTexture().usePixmap())
         m_focused_pm.reset(m_win.screen().imageControl().renderImage(
-                            width(), height(), m_theme.focusedTexture(),
+                            width(), height(), m_theme->focusedTexture(),
                             orientation()));
     else
         m_focused_pm.reset(0);
 
-    if (m_theme.unfocusedTexture().usePixmap())
+    if (m_theme->unfocusedTexture().usePixmap())
         m_unfocused_pm.reset(m_win.screen().imageControl().renderImage(
-                              width(), height(), m_theme.unfocusedTexture(),
+                              width(), height(), m_theme->unfocusedTexture(),
                               orientation()));
     else
         m_unfocused_pm.reset(0);
@@ -138,25 +138,25 @@ void IconButton::reconfigTheme() {
         if (m_focused_pm != 0)
             setBackgroundPixmap(m_focused_pm);
         else
-            setBackgroundColor(m_theme.focusedTexture().color());
+            setBackgroundColor(m_theme->focusedTexture().color());
 
-        setGC(m_theme.focusedText().textGC());
-        setFont(m_theme.focusedText().font());
-        setJustify(m_theme.focusedText().justify());
-        setBorderWidth(m_theme.focusedBorder().width());
-        setBorderColor(m_theme.focusedBorder().color());
+        setGC(m_theme->focusedText().textGC());
+        setFont(m_theme->focusedText().font());
+        setJustify(m_theme->focusedText().justify());
+        setBorderWidth(m_theme->focusedBorder().width());
+        setBorderColor(m_theme->focusedBorder().color());
 
     } else {
         if (m_unfocused_pm != 0)
             setBackgroundPixmap(m_unfocused_pm);
         else
-            setBackgroundColor(m_theme.unfocusedTexture().color());
+            setBackgroundColor(m_theme->unfocusedTexture().color());
 
-        setGC(m_theme.unfocusedText().textGC());
-        setFont(m_theme.unfocusedText().font());
-        setJustify(m_theme.unfocusedText().justify());
-        setBorderWidth(m_theme.unfocusedBorder().width());
-        setBorderColor(m_theme.unfocusedBorder().color());
+        setGC(m_theme->unfocusedText().textGC());
+        setFont(m_theme->unfocusedText().font());
+        setJustify(m_theme->unfocusedText().justify());
+        setBorderWidth(m_theme->unfocusedBorder().width());
+        setBorderColor(m_theme->unfocusedBorder().color());
 
     }
 

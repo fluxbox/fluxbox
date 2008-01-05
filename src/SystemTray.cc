@@ -153,7 +153,8 @@ private:
     SystemTray &m_tray;
 };
 
-SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen& screen):
+SystemTray::SystemTray(const FbTk::FbWindow& parent,
+        FbTk::ThemeProxy<ButtonTheme> &theme, BScreen& screen):
     ToolbarItem(ToolbarItem::FIXED),
     m_window(parent, 0, 0, 1, 1, ExposureMask | ButtonPressMask | ButtonReleaseMask |
              SubstructureNotifyMask | SubstructureRedirectMask),
@@ -164,7 +165,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen
     
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
-    m_theme.reconfigSig().attach(this);
+    m_theme->reconfigSig().attach(this);
     screen.bgChangeSig().attach(this);
 
     Fluxbox* fluxbox = Fluxbox::instance();
@@ -282,14 +283,14 @@ unsigned int SystemTray::width() const {
     if (orientation() == FbTk::ROT90 || orientation() == FbTk::ROT270)
         return m_window.width();
 
-    return m_num_visible_clients * (height() - 2 * m_theme.border().width());
+    return m_num_visible_clients * (height() - 2 * m_theme->border().width());
 }
 
 unsigned int SystemTray::height() const {
     if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180)
         return m_window.height();
 
-    return m_num_visible_clients * (width() - 2 * m_theme.border().width());
+    return m_num_visible_clients * (width() - 2 * m_theme->border().width());
 }
 
 unsigned int SystemTray::borderWidth() const {
@@ -463,7 +464,7 @@ void SystemTray::handleEvent(XEvent &event) {
 
 void SystemTray::rearrangeClients() {
     unsigned int w_rot0 = width(), h_rot0 = height();
-    const unsigned int bw = m_theme.border().width();
+    const unsigned int bw = m_theme->border().width();
     FbTk::translateSize(orientation(), w_rot0, h_rot0);
     unsigned int trayw = m_num_visible_clients*h_rot0 + bw, trayh = h_rot0;
     FbTk::translateSize(orientation(), trayw, trayh);
@@ -529,14 +530,14 @@ void SystemTray::showClient(TrayWindow *traywin) {
 
 void SystemTray::update(FbTk::Subject* subject) {
 
-    if (!m_theme.texture().usePixmap()) {
-        m_window.setBackgroundColor(m_theme.texture().color());
+    if (!m_theme->texture().usePixmap()) {
+        m_window.setBackgroundColor(m_theme->texture().color());
     }
     else {
         if(m_pixmap)
             m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
-                                                       m_theme.texture(), orientation());
+                                                       m_theme->texture(), orientation());
         m_window.setBackgroundPixmap(m_pixmap);
     }
 
