@@ -190,12 +190,12 @@ void CommandDialog::tabComplete() {
 
 void CommandDialog::render() {
     Pixmap tmp = m_pixmap;
-    if (!m_screen.winFrameTheme()->iconbarTheme().focusedTexture().usePixmap()) {
-        m_label.setBackgroundColor(m_screen.winFrameTheme()->iconbarTheme().focusedTexture().color());
+    if (!m_screen.winFrameTheme()->focusedIconbarTheme().texture().usePixmap()) {
+        m_label.setBackgroundColor(m_screen.winFrameTheme()->focusedIconbarTheme().texture().color());
         m_pixmap = 0;
     } else {
         m_pixmap = m_screen.imageControl().renderImage(m_label.width(), m_label.height(),
-                                                       m_screen.winFrameTheme()->iconbarTheme().focusedTexture());
+                                                       m_screen.winFrameTheme()->focusedIconbarTheme().texture());
         m_label.setBackgroundPixmap(m_pixmap);
     }
 
@@ -210,7 +210,7 @@ void CommandDialog::init() {
     // setup label
     // we listen to motion notify too
     m_label.setEventMask(m_label.eventMask() | ButtonPressMask | ButtonMotionMask);
-    m_label.setGC(m_screen.winFrameTheme()->iconbarTheme().focusedText().textGC());
+    m_label.setGC(m_screen.winFrameTheme()->focusedIconbarTheme().text().textGC());
     m_label.show();
 
     // setup text box

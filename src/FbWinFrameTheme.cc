@@ -55,7 +55,10 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_button_pic_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_focused_alpha(255),
     m_unfocused_alpha(255),
-    m_iconbar_theme(screen_num, "window.label", "Window.Label") {
+    m_focused_iconbar_theme(screen_num, "window.label.focus",
+                            "Window.Label.Unfocus"),
+    m_unfocused_iconbar_theme(screen_num, "window.label.unfocus",
+                              "Window.Label.Unfocus") {
 
     *m_title_height = 0;
     // set defaults
@@ -111,6 +114,7 @@ void FbWinFrameTheme::reconfigTheme() {
     m_button_pic_focus_gc.setForeground(*m_button_focus_color);
     m_button_pic_unfocus_gc.setForeground(*m_button_unfocus_color);
 
-    m_iconbar_theme.reconfigTheme();
+    m_focused_iconbar_theme.reconfigTheme();
+    m_unfocused_iconbar_theme.reconfigTheme();
 }
 

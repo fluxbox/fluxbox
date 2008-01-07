@@ -160,8 +160,8 @@ public:
     void addRightButton(FbTk::Button *btn);
     /// remove all buttons from titlebar
     void removeAllButtons();
-    /// adds a button to label window with specified title and command
-    IconButton *createTab(Focusable &client);
+    /// adds a button to tab container
+    void createTab(FbTk::Button &button);
     /// removes a specific button from label window
     void removeTab(IconButton *id);
     /// move label button to the left
@@ -253,7 +253,6 @@ public:
     FbTk::FbWindow &gripLeft() { return m_grip_left; }
     const FbTk::FbWindow &gripRight() const { return m_grip_right; }
     FbTk::FbWindow &gripRight() { return m_grip_right; }
-    const IconButton *currentLabel() const { return m_current_label; }
     bool focused() const { return m_focused; }
     bool isShaded() const { return m_shaded; }
     FbTk::ThemeProxy<FbWinFrameTheme> &theme() const { return m_theme; }
@@ -337,7 +336,6 @@ private:
     ButtonList m_buttons_left, ///< buttons to the left
         m_buttons_right; ///< buttons to the right
     typedef std::list<FbTk::TextButton *> LabelList;
-    IconButton *m_current_label; ///< which client button is focused at the moment
     int m_bevel;  ///< bevel between titlebar items and titlebar
     unsigned int m_decoration_mask; ///< bitmask of applied decorations
     bool m_use_titlebar; ///< if we should use titlebar

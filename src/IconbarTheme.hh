@@ -36,15 +36,9 @@ public:
     void reconfigTheme();
     bool fallback(FbTk::ThemeItem_base &item);
 
-    FbTk::TextTheme &focusedText()  { return m_focused_text; }
-    FbTk::TextTheme &unfocusedText() { return m_unfocused_text; }
-
-    const FbTk::BorderTheme &focusedBorder() const { return m_focused_border; }
-    const FbTk::BorderTheme &unfocusedBorder() const { return m_unfocused_border; }
+    FbTk::TextTheme &text()  { return m_text; }
     const FbTk::BorderTheme &border() const { return m_border; }
-
-    const FbTk::Texture &focusedTexture() const { return *m_focused_texture; }
-    const FbTk::Texture &unfocusedTexture() const { return *m_unfocused_texture; }
+    const FbTk::Texture &texture() const { return *m_texture; }
     const FbTk::Texture &emptyTexture() const { return *m_empty_texture; }
 
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
@@ -54,9 +48,9 @@ public:
     virtual const IconbarTheme &operator *() const { return *this; }
 
 private:
-    FbTk::ThemeItem<FbTk::Texture> m_focused_texture, m_unfocused_texture, m_empty_texture;
-    FbTk::BorderTheme m_focused_border, m_unfocused_border, m_border;
-    FbTk::TextTheme m_focused_text, m_unfocused_text;
+    FbTk::ThemeItem<FbTk::Texture> m_texture, m_empty_texture;
+    FbTk::BorderTheme m_border;
+    FbTk::TextTheme m_text;
     std::string m_name, m_altname;
 };
 

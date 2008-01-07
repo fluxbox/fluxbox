@@ -4128,8 +4128,11 @@ void FluxboxWindow::ungrabPointer(Time time) {
 }
 
 void FluxboxWindow::associateClient(WinClient &client) {
-
-    IconButton *btn = frame().createTab(client);
+    IconButton *btn = new IconButton(frame().tabcontainer(),
+                                     frame().theme()->focusedIconbarTheme(),
+                                     frame().theme()->unfocusedIconbarTheme(),
+                                     client);
+    frame().createTab(*btn);
 
     FbTk::RefCount<FbTk::Command> setcmd(new SetClientCmd(client));
     btn->setOnClick(setcmd, 1);

@@ -253,12 +253,14 @@ private:
 }; // end anonymous namespace
 
 IconbarTool::IconbarTool(const FbTk::FbWindow &parent,
-                         FbTk::ThemeProxy<IconbarTheme> &theme,
+                         FbTk::ThemeProxy<IconbarTheme> &focused_theme,
+                         FbTk::ThemeProxy<IconbarTheme> &unfocused_theme,
                          BScreen &screen, FbTk::Menu &menu):
     ToolbarItem(ToolbarItem::RELATIVE),
     m_screen(screen),
     m_icon_container(parent),
-    m_theme(theme),
+    m_focused_theme(focused_theme),
+    m_unfocused_theme(unfocused_theme),
     m_empty_pm( screen.imageControl() ),
     m_winlist(new FocusableList(screen)),
     m_mode("none"),
@@ -297,7 +299,8 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent,
     menu.insert(m_menu.label(), &m_menu);
 
     // setup signals
-    theme.reconfigSig().attach(this);
+    focused_theme.reconfigSig().attach(this);
+    unfocused_theme.reconfigSig().attach(this);
     setMode(*m_rc_mode);
 }
 
@@ -402,7 +405,8 @@ void IconbarTool::update(FbTk::Subject *subj) {
 
     m_icon_container.setMaxSizePerClient(*m_rc_client_width);
 
-    if (subj == &m_theme.reconfigSig()) {
+    if (subj == &m_focused_theme.reconfigSig() ||
+        subj == &m_unfocused_theme.reconfigSig()) {
         setMode(*m_rc_mode);
         return;
     }
@@ -468,7 +472,7 @@ void IconbarTool::reset() {
 }
 
 void IconbarTool::updateSizing() {
-    m_icon_container.setBorderWidth(m_theme->border().width());
+    m_icon_container.setBorderWidth(m_focused_theme->border().width());
 
     IconMap::iterator icon_it = m_icons.begin();
     const IconMap::iterator icon_it_end = m_icons.end();
@@ -489,14 +493,14 @@ void IconbarTool::renderTheme() {
     updateSizing();
 
     // if we dont have any icons then we should render empty texture
-    if (!m_theme->emptyTexture().usePixmap()) {
+    if (!m_focused_theme->emptyTexture().usePixmap()) {
         m_empty_pm.reset( 0 );
-        m_icon_container.setBackgroundColor(m_theme->emptyTexture().color());
+        m_icon_container.setBackgroundColor(m_focused_theme->emptyTexture().color());
     } else {
         m_empty_pm.reset(m_screen.imageControl().
                           renderImage(m_icon_container.width(),
                                       m_icon_container.height(),
-                                      m_theme->emptyTexture(), orientation()));
+                                      m_focused_theme->emptyTexture(), orientation()));
         m_icon_container.setBackgroundPixmap(m_empty_pm);
     }
 
@@ -548,7 +552,8 @@ IconButton *IconbarTool::makeButton(Focusable &win) {
 #ifdef DEBUG
     cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
 #endif // DEBUG
-    IconButton *button = new IconButton(m_icon_container, m_theme, win);
+    IconButton *button = new IconButton(m_icon_container, m_focused_theme,
+                                        m_unfocused_theme, win);
 
     RefCmd focus_cmd(new ::FocusCommand(win));
     RefCmd menu_cmd(new ::ShowMenu(*fbwin));

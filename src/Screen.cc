@@ -1795,7 +1795,7 @@ void BScreen::showPosition(int x, int y) {
 
     winFrameTheme()->font().drawText(m_pos_window,
                                     screenNumber(),
-                                    winFrameTheme()->iconbarTheme().focusedText().textGC(),
+                                    winFrameTheme()->focusedIconbarTheme().text().textGC(),
                                     label, strlen(label),
                                     winFrameTheme()->bevelWidth(),
                                     winFrameTheme()->bevelWidth() +
@@ -1847,7 +1847,7 @@ void BScreen::showGeometry(int gx, int gy) {
     //!! TODO: geom window again?! repeated
     winFrameTheme()->font().drawText(m_geom_window,
                                     screenNumber(),
-                                    winFrameTheme()->iconbarTheme().focusedText().textGC(),
+                                    winFrameTheme()->focusedIconbarTheme().text().textGC(),
                                     label, strlen(label),
                                     winFrameTheme()->bevelWidth(),
                                     winFrameTheme()->bevelWidth() +
@@ -1918,7 +1918,7 @@ void BScreen::renderGeomWindow() {
 
     Pixmap tmp = geom_pixmap;
 
-    if (winFrameTheme()->iconbarTheme().focusedTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+    if (winFrameTheme()->focusedIconbarTheme().texture().type() & FbTk::Texture::PARENTRELATIVE) {
         if (!winFrameTheme()->titleFocusTexture().usePixmap()) {
             geom_pixmap = None;
             m_geom_window.setBackgroundColor(winFrameTheme()->titleFocusTexture().color());
@@ -1928,12 +1928,12 @@ void BScreen::renderGeomWindow() {
             m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
-        if (!winFrameTheme()->iconbarTheme().focusedTexture().usePixmap()) {
+        if (!winFrameTheme()->focusedIconbarTheme().texture().usePixmap()) {
             geom_pixmap = None;
-            m_geom_window.setBackgroundColor(winFrameTheme()->iconbarTheme().focusedTexture().color());
+            m_geom_window.setBackgroundColor(winFrameTheme()->focusedIconbarTheme().texture().color());
         } else {
             geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
-                                                     winFrameTheme()->iconbarTheme().focusedTexture());
+                                                     winFrameTheme()->focusedIconbarTheme().texture());
             m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
@@ -1956,7 +1956,7 @@ void BScreen::renderPosWindow() {
 
     Pixmap tmp = pos_pixmap;
 
-    if (winFrameTheme()->iconbarTheme().focusedTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+    if (winFrameTheme()->focusedIconbarTheme().texture().type() & FbTk::Texture::PARENTRELATIVE) {
         if (!winFrameTheme()->titleFocusTexture().usePixmap()) {
             pos_pixmap = None;
             m_pos_window.setBackgroundColor(winFrameTheme()->titleFocusTexture().color());
@@ -1966,12 +1966,12 @@ void BScreen::renderPosWindow() {
             m_pos_window.setBackgroundPixmap(pos_pixmap);
         }
     } else {
-        if (!winFrameTheme()->iconbarTheme().focusedTexture().usePixmap()) {
+        if (!winFrameTheme()->focusedIconbarTheme().texture().usePixmap()) {
             pos_pixmap = None;
-            m_pos_window.setBackgroundColor(winFrameTheme()->iconbarTheme().focusedTexture().color());
+            m_pos_window.setBackgroundColor(winFrameTheme()->focusedIconbarTheme().texture().color());
         } else {
             pos_pixmap = imageControl().renderImage(m_pos_window.width(), m_pos_window.height(),
-                                                     winFrameTheme()->iconbarTheme().focusedTexture());
+                                                     winFrameTheme()->focusedIconbarTheme().texture());
             m_pos_window.setBackgroundPixmap(pos_pixmap);
         }
     }

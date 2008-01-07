@@ -563,19 +563,14 @@ void FbWinFrame::removeAllButtons() {
     }
 }
 
-IconButton *FbWinFrame::createTab(Focusable &client) {
-    IconButton *button = new IconButton(m_tab_container, theme()->iconbarTheme(),
-                                        client);
+void FbWinFrame::createTab(FbTk::Button &button) {
+    button.show();
+    button.setEventMask(ExposureMask | ButtonPressMask |
+                        ButtonReleaseMask | ButtonMotionMask |
+                        EnterWindowMask);
+    FbTk::EventManager::instance()->add(button, button.window());
 
-    button->show();
-    button->setEventMask(ExposureMask | ButtonPressMask |
-                         ButtonReleaseMask | ButtonMotionMask |
-                         EnterWindowMask);
-    FbTk::EventManager::instance()->add(*button, button->window());
-
-    m_tab_container.insertItem(button);
-
-    return button;
+    m_tab_container.insertItem(&button);
 }
 
 void FbWinFrame::removeTab(IconButton *btn) {
@@ -1140,11 +1135,11 @@ void FbWinFrame::renderTitlebar() {
 
     //!! TODO: don't render label if internal tabs
 
-    render(theme()->iconbarTheme()->focusedTexture(), m_label_focused_color,
+    render(theme()->focusedIconbarTheme()->texture(), m_label_focused_color,
            m_label_focused_pm,
            m_label.width(), m_label.height());
 
-    render(theme()->iconbarTheme()->unfocusedTexture(), m_label_unfocused_color,
+    render(theme()->unfocusedIconbarTheme()->texture(), m_label_unfocused_color,
            m_label_unfocused_pm,
            m_label.width(), m_label.height());
 
@@ -1156,8 +1151,8 @@ void FbWinFrame::renderTabContainer() {
         return;
     }
 
-    const FbTk::Texture *tc_focused = &theme()->iconbarTheme()->focusedTexture();
-    const FbTk::Texture *tc_unfocused = &theme()->iconbarTheme()->unfocusedTexture();
+    const FbTk::Texture *tc_focused = &theme()->focusedIconbarTheme()->texture();
+    const FbTk::Texture *tc_unfocused = &theme()->unfocusedIconbarTheme()->texture();
 
     if (m_tabmode == EXTERNAL && tc_focused->type() & FbTk::Texture::PARENTRELATIVE)
         tc_focused = &theme()->titleFocusTexture();
@@ -1192,11 +1187,11 @@ void FbWinFrame::applyTitlebar() {
 
     if (m_tabmode != INTERNAL) {
         m_label.setGC(m_focused ?
-                      theme()->iconbarTheme()->focusedText().textGC() :
-                      theme()->iconbarTheme()->unfocusedText().textGC());
+                      theme()->focusedIconbarTheme()->text().textGC() :
+                      theme()->unfocusedIconbarTheme()->text().textGC());
         m_label.setJustify(m_focused ?
-                           theme()->iconbarTheme()->focusedText().justify() :
-                           theme()->iconbarTheme()->unfocusedText().justify());
+                           theme()->focusedIconbarTheme()->text().justify() :
+                           theme()->unfocusedIconbarTheme()->text().justify());
 
         if (label_pm != 0)
             m_label.setBackgroundPixmap(label_pm);

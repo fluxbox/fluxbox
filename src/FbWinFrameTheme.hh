@@ -92,7 +92,8 @@ public:
     void setFocusedAlpha(unsigned char alpha) { m_focused_alpha = alpha; }
     void setUnfocusedAlpha(unsigned char alpha) { m_unfocused_alpha = alpha; }
 
-    IconbarTheme &iconbarTheme() { return m_iconbar_theme; }
+    IconbarTheme &focusedIconbarTheme() { return m_focused_iconbar_theme; }
+    IconbarTheme &unfocusedIconbarTheme() { return m_unfocused_iconbar_theme; }
 
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
@@ -128,7 +129,7 @@ private:
     unsigned char m_focused_alpha;
     unsigned char m_unfocused_alpha;
 
-    IconbarTheme m_iconbar_theme;
+    IconbarTheme m_focused_iconbar_theme, m_unfocused_iconbar_theme;
 };
 
 #endif // FBWINFRAMETHEME_HH

@@ -27,26 +27,10 @@ IconbarTheme::IconbarTheme(int screen_num,
                            const std::string &name,
                            const std::string &altname):
     FbTk::Theme(screen_num),
-    m_focused_texture(*this,
-            name + (name == "window.label" ? ".focus" : ".focused"),
-            altname + (name == "window.label" ? ".Focus" : ".Focused")),
-    m_unfocused_texture(*this,
-            name + (name == "window.label" ? ".unfocus" : ".unfocused"),
-            altname + (name == "window.label" ? ".Unfocus" : ".Unfocused")),
+    m_texture(*this, name, altname),
     m_empty_texture(*this, name + ".empty", altname + ".Empty"),
-    m_focused_border(*this,
-            name + (name == "window.label" ? ".focus" : ".focused"),
-            altname + (name == "window.label" ? ".Focus" : ".Focused")),
-    m_unfocused_border(*this,
-            name + (name == "window.label" ? ".unfocus" : ".unfocused"),
-            altname + (name == "window.label" ? ".Unfocus" : ".Unfocused")),
     m_border(*this, name, altname),
-    m_focused_text(*this,
-            name + (name == "window.label" ? ".focus" : ".focused"),
-            altname + (name == "window.label" ? ".Focus" : ".Focused")),
-    m_unfocused_text(*this,
-            name + (name == "window.label" ? ".unfocus" : ".unfocused"),
-            altname + (name == "window.label" ? ".Unfocus" : ".Unfocused")),
+    m_text(*this, name, altname),
     m_name(name), m_altname(altname) {
 
     FbTk::ThemeManager::instance().loadTheme(*this);
@@ -58,48 +42,46 @@ IconbarTheme::~IconbarTheme() {
 
 
 void IconbarTheme::reconfigTheme() {
-    m_focused_text.updateTextColor();
-    m_unfocused_text.updateTextColor();
+    m_text.updateTextColor();
 }
 
 // fallback resources
 bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
     using namespace FbTk;
     ThemeManager &tm = ThemeManager::instance();
-    std::string focus = (m_name == "window.label" ? ".focus" : ".focused");
-    std::string un = (m_name == "window.label" ? ".unfocus" : ".unfocused");
+    std::string base = m_name;
+    base.erase(base.find_last_of("."));
+    std::string altbase = m_altname;
+    altbase.erase(altbase.find_last_of("."));
 
-    if (&m_focused_texture == &item || &m_unfocused_texture == &item) {
+    if (&m_texture == &item) {
         return tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel");
     } else if (&m_empty_texture == &item) {
-        return (tm.loadItem(item, m_focused_texture.name(),
-                m_focused_texture.altName()) ||
+        return (tm.loadItem(item, "toolbar.iconbar.empty",
+                            "Toolbar.Iconbar.Empty") ||
+                tm.loadItem(item, m_texture.name(), m_texture.altName()) ||
                 tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel")
-                || tm.loadItem(item, "toolbar", "toolbar")); 
-    } else if (item.name() == m_name + focus + ".borderWidth" ||
-               item.name() == m_name + un + ".borderWidth")
+                || tm.loadItem(item, "toolbar", "toolbar"));
+    } else if (item.name() == m_name + ".borderWidth")
         // don't fallback for base border, for theme backwards compatibility
-        return (tm.loadItem(item, m_name + ".borderWidth",
-                            m_altname + ".BorderWidth") ||
+        return (tm.loadItem(item, base + ".borderWidth",
+                            altbase + ".BorderWidth") ||
                 tm.loadItem(item, "window.borderWidth", "Window.BorderWidth") ||
                 tm.loadItem(item, "borderWidth", "BorderWidth"));
 
-    else if (item.name() == m_name + focus + ".borderColor" ||
-             item.name() == m_name + un + ".borderColor")
+    else if (item.name() == m_name + ".borderColor")
 
-        return (tm.loadItem(item, m_name + ".borderColor",
-                            m_altname + ".BorderColor") ||
+        return (tm.loadItem(item, base + ".borderColor",
+                            altbase + ".BorderColor") ||
                 tm.loadItem(item, "window.borderColor", "Window.BorderColor") ||
                 tm.loadItem(item, "borderColor", "BorderColor"));
 
-    else if (item.name() == m_name + focus + ".font" ||
-             item.name() == m_name + un + ".font")
+    else if (item.name() == m_name + ".font")
 
         return tm.loadItem(item, "window.font", "Window.Font");
 
-    else if (item.name() == m_name + focus + ".justify" ||
-             item.name() == m_name + un + ".justify") {
-        return (tm.loadItem(item, m_name + ".justify", m_altname + ".Justify")
+    else if (item.name() == m_name + ".justify") {
+        return (tm.loadItem(item, base + ".justify", altbase + ".Justify")
                 || tm.loadItem(item, "window.justify", "Window.Justify"));
     }
 

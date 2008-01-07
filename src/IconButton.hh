@@ -23,12 +23,13 @@
 #ifndef ICONBUTTON_HH
 #define ICONBUTTON_HH
 
+#include "FocusableTheme.hh"
+
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/TextButton.hh"
 
-class Focusable;
 class IconbarTheme;
 
 namespace FbTk {
@@ -38,7 +39,9 @@ template <class T> class ThemeProxy;
 class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
     IconButton(const FbTk::FbWindow &parent,
-               FbTk::ThemeProxy<IconbarTheme> &theme, Focusable &window);
+               FbTk::ThemeProxy<IconbarTheme> &focused_theme,
+               FbTk::ThemeProxy<IconbarTheme> &unfocused_theme,
+               Focusable &window);
     virtual ~IconButton();
 
     void exposeEvent(XExposeEvent &event);
@@ -71,9 +74,9 @@ private:
     FbTk::FbPixmap m_icon_mask;
     bool m_use_pixmap;
 
-    FbTk::ThemeProxy<IconbarTheme> &m_theme;
+    FocusableTheme<IconbarTheme> m_theme;
     // cached pixmaps
-    FbTk::CachedPixmap m_focused_pm, m_unfocused_pm;
+    FbTk::CachedPixmap m_pm;
 };
 
 #endif // ICONBUTTON_HH

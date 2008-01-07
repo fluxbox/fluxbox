@@ -55,7 +55,7 @@ private:
     std::auto_ptr<ToolTheme> m_button_theme;
     std::auto_ptr<ToolTheme> m_workspace_theme;
     std::auto_ptr<ToolTheme> m_systray_theme;
-    IconbarTheme m_iconbar_theme;
+    IconbarTheme m_focused_iconbar_theme, m_unfocused_iconbar_theme;
 };
 
 #endif // TOOLFACTORY_HH
