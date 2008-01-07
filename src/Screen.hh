@@ -273,8 +273,11 @@ public:
 
     void saveMenu(FbTk::Menu &menu) { m_rootmenu_list.push_back(&menu); }
 
-    FbTk::ThemeProxy<FbWinFrameTheme> &winFrameTheme() { return *m_windowtheme.get(); }
-    const FbTk::ThemeProxy<FbWinFrameTheme> &winFrameTheme() const { return *m_windowtheme.get(); }
+    FbTk::ThemeProxy<FbWinFrameTheme> &focusedWinFrameTheme() { return *m_focused_windowtheme.get(); }
+    const FbTk::ThemeProxy<FbWinFrameTheme> &focusedWinFrameTheme() const { return *m_focused_windowtheme.get(); }
+    FbTk::ThemeProxy<FbWinFrameTheme> &unfocusedWinFrameTheme() { return *m_unfocused_windowtheme.get(); }
+    const FbTk::ThemeProxy<FbWinFrameTheme> &unfocusedWinFrameTheme() const { return *m_unfocused_windowtheme.get(); }
+
     FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() { return *m_menutheme.get(); }
     const FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() const { return *m_menutheme.get(); }
     const FbTk::ThemeProxy<RootTheme> &rootTheme() const { return *m_root_theme.get(); }
@@ -514,7 +517,8 @@ private:
     WorkspaceNames m_workspace_names;
     Workspaces m_workspaces_list;
 
-    std::auto_ptr<FbWinFrameTheme> m_windowtheme;
+    std::auto_ptr<FbWinFrameTheme> m_focused_windowtheme,
+                                   m_unfocused_windowtheme;
     std::auto_ptr<WinButtonTheme> m_winbutton_theme;
     std::auto_ptr<FbTk::MenuTheme> m_menutheme;
     std::auto_ptr<RootTheme> m_root_theme;

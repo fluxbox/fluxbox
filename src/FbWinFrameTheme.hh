@@ -31,41 +31,28 @@
 #include "FbTk/Shape.hh"
 
 #include "IconbarTheme.hh"
+#include <string>
 
 class FbWinFrameTheme: public FbTk::Theme,
                        public FbTk::ThemeProxy<FbWinFrameTheme> {
 public:
-    explicit FbWinFrameTheme(int screen_num);
+    explicit FbWinFrameTheme(int screen_num, const std::string &extra,
+                             const std::string &altextra);
     ~FbWinFrameTheme();
     /**
        @name textures
     */
     //@{
-    const FbTk::Texture &titleFocusTexture() const { return *m_title_focus; }
-    const FbTk::Texture &titleUnfocusTexture() const { return *m_title_unfocus; }
-
-    const FbTk::Texture &handleFocusTexture() const { return *m_handle_focus; }
-    const FbTk::Texture &handleUnfocusTexture() const { return *m_handle_unfocus; }
-
-    const FbTk::Texture &buttonFocusTexture() const { return *m_button_focus; }
-    const FbTk::Texture &buttonUnfocusTexture() const { return *m_button_unfocus; }
+    const FbTk::Texture &titleTexture() const { return *m_title; }
+    const FbTk::Texture &handleTexture() const { return *m_handle; }
+    const FbTk::Texture &buttonTexture() const { return *m_button; }
     const FbTk::Texture &buttonPressedTexture() const { return *m_button_pressed; }
-
-    const FbTk::Texture &gripFocusTexture() const { return *m_grip_focus; }
-    const FbTk::Texture &gripUnfocusTexture() const { return *m_grip_unfocus; }
+    const FbTk::Texture &gripTexture() const { return *m_grip; }
     //@}
 
-    /**
-       @name colors
-    */
-    //@{
-    const FbTk::Color &buttonFocuscolor() const { return *m_button_focus_color; }
-    const FbTk::Color &buttonUnfocuscolor() const { return *m_button_unfocus_color; }
-    //@}
+    const FbTk::Color &buttonColor() const { return *m_button_color; }
     FbTk::Font &font() { return *m_font; }
-
-    GC buttonPicFocusGC() const { return m_button_pic_focus_gc.gc(); }
-    GC buttonPicUnfocusGC() const { return m_button_pic_unfocus_gc.gc(); }
+    GC buttonPicGC() const { return m_button_pic_gc.gc(); }
 
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
@@ -81,19 +68,16 @@ public:
     Cursor bottomSideCursor() const { return m_cursor_bottom_side; }
 
     FbTk::Shape::ShapePlace shapePlace() const { return *m_shape_place; }
-    const FbTk::BorderTheme &border(bool focus) const { return (focus ? m_border_focus : m_border_unfocus); }
+    const FbTk::BorderTheme &border() const { return m_border; }
 
     unsigned int titleHeight() const { return *m_title_height; }
     unsigned int bevelWidth() const { return *m_bevel_width; }
     unsigned int handleWidth() const { return *m_handle_width; }
 
-    unsigned char focusedAlpha() const { return m_focused_alpha; }
-    unsigned char unfocusedAlpha() const { return m_unfocused_alpha; }
-    void setFocusedAlpha(unsigned char alpha) { m_focused_alpha = alpha; }
-    void setUnfocusedAlpha(unsigned char alpha) { m_unfocused_alpha = alpha; }
+    unsigned char alpha() const { return m_alpha; }
+    void setAlpha(unsigned char alpha) { m_alpha = alpha; }
 
-    IconbarTheme &focusedIconbarTheme() { return m_focused_iconbar_theme; }
-    IconbarTheme &unfocusedIconbarTheme() { return m_unfocused_iconbar_theme; }
+    IconbarTheme &iconbarTheme() { return m_iconbar_theme; }
 
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
@@ -102,20 +86,17 @@ public:
     virtual const FbWinFrameTheme &operator *() const { return *this; }
 
 private:
-    FbTk::ThemeItem<FbTk::Texture> m_title_focus, m_title_unfocus;
-    FbTk::ThemeItem<FbTk::Texture> m_handle_focus, m_handle_unfocus;
-    FbTk::ThemeItem<FbTk::Texture> m_button_focus, m_button_unfocus, m_button_pressed;
-    FbTk::ThemeItem<FbTk::Texture> m_grip_focus, m_grip_unfocus;
+    FbTk::ThemeItem<FbTk::Texture> m_title, m_handle, m_button,
+                                   m_button_pressed, m_grip;
 
-    FbTk::ThemeItem<FbTk::Color> m_button_focus_color, m_button_unfocus_color;
-
+    FbTk::ThemeItem<FbTk::Color> m_button_color;
     FbTk::ThemeItem<FbTk::Font> m_font;
     FbTk::ThemeItem<FbTk::Shape::ShapePlace> m_shape_place;
 
     FbTk::ThemeItem<int> m_title_height, m_bevel_width, m_handle_width;
-    FbTk::BorderTheme m_border_focus, m_border_unfocus;
+    FbTk::BorderTheme m_border;
 
-    FbTk::GContext m_button_pic_focus_gc, m_button_pic_unfocus_gc;
+    FbTk::GContext m_button_pic_gc;
 
     Cursor m_cursor_move;
     Cursor m_cursor_lower_left_angle;
@@ -126,10 +107,9 @@ private:
     Cursor m_cursor_right_side;
     Cursor m_cursor_top_side;
     Cursor m_cursor_bottom_side;
-    unsigned char m_focused_alpha;
-    unsigned char m_unfocused_alpha;
+    unsigned char m_alpha;
 
-    IconbarTheme m_focused_iconbar_theme, m_unfocused_iconbar_theme;
+    IconbarTheme m_iconbar_theme;
 };
 
 #endif // FBWINFRAMETHEME_HH

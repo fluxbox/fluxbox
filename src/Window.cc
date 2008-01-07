@@ -261,8 +261,7 @@ private:
 
 int FluxboxWindow::s_num_grabs = 0;
 
-FluxboxWindow::FluxboxWindow(WinClient &client,
-        FbTk::ThemeProxy<FbWinFrameTheme> &tm, FbTk::XLayer &layer):
+FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     Focusable(client.screen(), this),
     oplock(false),
     m_hintsig(*this),
@@ -291,14 +290,18 @@ FluxboxWindow::FluxboxWindow(WinClient &client,
     m_old_pos_x(0), m_old_pos_y(0),
     m_old_width(1),  m_old_height(1),
     m_last_button_x(0),  m_last_button_y(0),
-    m_frame(client.screen(), tm, client.screen().imageControl(), layer, 0, 0, 100, 100),
+    m_theme(*this, screen().focusedWinFrameTheme(),
+            screen().unfocusedWinFrameTheme()),
+    m_frame(client.screen(), m_theme, client.screen().imageControl(), layer,
+            0, 0, 100, 100),
     m_placed(false),
     m_layernum(layer.getLayerNum()),
     m_old_layernum(0),
     m_parent(client.screen().rootWindow()),
     m_resize_corner(RIGHTBOTTOM) {
 
-    tm.reconfigSig().attach(this);
+    screen().focusedWinFrameTheme().reconfigSig().attach(this);
+    screen().unfocusedWinFrameTheme().reconfigSig().attach(this);
 
     init();
 
@@ -3022,7 +3025,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
 
     unsigned int border_width = 0;
     if (decorations.border)
-        border_width = frame().theme()->border(m_focused).width();
+        border_width = frame().theme()->border().width();
 
     bool client_move = false;
 
@@ -4073,7 +4076,7 @@ void FluxboxWindow::updateButtons() {
 void FluxboxWindow::reconfigTheme() {
 
     m_frame.setBorderWidth(decorations.border ?
-                           frame().theme()->border(m_focused).width() : 0);
+                           frame().theme()->border().width() : 0);
     if (decorations.handle && frame().theme()->handleWidth() != 0)
         frame().showHandle();
     else
@@ -4129,9 +4132,8 @@ void FluxboxWindow::ungrabPointer(Time time) {
 
 void FluxboxWindow::associateClient(WinClient &client) {
     IconButton *btn = new IconButton(frame().tabcontainer(),
-                                     frame().theme()->focusedIconbarTheme(),
-                                     frame().theme()->unfocusedIconbarTheme(),
-                                     client);
+            frame().theme().focusedTheme()->iconbarTheme(),
+            frame().theme().unfocusedTheme()->iconbarTheme(), client);
     frame().createTab(*btn);
 
     FbTk::RefCount<FbTk::Command> setcmd(new SetClientCmd(client));

@@ -974,8 +974,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
     } else if (ce.message_type == m_net->request_frame_extents) {
         if (!screen)
             return true;
-        FbTk::ThemeProxy<FbWinFrameTheme> &theme = screen->winFrameTheme();
-        unsigned int bw = theme->border(true).width();
+        FbTk::ThemeProxy<FbWinFrameTheme> &theme = screen->focusedWinFrameTheme();
+        unsigned int bw = theme->border().width();
         long title_h = theme->titleHeight() ||
             theme->font().height() + 2*theme->bevelWidth() + 2 + 2*bw;
         long handle_h = theme->handleWidth() + 2*bw;

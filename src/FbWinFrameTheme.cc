@@ -26,39 +26,26 @@
 
 #include <X11/cursorfont.h>
 
-FbWinFrameTheme::FbWinFrameTheme(int screen_num):
+FbWinFrameTheme::FbWinFrameTheme(int screen_num, const std::string &extra,
+                                 const std::string &altextra):
     FbTk::Theme(screen_num),
-    m_title_focus(*this, "window.title.focus", "Window.Title.Focus"),
-    m_title_unfocus(*this, "window.title.unfocus", "Window.Title.Unfocus"),
-
-    m_handle_focus(*this, "window.handle.focus", "Window.Handle.Focus"),
-    m_handle_unfocus(*this, "window.handle.unfocus", "Window.Handle.Unfocus"),
-
-    m_button_focus(*this, "window.button.focus", "Window.Button.Focus"),
-    m_button_unfocus(*this, "window.button.unfocus", "Window.Button.Unfocus"),
+    m_title(*this, "window.title" + extra, "Window.Title" + altextra),
+    m_handle(*this, "window.handle" + extra, "Window.Handle" + altextra),
+    m_button(*this, "window.button" + extra, "Window.Button" + altextra),
     m_button_pressed(*this, "window.button.pressed", "Window.Button.Pressed"),
-
-    m_grip_focus(*this, "window.grip.focus", "Window.Grip.Focus"),
-    m_grip_unfocus(*this, "window.grip.unfocus", "Window.Grip.Unfocus"),
-
-    m_button_focus_color(*this, "window.button.focus.picColor", "Window.Button.Focus.PicColor"),
-    m_button_unfocus_color(*this, "window.button.unfocus.picColor", "Window.Button.Unfocus.PicColor"),
-
+    m_grip(*this, "window.grip" + extra, "Window.Grip" + altextra),
+    m_button_color(*this, "window.button" + extra + ".picColor",
+                   "Window.Button" + altextra + ".PicColor"),
     m_font(*this, "window.font", "Window.Font"),
     m_shape_place(*this, "window.roundCorners", "Window.RoundCorners"),
     m_title_height(*this, "window.title.height", "Window.Title.Height"),
     m_bevel_width(*this, "window.bevelWidth", "Window.BevelWidth"),
     m_handle_width(*this, "window.handleWidth", "Window.handleWidth"),
-    m_border_focus(*this, "window.focus", "Window.Focus"),
-    m_border_unfocus(*this, "window.unfocus", "Window.Unfocus"),
-    m_button_pic_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
-    m_button_pic_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
-    m_focused_alpha(255),
-    m_unfocused_alpha(255),
-    m_focused_iconbar_theme(screen_num, "window.label.focus",
-                            "Window.Label.Unfocus"),
-    m_unfocused_iconbar_theme(screen_num, "window.label.unfocus",
-                              "Window.Label.Unfocus") {
+    m_border(*this, "window" + extra, "Window" + altextra),
+    m_button_pic_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
+    m_alpha(255),
+    m_iconbar_theme(screen_num, "window.label" + extra,
+                    "Window.Label" + altextra) {
 
     *m_title_height = 0;
     // set defaults
@@ -111,10 +98,7 @@ void FbWinFrameTheme::reconfigTheme() {
     else if (*m_handle_width < 0)
         *m_handle_width = 1;
 
-    m_button_pic_focus_gc.setForeground(*m_button_focus_color);
-    m_button_pic_unfocus_gc.setForeground(*m_button_unfocus_color);
-
-    m_focused_iconbar_theme.reconfigTheme();
-    m_unfocused_iconbar_theme.reconfigTheme();
+    m_button_pic_gc.setForeground(*m_button_color);
+    m_iconbar_theme.reconfigTheme();
 }
 

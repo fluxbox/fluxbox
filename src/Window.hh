@@ -33,6 +33,7 @@
 #include "FbTk/XLayerItem.hh"
 #include "FbWinFrame.hh"
 #include "Focusable.hh"
+#include "FocusableTheme.hh"
 #include "WinButton.hh"
 
 #include <sys/time.h>
@@ -150,8 +151,7 @@ public:
     typedef std::list<WinClient *> ClientList;
 
     /// create a window from a client
-    FluxboxWindow(WinClient &client,
-                  FbTk::ThemeProxy<FbWinFrameTheme> &tm, FbTk::XLayer &layer);
+    FluxboxWindow(WinClient &client, FbTk::XLayer &layer);
 
     virtual ~FluxboxWindow();
 
@@ -610,6 +610,8 @@ private:
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
+
+    FocusableTheme<FbWinFrameTheme> m_theme;
     FbWinFrame m_frame;  ///< the actuall window frame
 
     bool m_placed; ///< determine whether or not we should place the window

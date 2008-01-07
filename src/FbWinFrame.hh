@@ -40,13 +40,13 @@ class FbWinFrameTheme;
 class BScreen;
 class IconButton;
 class Focusable;
+template <class T> class FocusableTheme;
 
 namespace FbTk {
 class ImageControl;
 class Command;
 class Texture;
 class XLayer;
-template <class T> class ThemeProxy;
 }
 
 /// holds a window frame with a client window
@@ -96,7 +96,7 @@ public:
     };
 
     /// create a top level window
-    FbWinFrame(BScreen &screen, FbTk::ThemeProxy<FbWinFrameTheme> &theme,
+    FbWinFrame(BScreen &screen, FocusableTheme<FbWinFrameTheme> &theme,
                FbTk::ImageControl &imgctrl,
                FbTk::XLayer &layer,
                int x, int y,
@@ -255,7 +255,7 @@ public:
     FbTk::FbWindow &gripRight() { return m_grip_right; }
     bool focused() const { return m_focused; }
     bool isShaded() const { return m_shaded; }
-    FbTk::ThemeProxy<FbWinFrameTheme> &theme() const { return m_theme; }
+    FocusableTheme<FbWinFrameTheme> &theme() const { return m_theme; }
     /// @return titlebar height
     unsigned int titlebarHeight() const { return (m_use_titlebar?m_titlebar.height()+m_window.borderWidth():0); }
     unsigned int handleHeight() const { return (m_use_handle?m_handle.height()+m_window.borderWidth():0); }
@@ -314,7 +314,7 @@ private:
 
     BScreen &m_screen;
 
-    FbTk::ThemeProxy<FbWinFrameTheme> &m_theme; ///< theme to be used
+    FocusableTheme<FbWinFrameTheme> &m_theme; ///< theme to be used
     FbTk::ImageControl &m_imagectrl; ///< Image control for rendering
     /**
        @name windows
