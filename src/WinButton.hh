@@ -41,6 +41,7 @@ public:
     enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE, MENUICON};
     WinButton(const FluxboxWindow &listen_to, 
               FbTk::ThemeProxy<WinButtonTheme> &theme,
+              FbTk::ThemeProxy<WinButtonTheme> &pressed,
               Type buttontype, const FbTk::FbWindow &parent, int x, int y, 
               unsigned int width, unsigned int height);
     /// override for drawing
@@ -60,7 +61,7 @@ private:
     void drawType();
     Type m_type; ///< the button type
     const FluxboxWindow &m_listen_to;
-    FbTk::ThemeProxy<WinButtonTheme> &m_theme;
+    FbTk::ThemeProxy<WinButtonTheme> &m_theme, &m_pressed_theme;
 
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;

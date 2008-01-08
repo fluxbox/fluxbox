@@ -34,11 +34,13 @@
 
 WinButton::WinButton(const FluxboxWindow &listen_to,
                      FbTk::ThemeProxy<WinButtonTheme> &theme,
+                     FbTk::ThemeProxy<WinButtonTheme> &pressed,
                      Type buttontype, const FbTk::FbWindow &parent,
                      int x, int y,
                      unsigned int width, unsigned int height):
     FbTk::Button(parent, x, y, width, height),
-    m_type(buttontype), m_listen_to(listen_to), m_theme(theme),
+    m_type(buttontype), m_listen_to(listen_to),
+    m_theme(theme), m_pressed_theme(pressed),
     m_icon_pixmap(0), m_icon_mask(0),
     overrode_bg(false), overrode_pressed(false) {
     theme.reconfigSig().attach(this);
@@ -108,64 +110,30 @@ void WinButton::setPressedColor(const FbTk::Color &color) {
 }
 
 Pixmap WinButton::getBackgroundPixmap() const {
-    bool focused = m_listen_to.isFocused();
     switch(m_type) {
     case MAXIMIZE:
-        if (focused)
-            return m_theme->maximizePixmap().pixmap().drawable();
-        else
-            return m_theme->maximizeUnfocusPixmap().pixmap().drawable();
+        return m_theme->maximizePixmap().pixmap().drawable();
         break;
     case MINIMIZE:
-        if (focused)
-            return m_theme->iconifyPixmap().pixmap().drawable();
-        else
-            return m_theme->iconifyUnfocusPixmap().pixmap().drawable();
+        return m_theme->iconifyPixmap().pixmap().drawable();
         break;
     case STICK:
-        if (m_listen_to.isStuck()) {
-            if (focused)
-                return m_theme->stuckPixmap().pixmap().drawable();
-            else
-                return m_theme->stuckUnfocusPixmap().pixmap().drawable();
-        } else {
-            if (focused)
-                return m_theme->stickPixmap().pixmap().drawable();
-            else
-                return m_theme->stickUnfocusPixmap().pixmap().drawable();
-        }
+        if (m_listen_to.isStuck())
+            return m_theme->stuckPixmap().pixmap().drawable();
+        return m_theme->stickPixmap().pixmap().drawable();
         break;
     case CLOSE:
-        if (focused)
-            return m_theme->closePixmap().pixmap().drawable();
-        else
-            return m_theme->closeUnfocusPixmap().pixmap().drawable();
+        return m_theme->closePixmap().pixmap().drawable();
         break;
     case SHADE:
-        if (m_listen_to.isShaded()) {
-            if (focused)
-                return m_theme->unshadePixmap().pixmap().drawable();
-            else
-                return m_theme->unshadeUnfocusPixmap().pixmap().drawable();
-        } else {
-            if (focused)
-                return m_theme->shadePixmap().pixmap().drawable();
-            else
-                return m_theme->shadeUnfocusPixmap().pixmap().drawable();
-        }
+        if (m_listen_to.isShaded())
+            return m_theme->unshadePixmap().pixmap().drawable();
+        return m_theme->shadePixmap().pixmap().drawable();
         break;
     case MENUICON:
-        if (m_icon_pixmap.drawable()) {
-            if (focused)
-                return m_theme->titleFocusPixmap().pixmap().drawable();
-            else
-                return m_theme->titleUnfocusPixmap().pixmap().drawable();
-        } else {
-            if (focused)
-                return m_theme->menuiconPixmap().pixmap().drawable();
-            else
-                return m_theme->menuiconUnfocusPixmap().pixmap().drawable();
-        }
+        if (m_icon_pixmap.drawable())
+            return m_theme->titlePixmap().pixmap().drawable();
+        return m_theme->menuiconPixmap().pixmap().drawable();
         break;
     }
     return None;
@@ -174,26 +142,23 @@ Pixmap WinButton::getBackgroundPixmap() const {
 Pixmap WinButton::getPressedPixmap() const {
     switch(m_type) {
     case MAXIMIZE:
-        return m_theme->maximizePressedPixmap().pixmap().drawable();
+        return m_pressed_theme->maximizePixmap().pixmap().drawable();
     case MINIMIZE:
-        return m_theme->iconifyPressedPixmap().pixmap().drawable();
+        return m_pressed_theme->iconifyPixmap().pixmap().drawable();
     case STICK:
-        return m_theme->stickPressedPixmap().pixmap().drawable();
+        return m_pressed_theme->stickPixmap().pixmap().drawable();
     case CLOSE:
-        return m_theme->closePressedPixmap().pixmap().drawable();
+        return m_pressed_theme->closePixmap().pixmap().drawable();
     case SHADE:
         if (m_listen_to.isShaded())
-            return m_theme->unshadePressedPixmap().pixmap().drawable();
+            return m_pressed_theme->unshadePixmap().pixmap().drawable();
         else
-            return m_theme->shadePressedPixmap().pixmap().drawable();
+            return m_pressed_theme->shadePixmap().pixmap().drawable();
     case MENUICON:
         if (m_icon_pixmap.drawable())
-            if (m_listen_to.isFocused())
-                return m_theme->titleFocusPixmap().pixmap().drawable();
-            else
-                return m_theme->titleUnfocusPixmap().pixmap().drawable();
+            return m_theme->titlePixmap().pixmap().drawable();
         else
-            return m_theme->menuiconPressedPixmap().pixmap().drawable();
+            return m_pressed_theme->menuiconPixmap().pixmap().drawable();
     }
     return None;
 }

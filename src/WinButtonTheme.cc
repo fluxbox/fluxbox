@@ -28,33 +28,29 @@
 #include "FbWinFrameTheme.hh"
 
 WinButtonTheme::WinButtonTheme(int screen_num,
-                               FbTk::ThemeProxy<FbWinFrameTheme> &frame_theme):
+        const std::string &extra, const std::string &altextra,
+        FbTk::ThemeProxy<FbWinFrameTheme> &frame_theme):
     FbTk::Theme(screen_num),
-    m_close_pm(*this, "window.close.pixmap", "Window.Close.Pixmap"),
-    m_close_unfocus_pm(*this, "window.close.unfocus.pixmap", "Window.Close.Unfocus.Pixmap"),
-    m_close_pressed_pm(*this, "window.close.pressed.pixmap", "Window.Close.Pressed.Pixmap"),
-    m_maximize_pm(*this, "window.maximize.pixmap", "Window.Maximize.Pixmap"),
-    m_maximize_unfocus_pm(*this, "window.maximize.unfocus.pixmap", "Window.Maximize.Unfocus.pixmap"),
-    m_maximize_pressed_pm(*this, "window.maximize.pressed.pixmap", "Window.Maximize.Pressed.Pixmap"),
-    m_iconify_pm(*this, "window.iconify.pixmap", "Window.Iconify.Pixmap"),
-    m_iconify_unfocus_pm(*this, "window.iconify.unfocus.pixmap", "Window.Iconify.Unfocus.Pixmap"),    
-    m_iconify_pressed_pm(*this, "window.iconify.pressed.pixmap", "Window.Iconify.Pressed.Pixmap"),
-    m_shade_pm(*this, "window.shade.pixmap", "Window.Shade.Pixmap"),
-    m_shade_unfocus_pm(*this, "window.shade.unfocus.pixmap", "Window.Shade.Unfocus.Pixmap"),
-    m_shade_pressed_pm(*this, "window.shade.pressed.pixmap", "Window.Shade.Pressed.Pixmap"),
-    m_unshade_pm(*this, "window.unshade.pixmap", "Window.Unshade.Pixmap"),
-    m_unshade_unfocus_pm(*this, "window.unshade.unfocus.pixmap", "Window.Unshade.Unfocus.Pixmap"),
-    m_unshade_pressed_pm(*this, "window.unshade.pressed.pixmap", "Window.Unshade.Pressed.Pixmap"),
-    m_menuicon_pm(*this, "window.menuicon.pixmap", "Window.MenuIcon.Pixmap"),
-    m_menuicon_unfocus_pm(*this, "window.menuicon.unfocus.pixmap", "Window.MenuIcon.Unfocus.Pixmap"),
-    m_menuicon_pressed_pm(*this, "window.menuicon.pressed.pixmap", "Window.MenuIcon.Pressed.Pixmap"),
-    m_title_focus_pm(*this, "window.title.focus.pixmap", "Window.Title.Focus.Pixmap"),
-    m_title_unfocus_pm(*this, "window.title.unfocus.pixmap", "Window.Title.UnFocus.Pixmap"),
+    m_close_pm(*this, "window.close" + extra + ".pixmap",
+               "Window.Close" + altextra + ".Pixmap"),
+    m_maximize_pm(*this, "window.maximize" + extra + ".pixmap",
+                  "Window.Maximize" + altextra + ".Pixmap"),
+    m_iconify_pm(*this, "window.iconify" + extra + ".pixmap",
+                 "Window.Iconify" + altextra + ".Pixmap"),
+    m_shade_pm(*this, "window.shade" + extra + ".pixmap",
+               "Window.Shade" + altextra + ".Pixmap"),
+    m_unshade_pm(*this, "window.unshade" + extra + ".pixmap",
+                 "Window.Unshade" + altextra + ".Pixmap"),
+    m_menuicon_pm(*this, "window.menuicon" + extra + ".pixmap",
+                  "Window.MenuIcon" + altextra + ".Pixmap"),
+    // whoever designed this is going to get hit with a stick
+    m_title_pm(*this, "window.title" + (extra.empty() ? std::string(".focus")
+                                                      : extra) + ".pixmap",
+               "Window.Title" + (extra.empty() ? std::string(".Focus")
+                                               : altextra) + ".Pixmap"),
     m_stick_pm(*this, "window.stick.pixmap", "Window.Stick.Pixmap"),
-    m_stick_unfocus_pm(*this, "window.stick.unfocus.pixmap", "Window.Stick.Unfocus.Pixmap"),
-    m_stick_pressed_pm(*this, "window.stick.pressed.pixmap", "Window.Stick.Pressed.Pixmap"),
-    m_stuck_pm(*this, "window.stuck.pixmap", "Window.Stuck.Pixmap"),
-    m_stuck_unfocus_pm(*this, "window.stuck.unfocus.pixmap", "Window.Stuck.Unfocus.Pixmap"),
+    m_stuck_pm(*this, "window.stuck" + extra + ".pixmap",
+               "Window.Stuck" + altextra + ".Pixmap"),
     m_frame_theme(frame_theme) {
 
     FbTk::ThemeManager::instance().loadTheme(*this);
@@ -77,37 +73,13 @@ void WinButtonTheme::reconfigTheme() {
 
     // scale all pixmaps
     m_close_pm->scale(size, size);
-    m_close_unfocus_pm->scale(size, size);
-    m_close_pressed_pm->scale(size, size);
-
     m_maximize_pm->scale(size, size);
-    m_maximize_unfocus_pm->scale(size, size);
-    m_maximize_pressed_pm->scale(size, size);
-
     m_menuicon_pm->scale(size, size);
-    m_menuicon_unfocus_pm->scale(size, size);
-    m_menuicon_pressed_pm->scale(size, size);
-
     m_iconify_pm->scale(size, size);
-    m_iconify_unfocus_pm->scale(size, size);
-    m_iconify_pressed_pm->scale(size, size);
-
     m_shade_pm->scale(size, size);
-    m_shade_unfocus_pm->scale(size, size);
-    m_shade_pressed_pm->scale(size, size);
-
     m_unshade_pm->scale(size, size);
-    m_unshade_unfocus_pm->scale(size, size);
-    m_unshade_pressed_pm->scale(size, size);
-
-    m_title_focus_pm->scale(size, size);
-    m_title_unfocus_pm->scale(size, size);
-
+    m_title_pm->scale(size, size);
     m_stick_pm->scale(size, size);
-    m_stick_unfocus_pm->scale(size, size);
-    m_stick_pressed_pm->scale(size, size);
-
     m_stuck_pm->scale(size, size);
-    m_stuck_unfocus_pm->scale(size, size);
 }
 

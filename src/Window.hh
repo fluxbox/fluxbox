@@ -611,6 +611,7 @@ private:
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
 
+    FocusableTheme<WinButtonTheme> m_button_theme;
     FocusableTheme<FbWinFrameTheme> m_theme;
     FbWinFrame m_frame;  ///< the actuall window frame
 

@@ -290,6 +290,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_old_pos_x(0), m_old_pos_y(0),
     m_old_width(1),  m_old_height(1),
     m_last_button_x(0),  m_last_button_y(0),
+    m_button_theme(*this, screen().focusedWinButtonTheme(),
+                   screen().unfocusedWinButtonTheme()),
     m_theme(*this, screen().focusedWinFrameTheme(),
             screen().unfocusedWinFrameTheme()),
     m_frame(client.screen(), m_theme, client.screen().imageControl(), layer,
@@ -3981,8 +3983,6 @@ void FluxboxWindow::updateButtons() {
     CommandRef stick_cmd(new WindowCmd(*this, &FluxboxWindow::stick));
     CommandRef show_menu_cmd(new WindowCmd(*this, &FluxboxWindow::popupMenu));
 
-    FbTk::ThemeProxy<WinButtonTheme> &winbutton_theme = screen().winButtonTheme();
-
     for (size_t c = 0; c < 2 ; c++) {
         // get titlebar configuration for current side
         const vector<WinButton::Type> &dir = *(*titlebar_side[c]);
@@ -3995,7 +3995,8 @@ void FluxboxWindow::updateButtons() {
             switch (dir[i]) {
             case WinButton::MINIMIZE:
                 if (isIconifiable()) {
-                    winbtn = new WinButton(*this, winbutton_theme,
+                    winbtn = new WinButton(*this, m_button_theme,
+                                           screen().pressedWinButtonTheme(),
                                            WinButton::MINIMIZE,
                                            frame().titlebar(),
                                            0, 0, 10, 10);
@@ -4004,7 +4005,8 @@ void FluxboxWindow::updateButtons() {
                 break;
             case WinButton::MAXIMIZE:
                 if (isMaximizable()) {
-                    winbtn = new WinButton(*this, winbutton_theme,
+                    winbtn = new WinButton(*this, m_button_theme,
+                                           screen().pressedWinButtonTheme(),
                                            dir[i],
                                            frame().titlebar(),
                                            0, 0, 10, 10);
@@ -4016,7 +4018,8 @@ void FluxboxWindow::updateButtons() {
                 break;
             case WinButton::CLOSE:
                 if (m_client->isClosable()) {
-                    winbtn = new WinButton(*this, winbutton_theme,
+                    winbtn = new WinButton(*this, m_button_theme,
+                                           screen().pressedWinButtonTheme(),
                                            dir[i],
                                            frame().titlebar(),
                                            0, 0, 10, 10);
@@ -4026,7 +4029,8 @@ void FluxboxWindow::updateButtons() {
                 }
                 break;
             case WinButton::STICK:
-                winbtn =  new WinButton(*this, winbutton_theme,
+                winbtn =  new WinButton(*this, m_button_theme,
+                                        screen().pressedWinButtonTheme(),
                                         dir[i],
                                         frame().titlebar(),
                                         0, 0, 10, 10);
@@ -4035,7 +4039,8 @@ void FluxboxWindow::updateButtons() {
                 winbtn->setOnClick(stick_cmd);
                 break;
             case WinButton::SHADE:
-                winbtn = new WinButton(*this, winbutton_theme,
+                winbtn = new WinButton(*this, m_button_theme,
+                                       screen().pressedWinButtonTheme(),
                                        dir[i],
                                        frame().titlebar(),
                                        0, 0, 10, 10);
@@ -4043,7 +4048,8 @@ void FluxboxWindow::updateButtons() {
                 winbtn->setOnClick(shade_cmd);
                 break;
             case WinButton::MENUICON:
-                winbtn = new WinButton(*this, winbutton_theme,
+                winbtn = new WinButton(*this, m_button_theme,
+                                       screen().pressedWinButtonTheme(),
                                        dir[i],
                                        frame().titlebar(),
                                        0, 0, 10, 10);

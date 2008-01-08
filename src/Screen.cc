@@ -326,7 +326,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // the order of windowtheme and winbutton theme is important
     // because winbutton need to rescale the pixmaps in winbutton theme
     // after fbwinframe have resized them
-    m_winbutton_theme(new WinButtonTheme(scrn, *m_focused_windowtheme)),
+    m_focused_winbutton_theme(new WinButtonTheme(scrn, "", "", *m_focused_windowtheme)),
+    m_unfocused_winbutton_theme(new WinButtonTheme(scrn, ".unfocus", ".Unfocus", *m_unfocused_windowtheme)),
+    m_pressed_winbutton_theme(new WinButtonTheme(scrn, ".pressed", ".Pressed", *m_focused_windowtheme)),
     m_menutheme(new FbTk::MenuTheme(scrn)),
     m_root_window(scrn),
     m_geom_window(m_root_window,

@@ -281,8 +281,13 @@ public:
     FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() { return *m_menutheme.get(); }
     const FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() const { return *m_menutheme.get(); }
     const FbTk::ThemeProxy<RootTheme> &rootTheme() const { return *m_root_theme.get(); }
-    FbTk::ThemeProxy<WinButtonTheme> &winButtonTheme() { return *m_winbutton_theme.get(); }
-    const FbTk::ThemeProxy<WinButtonTheme> &winButtonTheme() const { return *m_winbutton_theme.get(); }
+
+    FbTk::ThemeProxy<WinButtonTheme> &focusedWinButtonTheme() { return *m_focused_winbutton_theme.get(); }
+    const FbTk::ThemeProxy<WinButtonTheme> &focusedWinButtonTheme() const { return *m_focused_winbutton_theme.get(); }
+    FbTk::ThemeProxy<WinButtonTheme> &unfocusedWinButtonTheme() { return *m_unfocused_winbutton_theme.get(); }
+    const FbTk::ThemeProxy<WinButtonTheme> &unfocusedWinButtonTheme() const { return *m_unfocused_winbutton_theme.get(); }
+    FbTk::ThemeProxy<WinButtonTheme> &pressedWinButtonTheme() { return *m_pressed_winbutton_theme.get(); }
+    const FbTk::ThemeProxy<WinButtonTheme> &pressedWinButtonTheme() const { return *m_pressed_winbutton_theme.get(); }
 
     FbRootWindow &rootWindow() { return m_root_window; }
     const FbRootWindow &rootWindow() const { return m_root_window; }
@@ -519,7 +524,8 @@ private:
 
     std::auto_ptr<FbWinFrameTheme> m_focused_windowtheme,
                                    m_unfocused_windowtheme;
-    std::auto_ptr<WinButtonTheme> m_winbutton_theme;
+    std::auto_ptr<WinButtonTheme> m_focused_winbutton_theme,
+            m_unfocused_winbutton_theme, m_pressed_winbutton_theme;
     std::auto_ptr<FbTk::MenuTheme> m_menutheme;
     std::auto_ptr<RootTheme> m_root_theme;
 
