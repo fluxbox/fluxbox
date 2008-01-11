@@ -28,7 +28,7 @@
 #include "FbTk/RefCount.hh"
 
 namespace FbTk {
-class Command;
+template <class T> class Command;
 }
 
 #include "FocusControl.hh"
@@ -37,7 +37,7 @@ class FocusModelMenuItem : public FbTk::MenuItem {
 public:
     FocusModelMenuItem(const FbTk::FbString &label, FocusControl &focus_control, 
                        FocusControl::FocusModel model,
-                       FbTk::RefCount<FbTk::Command> &cmd):
+                       FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd), 
         m_focus_control(focus_control), 
         m_focusmodel(model) {
@@ -61,7 +61,7 @@ public:
     TabFocusModelMenuItem(const FbTk::FbString &label, 
                           FocusControl &focus_control,
                           FocusControl::TabFocusModel model, 
-                          FbTk::RefCount<FbTk::Command> &cmd):
+                          FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd), 
         m_focus_control(focus_control), 
         m_tabfocusmodel(model) {

@@ -30,26 +30,26 @@
 namespace FbTk {
 
 /// executes a list of commands
-class MacroCommand:public Command {
+class MacroCommand:public Command<void> {
 public:
-    void add(RefCount<Command> &com);
+    void add(RefCount<Command<void> > &com);
     size_t size() const;
     virtual void execute();
 
 private:
-    std::vector<RefCount<Command> > m_commandlist;
+    std::vector<RefCount<Command<void> > > m_commandlist;
 };
 
 /// executes one command at a time
-class ToggleCommand:public Command {
+class ToggleCommand:public Command<void> {
 public:
     ToggleCommand();
-    void add(RefCount<Command> &com);
+    void add(RefCount<Command<void> > &com);
     size_t size() const;
     virtual void execute();
 
 private:
-    std::vector<RefCount<Command> > m_commandlist;
+    std::vector<RefCount<Command<void> > > m_commandlist;
     size_t m_state;
 };
 

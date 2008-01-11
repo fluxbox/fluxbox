@@ -32,7 +32,7 @@ StyleMenuItem::StyleMenuItem(const FbTk::FbString &label, const std::string &fil
     m_filename(filename) {
     // perform shell style ~ home directory expansion
     // and insert style      
-    FbTk::RefCount<FbTk::Command> 
+    FbTk::RefCount<FbTk::Command<void> > 
         setstyle_cmd(new FbCommands::
                      SetStyleCmd(m_filename));
     setCommand(setstyle_cmd);

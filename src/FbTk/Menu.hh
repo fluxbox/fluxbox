@@ -38,7 +38,7 @@
 
 namespace FbTk {
 
-class Command;
+class Command<class T>;
 class MenuItem;
 class ImageControl;
 class RefCount<class T>;
@@ -63,7 +63,7 @@ public:
     */
     //@{
     /// add a menu item with a label and a command
-    int insert(const FbString &label, RefCount<Command> &cmd, int pos=-1);
+    int insert(const FbString &label, RefCount<Command<void> > &cmd, int pos=-1);
     /// add empty menu item
     int insert(const FbString &label, int pos=-1);
     /// add submenu

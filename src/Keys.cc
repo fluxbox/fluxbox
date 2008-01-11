@@ -30,7 +30,7 @@
 #include "FbTk/Command.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/KeyUtil.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "FbTk/I18n.hh"
 
 #ifdef HAVE_CONFIG_H
@@ -135,7 +135,7 @@ public:
     unsigned int key; // key code or button number
     int context; // ON_TITLEBAR, etc.: bitwise-or of all desired contexts
     bool isdouble;
-    FbTk::RefCount<FbTk::Command> m_command;
+    FbTk::RefCount<FbTk::Command<void> > m_command;
 
     keylist_t keylist;
 };
@@ -461,7 +461,7 @@ bool Keys::addBinding(const string &linebuffer) {
             const char *str = FbTk::StringUtil::strcasestr(linebuffer.c_str(),
                     val[argc].c_str() + 1); // +1 to skip ':'
             if (str)
-                current_key->m_command = FbTk::ObjectRegistry<FbTk::Command>::instance().parse(str);
+                current_key->m_command = FbTk::CommandParser<void>::instance().parse(str);
 
             if (!str || *current_key->m_command == 0 || mod) {
                 delete first_new_key;

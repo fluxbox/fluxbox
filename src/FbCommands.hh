@@ -34,7 +34,7 @@
 namespace FbCommands {
 
 /// executes a system command
-class ExecuteCmd: public FbTk::Command {
+class ExecuteCmd: public FbTk::Command<void> {
 public:
     ExecuteCmd(const std::string &cmd, int screen_num = -1);
     void execute();
@@ -48,11 +48,11 @@ private:
 };
 
 /// sets environment
-class ExportCmd : public FbTk::Command {
+class ExportCmd : public FbTk::Command<void> {
 public:
     ExportCmd(const std::string& name, const std::string& value);
     void execute();
-    static FbTk::Command *parse(const std::string &command,
+    static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 private:
     std::string m_name;
@@ -60,19 +60,19 @@ private:
 };
 
 /// exit fluxbox
-class ExitFluxboxCmd: public FbTk::Command {
+class ExitFluxboxCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
 /// saves resources
-class SaveResources: public FbTk::Command {
+class SaveResources: public FbTk::Command<void> {
 public:
     void execute();
 };
 
 /// restarts fluxbox
-class RestartFluxboxCmd: public FbTk::Command {
+class RestartFluxboxCmd: public FbTk::Command<void> {
 public:
     RestartFluxboxCmd(const std::string &cmd);
     void execute();
@@ -81,17 +81,17 @@ private:
 };
 
 /// reconfigures fluxbox
-class ReconfigureFluxboxCmd: public FbTk::Command {
+class ReconfigureFluxboxCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
-class ReloadStyleCmd: public FbTk::Command {
+class ReloadStyleCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
-class SetStyleCmd: public FbTk::Command {
+class SetStyleCmd: public FbTk::Command<void> {
 public:
     explicit SetStyleCmd(const std::string &filename);
     void execute();
@@ -99,7 +99,7 @@ private:
     std::string m_filename;
 };
 
-class KeyModeCmd: public FbTk::Command {
+class KeyModeCmd: public FbTk::Command<void> {
 public:
     explicit KeyModeCmd(const std::string &arguments);
     void execute();
@@ -108,17 +108,17 @@ private:
     std::string m_end_args;
 };
 
-class HideMenuCmd: public FbTk::Command {
+class HideMenuCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
-class ShowClientMenuCmd: public FbTk::Command {
+class ShowClientMenuCmd: public FbTk::Command<void> {
 public:
     ShowClientMenuCmd(int option, std::string &pat):
             m_option(option|FocusableList::LIST_GROUPS), m_pat(pat.c_str()) { }
     void execute();
-    static FbTk::Command *parse(const std::string &command,
+    static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 private:
     const int m_option;
@@ -127,7 +127,7 @@ private:
     FbTk::RefCount<ClientMenu> m_menu;
 };
 
-class ShowCustomMenuCmd: public FbTk::Command {
+class ShowCustomMenuCmd: public FbTk::Command<void> {
 public:
     explicit ShowCustomMenuCmd(const std::string &arguments);
     void execute();
@@ -136,17 +136,17 @@ private:
    FbTk::RefCount<FbTk::Menu> m_menu;    
 };
 
-class ShowRootMenuCmd: public FbTk::Command {
+class ShowRootMenuCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
-class ShowWorkspaceMenuCmd: public FbTk::Command {
+class ShowWorkspaceMenuCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
-class SetWorkspaceNameCmd: public FbTk::Command {
+class SetWorkspaceNameCmd: public FbTk::Command<void> {
 public:
     SetWorkspaceNameCmd(const std::string &name, int spaceid = -1);
     void execute();
@@ -155,18 +155,18 @@ private:
     int m_workspace;
 };
 
-class WorkspaceNameDialogCmd: public FbTk::Command {
+class WorkspaceNameDialogCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
-class CommandDialogCmd: public FbTk::Command {
+class CommandDialogCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
 
-class SetResourceValueCmd: public FbTk::Command {
+class SetResourceValueCmd: public FbTk::Command<void> {
 public:
     SetResourceValueCmd(const std::string &resourcename, const std::string &value);
     void execute();
@@ -175,12 +175,12 @@ private:
     const std::string m_value;
 };
 
-class SetResourceValueDialogCmd: public FbTk::Command {
+class SetResourceValueDialogCmd: public FbTk::Command<void> {
 public:
     void execute();
 };
 
-class BindKeyCmd: public FbTk::Command {
+class BindKeyCmd: public FbTk::Command<void> {
 public:
     BindKeyCmd(const std::string &keybind);
     void execute();
@@ -189,7 +189,7 @@ private:
 };
 
 /// deiconifies iconified windows
-class DeiconifyCmd: public FbTk::Command {
+class DeiconifyCmd: public FbTk::Command<void> {
 public:
     enum Mode { 
         LAST,
@@ -207,7 +207,7 @@ public:
     DeiconifyCmd(Mode mode= LASTWORKSPACE,
                  Destination dest= CURRENT);
     void execute();
-    static FbTk::Command *parse(const std::string &command,
+    static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 private:
     Mode m_mode;

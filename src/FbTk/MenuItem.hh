@@ -69,7 +69,7 @@ public:
           m_toggle_item(false)
     { }
     /// create a menu item with a specific command to be executed on click
-    MenuItem(const FbString &label, RefCount<Command> &cmd, Menu *menu = 0)
+    MenuItem(const FbString &label, RefCount<Command<void> > &cmd, Menu *menu = 0)
         : m_label(label),
           m_menu(menu),
           m_submenu(0),
@@ -91,7 +91,7 @@ public:
     { }
     virtual ~MenuItem() { }
 
-    void setCommand(RefCount<Command> &cmd) { m_command = cmd; }
+    void setCommand(RefCount<Command<void> > &cmd) { m_command = cmd; }
     virtual void setSelected(bool selected) { m_selected = selected; }
     virtual void setEnabled(bool enabled) { m_enabled = enabled; }
     virtual void setLabel(const FbString &label) { m_label = label; }
@@ -140,8 +140,8 @@ public:
     virtual void click(int button, int time, unsigned int mods);
     /// must use this to show submenu to ensure consistency for object like window menu in ClientMenu (see Workspace.cc)
     virtual void showSubmenu();
-    RefCount<Command> &command() { return m_command; }
-    const RefCount<Command> &command() const { return m_command; }
+    RefCount<Command<void> > &command() { return m_command; }
+    const RefCount<Command<void> > &command() const { return m_command; }
     //@}
 
     void setMenu(Menu &menu) { m_menu = &menu; }
@@ -151,7 +151,7 @@ private:
     FbString m_label; ///< label of this item
     Menu *m_menu; ///< the menu we live in
     Menu *m_submenu; ///< a submenu, 0 if we don't have one
-    RefCount<Command> m_command; ///< command to be executed
+    RefCount<Command<void> > m_command; ///< command to be executed
     bool m_enabled, m_selected;
     bool m_close_on_click, m_toggle_item;
     int m_index;

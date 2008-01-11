@@ -26,26 +26,14 @@
 
 namespace FbTk {
 
-/// a simple command 
+/// a simple command
 template <typename Receiver, typename ReturnType=void>
-class SimpleCommand: public Command {
+class SimpleCommand: public Command<ReturnType> {
 public:
     typedef ReturnType (Receiver::* Action)();
     SimpleCommand(Receiver &r, Action a):
         m_receiver(r), m_action(a) { }
     void execute() { (m_receiver.*m_action)(); }
-private:
-    Receiver &m_receiver;
-    Action m_action;
-};
-
-template <typename Receiver, typename ReturnType=bool>
-class SimpleBoolCommand: public BoolCommand {
-public:
-    typedef ReturnType (Receiver::* Action)();
-    SimpleBoolCommand(Receiver &r, Action a):
-        m_receiver(r), m_action(a) { }
-    bool bool_execute() { return (bool)(m_receiver.*m_action)(); }
 private:
     Receiver &m_receiver;
     Action m_action;

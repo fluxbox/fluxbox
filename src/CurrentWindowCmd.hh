@@ -29,7 +29,7 @@
 
 /// helper class for window commands
 /// calls real_execute if there's a focused window or a window in button press/release window
-class WindowHelperCmd: public FbTk::Command {
+class WindowHelperCmd: public FbTk::Command<void> {
 public:
     explicit WindowHelperCmd() { }
 
@@ -40,11 +40,11 @@ protected:
     virtual void real_execute() = 0;
 };
 
-class WindowHelperBoolCmd: public FbTk::BoolCommand {
+class WindowHelperBoolCmd: public FbTk::Command<bool> {
 public:
     explicit WindowHelperBoolCmd() { }
 
-    bool bool_execute();
+    bool execute();
 
 protected:
     FluxboxWindow &fbwindow();
@@ -149,7 +149,7 @@ protected:
 class StartResizingCmd: public WindowHelperCmd {
 public:
     explicit StartResizingCmd(FluxboxWindow::ResizeModel mode):m_mode(mode) { }
-    static FbTk::Command *parse(const std::string &command,
+    static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 protected:
     void real_execute();
@@ -169,7 +169,7 @@ protected:
 class MoveCmd: public WindowHelperCmd {
 public:
     explicit MoveCmd(const int step_size_x, const int step_size_y);
-    static FbTk::Command *parse(const std::string &command,
+    static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 protected:
     void real_execute();
@@ -183,7 +183,7 @@ private:
 class ResizeCmd: public WindowHelperCmd{
 public:
   explicit ResizeCmd(int step_size_x, int step_size_y);
-    static FbTk::Command *parse(const std::string &command,
+    static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 protected:
   void real_execute();
@@ -206,7 +206,7 @@ public:
         IGNORE_Y = 1 << 9
     };
     explicit MoveToCmd(const int step_size_x, const int step_size_y, const unsigned int refc);
-    static FbTk::Command *parse(const std::string &command,
+    static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 protected:
     void real_execute();
@@ -238,7 +238,7 @@ protected:
 class SetAlphaCmd: public WindowHelperCmd {
 public:
     SetAlphaCmd(int focus, bool rel, int unfocus, bool unrel);
-    static FbTk::Command *parse(const std::string &command,
+    static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 protected:
     void real_execute();

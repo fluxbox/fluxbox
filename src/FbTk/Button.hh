@@ -42,7 +42,7 @@ public:
     virtual ~Button();
 
     /// sets action when the button is clicked with #button mouse btn
-    void setOnClick(RefCount<Command> &com, int button = 1);
+    void setOnClick(RefCount<Command<void> > &com, int button = 1);
 
     /// sets the pixmap to be viewed when the button is pressed
     virtual void setPressedPixmap(Pixmap pm);
@@ -83,7 +83,7 @@ private:
     GC m_gc; ///< graphic context for button
     bool m_pressed; ///< if the button is pressed
     bool *mark_if_deleted; ///< if the button is deleted and this is set, make it true
-    RefCount<Command> m_onclick[5]; ///< what to do when this button is clicked with button num
+    RefCount<Command<void> > m_onclick[5]; ///< what to do when this button is clicked with button num
 };
 
 } // namespace FbTk

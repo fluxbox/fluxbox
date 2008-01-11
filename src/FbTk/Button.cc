@@ -62,7 +62,7 @@ Button::~Button() {
     }
 }
 
-void Button::setOnClick(RefCount<Command> &cmd, int button) {
+void Button::setOnClick(RefCount<Command<void> > &cmd, int button) {
     // we only handle buttons 1 to 5
     if (button > 5 || button == 0)
         return;

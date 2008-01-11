@@ -48,7 +48,7 @@
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
 #include "Strut.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "AtomHandler.hh"
 #include "HeadArea.hh"
 #include "FbCommands.hh"
@@ -168,7 +168,7 @@ class TabPlacementMenuItem: public FbTk::MenuItem {
 public:
     TabPlacementMenuItem(FbTk::FbString & label, BScreen &screen,
                          FbWinFrame::TabPlacement place,
-                         FbTk::RefCount<FbTk::Command> &cmd):
+                         FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd),
         m_screen(screen),
         m_place(place) {
@@ -773,7 +773,7 @@ void BScreen::propertyNotify(Atom atom) {
                     &ret_bytes_after, (unsigned char **)&str);
             }
 
-            FbTk::RefCount<FbTk::Command> cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse(str, false));
+            FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(str, false));
             if (cmd.get())
                 cmd->execute();
             XFree(str);
@@ -1479,9 +1479,9 @@ void BScreen::initMenu() {
     if (m_rootmenu.get() == 0) {
         _FB_USES_NLS;
         m_rootmenu.reset(createMenu(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
-        FbTk::RefCount<FbTk::Command> restart_fb(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("restart"));
-        FbTk::RefCount<FbTk::Command> exit_fb(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("exit"));
-        FbTk::RefCount<FbTk::Command> execute_xterm(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("exec xterm"));
+        FbTk::RefCount<FbTk::Command<void> > restart_fb(FbTk::CommandParser<void>::instance().parse("restart"));
+        FbTk::RefCount<FbTk::Command<void> > exit_fb(FbTk::CommandParser<void>::instance().parse("exit"));
+        FbTk::RefCount<FbTk::Command<void> > execute_xterm(FbTk::CommandParser<void>::instance().parse("exec xterm"));
         m_rootmenu->setInternalMenu();
         m_rootmenu->insert("xterm", execute_xterm);
         m_rootmenu->insert(_FB_XTEXT(Menu, Restart, "Restart", "Restart command"),
@@ -1523,20 +1523,20 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
     FbTk::MacroCommand *s_a_reconftabs_macro = new FbTk::MacroCommand();
-    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
+    FbTk::RefCount<FbTk::Command<void> > saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
                                                  *Fluxbox::instance(),
                                                  &Fluxbox::save_rc));
-    FbTk::RefCount<FbTk::Command> reconf_cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("reconfigure"));
+    FbTk::RefCount<FbTk::Command<void> > reconf_cmd(FbTk::CommandParser<void>::instance().parse("reconfigure"));
 
-    FbTk::RefCount<FbTk::Command> reconftabs_cmd(new FbTk::SimpleCommand<BScreen>(
+    FbTk::RefCount<FbTk::Command<void> > reconftabs_cmd(new FbTk::SimpleCommand<BScreen>(
                                                  *this,
                                                  &BScreen::reconfigureTabs));
     s_a_reconf_macro->add(saverc_cmd);
     s_a_reconf_macro->add(reconf_cmd);
     s_a_reconftabs_macro->add(saverc_cmd);
     s_a_reconftabs_macro->add(reconftabs_cmd);
-    FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
-    FbTk::RefCount<FbTk::Command> save_and_reconftabs(s_a_reconftabs_macro);
+    FbTk::RefCount<FbTk::Command<void> > save_and_reconfigure(s_a_reconf_macro);
+    FbTk::RefCount<FbTk::Command<void> > save_and_reconftabs(s_a_reconftabs_macro);
     // create focus menu
     // we don't set this to internal menu so will
     // be deleted toghether with the parent
@@ -1693,7 +1693,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
         // in order to save system resources, don't save or reconfigure alpha
         // settings until after the user is done changing them
-        FbTk::RefCount<FbTk::Command> delayed_save_and_reconf(
+        FbTk::RefCount<FbTk::Command<void> > delayed_save_and_reconf(
             new FbTk::DelayedCmd(save_and_reconfigure));
 
         FbTk::MenuItem *focused_alpha_item =

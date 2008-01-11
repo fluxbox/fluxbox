@@ -263,7 +263,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     // Because when the command is executed we shouldn't do reconfig directly
     // because it could affect ongoing menu stuff so we need to reconfig in
     // the next event "round".
-    FbTk::RefCount<FbTk::Command> reconfig_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::timed_reconfigure));
+    FbTk::RefCount<FbTk::Command<void> > reconfig_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::timed_reconfigure));
     timeval to;
     to.tv_sec = 0;
     to.tv_usec = 1;
@@ -1034,7 +1034,7 @@ void Fluxbox::handleSignal(int signum) {
         break;
     default:
         fprintf(stderr,
-                _FB_CONSOLETEXT(BaseDisplay, SignalCaught, "%s:      signal %d caught\n", "signal catch debug message. Include %s for command and %d for signal number").c_str(),
+                _FB_CONSOLETEXT(BaseDisplay, SignalCaught, "%s:      signal %d caught\n", "signal catch debug message. Include %s for Command<void> and %d for signal number").c_str(),
                 m_argv[0], signum);
 
         if (! m_starting && ! re_enter) {

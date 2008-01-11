@@ -34,7 +34,7 @@
 #include "WorkspaceNameTheme.hh"
 #include "ButtonTheme.hh"
 
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "Screen.hh"
 #include "Toolbar.hh"
 #include "fluxbox.hh"
@@ -42,7 +42,7 @@
 #include <utility>
 
 namespace {
-class ShowMenuAboveToolbar: public FbTk::Command {
+class ShowMenuAboveToolbar: public FbTk::Command<void> {
 public:
     explicit ShowMenuAboveToolbar(Toolbar &tbar):m_tbar(tbar) { }
     void execute() {
@@ -92,7 +92,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         WorkspaceNameTool *witem = new WorkspaceNameTool(parent,
                                                         *m_workspace_theme, screen());
         using namespace FbTk;
-        RefCount<Command> showmenu(new ShowMenuAboveToolbar(tbar));
+        RefCount<Command<void> > showmenu(new ShowMenuAboveToolbar(tbar));
         witem->button().setOnClick(showmenu);
         item = witem;
     } else if (name == "iconbar") {
@@ -104,7 +104,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
     } else if (name == "nextworkspace" || 
                name == "prevworkspace") {
 
-        FbTk::RefCount<FbTk::Command> cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse(name));
+        FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(name));
         if (*cmd == 0) // we need a command
             return 0;
 
@@ -124,7 +124,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
     } else if (name == "nextwindow" || 
                name == "prevwindow") {
 
-        FbTk::RefCount<FbTk::Command> cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse(name));
+        FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(name));
         if (*cmd == 0) // we need a command
             return 0;
 

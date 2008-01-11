@@ -25,7 +25,7 @@
 #include "Screen.hh"
 #include "FbWinFrameTheme.hh"
 #include "WinClient.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "FocusControl.hh"
 #include "fluxbox.hh"
 
@@ -136,8 +136,8 @@ void CommandDialog::keyPressEvent(XKeyEvent &event) {
 
     if (ks == XK_Return) {
         hide(); // hide and return focus to a FluxboxWindow
-        // create command from line
-        auto_ptr<FbTk::Command> cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse(m_precommand + m_textbox.text()));
+        // create Command<void> from line
+        auto_ptr<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(m_precommand + m_textbox.text()));
         if (cmd.get())
             cmd->execute();
         // post execute
@@ -167,8 +167,8 @@ void CommandDialog::tabComplete() {
             return;
         }
 
-        FbTk::ObjectRegistry<FbTk::Command>::CreatorMap::const_iterator it = FbTk::ObjectRegistry<FbTk::Command>::instance().creatorMap().begin();
-        const FbTk::ObjectRegistry<FbTk::Command>::CreatorMap::const_iterator it_end = FbTk::ObjectRegistry<FbTk::Command>::instance().creatorMap().end();
+        FbTk::ObjectRegistry<FbTk::CommandParser<void>::Creator *>::CreatorMap::const_iterator it = FbTk::ObjectRegistry<FbTk::CommandParser<void>::Creator *>::instance().creatorMap().begin();
+        const FbTk::ObjectRegistry<FbTk::CommandParser<void>::Creator *>::CreatorMap::const_iterator it_end = FbTk::ObjectRegistry<FbTk::CommandParser<void>::Creator *>::instance().creatorMap().end();
         vector<string> matches;
         for (; it != it_end; ++it) {
             if ((*it).first.find(prefix) == 0) {

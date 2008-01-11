@@ -24,7 +24,7 @@
 
 #include "Timer.hh"
 
-#include "ObjectRegistry.hh"
+#include "CommandParser.hh"
 #include "StringUtil.hh"
 
 //use GNU extensions
@@ -53,7 +53,7 @@ Timer::Timer():m_timing(false), m_once(false), m_interval(0) {
 
 }
 
-Timer::Timer(RefCount<Command> &handler):
+Timer::Timer(RefCount<Command<void> > &handler):
     m_handler(handler),
     m_timing(false),
     m_once(false),
@@ -79,7 +79,7 @@ void Timer::setTimeout(const timeval &t) {
     m_timeout.tv_usec = t.tv_usec;
 }
 
-void Timer::setCommand(RefCount<Command> &cmd) {
+void Timer::setCommand(RefCount<Command<void> > &cmd) {
     m_handler = cmd;
 }
 
@@ -247,7 +247,7 @@ void Timer::addTimer(Timer *timer) {
 
 }
 
-Command *DelayedCmd::parse(const std::string &command,
+Command<void> *DelayedCmd::parse(const std::string &command,
                            const std::string &args, bool trusted) {
 
     std::string cmd_str;
@@ -255,7 +255,7 @@ Command *DelayedCmd::parse(const std::string &command,
     if (err == 0)
         return 0;
 
-    RefCount<Command> cmd(ObjectRegistry<Command>::instance().parse(cmd_str, trusted));
+    RefCount<Command<void> > cmd(CommandParser<void>::instance().parse(cmd_str, trusted));
     if (*cmd == 0)
         return 0;
 
@@ -265,9 +265,9 @@ Command *DelayedCmd::parse(const std::string &command,
     return new DelayedCmd(cmd, delay);
 }
 
-REGISTER_OBJECT_PARSER(delay, DelayedCmd::parse, Command);
+REGISTER_COMMAND_PARSER(delay, DelayedCmd::parse, void);
 
-DelayedCmd::DelayedCmd(RefCount<Command> &cmd, unsigned int timeout) {
+DelayedCmd::DelayedCmd(RefCount<Command<void> > &cmd, unsigned int timeout) {
     timeval to; // defaults to 200ms
     to.tv_sec = timeout/1000000;
     to.tv_usec = timeout % 1000000;

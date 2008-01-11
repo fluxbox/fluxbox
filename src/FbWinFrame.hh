@@ -44,7 +44,7 @@ template <class T> class FocusableTheme;
 
 namespace FbTk {
 class ImageControl;
-class Command;
+template <class T> class Command;
 class Texture;
 class XLayer;
 }

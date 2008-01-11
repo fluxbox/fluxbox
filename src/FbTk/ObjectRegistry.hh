@@ -22,124 +22,30 @@
 #ifndef OBJECTREGISTRY_HH
 #define OBJECTREGISTRY_HH
 
-#include "StringUtil.hh"
-
 #include <map>
-
-using std::string;
+#include <string>
 
 namespace FbTk {
 
-#define REGISTER_OBJECT_PARSER(name, parser, type) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<type>::instance().registerObject(#name, parser); \
-  }
-
-#define REGISTER_OBJECT_PARSER_NSBASE(name, parser, space, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<space::base >::instance().registerObject(#name, parser); \
-  }
-
-/* Include some basic Object creators */
-template <typename Derived, typename Base>
-Base *ObjectCreator(const string &name, const string &args, bool trusted) {
-    return new Derived();
-}
-
-#define REGISTER_OBJECT(name, derived, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<base >::instance().registerObject(#name, FbTk::ObjectCreator<derived, base >); \
-  }
-
-#define REGISTER_OBJECT_NSBASE(name, derived, space, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<space::base >::instance().registerObject(#name, FbTk::ObjectCreator<derived, space::base >); \
-  }
-
-template <typename Derived, typename Base>
-Base *ObjectCreatorWithArgs(const string &name, const string &args,
-                            bool trusted) {
-    return new Derived(args);
-}
-
-#define REGISTER_OBJECT_WITH_ARGS(name, derived, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<base >::instance().registerObject(#name, FbTk::ObjectCreatorWithArgs<derived, base >); \
-  }
-
-#define REGISTER_OBJECT_WITH_ARGS_NSBASE(name, derived, space, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<space::base >::instance().registerObject(#name, FbTk::ObjectCreatorWithArgs<derived, space::base >); \
-  }
-
-template <typename Derived, typename Base>
-Base *UntrustedObjectCreator(const string &name, const string &args,
-                             bool trusted) {
-    if (!trusted) return 0;
-    return new Derived();
-}
-
-#define REGISTER_UNTRUSTED_OBJECT(name, derived, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<base >::instance().registerObject(#name, FbTk::UntrustedObjectCreator<derived, base >); \
-  }
-
-#define REGISTER_UNTRUSTED_OBJECT_NSBASE(name, derived, space, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<space::base >::instance().registerObject(#name, FbTk::UntrustedObjectCreator<derived, space::base >); \
-  }
-
-template <typename Derived, typename Base>
-Base * UntrustedObjectCreatorWithArgs(const string &name, const string &args,
-                                      bool trusted) {
-    if (!trusted) return 0;
-    return new Derived(args);
-}
-
-#define REGISTER_UNTRUSTED_OBJECT_WITH_ARGS(name, derived, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<base >::instance().registerObject(#name, FbTk::UntrustedObjectCreatorWithArgs<derived, base >); \
-  }
-
-#define REGISTER_UNTRUSTED_OBJECT_WITH_ARGS_NSBASE(name, derived, space, base) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::ObjectRegistry<space::base >::instance().registerObject(#name, FbTk::UntrustedObjectCreatorWithArgs<derived, space::base >); \
-  }
-
-template <typename Base>
+template <typename Creator>
 class ObjectRegistry {
 public:
-    typedef Base * CreateFunction(const string &name, const string &args, bool trusted);
-    typedef std::map<string, CreateFunction *> CreatorMap;
+    typedef std::map<std::string, Creator> CreatorMap;
 
-    static ObjectRegistry<Base > &instance() {
-        static ObjectRegistry<Base > s_instance;
+    static ObjectRegistry<Creator> &instance() {
+        static ObjectRegistry<Creator> s_instance;
         return s_instance;
     }
 
-    Base *parse(const string &name, const string &args, bool trusted = true) const {
-        string lc = StringUtil::toLower(name);
-        typename CreatorMap::const_iterator it = m_creators.find(lc.c_str());
+    Creator lookup(const std::string &name) {
+        typename CreatorMap::const_iterator it = m_creators.find(name);
         if (it == m_creators.end())
             return 0;
-        else
-            return it->second(lc, args, trusted);
+        return it->second;
     }
 
-    Base *parse(const string &line, bool trusted = true) const {
-        // parse args and command
-        string command, args;
-        StringUtil::getFirstWord(line, command, args);
-        StringUtil::removeFirstWhitespace(args);
-        StringUtil::removeTrailingWhitespace(args);
-
-        // now we have parsed command and args
-        return parse(command, args, trusted);
-    }
-
-    bool registerObject(string name, CreateFunction createFunction) {
-        name = StringUtil::toLower(name);
-        m_creators[name] = createFunction;
+    bool registerObject(const std::string &name, Creator creator) {
+        m_creators[name] = creator;
         return true;
     }
 

@@ -25,7 +25,7 @@
 #include "Workspace.hh"
 #include "WorkspaceCmd.hh"
 #include "MenuCreator.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "FbCommands.hh"
 #include "Layer.hh"
 
@@ -92,7 +92,7 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
                 FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5, 
                                                                                    wkspc->name().c_str(),
                                                                                    &wkspc->menu());
-                FbTk::RefCount<FbTk::Command> jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
+                FbTk::RefCount<FbTk::Command<void> > jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
                 mb_menu->setCommand(3, jump_cmd);
                 insert(mb_menu, workspace + IDX_AFTER_ICONS);
             }
@@ -124,28 +124,28 @@ void WorkspaceMenu::init(BScreen &screen) {
         FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5, 
                                                                            wkspc->name().c_str(),
                                                                            &wkspc->menu());
-        FbTk::RefCount<FbTk::Command> jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
+        FbTk::RefCount<FbTk::Command<void> > jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
         mb_menu->setCommand(2, jump_cmd);
         insert(mb_menu, workspace + IDX_AFTER_ICONS);
     }
     setItemSelected(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS, true);
 
 
-    RefCount<Command> saverc_cmd(new FbCommands::SaveResources());
+    RefCount<Command<void> > saverc_cmd(new FbCommands::SaveResources());
 
     MacroCommand *new_workspace_macro = new MacroCommand();
-    RefCount<Command> addworkspace(new SimpleCommand<BScreen, int>(screen, &BScreen::addWorkspace));
+    RefCount<Command<void> > addworkspace(new SimpleCommand<BScreen>(screen, (SimpleCommand<BScreen>::Action)&BScreen::addWorkspace));
     new_workspace_macro->add(addworkspace);
     new_workspace_macro->add(saverc_cmd);
-    RefCount<Command> new_workspace_cmd(new_workspace_macro);
+    RefCount<Command<void> > new_workspace_cmd(new_workspace_macro);
 
     MacroCommand *remove_workspace_macro = new MacroCommand();
-    RefCount<Command> rmworkspace(new SimpleCommand<BScreen, int>(screen, &BScreen::removeLastWorkspace));
+    RefCount<Command<void> > rmworkspace(new SimpleCommand<BScreen>(screen, (SimpleCommand<BScreen>::Action)&BScreen::removeLastWorkspace));
     remove_workspace_macro->add(rmworkspace);
     remove_workspace_macro->add(saverc_cmd);
-    RefCount<Command> remove_last_cmd(remove_workspace_macro);
+    RefCount<Command<void> > remove_last_cmd(remove_workspace_macro);
 
-    RefCount<Command> start_edit(FbTk::ObjectRegistry<Command>::instance().parse("setworkspacenamedialog"));
+    RefCount<Command<void> > start_edit(FbTk::CommandParser<void>::instance().parse("setworkspacenamedialog"));
 
     insert(new FbTk::MenuSeparator());
     insert(_FB_XTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 

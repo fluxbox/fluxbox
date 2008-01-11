@@ -40,7 +40,7 @@ public:
 class LayerMenuItem : public FbTk::MenuItem {
 public:
     LayerMenuItem(const FbTk::FbString &label, LayerObject *object,
-                  int layernum, FbTk::RefCount<FbTk::Command> &cmd):
+                  int layernum, FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd), m_object(object), m_layernum(layernum) {}
 
     LayerMenuItem(const FbTk::FbString &label, LayerObject *object,

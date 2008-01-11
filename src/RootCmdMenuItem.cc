@@ -34,7 +34,7 @@ RootCmdMenuItem::RootCmdMenuItem(const FbTk::FbString &label,
     m_filename(filename) {
 
     std::string prog = cmd.empty() ? realProgramName("fbsetbg") : cmd;
-    FbTk::RefCount<FbTk::Command>
+    FbTk::RefCount<FbTk::Command<void> >
         setwp_cmd(new FbCommands::ExecuteCmd(prog + " \"" + m_filename + "\""));
     setCommand(setwp_cmd);
     setToggleItem(true);

@@ -51,7 +51,7 @@ protected:
 
 /// executes action for a dynamic context set in WindowCmd_base
 template <typename ReturnType=void>
-class WindowCmd: public WindowCmd_base, public FbTk::Command {
+class WindowCmd: public WindowCmd_base, public FbTk::Command<void> {
 public:
     typedef ReturnType (FluxboxWindow::* Action)();
     WindowCmd(Action a):m_action(a) {}

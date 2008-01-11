@@ -45,7 +45,7 @@ MultiButtonMenuItem::~MultiButtonMenuItem() {
         delete [] m_button_exe;
 }
 
-void MultiButtonMenuItem::setCommand(int button, FbTk::RefCount<FbTk::Command> &cmd) {
+void MultiButtonMenuItem::setCommand(int button, FbTk::RefCount<FbTk::Command<void> > &cmd) {
     if (button <= 0 || button > static_cast<signed>(buttons()) || buttons() == 0)
         return;
     m_button_exe[button - 1] = cmd;
@@ -66,7 +66,7 @@ void MultiButtonMenuItem::init(int buttons) {
         m_buttons = buttons;
 
     if (m_buttons != 0)
-        m_button_exe = new FbTk::RefCount<FbTk::Command>[m_buttons];
+        m_button_exe = new FbTk::RefCount<FbTk::Command<void> >[m_buttons];
     else
         m_button_exe = 0;
 }

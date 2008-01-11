@@ -95,12 +95,12 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     m_need_update(true) {
     // setup timers
 
-    RefCount<Command> show_cmd(new SimpleCommand<Menu>(*this, &Menu::openSubmenu));
+    RefCount<Command<void> > show_cmd(new SimpleCommand<Menu>(*this, &Menu::openSubmenu));
     m_submenu_timer.setCommand(show_cmd);
     m_submenu_timer.fireOnce(true);
 
 
-    RefCount<Command> hide_cmd(new SimpleCommand<Menu>(*this, &Menu::closeMenu));
+    RefCount<Command<void> > hide_cmd(new SimpleCommand<Menu>(*this, &Menu::closeMenu));
     m_hide_timer.setCommand(hide_cmd);
     m_hide_timer.fireOnce(true);
 
@@ -198,7 +198,7 @@ Menu::~Menu() {
         s_focused = 0;
 }
 
-int Menu::insert(const FbString &label, RefCount<Command> &cmd, int pos) {
+int Menu::insert(const FbString &label, RefCount<Command<void> > &cmd, int pos) {
     return insert(new MenuItem(label, cmd, this), pos);
 }
 

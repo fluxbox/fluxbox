@@ -40,7 +40,7 @@ template <typename ItemType>
 class XineramaHeadMenuItem : public FbTk::MenuItem {
 public:
     XineramaHeadMenuItem(const FbTk::FbString &label, ItemType &object, int headnum,
-                  FbTk::RefCount<FbTk::Command> &cmd):
+                  FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label,cmd), m_object(object), m_headnum(headnum) {}
     XineramaHeadMenuItem(const FbTk::FbString &label, ItemType &object, int headnum):
         FbTk::MenuItem(label), m_object(object), m_headnum(headnum) {}
@@ -79,7 +79,7 @@ XineramaHeadMenu<ItemType>::XineramaHeadMenu(
     m_object(item) 
 {
     setLabel(title);
-    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
+    FbTk::RefCount<FbTk::Command<void> > saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
                                      *Fluxbox::instance(), 
                                      &Fluxbox::save_rc));
     char tname[128];

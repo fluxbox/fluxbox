@@ -21,7 +21,7 @@
 
 #include "LogicCommands.hh"
 
-#include "ObjectRegistry.hh"
+#include "CommandParser.hh"
 #include "StringUtil.hh"
 
 #include <vector>
@@ -39,11 +39,11 @@ M *addCommands(M *macro, const string &args, bool trusted) {
     std::string blah;
     std::vector<std::string> cmds;
     StringUtil::stringTokensBetween(cmds, args, blah, '{', '}');
-    RefCount<BoolCommand> cmd(0);
+    RefCount<Command<bool> > cmd(0);
 
     std::vector<std::string>::iterator it = cmds.begin(), it_end = cmds.end();
     for (; it != it_end; ++it) {
-        cmd = ObjectRegistry<BoolCommand>::instance().parse(*it, trusted);
+        cmd = CommandParser<bool>::instance().parse(*it, trusted);
         if (*cmd)
             macro->add(cmd);
     }
@@ -54,14 +54,14 @@ M *addCommands(M *macro, const string &args, bool trusted) {
     return 0;
 }
 
-BoolCommand *parseLogicCommand(const string &command, const string &args,
+Command<bool> *parseLogicCommand(const string &command, const string &args,
                                bool trusted) {
     if (command == "not") {
-        BoolCommand *boolcmd =
-                ObjectRegistry<BoolCommand>::instance().parse(args, trusted);
+        Command<bool> *boolcmd =
+                CommandParser<bool>::instance().parse(args, trusted);
         if (!boolcmd)
             return 0;
-        RefCount<BoolCommand> ref(boolcmd);
+        RefCount<Command<bool> > ref(boolcmd);
         return new NotCommand(ref);
     } else if (command == "and")
         return addCommands<AndCommand>(new AndCommand(), args, trusted);
@@ -72,41 +72,41 @@ BoolCommand *parseLogicCommand(const string &command, const string &args,
     return 0;
 }
 
-REGISTER_OBJECT_PARSER(not, parseLogicCommand, BoolCommand);
-REGISTER_OBJECT_PARSER(and, parseLogicCommand, BoolCommand);
-REGISTER_OBJECT_PARSER(or, parseLogicCommand, BoolCommand);
-REGISTER_OBJECT_PARSER(xor, parseLogicCommand, BoolCommand);
+REGISTER_COMMAND_PARSER(not, parseLogicCommand, bool);
+REGISTER_COMMAND_PARSER(and, parseLogicCommand, bool);
+REGISTER_COMMAND_PARSER(or, parseLogicCommand, bool);
+REGISTER_COMMAND_PARSER(xor, parseLogicCommand, bool);
 
 }; // end anonymous namespace
 
-Command *IfCommand::parse(const std::string &command, const std::string &args,
+Command<void> *IfCommand::parse(const std::string &command, const std::string &args,
                           bool trusted) {
     std::string blah;
     std::vector<std::string> cmds;
-    RefCount<BoolCommand> cond(0);
-    RefCount<Command> t(0), f(0);
+    RefCount<Command<bool> > cond(0);
+    RefCount<Command<void> > t(0), f(0);
 
     StringUtil::stringTokensBetween(cmds, args, blah, '{', '}');
     if (cmds.size() < 3)
         return 0;
 
-    cond = ObjectRegistry<BoolCommand>::instance().parse(cmds[0], trusted);
+    cond = CommandParser<bool>::instance().parse(cmds[0], trusted);
     if (*cond == 0)
         return 0;
 
-    t = ObjectRegistry<Command>::instance().parse(cmds[1], trusted);
+    t = CommandParser<void>::instance().parse(cmds[1], trusted);
     if (cmds.size() >= 3)
-        f = ObjectRegistry<Command>::instance().parse(cmds[2], trusted);
+        f = CommandParser<void>::instance().parse(cmds[2], trusted);
     if (*t == 0 && *f == 0)
         return 0;
 
     return new IfCommand(cond, t, f);
 }
 
-REGISTER_OBJECT_PARSER(if, IfCommand::parse, Command);
-REGISTER_OBJECT_PARSER(cond, IfCommand::parse, Command);
+REGISTER_COMMAND_PARSER(if, IfCommand::parse, void);
+REGISTER_COMMAND_PARSER(cond, IfCommand::parse, void);
 
-void OrCommand::add(RefCount<BoolCommand> &com) {
+void OrCommand::add(RefCount<Command<bool> > &com) {
     m_commandlist.push_back(com);
 }
 
@@ -114,15 +114,15 @@ size_t OrCommand::size() const {
     return m_commandlist.size();
 }
 
-bool OrCommand::bool_execute() {
+bool OrCommand::execute() {
     for (size_t i=0; i < m_commandlist.size(); ++i) {
-        if (m_commandlist[i]->bool_execute())
+        if (m_commandlist[i]->execute())
             return true;
     }
     return false;
 }
 
-void AndCommand::add(RefCount<BoolCommand> &com) {
+void AndCommand::add(RefCount<Command<bool> > &com) {
     m_commandlist.push_back(com);
 }
 
@@ -130,15 +130,15 @@ size_t AndCommand::size() const {
     return m_commandlist.size();
 }
 
-bool AndCommand::bool_execute() {
+bool AndCommand::execute() {
     for (size_t i=0; i < m_commandlist.size(); ++i) {
-        if (!m_commandlist[i]->bool_execute())
+        if (!m_commandlist[i]->execute())
             return false;
     }
     return true;
 }
 
-void XorCommand::add(RefCount<BoolCommand> &com) {
+void XorCommand::add(RefCount<Command<bool> > &com) {
     m_commandlist.push_back(com);
 }
 
@@ -146,10 +146,10 @@ size_t XorCommand::size() const {
     return m_commandlist.size();
 }
 
-bool XorCommand::bool_execute() {
+bool XorCommand::execute() {
     bool ret = false;
     for (size_t i=0; i < m_commandlist.size(); ++i)
-        ret ^= m_commandlist[i]->bool_execute();
+        ret ^= m_commandlist[i]->execute();
     return ret;
 }
 

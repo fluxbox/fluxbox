@@ -24,7 +24,7 @@
 
 #include "defaults.hh"
 #include "Screen.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "fluxbox.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
@@ -209,7 +209,7 @@ static void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::Strin
         else
             menu.insert(str_label, submenu);
     } else if (str_key == "exit") { // exit
-        FbTk::RefCount<FbTk::Command> exit_cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("exit"));
+        FbTk::RefCount<FbTk::Command<void> > exit_cmd(FbTk::CommandParser<void>::instance().parse("exit"));
         if (str_label.empty())
             menu.insert(_FB_XTEXT(Menu, Exit, "Exit", "Exit Command"), exit_cmd);
         else
@@ -217,11 +217,11 @@ static void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::Strin
     } else if (str_key == "exec") {
         // execute and hide menu
         using namespace FbTk;
-        RefCount<Command> exec_cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("exec " + str_cmd));
+        RefCount<Command<void> > exec_cmd(FbTk::CommandParser<void>::instance().parse("exec " + str_cmd));
         menu.insert(str_label, exec_cmd);
     } else if (str_key == "macrocmd") {
         using namespace FbTk;
-        RefCount<Command> macro_cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("macrocmd " + str_cmd));
+        RefCount<Command<void> > macro_cmd(FbTk::CommandParser<void>::instance().parse("macrocmd " + str_cmd));
         menu.insert(str_label, macro_cmd);
     } else if (str_key == "style") {	// style
         menu.insert(new StyleMenuItem(str_label, str_cmd));
@@ -313,10 +313,10 @@ static void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::Strin
     } else if (str_key == "endencoding") {
         MenuCreator::endEncoding();
     }
-    else { // ok, if we didn't find any special menu item we try with command FbTk::Parser
-        // we need to attach command with arguments so command FbTk::Parser can parse it
+    else { // ok, if we didn't find any special menu item we try with command parser
+        // we need to attach command with arguments so command parser can parse it
         string line = str_key + " " + str_cmd;
-        FbTk::RefCount<FbTk::Command> command(FbTk::ObjectRegistry<FbTk::Command>::instance().parse(line));
+        FbTk::RefCount<FbTk::Command<void> > command(FbTk::CommandParser<void>::instance().parse(line));
         if (*command != 0) {
             // special NLS default labels
             if (str_label.empty()) {
@@ -507,7 +507,7 @@ FbTk::Menu *MenuCreator::createMenuType(const string &type, int screen_num) {
 bool MenuCreator::createWindowMenuItem(const string &type,
                                        const string &label,
                                        FbTk::Menu &menu) {
-    typedef FbTk::RefCount<FbTk::Command> RefCmd;
+    typedef FbTk::RefCount<FbTk::Command<void> > RefCmd;
     _FB_USES_NLS;
 
     static MenuContext context;

@@ -21,7 +21,7 @@
 
 #include "MacroCommand.hh"
 
-#include "ObjectRegistry.hh"
+#include "CommandParser.hh"
 #include "StringUtil.hh"
 
 #include <list>
@@ -36,11 +36,11 @@ M *addCommands(M *macro, const std::string &args, bool trusted) {
     std::string blah;
     std::list<std::string> cmds;
     StringUtil::stringTokensBetween(cmds, args, blah, '{', '}');
-    RefCount<Command> cmd(0);
+    RefCount<Command<void> > cmd(0);
 
     std::list<std::string>::iterator it = cmds.begin(), it_end = cmds.end();
     for (; it != it_end; ++it) {
-        cmd = ObjectRegistry<Command>::instance().parse(*it, trusted);
+        cmd = CommandParser<void>::instance().parse(*it, trusted);
         if (*cmd)
             macro->add(cmd);
     }
@@ -52,21 +52,21 @@ M *addCommands(M *macro, const std::string &args, bool trusted) {
     return 0;
 }
 
-Command *parseMacroCmd(const std::string &command, const std::string &args,
+Command<void> *parseMacroCmd(const std::string &command, const std::string &args,
                        bool trusted) {
     if (command == "macrocmd")
-        return addCommands<MacroCommand>(new MacroCommand, args, trusted);
+        return addCommands<MacroCommand >(new MacroCommand, args, trusted);
     else if (command == "togglecmd")
-        return addCommands<ToggleCommand>(new ToggleCommand, args, trusted);
+        return addCommands<ToggleCommand >(new ToggleCommand, args, trusted);
     return 0;
 }
 
-REGISTER_OBJECT_PARSER(macrocmd, parseMacroCmd, Command);
-REGISTER_OBJECT_PARSER(togglecmd, parseMacroCmd, Command);
+REGISTER_COMMAND_PARSER(macrocmd, parseMacroCmd, void);
+REGISTER_COMMAND_PARSER(togglecmd, parseMacroCmd, void);
 
 }; // end anonymous namespace
 
-void MacroCommand::add(RefCount<Command> &com) {
+void MacroCommand::add(RefCount<Command<void> > &com) {
     m_commandlist.push_back(com);
 }
 
@@ -83,7 +83,7 @@ ToggleCommand::ToggleCommand() {
     m_state = 0;
 }
 
-void ToggleCommand::add(RefCount<Command> &com) {
+void ToggleCommand::add(RefCount<Command<void> > &com) {
     m_commandlist.push_back(com);
 }
 

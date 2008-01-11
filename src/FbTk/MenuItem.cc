@@ -37,7 +37,7 @@ void MenuItem::click(int button, int time, unsigned int mods) {
         if (m_menu && m_close_on_click && (mods & ControlMask) == 0)
             m_menu->hide();
         // we need a local variable, since the command may destroy this object
-        RefCount<Command> tmp(m_command);
+        RefCount<Command<void> > tmp(m_command);
         tmp->execute();
     }
 }

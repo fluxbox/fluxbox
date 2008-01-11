@@ -221,7 +221,7 @@ void tempRaiseFluxboxWindow(FluxboxWindow &win) {
 
 }
 
-class SetClientCmd:public FbTk::Command {
+class SetClientCmd:public FbTk::Command<void> {
 public:
     explicit SetClientCmd(WinClient &client):m_client(client) {
     }
@@ -446,7 +446,7 @@ void FluxboxWindow::init() {
     m_client->x = wattrib.x; m_client->y = wattrib.y;
 
     m_timer.setTimeout(fluxbox.getAutoRaiseDelay());
-    FbTk::RefCount<FbTk::Command> raise_cmd(new FbTk::SimpleCommand<FluxboxWindow>(*this,
+    FbTk::RefCount<FbTk::Command<void> > raise_cmd(new FbTk::SimpleCommand<FluxboxWindow>(*this,
                                                                                    &FluxboxWindow::raise));
     m_timer.setCommand(raise_cmd);
     m_timer.fireOnce(true);
@@ -3971,7 +3971,7 @@ void FluxboxWindow::updateButtons() {
     frame().removeAllButtons();
 
     using namespace FbTk;
-    typedef RefCount<Command> CommandRef;
+    typedef RefCount<Command<void> > CommandRef;
     typedef SimpleCommand<FluxboxWindow> WindowCmd;
 
     CommandRef iconify_cmd(new WindowCmd(*this, &FluxboxWindow::iconify));
@@ -4142,7 +4142,7 @@ void FluxboxWindow::associateClient(WinClient &client) {
             frame().theme().unfocusedTheme()->iconbarTheme(), client);
     frame().createTab(*btn);
 
-    FbTk::RefCount<FbTk::Command> setcmd(new SetClientCmd(client));
+    FbTk::RefCount<FbTk::Command<void> > setcmd(new SetClientCmd(client));
     btn->setOnClick(setcmd, 1);
     btn->setTextPadding(Fluxbox::instance()->getTabsPadding());
     btn->setPixmap(screen().getTabsUsePixmap());

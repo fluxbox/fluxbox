@@ -31,7 +31,7 @@
 #include "WindowCmd.hh"
 
 #include "FbTk/KeyUtil.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "FbTk/stringstream.hh"
 #include "FbTk/StringUtil.hh"
 
@@ -45,16 +45,14 @@
 #include <vector>
 
 using std::string;
-using FbTk::Command;
-using FbTk::BoolCommand;
 
-REGISTER_OBJECT_PARSER(map, WindowListCmd::parse, Command);
-REGISTER_OBJECT_PARSER(foreach, WindowListCmd::parse, Command);
+REGISTER_COMMAND_PARSER(map, WindowListCmd::parse, void);
+REGISTER_COMMAND_PARSER(foreach, WindowListCmd::parse, void);
 
-FbTk::Command *WindowListCmd::parse(const string &command, const string &args,
+FbTk::Command<void> *WindowListCmd::parse(const string &command, const string &args,
                                     bool trusted) {
-    FbTk::Command *cmd = 0;
-    FbTk::BoolCommand *filter = 0;
+    FbTk::Command<void> *cmd = 0;
+    FbTk::Command<bool> *filter = 0;
     std::vector<string> tokens;
     int opts;
     string pat;
@@ -63,19 +61,19 @@ FbTk::Command *WindowListCmd::parse(const string &command, const string &args,
     if (tokens.empty())
         return 0;
 
-    cmd = FbTk::ObjectRegistry<Command>::instance().parse(tokens[0], trusted);
+    cmd = FbTk::CommandParser<void>::instance().parse(tokens[0], trusted);
     if (!cmd)
         return 0;
 
     if (tokens.size() > 1) {
         FocusableList::parseArgs(tokens[1], opts, pat);
 
-        filter = FbTk::ObjectRegistry<BoolCommand>::instance().parse(pat,
+        filter = FbTk::CommandParser<bool>::instance().parse(pat,
                                                                      trusted);
     }
 
-    return new WindowListCmd(FbTk::RefCount<Command>(cmd), opts,
-                             FbTk::RefCount<BoolCommand>(filter));
+    return new WindowListCmd(FbTk::RefCount<FbTk::Command<void> >(cmd), opts,
+                             FbTk::RefCount<FbTk::Command<bool> >(filter));
 }
 
 void WindowListCmd::execute() {
@@ -92,29 +90,29 @@ void WindowListCmd::execute() {
                 WindowCmd<void>::setWindow((*it)->fbwindow());
             else if (typeid(**it) == typeid(WinClient))
                 WindowCmd<void>::setClient(dynamic_cast<WinClient *>(*it));
-            if (!*m_filter || m_filter->bool_execute())
+            if (!*m_filter || m_filter->execute())
                 m_cmd->execute();
         }
         WindowCmd<void>::setClient(old);
     }
 }
 
-FbTk::BoolCommand *SomeCmd::parse(const string &command, const string &args,
+FbTk::Command<bool> *SomeCmd::parse(const string &command, const string &args,
                                   bool trusted) {
-    FbTk::BoolCommand *boolcmd =
-            FbTk::ObjectRegistry<FbTk::BoolCommand>::instance().parse(args,
+    FbTk::Command<bool> *boolcmd =
+            FbTk::CommandParser<bool>::instance().parse(args,
                                                                       trusted);
     if (!boolcmd)
         return 0;
     if (command == "some")
-        return new SomeCmd(FbTk::RefCount<FbTk::BoolCommand>(boolcmd));
-    return new EveryCmd(FbTk::RefCount<FbTk::BoolCommand>(boolcmd));
+        return new SomeCmd(FbTk::RefCount<FbTk::Command<bool> >(boolcmd));
+    return new EveryCmd(FbTk::RefCount<FbTk::Command<bool> >(boolcmd));
 }
 
-REGISTER_OBJECT_PARSER(some, SomeCmd::parse, BoolCommand);
-REGISTER_OBJECT_PARSER(every, SomeCmd::parse, BoolCommand);
+REGISTER_COMMAND_PARSER(some, SomeCmd::parse, bool);
+REGISTER_COMMAND_PARSER(every, SomeCmd::parse, bool);
 
-bool SomeCmd::bool_execute() {
+bool SomeCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
         FocusControl::Focusables win_list(screen->focusControl().creationOrderList().clientList());
@@ -127,7 +125,7 @@ bool SomeCmd::bool_execute() {
             WinClient *client = dynamic_cast<WinClient *>(*it);
             if (!client) continue;
             WindowCmd<void>::setClient(client);
-            if (m_cmd->bool_execute())
+            if (m_cmd->execute())
                 return true;
         }
         WindowCmd<void>::setClient(old);
@@ -135,7 +133,7 @@ bool SomeCmd::bool_execute() {
     return false;
 }
 
-bool EveryCmd::bool_execute() {
+bool EveryCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0) {
         FocusControl::Focusables win_list(screen->focusControl().creationOrderList().clientList());
@@ -148,7 +146,7 @@ bool EveryCmd::bool_execute() {
             WinClient *client = dynamic_cast<WinClient *>(*it);
             if (!client) continue;
             WindowCmd<void>::setClient(client);
-            if (!m_cmd->bool_execute())
+            if (!m_cmd->execute())
                 return false;
         }
         WindowCmd<void>::setClient(old);
@@ -158,7 +156,7 @@ bool EveryCmd::bool_execute() {
 
 namespace {
 
-FbTk::Command *parseWindowList(const string &command,
+FbTk::Command<void> *parseWindowList(const string &command,
                                const string &args, bool trusted) {
     int opts;
     string pat;
@@ -179,11 +177,11 @@ FbTk::Command *parseWindowList(const string &command,
     return 0;
 }
 
-REGISTER_OBJECT_PARSER(attach, parseWindowList, Command);
-REGISTER_OBJECT_PARSER(nextwindow, parseWindowList, Command);
-REGISTER_OBJECT_PARSER(nextgroup, parseWindowList, Command);
-REGISTER_OBJECT_PARSER(prevwindow, parseWindowList, Command);
-REGISTER_OBJECT_PARSER(prevgroup, parseWindowList, Command);
+REGISTER_COMMAND_PARSER(attach, parseWindowList, void);
+REGISTER_COMMAND_PARSER(nextwindow, parseWindowList, void);
+REGISTER_COMMAND_PARSER(nextgroup, parseWindowList, void);
+REGISTER_COMMAND_PARSER(prevwindow, parseWindowList, void);
+REGISTER_COMMAND_PARSER(prevgroup, parseWindowList, void);
 
 }; // end anonymous namespace
 
@@ -219,7 +217,7 @@ void PrevWindowCmd::execute() {
         screen->cycleFocus(m_option, &m_pat, true);
 }
 
-FbTk::Command *GoToWindowCmd::parse(const string &command,
+FbTk::Command<void> *GoToWindowCmd::parse(const string &command,
                                     const string &arguments, bool trusted) {
     int num, opts;
     string args, pat;
@@ -232,7 +230,7 @@ FbTk::Command *GoToWindowCmd::parse(const string &command,
     return new GoToWindowCmd(num, opts, pat);
 }
 
-REGISTER_OBJECT_PARSER(gotowindow, GoToWindowCmd::parse, Command);
+REGISTER_COMMAND_PARSER(gotowindow, GoToWindowCmd::parse, void);
 
 void GoToWindowCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
@@ -243,7 +241,7 @@ void GoToWindowCmd::execute() {
     }
 }
 
-FbTk::Command *DirFocusCmd::parse(const string &command,
+FbTk::Command<void> *DirFocusCmd::parse(const string &command,
                                   const string &args, bool trusted) {
     if (command == "focusup")
         return new DirFocusCmd(FocusControl::FOCUSUP);
@@ -256,10 +254,10 @@ FbTk::Command *DirFocusCmd::parse(const string &command,
     return 0;
 }
 
-REGISTER_OBJECT_PARSER(focusup, DirFocusCmd::parse, Command);
-REGISTER_OBJECT_PARSER(focusdown, DirFocusCmd::parse, Command);
-REGISTER_OBJECT_PARSER(focusleft, DirFocusCmd::parse, Command);
-REGISTER_OBJECT_PARSER(focusright, DirFocusCmd::parse, Command);
+REGISTER_COMMAND_PARSER(focusup, DirFocusCmd::parse, void);
+REGISTER_COMMAND_PARSER(focusdown, DirFocusCmd::parse, void);
+REGISTER_COMMAND_PARSER(focusleft, DirFocusCmd::parse, void);
+REGISTER_COMMAND_PARSER(focusright, DirFocusCmd::parse, void);
 
 void DirFocusCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
@@ -271,7 +269,7 @@ void DirFocusCmd::execute() {
         screen->focusControl().dirFocus(*win, m_dir);
 }
 
-REGISTER_OBJECT(addworkspace, AddWorkspaceCmd, Command);
+REGISTER_COMMAND(addworkspace, AddWorkspaceCmd, void);
 
 void AddWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -279,7 +277,7 @@ void AddWorkspaceCmd::execute() {
         screen->addWorkspace();
 }
 
-REGISTER_OBJECT(removelastworkspace, RemoveLastWorkspaceCmd, Command);
+REGISTER_COMMAND(removelastworkspace, RemoveLastWorkspaceCmd, void);
 
 void RemoveLastWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -289,7 +287,7 @@ void RemoveLastWorkspaceCmd::execute() {
 
 namespace {
 
-FbTk::Command *parseIntCmd(const string &command, const string &args,
+FbTk::Command<void> *parseIntCmd(const string &command, const string &args,
                            bool trusted) {
     int num = 1;
     FbTk_istringstream iss(args.c_str());
@@ -308,11 +306,11 @@ FbTk::Command *parseIntCmd(const string &command, const string &args,
     return 0;
 }
 
-REGISTER_OBJECT_PARSER(nextworkspace, parseIntCmd, Command);
-REGISTER_OBJECT_PARSER(prevworkspace, parseIntCmd, Command);
-REGISTER_OBJECT_PARSER(rightworkspace, parseIntCmd, Command);
-REGISTER_OBJECT_PARSER(leftworkspace, parseIntCmd, Command);
-REGISTER_OBJECT_PARSER(workspace, parseIntCmd, Command);
+REGISTER_COMMAND_PARSER(nextworkspace, parseIntCmd, void);
+REGISTER_COMMAND_PARSER(prevworkspace, parseIntCmd, void);
+REGISTER_COMMAND_PARSER(rightworkspace, parseIntCmd, void);
+REGISTER_COMMAND_PARSER(leftworkspace, parseIntCmd, void);
+REGISTER_COMMAND_PARSER(workspace, parseIntCmd, void);
 
 }; // end anonymous namespace
 
@@ -355,7 +353,7 @@ void JumpToWorkspaceCmd::execute() {
     }
 }
 
-REGISTER_OBJECT(arrangewindows, ArrangeWindowsCmd, Command);
+REGISTER_COMMAND(arrangewindows, ArrangeWindowsCmd, void);
 
 /**
   try to arrange the windows on the current workspace in a 'clever' way.
@@ -481,7 +479,7 @@ void ArrangeWindowsCmd::execute() {
     }
 }
 
-REGISTER_OBJECT(showdesktop, ShowDesktopCmd, Command);
+REGISTER_COMMAND(showdesktop, ShowDesktopCmd, void);
 
 void ShowDesktopCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -497,7 +495,7 @@ void ShowDesktopCmd::execute() {
     }
 }
 
-REGISTER_OBJECT(closeallwindows, CloseAllWindowsCmd, Command);
+REGISTER_COMMAND(closeallwindows, CloseAllWindowsCmd, void);
 
 void CloseAllWindowsCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();

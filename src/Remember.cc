@@ -238,7 +238,7 @@ bool handleStartupItem(const string &line, int offset) {
 
     FbCommands::ExecuteCmd *tmp_exec_cmd = new FbCommands::ExecuteCmd(str, screen);
 #ifdef DEBUG
-    cerr<<"Executing startup command '"<<str<<"' on screen "<<screen<<endl;
+    cerr<<"Executing startup Command<void> '"<<str<<"' on screen "<<screen<<endl;
 #endif // DEBUG
     tmp_exec_cmd->execute();
     delete tmp_exec_cmd;

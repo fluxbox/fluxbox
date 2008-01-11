@@ -112,7 +112,7 @@ ImageControl::ImageControl(int screen_num, bool dither,
 
     if (cache_timeout && s_timed_cache) {
         m_timer.setTimeout(cache_timeout);
-        RefCount<Command> clean_cache(new SimpleCommand<ImageControl>(*this, &ImageControl::cleanCache));
+        RefCount<Command<void> > clean_cache(new SimpleCommand<ImageControl>(*this, &ImageControl::cleanCache));
         m_timer.setCommand(clean_cache);
         m_timer.start();
     }

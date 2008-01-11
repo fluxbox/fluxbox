@@ -32,7 +32,7 @@
 #include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/Command.hh"
 
-class SendToCmd: public FbTk::Command {
+class SendToCmd: public FbTk::Command<void> {
 public:
     SendToCmd(int workspace, bool follow):
         m_workspace(workspace),
@@ -78,8 +78,8 @@ void SendToMenu::update(FbTk::Subject *subj) {
     BScreen *screen = Fluxbox::instance()->findScreen(screenNumber());
     const BScreen::Workspaces &wlist = screen->getWorkspacesList();
     for (size_t i = 0; i < wlist.size(); ++i) {
-        FbTk::RefCount<FbTk::Command> sendto_cmd(new SendToCmd(i, false));
-        FbTk::RefCount<FbTk::Command> sendto_follow_cmd(new SendToCmd(i, true));
+        FbTk::RefCount<FbTk::Command<void> > sendto_cmd(new SendToCmd(i, false));
+        FbTk::RefCount<FbTk::Command<void> > sendto_follow_cmd(new SendToCmd(i, true));
         
         FbTk::MultiButtonMenuItem* item = new FbTk::MultiButtonMenuItem(3, wlist[i]->name());
         item->setCommand(1, sendto_cmd);

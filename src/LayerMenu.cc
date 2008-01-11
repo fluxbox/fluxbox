@@ -50,7 +50,7 @@ LayerMenu::LayerMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
         {0, 0, _FB_XTEXT(Layer, Desktop, "Desktop", "Layer desktop"), Layer::DESKTOP},
     };
 
-    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbCommands::SaveResources());
+    FbTk::RefCount<FbTk::Command<void> > saverc_cmd(new FbCommands::SaveResources());
 
     for (size_t i=0; i < 6; ++i) {
         // TODO: fetch nls string

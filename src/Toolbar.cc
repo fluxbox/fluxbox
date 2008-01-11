@@ -40,7 +40,7 @@
 #endif // XINERAMA
 
 #include "Strut.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "Layer.hh"
 
 #include "FbTk/I18n.hh"
@@ -159,7 +159,7 @@ getString() const {
 } // end namespace FbTk
 
 namespace {
-class SetToolbarPlacementCmd: public FbTk::Command {
+class SetToolbarPlacementCmd: public FbTk::Command<void> {
 public:
     SetToolbarPlacementCmd(Toolbar &tbar, Toolbar::Placement place):m_tbar(tbar), m_place(place) { }
     void execute() {
@@ -266,7 +266,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
 
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
-    FbTk::RefCount<FbTk::Command> toggle_hidden(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::toggleHidden));
+    FbTk::RefCount<FbTk::Command<void> > toggle_hidden(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::toggleHidden));
     m_hide_timer.setCommand(toggle_hidden);
     m_hide_timer.fireOnce(true);
 
@@ -813,14 +813,14 @@ void Toolbar::setupMenus(bool skip_new_placement) {
     _FB_USES_NLS;
     using namespace FbTk;
 
-    typedef RefCount<Command> RefCommand;
+    typedef RefCount<Command<void> > RefCommand;
     typedef SimpleCommand<Toolbar> ToolbarCommand;
 
     menu().setLabel(_FB_XTEXT(Toolbar, Toolbar,
                               "Toolbar", "Title of Toolbar menu"));
 
     RefCommand reconfig_toolbar(new ToolbarCommand(*this, &Toolbar::reconfigure));
-    RefCommand save_resources(FbTk::ObjectRegistry<Command>::instance().parse("saverc"));
+    RefCommand save_resources(FbTk::CommandParser<void>::instance().parse("saverc"));
     MacroCommand *toolbar_menuitem_macro = new MacroCommand();
     toolbar_menuitem_macro->add(reconfig_toolbar);
     toolbar_menuitem_macro->add(save_resources);
@@ -924,10 +924,10 @@ void Toolbar::setupMenus(bool skip_new_placement) {
                            0, 255, menu());
     // setup command for alpha value
     MacroCommand *alpha_macrocmd = new MacroCommand();
-    RefCount<Command> alpha_cmd(new SimpleCommand<Toolbar>(*this, &Toolbar::updateAlpha));
+    RefCount<Command<void> > alpha_cmd(new SimpleCommand<Toolbar>(*this, &Toolbar::updateAlpha));
     alpha_macrocmd->add(save_resources);
     alpha_macrocmd->add(alpha_cmd);
-    RefCount<Command> set_alpha_cmd(alpha_macrocmd);
+    RefCount<Command<void> > set_alpha_cmd(alpha_macrocmd);
     alpha_menuitem->setCommand(set_alpha_cmd);
 
     menu().insert(alpha_menuitem);

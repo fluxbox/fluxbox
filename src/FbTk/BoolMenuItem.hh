@@ -32,7 +32,7 @@ class Accessor<class T>;
 class BoolMenuItem: public FbTk::MenuItem {
 public:
     BoolMenuItem(const FbTk::FbString &label, Accessor<bool> &item, 
-                 FbTk::RefCount<FbTk::Command> &cmd):
+                 FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd), m_item(item) { 
         FbTk::MenuItem::setSelected(m_item);
         setToggleItem(true);

@@ -25,18 +25,11 @@
 namespace FbTk {
 
 /// Interface class for commands
+template <typename Ret=void>
 class Command {
 public:
     virtual ~Command() { }
-    virtual void execute() = 0;
-};
-
-/// Interface class for boolean commands
-class BoolCommand: public Command {
-public:
-    virtual ~BoolCommand() { }
-    virtual void execute() { bool_execute(); }
-    virtual bool bool_execute() = 0;
+    virtual Ret execute() = 0;
 };
 
 } // end namespace FbTk

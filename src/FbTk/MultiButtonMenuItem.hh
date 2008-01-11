@@ -34,7 +34,7 @@ public:
     MultiButtonMenuItem(int buttons, const FbString &label, Menu *submenu);
     virtual ~MultiButtonMenuItem();
     /// sets command to specified button
-    void setCommand(int button, FbTk::RefCount<FbTk::Command> &cmd);
+    void setCommand(int button, FbTk::RefCount<FbTk::Command<void> > &cmd);
     /// executes command for the button click
     virtual void click(int button, int time, unsigned int mods);
     /// @return number of buttons this instance handles
@@ -43,7 +43,7 @@ public:
 private:
     void init(int buttons);
 
-    FbTk::RefCount<FbTk::Command> *m_button_exe;
+    FbTk::RefCount<FbTk::Command<void> > *m_button_exe;
     unsigned int m_buttons;
 };
 

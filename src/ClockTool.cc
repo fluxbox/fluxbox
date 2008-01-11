@@ -24,7 +24,7 @@
 
 #include "ToolTheme.hh"
 #include "Screen.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "CommandDialog.hh"
 #include "fluxbox.hh"
 
@@ -116,7 +116,7 @@ private:
     ClockTool &m_tool;
 };
 
-class EditClockFormatCmd: public FbTk::Command {
+class EditClockFormatCmd: public FbTk::Command<void> {
 public:
     void execute() {
         BScreen *screen = Fluxbox::instance()->mouseScreen();
@@ -126,7 +126,7 @@ public:
 
         CommandDialog *dialog = new CommandDialog(*screen, "Edit Clock Format",
                                                   "SetResourceValue " + resourcename + " ");
-        FbTk::RefCount<FbTk::Command> cmd(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("reconfigure"));
+        FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse("reconfigure"));
         dialog->setPostCommand(cmd);
         dialog->setText(screen->resourceManager().resourceValue(resourcename));
         dialog->show();
@@ -160,7 +160,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     // if nothing has changed, it wont update the graphics
     m_timer.setInterval(1);
     // m_timer.setTimeout(delay); // don't need to set timeout on interval timer
-    FbTk::RefCount<FbTk::Command> update_graphic(new FbTk::SimpleCommand<ClockTool>(*this,
+    FbTk::RefCount<FbTk::Command<void> > update_graphic(new FbTk::SimpleCommand<ClockTool>(*this,
                                                                                     &ClockTool::updateTime));
     m_timer.setCommand(update_graphic);
     m_timer.start();
@@ -168,11 +168,11 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_button.setGC(m_theme->textGC());
 
     // setup menu
-    FbTk::RefCount<FbTk::Command> saverc(FbTk::ObjectRegistry<FbTk::Command>::instance().parse("saverc"));
+    FbTk::RefCount<FbTk::Command<void> > saverc(FbTk::CommandParser<void>::instance().parse("saverc"));
     FbTk::MenuItem *item = new ClockMenuItem(*this);
     item->setCommand(saverc);
     menu.insert(item);
-    FbTk::RefCount<FbTk::Command> editformat_cmd(new EditClockFormatCmd());
+    FbTk::RefCount<FbTk::Command<void> > editformat_cmd(new EditClockFormatCmd());
     menu.insert(_FB_XTEXT(Toolbar, ClockEditFormat,   "Edit Clock Format",   "edit Clock Format") , editformat_cmd);
 
 

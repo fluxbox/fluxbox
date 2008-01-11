@@ -176,7 +176,7 @@ namespace {
 
 class SlitClientMenuItem: public FbTk::MenuItem{
 public:
-    explicit SlitClientMenuItem(Slit& slit, SlitClient &client, FbTk::RefCount<FbTk::Command> &cmd):
+    explicit SlitClientMenuItem(Slit& slit, SlitClient &client, FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(client.matchName().c_str(), cmd), m_slit(slit), m_client(client) {
         setCommand(cmd);
         FbTk::MenuItem::setSelected(client.visible());
@@ -207,7 +207,7 @@ private:
 
 class SlitDirMenuItem: public FbTk::MenuItem {
 public:
-    SlitDirMenuItem(const FbTk::FbString &label, Slit &slit, FbTk::RefCount<FbTk::Command> &cmd)
+    SlitDirMenuItem(const FbTk::FbString &label, Slit &slit, FbTk::RefCount<FbTk::Command<void> > &cmd)
         :FbTk::MenuItem(label,cmd),
          m_slit(slit),
          m_label(label) {
@@ -242,7 +242,7 @@ private:
 
 class PlaceSlitMenuItem: public FbTk::MenuItem {
 public:
-    PlaceSlitMenuItem(const FbTk::FbString &label, Slit &slit, Slit::Placement place, FbTk::RefCount<FbTk::Command> &cmd):
+    PlaceSlitMenuItem(const FbTk::FbString &label, Slit &slit, Slit::Placement place, FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd), m_slit(slit), m_place(place) {
         setCloseOnClick(false);
     }
@@ -317,7 +317,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     // setup timer
     m_timer.setTimeout(200); // default timeout
     m_timer.fireOnce(true);
-    FbTk::RefCount<FbTk::Command> toggle_hidden(new FbTk::SimpleCommand<Slit>(*this, &Slit::toggleHidden));
+    FbTk::RefCount<FbTk::Command<void> > toggle_hidden(new FbTk::SimpleCommand<Slit>(*this, &Slit::toggleHidden));
     m_timer.setCommand(toggle_hidden);
 
 
@@ -1178,14 +1178,14 @@ void Slit::updateClientmenu() {
     m_clientlist_menu.removeAll();
     m_clientlist_menu.setLabel(_FB_XTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"));
 
-    FbTk::RefCount<FbTk::Command> cycle_up(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsUp));
-    FbTk::RefCount<FbTk::Command> cycle_down(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsDown));
+    FbTk::RefCount<FbTk::Command<void> > cycle_up(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsUp));
+    FbTk::RefCount<FbTk::Command<void> > cycle_down(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsDown));
     m_clientlist_menu.insert(_FB_XTEXT(Slit, CycleUp, "Cycle Up", "Cycle clients upwards"), cycle_up);
     m_clientlist_menu.insert(_FB_XTEXT(Slit, CycleDown, "Cycle Down", "Cycle clients downwards"), cycle_down);
 
     m_clientlist_menu.insert(new FbTk::MenuSeparator());
 
-    FbTk::RefCount<FbTk::Command> reconfig(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
+    FbTk::RefCount<FbTk::Command<void> > reconfig(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
     SlitClients::iterator it = m_client_list.begin();
     for (; it != m_client_list.end(); ++it) {
         if ((*it) != 0 && (*it)->window() != 0)
@@ -1193,7 +1193,7 @@ void Slit::updateClientmenu() {
     }
 
     m_clientlist_menu.insert(new FbTk::MenuSeparator());
-    FbTk::RefCount<FbTk::Command> savecmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::saveClientList));
+    FbTk::RefCount<FbTk::Command<void> > savecmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::saveClientList));
     m_clientlist_menu.insert(_FB_XTEXT(Slit,
                                      SaveSlitList,
                                      "Save SlitList", "Saves the current order in the slit"),
@@ -1224,9 +1224,9 @@ void Slit::setupMenu() {
 
     FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
     FbTk::MacroCommand *s_a_reconf_slit_macro = new FbTk::MacroCommand();
-    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbCommands::SaveResources());
-    FbTk::RefCount<FbTk::Command> reconf_cmd(new FbCommands::ReconfigureFluxboxCmd());
-    FbTk::RefCount<FbTk::Command> reconf_slit_cmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
+    FbTk::RefCount<FbTk::Command<void> > saverc_cmd(new FbCommands::SaveResources());
+    FbTk::RefCount<FbTk::Command<void> > reconf_cmd(new FbCommands::ReconfigureFluxboxCmd());
+    FbTk::RefCount<FbTk::Command<void> > reconf_slit_cmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
 
     s_a_reconf_macro->add(saverc_cmd);
     s_a_reconf_macro->add(reconf_cmd);
@@ -1234,8 +1234,8 @@ void Slit::setupMenu() {
     s_a_reconf_slit_macro->add(saverc_cmd);
     s_a_reconf_slit_macro->add(reconf_slit_cmd);
 
-    FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
-    FbTk::RefCount<FbTk::Command> save_and_reconfigure_slit(s_a_reconf_slit_macro);
+    FbTk::RefCount<FbTk::Command<void> > save_and_reconfigure(s_a_reconf_macro);
+    FbTk::RefCount<FbTk::Command<void> > save_and_reconfigure_slit(s_a_reconf_slit_macro);
 
 
     // it'll be freed by the slitmenu (since not marked internal)
@@ -1280,10 +1280,10 @@ void Slit::setupMenu() {
                            0, 255, m_slitmenu);
     // setup command for alpha value
     MacroCommand *alpha_macrocmd = new MacroCommand();
-    RefCount<Command> alpha_cmd(new SimpleCommand<Slit>(*this, &Slit::updateAlpha));
+    RefCount<Command<void> > alpha_cmd(new SimpleCommand<Slit>(*this, &Slit::updateAlpha));
     alpha_macrocmd->add(saverc_cmd);
     alpha_macrocmd->add(alpha_cmd);
-    RefCount<Command> set_alpha_cmd(alpha_macrocmd);
+    RefCount<Command<void> > set_alpha_cmd(alpha_macrocmd);
     alpha_menuitem->setCommand(set_alpha_cmd);
 
     m_slitmenu.insert(alpha_menuitem);

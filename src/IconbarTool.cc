@@ -30,7 +30,7 @@
 #include "IconButton.hh"
 #include "Workspace.hh"
 #include "FbMenu.hh"
-#include "FbTk/ObjectRegistry.hh"
+#include "FbTk/CommandParser.hh"
 #include "WinClient.hh"
 #include "FocusControl.hh"
 #include "FbCommands.hh"
@@ -103,7 +103,7 @@ class ToolbarModeMenuItem : public FbTk::MenuItem {
 public:
     ToolbarModeMenuItem(const FbTk::FbString &label, IconbarTool &handler,
                         string mode,
-                        FbTk::RefCount<FbTk::Command> &cmd):
+                        FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
         setCloseOnClick(false);
     }
@@ -122,7 +122,7 @@ class ToolbarAlignMenuItem: public FbTk::MenuItem {
 public:
     ToolbarAlignMenuItem(const FbTk::FbString &label, IconbarTool &handler,
                         FbTk::Container::Alignment mode,
-                        FbTk::RefCount<FbTk::Command> &cmd):
+                        FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
         setCloseOnClick(false);
     }
@@ -143,7 +143,7 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 
     menu.setLabel(_FB_XTEXT(Toolbar, IconbarMode, "Iconbar Mode", "Menu title - chooses which set of icons are shown in the iconbar"));
 
-    RefCount<Command> saverc_cmd(new FbCommands::SaveResources());
+    RefCount<Command<void> > saverc_cmd(new FbCommands::SaveResources());
 
 
     menu.insert(new ToolbarModeMenuItem(_FB_XTEXT(Toolbar, IconbarModeNone,
@@ -208,9 +208,9 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
     menu.updateMenu();
 }
 
-typedef FbTk::RefCount<FbTk::Command> RefCmd;
+typedef FbTk::RefCount<FbTk::Command<void> > RefCmd;
 
-class ShowMenu: public FbTk::Command {
+class ShowMenu: public FbTk::Command<void> {
 public:
     explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
     void execute() {
@@ -229,7 +229,7 @@ private:
     FluxboxWindow &m_win;
 };
 
-class FocusCommand: public FbTk::Command {
+class FocusCommand: public FbTk::Command<void> {
 public:
     explicit FocusCommand(Focusable &win): m_win(win) { }
     void execute() {
@@ -283,11 +283,11 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent,
     using namespace FbTk;
     // setup use pixmap item to reconfig iconbar and save resource on click
     MacroCommand *save_and_reconfig = new MacroCommand();
-    RefCount<Command> reconfig(new SimpleCommand<IconbarTool>(*this, &IconbarTool::renderTheme));
-    RefCount<Command> save(FbTk::ObjectRegistry<Command>::instance().parse("saverc"));
+    RefCount<Command<void> > reconfig(new SimpleCommand<IconbarTool>(*this, &IconbarTool::renderTheme));
+    RefCount<Command<void> > save(FbTk::CommandParser<void>::instance().parse("saverc"));
     save_and_reconfig->add(reconfig);
     save_and_reconfig->add(save);
-    RefCount<Command> s_and_reconfig(save_and_reconfig);
+    RefCount<Command<void> > s_and_reconfig(save_and_reconfig);
     m_menu.insert(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
                     "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
                            m_rc_use_pixmap, s_and_reconfig));

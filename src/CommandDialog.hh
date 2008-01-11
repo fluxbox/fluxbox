@@ -44,10 +44,10 @@ public:
     /// Sets the entry text.
     void setText(const std::string &text);
     /**
-     * Sets the command to be execute after the command is done.
+     * Sets the command to be executed after the command is done.
      * @param postcommand the command.
      */
-    void setPostCommand(FbTk::RefCount<FbTk::Command> &postcommand) { 
+    void setPostCommand(FbTk::RefCount<FbTk::Command<void> > &postcommand) { 
         m_postcommand = postcommand; 
     }
     void show();
@@ -71,11 +71,13 @@ private:
     FbTk::TextBox m_textbox; //< entry field
     FbTk::TextButton m_label; //< text in the titlebar
     FbTk::GContext m_gc;
-    FbTk::RefCount<FbTk::Command> m_postcommand; ///< command to do after the first command was issued (like reconfigure)
+    /// command to do after the first command was issued (like reconfigure)
+    FbTk::RefCount<FbTk::Command<void> > m_postcommand;
     BScreen &m_screen;
     int m_move_x, m_move_y;
     Pixmap m_pixmap;
-    const std::string m_precommand; ///< command to be used before the text (usefull for setting workspace name)
+    /// command to be used before the text (usefull for setting workspace name)
+    const std::string m_precommand;
 };
 
 

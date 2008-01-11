@@ -30,7 +30,7 @@
 #include "FbTk/Resource.hh"
 
 namespace {
-class ToggleFrameFocusCmd: public FbTk::Command {
+class ToggleFrameFocusCmd: public FbTk::Command<void> {
 public:
     ToggleFrameFocusCmd(Focusable &client):
         m_client(client),
@@ -82,7 +82,7 @@ void AttentionNoticeHandler::addAttention(Focusable &client) {
     timeval timeout;
     timeout.tv_sec = 0;
     timeout.tv_usec = **timeout_res * 1000;
-    RefCount<Command> cmd(new ToggleFrameFocusCmd(client));
+    RefCount<Command<void> > cmd(new ToggleFrameFocusCmd(client));
     timer->setCommand(cmd);
     timer->setTimeout(timeout); 
     timer->fireOnce(false); // will repeat until window has focus
