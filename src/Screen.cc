@@ -87,6 +87,12 @@
 class Slit {};
 #endif // SLIT
 
+#ifdef USE_TOOLBAR
+#include "Toolbar.hh"
+#else
+class Toolbar {};
+#endif // USE_TOOLBAR
+
 #ifdef STDC_HEADERS
 #include <sys/types.h>
 #endif // STDC_HEADERS
@@ -120,6 +126,10 @@ extern  "C" {
 #include <X11/extensions/Xinerama.h>
 }
 #endif // XINERAMA
+
+#ifdef HAVE_RANDR
+#include <X11/extensions/Xrandr.h>
+#endif // HAVE_RANDR
 
 #include <iostream>
 #include <algorithm>
@@ -354,6 +364,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
 
     Display *disp = m_root_window.display();
+    Fluxbox *fluxbox = Fluxbox::instance();
 
     initXinerama();
 
@@ -375,6 +386,15 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         return;
     }
 
+    // we're going to manage the screen, so now add our pid
+#ifdef HAVE_GETPID
+    pid_t bpid = getpid();
+
+    rootWindow().changeProperty(fluxbox->getFluxboxPidAtom(), XA_CARDINAL,
+                                sizeof(pid_t) * 8, PropModeReplace,
+                                (unsigned char *) &bpid, 1);
+#endif // HAVE_GETPID
+
     // check if we're the first EWMH compliant window manager on this screen
     Atom wm_check = XInternAtom(disp, "_NET_SUPPORTING_WM_CHECK", False);
     Atom xa_ret_type;
@@ -390,6 +410,19 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     // TODO fluxgen: check if this is the right place
     m_head_areas = new HeadArea[numHeads() ? numHeads() : 1];
+
+#ifdef HAVE_RANDR
+    // setup RANDR for this screens root window
+    // we need to determine if we should use old randr select input function or not
+#ifdef X_RRScreenChangeSelectInput
+    // use old set randr event
+    XRRScreenChangeSelectInput(disp, rootWindow().window(), True);
+#else
+    XRRSelectInput(disp, rootWindow().window(),
+                   RRScreenChangeNotifyMask);
+#endif // X_RRScreenChangeSelectInput
+
+#endif // HAVE_RANDR
 
     _FB_USES_NLS;
 
@@ -409,7 +442,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
     // load this screens resources
-    Fluxbox *fluxbox = Fluxbox::instance();
     fluxbox->load_rc(*this);
 
     // setup image cache engine
@@ -517,9 +549,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
 BScreen::~BScreen() {
 
-
     if (! managed)
         return;
+
+    m_toolbar.reset(0);
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->remove(rootWindow());
@@ -685,8 +718,18 @@ void BScreen::initWindows() {
         children[i] = None; // we dont need this anymore, since we already created a window for it
     }
 
-
     XFree(children);
+
+    // now, show slit and toolbar
+#ifdef SLIT
+    if (slit())
+        slit()->show();
+#endif // SLIT
+
+#ifdef USE_TOOLBAR
+    m_toolbar.reset(new Toolbar(*this,
+                                *layerManager().getLayer(::Layer::NORMAL)));
+#endif // USE_TOOLBAR
 
 }
 

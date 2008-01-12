@@ -59,6 +59,7 @@ class WinClient;
 class Workspace;
 class Strut;
 class Slit;
+class Toolbar;
 class HeadArea;
 class FocusControl;
 class ScreenPlacement;
@@ -516,6 +517,7 @@ private:
     Icons m_icon_list;
 
     std::auto_ptr<Slit> m_slit;
+    std::auto_ptr<Toolbar> m_toolbar;
 
     Workspace *m_current_workspace;
 

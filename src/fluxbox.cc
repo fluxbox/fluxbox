@@ -63,9 +63,6 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#ifdef SLIT
-#include "Slit.hh"
-#endif // SLIT
 #ifdef USE_GNOME
 #include "Gnome.hh"
 #endif // USE_GNOME
@@ -75,11 +72,6 @@
 #ifdef REMEMBER
 #include "Remember.hh"
 #endif // REMEMBER
-#ifdef USE_TOOLBAR
-#include "Toolbar.hh"
-#else
-class Toolbar { };
-#endif // USE_TOOLBAR
 
 // X headers
 #include <X11/Xlib.h>
@@ -423,24 +415,10 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     //
     //    m_resourcemanager.dump();
 
-#ifdef USE_TOOLBAR
-    // finally, show toolbar
-    Toolbars::iterator toolbar_it = m_toolbars.begin();
-    Toolbars::iterator toolbar_it_end = m_toolbars.end();
-    for (; toolbar_it != toolbar_it_end; ++toolbar_it)
-        (*toolbar_it)->updateVisibleState();
-#endif // USE_TOOLBAR
-
 }
 
 
 Fluxbox::~Fluxbox() {
-
-    // destroy toolbars
-    while (!m_toolbars.empty()) {
-        delete m_toolbars.back();
-        m_toolbars.pop_back();
-    }
 
     // destroy atomhandlers
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
@@ -467,40 +445,9 @@ Fluxbox::~Fluxbox() {
 
 void Fluxbox::initScreen(BScreen *screen) {
 
-    Display* disp = display();
-
     // now we can create menus (which needs this screen to be in screen_list)
     screen->initMenus();
 
-#ifdef HAVE_GETPID
-    pid_t bpid = getpid();
-
-    screen->rootWindow().changeProperty(getFluxboxPidAtom(), XA_CARDINAL,
-                                        sizeof(pid_t) * 8, PropModeReplace,
-                                        (unsigned char *) &bpid, 1);
-#endif // HAVE_GETPID
-
-#ifdef HAVE_RANDR
-    // setup RANDR for this screens root window
-    // we need to determine if we should use old randr select input function or not
-#ifdef X_RRScreenChangeSelectInput
-    // use old set randr event
-    XRRScreenChangeSelectInput(disp, screen->rootWindow().window(), True);
-#else
-    XRRSelectInput(disp, screen->rootWindow().window(),
-                   RRScreenChangeNotifyMask);
-#endif // X_RRScreenChangeSelectInput
-
-#endif // HAVE_RANDR
-
-
-#ifdef USE_TOOLBAR
-    m_toolbars.push_back(new Toolbar(*screen,
-                                     *screen->layerManager().
-                                     getLayer(::Layer::NORMAL)));
-#endif // USE_TOOLBAR
-
-    // must do this after toolbar is created
     screen->initWindows();
 
     // attach screen signals to this
@@ -519,10 +466,6 @@ void Fluxbox::initScreen(BScreen *screen) {
     }
 
     FocusControl::revertFocus(*screen); // make sure focus style is correct
-#ifdef SLIT
-    if (screen->slit())
-        screen->slit()->show();
-#endif // SLIT
 
 }
 

@@ -67,8 +67,6 @@ class WinClient;
 class Keys;
 class BScreen;
 class FbAtoms;
-class Toolbar;
-
 
 /// main class for the window manager.
 /**
@@ -277,8 +275,6 @@ private:
     typedef AtomHandlerContainer::iterator AtomHandlerContainerIt;
 
     AtomHandlerContainer m_atomhandler;
-    typedef std::vector<Toolbar *> Toolbars;
-    Toolbars m_toolbars;
 
     bool m_starting;
     bool m_restarting;
