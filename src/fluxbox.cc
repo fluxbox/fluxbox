@@ -420,14 +420,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
 Fluxbox::~Fluxbox() {
 
-    // destroy atomhandlers
-    for (AtomHandlerContainerIt it= m_atomhandler.begin();
-         it != m_atomhandler.end();
-         it++) {
-        delete (*it).first;
-    }
-    m_atomhandler.clear();
-
     // this needs to be destroyed before screens; otherwise, menus stored in
     // key commands cause a segfault when the XLayerItem is destroyed
     m_key.reset(0);
@@ -438,6 +430,13 @@ Fluxbox::~Fluxbox() {
         m_screen_list.pop_back();
     }
 
+    // destroy atomhandlers
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
+         it != m_atomhandler.end();
+         it++) {
+        delete (*it).first;
+    }
+    m_atomhandler.clear();
 
     clearMenuFilenames();
 }

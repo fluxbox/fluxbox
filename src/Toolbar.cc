@@ -287,7 +287,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
 }
 
 Toolbar::~Toolbar() {
-    Fluxbox::instance()->keys()->unregisterWindow(window().window());
+    if (Fluxbox::instance()->keys())
+        Fluxbox::instance()->keys()->unregisterWindow(window().window());
     FbTk::EventManager::instance()->remove(window());
     // remove menu items before we delete tools so we dont end up
     // with dangling pointers to old submenu items (internal menus)
