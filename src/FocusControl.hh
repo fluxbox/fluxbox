@@ -134,8 +134,10 @@ public:
     static void unfocusWindow(WinClient &client, bool full_revert = true, bool unfocus_frame = false);
     static void setFocusedWindow(WinClient *focus_to);
     static void setFocusedFbWindow(FluxboxWindow *focus_to) { s_focused_fbwindow = focus_to; }
+    static void setExpectingFocus(WinClient *client) { s_expecting_focus = client; }
     static WinClient *focusedWindow() { return s_focused_window; }
     static FluxboxWindow *focusedFbWindow() { return s_focused_fbwindow; }
+    static WinClient *expectingFocus() { return s_expecting_focus; }
 private:
 
     BScreen &m_screen;
@@ -158,6 +160,7 @@ private:
 
     static WinClient *s_focused_window;
     static FluxboxWindow *s_focused_fbwindow;
+    static WinClient *s_expecting_focus;
     static bool s_reverting;
 };
 

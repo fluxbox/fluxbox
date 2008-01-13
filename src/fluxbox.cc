@@ -749,11 +749,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
             FluxboxWindow *win = winclient->fbwindow();
             if (win)
                 win->destroyNotifyEvent(e->xdestroywindow);
-
-            delete winclient;
-
-            if (win && win->numClients() == 0)
-                delete win;
         }
 
     }
@@ -835,10 +830,11 @@ void Fluxbox::handleEvent(XEvent * const e) {
             break;
 
         WinClient *winclient = searchWindow(e->xfocus.window);
-        if (winclient && (winclient == FocusControl::focusedWindow() ||
-                          FocusControl::focusedWindow() == 0) &&
+        if ((winclient == FocusControl::focusedWindow() ||
+             FocusControl::focusedWindow() == 0) &&
             // we don't unfocus a moving window
-            (winclient->fbwindow() == 0 || !winclient->fbwindow()->isMoving()))
+            (!winclient || !winclient->fbwindow() ||
+             !winclient->fbwindow()->isMoving()))
             revertFocus();
     }
 	break;
@@ -884,13 +880,6 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
             // this should delete client and adjust m_focused_window if necessary
             win->unmapNotifyEvent(ue);
 
-            winclient = 0; // it's invalid now when win destroyed the client
-
-            // finally destroy window if empty
-            if (win->numClients() == 0) {
-                delete win;
-                win = 0;
-            }
         }
 
     // according to http://tronche.com/gui/x/icccm/sec-4.html#s-4.1.4
@@ -1077,6 +1066,9 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             FocusControl::unfocusWindow(*client);
             // make sure nothing else uses this window before focus reverts
             FocusControl::setFocusedWindow(0);
+        } else if (FocusControl::expectingFocus() == client) {
+            FocusControl::setExpectingFocus(0);
+            revertFocus();
         }
 
         screen.removeClient(*client);
@@ -1555,22 +1547,18 @@ void Fluxbox::revertFocus() {
     if (revert) {
         // see if there are any more focus events in the queue
         XEvent ev;
-        while (XCheckMaskEvent(display(), FocusChangeMask, &ev)) {
+        while (XCheckMaskEvent(display(), FocusChangeMask, &ev))
             handleEvent(&ev);
-            revert = false;
-        }
-        if (!revert)
+        if (FocusControl::focusedWindow() || FocusControl::expectingFocus())
             return; // already handled
-    }
 
-    if (revert) {
         Window win;
         int blah;
         XGetInputFocus(display(), &win, &blah);
 
         // we only want to revert focus if it's left dangling, as some other
         // application may have set the focus to an unmanaged window
-        if (win != None && win != PointerRoot &&
+        if (win != None && win != PointerRoot && !searchWindow(win) &&
             win != m_keyscreen->rootWindow().window())
             revert = false;
     }

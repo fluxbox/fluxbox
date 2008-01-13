@@ -30,7 +30,6 @@
 #include "ArrowButton.hh"
 
 // Themes
-#include "IconbarTheme.hh"
 #include "WorkspaceNameTheme.hh"
 #include "ButtonTheme.hh"
 

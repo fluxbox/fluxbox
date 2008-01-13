@@ -174,7 +174,8 @@ bool WinClient::acceptsFocus() const {
 
 bool WinClient::sendFocus() {
     if (accepts_input) {
-        setInputFocus(RevertToParent, CurrentTime);
+        setInputFocus(RevertToPointerRoot, CurrentTime);
+        FocusControl::setExpectingFocus(this);
         return true;
     }
     if (!send_focus_message)
@@ -198,6 +199,7 @@ bool WinClient::sendFocus() {
     ce.xclient.data.l[4] = 0l;
     // send focus msg
     XSendEvent(display(), window(), false, NoEventMask, &ce);
+    FocusControl::setExpectingFocus(this);
     return true;
 }
 

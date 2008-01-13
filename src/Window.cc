@@ -2353,8 +2353,9 @@ void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent &de) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): DestroyNotifyEvent this="<<this<<" title = "<<title()<<endl;
 #endif // DEBUG
-        if (numClients() == 1)
-            hide();
+        delete m_client;
+        if (numClients() == 0)
+            delete this;
     }
 
 }
@@ -3680,9 +3681,8 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
     cerr<<"FluxboxWindow::restore: remap = "<<remap<<endl;
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): numClients() = "<<numClients()<<endl;
 #endif // DEBUG
-    if (numClients() == 0) {
-        hide(true);
-    }
+    if (numClients() == 0)
+        delete this;
 
 }
 

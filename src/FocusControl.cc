@@ -45,6 +45,7 @@ using std::string;
 
 WinClient *FocusControl::s_focused_window = 0;
 FluxboxWindow *FocusControl::s_focused_fbwindow = 0;
+WinClient *FocusControl::s_expecting_focus = 0;
 bool FocusControl::s_reverting = false;
 
 namespace {
@@ -242,7 +243,7 @@ void FocusControl::stopCyclingFocus() {
  * is given.
  */
 Focusable *FocusControl::lastFocusedWindow(int workspace) {
-    if (m_focused_list.empty() || m_screen.isShuttingdown()) return 0;
+    if (m_screen.isShuttingdown()) return 0;
     if (workspace < 0 || workspace >= (int) m_screen.numberOfWorkspaces())
         return m_focused_list.clientList().front();
 
@@ -250,6 +251,7 @@ Focusable *FocusControl::lastFocusedWindow(int workspace) {
     Focusables::iterator it_end = m_focused_list.clientList().end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && (*it)->acceptsFocus() &&
+            (*it)->fbwindow()->winClient().validateClient() &&
             ((((int)(*it)->fbwindow()->workspaceNumber()) == workspace ||
              (*it)->fbwindow()->isStuck()) && !(*it)->fbwindow()->isIconic()))
             return *it;
@@ -536,6 +538,7 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         // screen should be ok
         s_focused_fbwindow = client->fbwindow();        
         s_focused_window = client;     // update focused window
+        s_expecting_focus = 0;
         s_focused_fbwindow->setCurrentClient(*client, 
                               false); // don't set inputfocus
         s_focused_fbwindow->setFocusFlag(true); // set focus flag
