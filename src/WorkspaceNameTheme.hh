@@ -30,7 +30,10 @@ class WorkspaceNameTheme: public ToolTheme,
 public:
     WorkspaceNameTheme(int screen_num, 
                        const std::string &name, 
-                       const std::string &alt_name):ToolTheme(screen_num, name, alt_name) { }
+                       const std::string &alt_name):
+            ToolTheme(screen_num, name, alt_name) {
+        FbTk::ThemeManager::instance().loadTheme(*this);
+    }
 
     bool fallback(FbTk::ThemeItem_base &item) {
         if (item.name() == "toolbar.workspace.textColor") {

@@ -45,7 +45,6 @@ WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent,
     screen.workspaceNamesSig().attach(this);
     screen.currentWorkspaceSig().attach(this);
     theme.reconfigSig().attach(this);
-
 }
 
 WorkspaceNameTool::~WorkspaceNameTool() {
@@ -132,12 +131,16 @@ void WorkspaceNameTool::updateSizing() {
 }
 
 void WorkspaceNameTool::reRender() {
+    if (m_pixmap)
+        m_screen.imageControl().removeImage(m_pixmap);
+
     if (m_theme->texture().usePixmap()) {
-        if (m_pixmap) 
-            m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
                                                        m_theme->texture(), orientation());
         m_button.setBackgroundPixmap(m_pixmap);
+    } else {
+        m_pixmap = 0;
+        m_button.setBackgroundColor(m_theme->texture().color());
     }
 }
 
@@ -148,15 +151,7 @@ void WorkspaceNameTool::renderTheme(unsigned char alpha) {
     m_button.setBorderColor(m_theme->border().color());
     m_button.setAlpha(alpha);
 
-    if (!m_theme->texture().usePixmap()) {
-        if (m_pixmap)
-            m_screen.imageControl().removeImage(m_pixmap);
-        m_pixmap = 0;
-        m_button.setBackgroundColor(m_theme->texture().color());
-    } else {
-        reRender();
-    }
-
+    reRender();
     m_button.clear();
 }
 
