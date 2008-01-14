@@ -25,6 +25,7 @@
 #include "ImageControl.hh"
 
 #include "TextureRender.hh"
+#include "Texture.hh"
 #include "App.hh"
 #include "SimpleCommand.hh"
 #include "I18n.hh"
@@ -67,15 +68,17 @@ using std::list;
 
 namespace FbTk {
 
-// lookup table for texture
-unsigned long *ImageControl::sqrt_table = 0;
+namespace { // anonymous
+
+static unsigned long *sqrt_table = 0; /// lookup table
+
 #ifdef TIMEDCACHE
-bool ImageControl::s_timed_cache = true;
+bool s_timed_cache = true;
 #else
-bool ImageControl::s_timed_cache = false;
+bool s_timed_cache = false;
 #endif // TIMEDCACHE
 
-namespace { // anonymous
+
 
 inline unsigned long bsqrt(unsigned long x) {
     if (x <= 0) return 0;
@@ -92,6 +95,14 @@ inline unsigned long bsqrt(unsigned long x) {
 }
 
 }; // end anonymous namespace
+
+struct ImageControl::Cache {
+    Pixmap pixmap;
+    Pixmap texture_pixmap;
+    Orientation orient;
+    unsigned int count, width, height;
+    unsigned long pixel1, pixel2, texture;
+};
 
 ImageControl::ImageControl(int screen_num, bool dither,
                            int cpc, unsigned long cache_timeout, unsigned long cmax):
@@ -148,7 +159,7 @@ ImageControl::~ImageControl() {
         delete [] m_colors;
     }
 
-    if (cache.size() > 0) {
+    if (!cache.empty()) {
         CacheList::iterator it = cache.begin();
         CacheList::iterator it_end = cache.end();
         for (; it != it_end; ++it) {
