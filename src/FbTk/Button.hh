@@ -28,7 +28,7 @@
 #include "FbWindow.hh"
 #include "Command.hh"
 #include "Color.hh"
-#include "Text.hh"
+#include "Orientation.hh"
 
 namespace FbTk {
 

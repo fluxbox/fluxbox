@@ -1,6 +1,5 @@
-// TextTheme.hh
-// Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
-//                and Simon Bowden    (rathnor at users.sourceforge.net)
+// Orientation.hh for FbTk
+// Copyright (c) 2008 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,36 +19,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef FBTK_TEXTTHEME_HH
-#define FBTK_TEXTTHEME_HH
-
-#include "Theme.hh"
-#include "Font.hh"
-#include "Color.hh"
-#include "Orientation.hh"
-#include "GContext.hh"
+#ifndef FBTK_ORIENTATION_HH
+#define FBTK_ORIENTATION_HH
 
 namespace FbTk {
 
-class TextTheme {
-public:
-    TextTheme(Theme &theme, const std::string &name, const std::string &altname);
-    virtual ~TextTheme() { }
+enum Justify {LEFT, RIGHT, CENTER};
 
-    void updateTextColor();
+// clockwise
+enum Orientation { ROT0=0, ROT90, ROT180, ROT270 };
 
-    Font &font() { return *m_font; }
-    const Font &font() const { return *m_font; }
-    const Color &textColor() const { return *m_text_color; }
-    Justify justify() const { return *m_justify; }
-    GC textGC() const { return m_text_gc.gc(); }
-private:
-    ThemeItem<Font> m_font;
-    ThemeItem<Color> m_text_color;
-    ThemeItem<Justify> m_justify;
-    GContext m_text_gc;
-};
+} // end namespace FbTk
 
-}; // end namespace FbTk
-
-#endif // FBTK_TEXTTHEME_HH
+#endif // FBTK_ORIENTATION_HH

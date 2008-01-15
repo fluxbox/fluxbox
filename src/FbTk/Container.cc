@@ -23,6 +23,7 @@
 #include "Container.hh"
 
 #include "Button.hh"
+#include "TextUtils.hh"
 #include "EventManager.hh"
 #include "CompareEqual.hh"
 
@@ -61,37 +62,6 @@ void Container::moveResize(int x, int y,
     FbWindow::moveResize(x, y, width, height);
     repositionItems();
 }
-
-#ifdef NOT_USED
-void Container::insertItems(ItemList &item_list, int pos) {
-
-    // make sure all items have parent == this
-    ItemList::iterator it = m_item_list.begin();
-    ItemList::iterator it_end = m_item_list.end();
-    for (; it != it_end; ++it) {
-        if ((*it)->parent() != this)
-            return;
-    }
-
-    if (pos > size() || pos < 0) {
-        // insert last
-        m_item_list.splice(m_item_list.end(), item_list);
-    } else if (pos == 0) {
-        // insert first
-        m_item_list.splice(m_item_list.begin(), item_list);
-    } else {
-        // find insert point
-        for (it = m_item_list.begin(); pos != 0; ++it, --pos)
-            continue;
-        m_item_list.splice(it, item_list);
-    }
-
-    m_item_list.unique();
-
-    // update position
-    repositionItems();
-}
-#endif
 
 void Container::insertItem(Item item, int pos) {
     if (find(item) != -1)

@@ -24,6 +24,7 @@
 #include "GContext.hh"
 #include "Transparent.hh"
 #include "FbWindow.hh"
+#include "TextUtils.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>

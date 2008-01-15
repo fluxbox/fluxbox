@@ -25,7 +25,7 @@
 #ifndef FBTK_IMAGECONTROL_HH
 #define FBTK_IMAGECONTROL_HH
 
-#include "Text.hh" // actually, Text is rather tool like, that's where orientation comes from
+#include "Orientation.hh"
 #include "Timer.hh"
 #include "NotCopyable.hh"
 

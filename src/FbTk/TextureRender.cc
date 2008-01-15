@@ -25,6 +25,7 @@
 #include "TextureRender.hh"
 
 #include "ImageControl.hh"
+#include "TextUtils.hh"
 #include "Texture.hh"
 #include "App.hh"
 #include "FbPixmap.hh"

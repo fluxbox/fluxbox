@@ -22,7 +22,7 @@
 #ifndef FBTK_FONTIMP_HH
 #define FBTK_FONTIMP_HH
 
-#include "Text.hh"
+#include "Orientation.hh"
 #include "FbString.hh"
 
 #include <X11/Xlib.h>

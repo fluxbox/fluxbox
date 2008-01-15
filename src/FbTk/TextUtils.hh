@@ -1,4 +1,4 @@
-// Text.hh for FbTk - text utils
+// TextUtils.hh for FbTk - text utils
 // Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,16 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef FBTK_TEXT_HH
-#define FBTK_TEXT_HH
+#ifndef FBTK_TEXTUTILS_HH
+#define FBTK_TEXTUTILS_HH
+
+#include "Orientation.hh"
 
 namespace FbTk {
 
 class Font;
-
-enum Justify {LEFT, RIGHT, CENTER};
-// clockwise
-enum Orientation { ROT0=0, ROT90, ROT180, ROT270 };
 
 /**
    Aligns the text after max width and bevel
@@ -132,4 +130,4 @@ inline void translateSize(Orientation orient, unsigned int w, unsigned int h) {
 
 } // end namespace FbTk
 
-#endif // FBTK_TEXT_HH
+#endif // FBTK_TEXTUTILS_HH

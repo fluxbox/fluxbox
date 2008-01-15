@@ -27,7 +27,6 @@
 #include "Font.hh"
 #include "Shape.hh"
 #include "Texture.hh"
-#include "Text.hh"
 #include "PixmapWithMask.hh"
 #include "GContext.hh"
 

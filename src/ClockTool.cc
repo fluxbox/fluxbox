@@ -30,6 +30,7 @@
 
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/TextUtils.hh"
 #include "FbTk/Menu.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/I18n.hh"

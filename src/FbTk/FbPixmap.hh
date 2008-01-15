@@ -23,7 +23,7 @@
 #define FBTK_FBPIXMAP_HH
 
 #include "FbDrawable.hh"
-#include "Text.hh" // for Orientation
+#include "Orientation.hh"
 
 namespace FbTk {
 

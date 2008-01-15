@@ -20,6 +20,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "TextButton.hh"
+#include "TextUtils.hh"
 #include "Font.hh"
 #include "GContext.hh"
 
