@@ -30,6 +30,7 @@ class Accessor {
 public:
     virtual Accessor<T> &operator =(const T &val) = 0;
     virtual operator T() const = 0;
+    virtual ~Accessor() {}
 };
 
 // essentially just a reference
