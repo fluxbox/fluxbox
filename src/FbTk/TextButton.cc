@@ -20,6 +20,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "TextButton.hh"
+#include "TextUtils.hh"
 #include "Font.hh"
 #include "GContext.hh"
 
@@ -150,7 +151,7 @@ void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
 }
 
 void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
-    size_t textlen = text().size();
+    unsigned int textlen = text().size();
     // do text alignment
 
     unsigned int textw = width(), texth = height();

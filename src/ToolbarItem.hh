@@ -24,7 +24,7 @@
 #define TOOLBARITEM_HH
 
 #include "FbTk/Subject.hh"
-#include "FbTk/Text.hh" // orientation
+#include "FbTk/Orientation.hh"
 
 /// An item in the toolbar that has either fixed or relative size to the toolbar
 class ToolbarItem {

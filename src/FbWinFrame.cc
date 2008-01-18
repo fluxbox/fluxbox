@@ -28,6 +28,7 @@
 #include "FbTk/Compose.hh"
 #include "FbTk/Transparent.hh"
 #include "FbTk/CompareEqual.hh"
+#include "FbTk/TextUtils.hh"
 
 #include "FbWinFrameTheme.hh"
 #include "Screen.hh"

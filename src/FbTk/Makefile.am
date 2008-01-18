@@ -30,7 +30,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	MenuTheme.hh MenuTheme.cc NotCopyable.hh \
 	BorderTheme.hh BorderTheme.cc TextTheme.hh TextTheme.cc \
 	RefCount.hh SimpleCommand.hh SignalHandler.cc SignalHandler.hh \
-	Text.hh Text.cc \
+	TextUtils.hh TextUtils.cc Orientation.hh \
 	Texture.cc Texture.hh TextureRender.hh TextureRender.cc \
 	Shape.hh Shape.cc \
 	Theme.hh Theme.cc ThemeItems.cc Timer.hh Timer.cc \

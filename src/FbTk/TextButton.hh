@@ -23,7 +23,6 @@
 #define FBTK_TEXTBUTTON_HH
 
 #include "Button.hh"
-#include "Text.hh"
 
 #include <string>
 

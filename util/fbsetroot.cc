@@ -22,6 +22,7 @@
 
 #include "../src/FbTk/I18n.hh"
 #include "../src/FbTk/ImageControl.hh"
+#include "../src/FbTk/Texture.hh"
 #include "../src/FbTk/GContext.hh"
 #include "../src/FbRootWindow.hh"
 

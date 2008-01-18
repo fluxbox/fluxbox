@@ -26,7 +26,7 @@
 #include "FbWindow.hh"
 #include "EventHandler.hh"
 #include "NotCopyable.hh"
-#include "Text.hh" // for Orientation
+#include "Orientation.hh"
 
 #include <list>
 
@@ -52,9 +52,6 @@ public:
     void moveResize(int x, int y,
                     unsigned int width, unsigned int height);
 
-#ifdef NOT_USED
-    void insertItems(ItemList &list, int position=-1);
-#endif
     void insertItem(Item item, int pos = -1);
     bool removeItem(int item); // return true if something was removed
     bool removeItem(Item item); // return true if something was removed

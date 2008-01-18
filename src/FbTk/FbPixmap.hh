@@ -23,22 +23,22 @@
 #define FBTK_FBPIXMAP_HH
 
 #include "FbDrawable.hh"
-#include "Text.hh"
+#include "Orientation.hh"
 
 namespace FbTk {
 
 /// a wrapper for X Pixmap
 class FbPixmap:public FbDrawable {
-public:    
+public:
     FbPixmap();
-    /// copy pixmap 
+    /// copy pixmap
     FbPixmap(const FbPixmap &copy);
     /// creates a FbPixmap from X pixmap
     explicit FbPixmap(Pixmap pm);
-    FbPixmap(const FbDrawable &src, 
+    FbPixmap(const FbDrawable &src,
              unsigned int width, unsigned int height,
              unsigned int depth);
-    FbPixmap(Drawable src, 
+    FbPixmap(Drawable src,
              unsigned int width, unsigned int height,
              unsigned int depth);
 
@@ -86,13 +86,6 @@ private:
     // if pixmap not *owned* by this object (eg assigned from cache object)
     bool m_dont_free;
 
-    /// Functions relating to the maintenance of root window pixmap caching
-    static void checkAtoms();
-
-    // array of pixmaps: 1 per screen
-    static Pixmap *m_root_pixmaps;
-    static const char *root_prop_ids[];
-    static Atom  root_prop_atoms[];
 };
 
 } // end namespace FbTk

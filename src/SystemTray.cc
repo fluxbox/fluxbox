@@ -23,6 +23,7 @@
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/TextUtils.hh"
 
 #include "AtomHandler.hh"
 #include "fluxbox.hh"

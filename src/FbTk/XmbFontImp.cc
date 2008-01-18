@@ -22,6 +22,7 @@
 #include "XmbFontImp.hh"
 
 #include "App.hh"
+#include "TextUtils.hh"
 #include "StringUtil.hh"
 #include "FbPixmap.hh"
 #include "GContext.hh"

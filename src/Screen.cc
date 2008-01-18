@@ -629,6 +629,12 @@ bool BScreen::isRestart() {
 }
 
 void BScreen::initWindows() {
+
+#ifdef USE_TOOLBAR
+    m_toolbar.reset(new Toolbar(*this,
+                                *layerManager().getLayer(::Layer::NORMAL)));
+#endif // USE_TOOLBAR
+
     unsigned int nchild;
     Window r, p, *children;
     Display *disp = FbTk::App::instance()->display();
@@ -725,11 +731,6 @@ void BScreen::initWindows() {
     if (slit())
         slit()->show();
 #endif // SLIT
-
-#ifdef USE_TOOLBAR
-    m_toolbar.reset(new Toolbar(*this,
-                                *layerManager().getLayer(::Layer::NORMAL)));
-#endif // USE_TOOLBAR
 
 }
 

@@ -25,15 +25,16 @@
 #ifndef FBTK_IMAGECONTROL_HH
 #define FBTK_IMAGECONTROL_HH
 
-// actually, Text is rather tool like, that's where orientation comes from
-#include "Text.hh" 
-#include "Texture.hh"
+#include "Orientation.hh"
 #include "Timer.hh"
 #include "NotCopyable.hh"
 
+#include <X11/Xlib.h> // for Visual* etc
 #include <list>
 
 namespace FbTk {
+
+class Texture;
 
 /// Holds screen info, color tables and caches textures
 class ImageControl: private NotCopyable {
@@ -47,7 +48,7 @@ public:
     int bitsPerPixel() const { return bits_per_pixel; }
 #endif
     int depth() const { return m_screen_depth; }
-    int colorsPerChannel() const	{ return m_colors_per_channel; }
+    int colorsPerChannel() const { return m_colors_per_channel; }
     int screenNumber() const { return m_screen_num; }
     Visual *visual() const { return m_visual; }
     unsigned long getSqrt(unsigned int val) const;
@@ -103,39 +104,18 @@ private:
     int m_colors_per_channel; ///< number of colors per channel
     int m_screen_depth; ///< bit depth of screen
     int m_screen_num;  ///< screen number
-    unsigned char red_color_table[256], green_color_table[256],
-        blue_color_table[256];
+    unsigned char red_color_table[256];
+    unsigned char green_color_table[256];
+    unsigned char blue_color_table[256];
+
     unsigned int *grad_xbuffer, *grad_ybuffer, grad_buffer_width,
         grad_buffer_height;
 
-    static unsigned long *sqrt_table; /// sqrt lookup table
-
-    typedef struct Cache {
-        Pixmap pixmap;
-        Pixmap texture_pixmap;
-        Orientation orient;
-        unsigned int count, width, height;
-        unsigned long pixel1, pixel2, texture;
-    } Cache;
-
-    struct ltCacheEntry {
-        bool operator()(const Cache* s1, const Cache* s2) const {
-            return (s1->orient  < s2->orient || s1->orient == s2->orient 
-                    && (s1->width  < s2->width || s1->width == s2->width 
-                    && (s1->height < s2->height || s1->height == s2->height
-                    && (s1->texture < s2->texture || s1->texture == s2->texture
-                    && (s1->pixel1 < s2->pixel1 || s1->pixel1 == s2->pixel1
-                    && ((s1->texture & FbTk::Texture::GRADIENT) && s1->pixel2 < s2->pixel2)
-                        )))));
-        }
-    };
-
-	
-    unsigned long cache_max;
+    struct Cache;
     typedef std::list<Cache *> CacheList;
 
     mutable CacheList cache;
-    static bool s_timed_cache;
+    unsigned long cache_max;
 };
 
 } // end namespace FbTk

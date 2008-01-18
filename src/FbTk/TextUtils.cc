@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "Text.hh"
+#include "TextUtils.hh"
 
 #include "Font.hh"
 #include "Theme.hh"
@@ -28,15 +28,15 @@
 
 namespace FbTk {
 
-int doAlignment(int max_width, int bevel, FbTk::Justify justify, 
-                const FbTk::Font &font, const char * const text, 
-                size_t textlen, size_t &newlen) {
+int doAlignment(int max_width, int bevel, FbTk::Justify justify,
+                const FbTk::Font &font, const char * const text,
+                unsigned int textlen, unsigned int &newlen) {
 
     if (text == 0 || textlen == 0)
         return 0;
 
     int l = font.textWidth(text, textlen) + bevel;
-    size_t dlen = textlen;
+    unsigned int dlen = textlen;
     int dx = bevel;
     if (l > max_width) {
         for (; dlen > 0; dlen--) {
@@ -51,14 +51,14 @@ int doAlignment(int max_width, int bevel, FbTk::Justify justify,
     switch (justify) {
     case FbTk::RIGHT:
         dx = max_width - l - bevel;
-	break;
+    break;
     case FbTk::CENTER:
         dx = (max_width - l)/2;
-	break;
+    break;
     case FbTk::LEFT:
-	break;
+    break;
     }
-	
+
     return dx;
 }
 

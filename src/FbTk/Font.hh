@@ -30,7 +30,7 @@
 
 #include "FbString.hh"
 #include "Color.hh"
-#include "Text.hh"
+#include "Orientation.hh"
 
 namespace FbTk {
 

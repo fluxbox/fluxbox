@@ -1,4 +1,4 @@
-// Text.hh for FbTk - text utils
+// TextUtils.hh for FbTk - text utils
 // Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,25 +19,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef FBTK_TEXT_HH
-#define FBTK_TEXT_HH
+#ifndef FBTK_TEXTUTILS_HH
+#define FBTK_TEXTUTILS_HH
 
-#include <sys/types.h>
+#include "Orientation.hh"
 
 namespace FbTk {
 
 class Font;
-
-enum Justify {LEFT, RIGHT, CENTER};
-// clockwise
-enum Orientation { ROT0=0, ROT90, ROT180, ROT270 };
 
 /**
    Aligns the text after max width and bevel
  */
 int doAlignment(int max_width, int bevel, FbTk::Justify justify, 
                 const FbTk::Font &font, const char * const text, 
-                size_t textlen, size_t &newlen);
+                unsigned int textlen, unsigned int &newlen);
 
 /**
    There are 3 interesting translations:
@@ -76,7 +72,7 @@ inline void translateCoords(Orientation orient, int &x, int &y, unsigned int w, 
 }
 
 // still require w and h in ROT0 coords
-inline void untranslateCoords(Orientation orient, int &orig_x, int &orig_y, unsigned int w, unsigned int h) {
+inline void untranslateCoords(Orientation orient, int orig_x, int orig_y, unsigned int w, unsigned int h) {
 
     int x = orig_x;
     int y = orig_y;
@@ -102,7 +98,7 @@ inline void untranslateCoords(Orientation orient, int &orig_x, int &orig_y, unsi
 
 // When positioning an X11 box inside another area, we need to
 // relocate the x,y coordinates
-inline void translatePosition(Orientation orient, int &x, int &y, unsigned int w, unsigned int h, unsigned int bw) {
+inline void translatePosition(Orientation orient, int x, int y, unsigned int w, unsigned int h, unsigned int bw) {
 
     switch(orient) {
     case ROT0:
@@ -121,7 +117,7 @@ inline void translatePosition(Orientation orient, int &x, int &y, unsigned int w
 
 }
 
-inline void translateSize(Orientation orient, unsigned int &w, unsigned int &h) {
+inline void translateSize(Orientation orient, unsigned int w, unsigned int h) {
     if (orient == ROT0 || orient == ROT180)
         return;
 
@@ -134,4 +130,4 @@ inline void translateSize(Orientation orient, unsigned int &w, unsigned int &h) 
 
 } // end namespace FbTk
 
-#endif // FBTK_TEXT_HH
+#endif // FBTK_TEXTUTILS_HH

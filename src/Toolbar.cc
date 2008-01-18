@@ -45,6 +45,7 @@
 
 #include "FbTk/I18n.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/TextUtils.hh"
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/EventManager.hh"
 #include "FbTk/SimpleCommand.hh"

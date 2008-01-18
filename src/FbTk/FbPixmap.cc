@@ -24,6 +24,7 @@
 #include "GContext.hh"
 #include "Transparent.hh"
 #include "FbWindow.hh"
+#include "TextUtils.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -38,21 +39,34 @@ using std::cerr;
 
 namespace FbTk {
 
-Pixmap *FbPixmap::m_root_pixmaps = 0;
+namespace {
 
-const char* FbPixmap::root_prop_ids[] = {
+Pixmap *root_pixmaps = 0;
+
+const char* root_prop_ids[] = {
     "_XROOTPMAP_ID",
     "_XSETROOT_ID",
     0
 };
 
 // same number as in root_prop_ids
-Atom FbPixmap::root_prop_atoms[] = {
+Atom root_prop_atoms[] = {
     None,
     None,
     None
 };
 
+void checkAtoms() {
+
+    Display* display = FbTk::App::instance()->display();
+    for (int i=0; root_prop_ids[i] != 0; ++i) {
+        if (root_prop_atoms[i] == None) {
+            root_prop_atoms[i] = XInternAtom(display, root_prop_ids[i], False);
+        }
+    }
+}
+
+}; // end of anonymous namespace
 
 FbPixmap::FbPixmap():m_pm(0),
                      m_width(0), m_height(0),
@@ -389,14 +403,14 @@ bool FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
 
 // returns whether or not the background was changed
 bool FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
-    if (!m_root_pixmaps) {
-        m_root_pixmaps = new Pixmap[ScreenCount(display())];
+    if (!root_pixmaps) {
+        root_pixmaps = new Pixmap[ScreenCount(display())];
         for (int i=0; i < ScreenCount(display()); ++i)
-            m_root_pixmaps[i] = None;
+            root_pixmaps[i] = None;
     }
 
-    if (m_root_pixmaps[screen_num] != pm) {
-        m_root_pixmaps[screen_num] = pm;
+    if (root_pixmaps[screen_num] != pm) {
+        root_pixmaps[screen_num] = pm;
         FbWindow::updatedAlphaBackground(screen_num);
         return true;
     }
@@ -410,8 +424,8 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
     */
 
     // check and see if if we have the pixmaps in cache
-    if (m_root_pixmaps && !force_update)
-        return m_root_pixmaps[screen_num];
+    if (root_pixmaps && !force_update)
+        return root_pixmaps[screen_num];
 
     // else setup pixmap cache
     int numscreens = ScreenCount(display());
@@ -460,15 +474,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
         setRootPixmap(i, root_pm);
     }
 
-    return m_root_pixmaps[screen_num];
-}
-
-void FbPixmap::checkAtoms() {
-    for (int i=0; root_prop_ids[i] != 0; ++i) {
-        if (root_prop_atoms[i] == None) {
-            root_prop_atoms[i] = XInternAtom(display(), root_prop_ids[i], False);
-        }
-    }
+    return root_pixmaps[screen_num];
 }
 
 void FbPixmap::free() {

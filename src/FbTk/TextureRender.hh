@@ -25,7 +25,7 @@
 #ifndef FBTK_TEXTURRENDER_HH
 #define FBTK_TEXTURRENDER_HH
 
-#include "Text.hh"
+#include "Orientation.hh"
 
 #include <X11/Xlib.h>
 
