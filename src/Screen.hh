@@ -30,6 +30,7 @@
 #include "RootTheme.hh"
 #include "WinButtonTheme.hh"
 #include "FbWinFrameTheme.hh"
+#include "OSDWindow.hh"
 
 #include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
@@ -496,11 +497,9 @@ private:
 
     FbTk::MultLayers m_layermanager;
 
-    bool root_colormap_installed, managed, geom_visible, pos_visible;
+    bool root_colormap_installed, managed;
 
     GC opGC;
-    Pixmap geom_pixmap, pos_pixmap;
-
 
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
@@ -532,7 +531,8 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
-    FbTk::FbWindow m_geom_window, m_pos_window, m_dummy_window;
+    OSDWindow m_geom_window, m_pos_window;
+    FbTk::FbWindow m_dummy_window;
 
     struct ScreenResource {
         ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,

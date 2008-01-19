@@ -341,14 +341,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_pressed_winbutton_theme(new WinButtonTheme(scrn, ".pressed", ".Pressed", *m_focused_windowtheme)),
     m_menutheme(new FbTk::MenuTheme(scrn)),
     m_root_window(scrn),
-    m_geom_window(m_root_window,
-                  0, 0, 10, 10,
-                  false,  // override redirect
-                  true), // save under
-    m_pos_window(m_root_window,
-                 0, 0, 10, 10,
-                 false,  // override redirect
-                 true), // save under
+    m_geom_window(m_root_window, *this, *m_focused_windowtheme),
+    m_pos_window(m_root_window, *this, *m_focused_windowtheme),
     m_dummy_window(scrn, -1, -1, 1, 1, 0, true, false, CopyFromParent,
                    InputOnly),
     resource(rm, screenname, altscreenname),
@@ -483,11 +477,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     focusedWinFrameTheme()->reconfigSig().attach(this);// for geom window
 
 
-    geom_visible = false;
-    geom_pixmap = 0;
-    pos_visible = false;
-    pos_pixmap = 0;
-
     renderGeomWindow();
     renderPosWindow();
 
@@ -584,12 +573,6 @@ BScreen::~BScreen() {
             mit->second->setInternalMenu(false);
         }
     }
-
-    if (geom_pixmap != None)
-        imageControl().removeImage(geom_pixmap);
-
-    if (pos_pixmap != None)
-        imageControl().removeImage(pos_pixmap);
 
     removeWorkspaceNames();
     using namespace FbTk::STLUtil;
@@ -937,9 +920,6 @@ void BScreen::reconfigure() {
 
     m_menutheme->setDelayOpen(*resource.menu_delay);
     m_menutheme->setDelayClose(*resource.menu_delay_close);
-
-    renderGeomWindow();
-    renderPosWindow();
 
     // realize the number of workspaces from the init-file
     const unsigned int nr_ws = *resource.workspaces;
@@ -1812,70 +1792,23 @@ void BScreen::shutdown() {
 
 
 void BScreen::showPosition(int x, int y) {
-        if (!doShowWindowPos())
+    if (!doShowWindowPos())
         return;
-
-    if (! pos_visible) {
-        if (hasXinerama()) {
-            unsigned int head = getCurrHead();
-
-            m_pos_window.move(getHeadX(head) + (getHeadWidth(head) - m_pos_window.width()) / 2,
-                              getHeadY(head) + (getHeadHeight(head) - m_pos_window.height()) / 2);
-
-        } else {
-            m_pos_window.move((width() - m_pos_window.width()) / 2,
-                              (height() - m_pos_window.height()) / 2);
-        }
-
-        m_pos_window.show();
-        m_pos_window.raise();
-
-        pos_visible = true;
-    }
 
     char label[256];
     sprintf(label, "X:%5d x Y:%5d", x, y);
-
-    m_pos_window.clear();
-
-    focusedWinFrameTheme()->font().drawText(m_pos_window, screenNumber(),
-            focusedWinFrameTheme()->iconbarTheme().text().textGC(),
-            label, strlen(label),
-            focusedWinFrameTheme()->bevelWidth(),
-            focusedWinFrameTheme()->bevelWidth() +
-            focusedWinFrameTheme()->font().ascent());
-
+    m_pos_window.showText(label);
 }
 
 
 void BScreen::hidePosition() {
-    if (pos_visible) {
-        m_pos_window.hide();
-        pos_visible = false;
-    }
+    m_pos_window.hide();
 }
 
 // can be negative when base_width/height > min_width/height
 void BScreen::showGeometry(int gx, int gy) {
     if (!doShowWindowPos())
         return;
-
-    if (! geom_visible) {
-        if (hasXinerama()) {
-            unsigned int head = getCurrHead();
-
-            m_geom_window.move(getHeadX(head) + (getHeadWidth(head) - m_geom_window.width()) / 2,
-                               getHeadY(head) + (getHeadHeight(head) - m_geom_window.height()) / 2);
-        } else {
-            m_geom_window.move((width() - m_geom_window.width()) / 2,
-                               (height() - m_geom_window.height()) / 2);
-
-        }
-        m_geom_window.show();
-        m_geom_window.raise();
-
-        geom_visible = true;
-    }
 
     char label[256];
     _FB_USES_NLS;
@@ -1885,24 +1818,12 @@ void BScreen::showGeometry(int gx, int gy) {
                     "W: %4d x H: %4d",
                     "Format for width and height window, %4d for width, and %4d for height").c_str(),
             gx, gy);
-
-    m_geom_window.clear();
-
-    //!! TODO: geom window again?! repeated
-    focusedWinFrameTheme()->font().drawText(m_geom_window, screenNumber(),
-            focusedWinFrameTheme()->iconbarTheme().text().textGC(),
-            label, strlen(label),
-            focusedWinFrameTheme()->bevelWidth(),
-            focusedWinFrameTheme()->bevelWidth() +
-            focusedWinFrameTheme()->font().ascent());
+    m_geom_window.showText(label);
 }
 
 
 void BScreen::hideGeometry() {
-    if (geom_visible) {
-        m_geom_window.hide();
-        geom_visible = false;
-    }
+    m_geom_window.hide();
 }
 
 void BScreen::setLayer(FbTk::XLayerItem &item, int layernum) {
@@ -1950,93 +1871,14 @@ void BScreen::renderGeomWindow() {
             _FB_XTEXT(Screen, GeometrySpacing,
             "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog").c_str(),
             0, 0);
-
-    int geom_h = focusedWinFrameTheme()->font().height() +
-                 focusedWinFrameTheme()->bevelWidth()*2;
-    int geom_w = focusedWinFrameTheme()->font().textWidth(label, strlen(label))
-               + focusedWinFrameTheme()->bevelWidth()*2;
-    m_geom_window.resize(geom_w, geom_h);
-
-    m_geom_window.setBorderWidth(focusedWinFrameTheme()->border().width());
-    m_geom_window.setBorderColor(focusedWinFrameTheme()->border().color());
-
-
-    Pixmap tmp = geom_pixmap;
-
-    if (focusedWinFrameTheme()->iconbarTheme().texture().type() &
-        FbTk::Texture::PARENTRELATIVE) {
-        if (!focusedWinFrameTheme()->titleTexture().usePixmap()) {
-            geom_pixmap = None;
-            m_geom_window.setBackgroundColor(
-                    focusedWinFrameTheme()->titleTexture().color());
-        } else {
-            geom_pixmap = imageControl().renderImage(m_geom_window.width(),
-                              m_geom_window.height(),
-                              focusedWinFrameTheme()->titleTexture());
-            m_geom_window.setBackgroundPixmap(geom_pixmap);
-        }
-    } else {
-        if (!focusedWinFrameTheme()->iconbarTheme().texture().usePixmap()) {
-            geom_pixmap = None;
-            m_geom_window.setBackgroundColor(
-                    focusedWinFrameTheme()->iconbarTheme().texture().color());
-        } else {
-            geom_pixmap = imageControl().renderImage(m_geom_window.width(),
-                              m_geom_window.height(),
-                              focusedWinFrameTheme()->iconbarTheme().texture());
-            m_geom_window.setBackgroundPixmap(geom_pixmap);
-        }
-    }
-
-    if (tmp)
-        imageControl().removeImage(tmp);
-
+    m_geom_window.resize(label);
+    m_geom_window.reconfigTheme();
 }
 
 
 void BScreen::renderPosWindow() {
-
-    int pos_h = focusedWinFrameTheme()->font().height() +
-                focusedWinFrameTheme()->bevelWidth()*2;
-    int pos_w = focusedWinFrameTheme()->font().textWidth("0:00000 x 0:00000",
-                                                         17) +
-                focusedWinFrameTheme()->bevelWidth()*2;
-    m_pos_window.resize(pos_w, pos_h);
-
-    m_pos_window.setBorderWidth(focusedWinFrameTheme()->border().width());
-    m_pos_window.setBorderColor(focusedWinFrameTheme()->border().color());
-
-
-    Pixmap tmp = pos_pixmap;
-
-    if (focusedWinFrameTheme()->iconbarTheme().texture().type() &
-        FbTk::Texture::PARENTRELATIVE) {
-        if (!focusedWinFrameTheme()->titleTexture().usePixmap()) {
-            pos_pixmap = None;
-            m_pos_window.setBackgroundColor(
-                    focusedWinFrameTheme()->titleTexture().color());
-        } else {
-            pos_pixmap = imageControl().renderImage(m_pos_window.width(),
-                             m_pos_window.height(),
-                             focusedWinFrameTheme()->titleTexture());
-            m_pos_window.setBackgroundPixmap(pos_pixmap);
-        }
-    } else {
-        if (!focusedWinFrameTheme()->iconbarTheme().texture().usePixmap()) {
-            pos_pixmap = None;
-            m_pos_window.setBackgroundColor(
-                    focusedWinFrameTheme()->iconbarTheme().texture().color());
-        } else {
-            pos_pixmap = imageControl().renderImage(m_pos_window.width(),
-                             m_pos_window.height(),
-                             focusedWinFrameTheme()->iconbarTheme().texture());
-            m_pos_window.setBackgroundPixmap(pos_pixmap);
-        }
-    }
-
-    if (tmp)
-        imageControl().removeImage(tmp);
-
+    m_pos_window.resize("0:00000 x 0:00000");
+    m_pos_window.reconfigTheme();
 }
 
 void BScreen::updateSize() {
