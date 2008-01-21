@@ -302,8 +302,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_parent(client.screen().rootWindow()),
     m_resize_corner(RIGHTBOTTOM) {
 
-    screen().focusedWinFrameTheme().reconfigSig().attach(this);
-    screen().unfocusedWinFrameTheme().reconfigSig().attach(this);
+    m_theme.reconfigSig().attach(this);
 
     init();
 
@@ -3016,9 +3015,9 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
             if (FocusControl::focusedFbWindow())
                 setFullscreenLayer();
         }
-    } else if (subj == &frame().theme()->reconfigSig()) {
-        reconfigTheme();
+    } else if (subj == &m_theme.reconfigSig()) {
         frame().reconfigure();
+        reconfigTheme();
     }
 }
 
