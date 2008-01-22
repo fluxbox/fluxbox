@@ -521,10 +521,15 @@ void Toolbar::reconfigure() {
 
 
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
+    WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setWindow(0);
     if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
-                                              Keys::ON_TOOLBAR, be.time))
+                                              Keys::ON_TOOLBAR, be.time)) {
+        WindowCmd<void>::setClient(old);
         return;
+    }
+    WindowCmd<void>::setClient(old);
+
     if (be.button == 1)
         raise();
     if (be.button != 3)
@@ -549,9 +554,12 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 }
 
 void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
+    WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setWindow(0);
     Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0,
                                           Keys::ON_TOOLBAR);
+    WindowCmd<void>::setClient(old);
+
     if (! doAutoHide()) {
         if (isHidden())
             toggleHidden();
@@ -573,8 +581,12 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
         event.y_root > y() && event.y_root <= (int)(y() + height()))
         return;
 
+    WinClient *old = WindowCmd<void>::client();
+    WindowCmd<void>::setWindow(0);
     Fluxbox::instance()->keys()->doAction(event.type, event.state, 0,
                                           Keys::ON_TOOLBAR);
+    WindowCmd<void>::setClient(old);
+
     if (! doAutoHide())
         return;
 
