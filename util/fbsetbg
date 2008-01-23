@@ -155,14 +155,14 @@ remembercommand() {
     grep -vs "|${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
     mv -f ${lastwallpaper}.tmp ${lastwallpaper}
     if [ "$option" = fbsetroot ]; then
-        echo $option'|'$wallpaper'|'$DISPLAY >> $lastwallpaper
+        echo $option"|$wallpaper|"$DISPLAY >> $lastwallpaper
         return
     fi
     # Make dir/../../path/file.jpg work
     case $wallpaper in
         # no spaces allowed between the varname and '|'
-        /*) echo $option $option2'|'$wallpaper'|'$DISPLAY >> $lastwallpaper ;;
-        *)  echo $option $option2'|'$PWD/$wallpaper'|'$DISPLAY >> $lastwallpaper ;;
+        /*) echo $option $option2"|$wallpaper|"$DISPLAY >> $lastwallpaper ;;
+        *)  echo $option $option2"|$PWD/$wallpaper|"$DISPLAY >> $lastwallpaper ;;
     esac
 }
 
