@@ -325,10 +325,8 @@ void WinClient::updateTransientInfo() {
 #endif // DEBUG
     // make sure we don't have deadlock loop in transient chain
     for (WinClient *w = this; w != 0; w = w->transient_for) {
-        if (w == w->transient_for) {
+        if (this == w->transient_for)
             w->transient_for = 0;
-            break;
-        }
     }
 
     if (transientFor() != 0) {
