@@ -812,9 +812,11 @@ void BScreen::propertyNotify(Atom atom) {
 }
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
+    WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setWindow(FocusControl::focusedFbWindow());
     Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
                                           Keys::GLOBAL|Keys::ON_DESKTOP);
+    WindowCmd<void>::setClient(old);
 }
 
 void BScreen::keyReleaseEvent(XKeyEvent &ke) {
@@ -833,9 +835,11 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
         imageControl().installRootColormap();
 
     Keys *keys = Fluxbox::instance()->keys();
+    WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setWindow(FocusControl::focusedFbWindow());
     keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP,
                    be.time);
+    WindowCmd<void>::setClient(old);
 }
 
 void BScreen::notifyUngrabKeyboard() {
