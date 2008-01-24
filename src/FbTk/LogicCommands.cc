@@ -87,7 +87,7 @@ Command<void> *IfCommand::parse(const std::string &command, const std::string &a
     RefCount<Command<void> > t(0), f(0);
 
     StringUtil::stringTokensBetween(cmds, args, blah, '{', '}');
-    if (cmds.size() < 3)
+    if (cmds.size() < 2)
         return 0;
 
     cond = CommandParser<bool>::instance().parse(cmds[0], trusted);
