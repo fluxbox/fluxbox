@@ -324,7 +324,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                 cerr << _FB_CONSOLETEXT(main, ScreenRequiresArg, 
                                         "error, -screen requires argument", 
                                         "the -screen option requires a file argument") << endl;
-                exit(1);
+                exit(EXIT_FAILURE);
             }
 
             // "all" is default

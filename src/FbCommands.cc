@@ -171,7 +171,7 @@ int ExecuteCmd::run() {
     setsid();
     putenv(const_cast<char *>(displaystring.c_str()));
     execl(shell, shell, "-c", m_cmd.c_str(), static_cast<void*>(NULL));
-    exit(0);
+    exit(EXIT_SUCCESS);
 
     return pid; // compiler happy -> we are happy ;)
 }

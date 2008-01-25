@@ -65,7 +65,9 @@ list<size_t> MenuCreator::stacksize_stack;
 
 FbTk::StringConvertor MenuCreator::m_stringconvertor(FbTk::StringConvertor::ToFbString);
 
-static void createStyleMenu(FbTk::Menu &parent, const string &label,
+namespace {
+
+void createStyleMenu(FbTk::Menu &parent, const string &label,
                             const string &directory) {
     // perform shell style ~ home directory expansion
     string stylesdir(FbTk::StringUtil::expandFilename(directory));
@@ -101,7 +103,7 @@ static void createStyleMenu(FbTk::Menu &parent, const string &label,
 
 }
 
-static void createRootCmdMenu(FbTk::Menu &parent, const string &label,
+void createRootCmdMenu(FbTk::Menu &parent, const string &label,
                                 const string &directory, const string &cmd) {
     // perform shell style ~ home directory expansion
     string rootcmddir(FbTk::StringUtil::expandFilename(directory));
@@ -141,15 +143,15 @@ class ParseItem {
 public:
     explicit ParseItem(FbTk::Menu *menu):m_menu(menu) {}
 
-    inline void load(FbTk::Parser &p, FbTk::StringConvertor &m_labelconvertor) {
+    void load(FbTk::Parser &p, FbTk::StringConvertor &m_labelconvertor) {
         p>>m_key>>m_label>>m_cmd>>m_icon;
         m_label.second = m_labelconvertor.recode(m_label.second);
     }
-    inline const string &icon() const { return m_icon.second; }
-    inline const string &command() const { return m_cmd.second; }
-    inline const string &label() const { return m_label.second; }
-    inline const string &key() const { return m_key.second; }
-    inline FbTk::Menu *menu() { return m_menu; }
+    const string &icon() const { return m_icon.second; }
+    const string &command() const { return m_cmd.second; }
+    const string &label() const { return m_label.second; }
+    const string &key() const { return m_key.second; }
+    FbTk::Menu *menu() { return m_menu; }
 private:
     FbTk::Parser::Item m_key, m_label, m_cmd, m_icon;
     FbTk::Menu *m_menu;
@@ -170,10 +172,10 @@ public:
 
 };
 
-static void translateMenuItem(FbTk::Parser &parse, ParseItem &item, FbTk::StringConvertor &labelconvertor);
+void translateMenuItem(FbTk::Parser &parse, ParseItem &item, FbTk::StringConvertor &labelconvertor);
 
 
-static void parseMenu(FbTk::Parser &pars, FbTk::Menu &menu, FbTk::StringConvertor &label_convertor) {
+void parseMenu(FbTk::Parser &pars, FbTk::Menu &menu, FbTk::StringConvertor &label_convertor) {
     ParseItem pitem(&menu);
     while (!pars.eof()) {
         pitem.load(pars, label_convertor);
@@ -183,7 +185,7 @@ static void parseMenu(FbTk::Parser &pars, FbTk::Menu &menu, FbTk::StringConverto
     }
 }
 
-static void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::StringConvertor &labelconvertor) {
+void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::StringConvertor &labelconvertor) {
     if (pitem.menu() == 0)
         throw string("translateMenuItem: We must have a menu in ParseItem!");
 
@@ -216,12 +218,10 @@ static void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::Strin
             menu.insert(str_label, exit_cmd);
     } else if (str_key == "exec") {
         // execute and hide menu
-        using namespace FbTk;
-        RefCount<Command<void> > exec_cmd(FbTk::CommandParser<void>::instance().parse("exec " + str_cmd));
+        FbTk::RefCount<FbTk::Command<void> > exec_cmd(FbTk::CommandParser<void>::instance().parse("exec " + str_cmd));
         menu.insert(str_label, exec_cmd);
     } else if (str_key == "macrocmd") {
-        using namespace FbTk;
-        RefCount<Command<void> > macro_cmd(FbTk::CommandParser<void>::instance().parse("macrocmd " + str_cmd));
+        FbTk::RefCount<FbTk::Command<void> > macro_cmd(FbTk::CommandParser<void>::instance().parse("macrocmd " + str_cmd));
         menu.insert(str_label, macro_cmd);
     } else if (str_key == "style") {	// style
         menu.insert(new StyleMenuItem(str_label, str_cmd));
@@ -339,7 +339,7 @@ static void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::Strin
 }
 
 
-static void parseWindowMenu(FbTk::Parser &parse, FbTk::Menu &menu, FbTk::StringConvertor &labelconvertor) {
+void parseWindowMenu(FbTk::Parser &parse, FbTk::Menu &menu, FbTk::StringConvertor &labelconvertor) {
 
     ParseItem pitem(&menu);
     while (!parse.eof()) {
@@ -361,19 +361,6 @@ static void parseWindowMenu(FbTk::Parser &parse, FbTk::Menu &menu, FbTk::StringC
     }
 }
 
-FbTk::Menu *MenuCreator::createMenu(const string &label, int screen_number) {
-    BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
-    if (screen == 0)
-        return 0;
-
-    FbTk::Menu *menu = new FbMenu(screen->menuTheme(),
-                                  screen->imageControl(),
-                                  *screen->layerManager().getLayer(Layer::MENU));
-    if (!label.empty())
-        menu->setLabel(label);
-
-    return menu;
-}
 
 bool getStart(FbMenuParser &parser, string &label, FbTk::StringConvertor &labelconvertor) {
     ParseItem pitem(0);
@@ -389,6 +376,22 @@ bool getStart(FbMenuParser &parser, string &label, FbTk::StringConvertor &labelc
 
     label = pitem.label();
     return true;
+}
+
+}; // end of anonymous namespace
+
+FbTk::Menu *MenuCreator::createMenu(const string &label, int screen_number) {
+    BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
+    if (screen == 0)
+        return 0;
+
+    FbTk::Menu *menu = new FbMenu(screen->menuTheme(),
+                                  screen->imageControl(),
+                                  *screen->layerManager().getLayer(Layer::MENU));
+    if (!label.empty())
+        menu->setLabel(label);
+
+    return menu;
 }
 
 FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_number, bool require_begin) {
