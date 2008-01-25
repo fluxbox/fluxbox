@@ -325,11 +325,8 @@ int main(int argc, char **argv) {
             if (!shell)
                 shell = "/bin/sh";
 
-            const char *arg = restart_argument.c_str();
-            if (arg) {
-                execlp(shell, shell, "-c", arg, (const char *) NULL);
-                perror(arg);
-            }
+            execlp(shell, shell, "-c", restart_argument.c_str(), (const char *) NULL);
+            perror(restart_argument.c_str());
         }
 
         // fall back in case the above execlp doesn't work
