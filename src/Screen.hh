@@ -406,6 +406,7 @@ public:
     int numHeads() const { return m_xinerama_num_heads; }
 
     void initXinerama();
+    void clearHeads();
     /**
      * Determines head number for a position
      * @param x position in pixels on the screen
@@ -590,7 +591,7 @@ private:
     int m_xinerama_num_heads;
     int m_xinerama_center_x, m_xinerama_center_y;
 
-    HeadArea *m_head_areas;
+    std::vector<HeadArea *> m_head_areas;
 
     struct XineramaHeadInfo {
         int x, y, width, height;

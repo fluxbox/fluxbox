@@ -844,6 +844,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
 #ifdef HAVE_RANDR
         if (e->type == m_randr_event_type) {
+            XRRUpdateConfiguration(e);
             // update root window size in screen
             BScreen *scr = searchScreen(e->xany.window);
             if (scr != 0)

@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*08/01/27:
+   * Reload the Xinerama layout on RandR signal (Tomas)
+     Screen.cc/hh
+   * Move windows out of inactive heads upon Xinerama layout change (Tomas)
+     Screen.cc/hh
 *07/12/28:
    * Added new key command :Delay {<command>} [<int>], which runs the command
      after a delay of <int> microseconds (default is 200 milliseconds) (Mark)

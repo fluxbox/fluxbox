@@ -48,10 +48,6 @@
 #include "RootTheme.hh"
 #include "FbMenu.hh"
 
-#ifdef XINERAMA
-#include "Xinerama.hh"
-#endif // XINERAMA
-
 #include "SlitTheme.hh"
 #include "SlitClient.hh"
 #include "Xutil.hh"
@@ -270,6 +266,9 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_slitmenu(scr.menuTheme(),
                  scr.imageControl(),
                  *scr.layerManager().getLayer(Layer::MENU)),
+#ifdef XINERAMA
+      m_xineramaheadmenu(0),
+#endif // XINERAMA
       frame(scr.rootWindow()),
        //For KDE dock applets
       m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(),
@@ -482,8 +481,7 @@ void Slit::addClient(Window w) {
     if (wmhints != 0) {
         if ((wmhints->flags & IconWindowHint) &&
             (wmhints->icon_window != None)) {
-            XMoveWindow(disp, client->clientWindow(), screen().width() + 10,
-                        screen().height() + 10);
+            XMoveWindow(disp, client->clientWindow(), -100, -100);
             XMapWindow(disp, client->clientWindow());
             client->setIconWindow(wmhints->icon_window);
             client->setWindow(client->iconWindow());
@@ -1113,6 +1111,10 @@ void Slit::exposeEvent(XExposeEvent &ev) {
 
 void Slit::update(FbTk::Subject *subj) {
     reconfigure();
+#ifdef XINERAMA
+    if (subj == &m_screen.resizeSig() && m_xineramaheadmenu)
+        m_xineramaheadmenu->reloadHeads();
+#endif // XINERAMA
 }
 
 void Slit::clearWindow() {
@@ -1254,6 +1256,7 @@ void Slit::setupMenu() {
 #ifdef XINERAMA
     if (screen().hasXinerama()) {
         m_slitmenu.insert(_FB_XTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
+                          m_xineramaheadmenu =
                           new XineramaHeadMenu<Slit>(
                               screen().menuTheme(),
                               screen(),

@@ -25,6 +25,7 @@
 
 #include "FbMenu.hh"
 #include "fluxbox.hh"
+#include "Screen.hh"
 
 #include "FbTk/RefCount.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -59,14 +60,16 @@ private:
 
 /// Create a xinerama menu
 template <typename ItemType>
-class XineramaHeadMenu : public FbMenu {
+class XineramaHeadMenu : public ToggleMenu {
 public:
     XineramaHeadMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm, BScreen &screen,
                      FbTk::ImageControl &imgctrl, FbTk::XLayer &layer,
                      ItemType &item, const FbTk::FbString & title = "");
+    void reloadHeads();
 
 private:
     ItemType &m_object;
+    BScreen &m_screen;
 };
 
 
@@ -75,15 +78,22 @@ XineramaHeadMenu<ItemType>::XineramaHeadMenu(
         FbTk::ThemeProxy<FbTk::MenuTheme> &tm, BScreen &screen,
         FbTk::ImageControl &imgctrl, FbTk::XLayer &layer, ItemType &item,
         const FbTk::FbString & title):
-    FbMenu(tm, imgctrl, layer), 
-    m_object(item) 
+    ToggleMenu(tm, imgctrl, layer),
+    m_object(item), m_screen(screen)
 {
     setLabel(title);
+    reloadHeads();
+}
+
+template <typename ItemType>
+void XineramaHeadMenu<ItemType>::reloadHeads()
+{
+    removeAll();
     FbTk::RefCount<FbTk::Command<void> > saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
                                      *Fluxbox::instance(), 
                                      &Fluxbox::save_rc));
     char tname[128];
-    for (int i=1; i <= screen.numHeads(); ++i) {
+    for (int i=1; i <= m_screen.numHeads(); ++i) {
         // TODO: nls
 /*
         sprintf(tname, I18n::instance()->

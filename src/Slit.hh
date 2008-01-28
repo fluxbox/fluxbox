@@ -29,6 +29,10 @@
 #include "LayerMenu.hh"
 #include "Layer.hh"
 
+#ifdef XINERAMA
+#include "Xinerama.hh"
+#endif // XINERAMA
+
 #include "FbTk/Menu.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/Timer.hh"
@@ -144,6 +148,9 @@ private:
     SlitClients m_client_list;
     std::auto_ptr<LayerMenu> m_layermenu;
     FbMenu m_clientlist_menu, m_slitmenu;
+#ifdef XINERAMA
+    XineramaHeadMenu<Slit> *m_xineramaheadmenu;
+#endif // XINERAMA
     std::string m_filename;
 
     struct frame {
