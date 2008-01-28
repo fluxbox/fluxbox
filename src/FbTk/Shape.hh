@@ -24,8 +24,6 @@
 
 #include "FbPixmap.hh"
 
-#include <vector>
-
 namespace FbTk {
 class FbWindow;
 
@@ -67,17 +65,8 @@ private:
 
     void initCorners(int screen_num);
 
-    struct CornerPixmaps {
-        FbPixmap topleft;
-        FbPixmap topright;
-        FbPixmap botleft;
-        FbPixmap botright;
-    };
 
-    // unfortunately, we need a separate pixmap per screen
-    static std::vector<CornerPixmaps> s_corners;
     int m_shapeplaces; ///< places to shape
-
 };
 
 }; // end namespace FbTk

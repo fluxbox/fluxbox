@@ -43,6 +43,7 @@
 #endif // SHAPE
 
 #include <algorithm>
+#include <vector>
 
 using std::min;
 
@@ -92,9 +93,17 @@ Pixmap makePixmap(FbWindow &drawable, const unsigned char rows[]) {
     return pm.release();
 }
 
+struct CornerPixmaps {
+    FbPixmap topleft;
+    FbPixmap topright;
+    FbPixmap botleft;
+    FbPixmap botright;
 };
 
-std::vector<Shape::CornerPixmaps> Shape::s_corners;
+// unfortunately, we need a separate pixmap per screen
+std::vector<CornerPixmaps> s_corners;
+
+}; // end of anonymous namespace
 
 Shape::Shape(FbWindow &win, int shapeplaces):
     m_win(&win),
@@ -134,7 +143,7 @@ Shape::~Shape() {
 void Shape::initCorners(int screen_num) {
     if (s_corners.size() == 0)
         s_corners.resize(ScreenCount(App::instance()->display()));
- 
+
     static const unsigned char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
     static const unsigned char right_bits[] = { 0x03, 0x1f, 0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff};
     static const unsigned char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
