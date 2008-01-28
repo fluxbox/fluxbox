@@ -40,11 +40,11 @@
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/Theme.hh"
 #include "FbTk/Transparent.hh"
-#include "MacroCommand.hh"
+#include "FbTk/MacroCommand.hh"
 #include "FbCommands.hh"
 #include "Layer.hh"
 #include "LayerMenu.hh"
-#include "XLayer.hh"
+#include "FbTk/XLayer.hh"
 #include "RootTheme.hh"
 #include "FbMenu.hh"
 

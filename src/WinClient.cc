@@ -29,7 +29,7 @@
 
 #include "Xutil.hh"
 
-#include "EventManager.hh"
+#include "FbTk/EventManager.hh"
 #include "FbTk/MultLayers.hh"
 
 #include <iostream>

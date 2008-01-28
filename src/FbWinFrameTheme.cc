@@ -20,7 +20,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "FbWinFrameTheme.hh"
-#include "App.hh"
+#include "FbTk/App.hh"
 
 #include "IconbarTheme.hh"
 

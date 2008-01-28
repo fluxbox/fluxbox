@@ -22,7 +22,7 @@
 #ifndef SLITCLIENT_HH
 #define SLITCLIENT_HH
 
-#include "NotCopyable.hh"
+#include "FbTk/NotCopyable.hh"
 
 #include <X11/Xlib.h>
 #include <string>
