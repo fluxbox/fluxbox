@@ -603,7 +603,7 @@ BScreen::~BScreen() {
     m_slit.reset(0);
 
     // TODO fluxgen: check if this is the right place
-    for (int i = 0; i < m_head_areas.size(); i++)
+    for (size_t i = 0; i < m_head_areas.size(); i++)
         delete m_head_areas[i];
 
     delete m_focus_control;
