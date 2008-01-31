@@ -811,13 +811,13 @@ void Fluxbox::handleEvent(XEvent * const e) {
         if (FbTk::Menu::focused() &&
             FbTk::Menu::focused()->window() == e->xfocus.window) {
             m_keyscreen = findScreen(FbTk::Menu::focused()->screenNumber());
+            FocusControl::setFocusedWindow(0);
             break;
         }
 
         WinClient *winclient = searchWindow(e->xfocus.window);
-        if (!winclient)
-            break;
-        m_keyscreen = &winclient->screen();
+        if (winclient)
+            m_keyscreen = &winclient->screen();
         FocusControl::setFocusedWindow(winclient);
 
     } break;
