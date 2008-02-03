@@ -119,7 +119,7 @@ public:
         context_ = context_ ? context_ : GLOBAL;
         keylist_t::iterator it = keylist.begin(), it_end = keylist.end();
         for (; it != it_end; it++) {
-            if ((*it)->type == type_ && (*it)->key == key_ &&
+            if (*it && (*it)->type == type_ && (*it)->key == key_ &&
                 ((*it)->context & context_) > 0 &&
                 isdouble_ == (*it)->isdouble && (*it)->mod ==
                 FbTk::KeyUtil::instance().isolateModifierMask(mod_))
