@@ -593,6 +593,7 @@ void Remember::reconfigure() {
 
     // we merge the old patterns with new ones
     Patterns *old_pats = m_pats.release();
+    set<Application *> reused_apps;
     m_pats.reset(new Patterns());
     m_startups.clear();
 
@@ -621,9 +622,10 @@ void Remember::reconfigure() {
                     if (!in_group) {
                         if ((err = pat->error()) == 0) {
                             Application *app = findMatchingPatterns(pat, old_pats, false);
-                            if (app)
+                            if (app) {
                                 app->reset();
-                            else
+                                reused_apps.insert(app);
+                            } else
                                 app = new Application(false);
 
                             m_pats->push_back(make_pair(pat, app));
@@ -659,6 +661,8 @@ void Remember::reconfigure() {
 
                     if (!app)
                         app = new Application(in_group, pat);
+                    else
+                        reused_apps.insert(app);
 
                     while (!grouped_pats.empty()) {
                         // associate all the patterns with this app
@@ -695,7 +699,8 @@ void Remember::reconfigure() {
     while (!old_pats->empty()) {
         it = old_pats->begin();
         delete it->first; // ClientPattern
-        old_apps.insert(it->second); // Application, not necessarily unique
+        if (reused_apps.find(it->second) == reused_apps.end())
+            old_apps.insert(it->second); // Application, not necessarily unique
         old_pats->erase(it);
     }
 
