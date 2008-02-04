@@ -113,6 +113,9 @@ private:
     t_key *m_keylist;
     keyspace_t m_map;
 
+    // former doAction static var, we need to access it from deleteTree
+    t_key *next_key;
+
     WindowMap m_window_map;
     HandlerMap m_handler_map;
 };

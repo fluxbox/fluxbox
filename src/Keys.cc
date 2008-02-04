@@ -168,7 +168,7 @@ Keys::t_key::~t_key() {
 
 
 
-Keys::Keys() { }
+Keys::Keys() : next_key(0) { }
 
 Keys::~Keys() {
     ungrabKeys();
@@ -181,6 +181,7 @@ void Keys::deleteTree() {
     for (keyspace_t::iterator map_it = m_map.begin(); map_it != m_map.end(); ++map_it)
         delete map_it->second;
     m_map.clear();
+    next_key = 0;
 }
 
 // keys are only grabbed in global context
@@ -502,7 +503,6 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         isdouble = double_click;
     }
 
-    static t_key* next_key = m_keylist;
     if (!next_key)
         next_key = m_keylist;
 
