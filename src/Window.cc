@@ -1986,9 +1986,11 @@ void FluxboxWindow::setFocusFlag(bool focus) {
         m_focussig.notify();
         if (m_client)
             m_client->focusSig().notify();
+        WinClient *old = WindowCmd<void>::client();
         WindowCmd<void>::setClient(m_client);
         Fluxbox::instance()->keys()->doAction(focus ? FocusIn : FocusOut, 0, 0,
                                               Keys::ON_WINDOW);
+        WindowCmd<void>::setClient(old);
     }
 }
 
