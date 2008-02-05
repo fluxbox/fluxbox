@@ -586,11 +586,14 @@ bool MenuCreator::createWindowMenuItem(const string &type,
             if (screen == 0)
                 return false;
 
+            FbTk::Menu *submenu =
+                new AlphaMenu(screen->menuTheme(),
+                              screen->imageControl(),
+                              *screen->layerManager().getLayer(Layer::MENU));
+            submenu->disableTitle();
             menu.insert(label.empty() ? _FB_XTEXT(Configmenu, Transparency, "Transparency",
                                                   "Menu containing various transparency options"): label,
-                        new AlphaMenu(screen->menuTheme(),
-                                      screen->imageControl(),
-                                      *screen->layerManager().getLayer(Layer::MENU)));
+                        submenu);
         }
 #endif // HAVE_XRENDER
     } else if (type == "extramenus") {
