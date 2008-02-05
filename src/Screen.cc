@@ -559,21 +559,32 @@ BScreen::~BScreen() {
     // we need to destroy it before we destroy workspaces
     m_workspacemenu.reset(0);
 
-    ExtraMenus::iterator mit = m_extramenus.begin();
-    ExtraMenus::iterator mit_end = m_extramenus.end();
-    for (; mit != mit_end; ++mit) {
-        // we set them to NOT internal so that they will be deleted when the
-        // menu is cleaned up. We can't delete them here because they are
-        // still in the menu
-        // (They need to be internal for most of the time so that if we
-        // rebuild the menu, then they won't be removed.
-        if (mit->second->parent() == 0) {
-            // not attached to our windowmenu
-            // so we clean it up
-            delete mit->second;
-        } else {
-            // let the parent clean it up
-            mit->second->setInternalMenu(false);
+    if (m_extramenus.size()) {
+        // check whether extramenus are included in windowmenu
+        // if not, we clean them ourselves
+        bool extramenus_in_windowmenu = false;
+        for (size_t i = 0, n = m_windowmenu->numberOfItems(); i < n; i++)
+            if (m_windowmenu->find(i)->submenu() == m_extramenus.begin()->second) {
+                extramenus_in_windowmenu = true;
+                break;
+            }
+
+        ExtraMenus::iterator mit = m_extramenus.begin();
+        ExtraMenus::iterator mit_end = m_extramenus.end();
+        for (; mit != mit_end; ++mit) {
+            // we set them to NOT internal so that they will be deleted when the
+            // menu is cleaned up. We can't delete them here because they are
+            // still in the menu
+            // (They need to be internal for most of the time so that if we
+            // rebuild the menu, then they won't be removed.
+            if (! extramenus_in_windowmenu) {
+                // not attached to our windowmenu
+                // so we clean it up
+                delete mit->second;
+            } else {
+                // let the parent clean it up
+                mit->second->setInternalMenu(false);
+            }
         }
     }
 
