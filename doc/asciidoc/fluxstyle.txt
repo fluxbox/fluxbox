@@ -467,7 +467,7 @@ These are the color formats for styles:
    #000000 (Hexadecimal)
    rgb:<0-255>/<0-255>/<0-255>
 
-See /usr/X11R6/lib/X11/rgb.txt for an explaination.
+See /usr/share/X11/rgb.txt for an explaination.
 
 AUTHOR and CREDITS
 ------------------
