@@ -391,7 +391,7 @@ Changes for 1.0.0:
    * Fix KDE Dockapps on restart (dont unmap), and some minor tweaks (Simon)
      SystemTray.hh/cc
 *07/08/05:
-   * When saving window info for rememberm use class name AND instance name,
+   * When saving window info for remember use class name AND instance name,
      AND role if present. (Simon)
      - This should fix firefox/thunderbird issues, but note that mplayer
        (nogui) sets the vo driver name as the instance name.
