@@ -60,7 +60,7 @@ LOCATION
 --------
 There are many places to store your styles, the most common is in your
 '~/.fluxbox/styles' directory. The initial installation will place the default
-styles in '@pkg_datadir@/styles' providing a basic usable configuration.
+styles in '@pkgdatadir@/styles' providing a basic usable configuration.
 
 When creating your own style, create a directory (normally the name of your
 style) in '~/.fluxbox/styles/' (If the 'styles' directory doesn't exist,
