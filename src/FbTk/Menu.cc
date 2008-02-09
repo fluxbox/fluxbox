@@ -832,8 +832,7 @@ void Menu::handleEvent(XEvent &event) {
         if (validIndex(m_which_sub) &&
                 menuitems[m_which_sub]->submenu()->isVisible())
             menuitems[m_which_sub]->submenu()->grabInputFocus();
-    } else if (event.type == LeaveNotify)
-        m_closing = false;
+    }
 }
 
 void Menu::buttonPressEvent(XButtonEvent &be) {
@@ -1091,6 +1090,18 @@ void Menu::keyPressEvent(XKeyEvent &event) {
     }
 }
 
+void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
+    m_closing = false;
+    // if there's a submenu open, highlight its index and stop hide
+    if (validIndex(m_which_sub) && m_active_index != m_which_sub &&
+        menuitems[m_which_sub]->submenu()->isVisible()) {
+        int old = m_active_index;
+        m_active_index = m_which_sub;
+        clearItem(m_active_index);
+        clearItem(old);
+        menuitems[m_which_sub]->submenu()->stopHide();
+    }
+}
 
 void Menu::reconfigure() {
     m_shape->setPlaces(theme()->shapePlaces());

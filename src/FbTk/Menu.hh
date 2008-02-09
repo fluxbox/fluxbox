@@ -103,6 +103,7 @@ public:
     void motionNotifyEvent(XMotionEvent &mn);
     void exposeEvent(XExposeEvent &ee);
     void keyPressEvent(XKeyEvent &ke);
+    void leaveNotifyEvent(XCrossingEvent &ce);
     //@}
     /// get input focus
     void grabInputFocus();
