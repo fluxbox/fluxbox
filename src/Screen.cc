@@ -1963,21 +1963,23 @@ WinClient *BScreen::findGroupRight(WinClient &winclient) {
 
     return other;
 }
+void BScreen::clearXinerama() {
+#ifdef DEBUG
+    cerr<<"BScreen::initXinerama(): dont have Xinerama"<<endl;
+#endif // DEBUG
+    m_xinerama_avail = false;
+    if (m_xinerama_headinfo)
+        delete [] m_xinerama_headinfo;
+    m_xinerama_headinfo = 0;
+    m_xinerama_num_heads = 0;
+}
 
 void BScreen::initXinerama() {
 #ifdef XINERAMA
     Display *display = FbTk::App::instance()->display();
 
     if (!XineramaIsActive(display)) {
-notactive:
-#ifdef DEBUG
-        cerr<<"BScreen::initXinerama(): dont have Xinerama"<<endl;
-#endif // DEBUG
-        m_xinerama_avail = false;
-        if (m_xinerama_headinfo)
-            delete [] m_xinerama_headinfo;
-        m_xinerama_headinfo = 0;
-        m_xinerama_num_heads = 0;
+        clearXinerama();
         return;
     }
 #ifdef DEBUG
@@ -1993,10 +1995,9 @@ notactive:
      * Xinerama, fall back to turning it off. If not, pretend nothing
      * happened -- another event will tell us and it will work then. */
     if (!screen_info) {
-        if (m_xinerama_headinfo)
-            return;
-        else
-            goto notactive;
+        if (!m_xinerama_headinfo)
+            clearXinerama();
+        return;
     }
 
     if (m_xinerama_headinfo)

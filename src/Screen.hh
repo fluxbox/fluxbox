@@ -407,6 +407,9 @@ public:
 
     void initXinerama();
     void clearHeads();
+    /// clean up xinerama
+    void clearXinerama();
+
     /**
      * Determines head number for a position
      * @param x position in pixels on the screen
