@@ -23,12 +23,25 @@
 
 #include "fluxbox.hh"
 #include "Screen.hh"
+#include "WindowCmd.hh"
+
+FluxboxWindow *FbMenu::s_window = 0;
 
 FbMenu::FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
                FbTk::ImageControl &imgctrl, FbTk::XLayer &layer):
     FbTk::Menu(tm, imgctrl), 
     m_layeritem(fbwindow(), layer) {
 
+}
+
+void FbMenu::show() {
+    WindowCmd<void>::setWindow(s_window);
+    FbTk::Menu::show();
+}
+
+void FbMenu::buttonPressEvent(XButtonEvent &be) {
+    WindowCmd<void>::setWindow(s_window);
+    FbTk::Menu::buttonPressEvent(be);
 }
 
 void FbMenu::buttonReleaseEvent(XButtonEvent &be) {
@@ -41,7 +54,13 @@ void FbMenu::buttonReleaseEvent(XButtonEvent &be) {
                   screen->getHeadWidth(head),
                   screen->getHeadHeight(head));
     }
+    WindowCmd<void>::setWindow(s_window);
 
     // now get on with the show
     FbTk::Menu::buttonReleaseEvent(be);
+}
+
+void FbMenu::keyPressEvent(XKeyEvent &ke) {
+    WindowCmd<void>::setWindow(s_window);
+    FbTk::Menu::keyPressEvent(ke);
 }

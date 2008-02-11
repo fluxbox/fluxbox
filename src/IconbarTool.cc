@@ -215,7 +215,7 @@ public:
     explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
     void execute() {
         // hide the menu if it's already showing for this FluxboxWindow
-        if (m_win.menu().isVisible() && WindowCmd<void>::window() == &m_win) {
+        if (m_win.menu().isVisible() && FbMenu::window() == &m_win) {
             m_win.menu().hide();
             return;
         }

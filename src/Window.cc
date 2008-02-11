@@ -1986,11 +1986,8 @@ void FluxboxWindow::setFocusFlag(bool focus) {
         m_focussig.notify();
         if (m_client)
             m_client->focusSig().notify();
-        WinClient *old = WindowCmd<void>::client();
-        WindowCmd<void>::setClient(m_client);
         Fluxbox::instance()->keys()->doAction(focus ? FocusIn : FocusOut, 0, 0,
-                                              Keys::ON_WINDOW);
-        WindowCmd<void>::setClient(old);
+                                              Keys::ON_WINDOW, m_client);
     }
 }
 
@@ -2168,7 +2165,7 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
     else if (menu_x + static_cast<signed>(menu().width()) >= static_cast<signed>(screen().maxRight(head)))
         menu_x = screen().maxRight(head) - menu().width() - 1;
 
-    WindowCmd<void>::setWindow(this);
+    FbMenu::setWindow(this);
     menu().move(menu_x, menu_y);
     menu().show();
     menu().raise();
@@ -2182,7 +2179,7 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
 void FluxboxWindow::popupMenu() {
 
     // hide menu if it was opened for this window before
-    if (menu().isVisible() && WindowCmd<void>::window() == this) {
+    if (menu().isVisible() && FbMenu::window() == this) {
         menu().hide();
         return;
     }
@@ -2639,11 +2636,11 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         raise();
 
     // check keys file first
-    WindowCmd<void>::setWindow(this);
     Keys *k = Fluxbox::instance()->keys();
     if (onTitlebar && k->doAction(be.type, be.state, be.button,
-                                  Keys::ON_TITLEBAR, be.time) ||
-        k->doAction(be.type, be.state, be.button, Keys::ON_WINDOW, be.time)) {
+                                  Keys::ON_TITLEBAR, m_client, be.time) ||
+        k->doAction(be.type, be.state, be.button, Keys::ON_WINDOW, m_client,
+                    be.time)) {
         return;
     }
 
@@ -2926,14 +2923,9 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         return;
     }
 
-    if (ev.window == frame().window()) {
-        // save old value, so we can restore it later
-        WinClient *old = WindowCmd<void>::client();
-        WindowCmd<void>::setWindow(this);
+    if (ev.window == frame().window())
         Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
-                                              Keys::ON_WINDOW);
-        WindowCmd<void>::setClient(old);
-    }
+                                              Keys::ON_WINDOW, m_client);
 
     WinClient *client = 0;
     if (screen().focusControl().isMouseTabFocus()) {
@@ -2989,12 +2981,8 @@ void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
         ev.y_root <= (int)(frame().y() + frame().height()))
         return;
 
-    // save old value, so we can restore it later
-    WinClient *old = WindowCmd<void>::client();
-    WindowCmd<void>::setWindow(this);
     Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
-                                          Keys::ON_WINDOW);
-    WindowCmd<void>::setClient(old);
+                                          Keys::ON_WINDOW, m_client);
 
     // I hope commenting this out is right - simon 21jul2003
     //if (ev.window == frame().window())

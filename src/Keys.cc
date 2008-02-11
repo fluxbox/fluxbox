@@ -23,6 +23,8 @@
 
 #include "fluxbox.hh"
 #include "Screen.hh"
+#include "WinClient.hh"
+#include "WindowCmd.hh"
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/StringUtil.hh"
@@ -480,7 +482,7 @@ bool Keys::addBinding(const string &linebuffer) {
 
 // return true if bound to a command, else false
 bool Keys::doAction(int type, unsigned int mods, unsigned int key,
-                    int context, Time time) {
+                    int context, WinClient *current, Time time) {
 
     static Time last_button_time = 0;
     static unsigned int last_button = 0;
@@ -546,7 +548,11 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         return false;
     }
 
+    WinClient *old = WindowCmd<void>::client();
+    WindowCmd<void>::setClient(current);
     temp_key->m_command->execute();
+    WindowCmd<void>::setClient(old);
+
     if (saved_keymode) {
         if (next_key == m_keylist) // don't reset keymode if command changed it
             setKeyMode(saved_keymode);

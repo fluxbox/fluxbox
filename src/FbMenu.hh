@@ -25,6 +25,8 @@
 #include "FbTk/Menu.hh"
 #include "FbTk/XLayerItem.hh"
 
+class FluxboxWindow;
+
 namespace FbTk {
 class MenuTheme;
 }
@@ -37,9 +39,17 @@ public:
     virtual ~FbMenu() { }
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
+    void show();
+    void buttonPressEvent(XButtonEvent &be);
     void buttonReleaseEvent(XButtonEvent &be);
+    void keyPressEvent(XKeyEvent &ke);
+
+    static void setWindow(FluxboxWindow *win) { s_window = win; }
+    static FluxboxWindow *window() { return s_window; }
+
 private:
     FbTk::XLayerItem m_layeritem;
+    static FluxboxWindow *s_window;
 };
 
 #endif // FBMENU_HH

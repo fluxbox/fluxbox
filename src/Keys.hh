@@ -28,6 +28,7 @@
 #include <string>
 #include <map>
 
+class WinClient;
 
 namespace FbTk {
     class EventHandler;
@@ -75,7 +76,7 @@ public:
        do action from XKeyEvent; return false if not bound to anything
     */
     bool doAction(int type, unsigned int mods, unsigned int key, int context,
-                  Time time = 0);
+                  WinClient *current = 0, Time time = 0);
 
     /// register a window so that proper keys/buttons get grabbed on it
     void registerWindow(Window win, FbTk::EventHandler &handler, int context);
