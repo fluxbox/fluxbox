@@ -358,9 +358,17 @@ void WinClient::updateTitle() {
     titleSig().notify();
 }
 
-void WinClient::setTitle(FbTk::FbString &title) {
+void WinClient::setTitle(const FbTk::FbString &title) {
     m_title = title;
     m_title_override = true;
+    titleSig().notify();
+}
+
+void WinClient::setIcon(const FbTk::PixmapWithMask& pm) {
+
+    m_icon.pixmap().copy(pm.pixmap());
+    m_icon.mask().copy(pm.mask());
+    m_icon_override = true;
     titleSig().notify();
 }
 
@@ -429,15 +437,18 @@ void WinClient::updateWMHints() {
         if (wmhint->flags & WindowGroupHint && !window_group)
             window_group = wmhint->window_group;
 
-        if ((bool)(wmhint->flags & IconPixmapHint) && wmhint->icon_pixmap != 0)
-            m_icon.pixmap().copy(wmhint->icon_pixmap, 0, 0);
-        else
-            m_icon.pixmap().release();
+        if (! m_icon_override) {
 
-        if ((bool)(wmhint->flags & IconMaskHint) && wmhint->icon_mask != 0)
-            m_icon.mask().copy(wmhint->icon_mask, 0, 0);
-        else
-            m_icon.mask().release();
+            if ((bool)(wmhint->flags & IconPixmapHint) && wmhint->icon_pixmap != 0)
+                m_icon.pixmap().copy(wmhint->icon_pixmap, 0, 0);
+            else
+                m_icon.pixmap().release();
+
+            if ((bool)(wmhint->flags & IconMaskHint) && wmhint->icon_mask != 0)
+                m_icon.mask().copy(wmhint->icon_mask, 0, 0);
+            else
+                m_icon.mask().release();
+        }
 
         if (fbwindow()) {
             if (wmhint->flags & XUrgencyHint) {

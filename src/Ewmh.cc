@@ -35,7 +35,9 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/XLayer.hh"
+#include "FbTk/FbPixmap.hh"
 
+#include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <iostream>
 #include <algorithm>
@@ -58,6 +60,149 @@ using std::list;
 #define FB_new_nothrow new(std::nothrow)
 #endif
 
+
+namespace {
+
+/* From Extended Window Manager Hints, draft 1.3:
+ *
+ * _NET_WM_ICON CARDINAL[][2+n]/32
+ *
+ * This is an array of possible icons for the client. This specification does
+ * not stipulate what size these icons should be, but individual desktop
+ * environments or toolkits may do so. The Window Manager MAY scale any of
+ * these icons to an appropriate size.
+ *
+ * This is an array of 32bit packed CARDINAL ARGB with high byte being A, low
+ * byte being B. The first two cardinals are width, height. Data is in rows,
+ * left to right and top to bottom. 
+ */
+void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
+
+    typedef std::pair<int, int> Size;
+    typedef std::map<Size, const unsigned long*> IconContainer;
+
+    // attention: the returned data for XA_CARDINAL is long if the rfmt equals
+    // 32. sizeof(long) on 64bit machines is 8.
+    unsigned long* raw_data = 0;
+    long nr_icon_data = 0;
+
+    {
+        Atom rtype;
+        int rfmt;
+        unsigned long nr_read;
+        unsigned long nr_bytes_left;
+
+        // no data or no _NET_WM_ICON
+        if (! winclient.property(net_wm_icon, 0L, 0L, False, XA_CARDINAL,
+                                 &rtype, &rfmt, &nr_read, &nr_bytes_left,
+                                 reinterpret_cast<unsigned char**>(&raw_data)) || nr_bytes_left == 0) {
+
+            if (raw_data)
+                XFree(raw_data);
+
+            return;
+        }
+
+        // actually there is some data in _NET_WM_ICON
+        nr_icon_data = nr_bytes_left / sizeof(CARD32);
+
+        // read all the icons stored in _NET_WM_ICON
+        winclient.property(net_wm_icon, 0L, nr_icon_data, False, XA_CARDINAL,
+                           &rtype, &rfmt, &nr_read, &nr_bytes_left,
+                           reinterpret_cast<unsigned char**>(&raw_data));
+    }
+
+    IconContainer icon_data; // stores all available data, sorted by size (width x height)
+    int width;
+    int height;
+
+    // analyze the available icons
+    long i;
+    for (i = 0; i < nr_icon_data; i += width * height ) {
+
+        width = raw_data[i++];
+        height = raw_data[i++];
+
+        icon_data[Size(width, height)] = &raw_data[i];
+    }
+
+    Display* dpy = FbTk::App::instance()->display();
+    int scrn = winclient.screen().screenNumber();
+
+    // pick the smallest icon size atm
+    // TODO: find a better criteria
+    width = icon_data.begin()->first.first;
+    height = icon_data.begin()->first.second;
+
+    // tmp image for the pixmap
+    XImage* img_pm = XCreateImage(dpy, DefaultVisual(dpy, scrn), winclient.depth(),
+                                  ZPixmap,
+                                  0, NULL, width, height, 32, 0);
+    if (!img_pm) {
+        XFree(raw_data);
+        return;
+    }
+
+    // tmp image for the mask
+    XImage* img_mask = XCreateImage(dpy, DefaultVisual(dpy, scrn), 1,
+                                  XYBitmap,
+                                  0, NULL, width, height, 32, 0);
+
+    if (!img_mask) {
+        XFree(raw_data);
+        XDestroyImage(img_pm);
+        return;
+    }
+
+    // allocate some memory for the icons at client side
+    img_pm->data = new char[img_pm->bytes_per_line * height];
+    img_mask->data = new char[img_mask->bytes_per_line * height];
+
+
+    const unsigned long* src = icon_data.begin()->second;
+    unsigned int pixel;
+    int x;
+    int y;
+    unsigned char r, g, b, a;
+
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++, src++) {
+
+            pixel = *src; // use only 32bit
+
+            a = ( pixel & 0xff000000 ) >> 24;
+            r = ( pixel & 0x00ff0000 ) >> 16;
+            g = ( pixel & 0x0000ff00 ) >> 8;
+            b = ( pixel & 0x000000ff );
+
+            // transfer color data
+            XPutPixel(img_pm, x, y, pixel & 0x00ffffff ); // TODO: this only works in 24bit depth
+
+            // transfer mask data
+            XPutPixel(img_mask, x, y, a > 127 ? 0 : 1);
+        }
+    }
+
+    // the final icon
+    FbTk::PixmapWithMask icon;
+    icon.pixmap() = FbTk::FbPixmap(winclient.drawable(), width, height, winclient.depth());
+    icon.mask() = FbTk::FbPixmap(winclient.drawable(), width, height, 1);
+
+    FbTk::GContext gc_pm(icon.pixmap());
+    FbTk::GContext gc_mask(icon.mask());
+
+    XPutImage(dpy, icon.pixmap().drawable(), gc_pm.gc(), img_pm, 0, 0, 0, 0, width, height);
+    XPutImage(dpy, icon.mask().drawable(), gc_mask.gc(), img_mask, 0, 0, 0, 0, width, height);
+
+    XDestroyImage(img_pm); // also frees img_pm->data
+    XDestroyImage(img_mask); // also frees img_mask->data
+
+    XFree(raw_data);
+
+    winclient.setIcon(icon);
+}
+
+}; // end anonymous namespace
 
 class Ewmh::EwmhAtoms {
 public:
@@ -284,6 +429,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net->wm_strut,
         m_net->wm_state,
         m_net->wm_name,
+        m_net->wm_icon,
         m_net->wm_icon_name,
 
         // states that we support:
@@ -386,7 +532,11 @@ void Ewmh::setupClient(WinClient &winclient) {
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
-    unsigned char *data = 0;
+    unsigned char* data = 0;
+
+
+    extractNetWmIcon(m_net->wm_icon, winclient);
+
 
     /* From Extended Window Manager Hints, draft 1.3:
      *
@@ -1051,6 +1201,9 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
         return true;
     } else if (the_property == m_net->wm_icon_name) {
         // we don't use icon title, since we don't show icons
+        return true;
+    } else if (the_property == m_net->wm_icon) {
+        extractNetWmIcon(m_net->wm_icon, winclient);
         return true;
     }
 

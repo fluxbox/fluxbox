@@ -59,11 +59,15 @@ public:
     void updateWMProtocols();
 
     // override the title with this
-    void setTitle(FbTk::FbString &title);
+    void setTitle(const FbTk::FbString &title);
     void updateTitle();
     /// updates transient window information
     void updateTransientInfo();
 
+    // override the icon with this
+    void setIcon(const FbTk::PixmapWithMask& pm);
+
+    // update some thints
     void updateMWMHints();
     void updateWMHints();
     void updateWMNormalHints();
@@ -164,6 +168,7 @@ private:
     int m_win_gravity;
 
     bool m_title_override;
+    bool m_icon_override;
 
     Focusable::WindowType m_window_type;
     MwmHints *m_mwm_hint;
