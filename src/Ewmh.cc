@@ -75,7 +75,8 @@ namespace {
  * This is an array of 32bit packed CARDINAL ARGB with high byte being A, low
  * byte being B. The first two cardinals are width, height. Data is in rows,
  * left to right and top to bottom. 
- */
+ *
+ * TODO: maybe move the pixmap-creation code to FbTk? */
 void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
     typedef std::pair<int, int> Size;
@@ -160,7 +161,8 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
 
     const unsigned long* src = icon_data.begin()->second;
-    unsigned int pixel;
+    unsigned int rgba;
+    unsigned long pixel;
     int x;
     int y;
     unsigned char r, g, b, a;
@@ -168,15 +170,40 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     for (y = 0; y < height; y++) {
         for (x = 0; x < width; x++, src++) {
 
-            pixel = *src; // use only 32bit
+            rgba = *src; // use only 32bit
 
-            a = ( pixel & 0xff000000 ) >> 24;
-            r = ( pixel & 0x00ff0000 ) >> 16;
-            g = ( pixel & 0x0000ff00 ) >> 8;
-            b = ( pixel & 0x000000ff );
+            a = ( rgba & 0xff000000 ) >> 24;
+            r = ( rgba & 0x00ff0000 ) >> 16;
+            g = ( rgba & 0x0000ff00 ) >> 8;
+            b = ( rgba & 0x000000ff );
 
-            // transfer color data
-            XPutPixel(img_pm, x, y, pixel & 0x00ffffff ); // TODO: this only works in 24bit depth
+            // 15 bit display, 5R 5G 5B
+            if (img_pm->red_mask == 0x7c00
+                && img_pm->green_mask == 0x03e0
+                && img_pm->blue_mask == 0x1f) {
+
+                pixel = ((r << 7) & 0x7c00) | ((g << 2) & 0x03e0) | ((b >> 3) & 0x001f);
+
+            // 16 bit display, 5R 6G 5B
+            } else if (img_pm->red_mask == 0xf800
+                       && img_pm->green_mask == 0x07e0
+                       && img_pm->blue_mask == 0x1f) {
+
+                pixel = ((r << 8) & 0xf800) | ((g << 3) & 0x07e0) | ((b >> 3) & 0x001f);
+
+            // 24/32 bit display, 8R 8G 8B
+            } else if (img_pm->red_mask == 0xff0000
+                       && img_pm->green_mask == 0xff00
+                       && img_pm->blue_mask == 0xff) {
+
+                pixel = rgba & 0x00ffffff;
+
+            } else {
+                pixel = 0;
+            }
+
+            // transfer rgb data
+            XPutPixel(img_pm, x, y, pixel);
 
             // transfer mask data
             XPutPixel(img_mask, x, y, a > 127 ? 0 : 1);
@@ -194,8 +221,8 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     XPutImage(dpy, icon.pixmap().drawable(), gc_pm.gc(), img_pm, 0, 0, 0, 0, width, height);
     XPutImage(dpy, icon.mask().drawable(), gc_mask.gc(), img_mask, 0, 0, 0, 0, width, height);
 
-    XDestroyImage(img_pm); // also frees img_pm->data
-    XDestroyImage(img_mask); // also frees img_mask->data
+    XDestroyImage(img_pm);   // frees img_pm->data as well
+    XDestroyImage(img_mask); // frees img_mask->data as well
 
     XFree(raw_data);
 
