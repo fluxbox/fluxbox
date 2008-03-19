@@ -48,7 +48,8 @@ WinButtonTheme::WinButtonTheme(int screen_num,
                                                       : extra) + ".pixmap",
                "Window.Title" + (extra.empty() ? std::string(".Focus")
                                                : altextra) + ".Pixmap"),
-    m_stick_pm(*this, "window.stick.pixmap", "Window.Stick.Pixmap"),
+    m_stick_pm(*this, "window.stick" + extra + ".pixmap",
+               "Window.Stick" + altextra + ".Pixmap"),
     m_stuck_pm(*this, "window.stuck" + extra + ".pixmap",
                "Window.Stuck" + altextra + ".Pixmap"),
     m_frame_theme(frame_theme) {
