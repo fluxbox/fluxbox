@@ -30,6 +30,7 @@
 
 #include <list>
 #include <string>
+#include <memory>
 
 class BScreen;
 class Focusable;

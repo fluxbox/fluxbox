@@ -31,6 +31,12 @@
 
 #include <vector>
 
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+
 using std::string;
 using std::vector;
 

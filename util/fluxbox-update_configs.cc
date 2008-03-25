@@ -48,6 +48,7 @@
 #include <fstream>
 #include <set>
 #include <map>
+#include <cstdlib>
 #include <list>
 
 using std::cout;
@@ -59,6 +60,8 @@ using std::ofstream;
 using std::set;
 using std::map;
 using std::list;
+using std::exit;
+using std::getenv;
 
 string read_file(string filename);
 void write_file(string filename, string &contents);

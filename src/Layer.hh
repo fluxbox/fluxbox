@@ -25,6 +25,12 @@
 #include <string>
 #include <cstdio>
 
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+
 using std::string;
 
 /** 

@@ -29,7 +29,14 @@
 #include <X11/Xatom.h>
 #include <iostream>
 
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+
 using std::string;
+using std::strlen;
 
 #ifdef DEBUG
 using std::cerr;
