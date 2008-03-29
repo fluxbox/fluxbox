@@ -567,10 +567,16 @@ void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
 }
 
 void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
-    // still inside?
+
+    // in autoHide mode we'll receive a leaveNotifyEvent when activating
+    // the toolbar. so check if we are still inside the toolbar area.
+    // event.subwindow gets != None if we really left the window (eg the Slit
+    // was entered ontop of the toolbar)
     if (event.x_root > x() && event.x_root <= (int)(x() + width()) &&
-        event.y_root > y() && event.y_root <= (int)(y() + height()))
+        event.y_root > y() && event.y_root <= (int)(y() + height()) && 
+        event.subwindow == None ) {
         return;
+    }
 
     Fluxbox::instance()->keys()->doAction(event.type, event.state, 0,
                                           Keys::ON_TOOLBAR);
