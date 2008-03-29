@@ -665,3 +665,67 @@ nls/vi_VN/Makefile
 nls/zh_CN/Makefile
 nls/zh_TW/Makefile
 )
+
+dnl autoscan suggested these as of 2cac7ddf6fb0b3c937c4ea7b55b20960e362a360 
+dnl wanted by: src/ClockTool.cc:262
+AC_CHECK_FUNCS([gettimeofday])
+dnl wanted by: src/Ewmh.cc:770
+AC_CHECK_FUNCS([memset])
+dnl wanted by: src/fluxbox.cc:553
+AC_CHECK_FUNCS([mkdir])
+dnl wanted by: src/FbTk/FbString.cc:80
+AC_CHECK_FUNCS([nl_langinfo])
+dnl wanted by: src/FbCommands.cc:172
+AC_CHECK_FUNCS([putenv])
+dnl wanted by: src/FbTk/RegExp.cc:56
+AC_CHECK_FUNCS([regcomp])
+dnl wanted by: src/FbTk/Timer.cc:156
+AC_CHECK_FUNCS([select])
+dnl wanted by: src/FbCommands.cc:206
+AC_CHECK_FUNCS([setenv])
+dnl wanted by: src/WorkspaceCmd.cc:403
+AC_CHECK_FUNCS([sqrt])
+dnl wanted by: src/ClientPattern.cc:104
+AC_CHECK_FUNCS([strcasecmp])
+dnl wanted by: src/FbTk/XmbFontImp.cc:101
+AC_CHECK_FUNCS([strchr])
+dnl wanted by: src/RootTheme.cc:187
+AC_CHECK_FUNCS([strstr])
+dnl wanted by: src/Window.cc:4165
+AC_CHECK_FUNCS([strtol])
+dnl wanted by: src/Keys.cc:422
+AC_CHECK_FUNCS([strtoul])
+dnl wanted by: src/FbTk/FbString.cc:43
+AC_CHECK_HEADERS([langinfo.h])
+dnl wanted by: src/AlphaMenu.cc:51
+AC_C_CONST
+dnl wanted by: src/Window.cc:3259
+AC_C_INLINE
+dnl wanted by: src/FbTk/FileUtil.cc:117
+AC_FUNC_CLOSEDIR_VOID
+dnl wanted by: src/ClientPattern.cc:333
+AC_FUNC_ERROR_AT_LINE
+dnl wanted by: src/FbCommands.cc:144
+AC_FUNC_FORK
+dnl wanted by: src/FbTk/FbString.cc:150
+AC_FUNC_MALLOC
+dnl wanted by: src/FbTk/FbString.cc:181
+AC_FUNC_REALLOC
+dnl wanted by: src/FbTk/Timer.cc:156
+AC_FUNC_SELECT_ARGTYPES
+dnl wanted by: src/Slit.cc:1149
+AC_FUNC_STAT
+dnl wanted by: src/ClockTool.cc:273
+AC_FUNC_STRFTIME
+dnl wanted by: src/FbTk/FileUtil.hh:34
+AC_HEADER_DIRENT
+dnl wanted by: src/AlphaMenu.hh:49
+AC_HEADER_STDBOOL
+dnl wanted by: src/Keys.cc:75
+AC_HEADER_SYS_WAIT
+dnl wanted by: src/AlphaMenu.cc:37
+AC_STRUCT_TM
+dnl wanted by: src/FbCommands.cc:144
+AC_TYPE_PID_T
+dnl wanted by: src/ClientMenu.cc:128
+AC_TYPE_SIZE_T
