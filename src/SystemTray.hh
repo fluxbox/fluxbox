@@ -27,6 +27,7 @@
 #include "FbTk/EventHandler.hh"
 #include "FbTk/Observer.hh"
 
+#include "ToolTheme.hh"
 #include "ToolbarItem.hh"
 
 #include <list>
@@ -44,7 +45,7 @@ class SystemTray: public ToolbarItem, public FbTk::EventHandler, public FbTk::Ob
 public:
 
     explicit SystemTray(const FbTk::FbWindow &parent,
-                        FbTk::ThemeProxy<ButtonTheme> &theme, BScreen& screen);
+                        FbTk::ThemeProxy<ToolTheme> &theme, BScreen& screen);
     virtual ~SystemTray();
 
     void move(int x, int y);
@@ -70,8 +71,13 @@ public:
     int numClients() const { return m_clients.size(); }
     const FbTk::FbWindow &window() const { return m_window; }
 
-    void renderTheme(unsigned char alpha) { m_window.setAlpha(alpha); update(0); }
-    void updateSizing() {}
+    void renderTheme(unsigned char alpha) { 
+        m_window.setBorderWidth(m_theme->border().width());
+        m_window.setBorderColor(m_theme->border().color());
+        m_window.setAlpha(alpha); 
+        update(0); 
+    }
+    void updateSizing() { m_window.setBorderWidth(m_theme->border().width()); }
 
     void parentMoved() { m_window.parentMoved(); }
 
@@ -90,7 +96,7 @@ private:
     void showClient(TrayWindow *traywin);
 
     FbTk::FbWindow m_window;
-    FbTk::ThemeProxy<ButtonTheme> &m_theme;
+    FbTk::ThemeProxy<ToolTheme> &m_theme;
     BScreen& m_screen;
     Pixmap m_pixmap;
 

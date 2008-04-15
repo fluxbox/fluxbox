@@ -155,7 +155,7 @@ private:
 };
 
 SystemTray::SystemTray(const FbTk::FbWindow& parent,
-        FbTk::ThemeProxy<ButtonTheme> &theme, BScreen& screen):
+        FbTk::ThemeProxy<ToolTheme> &theme, BScreen& screen):
     ToolbarItem(ToolbarItem::FIXED),
     m_window(parent, 0, 0, 1, 1, ExposureMask | ButtonPressMask | ButtonReleaseMask |
              SubstructureNotifyMask | SubstructureRedirectMask),
