@@ -263,4 +263,4 @@ void ThemeManager::listItems() {
 
 }
 */
-}; // end namespace FbTk
+} // end namespace FbTk

@@ -166,4 +166,4 @@ XImage *FbDrawable::image(int x, int y, unsigned int width, unsigned int height)
                      ZPixmap);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

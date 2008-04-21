@@ -41,14 +41,14 @@ public:
         FLAT =     0x00002,
         SUNKEN =   0x00004,
         RAISED =   0x00008,
-        DEFAULT_BEVEL = FLAT,
+        DEFAULT_BEVEL = FLAT
     };
 
     enum Textures {
         NONE =     0x00000,
         SOLID =    0x00010,
         GRADIENT = 0x00020,
-        DEFAULT_TEXTURE = SOLID,
+        DEFAULT_TEXTURE = SOLID
     };
 
     enum Gradients {

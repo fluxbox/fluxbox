@@ -306,5 +306,5 @@ unsigned int XmbFontImp::height() const {
     return m_setextents->max_ink_extent.height;
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk
 

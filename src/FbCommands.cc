@@ -556,4 +556,4 @@ void DeiconifyCmd::execute() {
     };
 }
 
-}; // end namespace FbCommands
+} // end namespace FbCommands

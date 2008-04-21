@@ -230,4 +230,4 @@ void ResourceManager::unlock() {
     }
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

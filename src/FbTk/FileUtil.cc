@@ -145,4 +145,4 @@ bool Directory::open(const char *dir) {
 }
 
 
-}; // end namespace FbTk
+} // end namespace FbTk

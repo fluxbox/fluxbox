@@ -42,6 +42,6 @@ private:
     ThemeItem<Color> m_color;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_BORDERTHEME_HH

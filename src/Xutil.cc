@@ -142,5 +142,5 @@ string getWMClassClass(Window win) {
     return class_name;
 }
 
-}; // end namespace Xutil
+} // end namespace Xutil
 

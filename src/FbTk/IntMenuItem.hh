@@ -96,6 +96,6 @@ private:
     Accessor<int> &m_res; ///< resource item to be changed
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_INTMENUITEM_HH

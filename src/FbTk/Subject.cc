@@ -82,4 +82,4 @@ void Subject::removeObserver(Observer *obj) {
 
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

@@ -145,6 +145,7 @@ protected:
 
 private:
     static bool m_init;
+
     ResourceList m_resourcelist;
 
     XrmDatabaseHelper *m_database;

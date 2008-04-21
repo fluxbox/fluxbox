@@ -672,4 +672,4 @@ void ImageControl::createColorTable() {
     }
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

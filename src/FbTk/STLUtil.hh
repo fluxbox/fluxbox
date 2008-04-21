@@ -49,7 +49,7 @@ void destroyAndClearSecond(A &a) {
     a.clear();
 }
 
-}; // end namespace STLUtil
-}; // end namespace FbTk
+} // end namespace STLUtil
+} // end namespace FbTk
 
 #endif // STLUTIL_Hh

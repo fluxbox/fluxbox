@@ -92,4 +92,4 @@ bool RegExp::error() const {
 #endif // USE_REGEXP
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

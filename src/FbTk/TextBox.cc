@@ -464,4 +464,4 @@ void TextBox::adjustPos(){
         adjustStartPos();
 
 }
-}; // end namespace FbTk
+} // end namespace FbTk

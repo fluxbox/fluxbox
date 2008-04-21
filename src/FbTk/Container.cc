@@ -491,4 +491,4 @@ void Container::setOrientation(Orientation orient) {
 
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

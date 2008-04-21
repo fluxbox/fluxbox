@@ -58,6 +58,6 @@ private:
     CreatorMap m_creators;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // OBJECTREGISTRY_HH

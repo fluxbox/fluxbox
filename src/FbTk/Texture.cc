@@ -147,4 +147,4 @@ void Texture::calcHiLoColors(int screen_num) {
     m_locolor.setPixel(xcol.pixel);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

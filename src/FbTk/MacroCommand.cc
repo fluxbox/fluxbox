@@ -97,6 +97,6 @@ void ToggleCommand::execute() {
         m_state = 0;
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 

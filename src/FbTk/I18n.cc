@@ -195,4 +195,4 @@ FbString I18n::getMessage(int set_number, int message_number,
         return default_message;
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

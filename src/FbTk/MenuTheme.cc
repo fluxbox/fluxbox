@@ -177,4 +177,4 @@ void ThemeItem<MenuTheme::BulletType>::load(const std::string *name, const std::
     // do nothing, we don't have anything extra to load
 }
 
-}; // end namespace  FbTk
+} // end namespace  FbTk

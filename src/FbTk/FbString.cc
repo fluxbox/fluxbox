@@ -239,7 +239,7 @@ bool haveUTF8() {
 }
 
 
-}; // end namespace StringUtil
+} // end namespace StringUtil
 
 StringConvertor::StringConvertor(EncodingTarget target):
 #ifdef HAVE_ICONV
@@ -289,4 +289,4 @@ string StringConvertor::recode(const string &src) {
 #endif
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

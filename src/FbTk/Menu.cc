@@ -1300,4 +1300,4 @@ void Menu::hideShownMenu() {
         shown->hide();
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

@@ -1840,4 +1840,4 @@ void TextureRender::cdgradient() {
 
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

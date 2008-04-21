@@ -47,6 +47,6 @@ public:
 
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_PARSER_HH

@@ -81,6 +81,6 @@ private:
     Getter m_getter;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_ACCESSOR_HH

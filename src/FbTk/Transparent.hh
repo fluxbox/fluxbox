@@ -69,7 +69,7 @@ private:
     static void init();
 };
 
-}; // end namespace  FbTk
+} // end namespace  FbTk
 
 #endif // FBTK_TRANSPARENT_HH
 

@@ -42,7 +42,7 @@ public:
     /// list option bits
     enum { 
         LIST_GROUPS = 0x01,  //< list groups instead of clients
-        STATIC_ORDER = 0x02,  ///< use creation order instead of focused order
+        STATIC_ORDER = 0x02  ///< use creation order instead of focused order
     };
 
     FocusableList(BScreen &scr): m_pat(0), m_parent(0), m_screen(scr) { }

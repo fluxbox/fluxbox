@@ -84,4 +84,4 @@ template <>
 void ThemeItem<FbTk::Justify>::load(const std::string *name, const std::string *altname) {
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

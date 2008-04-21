@@ -96,7 +96,7 @@ public:
         ATTRIB_WORKSPACE = 0x10,   ///< workspace
         ATTRIB_STACK = 0x20,       ///< stack
         ATTRIB_DECORATION = 0x40,  ///< decorations
-        ATTRIB_HIDDEN = 0x80,      ///< hidden
+        ATTRIB_HIDDEN = 0x80       ///< hidden
     };
 
     /**

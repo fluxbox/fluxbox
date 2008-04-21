@@ -187,4 +187,4 @@ void TextButton::exposeEvent(XExposeEvent &event) {
     clearArea(event.x, event.y, event.width, event.height, false);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

@@ -146,4 +146,4 @@ void Button::exposeEvent(XExposeEvent &event) {
     clearArea(event.x, event.y, event.width, event.height);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk
