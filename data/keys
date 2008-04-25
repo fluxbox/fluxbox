@@ -4,12 +4,12 @@ OnDesktop Mouse2 :WorkspaceMenu
 OnDesktop Mouse3 :RootMenu
 
 # scroll on the desktop to change workspaces
-OnDesktop Mouse4 :NextWorkspace
-OnDesktop Mouse5 :PrevWorkspace
+OnDesktop Mouse4 :PrevWorkspace
+OnDesktop Mouse5 :NextWorkspace
 
 # scroll on the toolbar to change workspaces
-OnToolbar Mouse4 :NextWorkspace
-OnToolbar Mouse5 :PrevWorkspace
+OnToolbar Mouse4 :PrevWorkspace
+OnToolbar Mouse5 :NextWorkspace
 
 # alt + left/right click to move/resize a window
 OnWindow Mod1 Mouse1 :StartMoving
@@ -42,6 +42,9 @@ Mod4 6 :Tab 6
 Mod4 7 :Tab 7
 Mod4 8 :Tab 8
 Mod4 9 :Tab 9
+
+# open a terminal
+Mod1 F1 :Exec xterm
 
 # open a dialog to run programs
 Mod1 F2 :Exec fbrun
