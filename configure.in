@@ -554,6 +554,14 @@ AC_ARG_WITH(
 AC_SUBST(DEFAULT_KEYS)
 
 AC_ARG_WITH(
+  apps,
+  [ --with-apps=path         location apps file (PREFIX/share/fluxbox/apps)],
+  DEFAULT_APPS=$with_apps,
+  DEFAULT_APPS=\$\(prefix\)/share/fluxbox/apps
+)
+AC_SUBST(DEFAULT_APPS)
+
+AC_ARG_WITH(
   init,
   [  --with-init=path        location init file (PREFIX/share/fluxbox/init)],
   DEFAULT_INIT=$with_init,
