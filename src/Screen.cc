@@ -423,12 +423,14 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     _FB_USES_NLS;
 
+#ifdef DEBUG
     fprintf(stderr, _FB_CONSOLETEXT(Screen, ManagingScreen,
                             "BScreen::BScreen: managing screen %d "
                             "using visual 0x%lx, depth %d\n",
                             "informational message saying screen number (%d), visual (%lx), and colour depth (%d)").c_str(),
             screenNumber(), XVisualIDFromVisual(rootWindow().visual()),
             rootWindow().depth());
+#endif // DEBUG
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->add(*this, rootWindow());
