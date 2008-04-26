@@ -524,14 +524,16 @@ void Fluxbox::ungrab() {
 void Fluxbox::setupConfigFiles() {
 
     bool create_init = false, create_keys = false, create_menu = false,
-         create_apps = false;
+         create_apps = false, create_overlay = false;
 
     string dirname = getenv("HOME") + string("/.") + m_RC_PATH + "/";
-    string init_file, keys_file, menu_file, slitlist_file, apps_file;
+    string init_file, keys_file, menu_file, slitlist_file, apps_file,
+           overlay_file;
     init_file = dirname + m_RC_INIT_FILE;
     keys_file = dirname + "keys";
     menu_file = dirname + "menu";
     apps_file = dirname + "apps";
+    overlay_file = dirname + "overlay";
 
     struct stat buf;
 
@@ -547,6 +549,8 @@ void Fluxbox::setupConfigFiles() {
             create_menu = true;
         if (stat(apps_file.c_str(), &buf))
             create_apps = true;
+        if (stat(overlay_file.c_str(), &buf))
+            create_overlay = true;
 
     } else {
 #ifdef DEBUG
@@ -579,6 +583,10 @@ void Fluxbox::setupConfigFiles() {
     // copy apps file
     if (create_apps)
         FbTk::FileUtil::copyFile(DEFAULT_APPSFILE, apps_file.c_str());
+
+    // copy overlay file
+    if (create_overlay)
+        FbTk::FileUtil::copyFile(DEFAULT_OVERLAY, overlay_file.c_str());
 
     // copy init file
     if (create_init)

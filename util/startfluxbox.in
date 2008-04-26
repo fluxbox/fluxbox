@@ -37,17 +37,14 @@ else
 #
 # Lines starting with a '#' are ignored.
 
-# You can set your favourite wallpaper here if you don't want
-# to do it from your style.
-#
-# fbsetbg -f $HOME/pictures/wallpaper.png
-#
 # This sets a black background
 
-@pkgbindir@/@pkgprefix@fbsetroot@pkgsuffix@ -solid black
+@pkgprefix@fbsetroot@pkgsuffix@ -solid black
 
-# This shows the fluxbox-splash-screen
-# @pkgprefix@fbsetbg@pkgsuffix@ -C @pkgdatadir@/splash.jpg
+# You can set your favourite wallpaper here. You will also need to uncomment the
+# line in $HOME/.@pkgprefix@fluxbox@pkgsuffix@/overlay or else your style will override it.
+#
+# @pkgprefix@fbsetbg@pkgsuffix@ -f $HOME/.@pkgprefix@fluxbox@pkgsuffix@/backgrounds/wallpaper.png
 
 # Other examples. Check man xset for details.
 #
@@ -59,9 +56,6 @@ else
 #
 # Your own fonts-dir:
 # xset +fp "$HOME/.fonts"
-#
-# Your favourite mouse cursor:
-# xsetroot -cursor_name right_ptr
 #
 # Change your keymap:
 # xmodmap "$HOME/.Xmodmap"

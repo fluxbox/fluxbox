@@ -562,6 +562,14 @@ AC_ARG_WITH(
 AC_SUBST(DEFAULT_APPS)
 
 AC_ARG_WITH(
+  overlay,
+  [ --with-overlay=path      location overlay file (PREFIX/share/fluxbox/overlay)],
+  DEFAULT_OVERLAY=$with_overlay,
+  DEFAULT_OVERLAY=\$\(prefix\)/share/fluxbox/overlay
+)
+AC_SUBST(DEFAULT_OVERLAY)
+
+AC_ARG_WITH(
   init,
   [  --with-init=path        location init file (PREFIX/share/fluxbox/init)],
   DEFAULT_INIT=$with_init,

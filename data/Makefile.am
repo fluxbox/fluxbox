@@ -7,13 +7,14 @@ DEFAULT_MENU = @DEFAULT_MENU@
 DEFAULT_STYLE = @DEFAULT_STYLE@
 DEFAULT_KEYS = @DEFAULT_KEYS@
 DEFAULT_APPS = @DEFAULT_APPS@
+DEFAULT_OVERLAY = @DEFAULT_OVERLAY@
 DEFAULT_INIT = @DEFAULT_INIT@
 
 SUBDIRS= 		styles
 CLEANFILES= 		menu menu.in menu.pre menu.bak init apps
 MAINTAINERCLEANFILES= 	Makefile.in
-pkgdata_DATA= 		keys menu init apps
-EXTRA_DIST= 		keys init.in apps.in
+pkgdata_DATA= 		keys menu init apps overlay
+EXTRA_DIST= 		keys init.in apps.in overlay
 all-local: 		menu init apps
 install-pkgdataDATA:
 	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"
@@ -25,6 +26,9 @@ install-pkgdataDATA:
 	@echo "Installing apps file in $(DESTDIR)$(DEFAULT_APPS)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_APPS))
 	$(INSTALL_DATA) $(srcdir)/apps $(DESTDIR)$(DEFAULT_APPS)
+	@echo "Installing overlay file in $(DESTDIR)$(DEFAULT_OVERLAY)"
+	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_OVERLAY))
+	$(INSTALL_DATA) $(srcdir)/overlay $(DESTDIR)$(DEFAULT_OVERLAY)
 	@echo "Installing init file in $(DESTDIR)$(DEFAULT_INIT)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_INIT))
 	$(INSTALL_DATA) init $(DESTDIR)$(DEFAULT_INIT)
