@@ -44,7 +44,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	StringUtil.hh StringUtil.cc Parser.hh Parser.cc \
 	RegExp.hh RegExp.cc \
 	FbString.hh FbString.cc \
-	Subject.hh Subject.cc Observer.hh Observer.cc \
+	Subject.hh Subject.cc Observer.hh Observer.cc SimpleObserver.hh \
 	Transparent.hh Transparent.cc \
 	FbPixmap.hh FbPixmap.cc \
 	FbDrawable.hh FbDrawable.cc \

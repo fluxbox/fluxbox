@@ -50,7 +50,7 @@
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
 #include "FbTk/Shape.hh"
-
+#include "FbTk/SimpleObserver.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -240,11 +240,15 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_shape(new FbTk::Shape(frame.window, 0)),
     m_resize_lock(false) {
     _FB_USES_NLS;
+    // NOTE: first subject is always the rearrangeItem !
+    m_observers.push_back(makeObserver(*this, &Toolbar::rearrangeItems));
     // we need to get notified when the theme is reloaded
-    m_theme.reconfigSig().attach(this);
+    m_observers.push_back(makeObserver(*this, &Toolbar::reconfigure));
+    m_theme.reconfigSig().attach(m_observers.back());
+    screen().reconfigureSig().attach(m_observers.back()); // get this on antialias change
     // listen to screen size changes
-    screen().resizeSig().attach(this);
-    screen().reconfigureSig().attach(this); // get this on antialias change
+    screen().resizeSig().attach(m_observers.back());
+
 
     moveToLayer((*m_rc_layernum).getNum());
 
@@ -370,6 +374,7 @@ void Toolbar::lower() {
 }
 
 void Toolbar::reconfigure() {
+
     updateVisibleState();
 
     if (!doAutoHide() && isHidden())
@@ -426,7 +431,8 @@ void Toolbar::reconfigure() {
                 if (item == 0)
                     continue;
                 m_item_list.push_back(item);
-                item->resizeSig().attach(this);
+                // attach to first observer ( which must be rearrangeItems )
+                item->resizeSig().attach(m_observers[0]);
 
             }
             // show all items
@@ -514,6 +520,11 @@ void Toolbar::reconfigure() {
     // we're done with all resizing and stuff now we can request a new
     // area to be reserved on screen
     updateStrut();
+
+#ifdef XINERAMA
+    if (m_xineramaheadmenu)
+        m_xineramaheadmenu->reloadHeads();
+#endif // XINERAMA
 
 }
 
@@ -611,22 +622,6 @@ void Toolbar::handleEvent(XEvent &event) {
         rearrangeItems();
     }
 */
-}
-
-void Toolbar::update(FbTk::Subject *subj) {
-
-    // either screen reconfigured, theme was reloaded
-    // or a tool resized itself
-
-    if (typeid(*subj) == typeid(ToolbarItem::ToolbarItemSubject))
-        rearrangeItems();
-    else
-        reconfigure();
-
-#ifdef XINERAMA
-    if (subj == &m_screen.resizeSig() && m_xineramaheadmenu)
-        m_xineramaheadmenu->reloadHeads();
-#endif // XINERAMA
 }
 
 void Toolbar::setPlacement(Toolbar::Placement where) {

@@ -30,6 +30,7 @@
 #include "WinClient.hh"
 #include "Screen.hh"
 #include "ButtonTheme.hh"
+#include "SimpleObserver.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -166,8 +167,10 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
-    m_theme->reconfigSig().attach(this);
-    screen.bgChangeSig().attach(this);
+    // setup signals
+    m_observer.reset(makeObserver(*this, &SystemTray::update));
+    m_theme->reconfigSig().attach(m_observer.get());
+    screen.bgChangeSig().attach(m_observer.get());
 
     Fluxbox* fluxbox = Fluxbox::instance();
     Display *disp = fluxbox->display();
@@ -216,7 +219,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
 
     XSendEvent(disp, root_window, false, StructureNotifyMask, &ce);
 
-    update(0);
+    update();
 }
 
 SystemTray::~SystemTray() {
@@ -276,7 +279,7 @@ void SystemTray::hide() {
 
 void SystemTray::show() {
 
-    update(0);
+    update();
     m_window.show();
 }
 
@@ -470,7 +473,7 @@ void SystemTray::rearrangeClients() {
     unsigned int trayw = m_num_visible_clients*h_rot0 + bw, trayh = h_rot0;
     FbTk::translateSize(orientation(), trayw, trayh);
     resize(trayw, trayh);
-    update(0);
+    update();
 
     // move and resize clients
     ClientList::iterator client_it = m_clients.begin();
@@ -529,7 +532,7 @@ void SystemTray::showClient(TrayWindow *traywin) {
     rearrangeClients();
 }
 
-void SystemTray::update(FbTk::Subject* subject) {
+void SystemTray::update() {
 
     if (!m_theme->texture().usePixmap()) {
         m_window.setBackgroundColor(m_theme->texture().color());

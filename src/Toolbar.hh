@@ -37,7 +37,6 @@
 
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/XLayer.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/EventHandler.hh"
@@ -57,7 +56,8 @@ class Shape;
 
 /// The toolbar.
 /// Handles iconbar, workspace name view and clock view
-class Toolbar: public FbTk::EventHandler, public FbTk::Observer, public LayerObject {
+class Toolbar: public FbTk::EventHandler,
+               public LayerObject {
 public:
 
     /// Toolbar placement on the screen
@@ -98,8 +98,6 @@ public:
 
     void reconfigure();
     void setPlacement(Placement where);
-
-    void update(FbTk::Subject *subj);
 
     int layerNumber() const { return const_cast<FbTk::XLayerItem &>(m_layeritem).getLayerNum(); }
 
@@ -193,6 +191,8 @@ private:
     StringList m_tools;
 
     bool m_resize_lock; ///< to lock rearrangeItems or not
+    /// observers for various signals
+    std::vector<FbTk::Observer*> m_observers;
 };
 
 
