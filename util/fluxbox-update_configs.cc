@@ -291,6 +291,16 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         new_version = 7;
     }
 
+    if (old_version < 8) { // disable icons in tabs for backwards compatibility
+        FbTk::Resource<bool> *show =
+            new FbTk::Resource<bool>(rm, false,
+                                     "session.screen0.tabs.usePixmap",
+                                     "Session.Screen0.Tabs.UsePixmap");
+        if (!*show) // only change if the setting didn't already exist
+            *show = false;
+        new_version = 8;
+    }
+
     return new_version;
 }
 
