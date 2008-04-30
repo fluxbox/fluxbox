@@ -1522,7 +1522,7 @@ void BScreen::initMenu() {
 
     }
 
-    if (m_rootmenu.get() == 0) {
+    if (m_rootmenu.get() == 0 || m_rootmenu->numberOfItems() == 0) {
         _FB_USES_NLS;
         m_rootmenu.reset(createMenu(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
         FbTk::RefCount<FbTk::Command<void> > restart_fb(FbTk::CommandParser<void>::instance().parse("restart"));

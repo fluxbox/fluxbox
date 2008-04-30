@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*08/04/30:
+   * Don't allow empty root menu (Mark)
+     Screen.cc
 *08/04/27:
    * Added SimpleObserver class. (Henrik)
      SimpleObserver.hh, SendToMenu.hh/cc, Toolbar.hh/cc,
