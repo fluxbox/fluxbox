@@ -410,6 +410,8 @@ bool Keys::addBinding(const string &linebuffer) {
                     type = ButtonPress;
                     key = atoi(val[argc].substr(5,
                                                 val[argc].length()-5).c_str());
+                    if (strstr(val[argc].c_str(), "top"))
+                        context = ON_DESKTOP;
                 // keycode covers the following three two-byte cases:
                 // 0x       - hex
                 // +[1-9]   - number between +1 and +9
