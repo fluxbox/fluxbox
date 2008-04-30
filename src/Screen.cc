@@ -1530,6 +1530,8 @@ void BScreen::initMenu() {
         FbTk::RefCount<FbTk::Command<void> > execute_xterm(FbTk::CommandParser<void>::instance().parse("exec xterm"));
         m_rootmenu->setInternalMenu();
         m_rootmenu->insert("xterm", execute_xterm);
+        m_rootmenu->insert(_FB_XTEXT(Menu, Reconfigure, "Reconfigure",
+                                     "Reload Configuration command")),
         m_rootmenu->insert(_FB_XTEXT(Menu, Restart, "Restart", "Restart command"),
                            restart_fb);
         m_rootmenu->insert(_FB_XTEXT(Menu, Exit, "Exit", "Exit command"),
