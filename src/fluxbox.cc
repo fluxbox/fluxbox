@@ -1476,10 +1476,7 @@ bool Fluxbox::menuTimestampsChanged() const {
 
         time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp((*it)->filename.c_str());
 
-        if (timestamp >= 0) {
-            if (timestamp != (*it)->timestamp)
-                return true;
-        } else
+        if (timestamp != (*it)->timestamp)
             return true;
     }
 
@@ -1529,14 +1526,12 @@ void Fluxbox::saveMenuFilename(const char *filename) {
     if (! found) {
         time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(filename);
 
-        if (timestamp >= 0) {
-            MenuTimestamp *ts = new MenuTimestamp;
+        MenuTimestamp *ts = new MenuTimestamp;
 
-            ts->filename = filename;
-            ts->timestamp = timestamp;
+        ts->filename = filename;
+        ts->timestamp = timestamp;
 
-            m_menu_timestamps.push_back(ts);
-        }
+        m_menu_timestamps.push_back(ts);
     }
 }
 

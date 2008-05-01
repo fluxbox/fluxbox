@@ -1536,6 +1536,9 @@ void BScreen::initMenu() {
                            restart_fb);
         m_rootmenu->insert(_FB_XTEXT(Menu, Exit, "Exit", "Exit command"),
                            exit_fb);
+        // still save the menu filename, in case it becomes valid later
+        if (!fb->getMenuFilename().empty())
+            fb->saveMenuFilename(fb->getMenuFilename().c_str());
     }
 
     m_rootmenu->updateMenu();

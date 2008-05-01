@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.0.1:
+*08/04/31:
+   * Notice when user replaces a non-existent menu file (Mark)
+     fluxbox.cc Screen.cc
 *08/04/30:
    * Don't allow empty root menu (Mark)
      Screen.cc
