@@ -70,38 +70,38 @@ display_help() {
 
 Options:
 
-    -k  Insert a kde menu
-    -g  Add a gnome menu
-    -B  enable backgrounds menu
-    -su enable sudo commands
+    -k  Insert a KDE menu
+    -g  Add a Gnome menu
+    -B  Enable backgrounds menu
+    -su Enable sudo commands
     -r  Don't remove empty menu-entries; for templates
 
-    -d  other path(s) to recursively search for *.desktop files
-    -ds wider search for *.desktop files (takes more time)
-    -i  other path(s) to search for icons
+    -d  Other path(s) to recursively search for *.desktop files
+    -ds Wider search for *.desktop files (takes more time)
+    -i  Other path(s) to search for icons
         e.g., "/usr/kde/3.3/share/icons/crystalsvg/16x16/*"
-    -is wider search for icons (worth the extra time)
-    -in skip icon search
+    -is Wider search for icons (worth the extra time)
+    -in Skip icon search
 
     -t  Favourite terminal
     -w  Homepage for console-browsers. Default is fluxbox.org
     -b  Favourite browser
     -m  Menu-title; default is "Fluxbox"
     -o  Outputfile; default is ~/.@pkgprefix@fluxbox@pkgsuffix@/menu
-    -u  user sub-menu; default is ~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu
+    -u  User sub-menu; default is ~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu
 
     -h  Display this help
     -a  Display the authors of this script
 
   Only for packagers:
 
-    -p  prefix; default is @PREFIX@
+    -p  Prefix; default is @PREFIX@
     -n  Gnome-prefix; /opt, /usr, /usr/X11R6 and /usr/local autodetected
     -q  KDE-prefix; idem dito
 
 
 Files:
-    ~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu     your own submenu which will be included in the menu
+    ~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu     Your own submenu which will be included in the menu
     ~/.@pkgprefix@fluxbox@pkgsuffix@/menuconfig   rc file for fluxbox-generate_menu
 
 EOF
@@ -115,8 +115,8 @@ display_authors() {
 
     Henrik Kinnunen:    Project leader.
     Han Boetes:         Packaging, debugging and scripts.
-    Simon Bowden:       Cleanups and compatibility for sun.
-    Jeramy B. Smith:    Packaging assistance, gnome and kde menu system.
+    Simon Bowden:       Cleanups and compatibility for SUN.
+    Jeramy B. Smith:    Packaging assistance, Gnome and KDE menu system.
     Filippo Pappalardo: Italian locales and -t option.
     $WHOAMI:            Innocent bystander.
 
@@ -366,7 +366,7 @@ lookupIcon() {
 
     execname="$1"
     shift
-    [ -n "$1" ] && echo "!! Ignoring extra paramters: $*" >&2
+    [ -n "$1" ] && echo "!! Ignoring extra parameters: $*" >&2
 
     [ -z "$execname" ] && { echo "execname is NULL; cannot lookup"; return 1; }
     execname=`removePath "$execname"`
@@ -538,6 +538,7 @@ rm -f ${MENUFILENAME}.tmp
 MENU_ENCODING=UTF-8 # (its also ascii)
 
 ABOUTITEM='About'
+ANALYZERMENU='Analyzers'
 BACKGROUNDMENU='Backgrounds'
 BACKGROUNDMENUTITLE='Set the Background'
 BROWSERMENU='Browsers'
@@ -546,7 +547,7 @@ CONFIGUREMENU='Configure'
 EDITORMENU='Editors'
 EDUCATIONMENU='Education'
 EXITITEM='Exit'
-FBSETTINGSMENU='fluxbox menu'
+FBSETTINGSMENU='Fluxbox menu'
 FILEUTILSMENU='File utils'
 FLUXBOXCOMMAND='Fluxbox Command'
 GAMESMENU='Games'
@@ -883,11 +884,12 @@ case ${LC_ALL} in
 
         MENU_ENCODING=ISO-8859-15
 
+        ANALYZERMENU='Analyseurs'
         BACKGROUNDMENU="Fond d'écran"
         BACKGROUNDMENUTITLE="Changer le fond d'écran"
         BROWSERMENU='Navigateurs'
         CONFIGUREMENU='Configurer'
-        EDITORMENU='Editeurs'
+        EDITORMENU='Éditeurs'
         EXITITEM='Sortir'
         FBSETTINGSMENU='Configurer Fluxbox'
         FILEUTILSMENU='Outils fichiers'
@@ -896,8 +898,9 @@ case ${LC_ALL} in
         GNOMEMENUTEXT='Menus Gnome'
         GRAPHICMENU='Graphisme'
         KDEMENUTEXT='Menus KDE'
-        LOCKSCREEN="Verouiller l'écran"
+        LOCKSCREEN="Verrouiller l'écran"
         MISCMENU='Divers'
+        MULTIMEDIAMENU='Multimédia'
         MUSICMENU='Musique'
         NETMENU='Réseau'
         OFFICEMENU='Bureautique'
@@ -908,12 +911,14 @@ case ${LC_ALL} in
         RUNCOMMAND='Run'
         SCREENSHOT="Capture d'écran"
         STYLEMENUTITLE='Choisir un style...'
-        SYSTEMSTYLES='Styles Systeme'
+        SYSTEMSTYLES='Styles Système'
+        SYSTEMTOOLSMENU='Outils Système'
         TERMINALMENU='Terminaux'
         TOOLS='Outils'
         USERSTYLES='Styles Utilisateur'
+        VIDEOMENU='Vidéo'
         WINDOWMANAGERS='Gestionnaires de fenêtres'
-        WINDOWNAME='Nom de la fenetre'
+        WINDOWNAME='Nom de la fenêtre'
         WORKSPACEMENU='Liste des bureaux'
         XUTILSMENU='Outils X'
         ;;
@@ -1239,24 +1244,24 @@ if [ ! "${INSTALL}" = Yes ]; then
 # KDE_PREFIX=/opt/kde
 
 
-# Sepparate the list of background-dirs with semicolumns ':'
+# Separate the list of background dirs with colons ':'
 # BACKGROUND_DIRS="${USERFLUXDIR}/backgrounds/:@PREFIX@/share/fluxbox/backgrounds/:/usr/share/wallpapers"
 
 
 # --- Boolean variables.
 # Setting a variable to ``no'' won't help. Comment them out if you don't
-# want them.  Setting are overruled by the command-line options.
+# want them. Settings are overruled by the command-line options.
 
 # Include all backgrounds in your backgrounds-directory
 # BACKGROUNDMENUITEM=yes
 
-# Include kde-menus
+# Include KDE-menus
 # KDEMENU=yes
 
-# Include gnome-menus
+# Include Gnome-menus
 # GNOMEMENU=yes
 
-# enable sudo commands
+# Enable sudo commands
 # DOSUDO=yes
 
 # Don't cleanup the menu
@@ -1565,7 +1570,7 @@ find_it "${LAUNCHER}" append "[exec]   (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTION
 
 append_submenu "${TERMINALMENU}"
     normal_find xterm urxvt urxvtc gnome-terminal multi-gnome-terminal Eterm \
-        konsole aterm mlterm multi-aterm rxvt
+        konsole aterm mlterm multi-aterm rxvt mrxvt
 append_menu_end
 
 
@@ -1620,7 +1625,7 @@ append_submenu "${NETMENU}"
       normal_find LinNeighborhood jags SambaSentinel
     append_menu_end
 
-    append_submenu Analyzer
+    append_submenu "${ANALYZERMENU}"
 	  normal_find xnmap nmapfe wireshark ettercap
 	  sudo_find xnmap nmapfe wireshark ettercap
     append_menu_end
@@ -1736,7 +1741,7 @@ append_submenu "${GAMESMENU}"
         wesnoth canfeild ace_canfeild golf merlin chickens \
         supertux tuxdash  neverball cube_client blackjack \
         doom doom3 quake4 blackshades gltron kpoker concentration \
-        torrent scramble kiki xmoto warsow wormux
+        torrent scramble kiki xmoto warsow wormux zsnes
     cli_find gnugo xgame
 
     find_it et append "[exec] (Enemy Territory) {et}"
@@ -1755,7 +1760,7 @@ append_submenu "${SYSTEMTOOLSMENU}"
   normal_find firestarter gtk-lshw gproftd gpureftpd guitoo porthole gtk-iptables \
               gtk-cpuspeedy
   find_it    fireglcontrol   append "[exec] (ATI Config) {fireglcontrol}"
-  cli_find    top
+  cli_find    top htop
 append_menu_end
 
 
@@ -1840,7 +1845,7 @@ append_submenu "${FBSETTINGSMENU}"
     append_submenu "${TOOLS}"
         normal_find fluxconf fluxkeys fluxmenu
         find_it fbpanel append "[exec] (Fluxbox panel) {fbpanel}"
-        # if gxmessage exitst use it; else use xmessage
+        # if gxmessage exists, use it; else use xmessage
         find_it gxmessage append \
             "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
             find_it xmessage append \
