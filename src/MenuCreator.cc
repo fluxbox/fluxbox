@@ -255,13 +255,13 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::StringConver
                 if (FbTk::FileUtil::isRegularFile(thisfile.c_str()) &&
                         (filelist[file_index][0] != '.') &&
                         (thisfile[thisfile.length() - 1] != '~')) {
-                    MenuCreator::createFromFile(thisfile, menu, false);
+                    MenuCreator::createFromFile(thisfile, menu);
                 }
             }
 
         } else {
             // inject this file into the current menu
-            MenuCreator::createFromFile(newfile, menu, false);
+            MenuCreator::createFromFile(newfile, menu);
         }
 
         safe_counter--;
@@ -394,7 +394,7 @@ FbTk::Menu *MenuCreator::createMenu(const string &label, int screen_number) {
     return menu;
 }
 
-FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_number, bool require_begin) {
+FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_number) {
     string real_filename = FbTk::StringUtil::expandFilename(filename);
     Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
 
@@ -404,7 +404,7 @@ FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_numbe
 
     startFile();
     string label;
-    if (require_begin && !getStart(parser, label, m_stringconvertor)) {
+    if (!getStart(parser, label, m_stringconvertor)) {
         endFile();
         return 0;
     }
@@ -420,7 +420,7 @@ FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_numbe
 
 
 bool MenuCreator::createFromFile(const string &filename,
-                                 FbTk::Menu &inject_into, bool require_begin) {
+                                 FbTk::Menu &inject_into) {
     string real_filename = FbTk::StringUtil::expandFilename(filename);
 
     FbMenuParser parser(real_filename);
@@ -428,11 +428,6 @@ bool MenuCreator::createFromFile(const string &filename,
         return false;
 
     startFile();
-    string label;
-    if (require_begin && !getStart(parser, label, m_stringconvertor)) {
-        endFile();
-        return false;
-    }
 
     // save menu filename, so we can check if it changes
     Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
@@ -445,8 +440,7 @@ bool MenuCreator::createFromFile(const string &filename,
 
 
 bool MenuCreator::createWindowMenuFromFile(const string &filename,
-                                           FbTk::Menu &inject_into,
-                                           bool require_begin) {
+                                           FbTk::Menu &inject_into) {
     string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
@@ -455,7 +449,7 @@ bool MenuCreator::createWindowMenuFromFile(const string &filename,
     string label;
 
     startFile();
-    if (require_begin && !getStart(parser, label, m_stringconvertor)) {
+    if (!getStart(parser, label, m_stringconvertor)) {
         endFile();
         return false;
     }
@@ -481,7 +475,7 @@ FbTk::Menu *MenuCreator::createMenuType(const string &type, int screen_num) {
 
         menu->disableTitle(); // not titlebar
         if (screen->windowMenuFilename().empty() ||
-            ! createWindowMenuFromFile(screen->windowMenuFilename(), *menu, true)) {
+            ! createWindowMenuFromFile(screen->windowMenuFilename(), *menu)) {
             const char *default_menu[] = {
                 "shade",
                 "stick",

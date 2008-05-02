@@ -1518,7 +1518,7 @@ void BScreen::initMenu() {
     Fluxbox * const fb = Fluxbox::instance();
     if (!fb->getMenuFilename().empty()) {
         m_rootmenu.reset(MenuCreator::createFromFile(fb->getMenuFilename(),
-                                                     screenNumber(), true));
+                                                     screenNumber()));
 
     }
 
