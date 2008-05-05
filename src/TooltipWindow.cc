@@ -65,24 +65,24 @@ void TooltipWindow::raiseTooltip() {
     XQueryPointer(display(), m_screen.rootWindow().window(),
                   &root_ret, &window_ret, &rx, &ry, &wx, &wy, &mask);
 
-    // mouse position
-    int mx = rx;
-    int my = ry;
+    int head = m_screen.getHead(rx, ry);
+    int head_top = m_screen.getHeadY(head);
+    int head_left = m_screen.getHeadX(head);
+    int head_right = head_left + m_screen.getHeadWidth(head);
 
     // center the mouse horizontally
     rx -= w/2;
     int yoffset = 10;
-    if (ry >= yoffset + h)
+    if (ry - yoffset - h >= head_top)
         ry -= yoffset + h;
     else
         ry += yoffset;
 
     // check that we are not out of screen
-    int outOfBound = rx + w - m_screen.width(); 
-    if (outOfBound > 0)
-        rx -= outOfBound;
-    if (rx < 0)
-        rx = 0;
+    if (rx + w > head_right)
+        rx = head_right - w;
+    if (rx < head_left)
+        rx = head_left;
 
     moveResize(rx,ry,w, h);
 
