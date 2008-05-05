@@ -52,7 +52,8 @@ IconButton::IconButton(const FbTk::FbWindow &parent,
     FbTk::TextButton(parent, focused_theme->text().font(), win.title()),
     m_win(win),
     m_icon_window(*this, 1, 1, 1, 1,
-                  ExposureMask | ButtonPressMask | ButtonReleaseMask),
+                  ExposureMask |EnterWindowMask | LeaveWindowMask |
+                  ButtonPressMask | ButtonReleaseMask),
     m_use_pixmap(true),
     m_theme(win, focused_theme, unfocused_theme),
     m_pm(win.screen().imageControl()) {
@@ -77,6 +78,20 @@ void IconButton::exposeEvent(XExposeEvent &event) {
         m_icon_window.clear();
     else
         FbTk::TextButton::exposeEvent(event);
+}
+
+void IconButton::enterNotifyEvent(XCrossingEvent &ev) {
+
+   int xoffset = 1;
+   if (m_icon_pixmap.drawable() != 0)
+       xoffset = m_icon_window.x() + m_icon_window.width() + 1;
+    
+    if (FbTk::TextButton::textExceeds(xoffset))
+        m_win.screen().showTooltip(m_win.title());
+}
+
+void IconButton::leaveNotifyEvent(XCrossingEvent &ev) {
+    m_win.screen().hideTooltip();
 }
 
 void IconButton::moveResize(int x, int y,

@@ -30,7 +30,7 @@
 #include "RootTheme.hh"
 #include "WinButtonTheme.hh"
 #include "FbWinFrameTheme.hh"
-#include "OSDWindow.hh"
+#include "TooltipWindow.hh"
 
 #include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
@@ -389,6 +389,9 @@ public:
     /// show geomentry with "width x height"-text, not size of window
     void showGeometry(int width, int height);
     void hideGeometry();
+    
+    void showTooltip(const std::string &text);
+    void hideTooltip();
 
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
@@ -536,6 +539,7 @@ private:
 
     FbRootWindow m_root_window;
     OSDWindow m_geom_window, m_pos_window;
+    TooltipWindow m_tooltip_window;
     FbTk::FbWindow m_dummy_window;
 
     struct ScreenResource {
@@ -554,7 +558,8 @@ private:
         FbTk::Resource<FollowModel> follow_model, user_follow_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
-            unfocused_alpha, menu_alpha, menu_delay, menu_delay_close, tab_width;
+            unfocused_alpha, menu_alpha, menu_delay, menu_delay_close,
+            tab_width, tooltip_delay;
         FbTk::Resource<FbTk::MenuTheme::MenuMode> menu_mode;
 
         FbTk::Resource<int> gc_line_width;

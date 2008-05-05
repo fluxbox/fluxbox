@@ -1,4 +1,4 @@
-// OSDWindow.hh
+// TooltipWindow.hh
 // Copyright (c) 2008 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -17,43 +17,37 @@
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-// DEALINGS IN THE SOFTWARE.
+// DEALINGS IN THE SOFTWARE.#ifndef TOOLTIPWINDOW_HH_
+#ifndef TOOLTIPWINDOW_HH_
+#define TOOLTIPWINDOW_HH_
 
-#ifndef OSDWINDOW_HH
-#define OSDWINDOW_HH
+#include "OSDWindow.hh"
+#include "FbTk/Command.hh"
+#include "FbTk/RefCount.hh"
+#include "FbTk/Timer.hh"
+#include "FbTk/SimpleCommand.hh"
 
-#include "FbTk/FbWindow.hh"
-#include <string>
 
-class BScreen;
-class FbWinFrameTheme;
-
-namespace FbTk {
-template <class T> class ThemeProxy;
-}
-
-class OSDWindow: public FbTk::FbWindow {
+class TooltipWindow : public OSDWindow  {
 public:
-    OSDWindow(const FbTk::FbWindow &parent, BScreen &screen,
-              FbTk::ThemeProxy<FbWinFrameTheme> &theme):
-        FbTk::FbWindow(parent, 0, 0, 10, 10, 0, false, true),
-        m_screen(screen), m_theme(theme),
-        m_pixmap(None), m_visible(false) { }
+    TooltipWindow(const FbTk::FbWindow &parent, BScreen &screen,
+                  FbTk::ThemeProxy<FbWinFrameTheme> &theme);
 
-    void reconfigTheme();
-    void resize(const std::string &text);
     void showText(const std::string &text);
-    void hide();
+    void setDelay(int iDelay) { 
+        delay = iDelay; 
+        timer.setTimeout(delay);
+    }
+    void hide() ;    
 
-    bool isVisible() const { return m_visible; }
-
-protected:
-    void show();
-
-    BScreen &m_screen;
-    FbTk::ThemeProxy<FbWinFrameTheme> &m_theme;
-    Pixmap m_pixmap;
-    bool m_visible;
+private:
+    void raiseTooltip();
+    void show();    
+    int delay;
+    std::string lastText;
+    FbTk::Timer timer;
 };
 
-#endif // OSDWINDOW_HH
+
+
+#endif /*TOOLTIPWINDOW_HH_*/

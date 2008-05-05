@@ -61,6 +61,8 @@ public:
     //@{
     virtual void buttonPressEvent(XButtonEvent &event);
     virtual void buttonReleaseEvent(XButtonEvent &event);
+    virtual void enterNotifyEvent(XCrossingEvent &ce);    
+    virtual void leaveNotifyEvent(XCrossingEvent &ce);    
     virtual void exposeEvent(XExposeEvent &event);
     //@}
 

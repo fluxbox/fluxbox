@@ -80,6 +80,8 @@ public:
 
 protected:
     virtual void drawText(int x_offset, int y_offset, FbDrawable *drawable_override);
+    // return true if the text will be truncated
+    bool textExceeds(int x_offset);
 
 private:
     FbTk::Font *m_font;

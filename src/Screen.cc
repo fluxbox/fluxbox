@@ -290,6 +290,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     menu_delay(rm, 0, scrname + ".menuDelay", altscrname+".MenuDelay"),
     menu_delay_close(rm, 0, scrname + ".menuDelayClose", altscrname+".MenuDelayClose"),
     tab_width(rm, 64, scrname + ".tab.width", altscrname+".Tab.Width"),
+    tooltip_delay(rm, 500, scrname + ".tooltipDelay", altscrname+".TooltipDelay"),
     menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode"),
 
     gc_line_width(rm, 1, scrname+".overlay.lineWidth", altscrname+".Overlay.LineWidth"),
@@ -343,6 +344,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_root_window(scrn),
     m_geom_window(m_root_window, *this, *m_focused_windowtheme),
     m_pos_window(m_root_window, *this, *m_focused_windowtheme),
+    m_tooltip_window(m_root_window, *this, *m_focused_windowtheme),
     m_dummy_window(scrn, -1, -1, 1, 1, 0, true, false, CopyFromParent,
                    InputOnly),
     resource(rm, screenname, altscreenname),
@@ -484,6 +486,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     renderGeomWindow();
     renderPosWindow();
+    m_tooltip_window.setDelay(*resource.tooltip_delay);
 
     // setup workspaces and workspace menu
     int nr_ws = *resource.workspaces;
@@ -1846,6 +1849,17 @@ void BScreen::showGeometry(int gx, int gy) {
                     "Format for width and height window, %4d for width, and %4d for height").c_str(),
             gx, gy);
     m_geom_window.showText(label);
+}
+
+
+void BScreen::showTooltip(const std::string &text) {
+    if (*resource.tooltip_delay >= 0)
+        m_tooltip_window.showText(text);
+}
+
+void BScreen::hideTooltip() {
+    if (*resource.tooltip_delay >= 0)
+        m_tooltip_window.hide();
 }
 
 
