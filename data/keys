@@ -13,7 +13,7 @@ OnToolbar Mouse5 :NextWorkspace
 
 # alt + left/right click to move/resize a window
 OnWindow Mod1 Mouse1 :StartMoving
-OnWindow Mod1 Mouse3 :StartResizing
+OnWindow Mod1 Mouse3 :StartResizing NearestCorner
 
 # middle click a window's titlebar and drag to attach windows
 OnTitlebar Mouse2 :StartTabbing
@@ -49,8 +49,14 @@ Mod1 F1 :Exec xterm
 # open a dialog to run programs
 Mod1 F2 :Exec fbrun
 
-# close the current window
+# current window commands
 Mod1 F4 :Close
+Mod1 F9 :Minimize
+Mod1 F10 :Maximize
+Mod1 F11 :Fullscreen
+
+# open the window menu
+Mod1 space :WindowMenu
 
 # exit fluxbox
 Control Mod1 Delete :Exit
