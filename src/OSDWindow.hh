@@ -46,8 +46,15 @@ public:
     void hide();
 
     bool isVisible() const { return m_visible; }
-
+    BScreen &screen() const { return m_screen; }
+    FbTk::ThemeProxy<FbWinFrameTheme> &theme() { return m_theme; }
 protected:
+    /// Force visible status, use with care.
+    void setVisible(bool visible) {
+        m_visible = visible;
+    }
+
+private:
     void show();
 
     BScreen &m_screen;

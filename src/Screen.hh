@@ -64,6 +64,8 @@ class Toolbar;
 class HeadArea;
 class FocusControl;
 class ScreenPlacement;
+class TooltipWindow;
+class OSDWindow;
 
 namespace FbTk {
 class Menu;
@@ -72,6 +74,7 @@ class XLayerItem;
 class FbWindow;
 class Subject;
 }
+
 
 /// Handles screen connection, screen clients and workspaces
 /**
@@ -389,9 +392,13 @@ public:
     /// show geomentry with "width x height"-text, not size of window
     void showGeometry(int width, int height);
     void hideGeometry();
-    
+
+    /// @param text the text to be displayed in the tooltip window
     void showTooltip(const std::string &text);
+    /// Hides the tooltip window
     void hideTooltip();
+
+    TooltipWindow& tooltipWindow() { return *m_tooltip_window; }
 
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
@@ -538,8 +545,8 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
-    OSDWindow m_geom_window, m_pos_window;
-    TooltipWindow m_tooltip_window;
+    std::auto_ptr<OSDWindow> m_geom_window, m_pos_window;
+    std::auto_ptr<TooltipWindow> m_tooltip_window;
     FbTk::FbWindow m_dummy_window;
 
     struct ScreenResource {

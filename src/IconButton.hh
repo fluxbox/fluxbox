@@ -69,13 +69,16 @@ protected:
     void drawText(int x, int y, FbTk::FbDrawable *drawable_override);
 private:
     void setupWindow();
+    void showTooltip();
 
     Focusable &m_win;
     FbTk::FbWindow m_icon_window;
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;
     bool m_use_pixmap;
-
+    /// whether or not this instance has the tooltip attention 
+    /// i.e if it got enter notify
+    bool m_has_tooltip;
     FocusableTheme<IconbarTheme> m_theme;
     // cached pixmaps
     FbTk::CachedPixmap m_pm;

@@ -28,33 +28,35 @@
 TooltipWindow::TooltipWindow(const FbTk::FbWindow &parent, BScreen &screen,
                              FbTk::ThemeProxy<FbWinFrameTheme> &theme):
     OSDWindow(parent, screen, theme),
-    delay(-1) {
+    m_delay(-1) {
 
-    FbTk::RefCount<FbTk::Command<void> > raisecmd(new FbTk::SimpleCommand<TooltipWindow>(*this, &TooltipWindow::raiseTooltip));
-    timer.setCommand(raisecmd);
-    timer.fireOnce(true);
+    FbTk::RefCount<FbTk::Command<void> > 
+        raisecmd(new FbTk::SimpleCommand<TooltipWindow>(*this, 
+                                                        &TooltipWindow::raiseTooltip));
+    m_timer.setCommand(raisecmd);
+    m_timer.fireOnce(true);
 
 }
 
 void TooltipWindow::showText(const std::string &text) {
 
-    lastText = text.c_str();
-    if (delay == 0)
+    m_lastText = text;
+    if (m_delay == 0)
         raiseTooltip();
     else
-        timer.start();
+        m_timer.start();
 
 }
 
 void TooltipWindow::raiseTooltip() {
 
-    if (lastText.size() == 0)
+    if (m_lastText.empty())
         return;
 
-    resize(lastText);
+    resize(m_lastText);
     reconfigTheme();
-    int h = m_theme->font().height() + m_theme->bevelWidth() * 2;
-    int w = m_theme->font().textWidth(lastText, lastText.size()) + m_theme->bevelWidth() * 2;
+    int h = theme()->font().height() + theme()->bevelWidth() * 2;
+    int w = theme()->font().textWidth(m_lastText, m_lastText.size()) + theme()->bevelWidth() * 2;
 
     Window root_ret; // not used
     Window window_ret; // not used
@@ -62,13 +64,13 @@ void TooltipWindow::raiseTooltip() {
     int wx, wy; // not used
     unsigned int mask; // not used
 
-    XQueryPointer(display(), m_screen.rootWindow().window(),
+    XQueryPointer(display(), screen().rootWindow().window(),
                   &root_ret, &window_ret, &rx, &ry, &wx, &wy, &mask);
 
-    int head = m_screen.getHead(rx, ry);
-    int head_top = m_screen.getHeadY(head);
-    int head_left = m_screen.getHeadX(head);
-    int head_right = head_left + m_screen.getHeadWidth(head);
+    int head = screen().getHead(rx, ry);
+    int head_top = screen().getHeadY(head);
+    int head_left = screen().getHeadX(head);
+    int head_right = head_left + screen().getHeadWidth(head);
 
     // center the mouse horizontally
     rx -= w/2;
@@ -88,22 +90,27 @@ void TooltipWindow::raiseTooltip() {
 
     show();
     clear();
-    m_theme->font().drawText(*this, m_screen.screenNumber(),
-                             m_theme->iconbarTheme().text().textGC(), lastText,
-                             lastText.size(), m_theme->bevelWidth(),
-                             m_theme->bevelWidth() + m_theme->font().ascent());
+    theme()->font().drawText(*this, screen().screenNumber(),
+                             theme()->iconbarTheme().text().textGC(), 
+                             m_lastText, m_lastText.size(), 
+                             theme()->bevelWidth(),
+                             theme()->bevelWidth() + theme()->font().ascent());
 }
 
+void TooltipWindow::updateText(const std::string &text) {
+    m_lastText = text;
+    raiseTooltip();
+}
 
 void TooltipWindow::show() {
-    if (m_visible)
+    if (isVisible())
         return;
-    m_visible = true;
+    setVisible(true);
     raise();
     FbTk::FbWindow::show();
 }
 
 void TooltipWindow::hide() {
-    timer.stop();
+    m_timer.stop();
     OSDWindow::hide();
 }

@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
-Changes for 1.0.1:
+Changes for 1.1
+*08/05/09:
+   * Made tooltip in toolbar update when the title changes (Henrik)
+     Tooltip.cc/hh, Screen.cc/cc, OSDWindow.hh
 *08/05/05:
    * Add tooltips for iconbar buttons (thanks Matteo Galiazzo)
      TooltipWindow.cc/hh

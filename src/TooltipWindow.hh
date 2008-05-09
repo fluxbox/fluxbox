@@ -17,9 +17,10 @@
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-// DEALINGS IN THE SOFTWARE.#ifndef TOOLTIPWINDOW_HH_
-#ifndef TOOLTIPWINDOW_HH_
-#define TOOLTIPWINDOW_HH_
+// DEALINGS IN THE SOFTWARE.
+
+#ifndef TOOLTIPWINDOW_HH
+#define TOOLTIPWINDOW_HH
 
 #include "OSDWindow.hh"
 #include "FbTk/Command.hh"
@@ -27,27 +28,38 @@
 #include "FbTk/Timer.hh"
 #include "FbTk/SimpleCommand.hh"
 
-
+/**
+ * Displays a tooltip window
+ */
 class TooltipWindow : public OSDWindow  {
 public:
     TooltipWindow(const FbTk::FbWindow &parent, BScreen &screen,
                   FbTk::ThemeProxy<FbWinFrameTheme> &theme);
-
+    /**
+     * Sets the text in the window and starts the display timer.
+     * @param text the text to show in the window.
+     */
     void showText(const std::string &text);
-    void setDelay(int iDelay) { 
-        delay = iDelay; 
-        timer.setTimeout(delay);
+    /// updates the text directly without any delay
+    void updateText(const std::string &text);
+
+    /// Sets the delay before the window pops up
+    void setDelay(int delay) {
+        m_delay = delay;
+        m_timer.setTimeout(delay);
     }
-    void hide() ;    
+
+    void hide();
+
 
 private:
     void raiseTooltip();
-    void show();    
-    int delay;
-    std::string lastText;
-    FbTk::Timer timer;
+    void show();
+    int m_delay; ///< delay time for the timer
+    std::string m_lastText; ///< last text to be displayed
+    FbTk::Timer m_timer; ///< delay timer before the tooltip will show
 };
 
 
 
-#endif /*TOOLTIPWINDOW_HH_*/
+#endif // TOOLTIPWINDOW_HH_

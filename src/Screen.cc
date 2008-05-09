@@ -342,9 +342,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_pressed_winbutton_theme(new WinButtonTheme(scrn, ".pressed", ".Pressed", *m_focused_windowtheme)),
     m_menutheme(new FbTk::MenuTheme(scrn)),
     m_root_window(scrn),
-    m_geom_window(m_root_window, *this, *m_focused_windowtheme),
-    m_pos_window(m_root_window, *this, *m_focused_windowtheme),
-    m_tooltip_window(m_root_window, *this, *m_focused_windowtheme),
+    m_geom_window(new OSDWindow(m_root_window, *this, *m_focused_windowtheme)),
+    m_pos_window(new OSDWindow(m_root_window, *this, *m_focused_windowtheme)),
+    m_tooltip_window(new TooltipWindow(m_root_window, *this, *m_focused_windowtheme)),
     m_dummy_window(scrn, -1, -1, 1, 1, 0, true, false, CopyFromParent,
                    InputOnly),
     resource(rm, screenname, altscreenname),
@@ -486,7 +486,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     renderGeomWindow();
     renderPosWindow();
-    m_tooltip_window.setDelay(*resource.tooltip_delay);
+    m_tooltip_window->setDelay(*resource.tooltip_delay);
 
     // setup workspaces and workspace menu
     int nr_ws = *resource.workspaces;
@@ -1827,12 +1827,12 @@ void BScreen::showPosition(int x, int y) {
 
     char label[256];
     sprintf(label, "X:%5d x Y:%5d", x, y);
-    m_pos_window.showText(label);
+    m_pos_window->showText(label);
 }
 
 
 void BScreen::hidePosition() {
-    m_pos_window.hide();
+    m_pos_window->hide();
 }
 
 // can be negative when base_width/height > min_width/height
@@ -1848,23 +1848,23 @@ void BScreen::showGeometry(int gx, int gy) {
                     "W: %4d x H: %4d",
                     "Format for width and height window, %4d for width, and %4d for height").c_str(),
             gx, gy);
-    m_geom_window.showText(label);
+    m_geom_window->showText(label);
 }
 
 
 void BScreen::showTooltip(const std::string &text) {
     if (*resource.tooltip_delay >= 0)
-        m_tooltip_window.showText(text);
+        m_tooltip_window->showText(text);
 }
 
 void BScreen::hideTooltip() {
     if (*resource.tooltip_delay >= 0)
-        m_tooltip_window.hide();
+        m_tooltip_window->hide();
 }
 
 
 void BScreen::hideGeometry() {
-    m_geom_window.hide();
+    m_geom_window->hide();
 }
 
 void BScreen::setLayer(FbTk::XLayerItem &item, int layernum) {
@@ -1912,14 +1912,14 @@ void BScreen::renderGeomWindow() {
             _FB_XTEXT(Screen, GeometrySpacing,
             "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog").c_str(),
             0, 0);
-    m_geom_window.resize(label);
-    m_geom_window.reconfigTheme();
+    m_geom_window->resize(label);
+    m_geom_window->reconfigTheme();
 }
 
 
 void BScreen::renderPosWindow() {
-    m_pos_window.resize("0:00000 x 0:00000");
-    m_pos_window.reconfigTheme();
+    m_pos_window->resize("0:00000 x 0:00000");
+    m_pos_window->reconfigTheme();
 }
 
 void BScreen::updateSize() {
