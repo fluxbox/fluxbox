@@ -956,18 +956,7 @@ void BScreen::reconfigure() {
         }
     }
 
-    // if timestamp hasn't changed, then just a reconfigure is fine
-    // and that seems to happen somewhere else, anyway
-    if (fluxbox->menuTimestampsChanged()) {
-        // all bets are off, so just hide the menu and reset the filenames
-        fluxbox->clearMenuFilenames();
-        m_rootmenu->hide();
-        rereadMenu();
-    }
-
     //reconfigure menus
-    m_workspacemenu->reconfigure();
-    m_configmenu->reconfigure();
     // recreate window menu
     m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
     m_windowmenu->setInternalMenu();
