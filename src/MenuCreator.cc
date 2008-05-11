@@ -255,13 +255,13 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::StringConver
                 if (FbTk::FileUtil::isRegularFile(thisfile.c_str()) &&
                         (filelist[file_index][0] != '.') &&
                         (thisfile[thisfile.length() - 1] != '~')) {
-                    MenuCreator::createFromFile(thisfile, menu);
+                    MenuCreator::createFromFile(thisfile, menu, false);
                 }
             }
 
         } else {
             // inject this file into the current menu
-            MenuCreator::createFromFile(newfile, menu);
+            MenuCreator::createFromFile(newfile, menu, false);
         }
 
         safe_counter--;
@@ -390,33 +390,8 @@ FbTk::Menu *MenuCreator::createMenu(const string &label, int screen_number) {
     return menu;
 }
 
-FbTk::Menu *MenuCreator::createFromFile(const string &filename, int screen_number) {
-    string real_filename = FbTk::StringUtil::expandFilename(filename);
-    Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
-
-    FbMenuParser parser(real_filename);
-    if (!parser.isLoaded())
-        return 0;
-
-    startFile();
-    string label;
-    if (!getStart(parser, label, m_stringconvertor)) {
-        endFile();
-        return 0;
-    }
-
-    FbTk::Menu *menu = createMenu(label, screen_number);
-    if (menu != 0)
-        parseMenu(parser, *menu, m_stringconvertor);
-
-    endFile();
-
-    return menu;
-}
-
-
 bool MenuCreator::createFromFile(const string &filename,
-                                 FbTk::Menu &inject_into) {
+                                 FbTk::Menu &inject_into, bool begin) {
     string real_filename = FbTk::StringUtil::expandFilename(filename);
 
     FbMenuParser parser(real_filename);
@@ -424,6 +399,14 @@ bool MenuCreator::createFromFile(const string &filename,
         return false;
 
     startFile();
+    if (begin) {
+        string label;
+        if (!getStart(parser, label, m_stringconvertor)) {
+            endFile();
+            return false;
+        }
+        inject_into.setLabel(label);
+    }
 
     // save menu filename, so we can check if it changes
     Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
@@ -467,7 +450,7 @@ FbTk::Menu *MenuCreator::createMenuType(const string &type, int screen_num) {
     } else if (type == "workspacemenu") {
         return new WorkspaceMenu(*screen);
     } else if (type == "windowmenu") {
-        FbTk::Menu *menu = screen->createMenu("");
+        FbTk::Menu *menu = createMenu("", screen_num);
 
         menu->disableTitle(); // not titlebar
         if (screen->windowMenuFilename().empty() ||

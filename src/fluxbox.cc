@@ -1490,9 +1490,6 @@ void Fluxbox::rereadMenu() {
     for_each(m_screen_list.begin(),
              m_screen_list.end(),
              mem_fun(&BScreen::rereadMenu));
-
-    FbCommands::ShowRootMenuCmd showcmd;
-    showcmd.execute();
 }
 
 void Fluxbox::saveMenuFilename(const char *filename) {

@@ -1498,21 +1498,18 @@ void BScreen::initMenus() {
 void BScreen::initMenu() {
 
     if (m_rootmenu.get()) {
-        while (m_rootmenu->numberOfItems())
-            m_rootmenu->remove(0);
+        m_rootmenu->removeAll();
+        m_rootmenu->setLabel("");
     } else
         m_rootmenu.reset(createMenu(""));
 
     Fluxbox * const fb = Fluxbox::instance();
-    if (!fb->getMenuFilename().empty()) {
-        m_rootmenu.reset(MenuCreator::createFromFile(fb->getMenuFilename(),
-                                                     screenNumber()));
+    if (!fb->getMenuFilename().empty())
+        MenuCreator::createFromFile(fb->getMenuFilename(), *m_rootmenu);
 
-    }
-
-    if (m_rootmenu.get() == 0 || m_rootmenu->numberOfItems() == 0) {
+    if (m_rootmenu->numberOfItems() == 0) {
         _FB_USES_NLS;
-        m_rootmenu.reset(createMenu(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
+        m_rootmenu->setLabel(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu"));
         FbTk::RefCount<FbTk::Command<void> > restart_fb(FbTk::CommandParser<void>::instance().parse("restart"));
         FbTk::RefCount<FbTk::Command<void> > exit_fb(FbTk::CommandParser<void>::instance().parse("exit"));
         FbTk::RefCount<FbTk::Command<void> > execute_xterm(FbTk::CommandParser<void>::instance().parse("exec xterm"));

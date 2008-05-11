@@ -76,13 +76,8 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
     // special case for root menu
     if (&menu == &screen.rootMenu()) {
         Fluxbox* fb = Fluxbox::instance();
-        if(fb->menuTimestampsChanged()) {
-            // we dont show the menu here because fluxbox
-            // will bring up the rootmenu after the timed
-            // reread of the menu
+        if(fb->menuTimestampsChanged())
             fb->rereadMenu();
-            return;
-        }
     }
 
     Window root_ret; // not used
@@ -335,8 +330,8 @@ void ShowClientMenuCmd::execute() {
             m_list.push_back(static_cast<FluxboxWindow *>(*it));
     }
 
-    m_menu = new ClientMenu(*screen, m_list, 0);
-    ::showMenu(*screen, **m_menu);
+    m_menu.reset(new ClientMenu(*screen, m_list, 0));
+    ::showMenu(*screen, *m_menu.get());
 }
 
 REGISTER_COMMAND_WITH_ARGS(custommenu, FbCommands::ShowCustomMenuCmd, void);
@@ -347,11 +342,15 @@ void ShowCustomMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
-    m_menu = MenuCreator::createFromFile(custom_menu_file,
-                                         screen->screenNumber());
-    if (!m_menu.get())
-        return;
-    ::showMenu(*screen, **m_menu);
+
+    if (m_menu.get()) {
+        m_menu->removeAll();
+        m_menu->setLabel("");
+    } else
+        m_menu.reset(screen->createMenu(""));
+
+    MenuCreator::createFromFile(custom_menu_file, *m_menu.get());
+    ::showMenu(*screen, *m_menu.get());
 }
 
 REGISTER_COMMAND(rootmenu, FbCommands::ShowRootMenuCmd, void);
