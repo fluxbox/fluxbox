@@ -281,10 +281,6 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem, FbTk::StringConver
         parseMenu(parse, *submenu, labelconvertor);
         submenu->updateMenu();
         menu.insert(str_label, submenu);
-        // save to screen list so we can delete it later
-        BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
-        if (screen != 0)
-            screen->saveMenu(*submenu);
 
     } // end of submenu
     else if (str_key == "stylesdir" || str_key == "stylesmenu") {

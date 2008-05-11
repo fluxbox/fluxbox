@@ -1498,12 +1498,8 @@ void BScreen::initMenus() {
 void BScreen::initMenu() {
 
     if (m_rootmenu.get()) {
-        // since all menus in root is submenus in m_rootmenu
-        // just remove every item in m_rootmenu and then clear m_rootmenu_list
         while (m_rootmenu->numberOfItems())
             m_rootmenu->remove(0);
-        m_rootmenu_list.clear();
-
     } else
         m_rootmenu.reset(createMenu(""));
 

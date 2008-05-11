@@ -276,8 +276,6 @@ public:
 
     void saveWorkspaces(int w) { *resource.workspaces = w;  }
 
-    void saveMenu(FbTk::Menu &menu) { m_rootmenu_list.push_back(&menu); }
-
     FbTk::ThemeProxy<FbWinFrameTheme> &focusedWinFrameTheme() { return *m_focused_windowtheme.get(); }
     const FbTk::ThemeProxy<FbWinFrameTheme> &focusedWinFrameTheme() const { return *m_focused_windowtheme.get(); }
     FbTk::ThemeProxy<FbWinFrameTheme> &unfocusedWinFrameTheme() { return *m_unfocused_windowtheme.get(); }
@@ -521,11 +519,9 @@ private:
 
     ExtraMenus m_extramenus;
 
-    typedef std::list<FbTk::Menu *> Rootmenus;
     typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > Configmenus;
 
 
-    Rootmenus m_rootmenu_list;
     Configmenus m_configmenu_list;
     Icons m_icon_list;
 
