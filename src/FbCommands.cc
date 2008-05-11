@@ -80,7 +80,7 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
             // we dont show the menu here because fluxbox
             // will bring up the rootmenu after the timed
             // reread of the menu
-            fb->rereadMenu(true);
+            fb->rereadMenu();
             return;
         }
     }

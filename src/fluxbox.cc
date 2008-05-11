@@ -399,7 +399,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     //XSynchronize(disp, False);
     sync(false);
 
-    m_reconfigure_wait = m_reread_menu_wait = false;
+    m_reconfigure_wait = false;
 
     m_resourcemanager.unlock();
     ungrab();
@@ -1484,28 +1484,15 @@ bool Fluxbox::menuTimestampsChanged() const {
     return false;
 }
 
-void Fluxbox::rereadMenu(bool show_after_reread) {
-    m_reread_menu_wait = true;
-    m_show_menu_after_reread = show_after_reread;
-    m_reconfig_timer.start();
-}
-
-
-void Fluxbox::real_rereadMenu() {
-
+void Fluxbox::rereadMenu() {
     clearMenuFilenames();
 
     for_each(m_screen_list.begin(),
              m_screen_list.end(),
              mem_fun(&BScreen::rereadMenu));
 
-    if(m_show_menu_after_reread) {
-
-        FbCommands::ShowRootMenuCmd showcmd;
-        showcmd.execute();
-
-        m_show_menu_after_reread = false;
-    }
+    FbCommands::ShowRootMenuCmd showcmd;
+    showcmd.execute();
 }
 
 void Fluxbox::saveMenuFilename(const char *filename) {
@@ -1546,10 +1533,7 @@ void Fluxbox::timed_reconfigure() {
     if (m_reconfigure_wait)
         real_reconfigure();
 
-    if (m_reread_menu_wait)
-        real_rereadMenu();
-
-    m_reconfigure_wait = m_reread_menu_wait = false;
+    m_reconfigure_wait = false;
 }
 
 void Fluxbox::revertFocus() {

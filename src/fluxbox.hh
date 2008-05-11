@@ -149,7 +149,7 @@ public:
     void removeGroupSearch(Window win);
     void restart(const char *command = 0);
     void reconfigure();
-    void rereadMenu(bool show_after_reread = false);
+    void rereadMenu();
     /// reloads the menus if the timestamps changed
 
     /// handle any system signal sent to the application
@@ -201,7 +201,6 @@ private:
     std::string getRcFilename();
     void load_rc();
 
-    void real_rereadMenu();
     void real_reconfigure();
 
     void handleEvent(XEvent *xe);
@@ -251,7 +250,7 @@ private:
 
     Atom m_fluxbox_pid;
 
-    bool m_reconfigure_wait, m_reread_menu_wait;
+    bool m_reconfigure_wait;
     Time m_last_time;
     Window m_masked;
     std::string m_rc_file; ///< resource filename
@@ -279,7 +278,6 @@ private:
     bool m_starting;
     bool m_restarting;
     bool m_shutdown;
-    bool m_show_menu_after_reread;
     int m_server_grabs;
     int m_randr_event_type; ///< the type number of randr event
     int m_shape_eventbase; ///< event base for shape events
