@@ -307,7 +307,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     // Create keybindings handler and load keys file
     // Note: this needs to be done before creating screens
     m_key.reset(new Keys);
-    m_key->load(StringUtil::expandFilename(*m_rc_keyfile).c_str());
+    m_key->reconfigure();
 
     vector<int> screens;
     int i;
@@ -751,7 +751,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             XRefreshKeyboardMapping(&e->xmapping);
             FbTk::KeyUtil::instance().init(); // reinitialise the key utils
             // reconfigure keys (if the mapping changes, they don't otherwise update
-            m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
+            m_key->reconfigure();
         }
         break;
     case CreateNotify:
@@ -1443,7 +1443,7 @@ void Fluxbox::real_reconfigure() {
     for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::reconfigure));
 
     //reconfigure keys
-    m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
+    m_key->reconfigure();
 
     // and atomhandlers
     for (AtomHandlerContainerIt it= m_atomhandler.begin();

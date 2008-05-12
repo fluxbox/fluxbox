@@ -120,6 +120,7 @@ public:
     const std::string &getMenuFilename() const { return *m_rc_menufile; }
     const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
     const std::string &getAppsFilename() const { return *m_rc_appsfile; }
+    const std::string &getKeysFilename() const { return *m_rc_keyfile; }
     int colorsPerChannel() const { return *m_rc_colors_per_channel; }
     int getTabsPadding() const { return *m_rc_tabs_padding; }
 
