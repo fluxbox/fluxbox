@@ -225,6 +225,7 @@ public:
     FluxboxWindow* findGroup(Application *, BScreen &screen);
 
     void reconfigure();
+    void checkReload();
     void reload();
     void save();
 

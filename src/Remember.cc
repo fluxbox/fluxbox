@@ -120,7 +120,7 @@ public:
 
     void click(int button, int time, unsigned int mods) {
         // reconfigure only does stuff if the apps file has changed
-        Remember::instance().reconfigure();
+        Remember::instance().checkReload();
         if (WindowCmd<void>::window() != 0) {
             if (isSelected()) {
                 Remember::instance().forgetAttrib(WindowCmd<void>::window()->winClient(), m_attrib);
@@ -580,6 +580,9 @@ Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlis
 
 void Remember::reconfigure() {
     m_reloader.setMainFile(Fluxbox::instance()->getAppsFilename());
+}
+
+void Remember::checkReload() {
     m_reloader.checkReload();
 }
 
@@ -1214,7 +1217,7 @@ void Remember::setupClient(WinClient &winclient) {
         return;
 
     // check if apps file has changed
-    reconfigure();
+    checkReload();
 
     Application *app = find(winclient);
     if (app == 0)
@@ -1249,7 +1252,7 @@ FluxboxWindow *Remember::findGroup(Application *app, BScreen &screen) {
 }
 
 void Remember::updateClientClose(WinClient &winclient) {
-    reconfigure(); // reload if it's changed
+    checkReload(); // reload if it's changed
     Application *app = find(winclient);
 
     if (app && (app->save_on_close_remember && app->save_on_close)) {
