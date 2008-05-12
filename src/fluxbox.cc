@@ -437,8 +437,6 @@ Fluxbox::~Fluxbox() {
         delete (*it).first;
     }
     m_atomhandler.clear();
-
-    clearMenuFilenames();
 }
 
 
@@ -1467,63 +1465,6 @@ BScreen *Fluxbox::findScreen(int id) {
         return 0;
 
     return *it;
-}
-
-bool Fluxbox::menuTimestampsChanged() const {
-    list<MenuTimestamp *>::const_iterator it = m_menu_timestamps.begin();
-    list<MenuTimestamp *>::const_iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end; ++it) {
-
-        time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp((*it)->filename.c_str());
-
-        if (timestamp != (*it)->timestamp)
-            return true;
-    }
-
-    // no timestamp changed
-    return false;
-}
-
-void Fluxbox::rereadMenu() {
-    clearMenuFilenames();
-
-    for_each(m_screen_list.begin(),
-             m_screen_list.end(),
-             mem_fun(&BScreen::rereadMenu));
-}
-
-void Fluxbox::saveMenuFilename(const char *filename) {
-    if (filename == 0)
-        return;
-
-    bool found = false;
-
-    list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
-    list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end; ++it) {
-        if ((*it)->filename == filename) {
-            found = true;
-            break;
-        }
-    }
-
-    if (! found) {
-        time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(filename);
-
-        MenuTimestamp *ts = new MenuTimestamp;
-
-        ts->filename = filename;
-        ts->timestamp = timestamp;
-
-        m_menu_timestamps.push_back(ts);
-    }
-}
-
-void Fluxbox::clearMenuFilenames() {
-    while(!m_menu_timestamps.empty()) {
-        delete m_menu_timestamps.back();
-        m_menu_timestamps.pop_back();
-    }
 }
 
 void Fluxbox::timed_reconfigure() {

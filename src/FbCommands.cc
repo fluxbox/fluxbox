@@ -73,11 +73,11 @@ namespace {
 
 void showMenu(const BScreen &screen, FbTk::Menu &menu) {
 
-    // special case for root menu
-    if (&menu == &screen.rootMenu()) {
-        Fluxbox* fb = Fluxbox::instance();
-        if(fb->menuTimestampsChanged())
-            fb->rereadMenu();
+    // check if menu has changed
+    if (typeid(menu) == typeid(FbMenu)) {
+        FbMenu *fbmenu = static_cast<FbMenu *>(&menu);
+        if (fbmenu->reloadHelper())
+            fbmenu->reloadHelper()->checkReload();
     }
 
     Window root_ret; // not used

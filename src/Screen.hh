@@ -54,6 +54,7 @@
 #include <map>
 
 class ClientPattern;
+class FbMenu;
 class Focusable;
 class FluxboxWindow;
 class WinClient;
@@ -122,12 +123,12 @@ public:
     const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
     FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     // menus
-    const FbTk::Menu &rootMenu() const { return *m_rootmenu.get(); }
-    FbTk::Menu &rootMenu() { return *m_rootmenu.get(); }
-    const FbTk::Menu &configMenu() const { return *m_configmenu.get(); }
-    FbTk::Menu &configMenu() { return *m_configmenu.get(); }
-    const FbTk::Menu &windowMenu() const { return *m_windowmenu.get(); }
-    FbTk::Menu &windowMenu() { return *m_windowmenu.get(); }
+    const FbMenu &rootMenu() const { return *m_rootmenu.get(); }
+    FbMenu &rootMenu() { return *m_rootmenu.get(); }
+    const FbMenu &configMenu() const { return *m_configmenu.get(); }
+    FbMenu &configMenu() { return *m_configmenu.get(); }
+    const FbMenu &windowMenu() const { return *m_windowmenu.get(); }
+    FbMenu &windowMenu() { return *m_windowmenu.get(); }
     ExtraMenus &extraWindowMenus() { return m_extramenus; }
     const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
 
@@ -166,9 +167,9 @@ public:
     Workspace *currentWorkspace() { return m_current_workspace; }
     const Workspace *currentWorkspace() const { return m_current_workspace; }
     /// @return the workspace menu
-    const FbTk::Menu &workspaceMenu() const { return *m_workspacemenu.get(); }
+    const FbMenu &workspaceMenu() const { return *m_workspacemenu.get(); }
     /// @return the workspace menu
-    FbTk::Menu &workspaceMenu() { return *m_workspacemenu.get(); }
+    FbMenu &workspaceMenu() { return *m_workspacemenu.get(); }
     /// @return focus control handler
     const FocusControl &focusControl() const { return *m_focus_control; }
     /// @return focus control handler
@@ -251,15 +252,15 @@ public:
     /**
      * Creates an empty menu with specified label
      * @param label for the menu
-     * @return create menu
+     * @return created menu
      */
-    FbTk::Menu *createMenu(const std::string &label);
+    FbMenu *createMenu(const std::string &label);
     /**
      * Creates an empty toggle menu with a specific label
      * @param label
      * @return created menu
      */
-    FbTk::Menu *createToggleMenu(const std::string &label);
+    FbMenu *createToggleMenu(const std::string &label);
 
     /**
      * For extras to add menus.
@@ -383,6 +384,7 @@ public:
     void reconfigure();
     void reconfigureTabs();
     void rereadMenu();
+    void rereadWindowMenu();
     void shutdown();
     /// show position window centered on the screen with "X x Y" text
     void showPosition(int x, int y);
@@ -489,7 +491,6 @@ public:
 
 private:
     void setupConfigmenu(FbTk::Menu &menu);
-    void initMenu();
     void renderGeomWindow();
     void renderPosWindow();
 
@@ -515,7 +516,7 @@ private:
 
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
-    std::auto_ptr<FbTk::Menu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
+    std::auto_ptr<FbMenu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
 
     ExtraMenus m_extramenus;
 

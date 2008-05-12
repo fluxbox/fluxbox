@@ -136,8 +136,6 @@ public:
     void shutdown();
     void load_rc(BScreen &scr);
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
-    void saveMenuFilename(const char *);
-    void clearMenuFilenames();
     void saveWindowSearch(Window win, WinClient *winclient);
     // some windows relate to the group, not the client, so we record separately
     // searchWindow on these windows will give the active client in the group
@@ -149,8 +147,6 @@ public:
     void removeGroupSearch(Window win);
     void restart(const char *command = 0);
     void reconfigure();
-    void rereadMenu();
-    /// reloads the menus if the timestamps changed
 
     /// handle any system signal sent to the application
     void handleSignal(int signum);
@@ -176,8 +172,6 @@ public:
     typedef std::list<BScreen *> ScreenList;
     const ScreenList screenList() const { return m_screen_list; }
 
-    /// @return whether the timestamps on the menu changed
-    bool menuTimestampsChanged() const;
     bool haveShape() const { return m_have_shape; }
     int shapeEventbase() const { return m_shape_eventbase; }
     void getDefaultDataFilename(const char *name, std::string &) const;
@@ -190,14 +184,6 @@ public:
     AttentionNoticeHandler &attentionHandler() { return m_attention_handler; }
 
 private:
-
-    typedef struct MenuTimestamp {
-        std::string filename;
-        time_t timestamp;
-    } MenuTimestamp;
-
-
-
     std::string getRcFilename();
     void load_rc();
 
@@ -241,7 +227,6 @@ private:
     // will have it's window being the group index
     std::multimap<Window, WinClient *> m_group_search;
 
-    std::list<MenuTimestamp *> m_menu_timestamps;
     ScreenList m_screen_list;
 
     FluxboxWindow *m_masked_window;
