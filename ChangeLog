@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/05/12:
+   * Modifying the apps file no longer requires a reconfigure (Mark)
+     Remember.cc/hh
 *08/05/09:
    * Made tooltip in toolbar update when the title changes (Henrik)
      Tooltip.cc/hh, Screen.cc/cc, OSDWindow.hh
