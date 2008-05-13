@@ -343,14 +343,21 @@ void ShowCustomMenuCmd::execute() {
     if (screen == 0)
         return;
 
-    if (m_menu.get()) {
-        m_menu->removeAll();
-        m_menu->setLabel("");
-    } else
+    if (!m_menu.get() || screen->screenNumber() != m_menu->screenNumber()) {
         m_menu.reset(screen->createMenu(""));
+        m_menu->setReloadHelper(new FbTk::AutoReloadHelper());
+        m_menu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<ShowCustomMenuCmd>(*this, &ShowCustomMenuCmd::reload)));
+        m_menu->reloadHelper()->setMainFile(custom_menu_file);
+    } else
+        m_menu->reloadHelper()->checkReload();
 
-    MenuCreator::createFromFile(custom_menu_file, *m_menu.get());
     ::showMenu(*screen, *m_menu.get());
+}
+
+void ShowCustomMenuCmd::reload() {
+    m_menu->removeAll();
+    m_menu->setLabel("");
+    MenuCreator::createFromFile(custom_menu_file, *m_menu.get(), m_menu->reloadHelper());
 }
 
 REGISTER_COMMAND(rootmenu, FbCommands::ShowRootMenuCmd, void);
