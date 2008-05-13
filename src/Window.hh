@@ -323,6 +323,12 @@ public:
      * @param my position
      */
     void showMenu(int mx, int my);
+
+    /** popup window menu at specific location
+     * @param x 
+     * @param y
+     */
+    void popupMenu(int x, int y);
     // popup menu on last button press position
     void popupMenu();
 

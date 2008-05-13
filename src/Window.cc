@@ -2172,25 +2172,31 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
     menu().grabInputFocus();
 }
 
+void FluxboxWindow::popupMenu(int x, int y) {
+    // hide menu if it was opened for this window before
+    if (menu().isVisible() && FbMenu::window() == this) {
+       menu().hide();
+       return;
+    }
+
+    menu().disableTitle();
+
+    showMenu(x, y);
+}
+
 /**
    Moves the menu to last button press position and shows it,
    if it's already visible it'll be hidden
  */
 void FluxboxWindow::popupMenu() {
 
-    // hide menu if it was opened for this window before
-    if (menu().isVisible() && FbMenu::window() == this) {
-        menu().hide();
-        return;
-    }
-
-    menu().disableTitle();
     int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
     if (!decorations.titlebar) // if we don't have any titlebar
         menu_y = 0;
     if (m_last_button_x < x() || m_last_button_x > x() + static_cast<signed>(width()))
         m_last_button_x = x();
-    showMenu(m_last_button_x, menu_y + frame().y());
+
+    popupMenu(m_last_button_x, menu_y + frame().y());
 }
 
 

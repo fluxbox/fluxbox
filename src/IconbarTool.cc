@@ -214,16 +214,11 @@ class ShowMenu: public FbTk::Command<void> {
 public:
     explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
     void execute() {
-        // hide the menu if it's already showing for this FluxboxWindow
-        if (m_win.menu().isVisible() && FbMenu::window() == &m_win) {
-            m_win.menu().hide();
-            return;
-        }
         // get last button pos
         const XEvent &event = Fluxbox::instance()->lastEvent();
         int x = event.xbutton.x_root - (m_win.menu().width() / 2);
         int y = event.xbutton.y_root - (m_win.menu().height() / 2);
-        m_win.showMenu(x, y);
+        m_win.popupMenu(x, y);
     }
 private:
     FluxboxWindow &m_win;
