@@ -73,16 +73,11 @@ namespace {
 
 void showMenu(const BScreen &screen, FbTk::Menu &menu) {
 
-    // special case for root menu
-    if (&menu == &screen.rootMenu()) {
-        Fluxbox* fb = Fluxbox::instance();
-        if(fb->menuTimestampsChanged()) {
-            // we dont show the menu here because fluxbox
-            // will bring up the rootmenu after the timed
-            // reread of the menu
-            fb->rereadMenu(true);
-            return;
-        }
+    // check if menu has changed
+    if (typeid(menu) == typeid(FbMenu)) {
+        FbMenu *fbmenu = static_cast<FbMenu *>(&menu);
+        if (fbmenu->reloadHelper())
+            fbmenu->reloadHelper()->checkReload();
     }
 
     Window root_ret; // not used
@@ -335,8 +330,8 @@ void ShowClientMenuCmd::execute() {
             m_list.push_back(static_cast<FluxboxWindow *>(*it));
     }
 
-    m_menu = new ClientMenu(*screen, m_list, 0);
-    ::showMenu(*screen, **m_menu);
+    m_menu.reset(new ClientMenu(*screen, m_list, 0));
+    ::showMenu(*screen, *m_menu.get());
 }
 
 REGISTER_COMMAND_WITH_ARGS(custommenu, FbCommands::ShowCustomMenuCmd, void);
@@ -347,11 +342,22 @@ void ShowCustomMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
-    m_menu = MenuCreator::createFromFile(custom_menu_file,
-                                         screen->screenNumber());
-    if (!m_menu.get())
-        return;
-    ::showMenu(*screen, **m_menu);
+
+    if (!m_menu.get() || screen->screenNumber() != m_menu->screenNumber()) {
+        m_menu.reset(screen->createMenu(""));
+        m_menu->setReloadHelper(new FbTk::AutoReloadHelper());
+        m_menu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<ShowCustomMenuCmd>(*this, &ShowCustomMenuCmd::reload)));
+        m_menu->reloadHelper()->setMainFile(custom_menu_file);
+    } else
+        m_menu->reloadHelper()->checkReload();
+
+    ::showMenu(*screen, *m_menu.get());
+}
+
+void ShowCustomMenuCmd::reload() {
+    m_menu->removeAll();
+    m_menu->setLabel("");
+    MenuCreator::createFromFile(custom_menu_file, *m_menu.get(), m_menu->reloadHelper());
 }
 
 REGISTER_COMMAND(rootmenu, FbCommands::ShowRootMenuCmd, void);

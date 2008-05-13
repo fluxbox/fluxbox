@@ -29,6 +29,7 @@
 #include "AtomHandler.hh"
 #include "ClientPattern.hh"
 
+#include "FbTk/AutoReloadHelper.hh"
 #include "FbTk/RefCount.hh"
 
 #include <fstream>
@@ -223,7 +224,9 @@ public:
     Application* add(WinClient &winclient);
     FluxboxWindow* findGroup(Application *, BScreen &screen);
 
-    void reconfigure(); // was load
+    void reconfigure();
+    void checkReload();
+    void reload();
     void save();
 
     bool isRemembered(WinClient &win, Attribute attrib);
@@ -277,7 +280,7 @@ private:
     Startups m_startups;
     static Remember *s_instance;
 
-    time_t m_last_timestamp;
+    FbTk::AutoReloadHelper m_reloader;
 };
 
 #endif // REMEMBER_HH

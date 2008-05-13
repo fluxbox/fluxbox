@@ -23,6 +23,7 @@
 #define KEYS_HH
 
 #include "FbTk/NotCopyable.hh"
+#include "FbTk/AutoReloadHelper.hh"
 
 #include <X11/Xlib.h>
 #include <string>
@@ -57,17 +58,6 @@ public:
     /// destructor
     ~Keys();
 
-    /**
-       Load configuration from file
-       @return true on success, else false
-    */
-    bool load(const char *filename = 0);
-    /**
-       Save keybindings to a file
-       Note: the file will be overwritten
-       @return true on success, else false
-     */
-    bool save(const char *filename = 0) const;
     /// bind a key action from a string
     /// @return false on failure
     bool addBinding(const std::string &binding);
@@ -83,12 +73,12 @@ public:
     /// unregister window
     void unregisterWindow(Window win);
 
+    const std::string& filename() const { return m_filename; }
     /**
        Reload configuration from filename
        @return true on success, else false
     */
-    bool reconfigure(const char *filename);
-    const std::string& filename() const { return m_filename; }
+    void reconfigure();
     void keyMode(const std::string& keyMode);
 private:
     class t_key; // helper class to build a 'keytree'
@@ -104,13 +94,18 @@ private:
     void ungrabButtons();
     void grabWindow(Window win);
 
-    // Load default keybindings for when there are errors loading the initial one
+    /**
+       Load configuration from file
+    */
+    void reload();
+    // Load default keybindings for when there are errors loading the keys file
     void loadDefaults();
     void setKeyMode(t_key *keyMode);
 
 
     // member variables
     std::string m_filename;
+    FbTk::AutoReloadHelper m_reloader;
     t_key *m_keylist;
     keyspace_t m_map;
 

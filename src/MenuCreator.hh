@@ -28,18 +28,24 @@
 #include <list>
 
 namespace FbTk {
+class AutoReloadHelper;
 class Menu;
 }
 
+class FbMenu;
 class FluxboxWindow;
 
 class MenuCreator {
 public:
-    static FbTk::Menu *createMenu(const std::string &label, int screen_num);
-    static FbTk::Menu *createFromFile(const std::string &filename, int screen_num);
-    static FbTk::Menu *createMenuType(const std::string &label, int screen_num);
-    static bool createFromFile(const std::string &filename, FbTk::Menu &inject_into);
-    static bool createWindowMenuFromFile(const std::string &filename, FbTk::Menu &inject_into);
+    static FbMenu *createMenu(const std::string &label, int screen_num);
+    static FbMenu *createMenuType(const std::string &label, int screen_num);
+    static bool createFromFile(const std::string &filename,
+                               FbTk::Menu &inject_into,
+                               FbTk::AutoReloadHelper *reloader = NULL,
+                               bool begin = true);
+    static void createWindowMenuFromFile(const std::string &filename,
+                                         FbTk::Menu &inject_into,
+                                         FbTk::AutoReloadHelper *reloader);
     static bool createWindowMenuItem(const std::string &type, const std::string &label, 
                                      FbTk::Menu &inject_into);
 

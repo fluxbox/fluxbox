@@ -170,7 +170,9 @@ Keys::t_key::~t_key() {
 
 
 
-Keys::Keys() : next_key(0) { }
+Keys::Keys(): next_key(0) {
+    m_reloader.setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Keys>(*this, &Keys::reload)));
+}
 
 Keys::~Keys() {
     ungrabKeys();
@@ -255,27 +257,25 @@ void Keys::grabWindow(Window win) {
 /**
     Load and grab keys
     TODO: error checking
-    @return true on success else false
 */
-bool Keys::load(const char *filename) {
+void Keys::reload() {
     // an intentionally empty file will still have one root mapping
     bool firstload = m_map.empty();
 
-    if (!filename) {
+    if (m_filename.empty()) {
         if (firstload)
             loadDefaults();
-        return false;
+        return;
     }
 
     FbTk::App::instance()->sync(false);
 
     // open the file
-    ifstream infile(filename);
+    ifstream infile(m_filename.c_str());
     if (!infile) {
         if (firstload)
             loadDefaults();
-
-        return false; // failed to open file
+        return; // failed to open file
     }
 
     // free memory of previous grabs
@@ -301,9 +301,7 @@ bool Keys::load(const char *filename) {
         }
     } // end while eof
 
-    m_filename = filename;
     keyMode("default");
-    return true;
 }
 
 /**
@@ -319,19 +317,6 @@ void Keys::loadDefaults() {
     addBinding("OnDesktop Mouse2 :WorkspaceMenu");
     addBinding("OnDesktop Mouse3 :RootMenu");
     keyMode("default");
-}
-
-bool Keys::save(const char *filename) const {
-    //!!
-    //!! TODO: fix keybinding saving
-    //!! (we probably need to save key actions
-    //!! as strings instead of creating new Commands)
-
-    // open file for writing
-    //    ofstream outfile(filename);
-    //    if (!outfile)
-    return false;
-    //    return true;
 }
 
 bool Keys::addBinding(const string &linebuffer) {
@@ -583,8 +568,10 @@ void Keys::unregisterWindow(Window win) {
  deletes the tree and load configuration
  returns true on success else false
 */
-bool Keys::reconfigure(const char *filename) {
-    return load(filename);
+void Keys::reconfigure() {
+    m_filename = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getKeysFilename());
+    m_reloader.setMainFile(m_filename);
+    m_reloader.checkReload();
 }
 
 void Keys::keyMode(const string& keyMode) {

@@ -1,5 +1,13 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/05/13:
+   * Only reload custom menus when necessary (Mark)
+     FbCommands.cc/hh
+*08/05/12:
+   * Only reload the keys file if the contents have changed (Mark)
+     Keys.cc/hh fluxbox.cc/hh
+   * Modifying the apps file no longer requires a reconfigure (Mark)
+     Remember.cc/hh
 *08/05/09:
    * Made tooltip in toolbar update when the title changes (Henrik)
      Tooltip.cc/hh, Screen.cc/cc, OSDWindow.hh

@@ -120,7 +120,7 @@ public:
 
     void click(int button, int time, unsigned int mods) {
         // reconfigure only does stuff if the apps file has changed
-        Remember::instance().reconfigure();
+        Remember::instance().checkReload();
         if (WindowCmd<void>::window() != 0) {
             if (isSelected()) {
                 Remember::instance().forgetAttrib(WindowCmd<void>::window()->winClient(), m_attrib);
@@ -281,14 +281,14 @@ void Application::reset() {
 Remember *Remember::s_instance = 0;
 
 Remember::Remember():
-    m_pats(new Patterns()),
-    m_last_timestamp(0)
-{
+    m_pats(new Patterns()) {
     if (s_instance != 0)
         throw string("Can not create more than one instance of Remember");
 
     s_instance = this;
     enableUpdate();
+
+    m_reloader.setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Remember>(*this, &Remember::reload)));
     reconfigure();
 }
 
@@ -579,11 +579,15 @@ Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlis
 
 
 void Remember::reconfigure() {
-    string apps_string = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getAppsFilename());
+    m_reloader.setMainFile(Fluxbox::instance()->getAppsFilename());
+}
 
-    time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(apps_string.c_str());
-    if (m_last_timestamp > 0 && m_last_timestamp == timestamp)
-        return;
+void Remember::checkReload() {
+    m_reloader.checkReload();
+}
+
+void Remember::reload() {
+    string apps_string = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getAppsFilename());
 
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;
@@ -598,7 +602,6 @@ void Remember::reconfigure() {
     m_startups.clear();
 
     if (!apps_file.fail()) {
-        m_last_timestamp = timestamp;
         if (!apps_file.eof()) {
             string line;
             int row = 0;
@@ -687,7 +690,7 @@ void Remember::reconfigure() {
 #endif
         }
     } else {
-        cerr << "apps file failure" << endl;
+        cerr << "failed to open apps file" << endl;
     }
 
     // Clean up old state
@@ -895,11 +898,8 @@ void Remember::save() {
         apps_file << "[end]" << endl;
     }
     apps_file.close();
-
-    time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(apps_string.c_str());
-    if (timestamp > 0)
-        m_last_timestamp = timestamp;
-
+    // update timestamp to avoid unnecessary reload
+    m_reloader.addFile(Fluxbox::instance()->getAppsFilename());
 }
 
 bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
@@ -1216,6 +1216,9 @@ void Remember::setupClient(WinClient &winclient) {
     if (winclient.screen().isRestart())
         return;
 
+    // check if apps file has changed
+    checkReload();
+
     Application *app = find(winclient);
     if (app == 0)
         return; // nothing to do
@@ -1249,7 +1252,7 @@ FluxboxWindow *Remember::findGroup(Application *app, BScreen &screen) {
 }
 
 void Remember::updateClientClose(WinClient &winclient) {
-    reconfigure(); // reload if it's changed
+    checkReload(); // reload if it's changed
     Application *app = find(winclient);
 
     if (app && (app->save_on_close_remember && app->save_on_close)) {

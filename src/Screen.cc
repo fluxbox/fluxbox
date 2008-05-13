@@ -283,7 +283,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
     user_follow_model(rm, FOLLOW_ACTIVE_WINDOW, scrname+".userFollowModel", altscrname+".UserFollowModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
-    edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
+    edge_snap_threshold(rm, 10, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
     focused_alpha(rm, 255, scrname+".window.focus.alpha", altscrname+".Window.Focus.Alpha"),
     unfocused_alpha(rm, 255, scrname+".window.unfocus.alpha", altscrname+".Window.Unfocus.Alpha"),
     menu_alpha(rm, 255, scrname+".menu.alpha", altscrname+".Menu.Alpha"),
@@ -501,6 +501,15 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     //!! TODO: we shouldn't do this more than once, but since slit handles their
     // own resources we must do this.
     fluxbox->load_rc(*this);
+
+    m_windowmenu.reset(createMenu(""));
+    m_windowmenu->setInternalMenu();
+    m_windowmenu->setReloadHelper(new FbTk::AutoReloadHelper());
+    m_windowmenu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<BScreen>(*this, &BScreen::rereadWindowMenu)));
+
+    m_rootmenu.reset(createMenu(""));
+    m_rootmenu->setReloadHelper(new FbTk::AutoReloadHelper());
+    m_rootmenu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<BScreen>(*this, &BScreen::rereadMenu)));
 
     m_configmenu.reset(createMenu(_FB_XTEXT(Menu, Configuration,
                                   "Configuration", "Title of configuration menu")));
@@ -889,8 +898,8 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
 
 }
 
-FbTk::Menu *BScreen::createMenu(const string &label) {
-    FbTk::Menu *menu = new FbMenu(menuTheme(),
+FbMenu *BScreen::createMenu(const string &label) {
+    FbMenu *menu = new FbMenu(menuTheme(),
                                   imageControl(),
                                   *layerManager().getLayer(Layer::MENU));
     if (!label.empty())
@@ -898,8 +907,9 @@ FbTk::Menu *BScreen::createMenu(const string &label) {
 
     return menu;
 }
-FbTk::Menu *BScreen::createToggleMenu(const string &label) {
-    FbTk::Menu *menu = new ToggleMenu(menuTheme(),
+
+FbMenu *BScreen::createToggleMenu(const string &label) {
+    FbMenu *menu = new ToggleMenu(menuTheme(),
                                       imageControl(),
                                       *layerManager().getLayer(Layer::MENU));
     if (!label.empty())
@@ -912,9 +922,7 @@ void BScreen::addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu) 
     menu->setInternalMenu();
     menu->disableTitle();
     m_extramenus.push_back(make_pair(label, menu));
-    // recreate window menu
-    m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
-    m_windowmenu->setInternalMenu();
+    rereadWindowMenu();
 }
 
 void BScreen::reconfigure() {
@@ -956,21 +964,9 @@ void BScreen::reconfigure() {
         }
     }
 
-    // if timestamp hasn't changed, then just a reconfigure is fine
-    // and that seems to happen somewhere else, anyway
-    if (fluxbox->menuTimestampsChanged()) {
-        // all bets are off, so just hide the menu and reset the filenames
-        fluxbox->clearMenuFilenames();
-        m_rootmenu->hide();
-        rereadMenu();
-    }
-
-    //reconfigure menus
-    m_workspacemenu->reconfigure();
-    m_configmenu->reconfigure();
-    // recreate window menu
-    m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
-    m_windowmenu->setInternalMenu();
+    // update menu filenames
+    m_rootmenu->reloadHelper()->setMainFile(fluxbox->getMenuFilename());
+    m_windowmenu->reloadHelper()->setMainFile(windowMenuFilename());
 
     // reconfigure workspaces
     for_each(m_workspaces_list.begin(),
@@ -1001,12 +997,6 @@ void BScreen::reconfigureTabs() {
                                            it_end = winlist.end();
     for (; it != it_end; ++it)
         (*it)->fbwindow()->applyDecorations();
-}
-
-
-void BScreen::rereadMenu() {
-    initMenu();
-    m_rootmenu->reconfigure();
 }
 
 void BScreen::updateWorkspaceName(unsigned int w) {
@@ -1500,34 +1490,24 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
 
 void BScreen::initMenus() {
     m_workspacemenu.reset(MenuCreator::createMenuType("workspacemenu", screenNumber()));
-    m_windowmenu.reset(MenuCreator::createMenuType("windowmenu", screenNumber()));
-    m_windowmenu->setInternalMenu();
-    initMenu();
+    m_rootmenu->reloadHelper()->setMainFile(Fluxbox::instance()->getMenuFilename());
+    m_windowmenu->reloadHelper()->setMainFile(windowMenuFilename());
 }
 
 
-void BScreen::initMenu() {
+void BScreen::rereadMenu() {
 
-    if (m_rootmenu.get()) {
-        // since all menus in root is submenus in m_rootmenu
-        // just remove every item in m_rootmenu and then clear m_rootmenu_list
-        while (m_rootmenu->numberOfItems())
-            m_rootmenu->remove(0);
-        m_rootmenu_list.clear();
-
-    } else
-        m_rootmenu.reset(createMenu(""));
+    m_rootmenu->removeAll();
+    m_rootmenu->setLabel("");
 
     Fluxbox * const fb = Fluxbox::instance();
-    if (!fb->getMenuFilename().empty()) {
-        m_rootmenu.reset(MenuCreator::createFromFile(fb->getMenuFilename(),
-                                                     screenNumber()));
+    if (!fb->getMenuFilename().empty())
+        MenuCreator::createFromFile(fb->getMenuFilename(), *m_rootmenu,
+                                    m_rootmenu->reloadHelper());
 
-    }
-
-    if (m_rootmenu.get() == 0 || m_rootmenu->numberOfItems() == 0) {
+    if (m_rootmenu->numberOfItems() == 0) {
         _FB_USES_NLS;
-        m_rootmenu.reset(createMenu(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
+        m_rootmenu->setLabel(_FB_XTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu"));
         FbTk::RefCount<FbTk::Command<void> > restart_fb(FbTk::CommandParser<void>::instance().parse("restart"));
         FbTk::RefCount<FbTk::Command<void> > exit_fb(FbTk::CommandParser<void>::instance().parse("exit"));
         FbTk::RefCount<FbTk::Command<void> > execute_xterm(FbTk::CommandParser<void>::instance().parse("exec xterm"));
@@ -1539,14 +1519,39 @@ void BScreen::initMenu() {
                            restart_fb);
         m_rootmenu->insert(_FB_XTEXT(Menu, Exit, "Exit", "Exit command"),
                            exit_fb);
-        // still save the menu filename, in case it becomes valid later
-        if (!fb->getMenuFilename().empty())
-            fb->saveMenuFilename(fb->getMenuFilename().c_str());
     }
 
-    m_rootmenu->updateMenu();
 }
 
+void BScreen::rereadWindowMenu() {
+
+    m_windowmenu->removeAll();
+    if (!windowMenuFilename().empty())
+        MenuCreator::createWindowMenuFromFile(windowMenuFilename(),
+                                              *m_windowmenu,
+                                              m_windowmenu->reloadHelper());
+
+    if (m_windowmenu->numberOfItems() == 0) {
+        const char *defaults[] = {
+            "shade",
+            "stick",
+            "maximize",
+            "iconify",
+            "raise",
+            "lower",
+            "sendto",
+            "layer",
+            "alpha",
+            "extramenus",
+            "separator",
+            "close",
+            0
+        };
+        for (unsigned int i=0; defaults[i]; ++i)
+            MenuCreator::createWindowMenuItem(defaults[i], "", *m_windowmenu);
+    }
+
+}
 
 void BScreen::addConfigMenu(const FbTk::FbString &label, FbTk::Menu &menu) {
     m_configmenu_list.push_back(make_pair(label, &menu));

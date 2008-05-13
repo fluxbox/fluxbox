@@ -25,7 +25,8 @@
 #define FBCOMMANDS_HH
 
 #include "FbTk/Command.hh"
-#include "FbTk/RefCount.hh"
+
+#include <memory>
 
 #include "ClientMenu.hh"
 #include "ClientPattern.hh"
@@ -124,16 +125,17 @@ private:
     const int m_option;
     const ClientPattern m_pat;
     std::list<FluxboxWindow *> m_list;
-    FbTk::RefCount<ClientMenu> m_menu;
+    std::auto_ptr<ClientMenu> m_menu;
 };
 
 class ShowCustomMenuCmd: public FbTk::Command<void> {
 public:
     explicit ShowCustomMenuCmd(const std::string &arguments);
     void execute();
+    void reload();
 private:
    std::string custom_menu_file;
-   FbTk::RefCount<FbTk::Menu> m_menu;    
+   std::auto_ptr<FbMenu> m_menu;    
 };
 
 class ShowRootMenuCmd: public FbTk::Command<void> {
