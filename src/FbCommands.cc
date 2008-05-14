@@ -274,10 +274,11 @@ SetStyleCmd::SetStyleCmd(const string &filename):m_filename(filename) {
 }
 
 void SetStyleCmd::execute() {
-    Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
-    Fluxbox::instance()->save_rc();
-    FbTk::ThemeManager::instance().load(m_filename,
-                                        Fluxbox::instance()->getStyleOverlayFilename());
+    if (FbTk::ThemeManager::instance().load(m_filename,
+        Fluxbox::instance()->getStyleOverlayFilename())) {
+        Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
+        Fluxbox::instance()->save_rc();
+    }
 }
 
 REGISTER_COMMAND_WITH_ARGS(keymode, FbCommands::KeyModeCmd, void);
