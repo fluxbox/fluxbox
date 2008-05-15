@@ -75,8 +75,11 @@ public:
 
     const std::string& filename() const { return m_filename; }
     /**
-       Reload configuration from filename
-       @return true on success, else false
+       Load configuration from file
+    */
+    void reload();
+    /**
+       Reload configuration if keys file has changed
     */
     void reconfigure();
     void keyMode(const std::string& keyMode);
@@ -94,10 +97,6 @@ private:
     void ungrabButtons();
     void grabWindow(Window win);
 
-    /**
-       Load configuration from file
-    */
-    void reload();
     // Load default keybindings for when there are errors loading the keys file
     void loadDefaults();
     void setKeyMode(t_key *keyMode);

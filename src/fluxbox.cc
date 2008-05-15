@@ -751,7 +751,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             XRefreshKeyboardMapping(&e->xmapping);
             FbTk::KeyUtil::instance().init(); // reinitialise the key utils
             // reconfigure keys (if the mapping changes, they don't otherwise update
-            m_key->reconfigure();
+            m_key->reload();
         }
         break;
     case CreateNotify:
