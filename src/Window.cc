@@ -500,12 +500,13 @@ void FluxboxWindow::init() {
     } else
         setOnHead(screen().getCurrHead());
 
+    // we must do this now, or else resizing may not work properly
+    applyDecorations(true);
+
     Fluxbox::instance()->attachSignals(*this);
 
     // this window is managed, we are now allowed to modify actual state
     m_initialized = true;
-
-    applyDecorations(true);
 
     restoreAttributes();
 
