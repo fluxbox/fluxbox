@@ -871,8 +871,13 @@ void FbWinFrame::reconfigure() {
     gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw, false);
 
     m_bevel = theme()->bevelWidth();
-    // reconfigure can't set borderwidth, as it doesn't know
-    // if it's meant to be borderless or not
+    setBorderWidth(m_decoration_mask & DECORM_BORDER ?
+                   theme()->border().width() : 0);
+
+    if (m_decoration_mask & DECORM_HANDLE && theme()->handleWidth() != 0)
+        showHandle();
+    else
+        hideHandle();
 
     unsigned int orig_handle_h = handle().height();
     if (m_use_handle && orig_handle_h != theme()->handleWidth())

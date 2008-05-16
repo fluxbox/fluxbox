@@ -4077,13 +4077,6 @@ void FluxboxWindow::updateButtons() {
  */
 void FluxboxWindow::reconfigTheme() {
 
-    m_frame.setBorderWidth(decorations.border ?
-                           frame().theme()->border().width() : 0);
-    if (decorations.handle && frame().theme()->handleWidth() != 0)
-        frame().showHandle();
-    else
-        frame().hideHandle();
-
     ClientList::iterator it = clientList().begin();
     ClientList::iterator it_end = clientList().end();
 
