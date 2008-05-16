@@ -1432,7 +1432,7 @@ void BScreen::clearStrut(Strut *str) {
         clearStrut(str->next());
     int head = str->head() ? str->head() - 1 : 0;
     /* The number of heads may have changed, be careful. */
-    if (head < numHeads())
+    if (head < (numHeads() ? numHeads() : 1))
         m_head_areas[head]->clearStrut(str);
     // str is invalid now
 }
