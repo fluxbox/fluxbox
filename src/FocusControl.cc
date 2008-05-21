@@ -168,17 +168,19 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
 
 void FocusControl::goToWindowNumber(const FocusableList &winlist, int num,
                                     const ClientPattern *pat) {
+    Focusable *win = 0;
     Focusables::const_iterator it = winlist.clientList().begin();
     Focusables::const_iterator it_end = winlist.clientList().end();
     for (; it != it_end && num; ++it) {
         if (!doSkipWindow(**it, pat) && (*it)->acceptsFocus()) {
             num > 0 ? --num : ++num;
-            if (!num) {
-                (*it)->focus();
-                if ((*it)->fbwindow())
-                    (*it)->fbwindow()->raise();
-            }
+            win = *it;
         }
+    }
+    if (win) {
+        win->focus();
+        if (win->fbwindow())
+            win->fbwindow()->raise();
     }
 }
 
