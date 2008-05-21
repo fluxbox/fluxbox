@@ -1153,8 +1153,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             return true;
         FbTk::ThemeProxy<FbWinFrameTheme> &theme = screen->focusedWinFrameTheme();
         unsigned int bw = theme->border().width();
-        long title_h = theme->titleHeight() + 2*bw ||
-            theme->font().height() + 2*theme->bevelWidth() + 2 + 2*bw;
+        long title_h = theme->titleHeight() ? theme->titleHeight() + 2*bw : 
+                theme->font().height() + 2*theme->bevelWidth() + 2 + 2*bw;
         long handle_h = theme->handleWidth() + 2*bw;
         long extents[4];
         // our frames currently don't protrude from left/right
