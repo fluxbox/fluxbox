@@ -357,7 +357,7 @@ public:
     /// handle Subject notifications
     void update(FbTk::Subject *subj);
 
-    void applyDecorations(bool initial = false);
+    void applyDecorations();
     void toggleDecoration();
 
     unsigned int decorationMask() const;

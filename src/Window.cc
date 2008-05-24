@@ -303,6 +303,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_resize_corner(RIGHTBOTTOM) {
 
     m_theme.reconfigSig().attach(this);
+    m_frame.frameExtentSig().attach(this);
 
     init();
 
@@ -501,7 +502,7 @@ void FluxboxWindow::init() {
         setOnHead(screen().getCurrHead());
 
     // we must do this now, or else resizing may not work properly
-    applyDecorations(true);
+    applyDecorations();
 
     Fluxbox::instance()->attachSignals(*this);
 
@@ -601,7 +602,7 @@ void FluxboxWindow::init() {
     gettimeofday(&now, NULL);
     m_creation_time = now.tv_sec;
 
-    sendConfigureNotify();
+    frame().frameExtentSig().notify();
 
     setupWindow();
 
@@ -3015,74 +3016,16 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
     } else if (subj == &m_theme.reconfigSig()) {
         frame().reconfigure();
         reconfigTheme();
+    } else if (m_initialized && subj == &m_frame.frameExtentSig()) {
+        Fluxbox::instance()->updateFrameExtents(*this);
+        sendConfigureNotify();
     }
 }
 
 // commit current decoration values to actual displayed things
-void FluxboxWindow::applyDecorations(bool initial) {
-    frame().clientArea().setBorderWidth(0); // client area bordered by other things
-
-    unsigned int border_width = 0;
-    if (decorations.border)
-        border_width = frame().theme()->border().width();
-
-    bool client_move = false;
-
-    // borderWidth setting handles its own gravity
-    if (initial || frame().window().borderWidth() != border_width) {
-        client_move = true;
-        frame().setBorderWidth(border_width);
-    }
-
-    int grav_x=0, grav_y=0;
-    // negate gravity
-    frame().gravityTranslate(grav_x, grav_y, -m_client->gravity(), m_client->old_bw, false);
-
-    // tab deocration only affects if we're external
-    // must do before the setTabMode in case it goes
-    // to external and is meant to be hidden
-    if (decorations.tab)
-        client_move |= frame().showTabs();
-    else
-        client_move |= frame().hideTabs();
-
-    // we rely on frame not doing anything if it is already shown/hidden
-    if (decorations.titlebar) {
-        bool change = frame().showTitlebar();
-        client_move |= change;
-        if (screen().getDefaultInternalTabs()) {
-            client_move |= frame().setTabMode(FbWinFrame::INTERNAL);
-        } else {
-            client_move |= frame().setTabMode(FbWinFrame::EXTERNAL);
-        }
-    } else {
-        client_move |= frame().hideTitlebar();
-        if (decorations.tab)
-            client_move |= frame().setTabMode(FbWinFrame::EXTERNAL);
-    }
-
-    if (decorations.handle) {
-        client_move |= frame().showHandle();
-    } else
-        client_move |= frame().hideHandle();
-
-    // apply gravity once more
-    frame().gravityTranslate(grav_x, grav_y, m_client->gravity(), m_client->old_bw, false);
-
-    // if the location changes, shift it
-    if (grav_x != 0 || grav_y != 0) {
-        move(grav_x + frame().x(), grav_y + frame().y());
-        client_move = true;
-    }
-
+void FluxboxWindow::applyDecorations() {
     frame().setDecorationMask(decorationMask());
-    frame().reconfigure();
-    if (client_move)
-        Fluxbox::instance()->updateFrameExtents(*this);
-
-    if (!initial && client_move)
-        sendConfigureNotify();
-
+    frame().applyDecorations();
 }
 
 void FluxboxWindow::toggleDecoration() {

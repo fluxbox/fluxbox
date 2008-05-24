@@ -487,12 +487,7 @@ void FbWinFrame::setFocus(bool newvalue) {
         }
     }
 
-    if (m_decoration_mask & DECORM_BORDER &&
-        (theme().focusedTheme()->border().width() !=
-         theme().unfocusedTheme()->border().width() ||
-         theme().focusedTheme()->border().color().pixel() !=
-         theme().unfocusedTheme()->border().color().pixel()))
-        setBorderWidth(theme()->border().width());
+    setBorderWidth();
 
     applyAll();
     clearAll();
@@ -759,28 +754,6 @@ bool FbWinFrame::showHandle() {
     return true;
 }
 
-bool FbWinFrame::hideAllDecorations() {
-    bool changed = false;
-    changed |= hideHandle();
-    changed |= hideTitlebar();
-    // resize done by hide*
-    reconfigure();
-
-    return changed;
-}
-
-bool FbWinFrame::showAllDecorations() {
-    bool changed = false;
-    if (!m_use_handle)
-        changed |= showHandle();
-    if (!m_use_titlebar)
-        changed |= showTitlebar();
-    // resize shouldn't be necessary
-    reconfigure();
-
-    return changed;
-}
-
 /**
    Set new event handler for the frame's windows
 */
@@ -871,8 +844,7 @@ void FbWinFrame::reconfigure() {
     gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw, false);
 
     m_bevel = theme()->bevelWidth();
-    setBorderWidth(m_decoration_mask & DECORM_BORDER ?
-                   theme()->border().width() : 0);
+    setBorderWidth();
 
     if (m_decoration_mask & DECORM_HANDLE && theme()->handleWidth() != 0)
         showHandle();
@@ -1439,14 +1411,78 @@ void FbWinFrame::applyTabContainer() {
     }
 }
 
-void FbWinFrame::setBorderWidth(unsigned int border_width) {
-    int bw_changes = 0;
+void FbWinFrame::applyDecorations() {
+    int grav_x=0, grav_y=0;
+    // negate gravity
+    gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw,
+                     false);
+
+    bool client_move = setBorderWidth(false);
+
+    // tab deocration only affects if we're external
+    // must do before the setTabMode in case it goes
+    // to external and is meant to be hidden
+    if (m_decoration_mask & DECORM_TAB)
+        client_move |= showTabs();
+    else
+        client_move |= hideTabs();
+
+    // we rely on frame not doing anything if it is already shown/hidden
+    if (m_decoration_mask & DECORM_TITLEBAR) {
+        client_move |= showTitlebar();
+        if (m_screen.getDefaultInternalTabs())
+            client_move |= setTabMode(INTERNAL);
+        else
+            client_move |= setTabMode(EXTERNAL);
+    } else {
+        client_move |= hideTitlebar();
+        if (m_decoration_mask & DECORM_TAB)
+            client_move |= setTabMode(EXTERNAL);
+    }
+
+    if (m_decoration_mask & DECORM_HANDLE)
+        client_move |= showHandle();
+    else
+        client_move |= hideHandle();
+
+    // apply gravity once more
+    gravityTranslate(grav_x, grav_y, m_active_gravity, m_active_orig_client_bw,
+                     false);
+
+    // if the location changes, shift it
+    if (grav_x != 0 || grav_y != 0) {
+        move(grav_x + x(), grav_y + y());
+        client_move = true;
+    }
+
+    reconfigure();
+    if (client_move)
+        frameExtentSig().notify();
+}
+
+bool FbWinFrame::setBorderWidth(bool do_move) {
+    unsigned int border_width = m_decoration_mask & DECORM_BORDER ?
+                                theme()->border().width() : 0;
+
+    if (border_width &&
+        theme()->border().color().pixel() != window().borderColor()) {
+        window().setBorderColor(theme()->border().color());
+        titlebar().setBorderColor(theme()->border().color());
+        handle().setBorderColor(theme()->border().color());
+        gripLeft().setBorderColor(theme()->border().color());
+        gripRight().setBorderColor(theme()->border().color());
+    }
+
+    if (border_width == window().borderWidth())
+        return false;
 
     int grav_x=0, grav_y=0;
     // negate gravity
-    gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw, false);
+    if (do_move)
+        gravityTranslate(grav_x, grav_y, -m_active_gravity,
+                         m_active_orig_client_bw, false);
 
-
+    int bw_changes = 0;
     // we need to change the size of the window
     // if the border width changes...
     if (m_use_titlebar)
@@ -1455,21 +1491,13 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
         bw_changes += static_cast<signed>(border_width - handle().borderWidth());
 
     window().setBorderWidth(border_width);
-    window().setBorderColor(theme()->border().color());
 
     setTabMode(NOTSET);
 
     titlebar().setBorderWidth(border_width);
-    titlebar().setBorderColor(theme()->border().color());
-
     handle().setBorderWidth(border_width);
-    handle().setBorderColor(theme()->border().color());
-
     gripLeft().setBorderWidth(border_width);
-    gripLeft().setBorderColor(theme()->border().color());
-
     gripRight().setBorderWidth(border_width);
-    gripRight().setBorderColor(theme()->border().color());
 
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);
@@ -1477,11 +1505,16 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
     if (m_tabmode == EXTERNAL)
         alignTabs();
 
-    gravityTranslate(grav_x, grav_y, m_active_gravity, m_active_orig_client_bw, false);
-    // if the location changes, shift it
-    if (grav_x != 0 || grav_y != 0)
-        move(grav_x + x(), grav_y + y());
+    if (do_move) {
+        frameExtentSig().notify();
+        gravityTranslate(grav_x, grav_y, m_active_gravity,
+                         m_active_orig_client_bw, false);
+        // if the location changes, shift it
+        if (grav_x != 0 || grav_y != 0)
+            move(grav_x + x(), grav_y + y());
+    }
 
+    return true;
 }
 
 // this function translates its arguments according to win_gravity
