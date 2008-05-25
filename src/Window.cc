@@ -3701,25 +3701,25 @@ bool FluxboxWindow::isTransient() const {
 }
 
 int FluxboxWindow::normalX() const {
-    if (maximized & MAX_HORZ)
+    if (maximized & MAX_HORZ || fullscreen)
         return m_old_pos_x;
     return x();
 }
 
 int FluxboxWindow::normalY() const {
-    if (maximized & MAX_VERT)
+    if (maximized & MAX_VERT || fullscreen)
         return m_old_pos_y;
     return y();
 }
 
 unsigned int FluxboxWindow::normalWidth() const {
-    if (maximized & MAX_HORZ)
+    if (maximized & MAX_HORZ || fullscreen)
         return m_old_width;
     return width();
 }
 
 unsigned int FluxboxWindow::normalHeight() const {
-    if (maximized & MAX_VERT)
+    if (maximized & MAX_VERT || fullscreen)
         return m_old_height;
     if (shaded)
         return frame().normalHeight();

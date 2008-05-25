@@ -978,8 +978,7 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         app->rememberHead(win->screen().getHead(win->fbWindow()));
         break;
     case REM_DIMENSIONS:
-        //!! Note: This is odd, why dont we need to substract border width on win->width() ?
-        app->rememberDimensions(win->normalWidth(), win->normalHeight() - 2 * win->fbWindow().borderWidth());
+        app->rememberDimensions(win->normalWidth(), win->normalHeight());
         break;
     case REM_POSITION: {
         int head = win->screen().getHead(win->fbWindow());
