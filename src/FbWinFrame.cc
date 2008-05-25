@@ -1557,44 +1557,30 @@ void FbWinFrame::gravityTranslate(int &x, int &y,
     // Note that the client window's x,y is offset by it's borderWidth, which
     // is removed by fluxbox, so the gravity needs to account for this change
 
-//    unsigned int width_offset = 0; // no side decorations
-
     // these functions already check if the title/handle is used
-    int height_offset = - titlebarHeight() - handleHeight();
-
     int bw_diff = client_bw - m_window.borderWidth();
+    int height_diff = 2*bw_diff - titlebarHeight() - handleHeight();
+    int width_diff = 2*bw_diff;
 
-    // mostly no X offset, since we don't have extra frame on the sides
-    switch (win_gravity) {
-    case NorthEastGravity:
-        x_offset += bw_diff;
-    case NorthGravity:
-        x_offset += bw_diff;
-    case NorthWestGravity:
-        // no offset, since the top point is still the same
-        break;
-    case SouthEastGravity:
-        x_offset += bw_diff;
-    case SouthGravity:
-        x_offset += bw_diff;
-    case SouthWestGravity:
-        // window shifted down by height of titlebar, and the handle
-        // since that's necessary to get the bottom of the frame
-        // all the way up
-        y_offset += 2*bw_diff + height_offset;
-        break;
-    case EastGravity:
-        x_offset += bw_diff;
-    case CenterGravity:
-        x_offset += bw_diff;
-    case WestGravity:
-        // these centered ones are a little more interesting
-        y_offset += bw_diff + height_offset/2;
-        break;
-    case StaticGravity:
-        x_offset += bw_diff;
-        y_offset += -titlebarHeight() + bw_diff;
-        break;
+    if (win_gravity == SouthWestGravity || win_gravity == SouthGravity ||
+        win_gravity == SouthEastGravity)
+        y_offset = height_diff;
+
+    if (win_gravity == WestGravity || win_gravity == CenterGravity ||
+        win_gravity == EastGravity)
+        y_offset = height_diff/2;
+
+    if (win_gravity == NorthEastGravity || win_gravity == EastGravity ||
+        win_gravity == SouthEastGravity)
+        x_offset = width_diff;
+
+    if (win_gravity == NorthGravity || win_gravity == CenterGravity ||
+        win_gravity == SouthGravity)
+        x_offset = width_diff/2;
+
+    if (win_gravity == StaticGravity) {
+        x_offset = bw_diff;
+        y_offset = bw_diff - titlebarHeight();
     }
 
     if (invert) {
