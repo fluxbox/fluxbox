@@ -28,6 +28,7 @@
 #include "fluxbox.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
+#include "WindowMenuAccessor.hh"
 
 #include "ClientMenu.hh"
 #include "WorkspaceMenu.hh"
@@ -480,7 +481,7 @@ bool MenuCreator::createWindowMenuItem(const string &type,
     static MenuContext context;
 
     if (type == "shade") {
-        static WindowAccessor<bool> res(&FluxboxWindow::isShaded, &FluxboxWindow::setShaded, false);
+        static WindowMenuAccessor<bool> res(&FluxboxWindow::isShaded, &FluxboxWindow::setShaded, false);
         menu.insert(new FbTk::BoolMenuItem(
                         label.empty()?_FB_XTEXT(Windowmenu, Shade, "Shade", "Shade the window"):label, 
                         res));
@@ -504,7 +505,7 @@ bool MenuCreator::createWindowMenuItem(const string &type,
         maximize_item->setCommand(3, maximize_horiz_cmd);
         menu.insert(maximize_item);
     } else if (type == "iconify") {
-        static WindowAccessor<bool> res(&FluxboxWindow::isIconic, &FluxboxWindow::setIconic, false);
+        static WindowMenuAccessor<bool> res(&FluxboxWindow::isIconic, &FluxboxWindow::setIconic, false);
         menu.insert(new FbTk::BoolMenuItem(
                         label.empty() ?
                         _FB_XTEXT(Windowmenu, Iconify,
@@ -536,7 +537,7 @@ bool MenuCreator::createWindowMenuItem(const string &type,
                     label, raise_cmd);
 
     } else if (type == "stick") {
-        static WindowAccessor<bool> res(&FluxboxWindow::isStuck, &FluxboxWindow::setStuck, false);
+        static WindowMenuAccessor<bool> res(&FluxboxWindow::isStuck, &FluxboxWindow::setStuck, false);
         menu.insert(new FbTk::BoolMenuItem(
                         label.empty() ?
                         _FB_XTEXT(Windowmenu, Stick,

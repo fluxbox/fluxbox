@@ -23,10 +23,8 @@
 #include "AlphaMenu.hh"
 
 #include "Window.hh"
-#include "WindowCmd.hh"
 #include "Screen.hh"
 #include "Workspace.hh"
-#include "WindowCmd.hh"
 #include "fluxbox.hh"
 #include "Layer.hh"
 #include "FbTk/IntMenuItem.hh"
@@ -39,10 +37,10 @@ AlphaMenu::AlphaMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
     ToggleMenu(tm, imgctrl, layer)
 {
 
-    static WindowAccessor<int> m_focused_alpha((WindowAccessor<int>::Getter)&FluxboxWindow::getFocusedAlpha,
-            (WindowAccessor<int>::Setter)&FluxboxWindow::setFocusedAlpha, 255);
-    static WindowAccessor<int> m_unfocused_alpha((WindowAccessor<int>::Getter)&FluxboxWindow::getUnfocusedAlpha,
-            (WindowAccessor<int>::Setter)&FluxboxWindow::setUnfocusedAlpha, 255);
+    static WindowMenuAccessor<int> m_focused_alpha((WindowMenuAccessor<int>::Getter)&FluxboxWindow::getFocusedAlpha,
+            (WindowMenuAccessor<int>::Setter)&FluxboxWindow::setFocusedAlpha, 255);
+    static WindowMenuAccessor<int> m_unfocused_alpha((WindowMenuAccessor<int>::Getter)&FluxboxWindow::getUnfocusedAlpha,
+            (WindowMenuAccessor<int>::Setter)&FluxboxWindow::setUnfocusedAlpha, 255);
 
     _FB_USES_NLS;
 

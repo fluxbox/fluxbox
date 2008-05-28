@@ -25,6 +25,7 @@
 
 #include "ToggleMenu.hh"
 #include "WindowCmd.hh"
+#include "WindowMenuAccessor.hh"
 #include "FbTk/MenuItem.hh"
 
 class AlphaMenu : public ToggleMenu {
@@ -47,7 +48,7 @@ public:
     }
 
     bool isSelected() const {
-        static ConstWindowAccessor<bool> s_is_default(&FluxboxWindow::getUseDefaultAlpha, true);
+        static ConstWindowMenuAccessor<bool> s_is_default(&FluxboxWindow::getUseDefaultAlpha, true);
         return s_is_default;
     }
     void click(int button, int time, unsigned int mods) {
