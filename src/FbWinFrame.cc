@@ -121,7 +121,6 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
     if (tabmode == EXTERNAL) {
         m_label.show();
         m_tab_container.setBorderWidth(m_window.borderWidth());
-        m_tab_container.setBorderColor(theme()->border().color());
         m_tab_container.setEventMask(
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |
@@ -1471,6 +1470,7 @@ bool FbWinFrame::setBorderWidth(bool do_move) {
         handle().setBorderColor(theme()->border().color());
         gripLeft().setBorderColor(theme()->border().color());
         gripRight().setBorderColor(theme()->border().color());
+        tabcontainer().setBorderColor(theme()->border().color());
     }
 
     if (border_width == window().borderWidth())
