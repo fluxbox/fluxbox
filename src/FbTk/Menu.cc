@@ -243,6 +243,8 @@ int Menu::remove(unsigned int index) {
     MenuItem *item = (*it);
 
     if (item) {
+        if (!m_matches.empty())
+            resetTypeAhead();
         menuitems.erase(it);
         // avoid O(n^2) algorithm with removeAll()
         if (index != menuitems.size())
@@ -511,6 +513,7 @@ void Menu::show() {
         updateMenu();
 
     m_type_ahead.reset();
+    m_matches.clear();
 
     menu.window.showSubwindows();
     menu.window.show();
