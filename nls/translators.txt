@@ -16,9 +16,9 @@ Adding a new translation
      
 
     Details regarding the meaning of all of the positions & default values
-    are listed in Translation.m.desc
+    would be listed in Translation.m.desc, if you're kind enough to write it.
 
-List of translators contrubutors
+List of translators contributors
 --------------------------------
 
 ru_RU: Slava Semushin <php-coder@altlinux.ru>

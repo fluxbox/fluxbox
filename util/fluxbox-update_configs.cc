@@ -282,7 +282,7 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         string whole_keyfile = read_file(keyfilename);
         string new_keyfile = "";
         // let's put our new keybindings first, so they're easy to find
-        new_keyfile += "# start tabbing windows together\n";
+        new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
         new_keyfile += "OnTitlebar Mouse2 :StartTabbing\n\n";
         new_keyfile += whole_keyfile; // don't forget user's old keybindings
 

@@ -221,7 +221,7 @@ int main(int argc, char **argv) {
             }
         } else if (arg == "-version" || arg == "-v") {
             // print current version string
-            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2007 Fluxbox Team " << endl << endl;
+            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2008 Fluxbox Team " << endl << endl;
             exit(EXIT_SUCCESS);
         } else if (arg == "-log") {
             if (++i >= argc) {
@@ -244,7 +244,7 @@ int main(int argc, char **argv) {
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
                            "Main usage string. Please lay it out nicely. There is one %s that is given the version").c_str(),
-                   __fluxbox_version, "2001-2007");
+                   __fluxbox_version, "2001-2008");
             exit(EXIT_SUCCESS);
         } else if (arg == "-info" || arg == "-i") {
             showInfo(cout);
