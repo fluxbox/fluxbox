@@ -27,7 +27,7 @@ fbsetroot.o: 	fbsetroot.cc ../config.h $(srcdir)/fbsetroot.hh \
 			$(top_srcdir)/src/FbRootWindow.hh $(top_srcdir)/src/FbAtoms.hh
 
 fluxbox-update_configs.o:	fluxbox-update_configs.cc ../config.h \
-			$(top_srcdir)/src/defaults.hh
+			$(top_builddir)/src/defaults.hh
 
 fluxbox-remote.o:	fluxbox-remote.cc
 
