@@ -665,6 +665,7 @@ nls/it_IT/Makefile
 nls/ja_JP/Makefile
 nls/ko_KR/Makefile
 nls/lv_LV/Makefile
+nls/mk_MK/Makefile
 nls/nb_NO/Makefile
 nls/nl_NL/Makefile
 nls/no_NO/Makefile
