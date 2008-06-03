@@ -9,14 +9,16 @@ fluxbox - A lightweight window manager for the X Windowing System
 
 SYNOPSIS
 --------
-'fluxbox' [-v | -version]
-          [-h | -help]
-          [-i | -info]
 'fluxbox' [-rc rcfile]
           [-log logfile]
           [-display display]
           [-screen scr,scr|all]
           [-verbose]
+
+'fluxbox' [-v | -version] |
+          [-h | -help] |
+          [-i | -info] |
+          [-list-commands]
 
 DESCRIPTION
 -----------

@@ -258,6 +258,7 @@ Website: http://www.fluxbox.org/\n\n\
 -rc <string>\t\t\tuse alternate resource file.\n\
 -version\t\t\tdisplay version and exit.\n\
 -info\t\t\t\tdisplay some useful information.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tdisplay this help text and exit.\n\n
 14 warning: couldn't set environment variable 'DISPLAY'

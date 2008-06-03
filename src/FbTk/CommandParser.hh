@@ -128,7 +128,7 @@ public:
         return it->second;
     }
 
-    const CreatorMap creatorMap() const { return m_creators; }
+    const CreatorMap &creatorMap() const { return m_creators; }
 
 private:
     CommandParser() {}

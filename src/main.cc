@@ -26,7 +26,7 @@
 
 #include "FbTk/Theme.hh"
 #include "FbTk/I18n.hh"
-#include "FbTk/StringUtil.hh"
+#include "FbTk/CommandParser.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -239,6 +239,7 @@ int main(int argc, char **argv) {
                            "-rc <string>\t\t\tuse alternate resource file.\n"
                            "-version\t\t\tdisplay version and exit.\n"
                            "-info\t\t\t\tdisplay some useful information.\n"
+                           "-list-commands\t\t\tlist all valid key commands.\n"
                            "-log <filename>\t\t\tlog output to file.\n"
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
@@ -247,6 +248,13 @@ int main(int argc, char **argv) {
             exit(EXIT_SUCCESS);
         } else if (arg == "-info" || arg == "-i") {
             showInfo(cout);
+            exit(EXIT_SUCCESS);
+        } else if (arg == "-list-commands") {
+            FbTk::CommandParser<void>::CreatorMap cmap = FbTk::CommandParser<void>::instance().creatorMap();
+            FbTk::CommandParser<void>::CreatorMap::const_iterator it = cmap.begin();
+            const FbTk::CommandParser<void>::CreatorMap::const_iterator it_end = cmap.end();
+            for (; it != it_end; ++it)
+                cout << it->first << endl;
             exit(EXIT_SUCCESS);
         } else if (arg == "-verbose") {
             FbTk::ThemeManager::instance().setVerbose(true);
