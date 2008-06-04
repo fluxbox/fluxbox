@@ -1460,8 +1460,8 @@ void FbWinFrame::applyDecorations() {
 }
 
 bool FbWinFrame::setBorderWidth(bool do_move) {
-    unsigned int border_width = m_decoration_mask & DECORM_BORDER ?
-                                theme()->border().width() : 0;
+    unsigned int border_width = theme()->border().width();
+    unsigned int win_bw = m_decoration_mask & DECORM_BORDER ? border_width : 0;
 
     if (border_width &&
         theme()->border().color().pixel() != window().borderColor()) {
@@ -1473,7 +1473,8 @@ bool FbWinFrame::setBorderWidth(bool do_move) {
         tabcontainer().setBorderColor(theme()->border().color());
     }
 
-    if (border_width == window().borderWidth())
+    if (border_width == handle().borderWidth() &&
+        win_bw == window().borderWidth())
         return false;
 
     int grav_x=0, grav_y=0;
@@ -1490,7 +1491,7 @@ bool FbWinFrame::setBorderWidth(bool do_move) {
     if (m_use_handle)
         bw_changes += static_cast<signed>(border_width - handle().borderWidth());
 
-    window().setBorderWidth(border_width);
+    window().setBorderWidth(win_bw);
 
     setTabMode(NOTSET);
 

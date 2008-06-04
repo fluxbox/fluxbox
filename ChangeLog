@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/06/04:
+   * Leave titlebar and handle borders alone with borderless windows (Mark)
+     FbWinFrame.cc/hh
 *08/06/03:
    * Add -list-commands command line option, which prints a list of valid
      fluxbox commands (Mark)
