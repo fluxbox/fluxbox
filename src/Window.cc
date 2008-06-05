@@ -2192,13 +2192,10 @@ void FluxboxWindow::popupMenu(int x, int y) {
  */
 void FluxboxWindow::popupMenu() {
 
-    int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
-    if (!decorations.titlebar) // if we don't have any titlebar
-        menu_y = 0;
     if (m_last_button_x < x() || m_last_button_x > x() + static_cast<signed>(width()))
         m_last_button_x = x();
 
-    popupMenu(m_last_button_x, menu_y + frame().y());
+    popupMenu(m_last_button_x, frame().titlebarHeight() + frame().y());
 }
 
 
@@ -3729,13 +3726,7 @@ unsigned int FluxboxWindow::normalHeight() const {
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
 void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
-    int titlebar_height = (decorations.titlebar ?
-                           frame().titlebar().height()  +
-                           frame().titlebar().borderWidth() : 0);
-    int handle_height = (decorations.handle ?
-                         frame().handle().height() +
-                         frame().handle().borderWidth() : 0);
-    int decoration_height = titlebar_height + handle_height;
+    int decoration_height = frame().titlebarHeight() + frame().handleHeight();
 
     // dx is new width = current width + difference between new and old x values
     //int dx = frame().width() + frame().x() - m_last_resize_x;
