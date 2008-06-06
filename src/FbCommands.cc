@@ -80,6 +80,8 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
             fbmenu->reloadHelper()->checkReload();
     }
 
+    FbMenu::setWindow(FocusControl::focusedFbWindow());
+
     Window root_ret; // not used
     Window window_ret; // not used
 

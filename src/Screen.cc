@@ -1527,9 +1527,8 @@ void BScreen::rereadWindowMenu() {
 
     m_windowmenu->removeAll();
     if (!windowMenuFilename().empty())
-        MenuCreator::createWindowMenuFromFile(windowMenuFilename(),
-                                              *m_windowmenu,
-                                              m_windowmenu->reloadHelper());
+        MenuCreator::createFromFile(windowMenuFilename(), *m_windowmenu,
+                                    m_windowmenu->reloadHelper());
 
     if (m_windowmenu->numberOfItems() == 0) {
         const char *defaults[] = {

@@ -321,9 +321,9 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem,
         MenuCreator::startEncoding(str_cmd);
     } else if (str_key == "endencoding") {
         MenuCreator::endEncoding();
-    }
-    else { // ok, if we didn't find any special menu item we try with command parser
-        // we need to attach command with arguments so command parser can parse it
+    } else if (!MenuCreator::createWindowMenuItem(str_key, str_label, menu)) {
+        // if we didn't find any special menu item we try with command parser
+        // we need to attach command to arguments so command parser can parse it
         string line = str_key + " " + str_cmd;
         FbTk::RefCount<FbTk::Command<void> > command(FbTk::CommandParser<void>::instance().parse(line));
         if (*command != 0) {
@@ -346,32 +346,6 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem,
             item->setIcon(pitem.icon(), menu.screenNumber());
     }
 }
-
-
-void parseWindowMenu(FbTk::Parser &parse, FbTk::Menu &menu,
-                     FbTk::StringConvertor &labelconvertor,
-                     AutoReloadHelper *reloader) {
-
-    ParseItem pitem(&menu);
-    while (!parse.eof()) {
-        pitem.load(parse, labelconvertor);
-        if (MenuCreator::createWindowMenuItem(pitem.key(), pitem.label(), menu))
-            continue;
-
-        if (pitem.key() == "end")
-            return;
-        if (pitem.key() == "submenu") {
-            FbTk::Menu *submenu = MenuCreator::createMenu(pitem.label(), menu.screenNumber());
-            parseWindowMenu(parse, *submenu, labelconvertor, reloader);
-            submenu->updateMenu();
-            menu.insert(pitem.label(), submenu);
-
-        } else { // try non window menu specific stuff
-            translateMenuItem(parse, pitem, labelconvertor, reloader);
-        }
-    }
-}
-
 
 bool getStart(FbMenuParser &parser, string &label, FbTk::StringConvertor &labelconvertor) {
     ParseItem pitem(0);
@@ -433,31 +407,6 @@ bool MenuCreator::createFromFile(const string &filename,
 
     return true;
 }
-
-
-void MenuCreator::createWindowMenuFromFile(const string &filename,
-                                           FbTk::Menu &inject_into,
-                                           AutoReloadHelper *reloader) {
-    string real_filename = FbTk::StringUtil::expandFilename(filename);
-    FbMenuParser parser(real_filename);
-    if (!parser.isLoaded())
-        return;
-
-    string label;
-
-    startFile();
-    if (!getStart(parser, label, m_stringconvertor)) {
-        endFile();
-        return;
-    }
-
-    if (reloader)
-        reloader->addFile(real_filename);
-
-    parseWindowMenu(parser, inject_into, m_stringconvertor, reloader);
-    endFile();
-}
-
 
 FbMenu *MenuCreator::createMenuType(const string &type, int screen_num) {
     BScreen *screen = Fluxbox::instance()->findScreen(screen_num);

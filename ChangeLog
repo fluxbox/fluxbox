@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/06/06:
+   * Allow window menu items in ordinary menus (Mark)
+     MenuCreator.cc/hh
 *08/06/04:
    * Leave titlebar and handle borders alone with borderless windows (Mark)
      FbWinFrame.cc/hh

@@ -43,9 +43,6 @@ public:
                                FbTk::Menu &inject_into,
                                FbTk::AutoReloadHelper *reloader = NULL,
                                bool begin = true);
-    static void createWindowMenuFromFile(const std::string &filename,
-                                         FbTk::Menu &inject_into,
-                                         FbTk::AutoReloadHelper *reloader);
     static bool createWindowMenuItem(const std::string &type, const std::string &label, 
                                      FbTk::Menu &inject_into);
 
