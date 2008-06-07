@@ -83,6 +83,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      send_close_message(false),
                      m_win_gravity(0),
                      m_title_override(false),
+                     m_icon_override(false),
                      m_window_type(Focusable::TYPE_NORMAL),
                      m_mwm_hint(0),
                      m_strut(0) {

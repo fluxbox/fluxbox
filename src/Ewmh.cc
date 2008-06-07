@@ -156,8 +156,8 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     }
 
     // allocate some memory for the icons at client side
-    img_pm->data = new char[img_pm->bytes_per_line * height];
-    img_mask->data = new char[img_mask->bytes_per_line * height];
+    img_pm->data = static_cast<char*>(malloc(img_pm->bytes_per_line * height));
+    img_mask->data = static_cast<char*>(malloc(img_mask->bytes_per_line * height));
 
 
     const unsigned long* src = icon_data.begin()->second;
