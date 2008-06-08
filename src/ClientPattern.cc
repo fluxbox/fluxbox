@@ -22,6 +22,7 @@
 
 #include "ClientPattern.hh"
 
+#include "fluxbox.hh"
 #include "FocusControl.hh"
 #include "Layer.hh"
 #include "Screen.hh"
@@ -132,6 +133,8 @@ ClientPattern::ClientPattern(const char *str, bool default_no_transient):
                 prop = HEAD;
             } else if (strcasecmp(memstr.c_str(), "layer") == 0) {
                 prop = LAYER;
+            } else if (strcasecmp(memstr.c_str(), "urgent") == 0) {
+                prop = URGENT;
             } else {
                 prop = NAME;
                 expr = match;
@@ -244,6 +247,8 @@ string ClientPattern::toString() const {
         case LAYER:
             pat.append("layer=");
             break;
+        case URGENT:
+            pat.append("urgent=");
         }
 
         pat.append((*it)->orig);
@@ -402,6 +407,10 @@ string ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
     }
     case LAYER:
         return fbwin ? ::Layer::getString(fbwin->layerNum()) : "";
+        break;
+    case URGENT:
+        return Fluxbox::instance()->attentionHandler()
+                .isDemandingAttention(client) ? "yes" : "no";
         break;
     }
     return client.getWMClassName();

@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/06/08:
+   * Add (urgent=yes|no) option to client patterns (Mark)
+     ClientPattern.cc/hh
 *08/06/06:
    * Allow window menu items in ordinary menus (Mark)
      MenuCreator.cc/hh
