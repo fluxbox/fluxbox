@@ -326,6 +326,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
 FluxboxWindow::~FluxboxWindow() {
     if (WindowCmd<void>::window() == this)
         WindowCmd<void>::setWindow(0);
+    if (FbMenu::window() == this)
+        FbMenu::setWindow(0);
     if ( Fluxbox::instance()->keys() != 0 ) {
         Fluxbox::instance()->keys()->
             unregisterWindow(frame().window().window());
