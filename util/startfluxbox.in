@@ -73,9 +73,9 @@ else
 # And last but not least we start fluxbox.
 # Because it is the last app you have to run it with ''exec'' before it.
 
-exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@
+exec @pkgprefix@fluxbox@pkgsuffix@
 # or if you want to keep a log:
-# exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@ -log "$fluxdir/log"
+# exec @pkgprefix@fluxbox@pkgsuffix@ -log "$fluxdir/log"
 EOF
     ) > "$startup"
     fi
