@@ -47,13 +47,13 @@ class FbWinFrameTheme;
 class BScreen;
 class FbWinFrame;
 class FocusControl;
+class FbMenu;
 
 namespace FbTk {
 class TextButton;
 class MenuTheme;
 class ImageControl;
 class XLayer;
-class Menu;
 }
 
 /// Creates the window frame and handles any window event for it
@@ -439,8 +439,8 @@ public:
     FbTk::FbWindow &fbWindow();
     const FbTk::FbWindow &fbWindow() const;
 
-    FbTk::Menu &menu();
-    const FbTk::Menu &menu() const;
+    FbMenu &menu();
+    const FbMenu &menu() const;
 
     const FbTk::FbWindow &parent() const { return m_parent; }
     FbTk::FbWindow &parent() { return m_parent; }

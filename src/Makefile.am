@@ -30,6 +30,7 @@ DEFAULT_KEYSFILE=@DEFAULT_KEYS@
 DEFAULT_APPSFILE=@DEFAULT_APPS@
 DEFAULT_OVERLAY=@DEFAULT_OVERLAY@
 DEFAULT_INITFILE=@DEFAULT_INIT@
+DEFAULT_WINDOWMENU=@DEFAULT_WINDOWMENU@
 PROGRAM_PREFIX=@program_prefix@
 PROGRAM_SUFFIX=@program_suffix@
 
@@ -49,6 +50,7 @@ defaults.hh: Makefile
 		echo '#define DEFAULT_APPSFILE "$(DEFAULT_APPSFILE)"'; \
 		echo '#define DEFAULT_OVERLAY "$(DEFAULT_OVERLAY)"'; \
 		echo '#define DEFAULT_INITFILE "$(DEFAULT_INITFILE)"'; \
+		echo '#define DEFAULT_WINDOWMENU "$(DEFAULT_WINDOWMENU)"'; \
 		echo '#define PROGRAM_PREFIX "$(PROGRAM_PREFIX:NONE=)"'; \
 		echo '#define PROGRAM_SUFFIX "$(PROGRAM_SUFFIX:NONE=)"'; \
 		echo 'std::string realProgramName(std::string name);'; \

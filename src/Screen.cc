@@ -278,7 +278,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     default_deco(rm, "NORMAL", scrname+".defaultDeco", altscrname+".DefaultDeco"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
-    windowmenufile(rm, "", scrname+".windowMenu", altscrname+".WindowMenu"),
+    windowmenufile(rm, Fluxbox::instance()->getDefaultDataFilename("windowmenu"), scrname+".windowMenu", altscrname+".WindowMenu"),
     typing_delay(rm, 0, scrname+".noFocusWhileTypingDelay", altscrname+".NoFocusWhileTypingDelay"),
     follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
     user_follow_model(rm, FOLLOW_ACTIVE_WINDOW, scrname+".userFollowModel", altscrname+".UserFollowModel"),
@@ -1523,32 +1523,18 @@ void BScreen::rereadMenu() {
 
 }
 
+const std::string BScreen::windowMenuFilename() const {
+    if ((*resource.windowmenufile).empty())
+        return Fluxbox::instance()->getDefaultDataFilename("windowmenu");
+    return *resource.windowmenufile;
+}
+
 void BScreen::rereadWindowMenu() {
 
     m_windowmenu->removeAll();
     if (!windowMenuFilename().empty())
         MenuCreator::createFromFile(windowMenuFilename(), *m_windowmenu,
                                     m_windowmenu->reloadHelper());
-
-    if (m_windowmenu->numberOfItems() == 0) {
-        const char *defaults[] = {
-            "shade",
-            "stick",
-            "maximize",
-            "iconify",
-            "raise",
-            "lower",
-            "sendto",
-            "layer",
-            "alpha",
-            "extramenus",
-            "separator",
-            "close",
-            0
-        };
-        for (unsigned int i=0; defaults[i]; ++i)
-            MenuCreator::createWindowMenuItem(defaults[i], "", *m_windowmenu);
-    }
 
 }
 

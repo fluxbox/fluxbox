@@ -522,16 +522,15 @@ void Fluxbox::ungrab() {
 void Fluxbox::setupConfigFiles() {
 
     bool create_init = false, create_keys = false, create_menu = false,
-         create_apps = false, create_overlay = false;
+         create_apps = false, create_overlay = false, create_windowmenu = false;
 
-    string dirname = getenv("HOME") + string("/.") + m_RC_PATH + "/";
-    string init_file, keys_file, menu_file, slitlist_file, apps_file,
-           overlay_file;
-    init_file = dirname + m_RC_INIT_FILE;
-    keys_file = dirname + "keys";
-    menu_file = dirname + "menu";
-    apps_file = dirname + "apps";
-    overlay_file = dirname + "overlay";
+    string dirname = getDefaultDataFilename("");
+    string init_file = getDefaultDataFilename(m_RC_INIT_FILE);
+    string keys_file = getDefaultDataFilename("keys");
+    string menu_file = getDefaultDataFilename("menu");
+    string apps_file = getDefaultDataFilename("apps");
+    string overlay_file = getDefaultDataFilename("overlay");
+    string windowmenu_file = getDefaultDataFilename("windowmenu");
 
     struct stat buf;
 
@@ -549,6 +548,8 @@ void Fluxbox::setupConfigFiles() {
             create_apps = true;
         if (stat(overlay_file.c_str(), &buf))
             create_overlay = true;
+        if (stat(windowmenu_file.c_str(), &buf))
+            create_windowmenu = true;
 
     } else {
 #ifdef DEBUG
@@ -589,6 +590,9 @@ void Fluxbox::setupConfigFiles() {
     // copy init file
     if (create_init)
         FbTk::FileUtil::copyFile(DEFAULT_INITFILE, init_file.c_str());
+
+    if (create_windowmenu)
+        FbTk::FileUtil::copyFile(DEFAULT_WINDOWMENU, windowmenu_file.c_str());
 
 #define CONFIG_VERSION 8
     FbTk::Resource<int> config_version(m_resourcemanager, 0,
@@ -1319,18 +1323,14 @@ void Fluxbox::save_rc() {
 
 /// @return filename of resource file
 string Fluxbox::getRcFilename() {
-
-    if (m_rc_file.empty()) { // set default filename
-        string defaultfile(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + m_RC_INIT_FILE);
-        return defaultfile;
-    }
-
+    if (m_rc_file.empty())
+        return getDefaultDataFilename(m_RC_INIT_FILE);
     return m_rc_file;
 }
 
 /// Provides default filename of data file
-void Fluxbox::getDefaultDataFilename(const char *name, string &filename) const {
-    filename = string(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + name);
+string Fluxbox::getDefaultDataFilename(const char *name) const {
+    return (getenv("HOME") + string("/.") + m_RC_PATH + string("/") + name);
 }
 
 /// loads resources
@@ -1359,8 +1359,7 @@ void Fluxbox::load_rc() {
     if (!m_rc_slitlistfile->empty()) {
         *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);
     } else {
-        string filename;
-        getDefaultDataFilename("slitlist", filename);
+        string filename = getDefaultDataFilename("slitlist");
         m_rc_slitlistfile.setFromString(filename.c_str());
     }
 

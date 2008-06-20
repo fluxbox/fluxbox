@@ -2154,11 +2154,11 @@ void FluxboxWindow::restoreAttributes() {
    Show the window menu at pos mx, my
 */
 void FluxboxWindow::showMenu(int menu_x, int menu_y) {
-    // move menu directly under titlebar
+    menu().reloadHelper()->checkReload();
 
     int head = screen().getHead(menu_x, menu_y);
 
-    // but not off the screen
+    // move menu directly under titlebar but not off the screen
     if (menu_y < static_cast<signed>(screen().maxTop(head)))
         menu_y = screen().maxTop(head);
     else if (menu_y + menu().height() >= screen().maxBottom(head))
@@ -3648,7 +3648,7 @@ const FbTk::FbWindow &FluxboxWindow::fbWindow() const {
     return frame().window();
 }
 
-FbTk::Menu &FluxboxWindow::menu() {
+FbMenu &FluxboxWindow::menu() {
     return screen().windowMenu();
 }
 
@@ -3660,7 +3660,7 @@ const FbTk::PixmapWithMask &FluxboxWindow::icon() const {
     return (m_client ? m_client->icon() : m_icon);
 }
 
-const FbTk::Menu &FluxboxWindow::menu() const {
+const FbMenu &FluxboxWindow::menu() const {
     return screen().windowMenu();
 }
 

@@ -9,6 +9,7 @@ DEFAULT_KEYS = @DEFAULT_KEYS@
 DEFAULT_APPS = @DEFAULT_APPS@
 DEFAULT_OVERLAY = @DEFAULT_OVERLAY@
 DEFAULT_INIT = @DEFAULT_INIT@
+DEFAULT_WINDOWMENU = @DEFAULT_WINDOWMENU@
 
 SUBDIRS= 		styles
 CLEANFILES= 		menu menu.in menu.pre menu.bak init apps
@@ -19,7 +20,7 @@ all-local: 		menu init apps
 install-pkgdataDATA:
 	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_MENU))
-	$(INSTALL_DATA) menu $(DESTDIR)$(DEFAULT_MENU)
+	$(INSTALL_DATA) $(srcdir)/menu $(DESTDIR)$(DEFAULT_MENU)
 	@echo "Installing keys file in $(DESTDIR)$(DEFAULT_KEYS)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_KEYS))
 	$(INSTALL_DATA) $(srcdir)/keys $(DESTDIR)$(DEFAULT_KEYS)
@@ -31,7 +32,10 @@ install-pkgdataDATA:
 	$(INSTALL_DATA) $(srcdir)/overlay $(DESTDIR)$(DEFAULT_OVERLAY)
 	@echo "Installing init file in $(DESTDIR)$(DEFAULT_INIT)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_INIT))
-	$(INSTALL_DATA) init $(DESTDIR)$(DEFAULT_INIT)
+	$(INSTALL_DATA) $(srcdir)/init $(DESTDIR)$(DEFAULT_INIT)
+	@echo "Installing windowmenu file in $(DESTDIR)$(DEFAULT_WINDOWMENU)"
+	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_WINDOWMENU))
+	$(INSTALL_DATA) $(srcdir)/windowmenu $(DESTDIR)$(DEFAULT_WINDOWMENU)
 
 distclean-local:
 		rm -f *\~

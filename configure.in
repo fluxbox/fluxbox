@@ -538,6 +538,14 @@ AC_ARG_WITH(
 AC_SUBST(DEFAULT_MENU)
 
 AC_ARG_WITH(
+  windowmenu,
+  [  --with-windowmenu=path  location windowmenu file (PREFIX/share/fluxbox/windowmenu)],
+  DEFAULT_WINDOWMENU=$with_windowmenu,
+  DEFAULT_WINDOWMENU=\$\(prefix\)/share/fluxbox/windowmenu
+)
+AC_SUBST(DEFAULT_WINDOWMENU)
+
+AC_ARG_WITH(
   style,
   [  --with-style=path       style by default   (PREFIX/share/fluxbox/styles/bloe)],
   DEFAULT_STYLE=$with_style,

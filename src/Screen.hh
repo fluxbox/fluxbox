@@ -120,7 +120,7 @@ public:
     bool doShowWindowPos() const { return *resource.show_window_pos; }
     bool decorateTransient() const { return *resource.decorate_transient; }
     const std::string &defaultDeco() const { return *resource.default_deco; }
-    const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
+    const std::string windowMenuFilename() const;
     FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     // menus
     const FbMenu &rootMenu() const { return *m_rootmenu.get(); }
