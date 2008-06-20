@@ -243,7 +243,14 @@ void SaveResources::execute() {
     Fluxbox::instance()->save_rc();
 }
 
-REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(restart, FbCommands::RestartFluxboxCmd, void);
+REGISTER_COMMAND_PARSER(restart, RestartFluxboxCmd::parse, void);
+
+FbTk::Command<void> *RestartFluxboxCmd::parse(const string &command,
+        const string &args, bool trusted) {
+    if (!trusted && !args.empty())
+        return 0;
+    return new RestartFluxboxCmd(args);
+}
 
 RestartFluxboxCmd::RestartFluxboxCmd(const string &cmd):m_cmd(cmd){
 }

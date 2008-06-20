@@ -77,6 +77,8 @@ class RestartFluxboxCmd: public FbTk::Command<void> {
 public:
     RestartFluxboxCmd(const std::string &cmd);
     void execute();
+    static FbTk::Command<void> *parse(const std::string &command,
+                                      const std::string &args, bool trusted);
 private:
     std::string m_cmd;
 };
