@@ -1200,7 +1200,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (!win)
         win = FocusControl::focusedFbWindow();
 
-    if (!win || &win->screen() != this)
+    if (!win || &win->screen() != this || win->isStuck())
         return;
 
     FbTk::App::instance()->sync(false);
