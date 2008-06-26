@@ -104,9 +104,8 @@ struct ImageControl::Cache {
     unsigned long pixel1, pixel2, texture;
 };
 
-ImageControl::ImageControl(int screen_num, bool dither,
+ImageControl::ImageControl(int screen_num,
                            int cpc, unsigned long cache_timeout, unsigned long cmax):
-    m_dither(dither),
     m_colors(0),
     m_num_colors(0),
     m_colors_per_channel(cpc) {
@@ -318,13 +317,6 @@ void ImageControl::colorTables(const unsigned char **rmt, const unsigned char **
     if (bbit) *bbit = blue_bits;
 }
 
-#ifdef NOT_USED
-void ImageControl::getXColorTable(XColor **c, int *n) {
-    if (c) *c = m_colors;
-    if (n) *n = m_num_colors;
-}
-#endif
-
 void ImageControl::getGradientBuffers(unsigned int w,
                                       unsigned int h,
                                       unsigned int **xbuf,
@@ -379,15 +371,6 @@ void ImageControl::installRootColormap() {
 
     XUngrabServer(disp);
 }
-
-#ifdef NOT_USED
-void ImageControl::setColorsPerChannel(int cpc) {
-    if (cpc < 2) cpc = 2;
-    if (cpc > 6) cpc = 6;
-
-    m_colors_per_channel = cpc;
-}
-#endif
 
 unsigned long ImageControl::getSqrt(unsigned int x) const {
     if (! sqrt_table) {
@@ -449,8 +432,6 @@ void ImageControl::createColorTable() {
 
     if (bits_per_pixel == 0)
         bits_per_pixel = m_screen_depth;
-    if (bits_per_pixel >= 24)
-        setDither(false);
 
     red_offset = green_offset = blue_offset = 0;
 
@@ -501,12 +482,7 @@ void ImageControl::createColorTable() {
 
         m_colors = new XColor[m_num_colors];
 
-        int bits = 256 / m_colors_per_channel;
-
-#ifndef ORDEREDPSEUDO
-        bits = 255 / (m_colors_per_channel - 1);
-#endif // ORDEREDPSEUDO
-
+        int bits = 255 / (m_colors_per_channel - 1);
         red_bits = green_bits = blue_bits = bits;
 
         for (unsigned int i = 0; i < 256; i++) {

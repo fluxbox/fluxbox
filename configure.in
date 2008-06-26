@@ -290,20 +290,6 @@ AC_ARG_ENABLE(
 )
 AM_CONDITIONAL(NEWWMSPEC, test x$NEWWMSPEC = xtrue)
 
-dnl Check for ordered 8bpp dithering
-AC_MSG_CHECKING([whether to include Pseudocolor ordered dithering code])
-AC_ARG_ENABLE(ordered-pseudo,
-[  --enable-ordered-pseudo include code for ordered pseudocolor (8bpp)
-                          dithering ([default=no])],
-  if test x$enableval = "xyes"; then
-    AC_MSG_RESULT([yes])
-	AC_DEFINE(ORDEREDPSEUDO, 1, "ordered dithering code")
-  else
-    AC_MSG_RESULT([no]) 
-  fi,
-  AC_MSG_RESULT([no])
-)
-
 dnl Check whether to include debugging code
 DEBUG=""
 AC_MSG_CHECKING([whether to include verbose debugging code])

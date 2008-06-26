@@ -264,7 +264,6 @@ getString() const {
 BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                                         const string &scrname,
                                         const string &altscrname):
-    image_dither(rm, false, scrname+".imageDither", altscrname+".ImageDither"),
     opaque_move(rm, false, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
     full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
     max_ignore_inc(rm, true, scrname+".maxIgnoreIncrement", altscrname+".MaxIgnoreIncrement"),
@@ -446,7 +445,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     fluxbox->load_rc(*this);
 
     // setup image cache engine
-    m_image_control.reset(new FbTk::ImageControl(scrn, true,
+    m_image_control.reset(new FbTk::ImageControl(scrn,
                                                  fluxbox->colorsPerChannel(),
                                                  fluxbox->getCacheLife(), fluxbox->getCacheMax()));
     imageControl().installRootColormap();
@@ -478,8 +477,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     m_menutheme->setDelayOpen(*resource.menu_delay);
     m_menutheme->setDelayClose(*resource.menu_delay_close);
-
-    imageControl().setDither(*resource.image_dither);
 
     focusedWinFrameTheme()->reconfigSig().attach(this);// for geom window
 
@@ -1775,9 +1772,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     for (; it != it_end; ++it)
         menu.insert(it->first, it->second);
 
-    _BOOLITEM(menu, Configmenu, ImageDithering,
-              "Image Dithering", "Image Dithering",
-              resource.image_dither, save_and_reconfigure);
     _BOOLITEM(menu, Configmenu, OpaqueMove,
               "Opaque Window Moving",
               "Window Moving with whole window visible (as opposed to outline moving)",

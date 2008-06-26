@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/06/26:
+   * Remove antiquated dithering code (Mark)
+     FbTk/ImageControl.cc/hh FbTk/TextureRender.cc Screen.cc/hh
 *08/06/20:
    * Move default window menu to ~/.fluxbox/windowmenu (Mark)
      configure.in data/Makefile.am data/windowmenu Screen.cc

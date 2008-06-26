@@ -550,7 +550,7 @@ private:
         ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
                        const std::string &altscrname);
 
-        FbTk::Resource<bool> image_dither, opaque_move, full_max,
+        FbTk::Resource<bool> opaque_move, full_max,
             max_ignore_inc, max_disable_move, max_disable_resize,
             workspace_warping, show_window_pos, auto_raise, click_raises,
             decorate_transient;
@@ -560,7 +560,6 @@ private:
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<unsigned int> typing_delay;
         FbTk::Resource<FollowModel> follow_model, user_follow_model;
-        bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
             unfocused_alpha, menu_alpha, menu_delay, menu_delay_close,
             tab_width, tooltip_delay;
