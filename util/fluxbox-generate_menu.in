@@ -1760,7 +1760,7 @@ append_submenu "${SYSTEMTOOLSMENU}"
   normal_find firestarter gtk-lshw gproftd gpureftpd guitoo porthole gtk-iptables \
               gtk-cpuspeedy
   find_it    fireglcontrol   append "[exec] (ATI Config) {fireglcontrol}"
-  cli_find    top htop
+  cli_find    top htop iotop ntop powertop
 append_menu_end
 
 
