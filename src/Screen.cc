@@ -38,6 +38,7 @@
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
 #include "FocusModelMenuItem.hh"
+#include "RadioMenuItem.hh"
 
 // menus
 #include "FbMenu.hh"
@@ -174,21 +175,21 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 }
 
 
-class TabPlacementMenuItem: public FbTk::MenuItem {
+class TabPlacementMenuItem: public FbTk::RadioMenuItem {
 public:
     TabPlacementMenuItem(FbTk::FbString & label, BScreen &screen,
                          FbWinFrame::TabPlacement place,
                          FbTk::RefCount<FbTk::Command<void> > &cmd):
-        FbTk::MenuItem(label, cmd),
+        FbTk::RadioMenuItem(label, cmd),
         m_screen(screen),
         m_place(place) {
         setCloseOnClick(false);
     }
 
-    bool isEnabled() const { return m_screen.getTabPlacement() != m_place; }
+    bool isSelected() const { return m_screen.getTabPlacement() == m_place; }
     void click(int button, int time, unsigned int mods) {
         m_screen.saveTabPlacement(m_place);
-        FbTk::MenuItem::click(button, time, mods);
+        FbTk::RadioMenuItem::click(button, time, mods);
     }
 
 

@@ -57,6 +57,7 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
+#include "FbTk/RadioMenuItem.hh"
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/types.h>
@@ -236,16 +237,16 @@ private:
     string m_label;
 };
 
-class PlaceSlitMenuItem: public FbTk::MenuItem {
+class PlaceSlitMenuItem: public FbTk::RadioMenuItem {
 public:
     PlaceSlitMenuItem(const FbTk::FbString &label, Slit &slit, Slit::Placement place, FbTk::RefCount<FbTk::Command<void> > &cmd):
-        FbTk::MenuItem(label, cmd), m_slit(slit), m_place(place) {
+        FbTk::RadioMenuItem(label, cmd), m_slit(slit), m_place(place) {
         setCloseOnClick(false);
     }
-    bool isEnabled() const { return m_slit.placement() != m_place; }
+    bool isSelected() const { return m_slit.placement() == m_place; }
     void click(int button, int time, unsigned int mods) {
         m_slit.setPlacement(m_place);
-        FbTk::MenuItem::click(button, time, mods);
+        FbTk::RadioMenuItem::click(button, time, mods);
     }
 private:
     Slit &m_slit;
@@ -1291,7 +1292,7 @@ void Slit::setupMenu() {
 
     m_slitmenu.insert(alpha_menuitem);
 
-    m_slitmenu.insert(new SlitDirMenuItem(_FB_XTEXT(Slit, Direction, "Slit Direction", "Orientation of slit"),
+    m_slitmenu.insert(new SlitDirMenuItem(_FB_XTEXT(Slit, Direction, "Slit Direction:", "Orientation of slit"),
                                           *this,
                                           save_and_reconfigure));
     m_slitmenu.insert(_FB_XTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);

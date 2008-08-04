@@ -29,7 +29,7 @@
 
 #include "FbTk/RefCount.hh"
 #include "FbTk/SimpleCommand.hh"
-#include "FbTk/MenuItem.hh"
+#include "FbTk/RadioMenuItem.hh"
 
 // provides a generic way for giving an object a xinerama head menu
 // The object must have two functions:
@@ -38,18 +38,18 @@
 
 /// this class holds the xinerama items
 template <typename ItemType> 
-class XineramaHeadMenuItem : public FbTk::MenuItem {
+class XineramaHeadMenuItem : public FbTk::RadioMenuItem {
 public:
     XineramaHeadMenuItem(const FbTk::FbString &label, ItemType &object, int headnum,
                   FbTk::RefCount<FbTk::Command<void> > &cmd):
-        FbTk::MenuItem(label,cmd), m_object(object), m_headnum(headnum) {}
+        FbTk::RadioMenuItem(label,cmd), m_object(object), m_headnum(headnum) {}
     XineramaHeadMenuItem(const FbTk::FbString &label, ItemType &object, int headnum):
-        FbTk::MenuItem(label), m_object(object), m_headnum(headnum) {}
+        FbTk::RadioMenuItem(label), m_object(object), m_headnum(headnum) {}
 
-    bool isEnabled() const { return m_object.getOnHead() != m_headnum; } 
+    bool isSelected() const { return m_object.getOnHead() == m_headnum; } 
     void click(int button, int time, unsigned int mods) {
         m_object.saveOnHead(m_headnum);
-        FbTk::MenuItem::click(button, time, mods);
+        FbTk::RadioMenuItem::click(button, time, mods);
     }
     
 private:

@@ -170,7 +170,7 @@ $set 13 #Slit
 1 Clients
 2 Cycle Down
 3 Cycle Up
-4 Slit Direction
+4 Slit Direction:
 5 Slit Layer
 6 Slit on Head
 7 Slit Placement

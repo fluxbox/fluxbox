@@ -39,7 +39,7 @@
 #include "FbTk/STLUtil.hh"
 #include "FbTk/I18n.hh"
 #include "FbTk/Menu.hh"
-#include "FbTk/MenuItem.hh"
+#include "FbTk/RadioMenuItem.hh"
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -99,18 +99,18 @@ void FbTk::Resource<FbTk::Container::Alignment>::setFromString(const char *str) 
 
 namespace {
 
-class ToolbarModeMenuItem : public FbTk::MenuItem {
+class ToolbarModeMenuItem : public FbTk::RadioMenuItem {
 public:
     ToolbarModeMenuItem(const FbTk::FbString &label, IconbarTool &handler,
                         string mode,
                         FbTk::RefCount<FbTk::Command<void> > &cmd):
-        FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
+        FbTk::RadioMenuItem(label, cmd), m_handler(handler), m_mode(mode) {
         setCloseOnClick(false);
     }
-    bool isEnabled() const { return m_handler.mode() != m_mode; }
+    bool isSelected() const { return m_handler.mode() == m_mode; }
     void click(int button, int time, unsigned int mods) {
         m_handler.setMode(m_mode);
-        FbTk::MenuItem::click(button, time, mods);
+        FbTk::RadioMenuItem::click(button, time, mods);
     }
 
 private:
@@ -118,18 +118,18 @@ private:
     string m_mode;
 };
 
-class ToolbarAlignMenuItem: public FbTk::MenuItem {
+class ToolbarAlignMenuItem: public FbTk::RadioMenuItem {
 public:
     ToolbarAlignMenuItem(const FbTk::FbString &label, IconbarTool &handler,
                         FbTk::Container::Alignment mode,
                         FbTk::RefCount<FbTk::Command<void> > &cmd):
-        FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
+        FbTk::RadioMenuItem(label, cmd), m_handler(handler), m_mode(mode) {
         setCloseOnClick(false);
     }
-    bool isEnabled() const { return m_handler.alignment() != m_mode; }
+    bool isSelected() const { return m_handler.alignment() == m_mode; }
     void click(int button, int time, unsigned int mods) {
         m_handler.setAlignment(m_mode);
-        FbTk::MenuItem::click(button, time, mods);
+        FbTk::RadioMenuItem::click(button, time, mods);
     }
 
 private:

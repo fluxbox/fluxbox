@@ -156,16 +156,22 @@ getString() const {
 } // end namespace FbTk
 
 namespace {
-class SetToolbarPlacementCmd: public FbTk::Command<void> {
+
+class PlaceToolbarMenuItem: public FbTk::RadioMenuItem {
 public:
-    SetToolbarPlacementCmd(Toolbar &tbar, Toolbar::Placement place):m_tbar(tbar), m_place(place) { }
-    void execute() {
-        m_tbar.setPlacement(m_place);
-        m_tbar.reconfigure();
+    PlaceToolbarMenuItem(const FbTk::FbString &label, Toolbar &toolbar,
+        Toolbar::Placement place):
+        FbTk::RadioMenuItem(label), m_toolbar(toolbar), m_place(place) {
+        setCloseOnClick(false);
+    }
+    bool isSelected() const { return m_toolbar.placement() == m_place; }
+    void click(int button, int time, unsigned int mods) {
+        m_toolbar.setPlacement(m_place);
+        m_toolbar.reconfigure();
         Fluxbox::instance()->save_rc();
     }
 private:
-    Toolbar &m_tbar;
+    Toolbar &m_toolbar;
     Toolbar::Placement m_place;
 };
 
@@ -909,11 +915,10 @@ void Toolbar::setupMenus(bool skip_new_placement) {
             if (str == "") {
                 placementMenu().insert("");
                 placementMenu().setItemEnabled(i, false);
-            } else {
-                RefCommand setplace(new SetToolbarPlacementCmd(*this, placement));
-                placementMenu().insert(str, setplace);
+            } else
+                placementMenu().insert(new PlaceToolbarMenuItem(str, *this,
+                                                                placement));
 
-            }
             place_menu.pop_front();
         }
     }

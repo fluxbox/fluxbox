@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1
 *08/08/04:
+   * Add selection box to various "choose one of these" menu items (Mark)
+     Toolbar.cc Slit.cc Screen.cc LayerMenu.hh Xinerama.hh StyleMenuItem.cc/hh
+     added FbTk/RadioMenuItem.hh
    * Add window list argument to ArrangeWindows (Mark)
      WorkspaceCmd.cc/hh
 *08/06/26:

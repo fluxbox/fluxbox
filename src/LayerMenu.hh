@@ -26,7 +26,7 @@
 
 #include "ToggleMenu.hh"
 
-#include "FbTk/MenuItem.hh"
+#include "FbTk/RadioMenuItem.hh"
 
 class LayerObject {
 public:
@@ -37,20 +37,20 @@ public:
 
 
 /// this class holds the layermenu items
-class LayerMenuItem : public FbTk::MenuItem {
+class LayerMenuItem : public FbTk::RadioMenuItem {
 public:
     LayerMenuItem(const FbTk::FbString &label, LayerObject *object,
                   int layernum, FbTk::RefCount<FbTk::Command<void> > &cmd):
-        FbTk::MenuItem(label, cmd), m_object(object), m_layernum(layernum) {}
+        FbTk::RadioMenuItem(label, cmd), m_object(object), m_layernum(layernum) {}
 
     LayerMenuItem(const FbTk::FbString &label, LayerObject *object,
                   int layernum):
-        FbTk::MenuItem(label), m_object(object), m_layernum(layernum) {}
+        FbTk::RadioMenuItem(label), m_object(object), m_layernum(layernum) {}
 
-    bool isEnabled() const { return m_object->layerNumber() != m_layernum; }
+    bool isSelected() const { return m_object->layerNumber() == m_layernum; }
     void click(int button, int time, unsigned int mods) {
         m_object->moveToLayer(m_layernum);
-        FbTk::MenuItem::click(button, time, mods);
+        FbTk::RadioMenuItem::click(button, time, mods);
     }
     
 private:

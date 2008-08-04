@@ -23,9 +23,9 @@
 #ifndef STYLEMENUITEM_HH
 #define STYLEMENUITEM_HH
 
-#include "FbTk/MenuItem.hh"
+#include "FbTk/RadioMenuItem.hh"
 
-class StyleMenuItem: public FbTk::MenuItem {
+class StyleMenuItem: public FbTk::RadioMenuItem {
 public:
     StyleMenuItem(const FbTk::FbString &label, const std::string &filename);
     bool isSelected() const;
