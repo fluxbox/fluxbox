@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/08/04:
+   * Add window list argument to ArrangeWindows (Mark)
+     WorkspaceCmd.cc/hh
 *08/06/26:
    * Remove antiquated dithering code (Mark)
      FbTk/ImageControl.cc/hh FbTk/TextureRender.cc Screen.cc/hh

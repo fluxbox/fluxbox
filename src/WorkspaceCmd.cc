@@ -173,7 +173,8 @@ FbTk::Command<void> *parseWindowList(const string &command,
     else if (command == "prevgroup") {
         opts |= FocusableList::LIST_GROUPS;
         return new PrevWindowCmd(opts, pat);
-    }
+    } else if (command == "arrangewindows")
+        return new ArrangeWindowsCmd(pat);
     return 0;
 }
 
@@ -182,6 +183,7 @@ REGISTER_COMMAND_PARSER(nextwindow, parseWindowList, void);
 REGISTER_COMMAND_PARSER(nextgroup, parseWindowList, void);
 REGISTER_COMMAND_PARSER(prevwindow, parseWindowList, void);
 REGISTER_COMMAND_PARSER(prevgroup, parseWindowList, void);
+REGISTER_COMMAND_PARSER(arrangewindows, parseWindowList, void);
 
 }; // end anonymous namespace
 
@@ -353,8 +355,6 @@ void JumpToWorkspaceCmd::execute() {
     }
 }
 
-REGISTER_COMMAND(arrangewindows, ArrangeWindowsCmd, void);
-
 /**
   try to arrange the windows on the current workspace in a 'clever' way.
   we take the shaded-windows and put them ontop of the workspace and put the
@@ -366,9 +366,8 @@ void ArrangeWindowsCmd::execute() {
         return;
 
     Workspace *space = screen->currentWorkspace();
-    size_t win_count = space->windowList().size();
 
-    if (win_count == 0)
+    if (space->windowList().empty())
         return;
 
     // TODO: choice between
@@ -382,19 +381,18 @@ void ArrangeWindowsCmd::execute() {
     Workspace::Windows shaded_windows;
     for(win = space->windowList().begin(); win != space->windowList().end(); win++) {
         int winhead = screen->getHead((*win)->fbWindow());
-        if (winhead == head || winhead == 0) {
-            if (!(*win)->isShaded())
-                normal_windows.push_back(*win);
-            else
+        if ((winhead == head || winhead == 0) && m_pat.match(**win)) {
+            if ((*win)->isShaded())
                 shaded_windows.push_back(*win);
+            else
+                normal_windows.push_back(*win);
         }
     }
 
     // to arrange only shaded windows is a bit pointless imho (mathias)
-    if (normal_windows.size() == 0)
+    size_t win_count = normal_windows.size();
+    if (win_count == 0)
         return;
-
-    win_count = normal_windows.size();
 
     const unsigned int max_width = screen->maxRight(head) - screen->maxLeft(head);
     unsigned int max_height = screen->maxBottom(head) - screen->maxTop(head);
