@@ -163,10 +163,13 @@ BottomRight*
 
 Window Commands
 ~~~~~~~~~~~~~~~
-These commands affect only the currently focused window.
+These commands ordinarily affect only the currently focused window. The
+*OnWindow* modifier and *ForEach* command may affect the window that is used.
 
-*Activate* | *Focus*::
-	Set the focus to the window matching the argument, and raise it.
+*Activate* ['pattern'] | *Focus* ['pattern']::
+	Set the focus to the window matching the argument. If 'pattern' is
+	omitted, this may be used with the *OnWindow* modifier to set the
+	focus. See *CLIENT PATTERNS* for more about the 'pattern' arguments.
 
 *Minimize* | *MinimizeWindow* | *Iconify*::
 	Minimize the current window, equivalent to the window button.

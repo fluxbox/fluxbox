@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
 *08/08/05:
+   * Fixed Focus key command (Mark)
+     CurrentWindowCmd.cc/hh FocusableList.cc/hh
    * Added new SetLayer key command (Mark)
      CurrentWindowCmd.cc/hh
    * Make ShowDesktop command toggle between showing windows and desktop (Mark)

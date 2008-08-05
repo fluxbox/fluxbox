@@ -137,6 +137,16 @@ private:
     const int m_tab_num;
 };
 
+// focus the window
+class FocusCmd: public WindowHelperCmd {
+public:
+    explicit FocusCmd(const std::string &pat): m_pat(pat.c_str()) { }
+protected:
+    void real_execute();
+private:
+    const ClientPattern m_pat;
+};
+
 // begin moving with mouse
 class StartMovingCmd: public WindowHelperCmd {
 public:

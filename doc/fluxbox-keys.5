@@ -165,11 +165,19 @@ By default \fIcorner\fR is \fBBottomRight\fR, but may be overridden with one of:
 Start dragging to add this window to another\'s tabgroup\.
 .RE
 .SS "Window Commands"
-These commands affect only the currently focused window\.
+These commands ordinarily affect only the currently focused window\. The \fBOnWindow\fR modifier and \fBForEach\fR command may affect the window that is used\.
 .PP
-\fBActivate\fR | \fBFocus\fR
+\fBActivate\fR [\fIpattern\fR] | \fBFocus\fR [\fIpattern\fR]
 .RS 4
-Set the focus to the window matching the argument, and raise it\.
+Set the focus to the window matching the argument\. If
+\fIpattern\fR
+is omitted, this may be used with the
+\fBOnWindow\fR
+modifier to set the focus\. See
+\fBCLIENT PATTERNS\fR
+for more about the
+\fIpattern\fR
+arguments\.
 .RE
 .PP
 \fBMinimize\fR | \fBMinimizeWindow\fR | \fBIconify\fR

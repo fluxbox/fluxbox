@@ -70,6 +70,8 @@ public:
     bool empty() const { return m_list.empty(); }
     /// does the list contain the given window?
     bool contains(const Focusable &win) const;
+    /// find the first window matching the pattern
+    Focusable *find(const ClientPattern &pattern) const;
 
     /**
        @name signals
