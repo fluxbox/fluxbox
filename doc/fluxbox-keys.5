@@ -1,0 +1,981 @@
+.\"     Title: fluxbox-keys
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 08/04/2008
+.\"    Manual: 
+.\"    Source: 
+.\"
+.TH "FLUXBOX\-KEYS" "5" "08/04/2008" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+fluxbox-keys - keyboard shortcuts configuration for fluxbox(1)
+.SH "SYNOPSIS"
+~/\.fluxbox/keys
+.sp
+.SH "SYNTAX"
+Variable parameters are shown in emphasis: \fIargument\fR
+.sp
+Optional parameters are shown in square brackets: [\fIargument\fR]
+.sp
+All other characters shown are required verbatim\. Whitespace is required where shown, but it is fine to add more whitespace\.
+.sp
+.SH "DESCRIPTION"
+The keys file defines the keyboard shortcuts for \fIfluxbox(1)\fR\.
+.sp
+You can customize fluxbox\'s key handling through the ~/\.fluxbox/keys file\. The file consists of lines of the basic format:
+.sp
+\fB[\fR\fB\fImodifiers\fR\fR\fB] \fR\fB\fIkey\fR\fR\fB :\fR\fB\fIcommand\fR\fR\fB [\fR\fB\fIarguments\fR\fR\fB \fR\fB\fI\&...\fR\fR\fB]\fR
+.sp
+The space between the \fIkey\fR and the \fB:\fR before the \fIcommand\fR is mandatory\.
+.sp
+All modifiers and commands are case\-insensitive\. Some command arguments (especially those that will be passed to the shell) are case\-sensitive\. Some key names are case\-sensitive\.
+.sp
+Lines beginning with a \fI#\fR or \fI!\fR are considered comments and are unread by fluxbox\.
+.sp
+.SH "MODIFIERS"
+You can get a list of possible modifiers by calling `xmodmap \-pm\'\. This also shows you to which keys the modifiers are mapped, but the following modifiers are most commonly used:
+.sp
+\fBShift Control Mod1 Mod4\fR
+.sp
+where \fBMod1\fR is the Alt key on the PC keyboard and \fBMod4\fR is usually a key branded with a familiar company logo\.
+.PP
+There are also some special modifiers that refer to mouse button presses:
+.RS 4
+.PP
+\fBOnDesktop\fR
+.RS 4
+The mouse cursor is over the desktop (root window), and not any window\.
+.RE
+.PP
+\fBOnToolbar\fR
+.RS 4
+The mouse cursor is over the toolbar (which is normally at the bottom of the screen)\.
+.RE
+.PP
+\fBOnWindow\fR
+.RS 4
+The mouse cursor is over a window\.
+.RE
+.PP
+\fBOnTitlebar\fR
+.RS 4
+The mouse cursor is over a window\'s titlebar\.
+.RE
+.PP
+\fBDouble\fR
+.RS 4
+Limits this action to double\-clicks only\.
+.RE
+.RE
+.SS "Combining Modifiers"
+To combine two or more modifiers, just list them (space\-delimited) in any order\.
+.sp
+.SH "KEYS"
+You may specify a key by its key name (for example, \fBa\fR or \fBspace\fR) or by its numeric keycode (for example, \fB38\fR or \fB0xf3\fR)\.
+.sp
+If you don\'t know the name of a key, you can run \fIxev(1)\fR in a terminal, push the key, and see the name in the output\. If you have some "special" keys that do not produce a key name in the output of \fIxev(1)\fR, you can just use the keycode (NOT the keysym!) in your keys file\.
+.sp
+Commands can also be bound to mouse button presses, for which the proper "key" name is \fBMouse\fR\fIn\fR where \fIn\fR is the number of the mouse button\. For example, \fBMouse1\fR is the primary button, and \fBMouse4\fR / \fBMouse5\fR are the scroll wheel events, in normal configurations\. \fIxev(1)\fR can also be used to tell the button number\.
+.sp
+.SH "CHAINING"
+Key bindings can be chained in a fashion similar to Emacs key bindings using the syntax:
+.sp
+\fB\fImodifiers\-1\fR\fR\fB \fR\fB\fIkey\-1\fR\fR\fB \fR\fB\fImodifiers\-2\fR\fR\fB \fR\fB\fIkey\-2\fR\fR\fB :\fR\fB\fIcommand\fR\fR\fB [\fR\fB\fIarguments \&...\fR\fR\fB]\fR
+.PP
+\fBExample\ 1.\ To Bind CTRL+C CTRL+X (Which means, press CTRL+C then CTRL+X) to quit fluxbox\fR
+.sp
+.RS 4
+.nf
+Control c Control x :Quit
+.fi
+.RE
+.SH "KEYMODES"
+A specific set of key mappings can be activated and de\-activated on\-the\-fly using what are called keymodes\. The syntax to define a mapping in a keymode is:
+.sp
+\fB\fIkeymode\fR\fR\fB: \fR\fB\fImodifiers\fR\fR\fB \fR\fB\fIkey\fR\fR\fB :\fR\fB\fIcommand\fR\fR\fB [\fR\fB\fIarguments\fR\fR\fB \fR\fB\fI\&...\fR\fR\fB]\fR
+.sp
+Where \fIkeymode\fR is any alpha\-numeric string name\.
+.sp
+When this keymode is activated (see the \fBKeyMode\fR command below), all bindings prefaced by that keymode name become active (and all other keybindings will be deactivated) until the keymode changes again\.
+.sp
+.SH "COMMANDS"
+.PP
+Some commands have multiple names which are shown below as:
+.RS 4
+CMD1 | CMD2
+.RE
+.PP
+Related commands have been grouped below as:
+.RS 4
+CMD1 / CMD2
+.RE
+.PP
+The commands are broken up into sections as follows:
+.RS 4
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Mouse Commands
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Window Commands
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Workspace Commands
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Menu Commands
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Window Manager Commands
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Special Commands
+.RE
+.RE
+.SS "Mouse Commands"
+These commands may only be bound to mouse buttons (plus modifiers), not keystrokes\. In all cases, the action finishes when the mouse button is released\.
+.PP
+\fBStartMoving\fR
+.RS 4
+Start dragging to move the window\.
+.RE
+.PP
+\fBStartResizing\fR [\fIcorner\fR]
+.RS 4
+Start dragging to resize the window as if you had grabbed the window at the specified
+\fIcorner\fR\.
+.PP
+By default \fIcorner\fR is \fBBottomRight\fR, but may be overridden with one of:
+.RS 4
+
+\fBNearestCorner NearestEdge Center TopLeft Top TopRight Left Right BottomLeft BottomRight\fR
+.RE
+.RE
+.PP
+\fBStartTabbing\fR
+.RS 4
+Start dragging to add this window to another\'s tabgroup\.
+.RE
+.SS "Window Commands"
+These commands affect only the currently focused window\.
+.PP
+\fBActivate\fR | \fBFocus\fR
+.RS 4
+Set the focus to the window matching the argument, and raise it\.
+.RE
+.PP
+\fBMinimize\fR | \fBMinimizeWindow\fR | \fBIconify\fR
+.RS 4
+Minimize the current window, equivalent to the window button\.
+.RE
+.PP
+\fBMaximize\fR | \fBMaximizeWindow\fR
+.RS 4
+Maximize the current window, equivalent to the window button\.
+.RE
+.PP
+\fBMaximizeHorizontal\fR / \fBMaximizeVertical\fR
+.RS 4
+Maximize the current window in one direction only, leaving the other dimension unchanged\.
+.RE
+.PP
+\fBRaise\fR / \fBLower\fR
+.RS 4
+Reorder this window to the top or bottom of the window stack, within its current layer\. See
+\fIfluxbox(1)\fR
+for a discussion of layers\.
+.RE
+.PP
+\fBRaiseLayer\fR / \fBLowerLayer\fR
+.RS 4
+Raise the window up to the layer above, or lower it to the layer below\. See
+\fIfluxbox(1)\fR
+for a discussion of layers\.
+.RE
+.PP
+\fBClose\fR
+.RS 4
+Close the current window, equivalent to the window button\.
+.RE
+.PP
+\fBKill\fR | \fBKillWindow\fR
+.RS 4
+Close a window that\'s not responding to
+\fBClose\fR, like using
+xkill\.
+.RE
+.PP
+\fBShade\fR | \fBShadeWindow\fR
+.RS 4
+Toggle the
+\fBshaded\fR
+state of the current window, equivalent to the window button\. A
+\fBshaded\fR
+window appears as only the title bar\.
+.RE
+.PP
+\fBShadeOn\fR / \fBShadeOff\fR
+.RS 4
+Set the
+\fBshaded\fR
+state of the window to On / Off\.
+.RE
+.PP
+\fBStick\fR | \fBStickWindow\fR
+.RS 4
+Toggle the
+\fBsticky\fR
+state of the current window, equivalent to the window button\. A
+\fBsticky\fR
+window is visible on all workspaces\.
+.RE
+.PP
+\fBToggleDecor\fR
+.RS 4
+Toggles the presence of the window decorations (title bar, window buttons, and resize bar)\.
+.RE
+.PP
+\fBNextTab\fR / \fBPrevTab\fR
+.RS 4
+Cycle to the next / previous tab in the current tab group\.
+.RE
+.PP
+\fBTab\fR \fInumber\fR
+.RS 4
+Cycle to the given tab in the current tab group, where
+\fB1\fR
+is the first tab\. A negative
+\fInumber\fR
+counts from the end of the tab group (\fB\-1\fR
+is the last tab,
+\fB\-2\fR
+is the next\-to\-last, etc\.)\.
+.RE
+.PP
+\fBMoveTabRight\fR / \fBMoveTabLeft\fR
+.RS 4
+Reorder the tabs in the current tab group, swapping the current tab with the one to the right / left\.
+.RE
+.PP
+\fBDetachClient\fR
+.RS 4
+Remove the current tab from the tab group, placing it in its own window\.
+.RE
+.PP
+\fBResizeTo\fR \fIwidth\fR \fIheight\fR
+.RS 4
+Resizes the window to the given width and height\.
+.RE
+.PP
+\fBResize\fR \fIdelta\-width\fR \fIdelta\-height\fR
+.RS 4
+Resizes the window relative to the current width and height\.
+.RE
+.PP
+\fBResizeHorizontal\fR \fIdelta\-width\fR / \fBResizeVertical\fR \fIdelta\-height\fR
+.RS 4
+Resizes the window in one dimension only
+.RE
+.PP
+\fBMoveTo\fR \fIx\fR \fIy\fR [\fIanchor\fR]
+.RS 4
+Moves the window to the given coordinates, given in pixels\.
+.sp
+If either
+\fIx\fR
+or
+\fIy\fR
+is set to
+\fB*\fR, that coordinate will be ignored, and the movement will only take place in one dimension\.
+.PP
+The default \fIanchor\fR is the upper left corner, but this may be overridden with one of:
+.RS 4
+
+\fBUpperLeft LowerLeft UpperRight LowerRight\fR
+.RE
+.RE
+.PP
+\fBMove\fR \fIdelta\-x\fR \fIdelta\-y\fR
+.RS 4
+Moves the window relative to its current position\. Positive numbers refer to right and down, and negative to left and up, respectively\.
+.RE
+.PP
+\fBMoveRight\fR \fId\fR / \fBMoveLeft\fR \fId\fR / \fBMoveUp\fR \fId\fR / \fBMoveDown\fR \fId\fR
+.RS 4
+Moves the window relative to its current position by the number of pixels specified in
+\fId\fR\. If the number is negative, it moves in the opposite direction\.
+.RE
+.PP
+\fBTakeToWorkspace\fR \fIworkspace\fR / \fBSendToWorkspace\fR \fIworkspace\fR
+.RS 4
+Sends you along with the current window to the selected workspace\. SendToWorkspace just sends the window\. The first workspace is number
+\fB1\fR, not 0\.
+.RE
+.PP
+\fBTakeToNextWorkspace\fR [\fIoffset\fR] / \fBTakeToPrevWorkspace\fR [\fIoffset\fR]
+.RS 4
+Sends you along with the current window to the next or previous workspace\. If you set
+\fIoffset\fR
+to a value greater than the default of
+\fB1\fR, it will move you that number of workspaces ahead or behind\. If you go beyond the end of the currently defined workspaces, it will wrap around to the other end automatically\.
+.RE
+.PP
+\fBSendToNextWorkspace\fR [\fIoffset\fR] / \fBSendToPrevWorkspace\fR [\fIoffset\fR]
+.RS 4
+Identical to the "TakeTo\&..." commands, but again this sends only the window, and does not move you away from your current workspace\.
+.RE
+.PP
+\fBSetAlpha\fR [\fIalpha\fR [\fIunfocused\-alpha\fR]]
+.RS 4
+Sets the alpha value of a window\.
+.sp
+Putting a
+\fB+\fR
+or
+\fB\-\fR
+in front of the value adds or subtracts from the current value\. A plain integer sets the value explicitly\.
+.PP
+no arguments
+.RS 4
+Resets both focused and unfocused settings to default opacity\.
+.RE
+.PP
+one argument
+.RS 4
+Changes both focused and unfocused alpha settings\.
+.RE
+.PP
+two arguments
+.RS 4
+First value becomes the focused alpha, second becomes the unfocused alpha value\.
+.RE
+.RE
+.PP
+\fBSetHead\fR \fInumber\fR
+.RS 4
+Moves the window to the given display head\. Only available when fluxbox has been compiled with Xinerama support\.
+.RE
+.SS "Workspace Commands"
+These commands affect the entire workspace (or "desktop" as it is sometimes called)\.
+.PP
+\fBAddWorkspace\fR / \fBRemoveLastWorkspace\fR
+.RS 4
+Adds or removes a workspace from the end of the list of workspaces\.
+.RE
+.PP
+\fBNextWorkspace\fR [\fIn\fR] / \fBPrevWorkspace\fR [\fIn\fR] / \fBRightWorkspace\fR [\fIn\fR] / \fBLeftWorkspace\fR [\fIn\fR]
+.RS 4
+Switch to the Next / Previous workspace\. All versions accept an offset value
+\fIn\fR, which defaults to
+\fB1\fR
+and refers to the number of workspaces to move at one time\. {Next,Prev}Workspace wrap around when going past the last workspace, whereas {Right,Left}Workspace do not\.
+.RE
+.PP
+\fBWorkspace\fR \fInumber\fR
+.RS 4
+Jumps to the given workspace
+\fInumber\fR\. The first workspace is
+\fB1\fR\.
+.RE
+.PP
+\fBNextWindow\fR [{\fIoptions\fR}] [\fIpattern\fR] / \fBPrevWindow\fR [{\fIoptions\fR}] [\fIpattern\fR]
+.RS 4
+Focuses and activates the next / previous window in the focus list\.
+.PP
+\fIoptions\fR is one or more of the following, space delimited:
+.RS 4
+.PP
+\fBstatic\fR
+.RS 4
+Instead of moving in order of most\-recent focus, move in order of when the window was opened (or, the order shown in the iconbar)\.
+.RE
+.PP
+\fBgroups\fR
+.RS 4
+Only include the current tab in windows with multiple tabs\.
+.RE
+.sp
+If
+\fIpattern\fR
+arguments are supplied, only windows that match all the patterns are considered \- all others are skipped\. See the section
+\fBCLIENT PATTERNS\fR
+below for more information\.
+.sp
+This pair of commands has a special side\-effect when the keybinding used has a modifier \- It will temporarily raise the cycled window to the front so you can see it, but if you continue holding down the modifier and press the key again (For example, keep holding "Alt" while you tap the "Tab" key a few times), fluxbox will lower the window again when you move on to the next one\. This allows you to preview the windows in order, but does not change the order in doing so\.
+.RE
+.RE
+.PP
+\fBNextGroup\fR [{\fIoptions\fR}] [\fIpattern\fR] / \fBPrevGroup\fR [{\fIoptions\fR}] [\fIpattern\fR]
+.RS 4
+Equivalent to NextWindow / PrevWindow above, but with the
+\fBgroups\fR
+option forced on\.
+.RE
+.PP
+\fBGotoWindow\fR \fInumber\fR [{\fIoptions\fR}] [\fIpattern\fR]
+.RS 4
+Focuses and activates the window at position
+\fInumber\fR
+in the focus list\. The
+\fIoptions\fR
+and
+\fIpattern\fR
+arguments have the same meaning as
+\fBNextWindow\fR
+above\.
+.RE
+.PP
+\fBAttach\fR \fIpattern\fR
+.RS 4
+Combines all windows that match the
+\fIpattern\fR
+into a single tab group\. See
+\fBCLIENT PATTERNS\fR
+for more about the
+\fIpattern\fR
+arguments\.
+.RE
+.PP
+\fBFocusLeft\fR / \fBFocusRight\fR / \fBFocusUp\fR / \fBFocusDown\fR
+.RS 4
+Focus to the next window which is located in the direction specified\.
+.RE
+.PP
+\fBArrangeWindows\fR \fIpattern\fR
+.RS 4
+Tries to arrange all windows on the current workspace so that they overlap the least amount possible\. See
+\fBCLIENT PATTERNS\fR
+for more about the
+\fIpattern\fR
+arguments\.
+.RE
+.PP
+\fBShowDesktop\fR
+.RS 4
+Iconifies all windows\.
+.RE
+.PP
+\fBDeiconify\fR \fImode\fR \fIdestination\fR
+.RS 4
+Deiconifies windows (or, restores from a minimized state)\.
+.PP
+Where \fImode\fR may be one of:
+.RS 4
+.PP
+\fBAll\fR
+.RS 4
+All icons across all workspaces\.
+.RE
+.PP
+\fBAllWorkspace\fR
+.RS 4
+All icons on the current workspace\.
+.RE
+.PP
+\fBLast\fR
+.RS 4
+The last icon across all workspaces\.
+.RE
+.PP
+\fBLastWorkspace\fR (default)
+.RS 4
+The last icon on the current workspace\.
+.RE
+.RE
+.PP
+And \fIdestination\fR may be one of:
+.RS 4
+.PP
+\fBCurrent\fR (default)
+.RS 4
+Deiconify to the current workspace\.
+.RE
+.PP
+\fBOriginQuiet\fR
+.RS 4
+Deiconify to the window\'s original workspace, but does so in the background, without moving you there\.
+.RE
+.RE
+.RE
+.PP
+\fBSetWorkspaceName\fR \fIname\fR / \fBSetWorkspaceNameDialog\fR
+.RS 4
+Sets the name of the current workspace\.
+.RE
+.PP
+\fBCloseAllWindows\fR
+.RS 4
+Closes all windows on all desktops\.
+.RE
+.SS "Menu Commands"
+These commands open or close fluxbox popup menus\. For more information on what these menus contain or how to configure them, see \fIfluxbox(1)\fR\.
+.PP
+\fBRootMenu\fR / \fBWorkspaceMenu\fR / \fBWindowMenu\fR
+.RS 4
+Opens the specified menu\. See fluxbox(1) for more details on what these menus contain\.
+.RE
+.PP
+\fBClientMenu\fR [\fIpattern\fR]
+.RS 4
+Opens a menu that contains all windows\. If you specify a
+\fIpattern\fR, only matching windows will be in the menu\. See
+\fBCLIENT PATTERNS\fR
+below for more details on the
+\fIpattern\fR
+argument\.
+.RE
+.PP
+\fBCustomMenu\fR \fIpath\fR
+.RS 4
+Opens a custom menu file\.
+.RE
+.PP
+\fBHideMenus\fR
+.RS 4
+Hide all fluxbox popup menus\.
+.RE
+.SS "Window Manager Commands"
+These commands affect the Window Manager, or more than one window\.
+.PP
+\fBRestart\fR [\fIpath\fR]
+.RS 4
+Restarts fluxbox\. This does not close any running applications\. If the optional
+\fIpath\fR
+is a path to an executable window manager, that manager is started in place of fluxbox\.
+.RE
+.PP
+\fBQuit\fR | \fBExit\fR
+.RS 4
+Exits fluxbox\. This will normally cause X to stop as well and terminate all existing applications, returning you to the login manager or console\.
+.RE
+.PP
+\fBReconfig\fR | \fBReconfigure\fR
+.RS 4
+Reloads all fluxbox configuration files including the keys file, apps file, and init file, if they have changed\.
+.RE
+.PP
+\fBSetStyle\fR \fIpath\fR
+.RS 4
+Sets the current style to that given in
+\fIpath\fR, which must be the full path to a fluxbox style\.
+.RE
+.PP
+\fBReloadStyle\fR
+.RS 4
+Reloads only the current style\. Useful after editing a style which is currently in use\.
+.RE
+.PP
+\fBExecCommand\fR \fIargs \&...\fR | \fBExec\fR \fIargs \&...\fR | \fBExecute\fR \fIargs \&...\fR
+.RS 4
+Probably the most\-used binding of all\. Passes all the arguments to your
+\fB$SHELL\fR
+(or /bin/sh if $SHELL is not set)\. You can use this to launch applications, run shell scripts, etc\. Since all arguments are passed verbatim to the shell, you can use environment variables, pipes, or anything else the shell can do\. Note that processes only see environment variables that were set before fluxbox started (such as in ~/\.fluxbox/startup), or any that are set via the Export or SetEnv commands, below\.
+.RE
+.PP
+\fBCommandDialog\fR
+.RS 4
+Pops up a dialog box that lets you type in any of these commands manually\.
+.RE
+.PP
+\fBSetEnv\fR \fIname\fR \fIvalue\fR | \fBExport\fR \fIname\fR=\fIvalue\fR
+.RS 4
+Sets an environment variable in Fluxbox\. It will be passed to any applications spawned by any future ExecCommand commands\.
+.RE
+.PP
+\fBSetResourceValue\fR \fIresourcename\fR \fIresourcevalue\fR | \fBSetResourceValueDialog\fR
+.RS 4
+Sets a fluxbox resource value, which are normally stored in the init file\. See
+\fIfluxbox(1)\fR
+for more details on available resources and allowed values\.
+.RE
+.SS "Special Commands"
+These commands have special meanings or behaviors\.
+.PP
+\fBMacroCmd\fR {\fIcommand1\fR} {\fIcommand2\fR} {\fIcommand3\fR} \fI\&...\fR
+.RS 4
+Allows you to execute more than one command with one keybinding\. The commands will be executed in series\. The
+\fB{\fR
+\fB}\fR
+brackets are literally required, as in the following example:
+.sp
+.RS 4
+.nf
+MacroCmd {MoveTo 0 0} {ResizeTo 1280 800}
+.fi
+.RE
+.RE
+.PP
+\fBDelay\fR {\fIcommand\fR} [\fImicroseconds\fR]
+.RS 4
+Delays running
+\fIcommand\fR
+for the given amount of time\. If the same key binding is activated again, the timer will be restarted\.
+.RE
+.PP
+\fBToggleCmd\fR {\fIcommand1\fR} {\fIcommand2\fR} \fI\&...\fR
+.RS 4
+Alternates between the commands\. On the first press of the bound key, runs
+\fIcommand1\fR\. On the next press, runs
+\fIcommand2\fR\.
+.RE
+.PP
+\fBBindKey\fR \fIkeybinding\fR
+.RS 4
+Adds the given
+\fIkeybinding\fR
+(which must be a valid key binding as defined in the DESCRIPTION section above) to your keys file\.
+.RE
+.PP
+\fBKeyMode\fR \fIkeymode\fR [\fIreturn\-keybinding\fR]
+.RS 4
+Activates the named
+\fIkeymode\fR
+(or, all key binding lines prefaced with the same
+\fIkeymode\fR:) and deactivates all others until the
+\fIreturn\-keybinding\fR
+(by default
+\fBEscape\fR) is pressed\. The default keymode is named
+\fIdefault\fR\.
+.RE
+.PP
+\fBForEach\fR {\fIcommand\fR} [{\fIcondition\fR}] | \fBMap\fR {\fIcommand\fR} [{\fIcondition\fR}]
+.RS 4
+Runs the given
+\fIcommand\fR
+(normally one from the
+\fBWindow Commands\fR
+section above) on each window\. If you specify a
+\fIcondition\fR
+(See
+\fBConditions\fR, below) the action will be limited to matching windows\.
+.RE
+.PP
+\fBIf\fR {\fIcondition\fR} {\fIthen\-command\fR} [{\fIelse\-command\fR}] | \fBCond\fR {\fIcondition\fR} {\fIthen\-command\fR} [{\fIelse\-command\fR}]
+.RS 4
+If the
+\fIcondition\fR
+command returns
+\fBtrue\fR, then run the
+\fIthen\-command\fR, otherwise run the optional
+\fIelse\-command\fR\. See
+\fBConditions\fR
+below for more information on the
+\fIcondition\fR
+argument\.
+.RE
+.SS "Conditions"
+These special commands are used to match windows conditionally\. They are commonly used by the \fBIf\fR and \fBForEach\fR command\.
+.PP
+\fBMatches\fR \fIpattern\fR
+.RS 4
+Returns
+\fBtrue\fR
+if the current window matches the given
+\fIpattern\fR\. See
+\fBCLIENT PATTERNS\fR
+below for details on the
+\fIpattern\fR
+syntax\.
+.sp
+If your key binding uses the
+\fBOnWindow\fR
+modifier, it matches against the window you clicked, not the currently focused window\.
+.sp
+To check other windows besides the currently focused one, see the
+\fBEvery\fR
+and
+\fBSome\fR
+conditions below\.
+.RE
+.PP
+\fBSome\fR \fIcondition\fR
+.RS 4
+Retuns
+\fBtrue\fR
+if any window on any workspace (not just the currently focused one) matches the
+\fIcondition\fR\.
+.RE
+.PP
+\fBEvery\fR \fIcondition\fR
+.RS 4
+Retuns
+\fBtrue\fR
+if every window on every workspace (not just the current one) matches the
+\fIcondition\fR\.
+.RE
+.PP
+\fBNot\fR \fIcondition\fR
+.RS 4
+Returns
+\fBtrue\fR
+if
+\fIcondition\fR
+returns
+\fBfalse\fR, and vice\-versa\.
+.RE
+.PP
+\fBAnd\fR {\fIcondition1\fR} {\fIcondition2\fR} [{\fIcondition3\fR} \&...]
+.RS 4
+Returns
+\fBtrue\fR
+if and only if all given conditions return
+\fBtrue\fR\.
+.RE
+.PP
+\fBOr\fR {\fIcondition1\fR} {\fIcondition2\fR} [{\fIcondition3\fR} \&...]
+.RS 4
+Returns
+\fBtrue\fR
+if any of the listed conditions return
+\fBtrue\fR\.
+.RE
+.PP
+\fBXor\fR {\fIcondition1\fR} {\fIcondition2\fR} [{\fIcondition3\fR} \&...]
+.RS 4
+Returns the boolean
+\fBxor\fR
+of the truth values for all conditions listed\.
+.RE
+.SH "CLIENT PATTERNS"
+Many of the more advanced commands take a \fIpattern\fR argument, which allows you to direct the action at a specific window or set of windows which match the properties specified in the \fIpattern\fR\. A \fIpattern\fR looks like this:
+.sp
+([\fIpropertyname\fR[!]=]\fIregexp\fR) \&...
+.sp
+That is, one or more match definitions, followed by an optional limit on the number of windows to match\.
+.sp
+Match definitions are enclosed in parentheses \fB(\fR\&...\fB)\fR, and if no \fIpropertyname\fR is given then \fBName\fR is assumed\. The \fIregexp\fR can contain any regular expression, or the special value \fB[current]\fR, which matches the corresponding value of the currently focused window\. See \fIregex(7)\fR for more information on acceptable regular expressions\.
+.sp
+You can use \fB=\fR to test for equality or \fB!=\fR to test for inequality\.
+.PP
+The following values are accepted for \fIpropertyname\fR:
+.RS 4
+.PP
+\fBName\fR
+.RS 4
+A string, corresponding to the CLASSNAME property\.
+.RE
+.PP
+\fBClass\fR
+.RS 4
+A string, corresponding to the CLASSCLASS property\.
+.RE
+.PP
+\fBTitle\fR
+.RS 4
+A string, corresponding to the window title\.
+.RE
+.PP
+\fBRole\fR
+.RS 4
+A string, corresponding to the ROLE property\.
+.RE
+.PP
+\fBTransient\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is transient (typically, a popup dialog) or not\.
+.RE
+.PP
+\fBMaximized\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is maximized or not\.
+.RE
+.PP
+\fBMinimized\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is minimized (iconified) or not\.
+.RE
+.PP
+\fBShaded\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is shaded or not\.
+.RE
+.PP
+\fBStuck\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is sticky (on all workspaces) or not\.
+.RE
+.PP
+\fBFocusHidden\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window has asked to be left off the focus list (or, the alt\-tab list), or not\.
+.RE
+.PP
+\fBIconHidden\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window has asked to be left off the icon list (or, the taskbar), or not\.
+.RE
+.PP
+\fBUrgent\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window has the urgent hint set\.
+.RE
+.PP
+\fBWorkspace\fR
+.RS 4
+A number corresponding to the workspace number to which the window is attached\. The first workspace here is
+\fB0\fR\.
+.RE
+.PP
+\fBWorkspaceName\fR
+.RS 4
+A string corresponding to the name of the workspace to which the window is attached\.
+.RE
+.PP
+\fBHead\fR
+.RS 4
+The number of the display head to which the window is attached\. You may match this against the special value
+\fB[mouse]\fR
+which refers to the head where the mouse pointer currently resides\.
+.RE
+.PP
+\fBLayer\fR
+.RS 4
+The string name of the window\'s layer, which is one of
+\fBAbove Dock\fR,
+\fBDock\fR,
+\fBTop\fR,
+\fBNormal\fR,
+\fBBottom\fR,
+\fBDesktop\fR
+.RE
+.RE
+.PP
+\fBExample\ 2.\ Matches any windows with the CLASSNAME of "xterm"\fR
+.sp
+.RS 4
+.nf
+(xterm)
+.fi
+.RE
+.PP
+\fBExample\ 3.\ Matches any windows with the same CLASSNAME as the currently focused window\fR
+.sp
+.RS 4
+.nf
+(Name=[current])
+.fi
+.RE
+.PP
+\fBExample\ 4.\ Matches any windows on the same head as the mouse but on a different layer than the currently focused window\fR
+.sp
+.RS 4
+.nf
+(Head=[mouse]) (Layer!=[current])
+.fi
+.RE
+.SH "FILES"
+.PP
+~/\.fluxbox/keys
+.RS 4
+This is the default location for the keybinding definitions\.
+.RE
+.PP
+/usr/X11R6/include/X11/keysymdef\.h
+.RS 4
+X key names are in this file\.
+.RE
+.PP
+/usr/X11R6/lib/X11/XKeysymDB
+.RS 4
+X key names are also in this file\.
+.RE
+.SH "RESOURCES"
+.PP
+session\.keyFile: <location>
+.RS 4
+This may be set to override the location of the keybinding definitions\.
+.RE
+.SH "ENVIRONMENT"
+Remember that \fBExecCommand\fR command can take advantage of other environment variables if they are set before fluxbox is started, or via the \fBExport\fR or \fBSetEnv\fR commands\. For example, if \fB$TERM\fR is set, it could be use like this:
+.sp
+.sp
+.RS 4
+.nf
+Mod1 x :ExecCommand $TERM
+.fi
+.RE
+For more information about environment variables, see your shell\'s manual\.
+.sp
+.SH "EXAMPLES"
+Here are some interesting and/or useful examples you can do with your keys file\.
+.sp
+.sp
+.RS 4
+.nf
+# Mod4+drag moves a window
+OnWindow Mod4 Mouse1 :StartMoving
+
+# If any xterm windows are open, cycle through them\. If none are open, open
+# one:
+Mod4 t :If {Some Matches (xterm)} {NextWindow (xterm)} {Exec xterm}
+
+# Set a different wallpaper on every workspace:
+ChangeWorkspace :Exec fbsetbg ~/\.fluxbox/bg$(xprop \-root _NET_CURRENT_DESKTOP | awk \'{print $3}\')\.png
+.fi
+.RE
+.SH "AUTHOR AND CREDITS"
+This manpage is the combined work of:
+.sp
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Jim Ramsay <i\.am at jimramsay com> (>fluxbox\-1\.0\.0)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Curt Micol <asenchi at asenchi com> (>fluxbox\-0\.9\.11)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Tobias Klausmann <klausman at users sourceforge net> (⇐fluxbox\-0\.9\.11)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Grubert <grubert at users sourceforge net> (fluxbox)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Matthew Hawkins <matt at mh dropbear id au> (blackbox)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
+.RE
+.sp
+.RS 4
+\h'-04'\(bu\h'+03'Numerous other languages could be available if someone jumps in\.
+.RE
+.SH "SEE ALSO"
+fluxbox(1), xev(1), xkill(1), regex(7)
+.sp

@@ -1,0 +1,677 @@
+fluxbox-keys(5)
+===============
+Jim Ramsay <i.am@jimramsay.com>
+v1.1.0, 22 July, 2008
+
+NAME
+----
+fluxbox-keys - keyboard shortcuts configuration for fluxbox(1)
+
+SYNOPSIS
+--------
+~/.fluxbox/keys
+
+SYNTAX
+------
+Variable parameters are shown in emphasis: 'argument'
+
+Optional parameters are shown in square brackets: ['argument']
+
+All other characters shown are required verbatim. Whitespace is required
+where shown, but it is fine to add more whitespace.
+
+DESCRIPTION
+-----------
+The keys file defines the keyboard shortcuts for 'fluxbox(1)'.
+
+You can customize fluxbox's key handling through the ~/.fluxbox/keys file. The
+file consists of lines of the basic format:
+
+*['modifiers'] 'key' :'command' ['arguments' '...']*
+
+The space between the 'key' and the *:* before the 'command' is mandatory.
+
+All modifiers and commands are case-insensitive. Some command arguments
+(especially those that will be passed to the shell) are case-sensitive. Some
+key names are case-sensitive.
+
+Lines beginning with a '#' or '!' are considered comments and are unread by
+fluxbox.
+
+MODIFIERS
+---------
+You can get a list of possible modifiers by calling `xmodmap -pm'. This also
+shows you to which keys the modifiers are mapped, but the following modifiers
+are most commonly used:
+
+*Shift Control Mod1 Mod4*
+
+where *Mod1* is the Alt key on the PC keyboard and *Mod4* is usually a key
+branded with a familiar company logo.
+
+There are also some special modifiers that refer to mouse button presses:::
+*OnDesktop*;;
+	The mouse cursor is over the desktop (root window), and not any
+	window.
+*OnToolbar*;;
+	The mouse cursor is over the toolbar (which is normally at the bottom
+	of the screen).
+*OnWindow*;;
+	The mouse cursor is over a window.
+*OnTitlebar*;;
+	The mouse cursor is over a window's titlebar.
+*Double*;;
+	Limits this action to double-clicks only.
+
+Combining Modifiers
+~~~~~~~~~~~~~~~~~~~
+To combine two or more modifiers, just list them (space-delimited) in any
+order.
+
+KEYS
+----
+You may specify a key by its key name (for example, *a* or *space*) or by its
+numeric keycode (for example, *38* or *0xf3*).
+
+If you don't know the name of a key, you can run 'xev(1)' in a terminal, push
+the key, and see the name in the output. If you have some "special" keys that
+do not produce a key name in the output of 'xev(1)', you can just use the
+keycode (NOT the keysym!) in your keys file.
+
+Commands can also be bound to mouse button presses, for which the proper "key"
+name is *Mouse*'n' where 'n' is the number of the mouse button. For example,
+*Mouse1* is the primary button, and *Mouse4* / *Mouse5* are the scroll wheel
+events, in normal configurations. 'xev(1)' can also be used to tell the button
+number.
+
+////////////////
+There are some special "keys" that let you bind events to non-keyboard events:::
+*ChangeWorkspace*;;
+	Fires when the workspace changes
+TODO: Advanced users only?
+*FocusIn* / *FocusOut*;;
+	Fires when the focus is given to or removed from a window. It may be
+	useful to combine this with the 'If' command, in the section *Special
+	Commands* below.
+*MouseOver* / *MouseOut*;;
+	Fires when the mouse cursor enters or leaves a specific area of the
+	screen. It may be useful to combine this with the 'On*' modifiers
+	detailed above and/or the 'If' command.
+
+////////////////
+CHAINING
+--------
+Key bindings can be chained in a fashion similar to Emacs key bindings using the
+syntax:
+
+*'modifiers-1' 'key-1' 'modifiers-2' 'key-2' :'command' ['arguments ...']*
+
+.To Bind CTRL+C CTRL+X (Which means, press CTRL+C then CTRL+X) to quit fluxbox
+........
+Control c Control x :Quit
+........
+
+KEYMODES
+--------
+A specific set of key mappings can be activated and de-activated on-the-fly
+using what are called keymodes. The syntax to define a mapping in a keymode
+is:
+
+*'keymode': 'modifiers' 'key' :'command' ['arguments' '...']*
+
+Where 'keymode' is any alpha-numeric string name.
+
+When this keymode is activated (see the *KeyMode* command below), all bindings
+prefaced by that keymode name become active (and all other keybindings will be
+deactivated) until the keymode changes again.
+
+COMMANDS
+--------
+Some commands have multiple names which are shown below as:::
+	CMD1 | CMD2
+
+Related commands have been grouped below as:::
+	CMD1 / CMD2
+
+The commands are broken up into sections as follows:::
+- Mouse Commands
+- Window Commands
+- Workspace Commands
+- Menu Commands
+- Window Manager Commands
+- Special Commands
+
+Mouse Commands
+~~~~~~~~~~~~~~
+These commands may only be bound to mouse buttons (plus modifiers), not
+keystrokes. In all cases, the action finishes when the mouse button is
+released.
+
+*StartMoving*::
+	Start dragging to move the window.
+
+*StartResizing* ['corner']::
+Start dragging to resize the window as if you had grabbed the window
+at the specified 'corner'.
++
+By default 'corner' is *BottomRight*, but may be overridden with one of:;;
+*NearestCorner NearestEdge Center TopLeft Top TopRight Left Right BottomLeft
+BottomRight*
+
+*StartTabbing*::
+	Start dragging to add this window to another's tabgroup.
+
+Window Commands
+~~~~~~~~~~~~~~~
+These commands affect only the currently focused window.
+
+*Activate* | *Focus*::
+	Set the focus to the window matching the argument, and raise it.
+
+*Minimize* | *MinimizeWindow* | *Iconify*::
+	Minimize the current window, equivalent to the window button.
+
+*Maximize* | *MaximizeWindow*::
+	Maximize the current window, equivalent to the window button.
+
+*MaximizeHorizontal* / *MaximizeVertical*::
+	Maximize the current window in one direction only, leaving the other
+	dimension unchanged.
+
+*Raise* / *Lower*::
+	Reorder this window to the top or bottom of the window stack, within
+	its current layer. See 'fluxbox(1)' for a discussion of layers.
+
+*RaiseLayer* / *LowerLayer*::
+	Raise the window up to the layer above, or lower it to the layer
+	below. See 'fluxbox(1)' for a discussion of layers.
+
+*Close*::
+	Close the current window, equivalent to the window button.
+
+*Kill* | *KillWindow*::
+	Close a window that's not responding to *Close*, like using `xkill`.
+
+*Shade* | *ShadeWindow*::
+	Toggle the *shaded* state of the current window, equivalent to the
+	window button. A *shaded* window appears as only the title bar.
+
+*ShadeOn* / *ShadeOff*::
+	Set the *shaded* state of the window to On / Off.
+
+*Stick* | *StickWindow*::
+	Toggle the *sticky* state of the current window, equivalent to the
+	window button. A *sticky* window is visible on all workspaces.
+
+*ToggleDecor*::
+	Toggles the presence of the window decorations (title bar, window
+	buttons, and resize bar).
+
+*NextTab* / *PrevTab*::
+	Cycle to the next / previous tab in the current tab group.
+
+*Tab* 'number'::
+	Cycle to the given tab in the current tab group, where *1* is the
+	first tab. A negative 'number' counts from the end of the tab group
+	(*-1* is the last tab, *-2* is the next-to-last, etc.).
+
+*MoveTabRight* / *MoveTabLeft*::
+	Reorder the tabs in the current tab group, swapping the current tab
+	with the one to the right / left.
+
+*DetachClient*::
+	Remove the current tab from the tab group, placing it in its own window.
+
+*ResizeTo* 'width' 'height'::
+	Resizes the window to the given width and height.
+
+*Resize* 'delta-width' 'delta-height'::
+	Resizes the window relative to the current width and height.
+
+*ResizeHorizontal* 'delta-width' / *ResizeVertical* 'delta-height'::
+	Resizes the window in one dimension only
+
+*MoveTo* 'x' 'y' ['anchor']::
+Moves the window to the given coordinates, given in pixels.
++
+If either 'x' or 'y' is set to *\**, that coordinate will be ignored, and the
+movement will only take place in one dimension.
++
+The default 'anchor' is the upper left corner, but this may be overridden with one of:;;
+*UpperLeft LowerLeft UpperRight LowerRight*
+
+*Move* 'delta-x' 'delta-y'::
+	Moves the window relative to its current position. Positive numbers
+	refer to right and down, and negative to left and up, respectively.
+
+*MoveRight* 'd' / *MoveLeft* 'd' / *MoveUp* 'd' / *MoveDown* 'd'::
+	Moves the window relative to its current position by the number of
+	pixels specified in 'd'. If the number is negative, it moves in the
+	opposite direction.
+
+*TakeToWorkspace* 'workspace' / *SendToWorkspace* 'workspace'::
+	Sends you along with the current window to the selected workspace.
+	SendToWorkspace just sends the window. The first workspace is number
+	*1*, not 0.
+
+*TakeToNextWorkspace* ['offset'] / *TakeToPrevWorkspace* ['offset']::
+	Sends you along with the current window to the next or previous
+	workspace. If you set 'offset' to a value greater than the default of
+	*1*, it will move you that number of workspaces ahead or behind. If
+	you go beyond the end of the currently defined workspaces, it will
+	wrap around to the other end automatically.
+
+*SendToNextWorkspace* ['offset'] / *SendToPrevWorkspace* ['offset']::
+	Identical to the "TakeTo..." commands, but again this sends only the
+	window, and does not move you away from your current workspace.
+
+*SetAlpha* ['alpha' ['unfocused-alpha']]::
+Sets the alpha value of a window.
++
+Putting a *+* or *-* in front of
+the value adds or subtracts from the current value. A plain integer
+sets the value explicitly.
++
+no arguments;;
+	Resets both focused and unfocused settings to default opacity.
+one argument;;
+	Changes both focused and unfocused alpha settings.
+two arguments;;
+	First value becomes the focused alpha, second becomes the unfocused
+	alpha value.
+
+*SetHead* 'number'::
+	Moves the window to the given display head. Only available when fluxbox
+	has been compiled with Xinerama support.
+
+Workspace Commands
+~~~~~~~~~~~~~~~~~~
+These commands affect the entire workspace (or "desktop" as it is sometimes
+called).
+
+*AddWorkspace* / *RemoveLastWorkspace*::
+	Adds or removes a workspace from the end of the list of workspaces.
+
+*NextWorkspace* ['n'] / *PrevWorkspace* ['n'] / *RightWorkspace* ['n'] / *LeftWorkspace* ['n']::
+	Switch to the Next / Previous workspace. All versions accept an
+	offset value 'n', which defaults to *1* and refers to the number of
+	workspaces to move at one time. {Next,Prev}Workspace wrap around when
+	going past the last workspace, whereas {Right,Left}Workspace do not.
+
+*Workspace* 'number'::
+	Jumps to the given workspace 'number'. The first workspace is *1*.
+
+*NextWindow* [{'options'}] ['pattern'] / *PrevWindow* [{'options'}] ['pattern']::
+Focuses and activates the next / previous window in the focus list.
++
+'options' is one or more of the following, space delimited:;;
++
+--
+	*static*;;
+		Instead of moving in order of most-recent focus, move in
+		order of when the window was opened (or, the order shown in
+		the iconbar).
+	*groups*;;
+		Only include the current tab in windows with multiple tabs.
+--
++
+If 'pattern' arguments are supplied, only windows that match all the
+patterns are considered - all others are skipped. See the section *CLIENT
+PATTERNS* below for more information.
++
+This pair of commands has a special side-effect when the keybinding used has a
+modifier - It will temporarily raise the cycled window to the front so you can
+see it, but if you continue holding down the modifier and press the key again
+(For example, keep holding "Alt" while you tap the "Tab" key a few times),
+fluxbox will lower the window again when you move on to the next one. This
+allows you to preview the windows in order, but does not change the order in
+doing so.
+
+*NextGroup* [{'options'}] ['pattern'] / *PrevGroup* [{'options'}] ['pattern']::
+	Equivalent to NextWindow / PrevWindow above, but with the *groups*
+	option forced on.
+
+*GotoWindow* 'number' [{'options'}] ['pattern']::
+	Focuses and activates the window at position 'number' in the focus
+	list. The 'options' and 'pattern' arguments have the same meaning as
+	*NextWindow* above.
+
+*Attach* 'pattern'::
+	Combines all windows that match the 'pattern' into a single tab group.
+	See *CLIENT PATTERNS* for more about the 'pattern' arguments.
+
+*FocusLeft* / *FocusRight* / *FocusUp* / *FocusDown*::
+	Focus to the next window which is located in the direction specified.
+
+*ArrangeWindows* 'pattern'::
+	Tries to arrange all windows on the current workspace so that they
+	overlap the least amount possible. See *CLIENT PATTERNS* for more about
+	the 'pattern' arguments.
+
+*ShowDesktop*::
+	Iconifies all windows.
+
+*Deiconify* 'mode' 'destination'::
+Deiconifies windows (or, restores from a minimized state).
++
+Where 'mode' may be one of:;;
++
+--
+	*All*;;
+		All icons across all workspaces.
+	*AllWorkspace*;;
+		All icons on the current workspace.
+	*Last*;;
+		The last icon across all workspaces.
+	*LastWorkspace* (default);;
+		The last icon on the current workspace.
+
+--
++
+And 'destination' may be one of:;;
++
+--
+	*Current* (default);;
+		Deiconify to the current workspace.
+//////
+	TODO: Leave this out until it is stable!
+	*Origin*;;
+		Deiconify to the window's original workspace, and moves you
+		there.... sometimes?
+//////
+	*OriginQuiet*;;
+		Deiconify to the window's original workspace, but does so in
+		the background, without moving you there.
+--
+
+*SetWorkspaceName* 'name' / *SetWorkspaceNameDialog*::
+	Sets the name of the current workspace.
+
+*CloseAllWindows*::
+	Closes all windows on all desktops.
+
+Menu Commands
+~~~~~~~~~~~~~
+These commands open or close fluxbox popup menus. For more information on
+what these menus contain or how to configure them, see 'fluxbox(1)'.
+
+*RootMenu* / *WorkspaceMenu* / *WindowMenu*::
+	Opens the specified menu. See fluxbox(1) for more details on what
+	these menus contain.
+
+*ClientMenu* ['pattern']::
+	Opens a menu that contains all windows. If you specify a 'pattern',
+	only matching windows will be in the menu. See *CLIENT PATTERNS*
+	below for more details on the 'pattern' argument.
+
+*CustomMenu* 'path'::
+	Opens a custom menu file.
+
+*HideMenus*::
+	Hide all fluxbox popup menus.
+
+Window Manager Commands
+~~~~~~~~~~~~~~~~~~~~~~~
+These commands affect the Window Manager, or more than one window.
+
+*Restart* ['path']::
+	Restarts fluxbox. This does not close any running applications. If
+	the optional 'path' is a path to an executable window manager, that
+	manager is started in place of fluxbox.
+
+*Quit* | *Exit*::
+	Exits fluxbox. This will normally cause X to stop as well and
+	terminate all existing applications, returning you to the login
+	manager or console.
+
+*Reconfig* | *Reconfigure*::
+	Reloads all fluxbox configuration files including the keys file, apps
+	file, and init file, if they have changed.
+
+*SetStyle* 'path'::
+	Sets the current style to that given in 'path', which must be the full
+	path to a fluxbox style.
+
+*ReloadStyle*::
+	Reloads only the current style. Useful after editing a style which is
+	currently in use.
+
+*ExecCommand* 'args ...' | *Exec* 'args ...' | *Execute* 'args ...'::
+	Probably the most-used binding of all. Passes all the arguments to
+	your *$SHELL* (or /bin/sh if $SHELL is not set). You can use this to
+	launch applications, run shell scripts, etc. Since all arguments are
+	passed verbatim to the shell, you can use environment variables,
+	pipes, or anything else the shell can do. Note that processes only
+	see environment variables that were set before fluxbox started (such
+	as in ~/.fluxbox/startup), or any that are set via the Export or
+	SetEnv commands, below.
+
+*CommandDialog*::
+	Pops up a dialog box that lets you type in any of these commands
+	manually.
+
+*SetEnv* 'name' 'value' | *Export* 'name'='value'::
+	Sets an environment variable in Fluxbox. It will be passed to any
+	applications spawned by any future ExecCommand commands.
+
+*SetResourceValue* 'resourcename' 'resourcevalue' | *SetResourceValueDialog*::
+	Sets a fluxbox resource value, which are normally stored in the init
+	file. See 'fluxbox(1)' for more details on available resources and
+	allowed values.
+
+Special Commands
+~~~~~~~~~~~~~~~~
+These commands have special meanings or behaviors.
+
+*MacroCmd* {'command1'} {'command2'} {'command3'} '...'::
+	Allows you to execute more than one command with one keybinding. The
+	commands will be executed in series. The *{* *}* brackets are
+	literally required, as in the following example:
+
+	MacroCmd {MoveTo 0 0} {ResizeTo 1280 800}
+
+*Delay* {'command'} ['microseconds']::
+	Delays running 'command' for the given amount of time. If the same
+	key binding is activated again, the timer will be restarted.
+
+*ToggleCmd* {'command1'} {'command2'} '...'::
+	Alternates between the commands. On the first press of the bound
+	key, runs 'command1'. On the next press, runs 'command2'.
+
+*BindKey* 'keybinding'::
+	Adds the given 'keybinding' (which must be a valid key binding as
+	defined in the DESCRIPTION section above) to your keys file.
+
+*KeyMode* 'keymode' ['return-keybinding']::
+	Activates the named 'keymode' (or, all key binding lines prefaced
+	with the same 'keymode':) and deactivates all others until the
+	'return-keybinding' (by default *Escape*) is pressed. The default
+	keymode is named 'default'.
+
+*ForEach* {'command'} [{'condition'}] | *Map* {'command'} [{'condition'}]::
+	Runs the given 'command' (normally one from the *Window Commands*
+	section above) on each window. If you specify a 'condition' (See
+	*Conditions*, below) the action will be limited to matching windows.
+
+*If* {'condition'} {'then-command'} [{'else-command'}] | *Cond*  {'condition'} {'then-command'} [{'else-command'}]::
+	If the 'condition' command returns *true*, then run the
+	'then-command', otherwise run the optional 'else-command'. See
+	*Conditions* below for more information on the 'condition' argument.
+
+Conditions
+~~~~~~~~~~
+These special commands are used to match windows conditionally. They are
+commonly used by the *If* and *ForEach* command.
+
+*Matches* 'pattern'::
+Returns *true* if the current window matches the given 'pattern'. See *CLIENT
+PATTERNS* below for details on the 'pattern' syntax.
++
+If your key binding uses the *OnWindow* modifier, it matches against the window
+you clicked, not the currently focused window.
++
+To check other windows besides the currently focused one, see the *Every* and
+*Some* conditions below.
+
+*Some* 'condition'::
+	Retuns *true* if any window on any workspace (not just the currently
+	focused one) matches the 'condition'.
+
+*Every* 'condition'::
+	Retuns *true* if every window on every workspace (not just the
+	current one) matches the 'condition'.
+
+*Not* 'condition'::
+	Returns *true* if 'condition' returns *false*, and vice-versa.
+
+*And* {'condition1'} {'condition2'} [{'condition3'} ...]::
+	Returns *true* if and only if all given conditions return *true*.
+
+*Or* {'condition1'} {'condition2'} [{'condition3'} ...]::
+	Returns *true* if any of the listed conditions return *true*.
+
+*Xor* {'condition1'} {'condition2'} [{'condition3'} ...]::
+	Returns the boolean *xor* of the truth values for all conditions
+	listed.
+
+CLIENT PATTERNS
+---------------
+Many of the more advanced commands take a 'pattern' argument, which allows you
+to direct the action at a specific window or set of windows which match the
+properties specified in the 'pattern'. A 'pattern' looks like this:
+
+(['propertyname'[!]=]'regexp') ...
+
+That is, one or more match definitions, followed by an optional limit on the
+number of windows to match.
+
+Match definitions are enclosed in parentheses *(*...*)*, and if no
+'propertyname' is given then *Name* is assumed. The 'regexp' can contain any
+regular expression, or the special value *[current]*, which matches the
+corresponding value of the currently focused window. See 'regex(7)' for more
+information on acceptable regular expressions.
+
+You can use *=* to test for equality or *!=* to test for inequality.
+
+The following values are accepted for 'propertyname':::
+*Name*;;
+	A string, corresponding to the CLASSNAME property.
+*Class*;;
+	A string, corresponding to the CLASSCLASS property.
+*Title*;;
+	A string, corresponding to the window title.
+*Role*;;
+	A string, corresponding to the ROLE property.
+*Transient*;;
+	Either *yes* or *no*, depending on whether the window is transient
+	(typically, a popup dialog) or not.
+*Maximized*;;
+	Either *yes* or *no*, depending on whether the window is maximized or
+	not.
+*Minimized*;;
+	Either *yes* or *no*, depending on whether the window is minimized
+	(iconified) or not.
+*Shaded*;;
+	Either *yes* or *no*, depending on whether the window is shaded or
+	not.
+*Stuck*;;
+	Either *yes* or *no*, depending on whether the window is sticky (on
+	all workspaces) or not.
+*FocusHidden*;;
+	Either *yes* or *no*, depending on whether the window has asked to be
+	left off the focus list (or, the alt-tab list), or not.
+*IconHidden*;;
+	Either *yes* or *no*, depending on whether the window has asked to be
+	left off the icon list (or, the taskbar), or not.
+*Urgent*;;
+	Either *yes* or *no*, depending on whether the window has the urgent
+	hint set.
+*Workspace*;;
+	A number corresponding to the workspace number to which the window is
+	attached. The first workspace here is *0*.
+*WorkspaceName*;;
+	A string corresponding to the name of the workspace to which the
+	window is attached.
+*Head*;;
+	The number of the display head to which the window is attached. You
+	may match this against the special value *[mouse]* which refers to the
+	head where the mouse pointer currently resides.
+*Layer*;;
+	The string name of the window's layer, which is one of
+	*Above Dock*, *Dock*, *Top*, *Normal*, *Bottom*, *Desktop*
+
+.Matches any windows with the CLASSNAME of "xterm"
+..........
+(xterm)
+..........
+
+.Matches any windows with the same CLASSNAME as the currently focused window
+..........
+(Name=[current])
+..........
+
+.Matches any windows on the same head as the mouse but on a different layer than the currently focused window
+...........
+(Head=[mouse]) (Layer!=[current])
+...........
+
+FILES
+-----
+~/.fluxbox/keys::
+	This is the default location for the keybinding definitions.
+/usr/X11R6/include/X11/keysymdef.h::
+	X key names are in this file.
+/usr/X11R6/lib/X11/XKeysymDB::
+	X key names are also in this file.
+
+RESOURCES
+---------
+session.keyFile: <location>::
+      This may be set to override the location of the keybinding definitions.
+
+ENVIRONMENT
+-----------
+Remember that *ExecCommand* command can take advantage of other environment
+variables if they are set before fluxbox is started, or via the *Export* or
+*SetEnv* commands. For example, if *$TERM* is set, it could be use like this:
+
+...........................
+Mod1 x :ExecCommand $TERM
+...........................
+
+For more information about environment variables, see your shell's manual.
+
+EXAMPLES
+--------
+Here are some interesting and/or useful examples you can do with your keys
+file.
+
+..................
+# Mod4+drag moves a window
+OnWindow Mod4 Mouse1 :StartMoving
+
+# If any xterm windows are open, cycle through them. If none are open, open
+# one:
+Mod4 t :If {Some Matches (xterm)} {NextWindow (xterm)} {Exec xterm}
+
+# Set a different wallpaper on every workspace:
+ChangeWorkspace :Exec fbsetbg ~/.fluxbox/bg$(xprop -root _NET_CURRENT_DESKTOP | awk '{print $3}').png
+..................
+
+AUTHOR and CREDITS
+------------------
+This manpage is the combined work of:
+
+- Jim Ramsay <i.am at jimramsay com> (>fluxbox-1.0.0)
+- Curt Micol <asenchi at asenchi com> (>fluxbox-0.9.11)
+- Tobias Klausmann <klausman at users sourceforge net> (<=fluxbox-0.9.11)
+- Grubert <grubert at users sourceforge net> (fluxbox)
+- Matthew Hawkins <matt at mh dropbear id au> (blackbox)
+- Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
+
+- Numerous other languages could be available if someone jumps in.
+
+SEE ALSO
+--------
+fluxbox(1), xev(1), xkill(1), regex(7)
+
