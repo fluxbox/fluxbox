@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/08/05:
+   * Make resize cursors consistent (thanks Dmitry E. Oboukhov)
+     FbWinFrameTheme.cc
 *08/08/04:
    * Add selection box to various "choose one of these" menu items (Mark)
      Toolbar.cc Slit.cc Screen.cc LayerMenu.hh Xinerama.hh StyleMenuItem.cc/hh
