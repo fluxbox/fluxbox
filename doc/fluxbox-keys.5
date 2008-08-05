@@ -1,11 +1,11 @@
 .\"     Title: fluxbox-keys
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/04/2008
+.\"      Date: 08/05/2008
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "FLUXBOX\-KEYS" "5" "08/04/2008" "" ""
+.TH "FLUXBOX\-KEYS" "5" "08/05/2008" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -197,6 +197,21 @@ for a discussion of layers\.
 \fBRaiseLayer\fR / \fBLowerLayer\fR
 .RS 4
 Raise the window up to the layer above, or lower it to the layer below\. See
+\fIfluxbox(1)\fR
+for a discussion of layers\.
+.RE
+.PP
+\fBSetLayer\fR \fIlayer\fR
+.RS 4
+Move the window to the specified layer\.
+\fIlayer\fR
+should be one of
+\fBAboveDock\fR,
+\fBDock\fR,
+\fBTop\fR,
+\fBNormal\fR,
+\fBBottom\fR,
+\fBDesktop\fR\. See
 \fIfluxbox(1)\fR
 for a discussion of layers\.
 .RE
@@ -863,7 +878,7 @@ which refers to the head where the mouse pointer currently resides\.
 \fBLayer\fR
 .RS 4
 The string name of the window\'s layer, which is one of
-\fBAbove Dock\fR,
+\fBAboveDock\fR,
 \fBDock\fR,
 \fBTop\fR,
 \fBNormal\fR,

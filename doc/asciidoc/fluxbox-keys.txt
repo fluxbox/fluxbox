@@ -186,6 +186,11 @@ These commands affect only the currently focused window.
 	Raise the window up to the layer above, or lower it to the layer
 	below. See 'fluxbox(1)' for a discussion of layers.
 
+*SetLayer* 'layer'::
+	Move the window to the specified layer. 'layer' should be one of
+	*AboveDock*, *Dock*, *Top*, *Normal*, *Bottom*, *Desktop*. See
+	'fluxbox(1)' for a discussion of layers.
+
 *Close*::
 	Close the current window, equivalent to the window button.
 
@@ -599,7 +604,7 @@ The following values are accepted for 'propertyname':::
 	head where the mouse pointer currently resides.
 *Layer*;;
 	The string name of the window's layer, which is one of
-	*Above Dock*, *Dock*, *Top*, *Normal*, *Bottom*, *Desktop*
+	*AboveDock*, *Dock*, *Top*, *Normal*, *Bottom*, *Desktop*
 
 .Matches any windows with the CLASSNAME of "xterm"
 ..........

@@ -23,6 +23,7 @@
 #include "CurrentWindowCmd.hh"
 
 #include "fluxbox.hh"
+#include "Layer.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
 #include "Screen.hh"
@@ -477,6 +478,18 @@ REGISTER_COMMAND(fullscreen, FullscreenCmd, void);
 FullscreenCmd::FullscreenCmd() { }
 void FullscreenCmd::real_execute() {
     fbwindow().setFullscreen(!fbwindow().isFullscreen());
+}
+
+FbTk::Command<void> *SetLayerCmd::parse(const string &command,
+                                        const string &args, bool trusted) {
+    int l = Layer::getNumFromString(args);
+    return (l == -1) ? 0 : new SetLayerCmd(l);
+}
+
+REGISTER_COMMAND_PARSER(setlayer, SetLayerCmd::parse, void);
+
+void SetLayerCmd::real_execute() {
+    fbwindow().moveToLayer(m_layer);
 }
 
 FbTk::Command<void> *SetAlphaCmd::parse(const string &command, const string &args,

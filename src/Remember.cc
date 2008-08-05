@@ -411,24 +411,8 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 else
                     had_error = true;
             } else if (strcasecmp(str_key.c_str(), "Layer") == 0) {
-                unsigned int l;
-                if (strcasecmp(str_label.c_str(), "DESKTOP") == 0) {
-                    l = Layer::DESKTOP;
-                } else if (strcasecmp(str_label.c_str(), "BOTTOM") == 0) {
-                    l = Layer::BOTTOM;
-                } else if (strcasecmp(str_label.c_str(), "NORMAL") == 0) {
-                    l = Layer::NORMAL;
-                } else if (strcasecmp(str_label.c_str(), "TOP") == 0) {
-                    l = Layer::TOP;
-                } else if (strcasecmp(str_label.c_str(), "DOCK") == 0) {
-                    l = Layer::DOCK;
-                } else if (strcasecmp(str_label.c_str(), "ABOVEDOCK") == 0) {
-                    l = Layer::ABOVE_DOCK;
-                } else if (strcasecmp(str_label.c_str(), "MENU") == 0) {
-                    l = Layer::MENU;
-                } else if (!getuint(str_label.c_str(), l)) {
-                    had_error = true;
-                }
+                int l = Layer::getNumFromString(str_label);
+                had_error = (l == -1);
                 if (!had_error)
                     app.rememberLayer(l);
             } else if (strcasecmp(str_key.c_str(), "Dimensions") == 0) {

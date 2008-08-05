@@ -54,7 +54,7 @@ public:
 
     explicit Layer(int i) : m_num(i) {};
 
-    static int getNumFromString(string &str) {
+    static int getNumFromString(const string &str) {
         int tempnum = 0;
         if (sscanf(str.c_str(), "%d", &tempnum) == 1)
             return tempnum;

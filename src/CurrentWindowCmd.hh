@@ -247,6 +247,17 @@ private:
     int m_relative, m_un_relative;
 };
 
+class SetLayerCmd: public WindowHelperCmd {
+public:
+    explicit SetLayerCmd(int layer): m_layer(layer) { }
+    static FbTk::Command<void> *parse(const std::string &command,
+                                      const std::string &args, bool trusted);
+protected:
+    void real_execute();
+private:
+    int m_layer;
+};
+
 class MatchCmd: public WindowHelperBoolCmd {
 public:
     MatchCmd(const std::string &pat): m_pat(pat.c_str()) { };
