@@ -349,7 +349,8 @@ doing so.
 	the 'pattern' arguments.
 
 *ShowDesktop*::
-	Iconifies all windows.
+	Minimizes all windows on the current workspace. If they are already all
+	minimized, then it restores them.
 
 *Deiconify* 'mode' 'destination'::
 Deiconifies windows (or, restores from a minimized state).

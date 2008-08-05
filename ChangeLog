@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
 *08/08/05:
+   * Make ShowDesktop command toggle between showing windows and desktop (Mark)
+     WorkspaceCmd.cc
    * Created new `fluxbox-keys' man page (thanks Jim Ramsay)
      doc/asciidoc/fluxbox-keys.txt
    * Make resize cursors consistent (thanks Dmitry E. Oboukhov)

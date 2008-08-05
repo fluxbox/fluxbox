@@ -484,12 +484,27 @@ void ShowDesktopCmd::execute() {
     if (screen == 0)
         return;
 
+    unsigned int count = 0;
     Workspace::Windows windows(screen->currentWorkspace()->windowList());
     Workspace::Windows::iterator it = windows.begin(),
                                  it_end = windows.end();
     for (; it != it_end; ++it) {
-        if ((*it)->getWindowType() != Focusable::TYPE_DESKTOP)
+        if ((*it)->getWindowType() != Focusable::TYPE_DESKTOP) {
             (*it)->iconify();
+            count++;
+        }
+    }
+
+    if (count == 0) {
+        BScreen::Icons icon_list = screen->iconList();
+        BScreen::Icons::iterator icon_it = icon_list.begin();
+        BScreen::Icons::iterator itend = icon_list.end();
+        unsigned int space = screen->currentWorkspaceID();
+
+        for (; icon_it != itend; ++icon_it) {
+            if ((*icon_it)->isStuck() || (*icon_it)->workspaceNumber() == space)
+                (*icon_it)->deiconify();
+        }
     }
 }
 
