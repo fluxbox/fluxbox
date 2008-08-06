@@ -61,13 +61,13 @@ class Toolbar: public FbTk::EventHandler,
 public:
 
     /// Toolbar placement on the screen
-    enum Placement{
+    enum Placement {
         // top and bottom placement
-        TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
-        BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT,
+        TOPLEFT = 1, TOPCENTER, TOPRIGHT,
+        BOTTOMLEFT, BOTTOMCENTER, BOTTOMRIGHT,
         // left and right placement
-        LEFTCENTER, LEFTBOTTOM, LEFTTOP,
-        RIGHTCENTER, RIGHTBOTTOM, RIGHTTOP
+        LEFTBOTTOM, LEFTCENTER, LEFTTOP,
+        RIGHTBOTTOM, RIGHTCENTER, RIGHTTOP
     };
 
     /// Create a toolbar on the screen with specific width

@@ -93,8 +93,7 @@ template<>
 void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
     if (strcasecmp(strval, "TopLeft")==0)
         m_value = Slit::TOPLEFT;
-    else if (strcasecmp(strval, "LeftCenter")==0
-             || strcasecmp(strval, "CenterLeft")==0)
+    else if (strcasecmp(strval, "LeftCenter")==0)
         m_value = Slit::LEFTCENTER;
     else if (strcasecmp(strval, "BottomLeft")==0)
         m_value = Slit::BOTTOMLEFT;
@@ -104,21 +103,18 @@ void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
         m_value = Slit::BOTTOMCENTER;
     else if (strcasecmp(strval, "TopRight")==0)
         m_value = Slit::TOPRIGHT;
-    else if (strcasecmp(strval, "RightCenter")==0
-             || strcasecmp(strval, "CenterRight")==0)
+    else if (strcasecmp(strval, "RightCenter")==0)
         m_value = Slit::RIGHTCENTER;
     else if (strcasecmp(strval, "BottomRight")==0)
         m_value = Slit::BOTTOMRIGHT;
-    else
-        setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<Slit::Direction>::setFromString(const char *strval) {
-    if (strcasecmp(strval, "Vertical") == 0)
-        m_value = Slit::VERTICAL;
-    else if (strcasecmp(strval, "Horizontal") == 0)
-        m_value = Slit::HORIZONTAL;
+    else if (strcasecmp(strval, "LeftTop")==0)
+        m_value = Slit::LEFTTOP;
+    else if (strcasecmp(strval, "LeftBottom")==0)
+        m_value = Slit::LEFTBOTTOM;
+    else if (strcasecmp(strval, "RightTop")==0)
+        m_value = Slit::RIGHTTOP;
+    else if (strcasecmp(strval, "RightBottom")==0)
+        m_value = Slit::RIGHTBOTTOM;
     else
         setDefaultValue();
 }
@@ -150,24 +146,23 @@ string FbTk::Resource<Slit::Placement>::getString() const {
     case Slit::BOTTOMRIGHT:
         return string("BottomRight");
         break;
+    case Slit::LEFTTOP:
+        return string("LeftTop");
+        break;
+    case Slit::RIGHTTOP:
+        return string("RightTop");
+        break;
+    case Slit::LEFTBOTTOM:
+        return string("LeftBottom");
+        break;
+    case Slit::RIGHTBOTTOM:
+        return string("RightBottom");
+        break;
     }
     //default string
-    return string("BottomRight");
+    return string("RightBottom");
 }
 
-template<>
-string FbTk::Resource<Slit::Direction>::getString() const {
-    switch (m_value) {
-    case Slit::VERTICAL:
-        return string("Vertical");
-        break;
-    case Slit::HORIZONTAL:
-        return string("Horizontal");
-        break;
-    }
-    // default string
-    return string("Vertical");
-}
 } // end namespace FbTk
 namespace {
 
@@ -200,41 +195,6 @@ public:
 private:
     Slit& m_slit;
     SlitClient &m_client;
-};
-
-class SlitDirMenuItem: public FbTk::MenuItem {
-public:
-    SlitDirMenuItem(const FbTk::FbString &label, Slit &slit, FbTk::RefCount<FbTk::Command<void> > &cmd)
-        :FbTk::MenuItem(label,cmd),
-         m_slit(slit),
-         m_label(label) {
-        setLabel(m_label); // update label
-        setCloseOnClick(false);
-    }
-
-    void click(int button, int time, unsigned int mods) {
-        // toggle direction
-        if (m_slit.direction() == Slit::HORIZONTAL)
-            m_slit.setDirection(Slit::VERTICAL);
-        else
-            m_slit.setDirection(Slit::HORIZONTAL);
-        setLabel(m_label);
-        FbTk::MenuItem::click(button, time, mods);
-    }
-
-    void setLabel(const FbTk::FbString &label) {
-        _FB_USES_NLS;
-        m_label = (label);
-        string reallabel = m_label + " " +
-            ( m_slit.direction() == Slit::HORIZONTAL ?
-
-              _FB_XTEXT(Align, Horizontal, "Horizontal", "Horizontal"):
-              _FB_XTEXT(Align, Vertical,   "Vertical",   "Vertical"));
-        FbTk::MenuItem::setLabel(reallabel);
-    }
-private:
-    Slit &m_slit;
-    string m_label;
 };
 
 class PlaceSlitMenuItem: public FbTk::RadioMenuItem {
@@ -290,10 +250,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       // TODO: this resource name must change
       m_rc_maximize_over(scr.resourceManager(), false,
                          scr.name() + ".slit.maxOver", scr.altName() + ".Slit.MaxOver"),
-      m_rc_placement(scr.resourceManager(), BOTTOMRIGHT,
+      m_rc_placement(scr.resourceManager(), RIGHTBOTTOM,
                      scr.name() + ".slit.placement", scr.altName() + ".Slit.Placement"),
-      m_rc_direction(scr.resourceManager(), VERTICAL,
-                     scr.name() + ".slit.direction", scr.altName() + ".Slit.Direction"),
       m_rc_alpha(scr.resourceManager(), 255,
                  scr.name() + ".slit.alpha", scr.altName() + ".Slit.Alpha"),
       m_rc_on_head(scr.resourceManager(), 0,
@@ -386,46 +344,40 @@ void Slit::updateStrut() {
     int left = 0, right = 0, top = 0, bottom = 0;
     switch (placement()) {
     case TOPLEFT:
-        if (direction() == HORIZONTAL)
-            top = height() + 2 * bw;
-        else
-            left = width() + 2 * bw;
+        top = height() + 2 * bw;
+        break;
+    case LEFTTOP:
+        left = width() + 2 * bw;
         break;
     case TOPCENTER:
-        if (direction() == HORIZONTAL)
-            top = height() + 2 * bw;
+        top = height() + 2 * bw;
         break;
     case TOPRIGHT:
-        if (direction() == HORIZONTAL)
-            top = height() + 2 * bw;
-        else
-            right = width() + 2 * bw;
+        top = height() + 2 * bw;
+        break;
+    case RIGHTTOP:
+        right = width() + 2 * bw;
         break;
     case BOTTOMLEFT:
-        if (direction() == HORIZONTAL)
-            bottom = height() + 2 * bw;
-        else
-            left = width() + 2 * bw;
+        bottom = height() + 2 * bw;
+        break;
+    case LEFTBOTTOM:
+        left = width() + 2 * bw;
         break;
     case BOTTOMCENTER:
-        // would be strange to have it request size on vertical direction
-        // each time we add a client
-        if (direction() == HORIZONTAL)
-            bottom = height() + 2 * bw;
+        bottom = height() + 2 * bw;
         break;
     case BOTTOMRIGHT:
-        if (direction() == HORIZONTAL)
-            bottom = height() + 2 * bw;
-        else
-            right = width() + 2 * bw;
+        bottom = height() + 2 * bw;
+        break;
+    case RIGHTBOTTOM:
+        right = width() + 2 * bw;
         break;
     case LEFTCENTER:
-        if (direction() == VERTICAL)
-            left = width() + 2 * bw;
+        left = width() + 2 * bw;
         break;
     case RIGHTCENTER:
-        if (direction() == VERTICAL)
-            right = width() + 2 * bw;
+        right = width() + 2 * bw;
         break;
     }
 
@@ -551,11 +503,6 @@ void Slit::addClient(Window w) {
 
 }
 
-void Slit::setDirection(Direction dir) {
-    *m_rc_direction = dir;
-    reconfigure();
-}
-
 void Slit::setPlacement(Placement place) {
     *m_rc_placement = place;
     reconfigure();
@@ -636,11 +583,15 @@ void Slit::reconfigure() {
     const int bevel_width = theme()->bevelWidth();
     // determine width or height increase
     bool height_inc = false;
-    switch (direction()) {
-    case VERTICAL:
+    switch (placement()) {
+    case LEFTTOP:
+    case RIGHTTOP:
+    case LEFTCENTER:
+    case RIGHTCENTER:
+    case LEFTBOTTOM:
+    case RIGHTBOTTOM:
         height_inc = true;
-        break;
-    case HORIZONTAL: // already false
+    default:
         break;
     }
 
@@ -724,19 +675,10 @@ void Slit::reconfigure() {
         show();
 
     int x = 0, y = 0;
-    height_inc = false;
-    switch (direction()) {
-    case VERTICAL:
-        x = 0;
+    if (height_inc)
         y = bevel_width;
-        height_inc = true;
-        break;
-
-    case HORIZONTAL:
+    else
         x = bevel_width;
-        y = 0;
-        break;
-    }
 
     client_it = m_client_list.begin();
     for (; client_it != client_it_end; ++client_it) {
@@ -826,90 +768,86 @@ void Slit::reposition() {
     case TOPLEFT:
         frame.x = head_x;
         frame.y = head_y;
-        if (direction() == VERTICAL) {
-            frame.x_hidden = bevel_width -
-                border_width - frame.width;
-            frame.y_hidden = head_y;
-        } else {
-            frame.x_hidden = head_x;
-            frame.y_hidden = bevel_width -
-                border_width - frame.height;
-        }
+        frame.x_hidden = head_x;
+        frame.y_hidden = bevel_width - border_width - frame.height;
+        break;
+
+    case LEFTTOP:
+        frame.x = head_x;
+        frame.y = head_y;
+        frame.x_hidden = bevel_width - border_width - frame.width;
+        frame.y_hidden = head_y;
         break;
 
     case LEFTCENTER:
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height) / 2;
-        frame.x_hidden = head_x + bevel_width -
-            border_width - frame.width;
+        frame.x_hidden = head_x + bevel_width - border_width - frame.width;
         frame.y_hidden = frame.y;
         break;
 
     case BOTTOMLEFT:
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height - border_width*2;
-        if (direction() == VERTICAL) {
-            frame.x_hidden = head_x + bevel_width -
-                border_width - frame.width;
-            frame.y_hidden = frame.y;
-        } else {
-            frame.x_hidden = head_x;
-            frame.y_hidden = head_y + head_h -
-                bevel_width - border_width;
-        }
+        frame.x_hidden = head_x;
+        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        break;
+
+    case LEFTBOTTOM:
+        frame.x = head_x;
+        frame.y = head_y + head_h - frame.height - border_width*2;
+        frame.x_hidden = head_x + bevel_width - border_width - frame.width;
+        frame.y_hidden = frame.y;
         break;
 
     case TOPCENTER:
         frame.x = head_x + ((head_w - frame.width) / 2);
         frame.y = head_y;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + bevel_width -
-            border_width - frame.height;
+        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
         break;
 
     case BOTTOMCENTER:
         frame.x = head_x + ((head_w - frame.width) / 2);
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h -
-            bevel_width - border_width;
+        frame.y_hidden = head_y + head_h - bevel_width - border_width;
         break;
 
     case TOPRIGHT:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
-        if (direction() == VERTICAL) {
-            frame.x_hidden = head_x + head_w -
-                bevel_width - border_width;
-            frame.y_hidden = head_y;
-        } else {
-            frame.x_hidden = frame.x;
-            frame.y_hidden = head_y + bevel_width -
-                border_width - frame.height;
-        }
+        frame.x_hidden = frame.x;
+        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
+        break;
+
+    case RIGHTTOP:
+        frame.x = head_x + head_w - frame.width - border_width*2;
+        frame.y = head_y;
+        frame.x_hidden = head_x + head_w - bevel_width - border_width;
+        frame.y_hidden = head_y;
         break;
 
     case RIGHTCENTER:
-    default:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + ((head_h - frame.height) / 2);
-        frame.x_hidden = head_x + head_w -
-            bevel_width - border_width;
+        frame.x_hidden = head_x + head_w - bevel_width - border_width;
         frame.y_hidden = frame.y;
         break;
 
     case BOTTOMRIGHT:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + head_h - frame.height - border_width*2;
-        if (direction() == VERTICAL) {
-            frame.x_hidden = head_x + head_w -
-                bevel_width - border_width;
-            frame.y_hidden = frame.y;
-        } else {
-            frame.x_hidden = frame.x;
-            frame.y_hidden = head_y + head_h -
-                bevel_width - border_width;
-        }
+        frame.x_hidden = frame.x;
+        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        break;
+
+    case RIGHTBOTTOM:
+    default:
+        frame.x = head_x + head_w - frame.width - border_width*2;
+        frame.y = head_y + head_h - frame.height - border_width*2;
+        frame.x_hidden = head_x + head_w - bevel_width - border_width;
+        frame.y_hidden = frame.y;
         break;
     }
 
@@ -1292,9 +1230,6 @@ void Slit::setupMenu() {
 
     m_slitmenu.insert(alpha_menuitem);
 
-    m_slitmenu.insert(new SlitDirMenuItem(_FB_XTEXT(Slit, Direction, "Slit Direction:", "Orientation of slit"),
-                                          *this,
-                                          save_and_reconfigure));
     m_slitmenu.insert(_FB_XTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);
     m_slitmenu.updateMenu();
 
@@ -1311,18 +1246,24 @@ void Slit::setupMenu() {
 
     // menu is 3 wide, 5 down
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), Slit::TOPLEFT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), Slit::LEFTTOP));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), Slit::LEFTCENTER));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), Slit::LEFTBOTTOM));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Slit::BOTTOMLEFT));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopCenter, "Top Center", "Top Center"), Slit::TOPCENTER));
     place_menu.push_back(PlacementP("", Slit::TOPLEFT));
+    place_menu.push_back(PlacementP("", Slit::TOPLEFT));
+    place_menu.push_back(PlacementP("", Slit::TOPLEFT));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Slit::BOTTOMCENTER));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), Slit::TOPRIGHT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightTop, "Right Top", "Right Top"), Slit::RIGHTTOP));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightCenter, "Right Center", "Right Center"), Slit::RIGHTCENTER));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), Slit::RIGHTBOTTOM));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Slit::BOTTOMRIGHT));
 
 
     // create items in sub menu
-    for (size_t i=0; i<9; ++i) {
+    for (size_t i=0; i<15; ++i) {
         const FbTk::FbString &str = place_menu.front().first;
         Slit::Placement placement = place_menu.front().second;
 

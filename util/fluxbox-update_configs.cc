@@ -301,6 +301,28 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         new_version = 8;
     }
 
+    if (old_version < 9) { // change format of slit placement menu
+        FbTk::Resource<string> *placement =
+            new FbTk::Resource<string>(rm, "BottomRight",
+                                       "session.screen0.slit.placement",
+                                       "Session.Screen0.Slit.Placement");
+        FbTk::Resource<string> *direction =
+            new FbTk::Resource<string>(rm, "Vertical",
+                                       "session.screen0.slit.direction",
+                                       "Session.Screen0.Slit.Direction");
+        if (strcasecmp((**direction).c_str(), "vertical") == 0) {
+            if (strcasecmp((**placement).c_str(), "BottomRight") == 0)
+                *placement = "RightBottom";
+            else if (strcasecmp((**placement).c_str(), "BottomLeft") == 0)
+                *placement = "LeftBottom";
+            else if (strcasecmp((**placement).c_str(), "TopRight") == 0)
+                *placement = "RightTop";
+            else if (strcasecmp((**placement).c_str(), "TopLeft") == 0)
+                *placement = "LeftTop";
+        }
+        new_version = 9;
+    }
+
     return new_version;
 }
 
