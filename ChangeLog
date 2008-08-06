@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/08/06:
+   * Automatically restore the previous background on startup (Mark)
+     RootTheme.cc/hh util/fbsetbg startfluxbox.in
 *08/08/05:
    * Fixed Focus key command (Mark)
      CurrentWindowCmd.cc/hh FocusableList.cc/hh

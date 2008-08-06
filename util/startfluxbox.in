@@ -39,30 +39,8 @@ else
 #
 # Lines starting with a '#' are ignored.
 
-# This sets a black background
-
-@pkgprefix@fbsetroot@pkgsuffix@ -solid black
-
-# You can set your favourite wallpaper here. You will also need to uncomment the
-# line in $HOME/.@pkgprefix@fluxbox@pkgsuffix@/overlay or else your style will override it.
-#
-# @pkgprefix@fbsetbg@pkgsuffix@ -f $HOME/.@pkgprefix@fluxbox@pkgsuffix@/backgrounds/wallpaper.png
-
-# Other examples. Check man xset for details.
-#
-# Turn off beeps:
-# xset -b
-#
-# Increase the keyboard repeat-rate:
-# xset r rate 195 35
-#
-# Your own fonts-dir:
-# xset +fp "$HOME/.fonts"
-#
 # Change your keymap:
-# xmodmap "$HOME/.Xmodmap"
-
-
+xmodmap "$HOME/.Xmodmap"
 
 # Applications you want to run with fluxbox.
 # MAKE SURE THAT APPS THAT KEEP RUNNING HAVE AN ''&'' AT THE END.

@@ -155,14 +155,14 @@ remembercommand() {
     grep -vs "|${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
     mv -f ${lastwallpaper}.tmp ${lastwallpaper}
     if [ "$option" = fbsetroot ]; then
-        echo $option"|$wallpaper|"$DISPLAY >> $lastwallpaper
+        echo $option"|$wallpaper|$style|"$DISPLAY >> $lastwallpaper
         return
     fi
     # Make dir/../../path/file.jpg work
     case $wallpaper in
         # no spaces allowed between the varname and '|'
-        /*) echo $option $option2"|$wallpaper|"$DISPLAY >> $lastwallpaper ;;
-        *)  echo $option $option2"|$PWD/$wallpaper|"$DISPLAY >> $lastwallpaper ;;
+        /*) echo $option $option2"|$wallpaper|$style|"$DISPLAY >> $lastwallpaper ;;
+        *)  echo $option $option2"|$PWD/$wallpaper|$style|"$DISPLAY >> $lastwallpaper ;;
     esac
 }
 
@@ -252,13 +252,11 @@ while [ $# -gt 0 ]; do
         -b) option=fbsetroot
             shift
             wallpaper=$*
-            use_fbsetroot
             break ;;
         -B) option=fbsetroot
             shift
             wallpaper=$*
             remember=false
-            use_fbsetroot
             break ;;
         -r) option2=$option
             option=random
@@ -285,15 +283,36 @@ while [ $# -gt 0 ]; do
                     message "No previous wallpaper recorded for display ${DISPLAY}"
                     exit 1
                 fi
-                if [ "$option" = "fbsetroot" ]; then
-                    use_fbsetroot
-                fi
             else
                 message "No previous wallpaper recorded for display ${DISPLAY}"
                 exit 1
             fi
             remember=false
             break ;;
+        -z)
+            if [ -r "$lastwallpaper" ]; then
+                option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
+                option2=`echo $option|cut -d' ' -f2`
+                option=`echo $option|cut -d' ' -f1`
+                style=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f3`
+                wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
+                if [ -z "$wallpaper" ]; then
+                    option=`grep "|${DISPLAY}.0$"    $lastwallpaper|cut -d'|' -f1`
+                    option2=`echo $option|cut -d' ' -f2`
+                    option=`echo $option|cut -d' ' -f1`
+                    style=`grep "|${DISPLAY}.0$" $lastwallpaper|cut -d'|' -f3`
+                    wallpaper=`grep "|${DISPLAY}.0$" $lastwallpaper|cut -d'|' -f2`
+                fi
+            fi
+            if [ "$style" != "style" -a -n "$wallpaper" ]; then
+                remember=false
+                break
+            fi
+            style="style"
+            shift ;;
+        -Z)
+            style="style"
+            shift ;;
         -p) display_tips ; exit 0 ;;
         -h) display_help ; exit 0 ;;
         --)
@@ -322,6 +341,10 @@ while [ $# -gt 0 ]; do
             fi ;;
     esac
 done
+
+if [ "$option" = "fbsetroot" ]; then
+    use_fbsetroot
+fi
 
 # Find the default wallpapersetter
 if [ "$setterfromcommandline" != true ]; then
