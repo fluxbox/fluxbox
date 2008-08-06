@@ -1,0 +1,39 @@
+.\"     Title: fluxbox-remote
+.\"    Author: 
+.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
+.\"      Date: 08/06/2008
+.\"    Manual: 
+.\"    Source: 
+.\"
+.TH "FLUXBOX\-REMOTE" "1" "08/06/2008" "" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+fluxbox-remote - command line access to key commands for fluxbox(1)
+.SH "SYNOPSIS"
+\fBfluxbox\-remote\fR \fIcommand\fR
+.sp
+.SH "DESCRIPTION"
+\fIfluxbox\-remote(1)\fR is designed to allow scripts to execute most key commands from \fIfluxbox(1)\fR\. \fIfluxbox\-remote(1)\fR will only work with \fIfluxbox(1)\fR: its communications with \fIfluxbox(1)\fR are not standardized in any way\. It is recommended that a standards\-based tool such as \fIwmctrl(1)\fR be used whenever possible, in order for scripts to work with other window managers\.
+.sp
+.SH "CAVEATS"
+\fIfluxbox\-remote(1)\fR uses the X11 protocol to communicate with \fIfluxbox(1)\fR\. Therefore, it is possible for any user with access to the \fIX(7)\fR server to use \fIfluxbox\-remote(1)\fR\. For this reason, several key commands have been disabled\. Users should be aware of the security implications when enabling \fIfluxbox\-remote(1)\fR, especially when using a forwarded \fIX(7)\fR connection\.
+.sp
+.SH "RESOURCES"
+.PP
+session\.screen0\.allowRemoteActions: <boolean>
+.RS 4
+This resource in ~/\.fluxbox/init must be set to `true\' in order for
+\fIfluxbox\-remote(1)\fR
+to function\. Please read the
+\fBCAVEATS\fR
+first\.
+.RE
+.SH "ENVIRONMENT"
+In order to communicate with \fIfluxbox(1)\fR, the DISPLAY environment variable must be set properly\. Usually, the value should be `:0\.0\'\.
+.sp
+.SH "SEE ALSO"
+fluxbox(1), fluxbox\-keys(5), wmctrl(1)
+.sp

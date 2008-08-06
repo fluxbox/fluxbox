@@ -5,7 +5,7 @@ SUBDIRS = ru
 CLEANFILES = fluxbox.1 fluxstyle.1
 MAINTAINERCLEANFILES = Makefile.in
 man_MANS = fluxbox.1 fbsetroot.1 fbrun.1 fbsetbg.1 \
-	startfluxbox.1 fluxstyle.1 fbrun.1 fluxbox-keys.5 
+	startfluxbox.1 fluxstyle.1 fbrun.1 fluxbox-keys.5 fluxbox-remote.1
 EXTRA_DIST=fluxbox.1.in fbsetroot.1 fbrun.1 startfluxbox.1 fbsetbg.1 \
 	fluxstyle.1.in CODESTYLE
 distclean-local:

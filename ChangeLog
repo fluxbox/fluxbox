@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
 *08/08/06:
+   * Created manual for fluxbox-remote (Mark)
+     doc/asciidoc/fluxbox-remote.txt doc/fluxbox-remote.1
    * Automatically restore the previous background on startup (Mark)
      RootTheme.cc/hh util/fbsetbg startfluxbox.in
 *08/08/05:
