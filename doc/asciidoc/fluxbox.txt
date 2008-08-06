@@ -814,10 +814,6 @@ session.screen0.overlay.capStyle: CapNotLast
       These are options for how fluxbox draws lines. See
       `man XSetLineAttributes' for more details. Defaults: listed above
 
-session.screen0.slit.direction: Vertical|Horizontal
-      This specifies whether clients in the slit are arranged horizontally or
-      vertically. Default: Vertical
-
 session.screen0.strftimeFormat: <date>
       This adjusts the way the current time is displayed in the toolbar. The
       strftime(3) format is used. Default: %I:%M %p
@@ -1407,10 +1403,6 @@ The slit menu items are described in more detail below:
 - *Alpha*:
     By changing the value the slit (only the decoration not the apps in the
     slit) will become transparent.  0 (transparent) - 255 (opaque)
-
-- *Slit direction*:
-    Changing the value will set the slit's direction for ordering apps sitting
-    in the slit. There is no effect with only on application.
 
 - *Clients*:
     This submenu lets you reorder the the applications running in the
