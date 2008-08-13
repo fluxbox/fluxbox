@@ -567,7 +567,8 @@ void Fluxbox::setupConfigFiles() {
         }
 
         //mark creation of files
-        create_init = create_keys = create_menu = true;
+        create_init = create_keys = create_menu = create_apps = create_overlay =
+            create_windowmenu = true;
     }
 
 
