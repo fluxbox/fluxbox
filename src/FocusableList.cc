@@ -31,6 +31,12 @@
 
 #include <vector>
 
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+
 using std::string;
 using std::vector;
 
@@ -280,8 +286,17 @@ void FocusableList::reset() {
 
 bool FocusableList::contains(const Focusable &win) const {
     Focusables::const_iterator it = m_list.begin(), it_end = m_list.end();
-    it = find(it, it_end, &win);
+    it = std::find(it, it_end, &win);
     return (it != it_end);
+}
+
+Focusable *FocusableList::find(const ClientPattern &pat) const {
+    Focusables::const_iterator it = m_list.begin(), it_end = m_list.end();
+    for (; it != it_end; ++it) {
+        if (pat.match(**it))
+            return *it;
+    }
+    return 0;
 }
 
 void FocusableList::attachChild(FocusableList &child) const {

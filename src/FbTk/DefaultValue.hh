@@ -51,6 +51,6 @@ private:
     bool m_use_default;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_DEFAULTVALUE_HH

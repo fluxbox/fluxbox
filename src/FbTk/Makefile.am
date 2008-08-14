@@ -16,7 +16,7 @@ imlib2_SOURCE= ImageImlib2.hh ImageImlib2.cc
 endif
 
 libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
-	ObjectRegistry.hh Accessor.hh DefaultValue.hh \
+	Accessor.hh DefaultValue.hh \
 	FileUtil.hh FileUtil.cc \
 	EventHandler.hh EventManager.hh EventManager.cc \
 	FbWindow.hh FbWindow.cc Font.cc Font.hh FontImp.hh \
@@ -44,7 +44,8 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	StringUtil.hh StringUtil.cc Parser.hh Parser.cc \
 	RegExp.hh RegExp.cc \
 	FbString.hh FbString.cc \
-	Subject.hh Subject.cc Observer.hh Observer.cc \
+	Subject.hh Subject.cc Observer.hh Observer.cc SimpleObserver.hh \
+	AutoReloadHelper.hh AutoReloadHelper.cc \
 	Transparent.hh Transparent.cc \
 	FbPixmap.hh FbPixmap.cc \
 	FbDrawable.hh FbDrawable.cc \

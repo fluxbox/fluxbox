@@ -22,8 +22,10 @@
 #ifndef CommandParser_HH
 #define CommandParser_HH
 
-#include "ObjectRegistry.hh"
 #include "StringUtil.hh"
+
+#include <string>
+#include <map>
 
 using std::string;
 
@@ -86,6 +88,7 @@ template <typename Type>
 class CommandParser {
 public:
     typedef Command<Type> *(*Creator)(const string &, const string &, bool);
+    typedef std::map<std::string, Creator> CreatorMap;
 
     static CommandParser<Type> &instance() {
         static CommandParser<Type> s_instance;
@@ -93,9 +96,9 @@ public:
     }
 
     Command<Type> *parse(const string &name, const string &args,
-                         bool trusted = true) const {
+                                bool trusted = true) const {
         string lc = StringUtil::toLower(name);
-        Creator creator = ObjectRegistry<Creator>::instance().lookup(lc);
+        Creator creator = lookup(lc);
         if (creator)
             return creator(lc, args, trusted);
         return 0;
@@ -114,13 +117,24 @@ public:
 
     bool registerCommand(string name, Creator creator) {
         name = StringUtil::toLower(name);
-        return ObjectRegistry<Creator>::instance().registerObject(name,
-                                                                  creator);
+        m_creators[name] = creator;
+        return true;
     }
+
+    Creator lookup(const std::string &name) const {
+        typename CreatorMap::const_iterator it = m_creators.find(name);
+        if (it == m_creators.end())
+            return 0;
+        return it->second;
+    }
+
+    const CreatorMap &creatorMap() const { return m_creators; }
 
 private:
     CommandParser() {}
     ~CommandParser() {}
+
+    CreatorMap m_creators;
 };
 
 } // end namespace FbTk

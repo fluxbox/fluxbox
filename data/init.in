@@ -1,5 +1,4 @@
-session.screen0.slit.placement:	BottomRight
-session.screen0.slit.direction:	Vertical
+session.screen0.slit.placement:	RightBottom
 session.screen0.slit.onTop:	False
 session.screen0.slit.autoHide:	False
 session.screen0.tab.placement:	Top
@@ -30,4 +29,4 @@ session.colorsPerChannel:	4
 session.doubleClickInterval:	250
 session.cacheMax:	200
 session.imageDither:	True
-session.configVersion:	7
+session.configVersion:	9

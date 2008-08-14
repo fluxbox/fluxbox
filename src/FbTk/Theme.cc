@@ -117,6 +117,8 @@ bool ThemeManager::unregisterTheme(Theme &tm) {
 bool ThemeManager::load(const string &filename,
                         const string &overlay_filename, int screen_num) {
     string location = FbTk::StringUtil::expandFilename(filename);
+    StringUtil::removeTrailingWhitespace(location);
+    StringUtil::removeFirstWhitespace(location);
     string prefix = "";
 
     if (FileUtil::isDirectory(filename.c_str())) {
@@ -263,4 +265,4 @@ void ThemeManager::listItems() {
 
 }
 */
-}; // end namespace FbTk
+} // end namespace FbTk

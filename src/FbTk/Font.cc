@@ -73,11 +73,12 @@ using std::string;
 using std::map;
 using std::list;
 
-namespace {
 
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
 #endif //HAVE_SETLOCALE
+
+namespace {
 
 // use to map <font1>|<font2>|<font3> => <fontthatworks>
 typedef map<string, string> StringMap;

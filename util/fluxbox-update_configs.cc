@@ -48,6 +48,7 @@
 #include <fstream>
 #include <set>
 #include <map>
+#include <cstdlib>
 #include <list>
 
 using std::cout;
@@ -59,6 +60,8 @@ using std::ofstream;
 using std::set;
 using std::map;
 using std::list;
+using std::exit;
+using std::getenv;
 
 string read_file(string filename);
 void write_file(string filename, string &contents);
@@ -279,13 +282,45 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         string whole_keyfile = read_file(keyfilename);
         string new_keyfile = "";
         // let's put our new keybindings first, so they're easy to find
-        new_keyfile += "# start tabbing windows together\n";
+        new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
         new_keyfile += "OnTitlebar Mouse2 :StartTabbing\n\n";
         new_keyfile += whole_keyfile; // don't forget user's old keybindings
 
         write_file(keyfilename, new_keyfile);
 
         new_version = 7;
+    }
+
+    if (old_version < 8) { // disable icons in tabs for backwards compatibility
+        FbTk::Resource<bool> *show =
+            new FbTk::Resource<bool>(rm, false,
+                                     "session.screen0.tabs.usePixmap",
+                                     "Session.Screen0.Tabs.UsePixmap");
+        if (!*show) // only change if the setting didn't already exist
+            *show = false;
+        new_version = 8;
+    }
+
+    if (old_version < 9) { // change format of slit placement menu
+        FbTk::Resource<string> *placement =
+            new FbTk::Resource<string>(rm, "BottomRight",
+                                       "session.screen0.slit.placement",
+                                       "Session.Screen0.Slit.Placement");
+        FbTk::Resource<string> *direction =
+            new FbTk::Resource<string>(rm, "Vertical",
+                                       "session.screen0.slit.direction",
+                                       "Session.Screen0.Slit.Direction");
+        if (strcasecmp((**direction).c_str(), "vertical") == 0) {
+            if (strcasecmp((**placement).c_str(), "BottomRight") == 0)
+                *placement = "RightBottom";
+            else if (strcasecmp((**placement).c_str(), "BottomLeft") == 0)
+                *placement = "LeftBottom";
+            else if (strcasecmp((**placement).c_str(), "TopRight") == 0)
+                *placement = "RightTop";
+            else if (strcasecmp((**placement).c_str(), "TopLeft") == 0)
+                *placement = "LeftTop";
+        }
+        new_version = 9;
     }
 
     return new_version;

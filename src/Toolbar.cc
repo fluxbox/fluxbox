@@ -50,7 +50,7 @@
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
 #include "FbTk/Shape.hh"
-
+#include "FbTk/SimpleObserver.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -156,16 +156,22 @@ getString() const {
 } // end namespace FbTk
 
 namespace {
-class SetToolbarPlacementCmd: public FbTk::Command<void> {
+
+class PlaceToolbarMenuItem: public FbTk::RadioMenuItem {
 public:
-    SetToolbarPlacementCmd(Toolbar &tbar, Toolbar::Placement place):m_tbar(tbar), m_place(place) { }
-    void execute() {
-        m_tbar.setPlacement(m_place);
-        m_tbar.reconfigure();
+    PlaceToolbarMenuItem(const FbTk::FbString &label, Toolbar &toolbar,
+        Toolbar::Placement place):
+        FbTk::RadioMenuItem(label), m_toolbar(toolbar), m_place(place) {
+        setCloseOnClick(false);
+    }
+    bool isSelected() const { return m_toolbar.placement() == m_place; }
+    void click(int button, int time, unsigned int mods) {
+        m_toolbar.setPlacement(m_place);
+        m_toolbar.reconfigure();
         Fluxbox::instance()->save_rc();
     }
 private:
-    Toolbar &m_tbar;
+    Toolbar &m_toolbar;
     Toolbar::Placement m_place;
 };
 
@@ -240,11 +246,15 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_shape(new FbTk::Shape(frame.window, 0)),
     m_resize_lock(false) {
     _FB_USES_NLS;
+    // NOTE: first subject is always the rearrangeItem !
+    m_observers.push_back(makeObserver(*this, &Toolbar::rearrangeItems));
     // we need to get notified when the theme is reloaded
-    m_theme.reconfigSig().attach(this);
+    m_observers.push_back(makeObserver(*this, &Toolbar::reconfigure));
+    m_theme.reconfigSig().attach(m_observers.back());
+    screen().reconfigureSig().attach(m_observers.back()); // get this on antialias change
     // listen to screen size changes
-    screen().resizeSig().attach(this);
-    screen().reconfigureSig().attach(this); // get this on antialias change
+    screen().resizeSig().attach(m_observers.back());
+
 
     moveToLayer((*m_rc_layernum).getNum());
 
@@ -370,6 +380,7 @@ void Toolbar::lower() {
 }
 
 void Toolbar::reconfigure() {
+
     updateVisibleState();
 
     if (!doAutoHide() && isHidden())
@@ -426,7 +437,8 @@ void Toolbar::reconfigure() {
                 if (item == 0)
                     continue;
                 m_item_list.push_back(item);
-                item->resizeSig().attach(this);
+                // attach to first observer ( which must be rearrangeItems )
+                item->resizeSig().attach(m_observers[0]);
 
             }
             // show all items
@@ -515,6 +527,11 @@ void Toolbar::reconfigure() {
     // area to be reserved on screen
     updateStrut();
 
+#ifdef XINERAMA
+    if (m_xineramaheadmenu)
+        m_xineramaheadmenu->reloadHeads();
+#endif // XINERAMA
+
 }
 
 
@@ -567,10 +584,16 @@ void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
 }
 
 void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
-    // still inside?
+
+    // in autoHide mode we'll receive a leaveNotifyEvent when activating
+    // the toolbar. so check if we are still inside the toolbar area.
+    // event.subwindow gets != None if we really left the window (eg the Slit
+    // was entered ontop of the toolbar)
     if (event.x_root > x() && event.x_root <= (int)(x() + width()) &&
-        event.y_root > y() && event.y_root <= (int)(y() + height()))
+        event.y_root > y() && event.y_root <= (int)(y() + height()) && 
+        event.subwindow == None ) {
         return;
+    }
 
     Fluxbox::instance()->keys()->doAction(event.type, event.state, 0,
                                           Keys::ON_TOOLBAR);
@@ -605,22 +628,6 @@ void Toolbar::handleEvent(XEvent &event) {
         rearrangeItems();
     }
 */
-}
-
-void Toolbar::update(FbTk::Subject *subj) {
-
-    // either screen reconfigured, theme was reloaded
-    // or a tool resized itself
-
-    if (typeid(*subj) == typeid(ToolbarItem::ToolbarItemSubject))
-        rearrangeItems();
-    else
-        reconfigure();
-
-#ifdef XINERAMA
-    if (subj == &m_screen.resizeSig() && m_xineramaheadmenu)
-        m_xineramaheadmenu->reloadHeads();
-#endif // XINERAMA
 }
 
 void Toolbar::setPlacement(Toolbar::Placement where) {
@@ -908,11 +915,10 @@ void Toolbar::setupMenus(bool skip_new_placement) {
             if (str == "") {
                 placementMenu().insert("");
                 placementMenu().setItemEnabled(i, false);
-            } else {
-                RefCommand setplace(new SetToolbarPlacementCmd(*this, placement));
-                placementMenu().insert(str, setplace);
+            } else
+                placementMenu().insert(new PlaceToolbarMenuItem(str, *this,
+                                                                placement));
 
-            }
             place_menu.pop_front();
         }
     }

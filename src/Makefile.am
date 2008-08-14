@@ -27,7 +27,10 @@ SUBDIRS= FbTk
 DEFAULT_MENU=@DEFAULT_MENU@
 DEFAULT_STYLE=@DEFAULT_STYLE@
 DEFAULT_KEYSFILE=@DEFAULT_KEYS@
+DEFAULT_APPSFILE=@DEFAULT_APPS@
+DEFAULT_OVERLAY=@DEFAULT_OVERLAY@
 DEFAULT_INITFILE=@DEFAULT_INIT@
+DEFAULT_WINDOWMENU=@DEFAULT_WINDOWMENU@
 PROGRAM_PREFIX=@program_prefix@
 PROGRAM_SUFFIX=@program_suffix@
 
@@ -44,7 +47,10 @@ defaults.hh: Makefile
 		echo '#define DEFAULTMENU "$(DEFAULT_MENU)"'; \
 		echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"'; \
 		echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"'; \
+		echo '#define DEFAULT_APPSFILE "$(DEFAULT_APPSFILE)"'; \
+		echo '#define DEFAULT_OVERLAY "$(DEFAULT_OVERLAY)"'; \
 		echo '#define DEFAULT_INITFILE "$(DEFAULT_INITFILE)"'; \
+		echo '#define DEFAULT_WINDOWMENU "$(DEFAULT_WINDOWMENU)"'; \
 		echo '#define PROGRAM_PREFIX "$(PROGRAM_PREFIX:NONE=)"'; \
 		echo '#define PROGRAM_SUFFIX "$(PROGRAM_SUFFIX:NONE=)"'; \
 		echo 'std::string realProgramName(std::string name);'; \
@@ -102,6 +108,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	RootTheme.hh RootTheme.cc \
 	FbRootWindow.hh FbRootWindow.cc \
 	OSDWindow.hh OSDWindow.cc \
+	TooltipWindow.hh TooltipWindow.cc \
 	Screen.cc Screen.hh ScreenResources.cc \
 	Slit.cc Slit.hh SlitTheme.hh SlitTheme.cc SlitClient.hh SlitClient.cc \
 	WinButton.hh WinButton.cc \

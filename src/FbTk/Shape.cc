@@ -372,4 +372,4 @@ bool Shape::isShaped(const FbWindow &win) {
     return (shaped != 0 ? true : false);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

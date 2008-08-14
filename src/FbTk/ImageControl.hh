@@ -39,14 +39,10 @@ class Texture;
 /// Holds screen info, color tables and caches textures
 class ImageControl: private NotCopyable {
 public:
-    ImageControl(int screen_num, bool dither = false, int colors_per_channel = 4,
+    ImageControl(int screen_num, int colors_per_channel = 4,
                   unsigned long cache_timeout = 300000l, unsigned long cache_max = 200l);
     virtual ~ImageControl();
 
-    bool doDither() const { return m_dither; }
-#ifdef NOT_USED
-    int bitsPerPixel() const { return bits_per_pixel; }
-#endif
     int depth() const { return m_screen_depth; }
     int colorsPerChannel() const { return m_colors_per_channel; }
     int screenNumber() const { return m_screen_num; }
@@ -68,15 +64,8 @@ public:
     void removeImage(Pixmap thepix);
     void colorTables(const unsigned char **, const unsigned char **, const unsigned char **,
                      int *, int *, int *, int *, int *, int *) const;
-#ifdef NOT_USED
-    void getXColorTable(XColor **, int *);
-#endif
     void getGradientBuffers(unsigned int, unsigned int,
                             unsigned int **, unsigned int **);
-    void setDither(bool d) { m_dither = d; }
-#ifdef NOT_USED
-    void setColorsPerChannel(int cpc);
-#endif
 
     void cleanCache();
 private:

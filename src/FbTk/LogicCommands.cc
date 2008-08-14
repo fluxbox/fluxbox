@@ -153,4 +153,4 @@ bool XorCommand::execute() {
     return ret;
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

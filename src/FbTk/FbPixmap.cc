@@ -506,4 +506,4 @@ void FbPixmap::create(Drawable src,
     m_depth = depth;
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

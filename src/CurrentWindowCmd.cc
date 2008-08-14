@@ -23,6 +23,7 @@
 #include "CurrentWindowCmd.hh"
 
 #include "fluxbox.hh"
+#include "Layer.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
 #include "Screen.hh"
@@ -55,8 +56,6 @@ FbTk::Command<void> *createCurrentWindowCmd(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::lower);
     else if (command == "lowerlayer")
         return new CurrentWindowCmd(&FluxboxWindow::lowerLayer);
-    else if (command == "activate" || command == "focus")
-        return new CurrentWindowCmd((void (FluxboxWindow::*)())&FluxboxWindow::focus);
     else if (command == "close")
         return new CurrentWindowCmd(&FluxboxWindow::close);
     else if (command == "killwindow" || command == "kill")
@@ -97,8 +96,6 @@ REGISTER_COMMAND_PARSER(raise, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(raiselayer, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(lower, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(lowerlayer, createCurrentWindowCmd, void);
-REGISTER_COMMAND_PARSER(activate, createCurrentWindowCmd, void);
-REGISTER_COMMAND_PARSER(focus, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(close, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(killwindow, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(kill, createCurrentWindowCmd, void);
@@ -249,6 +246,18 @@ void GoToTabCmd::real_execute() {
     while (--num > 0) ++it;
 
     (*it)->focus();
+}
+
+REGISTER_COMMAND_WITH_ARGS(activate, FocusCmd, void);
+REGISTER_COMMAND_WITH_ARGS(focus, FocusCmd, void);
+
+void FocusCmd::real_execute() {
+    Focusable *win = 0;
+    if (!m_pat.error())
+         win = fbwindow().screen().focusControl().focusedOrderWinList().find(m_pat);
+    if (!win)
+        win = &fbwindow();
+    win->focus();
 }
 
 REGISTER_COMMAND(startmoving, StartMovingCmd, void);
@@ -477,6 +486,18 @@ REGISTER_COMMAND(fullscreen, FullscreenCmd, void);
 FullscreenCmd::FullscreenCmd() { }
 void FullscreenCmd::real_execute() {
     fbwindow().setFullscreen(!fbwindow().isFullscreen());
+}
+
+FbTk::Command<void> *SetLayerCmd::parse(const string &command,
+                                        const string &args, bool trusted) {
+    int l = Layer::getNumFromString(args);
+    return (l == -1) ? 0 : new SetLayerCmd(l);
+}
+
+REGISTER_COMMAND_PARSER(setlayer, SetLayerCmd::parse, void);
+
+void SetLayerCmd::real_execute() {
+    fbwindow().moveToLayer(m_layer);
 }
 
 FbTk::Command<void> *SetAlphaCmd::parse(const string &command, const string &args,

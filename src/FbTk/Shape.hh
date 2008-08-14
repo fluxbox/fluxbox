@@ -69,6 +69,6 @@ private:
     int m_shapeplaces; ///< places to shape
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // SHAPE_HH

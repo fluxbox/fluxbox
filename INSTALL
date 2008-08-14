@@ -75,12 +75,6 @@ every other line in rendered images.  This support works only for gradient
 images.  It is compiled in by default, but may be overridden by specifying
 `--disable-interlace' on the configure script's command line. 
 
-Fluxbox provides an alternative rendering algorithm for dithering on
-pseudocolor (8 bit) displays. A noticeable pattern is visible when using
-this; it's a matter of taste whether this looks better than the default
-algorithm. It is disabled by default, but may be overridden by specifying
-'--enable-ordered-pseudo' on the configure script's command line.
-
 Fluxbox uses a timer which allows it to periodically flush its pixmap
 cache. It is enabled by default, but may be overridden by specifying
 '--disable-timed-cache' on the configure script's command line.

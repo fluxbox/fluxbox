@@ -287,4 +287,4 @@ void Timer::removeTimer(Timer *timer) {
     m_timerlist.remove(timer);
 }
 	
-}; // end namespace FbTk
+} // end namespace FbTk

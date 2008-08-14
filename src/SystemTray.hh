@@ -25,11 +25,12 @@
 
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
-#include "FbTk/Observer.hh"
 
+#include "ToolTheme.hh"
 #include "ToolbarItem.hh"
 
 #include <list>
+#include <memory>
 
 class BScreen;
 class ButtonTheme;
@@ -38,13 +39,14 @@ class AtomHandler;
 
 namespace FbTk {
 template <class T> class ThemeProxy;
+class Observer;
 }
 
-class SystemTray: public ToolbarItem, public FbTk::EventHandler, public FbTk::Observer {
+class SystemTray: public ToolbarItem, public FbTk::EventHandler {
 public:
 
     explicit SystemTray(const FbTk::FbWindow &parent,
-                        FbTk::ThemeProxy<ButtonTheme> &theme, BScreen& screen);
+                        FbTk::ThemeProxy<ToolTheme> &theme, BScreen& screen);
     virtual ~SystemTray();
 
     void move(int x, int y);
@@ -70,8 +72,13 @@ public:
     int numClients() const { return m_clients.size(); }
     const FbTk::FbWindow &window() const { return m_window; }
 
-    void renderTheme(unsigned char alpha) { m_window.setAlpha(alpha); update(0); }
-    void updateSizing() {}
+    void renderTheme(unsigned char alpha) { 
+        m_window.setBorderWidth(m_theme->border().width());
+        m_window.setBorderColor(m_theme->border().color());
+        m_window.setAlpha(alpha); 
+        update(); 
+    }
+    void updateSizing() { m_window.setBorderWidth(m_theme->border().width()); }
 
     void parentMoved() { m_window.parentMoved(); }
 
@@ -79,7 +86,7 @@ public:
 
 private:
 
-    void update(FbTk::Subject *subj);
+    void update();
 
     typedef std::list<TrayWindow *> ClientList;
     ClientList::iterator findClient(Window win);
@@ -90,7 +97,7 @@ private:
     void showClient(TrayWindow *traywin);
 
     FbTk::FbWindow m_window;
-    FbTk::ThemeProxy<ButtonTheme> &m_theme;
+    FbTk::ThemeProxy<ToolTheme> &m_theme;
     BScreen& m_screen;
     Pixmap m_pixmap;
 
@@ -102,7 +109,7 @@ private:
     // gaim/pidgin seems to barf if the selection is not an independent window.
     // I suspect it's an interacton with parent relationship and gdk window caching.
     FbTk::FbWindow m_selection_owner;
-
+    std::auto_ptr<FbTk::Observer> m_observer;
 };
 
 #endif // SYSTEMTRAY_HH

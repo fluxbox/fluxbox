@@ -67,6 +67,8 @@ public:
     bool setSource(const std::string &encoding);
     void reset() {
 #ifdef HAVE_ICONV
+ if (m_iconv != ((iconv_t)-1))
+     iconv_close(m_iconv);
  m_iconv = ((iconv_t)(-1));
 #endif
     }

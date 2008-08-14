@@ -119,6 +119,11 @@ void AttentionNoticeHandler::update(FbTk::Subject *subj) {
 
 }
 
-bool AttentionNoticeHandler::isDemandingAttention(Focusable &client) {
-    return m_attentions.find(&client) != m_attentions.end();
+bool AttentionNoticeHandler::isDemandingAttention(const Focusable &client) {
+    NoticeMap::iterator it = m_attentions.begin(), it_end = m_attentions.end();
+    for (; it != it_end; ++it) {
+        if (it->first == &client)
+            return true;
+    }
+    return false;
 }

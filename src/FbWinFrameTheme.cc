@@ -54,10 +54,10 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num, const std::string &extra,
     // create cursors
     Display *disp = FbTk::App::instance()->display();
     m_cursor_move = XCreateFontCursor(disp, XC_fleur);
-    m_cursor_lower_left_angle = XCreateFontCursor(disp, XC_ll_angle);
-    m_cursor_lower_right_angle = XCreateFontCursor(disp, XC_lr_angle);
-    m_cursor_upper_right_angle = XCreateFontCursor(disp, XC_ur_angle);
-    m_cursor_upper_left_angle = XCreateFontCursor(disp, XC_ul_angle);
+    m_cursor_lower_left_angle = XCreateFontCursor(disp, XC_bottom_left_corner);
+    m_cursor_lower_right_angle = XCreateFontCursor(disp, XC_bottom_right_corner);
+    m_cursor_upper_right_angle = XCreateFontCursor(disp, XC_top_right_corner);
+    m_cursor_upper_left_angle = XCreateFontCursor(disp, XC_top_left_corner);
     m_cursor_left_side = XCreateFontCursor(disp, XC_left_side);
     m_cursor_top_side = XCreateFontCursor(disp, XC_top_side);
     m_cursor_right_side = XCreateFontCursor(disp, XC_right_side);

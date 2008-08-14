@@ -64,7 +64,7 @@ private:
     BackgroundItem *m_background;///< background image/texture
     FbTk::GContext m_opgc;
     FbTk::ImageControl &m_image_ctrl; ///< image control for rendering background texture
-
+    bool m_first;
 };
 
 #endif // ROOTTHEME_HH

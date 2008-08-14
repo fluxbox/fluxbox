@@ -33,4 +33,4 @@ BorderTheme::BorderTheme(Theme &theme, const std::string &name,
     m_color->setFromString("black", theme.screenNum());
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

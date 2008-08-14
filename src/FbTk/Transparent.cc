@@ -335,7 +335,7 @@ void Transparent::freeAlpha() {
     m_alpha = 255;
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 
 

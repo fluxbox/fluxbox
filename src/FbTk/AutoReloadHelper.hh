@@ -1,5 +1,5 @@
-// ObjectRegistry.hh for FbTk
-// Copyright (c) 2007 Fluxbox Team (fluxgen at fluxbox dot org)
+// AutoReloadHelper.hh
+// Copyright (c) 2008 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,51 +13,42 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef OBJECTREGISTRY_HH
-#define OBJECTREGISTRY_HH
+#ifndef AUTORELOADHELPER_HH
+#define AUTORELOADHELPER_HH
 
 #include <map>
 #include <string>
+#include <sys/types.h>
+
+#include "Command.hh"
+#include "RefCount.hh"
 
 namespace FbTk {
 
-template <typename Creator>
-class ObjectRegistry {
+class AutoReloadHelper {
 public:
-    typedef std::map<std::string, Creator> CreatorMap;
 
-    static ObjectRegistry<Creator> &instance() {
-        static ObjectRegistry<Creator> s_instance;
-        return s_instance;
-    }
+    void setMainFile(std::string filename);
+    void addFile(std::string filename);
+    void setReloadCmd(RefCount<Command<void> > cmd) { m_reload_cmd = cmd; }
 
-    Creator lookup(const std::string &name) {
-        typename CreatorMap::const_iterator it = m_creators.find(name);
-        if (it == m_creators.end())
-            return 0;
-        return it->second;
-    }
-
-    bool registerObject(const std::string &name, Creator creator) {
-        m_creators[name] = creator;
-        return true;
-    }
-
-    const CreatorMap creatorMap() const { return m_creators; }
+    void checkReload();
+    void reload();
 
 private:
-    ObjectRegistry() {}
-    ~ObjectRegistry() {}
+    RefCount<Command<void> > m_reload_cmd;
+    std::string m_main_file;
 
-    CreatorMap m_creators;
+    typedef std::map<std::string, time_t> TimestampMap;
+    TimestampMap m_timestamps;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
-#endif // OBJECTREGISTRY_HH
+#endif // AUTORELOADHELPER_HH

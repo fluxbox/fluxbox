@@ -55,21 +55,22 @@ class Slit: public FbTk::EventHandler, public FbTk::Observer, public LayerObject
 public:
     typedef std::list<SlitClient *> SlitClients;
     /**
-       Client alignment
-    */
-    enum Direction { VERTICAL = 1, HORIZONTAL };
-    /**
        Placement on screen
     */
-    enum Placement { TOPLEFT = 1, LEFTCENTER, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
-           TOPRIGHT, RIGHTCENTER, BOTTOMRIGHT };
+    enum Placement {
+        // top and bottom placement
+        TOPLEFT = 1, TOPCENTER, TOPRIGHT,
+        BOTTOMLEFT, BOTTOMCENTER, BOTTOMRIGHT,
+        // left and right placement
+        LEFTBOTTOM, LEFTCENTER, LEFTTOP,
+        RIGHTBOTTOM, RIGHTCENTER, RIGHTTOP
+    };
 
     Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();
 
     void show() { frame.window.show(); m_visible = true; }
     void hide() { frame.window.hide(); m_visible = false; }
-    void setDirection(Direction dir);
     void setPlacement(Placement place);
     void addClient(Window clientwin);
     void removeClient(Window clientwin, bool remap = true);
@@ -113,7 +114,6 @@ public:
     bool isHidden() const { return m_hidden; }
     bool acceptKdeDockapp() const { return *m_rc_kde_dockapp; }
     bool doAutoHide() const { return *m_rc_auto_hide; }
-    Direction direction() const { return *m_rc_direction; }
     Placement placement() const { return *m_rc_placement; }
     int getOnHead() const { return *m_rc_on_head; }
     void saveOnHead(int head);
@@ -178,7 +178,6 @@ private:
 
     FbTk::Resource<bool> m_rc_kde_dockapp, m_rc_auto_hide, m_rc_maximize_over;
     FbTk::Resource<Slit::Placement> m_rc_placement;
-    FbTk::Resource<Slit::Direction> m_rc_direction;
     FbTk::Resource<int> m_rc_alpha, m_rc_on_head;
     FbTk::Resource<class Layer> m_rc_layernum;
 };

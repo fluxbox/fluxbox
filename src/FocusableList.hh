@@ -30,6 +30,7 @@
 
 #include <list>
 #include <string>
+#include <memory>
 
 class BScreen;
 class Focusable;
@@ -41,7 +42,7 @@ public:
     /// list option bits
     enum { 
         LIST_GROUPS = 0x01,  //< list groups instead of clients
-        STATIC_ORDER = 0x02,  ///< use creation order instead of focused order
+        STATIC_ORDER = 0x02  ///< use creation order instead of focused order
     };
 
     FocusableList(BScreen &scr): m_pat(0), m_parent(0), m_screen(scr) { }
@@ -69,6 +70,8 @@ public:
     bool empty() const { return m_list.empty(); }
     /// does the list contain the given window?
     bool contains(const Focusable &win) const;
+    /// find the first window matching the pattern
+    Focusable *find(const ClientPattern &pattern) const;
 
     /**
        @name signals

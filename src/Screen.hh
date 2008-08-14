@@ -30,7 +30,7 @@
 #include "RootTheme.hh"
 #include "WinButtonTheme.hh"
 #include "FbWinFrameTheme.hh"
-#include "OSDWindow.hh"
+#include "TooltipWindow.hh"
 
 #include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
@@ -54,6 +54,7 @@
 #include <map>
 
 class ClientPattern;
+class FbMenu;
 class Focusable;
 class FluxboxWindow;
 class WinClient;
@@ -64,6 +65,8 @@ class Toolbar;
 class HeadArea;
 class FocusControl;
 class ScreenPlacement;
+class TooltipWindow;
+class OSDWindow;
 
 namespace FbTk {
 class Menu;
@@ -72,6 +75,7 @@ class XLayerItem;
 class FbWindow;
 class Subject;
 }
+
 
 /// Handles screen connection, screen clients and workspaces
 /**
@@ -116,15 +120,15 @@ public:
     bool doShowWindowPos() const { return *resource.show_window_pos; }
     bool decorateTransient() const { return *resource.decorate_transient; }
     const std::string &defaultDeco() const { return *resource.default_deco; }
-    const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
+    const std::string windowMenuFilename() const;
     FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     // menus
-    const FbTk::Menu &rootMenu() const { return *m_rootmenu.get(); }
-    FbTk::Menu &rootMenu() { return *m_rootmenu.get(); }
-    const FbTk::Menu &configMenu() const { return *m_configmenu.get(); }
-    FbTk::Menu &configMenu() { return *m_configmenu.get(); }
-    const FbTk::Menu &windowMenu() const { return *m_windowmenu.get(); }
-    FbTk::Menu &windowMenu() { return *m_windowmenu.get(); }
+    const FbMenu &rootMenu() const { return *m_rootmenu.get(); }
+    FbMenu &rootMenu() { return *m_rootmenu.get(); }
+    const FbMenu &configMenu() const { return *m_configmenu.get(); }
+    FbMenu &configMenu() { return *m_configmenu.get(); }
+    const FbMenu &windowMenu() const { return *m_windowmenu.get(); }
+    FbMenu &windowMenu() { return *m_windowmenu.get(); }
     ExtraMenus &extraWindowMenus() { return m_extramenus; }
     const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
 
@@ -163,9 +167,9 @@ public:
     Workspace *currentWorkspace() { return m_current_workspace; }
     const Workspace *currentWorkspace() const { return m_current_workspace; }
     /// @return the workspace menu
-    const FbTk::Menu &workspaceMenu() const { return *m_workspacemenu.get(); }
+    const FbMenu &workspaceMenu() const { return *m_workspacemenu.get(); }
     /// @return the workspace menu
-    FbTk::Menu &workspaceMenu() { return *m_workspacemenu.get(); }
+    FbMenu &workspaceMenu() { return *m_workspacemenu.get(); }
     /// @return focus control handler
     const FocusControl &focusControl() const { return *m_focus_control; }
     /// @return focus control handler
@@ -248,15 +252,15 @@ public:
     /**
      * Creates an empty menu with specified label
      * @param label for the menu
-     * @return create menu
+     * @return created menu
      */
-    FbTk::Menu *createMenu(const std::string &label);
+    FbMenu *createMenu(const std::string &label);
     /**
      * Creates an empty toggle menu with a specific label
      * @param label
      * @return created menu
      */
-    FbTk::Menu *createToggleMenu(const std::string &label);
+    FbMenu *createToggleMenu(const std::string &label);
 
     /**
      * For extras to add menus.
@@ -272,8 +276,6 @@ public:
     void saveTabPlacement(FbWinFrame::TabPlacement place) { *resource.tab_placement = place; }
 
     void saveWorkspaces(int w) { *resource.workspaces = w;  }
-
-    void saveMenu(FbTk::Menu &menu) { m_rootmenu_list.push_back(&menu); }
 
     FbTk::ThemeProxy<FbWinFrameTheme> &focusedWinFrameTheme() { return *m_focused_windowtheme.get(); }
     const FbTk::ThemeProxy<FbWinFrameTheme> &focusedWinFrameTheme() const { return *m_focused_windowtheme.get(); }
@@ -382,6 +384,7 @@ public:
     void reconfigure();
     void reconfigureTabs();
     void rereadMenu();
+    void rereadWindowMenu();
     void shutdown();
     /// show position window centered on the screen with "X x Y" text
     void showPosition(int x, int y);
@@ -389,6 +392,13 @@ public:
     /// show geomentry with "width x height"-text, not size of window
     void showGeometry(int width, int height);
     void hideGeometry();
+
+    /// @param text the text to be displayed in the tooltip window
+    void showTooltip(const std::string &text);
+    /// Hides the tooltip window
+    void hideTooltip();
+
+    TooltipWindow& tooltipWindow() { return *m_tooltip_window; }
 
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
@@ -481,7 +491,6 @@ public:
 
 private:
     void setupConfigmenu(FbTk::Menu &menu);
-    void initMenu();
     void renderGeomWindow();
     void renderPosWindow();
 
@@ -507,15 +516,13 @@ private:
 
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
-    std::auto_ptr<FbTk::Menu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
+    std::auto_ptr<FbMenu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
 
     ExtraMenus m_extramenus;
 
-    typedef std::list<FbTk::Menu *> Rootmenus;
     typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > Configmenus;
 
 
-    Rootmenus m_rootmenu_list;
     Configmenus m_configmenu_list;
     Icons m_icon_list;
 
@@ -535,14 +542,15 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
-    OSDWindow m_geom_window, m_pos_window;
+    std::auto_ptr<OSDWindow> m_geom_window, m_pos_window;
+    std::auto_ptr<TooltipWindow> m_tooltip_window;
     FbTk::FbWindow m_dummy_window;
 
     struct ScreenResource {
         ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
                        const std::string &altscrname);
 
-        FbTk::Resource<bool> image_dither, opaque_move, full_max,
+        FbTk::Resource<bool> opaque_move, full_max,
             max_ignore_inc, max_disable_move, max_disable_resize,
             workspace_warping, show_window_pos, auto_raise, click_raises,
             decorate_transient;
@@ -552,9 +560,9 @@ private:
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<unsigned int> typing_delay;
         FbTk::Resource<FollowModel> follow_model, user_follow_model;
-        bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
-            unfocused_alpha, menu_alpha, menu_delay, menu_delay_close, tab_width;
+            unfocused_alpha, menu_alpha, menu_delay, menu_delay_close,
+            tab_width, tooltip_delay;
         FbTk::Resource<FbTk::MenuTheme::MenuMode> menu_mode;
 
         FbTk::Resource<int> gc_line_width;

@@ -150,7 +150,8 @@ RootTheme::RootTheme(FbTk::ImageControl &image_control):
     FbTk::Theme(image_control.screenNumber()),
     m_background(new BackgroundItem(*this, "background", "Background")),
     m_opgc(RootWindow(FbTk::App::instance()->display(), image_control.screenNumber())),
-    m_image_ctrl(image_control) {
+    m_image_ctrl(image_control),
+    m_first(true) {
 
     Display *disp = FbTk::App::instance()->display();
     m_opgc.setForeground(WhitePixel(disp, screenNum())^BlackPixel(disp, screenNum()));
@@ -183,10 +184,6 @@ void RootTheme::reconfigTheme() {
     if (!m_background->changed())
         return;
 
-    // style doesn't wish to change the background
-    if (strstr(m_background->options().c_str(), "none") != 0)
-        return;
-
     //
     // Else parse background from style
     //
@@ -197,37 +194,35 @@ void RootTheme::reconfigTheme() {
     std::string filename = m_background->filename();
     FbTk::StringUtil::removeTrailingWhitespace(filename);
     FbTk::StringUtil::removeFirstWhitespace(filename);
+
     // if background argument is a file then
     // parse image options and call image setting
     // command specified in the resources
     filename = FbTk::StringUtil::expandFilename(filename);
-    if (FbTk::FileUtil::isRegularFile(filename.c_str())) {
+    std::string cmd = realProgramName("fbsetbg") + (m_first ? " -z " : " -Z ");
+
+    // style doesn't wish to change the background
+    if (strstr(m_background->options().c_str(), "none") != 0) {
+        if (!m_first)
+            return;
+    } else if (FbTk::FileUtil::isRegularFile(filename.c_str())) {
         // parse options
-        std::string options = "-F ";
         if (strstr(m_background->options().c_str(), "tiled") != 0)
-            options = "-T ";
-        if (strstr(m_background->options().c_str(), "centered") != 0)
-            options = "-C ";
-        if (strstr(m_background->options().c_str(), "aspect") != 0)
-            options = "-A ";
+            cmd += "-t ";
+        else if (strstr(m_background->options().c_str(), "centered") != 0)
+            cmd += "-c ";
+        else if (strstr(m_background->options().c_str(), "aspect") != 0)
+            cmd += "-a ";
+        else
+            cmd += "-f ";
 
-        // compose wallpaper application "fbsetbg" with argumetns
-        std::string commandargs = realProgramName("fbsetbg") + " " + options +
-                                  filename;
-
-        // call command with options
-        FbCommands::ExecuteCmd exec(commandargs, screenNum());
-        exec.execute();
-
+        cmd += filename;
     } else if (FbTk::FileUtil::isDirectory(filename.c_str()) &&
-            strstr(m_background->options().c_str(), "random") != 0) {
-        std::string commandargs = realProgramName("fbsetbg") + " -R " +
-                                  filename;
-        FbCommands::ExecuteCmd exec(commandargs, screenNum());
-        exec.execute();
+               strstr(m_background->options().c_str(), "random") != 0) {
+        cmd += "-r " + filename;
     } else {
         // render normal texture with fbsetroot
-
+        cmd += "-b ";
 
         // Make sure the color strings are valid,
         // so we dont pass any `commands` that can be executed
@@ -240,23 +235,26 @@ void RootTheme::reconfigTheme() {
 
         std::string options;
         if (color_valid)
-            options += "-foreground '" + m_background->colorString() + "' ";
+            cmd += "-foreground '" + m_background->colorString() + "' ";
         if (color_to_valid)
-            options += "-background '" + m_background->colorToString() + "' ";
+            cmd += "-background '" + m_background->colorToString() + "' ";
 
         if (strstr(m_background->options().c_str(), "mod") != 0)
-            options += "-mod " + m_background->modX() + " " + m_background->modY();
+            cmd += "-mod " + m_background->modX() + " " + m_background->modY();
         else if ((*m_background)->type() & FbTk::Texture::SOLID && color_valid)
-            options += "-solid '" + m_background->colorString() + "' ";
-
+            cmd += "-solid '" + m_background->colorString() + "' ";
         else if ((*m_background)->type() & FbTk::Texture::GRADIENT) {
-            options += "-gradient '" + m_background->options() + "'";
+            // remove whitespace from the options, since fbsetroot doesn't care
+            // and dealing with sh and fbsetbg is impossible if we don't
+            std::string options = m_background->options();
+            options = FbTk::StringUtil::replaceString(options, " ", "");
+            options = FbTk::StringUtil::replaceString(options, "\t", "");
+            cmd += "-gradient " + options;
         }
-
-        std::string commandargs = realProgramName("fbsetroot") + " " + options;
-
-        FbCommands::ExecuteCmd exec(commandargs, screenNum());
-        exec.execute();
     }
 
+    // call command with options
+    FbCommands::ExecuteCmd exec(cmd, screenNum());
+    m_first = false;
+    exec.execute();
 }

@@ -47,13 +47,13 @@ class FbWinFrameTheme;
 class BScreen;
 class FbWinFrame;
 class FocusControl;
+class FbMenu;
 
 namespace FbTk {
 class TextButton;
 class MenuTheme;
 class ImageControl;
 class XLayer;
-class Menu;
 }
 
 /// Creates the window frame and handles any window event for it
@@ -96,7 +96,7 @@ public:
         ATTRIB_WORKSPACE = 0x10,   ///< workspace
         ATTRIB_STACK = 0x20,       ///< stack
         ATTRIB_DECORATION = 0x40,  ///< decorations
-        ATTRIB_HIDDEN = 0x80,      ///< hidden
+        ATTRIB_HIDDEN = 0x80       ///< hidden
     };
 
     /**
@@ -323,6 +323,12 @@ public:
      * @param my position
      */
     void showMenu(int mx, int my);
+
+    /** popup window menu at specific location
+     * @param x 
+     * @param y
+     */
+    void popupMenu(int x, int y);
     // popup menu on last button press position
     void popupMenu();
 
@@ -351,7 +357,7 @@ public:
     /// handle Subject notifications
     void update(FbTk::Subject *subj);
 
-    void applyDecorations(bool initial = false);
+    void applyDecorations();
     void toggleDecoration();
 
     unsigned int decorationMask() const;
@@ -433,8 +439,8 @@ public:
     FbTk::FbWindow &fbWindow();
     const FbTk::FbWindow &fbWindow() const;
 
-    FbTk::Menu &menu();
-    const FbTk::Menu &menu() const;
+    FbMenu &menu();
+    const FbMenu &menu() const;
 
     const FbTk::FbWindow &parent() const { return m_parent; }
     FbTk::FbWindow &parent() { return m_parent; }

@@ -123,6 +123,6 @@ private:
 
 void NLSInit(const char *);
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // I18N_HH

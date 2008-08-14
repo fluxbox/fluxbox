@@ -34,7 +34,7 @@ To understand how the style mechanism works, it is nice to know a little about h
 A more complete reference to this can be found in X(7), section \fIRESOURCES\fR.
 .sp
 .SH "LOCATION"
-There are many places to store your styles, the most common is in your \fI~/.fluxbox/styles\fR directory. The initial installation will place the default styles in \fI@pkg_datadir@/styles\fR providing a basic usable configuration.
+There are many places to store your styles, the most common is in your \fI~/.fluxbox/styles\fR directory. The initial installation will place the default styles in \fI@pkgdatadir@/styles\fR providing a basic usable configuration.
 .sp
 When creating your own style, create a directory (normally the name of your style) in \fI~/.fluxbox/styles/\fR (If the \fIstyles\fR directory doesn't exist, create that also). While there isn't an official structure, it is common to create a directory named after your style and place your pixmaps directory (if required) in there along with a file called theme.cfg (may also be named style.cfg). This file is where you will construct your style using the components covered later in this manual page. An example of steps taken when beginning a style project of your own may look like:
 .sp
@@ -435,7 +435,7 @@ These are the color formats for styles:
 rgb:<0\-255>/<0\-255>/<0\-255>
 .fi
 .RE
-See /usr/X11R6/lib/X11/rgb.txt for an explaination.
+See /usr/share/X11/rgb.txt for an explaination.
 .sp
 .SH "AUTHOR AND CREDITS"
 Blackbox was written and maintained by Brad Hughes <blackbox@alug.org> and Jeff Raven <jraven@psu.edu>.

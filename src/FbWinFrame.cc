@@ -121,7 +121,6 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
     if (tabmode == EXTERNAL) {
         m_label.show();
         m_tab_container.setBorderWidth(m_window.borderWidth());
-        m_tab_container.setBorderColor(theme()->border().color());
         m_tab_container.setEventMask(
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |
@@ -487,12 +486,7 @@ void FbWinFrame::setFocus(bool newvalue) {
         }
     }
 
-    if (m_decoration_mask & DECORM_BORDER &&
-        (theme().focusedTheme()->border().width() !=
-         theme().unfocusedTheme()->border().width() ||
-         theme().focusedTheme()->border().color().pixel() !=
-         theme().unfocusedTheme()->border().color().pixel()))
-        setBorderWidth(theme()->border().width());
+    setBorderWidth();
 
     applyAll();
     clearAll();
@@ -759,28 +753,6 @@ bool FbWinFrame::showHandle() {
     return true;
 }
 
-bool FbWinFrame::hideAllDecorations() {
-    bool changed = false;
-    changed |= hideHandle();
-    changed |= hideTitlebar();
-    // resize done by hide*
-    reconfigure();
-
-    return changed;
-}
-
-bool FbWinFrame::showAllDecorations() {
-    bool changed = false;
-    if (!m_use_handle)
-        changed |= showHandle();
-    if (!m_use_titlebar)
-        changed |= showTitlebar();
-    // resize shouldn't be necessary
-    reconfigure();
-
-    return changed;
-}
-
 /**
    Set new event handler for the frame's windows
 */
@@ -871,8 +843,12 @@ void FbWinFrame::reconfigure() {
     gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw, false);
 
     m_bevel = theme()->bevelWidth();
-    // reconfigure can't set borderwidth, as it doesn't know
-    // if it's meant to be borderless or not
+    setBorderWidth();
+
+    if (m_decoration_mask & DECORM_HANDLE && theme()->handleWidth() != 0)
+        showHandle();
+    else
+        hideHandle();
 
     unsigned int orig_handle_h = handle().height();
     if (m_use_handle && orig_handle_h != theme()->handleWidth())
@@ -1434,14 +1410,80 @@ void FbWinFrame::applyTabContainer() {
     }
 }
 
-void FbWinFrame::setBorderWidth(unsigned int border_width) {
-    int bw_changes = 0;
+void FbWinFrame::applyDecorations() {
+    int grav_x=0, grav_y=0;
+    // negate gravity
+    gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw,
+                     false);
+
+    bool client_move = setBorderWidth(false);
+
+    // tab deocration only affects if we're external
+    // must do before the setTabMode in case it goes
+    // to external and is meant to be hidden
+    if (m_decoration_mask & DECORM_TAB)
+        client_move |= showTabs();
+    else
+        client_move |= hideTabs();
+
+    // we rely on frame not doing anything if it is already shown/hidden
+    if (m_decoration_mask & DECORM_TITLEBAR) {
+        client_move |= showTitlebar();
+        if (m_screen.getDefaultInternalTabs())
+            client_move |= setTabMode(INTERNAL);
+        else
+            client_move |= setTabMode(EXTERNAL);
+    } else {
+        client_move |= hideTitlebar();
+        if (m_decoration_mask & DECORM_TAB)
+            client_move |= setTabMode(EXTERNAL);
+    }
+
+    if (m_decoration_mask & DECORM_HANDLE)
+        client_move |= showHandle();
+    else
+        client_move |= hideHandle();
+
+    // apply gravity once more
+    gravityTranslate(grav_x, grav_y, m_active_gravity, m_active_orig_client_bw,
+                     false);
+
+    // if the location changes, shift it
+    if (grav_x != 0 || grav_y != 0) {
+        move(grav_x + x(), grav_y + y());
+        client_move = true;
+    }
+
+    reconfigure();
+    if (client_move)
+        frameExtentSig().notify();
+}
+
+bool FbWinFrame::setBorderWidth(bool do_move) {
+    unsigned int border_width = theme()->border().width();
+    unsigned int win_bw = m_decoration_mask & DECORM_BORDER ? border_width : 0;
+
+    if (border_width &&
+        theme()->border().color().pixel() != window().borderColor()) {
+        window().setBorderColor(theme()->border().color());
+        titlebar().setBorderColor(theme()->border().color());
+        handle().setBorderColor(theme()->border().color());
+        gripLeft().setBorderColor(theme()->border().color());
+        gripRight().setBorderColor(theme()->border().color());
+        tabcontainer().setBorderColor(theme()->border().color());
+    }
+
+    if (border_width == handle().borderWidth() &&
+        win_bw == window().borderWidth())
+        return false;
 
     int grav_x=0, grav_y=0;
     // negate gravity
-    gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw, false);
+    if (do_move)
+        gravityTranslate(grav_x, grav_y, -m_active_gravity,
+                         m_active_orig_client_bw, false);
 
-
+    int bw_changes = 0;
     // we need to change the size of the window
     // if the border width changes...
     if (m_use_titlebar)
@@ -1449,22 +1491,14 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
     if (m_use_handle)
         bw_changes += static_cast<signed>(border_width - handle().borderWidth());
 
-    window().setBorderWidth(border_width);
-    window().setBorderColor(theme()->border().color());
+    window().setBorderWidth(win_bw);
 
     setTabMode(NOTSET);
 
     titlebar().setBorderWidth(border_width);
-    titlebar().setBorderColor(theme()->border().color());
-
     handle().setBorderWidth(border_width);
-    handle().setBorderColor(theme()->border().color());
-
     gripLeft().setBorderWidth(border_width);
-    gripLeft().setBorderColor(theme()->border().color());
-
     gripRight().setBorderWidth(border_width);
-    gripRight().setBorderColor(theme()->border().color());
 
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);
@@ -1472,11 +1506,16 @@ void FbWinFrame::setBorderWidth(unsigned int border_width) {
     if (m_tabmode == EXTERNAL)
         alignTabs();
 
-    gravityTranslate(grav_x, grav_y, m_active_gravity, m_active_orig_client_bw, false);
-    // if the location changes, shift it
-    if (grav_x != 0 || grav_y != 0)
-        move(grav_x + x(), grav_y + y());
+    if (do_move) {
+        frameExtentSig().notify();
+        gravityTranslate(grav_x, grav_y, m_active_gravity,
+                         m_active_orig_client_bw, false);
+        // if the location changes, shift it
+        if (grav_x != 0 || grav_y != 0)
+            move(grav_x + x(), grav_y + y());
+    }
 
+    return true;
 }
 
 // this function translates its arguments according to win_gravity
@@ -1519,44 +1558,30 @@ void FbWinFrame::gravityTranslate(int &x, int &y,
     // Note that the client window's x,y is offset by it's borderWidth, which
     // is removed by fluxbox, so the gravity needs to account for this change
 
-//    unsigned int width_offset = 0; // no side decorations
-
     // these functions already check if the title/handle is used
-    int height_offset = - titlebarHeight() - handleHeight();
-
     int bw_diff = client_bw - m_window.borderWidth();
+    int height_diff = 2*bw_diff - titlebarHeight() - handleHeight();
+    int width_diff = 2*bw_diff;
 
-    // mostly no X offset, since we don't have extra frame on the sides
-    switch (win_gravity) {
-    case NorthEastGravity:
-        x_offset += bw_diff;
-    case NorthGravity:
-        x_offset += bw_diff;
-    case NorthWestGravity:
-        // no offset, since the top point is still the same
-        break;
-    case SouthEastGravity:
-        x_offset += bw_diff;
-    case SouthGravity:
-        x_offset += bw_diff;
-    case SouthWestGravity:
-        // window shifted down by height of titlebar, and the handle
-        // since that's necessary to get the bottom of the frame
-        // all the way up
-        y_offset += 2*bw_diff + height_offset;
-        break;
-    case EastGravity:
-        x_offset += bw_diff;
-    case CenterGravity:
-        x_offset += bw_diff;
-    case WestGravity:
-        // these centered ones are a little more interesting
-        y_offset += bw_diff + height_offset/2;
-        break;
-    case StaticGravity:
-        x_offset += bw_diff;
-        y_offset += -titlebarHeight() + bw_diff;
-        break;
+    if (win_gravity == SouthWestGravity || win_gravity == SouthGravity ||
+        win_gravity == SouthEastGravity)
+        y_offset = height_diff;
+
+    if (win_gravity == WestGravity || win_gravity == CenterGravity ||
+        win_gravity == EastGravity)
+        y_offset = height_diff/2;
+
+    if (win_gravity == NorthEastGravity || win_gravity == EastGravity ||
+        win_gravity == SouthEastGravity)
+        x_offset = width_diff;
+
+    if (win_gravity == NorthGravity || win_gravity == CenterGravity ||
+        win_gravity == SouthGravity)
+        x_offset = width_diff/2;
+
+    if (win_gravity == StaticGravity) {
+        x_offset = bw_diff;
+        y_offset = bw_diff - titlebarHeight();
     }
 
     if (invert) {

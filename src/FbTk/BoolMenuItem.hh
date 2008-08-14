@@ -58,6 +58,6 @@ private:
     Accessor<bool> &m_item;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_BOOLMENUITEM_HH

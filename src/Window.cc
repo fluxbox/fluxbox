@@ -303,6 +303,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_resize_corner(RIGHTBOTTOM) {
 
     m_theme.reconfigSig().attach(this);
+    m_frame.frameExtentSig().attach(this);
 
     init();
 
@@ -325,6 +326,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
 FluxboxWindow::~FluxboxWindow() {
     if (WindowCmd<void>::window() == this)
         WindowCmd<void>::setWindow(0);
+    if (FbMenu::window() == this)
+        FbMenu::setWindow(0);
     if ( Fluxbox::instance()->keys() != 0 ) {
         Fluxbox::instance()->keys()->
             unregisterWindow(frame().window().window());
@@ -500,12 +503,13 @@ void FluxboxWindow::init() {
     } else
         setOnHead(screen().getCurrHead());
 
+    // we must do this now, or else resizing may not work properly
+    applyDecorations();
+
     Fluxbox::instance()->attachSignals(*this);
 
     // this window is managed, we are now allowed to modify actual state
     m_initialized = true;
-
-    applyDecorations(true);
 
     restoreAttributes();
 
@@ -600,7 +604,7 @@ void FluxboxWindow::init() {
     gettimeofday(&now, NULL);
     m_creation_time = now.tv_sec;
 
-    sendConfigureNotify();
+    frame().frameExtentSig().notify();
 
     setupWindow();
 
@@ -2150,11 +2154,11 @@ void FluxboxWindow::restoreAttributes() {
    Show the window menu at pos mx, my
 */
 void FluxboxWindow::showMenu(int menu_x, int menu_y) {
-    // move menu directly under titlebar
+    menu().reloadHelper()->checkReload();
 
     int head = screen().getHead(menu_x, menu_y);
 
-    // but not off the screen
+    // move menu directly under titlebar but not off the screen
     if (menu_y < static_cast<signed>(screen().maxTop(head)))
         menu_y = screen().maxTop(head);
     else if (menu_y + menu().height() >= screen().maxBottom(head))
@@ -2172,25 +2176,28 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
     menu().grabInputFocus();
 }
 
+void FluxboxWindow::popupMenu(int x, int y) {
+    // hide menu if it was opened for this window before
+    if (menu().isVisible() && FbMenu::window() == this) {
+       menu().hide();
+       return;
+    }
+
+    menu().disableTitle();
+
+    showMenu(x, y);
+}
+
 /**
    Moves the menu to last button press position and shows it,
    if it's already visible it'll be hidden
  */
 void FluxboxWindow::popupMenu() {
 
-    // hide menu if it was opened for this window before
-    if (menu().isVisible() && FbMenu::window() == this) {
-        menu().hide();
-        return;
-    }
-
-    menu().disableTitle();
-    int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
-    if (!decorations.titlebar) // if we don't have any titlebar
-        menu_y = 0;
     if (m_last_button_x < x() || m_last_button_x > x() + static_cast<signed>(width()))
         m_last_button_x = x();
-    showMenu(m_last_button_x, menu_y + frame().y());
+
+    popupMenu(m_last_button_x, frame().titlebarHeight() + frame().y());
 }
 
 
@@ -3008,74 +3015,16 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
     } else if (subj == &m_theme.reconfigSig()) {
         frame().reconfigure();
         reconfigTheme();
+    } else if (m_initialized && subj == &m_frame.frameExtentSig()) {
+        Fluxbox::instance()->updateFrameExtents(*this);
+        sendConfigureNotify();
     }
 }
 
 // commit current decoration values to actual displayed things
-void FluxboxWindow::applyDecorations(bool initial) {
-    frame().clientArea().setBorderWidth(0); // client area bordered by other things
-
-    unsigned int border_width = 0;
-    if (decorations.border)
-        border_width = frame().theme()->border().width();
-
-    bool client_move = false;
-
-    // borderWidth setting handles its own gravity
-    if (initial || frame().window().borderWidth() != border_width) {
-        client_move = true;
-        frame().setBorderWidth(border_width);
-    }
-
-    int grav_x=0, grav_y=0;
-    // negate gravity
-    frame().gravityTranslate(grav_x, grav_y, -m_client->gravity(), m_client->old_bw, false);
-
-    // tab deocration only affects if we're external
-    // must do before the setTabMode in case it goes
-    // to external and is meant to be hidden
-    if (decorations.tab)
-        client_move |= frame().showTabs();
-    else
-        client_move |= frame().hideTabs();
-
-    // we rely on frame not doing anything if it is already shown/hidden
-    if (decorations.titlebar) {
-        bool change = frame().showTitlebar();
-        client_move |= change;
-        if (screen().getDefaultInternalTabs()) {
-            client_move |= frame().setTabMode(FbWinFrame::INTERNAL);
-        } else {
-            client_move |= frame().setTabMode(FbWinFrame::EXTERNAL);
-        }
-    } else {
-        client_move |= frame().hideTitlebar();
-        if (decorations.tab)
-            client_move |= frame().setTabMode(FbWinFrame::EXTERNAL);
-    }
-
-    if (decorations.handle) {
-        client_move |= frame().showHandle();
-    } else
-        client_move |= frame().hideHandle();
-
-    // apply gravity once more
-    frame().gravityTranslate(grav_x, grav_y, m_client->gravity(), m_client->old_bw, false);
-
-    // if the location changes, shift it
-    if (grav_x != 0 || grav_y != 0) {
-        move(grav_x + frame().x(), grav_y + frame().y());
-        client_move = true;
-    }
-
+void FluxboxWindow::applyDecorations() {
     frame().setDecorationMask(decorationMask());
-    frame().reconfigure();
-    if (client_move)
-        Fluxbox::instance()->updateFrameExtents(*this);
-
-    if (!initial && client_move)
-        sendConfigureNotify();
-
+    frame().applyDecorations();
 }
 
 void FluxboxWindow::toggleDecoration() {
@@ -3699,7 +3648,7 @@ const FbTk::FbWindow &FluxboxWindow::fbWindow() const {
     return frame().window();
 }
 
-FbTk::Menu &FluxboxWindow::menu() {
+FbMenu &FluxboxWindow::menu() {
     return screen().windowMenu();
 }
 
@@ -3711,7 +3660,7 @@ const FbTk::PixmapWithMask &FluxboxWindow::icon() const {
     return (m_client ? m_client->icon() : m_icon);
 }
 
-const FbTk::Menu &FluxboxWindow::menu() const {
+const FbMenu &FluxboxWindow::menu() const {
     return screen().windowMenu();
 }
 
@@ -3751,25 +3700,25 @@ bool FluxboxWindow::isTransient() const {
 }
 
 int FluxboxWindow::normalX() const {
-    if (maximized & MAX_HORZ)
+    if (maximized & MAX_HORZ || fullscreen)
         return m_old_pos_x;
     return x();
 }
 
 int FluxboxWindow::normalY() const {
-    if (maximized & MAX_VERT)
+    if (maximized & MAX_VERT || fullscreen)
         return m_old_pos_y;
     return y();
 }
 
 unsigned int FluxboxWindow::normalWidth() const {
-    if (maximized & MAX_HORZ)
+    if (maximized & MAX_HORZ || fullscreen)
         return m_old_width;
     return width();
 }
 
 unsigned int FluxboxWindow::normalHeight() const {
-    if (maximized & MAX_VERT)
+    if (maximized & MAX_VERT || fullscreen)
         return m_old_height;
     if (shaded)
         return frame().normalHeight();
@@ -3779,13 +3728,7 @@ unsigned int FluxboxWindow::normalHeight() const {
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
 void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
-    int titlebar_height = (decorations.titlebar ?
-                           frame().titlebar().height()  +
-                           frame().titlebar().borderWidth() : 0);
-    int handle_height = (decorations.handle ?
-                         frame().handle().height() +
-                         frame().handle().borderWidth() : 0);
-    int decoration_height = titlebar_height + handle_height;
+    int decoration_height = frame().titlebarHeight() + frame().handleHeight();
 
     // dx is new width = current width + difference between new and old x values
     //int dx = frame().width() + frame().x() - m_last_resize_x;
@@ -3818,8 +3761,8 @@ void FluxboxWindow::moveResizeClient(WinClient &client, int x, int y,
     client.moveResize(x, y,
                       frame().clientArea().width(),
                       frame().clientArea().height());
-    client.sendConfigureNotify(frame().x() + frame().clientArea().x(),
-                      frame().y() + frame().clientArea().y(),
+    client.sendConfigureNotify(frame().x() + frame().clientArea().x() + frame().window().borderWidth(),
+                      frame().y() + frame().clientArea().y() + frame().window().borderWidth(),
                       frame().clientArea().width(),
                       frame().clientArea().height());
 }
@@ -4069,13 +4012,6 @@ void FluxboxWindow::updateButtons() {
  * the frame's client area.
  */
 void FluxboxWindow::reconfigTheme() {
-
-    m_frame.setBorderWidth(decorations.border ?
-                           frame().theme()->border().width() : 0);
-    if (decorations.handle && frame().theme()->handleWidth() != 0)
-        frame().showHandle();
-    else
-        frame().hideHandle();
 
     ClientList::iterator it = clientList().begin();
     ClientList::iterator it_end = clientList().end();

@@ -354,4 +354,4 @@ void MenuItem::showSubmenu() {
         submenu()->show(); 
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

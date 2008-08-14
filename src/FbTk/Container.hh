@@ -109,6 +109,6 @@ private:
     bool m_update_lock;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_CONTAINER_HH

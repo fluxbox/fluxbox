@@ -1,5 +1,5 @@
 // SendToMenu.cc for Fluxbox
-// Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2003 - 2008 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,6 +31,7 @@
 
 #include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/Command.hh"
+#include "FbTk/SimpleObserver.hh"
 
 class SendToCmd: public FbTk::Command<void> {
 public:
@@ -54,24 +55,21 @@ SendToMenu::SendToMenu(BScreen &screen):
     // workspace count signal
     // workspace names signal
     // current workspace signal
-    screen.workspaceCountSig().attach(this);
-    screen.workspaceNamesSig().attach(this);
-    screen.currentWorkspaceSig().attach(this);
-
+    m_rebuildObs = makeObserver(*this, &SendToMenu::rebuildMenu);
+    screen.workspaceCountSig().attach(m_rebuildObs);
+    screen.workspaceNamesSig().attach(m_rebuildObs);
+    screen.currentWorkspaceSig().attach(m_rebuildObs);
+    // no title for this menu, it should be a submenu in the window menu.
     disableTitle();
-    // build menu
-    update(0);
+    // setup menu items
+    rebuildMenu();
 }
 
-void SendToMenu::update(FbTk::Subject *subj) {
-    if (subj != 0) {
-        if (subj == &(theme().reconfigSig())) {
-            // we got reconfig Theme signal, let base menu handle it 
-            FbTk::Menu::update(subj);
-            return;
-        }
-        
-    }
+SendToMenu::~SendToMenu() {
+    delete m_rebuildObs;
+}
+
+void SendToMenu::rebuildMenu() {
     // rebuild menu
 
     removeAll();
@@ -95,6 +93,7 @@ void SendToMenu::show() {
     if (WindowCmd<void>::window() != 0) {
         for (unsigned int i=0; i < numberOfItems(); ++i)
             setItemEnabled(i, true);
+        // update the workspace for the current window
         setItemEnabled(WindowCmd<void>::window()->workspaceNumber(), false);
         updateMenu();
     }

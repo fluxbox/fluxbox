@@ -52,8 +52,10 @@ IconButton::IconButton(const FbTk::FbWindow &parent,
     FbTk::TextButton(parent, focused_theme->text().font(), win.title()),
     m_win(win),
     m_icon_window(*this, 1, 1, 1, 1,
-                  ExposureMask | ButtonPressMask | ButtonReleaseMask),
+                  ExposureMask |EnterWindowMask | LeaveWindowMask |
+                  ButtonPressMask | ButtonReleaseMask),
     m_use_pixmap(true),
+    m_has_tooltip(false),
     m_theme(win, focused_theme, unfocused_theme),
     m_pm(win.screen().imageControl()) {
 
@@ -79,6 +81,16 @@ void IconButton::exposeEvent(XExposeEvent &event) {
         FbTk::TextButton::exposeEvent(event);
 }
 
+void IconButton::enterNotifyEvent(XCrossingEvent &ev) {
+    m_has_tooltip = true;
+    showTooltip();
+}
+
+void IconButton::leaveNotifyEvent(XCrossingEvent &ev) {
+    m_has_tooltip = false;
+    m_win.screen().hideTooltip();
+}
+
 void IconButton::moveResize(int x, int y,
                             unsigned int width, unsigned int height) {
 
@@ -96,6 +108,15 @@ void IconButton::resize(unsigned int width, unsigned int height) {
         m_icon_window.height() != FbTk::Button::height()) {
         update(0); // update icon window
     }
+}
+
+void IconButton::showTooltip() {
+   int xoffset = 1;
+   if (m_icon_pixmap.drawable() != 0)
+       xoffset = m_icon_window.x() + m_icon_window.width() + 1;
+
+    if (FbTk::TextButton::textExceeds(xoffset))
+        m_win.screen().showTooltip(m_win.title());
 }
 
 void IconButton::clear() {
@@ -215,6 +236,15 @@ void IconButton::update(FbTk::Subject *subj) {
     } else {
         m_icon_window.clear();
     }
+    // if the title was changed AND the tooltip window is visible AND
+    // we have had an enter notify event ( without the leave notify )
+    // update the text inside it
+    if (subj == &m_win.titleSig() &&
+        m_has_tooltip &&
+        m_win.screen().tooltipWindow().isVisible()) {
+        m_win.screen().tooltipWindow().updateText(m_win.title());
+    }
+
 }
 
 void IconButton::setupWindow() {

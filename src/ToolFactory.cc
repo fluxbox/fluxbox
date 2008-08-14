@@ -120,8 +120,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
                               dynamic_cast<ButtonTheme &>(*m_button_theme),
                               screen().imageControl());
 
-    } else if (name == "nextwindow" || 
-               name == "prevwindow") {
+    } else {
 
         FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(name));
         if (*cmd == 0) // we need a command

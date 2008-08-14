@@ -167,8 +167,8 @@ void CommandDialog::tabComplete() {
             return;
         }
 
-        FbTk::ObjectRegistry<FbTk::CommandParser<void>::Creator>::CreatorMap::const_iterator it = FbTk::ObjectRegistry<FbTk::CommandParser<void>::Creator>::instance().creatorMap().begin();
-        const FbTk::ObjectRegistry<FbTk::CommandParser<void>::Creator>::CreatorMap::const_iterator it_end = FbTk::ObjectRegistry<FbTk::CommandParser<void>::Creator>::instance().creatorMap().end();
+        FbTk::CommandParser<void>::CreatorMap::const_iterator it = FbTk::CommandParser<void>::instance().creatorMap().begin();
+        const FbTk::CommandParser<void>::CreatorMap::const_iterator it_end = FbTk::CommandParser<void>::instance().creatorMap().end();
         vector<string> matches;
         for (; it != it_end; ++it) {
             if ((*it).first.find(prefix) == 0) {

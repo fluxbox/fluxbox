@@ -170,7 +170,10 @@ private:
 /// arranges windows in current workspace to rows and columns
 class ArrangeWindowsCmd: public FbTk::Command<void> {
 public:
+    ArrangeWindowsCmd(std::string &pat): m_pat(pat.c_str()) { }
     void execute();
+private:
+    const ClientPattern m_pat;
 };
 
 class ShowDesktopCmd: public FbTk::Command<void> {

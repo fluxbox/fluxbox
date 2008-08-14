@@ -30,7 +30,8 @@ namespace FbTk {
 Button::Button(int screen_num, int x, int y,
                unsigned int width, unsigned int height):
     FbWindow(screen_num, x, y, width, height,
-             ExposureMask | ButtonPressMask | ButtonReleaseMask),
+             ExposureMask | ButtonPressMask | EnterWindowMask |
+             LeaveWindowMask | ButtonReleaseMask),
     m_background_pm(0),
     m_pressed_pm(0),
     m_pressed_color(),
@@ -45,7 +46,8 @@ Button::Button(int screen_num, int x, int y,
 Button::Button(const FbWindow &parent, int x, int y, 
                unsigned int width, unsigned int height):
     FbWindow(parent, x, y, width, height,
-             ExposureMask | ButtonPressMask | ButtonReleaseMask),
+             ExposureMask | ButtonPressMask | ButtonReleaseMask |
+             EnterWindowMask | LeaveWindowMask),
     m_background_pm(0),
     m_pressed_pm(0),
     m_pressed_color(),
@@ -88,6 +90,14 @@ void Button::setBackgroundColor(const Color &color) {
 void Button::setBackgroundPixmap(Pixmap pm) {
     m_background_pm = pm;
     FbTk::FbWindow::setBackgroundPixmap(pm);
+}
+
+
+void Button::enterNotifyEvent(XCrossingEvent &ce){
+		
+}
+void Button::leaveNotifyEvent(XCrossingEvent &ce){
+		
 }
 
 void Button::buttonPressEvent(XButtonEvent &event) {
@@ -146,4 +156,4 @@ void Button::exposeEvent(XExposeEvent &event) {
     clearArea(event.x, event.y, event.width, event.height);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

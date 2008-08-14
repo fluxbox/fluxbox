@@ -249,4 +249,4 @@ bool XftFontImp::validOrientation(FbTk::Orientation orient) {
 
 
 
-}; // end namespace FbTk
+} // end namespace FbTk

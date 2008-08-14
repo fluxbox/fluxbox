@@ -43,21 +43,28 @@
 
 namespace FbTk {
 
-FbWindow::FbWindow():FbDrawable(), m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0),
-                     m_width(0), m_height(0), m_border_width(0), m_depth(0), m_destroy(true),
-                     m_lastbg_color_set(false), m_lastbg_color(0), m_lastbg_pm(0), m_renderer(0) {
+FbWindow::FbWindow():
+    FbDrawable(),
+    m_parent(0), m_screen_num(0), m_window(0),
+    m_x(0), m_y(0), m_width(0), m_height(0),
+    m_border_width(0), m_border_color(0),
+    m_depth(0), m_destroy(true),
+    m_lastbg_color_set(false), m_lastbg_color(0), m_lastbg_pm(0),
+    m_renderer(0) {
 
 }
 
-FbWindow::FbWindow(const FbWindow& the_copy):FbDrawable(),
-                                             m_parent(the_copy.parent()),
-                                             m_screen_num(the_copy.screenNumber()), m_window(the_copy.window()),
-                                             m_x(the_copy.x()), m_y(the_copy.y()),
-                                             m_width(the_copy.width()), m_height(the_copy.height()),
-                                             m_border_width(the_copy.borderWidth()),
-                                             m_depth(the_copy.depth()), m_destroy(true),
-                                             m_lastbg_color_set(false), m_lastbg_color(0), 
-                                             m_lastbg_pm(0), m_renderer(the_copy.m_renderer) {
+FbWindow::FbWindow(const FbWindow& the_copy):
+    FbDrawable(),
+    m_parent(the_copy.parent()),
+    m_screen_num(the_copy.screenNumber()), m_window(the_copy.window()),
+    m_x(the_copy.x()), m_y(the_copy.y()),
+    m_width(the_copy.width()), m_height(the_copy.height()),
+    m_border_width(the_copy.borderWidth()),
+    m_border_color(the_copy.borderColor()),
+    m_depth(the_copy.depth()), m_destroy(true),
+    m_lastbg_color_set(false), m_lastbg_color(0), m_lastbg_pm(0),
+    m_renderer(the_copy.m_renderer) {
     the_copy.m_window = 0;
 }
 
@@ -100,17 +107,14 @@ FbWindow::FbWindow(const FbWindow &parent,
 
 };
 
-FbWindow::FbWindow(Window client):FbDrawable(), m_parent(0),
-                                  m_screen_num(0),
-                                  m_window(0),
-                                  m_x(0), m_y(0),
-                                  m_width(1), m_height(1),
-                                  m_border_width(0),
-                                  m_depth(0),
-                                  m_destroy(false),  // don't destroy this window
-                                  m_lastbg_color_set(false), m_lastbg_color(0),
-                                  m_lastbg_pm(0), m_renderer(0) {
-
+FbWindow::FbWindow(Window client):
+    FbDrawable(),
+    m_parent(0), m_screen_num(0), m_window(0),
+    m_x(0), m_y(0), m_width(1), m_height(1),
+    m_border_width(0), m_border_color(0),
+    m_depth(0), m_destroy(false), // don't destroy this window
+    m_lastbg_color_set(false), m_lastbg_color(0), m_lastbg_pm(0),
+    m_renderer(0) {
     setNew(client);
 }
 
@@ -235,6 +239,7 @@ void FbWindow::updateBackground(bool only_if_alpha) {
 
 void FbWindow::setBorderColor(const FbTk::Color &border_color) {
     XSetWindowBorder(display(), m_window, border_color.pixel());
+    m_border_color = border_color.pixel();
 }
 
 void FbWindow::setBorderWidth(unsigned int size) {
@@ -373,6 +378,7 @@ FbWindow &FbWindow::operator = (const FbWindow &win) {
     m_width = win.width();
     m_height = win.height();
     m_border_width = win.borderWidth();
+    m_border_color = win.borderColor();
     m_depth = win.depth();
     // take over this window
     win.m_window = 0;
@@ -601,6 +607,7 @@ void FbWindow::create(Window parent, int x, int y,
 
 
     m_border_width = 0;
+    m_border_color = 0;
 
     long valmask = CWEventMask;
     XSetWindowAttributes values;

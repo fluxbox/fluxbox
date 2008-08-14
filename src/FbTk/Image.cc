@@ -160,4 +160,4 @@ void Image::removeAllSearchPaths() {
     s_search_paths.clear();
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

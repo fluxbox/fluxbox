@@ -34,6 +34,6 @@ std::string getWMClassName(Window win);
 std::string getWMClassClass(Window win);
 
 
-}; // end namespace Xutil
+} // end namespace Xutil
 
 #endif // XUTIL_HH

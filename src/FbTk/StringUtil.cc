@@ -236,6 +236,6 @@ void getFirstWord(const std::string &in, std::string &word, std::string &rest) {
     }
 }
 
-}; // end namespace StringUtil
+} // end namespace StringUtil
 
-}; // end namespace FbTk
+} // end namespace FbTk

@@ -33,40 +33,14 @@ else
     fi
     if [ ! -r "$startup" ]; then
         ( cat << EOF
+#!/bin/sh
+#
 # fluxbox startup-script:
 #
 # Lines starting with a '#' are ignored.
 
-# You can set your favourite wallpaper here if you don't want
-# to do it from your style.
-#
-# fbsetbg -f $HOME/pictures/wallpaper.png
-#
-# This sets a black background
-
-@pkgbindir@/@pkgprefix@fbsetroot@pkgsuffix@ -solid black
-
-# This shows the fluxbox-splash-screen
-# @pkgprefix@fbsetbg@pkgsuffix@ -C @pkgdatadir@/splash.jpg
-
-# Other examples. Check man xset for details.
-#
-# Turn off beeps:
-# xset -b
-#
-# Increase the keyboard repeat-rate:
-# xset r rate 195 35
-#
-# Your own fonts-dir:
-# xset +fp "$HOME/.fonts"
-#
-# Your favourite mouse cursor:
-# xsetroot -cursor_name right_ptr
-#
 # Change your keymap:
-# xmodmap "$HOME/.Xmodmap"
-
-
+xmodmap "$HOME/.Xmodmap"
 
 # Applications you want to run with fluxbox.
 # MAKE SURE THAT APPS THAT KEEP RUNNING HAVE AN ''&'' AT THE END.
@@ -79,9 +53,9 @@ else
 # And last but not least we start fluxbox.
 # Because it is the last app you have to run it with ''exec'' before it.
 
-exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@
+exec @pkgprefix@fluxbox@pkgsuffix@
 # or if you want to keep a log:
-# exec @pkgbindir@/@pkgprefix@fluxbox@pkgsuffix@ -log "$fluxdir/log"
+# exec @pkgprefix@fluxbox@pkgsuffix@ -log "$fluxdir/log"
 EOF
     ) > "$startup"
     fi

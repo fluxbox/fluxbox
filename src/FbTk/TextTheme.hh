@@ -50,6 +50,6 @@ private:
     GContext m_text_gc;
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_TEXTTHEME_HH

@@ -22,8 +22,11 @@
 #ifndef FBMENU_HH
 #define FBMENU_HH
 
+#include <memory>
+
 #include "FbTk/Menu.hh"
 #include "FbTk/XLayerItem.hh"
+#include "FbTk/AutoReloadHelper.hh"
 
 class FluxboxWindow;
 
@@ -44,11 +47,15 @@ public:
     void buttonReleaseEvent(XButtonEvent &be);
     void keyPressEvent(XKeyEvent &ke);
 
+    void setReloadHelper(FbTk::AutoReloadHelper *helper) { m_reloader.reset(helper); }
+    FbTk::AutoReloadHelper *reloadHelper() { return m_reloader.get(); }
+
     static void setWindow(FluxboxWindow *win) { s_window = win; }
     static FluxboxWindow *window() { return s_window; }
 
 private:
     FbTk::XLayerItem m_layeritem;
+    std::auto_ptr<FbTk::AutoReloadHelper> m_reloader;
     static FluxboxWindow *s_window;
 };
 

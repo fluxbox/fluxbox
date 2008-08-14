@@ -25,7 +25,7 @@
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/RefCount.hh"
-#include "FbTk/Observer.hh"
+#include "FbTk/Subject.hh"
 #include "FbTk/Color.hh"
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/TextButton.hh"
@@ -186,21 +186,12 @@ public:
     void removeEventHandler();
 
     void setDecorationMask(unsigned int mask) { m_decoration_mask = mask; }
-    // these return true/false for if something changed
-    bool hideTitlebar();
-    bool showTitlebar();
-    bool hideTabs();
-    bool showTabs();
-    bool hideHandle();
-    bool showHandle();
-    bool hideAllDecorations();
-    bool showAllDecorations();
+    void applyDecorations();
 
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation
     void gravityTranslate(int &x, int &y, int win_gravity, unsigned int client_bw, bool move_frame = false);
     void setActiveGravity(int gravity, unsigned int orig_client_bw) { m_active_gravity = gravity; m_active_orig_client_bw = orig_client_bw; }
-    void setBorderWidth(unsigned int borderW);
 
     /**
        @name Event handlers
@@ -257,14 +248,17 @@ public:
     bool isShaded() const { return m_shaded; }
     FocusableTheme<FbWinFrameTheme> &theme() const { return m_theme; }
     /// @return titlebar height
-    unsigned int titlebarHeight() const { return (m_use_titlebar?m_titlebar.height()+m_window.borderWidth():0); }
-    unsigned int handleHeight() const { return (m_use_handle?m_handle.height()+m_window.borderWidth():0); }
+    unsigned int titlebarHeight() const { return (m_use_titlebar?m_titlebar.height()+m_titlebar.borderWidth():0); }
+    unsigned int handleHeight() const { return (m_use_handle?m_handle.height()+m_handle.borderWidth():0); }
     /// @return size of button
     unsigned int buttonHeight() const;
     bool externalTabMode() const { return m_tabmode == EXTERNAL && m_use_tabs; }
 
     const FbTk::XLayerItem &layerItem() const { return m_layeritem; }
     FbTk::XLayerItem &layerItem() { return m_layeritem; }
+
+    const FbTk::Subject &frameExtentSig() const { return m_frame_extent_sig; }
+    FbTk::Subject &frameExtentSig() { return m_frame_extent_sig; }
 
     //@}
 
@@ -289,6 +283,15 @@ private:
                 unsigned int width, unsigned int height, FbTk::Orientation orient = FbTk::ROT0);
 
     //@}
+
+    // these return true/false for if something changed
+    bool hideTitlebar();
+    bool showTitlebar();
+    bool hideTabs();
+    bool showTabs();
+    bool hideHandle();
+    bool showHandle();
+    bool setBorderWidth(bool do_move = true);
 
     /**
        @name apply pixmaps depending on focus
@@ -332,6 +335,9 @@ private:
         m_grip_left; ///< left grip
     FbTk::FbWindow m_clientarea; ///< window that sits behind client window to fill gaps @see setClientWindow
     //@}
+
+    FbTk::Subject m_frame_extent_sig;
+
     typedef std::vector<FbTk::Button *> ButtonList;
     ButtonList m_buttons_left, ///< buttons to the left
         m_buttons_right; ///< buttons to the right

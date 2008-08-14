@@ -53,6 +53,6 @@ protected:
     FontImp() { }
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_FONTIMP_HH

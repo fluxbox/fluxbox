@@ -177,6 +177,7 @@ public:
     unsigned int width() const { return m_width; }
     unsigned int height() const { return m_height; }
     unsigned int borderWidth() const { return m_border_width; }
+    unsigned long borderColor() const { return m_border_color; }
     unsigned int depth() const { return m_depth; }
     unsigned char alpha() const;
     int screenNumber() const;
@@ -225,6 +226,7 @@ private:
     int m_x, m_y; ///< position of window
     unsigned int m_width, m_height;  ///< size of window
     unsigned int m_border_width; ///< border size
+    unsigned long m_border_color; ///< border color
     unsigned int m_depth; ///< bit depth
     bool m_destroy; ///< wheter the x window was created before
     std::auto_ptr<FbTk::Transparent> m_transparent;

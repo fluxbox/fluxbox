@@ -98,5 +98,5 @@ private:
     unsigned int *xtable, *ytable;
 };
 
-}; // end namespace FbTk 
+} // end namespace FbTk 
 #endif // FBTK_TEXTURERENDER_HH

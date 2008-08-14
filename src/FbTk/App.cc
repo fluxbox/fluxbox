@@ -81,4 +81,4 @@ void App::end() {
     m_done = true; //end loop in App::eventLoop
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

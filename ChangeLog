@@ -1,5 +1,73 @@
  (Format: Year/Month/Day)
-Changes for 1.0.1:
+Changes for 1.1
+*08/08/06:
+   * Created manual for fluxbox-remote (Mark)
+     doc/asciidoc/fluxbox-remote.txt doc/fluxbox-remote.1
+   * Automatically restore the previous background on startup (Mark)
+     RootTheme.cc/hh util/fbsetbg startfluxbox.in
+*08/08/05:
+   * Fixed Focus key command (Mark)
+     CurrentWindowCmd.cc/hh FocusableList.cc/hh
+   * Added new SetLayer key command (Mark)
+     CurrentWindowCmd.cc/hh
+   * Make ShowDesktop command toggle between showing windows and desktop (Mark)
+     WorkspaceCmd.cc
+   * Created new `fluxbox-keys' man page (thanks Jim Ramsay)
+     doc/asciidoc/fluxbox-keys.txt
+   * Make resize cursors consistent (thanks Dmitry E. Oboukhov)
+     FbWinFrameTheme.cc
+*08/08/04:
+   * Add selection box to various "choose one of these" menu items (Mark)
+     Toolbar.cc Slit.cc Screen.cc LayerMenu.hh Xinerama.hh StyleMenuItem.cc/hh
+     added FbTk/RadioMenuItem.hh
+   * Add window list argument to ArrangeWindows (Mark)
+     WorkspaceCmd.cc/hh
+*08/06/26:
+   * Remove antiquated dithering code (Mark)
+     FbTk/ImageControl.cc/hh FbTk/TextureRender.cc Screen.cc/hh
+*08/06/20:
+   * Move default window menu to ~/.fluxbox/windowmenu (Mark)
+     configure.in data/Makefile.am data/windowmenu Screen.cc
+*08/06/08:
+   * Add (urgent=yes|no) option to client patterns (Mark)
+     ClientPattern.cc/hh
+*08/06/06:
+   * Allow window menu items in ordinary menus (Mark)
+     MenuCreator.cc/hh
+*08/06/04:
+   * Leave titlebar and handle borders alone with borderless windows (Mark)
+     FbWinFrame.cc/hh
+*08/06/03:
+   * Add -list-commands command line option, which prints a list of valid
+     fluxbox commands (Mark)
+     main.cc
+*08/05/13:
+   * Only reload custom menus when necessary (Mark)
+     FbCommands.cc/hh
+*08/05/12:
+   * Only reload the keys file if the contents have changed (Mark)
+     Keys.cc/hh fluxbox.cc/hh
+   * Modifying the apps file no longer requires a reconfigure (Mark)
+     Remember.cc/hh
+*08/05/09:
+   * Made tooltip in toolbar update when the title changes (Henrik)
+     Tooltip.cc/hh, Screen.cc/cc, OSDWindow.hh
+*08/05/05:
+   * Add tooltips for iconbar buttons (thanks Matteo Galiazzo)
+     TooltipWindow.cc/hh
+*08/05/02:
+   * Minor changes for fluxbox-generate_menu (thanks skiidoo)
+     util/fluxbox-generate_menu.in
+*08/05/01:
+   * Notice when user replaces a non-existent menu file (Mark)
+     fluxbox.cc Screen.cc
+*08/04/30:
+   * Don't allow empty root menu (Mark)
+     Screen.cc
+*08/04/27:
+   * Added SimpleObserver class. (Henrik)
+     SimpleObserver.hh, SendToMenu.hh/cc, Toolbar.hh/cc,
+     SystemTray.hh/cc
 *08/01/27:
    * Reload the Xinerama layout on RandR signal (Tomas)
      Screen.cc/hh
@@ -375,7 +443,7 @@ Changes for 1.0.0:
    * Fix KDE Dockapps on restart (dont unmap), and some minor tweaks (Simon)
      SystemTray.hh/cc
 *07/08/05:
-   * When saving window info for rememberm use class name AND instance name,
+   * When saving window info for remember use class name AND instance name,
      AND role if present. (Simon)
      - This should fix firefox/thunderbird issues, but note that mplayer
        (nogui) sets the vo driver name as the instance name.

@@ -120,6 +120,7 @@ public:
     const std::string &getMenuFilename() const { return *m_rc_menufile; }
     const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
     const std::string &getAppsFilename() const { return *m_rc_appsfile; }
+    const std::string &getKeysFilename() const { return *m_rc_keyfile; }
     int colorsPerChannel() const { return *m_rc_colors_per_channel; }
     int getTabsPadding() const { return *m_rc_tabs_padding; }
 
@@ -136,8 +137,6 @@ public:
     void shutdown();
     void load_rc(BScreen &scr);
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
-    void saveMenuFilename(const char *);
-    void clearMenuFilenames();
     void saveWindowSearch(Window win, WinClient *winclient);
     // some windows relate to the group, not the client, so we record separately
     // searchWindow on these windows will give the active client in the group
@@ -149,8 +148,6 @@ public:
     void removeGroupSearch(Window win);
     void restart(const char *command = 0);
     void reconfigure();
-    void rereadMenu(bool show_after_reread = false);
-    /// reloads the menus if the timestamps changed
 
     /// handle any system signal sent to the application
     void handleSignal(int signum);
@@ -176,11 +173,9 @@ public:
     typedef std::list<BScreen *> ScreenList;
     const ScreenList screenList() const { return m_screen_list; }
 
-    /// @return whether the timestamps on the menu changed
-    bool menuTimestampsChanged() const;
     bool haveShape() const { return m_have_shape; }
     int shapeEventbase() const { return m_shape_eventbase; }
-    void getDefaultDataFilename(const char *name, std::string &) const;
+    std::string getDefaultDataFilename(const char *name) const;
     // screen mouse was in at last key event
     BScreen *mouseScreen() { return m_mousescreen; }
     // screen of window that last key event (i.e. focused window) went to
@@ -190,18 +185,9 @@ public:
     AttentionNoticeHandler &attentionHandler() { return m_attention_handler; }
 
 private:
-
-    typedef struct MenuTimestamp {
-        std::string filename;
-        time_t timestamp;
-    } MenuTimestamp;
-
-
-
     std::string getRcFilename();
     void load_rc();
 
-    void real_rereadMenu();
     void real_reconfigure();
 
     void handleEvent(XEvent *xe);
@@ -242,7 +228,6 @@ private:
     // will have it's window being the group index
     std::multimap<Window, WinClient *> m_group_search;
 
-    std::list<MenuTimestamp *> m_menu_timestamps;
     ScreenList m_screen_list;
 
     FluxboxWindow *m_masked_window;
@@ -251,7 +236,7 @@ private:
 
     Atom m_fluxbox_pid;
 
-    bool m_reconfigure_wait, m_reread_menu_wait;
+    bool m_reconfigure_wait;
     Time m_last_time;
     Window m_masked;
     std::string m_rc_file; ///< resource filename
@@ -279,7 +264,6 @@ private:
     bool m_starting;
     bool m_restarting;
     bool m_shutdown;
-    bool m_show_menu_after_reread;
     int m_server_grabs;
     int m_randr_event_type; ///< the type number of randr event
     int m_shape_eventbase; ///< event base for shape events

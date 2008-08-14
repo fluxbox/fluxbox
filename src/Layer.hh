@@ -25,6 +25,12 @@
 #include <string>
 #include <cstdio>
 
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+
 using std::string;
 
 /** 
@@ -48,7 +54,7 @@ public:
 
     explicit Layer(int i) : m_num(i) {};
 
-    static int getNumFromString(string &str) {
+    static int getNumFromString(const string &str) {
         int tempnum = 0;
         if (sscanf(str.c_str(), "%d", &tempnum) == 1)
             return tempnum;

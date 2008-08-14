@@ -60,7 +60,7 @@ LOCATION
 --------
 There are many places to store your styles, the most common is in your
 '~/.fluxbox/styles' directory. The initial installation will place the default
-styles in '@pkg_datadir@/styles' providing a basic usable configuration.
+styles in '@pkgdatadir@/styles' providing a basic usable configuration.
 
 When creating your own style, create a directory (normally the name of your
 style) in '~/.fluxbox/styles/' (If the 'styles' directory doesn't exist,
@@ -467,7 +467,7 @@ These are the color formats for styles:
    #000000 (Hexadecimal)
    rgb:<0-255>/<0-255>/<0-255>
 
-See /usr/X11R6/lib/X11/rgb.txt for an explaination.
+See /usr/share/X11/rgb.txt for an explaination.
 
 AUTHOR and CREDITS
 ------------------

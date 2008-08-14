@@ -45,4 +45,4 @@ void TextTheme::updateTextColor() {
     m_text_gc.setForeground(*m_text_color);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

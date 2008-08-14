@@ -307,7 +307,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     // Create keybindings handler and load keys file
     // Note: this needs to be done before creating screens
     m_key.reset(new Keys);
-    m_key->load(StringUtil::expandFilename(*m_rc_keyfile).c_str());
+    m_key->reconfigure();
 
     vector<int> screens;
     int i;
@@ -399,7 +399,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     //XSynchronize(disp, False);
     sync(false);
 
-    m_reconfigure_wait = m_reread_menu_wait = false;
+    m_reconfigure_wait = false;
 
     m_resourcemanager.unlock();
     ungrab();
@@ -437,8 +437,6 @@ Fluxbox::~Fluxbox() {
         delete (*it).first;
     }
     m_atomhandler.clear();
-
-    clearMenuFilenames();
 }
 
 
@@ -523,13 +521,16 @@ void Fluxbox::ungrab() {
 */
 void Fluxbox::setupConfigFiles() {
 
-    bool create_init = false, create_keys = false, create_menu = false;
+    bool create_init = false, create_keys = false, create_menu = false,
+         create_apps = false, create_overlay = false, create_windowmenu = false;
 
-    string dirname = getenv("HOME") + string("/.") + m_RC_PATH + "/";
-    string init_file, keys_file, menu_file, slitlist_file;
-    init_file = dirname + m_RC_INIT_FILE;
-    keys_file = dirname + "keys";
-    menu_file = dirname + "menu";
+    string dirname = getDefaultDataFilename("");
+    string init_file = getDefaultDataFilename(m_RC_INIT_FILE);
+    string keys_file = getDefaultDataFilename("keys");
+    string menu_file = getDefaultDataFilename("menu");
+    string apps_file = getDefaultDataFilename("apps");
+    string overlay_file = getDefaultDataFilename("overlay");
+    string windowmenu_file = getDefaultDataFilename("windowmenu");
 
     struct stat buf;
 
@@ -543,6 +544,12 @@ void Fluxbox::setupConfigFiles() {
             create_keys = true;
         if (stat(menu_file.c_str(), &buf))
             create_menu = true;
+        if (stat(apps_file.c_str(), &buf))
+            create_apps = true;
+        if (stat(overlay_file.c_str(), &buf))
+            create_overlay = true;
+        if (stat(windowmenu_file.c_str(), &buf))
+            create_windowmenu = true;
 
     } else {
 #ifdef DEBUG
@@ -560,7 +567,8 @@ void Fluxbox::setupConfigFiles() {
         }
 
         //mark creation of files
-        create_init = create_keys = create_menu = true;
+        create_init = create_keys = create_menu = create_apps = create_overlay =
+            create_windowmenu = true;
     }
 
 
@@ -572,11 +580,22 @@ void Fluxbox::setupConfigFiles() {
     if (create_menu)
         FbTk::FileUtil::copyFile(DEFAULTMENU, menu_file.c_str());
 
+    // copy apps file
+    if (create_apps)
+        FbTk::FileUtil::copyFile(DEFAULT_APPSFILE, apps_file.c_str());
+
+    // copy overlay file
+    if (create_overlay)
+        FbTk::FileUtil::copyFile(DEFAULT_OVERLAY, overlay_file.c_str());
+
     // copy init file
     if (create_init)
         FbTk::FileUtil::copyFile(DEFAULT_INITFILE, init_file.c_str());
 
-#define CONFIG_VERSION 7
+    if (create_windowmenu)
+        FbTk::FileUtil::copyFile(DEFAULT_WINDOWMENU, windowmenu_file.c_str());
+
+#define CONFIG_VERSION 9
     FbTk::Resource<int> config_version(m_resourcemanager, 0,
             "session.configVersion", "Session.ConfigVersion");
     if (*config_version < CONFIG_VERSION) {
@@ -737,7 +756,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             XRefreshKeyboardMapping(&e->xmapping);
             FbTk::KeyUtil::instance().init(); // reinitialise the key utils
             // reconfigure keys (if the mapping changes, they don't otherwise update
-            m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
+            m_key->reload();
         }
         break;
     case CreateNotify:
@@ -1305,18 +1324,14 @@ void Fluxbox::save_rc() {
 
 /// @return filename of resource file
 string Fluxbox::getRcFilename() {
-
-    if (m_rc_file.empty()) { // set default filename
-        string defaultfile(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + m_RC_INIT_FILE);
-        return defaultfile;
-    }
-
+    if (m_rc_file.empty())
+        return getDefaultDataFilename(m_RC_INIT_FILE);
     return m_rc_file;
 }
 
 /// Provides default filename of data file
-void Fluxbox::getDefaultDataFilename(const char *name, string &filename) const {
-    filename = string(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + name);
+string Fluxbox::getDefaultDataFilename(const char *name) const {
+    return (getenv("HOME") + string("/.") + m_RC_PATH + string("/") + name);
 }
 
 /// loads resources
@@ -1345,8 +1360,7 @@ void Fluxbox::load_rc() {
     if (!m_rc_slitlistfile->empty()) {
         *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);
     } else {
-        string filename;
-        getDefaultDataFilename("slitlist", filename);
+        string filename = getDefaultDataFilename("slitlist");
         m_rc_slitlistfile.setFromString(filename.c_str());
     }
 
@@ -1429,7 +1443,7 @@ void Fluxbox::real_reconfigure() {
     for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::reconfigure));
 
     //reconfigure keys
-    m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
+    m_key->reconfigure();
 
     // and atomhandlers
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
@@ -1453,92 +1467,11 @@ BScreen *Fluxbox::findScreen(int id) {
     return *it;
 }
 
-bool Fluxbox::menuTimestampsChanged() const {
-    list<MenuTimestamp *>::const_iterator it = m_menu_timestamps.begin();
-    list<MenuTimestamp *>::const_iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end; ++it) {
-
-        time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp((*it)->filename.c_str());
-
-        if (timestamp >= 0) {
-            if (timestamp != (*it)->timestamp)
-                return true;
-        } else
-            return true;
-    }
-
-    // no timestamp changed
-    return false;
-}
-
-void Fluxbox::rereadMenu(bool show_after_reread) {
-    m_reread_menu_wait = true;
-    m_show_menu_after_reread = show_after_reread;
-    m_reconfig_timer.start();
-}
-
-
-void Fluxbox::real_rereadMenu() {
-
-    clearMenuFilenames();
-
-    for_each(m_screen_list.begin(),
-             m_screen_list.end(),
-             mem_fun(&BScreen::rereadMenu));
-
-    if(m_show_menu_after_reread) {
-
-        FbCommands::ShowRootMenuCmd showcmd;
-        showcmd.execute();
-
-        m_show_menu_after_reread = false;
-    }
-}
-
-void Fluxbox::saveMenuFilename(const char *filename) {
-    if (filename == 0)
-        return;
-
-    bool found = false;
-
-    list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
-    list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end; ++it) {
-        if ((*it)->filename == filename) {
-            found = true;
-            break;
-        }
-    }
-
-    if (! found) {
-        time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(filename);
-
-        if (timestamp >= 0) {
-            MenuTimestamp *ts = new MenuTimestamp;
-
-            ts->filename = filename;
-            ts->timestamp = timestamp;
-
-            m_menu_timestamps.push_back(ts);
-        }
-    }
-}
-
-void Fluxbox::clearMenuFilenames() {
-    while(!m_menu_timestamps.empty()) {
-        delete m_menu_timestamps.back();
-        m_menu_timestamps.pop_back();
-    }
-}
-
 void Fluxbox::timed_reconfigure() {
     if (m_reconfigure_wait)
         real_reconfigure();
 
-    if (m_reread_menu_wait)
-        real_rereadMenu();
-
-    m_reconfigure_wait = m_reread_menu_wait = false;
+    m_reconfigure_wait = false;
 }
 
 void Fluxbox::revertFocus() {

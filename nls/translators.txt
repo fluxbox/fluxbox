@@ -16,12 +16,12 @@ Adding a new translation
      
 
     Details regarding the meaning of all of the positions & default values
-    are listed in Translation.m.desc
+    would be listed in Translation.m.desc, if you're kind enough to write it.
 
-List of translators contrubutors
+List of translators contributors
 --------------------------------
 
-ru_RU: php-coder <php-coder@ngs.ru>
+ru_RU: Slava Semushin <php-coder@altlinux.ru>
 ko_KR: Jo Hyunseok <ttrand@gmail.com>
 pl_PL: Meltir and Cheester <meltir@wp.pl> <czester@gmail.com>, offtza@gazeta.pl
 nl_NL: Han Boetes <han@mijncomputer.nl>

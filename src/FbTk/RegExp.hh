@@ -61,6 +61,6 @@ private:
 
 };
 
-}; // end namespace FbTk
+} // end namespace FbTk
 
 #endif // FBTK_REGEXP_HH

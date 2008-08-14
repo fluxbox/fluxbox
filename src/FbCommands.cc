@@ -73,17 +73,14 @@ namespace {
 
 void showMenu(const BScreen &screen, FbTk::Menu &menu) {
 
-    // special case for root menu
-    if (&menu == &screen.rootMenu()) {
-        Fluxbox* fb = Fluxbox::instance();
-        if(fb->menuTimestampsChanged()) {
-            // we dont show the menu here because fluxbox
-            // will bring up the rootmenu after the timed
-            // reread of the menu
-            fb->rereadMenu(true);
-            return;
-        }
+    // check if menu has changed
+    if (typeid(menu) == typeid(FbMenu)) {
+        FbMenu *fbmenu = static_cast<FbMenu *>(&menu);
+        if (fbmenu->reloadHelper())
+            fbmenu->reloadHelper()->checkReload();
     }
+
+    FbMenu::setWindow(FocusControl::focusedFbWindow());
 
     Window root_ret; // not used
     Window window_ret; // not used
@@ -246,7 +243,14 @@ void SaveResources::execute() {
     Fluxbox::instance()->save_rc();
 }
 
-REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(restart, FbCommands::RestartFluxboxCmd, void);
+REGISTER_COMMAND_PARSER(restart, RestartFluxboxCmd::parse, void);
+
+FbTk::Command<void> *RestartFluxboxCmd::parse(const string &command,
+        const string &args, bool trusted) {
+    if (!trusted && !args.empty())
+        return 0;
+    return new RestartFluxboxCmd(args);
+}
 
 RestartFluxboxCmd::RestartFluxboxCmd(const string &cmd):m_cmd(cmd){
 }
@@ -279,10 +283,11 @@ SetStyleCmd::SetStyleCmd(const string &filename):m_filename(filename) {
 }
 
 void SetStyleCmd::execute() {
-    Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
-    Fluxbox::instance()->save_rc();
-    FbTk::ThemeManager::instance().load(m_filename,
-                                        Fluxbox::instance()->getStyleOverlayFilename());
+    if (FbTk::ThemeManager::instance().load(m_filename,
+        Fluxbox::instance()->getStyleOverlayFilename())) {
+        Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
+        Fluxbox::instance()->save_rc();
+    }
 }
 
 REGISTER_COMMAND_WITH_ARGS(keymode, FbCommands::KeyModeCmd, void);
@@ -335,8 +340,8 @@ void ShowClientMenuCmd::execute() {
             m_list.push_back(static_cast<FluxboxWindow *>(*it));
     }
 
-    m_menu = new ClientMenu(*screen, m_list, 0);
-    ::showMenu(*screen, **m_menu);
+    m_menu.reset(new ClientMenu(*screen, m_list, 0));
+    ::showMenu(*screen, *m_menu.get());
 }
 
 REGISTER_COMMAND_WITH_ARGS(custommenu, FbCommands::ShowCustomMenuCmd, void);
@@ -347,11 +352,22 @@ void ShowCustomMenuCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
-    m_menu = MenuCreator::createFromFile(custom_menu_file,
-            screen->screenNumber(), true);
-    if (!m_menu.get())
-        return;
-    ::showMenu(*screen, **m_menu);
+
+    if (!m_menu.get() || screen->screenNumber() != m_menu->screenNumber()) {
+        m_menu.reset(screen->createMenu(""));
+        m_menu->setReloadHelper(new FbTk::AutoReloadHelper());
+        m_menu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<ShowCustomMenuCmd>(*this, &ShowCustomMenuCmd::reload)));
+        m_menu->reloadHelper()->setMainFile(custom_menu_file);
+    } else
+        m_menu->reloadHelper()->checkReload();
+
+    ::showMenu(*screen, *m_menu.get());
+}
+
+void ShowCustomMenuCmd::reload() {
+    m_menu->removeAll();
+    m_menu->setLabel("");
+    MenuCreator::createFromFile(custom_menu_file, *m_menu.get(), m_menu->reloadHelper());
 }
 
 REGISTER_COMMAND(rootmenu, FbCommands::ShowRootMenuCmd, void);
@@ -556,4 +572,4 @@ void DeiconifyCmd::execute() {
     };
 }
 
-}; // end namespace FbCommands
+} // end namespace FbCommands

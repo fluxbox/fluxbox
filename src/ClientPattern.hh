@@ -53,7 +53,7 @@ public:
     enum WinProperty {
         TITLE, CLASS, NAME, ROLE, TRANSIENT,
         MAXIMIZED, MINIMIZED, SHADED, STUCK, FOCUSHIDDEN, ICONHIDDEN,
-        WORKSPACE, WORKSPACENAME, HEAD, LAYER
+        WORKSPACE, WORKSPACENAME, HEAD, LAYER, URGENT
     };
 
     /// Does this client match this pattern?

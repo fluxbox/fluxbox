@@ -221,4 +221,4 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
 
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk

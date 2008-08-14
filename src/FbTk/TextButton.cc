@@ -158,11 +158,9 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
     translateSize(m_orientation, textw, texth);
 
     int align_x = FbTk::doAlignment(textw - x_offset - m_left_padding - m_right_padding,
-                                    bevel(),
-                                    justify(),
-                                    font(),
+                                    bevel(), justify(), font(),
                                     text().data(), text().size(),
-                                    textlen); // return new text lne
+                                    textlen); // return new text len
 
     // center text by default
     int center_pos = texth/2 + font().ascent()/2 - 1;
@@ -183,8 +181,25 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
                     textx, texty, m_orientation); // position
 }
 
+
+bool TextButton::textExceeds(int x_offset) {
+    
+    unsigned int textlen = text().size();
+    // do text alignment
+
+    unsigned int textw = width(), texth = height();
+    translateSize(m_orientation, textw, texth);
+
+    FbTk::doAlignment(textw - x_offset - m_left_padding - m_right_padding,
+                      bevel(), justify(), font(), text().data(), text().size(),
+                      textlen); // return new text len
+
+    return text().size()>textlen;
+    
+}
+
 void TextButton::exposeEvent(XExposeEvent &event) {
     clearArea(event.x, event.y, event.width, event.height, false);
 }
 
-}; // end namespace FbTk
+} // end namespace FbTk
