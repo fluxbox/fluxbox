@@ -24,6 +24,7 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "WindowCmd.hh"
+#include "FbTk/AutoReloadHelper.hh"
 
 FluxboxWindow *FbMenu::s_window = 0;
 

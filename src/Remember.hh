@@ -29,135 +29,18 @@
 #include "AtomHandler.hh"
 #include "ClientPattern.hh"
 
-#include "FbTk/AutoReloadHelper.hh"
-#include "FbTk/RefCount.hh"
 
-#include <fstream>
 #include <map>
 #include <list>
-#include <utility>
 #include <memory>
 
 class FluxboxWindow;
 class BScreen;
 class WinClient;
+class Application;
 
-class Application {
-public:
-    Application(bool grouped, ClientPattern *pat = 0);
-    void reset();
-    void forgetWorkspace() { workspace_remember = false; }
-    void forgetHead() { head_remember = false; }
-    void forgetDimensions() { dimensions_remember = false; }
-    void forgetPosition() { position_remember = false; }
-    void forgetShadedstate() { shadedstate_remember = false; }
-    void forgetTabstate() { tabstate_remember = false; }
-    void forgetDecostate() { decostate_remember = false; }
-    void forgetFocusHiddenstate() { focushiddenstate_remember= false; }
-    void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
-    void forgetStuckstate() { stuckstate_remember = false; }
-    void forgetJumpworkspace() { jumpworkspace_remember = false; }
-    void forgetLayer() { layer_remember = false; }
-    void forgetSaveOnClose() { save_on_close_remember = false; }
-    void forgetAlpha() { alpha_remember = false; }
-    void forgetMinimizedstate() { minimizedstate_remember = false; }
-    void forgetMaximizedstate() { maximizedstate_remember = false; }
-    void forgetFullscreenstate() { fullscreenstate_remember = false; }
-
-    void rememberWorkspace(int ws)
-        { workspace = ws; workspace_remember = true; }
-    void rememberHead(int h)
-        { head = h; head_remember = true; }
-    void rememberDimensions(int width, int height)
-        { w = width; h = height; dimensions_remember = true; }
-    void rememberFocusHiddenstate(bool state)
-        { focushiddenstate= state; focushiddenstate_remember= true; }
-    void rememberIconHiddenstate(bool state)
-        { iconhiddenstate= state; iconhiddenstate_remember= true; }
-    void rememberPosition(int posx, int posy, unsigned char rfc= 0 )
-        { x = posx; y = posy; refc = rfc; position_remember = true; }
-    void rememberShadedstate(bool state)
-        { shadedstate = state; shadedstate_remember = true; }
-    void rememberTabstate(bool state)
-        { tabstate = state; tabstate_remember = true; }
-    void rememberDecostate(unsigned int state)
-        { decostate = state; decostate_remember = true; }
-    void rememberStuckstate(bool state)
-        { stuckstate = state; stuckstate_remember = true; }
-    void rememberJumpworkspace(bool state)
-        { jumpworkspace = state; jumpworkspace_remember = true; }
-    void rememberLayer(int layernum) 
-        { layer = layernum; layer_remember = true; }
-    void rememberSaveOnClose(bool state)
-        { save_on_close = state; save_on_close_remember = true; }
-    void rememberAlpha(int focused_a, int unfocused_a)
-        { focused_alpha = focused_a; unfocused_alpha = unfocused_a; alpha_remember = true; }
-    void rememberMinimizedstate(bool state)
-        { minimizedstate = state; minimizedstate_remember = true; }
-    void rememberMaximizedstate(int state)
-        { maximizedstate = state; maximizedstate_remember = true; }
-    void rememberFullscreenstate(bool state)
-        { fullscreenstate = state; fullscreenstate_remember = true; }
-
-    bool workspace_remember;
-    unsigned int workspace;
-
-    bool head_remember;
-    int head;
-
-    bool dimensions_remember;
-    int w,h; // width, height
-
-    bool position_remember;
-    int x,y;
-    unsigned char refc;    // referenceCorner-> 0 - upperleft
-                           //                   1 - upperight
-                           //                   2 - lowerleft
-                           //                   3 - lowerright
-
-    bool alpha_remember;
-    int focused_alpha;
-    int unfocused_alpha;
-
-    bool shadedstate_remember;
-    bool shadedstate;
-
-    bool tabstate_remember;
-    bool tabstate;
-
-    bool decostate_remember;
-    unsigned int decostate;
-
-    bool stuckstate_remember;
-    bool stuckstate;
-
-    bool focushiddenstate_remember;
-    bool focushiddenstate;
-
-    bool iconhiddenstate_remember;
-    bool iconhiddenstate;
-
-    bool jumpworkspace_remember;
-    bool jumpworkspace;
-
-    bool layer_remember;
-    int layer;
-
-    bool save_on_close_remember;
-    bool save_on_close;
-
-    bool minimizedstate_remember;
-    bool minimizedstate;
-
-    bool maximizedstate_remember;
-    int maximizedstate;
-
-    bool fullscreenstate_remember;
-    bool fullscreenstate;
-
-    bool is_grouped;
-    FbTk::RefCount<ClientPattern> group_pattern;
-
+namespace FbTk {
+class AutoReloadHelper;
 };
 
 /**
@@ -258,6 +141,8 @@ public:
     void updateLayer(FluxboxWindow &win) {}
     void updateFrameClose(FluxboxWindow &win) {}
 
+    void updateDecoStateFromClient(WinClient& client);
+
     bool checkClientMessage(const XClientMessageEvent &ce, 
         BScreen * screen, WinClient * const winclient) { return false; }
     // ignore this
@@ -267,20 +152,13 @@ public:
 
 private:
 
-    // returns number of lines read
-    // optionally can give a line to read before the first (lookahead line)
-    int parseApp(std::ifstream &file, Application &app, std::string *first_line = 0);
-
-    Application *findMatchingPatterns(ClientPattern *pat, Patterns *patlist,
-            bool is_group, ClientPattern *match_pat = 0);
-
     std::auto_ptr<Patterns> m_pats;
     Clients m_clients;
 
     Startups m_startups;
     static Remember *s_instance;
 
-    FbTk::AutoReloadHelper m_reloader;
+    FbTk::AutoReloadHelper* m_reloader;
 };
 
 #endif // REMEMBER_HH

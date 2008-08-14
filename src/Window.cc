@@ -1183,17 +1183,6 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
     }
 }
 
-void FluxboxWindow::updateRememberStateFromClient(WinClient &client) {
-#ifdef REMEMBER
-    Remember* rem= const_cast<Remember*>(static_cast<const Remember*>(Fluxbox::instance()->getAtomHandler("remember")));
-    Application* app= 0;
-    if ( rem && (app= (const_cast<Remember*>(rem))->find(client)) ) {
-        if ( !m_toggled_decos && rem->isRemembered(client, Remember::REM_DECOSTATE) )
-            setDecorationMask(app->decostate);
-    }
-#endif // REMEMBER
-}
-
 void FluxboxWindow::updateFunctions() {
     if (!m_client)
         return;
@@ -1828,7 +1817,7 @@ void FluxboxWindow::setIconic(bool val) {
 
 void FluxboxWindow::raise() {
     if (isIconic())
-        return;;
+        return;
 #ifdef DEBUG
     cerr<<"FluxboxWindow("<<title()<<")::raise()[layer="<<layerNum()<<"]"<<endl;
 #endif // DEBUG
@@ -2459,7 +2448,9 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         } else if (atom == fbatoms->getMWMHintsAtom()) {
             client.updateMWMHints();
             updateMWMHintsFromClient(client);
-            updateRememberStateFromClient(client);
+            if (!m_toggled_decos) {
+                Remember::instance().updateDecoStateFromClient(client);
+            }
             applyDecorations(); // update decorations (if they changed)
         }
         break;
@@ -2511,21 +2502,19 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         struct timeval now;
         gettimeofday(&now, NULL);
 
+        Remember& rinst = Remember::instance();
+
         if (now.tv_sec > m_creation_time + 1)
             m_creation_time = 0;
-        else if (Remember::instance().isRemembered(*client,
-                         Remember::REM_MAXIMIZEDSTATE) ||
-                 Remember::instance().isRemembered(*client,
-                         Remember::REM_FULLSCREENSTATE)) {
+        else if (rinst.isRemembered(*client, Remember::REM_MAXIMIZEDSTATE) ||
+                 rinst.isRemembered(*client, Remember::REM_FULLSCREENSTATE)) {
             cr.value_mask = cr.value_mask & ~(CWWidth | CWHeight);
             cr.value_mask = cr.value_mask & ~(CWX | CWY);
         } else {
-            if (Remember::instance().isRemembered(*client,
-                                                  Remember::REM_DIMENSIONS))
+            if (rinst.isRemembered(*client, Remember::REM_DIMENSIONS))
                 cr.value_mask = cr.value_mask & ~(CWWidth | CWHeight);
 
-            if (Remember::instance().isRemembered(*client,
-                                                  Remember::REM_POSITION))
+            if (rinst.isRemembered(*client, Remember::REM_POSITION))
                 cr.value_mask = cr.value_mask & ~(CWX | CWY);
         }
     }

@@ -1183,7 +1183,7 @@ AtomHandler* Fluxbox::getAtomHandler(const string &name) {
     return 0;
 }
 void Fluxbox::addAtomHandler(AtomHandler *atomh, const string &name) {
-    m_atomhandler[atomh]= name;;
+    m_atomhandler[atomh]= name;
 }
 
 void Fluxbox::removeAtomHandler(AtomHandler *atomh) {

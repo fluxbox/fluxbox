@@ -495,7 +495,7 @@ void ImageControl::createColorTable() {
                 for (int b = 0; b < m_colors_per_channel; b++, i++) {
                     m_colors[i].red = (r * 0xffff) / (m_colors_per_channel - 1);
                     m_colors[i].green = (g * 0xffff) / (m_colors_per_channel - 1);
-                    m_colors[i].blue = (b * 0xffff) / (m_colors_per_channel - 1);;
+                    m_colors[i].blue = (b * 0xffff) / (m_colors_per_channel - 1);
                     m_colors[i].flags = DoRed|DoGreen|DoBlue;
                 }
             }
@@ -587,7 +587,7 @@ void ImageControl::createColorTable() {
             for (unsigned int i = 0; i < m_num_colors; i++) {
                 m_colors[i].red = (i * 0xffff) / (m_colors_per_channel - 1);
                 m_colors[i].green = (i * 0xffff) / (m_colors_per_channel - 1);
-                m_colors[i].blue = (i * 0xffff) / (m_colors_per_channel - 1);;
+                m_colors[i].blue = (i * 0xffff) / (m_colors_per_channel - 1);
                 m_colors[i].flags = DoRed|DoGreen|DoBlue;
 
                 if (! XAllocColor(disp, m_colormap,

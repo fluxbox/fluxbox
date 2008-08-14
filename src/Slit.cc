@@ -1029,7 +1029,7 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
         if ((*it)->window() == event.window) {
             if ((*it)->width() != ((unsigned) event.width) ||
                 (*it)->height() != ((unsigned) event.height)) {
-                (*it)->resize(event.width, event.height);;
+                (*it)->resize(event.width, event.height);
 
                 reconf = true; //requires reconfiguration
 

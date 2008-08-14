@@ -528,7 +528,6 @@ private:
 
     bool getState();
     void updateMWMHintsFromClient(WinClient &client);
-    void updateRememberStateFromClient(WinClient &client);
     void saveBlackboxAttribs();
     void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1, int gravity = ForgetGravity, unsigned int client_bw = 0);
 

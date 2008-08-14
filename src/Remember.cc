@@ -39,7 +39,8 @@
 #include "FbTk/App.hh"
 #include "FbTk/stringstream.hh"
 #include "FbTk/Transparent.hh"
-
+#include "FbTk/AutoReloadHelper.hh"
+#include "FbTk/RefCount.hh"
 
 #ifdef HAVE_CSTRING
   #include <cstring>
@@ -67,6 +68,160 @@ using std::ofstream;
 using std::hex;
 using std::dec;
 
+/*------------------------------------------------------------------*\
+\*------------------------------------------------------------------*/
+
+class Application {
+public:
+    Application(bool grouped, ClientPattern *pat = 0);
+    void reset();
+    void forgetWorkspace() { workspace_remember = false; }
+    void forgetHead() { head_remember = false; }
+    void forgetDimensions() { dimensions_remember = false; }
+    void forgetPosition() { position_remember = false; }
+    void forgetShadedstate() { shadedstate_remember = false; }
+    void forgetTabstate() { tabstate_remember = false; }
+    void forgetDecostate() { decostate_remember = false; }
+    void forgetFocusHiddenstate() { focushiddenstate_remember= false; }
+    void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
+    void forgetStuckstate() { stuckstate_remember = false; }
+    void forgetJumpworkspace() { jumpworkspace_remember = false; }
+    void forgetLayer() { layer_remember = false; }
+    void forgetSaveOnClose() { save_on_close_remember = false; }
+    void forgetAlpha() { alpha_remember = false; }
+    void forgetMinimizedstate() { minimizedstate_remember = false; }
+    void forgetMaximizedstate() { maximizedstate_remember = false; }
+    void forgetFullscreenstate() { fullscreenstate_remember = false; }
+
+    void rememberWorkspace(int ws)
+        { workspace = ws; workspace_remember = true; }
+    void rememberHead(int h)
+        { head = h; head_remember = true; }
+    void rememberDimensions(int width, int height)
+        { w = width; h = height; dimensions_remember = true; }
+    void rememberFocusHiddenstate(bool state)
+        { focushiddenstate= state; focushiddenstate_remember= true; }
+    void rememberIconHiddenstate(bool state)
+        { iconhiddenstate= state; iconhiddenstate_remember= true; }
+    void rememberPosition(int posx, int posy, unsigned char rfc= 0 )
+        { x = posx; y = posy; refc = rfc; position_remember = true; }
+    void rememberShadedstate(bool state)
+        { shadedstate = state; shadedstate_remember = true; }
+    void rememberTabstate(bool state)
+        { tabstate = state; tabstate_remember = true; }
+    void rememberDecostate(unsigned int state)
+        { decostate = state; decostate_remember = true; }
+    void rememberStuckstate(bool state)
+        { stuckstate = state; stuckstate_remember = true; }
+    void rememberJumpworkspace(bool state)
+        { jumpworkspace = state; jumpworkspace_remember = true; }
+    void rememberLayer(int layernum) 
+        { layer = layernum; layer_remember = true; }
+    void rememberSaveOnClose(bool state)
+        { save_on_close = state; save_on_close_remember = true; }
+    void rememberAlpha(int focused_a, int unfocused_a)
+        { focused_alpha = focused_a; unfocused_alpha = unfocused_a; alpha_remember = true; }
+    void rememberMinimizedstate(bool state)
+        { minimizedstate = state; minimizedstate_remember = true; }
+    void rememberMaximizedstate(int state)
+        { maximizedstate = state; maximizedstate_remember = true; }
+    void rememberFullscreenstate(bool state)
+        { fullscreenstate = state; fullscreenstate_remember = true; }
+
+    bool workspace_remember;
+    unsigned int workspace;
+
+    bool head_remember;
+    int head;
+
+    bool dimensions_remember;
+    int w,h; // width, height
+
+    bool position_remember;
+    int x,y;
+    unsigned char refc;    // referenceCorner-> 0 - upperleft
+                           //                   1 - upperight
+                           //                   2 - lowerleft
+                           //                   3 - lowerright
+
+    bool alpha_remember;
+    int focused_alpha;
+    int unfocused_alpha;
+
+    bool shadedstate_remember;
+    bool shadedstate;
+
+    bool tabstate_remember;
+    bool tabstate;
+
+    bool decostate_remember;
+    unsigned int decostate;
+
+    bool stuckstate_remember;
+    bool stuckstate;
+
+    bool focushiddenstate_remember;
+    bool focushiddenstate;
+
+    bool iconhiddenstate_remember;
+    bool iconhiddenstate;
+
+    bool jumpworkspace_remember;
+    bool jumpworkspace;
+
+    bool layer_remember;
+    int layer;
+
+    bool save_on_close_remember;
+    bool save_on_close;
+
+    bool minimizedstate_remember;
+    bool minimizedstate;
+
+    bool maximizedstate_remember;
+    int maximizedstate;
+
+    bool fullscreenstate_remember;
+    bool fullscreenstate;
+
+    bool is_grouped;
+    FbTk::RefCount<ClientPattern> group_pattern;
+
+};
+
+
+
+
+
+
+Application::Application(bool grouped, ClientPattern *pat)
+    : is_grouped(grouped), group_pattern(pat)
+{
+    reset();
+}
+
+void Application::reset() {
+    decostate_remember =
+        dimensions_remember =
+        focushiddenstate_remember =
+        iconhiddenstate_remember =
+        jumpworkspace_remember =
+        layer_remember  =
+        position_remember =
+        shadedstate_remember =
+        stuckstate_remember =
+        tabstate_remember =
+        workspace_remember =
+        head_remember =
+        alpha_remember =
+        minimizedstate_remember =
+        maximizedstate_remember =
+        fullscreenstate_remember =
+        save_on_close_remember = false;
+}
+
+/*------------------------------------------------------------------*\
+\*------------------------------------------------------------------*/
 
 namespace {
 
@@ -245,50 +400,246 @@ bool handleStartupItem(const string &line, int offset) {
     return true;
 };
 
+
+
+// returns number of lines read
+// optionally can give a line to read before the first (lookahead line)
+int parseApp(ifstream &file, Application &app, string *first_line = 0) {
+    string line;
+    _FB_USES_NLS;
+    int row = 0;
+    while (! file.eof()) {
+        if (first_line || getline(file, line)) {
+            if (first_line) {
+                line = *first_line;
+                first_line = 0;
+            }
+
+            row++;
+            FbTk::StringUtil::removeFirstWhitespace(line);
+            FbTk::StringUtil::removeTrailingWhitespace(line);
+            if (line.size() == 0 || line[0] == '#')
+                continue;  //the line is commented or blank
+
+            int parse_pos = 0, err = 0;
+            string str_key, str_option, str_label;
+
+            err = FbTk::StringUtil::getStringBetween(str_key,
+                                                     line.c_str(),
+                                                     '[', ']');
+            if (err > 0) {
+                int tmp;
+                tmp= FbTk::StringUtil::getStringBetween(str_option,
+                                                        line.c_str() + err,
+                                                        '(', ')');
+                if (tmp>0)
+                    err += tmp;
+            }
+            if (err > 0 ) {
+                parse_pos += err;
+                err = FbTk::StringUtil::getStringBetween(str_label,
+                                                         line.c_str() + parse_pos,
+                                                         '{', '}');
+                if (err>0) {
+                    parse_pos += err;
+                }
+            } else
+                continue; //read next line
+
+            bool had_error = false;
+
+            if (str_key.empty())
+                continue; //read next line
+
+            str_key = FbTk::StringUtil::toLower(str_key);
+
+            if (str_key == "workspace") {
+                unsigned int w;
+                if (getuint(str_label.c_str(), w))
+                    app.rememberWorkspace(w);
+                else
+                    had_error = true;
+            } else if (str_key == "head") {
+                unsigned int h;
+                if (getuint(str_label.c_str(), h))
+                    app.rememberHead(h);
+                else
+                    had_error = true;
+            } else if (str_key == "layer") {
+                int l = Layer::getNumFromString(str_label);
+                had_error = (l == -1);
+                if (!had_error)
+                    app.rememberLayer(l);
+            } else if (str_key == "dimensions") {
+                unsigned int h,w;
+                if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2)
+                    app.rememberDimensions(w, h);
+                else
+                    had_error = true;
+            } else if (str_key == "position") {
+                unsigned int r= 0;
+                unsigned int x= 0;
+                unsigned int y= 0;
+                // more info about the parameter
+                // in ::rememberPosition
+
+                str_option == FbTk::StringUtil::toUpper(str_option);
+                if ( str_option.length() )
+                    {
+                        if      (str_option == "UPPERLEFT")  r= Remember::POS_UPPERLEFT;
+                        else if (str_option == "UPPERRIGHT") r= Remember::POS_UPPERRIGHT;
+                        else if (str_option == "LOWERLEFT")  r= Remember::POS_LOWERLEFT;
+                        else if (str_option == "LOWERRIGHT") r= Remember::POS_LOWERRIGHT;
+                        else if (str_option == "CENTER")     r= Remember::POS_CENTER;
+                        else if (str_option == "WINCENTER")  r= Remember::POS_WINCENTER;
+                        else if (!getuint(str_option.c_str(), r)) {
+                            had_error = 1;
+                        }
+                    }
+
+                if (!had_error && sscanf(str_label.c_str(), "%u %u", &x, &y) == 2)
+                    app.rememberPosition(x, y, r);
+                else
+                    had_error = true;
+            } else if (str_key == "shaded") {
+                app.rememberShadedstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "tab") {
+                app.rememberTabstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "focushidden") {
+                app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "iconhidden") {
+                app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "hidden") {
+                app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "deco") {
+                int deco = FluxboxWindow::getDecoMaskFromString(str_label);
+                if (deco == -1)
+                    had_error = 1;
+                else
+                    app.rememberDecostate((unsigned int)deco);
+            } else if (str_key == "alpha") {
+                int focused_a, unfocused_a;
+                if (sscanf(str_label.c_str(), "%i %i", &focused_a, &unfocused_a) == 2)
+                {
+                    // clamp;
+                    if (focused_a > 255)
+                        focused_a = 255;
+                    if (unfocused_a > 255)
+                        unfocused_a = 255;
+                    if (focused_a <= 0)
+                        focused_a = 0;
+                    if (unfocused_a <= 0)
+                        unfocused_a = 0;
+
+                    app.rememberAlpha(focused_a, unfocused_a);
+                } else if (sscanf(str_label.c_str(), "%i", &focused_a) == 1) {
+                    if (focused_a > 255)
+                        focused_a = 255;
+                    if (focused_a <= 0)
+                        focused_a = 0;
+                    app.rememberAlpha(focused_a, focused_a);
+                }
+                else
+                    had_error = 1;
+            } else if (str_key == "sticky") {
+                app.rememberStuckstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "minimized") {
+                app.rememberMinimizedstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "maximized") {
+                if (strcasecmp(str_label.c_str(), "yes") == 0)
+                    app.rememberMaximizedstate(FluxboxWindow::MAX_FULL);
+                else if (strcasecmp(str_label.c_str(), "horz") == 0)
+                    app.rememberMaximizedstate(FluxboxWindow::MAX_HORZ);
+                else if (strcasecmp(str_label.c_str(), "vert") == 0)
+                    app.rememberMaximizedstate(FluxboxWindow::MAX_VERT);
+                else
+                    app.rememberMaximizedstate(FluxboxWindow::MAX_NONE);
+            } else if (str_key == "fullscreen") {
+                app.rememberFullscreenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "jump") {
+                app.rememberJumpworkspace((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "close") {
+                app.rememberSaveOnClose((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "end") {
+                return row;
+            } else {
+                cerr << _FB_CONSOLETEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
+            }
+            if (had_error) {
+                cerr<<"Error parsing apps entry: ("<<line<<")"<<endl;
+            }
+        }
+    }
+    return row;
+}
+
+
+
+/*
+  This function is used to search for old instances of the same pattern
+  (when reloading apps file). More than one pattern might match, but only
+  if the application is the same (also note that they'll be adjacent).
+  We REMOVE and delete any matching patterns from the old list, as they're
+  effectively moved into the new
+*/
+
+Application* findMatchingPatterns(ClientPattern *pat, Remember::Patterns *patlist, bool is_group, ClientPattern *match_pat = 0) {
+
+    Remember::Patterns::iterator it = patlist->begin();
+    Remember::Patterns::iterator it_end = patlist->end();
+
+    for (; it != it_end; ++it) {
+        if (*it->first == *pat && is_group == it->second->is_grouped &&
+            ((match_pat == 0 && *it->second->group_pattern == 0) ||
+             (match_pat && *match_pat == **it->second->group_pattern))) {
+
+            Application *ret = it->second;
+
+            if (!is_group) return ret;
+            // find the rest of the group and remove it from the list
+
+            // rewind
+            Remember::Patterns::iterator tmpit = it;
+            while (tmpit != patlist->begin()) {
+                --tmpit;
+                if (tmpit->second == ret)
+                    it = tmpit;
+                else
+                    break;
+            }
+
+            // forward
+            for(; it != it_end && it->second == ret; ++it) {
+                delete it->first;
+            }
+            patlist->erase(patlist->begin(), it);
+
+            return ret;
+        }
+    }
+
+    return 0;
+}
+
 }; // end anonymous namespace
 
-
-Application::Application(bool grouped, ClientPattern *pat)
-    : is_grouped(grouped), group_pattern(pat)
-{
-    reset();
-}
-
-void Application::reset() {
-    decostate_remember =
-        dimensions_remember =
-        focushiddenstate_remember =
-        iconhiddenstate_remember =
-        jumpworkspace_remember =
-        layer_remember  =
-        position_remember =
-        shadedstate_remember =
-        stuckstate_remember =
-        tabstate_remember =
-        workspace_remember =
-        head_remember =
-        alpha_remember =
-        minimizedstate_remember =
-        maximizedstate_remember =
-        fullscreenstate_remember =
-        save_on_close_remember = false;
-}
-
-/************
- * Remember *
- ************/
+/*------------------------------------------------------------------*\
+\*------------------------------------------------------------------*/
 
 Remember *Remember::s_instance = 0;
 
 Remember::Remember():
-    m_pats(new Patterns()) {
+    m_pats(new Patterns()),
+    m_reloader(new FbTk::AutoReloadHelper()) {
+
     if (s_instance != 0)
         throw string("Can not create more than one instance of Remember");
 
     s_instance = this;
     enableUpdate();
 
-    m_reloader.setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Remember>(*this, &Remember::reload)));
+    m_reloader->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Remember>(*this, &Remember::reload)));
     reconfigure();
 }
 
@@ -311,6 +662,8 @@ Remember::~Remember() {
     for (; ait != all_apps.end(); ++ait) {
         delete (*ait);
     }
+
+    delete(m_reloader);
 
     s_instance = 0;
 }
@@ -354,220 +707,15 @@ Application * Remember::add(WinClient &winclient) {
     return app;
 }
 
-int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
-    string line;
-    _FB_USES_NLS;
-    int row = 0;
-    while (! file.eof()) {
-        if (first_line || getline(file, line)) {
-            if (first_line) {
-                line = *first_line;
-                first_line = 0;
-            }
 
-            row++;
-            FbTk::StringUtil::removeFirstWhitespace(line);
-            FbTk::StringUtil::removeTrailingWhitespace(line);
-            if (line.size() == 0 || line[0] == '#')
-                continue;  //the line is commented or blank
-            int parse_pos = 0, err = 0;
-            string str_key, str_option, str_label;
-            err = FbTk::StringUtil::getStringBetween(str_key,
-                                                     line.c_str(),
-                                                     '[', ']');
-            if (err > 0) {
-                int tmp;
-                tmp= FbTk::StringUtil::getStringBetween(str_option,
-                                                        line.c_str() + err,
-                                                        '(', ')');
-                if (tmp>0)
-                    err += tmp;
-            }
-            if (err > 0 ) {
-                parse_pos += err;
-                err = FbTk::StringUtil::getStringBetween(str_label,
-                                                         line.c_str() + parse_pos,
-                                                         '{', '}');
-                if (err>0) {
-                    parse_pos += err;
-                }
-            } else
-                continue; //read next line
-
-            bool had_error = false;
-
-            if (str_key.empty())
-                continue; //read next line
-            if (strcasecmp(str_key.c_str(), "Workspace") == 0) {
-                unsigned int w;
-                if (getuint(str_label.c_str(), w))
-                    app.rememberWorkspace(w);
-                else
-                    had_error = true;
-            } else if (strcasecmp(str_key.c_str(), "Head") == 0) {
-                unsigned int h;
-                if (getuint(str_label.c_str(), h))
-                    app.rememberHead(h);
-                else
-                    had_error = true;
-            } else if (strcasecmp(str_key.c_str(), "Layer") == 0) {
-                int l = Layer::getNumFromString(str_label);
-                had_error = (l == -1);
-                if (!had_error)
-                    app.rememberLayer(l);
-            } else if (strcasecmp(str_key.c_str(), "Dimensions") == 0) {
-                unsigned int h,w;
-                if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2)
-                    app.rememberDimensions(w, h);
-                else
-                    had_error = true;
-            } else if (strcasecmp(str_key.c_str(), "Position") == 0) {
-                unsigned int r= 0;
-                unsigned int x= 0;
-                unsigned int y= 0;
-                // more info about the parameter
-                // in ::rememberPosition
-
-                if ( str_option.length() )
-                    {
-                        if      (strcasecmp(str_option.c_str(), "UPPERLEFT") == 0) r= POS_UPPERLEFT;
-                        else if (strcasecmp(str_option.c_str(), "UPPERRIGHT") == 0) r= POS_UPPERRIGHT;
-                        else if (strcasecmp(str_option.c_str(), "LOWERLEFT") == 0) r= POS_LOWERLEFT;
-                        else if (strcasecmp(str_option.c_str(), "LOWERRIGHT") == 0) r= POS_LOWERRIGHT;
-                        else if (strcasecmp(str_option.c_str(), "CENTER") == 0)     r= POS_CENTER;
-                        else if (strcasecmp(str_option.c_str(), "WINCENTER") == 0)  r= POS_WINCENTER;
-                        else if (!getuint(str_option.c_str(), r)) {
-                            had_error = 1;
-                        }
-                    }
-
-                if (!had_error && sscanf(str_label.c_str(), "%u %u", &x, &y) == 2)
-                    app.rememberPosition(x, y, r);
-                else
-                    had_error = true;
-            } else if (strcasecmp(str_key.c_str(), "Shaded") == 0) {
-                app.rememberShadedstate((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "Tab") == 0) {
-                app.rememberTabstate((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "FocusHidden") == 0) {
-                app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "IconHidden") == 0) {
-                app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "Hidden") == 0) {
-                app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
-                app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "Deco") == 0) {
-                int deco = FluxboxWindow::getDecoMaskFromString(str_label);
-                if (deco == -1)
-                    had_error = 1;
-                else
-                    app.rememberDecostate((unsigned int)deco);
-            } else if (strcasecmp(str_key.c_str(), "Alpha") == 0) {
-                int focused_a, unfocused_a;
-                if (sscanf(str_label.c_str(), "%i %i", &focused_a, &unfocused_a) == 2)
-                {
-                    // clamp;
-                    if (focused_a > 255)
-                        focused_a = 255;
-                    if (unfocused_a > 255)
-                        unfocused_a = 255;
-                    if (focused_a <= 0)
-                        focused_a = 0;
-                    if (unfocused_a <= 0)
-                        unfocused_a = 0;
-
-                    app.rememberAlpha(focused_a, unfocused_a);
-                } else if (sscanf(str_label.c_str(), "%i", &focused_a) == 1) {
-                    if (focused_a > 255)
-                        focused_a = 255;
-                    if (focused_a <= 0)
-                        focused_a = 0;
-                    app.rememberAlpha(focused_a, focused_a);
-                }
-                else
-                    had_error = 1;
-            } else if (strcasecmp(str_key.c_str(), "Sticky") == 0) {
-                app.rememberStuckstate((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "Minimized") == 0) {
-                app.rememberMinimizedstate((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "Maximized") == 0) {
-                if (strcasecmp(str_label.c_str(), "yes") == 0)
-                    app.rememberMaximizedstate(FluxboxWindow::MAX_FULL);
-                else if (strcasecmp(str_label.c_str(), "horz") == 0)
-                    app.rememberMaximizedstate(FluxboxWindow::MAX_HORZ);
-                else if (strcasecmp(str_label.c_str(), "vert") == 0)
-                    app.rememberMaximizedstate(FluxboxWindow::MAX_VERT);
-                else
-                    app.rememberMaximizedstate(FluxboxWindow::MAX_NONE);
-            } else if (strcasecmp(str_key.c_str(), "Fullscreen") == 0) {
-                app.rememberFullscreenstate((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "Jump") == 0) {
-                app.rememberJumpworkspace((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "Close") == 0) {
-                app.rememberSaveOnClose((strcasecmp(str_label.c_str(), "yes") == 0));
-            } else if (strcasecmp(str_key.c_str(), "end") == 0) {
-                return row;
-            } else {
-                cerr << _FB_CONSOLETEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
-            }
-            if (had_error) {
-                cerr<<"Error parsing apps entry: ("<<line<<")"<<endl;
-            }
-        }
-    }
-    return row;
-}
-
-/*
-  This function is used to search for old instances of the same pattern
-  (when reloading apps file). More than one pattern might match, but only
-  if the application is the same (also note that they'll be adjacent).
-  We REMOVE and delete any matching patterns from the old list, as they're
-  effectively moved into the new
-*/
-
-Application *Remember::findMatchingPatterns(ClientPattern *pat, Patterns *patlist, bool is_group, ClientPattern *match_pat) {
-    Patterns::iterator it = patlist->begin();
-    Patterns::iterator it_end = patlist->end();
-    for (; it != it_end; ++it) {
-        if (*it->first == *pat && is_group == it->second->is_grouped &&
-            ((match_pat == 0 && *it->second->group_pattern == 0) ||
-             (match_pat && *match_pat == **it->second->group_pattern))) {
-            Application *ret = it->second;
-
-            if (!is_group) return ret;
-            // find the rest of the group and remove it from the list
-
-            // rewind
-            Patterns::iterator tmpit = it;
-            while (tmpit != patlist->begin()) {
-                --tmpit;
-                if (tmpit->second == ret)
-                    it = tmpit;
-                else
-                    break;
-            }
-
-            // forward
-            for(; it != it_end && it->second == ret; ++it) {
-                delete it->first;
-            }
-            patlist->erase(patlist->begin(), it);
-
-            return ret;
-        }
-    }
-
-    return 0;
-}
 
 
 void Remember::reconfigure() {
-    m_reloader.setMainFile(Fluxbox::instance()->getAppsFilename());
+    m_reloader->setMainFile(Fluxbox::instance()->getAppsFilename());
 }
 
 void Remember::checkReload() {
-    m_reloader.checkReload();
+    m_reloader->checkReload();
 }
 
 void Remember::reload() {
@@ -883,7 +1031,7 @@ void Remember::save() {
     }
     apps_file.close();
     // update timestamp to avoid unnecessary reload
-    m_reloader.addFile(Fluxbox::instance()->getAppsFilename());
+    m_reloader->addFile(Fluxbox::instance()->getAppsFilename());
 }
 
 bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
@@ -1232,6 +1380,15 @@ FluxboxWindow *Remember::findGroup(Application *app, BScreen &screen) {
 
     // there weren't any open, but that's ok
     return 0;
+}
+
+void Remember::updateDecoStateFromClient(WinClient& winclient) {
+
+    Application* app= find(winclient);
+
+    if ( app && isRemembered(winclient, REM_DECOSTATE)) {
+        winclient.fbwindow()->setDecorationMask(app->decostate);
+    }
 }
 
 void Remember::updateClientClose(WinClient &winclient) {

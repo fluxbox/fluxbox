@@ -34,6 +34,7 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/CommandParser.hh"
 #include "FbTk/I18n.hh"
+#include "FbTk/AutoReloadHelper.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -92,7 +93,6 @@
 #include <fstream>
 #include <list>
 #include <vector>
-#include <map>
 #include <memory>
 
 using std::cerr;
@@ -131,7 +131,7 @@ public:
     }
 
     // member variables
- 
+
     int type; // KeyPress or ButtonPress
     unsigned int mod;
     unsigned int key; // key code or button number
@@ -170,14 +170,15 @@ Keys::t_key::~t_key() {
 
 
 
-Keys::Keys(): next_key(0) {
-    m_reloader.setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Keys>(*this, &Keys::reload)));
+Keys::Keys(): next_key(0), m_reloader(new FbTk::AutoReloadHelper()) {
+    m_reloader->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Keys>(*this, &Keys::reload)));
 }
 
 Keys::~Keys() {
     ungrabKeys();
     ungrabButtons();
     deleteTree();
+    delete m_reloader;
 }
 
 /// Destroys the keytree
@@ -570,8 +571,8 @@ void Keys::unregisterWindow(Window win) {
 */
 void Keys::reconfigure() {
     m_filename = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getKeysFilename());
-    m_reloader.setMainFile(m_filename);
-    m_reloader.checkReload();
+    m_reloader->setMainFile(m_filename);
+    m_reloader->checkReload();
 }
 
 void Keys::keyMode(const string& keyMode) {

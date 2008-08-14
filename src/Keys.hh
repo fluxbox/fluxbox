@@ -23,7 +23,6 @@
 #define KEYS_HH
 
 #include "FbTk/NotCopyable.hh"
-#include "FbTk/AutoReloadHelper.hh"
 
 #include <X11/Xlib.h>
 #include <string>
@@ -33,6 +32,7 @@ class WinClient;
 
 namespace FbTk {
     class EventHandler;
+    class AutoReloadHelper;
 }
 
 class Keys:private FbTk::NotCopyable  {
@@ -104,7 +104,7 @@ private:
 
     // member variables
     std::string m_filename;
-    FbTk::AutoReloadHelper m_reloader;
+    FbTk::AutoReloadHelper* m_reloader;
     t_key *m_keylist;
     keyspace_t m_map;
 

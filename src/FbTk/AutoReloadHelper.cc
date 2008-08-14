@@ -40,19 +40,19 @@ void AutoReloadHelper::checkReload() {
     }
 }
 
-void AutoReloadHelper::setMainFile(std::string file) {
-    file = StringUtil::expandFilename(file);
-    if (file == m_main_file)
+void AutoReloadHelper::setMainFile(const std::string& file) {
+    std::string expanded_file = StringUtil::expandFilename(file);
+    if (expanded_file == m_main_file)
         return;
-    m_main_file = file;
+    m_main_file = expanded_file;
     reload();
 }
 
-void AutoReloadHelper::addFile(std::string file) {
+void AutoReloadHelper::addFile(const std::string& file) {
     if (file.empty())
         return;
-    file = StringUtil::expandFilename(file);
-    m_timestamps[file] = FileUtil::getLastStatusChangeTimestamp(file.c_str());
+    std::string expanded_file = StringUtil::expandFilename(file);
+    m_timestamps[expanded_file] = FileUtil::getLastStatusChangeTimestamp(expanded_file.c_str());
 }
 
 void AutoReloadHelper::reload() {

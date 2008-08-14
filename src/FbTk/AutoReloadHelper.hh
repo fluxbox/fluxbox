@@ -34,8 +34,8 @@ namespace FbTk {
 class AutoReloadHelper {
 public:
 
-    void setMainFile(std::string filename);
-    void addFile(std::string filename);
+    void setMainFile(const std::string& filename);
+    void addFile(const std::string& filename);
     void setReloadCmd(RefCount<Command<void> > cmd) { m_reload_cmd = cmd; }
 
     void checkReload();
