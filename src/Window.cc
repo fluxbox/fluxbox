@@ -1526,6 +1526,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
         sendConfigureNotify();
 
         fullscreen = true;
+        frame().setFullscreen(true);
 
         setFullscreenLayer();
         if (!isFocused())
@@ -1534,6 +1535,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
     } else if (!flag && isFullscreen()) {
 
         fullscreen = false;
+        frame().setFullscreen(false);
 
         frame().setUseShape(true);
         if (m_toggled_decos) {
@@ -1668,6 +1670,7 @@ void FluxboxWindow::setMaximizedState(int type) {
         maximized ^= MAX_HORZ;
     }
 
+    frame().setMaximized(maximized);
     // ensure we apply the sizehints here, otherwise some
     // apps (eg xterm) end up a little bit .. crappy (visually)
 
@@ -3379,6 +3382,7 @@ void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
 
     resizing = true;
     maximized = MAX_NONE;
+    frame().setMaximized(maximized);
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme()->upperLeftAngleCursor() :
                            (m_resize_corner == RIGHTTOP) ? frame().theme()->upperRightAngleCursor() :

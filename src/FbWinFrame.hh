@@ -95,25 +95,38 @@ public:
         DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
     };
 
-    typedef struct SizeHints {
+    class SizeHints {
+    public:
+        SizeHints():
+            min_width(1), max_width(0), min_height(1), max_height(0),
+            width_inc(1), height_inc(1), base_width(0), base_height(0),
+            min_aspect_x(0), max_aspect_x(0),
+            min_aspect_y(0), max_aspect_y(0) { }
+
         void apply(unsigned int &w, unsigned int &h,
                    bool maximizing = false) const;
         bool valid(unsigned int width, unsigned int height) const;
         void displaySize(unsigned int &i, unsigned int &j,
                          unsigned int width, unsigned int height) const;
-        unsigned int min_width;
-        unsigned int max_width;
-        unsigned int min_height;
-        unsigned int max_height;
-        unsigned int width_inc;
-        unsigned int height_inc;
-        unsigned int min_aspect_x;
-        unsigned int max_aspect_x;
-        unsigned int min_aspect_y;
-        unsigned int max_aspect_y;
-        unsigned int base_width;
-        unsigned int base_height;
-    } SizeHints;
+
+        unsigned int min_width, max_width, min_height, max_height,
+                     width_inc, height_inc, base_width, base_height,
+                     min_aspect_x, max_aspect_x, min_aspect_y, max_aspect_y;
+    };
+
+    class State {
+    public:
+        State():
+            size_hints(),
+            deco_mask(DECOR_NORMAL),
+            focused(false),
+            shaded(false), fullscreen(false), maximized(0) { }
+
+        SizeHints size_hints;
+        unsigned int deco_mask;
+        bool focused, shaded, fullscreen;
+        int maximized;
+    };
 
     /// create a top level window
     FbWinFrame(BScreen &screen, FocusableTheme<FbWinFrameTheme> &theme,
@@ -162,6 +175,9 @@ public:
 
     /// set focus/unfocus style
     void setFocus(bool newvalue);
+    void setFullscreen(bool value) { m_state.fullscreen = value; }
+    void setMaximized(int value) { m_state.maximized = value; }
+
     void setFocusTitle(const std::string &str) { m_label.setText(str); }
     bool setTabMode(TabMode tabmode);
     void updateTabProperties() { alignTabs(); }
@@ -205,14 +221,14 @@ public:
     /// remove any handler for the windows
     void removeEventHandler();
 
-    const SizeHints &sizeHints() const { return m_size_hints; }
-    void setSizeHints(const SizeHints &hint) { m_size_hints = hint; }
+    const SizeHints &sizeHints() const { return m_state.size_hints; }
+    void setSizeHints(const SizeHints &hint) { m_state.size_hints = hint; }
 
     void applySizeHints(unsigned int &width, unsigned int &height,
                         bool maximizing = false) const;
     void displaySize(unsigned int width, unsigned int height) const;
 
-    void setDecorationMask(unsigned int mask) { m_decoration_mask = mask; }
+    void setDecorationMask(unsigned int mask) { m_state.deco_mask = mask; }
     void applyDecorations();
 
     // this function translates its arguments according to win_gravity
@@ -271,8 +287,8 @@ public:
     FbTk::FbWindow &gripLeft() { return m_grip_left; }
     const FbTk::FbWindow &gripRight() const { return m_grip_right; }
     FbTk::FbWindow &gripRight() { return m_grip_right; }
-    bool focused() const { return m_focused; }
-    bool isShaded() const { return m_shaded; }
+    bool focused() const { return m_state.focused; }
+    bool isShaded() const { return m_state.shaded; }
     FocusableTheme<FbWinFrameTheme> &theme() const { return m_theme; }
     /// @return titlebar height
     unsigned int titlebarHeight() const { return (m_use_titlebar?m_titlebar.height()+m_titlebar.borderWidth():0); }
@@ -370,11 +386,9 @@ private:
         m_buttons_right; ///< buttons to the right
     typedef std::list<FbTk::TextButton *> LabelList;
     int m_bevel;  ///< bevel between titlebar items and titlebar
-    unsigned int m_decoration_mask; ///< bitmask of applied decorations
     bool m_use_titlebar; ///< if we should use titlebar
     bool m_use_tabs; ///< if we should use tabs (turns them off in external mode only)
     bool m_use_handle; ///< if we should use handle
-    bool m_focused; ///< focused/unfocused mode
     bool m_visible; ///< if we are currently showing
     ///< do we use screen or window alpha settings ? (0 = window, 1 = default, 2 = default and window never set)
 
@@ -419,12 +433,11 @@ private:
     // last gravity that this window was *actively* placed with
     int m_active_gravity;
     unsigned int m_active_orig_client_bw;
-    SizeHints m_size_hints;
+    State m_state;
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
     unsigned int m_height_before_shade; ///< height before shade, so we can restore it when we unshade
-    bool m_shaded; ///< wheter we're shaded or not
     /// alpha values
     typedef FbTk::ConstObjectAccessor<unsigned char, FbWinFrameTheme> AlphaAcc;
     FbTk::DefaultValue<unsigned char, AlphaAcc> m_focused_alpha;

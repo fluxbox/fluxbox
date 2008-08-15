@@ -78,11 +78,9 @@ FbWinFrame::FbWinFrame(BScreen &screen,
                  ButtonMotionMask | ExposureMask |
                  EnterWindowMask | LeaveWindowMask),
     m_bevel(1),
-    m_decoration_mask(DECOR_NORMAL),
     m_use_titlebar(true),
     m_use_tabs(true),
     m_use_handle(true),
-    m_focused(false),
     m_visible(false),
     m_button_pm(0),
     m_tabmode(screen.getDefaultInternalTabs()?INTERNAL:EXTERNAL),
@@ -91,7 +89,6 @@ FbWinFrame::FbWinFrame(BScreen &screen,
     m_need_render(true),
     m_button_size(1),
     m_height_before_shade(1),
-    m_shaded(false),
     m_focused_alpha(AlphaAcc(*theme.focusedTheme(), &FbWinFrameTheme::alpha)),
     m_unfocused_alpha(AlphaAcc(*theme.unfocusedTheme(), &FbWinFrameTheme::alpha)),
     m_shape(m_window, theme->shapePlace()),
@@ -203,8 +200,8 @@ void FbWinFrame::shade() {
         return;
 
     // toggle shade
-    m_shaded = !m_shaded;
-    if (m_shaded) { // i.e. should be shaded now
+    m_state.shaded = !m_state.shaded;
+    if (m_state.shaded) { // i.e. should be shaded now
         m_height_before_shade = m_window.height();
         m_window.resize(m_window.width(), m_titlebar.height());
         alignTabs();
@@ -250,7 +247,7 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
     if (move && x == window().x() && y == window().y())
         move = false;
 
-    if (resize && (m_shaded || width == FbWinFrame::width() &&
+    if (resize && (m_state.shaded || width == FbWinFrame::width() &&
                                height == FbWinFrame::height()))
         resize = false;
 
@@ -412,7 +409,7 @@ void FbWinFrame::alignTabs() {
 
 void FbWinFrame::notifyMoved(bool clear) {
     // not important if no alpha...
-    unsigned char alpha = getAlpha(m_focused);
+    unsigned char alpha = getAlpha(m_state.focused);
     if (alpha == 255)
         return;
 
@@ -469,14 +466,14 @@ void FbWinFrame::clearAll() {
 }
 
 void FbWinFrame::setFocus(bool newvalue) {
-    if (m_focused == newvalue)
+    if (m_state.focused == newvalue)
         return;
 
-    m_focused = newvalue;
+    m_state.focused = newvalue;
 
     if (FbTk::Transparent::haveRender() && 
         getAlpha(true) != getAlpha(false)) { // different alpha for focused and unfocused
-        unsigned char alpha = getAlpha(m_focused);
+        unsigned char alpha = getAlpha(m_state.focused);
         if (FbTk::Transparent::haveComposite()) {
             m_tab_container.setAlpha(255);
             m_window.setOpaque(alpha);
@@ -498,12 +495,12 @@ void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
     else
         m_unfocused_alpha = alpha;
 
-    if (m_focused == focused)
+    if (m_state.focused == focused)
         applyAlpha();
 }
 
 void FbWinFrame::applyAlpha() {
-    unsigned char alpha = getAlpha(m_focused);
+    unsigned char alpha = getAlpha(m_state.focused);
     if (FbTk::Transparent::haveComposite())
         m_window.setOpaque(alpha);
     else {
@@ -845,7 +842,7 @@ void FbWinFrame::reconfigure() {
     m_bevel = theme()->bevelWidth();
     setBorderWidth();
 
-    if (m_decoration_mask & DECORM_HANDLE && theme()->handleWidth() != 0)
+    if (m_state.deco_mask & DECORM_HANDLE && theme()->handleWidth() != 0)
         showHandle();
     else
         hideHandle();
@@ -889,7 +886,7 @@ void FbWinFrame::reconfigure() {
     }
 
     // leave client+grips alone if we're shaded (it'll get fixed when we unshade)
-    if (!m_shaded) {
+    if (!m_state.shaded) {
         int client_top = 0;
         int client_height = m_window.height();
         if (m_use_titlebar) {
@@ -945,7 +942,7 @@ void FbWinFrame::reconfigure() {
         // update transparency settings
         if (FbTk::Transparent::haveRender()) {
             unsigned char alpha =
-                getAlpha(m_focused);
+                getAlpha(m_state.focused);
             if (FbTk::Transparent::haveComposite()) {
                 m_tab_container.setAlpha(255);
                 m_window.setOpaque(alpha);
@@ -1160,7 +1157,7 @@ void FbWinFrame::applyTitlebar() {
     getCurrentFocusPixmap(label_pm, title_pm,
                           label_color, title_color);
 
-    unsigned char alpha = getAlpha (m_focused);
+    unsigned char alpha = getAlpha (m_state.focused);
     m_titlebar.setAlpha(alpha);
     m_label.setAlpha(alpha);
 
@@ -1212,12 +1209,12 @@ void FbWinFrame::renderHandles() {
 
 void FbWinFrame::applyHandles() {
 
-    unsigned char alpha = getAlpha (m_focused);
+    unsigned char alpha = getAlpha(m_state.focused);
     m_handle.setAlpha(alpha);
     m_grip_left.setAlpha(alpha);
     m_grip_right.setAlpha(alpha);
 
-    if (m_focused) {
+    if (m_state.focused) {
 
         if (m_handle_focused_pm) {
             m_handle.setBackgroundPixmap(m_handle_focused_pm);
@@ -1302,7 +1299,7 @@ void FbWinFrame::init() {
 
     m_clientarea.setBorderWidth(0);
     m_label.setBorderWidth(0);
-    m_shaded = false;
+    m_state.shaded = false;
 
     setTabMode(NOTSET);
 
@@ -1327,13 +1324,13 @@ void FbWinFrame::applyButton(FbTk::Button &btn) {
     else
         btn.setPressedColor(m_button_pressed_color);
 
-    Pixmap pm = m_focused ? m_button_pm : m_button_unfocused_pm;
-    btn.setAlpha(getAlpha(m_focused));
+    Pixmap pm = m_state.focused ? m_button_pm : m_button_unfocused_pm;
+    btn.setAlpha(getAlpha(m_state.focused));
     btn.setGC(theme()->buttonPicGC());
     if (pm)
         btn.setBackgroundPixmap(pm);
     else
-        btn.setBackgroundColor(m_focused ? m_button_color
+        btn.setBackgroundColor(m_state.focused ? m_button_color
                                          : m_button_unfocused_color);
 }
 
@@ -1355,7 +1352,7 @@ void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
 
 void FbWinFrame::getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                        FbTk::Color &label_color, FbTk::Color &title_color) {
-    if (m_focused) {
+    if (m_state.focused) {
         if (m_label_focused_pm != 0)
             label_pm = m_label_focused_pm;
         else
@@ -1379,12 +1376,12 @@ void FbWinFrame::getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
 }
 
 void FbWinFrame::applyTabContainer() {
-    m_tab_container.setAlpha(getAlpha(m_focused));
+    m_tab_container.setAlpha(getAlpha(m_state.focused));
 
     // do the parent container
     Pixmap tabcontainer_pm = None;
     FbTk::Color *tabcontainer_color = NULL;
-    if (m_focused) {
+    if (m_state.focused) {
         if (m_tabcontainer_focused_pm != 0)
             tabcontainer_pm = m_tabcontainer_focused_pm;
         else
@@ -1421,13 +1418,13 @@ void FbWinFrame::applyDecorations() {
     // tab deocration only affects if we're external
     // must do before the setTabMode in case it goes
     // to external and is meant to be hidden
-    if (m_decoration_mask & DECORM_TAB)
+    if (m_state.deco_mask & DECORM_TAB)
         client_move |= showTabs();
     else
         client_move |= hideTabs();
 
     // we rely on frame not doing anything if it is already shown/hidden
-    if (m_decoration_mask & DECORM_TITLEBAR) {
+    if (m_state.deco_mask & DECORM_TITLEBAR) {
         client_move |= showTitlebar();
         if (m_screen.getDefaultInternalTabs())
             client_move |= setTabMode(INTERNAL);
@@ -1435,11 +1432,11 @@ void FbWinFrame::applyDecorations() {
             client_move |= setTabMode(EXTERNAL);
     } else {
         client_move |= hideTitlebar();
-        if (m_decoration_mask & DECORM_TAB)
+        if (m_state.deco_mask & DECORM_TAB)
             client_move |= setTabMode(EXTERNAL);
     }
 
-    if (m_decoration_mask & DECORM_HANDLE)
+    if (m_state.deco_mask & DECORM_HANDLE)
         client_move |= showHandle();
     else
         client_move |= hideHandle();
@@ -1461,7 +1458,7 @@ void FbWinFrame::applyDecorations() {
 
 bool FbWinFrame::setBorderWidth(bool do_move) {
     unsigned int border_width = theme()->border().width();
-    unsigned int win_bw = m_decoration_mask & DECORM_BORDER ? border_width : 0;
+    unsigned int win_bw = m_state.deco_mask & DECORM_BORDER ? border_width : 0;
 
     if (border_width &&
         theme()->border().color().pixel() != window().borderColor()) {
@@ -1598,7 +1595,7 @@ void FbWinFrame::gravityTranslate(int &x, int &y,
 }
 
 unsigned int FbWinFrame::normalHeight() const {
-    if (m_shaded)
+    if (m_state.shaded)
         return m_height_before_shade;
     return height();
 }
