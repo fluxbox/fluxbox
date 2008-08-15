@@ -305,7 +305,7 @@ public:
      * @param width will be filled in with maximum width
      * @param height will be filled in with maximum height
      */
-    void maxSize(unsigned int &width, unsigned int &height) const;
+    void getMaxSize(unsigned int* width, unsigned int* height) const;
     void setWorkspace(int n);
     void updateFunctions();
     void restoreAttributes();

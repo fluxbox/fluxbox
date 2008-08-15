@@ -1389,7 +1389,7 @@ void Ewmh::updateActions(FluxboxWindow &win) {
         actions.push_back(m_net->wm_action_minimize);
 
     unsigned int max_width, max_height;
-    win.maxSize(max_width, max_height);
+    win.getMaxSize(&max_width, &max_height);
 
     // if unlimited max width we can maximize horizontal
     if (max_width == 0) {

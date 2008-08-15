@@ -1261,18 +1261,33 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
 
 }
 
-void FluxboxWindow::maxSize(unsigned int &width, unsigned int &height) const {
+void FluxboxWindow::getMaxSize(unsigned int* width, unsigned int* height) const {
+
+    if (!width || !height)
+        return;
+
     ClientList::const_iterator it = clientList().begin();
     ClientList::const_iterator it_end = clientList().end();
-    width = height = 0; // unlimited
+
+    unsigned int w;
+    unsigned int h;
+
+    w = h = 0; // unlimited
+
     for (; it != it_end; ++it) {
         // special case for max height/width == 0
         // 0 indicates unlimited size, so we skip them
-        if (!height || (*it)->maxHeight() && height > (*it)->maxHeight())
-            height = (*it)->maxHeight();
-        if (!width || (*it)->maxWidth() && width > (*it)->maxWidth())
-            width = (*it)->maxWidth();
+        if (h || (*it)->maxHeight() && h > (*it)->maxHeight())
+            h = (*it)->maxHeight();
+        if (!w || (*it)->maxWidth() && w > (*it)->maxWidth())
+            w = (*it)->maxWidth();
     }
+
+    if (width)
+        *width = w;
+
+    if (height)
+        *height = h;
 }
 
 // returns whether the focus was "set" to this window
