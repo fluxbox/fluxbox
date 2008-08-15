@@ -1820,8 +1820,7 @@ void BScreen::hidePosition() {
     m_pos_window->hide();
 }
 
-// can be negative when base_width/height > min_width/height
-void BScreen::showGeometry(int gx, int gy) {
+void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     if (!doShowWindowPos())
         return;
 

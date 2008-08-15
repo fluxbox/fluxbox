@@ -390,7 +390,7 @@ public:
     void showPosition(int x, int y);
     void hidePosition();
     /// show geomentry with "width x height"-text, not size of window
-    void showGeometry(int width, int height);
+    void showGeometry(unsigned int width, unsigned int height);
     void hideGeometry();
 
     /// @param text the text to be displayed in the tooltip window

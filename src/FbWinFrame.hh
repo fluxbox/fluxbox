@@ -99,7 +99,7 @@ public:
         void apply(unsigned int &w, unsigned int &h,
                    bool maximizing = false) const;
         bool valid(unsigned int width, unsigned int height) const;
-        void displaySize(int &i, int &j,
+        void displaySize(unsigned int &i, unsigned int &j,
                          unsigned int width, unsigned int height) const;
         unsigned int min_width;
         unsigned int max_width;
@@ -207,6 +207,10 @@ public:
 
     const SizeHints &sizeHints() const { return m_size_hints; }
     void setSizeHints(const SizeHints &hint) { m_size_hints = hint; }
+
+    void applySizeHints(unsigned int &width, unsigned int &height,
+                        bool maximizing) const;
+    void displaySize(unsigned int width, unsigned int height) const;
 
     void setDecorationMask(unsigned int mask) { m_decoration_mask = mask; }
     void applyDecorations();

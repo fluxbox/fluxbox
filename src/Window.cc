@@ -1690,7 +1690,7 @@ void FluxboxWindow::setMaximizedState(int type) {
     if (!screen().getMaxIgnoreIncrement() || !maximized) {
         ResizeDirection old_resize_corner = m_resize_corner;
         m_resize_corner = NOCORNER;
-        fixsize(0, 0, (maximized ? true : false));
+        fixsize(maximized ? true : false);
         m_resize_corner = old_resize_corner;
     }
 
@@ -2835,9 +2835,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             unsigned int old_resize_w = m_last_resize_w;
             unsigned int old_resize_h = m_last_resize_h;
 
-            // move rectangle
-            int gx = 0, gy = 0;
-
             int dx = me.x - m_button_grab_x;
             int dy = me.y - m_button_grab_y;
             if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
@@ -2870,7 +2867,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 }
             }
 
-            fixsize(&gx, &gy);
+            fixsize();
+            frame().displaySize(m_last_resize_w, m_last_resize_h);
 
             if (old_resize_x != m_last_resize_x ||
                 old_resize_y != m_last_resize_y ||
@@ -2889,7 +2887,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                                        m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
                                        m_last_resize_h - 1 + 2 * frame().window().borderWidth());
 
-                screen().showGeometry(gx, gy);
             }
         }
     } else if (m_attaching_tab != 0) {
@@ -3413,7 +3410,6 @@ void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
                 false, ButtonMotionMask | ButtonReleaseMask,
                 GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime);
 
-    int gx = 0, gy = 0;
     m_button_grab_x = x;
     m_button_grab_y = y;
     m_last_resize_x = frame().x();
@@ -3421,9 +3417,8 @@ void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
     m_last_resize_w = frame().width();
     m_last_resize_h = frame().height();
 
-    fixsize(&gx, &gy);
-
-    screen().showGeometry(gx, gy);
+    fixsize();
+    frame().displaySize(m_last_resize_w, m_last_resize_h);
 
     parent().drawRectangle(screen().rootTheme()->opGC(),
                        m_last_resize_x, m_last_resize_y,
@@ -3720,23 +3715,8 @@ unsigned int FluxboxWindow::normalHeight() const {
 
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
-void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
-    int decoration_height = frame().titlebarHeight() + frame().handleHeight();
-
-    // dx is new width = current width + difference between new and old x values
-    //int dx = frame().width() + frame().x() - m_last_resize_x;
-    unsigned int dw = m_last_resize_w;
-
-    // dy = new height (w/o decorations), similarly
-    unsigned int dh = m_last_resize_h - decoration_height;
-
-    frame().sizeHints().apply(dw, dh, maximizing);
-    if (user_w && user_h)
-        frame().sizeHints().displaySize(*user_w, *user_h, dw, dh);
-
-    // update last resize
-    m_last_resize_w = dw;
-    m_last_resize_h = dh + decoration_height;
+void FluxboxWindow::fixsize(bool maximizing) {
+    frame().applySizeHints(m_last_resize_w, m_last_resize_h, maximizing);
 
     // move X if necessary
     if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
@@ -3748,7 +3728,6 @@ void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
         m_resize_corner == TOP) {
         m_last_resize_y = frame().y() + frame().height() - m_last_resize_h;
     }
-
 }
 
 void FluxboxWindow::moveResizeClient(WinClient &client, int x, int y,

@@ -1668,6 +1668,20 @@ int FbWinFrame::yOffset() const {
     return 0;
 }
 
+void FbWinFrame::applySizeHints(unsigned int &width, unsigned int &height,
+                                bool maximizing) const {
+    height -= titlebarHeight() + handleHeight();
+    sizeHints().apply(width, height, maximizing);
+    height += titlebarHeight() + handleHeight();
+}
+
+void FbWinFrame::displaySize(unsigned int width, unsigned int height) const {
+    unsigned int i, j;
+    sizeHints().displaySize(i, j,
+                            width, height - titlebarHeight() - handleHeight());
+    m_screen.showGeometry(i, j);
+}
+
 /* For aspect ratios
    Note that its slightly simplified in that only the
    line gradient is given - this is because for aspect
@@ -1804,8 +1818,8 @@ bool FbWinFrame::SizeHints::valid(unsigned int w, unsigned int h) const {
     return true;
 }
 
-void FbWinFrame::SizeHints::displaySize(int &i, int &j,
+void FbWinFrame::SizeHints::displaySize(unsigned int &i, unsigned int &j,
         unsigned int width, unsigned int height) const {
-    i = static_cast<signed>(width - base_width) / width_inc;
-    j = static_cast<signed>(height - base_height) / height_inc;
+    i = (width - base_width) / width_inc;
+    j = (height - base_height) / height_inc;
 }
