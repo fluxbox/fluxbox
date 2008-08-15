@@ -427,7 +427,8 @@ void FluxboxWindow::init() {
     m_blackbox_attrib.premax_w = m_blackbox_attrib.premax_h = 0;
 
     // set default decorations but don't apply them
-    setDecorationMask(getDecoMaskFromString(screen().defaultDeco()), false);
+    setDecorationMask(FbWinFrame::getDecoMaskFromString(screen().defaultDeco()),
+                      false);
 
     functions.resize = functions.move = functions.iconify = functions.maximize
     = functions.close = functions.tabable = true;
@@ -4033,26 +4034,6 @@ void FluxboxWindow::associateClient(WinClient &client) {
     evm.add(*this, client.window());
     client.setFluxboxWindow(this);
     client.titleSig().attach(this);
-}
-
-int FluxboxWindow::getDecoMaskFromString(const string &str_label) {
-    if (strcasecmp(str_label.c_str(), "NONE") == 0)
-        return FbWinFrame::DECOR_NONE;
-    if (strcasecmp(str_label.c_str(), "NORMAL") == 0)
-        return FbWinFrame::DECOR_NORMAL;
-    if (strcasecmp(str_label.c_str(), "TINY") == 0)
-        return FbWinFrame::DECOR_TINY;
-    if (strcasecmp(str_label.c_str(), "TOOL") == 0)
-        return FbWinFrame::DECOR_TOOL;
-    if (strcasecmp(str_label.c_str(), "BORDER") == 0)
-        return FbWinFrame::DECOR_BORDER;
-    if (strcasecmp(str_label.c_str(), "TAB") == 0)
-        return FbWinFrame::DECOR_TAB;
-    int mask = -1;
-    if (str_label.size() > 1 && str_label[0] == '0' && str_label[1] == 'x' ||
-        str_label.size() > 0 && isdigit(str_label[0]))
-        mask = strtol(str_label.c_str(), NULL, 0);
-    return mask;
 }
 
 int FluxboxWindow::getOnHead() const {

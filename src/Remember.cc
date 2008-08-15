@@ -513,7 +513,7 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
                 app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "deco") {
-                int deco = FluxboxWindow::getDecoMaskFromString(str_label);
+                int deco = FbWinFrame::getDecoMaskFromString(str_label);
                 if (deco == -1)
                     had_error = 1;
                 else

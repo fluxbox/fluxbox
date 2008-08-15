@@ -1407,6 +1407,26 @@ void FbWinFrame::applyTabContainer() {
     }
 }
 
+int FbWinFrame::getDecoMaskFromString(const string &str_label) {
+    if (strcasecmp(str_label.c_str(), "NONE") == 0)
+        return DECOR_NONE;
+    if (strcasecmp(str_label.c_str(), "NORMAL") == 0)
+        return DECOR_NORMAL;
+    if (strcasecmp(str_label.c_str(), "TINY") == 0)
+        return DECOR_TINY;
+    if (strcasecmp(str_label.c_str(), "TOOL") == 0)
+        return DECOR_TOOL;
+    if (strcasecmp(str_label.c_str(), "BORDER") == 0)
+        return DECOR_BORDER;
+    if (strcasecmp(str_label.c_str(), "TAB") == 0)
+        return DECOR_TAB;
+    int mask = -1;
+    if (str_label.size() > 1 && str_label[0] == '0' && str_label[1] == 'x' ||
+        str_label.size() > 0 && isdigit(str_label[0]))
+        mask = strtol(str_label.c_str(), NULL, 0);
+    return mask;
+}
+
 void FbWinFrame::applyDecorations() {
     int grav_x=0, grav_y=0;
     // negate gravity

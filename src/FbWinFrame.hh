@@ -228,6 +228,7 @@ public:
                         bool maximizing = false) const;
     void displaySize(unsigned int width, unsigned int height) const;
 
+    static int getDecoMaskFromString(const std::string &str);
     void setDecorationMask(unsigned int mask) { m_state.deco_mask = mask; }
     void applyDecorations();
 

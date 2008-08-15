@@ -465,8 +465,6 @@ public:
     int layerNum() const { return m_layernum; }
     void setLayerNum(int layernum);
 
-    static int getDecoMaskFromString(const std::string &str);
-
     unsigned int titlebarHeight() const;
 
     int initialState() const;
