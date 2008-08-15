@@ -690,31 +690,6 @@ void WinClient::updateWMProtocols() {
 
 }
 
-// check if the given width and height satisfy the size hints
-bool WinClient::checkSizeHints(unsigned int width, unsigned int height) {
-    if (width < m_size_hints.min_width || height < m_size_hints.min_height)
-        return false;
-
-    if (width > m_size_hints.max_width || height > m_size_hints.max_height)
-        return false;
-
-    if ((width - m_size_hints.base_width) % m_size_hints.width_inc != 0)
-        return false;
-
-    if ((height - m_size_hints.base_height) % m_size_hints.height_inc != 0)
-        return false;
-
-    double ratio = (double)width / (double)height;
-
-    if (m_size_hints.min_aspect_y > 0 && (double)m_size_hints.min_aspect_x / (double)m_size_hints.min_aspect_y > ratio)
-        return false;
-
-    if (m_size_hints.max_aspect_y > 0 && (double)m_size_hints.max_aspect_x / (double)m_size_hints.max_aspect_y < ratio)
-        return false;
-
-    return true;
-}
-
 void WinClient::removeTransientFromWaitingList() {
 
     // holds the windows that dont have empty

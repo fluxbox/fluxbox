@@ -96,6 +96,11 @@ public:
     };
 
     typedef struct SizeHints {
+        void apply(unsigned int &w, unsigned int &h,
+                   bool maximizing = false) const;
+        bool valid(unsigned int width, unsigned int height) const;
+        void displaySize(int &i, int &j,
+                         unsigned int width, unsigned int height) const;
         unsigned int min_width;
         unsigned int max_width;
         unsigned int min_height;
@@ -200,16 +205,7 @@ public:
     /// remove any handler for the windows
     void removeEventHandler();
 
-    /**
-     * Changes width and height to the nearest (lower) value
-     * that conforms to it's size hints.
-     *
-     * display_* give the values that would be displayed
-     * to the user when resizing.
-     * We use pointers for display_* since they are optional.
-     */
-    void applySizeHints(int &width, int &height, int *display_width = 0,
-            int *display_height = 0, bool maximizing = false);
+    const SizeHints &sizeHints() const { return m_size_hints; }
     void setSizeHints(const SizeHints &hint) { m_size_hints = hint; }
 
     void setDecorationMask(unsigned int mask) { m_decoration_mask = mask; }

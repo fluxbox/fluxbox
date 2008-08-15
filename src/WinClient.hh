@@ -81,8 +81,6 @@ public:
     void setAttentionState(bool value);
     const std::string &title() const { return m_title; }
 
-    bool checkSizeHints(unsigned int width, unsigned int height);
-
     void setGroupLeftWindow(Window win);
 
     void saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs, int nelements);

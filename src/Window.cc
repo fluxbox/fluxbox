@@ -550,9 +550,9 @@ void FluxboxWindow::init() {
     }
 #endif // DEBUG
 
-    int real_width = frame().width();
-    int real_height = frame().height() - frame().titlebarHeight() - frame().handleHeight();
-    frame().applySizeHints(real_width, real_height);
+    unsigned int real_width = frame().width();
+    unsigned int real_height = frame().height() - frame().titlebarHeight() - frame().handleHeight();
+    frame().sizeHints().apply(real_width, real_height);
     real_height += frame().titlebarHeight() + frame().handleHeight();
 
     if (m_placed)
@@ -2483,12 +2483,12 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     // make sure the new width/height would be ok with all clients, or else they
     // could try to resize the window back and forth
     if (cr.value_mask & CWWidth || cr.value_mask & CWHeight) {
-        int new_w = (cr.value_mask & CWWidth) ? cr.width : cw;
-        int new_h = (cr.value_mask & CWHeight) ? cr.height : ch;
+        unsigned int new_w = (cr.value_mask & CWWidth) ? cr.width : cw;
+        unsigned int new_h = (cr.value_mask & CWHeight) ? cr.height : ch;
         ClientList::iterator it = clientList().begin();
         ClientList::iterator it_end = clientList().end();
         for (; it != it_end; ++it) {
-            if (*it != client && !(*it)->checkSizeHints(new_w, new_h))
+            if (*it != client && !(*it)->sizeHints().valid(new_w, new_h))
                 cr.value_mask = cr.value_mask & ~(CWWidth | CWHeight);
         }
     }
@@ -3725,12 +3725,14 @@ void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
 
     // dx is new width = current width + difference between new and old x values
     //int dx = frame().width() + frame().x() - m_last_resize_x;
-    int dw = m_last_resize_w;
+    unsigned int dw = m_last_resize_w;
 
     // dy = new height (w/o decorations), similarly
-    int dh = m_last_resize_h - decoration_height;
+    unsigned int dh = m_last_resize_h - decoration_height;
 
-    frame().applySizeHints(dw, dh, user_w, user_h, maximizing);
+    frame().sizeHints().apply(dw, dh, maximizing);
+    if (user_w && user_h)
+        frame().sizeHints().displaySize(*user_w, *user_h, dw, dh);
 
     // update last resize
     m_last_resize_w = dw;
