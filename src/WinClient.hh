@@ -22,6 +22,7 @@
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
 
+#include "FbWinFrame.hh"
 #include "Window.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/FbString.hh"
@@ -42,21 +43,6 @@ public:
         unsigned long functions;   // Motif wm functions
         unsigned long decorations; // Motif wm decorations
     } MwmHints;
-
-    typedef struct SizeHints {
-        unsigned int min_width;
-        unsigned int max_width;
-        unsigned int min_height;
-        unsigned int max_height;
-        unsigned int width_inc;
-        unsigned int height_inc;
-        unsigned int min_aspect_x;
-        unsigned int max_aspect_x;
-        unsigned int min_aspect_y;
-        unsigned int max_aspect_y;
-        unsigned int base_width;
-        unsigned int base_height;
-    } SizeHints;
 
     WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin = 0);
 
@@ -95,16 +81,6 @@ public:
     void setAttentionState(bool value);
     const std::string &title() const { return m_title; }
 
-    /**
-     * Changes width and height to the nearest (lower) value
-     * that conforms to it's size hints.
-     *
-     * display_* give the values that would be displayed
-     * to the user when resizing.
-     * We use pointers for display_* since they are optional.
-     */
-    void applySizeHints(int &width, int &height, int *display_width = 0,
-            int *display_height = 0, bool maximizing = false);
     bool checkSizeHints(unsigned int width, unsigned int height);
 
     void setGroupLeftWindow(Window win);
@@ -143,6 +119,7 @@ public:
     Window getGroupLeftWindow() const;
 
     const MwmHints *getMwmHint() const { return m_mwm_hint; }
+    const FbWinFrame::SizeHints &sizeHints() const { return m_size_hints; }
 
     unsigned int minWidth() const { return m_size_hints.min_width; }
     unsigned int minHeight() const { return m_size_hints.min_height; }
@@ -187,7 +164,7 @@ private:
 
     Focusable::WindowType m_window_type;
     MwmHints *m_mwm_hint;
-    SizeHints m_size_hints;
+    FbWinFrame::SizeHints m_size_hints;
 
     Strut *m_strut;
     // map transient_for X window to winclient transient 

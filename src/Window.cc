@@ -552,7 +552,7 @@ void FluxboxWindow::init() {
 
     int real_width = frame().width();
     int real_height = frame().height() - frame().titlebarHeight() - frame().handleHeight();
-    m_client->applySizeHints(real_width, real_height);
+    frame().applySizeHints(real_width, real_height);
     real_height += frame().titlebarHeight() + frame().handleHeight();
 
     if (m_placed)
@@ -1066,6 +1066,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     // frame focused doesn't necessarily mean input focused
     frame().setLabelButtonFocus(*button);
     frame().setShapingClient(&client, false);
+    frame().setSizeHints(client.sizeHints());
     return ret;
 }
 
@@ -1090,6 +1091,7 @@ void FluxboxWindow::associateClientWindow(bool use_attrs,
         frame().resizeForClient(m_client->width(), m_client->height());
 
     frame().setActiveGravity(m_client->gravity(), m_client->old_bw);
+    frame().setSizeHints(m_client->sizeHints());
     frame().setClientWindow(*m_client);
 }
 
@@ -3728,7 +3730,7 @@ void FluxboxWindow::fixsize(int *user_w, int *user_h, bool maximizing) {
     // dy = new height (w/o decorations), similarly
     int dh = m_last_resize_h - decoration_height;
 
-    m_client->applySizeHints(dw, dh, user_w, user_h, maximizing);
+    frame().applySizeHints(dw, dh, user_w, user_h, maximizing);
 
     // update last resize
     m_last_resize_w = dw;

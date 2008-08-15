@@ -95,6 +95,21 @@ public:
         DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
     };
 
+    typedef struct SizeHints {
+        unsigned int min_width;
+        unsigned int max_width;
+        unsigned int min_height;
+        unsigned int max_height;
+        unsigned int width_inc;
+        unsigned int height_inc;
+        unsigned int min_aspect_x;
+        unsigned int max_aspect_x;
+        unsigned int min_aspect_y;
+        unsigned int max_aspect_y;
+        unsigned int base_width;
+        unsigned int base_height;
+    } SizeHints;
+
     /// create a top level window
     FbWinFrame(BScreen &screen, FocusableTheme<FbWinFrameTheme> &theme,
                FbTk::ImageControl &imgctrl,
@@ -184,6 +199,18 @@ public:
     void setEventHandler(FbTk::EventHandler &evh);
     /// remove any handler for the windows
     void removeEventHandler();
+
+    /**
+     * Changes width and height to the nearest (lower) value
+     * that conforms to it's size hints.
+     *
+     * display_* give the values that would be displayed
+     * to the user when resizing.
+     * We use pointers for display_* since they are optional.
+     */
+    void applySizeHints(int &width, int &height, int *display_width = 0,
+            int *display_height = 0, bool maximizing = false);
+    void setSizeHints(const SizeHints &hint) { m_size_hints = hint; }
 
     void setDecorationMask(unsigned int mask) { m_decoration_mask = mask; }
     void applyDecorations();
@@ -392,6 +419,7 @@ private:
     // last gravity that this window was *actively* placed with
     int m_active_gravity;
     unsigned int m_active_orig_client_bw;
+    SizeHints m_size_hints;
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
