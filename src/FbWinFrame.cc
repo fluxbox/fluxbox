@@ -1689,6 +1689,14 @@ void closestPointToAspect(unsigned int &ret_x, unsigned int &ret_y,
     ret_y = static_cast<unsigned int>(u * aspect_y);
 }
 
+unsigned int increaseToMultiple(unsigned int val, unsigned int inc) {
+    return val % inc ? val + inc - (val % inc) : val;
+}
+
+unsigned int decreaseToMultiple(unsigned int val, unsigned int inc) {
+    return val % inc ? val - (val % inc) : val;
+}
+    
 /**
  * Changes width and height to the nearest (lower) value
  * that conforms to it's size hints.
@@ -1700,20 +1708,13 @@ void closestPointToAspect(unsigned int &ret_x, unsigned int &ret_y,
  * See ICCCM section 4.1.2.3
  */
 void FbWinFrame::SizeHints::apply(unsigned int &width, unsigned int &height,
-                                  bool maximizing) const {
-
-    // we apply aspect ratios before incrementals
-    // Too difficult to exactly satisfy both incremental+aspect
-    // in most situations
-    // (they really shouldn't happen at the same time anyway).
+                                  bool make_fit) const {
 
     /* aspect ratios are applied exclusive to the base size
      *
      * min_aspect_x      width      max_aspect_x
      * ------------  <  -------  <  ------------
      * min_aspect_y      height     max_aspect_y
-     *
-     * beware of integer maximum (so I'll use doubles instead and divide)
      *
      * The trick is how to get back to the aspect ratio with minimal
      * change - do we modify x, y or both?
@@ -1722,43 +1723,62 @@ void FbWinFrame::SizeHints::apply(unsigned int &width, unsigned int &height,
      *  Consider that the aspect ratio is a line, and the current
      *  w/h is a point, so we're just using the formula for
      *  shortest distance from a point to a line!
-     *
-     * When maximizing, we must not increase any of the sizes, because we
-     * would end up with the window partly off a screen, so a simpler formula
-     * is used in that case.
      */
 
-    if (min_aspect_y > 0 && width*min_aspect_y < min_aspect_x*height) {
-        if (maximizing)
-            height = width * min_aspect_y / min_aspect_x;
-        else
-            closestPointToAspect(width, height, width, height,
-                                 min_aspect_x, min_aspect_y);
-    } else if (max_aspect_x > 0 && width*max_aspect_y > max_aspect_x*height) {
-        if (maximizing)
-            width = height * max_aspect_x / max_aspect_y;
-        else
-            closestPointToAspect(width, height, width, height,
-                                 max_aspect_x, max_aspect_y);
+    // make respective to base_size
+    unsigned int w = width - base_width, h = height - base_height;
+
+    if (min_aspect_y > 0 && w * min_aspect_y < min_aspect_x * h) {
+        closestPointToAspect(w, h, w, h, min_aspect_x, min_aspect_y);
+        // new w must be > old w, new h must be < old h
+        w = increaseToMultiple(w, width_inc);
+        h = decreaseToMultiple(h, height_inc);
+    } else if (max_aspect_x > 0 && w * max_aspect_y > max_aspect_x * h) {
+        closestPointToAspect(w, h, w, h, max_aspect_x, max_aspect_y);
+        // new w must be < old w, new h must be > old h
+        w = decreaseToMultiple(w, width_inc);
+        h = increaseToMultiple(h, height_inc);
     }
 
     // Check minimum size
-    if (width < min_width)
-        width = min_width;
+    if (w + base_width < min_width) {
+        w = increaseToMultiple(min_width - base_width, width_inc);
+        // need to check maximum aspect again
+        if (max_aspect_x > 0 && w * max_aspect_y > max_aspect_x * h)
+            h = increaseToMultiple(w * max_aspect_y / max_aspect_x, height_inc);
+    }
 
-    if (height < min_height)
-        height = min_height;
+    if (h + base_height < min_height) {
+        h = increaseToMultiple(min_height - base_height, height_inc);
+        // need to check minimum aspect again
+        if (min_aspect_y > 0 && w * min_aspect_y < min_aspect_x * h)
+            w = increaseToMultiple(h * min_aspect_x / min_aspect_y, width_inc);
+    }
+
+    unsigned int max_w = make_fit && (width < max_width || max_width == 0) ?
+                         width : max_width;
+    unsigned int max_h = make_fit && (height < max_height || max_height == 0) ?
+                         height : max_height;
 
     // Check maximum size
-    if (max_width > 0 && width > max_width)
-        width = max_width;
+    if (max_w > 0 && w + base_width > max_w)
+        w = max_w - base_width;
 
-    if (max_height > 0 && height > max_height)
-        height = max_height;
+    if (max_h > 0 && h + base_height > max_h)
+        h = max_h - base_height;
 
-    // enforce incremental size limits, wrt base size
-    width -= (width - base_width) % width_inc;
-    height -= (height - base_height) % height_inc;
+    w = decreaseToMultiple(w, width_inc);
+    h = decreaseToMultiple(h, height_inc);
+
+    // need to check aspects one more time
+    if (min_aspect_y > 0 && w * min_aspect_y < min_aspect_x * h)
+        h = decreaseToMultiple(w * min_aspect_y / min_aspect_x, height_inc);
+
+    if (max_aspect_x > 0 && w * max_aspect_y > max_aspect_x * h)
+        w = decreaseToMultiple(h * max_aspect_x / max_aspect_y, width_inc);
+
+    width = w + base_width;
+    height = h + base_height;
 }
 
 // check if the given width and height satisfy the size hints
@@ -1775,10 +1795,10 @@ bool FbWinFrame::SizeHints::valid(unsigned int w, unsigned int h) const {
     if ((h - base_height) % height_inc != 0)
         return false;
 
-    if (min_aspect_x * h > w * min_aspect_y)
+    if (min_aspect_x * (h - base_height) > (w - base_width) * min_aspect_y)
         return false;
 
-    if (max_aspect_x * h < w * max_aspect_y)
+    if (max_aspect_x * (h - base_height) < (w - base_width) * max_aspect_y)
         return false;
 
     return true;

@@ -82,14 +82,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      m_mwm_hint(0),
                      m_strut(0) {
 
-    m_size_hints.min_width = m_size_hints.min_height =
-        m_size_hints.width_inc = m_size_hints.height_inc =
-        m_size_hints.base_width = m_size_hints.base_height = 1;
-
-    m_size_hints.max_width = m_size_hints.max_height =
-        m_size_hints.min_aspect_x = m_size_hints.min_aspect_y =
-        m_size_hints.max_aspect_x = m_size_hints.max_aspect_y = 0;
-
     updateWMProtocols();
     updateMWMHints();
     updateWMHints();
@@ -471,73 +463,65 @@ void WinClient::updateWMHints() {
 void WinClient::updateWMNormalHints() {
     long icccm_mask;
     XSizeHints sizehint;
-    if (! XGetWMNormalHints(display(), window(), &sizehint, &icccm_mask)) {
-        m_size_hints.min_width = m_size_hints.min_height =
-            m_size_hints.base_width = m_size_hints.base_height =
-            m_size_hints.width_inc = m_size_hints.height_inc = 1;
+    if (!XGetWMNormalHints(display(), window(), &sizehint, &icccm_mask))
+        sizehint.flags = 0;
+
+    normal_hint_flags = sizehint.flags;
+
+    if (sizehint.flags & PMinSize) {
+        m_size_hints.min_width = sizehint.min_width;
+        m_size_hints.min_height = sizehint.min_height;
+    } else
+        m_size_hints.min_width = m_size_hints.min_height = 1;
+
+    if (sizehint.flags & PBaseSize) {
+        m_size_hints.base_width = sizehint.base_width;
+        m_size_hints.base_height = sizehint.base_height;
+        if (!(sizehint.flags & PMinSize)) {
+            m_size_hints.min_width = m_size_hints.base_width;
+            m_size_hints.min_height = m_size_hints.base_height;
+        }
+    } else
+        m_size_hints.base_width = m_size_hints.base_height = 0;
+
+    if (sizehint.flags & PMaxSize) {
+        m_size_hints.max_width = sizehint.max_width;
+        m_size_hints.max_height = sizehint.max_height;
+    } else {
         m_size_hints.max_width = 0; // unbounded
         m_size_hints.max_height = 0;
+    }
+
+    if (sizehint.flags & PResizeInc) {
+        m_size_hints.width_inc = sizehint.width_inc;
+        m_size_hints.height_inc = sizehint.height_inc;
+    } else
+        m_size_hints.width_inc = m_size_hints.height_inc = 1;
+
+    if (sizehint.flags & PAspect) {
+        m_size_hints.min_aspect_x = sizehint.min_aspect.x;
+        m_size_hints.min_aspect_y = sizehint.min_aspect.y;
+        m_size_hints.max_aspect_x = sizehint.max_aspect.x;
+        m_size_hints.max_aspect_y = sizehint.max_aspect.y;
+    } else
         m_size_hints.min_aspect_x = m_size_hints.min_aspect_y =
             m_size_hints.max_aspect_x = m_size_hints.max_aspect_y = 0;
+
+    if (sizehint.flags & PWinGravity)
+        m_win_gravity = sizehint.win_gravity;
+    else
         m_win_gravity = NorthWestGravity;
-    } else {
-        normal_hint_flags = sizehint.flags;
 
-        if (sizehint.flags & PMinSize) {
-            m_size_hints.min_width = sizehint.min_width;
-            m_size_hints.min_height = sizehint.min_height;
-            if (!(sizehint.flags & PBaseSize)) {
-                m_size_hints.base_width = m_size_hints.min_width;
-                m_size_hints.base_height = m_size_hints.min_height;
-            }
-        } else {
-            m_size_hints.min_width = m_size_hints.min_height = 1;
-            m_size_hints.base_width = m_size_hints.base_height = 0;
-        }
+    // some sanity checks
+    if (m_size_hints.width_inc == 0)
+        m_size_hints.width_inc = 1;
+    if (m_size_hints.height_inc == 0)
+        m_size_hints.height_inc = 1;
 
-        if (sizehint.flags & PBaseSize) {
-            m_size_hints.base_width = sizehint.base_width;
-            m_size_hints.base_height = sizehint.base_height;
-            if (!(sizehint.flags & PMinSize)) {
-                m_size_hints.min_width = m_size_hints.base_width;
-                m_size_hints.min_height = m_size_hints.base_height;
-            }
-        } // default set in PMinSize
-
-        if (sizehint.flags & PMaxSize) {
-            m_size_hints.max_width = sizehint.max_width;
-            m_size_hints.max_height = sizehint.max_height;
-        } else {
-            m_size_hints.max_width = 0; // unbounded
-            m_size_hints.max_height = 0;
-        }
-
-        if (sizehint.flags & PResizeInc) {
-            m_size_hints.width_inc = sizehint.width_inc;
-            m_size_hints.height_inc = sizehint.height_inc;
-        } else
-            m_size_hints.width_inc = m_size_hints.height_inc = 1;
-
-        if (m_size_hints.width_inc == 0)
-            m_size_hints.width_inc = 1;
-        if (m_size_hints.height_inc == 0)
-            m_size_hints.height_inc = 1;
-
-        if (sizehint.flags & PAspect) {
-            m_size_hints.min_aspect_x = sizehint.min_aspect.x;
-            m_size_hints.min_aspect_y = sizehint.min_aspect.y;
-            m_size_hints.max_aspect_x = sizehint.max_aspect.x;
-            m_size_hints.max_aspect_y = sizehint.max_aspect.y;
-        } else
-            m_size_hints.min_aspect_x = m_size_hints.min_aspect_y =
-                m_size_hints.max_aspect_x = m_size_hints.max_aspect_y = 0;
-
-        if (sizehint.flags & PWinGravity)
-            m_win_gravity = sizehint.win_gravity;
-        else
-            m_win_gravity = NorthWestGravity;
-
-    }
+    if (m_size_hints.base_width > m_size_hints.min_width)
+        m_size_hints.min_width = m_size_hints.base_width;
+    if (m_size_hints.base_height > m_size_hints.min_height)
+        m_size_hints.min_height = m_size_hints.base_height;
 }
 
 Window WinClient::getGroupLeftWindow() const {
