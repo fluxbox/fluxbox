@@ -1524,8 +1524,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
         frame().moveResize(screen().getHeadX(head), screen().getHeadY(head),
                            screen().getHeadWidth(head), screen().getHeadHeight(head));
         sendConfigureNotify();
-        m_last_resize_x = frame().x();
-        m_last_resize_y = frame().y();
 
         fullscreen = true;
 
@@ -1548,14 +1546,9 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         // ensure we apply the sizehints here, otherwise some
         // apps (eg xterm) end up a little bit .. crappy (visually)
-        m_last_resize_x = m_old_pos_x;
-        m_last_resize_y = m_old_pos_y;
-        m_last_resize_w = m_old_width;
-        m_last_resize_h = m_old_height;
-        m_resize_corner = NOCORNER;
-        fixsize();
+        frame().applySizeHints(m_old_width, m_old_height);
 
-        moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
+        moveResize(m_old_pos_x, m_old_pos_y, m_old_width, m_old_height);
         moveToLayer(m_old_layernum);
 
         m_old_layernum = ::Layer::NORMAL;
@@ -1624,10 +1617,8 @@ void FluxboxWindow::setMaximizedState(int type) {
         stopResizing();
 
     int head = screen().getHead(frame().window());
-    int new_x = frame().x(),
-        new_y = frame().y(),
-        new_w = frame().width(),
-        new_h = frame().height();
+    int new_x = frame().x(), new_y = frame().y();
+    unsigned int new_w = frame().width(), new_h = frame().height();
 
     // These evaluate whether we need to TOGGLE the value for that field
     // Why? If maximize is only set to zero outside this,
@@ -1679,22 +1670,14 @@ void FluxboxWindow::setMaximizedState(int type) {
 
     // ensure we apply the sizehints here, otherwise some
     // apps (eg xterm) end up a little bit .. crappy (visually)
-    m_last_resize_x = new_x;
-    m_last_resize_y = new_y;
-    m_last_resize_w = new_w;
-    m_last_resize_h = new_h;
 
     // frankly, that xterm bug was pretty obscure, and it's really annoying not
     // being able to maximize my terminals, so we make an option
     // but we do fix size hints when restoring the window to normal size
-    if (!screen().getMaxIgnoreIncrement() || !maximized) {
-        ResizeDirection old_resize_corner = m_resize_corner;
-        m_resize_corner = NOCORNER;
-        fixsize(maximized ? true : false);
-        m_resize_corner = old_resize_corner;
-    }
+    if (!screen().getMaxIgnoreIncrement() || !maximized)
+        frame().applySizeHints(new_w, new_h, maximized ? true : false);
 
-    moveResize(m_last_resize_x, m_last_resize_y, m_last_resize_w, m_last_resize_h);
+    moveResize(new_x, new_y, new_w, new_h);
 
     // notify listeners that we changed state
     stateSig().notify();
@@ -3715,8 +3698,8 @@ unsigned int FluxboxWindow::normalHeight() const {
 
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
-void FluxboxWindow::fixsize(bool maximizing) {
-    frame().applySizeHints(m_last_resize_w, m_last_resize_h, maximizing);
+void FluxboxWindow::fixsize() {
+    frame().applySizeHints(m_last_resize_w, m_last_resize_h);
 
     // move X if necessary
     if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||

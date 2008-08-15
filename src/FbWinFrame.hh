@@ -209,7 +209,7 @@ public:
     void setSizeHints(const SizeHints &hint) { m_size_hints = hint; }
 
     void applySizeHints(unsigned int &width, unsigned int &height,
-                        bool maximizing) const;
+                        bool maximizing = false) const;
     void displaySize(unsigned int width, unsigned int height) const;
 
     void setDecorationMask(unsigned int mask) { m_decoration_mask = mask; }
