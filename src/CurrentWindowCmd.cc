@@ -391,10 +391,10 @@ ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
 void ResizeCmd::real_execute() {
 
     int w = std::max<int>(static_cast<int>(fbwindow().width() +
-                                      m_step_size_x * fbwindow().winClient().width_inc),
+                                      m_step_size_x * fbwindow().winClient().widthInc()),
                      fbwindow().frame().titlebarHeight() * 2 + 10);
     int h = std::max<int>(static_cast<int>(fbwindow().height() +
-                                      m_step_size_y * fbwindow().winClient().height_inc),
+                                      m_step_size_y * fbwindow().winClient().heightInc()),
                      fbwindow().frame().titlebarHeight() + 10);
     fbwindow().resize(w, h);
 }

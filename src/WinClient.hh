@@ -43,6 +43,21 @@ public:
         unsigned long decorations; // Motif wm decorations
     } MwmHints;
 
+    typedef struct SizeHints {
+        unsigned int min_width;
+        unsigned int max_width;
+        unsigned int min_height;
+        unsigned int max_height;
+        unsigned int width_inc;
+        unsigned int height_inc;
+        unsigned int min_aspect_x;
+        unsigned int max_aspect_x;
+        unsigned int min_aspect_y;
+        unsigned int max_aspect_y;
+        unsigned int base_width;
+        unsigned int base_height;
+    } SizeHints;
+
     WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin = 0);
 
     ~WinClient();
@@ -129,8 +144,12 @@ public:
 
     const MwmHints *getMwmHint() const { return m_mwm_hint; }
 
-    unsigned int maxWidth() const { return max_width; }
-    unsigned int maxHeight() const { return max_height; }
+    unsigned int minWidth() const { return m_size_hints.min_width; }
+    unsigned int minHeight() const { return m_size_hints.min_height; }
+    unsigned int maxWidth() const { return m_size_hints.max_width; }
+    unsigned int maxHeight() const { return m_size_hints.max_height; }
+    unsigned int widthInc() const { return m_size_hints.width_inc; }
+    unsigned int heightInc() const { return m_size_hints.height_inc; }
 
     static const int PropMwmHintsElements = 3;
 
@@ -145,10 +164,6 @@ public:
 
  
     int x, y, old_bw;
-    unsigned int
-        min_width, min_height, max_width, max_height, width_inc, height_inc,
-        min_aspect_x, min_aspect_y, max_aspect_x, max_aspect_y,
-        base_width, base_height;
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
 private:
@@ -172,6 +187,7 @@ private:
 
     Focusable::WindowType m_window_type;
     MwmHints *m_mwm_hint;
+    SizeHints m_size_hints;
 
     Strut *m_strut;
     // map transient_for X window to winclient transient 

@@ -67,12 +67,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      transient_for(0),
                      window_group(0),
                      x(0), y(0), old_bw(0),
-                     min_width(1), min_height(1),
-                     max_width(0), max_height(0),
-                     width_inc(1), height_inc(1),
-                     min_aspect_x(0), min_aspect_y(0),
-                     max_aspect_x(0), max_aspect_y(0),
-                     base_width(1), base_height(1),
                      initial_state(0),
                      normal_hint_flags(0),
                      wm_hint_flags(0),
@@ -87,6 +81,15 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      m_window_type(Focusable::TYPE_NORMAL),
                      m_mwm_hint(0),
                      m_strut(0) {
+
+    m_size_hints.min_width = m_size_hints.min_height =
+        m_size_hints.width_inc = m_size_hints.height_inc =
+        m_size_hints.base_width = m_size_hints.base_height = 1;
+
+    m_size_hints.max_width = m_size_hints.max_height =
+        m_size_hints.min_aspect_x = m_size_hints.min_aspect_y =
+        m_size_hints.max_aspect_x = m_size_hints.max_aspect_y = 0;
+
     updateWMProtocols();
     updateMWMHints();
     updateWMHints();
@@ -469,65 +472,65 @@ void WinClient::updateWMNormalHints() {
     long icccm_mask;
     XSizeHints sizehint;
     if (! XGetWMNormalHints(display(), window(), &sizehint, &icccm_mask)) {
-        min_width = min_height =
-            base_width = base_height =
-            width_inc = height_inc = 1;
-        max_width = 0; // unbounded
-        max_height = 0;
-        min_aspect_x = min_aspect_y =
-            max_aspect_x = max_aspect_y = 0;
+        m_size_hints.min_width = m_size_hints.min_height =
+            m_size_hints.base_width = m_size_hints.base_height =
+            m_size_hints.width_inc = m_size_hints.height_inc = 1;
+        m_size_hints.max_width = 0; // unbounded
+        m_size_hints.max_height = 0;
+        m_size_hints.min_aspect_x = m_size_hints.min_aspect_y =
+            m_size_hints.max_aspect_x = m_size_hints.max_aspect_y = 0;
         m_win_gravity = NorthWestGravity;
     } else {
         normal_hint_flags = sizehint.flags;
 
         if (sizehint.flags & PMinSize) {
-            min_width = sizehint.min_width;
-            min_height = sizehint.min_height;
+            m_size_hints.min_width = sizehint.min_width;
+            m_size_hints.min_height = sizehint.min_height;
             if (!(sizehint.flags & PBaseSize)) {
-                base_width = min_width;
-                base_height = min_height;
+                m_size_hints.base_width = m_size_hints.min_width;
+                m_size_hints.base_height = m_size_hints.min_height;
             }
         } else {
-            min_width = min_height = 1;
-            base_width = base_height = 0;
+            m_size_hints.min_width = m_size_hints.min_height = 1;
+            m_size_hints.base_width = m_size_hints.base_height = 0;
         }
 
         if (sizehint.flags & PBaseSize) {
-            base_width = sizehint.base_width;
-            base_height = sizehint.base_height;
+            m_size_hints.base_width = sizehint.base_width;
+            m_size_hints.base_height = sizehint.base_height;
             if (!(sizehint.flags & PMinSize)) {
-                min_width = base_width;
-                min_height = base_height;
+                m_size_hints.min_width = m_size_hints.base_width;
+                m_size_hints.min_height = m_size_hints.base_height;
             }
         } // default set in PMinSize
 
         if (sizehint.flags & PMaxSize) {
-            max_width = sizehint.max_width;
-            max_height = sizehint.max_height;
+            m_size_hints.max_width = sizehint.max_width;
+            m_size_hints.max_height = sizehint.max_height;
         } else {
-            max_width = 0; // unbounded
-            max_height = 0;
+            m_size_hints.max_width = 0; // unbounded
+            m_size_hints.max_height = 0;
         }
 
         if (sizehint.flags & PResizeInc) {
-            width_inc = sizehint.width_inc;
-            height_inc = sizehint.height_inc;
+            m_size_hints.width_inc = sizehint.width_inc;
+            m_size_hints.height_inc = sizehint.height_inc;
         } else
-            width_inc = height_inc = 1;
+            m_size_hints.width_inc = m_size_hints.height_inc = 1;
 
-        if (width_inc == 0)
-            width_inc = 1;
-        if (height_inc == 0)
-            height_inc = 1;
+        if (m_size_hints.width_inc == 0)
+            m_size_hints.width_inc = 1;
+        if (m_size_hints.height_inc == 0)
+            m_size_hints.height_inc = 1;
 
         if (sizehint.flags & PAspect) {
-            min_aspect_x = sizehint.min_aspect.x;
-            min_aspect_y = sizehint.min_aspect.y;
-            max_aspect_x = sizehint.max_aspect.x;
-            max_aspect_y = sizehint.max_aspect.y;
+            m_size_hints.min_aspect_x = sizehint.min_aspect.x;
+            m_size_hints.min_aspect_y = sizehint.min_aspect.y;
+            m_size_hints.max_aspect_x = sizehint.max_aspect.x;
+            m_size_hints.max_aspect_y = sizehint.max_aspect.y;
         } else
-            min_aspect_x = min_aspect_y =
-                max_aspect_x = max_aspect_y = 0;
+            m_size_hints.min_aspect_x = m_size_hints.min_aspect_y =
+                m_size_hints.max_aspect_x = m_size_hints.max_aspect_y = 0;
 
         if (sizehint.flags & PWinGravity)
             m_win_gravity = sizehint.win_gravity;
@@ -725,29 +728,29 @@ void WinClient::applySizeHints(int &width, int &height,
     int i = width, j = height;
 
     // Check minimum size
-    if (width < 0 || width < static_cast<signed>(min_width))
-        width = min_width;
+    if (width < 0 || width < static_cast<signed>(m_size_hints.min_width))
+        width = m_size_hints.min_width;
 
-    if (height < 0 || height < static_cast<signed>(min_height))
-        height = min_height;
+    if (height < 0 || height < static_cast<signed>(m_size_hints.min_height))
+        height = m_size_hints.min_height;
 
     // Check maximum size
-    if (max_width > 0 && width > static_cast<signed>(max_width))
-        width = max_width;
+    if (m_size_hints.max_width > 0 && width > static_cast<signed>(m_size_hints.max_width))
+        width = m_size_hints.max_width;
 
-    if (max_height > 0 && height > static_cast<signed>(max_height))
-        height = max_height;
+    if (m_size_hints.max_height > 0 && height > static_cast<signed>(m_size_hints.max_height))
+        height = m_size_hints.max_height;
 
     // we apply aspect ratios before incrementals
     // Too difficult to exactly satisfy both incremental+aspect
     // in most situations
     // (they really shouldn't happen at the same time anyway).
 
-    /* aspect ratios are applied exclusive to the base_width
+    /* aspect ratios are applied exclusive to the m_size_hints.base_width
      *
-     * min_aspect_x      width      max_aspect_x
+     * m_size_hints.min_aspect_x      width      m_size_hints.max_aspect_x
      * ------------  <  -------  <  ------------
-     * min_aspect_y      height     max_aspect_y
+     * m_size_hints.min_aspect_y      height     m_size_hints.max_aspect_y
      *
      * beware of integer maximum (so I'll use doubles instead and divide)
      *
@@ -764,16 +767,16 @@ void WinClient::applySizeHints(int &width, int &height,
      * is used in that case.
      */
 
-    if (min_aspect_y > 0 && max_aspect_y > 0 &&
-        (height - base_height) > 0) {
-        double widthd = static_cast<double>(width - base_width);
-        double heightd = static_cast<double>(height - base_height);
+    if (m_size_hints.min_aspect_y > 0 && m_size_hints.max_aspect_y > 0 &&
+        (height - m_size_hints.base_height) > 0) {
+        double widthd = static_cast<double>(width - m_size_hints.base_width);
+        double heightd = static_cast<double>(height - m_size_hints.base_height);
 
-        double min = static_cast<double>(min_aspect_x) /
-            static_cast<double>(min_aspect_y);
+        double min = static_cast<double>(m_size_hints.min_aspect_x) /
+            static_cast<double>(m_size_hints.min_aspect_y);
 
-        double max = static_cast<double>(max_aspect_x) /
-            static_cast<double>(max_aspect_y);
+        double max = static_cast<double>(m_size_hints.max_aspect_x) /
+            static_cast<double>(m_size_hints.max_aspect_y);
 
         double actual = widthd / heightd;
 
@@ -794,23 +797,23 @@ void WinClient::applySizeHints(int &width, int &height,
             }
 
             if (changed) {
-                width = static_cast<int>(widthd) + base_width;
-                height = static_cast<int>(heightd) + base_height;
+                width = static_cast<int>(widthd) + m_size_hints.base_width;
+                height = static_cast<int>(heightd) + m_size_hints.base_height;
             }
         }
     }
 
     // enforce incremental size limits, wrt base size
     // only calculate this if we really need to
-    i = (width - static_cast<signed>(base_width)) /
-        static_cast<signed>(width_inc);
-    width = i*static_cast<signed>(width_inc) +
-        static_cast<signed>(base_width);
+    i = (width - static_cast<signed>(m_size_hints.base_width)) /
+        static_cast<signed>(m_size_hints.width_inc);
+    width = i*static_cast<signed>(m_size_hints.width_inc) +
+        static_cast<signed>(m_size_hints.base_width);
 
-    j = (height - static_cast<signed>(base_height)) /
-        static_cast<signed>(height_inc);
-    height = j*static_cast<signed>(height_inc) +
-        static_cast<signed>(base_height);
+    j = (height - static_cast<signed>(m_size_hints.base_height)) /
+        static_cast<signed>(m_size_hints.height_inc);
+    height = j*static_cast<signed>(m_size_hints.height_inc) +
+        static_cast<signed>(m_size_hints.base_height);
 
     if (display_width)
         *display_width = i;
@@ -821,24 +824,24 @@ void WinClient::applySizeHints(int &width, int &height,
 
 // check if the given width and height satisfy the size hints
 bool WinClient::checkSizeHints(unsigned int width, unsigned int height) {
-    if (width < min_width || height < min_height)
+    if (width < m_size_hints.min_width || height < m_size_hints.min_height)
         return false;
 
-    if (width > max_width || height > max_height)
+    if (width > m_size_hints.max_width || height > m_size_hints.max_height)
         return false;
 
-    if ((width - base_width) % width_inc != 0)
+    if ((width - m_size_hints.base_width) % m_size_hints.width_inc != 0)
         return false;
 
-    if ((height - base_height) % height_inc != 0)
+    if ((height - m_size_hints.base_height) % m_size_hints.height_inc != 0)
         return false;
 
     double ratio = (double)width / (double)height;
 
-    if (min_aspect_y > 0 && (double)min_aspect_x / (double)min_aspect_y > ratio)
+    if (m_size_hints.min_aspect_y > 0 && (double)m_size_hints.min_aspect_x / (double)m_size_hints.min_aspect_y > ratio)
         return false;
 
-    if (max_aspect_y > 0 && (double)max_aspect_x / (double)max_aspect_y < ratio)
+    if (m_size_hints.max_aspect_y > 0 && (double)m_size_hints.max_aspect_x / (double)m_size_hints.max_aspect_y < ratio)
         return false;
 
     return true;
