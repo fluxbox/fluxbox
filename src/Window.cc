@@ -874,7 +874,6 @@ void FluxboxWindow::moveClientRight() {
     updateClientLeftWindow();
 }
 
-//list<*WinClient>::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
 FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
 
     int dest_x = 0, dest_y = 0;
@@ -1261,25 +1260,18 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
 
 }
 
-void FluxboxWindow::maxSize(unsigned int &max_width, unsigned int &max_height) {
+void FluxboxWindow::maxSize(unsigned int &width, unsigned int &height) const {
     ClientList::const_iterator it = clientList().begin();
     ClientList::const_iterator it_end = clientList().end();
-    max_width = (unsigned int) ~0; // unlimited
-    max_height = (unsigned int) ~0; // unlimited
+    width = height = 0; // unlimited
     for (; it != it_end; ++it) {
         // special case for max height/width == 0
         // 0 indicates unlimited size, so we skip them
-        // and set max size to 0 if max size == ~0 after the loop
-        if ((*it)->maxHeight() != 0)
-            max_height = std::min( (*it)->maxHeight(), max_height );
-        if ((*it)->maxWidth() != 0)
-            max_width = std::min( (*it)->maxWidth(), max_width );
+        if (!height || (*it)->maxHeight() && height > (*it)->maxHeight())
+            height = (*it)->maxHeight();
+        if (!width || (*it)->maxWidth() && width > (*it)->maxWidth())
+            width = (*it)->maxWidth();
     }
-
-    if (max_width == (unsigned int) ~0)
-        max_width = 0;
-    if (max_height == (unsigned int) ~0)
-        max_height = 0;
 }
 
 // returns whether the focus was "set" to this window
@@ -2597,7 +2589,7 @@ void FluxboxWindow::keyPressEvent(XKeyEvent &ke) {
     gettimeofday(&m_last_keypress_time, 0);
 }
 
-bool FluxboxWindow::isTyping() {
+bool FluxboxWindow::isTyping() const {
     timeval now;
     if (gettimeofday(&now, NULL) == -1)
         return false;
@@ -3345,7 +3337,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 }
 
 FluxboxWindow::ResizeDirection FluxboxWindow::getResizeDirection(int x, int y,
-                                   ResizeModel model) {
+        ResizeModel model) const {
     int cx = frame().width() / 2;
     int cy = frame().height() / 2;
     if (model == CENTERRESIZE)

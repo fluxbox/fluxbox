@@ -199,14 +199,6 @@ public:
      */
     void moveClientTo(WinClient &win, int x, int y);
     /**
-     * Calculates insertition position in the list by
-     * using pixel position x and y.
-     * @param x position
-     * @param y position
-     * @return iterator position for insertion
-     */
-    ClientList::iterator getClientInsertPosition(int x, int y);
-    /**
      * Take focus.
      * @see Focusable
      * @return true if it took focus.
@@ -313,7 +305,7 @@ public:
      * @param width will be filled in with maximum width
      * @param height will be filled in with maximum height
      */
-    void maxSize(unsigned int &width, unsigned int &height);
+    void maxSize(unsigned int &width, unsigned int &height) const;
     void setWorkspace(int n);
     void updateFunctions();
     void restoreAttributes();
@@ -381,7 +373,7 @@ public:
      */
     void startResizing(int x, int y, ResizeDirection dir);
     /// determine which edge or corner to resize
-    ResizeDirection getResizeDirection(int x, int y, ResizeModel model);
+    ResizeDirection getResizeDirection(int x, int y, ResizeModel model) const;
     /// stops the resizing
     void stopResizing(bool interrupted = false);
     /// starts tabbing
@@ -395,7 +387,7 @@ public:
     // whether this window can be tabbed with other windows,
     // and others tabbed with it
     void setTabable(bool tabable) { functions.tabable = tabable; }
-    bool isTabable() { return functions.tabable; }
+    bool isTabable() const { return functions.tabable; }
     void setMovable(bool movable) { functions.move = movable; }
     void setResizable(bool resizable) { functions.resize = resizable; }
 
@@ -403,9 +395,7 @@ public:
     bool isIconHidden() const { return m_icon_hidden; }
     bool isManaged() const { return m_initialized; }
     bool isVisible() const;
-    bool isIconic() { return iconic; }
     bool isIconic() const { return iconic; }
-    bool isShaded() { return shaded; }
     bool isShaded() const { return shaded; }
     bool isFullscreen() const { return fullscreen; }
     bool isMaximized() const { return maximized == MAX_FULL; }
@@ -429,7 +419,7 @@ public:
     WinClient &winClient() { return *m_client; }
     const WinClient &winClient() const { return *m_client; }
 
-    bool isTyping();
+    bool isTyping() const;
 
     const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }
     FbTk::XLayerItem &layerItem() { return m_frame.layerItem(); }
@@ -522,6 +512,15 @@ private:
     void init();
     void updateClientLeftWindow();
     void grabButtons();
+
+    /**
+     * Calculates insertition position in the list by
+     * using pixel position x and y.
+     * @param x position
+     * @param y position
+     * @return iterator position for insertion
+     */
+    ClientList::iterator getClientInsertPosition(int x, int y);
 
     /// try to attach current attaching client to a window at pos x, y
     void attachTo(int x, int y, bool interrupted = false);
