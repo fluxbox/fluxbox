@@ -28,6 +28,7 @@
 #include "FbTk/Compose.hh"
 #include "FbTk/Transparent.hh"
 #include "FbTk/CompareEqual.hh"
+#include "FbTk/StringUtil.hh"
 #include "FbTk/TextUtils.hh"
 
 #include "FbWinFrameTheme.hh"
@@ -1416,17 +1417,18 @@ void FbWinFrame::applyTabContainer() {
 }
 
 int FbWinFrame::getDecoMaskFromString(const string &str_label) {
-    if (strcasecmp(str_label.c_str(), "NONE") == 0)
+    string label = FbTk::StringUtil::toLower(str_label);
+    if (label == "none")
         return DECOR_NONE;
-    if (strcasecmp(str_label.c_str(), "NORMAL") == 0)
+    if (label == "normal")
         return DECOR_NORMAL;
-    if (strcasecmp(str_label.c_str(), "TINY") == 0)
+    if (label == "tiny")
         return DECOR_TINY;
-    if (strcasecmp(str_label.c_str(), "TOOL") == 0)
+    if (label == "tool")
         return DECOR_TOOL;
-    if (strcasecmp(str_label.c_str(), "BORDER") == 0)
+    if (label == "border")
         return DECOR_BORDER;
-    if (strcasecmp(str_label.c_str(), "TAB") == 0)
+    if (label == "tab")
         return DECOR_TAB;
     int mask = -1;
     if (str_label.size() > 1 && str_label[0] == '0' && str_label[1] == 'x' ||
