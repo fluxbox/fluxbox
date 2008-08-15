@@ -1494,9 +1494,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         frame().setUseShape(false);
 
-        if (!m_toggled_decos)
-            m_old_decoration_mask = decorationMask();
-
         m_old_layernum = layerNum();
         if (!maximized) {
             m_old_pos_x = frame().x();
@@ -1505,8 +1502,8 @@ void FluxboxWindow::setFullscreen(bool flag) {
             m_old_height = frame().height();
         }
 
-        // clear decorations
-        setDecorationMask(0);
+        fullscreen = true;
+        frame().setFullscreen(true);
 
         // dont call Window::moveResize here, it might ignore the 
         // resize if win state is not resizable; 
@@ -1518,9 +1515,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
                            screen().getHeadWidth(head), screen().getHeadHeight(head));
         sendConfigureNotify();
 
-        fullscreen = true;
-        frame().setFullscreen(true);
-
         setFullscreenLayer();
         if (!isFocused())
             screen().focusedWindowSig().attach(this);
@@ -1531,13 +1525,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
         frame().setFullscreen(false);
 
         frame().setUseShape(true);
-        if (m_toggled_decos) {
-            if (m_old_decoration_mask & (FbWinFrame::DECORM_TITLEBAR | FbWinFrame::DECORM_TAB))
-                setDecorationMask(FbWinFrame::DECOR_NONE);
-            else
-                setDecorationMask(FbWinFrame::DECOR_NORMAL);
-        } else
-            setDecorationMask(m_old_decoration_mask);
 
         // ensure we apply the sizehints here, otherwise some
         // apps (eg xterm) end up a little bit .. crappy (visually)

@@ -175,7 +175,7 @@ public:
 
     /// set focus/unfocus style
     void setFocus(bool newvalue);
-    void setFullscreen(bool value) { m_state.fullscreen = value; }
+    void setFullscreen(bool value);
     void setMaximized(int value) { m_state.maximized = value; }
 
     void setFocusTitle(const std::string &str) { m_label.setText(str); }
@@ -231,6 +231,12 @@ public:
     static int getDecoMaskFromString(const std::string &str);
     void setDecorationMask(unsigned int mask) { m_state.deco_mask = mask; }
     void applyDecorations();
+
+    /// determine if the given decoration should be shown in current state
+    bool useBorder() const;
+    bool useTabs() const;
+    bool useTitlebar() const;
+    bool useHandle() const;
 
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation

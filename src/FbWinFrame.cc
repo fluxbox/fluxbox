@@ -489,6 +489,14 @@ void FbWinFrame::setFocus(bool newvalue) {
     clearAll();
 }
 
+void FbWinFrame::setFullscreen(bool newvalue) {
+    if (newvalue == m_state.fullscreen)
+        return;
+
+    m_state.fullscreen = newvalue;
+    applyDecorations();
+}
+
 void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
     if (focused)
         m_focused_alpha = alpha;
@@ -842,7 +850,7 @@ void FbWinFrame::reconfigure() {
     m_bevel = theme()->bevelWidth();
     setBorderWidth();
 
-    if (m_state.deco_mask & DECORM_HANDLE && theme()->handleWidth() != 0)
+    if (useHandle() && theme()->handleWidth() != 0)
         showHandle();
     else
         hideHandle();
@@ -1427,6 +1435,22 @@ int FbWinFrame::getDecoMaskFromString(const string &str_label) {
     return mask;
 }
 
+bool FbWinFrame::useBorder() const {
+    return !m_state.fullscreen && m_state.deco_mask & DECORM_BORDER;
+}
+
+bool FbWinFrame::useTabs() const {
+    return !m_state.fullscreen && m_state.deco_mask & DECORM_TAB;
+}
+
+bool FbWinFrame::useTitlebar() const {
+    return !m_state.fullscreen && m_state.deco_mask & DECORM_TITLEBAR;
+}
+
+bool FbWinFrame::useHandle() const {
+    return !m_state.fullscreen && m_state.deco_mask & DECORM_HANDLE;
+}
+
 void FbWinFrame::applyDecorations() {
     int grav_x=0, grav_y=0;
     // negate gravity
@@ -1438,13 +1462,13 @@ void FbWinFrame::applyDecorations() {
     // tab deocration only affects if we're external
     // must do before the setTabMode in case it goes
     // to external and is meant to be hidden
-    if (m_state.deco_mask & DECORM_TAB)
+    if (useTabs())
         client_move |= showTabs();
     else
         client_move |= hideTabs();
 
     // we rely on frame not doing anything if it is already shown/hidden
-    if (m_state.deco_mask & DECORM_TITLEBAR) {
+    if (useTitlebar()) {
         client_move |= showTitlebar();
         if (m_screen.getDefaultInternalTabs())
             client_move |= setTabMode(INTERNAL);
@@ -1452,11 +1476,11 @@ void FbWinFrame::applyDecorations() {
             client_move |= setTabMode(EXTERNAL);
     } else {
         client_move |= hideTitlebar();
-        if (m_state.deco_mask & DECORM_TAB)
+        if (useTabs())
             client_move |= setTabMode(EXTERNAL);
     }
 
-    if (m_state.deco_mask & DECORM_HANDLE)
+    if (useHandle())
         client_move |= showHandle();
     else
         client_move |= hideHandle();
@@ -1478,7 +1502,7 @@ void FbWinFrame::applyDecorations() {
 
 bool FbWinFrame::setBorderWidth(bool do_move) {
     unsigned int border_width = theme()->border().width();
-    unsigned int win_bw = m_state.deco_mask & DECORM_BORDER ? border_width : 0;
+    unsigned int win_bw = useBorder() ? border_width : 0;
 
     if (border_width &&
         theme()->border().color().pixel() != window().borderColor()) {
