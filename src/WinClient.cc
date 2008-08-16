@@ -75,7 +75,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      accepts_input(false),
                      send_focus_message(false),
                      send_close_message(false),
-                     m_win_gravity(0),
                      m_title_override(false),
                      m_icon_override(false),
                      m_window_type(Focusable::TYPE_NORMAL),
@@ -467,61 +466,7 @@ void WinClient::updateWMNormalHints() {
         sizehint.flags = 0;
 
     normal_hint_flags = sizehint.flags;
-
-    if (sizehint.flags & PMinSize) {
-        m_size_hints.min_width = sizehint.min_width;
-        m_size_hints.min_height = sizehint.min_height;
-    } else
-        m_size_hints.min_width = m_size_hints.min_height = 1;
-
-    if (sizehint.flags & PBaseSize) {
-        m_size_hints.base_width = sizehint.base_width;
-        m_size_hints.base_height = sizehint.base_height;
-        if (!(sizehint.flags & PMinSize)) {
-            m_size_hints.min_width = m_size_hints.base_width;
-            m_size_hints.min_height = m_size_hints.base_height;
-        }
-    } else
-        m_size_hints.base_width = m_size_hints.base_height = 0;
-
-    if (sizehint.flags & PMaxSize) {
-        m_size_hints.max_width = sizehint.max_width;
-        m_size_hints.max_height = sizehint.max_height;
-    } else {
-        m_size_hints.max_width = 0; // unbounded
-        m_size_hints.max_height = 0;
-    }
-
-    if (sizehint.flags & PResizeInc) {
-        m_size_hints.width_inc = sizehint.width_inc;
-        m_size_hints.height_inc = sizehint.height_inc;
-    } else
-        m_size_hints.width_inc = m_size_hints.height_inc = 1;
-
-    if (sizehint.flags & PAspect) {
-        m_size_hints.min_aspect_x = sizehint.min_aspect.x;
-        m_size_hints.min_aspect_y = sizehint.min_aspect.y;
-        m_size_hints.max_aspect_x = sizehint.max_aspect.x;
-        m_size_hints.max_aspect_y = sizehint.max_aspect.y;
-    } else
-        m_size_hints.min_aspect_x = m_size_hints.min_aspect_y =
-            m_size_hints.max_aspect_x = m_size_hints.max_aspect_y = 0;
-
-    if (sizehint.flags & PWinGravity)
-        m_win_gravity = sizehint.win_gravity;
-    else
-        m_win_gravity = NorthWestGravity;
-
-    // some sanity checks
-    if (m_size_hints.width_inc == 0)
-        m_size_hints.width_inc = 1;
-    if (m_size_hints.height_inc == 0)
-        m_size_hints.height_inc = 1;
-
-    if (m_size_hints.base_width > m_size_hints.min_width)
-        m_size_hints.min_width = m_size_hints.base_width;
-    if (m_size_hints.base_height > m_size_hints.min_height)
-        m_size_hints.min_height = m_size_hints.base_height;
+    m_size_hints.reset(sizehint);
 }
 
 Window WinClient::getGroupLeftWindow() const {

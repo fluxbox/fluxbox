@@ -85,7 +85,6 @@ FbWinFrame::FbWinFrame(BScreen &screen,
     m_visible(false),
     m_button_pm(0),
     m_tabmode(screen.getDefaultInternalTabs()?INTERNAL:EXTERNAL),
-    m_active_gravity(0),
     m_active_orig_client_bw(0),
     m_need_render(true),
     m_button_size(1),
@@ -846,7 +845,7 @@ void FbWinFrame::reconfigure() {
 
     int grav_x=0, grav_y=0;
     // negate gravity
-    gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw, false);
+    gravityTranslate(grav_x, grav_y, -sizeHints().win_gravity, m_active_orig_client_bw, false);
 
     m_bevel = theme()->bevelWidth();
     setBorderWidth();
@@ -941,7 +940,7 @@ void FbWinFrame::reconfigure() {
                                 m_window.width(), client_height);
     }
 
-    gravityTranslate(grav_x, grav_y, m_active_gravity, m_active_orig_client_bw, false);
+    gravityTranslate(grav_x, grav_y, sizeHints().win_gravity, m_active_orig_client_bw, false);
     // if the location changes, shift it
     if (grav_x != 0 || grav_y != 0)
         move(grav_x + x(), grav_y + y());
@@ -1456,7 +1455,7 @@ bool FbWinFrame::useHandle() const {
 void FbWinFrame::applyDecorations() {
     int grav_x=0, grav_y=0;
     // negate gravity
-    gravityTranslate(grav_x, grav_y, -m_active_gravity, m_active_orig_client_bw,
+    gravityTranslate(grav_x, grav_y, -sizeHints().win_gravity, m_active_orig_client_bw,
                      false);
 
     bool client_move = setBorderWidth(false);
@@ -1488,7 +1487,7 @@ void FbWinFrame::applyDecorations() {
         client_move |= hideHandle();
 
     // apply gravity once more
-    gravityTranslate(grav_x, grav_y, m_active_gravity, m_active_orig_client_bw,
+    gravityTranslate(grav_x, grav_y, sizeHints().win_gravity, m_active_orig_client_bw,
                      false);
 
     // if the location changes, shift it
@@ -1523,7 +1522,7 @@ bool FbWinFrame::setBorderWidth(bool do_move) {
     int grav_x=0, grav_y=0;
     // negate gravity
     if (do_move)
-        gravityTranslate(grav_x, grav_y, -m_active_gravity,
+        gravityTranslate(grav_x, grav_y, -sizeHints().win_gravity,
                          m_active_orig_client_bw, false);
 
     int bw_changes = 0;
@@ -1551,7 +1550,7 @@ bool FbWinFrame::setBorderWidth(bool do_move) {
 
     if (do_move) {
         frameExtentSig().notify();
-        gravityTranslate(grav_x, grav_y, m_active_gravity,
+        gravityTranslate(grav_x, grav_y, sizeHints().win_gravity,
                          m_active_orig_client_bw, false);
         // if the location changes, shift it
         if (grav_x != 0 || grav_y != 0)
@@ -1723,6 +1722,60 @@ void FbWinFrame::displaySize(unsigned int width, unsigned int height) const {
     sizeHints().displaySize(i, j,
                             width, height - titlebarHeight() - handleHeight());
     m_screen.showGeometry(i, j);
+}
+
+void FbWinFrame::SizeHints::reset(const XSizeHints &sizehint) {
+    if (sizehint.flags & PMinSize) {
+        min_width = sizehint.min_width;
+        min_height = sizehint.min_height;
+    } else
+        min_width = min_height = 1;
+
+    if (sizehint.flags & PBaseSize) {
+        base_width = sizehint.base_width;
+        base_height = sizehint.base_height;
+        if (!(sizehint.flags & PMinSize)) {
+            min_width = base_width;
+            min_height = base_height;
+        }
+    } else
+        base_width = base_height = 0;
+
+    if (sizehint.flags & PMaxSize) {
+        max_width = sizehint.max_width;
+        max_height = sizehint.max_height;
+    } else
+        max_width = max_height = 0; // unbounded
+
+    if (sizehint.flags & PResizeInc) {
+        width_inc = sizehint.width_inc;
+        height_inc = sizehint.height_inc;
+    } else
+        width_inc = height_inc = 1;
+
+    if (sizehint.flags & PAspect) {
+        min_aspect_x = sizehint.min_aspect.x;
+        min_aspect_y = sizehint.min_aspect.y;
+        max_aspect_x = sizehint.max_aspect.x;
+        max_aspect_y = sizehint.max_aspect.y;
+    } else
+        min_aspect_x = min_aspect_y = max_aspect_x = max_aspect_y = 0;
+
+    if (sizehint.flags & PWinGravity)
+        win_gravity = sizehint.win_gravity;
+    else
+        win_gravity = NorthWestGravity;
+
+    // some sanity checks
+    if (width_inc == 0)
+        width_inc = 1;
+    if (height_inc == 0)
+        height_inc = 1;
+
+    if (base_width > min_width)
+        min_width = base_width;
+    if (base_height > min_height)
+        min_height = base_height;
 }
 
 /* For aspect ratios

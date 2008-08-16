@@ -33,6 +33,8 @@
 #include "FbTk/Container.hh"
 #include "FbTk/Shape.hh"
 
+#include <X11/Xutil.h>
+
 #include <vector>
 #include <memory>
 
@@ -101,7 +103,10 @@ public:
             min_width(1), max_width(0), min_height(1), max_height(0),
             width_inc(1), height_inc(1), base_width(0), base_height(0),
             min_aspect_x(0), max_aspect_x(0),
-            min_aspect_y(0), max_aspect_y(0) { }
+            min_aspect_y(0), max_aspect_y(0),
+            win_gravity(0) { }
+
+        void reset(const XSizeHints &sizehint);
 
         void apply(unsigned int &w, unsigned int &h,
                    bool maximizing = false) const;
@@ -112,6 +117,7 @@ public:
         unsigned int min_width, max_width, min_height, max_height,
                      width_inc, height_inc, base_width, base_height,
                      min_aspect_x, max_aspect_x, min_aspect_y, max_aspect_y;
+        int win_gravity;
     };
 
     class State {
@@ -241,7 +247,7 @@ public:
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation
     void gravityTranslate(int &x, int &y, int win_gravity, unsigned int client_bw, bool move_frame = false);
-    void setActiveGravity(int gravity, unsigned int orig_client_bw) { m_active_gravity = gravity; m_active_orig_client_bw = orig_client_bw; }
+    void setActiveGravity(int gravity, unsigned int orig_client_bw) { m_state.size_hints.win_gravity = gravity; m_active_orig_client_bw = orig_client_bw; }
 
     /**
        @name Event handlers
@@ -437,8 +443,6 @@ private:
 
     TabMode m_tabmode;
 
-    // last gravity that this window was *actively* placed with
-    int m_active_gravity;
     unsigned int m_active_orig_client_bw;
     State m_state;
 

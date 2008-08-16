@@ -27,8 +27,6 @@
 #include "FbTk/FbWindow.hh"
 #include "FbTk/FbString.hh"
 
-#include <X11/Xutil.h>
-
 class BScreen;
 class Strut;
 
@@ -110,7 +108,7 @@ public:
     bool isStateModal() const { return m_modal; }
     void setStateModal(bool state);
 
-    int gravity() const { return m_win_gravity; }
+    int gravity() const { return m_size_hints.win_gravity; }
 
     bool hasGroupLeftWindow() const;
     // grouping is tracked by remembering the window to the left in the group
@@ -154,8 +152,6 @@ private:
     int m_modal_count;
     bool m_modal;
     bool accepts_input, send_focus_message, send_close_message;
-
-    int m_win_gravity;
 
     bool m_title_override;
     bool m_icon_override;

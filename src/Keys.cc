@@ -170,7 +170,7 @@ Keys::t_key::~t_key() {
 
 
 
-Keys::Keys(): next_key(0), m_reloader(new FbTk::AutoReloadHelper()) {
+Keys::Keys(): m_reloader(new FbTk::AutoReloadHelper()), next_key(0) {
     m_reloader->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Keys>(*this, &Keys::reload)));
 }
 
