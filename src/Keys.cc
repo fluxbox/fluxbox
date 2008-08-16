@@ -403,9 +403,9 @@ bool Keys::addBinding(const string &linebuffer) {
                 // +[1-9]   - number between +1 and +9
                 // numbers 10 and above
                 //
-                } else if (!val[argc].empty() && (isdigit(val[argc][0]) &&
-                           (isdigit(val[argc][1]) || val[argc][1] == 'x') ||
-                           val[argc][0] == '+' && isdigit(val[argc][1])) ) {
+                } else if (!val[argc].empty() && ((isdigit(val[argc][0]) &&
+                           (isdigit(val[argc][1]) || val[argc][1] == 'x')) ||
+                           (val[argc][0] == '+' && isdigit(val[argc][1])))) {
 
                     key = strtoul(val[argc].c_str(), NULL, 0);
                     type = KeyPress;

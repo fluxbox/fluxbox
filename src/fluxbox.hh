@@ -160,7 +160,9 @@ public:
 
     void timed_reconfigure();
     void revertFocus();
-    void setShowingDialog(bool value) { m_showing_dialog = value; }
+    void setShowingDialog(bool value) {
+        m_showing_dialog = value; if (!value) revertFocus();
+    }
 
     bool isStartup() const { return m_starting; }
     bool isRestarting() const { return m_restarting; }

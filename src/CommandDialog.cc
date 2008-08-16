@@ -130,7 +130,6 @@ void CommandDialog::keyPressEvent(XKeyEvent &event) {
     XLookupString(&event, &keychar, 1, &ks, 0);
 
     if (ks == XK_Return) {
-        hide(); // hide and return focus to a FluxboxWindow
         // create Command<void> from line
         auto_ptr<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(m_precommand + m_textbox.text()));
         if (cmd.get())

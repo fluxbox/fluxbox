@@ -67,10 +67,10 @@ bool TextButton::setOrientation(FbTk::Orientation orient) {
         return false;
     invalidateBackground();
 
-    if ((m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) &&
-        (orient == FbTk::ROT90 || orient == FbTk::ROT270) ||
-        (m_orientation == FbTk::ROT90 || m_orientation == FbTk::ROT270) &&
-        (orient == FbTk::ROT0 || orient == FbTk::ROT180)) {
+    if (((m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) &&
+         (orient == FbTk::ROT90 || orient == FbTk::ROT270)) ||
+        ((m_orientation == FbTk::ROT90 || m_orientation == FbTk::ROT270) &&
+         (orient == FbTk::ROT0 || orient == FbTk::ROT180))) {
         // flip width and height
         m_orientation = orient;
         resize(height(), width());
