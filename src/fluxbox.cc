@@ -884,22 +884,18 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
         return;
     }
 
-    WinClient *winclient = 0;
+    WinClient *winclient = searchWindow(ue.window);
 
-    if ((winclient = searchWindow(ue.window)) != 0) {
+    if (winclient != 0) {
 
-        if (winclient != 0) {
-            FluxboxWindow *win = winclient->fbwindow();
-
-            if (!win) {
-                delete winclient;
-                return;
-            }
-
-            // this should delete client and adjust m_focused_window if necessary
-            win->unmapNotifyEvent(ue);
-
+        FluxboxWindow *win = winclient->fbwindow();
+        if (!win) {
+            delete winclient;
+            return;
         }
+
+        // this should delete client and adjust m_focused_window if necessary
+        win->unmapNotifyEvent(ue);
 
     // according to http://tronche.com/gui/x/icccm/sec-4.html#s-4.1.4
     // a XWithdrawWindow is

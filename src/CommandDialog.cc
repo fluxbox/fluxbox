@@ -93,11 +93,6 @@ void CommandDialog::show() {
 void CommandDialog::hide() {
     FbTk::FbWindow::hide();
     Fluxbox::instance()->setShowingDialog(false);
-
-    // return focus to fluxbox window
-    if (FocusControl::focusedFbWindow())
-        FocusControl::focusedFbWindow()->focus();
-
 }
 
 void CommandDialog::exposeEvent(XExposeEvent &event) {
