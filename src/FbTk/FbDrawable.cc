@@ -151,14 +151,6 @@ void FbDrawable::drawTriangle(GC gc, FbDrawable::TriangleType type,
                 Convex, CoordModePrevious);
 }
 
-#ifdef NOT_USED
-void FbDrawable::drawPoint(GC gc, int x, int y) {
-    if (drawable() == 0 || gc == 0)
-        return;
-    XDrawPoint(display(), drawable(), gc, x, y);
-}
-#endif
-
 XImage *FbDrawable::image(int x, int y, unsigned int width, unsigned int height) const {
     return XGetImage(display(), drawable(),
                      x, y, width, height,

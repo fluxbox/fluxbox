@@ -39,22 +39,10 @@ public:
     virtual iterator insert(ItemType &item, unsigned int pos=0);
     /// remove item from list
     virtual void remove(ItemType &item);
-#ifdef NOT_USED
-    /// cycle all item upwards
-    virtual void cycleUp();
-    /// cycle all items downwards
-    virtual void cycleDown();
-#endif // NOT_USED
     /// move item to top
     virtual void raise(ItemType &item);
     /// move item to bottom
     virtual void lower(ItemType &item);
-#ifdef NOT_USED
-    /// raise a specific item one step
-    virtual void stepUp(ItemType &item);
-    /// lower a specific item one step
-    virtual void stepDown(ItemType &item);
-#endif // NOT_USED
     virtual void restack();
     /// @return layer item on specific position, on failure 0
     ItemType *getItem(unsigned int position);
@@ -94,73 +82,6 @@ void Layer<ItemType, Container>::remove(ItemType &item) {
     if (it != itemList().end())
         m_list.erase(it);
 }
-
-#ifdef NOT_USED
-template <typename ItemType, typename Container>
-void Layer<ItemType, Container>::cycleUp() {
-    if (size() == 0)
-        return;
-    iterator it = itemList().begin();
-    it++;
-    rotate(itemList().begin(), it, itemList().end());
-    restack();
-}
-
-
-template <typename ItemType, typename Container>
-void Layer<ItemType, Container>::cycleDown() {
-    if (size() == 0)
-        return;
-    // save last item and remove it from list
-    ItemType *last_item = itemList().back();
-    itemList().pop_back();
-    // add last item to front
-    itemList().insert(itemList().begin(), last_item);
-    restack();
-}
-
-template <typename ItemType, typename Container>
-void Layer<ItemType, Container>::stepUp(ItemType &item) {
-    iterator it = 
-        find(itemList().begin(), itemList().end(), &item);
-             
-    if (it == itemList().end())
-        return;
-
-    if (it == itemList().begin()) // we can't raise it more
-        return;
-
-    iterator new_pos = it;
-    new_pos--;
-    ItemType *textitem = *it;
-    // remove item from list    
-    itemList().erase(it);
-    // insert above last pos
-    itemList().insert(new_pos, textitem);
-    restack();
-}
-
-template <typename ItemType, typename Container>
-void Layer<ItemType, Container>::stepDown(ItemType &item) {
-    iterator it = 
-        find(itemList().begin(), itemList().end(), &item);
-             
-    if (it == itemList().end()) // we didn't find the item in our list
-        return;
-
-    if (*it == itemList().back()) // it's already at the bottom
-        return;
-
-    iterator new_pos = it;
-    new_pos++;
-    ItemType *textitem = *it;
-    // remove from list
-    itemList().erase(it); 
-    // insert on the new place
-    itemList().insert(new_pos, textitem);
-    restack();
-}
-#endif // NOT_USED
 
 template <typename ItemType, typename Container>
 void Layer<ItemType, Container>::raise(ItemType &item) {

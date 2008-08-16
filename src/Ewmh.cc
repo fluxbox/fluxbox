@@ -1251,7 +1251,7 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
 void Ewmh::setState(FluxboxWindow &win, Atom state, bool value,
                     WinClient &client) {
     if (state == m_net->wm_state_sticky) { // STICKY
-        if (value && !win.isStuck() ||
+        if ((value && !win.isStuck()) ||
             (!value && win.isStuck()))
             win.stick();
     } else if (state == m_net->wm_state_shaded) { // SHADED

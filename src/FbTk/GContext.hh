@@ -89,15 +89,7 @@ public:
     void setFont(int fid) {
         XSetFont(m_display, m_gc, fid);
     }
-#ifdef NOT_USED
-    void setClipMask(const FbTk::FbPixmap &mask) {
-        XSetClipMask(m_display, m_gc, mask.drawable());
-    }
 
-    void setClipOrigin(int x, int y) {
-        XSetClipOrigin(m_display, m_gc, x, y);
-    }
-#endif
     void setGraphicsExposure(bool value) {
         XSetGraphicsExposures(m_display, m_gc, value);
     }
@@ -112,11 +104,7 @@ public:
     void setFillStyle(int style) {
         XSetFillStyle(m_display, m_gc, style);
     }
-#ifdef NOT_USED
-    void setFillRule(int rule) {
-        XSetFillRule(m_display, m_gc, rule);
-    }
-#endif
+
     void setLineAttributes(unsigned int width,
                                   int line_style,
                                   int cap_style,

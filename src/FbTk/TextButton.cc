@@ -97,15 +97,6 @@ void TextButton::setFont(FbTk::Font &font) {
     font.validOrientation(m_orientation); // load the orientation!
 }
 
-#ifdef NOT_USED
-/// set bevel and redraw text
-void TextButton::setBevel(int bevel) {
-    if (m_bevel == bevel)
-        return;
-    m_bevel = bevel;
-}
-#endif
-
 void TextButton::setTextPaddingLeft(unsigned int leftpadding) {
     m_left_padding = leftpadding;
 }
@@ -137,13 +128,6 @@ void TextButton::clearArea(int x, int y,
 unsigned int TextButton::textWidth() const {
     return font().textWidth(text().data(), text().size());
 }
-
-#ifdef NOT_USED
-unsigned int TextButton::textHeight() const {
-    return font().height();
-
-}
-#endif
 
 void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
     // (win should always be *this, no need to check)

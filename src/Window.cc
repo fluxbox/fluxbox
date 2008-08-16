@@ -1277,9 +1277,9 @@ void FluxboxWindow::getMaxSize(unsigned int* width, unsigned int* height) const 
     for (; it != it_end; ++it) {
         // special case for max height/width == 0
         // 0 indicates unlimited size, so we skip them
-        if (h || (*it)->maxHeight() && h > (*it)->maxHeight())
+        if (!h || ((*it)->maxHeight() && h > (*it)->maxHeight()))
             h = (*it)->maxHeight();
-        if (!w || (*it)->maxWidth() && w > (*it)->maxWidth())
+        if (!w || ((*it)->maxWidth() && w > (*it)->maxWidth()))
             w = (*it)->maxWidth();
     }
 
@@ -1876,7 +1876,7 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
     if (!m_initialized)
         m_layernum = layernum;
 
-    if (m_layernum == layernum && !force || !m_client)
+    if ((m_layernum == layernum && !force) || !m_client)
         return;
 
     // get root window
@@ -2475,9 +2475,9 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     }
 
     // don't allow moving/resizing fullscreen or maximized windows
-    if (isFullscreen() || isMaximizedHorz() && screen().getMaxIgnoreIncrement())
+    if (isFullscreen() || (isMaximizedHorz() && screen().getMaxIgnoreIncrement()))
         cr.value_mask = cr.value_mask & ~(CWWidth | CWX);
-    if (isFullscreen() || isMaximizedVert() && screen().getMaxIgnoreIncrement())
+    if (isFullscreen() || (isMaximizedVert() && screen().getMaxIgnoreIncrement()))
         cr.value_mask = cr.value_mask & ~(CWHeight | CWY);
 
 #ifdef REMEMBER
@@ -2545,7 +2545,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         case Above:
         case TopIf:
         default:
-            if (isFocused() && focusRequestFromClient(*client) ||
+            if ((isFocused() && focusRequestFromClient(*client)) ||
                 !FocusControl::focusedWindow()) {
                 setCurrentClient(*client, true);
                 raise();
@@ -2618,8 +2618,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
     // check keys file first
     Keys *k = Fluxbox::instance()->keys();
-    if (onTitlebar && k->doAction(be.type, be.state, be.button,
-                                  Keys::ON_TITLEBAR, m_client, be.time) ||
+    if ((onTitlebar && k->doAction(be.type, be.state, be.button,
+                                  Keys::ON_TITLEBAR, m_client, be.time)) ||
         k->doAction(be.type, be.state, be.button, Keys::ON_WINDOW, m_client,
                     be.time)) {
         return;
@@ -2706,8 +2706,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             return;
     }
 
-    if (moving || (me.state & Button1Mask) && functions.move &&
-        inside_titlebar && !isResizing() && m_attaching_tab == 0) {
+    if (moving || ((me.state & Button1Mask) && functions.move &&
+        inside_titlebar && !isResizing() && m_attaching_tab == 0)) {
 
         if (! isMoving()) {
             startMoving(me.x_root, me.y_root);
@@ -2781,11 +2781,11 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             screen().showPosition(dx, dy);
         } // end if moving
-    } else if (resizing || m_attaching_tab == 0 && functions.resize &&
-               (((me.state & Button1Mask) &&
-                 (me.window == frame().gripRight() ||
-                  me.window == frame().gripLeft())) ||
-                me.window == frame().window())) {
+    } else if (resizing || (m_attaching_tab == 0 && functions.resize &&
+                            (((me.state & Button1Mask) &&
+                              (me.window == frame().gripRight() ||
+                               me.window == frame().gripLeft())) ||
+                              me.window == frame().window()))) {
 
         if (! resizing) {
 

@@ -247,8 +247,8 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
     if (move && x == window().x() && y == window().y())
         move = false;
 
-    if (resize && (m_state.shaded || width == FbWinFrame::width() &&
-                               height == FbWinFrame::height()))
+    if (resize && (m_state.shaded || (width == FbWinFrame::width() &&
+                               height == FbWinFrame::height())))
         resize = false;
 
     if (!move && !resize)
@@ -265,7 +265,7 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
         m_window.resize(width, height);
     }
 
-    if (move || resize && m_screen.getTabPlacement() != TOPLEFT)
+    if (move || (resize && m_screen.getTabPlacement() != TOPLEFT))
         alignTabs();
 
     if (resize) {
@@ -413,7 +413,7 @@ void FbWinFrame::notifyMoved(bool clear) {
     if (alpha == 255)
         return;
 
-    if (m_tabmode == EXTERNAL && m_use_tabs || m_use_titlebar) {
+    if ((m_tabmode == EXTERNAL && m_use_tabs) || m_use_titlebar) {
         m_tab_container.parentMoved();
         m_tab_container.for_each(mem_fun(&FbTk::Button::parentMoved));
     }
@@ -1430,8 +1430,8 @@ int FbWinFrame::getDecoMaskFromString(const string &str_label) {
     if (label == "tab")
         return DECOR_TAB;
     int mask = -1;
-    if (str_label.size() > 1 && str_label[0] == '0' && str_label[1] == 'x' ||
-        str_label.size() > 0 && isdigit(str_label[0]))
+    if ((str_label.size() > 1 && str_label[0] == '0' && str_label[1] == 'x') ||
+        (str_label.size() > 0 && isdigit(str_label[0])))
         mask = strtol(str_label.c_str(), NULL, 0);
     return mask;
 }

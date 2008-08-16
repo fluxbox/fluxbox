@@ -283,7 +283,8 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
     if (width() == 0 || height() == 0)
         return;
 
-    if (!dest_override && (the_width == 0 && the_height == 0 || the_width == width() && the_height == height()) &&
+    if (!dest_override && ((the_width == 0 && the_height == 0) ||
+        (the_width == width() && the_height == height())) &&
         the_x <= 0 && the_y <= 0) {
         // do the whole thing
         updateBackground(true);
@@ -452,12 +453,6 @@ void FbWindow::setInputFocus(int revert_to, int time) {
 void FbWindow::setCursor(Cursor cur) {
     XDefineCursor(display(), window(), cur);
 }
-
-#ifdef NOT_USED
-void FbWindow::unsetCursor() {
-    XUndefineCursor(display(), window());
-}
-#endif
 
 void FbWindow::reparent(const FbWindow &parent, int x, int y, bool continuing) {
     XReparentWindow(display(), window(), parent.window(), x, y);

@@ -1136,7 +1136,7 @@ void Menu::openSubmenu() {
 
     int item = m_active_index;
     if (!isVisible() || !validIndex(item) || !menuitems[item]->isEnabled() ||
-        s_focused != this && s_focused && s_focused->isVisible())
+        (s_focused != this && s_focused && s_focused->isVisible()))
         return;
 
     clearItem(item);

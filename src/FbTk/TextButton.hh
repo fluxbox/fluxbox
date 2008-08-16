@@ -40,9 +40,6 @@ public:
     bool setOrientation(FbTk::Orientation orient);
     void setText(const std::string &text);
     void setFont(FbTk::Font &font);
-#ifdef NOT_USED
-    void setBevel(int bevel);
-#endif
     void setTextPadding(unsigned int padding);
     void setTextPaddingLeft(unsigned int leftpadding);
     void setTextPaddingRight(unsigned int rightpadding);
@@ -67,14 +64,7 @@ public:
     FbTk::Font &font() const { return *m_font; }
     FbTk::Orientation orientation() const { return m_orientation; }
     unsigned int textWidth() const;
-#ifdef NOT_USED
-    unsigned int textHeight() const;
-#endif
     int bevel() const { return m_bevel; }
-#ifdef NOT_USED
-    unsigned int leftPadding() const { return m_left_padding; }
-    unsigned int rightPadding() const { return m_right_padding; }
-#endif
 
     void renderForeground(FbWindow &win, FbDrawable &drawable);
 

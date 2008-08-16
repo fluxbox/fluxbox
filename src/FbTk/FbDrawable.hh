@@ -61,10 +61,6 @@ public:
 
     virtual void drawTriangle(GC gc, TriangleType type, int x, int y, unsigned int width, unsigned int height, int scale);
 
-#ifdef NOT_USED
-    virtual void drawPoint(GC gc, int x, int y);
-#endif
-
     virtual XImage *image(int x, int y, unsigned int width, unsigned int height) const;
 
     /// X drawable

@@ -89,11 +89,12 @@ void Texture::setFromString(const char * const texture_str) {
         else
             addType(Texture::DEFAULT_BEVEL);
 
-        if (! (type() & Texture::FLAT))
+        if (! (type() & Texture::FLAT)) {
             if (strstr(ts, "bevel2"))
                 addType(Texture::BEVEL2);
             else
                 addType(Texture::BEVEL1);
+        }
 
         if (strstr(ts, "invert"))
             addType(Texture::INVERT);

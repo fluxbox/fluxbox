@@ -76,10 +76,7 @@ public:
     void removeAll();
     void setInternalMenu(bool val = true) { m_internal_menu = val; }
     void setAlignment(Alignment a) { m_alignment = a; }
-#ifdef NOT_USED
-    void setTorn() { m_torn = true; }
-    void removeParent() { if (m_internal_menu) m_parent = 0; }
-#endif
+
     /// raise this window
     virtual void raise();
     /// lower this window
@@ -122,16 +119,12 @@ public:
     /// hide menu
     virtual void hide(bool force = false);
     virtual void clearWindow();
-#ifdef NOT_USED
-    void setActiveIndex(int index) { m_active_index = index; }
     /*@}*/
 
     /**
        @name accessors
     */
     //@{
-    int activeIndex() const { return m_active_index; }
-#endif
     bool isTorn() const { return m_torn; }
     bool isVisible() const { return m_visible; }
     bool isMoving() const { return m_moving; }

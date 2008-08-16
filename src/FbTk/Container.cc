@@ -332,7 +332,8 @@ void Container::repositionItems() {
             // calling Container::resize here risks infinite loops
             unsigned int neww = total_width, newh = height;
             translateSize(m_orientation, neww, newh);
-            if (align == RIGHT && m_orientation != ROT270 || align == LEFT && m_orientation == ROT270) {
+            if ((align == RIGHT && m_orientation != ROT270) ||
+                (align == LEFT && m_orientation == ROT270)) {
                 int deltax = 0;
                 int deltay = 0;
                 if (m_orientation == ROT0 || m_orientation == ROT180)
@@ -477,10 +478,10 @@ void Container::setOrientation(Orientation orient) {
     for (; it != it_end; ++it)
         (*it)->setOrientation(orient);
 
-    if ((m_orientation == ROT0 || m_orientation == ROT180) &&
-        (orient == ROT90 || orient == ROT270) ||
-        (m_orientation == ROT90 || m_orientation == ROT270) &&
-        (orient == ROT0 || orient == ROT180)) {
+    if (((m_orientation == ROT0 || m_orientation == ROT180) &&
+        (orient == ROT90 || orient == ROT270)) ||
+        ((m_orientation == ROT90 || m_orientation == ROT270) &&
+        (orient == ROT0 || orient == ROT180))) {
         // flip width and height
         m_orientation = orient;
         resize(height(), width());

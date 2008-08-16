@@ -1310,8 +1310,8 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
     if (app->shadedstate_remember)
         // if inconsistent...
-        if (win.isShaded() && !app->shadedstate ||
-            !win.isShaded() && app->shadedstate)
+        if ((win.isShaded() && !app->shadedstate) ||
+            (!win.isShaded() && app->shadedstate))
             win.shade(); // toggles
 
     // external tabs aren't available atm...
@@ -1319,8 +1319,8 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
     if (app->stuckstate_remember)
         // if inconsistent...
-        if (win.isStuck() && !app->stuckstate ||
-            !win.isStuck() && app->stuckstate)
+        if ((win.isStuck() && !app->stuckstate) ||
+            (!win.isStuck() && app->stuckstate))
             win.stick(); // toggles
 
     if (app->minimizedstate_remember) {

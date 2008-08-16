@@ -58,16 +58,6 @@ void XLayerItem::tempRaise() {
     m_layer->tempRaise(*this); 
 }
 
-#ifdef NOT_USED
-void XLayerItem::stepUp() {
-    m_layer->stepUp(*this);
-}
-
-void XLayerItem::stepDown() {
-    m_layer->stepDown(*this);
-}
-#endif // NOT_USED
-
 void XLayerItem::raiseLayer() {
     m_layer->raiseLayer(*this); 
 }
