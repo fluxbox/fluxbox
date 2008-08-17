@@ -124,6 +124,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Xutil.hh Xutil.cc \
 	CurrentWindowCmd.hh CurrentWindowCmd.cc \
 	WorkspaceCmd.hh WorkspaceCmd.cc \
+	TextDialog.hh TextDialog.cc \
 	CommandDialog.hh CommandDialog.cc SendToMenu.hh SendToMenu.cc \
 	AlphaMenu.hh AlphaMenu.cc ObjectResource.hh \
 	CompareWindow.hh \

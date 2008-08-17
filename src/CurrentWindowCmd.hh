@@ -240,9 +240,25 @@ private:
 
 class FullscreenCmd: public WindowHelperCmd{
 public:
-    explicit FullscreenCmd();
+    explicit FullscreenCmd() { }
 protected:
     void real_execute();
+};
+
+class SetTitleDialogCmd: public WindowHelperCmd {
+public:
+    explicit SetTitleDialogCmd() { }
+protected:
+    void real_execute();
+};
+
+class SetTitleCmd: public WindowHelperCmd {
+public:
+    explicit SetTitleCmd(std::string newtitle): title(newtitle) { }
+protected:
+    void real_execute();
+private:
+    std::string title;
 };
 
 class SetAlphaCmd: public WindowHelperCmd {

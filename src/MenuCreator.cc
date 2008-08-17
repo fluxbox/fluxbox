@@ -28,6 +28,7 @@
 #include "fluxbox.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
+#include "CurrentWindowCmd.hh"
 #include "WindowMenuAccessor.hh"
 
 #include "ClientMenu.hh"
@@ -492,6 +493,12 @@ bool MenuCreator::createWindowMenuItem(const string &type,
                         _FB_XTEXT(Windowmenu, Stick,
                                   "Stick", "Stick the window"):
                         label, res));
+    } else if (type == "settitledialog") {
+        RefCmd setname_cmd(new SetTitleDialogCmd());
+        menu.insert(label.empty() ?
+                    _FB_XTEXT(Windowmenu, SetTitle,
+                              "Set Title", "Change the title of the window"):
+                    label, setname_cmd);
 #ifdef HAVE_XRENDER
     } else if (type == "alpha") {
         if (FbTk::Transparent::haveComposite() || 

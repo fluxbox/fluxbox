@@ -23,26 +23,20 @@
 #ifndef RUNCOMMANDDIALOG_HH
 #define RUNCOMMANDDIALOG_HH
 
-#include "FbTk/TextBox.hh"
-#include "FbTk/TextButton.hh"
-#include "FbTk/GContext.hh"
+#include "TextDialog.hh"
 #include "FbTk/RefCount.hh"
 
-class BScreen;
 class Command;
 
 /**
  * Displays a fluxbox command dialog which executes fluxbox
  * action commands.
  */
-class CommandDialog: public FbTk::FbWindow, public FbTk::EventHandler {
+class CommandDialog: public TextDialog {
 public:
     CommandDialog(BScreen &screen, const std::string &title,
                   const std::string pre_command = "");
-    virtual ~CommandDialog();
-    
-    /// Sets the entry text.
-    void setText(const std::string &text);
+
     /**
      * Sets the command to be executed after the command is done.
      * @param postcommand the command.
@@ -50,32 +44,14 @@ public:
     void setPostCommand(FbTk::RefCount<FbTk::Command<void> > &postcommand) { 
         m_postcommand = postcommand; 
     }
-    void show();
-    void hide();
-
-    void exposeEvent(XExposeEvent &event);
-    void motionNotifyEvent(XMotionEvent &event);
-    void buttonPressEvent(XButtonEvent &event);
-    void handleEvent(XEvent &event);
-    void keyPressEvent(XKeyEvent &event);
-
-protected:
-    /// expand the current word, using the history as a references
-    virtual void tabComplete();
 
 private:
-    void init();
-    void render();
-    void updateSizes();
+    /// expand the current word, using the history as a references
+    void tabComplete();
+    void exec(const std::string &string);
 
-    FbTk::TextBox m_textbox; //< entry field
-    FbTk::TextButton m_label; //< text in the titlebar
-    FbTk::GContext m_gc;
     /// command to do after the first command was issued (like reconfigure)
     FbTk::RefCount<FbTk::Command<void> > m_postcommand;
-    BScreen &m_screen;
-    int m_move_x, m_move_y;
-    Pixmap m_pixmap;
     /// command to be used before the text (usefull for setting workspace name)
     const std::string m_precommand;
 };

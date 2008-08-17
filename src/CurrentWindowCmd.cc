@@ -27,10 +27,12 @@
 #include "Window.hh"
 #include "WindowCmd.hh"
 #include "Screen.hh"
+#include "TextDialog.hh"
 #include "WinClient.hh"
 
 #include "FocusControl.hh"
 #include "FbTk/CommandParser.hh"
+#include "FbTk/I18n.hh"
 #include "FbTk/stringstream.hh"
 #include "FbTk/StringUtil.hh"
 
@@ -483,7 +485,6 @@ void ResizeToCmd::real_execute() {
 
 REGISTER_COMMAND(fullscreen, FullscreenCmd, void);
 
-FullscreenCmd::FullscreenCmd() { }
 void FullscreenCmd::real_execute() {
     fbwindow().setFullscreen(!fbwindow().isFullscreen());
 }
@@ -498,6 +499,40 @@ REGISTER_COMMAND_PARSER(setlayer, SetLayerCmd::parse, void);
 
 void SetLayerCmd::real_execute() {
     fbwindow().moveToLayer(m_layer);
+}
+
+namespace {
+class SetTitleDialog: public TextDialog {
+public:
+    SetTitleDialog(FluxboxWindow &win, const string &title):
+        TextDialog(win.screen(), title), window(win) {
+        setText(win.title());
+    }
+
+private:
+    void exec(const std::string &text) {
+        window.winClient().setTitle(text);
+    }
+
+    FluxboxWindow &window;
+};
+} // end anonymous namespace
+
+REGISTER_COMMAND(settitledialog, SetTitleDialogCmd, void);
+
+void SetTitleDialogCmd::real_execute() {
+    _FB_USES_NLS;
+
+    SetTitleDialog *win = new SetTitleDialog(fbwindow(),
+            _FB_XTEXT(Windowmenu, SetTitle, "Set Title",
+                      "Change the title of the window"));
+    win->show();
+}
+
+REGISTER_COMMAND_WITH_ARGS(settitle, SetTitleCmd, void);
+
+void SetTitleCmd::real_execute() {
+    fbwindow().winClient().setTitle(title);
 }
 
 FbTk::Command<void> *SetAlphaCmd::parse(const string &command, const string &args,

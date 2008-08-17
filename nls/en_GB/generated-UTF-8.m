@@ -215,6 +215,7 @@ $set 16 #Windowmenu
 9 Stick
 10 Kill
 11 Use Defaults
+12 Set Window Title
 
 $set 17 #Workspace
 

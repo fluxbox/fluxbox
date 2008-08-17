@@ -209,6 +209,7 @@ enum {
 	WindowmenuStick = 9,
 	WindowmenuKill = 10,
 	WindowmenuDefaultAlpha = 11,
+	WindowmenuSetTitle = 12,
 
 	WorkspaceSet = 17,
 	WorkspaceDefaultNameFormat = 1,
