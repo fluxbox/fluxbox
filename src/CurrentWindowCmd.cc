@@ -189,6 +189,19 @@ REGISTER_COMMAND_PARSER(taketoprevworkspace, parseIntCmd, void);
 REGISTER_COMMAND_PARSER(sendtoworkspace, parseIntCmd, void);
 REGISTER_COMMAND_PARSER(taketoworkspace, parseIntCmd, void);
 
+FbTk::Command<void> *parseFocusCmd(const string &command, const string &args,
+                                   bool trusted) {
+    ClientPattern pat(args.c_str());
+    if (!pat.error())
+        return FbTk::CommandParser<void>::instance().parse("GoToWindow 1 " +
+                                                           args);
+    return new CurrentWindowCmd((CurrentWindowCmd::Action)
+                                    &FluxboxWindow::focus);
+}
+
+REGISTER_COMMAND_PARSER(activate, parseFocusCmd, void);
+REGISTER_COMMAND_PARSER(focus, parseFocusCmd, void);
+
 }; // end anonymous namespace
 
 void SetHeadCmd::real_execute() {
@@ -248,18 +261,6 @@ void GoToTabCmd::real_execute() {
     while (--num > 0) ++it;
 
     (*it)->focus();
-}
-
-REGISTER_COMMAND_WITH_ARGS(activate, FocusCmd, void);
-REGISTER_COMMAND_WITH_ARGS(focus, FocusCmd, void);
-
-void FocusCmd::real_execute() {
-    Focusable *win = 0;
-    if (!m_pat.error())
-         win = fbwindow().screen().focusControl().focusedOrderWinList().find(m_pat);
-    if (!win)
-        win = &fbwindow();
-    win->focus();
 }
 
 REGISTER_COMMAND(startmoving, StartMovingCmd, void);
