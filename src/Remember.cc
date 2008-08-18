@@ -103,7 +103,8 @@ public:
         { focushiddenstate= state; focushiddenstate_remember= true; }
     void rememberIconHiddenstate(bool state)
         { iconhiddenstate= state; iconhiddenstate_remember= true; }
-    void rememberPosition(int posx, int posy, unsigned char rfc= 0 )
+    void rememberPosition(int posx, int posy,
+                 FluxboxWindow::ReferenceCorner rfc = FluxboxWindow::LEFTTOP)
         { x = posx; y = posy; refc = rfc; position_remember = true; }
     void rememberShadedstate(bool state)
         { shadedstate = state; shadedstate_remember = true; }
@@ -139,10 +140,7 @@ public:
 
     bool position_remember;
     int x,y;
-    unsigned char refc;    // referenceCorner-> 0 - upperleft
-                           //                   1 - upperight
-                           //                   2 - lowerleft
-                           //                   3 - lowerright
+    FluxboxWindow::ReferenceCorner refc;
 
     bool alpha_remember;
     int focused_alpha;
@@ -477,27 +475,16 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 else
                     had_error = true;
             } else if (str_key == "position") {
-                unsigned int r= 0;
-                unsigned int x= 0;
-                unsigned int y= 0;
+                FluxboxWindow::ReferenceCorner r = FluxboxWindow::LEFTTOP;
+                int x = 0, y = 0;
                 // more info about the parameter
                 // in ::rememberPosition
 
-                str_option == FbTk::StringUtil::toUpper(str_option);
-                if ( str_option.length() )
-                    {
-                        if      (str_option == "UPPERLEFT")  r= Remember::POS_UPPERLEFT;
-                        else if (str_option == "UPPERRIGHT") r= Remember::POS_UPPERRIGHT;
-                        else if (str_option == "LOWERLEFT")  r= Remember::POS_LOWERLEFT;
-                        else if (str_option == "LOWERRIGHT") r= Remember::POS_LOWERRIGHT;
-                        else if (str_option == "CENTER")     r= Remember::POS_CENTER;
-                        else if (str_option == "WINCENTER")  r= Remember::POS_WINCENTER;
-                        else if (!getuint(str_option.c_str(), r)) {
-                            had_error = 1;
-                        }
-                    }
+                if (str_option.length())
+                    r = FluxboxWindow::getCorner(str_option);
+                had_error = (r == FluxboxWindow::ERROR);
 
-                if (!had_error && sscanf(str_label.c_str(), "%u %u", &x, &y) == 2)
+                if (!had_error && sscanf(str_label.c_str(), "%d %d", &x, &y) == 2)
                     app.rememberPosition(x, y, r);
                 else
                     had_error = true;
@@ -916,20 +903,29 @@ void Remember::save() {
         if (a.position_remember) {
             apps_file << "  [Position]\t(";
             switch(a.refc) {
-            case POS_WINCENTER:
-                apps_file << "WINCENTER";
-                break;
-            case POS_CENTER:
+            case FluxboxWindow::CENTER:
                 apps_file << "CENTER";
                 break;
-            case POS_LOWERLEFT:
+            case FluxboxWindow::LEFTBOTTOM:
                 apps_file << "LOWERLEFT";
                 break;
-            case POS_LOWERRIGHT:
+            case FluxboxWindow::RIGHTBOTTOM:
                 apps_file << "LOWERRIGHT";
                 break;
-            case POS_UPPERRIGHT:
+            case FluxboxWindow::RIGHTTOP:
                 apps_file << "UPPERRIGHT";
+                break;
+            case FluxboxWindow::LEFT:
+                apps_file << "LEFT";
+                break;
+            case FluxboxWindow::RIGHT:
+                apps_file << "RIGHT";
+                break;
+            case FluxboxWindow::TOP:
+                apps_file << "TOP";
+                break;
+            case FluxboxWindow::BOTTOM:
+                apps_file << "BOTTOM";
                 break;
             default:
                 apps_file << "UPPERLEFT";
@@ -1114,8 +1110,8 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_POSITION: {
         int head = win->screen().getHead(win->fbWindow());
-        int head_x = win->screen().getHeadX(head);
-        int head_y = win->screen().getHeadY(head);
+        int head_x = win->screen().maxLeft(head);
+        int head_y = win->screen().maxTop(head);
         app->rememberPosition(win->normalX() - head_x, win->normalY() - head_y);
         break;
     }
@@ -1275,37 +1271,10 @@ void Remember::setupFrame(FluxboxWindow &win) {
     if (app->dimensions_remember)
         win.resize(app->w, app->h);
 
-    int head = screen.getHead(win.fbWindow());
-
     if (app->position_remember) {
-
-        switch (app->refc) {
-          default:
-          case POS_UPPERLEFT: // upperleft corner
-              win.move(screen.getHeadX(head) + app->x,
-                       screen.getHeadY(head) + app->y);
-              break;
-          case POS_UPPERRIGHT: // upperright corner
-              win.move(screen.getHeadX(head) + screen.getHeadWidth(head) - win.width() - app->x,
-                       screen.getHeadY(head) + app->y);
-              break;
-          case POS_LOWERLEFT: // lowerleft corner
-              win.move(screen.getHeadX(head) + app->x,
-                       screen.getHeadHeight(head) - win.height() - app->y);
-              break;
-          case POS_LOWERRIGHT: // lowerright corner
-              win.move(screen.getHeadWidth(head) - win.width() - app->x,
-                       screen.getHeadHeight(head) - win.height() - app->y);
-              break;
-          case POS_CENTER: // center of the screen, windows topleft corner is on the center
-                win.move((screen.getHeadWidth(head) / 2) + app->x,
-                         (screen.getHeadHeight(head) / 2) + app->y);
-              break;
-          case POS_WINCENTER: // the window is centered REALLY upon the center
-                win.move((screen.getHeadWidth(head) / 2) - ( win.width() / 2 ) + app->x,
-                         (screen.getHeadHeight(head) / 2) - ( win.height() / 2 ) + app->y);
-              break;
-        };
+        int newx = app->x, newy = app->y;
+        win.translateCoords(newx, newy, app->refc);
+        win.move(newx, newy);
     }
 
     if (app->shadedstate_remember)

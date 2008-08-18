@@ -1,6 +1,16 @@
  (Format: Year/Month/Day)
 Changes for 1.1
 *08/08/18:
+   * Combined code for MoveTo key command and saved window positions (Mark)
+     Side effects:
+     - both now have the following options: TopLeft Left BottomLeft Top Center
+       Bottom TopRight Right BottomRight
+     - the CENTER reference in apps now behaves like WINCENTER
+     - some previously saved positions will be wrong, since they are now
+       computed relative to the toolbar and slit
+     - CENTER/WINCENTER will now work properly with Xinerama when placing the
+       window on a head other than the top left one
+     CurrentWindowCmd.cc/hh Remember.cc Window.cc/hh
    * Add Top Center, Left Center, Right Center, and Bottom Center tab placement
      options (Mark)
      FbWinFrame.cc/hh Screen.cc FbTk/Container.cc/hh

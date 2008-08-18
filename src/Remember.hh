@@ -81,8 +81,7 @@ public:
       POS_UPPERRIGHT,
       POS_LOWERLEFT,
       POS_LOWERRIGHT,
-      POS_CENTER,
-      POS_WINCENTER
+      POS_CENTER
     };
 
 

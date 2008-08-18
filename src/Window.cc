@@ -2789,7 +2789,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
         if (! resizing) {
 
-          ResizeDirection resize_corner = RIGHTBOTTOM;
+          ReferenceCorner resize_corner = RIGHTBOTTOM;
           if (me.window == frame().gripRight())
               resize_corner = RIGHTBOTTOM;
           else if (me.window == frame().gripLeft())
@@ -2834,7 +2834,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             if (m_resize_corner == RIGHTBOTTOM || m_resize_corner == RIGHTTOP ||
                 m_resize_corner == RIGHT)
                 m_last_resize_w = frame().width() + dx;
-            if (m_resize_corner == ALLCORNERS) {
+            if (m_resize_corner == CENTER) {
                 // dx or dy must be at least 2
                 if (abs(dx) >= 2 || abs(dy) >= 2) {
                     // take max and make it even
@@ -3339,12 +3339,12 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
 }
 
-FluxboxWindow::ResizeDirection FluxboxWindow::getResizeDirection(int x, int y,
+FluxboxWindow::ReferenceCorner FluxboxWindow::getResizeDirection(int x, int y,
         ResizeModel model) const {
     int cx = frame().width() / 2;
     int cy = frame().height() / 2;
     if (model == CENTERRESIZE)
-        return ALLCORNERS;
+        return CENTER;
     if (model == NEARESTEDGERESIZE) {
         if (cy - abs(y - cy) < cx - abs(x - cx)) // y is nearest
             return (y > cy) ? BOTTOM : TOP;
@@ -3365,7 +3365,7 @@ FluxboxWindow::ResizeDirection FluxboxWindow::getResizeDirection(int x, int y,
     return RIGHTBOTTOM;
 }
 
-void FluxboxWindow::startResizing(int x, int y, ResizeDirection dir) {
+void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
 
     if (s_num_grabs > 0 || isShaded() || isIconic() )
         return;
@@ -4036,6 +4036,48 @@ void FluxboxWindow::associateClient(WinClient &client) {
     evm.add(*this, client.window());
     client.setFluxboxWindow(this);
     client.titleSig().attach(this);
+}
+
+FluxboxWindow::ReferenceCorner FluxboxWindow::getCorner(string str) {
+    str = FbTk::StringUtil::toLower(str);
+    if (str == "lefttop" || str == "topleft" || str == "upperleft" || str == "")
+        return LEFTTOP;
+    if (str == "top" || str == "upper" || str == "topcenter")
+        return TOP;
+    if (str == "righttop" || str == "topright" || str == "upperright")
+        return RIGHTTOP;
+    if (str == "left" || str == "leftcenter")
+        return LEFT;
+    if (str == "center" || str == "wincenter")
+        return CENTER;
+    if (str == "right" || str == "rightcenter")
+        return RIGHT;
+    if (str == "leftbottom" || str == "bottomleft" || str == "lowerleft")
+        return LEFTBOTTOM;
+    if (str == "bottom" || str == "bottomcenter")
+        return BOTTOM;
+    if (str == "rightbottom" || str == "bottomright" || str == "lowerright")
+        return RIGHTBOTTOM;
+    return ERROR;
+}
+
+void FluxboxWindow::translateCoords(int &x, int &y, ReferenceCorner dir) const {
+    int head = getOnHead(), bw = 2 * frame().window().borderWidth(),
+        left = screen().maxLeft(head), right = screen().maxRight(head),
+        top = screen().maxTop(head), bottom = screen().maxBottom(head);
+
+    if (dir == LEFTTOP || dir == LEFT || dir == LEFTBOTTOM)
+        x += left;
+    if (dir == RIGHTTOP || dir == RIGHT || dir == RIGHTBOTTOM)
+        x = right - width() - bw - x;
+    if (dir == TOP || dir == CENTER || dir == BOTTOM)
+        x += (left + right - width() - bw)/2;
+    if (dir == LEFTTOP || dir == TOP || dir == RIGHTTOP)
+        y += top;
+    if (dir == LEFTBOTTOM || dir == BOTTOM || dir == RIGHTBOTTOM)
+        y = bottom - height() - bw - y;
+    if (dir == LEFT || dir == CENTER || dir == RIGHT)
+        y += (top + bottom - height() - bw)/2;
 }
 
 int FluxboxWindow::getOnHead() const {

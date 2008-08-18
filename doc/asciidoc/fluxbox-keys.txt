@@ -246,7 +246,7 @@ If either 'x' or 'y' is set to *\**, that coordinate will be ignored, and the
 movement will only take place in one dimension.
 +
 The default 'anchor' is the upper left corner, but this may be overridden with one of:;;
-*UpperLeft LowerLeft UpperRight LowerRight*
+*TopLeft Left BottomLeft Top Center Bottom TopRight Right BottomRight*
 
 *Move* 'delta-x' 'delta-y'::
 	Moves the window relative to its current position. Positive numbers

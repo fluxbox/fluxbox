@@ -126,19 +126,19 @@ public:
     };
 
     /**
-     * Resize direction while resizing
+     * Reference corner for moves and resizes
      */
-     enum ResizeDirection {
-         NOCORNER = -1,
-         LEFTTOP  = 0,
-         TOP      = 1,
-         RIGHTTOP = 2,
-         RIGHT    = 3,
+     enum ReferenceCorner {
+         ERROR        = -1,
+         LEFTTOP      = 0,
+         TOP          = 1,
+         RIGHTTOP     = 2,
+         RIGHT        = 3,
          RIGHTBOTTOM  = 4,
          BOTTOM       = 5,
          LEFTBOTTOM   = 6,
          LEFT         = 7,
-         ALLCORNERS   = 8
+         CENTER       = 8
     };
 
     /// holds old blackbox attributes
@@ -371,13 +371,18 @@ public:
      * @param y start position
      * @param dir the resize direction
      */
-    void startResizing(int x, int y, ResizeDirection dir);
+    void startResizing(int x, int y, ReferenceCorner dir);
     /// determine which edge or corner to resize
-    ResizeDirection getResizeDirection(int x, int y, ResizeModel model) const;
+    ReferenceCorner getResizeDirection(int x, int y, ResizeModel model) const;
     /// stops the resizing
     void stopResizing(bool interrupted = false);
     /// starts tabbing
     void startTabbing(const XButtonEvent &be);
+
+    /// determine the reference corner from a string
+    static ReferenceCorner getCorner(std::string str);
+    /// convert to coordinates on the root window
+    void translateCoords(int &x, int &y, ReferenceCorner dir = LEFTTOP) const;
 
     /**
        @name accessors
@@ -624,7 +629,7 @@ private:
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
 
-    ResizeDirection m_resize_corner; //< the current resize corner used while resizing
+    ReferenceCorner m_resize_corner; //< the current corner used while resizing
 
     static int s_num_grabs; ///< number of XGrabPointer's
 };

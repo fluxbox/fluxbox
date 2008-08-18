@@ -410,65 +410,38 @@ FbTk::Command<void> *MoveToCmd::parse(const string &cmd, const string &args,
     if (tokens.size() < 2)
         return 0;
 
-    unsigned int refc = MoveToCmd::UPPER|MoveToCmd::LEFT;
-    int dx = 0, dy = 0;
+    FluxboxWindow::ReferenceCorner refc = FluxboxWindow::LEFTTOP;
+    int x = 0, y = 0;
+    bool ignore_x = false, ignore_y = false;
 
     if (tokens[0][0] == '*')
-        refc |= MoveToCmd::IGNORE_X;
+        ignore_x = true;
     else
-        dx = atoi(tokens[0].c_str());
+        x = atoi(tokens[0].c_str());
 
-    if (tokens[1][0] == '*' && ! (refc & MoveToCmd::IGNORE_X))
-        refc |= MoveToCmd::IGNORE_Y;
+    if (tokens[1][0] == '*' && !ignore_x)
+        ignore_y = true;
     else
-        dy = atoi(tokens[1].c_str());
+        y = atoi(tokens[1].c_str());
 
     if (tokens.size() >= 3) {
-        tokens[2] = FbTk::StringUtil::toLower(tokens[2]);
-        if (tokens[2] == "left" || tokens[2] == "upperleft" || tokens[2] == "lowerleft") {
-            refc |= MoveToCmd::LEFT;
-            refc &= ~MoveToCmd::RIGHT;
-        } else if (tokens[2] == "right" || tokens[2] == "upperright" || tokens[2] == "lowerright") {
-            refc |= MoveToCmd::RIGHT;
-            refc &= ~MoveToCmd::LEFT;
-        }
-
-        if (tokens[2] == "upper" || tokens[2] == "upperleft" || tokens[2] == "upperright") {
-            refc |= MoveToCmd::UPPER;
-            refc &= ~MoveToCmd::LOWER;
-        } else if (tokens[2] == "lower" || tokens[2] == "lowerleft" || tokens[2] == "lowerright") {
-            refc |= MoveToCmd::LOWER;
-            refc &= ~MoveToCmd::UPPER;
-        }
+        refc = FluxboxWindow::getCorner(tokens[2]);
+        if (refc == FluxboxWindow::ERROR)
+            refc = FluxboxWindow::LEFTTOP;
     }
 
-    return new MoveToCmd(dx, dy, refc);
-
+    return new MoveToCmd(x, y, ignore_x, ignore_y, refc);
 }
 
 REGISTER_COMMAND_PARSER(moveto, MoveToCmd::parse, void);
 
-MoveToCmd::MoveToCmd(const int step_size_x, const int step_size_y, const unsigned int refc) :
-    m_step_size_x(step_size_x), m_step_size_y(step_size_y), m_refc(refc) { }
-
 void MoveToCmd::real_execute() {
-    int x = 0;
-    int y = 0;
+    int x = m_pos_x, y = m_pos_y;
 
-    const int head = fbwindow().screen().getHead(fbwindow().fbWindow());
-
-    if (m_refc & MoveToCmd::LOWER)
-        y = fbwindow().screen().maxBottom(head) - fbwindow().height() - 2 * fbwindow().frame().window().borderWidth() - m_step_size_y;
-    if (m_refc & MoveToCmd::UPPER)
-        y = fbwindow().screen().maxTop(head) + m_step_size_y;
-    if (m_refc & MoveToCmd::RIGHT)
-        x = fbwindow().screen().maxRight(head) - fbwindow().width() - 2 * fbwindow().frame().window().borderWidth() - m_step_size_x;
-    if (m_refc & MoveToCmd::LEFT)
-        x = fbwindow().screen().maxLeft(head) + m_step_size_x;
-
-    if (m_refc & MoveToCmd::IGNORE_X)
+    fbwindow().translateCoords(x, y, m_corner);
+    if (m_ignore_x)
         x = fbwindow().x();
-    if (m_refc & MoveToCmd::IGNORE_Y)
+    if (m_ignore_y)
         y = fbwindow().y();
 
     fbwindow().move(x, y);

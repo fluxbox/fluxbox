@@ -206,25 +206,21 @@ private:
 
 class MoveToCmd: public WindowHelperCmd {
 public:
-    enum {
-        LEFT =  1 << 0,
-        RIGHT = 1 << 1,
-        UPPER = 1 << 2,
-        LOWER = 1 << 3,
+    explicit MoveToCmd(int pos_x, int pos_y, bool ignore_x, bool ignore_y,
+                       FluxboxWindow::ReferenceCorner refc):
+        m_pos_x(pos_x), m_pos_y(pos_y),
+        m_ignore_x(ignore_x), m_ignore_y(ignore_y),
+        m_corner(refc) { }
 
-        IGNORE_X = 1 << 8,
-        IGNORE_Y = 1 << 9
-    };
-    explicit MoveToCmd(const int step_size_x, const int step_size_y, const unsigned int refc);
     static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 protected:
     void real_execute();
 
 private:
-    const int m_step_size_x;
-    const int m_step_size_y;
-    const unsigned int m_refc;
+    int m_pos_x, m_pos_y;
+    bool m_ignore_x, m_ignore_y;
+    FluxboxWindow::ReferenceCorner m_corner;
 };
 
 // resize cmd

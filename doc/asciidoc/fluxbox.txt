@@ -1170,12 +1170,15 @@ curly brackets:
 - [Position] (*refspot*)) {X Y}:
     Position the application at a particular spot:
     +
-        * WINCENTER
+        * TOPLEFT
+        * TOP
+        * TOPRIGHT
+        * LEFT
         * CENTER
-        * UPPERLEFT
-        * UPPERRIGHT
-        * LOWERLEFT
-        * LOWERRIGHT
+        * RIGHT
+        * BOTTOMLEFT
+        * BOTTOM
+        * BOTTOMRIGHT
     +
 
     You can optionally specify what X and Y are relative to. By default the

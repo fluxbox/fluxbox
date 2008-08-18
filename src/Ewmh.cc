@@ -1191,7 +1191,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
                 winclient->fbwindow()->frame().window().borderWidth(),
                 ce.data.l[1] - winclient->fbwindow()->y() -
                 winclient->fbwindow()->frame().window().borderWidth(),
-                static_cast<FluxboxWindow::ResizeDirection>(ce.data.l[2]));
+                static_cast<FluxboxWindow::ReferenceCorner>(ce.data.l[2]));
             break;
         case _NET_WM_MOVERESIZE_MOVE:
         case _NET_WM_MOVERESIZE_MOVE_KEYBOARD:
