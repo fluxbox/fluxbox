@@ -125,8 +125,10 @@ bool SomeCmd::execute() {
             WinClient *client = dynamic_cast<WinClient *>(*it);
             if (!client) continue;
             WindowCmd<void>::setClient(client);
-            if (m_cmd->execute())
+            if (m_cmd->execute()) {
+                WindowCmd<void>::setClient(old);
                 return true;
+            }
         }
         WindowCmd<void>::setClient(old);
     }
@@ -146,8 +148,10 @@ bool EveryCmd::execute() {
             WinClient *client = dynamic_cast<WinClient *>(*it);
             if (!client) continue;
             WindowCmd<void>::setClient(client);
-            if (!m_cmd->execute())
+            if (!m_cmd->execute()) {
+                WindowCmd<void>::setClient(old);
                 return false;
+            }
         }
         WindowCmd<void>::setClient(old);
     }
