@@ -1284,12 +1284,9 @@ The following are the properties that can be defined in each [app] entry\. Each 
 .RS 4
 .nf
 You can optionally specify what X and Y are relative to\. By default the
-upper left corner is placed at screen coordinates (X, Y)\. If you specify
-LOWERRIGHT, then the lower right corner of the window is positioned (X,Y)
-pixels from the lower right of the screen\. Note that CENTER puts the top
-left corner of the window relative to the center of the screen (WINCENTER
-acts like the rest \- positions the center of the window relative to the
-center of the screen)\.
+upper left corner is placed at screen coordinates (X, Y)\. If you specify a
+reference point, say LOWERRIGHT, then the lower right corner of the window
+is positioned (X,Y) pixels from the lower right of the screen\.
 .fi
 .RE
 .RE
