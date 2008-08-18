@@ -19,6 +19,9 @@ $set 1 #Align
 15 Top Left
 16 Top Right
 17 Vertical
+18 Center
+19 Top
+20 Bottom
 
 $set 2 #BaseDisplay
 

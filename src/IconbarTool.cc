@@ -72,15 +72,11 @@ void FbTk::Resource<FbTk::Container::Alignment>::setDefaultValue() {
 
 template<>
 string FbTk::Resource<FbTk::Container::Alignment>::getString() const {
-    switch (m_value) {
-    case FbTk::Container::LEFT:
+    if (m_value == FbTk::Container::LEFT)
         return string("Left");
-    case FbTk::Container::RIGHT:
+    if (m_value == FbTk::Container::RIGHT)
         return string("Right");
-    case FbTk::Container::RELATIVE:
-        return string("Relative");
-    }
-    return string("Left");
+    return string("Relative");
 }
 
 template<>
@@ -261,7 +257,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent,
     m_mode("none"),
     m_rc_mode(screen.resourceManager(), "{static groups} (workspace)",
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
-    m_rc_alignment(screen.resourceManager(), FbTk::Container::LEFT,
+    m_rc_alignment(screen.resourceManager(), FbTk::Container::RELATIVE,
                    screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
     m_rc_client_width(screen.resourceManager(), 70,
                    screen.name() + ".iconbar.iconWidth", screen.altName() + ".Iconbar.IconWidth"),

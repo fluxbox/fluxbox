@@ -24,6 +24,9 @@ enum {
 	AlignTopLeft = 15,
 	AlignTopRight = 16,
 	AlignVertical = 17,
+	AlignCenter = 18,
+	AlignTop = 19,
+	AlignBottom = 20,
 
 	BaseDisplaySet = 2,
 	BaseDisplayAborting = 1,

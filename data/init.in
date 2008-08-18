@@ -11,7 +11,7 @@ session.screen0.strftimeFormat:	%k:%M
 session.screen0.focusNewWindows:	True
 session.screen0.focusModel:	ClickToFocus
 session.screen0.fullMaximization:	False
-session.screen0.edgeSnapThreshold:	0
+session.screen0.edgeSnapThreshold:	10
 session.screen0.rowPlacementDirection:	LeftToRight
 session.screen0.workspaces:	4
 session.screen0.colPlacementDirection:	TopToBottom
