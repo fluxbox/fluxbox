@@ -61,11 +61,11 @@ public:
    /// Toolbar placement on the screen
     enum TabPlacement{
         // top and bottom placement
-        TOPLEFT = 1, BOTTOMLEFT,
-        TOPRIGHT, BOTTOMRIGHT,
+        TOPLEFT = 1, TOP, TOPRIGHT,
+        BOTTOMLEFT, BOTTOM, BOTTOMRIGHT,
         // left and right placement
-        LEFTBOTTOM, LEFTTOP,
-        RIGHTBOTTOM, RIGHTTOP
+        LEFTBOTTOM, LEFT, LEFTTOP,
+        RIGHTBOTTOM, RIGHT, RIGHTTOP
     };
 
     /**

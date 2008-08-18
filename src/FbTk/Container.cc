@@ -319,7 +319,7 @@ void Container::repositionItems() {
     // if we have a max total size, then we must also resize ourself
     // within that bound
     Alignment align = alignment();
-    if (m_max_total_size && (align == RIGHT || align == LEFT)) {
+    if (m_max_total_size && align != RELATIVE) {
         total_width = (max_width_per_client + borderW) * num_items - borderW;
         if (total_width > m_max_total_size) {
             total_width = m_max_total_size;
@@ -332,14 +332,21 @@ void Container::repositionItems() {
             // calling Container::resize here risks infinite loops
             unsigned int neww = total_width, newh = height;
             translateSize(m_orientation, neww, newh);
-            if ((align == RIGHT && m_orientation != ROT270) ||
-                (align == LEFT && m_orientation == ROT270)) {
+            if (!(align == LEFT && (m_orientation == ROT0 ||
+                                     m_orientation == ROT90)) &&
+                !(align == RIGHT && (m_orientation == ROT180 ||
+                                     m_orientation == ROT270))) {
                 int deltax = 0;
                 int deltay = 0;
                 if (m_orientation == ROT0 || m_orientation == ROT180)
                     deltax = - (total_width - cur_width);
                 else
                     deltay = - (total_width - cur_width);
+                // TODO: rounding errors could accumulate in this process
+                if (align == CENTER) {
+                    deltax = deltax/2;
+                    deltay = deltay/2;
+                }
 
                 FbWindow::moveResize(x() + deltax, y() + deltay, neww, newh);
             } else {
@@ -405,6 +412,7 @@ void Container::repositionItems() {
 unsigned int Container::maxWidthPerClient() const {
     switch (alignment()) {
     case RIGHT:
+    case CENTER:
     case LEFT:
         return m_max_size_per_client;
         break;

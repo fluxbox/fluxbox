@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/08/18:
+   * Add Top Center, Left Center, Right Center, and Bottom Center tab placement
+     options (Mark)
+     FbWinFrame.cc/hh Screen.cc FbTk/Container.cc/hh
 *08/08/17:
    * Add new key commands SetTitle and SetTitleDialog (thanks Matteo Galiazzo)
      CommandDialog.cc/hh TextDialog.cc/hh CurrentWindowCmd.cc/hh Makefile.am

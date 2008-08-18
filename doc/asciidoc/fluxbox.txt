@@ -1075,26 +1075,8 @@ This section of fluxbox configuration menu lets you configure many features of
 tabs. Inside of it there are three main options:
 
 - *Placement*:
-    You can choose where the external tabs must be positioned. The options are:
-
-    * Top Left: tabs are located on the left side of the top border of the
-      window.
-    * Top Right: tabs are located on the right side of the top border of the
-      window.
-    * Left Top: tabs are located on the top part of the left border of the
-      window.
-    * Right Top: tabs are located on the top part of the right border of the
-      window.
-    * Left Bottom: tabs are located on the bottom part of the left border of the
-      window.
-    * Right Bottom: tabs are located on the bottom part of the right border of
-      the window.
-    * Bottom Left: tabs are located on the left side of the bottom border of the
-      window.
-    * Bottom Right: tabs are located on the right side of the bottom border of
-      the window.
-
-    For these options to work 'Tabs in Titlebar' must be off.
+    You can choose where the external tabs will be positioned relative to the
+    window. For these options to work, 'Tabs in Titlebar' must be off.
 
 - *Tabs in Titlebar*:
     When this option is on, tabs are fixed in window titlebar and the width

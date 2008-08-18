@@ -207,20 +207,28 @@ namespace FbTk {
 template<>
 void FbTk::Resource<FbWinFrame::TabPlacement>::
 setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft")==0)
+    if (strcasecmp(strval, "TopLeft") == 0)
         m_value = FbWinFrame::TOPLEFT;
-    else if (strcasecmp(strval, "BottomLeft")==0)
+    else if (strcasecmp(strval, "BottomLeft") == 0)
         m_value = FbWinFrame::BOTTOMLEFT;
-    else if (strcasecmp(strval, "TopRight")==0)
+    else if (strcasecmp(strval, "Top") == 0)
+        m_value = FbWinFrame::TOP;
+    else if (strcasecmp(strval, "Bottom") == 0)
+        m_value = FbWinFrame::BOTTOM;
+    else if (strcasecmp(strval, "TopRight") == 0)
         m_value = FbWinFrame::TOPRIGHT;
-    else if (strcasecmp(strval, "BottomRight")==0)
+    else if (strcasecmp(strval, "BottomRight") == 0)
         m_value = FbWinFrame::BOTTOMRIGHT;
     else if (strcasecmp(strval, "LeftTop") == 0)
         m_value = FbWinFrame::LEFTTOP;
+    else if (strcasecmp(strval, "Left") == 0)
+        m_value = FbWinFrame::LEFT;
     else if (strcasecmp(strval, "LeftBottom") == 0)
         m_value = FbWinFrame::LEFTBOTTOM;
     else if (strcasecmp(strval, "RightTop") == 0)
         m_value = FbWinFrame::RIGHTTOP;
+    else if (strcasecmp(strval, "Right") == 0)
+        m_value = FbWinFrame::RIGHT;
     else if (strcasecmp(strval, "RightBottom") == 0)
         m_value = FbWinFrame::RIGHTBOTTOM;
     else
@@ -237,6 +245,12 @@ getString() const {
     case FbWinFrame::BOTTOMLEFT:
         return string("BottomLeft");
         break;
+    case FbWinFrame::TOP:
+        return string("Top");
+        break;
+    case FbWinFrame::BOTTOM:
+        return string("Bottom");
+        break;
     case FbWinFrame::TOPRIGHT:
         return string("TopRight");
         break;
@@ -246,11 +260,17 @@ getString() const {
     case FbWinFrame::LEFTTOP:
         return string("LeftTop");
         break;
+    case FbWinFrame::LEFT:
+        return string("Left");
+        break;
     case FbWinFrame::LEFTBOTTOM:
         return string("LeftBottom");
         break;
     case FbWinFrame::RIGHTTOP:
         return string("RightTop");
+        break;
+    case FbWinFrame::RIGHT:
+        return string("Right");
         break;
     case FbWinFrame::RIGHTBOTTOM:
         return string("RightBottom");
@@ -1691,25 +1711,34 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     typedef list<PlacementP> Placements;
     Placements place_menu;
 
-    // menu is 2 wide, 2 down
+    // menu is 3 wide, 5 down
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), FbWinFrame::LEFTTOP));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), FbWinFrame::LEFT));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), FbWinFrame::LEFTBOTTOM));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopCenter, "Top Center", "Top Center"), FbWinFrame::TOP));
+    place_menu.push_back(PlacementP("", FbWinFrame::TOPLEFT));
+    place_menu.push_back(PlacementP("", FbWinFrame::TOPLEFT));
+    place_menu.push_back(PlacementP("", FbWinFrame::TOPLEFT));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), FbWinFrame::BOTTOM));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightTop, "Right Top", "Right Top"), FbWinFrame::RIGHTTOP));
+    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightCenter, "Right Center", "Right Center"), FbWinFrame::RIGHT));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), FbWinFrame::RIGHTBOTTOM));
     place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT));
 
-    tabplacement_menu->setMinimumSublevels(2);
+    tabplacement_menu->setMinimumSublevels(3);
     // create items in sub menu
-    size_t i=0;
-    while (!place_menu.empty()) {
-        i++;
+    for (size_t i=0; i<15; ++i) {
         FbTk::FbString &str = place_menu.front().first;
         FbWinFrame::TabPlacement placement = place_menu.front().second;
-
-        tabplacement_menu->insert(new TabPlacementMenuItem(str, *this, placement, save_and_reconftabs));
+        if (str == "") {
+            tabplacement_menu->insert("");
+            tabplacement_menu->setItemEnabled(i, false);
+        } else {
+            tabplacement_menu->insert(new TabPlacementMenuItem(str, *this, placement, save_and_reconftabs));
+        }
         place_menu.pop_front();
     }
     tabplacement_menu->updateMenu();
