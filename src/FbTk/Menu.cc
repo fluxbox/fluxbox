@@ -1058,11 +1058,11 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         resetTypeAhead();
         if (validIndex(m_active_index) &&
             isItemEnabled(m_active_index)) {
-            if (menuitems[m_active_index]->submenu() != 0)
+            // send fake button click
+            int button = (event.state & ShiftMask) ? 3 : 1;
+            if (menuitems[m_active_index]->submenu() != 0 && button == 1)
                 enterSubmenu();
             else {
-                // send fake button click
-                int button = (event.state & ShiftMask) ? 3 : 1;
                 find(m_active_index)->click(button, event.time, event.state);
                 m_need_update = true;
                 updateMenu();
