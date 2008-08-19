@@ -73,7 +73,7 @@ using std::dec;
 
 class Application {
 public:
-    Application(bool grouped, ClientPattern *pat = 0);
+    Application(bool transient, bool grouped, ClientPattern *pat = 0);
     void reset();
     void forgetWorkspace() { workspace_remember = false; }
     void forgetHead() { head_remember = false; }
@@ -182,7 +182,7 @@ public:
     bool fullscreenstate_remember;
     bool fullscreenstate;
 
-    bool is_grouped;
+    bool is_transient, is_grouped;
     FbTk::RefCount<ClientPattern> group_pattern;
 
 };
@@ -192,8 +192,8 @@ public:
 
 
 
-Application::Application(bool grouped, ClientPattern *pat)
-    : is_grouped(grouped), group_pattern(pat)
+Application::Application(bool transient, bool grouped, ClientPattern *pat):
+    is_transient(transient), is_grouped(grouped), group_pattern(pat)
 {
     reset();
 }
@@ -571,13 +571,14 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
   effectively moved into the new
 */
 
-Application* findMatchingPatterns(ClientPattern *pat, Remember::Patterns *patlist, bool is_group, ClientPattern *match_pat = 0) {
+Application* findMatchingPatterns(ClientPattern *pat, Remember::Patterns *patlist, bool transient, bool is_group, ClientPattern *match_pat = 0) {
 
     Remember::Patterns::iterator it = patlist->begin();
     Remember::Patterns::iterator it_end = patlist->end();
 
     for (; it != it_end; ++it) {
         if (*it->first == *pat && is_group == it->second->is_grouped &&
+            transient == it->second->is_transient &&
             ((match_pat == 0 && *it->second->group_pattern == 0) ||
              (match_pat && *match_pat == **it->second->group_pattern))) {
 
@@ -664,7 +665,8 @@ Application* Remember::find(WinClient &winclient) {
     else {
         Patterns::iterator it = m_pats->begin();
         for (; it != m_pats->end(); it++)
-            if (it->first->match(winclient)) {
+            if (it->first->match(winclient) &&
+                it->second->is_transient == winclient.isTransient()) {
                 it->first->addMatch();
                 m_clients[&winclient] = it->second;
                 return it->second;
@@ -676,7 +678,7 @@ Application* Remember::find(WinClient &winclient) {
 
 Application * Remember::add(WinClient &winclient) {
     ClientPattern *p = new ClientPattern();
-    Application *app = new Application(false);
+    Application *app = new Application(winclient.isTransient(), false);
 
     // by default, we match against the WMClass of a window (instance and class strings)
     string win_name  = ::escapeRememberChars(p->getProperty(ClientPattern::NAME,  winclient));
@@ -687,7 +689,6 @@ Application * Remember::add(WinClient &winclient) {
     p->addTerm(win_class, ClientPattern::CLASS);
     if (!win_role.empty())
         p->addTerm(win_role, ClientPattern::ROLE);
-    p->addTerm(winclient.isTransient() ? "yes" : "no", ClientPattern::TRANSIENT);
     m_clients[&winclient] = app;
     p->addMatch();
     m_pats->push_back(make_pair(p, app));
@@ -739,16 +740,21 @@ void Remember::reload() {
                                                              line.c_str(),
                                                              '[', ']');
 
-                if (pos > 0 && strcasecmp(key.c_str(), "app") == 0) {
-                    ClientPattern *pat = new ClientPattern(line.c_str() + pos, true);
+                if (pos > 0 && (strcasecmp(key.c_str(), "app") == 0 ||
+                                strcasecmp(key.c_str(), "transient") == 0)) {
+                    ClientPattern *pat = new ClientPattern(line.c_str() + pos);
                     if (!in_group) {
                         if ((err = pat->error()) == 0) {
-                            Application *app = findMatchingPatterns(pat, old_pats, false);
+                            bool transient = (strcasecmp(key.c_str(),
+                                                         "transient") == 0);
+                            Application *app = findMatchingPatterns(pat,
+                                                   old_pats, transient, false);
                             if (app) {
                                 app->reset();
                                 reused_apps.insert(app);
-                            } else
-                                app = new Application(false);
+                            } else {
+                                app = new Application(transient, false);
+                            }
 
                             m_pats->push_back(make_pair(pat, app));
                             row += parseApp(apps_file, *app);
@@ -769,7 +775,7 @@ void Remember::reload() {
                 } else if (pos > 0 && strcasecmp(key.c_str(), "group") == 0) {
                     in_group = true;
                     if (line.find('(') != string::npos)
-                        pat = new ClientPattern(line.c_str() + pos, true);
+                        pat = new ClientPattern(line.c_str() + pos);
                 } else if (in_group) {
                     // otherwise assume that it is the start of the attributes
                     Application *app = 0;
@@ -777,12 +783,13 @@ void Remember::reload() {
                     list<ClientPattern *>::iterator it = grouped_pats.begin();
                     list<ClientPattern *>::iterator it_end = grouped_pats.end();
                     while (!app && it != it_end) {
-                        app = findMatchingPatterns(*it, old_pats, in_group, pat);
+                        app = findMatchingPatterns(*it, old_pats, false,
+                                                   in_group, pat);
                         ++it;
                     }
 
                     if (!app)
-                        app = new Application(in_group, pat);
+                        app = new Application(false, in_group, pat);
                     else
                         reused_apps.insert(app);
 
@@ -885,11 +892,13 @@ void Remember::save() {
             Patterns::iterator git_end = m_pats->end();
             for (; git != git_end; git++) {
                 if (git->second == &a) {
-                    apps_file << " [app]"<<git->first->toString()<<endl;
+                    apps_file << (a.is_transient ? " [transient]" : " [app]") <<
+                                 git->first->toString()<<endl;
                 }
             }
         } else {
-            apps_file << "[app]"<<it->first->toString()<<endl;
+            apps_file << (a.is_transient ? "[transient]" : "[app]") <<
+                         it->first->toString()<<endl;
         }
         if (a.workspace_remember) {
             apps_file << "  [Workspace]\t{" << a.workspace << "}" << endl;

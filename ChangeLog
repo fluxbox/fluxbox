@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/08/19:
+   * Add new [transient] tag to apps file to match transient windows (Mark)
+     ClientPattern.cc/hh Remember.cc
 *08/08/18:
    * Combined code for MoveTo key command and saved window positions (Mark)
      Side effects:

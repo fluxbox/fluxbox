@@ -58,7 +58,7 @@ ClientPattern::ClientPattern():
     m_nummatches(0) {}
 
 // parse the given pattern (to end of line)
-ClientPattern::ClientPattern(const char *str, bool default_no_transient):
+ClientPattern::ClientPattern(const char *str):
     m_matchlimit(0),
     m_nummatches(0)
 {
@@ -112,7 +112,6 @@ ClientPattern::ClientPattern(const char *str, bool default_no_transient):
                 prop = ROLE;
             } else if (strcasecmp(memstr.c_str(), "transient") == 0) {
                 prop = TRANSIENT;
-                default_no_transient = false;
             } else if (strcasecmp(memstr.c_str(), "maximized") == 0) {
                 prop = MAXIMIZED;
             } else if (strcasecmp(memstr.c_str(), "minimized") == 0) {
@@ -147,9 +146,6 @@ ClientPattern::ClientPattern(const char *str, bool default_no_transient):
         // no match terms given, this is not allowed
         had_error = true;
     }
-
-    if (default_no_transient)
-        had_error = !addTerm("no", TRANSIENT);
 
     if (!had_error) {
         // otherwise, we check for a number

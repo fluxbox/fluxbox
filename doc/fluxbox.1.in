@@ -1,11 +1,11 @@
 .\"     Title: fluxbox
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/18/2008
+.\"      Date: 08/19/2008
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "FLUXBOX" "1" "08/18/2008" "" ""
+.TH "FLUXBOX" "1" "08/19/2008" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -1213,7 +1213,7 @@ The format of a line in the `apps\' file is:
 [end]
 .fi
 .RE
-Each app\-name can be a string, or a regular expression\. By default the name is matched against a window\'s WM_CLASS property (the first string in it, called the "instance")\. You can match against the title, instance name (default), class name, or role (the WM_WINDOW_ROLE property) by explicitly specifying it\. You can also specify multiple matches, which must ALL match for the properties to be applied\. If a count is supplied in curly brackets at the end of the app line, then the entry will only match at most that many at any time (default is to match all matching windows)\.
+Each app\-name can be a string, or a regular expression\. By default the name is matched against a window\'s WM_CLASS property (the first string in it, called the "instance")\. You can match against the title, instance name (default), class name, or role (the WM_WINDOW_ROLE property) by explicitly specifying it\. You can also specify multiple matches, which must ALL match for the properties to be applied\. If a count is supplied in curly brackets at the end of the app line, then the entry will only match at most that many at any time (default is to match all matching windows)\. Settings associated with an [app] line will not be applied to transient windows\. [transient] may be used instead to match them\.
 .sp
 .sp
 .RS 4
@@ -1404,37 +1404,7 @@ You can also place [group] tag around several [app] tags, with an [end] tag to i
     [end]
 .fi
 .RE
-Parameters in the `apps\' file are case\-sensitive\. Application names are taken from the first X window WM_CLASS attribute by default (WM_NAME = title, WM_WINDOW_ROLE = role)\. You can see this attribute by using the xprop command\. Transient windows are not affected by application settings\. Take care when using regular expressions\. If you are not familiar with regular expressions you can disable this feature by specifying \-\-disable\-regexp during configure\. Plain strings will then be matched\.
-.sp
-.SH "GROUPS"
-Since version 0\.1\.11, fluxbox has a feature called autogrouping, that is apps are automatically grouped together if they are in the same group\. NOTE: this feature is deprecated since version 0\.9\.1 in favor of grouping using the `apps\' file, since it is much more powerful\.
-.sp
-You can create groups simply by editing the ~/\.fluxbox/groups file\. This file takes the format of:
-.sp
-.sp
-.RS 4
-.nf
-<app1> <app2> <app3> <\.\.\.> <appN>
-.fi
-.RE
-where elements can be found with this command:
-.sp
-.sp
-.RS 4
-.nf
-$> xprop WM_CLASS
-.fi
-.RE
-Just type this command into a terminal and use the mouse to click on the desired app and it will tell you what to write as an element (use the first of the two names returned)\. Each line forms a different group, e\.g\.:
-.sp
-.sp
-.RS 4
-.nf
-Navigator nedit
-xterm
-.fi
-.RE
-This will create two groups, one with netscape and nedit, and one with xterm\. The new window will only group itself to other windows on the same workspace and to the last window that was focused\.
+Parameters in the `apps\' file are case\-sensitive\. Application names are taken from the first X window WM_CLASS attribute by default (WM_NAME = title, WM_WINDOW_ROLE = role)\. You can see this attribute by using the xprop command\. Take care when using regular expressions\. If you are not familiar with regular expressions you can disable this feature by specifying \-\-disable\-regexp during configure\. Plain strings will then be matched\.
 .sp
 .SH "THE SLIT"
 The slit is a special fluxbox window frame that can contain dockable applications, e\.g\. \fIbbtools\fR or \fIwmapps\fR\.

@@ -1139,7 +1139,8 @@ name, or role (the WM_WINDOW_ROLE property) by explicitly specifying it. You can
 also specify multiple matches, which must ALL match for the properties to be
 applied. If a count is supplied in curly brackets at the end of the app line,
 then the entry will only match at most that many at any time (default is to
-match all matching windows).
+match all matching windows). Settings associated with an [app] line will not be
+applied to transient windows. [transient] may be used instead to match them.
 
 ...................................................................
 # match a standard xterm
@@ -1298,41 +1299,9 @@ entries. Here is a short example of an `apps' file:
 Parameters in the `apps' file are case-sensitive. Application names are taken
 from the first X window WM_CLASS attribute by default (WM_NAME = title,
 WM_WINDOW_ROLE = role). You can see this attribute by using the xprop
-command. Transient windows are not affected by application settings. Take care
-when using regular expressions. If you are not familiar with regular
-expressions you can disable this feature by specifying --disable-regexp during
-configure. Plain strings will then be matched.
-
-GROUPS
-------
-Since version 0.1.11, fluxbox has a feature called autogrouping, that is apps
-are automatically grouped together if they are in the same group. NOTE: this
-feature is deprecated since version 0.9.1 in favor of grouping using the
-`apps' file, since it is much more powerful.
-
-You can create groups simply by editing the ~/.fluxbox/groups file. This file
-takes the format of:
-
-    <app1> <app2> <app3> <...> <appN>
-
-where elements can be found with this command:
-
-..................
-$> xprop WM_CLASS
-..................
-
-Just type this command into a terminal and use the mouse to click on the
-desired app and it will tell you what to write as an element (use the first of
-the two names returned). Each line forms a different group, e.g.:
-
-................
-Navigator nedit
-xterm
-................
-
-This will create two groups, one with netscape and nedit, and one with xterm.
-The new window will only group itself to other windows on the same workspace
-and to the last window that was focused.
+command. Take care when using regular expressions. If you are not familiar with
+regular expressions you can disable this feature by specifying --disable-regexp
+during configure. Plain strings will then be matched.
 
 THE SLIT
 --------
