@@ -29,4 +29,4 @@ session.colorsPerChannel:	4
 session.doubleClickInterval:	250
 session.cacheMax:	200
 session.imageDither:	True
-session.configVersion:	9
+session.configVersion:	10
