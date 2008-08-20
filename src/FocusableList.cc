@@ -156,10 +156,12 @@ void FocusableList::checkUpdate(Focusable &win) {
     if (contains(win)) {
         if (!m_pat->match(win)) {
             m_list.remove(&win);
+            m_pat->removeMatch();
             m_removesig.notify(&win);
         }
     } else if (m_pat->match(win)) {
         insertFromParent(win);
+        m_pat->addMatch();
         m_addsig.notify(&win);
     }
 }
@@ -194,9 +196,10 @@ void FocusableList::addMatching() {
     const Focusables list = m_parent->clientList();
     Focusables::const_iterator it = list.begin(), it_end = list.end();
     for (; it != it_end; ++it) {
-        if (m_pat->match(**it))
+        if (m_pat->match(**it)) {
             pushBack(**it);
-        else // we still want to watch it, in case it changes to match
+            m_pat->addMatch();
+        } else // we still want to watch it, in case it changes to match
             attachSignals(**it);
     }
 }
@@ -279,6 +282,7 @@ void FocusableList::reset() {
         detachSignals(*m_list.back());
         m_list.pop_back();
     }
+    m_pat->resetMatches();
     if (m_parent)
         addMatching();
     m_resetsig.notify(0);

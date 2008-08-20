@@ -252,7 +252,8 @@ window is visible on all workspaces\.
 .RS 4
 Sets which window decorations will be shown\.
 \fIdecor\fR
-has the same format as the `[Deco]\' parameter in the apps file\. See man fluxbox section APPLICATION SETTINGS for more info\.
+has the same format as the `\fI parameter in the apps file\. See `man fluxbox\fR
+section APPLICATIONS for more info\.
 .RE
 .PP
 \fBToggleDecor\fR
@@ -774,8 +775,6 @@ of the truth values for all conditions listed\.
 Many of the more advanced commands take a \fIpattern\fR argument, which allows you to direct the action at a specific window or set of windows which match the properties specified in the \fIpattern\fR\. A \fIpattern\fR looks like this:
 .sp
 ([\fIpropertyname\fR[!]=]\fIregexp\fR) \&...
-.sp
-That is, one or more match definitions, followed by an optional limit on the number of windows to match\.
 .sp
 Match definitions are enclosed in parentheses \fB(\fR\&...\fB)\fR, and if no \fIpropertyname\fR is given then \fBName\fR is assumed\. The \fIregexp\fR can contain any regular expression, or the special value \fB[current]\fR, which matches the corresponding value of the currently focused window\. See \fIregex(7)\fR for more information on acceptable regular expressions\.
 .sp

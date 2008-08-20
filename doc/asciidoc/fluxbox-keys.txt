@@ -208,8 +208,8 @@ These commands ordinarily affect only the currently focused window. The
 
 *SetDecor* 'decor'::
 	Sets which window decorations will be shown. 'decor' has the same format
-	as the `[Deco]' parameter in the apps file. See man fluxbox section
-	APPLICATION SETTINGS for more info.
+	as the `[Deco]' parameter in the apps file. See `man fluxbox' section
+	APPLICATIONS for more info.
 
 *ToggleDecor*::
 	Toggles the presence of the window decorations (title bar, window
@@ -555,9 +555,6 @@ to direct the action at a specific window or set of windows which match the
 properties specified in the 'pattern'. A 'pattern' looks like this:
 
 (['propertyname'[!]=]'regexp') ...
-
-That is, one or more match definitions, followed by an optional limit on the
-number of windows to match.
 
 Match definitions are enclosed in parentheses *(*...*)*, and if no
 'propertyname' is given then *Name* is assumed. The 'regexp' can contain any

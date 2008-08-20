@@ -1,11 +1,11 @@
 .\"     Title: fluxbox
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/19/2008
+.\"      Date: 08/20/2008
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "FLUXBOX" "1" "08/19/2008" "" ""
+.TH "FLUXBOX" "1" "08/20/2008" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -1199,40 +1199,44 @@ The default installation of fluxbox provides some of these style files\. See flu
 In addition to the style file, the overlay file, whose location is specified by session\.screen0\.styleOverlay (default: ~/\.fluxbox/overlay ) can be used to set style resources that override all styles\. For more information about which parts of fluxbox can be controlled by the overlay file, see fluxstyle(1)\.
 .sp
 .SH "APPLICATIONS"
-It is possible to force an application to always have the same dimensions, position, and other settings when it is first launched\. This is done using either the window\-menu `Remember\&...\fI submenu, or by directly using the ~/\.fluxbox/apps file\. Be careful about editing the apps file while fluxbox is running\. Your changes may be overwritten\. Following is a listing of the valid entries for the `apps\fR file\. The `Remember\&...\fI submenu has entries for most options that store the current state in the `apps\fR file for future use\.
+It is possible to force an application to always have the same dimensions, position, and other settings when it is first launched\. The easiest way to do this is to use the `Remember\&...\' submenu of the window menu, which can usually be opened with a right click on the titlebar\. More advanced features require manually editing the ~/\.fluxbox/apps file, where these settings are saved\.
 .sp
-The format of a line in the `apps\' file is:
+The format of a section in the `apps\' file is:
 .sp
 .sp
 .RS 4
 .nf
-[app] (app\-name) {count \- optional}
-    [Property1]  {value1}
-    [Property2]  {value2}
+[app] (Property=\'value\') \.\.\. {count \- optional}
+    [Setting1]  {value1}
+    [Setting2]  {value2}
     \.\.\.
 [end]
 .fi
 .RE
-Each app\-name can be a string, or a regular expression\. By default the name is matched against a window\'s WM_CLASS property (the first string in it, called the "instance")\. You can match against the title, instance name (default), class name, or role (the WM_WINDOW_ROLE property) by explicitly specifying it\. You can also specify multiple matches, which must ALL match for the properties to be applied\. If a count is supplied in curly brackets at the end of the app line, then the entry will only match at most that many at any time (default is to match all matching windows)\. Settings associated with an [app] line will not be applied to transient windows\. [transient] may be used instead to match them\.
+Property can be one of the following tags:
+.sp
+o name \- the name of the window (the first field of WM_CLASS) o class \- class of the window (the second field of WM_CLASS) o title \- title of the window (the WM_NAME property) o role \- role of the window (the WM_WINDOW_ROLE property)
+.sp
+You can find out the value for these fields for a particular window by running xprop(1)\. The window title should be used only as a last resort, since it often changes after the window opens\. Each \fIvalue\fR can be a string or a regular expression\. All values are case sensitive\.
+.sp
+You can specify multiple properties, which must ALL match for the settings to be applied\. If a count is supplied in curly brackets at the end of the app line, then the entry will only match at most that many at any time (default is to match all matching windows)\. Settings associated with an [app] line will not be applied to transient windows\. [transient] may be used instead to match them\.
 .sp
 .sp
 .RS 4
 .nf
 # match a standard xterm
-[app] (xterm)
+[app] (name=xterm)
 # match an xterm started like: xterm \-name myshell
-[app] (myshell)
-# match any one Firefox window (the instance name is "Gecko")
-[app] (class=Firefox\-bin) {1}
+[app] (name=myshell)
 # match the gaim buddy list window
 [app] (role=buddy_list)
 # match an rdesktop window to a particular host
 [app] (title=rdesktop \- hostname\.*)
-# match gaim IRC windows
-[app] (gaim) (title=#\.*)
+# match pidgin IRC windows
+[app] (pidgin) (title=#\.*)
 .fi
 .RE
-The following are the properties that can be defined in each [app] entry\. Each name must be enclosed in square brackets, and the value is generally in curly brackets:
+The following are the settings that can be defined in each [app] entry\. Each name must be enclosed in square brackets, and the value is generally in curly brackets:
 .sp
 .sp
 .RS 4
@@ -1244,7 +1248,7 @@ The following are the properties that can be defined in each [app] entry\. Each 
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[Position] (\fBrefspot\fR)) {X Y}: Position the application at a particular spot:
+\h'-04'\(bu\h'+03'[Position] (\fBrefspot\fR) {X Y}: Position the application at a particular spot:
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'TOPLEFT
@@ -1309,7 +1313,7 @@ is positioned (X,Y) pixels from the lower right of the screen\.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[FocusHidden] {yes|no}: Hides the app from the window cycling list used Next/PrevWindow key bindings\.
+\h'-04'\(bu\h'+03'[FocusHidden] {yes|no}: Hides the app from the window cycling list used by Next/PrevWindow key bindings\.
 .RE
 .sp
 .RS 4
@@ -1356,56 +1360,40 @@ enabled, focus enabled\.
 .RE
 The apps file also allows you to specify applications that should be started only valid option is (screen=NN), where NN is the screen number on which the command should be run\.
 .sp
-Finally, you can set windows to group together by using the `apps\' file\. This can be achieved with regular expressions using:
-.sp
-.sp
-.RS 4
-.nf
-[app] (property=expr) \.\.\. {number}
-.fi
-.RE
-Property can be one of the following tags:
-.sp
-o name \- the name of the window (the first field of WM_CLASS) o class \- class of the window (the second field of WM_CLASS) o title \- title of the window ( WM_NAME property) o role \- role of the window (the WM_WINDOW_ROLE property)
-.sp
-If no `property\' is specified, the name property is assumed\. You can find out the value for these fields for a particular window by running xprop(1)\.
-.sp
-You can also place [group] tag around several [app] tags, with an [end] tag to indicate the end of the group\. If you place (workspace) after the [group] tag, a new window will only get grouped with other windows on the current workspace\. You can also specify dimensions, positions, etc\. for the group as for normal app entries\. Here is a short example of an `apps\' file:
+Finally, you can set windows to group together by using the `apps\' file\. Just place a [group] tag around several [app] tags, with an [end] tag to indicate the end of the group\. If you place (workspace) after the [group] tag, a new window will only get grouped with other windows on the current workspace\. You can also specify dimensions, positions, etc\. for the group as for normal app entries\. Here is a short example of an `apps\' file:
 .sp
 .sp
 .RS 4
 .nf
     [startup] {xterm}
     # match anything ending with term, up to 2 instances
-    [app] (\.*[tT]erm) {2}
-    # match anything with `gaim\' in the title
-    [app] (title=\.*gaim\.*)
-    [app] (kate)
-        [Dimensions]  {1022 747}
-        [Position]    (WINCENTER) {0 0}
-        [Close]       {yes}
+    [app] (name=\.*[tT]erm) {2}
+      [Workspace]   {1}
     [end]
-    [app] (konqueror)
-        [Workspace]   {1}
-        [Dimensions]  {1006 749}
-        [Position]    {16 0}
-        [Jump]        {yes}
+    [app] (name=kate)
+      [Dimensions]  {1022 747}
+      [Position]    (WINCENTER) {0 0}
+      [Close]       {yes}
+    [end]
+    [app] (name=konqueror)
+      [Workspace]   {1}
+      [Dimensions]  {1006 749}
+      [Position]    {16 0}
+      [Jump]        {yes}
     [end]
     # start all aterms without decorations
-    [app] (aterm)
-        [Deco]        {NONE}
+    [app] (name=aterm)
+      [Deco]        {NONE}
     [end]
     # a group with the gimp dock and toolbox
     # appears on layer 4 (bottom)
     [group]
-      [app] (gimp) (role=gimp\-dock)
-      [app] (gimp) (role=gimp\-toolbox)
-        [Layer] {4}
+     [app] (name=gimp) (role=gimp\-dock)
+     [app] (name=gimp) (role=gimp\-toolbox)
+      [Layer]       {4}
     [end]
 .fi
 .RE
-Parameters in the `apps\' file are case\-sensitive\. Application names are taken from the first X window WM_CLASS attribute by default (WM_NAME = title, WM_WINDOW_ROLE = role)\. You can see this attribute by using the xprop command\. Take care when using regular expressions\. If you are not familiar with regular expressions you can disable this feature by specifying \-\-disable\-regexp during configure\. Plain strings will then be matched\.
-.sp
 .SH "THE SLIT"
 The slit is a special fluxbox window frame that can contain dockable applications, e\.g\. \fIbbtools\fR or \fIwmapps\fR\.
 .sp

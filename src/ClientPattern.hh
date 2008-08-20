@@ -74,6 +74,8 @@ public:
     bool addTerm(const std::string &str, WinProperty prop, bool negate = false);
 
     void addMatch() { ++m_nummatches; }
+    void removeMatch() { --m_nummatches; }
+    void resetMatches() { m_nummatches = 0; }
 
     // whether this pattern has identical matching criteria
     bool operator ==(const ClientPattern &pat) const;

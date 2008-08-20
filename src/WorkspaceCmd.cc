@@ -69,8 +69,7 @@ FbTk::Command<void> *WindowListCmd::parse(const string &command, const string &a
     if (tokens.size() > 1) {
         FocusableList::parseArgs(tokens[1], opts, pat);
 
-        filter = FbTk::CommandParser<bool>::instance().parse(pat,
-                                                                     trusted);
+        filter = FbTk::CommandParser<bool>::instance().parse(pat, trusted);
     }
 
     return new WindowListCmd(FbTk::RefCount<FbTk::Command<void> >(cmd), opts,

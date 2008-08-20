@@ -1373,6 +1373,16 @@ void Remember::updateClientClose(WinClient &winclient) {
     checkReload(); // reload if it's changed
     Application *app = find(winclient);
 
+    if (app) {
+        Patterns::iterator it = m_pats->begin();
+        for (; it != m_pats->end(); it++) {
+            if (it->second == app) {
+                it->first->removeMatch();
+                break;
+            }
+        }
+    }
+
     if (app && (app->save_on_close_remember && app->save_on_close)) {
 
         for (int attrib = 0; attrib < REM_LASTATTRIB; attrib++) {
