@@ -22,6 +22,7 @@
 
 #include "WorkspaceCmd.hh"
 
+#include "Layer.hh"
 #include "Workspace.hh"
 #include "Window.hh"
 #include "Screen.hh"
@@ -493,7 +494,7 @@ void ShowDesktopCmd::execute() {
     Workspace::Windows::iterator it = windows.begin(),
                                  it_end = windows.end();
     for (; it != it_end; ++it) {
-        if ((*it)->getWindowType() != Focusable::TYPE_DESKTOP) {
+        if ((*it)->layerNum() < Layer::DESKTOP) {
             (*it)->iconify();
             count++;
         }
