@@ -509,6 +509,15 @@ void SetTitleCmd::real_execute() {
     fbwindow().winClient().setTitle(title);
 }
 
+REGISTER_COMMAND_WITH_ARGS(setdecor, SetDecorCmd, void);
+
+SetDecorCmd::SetDecorCmd(const std::string &args):
+    m_mask(FbWinFrame::getDecoMaskFromString(args)) { }
+
+void SetDecorCmd::real_execute() {
+    fbwindow().setDecorationMask(m_mask);
+}
+
 FbTk::Command<void> *SetAlphaCmd::parse(const string &command, const string &args,
                                   bool trusted) {
     typedef std::vector<string> StringTokens;

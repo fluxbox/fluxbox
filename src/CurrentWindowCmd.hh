@@ -247,6 +247,15 @@ private:
     std::string title;
 };
 
+class SetDecorCmd: public WindowHelperCmd {
+public:
+    explicit SetDecorCmd(const std::string &args);
+protected:
+    void real_execute();
+private:
+    unsigned int m_mask;
+};
+
 class SetAlphaCmd: public WindowHelperCmd {
 public:
     SetAlphaCmd(int focus, bool rel, int unfocus, bool unrel);

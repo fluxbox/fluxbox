@@ -1,11 +1,11 @@
 .\"     Title: fluxbox-keys
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/18/2008
+.\"      Date: 08/20/2008
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "FLUXBOX\-KEYS" "5" "08/18/2008" "" ""
+.TH "FLUXBOX\-KEYS" "5" "08/20/2008" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -167,19 +167,6 @@ Start dragging to add this window to another\'s tabgroup\.
 .SS "Window Commands"
 These commands ordinarily affect only the currently focused window\. The \fBOnWindow\fR modifier and \fBForEach\fR command may affect the window that is used\.
 .PP
-\fBActivate\fR [\fIpattern\fR] | \fBFocus\fR [\fIpattern\fR]
-.RS 4
-Set the focus to the window matching the argument\. If
-\fIpattern\fR
-is omitted, this may be used with the
-\fBOnWindow\fR
-modifier to set the focus\. See
-\fBCLIENT PATTERNS\fR
-for more about the
-\fIpattern\fR
-arguments\.
-.RE
-.PP
 \fBMinimize\fR | \fBMinimizeWindow\fR | \fBIconify\fR
 .RS 4
 Minimize the current window, equivalent to the window button\.
@@ -259,6 +246,13 @@ Toggle the
 state of the current window, equivalent to the window button\. A
 \fBsticky\fR
 window is visible on all workspaces\.
+.RE
+.PP
+\fBSetDecor\fR \fIdecor\fR
+.RS 4
+Sets which window decorations will be shown\.
+\fIdecor\fR
+has the same format as the `[Deco]\' parameter in the apps file\. See man fluxbox section APPLICATION SETTINGS for more info\.
 .RE
 .PP
 \fBToggleDecor\fR
@@ -411,7 +405,7 @@ Jumps to the given workspace
 .PP
 \fBNextWindow\fR [{\fIoptions\fR}] [\fIpattern\fR] / \fBPrevWindow\fR [{\fIoptions\fR}] [\fIpattern\fR]
 .RS 4
-Focuses and activates the next / previous window in the focus list\.
+Focuses the next / previous window in the focus list\.
 .PP
 \fIoptions\fR is one or more of the following, space delimited:
 .RS 4
@@ -454,6 +448,15 @@ and
 arguments have the same meaning as
 \fBNextWindow\fR
 above\.
+.RE
+.PP
+\fBActivate\fR [\fIpattern\fR] | \fBFocus\fR [\fIpattern\fR]
+.RS 4
+With
+\fIpattern\fR, this is an alias for
+\fBGoToWindow\fR
+1
+\fIpattern\fR\. Without, this behaves like a window command, so that OnWindow events can change the focused window\.
 .RE
 .PP
 \fBAttach\fR \fIpattern\fR

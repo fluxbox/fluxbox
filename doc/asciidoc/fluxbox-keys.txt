@@ -166,11 +166,6 @@ Window Commands
 These commands ordinarily affect only the currently focused window. The
 *OnWindow* modifier and *ForEach* command may affect the window that is used.
 
-*Activate* ['pattern'] | *Focus* ['pattern']::
-	Set the focus to the window matching the argument. If 'pattern' is
-	omitted, this may be used with the *OnWindow* modifier to set the
-	focus. See *CLIENT PATTERNS* for more about the 'pattern' arguments.
-
 *Minimize* | *MinimizeWindow* | *Iconify*::
 	Minimize the current window, equivalent to the window button.
 
@@ -210,6 +205,11 @@ These commands ordinarily affect only the currently focused window. The
 *Stick* | *StickWindow*::
 	Toggle the *sticky* state of the current window, equivalent to the
 	window button. A *sticky* window is visible on all workspaces.
+
+*SetDecor* 'decor'::
+	Sets which window decorations will be shown. 'decor' has the same format
+	as the `[Deco]' parameter in the apps file. See man fluxbox section
+	APPLICATION SETTINGS for more info.
 
 *ToggleDecor*::
 	Toggles the presence of the window decorations (title bar, window
@@ -310,7 +310,7 @@ called).
 	Jumps to the given workspace 'number'. The first workspace is *1*.
 
 *NextWindow* [{'options'}] ['pattern'] / *PrevWindow* [{'options'}] ['pattern']::
-Focuses and activates the next / previous window in the focus list.
+Focuses the next / previous window in the focus list.
 +
 'options' is one or more of the following, space delimited:;;
 +
@@ -343,6 +343,11 @@ doing so.
 	Focuses and activates the window at position 'number' in the focus
 	list. The 'options' and 'pattern' arguments have the same meaning as
 	*NextWindow* above.
+
+*Activate* ['pattern'] | *Focus* ['pattern']::
+	With 'pattern', this is an alias for *GoToWindow* 1 'pattern'. Without,
+	this behaves like a window command, so that OnWindow events can change
+	the focused window.
 
 *Attach* 'pattern'::
 	Combines all windows that match the 'pattern' into a single tab group.
