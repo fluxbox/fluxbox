@@ -396,6 +396,10 @@ The supported tags are:
     fluxbox to read your menu file. If it cannot find it, the system default
     menu is used in its place.
 
+[config] (label);;
+    Inserts a fluxbox native submenu item, containing numerous configuration
+    options concerning window placement, focus style, window moving style, etc.
+
 [end];;
     This tells fluxbox that it is at the end of a menu. This can either be a
     submenu or the main root menu. There must be at least one of these tags in
@@ -464,16 +468,7 @@ The supported tags are:
     runs the command (which is commonly the name of another window manager). If
     the command is omitted, fluxbox restarts itself.
 
-[config] (label);;
-    Inserts a fluxbox native submenu item, containing numerous configuration
-    options concerning window placement, focus style, window moving style, etc.
-
-[wallpapers] (label);;
-    This allows you to list your backgrounds. This tag is built in to use
-    fbsetbg(1) and allows you to simply click on an image to set your wallpaper.
-    See? fluxbox makes it easy...
-
-[wallpapermenu] (directory) \{command\};;
+[wallpapers] (directory) \{command\};;
     This inserts a menu item to set the wallpaper for each file in the given
     directory. The command is optional and defaults to fbsetbg.
 
@@ -482,6 +477,10 @@ The supported tags are:
     your menu. This is handy for those users who can't access the workspace menu
     directly (e.g. if you don't have a 3 button mouse, it is rather hard to
     middle click to show the workspace menu).
+
+['command'] (label);;
+    In addition to the commands above, any legal key command may be used as a
+    menu item. See fluxbox-keys(5) for more information.
 
 Any line that starts with a '#' or '!' is considered a comment and ignored by
 fluxbox. Also, in the label/command/filename fields you can escape any

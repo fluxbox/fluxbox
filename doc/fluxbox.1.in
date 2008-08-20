@@ -393,6 +393,11 @@ The supported tags are:
 This tells fluxbox to start parsing the menu file\. This tag is required for fluxbox to read your menu file\. If it cannot find it, the system default menu is used in its place\.
 .RE
 .PP
+[config] (label)
+.RS 4
+Inserts a fluxbox native submenu item, containing numerous configuration options concerning window placement, focus style, window moving style, etc\.
+.RE
+.PP
 [end]
 .RS 4
 This tells fluxbox that it is at the end of a menu\. This can either be a submenu or the main root menu\. There must be at least one of these tags in your menu to correspond to the required [begin] tag\.
@@ -456,17 +461,7 @@ When selected this item re\-reads the current style and menu files and applies a
 This tells fluxbox to restart\. If command is supplied, it shuts down and runs the command (which is commonly the name of another window manager)\. If the command is omitted, fluxbox restarts itself\.
 .RE
 .PP
-[config] (label)
-.RS 4
-Inserts a fluxbox native submenu item, containing numerous configuration options concerning window placement, focus style, window moving style, etc\.
-.RE
-.PP
-[wallpapers] (label)
-.RS 4
-This allows you to list your backgrounds\. This tag is built in to use fbsetbg(1) and allows you to simply click on an image to set your wallpaper\. See? fluxbox makes it easy\&...
-.RE
-.PP
-[wallpapermenu] (directory) {command}
+[wallpapers] (directory) {command}
 .RS 4
 This inserts a menu item to set the wallpaper for each file in the given directory\. The command is optional and defaults to fbsetbg\.
 .RE
@@ -474,6 +469,11 @@ This inserts a menu item to set the wallpaper for each file in the given directo
 [workspaces] (label)
 .RS 4
 This tells fluxbox to insert a link to the workspaces menu directly into your menu\. This is handy for those users who can\'t access the workspace menu directly (e\.g\. if you don\'t have a 3 button mouse, it is rather hard to middle click to show the workspace menu)\.
+.RE
+.PP
+[\fIcommand\fR] (label)
+.RS 4
+In addition to the commands above, any legal key command may be used as a menu item\. See fluxbox\-keys(5) for more information\.
 .RE
 Any line that starts with a \fI#\fR or \fI!\fR is considered a comment and ignored by fluxbox\. Also, in the label/command/filename fields you can escape any character\. Using \fI\e\e\fR inserts a literal back\-slash into the label/command/filename field\.
 .sp
