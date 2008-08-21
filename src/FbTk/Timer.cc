@@ -251,7 +251,8 @@ Command<void> *DelayedCmd::parse(const std::string &command,
                            const std::string &args, bool trusted) {
 
     std::string cmd_str;
-    int err = StringUtil::getStringBetween(cmd_str, args.c_str(), '{', '}');
+    int err = StringUtil::getStringBetween(cmd_str, args.c_str(), '{', '}',
+                                           " \t\n", true);
     if (err == 0)
         return 0;
 
