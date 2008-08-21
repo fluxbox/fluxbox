@@ -880,12 +880,6 @@ void FbWinFrame::reconfigure() {
     gravityTranslate(grav_x, grav_y, -sizeHints().win_gravity, m_active_orig_client_bw, false);
 
     m_bevel = theme()->bevelWidth();
-    setBorderWidth();
-
-    if (useHandle() && theme()->handleWidth() != 0)
-        showHandle();
-    else
-        hideHandle();
 
     unsigned int orig_handle_h = handle().height();
     if (m_use_handle && orig_handle_h != theme()->handleWidth())

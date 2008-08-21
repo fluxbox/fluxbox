@@ -422,8 +422,6 @@ void FluxboxWindow::init() {
     fluxbox.saveWindowSearchGroup(frame().window().window(), this);
     fluxbox.saveWindowSearchGroup(frame().tabcontainer().window(), this);
 
-    frame().resize(m_client->width(), m_client->height());
-
     m_workspace_number = m_screen.currentWorkspaceID();
 
     // set default decorations but don't apply them
@@ -619,11 +617,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
             // reparent window to this
             frame().setClientWindow(**client_it);
 
-            moveResizeClient(**client_it,
-                             frame().clientArea().x(),
-                             frame().clientArea().y(),
-                             frame().clientArea().width(),
-                             frame().clientArea().height());
+            moveResizeClient(**client_it);
 
             // create a labelbutton for this client and
             // associate it with the pointer
@@ -645,11 +639,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     } else { // client.fbwindow() == 0
         associateClient(client);
 
-        moveResizeClient(client,
-                         frame().clientArea().x(),
-                         frame().clientArea().y(),
-                         frame().clientArea().width(),
-                         frame().clientArea().height());
+        moveResizeClient(client);
 
         // right now, this block only happens with new windows or on restart
         bool is_startup = Fluxbox::instance()->isStartup();
@@ -2870,8 +2860,8 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
                 setFullscreenLayer();
         }
     } else if (subj == &m_theme.reconfigSig()) {
-        frame().reconfigure();
-        reconfigTheme();
+        frame().applyDecorations();
+        sendConfigureNotify();
     } else if (m_initialized && subj == &m_frame.frameExtentSig()) {
         Fluxbox::instance()->updateFrameExtents(*this);
         sendConfigureNotify();
@@ -3598,15 +3588,16 @@ void FluxboxWindow::fixsize() {
     }
 }
 
-void FluxboxWindow::moveResizeClient(WinClient &client, int x, int y,
-                                 unsigned int height, unsigned int width) {
-    client.moveResize(x, y,
+void FluxboxWindow::moveResizeClient(WinClient &client) {
+    client.moveResize(frame().clientArea().x(), frame().clientArea().y(),
                       frame().clientArea().width(),
                       frame().clientArea().height());
-    client.sendConfigureNotify(frame().x() + frame().clientArea().x() + frame().window().borderWidth(),
-                      frame().y() + frame().clientArea().y() + frame().window().borderWidth(),
-                      frame().clientArea().width(),
-                      frame().clientArea().height());
+    client.sendConfigureNotify(frame().x() + frame().clientArea().x() +
+                                             frame().window().borderWidth(),
+                               frame().y() + frame().clientArea().y() +
+                                             frame().window().borderWidth(),
+                               frame().clientArea().width(),
+                               frame().clientArea().height());
 }
 
 void FluxboxWindow::sendConfigureNotify() {
@@ -3619,11 +3610,7 @@ void FluxboxWindow::sendConfigureNotify() {
           of the client window is. (ie frame pos + client pos inside the frame = send pos)
         */
         //!!
-        moveResizeClient(client,
-                     frame().clientArea().x(),
-                     frame().clientArea().y(),
-                     frame().clientArea().width(),
-                     frame().clientArea().height());
+        moveResizeClient(client);
 
     } // end for
 
@@ -3844,29 +3831,6 @@ void FluxboxWindow::updateButtons() {
     } // end for c
 
     frame().reconfigure();
-}
-
-/**
- * reconfigTheme: must be called after frame is reconfigured
- * Client windows need to be made the same size and location as
- * the frame's client area.
- */
-void FluxboxWindow::reconfigTheme() {
-
-    ClientList::iterator it = clientList().begin();
-    ClientList::iterator it_end = clientList().end();
-
-    int x = m_frame.clientArea().x(),
-        y = m_frame.clientArea().y();
-
-    unsigned int width = m_frame.clientArea().width(),
-        height = m_frame.clientArea().height();
-
-    for (; it != it_end; ++it) {
-        (*it)->moveResize(x, y, width, height);
-    }
-
-    sendConfigureNotify();
 }
 
 // grab pointer and increase counter.

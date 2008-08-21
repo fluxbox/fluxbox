@@ -471,8 +471,6 @@ public:
     const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
     /** @} */ // end group signals
 
-    void reconfigTheme();
-
     //@}
 
     class WinSubject: public FbTk::Subject {
@@ -518,7 +516,7 @@ private:
     void doSnapping(int &left, int &top);
     // user_w/h return the values that should be shown to the user
     void fixsize();
-    void moveResizeClient(WinClient &client, int x, int y, unsigned int width, unsigned int height);
+    void moveResizeClient(WinClient &client);
     /// sends configurenotify to all clients
     void sendConfigureNotify();
 
