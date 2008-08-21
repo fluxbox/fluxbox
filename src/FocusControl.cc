@@ -521,6 +521,9 @@ void FocusControl::unfocusWindow(WinClient &client,
 
 
 void FocusControl::setFocusedWindow(WinClient *client) {
+    if (client == s_focused_window)
+        return;
+
     BScreen *screen = client ? &client->screen() : 0;
     BScreen *old_screen = 
         FocusControl::focusedWindow() ? 
