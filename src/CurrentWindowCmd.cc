@@ -157,7 +157,7 @@ namespace {
 
 FbTk::Command<void> *parseIntCmd(const string &command, const string &args,
                            bool trusted) {
-    int num = (command == "sethead" ? 0 : 1);
+    int num = 1;
     FbTk_istringstream iss(args.c_str());
     iss >> num;
     if (command == "sethead")
@@ -167,16 +167,19 @@ FbTk::Command<void> *parseIntCmd(const string &command, const string &args,
     else if (command == "sendtonextworkspace")
         return new SendToNextWorkspaceCmd(num);
     else if (command == "sendtoprevworkspace")
-        return new SendToPrevWorkspaceCmd(num);
+        return new SendToNextWorkspaceCmd(-num);
     else if (command == "taketonextworkspace")
-        return new TakeToNextWorkspaceCmd(num);
+        return new SendToNextWorkspaceCmd(num, true);
     else if (command == "taketoprevworkspace")
-        return new TakeToPrevWorkspaceCmd(num);
+        return new SendToNextWorkspaceCmd(-num, true);
     else if (command == "sendtoworkspace")
-        // workspaces appear 1-indexed to the user, hence the minus 1
-        return new SendToWorkspaceCmd(num-1);
+        return new SendToWorkspaceCmd(num);
     else if (command == "taketoworkspace")
-        return new TakeToWorkspaceCmd(num-1);
+        return new SendToWorkspaceCmd(num, true);
+    else if (command == "sendtonexthead")
+        return new SendToNextHeadCmd(num);
+    else if (command == "sendtoprevhead")
+        return new SendToNextHeadCmd(-num);
     return 0;
 }
 
@@ -188,6 +191,8 @@ REGISTER_COMMAND_PARSER(taketonextworkspace, parseIntCmd, void);
 REGISTER_COMMAND_PARSER(taketoprevworkspace, parseIntCmd, void);
 REGISTER_COMMAND_PARSER(sendtoworkspace, parseIntCmd, void);
 REGISTER_COMMAND_PARSER(taketoworkspace, parseIntCmd, void);
+REGISTER_COMMAND_PARSER(sendtonexthead, parseIntCmd, void);
+REGISTER_COMMAND_PARSER(sendtoprevhead, parseIntCmd, void);
 
 FbTk::Command<void> *parseFocusCmd(const string &command, const string &args,
                                    bool trusted) {
@@ -205,49 +210,35 @@ REGISTER_COMMAND_PARSER(focus, parseFocusCmd, void);
 }; // end anonymous namespace
 
 void SetHeadCmd::real_execute() {
-    fbwindow().setOnHead(m_head);
+    int num = m_head;
+    int total = fbwindow().screen().numHeads();
+    if (num < 0) num += total + 1;
+    if (num < 1) num = 1;
+    if (num > total) num = total;
+    fbwindow().setOnHead(num);
 }
 
 void SendToWorkspaceCmd::real_execute() {
-    fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow(), false);
+    int num = m_workspace_num;
+    int total = fbwindow().screen().numberOfWorkspaces();
+    if (num < 0) num += total + 1;
+    if (num < 1) num = 1;
+    if (num > total) num = total;
+    fbwindow().screen().sendToWorkspace(num-1, &fbwindow(), m_take);
 }
 
 void SendToNextWorkspaceCmd::real_execute() {
-    const int ws_nr =
-        ( fbwindow().workspaceNumber() + m_delta ) %
-          fbwindow().screen().numberOfWorkspaces();
-    fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
+    int total = fbwindow().screen().numberOfWorkspaces();
+    const int ws_nr = (total + (fbwindow().workspaceNumber() + m_delta % total)) % total;
+    fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), m_take);
 }
 
-void SendToPrevWorkspaceCmd::real_execute() {
-    int ws_nr = (fbwindow().workspaceNumber() - m_delta );
-    if ( ws_nr < 0 )
-        ws_nr += fbwindow().screen().numberOfWorkspaces();
-
-    ws_nr = ws_nr % fbwindow().screen().numberOfWorkspaces();
-
-    fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow(), false);
-}
-
-void TakeToWorkspaceCmd::real_execute() {
-    fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow());
-}
-
-void TakeToNextWorkspaceCmd::real_execute() {
-    unsigned int ws_nr =
-        ( fbwindow().workspaceNumber() + m_delta) %
-          fbwindow().screen().numberOfWorkspaces();
-    fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow());
-}
-
-void TakeToPrevWorkspaceCmd::real_execute() {
-    int ws_nr = (fbwindow().workspaceNumber() - m_delta);
-    if ( ws_nr < 0 )
-        ws_nr += fbwindow().screen().numberOfWorkspaces();
-
-    ws_nr = ws_nr % fbwindow().screen().numberOfWorkspaces();
-
-    fbwindow().screen().sendToWorkspace(ws_nr, &fbwindow());
+void SendToNextHeadCmd::real_execute() {
+    int total = fbwindow().screen().numHeads();
+    if (total < 2)
+        return;
+    int num = (total + fbwindow().getOnHead() - 1 + (m_delta % total)) % total;
+    fbwindow().setOnHead(1 + num);
 }
 
 void GoToTabCmd::real_execute() {

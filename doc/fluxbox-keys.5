@@ -1,11 +1,11 @@
 .\"     Title: fluxbox-keys
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/20/2008
+.\"      Date: 08/21/2008
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "FLUXBOX\-KEYS" "5" "08/20/2008" "" ""
+.TH "FLUXBOX\-KEYS" "5" "08/21/2008" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -380,6 +380,14 @@ First value becomes the focused alpha, second becomes the unfocused alpha value\
 \fBSetHead\fR \fInumber\fR
 .RS 4
 Moves the window to the given display head\. Only available when fluxbox has been compiled with Xinerama support\.
+.RE
+.PP
+\fBSendToNextHead\fR [\fIoffset\fR] / \fBSendToPrevHead\fR [\fIoffset\fR]
+.RS 4
+Sends the current window to the next/previous display head\. If you specify an
+\fIoffset\fR
+greater than
+\fB1\fR, it will move the window that many heads\. If this takes the window beyond the total number of heads, it will wrap around to the beginning\.
 .RE
 .SS "Workspace Commands"
 These commands affect the entire workspace (or "desktop" as it is sometimes called)\.

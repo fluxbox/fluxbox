@@ -74,58 +74,34 @@ private:
 
 class SendToWorkspaceCmd: public WindowHelperCmd {
 public:
-    explicit SendToWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }
+    explicit SendToWorkspaceCmd(int workspace_num, bool take = false):
+        m_workspace_num(workspace_num), m_take(take) { }
 protected:
     void real_execute();
 private:
     const int m_workspace_num;
+    const bool m_take;
 };
 
 class SendToNextWorkspaceCmd: public WindowHelperCmd {
 public:
-    explicit SendToNextWorkspaceCmd(int delta):m_delta(delta) { }
+    explicit SendToNextWorkspaceCmd(int delta, bool take = false):
+        m_delta(delta), m_take(take) { }
+protected:
+    void real_execute();
+private:
+    const int m_delta;
+    const bool m_take;
+};
+
+class SendToNextHeadCmd: public WindowHelperCmd {
+public:
+    explicit SendToNextHeadCmd(int delta): m_delta(delta) { }
 protected:
     void real_execute();
 private:
     const int m_delta;
 };
-
-class SendToPrevWorkspaceCmd: public WindowHelperCmd {
-public:
-    explicit SendToPrevWorkspaceCmd(int delta):m_delta(delta) { }
-protected:
-    void real_execute();
-private:
-    const int m_delta;
-};
-
-class TakeToWorkspaceCmd : public WindowHelperCmd {
-public:
-    explicit TakeToWorkspaceCmd(int workspace_num) : m_workspace_num(workspace_num) { }
-protected:
-    void real_execute();
-private:
-    const int m_workspace_num;
-};
-
-class TakeToNextWorkspaceCmd : public WindowHelperCmd {
-public:
-    explicit TakeToNextWorkspaceCmd(int delta) : m_delta(delta) { }
-protected:
-    void real_execute();
-private:
-    const int m_delta;
-};
-
-class TakeToPrevWorkspaceCmd : public WindowHelperCmd {
-public:
-    explicit TakeToPrevWorkspaceCmd(int delta) : m_delta(delta) { }
-protected:
-    void real_execute();
-private:
-    const int m_delta;
-};
-
 
 // goto tab
 class GoToTabCmd: public WindowHelperCmd {

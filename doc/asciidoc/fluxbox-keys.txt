@@ -292,6 +292,12 @@ two arguments;;
 	Moves the window to the given display head. Only available when fluxbox
 	has been compiled with Xinerama support.
 
+*SendToNextHead* ['offset'] / *SendToPrevHead* ['offset']::
+	Sends the current window to the next/previous display head. If you
+	specify an 'offset' greater than *1*, it will move the window that many
+	heads. If this takes the window beyond the total number of heads, it
+	will wrap around to the beginning.
+
 Workspace Commands
 ~~~~~~~~~~~~~~~~~~
 These commands affect the entire workspace (or "desktop" as it is sometimes
