@@ -388,13 +388,19 @@ FluxboxWindow::~FluxboxWindow() {
 void FluxboxWindow::init() {
     m_attaching_tab = 0;
 
-    assert(m_client);
+    // fetch client size and placement
+    XWindowAttributes wattrib;
+    if (! m_client->getAttrib(wattrib) ||
+        !wattrib.screen  || // no screen? ??
+        wattrib.override_redirect || // override redirect
+        m_client->initial_state == WithdrawnState) // Slit client
+        return;
+
     m_client->setFluxboxWindow(this);
     m_client->setGroupLeftWindow(None); // nothing to the left.
 
-    if (Fluxbox::instance()->haveShape()) {
+    if (Fluxbox::instance()->haveShape())
         Shape::setShapeNotify(winClient());
-    }
 
     //!! TODO init of client should be better
     // we don't want to duplicate code here and in attachClient
@@ -407,24 +413,18 @@ void FluxboxWindow::init() {
 
     Fluxbox &fluxbox = *Fluxbox::instance();
 
-    // setup cursors for resize grips
-    frame().gripLeft().setCursor(frame().theme()->lowerLeftAngleCursor());
-    frame().gripRight().setCursor(frame().theme()->lowerRightAngleCursor());
-
     associateClient(*m_client);
 
     frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
 
     // redirect events from frame to us
     frame().setEventHandler(*this);
+    fluxbox.saveWindowSearchGroup(frame().window().window(), this);
+    fluxbox.saveWindowSearchGroup(frame().tabcontainer().window(), this);
 
     frame().resize(m_client->width(), m_client->height());
 
-    m_blackbox_attrib.workspace = m_workspace_number = m_screen.currentWorkspaceID();
-
-    m_blackbox_attrib.flags = m_blackbox_attrib.attrib = m_blackbox_attrib.stack = 0;
-    m_blackbox_attrib.premax_x = m_blackbox_attrib.premax_y = 0;
-    m_blackbox_attrib.premax_w = m_blackbox_attrib.premax_h = 0;
+    m_workspace_number = m_screen.currentWorkspaceID();
 
     // set default decorations but don't apply them
     setDecorationMask(FbWinFrame::getDecoMaskFromString(screen().defaultDeco()),
@@ -435,45 +435,27 @@ void FluxboxWindow::init() {
 
     updateMWMHintsFromClient(*m_client);
 
-    //!!
-    // fetch client size and placement
-    XWindowAttributes wattrib;
-    if (! m_client->getAttrib(wattrib) ||
-        !wattrib.screen  || // no screen? ??
-        wattrib.override_redirect || // override redirect
-        m_client->initial_state == WithdrawnState) // Slit client
-        return;
-
-    // save old border width so we can restore it later
-    m_client->old_bw = wattrib.border_width;
-    m_client->x = wattrib.x; m_client->y = wattrib.y;
-
     m_timer.setTimeout(fluxbox.getAutoRaiseDelay());
     FbTk::RefCount<FbTk::Command<void> > raise_cmd(new FbTk::SimpleCommand<FluxboxWindow>(*this,
                                                                                    &FluxboxWindow::raise));
     m_timer.setCommand(raise_cmd);
     m_timer.fireOnce(true);
 
-    Fluxbox::instance()->saveWindowSearchGroup(frame().window().window(), this);
-    Fluxbox::instance()->saveWindowSearchGroup(frame().tabcontainer().window(), this);
-
     /**************************************************/
     /* Read state above here, apply state below here. */
     /**************************************************/
 
-    if (m_client->transientFor() && m_client->transientFor()->fbwindow() &&
-        m_client->transientFor()->fbwindow()->isStuck())
-        stick();
+    if (m_client->isTransient()) {
+        if (m_client->transientFor()->fbwindow())
+            stuck = m_client->transientFor()->fbwindow()->isStuck();
 
-    // adjust the window decorations based on transience and window sizes
-    if (m_client->isTransient() && !screen().decorateTransient()) {
-        decorations.maximize =  functions.maximize = false;
-        decorations.handle = false;
+        if (!screen().decorateTransient()) {
+            decorations.maximize =  functions.maximize = false;
+            decorations.handle = false;
+        }
     }
 
-    if ((m_client->normal_hint_flags & PMinSize) &&
-        (m_client->normal_hint_flags & PMaxSize) &&
-        m_client->maxWidth() != 0 && m_client->maxHeight() != 0 &&
+    if (m_client->maxWidth() != 0 && m_client->maxHeight() != 0 &&
         m_client->maxWidth() <= m_client->minWidth() &&
         m_client->maxHeight() <= m_client->minHeight()) {
         decorations.maximize = decorations.handle =
@@ -481,10 +463,7 @@ void FluxboxWindow::init() {
         decorations.tab = false; //no tab for this window
     }
 
-    associateClientWindow(true, 
-                          wattrib.x, wattrib.y, 
-                          wattrib.width, wattrib.height, 
-                          m_client->gravity(), m_client->old_bw);
+    associateClientWindow();
 
     setWindowType(m_client->getWindowType());
 
@@ -513,17 +492,8 @@ void FluxboxWindow::init() {
     // this window is managed, we are now allowed to modify actual state
     m_initialized = true;
 
-    restoreAttributes();
-
     if (m_workspace_number >= screen().numberOfWorkspaces())
         m_workspace_number = screen().currentWorkspaceID();
-
-/*
-    if (wattrib.width <= 0)
-        wattrib.width = 1;
-    if (wattrib.height <= 0)
-        wattrib.height = 1;
-*/
 
     // if we're a transient then we should be on the same layer as our parent
     if (m_client->isTransient() &&
@@ -535,13 +505,12 @@ void FluxboxWindow::init() {
     
     // transients should be on the same workspace as parent
     if (m_client->isTransient() &&
-        m_client->transientFor()->fbwindow() &&
-        m_client->transientFor()->fbwindow() != this) {
+        m_client->transientFor()->fbwindow()) {
         m_workspace_number =
                 m_client->transientFor()->fbwindow()->workspaceNumber();
     }
-    
-    
+
+
 #ifdef DEBUG
     cerr<<"FluxboxWindow::init("<<title()<<") transientFor: "<<
         m_client->transientFor()<<endl;
@@ -551,10 +520,8 @@ void FluxboxWindow::init() {
     }
 #endif // DEBUG
 
-    unsigned int real_width = frame().width();
-    unsigned int real_height = frame().height() - frame().titlebarHeight() - frame().handleHeight();
-    frame().sizeHints().apply(real_width, real_height);
-    real_height += frame().titlebarHeight() + frame().handleHeight();
+    unsigned int real_width = frame().width(), real_height = frame().height()
+    frame().applySizeHints(real_width, real_height);
 
     if (m_placed)
         moveResize(frame().x(), frame().y(), real_width, real_height);
@@ -665,9 +632,6 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
             //null if we want the new button at the end of the list
             if (x >= 0 && button_insert_pos)
                 frame().moveLabelButtonLeftOf(*m_labelbuttons[*client_it], *button_insert_pos);
-
-            (*client_it)->saveBlackboxAttribs(m_blackbox_attrib,
-                                              PropBlackboxAttributesElements);
         }
 
         // add client and move over all attached clients
@@ -695,8 +659,6 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
             m_focused = focusRequestFromClient(client);
         focused_win = (m_focus_new || is_startup) ? &client : m_client;
 
-        client.saveBlackboxAttribs(m_blackbox_attrib,
-                                   PropBlackboxAttributesElements);
         m_clientlist.push_back(&client);
     }
 
@@ -1076,21 +1038,13 @@ bool FluxboxWindow::isGroupable() const {
     return false;
 }
 
-void FluxboxWindow::associateClientWindow(bool use_attrs,
-                                          int x, int y,
-                                          unsigned int width, unsigned int height,
-                                          int gravity, unsigned int client_bw) {
-    m_client->updateTitle();
-
+void FluxboxWindow::associateClientWindow() {
     frame().setShapingClient(m_client, false);
 
-    if (use_attrs)
-        frame().moveResizeForClient(x, y,
-                                    width, height, gravity, client_bw);
-    else
-        frame().resizeForClient(m_client->width(), m_client->height());
+    frame().moveResizeForClient(m_client->x(), m_client->y(),
+                                m_client->width(), m_client->height(),
+                                m_client->gravity(), m_client->old_bw);
 
-    frame().setActiveGravity(m_client->gravity(), m_client->old_bw);
     frame().setSizeHints(m_client->sizeHints());
     frame().setClientWindow(*m_client);
 }
@@ -1719,12 +1673,7 @@ void FluxboxWindow::setWorkspace(int n) {
 void FluxboxWindow::setLayerNum(int layernum) {
     m_layernum = layernum;
 
-    m_blackbox_attrib.flags |= ATTRIB_STACK;
-    m_blackbox_attrib.stack = layernum;
-
     if (m_initialized) {
-        saveBlackboxAttribs();
-
 #ifdef DEBUG
         cerr<<this<<" notify layer signal"<<endl;
 #endif // DEBUG
@@ -1779,8 +1728,8 @@ void FluxboxWindow::stick() {
         WinClient::TransientList::const_iterator it = (*client_it)->transientList().begin();
         WinClient::TransientList::const_iterator it_end = (*client_it)->transientList().end();
         for (; it != it_end; ++it) {
-            if ((*it)->fbwindow() && (*it)->fbwindow()->isStuck() != stuck)
-                (*it)->fbwindow()->stick();
+            if ((*it)->fbwindow())
+                (*it)->fbwindow()->setStuck(stuck);
         }
 
     }
@@ -2009,20 +1958,6 @@ void FluxboxWindow::installColormap(bool install) {
 }
 
 /**
- Saves blackbox attributes for every client in our list
- */
-void FluxboxWindow::saveBlackboxAttribs() {
-    for_each(m_clientlist.begin(), m_clientlist.end(),
-             ChangeProperty(
-                 display,
-                 FbAtoms::instance()->getFluxboxAttributesAtom(),
-                 PropModeReplace,
-                 (unsigned char *)&m_blackbox_attrib,
-                 PropBlackboxAttributesElements
-                 ));
-}
-
-/**
  Sets state on each client in our list
  Use setting_up for setting startup state - it may not be committed yet
  That'll happen when its mapped
@@ -2074,53 +2009,6 @@ bool FluxboxWindow::getState() {
     XFree(static_cast<void *>(state));
 
     return ret;
-}
-
-/**
- * Sets the attributes to what they should be
- * but doesn't change the actual state
- * (so the caller can set defaults etc as well)
- */
-void FluxboxWindow::restoreAttributes() {
-    if (!getState()) {
-        m_current_state = m_client->initial_state;
-        if (m_current_state == IconicState)
-            iconic = true;
-    }
-
-    Atom atom_return;
-    int foo;
-    unsigned long ulfoo, nitems;
-    FbAtoms *fbatoms = FbAtoms::instance();
-
-    BlackboxAttributes *net;
-    if (m_client->property(fbatoms->getFluxboxAttributesAtom(), 0l,
-                           PropBlackboxAttributesElements, false,
-                           fbatoms->getFluxboxAttributesAtom(), &atom_return, &foo,
-                           &nitems, &ulfoo, (unsigned char **) &net) &&
-        net) {
-        if (nitems != (unsigned)PropBlackboxAttributesElements) {
-            XFree(net);
-            return;
-        }
-        m_blackbox_attrib.flags = net->flags;
-        m_blackbox_attrib.attrib = net->attrib;
-        m_blackbox_attrib.workspace = net->workspace;
-        m_blackbox_attrib.stack = net->stack;
-        m_blackbox_attrib.premax_x = net->premax_x;
-        m_blackbox_attrib.premax_y = net->premax_y;
-        m_blackbox_attrib.premax_w = net->premax_w;
-        m_blackbox_attrib.premax_h = net->premax_h;
-
-        XFree(static_cast<void *>(net));
-    } else
-        return;
-
-    if (m_blackbox_attrib.flags & ATTRIB_STACK) {
-        //!! TODO check value?
-        m_layernum = m_blackbox_attrib.stack;
-    }
-
 }
 
 /**
@@ -2243,7 +2131,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     }
 
     // Note: this function never gets called from WithdrawnState
-    // initial state is handled in restoreAttributes() and init()
+    // initial state is handled in init()
 
     setCurrentClient(*client, false); // focus handled on MapNotify
     deiconify();
@@ -2610,7 +2498,6 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     bool onTitlebar = frame().gripLeft().window() != be.window &&
         frame().gripRight().window() != be.window &&
         frame().handle().window() != be.window &&
-        frame().clientArea().window() != be.window &&
         frame().window() != be.window;
 
     if (onTitlebar && be.button == 1)
@@ -2670,7 +2557,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
     bool inside_titlebar = frame().gripLeft().window() != me.window &&
         frame().gripRight().window() != me.window &&
-        frame().clientArea().window() != me.window &&
         frame().window() != me.window;
 
     if (Fluxbox::instance()->getIgnoreBorder() && m_attaching_tab == 0
@@ -3733,8 +3619,6 @@ void FluxboxWindow::sendConfigureNotify() {
           of the client window is. (ie frame pos + client pos inside the frame = send pos)
         */
         //!!
-        client.x = frame().x();
-        client.y = frame().y();
         moveResizeClient(client,
                      frame().clientArea().x(),
                      frame().clientArea().y(),

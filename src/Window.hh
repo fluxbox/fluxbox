@@ -87,18 +87,6 @@ public:
         MwmDecorMaximize    = (1l << 6)  /// maximize
     };
 
-    /// attributes for BlackboxHints
-    enum Attrib {
-        ATTRIB_SHADED = 0x01,      ///< shaded
-        ATTRIB_MAXHORIZ = 0x02,    ///< maximized horizontal
-        ATTRIB_MAXVERT = 0x04,     ///< maximized vertical
-        ATTRIB_OMNIPRESENT = 0x08, ///< omnipresent (sticky)
-        ATTRIB_WORKSPACE = 0x10,   ///< workspace
-        ATTRIB_STACK = 0x20,       ///< stack
-        ATTRIB_DECORATION = 0x40,  ///< decorations
-        ATTRIB_HIDDEN = 0x80       ///< hidden
-    };
-
     /**
      * Types of maximization
      */
@@ -140,13 +128,6 @@ public:
          LEFT         = 7,
          CENTER       = 8
     };
-
-    /// holds old blackbox attributes
-    typedef struct _blackbox_attributes {
-        unsigned long flags, attrib, workspace, stack;
-        long premax_x, premax_y;
-        unsigned long premax_w, premax_h;
-    } BlackboxAttributes;
 
     typedef std::list<WinClient *> ClientList;
 
@@ -308,7 +289,6 @@ public:
     void getMaxSize(unsigned int* width, unsigned int* height) const;
     void setWorkspace(int n);
     void updateFunctions();
-    void restoreAttributes();
     /**
      * Show window meny at at given position
      * @param mx position
@@ -507,8 +487,6 @@ public:
     bool oplock; ///< Used to help stop transient loops occurring by locking a window during certain operations
 
 private:
-    static const int PropBlackboxAttributesElements = 8;
-
     void setupWindow();
     void updateButtons();
 
@@ -530,8 +508,7 @@ private:
 
     bool getState();
     void updateMWMHintsFromClient(WinClient &client);
-    void saveBlackboxAttribs();
-    void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1, int gravity = ForgetGravity, unsigned int client_bw = 0);
+    void associateClientWindow();
 
     void setState(unsigned long stateval, bool setting_up);
     /// set the layer of a fullscreen window
@@ -574,7 +551,6 @@ private:
 
     FbTk::Timer m_timer;
     Display *display; /// display connection
-    BlackboxAttributes m_blackbox_attrib;
 
     int m_button_grab_x, m_button_grab_y; // handles last button press event for move
     int m_last_resize_x, m_last_resize_y; // handles last button press event for resize

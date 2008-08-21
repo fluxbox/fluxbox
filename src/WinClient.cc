@@ -66,7 +66,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
         Focusable(screen, fbwin), FbTk::FbWindow(win),
                      transient_for(0),
                      window_group(0),
-                     x(0), y(0), old_bw(0),
+                     old_bw(0),
                      initial_state(0),
                      normal_hint_flags(0),
                      wm_hint_flags(0),
@@ -81,6 +81,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      m_mwm_hint(0),
                      m_strut(0) {
 
+    old_bw = borderWidth();
     updateWMProtocols();
     updateMWMHints();
     updateWMHints();
@@ -365,13 +366,6 @@ void WinClient::setIcon(const FbTk::PixmapWithMask& pm) {
     m_icon.mask().copy(pm.mask());
     m_icon_override = true;
     titleSig().notify();
-}
-
-void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs, int nelements) {
-    changeProperty(FbAtoms::instance()->getFluxboxAttributesAtom(),
-                   XA_CARDINAL, 32, PropModeReplace,
-                   (unsigned char *)&blackbox_attribs,
-                   nelements);
 }
 
 void WinClient::setFluxboxWindow(FluxboxWindow *win) {

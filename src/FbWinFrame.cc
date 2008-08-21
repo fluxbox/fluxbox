@@ -674,10 +674,7 @@ void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
 
     // we need to mask this so we don't get unmap event
     win.setEventMask(NoEventMask);
-    win.reparent(m_window, 0, clientArea().y());
-    // remask window so we get events
-    win.setEventMask(PropertyChangeMask | StructureNotifyMask |
-                     FocusChangeMask | KeyPressMask);
+    win.reparent(m_window, clientArea().x(), clientArea().y());
 
     m_window.setEventMask(ButtonPressMask | ButtonReleaseMask |
                           ButtonMotionMask | EnterWindowMask |
@@ -685,14 +682,14 @@ void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
 
     XFlush(win.display());
 
+    // remask window so we get events
     XSetWindowAttributes attrib_set;
-    attrib_set.event_mask = PropertyChangeMask | StructureNotifyMask | FocusChangeMask;
+    attrib_set.event_mask = PropertyChangeMask | StructureNotifyMask | FocusChangeMask | KeyPressMask;
     attrib_set.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask |
         ButtonMotionMask;
 
     XChangeWindowAttributes(win.display(), win.window(), CWEventMask|CWDontPropagate, &attrib_set);
 
-    m_clientarea.raise();
     if (isVisible())
         win.show();
     win.raise();
@@ -808,7 +805,6 @@ void FbWinFrame::setEventHandler(FbTk::EventHandler &evh) {
     evm.add(evh, m_grip_right);
     evm.add(evh, m_grip_left);
     evm.add(evh, m_window);
-    evm.add(evh, m_clientarea);
 }
 
 /**
@@ -823,7 +819,6 @@ void FbWinFrame::removeEventHandler() {
     evm.remove(m_grip_right);
     evm.remove(m_grip_left);
     evm.remove(m_window);
-    evm.remove(m_clientarea);
 }
 
 void FbWinFrame::exposeEvent(XExposeEvent &event) {
@@ -1344,7 +1339,6 @@ void FbWinFrame::init() {
 
     m_button_size = 26;
 
-    m_clientarea.setBorderWidth(0);
     m_label.setBorderWidth(0);
     m_state.shaded = false;
 
@@ -1360,6 +1354,10 @@ void FbWinFrame::init() {
     // Note: we don't show clientarea yet
 
     setEventHandler(*this);
+
+    // setup cursors for resize grips
+    gripLeft().setCursor(theme()->lowerLeftAngleCursor());
+    gripRight().setCursor(theme()->lowerRightAngleCursor());
 }
 
 /**
