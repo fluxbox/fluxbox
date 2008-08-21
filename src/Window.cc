@@ -520,7 +520,7 @@ void FluxboxWindow::init() {
     }
 #endif // DEBUG
 
-    unsigned int real_width = frame().width(), real_height = frame().height()
+    unsigned int real_width = frame().width(), real_height = frame().height();
     frame().applySizeHints(real_width, real_height);
 
     if (m_placed)
