@@ -1503,7 +1503,8 @@ int FbWinFrame::getDecoMaskFromString(const string &str_label) {
 }
 
 bool FbWinFrame::useBorder() const {
-    return !m_state.fullscreen && m_state.deco_mask & DECORM_BORDER;
+    return !m_state.fullscreen && m_state.maximized != MAX_FULL &&
+           (m_state.deco_mask & DECORM_BORDER);
 }
 
 bool FbWinFrame::useTabs() const {

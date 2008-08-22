@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/08/22:
+   * Remove borders from maximized windows (Mark)
+     FbWinFrame.cc
+   * Add -sync command line option for debugging X issues (Mark)
+     fluxbox.cc/hh main.cc
 *08/08/21:
    * Added SendToNextHead and SendToPrevHead commands (Mark)
      CurrentWindowCmd.cc/hh
