@@ -1104,6 +1104,10 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
         }
     }
 
+    unsigned int mask = decorationMask();
+    mask &= FbWinFrame::getDecoMaskFromString(screen().defaultDeco());
+    setDecorationMask(mask, false);
+
     // functions.tabable is ours, not special one
     // note that it means this window is "tabbable"
     if (hint->flags & MwmHintsFunctions) {
