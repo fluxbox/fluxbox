@@ -535,13 +535,13 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 app.rememberMinimizedstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "maximized") {
                 if (strcasecmp(str_label.c_str(), "yes") == 0)
-                    app.rememberMaximizedstate(FluxboxWindow::MAX_FULL);
+                    app.rememberMaximizedstate(FbWinFrame::MAX_FULL);
                 else if (strcasecmp(str_label.c_str(), "horz") == 0)
-                    app.rememberMaximizedstate(FluxboxWindow::MAX_HORZ);
+                    app.rememberMaximizedstate(FbWinFrame::MAX_HORZ);
                 else if (strcasecmp(str_label.c_str(), "vert") == 0)
-                    app.rememberMaximizedstate(FluxboxWindow::MAX_VERT);
+                    app.rememberMaximizedstate(FbWinFrame::MAX_VERT);
                 else
-                    app.rememberMaximizedstate(FluxboxWindow::MAX_NONE);
+                    app.rememberMaximizedstate(FbWinFrame::MAX_NONE);
             } else if (str_key == "fullscreen") {
                 app.rememberFullscreenstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "jump") {
@@ -999,16 +999,16 @@ void Remember::save() {
         if (a.maximizedstate_remember) {
             apps_file << "  [Maximized]\t{";
             switch (a.maximizedstate) {
-            case FluxboxWindow::MAX_FULL:
+            case FbWinFrame::MAX_FULL:
                 apps_file << "yes" << "}" << endl;
                 break;
-            case FluxboxWindow::MAX_HORZ:
+            case FbWinFrame::MAX_HORZ:
                 apps_file << "horz" << "}" << endl;
                 break;
-            case FluxboxWindow::MAX_VERT:
+            case FbWinFrame::MAX_VERT:
                 apps_file << "vert" << "}" << endl;
                 break;
-            case FluxboxWindow::MAX_NONE:
+            case FbWinFrame::MAX_NONE:
             default:
                 apps_file << "no" << "}" << endl;
                 break;
@@ -1115,13 +1115,15 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         app->rememberHead(win->screen().getHead(win->fbWindow()));
         break;
     case REM_DIMENSIONS:
-        app->rememberDimensions(win->normalWidth(), win->normalHeight());
+        app->rememberDimensions(win->frame().normalWidth(),
+                                win->frame().normalHeight());
         break;
     case REM_POSITION: {
         int head = win->screen().getHead(win->fbWindow());
         int head_x = win->screen().maxLeft(head);
         int head_y = win->screen().maxTop(head);
-        app->rememberPosition(win->normalX() - head_x, win->normalY() - head_y);
+        app->rememberPosition(win->frame().normalX() - head_x,
+                              win->frame().normalY() - head_y);
         break;
     }
     case REM_FOCUSHIDDENSTATE:

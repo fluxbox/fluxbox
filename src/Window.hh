@@ -87,16 +87,6 @@ public:
         MwmDecorMaximize    = (1l << 6)  /// maximize
     };
 
-    /**
-     * Types of maximization
-     */
-    enum MaximizeMode {
-        MAX_NONE = 0, ///< normal state
-        MAX_HORZ = 1, ///< maximize horizontal
-        MAX_VERT = 2, ///< maximize vertical
-        MAX_FULL = 3  ///< maximize full
-    };
-
     /// Different resize modes when resizing a window
     enum ResizeModel {
         QUADRANTRESIZE,                   ///< resizes from one quadrant
@@ -222,7 +212,7 @@ public:
     /// set fullscreen
     void setFullscreen(bool flag);
     /// toggle maximize
-    void maximize(int type = MAX_FULL);
+    void maximize(int type = FbWinFrame::MAX_FULL);
     /// sets the maximized state
     void setMaximizedState(int type);
     /// maximizes the window horizontal
@@ -383,9 +373,9 @@ public:
     bool isIconic() const { return iconic; }
     bool isShaded() const { return shaded; }
     bool isFullscreen() const { return fullscreen; }
-    bool isMaximized() const { return maximized == MAX_FULL; }
-    bool isMaximizedVert() const { return (bool)(maximized & MAX_VERT); }
-    bool isMaximizedHorz() const { return (bool)(maximized & MAX_HORZ); }
+    bool isMaximized() const { return maximized == FbWinFrame::MAX_FULL; }
+    bool isMaximizedVert() const { return (bool)(maximized & FbWinFrame::MAX_VERT); }
+    bool isMaximizedHorz() const { return (bool)(maximized & FbWinFrame::MAX_HORZ); }
     int maximizedState() const { return maximized; }
     bool isIconifiable() const { return functions.iconify; }
     bool isMaximizable() const { return functions.maximize; }
@@ -434,11 +424,6 @@ public:
     int y() const { return frame().y(); }
     unsigned int width() const { return frame().width(); }
     unsigned int height() const { return frame().height(); }
-
-    int normalX() const;
-    int normalY() const;
-    unsigned int normalWidth() const;
-    unsigned int normalHeight() const;
 
     int xOffset() const { return frame().xOffset(); }
     int yOffset() const { return frame().yOffset(); }
@@ -587,8 +572,6 @@ private:
     /// if the window is focused with EnterNotify
     FbTk::DefaultValue<bool, BoolAcc> m_mouse_focus;
     bool m_click_focus;  ///< if the window is focused by clicking
-    int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
-    unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
 

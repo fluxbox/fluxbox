@@ -69,6 +69,16 @@ public:
     };
 
     /**
+     * Types of maximization
+     */
+    enum MaximizeMode {
+        MAX_NONE = 0, ///< normal state
+        MAX_HORZ = 1, ///< maximize horizontal
+        MAX_VERT = 2, ///< maximize vertical
+        MAX_FULL = 3  ///< maximize full
+    };
+
+    /**
        This enumeration represents individual decoration
        attributes, they can be OR-d together to get a mask.
        Useful for saving.
@@ -126,12 +136,15 @@ public:
             size_hints(),
             deco_mask(DECOR_NORMAL),
             focused(false),
-            shaded(false), fullscreen(false), maximized(0) { }
+            shaded(false), fullscreen(false), maximized(0),
+            x(0), y(0), width(1), height(1) { }
 
         SizeHints size_hints;
         unsigned int deco_mask;
         bool focused, shaded, fullscreen;
         int maximized;
+        int x, y;
+        unsigned int width, height;
     };
 
     /// create a top level window
@@ -182,7 +195,7 @@ public:
     /// set focus/unfocus style
     void setFocus(bool newvalue);
     void setFullscreen(bool value);
-    void setMaximized(int value) { m_state.maximized = value; }
+    void setMaximized(int value);
 
     void setFocusTitle(const std::string &str) { m_label.setText(str); }
     bool setTabMode(TabMode tabmode);
@@ -237,6 +250,8 @@ public:
     static int getDecoMaskFromString(const std::string &str);
     void setDecorationMask(unsigned int mask) { m_state.deco_mask = mask; }
     void applyDecorations();
+    void applyState();
+    void saveGeometry();
 
     /// determine if the given decoration should be shown in current state
     bool useBorder() const;
@@ -271,6 +286,10 @@ public:
     int y() const { return m_window.y(); }
     unsigned int width() const { return m_window.width(); }
     unsigned int height() const { return m_window.height(); }
+
+    int normalX() const;
+    int normalY() const;
+    unsigned int normalWidth() const;
     unsigned int normalHeight() const;
 
     // extra bits for tabs

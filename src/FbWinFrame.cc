@@ -529,8 +529,60 @@ void FbWinFrame::setFullscreen(bool newvalue) {
     if (newvalue == m_state.fullscreen)
         return;
 
+    saveGeometry();
     m_state.fullscreen = newvalue;
+    applyState();
+}
+
+void FbWinFrame::setMaximized(int value) {
+    if (value == m_state.maximized)
+        return;
+
+    saveGeometry();
+    m_state.maximized = value;
+    applyState();
+}
+
+void FbWinFrame::saveGeometry() {
+    if (m_state.fullscreen || m_state.maximized)
+        return;
+
+    m_state.x = x();
+    m_state.y = y();
+    m_state.width = width();
+    m_state.height = height();
+}
+
+void FbWinFrame::applyState() {
     applyDecorations();
+
+    if (m_state.fullscreen) {
+        const int head = m_screen.getHead(window());
+        moveResize(m_screen.getHeadX(head), m_screen.getHeadY(head),
+                   m_screen.getHeadWidth(head), m_screen.getHeadHeight(head));
+    } else if (m_state.maximized) {
+        const int head = m_screen.getHead(window());
+        int new_x = m_state.x, new_y = m_state.y;
+        unsigned int new_w = m_state.width, new_h = m_state.height;
+        if (m_state.maximized & MAX_VERT) {
+            new_y = m_screen.maxTop(head);
+            new_h = m_screen.maxBottom(head) - new_y - 2*window().borderWidth();
+        }
+        if (m_state.maximized & MAX_HORZ) {
+            new_x = m_screen.maxLeft(head);
+            new_w = m_screen.maxRight(head) - new_x - 2*window().borderWidth();
+        }
+        if (!m_screen.getMaxOverTabs()) {
+            new_y += yOffset();
+            new_h -= heightOffset();
+            new_x += xOffset();
+            new_w -= widthOffset();
+        }
+        moveResize(new_x, new_y, new_w, new_h);
+    } else
+        moveResize(m_state.x, m_state.y, m_state.width, m_state.height);
+
+    frameExtentSig().notify();
 }
 
 void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
@@ -1662,7 +1714,27 @@ void FbWinFrame::gravityTranslate(int &x, int &y,
     }
 }
 
+int FbWinFrame::normalX() const {
+    if ((m_state.maximized & MAX_HORZ) || m_state.fullscreen)
+        return m_state.x;
+    return x();
+}
+
+int FbWinFrame::normalY() const {
+    if ((m_state.maximized & MAX_VERT) || m_state.fullscreen)
+        return m_state.y;
+    return y();
+}
+
+unsigned int FbWinFrame::normalWidth() const {
+    if ((m_state.maximized & MAX_HORZ) || m_state.fullscreen)
+        return m_state.width;
+    return width();
+}
+
 unsigned int FbWinFrame::normalHeight() const {
+    if ((m_state.maximized & MAX_VERT) || m_state.fullscreen)
+        return m_state.height;
     if (m_state.shaded)
         return m_height_before_shade;
     return height();

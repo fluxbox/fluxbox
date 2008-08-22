@@ -271,7 +271,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_creation_time(0),
     moving(false), resizing(false), shaded(false), iconic(false),
     stuck(false), m_initialized(false), fullscreen(false),
-    maximized(MAX_NONE),
+    maximized(FbWinFrame::MAX_NONE),
     m_attaching_tab(0),
     display(FbTk::App::instance()->display()),
     m_button_grab_x(0), m_button_grab_y(0),
@@ -287,8 +287,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_focus_new(BoolAcc(screen().focusControl(), &FocusControl::focusNew)),
     m_mouse_focus(BoolAcc(screen().focusControl(), &FocusControl::isMouseFocus)),
     m_click_focus(true),
-    m_old_pos_x(0), m_old_pos_y(0),
-    m_old_width(1),  m_old_height(1),
     m_last_button_x(0),  m_last_button_y(0),
     m_button_theme(*this, screen().focusedWinButtonTheme(),
                    screen().unfocusedWinButtonTheme()),
@@ -561,7 +559,7 @@ void FluxboxWindow::init() {
 
     if (maximized) {
         int tmp = maximized;
-        maximized = MAX_NONE;
+        maximized = FbWinFrame::MAX_NONE;
         setMaximizedState(tmp);
     }
 
@@ -1444,35 +1442,16 @@ void FluxboxWindow::setFullscreen(bool flag) {
         return;
     }
 
-    const int head = screen().getHead(fbWindow());
-
     if (flag && !isFullscreen()) {
 
         if (isShaded())
             shade();
 
         m_old_layernum = layerNum();
-        if (!maximized) {
-            m_old_pos_x = frame().x();
-            m_old_pos_y = frame().y();
-            m_old_width = frame().width();
-            m_old_height = frame().height();
-        }
-
         fullscreen = true;
         frame().setFullscreen(true);
 
-        // dont call Window::moveResize here, it might ignore the 
-        // resize if win state is not resizable; 
-        // instead we call frame resize directly
-        // (see tests/fullscreentest.cc)
-
-        // be xinerama aware
-        frame().moveResize(screen().getHeadX(head), screen().getHeadY(head),
-                           screen().getHeadWidth(head), screen().getHeadHeight(head));
-        sendConfigureNotify();
-
-        setFullscreenLayer();
+        setFullscreenLayer(); // calls stateSig().notify()
         if (!isFocused())
             screen().focusedWindowSig().attach(this);
 
@@ -1481,21 +1460,8 @@ void FluxboxWindow::setFullscreen(bool flag) {
         fullscreen = false;
         frame().setFullscreen(false);
 
-        // ensure we apply the sizehints here, otherwise some
-        // apps (eg xterm) end up a little bit .. crappy (visually)
-        frame().applySizeHints(m_old_width, m_old_height);
-
-        moveResize(m_old_pos_x, m_old_pos_y, m_old_width, m_old_height);
         moveToLayer(m_old_layernum);
-
-        m_old_layernum = ::Layer::NORMAL;
-
-        if (maximized) {
-            int tmp = maximized;
-            maximized = MAX_NONE;
-            setMaximizedState(tmp);
-        } else
-            stateSig().notify();
+        stateSig().notify();
     }
 }
 
@@ -1507,8 +1473,7 @@ void FluxboxWindow::setFullscreenLayer() {
         getOnHead() != foc->getOnHead()) {
         moveToLayer(::Layer::ABOVE_DOCK);
     } else {
-        moveToLayer(m_old_layernum);
-        lower();
+        moveToLayer(::Layer::DESKTOP);
     }
     stateSig().notify();
 
@@ -1520,7 +1485,7 @@ void FluxboxWindow::setFullscreenLayer() {
 void FluxboxWindow::maximize(int type) {
 
     // nothing to do
-    if (type == MAX_NONE)
+    if (type == FbWinFrame::MAX_NONE)
         return;
 
     int new_max = maximized;
@@ -1529,19 +1494,21 @@ void FluxboxWindow::maximize(int type) {
     // when _don't_ we want to toggle?
     // - type is horizontal maximise, or
     // - type is full and we are not maximised horz but already vertically
-    if (type != MAX_HORZ && !(type == MAX_FULL && maximized == MAX_VERT))
-        new_max ^= MAX_VERT;
+    if (type != FbWinFrame::MAX_HORZ &&
+        (type != FbWinFrame::MAX_FULL || maximized != FbWinFrame::MAX_VERT))
+        new_max ^= FbWinFrame::MAX_VERT;
 
     // maximize horizontally?
-    if (type != MAX_VERT && !(type == MAX_FULL && maximized == MAX_HORZ))
-        new_max ^= MAX_HORZ;
+    if (type != FbWinFrame::MAX_VERT &&
+        (type != FbWinFrame::MAX_FULL || maximized != FbWinFrame::MAX_HORZ))
+        new_max ^= FbWinFrame::MAX_HORZ;
 
     setMaximizedState(new_max);
 }
 
 void FluxboxWindow::setMaximizedState(int type) {
 
-    if (!m_initialized || isFullscreen() || type == maximized) {
+    if (!m_initialized || type == maximized) {
         // this will interfere with window placement, so we delay it
         maximized = type;
         return;
@@ -1553,69 +1520,8 @@ void FluxboxWindow::setMaximizedState(int type) {
     if (isResizing())
         stopResizing();
 
-    int head = screen().getHead(frame().window());
-    int new_x = frame().x(), new_y = frame().y();
-    unsigned int new_w = frame().width(), new_h = frame().height();
-
-    // These evaluate whether we need to TOGGLE the value for that field
-    // Why? If maximize is only set to zero outside this,
-    // and we only EVER toggle them, then:
-    // 1) We will never loose the old_ values
-    // 2) It shouldn't get confused
-
-    // Worst case being that some action will toggle the wrong way, but
-    // we still won't lose the state in that case.
-
-    // toggle maximize vertically?
-    if ((maximized ^ type) & MAX_VERT) {
-        // already maximized in that direction?
-        if (maximized & MAX_VERT) {
-            new_y = m_old_pos_y;
-            new_h = m_old_height;
-        } else {
-            m_old_pos_y  = new_y;
-            m_old_height = new_h;
-            new_y = screen().maxTop(head);
-            new_h = screen().maxBottom(head) - new_y - 2*frame().window().borderWidth();
-            if (!screen().getMaxOverTabs()) {
-                new_y += yOffset();
-                new_h -= heightOffset();
-            }
-        }
-        maximized ^= MAX_VERT;
-    }
-
-    // toggle maximize horizontally?
-    if ((maximized ^ type) & MAX_HORZ) {
-        // already maximized in that direction?
-        if (maximized & MAX_HORZ) {
-            new_x = m_old_pos_x;
-            new_w = m_old_width;
-        } else {
-            // only save if we weren't already maximized
-            m_old_pos_x = new_x;
-            m_old_width = new_w;
-            new_x = screen().maxLeft(head);
-            new_w = screen().maxRight(head) - new_x - 2*frame().window().borderWidth();
-            if (!screen().getMaxOverTabs()) {
-                new_x += xOffset();
-                new_w -= widthOffset();
-            }
-        }
-        maximized ^= MAX_HORZ;
-    }
-
-    frame().setMaximized(maximized);
-    // ensure we apply the sizehints here, otherwise some
-    // apps (eg xterm) end up a little bit .. crappy (visually)
-
-    // frankly, that xterm bug was pretty obscure, and it's really annoying not
-    // being able to maximize my terminals, so we make an option
-    // but we do fix size hints when restoring the window to normal size
-    if (!screen().getMaxIgnoreIncrement() || !maximized)
-        frame().applySizeHints(new_w, new_h, maximized ? true : false);
-
-    moveResize(new_x, new_y, new_w, new_h);
+    maximized = type;
+    frame().setMaximized(type);
 
     // notify listeners that we changed state
     stateSig().notify();
@@ -1625,21 +1531,21 @@ void FluxboxWindow::setMaximizedState(int type) {
  * Maximize window horizontal
  */
 void FluxboxWindow::maximizeHorizontal() {
-    maximize(MAX_HORZ);
+    maximize(FbWinFrame::MAX_HORZ);
 }
 
 /**
  * Maximize window vertical
  */
 void FluxboxWindow::maximizeVertical() {
-    maximize(MAX_VERT);
+    maximize(FbWinFrame::MAX_VERT);
 }
 
 /**
  * Maximize window fully
  */
 void FluxboxWindow::maximizeFull() {
-    maximize(MAX_FULL);
+    maximize(FbWinFrame::MAX_FULL);
 }
 
 void FluxboxWindow::setWorkspace(int n) {
@@ -3248,7 +3154,7 @@ void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
     m_resize_corner = dir;
 
     resizing = true;
-    maximized = MAX_NONE;
+    maximized = FbWinFrame::MAX_NONE;
     frame().setMaximized(maximized);
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme()->upperLeftAngleCursor() :
@@ -3539,32 +3445,6 @@ Focusable::WindowType FluxboxWindow::getWindowType() const {
 
 bool FluxboxWindow::isTransient() const {
     return (m_client && m_client->isTransient());
-}
-
-int FluxboxWindow::normalX() const {
-    if (maximized & MAX_HORZ || fullscreen)
-        return m_old_pos_x;
-    return x();
-}
-
-int FluxboxWindow::normalY() const {
-    if (maximized & MAX_VERT || fullscreen)
-        return m_old_pos_y;
-    return y();
-}
-
-unsigned int FluxboxWindow::normalWidth() const {
-    if (maximized & MAX_HORZ || fullscreen)
-        return m_old_width;
-    return width();
-}
-
-unsigned int FluxboxWindow::normalHeight() const {
-    if (maximized & MAX_VERT || fullscreen)
-        return m_old_height;
-    if (shaded)
-        return frame().normalHeight();
-    return height();
 }
 
 int FluxboxWindow::initialState() const { return m_client->initial_state; }

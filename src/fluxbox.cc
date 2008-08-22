@@ -263,7 +263,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
 
-    // XSynchronize(disp, True);
+    XSynchronize(disp, True);
 
     s_singleton = this;
     m_have_shape = false;
