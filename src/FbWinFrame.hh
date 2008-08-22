@@ -467,7 +467,6 @@ private:
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
-    unsigned int m_height_before_shade; ///< height before shade, so we can restore it when we unshade
     /// alpha values
     typedef FbTk::ConstObjectAccessor<unsigned char, FbWinFrameTheme> AlphaAcc;
     FbTk::DefaultValue<unsigned char, AlphaAcc> m_focused_alpha;

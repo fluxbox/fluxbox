@@ -1465,9 +1465,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
     if (flag && !isFullscreen()) {
 
-        if (isShaded())
-            shade();
-
         m_old_layernum = layerNum();
         fullscreen = true;
         frame().setFullscreen(true);
@@ -1534,9 +1531,6 @@ void FluxboxWindow::setMaximizedState(int type) {
         maximized = type;
         return;
     }
-
-    if (isShaded())
-        shade();
 
     if (isResizing())
         stopResizing();
@@ -1605,7 +1599,7 @@ void FluxboxWindow::shade() {
         frame().shade();
 
     shaded = !shaded;
-
+    stateSig().notify();
     // TODO: this should set IconicState, but then we can't focus the window
 }
 

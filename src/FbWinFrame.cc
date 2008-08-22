@@ -88,7 +88,6 @@ FbWinFrame::FbWinFrame(BScreen &screen,
     m_active_orig_client_bw(0),
     m_need_render(true),
     m_button_size(1),
-    m_height_before_shade(1),
     m_focused_alpha(AlphaAcc(*theme.focusedTheme(), &FbWinFrameTheme::alpha)),
     m_unfocused_alpha(AlphaAcc(*theme.unfocusedTheme(), &FbWinFrameTheme::alpha)),
     m_shape(m_window, theme->shapePlace()) {
@@ -195,21 +194,14 @@ void FbWinFrame::show() {
  Toggle shade state, and resize window
  */
 void FbWinFrame::shade() {
-    if (!m_use_titlebar)
+    if (!(m_state.deco_mask & DECORM_TITLEBAR))
         return;
 
     // toggle shade
+    if (!m_state.shaded)
+        saveGeometry();
     m_state.shaded = !m_state.shaded;
-    if (m_state.shaded) { // i.e. should be shaded now
-        m_height_before_shade = m_window.height();
-        m_window.resize(m_window.width(), m_titlebar.height());
-        alignTabs();
-        // need to update our shape
-        m_shape.update();
-    } else { // should be unshaded
-        m_window.resize(m_window.width(), m_height_before_shade);
-        reconfigure();
-    }
+    applyState();
 }
 
 
@@ -246,8 +238,8 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
     if (move && x == window().x() && y == window().y())
         move = false;
 
-    if (resize && (m_state.shaded || (width == FbWinFrame::width() &&
-                               height == FbWinFrame::height())))
+    if (resize && width == FbWinFrame::width() &&
+                  height == FbWinFrame::height())
         resize = false;
 
     if (!move && !resize)
@@ -544,44 +536,52 @@ void FbWinFrame::setMaximized(int value) {
 }
 
 void FbWinFrame::saveGeometry() {
-    if (m_state.fullscreen || m_state.maximized)
+    if (m_state.fullscreen || m_state.maximized == MAX_FULL)
         return;
 
     m_state.x = x();
     m_state.y = y();
-    m_state.width = width();
-    m_state.height = height();
+    if (!(m_state.maximized & MAX_HORZ))
+        m_state.width = width();
+    if (!m_state.shaded && !(m_state.maximized & MAX_VERT))
+        m_state.height = height();
 }
 
 void FbWinFrame::applyState() {
     applyDecorations();
 
-    if (m_state.fullscreen) {
-        const int head = m_screen.getHead(window());
-        moveResize(m_screen.getHeadX(head), m_screen.getHeadY(head),
-                   m_screen.getHeadWidth(head), m_screen.getHeadHeight(head));
-    } else if (m_state.maximized) {
-        const int head = m_screen.getHead(window());
-        int new_x = m_state.x, new_y = m_state.y;
-        unsigned int new_w = m_state.width, new_h = m_state.height;
-        if (m_state.maximized & MAX_VERT) {
-            new_y = m_screen.maxTop(head);
-            new_h = m_screen.maxBottom(head) - new_y - 2*window().borderWidth();
-        }
-        if (m_state.maximized & MAX_HORZ) {
-            new_x = m_screen.maxLeft(head);
-            new_w = m_screen.maxRight(head) - new_x - 2*window().borderWidth();
-        }
+    const int head = m_screen.getHead(window());
+    int new_x = m_state.x, new_y = m_state.y;
+    unsigned int new_w = m_state.width, new_h = m_state.height;
+
+    if (m_state.maximized & MAX_VERT) {
+        new_y = m_screen.maxTop(head);
+        new_h = m_screen.maxBottom(head) - new_y - 2*window().borderWidth();
         if (!m_screen.getMaxOverTabs()) {
             new_y += yOffset();
             new_h -= heightOffset();
+        }
+    }
+    if (m_state.maximized & MAX_HORZ) {
+        new_x = m_screen.maxLeft(head);
+        new_w = m_screen.maxRight(head) - new_x - 2*window().borderWidth();
+        if (!m_screen.getMaxOverTabs()) {
             new_x += xOffset();
             new_w -= widthOffset();
         }
-        moveResize(new_x, new_y, new_w, new_h);
-    } else
-        moveResize(m_state.x, m_state.y, m_state.width, m_state.height);
+    }
 
+    if (m_state.shaded)
+        new_h = m_titlebar.height();
+
+    if (m_state.fullscreen) {
+        new_x = m_screen.getHeadX(head);
+        new_y = m_screen.getHeadY(head);
+        new_w = m_screen.getHeadWidth(head);
+        new_h = m_screen.getHeadHeight(head);
+    }
+
+    moveResize(new_x, new_y, new_w, new_h);
     frameExtentSig().notify();
 }
 
@@ -973,7 +973,7 @@ void FbWinFrame::reconfigure() {
     }
 
     // leave client+grips alone if we're shaded (it'll get fixed when we unshade)
-    if (!m_state.shaded) {
+    if (!m_state.shaded || m_state.fullscreen) {
         int client_top = 0;
         int client_height = m_window.height();
         if (m_use_titlebar) {
@@ -1369,7 +1369,6 @@ void FbWinFrame::init() {
     m_button_size = 26;
 
     m_label.setBorderWidth(0);
-    m_state.shaded = false;
 
     setTabMode(NOTSET);
 
@@ -1516,7 +1515,8 @@ bool FbWinFrame::useTitlebar() const {
 }
 
 bool FbWinFrame::useHandle() const {
-    return !m_state.fullscreen && m_state.deco_mask & DECORM_HANDLE;
+    return !m_state.fullscreen && !m_state.shaded &&
+        m_state.deco_mask & DECORM_HANDLE;
 }
 
 int FbWinFrame::getShape() const {
@@ -1734,10 +1734,8 @@ unsigned int FbWinFrame::normalWidth() const {
 }
 
 unsigned int FbWinFrame::normalHeight() const {
-    if ((m_state.maximized & MAX_VERT) || m_state.fullscreen)
+    if ((m_state.maximized & MAX_VERT) || m_state.fullscreen || m_state.shaded)
         return m_state.height;
-    if (m_state.shaded)
-        return m_height_before_shade;
     return height();
 }
 
