@@ -112,8 +112,8 @@ public:
         SizeHints():
             min_width(1), max_width(0), min_height(1), max_height(0),
             width_inc(1), height_inc(1), base_width(0), base_height(0),
-            min_aspect_x(0), max_aspect_x(0),
-            min_aspect_y(0), max_aspect_y(0),
+            min_aspect_x(0), max_aspect_x(1),
+            min_aspect_y(1), max_aspect_y(0),
             win_gravity(0) { }
 
         void reset(const XSizeHints &sizehint);

@@ -491,6 +491,7 @@ private:
 
     bool getState();
     void updateMWMHintsFromClient(WinClient &client);
+    void updateSizeHints();
     void associateClientWindow();
 
     void setState(unsigned long stateval, bool setting_up);
@@ -552,6 +553,7 @@ private:
     typedef std::map<WinClient *, IconButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
 
+    FbWinFrame::SizeHints m_size_hint;
     struct _decorations {
         bool titlebar, handle, border, iconify,
             maximize, close, menu, sticky, shade, tab, enabled;

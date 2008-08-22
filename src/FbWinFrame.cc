@@ -1860,8 +1860,10 @@ void FbWinFrame::SizeHints::reset(const XSizeHints &sizehint) {
         min_aspect_y = sizehint.min_aspect.y;
         max_aspect_x = sizehint.max_aspect.x;
         max_aspect_y = sizehint.max_aspect.y;
-    } else
-        min_aspect_x = min_aspect_y = max_aspect_x = max_aspect_y = 0;
+    } else {
+        min_aspect_x = max_aspect_y = 0;
+        min_aspect_y = max_aspect_x = 1;
+    }
 
     if (sizehint.flags & PWinGravity)
         win_gravity = sizehint.win_gravity;

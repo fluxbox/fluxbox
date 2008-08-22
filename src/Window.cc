@@ -1016,7 +1016,6 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     // frame focused doesn't necessarily mean input focused
     frame().setLabelButtonFocus(*button);
     frame().setShapingClient(&client, false);
-    frame().setSizeHints(client.sizeHints());
     return ret;
 }
 
@@ -1033,10 +1032,50 @@ void FluxboxWindow::associateClientWindow() {
                                 m_client->width(), m_client->height(),
                                 m_client->gravity(), m_client->old_bw);
 
-    frame().setSizeHints(m_client->sizeHints());
+    updateSizeHints();
     frame().setClientWindow(*m_client);
 }
 
+void FluxboxWindow::updateSizeHints() {
+    m_size_hint = m_client->sizeHints();
+
+    ClientList::const_iterator it = clientList().begin();
+    ClientList::const_iterator it_end = clientList().end();
+    for (; it != it_end; ++it) {
+        if ((*it) == m_client)
+            continue;
+
+        const FbWinFrame::SizeHints &hint = (*it)->sizeHints();
+        if (m_size_hint.min_width < hint.min_width)
+            m_size_hint.min_width = hint.min_width;
+        if (m_size_hint.max_width > hint.max_width)
+            m_size_hint.max_width = hint.max_width;
+        if (m_size_hint.min_height < hint.min_height)
+            m_size_hint.min_height = hint.min_height;
+        if (m_size_hint.max_height > hint.max_height)
+            m_size_hint.max_height = hint.max_height;
+        // lcm could end up a bit silly, and the situation is bad no matter what
+        if (m_size_hint.width_inc < hint.width_inc)
+            m_size_hint.width_inc = hint.width_inc;
+        if (m_size_hint.height_inc < hint.height_inc)
+            m_size_hint.height_inc = hint.height_inc;
+        if (m_size_hint.base_width < hint.base_width)
+            m_size_hint.base_width = hint.base_width;
+        if (m_size_hint.base_height < hint.base_height)
+            m_size_hint.base_height = hint.base_height;
+        if (m_size_hint.min_aspect_x * hint.min_aspect_y >
+            m_size_hint.min_aspect_y * hint.min_aspect_x) {
+            m_size_hint.min_aspect_x = hint.min_aspect_x;
+            m_size_hint.min_aspect_y = hint.min_aspect_y;
+        }
+        if (m_size_hint.max_aspect_x * hint.max_aspect_y >
+            m_size_hint.max_aspect_y * hint.max_aspect_x) {
+            m_size_hint.max_aspect_x = hint.max_aspect_x;
+            m_size_hint.max_aspect_y = hint.max_aspect_y;
+        }
+    }
+    frame().setSizeHints(m_size_hint);
+}
 
 void FluxboxWindow::grabButtons() {
 
@@ -1208,32 +1247,10 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
 }
 
 void FluxboxWindow::getMaxSize(unsigned int* width, unsigned int* height) const {
-
-    if (!width || !height)
-        return;
-
-    ClientList::const_iterator it = clientList().begin();
-    ClientList::const_iterator it_end = clientList().end();
-
-    unsigned int w;
-    unsigned int h;
-
-    w = h = 0; // unlimited
-
-    for (; it != it_end; ++it) {
-        // special case for max height/width == 0
-        // 0 indicates unlimited size, so we skip them
-        if (!h || ((*it)->maxHeight() && h > (*it)->maxHeight()))
-            h = (*it)->maxHeight();
-        if (!w || ((*it)->maxWidth() && w > (*it)->maxWidth()))
-            w = (*it)->maxWidth();
-    }
-
     if (width)
-        *width = w;
-
+        *width = m_size_hint.max_width;
     if (height)
-        *height = h;
+        *height = m_size_hint.max_height;
 }
 
 // returns whether the focus was "set" to this window
