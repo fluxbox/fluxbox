@@ -91,8 +91,7 @@ FbWinFrame::FbWinFrame(BScreen &screen,
     m_height_before_shade(1),
     m_focused_alpha(AlphaAcc(*theme.focusedTheme(), &FbWinFrameTheme::alpha)),
     m_unfocused_alpha(AlphaAcc(*theme.unfocusedTheme(), &FbWinFrameTheme::alpha)),
-    m_shape(m_window, theme->shapePlace()),
-    m_disable_themeshape(false) {
+    m_shape(m_window, theme->shapePlace()) {
     init();
 }
 
@@ -994,24 +993,10 @@ void FbWinFrame::reconfigure() {
         m_need_render = true;
     }
 
-    if (m_disable_themeshape)
-        m_shape.setPlaces(FbTk::Shape::NONE);
-    else
-        m_shape.setPlaces(theme()->shapePlace());
-
+    m_shape.setPlaces(getShape());
     m_shape.setShapeOffsets(0, titlebarHeight());
 
     // titlebar stuff rendered already by reconftitlebar
-}
-
-void FbWinFrame::setUseShape(bool value) {
-    m_disable_themeshape = !value;
-
-    if (m_disable_themeshape)
-        m_shape.setPlaces(FbTk::Shape::NONE);
-    else
-        m_shape.setPlaces(theme()->shapePlace());
-
 }
 
 void FbWinFrame::setShapingClient(FbTk::FbWindow *win, bool always_update) {
@@ -1319,8 +1304,6 @@ void FbWinFrame::init() {
     if (theme()->handleWidth() == 0)
         m_use_handle = false;
 
-    m_disable_themeshape = false;
-
     m_handle.showSubwindows();
 
     // clear pixmaps
@@ -1481,6 +1464,15 @@ bool FbWinFrame::useTitlebar() const {
 
 bool FbWinFrame::useHandle() const {
     return !m_state.fullscreen && m_state.deco_mask & DECORM_HANDLE;
+}
+
+int FbWinFrame::getShape() const {
+    int shape = theme()->shapePlace();
+    if (!useTitlebar())
+        shape &= ~(FbTk::Shape::TOPRIGHT|FbTk::Shape::TOPLEFT);
+    if (!useHandle())
+        shape &= ~(FbTk::Shape::BOTTOMRIGHT|FbTk::Shape::BOTTOMLEFT);
+    return shape;
 }
 
 void FbWinFrame::applyDecorations() {

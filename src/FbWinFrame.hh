@@ -243,6 +243,7 @@ public:
     bool useTabs() const;
     bool useTitlebar() const;
     bool useHandle() const;
+    int getShape() const;
 
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation
@@ -259,7 +260,6 @@ public:
     //@}
 
     void reconfigure();
-    void setUseShape(bool value);
     void setShapingClient(FbTk::FbWindow *win, bool always_update);
     void updateShape() { m_shape.update(); }
 
@@ -455,8 +455,6 @@ private:
     FbTk::DefaultValue<unsigned char, AlphaAcc> m_unfocused_alpha;
 
     FbTk::Shape m_shape;
-
-    bool m_disable_themeshape;
 };
 
 #endif // FBWINFRAME_HH

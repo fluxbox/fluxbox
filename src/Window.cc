@@ -1451,8 +1451,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
         if (isShaded())
             shade();
 
-        frame().setUseShape(false);
-
         m_old_layernum = layerNum();
         if (!maximized) {
             m_old_pos_x = frame().x();
@@ -1482,8 +1480,6 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
         fullscreen = false;
         frame().setFullscreen(false);
-
-        frame().setUseShape(true);
 
         // ensure we apply the sizehints here, otherwise some
         // apps (eg xterm) end up a little bit .. crappy (visually)
