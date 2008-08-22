@@ -183,6 +183,7 @@ int main(int argc, char **argv) {
     string session_display("");
     string rc_file;
     string log_filename;
+    bool xsync = false;
 
     FbTk::NLSInit("fluxbox.cat");
     _FB_USES_NLS;
@@ -229,6 +230,8 @@ int main(int argc, char **argv) {
                 exit(EXIT_FAILURE);
             }
             log_filename = argv[i];
+        } else if (arg == "-sync") {
+             xsync = true;
         } else if (arg == "-help" || arg == "-h") {
             // print program usage and command line options
             printf(_FB_CONSOLETEXT(main, Usage,
@@ -240,6 +243,7 @@ int main(int argc, char **argv) {
                            "-version\t\t\tdisplay version and exit.\n"
                            "-info\t\t\t\tdisplay some useful information.\n"
                            "-list-commands\t\t\tlist all valid key commands.\n"
+                           "-sync\t\t\t\tsynchronize with X server for debugging.\n"
                            "-log <filename>\t\t\tlog output to file.\n"
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
@@ -286,7 +290,8 @@ int main(int argc, char **argv) {
 
     try {
 
-        fluxbox.reset(new Fluxbox(argc, argv, session_display.c_str(), rc_file.c_str()));
+        fluxbox.reset(new Fluxbox(argc, argv, session_display.c_str(),
+                                  rc_file.c_str(), xsync));
         fluxbox->eventLoop();
 
         exitcode = EXIT_SUCCESS;

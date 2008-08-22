@@ -1,11 +1,11 @@
 .\"     Title: fluxbox
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/20/2008
+.\"      Date: 08/22/2008
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "FLUXBOX" "1" "08/20/2008" "" ""
+.TH "FLUXBOX" "1" "08/22/2008" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -13,7 +13,7 @@
 .SH "NAME"
 fluxbox - A lightweight window manager for the X Windowing System
 .SH "SYNOPSIS"
-\fIfluxbox\fR [\-rc rcfile] [\-log logfile] [\-display display] [\-screen scr,scr|all] [\-verbose]
+\fIfluxbox\fR [\-rc rcfile] [\-log logfile] [\-display display] [\-screen scr,scr|all] [\-verbose] [\-sync]
 .sp
 \fIfluxbox\fR [\-v | \-version] | [\-h | \-help] | [\-i | \-info] | [\-list\-commands]
 .sp
@@ -66,6 +66,11 @@ Run on specified screens only or all (by default)\.
 \-verbose
 .RS 4
 Print more information in process\.
+.RE
+.PP
+\-sync
+.RS 4
+Synchronize with the X server for debugging\.
 .RE
 .SH "STARTING FLUXBOX"
 fluxbox(1) comes with a program called startfluxbox(8) usually located wherever you installed fluxbox\. This script provides you with many options and variables that can be set when starting fluxbox\. To actually call fluxbox and begin using it, you should place "exec startfluxbox" in your /\.xinitrc or /\.xsession (depending on your distribution and/or display manager) as the last executed command\. This is assuming that the location of fluxbox(1) and startfluxbox(8) are in your shell\'s $PATH\. Also note that you may need to create the /\.xinitrc file or your setup may use /\.xsession instead, depending on your X setup\. For more information on your shell, please visit your shell\'s manual page\.

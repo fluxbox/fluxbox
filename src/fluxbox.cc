@@ -179,7 +179,8 @@ int handleXErrors(Display *d, XErrorEvent *e) {
 //static singleton var
 Fluxbox *Fluxbox::s_singleton=0;
 
-Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfilename)
+Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
+                 const char *rcfilename, bool xsync)
     : FbTk::App(dpy_name),
       m_fbatoms(new FbAtoms()),
       m_resourcemanager(rcfilename, true),
@@ -263,7 +264,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
 
-    // XSynchronize(disp, True);
+    if (xsync)
+        XSynchronize(disp, True);
 
     s_singleton = this;
     m_have_shape = false;

@@ -14,6 +14,7 @@ SYNOPSIS
           [-display display]
           [-screen scr,scr|all]
           [-verbose]
+          [-sync]
 
 'fluxbox' [-v | -version] |
           [-h | -help] |
@@ -67,6 +68,8 @@ OPTIONS
     Run on specified screens only or all (by default).
 -verbose::
     Print more information in process.
+-sync::
+    Synchronize with the X server for debugging.
 
 STARTING FLUXBOX
 ----------------

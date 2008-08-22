@@ -77,7 +77,7 @@ class Fluxbox : public FbTk::App,
                 public FbTk::Observer {
 public:
     Fluxbox(int argc, char **argv, const char * dpy_name= 0,
-            const char *rcfilename = 0);
+            const char *rcfilename = 0, bool xsync = false);
     virtual ~Fluxbox();
 
     static Fluxbox *instance() { return s_singleton; }
