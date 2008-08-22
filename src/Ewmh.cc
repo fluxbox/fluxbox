@@ -108,6 +108,8 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         nr_icon_data = nr_bytes_left / sizeof(CARD32);
 
         // read all the icons stored in _NET_WM_ICON
+        if (raw_data)
+                XFree(raw_data);
         winclient.property(net_wm_icon, 0L, nr_icon_data, False, XA_CARDINAL,
                            &rtype, &rfmt, &nr_read, &nr_bytes_left,
                            reinterpret_cast<unsigned char**>(&raw_data));
