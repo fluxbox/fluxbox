@@ -450,9 +450,9 @@ bool Keys::addBinding(const string &linebuffer) {
                 return false;
 
             const char *str = FbTk::StringUtil::strcasestr(linebuffer.c_str(),
-                    val[argc].c_str() + 1); // +1 to skip ':'
-            if (str)
-                current_key->m_command = FbTk::CommandParser<void>::instance().parse(str);
+                    val[argc].c_str());
+            if (str) // +1 to skip ':'
+                current_key->m_command = FbTk::CommandParser<void>::instance().parse(str + 1);
 
             if (!str || *current_key->m_command == 0 || mod) {
                 delete first_new_key;
