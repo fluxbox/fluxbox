@@ -43,7 +43,7 @@ class IconbarTool: public ToolbarItem, public FbTk::Observer {
 public:
     typedef std::map<Focusable *, IconButton *> IconMap;
 
-    IconbarTool(const FbTk::FbWindow &parent,
+    IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
                 FbTk::ThemeProxy<IconbarTheme> &focused_theme,
                 FbTk::ThemeProxy<IconbarTheme> &unfocused_theme,
                 BScreen &screen, FbTk::Menu &menu);
@@ -97,6 +97,7 @@ private:
 
     BScreen &m_screen;
     FbTk::Container m_icon_container;
+    IconbarTheme &m_theme;
     FbTk::ThemeProxy<IconbarTheme> &m_focused_theme, &m_unfocused_theme;
     FbTk::CachedPixmap m_empty_pm; ///< pixmap for empty container
 

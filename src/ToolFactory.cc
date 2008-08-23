@@ -75,6 +75,7 @@ ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
     m_workspace_theme(new WorkspaceNameTheme(screen.screenNumber(), "toolbar.workspace", "Toolbar.Workspace")),
     m_systray_theme(new ButtonTheme(screen.screenNumber(), "toolbar.systray", "Toolbar.Systray",
                                     "toolbar.clock", "Toolbar.Systray")),
+    m_iconbar_theme(screen.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar"),
     m_focused_iconbar_theme(screen.screenNumber(), "toolbar.iconbar.focused", "Toolbar.Iconbar.Focused"),
     m_unfocused_iconbar_theme(screen.screenNumber(), "toolbar.iconbar.unfocused", "Toolbar.Iconbar.Unfocused") {
 
@@ -95,7 +96,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         witem->button().setOnClick(showmenu);
         item = witem;
     } else if (name == "iconbar") {
-        item = new IconbarTool(parent, m_focused_iconbar_theme, m_unfocused_iconbar_theme, screen(), tbar.menu());
+        item = new IconbarTool(parent, m_iconbar_theme, m_focused_iconbar_theme, m_unfocused_iconbar_theme, screen(), tbar.menu());
     } else if (name == "systemtray") {
         item = new SystemTray(parent, dynamic_cast<ButtonTheme &>(*m_systray_theme), screen());
     } else if (name == "clock") {
