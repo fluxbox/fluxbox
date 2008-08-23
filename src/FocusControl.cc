@@ -505,13 +505,13 @@ void FocusControl::unfocusWindow(WinClient &client,
 
     BScreen &screen = fbwin->screen();
 
+    if (client.isTransient() && client.transientFor()->focus())
+        return;
+
     if (!unfocus_frame) {
         WinClient *last_focus = screen.focusControl().lastFocusedWindow(*fbwin, &client);
-        if (last_focus != 0 &&
-            fbwin->setCurrentClient(*last_focus, 
-                                    s_focused_window == &client)) {
+        if (last_focus && last_focus->focus())
             return;
-        }
     }
 
     if (full_revert && s_focused_window == &client)

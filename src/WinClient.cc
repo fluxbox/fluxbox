@@ -126,7 +126,6 @@ WinClient::~WinClient() {
         transient_for->transientList().remove(this);
         if (m_modal)
             transient_for->removeModal();
-        transient_for = 0;
     }
 
     while (!transients.empty()) {
@@ -141,13 +140,13 @@ WinClient::~WinClient() {
     // this takes care of any focus issues
     m_diesig.notify();
 
-    Fluxbox *fluxbox = Fluxbox::instance();
-
     // This fixes issue 1 (see WinClient.hh):
     // If transients die before the transient_for is created
+    transient_for = 0;
     removeTransientFromWaitingList();
     s_transient_wait.erase(window());
 
+    Fluxbox *fluxbox = Fluxbox::instance();
 
     if (window_group != 0) {
         fluxbox->removeGroupSearch(window_group);
