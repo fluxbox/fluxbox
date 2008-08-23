@@ -488,28 +488,33 @@ void ShowDesktopCmd::execute() {
     if (screen == 0)
         return;
 
+    // iconify windows in focus order, so it gets restored properly
+    const std::list<Focusable *> wins =
+            screen->focusControl().focusedOrderWinList().clientList();
+    std::list<Focusable *>::const_iterator it = wins.begin(),
+                                           it_end = wins.end();
+    unsigned int space = screen->currentWorkspaceID();
     unsigned int count = 0;
-    Workspace::Windows windows(screen->currentWorkspace()->windowList());
-    Workspace::Windows::iterator it = windows.begin(),
-                                 it_end = windows.end();
     for (; it != it_end; ++it) {
-        if ((*it)->layerNum() < Layer::DESKTOP) {
-            (*it)->iconify();
+        if (!(*it)->fbwindow()->isIconic() && ((*it)->fbwindow()->isStuck() ||
+            (*it)->fbwindow()->workspaceNumber() == space) &&
+            (*it)->fbwindow()->layerNum() < Layer::DESKTOP) {
+            (*it)->fbwindow()->iconify();
             count++;
         }
     }
 
     if (count == 0) {
         BScreen::Icons icon_list = screen->iconList();
-        BScreen::Icons::iterator icon_it = icon_list.begin();
-        BScreen::Icons::iterator itend = icon_list.end();
-        unsigned int space = screen->currentWorkspaceID();
-
-        for (; icon_it != itend; ++icon_it) {
-            if ((*icon_it)->isStuck() || (*icon_it)->workspaceNumber() == space)
-                (*icon_it)->deiconify();
+        BScreen::Icons::reverse_iterator iconit = icon_list.rbegin();
+        BScreen::Icons::reverse_iterator itend= icon_list.rend();
+        for(; iconit != itend; iconit++) {
+            if ((*iconit)->workspaceNumber() == space || (*iconit)->isStuck())
+                (*iconit)->deiconify(false);
         }
-    }
+    } else
+        FocusControl::revertFocus(*screen);
+
 }
 
 REGISTER_COMMAND(closeallwindows, CloseAllWindowsCmd, void);
