@@ -198,8 +198,6 @@ void FbWinFrame::shade() {
         return;
 
     // toggle shade
-    if (!m_state.shaded)
-        saveGeometry();
     m_state.shaded = !m_state.shaded;
     applyState();
 }
@@ -256,6 +254,8 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
         m_window.resize(width, height);
     }
 
+    saveGeometry();
+
     if (move || (resize && m_screen.getTabPlacement() != TOPLEFT &&
                            m_screen.getTabPlacement() != LEFTTOP))
         alignTabs();
@@ -283,6 +283,7 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
 void FbWinFrame::quietMoveResize(int x, int y,
                                  unsigned int width, unsigned int height) {
     m_window.moveResize(x, y, width, height);
+    saveGeometry();
     if (m_tabmode == EXTERNAL) {
 
         switch(m_screen.getTabPlacement()) {
@@ -521,7 +522,6 @@ void FbWinFrame::setFullscreen(bool newvalue) {
     if (newvalue == m_state.fullscreen)
         return;
 
-    saveGeometry();
     m_state.fullscreen = newvalue;
     applyState();
 }
@@ -530,7 +530,6 @@ void FbWinFrame::setMaximized(int value) {
     if (value == m_state.maximized)
         return;
 
-    saveGeometry();
     m_state.maximized = value;
     applyState();
 }

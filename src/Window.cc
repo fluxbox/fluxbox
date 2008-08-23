@@ -1538,6 +1538,12 @@ void FluxboxWindow::setMaximizedState(int type) {
     maximized = type;
     frame().setMaximized(type);
 
+    // notify when struts change, so we can resize accordingly
+    if (maximized)
+        screen().workspaceAreaSig().attach(this);
+    else
+        screen().workspaceAreaSig().detach(this);
+
     // notify listeners that we changed state
     stateSig().notify();
 }
@@ -2771,14 +2777,14 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
             titleSig().notify();
         }
 
-    } else if (subj && typeid(*subj) == typeid(BScreen::ScreenSubject)) {
-        if (subj == &screen().focusedWindowSig()) {
-            if (FocusControl::focusedFbWindow())
-                setFullscreenLayer();
-        }
+    } else if (subj == &screen().focusedWindowSig()) {
+        if (FocusControl::focusedFbWindow())
+            setFullscreenLayer();
     } else if (subj == &m_theme.reconfigSig()) {
         frame().applyDecorations();
         sendConfigureNotify();
+    } else if (subj == &screen().workspaceAreaSig()) {
+        frame().applyState();
     } else if (m_initialized && subj == &m_frame.frameExtentSig()) {
         Fluxbox::instance()->updateFrameExtents(*this);
         sendConfigureNotify();
