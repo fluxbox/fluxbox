@@ -538,12 +538,15 @@ void FbWinFrame::saveGeometry() {
     if (m_state.fullscreen || m_state.maximized == MAX_FULL)
         return;
 
-    m_state.x = x();
-    m_state.y = y();
-    if (!(m_state.maximized & MAX_HORZ))
+    if (!(m_state.maximized & MAX_HORZ)) {
+        m_state.x = x();
         m_state.width = width();
-    if (!m_state.shaded && !(m_state.maximized & MAX_VERT))
-        m_state.height = height();
+    }
+    if (!(m_state.maximized & MAX_VERT)) {
+        m_state.y = y();
+        if (!m_state.shaded)
+            m_state.height = height();
+    }
 }
 
 void FbWinFrame::applyState() {
