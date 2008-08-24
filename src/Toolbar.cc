@@ -168,6 +168,7 @@ public:
     void click(int button, int time, unsigned int mods) {
         m_toolbar.setPlacement(m_place);
         m_toolbar.reconfigure();
+        m_toolbar.placementMenu().reconfigure();
         Fluxbox::instance()->save_rc();
     }
 private:
