@@ -12,8 +12,8 @@ OnToolbar Mouse4 :PrevWorkspace
 OnToolbar Mouse5 :NextWorkspace
 
 # alt + left/right click to move/resize a window
-OnWindow Mod1 Mouse1 :StartMoving
-OnWindow Mod1 Mouse3 :StartResizing NearestCorner
+OnWindow Mod1 Mouse1 :MacroCmd {Raise} {Focus} {StartMoving}
+OnWindow Mod1 Mouse3 :MacroCmd {Raise} {Focus} {StartResizing NearestCorner}
 
 # middle click a window's titlebar and drag to attach windows
 OnTitlebar Mouse2 :StartTabbing

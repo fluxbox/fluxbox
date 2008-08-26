@@ -199,16 +199,16 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
                                        "session.modKey",
                                        "Session.ModKey");
 
-        new_keyfile += "OnWindow " + *rc_modkey + " Mouse1 :StartMoving\n";
+        new_keyfile += "OnWindow " + *rc_modkey +
+                       " Mouse1 :MacroCmd {Raise} {Focus} {StartMoving}\n";
+        new_keyfile += "OnWindow " + *rc_modkey +
+                       " Mouse3 :MacroCmd {Raise} {Focus} {StartResizing ";
         if (strcasecmp((*rc_mode).c_str(), "Quadrant") == 0) {
-            new_keyfile += "OnWindow " + *rc_modkey +
-                           " Mouse3 :StartResizing NearestCorner\n";
+            new_keyfile += "NearestCorner}\n";
         } else if (strcasecmp((*rc_mode).c_str(), "Center") == 0) {
-            new_keyfile += "OnWindow " + *rc_modkey +
-                           " Mouse3 :StartResizing Center\n";
+            new_keyfile += "Center}\n";
         } else {
-            new_keyfile += "OnWindow " + *rc_modkey +
-                           " Mouse3 :StartResizing BottomRight\n";
+            new_keyfile += "BottomRight}\n";
         }
         new_keyfile += "\n"; // just for good looks
         new_keyfile += whole_keyfile; // don't forget user's old keybindings
