@@ -441,15 +441,8 @@ void FluxboxWindow::init() {
     /* Read state above here, apply state below here. */
     /**************************************************/
 
-    if (m_client->isTransient()) {
-        if (m_client->transientFor()->fbwindow())
-            stuck = m_client->transientFor()->fbwindow()->isStuck();
-
-        if (!screen().decorateTransient()) {
-            decorations.maximize =  functions.maximize = false;
-            decorations.handle = false;
-        }
-    }
+    if (m_client->isTransient() && m_client->transientFor()->fbwindow())
+        stuck = m_client->transientFor()->fbwindow()->isStuck();
 
     if (!m_client->sizeHints().isResizable()) {
         functions.resize = functions.maximize = false;
@@ -2188,18 +2181,12 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
                 if (functions.resize ||
                     functions.maximize)
                     changed = true;
-                functions.resize=false;
-                functions.maximize=false;
+                functions.resize = functions.maximize = false;
             } else {
                 // TODO: is broken while handled by FbW, needs to be in WinClient
-                if (!client.isTransient() || screen().decorateTransient()) {
-                    if (!functions.maximize)
-                        changed = true;
-                    functions.maximize = true;
-                }
-                if (!functions.resize)
+                if (!functions.maximize || !functions.resize)
                     changed = true;
-                functions.resize = true;
+                functions.maximize = functions.resize = true;
             }
 
             if (changed) {

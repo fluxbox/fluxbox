@@ -118,7 +118,6 @@ public:
     bool getMaxDisableMove() const { return *resource.max_disable_move; }
     bool getMaxDisableResize() const { return *resource.max_disable_resize; }
     bool doShowWindowPos() const { return *resource.show_window_pos; }
-    bool decorateTransient() const { return *resource.decorate_transient; }
     const std::string &defaultDeco() const { return *resource.default_deco; }
     const std::string windowMenuFilename() const;
     FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
@@ -552,8 +551,7 @@ private:
 
         FbTk::Resource<bool> opaque_move, full_max,
             max_ignore_inc, max_disable_move, max_disable_resize,
-            workspace_warping, show_window_pos, auto_raise, click_raises,
-            decorate_transient;
+            workspace_warping, show_window_pos, auto_raise, click_raises;
         FbTk::Resource<std::string> default_deco;
         FbTk::Resource<std::string> rootcommand;
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;

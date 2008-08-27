@@ -294,7 +294,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
-    decorate_transient(rm, true, scrname+".decorateTransient", altscrname+".DecorateTransient"),
     default_deco(rm, "NORMAL", scrname+".defaultDeco", altscrname+".DefaultDeco"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
@@ -1810,9 +1809,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
               resource.workspace_warping, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, DecorateTransient,
-              "Decorate Transient Windows", "Decorate Transient Windows",
-              resource.decorate_transient, saverc_cmd);
     _BOOLITEM(menu, Configmenu, ClickRaises,
               "Click Raises", "Click Raises",
               resource.click_raises, saverc_cmd);
