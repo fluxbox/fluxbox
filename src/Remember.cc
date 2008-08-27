@@ -500,7 +500,7 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
                 app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "deco") {
-                int deco = FbWinFrame::getDecoMaskFromString(str_label);
+                int deco = WindowState::getDecoMaskFromString(str_label);
                 if (deco == -1)
                     had_error = 1;
                 else
@@ -535,13 +535,13 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 app.rememberMinimizedstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "maximized") {
                 if (strcasecmp(str_label.c_str(), "yes") == 0)
-                    app.rememberMaximizedstate(FbWinFrame::MAX_FULL);
+                    app.rememberMaximizedstate(WindowState::MAX_FULL);
                 else if (strcasecmp(str_label.c_str(), "horz") == 0)
-                    app.rememberMaximizedstate(FbWinFrame::MAX_HORZ);
+                    app.rememberMaximizedstate(WindowState::MAX_HORZ);
                 else if (strcasecmp(str_label.c_str(), "vert") == 0)
-                    app.rememberMaximizedstate(FbWinFrame::MAX_VERT);
+                    app.rememberMaximizedstate(WindowState::MAX_VERT);
                 else
-                    app.rememberMaximizedstate(FbWinFrame::MAX_NONE);
+                    app.rememberMaximizedstate(WindowState::MAX_NONE);
             } else if (str_key == "fullscreen") {
                 app.rememberFullscreenstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "jump") {
@@ -953,25 +953,25 @@ void Remember::save() {
                 apps_file << "  [Deco]\t{NONE}" << endl;
                 break;
             case (0xffffffff):
-            case (FbWinFrame::DECORM_LAST - 1):
+            case (WindowState::DECORM_LAST - 1):
                 apps_file << "  [Deco]\t{NORMAL}" << endl;
                 break;
-            case (FbWinFrame::DECORM_TITLEBAR
-                  | FbWinFrame::DECORM_ICONIFY
-                  | FbWinFrame::DECORM_MENU):
+            case (WindowState::DECORM_TITLEBAR
+                  | WindowState::DECORM_ICONIFY
+                  | WindowState::DECORM_MENU):
                 apps_file << "  [Deco]\t{TOOL}" << endl;
                 break;
-            case (FbWinFrame::DECORM_TITLEBAR
-                  | FbWinFrame::DECORM_MENU):
+            case (WindowState::DECORM_TITLEBAR
+                  | WindowState::DECORM_MENU):
                 apps_file << "  [Deco]\t{TINY}" << endl;
                 break;
-            case (FbWinFrame::DECORM_BORDER
-                  | FbWinFrame::DECORM_MENU):
+            case (WindowState::DECORM_BORDER
+                  | WindowState::DECORM_MENU):
                 apps_file << "  [Deco]\t{BORDER}" << endl;
                 break;
-            case (FbWinFrame::DECORM_BORDER
-                  | FbWinFrame::DECORM_MENU
-                  | FbWinFrame::DECORM_TAB):
+            case (WindowState::DECORM_BORDER
+                  | WindowState::DECORM_MENU
+                  | WindowState::DECORM_TAB):
                 apps_file << "  [Deco]\t{TAB}" << endl;
                 break;
             default:
@@ -999,16 +999,16 @@ void Remember::save() {
         if (a.maximizedstate_remember) {
             apps_file << "  [Maximized]\t{";
             switch (a.maximizedstate) {
-            case FbWinFrame::MAX_FULL:
+            case WindowState::MAX_FULL:
                 apps_file << "yes" << "}" << endl;
                 break;
-            case FbWinFrame::MAX_HORZ:
+            case WindowState::MAX_HORZ:
                 apps_file << "horz" << "}" << endl;
                 break;
-            case FbWinFrame::MAX_VERT:
+            case WindowState::MAX_VERT:
                 apps_file << "vert" << "}" << endl;
                 break;
-            case FbWinFrame::MAX_NONE:
+            case WindowState::MAX_NONE:
             default:
                 apps_file << "no" << "}" << endl;
                 break;

@@ -271,7 +271,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_creation_time(0),
     moving(false), resizing(false), shaded(false), iconic(false),
     stuck(false), m_initialized(false), fullscreen(false),
-    maximized(FbWinFrame::MAX_NONE),
+    maximized(WindowState::MAX_NONE),
     m_attaching_tab(0),
     display(FbTk::App::instance()->display()),
     m_button_grab_x(0), m_button_grab_y(0),
@@ -423,7 +423,7 @@ void FluxboxWindow::init() {
     m_workspace_number = m_screen.currentWorkspaceID();
 
     // set default decorations but don't apply them
-    setDecorationMask(FbWinFrame::getDecoMaskFromString(screen().defaultDeco()),
+    setDecorationMask(WindowState::getDecoMaskFromString(screen().defaultDeco()),
                       false);
 
     functions.resize = functions.move = functions.iconify = functions.maximize
@@ -559,7 +559,7 @@ void FluxboxWindow::init() {
 
     if (maximized) {
         int tmp = maximized;
-        maximized = FbWinFrame::MAX_NONE;
+        maximized = WindowState::MAX_NONE;
         setMaximizedState(tmp);
     }
 
@@ -1045,7 +1045,7 @@ void FluxboxWindow::updateSizeHints() {
         if ((*it) == m_client)
             continue;
 
-        const FbWinFrame::SizeHints &hint = (*it)->sizeHints();
+        const SizeHints &hint = (*it)->sizeHints();
         if (m_size_hint.min_width < hint.min_width)
             m_size_hint.min_width = hint.min_width;
         if (m_size_hint.max_width > hint.max_width)
@@ -1144,7 +1144,7 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
     }
 
     unsigned int mask = decorationMask();
-    mask &= FbWinFrame::getDecoMaskFromString(screen().defaultDeco());
+    mask &= WindowState::getDecoMaskFromString(screen().defaultDeco());
     setDecorationMask(mask, false);
 
     // functions.tabable is ours, not special one
@@ -1503,7 +1503,7 @@ void FluxboxWindow::setFullscreenLayer() {
 void FluxboxWindow::maximize(int type) {
 
     // nothing to do
-    if (type == FbWinFrame::MAX_NONE)
+    if (type == WindowState::MAX_NONE)
         return;
 
     int new_max = maximized;
@@ -1512,14 +1512,14 @@ void FluxboxWindow::maximize(int type) {
     // when _don't_ we want to toggle?
     // - type is horizontal maximise, or
     // - type is full and we are not maximised horz but already vertically
-    if (type != FbWinFrame::MAX_HORZ &&
-        (type != FbWinFrame::MAX_FULL || maximized != FbWinFrame::MAX_VERT))
-        new_max ^= FbWinFrame::MAX_VERT;
+    if (type != WindowState::MAX_HORZ &&
+        (type != WindowState::MAX_FULL || maximized != WindowState::MAX_VERT))
+        new_max ^= WindowState::MAX_VERT;
 
     // maximize horizontally?
-    if (type != FbWinFrame::MAX_VERT &&
-        (type != FbWinFrame::MAX_FULL || maximized != FbWinFrame::MAX_HORZ))
-        new_max ^= FbWinFrame::MAX_HORZ;
+    if (type != WindowState::MAX_VERT &&
+        (type != WindowState::MAX_FULL || maximized != WindowState::MAX_HORZ))
+        new_max ^= WindowState::MAX_HORZ;
 
     setMaximizedState(new_max);
 }
@@ -1552,21 +1552,21 @@ void FluxboxWindow::setMaximizedState(int type) {
  * Maximize window horizontal
  */
 void FluxboxWindow::maximizeHorizontal() {
-    maximize(FbWinFrame::MAX_HORZ);
+    maximize(WindowState::MAX_HORZ);
 }
 
 /**
  * Maximize window vertical
  */
 void FluxboxWindow::maximizeVertical() {
-    maximize(FbWinFrame::MAX_VERT);
+    maximize(WindowState::MAX_VERT);
 }
 
 /**
  * Maximize window fully
  */
 void FluxboxWindow::maximizeFull() {
-    maximize(FbWinFrame::MAX_FULL);
+    maximize(WindowState::MAX_FULL);
 }
 
 void FluxboxWindow::setWorkspace(int n) {
@@ -2807,9 +2807,9 @@ void FluxboxWindow::toggleDecoration() {
     if (m_toggled_decos) {
         m_old_decoration_mask = decorationMask();
         if (decorations.titlebar | decorations.tab)
-            setDecorationMask(FbWinFrame::DECOR_NONE);
+            setDecorationMask(WindowState::DECOR_NONE);
         else
-            setDecorationMask(FbWinFrame::DECOR_NORMAL);
+            setDecorationMask(WindowState::DECOR_NORMAL);
     } else //revert back to old decoration
         setDecorationMask(m_old_decoration_mask);
 
@@ -2818,42 +2818,42 @@ void FluxboxWindow::toggleDecoration() {
 unsigned int FluxboxWindow::decorationMask() const {
     unsigned int ret = 0;
     if (decorations.titlebar)
-        ret |= FbWinFrame::DECORM_TITLEBAR;
+        ret |= WindowState::DECORM_TITLEBAR;
     if (decorations.handle)
-        ret |= FbWinFrame::DECORM_HANDLE;
+        ret |= WindowState::DECORM_HANDLE;
     if (decorations.border)
-        ret |= FbWinFrame::DECORM_BORDER;
+        ret |= WindowState::DECORM_BORDER;
     if (decorations.iconify)
-        ret |= FbWinFrame::DECORM_ICONIFY;
+        ret |= WindowState::DECORM_ICONIFY;
     if (decorations.maximize)
-        ret |= FbWinFrame::DECORM_MAXIMIZE;
+        ret |= WindowState::DECORM_MAXIMIZE;
     if (decorations.close)
-        ret |= FbWinFrame::DECORM_CLOSE;
+        ret |= WindowState::DECORM_CLOSE;
     if (decorations.menu)
-        ret |= FbWinFrame::DECORM_MENU;
+        ret |= WindowState::DECORM_MENU;
     if (decorations.sticky)
-        ret |= FbWinFrame::DECORM_STICKY;
+        ret |= WindowState::DECORM_STICKY;
     if (decorations.shade)
-        ret |= FbWinFrame::DECORM_SHADE;
+        ret |= WindowState::DECORM_SHADE;
     if (decorations.tab)
-        ret |= FbWinFrame::DECORM_TAB;
+        ret |= WindowState::DECORM_TAB;
     if (decorations.enabled)
-        ret |= FbWinFrame::DECORM_ENABLED;
+        ret |= WindowState::DECORM_ENABLED;
     return ret;
 }
 
 void FluxboxWindow::setDecorationMask(unsigned int mask, bool apply) {
-    decorations.titlebar = mask & FbWinFrame::DECORM_TITLEBAR;
-    decorations.handle   = mask & FbWinFrame::DECORM_HANDLE;
-    decorations.border   = mask & FbWinFrame::DECORM_BORDER;
-    decorations.iconify  = mask & FbWinFrame::DECORM_ICONIFY;
-    decorations.maximize = mask & FbWinFrame::DECORM_MAXIMIZE;
-    decorations.close    = mask & FbWinFrame::DECORM_CLOSE;
-    decorations.menu     = mask & FbWinFrame::DECORM_MENU;
-    decorations.sticky   = mask & FbWinFrame::DECORM_STICKY;
-    decorations.shade    = mask & FbWinFrame::DECORM_SHADE;
-    decorations.tab      = mask & FbWinFrame::DECORM_TAB;
-    decorations.enabled  = mask & FbWinFrame::DECORM_ENABLED;
+    decorations.titlebar = mask & WindowState::DECORM_TITLEBAR;
+    decorations.handle   = mask & WindowState::DECORM_HANDLE;
+    decorations.border   = mask & WindowState::DECORM_BORDER;
+    decorations.iconify  = mask & WindowState::DECORM_ICONIFY;
+    decorations.maximize = mask & WindowState::DECORM_MAXIMIZE;
+    decorations.close    = mask & WindowState::DECORM_CLOSE;
+    decorations.menu     = mask & WindowState::DECORM_MENU;
+    decorations.sticky   = mask & WindowState::DECORM_STICKY;
+    decorations.shade    = mask & WindowState::DECORM_SHADE;
+    decorations.tab      = mask & WindowState::DECORM_TAB;
+    decorations.enabled  = mask & WindowState::DECORM_ENABLED;
     // we don't want to do this during initialization
     if (apply)
         applyDecorations();
@@ -3024,7 +3024,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     // we only care about the left/top etc that includes borders
     int borderW = 0;
 
-    if (decorationMask() & (FbWinFrame::DECORM_BORDER|FbWinFrame::DECORM_HANDLE))
+    if (decorationMask() & (WindowState::DECORM_BORDER|WindowState::DECORM_HANDLE))
         borderW = frame().window().borderWidth();
 
     int top = orig_top; // orig include the borders
@@ -3096,7 +3096,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
         if ((*it) == this)
             continue; // skip myself
 
-        bw = (*it)->decorationMask() & (FbWinFrame::DECORM_BORDER|FbWinFrame::DECORM_HANDLE) ?
+        bw = (*it)->decorationMask() & (WindowState::DECORM_BORDER|WindowState::DECORM_HANDLE) ?
                 (*it)->frame().window().borderWidth() : 0;
 
         snapToWindow(dx, dy, left, right, top, bottom,
@@ -3175,7 +3175,7 @@ void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
     m_resize_corner = dir;
 
     resizing = true;
-    maximized = FbWinFrame::MAX_NONE;
+    maximized = WindowState::MAX_NONE;
     frame().setMaximized(maximized);
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme()->upperLeftAngleCursor() :
@@ -3862,7 +3862,7 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
         setFocusNew(false);
         setMouseFocus(false);
         setClickFocus(false);
-        setDecorationMask(FbWinFrame::DECOR_NONE);
+        setDecorationMask(WindowState::DECOR_NONE);
         moveToLayer(::Layer::DOCK);
         break;
     case Focusable::TYPE_DESKTOP:
@@ -3877,7 +3877,7 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
         setFocusNew(false);
         setMouseFocus(false);
         moveToLayer(::Layer::DESKTOP);
-        setDecorationMask(FbWinFrame::DECOR_NONE);
+        setDecorationMask(WindowState::DECOR_NONE);
         setTabable(false);
         setMovable(false);
         setResizable(false);
@@ -3889,7 +3889,7 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
          * window is a splash screen displayed as an application
          * is starting up.
          */
-        setDecorationMask(FbWinFrame::DECOR_NONE);
+        setDecorationMask(WindowState::DECOR_NONE);
         setFocusHidden(true);
         setIconHidden(true);
         setFocusNew(false);
@@ -3909,7 +3909,7 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
          * application). Windows of this type may set the
          * WM_TRANSIENT_FOR hint indicating the main application window.
          */
-        setDecorationMask(FbWinFrame::DECOR_TOOL);
+        setDecorationMask(WindowState::DECOR_TOOL);
         setIconHidden(true);
         moveToLayer(::Layer::ABOVE_DOCK);
         break;

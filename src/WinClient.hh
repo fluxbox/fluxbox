@@ -22,8 +22,9 @@
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
 
-#include "FbWinFrame.hh"
 #include "Window.hh"
+#include "WindowState.hh"
+
 #include "FbTk/FbWindow.hh"
 #include "FbTk/FbString.hh"
 
@@ -114,7 +115,7 @@ public:
     Window getGroupLeftWindow() const;
 
     const MwmHints *getMwmHint() const { return m_mwm_hint; }
-    const FbWinFrame::SizeHints &sizeHints() const { return m_size_hints; }
+    const SizeHints &sizeHints() const { return m_size_hints; }
 
     unsigned int minWidth() const { return m_size_hints.min_width; }
     unsigned int minHeight() const { return m_size_hints.min_height; }
@@ -157,7 +158,7 @@ private:
 
     Focusable::WindowType m_window_type;
     MwmHints *m_mwm_hint;
-    FbWinFrame::SizeHints m_size_hints;
+    SizeHints m_size_hints;
 
     Strut *m_strut;
     // map transient_for X window to winclient transient 

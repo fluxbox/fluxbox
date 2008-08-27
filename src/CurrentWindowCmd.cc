@@ -503,7 +503,7 @@ void SetTitleCmd::real_execute() {
 REGISTER_COMMAND_WITH_ARGS(setdecor, SetDecorCmd, void);
 
 SetDecorCmd::SetDecorCmd(const std::string &args):
-    m_mask(FbWinFrame::getDecoMaskFromString(args)) { }
+    m_mask(WindowState::getDecoMaskFromString(args)) { }
 
 void SetDecorCmd::real_execute() {
     fbwindow().setDecorationMask(m_mask);

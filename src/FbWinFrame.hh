@@ -33,6 +33,8 @@
 #include "FbTk/Container.hh"
 #include "FbTk/Shape.hh"
 
+#include "WindowState.hh"
+
 #include <X11/Xutil.h>
 
 #include <vector>
@@ -66,85 +68,6 @@ public:
         // left and right placement
         LEFTBOTTOM, LEFT, LEFTTOP,
         RIGHTBOTTOM, RIGHT, RIGHTTOP
-    };
-
-    /**
-     * Types of maximization
-     */
-    enum MaximizeMode {
-        MAX_NONE = 0, ///< normal state
-        MAX_HORZ = 1, ///< maximize horizontal
-        MAX_VERT = 2, ///< maximize vertical
-        MAX_FULL = 3  ///< maximize full
-    };
-
-    /**
-       This enumeration represents individual decoration
-       attributes, they can be OR-d together to get a mask.
-       Useful for saving.
-    */
-    enum DecorationMask {
-        DECORM_TITLEBAR = (1<<0),
-        DECORM_HANDLE   = (1<<1),
-        DECORM_BORDER   = (1<<2),
-        DECORM_ICONIFY  = (1<<3),
-        DECORM_MAXIMIZE = (1<<4),
-        DECORM_CLOSE    = (1<<5),
-        DECORM_MENU     = (1<<6),
-        DECORM_STICKY   = (1<<7),
-        DECORM_SHADE    = (1<<8),
-        DECORM_TAB      = (1<<9),
-        DECORM_ENABLED  = (1<<10),
-        DECORM_LAST     = (1<<11) // useful for getting "All"
-    };
-
-    enum Decoration {
-        DECOR_NONE = 0,
-        DECOR_NORMAL = DECORM_LAST - 1,
-        DECOR_TINY = DECORM_TITLEBAR|DECORM_ICONIFY|DECORM_MENU|DECORM_TAB,
-        DECOR_TOOL = DECORM_TITLEBAR|DECORM_MENU,
-        DECOR_BORDER = DECORM_BORDER|DECORM_MENU,
-        DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
-    };
-
-    class SizeHints {
-    public:
-        SizeHints():
-            min_width(1), max_width(0), min_height(1), max_height(0),
-            width_inc(1), height_inc(1), base_width(0), base_height(0),
-            min_aspect_x(0), max_aspect_x(1),
-            min_aspect_y(1), max_aspect_y(0),
-            win_gravity(0) { }
-
-        void reset(const XSizeHints &sizehint);
-
-        void apply(unsigned int &w, unsigned int &h,
-                   bool maximizing = false) const;
-        bool valid(unsigned int width, unsigned int height) const;
-        void displaySize(unsigned int &i, unsigned int &j,
-                         unsigned int width, unsigned int height) const;
-
-        unsigned int min_width, max_width, min_height, max_height,
-                     width_inc, height_inc, base_width, base_height,
-                     min_aspect_x, max_aspect_x, min_aspect_y, max_aspect_y;
-        int win_gravity;
-    };
-
-    class State {
-    public:
-        State():
-            size_hints(),
-            deco_mask(DECOR_NORMAL),
-            focused(false),
-            shaded(false), fullscreen(false), maximized(0),
-            x(0), y(0), width(1), height(1) { }
-
-        SizeHints size_hints;
-        unsigned int deco_mask;
-        bool focused, shaded, fullscreen;
-        int maximized;
-        int x, y;
-        unsigned int width, height;
     };
 
     /// create a top level window
@@ -247,18 +170,9 @@ public:
                         bool maximizing = false) const;
     void displaySize(unsigned int width, unsigned int height) const;
 
-    static int getDecoMaskFromString(const std::string &str);
     void setDecorationMask(unsigned int mask) { m_state.deco_mask = mask; }
     void applyDecorations();
     void applyState();
-    void saveGeometry();
-
-    /// determine if the given decoration should be shown in current state
-    bool useBorder() const;
-    bool useTabs() const;
-    bool useTitlebar() const;
-    bool useHandle() const;
-    int getShape() const;
 
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation
@@ -287,10 +201,10 @@ public:
     unsigned int width() const { return m_window.width(); }
     unsigned int height() const { return m_window.height(); }
 
-    int normalX() const;
-    int normalY() const;
-    unsigned int normalWidth() const;
-    unsigned int normalHeight() const;
+    int normalX() const { return m_state.x; }
+    int normalY() const { return m_state.y; }
+    unsigned int normalWidth() const { return m_state.width; }
+    unsigned int normalHeight() const { return m_state.height; }
 
     // extra bits for tabs
     int xOffset() const;
@@ -367,6 +281,9 @@ private:
     bool hideHandle();
     bool showHandle();
     bool setBorderWidth(bool do_move = true);
+
+    // check which corners should be rounded
+    int getShape() const;
 
     /**
        @name apply pixmaps depending on focus
@@ -463,7 +380,7 @@ private:
     TabMode m_tabmode;
 
     unsigned int m_active_orig_client_bw;
-    State m_state;
+    WindowState m_state;
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons

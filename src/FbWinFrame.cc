@@ -28,7 +28,6 @@
 #include "FbTk/Compose.hh"
 #include "FbTk/Transparent.hh"
 #include "FbTk/CompareEqual.hh"
-#include "FbTk/StringUtil.hh"
 #include "FbTk/TextUtils.hh"
 
 #include "FbWinFrameTheme.hh"
@@ -194,7 +193,7 @@ void FbWinFrame::show() {
  Toggle shade state, and resize window
  */
 void FbWinFrame::shade() {
-    if (!(m_state.deco_mask & DECORM_TITLEBAR))
+    if (!(m_state.deco_mask & WindowState::DECORM_TITLEBAR))
         return;
 
     // toggle shade
@@ -254,7 +253,8 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
         m_window.resize(width, height);
     }
 
-    saveGeometry();
+    m_state.saveGeometry(window().x(), window().y(),
+                         window().width(), window().height());
 
     if (move || (resize && m_screen.getTabPlacement() != TOPLEFT &&
                            m_screen.getTabPlacement() != LEFTTOP))
@@ -283,7 +283,8 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
 void FbWinFrame::quietMoveResize(int x, int y,
                                  unsigned int width, unsigned int height) {
     m_window.moveResize(x, y, width, height);
-    saveGeometry();
+    m_state.saveGeometry(window().x(), window().y(),
+                         window().width(), window().height());
     if (m_tabmode == EXTERNAL) {
 
         switch(m_screen.getTabPlacement()) {
@@ -534,21 +535,6 @@ void FbWinFrame::setMaximized(int value) {
     applyState();
 }
 
-void FbWinFrame::saveGeometry() {
-    if (m_state.fullscreen || m_state.maximized == MAX_FULL)
-        return;
-
-    if (!(m_state.maximized & MAX_HORZ)) {
-        m_state.x = x();
-        m_state.width = width();
-    }
-    if (!(m_state.maximized & MAX_VERT)) {
-        m_state.y = y();
-        if (!m_state.shaded)
-            m_state.height = height();
-    }
-}
-
 void FbWinFrame::applyState() {
     applyDecorations();
 
@@ -556,7 +542,7 @@ void FbWinFrame::applyState() {
     int new_x = m_state.x, new_y = m_state.y;
     unsigned int new_w = m_state.width, new_h = m_state.height;
 
-    if (m_state.maximized & MAX_VERT) {
+    if (m_state.maximized & WindowState::MAX_VERT) {
         new_y = m_screen.maxTop(head);
         new_h = m_screen.maxBottom(head) - new_y - 2*window().borderWidth();
         if (!m_screen.getMaxOverTabs()) {
@@ -564,7 +550,7 @@ void FbWinFrame::applyState() {
             new_h -= heightOffset();
         }
     }
-    if (m_state.maximized & MAX_HORZ) {
+    if (m_state.maximized & WindowState::MAX_HORZ) {
         new_x = m_screen.maxLeft(head);
         new_w = m_screen.maxRight(head) - new_x - 2*window().borderWidth();
         if (!m_screen.getMaxOverTabs()) {
@@ -1482,50 +1468,11 @@ void FbWinFrame::applyTabContainer() {
     }
 }
 
-int FbWinFrame::getDecoMaskFromString(const string &str_label) {
-    string label = FbTk::StringUtil::toLower(str_label);
-    if (label == "none")
-        return DECOR_NONE;
-    if (label == "normal")
-        return DECOR_NORMAL;
-    if (label == "tiny")
-        return DECOR_TINY;
-    if (label == "tool")
-        return DECOR_TOOL;
-    if (label == "border")
-        return DECOR_BORDER;
-    if (label == "tab")
-        return DECOR_TAB;
-    int mask = -1;
-    if ((str_label.size() > 1 && str_label[0] == '0' && str_label[1] == 'x') ||
-        (str_label.size() > 0 && isdigit(str_label[0])))
-        mask = strtol(str_label.c_str(), NULL, 0);
-    return mask;
-}
-
-bool FbWinFrame::useBorder() const {
-    return !m_state.fullscreen && m_state.maximized != MAX_FULL &&
-           (m_state.deco_mask & DECORM_BORDER);
-}
-
-bool FbWinFrame::useTabs() const {
-    return !m_state.fullscreen && m_state.deco_mask & DECORM_TAB;
-}
-
-bool FbWinFrame::useTitlebar() const {
-    return !m_state.fullscreen && m_state.deco_mask & DECORM_TITLEBAR;
-}
-
-bool FbWinFrame::useHandle() const {
-    return !m_state.fullscreen && !m_state.shaded &&
-        m_state.deco_mask & DECORM_HANDLE;
-}
-
 int FbWinFrame::getShape() const {
     int shape = theme()->shapePlace();
-    if (!useTitlebar())
+    if (!m_state.useTitlebar())
         shape &= ~(FbTk::Shape::TOPRIGHT|FbTk::Shape::TOPLEFT);
-    if (!useHandle())
+    if (!m_state.useHandle())
         shape &= ~(FbTk::Shape::BOTTOMRIGHT|FbTk::Shape::BOTTOMLEFT);
     return shape;
 }
@@ -1541,13 +1488,13 @@ void FbWinFrame::applyDecorations() {
     // tab deocration only affects if we're external
     // must do before the setTabMode in case it goes
     // to external and is meant to be hidden
-    if (useTabs())
+    if (m_state.useTabs())
         client_move |= showTabs();
     else
         client_move |= hideTabs();
 
     // we rely on frame not doing anything if it is already shown/hidden
-    if (useTitlebar()) {
+    if (m_state.useTitlebar()) {
         client_move |= showTitlebar();
         if (m_screen.getDefaultInternalTabs())
             client_move |= setTabMode(INTERNAL);
@@ -1555,11 +1502,11 @@ void FbWinFrame::applyDecorations() {
             client_move |= setTabMode(EXTERNAL);
     } else {
         client_move |= hideTitlebar();
-        if (useTabs())
+        if (m_state.useTabs())
             client_move |= setTabMode(EXTERNAL);
     }
 
-    if (useHandle())
+    if (m_state.useHandle())
         client_move |= showHandle();
     else
         client_move |= hideHandle();
@@ -1581,7 +1528,7 @@ void FbWinFrame::applyDecorations() {
 
 bool FbWinFrame::setBorderWidth(bool do_move) {
     unsigned int border_width = theme()->border().width();
-    unsigned int win_bw = useBorder() ? border_width : 0;
+    unsigned int win_bw = m_state.useBorder() ? border_width : 0;
 
     if (border_width &&
         theme()->border().color().pixel() != window().borderColor()) {
@@ -1717,30 +1664,6 @@ void FbWinFrame::gravityTranslate(int &x, int &y,
     }
 }
 
-int FbWinFrame::normalX() const {
-    if ((m_state.maximized & MAX_HORZ) || m_state.fullscreen)
-        return m_state.x;
-    return x();
-}
-
-int FbWinFrame::normalY() const {
-    if ((m_state.maximized & MAX_VERT) || m_state.fullscreen)
-        return m_state.y;
-    return y();
-}
-
-unsigned int FbWinFrame::normalWidth() const {
-    if ((m_state.maximized & MAX_HORZ) || m_state.fullscreen)
-        return m_state.width;
-    return width();
-}
-
-unsigned int FbWinFrame::normalHeight() const {
-    if ((m_state.maximized & MAX_VERT) || m_state.fullscreen || m_state.shaded)
-        return m_state.height;
-    return height();
-}
-
 int FbWinFrame::widthOffset() const {
     if (m_tabmode != EXTERNAL || !m_use_tabs)
         return 0;
@@ -1824,202 +1747,4 @@ void FbWinFrame::displaySize(unsigned int width, unsigned int height) const {
     sizeHints().displaySize(i, j,
                             width, height - titlebarHeight() - handleHeight());
     m_screen.showGeometry(i, j);
-}
-
-void FbWinFrame::SizeHints::reset(const XSizeHints &sizehint) {
-    if (sizehint.flags & PMinSize) {
-        min_width = sizehint.min_width;
-        min_height = sizehint.min_height;
-    } else
-        min_width = min_height = 1;
-
-    if (sizehint.flags & PBaseSize) {
-        base_width = sizehint.base_width;
-        base_height = sizehint.base_height;
-        if (!(sizehint.flags & PMinSize)) {
-            min_width = base_width;
-            min_height = base_height;
-        }
-    } else
-        base_width = base_height = 0;
-
-    if (sizehint.flags & PMaxSize) {
-        max_width = sizehint.max_width;
-        max_height = sizehint.max_height;
-    } else
-        max_width = max_height = 0; // unbounded
-
-    if (sizehint.flags & PResizeInc) {
-        width_inc = sizehint.width_inc;
-        height_inc = sizehint.height_inc;
-    } else
-        width_inc = height_inc = 1;
-
-    if (sizehint.flags & PAspect) {
-        min_aspect_x = sizehint.min_aspect.x;
-        min_aspect_y = sizehint.min_aspect.y;
-        max_aspect_x = sizehint.max_aspect.x;
-        max_aspect_y = sizehint.max_aspect.y;
-    } else {
-        min_aspect_x = max_aspect_y = 0;
-        min_aspect_y = max_aspect_x = 1;
-    }
-
-    if (sizehint.flags & PWinGravity)
-        win_gravity = sizehint.win_gravity;
-    else
-        win_gravity = NorthWestGravity;
-
-    // some sanity checks
-    if (width_inc == 0)
-        width_inc = 1;
-    if (height_inc == 0)
-        height_inc = 1;
-
-    if (base_width > min_width)
-        min_width = base_width;
-    if (base_height > min_height)
-        min_height = base_height;
-}
-
-/* For aspect ratios
-   Note that its slightly simplified in that only the
-   line gradient is given - this is because for aspect
-   ratios, we always have the line going through the origin
-
-   * Based on this formula:
-   http://astronomy.swin.edu.au/~pbourke/geometry/pointline/
-
-   Note that a gradient from origin goes through ( grad , 1 )
- */
-
-void closestPointToAspect(unsigned int &ret_x, unsigned int &ret_y,
-                          unsigned int point_x, unsigned int point_y,
-                          unsigned int aspect_x, unsigned int aspect_y) {
-    double u = static_cast<double>(point_x * aspect_x + point_y * aspect_y) /
-               static_cast<double>(aspect_x * aspect_x + aspect_y * aspect_y);
-
-    ret_x = static_cast<unsigned int>(u * aspect_x);
-    ret_y = static_cast<unsigned int>(u * aspect_y);
-}
-
-unsigned int increaseToMultiple(unsigned int val, unsigned int inc) {
-    return val % inc ? val + inc - (val % inc) : val;
-}
-
-unsigned int decreaseToMultiple(unsigned int val, unsigned int inc) {
-    return val % inc ? val - (val % inc) : val;
-}
-    
-/**
- * Changes width and height to the nearest (lower) value
- * that conforms to it's size hints.
- *
- * display_* give the values that would be displayed
- * to the user when resizing.
- * We use pointers for display_* since they are optional.
- *
- * See ICCCM section 4.1.2.3
- */
-void FbWinFrame::SizeHints::apply(unsigned int &width, unsigned int &height,
-                                  bool make_fit) const {
-
-    /* aspect ratios are applied exclusive to the base size
-     *
-     * min_aspect_x      width      max_aspect_x
-     * ------------  <  -------  <  ------------
-     * min_aspect_y      height     max_aspect_y
-     *
-     * The trick is how to get back to the aspect ratio with minimal
-     * change - do we modify x, y or both?
-     * A: we minimise the distance between the current point, and
-     *    the target aspect ratio (consider them as x,y coordinates)
-     *  Consider that the aspect ratio is a line, and the current
-     *  w/h is a point, so we're just using the formula for
-     *  shortest distance from a point to a line!
-     */
-
-    // make respective to base_size
-    unsigned int w = width - base_width, h = height - base_height;
-
-    if (min_aspect_y > 0 && w * min_aspect_y < min_aspect_x * h) {
-        closestPointToAspect(w, h, w, h, min_aspect_x, min_aspect_y);
-        // new w must be > old w, new h must be < old h
-        w = increaseToMultiple(w, width_inc);
-        h = decreaseToMultiple(h, height_inc);
-    } else if (max_aspect_x > 0 && w * max_aspect_y > max_aspect_x * h) {
-        closestPointToAspect(w, h, w, h, max_aspect_x, max_aspect_y);
-        // new w must be < old w, new h must be > old h
-        w = decreaseToMultiple(w, width_inc);
-        h = increaseToMultiple(h, height_inc);
-    }
-
-    // Check minimum size
-    if (w + base_width < min_width) {
-        w = increaseToMultiple(min_width - base_width, width_inc);
-        // need to check maximum aspect again
-        if (max_aspect_x > 0 && w * max_aspect_y > max_aspect_x * h)
-            h = increaseToMultiple(w * max_aspect_y / max_aspect_x, height_inc);
-    }
-
-    if (h + base_height < min_height) {
-        h = increaseToMultiple(min_height - base_height, height_inc);
-        // need to check minimum aspect again
-        if (min_aspect_y > 0 && w * min_aspect_y < min_aspect_x * h)
-            w = increaseToMultiple(h * min_aspect_x / min_aspect_y, width_inc);
-    }
-
-    unsigned int max_w = make_fit && (width < max_width || max_width == 0) ?
-                         width : max_width;
-    unsigned int max_h = make_fit && (height < max_height || max_height == 0) ?
-                         height : max_height;
-
-    // Check maximum size
-    if (max_w > 0 && w + base_width > max_w)
-        w = max_w - base_width;
-
-    if (max_h > 0 && h + base_height > max_h)
-        h = max_h - base_height;
-
-    w = decreaseToMultiple(w, width_inc);
-    h = decreaseToMultiple(h, height_inc);
-
-    // need to check aspects one more time
-    if (min_aspect_y > 0 && w * min_aspect_y < min_aspect_x * h)
-        h = decreaseToMultiple(w * min_aspect_y / min_aspect_x, height_inc);
-
-    if (max_aspect_x > 0 && w * max_aspect_y > max_aspect_x * h)
-        w = decreaseToMultiple(h * max_aspect_x / max_aspect_y, width_inc);
-
-    width = w + base_width;
-    height = h + base_height;
-}
-
-// check if the given width and height satisfy the size hints
-bool FbWinFrame::SizeHints::valid(unsigned int w, unsigned int h) const {
-    if (w < min_width || h < min_height)
-        return false;
-
-    if (w > max_width || h > max_height)
-        return false;
-
-    if ((w - base_width) % width_inc != 0)
-        return false;
-
-    if ((h - base_height) % height_inc != 0)
-        return false;
-
-    if (min_aspect_x * (h - base_height) > (w - base_width) * min_aspect_y)
-        return false;
-
-    if (max_aspect_x * (h - base_height) < (w - base_width) * max_aspect_y)
-        return false;
-
-    return true;
-}
-
-void FbWinFrame::SizeHints::displaySize(unsigned int &i, unsigned int &j,
-        unsigned int width, unsigned int height) const {
-    i = (width - base_width) / width_inc;
-    j = (height - base_height) / height_inc;
 }

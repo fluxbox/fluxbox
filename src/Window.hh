@@ -31,6 +31,7 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/XLayerItem.hh"
+
 #include "FbWinFrame.hh"
 #include "Focusable.hh"
 #include "FocusableTheme.hh"
@@ -45,7 +46,6 @@
 class WinClient;
 class FbWinFrameTheme;
 class BScreen;
-class FbWinFrame;
 class FocusControl;
 class FbMenu;
 
@@ -212,7 +212,7 @@ public:
     /// set fullscreen
     void setFullscreen(bool flag);
     /// toggle maximize
-    void maximize(int type = FbWinFrame::MAX_FULL);
+    void maximize(int type = WindowState::MAX_FULL);
     /// sets the maximized state
     void setMaximizedState(int type);
     /// maximizes the window horizontal
@@ -373,9 +373,9 @@ public:
     bool isIconic() const { return iconic; }
     bool isShaded() const { return shaded; }
     bool isFullscreen() const { return fullscreen; }
-    bool isMaximized() const { return maximized == FbWinFrame::MAX_FULL; }
-    bool isMaximizedVert() const { return (bool)(maximized & FbWinFrame::MAX_VERT); }
-    bool isMaximizedHorz() const { return (bool)(maximized & FbWinFrame::MAX_HORZ); }
+    bool isMaximized() const { return maximized == WindowState::MAX_FULL; }
+    bool isMaximizedVert() const { return (bool)(maximized & WindowState::MAX_VERT); }
+    bool isMaximizedHorz() const { return (bool)(maximized & WindowState::MAX_HORZ); }
     int maximizedState() const { return maximized; }
     bool isIconifiable() const { return functions.iconify; }
     bool isMaximizable() const { return functions.maximize; }
@@ -553,7 +553,7 @@ private:
     typedef std::map<WinClient *, IconButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
 
-    FbWinFrame::SizeHints m_size_hint;
+    SizeHints m_size_hint;
     struct _decorations {
         bool titlebar, handle, border, iconify,
             maximize, close, menu, sticky, shade, tab, enabled;
