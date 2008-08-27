@@ -115,8 +115,8 @@ bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
 
 
 
-    int win_w = win.width() + win.fbWindow().borderWidth()*2 + win.widthOffset(),
-        win_h = win.height() + win.fbWindow().borderWidth()*2 + win.heightOffset();
+    int win_w = win.normalWidth() + win.fbWindow().borderWidth()*2 + win.widthOffset(),
+        win_h = win.normalHeight() + win.fbWindow().borderWidth()*2 + win.heightOffset();
 
     // make sure the window is inside our screen(head) area
     if (place_x + win_w - win.xOffset() > head_right)

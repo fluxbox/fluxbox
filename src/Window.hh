@@ -371,12 +371,12 @@ public:
     bool isManaged() const { return m_initialized; }
     bool isVisible() const;
     bool isIconic() const { return iconic; }
-    bool isShaded() const { return shaded; }
-    bool isFullscreen() const { return fullscreen; }
-    bool isMaximized() const { return maximized == WindowState::MAX_FULL; }
-    bool isMaximizedVert() const { return (bool)(maximized & WindowState::MAX_VERT); }
-    bool isMaximizedHorz() const { return (bool)(maximized & WindowState::MAX_HORZ); }
-    int maximizedState() const { return maximized; }
+    bool isShaded() const { return m_state.shaded; }
+    bool isFullscreen() const { return m_state.fullscreen; }
+    bool isMaximized() const { return m_state.isMaximized(); }
+    bool isMaximizedVert() const { return m_state.isMaximizedVert(); }
+    bool isMaximizedHorz() const { return m_state.isMaximizedHorz(); }
+    int maximizedState() const { return m_state.maximized; }
     bool isIconifiable() const { return functions.iconify; }
     bool isMaximizable() const { return functions.maximize; }
     bool isResizable() const { return functions.resize; }
@@ -424,6 +424,11 @@ public:
     int y() const { return frame().y(); }
     unsigned int width() const { return frame().width(); }
     unsigned int height() const { return frame().height(); }
+
+    int normalX() const { return m_state.x; }
+    int normalY() const { return m_state.y; }
+    unsigned int normalWidth() const { return m_state.width; }
+    unsigned int normalHeight() const { return m_state.height; }
 
     int xOffset() const { return frame().xOffset(); }
     int yOffset() const { return frame().yOffset(); }
@@ -526,10 +531,7 @@ private:
     time_t m_creation_time;
 
     // Window states
-    bool moving, resizing, shaded, iconic,
-        stuck, m_initialized, fullscreen;
-
-    int maximized;
+    bool moving, resizing, iconic, stuck, m_initialized;
 
     WinClient *m_attaching_tab;
 
@@ -579,7 +581,9 @@ private:
 
     FocusableTheme<WinButtonTheme> m_button_theme;
     FocusableTheme<FbWinFrameTheme> m_theme;
-    FbWinFrame m_frame;  ///< the actuall window frame
+
+    WindowState m_state;
+    FbWinFrame m_frame;  ///< the actual window frame
 
     bool m_placed; ///< determine whether or not we should place the window
 

@@ -72,10 +72,7 @@ public:
 
     /// create a top level window
     FbWinFrame(BScreen &screen, FocusableTheme<FbWinFrameTheme> &theme,
-               FbTk::ImageControl &imgctrl,
-               FbTk::XLayer &layer,
-               int x, int y,
-               unsigned int width, unsigned int height);
+               FbTk::XLayer &layer, WindowState &state);
 
 /*    /// create a frame window inside another FbWindow, NOT IMPLEMENTED!
     FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
@@ -89,8 +86,7 @@ public:
     void hide();
     void show();
     bool isVisible() const { return m_visible; }
-    /// shade frame (ie resize to titlebar size)
-    void shade();
+
     void move(int x, int y);
     void resize(unsigned int width, unsigned int height);
     /// resize client to specified size and resize frame to it
@@ -117,8 +113,6 @@ public:
 
     /// set focus/unfocus style
     void setFocus(bool newvalue);
-    void setFullscreen(bool value);
-    void setMaximized(int value);
 
     void setFocusTitle(const std::string &str) { m_label.setText(str); }
     bool setTabMode(TabMode tabmode);
@@ -201,11 +195,6 @@ public:
     unsigned int width() const { return m_window.width(); }
     unsigned int height() const { return m_window.height(); }
 
-    int normalX() const { return m_state.x; }
-    int normalY() const { return m_state.y; }
-    unsigned int normalWidth() const { return m_state.width; }
-    unsigned int normalHeight() const { return m_state.height; }
-
     // extra bits for tabs
     int xOffset() const;
     int yOffset() const;
@@ -234,7 +223,6 @@ public:
     const FbTk::FbWindow &gripRight() const { return m_grip_right; }
     FbTk::FbWindow &gripRight() { return m_grip_right; }
     bool focused() const { return m_state.focused; }
-    bool isShaded() const { return m_state.shaded; }
     FocusableTheme<FbWinFrameTheme> &theme() const { return m_theme; }
     /// @return titlebar height
     unsigned int titlebarHeight() const { return (m_use_titlebar?m_titlebar.height()+m_titlebar.borderWidth():0); }
@@ -311,6 +299,8 @@ private:
 
     FocusableTheme<FbWinFrameTheme> &m_theme; ///< theme to be used
     FbTk::ImageControl &m_imagectrl; ///< Image control for rendering
+    WindowState &m_state;
+
     /**
        @name windows
     */
@@ -380,7 +370,6 @@ private:
     TabMode m_tabmode;
 
     unsigned int m_active_orig_client_bw;
-    WindowState m_state;
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons

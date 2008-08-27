@@ -269,9 +269,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_layersig(*this),
     m_workspacesig(*this),
     m_creation_time(0),
-    moving(false), resizing(false), shaded(false), iconic(false),
-    stuck(false), m_initialized(false), fullscreen(false),
-    maximized(WindowState::MAX_NONE),
+    moving(false), resizing(false), iconic(false), stuck(false),
+    m_initialized(false),
     m_attaching_tab(0),
     display(FbTk::App::instance()->display()),
     m_button_grab_x(0), m_button_grab_y(0),
@@ -292,8 +291,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
                    screen().unfocusedWinButtonTheme()),
     m_theme(*this, screen().focusedWinFrameTheme(),
             screen().unfocusedWinFrameTheme()),
-    m_frame(client.screen(), m_theme, client.screen().imageControl(), layer,
-            0, 0, 100, 100),
+    m_frame(client.screen(), m_theme, layer, m_state),
     m_placed(false),
     m_layernum(layer.getLayerNum()),
     m_old_layernum(0),
@@ -509,11 +507,11 @@ void FluxboxWindow::init() {
     unsigned int real_width = frame().width(), real_height = frame().height();
     frame().applySizeHints(real_width, real_height);
 
+    screen().getWorkspace(m_workspace_number)->addWindow(*this);
     if (m_placed)
         moveResize(frame().x(), frame().y(), real_width, real_height);
-
-    if (!m_placed) placeWindow(getOnHead());
-    screen().getWorkspace(m_workspace_number)->addWindow(*this);
+    else
+        placeWindow(getOnHead());
 
     setFocusFlag(false); // update graphics before mapping
 
@@ -522,8 +520,8 @@ void FluxboxWindow::init() {
         stick();
     }
 
-    if (shaded) { // start shaded
-        shaded = false;
+    if (m_state.shaded) { // start shaded
+        m_state.shaded = false;
         shade();
     }
 
@@ -542,14 +540,14 @@ void FluxboxWindow::init() {
         }
     }
 
-    if (fullscreen) {
-        fullscreen = false;
+    if (m_state.fullscreen) {
+        m_state.fullscreen = false;
         setFullscreen(true);
     }
 
-    if (maximized) {
-        int tmp = maximized;
-        maximized = WindowState::MAX_NONE;
+    if (m_state.maximized) {
+        int tmp = m_state.maximized;
+        m_state.maximized = WindowState::MAX_NONE;
         setMaximizedState(tmp);
     }
 
@@ -1226,7 +1224,7 @@ void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
     m_placed = true;
     frame().moveResizeForClient(new_x, new_y, new_width, new_height, gravity, client_bw);
     setFocusFlag(m_focused);
-    shaded = false;
+    m_state.shaded = false;
     sendConfigureNotify();
 
     if (!moving) {
@@ -1449,15 +1447,15 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
     if (!m_initialized) {
         // this will interfere with window placement, so we delay it
-        fullscreen = flag;
+        m_state.fullscreen = flag;
         return;
     }
 
     if (flag && !isFullscreen()) {
 
         m_old_layernum = layerNum();
-        fullscreen = true;
-        frame().setFullscreen(true);
+        m_state.fullscreen = true;
+        frame().applyState();
 
         setFullscreenLayer(); // calls stateSig().notify()
         if (!isFocused())
@@ -1465,8 +1463,8 @@ void FluxboxWindow::setFullscreen(bool flag) {
 
     } else if (!flag && isFullscreen()) {
 
-        fullscreen = false;
-        frame().setFullscreen(false);
+        m_state.fullscreen = false;
+        frame().applyState();
 
         moveToLayer(m_old_layernum);
         stateSig().notify();
@@ -1491,45 +1489,26 @@ void FluxboxWindow::setFullscreenLayer() {
    Maximize window both horizontal and vertical
 */
 void FluxboxWindow::maximize(int type) {
-
-    // nothing to do
-    if (type == WindowState::MAX_NONE)
-        return;
-
-    int new_max = maximized;
-
-    // toggle maximize vertically?
-    // when _don't_ we want to toggle?
-    // - type is horizontal maximise, or
-    // - type is full and we are not maximised horz but already vertically
-    if (type != WindowState::MAX_HORZ &&
-        (type != WindowState::MAX_FULL || maximized != WindowState::MAX_VERT))
-        new_max ^= WindowState::MAX_VERT;
-
-    // maximize horizontally?
-    if (type != WindowState::MAX_VERT &&
-        (type != WindowState::MAX_FULL || maximized != WindowState::MAX_HORZ))
-        new_max ^= WindowState::MAX_HORZ;
-
+    int new_max = m_state.queryToggleMaximized(type);
     setMaximizedState(new_max);
 }
 
 void FluxboxWindow::setMaximizedState(int type) {
 
-    if (!m_initialized || type == maximized) {
+    if (!m_initialized || type == m_state.maximized) {
         // this will interfere with window placement, so we delay it
-        maximized = type;
+        m_state.maximized = type;
         return;
     }
 
     if (isResizing())
         stopResizing();
 
-    maximized = type;
-    frame().setMaximized(type);
+    m_state.maximized = type;
+    frame().applyState();
 
     // notify when struts change, so we can resize accordingly
-    if (maximized)
+    if (m_state.maximized)
         screen().workspaceAreaSig().attach(this);
     else
         screen().workspaceAreaSig().detach(this);
@@ -1590,27 +1569,27 @@ void FluxboxWindow::shade() {
     if (!decorations.titlebar)
         return;
 
-    // we're toggling, so if they're equal now, we need to change it
-    if (m_initialized && m_frame.isShaded() == shaded)
-        frame().shade();
+    m_state.shaded = !m_state.shaded;
+    if (!m_initialized)
+        return;
 
-    shaded = !shaded;
+    frame().applyState();
     stateSig().notify();
     // TODO: this should set IconicState, but then we can't focus the window
 }
 
 void FluxboxWindow::shadeOn() {
-    if (!shaded)
+    if (!m_state.shaded)
         shade();
 }
 
 void FluxboxWindow::shadeOff() {
-    if (shaded)
+    if (m_state.shaded)
         shade();
 }
 
 void FluxboxWindow::setShaded(bool val) {
-    if (val != shaded)
+    if (val != m_state.shaded)
         shade();
 }
 
@@ -1789,10 +1768,10 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
     // if we're fullscreen and another window gains focus on the same head,
     // then we need to let the user see it
-    if (fullscreen && !focus)
+    if (m_state.fullscreen && !focus)
         screen().focusedWindowSig().attach(this);
 
-    if (fullscreen && focus) {
+    if (m_state.fullscreen && focus) {
         moveToLayer(::Layer::ABOVE_DOCK);
         screen().focusedWindowSig().detach(this);
     }
@@ -3149,8 +3128,10 @@ void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
     m_resize_corner = dir;
 
     resizing = true;
-    maximized = WindowState::MAX_NONE;
-    frame().setMaximized(maximized);
+    m_state.maximized = WindowState::MAX_NONE;
+    m_state.saveGeometry(frame().x(), frame().y(),
+                         frame().width(), frame().height());
+    frame().applyState();
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme()->upperLeftAngleCursor() :
                            (m_resize_corner == RIGHTTOP) ? frame().theme()->upperRightAngleCursor() :
@@ -3814,11 +3795,12 @@ void FluxboxWindow::setOnHead(int head) {
 }
 
 void FluxboxWindow::placeWindow(int head) {
-    int place_x, place_y;
+    int new_x, new_y;
     // we ignore the return value,
     // the screen placement strategy is guaranteed to succeed.
-    screen().placementStrategy().placeWindow(*this, head, place_x, place_y);
-    move(place_x, place_y);
+    screen().placementStrategy().placeWindow(*this, head, new_x, new_y);
+    m_state.saveGeometry(new_x, new_y, frame().width(), frame().height(), true);
+    move(new_x, new_y);
 }
 
 void FluxboxWindow::setWindowType(Focusable::WindowType type) {

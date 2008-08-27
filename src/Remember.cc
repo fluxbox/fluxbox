@@ -1115,15 +1115,15 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         app->rememberHead(win->screen().getHead(win->fbWindow()));
         break;
     case REM_DIMENSIONS:
-        app->rememberDimensions(win->frame().normalWidth(),
-                                win->frame().normalHeight());
+        app->rememberDimensions(win->normalWidth(),
+                                win->normalHeight());
         break;
     case REM_POSITION: {
         int head = win->screen().getHead(win->fbWindow());
         int head_x = win->screen().maxLeft(head);
         int head_y = win->screen().maxTop(head);
-        app->rememberPosition(win->frame().normalX() - head_x,
-                              win->frame().normalY() - head_y);
+        app->rememberPosition(win->normalX() - head_x,
+                              win->normalY() - head_y);
         break;
     }
     case REM_FOCUSHIDDENSTATE:

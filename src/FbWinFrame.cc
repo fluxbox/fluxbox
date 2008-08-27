@@ -43,14 +43,12 @@ using std::string;
 
 FbWinFrame::FbWinFrame(BScreen &screen,
                        FocusableTheme<FbWinFrameTheme> &theme,
-                       FbTk::ImageControl &imgctrl,
-                       FbTk::XLayer &layer,
-                       int x, int y,
-                       unsigned int width, unsigned int height):
+                       FbTk::XLayer &layer, WindowState &state):
     m_screen(screen),
     m_theme(theme),
-    m_imagectrl(imgctrl),
-    m_window(theme->screenNum(), x, y, width, height,
+    m_imagectrl(screen.imageControl()),
+    m_state(state),
+    m_window(theme->screenNum(), state.x, state.y, state.width, state.height,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | EnterWindowMask |
              LeaveWindowMask, true),
@@ -188,19 +186,6 @@ void FbWinFrame::show() {
     m_window.showSubwindows();
     m_window.show();
 }
-
-/**
- Toggle shade state, and resize window
- */
-void FbWinFrame::shade() {
-    if (!(m_state.deco_mask & WindowState::DECORM_TITLEBAR))
-        return;
-
-    // toggle shade
-    m_state.shaded = !m_state.shaded;
-    applyState();
-}
-
 
 void FbWinFrame::move(int x, int y) {
     moveResize(x, y, 0, 0, true, false);
@@ -519,22 +504,6 @@ void FbWinFrame::setFocus(bool newvalue) {
     clearAll();
 }
 
-void FbWinFrame::setFullscreen(bool newvalue) {
-    if (newvalue == m_state.fullscreen)
-        return;
-
-    m_state.fullscreen = newvalue;
-    applyState();
-}
-
-void FbWinFrame::setMaximized(int value) {
-    if (value == m_state.maximized)
-        return;
-
-    m_state.maximized = value;
-    applyState();
-}
-
 void FbWinFrame::applyState() {
     applyDecorations();
 
@@ -542,7 +511,7 @@ void FbWinFrame::applyState() {
     int new_x = m_state.x, new_y = m_state.y;
     unsigned int new_w = m_state.width, new_h = m_state.height;
 
-    if (m_state.maximized & WindowState::MAX_VERT) {
+    if (m_state.isMaximizedVert()) {
         new_y = m_screen.maxTop(head);
         new_h = m_screen.maxBottom(head) - new_y - 2*window().borderWidth();
         if (!m_screen.getMaxOverTabs()) {
@@ -550,7 +519,7 @@ void FbWinFrame::applyState() {
             new_h -= heightOffset();
         }
     }
-    if (m_state.maximized & WindowState::MAX_HORZ) {
+    if (m_state.isMaximizedHorz()) {
         new_x = m_screen.maxLeft(head);
         new_w = m_screen.maxRight(head) - new_x - 2*window().borderWidth();
         if (!m_screen.getMaxOverTabs()) {

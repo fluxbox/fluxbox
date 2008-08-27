@@ -43,19 +43,39 @@ bool WindowState::useTitlebar() const {
 }
 
 void WindowState::saveGeometry(int new_x, int new_y,
-                               unsigned int new_w, unsigned int new_h) {
-    if (fullscreen || maximized == MAX_FULL)
+                               unsigned int new_w, unsigned int new_h,
+                               bool force) {
+    if ((fullscreen || maximized == MAX_FULL) && !force)
         return;
 
-    if (!(maximized & MAX_HORZ)) {
+    if (!(maximized & MAX_HORZ) || force) {
         x = new_x;
         width = new_w;
     }
-    if (!(maximized & MAX_VERT)) {
+    if (!(maximized & MAX_VERT) || force) {
         y = new_y;
-        if (!shaded)
+        if (!shaded || force)
             height = new_h;
     }
+}
+
+int WindowState::queryToggleMaximized(int type) const {
+    if (type == MAX_NONE)
+        return maximized;
+
+    int new_max = maximized;
+    // toggle maximize vertically?
+    // when _don't_ we want to toggle?
+    // - type is horizontal maximize, or
+    // - type is full and we are not maximized horz but already vertically
+    if (type != MAX_HORZ && (type != MAX_FULL || maximized != MAX_VERT))
+        new_max ^= MAX_VERT;
+
+    // maximize horizontally?
+    if (type != MAX_VERT && (type != MAX_FULL || maximized != MAX_HORZ))
+        new_max ^= MAX_HORZ;
+
+    return new_max;
 }
 
 int WindowState::getDecoMaskFromString(const std::string &str_label) {
