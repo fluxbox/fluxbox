@@ -586,22 +586,22 @@ void Ewmh::setupClient(WinClient &winclient) {
     winclient.property(m_net->wm_window_type, 0, 0x7fffffff, False, XA_ATOM,
                        &ret_type, &fmt, &nitems, &bytes_after,
                        &data);
-    Focusable::WindowType type = Focusable::TYPE_NORMAL;
+    WindowState::WindowType type = WindowState::TYPE_NORMAL;
     if (data) {
         Atom *atoms = (unsigned long *)data;
         for (unsigned long l = 0; l < nitems; ++l) {
             if (atoms[l] == m_net->wm_window_type_dock)
-                type = Focusable::TYPE_DOCK;
+                type = WindowState::TYPE_DOCK;
             else if (atoms[l] == m_net->wm_window_type_desktop)
-                type = Focusable::TYPE_DESKTOP;
+                type = WindowState::TYPE_DESKTOP;
             else if (atoms[l] == m_net->wm_window_type_splash)
-                type = Focusable::TYPE_SPLASH;
+                type = WindowState::TYPE_SPLASH;
             else if (atoms[l] == m_net->wm_window_type_dialog)
-                type = Focusable::TYPE_DIALOG;
+                type = WindowState::TYPE_DIALOG;
             else if (atoms[l] == m_net->wm_window_type_menu)
-                type = Focusable::TYPE_MENU;
+                type = WindowState::TYPE_MENU;
             else if (atoms[l] == m_net->wm_window_type_toolbar)
-                type = Focusable::TYPE_TOOLBAR;
+                type = WindowState::TYPE_TOOLBAR;
             else if (atoms[l] != m_net->wm_window_type_normal)
                 continue;
             /*
@@ -615,7 +615,7 @@ void Ewmh::setupClient(WinClient &winclient) {
         // if _NET_WM_WINDOW_TYPE not set and this window
         // has transient_for the type must be set to _NET_WM_WINDOW_TYPE_DIALOG
         if (winclient.isTransient()) {
-            type = Focusable::TYPE_DIALOG;
+            type = WindowState::TYPE_DIALOG;
             winclient.
                 changeProperty(m_net->wm_window_type,
                                XA_ATOM, 32, PropModeReplace,

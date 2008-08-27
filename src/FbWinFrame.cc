@@ -41,9 +41,8 @@
 using std::mem_fun;
 using std::string;
 
-FbWinFrame::FbWinFrame(BScreen &screen,
-                       FocusableTheme<FbWinFrameTheme> &theme,
-                       FbTk::XLayer &layer, WindowState &state):
+FbWinFrame::FbWinFrame(BScreen &screen, WindowState &state,
+                       FocusableTheme<FbWinFrameTheme> &theme):
     m_screen(screen),
     m_theme(theme),
     m_imagectrl(screen.imageControl()),
@@ -52,7 +51,7 @@ FbWinFrame::FbWinFrame(BScreen &screen,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | EnterWindowMask |
              LeaveWindowMask, true),
-    m_layeritem(window(), layer),
+    m_layeritem(window(), *screen.layerManager().getLayer(Layer::NORMAL)),
     m_titlebar(m_window, 0, 0, 100, 16,
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |

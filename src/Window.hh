@@ -122,7 +122,7 @@ public:
     typedef std::list<WinClient *> ClientList;
 
     /// create a window from a client
-    FluxboxWindow(WinClient &client, FbTk::XLayer &layer);
+    FluxboxWindow(WinClient &client);
 
     virtual ~FluxboxWindow();
 
@@ -366,11 +366,11 @@ public:
     void setMovable(bool movable) { functions.move = movable; }
     void setResizable(bool resizable) { functions.resize = resizable; }
 
-    bool isFocusHidden() const { return m_focus_hidden; }
-    bool isIconHidden() const { return m_icon_hidden; }
+    bool isFocusHidden() const { return m_state.focus_hidden; }
+    bool isIconHidden() const { return m_state.icon_hidden; }
     bool isManaged() const { return m_initialized; }
     bool isVisible() const;
-    bool isIconic() const { return iconic; }
+    bool isIconic() const { return m_state.iconic; }
     bool isShaded() const { return m_state.shaded; }
     bool isFullscreen() const { return m_state.fullscreen; }
     bool isMaximized() const { return m_state.isMaximized(); }
@@ -382,7 +382,7 @@ public:
     bool isResizable() const { return functions.resize; }
     bool isClosable() const { return functions.close; }
     bool isMoveable() const { return functions.move; }
-    bool isStuck() const { return stuck; }
+    bool isStuck() const { return m_state.stuck; }
     bool hasTitlebar() const { return decorations.titlebar; }
     bool isMoving() const { return moving; }
     bool isResizing() const { return resizing; }
@@ -416,8 +416,7 @@ public:
     const std::string &getWMClassName() const;
     const std::string &getWMClassClass() const;
     std::string getWMRole() const;
-    Focusable::WindowType getWindowType() const;
-    void setWindowType(Focusable::WindowType type);
+    void setWindowType(WindowState::WindowType type);
     bool isTransient() const;
 
     int x() const { return frame().x(); }
@@ -437,7 +436,7 @@ public:
 
     unsigned int workspaceNumber() const { return m_workspace_number; }
 
-    int layerNum() const { return m_layernum; }
+    int layerNum() const { return m_state.layernum; }
     void setLayerNum(int layernum);
 
     unsigned int titlebarHeight() const;
@@ -531,7 +530,7 @@ private:
     time_t m_creation_time;
 
     // Window states
-    bool moving, resizing, iconic, stuck, m_initialized;
+    bool moving, resizing, m_initialized;
 
     WinClient *m_attaching_tab;
 
@@ -568,8 +567,6 @@ private:
         bool resize, move, iconify, maximize, close, tabable;
     } functions;
 
-    bool m_icon_hidden;  ///< if the window is in the iconbar
-    bool m_focus_hidden; ///< if the window is in the NextWindow list
     typedef FbTk::ConstObjectAccessor<bool, FocusControl> BoolAcc;
     /// if the window is normally focused when mapped
     FbTk::DefaultValue<bool, BoolAcc> m_focus_new;
@@ -587,7 +584,6 @@ private:
 
     bool m_placed; ///< determine whether or not we should place the window
 
-    int m_layernum;
     int m_old_layernum;
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")

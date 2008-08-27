@@ -77,7 +77,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
                      send_close_message(false),
                      m_title_override(false),
                      m_icon_override(false),
-                     m_window_type(Focusable::TYPE_NORMAL),
+                     m_window_type(WindowState::TYPE_NORMAL),
                      m_mwm_hint(0),
                      m_strut(0) {
 
@@ -163,8 +163,8 @@ WinClient::~WinClient() {
 bool WinClient::acceptsFocus() const {
     return ((accepts_input || send_focus_message) &&
             // focusing fbpanel messes up quite a few things
-            m_window_type != Focusable::TYPE_DOCK &&
-            m_window_type != Focusable::TYPE_SPLASH);
+            m_window_type != WindowState::TYPE_DOCK &&
+            m_window_type != WindowState::TYPE_SPLASH);
 }
 
 bool WinClient::sendFocus() {

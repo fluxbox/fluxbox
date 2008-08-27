@@ -95,8 +95,8 @@ public:
     bool getWMName(XTextProperty &textprop) const;
     bool getWMIconName(XTextProperty &textprop) const;
     std::string getWMRole() const;
-    Focusable::WindowType getWindowType() const { return m_window_type; }
-    void setWindowType(Focusable::WindowType type) { m_window_type = type; }
+    WindowState::WindowType getWindowType() const { return m_window_type; }
+    void setWindowType(WindowState::WindowType type) { m_window_type = type; }
 
     WinClient *transientFor() { return transient_for; }
     const WinClient *transientFor() const { return transient_for; }
@@ -156,7 +156,7 @@ private:
     bool m_title_override;
     bool m_icon_override;
 
-    Focusable::WindowType m_window_type;
+    WindowState::WindowType m_window_type;
     MwmHints *m_mwm_hint;
     SizeHints m_size_hints;
 

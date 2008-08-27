@@ -71,8 +71,8 @@ public:
     };
 
     /// create a top level window
-    FbWinFrame(BScreen &screen, FocusableTheme<FbWinFrameTheme> &theme,
-               FbTk::XLayer &layer, WindowState &state);
+    FbWinFrame(BScreen &screen, WindowState &state,
+               FocusableTheme<FbWinFrameTheme> &theme);
 
 /*    /// create a frame window inside another FbWindow, NOT IMPLEMENTED!
     FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,

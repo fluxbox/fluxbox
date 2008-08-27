@@ -22,6 +22,8 @@
 #ifndef WINDOWSTATE_HH
 #define WINDOWSTATE_HH
 
+#include "Layer.hh"
+
 #include <X11/Xutil.h>
 
 #include <string>
@@ -93,11 +95,24 @@ public:
         DECOR_TAB = DECORM_BORDER|DECORM_MENU|DECORM_TAB
     };
 
+    enum WindowType {
+        TYPE_NORMAL,
+        TYPE_DOCK,
+        TYPE_DESKTOP,
+        TYPE_SPLASH,
+        TYPE_DIALOG,
+        TYPE_MENU,
+        TYPE_TOOLBAR
+    };
+
     WindowState():
         size_hints(),
         deco_mask(DECOR_NORMAL),
+        type(TYPE_NORMAL),
         focused(false),
-        shaded(false), fullscreen(false), maximized(0),
+        shaded(false), fullscreen(false), stuck(false), iconic(false),
+        focus_hidden(false), icon_hidden(false),
+        maximized(0), layernum(Layer::NORMAL),
         x(0), y(0), width(1), height(1) { }
 
     void saveGeometry(int x, int y, unsigned int width, unsigned int height,
@@ -112,15 +127,16 @@ public:
     bool useTitlebar() const;
 
     bool isMaximized() const { return maximized == MAX_FULL; }
-    bool isMaximizedHorz() const { return (bool)(maximized & MAX_HORZ); }
-    bool isMaximizedVert() const { return (bool)(maximized & MAX_VERT); }
+    bool isMaximizedHorz() const { return maximized & MAX_HORZ; }
+    bool isMaximizedVert() const { return maximized & MAX_VERT; }
 
     static int getDecoMaskFromString(const std::string &str);
 
     SizeHints size_hints;
     unsigned int deco_mask;
-    bool focused, shaded, fullscreen;
-    int maximized;
+    WindowType type;
+    bool focused, shaded, fullscreen, stuck, iconic, focus_hidden, icon_hidden;
+    int maximized, layernum;
     int x, y;
     unsigned int width, height;
 };

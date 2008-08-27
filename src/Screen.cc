@@ -1357,8 +1357,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
             if (workspace)
                 workspace->updateClientmenu();
         } else {
-            win = new FluxboxWindow(*winclient,
-                                    *layerManager().getLayer(Layer::NORMAL));
+            win = new FluxboxWindow(*winclient);
 
             if (!win->isManaged()) {
                 delete win;
@@ -1394,8 +1393,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
         return 0;
     }
 
-    FluxboxWindow *win = new FluxboxWindow(client,
-                                           *layerManager().getLayer(Layer::NORMAL));
+    FluxboxWindow *win = new FluxboxWindow(client);
 
 #ifdef SLIT
     if (win->initialState() == WithdrawnState && slit() != 0) {

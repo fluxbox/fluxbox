@@ -39,7 +39,6 @@
 #include "Remember.hh"
 #include "MenuCreator.hh"
 #include "FocusControl.hh"
-#include "Layer.hh"
 #include "IconButton.hh"
 #include "ScreenPlacement.hh"
 
@@ -261,7 +260,7 @@ private:
 
 int FluxboxWindow::s_num_grabs = 0;
 
-FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
+FluxboxWindow::FluxboxWindow(WinClient &client):
     Focusable(client.screen(), this),
     oplock(false),
     m_hintsig(*this),
@@ -269,7 +268,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_layersig(*this),
     m_workspacesig(*this),
     m_creation_time(0),
-    moving(false), resizing(false), iconic(false), stuck(false),
+    moving(false), resizing(false),
     m_initialized(false),
     m_attaching_tab(0),
     display(FbTk::App::instance()->display()),
@@ -281,8 +280,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
     m_old_decoration_mask(0),
     m_client(&client),
     m_toggled_decos(false),
-    m_icon_hidden(false),
-    m_focus_hidden(false),
     m_focus_new(BoolAcc(screen().focusControl(), &FocusControl::focusNew)),
     m_mouse_focus(BoolAcc(screen().focusControl(), &FocusControl::isMouseFocus)),
     m_click_focus(true),
@@ -291,9 +288,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbTk::XLayer &layer):
                    screen().unfocusedWinButtonTheme()),
     m_theme(*this, screen().focusedWinFrameTheme(),
             screen().unfocusedWinFrameTheme()),
-    m_frame(client.screen(), m_theme, layer, m_state),
+    m_frame(client.screen(), m_state, m_theme),
     m_placed(false),
-    m_layernum(layer.getLayerNum()),
     m_old_layernum(0),
     m_parent(client.screen().rootWindow()),
     m_resize_corner(RIGHTBOTTOM) {
@@ -440,7 +436,7 @@ void FluxboxWindow::init() {
     /**************************************************/
 
     if (m_client->isTransient() && m_client->transientFor()->fbwindow())
-        stuck = m_client->transientFor()->fbwindow()->isStuck();
+        m_state.stuck = m_client->transientFor()->fbwindow()->isStuck();
 
     if (!m_client->sizeHints().isResizable()) {
         functions.resize = functions.maximize = false;
@@ -485,7 +481,7 @@ void FluxboxWindow::init() {
         m_client->transientFor()->fbwindow() != this)
         layerItem().setLayer(m_client->transientFor()->fbwindow()->layerItem().getLayer());
     else // if no parent then set default layer
-        moveToLayer(m_layernum, m_layernum != ::Layer::NORMAL);
+        moveToLayer(m_state.layernum, m_state.layernum != ::Layer::NORMAL);
     
     // transients should be on the same workspace as parent
     if (m_client->isTransient() &&
@@ -515,8 +511,8 @@ void FluxboxWindow::init() {
 
     setFocusFlag(false); // update graphics before mapping
 
-    if (stuck) {
-        stuck = false;
+    if (m_state.stuck) {
+        m_state.stuck = false;
         stick();
     }
 
@@ -525,11 +521,11 @@ void FluxboxWindow::init() {
         shade();
     }
 
-    if (iconic) {
-        iconic = false;
+    if (m_state.iconic) {
+        m_state.iconic = false;
         iconify();
     } else if (m_workspace_number == screen().currentWorkspaceID()) {
-        iconic = true;
+        m_state.iconic = true;
         deiconify(false);
         // check if we should prevent this window from gaining focus
         m_focused = false; // deiconify sets this
@@ -1374,7 +1370,7 @@ void FluxboxWindow::iconify() {
     if (isIconic()) // no need to iconify if we're already
         return;
 
-    iconic = true;
+    m_state.iconic = true;
     m_statesig.notify();
 
     hide(true);
@@ -1396,14 +1392,14 @@ void FluxboxWindow::iconify() {
 }
 
 void FluxboxWindow::deiconify(bool do_raise) {
-    if (numClients() == 0 || !iconic || oplock)
+    if (numClients() == 0 || !m_state.iconic || oplock)
         return;
 
     oplock = true;
 
     // reassociate first, so it gets removed from screen's icon list
     screen().reassociateWindow(this, m_workspace_number, false);
-    iconic = false;
+    m_state.iconic = false;
     m_statesig.notify();
 
     // deiconify all transients
@@ -1544,7 +1540,7 @@ void FluxboxWindow::setWorkspace(int n) {
     m_workspace_number = n;
 
     // notify workspace change
-    if (m_initialized && !stuck && old_wkspc != m_workspace_number) {
+    if (m_initialized && old_wkspc != m_workspace_number) {
 #ifdef DEBUG
         cerr<<this<<" notify workspace signal"<<endl;
 #endif // DEBUG
@@ -1553,7 +1549,7 @@ void FluxboxWindow::setWorkspace(int n) {
 }
 
 void FluxboxWindow::setLayerNum(int layernum) {
-    m_layernum = layernum;
+    m_state.layernum = layernum;
 
     if (m_initialized) {
 #ifdef DEBUG
@@ -1595,7 +1591,7 @@ void FluxboxWindow::setShaded(bool val) {
 
 void FluxboxWindow::stick() {
 
-    stuck = !stuck;
+    m_state.stuck = !m_state.stuck;
 
     if (m_initialized) {
         stateSig().notify();
@@ -1611,7 +1607,7 @@ void FluxboxWindow::stick() {
         WinClient::TransientList::const_iterator it_end = (*client_it)->transientList().end();
         for (; it != it_end; ++it) {
             if ((*it)->fbwindow())
-                (*it)->fbwindow()->setStuck(stuck);
+                (*it)->fbwindow()->setStuck(m_state.stuck);
         }
 
     }
@@ -1619,7 +1615,7 @@ void FluxboxWindow::stick() {
 }
 
 void FluxboxWindow::setStuck(bool val) {
-    if (val != stuck)
+    if (val != m_state.stuck)
         stick();
 }
 
@@ -1685,11 +1681,11 @@ void FluxboxWindow::tempRaise() {
 
 
 void FluxboxWindow::raiseLayer() {
-    moveToLayer(m_layernum-1);
+    moveToLayer(m_state.layernum-1);
 }
 
 void FluxboxWindow::lowerLayer() {
-    moveToLayer(m_layernum+1);
+    moveToLayer(m_state.layernum+1);
 }
 
 
@@ -1705,9 +1701,9 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
         layernum = ::Layer::NUM_LAYERS - 1;
 
     if (!m_initialized)
-        m_layernum = layernum;
+        m_state.layernum = layernum;
 
-    if ((m_layernum == layernum && !force) || !m_client)
+    if ((m_state.layernum == layernum && !force) || !m_client)
         return;
 
     // get root window
@@ -1741,13 +1737,13 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
 }
 
 void FluxboxWindow::setFocusHidden(bool value) {
-    m_focus_hidden = value;
+    m_state.focus_hidden = value;
     if (m_initialized)
         m_statesig.notify();
 }
 
 void FluxboxWindow::setIconHidden(bool value) {
-    m_icon_hidden= value;
+    m_state.icon_hidden = value;
     if (m_initialized)
         m_statesig.notify();
 }
@@ -2058,7 +2054,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
     if (ne.override_redirect || !isVisible() || !client->validateClient())
         return;
 
-    iconic = false;
+    m_state.iconic = false;
 
     // setting state will cause all tabs to be mapped, but we only want the
     // original tab to be focused
@@ -3415,10 +3411,6 @@ std::string FluxboxWindow::getWMRole() const {
     return (m_client ? m_client->getWMRole() : "FluxboxWindow");
 }
 
-Focusable::WindowType FluxboxWindow::getWindowType() const {
-    return (m_client ? m_client->getWindowType() : Focusable::TYPE_NORMAL);
-}
-
 bool FluxboxWindow::isTransient() const {
     return (m_client && m_client->isTransient());
 }
@@ -3803,9 +3795,10 @@ void FluxboxWindow::placeWindow(int head) {
     move(new_x, new_y);
 }
 
-void FluxboxWindow::setWindowType(Focusable::WindowType type) {
+void FluxboxWindow::setWindowType(WindowState::WindowType type) {
+    m_state.type = type;
     switch (type) {
-    case Focusable::TYPE_DOCK:
+    case WindowState::TYPE_DOCK:
         /* From Extended Window Manager Hints, draft 1.3:
          *
          * _NET_WM_WINDOW_TYPE_DOCK indicates a dock or panel feature.
@@ -3821,7 +3814,7 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
         setDecorationMask(WindowState::DECOR_NONE);
         moveToLayer(::Layer::DOCK);
         break;
-    case Focusable::TYPE_DESKTOP:
+    case WindowState::TYPE_DESKTOP:
         /*
          * _NET_WM_WINDOW_TYPE_DESKTOP indicates a "false desktop" window
          * We let it be the size it wants, but it gets no decoration,
@@ -3837,9 +3830,9 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
         setTabable(false);
         setMovable(false);
         setResizable(false);
-        stick();
+        setStuck(true);
         break;
-    case Focusable::TYPE_SPLASH:
+    case WindowState::TYPE_SPLASH:
         /*
          * _NET_WM_WINDOW_TYPE_SPLASH indicates that the
          * window is a splash screen displayed as an application
@@ -3853,11 +3846,11 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
         setClickFocus(false);
         setMovable(false);
         break;
-    case Focusable::TYPE_DIALOG:
+    case WindowState::TYPE_DIALOG:
         setTabable(false);
         break;
-    case Focusable::TYPE_MENU:
-    case Focusable::TYPE_TOOLBAR:
+    case WindowState::TYPE_MENU:
+    case WindowState::TYPE_TOOLBAR:
         /*
          * _NET_WM_WINDOW_TYPE_TOOLBAR and _NET_WM_WINDOW_TYPE_MENU
          * indicate toolbar and pinnable menu windows, respectively
@@ -3869,7 +3862,7 @@ void FluxboxWindow::setWindowType(Focusable::WindowType type) {
         setIconHidden(true);
         moveToLayer(::Layer::ABOVE_DOCK);
         break;
-    case Focusable::TYPE_NORMAL:
+    case WindowState::TYPE_NORMAL:
     default:
         break;
     }
