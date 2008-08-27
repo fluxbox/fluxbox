@@ -475,21 +475,16 @@ void FluxboxWindow::init() {
     if (m_workspace_number >= screen().numberOfWorkspaces())
         m_workspace_number = screen().currentWorkspaceID();
 
-    // if we're a transient then we should be on the same layer as our parent
+    // if we're a transient then we should be on the same layer and workspace
     if (m_client->isTransient() &&
         m_client->transientFor()->fbwindow() &&
-        m_client->transientFor()->fbwindow() != this)
+        m_client->transientFor()->fbwindow() != this) {
         layerItem().setLayer(m_client->transientFor()->fbwindow()->layerItem().getLayer());
-    else // if no parent then set default layer
-        moveToLayer(m_state.layernum, m_state.layernum != ::Layer::NORMAL);
-    
-    // transients should be on the same workspace as parent
-    if (m_client->isTransient() &&
-        m_client->transientFor()->fbwindow()) {
+        m_state.layernum = m_client->transientFor()->fbwindow()->layerNum();
         m_workspace_number =
                 m_client->transientFor()->fbwindow()->workspaceNumber();
-    }
-
+    } else // if no parent then set default layer
+        moveToLayer(m_state.layernum, m_state.layernum != ::Layer::NORMAL);
 
 #ifdef DEBUG
     cerr<<"FluxboxWindow::init("<<title()<<") transientFor: "<<
@@ -1472,7 +1467,9 @@ void FluxboxWindow::setFullscreenLayer() {
     FluxboxWindow *foc = FocusControl::focusedFbWindow();
     // if another window on the same head is focused, make sure we can see it
     if (isFocused() || !foc || &foc->screen() != &screen() ||
-        getOnHead() != foc->getOnHead()) {
+        getOnHead() != foc->getOnHead() || 
+        (foc->winClient().isTransient() &&
+         foc->winClient().transientFor()->fbwindow() == this)) {
         moveToLayer(::Layer::ABOVE_DOCK);
     } else {
         moveToLayer(::Layer::DESKTOP);
