@@ -43,6 +43,8 @@ public:
     void displaySize(unsigned int &i, unsigned int &j,
                      unsigned int width, unsigned int height) const;
 
+    bool isResizable() const;
+
     unsigned int min_width, max_width, min_height, max_height,
                  width_inc, height_inc, base_width, base_height,
                  min_aspect_x, max_aspect_x, min_aspect_y, max_aspect_y;

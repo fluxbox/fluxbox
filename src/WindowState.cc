@@ -30,7 +30,8 @@ bool WindowState::useBorder() const {
 }
 
 bool WindowState::useHandle() const {
-    return !fullscreen && !shaded && deco_mask & DECORM_HANDLE;
+    return !fullscreen && !shaded && deco_mask & DECORM_HANDLE &&
+           size_hints.isResizable();
 }
 
 bool WindowState::useTabs() const {
@@ -76,6 +77,11 @@ int WindowState::getDecoMaskFromString(const std::string &str_label) {
         (str_label.size() > 0 && isdigit(str_label[0])))
         mask = strtol(str_label.c_str(), NULL, 0);
     return mask;
+}
+
+bool SizeHints::isResizable() const {
+    return max_width == 0 || max_height == 0 ||
+           max_width > min_width || max_height > min_height;
 }
 
 void SizeHints::reset(const XSizeHints &sizehint) {

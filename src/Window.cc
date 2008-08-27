@@ -451,11 +451,8 @@ void FluxboxWindow::init() {
         }
     }
 
-    if (m_client->maxWidth() != 0 && m_client->maxHeight() != 0 &&
-        m_client->maxWidth() <= m_client->minWidth() &&
-        m_client->maxHeight() <= m_client->minHeight()) {
-        decorations.maximize = decorations.handle =
-            functions.resize = functions.maximize = false;
+    if (!m_client->sizeHints().isResizable()) {
+        functions.resize = functions.maximize = false;
         decorations.tab = false; //no tab for this window
     }
 
@@ -2187,27 +2184,17 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
             client.maxWidth() != old_max_width ||
             client.minHeight() != old_min_height ||
             client.maxHeight() != old_max_height) {
-            if (client.maxWidth() != 0 && client.maxHeight() != 0 &&
-                client.maxWidth() <= client.minWidth() &&
-                client.maxHeight() <= client.minHeight()) {
-                if (decorations.maximize ||
-                    decorations.handle ||
-                    functions.resize ||
+            if (!client.sizeHints().isResizable()) {
+                if (functions.resize ||
                     functions.maximize)
                     changed = true;
-                decorations.maximize = false;
-                decorations.handle = false;
                 functions.resize=false;
                 functions.maximize=false;
             } else {
                 // TODO: is broken while handled by FbW, needs to be in WinClient
                 if (!client.isTransient() || screen().decorateTransient()) {
-                    if (!decorations.maximize ||
-                        !decorations.handle ||
-                        !functions.maximize)
+                    if (!functions.maximize)
                         changed = true;
-                    decorations.maximize = true;
-                    decorations.handle = true;
                     functions.maximize = true;
                 }
                 if (!functions.resize)
