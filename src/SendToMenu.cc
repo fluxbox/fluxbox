@@ -25,7 +25,6 @@
 #include "Window.hh"
 #include "Screen.hh"
 #include "Workspace.hh"
-#include "WindowCmd.hh"
 #include "fluxbox.hh"
 #include "Layer.hh"
 
@@ -39,8 +38,8 @@ public:
         m_workspace(workspace),
         m_follow(follow) { }
     void execute() {
-        if (WindowCmd<void>::window() != 0)
-            WindowCmd<void>::window()->screen().sendToWorkspace(m_workspace, WindowCmd<void>::window(), m_follow);
+        if (FbMenu::window() != 0)
+            FbMenu::window()->screen().sendToWorkspace(m_workspace, FbMenu::window(), m_follow);
     }
 private:
     const int m_workspace;
@@ -90,11 +89,11 @@ void SendToMenu::rebuildMenu() {
 }
 
 void SendToMenu::show() {
-    if (WindowCmd<void>::window() != 0) {
+    if (FbMenu::window() != 0) {
         for (unsigned int i=0; i < numberOfItems(); ++i)
             setItemEnabled(i, true);
         // update the workspace for the current window
-        setItemEnabled(WindowCmd<void>::window()->workspaceNumber(), false);
+        setItemEnabled(FbMenu::window()->workspaceNumber(), false);
         updateMenu();
     }
     FbTk::Menu::show();
