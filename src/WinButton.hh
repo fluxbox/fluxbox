@@ -39,7 +39,7 @@ class WinButton:public FbTk::Button, public FbTk::Observer {
 public:
     /// draw type for the button
     enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE, MENUICON};
-    WinButton(const FluxboxWindow &listen_to, 
+    WinButton(FluxboxWindow &listen_to, 
               FbTk::ThemeProxy<WinButtonTheme> &theme,
               FbTk::ThemeProxy<WinButtonTheme> &pressed,
               Type buttontype, const FbTk::FbWindow &parent, int x, int y, 
@@ -60,7 +60,7 @@ public:
 private:
     void drawType();
     Type m_type; ///< the button type
-    const FluxboxWindow &m_listen_to;
+    FluxboxWindow &m_listen_to;
     FbTk::ThemeProxy<WinButtonTheme> &m_theme, &m_pressed_theme;
 
     FbTk::FbPixmap m_icon_pixmap;

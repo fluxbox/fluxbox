@@ -21,6 +21,7 @@
 
 #include "WinButton.hh"
 #include "Window.hh"
+#include "WindowCmd.hh"
 #include "Screen.hh"
 #include "WinClient.hh"
 #include "WinButtonTheme.hh"
@@ -32,7 +33,7 @@
 #endif // SHAPE
 
 
-WinButton::WinButton(const FluxboxWindow &listen_to,
+WinButton::WinButton(FluxboxWindow &listen_to,
                      FbTk::ThemeProxy<WinButtonTheme> &theme,
                      FbTk::ThemeProxy<WinButtonTheme> &pressed,
                      Type buttontype, const FbTk::FbWindow &parent,
@@ -55,7 +56,10 @@ void WinButton::exposeEvent(XExposeEvent &event) {
 }
 
 void WinButton::buttonReleaseEvent(XButtonEvent &event) {
+    WinClient *old = WindowCmd<void>::client();
+    WindowCmd<void>::setWindow(&m_listen_to);
     FbTk::Button::buttonReleaseEvent(event);
+    WindowCmd<void>::setClient(old);
 }
 
 // when someone else tries to set the background, we may override it
