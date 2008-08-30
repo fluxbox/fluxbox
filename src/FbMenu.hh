@@ -42,7 +42,6 @@ public:
     virtual ~FbMenu() { }
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
-    void show();
     void buttonPressEvent(XButtonEvent &be);
     void buttonReleaseEvent(XButtonEvent &be);
     void keyPressEvent(XKeyEvent &ke);

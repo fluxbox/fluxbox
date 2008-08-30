@@ -29,7 +29,6 @@
 #include "FbMenu.hh"
 #include "FbCommands.hh"
 #include "fluxbox.hh"
-#include "WindowCmd.hh"
 #include "Layer.hh"
 
 #include "FbTk/I18n.hh"
@@ -250,23 +249,23 @@ public:
     }
 
     bool isSelected() const {
-        if (WindowCmd<void>::window() == 0)
+        if (FbMenu::window() == 0)
             return false;
 
-        if (WindowCmd<void>::window()->numClients()) // ensure it HAS clients
-            return Remember::instance().isRemembered(WindowCmd<void>::window()->winClient(), m_attrib);
+        if (FbMenu::window()->numClients()) // ensure it HAS clients
+            return Remember::instance().isRemembered(FbMenu::window()->winClient(), m_attrib);
         else
             return false;
     }
 
     bool isEnabled() const {
-        if (WindowCmd<void>::window() == 0)
+        if (FbMenu::window() == 0)
             return false;
 
         if (m_attrib != Remember::REM_JUMPWORKSPACE)
             return true;
-        else if (WindowCmd<void>::window()->numClients())
-            return (Remember::instance().isRemembered(WindowCmd<void>::window()->winClient(), Remember::REM_WORKSPACE));
+        else if (FbMenu::window()->numClients())
+            return (Remember::instance().isRemembered(FbMenu::window()->winClient(), Remember::REM_WORKSPACE));
         else
             return false;
     }
@@ -274,11 +273,11 @@ public:
     void click(int button, int time, unsigned int mods) {
         // reconfigure only does stuff if the apps file has changed
         Remember::instance().checkReload();
-        if (WindowCmd<void>::window() != 0) {
+        if (FbMenu::window() != 0) {
             if (isSelected()) {
-                Remember::instance().forgetAttrib(WindowCmd<void>::window()->winClient(), m_attrib);
+                Remember::instance().forgetAttrib(FbMenu::window()->winClient(), m_attrib);
             } else {
-                Remember::instance().rememberAttrib(WindowCmd<void>::window()->winClient(), m_attrib);
+                Remember::instance().rememberAttrib(FbMenu::window()->winClient(), m_attrib);
             }
         }
         Remember::instance().save();

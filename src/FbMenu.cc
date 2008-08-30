@@ -35,14 +35,11 @@ FbMenu::FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
 
 }
 
-void FbMenu::show() {
-    WindowCmd<void>::setWindow(s_window);
-    FbTk::Menu::show();
-}
-
 void FbMenu::buttonPressEvent(XButtonEvent &be) {
+    WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setWindow(s_window);
     FbTk::Menu::buttonPressEvent(be);
+    WindowCmd<void>::setClient(old);
 }
 
 void FbMenu::buttonReleaseEvent(XButtonEvent &be) {
@@ -55,13 +52,17 @@ void FbMenu::buttonReleaseEvent(XButtonEvent &be) {
                   screen->getHeadWidth(head),
                   screen->getHeadHeight(head));
     }
-    WindowCmd<void>::setWindow(s_window);
 
     // now get on with the show
+    WinClient *old = WindowCmd<void>::client();
+    WindowCmd<void>::setWindow(s_window);
     FbTk::Menu::buttonReleaseEvent(be);
+    WindowCmd<void>::setClient(old);
 }
 
 void FbMenu::keyPressEvent(XKeyEvent &ke) {
+    WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setWindow(s_window);
     FbTk::Menu::keyPressEvent(ke);
+    WindowCmd<void>::setClient(old);
 }

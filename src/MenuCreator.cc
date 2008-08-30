@@ -168,14 +168,14 @@ private:
 class MenuContext: public LayerObject {
 public:
     void moveToLayer(int layer_number) {
-        if (WindowCmd<void>::window() == 0)
+        if (FbMenu::window() == 0)
             return;
-        WindowCmd<void>::window()->moveToLayer(layer_number);
+        FbMenu::window()->moveToLayer(layer_number);
     }
     int layerNumber() const {
-        if (WindowCmd<void>::window() == 0)
+        if (FbMenu::window() == 0)
             return -1;
-        return WindowCmd<void>::window()->layerItem().getLayerNum();
+        return FbMenu::window()->layerItem().getLayerNum();
     }
 
 };
