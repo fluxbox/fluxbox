@@ -21,6 +21,8 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	EventHandler.hh EventManager.hh EventManager.cc \
 	FbWindow.hh FbWindow.cc Font.cc Font.hh FontImp.hh \
 	I18n.cc I18n.hh \
+	CommandParser.hh \
+	RadioMenuItem.hh \
 	ImageControl.hh ImageControl.cc \
 	LogicCommands.hh LogicCommands.cc \
 	MacroCommand.hh MacroCommand.cc \
