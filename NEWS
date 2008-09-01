@@ -1,61 +1,64 @@
-News in 1.0.0:
-    * New default style: bloe
-    * New styles:
-      ostrich zimek_darkblue, zimek_green, zimek_bisque,
-      carp, arch, bora_black, bora_blue, bora_green, green_tea, bloe
-    * Fixed shape handling, now shaped corners have border.
-    * Allow negative numbers in command "Workspace"
-    * Added utility fluxbox-remote 
-      * Allows script access to most fluxbox commands; 
-        Support must be turned on in the init file with
-        session.screen<N>.allowRemoteActions; the syntax is, e.g.,
-        fluxbox-remote "CustomMenu ~/.fluxbox/custommenu" 
-    * Added keycommands :AddWorkspace and :RemoveLastWorkspace
-    * Added some missing Open Office entries and window managers,
-      plus some other minor changes in fluxbox-generate_menu
-    * Updated languages: 
-      sv_SE, zh_CN, de_*, es_ES, es_AR, en_US, en_GB, pt_*
-      fi_FI, fr_FR, ru_RU
-
+News in 1.1.0:
+    * Changed syntax for window cycling.
+      Instead of bitmask, the window cucling functions takes a list of
+      options enclosed in{} followed by pattern, similar to those used in 
+      the apps file.
+    * Added new placement policies {Row,Col}MinOverlapPlacement. They 
+      behave the same as {Row,Col}SmartPlacement when the window fits but
+      fall back on minimizing overlap with other windows instead of
+      CascadePlacement.
+    * New options to client patterns:
+      - transient
+      - mouse
+      - workspacename
+    * New commands:
+      - TypeAheadFocus 
+      - GoToWindow
+      - ClientMenu
+      - Attach
+      - Focus
+      - ForEach
+      - StartTabbing
+      - SetDecor
+      - SetTitle 
+      - SetTitleDialog
+      - SetLayer
+    * New modifiers to keys file:
+      - OnToolbar
+      - OnWindow
+      - OnTitlebar
+      - Double
+      - FocusIn/FocusOut  MouseOver/MouseOut ..?
+      - Delay
+    * New resources:
+      - session.screen<N>.tabs.usePixmap: <boolean>
+      - session.screen<N>.maxIgnoreIncrement: <boolean>
+      - session.screen<N>.noFocusWhileTypingDelay: <int>
+      - session.screen<N>.maxDisable{Move,Resize}: <boolean>
+      - session.screen<N>.slit.acceptKdeDockapps: <boolean>
+    * New Resize modes:
+      NearestEdge, Left, Right, Top, Bottom.
+    * Style changes:
+      New window.label.(un)focused.{justify,border{Color,Width}},
+      which fallback to window.label.{justify,border{Color,Width}} before
+      - this has the backwards-incompatible effect that
+        toolbar.iconbar.(un)focused.* fallback first to toolbar.iconbar.* 
+        and then to window.label.* window.{justify,border{Color,Width}}
+      New style items: 
+      window.(un)focus.border{Width,Color}
+    * New or updated translations: 
+      - zh_TW
+      - de_*
+    * Added -list-commands command line option, which prints a list of 
+      valid fluxbox commands.
 Bug fixes:
-    * #1694959 Rotate toolbar background texture along with toolbar
-    * #1712583 Non-latin characters displayed incorrectly in menu title
-    * #1708859 Fix error passing --with-locale path in ./configure
-    * #1524098 #1633718, System tray restart issue 
-               ( gaim/pidgin crash on restart )
-    * #1748967 Save workspace names when changing through menu
-    * #1745678 Fixed resource usage due to Skype 1.4
-    * #1736252 Strip off additional bits in event state set by Xorg
-    * #1716899 Deiconify when automatically tabbing to a minimized 
-               window with focus new windows on
-    * #1479517 Fix submenu placement with xinerama after moving the 
-               menu between heads
-    * #1716900 Also send transient windows when sending a window to 
-               another workspace
-    * #1717782 Bad fullscreen in ooimpress2
-    * #1718112 memory leak in FbWindow::textProperty 
-    * #1545066 Only replace numbers with zeros when calculating clock 
-               width
-    * #1652185 Fix window menu context when opened by clicking on tab
-    * Workspace Menu wasn't updating when windows changed titles 
-    * HideMenus didn't work on CustomMenus, and also fixed a memleak with
-      CustomMenu
-    * Fix to avoid rogue instances of /bin/sh after forking away programs
-    * Fixed some rendering problems when toolbar item borderwidth is
-      too large and toolbar bevelwidth is set
-    * Right clicking on a submenu didn't revert focus to its parent
-    * Pressing escape in a torn menu didn't work
-    * Updates for compiling with gcc 4.3 
-    * Fixed compile error with --disable-remember
-    * Fix transient windows getting tabbed from apps file and not 
-      changing layers when main window is in a lowered tab
-    * Fixed some window placement issues
-    * Fixed bug with fluxbox-generate_menu -is
-    * Fixed infinite loop caused by deiconify command 
-    * Fixed a bug in parsing cli
-    * Fix slit.onhead with BOTTOMLEFT placement
-    * Fixed crash when CustomMenu command doesn't point to a file
-
+    * #1809786, Fixed gcc 2.96 compile problem.
+    * #1787345, Fix crash when cycling focus and window closes.
+    * #1836182, Fix division by 0 error when resize increments are set to 
+      0 by an application.
+    * #1843325, Fix startup items in apps file with specified screen number
+    * #1786566, NLS entries for Mouse Tab Focus and Click Tab Focus were 
+      switched.
 See ChangeLog for more details.
 
 
