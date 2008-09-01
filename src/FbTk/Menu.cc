@@ -374,6 +374,21 @@ void Menu::updateMenu(int active_index) {
     } else
         menu.item_w = 1;
 
+    if (validIndex(m_active_index) && !menuitems[m_active_index]->isEnabled()) {
+        // find the nearest enabled menuitem and highlight it
+        for (size_t i = 1; i < menuitems.size(); i++) {
+            if (validIndex(m_active_index + i) &&
+                menuitems[m_active_index + i]->isEnabled()) {
+                m_active_index += i;
+                break;
+            } else if (validIndex(m_active_index - i) &&
+                       menuitems[m_active_index - i]->isEnabled()) {
+                m_active_index -= i;
+                break;
+            }
+        }
+    }
+
     unsigned int ii = 0;
     Menuitems::iterator it = menuitems.begin();
     Menuitems::iterator it_end = menuitems.end();

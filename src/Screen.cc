@@ -37,6 +37,7 @@
 // menu items
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
+#include "FbTk/MenuSeparator.hh"
 #include "FocusModelMenuItem.hh"
 #include "RadioMenuItem.hh"
 
@@ -1619,12 +1620,14 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                FocusControl::MOUSEFOCUS);
 #undef _FOCUSITEM
 
+    focus_menu->insert(new FbTk::MenuSeparator());
     focus_menu->insert(new TabFocusModelMenuItem(_FB_XTEXT(Configmenu,
         ClickTabFocus, "ClickTabFocus", "Click tab to focus windows"),
         focusControl(), FocusControl::CLICKTABFOCUS, save_and_reconfigure));
     focus_menu->insert(new TabFocusModelMenuItem(_FB_XTEXT(Configmenu,
         MouseTabFocus, "MouseTabFocus", "Hover over tab to focus windows"),
         focusControl(), FocusControl::MOUSETABFOCUS, save_and_reconfigure));
+    focus_menu->insert(new FbTk::MenuSeparator());
 
     try {
         focus_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, FocusNew,
