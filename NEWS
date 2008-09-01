@@ -1,23 +1,36 @@
 News in 1.1.0:
     * Changed syntax for window cycling.
-      Instead of bitmask, the window cucling functions takes a list of
-      options enclosed in{} followed by pattern, similar to those used in 
+      Instead of bitmask, the window cycling functions takes a list of
+      options enclosed in {} followed by pattern, similar to those used in 
       the apps file.
     * Added new placement policies {Row,Col}MinOverlapPlacement. They 
       behave the same as {Row,Col}SmartPlacement when the window fits but
       fall back on minimizing overlap with other windows instead of
       CascadePlacement.
     * New options to client patterns:
+      - focushidden
+      - fullscreen
+      - head
+      - iconhidden
+      - layer
+      - minimized
+      - maximized
+      - shaded
+      - stuck
       - transient
-      - mouse
+      - urgent
+      - workspace
       - workspacename
     * New commands:
-      - TypeAheadFocus 
-      - GoToWindow
-      - ClientMenu
       - Attach
+      - ClientMenu
+      - Delay
       - Focus
       - ForEach
+      - GoToWindow
+      - If
+      - StartMoving
+      - StartResizing
       - StartTabbing
       - SetDecor
       - SetTitle 
@@ -28,8 +41,6 @@ News in 1.1.0:
       - OnWindow
       - OnTitlebar
       - Double
-      - FocusIn/FocusOut  MouseOver/MouseOut ..?
-      - Delay
     * New resources:
       - session.screen<N>.tabs.usePixmap: <boolean>
       - session.screen<N>.maxIgnoreIncrement: <boolean>
@@ -47,8 +58,10 @@ News in 1.1.0:
       New style items: 
       window.(un)focus.border{Width,Color}
     * New or updated translations: 
+      - de_AT
+      - de_CH
+      - mk_MK
       - zh_TW
-      - de_*
     * Added -list-commands command line option, which prints a list of 
       valid fluxbox commands.
 Bug fixes:
@@ -59,6 +72,7 @@ Bug fixes:
     * #1843325, Fix startup items in apps file with specified screen number
     * #1786566, NLS entries for Mouse Tab Focus and Click Tab Focus were 
       switched.
+    * #1806327, Fix `About' menu item with tcsh.
 See ChangeLog for more details.
 
 
