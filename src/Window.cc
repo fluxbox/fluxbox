@@ -2144,6 +2144,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         unsigned int old_max_height = client.maxHeight();
         bool changed = false;
         client.updateWMNormalHints();
+        updateSizeHints();
 
         if (client.minWidth() != old_min_width ||
             client.maxWidth() != old_max_width ||
