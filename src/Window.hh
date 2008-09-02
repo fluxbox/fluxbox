@@ -501,6 +501,7 @@ private:
     void setState(unsigned long stateval, bool setting_up);
     /// set the layer of a fullscreen window
     void setFullscreenLayer();
+    void attachWorkAreaSig();
 
     // modifies left and top if snap is necessary
     void doSnapping(int &left, int &top);

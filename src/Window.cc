@@ -1460,6 +1460,8 @@ void FluxboxWindow::setFullscreen(bool flag) {
         moveToLayer(m_old_layernum);
         stateSig().notify();
     }
+
+    attachWorkAreaSig();
 }
 
 void FluxboxWindow::setFullscreenLayer() {
@@ -1476,6 +1478,15 @@ void FluxboxWindow::setFullscreenLayer() {
     }
     stateSig().notify();
 
+}
+
+void FluxboxWindow::attachWorkAreaSig() {
+    // notify when struts change, so we can resize accordingly
+    // Subject checks for duplicates for us
+    if (m_state.maximized || m_state.fullscreen)
+        screen().workspaceAreaSig().attach(this);
+    else
+        screen().workspaceAreaSig().detach(this);
 }
 
 /**
@@ -1500,11 +1511,7 @@ void FluxboxWindow::setMaximizedState(int type) {
     m_state.maximized = type;
     frame().applyState();
 
-    // notify when struts change, so we can resize accordingly
-    if (m_state.maximized)
-        screen().workspaceAreaSig().attach(this);
-    else
-        screen().workspaceAreaSig().detach(this);
+    attachWorkAreaSig();
 
     // notify listeners that we changed state
     stateSig().notify();
