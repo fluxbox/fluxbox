@@ -1,11 +1,11 @@
 .\"     Title: fluxbox
 .\"    Author: 
 .\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/22/2008
+.\"      Date: 09/02/2008
 .\"    Manual: 
 .\"    Source: 
 .\"
-.TH "FLUXBOX" "1" "08/22/2008" "" ""
+.TH "FLUXBOX" "1" "09/02/2008" "" ""
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
@@ -262,7 +262,7 @@ This menu offers the opportunity to set up fluxbox\. It contains many options fr
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'
-\fBImage Dithering\fR: Enable or disable dithering of images\.
+\fBTransparency\fR: This sets the transparency for a focused, unfocused window and the menu\.
 .RE
 .sp
 .RS 4
@@ -282,27 +282,12 @@ This menu offers the opportunity to set up fluxbox\. It contains many options fr
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'
-\fBFocus Last Window on Workspace\fR: This focuses the previous window when switching back to a workspace if the option is enabled\.
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'
 \fBWindows Warping\fR: If enabled, you can drag windows from one workspace to another\.
 .RE
 .sp
 .RS 4
 \h'-04'\(bu\h'+03'
-\fBDecorate Transient Windows\fR: With this option enabled all temporary windows will have a border and grips\.
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'
 \fBClick Raises\fR: If enabled a click anywhere on a window area (including the decorations) will raise it\. Otherwise you can only raise it by clicking the titlebar\.
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'
-\fBTransparency\fR: This sets the transparency for a focused, unfocused window and the menu\.
 .RE
 .SS "Window Menu"
 The Window menu is displayed when you right click on the titlebar of a window\. The options available are:
@@ -953,11 +938,6 @@ session\.screen0\.showwindowposition: <boolean>
       dragging it\. Allows a precise placement of windows on a screen\.
       Default: True
 
-session\.screen0\.decorateTransient: <boolean>
-      This controls whether or not transient windows get certain window
-      decorations, currently the maximize button and handle\.
-      Default: True
-
 session\.screen0\.defaultDeco: <string>
       This specifies the default window decorations, according to the same
       options available to the `[Deco]\' option in the `apps\' file, described in
@@ -1020,10 +1000,6 @@ session\.screen0\.rootCommand: <command>
       NOTE: Setting this command can be dangerous\. Please make sure you know
       what you are doing when setting this resource to a value other than a
       desktop wallpaper command\.
-
-session\.screen0\.imageDither: <boolean>
-      This controls whether or not fluxbox created dithered images\. Default:
-      False
 
 session\.screen0\.opaqueMove: <boolean>
       When moving a window, setting this to True will draw the window

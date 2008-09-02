@@ -288,8 +288,8 @@ from the init file, but this is an easier and faster way for most users.
     Please take a look at the "Configuration via the Toolbar Menu" part of the
     TOOLBAR section.
 
-- *Image Dithering*:
-    Enable or disable dithering of images.
+- *Transparency*:
+    This sets the transparency for a focused, unfocused window and the menu.
 
 - *Opaque Window Moving*:
     If enabled, you will see the window content while dragging it. Otherwise
@@ -302,23 +302,12 @@ from the init file, but this is an easier and faster way for most users.
 - *Focus New Window*:
     If enabled, a newly opened window will gain focus.
 
-- *Focus Last Window on Workspace*:
-    This focuses the previous window when switching back to a workspace if the
-    option is enabled.
-
 - *Windows Warping*:
     If enabled, you can drag windows from one workspace to another.
-
-- *Decorate Transient Windows*:
-    With this option enabled all temporary windows will have a border and
-    grips.
 
 - *Click Raises*:
     If enabled a click anywhere on a window area (including the decorations)
     will raise it. Otherwise you can only raise it by clicking the titlebar.
-
-- *Transparency*:
-    This sets the transparency for a focused, unfocused window and the menu.
 
 Window Menu
 ~~~~~~~~~~~
@@ -871,11 +860,6 @@ session.screen0.showwindowposition: <boolean>
       dragging it. Allows a precise placement of windows on a screen.
       Default: True
 
-session.screen0.decorateTransient: <boolean>
-      This controls whether or not transient windows get certain window
-      decorations, currently the maximize button and handle.
-      Default: True
-
 session.screen0.defaultDeco: <string>
       This specifies the default window decorations, according to the same
       options available to the `[Deco]' option in the `apps' file, described in
@@ -938,10 +922,6 @@ session.screen0.rootCommand: <command>
       NOTE: Setting this command can be dangerous. Please make sure you know
       what you are doing when setting this resource to a value other than a
       desktop wallpaper command.
-
-session.screen0.imageDither: <boolean>
-      This controls whether or not fluxbox created dithered images. Default:
-      False
 
 session.screen0.opaqueMove: <boolean>
       When moving a window, setting this to True will draw the window
