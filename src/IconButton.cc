@@ -71,6 +71,8 @@ IconButton::IconButton(const FbTk::FbWindow &parent,
 
 IconButton::~IconButton() {
     // ~FbWindow cleans event manager
+    if (m_has_tooltip)
+        m_win.screen().hideTooltip();
 }
 
 
