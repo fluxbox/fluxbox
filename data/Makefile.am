@@ -14,8 +14,8 @@ DEFAULT_WINDOWMENU = @DEFAULT_WINDOWMENU@
 SUBDIRS= 		styles
 CLEANFILES= 		menu menu.in menu.pre menu.bak init apps
 MAINTAINERCLEANFILES= 	Makefile.in
-pkgdata_DATA= 		keys menu init apps overlay
-EXTRA_DIST= 		keys init.in apps.in overlay
+pkgdata_DATA= 		keys menu init apps overlay windowmenu
+EXTRA_DIST= 		keys init.in apps.in overlay windowmenu
 all-local: 		menu init apps
 install-pkgdataDATA:
 	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"
