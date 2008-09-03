@@ -165,7 +165,7 @@ public:
     void displaySize(unsigned int width, unsigned int height) const;
 
     void setDecorationMask(unsigned int mask) { m_state.deco_mask = mask; }
-    void applyDecorations();
+    void applyDecorations(bool do_move = true);
     void applyState();
 
     // this function translates its arguments according to win_gravity

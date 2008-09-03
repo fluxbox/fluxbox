@@ -504,7 +504,7 @@ void FbWinFrame::setFocus(bool newvalue) {
 }
 
 void FbWinFrame::applyState() {
-    applyDecorations();
+    applyDecorations(false);
 
     const int head = m_screen.getHead(window());
     int new_x = m_state.x, new_y = m_state.y;
@@ -1445,7 +1445,7 @@ int FbWinFrame::getShape() const {
     return shape;
 }
 
-void FbWinFrame::applyDecorations() {
+void FbWinFrame::applyDecorations(bool do_move) {
     int grav_x=0, grav_y=0;
     // negate gravity
     gravityTranslate(grav_x, grav_y, -sizeHints().win_gravity, m_active_orig_client_bw,
@@ -1484,7 +1484,7 @@ void FbWinFrame::applyDecorations() {
                      false);
 
     // if the location changes, shift it
-    if (grav_x != 0 || grav_y != 0) {
+    if (do_move && (grav_x != 0 || grav_y != 0)) {
         move(grav_x + x(), grav_y + y());
         client_move = true;
     }
