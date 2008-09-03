@@ -494,6 +494,22 @@ AC_ARG_ENABLE(
 		LIBS="$LIBS -lXrandr")
 )
 
+AC_MSG_CHECKING([whether to have RANDR 1.2 support])
+AC_ARG_ENABLE(
+  randr1.2,
+[  --enable-randr1.2       RANDR 1.2 support ([default=yes])],
+  if test x$enableval = "xyes"; then
+	AC_MSG_RESULT([yes])
+	AC_CHECK_LIB(Xrandr, XRRUpdateConfiguration,
+		AC_DEFINE(HAVE_RANDR1_2, 1, "randr 1.2 support"))
+  else
+    AC_MSG_RESULT([no])
+  fi,  
+  AC_MSG_RESULT([yes])
+  AC_CHECK_LIB(Xrandr, XRRUpdateConfiguration,
+		AC_DEFINE(HAVE_RANDR1_2, 1, "randr 1.2 support"))
+)
+
 dnl Check for Xinerama support
 
 AC_MSG_CHECKING([whether to build support for the Xinerama extension])
@@ -549,7 +565,7 @@ AC_SUBST(DEFAULT_KEYS)
 
 AC_ARG_WITH(
   apps,
-  [ --with-apps=path         location apps file (PREFIX/share/fluxbox/apps)],
+  [  --with-apps=path        location apps file (PREFIX/share/fluxbox/apps)],
   DEFAULT_APPS=$with_apps,
   DEFAULT_APPS=\$\(prefix\)/share/fluxbox/apps
 )
@@ -557,7 +573,7 @@ AC_SUBST(DEFAULT_APPS)
 
 AC_ARG_WITH(
   overlay,
-  [ --with-overlay=path      location overlay file (PREFIX/share/fluxbox/overlay)],
+  [  --with-overlay=path     location overlay file (PREFIX/share/fluxbox/overlay)],
   DEFAULT_OVERLAY=$with_overlay,
   DEFAULT_OVERLAY=\$\(prefix\)/share/fluxbox/overlay
 )
