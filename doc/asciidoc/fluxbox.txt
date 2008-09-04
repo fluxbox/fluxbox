@@ -926,7 +926,7 @@ session.screen0.rootCommand: <command>
 session.screen0.opaqueMove: <boolean>
       When moving a window, setting this to True will draw the window
       contents as it moves (this is nasty on slow systems). If False, it
-      will only draw an outline of the window border. Default: False
+      will only draw an outline of the window border. Default: True
 
 session.screen0.workspaces: <integer>
       Set this to the number of workspaces the users wants. Default: 4

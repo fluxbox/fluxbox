@@ -286,7 +286,7 @@ getString() const {
 BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                                         const string &scrname,
                                         const string &altscrname):
-    opaque_move(rm, false, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
+    opaque_move(rm, true, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
     full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
     max_ignore_inc(rm, true, scrname+".maxIgnoreIncrement", altscrname+".MaxIgnoreIncrement"),
     max_disable_move(rm, false, scrname+".maxDisableMove", altscrname+".MaxDisableMove"),
