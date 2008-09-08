@@ -231,7 +231,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_rc_maximize_over(scrn.resourceManager(), false,
                        scrn.name() + ".toolbar.maxOver", scrn.altName() + ".Toolbar.MaxOver"),
     m_rc_visible(scrn.resourceManager(), true, scrn.name() + ".toolbar.visible", scrn.altName() + ".Toolbar.Visible"),
-    m_rc_width_percent(scrn.resourceManager(), 65,
+    m_rc_width_percent(scrn.resourceManager(), 66,
                        scrn.name() + ".toolbar.widthPercent", scrn.altName() + ".Toolbar.WidthPercent"),
     m_rc_alpha(scrn.resourceManager(), 255,
                        scrn.name() + ".toolbar.alpha", scrn.altName() + ".Toolbar.Alpha"),

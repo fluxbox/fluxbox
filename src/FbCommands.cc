@@ -414,9 +414,6 @@ void SetWorkspaceNameCmd::execute() {
             return;
         space->setName(m_name);
     }
-
-    screen->updateWorkspaceNamesAtom();
-    Fluxbox::instance()->save_rc();
 }
 
 REGISTER_COMMAND(setworkspacenamedialog, FbCommands::WorkspaceNameDialogCmd, void);

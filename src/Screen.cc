@@ -1021,17 +1021,13 @@ void BScreen::updateWorkspaceName(unsigned int w) {
     Workspace *space = getWorkspace(w);
     if (space) {
         m_workspace_names[w] = space->name();
-        updateWorkspaceNamesAtom();
+        m_workspacenames_sig.notify();
         Fluxbox::instance()->save_rc();
     }
 }
 
 void BScreen::removeWorkspaceNames() {
     m_workspace_names.clear();
-}
-
-void BScreen::updateWorkspaceNamesAtom() {
-    m_workspacenames_sig.notify();
 }
 
 void BScreen::addIcon(FluxboxWindow *w) {
@@ -1104,14 +1100,16 @@ void BScreen::removeClient(WinClient &client) {
 
 int BScreen::addWorkspace() {
 
-    bool save_name = getNameOfWorkspace(m_workspaces_list.size()) != "" ? false : true;
+    bool save_name = getNameOfWorkspace(m_workspaces_list.size()) == "";
     Workspace *wkspc = new Workspace(*this,
                                      getNameOfWorkspace(m_workspaces_list.size()),
                                      m_workspaces_list.size());
     m_workspaces_list.push_back(wkspc);
 
-    if (save_name)
+    if (save_name) {
         addWorkspaceName(wkspc->name().c_str()); //update names
+        m_workspacenames_sig.notify();
+    }
 
     saveWorkspaces(m_workspaces_list.size());
     workspaceCountSig().notify();

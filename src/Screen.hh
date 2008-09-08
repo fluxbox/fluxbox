@@ -342,8 +342,6 @@ public:
     void updateWorkspaceName(unsigned int w);
     /// remove all workspace names
     void removeWorkspaceNames();
-    /// update the workspace name atom
-    void updateWorkspaceNamesAtom();
     /// add a workspace name to the end of the workspace name list
     void addWorkspaceName(const char *name);
     /// add a window to the icon list
