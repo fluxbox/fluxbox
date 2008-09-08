@@ -197,10 +197,10 @@ void FocusableList::addMatching() {
     Focusables::const_iterator it = list.begin(), it_end = list.end();
     for (; it != it_end; ++it) {
         if (m_pat->match(**it)) {
-            pushBack(**it);
+            m_list.push_back(*it);
             m_pat->addMatch();
-        } else // we still want to watch it, in case it changes to match
-            attachSignals(**it);
+        }
+        attachSignals(**it);
     }
 }
 
