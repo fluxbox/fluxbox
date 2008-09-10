@@ -167,7 +167,7 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
                                         "session.screen0.reversewheeling",
                                         "Session.Screen0.ReverseWheeling");
         if (strcasecmp((*rc_wheeling).c_str(), "On") == 0 ||
-            (strcasecmp((*rc_wheeling).c_str(), "Screen") && *rc_screen)) {
+            (strcasecmp((*rc_wheeling).c_str(), "Screen") == 0 && *rc_screen)) {
             keep_changes = true;
             if (*rc_reverse) { // if you ask me, this should have been default
                 new_keyfile += "OnToolbar Mouse4 :PrevWorkspace\n";
