@@ -1489,7 +1489,8 @@ void FbWinFrame::applyDecorations(bool do_move) {
         client_move = true;
     }
 
-    reconfigure();
+    if (do_move)
+        reconfigure();
     if (client_move)
         frameExtentSig().notify();
 }
