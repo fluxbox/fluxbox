@@ -109,10 +109,15 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
         // read all the icons stored in _NET_WM_ICON
         if (raw_data)
-                XFree(raw_data);
-        winclient.property(net_wm_icon, 0L, nr_icon_data, False, XA_CARDINAL,
+            XFree(raw_data);
+
+        // something went wrong
+        if (!winclient.property(net_wm_icon, 0L, nr_icon_data, False, XA_CARDINAL,
                            &rtype, &rfmt, &nr_read, &nr_bytes_left,
-                           reinterpret_cast<unsigned char**>(&raw_data));
+                           reinterpret_cast<unsigned char**>(&raw_data))) {
+
+            return;
+        }
     }
 
     IconContainer icon_data; // stores all available data, sorted by size (width x height)
@@ -121,10 +126,18 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
     // analyze the available icons
     long i;
-    for (i = 0; i < nr_icon_data; i += width * height ) {
+
+    for (i = 0; i + 2 < nr_icon_data; i += width * height ) {
 
         width = raw_data[i++];
         height = raw_data[i++];
+
+        // strange values stored in the NETWM_ICON
+        if (width <= 0 || height <= 0 || i + width * height > nr_icon_data) {
+            std::cerr << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON dimensions for " << winclient.title() << "\n";
+            XFree(raw_data);
+            return;
+        }
 
         icon_data[Size(width, height)] = &raw_data[i];
     }
