@@ -136,9 +136,6 @@ public:
     unsigned int noFocusWhileTypingDelay() const { return *resource.typing_delay; }
     FollowModel getFollowModel() const { return *resource.follow_model; }
     FollowModel getUserFollowModel() const { return *resource.user_follow_model; }
-
-    const std::string &getScrollAction() const { return *resource.scroll_action; }
-    const bool getScrollReverse() const { return *resource.scroll_reverse; }
     const bool allowRemoteActions() const { return *resource.allow_remote_actions; }
     const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
     const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
@@ -565,8 +562,6 @@ private:
         FbTk::Resource<FbTk::GContext::LineStyle> gc_line_style;
         FbTk::Resource<FbTk::GContext::JoinStyle> gc_join_style;
         FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
-        FbTk::Resource<std::string> scroll_action;
-        FbTk::Resource<bool> scroll_reverse;
         FbTk::Resource<bool> allow_remote_actions;
         FbTk::Resource<bool> clientmenu_use_pixmap;
         FbTk::Resource<bool> tabs_use_pixmap;

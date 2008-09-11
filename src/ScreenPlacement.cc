@@ -47,7 +47,7 @@ ScreenPlacement::ScreenPlacement(BScreen &screen):
     m_col_direction(screen.resourceManager(), TOPBOTTOM, 
                     screen.name()+".colPlacementDirection", 
                     screen.altName()+".ColPlacementDirection"),
-    m_placement_policy(screen.resourceManager(), ROWSMARTPLACEMENT, 
+    m_placement_policy(screen.resourceManager(), ROWMINOVERLAPPLACEMENT, 
                        screen.name()+".windowPlacement", 
                        screen.altName()+".WindowPlacement"),
     m_old_policy(ROWSMARTPLACEMENT),

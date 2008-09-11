@@ -300,9 +300,9 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
     windowmenufile(rm, Fluxbox::instance()->getDefaultDataFilename("windowmenu"), scrname+".windowMenu", altscrname+".WindowMenu"),
     typing_delay(rm, 0, scrname+".noFocusWhileTypingDelay", altscrname+".NoFocusWhileTypingDelay"),
-    follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
-    user_follow_model(rm, FOLLOW_ACTIVE_WINDOW, scrname+".userFollowModel", altscrname+".UserFollowModel"),
-    workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
+    follow_model(rm, SEMIFOLLOW_ACTIVE_WINDOW, scrname+".followModel", altscrname+".followModel"),
+    user_follow_model(rm, SEMIFOLLOW_ACTIVE_WINDOW, scrname+".userFollowModel", altscrname+".UserFollowModel"),
+    workspaces(rm, 4, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 10, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
     focused_alpha(rm, 255, scrname+".window.focus.alpha", altscrname+".Window.Focus.Alpha"),
     unfocused_alpha(rm, 255, scrname+".window.unfocus.alpha", altscrname+".Window.Unfocus.Alpha"),
@@ -326,8 +326,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                  FbTk::GContext::CAPNOTLAST,
                  scrname+".overlay.capStyle",
                  altscrname+".overlay.CapStyle"),
-    scroll_action(rm, "", scrname+".windowScrollAction", altscrname+".WindowScrollAction"),
-    scroll_reverse(rm, false, scrname+".windowScrollReverse", altscrname+".WindowScrollReverse"),
     allow_remote_actions(rm, false, scrname+".allowRemoteActions", altscrname+".AllowRemoteActions"),
     clientmenu_use_pixmap(rm, true, scrname+".clientMenu.usePixmap", altscrname+".ClientMenu.UsePixmap"),
     tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
@@ -506,6 +504,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     renderPosWindow();
     m_tooltip_window->setDelay(*resource.tooltip_delay);
 
+
+    //!! TODO: we shouldn't do this more than once, but since slit handles their
+    // own resources we must do this.
+    fluxbox->load_rc(*this);
+
     // setup workspaces and workspace menu
     int nr_ws = *resource.workspaces;
     addWorkspace(); // at least one
@@ -514,11 +517,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     }
 
     m_current_workspace = m_workspaces_list.front();
-
-
-    //!! TODO: we shouldn't do this more than once, but since slit handles their
-    // own resources we must do this.
-    fluxbox->load_rc(*this);
 
     m_windowmenu.reset(createMenu(""));
     m_windowmenu->setInternalMenu();
