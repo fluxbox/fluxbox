@@ -41,6 +41,7 @@
 #include "FocusControl.hh"
 #include "IconButton.hh"
 #include "ScreenPlacement.hh"
+#include "RectangleUtil.hh"
 
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Compose.hh"
@@ -2362,10 +2363,9 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_last_button_x = be.x_root;
     m_last_button_y = be.y_root;
 
-    bool onTitlebar = frame().gripLeft().window() != be.window &&
-        frame().gripRight().window() != be.window &&
-        frame().handle().window() != be.window &&
-        frame().window() != be.window;
+    bool onTitlebar =
+        frame().insideTitlebar( be.window ) &&
+        frame().handle().window() != be.window;
 
     if (onTitlebar && be.button == 1)
         raise();
@@ -2422,41 +2422,31 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         me.window = frame().window().window();
     }
 
-    bool inside_titlebar = frame().gripLeft().window() != me.window &&
-        frame().gripRight().window() != me.window &&
-        frame().window() != me.window;
+    bool inside_titlebar = frame().insideTitlebar( me.window );
 
     if (Fluxbox::instance()->getIgnoreBorder() && m_attaching_tab == 0
         && !(isMoving() || isResizing())) {
+
+        using RectangleUtil::insideBorder;
+
         int borderw = frame().window().borderWidth();
         //!! TODO(tabs): the below test ought to be in FbWinFrame
         // if mouse is currently on the window border, ignore it
-        if ((me.x_root < (frame().x() + borderw) ||
-            me.y_root < (frame().y() + borderw) ||
-            me.x_root >= (frame().x() + (int)frame().width() + borderw) ||
-            me.y_root >= (frame().y() + (int)frame().height() + borderw))
-            && (!frame().externalTabMode() ||
-                (me.x_root < (frame().tabcontainer().x() + borderw) ||
-                 me.y_root < (frame().tabcontainer().y() + borderw) ||
-                 me.x_root >= (frame().tabcontainer().x() +
-                         (int)frame().tabcontainer().width() + borderw) ||
-                 me.y_root >= (frame().tabcontainer().y() +
-                         (int)frame().tabcontainer().height() + borderw)))
-            // or if mouse was on border when it was last clicked
-            || (m_last_button_x < (frame().x() + borderw) ||
-                m_last_button_y < (frame().y() + borderw) ||
-                m_last_button_x >= (frame().x() +
-                         (int)frame().width() + borderw) ||
-                m_last_button_y >= (frame().y() +
-                         (int)frame().height() + borderw))
-            && (!frame().externalTabMode() ||
-                (m_last_button_x < (frame().tabcontainer().x() + borderw) ||
-                 m_last_button_y < (frame().tabcontainer().y() + borderw) ||
-                 m_last_button_x >= (frame().tabcontainer().x() +
-                         (int)frame().tabcontainer().width() + borderw) ||
-                 m_last_button_y >= (frame().tabcontainer().y() +
-                         (int)frame().tabcontainer().height() + borderw))))
+        if ( ! insideBorder(frame(),
+                            me.x_root, me.y_root, borderw)  &&
+             ( !frame().externalTabMode() ||
+               ! insideBorder(frame().tabcontainer(),
+                              me.x_root, me.y_root, borderw) )
+
+             || // or if mouse was on border when it was last clicked
+
+             ! insideBorder(frame(),
+                            m_last_button_x, m_last_button_y, borderw) &&
+             ( ! frame().externalTabMode() ||
+               ! insideBorder(frame().tabcontainer(),
+                              m_last_button_x, m_last_button_y, borderw ) ) ) {
             return;
+        }
     }
 
     if (moving || ((me.state & Button1Mask) && functions.move &&

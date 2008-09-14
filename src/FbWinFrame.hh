@@ -236,6 +236,9 @@ public:
 
     const FbTk::Subject &frameExtentSig() const { return m_frame_extent_sig; }
     FbTk::Subject &frameExtentSig() { return m_frame_extent_sig; }
+    /// @returns true if the window is inside titlebar, 
+    /// assuming window is an event window that was generated for this frame.
+    bool insideTitlebar(Window win) const;
 
     //@}
 

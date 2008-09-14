@@ -1717,3 +1717,10 @@ void FbWinFrame::displaySize(unsigned int width, unsigned int height) const {
                             width, height - titlebarHeight() - handleHeight());
     m_screen.showGeometry(i, j);
 }
+
+bool FbWinFrame::insideTitlebar(Window win) const {
+    return 
+        gripLeft().window() != win &&
+        gripRight().window() != win &&
+        window().window() != win;
+}
