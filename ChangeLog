@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1
+*08/09/14:
+   * Fixed a minor pixmap resource leak (Henrik)
+     FbTk/Menu.cc, FbTk/ImageControl.cc/hh
 *08/09/01:
    * When the current menu item gets disabled, highlight its nearest neighbor
      and add separators to the focus model menu (Mark)

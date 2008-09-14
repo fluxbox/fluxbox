@@ -460,12 +460,24 @@ void Menu::updateMenu(int active_index) {
 
     if (!theme()->selectedPixmap().pixmap().drawable()) {
         int hw = theme()->itemHeight() / 2;
-        theme()->setSelectedPixmap(m_image_ctrl.renderImage(hw, hw, theme()->hiliteTexture()), true);
+        // render image, disable cache and let the theme remove the pixmap
+        theme()->setSelectedPixmap(m_image_ctrl.
+                                   renderImage(hw, hw,
+                                               theme()->hiliteTexture(), ROT0, 
+                                               false // no cache
+                                               ),  
+                                   false); // the theme takes care of this pixmap
 
         if (!theme()->highlightSelectedPixmap().pixmap().drawable()) {
             int hw = theme()->itemHeight() / 2;
-            theme()->setHighlightSelectedPixmap(m_image_ctrl.renderImage(hw, hw, theme()->frameTexture()), true);
-        }
+            // render image, disable cache and let the theme remove the pixmap
+            theme()->setHighlightSelectedPixmap(m_image_ctrl.
+                                                renderImage(hw, hw,
+                                                            theme()->frameTexture(), ROT0, 
+                                                            false  // no cache
+                                                            ), 
+                                                false); // theme takes care of this pixmap
+       }
     }
 
     if (m_title_vis) {

@@ -54,11 +54,14 @@ public:
        @param width width of pixmap
        @param height height of pixmap
        @param src_texture texture type to render
+       @param orient Orientation of the texture.
+       @param use_cache whether or not to use cache
        @return pixmap of the rendered image, on failure None
     */
     Pixmap renderImage(unsigned int width, unsigned int height,
                        const FbTk::Texture &src_texture,
-                       Orientation orient = ROT0);
+                       Orientation orient = ROT0,
+                       bool use_cache = true);
 
     void installRootColormap();
     void removeImage(Pixmap thepix);

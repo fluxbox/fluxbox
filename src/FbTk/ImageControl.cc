@@ -227,10 +227,17 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
 
 Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
                                  const FbTk::Texture &texture,
-                                 FbTk::Orientation orient) {
+                                 FbTk::Orientation orient,
+                                 bool use_cache ) {
 
     if (texture.type() & FbTk::Texture::PARENTRELATIVE)
         return ParentRelative;
+
+    // If we are not suppose to cache this pixmap, just render and return it
+    if ( ! use_cache) {
+        TextureRender image(*this, width, height, orient, m_colors, m_num_colors);
+        return image.render(texture);
+    }
 
     // search cache first
     Pixmap pixmap = searchCache(width, height, texture, orient);
