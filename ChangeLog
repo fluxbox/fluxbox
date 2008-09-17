@@ -1,8 +1,17 @@
  (Format: Year/Month/Day)
-Changes for 1.1
+Changes for 1.1.1
 *08/09/14:
    * Fixed a minor pixmap resource leak (Henrik)
      FbTk/Menu.cc, FbTk/ImageControl.cc/hh
+*08/09/11:
+   * Fixed unshading crash (Mark)
+     src/FbWinFrame.cc
+   * Be aware of badly specified _NET_WM_ICONS (Mathias)
+     Ewmh.cc
+*08/09/03:
+   * Added windowmenu to distpackage (Mark)
+-----------------------------
+Changes for 1.1.0
 *08/09/01:
    * When the current menu item gets disabled, highlight its nearest neighbor
      and add separators to the focus model menu (Mark)
