@@ -7,13 +7,17 @@ COMPILEFILE=$(CXX) -c $(CXXFLAGS)
 FONT_OBJ = ../FbTk/libFbTk.a
 COMPILE = ${CXX} ${CXXFLAGS} ${XLIBS}
 
-all: testMenu testFont testTexture movetest
+all: testMenu testFont testTexture movetest testSignals
+
 
 .cc.o:
 	$(CXX) -c $(CXXFLAGS) $<
 
 glxtest: ../FbTk/App.hh glxtest.cc
 	${CXX} glxtest.cc ${CXXFLAGS} ${XLIBS} -lGL -lGLU -lXpm -o glxtest
+
+testSignals: testSignals.o ../FbTk/Signal.hh ../FbTk/MemFun.hh
+	$(CXX) $(LIBS) testSignals.o -o testSignals
 
 testStringUtil: StringUtiltest.o
 	$(CXX) $(LIBS) StringUtiltest.o ../FbTk/libFbTk.a -o testStringUtil

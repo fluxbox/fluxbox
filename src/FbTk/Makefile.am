@@ -63,6 +63,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	TypeAhead.hh SearchResult.hh SearchResult.cc ITypeAheadable.hh \
 	Select2nd.hh STLUtil.hh \
 	CachedPixmap.hh CachedPixmap.cc \
+	Slot.hh Signal.hh MemFun.hh \
 	${xpm_SOURCE} \
 	${xft_SOURCE} \
 	${xmb_SOURCE} \

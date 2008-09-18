@@ -1,4 +1,9 @@
  (Format: Year/Month/Day)
+Changes for 1.1.2:
+*08/09/18:
+   * Added new Signal/Slot system to FbTk (Henrik)
+     This is suppose to replace the obsolete Subject/Observer classes.
+     FbTk/Signal.hh, FbTk/Slot.hh, FbTk/MemFun.hh, tests/testSignals.cc
 Changes for 1.1.1
 *08/09/14:
    * Fixed a minor pixmap resource leak (Henrik)
