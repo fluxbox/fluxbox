@@ -1,5 +1,5 @@
  (Format: Year/Month/Day)
-Changes for 1.1.2:
+Changes for 1.1.2
 *08/09/18:
    * Changed workspace count signal in BScreen to use the new signal
      system. (Henrik)
@@ -7,6 +7,9 @@ Changes for 1.1.2:
    * Added new Signal/Slot system to FbTk (Henrik)
      This is suppose to replace the obsolete Subject/Observer classes.
      FbTk/Signal.hh, FbTk/Slot.hh, FbTk/MemFun.hh, tests/testSignals.cc
+   * Fix crash when using SetTitleDialog on a window that's been closed (Mark)
+     CurrentWindowCmd.cc
+-----------------------------
 Changes for 1.1.1
 *08/09/14:
    * Fixed a minor pixmap resource leak (Henrik)
