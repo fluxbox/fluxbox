@@ -31,6 +31,7 @@
 #include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/Command.hh"
 #include "FbTk/SimpleObserver.hh"
+#include "FbTk/MemFun.hh"
 
 class SendToCmd: public FbTk::Command<void> {
 public:
@@ -55,9 +56,14 @@ SendToMenu::SendToMenu(BScreen &screen):
     // workspace names signal
     // current workspace signal
     m_rebuildObs = makeObserver(*this, &SendToMenu::rebuildMenu);
-    screen.workspaceCountSig().attach(m_rebuildObs);
+
     screen.workspaceNamesSig().attach(m_rebuildObs);
     screen.currentWorkspaceSig().attach(m_rebuildObs);
+
+    // setup new signal system
+    join( screen.workspaceCountSig(),
+          FbTk::MemFun(*this, &SendToMenu::workspaceCountChange) );
+
     // no title for this menu, it should be a submenu in the window menu.
     disableTitle();
     // setup menu items

@@ -36,6 +36,7 @@
 #include "FbTk/MenuItem.hh"
 #include "FbTk/MenuSeparator.hh"
 #include "FbTk/MultiButtonMenuItem.hh"
+#include "FbTk/MemFun.hh"
 
 #include <typeinfo>
 
@@ -61,6 +62,27 @@ WorkspaceMenu::WorkspaceMenu(BScreen &screen):
     init(screen);
 }
 
+void WorkspaceMenu::workspaceInfoChanged( BScreen& screen ) {
+    while (numberOfItems() > NR_STATIC_ITEMS) {
+        remove(IDX_AFTER_ICONS);
+    }
+    // for each workspace add workspace name and it's menu
+    // to our workspace menu
+    for (size_t workspace = 0; workspace < screen.numberOfWorkspaces();
+         ++workspace) {
+        Workspace *wkspc = screen.getWorkspace(workspace);
+        wkspc->menu().setInternalMenu();
+        FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5,
+                                                                           wkspc->name().c_str(),
+                                                                           &wkspc->menu());
+        FbTk::RefCount<FbTk::Command<void> > jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
+        mb_menu->setCommand(3, jump_cmd);
+        insert(mb_menu, workspace + IDX_AFTER_ICONS);
+    }
+
+    updateMenu(-1);
+}
+
 void WorkspaceMenu::update(FbTk::Subject *subj) {
 
     if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject)) {
@@ -78,26 +100,8 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
             }
             setItemSelected(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS, true);
             updateMenu(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS);
-        } else if (subj == &screen.workspaceCountSig() || 
-                   subj == &screen.workspaceNamesSig()) {
-            while (numberOfItems() > NR_STATIC_ITEMS) {
-                remove(IDX_AFTER_ICONS);
-            }
-            // for each workspace add workspace name and it's menu
-            // to our workspace menu
-            for (size_t workspace = 0; workspace < screen.numberOfWorkspaces(); 
-                 ++workspace) {
-                Workspace *wkspc = screen.getWorkspace(workspace);
-                wkspc->menu().setInternalMenu();
-                FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5, 
-                                                                                   wkspc->name().c_str(),
-                                                                                   &wkspc->menu());
-                FbTk::RefCount<FbTk::Command<void> > jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
-                mb_menu->setCommand(3, jump_cmd);
-                insert(mb_menu, workspace + IDX_AFTER_ICONS);
-            }
-
-            updateMenu(-1);
+        } else if ( subj == &screen.workspaceNamesSig() ) {
+            workspaceInfoChanged( screen );
         }
     } else {
         FbTk::Menu::update(subj);
@@ -106,8 +110,12 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
 
 void WorkspaceMenu::init(BScreen &screen) {
     screen.currentWorkspaceSig().attach(this);
-    screen.workspaceCountSig().attach(this);
+
     screen.workspaceNamesSig().attach(this);
+
+    join( screen.workspaceCountSig(),
+          FbTk::MemFun( *this, &WorkspaceMenu::workspaceInfoChanged ) );
+
     using namespace FbTk;
     _FB_USES_NLS;
 

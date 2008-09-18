@@ -39,6 +39,7 @@
 #include "FbTk/MultLayers.hh"
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/Observer.hh"
+#include "FbTk/Signal.hh"
 
 #include <X11/Xresource.h>
 
@@ -213,7 +214,7 @@ public:
     /// icon list sig
     FbTk::Subject &iconListSig() { return m_iconlist_sig; }
     /// workspace count signal
-    FbTk::Subject &workspaceCountSig() { return m_workspacecount_sig; }
+    FbTk::Signal<void, BScreen&> &workspaceCountSig() { return m_workspacecount_sig; }
     /// workspace names signal
     FbTk::Subject &workspaceNamesSig() { return m_workspacenames_sig; }
     /// workspace area signal
@@ -493,7 +494,6 @@ private:
     ScreenSubject
     m_clientlist_sig,  ///< client signal
         m_iconlist_sig, ///< notify if a window gets iconified/deiconified
-        m_workspacecount_sig, ///< workspace count signal
         m_workspacenames_sig, ///< workspace names signal
         m_workspace_area_sig, ///< workspace area changed signal
         m_currentworkspace_sig, ///< current workspace signal
@@ -502,6 +502,7 @@ private:
         m_resize_sig, ///< resize signal
         m_bg_change_sig; ///< background change signal
 
+    FbTk::Signal<void, BScreen&> m_workspacecount_sig; ///< workspace count signal
     FbTk::MultLayers m_layermanager;
 
     bool root_colormap_installed, managed;

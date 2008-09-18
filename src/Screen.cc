@@ -341,7 +341,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  int scrn, int num_layers) :
     m_clientlist_sig(*this),  // client signal
     m_iconlist_sig(*this), // icon list signal
-    m_workspacecount_sig(*this), // workspace count signal
     m_workspacenames_sig(*this), // workspace names signal
     m_workspace_area_sig(*this), // workspace area signal
     m_currentworkspace_sig(*this), // current workspace signal
@@ -1110,7 +1109,7 @@ int BScreen::addWorkspace() {
     }
 
     saveWorkspaces(m_workspaces_list.size());
-    workspaceCountSig().notify();
+    workspaceCountSig().emit( *this );
 
     return m_workspaces_list.size();
 
@@ -1140,7 +1139,7 @@ int BScreen::removeLastWorkspace() {
     m_workspaces_list.pop_back();
 
     saveWorkspaces(m_workspaces_list.size());
-    workspaceCountSig().notify();
+    workspaceCountSig().emit( *this );
     // must be deleted after we send notify!!
     // so we dont get bad pointers somewhere
     // while processing the notify signal

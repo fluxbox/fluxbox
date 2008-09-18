@@ -53,6 +53,7 @@
 #include "FbTk/Select2nd.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/KeyUtil.hh"
+#include "FbTk/MemFun.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -452,10 +453,12 @@ void Fluxbox::initScreen(BScreen *screen) {
     // attach screen signals to this
     screen->currentWorkspaceSig().attach(this);
     screen->focusedWindowSig().attach(this);
-    screen->workspaceCountSig().attach(this);
     screen->workspaceNamesSig().attach(this);
     screen->workspaceAreaSig().attach(this);
     screen->clientListSig().attach(this);
+
+    join( screen->workspaceCountSig(), 
+          FbTk::MemFun( *this, &Fluxbox::workspaceCountChanged ) );
 
     // initiate atomhandler for screen specific stuff
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
@@ -1095,13 +1098,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (typeid(*changedsub) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject *subj = dynamic_cast<BScreen::ScreenSubject *>(changedsub);
         BScreen &screen = subj->screen();
-        if ((&(screen.workspaceCountSig())) == changedsub) {
-            for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                 it != m_atomhandler.end(); ++it) {
-                if ((*it).first->update())
-                    (*it).first->updateWorkspaceCount(screen);
-            }
-        } else if ((&(screen.workspaceNamesSig())) == changedsub) {
+        if ((&(screen.workspaceNamesSig())) == changedsub) {
             for (AtomHandlerContainerIt it= m_atomhandler.begin();
                  it != m_atomhandler.end(); ++it) {
                 if ((*it).first->update())
@@ -1517,5 +1514,13 @@ void Fluxbox::updateFrameExtents(FluxboxWindow &win) {
     AtomHandlerContainerIt it_end = m_atomhandler.end();
     for (; it != it_end; ++it ) {
         (*it).first->updateFrameExtents(win);
+    }
+}
+
+void Fluxbox::workspaceCountChanged( BScreen& screen ) {
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
+         it != m_atomhandler.end(); ++it) {
+        if ((*it).first->update())
+            (*it).first->updateWorkspaceCount(screen);
     }
 }

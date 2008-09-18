@@ -30,6 +30,8 @@
 #include "FbTk/Timer.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/SignalHandler.hh"
+#include "FbTk/Signal.hh"
+
 #include "AttentionNoticeHandler.hh"
 
 #include <X11/Xresource.h>
@@ -74,7 +76,8 @@ class FbAtoms;
 */
 class Fluxbox : public FbTk::App,
                 public FbTk::SignalEventHandler,
-                public FbTk::Observer {
+                public FbTk::Observer,
+                private FbTk::SignalTracker {
 public:
     Fluxbox(int argc, char **argv, const char * dpy_name= 0,
             const char *rcfilename = 0, bool xsync = false);
@@ -197,6 +200,9 @@ private:
     void setupConfigFiles();
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
+
+    /// Called when workspace count on a specific screen changed.
+    void workspaceCountChanged( BScreen& screen );
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 

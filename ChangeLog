@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2:
 *08/09/18:
+   * Changed workspace count signal in BScreen to use the new signal
+     system. (Henrik)
+     Screen.cc/hh, SendToMenu.cc/hh, fluxbox.hh/cc, WorkspaceMenu.cc/hh
    * Added new Signal/Slot system to FbTk (Henrik)
      This is suppose to replace the obsolete Subject/Observer classes.
      FbTk/Signal.hh, FbTk/Slot.hh, FbTk/MemFun.hh, tests/testSignals.cc
