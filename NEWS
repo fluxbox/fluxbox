@@ -1,5 +1,6 @@
 News in 1.1.1:
     * Opaque moving is now default.
+    * Faster workspace changing.
 Bug fixes:
     * Install issues.
     * Maximize/Fullscreen for windows with non-northwest gravity.
