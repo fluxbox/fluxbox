@@ -467,12 +467,16 @@ void SetLayerCmd::real_execute() {
 }
 
 namespace {
-class SetTitleDialog: public TextDialog {
+class SetTitleDialog: public TextDialog, public FbTk::Observer {
 public:
     SetTitleDialog(FluxboxWindow &win, const string &title):
         TextDialog(win.screen(), title), window(win) {
+        win.dieSig().attach(this);
         setText(win.title());
     }
+
+    // only attached signal is window destruction
+    void update(FbTk::Subject *subj) { delete this; }
 
 private:
     void exec(const std::string &text) {
