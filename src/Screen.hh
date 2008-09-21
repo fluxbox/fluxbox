@@ -216,7 +216,7 @@ public:
     /// workspace count signal
     FbTk::Signal<void, BScreen&> &workspaceCountSig() { return m_workspacecount_sig; }
     /// workspace names signal
-    FbTk::Subject &workspaceNamesSig() { return m_workspacenames_sig; }
+    FbTk::Signal<void, BScreen&> &workspaceNamesSig() { return m_workspacenames_sig; }
     /// workspace area signal
     FbTk::Subject &workspaceAreaSig() { return m_workspace_area_sig; }
     /// current workspace signal
@@ -494,7 +494,7 @@ private:
     ScreenSubject
     m_clientlist_sig,  ///< client signal
         m_iconlist_sig, ///< notify if a window gets iconified/deiconified
-        m_workspacenames_sig, ///< workspace names signal
+
         m_workspace_area_sig, ///< workspace area changed signal
         m_focusedwindow_sig, ///< focused window signal
         m_reconfigure_sig, ///< reconfigure signal
@@ -503,6 +503,8 @@ private:
 
     FbTk::Signal<void, BScreen&> m_workspacecount_sig; ///< workspace count signal
     FbTk::Signal<void, BScreen&> m_currentworkspace_sig; ///< current workspace signal
+    FbTk::Signal<void, BScreen&> m_workspacenames_sig; ///< workspace names signal
+
     FbTk::MultLayers m_layermanager;
 
     bool root_colormap_installed, managed;

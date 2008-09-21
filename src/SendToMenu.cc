@@ -55,17 +55,16 @@ SendToMenu::SendToMenu(BScreen &screen):
     // workspace count signal
     // workspace names signal
     // current workspace signal
-    m_rebuildObs = makeObserver(*this, &SendToMenu::rebuildMenu);
 
-    screen.workspaceNamesSig().attach(m_rebuildObs);
+    join(screen.workspaceNamesSig(),
+         FbTk::MemFun(*this, &SendToMenu::rebuildMenuForScreen));
+
+    join(screen.currentWorkspaceSig(),
+         FbTk::MemFun(*this, &SendToMenu::rebuildMenuForScreen));
 
     // setup new signal system
-    join( screen.currentWorkspaceSig(),
-          FbTk::MemFun(*this, &SendToMenu::rebuildMenuForScreen));
-
-    // setup new signal system
-    join( screen.workspaceCountSig(),
-          FbTk::MemFun(*this, &SendToMenu::rebuildMenuForScreen));
+    join(screen.workspaceCountSig(),
+         FbTk::MemFun(*this, &SendToMenu::rebuildMenuForScreen));
 
     // no title for this menu, it should be a submenu in the window menu.
     disableTitle();
@@ -74,7 +73,7 @@ SendToMenu::SendToMenu(BScreen &screen):
 }
 
 SendToMenu::~SendToMenu() {
-    delete m_rebuildObs;
+
 }
 
 void SendToMenu::rebuildMenu() {

@@ -341,7 +341,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  int scrn, int num_layers) :
     m_clientlist_sig(*this),  // client signal
     m_iconlist_sig(*this), // icon list signal
-    m_workspacenames_sig(*this), // workspace names signal
     m_workspace_area_sig(*this), // workspace area signal
     m_focusedwindow_sig(*this), // focused window signal
     m_reconfigure_sig(*this), // reconfigure signal
@@ -1017,7 +1016,7 @@ void BScreen::updateWorkspaceName(unsigned int w) {
     Workspace *space = getWorkspace(w);
     if (space) {
         m_workspace_names[w] = space->name();
-        m_workspacenames_sig.notify();
+        m_workspacenames_sig.emit(*this);
         Fluxbox::instance()->save_rc();
     }
 }
@@ -1104,7 +1103,7 @@ int BScreen::addWorkspace() {
 
     if (save_name) {
         addWorkspaceName(wkspc->name().c_str()); //update names
-        m_workspacenames_sig.notify();
+        m_workspacenames_sig.emit(*this);
     }
 
     saveWorkspaces(m_workspaces_list.size());

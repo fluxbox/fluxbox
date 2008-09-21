@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *08/09/21:
+   * Changed workspace names signal in BScreen to use the new signal
+     system (Henrik)
+     Screen.hh/cc, SendToMenu.hh/cc, WorkspaceMenu.hh/cc, WorkspaceNameTool.hh/cc
    * Changed current workspace signal in Bscreen to use the new signal
      system (Henrik)
      FocusableList.hh/cc, Screen.hh/cc, SendToMenu.hh/cc,

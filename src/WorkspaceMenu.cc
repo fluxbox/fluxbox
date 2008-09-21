@@ -97,26 +97,13 @@ void WorkspaceMenu::workspaceChanged(BScreen& screen) {
     updateMenu(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS);
 }
 
-void WorkspaceMenu::update(FbTk::Subject *subj) {
-
-    if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject)) {
-        BScreen::ScreenSubject &screen_subj = *static_cast<BScreen::ScreenSubject *>(subj);
-        BScreen &screen = screen_subj.screen();
-        if ( subj == &screen.workspaceNamesSig() ) {
-            workspaceInfoChanged( screen );
-        }
-    } else {
-        FbTk::Menu::update(subj);
-    }
-}
-
 void WorkspaceMenu::init(BScreen &screen) {
-
-    screen.workspaceNamesSig().attach(this);
 
     join(screen.currentWorkspaceSig(),
          FbTk::MemFun(*this, &WorkspaceMenu::workspaceChanged));
     join(screen.workspaceCountSig(),
+         FbTk::MemFun(*this, &WorkspaceMenu::workspaceInfoChanged));
+    join(screen.workspaceNamesSig(),
          FbTk::MemFun(*this, &WorkspaceMenu::workspaceInfoChanged));
 
     using namespace FbTk;

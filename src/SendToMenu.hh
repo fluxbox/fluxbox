@@ -52,8 +52,6 @@ private:
 
     /// Rebuild the menu from scratch.
     void rebuildMenu();
-    /// listens to signals that makes this instance need to rebuild menu
-    FbTk::Observer *m_rebuildObs;
 };
 
 #endif // SENDTOMENU_HH

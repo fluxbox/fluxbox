@@ -43,9 +43,9 @@ WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent,
     m_button.setText(m_screen.currentWorkspace()->name());
 
     // setup signals
-    screen.workspaceNamesSig().attach(this);
-
     join(screen.currentWorkspaceSig(),
+         FbTk::MemFun(*this, &WorkspaceNameTool::updateForScreen));
+    join(screen.workspaceNamesSig(),
          FbTk::MemFun(*this, &WorkspaceNameTool::updateForScreen));
 
     theme.reconfigSig().attach(this);

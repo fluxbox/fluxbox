@@ -454,10 +454,11 @@ void Fluxbox::initScreen(BScreen *screen) {
 
     // attach screen signals to this
     screen->focusedWindowSig().attach(this);
-    screen->workspaceNamesSig().attach(this);
     screen->workspaceAreaSig().attach(this);
     screen->clientListSig().attach(this);
 
+    join(screen->workspaceNamesSig(), 
+         FbTk::MemFun(*this, &Fluxbox::workspaceNamesChanged));
     join(screen->currentWorkspaceSig(), 
          FbTk::MemFun(*this, &Fluxbox::workspaceChanged));
 
@@ -1102,13 +1103,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (typeid(*changedsub) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject *subj = dynamic_cast<BScreen::ScreenSubject *>(changedsub);
         BScreen &screen = subj->screen();
-        if ((&(screen.workspaceNamesSig())) == changedsub) {
-            for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                 it != m_atomhandler.end(); ++it) {
-                if ((*it).first->update())
-                    (*it).first->updateWorkspaceNames(screen);
-            }
-        } else if ((&(screen.focusedWindowSig())) == changedsub) {
+        if ((&(screen.focusedWindowSig())) == changedsub) {
             for (AtomHandlerContainerIt it= m_atomhandler.begin();
                  it != m_atomhandler.end(); it++) {
                 (*it).first->updateFocusedWindow(screen,
@@ -1528,5 +1523,13 @@ void Fluxbox::workspaceChanged( BScreen& screen ) {
          it != m_atomhandler.end(); ++it) {
         if ((*it).first->update())
             (*it).first->updateCurrentWorkspace(screen);
+    }
+}
+
+void Fluxbox::workspaceNamesChanged(BScreen &screen) {
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
+         it != m_atomhandler.end(); ++it) {
+        if ((*it).first->update())
+            (*it).first->updateWorkspaceNames(screen);
     }
 }

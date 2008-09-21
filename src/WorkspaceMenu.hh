@@ -38,8 +38,7 @@ class WorkspaceMenu: public FbMenu, private FbTk::SignalTracker {
 public:
     explicit WorkspaceMenu(BScreen &screen);
     virtual ~WorkspaceMenu() { }
-    /// called when a subject is sending a signal
-    void update(FbTk::Subject *subj);
+
 private:
     /// initialize menu for the screen
     void init(BScreen &screen);
