@@ -1,5 +1,5 @@
 // Workspace.hh for Fluxbox
-// Copyright (c) 2002 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2002 - 2008 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Workspace.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -28,6 +28,7 @@
 #include "ClientMenu.hh"
 
 #include "FbTk/NotCopyable.hh"
+#include "FbTk/Signal.hh"
 
 #include <string>
 #include <list>
@@ -84,7 +85,7 @@ private:
     BScreen &m_screen;
 
     Windows m_windowlist;
-    FbTk::Subject m_clientlist_sig;
+    FbTk::Signal<void> m_clientlist_sig;
     ClientMenu m_clientmenu;
 
     std::string m_name;  ///< name of this workspace

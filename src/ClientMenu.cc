@@ -1,5 +1,5 @@
 // ClientMenu.hh
-// Copyright (c) 2007 Fluxbox Team (fluxgen at fluxbox dot org)
+// Copyright (c) 2007-2008 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -28,6 +28,7 @@
 #include <X11/keysym.h>
 
 #include "FbTk/MenuItem.hh"
+#include "FbTk/MemFun.hh"
 
 namespace { // anonymous
 
@@ -79,14 +80,16 @@ private:
 }; // end anonymous namespace
 
 ClientMenu::ClientMenu(BScreen &screen, Focusables &clients,
-                       FbTk::Subject *refresh):
+                       bool listen_for_iconlist_changes):
     FbMenu(screen.menuTheme(), screen.imageControl(),
            *screen.layerManager().getLayer(Layer::MENU)),
-    m_list(clients),
-    m_refresh_sig(refresh) {
+    m_list(clients) {
 
-    if (refresh)
-        refresh->attach(this);
+    if (listen_for_iconlist_changes) {
+        m_slots.join(screen.iconListSig(),
+                     FbTk::MemFun(*this, &ClientMenu::updateClientList));
+    }
+
     refreshMenu();
 
 }
@@ -116,9 +119,7 @@ void ClientMenu::refreshMenu() {
 }
 
 void ClientMenu::update(FbTk::Subject *subj) {
-    if (subj == m_refresh_sig)
-        refreshMenu();
-    else if (subj && typeid(*subj) == typeid(Focusable::FocusSubject)) {
+    if (subj && typeid(*subj) == typeid(Focusable::FocusSubject)) {
 
         Focusable::FocusSubject *fsubj = static_cast<Focusable::FocusSubject *>(subj);
         Focusable &win = fsubj->win();

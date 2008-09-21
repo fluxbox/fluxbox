@@ -339,7 +339,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname,
                  const string &altscreenname,
                  int scrn, int num_layers) :
-    m_iconlist_sig(*this), // icon list signal
     m_workspace_area_sig(*this), // workspace area signal
     m_focusedwindow_sig(*this), // focused window signal
     m_reconfigure_sig(*this), // reconfigure signal
@@ -1034,7 +1033,7 @@ void BScreen::addIcon(FluxboxWindow *w) {
     m_icon_list.push_back(w);
 
     // notify listeners
-    m_iconlist_sig.notify();
+    m_iconlist_sig.emit(*this);
 }
 
 
@@ -1049,7 +1048,7 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     // change the iconlist
     if (erase_it != m_icon_list.end()) {
         iconList().erase(erase_it);
-        m_iconlist_sig.notify();
+        m_iconlist_sig.emit(*this);
     }
 }
 
@@ -1072,7 +1071,7 @@ void BScreen::removeClient(WinClient &client) {
     focusControl().removeClient(client);
 
     if (client.fbwindow() && client.fbwindow()->isIconic())
-        iconListSig().notify();
+        iconListSig().emit(*this);
 
     using namespace FbTk;
 

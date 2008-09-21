@@ -1,5 +1,5 @@
 // MenuCreator.cc for Fluxbox
-// Copyright (c) 2004 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2004-2008 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -415,7 +415,7 @@ FbMenu *MenuCreator::createMenuType(const string &type, int screen_num) {
         return 0;
     if (type == "iconmenu")
         return new ClientMenu(*screen, screen->iconList(),
-                              &screen->iconListSig());
+                              true); // listen to icon list changes
     else if (type == "workspacemenu")
         return new WorkspaceMenu(*screen);
 

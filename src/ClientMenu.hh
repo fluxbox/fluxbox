@@ -1,5 +1,5 @@
 // ClientMenu.hh
-// Copyright (c) 2007 Fluxbox Team (fluxgen at fluxbox dot org)
+// Copyright (c) 2007-2008 Fluxbox Team (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -24,6 +24,8 @@
 
 #include "FbMenu.hh"
 
+#include "FbTk/Signal.hh"
+
 class BScreen;
 class FluxboxWindow;
 /**
@@ -38,19 +40,24 @@ public:
     /**
      * @param screen the screen to show this menu on
      * @param client a list of clients to show in this menu
-     * @param refresh the refresh subject to listen to
+     * @param listen_for_iconlist_changes Listen for list changes from the \c screen.
      */
     ClientMenu(BScreen &screen, 
-               Focusables &clients, FbTk::Subject *refresh);
+               Focusables &clients, bool listen_for_iconlist_changes);
 
-private:
     /// refresh the entire menu
     void refreshMenu();
+private:
+
+    void updateClientList(BScreen& screen) {
+        refreshMenu();
+    }
+
     /// called when receiving a subject signal
     void update(FbTk::Subject *subj);
 
     Focusables &m_list; ///< clients in the menu
-    FbTk::Subject *m_refresh_sig; ///< signal to listen to
+    FbTk::SignalTracker m_slots; ///< track all the slots
 };
 
 #endif // CLIENTMENU_HH
