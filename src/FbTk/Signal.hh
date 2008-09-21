@@ -46,7 +46,7 @@ public:
     typedef Iterator SlotID;
     typedef SlotList::const_iterator ConstIterator;
 
-    virtual ~SignalHolder() { }
+    ~SignalHolder() { }
 
     /// Remove a specific slot \c id from this signal
     void disconnect(SlotID slotIt) {
@@ -81,7 +81,7 @@ class Signal0: public SignalHolder {
 public:
     typedef Slot0<ReturnType> SlotType;
 
-    virtual ~Signal0() { }
+    ~Signal0() { }
 
     void emit() {
         for ( Iterator it = begin(); it != end(); ++it ) {
@@ -101,7 +101,7 @@ class Signal1: public SignalHolder {
 public:
     typedef Slot1<ReturnType, Arg1> SlotType;
 
-    virtual ~Signal1() { }
+    ~Signal1() { }
 
     void emit(Arg1 arg) {
         for ( Iterator it = begin(); it != end(); ++it ) {
@@ -121,7 +121,7 @@ class Signal2: public SignalHolder {
 public:
     typedef Slot2<ReturnType, Arg1, Arg2> SlotType;
 
-    virtual ~Signal2() { }
+    ~Signal2() { }
 
     void emit(Arg1 arg1, Arg2 arg2) {
         for ( Iterator it = begin(); it != end(); ++it ) {
@@ -140,7 +140,7 @@ class Signal3: public SignalHolder {
 public:
     typedef Slot3<ReturnType, Arg1, Arg2, Arg3> SlotType;
 
-    virtual ~Signal3() { }
+    ~Signal3() { }
 
     void emit(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
         for ( Iterator it = begin(); it != end(); ++it ) {
@@ -191,15 +191,12 @@ public:
 class SignalTracker {
 public:
     /// Internal type, do not use.
-    typedef std::map<SigImpl::SignalHolder*, SigImpl::SignalHolder::SlotID> Connections;
+    typedef std::list< std::pair<SigImpl::SignalHolder*,
+                                 SigImpl::SignalHolder::SlotID> > Connections;
     typedef Connections::iterator TrackID; ///< \c ID type for join/leave.
 
-    virtual ~SignalTracker() {
-        // disconnect all connections
-        for ( Connections::iterator conIt = m_connections.begin();
-              conIt != m_connections.end(); ++conIt)
-            conIt->first->disconnect( conIt->second );
-        m_connections.clear();
+    ~SignalTracker() {
+        leaveAll();
     }
 
     /// Starts tracking a signal.
@@ -220,10 +217,22 @@ public:
     /// Leave tracking for a signal
     /// @param sig the signal to leave
     template <typename Signal>
-    void leave(Signal &sig) {
+    void leave(const Signal &sig) {
         m_connections.erase(&sig);
     }
 
+
+    void leaveAll() {
+        // disconnect all connections
+        for ( Connections::iterator conIt = m_connections.begin();
+              conIt != m_connections.end(); ) {
+            // keep temporary, while disconnecting we can
+            // in some strange cases get a call to this again
+            Connections::value_type tmp = *conIt;
+            conIt = m_connections.erase(conIt);
+            tmp.first->disconnect(tmp.second);
+        }
+    }
 private:
     /// holds all connections to different signals and slots.
     Connections m_connections;
