@@ -28,6 +28,7 @@
 #include "Window.hh"
 
 #include "FbTk/StringUtil.hh"
+#include "FbTk/MemFun.hh"
 
 #include <vector>
 
@@ -95,8 +96,10 @@ void FocusableList::init() {
     m_parent->attachChild(*this);
 
     // TODO: can't handle (head=[mouse]) yet
-    if (m_pat->dependsOnCurrentWorkspace())
-        m_screen.currentWorkspaceSig().attach(this);
+    if (m_pat->dependsOnCurrentWorkspace()) {
+        join(m_screen.currentWorkspaceSig(),
+             FbTk::MemFun(*this, &FocusableList::workspaceChanged));
+    }
     if (m_pat->dependsOnFocusedWindow())
         m_screen.focusedWindowSig().attach(this);
 }
@@ -147,8 +150,7 @@ void FocusableList::update(FbTk::Subject *subj) {
             if (insertFromParent(*win))
                 m_ordersig.notify(win);
         }
-    } else if (subj == &m_screen.currentWorkspaceSig() ||
-               subj == &m_screen.focusedWindowSig())
+    } else if (subj == &m_screen.focusedWindowSig())
         reset();
 }
 
@@ -308,4 +310,8 @@ void FocusableList::attachChild(FocusableList &child) const {
     m_removesig.attach(&child);
     m_resetsig.attach(&child);
     m_ordersig.attach(&child);
+}
+
+void FocusableList::workspaceChanged(BScreen &screen) {
+    reset();
 }

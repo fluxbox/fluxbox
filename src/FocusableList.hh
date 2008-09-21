@@ -25,6 +25,7 @@
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/Subject.hh"
+#include "FbTk/Signal.hh"
 
 #include "ClientPattern.hh"
 
@@ -35,7 +36,8 @@
 class BScreen;
 class Focusable;
 
-class FocusableList: public FbTk::Observer, private FbTk::NotCopyable {
+class FocusableList: public FbTk::Observer, private FbTk::NotCopyable,
+                     private FbTk::SignalTracker {
 public:
     typedef std::list<Focusable *> Focusables;
 
@@ -110,6 +112,7 @@ private:
     void detachSignals(Focusable &win);
     void reset();
     void attachChild(FocusableList &child) const;
+    void workspaceChanged(BScreen& screen);
 
     std::auto_ptr<ClientPattern> m_pat;
     const FocusableList *m_parent;

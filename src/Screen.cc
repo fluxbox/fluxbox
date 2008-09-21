@@ -343,7 +343,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_iconlist_sig(*this), // icon list signal
     m_workspacenames_sig(*this), // workspace names signal
     m_workspace_area_sig(*this), // workspace area signal
-    m_currentworkspace_sig(*this), // current workspace signal
     m_focusedwindow_sig(*this), // focused window signal
     m_reconfigure_sig(*this), // reconfigure signal
     m_resize_sig(*this),
@@ -1199,7 +1198,7 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
 
     FbTk::App::instance()->sync(false);
 
-    m_currentworkspace_sig.notify();
+    m_currentworkspace_sig.emit(*this);
 
     // do this after atom handlers, so scripts can access new workspace number
     Fluxbox::instance()->keys()->doAction(FocusIn, 0, 0, Keys::ON_DESKTOP);

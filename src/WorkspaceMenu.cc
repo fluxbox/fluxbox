@@ -83,24 +83,26 @@ void WorkspaceMenu::workspaceInfoChanged( BScreen& screen ) {
     updateMenu(-1);
 }
 
+void WorkspaceMenu::workspaceChanged(BScreen& screen) {
+    FbTk::MenuItem *item = 0;
+    for (unsigned int i = 0; i < screen.numberOfWorkspaces(); ++i) {
+        item = find(i + IDX_AFTER_ICONS);
+        if (item && item->isSelected()) {
+            setItemSelected(i + IDX_AFTER_ICONS, false);
+            updateMenu(i + IDX_AFTER_ICONS);
+            break;
+        }
+    }
+    setItemSelected(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS, true);
+    updateMenu(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS);
+}
+
 void WorkspaceMenu::update(FbTk::Subject *subj) {
 
     if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject &screen_subj = *static_cast<BScreen::ScreenSubject *>(subj);
         BScreen &screen = screen_subj.screen();
-        if (subj == &screen.currentWorkspaceSig()) {
-            FbTk::MenuItem *item = 0;
-            for (unsigned int i = 0; i < screen.numberOfWorkspaces(); ++i) {
-                item = find(i + IDX_AFTER_ICONS);
-                if (item && item->isSelected()) {
-                    setItemSelected(i + IDX_AFTER_ICONS, false);
-                    updateMenu(i + IDX_AFTER_ICONS);
-                    break;
-                }
-            }
-            setItemSelected(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS, true);
-            updateMenu(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS);
-        } else if ( subj == &screen.workspaceNamesSig() ) {
+        if ( subj == &screen.workspaceNamesSig() ) {
             workspaceInfoChanged( screen );
         }
     } else {
@@ -109,12 +111,13 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
 }
 
 void WorkspaceMenu::init(BScreen &screen) {
-    screen.currentWorkspaceSig().attach(this);
 
     screen.workspaceNamesSig().attach(this);
 
-    join( screen.workspaceCountSig(),
-          FbTk::MemFun( *this, &WorkspaceMenu::workspaceInfoChanged ) );
+    join(screen.currentWorkspaceSig(),
+         FbTk::MemFun(*this, &WorkspaceMenu::workspaceChanged));
+    join(screen.workspaceCountSig(),
+         FbTk::MemFun(*this, &WorkspaceMenu::workspaceInfoChanged));
 
     using namespace FbTk;
     _FB_USES_NLS;

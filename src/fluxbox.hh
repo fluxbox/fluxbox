@@ -203,6 +203,8 @@ private:
 
     /// Called when workspace count on a specific screen changed.
     void workspaceCountChanged( BScreen& screen );
+    /// Called when workspace was switched
+    void workspaceChanged(BScreen& screen);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 

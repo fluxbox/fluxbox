@@ -45,7 +45,9 @@ private:
     void init(BScreen &screen);
     /// Called when workspace info was changed 
     /// ( number of workspace, workspace names etc )
-    void workspaceInfoChanged( BScreen& screen );
+    void workspaceInfoChanged(BScreen& screen);
+    /// Called when workspace was switched.
+    void workspaceChanged(BScreen& screen);
 };
 
 #endif //  WORKSPACEMENU_HH

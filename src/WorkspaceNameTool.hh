@@ -27,6 +27,7 @@
 
 #include "FbTk/TextButton.hh"
 #include "FbTk/Observer.hh"
+#include "FbTk/Signal.hh"
 
 class BScreen;
 class ToolTheme;
@@ -35,7 +36,8 @@ namespace FbTk {
 template <class T> class ThemeProxy;
 }
 
-class WorkspaceNameTool: public ToolbarItem, public FbTk::Observer {
+class WorkspaceNameTool: public ToolbarItem, public FbTk::Observer,
+                         private FbTk::SignalTracker {
 public:
     WorkspaceNameTool(const FbTk::FbWindow &parent, FbTk::ThemeProxy<ToolTheme> &theme, BScreen &screen);
     virtual ~WorkspaceNameTool();
@@ -59,6 +61,9 @@ public:
     void parentMoved() { m_button.parentMoved(); }
 
 private:
+    /// Called when workspace changed on \c screen
+    void updateForScreen(BScreen &screen);
+
     void renderTheme(unsigned char alpha);
     void reRender();
     void updateSizing();

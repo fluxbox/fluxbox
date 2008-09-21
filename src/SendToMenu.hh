@@ -46,7 +46,7 @@ public:
     void show();
 private:
     /// workspace count changed on screen
-    void workspaceCountChange( BScreen& screen ) {
+    void rebuildMenuForScreen( BScreen& screen ) {
         rebuildMenu();
     }
 
