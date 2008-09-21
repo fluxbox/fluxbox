@@ -429,6 +429,9 @@ Fluxbox::~Fluxbox() {
 
     // destroy screens (after others, as they may do screen things)
     while (!m_screen_list.empty()) {
+        // this needs to be done before the signal is destroyed
+        leave( m_screen_list.back()->workspaceCountSig() );
+
         delete m_screen_list.back();
         m_screen_list.pop_back();
     }
