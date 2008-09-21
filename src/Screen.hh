@@ -211,7 +211,7 @@ public:
     //@{
     typedef FbTk::Signal<void, BScreen&> ScreenSignal;
     /// client list signal
-    FbTk::Subject &clientListSig() { return m_clientlist_sig; }
+    ScreenSignal &clientListSig() { return m_clientlist_sig; }
     /// icon list sig
     FbTk::Subject &iconListSig() { return m_iconlist_sig; }
     /// workspace count signal
@@ -493,13 +493,13 @@ private:
     const Strut* availableWorkspaceArea(int head) const;
 
     ScreenSubject
-    m_clientlist_sig,  ///< client signal
         m_iconlist_sig, ///< notify if a window gets iconified/deiconified
         m_workspace_area_sig, ///< workspace area changed signal
         m_focusedwindow_sig, ///< focused window signal
         m_reconfigure_sig, ///< reconfigure signal
         m_resize_sig; ///< resize signal
 
+    ScreenSignal m_clientlist_sig;  ///< client signal
     ScreenSignal m_bg_change_sig; ///< background change signal
     ScreenSignal m_workspacecount_sig; ///< workspace count signal
     ScreenSignal m_currentworkspace_sig; ///< current workspace signal

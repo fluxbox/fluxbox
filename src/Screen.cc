@@ -339,7 +339,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname,
                  const string &altscreenname,
                  int scrn, int num_layers) :
-    m_clientlist_sig(*this),  // client signal
     m_iconlist_sig(*this), // icon list signal
     m_workspace_area_sig(*this), // workspace area signal
     m_focusedwindow_sig(*this), // focused window signal
@@ -1130,7 +1129,7 @@ int BScreen::removeLastWorkspace() {
         if ((*it)->workspaceNumber() == wkspc->workspaceID())
             (*it)->setWorkspace(wkspc->workspaceID()-1);
     }
-    m_clientlist_sig.notify();
+    m_clientlist_sig.emit(*this);
 
     //remove last workspace
     m_workspaces_list.pop_back();
@@ -1373,7 +1372,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     else if (other) // should never happen
         win->moveClientRightOf(*other, *winclient);
 
-    m_clientlist_sig.notify();
+    m_clientlist_sig.emit(*this);
 
     FbTk::App::instance()->sync(false);
     return win;
@@ -1407,7 +1406,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
             && win->focus())
         FocusControl::setFocusedWindow(&client);
 
-    m_clientlist_sig.notify();
+    m_clientlist_sig.emit(*this);
 
     return win;
 }

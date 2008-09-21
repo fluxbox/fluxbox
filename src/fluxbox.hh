@@ -207,6 +207,8 @@ private:
     void workspaceChanged(BScreen& screen);
     /// Called when workspace names changed
     void workspaceNamesChanged(BScreen &screen);
+    /// Called when the client list changed.
+    void clientListChanged(BScreen &screen);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 

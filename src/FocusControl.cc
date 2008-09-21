@@ -415,7 +415,7 @@ void FocusControl::removeClient(WinClient &client) {
 
     m_focused_list.remove(client);
     m_creation_order_list.remove(client);
-    client.screen().clientListSig().notify();
+    client.screen().clientListSig().emit(client.screen());
 }
 
 void FocusControl::removeWindow(Focusable &win) {
@@ -430,7 +430,7 @@ void FocusControl::removeWindow(Focusable &win) {
 
     m_focused_win_list.remove(win);
     m_creation_order_win_list.remove(win);
-    win.screen().clientListSig().notify();
+    win.screen().clientListSig().emit(win.screen());
 }
 
 void FocusControl::shutdown() {
