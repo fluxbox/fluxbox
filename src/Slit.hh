@@ -38,6 +38,7 @@
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/XLayerItem.hh"
+#include "FbTk/Signal.hh"
 
 #include <X11/Xutil.h>
 
@@ -51,7 +52,9 @@ class Strut;
 class Layer;
 
 /// Handles dock apps
-class Slit: public FbTk::EventHandler, public FbTk::Observer, public LayerObject {
+class Slit: public FbTk::EventHandler, public FbTk::Observer,
+            public LayerObject, private FbTk::SignalTracker
+{
 public:
     typedef std::list<SlitClient *> SlitClients;
     /**
@@ -129,6 +132,9 @@ public:
     const SlitClients &clients() const { return m_client_list; }
     SlitClients &clients() { return m_client_list; }
 private:
+    /// Called when screen has changed
+    void updateForScreen(BScreen &screen);
+
     void updateAlpha();
     void clearWindow();
     void setupMenu();

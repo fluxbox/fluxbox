@@ -209,24 +209,25 @@ public:
        @name Screen signals
     */
     //@{
+    typedef FbTk::Signal<void, BScreen&> ScreenSignal;
     /// client list signal
     FbTk::Subject &clientListSig() { return m_clientlist_sig; }
     /// icon list sig
     FbTk::Subject &iconListSig() { return m_iconlist_sig; }
     /// workspace count signal
-    FbTk::Signal<void, BScreen&> &workspaceCountSig() { return m_workspacecount_sig; }
+    ScreenSignal &workspaceCountSig() { return m_workspacecount_sig; }
     /// workspace names signal
-    FbTk::Signal<void, BScreen&> &workspaceNamesSig() { return m_workspacenames_sig; }
+    ScreenSignal &workspaceNamesSig() { return m_workspacenames_sig; }
     /// workspace area signal
     FbTk::Subject &workspaceAreaSig() { return m_workspace_area_sig; }
     /// current workspace signal
-    FbTk::Signal<void, BScreen&> &currentWorkspaceSig() { return m_currentworkspace_sig; }
+    ScreenSignal &currentWorkspaceSig() { return m_currentworkspace_sig; }
     /// focused window signal
     FbTk::Subject &focusedWindowSig() { return m_focusedwindow_sig; }
     /// reconfigure signal
     FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
     FbTk::Subject &resizeSig() { return m_resize_sig; }
-    FbTk::Subject &bgChangeSig() { return m_bg_change_sig; }
+    ScreenSignal &bgChangeSig() { return m_bg_change_sig; }
     //@}
 
     /// called when the screen receives a signal from a subject
@@ -494,16 +495,15 @@ private:
     ScreenSubject
     m_clientlist_sig,  ///< client signal
         m_iconlist_sig, ///< notify if a window gets iconified/deiconified
-
         m_workspace_area_sig, ///< workspace area changed signal
         m_focusedwindow_sig, ///< focused window signal
         m_reconfigure_sig, ///< reconfigure signal
-        m_resize_sig, ///< resize signal
-        m_bg_change_sig; ///< background change signal
+        m_resize_sig; ///< resize signal
 
-    FbTk::Signal<void, BScreen&> m_workspacecount_sig; ///< workspace count signal
-    FbTk::Signal<void, BScreen&> m_currentworkspace_sig; ///< current workspace signal
-    FbTk::Signal<void, BScreen&> m_workspacenames_sig; ///< workspace names signal
+    ScreenSignal m_bg_change_sig; ///< background change signal
+    ScreenSignal m_workspacecount_sig; ///< workspace count signal
+    ScreenSignal m_currentworkspace_sig; ///< current workspace signal
+    ScreenSignal m_workspacenames_sig; ///< workspace names signal
 
     FbTk::MultLayers m_layermanager;
 

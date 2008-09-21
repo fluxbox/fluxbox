@@ -41,6 +41,8 @@
 #include "FbTk/Theme.hh"
 #include "FbTk/Transparent.hh"
 #include "FbTk/MacroCommand.hh"
+#include "FbTk/MemFun.hh"
+
 #include "FbCommands.hh"
 #include "Layer.hh"
 #include "LayerMenu.hh"
@@ -264,7 +266,10 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     // attach to theme and root window change signal
     theme().reconfigSig().attach(this);
     scr.resizeSig().attach(this);
-    scr.bgChangeSig().attach(this);
+
+    join(scr.bgChangeSig(),
+         FbTk::MemFun(*this, &Slit::updateForScreen));
+
     scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
 
     scr.addConfigMenu(_FB_XTEXT(Slit, Slit, "Slit", "The Slit"), m_slitmenu);
@@ -1046,6 +1051,10 @@ void Slit::exposeEvent(XExposeEvent &ev) {
     // we don't need to clear the entire window
     // just the are that gets exposed
     frame.window.clearArea(ev.x, ev.y, ev.width, ev.height);
+}
+
+void Slit::updateForScreen(BScreen &screen) {
+    reconfigure();
 }
 
 void Slit::update(FbTk::Subject *subj) {

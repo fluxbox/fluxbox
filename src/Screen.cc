@@ -345,7 +345,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_focusedwindow_sig(*this), // focused window signal
     m_reconfigure_sig(*this), // reconfigure signal
     m_resize_sig(*this),
-    m_bg_change_sig(*this),
     m_layermanager(num_layers),
     m_focused_windowtheme(new FbWinFrameTheme(scrn, ".focus", ".Focus")),
     m_unfocused_windowtheme(new FbWinFrameTheme(scrn, ".unfocus", ".Unfocus")),
@@ -855,7 +854,7 @@ void BScreen::propertyNotify(Atom atom) {
         }
     // TODO: this doesn't belong in FbPixmap
     } else if (FbTk::FbPixmap::rootwinPropertyNotify(screenNumber(), atom))
-        m_bg_change_sig.notify();
+        m_bg_change_sig.emit(*this);
 }
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {

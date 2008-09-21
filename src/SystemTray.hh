@@ -25,6 +25,7 @@
 
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
+#include "FbTk/Signal.hh"
 
 #include "ToolTheme.hh"
 #include "ToolbarItem.hh"
@@ -42,7 +43,8 @@ template <class T> class ThemeProxy;
 class Observer;
 }
 
-class SystemTray: public ToolbarItem, public FbTk::EventHandler {
+class SystemTray: public ToolbarItem, public FbTk::EventHandler,
+                  private FbTk::SignalTracker {
 public:
 
     explicit SystemTray(const FbTk::FbWindow &parent,
@@ -85,7 +87,10 @@ public:
     static Atom getXEmbedInfoAtom();
 
 private:
-
+    /// Called when an update for a screen is needed.
+    void updateForScreen(BScreen &screen) {
+        update();
+    }
     void update();
 
     typedef std::list<TrayWindow *> ClientList;

@@ -24,6 +24,7 @@
 #include "FbTk/EventManager.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/TextUtils.hh"
+#include "FbTk/MemFun.hh"
 
 #include "AtomHandler.hh"
 #include "fluxbox.hh"
@@ -170,7 +171,10 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     // setup signals
     m_observer.reset(makeObserver(*this, &SystemTray::update));
     m_theme->reconfigSig().attach(m_observer.get());
-    screen.bgChangeSig().attach(m_observer.get());
+
+    join(screen.bgChangeSig(),
+         FbTk::MemFun(*this, &SystemTray::updateForScreen));
+
 
     Fluxbox* fluxbox = Fluxbox::instance();
     Display *disp = fluxbox->display();
