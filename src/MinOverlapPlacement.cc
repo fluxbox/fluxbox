@@ -60,8 +60,10 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
     s_row_dir = screen_placement.rowDirection();
     s_col_dir = screen_placement.colDirection();
 
-    int win_w = win.width() + win.fbWindow().borderWidth()*2 + win.widthOffset();
-    int win_h = win.height() + win.fbWindow().borderWidth()*2 + win.heightOffset();
+    int win_w = win.normalWidth() + win.fbWindow().borderWidth()*2 +
+                win.widthOffset();
+    int win_h = win.normalHeight() + win.fbWindow().borderWidth()*2 +
+                win.heightOffset();
 
     // we keep a set of open spaces on the desktop, sorted by size/location
     std::set<Region> region_set;
