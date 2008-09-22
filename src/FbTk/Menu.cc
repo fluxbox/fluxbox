@@ -219,6 +219,8 @@ int Menu::insert(MenuItem *item, int pos) {
     } else {
         menuitems.insert(menuitems.begin() + pos, item);
         fixMenuItemIndices();
+        if (m_active_index >= pos)
+            m_active_index++;
     }
     m_need_update = true; // we need to redraw the menu
     return menuitems.size();
@@ -233,7 +235,7 @@ int Menu::remove(unsigned int index) {
     if (index >= menuitems.size()) {
 #ifdef DEBUG
         cout << "Bad index (" << index << ") given to Menu::remove()"
-                  << " -- should be between 0 and " << menuitems.size()
+                  << " -- should be between 0 and " << menuitems.size()-1
                   << " inclusive." << endl;
 #endif // DEBUG
         return -1;
@@ -270,6 +272,9 @@ int Menu::remove(unsigned int index) {
         m_which_sub = -1;
     else if (static_cast<unsigned int>(m_which_sub) > index)
         m_which_sub--;
+
+    if (static_cast<unsigned int>(m_active_index) > index)
+        m_active_index--;
 
     m_need_update = true; // we need to redraw the menu
 
@@ -366,7 +371,7 @@ void Menu::enableTitle() {
     setTitleVisibility(true);
 }
 
-void Menu::updateMenu(int active_index) {
+void Menu::updateMenu() {
     if (m_title_vis) {
         menu.item_w = theme()->titleFont().textWidth(menu.label,
                                                     menu.label.size());

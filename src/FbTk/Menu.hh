@@ -109,7 +109,7 @@ public:
     void setLabel(const FbString &labelstr);
     /// move menu to x,y
     virtual void move(int x, int y);
-    virtual void updateMenu(int active_index = -1);
+    virtual void updateMenu();
     void setItemSelected(unsigned int index, bool val);
     void setItemEnabled(unsigned int index, bool val);
     void setMinimumSublevels(int m) { menu.minsub = m; }

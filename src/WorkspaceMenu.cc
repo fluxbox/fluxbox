@@ -80,7 +80,7 @@ void WorkspaceMenu::workspaceInfoChanged( BScreen& screen ) {
         insert(mb_menu, workspace + IDX_AFTER_ICONS);
     }
 
-    updateMenu(-1);
+    updateMenu();
 }
 
 void WorkspaceMenu::workspaceChanged(BScreen& screen) {
@@ -89,12 +89,12 @@ void WorkspaceMenu::workspaceChanged(BScreen& screen) {
         item = find(i + IDX_AFTER_ICONS);
         if (item && item->isSelected()) {
             setItemSelected(i + IDX_AFTER_ICONS, false);
-            updateMenu(i + IDX_AFTER_ICONS);
+            updateMenu();
             break;
         }
     }
     setItemSelected(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS, true);
-    updateMenu(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS);
+    updateMenu();
 }
 
 void WorkspaceMenu::init(BScreen &screen) {
