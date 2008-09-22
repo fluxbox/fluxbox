@@ -1030,10 +1030,10 @@ void BScreen::addIcon(FluxboxWindow *w) {
     if (find(iconList().begin(), iconList().end(), w) != iconList().end())
         return;
 
-    m_icon_list.push_back(w);
+    iconList().push_back(w);
 
     // notify listeners
-    m_iconlist_sig.emit(*this);
+    iconListSig().emit(*this);
 }
 
 
@@ -1048,7 +1048,7 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     // change the iconlist
     if (erase_it != m_icon_list.end()) {
         iconList().erase(erase_it);
-        m_iconlist_sig.emit(*this);
+        iconListSig().emit(*this);
     }
 }
 
