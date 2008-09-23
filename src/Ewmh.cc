@@ -76,16 +76,30 @@ namespace {
  * byte being B. The first two cardinals are width, height. Data is in rows,
  * left to right and top to bottom. 
  *
+ ***
+ *
+ * NOTE: the returned data for XA_CARDINAL is long if the rfmt equals
+ * 32. sizeof(long) on 64bit machines is 8. to quote from
+ * "man XGetWindowProperty":
+ *
+ *    If the returned format is 32, the property data will be stored as 
+ *    an array of longs (which in a 64-bit application will be 64-bit 
+ *    values that are padded in the upper 4 bytes).
+ *
+ * this is especially true on 64bit machines when some of the clients
+ * (eg: tvtime, konqueror3) have problems to feed in the right data
+ * into the _NET_WM_ICON property. we faced some segfaults because
+ * width and height were not quite right because of ignoring 64bit
+ * behaviour on client side.
+ *
  * TODO: maybe move the pixmap-creation code to FbTk? */
 void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
     typedef std::pair<int, int> Size;
     typedef std::map<Size, const unsigned long*> IconContainer;
 
-    // attention: the returned data for XA_CARDINAL is long if the rfmt equals
-    // 32. sizeof(long) on 64bit machines is 8.
     unsigned long* raw_data = 0;
-    long nr_icon_data = 0;
+    unsigned long nr_icon_data = 0;
 
     {
         Atom rtype;
@@ -106,7 +120,10 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
         // actually there is some data in _NET_WM_ICON
         nr_icon_data = nr_bytes_left / sizeof(CARD32);
-
+#ifdef DEBUG
+        std::cerr << "extractNetWmIcon: " << winclient.title() << "\n";
+        std::cerr << "nr_icon_data: " << nr_icon_data << "\n";
+#endif
         // read all the icons stored in _NET_WM_ICON
         if (raw_data)
             XFree(raw_data);
@@ -118,28 +135,55 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
             return;
         }
+#ifdef DEBUG
+        std::cerr << "nr_read: " << nr_read << "|" << nr_bytes_left << "\n";
+#endif
     }
 
     IconContainer icon_data; // stores all available data, sorted by size (width x height)
-    int width;
-    int height;
+    unsigned long width;
+    unsigned long height;
 
     // analyze the available icons
-    long i;
-
+    //
+    // check also for invalid values coming in from "bad" applications
+    unsigned long i;
     for (i = 0; i + 2 < nr_icon_data; i += width * height ) {
 
         width = raw_data[i++];
+        if (width >= nr_icon_data) {
+#ifdef DEBUG
+            std::cerr << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON width (" 
+                << width << ") for " << winclient.title() << "\n";
+#endif
+            break;
+        }
+
         height = raw_data[i++];
+        if (height >= nr_icon_data) {
+#ifdef DEBUG
+            std::cerr << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON height (" 
+                << height << ") for " << winclient.title() << "\n";
+#endif
+            break;
+        }
 
         // strange values stored in the NETWM_ICON
-        if (width <= 0 || height <= 0 || i + width * height > nr_icon_data) {
-            std::cerr << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON dimensions for " << winclient.title() << "\n";
-            XFree(raw_data);
-            return;
+        if (i + width * height > nr_icon_data) {
+#ifdef DEBUG
+            std::cerr << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON dimensions (" 
+                << width << "x" << height << ")for " << winclient.title() << "\n";
+#endif
+            break;
         }
 
         icon_data[Size(width, height)] = &raw_data[i];
+    }
+
+    // no valid icons found at all
+    if (icon_data.empty()) {
+        XFree(raw_data);
+        return;
     }
 
     Display* dpy = FbTk::App::instance()->display();
@@ -178,8 +222,8 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     const unsigned long* src = icon_data.begin()->second;
     unsigned int rgba;
     unsigned long pixel;
-    int x;
-    int y;
+    unsigned long x;
+    unsigned long y;
     unsigned char r, g, b, a;
 
     for (y = 0; y < height; y++) {
