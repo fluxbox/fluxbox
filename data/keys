@@ -7,19 +7,25 @@ OnDesktop Mouse3 :RootMenu
 OnDesktop Mouse4 :PrevWorkspace
 OnDesktop Mouse5 :NextWorkspace
 
-# scroll on the toolbar to change workspaces
-OnToolbar Mouse4 :PrevWorkspace
-OnToolbar Mouse5 :NextWorkspace
+# scroll on the toolbar to change current window
+OnToolbar Mouse4 :PrevWindow {static groups} (iconhidden=no)
+OnToolbar Mouse5 :NextWindow {static groups} (iconhidden=no)
 
 # alt + left/right click to move/resize a window
 OnWindow Mod1 Mouse1 :MacroCmd {Raise} {Focus} {StartMoving}
 OnWindow Mod1 Mouse3 :MacroCmd {Raise} {Focus} {StartResizing NearestCorner}
 
-# middle click a window's titlebar and drag to attach windows
-OnTitlebar Mouse2 :StartTabbing
+# alt + middle click to lower the window
+OnWindow Mod1 Mouse2 :Lower
+
+# control-click a window's titlebar and drag to attach windows
+OnTitlebar Control Mouse1 :StartTabbing
 
 # double click on the titlebar to shade
 OnTitlebar Double Mouse1 :Shade
+
+# middle click on the titlebar to lower
+OnTitlebar Mouse2 :Lower
 
 # right click on the titlebar for a menu of options
 OnTitlebar Mouse3 :WindowMenu
@@ -57,6 +63,7 @@ Mod1 F2 :Exec fbrun
 
 # current window commands
 Mod1 F4 :Close
+Mod1 F5 :Kill
 Mod1 F9 :Minimize
 Mod1 F10 :Maximize
 Mod1 F11 :Fullscreen
@@ -66,6 +73,18 @@ Mod1 space :WindowMenu
 
 # exit fluxbox
 Control Mod1 Delete :Exit
+
+# change to previous/next workspace
+Control Mod1 Left :PrevWorkspace
+Control Mod1 Right :NextWorkspace
+
+# send the current window to previous/next workspace
+Mod4 Left :SendToPrevWorkspace
+Mod4 Right :SendToNextWorkspace
+
+# send the current window and follow it to previous/next workspace
+Control Mod4 Left :TakeToPrevWorkspace
+Control Mod4 Right :TakeToNextWorkspace
 
 # change to a specific workspace
 Control F1 :Workspace 1
