@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*08/09/25:
+   * Fixed issues with round corners on restart, #2110455 (Mark)
+     FbTk/Shape.cc
 *08/09/21:
    * Changed icon list signal in BScreen to use the new signal system
      (Henrik)

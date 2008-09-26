@@ -1557,7 +1557,8 @@ void BScreen::removeConfigMenu(FbTk::Menu &menu) {
     if (erase_it != m_configmenu_list.end())
         m_configmenu_list.erase(erase_it);
 
-    setupConfigmenu(*m_configmenu.get());
+    if (!isShuttingdown())
+        setupConfigmenu(*m_configmenu.get());
 
 }
 
