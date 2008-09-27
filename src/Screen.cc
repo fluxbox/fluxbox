@@ -292,7 +292,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     max_disable_move(rm, false, scrname+".maxDisableMove", altscrname+".MaxDisableMove"),
     max_disable_resize(rm, false, scrname+".maxDisableResize", altscrname+".MaxDisableResize"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
-    show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
+    show_window_pos(rm, false, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
     default_deco(rm, "NORMAL", scrname+".defaultDeco", altscrname+".DefaultDeco"),
@@ -1629,12 +1629,12 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         cerr<<e.what()<<endl;
     }
 
-    focus_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu,
-                                                AutoRaise,
-                                                "Auto Raise",
-                                                "Auto Raise windows on sloppy"),
-                                        resource.auto_raise,
-                                        save_and_reconfigure));
+    _BOOLITEM(*focus_menu, Configmenu, AutoRaise,
+              "Auto Raise", "Auto Raise windows on sloppy",
+              resource.auto_raise, saverc_cmd);
+    _BOOLITEM(*focus_menu, Configmenu, ClickRaises,
+              "Click Raises", "Click Raises",
+              resource.click_raises, saverc_cmd);
 
     focus_menu->updateMenu();
 
@@ -1801,9 +1801,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
               resource.workspace_warping, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, ClickRaises,
-              "Click Raises", "Click Raises",
-              resource.click_raises, saverc_cmd);
 
 #undef _BOOLITEM
 
