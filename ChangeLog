@@ -4,6 +4,9 @@ Changes for 1.1.2
    * Change focused window signal to use the new signal system (Henrik)
      FbTk/Signal.hh, FocusControl.cc, FocusableList.hh/cc, Screen.hh/cc
      Window.hh/cc, fluxbox.hh/cc
+*08/09/25:
+   * Fixed issues with round corners on restart, #2110455 (Mark)
+     FbTk/Shape.cc
 *08/09/21:
    * Changed icon list signal in BScreen to use the new signal system
      (Henrik)
@@ -22,6 +25,9 @@ Changes for 1.1.2
      system (Henrik)
      FocusableList.hh/cc, Screen.hh/cc, SendToMenu.hh/cc,
      WorkspaceMenu.hh/cc, WorkspaceNameTool.hh/cc, fluxbox.hh/cc
+*08/09/23:
+   * Fix crashes when analyzing bad constructed _NET_WM_ICON data (Mathias)
+     (Ewmh.cc)
 *08/09/18:
    * Changed workspace count signal in BScreen to use the new signal
      system. (Henrik)

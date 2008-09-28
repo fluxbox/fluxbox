@@ -292,7 +292,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     max_disable_move(rm, false, scrname+".maxDisableMove", altscrname+".MaxDisableMove"),
     max_disable_resize(rm, false, scrname+".maxDisableResize", altscrname+".MaxDisableResize"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
-    show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
+    show_window_pos(rm, false, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
     default_deco(rm, "NORMAL", scrname+".defaultDeco", altscrname+".DefaultDeco"),
@@ -855,19 +855,26 @@ void BScreen::propertyNotify(Atom atom) {
 }
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
-    Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
-                                          Keys::GLOBAL|Keys::ON_DESKTOP);
+    if (Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
+                                              Keys::GLOBAL|Keys::ON_DESKTOP))
+        // re-grab keyboard, so we don't pass KeyRelease to clients
+        FbTk::EventManager::instance()->grabKeyboard(rootWindow().window());
+
 }
 
 void BScreen::keyReleaseEvent(XKeyEvent &ke) {
-    if (!m_cycling)
-        return;
+    if (m_cycling) {
+        unsigned int state = FbTk::KeyUtil::instance().cleanMods(ke.state);
+        state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
 
-    unsigned int state = FbTk::KeyUtil::instance().cleanMods(ke.state);
-    state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
+        if (state) // still cycling
+            return;
 
-    if (!state) // all modifiers were released
-        FbTk::EventManager::instance()->ungrabKeyboard();
+        m_cycling = false;
+        focusControl().stopCyclingFocus();
+    }
+
+    FbTk::EventManager::instance()->ungrabKeyboard();
 }
 
 void BScreen::buttonPressEvent(XButtonEvent &be) {
@@ -877,11 +884,6 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
     Keys *keys = Fluxbox::instance()->keys();
     keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP,
                    0, be.time);
-}
-
-void BScreen::notifyUngrabKeyboard() {
-    m_cycling = false;
-    focusControl().stopCyclingFocus();
 }
 
 void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
@@ -895,7 +897,7 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
 
     if (!m_cycling && mods) {
         m_cycling = true;
-        FbTk::EventManager::instance()->grabKeyboard(*this, rootWindow().window());
+        FbTk::EventManager::instance()->grabKeyboard(rootWindow().window());
     }
 
     if (mods == 0) // can't stacked cycle unless there is a mod to grab
@@ -1029,10 +1031,10 @@ void BScreen::addIcon(FluxboxWindow *w) {
     if (find(iconList().begin(), iconList().end(), w) != iconList().end())
         return;
 
-    m_icon_list.push_back(w);
+    iconList().push_back(w);
 
     // notify listeners
-    m_iconlist_sig.emit(*this);
+    iconListSig().emit(*this);
 }
 
 
@@ -1047,7 +1049,7 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     // change the iconlist
     if (erase_it != m_icon_list.end()) {
         iconList().erase(erase_it);
-        m_iconlist_sig.emit(*this);
+        iconListSig().emit(*this);
     }
 }
 
@@ -1556,7 +1558,8 @@ void BScreen::removeConfigMenu(FbTk::Menu &menu) {
     if (erase_it != m_configmenu_list.end())
         m_configmenu_list.erase(erase_it);
 
-    setupConfigmenu(*m_configmenu.get());
+    if (!isShuttingdown())
+        setupConfigmenu(*m_configmenu.get());
 
 }
 
@@ -1627,12 +1630,12 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         cerr<<e.what()<<endl;
     }
 
-    focus_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu,
-                                                AutoRaise,
-                                                "Auto Raise",
-                                                "Auto Raise windows on sloppy"),
-                                        resource.auto_raise,
-                                        save_and_reconfigure));
+    _BOOLITEM(*focus_menu, Configmenu, AutoRaise,
+              "Auto Raise", "Auto Raise windows on sloppy",
+              resource.auto_raise, saverc_cmd);
+    _BOOLITEM(*focus_menu, Configmenu, ClickRaises,
+              "Click Raises", "Click Raises",
+              resource.click_raises, saverc_cmd);
 
     focus_menu->updateMenu();
 
@@ -1799,9 +1802,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
               resource.workspace_warping, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, ClickRaises,
-              "Click Raises", "Click Raises",
-              resource.click_raises, saverc_cmd);
 
 #undef _BOOLITEM
 

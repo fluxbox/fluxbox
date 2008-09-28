@@ -65,25 +65,14 @@ EventHandler *EventManager::find(Window win) {
     return m_eventhandlers[win];
 }
 
-bool EventManager::grabKeyboard(EventHandler &ev, Window win) {
-    if (m_grabbing_keyboard)
-        ungrabKeyboard();
-
+bool EventManager::grabKeyboard(Window win) {
     int ret = XGrabKeyboard(App::instance()->display(), win, False,
                             GrabModeAsync, GrabModeAsync, CurrentTime);
-
-    if (ret == Success) {
-        m_grabbing_keyboard = &ev;
-        return true;
-    }
-    return false;
+    return (ret == Success);
 }
 
 void EventManager::ungrabKeyboard() {
     XUngrabKeyboard(App::instance()->display(), CurrentTime);
-    if (m_grabbing_keyboard)
-        m_grabbing_keyboard->notifyUngrabKeyboard();
-    m_grabbing_keyboard = 0;
 }
 
 Window EventManager::getEventWindow(XEvent &ev) {
@@ -190,10 +179,14 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
         evhand->exposeEvent(ev.xexpose);
     break;
     case EnterNotify:
-        evhand->enterNotifyEvent(ev.xcrossing);
+        if (ev.xcrossing.mode != NotifyGrab &&
+            ev.xcrossing.mode != NotifyUngrab)
+            evhand->enterNotifyEvent(ev.xcrossing);
     break;
     case LeaveNotify:
-        evhand->leaveNotifyEvent(ev.xcrossing);
+        if (ev.xcrossing.mode != NotifyGrab &&
+            ev.xcrossing.mode != NotifyUngrab)
+            evhand->leaveNotifyEvent(ev.xcrossing);
     break;
     default:
         evhand->handleEvent(ev);

@@ -56,9 +56,9 @@ Pixmap makePixmap(FbWindow &drawable, const unsigned char rows[]) {
     Display *disp = App::instance()->display();
 
     const size_t data_size = 8 * 8;
-    // we use calloc here so we get consistent C alloc/free with XDestroyImage
+    // we use malloc here so we get consistent C alloc/free with XDestroyImage
     // and no warnings in valgrind :)
-    char *data = (char *)calloc(data_size, sizeof (char));
+    char *data = (char *)malloc(data_size * sizeof (char));
     if (data == 0)
         return 0;
 
@@ -141,6 +141,9 @@ Shape::~Shape() {
 }
 
 void Shape::initCorners(int screen_num) {
+    if (!m_win->window())
+        return;
+
     if (s_corners.size() == 0)
         s_corners.resize(ScreenCount(App::instance()->display()));
 

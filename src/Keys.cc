@@ -510,12 +510,6 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
     // grab "None Escape" to exit keychain in the middle
     unsigned int esc = FbTk::KeyUtil::getKey("Escape");
 
-    // if focus changes, windows will get NotifyWhileGrabbed,
-    // which they tend to ignore
-    if (temp_key && type == KeyPress &&
-        !FbTk::EventManager::instance()->grabbingKeyboard())
-        XUngrabKeyboard(Fluxbox::instance()->display(), CurrentTime);
-
     if (temp_key && !temp_key->keylist.empty()) { // emacs-style
         if (!saved_keymode)
             saved_keymode = m_keylist;
@@ -535,6 +529,11 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         }
         return false;
     }
+
+    // if focus changes, windows will get NotifyWhileGrabbed,
+    // which they tend to ignore
+    if (type == KeyPress)
+        XUngrabKeyboard(Fluxbox::instance()->display(), CurrentTime);
 
     WinClient *old = WindowCmd<void>::client();
     WindowCmd<void>::setClient(current);

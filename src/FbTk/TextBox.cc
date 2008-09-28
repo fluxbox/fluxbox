@@ -230,31 +230,6 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
         if ((event.state & ControlMask) == ControlMask) {
 
             switch (ks) {
-            case XK_b:
-                cursorBackward();
-                break;
-            case XK_f:
-                cursorForward();
-                break;
-            case XK_a:
-                cursorHome();
-                break;
-            case XK_e:
-                cursorEnd();
-                break;
-            case XK_d:
-                deleteForward();
-                break;
-            case XK_k:
-                killToEnd();
-                break;
-            case XK_c:
-                cursorHome();
-                m_text = "";
-                m_start_pos = 0;
-                m_cursor_pos = 0;
-                m_end_pos = 0;
-                break;
             case XK_Left: {
                 unsigned int pos = findEmptySpaceLeft();
                 if (pos < m_start_pos){
@@ -311,13 +286,6 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 }
                 break;
             }
-        } else if ((event.state & ShiftMask)== ShiftMask || 
-                   (event.state & 0x80) == 0x80) { // shif and altgr
-            if (isprint(keychar[0])) {
-                std::string val;
-                val += keychar[0];
-                insertText(val);
-            }
         }
 
     } else { // no state
@@ -341,48 +309,45 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
         case XK_Delete:
             deleteForward();
             break;
-        default:
-            switch (ks) {
-            case XK_KP_Insert:
-                keychar[0] = '0';
-                break;
-            case XK_KP_End:
-                keychar[0] = '1';
-                break;
-            case XK_KP_Down:
-                keychar[0] = '2';
-                break;
-            case XK_KP_Page_Down:
-                keychar[0] = '3';
-                break;
-            case XK_KP_Left:
-                keychar[0] = '4';
-                break;
-            case XK_KP_Begin:
-                keychar[0] = '5';
-                break;
-            case XK_KP_Right:
-                keychar[0] = '6';
-                break;
-            case XK_KP_Home:
-                keychar[0] = '7';
-                break;
-            case XK_KP_Up:
-                keychar[0] = '8';
-                break;
-            case XK_KP_Page_Up:
-                keychar[0] = '9';
-                break;
-            case XK_KP_Delete:
-                keychar[0] = ',';
-                break;
-            };
-            if (isprint(keychar[0])) {
-                std::string val;
-                val += keychar[0];
-                insertText(val);
-            }
+        case XK_KP_Insert:
+            keychar[0] = '0';
+            break;
+        case XK_KP_End:
+            keychar[0] = '1';
+            break;
+        case XK_KP_Down:
+            keychar[0] = '2';
+            break;
+        case XK_KP_Page_Down:
+            keychar[0] = '3';
+            break;
+        case XK_KP_Left:
+            keychar[0] = '4';
+            break;
+        case XK_KP_Begin:
+            keychar[0] = '5';
+            break;
+        case XK_KP_Right:
+            keychar[0] = '6';
+            break;
+        case XK_KP_Home:
+            keychar[0] = '7';
+            break;
+        case XK_KP_Up:
+            keychar[0] = '8';
+            break;
+        case XK_KP_Page_Up:
+            keychar[0] = '9';
+            break;
+        case XK_KP_Delete:
+            keychar[0] = ',';
+            break;
         }
+    }
+    if (isprint(keychar[0])) {
+        std::string val;
+        val += keychar[0];
+        insertText(val);
     }
     clear();
 }

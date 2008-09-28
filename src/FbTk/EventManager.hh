@@ -42,9 +42,8 @@ public:
     void add(EventHandler &ev, Window win) { registerEventHandler(ev, win); }
     void remove(Window win) { unregisterEventHandler(win); }
 
-    bool grabKeyboard(EventHandler &ev, Window win);
+    bool grabKeyboard(Window win);
     void ungrabKeyboard();
-    EventHandler *grabbingKeyboard() { return m_grabbing_keyboard; }
 
     EventHandler *find(Window win);
 

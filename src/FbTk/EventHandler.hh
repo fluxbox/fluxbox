@@ -56,7 +56,6 @@ public:
     virtual void leaveNotifyEvent(XCrossingEvent &) { }
     virtual void enterNotifyEvent(XCrossingEvent &) { }
 
-    virtual void notifyUngrabKeyboard() { }
     virtual void grabButtons() { }
 };
 
