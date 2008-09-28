@@ -91,7 +91,7 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
                               const ClientPattern *pat, bool cycle_reverse) {
 
     if (!m_cycling_list) {
-        if (&m_screen == FbTk::EventManager::instance()->grabbingKeyboard())
+        if (m_screen.isCycling())
             // only set this when we're waiting for modifiers
             m_cycling_list = &window_list;
         m_was_iconic = 0;

@@ -856,19 +856,26 @@ void BScreen::propertyNotify(Atom atom) {
 }
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
-    Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
-                                          Keys::GLOBAL|Keys::ON_DESKTOP);
+    if (Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
+                                              Keys::GLOBAL|Keys::ON_DESKTOP))
+        // re-grab keyboard, so we don't pass KeyRelease to clients
+        FbTk::EventManager::instance()->grabKeyboard(rootWindow().window());
+
 }
 
 void BScreen::keyReleaseEvent(XKeyEvent &ke) {
-    if (!m_cycling)
-        return;
+    if (m_cycling) {
+        unsigned int state = FbTk::KeyUtil::instance().cleanMods(ke.state);
+        state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
 
-    unsigned int state = FbTk::KeyUtil::instance().cleanMods(ke.state);
-    state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
+        if (state) // still cycling
+            return;
 
-    if (!state) // all modifiers were released
-        FbTk::EventManager::instance()->ungrabKeyboard();
+        m_cycling = false;
+        focusControl().stopCyclingFocus();
+    }
+
+    FbTk::EventManager::instance()->ungrabKeyboard();
 }
 
 void BScreen::buttonPressEvent(XButtonEvent &be) {
@@ -878,11 +885,6 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
     Keys *keys = Fluxbox::instance()->keys();
     keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP,
                    0, be.time);
-}
-
-void BScreen::notifyUngrabKeyboard() {
-    m_cycling = false;
-    focusControl().stopCyclingFocus();
 }
 
 void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
@@ -896,7 +898,7 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
 
     if (!m_cycling && mods) {
         m_cycling = true;
-        FbTk::EventManager::instance()->grabKeyboard(*this, rootWindow().window());
+        FbTk::EventManager::instance()->grabKeyboard(rootWindow().window());
     }
 
     if (mods == 0) // can't stacked cycle unless there is a mod to grab

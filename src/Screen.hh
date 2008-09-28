@@ -237,7 +237,6 @@ public:
     void keyPressEvent(XKeyEvent &ke);
     void keyReleaseEvent(XKeyEvent &ke);
     void buttonPressEvent(XButtonEvent &be);
-    void notifyUngrabKeyboard();
 
     /**
      * Cycles focus of windows
@@ -246,6 +245,8 @@ public:
      * @param reverse the order of cycling
      */
     void cycleFocus(int opts = 0, const ClientPattern *pat = 0, bool reverse = false);
+
+    bool isCycling() const { return m_cycling; }
 
     /**
      * Creates an empty menu with specified label
