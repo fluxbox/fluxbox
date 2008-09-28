@@ -214,6 +214,9 @@ private:
                               FluxboxWindow* win,
                               WinClient* client);
 
+    /// Called when the workspace area changed.
+    void workspaceAreaChanged(BScreen &screen);
+
     std::auto_ptr<FbAtoms> m_fbatoms;
 
     FbTk::ResourceManager m_resourcemanager, &m_screen_rm;

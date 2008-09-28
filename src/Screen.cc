@@ -339,7 +339,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname,
                  const string &altscreenname,
                  int scrn, int num_layers) :
-    m_workspace_area_sig(*this), // workspace area signal
     m_reconfigure_sig(*this), // reconfigure signal
     m_resize_sig(*this),
     m_layermanager(num_layers),
@@ -1453,7 +1452,7 @@ void BScreen::updateAvailableWorkspaceArea() {
     }
 
     if (updated)
-        m_workspace_area_sig.notify();
+        m_workspace_area_sig.emit(*this);
 }
 
 void BScreen::addWorkspaceName(const char *name) {
@@ -1933,7 +1932,7 @@ void BScreen::updateSize() {
 
     // send resize notify
     m_resize_sig.notify();
-    m_workspace_area_sig.notify();
+    m_workspace_area_sig.emit(*this);
 
     // move windows out of inactive heads
     clearHeads();

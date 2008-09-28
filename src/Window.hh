@@ -526,6 +526,9 @@ private:
     void associateClient(WinClient &client);
     /// Called when focused changed, and is attached when it is not in fullscreen mode
     void focusedWindowChanged(BScreen &screen, FluxboxWindow *focused_win, WinClient* client);
+    /// Called when workspace area on screen changed.
+    void workspaceAreaChanged(BScreen &screen);
+
 
     // state and hint signals
     WinSubject m_hintsig,

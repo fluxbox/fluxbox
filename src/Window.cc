@@ -1488,9 +1488,10 @@ void FluxboxWindow::attachWorkAreaSig() {
     // notify when struts change, so we can resize accordingly
     // Subject checks for duplicates for us
     if (m_state.maximized || m_state.fullscreen)
-        screen().workspaceAreaSig().attach(this);
+        join(screen().workspaceAreaSig(),
+             FbTk::MemFun(*this, &FluxboxWindow::workspaceAreaChanged));
     else
-        screen().workspaceAreaSig().detach(this);
+        leave(screen().workspaceAreaSig());
 }
 
 /**
@@ -2729,12 +2730,14 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
     } else if (subj == &m_theme.reconfigSig()) {
         frame().applyDecorations();
         sendConfigureNotify();
-    } else if (subj == &screen().workspaceAreaSig()) {
-        frame().applyState();
     } else if (m_initialized && subj == &m_frame.frameExtentSig()) {
         Fluxbox::instance()->updateFrameExtents(*this);
         sendConfigureNotify();
     }
+}
+
+void FluxboxWindow::workspaceAreaChanged(BScreen &screen) {
+    frame().applyState();
 }
 
 // commit current decoration values to actual displayed things

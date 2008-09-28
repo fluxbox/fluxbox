@@ -219,7 +219,7 @@ public:
     /// workspace names signal
     ScreenSignal &workspaceNamesSig() { return m_workspacenames_sig; }
     /// workspace area signal
-    FbTk::Subject &workspaceAreaSig() { return m_workspace_area_sig; }
+    ScreenSignal &workspaceAreaSig() { return m_workspace_area_sig; }
     /// current workspace signal
     ScreenSignal &currentWorkspaceSig() { return m_currentworkspace_sig; }
     /// focused window signal
@@ -494,11 +494,11 @@ private:
     const Strut* availableWorkspaceArea(int head) const;
 
     ScreenSubject
-        m_workspace_area_sig, ///< workspace area changed signal
         m_reconfigure_sig, ///< reconfigure signal
         m_resize_sig; ///< resize signal
 
     FbTk::Signal<void, BScreen&, FluxboxWindow*, WinClient*> m_focusedwindow_sig;  ///< focused window signal
+    ScreenSignal m_workspace_area_sig; ///< workspace area changed signal
     ScreenSignal m_iconlist_sig; ///< notify if a window gets iconified/deiconified
     ScreenSignal m_clientlist_sig;  ///< client signal
     ScreenSignal m_bg_change_sig; ///< background change signal
