@@ -49,6 +49,7 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/Select2nd.hh"
+#include "FbTk/MemFun.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -1450,8 +1451,10 @@ void FluxboxWindow::setFullscreen(bool flag) {
         frame().applyState();
 
         setFullscreenLayer(); // calls stateSig().notify()
-        if (!isFocused())
-            screen().focusedWindowSig().attach(this);
+        if (!isFocused()) {
+            join(screen().focusedWindowSig(),
+                 FbTk::MemFun(*this, &FluxboxWindow::focusedWindowChanged));
+        }
 
     } else if (!flag && isFullscreen()) {
 
@@ -1769,12 +1772,14 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
     // if we're fullscreen and another window gains focus on the same head,
     // then we need to let the user see it
-    if (m_state.fullscreen && !focus)
-        screen().focusedWindowSig().attach(this);
+    if (m_state.fullscreen && !focus) {
+        join(screen().focusedWindowSig(),
+             FbTk::MemFun(*this, &FluxboxWindow::focusedWindowChanged));
+    }
 
     if (m_state.fullscreen && focus) {
         moveToLayer(::Layer::ABOVE_DOCK);
-        screen().focusedWindowSig().detach(this);
+        leave(screen().focusedWindowSig());
     }
 
     if (focus != frame().focused())
@@ -2721,9 +2726,6 @@ void FluxboxWindow::update(FbTk::Subject *subj) {
             titleSig().notify();
         }
 
-    } else if (subj == &screen().focusedWindowSig()) {
-        if (FocusControl::focusedFbWindow())
-            setFullscreenLayer();
     } else if (subj == &m_theme.reconfigSig()) {
         frame().applyDecorations();
         sendConfigureNotify();
@@ -3866,4 +3868,11 @@ void FluxboxWindow::setWindowType(WindowState::WindowType type) {
      * NOT YET IMPLEMENTED:
      *   _NET_WM_WINDOW_TYPE_UTILITY
      */
+}
+
+void FluxboxWindow::focusedWindowChanged(BScreen &screen, 
+                                         FluxboxWindow *focused_win, WinClient* client) {
+    if (focused_win) {
+        setFullscreenLayer();
+    }
 }

@@ -560,9 +560,9 @@ void FocusControl::setFocusedWindow(WinClient *client) {
 
     // update AtomHandlers and/or other stuff...
     if (screen)
-        screen->focusedWindowSig().notify();
+        screen->focusedWindowSig().emit(*screen, s_focused_fbwindow, s_focused_window);
     if (old_screen && screen != old_screen)
-        old_screen->focusedWindowSig().notify();
+        old_screen->focusedWindowSig().emit(*old_screen, s_focused_fbwindow, s_focused_window);
 }
 
 ////////////////////// FocusControl RESOURCES

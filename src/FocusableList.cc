@@ -100,8 +100,10 @@ void FocusableList::init() {
         join(m_screen.currentWorkspaceSig(),
              FbTk::MemFun(*this, &FocusableList::workspaceChanged));
     }
-    if (m_pat->dependsOnFocusedWindow())
-        m_screen.focusedWindowSig().attach(this);
+    if (m_pat->dependsOnFocusedWindow()) {
+        join(m_screen.focusedWindowSig(),
+             FbTk::MemFun(*this, &FocusableList::focusedWindowChanged));
+    }
 }
 
 void FocusableList::update(FbTk::Subject *subj) {
@@ -150,8 +152,7 @@ void FocusableList::update(FbTk::Subject *subj) {
             if (insertFromParent(*win))
                 m_ordersig.notify(win);
         }
-    } else if (subj == &m_screen.focusedWindowSig())
-        reset();
+    }
 }
 
 void FocusableList::checkUpdate(Focusable &win) {
@@ -313,5 +314,11 @@ void FocusableList::attachChild(FocusableList &child) const {
 }
 
 void FocusableList::workspaceChanged(BScreen &screen) {
+    reset();
+}
+
+void FocusableList::focusedWindowChanged(BScreen &screen,
+                                         FluxboxWindow *focused_win,
+                                         WinClient *client) {
     reset();
 }

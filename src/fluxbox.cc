@@ -453,8 +453,10 @@ void Fluxbox::initScreen(BScreen *screen) {
     screen->initWindows();
 
     // attach screen signals to this
-    screen->focusedWindowSig().attach(this);
     screen->workspaceAreaSig().attach(this);
+
+    join(screen->focusedWindowSig(),
+         FbTk::MemFun(*this, &Fluxbox::focusedWindowChanged));
 
     join(screen->clientListSig(),
          FbTk::MemFun(*this, &Fluxbox::clientListChanged));
@@ -1105,15 +1107,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (typeid(*changedsub) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject *subj = dynamic_cast<BScreen::ScreenSubject *>(changedsub);
         BScreen &screen = subj->screen();
-        if ((&(screen.focusedWindowSig())) == changedsub) {
-            for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                 it != m_atomhandler.end(); it++) {
-                (*it).first->updateFocusedWindow(screen,
-                        (FocusControl::focusedWindow() ?
-                         FocusControl::focusedWindow()->window() :
-                         0));
-            }
-        } else if ((&(screen.workspaceAreaSig())) == changedsub) {
+        if ((&(screen.workspaceAreaSig())) == changedsub) {
             for (AtomHandlerContainerIt it= m_atomhandler.begin();
                  it != m_atomhandler.end(); ++it) {
                 if ((*it).first->update())
@@ -1535,5 +1529,14 @@ void Fluxbox::clientListChanged(BScreen &screen) {
          it != m_atomhandler.end(); ++it) {
         if ((*it).first->update())
             (*it).first->updateClientList(screen);
+    }
+}
+
+void Fluxbox::focusedWindowChanged(BScreen &screen, 
+                                   FluxboxWindow* win, 
+                                   WinClient* client) {
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
+         it != m_atomhandler.end(); it++) {
+        (*it).first->updateFocusedWindow(screen, client ? client->window() : 0 );
     }
 }

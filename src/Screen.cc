@@ -340,7 +340,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &altscreenname,
                  int scrn, int num_layers) :
     m_workspace_area_sig(*this), // workspace area signal
-    m_focusedwindow_sig(*this), // focused window signal
     m_reconfigure_sig(*this), // reconfigure signal
     m_resize_sig(*this),
     m_layermanager(num_layers),

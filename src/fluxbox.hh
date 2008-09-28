@@ -209,6 +209,10 @@ private:
     void workspaceNamesChanged(BScreen &screen);
     /// Called when the client list changed.
     void clientListChanged(BScreen &screen);
+    /// Called when the focused window changed on a screen
+    void focusedWindowChanged(BScreen &screen,
+                              FluxboxWindow* win,
+                              WinClient* client);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 

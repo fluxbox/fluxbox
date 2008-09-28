@@ -31,11 +31,13 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/XLayerItem.hh"
+#include "FbTk/Signal.hh"
 
 #include "FbWinFrame.hh"
 #include "Focusable.hh"
 #include "FocusableTheme.hh"
 #include "WinButton.hh"
+
 
 #include <sys/time.h>
 #include <vector>
@@ -58,7 +60,8 @@ class XLayer;
 
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow: public Focusable, public FbTk::Observer,
-        public FbTk::EventHandler {
+                     public FbTk::EventHandler,
+                     private FbTk::SignalTracker {
 public:
     /// Motif wm Hints
     enum {
@@ -521,6 +524,8 @@ private:
     static void ungrabPointer(Time time);
 
     void associateClient(WinClient &client);
+    /// Called when focused changed, and is attached when it is not in fullscreen mode
+    void focusedWindowChanged(BScreen &screen, FluxboxWindow *focused_win, WinClient* client);
 
     // state and hint signals
     WinSubject m_hintsig,

@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*08/09/28:
+   * Change focused window signal to use the new signal system (Henrik)
+     FbTk/Signal.hh, FocusControl.cc, FocusableList.hh/cc, Screen.hh/cc
+     Window.hh/cc, fluxbox.hh/cc
 *08/09/21:
    * Changed icon list signal in BScreen to use the new signal system
      (Henrik)

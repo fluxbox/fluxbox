@@ -35,6 +35,8 @@
 
 class BScreen;
 class Focusable;
+class WinClient;
+class FluxboxWindow;
 
 class FocusableList: public FbTk::Observer, private FbTk::NotCopyable,
                      private FbTk::SignalTracker {
@@ -112,8 +114,8 @@ private:
     void detachSignals(Focusable &win);
     void reset();
     void attachChild(FocusableList &child) const;
-    void workspaceChanged(BScreen& screen);
-
+    void workspaceChanged(BScreen &screen);
+    void focusedWindowChanged(BScreen &screen, FluxboxWindow *win, WinClient *client);
     std::auto_ptr<ClientPattern> m_pat;
     const FocusableList *m_parent;
     BScreen &m_screen;

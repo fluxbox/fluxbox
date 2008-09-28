@@ -223,7 +223,7 @@ public:
     /// current workspace signal
     ScreenSignal &currentWorkspaceSig() { return m_currentworkspace_sig; }
     /// focused window signal
-    FbTk::Subject &focusedWindowSig() { return m_focusedwindow_sig; }
+    FbTk::Signal<void, BScreen&, FluxboxWindow*, WinClient*> &focusedWindowSig() { return m_focusedwindow_sig; }
     /// reconfigure signal
     FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
     FbTk::Subject &resizeSig() { return m_resize_sig; }
@@ -494,10 +494,10 @@ private:
 
     ScreenSubject
         m_workspace_area_sig, ///< workspace area changed signal
-        m_focusedwindow_sig, ///< focused window signal
         m_reconfigure_sig, ///< reconfigure signal
         m_resize_sig; ///< resize signal
 
+    FbTk::Signal<void, BScreen&, FluxboxWindow*, WinClient*> m_focusedwindow_sig;  ///< focused window signal
     ScreenSignal m_iconlist_sig; ///< notify if a window gets iconified/deiconified
     ScreenSignal m_clientlist_sig;  ///< client signal
     ScreenSignal m_bg_change_sig; ///< background change signal

@@ -191,8 +191,8 @@ public:
 class SignalTracker {
 public:
     /// Internal type, do not use.
-    typedef std::list< std::pair<SigImpl::SignalHolder*,
-                                 SigImpl::SignalHolder::SlotID> > Connections;
+    typedef std::map<SigImpl::SignalHolder*,
+                     SigImpl::SignalHolder::SlotID> Connections;
     typedef Connections::iterator TrackID; ///< \c ID type for join/leave.
 
     ~SignalTracker() {
@@ -203,9 +203,13 @@ public:
     /// @return A tracking ID ( not unique )
     template <typename Signal, typename Functor>
     TrackID join(Signal& sig, const Functor& functor) {
-        return 
-            m_connections.insert(m_connections.end(), 
-                                 Connections::value_type(&sig, sig.connect(functor)));
+        ValueType value = std::make_pair(&sig, sig.connect(functor));
+        std::pair<TrackID, bool> ret = m_connections.insert(value);
+        if ( !ret.second ) {
+            // failed to insert this functor
+            sig.disconnect(value.second);
+        }
+        return ret.first;
     }
 
     /// Leave tracking for a signal
@@ -217,23 +221,29 @@ public:
     /// Leave tracking for a signal
     /// @param sig the signal to leave
     template <typename Signal>
-    void leave(const Signal &sig) {
-        m_connections.erase(&sig);
+    void leave(Signal &sig) {
+        Iterator it = m_connections.find(&sig);
+        if (it != m_connections.end()) {
+            it->first->disconnect( it->second );
+            m_connections.erase(it);
+        }
     }
 
 
     void leaveAll() {
         // disconnect all connections
-        for ( Connections::iterator conIt = m_connections.begin();
-              conIt != m_connections.end(); ) {
+        for ( Iterator conIt = m_connections.begin();
+              conIt != m_connections.end(); ++conIt) {
             // keep temporary, while disconnecting we can
             // in some strange cases get a call to this again
-            Connections::value_type tmp = *conIt;
-            conIt = m_connections.erase(conIt);
+            ValueType tmp = *conIt;
+            m_connections.erase(conIt);
             tmp.first->disconnect(tmp.second);
         }
     }
 private:
+    typedef Connections::value_type ValueType;
+    typedef Connections::iterator Iterator;
     /// holds all connections to different signals and slots.
     Connections m_connections;
 };
