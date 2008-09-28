@@ -133,6 +133,7 @@ public:
     SlitClients &clients() { return m_client_list; }
 private:
     /// Called when screen has changed
+    void screenSizeChanged(BScreen &screen);
     void updateForScreen(BScreen &screen);
 
     void updateAlpha();

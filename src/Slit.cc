@@ -265,7 +265,9 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     // attach to theme and root window change signal
     theme().reconfigSig().attach(this);
-    scr.resizeSig().attach(this);
+
+    join(scr.resizeSig(),
+         FbTk::MemFun(*this, &Slit::screenSizeChanged));
 
     join(scr.bgChangeSig(),
          FbTk::MemFun(*this, &Slit::updateForScreen));
@@ -1053,16 +1055,20 @@ void Slit::exposeEvent(XExposeEvent &ev) {
     frame.window.clearArea(ev.x, ev.y, ev.width, ev.height);
 }
 
+void Slit::screenSizeChanged(BScreen &screen) {
+    reconfigure();
+#ifdef XINERAMA
+    if (m_xineramaheadmenu)
+        m_xineramaheadmenu->reloadHeads();
+#endif // XINERAMA
+}
+
 void Slit::updateForScreen(BScreen &screen) {
     reconfigure();
 }
 
-void Slit::update(FbTk::Subject *subj) {
-    reconfigure();
-#ifdef XINERAMA
-    if (subj == &m_screen.resizeSig() && m_xineramaheadmenu)
-        m_xineramaheadmenu->reloadHeads();
-#endif // XINERAMA
+void Slit::update(FbTk::Subject*) {
+    updateForScreen(screen());
 }
 
 void Slit::clearWindow() {

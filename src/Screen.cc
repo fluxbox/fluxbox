@@ -340,7 +340,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &altscreenname,
                  int scrn, int num_layers) :
     m_reconfigure_sig(*this), // reconfigure signal
-    m_resize_sig(*this),
     m_layermanager(num_layers),
     m_focused_windowtheme(new FbWinFrameTheme(scrn, ".focus", ".Focus")),
     m_unfocused_windowtheme(new FbWinFrameTheme(scrn, ".unfocus", ".Unfocus")),
@@ -1931,7 +1930,7 @@ void BScreen::updateSize() {
     m_root_theme->reconfigTheme();
 
     // send resize notify
-    m_resize_sig.notify();
+    m_resize_sig.emit(*this);
     m_workspace_area_sig.emit(*this);
 
     // move windows out of inactive heads

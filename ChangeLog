@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *08/09/28:
+   * Changed resize signal, in screen, to use the new signal system
+     (Henrik)
+     Toolbar.hh/cc, Slit.hh/cc, Screen.hh/cc
    * Changed workspace area signal to use the new signal system (Henrik)
      Window.hh/cc, Screen.hh/cc, fluxbox.hh/cc
    * Changed focused window signal to use the new signal system (Henrik)

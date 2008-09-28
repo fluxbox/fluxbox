@@ -51,6 +51,7 @@
 #include "FbTk/IntMenuItem.hh"
 #include "FbTk/Shape.hh"
 #include "FbTk/SimpleObserver.hh"
+#include "FbTk/MemFun.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -253,8 +254,10 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_observers.push_back(makeObserver(*this, &Toolbar::reconfigure));
     m_theme.reconfigSig().attach(m_observers.back());
     screen().reconfigureSig().attach(m_observers.back()); // get this on antialias change
+
     // listen to screen size changes
-    screen().resizeSig().attach(m_observers.back());
+    m_signal_tracker.join(screen().resizeSig(),
+                          FbTk::MemFun(*this, &Toolbar::screenChanged));
 
 
     moveToLayer((*m_rc_layernum).getNum());
@@ -378,6 +381,10 @@ void Toolbar::raise() {
 
 void Toolbar::lower() {
     m_layeritem.lower();
+}
+
+void Toolbar::screenChanged(BScreen &screen) {
+    reconfigure();
 }
 
 void Toolbar::reconfigure() {

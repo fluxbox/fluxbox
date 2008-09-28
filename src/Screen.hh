@@ -226,7 +226,7 @@ public:
     FbTk::Signal<void, BScreen&, FluxboxWindow*, WinClient*> &focusedWindowSig() { return m_focusedwindow_sig; }
     /// reconfigure signal
     FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
-    FbTk::Subject &resizeSig() { return m_resize_sig; }
+    ScreenSignal &resizeSig() { return m_resize_sig; }
     ScreenSignal &bgChangeSig() { return m_bg_change_sig; }
     //@}
 
@@ -493,11 +493,11 @@ private:
 
     const Strut* availableWorkspaceArea(int head) const;
 
-    ScreenSubject
-        m_reconfigure_sig, ///< reconfigure signal
-        m_resize_sig; ///< resize signal
+    ScreenSubject m_reconfigure_sig; ///< reconfigure signal
+
 
     FbTk::Signal<void, BScreen&, FluxboxWindow*, WinClient*> m_focusedwindow_sig;  ///< focused window signal
+    ScreenSignal m_resize_sig; ///< resize signal
     ScreenSignal m_workspace_area_sig; ///< workspace area changed signal
     ScreenSignal m_iconlist_sig; ///< notify if a window gets iconified/deiconified
     ScreenSignal m_clientlist_sig;  ///< client signal

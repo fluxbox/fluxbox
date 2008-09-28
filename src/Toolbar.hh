@@ -41,6 +41,7 @@
 #include "FbTk/XLayerItem.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/FbWindow.hh"
+#include "FbTk/Signal.hh"
 
 #include <memory>
 
@@ -139,6 +140,9 @@ private:
     void updateStrut();
     void updateAlpha();
 
+    /// Called when the screen changed property.
+    void screenChanged(BScreen &screen);
+
     bool m_hidden;       ///< hidden state
 
     /// Toolbar frame
@@ -193,6 +197,7 @@ private:
     bool m_resize_lock; ///< to lock rearrangeItems or not
     /// observers for various signals
     std::vector<FbTk::Observer*> m_observers;
+    FbTk::SignalTracker m_signal_tracker;
 };
 
 
