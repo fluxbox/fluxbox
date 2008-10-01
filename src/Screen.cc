@@ -1927,7 +1927,7 @@ void BScreen::updateSize() {
     rootWindow().updateGeometry();
 
     // reset background
-    m_root_theme->reconfigTheme();
+    m_root_theme->reset();
 
     // send resize notify
     m_resize_sig.emit(*this);

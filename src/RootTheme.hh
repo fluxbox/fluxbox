@@ -44,6 +44,7 @@ public:
 
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
+    void reset() { m_first = true; reconfigTheme(); }
 
     GC opGC() const { return m_opgc.gc(); }
 

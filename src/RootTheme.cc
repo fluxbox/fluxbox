@@ -181,7 +181,7 @@ void RootTheme::reconfigTheme() {
     if (!m_background->loaded())
         return;
 
-    if (!m_background->changed())
+    if (!m_first && !m_background->changed())
         return;
 
     //
