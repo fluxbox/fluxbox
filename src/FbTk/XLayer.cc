@@ -37,7 +37,7 @@ using std::endl;
 #endif // DEBUG
 
 XLayer::XLayer(MultLayers &manager, int layernum):
-    m_manager(manager), m_layernum(layernum) {
+    m_manager(manager), m_layernum(layernum), m_needs_restack(false) {
 }
 
 XLayer::~XLayer() {
@@ -70,6 +70,7 @@ void XLayer::restack() {
 
     delete [] winlist;
 
+    m_needs_restack = false;
 }
 
 int XLayer::countWindows() {
@@ -177,8 +178,11 @@ void XLayer::remove(XLayerItem &item) {
 void XLayer::raise(XLayerItem &item) {
     // assume it is already in this layer
 
-    if (&item == itemList().front())
+    if (&item == itemList().front()) {
+        if (m_needs_restack)
+            restack();
         return; // nothing to do
+    }
 
     iterator it = find(itemList().begin(), itemList().end(), &item);
     if (it != itemList().end())
@@ -198,7 +202,7 @@ void XLayer::raise(XLayerItem &item) {
 void XLayer::tempRaise(XLayerItem &item) {
     // assume it is already in this layer
 
-    if (&item == itemList().front())
+    if (!m_needs_restack && &item == itemList().front())
         return; // nothing to do
 
     iterator it = find(itemList().begin(), itemList().end(), &item);
@@ -212,14 +216,18 @@ void XLayer::tempRaise(XLayerItem &item) {
     // don't add it back to the top
     stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
 
+    m_needs_restack = true;
 }
 
 void XLayer::lower(XLayerItem &item) {
     // assume already in this layer
 
     // is it already the lowest?
-    if (&item == itemList().back())
+    if (&item == itemList().back()) {
+        if (m_needs_restack)
+            restack();
         return; // nothing to do
+    }
 
     iterator it = find(itemList().begin(), itemList().end(), &item);
     if (it != itemList().end())

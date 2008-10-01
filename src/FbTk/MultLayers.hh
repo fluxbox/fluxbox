@@ -52,7 +52,6 @@ public:
 
     void moveToLayer(XLayerItem &item, int layernum);
     int  size();
-    void restack();
 
     XLayer *getLayer(size_t num);
     const XLayer *getLayer(size_t num) const;
@@ -62,10 +61,10 @@ public:
     void unlock() { if (--m_lock == 0) restack(); }
 
 private:
+    void restack();
+
     std::vector<XLayer *> m_layers;
-
     int m_lock;
-
 };
 
 };

@@ -146,8 +146,6 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
 
     // if we were already cycling, then restore the old state
     if (m_cycling_last) {
-        m_screen.layerManager().restack();
-
         // set back to originally selected window in that group
         m_cycling_last->fbwindow()->setCurrentClient(*m_cycling_last, false);
 

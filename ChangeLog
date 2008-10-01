@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *08/10/01:
+   * Don't flash original window while cycling (Mark)
+     FocusControl.cc FbTk/XLayer.cc/hh
    * Reset background when screen changes resolution (Mark)
      Screen.cc RootTheme.cc/hh
    * Restore missing config files on reconfigure (Mark)

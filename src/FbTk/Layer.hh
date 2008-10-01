@@ -43,7 +43,6 @@ public:
     virtual void raise(ItemType &item);
     /// move item to bottom
     virtual void lower(ItemType &item);
-    virtual void restack();
     /// @return layer item on specific position, on failure 0
     ItemType *getItem(unsigned int position);
     /// @return number of elements in layer
@@ -52,6 +51,8 @@ public:
     const ListType &itemList() const { return m_list; }
     /// @return layer list
     ListType &itemList() { return m_list; }
+protected:
+    virtual void restack();
 private:
     ListType m_list;
 };

@@ -44,7 +44,6 @@ public:
 
     void setLayerNum(int layernum) { m_layernum = layernum; };
     int  getLayerNum() { return m_layernum; };
-    void restack();
     // Put all items on the same layer (called when layer item added to)
     void alignItem(XLayerItem &item);
     int countWindows();
@@ -73,9 +72,11 @@ public:
     void moveToLayer(XLayerItem &item, int layernum);
 
 private:
+    void restack();
+
     MultLayers &m_manager;
     int m_layernum;
-
+    bool m_needs_restack;
 };
 
 } // namespace FbTk
