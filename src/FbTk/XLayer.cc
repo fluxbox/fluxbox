@@ -73,6 +73,40 @@ void XLayer::restack() {
     m_needs_restack = false;
 }
 
+void XLayer::restackAndTempRaise(XLayerItem &item) {
+    int num_windows = countWindows();
+
+    // each LayerItem can contain several windows
+    iterator it = itemList().begin();
+    iterator it_end = itemList().end();
+    Window *winlist = new Window[num_windows];
+    size_t j=0;
+
+    // add windows that go on top
+    XLayerItem::Windows::const_iterator wit = item.getWindows().begin();
+    XLayerItem::Windows::const_iterator wit_end = item.getWindows().end();
+    for (; wit != wit_end; ++wit) {
+        if ((*wit)->window())
+            winlist[j++] = (*wit)->window();
+    }
+
+    // add all the windows from each other item
+    for (; it != it_end; ++it) {
+        if (*it == &item)
+            continue;
+        wit = (*it)->getWindows().begin();
+        wit_end = (*it)->getWindows().end();
+        for (; wit != wit_end; ++wit) {
+            if ((*wit)->window())
+                winlist[j++] = (*wit)->window();
+        }
+    }
+
+    XRestackWindows(FbTk::App::instance()->display(), winlist, j);
+
+    delete [] winlist;
+}
+
 int XLayer::countWindows() {
     int num_windows = 0;
     iterator it = itemList().begin();
@@ -85,7 +119,7 @@ int XLayer::countWindows() {
 
 
 // Stack all windows associated with 'item' below the 'above' item
-void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
+void XLayer::stackBelowItem(XLayerItem &item, XLayerItem *above) {
     if (!m_manager.isUpdatable())
         return;
 
@@ -93,13 +127,13 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     // then we must restack the entire layer
     // we can't do XRaiseWindow because a restack then causes OverrideRedirect
     // windows to get pushed to the bottom
-    if (!above) { // must need to go right to top
+    if (!above || m_needs_restack) { // must need to go right to top
         restack();
         return;
     }
 
     Window *winlist;
-    size_t winnum = 1, size = item->numWindows()+1;
+    size_t winnum = 1, size = item.numWindows()+1;
 
     // We do have a window to stack below
     // so we put it on top, and fill the rest of the array with the ones to go below it.
@@ -108,8 +142,8 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     winlist[0] = above->getWindows().back()->window();
 
     // fill the rest of the array
-    XLayerItem::Windows::iterator it = item->getWindows().begin();
-    XLayerItem::Windows::iterator it_end = item->getWindows().end();
+    XLayerItem::Windows::iterator it = item.getWindows().begin();
+    XLayerItem::Windows::iterator it_end = item.getWindows().end();
     for (; it != it_end; ++it) {
         if ((*it)->window())
             winlist[winnum++] = (*it)->window();
@@ -126,7 +160,7 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
 // already in the same relative order excluding other windows
 void XLayer::alignItem(XLayerItem &item) {
     if (itemList().front() == &item) {
-        stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
+        stackBelowItem(item, m_manager.getLowestItemAboveLayer(m_layernum));
         return;
     }
 
@@ -145,9 +179,9 @@ void XLayer::alignItem(XLayerItem &item) {
 
     if (it == itemList().begin() && !(*it)->visible())
         // reached front item, but it wasn't visible, therefore it was already raised
-        stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
+        stackBelowItem(item, m_manager.getLowestItemAboveLayer(m_layernum));
     else
-        stackBelowItem(&item, *it);
+        stackBelowItem(item, *it);
 
 }
 
@@ -160,7 +194,7 @@ XLayer::iterator XLayer::insert(XLayerItem &item, unsigned int pos) {
 
     itemList().push_front(&item);
     // restack below next window up
-    stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
+    stackBelowItem(item, m_manager.getLowestItemAboveLayer(m_layernum));
     return itemList().begin();
 }
 
@@ -195,7 +229,7 @@ void XLayer::raise(XLayerItem &item) {
     }
 
     itemList().push_front(&item);
-    stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
+    stackBelowItem(item, m_manager.getLowestItemAboveLayer(m_layernum));
 
 }
 
@@ -213,8 +247,10 @@ void XLayer::tempRaise(XLayerItem &item) {
         return;
     }
 
-    // don't add it back to the top
-    stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
+    if (m_needs_restack)
+        restackAndTempRaise(item);
+    else
+        stackBelowItem(item, m_manager.getLowestItemAboveLayer(m_layernum));
 
     m_needs_restack = true;
 }
@@ -255,7 +291,7 @@ void XLayer::lower(XLayerItem &item) {
     it--;
 
     // and restack our window below that one.
-    stackBelowItem(&item, *it);
+    stackBelowItem(item, *it);
 }
 
 void XLayer::raiseLayer(XLayerItem &item) {

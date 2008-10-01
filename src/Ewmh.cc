@@ -1203,7 +1203,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // do restack if both items are on the same layer
         // else ignore restack
         if (&below_item.getLayer() == &above_item.getLayer())
-            below_item.getLayer().stackBelowItem(&below_item, &above_item);
+            below_item.getLayer().stackBelowItem(below_item, &above_item);
 
 
         return true;

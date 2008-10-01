@@ -47,7 +47,7 @@ public:
     // Put all items on the same layer (called when layer item added to)
     void alignItem(XLayerItem &item);
     int countWindows();
-    void stackBelowItem(XLayerItem *item, XLayerItem *above);
+    void stackBelowItem(XLayerItem &item, XLayerItem *above);
     XLayerItem *getLowestItem();
     XLayerItem *getItemBelow(XLayerItem &item);
     XLayerItem *getItemAbove(XLayerItem &item);
@@ -73,6 +73,7 @@ public:
 
 private:
     void restack();
+    void restackAndTempRaise(XLayerItem &item);
 
     MultLayers &m_manager;
     int m_layernum;
