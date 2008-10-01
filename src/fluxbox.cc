@@ -1397,6 +1397,7 @@ void Fluxbox::load_rc(BScreen &screen) {
 }
 
 void Fluxbox::reconfigure() {
+    setupConfigFiles();
     load_rc();
     m_reconfigure_wait = true;
     m_reconfig_timer.start();
