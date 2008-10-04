@@ -170,7 +170,9 @@ Keys::t_key::~t_key() {
 
 
 
-Keys::Keys(): m_reloader(new FbTk::AutoReloadHelper()), next_key(0) {
+Keys::Keys():
+    m_reloader(new FbTk::AutoReloadHelper()),
+    next_key(0), saved_keymode(0) {
     m_reloader->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Keys>(*this, &Keys::reload)));
 }
 
@@ -187,6 +189,7 @@ void Keys::deleteTree() {
         delete map_it->second;
     m_map.clear();
     next_key = 0;
+    saved_keymode = 0;
 }
 
 // keys are only grabbed in global context
@@ -504,22 +507,16 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
     if (!temp_key && isdouble)
         temp_key = next_key->find(type, mods, key, context, false);
 
-    // need to save this for emacs-style keybindings
-    static t_key *saved_keymode = 0;
-
-    // grab "None Escape" to exit keychain in the middle
-    unsigned int esc = FbTk::KeyUtil::getKey("Escape");
-
     if (temp_key && !temp_key->keylist.empty()) { // emacs-style
         if (!saved_keymode)
             saved_keymode = m_keylist;
         next_key = temp_key;
         setKeyMode(next_key);
-        grabKey(esc,0);
         return true;
     }
     if (!temp_key || *temp_key->m_command == 0) {
-        if (type == KeyPress && key == esc && mods == 0) {
+        if (type == KeyPress &&
+            !FbTk::KeyUtil::instance().keycodeToModmask(key)) {
             // if we're in the middle of an emacs-style keychain, exit it
             next_key = 0;
             if (saved_keymode) {

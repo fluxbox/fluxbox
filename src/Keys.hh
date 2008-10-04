@@ -83,6 +83,9 @@ public:
     */
     void reconfigure();
     void keyMode(const std::string& keyMode);
+
+    bool inKeychain() const { return saved_keymode != 0; }
+
 private:
     class t_key; // helper class to build a 'keytree'
     typedef std::map<std::string, t_key *> keyspace_t;
@@ -109,7 +112,7 @@ private:
     keyspace_t m_map;
 
     // former doAction static var, we need to access it from deleteTree
-    t_key *next_key;
+    t_key *next_key, *saved_keymode;
 
     WindowMap m_window_map;
     HandlerMap m_handler_map;

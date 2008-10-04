@@ -856,6 +856,7 @@ void BScreen::keyPressEvent(XKeyEvent &ke) {
     if (Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
                                               Keys::GLOBAL|Keys::ON_DESKTOP))
         // re-grab keyboard, so we don't pass KeyRelease to clients
+        // also for catching invalid keys in the middle of keychains
         FbTk::EventManager::instance()->grabKeyboard(rootWindow().window());
 
 }
@@ -871,8 +872,8 @@ void BScreen::keyReleaseEvent(XKeyEvent &ke) {
         m_cycling = false;
         focusControl().stopCyclingFocus();
     }
-
-    FbTk::EventManager::instance()->ungrabKeyboard();
+    if (!Fluxbox::instance()->keys()->inKeychain())
+        FbTk::EventManager::instance()->ungrabKeyboard();
 }
 
 void BScreen::buttonPressEvent(XButtonEvent &be) {
