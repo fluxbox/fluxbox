@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*08/10/04:
+   * Fix flickering of shaped windows, #2131548 and #2001027 (Mark)
+     FbTk/Shape.cc
 *08/10/01:
    * Don't flash original window while cycling (Mark)
      FocusControl.cc FbTk/XLayer.cc/hh

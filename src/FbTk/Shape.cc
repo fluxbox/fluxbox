@@ -190,32 +190,23 @@ void Shape::update() {
         return;
     }
 
+    Region clip = XCreateRegion();
+    Region bound = XCreateRegion();
+
     XRectangle rect;
     rect.x = 0;
     rect.y = 0;
     rect.width = width;
     rect.height = height;
 
-    XShapeCombineRectangles(display,
-                            m_win->window(), ShapeClip,
-                            0, 0, /* offsets */
-                            &rect, 
-                            1,    /* number of rectangles */
-                            ShapeSet, /* op */
-                            2     /* ordering: YXSorted... only 1: doesn't matter */ );
+    XUnionRectWithRegion(&rect, clip, clip);
 
     rect.x = -bw;
     rect.y = -bw;
     rect.width = width+2*bw;
     rect.height = height+2*bw;
 
-    XShapeCombineRectangles(display,
-                            m_win->window(), ShapeBounding,
-                            0, 0, /* offsets */
-                            &rect, 
-                            1,    /* number of rectangles */
-                            ShapeSet, /* op */
-                            2     /* ordering: YXSorted... only 1: doesn't matter */ );
+    XUnionRectWithRegion(&rect, bound, bound);
 
     if (m_shapesource != 0) {
 
@@ -229,45 +220,51 @@ void Shape::update() {
         rect.width = m_shapesource->width();
         rect.height = m_shapesource->height();
 
-        XShapeCombineRectangles(display,
-                                m_win->window(), ShapeClip,
-                                0, 0, /* offsets */
-                                &rect, 
-                                1,    /* number of rectangles */
-                                ShapeSubtract, /* op */
-                                2     /* ordering: YXSorted... only 1: doesn't matter */ );
+        Region clientarea = XCreateRegion();
+        XUnionRectWithRegion(&rect, clientarea, clientarea);
+        XSubtractRegion(clip, clientarea, clip);
+        XSubtractRegion(bound, clientarea, bound);
+        XDestroyRegion(clientarea);
 
         XShapeCombineShape(display,
                            m_win->window(), ShapeClip,
                            rect.x, rect.y, // xOff, yOff
                            m_shapesource->window(),
-                           ShapeClip, ShapeUnion);
+                           ShapeClip, ShapeSet);
+
+        XShapeCombineRegion(display,
+                            m_win->window(), ShapeClip,
+                            0, 0, // offsets
+                            clip, ShapeUnion);
 
         /* 
            Now the bounding rectangle. Note that the frame has a shared border with the region above the 
            client (i.e. titlebar), so we don't want to wipe the shared border, hence the adjustments.
         */
-        rect.x = m_shapesource_xoff; // note that the full bounding region is already offset by a -borderwidth!
-        rect.y = m_shapesource_yoff;
-        rect.width = m_shapesource->width(); // we don't wipe the outer bounding region [i think]
-        rect.height = m_shapesource->height();
-
-        // we want to delete the client area, dont care about borders really
-        XShapeCombineRectangles(display,
-                                m_win->window(), ShapeBounding,
-                                0, 0, /* offsets */
-                                &rect, 
-                                1,    /* number of rectangles */
-                                ShapeSubtract, /* op */
-                                2     /* ordering: YXSorted... only 1: doesn't matter */ );
 
         XShapeCombineShape(display,
                            m_win->window(), ShapeBounding,
-                           rect.x , rect.y, // xOff, yOff
+                           rect.x, rect.y, // xOff, yOff
                            m_shapesource->window(),
-                           ShapeBounding, ShapeUnion);
+                           ShapeBounding, ShapeSet);
+
+        XShapeCombineRegion(display,
+                            m_win->window(), ShapeBounding,
+                            0, 0, // offsets
+                            bound, ShapeUnion);
+    } else {
+        XShapeCombineRegion(display,
+                            m_win->window(), ShapeClip,
+                            0, 0, // offsets
+                            clip, ShapeSet);
+        XShapeCombineRegion(display,
+                            m_win->window(), ShapeBounding,
+                            0, 0, // offsets
+                            bound, ShapeSet);
     }
 
+    XDestroyRegion(clip);
+    XDestroyRegion(bound);
 
     CornerPixmaps &corners = s_corners[m_win->screenNumber()];
 #define SHAPECORNER(corner, x, y, shapekind)            \

@@ -665,12 +665,6 @@ void FbWinFrame::moveLabelButtonRightOf(FbTk::TextButton &btn, const FbTk::TextB
     m_tab_container.moveItem(&btn, movement);
 }
 
-void FbWinFrame::setLabelButtonFocus(IconButton &btn) {
-    if (btn.parent() != &m_tab_container)
-        return;
-    m_label.setText(btn.text());
-}
-
 void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
 
     win.setBorderWidth(0);

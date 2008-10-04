@@ -409,7 +409,7 @@ void FluxboxWindow::init() {
 
     associateClient(*m_client);
 
-    frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
+    frame().setFocusTitle(title());
 
     // redirect events from frame to us
     frame().setEventHandler(*this);
@@ -987,16 +987,17 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
         if (old)
             old->focusSig().notify();
     }
-    if (old != &client)
-        titleSig().notify();
 
 #ifdef DEBUG
     cerr<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
         button<<endl;
 #endif // DEBUG
-    // frame focused doesn't necessarily mean input focused
-    frame().setLabelButtonFocus(*button);
-    frame().setShapingClient(&client, false);
+
+    if (old != &client) {
+        titleSig().notify();
+        frame().setFocusTitle(title());
+        frame().setShapingClient(&client, false);
+    }
     return ret;
 }
 
