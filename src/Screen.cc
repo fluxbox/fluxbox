@@ -841,7 +841,8 @@ void BScreen::propertyNotify(Atom atom) {
                     &ret_bytes_after, (unsigned char **)&str);
             }
 
-            FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(str, false));
+            static std::auto_ptr<FbTk::Command<void> > cmd(0);
+            cmd.reset(FbTk::CommandParser<void>::instance().parse(str, false));
             if (cmd.get())
                 cmd->execute();
             XFree(str);

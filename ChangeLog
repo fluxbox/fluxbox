@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *08/10/04:
+   * Fix CustomMenu and ClientMenu commands from fluxbox-remote (Mark)
+     Screen.cc
    * Break emacs-style keychains after one invalid key has been pressed (Mark)
      Screen.cc Keys.cc/hh
    * Fix flickering of shaped windows, #2131548 and #2001027 (Mark)
