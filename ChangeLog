@@ -1,9 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *08/10/04:
+   * Recognize --option in addition to -option for long option names (Mark)
+     main.cc util/fbsetroot.cc util/fbrun/main.cc
    * Add -print option to fbrun that sends the result to stdout instead of
      running it (Mark)
-     util/FbRun/main.cc FbRun.cc/hh
+     util/fbrun/main.cc FbRun.cc/hh
    * Fix CustomMenu and ClientMenu commands from fluxbox-remote (Mark)
      Screen.cc
    * Break emacs-style keychains after one invalid key has been pressed (Mark)

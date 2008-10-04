@@ -67,30 +67,29 @@ fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
     img_ctrl = new FbTk::ImageControl(screen);
 
     for (; i < argc; i++) {
-        if (! strcmp("-help", argv[i])) {
+        string arg = argv[i];
+        if (arg == "-help" || arg == "--help" || arg == "-h") {
             usage();
 
-        } else if ((! strcmp("-fg", argv[i])) ||
-                   (! strcmp("-foreground", argv[i])) ||
-                   (! strcmp("-from", argv[i]))) {
+        } else if (arg == "-fg" || arg == "-foreground" ||
+                   arg == "--foreground" || arg == "-from" || arg == "--from") {
             if ((++i) >= argc)
                 usage(1);
             fore = argv[i];
 
-        } else if ((! strcmp("-bg", argv[i])) ||
-                   (! strcmp("-background", argv[i])) ||
-                   (! strcmp("-to", argv[i]))) {
+        } else if (arg == "-bg" || arg == "-background" ||
+                   arg == "--background" || arg == "-to" || arg == "--to") {
             if ((++i) >= argc)
                 usage(1);
             back = argv[i];
 
-        } else if (! strcmp("-solid", argv[i])) {
+        } else if (arg == "-solid" || arg == "--solid") {
             if ((++i) >= argc)
                 usage(1);
             fore = argv[i];
             sol = true;
 
-        } else if (! strcmp("-mod", argv[i])) {
+        } else if (arg == "-mod" || arg == "--mod") {
             if ((++i) >= argc)
                 usage();
             mod_x = atoi(argv[i]);
@@ -103,14 +102,14 @@ fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
                 mod_y = 1;
             mod = true;
 
-        } else if (! strcmp("-gradient", argv[i])) {
+        } else if (arg == "-gradient" || arg == "--gradient") {
             if ((++i) >= argc)
                 usage();
 
             grad = argv[i];
             grd = true;
 
-        } else if (! strcmp("-display", argv[i])) {
+        } else if (arg == "-display" || arg == "--display") {
             // -display passed through tests earlier... we just skip it now
             i++;
 
@@ -382,7 +381,7 @@ int main(int argc, char **argv) {
     FbTk::NLSInit("fluxbox.cat");
 
     for (; i < argc; i++) {
-        if (! strcmp(argv[i], "-display")) {
+        if (!strcmp(argv[i], "-display") || !strcmp(argv[i], "--display")) {
             // check for -display option
 
             if ((++i) >= argc) {

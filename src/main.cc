@@ -191,7 +191,7 @@ int main(int argc, char **argv) {
     int i;
     for (i = 1; i < argc; ++i) {
         string arg(argv[i]);
-        if (arg == "-rc") {
+        if (arg == "-rc" || arg == "--rc") {
             // look for alternative rc file to use
 
             if ((++i) >= argc) {
@@ -201,7 +201,7 @@ int main(int argc, char **argv) {
             }
 
             rc_file = argv[i];
-        } else if (arg == "-display") {
+        } else if (arg == "-display" || arg == "--display") {
             // check for -display option... to run on a display other than the one
             // set by the environment variable DISPLAY
 
@@ -220,19 +220,19 @@ int main(int argc, char **argv) {
                               "")<<endl;
                 perror("putenv()");
             }
-        } else if (arg == "-version" || arg == "-v") {
+        } else if (arg == "-version" || arg == "-v" || arg == "--version") {
             // print current version string
             cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2008 Fluxbox Team " << endl << endl;
             exit(EXIT_SUCCESS);
-        } else if (arg == "-log") {
+        } else if (arg == "-log" || arg == "--log") {
             if (++i >= argc) {
                 cerr<<_FB_CONSOLETEXT(main, LOGRequiresArg, "error: '-log' needs an argument", "")<<endl;
                 exit(EXIT_FAILURE);
             }
             log_filename = argv[i];
-        } else if (arg == "-sync") {
+        } else if (arg == "-sync" || arg == "--sync") {
              xsync = true;
-        } else if (arg == "-help" || arg == "-h") {
+        } else if (arg == "-help" || arg == "-h" || arg == "--help") {
             // print program usage and command line options
             printf(_FB_CONSOLETEXT(main, Usage,
                            "Fluxbox %s : (c) %s Henrik Kinnunen\n"
@@ -250,17 +250,17 @@ int main(int argc, char **argv) {
                            "Main usage string. Please lay it out nicely. There is one %s that is given the version").c_str(),
                    __fluxbox_version, "2001-2008");
             exit(EXIT_SUCCESS);
-        } else if (arg == "-info" || arg == "-i") {
+        } else if (arg == "-info" || arg == "-i" || arg == "--info") {
             showInfo(cout);
             exit(EXIT_SUCCESS);
-        } else if (arg == "-list-commands") {
+        } else if (arg == "-list-commands" || arg == "--list-commands") {
             FbTk::CommandParser<void>::CreatorMap cmap = FbTk::CommandParser<void>::instance().creatorMap();
             FbTk::CommandParser<void>::CreatorMap::const_iterator it = cmap.begin();
             const FbTk::CommandParser<void>::CreatorMap::const_iterator it_end = cmap.end();
             for (; it != it_end; ++it)
                 cout << it->first << endl;
             exit(EXIT_SUCCESS);
-        } else if (arg == "-verbose") {
+        } else if (arg == "-verbose" || arg == "--verbose") {
             FbTk::ThemeManager::instance().setVerbose(true);
         }
     }

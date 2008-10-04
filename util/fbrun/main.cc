@@ -86,27 +86,28 @@ int main(int argc, char **argv) {
     string history_file("~/.fluxbox/fbrun_history"); // command history file
     // parse arguments
     for (int i=1; i<argc; i++) {
-        if (strcmp(argv[i], "-font") == 0 && i+1 < argc) {
+        string arg = argv[i];
+        if ((arg == "-font" || arg == "--font") && i+1 < argc) {
             fontname = argv[++i];
-        } else if (strcmp(argv[i], "-print") == 0) {
+        } else if (arg == "-print" || arg == "--print") {
             print = true;
-        } else if (strcmp(argv[i], "-title") == 0 && i+1 < argc) {
+        } else if ((arg == "-title" || arg == "--title") && i+1 < argc) {
             title = argv[++i];
-        } else if (strcmp(argv[i], "-text") == 0 && i+1 < argc) {
+        } else if ((arg == "-text" || arg == "--text") && i+1 < argc) {
             text = argv[++i];
-        } else if (strcmp(argv[i], "-w") == 0 && i+1 < argc) {
+        } else if (arg == "-w" && i+1 < argc) {
             width = atoi(argv[++i]);
             set_width = true;
-        } else if (strcmp(argv[i], "-h") == 0 && i+1 < argc) {
+        } else if (arg == "-h" && i+1 < argc) {
             height = atoi(argv[++i]);
             set_height = true; // mark true else the height of font will be used
-        } else if (strcmp(argv[i], "-display") == 0 && i+1 < argc) {
+        } else if ((arg == "-display" || arg == "--display") && i+1 < argc) {
             display_name = argv[++i];
-        } else if (strcmp(argv[i], "-pos") == 0 && i+2 < argc) {
+        } else if ((arg == "-pos" || arg == "--pos") && i+2 < argc) {
             x = atoi(argv[++i]);
             y = atoi(argv[++i]);
             set_pos = true;
-        } else if (strcmp(argv[i], "-nearmouse") == 0) {
+        } else if (arg == "-nearmouse" || arg == "--nearmouse") {
             set_pos = true;
             near_mouse = true;
         } else if (strcmp(argv[i], "-fg") == 0 && i+1 < argc) {
@@ -117,7 +118,7 @@ int main(int argc, char **argv) {
             antialias = false;
         } else if (strcmp(argv[i], "-hf") == 0 && i+1 < argc) {
             history_file = argv[++i];
-        } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-help") == 0) {
+        } else if (arg == "-h" || arg == "-help" || arg == "--help") {
             showUsage(argv[0]);
             exit(0);
         } else {
