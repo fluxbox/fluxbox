@@ -2388,9 +2388,6 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
     frame().tabcontainer().tryButtonPressEvent(be);
     if (be.button == 1) {
-        if (!m_focused && acceptsFocus() && m_click_focus) //check focus
-            focus();
-
         if (frame().window().window() == be.window ||
             frame().tabcontainer().window() == be.window) {
             if (screen().clickRaises())
@@ -2405,6 +2402,9 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
             m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
         } else if (frame().handle() == be.window)
             raise();
+
+        if (!m_focused && acceptsFocus() && m_click_focus) //check focus
+            focus();
 
         menu().hide();
     }
