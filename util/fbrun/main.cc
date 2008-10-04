@@ -55,6 +55,7 @@ void showUsage(const char *progname) {
         "   -font [font name]           Text font"<<endl<<
         "   -title [title name]         Set title"<<endl<<
         "   -text [text]                Text input"<<endl<<
+        "   -print                      Print result to stdout"<<endl<<
         "   -w [width]                  Window width in pixels"<<endl<<
         "   -h [height]                 Window height in pixels"<<endl<<
         "   -display [display string]   Display name"<<endl<<
@@ -75,6 +76,7 @@ int main(int argc, char **argv) {
     bool set_pos = false; // set position
     bool near_mouse = false; // popup near mouse
     bool antialias = true; // antialias text
+    bool print = false;
     string fontname; // font name
     string title("Run program"); // default title
     string text;         // default input text
@@ -86,6 +88,8 @@ int main(int argc, char **argv) {
     for (int i=1; i<argc; i++) {
         if (strcmp(argv[i], "-font") == 0 && i+1 < argc) {
             fontname = argv[++i];
+        } else if (strcmp(argv[i], "-print") == 0) {
+            print = true;
         } else if (strcmp(argv[i], "-title") == 0 && i+1 < argc) {
             title = argv[++i];
         } else if (strcmp(argv[i], "-text") == 0 && i+1 < argc) {
@@ -129,7 +133,7 @@ int main(int argc, char **argv) {
         FbTk::App application(display_name.c_str());
         FbRun fbrun;
 
-        //fbrun.setAntialias(antialias);
+        fbrun.setPrint(print);
 
         if (fontname.size() != 0) {
             if (!fbrun.loadFont(fontname.c_str())) {

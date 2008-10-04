@@ -42,6 +42,7 @@ public:
     void handleEvent(XEvent * const ev);
     void setTitle(const std::string &title);
     void resize(unsigned int width, unsigned int height);
+    void setPrint(bool print) { m_print = print; }
 
     /// load and reconfigure for new font
     bool loadFont(const std::string &fontname);
@@ -83,6 +84,7 @@ private:
     void tabCompleteHistory();
     void tabCompleteApps();
 
+    bool m_print; ///< the input should be printed to stdout rather than run
     FbTk::Font m_font; ///< font used to draw command text
     Display *m_display;  ///< display connection
     int m_bevel;

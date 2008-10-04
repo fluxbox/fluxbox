@@ -58,6 +58,7 @@ using std::ios;
 FbRun::FbRun(int x, int y, size_t width):
     FbTk::TextBox(DefaultScreen(FbTk::App::instance()->display()),
                   m_font, ""),
+    m_print(false),
     m_font("fixed"),
     m_display(FbTk::App::instance()->display()),
     m_bevel(4),
@@ -114,6 +115,12 @@ FbRun::~FbRun() {
 void FbRun::run(const std::string &command) {
     FbTk::App::instance()->end(); // end application
     m_end = true; // mark end of processing
+
+    if (m_print) {
+        std::cout << command;
+        hide();
+        return;
+    }
 
     // fork and execute program
     if (!fork()) {
