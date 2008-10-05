@@ -308,7 +308,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     menu_delay_close(rm, 200, scrname + ".menuDelayClose", altscrname+".MenuDelayClose"),
     tab_width(rm, 64, scrname + ".tab.width", altscrname+".Tab.Width"),
     tooltip_delay(rm, 500, scrname + ".tooltipDelay", altscrname+".TooltipDelay"),
-    menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode"),
     allow_remote_actions(rm, false, scrname+".allowRemoteActions", altscrname+".AllowRemoteActions"),
     clientmenu_use_pixmap(rm, true, scrname+".clientMenu.usePixmap", altscrname+".ClientMenu.UsePixmap"),
     tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
@@ -450,7 +449,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     focusedWinFrameTheme()->setAlpha(*resource.focused_alpha);
     unfocusedWinFrameTheme()->setAlpha(*resource.unfocused_alpha);
     m_menutheme->setAlpha(*resource.menu_alpha);
-    m_menutheme->setMenuMode(*resource.menu_mode);
     // clamp values
     if (*resource.menu_delay > 5000)
         *resource.menu_delay = 5000;
@@ -910,7 +908,6 @@ void BScreen::reconfigure() {
     focusedWinFrameTheme()->setAlpha(*resource.focused_alpha);
     unfocusedWinFrameTheme()->setAlpha(*resource.unfocused_alpha);
     m_menutheme->setAlpha(*resource.menu_alpha);
-    m_menutheme->setMenuMode(*resource.menu_mode);
 
     // clamp values
     if (*resource.menu_delay > 5000)

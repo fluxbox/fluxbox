@@ -836,12 +836,6 @@ session.screen0.defaultDeco: <string>
       options available to the `[Deco]' option in the `apps' file, described in
       the APPLICATIONS section. Default: NORMAL.
 
-session.screen0.menuMode: Delay|Click
-      This setting controls the circumstances under which submenus open. With
-      `Click', the user must click on the menu item in order for the submenu to
-      open. With `Delay', submenus open when the mouse hovers over the menu
-      item. Default: Delay
-
 session.screen0.menuDelay: <integer>
       This sets the delay in milliseconds for submenus to open with the previous
       option set to `Delay'. Default: 0

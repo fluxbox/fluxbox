@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *08/10/05:
+   * Remove menu modes (Mark)
+     Screen.cc/hh ScreenResources.cc FbTk/MenuTheme.cc/hh FbTk/Menu.cc
    * Remove follow models (Mark)
      Screen.cc/hh ScreenResources.cc Window.cc
    * Remove line style resources from init file (Mark)

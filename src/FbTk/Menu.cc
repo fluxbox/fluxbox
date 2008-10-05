@@ -994,7 +994,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
         }
 
-        if (itmp->submenu() && theme()->menuMode() == MenuTheme::DELAY_OPEN) {
+        if (itmp->submenu()) {
             // start submenu open delay
             timeval timeout;
             timeout.tv_sec = 0;

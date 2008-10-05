@@ -547,7 +547,6 @@ private:
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
             unfocused_alpha, menu_alpha, menu_delay, menu_delay_close,
             tab_width, tooltip_delay;
-        FbTk::Resource<FbTk::MenuTheme::MenuMode> menu_mode;
         FbTk::Resource<bool> allow_remote_actions;
         FbTk::Resource<bool> clientmenu_use_pixmap;
         FbTk::Resource<bool> tabs_use_pixmap;

@@ -72,7 +72,6 @@ MenuTheme::MenuTheme(int screen_num):
     d_text_gc(RootWindow(m_display, screen_num)),
     hilite_gc(RootWindow(m_display, screen_num)),
     m_alpha(255),
-    m_menumode(DELAY_OPEN),
     m_delayopen(0), // no delay as default
     m_delayclose(0), // no delay as default
     m_real_title_height(*m_title_height),

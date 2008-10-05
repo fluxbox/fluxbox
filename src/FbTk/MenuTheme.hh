@@ -34,11 +34,6 @@ namespace FbTk {
 
 class MenuTheme: public Theme, public ThemeProxy<MenuTheme> {
 public:
-    //!! TODO
-    // this isn't actually used with a theme item
-    // see setMenuMode() for more info
-    enum MenuMode {CLICK_OPEN, DELAY_OPEN};
-
     enum BulletType { EMPTY, SQUARE, TRIANGLE, DIAMOND};
     MenuTheme(int screen_num);
     virtual ~MenuTheme();
@@ -116,8 +111,6 @@ public:
     // this isn't actually a theme item
     // but we'll let it be here for now, until there's a better way to
     // get resources into menu
-    void setMenuMode(MenuMode mode) { m_menumode = mode; }
-    MenuMode menuMode() const { return m_menumode; }
     void setDelayOpen(int msec) { m_delayopen = msec; }
     void setDelayClose(int msec) { m_delayclose = msec; }
     int delayOpen() const { return m_delayopen; }
@@ -164,7 +157,6 @@ private:
     GContext t_text_gc, f_text_gc, u_text_gc, h_text_gc, d_text_gc, hilite_gc;
 
     unsigned char m_alpha;
-    MenuMode m_menumode;
     unsigned int m_delayopen; ///< in msec
     unsigned int m_delayclose; ///< in msec
     unsigned int m_real_title_height; ///< the calculated item height (from font and menu.titleHeight)
