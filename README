@@ -7,8 +7,8 @@ Read NEWS to see whats new in this release.
 
 For copyright information see COPYING
 
-For more information and extensive documentation go to:
-  http://fluxbox.org/version-0.9.php
+For more information go to:
+  http://fluxbox.org/
 
 
 Compile and Install:
@@ -17,44 +17,6 @@ Compile and Install:
   $ make
   and then as root
   # make install
-
-Configuration options:
-
-  For Gnome support ( default, does not require any gnome libraries ):
-    ./configure --enable-gnome
-
-  Use ./configure --help to see the full list of options
-
-For former blackbox users:
-
- - You can use your old blackbox configuration file too. Just copy
-   .blackboxrc to ~/.fluxbox/init . The same goes for menu file.
-
- - You can also use the Blackbox themes in Fluxbox. Fluxbox has a few
-   extra styleoption for the tabs but they don't have to be specified.
-
- - The keys file is no longer compatible with bbkeys. There's a
-   convertkeys script at http://fluxbox.sourceforge.net/ that will
-   convert the bbkeys format to the fluxbox format.
-
-
-A few extra notes about the new features:
-
- - To disable tabs and/or iconbar just change it in configure menu.
-
- - To work with tabs, use the third mouse button to drag a tab to
-   another tab.  This will group the two windows together.
-
- - With 'Sloppy Window Grouping' turned on (in your configure menu),
-   you can drop the tabs anywhere on the target window to group
-   windows together.
-
- - The 'Maximize over Slit' option means that maximized windows will not
-   stop at the outside border of the slit, and will instead cover it.
-
- - In the init file, the session.screen0.rootCommand: option will
-   override the rootCommand option in a theme, keeping your background
-   the same, no matter what the theme says it should be.
 
 
 Thanks:

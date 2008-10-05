@@ -1,535 +1,1121 @@
 .\"     Title: fluxbox
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/20/2008
-.\"    Manual: 
-.\"    Source: 
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
+.\"      Date: 10/04/2008
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "08/20/2008" "" ""
+.TH "FLUXBOX" "1" "10/04/2008" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * (re)Define some macros
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" toupper - uppercase a string (locale-aware)
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de toupper
+.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+\\$*
+.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH-xref - format a cross-reference to an SH section
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de SH-xref
+.ie n \{\
+.\}
+.toupper \\$*
+.el \{\
+\\$*
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH - level-one heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SH
+.\" put an extra blank line of space above the head in non-TTY output
+.if t \{\
+.sp 1
+.\}
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[an-margin]u
+.ti 0
+.HTML-TAG ".NH \\n[an-level]"
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+\." make the size of the head bigger
+.ps +3
+.ft B
+.ne (2v + 1u)
+.ie n \{\
+.\" if n (TTY output), use uppercase
+.toupper \\$*
+.\}
+.el \{\
+.nr an-break-flag 0
+.\" if not n (not TTY), use normal case (not uppercase)
+\\$1
+.in \\n[an-margin]u
+.ti 0
+.\" if not n (not TTY), put a border/line under subheading
+.sp -.6
+\l'\n(.lu'
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SS - level-two heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SS
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[IN]u
+.ti \\n[SN]u
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.ps \\n[PS-SS]u
+\." make the size of the head bigger
+.ps +2
+.ft B
+.ne (2v + 1u)
+.if \\n[.$] \&\\$*
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BB/BE - put background/screen (filled box) around block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BB
+.if t \{\
+.sp -.5
+.br
+.in +2n
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EB
+.if t \{\
+.if "\\$2"adjust-for-leading-newline" \{\
+.sp -1
+.\}
+.br
+.di
+.in
+.ll
+.gcolor
+.nr BW \\n(.lu-\\n(.i
+.nr BH \\n(dn+.5v
+.ne \\n(BHu+.5v
+.ie "\\$2"adjust-for-leading-newline" \{\
+\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.el \{\
+\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.in 0
+.sp -.5v
+.nf
+.BX
+.in
+.sp .5v
+.fi
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BM/EM - put colored marker in margin next to block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BM
+.if t \{\
+.br
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EM
+.if t \{\
+.br
+.di
+.ll
+.gcolor
+.nr BH \\n(dn
+.ne \\n(BHu
+\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
+.in 0
+.nf
+.BX
+.in
+.fi
+.\}
+..
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
-.SH "NAME"
-fluxbox - Un liviano manejador de ventanas para el X Windowing System
-.SH "SYNOPSIS"
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "Name"
+fluxbox \- Un liviano manejador de ventanas para el X Windowing System
+.SH "Synopsis"
+.sp
 \fIfluxbox\fR [\-v | \-version] [\-h | \-help] [\-i | \-info] \fIfluxbox\fR [\-rc rcfile] [\-log logfile] [\-display display] [\-screen scr,scr|all] [\-verbose]
-.sp
 .SH "DESCRIPCION"
-fluxbox(1) provee decoraciones de ventanas configurables, un menu root para lanzar aplicaciones y una barra de tareas que muestra el nombre del \fIworkspace\fR actual, la aplicacion activa y la hora actual\. Tambien hay un menu de workspace para agregar o remover espacios de trabajo\. La \fIslit\fR puede ser usada para \fIdockear\fR pequenias aplicaciones, por ej\.: la mayoria de las bbtools pueden usar la slit\.
 .sp
-fluxbox(1) puede iconificar las ventanas a la barra de tareas, agregando la ventana al submenu \fIIcons\fR del menu workspace\. Con un click reapareceran las ventanas iconificadas\. Doble\-click en la barra de titulo de una ventana la \fIfoldeara\fR (shade), por ej\.: desaparecera la ventana y quedara visible solamente la barra de titulo\.
+fluxbox(1) provee decoraciones de ventanas configurables, un menu root para lanzar aplicaciones y una barra de tareas que muestra el nombre del \fIworkspace\fR actual, la aplicacion activa y la hora actual\&. Tambien hay un menu de workspace para agregar o remover espacios de trabajo\&. La \fIslit\fR puede ser usada para \fIdockear\fR pequenias aplicaciones, por ej\&.: la mayoria de las bbtools pueden usar la slit\&.
 .sp
-fluxbox(1) usa su propia clase de graficos para renderizar sus imagenes al vuelo\. Mediante el uso de \fIestilos\fR se puede determinar en gran nivel la apariencia de un escritorio\. Los estilos de Fluxbox son compatibles con los de Blackbox 0\.65 o versiones anteriores, de modo que los usuarios que esten migrando aun pueden usar sus temas favoritos\.
+fluxbox(1) puede iconificar las ventanas a la barra de tareas, agregando la ventana al submenu \fIIcons\fR del menu workspace\&. Con un click reapareceran las ventanas iconificadas\&. Doble\-click en la barra de titulo de una ventana la \fIfoldeara\fR (shade), por ej\&.: desaparecera la ventana y quedara visible solamente la barra de titulo\&.
 .sp
-Fluxbox cumple con la mayoria de las especificaciones Extended Window Manager Hints (EWMH), asi como otros numerosos standards de Window Hinting\. Esto permite a todos los window managers que las cumplen proveer una interfaz comun para caracteristicas standard usadas por aplicaciones y utilidades de escritorio\.
+fluxbox(1) usa su propia clase de graficos para renderizar sus imagenes al vuelo\&. Mediante el uso de \fIestilos\fR se puede determinar en gran nivel la apariencia de un escritorio\&. Los estilos de Fluxbox son compatibles con los de Blackbox 0\&.65 o versiones anteriores, de modo que los usuarios que esten migrando aun pueden usar sus temas favoritos\&.
 .sp
+Fluxbox cumple con la mayoria de las especificaciones Extended Window Manager Hints (EWMH), asi como otros numerosos standards de Window Hinting\&. Esto permite a todos los window managers que las cumplen proveer una interfaz comun para caracteristicas standard usadas por aplicaciones y utilidades de escritorio\&.
 .SH "OPCIONES"
 .PP
 \-d display |\-display display
 .RS 4
 Inicia fluxbox en el
 \fIdisplay\fR
-especificado\. Los programas iniciados por Fluxbox tendran el mismo valor de la variable de entorno DISPLAY\.
+especificado\&. Los programas iniciados por Fluxbox tendran el mismo valor de la variable de entorno DISPLAY\&.
 .RE
 .PP
 \-h | \-help
 .RS 4
-Muestra las opciones de lineas de comandos y sale\.
+Muestra las opciones de lineas de comandos y sale\&.
 .RE
 .PP
 \-i | \-info
 .RS 4
-Muestra informacion util concerniente a las opciones por defecto y las compiladas\.
+Muestra informacion util concerniente a las opciones por defecto y las compiladas\&.
 .RE
 .PP
 \-l logfile
 .RS 4
 Iniciando Fluxbox con esta opcion creara un archivo en el que se guardara un
 \fIlog\fR
-de los eventos\.
+de los eventos\&.
 .RE
 .PP
 \-rc archivo rc
 .RS 4
-Usa otro archivo rc que el por defecto "~/\.fluxbox/init"\. \-version Muestra la version de Fluxbox instalada\.
+Usa otro archivo rc que el por defecto "~/\&.fluxbox/init"\&. \-version Muestra la version de Fluxbox instalada\&.
 .RE
 .SH "INICIANDO FLUXBOX"
-fluxbox(1) viene con un programa llamado startfluxbox(8) localizado generalmente donde se instalo Fluxbox\. Este script nos provee con muchas opciones y variables que pueden ser indicadas cuando al inicio de Fluxbox\. Para utilizarlo cuando se inicia Fluxbox, se debe colocar \fIexec startfluxbox\fR como ultimo comando en el /\.xinitrc o /\.xsession del usuario (dependiendo de las distribuciones y del display manager que se utilice), asumiendo que la localizacion de fluxbox(1) y startfluxbox(8) estan en el $PATH del \fIshell\fR\. Tambien hay que notar que tal vez haya que crear el archivo /\.xinitrc o tal vez el setup use /\.xsession\. Para mas informacion ver el manual del shell\.
 .sp
-Usando \fIfluxbox \-i\fR se veran las opciones por defecto utilizadas por fluxbox(1)\. Estas son las que busca al inicio\. En la lista de \fIDefaults:\fR la ubicacion de archivo menu, ahi se puede proveer un menu comun para todos los usuarios\.
+fluxbox(1) viene con un programa llamado startfluxbox(8) localizado generalmente donde se instalo Fluxbox\&. Este script nos provee con muchas opciones y variables que pueden ser indicadas cuando al inicio de Fluxbox\&. Para utilizarlo cuando se inicia Fluxbox, se debe colocar \fIexec startfluxbox\fR como ultimo comando en el /\&.xinitrc o /\&.xsession del usuario (dependiendo de las distribuciones y del display manager que se utilice), asumiendo que la localizacion de fluxbox(1) y startfluxbox(8) estan en el $PATH del \fIshell\fR\&. Tambien hay que notar que tal vez haya que crear el archivo /\&.xinitrc o tal vez el setup use /\&.xsession\&. Para mas informacion ver el manual del shell\&.
 .sp
-Saliendo o reiniciando, Fluxbox guardara las configuraciones del usuario en el archivo ~/\.fluxbox/init\. Los recursos en este archivo pueden ser editados a mano\. Fluxbox tambien tiene muchas herramientas para modificar esto\. Hay que mirar en el menu principal una vez que Fluxbox ha iniciado para encontrar diferentes maneras de administrar la sesion\.
+Usando \fIfluxbox \-i\fR se veran las opciones por defecto utilizadas por fluxbox(1)\&. Estas son las que busca al inicio\&. En la lista de \fIDefaults:\fR la ubicacion de archivo menu, ahi se puede proveer un menu comun para todos los usuarios\&.
 .sp
+Saliendo o reiniciando, Fluxbox guardara las configuraciones del usuario en el archivo ~/\&.fluxbox/init\&. Los recursos en este archivo pueden ser editados a mano\&. Fluxbox tambien tiene muchas herramientas para modificar esto\&. Hay que mirar en el menu principal una vez que Fluxbox ha iniciado para encontrar diferentes maneras de administrar la sesion\&.
 .SH "USANDO FLUXBOX"
-Cuando se usa Fluxbox por primera vez, los usuarios acostumbrados a ambientes de escritorios completos tales como KDE o Gnome pueden quedar un poco sorprendidos por el contenido de pantalla minimo\. Fluxbox esta diseniado para ser rapido y potente, asi que puede llevar un poco de tiempo acostumbrarse, sin embargo los resultados que se pueden obtener valen la pena\. Daremos un sumario rapido de las cosas comunes en esta seccion\. De todas maneras recomendamos que consulte las secciones referenciadas de este manual para posterior desarrollo de su entendimiento de lo que puede hacer con Fluxbox\.
 .sp
+Cuando se usa Fluxbox por primera vez, los usuarios acostumbrados a ambientes de escritorios completos tales como KDE o Gnome pueden quedar un poco sorprendidos por el contenido de pantalla minimo\&. Fluxbox esta diseniado para ser rapido y potente, asi que puede llevar un poco de tiempo acostumbrarse, sin embargo los resultados que se pueden obtener valen la pena\&. Daremos un sumario rapido de las cosas comunes en esta seccion\&. De todas maneras recomendamos que consulte las secciones referenciadas de este manual para posterior desarrollo de su entendimiento de lo que puede hacer con Fluxbox\&.
 .SS "Root Window (ventana principal)"
-Observando el escritorio de Fluxbox inmediatamente despues del startup generalmente se vera solo una cosa: la barra de tareas (Toolbar)\. Si se hace click derecho (boton 3 del mouse) en algun lugar vacio se podra acceder al RootMenu (menu principal), con un click del boton del medio (boton 2 del mouse) en el escritorio muestra el WorkspaceMenu (menu de escritorio)\.
 .sp
+Observando el escritorio de Fluxbox inmediatamente despues del startup generalmente se vera solo una cosa: la barra de tareas (Toolbar)\&. Si se hace click derecho (boton 3 del mouse) en algun lugar vacio se podra acceder al RootMenu (menu principal), con un click del boton del medio (boton 2 del mouse) en el escritorio muestra el WorkspaceMenu (menu de escritorio)\&.
 .SS "RootMenu y WorkspaceMenu"
-Desde el RootMenu se pueden lanzar aplicaciones y configurar Fluxbox\. El WorkspaceMenu muestra todas las ventanas y en que escritorios estan\. Vea la seccion MENUS para saber como personalizar estos\.
 .sp
+Desde el RootMenu se pueden lanzar aplicaciones y configurar Fluxbox\&. El WorkspaceMenu muestra todas las ventanas y en que escritorios estan\&. Vea la seccion MENUS para saber como personalizar estos\&.
 .SS "Toolbar"
+.sp
 La Toolbar contiene hasta ocho campos/herramientas:
 .sp
-.sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBWorkspace Name\fR: Nombre del escritorio actual
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBIconbar\fR: Muestra las ventanas
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBSystem Tray\fR: Area para
 \fIapplets\fR
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBClock\fR: Hora y fecha
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBWorkspace Arrows\fR:
 \fIFlechas\fR
 para cambiar de escritorio
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBWindow Arrows\fR:
 \fIFlechas\fR
 para cambiar de ventana
 .RE
-Los contenidos de la Toolbar pueden ser configurados en el archivo \fIinit\fR\. Hablaremos sobre este archivo en gran extension en la seccion RECURSOS\.
 .sp
+Los contenidos de la Toolbar pueden ser configurados en el archivo \fIinit\fR\&. Hablaremos sobre este archivo en gran extension en la seccion RECURSOS\&.
 .SS "Slit"
-Inicialmente no se podra ver la Slit\. Esta ahi, es solo que aun no esta siendo utilizada\. La Slit confunde a algunos al principio\. Hay que pensar en ella como un \fImuelle\fR (dock) al que se pueden anclar pequenios programas\. Si se han mirado capturas de pantalla en el sitio oficial de Fluxbox probablemente se hayan notado pequenias aplicaciones en el borde de algunas de las pantallas\. Estas muy probablemente estaban \fIdockeadas\fR en la Slit\. Para aprender mas sobre la Slit hay una seccion entera mas adelante que entra en detalle acerca de las opciones de que dispone\.
 .sp
+Inicialmente no se podra ver la Slit\&. Esta ahi, es solo que aun no esta siendo utilizada\&. La Slit confunde a algunos al principio\&. Hay que pensar en ella como un \fImuelle\fR (dock) al que se pueden anclar pequenios programas\&. Si se han mirado capturas de pantalla en el sitio oficial de Fluxbox probablemente se hayan notado pequenias aplicaciones en el borde de algunas de las pantallas\&. Estas muy probablemente estaban \fIdockeadas\fR en la Slit\&. Para aprender mas sobre la Slit hay una seccion entera mas adelante que entra en detalle acerca de las opciones de que dispone\&.
 .SS "Layers"
+.sp
 Fluxbox maneja las siguientes Layers (capas) \fB Above Dock \fR Dock \fB Top \fR Normal \fB Bottom \fR Desktop
 .sp
-Las ventanas en una capa mas alta aparecen sobre las que estan en una mas baja\. Estas capas pueden ser usadas en ventanas de aplicaciones, en la Slit o en la Toolbar\. Se pueden asignar aplicaciones a una cierta capa especificandolo en el archivo apps\. Hablaremos sobre el archivo \fIapps\fR en la seccion APLICACIONES\. Se discutira en mas detalle sobre las capas en la seccion LAYERS\.
-.sp
+Las ventanas en una capa mas alta aparecen sobre las que estan en una mas baja\&. Estas capas pueden ser usadas en ventanas de aplicaciones, en la Slit o en la Toolbar\&. Se pueden asignar aplicaciones a una cierta capa especificandolo en el archivo apps\&. Hablaremos sobre el archivo \fIapps\fR en la seccion APLICACIONES\&. Se discutira en mas detalle sobre las capas en la seccion LAYERS\&.
 .SS "Focus Model"
-La ventana que esta enfocada es la que recibe los eventos de teclado y mouse\. El tipo de enfocado (Focus Model) es seleccionable via menu de Configuracion localizado en el RootMenu\. Discutiremos sobre los diferentes modos de enfocado en la seccion FOCUS MODEL\.
 .sp
+La ventana que esta enfocada es la que recibe los eventos de teclado y mouse\&. El tipo de enfocado (Focus Model) es seleccionable via menu de Configuracion localizado en el RootMenu\&. Discutiremos sobre los diferentes modos de enfocado en la seccion FOCUS MODEL\&.
 .SS "Ventanas"
-Un click izquierdo del mouse en cualquier parte del borde de la ventana la \fIelevara\fR sobre las otras\. Manteniendo apretado el boton y arrastrando la desplazara a otra parte del escritorio\. Arrastrando los \fIgrips\fR de tamanio en las esquinas inferiores izquierda y derecha cambiaran el tamanio de la ventana\. Click del medio en un borde o la barra de titulo inmediatamente la \fIbajara\fR\. Click derecho en un borde o la barra de titulo muestra el WindowMenu\. Los comandos en este menu en particular se comentan en detalle en la seccion MENUS\.
 .sp
+Un click izquierdo del mouse en cualquier parte del borde de la ventana la \fIelevara\fR sobre las otras\&. Manteniendo apretado el boton y arrastrando la desplazara a otra parte del escritorio\&. Arrastrando los \fIgrips\fR de tamanio en las esquinas inferiores izquierda y derecha cambiaran el tamanio de la ventana\&. Click del medio en un borde o la barra de titulo inmediatamente la \fIbajara\fR\&. Click derecho en un borde o la barra de titulo muestra el WindowMenu\&. Los comandos en este menu en particular se comentan en detalle en la seccion MENUS\&.
 .SS "Tabs"
-Fluxbox permite que las ventanas sean \fIagrupadas\fR haciendo click con el boton del medio en la barra de titulo y luego arrastrando y soltando en otra ventana\. De esta manera las barras de título se convertiran en pestanias permitiendo al usuario seleccionar cada ventana individualmente\. Este metodo nos permite poner multiples aplicaciones en una sola localizacion en el escritorio, y hacer muchas operaciones (por ej\. mover o cambiar de tamanio) a todas las ventanas del grupo\. Las opciones se detallan en la seccion TAB OPTIONS
 .sp
+Fluxbox permite que las ventanas sean \fIagrupadas\fR haciendo click con el boton del medio en la barra de titulo y luego arrastrando y soltando en otra ventana\&. De esta manera las barras de t\('itulo se convertiran en pestanias permitiendo al usuario seleccionar cada ventana individualmente\&. Este metodo nos permite poner multiples aplicaciones en una sola localizacion en el escritorio, y hacer muchas operaciones (por ej\&. mover o cambiar de tamanio) a todas las ventanas del grupo\&. Las opciones se detallan en la seccion TAB OPTIONS
 .SS "Miscelaneas"
+.sp
 Cuando se quiere arrastrar una ventana, pero no se puede ver el borde inferior o la barra de titulo se puede apretar (y sostener!)
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 ALT + Boton Izquierdo del Mouse (Boton 1)
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-y moverla a cualquier parte del espacio de trabajo actual\. Esta combinacion de teclas puede ser usada tambien para traer el frente ventanas parcialmente visibles\.
+.\}
+.sp
+y moverla a cualquier parte del espacio de trabajo actual\&. Esta combinacion de teclas puede ser usada tambien para traer el frente ventanas parcialmente visibles\&.
 .sp
 La combinacion
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 ALT + Boton Derecho del Mouse (Boton 3)
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-permitira cambiar el tamanio de la ventana\. Esto puede se deshabilitado en el archivo \fIinit\fR (por defecto ~/\.fluxbox/init) con:
+.\}
 .sp
+permitira cambiar el tamanio de la ventana\&. Esto puede se deshabilitado en el archivo \fIinit\fR (por defecto ~/\&.fluxbox/init) con:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.session0\.useMod1: <logica>
+.BB lightgray
+session\&.session0\&.useMod1: <logica>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .SS "MENUS"
-Fluxbox instala un archivo de menu por defecto en /user/local/share/fluxbox/menu\. Para confirmar esto podemos usar el comando fluxbox \-i desde una terminal\. Por supuesto este menu puede ser modificado para todos los usuarios de una sola vez, pero tambien es posible crear un menu individual para cada usuario\. Por convencion los usuarios crean su archivo menu en ~/\.fluxbox\. Una vez que hemos creado nuestro propia menu, querremos asegurarnos que indicamos adecuadamente su localizacion en nuestro archivo \fIinit\fR asi fluxbox sabra donde buscar\. El valor que debemos agregar o cambiar es:
 .sp
+Fluxbox instala un archivo de menu por defecto en /user/local/share/fluxbox/menu\&. Para confirmar esto podemos usar el comando fluxbox \-i desde una terminal\&. Por supuesto este menu puede ser modificado para todos los usuarios de una sola vez, pero tambien es posible crear un menu individual para cada usuario\&. Por convencion los usuarios crean su archivo menu en ~/\&.fluxbox\&. Una vez que hemos creado nuestro propia menu, querremos asegurarnos que indicamos adecuadamente su localizacion en nuestro archivo \fIinit\fR asi fluxbox sabra donde buscar\&. El valor que debemos agregar o cambiar es:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.session0\.menuFile: <archivo_menu>
+.BB lightgray
+session\&.session0\&.menuFile: <archivo_menu>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Para que este cambio tenga efecto debemos reiniciar Fluxbox\. Nos aseguramos que nuestro menu sea utilizable, luego elegimos \fIRestar\fR del menu root\. Este reinicio es necesario solamente si hacemos cambios al archivo \fIinit\fR, de otra manera alcanza con \fIReload config\fR\. Una recarga del menu tambien puede ser forzada enviando una senial SIGUSR2 (ver la seccion SENIALES)\.
+.\}
 .sp
+Para que este cambio tenga efecto debemos reiniciar Fluxbox\&. Nos aseguramos que nuestro menu sea utilizable, luego elegimos \fIRestar\fR del menu root\&. Este reinicio es necesario solamente si hacemos cambios al archivo \fIinit\fR, de otra manera alcanza con \fIReload config\fR\&. Una recarga del menu tambien puede ser forzada enviando una senial SIGUSR2 (ver la seccion SENIALES)\&.
 .SS "Menu Root"
-El menu root es donde se pueden cambiar diferentes aspectos de fluxbox simplemente haciendo click en un item del mismo\. La mayoria de los cambios en este menu tambien se pueden hacer en el archivo \fIinit\fR\. Sin embargo es mucho mas facil cambiar ciertas opciones sin tener que abrir un editor de texto y buscar el recurso\. En el menu root generalmente se tiene un submenu llamado\'fluxbox menu\' o \fIsettings\fR, donde se encontrara una cantidad de opciones diferentes\. Le echaremos una mirada a la mayoria, si no a todas, aqui\.
 .sp
+El menu root es donde se pueden cambiar diferentes aspectos de fluxbox simplemente haciendo click en un item del mismo\&. La mayoria de los cambios en este menu tambien se pueden hacer en el archivo \fIinit\fR\&. Sin embargo es mucho mas facil cambiar ciertas opciones sin tener que abrir un editor de texto y buscar el recurso\&. En el menu root generalmente se tiene un submenu llamado\'fluxbox menu\' o \fIsettings\fR, donde se encontrara una cantidad de opciones diferentes\&. Le echaremos una mirada a la mayoria, si no a todas, aqui\&.
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBConfigure\fR: El proximo nivel bajo este menu es donde se pueden indicar ciertas opciones y realmente empezar a personalizar el
 \fIlook and feel\fR
-del escritorio\.
+del escritorio\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBSystem Styles\fR: Aca es donde se encuentra la lista de los estilos estandar\. Se puede seleccionar uno de ellos con un simple click\. Es probable que se tenga que recargar la configuracion o reiniciar para que cada elemento grafico corresponda al nuevo estilo\. Los estilos de sistema estan localizados en /usr/local/share/fluxbox/styles de acuerdo a una instalacion por defecto\. Cabe recordar que se puede confirmar esto con fluxbox \-i\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBSystem Styles\fR: Aca es donde se encuentra la lista de los estilos estandar\&. Se puede seleccionar uno de ellos con un simple click\&. Es probable que se tenga que recargar la configuracion o reiniciar para que cada elemento grafico corresponda al nuevo estilo\&. Los estilos de sistema estan localizados en /usr/local/share/fluxbox/styles de acuerdo a una instalacion por defecto\&. Cabe recordar que se puede confirmar esto con fluxbox \-i\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBUser Styles\fR: ~/\.fluxbox/styles es la ubicacion donde se almacenaran los estilos nuevos que se consigan de Internet\. Si se crean estilos propios tambien es este el directorio donde colocarlos (siguiendo los
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBUser Styles\fR: ~/\&.fluxbox/styles es la ubicacion donde se almacenaran los estilos nuevos que se consigan de Internet\&. Si se crean estilos propios tambien es este el directorio donde colocarlos (siguiendo los
 \fIstandards\fR
-descriptos en fluxstyle(1))\.
+descriptos en fluxstyle(1))\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBWorkspace List\fR: Esta es una lista de los espacios de trabajo configurados en
-\fIinit\fR\. Si hay programas ejecutandose en alguno de los
+\fIinit\fR\&. Si hay programas ejecutandose en alguno de los
 \fIescritorios\fR
-apareceran listados un nivel mas abajo\.
+apareceran listados un nivel mas abajo\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBTools\fR: Aparecen listadas diferentes herramientas que se pueden utilizar\. Se puede renombrar ventanas o regenerar el menu\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBTools\fR: Aparecen listadas diferentes herramientas que se pueden utilizar\&. Se puede renombrar ventanas o regenerar el menu\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBWindow\fR: Permite cambiar el manejador de ventanas (aparece solamente si se tienen instalados otros manejadores de ventanas o ambientes de escritorio)\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBWindow\fR: Permite cambiar el manejador de ventanas (aparece solamente si se tienen instalados otros manejadores de ventanas o ambientes de escritorio)\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBLock Screen\fR: Bloquea la pantalla\&...
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBFluxbox Command\fR: Una pequenia linea de comandos aparecera donde se podra ingresar un comando Fluxbox\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBFluxbox Command\fR: Una pequenia linea de comandos aparecera donde se podra ingresar un comando Fluxbox\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBReload Config\fR: Se utiliza para recargar cualquier archivo de menu o estilo\. Es solo una re\-lectura basica de los archivos usados por Fluxbox\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBReload Config\fR: Se utiliza para recargar cualquier archivo de menu o estilo\&. Es solo una re\-lectura basica de los archivos usados por Fluxbox\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBRestart\fR: Reinicia todo, esto relee archivos y redibuja elementos graficos\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBRestart\fR: Reinicia todo, esto relee archivos y redibuja elementos graficos\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBExit\fR: Sale de fluxbox y termina el servidor X\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBExit\fR: Sale de fluxbox y termina el servidor X\&.
 .RE
 .SS "Menu de Configuracion"
-Este menu ofrece la oportunidad de configurar fluxbox\. Tambien puede ser hecho editando el archivo init, pero es mas facil y mas rapido para la mayoria de los usuarios hacerlo desde el menu\.
 .sp
+Este menu ofrece la oportunidad de configurar fluxbox\&. Tambien puede ser hecho editando el archivo init, pero es mas facil y mas rapido para la mayoria de los usuarios hacerlo desde el menu\&.
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBFocus Model\fR: Por favor leer la seccion FOCUS MODEL al final de este manual\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBFocus Model\fR: Por favor leer la seccion FOCUS MODEL al final de este manual\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBTab Options\fR: Nos permite configurar las propiedades de las
-\fItabs\fR\. Se detalla en la seccion TAB OPTIONS\.
+\fItabs\fR\&. Se detalla en la seccion TAB OPTIONS\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBSlit\fR: Este menu puede ser abierto clickeando sobre la Slit (si esta visible)\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBSlit\fR: Este menu puede ser abierto clickeando sobre la Slit (si esta visible)\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBLayer\fR: Mirar dentro de este submenu las distintas prioridades de Layer\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBLayer\fR: Mirar dentro de este submenu las distintas prioridades de Layer\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBAuto Hide\fR: Si esta activado, la slit desaparecera luego de cierto tiempo y se escondera de la vista del usuario\. Se puede hacer aparecer si se mueve el mouse hacia el borde del escritorio donde la slit esta posicionada\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBAuto Hide\fR: Si esta activado, la slit desaparecera luego de cierto tiempo y se escondera de la vista del usuario\&. Se puede hacer aparecer si se mueve el mouse hacia el borde del escritorio donde la slit esta posicionada\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBMaximize Over\fR: Si activado, todas las ventanas al ser maximizadas se estiraran hasta pasar por encima o por debajo de la slit\. De otro modo seran limitadas por el borde de esta\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBMaximize Over\fR: Si activado, todas las ventanas al ser maximizadas se estiraran hasta pasar por encima o por debajo de la slit\&. De otro modo seran limitadas por el borde de esta\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBAlpha\fR: Cambiando este valor la slit se volvera mas o menos transparente (solamente su decoracion, no las aplicaciones en ella)\. 0 (transparente) \- 255 (opaco)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBAlpha\fR: Cambiando este valor la slit se volvera mas o menos transparente (solamente su decoracion, no las aplicaciones en ella)\&. 0 (transparente) \- 255 (opaco)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBSlit Direction\fR: Alterando este valor se indicara la direccion de la slit para ordenar las aplicaciones cargadas en la slit\. No hay efecto con solo una aplicacion\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBSlit Direction\fR: Alterando este valor se indicara la direccion de la slit para ordenar las aplicaciones cargadas en la slit\&. No hay efecto con solo una aplicacion\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBClients\fR: Este submenu nos deja reordenar las aplicaciones corriendo en la slit\. Se pueden esconder deseleccionandolas en la lista que las muestra\. Esto no matara la aplicacion\. Se hacen aparecer seleccionandolas en la lista\. La opcion "Save Slitlist" guarda el nuevo orden en el archivo
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBClients\fR: Este submenu nos deja reordenar las aplicaciones corriendo en la slit\&. Se pueden esconder deseleccionandolas en la lista que las muestra\&. Esto no matara la aplicacion\&. Se hacen aparecer seleccionandolas en la lista\&. La opcion "Save Slitlist" guarda el nuevo orden en el archivo
 \fIslitlist\fR
-localizado en ~/\.fluxbox (util si se reordenan las aplicaciones con las opciones
+localizado en ~/\&.fluxbox (util si se reordenan las aplicaciones con las opciones
 \fICycle Up\fR
 y
-\fICycle Down\fR)\.
+\fICycle Down\fR)\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBToolbar\fR: Observar la parte de la seccion TOOLBAR denominada "Configuracion a traves del menu de la Barra de Herramientas"\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBToolbar\fR: Observar la parte de la seccion TOOLBAR denominada "Configuracion a traves del menu de la Barra de Herramientas"\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBImage dithering\fR: Activa o desactiva el dithering de imagenes\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBImage dithering\fR: Activa o desactiva el dithering de imagenes\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBOpaque Window Moving\fR: Si esta activado, se vera el contenido de la ventana mientras se la arrastra\. De otro modo se vera solo el borde durante el movimiento\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBOpaque Window Moving\fR: Si esta activado, se vera el contenido de la ventana mientras se la arrastra\&. De otro modo se vera solo el borde durante el movimiento\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBFull Maximization\fR: Activando esta opcion actuara sobre las configuraciones por separado de la slit y la toolbar\. Las ventanas siempre se maximizaran por encima o por debajo de ellas\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBFull Maximization\fR: Activando esta opcion actuara sobre las configuraciones por separado de la slit y la toolbar\&. Las ventanas siempre se maximizaran por encima o por debajo de ellas\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBFocus New Window\fR: Si activado, cada nueva ventana que se abra aparecera enfocada\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBFocus New Window\fR: Si activado, cada nueva ventana que se abra aparecera enfocada\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBFocus Last Window on Workspace\fR: Enfoca la ultima ventana cuando se vuelve a un espacio de trabajo\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBFocus Last Window on Workspace\fR: Enfoca la ultima ventana cuando se vuelve a un espacio de trabajo\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBWorkspace warping\fR: Activar esta opcion permite arrastrar ventanas de un escritorio hacia otro\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBWorkspace warping\fR: Activar esta opcion permite arrastrar ventanas de un escritorio hacia otro\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBDesktop MouseWhell Switching\fR: Con esta opción se puede cambiar de escritorio haciendo girar la rueda del mouse sobre la toolbar o sobre el fondo de escritorio\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBDesktop MouseWhell Switching\fR: Con esta opci\('on se puede cambiar de escritorio haciendo girar la rueda del mouse sobre la toolbar o sobre el fondo de escritorio\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBDecorate transient windows\fR: Cuando se selecciona esta opción todas las ventanas temporales tienen borde y
-\fIgrips\fR\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBDecorate transient windows\fR: Cuando se selecciona esta opci\('on todas las ventanas temporales tienen borde y
+\fIgrips\fR\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBClick Raises\fR: Cuando activada, un click en cualquier parte de la ventana (incluida la decoracion) la traera al frente\. De otro modo solamente se podra hacer con un click en la barra de titulo\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBClick Raises\fR: Cuando activada, un click en cualquier parte de la ventana (incluida la decoracion) la traera al frente\&. De otro modo solamente se podra hacer con un click en la barra de titulo\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBTransparency\fR: Permite configurar la transparencia para el menu y las ventanas enfocadas y desenfocadas\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBTransparency\fR: Permite configurar la transparencia para el menu y las ventanas enfocadas y desenfocadas\&.
 .RE
 .SS "Menu Window"
-Este menu es mostrado cuando se hace click derecho sobre la barra de titulo o el borde de una ventana\. Las opciones disponibles son:
 .sp
+Este menu es mostrado cuando se hace click derecho sobre la barra de titulo o el borde de una ventana\&. Las opciones disponibles son:
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBSend To\&...\fR: Manda una ventana a otro escritorio\. Cuando se selecciona el escritorio con click del medio, Fluxbox nos enviara junto con la aplicacion al espacio seleccionado\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBSend To\&...\fR: Manda una ventana a otro escritorio\&. Cuando se selecciona el escritorio con click del medio, Fluxbox nos enviara junto con la aplicacion al espacio seleccionado\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBShade\fR: Hace un
 \fIshade\fR
-a la ventana (muestra solamente la barra de titulo)\.
+a la ventana (muestra solamente la barra de titulo)\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBIconify\fR: Iconifica la ventana\. El
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBIconify\fR: Iconifica la ventana\&. El
 \fIicono\fR
-puede encontrarse en el submenu Icons del menu workspace asi como en la toolbar (si se ha seleccionado un modo para la toolbar que muestre los iconos\.
+puede encontrarse en el submenu Icons del menu workspace asi como en la toolbar (si se ha seleccionado un modo para la toolbar que muestre los iconos\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBMaximize\fR: (Des)Maximiza la ventana\. Dependiendo de la configuracion de la toolbar y de la slit, la maximizacion puede cubrirlas\. Se pueden usar los diferentes botones del mouse para diferentes aspectos de la funcion Maximize\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBMaximize\fR: (Des)Maximiza la ventana\&. Dependiendo de la configuracion de la toolbar y de la slit, la maximizacion puede cubrirlas\&. Se pueden usar los diferentes botones del mouse para diferentes aspectos de la funcion Maximize\&.
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Boton 1 (Des)Maximiza normalmente\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Boton 1 (Des)Maximiza normalmente\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Boton 2 (Des)Maximiza la ventana verticalmente\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Boton 2 (Des)Maximiza la ventana verticalmente\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Boton 3 (Des)Maximiza la ventana horizontalmente\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Boton 3 (Des)Maximiza la ventana horizontalmente\&.
 .RE
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBRaise\fR: Trae la ventana al frente\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBRaise\fR: Trae la ventana al frente\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBLower\fR: Envia la ventana al fondo\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBLower\fR: Envia la ventana al fondo\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBStick\fR: (De)Stickea la ventana\. Una ventana stickeada es mostrada en todos los escritorios al mismo tiempo\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBStick\fR: (De)Stickea la ventana\&. Una ventana stickeada es mostrada en todos los escritorios al mismo tiempo\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBNext Client\fR: Activa el proximo cliente en este grupo de ventanas\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBNext Client\fR: Activa el proximo cliente en este grupo de ventanas\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBPrev Client\fR: Activa el cliente anterior en este grupo de ventanas\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBPrev Client\fR: Activa el cliente anterior en este grupo de ventanas\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBLayer\&...\fR: Cambia la capa de esta ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBLayer\&...\fR: Cambia la capa de esta ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBRemember\&...\fR: Especifica que configuracion de ventana debe ser almacenada en el archivo apps, cubierto mas adelante en la seccion APLICACIONES\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBRemember\&...\fR: Especifica que configuracion de ventana debe ser almacenada en el archivo apps, cubierto mas adelante en la seccion APLICACIONES\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBClose\fR: Cierra la aplicacion\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBClose\fR: Cierra la aplicacion\&.
 .RE
 .SS "Menu Workspace"
-El menu Workspace puede encontrarse clickeando con el boton del medio en el fondo de escritorio\. Aparecera un menu dando la opcion de agregar o quitar un escritorio\. Tambien se veran los escritorios listados, un menu por debajo se veran los programas que estan ejecutandose en los respectivos espacios de trabajo\. Por ultimo pero no menos importante se vera el menu Icons que muestra las aplicaciones que han sido iconificadas\.
 .sp
+El menu Workspace puede encontrarse clickeando con el boton del medio en el fondo de escritorio\&. Aparecera un menu dando la opcion de agregar o quitar un escritorio\&. Tambien se veran los escritorios listados, un menu por debajo se veran los programas que estan ejecutandose en los respectivos espacios de trabajo\&. Por ultimo pero no menos importante se vera el menu Icons que muestra las aplicaciones que han sido iconificadas\&.
 .SS "Comportamiento de los menus"
+.sp
 Dicho comportamiento puede ser configurado en el archivo \fIinit\fR con las siguientes entradas (el valor por defecto para ambas es 0):
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.menuDelay: <msec>
-session\.screen0\.menuDelayClose: <msec>
+.BB lightgray
+session\&.screen0\&.menuDelay: <msec>
+session\&.screen0\&.menuDelayClose: <msec>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .SS "Sintaxis del Menu"
-Existen hasta cuatro campos en una linea de menu\. Son de la forma:
 .sp
+Existen hasta cuatro campos en una linea de menu\&. Son de la forma:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 [tag] (nombre|etiqueta) {comando|nombre_del_archivo} </ruta/al/icono>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
+.sp
 Los tags reconocidos son:
 .PP
 [begin] (etiqueta)
 .RS 4
-Le indica a fluxbox donde inicia a analizar el menu\. Este tag es requerido para que Fluxbox lea el archivo de menu\. Si no lo puede encontrar sera usado el menu por defecto\.
+Le indica a fluxbox donde inicia a analizar el menu\&. Este tag es requerido para que Fluxbox lea el archivo de menu\&. Si no lo puede encontrar sera usado el menu por defecto\&.
 .RE
 .PP
 [end]
 .RS 4
-Le dice a Fluxbox que es el final de un menu\. Puede ser tanto un submenu como el Menu root\. Debe haber por lo menos uno de estos tags que se corresponda con el tag requerido [begin]\.
+Le dice a Fluxbox que es el final de un menu\&. Puede ser tanto un submenu como el Menu root\&. Debe haber por lo menos uno de estos tags que se corresponda con el tag requerido [begin]\&.
 .RE
 .PP
 .RS 4
-Inserta un comando en el menu\. Cuando se selecciona este item en el menu Fluxbox ejecuta el comando\.
+Inserta un comando en el menu\&. Cuando se selecciona este item en el menu Fluxbox ejecuta el comando\&.
 .RE
 .PP
 [exit] (etiqueta)
 .RS 4
-Inserta un item que sale de Fluxbox\. Cualquier ventana abierta es redireccionada a la ventana root y se cierra\.
+Inserta un item que sale de Fluxbox\&. Cualquier ventana abierta es redireccionada a la ventana root y se cierra\&.
 .RE
 .PP
 [include] (nombre\-de\-archivo\-o\-directorio)
 .RS 4
-Analiza el archivo especificado por nombre en linea con el menu actual\. El nombre puede ser la ruta completa al archivo, o puede empezar con ~/, el cual sera buscado en el directorio home del usuario\. Si la ruta es un directorio entonces todos los archivos que contenga seran incluidos\.
+Analiza el archivo especificado por nombre en linea con el menu actual\&. El nombre puede ser la ruta completa al archivo, o puede empezar con ~/, el cual sera buscado en el directorio home del usuario\&. Si la ruta es un directorio entonces todos los archivos que contenga seran incluidos\&.
 .RE
 .PP
 [nop] (etiqueta)
 .RS 4
-Inserta un item no operacional en el menu actual\. Esto puede ser usado para ayudar a dar formato al menu dividiendolo en bloques o secciones si asi se desea\. Este tag soporta una etiqueta pero no es necesaria, en tal caso se obtendra un item en blanco\.
+Inserta un item no operacional en el menu actual\&. Esto puede ser usado para ayudar a dar formato al menu dividiendolo en bloques o secciones si asi se desea\&. Este tag soporta una etiqueta pero no es necesaria, en tal caso se obtendra un item en blanco\&.
 .RE
 .PP
 [separator]
 .RS 4
-Esto creara una bonita linea de separacion\. Util para dividir secciones de una manera vistosa\.
+Esto creara una bonita linea de separacion\&. Util para dividir secciones de una manera vistosa\&.
 .RE
 .PP
 [style] (etiqueta) {nombre_de_archivo}
 .RS 4
-Le dice a Fluxbox que inserte un item que, cuando seleccionado, lee el estilo nombrado en nombre_de_archivo y aplica las nuevas texturas, colores y fuentes a la sesion ejecutandose actualmente\.
+Le dice a Fluxbox que inserte un item que, cuando seleccionado, lee el estilo nombrado en nombre_de_archivo y aplica las nuevas texturas, colores y fuentes a la sesion ejecutandose actualmente\&.
 .RE
 .PP
 [stylesmenu] (directorio)
 .RS 4
-Lee todos los nombres de archivo dentro del directorio especificado, asumiendo que todos son archivos de estilo validos, y crea items del menu dentro del menu actual para cada archivo, que, cuando seleccionados por el usuario aplicaran el estilo elegido a la sesion actual\. Las etiquetas que son creadas en el menu son los nombres de los archivos de estilos\.
+Lee todos los nombres de archivo dentro del directorio especificado, asumiendo que todos son archivos de estilo validos, y crea items del menu dentro del menu actual para cada archivo, que, cuando seleccionados por el usuario aplicaran el estilo elegido a la sesion actual\&. Las etiquetas que son creadas en el menu son los nombres de los archivos de estilos\&.
 .RE
 .PP
 [stylesdir] (etiquteta) {titulo_del_menu}
 .RS 4
-Crea un entrada de submenu con etiqueta (que es tambien el titulo del nuevo submenu), e inserta en ese submenu todos los nombres de archivo en el directorio especificado, asumiendo que todos son archivos validos de estilo (los directorios son ignorados) en la misma manera que el comando [stylesmenu]\. Tanto [stylesdir] como [stylesmenu] hacen posible instalar estilos sin editar el archivo init\.
+Crea un entrada de submenu con etiqueta (que es tambien el titulo del nuevo submenu), e inserta en ese submenu todos los nombres de archivo en el directorio especificado, asumiendo que todos son archivos validos de estilo (los directorios son ignorados) en la misma manera que el comando [stylesmenu]\&. Tanto [stylesdir] como [stylesmenu] hacen posible instalar estilos sin editar el archivo init\&.
 .RE
 .PP
 [submenu] (etiqueta) {titulo_de_menu}
 .RS 4
-Este comando le dice a Fluxbox que cree y analice un nuevo menu\. Este menu es insertado como submenu dentro de menu principal\. Estos menus son analizados recursivamente, de modo que no hay limite para el numero de niveles o submenus anidados que se puedan tener\. El titulo del nuevo menu es opcional, si no se especifica ninguno el titulo del menu sera el mismo que el de la etiqueta\. Es requerido el tag [end] para finalizar el submenu\.
+Este comando le dice a Fluxbox que cree y analice un nuevo menu\&. Este menu es insertado como submenu dentro de menu principal\&. Estos menus son analizados recursivamente, de modo que no hay limite para el numero de niveles o submenus anidados que se puedan tener\&. El titulo del nuevo menu es opcional, si no se especifica ninguno el titulo del menu sera el mismo que el de la etiqueta\&. Es requerido el tag [end] para finalizar el submenu\&.
 .RE
 .PP
 [reconfig] (label)
 .RS 4
-Cuando seleccionado este item relee el estilo actual y el archivo de menu y aplica cualquier cambio\. Es util para crear un nuevo tema o estilo sin que haya que reiniciar fluxbox cada vez que guardamos algun cambio\. Sin embargo Fluxbox relee el menu automaticamente cada vez que cambia\.
+Cuando seleccionado este item relee el estilo actual y el archivo de menu y aplica cualquier cambio\&. Es util para crear un nuevo tema o estilo sin que haya que reiniciar fluxbox cada vez que guardamos algun cambio\&. Sin embargo Fluxbox relee el menu automaticamente cada vez que cambia\&.
 .RE
 .PP
 [restart] (etiqueta) {comando}
 .RS 4
-Le dice a Fluxbox que reinicie\. Si se provee un comando sale y ejecuta el comando (el cual es habitualmente el nombre de otro window manager)\. Si el comando es omitido Fluxbox se reinicia a si mismo\.
+Le dice a Fluxbox que reinicie\&. Si se provee un comando sale y ejecuta el comando (el cual es habitualmente el nombre de otro window manager)\&. Si el comando es omitido Fluxbox se reinicia a si mismo\&.
 .RE
 .PP
 [config] (label)
 .RS 4
-Inserta submenu Fluxbox nativo, conteniendo numerosas opciones de configuracion relacionadas a la localizacion de ventanas, estilo de foco, estilo de movimiento de ventana, etc\.
+Inserta submenu Fluxbox nativo, conteniendo numerosas opciones de configuracion relacionadas a la localizacion de ventanas, estilo de foco, estilo de movimiento de ventana, etc\&.
 .RE
 .PP
 [wallpapers] (etiqueta)
 .RS 4
-Este item nos permite enlistar nuestros fondos de pantalla\. Esta hecho para trabajar junto con fbsetbg(1) y permite con un simple click en una imagen cambiar de fondo\. Se nota? Fluxbox lo hace facil\&...
+Este item nos permite enlistar nuestros fondos de pantalla\&. Esta hecho para trabajar junto con fbsetbg(1) y permite con un simple click en una imagen cambiar de fondo\&. Se nota? Fluxbox lo hace facil\&...
 .RE
 .PP
 [workspaces] (etiqueta)
 .RS 4
-Le dice a Fluxbox que inserte un enlace al menu workspaces directamente a nuestro menu\. Particularmente util para los usuarios que no pueden acceder a dicho menu directamente (por ej\.: si no se tiene un mouse de tres botones es bastante dificil clickear con el boton del medio para que nos lo muestre)\.
+Le dice a Fluxbox que inserte un enlace al menu workspaces directamente a nuestro menu\&. Particularmente util para los usuarios que no pueden acceder a dicho menu directamente (por ej\&.: si no se tiene un mouse de tres botones es bastante dificil clickear con el boton del medio para que nos lo muestre)\&.
 .RE
-Cualquier linea que empiece con un \fI#\fR o \fI!\fR es considerada un comentario e ignorada por Fluxbox\. Tambien, en los campos etiqueta/comando/nombre_de_archivo se puede usar cualquier caracter\. Usando \fI\e\fR se inserta una barra invertida literal en los campos etiqueta/comando/nombre_de_archivo\.
 .sp
+Cualquier linea que empiece con un \fI#\fR o \fI!\fR es considerada un comentario e ignorada por Fluxbox\&. Tambien, en los campos etiqueta/comando/nombre_de_archivo se puede usar cualquier caracter\&. Usando \fI\e\fR se inserta una barra invertida literal en los campos etiqueta/comando/nombre_de_archivo\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
    Menu Ejemplo
      # menu de Fluxbox
      [begin] (Fluxbox)
-       [exec] (rxvt) {rxvt \-ls} </usr/X11R6/share/icons/terminal\.xpm>
+       [exec] (rxvt) {rxvt \-ls} </usr/X11R6/share/icons/terminal\&.xpm>
        [exec] (netscape) {netscape \-install}
        [exec] (The GIMP) {gimp}
        [exec] (XV) {xv}
@@ -543,9 +1129,9 @@ Cualquier linea que empiece con un \fI#\fR o \fI!\fR es considerada un comentari
          [exec] (compose) {mozilla \-compose}
        [end]
        [submenu] (Window Manager)
-         [exec] (Editar Menus) {nedit ~/\.fluxbox/menu}
+         [exec] (Editar Menus) {nedit ~/\&.fluxbox/menu}
          [submenu] (Estilo) {Que estilo?}
-           [stylesdir] (~/\.fluxbox/styles)
+           [stylesdir] (~/\&.fluxbox/styles)
            [stylesmenu] (Fluxbox Styles) {@pkgdatadir@/styles}
          [end]
          [config] (Opciones de configuracion)
@@ -554,308 +1140,622 @@ Cualquier linea que empiece con un \fI#\fR o \fI!\fR es considerada un comentari
        [end]
        [exit] (Salir)
      [end]
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .SH "TOOLBAR"
-La toolbar (barra de tareas) es un area donde Fluxbox muestra informacion, como un reloj, el identificador de workspaces (espacios de trabajo o escritorios), una systemtray (bandeja del sistema) u una taskbar (llamada iconbar) que puede contener los programas en ejecucion\. El color, aspecto, fuente, etc, son definidos en el estilo y no pueden ser definidos como configuraciones globales\.
+.sp
+La toolbar (barra de tareas) es un area donde Fluxbox muestra informacion, como un reloj, el identificador de workspaces (espacios de trabajo o escritorios), una systemtray (bandeja del sistema) u una taskbar (llamada iconbar) que puede contener los programas en ejecucion\&. El color, aspecto, fuente, etc, son definidos en el estilo y no pueden ser definidos como configuraciones globales\&.
 .sp
 Las partes de la toolbar pueden ser activadas o desactivadas en el archivo \fIinit\fR con los argumentos definidos a continuacion:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.tools
+.BB lightgray
+session\&.screen0\&.toolbar\&.tools
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-El orden y la cantidad de herramientas son libremente seleccionables y deben estar separadas por comas\.Ej\.:
+.\}
 .sp
+El orden y la cantidad de herramientas son libremente seleccionables y deben estar separadas por comas\&.Ej\&.:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.tools: workspacename, systemtray, iconbar, clock
+.BB lightgray
+session\&.screen0\&.toolbar\&.tools: workspacename, systemtray, iconbar, clock
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
+.sp
 las posibles partes o herramientas de la toolbar son:
 .sp
-.sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBClock\fR: Mostrara el area donde apareceran de acuerdo a la especificacion del formato listado en "man strftime"\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBClock\fR: Mostrara el area donde apareceran de acuerdo a la especificacion del formato listado en "man strftime"\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBIconbar\fR: Esta es el area que contiene todas las ventanas (todas las aplicaciones en ejecucion, todas las ventanas minimizadas o tal vez ninguna ventana, todo dependiendo de la configuracion de la toolbar\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBIconbar\fR: Esta es el area que contiene todas las ventanas (todas las aplicaciones en ejecucion, todas las ventanas minimizadas o tal vez ninguna ventana, todo dependiendo de la configuracion de la toolbar\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBSystemtray\fR: La Systemtray (bandeja del sistema) puede contener aplicaciones que estan hechas para correr sobre ella\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBSystemtray\fR: La Systemtray (bandeja del sistema) puede contener aplicaciones que estan hechas para correr sobre ella\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBWorkspaceName\fR: Muestra el nombre del espacio de trabajo actual\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBWorkspaceName\fR: Muestra el nombre del espacio de trabajo actual\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBPrevWorkspace\fR: Muestra una flecha que permite cambiar al Workspace siguiente que se encuentra a la izquierda del actual\. Lo mismo que MouseWheelDown con "Desktop MouseWheel Switching" activado\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBPrevWorkspace\fR: Muestra una flecha que permite cambiar al Workspace siguiente que se encuentra a la izquierda del actual\&. Lo mismo que MouseWheelDown con "Desktop MouseWheel Switching" activado\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBNextWorkspace\fR: Muestra una flecha que permite cambiar al siguiente Workspace a la derecha del actual\. Lo mismo que MouseWheelUp con "Desktop MouseWheel Switching" activado\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBNextWorkspace\fR: Muestra una flecha que permite cambiar al siguiente Workspace a la derecha del actual\&. Lo mismo que MouseWheelUp con "Desktop MouseWheel Switching" activado\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBPrevWindow\fR: Muestra una flecha que permite enfocar la ventana visible anterior en el workspace actual\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBPrevWindow\fR: Muestra una flecha que permite enfocar la ventana visible anterior en el workspace actual\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBNextWindow\fR: Muestra una flecha que permite enfocar la ventana visible posterior en el workspace actual\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBNextWindow\fR: Muestra una flecha que permite enfocar la ventana visible posterior en el workspace actual\&.
 .RE
-La Toolbar puede ser configurada de dos maneras\. Tanto a traves de el Menu de configuracion de la misma, el cual es accesible desde el Menu de Configuracion en el Root\-Menu o con click derecho sobre Nombre de Workspace/Flechas/Reloj en la toolbar, o editando el archivo Init a mano (Observar la seccion RESOURCES para mas informacion sobre como hacerlo\.
 .sp
-.SS "Configuracion a traves del menu de la Barra de Herramientas\."
-Todos los cambios tienen efecto mientras trabajas y puedes notarlo de inmediato, exceptuando cambios en el "Alpha de la barra de herramientas" (toolbar Alpha) , que necesita que se reinicie fluxbox para que los cambios tengan efecto\.
+La Toolbar puede ser configurada de dos maneras\&. Tanto a traves de el Menu de configuracion de la misma, el cual es accesible desde el Menu de Configuracion en el Root\-Menu o con click derecho sobre Nombre de Workspace/Flechas/Reloj en la toolbar, o editando el archivo Init a mano (Observar la seccion RESOURCES para mas informacion sobre como hacerlo\&.
+.SS "Configuracion a traves del menu de la Barra de Herramientas\&."
 .sp
+Todos los cambios tienen efecto mientras trabajas y puedes notarlo de inmediato, exceptuando cambios en el "Alpha de la barra de herramientas" (toolbar Alpha) , que necesita que se reinicie fluxbox para que los cambios tengan efecto\&.
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBVisible\fR: Setea la barra de herramientas en modo visible o invisible (bueno, esto deberia ser mas que obvio ;) )
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.visible: <booleana>
+.BB lightgray
+session\&.screen0\&.toolbar\&.visible: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBAuto hide\fR: Si esta variable es seteada la barra de herramientas va a desaparecer despues de un tiempo definido cuando el puntero del mouse salga del area de la barra de herramientas\. La barra va a aparecer cuando el mouse entre en la zona restante de los bordes de la barra de herramientas\. El tiempo de espera puede ser seteado en init\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBAuto hide\fR: Si esta variable es seteada la barra de herramientas va a desaparecer despues de un tiempo definido cuando el puntero del mouse salga del area de la barra de herramientas\&. La barra va a aparecer cuando el mouse entre en la zona restante de los bordes de la barra de herramientas\&. El tiempo de espera puede ser seteado en init\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.autoHide: <booleana>
-session\.autoRaiseDelay: <int>
+.BB lightgray
+session\&.screen0\&.toolbar\&.autoHide: <booleana>
+session\&.autoRaiseDelay: <int>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBToolbar width percentage\fR: Setea el ancho de la barra de herramienta en forma de porcentaje\. Use el boton izquierdo del mouse para disminuir y el boton derecho para incrementar el valor\. El valor puede variar entre 0 y 100\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBToolbar width percentage\fR: Setea el ancho de la barra de herramienta en forma de porcentaje\&. Use el boton izquierdo del mouse para disminuir y el boton derecho para incrementar el valor\&. El valor puede variar entre 0 y 100\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.widthPercent: <int>
+.BB lightgray
+session\&.screen0\&.toolbar\&.widthPercent: <int>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBMaximize Over\fR: Esta opcion permitira a las ventanas ser maximizadas sobre la barra de herramientas\. Con esta opcion deshabilitada solo se "dockearan" en el borde de la barra\. Para usar esta opcion, la opcion de "Full Maximization" de la configuracion de fluxbox menu debera estar deshabilitada, de otra manera esta opcion "Maximize over" no funcionara\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBMaximize Over\fR: Esta opcion permitira a las ventanas ser maximizadas sobre la barra de herramientas\&. Con esta opcion deshabilitada solo se "dockearan" en el borde de la barra\&. Para usar esta opcion, la opcion de "Full Maximization" de la configuracion de fluxbox menu debera estar deshabilitada, de otra manera esta opcion "Maximize over" no funcionara\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.maxOver: <booleana>
-session\.screen0\.fullMaximization: <booleana>
+.BB lightgray
+session\&.screen0\&.toolbar\&.maxOver: <booleana>
+session\&.screen0\&.fullMaximization: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .RE
-\-\fBLayer\&...\fR: Esta opcion configura la capa donde la barra de herramientas es seteada\. Con esta misma uno puede configurar la barra de herramientas para que este siempre arriba de todo con "Always on top"
 .sp
+\-\fBLayer\&...\fR: Esta opcion configura la capa donde la barra de herramientas es seteada\&. Con esta misma uno puede configurar la barra de herramientas para que este siempre arriba de todo con "Always on top"
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.layer: <layer>
+.BB lightgray
+session\&.screen0\&.toolbar\&.layer: <layer>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-\-\fBPlacement\fR: Configura el lugar donde la barra de herramientas se encontrara, arriba, abajo, con una alineacion de derecha, izquierda o en el centro\.
+.\}
 .sp
+\-\fBPlacement\fR: Configura el lugar donde la barra de herramientas se encontrara, arriba, abajo, con una alineacion de derecha, izquierda o en el centro\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.alpha: <int>
+.BB lightgray
+session\&.screen0\&.toolbar\&.alpha: <int>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-\-\fBAlpha\fR: Esta opcion configura el valor alpha (transparencia) para la barra de herramientas\. Use el boton izquierdo del mouse para disminuir y el derecho para incrementar el valor\. 0 es invisible y 255 es sin ninguna transparencia (color solido)\.
+.\}
 .sp
+\-\fBAlpha\fR: Esta opcion configura el valor alpha (transparencia) para la barra de herramientas\&. Use el boton izquierdo del mouse para disminuir y el derecho para incrementar el valor\&. 0 es invisible y 255 es sin ninguna transparencia (color solido)\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.alpha: <int>
+.BB lightgray
+session\&.screen0\&.toolbar\&.alpha: <int>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
+.sp
 \-\fBIconbar Mode\fR:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 Especifica el modo de la barra de iconos "iconbar":
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 \-None:
     No mostrara ninguna ventana
 \-Icons:
-    Solo mostrara las ventanas de todos los escritorios que estan minimizadas\.
+    Solo mostrara las ventanas de todos los escritorios que estan minimizadas\&.
 \-NoIcons:
-    Solo mostrara las ventanas de todos los escritorios que no estan minimizadas\.
+    Solo mostrara las ventanas de todos los escritorios que no estan minimizadas\&.
 \-WorkspaceIcons:
     Solo mostrara las ventanas del escritorio en donde se encuentra que esten
-    minimizadas\.
+    minimizadas\&.
 \-WorkspaceNoIcons:
     Solo mostrara las ventanas del escritorio en donde se encuentra que no esten
-    minimizadas\.
+    minimizadas\&.
 \-Workspace:
-    Mostrara todas las ventanas del escritorio en donde se encuentra\.
+    Mostrara todas las ventanas del escritorio en donde se encuentra\&.
 \-All WIndows:
-    Mostrara todas las ventanas de todos los escritorios\.
+    Mostrara todas las ventanas de todos los escritorios\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.iconbar\.mode: <mode>
+.BB lightgray
+session\&.screen0\&.iconbar\&.mode: <mode>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
+.sp
 \-\fBAlignment\fR:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 \-Left:
-    Todos los iconos y ventanas seran alineados segun el ancho seteado en init\.
+    Todos los iconos y ventanas seran alineados segun el ancho seteado en init\&.
 \-Relative:
     Todos los iconos y ventanas seran arreglados para que la barra de iconos
-    siempre este completa\.
+    siempre este completa\&.
 \-Right:
-    Todos los iconos y ventanas seran alineados segun el ancho seteado en init\.
+    Todos los iconos y ventanas seran alineados segun el ancho seteado en init\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.iconbar\.aligment: <alignment>
-session\.screen0\.iconbar\.iconWidth: <int>
+.BB lightgray
+session\&.screen0\&.iconbar\&.aligment: <alignment>
+session\&.screen0\&.iconbar\&.iconWidth: <int>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-\-\fBShow Pictures\fR: Si esta variable esta habilitada la barra de iconos mostrara los iconos de las aplicaciones , si esta posee alguno\.
+.\}
 .sp
+\-\fBShow Pictures\fR: Si esta variable esta habilitada la barra de iconos mostrara los iconos de las aplicaciones , si esta posee alguno\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.iconbar\.usePixmap: <booleana>
+.BB lightgray
+session\&.screen0\&.iconbar\&.usePixmap: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-\-\fBClock\fR: Deja que cambies el estilo de la hora entre 00:00am \- 12:00pm y 00:00\-24:00\.
+.\}
 .sp
-\-\fBEdit Clock Format\fR: Clickeando esta opcion abrira una pequenia ventana en la cual el el formato de hora podra ser modificado de acuerdo a \fIman strftime\fR\.
+\-\fBClock\fR: Deja que cambies el estilo de la hora entre 00:00am \- 12:00pm y 00:00\-24:00\&.
 .sp
+\-\fBEdit Clock Format\fR: Clickeando esta opcion abrira una pequenia ventana en la cual el el formato de hora podra ser modificado de acuerdo a \fIman strftime\fR\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.strftimeFormat: <formato>
+.BB lightgray
+session\&.screen0\&.strftimeFormat: <formato>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .SS "RESOURCES"
-Usualmente el archivo de resource ~/\.fluxbox/init es creado y mantenido por Fluxbox\. Uno puede usar el menu [config] para setear la mayoria de estas opciones\. Sin embargo, nosotros vamos a contemplar todas las opciones disponibles de resource para el usuario\. Si editas este archivo mientras estas corriendo Fluxbox, deberas reiniciar el mismo para que carguen las opciones de resource\.
 .sp
-Cuando estamos corriendo Fluxbox en un ambiente de multiples escritorios la screen0 puede ser tambien screen1, screenN, etc\. Uno puede customizar el comportamiento de Fluxbox en cada uno de los escritorios\. A continuacion damos un ejemplo favorito de Fluxbox documentation manager:
+Usualmente el archivo de resource ~/\&.fluxbox/init es creado y mantenido por Fluxbox\&. Uno puede usar el menu [config] para setear la mayoria de estas opciones\&. Sin embargo, nosotros vamos a contemplar todas las opciones disponibles de resource para el usuario\&. Si editas este archivo mientras estas corriendo Fluxbox, deberas reiniciar el mismo para que carguen las opciones de resource\&.
 .sp
+Cuando estamos corriendo Fluxbox en un ambiente de multiples escritorios la screen0 puede ser tambien screen1, screenN, etc\&. Uno puede customizar el comportamiento de Fluxbox en cada uno de los escritorios\&. A continuacion damos un ejemplo favorito de Fluxbox documentation manager:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-    session\.screen0\.toolbar\.onTop: False
-    session\.screen0\.toolbar\.autoHide: True
-    session\.screen0\.toolbar\.placement: BottomCenter
-    session\.screen0\.toolbar\.widthPercent: 42
-    session\.screen0\.slit\.onTop: False
-    session\.screen0\.slit\.autoHide: True
-    session\.screen0\.slit\.placement: TopLeft
-    session\.screen0\.slit\.direction: Vertical
-    session\.screen0\.strftimeFormat: %I:%M %p
-    session\.screen1\.toolbar\.onTop: True
-    session\.screen1\.slit\.autoHide: False
-    session\.screen1\.slit\.placement: CenterRight
-    session\.screen1\.slit\.direction: Vertical
-    session\.screen1\.strftimeFormat: %a %d %R [%s]
+.BB lightgray
+    session\&.screen0\&.toolbar\&.onTop: False
+    session\&.screen0\&.toolbar\&.autoHide: True
+    session\&.screen0\&.toolbar\&.placement: BottomCenter
+    session\&.screen0\&.toolbar\&.widthPercent: 42
+    session\&.screen0\&.slit\&.onTop: False
+    session\&.screen0\&.slit\&.autoHide: True
+    session\&.screen0\&.slit\&.placement: TopLeft
+    session\&.screen0\&.slit\&.direction: Vertical
+    session\&.screen0\&.strftimeFormat: %I:%M %p
+    session\&.screen1\&.toolbar\&.onTop: True
+    session\&.screen1\&.slit\&.autoHide: False
+    session\&.screen1\&.slit\&.placement: CenterRight
+    session\&.screen1\&.slit\&.direction: Vertical
+    session\&.screen1\&.strftimeFormat: %a %d %R [%s]
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
+.sp
 Aqui estan los resources que estan actualmente disponibles:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.menu\.alpha: <entero>
-session\.screen0\.slit\.alpha: <entero>
-session\.screen0\.toolbar\.alpha: <entero>
-session\.screen0\.window\.focus\.alpha: <entero>
-session\.screen0\.window\.unfocus\.alpha: <entero>
+.BB lightgray
+session\&.screen0\&.menu\&.alpha: <entero>
+session\&.screen0\&.slit\&.alpha: <entero>
+session\&.screen0\&.toolbar\&.alpha: <entero>
+session\&.screen0\&.window\&.focus\&.alpha: <entero>
+session\&.screen0\&.window\&.unfocus\&.alpha: <entero>
     Estos resources estan disponibles para que el usuario pueda configurar
 diferentes niveles de transparencia para diferentes componentes
-de Fluxbox\. Cada uno acepta un valor entre 0\-255 siendo 255 el
-mas opaco y 0 completamente transparente\. El default es 255\.
+de Fluxbox\&. Cada uno acepta un valor entre 0\-255 siendo 255 el
+mas opaco y 0 completamente transparente\&. El default es 255\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.slit\.autoHide: <booleana>
-session\.screen0\.toolbar\.autoHide: <booleana>
+.BB lightgray
+session\&.screen0\&.slit\&.autoHide: <booleana>
+session\&.screen0\&.toolbar\&.autoHide: <booleana>
     El resource autoHide permite al usuario que configure el comportamiento
-de la barra de herramientas  y el slit\. Este comportamiento puede ser
+de la barra de herramientas  y el slit\&. Este comportamiento puede ser
 que estos desaparezcan cuando estos no estan siendo activamente usados
-por el usuario, o que permanezcan visibles todo el tiempo\. Default <booleana>
+por el usuario, o que permanezcan visibles todo el tiempo\&. Default <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.desktopwheeling: <booleana>
-session\.screen0\.toolbar\.wheeling: <booleana>
-Esto marca la posibilidad de utlizar el scroll del mouse del usuario\.
+.BB lightgray
+session\&.screen0\&.desktopwheeling: <booleana>
+session\&.screen0\&.toolbar\&.wheeling: <booleana>
+Esto marca la posibilidad de utlizar el scroll del mouse del usuario\&.
 Configurando estos valores a \'<booleana>\' (true o false) permite que el usuario
 pueda literalmente navegar entre escritorios o aplicaciones en la barra de
-herramientas\. Default: <booleana>
+herramientas\&. Default: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.slit\.layer: <layer>
-session\.screen0\.toolbar\.layer: <layer
+.BB lightgray
+session\&.screen0\&.slit\&.layer: <layer>
+session\&.screen0\&.toolbar\&.layer: <layer
 Con estos dos resources, uno puede marcar las capas en que uno quiere
-que aparezcan la barra de herramientas y el slit\. Por favor lea la
-seccion de LAYER para mas informacion\.
+que aparezcan la barra de herramientas y el slit\&. Por favor lea la
+seccion de LAYER para mas informacion\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.slit\.onTop: <booleana>
-session\.screen0\.toolbar\.onTop: <booleana>
+.BB lightgray
+session\&.screen0\&.slit\&.onTop: <booleana>
+session\&.screen0\&.toolbar\&.onTop: <booleana>
 Un usuario puede configurar si la barra de herramientas o el slit
-siempre estan en el frente de la pantalla\. Configurando estos
+siempre estan en el frente de la pantalla\&. Configurando estos
 resources va a llevar a la barra de herramientas y el slit por
-encima de todas las otras ventanas\. Por defecto: False
+encima de todas las otras ventanas\&. Por defecto: False
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.slit\.placement: <posicion>
-session\.screen0\.toolbar\.placement: <posicion>
+.BB lightgray
+session\&.screen0\&.slit\&.placement: <posicion>
+session\&.screen0\&.toolbar\&.placement: <posicion>
 Esto permite al usuario poner el split y la barra de herramientas
-donde el usuario desee\. Las opciones disponibles son:
+donde el usuario desee\&. Las opciones disponibles son:
  \-   BottomCenter
  \-   BottomLeft
  \-   BottomRight
@@ -863,56 +1763,106 @@ donde el usuario desee\. Las opciones disponibles son:
  \-   RightCenter
  \-   TopCenter
  \-   TopLeft
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.slit\.maxOver: <booleana>
-session\.screen0\.toolbar\.maxOver: <booleana>
+.BB lightgray
+session\&.screen0\&.slit\&.maxOver: <booleana>
+session\&.screen0\&.toolbar\&.maxOver: <booleana>
     Seteando estas a \'<booleana>\' permitira la ventana de aplicacion
-maximizarse completamente\. configurando estas a \'<booleana>\' permitira
+maximizarse completamente\&. configurando estas a \'<booleana>\' permitira
 a la slit y la barra de herramientas conservar sus correspondientes
 territorios y siempre seran visibles cuando una aplicacion sea
-maximizada\. El default es: <booleana>
+maximizada\&. El default es: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.height: <entero>
-Setea la altura de la barra de herramientas\. Default: 0
+.BB lightgray
+session\&.screen0\&.toolbar\&.height: <entero>
+Setea la altura de la barra de herramientas\&. Default: 0
     Si el valor es seteado a 0, el archivo de estilo <style> va a tomar
-control sobre la altura de la barra de herramientas\.  Es posible
-cambiar el tamanio de la misma seteandola con un valor > 0\.
+control sobre la altura de la barra de herramientas\&.  Es posible
+cambiar el tamanio de la misma seteandola con un valor > 0\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.visible: <booleana>
+.BB lightgray
+session\&.screen0\&.toolbar\&.visible: <booleana>
      El usuario puede setear si quiere o no una barra de herramientas
- visible en la pantalla\. Configurando la variable a \'<booleana>\' remueve
- la barra de herramientas de la pantalla\. Esto tambien depende
+ visible en la pantalla\&. Configurando la variable a \'<booleana>\' remueve
+ la barra de herramientas de la pantalla\&. Esto tambien depende
  obviamente de que si fue o no compilada la barra de herramientas
- cuando se compilo fluxbox\. El default es que la barra sea visible\.
+ cuando se compilo fluxbox\&. El default es que la barra sea visible\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.widthPercent: <entero>
+.BB lightgray
+session\&.screen0\&.toolbar\&.widthPercent: <entero>
     Esta variable permite configurar el ancho (largo) de la barra de
- herramientas\. El default es: 100
+ herramientas\&. El default es: 100
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.toolbar\.tools: <tools>
-    Esto especifica las herramientas en la barra de herramientas\. Para mas
+.BB lightgray
+session\&.screen0\&.toolbar\&.tools: <tools>
+    Esto especifica las herramientas en la barra de herramientas\&. Para mas
  informacion leer la seccion TOOLBAR en este manual para una
- descripcion detallada de cada una de estas herramientas\.
+ descripcion detallada de cada una de estas herramientas\&.
  Las posibles herramientas son::
  \-   clock
      \-   iconbar
@@ -922,303 +1872,577 @@ session\.screen0\.toolbar\.tools: <tools>
      \-   prevworkspace
      \-   systemtray
      \-   workspacename
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.slit\.onhead: <entero>
-session\.screen0\.toolbar\.onhead: <entero>
+.BB lightgray
+session\&.screen0\&.slit\&.onhead: <entero>
+session\&.screen0\&.toolbar\&.onhead: <entero>
     Para aquellos usuarios  que tienen sistemas de doble cabeza <varios
  monitores>, puede setear esta variable al numero de pantalla en el
- cual quieren ver el slit y la barra de herramientas\. Default: 0
+ cual quieren ver el slit y la barra de herramientas\&. Default: 0
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.iconbar\.iconWidth: 70
-session\.screen0\.iconbar\.mode: <mode>
- Este valor es seteado en el menu de Iconbar Mode\. Las opciones
+.BB lightgray
+session\&.screen0\&.iconbar\&.iconWidth: 70
+session\&.screen0\&.iconbar\&.mode: <mode>
+ Este valor es seteado en el menu de Iconbar Mode\&. Las opciones
  disponibles son::
      \-   All Windows
   \-   Icons
   \-   None
   \-   Workspace
   \-   WorkspaceIcons
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.iconbar\.usePixmap: <booleana>
-    Esto tambien es seteado en el menu de Iconbar Mode\. Cuando ponemos
+.BB lightgray
+session\&.screen0\&.iconbar\&.usePixmap: <booleana>
+    Esto tambien es seteado en el menu de Iconbar Mode\&. Cuando ponemos
  esta variable en \'<booleana>\' mostrara los iconos nativos de las
- aplicaciones\. El Default: <booleana>
+ aplicaciones\&. El Default: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.iconbar\.iconTextPadding: 10l
-session\.screen0\.iconbar\.deiconifyMode: Current
-session\.screen0\.iconbar\.wheelMode: Screen
-session\.screen0\.iconbar\.alignment: <position>
-    Este valor deberia cambiarse en el menu Iconbar Mode\.
+.BB lightgray
+session\&.screen0\&.iconbar\&.iconTextPadding: 10l
+session\&.screen0\&.iconbar\&.deiconifyMode: Current
+session\&.screen0\&.iconbar\&.wheelMode: Screen
+session\&.screen0\&.iconbar\&.alignment: <position>
+    Este valor deberia cambiarse en el menu Iconbar Mode\&.
  El default es: Relative (relativo)
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 Opciones Disponibles:
 \-   Left: ancho, alineado izquierda
 \-   Relative
 \-   Right: ancho, alineado derecha
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.iconbar\.clientWidth: <entero>
+.BB lightgray
+session\&.screen0\&.iconbar\&.clientWidth: <entero>
     Usado para especificar el ancho de alineacion izquierda/derecha del
- boton Iconbar\. Default: 0
+ boton Iconbar\&. Default: 0
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.overlay\.lineWidth: 1
-session\.screen0\.overlay\.lineStyle: LineSolid
-session\.screen0\.overlay\.joinStyle: JoinMiter
-session\.screen0\.overlay\.capStyle: CapNotLast
-session\.screen0\.slit\.direction: Vertical
-session\.screen0\.strftimeFormat: <fecha>
+.BB lightgray
+session\&.screen0\&.overlay\&.lineWidth: 1
+session\&.screen0\&.overlay\&.lineStyle: LineSolid
+session\&.screen0\&.overlay\&.joinStyle: JoinMiter
+session\&.screen0\&.overlay\&.capStyle: CapNotLast
+session\&.screen0\&.slit\&.direction: Vertical
+session\&.screen0\&.strftimeFormat: <fecha>
     Esto ajusta la forma en que la hora es mostrada en la barra de
- herramientas\. El formato usado es strftime(3)\. default %I %M %p
+ herramientas\&. El formato usado es strftime(3)\&. default %I %M %p
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.tab\.alignment: Left
-session\.screen0\.tab\.height: 16
-session\.screen0\.tab\.placement: Top
-session\.screen0\.tab\.rotatevertical: True
-session\.screen0\.tab\.width: 64
-session\.screen0\.followModel: Ignore
-session\.screen0\.rowPlacementDirection: LeftToRight
-session\.screen0\.colPlacementDirection: TopToBottom
-session\.screen0\.resizeMode: Bottom
-session\.screen0\.focusModel: ClickToFocus
-session\.screen0\.autoRaise: <booleana>
-session\.screen0\.clickRaises: <booleana>
-session\.screen0\.workspacewarping: <booleana>
-session\.screen0\.showwindowposition: <booleana>
+.BB lightgray
+session\&.screen0\&.tab\&.alignment: Left
+session\&.screen0\&.tab\&.height: 16
+session\&.screen0\&.tab\&.placement: Top
+session\&.screen0\&.tab\&.rotatevertical: True
+session\&.screen0\&.tab\&.width: 64
+session\&.screen0\&.followModel: Ignore
+session\&.screen0\&.rowPlacementDirection: LeftToRight
+session\&.screen0\&.colPlacementDirection: TopToBottom
+session\&.screen0\&.resizeMode: Bottom
+session\&.screen0\&.focusModel: ClickToFocus
+session\&.screen0\&.autoRaise: <booleana>
+session\&.screen0\&.clickRaises: <booleana>
+session\&.screen0\&.workspacewarping: <booleana>
+session\&.screen0\&.showwindowposition: <booleana>
  Configurando estas opciones a \'<booleana>\' muestra al usuario, en una
  pequenia ventana, la posicion exacta de la ventana mientras el usuario
- esta arrastrandola\. Permite un posicionamiento preciso de la ventana
- en la pantalla\. Default: <booleana>
+ esta arrastrandola\&. Permite un posicionamiento preciso de la ventana
+ en la pantalla\&. Default: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.decorateTransient: <booleana>
-session\.screen0\.showposinsidewindow: <booleana>
-session\.screen0\.menuMode: Delay
-session\.screen0\.focusNewWindows: <booleana>
-session\.screen0\.workspaceNames: workspace1, workspaceN
+.BB lightgray
+session\&.screen0\&.decorateTransient: <booleana>
+session\&.screen0\&.showposinsidewindow: <booleana>
+session\&.screen0\&.menuMode: Delay
+session\&.screen0\&.focusNewWindows: <booleana>
+session\&.screen0\&.workspaceNames: workspace1, workspaceN
  Aqui es donde el usuario puede nombrar sus ventanas de trabajo
- <workspaces>\. De todos modos, es recomendable que utilice la herramienta
- disponible en el Menu de Configuracion para hacer esto\. Default: one,
- two, three, four\.
+ <workspaces>\&. De todos modos, es recomendable que utilice la herramienta
+ disponible en el Menu de Configuracion para hacer esto\&. Default: one,
+ two, three, four\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.menuDelayClose: 0
+.BB lightgray
+session\&.screen0\&.menuDelayClose: 0
  Esta variable marca el tiempo de demora en milisegundos que el usuario
  quiere que el menu permanezca visible despues de que ha movido el
- mouse de arriba\. Default: 0
+ mouse de arriba\&. Default: 0
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.edgeSnapThreshold: <entero>
+.BB lightgray
+session\&.screen0\&.edgeSnapThreshold: <entero>
    Cuando movemos una ventana en la pantalla, Fluxbox es capaz de pegarla
- al borde de la pantalla para "facil posicionamiento"\. Esta variable le
+ al borde de la pantalla para "facil posicionamiento"\&. Esta variable le
  dice a Fluxbox la distancia en pixels de cuando la ventana va a saltar
- al borde\. Default : 0
+ al borde\&. Default : 0
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.windowPlacement: RowSmartPlacement
+.BB lightgray
+session\&.screen0\&.windowPlacement: RowSmartPlacement
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.fullMaximization: <booleana>
-session\.screen0\.sloppywindowgrouping: <booleana>
-session\.screen0\.rootCommand: <command>
-    Esto sobreescribe el rootCommand del estilo\. Cuando esta variable esta
- seteada va a mantener el fondo de pantalla, mas halla de lo que  cualquier
- estilo tenga configurado\. NOTA: Este comando puede ser peligroso\. Por
- favor este seguro de lo que esta haciendo cuando configure esta
- variable a otro valor distinto de un comando de fondo de pantalla\.
+.BB lightgray
+session\&.screen0\&.fullMaximization: <booleana>
+session\&.screen0\&.sloppywindowgrouping: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.imageDither: <booleana>
-session\.screen0\.opaqueMove: <booleana>
+.BB lightgray
+session\&.screen0\&.imageDither: <booleana>
+session\&.screen0\&.opaqueMove: <booleana>
  Determina el nivel de visibilidad de la aplicacion cuando esta siendo
- arrastrada\. Default: True
+ arrastrada\&. Default: True
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.menuDelay: <msec>
-session\.screen0\.workspaces: <entero>
- Determina el numero de ambientes de trabajos <ventanas> que el usuario quiere\.
+.BB lightgray
+session\&.screen0\&.menuDelay: <msec>
+session\&.screen0\&.workspaces: <entero>
+ Determina el numero de ambientes de trabajos <ventanas> que el usuario quiere\&.
  Default: 4
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.focusLastWindow: <booleana>
-session\.screen0\.windowMenu:
+.BB lightgray
+session\&.screen0\&.focusLastWindow: <booleana>
+session\&.screen0\&.windowMenu:
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.appsFile: <ubicacion>
-session\.groupFile: <ubicacion>
-session\.keyFile: <ubicacion>
-session\.menuFile: <ubicacion>
-session\.slitlistFile: <ubicacion>
-session\.styleFile: <ubicacion>
+.BB lightgray
+session\&.appsFile: <ubicacion>
+session\&.groupFile: <ubicacion>
+session\&.keyFile: <ubicacion>
+session\&.menuFile: <ubicacion>
+session\&.slitlistFile: <ubicacion>
+session\&.styleFile: <ubicacion>
  Todas estas variables de configuracion requieren una direccion a su
- recurso especifico\.  Aqui es cuando podes especificar diferentes
- archivos\. La mayoria de las configuraciones por default estaran en el
- directorio ~/\.fluxbox\.
+ recurso especifico\&.  Aqui es cuando podes especificar diferentes
+ archivos\&. La mayoria de las configuraciones por default estaran en el
+ directorio ~/\&.fluxbox\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.autoRaiseDelay: <entero>
+.BB lightgray
+session\&.autoRaiseDelay: <entero>
     Ajusta el retraso en milisegundos que toma las ventanas enfocadas
- levantarse cuando tienen la opcion Autoraise marcada\.
- El default es 250\.
+ levantarse cuando tienen la opcion Autoraise marcada\&.
+ El default es 250\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.cacheLife: <entero>
+.BB lightgray
+session\&.cacheLife: <entero>
  Esto le dice a Fluxbox cuando tiempo (en minutos) los pixmaps no
- usados van a permanecer en la memoria del servidor X\. Default: 5
+ usados van a permanecer en la memoria del servidor X\&. Default: 5
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.cacheMax: <entero>
+.BB lightgray
+session\&.cacheMax: <entero>
  Esto le dice a Fluxbox cuanta memoria (en kb) puede usar para guardar
- pixmaps cacheados en el servidor X\. Si tu maquina tiene poca memoria
- disponible, podes disminuir este valor\. Default: 200
+ pixmaps cacheados en el servidor X\&. Si tu maquina tiene poca memoria
+ disponible, podes disminuir este valor\&. Default: 200
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.colorsPerChannel: <entero>
+.BB lightgray
+session\&.colorsPerChannel: <entero>
  Esto le dice a Fluxbox cuantos colores debe tomar del servidor X en
- pantallas con pseudo\-colores\. Un canal seria rojo , verde o azul\.
- Fluxbox guarda estas variables y las mantiene siempre disponibles\.
- El valor debe estar siempre entre 2 y 6\. Cuando se ejecuta Fluxbox en una
- pantalla de 8bpp, debe setear este componente a 4\. El default es 4\.
+ pantallas con pseudo\-colores\&. Un canal seria rojo , verde o azul\&.
+ Fluxbox guarda estas variables y las mantiene siempre disponibles\&.
+ El valor debe estar siempre entre 2 y 6\&. Cuando se ejecuta Fluxbox en una
+ pantalla de 8bpp, debe setear este componente a 4\&. El default es 4\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.doubleClickInterval: <entero>
+.BB lightgray
+session\&.doubleClickInterval: <entero>
  Ajusta el tiempo en milisegundos que Fluxbox considera doble\-click
- a dos clicks consecutivos\. El default es 250\.
+ a dos clicks consecutivos\&. El default es 250\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.forcePseudoTransparency: <booleana>
-session\.focusTabMinWidth: 0
-session\.iconbar: <booleana>
+.BB lightgray
+session\&.forcePseudoTransparency: <booleana>
+session\&.focusTabMinWidth: 0
+session\&.iconbar: <booleana>
     Configura este valor a \'true\' o \'false\' para habilitar o
  deshabilitar que la barra de herramientas de Fluxbox muestre ventanas
- iconificadas\. El default es: true
+ iconificadas\&. El default es: true
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.ignoreBorder: <booleana>
-session\.imageDither: <booleana>
+.BB lightgray
+session\&.ignoreBorder: <booleana>
+session\&.imageDither: <booleana>
  Setear a \'true\' o \'false\', respectivamente, para habilitar o
- deshabilitar la agitacion en las imagenes <dithering>\. Solo es
- necesario en sistemas con una profundidad de color de 8bpp o inferior\.
+ deshabilitar la agitacion en las imagenes <dithering>\&. Solo es
+ necesario en sistemas con una profundidad de color de 8bpp o inferior\&.
  Default: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.numLayers: 13
-session\.opaqueMove: <booleana>
+.BB lightgray
+session\&.numLayers: 13
+session\&.opaqueMove: <booleana>
  Cuando estas moviendo una ventana, con esta variable en \'true\',
- dibujara el contenido de la ventana mientras se mueve\. (Esto disminuye el
- rendimiento en sistemas con poco recursos)\. Si el valor es \'true\' solo
- dibujara el recuadro del borde de la ventana\. Default: true
+ dibujara el contenido de la ventana mientras se mueve\&. (Esto disminuye el
+ rendimiento en sistemas con poco recursos)\&. Si el valor es \'true\' solo
+ dibujara el recuadro del borde de la ventana\&. Default: true
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.tabs: <booleana>
-session\.tabPadding: 0
-session\.tabsAttachArea: Window
-session\.titlebar\.left: Stick
-session\.titlebar\.right: Minimize Maximize Close
-session\.updateDelayTime: 0
-session\.useMod1: <booleana>
+.BB lightgray
+session\&.tabs: <booleana>
+session\&.tabPadding: 0
+session\&.tabsAttachArea: Window
+session\&.titlebar\&.left: Stick
+session\&.titlebar\&.right: Minimize Maximize Close
+session\&.updateDelayTime: 0
+session\&.useMod1: <booleana>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .SH "KEYS"
-Se puede customizar (personalizar) las combinaciones de teclas en Fdateluxbox a traves del archivo ~/\.fluxbox/keys\. El archivo toma la forma de:
 .sp
+Se puede customizar (personalizar) las combinaciones de teclas en Fdateluxbox a traves del archivo ~/\&.fluxbox/keys\&. El archivo toma la forma de:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-<modificador> <tecla> :[\.\.\.] <operacion>
+.BB lightgray
+<modificador> <tecla> :[\&.\&.\&.] <operacion>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Como se vera en el ejemplo de mas abajo, Mod1 es la tecla ALT y Mod4 es una de las tres teclas extras en los teclados pc104 que esta marcada con el logo de una empresa muy conocida\. Las lineas que comienzan con \fI#\fR o \fI!\fR se consideran comentarios y no son interpretadas por Fluxbox\.
+.\}
 .sp
+Como se vera en el ejemplo de mas abajo, Mod1 es la tecla ALT y Mod4 es una de las tres teclas extras en los teclados pc104 que esta marcada con el logo de una empresa muy conocida\&. Las lineas que comienzan con \fI#\fR o \fI!\fR se consideran comentarios y no son interpretadas por Fluxbox\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
-# Fluxbox keys file\.
+# Fluxbox keys file\&.
 Mod1 Tab :NextWindow
 Mod1 Shift Tab :PrevWindow
 Mod1 F1 :Workspace 1
@@ -1238,254 +2462,672 @@ Mod4 x :Close
 Mod4 m :RootMenu
 Control n Mod1 n :NextTab
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Como se puede observar en la ultima linea, las \fIkeybindings\fR pueden ser encadenadas al estilo de las combinaciones de Emacs\.
+.\}
 .sp
-Algunas cosas que hay que saber: \- Los comandos distinguen mayusculas de minusculas\. \- La numeracion de los workspaces empieza en "1"\. \- Algunos comandos tienen sinonimos \- El espacio entre la ultima tecla y :Comando es obligatorio\.
+Como se puede observar en la ultima linea, las \fIkeybindings\fR pueden ser encadenadas al estilo de las combinaciones de Emacs\&.
+.sp
+Algunas cosas que hay que saber: \- Los comandos distinguen mayusculas de minusculas\&. \- La numeracion de los workspaces empieza en "1"\&. \- Algunos comandos tienen sinonimos \- El espacio entre la ultima tecla y :Comando es obligatorio\&.
 .sp
 Aqui van los comandos de Fluxbox para usar con teclas:
-.sp
 .SS "Comandos del manejador de ventanas"
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Restart <argumento>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Restart <argumento>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Quit
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Quit
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Reconfigure
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Reconfigure
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'SetStyle <argumento>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SetStyle <argumento>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ExecCommand <argumento>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ExecCommand <argumento>
 .RE
 .SS "Comandos de la ventana en foco"
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Minimize
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Minimize
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MinimizeWindow
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MinimizeWindow
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Iconify
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Iconify
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Maximize
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Maximize
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MaximizeWindow
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MaximizeWindow
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MaximizeHorizontal
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MaximizeHorizontal
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MaximizeVertical
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MaximizeVertical
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ResizeTo <ancho> <altura>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ResizeTo <ancho> <altura>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Resize <delta\-ancho> <delta\-altura>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Resize <delta\-ancho> <delta\-altura>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ResizeHorizontal <delta\-ancho>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ResizeHorizontal <delta\-ancho>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ResizeVertical <delta\-altura>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ResizeVertical <delta\-altura>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MoveTo <x> <y>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MoveTo <x> <y>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Move <delta\-x> <delta\-y>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Move <delta\-x> <delta\-y>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MoveRight <delta\-x>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MoveRight <delta\-x>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MoveLeft <delta\-x>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MoveLeft <delta\-x>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MoveUp <delta\-y>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MoveUp <delta\-y>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MoveDown <delta\-y>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MoveDown <delta\-y>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Raise
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Raise
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Lower
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Lower
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Close
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Close
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Shade
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Shade
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ShadeWindow
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ShadeWindow
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Stick
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Stick
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'StickWindow
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+StickWindow
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ToggleDecor
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ToggleDecor
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'SendToWorkspace <numero>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SendToWorkspace <numero>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'SentToWorkspace <numero>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SentToWorkspace <numero>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'KillWindow
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+KillWindow
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'NextTab
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+NextTab
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'PrevTab
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+PrevTab
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MoveTabLeft
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MoveTabLeft
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MoveTabRight
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MoveTabRight
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'DetachClient
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+DetachClient
 .RE
 .SS "Comandos de Workspace"
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'NextWorkspace
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+NextWorkspace
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'PrevWorkspace
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+PrevWorkspace
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'RightWorkspace <por\-numero>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+RightWorkspace <por\-numero>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'LeftWorkspace <por\-numero>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+LeftWorkspace <por\-numero>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Workspace <numero>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Workspace <numero>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'NextWindow <bitmask>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+NextWindow <bitmask>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'PrevWindow <bitmask>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+PrevWindow <bitmask>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'NextGroup <por\-numero>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+NextGroup <por\-numero>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'PrevGroup <por\-numero>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+PrevGroup <por\-numero>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ArrangeWindows
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ArrangeWindows
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ShowDesktop (Iconifica todas las ventanas)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ShowDesktop (Iconifica todas las ventanas)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'RootMenu
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+RootMenu
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'WorkspaceMenu
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+WorkspaceMenu
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'WindowMenu
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+WindowMenu
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'SetWorkspaceName <nombre>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SetWorkspaceName <nombre>
 .RE
 .SS "Comandos especiales"
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MacroCmd
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MacroCmd
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'ReloadStyle
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+ReloadStyle
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'SetResourceValue <resourcename> <resource> value
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SetResourceValue <resourcename> <resource> value
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'BindKey <key><value>: <action>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+BindKey <key><value>: <action>
 .RE
 .SS "Un par de cosas"
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'SentToWorkspace: Nos enviara junto con la ventana al workspace seleccionado\. SendToWorkspace solo envia la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SentToWorkspace: Nos enviara junto con la ventana al workspace seleccionado\&. SendToWorkspace solo envia la ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Los parametros PrevWindow/NextWindow toman valores enteros: 0 o no especificado = comportamiento Default/actual \- no se saltea 1 = Ignorar las Tabs de mas abajo 2 = Ingnorar las ventanas
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Los parametros PrevWindow/NextWindow toman valores enteros: 0 o no especificado = comportamiento Default/actual \- no se saltea 1 = Ignorar las Tabs de mas abajo 2 = Ingnorar las ventanas
 \fIStickeadas\fR
 3 = Ignorar las Tabs de mas abajo/ventanas
 \fIStickeadas\fR
@@ -1493,203 +3135,453 @@ Aqui van los comandos de Fluxbox para usar con teclas:
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Bindkey agregara una combinacion de teclas y una accion al archivo keys\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Bindkey agregara una combinacion de teclas y una accion al archivo keys\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'El valor
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+El valor
 \fIdelta\fR
-significa la diferencia entre el valor actual y configuracion solicitada\. De modo que si tenemos una ventana con un ancho de 100 pixels, podemos setear
+significa la diferencia entre el valor actual y configuracion solicitada\&. De modo que si tenemos una ventana con un ancho de 100 pixels, podemos setear
 .RE
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 Mod1 r :ResizeHorizontal 10
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-y cuando usamos esa combinacion incrementara el tamanio de la ventana a 110 pixels\. Si hemos usado
+.\}
 .sp
+y cuando usamos esa combinacion incrementara el tamanio de la ventana a 110 pixels\&. Si hemos usado
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 Mod1 r :ResizeHorizontal \-10
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-el tamanio ha disminuido 10 pixels llevando la ventana a 90 pixels\.
+.\}
 .sp
+el tamanio ha disminuido 10 pixels llevando la ventana a 90 pixels\&.
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Los comandos Resize no necesariamente cambian el numero de pixels\. De modo que muchas terminales usaran el tamanio de un caracter como la unidad para cambiar el tamanio\. La mayoria de las aplicaciones sin embargo usaran pixels\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Los comandos Resize no necesariamente cambian el numero de pixels\&. De modo que muchas terminales usaran el tamanio de un caracter como la unidad para cambiar el tamanio\&. La mayoria de las aplicaciones sin embargo usaran pixels\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'MacroCmd:
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+MacroCmd:
 .RE
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 Mod1 r MacroCmd: {command1} {command2}
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-permite ejecutar mas de un comando con una sola combinacion\. Los mismos se ejecutaran de modo serial\.
+.\}
 .sp
+permite ejecutar mas de un comando con una sola combinacion\&. Los mismos se ejecutaran de modo serial\&.
 .SH "LAYERS"
-La layers (capas) afectan el modo en que las ventanas se solapan unas a otras en la pantalla\. Las ventanas en una capa mas alta apareceran por encima de aquellas en una mas baja, sea que esten en foco o no\. Por defecto, Fluxbox usa 13 capas, empezando desde 1 (la mas alta)\. El numero de capas puede ser cambiado usando el siguiente recurso:
 .sp
+La layers (capas) afectan el modo en que las ventanas se solapan unas a otras en la pantalla\&. Las ventanas en una capa mas alta apareceran por encima de aquellas en una mas baja, sea que esten en foco o no\&. Por defecto, Fluxbox usa 13 capas, empezando desde 1 (la mas alta)\&. El numero de capas puede ser cambiado usando el siguiente recurso:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.numLayers: <entero>
+.BB lightgray
+session\&.numLayers: <entero>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Hay dos maneras de asignar una ventana a una capa diferente\. Cuando la ventana esta abierta, se puede seleccionar la capa en el submenu \fILayer \&...\fR del menu de ventana\. El menu da seis opciones para la capa, los cuales Fluxbox maneja por nombre\. Los nombres son (de la capa mas alta a la mas baja):
+.\}
 .sp
+Hay dos maneras de asignar una ventana a una capa diferente\&. Cuando la ventana esta abierta, se puede seleccionar la capa en el submenu \fILayer \&...\fR del menu de ventana\&. El menu da seis opciones para la capa, los cuales Fluxbox maneja por nombre\&. Los nombres son (de la capa mas alta a la mas baja):
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'2 \- Above Dock
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'4 \- Dock
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'6 \- Top
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'8 \- Normal
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'10 \- Bottom
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+2 \- Above Dock
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'12 \- Desktop
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+4 \- Dock
 .RE
-La otra manera es indicar la capa para una ventana en al archivo \fIapps\fR\. Este metodo es indicado en la seccion APLICACIONES\.
 .sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+6 \- Top
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+8 \- Normal
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+10 \- Bottom
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+12 \- Desktop
+.RE
+.sp
+La otra manera es indicar la capa para una ventana en al archivo \fIapps\fR\&. Este metodo es indicado en la seccion APLICACIONES\&.
 .SH "FOCUS MODEL"
-Focus Model (modelo de foco) define como las ventanas obtienen foco\. (Por ej\. convertirse en la ventana activa, la que recibe los eventos de teclado y mouse)\. El Focus Model puede ser cambiado en el menu de configuracion (generalmente ubicado bajo el menu \fIfluxbox\fR, en el menu \fIroot\fR)\.
 .sp
-Hay dos aspectos principales del modo de enfocado: como las ventanas ganan foco y como las tabs (pestanias) ganan foco\. Cada uno tiene dos opciones: el foco sigue al mouse y al click para enfocar\. Que el foco sigue al mouse significa que las ventanas ganaran foco cuando el mouse pase sobre ellas\. Click para enfocar significa que las ventanas ganaran foco cuando reciben un click del mouse\.
+Focus Model (modelo de foco) define como las ventanas obtienen foco\&. (Por ej\&. convertirse en la ventana activa, la que recibe los eventos de teclado y mouse)\&. El Focus Model puede ser cambiado en el menu de configuracion (generalmente ubicado bajo el menu \fIfluxbox\fR, en el menu \fIroot\fR)\&.
 .sp
-Por lo tanto, hay cuatro opciones principales cuando se elige el modelo de foco\. Se debe elegir una de las dos primeras y una de las dos ultimas\. Estas son:
+Hay dos aspectos principales del modo de enfocado: como las ventanas ganan foco y como las tabs (pestanias) ganan foco\&. Cada uno tiene dos opciones: el foco sigue al mouse y al click para enfocar\&. Que el foco sigue al mouse significa que las ventanas ganaran foco cuando el mouse pase sobre ellas\&. Click para enfocar significa que las ventanas ganaran foco cuando reciben un click del mouse\&.
 .sp
+Por lo tanto, hay cuatro opciones principales cuando se elige el modelo de foco\&. Se debe elegir una de las dos primeras y una de las dos ultimas\&. Estas son:
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBClick To Focus\fR: click para enfocar las ventanas
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBMouse Focus\fR: el foco de las ventanas sigue el movimiento del mouse
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBClickTabFocus\fR: click para enfocar las pestanias
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
 \fBMouseTabFocus\fR: el foco de las pestanias sigue el movimiento del mouse
 .RE
-Hay una opcion mas en el menu de Focus Model\. Se llama AutoRaise\. Cuando AutoRaise esta habilitada las ventanas enfocadas apareceran por encima de otras ventanas en la misma capa\. Cuando esta deshabilitada se debe alzar explicitamente una ventana en foco usando el menu \fIWindow\fR o una combinacion de teclas\.
 .sp
+Hay una opcion mas en el menu de Focus Model\&. Se llama AutoRaise\&. Cuando AutoRaise esta habilitada las ventanas enfocadas apareceran por encima de otras ventanas en la misma capa\&. Cuando esta deshabilitada se debe alzar explicitamente una ventana en foco usando el menu \fIWindow\fR o una combinacion de teclas\&.
 .SH "TAB OPTIONS"
-Esta seccion del menu de configuracion de fluxbox nos permite configurar muchas de las caracteristicas de las tabs\. Dentro de ella hay tres opciones principales:
 .sp
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'
-\fBPlacement\fR: se puede elegir donde deben estar ubicadas las tabs externas\. Las opciones son
+Esta seccion del menu de configuracion de fluxbox nos permite configurar muchas de las caracteristicas de las tabs\&. Dentro de ella hay tres opciones principales:
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Top Left: las tabs se encuentran a la izquierda del borde superior de la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBPlacement\fR: se puede elegir donde deben estar ubicadas las tabs externas\&. Las opciones son
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Top Left: las tabs se encuentran a la izquierda del borde superior de la ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Top Right: las tabs se encuentran a la derecha del borde superior de la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Top Right: las tabs se encuentran a la derecha del borde superior de la ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Left Top: las tabs se encuentran en la parte superior del borde izquierdo de la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Left Top: las tabs se encuentran en la parte superior del borde izquierdo de la ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Right Top: las tabs se encuentran en la parte superior del borde derecho de la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Right Top: las tabs se encuentran en la parte superior del borde derecho de la ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Left Bottom: las tabs se encuentran en la parte inferior del borde izquierdo de la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Left Bottom: las tabs se encuentran en la parte inferior del borde izquierdo de la ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Right Bottom: las tabs se encuentran en la parte inferior del borde derecho de la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Right Bottom: las tabs se encuentran en la parte inferior del borde derecho de la ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Bottom Left: las tabs se encuentran a la izquierda del borde inferior de la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Bottom Left: las tabs se encuentran a la izquierda del borde inferior de la ventana\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Bottom Right: las tabs se encuentran a la derecha del borde inferior de la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Bottom Right: las tabs se encuentran a la derecha del borde inferior de la ventana\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-para que estas opciones funcionen la opcion \'Tabs in Titlebar\' debe estar desactivada\.
+.BB lightgray
+para que estas opciones funcionen la opcion \'Tabs in Titlebar\' debe estar desactivada\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .RE
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBTabs in Titlebar\fR: cuando esta opcion esta activada las tabs estan fijas en la barra de titulo y su ancho varia de acuerdo a la cantidad de ventanas agrupadas\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBTabs in Titlebar\fR: cuando esta opcion esta activada las tabs estan fijas en la barra de titulo y su ancho varia de acuerdo a la cantidad de ventanas agrupadas\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'
-\fBExternal Tab Width\fR: especifica en pixels el ancho de las tabs externas\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+
+\fBExternal Tab Width\fR: especifica en pixels el ancho de las tabs externas\&.
 .RE
-Como la mayoría de las configuraciones de fluxbox(1) esto se puede hacer editando el archivo init\. Los recursos que debemos buscar son:
 .sp
+Como la mayor\('ia de las configuraciones de fluxbox(1) esto se puede hacer editando el archivo init\&. Los recursos que debemos buscar son:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.screen0\.tabs\.intitlebar:    <booleana>
-session\.screen0\.tab\.width:            <entero>
-session\.screen0\.tab\.placement:    <direccion>
+.BB lightgray
+session\&.screen0\&.tabs\&.intitlebar:    <booleana>
+session\&.screen0\&.tab\&.width:            <entero>
+session\&.screen0\&.tab\&.placement:    <direccion>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .SH "ESTILOS"
-Fluxbox permite usar archivos especializados (estilos) que contienen recursos de las X(1) para especificar colores, texturas, pixmaps y fuentes, y por lo tanto el aspecto de los bordes de ventanas, menus y la barra de tareas\.
 .sp
-La instalacion de Fluxbox por defecto provee algunos de estos archivos de estilos\. Ver fluxstyle(1) para conocer el creciente numero de componentes de estilos\.
+Fluxbox permite usar archivos especializados (estilos) que contienen recursos de las X(1) para especificar colores, texturas, pixmaps y fuentes, y por lo tanto el aspecto de los bordes de ventanas, menus y la barra de tareas\&.
 .sp
+La instalacion de Fluxbox por defecto provee algunos de estos archivos de estilos\&. Ver fluxstyle(1) para conocer el creciente numero de componentes de estilos\&.
 .SH "APLICACIONES"
-Es posible forzar una aplicacion para que siempre tenga las mismas dimensiones, posicion, y otras configuraciones cuando es lanzada por primera vez\. Esto se hace usando el submenu \fIRemember \&...\fR del menu \fIwindow\fR, o directamente usando el archivo ~/\.fluxbox/apps\. Se debe tener cuidado de editar el archivo apps cuando Fluxbox no se esta ejecutando, de otro modo nuestros cambios seran sobreescritos\. A continuacion se listan las entradas validas para el mencionado archivo\. El submenu \fIRemember \&...\fR tiene entradas para la mayoria de las opciones que se almacenan en \fIapps\fR para cargarse la proxima vez\.
+.sp
+Es posible forzar una aplicacion para que siempre tenga las mismas dimensiones, posicion, y otras configuraciones cuando es lanzada por primera vez\&. Esto se hace usando el submenu \fIRemember \&...\fR del menu \fIwindow\fR, o directamente usando el archivo ~/\&.fluxbox/apps\&. Se debe tener cuidado de editar el archivo apps cuando Fluxbox no se esta ejecutando, de otro modo nuestros cambios seran sobreescritos\&. A continuacion se listan las entradas validas para el mencionado archivo\&. El submenu \fIRemember \&...\fR tiene entradas para la mayoria de las opciones que se almacenan en \fIapps\fR para cargarse la proxima vez\&.
 .sp
 El formato de una linea en \fIapps\fR es:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 [app] (aplicacion) {count \- opcional}
     [Propiedad1]  {valor1}
     [Propiedad2]  {valor2}
-    \.\.\.
+    \&.\&.\&.
 [end]
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Cada \fIaplicacion\fR puede ser una cadena o una expresion regular\. Por defecto el nombre se hace coincidir con una propiedad de ventana WM_CLASS (la primer cadena en ella, llamada "instancia")\. Se puede emparejar contra el titulo, nombre de instancia (por defecto), nombre de clase o rol (la propiedad WM_WINDOW_ROLE) especificandola explicitamente\. Tambien se puede especificar multiples coincidencias, de las cuales TODAS deben coincidir con las propiedades a ser aplicadas\. Si una \fIcount\fR es suministrada entre llaves al final de la linea de la aplicacion entonces la entrada coincidira con, como mucho, con la dada cantidad en cualquier momento (por defecto coincidiran todas las ventanas que encajen en dicho perfil)\.
+.\}
 .sp
+Cada \fIaplicacion\fR puede ser una cadena o una expresion regular\&. Por defecto el nombre se hace coincidir con una propiedad de ventana WM_CLASS (la primer cadena en ella, llamada "instancia")\&. Se puede emparejar contra el titulo, nombre de instancia (por defecto), nombre de clase o rol (la propiedad WM_WINDOW_ROLE) especificandola explicitamente\&. Tambien se puede especificar multiples coincidencias, de las cuales TODAS deben coincidir con las propiedades a ser aplicadas\&. Si una \fIcount\fR es suministrada entre llaves al final de la linea de la aplicacion entonces la entrada coincidira con, como mucho, con la dada cantidad en cualquier momento (por defecto coincidiran todas las ventanas que encajen en dicho perfil)\&.
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 # coincidir una xterm estandar
 [app] (xterm)
 
@@ -1703,145 +3595,328 @@ Cada \fIaplicacion\fR puede ser una cadena o una expresion regular\. Por defecto
 [app] (role=buddy_list)
 
 # coincidir en una ventana rdesktop en un host determinado
-[app] (title=rdesktop \- nombre_de_host\.*)
+[app] (title=rdesktop \- nombre_de_host\&.*)
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Las siguientes son las propiedades que pueden ser definidas en cada entrada [app]\. Cada nombre debe estar encerrado entre corchetes, y valor generalmente entre llaves:
+.\}
 .sp
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'[Workspace] {0\-N}: Fuerza la aplicacion a que se habra en un workspace especificado\. Los workspaces se indican con numero empezando desde 0\.
-.RE
+Las siguientes son las propiedades que pueden ser definidas en cada entrada [app]\&. Cada nombre debe estar encerrado entre corchetes, y valor generalmente entre llaves:
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[Dimensions] {Ancho Alto}: Abre la aplicacion con la altura y ancho especificados, en pixels\.
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'[Position] (\fBpunto de referencia\fR) {X Y} Posiciona la aplicacion en un punto determinado:
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'WINCENTER
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'CENTER
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Workspace] {0\-N}: Fuerza la aplicacion a que se habra en un workspace especificado\&. Los workspaces se indican con numero empezando desde 0\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'UPPERLEFT
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Dimensions] {Ancho Alto}: Abre la aplicacion con la altura y ancho especificados, en pixels\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'UPPERRIGHT
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Position] (\fBpunto de referencia\fR) {X Y} Posiciona la aplicacion en un punto determinado:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+WINCENTER
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'LOWERLEFT
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+CENTER
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'LOWERRIGHT
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+UPPERLEFT
+.RE
 .sp
 .RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+UPPERRIGHT
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+LOWERLEFT
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+LOWERRIGHT
+.sp
+.if n \{\
+.RS 4
+.\}
+.fam C
+.ps -1
 .nf
-Opcionalmente se de pueden especificar los valores realativos de X e Y\.
+.BB lightgray
+Opcionalmente se de pueden especificar los valores realativos de X e Y\&.
 UPERLEFT localiza la esquina superior izquierda en las coordenadas de
-pantalla (0,0)\. Si se especifica LOWERRIGHT, entonces la esquina inferior
+pantalla (0,0)\&. Si se especifica LOWERRIGHT, entonces la esquina inferior
 derecha de la ventana se posicionara en la esquina inferior derecha de la
-pantalla\. CENTER coloca la esquina superior izquierda en el centro de la
+pantalla\&. CENTER coloca la esquina superior izquierda en el centro de la
 pantalla (WINCENTER actua como el resto \- posiciona el centro de la ventana
-relativo la centro de la pantalla)\.
+relativo la centro de la pantalla)\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .RE
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Especifica la capa en que se abrira la ventana (por numero)\. Cada capa tiene un numero\. Las capas con nombre son: 2\-AboveDock, 4\-Dock, 6\-Top, 8\-Normal, 10\-Bottom, 12\-Desktop\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Especifica la capa en que se abrira la ventana (por numero)\&. Cada capa tiene un numero\&. Las capas con nombre son: 2\-AboveDock, 4\-Dock, 6\-Top, 8\-Normal, 10\-Bottom, 12\-Desktop\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[Shaded] {yes|no}: La ventana inicia foldedada (enrollada) o desenrrollada\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Shaded] {yes|no}: La ventana inicia foldedada (enrollada) o desenrrollada\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[Tab] {yes|no}: Indica si esta ventana puede ser agrupada en pestanias con otras\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Tab] {yes|no}: Indica si esta ventana puede ser agrupada en pestanias con otras\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[IconHidden] {yes|no}: Esconde la aplicacion de la barra de iconos\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[IconHidden] {yes|no}: Esconde la aplicacion de la barra de iconos\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[FocusHidden] {yes|no}: Esconde la aplicacion de la lista de ciclo de ventanas usando la combinacion de teclas Next/PrevWindow
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[FocusHidden] {yes|no}: Esconde la aplicacion de la lista de ciclo de ventanas usando la combinacion de teclas Next/PrevWindow
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[Hidden] {yes|no}: es ambas [IconHidden] mas [FocusHidden]
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Hidden] {yes|no}: es ambas [IconHidden] mas [FocusHidden]
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[Deco] {NONE|NORMAL|TOOL|TINY|BORDER}: Especifica el estado de decoracion\. Hay muchos sets de decoracion predefinidos:
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Deco] {NONE|NORMAL|TOOL|TINY|BORDER}: Especifica el estado de decoracion\&. Hay muchos sets de decoracion predefinidos:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 o   NORMAL \- decoraciones estandard
 o   NONE \- sin decoraciones
 o   BORDER \- como NONE solo que mantiene el borde de X window
 o   TINY \- Barra de titulo con boton de iconificar
 o   TOOL \- solamente barra de titulo
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-Tambien puede ser usada una mascara de bit para un control mas fino\.
+.BB lightgray
+Tambien puede ser usada una mascara de bit para un control mas fino\&.
 los bits son (de "1" a 1<<10): barra de titulo, grips de manipulacion, borde,
 boton de iconificar, boton de maximizar, boton de cerrar, menu activado,
-boton pegajoso, boton de foldeo, solapas activadas, foco activado\.
+boton pegajoso, boton de foldeo, solapas activadas, foco activado\&.
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'[Sticky] {si|no}: Si la ventana inicialmente esta en modo pegajoso (aparece en todos los escritorios) o no\.
-.RE
-.sp
-.RS 4
-\h'-04'\(bu\h'+03'[Jump] {si|no}: Saltar a un workspace\. Esto es util solamente si
-\fIWorkspace tambien esta activado\fR\. El workspace es cambiado al que tiene la aplicacion que esta siendo lanzada\.
+.\}
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'[Close] {si|no}: Guarda la configuracion al salir\. Por defecto, las configuraciones de aplicacion no son guardadas cuando se cierra la ventana\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Sticky] {si|no}: Si la ventana inicialmente esta en modo pegajoso (aparece en todos los escritorios) o no\&.
 .RE
-El archivo apps tambien permite especificar aplicaciones que deben ser iniciadas en el puede especificar la pantalla, no el workspace en que la aplicacion debe ser iniciada\. Startup todavia no es configurable a traves del menu\.
-.sp
-Finalmente, se puede configurar las ventanas para que se agrupen usando \fIapps\fR\. Esto se logra con expresiones regulares usando:
-.sp
 .sp
 .RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Jump] {si|no}: Saltar a un workspace\&. Esto es util solamente si
+\fIWorkspace tambien esta activado\fR\&. El workspace es cambiado al que tiene la aplicacion que esta siendo lanzada\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+[Close] {si|no}: Guarda la configuracion al salir\&. Por defecto, las configuraciones de aplicacion no son guardadas cuando se cierra la ventana\&.
+.RE
+.sp
+El archivo apps tambien permite especificar aplicaciones que deben ser iniciadas en el puede especificar la pantalla, no el workspace en que la aplicacion debe ser iniciada\&. Startup todavia no es configurable a traves del menu\&.
+.sp
+Finalmente, se puede configurar las ventanas para que se agrupen usando \fIapps\fR\&. Esto se logra con expresiones regulares usando:
+.sp
+.if n \{\
+.RS 4
+.\}
+.fam C
+.ps -1
 .nf
-[app] (propiedad=expresion) \.\.\. {numero}
+.BB lightgray
+[app] (propiedad=expresion) \&.\&.\&. {numero}
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
+.sp
 Propiedad puede ser uno de los siguientes tags:
 .sp
 o name \- el nombre de la ventana (el primer campo de WM_CLASS) o class \- clase de la ventana (el segundo campo de WM_CLASS) o title \- titulo de la ventana (propiedad WM_NAME) o role \- rol de la ventana (la propiedad WM_WINDOW_ROLE)
 .sp
-Si no se especifica ninguna \fIpropiedad\fR, es asumida la propiedad name\. Podemos averiguar los valores de estos campos para una ventana particular ejecutando xprop\.
+Si no se especifica ninguna \fIpropiedad\fR, es asumida la propiedad name\&. Podemos averiguar los valores de estos campos para una ventana particular ejecutando xprop\&.
 .sp
-Tambien se puede colocar el tag [group] alrededor de varias tags [app] con el tag [end] para indicar el final del grupo\. Tambien podemos especificar dimensiones, posiciones, etc\. para el grupo como para las entradas app normales\. A continuacion se lista un corto ejemplo de un archivo \fIapps\fR:
+Tambien se puede colocar el tag [group] alrededor de varias tags [app] con el tag [end] para indicar el final del grupo\&. Tambien podemos especificar dimensiones, posiciones, etc\&. para el grupo como para las entradas app normales\&. A continuacion se lista un corto ejemplo de un archivo \fIapps\fR:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 [startup] {xterm}
 # coincidir con cualquiera que termine en term, hasta dos instancias
-[app] (\.*[tT]erm) {2}
+[app] (\&.*[tT]erm) {2}
 # coincidir con cualquiera que tenga \'gaim\' en el titulo
-[app] (title=\.*gaim\.*)
+[app] (title=\&.*gaim\&.*)
 [app] (kate)
     [Dimensions]  (WINCENTER) {1022 747}
     [Position]    {0 0}
@@ -1863,185 +3938,348 @@ Tambien se puede colocar el tag [group] alrededor de varias tags [app] con el ta
 [app] (special\-term)
     [Layer] {4}
 [end]
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Los parametros en el archivo apps distinguen mayusculas de minusculas\. Los nombres de las aplicaciones son tomados del primer atributo WM_CLASS de X window por defecto (WM_NAME = title, WM_WINDOW_ROLE = role)\. Se puede ver este atributo usando el comando xprop\. Las ventanas temporales no son afectadas por las configuraciones de aplicaciones\. Se debe tener cuidado cuando se usan expresiones regulares\. Si no se esta familiarizado con ellas se puede desactivar esta caracteristica especificando \-\-disable\-regexp during configure\. Entonces se haran coincidir lineas de texto plano\.
+.\}
 .sp
+Los parametros en el archivo apps distinguen mayusculas de minusculas\&. Los nombres de las aplicaciones son tomados del primer atributo WM_CLASS de X window por defecto (WM_NAME = title, WM_WINDOW_ROLE = role)\&. Se puede ver este atributo usando el comando xprop\&. Las ventanas temporales no son afectadas por las configuraciones de aplicaciones\&. Se debe tener cuidado cuando se usan expresiones regulares\&. Si no se esta familiarizado con ellas se puede desactivar esta caracteristica especificando \-\-disable\-regexp during configure\&. Entonces se haran coincidir lineas de texto plano\&.
 .SH "GRUPOS"
-Desde la version 0\.1\.11, Fluxbox tiene una funcion llamada autogrouping, mediante la cual las agrupaciones son agrupadas juntas si estan en el mismo grupo\. NOTA: esta funcion esta en desuso desde la version 0\.9\.1 en favor del agrupamiento usando el archivo apps, ya que es mucho mas potente\.
 .sp
-Se pueden crear grupos simplemente editando el archivo ~/\.fluxbox/groups\. Este archivo el siguiente formato:
+Desde la version 0\&.1\&.11, Fluxbox tiene una funcion llamada autogrouping, mediante la cual las agrupaciones son agrupadas juntas si estan en el mismo grupo\&. NOTA: esta funcion esta en desuso desde la version 0\&.9\&.1 en favor del agrupamiento usando el archivo apps, ya que es mucho mas potente\&.
 .sp
+Se pueden crear grupos simplemente editando el archivo ~/\&.fluxbox/groups\&. Este archivo el siguiente formato:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-<aplicacion1> <aplicacion2> <aplicacion3> <\.\.\.> <aplicacionN>
+.BB lightgray
+<aplicacion1> <aplicacion2> <aplicacion3> <\&.\&.\&.> <aplicacionN>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
+.sp
 donde los elementos pueden ser encontrados con el siguiente comando:
 .sp
-.sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 $> xprop WM_CLASS
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Solo se tipea este comando en una terminal y se usa el mouse para clickear en la aplicacion deseada y nos dira que escribir como elemento (usar los primeros dos nombres que devuelva)\. Cada linea forma un grupo diferente\. por ej\.:
+.\}
 .sp
+Solo se tipea este comando en una terminal y se usa el mouse para clickear en la aplicacion deseada y nos dira que escribir como elemento (usar los primeros dos nombres que devuelva)\&. Cada linea forma un grupo diferente\&. por ej\&.:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 Navigator nedit
 xterm
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Esto creara dos grupos, uno con netscape y nedit y otro con xterm\. La nueva ventana solamente se agrupara con otras ventanas en el mismo workspace y con la ultima ventana enfocada\.
+.\}
 .sp
+Esto creara dos grupos, uno con netscape y nedit y otro con xterm\&. La nueva ventana solamente se agrupara con otras ventanas en el mismo workspace y con la ultima ventana enfocada\&.
 .SH "LA SLIT"
-La slit es una marco de ventana especial de FLuxbox que puede contener aplicaciones dockeables, por ej\. \fIbbtools\fR o \fIwmapps\fR\.
 .sp
-Cuando las aplicaciones se ejecutan en la slit no tienen bordes de ventana propios; en cambio estan enmarcadas en la slit, y estan siempre visibles en el workspace actual\.
+La slit es una marco de ventana especial de FLuxbox que puede contener aplicaciones dockeables, por ej\&. \fIbbtools\fR o \fIwmapps\fR\&.
 .sp
-Se puede hacer click con el boton 3 del mouse en el borde de ventana de la slit para obtener un menu para determinar su posicion, si las aplicaciones contenidas deben estar agrupadas horizontal o verticalmente y si la slit debe auto ocultarse cuando el mouse no esta sobre ella\.
+Cuando las aplicaciones se ejecutan en la slit no tienen bordes de ventana propios; en cambio estan enmarcadas en la slit, y estan siempre visibles en el workspace actual\&.
 .sp
-La mayoria de las aplicaciones dockeables usan la opcion \-w para correr en la slit\. Por ejemplo podriamos poner lo siguiente en ~/\.xinitrc:
+Se puede hacer click con el boton 3 del mouse en el borde de ventana de la slit para obtener un menu para determinar su posicion, si las aplicaciones contenidas deben estar agrupadas horizontal o verticalmente y si la slit debe auto ocultarse cuando el mouse no esta sobre ella\&.
 .sp
+La mayoria de las aplicaciones dockeables usan la opcion \-w para correr en la slit\&. Por ejemplo podriamos poner lo siguiente en ~/\&.xinitrc:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-
 bbmail \-w &
 bbpager \-w &
 wmdrawer &
 exec fluxbox
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-NOTA: Tambien se puede poner todo esto el script startfluxbox(8)\. de esta manera en en ~/\.xinitrc pondriamos solamente la linea \fIexec startfluxbox\fR\.
+.\}
 .sp
-Para usar la slit debe estar compilada con fluxbox\. Esta es la opcion por defecto\.
+NOTA: Tambien se puede poner todo esto el script startfluxbox(8)\&. de esta manera en en ~/\&.xinitrc pondriamos solamente la linea \fIexec startfluxbox\fR\&.
 .sp
-.SH "ARCHIVO SLITLIST"
-El archivo slitlist de Fluxbox esta disponible para aquellos que usan dockapps en la slit\. Esto ayuda a Fluxbox a rastrear el \fBorden\fR de los dockapps que se quieren iniciar\. El archivo esta localizado generalmente en ~/\.fluxbox/slitlist
+Para usar la slit debe estar compilada con fluxbox\&. Esta es la opcion por defecto\&.
+.SH "Archivo Slitlist"
+.sp
+El archivo slitlist de Fluxbox esta disponible para aquellos que usan dockapps en la slit\&. Esto ayuda a Fluxbox a rastrear el \fBorden\fR de los dockapps que se quieren iniciar\&. El archivo esta localizado generalmente en ~/\&.fluxbox/slitlist
 .sp
 Un procedimiento simple para obtener la secuencia de la slit del modo que queremos es el siguiente:
 .sp
-.sp
 .RS 4
-\h'-04' 1.\h'+02'Ejecutamos Fluxbox sin iniciar ningun dockapp\.
+.ie n \{\
+\h'-04' 1.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  1." 4.2
+.\}
+Ejecutamos Fluxbox sin iniciar ningun dockapp\&.
 .RE
 .sp
 .RS 4
-\h'-04' 2.\h'+02'Ejecutamos los dockapps individualmente en el orden que queremos\.
+.ie n \{\
+\h'-04' 2.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  2." 4.2
+.\}
+Ejecutamos los dockapps individualmente en el orden que queremos\&.
 .RE
 .sp
 .RS 4
-\h'-04' 3.\h'+02'Agregamos los dockapps en nuestro script auto\-inicio (si tenemos uno), o mejor aun, los agregamos al script startfluxbox(8)\.
+.ie n \{\
+\h'-04' 3.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  3." 4.2
+.\}
+Agregamos los dockapps en nuestro script auto\-inicio (si tenemos uno), o mejor aun, los agregamos al script startfluxbox(8)\&.
 .RE
-Esta secuencia sera guardada por defecto en ~/\.fluxbox/slitlist y sera mantenida en futuras versiones de Fluxbox\.
 .sp
-Los usuarios son libres de editar manualmente el archivo slitlist\. Es una simple lista de nombres de ventanas, una por dockapp\. Al igual que el archivo init no deberia ser editado mientras se esta ejecutando Fluxbox\. De otro modo los cambios podrian sobreescribirse\.
+Esta secuencia sera guardada por defecto en ~/\&.fluxbox/slitlist y sera mantenida en futuras versiones de Fluxbox\&.
 .sp
-El usuario tambien tiene la opcion de elegir una ruta diferente para slitlist\. La siguiente es la componente del archivo init que deber ser cambiado
+Los usuarios son libres de editar manualmente el archivo slitlist\&. Es una simple lista de nombres de ventanas, una por dockapp\&. Al igual que el archivo init no deberia ser editado mientras se esta ejecutando Fluxbox\&. De otro modo los cambios podrian sobreescribirse\&.
 .sp
+El usuario tambien tiene la opcion de elegir una ruta diferente para slitlist\&. La siguiente es la componente del archivo init que deber ser cambiado
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
-session\.session0\.slitlistfile: <ruta_al_archivo>
+.BB lightgray
+session\&.session0\&.slitlistfile: <ruta_al_archivo>
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
+.\}
 .SH "ENTORNO"
 .PP
 HOME
 .RS 4
-Fluxbox usa HOME para encontrar su archivo \.fluxbox/init y para resolver los nombres de archivo y de directorio\.
+Fluxbox usa HOME para encontrar su archivo \&.fluxbox/init y para resolver los nombres de archivo y de directorio\&.
 .RE
 .PP
 DISPLAY
 .RS 4
-Cuando no se ha especificado otro display en la linea de comandos, Fluxbox iniciara en el display indicado en esta variable\.
+Cuando no se ha especificado otro display en la linea de comandos, Fluxbox iniciara en el display indicado en esta variable\&.
 .RE
-Fluxbox tambien puede tomar ventaja de otras variables de entorno si son seteadas antes de que inicie\. Por ejemplo, si $XTERM es seteada, entonces Fluxbox permitira que $XTERM sea usada en los archivos keys y menu\. Entonces podriamos hacer:
 .sp
+Fluxbox tambien puede tomar ventaja de otras variables de entorno si son seteadas antes de que inicie\&. Por ejemplo, si $XTERM es seteada, entonces Fluxbox permitira que $XTERM sea usada en los archivos keys y menu\&. Entonces podriamos hacer:
 .sp
+.if n \{\
 .RS 4
+.\}
+.fam C
+.ps -1
 .nf
+.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 Mod1 x :ExecCommand $XTERM
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+.EB lightgray
 .fi
+.fam
+.ps +1
+.if n \{\
 .RE
-Las formas de usar esto de manera practica e \fIinteligente\fR son interminables\.
+.\}
 .sp
+Las formas de usar esto de manera practica e \fIinteligente\fR son interminables\&.
 .SH "SENIALES"
+.sp
 Fluxbox reconoce las siguiente seniales:
 .sp
-.sp
 .RS 4
-\h'-04'\(bu\h'+03'SIGHUP Fluxbox carga la configuracion\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SIGHUP Fluxbox carga la configuracion\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'SIGUSR1 Fuerza la recarga de la configuracion\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SIGUSR1 Fuerza la recarga de la configuracion\&.
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'SIGUSR2 Fuerza la recarga del archivo menu\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+SIGUSR2 Fuerza la recarga del archivo menu\&.
 .RE
 .SH "AUTOR Y CREDITOS"
-Fluxbox es escrito y mantenido por Henrik Kinnunen <fluxgen@fluxbox\.org>, Simon Bowden <rathnor@fluxbox\.org> y Mathias Gumz <akira@fluxbox\.org>; con contribuciones y parches hechos por muchos individuos alrededor del mundo\.
 .sp
-Blackbox fue escrito y mantenido por Brad Hughes <blackbox@alug\.org> y Jeff Raven <jraven@psu\.edu>
+Fluxbox es escrito y mantenido por Henrik Kinnunen <fluxgen@fluxbox\&.org>, Simon Bowden <rathnor@fluxbox\&.org> y Mathias Gumz <akira@fluxbox\&.org>; con contribuciones y parches hechos por muchos individuos alrededor del mundo\&.
 .sp
-Sitio oficial de Fluxbox: http://www\.fluxbox\.org
+Blackbox fue escrito y mantenido por Brad Hughes <blackbox@alug\&.org> y Jeff Raven <jraven@psu\&.edu>
 .sp
-Temas compatibles: \- http://boxwhore\.org \- http://themes\.freshmeat\.net
+Sitio oficial de Fluxbox: http://www\&.fluxbox\&.org
+.sp
+Temas compatibles: \- http://boxwhore\&.org \- http://themes\&.freshmeat\&.net
 .sp
 Este manpage es el trabajo combinado de:
 .sp
-.sp
 .RS 4
-\h'-04'\(bu\h'+03'Curt Micol <asenchi@asenchi\.com> (>fluxbox\-0\.9\.11)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Curt Micol <asenchi@asenchi\&.com> (>fluxbox\-0\&.9\&.11)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Tobias Klausmann <klausman@users\.sourceforge\.net> (⇐fluxbox\-0\.9\.11)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Tobias Klausmann <klausman@users\&.sourceforge\&.net> (\(lafluxbox\-0\&.9\&.11)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Grupert <grubert@users\.sourceforge\.net> (fluxbox)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Grupert <grubert@users\&.sourceforge\&.net> (fluxbox)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Matthew Hawkins <matt@mh\.dropbear\.id\.au> (blackbox)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Matthew Hawkins <matt@mh\&.dropbear\&.id\&.au> (blackbox)
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Wilbert Berendsen <wbsoft@xs4all\.nl> (blackbox)
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Wilbert Berendsen <wbsoft@xs4all\&.nl> (blackbox)
 .RE
+.sp
 Traduccion al espaniol realizada por:
 .sp
-.sp
 .RS 4
-\h'-04'\(bu\h'+03'Guillermo Patterer <gmpatterer@gmail\.com>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Guillermo Patterer <gmpatterer@gmail\&.com>
 .RE
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Matias Brutti <matiasbrutti@gmail\.com>
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Matias Brutti <matiasbrutti@gmail\&.com>
 .RE
-Por razones de compatibilidad se han omitido todos los caracteres especiales, por ej\. acentos, especificos del idioma espaniol\. De esta manera nos aseguramos que este manpage se vea lo mejor posible\.
 .sp
+Por razones de compatibilidad se han omitido todos los caracteres especiales, por ej\&. acentos, especificos del idioma espaniol\&. De esta manera nos aseguramos que este manpage se vea lo mejor posible\&.
 .sp
 .RS 4
-\h'-04'\(bu\h'+03'Muchos otros lenguajes podrian estar disponible si algun voluntario estuviera dispuesto\.
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+Muchos otros lenguajes podrian estar disponible si algun voluntario estuviera dispuesto\&.
 .RE
 .SH "BUGS"
-Si se encuentran bugs, por favor visitar el canal de irc #fluxbox en irc\.freenode\.net\. O pueden suscribirse a alguna de las listas de correo\. Se puede encontrar mas informacion en el sitio web oficial\.
 .sp
+Si se encuentran bugs, por favor visitar el canal de irc #fluxbox en irc\&.freenode\&.net\&. O pueden suscribirse a alguna de las listas de correo\&. Se puede encontrar mas informacion en el sitio web oficial\&.
 .SH "VER TAMBIEN"
-bsetroot(8) fbsetbg(8) fbrun(8) fluxstyle(8)
 .sp
+bsetroot(8) fbsetbg(8) fbrun(8) fluxstyle(8)

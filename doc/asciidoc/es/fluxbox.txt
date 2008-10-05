@@ -958,12 +958,6 @@ Aqui estan los resources que estan actualmente disponibles:
 
    session.screen0.fullMaximization: <booleana>
    session.screen0.sloppywindowgrouping: <booleana>
-   session.screen0.rootCommand: <command>
-       Esto sobreescribe el rootCommand del estilo. Cuando esta variable esta
-    seteada va a mantener el fondo de pantalla, mas halla de lo que  cualquier
-    estilo tenga configurado. NOTA: Este comando puede ser peligroso. Por
-    favor este seguro de lo que esta haciendo cuando configure esta
-    variable a otro valor distinto de un comando de fondo de pantalla.
 
    session.screen0.imageDither: <booleana>
    session.screen0.opaqueMove: <booleana>

@@ -699,16 +699,6 @@ session.screen0.toolbar.autoHide: <boolean>
       used actively by the user, or they remain visible at all times. Default:
       False
 
-session.screen0.windowScrollAction: shade|nexttab
-      This allows you to execute a command by scrolling on the titlebar of a
-      window. For `shade', scrolling down will shade the window, and scrolling
-      up will unshade it. For `nexttab', scrolling down will focus the next tab,
-      and scrolling up will focus the previous one. Default: <blank>
-
-session.screen0.windowScrollReverse: <boolean>
-      This switches the role of scrolling up and scrolling down for the previous
-      resource. Default: False
-
 session.screen0.slit.layer: <layer>
 session.screen0.toolbar.layer: <layer>
       With these two resources, you can set the layer you want the toolbar and
@@ -719,8 +709,8 @@ session.screen0.slit.placement: <placement>
 session.screen0.toolbar.placement: <placement>
       These allow users to place the slit and toolbar where they like. Possible
       options are:
-      -   BottomCenter
       -   BottomLeft
+      -   BottomCenter
       -   BottomRight
       -   LeftBottom
       -   LeftCenter
@@ -728,8 +718,8 @@ session.screen0.toolbar.placement: <placement>
       -   RightBottom
       -   RightCenter
       -   RightTop
-      -   TopCenter
       -   TopLeft
+      -   TopCenter
       -   TopRight
 
 session.screen0.slit.maxOver: <boolean>
@@ -914,14 +904,6 @@ session.screen0.fullMaximization: <boolean>
       If this setting is enabled, windows will maximize over the toolbar, slit,
       and any other window that creates a strut, no matter what their individual
       settings are. Default: False
-
-session.screen0.rootCommand: <command>
-      This runs a command when fluxbox starts, intended for setting a default
-      background. If you want to override backgrounds set by styles, you should
-      add `background: none' to your style overlay (see section STYLE OVERLAY).
-      NOTE: Setting this command can be dangerous. Please make sure you know
-      what you are doing when setting this resource to a value other than a
-      desktop wallpaper command.
 
 session.screen0.opaqueMove: <boolean>
       When moving a window, setting this to True will draw the window

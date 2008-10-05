@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*08/10/05:
+   * Remove rootcommand from init, as fbsetbg is run automatically nowadays.
+     For other purposes, use startup instead. (Mark)
+     Screen.cc/hh
 *08/10/04:
    * Recognize --option in addition to -option for long option names (Mark)
      main.cc util/fbsetroot.cc util/fbrun/main.cc

@@ -296,7 +296,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
     default_deco(rm, "NORMAL", scrname+".defaultDeco", altscrname+".DefaultDeco"),
-    rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
     windowmenufile(rm, Fluxbox::instance()->getDefaultDataFilename("windowmenu"), scrname+".windowMenu", altscrname+".WindowMenu"),
     typing_delay(rm, 0, scrname+".noFocusWhileTypingDelay", altscrname+".NoFocusWhileTypingDelay"),
@@ -460,12 +459,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                                                  fluxbox->getCacheLife(), fluxbox->getCacheMax()));
     imageControl().installRootColormap();
     root_colormap_installed = true;
-
-    // if user specified background in the config then use it
-    if (!resource.rootcommand->empty()) {
-        FbCommands::ExecuteCmd cmd(*resource.rootcommand, screenNumber());
-        cmd.execute();
-    }
 
     m_root_theme.reset(new RootTheme(imageControl()));
     m_root_theme->reconfigTheme();

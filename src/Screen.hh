@@ -552,7 +552,6 @@ private:
             max_ignore_inc, max_disable_move, max_disable_resize,
             workspace_warping, show_window_pos, auto_raise, click_raises;
         FbTk::Resource<std::string> default_deco;
-        FbTk::Resource<std::string> rootcommand;
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<unsigned int> typing_delay;
