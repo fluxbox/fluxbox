@@ -85,15 +85,6 @@ class Subject;
 class BScreen: public FbTk::EventHandler, public FbTk::Observer,
                private FbTk::NotCopyable {
 public:
-    /// a window becomes active / focussed on a different workspace
-    enum FollowModel {
-        IGNORE_OTHER_WORKSPACES = 0, ///< who cares?
-        FOLLOW_ACTIVE_WINDOW,     ///< go to that workspace
-        SEMIFOLLOW_ACTIVE_WINDOW, ///< fetch iconified windows, else follow
-        FETCH_ACTIVE_WINDOW       ///< put that window to the current workspace
-    };
-
-
     typedef std::list<FluxboxWindow *> Icons;
 
     typedef std::vector<Workspace *> Workspaces;
@@ -135,8 +126,6 @@ public:
     FbWinFrame::TabPlacement getTabPlacement() const { return *resource.tab_placement; }
 
     unsigned int noFocusWhileTypingDelay() const { return *resource.typing_delay; }
-    FollowModel getFollowModel() const { return *resource.follow_model; }
-    FollowModel getUserFollowModel() const { return *resource.user_follow_model; }
     const bool allowRemoteActions() const { return *resource.allow_remote_actions; }
     const bool clientMenuUsePixmap() const { return *resource.clientmenu_use_pixmap; }
     const bool getDefaultInternalTabs() const { return *resource.default_internal_tabs; }
@@ -555,7 +544,6 @@ private:
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<unsigned int> typing_delay;
-        FbTk::Resource<FollowModel> follow_model, user_follow_model;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
             unfocused_alpha, menu_alpha, menu_delay, menu_delay_close,
             tab_width, tooltip_delay;

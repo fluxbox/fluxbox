@@ -1273,13 +1273,8 @@ bool FluxboxWindow::focus() {
 
     if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck()) {
 
-        BScreen::FollowModel model = screen().getUserFollowModel();
-        if (model == BScreen::IGNORE_OTHER_WORKSPACES)
-            return false;
-
-        // fetch the window to the current workspace
-        if (model == BScreen::FETCH_ACTIVE_WINDOW ||
-            (isIconic() && model == BScreen::SEMIFOLLOW_ACTIVE_WINDOW))
+        // fetch the window to the current workspace if minimized
+        if (isIconic())
             screen().sendToWorkspace(screen().currentWorkspaceID(), this, false);
         // warp to the workspace of the window
         else
@@ -2041,14 +2036,10 @@ bool FluxboxWindow::focusRequestFromClient(WinClient &from) {
         return false;
 
     bool ret = true;
-    // check what to do if window is on another workspace
-    if (screen().currentWorkspaceID() != workspaceNumber() && !isStuck() &&
-        screen().getFollowModel() == BScreen::IGNORE_OTHER_WORKSPACES)
-        ret = false;
 
     FluxboxWindow *cur = FocusControl::focusedFbWindow();
     WinClient *client = FocusControl::focusedWindow();
-    if (ret && cur && getRootTransientFor(&from) != getRootTransientFor(client))
+    if (cur && getRootTransientFor(&from) != getRootTransientFor(client))
         ret = !(cur->isFullscreen() && getOnHead() == cur->getOnHead()) &&
               !cur->isTyping();
 
