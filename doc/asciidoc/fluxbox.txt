@@ -788,13 +788,6 @@ session.screen0.iconbar.iconWidth: <integer>
       Used to specify the iconbar button width for Left/Right alignment.
       Default: 70
 
-session.screen0.overlay.lineWidth: 1
-session.screen0.overlay.lineStyle: LineSolid
-session.screen0.overlay.joinStyle: JoinMiter
-session.screen0.overlay.capStyle: CapNotLast
-      These are options for how fluxbox draws lines. See
-      `man XSetLineAttributes' for more details. Defaults: listed above
-
 session.screen0.strftimeFormat: <date>
       This adjusts the way the current time is displayed in the toolbar. The
       strftime(3) format is used. Default: %I:%M %p

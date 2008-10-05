@@ -560,11 +560,6 @@ private:
             unfocused_alpha, menu_alpha, menu_delay, menu_delay_close,
             tab_width, tooltip_delay;
         FbTk::Resource<FbTk::MenuTheme::MenuMode> menu_mode;
-
-        FbTk::Resource<int> gc_line_width;
-        FbTk::Resource<FbTk::GContext::LineStyle> gc_line_style;
-        FbTk::Resource<FbTk::GContext::JoinStyle> gc_join_style;
-        FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
         FbTk::Resource<bool> allow_remote_actions;
         FbTk::Resource<bool> clientmenu_use_pixmap;
         FbTk::Resource<bool> tabs_use_pixmap;

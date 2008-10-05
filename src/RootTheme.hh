@@ -48,13 +48,6 @@ public:
 
     GC opGC() const { return m_opgc.gc(); }
 
-    void setLineAttributes(unsigned int width,
-                           int line_style,
-                           int cap_style,
-                           int join_style) {
-        m_opgc.setLineAttributes(width, line_style, cap_style, join_style);
-    }
-
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
 

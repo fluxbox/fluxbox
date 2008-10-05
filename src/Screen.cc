@@ -311,20 +311,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     tab_width(rm, 64, scrname + ".tab.width", altscrname+".Tab.Width"),
     tooltip_delay(rm, 500, scrname + ".tooltipDelay", altscrname+".TooltipDelay"),
     menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode"),
-
-    gc_line_width(rm, 1, scrname+".overlay.lineWidth", altscrname+".Overlay.LineWidth"),
-    gc_line_style(rm,
-                  FbTk::GContext::LINESOLID,
-                  scrname+".overlay.lineStyle",
-                  altscrname+".Overlay.LineStyle"),
-    gc_join_style(rm,
-                  FbTk::GContext::JOINMITER,
-                  scrname+".overlay.joinStyle",
-                  altscrname+".Overlay.JoinStyle"),
-    gc_cap_style(rm,
-                 FbTk::GContext::CAPNOTLAST,
-                 scrname+".overlay.capStyle",
-                 altscrname+".overlay.CapStyle"),
     allow_remote_actions(rm, false, scrname+".allowRemoteActions", altscrname+".AllowRemoteActions"),
     clientmenu_use_pixmap(rm, true, scrname+".clientMenu.usePixmap", altscrname+".ClientMenu.UsePixmap"),
     tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
@@ -531,15 +517,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     }
 
     changeWorkspaceID(first_desktop);
-
-    // we need to load win frame theme before we create any fluxbox window
-    // and after we've load the resources
-    // else we get some bad handle/grip height/width
-    //    FbTk::ThemeManager::instance().loadTheme(*m_windowtheme.get());
-    m_root_theme->setLineAttributes(*resource.gc_line_width,
-                                    *resource.gc_line_style,
-                                    *resource.gc_cap_style,
-                                    *resource.gc_join_style);
 
 #ifdef SLIT
     m_slit.reset(new Slit(*this, *layerManager().getLayer(Layer::DESKTOP),
@@ -947,11 +924,6 @@ void BScreen::reconfigure() {
         *resource.menu_delay_close = 5000;
     if (*resource.menu_delay_close < 0)
         *resource.menu_delay_close = 0;
-
-    m_root_theme->setLineAttributes(*resource.gc_line_width,
-                                    *resource.gc_line_style,
-                                    *resource.gc_cap_style,
-                                    *resource.gc_join_style);
 
     m_menutheme->setDelayOpen(*resource.menu_delay);
     m_menutheme->setDelayClose(*resource.menu_delay_close);
