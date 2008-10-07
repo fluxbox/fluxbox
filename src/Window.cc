@@ -390,6 +390,9 @@ void FluxboxWindow::init() {
         m_client->initial_state == WithdrawnState) // Slit client
         return;
 
+    if (m_client->initial_state == IconicState)
+        m_state.iconic = true;
+
     m_client->setFluxboxWindow(this);
     m_client->setGroupLeftWindow(None); // nothing to the left.
 
