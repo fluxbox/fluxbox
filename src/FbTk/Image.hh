@@ -55,6 +55,8 @@ public:
     static void removeSearchPath(const std::string &search_path);
     /// adds a path to search images from
     static void removeAllSearchPaths();
+    /// locates an image in the search path
+    static std::string locateFile(const std::string &filename);
 private:
     typedef std::map<std::string, ImageBase *> ImageMap;
     typedef std::list<std::string> StringList;

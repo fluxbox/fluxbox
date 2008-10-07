@@ -28,6 +28,7 @@
 
 #include "FbTk/App.hh"
 #include "FbTk/Font.hh"
+#include "FbTk/Image.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/FileUtil.hh"
@@ -197,6 +198,7 @@ void RootTheme::reconfigTheme() {
     // if background argument is a file then
     // parse image options and call image setting
     // command specified in the resources
+    std::string img_path = FbTk::Image::locateFile(filename);
     filename = FbTk::StringUtil::expandFilename(filename);
     std::string cmd = realProgramName("fbsetbg") + (m_first ? " -z " : " -Z ");
 
@@ -204,7 +206,7 @@ void RootTheme::reconfigTheme() {
     if (strstr(m_background->options().c_str(), "none") != 0) {
         if (!m_first)
             return;
-    } else if (FbTk::FileUtil::isRegularFile(filename.c_str())) {
+    } else if (!img_path.empty()) {
         // parse options
         if (strstr(m_background->options().c_str(), "tiled") != 0)
             cmd += "-t ";
@@ -215,7 +217,7 @@ void RootTheme::reconfigTheme() {
         else
             cmd += "-f ";
 
-        cmd += filename;
+        cmd += img_path;
     } else if (FbTk::FileUtil::isDirectory(filename.c_str()) &&
                strstr(m_background->options().c_str(), "random") != 0) {
         cmd += "-r " + filename;

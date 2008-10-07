@@ -21,6 +21,7 @@
 
 #include "Image.hh"
 #include "StringUtil.hh"
+#include "FileUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -94,25 +95,26 @@ PixmapWithMask *Image::load(const string &filename, int screen_num) {
     if (s_image_map.find(extension) == s_image_map.end())
         return false;
 
-    // load file
-    PixmapWithMask *pm = s_image_map[extension]->load(filename, screen_num);
-    // failed?, try different search paths
-    if (pm == 0 && s_search_paths.size()) {
-        // first we need to get basename of current filename
-        string base_filename = StringUtil::basename(filename);
-        string path = "";
-        // append each search path and try to load
-        StringList::iterator it = s_search_paths.begin();
-        StringList::iterator it_end = s_search_paths.end();
-        for (; it != it_end && pm == 0; ++it) {
-            // append search path and try load it
-            path = StringUtil::expandFilename(*it);
-            pm = s_image_map[extension]->load(path + "/" + base_filename, screen_num);
-        }
+    string path = locateFile(filename);
+    if (!path.empty())
+        return s_image_map[extension]->load(path, screen_num);
 
+    return 0;
+}
+
+string Image::locateFile(const string &filename) {
+    string path = StringUtil::expandFilename(filename);
+    if (FileUtil::isRegularFile(path.c_str()))
+        return path;
+    string base = StringUtil::basename(filename);
+    StringList::iterator it = s_search_paths.begin();
+    StringList::iterator it_end = s_search_paths.end();
+    for (; it != it_end; ++it) {
+        path = StringUtil::expandFilename(*it) + "/" + base;
+        if (FileUtil::isRegularFile(path.c_str()))
+            return path;
     }
-
-    return pm;
+    return "";
 }
 
 bool Image::registerType(const string &type, ImageBase &base) {
