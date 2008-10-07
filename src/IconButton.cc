@@ -119,6 +119,8 @@ void IconButton::showTooltip() {
 
     if (FbTk::TextButton::textExceeds(xoffset))
         m_win.screen().showTooltip(m_win.title());
+    else
+        m_win.screen().hideTooltip();
 }
 
 void IconButton::clear() {
@@ -238,14 +240,11 @@ void IconButton::update(FbTk::Subject *subj) {
     } else {
         m_icon_window.clear();
     }
-    // if the title was changed AND the tooltip window is visible AND
-    // we have had an enter notify event ( without the leave notify )
-    // update the text inside it
-    if (subj == &m_win.titleSig() &&
-        m_has_tooltip &&
-        m_win.screen().tooltipWindow().isVisible()) {
-        m_win.screen().tooltipWindow().updateText(m_win.title());
-    }
+
+    // if the title was changed AND the mouse is over *this,
+    // update the tooltip
+    if (subj == &m_win.titleSig() && m_has_tooltip)
+        showTooltip();
 
 }
 
