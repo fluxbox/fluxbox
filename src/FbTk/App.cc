@@ -49,14 +49,12 @@ App::App(const char *displayname):m_done(false), m_display(0) {
         throw std::string("Couldn't connect to XServer");
 
     FbStringUtil::init();
-    Image::init();
 }
 
 App::~App() {
     if (m_display != 0) {
 
         Font::shutdown();
-        Image::shutdown();
 
         XCloseDisplay(m_display);
         m_display = 0;

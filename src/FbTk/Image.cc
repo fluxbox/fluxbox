@@ -42,50 +42,31 @@ using std::string;
 using std::list;
 using std::set;
 
-namespace FbTk {
 
-Image::ImageMap Image::s_image_map;
-Image::StringList Image::s_search_paths;
+namespace {
 
+typedef std::map<std::string, FbTk::ImageBase *> ImageMap;
+typedef std::list<std::string> StringList;
 
-void Image::init() {
+ImageMap s_image_map;
+StringList s_search_paths;
 
-// create imagehandlers for their extensions
-#ifdef HAVE_XPM
-    new ImageXPM();
-#endif // HAVE_XPM
 #ifdef HAVE_IMLIB2
-    new ImageImlib2();
-#endif // HAVE_IMLIB2
-}
+FbTk::ImageImlib2 imlib2_loader;
+#endif
+#ifdef HAVE_XPM
+FbTk::ImageXPM xpm_loader;
+#endif
 
-void Image::shutdown() {
 
-    set<ImageBase*> handlers;
+}; // end of anonymous namespace
 
-    // one imagehandler could be registered
-    // for more than one type
-    ImageMap::iterator it = s_image_map.begin();
-    ImageMap::iterator it_end = s_image_map.end();
-    for (; it != it_end; it++) {
-        if (it->second)
-            handlers.insert(it->second);
-    }
-
-    // free the unique handlers
-    set<ImageBase*>::iterator handler_it = handlers.begin();
-    set<ImageBase*>::iterator handler_it_end = handlers.end();
-    for(; handler_it != handler_it_end; handler_it++) {
-        delete (*handler_it);
-    }
-
-    s_image_map.clear();
-}
+namespace FbTk {
 
 PixmapWithMask *Image::load(const string &filename, int screen_num) {
 
 
-    if (filename == "")
+    if (filename.empty())
         return false;
 
     // determine file ending
