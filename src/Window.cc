@@ -2462,6 +2462,14 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             m_last_resize_x = me.x_root;
             m_last_resize_y = me.y_root;
 
+            // undraw rectangle before warping workspaces
+            if (!screen().doOpaqueMove()) {
+                parent().drawRectangle(screen().rootTheme()->opGC(),
+                                       m_last_move_x, m_last_move_y,
+                                       frame().width() + 2*frame().window().borderWidth()-1,
+                                       frame().height() + 2*frame().window().borderWidth()-1);
+            }
+
             if (moved_x && screen().isWorkspaceWarping()) {
                 unsigned int cur_id = screen().currentWorkspaceID();
                 unsigned int new_id = cur_id;
@@ -2492,7 +2500,10 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     XWarpPointer(display, None, me.root, 0, 0, 0, 0,
                                  m_last_resize_x, m_last_resize_y);
 
-                    screen().sendToWorkspace(new_id, this, true);
+                    if (screen().doOpaqueMove())
+                        screen().sendToWorkspace(new_id, this, true);
+                    else
+                        screen().changeWorkspaceID(new_id, false);
                 }
             }
 
@@ -2505,12 +2516,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             // dx = current left side, dy = current top
             doSnapping(dx, dy);
 
-            if (! screen().doOpaqueMove()) {
-                parent().drawRectangle(screen().rootTheme()->opGC(),
-                                       m_last_move_x, m_last_move_y,
-                                       frame().width() + 2*frame().window().borderWidth()-1,
-                                       frame().height() + 2*frame().window().borderWidth()-1);
-
+            if (!screen().doOpaqueMove()) {
                 parent().drawRectangle(screen().rootTheme()->opGC(),
                                        dx, dy,
                                        frame().width() + 2*frame().window().borderWidth()-1,
@@ -2872,38 +2878,6 @@ void FluxboxWindow::stopMoving(bool interrupted) {
     ungrabPointer(CurrentTime);
 
     FbTk::App::instance()->sync(false); //make sure the redraw is made before we continue
-}
-
-void FluxboxWindow::pauseMoving() {
-    if (screen().doOpaqueMove()) {
-        return;
-    }
-
-    parent().drawRectangle(screen().rootTheme()->opGC(),
-                           m_last_move_x, m_last_move_y,
-                           frame().width() + 2*frame().window().borderWidth()-1,
-                           frame().height() + 2*frame().window().borderWidth()-1);
-
-}
-
-
-void FluxboxWindow::resumeMoving() {
-    if (screen().doOpaqueMove()) {
-        return;
-    }
-
-    if (m_workspace_number == screen().currentWorkspaceID()) {
-        frame().show();
-        focus();
-    }
-
-    FbTk::App::instance()->sync(false);
-
-    parent().drawRectangle(screen().rootTheme()->opGC(),
-                           m_last_move_x, m_last_move_y,
-                           frame().width() + 2*frame().window().borderWidth()-1,
-                           frame().height() + 2*frame().window().borderWidth()-1);
-
 }
 
 /**

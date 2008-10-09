@@ -297,8 +297,6 @@ public:
     // popup menu on last button press position
     void popupMenu();
 
-    void pauseMoving();
-    void resumeMoving();
     /**
        @name event handlers
     */

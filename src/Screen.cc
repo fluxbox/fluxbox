@@ -1113,21 +1113,18 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
 
     FbTk::App::instance()->sync(false);
 
+    FluxboxWindow *focused = FocusControl::focusedFbWindow();
+
+    if (focused && focused->isMoving() && doOpaqueMove())
+        // don't reassociate if not opaque moving
+        reassociateWindow(focused, id, true);
+
     // set new workspace
     Workspace *old = currentWorkspace();
     m_current_workspace = getWorkspace(id);
 
     // we show new workspace first in order to appear faster
     currentWorkspace()->showAll();
-
-    FluxboxWindow *focused = FocusControl::focusedFbWindow();
-
-    if (focused && focused->isMoving()) {
-        if (doOpaqueMove())
-            reassociateWindow(focused, id, true);
-        // don't reassociate if not opaque moving
-        focused->pauseMoving();
-    }
 
     // reassociate all windows that are stuck to the new workspace
     Workspace::Windows wins = old->windowList();
@@ -1145,10 +1142,9 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
             (*icon_it)->setWorkspace(id);
     }
 
-    if (focused && focused->isMoving()) {
+    if (focused && focused->isMoving() && doOpaqueMove())
         focused->focus();
-        focused->resumeMoving();
-    } else if (revert)
+    else if (revert)
         FocusControl::revertFocus(*this);
 
     old->hideAll(false);
