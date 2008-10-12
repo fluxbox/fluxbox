@@ -2861,11 +2861,9 @@ void FluxboxWindow::stopMoving(bool interrupted) {
                                frame().height() + 2*frame().window().borderWidth()-1);
         if (!interrupted) {
             moveResize(m_last_move_x, m_last_move_y, frame().width(), frame().height());
-            if (m_workspace_number != screen().currentWorkspaceID()) {
-                screen().reassociateWindow(this, screen().currentWorkspaceID(), true);
-                frame().show();
-                focus();
-            }
+            if (m_workspace_number != screen().currentWorkspaceID())
+                screen().sendToWorkspace(screen().currentWorkspaceID(), this);
+            focus();
         }
         fluxbox->ungrab();
     } else if (!interrupted) {
