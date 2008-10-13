@@ -111,10 +111,8 @@ public:
     // this isn't actually a theme item
     // but we'll let it be here for now, until there's a better way to
     // get resources into menu
-    void setDelayOpen(int msec) { m_delayopen = msec; }
-    void setDelayClose(int msec) { m_delayclose = msec; }
-    int delayOpen() const { return m_delayopen; }
-    int delayClose() const { return m_delayclose; }
+    void setDelay(int msec) { m_delay = msec; }
+    int getDelay() const { return m_delay; }
 
     const Color &borderColor() const { return *m_border_color; }
     Shape::ShapePlace shapePlaces() const { return *m_shapeplace; }
@@ -157,8 +155,7 @@ private:
     GContext t_text_gc, f_text_gc, u_text_gc, h_text_gc, d_text_gc, hilite_gc;
 
     unsigned char m_alpha;
-    unsigned int m_delayopen; ///< in msec
-    unsigned int m_delayclose; ///< in msec
+    unsigned int m_delay; ///< in msec
     unsigned int m_real_title_height; ///< the calculated item height (from font and menu.titleHeight)
     unsigned int m_real_item_height; ///< the calculated item height (from font and menu.itemHeight)
 };

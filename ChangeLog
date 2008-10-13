@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*08/10/13:
+   * Merge menuDelay and menuDelayClose options in init (Mark)
+     Screen.cc/hh FbTk/MenuTheme.cc/hh FbTk/Menu.cc
 *08/10/07:
    * Allow relative paths for background images in style files (Mark)
      RootTheme.cc FbTk/Image.cc/hh

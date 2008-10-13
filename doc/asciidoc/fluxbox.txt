@@ -367,14 +367,6 @@ workspace that window is on, and select the window. Last but not least
 you will notice the Icons menu.  This is for applications which have
 been `iconified'.
 
-Menu Behavior
-~~~~~~~~~~~~~
-The behavior of the submenus in a menu can be configured in the `init'
-file, with the following entries (default for both is 0):
-
-    session.screen0.menuDelay: <msec>
-    session.screen0.menuDelayClose: <msec>
-
 Menu Syntax
 ~~~~~~~~~~~
 There are up to four fields in a menu line. They are of the form:
@@ -837,12 +829,8 @@ session.screen0.defaultDeco: <string>
       the APPLICATIONS section. Default: NORMAL.
 
 session.screen0.menuDelay: <integer>
-      This sets the delay in milliseconds for submenus to open with the previous
-      option set to `Delay'. Default: 0
-
-session.screen0.menuDelayClose: 0
-      This value sets the delay in milliseconds that you would like the menu to
-      remain visible after you've clicked out of it. Default: 0
+      This sets the delay in milliseconds for submenus to open when you hover
+      over them or to close when you hover over another item. Default: 200
 
 session.screen0.focusNewWindows: <boolean>
       This sets whether or not new windows will become focused automatically.

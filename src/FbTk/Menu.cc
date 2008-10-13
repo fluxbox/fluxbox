@@ -998,7 +998,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             // start submenu open delay
             timeval timeout;
             timeout.tv_sec = 0;
-            timeout.tv_usec = theme()->delayOpen() * 1000; // transformed to usec
+            timeout.tv_usec = theme()->getDelay() * 1000; // transformed to usec
             m_submenu_timer.setTimeout(timeout);
             m_submenu_timer.start();
         } else if (isItemSelectable(w)){
@@ -1191,7 +1191,7 @@ void Menu::closeMenu() {
 void Menu::startHide() {
     timeval timeout;
     timeout.tv_sec = 0;
-    timeout.tv_usec = theme()->delayClose() * 1000; // transformed to usec
+    timeout.tv_usec = theme()->getDelay() * 1000; // transformed to usec
     m_hide_timer.setTimeout(timeout);
     m_hide_timer.start();
 }

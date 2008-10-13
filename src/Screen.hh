@@ -545,7 +545,7 @@ private:
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<unsigned int> typing_delay;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
-            unfocused_alpha, menu_alpha, menu_delay, menu_delay_close,
+            unfocused_alpha, menu_alpha, menu_delay,
             tab_width, tooltip_delay;
         FbTk::Resource<bool> allow_remote_actions;
         FbTk::Resource<bool> clientmenu_use_pixmap;

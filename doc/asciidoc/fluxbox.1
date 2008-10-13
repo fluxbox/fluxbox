@@ -1,12 +1,12 @@
 .\"     Title: fluxbox
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 10/04/2008
+.\"      Date: 10/12/2008
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "10/04/2008" "[FIXME: source]" "[FIXME: manual]"
+.TH "FLUXBOX" "1" "10/12/2008" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -845,26 +845,6 @@ Button 3 (Un)Maximize window horizontally\&.
 .SS "Workspace Menu"
 .sp
 The workspace menu can be found by middle clicking on the background\&. A menu will popup giving you the option to add or remove a workspace\&. You will also see your workspaces listed there; middle clicking on a workspace name will take you to that workspace, whereas clicking on a window name in one of the per\-workspace submenus will take you to the workspace that window is on, and select the window\&. Last but not least you will notice the Icons menu\&. This is for applications which have been `iconified\'\&.
-.SS "Menu Behavior"
-.sp
-The behavior of the submenus in a menu can be configured in the `init\' file, with the following entries (default for both is 0):
-.sp
-.if n \{\
-.RS 4
-.\}
-.fam C
-.ps -1
-.nf
-.BB lightgray
-session\&.screen0\&.menuDelay: <msec>
-session\&.screen0\&.menuDelayClose: <msec>
-.EB lightgray
-.fi
-.fam
-.ps +1
-.if n \{\
-.RE
-.\}
 .SS "Menu Syntax"
 .sp
 There are up to four fields in a menu line\&. They are of the form:
@@ -1789,12 +1769,8 @@ session\&.screen0\&.defaultDeco: <string>
       the APPLICATIONS section\&. Default: NORMAL\&.
 
 session\&.screen0\&.menuDelay: <integer>
-      This sets the delay in milliseconds for submenus to open with the previous
-      option set to `Delay\'\&. Default: 0
-
-session\&.screen0\&.menuDelayClose: 0
-      This value sets the delay in milliseconds that you would like the menu to
-      remain visible after you\'ve clicked out of it\&. Default: 0
+      This sets the delay in milliseconds for submenus to open when you hover
+      over them or to close when you hover over another item\&. Default: 200
 
 session\&.screen0\&.focusNewWindows: <boolean>
       This sets whether or not new windows will become focused automatically\&.

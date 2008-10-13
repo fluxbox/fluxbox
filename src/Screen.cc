@@ -305,7 +305,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     unfocused_alpha(rm, 255, scrname+".window.unfocus.alpha", altscrname+".Window.Unfocus.Alpha"),
     menu_alpha(rm, 255, scrname+".menu.alpha", altscrname+".Menu.Alpha"),
     menu_delay(rm, 200, scrname + ".menuDelay", altscrname+".MenuDelay"),
-    menu_delay_close(rm, 200, scrname + ".menuDelayClose", altscrname+".MenuDelayClose"),
     tab_width(rm, 64, scrname + ".tab.width", altscrname+".Tab.Width"),
     tooltip_delay(rm, 500, scrname + ".tooltipDelay", altscrname+".TooltipDelay"),
     allow_remote_actions(rm, false, scrname+".allowRemoteActions", altscrname+".AllowRemoteActions"),
@@ -455,13 +454,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     if (*resource.menu_delay < 0)
         *resource.menu_delay = 0;
 
-    if (*resource.menu_delay_close > 5000)
-        *resource.menu_delay_close = 5000;
-    if (*resource.menu_delay_close < 0)
-        *resource.menu_delay_close = 0;
-
-    m_menutheme->setDelayOpen(*resource.menu_delay);
-    m_menutheme->setDelayClose(*resource.menu_delay_close);
+    m_menutheme->setDelay(*resource.menu_delay);
 
     focusedWinFrameTheme()->reconfigSig().attach(this);// for geom window
 
@@ -915,13 +908,7 @@ void BScreen::reconfigure() {
     if (*resource.menu_delay < 0)
         *resource.menu_delay = 0;
 
-    if (*resource.menu_delay_close > 5000)
-        *resource.menu_delay_close = 5000;
-    if (*resource.menu_delay_close < 0)
-        *resource.menu_delay_close = 0;
-
-    m_menutheme->setDelayOpen(*resource.menu_delay);
-    m_menutheme->setDelayClose(*resource.menu_delay_close);
+    m_menutheme->setDelay(*resource.menu_delay);
 
     // realize the number of workspaces from the init-file
     const unsigned int nr_ws = *resource.workspaces;
