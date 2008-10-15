@@ -38,6 +38,7 @@
 #include <algorithm>
 #include <X11/X.h>
 
+using std::max;
 using std::mem_fun;
 using std::string;
 
@@ -1702,7 +1703,8 @@ int FbWinFrame::yOffset() const {
 
 void FbWinFrame::applySizeHints(unsigned int &width, unsigned int &height,
                                 bool maximizing) const {
-    height -= titlebarHeight() + handleHeight();
+    const int h = height - titlebarHeight() + handleHeight();
+    height = max(h, static_cast<int>(titlebarHeight() + handleHeight()));
     sizeHints().apply(width, height, maximizing);
     height += titlebarHeight() + handleHeight();
 }
