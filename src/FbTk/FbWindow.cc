@@ -583,16 +583,21 @@ void FbWindow::setOpaque(unsigned char alpha) {
 #endif // HAVE_XRENDER
 }
 
-void FbWindow::updateGeometry() {
+bool FbWindow::updateGeometry() {
     if (m_window == 0)
-        return;
+        return false;
+
+    int old_x = m_x, old_y = m_y;
+    unsigned int old_width = m_width, old_height = m_height;
 
     Window root;
     unsigned int border_width, depth;
     if (XGetGeometry(display(), m_window, &root, &m_x, &m_y,
-                     (unsigned int *)&m_width, (unsigned int *)&m_height,
-                     &border_width, &depth))
+                     &m_width, &m_height, &border_width, &depth))
         m_depth = depth;
+
+    return (old_x != m_x || old_y != m_y || old_width != m_width ||
+            old_height != m_height);
 }
 
 void FbWindow::create(Window parent, int x, int y,

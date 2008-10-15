@@ -60,7 +60,3 @@ FbRootWindow::FbRootWindow(int screen_num):
         m_colormap = DefaultColormap(disp, screen_num);
     }
 }
-
-void FbRootWindow::updateGeometry() {
-    FbTk::FbWindow::updateGeometry();
-}

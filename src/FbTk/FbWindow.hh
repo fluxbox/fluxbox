@@ -199,12 +199,12 @@ public:
 
     static void updatedAlphaBackground(int screen);
 
+    /// updates x,y, width, height and screen num from X window
+    bool updateGeometry();
+
 protected:
     /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);
-
-    /// updates x,y, width, height and screen num from X window
-    void updateGeometry();
 
 private:
     /// sets new X window and destroys old

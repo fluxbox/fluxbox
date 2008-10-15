@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*08/10/15:
+   * Ignore XRandr events that don't change the screen size (Mark)
+     Screen.cc FbTk/FbWindow.cc/hh
 *08/10/13:
    * Merge menuDelay and menuDelayClose options in init (Mark)
      Screen.cc/hh FbTk/MenuTheme.cc/hh FbTk/Menu.cc

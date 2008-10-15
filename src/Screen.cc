@@ -1868,18 +1868,18 @@ void BScreen::updateSize() {
     // update xinerama layout
     initXinerama();
 
-    // force update geometry
-    rootWindow().updateGeometry();
+    // check if window geometry has changed
+    if (rootWindow().updateGeometry()) {
+        // reset background
+        m_root_theme->reset();
 
-    // reset background
-    m_root_theme->reset();
+        // send resize notify
+        m_resize_sig.emit(*this);
+        m_workspace_area_sig.emit(*this);
 
-    // send resize notify
-    m_resize_sig.emit(*this);
-    m_workspace_area_sig.emit(*this);
-
-    // move windows out of inactive heads
-    clearHeads();
+        // move windows out of inactive heads
+        clearHeads();
+    }
 }
 
 

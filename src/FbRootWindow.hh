@@ -35,7 +35,6 @@ public:
     void hide() { }
     // we should not assign a new window to this
     FbTk::FbWindow &operator = (Window win) { return *this; }
-    void updateGeometry();
     Visual *visual() const { return m_visual; }
     Colormap colormap() const { return m_colormap; } 
 
