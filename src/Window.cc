@@ -2851,6 +2851,20 @@ void FluxboxWindow::stopMoving(bool interrupted) {
 
     fluxbox->maskWindowEvents(0, 0);
 
+    // if user has no clickraise he moves windows without
+    // changing the stacking order. by not moving the mouse
+    // but clicking (and holding the modifier for moving)
+    // the window raises without having to aim for the titlebar/border
+    // this is a mixture between "mouse raise" and "click raise"
+    // TODO: state this in the official documentation
+    if (m_last_move_x - frame().x() == 0 &&
+            m_last_move_y - frame().y() == 0 &&
+            !screen().clickRaises()) {
+
+        raise();
+    }
+
+
     if (! screen().doOpaqueMove()) {
         parent().drawRectangle(screen().rootTheme()->opGC(),
                                m_last_move_x, m_last_move_y,
