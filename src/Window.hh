@@ -507,7 +507,7 @@ private:
     // modifies left and top if snap is necessary
     void doSnapping(int &left, int &top);
     // user_w/h return the values that should be shown to the user
-    void fixsize();
+    void fixSize();
     void moveResizeClient(WinClient &client);
     /// sends configurenotify to all clients
     void sendConfigureNotify();
@@ -547,7 +547,7 @@ private:
     int m_button_grab_x, m_button_grab_y; // handles last button press event for move
     int m_last_resize_x, m_last_resize_y; // handles last button press event for resize
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
-    unsigned int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
+    int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
 
     timeval m_last_keypress_time;
 
@@ -562,16 +562,16 @@ private:
     Client2ButtonMap m_labelbuttons;
 
     SizeHints m_size_hint;
-    struct _decorations {
-        bool titlebar, handle, border, iconify,
-            maximize, close, menu, sticky, shade, tab, enabled;
+    struct {
+        bool titlebar:1, handle:1, border:1, iconify:1,
+            maximize:1, close:1, menu:1, sticky:1, shade:1, tab:1, enabled:1;
     } decorations;
 
     std::vector<WinButton::Type> m_titlebar_buttons[2];
     bool m_toggled_decos;
 
-    struct _functions {
-        bool resize, move, iconify, maximize, close, tabable;
+    struct {
+        bool resize:1, move:1, iconify:1, maximize:1, close:1, tabable:1;
     } functions;
 
     typedef FbTk::ConstObjectAccessor<bool, FocusControl> BoolAcc;

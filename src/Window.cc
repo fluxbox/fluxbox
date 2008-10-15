@@ -2433,19 +2433,15 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         int borderw = frame().window().borderWidth();
         //!! TODO(tabs): the below test ought to be in FbWinFrame
         // if mouse is currently on the window border, ignore it
-        if ( ! insideBorder(frame(),
-                            me.x_root, me.y_root, borderw)  &&
+        if ( ! insideBorder(frame(), me.x_root, me.y_root, borderw)  &&
              ( !frame().externalTabMode() ||
-               ! insideBorder(frame().tabcontainer(),
-                              me.x_root, me.y_root, borderw) )
+               ! insideBorder(frame().tabcontainer(), me.x_root, me.y_root, borderw) )
 
              || // or if mouse was on border when it was last clicked
 
-             ! insideBorder(frame(),
-                            m_last_button_x, m_last_button_y, borderw) &&
+             ! insideBorder(frame(), m_last_button_x, m_last_button_y, borderw) &&
              ( ! frame().externalTabMode() ||
-               ! insideBorder(frame().tabcontainer(),
-                              m_last_button_x, m_last_button_y, borderw ) ) ) {
+               ! insideBorder(frame().tabcontainer(), m_last_button_x, m_last_button_y, borderw ) ) ) {
             return;
         }
     }
@@ -2563,11 +2559,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             int old_resize_x = m_last_resize_x;
             int old_resize_y = m_last_resize_y;
-            unsigned int old_resize_w = m_last_resize_w;
-            unsigned int old_resize_h = m_last_resize_h;
+            int old_resize_w = m_last_resize_w;
+            int old_resize_h = m_last_resize_h;
 
             int dx = me.x - m_button_grab_x;
             int dy = me.y - m_button_grab_y;
+
             if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
                 m_resize_corner == LEFT) {
                 m_last_resize_w = frame().width() - dx;
@@ -2598,7 +2595,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 }
             }
 
-            fixsize();
+            fixSize();
             frame().displaySize(m_last_resize_w, m_last_resize_h);
 
             if (old_resize_x != m_last_resize_x ||
@@ -3107,7 +3104,7 @@ void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
     m_last_resize_w = frame().width();
     m_last_resize_h = frame().height();
 
-    fixsize();
+    fixSize();
     frame().displaySize(m_last_resize_w, m_last_resize_h);
 
     parent().drawRectangle(screen().rootTheme()->opGC(),
@@ -3127,7 +3124,7 @@ void FluxboxWindow::stopResizing(bool interrupted) {
     screen().hideGeometry();
 
     if (!interrupted) {
-        fixsize();
+        fixSize();
 
         moveResize(m_last_resize_x, m_last_resize_y,
                    m_last_resize_w, m_last_resize_h);
@@ -3375,8 +3372,21 @@ bool FluxboxWindow::isTransient() const {
 
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
-void FluxboxWindow::fixsize() {
-    frame().applySizeHints(m_last_resize_w, m_last_resize_h);
+void FluxboxWindow::fixSize() {
+
+    // m_last_resize_w / m_last_resize_h could be negative
+    // due to user interactions. check here and limit
+    unsigned int w = 1;
+    unsigned int h = 1;
+    if (m_last_resize_w > 0)
+        w = m_last_resize_w;
+    if (m_last_resize_h > 0)
+        h = m_last_resize_h;
+
+    frame().applySizeHints(w, h);
+
+    m_last_resize_w = w;
+    m_last_resize_h = h;
 
     // move X if necessary
     if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||

@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *08/10/15:
+   * Don't allow resizing to negative dimensions (Mathias)
+     Window.cc/hh
    * Ignore XRandr events that don't change the screen size (Mark)
      Screen.cc FbTk/FbWindow.cc/hh
 *08/10/13:
