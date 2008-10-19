@@ -1,12 +1,12 @@
 .\"     Title: fluxbox
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 10/12/2008
+.\"      Date: 10/18/2008
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "10/12/2008" "[FIXME: source]" "[FIXME: manual]"
+.TH "FLUXBOX" "1" "10/18/2008" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -1673,7 +1673,7 @@ session\&.screen0\&.toolbar\&.visible: <boolean>
 
 session\&.screen0\&.toolbar\&.widthPercent: <integer>
       This resource sets the width percentage of the toolbar on the screen\&.
-      Default: 65
+      Default: 100
 
 session\&.screen0\&.toolbar\&.tools: <tools>
       This resource specifies the tools plugged into the toolbar\&. Read the
@@ -1718,7 +1718,7 @@ session\&.screen0\&.iconbar\&.alignment: <position>
 
 session\&.screen0\&.iconbar\&.iconWidth: <integer>
       Used to specify the iconbar button width for Left/Right alignment\&.
-      Default: 70
+      Default: 128
 
 session\&.screen0\&.strftimeFormat: <date>
       This adjusts the way the current time is displayed in the toolbar\&. The
@@ -2731,9 +2731,9 @@ fluxbox is written and maintained by Henrik Kinnunen <fluxgen at fluxbox org>, S
 .sp
 Blackbox was written and maintained by Brad Hughes <blackbox at alug org> and Jeff Raven <jraven at psu edu>\&.
 .sp
-The Official fluxbox website: http://www\&.fluxbox\&.org
+The Official fluxbox website: \m[blue]\fBhttp://www\&.fluxbox\&.org\fR\m[]
 .sp
-Many compatible themes: \- http://boxwhore\&.org \- http://themes\&.freshmeat\&.net/
+Many compatible themes: \- \m[blue]\fBhttp://boxwhore\&.org\fR\m[] \- \m[blue]\fBhttp://themes\&.freshmeat\&.net/\fR\m[]
 .sp
 This manpage is the combined work of:
 .sp
@@ -2804,7 +2804,7 @@ Numerous other languages could be available if someone jumps in\&.
 .RE
 .SH "BUGS"
 .sp
-If you find any bugs, please visit the #fluxbox irc channel on irc\&.freenode\&.net or submit them to the bug tracker at http://sf\&.net/projects/fluxbox \&. Or you may subscribe to one of the mailinglists\&. More information can be found on the official website\&.
+If you find any bugs, please visit the #fluxbox irc channel on irc\&.freenode\&.net or submit them to the bug tracker at \m[blue]\fBhttp://sf\&.net/projects/fluxbox\fR\m[] \&. Or you may subscribe to one of the mailinglists\&. More information can be found on the official website\&.
 .SH "SEE ALSO"
 .sp
 fluxbox\-keys(5) bsetroot(1) fbsetbg(1) fbrun(1) fluxstyle(1)

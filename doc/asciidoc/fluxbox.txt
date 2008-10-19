@@ -733,7 +733,7 @@ session.screen0.toolbar.visible: <boolean>
 
 session.screen0.toolbar.widthPercent: <integer>
       This resource sets the width percentage of the toolbar on the screen.
-      Default: 65
+      Default: 100
 
 session.screen0.toolbar.tools: <tools>
       This resource specifies the tools plugged into the toolbar. Read the
@@ -778,7 +778,7 @@ session.screen0.iconbar.alignment: <position>
 
 session.screen0.iconbar.iconWidth: <integer>
       Used to specify the iconbar button width for Left/Right alignment.
-      Default: 70
+      Default: 128
 
 session.screen0.strftimeFormat: <date>
       This adjusts the way the current time is displayed in the toolbar. The
