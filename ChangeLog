@@ -1,5 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*08/11/01:
+   * Don't reload keys file when modifier map changes, just regrab (Mark)
+     Keys.cc/hh fluxbox.cc
 *08/10/15:
    * Don't allow resizing to negative dimensions (Mathias)
      Window.cc/hh

@@ -571,6 +571,10 @@ void Keys::reconfigure() {
     m_reloader->checkReload();
 }
 
+void Keys::regrab() {
+    setKeyMode(m_keylist);
+}
+
 void Keys::keyMode(const string& keyMode) {
     keyspace_t::iterator it = m_map.find(keyMode + ":");
     if (it == m_map.end())

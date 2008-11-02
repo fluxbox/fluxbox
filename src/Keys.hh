@@ -73,6 +73,9 @@ public:
     /// unregister window
     void unregisterWindow(Window win);
 
+    /// grab keys again when keymap changes
+    void regrab();
+
     const std::string& filename() const { return m_filename; }
     /**
        Load configuration from file
