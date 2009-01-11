@@ -1703,7 +1703,7 @@ int FbWinFrame::yOffset() const {
 
 void FbWinFrame::applySizeHints(unsigned int &width, unsigned int &height,
                                 bool maximizing) const {
-    const int h = height - titlebarHeight() + handleHeight();
+    const int h = height - titlebarHeight() - handleHeight();
     height = max(h, static_cast<int>(titlebarHeight() + handleHeight()));
     sizeHints().apply(width, height, maximizing);
     height += titlebarHeight() + handleHeight();
