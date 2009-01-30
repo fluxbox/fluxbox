@@ -1668,6 +1668,10 @@ void FluxboxWindow::lower() {
 #ifdef DEBUG
     cerr<<"FluxboxWindow("<<title()<<")::lower()"<<endl;
 #endif // DEBUG
+
+    /* Ignore all EnterNotify events until the pointer actually moves */
+    screen().focusControl().ignoreAtPointer();
+
     // get root window
     WinClient *client = getRootTransientFor(m_client);
 
