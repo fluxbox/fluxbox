@@ -899,6 +899,11 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 
     BScreen *screen = searchScreen(ue.event);
 
+    if (screen) {
+        /* Ignore all EnterNotify events until the pointer actually moves */
+        screen->focusControl().ignoreAtPointer();
+    }
+
     if (ue.event != ue.window && (!screen || !ue.send_event)) {
         return;
     }
