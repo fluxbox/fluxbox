@@ -2680,13 +2680,17 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             sa.enter = sa.leave = False;
             XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);
 
-            if ((!sa.leave || sa.inferior) && !screen().focusControl().isCycling() ) {
+            if ((!sa.leave || sa.inferior) &&
+                !screen().focusControl().isCycling() &&
+                !screen().focusControl().isIgnored(ev.x_root, ev.y_root) ) {
                 focus();
             }
         }
     }
 
-    if (screen().focusControl().isMouseTabFocus() && client && client != m_client) {
+    if (screen().focusControl().isMouseTabFocus() &&
+        client && client != m_client &&
+        !screen().focusControl().isIgnored(ev.x_root, ev.y_root) ) {
         setCurrentClient(*client, isFocused());
     }
 

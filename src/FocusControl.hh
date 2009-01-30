@@ -93,6 +93,15 @@ public:
     bool isMouseFocus() const { return focusModel() == MOUSEFOCUS; }
     /// @return true if tab focus mode is mouse tab focus
     bool isMouseTabFocus() const { return tabFocusModel() == MOUSETABFOCUS; }
+
+    /// Set the "ignore" pointer location to the current pointer location
+    void ignoreAtPointer();
+    /// Set the "ignore" pointer location to the given coordinates
+    void ignoreAt(int x, int y);
+    /// @return true if events at the given X/Y coordinate should be ignored
+    /// (ie, they were previously cached via one of the ignoreAt calls)
+    bool isIgnored(int x, int y);
+
     /// @return true if cycling is in progress
     bool isCycling() const { return m_cycling_list != 0; }
     /// Appends a client to the front of the focus list
@@ -157,6 +166,7 @@ private:
     const FocusableList *m_cycling_list;
     Focusable *m_was_iconic;
     WinClient *m_cycling_last;
+    int m_ignore_mouse_x, m_ignore_mouse_y;
 
     static WinClient *s_focused_window;
     static FluxboxWindow *s_focused_fbwindow;
