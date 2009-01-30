@@ -1211,6 +1211,9 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
     if (!moving) {
         m_last_resize_x = new_x;
         m_last_resize_y = new_y;
+
+        /* Ignore all EnterNotify events until the pointer actually moves */
+        screen().focusControl().ignoreAtPointer();
     }
 
 }
