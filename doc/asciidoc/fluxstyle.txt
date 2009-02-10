@@ -1,7 +1,10 @@
 fluxstyle(1)
 ============
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v1.0rc3 21th April 2007
+v1.1.1, 10 February 2009
+:man source:   fluxstyle.txt
+:man version:  {revision}
+:man manual:   Fluxbox Manual
 
 NAME
 ----

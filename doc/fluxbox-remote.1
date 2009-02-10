@@ -1,39 +1,195 @@
 .\"     Title: fluxbox-remote
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 08/06/2008
-.\"    Manual: 
-.\"    Source: 
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
+.\"      Date: 02/10/2009
+.\"    Manual: Fluxbox Manual
+.\"    Source: fluxbox-remote.txt 1.1.1
+.\"  Language: English
 .\"
-.TH "FLUXBOX\-REMOTE" "1" "08/06/2008" "" ""
+.TH "FLUXBOX\-REMOTE" "1" "02/10/2009" "fluxbox\-remote\&.txt 1\&.1\&." "Fluxbox Manual"
+.\" -----------------------------------------------------------------
+.\" * (re)Define some macros
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" toupper - uppercase a string (locale-aware)
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de toupper
+.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
+\\$*
+.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH-xref - format a cross-reference to an SH section
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de SH-xref
+.ie n \{\
+.\}
+.toupper \\$*
+.el \{\
+\\$*
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SH - level-one heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SH
+.\" put an extra blank line of space above the head in non-TTY output
+.if t \{\
+.sp 1
+.\}
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[an-margin]u
+.ti 0
+.HTML-TAG ".NH \\n[an-level]"
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+\." make the size of the head bigger
+.ps +3
+.ft B
+.ne (2v + 1u)
+.ie n \{\
+.\" if n (TTY output), use uppercase
+.toupper \\$*
+.\}
+.el \{\
+.nr an-break-flag 0
+.\" if not n (not TTY), use normal case (not uppercase)
+\\$1
+.in \\n[an-margin]u
+.ti 0
+.\" if not n (not TTY), put a border/line under subheading
+.sp -.6
+\l'\n(.lu'
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" SS - level-two heading that works better for non-TTY output
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de1 SS
+.sp \\n[PD]u
+.nr an-level 1
+.set-an-margin
+.nr an-prevailing-indent \\n[IN]
+.fi
+.in \\n[IN]u
+.ti \\n[SN]u
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.ps \\n[PS-SS]u
+\." make the size of the head bigger
+.ps +2
+.ft B
+.ne (2v + 1u)
+.if \\n[.$] \&\\$*
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BB/BE - put background/screen (filled box) around block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BB
+.if t \{\
+.sp -.5
+.br
+.in +2n
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EB
+.if t \{\
+.if "\\$2"adjust-for-leading-newline" \{\
+.sp -1
+.\}
+.br
+.di
+.in
+.ll
+.gcolor
+.nr BW \\n(.lu-\\n(.i
+.nr BH \\n(dn+.5v
+.ne \\n(BHu+.5v
+.ie "\\$2"adjust-for-leading-newline" \{\
+\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.el \{\
+\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
+.\}
+.in 0
+.sp -.5v
+.nf
+.BX
+.in
+.sp .5v
+.fi
+.\}
+..
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" BM/EM - put colored marker in margin next to block of text
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.de BM
+.if t \{\
+.br
+.ll -2n
+.gcolor red
+.di BX
+.\}
+..
+.de EM
+.if t \{\
+.br
+.di
+.ll
+.gcolor
+.nr BH \\n(dn
+.ne \\n(BHu
+\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
+.in 0
+.nf
+.BX
+.in
+.fi
+.\}
+..
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
-.SH "NAME"
-fluxbox-remote - command line access to key commands for fluxbox(1)
-.SH "SYNOPSIS"
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "Name"
+fluxbox-remote \- command line access to key commands for fluxbox(1)
+.SH "Synopsis"
+.sp
 \fBfluxbox\-remote\fR \fIcommand\fR
-.sp
 .SH "DESCRIPTION"
-\fIfluxbox\-remote(1)\fR is designed to allow scripts to execute most key commands from \fIfluxbox(1)\fR\. \fIfluxbox\-remote(1)\fR will only work with \fIfluxbox(1)\fR: its communications with \fIfluxbox(1)\fR are not standardized in any way\. It is recommended that a standards\-based tool such as \fIwmctrl(1)\fR be used whenever possible, in order for scripts to work with other window managers\.
 .sp
+\fIfluxbox\-remote(1)\fR is designed to allow scripts to execute most key commands from \fIfluxbox(1)\fR\&. \fIfluxbox\-remote(1)\fR will only work with \fIfluxbox(1)\fR: its communications with \fIfluxbox(1)\fR are not standardized in any way\&. It is recommended that a standards\-based tool such as \fIwmctrl(1)\fR be used whenever possible, in order for scripts to work with other window managers\&.
 .SH "CAVEATS"
-\fIfluxbox\-remote(1)\fR uses the X11 protocol to communicate with \fIfluxbox(1)\fR\. Therefore, it is possible for any user with access to the \fIX(7)\fR server to use \fIfluxbox\-remote(1)\fR\. For this reason, several key commands have been disabled\. Users should be aware of the security implications when enabling \fIfluxbox\-remote(1)\fR, especially when using a forwarded \fIX(7)\fR connection\.
 .sp
+\fIfluxbox\-remote(1)\fR uses the X11 protocol to communicate with \fIfluxbox(1)\fR\&. Therefore, it is possible for any user with access to the \fIX(7)\fR server to use \fIfluxbox\-remote(1)\fR\&. For this reason, several key commands have been disabled\&. Users should be aware of the security implications when enabling \fIfluxbox\-remote(1)\fR, especially when using a forwarded \fIX(7)\fR connection\&.
 .SH "RESOURCES"
 .PP
-session\.screen0\.allowRemoteActions: <boolean>
+session\&.screen0\&.allowRemoteActions: <boolean>
 .RS 4
-This resource in ~/\.fluxbox/init must be set to `true\' in order for
+This resource in ~/\&.fluxbox/init must be set to `true\' in order for
 \fIfluxbox\-remote(1)\fR
-to function\. Please read the
+to function\&. Please read the
 \fBCAVEATS\fR
-first\.
+first\&.
 .RE
 .SH "ENVIRONMENT"
-In order to communicate with \fIfluxbox(1)\fR, the DISPLAY environment variable must be set properly\. Usually, the value should be `:0\.0\'\.
 .sp
+In order to communicate with \fIfluxbox(1)\fR, the DISPLAY environment variable must be set properly\&. Usually, the value should be `:0\&.0\'\&.
 .SH "SEE ALSO"
-fluxbox(1), fluxbox\-keys(5), wmctrl(1)
 .sp
+fluxbox(1), fluxbox\-keys(5), wmctrl(1)
