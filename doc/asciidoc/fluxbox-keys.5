@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-keys
-.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/10/2009
+.\"      Date: 04/24/2009
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxbox-keys.txt 1.1.1
+.\"    Source: fluxbox-keys.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "02/10/2009" "fluxbox\-keys\&.txt 1\&.1\&.1" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "04/24/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -191,6 +191,8 @@ The space between the \fIkey\fR and the \fB:\fR before the \fIcommand\fR is mand
 All modifiers and commands are case\-insensitive\&. Some command arguments (especially those that will be passed to the shell) are case\-sensitive\&. Some key names are case\-sensitive\&.
 .sp
 Lines beginning with a \fI#\fR or \fI!\fR are considered comments and are unread by fluxbox\&.
+.sp
+You will need to \(lqreload\(rq fluxbox after editing the keys file so it picks up your change\&.
 .SH "MODIFIERS"
 .sp
 You can get a list of possible modifiers by calling `xmodmap \-pm\'\&. This also shows you to which keys the modifiers are mapped, but the following modifiers are most commonly used:
@@ -234,14 +236,27 @@ To combine two or more modifiers, just list them (space\-delimited) in any order
 .sp
 You may specify a key by its key name (for example, \fBa\fR or \fBspace\fR) or by its numeric keycode (for example, \fB38\fR or \fB0xf3\fR)\&.
 .sp
-If you don\'t know the name of a key, you can run \fIxev(1)\fR in a terminal, push the key, and see the name in the output\&. If you have some "special" keys that do not produce a key name in the output of \fIxev(1)\fR, you can just use the keycode (NOT the keysym!) in your keys file\&.
+If you don\'t know the name of a key, you can run \fBxev(1)\fR in a terminal, push the key, and see the name in the output\&. If you have some "special" keys that do not produce a key name in the output of \fBxev(1)\fR, you can just use the keycode (NOT the keysym!) in your keys file\&.
 .sp
-Commands can also be bound to mouse button presses, for which the proper "key" name is \fBMouse\fR\fIn\fR where \fIn\fR is the number of the mouse button\&. For example, \fBMouse1\fR is the primary button, and \fBMouse4\fR / \fBMouse5\fR are the scroll wheel events, in normal configurations\&. \fIxev(1)\fR can also be used to tell the button number\&.
+Commands can also be bound to mouse button presses, for which the proper "key" name is \fBMouse\fR\fIn\fR where \fIn\fR is the number of the mouse button\&. For example, \fBMouse1\fR is the primary button, and \fBMouse4\fR / \fBMouse5\fR are the scroll wheel events, in normal configurations\&. \fBxev(1)\fR can also be used to tell the button number\&.
+.PP
+There are some special "keys" that let you bind events to non\-keyboard events:
+.RS 4
+.PP
+\fBChangeWorkspace\fR
+.RS 4
+Fires when the workspace changes\&. This can be used to change backgrounds or do anything else you like when you switch to a new workspace\&. See the
+\fBEXAMPLES\fR
+below for one idea\&.
+.RE
+.RE
 .SH "CHAINING"
 .sp
 Key bindings can be chained in a fashion similar to Emacs key bindings using the syntax:
 .sp
-\fB\fImodifiers\-1\fR\fR\fB \fR\fB\fIkey\-1\fR\fR\fB \fR\fB\fImodifiers\-2\fR\fR\fB \fR\fB\fIkey\-2\fR\fR\fB :\fR\fB\fIcommand\fR\fR\fB [\fR\fB\fIarguments \&...\fR\fR\fB]\fR
+\fImodifiers\-1\fR \fIkey\-1\fR \fImodifiers\-2\fR \fIkey\-2\fR :\fIcommand\fR [\fIarguments \&...\fR]*
+.sp
+To abort a chained command part\-way through typing it, press the <ESC> key\&.
 .PP
 \fBExample\ \&1.\ \&To Bind CTRL+C CTRL+X (Which means, press CTRL+C then CTRL+X) to quit fluxbox\fR
 .sp
@@ -432,7 +447,7 @@ Close the current window, equivalent to the window button\&.
 .RS 4
 Close a window that\'s not responding to
 \fBClose\fR, like using
-\FCxkill\F[]\&.
+\fBxkill(1)\fR\&.
 .RE
 .PP
 \fBShade\fR | \fBShadeWindow\fR
@@ -544,10 +559,18 @@ Moves the window relative to its current position by the number of pixels specif
 \fId\fR\&. If the number is negative, it moves in the opposite direction\&.
 .RE
 .PP
-\fBTakeToWorkspace\fR \fIworkspace\fR / \fBSendToWorkspace\fR \fIworkspace\fR
+\fBTakeToWorkspace\fR \fIworkspace\fR
 .RS 4
-Sends you along with the current window to the selected workspace\&. SendToWorkspace just sends the window\&. The first workspace is number
+Sends you along with the current window to the selected workspace\&. The first workspace is number
 \fB1\fR, not 0\&.
+.RE
+.PP
+\fBSendToWorkspace\fR \fIworkspace\fR
+.RS 4
+SendToWorkspace just sends the window to the specified workspace\&. As in TakeToWorkspace, the first workspace is number
+\fB1\fR, but in addition you may use the number
+\fB0\fR
+to mean "The currently active workspace"\&.
 .RE
 .PP
 \fBTakeToNextWorkspace\fR [\fIoffset\fR] / \fBTakeToPrevWorkspace\fR [\fIoffset\fR]
@@ -767,15 +790,36 @@ Closes all windows on all desktops\&.
 .sp
 These commands open or close fluxbox popup menus\&. For more information on what these menus contain or how to configure them, see \fIfluxbox(1)\fR\&.
 .PP
-\fBRootMenu\fR / \fBWorkspaceMenu\fR / \fBWindowMenu\fR
+\fBRootMenu\fR
 .RS 4
-Opens the specified menu\&. See fluxbox(1) for more details on what these menus contain\&.
+Opens the root menu\&. See
+\fBROOT MENU\fR
+in
+\fBfluxbox\-menu(5)\fR
+for details\&.
 .RE
+.PP
+\fBWorkspaceMenu\fR
+.RS 4
+Opens a menu showing all workspaces and windows\&. See
+\fBWorkspace Menu\fR
+in
+\fBfluxbox(1)\fR
+for details\&.
+.RE
+.PP
+\fBWindowMenu\fR
+.RS 4
+Opens a menu containing actions for the current window\&. See
+\fBWINDOW MENU\fR
+in
+\fBfluxbox\-menu(5)\fR
+for details\&.
 .PP
 \fBClientMenu\fR [\fIpattern\fR]
 .RS 4
 Opens a menu that contains all windows\&. If you specify a
-\fIpattern\fR, only matching windows will be in the menu\&. See
+\fIpattern\fR, only matching windows will be in the menu\&. Selecting a window will jump to that workspace and raise the window\&. See
 \fBCLIENT PATTERNS\fR
 below for more details on the
 \fIpattern\fR
@@ -784,12 +828,18 @@ argument\&.
 .PP
 \fBCustomMenu\fR \fIpath\fR
 .RS 4
-Opens a custom menu file\&.
+Opens a custom menu file\&. This
+\fIpath\fR
+must be a valid menu file in the same format as detailed by the
+\fBROOT MENU\fR
+section of
+\fBfluxbox\-menu(5)\fR\&.
 .RE
 .PP
 \fBHideMenus\fR
 .RS 4
 Hide all fluxbox popup menus\&.
+.RE
 .RE
 .SS "Window Manager Commands"
 .sp
@@ -827,7 +877,18 @@ Reloads only the current style\&. Useful after editing a style which is currentl
 .RS 4
 Probably the most\-used binding of all\&. Passes all the arguments to your
 \fB$SHELL\fR
-(or /bin/sh if $SHELL is not set)\&. You can use this to launch applications, run shell scripts, etc\&. Since all arguments are passed verbatim to the shell, you can use environment variables, pipes, or anything else the shell can do\&. Note that processes only see environment variables that were set before fluxbox started (such as in ~/\&.fluxbox/startup), or any that are set via the Export or SetEnv commands, below\&.
+(or /bin/sh if $SHELL is not set)\&. You can use this to launch applications, run shell scripts, etc\&. Since all arguments are passed verbatim to the shell, you can use environment variables, pipes, or anything else the shell can do\&. Note that processes only see environment variables that were set before fluxbox started (such as in
+\fB~/\&.fluxbox/startup\fR), or any that are set via the
+\fBExport\fR
+or
+\fBSetEnv\fR
+commands, below\&. See
+\fBfluxbox(1)\fR
+for more details on the
+\fBENVIRONMENT\fR
+and
+\fB~/\&.fluxbox/startup\fR
+file\&.
 .RE
 .PP
 \fBCommandDialog\fR
@@ -1205,23 +1266,23 @@ The string name of the window\'s layer, which is one of
 .\}
 .SH "FILES"
 .PP
-~/\&.fluxbox/keys
+\fB~/\&.fluxbox/keys\fR
 .RS 4
 This is the default location for the keybinding definitions\&.
 .RE
 .PP
-/usr/X11R6/include/X11/keysymdef\&.h
+\fB/usr/X11R6/include/X11/keysymdef\&.h\fR
 .RS 4
 X key names are in this file\&.
 .RE
 .PP
-/usr/X11R6/lib/X11/XKeysymDB
+\fB/usr/X11R6/lib/X11/XKeysymDB\fR
 .RS 4
 X key names are also in this file\&.
 .RE
 .SH "RESOURCES"
 .PP
-session\&.keyFile: <location>
+\fBsession\&.keyFile:\fR \fIlocation\fR
 .RS 4
 This may be set to override the location of the keybinding definitions\&.
 .RE
@@ -1273,9 +1334,7 @@ ChangeWorkspace :Exec fbsetbg ~/\&.fluxbox/bg$(xprop \-root _NET_CURRENT_DESKTOP
 .if n \{\
 .RE
 .\}
-.SH "AUTHOR and CREDITS"
-.sp
-This manpage is the combined work of:
+.SH "AUTHORS"
 .sp
 .RS 4
 .ie n \{\
@@ -1342,17 +1401,6 @@ Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 .\}
 Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 .RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Numerous other languages could be available if someone jumps in\&.
-.RE
 .SH "SEE ALSO"
 .sp
-fluxbox(1), xev(1), xkill(1), regex(7)
+fluxbox(1) xprop(1) xev(1) xkill(1) regex(7)

@@ -1,7 +1,10 @@
 fluxbox-keys(5)
 ===============
 Jim Ramsay <i.am@jimramsay.com>
-v1.1.0, 22 July, 2008
+v1.1.1, 10 February 2009
+:man source:   fluxbox-keys.txt
+:man version:  {revision}
+:man manual:   Fluxbox Manual
 
 NAME
 ----
@@ -554,83 +557,14 @@ To check other windows besides the currently focused one, see the *Every* and
 	Returns the boolean *xor* of the truth values for all conditions
 	listed.
 
+
 CLIENT PATTERNS
 ---------------
 Many of the more advanced commands take a 'pattern' argument, which allows you
 to direct the action at a specific window or set of windows which match the
-properties specified in the 'pattern'. A 'pattern' looks like this:
+properties specified in the 'pattern'.
 
-(['propertyname'[!]=]'regexp') ...
-
-Match definitions are enclosed in parentheses *(*...*)*, and if no
-'propertyname' is given then *Name* is assumed. The 'regexp' can contain any
-regular expression, or the special value *[current]*, which matches the
-corresponding value of the currently focused window. See 'regex(7)' for more
-information on acceptable regular expressions.
-
-You can use *=* to test for equality or *!=* to test for inequality.
-
-The following values are accepted for 'propertyname':::
-*Name*;;
-	A string, corresponding to the CLASSNAME property.
-*Class*;;
-	A string, corresponding to the CLASSCLASS property.
-*Title*;;
-	A string, corresponding to the window title.
-*Role*;;
-	A string, corresponding to the ROLE property.
-*Transient*;;
-	Either *yes* or *no*, depending on whether the window is transient
-	(typically, a popup dialog) or not.
-*Maximized*;;
-	Either *yes* or *no*, depending on whether the window is maximized or
-	not.
-*Minimized*;;
-	Either *yes* or *no*, depending on whether the window is minimized
-	(iconified) or not.
-*Shaded*;;
-	Either *yes* or *no*, depending on whether the window is shaded or
-	not.
-*Stuck*;;
-	Either *yes* or *no*, depending on whether the window is sticky (on
-	all workspaces) or not.
-*FocusHidden*;;
-	Either *yes* or *no*, depending on whether the window has asked to be
-	left off the focus list (or, the alt-tab list), or not.
-*IconHidden*;;
-	Either *yes* or *no*, depending on whether the window has asked to be
-	left off the icon list (or, the taskbar), or not.
-*Urgent*;;
-	Either *yes* or *no*, depending on whether the window has the urgent
-	hint set.
-*Workspace*;;
-	A number corresponding to the workspace number to which the window is
-	attached. The first workspace here is *0*.
-*WorkspaceName*;;
-	A string corresponding to the name of the workspace to which the
-	window is attached.
-*Head*;;
-	The number of the display head to which the window is attached. You
-	may match this against the special value *[mouse]* which refers to the
-	head where the mouse pointer currently resides.
-*Layer*;;
-	The string name of the window's layer, which is one of
-	*AboveDock*, *Dock*, *Top*, *Normal*, *Bottom*, *Desktop*
-
-.Matches any windows with the CLASSNAME of "xterm"
-..........
-(xterm)
-..........
-
-.Matches any windows with the same CLASSNAME as the currently focused window
-..........
-(Name=[current])
-..........
-
-.Matches any windows on the same head as the mouse but on a different layer than the currently focused window
-...........
-(Head=[mouse]) (Layer!=[current])
-...........
+include::client-patterns.txt[]
 
 FILES
 -----
