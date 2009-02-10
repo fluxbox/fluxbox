@@ -1,12 +1,12 @@
 .\"     Title: fluxbox
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 10/18/2008
-.\"    Manual: [FIXME: manual]
-.\"    Source: [FIXME: source]
+.\"      Date: 02/10/2009
+.\"    Manual: Fluxbox Manual
+.\"    Source: fluxbox.txt 1.1.1
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "10/18/2008" "[FIXME: source]" "[FIXME: manual]"
+.TH "FLUXBOX" "1" "02/10/2009" "fluxbox\&.txt 1\&.1\&.1" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -396,7 +396,7 @@ Bottom
 Desktop
 .RE
 .sp
-Windows on a higher layer will always appear above those on a lower one\&. These layers can be used on application windows, the slit or the toolbar\&. You can assign applications to a certain layer by specifying it in the `apps\' file or through the WindowMenu\&. We discuss the `apps\' file in the APPLICATIONS section\&. We discuss the WindowMenu in the MENUS section\&. We discuss layers in more detail in the LAYERS section\&.
+Windows on a higher layer will always appear above those on a lower one\&. These layers can be used on application windows, the slit or the toolbar\&. You can assign applications to a certain layer by specifying it in the `apps\' file or through the WindowMenu\&. We discuss the `apps\' file in \fBfluxbox\-apps(5)\fR\&. We discuss the WindowMenu in the MENUS section\&. We discuss layers in more detail in the LAYERS section\&.
 .SS "Focus Model"
 .sp
 The window that has the focus is the one that receives key and mouse events\&. The focus model is selectable via the Configuration menu located in the root menu\&. We\'ll discuss the different types of focus below in the FOCUS MODEL section\&.
@@ -828,7 +828,8 @@ Button 3 (Un)Maximize window horizontally\&.
 .IP \(bu 2.3
 .\}
 
-\fBRemember\&...\fR: Specify which window settings should be stored in the apps file, covered later on in the APPLICATIONS section\&.
+\fBRemember\&...\fR: Specify which window settings should be stored in the `apps\' file, covered in
+\fBfluxbox\-apps(5)\fR\&.
 .RE
 .sp
 .RS 4
@@ -1766,7 +1767,7 @@ session\&.screen0\&.showwindowposition: <boolean>
 session\&.screen0\&.defaultDeco: <string>
       This specifies the default window decorations, according to the same
       options available to the `[Deco]\' option in the `apps\' file, described in
-      the APPLICATIONS section\&. Default: NORMAL\&.
+      *fluxbox\-apps(5)*\&. Default: NORMAL\&.
 
 session\&.screen0\&.menuDelay: <integer>
       This sets the delay in milliseconds for submenus to open when you hover
@@ -1970,7 +1971,7 @@ There are two ways to assign a window to a different layer\&. When the window is
 12 \- Desktop
 .RE
 .sp
-The other way to set the layer for a window is through the `apps\' file\&. This method is described in the APPLICATIONS section\&.
+The other way to set the layer for a window is through the `apps\' file\&. This method is described in \fBfluxbox\-apps(5)\fR\&.
 .SH "FOCUS MODEL"
 .sp
 The Focus Model defines how windows gain focus (i\&.e\&. become the active window, which receives keyboard and mouse events)\&. The focus model can be changed in the configuration menu (usually located under \fIfluxbox menu\fR in the Root Menu\&.
@@ -2109,423 +2110,6 @@ The default installation of fluxbox provides some of these style files\&. See fl
 .SH "STYLE OVERLAY"
 .sp
 In addition to the style file, the overlay file, whose location is specified by session\&.screen0\&.styleOverlay (default: ~/\&.fluxbox/overlay ) can be used to set style resources that override all styles\&. For more information about which parts of fluxbox can be controlled by the overlay file, see fluxstyle(1)\&.
-.SH "APPLICATIONS"
-.sp
-It is possible to force an application to always have the same dimensions, position, and other settings when it is first launched\&. The easiest way to do this is to use the `Remember\&...\' submenu of the window menu, which can usually be opened with a right click on the titlebar\&. More advanced features require manually editing the ~/\&.fluxbox/apps file, where these settings are saved\&.
-.sp
-The format of a section in the `apps\' file is:
-.sp
-.if n \{\
-.RS 4
-.\}
-.fam C
-.ps -1
-.nf
-.BB lightgray
-[app] (Property=\'value\') \&.\&.\&. {count \- optional}
-    [Setting1]  {value1}
-    [Setting2]  {value2}
-    \&.\&.\&.
-[end]
-.EB lightgray
-.fi
-.fam
-.ps +1
-.if n \{\
-.RE
-.\}
-.sp
-Property can be one of the following tags:
-.sp
-o name \- the name of the window (the first field of WM_CLASS) o class \- class of the window (the second field of WM_CLASS) o title \- title of the window (the WM_NAME property) o role \- role of the window (the WM_WINDOW_ROLE property)
-.sp
-You can find out the value for these fields for a particular window by running xprop(1)\&. The window title should be used only as a last resort, since it often changes after the window opens\&. Each \fIvalue\fR can be a string or a regular expression\&. All values are case sensitive\&.
-.sp
-You can specify multiple properties, which must ALL match for the settings to be applied\&. If a count is supplied in curly brackets at the end of the app line, then the entry will only match at most that many at any time (default is to match all matching windows)\&. Settings associated with an [app] line will not be applied to transient windows\&. [transient] may be used instead to match them\&.
-.sp
-.if n \{\
-.RS 4
-.\}
-.fam C
-.ps -1
-.nf
-.BB lightgray
-# match a standard xterm
-[app] (name=xterm)
-# match an xterm started like: xterm \-name myshell
-[app] (name=myshell)
-# match the gaim buddy list window
-[app] (role=buddy_list)
-# match an rdesktop window to a particular host
-[app] (title=rdesktop \- hostname\&.*)
-# match pidgin IRC windows
-[app] (pidgin) (title=#\&.*)
-.EB lightgray
-.fi
-.fam
-.ps +1
-.if n \{\
-.RE
-.\}
-.sp
-The following are the settings that can be defined in each [app] entry\&. Each name must be enclosed in square brackets, and the value is generally in curly brackets:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Workspace] {0\-N}: Forces the application to open on the workspace specified\&. Workspaces are set by number, beginning with 0\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Dimensions] {Width Height}: Open the application with the specified width and height, in pixels\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Position] (\fBrefspot\fR) {X Y}: Position the application at a particular spot:
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-TOPLEFT
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-TOP
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-TOPRIGHT
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-LEFT
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-CENTER
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-RIGHT
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-BOTTOMLEFT
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-BOTTOM
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-BOTTOMRIGHT
-.sp
-.if n \{\
-.RS 4
-.\}
-.fam C
-.ps -1
-.nf
-.BB lightgray
-You can optionally specify what X and Y are relative to\&. By default the
-upper left corner is placed at screen coordinates (X, Y)\&. If you specify a
-reference point, say LOWERRIGHT, then the lower right corner of the window
-is positioned (X,Y) pixels from the lower right of the screen\&.
-.EB lightgray
-.fi
-.fam
-.ps +1
-.if n \{\
-.RE
-.\}
-.RE
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Specify the layer to open the window on (by number)\&. Each layer has a number\&. The named ones are: 2\-AboveDock, 4\-Dock, 6\-Top, 8\-Normal, 10\-Bottom, 12\-Desktop\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Shaded] {yes|no}: The window is started shaded, or not\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Tab] {yes|no}: Whether this window can be tabbed with others\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[IconHidden] {yes|no}: Hides the app from the icon bar
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[FocusHidden] {yes|no}: Hides the app from the window cycling list used by Next/PrevWindow key bindings\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Hidden] {yes|no}: is both [IconHidden] plus [FocusHidden]
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Deco] {NONE|NORMAL|TOOL|TINY|BORDER}: Specify the decoration state\&. There are several predefined dec\- oration sets:
-.sp
-.if n \{\
-.RS 4
-.\}
-.fam C
-.ps -1
-.nf
-.BB lightgray
-o   NORMAL \- standard decorations
-o   NONE \- no decorations
-o   BORDER \- like NONE except keep the X window border
-o   TINY \- titlebar with an iconify button
-o   TOOL \- titlebar only
-.EB lightgray
-.fi
-.fam
-.ps +1
-.if n \{\
-.RE
-.\}
-.sp
-.if n \{\
-.RS 4
-.\}
-.fam C
-.ps -1
-.nf
-.BB lightgray
-A bitmask can also be used for fine\-grained control\&.  The bits are (from
-"1" to 1<<10): titlebar, handle/grips, border, iconify button, maximize
-button, close button, menu enabled, sticky button, shade button, tabbing
-enabled, focus enabled\&.
-.EB lightgray
-.fi
-.fam
-.ps +1
-.if n \{\
-.RE
-.\}
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Sticky] {yes|no}: Whether the window is initially stuck or not\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Jump] {yes|no}: Jump to workspace\&. This one is only useful if `Workspace\' is set too\&. The workspace is changed to the workspace containing the application being launched\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Close] {yes|no}: Save settings on close\&. By default, application settings are not saved when a window is closed\&. Set this option if you want previous settings to be saved when the window is closed\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-[Alpha] {int [int]} Where numbers represent focused and unfocused transparency, respectively\&. One number only will be used for both\&.
-.RE
-.sp
-The apps file also allows you to specify applications that should be started only valid option is (screen=NN), where NN is the screen number on which the command should be run\&.
-.sp
-Finally, you can set windows to group together by using the `apps\' file\&. Just place a [group] tag around several [app] tags, with an [end] tag to indicate the end of the group\&. If you place (workspace) after the [group] tag, a new window will only get grouped with other windows on the current workspace\&. You can also specify dimensions, positions, etc\&. for the group as for normal app entries\&. Here is a short example of an `apps\' file:
-.sp
-.if n \{\
-.RS 4
-.\}
-.fam C
-.ps -1
-.nf
-.BB lightgray
-    [startup] {xterm}
-    # match anything ending with term, up to 2 instances
-    [app] (name=\&.*[tT]erm) {2}
-      [Workspace]   {1}
-    [end]
-    [app] (name=kate)
-      [Dimensions]  {1022 747}
-      [Position]    (WINCENTER) {0 0}
-      [Close]       {yes}
-    [end]
-    [app] (name=konqueror)
-      [Workspace]   {1}
-      [Dimensions]  {1006 749}
-      [Position]    {16 0}
-      [Jump]        {yes}
-    [end]
-    # start all aterms without decorations
-    [app] (name=aterm)
-      [Deco]        {NONE}
-    [end]
-    # a group with the gimp dock and toolbox
-    # appears on layer 4 (bottom)
-    [group]
-     [app] (name=gimp) (role=gimp\-dock)
-     [app] (name=gimp) (role=gimp\-toolbox)
-      [Layer]       {4}
-    [end]
-.EB lightgray
-.fi
-.fam
-.ps +1
-.if n \{\
-.RE
-.\}
 .SH "THE SLIT"
 .sp
 The slit is a special fluxbox window frame that can contain dockable applications, e\&.g\&. \fIbbtools\fR or \fIwmapps\fR\&.

@@ -1,7 +1,10 @@
 fluxbox(1)
 ==========
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v1.0rc3, 21th April 2007
+v1.1.1, 10 February 2009
+:man source:   fluxbox.txt
+:man version:  {revision}
+:man manual:   Fluxbox Manual  
 
 NAME
 ----
@@ -162,7 +165,7 @@ fluxbox manages the following layers (from highest to lowest):
 Windows on a higher layer will always appear above those on a lower one. These
 layers can be used on application windows, the slit or the toolbar. You can
 assign applications to a certain layer by specifying it in the `apps' file or
-through the WindowMenu. We discuss the `apps' file in the APPLICATIONS section.
+through the WindowMenu. We discuss the `apps' file in *fluxbox-apps(5)*.
 We discuss the WindowMenu in the MENUS section. We discuss layers in more detail
 in the LAYERS section.
 
@@ -350,8 +353,8 @@ The options available are:
     Change the layer of this window.
 
 - *Remember...*:
-    Specify which window settings should be stored in the apps file,
-    covered later on in the APPLICATIONS section.
+    Specify which window settings should be stored in the `apps' file,
+    covered in *fluxbox-apps(5)*.
 
 - *Close*:
     Close the application softly.
@@ -826,7 +829,7 @@ session.screen0.showwindowposition: <boolean>
 session.screen0.defaultDeco: <string>
       This specifies the default window decorations, according to the same
       options available to the `[Deco]' option in the `apps' file, described in
-      the APPLICATIONS section. Default: NORMAL.
+      *fluxbox-apps(5)*. Default: NORMAL.
 
 session.screen0.menuDelay: <integer>
       This sets the delay in milliseconds for submenus to open when you hover
@@ -964,7 +967,7 @@ names are (from highest to lowest layer):
 * 12 - Desktop
 
 The other way to set the layer for a window is through the `apps' file. This
-method is described in the APPLICATIONS section.
+method is described in *fluxbox-apps(5)*.
 
 
 FOCUS MODEL
@@ -1038,179 +1041,6 @@ In addition to the style file, the overlay file, whose location is specified by
 session.screen0.styleOverlay (default: ~/.fluxbox/overlay ) can be used to set
 style resources that override all styles. For more information about which parts
 of fluxbox can be controlled by the overlay file, see fluxstyle(1).
-
-APPLICATIONS
-------------
-It is possible to force an application to always have the same dimensions,
-position, and other settings when it is first launched. The easiest way to do
-this is to use the `Remember...' submenu of the window menu, which can usually
-be opened with a right click on the titlebar. More advanced features require
-manually editing the ~/.fluxbox/apps file, where these settings are saved.
-
-The format of a section in the `apps' file is:
-
-....................................
-[app] (Property='value') ... {count - optional}
-    [Setting1]  {value1}
-    [Setting2]  {value2}
-    ...
-[end]
-....................................
-
-Property can be one of the following tags:
-
-o   name - the name of the window (the first field of WM_CLASS)
-o   class - class of the window (the second field of WM_CLASS)
-o   title - title of the window (the WM_NAME property)
-o   role - role of the window (the WM_WINDOW_ROLE property)
-
-You can find out the value for these fields for a particular window by running
-xprop(1). The window title should be used only as a last resort, since it often changes after the window opens. Each 'value' can be a string or a regular
-expression. All values are case sensitive.
-
-You can specify multiple properties, which must ALL match for the settings to be
-applied. If a count is supplied in curly brackets at the end of the app line,
-then the entry will only match at most that many at any time (default is to
-match all matching windows). Settings associated with an [app] line will not be
-applied to transient windows. [transient] may be used instead to match them.
-
-...................................................................
-# match a standard xterm
-[app] (name=xterm)
-# match an xterm started like: xterm -name myshell
-[app] (name=myshell)
-# match the gaim buddy list window
-[app] (role=buddy_list)
-# match an rdesktop window to a particular host
-[app] (title=rdesktop - hostname.*)
-# match pidgin IRC windows
-[app] (pidgin) (title=#.*)
-...................................................................
-
-The following are the settings that can be defined in each [app] entry. Each
-name must be enclosed in square brackets, and the value is generally in curly
-brackets:
-
-- [Workspace] \{0-N\}:
-    Forces the application to open on the workspace specified.  Workspaces are
-    set by number, beginning with 0.
-
-- [Dimensions] \{Width Height\}:
-    Open the application with the specified width and height, in pixels.
-
-- [Position] (*refspot*) {X Y}:
-    Position the application at a particular spot:
-    +
-        * TOPLEFT
-        * TOP
-        * TOPRIGHT
-        * LEFT
-        * CENTER
-        * RIGHT
-        * BOTTOMLEFT
-        * BOTTOM
-        * BOTTOMRIGHT
-    +
-
-    You can optionally specify what X and Y are relative to. By default the
-    upper left corner is placed at screen coordinates (X, Y). If you specify a
-    reference point, say LOWERRIGHT, then the lower right corner of the window
-    is positioned (X,Y) pixels from the lower right of the screen.
-
-- [Layer] {Layernum}:
-    Specify the layer to open the window on (by number). Each layer has a
-    number. The named ones are: 2-AboveDock, 4-Dock, 6-Top, 8-Normal,
-    10-Bottom, 12-Desktop.
-
-- [Shaded] {yes|no}:
-    The window is started shaded, or not.
-
-- [Tab] {yes|no}:
-    Whether this window can be tabbed with others.
-
-- [IconHidden] {yes|no}:
-    Hides the app from the icon bar
-
-- [FocusHidden] {yes|no}:
-    Hides the app from the window cycling list used by Next/PrevWindow key
-    bindings.
-
-- [Hidden] {yes|no}:
-    is both [IconHidden] plus [FocusHidden]
-
-- [Deco] {NONE|NORMAL|TOOL|TINY|BORDER}:
-    Specify the decoration state.  There are several predefined dec-
-    oration sets:
-
-    o   NORMAL - standard decorations
-    o   NONE - no decorations
-    o   BORDER - like NONE except keep the X window border
-    o   TINY - titlebar with an iconify button
-    o   TOOL - titlebar only
-
-    A bitmask can also be used for fine-grained control.  The bits are (from
-    "1" to 1<<10): titlebar, handle/grips, border, iconify button, maximize
-    button, close button, menu enabled, sticky button, shade button, tabbing
-    enabled, focus enabled.
-
-- [Sticky] {yes|no}:
-    Whether the window is initially stuck or not.
-
-- [Jump] {yes|no}:
-    Jump to workspace. This one is only useful if `Workspace' is set too. The
-    workspace is changed to the workspace containing the application being
-    launched.
-
-- [Close] {yes|no}:
-    Save settings on close. By default, application settings are not saved
-    when a window is closed. Set this option if you want previous settings to
-    be saved when the window is closed.
-
-- [Alpha] {int [int]}
-    Where numbers represent focused and unfocused transparency, 
-    respectively. One number only will be used for both.
-
-The apps file also allows you to specify applications that should be started
-on fluxbox startup using [startup] (options) {command} lines. Currently, the
-only valid option is (screen=NN), where NN is the screen number on which the
-command should be run.
-
-Finally, you can set windows to group together by using the `apps' file. Just
-place a [group] tag around several [app] tags, with an [end] tag to indicate the
-end of the group. If you place (workspace) after the [group] tag, a new window
-will only get grouped with other windows on the current workspace. You can also
-specify dimensions, positions, etc. for the group as for normal app entries.
-Here is a short example of an `apps' file:
-
-.........................................................
-    [startup] {xterm}
-    # match anything ending with term, up to 2 instances
-    [app] (name=.*[tT]erm) {2}
-      [Workspace]   {1}
-    [end]
-    [app] (name=kate)
-      [Dimensions]  {1022 747}
-      [Position]    (WINCENTER) {0 0}
-      [Close]       {yes}
-    [end]
-    [app] (name=konqueror)
-      [Workspace]   {1}
-      [Dimensions]  {1006 749}
-      [Position]    {16 0}
-      [Jump]        {yes}
-    [end]
-    # start all aterms without decorations
-    [app] (name=aterm)
-      [Deco]        {NONE}
-    [end]
-    # a group with the gimp dock and toolbox
-    # appears on layer 4 (bottom)
-    [group]
-     [app] (name=gimp) (role=gimp-dock)
-     [app] (name=gimp) (role=gimp-toolbox)
-      [Layer]       {4}
-    [end]
-.........................................................
 
 THE SLIT
 --------
