@@ -1,12 +1,12 @@
-.\"     Title: fluxstyle
+.\"     Title: fluxbox-style
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
 .\"      Date: 02/10/2009
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxstyle.txt 1.1.1
+.\"    Source: fluxbox-style.txt 1.1.1
 .\"  Language: English
 .\"
-.TH "FLUXSTYLE" "1" "02/10/2009" "fluxstyle\&.txt 1\&.1\&.1" "Fluxbox Manual"
+.TH "FLUXBOX\-STYLE" "5" "02/10/2009" "fluxbox\-style\&.txt 1\&.1\&.1" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -167,7 +167,7 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "Name"
-fluxstyle \- A comprehensive look at styles/themes for fluxbox(1)\&.
+fluxbox-style \- A comprehensive look at styles/themes for fluxbox(1)\&.
 .SH "Synopsis"
 .sp
 This document describes various options available for fluxbox styles\&.

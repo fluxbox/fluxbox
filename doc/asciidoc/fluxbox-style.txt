@@ -1,14 +1,14 @@
-fluxstyle(1)
-============
+fluxbox-style(5)
+================
 Henrik Kinnunen <fluxgen@fluxbox.org>
 v1.1.1, 10 February 2009
-:man source:   fluxstyle.txt
+:man source:   fluxbox-style.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual
 
 NAME
 ----
-fluxstyle - A comprehensive look at styles/themes for fluxbox(1).
+fluxbox-style - A comprehensive look at styles/themes for fluxbox(1).
 
 SYNOPSIS
 --------

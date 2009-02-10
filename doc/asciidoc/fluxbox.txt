@@ -196,6 +196,9 @@ default, tabs are located just above the window, but they may be embedded in the
 titlebar or moved to other locations on the outside of the window. Configuration
 is discussed in TAB OPTIONS section.
 
+You can also set up automatic grouping using the `apps' file. See *GROUP
+SECTIONS* in fluxbox-apps(5) for details.
+
 MENUS
 -----
 fluxbox installs a default menu file in @pkgdatadir@/menu. You can also use
@@ -238,7 +241,7 @@ if not all, of those here.
     ~/.fluxbox/styles This is the location where you will store new styles
     that you grab from the Internet. If you create your own styles this is
     also where you will put yours (provided that you follow the 'standards'
-    described in fluxstyle(1)).
+    described in fluxbox-style(5)).
 
 - *Workspace List*:
     This is a list of the workspaces configured in your `init' file. If there
@@ -1033,14 +1036,14 @@ specify colors, textures, pixmaps and fonts, and thus the overall look of your
 window borders, menus and the toolbar.
 
 The default installation of fluxbox provides some of these style files. See
-fluxstyle(1) to accommodate the growing number of style components.
+fluxbox-style(5) to accommodate the growing number of style components.
 
 STYLE OVERLAY
 -------------
 In addition to the style file, the overlay file, whose location is specified by
 session.screen0.styleOverlay (default: ~/.fluxbox/overlay ) can be used to set
 style resources that override all styles. For more information about which parts
-of fluxbox can be controlled by the overlay file, see fluxstyle(1).
+of fluxbox can be controlled by the overlay file, see fluxbox-style(5).
 
 THE SLIT
 --------
@@ -1192,5 +1195,6 @@ mailinglists. More information can be found on the official website.
 
 SEE ALSO
 --------
-fluxbox-keys(5) bsetroot(1) fbsetbg(1) fbrun(1) fluxstyle(1)
+fluxbox-apps(5) fluxbox-keys(5) bsetroot(1) fbsetbg(1) fbrun(1)
+fluxbox-style(5) fluxbox-remote(1)
 

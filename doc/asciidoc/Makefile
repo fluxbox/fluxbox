@@ -2,8 +2,8 @@
 # create manpages from the asciidoc files
 #
 
-SRC1 = fluxbox.txt fluxstyle.txt fluxbox-keys.txt fluxbox-remote.txt
-SRC5 = fluxbox-keys.txt fluxbox-apps.txt
+SRC1 = fluxbox.txt fluxbox-keys.txt fluxbox-remote.txt
+SRC5 = fluxbox-keys.txt fluxbox-apps.txt fluxbox-style.txt
 
 MAN = $(SRC1:.txt=.1) $(SRC5:.txt=.5)
 

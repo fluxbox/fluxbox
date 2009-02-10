@@ -406,6 +406,8 @@ A left click (mouse button 1) on any part of the window\'s border will raise it\
 .SS "Tabs"
 .sp
 fluxbox allows windows to be `grouped\' by middle clicking and holding on a window\'s tab and dragging it onto another window\&. This `tabbing\' allows you to put multiple applications in one location on the desktop and do several operations (for example, moving or resizing) to all windows in the group\&. By default, tabs are located just above the window, but they may be embedded in the titlebar or moved to other locations on the outside of the window\&. Configuration is discussed in TAB OPTIONS section\&.
+.sp
+You can also set up automatic grouping using the `apps\' file\&. See \fBGROUP SECTIONS\fR in fluxbox\-apps(5) for details\&.
 .SH "MENUS"
 .sp
 fluxbox installs a default menu file in @pkgdatadir@/menu\&. You can also use fluxbox \-i to confirm this action\&. Of course this system\-wide menu can be customized for all users at once, but it is also possible to create an individual menu file for each user\&. By convention, users create a menu file in ~/\&.fluxbox/menu \&. Once you\'ve created your own menu file, you\'ll want to make sure that you properly declare this location in your `init\' file so that fluxbox knows where to look\&. The value you\'ll want to add or change is:
@@ -466,7 +468,7 @@ The root menu is where you can change different aspects of fluxbox by simply cli
 
 \fBUser Styles\fR: ~/\&.fluxbox/styles This is the location where you will store new styles that you grab from the Internet\&. If you create your own styles this is also where you will put yours (provided that you follow the
 \fIstandards\fR
-described in fluxstyle(1))\&.
+described in fluxbox\-style(5))\&.
 .RE
 .sp
 .RS 4
@@ -2106,10 +2108,10 @@ session\&.screen0\&.tab\&.placement: <direction>
 .sp
 fluxbox enables you to use specialized files that contain X(1) resources to specify colors, textures, pixmaps and fonts, and thus the overall look of your window borders, menus and the toolbar\&.
 .sp
-The default installation of fluxbox provides some of these style files\&. See fluxstyle(1) to accommodate the growing number of style components\&.
+The default installation of fluxbox provides some of these style files\&. See fluxbox\-style(5) to accommodate the growing number of style components\&.
 .SH "STYLE OVERLAY"
 .sp
-In addition to the style file, the overlay file, whose location is specified by session\&.screen0\&.styleOverlay (default: ~/\&.fluxbox/overlay ) can be used to set style resources that override all styles\&. For more information about which parts of fluxbox can be controlled by the overlay file, see fluxstyle(1)\&.
+In addition to the style file, the overlay file, whose location is specified by session\&.screen0\&.styleOverlay (default: ~/\&.fluxbox/overlay ) can be used to set style resources that override all styles\&. For more information about which parts of fluxbox can be controlled by the overlay file, see fluxbox\-style(5)\&.
 .SH "THE SLIT"
 .sp
 The slit is a special fluxbox window frame that can contain dockable applications, e\&.g\&. \fIbbtools\fR or \fIwmapps\fR\&.
@@ -2391,4 +2393,4 @@ Numerous other languages could be available if someone jumps in\&.
 If you find any bugs, please visit the #fluxbox irc channel on irc\&.freenode\&.net or submit them to the bug tracker at \m[blue]\fBhttp://sf\&.net/projects/fluxbox\fR\m[] \&. Or you may subscribe to one of the mailinglists\&. More information can be found on the official website\&.
 .SH "SEE ALSO"
 .sp
-fluxbox\-keys(5) bsetroot(1) fbsetbg(1) fbrun(1) fluxstyle(1)
+fluxbox\-apps(5) fluxbox\-keys(5) bsetroot(1) fbsetbg(1) fbrun(1) fluxbox\-style(5) fluxbox\-remote(1)
