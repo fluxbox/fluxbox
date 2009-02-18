@@ -1,0 +1,45 @@
+startfluxbox(1)
+===============
+Jim Ramsay <i.am@jimramsay.com>
+v1.1.2, 18 February 2009
+:man source:   startfluxbox.txt
+:man version:  {revision}
+:man manual:   Fluxbox Manual  
+
+NAME
+----
+startfluxbox - start a fluxbox session
+
+SYNOPSIS
+--------
+*startfluxbox*
+
+DESCRIPTION
+-----------
+*startfluxbox* is a script which runs the file *\~/.fluxbox/startup* If it
+doesn't exist it will be generated.
+
+*startfluxbox* should be started from your *\~/.xinitrc* if you use startx, or
+*\~/.xsession* if you run a display manager, like xdm.
+
+FILES
+-----
+*~/.fluxbox/startup*::
+	This file contains all commands that should be executed before fluxbox is
+	started. The initial file contains helpful comments for beginners. It also
+	starts fluxbox.
+
+ONLINE DOCUMENTATION
+--------------------
+More extensive documentation for *startfluxbox(1)* can be found at:::
+http://www.xs4all.nl/~hanb/software/fluxbox/startfluxbox.html
+
+AUTHORS
+-------
+The author of *startfluxbox(1)* is Han Boetes <han@fluxbox.org>
+
+This manpage was updated to asciidoc format by Jim Ramsay <i.am@jimramsay.com>
+
+SEE ALSO
+--------
+fluxbox(1)
