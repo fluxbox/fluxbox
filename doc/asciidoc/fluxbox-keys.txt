@@ -1,7 +1,7 @@
 fluxbox-keys(5)
 ===============
 Jim Ramsay <i.am@jimramsay.com>
-v1.1.1, 10 February 2009
+v1.1.2, 10 February 2009
 :man source:   fluxbox-keys.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual
@@ -40,6 +40,9 @@ key names are case-sensitive.
 
 Lines beginning with a '#' or '!' are considered comments and are unread by
 fluxbox.
+
+You will need to ``reload'' fluxbox after editing the keys file so it picks up
+your change.
 
 MODIFIERS
 ---------
@@ -418,17 +421,26 @@ Menu Commands
 These commands open or close fluxbox popup menus. For more information on
 what these menus contain or how to configure them, see 'fluxbox(1)'.
 
-*RootMenu* / *WorkspaceMenu* / *WindowMenu*::
-	Opens the specified menu. See fluxbox(1) for more details on what
-	these menus contain.
+*RootMenu*;;
+	Opens the root menu. See *ROOT MENU* in *fluxbox-menu(5)* for details.
+
+*WorkspaceMenu*;;
+	Opens a menu showing all workspaces and windows. See *Workspace Menu* in
+	*fluxbox(1)* for details.
+
+*WindowMenu*;;
+	Opens a menu containing actions for the current window. See *WINDOW MENU* in
+	*fluxbox-menu(5)* for details.
 
 *ClientMenu* ['pattern']::
-	Opens a menu that contains all windows. If you specify a 'pattern',
-	only matching windows will be in the menu. See *CLIENT PATTERNS*
-	below for more details on the 'pattern' argument.
+	Opens a menu that contains all windows. If you specify a 'pattern', only
+	matching windows will be in the menu. Selecting a window will jump to that
+	workspace and raise the window. See *CLIENT PATTERNS* below for more details
+	on the 'pattern' argument.
 
 *CustomMenu* 'path'::
-	Opens a custom menu file.
+	Opens a custom menu file. This 'path' must be a valid menu file in the same
+	format as detailed by the *ROOT MENU* section of *fluxbox-menu(5)*.
 
 *HideMenus*::
 	Hide all fluxbox popup menus.
@@ -466,8 +478,9 @@ These commands affect the Window Manager, or more than one window.
 	passed verbatim to the shell, you can use environment variables,
 	pipes, or anything else the shell can do. Note that processes only
 	see environment variables that were set before fluxbox started (such
-	as in ~/.fluxbox/startup), or any that are set via the Export or
-	SetEnv commands, below.
+	as in *\~/.fluxbox/startup*), or any that are set via the *Export* or
+	*SetEnv* commands, below. See *fluxbox(1)* for more details on the
+	*ENVIRONMENT* and *\~/.fluxbox/startup* file.
 
 *CommandDialog*::
 	Pops up a dialog box that lets you type in any of these commands
@@ -568,16 +581,16 @@ include::client-patterns.txt[]
 
 FILES
 -----
-~/.fluxbox/keys::
+*\~/.fluxbox/keys*::
 	This is the default location for the keybinding definitions.
-/usr/X11R6/include/X11/keysymdef.h::
+*/usr/X11R6/include/X11/keysymdef.h*::
 	X key names are in this file.
-/usr/X11R6/lib/X11/XKeysymDB::
+*/usr/X11R6/lib/X11/XKeysymDB*::
 	X key names are also in this file.
 
 RESOURCES
 ---------
-session.keyFile: <location>::
+*session.keyFile:* 'location'::
       This may be set to override the location of the keybinding definitions.
 
 ENVIRONMENT

@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-keys
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/10/2009
+.\"      Date: 02/17/2009
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxbox-keys.txt 1.1.1
+.\"    Source: fluxbox-keys.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "02/10/2009" "fluxbox\-keys\&.txt 1\&.1\&.1" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "02/17/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -191,6 +191,8 @@ The space between the \fIkey\fR and the \fB:\fR before the \fIcommand\fR is mand
 All modifiers and commands are case\-insensitive\&. Some command arguments (especially those that will be passed to the shell) are case\-sensitive\&. Some key names are case\-sensitive\&.
 .sp
 Lines beginning with a \fI#\fR or \fI!\fR are considered comments and are unread by fluxbox\&.
+.sp
+You will need to \(lqreload\(rq fluxbox after editing the keys file so it picks up your change\&.
 .SH "MODIFIERS"
 .sp
 You can get a list of possible modifiers by calling `xmodmap \-pm\'\&. This also shows you to which keys the modifiers are mapped, but the following modifiers are most commonly used:
@@ -767,15 +769,36 @@ Closes all windows on all desktops\&.
 .sp
 These commands open or close fluxbox popup menus\&. For more information on what these menus contain or how to configure them, see \fIfluxbox(1)\fR\&.
 .PP
-\fBRootMenu\fR / \fBWorkspaceMenu\fR / \fBWindowMenu\fR
+\fBRootMenu\fR
 .RS 4
-Opens the specified menu\&. See fluxbox(1) for more details on what these menus contain\&.
+Opens the root menu\&. See
+\fBROOT MENU\fR
+in
+\fBfluxbox\-menu(5)\fR
+for details\&.
 .RE
+.PP
+\fBWorkspaceMenu\fR
+.RS 4
+Opens a menu showing all workspaces and windows\&. See
+\fBWorkspace Menu\fR
+in
+\fBfluxbox(1)\fR
+for details\&.
+.RE
+.PP
+\fBWindowMenu\fR
+.RS 4
+Opens a menu containing actions for the current window\&. See
+\fBWINDOW MENU\fR
+in
+\fBfluxbox\-menu(5)\fR
+for details\&.
 .PP
 \fBClientMenu\fR [\fIpattern\fR]
 .RS 4
 Opens a menu that contains all windows\&. If you specify a
-\fIpattern\fR, only matching windows will be in the menu\&. See
+\fIpattern\fR, only matching windows will be in the menu\&. Selecting a window will jump to that workspace and raise the window\&. See
 \fBCLIENT PATTERNS\fR
 below for more details on the
 \fIpattern\fR
@@ -784,12 +807,18 @@ argument\&.
 .PP
 \fBCustomMenu\fR \fIpath\fR
 .RS 4
-Opens a custom menu file\&.
+Opens a custom menu file\&. This
+\fIpath\fR
+must be a valid menu file in the same format as detailed by the
+\fBROOT MENU\fR
+section of
+\fBfluxbox\-menu(5)\fR\&.
 .RE
 .PP
 \fBHideMenus\fR
 .RS 4
 Hide all fluxbox popup menus\&.
+.RE
 .RE
 .SS "Window Manager Commands"
 .sp
@@ -827,7 +856,18 @@ Reloads only the current style\&. Useful after editing a style which is currentl
 .RS 4
 Probably the most\-used binding of all\&. Passes all the arguments to your
 \fB$SHELL\fR
-(or /bin/sh if $SHELL is not set)\&. You can use this to launch applications, run shell scripts, etc\&. Since all arguments are passed verbatim to the shell, you can use environment variables, pipes, or anything else the shell can do\&. Note that processes only see environment variables that were set before fluxbox started (such as in ~/\&.fluxbox/startup), or any that are set via the Export or SetEnv commands, below\&.
+(or /bin/sh if $SHELL is not set)\&. You can use this to launch applications, run shell scripts, etc\&. Since all arguments are passed verbatim to the shell, you can use environment variables, pipes, or anything else the shell can do\&. Note that processes only see environment variables that were set before fluxbox started (such as in
+\fB~/\&.fluxbox/startup\fR), or any that are set via the
+\fBExport\fR
+or
+\fBSetEnv\fR
+commands, below\&. See
+\fBfluxbox(1)\fR
+for more details on the
+\fBENVIRONMENT\fR
+and
+\fB~/\&.fluxbox/startup\fR
+file\&.
 .RE
 .PP
 \fBCommandDialog\fR
@@ -1205,23 +1245,23 @@ The string name of the window\'s layer, which is one of
 .\}
 .SH "FILES"
 .PP
-~/\&.fluxbox/keys
+\fB~/\&.fluxbox/keys\fR
 .RS 4
 This is the default location for the keybinding definitions\&.
 .RE
 .PP
-/usr/X11R6/include/X11/keysymdef\&.h
+\fB/usr/X11R6/include/X11/keysymdef\&.h\fR
 .RS 4
 X key names are in this file\&.
 .RE
 .PP
-/usr/X11R6/lib/X11/XKeysymDB
+\fB/usr/X11R6/lib/X11/XKeysymDB\fR
 .RS 4
 X key names are also in this file\&.
 .RE
 .SH "RESOURCES"
 .PP
-session\&.keyFile: <location>
+\fBsession\&.keyFile:\fR \fIlocation\fR
 .RS 4
 This may be set to override the location of the keybinding definitions\&.
 .RE

@@ -1,7 +1,7 @@
 fluxbox-apps(5)
 ===============
 Jim Ramsay <i.am@jimramsay.com>
-v1.1.1, 10 February 2009
+v1.1.2, 10 February 2009
 :man source:   fluxbox-apps.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual
@@ -27,10 +27,13 @@ It is possible to force an application to always have the same dimensions,
 position, and other settings when it is first launched. These settings are saved
 in the `apps' file.
 
-Most simple settings can be saved using the `Remember' submenu of the window
-menu, which can usually be opened with a right-click on the titlebar. More
-advanced features require manually editing the `apps' file. This may include
-using *GROUP SECTIONS* to set up automatic window tab groups.
+Most simple settings can be saved using the ``Remember...'' submenu of the
+window menu, which can usually be opened with a right-click on the titlebar.
+More advanced features require manually editing the `apps' file. This may
+include using *GROUP SECTIONS* to set up automatic window tab groups.
+
+You do not need to ``reload'' fluxbox after editing the apps file, the changes
+should be rescanned when the next window is opened.
 
 The file is made up of two main types of sections, apps and groups, detailed
 below.

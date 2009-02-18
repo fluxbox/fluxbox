@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-apps
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/10/2009
+.\"      Date: 02/17/2009
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxbox-apps.txt 1.1.1
+.\"    Source: fluxbox-apps.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-APPS" "5" "02/10/2009" "fluxbox\-apps\&.txt 1\&.1\&.1" "Fluxbox Manual"
+.TH "FLUXBOX\-APPS" "5" "02/17/2009" "fluxbox\-apps\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -180,7 +180,9 @@ All other characters shown are required verbatim\&. Whitespce is only required t
 .sp
 It is possible to force an application to always have the same dimensions, position, and other settings when it is first launched\&. These settings are saved in the `apps\' file\&.
 .sp
-Most simple settings can be saved using the `Remember\' submenu of the window menu, which can usually be opened with a right\-click on the titlebar\&. More advanced features require manually editing the `apps\' file\&. This may include using \fBGROUP SECTIONS\fR to set up automatic window tab groups\&.
+Most simple settings can be saved using the \(lqRemember\&...\(rq submenu of the window menu, which can usually be opened with a right\-click on the titlebar\&. More advanced features require manually editing the `apps\' file\&. This may include using \fBGROUP SECTIONS\fR to set up automatic window tab groups\&.
+.sp
+You do not need to \(lqreload\(rq fluxbox after editing the apps file, the changes should be rescanned when the next window is opened\&.
 .sp
 The file is made up of two main types of sections, apps and groups, detailed below\&.
 .SH "APP SECTIONS"

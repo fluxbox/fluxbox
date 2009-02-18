@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-remote
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/10/2009
+.\"      Date: 02/17/2009
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxbox-remote.txt 1.1.1
+.\"    Source: fluxbox-remote.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-REMOTE" "1" "02/10/2009" "fluxbox\-remote\&.txt 1\&.1\&." "Fluxbox Manual"
+.TH "FLUXBOX\-REMOTE" "1" "02/17/2009" "fluxbox\-remote\&.txt 1\&.1\&." "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
