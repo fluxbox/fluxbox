@@ -2,24 +2,33 @@
 # create manpages from the asciidoc files
 #
 
-SRC1 = fluxbox.txt fluxbox-keys.txt fluxbox-remote.txt
+SRC1 = fluxbox.txt fluxbox-remote.txt
 SRC5 = fluxbox-keys.txt fluxbox-apps.txt fluxbox-style.txt
 
-MAN = $(SRC1:.txt=.1) $(SRC5:.txt=.5)
+MAN = $(SRC1:.txt=.1.in) $(SRC5:.txt=.5.in)
 
-all : $(MAN)
+all: $(MAN)
+
+install-above: all
+	cp $(MAN) ../
 
 clean:
 	rm -fv $(MAN)
-
-%.xml : %.txt
-	asciidoc -b docbook -d manpage -o $@ $<
 
 %.1 : %.xml
 	xmlto man $<
 
 %.5 : %.xml
 	xmlto man $<
+
+%.1.in: %.1
+	cp $< $@
+
+%.5.in: %.5
+	cp $< $@
+
+%.xml : %.txt
+	asciidoc -b docbook -d manpage -o $@ $<
 
 # Dependencies:
 #
