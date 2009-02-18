@@ -5,12 +5,13 @@
 SRC1 = fluxbox.txt fluxbox-remote.txt fbrun.txt fbsetbg.txt fbsetroot.txt startfluxbox.txt
 SRC5 = fluxbox-keys.txt fluxbox-apps.txt fluxbox-style.txt fluxbox-menu.txt
 
-MAN = $(SRC1:.txt=.1.in) $(SRC5:.txt=.5.in)
+MAN = $(SRC1:.txt=.1) $(SRC5:.txt=.5)
+MANdotIN = $(addsuffix .in,$(MAN))
+DISTFILES = $(addprefix ../,$(MANdotIN))
 
 all: $(MAN)
 
-install-above: all
-	cp $(MAN) ../
+dist: $(DISTFILES)
 
 clean:
 	rm -fv $(MAN)
@@ -21,10 +22,10 @@ clean:
 %.5 : %.xml
 	xmlto man $<
 
-%.1.in: %.1
+../%.1.in: %.1
 	cp $< $@
 
-%.5.in: %.5
+../%.5.in: %.5
 	cp $< $@
 
 %.xml : %.txt
