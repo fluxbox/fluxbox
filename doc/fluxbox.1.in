@@ -1,12 +1,12 @@
 .\"     Title: fluxbox
-.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/17/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "02/17/2009" "fluxbox\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX" "1" "02/19/2009" "fluxbox\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -242,7 +242,7 @@ Lists all available internal commands\&.
 .RE
 .SH "STARTING FLUXBOX"
 .sp
-\fBfluxbox(1)\fR comes with a program called \fBstartfluxbox(8)\fR usually located wherever you installed fluxbox\&. This script provides you with many options and variables that can be set when starting fluxbox\&. To actually call fluxbox and begin using it, you should place \(lqexec startfluxbox\(rq in your \fB~/\&.xinitrc\fR as the last executed command\&. This is assuming that the location of \fBfluxbox(1)\fR and \fBstartfluxbox(8)\fR are in your shell\'s $PATH\&. Also note that you may need to create the \fB~/\&.xinitrc\fR file or your setup may use \fB~/\&.xsession\fR instead, depending on your X setup\&. Some X login managers like \fBgdm(1)\fR or \fBkdm(1)\fR may simply provide a \(lqFluxbox\(rq session for you without having to alter any settings\&.
+\fBfluxbox(1)\fR comes with a program called \fBstartfluxbox(1)\fR usually located wherever you installed fluxbox\&. This script provides you with many options and variables that can be set when starting fluxbox\&. To actually call fluxbox and begin using it, you should place \(lqexec startfluxbox\(rq in your \fB~/\&.xinitrc\fR as the last executed command\&. This is assuming that the location of \fBfluxbox(1)\fR and \fBstartfluxbox(1)\fR are in your shell\'s $PATH\&. Also note that you may need to create the \fB~/\&.xinitrc\fR file or your setup may use \fB~/\&.xsession\fR instead, depending on your X setup\&. Some X login managers like \fBgdm(1)\fR or \fBkdm(1)\fR may simply provide a \(lqFluxbox\(rq session for you without having to alter any settings\&.
 .sp
 By using fluxbox \-i you\'ll see the defaults used by \fBfluxbox(1)\fR\&. These are what fluxbox looks for upon startup\&. In the list of \(lqDefaults:\(rq you\'ll see a menu file location, this is where you can provide a system\-wide menu file for your users\&.
 .sp
@@ -1519,7 +1519,7 @@ This submenu lets you reorder the the applications running in the slit\&. You ar
 .sp
 fluxbox\'s slitlist file is available for those that use dockapps in the slit\&. This file helps fluxbox keep track of the \fBorder\fR of the dockapps when in the slit\&. The file is generally located at \fB~/\&.fluxbox/slitlist\fR\&.
 .sp
-A simple procedure for getting the slit sequences the way you like it is: 1\&. Run fluxbox with no pre\-loaded dockapps 2\&. Run dockapps individually in the order you want them 3\&. Add dockapps to your startfluxbox(8) script
+A simple procedure for getting the slit sequences the way you like it is: 1\&. Run fluxbox with no pre\-loaded dockapps 2\&. Run dockapps individually in the order you want them 3\&. Add dockapps to your \fBstartfluxbox(1)\fR script
 .sp
 This sequence will be saved by default to \fB~/\&.fluxbox/slitlist\fR and will be remembered for future instances of fluxbox\&.
 .sp
@@ -1929,17 +1929,11 @@ SIGUSR1 Forces reloading of configuration\&.
 .\}
 SIGUSR2 Forces reloading of menu file\&.
 .RE
-.SH "AUTHOR and CREDITS"
+.SH "AUTHORS"
 .sp
 fluxbox is written and maintained by Henrik Kinnunen <fluxgen at fluxbox org>, Simon Bowden <rathnor at fluxbox org>, Mathias Gumz <akira at fluxbox org>, and Mark Tiefenbruck <mark at fluxbox org>, with contributions and patches merged from many individuals around the world\&.
 .sp
 Blackbox was written and maintained by Brad Hughes <blackbox at alug org> and Jeff Raven <jraven at psu edu>\&.
-.sp
-The Official fluxbox website: \m[blue]\fBhttp://www\&.fluxbox\&.org\fR\m[]
-.sp
-The Official fluxbox wiki: \m[blue]\fBhttp://www\&.fluxbox\-wiki\&.org\fR\m[]
-.sp
-Many compatible themes: \m[blue]\fBhttp://tenr\&.de\fR\m[]
 .sp
 This manpage is the combined work of:
 .sp
@@ -1951,7 +1945,7 @@ This manpage is the combined work of:
 .sp -1
 .IP \(bu 2.3
 .\}
-Jim Ramsay <i\&.am at jimramsay com> (>fluxbox\-1\&.1\&.1)
+Jim Ramsay <i\&.am at jimramsay com> (>fluxbox\-1\&.0\&.0)
 .RE
 .sp
 .RS 4
@@ -2019,9 +2013,16 @@ Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 .\}
 Numerous other languages could be available if someone jumps in\&.
 .RE
+.SH "ONLINE DOCUMENTATION"
+.sp
+The Official fluxbox website: \m[blue]\fBhttp://www\&.fluxbox\&.org\fR\m[]
+.sp
+The Official fluxbox wiki: \m[blue]\fBhttp://www\&.fluxbox\-wiki\&.org\fR\m[]
+.sp
+Many compatible themes: \m[blue]\fBhttp://tenr\&.de\fR\m[]
 .SH "BUGS"
 .sp
 If you find any bugs, please visit the #fluxbox irc channel on irc\&.freenode\&.net or submit them to the bug tracker at \m[blue]\fBhttp://sf\&.net/projects/fluxbox\fR\m[] \&. Or you may subscribe to one of the mailinglists\&. More information can be found on the official website\&.
 .SH "SEE ALSO"
 .sp
-fluxbox\-apps(5) fluxbox\-keys(5) fluxbox\-style(5) fluxbox\-menu(5) fluxbox\-remote(1) bsetroot(1) fbsetbg(1) fbrun(1)
+fluxbox\-apps(5) fluxbox\-keys(5) fluxbox\-style(5) fluxbox\-menu(5) fluxbox\-remote(1) fbsetroot(1) fbsetbg(1) fbrun(1) startfluxbox(1)

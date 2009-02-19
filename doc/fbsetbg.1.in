@@ -1,12 +1,12 @@
 .\"     Title: fbsetbg
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/18/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fbsetbg.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FBSETBG" "1" "02/18/2009" "fbsetbg\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FBSETBG" "1" "02/19/2009" "fbsetbg\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -214,7 +214,8 @@ Use specified wallpapersetter, use no argument to forget\&.
 .PP
 \fB\-b\fR \fIfbsetrootoptions\fR
 .RS 4
-Forward the options to fbsetroot\&.
+Forward the options to
+\fBfbsetroot(1)\fR\&. These can be used to set a solid, pattern, or gradient background texture\&.
 .RE
 .PP
 \fB\-r\fR \fIdirectory\fR
@@ -302,9 +303,6 @@ $ DISPLAY=:0\&.0 fbsetbg \-l
 .if n \{\
 .RE
 .\}
-.SH "SEE ALSO"
-.sp
-fluxbox(1), fbsetroot(1)
 .SH "ONLINE DOCUMENTATION"
 .PP
 Much more extensive documentation for \fBfbsetbg(1)\fR is provided on:
@@ -317,17 +315,9 @@ Much more extensive documentation for \fBfbsetbg(1)\fR is provided on:
 \fBfbsetbg(1)\fR is not foolproof\&.
 .SH "AUTHORS"
 .sp
-The author of fbsetbg is Han Boetes <\m[blue]\fBhan@fluxbox\&.org\fR\m[]\&\s-2\u[1]\d\s+2>
+The author of fbsetbg is Han Boetes <han at fluxbox\&.org>
 .sp
-This manpage was updated to asciidoc format by Jim Ramsay <\m[blue]\fBi\&.am@jimramsay\&.com\fR\m[]\&\s-2\u[2]\d\s+2>
-.SH "Notes"
-.IP " 1." 4
-han@fluxbox.org
-.RS 4
-\%mailto:han@fluxbox.org
-.RE
-.IP " 2." 4
-i.am@jimramsay.com
-.RS 4
-\%mailto:i.am@jimramsay.com
-.RE
+This manpage was converted to asciidoc format by Jim Ramsay <i\&.am at jimramsay\&.com> for fluxbox\-1\&.1\&.2
+.SH "SEE ALSO"
+.sp
+fluxbox(1) fbsetroot(1)

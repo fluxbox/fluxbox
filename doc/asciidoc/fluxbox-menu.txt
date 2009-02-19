@@ -1,7 +1,7 @@
 fluxbox-menu(5)
 ===============
 Jim Ramsay <i.am@jimramsay.com>
-v1.1.2, 12 February 2009
+v1.1.2, 18 February 2009
 :man source:   fluxbox-menu.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual
@@ -326,20 +326,15 @@ EXAMPLES
 [end]
 ....
 
-AUTHOR and CREDITS
-------------------
-This manpage is the combined work of:
-
-- Jim Ramsay <i.am at jimramsay com> (>fluxbox-1.1.1)
+AUTHORS
+-------
+- Jim Ramsay <i.am at jimramsay com> (>fluxbox-1.0.0)
 - Curt Micol <asenchi at asenchi com> (>fluxbox-0.9.11)
 - Tobias Klausmann <klausman at users sourceforge net> (<=fluxbox-0.9.11)
 - Grubert <grubert at users sourceforge net> (fluxbox)
 - Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 - Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 
-- Numerous other languages could be available if someone jumps in.
-
 SEE ALSO
 --------
-fluxbox(1), xev(1), xkill(1), regex(7)
-
+fluxbox(1) fluxbox-keys(5) fluxbox-apps(5) xkill(1) iconv(1)

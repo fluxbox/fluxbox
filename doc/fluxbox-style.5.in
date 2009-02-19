@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-style
-.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/17/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-style.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-STYLE" "5" "02/17/2009" "fluxbox\-style\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-STYLE" "5" "02/19/2009" "fluxbox\-style\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -611,7 +611,7 @@ menu\&.unselected\&.pixmap:         <filename>
 .\}
 .SH "BACKGROUND"
 .sp
-Every style must specify the background option\&. If you don\'t want your style to change the user\'s background, then use `background: none\'\&. The options `centered\', `aspect\', `tiled\', and `fullscreen\' require the `background\&.pixmap\' resource to contain a valid file name\&. The `random\' option requires `background\&.pixmap\' to contain a valid directory name\&. For these options, fluxbox(1) will call fbsetbg(1) to set the background\&. The options `gradient\', `solid\', and `mod\' all require `background\&.color\' to be set\&. `gradient\' and `mod\' both require `background\&.colorTo\'\&. `mod\' requires `background\&.modX\' and `background\&.modY\' to be set as well\&. These options will be passed to fbsetroot(1) to set the background\&.
+Every style must specify the background option\&. If you don\'t want your style to change the user\'s background, then use `background: none\'\&. The options `centered\', `aspect\', `tiled\', and `fullscreen\' require the `background\&.pixmap\' resource to contain a valid file name\&. The `random\' option requires `background\&.pixmap\' to contain a valid directory name\&. For these options, \fBfluxbox(1)\fR will call \fBfbsetbg(1)\fR to set the background\&. The options `gradient\', `solid\', and `mod\' all require `background\&.color\' to be set\&. `gradient\' and `mod\' both require `background\&.colorTo\'\&. `mod\' requires `background\&.modX\' and `background\&.modY\' to be set as well\&. These options will be passed to \fBfbsetroot(1)\fR to set the background\&.
 .sp
 .if n \{\
 .RS 4
@@ -783,41 +783,15 @@ rgb:<0\-255>/<0\-255>/<0\-255>
 .\}
 .sp
 See /usr/share/X11/rgb\&.txt for an explaination\&.
-.SH "AUTHOR and CREDITS"
+.SH "AUTHORS"
 .sp
-Blackbox was written and maintained by Brad Hughes <\m[blue]\fBblackbox@alug\&.org\fR\m[]\&\s-2\u[1]\d\s+2> and Jeff Raven <\m[blue]\fBjraven@psu\&.edu\fR\m[]\&\s-2\u[2]\d\s+2>\&.
+Blackbox was written and maintained by Brad Hughes <blackbox at alug\&.org> and Jeff Raven <jraven at psu\&.edu>\&.
 .sp
-fluxbox(1) is written and maintained by Henrik Kinnunen <\m[blue]\fBfluxgen@fluxbox\&.org\fR\m[]\&\s-2\u[3]\d\s+2> with contributions and patches merged from many individuals around the world\&.
+fluxbox(1) is written and maintained by Henrik Kinnunen <fluxgen at fluxbox\&.org> with contributions and patches merged from many individuals around the world\&.
 .sp
 The Official fluxbox(1) website: \m[blue]\fBhttp://www\&.fluxbox\&.org\fR\m[] You can find a lot of styles here: \m[blue]\fBhttp://tenr\&.de/\fR\m[]
 .sp
-This manpage was composed from various resources including the official documentation, fluxbox(1) man page and numerous other resources by Curt "Asenchi" Micol\&. If you notice any errors or problems with this page, please contact him here: <\m[blue]\fBasenchi@asenchi\&.com\fR\m[]\&\s-2\u[4]\d\s+2> and using the great contributions of <\m[blue]\fBgrubert@users\&.sourceforge\&.net\fR\m[]\&\s-2\u[5]\d\s+2>\&. Numerous other languages could be available if someone jumps in\&.
+This manpage was composed from various resources including the official documentation, fluxbox(1) man page and numerous other resources by Curt "Asenchi" Micol\&. If you notice any errors or problems with this page, please contact him here: <asenchi at asenchi\&.com> and using the great contributions of <grubert at users\&.sourceforge\&.net>\&. Numerous other languages could be available if someone jumps in\&.
 .SH "SEE ALSO"
 .sp
 fluxbox(1) fbsetbg(1) fbsetroot(1)
-.SH "Notes"
-.IP " 1." 4
-blackbox@alug.org
-.RS 4
-\%mailto:blackbox@alug.org
-.RE
-.IP " 2." 4
-jraven@psu.edu
-.RS 4
-\%mailto:jraven@psu.edu
-.RE
-.IP " 3." 4
-fluxgen@fluxbox.org
-.RS 4
-\%mailto:fluxgen@fluxbox.org
-.RE
-.IP " 4." 4
-asenchi@asenchi.com
-.RS 4
-\%mailto:asenchi@asenchi.com
-.RE
-.IP " 5." 4
-grubert@users.sourceforge.net
-.RS 4
-\%mailto:grubert@users.sourceforge.net
-.RE

@@ -1,12 +1,12 @@
 .\"     Title: startfluxbox
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/18/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: startfluxbox.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "STARTFLUXBOX" "1" "02/18/2009" "startfluxbox\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "STARTFLUXBOX" "1" "02/19/2009" "startfluxbox\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -182,6 +182,79 @@ startfluxbox \- start a fluxbox session
 .RS 4
 This file contains all commands that should be executed before fluxbox is started\&. The initial file contains helpful comments for beginners\&. It also starts fluxbox\&.
 .RE
+.SH "EXAMPLES"
+.sp
+The default \fB~/\&.fluxbox/startup\fR is as follows:
+.sp
+.if n \{\
+.RS 4
+.\}
+.fam C
+.ps -1
+.nf
+.BB lightgray
+#!/bin/sh
+#
+# fluxbox startup\-script:
+#
+# Lines starting with a \'#\' are ignored\&.
+
+# Change your keymap:
+xmodmap "$HOME/\&.Xmodmap"
+
+# Applications you want to run with fluxbox\&.
+# MAKE SURE THAT APPS THAT KEEP RUNNING HAVE AN \'\'&\'\' AT THE END\&.
+#
+# unclutter \-idle 2 &
+# wmnd &
+# wmsmixer \-w &
+# idesk &
+
+# And last but not least we start fluxbox\&.
+# Because it is the last app you have to run it with \'\'exec\'\' before it\&.
+
+exec fluxbox
+# or if you want to keep a log:
+# exec fluxbox \-log "$fluxdir/log"
+.EB lightgray
+.fi
+.fam
+.ps +1
+.if n \{\
+.RE
+.\}
+.sp
+If you need to start applications after fluxbox, you can change the \fBexec fluxbox\fR line above to something like this:
+.sp
+.if n \{\
+.RS 4
+.\}
+.fam C
+.ps -1
+.nf
+.BB lightgray
+exec fluxbox &
+fbpid=$!
+
+sleep 1
+{
+        xsetroot \-cursor_name left_ptr \-fg white \-bg black &
+        ipager &
+        gkrellm2 &
+} &
+
+wait $fbpid
+.EB lightgray
+.fi
+.fam
+.ps +1
+.if n \{\
+.RE
+.\}
+.sp
+So xsetroot, ipager, and gkrellm2 will all be started after fluxbox, after giving fluxbox 1 second to startup\&.
+.sp
+For more details on what else you can do in this script, see \fBsh(1p)\fR, or the documentation for your shell\&.
 .SH "ONLINE DOCUMENTATION"
 .PP
 More extensive documentation for \fBstartfluxbox(1)\fR can be found at:
@@ -191,20 +264,9 @@ More extensive documentation for \fBstartfluxbox(1)\fR can be found at:
 .RE
 .SH "AUTHORS"
 .sp
-The author of \fBstartfluxbox(1)\fR is Han Boetes <\m[blue]\fBhan@fluxbox\&.org\fR\m[]\&\s-2\u[1]\d\s+2>
+The author of \fBstartfluxbox(1)\fR is Han Boetes <han at fluxbox\&.org>
 .sp
-This manpage was updated to asciidoc format by Jim Ramsay <\m[blue]\fBi\&.am@jimramsay\&.com\fR\m[]\&\s-2\u[2]\d\s+2>
+This manpage was converted to asciidoc format by Jim Ramsay <i\&.am at jimramsay\&.com> for fluxbox\-1\&.1\&.2
 .SH "SEE ALSO"
 .sp
 fluxbox(1)
-.SH "Notes"
-.IP " 1." 4
-han@fluxbox.org
-.RS 4
-\%mailto:han@fluxbox.org
-.RE
-.IP " 2." 4
-i.am@jimramsay.com
-.RS 4
-\%mailto:i.am@jimramsay.com
-.RE

@@ -1,12 +1,12 @@
 .\"     Title: fbsetroot
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/18/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fbsetroot.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FBSETROOT" "1" "02/18/2009" "fbsetroot\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FBSETROOT" "1" "02/19/2009" "fbsetroot\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -170,11 +170,11 @@
 fbsetroot \- a simple background utility used by the fluxbox(1) window manager, originally written for and by the original blackbox(1) window manager\&.
 .SH "Synopsis"
 .sp
-\fBfbsetroot\fR [\-display \fIdisplay\fR ] \-solid \fIcolor\fR
+\fBfbsetroot\fR [\-display \fIdisplay\fR] \-solid \fIcolor\fR
 .sp
-\fBfbsetroot\fR [\-display \fIdisplay\fR ] \-mod \fIx\fR \fIy\fR \-fg \fIcolor\fR \-bg \fIcolor\fR
+\fBfbsetroot\fR [\-display \fIdisplay\fR] \-mod \fIx\fR \fIy\fR \-fg \fIcolor\fR \-bg \fIcolor\fR
 .sp
-\fBfbsetroot\fR [\-display \fIdisplay\fR ] \-gradient \fItexture\fR \-from \fIcolor\fR \-to \fIcolor\fR
+\fBfbsetroot\fR [\-display \fIdisplay\fR] \-gradient \fItexture\fR \-from \fIcolor\fR \-to \fIcolor\fR
 .sp
 \fBfbsetroot\fR \-help
 .SH "DESCRIPTION"
@@ -182,6 +182,8 @@ fbsetroot \- a simple background utility used by the fluxbox(1) window manager, 
 \fBfbsetroot(1)\fR is a utility that can control the appearance of the root window in three ways: Either give it a solid color, or write a two color modula pattern to it, or render a gradient texture, based on two different colors\&.
 .sp
 fbsetroot resembles \fBxsetroot(1)\fR in this functionality but it supports multiple\-screen displays, and gradient textures the same way as blackbox or fluxbox does\&. It doesn\'t handle cursors etc\&. fbsetroot was originally part of the Blackbox package and was carried over with the code that became Fluxbox\&. It was called bsetroot back in those days\&.
+.sp
+If any errors are encountered, fbsetroot will use either \fBgxmessage(1)\fR or \fBxmessage(1)\fR to inform the user of errors\&.
 .SH "OPTIONS"
 .sp
 fbsetroot operates in three ways, you must choose one of the first 3 options:
@@ -258,22 +260,9 @@ Prints version info and short help text\&.
 .RE
 .SH "AUTHORS"
 .sp
-fbsetroot is written and maintained by the Fluxbox Development Team
+This manpage was modified by Curt "Asenchi" Micol <asenchi at asenchi\&.com> for the Fluxbox window manager\&.
 .sp
-This manpage was modified by Curt "Asenchi" Micol <\m[blue]\fBasenchi@asenchi\&.com\fR\m[]\&\s-2\u[1]\d\s+2> for the Fluxbox window manager\&.
-.sp
-Further updates for fluxbox\-1\&.1\&.2 and conversion to asciidoc format by Jim Ramsay <\m[blue]\fBi\&.am@jimramsay\&.com\fR\m[]\&\s-2\u[2]\d\s+2>
+Further updates for fluxbox\-1\&.1\&.2 and conversion to asciidoc format by Jim Ramsay <i\&.am at jimramsay\&.com>
 .SH "SEE ALSO"
 .sp
-fluxbox(1) fbsetbg(1)
-.SH "Notes"
-.IP " 1." 4
-asenchi@asenchi.com
-.RS 4
-\%mailto:asenchi@asenchi.com
-.RE
-.IP " 2." 4
-i.am@jimramsay.com
-.RS 4
-\%mailto:i.am@jimramsay.com
-.RE
+fluxbox(1) fbsetbg(1) xsetroot(1) xmessage(1) gxmessage(1)

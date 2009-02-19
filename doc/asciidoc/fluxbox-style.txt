@@ -1,7 +1,7 @@
 fluxbox-style(5)
 ================
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v1.1.2, 10 February 2009
+v1.1.2, 18 February 2009
 :man source:   fluxbox-style.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual
@@ -357,11 +357,11 @@ change the user's background, then use `background: none'. The options
 `centered', `aspect', `tiled', and `fullscreen' require the `background.pixmap'
 resource to contain a valid file name. The `random' option requires
 `background.pixmap' to contain a valid directory name. For these options,
-fluxbox(1) will call fbsetbg(1) to set the background. The options `gradient',
+*fluxbox(1)* will call *fbsetbg(1)* to set the background. The options `gradient',
 `solid', and `mod' all require `background.color' to be set. `gradient' and
 `mod' both require `background.colorTo'. `mod' requires `background.modX' and
 `background.modY' to be set as well. These options will be passed to
-fbsetroot(1) to set the background.
+*fbsetroot(1)* to set the background.
 
    background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>|mod|none
    background.pixmap: <file or directory>
@@ -472,25 +472,24 @@ These are the color formats for styles:
 
 See /usr/share/X11/rgb.txt for an explaination.
 
-AUTHOR and CREDITS
-------------------
-Blackbox was written and maintained by Brad Hughes <blackbox@alug.org>
-and Jeff Raven <jraven@psu.edu>.
+AUTHORS
+-------
+Blackbox was written and maintained by Brad Hughes <blackbox at alug.org>
+and Jeff Raven <jraven at psu.edu>.
 
-fluxbox(1) is written and maintained by Henrik Kinnunen <fluxgen@fluxbox.org>
+fluxbox(1) is written and maintained by Henrik Kinnunen <fluxgen at fluxbox.org>
 with contributions and patches merged from many individuals around the world.
 
-The Official fluxbox(1) website: http://www.fluxbox.org[]
-You can find a lot of styles here: http://tenr.de/[]
+The Official fluxbox(1) website: http://www.fluxbox.org
+You can find a lot of styles here: http://tenr.de/
 
 This manpage was composed from various resources including the official
 documentation, fluxbox(1) man page and numerous other resources by Curt
 "Asenchi" Micol. If you notice any errors or problems with this page, please
-contact him here: <asenchi@asenchi.com> and using the great contributions of
-<grubert@users.sourceforge.net>.  Numerous other languages could be available
+contact him here: <asenchi at asenchi.com> and using the great contributions of
+<grubert at users.sourceforge.net>.  Numerous other languages could be available
 if someone jumps in.
 
 SEE ALSO
 --------
 fluxbox(1) fbsetbg(1) fbsetroot(1)
-

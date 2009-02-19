@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-keys
-.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/17/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "02/17/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "02/19/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -236,9 +236,9 @@ To combine two or more modifiers, just list them (space\-delimited) in any order
 .sp
 You may specify a key by its key name (for example, \fBa\fR or \fBspace\fR) or by its numeric keycode (for example, \fB38\fR or \fB0xf3\fR)\&.
 .sp
-If you don\'t know the name of a key, you can run \fIxev(1)\fR in a terminal, push the key, and see the name in the output\&. If you have some "special" keys that do not produce a key name in the output of \fIxev(1)\fR, you can just use the keycode (NOT the keysym!) in your keys file\&.
+If you don\'t know the name of a key, you can run \fBxev(1)\fR in a terminal, push the key, and see the name in the output\&. If you have some "special" keys that do not produce a key name in the output of \fBxev(1)\fR, you can just use the keycode (NOT the keysym!) in your keys file\&.
 .sp
-Commands can also be bound to mouse button presses, for which the proper "key" name is \fBMouse\fR\fIn\fR where \fIn\fR is the number of the mouse button\&. For example, \fBMouse1\fR is the primary button, and \fBMouse4\fR / \fBMouse5\fR are the scroll wheel events, in normal configurations\&. \fIxev(1)\fR can also be used to tell the button number\&.
+Commands can also be bound to mouse button presses, for which the proper "key" name is \fBMouse\fR\fIn\fR where \fIn\fR is the number of the mouse button\&. For example, \fBMouse1\fR is the primary button, and \fBMouse4\fR / \fBMouse5\fR are the scroll wheel events, in normal configurations\&. \fBxev(1)\fR can also be used to tell the button number\&.
 .SH "CHAINING"
 .sp
 Key bindings can be chained in a fashion similar to Emacs key bindings using the syntax:
@@ -434,7 +434,7 @@ Close the current window, equivalent to the window button\&.
 .RS 4
 Close a window that\'s not responding to
 \fBClose\fR, like using
-\FCxkill\F[]\&.
+\fBxkill(1)\fR\&.
 .RE
 .PP
 \fBShade\fR | \fBShadeWindow\fR
@@ -1313,9 +1313,7 @@ ChangeWorkspace :Exec fbsetbg ~/\&.fluxbox/bg$(xprop \-root _NET_CURRENT_DESKTOP
 .if n \{\
 .RE
 .\}
-.SH "AUTHOR and CREDITS"
-.sp
-This manpage is the combined work of:
+.SH "AUTHORS"
 .sp
 .RS 4
 .ie n \{\
@@ -1382,17 +1380,6 @@ Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 .\}
 Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 .RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Numerous other languages could be available if someone jumps in\&.
-.RE
 .SH "SEE ALSO"
 .sp
-fluxbox(1), xev(1), xkill(1), regex(7)
+fluxbox(1) xprop(1) xev(1) xkill(1) regex(7)

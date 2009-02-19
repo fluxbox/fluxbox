@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-menu
-.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/17/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-menu.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-MENU" "5" "02/17/2009" "fluxbox\-menu\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-MENU" "5" "02/19/2009" "fluxbox\-menu\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -595,9 +595,7 @@ The \fIcomand\&...\fR field of the \fB[exec]\fR tag can take advantage of other 
 .if n \{\
 .RE
 .\}
-.SH "AUTHOR and CREDITS"
-.sp
-This manpage is the combined work of:
+.SH "AUTHORS"
 .sp
 .RS 4
 .ie n \{\
@@ -607,7 +605,7 @@ This manpage is the combined work of:
 .sp -1
 .IP \(bu 2.3
 .\}
-Jim Ramsay <i\&.am at jimramsay com> (>fluxbox\-1\&.1\&.1)
+Jim Ramsay <i\&.am at jimramsay com> (>fluxbox\-1\&.0\&.0)
 .RE
 .sp
 .RS 4
@@ -664,17 +662,6 @@ Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 .\}
 Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 .RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Numerous other languages could be available if someone jumps in\&.
-.RE
 .SH "SEE ALSO"
 .sp
-fluxbox(1), xev(1), xkill(1), regex(7)
+fluxbox(1) fluxbox\-keys(5) fluxbox\-apps(5) xkill(1) iconv(1)

@@ -1,7 +1,7 @@
 fluxbox-keys(5)
 ===============
 Jim Ramsay <i.am@jimramsay.com>
-v1.1.2, 10 February 2009
+v1.1.2, 18 February 2009
 :man source:   fluxbox-keys.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual
@@ -79,15 +79,15 @@ KEYS
 You may specify a key by its key name (for example, *a* or *space*) or by its
 numeric keycode (for example, *38* or *0xf3*).
 
-If you don't know the name of a key, you can run 'xev(1)' in a terminal, push
+If you don't know the name of a key, you can run *xev(1)* in a terminal, push
 the key, and see the name in the output. If you have some "special" keys that
-do not produce a key name in the output of 'xev(1)', you can just use the
+do not produce a key name in the output of *xev(1)*, you can just use the
 keycode (NOT the keysym!) in your keys file.
 
 Commands can also be bound to mouse button presses, for which the proper "key"
 name is *Mouse*'n' where 'n' is the number of the mouse button. For example,
 *Mouse1* is the primary button, and *Mouse4* / *Mouse5* are the scroll wheel
-events, in normal configurations. 'xev(1)' can also be used to tell the button
+events, in normal configurations. *xev(1)* can also be used to tell the button
 number.
 
 ////////////////
@@ -199,7 +199,7 @@ These commands ordinarily affect only the currently focused window. The
 	Close the current window, equivalent to the window button.
 
 *Kill* | *KillWindow*::
-	Close a window that's not responding to *Close*, like using `xkill`.
+	Close a window that's not responding to *Close*, like using *xkill(1)*.
 
 *Shade* | *ShadeWindow*::
 	Toggle the *shaded* state of the current window, equivalent to the
@@ -622,10 +622,8 @@ Mod4 t :If {Some Matches (xterm)} {NextWindow (xterm)} {Exec xterm}
 ChangeWorkspace :Exec fbsetbg ~/.fluxbox/bg$(xprop -root _NET_CURRENT_DESKTOP | awk '{print $3}').png
 ..................
 
-AUTHOR and CREDITS
-------------------
-This manpage is the combined work of:
-
+AUTHORS
+-------
 - Jim Ramsay <i.am at jimramsay com> (>fluxbox-1.0.0)
 - Curt Micol <asenchi at asenchi com> (>fluxbox-0.9.11)
 - Tobias Klausmann <klausman at users sourceforge net> (<=fluxbox-0.9.11)
@@ -633,9 +631,6 @@ This manpage is the combined work of:
 - Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 - Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 
-- Numerous other languages could be available if someone jumps in.
-
 SEE ALSO
 --------
-fluxbox(1), xev(1), xkill(1), regex(7)
-
+fluxbox(1) xprop(1) xev(1) xkill(1) regex(7)

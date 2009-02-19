@@ -1,7 +1,7 @@
 fluxbox-remote(1)
 =================
 Mark Tiefenbruck <mark@fluxbox.org>
-v1.1.2, 10 February 2009
+v1.1.2, 18 February 2009
 :man source: fluxbox-remote.txt
 :man version: {revision}
 :man manual: Fluxbox Manual
@@ -37,7 +37,10 @@ ENVIRONMENT
 In order to communicate with 'fluxbox(1)', the DISPLAY environment variable must
 be set properly. Usually, the value should be `:0.0'.
 
+AUTHORS
+-------
+This man page written by Mark Tiefenbruck <mark at fluxbox.org>
+
 SEE ALSO
 --------
-fluxbox(1), fluxbox-keys(5), wmctrl(1)
-
+fluxbox(1) fluxbox-keys(5) wmctrl(1)

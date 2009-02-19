@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-remote
-.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/17/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-remote.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-REMOTE" "1" "02/17/2009" "fluxbox\-remote\&.txt 1\&.1\&." "Fluxbox Manual"
+.TH "FLUXBOX\-REMOTE" "1" "02/19/2009" "fluxbox\-remote\&.txt 1\&.1\&." "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -190,6 +190,9 @@ first\&.
 .SH "ENVIRONMENT"
 .sp
 In order to communicate with \fIfluxbox(1)\fR, the DISPLAY environment variable must be set properly\&. Usually, the value should be `:0\&.0\'\&.
+.SH "AUTHORS"
+.sp
+This man page written by Mark Tiefenbruck <mark at fluxbox\&.org>
 .SH "SEE ALSO"
 .sp
-fluxbox(1), fluxbox\-keys(5), wmctrl(1)
+fluxbox(1) fluxbox\-keys(5) wmctrl(1)

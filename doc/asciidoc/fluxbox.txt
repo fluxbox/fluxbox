@@ -1,7 +1,7 @@
 fluxbox(1)
 ==========
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v1.1.2, 10 February 2009
+v1.1.2, 18 February 2009
 :man source:   fluxbox.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
@@ -88,12 +88,12 @@ OPTIONS
 
 STARTING FLUXBOX
 ----------------
-*fluxbox(1)* comes with a program called *startfluxbox(8)* usually located
+*fluxbox(1)* comes with a program called *startfluxbox(1)* usually located
 wherever you installed fluxbox. This script provides you with many options and
 variables that can be set when starting fluxbox. To actually call fluxbox and
 begin using it, you should place ``exec startfluxbox'' in your *\~/.xinitrc* as
 the last executed command. This is assuming that the location of *fluxbox(1)*
-and *startfluxbox(8)* are in your shell's $PATH. Also note that you may need to
+and *startfluxbox(1)* are in your shell's $PATH. Also note that you may need to
 create the *\~/.xinitrc* file or your setup may use *\~/.xsession* instead,
 depending on your X setup. Some X login managers like *gdm(1)* or *kdm(1)* may
 simply provide a ``Fluxbox'' session for you without having to alter any
@@ -815,7 +815,7 @@ slit. The file is generally located at *\~/.fluxbox/slitlist*.
 A simple procedure for getting the slit sequences the way you like it is:
 1.   Run fluxbox with no pre-loaded dockapps
 2.   Run dockapps individually in the order you want them
-3.   Add dockapps to your startfluxbox(8) script
+3.   Add dockapps to your *startfluxbox(1)* script
 
 This sequence will be saved by default to *\~/.fluxbox/slitlist* and will be
 remembered for future instances of fluxbox.
@@ -1155,8 +1155,8 @@ fluxbox responds to the following signals:
 - SIGUSR1  Forces reloading of configuration.
 - SIGUSR2  Forces reloading of menu file.
 
-AUTHOR and CREDITS
-------------------
+AUTHORS
+-------
 fluxbox is written and maintained by Henrik Kinnunen <fluxgen at fluxbox org>,
 Simon Bowden <rathnor at fluxbox org>, Mathias Gumz <akira at fluxbox org>, and
 Mark Tiefenbruck <mark at fluxbox org>, with contributions and patches merged
@@ -1165,15 +1165,9 @@ from many individuals around the world.
 Blackbox was written and maintained by Brad Hughes <blackbox at alug org> and
 Jeff Raven <jraven at psu edu>.
 
-The Official fluxbox website: http://www.fluxbox.org
-
-The Official fluxbox wiki: http://www.fluxbox-wiki.org
-
-Many compatible themes: http://tenr.de
-
 This manpage is the combined work of:
 
-- Jim Ramsay <i.am at jimramsay com> (>fluxbox-1.1.1)
+- Jim Ramsay <i.am at jimramsay com> (>fluxbox-1.0.0)
 - Curt Micol <asenchi at asenchi com> (>fluxbox-0.9.11)
 - Tobias Klausmann <klausman at users sourceforge net> (<=fluxbox-0.9.11)
 - Grubert <grubert at users sourceforge net> (fluxbox)
@@ -1181,6 +1175,14 @@ This manpage is the combined work of:
 - Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 
 - Numerous other languages could be available if someone jumps in.
+
+ONLINE DOCUMENTATION
+--------------------
+The Official fluxbox website: http://www.fluxbox.org
+
+The Official fluxbox wiki: http://www.fluxbox-wiki.org
+
+Many compatible themes: http://tenr.de
 
 BUGS
 ----
@@ -1192,5 +1194,4 @@ mailinglists. More information can be found on the official website.
 SEE ALSO
 --------
 fluxbox-apps(5) fluxbox-keys(5) fluxbox-style(5) fluxbox-menu(5)
-fluxbox-remote(1) bsetroot(1) fbsetbg(1) fbrun(1)
-
+fluxbox-remote(1) fbsetroot(1) fbsetbg(1) fbrun(1) startfluxbox(1)

@@ -51,7 +51,8 @@ doesn't support this option fbsetbg falls back to *-f*).
 Use specified wallpapersetter, use no argument to forget.
 
 *-b* 'fbsetrootoptions'::
-Forward the options to fbsetroot.
+Forward the options to *fbsetroot(1)*. These can be used to set a solid,
+pattern, or gradient background texture.
 
 *-r* 'directory'::
 Set random wallpaper from a directory.
@@ -97,10 +98,6 @@ Recall the last set wallpaper on display *:0.0* with the stored options.
 
 	$ DISPLAY=:0.0 fbsetbg -l
 
-SEE ALSO
---------
-fluxbox(1), fbsetroot(1)
-
 ONLINE DOCUMENTATION
 --------------------
 Much more extensive documentation for *fbsetbg(1)* is provided on:::
@@ -112,6 +109,11 @@ BUGS
 
 AUTHORS
 -------
-The author of fbsetbg is Han Boetes <han@fluxbox.org>
+The author of fbsetbg is Han Boetes <han at fluxbox.org>
 
-This manpage was updated to asciidoc format by Jim Ramsay <i.am@jimramsay.com>
+This manpage was converted to asciidoc format by Jim Ramsay <i.am at
+jimramsay.com> for fluxbox-1.1.2
+
+SEE ALSO
+--------
+fluxbox(1) fbsetroot(1)

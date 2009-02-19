@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-apps
-.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/17/2009
+.\"      Date: 02/19/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-apps.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-APPS" "5" "02/17/2009" "fluxbox\-apps\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-APPS" "5" "02/19/2009" "fluxbox\-apps\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -676,9 +676,7 @@ Here are some interesting and/or useful examples you can do with your apps file\
 .if n \{\
 .RE
 .\}
-.SH "AUTHOR and CREDITS"
-.sp
-This manpage is the combined work of:
+.SH "AUTHORS"
 .sp
 .RS 4
 .ie n \{\
@@ -745,17 +743,6 @@ Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 .\}
 Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 .RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-Numerous other languages could be available if someone jumps in\&.
-.RE
 .SH "SEE ALSO"
 .sp
-fluxbox(1), xev(1), xkill(1), regex(7)
+fluxbox(1) xprop(1) regex(7)

@@ -1,7 +1,7 @@
 fluxbox-apps(5)
 ===============
 Jim Ramsay <i.am@jimramsay.com>
-v1.1.2, 10 February 2009
+v1.1.2, 18 February 2009
 :man source:   fluxbox-apps.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual
@@ -253,10 +253,8 @@ file.
 [end]
 ..................
 
-AUTHOR and CREDITS
-------------------
-This manpage is the combined work of:
-
+AUTHORS
+-------
 - Jim Ramsay <i.am at jimramsay com> (>fluxbox-1.0.0)
 - Curt Micol <asenchi at asenchi com> (>fluxbox-0.9.11)
 - Tobias Klausmann <klausman at users sourceforge net> (<=fluxbox-0.9.11)
@@ -264,9 +262,6 @@ This manpage is the combined work of:
 - Matthew Hawkins <matt at mh dropbear id au> (blackbox)
 - Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 
-- Numerous other languages could be available if someone jumps in.
-
 SEE ALSO
 --------
-fluxbox(1), xev(1), xkill(1), regex(7)
-
+fluxbox(1) xprop(1) regex(7)

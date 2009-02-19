@@ -1,6 +1,6 @@
 fbrun(1)
-==========
-Bastian Kleineidam <calvin@debian.org>
+========
+Jim Ramsay <i.am@jimramsay.com>
 v1.1.2, 18 February 2009
 :man source:   fbrun.txt
 :man version:  {revision}
@@ -80,14 +80,12 @@ fbrun -fg black -bg white -text xterm -title "run xterm"
 
 AUTHORS
 -------
-- This manpage was originally written by Bastian Kleineidam <calvin at
-  debian.org> for the Debian distribution of fluxbox (but may be used by
-  others).
+This manpage was originally written by Bastian Kleineidam <calvin at
+debian.org> for the Debian distribution of fluxbox (but may be used by
+others).
 
-- It was then converted to asciidoc format by Jim Ramsay <i.am at jimramsay.com>
-  for fluxbox-1.1.2
-
-- The main author of fluxbox is Henrik Kinnunen <fluxgen at fluxbox.org>.
+It was then converted to asciidoc format by Jim Ramsay <i.am at jimramsay.com>
+for fluxbox-1.1.2
 
 SEE ALSO
 --------

@@ -33,6 +33,9 @@ fluxbox does. It doesn't handle cursors etc. fbsetroot was originally part of
 the Blackbox package and was carried over with the code that became Fluxbox. It
 was called bsetroot back in those days.
 
+If any errors are encountered, fbsetroot will use either *gxmessage(1)* or
+*xmessage(1)* to inform the user of errors.
+
 OPTIONS
 -------
 fbsetroot operates in three ways, you must choose one of  the  first  3
@@ -74,14 +77,12 @@ Prints version info and short help text.
 
 AUTHORS
 -------
-fbsetroot is written and maintained by the Fluxbox Development Team
-
-This manpage was modified by Curt "Asenchi" Micol <asenchi@asenchi.com>
+This manpage was modified by Curt "Asenchi" Micol <asenchi at asenchi.com>
 for the Fluxbox window manager.
 
 Further updates for fluxbox-1.1.2 and conversion to asciidoc format by Jim
-Ramsay <i.am@jimramsay.com>
+Ramsay <i.am at jimramsay.com>
 
 SEE ALSO
 --------
-fluxbox(1) fbsetbg(1)
+fluxbox(1) fbsetbg(1) xsetroot(1) xmessage(1) gxmessage(1)
