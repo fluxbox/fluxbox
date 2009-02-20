@@ -90,10 +90,13 @@ name is *Mouse*'n' where 'n' is the number of the mouse button. For example,
 events, in normal configurations. *xev(1)* can also be used to tell the button
 number.
 
-////////////////
 There are some special "keys" that let you bind events to non-keyboard events:::
 *ChangeWorkspace*;;
-	Fires when the workspace changes
+	Fires when the workspace changes. This can be used to change backgrounds or
+	do anything else you like when you switch to a new workspace. See the
+	*EXAMPLES* below for one idea.
+
+////////////////
 TODO: Advanced users only?
 *FocusIn* / *FocusOut*;;
 	Fires when the focus is given to or removed from a window. It may be
@@ -103,8 +106,8 @@ TODO: Advanced users only?
 	Fires when the mouse cursor enters or leaves a specific area of the
 	screen. It may be useful to combine this with the 'On*' modifiers
 	detailed above and/or the 'If' command.
-
 ////////////////
+
 CHAINING
 --------
 Key bindings can be chained in a fashion similar to Emacs key bindings using the

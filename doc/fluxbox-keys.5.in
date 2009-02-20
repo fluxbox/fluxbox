@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-keys
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/19/2009
+.\"      Date: 02/20/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "02/19/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "02/20/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -239,6 +239,17 @@ You may specify a key by its key name (for example, \fBa\fR or \fBspace\fR) or b
 If you don\'t know the name of a key, you can run \fBxev(1)\fR in a terminal, push the key, and see the name in the output\&. If you have some "special" keys that do not produce a key name in the output of \fBxev(1)\fR, you can just use the keycode (NOT the keysym!) in your keys file\&.
 .sp
 Commands can also be bound to mouse button presses, for which the proper "key" name is \fBMouse\fR\fIn\fR where \fIn\fR is the number of the mouse button\&. For example, \fBMouse1\fR is the primary button, and \fBMouse4\fR / \fBMouse5\fR are the scroll wheel events, in normal configurations\&. \fBxev(1)\fR can also be used to tell the button number\&.
+.PP
+There are some special "keys" that let you bind events to non\-keyboard events:
+.RS 4
+.PP
+\fBChangeWorkspace\fR
+.RS 4
+Fires when the workspace changes\&. This can be used to change backgrounds or do anything else you like when you switch to a new workspace\&. See the
+\fBEXAMPLES\fR
+below for one idea\&.
+.RE
+.RE
 .SH "CHAINING"
 .sp
 Key bindings can be chained in a fashion similar to Emacs key bindings using the syntax:
