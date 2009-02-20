@@ -862,274 +862,371 @@ When running fluxbox in a multiple-screen environment the screen0 key can also
 be screen1, screen2, to customize the behavior of fluxbox on each desktop
 accordingly. Here are the resources that are currently available:
 
-................................................................................
-session.screen0.window.focus.alpha: <integer>
-session.screen0.window.unfocus.alpha: <integer>
-		These resources are available to the user to set different levels of
-		transparency for different components of fluxbox. Each one accepts a value
-		between 0-255, 255 being opaque and 0 being completely transparent.
-		Default: 255
+*session.screen0.window.{focus|unfocus}.alpha*: 'integer'::
+These resources are available to the user to set different levels of
+transparency for different components of fluxbox. Each one accepts a value
+between 0-255, 255 being opaque and 0 being completely transparent.
++
+Default: *255*
 
-session.screen0.slit.autoHide: <boolean>
-session.screen0.toolbar.autoHide: <boolean>
-      The autoHide resources allow the user to set the behavior of the toolbar
-      and slit. This behavior can be that they disappear when they are not being
-      used actively by the user, or they remain visible at all times. Default:
-      False
+*session.screen0.{slit|toolbar}.autoHide*: 'boolean'::
+The autoHide resources allow the user to set the behavior of the toolbar
+and slit. This behavior can be that they disappear when they are not being
+used actively by the user, or they remain visible at all times.
++
+Default: *False*
 
-session.screen0.slit.layer: <layer>
-session.screen0.toolbar.layer: <layer>
-      With these two resources, you can set the layer you want the toolbar and
-      the slit to appear on. Please read the LAYER section for more information.
-      Default: Dock
+*session.screen0.{slit|toolbar}.layer*: 'layer'::
+With these two resources, you can set the layer you want the toolbar and
+the slit to appear on. Please read the LAYER section for more information.
++
+Default: *Dock*
 
-session.screen0.slit.placement: <placement>
-session.screen0.toolbar.placement: <placement>
-      These allow users to place the slit and toolbar where they like. Possible
-      options are:
-      -   BottomLeft
-      -   BottomCenter
-      -   BottomRight
-      -   LeftBottom
-      -   LeftCenter
-      -   LeftTop
-      -   RightBottom
-      -   RightCenter
-      -   RightTop
-      -   TopLeft
-      -   TopCenter
-      -   TopRight
+*session.screen0.{slit|toolbar}.placement*: 'placement'::
+These allow users to place the slit and toolbar where they like.
++
+--
+Possible options are:;;
+	*BottomLeft* *BottomCenter* *BottomRight* *LeftBottom* *LeftCenter* *LeftTop*
+	*RightBottom* *RightCenter* *RightTop* *TopLeft* *TopCenter* *TopRight*
+--
++
+Slit default: *TopRight*
++
+Toolbar default: *BottomCenter*
 
-session.screen0.slit.maxOver: <boolean>
-session.screen0.toolbar.maxOver: <boolean>
-session.screen0.tabs.maxOver: <boolean>
-      Setting these to True will allow application windows to maximize over the
-      complete screen. Setting to False allows the slit, toolbar, and external
-      tabs to hold their territory and will always be visible when an
-      application is maximized. Default: False
+*session.screen0.{slit|toolbar|tabs}.maxOver*: 'boolean'::
+Setting these to True will allow application windows to maximize over the
+complete screen. Setting to False allows the slit, toolbar, and external
+tabs to hold their territory and will always be visible when an
+application is maximized.
++
+Default: *False*
 
-session.screen0.toolbar.height: <integer>
-      Set the height of the toolbar. If the value is set to 0, the style file
-      will gain control over the toolbar height. It is possible to set a fixed
-      height by changing this value to something greater than 0. Default: 0
+*session.screen0.toolbar.height*: 'integer'::
+Set the height of the toolbar. If the value is set to 0, the style file
+will gain control over the toolbar height. It is possible to set a fixed
+height by changing this value to something greater than 0.
++
+Default: *0*
 
-session.screen0.toolbar.visible: <boolean>
-      The user can set whether they want to have a toolbar on screen at all.
-      Setting to False removes the toolbar from the screen. Default: True
+*session.screen0.toolbar.visible*: 'boolean'::
+The user can set whether they want to have a toolbar on screen at all.
+Setting to False removes the toolbar from the screen.
++
+Default: *True*
 
-session.screen0.toolbar.widthPercent: <integer>
-      This resource sets the width percentage of the toolbar on the screen.
-      Default: 100
+*session.screen0.toolbar.widthPercent*: 'integer'::
+This resource sets the width percentage of the toolbar on the screen.
++
+Default: *100*
 
-session.screen0.toolbar.tools: <tools>
-      This resource specifies the tools plugged into the toolbar. Read the
-      TOOLBAR section in this manual for a description of each of these.
-		They may be specified in any order, delimited by the ',' character.
-		They will appear in the order given.
-      Possible tools::
-      -   clock
-      -   iconbar
-      -   nextwindow
-      -   prevwindow
-      -   nextworkspace
-      -   prevworkspace
-      -   systemtray
-      -   workspacename
+*session.screen0.toolbar.tools*: 'tools'::
+This resource specifies the tools plugged into the toolbar. Read the
+TOOLBAR section in this manual for a description of each of these.
+They may be specified in any order, delimited by the *,* character.
+They will appear in the order given.
++
+Possible tools:;;
+*clock* *iconbar* *nextwindow* *prevwindow* *nextworkspace* *prevworkspace*
+*systemtray* *workspacename*
++
+Default:;;
+*workspacename, prevworkspace, nextworkspace, iconbar, prevwindow, nextwindow,
+systemtray, clock*
 
-session.screen0.slit.onhead: <integer>
-session.screen0.toolbar.onhead: <integer>
-      For those that use xinerama, users can set this value to the number of the
-      head where they would like to see the slit and toolbar, starting from 1.
-      Setting this to 0 will ignore xinerama information. Default: 0
+*session.screen0.{slit|toolbar}.onhead*: 'integer'::
+For those that use xinerama, users can set this value to the number of the
+head where they would like to see the slit and toolbar, starting from 1.
+Setting this to 0 will ignore xinerama information.
++
+Default: *0*
 
-session.screen0.iconbar.mode: <pattern>
-      This determines which windows will be displayed in the iconbar. Any window
-      pattern available to the Next/PrevWindow keybindings is acceptable.
-      Default: {static groups} (workspace)
+*session.screen0.iconbar.mode*: 'pattern'::
+This determines which windows will be displayed in the iconbar. Any window
+pattern is acceptable. See the section *CLIENT PATTERNS* in either
+*fluxbox-keys(5)* or *fluxbox-apps(5)* for details.
++
+Default: *{static groups} (workspace)*
 
-session.screen0.iconbar.usePixmap: <boolean>
-      This is also set in the Iconbar Mode menu. When set to True, this will
-      show the native icon of applications. Default: True
+*session.screen0.iconbar.usePixmap*: 'boolean'::
+This is also set in the Iconbar Mode menu. When set to True, this will
+show the native icon of applications.
++
+Default: *True*
 
-session.screen0.iconbar.iconTextPadding: <integer>
-      This specifies the space between the window title and the edge of the
-      button. Default: 10
+*session.screen0.iconbar.iconTextPadding*: 'integer'::
+This specifies the space between the window title and the edge of the
+button.
++
+Default: *10*
 
-session.screen0.iconbar.alignment: <position>
-      This value should be changed in the Iconbar Mode menu. Default:
-      Relative
+*session.screen0.iconbar.alignment*: 'position'::
+This value should be changed in the Iconbar Mode menu.
++
+--
+Available options:;;
+- *Left*: Fixed width, aligned left
+- *Relative*: Width varies to fill the iconbar
+- *Right*: Fixed width, aligned right
+--
++
+Default: *Relative*
 
-      Available options:
-      -   Left: Fixed width, aligned left
-      -   Relative: Width varies to fill the iconbar
-      -   Right: Fixed width, aligned right
+*session.screen0.iconbar.iconWidth*: 'integer'::
+Used to specify the iconbar button width for Left/Right alignment.
++
+Default: *128*
 
-session.screen0.iconbar.iconWidth: <integer>
-      Used to specify the iconbar button width for Left/Right alignment.
-      Default: 128
+*session.screen0.strftimeFormat*: 'date'::
+This adjusts the way the current time is displayed in the toolbar. The
+*strftime(3)* format is used.
++
+Default: *%I:%M %p*
 
-session.screen0.strftimeFormat: <date>
-      This adjusts the way the current time is displayed in the toolbar. The
-      strftime(3) format is used. Default: %I:%M %p
+*session.screen0.tabs.intitlebar*: 'boolean'::
+This specifies whether tabs should be embedded in the titlebar or placed
+outside the window.
++
+Default: *True*
 
-session.screen0.tabs.intitlebar: <boolean>
-      This specifies whether tabs should be embedded in the titlebar or placed
-      outside the window. Default: True
+*session.screen0.tab.placement*: 'placement'::
+This specifies where external tabs will appear on the window. It has the same
+possible values as *sesion.screen0.{slit|toolbar}.placement*.
++
+Default: *TopLeft*
 
-session.screen0.tab.placement: <placement>
-      This specifies where external tabs will appear on the window. Default:
-      TopLeft
+*session.screen0.tab.width*: 'integer'::
+This specifies the width of external tabs in pixels.
++
+Default: *64*
 
-session.screen0.tab.width: <integer>
-      This specifies the width of external tabs in pixels. Default: 64
-
-session.screen0.focusModel: ClickToFocus|MouseFocus
-      This controls how windows gain focus via the mouse. With `ClickToFocus',
-      the user must click on the window. With `MouseFocus', windows gain focus
-      whenever the mouse moves over them. Default: ClickToFocus
+*session.screen0.focusModel*: *ClickToFocus|MouseFocus*::
+This controls how windows gain focus via the mouse. With `ClickToFocus',
+the user must click on the window. With `MouseFocus', windows gain focus
+whenever the mouse moves over them.
++
+Default: *ClickToFocus*
       
-session.screen0.autoRaise: <boolean>
-      When True, this setting automatically raises any window that gains focus.
-      Default: True
+*session.screen0.autoRaise*: 'boolean'::
+When True, this setting automatically raises any window that gains focus.
++
+Default: *True*
 
-session.autoRaiseDelay: <integer>
-      Adjusts the delay (in milli-sec) before focused windows will raise
-      when using the Autoraise option. Default: 250
+*session.autoRaiseDelay*: 'integer'::
+Adjusts the delay (in milli-sec) before focused windows will raise
+when using the Autoraise option.
++
+Default: *250*
 
-session.screen0.clickRaises: <boolean>
-      This setting allows a user to click anywhere on a window to bring it on
-      top of other windows. Otherwise, only the titlebar will work. Default:
-      True
+*session.screen0.clickRaises*: 'boolean'::
+This setting allows a user to click anywhere on a window to bring it on
+top of other windows. Otherwise, only the titlebar will work.
++
+Default: *True*
 
-session.screen0.workspacewarping: <boolean>
-      This setting enables a user to change workspaces by dragging a window
-      across the edge of the screen. Default: True
+*session.screen0.workspacewarping*: 'boolean'::
+This setting enables a user to change workspaces by dragging a window
+across the edge of the screen.
++
+Default: *True*
 
-session.screen0.showwindowposition: <boolean>
-      Setting this resource to True shows the user, in a little window,
-      the exact position of the application window while the user is
-      dragging it. Allows a precise placement of windows on a screen.
-      Default: True
+*session.screen0.showwindowposition*: 'boolean'::
+Setting this resource to True shows the user, in a little window,
+the exact position of the application window while the user is
+dragging it. Allows a precise placement of windows on a screen.
++
+Default: *True*
 
-session.screen0.defaultDeco: <string>
-      This specifies the default window decorations, according to the same
-      options available to the `[Deco]' option in the `apps' file, described in
-      *fluxbox-apps(5)*. Default: NORMAL.
+*session.screen0.defaultDeco*: 'string'::
+This specifies the default window decorations, according to the same
+options available to the *[Deco]* option in the `apps' file, described in
+*fluxbox-apps(5)*.
++
+Default: *NORMAL*
 
-session.screen0.menuDelay: <integer>
-      This sets the delay in milliseconds for submenus to open when you hover
-      over them or to close when you hover over another item. Default: 200
+*session.screen0.menuDelay*: 'integer'::
+This sets the delay in milliseconds for submenus to open when you hover
+over them or to close when you hover over another item.
++
+Default: *200*
 
-session.screen0.focusNewWindows: <boolean>
-      This sets whether or not new windows will become focused automatically.
-      Default: True
+*session.screen0.focusNewWindows*: 'boolean'::
+This sets whether or not new windows will become focused automatically.
++
+Default: *True*
 
-session.screen0.workspaceNames: <names>
-      Here is where the user can name their workspaces. However it is
-      recommended to use the tool available in the Workspace Menu to set
-      these. Default: one, two, three, four
+*session.screen0.workspaceNames*: 'names'::
+Here is where the user can name their workspaces, in a comma-delimited list.
+However it is recommended to use the tool available in the Workspace Menu to set
+these.
++
+Default: *one, two, three, four*
 
-session.screen0.edgeSnapThreshold: <integer>
-      When moving a window across your screen, fluxbox is able to have it `snap'
-      to the edges of the screen and other windows for easy placement. This
-      variable tells fluxbox the distance (in pixels) at which the window will
-      jump to the edge. Default: 10
+*session.screen0.edgeSnapThreshold*: 'integer'::
+When moving a window across your screen, fluxbox is able to have it `snap'
+to the edges of the screen and other windows for easy placement. This
+variable tells fluxbox the distance (in pixels) at which the window will
+jump to the edge.
++
+Default: *10*
 
-session.screen0.windowPlacement: <placement strategy>
-      This resource specifies where to place new windows when not otherwise
-      specified (by the program or the `apps' file, for example). Here are the
-      options:
-      - RowSmartPlacement: tries to place windows in rows without overlapping
-      - ColSmartPlacement: tries to place windows in columns without overlapping
-      - CascadePlacement: places windows below the titlebar of the previous one
-      - UnderMousePlacement: places new windows underneath the mouse
-      Default: RowSmartPlacement
+*session.screen0.windowPlacement*: 'strategy'::
+This resource specifies where to place new windows when not otherwise
+specified (by the program or the `apps' file, for example).
++
+--
+Available strategies:;;
+- RowSmartPlacement: tries to place windows in rows without overlapping
+- ColSmartPlacement: tries to place windows in columns without overlapping
+- CascadePlacement: places windows below the titlebar of the previous one
+- UnderMousePlacement: places new windows underneath the mouse
+--
++
+Default: *RowSmartPlacement*
 
-session.screen0.rowPlacementDirection: LeftToRight|RightToLeft
-session.screen0.colPlacementDirection: TopToBottom|BottomToTop
-      These settings control the direction in which windows are tiled using the
-      RowSmartPlacement and ColSmartPlacement strategies described above.
-      Default: LeftToRight/TopToBottom
+*session.screen0.rowPlacementDirection*: *LeftToRight*|*RightToLeft*::
+These settings control the direction in which windows are tiled using the
+RowSmartPlacement and ColSmartPlacement strategies described above.
++
+Default: *LeftToRight*
 
-session.screen0.fullMaximization: <boolean>
-      If this setting is enabled, windows will maximize over the toolbar, slit,
-      and any other window that creates a strut, no matter what their individual
-      settings are. Default: False
+*session.screen0.colPlacementDirection*: *TopToBottom*|*BottomToTop*::
+These settings control the direction in which windows are tiled using the
+RowSmartPlacement and ColSmartPlacement strategies described above.
++
+Default: *TopToBottom*
 
-session.screen0.opaqueMove: <boolean>
-      When moving a window, setting this to True will draw the window
-      contents as it moves (this is nasty on slow systems). If False, it
-      will only draw an outline of the window border. Default: True
+*session.screen0.fullMaximization*: 'boolean'::
+If this setting is enabled, windows will maximize over the toolbar, slit,
+and any other window that creates a strut, no matter what their individual
+settings are.
++
+Default: *False*
 
-session.screen0.workspaces: <integer>
-      Set this to the number of workspaces the users wants. Default: 4
+*session.screen0.opaqueMove*: 'boolean'::
+When moving a window, setting this to True will draw the window
+contents as it moves (this is nasty on slow systems). If False, it
+will only draw an outline of the window border.
++
+Default: *True*
 
-session.screen0.windowMenu: <blank>|<location>
-      This specifies the location of a user-defined window menu. Default: blank
+*session.screen0.workspaces*: 'integer'::
+Set this to the number of workspaces the users wants.
++
+Default: *4*
 
-session.appsFile: <location>
-session.groupFile: <location>
-session.keyFile: <location>
-session.menuFile: <location>
-session.slitlistFile: <location>
-session.styleFile: <location>
-session.styleOverlay: <location>
-      All of these resources require a pathname to their specific files. This is
-      where you can specify different files. Most of the defaults will be
-      located in the user's ~/.fluxbox directory.
+*session.cacheLife*: 'minutes'::
+This tells fluxbox how long unused pixmaps may stay in the X
+server's memory.
++
+Default: *5*
 
-session.cacheLife: <integer>
-      This tells fluxbox how long (in minutes) unused pixmaps may stay in the X
-      server's memory. Default: 5
+*session.cacheMax*: 'KbSize'::
+This tells fluxbox how much memory it may use to store cached
+pixmaps on the X server. If your machine runs short of memory, you may
+lower this value.
++
+Default: *200*
 
-session.cacheMax: <integer>
-      This tells fluxbox how much memory (in Kb) it may use to store cached
-      pixmaps on the X server. If your machine runs short of memory, you may
-      lower this value. Default: 200
+*session.colorsPerChannel*: 'integer'::
+This tells fluxbox how many colors to take from the X server on
+pseudo-color displays. A channel would be red, green, or blue. fluxbox
+will allocate this variable ^ 3 and make them always available. Value must
+be between 2-6. When you run fluxbox on an 8bpp display, you must set this
+resource to 4.
++
+Default: *4*
 
-session.colorsPerChannel: <integer>
-      This tells fluxbox how many colors to take from the X server on
-      pseudo-color displays. A channel would be red, green, or blue. fluxbox
-      will allocate this variable ^ 3 and make them always available. Value must
-      be between 2-6. When you run fluxbox on an 8bpp display, you must set this
-      resource to 4. Default: 4
+*session.doubleClickInterval*: 'integer'::
+Adjust the delay in milliseconds between mouse clicks for fluxbox to
+consider a double click.
++
+Default: *250*
 
-session.doubleClickInterval: <integer>
-      Adjust the delay in milliseconds between mouse clicks for fluxbox to
-      consider a double click. Default: 250
+*session.forcePseudoTransparency*: 'boolean'::
+If you have Xorg's composite extension enabled, this setting will force
+the menu, windows, toolbar, and slit to use pseudo-transparency instead of
+true transparency.
++
+Default: *False*
 
-session.forcePseudoTransparency: <boolean>
-      If you have Xorg's composite extension enabled, this setting will force
-      the menu, windows, toolbar, and slit to use pseudo-transparency instead of
-      true transparency. Default: False
+*session.ignoreBorder*: 'boolean'::
+This configures the ability to move windows by dragging the border.
++
+Default: *False*
 
-session.ignoreBorder: <boolean>
-      This configures the ability to move windows by dragging the border.
-      Default: False
+*session.tabPadding*: 'integer'::
+This specifies the spacing between tabs.
++
+Default: *0*
 
-session.tabPadding: <integer>
-      This specifies the spacing between tabs. Default: 0
+*session.tabsAttachArea*: *Window|Titlebar*::
+With this set to `Window', windows may be grouped by dragging one tab with
+the middle mouse button and dropping it anywhere on another window. With
+`Titlebar', the user must drop the tab on the target window's titlebar.
++
+Default: *Window*
 
-session.tabsAttachArea: Window|Titlebar
-      With this set to `Window', windows may be grouped by dragging one tab with
-      the middle mouse button and dropping it anywhere on another window. With
-      `Titlebar', the user must drop the tab on the target window's titlebar.
-      Default: Window
+*session.titlebar.{left|right}*: 'buttons'::
+The buttons or icons to place in the titlebar of decorated windows. You
+may specify any number, space-delimited.
++
+--
+The available options are:;;
+	*Close* *Maximize* *MenuIcon* *Minimize* *Shade* *Stick*
+--
++
+Default left: *Stick MenuIcon*
++
+Default right: *Shade Minimize Maximize Close*
 
-session.titlebar.left: Stick
-session.titlebar.right: Minimize Maximize Close
-      The icons to place in the titlebar of decorated windows. The available
-      options are Close, Maximize, MenuIcon, Minimize, Shade, and Stick.
+All of the 'location' resources following require a pathname to their specific
+files. This is where you can specify different files. Most of the defaults will
+be located in the user's *\~/.fluxbox* directory.
 
-................................................................................
+*session.appsFile*: 'location'::
+	Location of persistent application settings, or the `apps' file. See the
+	*Remember...* item in the *Window Menu* section above or *fluxbox-apps(5)*
+	for details.
+
+*session.groupFile*: 'location'::
+	Deprecated, auto-grouping is now done in the `apps' file, see
+	*fluxbox-apps(5)* for details.
+
+*session.keyFile*: 'location'::
+	Location of the keyboard mapping settings, or the `keys' file.
+	See *fluxbox-keys(5)* for details.
+
+*session.menuFile*: 'location'::
+	Location of the Root Menu file.
+	See *fluxbox-menu(5)* for details.
+
+*session.slitlistFile*: 'location'::
+	Location of the file used to remember slit client ordering.
+	See *SLIT* above for details.
+
+*session.styleFile*: 'location'::
+	Location of the currently selected style.
+	See *fluxbox-style(5)* for details.
+
+*session.styleOverlay*: 'location'::
+	Location of the style overlay file.
+	See *fluxbox-style(5)* for details.
+
+*session.screen0.windowMenu*: 'location':::
+This optionally specifies the location of a user-defined window menu. If left
+blank, it will use *\~/.fluxbox/windowmenu*.
++
+Default: *blank*
 
 ENVIRONMENT
 -----------
-HOME::
-    fluxbox uses HOME to find the .fluxbox/init file and to resolve style file
+*HOME*::
+    fluxbox uses *$HOME* to find the .fluxbox/init file and to resolve style file
     and -directory names.
 
-DISPLAY::
+*DISPLAY*::
     When no other display was given on the command line, fluxbox will start on
     the display specified by this variable.
 
