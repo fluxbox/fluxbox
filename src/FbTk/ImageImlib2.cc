@@ -24,8 +24,6 @@
 #include "App.hh"
 #include "PixmapWithMask.hh"
 
-#include <X11/xpm.h>
-
 #include <Imlib2.h>
 #include <map>
 #include <iostream>
