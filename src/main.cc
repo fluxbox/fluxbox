@@ -72,8 +72,8 @@ static void showInfo(ostream &ostr) {
     _FB_USES_NLS;
     ostr<<_FB_CONSOLETEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")<<": "<<__fluxbox_version<<endl;
 
-    if (strlen(svnversion()) > 0)
-        ostr << _FB_CONSOLETEXT(Common, SvnRevision, "GIT Revision", "Revision number in GIT repositary") << ": " << svnversion() << endl;
+    if (strlen(gitrevision()) > 0)
+        ostr << _FB_CONSOLETEXT(Common, SvnRevision, "GIT Revision", "Revision number in GIT repositary") << ": " << gitrevision() << endl;
 #if defined(__DATE__) && defined(__TIME__)
     ostr<<_FB_CONSOLETEXT(Common, Compiled, "Compiled", "Time fluxbox was compiled")<<": "<<__DATE__<<" "<<__TIME__<<endl;
 #endif

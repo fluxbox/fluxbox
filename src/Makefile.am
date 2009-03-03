@@ -54,7 +54,7 @@ defaults.hh: Makefile
 		echo '#define PROGRAM_PREFIX "$(PROGRAM_PREFIX:NONE=)"'; \
 		echo '#define PROGRAM_SUFFIX "$(PROGRAM_SUFFIX:NONE=)"'; \
 		echo 'std::string realProgramName(std::string name);'; \
-		echo 'const char* svnversion(void);' ) > defaults.hh
+		echo 'const char* gitrevision();' ) > defaults.hh
 
 defaults.cc: force
 	@( \
@@ -64,7 +64,7 @@ defaults.cc: force
 		echo '  return PROGRAM_PREFIX + name + PROGRAM_SUFFIX;'; \
 		echo '}'; \
 		echo ''; \
-		echo 'const char* svnversion(void) {'; \
+		echo 'const char* gitrevision() {'; \
 		echo '  return "'`cat ../.git/$$(cat ../.git/HEAD | cut -f 2 -d ' ')`'";';\
 		echo '}' ) > defaults_tmp.cc
 	@if ! cmp defaults_tmp.cc defaults.cc ; then cp defaults_tmp.cc defaults.cc; fi
