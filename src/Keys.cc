@@ -35,6 +35,7 @@
 #include "FbTk/CommandParser.hh"
 #include "FbTk/I18n.hh"
 #include "FbTk/AutoReloadHelper.hh"
+#include "FbTk/STLUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -101,6 +102,8 @@ using std::string;
 using std::vector;
 using std::ifstream;
 using std::pair;
+
+using FbTk::STLUtil::destroyAndClearSecond;
 
 // helper class 'keytree'
 class Keys::t_key {
@@ -185,9 +188,8 @@ Keys::~Keys() {
 
 /// Destroys the keytree
 void Keys::deleteTree() {
-    for (keyspace_t::iterator map_it = m_map.begin(); map_it != m_map.end(); ++map_it)
-        delete map_it->second;
-    m_map.clear();
+
+    destroyAndClearSecond(m_map);
     next_key = 0;
     saved_keymode = 0;
 }
