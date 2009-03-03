@@ -33,7 +33,6 @@
 #include <X11/Xutil.h>
 
 #include <memory>
-#include <stdexcept>
 
 using std::string;
 
