@@ -44,6 +44,8 @@
   #include <string.h>
 #endif
 
+#include <sys/stat.h>
+
 #include <iostream>
 #include <fstream>
 #include <set>
@@ -63,8 +65,8 @@ using std::list;
 using std::exit;
 using std::getenv;
 
-string read_file(string filename);
-void write_file(string filename, string &contents);
+string read_file(const string& filename);
+void write_file(const string& filename, const string &contents);
 void save_all_files();
 
 int run_updates(int old_version, FbTk::ResourceManager &rm) {
@@ -455,17 +457,27 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-static set<string> modified_files;
+namespace {
+
+set<string> modified_files;
 // we may want to put a size limit on this cache, so it doesn't grow too big
-static map<string,string> file_cache;
+map<string,string> file_cache;
+
+};
 
 // returns the contents of the file given, either from the cache or by reading
 // the file from disk
-string read_file(string filename) {
+string read_file(const string& filename) {
     // check if we already have the file in memory
     map<string,string>::iterator it = file_cache.find(filename);
     if (it != file_cache.end())
         return it->second;
+
+    stat s;
+    stat(filename.c_str(), &s);
+
+    if (! (s.st_mode & S_IFREG))
+        return "";
 
     // nope, we'll have to read the file
     ifstream infile(filename.c_str());
@@ -474,10 +486,15 @@ string read_file(string filename) {
     if (!infile) // failed to open file
         return whole_file;
 
+    string linebuffer;
     while (!infile.eof()) {
-        string linebuffer;
-
         getline(infile, linebuffer);
+
+        // check if we read something at all. if its 0, its a strange file
+        // (eg a directory) or we are at the end
+        if (infile.gcount() == 0) {
+            break;
+        }
         whole_file += linebuffer + "\n";
     }
     infile.close();
@@ -488,7 +505,7 @@ string read_file(string filename) {
 
 #ifdef NOT_USED
 // remove the file from the cache, writing to disk if it's been changed
-void forget_file(string filename) {
+void forget_file(const string& filename) {
     map<string,string>::iterator cache_it = file_cache.find(filename);
     // check if we knew about the file to begin with
     if (cache_it == file_cache.end())
@@ -511,7 +528,7 @@ void forget_file(string filename) {
 
 // updates the file contents in the cache and marks the file as modified so it
 // gets saved later
-void write_file(string filename, string &contents) {
+void write_file(const string& filename, const string &contents) {
     modified_files.insert(filename);
     file_cache[filename] = contents;
 }
