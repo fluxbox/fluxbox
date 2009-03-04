@@ -473,7 +473,7 @@ string read_file(const string& filename) {
     if (it != file_cache.end())
         return it->second;
 
-    stat s;
+    struct stat s;
     stat(filename.c_str(), &s);
 
     if (! (s.st_mode & S_IFREG))
