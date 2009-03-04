@@ -36,7 +36,9 @@
 #include "WinButton.hh"
 #include "WinButtonTheme.hh"
 #include "WindowCmd.hh"
+#ifdef REMEMBER
 #include "Remember.hh"
+#endif
 #include "MenuCreator.hh"
 #include "FocusControl.hh"
 #include "IconButton.hh"
@@ -2190,9 +2192,11 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         } else if (atom == fbatoms->getMWMHintsAtom()) {
             client.updateMWMHints();
             updateMWMHintsFromClient(client);
+#ifdef REMEMBER
             if (!m_toggled_decos) {
                 Remember::instance().updateDecoStateFromClient(client);
             }
+#endif
             applyDecorations(); // update decorations (if they changed)
         }
         break;

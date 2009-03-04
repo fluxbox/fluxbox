@@ -84,8 +84,7 @@ if GNOME
 gnome_SOURCE= Gnome.hh Gnome.cc
 endif
 if REMEMBER_SRC
-REMEMBER_SOURCE= Remember.hh Remember.cc \
-	ClientPattern.hh ClientPattern.cc
+REMEMBER_SOURCE= Remember.hh Remember.cc
 endif
 if TOOLBAR_SRC
 TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \
@@ -132,6 +131,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	RootCmdMenuItem.hh RootCmdMenuItem.cc\
 	MenuCreator.hh MenuCreator.cc \
 	ClientMenu.hh ClientMenu.cc \
+	ClientPattern.hh ClientPattern.cc \
 	WorkspaceMenu.hh WorkspaceMenu.cc \
 	FocusModelMenuItem.hh \
 	ToggleMenu.hh \
