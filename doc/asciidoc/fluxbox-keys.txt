@@ -113,7 +113,9 @@ CHAINING
 Key bindings can be chained in a fashion similar to Emacs key bindings using the
 syntax:
 
-*'modifiers-1' 'key-1' 'modifiers-2' 'key-2' :'command' ['arguments ...']*
+'modifiers-1' 'key-1' 'modifiers-2' 'key-2' :'command' ['arguments ...']*
+
+To abort a chained command part-way through typing it, press the <ESC> key.
 
 .To Bind CTRL+C CTRL+X (Which means, press CTRL+C then CTRL+X) to quit fluxbox
 ........

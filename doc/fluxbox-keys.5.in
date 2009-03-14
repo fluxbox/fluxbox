@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-keys
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/20/2009
+.\"      Date: 03/14/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "02/20/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "03/14/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -254,7 +254,9 @@ below for one idea\&.
 .sp
 Key bindings can be chained in a fashion similar to Emacs key bindings using the syntax:
 .sp
-\fB\fImodifiers\-1\fR\fR\fB \fR\fB\fIkey\-1\fR\fR\fB \fR\fB\fImodifiers\-2\fR\fR\fB \fR\fB\fIkey\-2\fR\fR\fB :\fR\fB\fIcommand\fR\fR\fB [\fR\fB\fIarguments \&...\fR\fR\fB]\fR
+\fImodifiers\-1\fR \fIkey\-1\fR \fImodifiers\-2\fR \fIkey\-2\fR :\fIcommand\fR [\fIarguments \&...\fR]*
+.sp
+To abort a chained command part\-way through typing it, press the <ESC> key\&.
 .PP
 \fBExample\ \&1.\ \&To Bind CTRL+C CTRL+X (Which means, press CTRL+C then CTRL+X) to quit fluxbox\fR
 .sp
