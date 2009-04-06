@@ -84,7 +84,7 @@ static void stringTokensBetween(Container &container, const std::string &in,
     while (true) {
         err = getStringBetween(token, in.c_str() + pos, first, last, ok_chars,
                                allow_nesting);
-        if (err == 0)
+        if (err <= 0)
             break;
         container.push_back(token);
         pos += err;
