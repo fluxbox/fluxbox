@@ -308,6 +308,7 @@ while [ $# -gt 0 ]; do
                 remember=false
                 break
             fi
+            ignore_missing_wallpaper=true
             style="style"
             shift ;;
         -Z)
@@ -521,6 +522,9 @@ fi
 
 
 if [ ! -r "$wallpaper" ]; then
+	if [ "$ignore_missing_wallpaper" == "true" ]; then
+		exit 0
+	fi
     message "Can't find wallpaper $wallpaper"
     exit 1
 fi
