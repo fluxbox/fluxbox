@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-style
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/19/2009
+.\"      Date: 05/26/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-style.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-STYLE" "5" "02/19/2009" "fluxbox\-style\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-STYLE" "5" "05/26/2009" "fluxbox\-style\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -611,7 +611,7 @@ menu\&.unselected\&.pixmap:         <filename>
 .\}
 .SH "BACKGROUND"
 .sp
-Every style must specify the background option\&. If you don\'t want your style to change the user\'s background, then use `background: none\'\&. The options `centered\', `aspect\', `tiled\', and `fullscreen\' require the `background\&.pixmap\' resource to contain a valid file name\&. The `random\' option requires `background\&.pixmap\' to contain a valid directory name\&. For these options, \fBfluxbox(1)\fR will call \fBfbsetbg(1)\fR to set the background\&. The options `gradient\', `solid\', and `mod\' all require `background\&.color\' to be set\&. `gradient\' and `mod\' both require `background\&.colorTo\'\&. `mod\' requires `background\&.modX\' and `background\&.modY\' to be set as well\&. These options will be passed to \fBfbsetroot(1)\fR to set the background\&.
+Every style must specify the background option\&. If you don\'t want your style to change the user\'s background, then use `background: none\'\&. The options `centered\', `aspect\', `tiled\', and `fullscreen\' require the `background\&.pixmap\' resource to contain a valid file name\&. The `random\' option requires `background\&.pixmap\' to contain a valid directory name\&. For these options, \fBfluxbox(1)\fR will call \fBfbsetbg(1)\fR to set the background\&. The options `gradient\', `solid\', and `mod\' all require `background\&.color\' to be set\&. `gradient\' and `mod\' both require `background\&.colorTo\'\&. `mod\' requires `background\&.modX\' and `background\&.modY\' to be set as well\&. These options will be passed to \fBfbsetroot(1)\fR to set the background\&. The special option `unset\' is for use in user overlay files only\&. It specifies that fbsetbg should never be run (by default, even when `none\' is set in the overlay, fluxbox will try to run \(lqfbsetbg \-z\(rq to restore the last wallpaper)\&.
 .sp
 .if n \{\
 .RS 4
@@ -620,7 +620,7 @@ Every style must specify the background option\&. If you don\'t want your style 
 .ps -1
 .nf
 .BB lightgray
-background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>|mod|none
+background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>|mod|none|unset
 background\&.pixmap: <file or directory>
 background\&.color: <color>
 background\&.colorTo: <color>

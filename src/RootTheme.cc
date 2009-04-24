@@ -202,6 +202,10 @@ void RootTheme::reconfigTheme() {
     filename = FbTk::StringUtil::expandFilename(filename);
     std::string cmd = realProgramName("fbsetbg") + (m_first ? " -z " : " -Z ");
 
+    // user explicitly requests NO background be set at all
+    if (strstr(m_background->options().c_str(), "unset") != 0) {
+        return;
+    }
     // style doesn't wish to change the background
     if (strstr(m_background->options().c_str(), "none") != 0) {
         if (!m_first)

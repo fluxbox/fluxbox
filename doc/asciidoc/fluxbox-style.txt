@@ -361,9 +361,12 @@ resource to contain a valid file name. The `random' option requires
 `solid', and `mod' all require `background.color' to be set. `gradient' and
 `mod' both require `background.colorTo'. `mod' requires `background.modX' and
 `background.modY' to be set as well. These options will be passed to
-*fbsetroot(1)* to set the background.
+*fbsetroot(1)* to set the background. The special option `unset' is for use in
+user overlay files only. It specifies that fbsetbg should never be run (by
+default, even when `none' is set in the overlay, fluxbox will try to run
+``fbsetbg -z'' to restore the last wallpaper).
 
-   background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>|mod|none
+   background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>|mod|none|unset
    background.pixmap: <file or directory>
    background.color: <color>
    background.colorTo: <color>
