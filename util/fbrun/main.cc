@@ -20,9 +20,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "FbRun.hh"
-#include "App.hh"
-#include "StringUtil.hh"
-#include "Color.hh"
+#include "FbTk/App.hh"
+#include "FbTk/StringUtil.hh"
+#include "FbTk/Color.hh"
 
 #ifdef XINERAMA
 extern  "C" {

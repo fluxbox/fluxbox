@@ -23,7 +23,7 @@
 #include "../src/FbTk/Resource.hh"
 #include "../src/FbTk/StringUtil.hh"
 
-#include "../src/defaults.hh"
+#include "defaults.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -21,11 +21,11 @@
 
 #include "FbRun.hh"
 
-#include "App.hh"
-#include "EventManager.hh"
-#include "Color.hh"
-#include "KeyUtil.hh"
-#include "FileUtil.hh"
+#include "FbTk/App.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/Color.hh"
+#include "FbTk/KeyUtil.hh"
+#include "FbTk/FileUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
