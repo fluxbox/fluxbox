@@ -25,13 +25,13 @@
 #include "FbTk/ImageControl.hh"
 #include "FbTk/TextUtils.hh"
 #include "FbTk/MemFun.hh"
+#include "FbTk/SimpleObserver.hh"
 
 #include "AtomHandler.hh"
 #include "fluxbox.hh"
 #include "WinClient.hh"
 #include "Screen.hh"
 #include "ButtonTheme.hh"
-#include "SimpleObserver.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>

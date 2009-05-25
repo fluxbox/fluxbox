@@ -39,7 +39,7 @@
 #include "FbTk/IntMenuItem.hh"
 #include "FbTk/MenuSeparator.hh"
 #include "FocusModelMenuItem.hh"
-#include "RadioMenuItem.hh"
+#include "FbTk/RadioMenuItem.hh"
 
 // menus
 #include "FbMenu.hh"
