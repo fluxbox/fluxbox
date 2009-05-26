@@ -1213,6 +1213,9 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
     if (!moving) {
         m_last_resize_x = new_x;
         m_last_resize_y = new_y;
+
+        /* Ignore all EnterNotify events until the pointer actually moves */
+        screen().focusControl().ignoreAtPointer();
     }
 
 }
@@ -1670,6 +1673,10 @@ void FluxboxWindow::lower() {
 #ifdef DEBUG
     cerr<<"FluxboxWindow("<<title()<<")::lower()"<<endl;
 #endif // DEBUG
+
+    /* Ignore all EnterNotify events until the pointer actually moves */
+    screen().focusControl().ignoreAtPointer();
+
     // get root window
     WinClient *client = getRootTransientFor(m_client);
 
@@ -2684,13 +2691,17 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             sa.enter = sa.leave = False;
             XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);
 
-            if ((!sa.leave || sa.inferior) && !screen().focusControl().isCycling() ) {
+            if ((!sa.leave || sa.inferior) &&
+                !screen().focusControl().isCycling() &&
+                !screen().focusControl().isIgnored(ev.x_root, ev.y_root) ) {
                 focus();
             }
         }
     }
 
-    if (screen().focusControl().isMouseTabFocus() && client && client != m_client) {
+    if (screen().focusControl().isMouseTabFocus() &&
+        client && client != m_client &&
+        !screen().focusControl().isIgnored(ev.x_root, ev.y_root) ) {
         setCurrentClient(*client, isFocused());
     }
 

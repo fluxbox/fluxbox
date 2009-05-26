@@ -1098,6 +1098,9 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
         id == m_current_workspace->workspaceID())
         return;
 
+    /* Ignore all EnterNotify events until the pointer actually moves */
+    this->focusControl().ignoreAtPointer();
+
     FbTk::App::instance()->sync(false);
 
     FluxboxWindow *focused = FocusControl::focusedFbWindow();

@@ -81,7 +81,8 @@ FocusControl::FocusControl(BScreen &screen):
     m_focused_win_list(screen), m_creation_order_win_list(screen),
     m_cycling_list(0),
     m_was_iconic(false),
-    m_cycling_last(0) {
+    m_cycling_last(0),
+    m_ignore_mouse_x(-1), m_ignore_mouse_y(-1) {
 
     m_cycling_window = m_focused_list.clientList().end();
     
@@ -398,6 +399,28 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
     if (foundwin) 
         foundwin->focus();
 
+}
+
+void FocusControl::ignoreAtPointer()
+{
+    int ignore_i;
+    unsigned int ignore_ui;
+    Window ignore_w;
+
+    XQueryPointer(m_screen.rootWindow().display(),
+        m_screen.rootWindow().window(), &ignore_w, &ignore_w,
+        &m_ignore_mouse_x, &m_ignore_mouse_y,
+        &ignore_i, &ignore_i, &ignore_ui);
+}
+
+void FocusControl::ignoreAt(int x, int y)
+{
+    m_ignore_mouse_x = x; m_ignore_mouse_y = y;
+}
+
+bool FocusControl::isIgnored(int x, int y)
+{
+    return x == m_ignore_mouse_x && y == m_ignore_mouse_y;
 }
 
 void FocusControl::removeClient(WinClient &client) {
