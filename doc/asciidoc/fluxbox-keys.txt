@@ -96,6 +96,10 @@ There are some special "keys" that let you bind events to non-keyboard events:::
 	do anything else you like when you switch to a new workspace. See the
 	*EXAMPLES* below for one idea.
 
+WARNING: Use caution with this event! For example, do NOT bind this to any
+action that changes your current workspace. If you break your fluxbox with this
+feature, you get to keep the pieces.
+
 ////////////////
 TODO: Advanced users only?
 *FocusIn* / *FocusOut*;;

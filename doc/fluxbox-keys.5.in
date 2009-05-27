@@ -1,12 +1,12 @@
 .\"     Title: fluxbox-keys
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 03/14/2009
+.\"      Date: 05/27/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt 1.1.2
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "03/14/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "05/27/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * (re)Define some macros
 .\" -----------------------------------------------------------------
@@ -249,6 +249,24 @@ Fires when the workspace changes\&. This can be used to change backgrounds or do
 \fBEXAMPLES\fR
 below for one idea\&.
 .RE
+.RE
+.if n \{\
+.sp
+.\}
+.RS 4
+.BM yellow
+.it 1 an-trap
+.nr an-no-space-flag 1
+.nr an-break-flag 1
+.br
+.ps +1
+\fBWarning\fR
+.ps -1
+.br
+.sp
+Use caution with this event! For example, do NOT bind this to any action that changes your current workspace\&. If you break your fluxbox with this feature, you get to keep the pieces\&.
+.sp .5v
+.EM yellow
 .RE
 .SH "CHAINING"
 .sp
