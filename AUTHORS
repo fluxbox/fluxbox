@@ -10,6 +10,8 @@ Main developers:
     Mark Tiefenbruck <mark(at)fluxbox.org>
 
 Contributors:
+    Jim Ramsay <i.am(at)jimramsay.com>
+      - documentation updates, bugfixes, some code.
     Han Boetes <han(at)mijncomputer.nl>
       - RPM Packaging, debugging and scripts.
 	  - fbsetbg, fluxbox-generate_menu

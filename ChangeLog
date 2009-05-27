@@ -1,5 +1,18 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*09/05/26:
+   * Fixed unexpected window focus changes under "focus follows mouse" (Jim)
+     FocusControl.cc/hh Window.cc fluxbox.cc Screen.cc
+   * Make fbsetbg quieter on '-z' if there's no lastwallpaper (Jim)
+     util/fbsetbg
+   * Add new "background: unset" property for use in overlays. (Jim)
+     RootTheme.cc
+   * Key file parsing error for MacroCmd with unterminated {...} pairs (Jim)
+     FbTk/StringUtil.hh FbTk/MacroCommand.cc
+   * Many documentation updates (Jim):
+     * Rewrote most manpages into asciidoc format
+     * Split monolithic fluxbox(1) into fluxbox-apps(5), fluxbox-menu(5)
+     * Renamed fluxstyle(1) to fluxbox-style(5)
 *08/11/01:
    * Don't reload keys file when modifier map changes, just regrab (Mark)
      Keys.cc/hh fluxbox.cc
