@@ -378,17 +378,16 @@ string ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
         return (fbwin && fbwin->isIconHidden()) ? "yes" : "no";
         break;
     case WORKSPACE: {
-        if (!fbwin)
-            return "";
+        unsigned int wsnum = (fbwin ? fbwin->workspaceNumber() : client.screen().currentWorkspaceID());
         char tmpstr[128];
-        sprintf(tmpstr, "%d", fbwin->workspaceNumber());
+        sprintf(tmpstr, "%d", wsnum);
         return std::string(tmpstr);
         break;
     }
     case WORKSPACENAME: {
-        if (!fbwin)
-            return "";
-        const Workspace *w = client.screen().getWorkspace(fbwin->workspaceNumber());
+        const Workspace *w = (fbwin ?
+                client.screen().getWorkspace(fbwin->workspaceNumber()) :
+                client.screen().currentWorkspace());
         return w ? w->name() : "";
         break;
     }
