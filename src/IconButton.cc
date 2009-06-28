@@ -100,6 +100,7 @@ void IconButton::moveResize(int x, int y,
 
     if (m_icon_window.width() != FbTk::Button::width() ||
         m_icon_window.height() != FbTk::Button::height()) {
+        reconfigTheme();
         update(0); // update icon window
     }
 }
@@ -108,6 +109,7 @@ void IconButton::resize(unsigned int width, unsigned int height) {
     FbTk::TextButton::resize(width, height);
     if (m_icon_window.width() != FbTk::Button::width() ||
         m_icon_window.height() != FbTk::Button::height()) {
+        reconfigTheme();
         update(0); // update icon window
     }
 }

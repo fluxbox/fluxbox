@@ -229,7 +229,10 @@ void Container::setMaxTotalSize(unsigned int size) {
 }
 
 void Container::setAlignment(Container::Alignment a) {
-    m_align = a;
+    if (m_align != a) {
+        m_align = a;
+        repositionItems();
+    }
 }
 
 void Container::exposeEvent(XExposeEvent &event) {
