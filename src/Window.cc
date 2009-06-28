@@ -3729,7 +3729,7 @@ FluxboxWindow::ReferenceCorner FluxboxWindow::getCorner(string str) {
         return RIGHT;
     if (str == "leftbottom" || str == "bottomleft" || str == "lowerleft")
         return LEFTBOTTOM;
-    if (str == "bottom" || str == "bottomcenter")
+    if (str == "bottom" || str == "lower" || str == "bottomcenter")
         return BOTTOM;
     if (str == "rightbottom" || str == "bottomright" || str == "lowerright")
         return RIGHTBOTTOM;
