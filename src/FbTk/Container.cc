@@ -410,31 +410,24 @@ void Container::repositionItems() {
 
 
 unsigned int Container::maxWidthPerClient() const {
-    switch (alignment()) {
-    case RIGHT:
-    case CENTER:
-    case LEFT:
-        return m_max_size_per_client;
-        break;
-    case RELATIVE:
-        if (size() == 0)
-            return width();
-        else {
-            unsigned int borderW = m_item_list.front()->borderWidth();
-            // there're count-1 borders to fit in with the windows
-            // -> 1 per window plus end
-            unsigned int w = width(), h = height();
-            translateSize(m_orientation, w, h);
-            if (w < (size()-1)*borderW)
-                return 1;
-            else
-                return (w - (size() - 1) * borderW) / size();
-        }
-        break;
+    unsigned int max_relative_size;
+    if (size() == 0)
+        max_relative_size = width();
+    else {
+        unsigned int borderW = m_item_list.front()->borderWidth();
+        // there're count-1 borders to fit in with the windows
+        // -> 1 per window plus end
+        unsigned int w = width(), h = height();
+        translateSize(m_orientation, w, h);
+        max_relative_size = w < (size()-1)*borderW ? 1 :
+                (w - (size() - 1) * borderW) / size();
     }
 
-    // this will never happen anyway
-    return 1;
+    if (alignment() == RELATIVE)
+        return max_relative_size;
+
+    return (m_max_size_per_client < max_relative_size ?
+            m_max_size_per_client : max_relative_size);
 }
 
 void Container::for_each(std::mem_fun_t<void, FbWindow> function) {
