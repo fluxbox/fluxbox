@@ -238,7 +238,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
                        scrn.name() + ".toolbar.alpha", scrn.altName() + ".Toolbar.Alpha"),
     m_rc_layernum(scrn.resourceManager(), Layer(Layer::DOCK),
                   scrn.name() + ".toolbar.layer", scrn.altName() + ".Toolbar.Layer"),
-    m_rc_on_head(scrn.resourceManager(), 0,
+    m_rc_on_head(scrn.resourceManager(), 1,
                  scrn.name() + ".toolbar.onhead", scrn.altName() + ".Toolbar.onHead"),
     m_rc_placement(scrn.resourceManager(), Toolbar::BOTTOMCENTER,
                    scrn.name() + ".toolbar.placement", scrn.altName() + ".Toolbar.Placement"),

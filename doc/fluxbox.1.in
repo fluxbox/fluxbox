@@ -1,161 +1,13 @@
+'\" t
 .\"     Title: fluxbox
 .\"    Author: [see the "AUTHORS" section]
-.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/20/2009
+.\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
+.\"      Date: 06/28/2009
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxbox.txt 1.1.2
+.\"    Source: fluxbox.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "02/20/2009" "fluxbox\&.txt 1\&.1\&.2" "Fluxbox Manual"
-.\" -----------------------------------------------------------------
-.\" * (re)Define some macros
-.\" -----------------------------------------------------------------
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" toupper - uppercase a string (locale-aware)
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de toupper
-.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
-\\$*
-.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH-xref - format a cross-reference to an SH section
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de SH-xref
-.ie n \{\
-.\}
-.toupper \\$*
-.el \{\
-\\$*
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH - level-one heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SH
-.\" put an extra blank line of space above the head in non-TTY output
-.if t \{\
-.sp 1
-.\}
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[an-margin]u
-.ti 0
-.HTML-TAG ".NH \\n[an-level]"
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-\." make the size of the head bigger
-.ps +3
-.ft B
-.ne (2v + 1u)
-.ie n \{\
-.\" if n (TTY output), use uppercase
-.toupper \\$*
-.\}
-.el \{\
-.nr an-break-flag 0
-.\" if not n (not TTY), use normal case (not uppercase)
-\\$1
-.in \\n[an-margin]u
-.ti 0
-.\" if not n (not TTY), put a border/line under subheading
-.sp -.6
-\l'\n(.lu'
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SS - level-two heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SS
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[IN]u
-.ti \\n[SN]u
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.ps \\n[PS-SS]u
-\." make the size of the head bigger
-.ps +2
-.ft B
-.ne (2v + 1u)
-.if \\n[.$] \&\\$*
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BB/BE - put background/screen (filled box) around block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BB
-.if t \{\
-.sp -.5
-.br
-.in +2n
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EB
-.if t \{\
-.if "\\$2"adjust-for-leading-newline" \{\
-.sp -1
-.\}
-.br
-.di
-.in
-.ll
-.gcolor
-.nr BW \\n(.lu-\\n(.i
-.nr BH \\n(dn+.5v
-.ne \\n(BHu+.5v
-.ie "\\$2"adjust-for-leading-newline" \{\
-\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.el \{\
-\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.in 0
-.sp -.5v
-.nf
-.BX
-.in
-.sp .5v
-.fi
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BM/EM - put colored marker in margin next to block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BM
-.if t \{\
-.br
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EM
-.if t \{\
-.br
-.di
-.ll
-.gcolor
-.nr BH \\n(dn
-.ne \\n(BHu
-\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
-.in 0
-.nf
-.BX
-.in
-.fi
-.\}
-..
+.TH "FLUXBOX" "1" "06/28/2009" "fluxbox\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -166,9 +18,9 @@
 .\" -----------------------------------------------------------------
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
-.SH "Name"
+.SH "NAME"
 fluxbox \- A lightweight window manager for the X Windowing System
-.SH "Synopsis"
+.SH "SYNOPSIS"
 .sp
 \fBfluxbox\fR [\-rc \fIrcfile\fR] [\-log \fIlogfile\fR] [\-display \fIdisplay\fR] [\-screen all|\fIscr\fR,\fIscr\fR\&...] [\-verbose] [\-sync]
 .sp
@@ -179,11 +31,11 @@ fluxbox \- A lightweight window manager for the X Windowing System
 .sp
 Fluxbox can iconify (or minimize) windows to the toolbar One click and they reappear\&. A double\-click on the titlebar of the window will \fIshade\fR it; i\&.e\&. the window will disappear, and only the titlebar will remain visible\&.
 .sp
-There are also two areas commonly used by small applets: the `slit\' can be used to dock small applications; e\&.g\&. most of the \(lqbbtools\(rq and \(lqWindow Maker dockapps\(rq can use the slit, and the `systray\' which lives in the toolbar supports standard system tray icons provided by some applications\&.
+There are also two areas commonly used by small applets: the \(oqslit\(cq can be used to dock small applications; e\&.g\&. most of the \(lqbbtools\(rq and \(lqWindow Maker dockapps\(rq can use the slit, and the \(oqsystray\(cq which lives in the toolbar supports standard system tray icons provided by some applications\&.
 .sp
 Fluxbox uses its own graphics class to render its images on the fly\&. By using style files, you can determine in great detail how your desktop looks\&. fluxbox styles are compatible with those of Blackbox 0\&.65 or earlier versions, so users migrating can still use their current favourite themes\&.
 .sp
-Most of the default keyboard and mouse button actions mentioned in this manual can be changed and configured in the `keys\' file\&. This powerful configuration file can also be used to automate almost any action you may want to perform, from launching applications to moving windows around the screen\&. See \fBfluxbox\-keys(5)\fR for details\&.
+Most of the default keyboard and mouse button actions mentioned in this manual can be changed and configured in the \(oqkeys\(cq file\&. This powerful configuration file can also be used to automate almost any action you may want to perform, from launching applications to moving windows around the screen\&. See \fBfluxbox\-keys(5)\fR for details\&.
 .sp
 Fluxbox can also remember certain attributes of individual application windows and restore these settings the next time the window opens\&. See the \fBfluxbox\-apps(5)\fR for details\&.
 .sp
@@ -213,7 +65,7 @@ Starting fluxbox with this option will designate a file in which you want to log
 \fB\-rc\fR \fIrcfile\fR
 .RS 4
 Use a different config file other than the default
-\fB~/\&.fluxbox/init\fR\&.
+\fB\e~/\&.fluxbox/init\fR\&.
 .RE
 .PP
 \fB\-v\fR, \fB\-version\fR
@@ -242,19 +94,19 @@ Lists all available internal commands\&.
 .RE
 .SH "STARTING FLUXBOX"
 .sp
-\fBfluxbox(1)\fR comes with a program called \fBstartfluxbox(1)\fR usually located wherever you installed fluxbox\&. This script provides you with many options and variables that can be set when starting fluxbox\&. To actually call fluxbox and begin using it, you should place \(lqexec startfluxbox\(rq in your \fB~/\&.xinitrc\fR as the last executed command\&. This is assuming that the location of \fBfluxbox(1)\fR and \fBstartfluxbox(1)\fR are in your shell\'s $PATH\&. Also note that you may need to create the \fB~/\&.xinitrc\fR file or your setup may use \fB~/\&.xsession\fR instead, depending on your X setup\&. Some X login managers like \fBgdm(1)\fR or \fBkdm(1)\fR may simply provide a \(lqFluxbox\(rq session for you without having to alter any settings\&.
+\fBfluxbox(1)\fR comes with a program called \fBstartfluxbox(1)\fR usually located wherever you installed fluxbox\&. This script provides you with many options and variables that can be set when starting fluxbox\&. To actually call fluxbox and begin using it, you should place \(lqexec startfluxbox\(rq in your \fB~/\&.xinitrc\fR as the last executed command\&. This is assuming that the location of \fBfluxbox(1)\fR and \fBstartfluxbox(1)\fR are in your shell\(cqs $PATH\&. Also note that you may need to create the \fB~/\&.xinitrc\fR file or your setup may use \fB\e~/\&.xsession\fR instead, depending on your X setup\&. Some X login managers like \fBgdm(1)\fR or \fBkdm(1)\fR may simply provide a \(lqFluxbox\(rq session for you without having to alter any settings\&.
 .sp
-By using fluxbox \-i you\'ll see the defaults used by \fBfluxbox(1)\fR\&. These are what fluxbox looks for upon startup\&. In the list of \(lqDefaults:\(rq you\'ll see a menu file location, this is where you can provide a system\-wide menu file for your users\&.
+By using fluxbox \-i you\(cqll see the defaults used by \fBfluxbox(1)\fR\&. These are what fluxbox looks for upon startup\&. In the list of \(lqDefaults:\(rq you\(cqll see a menu file location, this is where you can provide a system\-wide menu file for your users\&.
 .sp
-On exit or restart, fluxbox will save user defaults in the file \fB~/\&.fluxbox/init\fR\&. Resources in this file can also be edited by hand, see the \fBRESOURCES\fR section for more details\&. \fBfluxbox(1)\fR also has many tools to edit these; look through the main menu once fluxbox has started to find different ways of managing your session\&.
+On exit or restart, fluxbox will save user defaults in the file \fB\e~/\&.fluxbox/init\fR\&. Resources in this file can also be edited by hand, see the \fBRESOURCES\fR section for more details\&. \fBfluxbox(1)\fR also has many tools to edit these; look through the main menu once fluxbox has started to find different ways of managing your session\&.
 .SH "USING FLUXBOX"
 .sp
 When using fluxbox for the first time, users who are more accustomed to full desktop environments such as KDE or Gnome may be a little surprised by the minimal screen content\&. fluxbox is designed to be fast and powerful, so it may take a bit of getting used to \(em however, the rewards are worthwhile\&.
 .sp
-In this section, we\'ll give a quick summary of the common things\&. However, we recommend that you consult the referenced sections of this manual to further develop your understanding of what you can do with fluxbox\&.
+In this section, we\(cqll give a quick summary of the common things\&. However, we recommend that you consult the referenced sections of this manual to further develop your understanding of what you can do with fluxbox\&.
 .SS "Root Window (Main)"
 .sp
-Looking at the fluxbox desktop immediately after startup you\'ll generally see only one thing: the toolbar\&. If you right\-click (mouse button 3) somewhere on the desktop, you can access the Root Menu\&. A middle\-click (mouse button 2) on the desktop shows you the Workspace Menu\&.
+Looking at the fluxbox desktop immediately after startup you\(cqll generally see only one thing: the toolbar\&. If you right\-click (mouse button 3) somewhere on the desktop, you can access the Root Menu\&. A middle\-click (mouse button 2) on the desktop shows you the Workspace Menu\&.
 .SS "Root Menu and Workspace Menu"
 .sp
 From the RootMenu you can launch applications and configure fluxbox\&. The WorkspaceMenu shows all windows and on which workspaces they are\&. See section \fBMENUS\fR on how to customize these menus\&.
@@ -337,7 +189,7 @@ The toolbar contains any combination of the following tools, by default in this 
 The contents and behavior of the toolbar can be configured, see the \fBTOOLBAR\fR section for details\&.
 .SS "Slit"
 .sp
-Initially you won\'t be able to see the slit\&. It is there, but it isn\'t being used yet, which confuses some people initially\&. Think of it as a dock where you can place smaller programs\&. If you\'ve looked at any screenshots on the official fluxbox web site, you will have noticed some small programs on the edge of some of the screens\&. These were more than likely docked programs in the slit\&. To learn more about the slit, we have an entire \fBSLIT\fR section below that goes into detail about the options you have\&.
+Initially you won\(cqt be able to see the slit\&. It is there, but it isn\(cqt being used yet, which confuses some people initially\&. Think of it as a dock where you can place smaller programs\&. If you\(cqve looked at any screenshots on the official fluxbox web site, you will have noticed some small programs on the edge of some of the screens\&. These were more than likely docked programs in the slit\&. To learn more about the slit, we have an entire \fBSLIT\fR section below that goes into detail about the options you have\&.
 .SS "Layers"
 .sp
 fluxbox manages the following layers (from highest to lowest):
@@ -408,18 +260,18 @@ Bottom
 Desktop
 .RE
 .sp
-Windows on a higher layer will always appear above those on a lower one\&. These layers can be used on application windows, the slit or the toolbar\&. You can assign applications to a certain layer by specifying it in the `apps\' file or through the WindowMenu\&. We discuss the `apps\' file in \fBfluxbox\-apps(5)\fR\&. We discuss the WindowMenu in the \fBMENUS\fR section\&. We discuss layers in more detail in the \fBLAYERS\fR section\&.
+Windows on a higher layer will always appear above those on a lower one\&. These layers can be used on application windows, the slit or the toolbar\&. You can assign applications to a certain layer by specifying it in the \(oqapps\(cq file or through the WindowMenu\&. We discuss the \(oqapps\(cq file in \fBfluxbox\-apps(5)\fR\&. We discuss the WindowMenu in the \fBMENUS\fR section\&. We discuss layers in more detail in the \fBLAYERS\fR section\&.
 .SS "Focus Model"
 .sp
-The window that has the focus is the one that receives key and mouse events\&. The focus model is selectable via the Configuration menu located in the root menu\&. We\'ll discuss the different types of focus below in the \fBFOCUS MODEL\fR section\&.
+The window that has the focus is the one that receives key and mouse events\&. The focus model is selectable via the Configuration menu located in the root menu\&. We\(cqll discuss the different types of focus below in the \fBFOCUS MODEL\fR section\&.
 .SS "Windows"
 .sp
-A left\-click (mouse button 1) on any part of the window\'s border will raise it\&. Dragging then moves the window to another part of the desktop\&. A right click and drag on the border resizes the window\&. Dragging the resize grips at the left and right bottom corners also will resize the window\&. Middle clicking on a border or titlebar will immediately lower the window\&. Right clicking on the titlebar opens the Window menu\&. The commands unique to this menu are discussed in detail in the \fBWindow Menu\fR section\&.
+A left\-click (mouse button 1) on any part of the window\(cqs border will raise it\&. Dragging then moves the window to another part of the desktop\&. A right click and drag on the border resizes the window\&. Dragging the resize grips at the left and right bottom corners also will resize the window\&. Middle clicking on a border or titlebar will immediately lower the window\&. Right clicking on the titlebar opens the Window menu\&. The commands unique to this menu are discussed in detail in the \fBWindow Menu\fR section\&.
 .SS "Tabs"
 .sp
-fluxbox allows windows to be `grouped\' by middle clicking and holding on a window\'s tab and dragging it onto another window\&. This `tabbing\' allows you to put multiple applications in one location on the desktop and do several operations (for example, moving or resizing) to all windows in the group\&. By default, tabs are located just above the window, but they may be embedded in the titlebar or moved to other locations on the outside of the window\&. Configuration is discussed in TAB OPTIONS section\&.
+fluxbox allows windows to be \(oqgrouped\(cq by middle clicking and holding on a window\(cqs tab and dragging it onto another window\&. This \(oqtabbing\(cq allows you to put multiple applications in one location on the desktop and do several operations (for example, moving or resizing) to all windows in the group\&. By default, tabs are located just above the window, but they may be embedded in the titlebar or moved to other locations on the outside of the window\&. Configuration is discussed in TAB OPTIONS section\&.
 .sp
-You can also set up automatic grouping using the `apps\' file\&. See \fBGROUP SECTIONS\fR in \fBfluxbox\-apps(5)\fR for details\&.
+You can also set up automatic grouping using the \(oqapps\(cq file\&. See \fBGROUP SECTIONS\fR in \fBfluxbox\-apps(5)\fR for details\&.
 .SS "Key Bindings"
 .sp
 There are a number of key bindings set up by default, which can be configured and extended to just about anything you can imagine with the keyboard\&. See \fBfluxbox\-keys(5)\fR for details on how to do this\&.
@@ -521,7 +373,7 @@ anywhere on a window resizes the window\&.
 anywhere on a window lowers the current window\&.
 .RE
 .sp
-Mouse gestures on a window\'s titlebar:
+Mouse gestures on a window\(cqs titlebar:
 .sp
 .RS 4
 .ie n \{\
@@ -533,7 +385,7 @@ Mouse gestures on a window\'s titlebar:
 .\}
 
 \fBCTRL+Drag Left\-click\fR
-on a window\'s titlebar lets you drag to attach the window to another\'s tab group
+on a window\(cqs titlebar lets you drag to attach the window to another\(cqs tab group
 .RE
 .sp
 .RS 4
@@ -546,7 +398,7 @@ on a window\'s titlebar lets you drag to attach the window to another\'s tab gro
 .\}
 
 \fBDouble Left\-click\fR
-on a window\'s titlebar shades the window
+on a window\(cqs titlebar shades the window
 .RE
 .sp
 .RS 4
@@ -559,7 +411,7 @@ on a window\'s titlebar shades the window
 .\}
 
 \fBMiddle\-click\fR
-on a window\'s titlebar lowers the window
+on a window\(cqs titlebar lowers the window
 .RE
 .sp
 .RS 4
@@ -572,7 +424,7 @@ on a window\'s titlebar lowers the window
 .\}
 
 \fBRight\-click\fR
-on a window\'s titlebar pops up the
+on a window\(cqs titlebar pops up the
 \fBWindow Menu\fR
 .RE
 .sp
@@ -838,7 +690,7 @@ fluxbox provides a popup menu facility that is used by a few different types of 
 .sp
 When a menu is open, you can click on items with the mouse to activate them\&. Some special menu items react slightly differently depending on the mouse button you use, but normally you will want to use a left\-click (button 1)\&.
 .sp
-You can also use the the keyboard arrow key to navigate, or even type the first few letters of the item\'s label to select it, and \(lqenter\(rq to activate the item\&.
+You can also use the the keyboard arrow key to navigate, or even type the first few letters of the item\(cqs label to select it, and \(lqenter\(rq to activate the item\&.
 .sp
 Normally activating a menu item should close the menu\&. You can also right\-click the title are of a menu or press \(lqesc\(rq to close it without activating an item\&.
 .SS "Root Menu"
@@ -861,70 +713,70 @@ section below for more details\&.
 This is where the standard styles are listed\&. You can select one of these by clicking on it, and it will be applied immediately\&. System styles are located in
 \fB@pkgdatadir@/styles/\fR
 upon a default install\&. Remember that you can confirm this with fluxbox \-i\&.
-.RE
 .PP
-\fBUser Styles\fR:
+\fBUser Styles\fR
 .RS 4
 This is where your custom styles are listed\&. It will list any styles from
-\fB~/\&.fluxbox/styles/\fR, which may be styles you grab from the Internet, or your own custom styles, provided you follow the standards described in
+\fB\e~/\&.fluxbox/styles/\fR, which may be styles you grab from the Internet, or your own custom styles, provided you follow the standards described in
 \fBfluxbox\-style(5)\fR\&.
 .RE
 .PP
-\fBWorkspace List\fR:
+\fBWorkspace List\fR
 .RS 4
 This is the same as the
 \fBWorkspace Menu\fR
 detailed below\&.
 .RE
 .PP
-\fBTools\fR:
+\fBTools\fR
 .RS 4
 Listed here are different tools that you can use\&. You can rename your workspace, run programs from a command line or regenerate your menu\&.
 .RE
 .PP
-\fBWindow Managers\fR:
+\fBWindow Managers\fR
 .RS 4
 Allows you to switch your window manager\&. (Only listed if you have other window managers/desktop environments installed\&.)
 .RE
 .PP
-\fBLock Screen\fR:
+\fBLock Screen\fR
 .RS 4
 Locks the screen, if a suitable locking program has been detected\&.
 .RE
 .PP
-\fBFluxbox Command\fR:
+\fBFluxbox Command\fR
 .RS 4
 A little Commandline will popup where you can enter a fluxbox command\&. These commands are the same as those detailed in
 \fBfluxbox\-keys(5)\fR\&.
 .RE
 .PP
-\fBReload config\fR:
+\fBReload config\fR
 .RS 4
-Use this to reload the fluxbox configuration files\&. You must do this after editing the `keys\' file, `init\' file, or the current style\&.
+Use this to reload the fluxbox configuration files\&. You must do this after editing the \(oqkeys\(cq file, \(oqinit\(cq file, or the current style\&.
 .RE
 .PP
-\fBRestart\fR:
+\fBRestart\fR
 .RS 4
 Restart the whole darn thing\&. This starts a completely new fluxbox process, rereads files and redraws all graphical elements\&. Running applications will remain open, however, and restored to the same workspaces they were previously in once fluxbox returns\&.
 .RE
 .PP
-\fBExit\fR:
+\fBExit\fR
 .RS 4
 Exits fluxbox, which in turn either shuts down the X Window server or returns you to the graphical login screen\&.
 .RE
+.RE
 .SS "Configuration Menu"
 .sp
-This menu offers the opportunity to set up fluxbox\&. It contains many options which can be altered manually in the `init\' file, but this is an easier and faster way to change the most common settings\&.
+This menu offers the opportunity to set up fluxbox\&. It contains many options which can be altered manually in the \(oqinit\(cq file, but this is an easier and faster way to change the most common settings\&.
 .sp
 All changes take effect immediately\&.
 .PP
-\fBFocus Model\fR:
+\fBFocus Model\fR
 .RS 4
 Lets you configure the window focus model\&. For details, see
 \fBFOCUS MODEL\fR, below\&.
 .RE
 .PP
-\fBMaximize Options\fR:
+\fBMaximize Options\fR
 .RS 4
 Lets you configure what happens when you maximize a window\&. The four options are:
 .PP
@@ -944,43 +796,43 @@ Normally, maximized windows can still be moved and resized\&. Enabling these opt
 .RE
 .RE
 .PP
-\fBTab Options\fR:
+\fBTab Options\fR
 .RS 4
 Lets you configure the properties of tabs\&. Detailed in
 \fBTAB OPTIONS\fR, below\&.
 .RE
 .PP
-\fBSlit\fR:
+\fBSlit\fR
 .RS 4
-This menu can also be found by right\-clicking the slit (if visible)\&. Find more information about this menu\'s options in the
+This menu can also be found by right\-clicking the slit (if visible)\&. Find more information about this menu\(cqs options in the
 \fBSlit Menu\fR
 section, below\&.
 .RE
 .PP
-\fBToolbar\fR:
+\fBToolbar\fR
 .RS 4
-This menu can also be found by right\-clicking any non\-icon part of the toolbar\&. Find more information about this menu\'s options in the
+This menu can also be found by right\-clicking any non\-icon part of the toolbar\&. Find more information about this menu\(cqs options in the
 \fBToolbar Menu\fR
 section, below\&.
 .RE
 .PP
-\fBTransparency\fR:
+\fBTransparency\fR
 .RS 4
 This sets the default transparency for a focused windows, unfocused window and the menu\&. Use the left mouse button to decrease and the right mouse button to increase the value\&. 0 is invisible, 255 is not transparent at all\&.
 .sp
-The transparency of individual application windows can be overridden in the `apps\' file (\fBfluxbox\-apps(5)\fR)\&.
+The transparency of individual application windows can be overridden in the \(oqapps\(cq file (\fBfluxbox\-apps(5)\fR)\&.
 .sp
 The
 \fBForce Pseudo Transparency\fR
 option will force fluxbox to ignore the xcomposite extension and use pseudo\-transparency instead of true transparency\&. Note: When pseudo\-transparency is on, the transparency values here only affect titlebars, not window contents\&.
 .RE
 .PP
-\fBOpaque Window Moving\fR:
+\fBOpaque Window Moving\fR
 .RS 4
 If enabled, you will see the window content while dragging it\&. Otherwise only an outline of the window will be shown\&.
 .RE
 .PP
-\fBWorkspace Warping\fR:
+\fBWorkspace Warping\fR
 .RS 4
 If enabled, you can drag windows from one workspace to another\&. The previous workspace is to the left, the next workspace is to the right\&.
 .RE
@@ -992,22 +844,22 @@ To customize this menu, see the \fBWINDOW MENU\fR section of \fBfluxbox\-menu(5)
 .sp
 By default, this menu contains:
 .PP
-\fBShade\fR:
+\fBShade\fR
 .RS 4
 Shade the window (display the titlebar only)\&.
 .RE
 .PP
-\fBStick\fR:
+\fBStick\fR
 .RS 4
-(Un)Stick window\&. A `stuck\' window will always be displayed on all workspaces\&.
+(Un)Stick window\&. A \(oqstuck\(cq window will always be displayed on all workspaces\&.
 .RE
 .PP
-\fBSend To\&...\fR:
+\fBSend To\&...\fR
 .RS 4
 Send window to another workspace\&. When you select the workspace with a middle click, fluxbox will send you along with the application to the selected workspace\&.
 .RE
 .PP
-\fBMaximize\fR:
+\fBMaximize\fR
 .RS 4
 (Un)Maximize window\&. Depending on your toolbar and slit configuration, maximize may cover them\&. You can use the different mouse buttons for different aspects of maximize function\&.
 .sp
@@ -1045,37 +897,37 @@ Button 3 (Un)Maximize window horizontally\&.
 .RE
 .RE
 .PP
-\fBIconify\fR:
+\fBIconify\fR
 .RS 4
-Iconify (or minimize) a window\&. The `icon\' can be found in the Icons submenu of the workspace menu as well as in the toolbar (if a Toolbar mode showing Icons is selected)\&.
+Iconify (or minimize) a window\&. The \(oqicon\(cq can be found in the Icons submenu of the workspace menu as well as in the toolbar (if a Toolbar mode showing Icons is selected)\&.
 .RE
 .PP
-\fBRaise\fR:
+\fBRaise\fR
 .RS 4
 Raise the window above all others in the same layer\&.
 .RE
 .PP
-\fBLower\fR:
+\fBLower\fR
 .RS 4
 Lower the window below all others in the same layer\&.
 .RE
 .PP
-\fBLayer\&...\fR:
+\fBLayer\&...\fR
 .RS 4
 Change the layer of this window\&. See
 \fBLAYERS\fR
 for more details\&.
 .RE
 .PP
-\fBTransparency\fR:
+\fBTransparency\fR
 .RS 4
-Change this window\'s transparency, overriding the defaults from the
+Change this window\(cqs transparency, overriding the defaults from the
 \fBConfiguration Menu\fR\&.
 .RE
 .PP
-\fBRemember\&...\fR:
+\fBRemember\&...\fR
 .RS 4
-Specify which window settings should be stored in the `apps\' file and resumed the next time this window is opened\&.
+Specify which window settings should be stored in the \(oqapps\(cq file and resumed the next time this window is opened\&.
 .sp
 Specifically the setting you may store are:
 .PP
@@ -1150,48 +1002,48 @@ Record the current layer\&.
 .PP
 \fBSave on close\fR:
 .RS 4
-If selected, any of the above items which are also selected will be updated with the window\'s current values as it is closed\&.
+If selected, any of the above items which are also selected will be updated with the window\(cqs current values as it is closed\&.
 .RE
 .sp
 These are is covered in more detail in
 \fBfluxbox\-apps(5)\fR\&.
 .RE
 .PP
-\fBClose\fR:
+\fBClose\fR
 .RS 4
 Close the application softly\&.
 .RE
 .PP
-\fBKill\fR:
+\fBKill\fR
 .RS 4
-Kill the window\'s parent process, like
+Kill the window\(cqs parent process, like
 \fBxkill(1)\fR\&.
 .RE
 .SS "Workspace Menu"
 .sp
 The workspace menu can be found, by default, by middle\-clicking on the background\&. This menu contains entries to explore the currently defined workspaces, windows, and add/remove/rename workspaces\&.
 .PP
-\fBIcons\fR:
+\fBIcons\fR
 .RS 4
 This menu shows any iconified (or, minimized) windows\&. Clicking on a window in this menu will raise it on the current workspace\&.
 .RE
 .PP
-\fIWorkspaces\fR:
+\fIWorkspaces\fR
 .RS 4
 The next section provides one submenu per workspace\&. Middle\-clicking on a workspace name will take you to that workspace\&. The submenu contains a list of all open windows on that workspace\&. Clicking on a window name will take you to that window and raise it, changing the active workspace if necessary\&.
 .RE
 .PP
-\fBNew Workspace\fR:
+\fBNew Workspace\fR
 .RS 4
 This entry adds a new workspace to the end of the list of current workspaces\&.
 .RE
 .PP
-\fBEdit current workspace name\fR:
+\fBEdit current workspace name\fR
 .RS 4
 Pops up a dialog to enter a new name for the current workspace\&.
 .RE
 .PP
-\fBRemove Last\fR:
+\fBRemove Last\fR
 .RS 4
 Remove the last workspace in the list\&. Any windows curretly open there will be sent to the next\-to\-last workspace\&.
 .RE
@@ -1199,46 +1051,46 @@ Remove the last workspace in the list\&. Any windows curretly open there will be
 .sp
 The toolbar is a small area to display information like a clock, workspace name, a system tray or a taskbar (iconbar) that can contain the running programs\&. The color, look, font etc\&. is defined in the \fBSTYLE\fR\&.
 .sp
-The tools in the toolbar can be enabled/disabled in the `init\' file with the \fBsession\&.screen0\&.toolbar\&.tools\fR resource\&. See the \fBRESOURCES\fR section for details on how to alter this value\&.
+The tools in the toolbar can be enabled/disabled in the \(oqinit\(cq file with the \fBsession\&.screen0\&.toolbar\&.tools\fR resource\&. See the \fBRESOURCES\fR section for details on how to alter this value\&.
 .sp
 The possible tools are:
 .PP
-\fBClock\fR:
+\fBClock\fR
 .RS 4
 This will show an area to display a clock and the date according to the format specification listed in "man strtftime"
 .RE
 .PP
-\fBIconbar\fR:
+\fBIconbar\fR
 .RS 4
 This is the area that contains all windows (all running applications, all minimized windows or maybe no window, all depending on the Toolbar Settings)\&.
 .RE
 .PP
-\fBSystemtray\fR:
+\fBSystemtray\fR
 .RS 4
 The Systemtray can hold applications that are made to use it\&.
 .RE
 .PP
-\fBWorkspaceName\fR:
+\fBWorkspaceName\fR
 .RS 4
 This displays the name of the current workspace\&.
 .RE
 .PP
-\fBPrevWorkspace\fR:
+\fBPrevWorkspace\fR
 .RS 4
 This displays an arrow that allows to switch to the workspace left of the current one\&.
 .RE
 .PP
-\fBNextWorkspace\fR:
+\fBNextWorkspace\fR
 .RS 4
 This displays an arrow that allows to switch to the workspace right of the current one\&.
 .RE
 .PP
-\fBPrevWindow\fR:
+\fBPrevWindow\fR
 .RS 4
 This displays an arrow that switches focus to the previous visible window on the current workspace\&.
 .RE
 .PP
-\fBNextWindow\fR:
+\fBNextWindow\fR
 .RS 4
 This displays an arrow that switches focus to the next visible window on the current workspace\&.
 .RE
@@ -1246,51 +1098,51 @@ This displays an arrow that switches focus to the next visible window on the cur
 Other aspects of the toolbar can be configured in two ways: through the toolbar menu, which is accessable in the Configuration part of the RootMenu or with a right click on the edge the toolbar, or by editing the init file (see the \fBRESOURCES\fR section for more information about that)\&.
 .SS "Toolbar Menu"
 .sp
-This menu can be opened by right\-clicking on the toolbar (though not on a window\'s name in the iconbar), or from the \fBConfiguration Menu\fR\&.
+This menu can be opened by right\-clicking on the toolbar (though not on a window\(cqs name in the iconbar), or from the \fBConfiguration Menu\fR\&.
 .sp
 All changes take effect immediately\&. Here are the settings:
 .PP
-\fBVisible\fR:
+\fBVisible\fR
 .RS 4
 Sets the toolbar either to visible or invisible\&.
 .RE
 .PP
-\fBAuto hide\fR:
+\fBAuto hide\fR
 .RS 4
 If this is enabled the toolbar will disappear after a defined time when the mouse pointer leaves the toolbar\&. It will slide in when the cursor hits the remaining edge of the toolbar\&. See the
 \fBsession\&.autoRaiseDelay\fR
 resource for the delay time\&.
 .RE
 .PP
-\fBToolbar width percentage\fR:
+\fBToolbar width percentage\fR
 .RS 4
 Sets the width of the toolbar in a percentage of your total screen size\&. Use the left mouse button to decrease and the right mouse\-button to increase the value\&. The value can be from 1\-100\&.
 .RE
 .PP
-\fBMaximize Over\fR:
+\fBMaximize Over\fR
 .RS 4
 Enabling this option will allow windows to maximize over the toolbar\&. With this switched on they will only expand to the edge of the bar\&. This option may be overridden by the \(lqFull Maximization\(rq from the
 \fBConfiguration Menu\fR\&. If that option is enabled, this option will have no effect\&.\&.
 .RE
 .PP
-\fBLayer\&...\fR:
+\fBLayer\&...\fR
 .RS 4
 This sets the layer on which the toolbar is set\&. With this you can set the toolbar to "Always on top"\&.
 .RE
 .PP
-\fBPlacement\fR:
+\fBPlacement\fR
 .RS 4
 Sets the toolbar to any edge of the screen, either centered or aligned with a corner\&.
 .RE
 .PP
-\fBAlpha\fR:
+\fBAlpha\fR
 .RS 4
 This sets the alpha value for the toolbar\&. Use the left mouse button to decrease and the right mouse button to increase the value\&. 0 is invisible, 255 is not transparent at all\&.
 .RE
 .PP
-\fBIconbar Mode\fR:
+\fBIconbar Mode\fR
 .RS 4
-Specifies various modes of the iconbar\'s operation\&.
+Specifies various modes of the iconbar\(cqs operation\&.
 .sp
 The first section outlines what types of windows will be shown in the iconbar:
 .PP
@@ -1335,7 +1187,7 @@ resource:
 .PP
 \fBLeft\fR:
 .RS 4
-All icons will be left\-aligned with the width set in the `init\' file
+All icons will be left\-aligned with the width set in the \(oqinit\(cq file
 .RE
 .PP
 \fBRelative\fR:
@@ -1345,23 +1197,23 @@ All icons will be sized evenly to fill the iconbar completely
 .PP
 \fBRight\fR:
 .RS 4
-All icons will be right\-aligned with the width set in the `init\' file
+All icons will be right\-aligned with the width set in the \(oqinit\(cq file
 .RE
 .sp
 The last option in this submenu is:
 .PP
 \fBShow Pictures\fR:
 .RS 4
-If enabled the iconbar will show the application\'s icon (if provided by the application)
+If enabled the iconbar will show the application\(cqs icon (if provided by the application)
 .RE
 .RE
 .PP
-\fBClock\fR:
+\fBClock\fR
 .RS 4
 Lets you switch between the 00:00am \- 11:59pm and 00:00 \- 23:59 notation
 .RE
 .PP
-\fBEdit Clock Format\fR:
+\fBEdit Clock Format\fR
 .RS 4
 clicking this entry will pop up a dialog window in which the clock format can be set according to
 \fIman strftime\fR
@@ -1376,32 +1228,31 @@ There are two main aspects of the focus model: how windows gain focus and how ta
 .sp
 Thus, there are four main options when choosing a focus model\&. You should choose one of the first two and one of the last two\&. They are:
 .PP
-\fBClick To Focus\fR:
+\fBClick To Focus\fR
 .RS 4
 Click to focus windows\&.
 .RE
 .PP
-\fBMouse Focus\fR:
+\fBMouse Focus\fR
 .RS 4
 Window focus follows mouse\&.
 .RE
 .PP
-\fBClickTabFocus\fR:
+\fBClickTabFocus\fR
 .RS 4
 Click to focus tabs\&.
 .RE
 .PP
-\fBMouseTabFocus\fR:
+\fBMouseTabFocus\fR
 .RS 4
 Tab focus follows mouse\&.
 .RE
 .sp
 There are three more settings in the \(lqFocus Model\(rq menu:
 .PP
-\fBFocus New Windows\fR:
+\fBFocus New Windows\fR
 .RS 4
 If enabled, a new window will grab X focus as soon as it is opened\&.
-.RE
 .PP
 \fBAuto Raise\fR
 .RS 4
@@ -1413,28 +1264,29 @@ If enabled, focusing on a new window will automatically raise that window above 
 .RS 4
 If enabled, clicking anywhere on a window will raise it above all others within its layer\&.
 .RE
+.RE
 .SH "TAB OPTIONS"
 .sp
 This section of fluxbox configuration menu lets you configure many features of tabs\&. Inside of it there are three main options:
 .PP
-\fBPlacement\fR:
+\fBPlacement\fR
 .RS 4
 You can choose where the external tabs will be positioned relative to the window\&. For these options to work,
 \fITabs in Titlebar\fR
 must be off\&.
 .RE
 .PP
-\fBTabs in Titlebar\fR:
+\fBTabs in Titlebar\fR
 .RS 4
 When this option is on, tabs are fixed in window titlebar and the width varies according to the amount of windows grouped\&.
 .RE
 .PP
-\fBMaximize Over\fR:
+\fBMaximize Over\fR
 .RS 4
 When this option is on, maximizing a window will disregard the size and location of external tabs, which means they may be pushed out of the screen entirely\&.
 .RE
 .PP
-\fBExternal Tab Width\fR:
+\fBExternal Tab Width\fR
 .RS 4
 This specifies in pixels the width of external tabs\&.
 .RE
@@ -1445,30 +1297,24 @@ fluxbox enables you to use specialized files that contain \fBX(1)\fR resources t
 The default installation of fluxbox provides some of these style files\&. See \fBfluxbox\-style(5)\fR to accommodate the growing number of style components\&.
 .SS "Style Overlay"
 .sp
-In addition to the style file, the overlay file, whose location is specified by \fBsession\&.screen0\&.styleOverlay\fR (default: \fB~/\&.fluxbox/overlay\fR) can be used to set style resources that override all styles\&. For more information about which parts of fluxbox can be controlled by the overlay file, see \fBfluxbox\-style(5)\fR\&.
+In addition to the style file, the overlay file, whose location is specified by \fBsession\&.screen0\&.styleOverlay\fR (default: \fB\e~/\&.fluxbox/overlay\fR) can be used to set style resources that override all styles\&. For more information about which parts of fluxbox can be controlled by the overlay file, see \fBfluxbox\-style(5)\fR\&.
 .SH "THE SLIT"
 .sp
 The slit is a special fluxbox window frame that can contain dockable applications, such as \(lqbbtools\(rq or \(lqwindow maker dockapps\(rq\&.
 .sp
 When applications are run in the slit they have no window borders of their own; instead they are framed in the slit, and they are always visible in the current workspace\&.
 .sp
-Most dockable applications use the \-w option to run in the slit\&. For example, you could put in your \fB~/\&.fluxbox/startup\fR:
+Most dockable applications use the \-w option to run in the slit\&. For example, you could put in your \fB\e~/\&.fluxbox/startup\fR:
 .sp
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 bbmail \-w &
 bbpager \-w &
 wmdrawer &
 exec fluxbox
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -1480,48 +1326,48 @@ This menu can be opened by right\-clicking on the slit (though not on an applica
 .sp
 All changes take effect immediately\&. Here are the settings:
 .PP
-\fBPlacement\fR:
+\fBPlacement\fR
 .RS 4
 This lets you set the position of the slit\&.
 .RE
 .PP
-\fBLayer\fR:
+\fBLayer\fR
 .RS 4
 See
 \fBLAYERS\fR
 for details on the layer order\&.
 .RE
 .PP
-\fBAuto hide\fR:
+\fBAuto hide\fR
 .RS 4
 If this is enabled the slit will disappear after a defined time when the mouse pointer leaves the slit\&. It will slide in when the cursor hits the remaining edge of the slit\&. See the
 \fBsession\&.autoRaiseDelay\fR
 resource for the delay time\&.
 .RE
 .PP
-\fBMaximize Over\fR:
+\fBMaximize Over\fR
 .RS 4
 Enabling this option will allow windows to maximizing over the slit\&. With this switched off they will only expand to the edge of the slit\&. This option may be overridden by the \(lqFull Maximization\(rq from the
 \fBConfiguration Menu\fR\&. If that option is enabled, this option will have no effect\&.\&.
 .RE
 .PP
-\fBAlpha\fR:
+\fBAlpha\fR
 .RS 4
 This sets the alpha value for the slit\&. Use the left mouse button to decrease and the right mouse button to increase the value\&. 0 is invisible, 255 is not transparent at all\&.
 .RE
 .PP
-\fBClients\fR:
+\fBClients\fR
 .RS 4
 This submenu lets you reorder the the applications running in the slit\&. You are able to hide apps from the slit by unselecting them in the list showing\&. This will not kill the app\&. You can make them re\-appear by selecting them in the list\&. The "Save SlitList" option saves the new order to you slitlist located in
-\fB~/\&.fluxbox/slitlist\fR\&. See the next section for details\&.
+\fB\e~/\&.fluxbox/slitlist\fR\&. See the next section for details\&.
 .RE
 .SS "Slitlist File"
 .sp
-fluxbox\'s slitlist file is available for those that use dockapps in the slit\&. This file helps fluxbox keep track of the \fBorder\fR of the dockapps when in the slit\&. The file is generally located at \fB~/\&.fluxbox/slitlist\fR\&.
+fluxbox\(cqs slitlist file is available for those that use dockapps in the slit\&. This file helps fluxbox keep track of the \fBorder\fR of the dockapps when in the slit\&. The file is generally located at \fB\e~/\&.fluxbox/slitlist\fR\&.
 .sp
 A simple procedure for getting the slit sequences the way you like it is: 1\&. Run fluxbox with no pre\-loaded dockapps 2\&. Run dockapps individually in the order you want them 3\&. Add dockapps to your \fBstartfluxbox(1)\fR script
 .sp
-This sequence will be saved by default to \fB~/\&.fluxbox/slitlist\fR and will be remembered for future instances of fluxbox\&.
+This sequence will be saved by default to \fB\e~/\&.fluxbox/slitlist\fR and will be remembered for future instances of fluxbox\&.
 .sp
 Users are free to manually edit the slitlist file\&. It is a simple list of window names, as given by \fBxprop(1)\fR, one per dockapp\&. Similar to the init file it should not be edited while fluxbox is running\&. Otherwise changes may get overwritten\&.
 .sp
@@ -1530,7 +1376,7 @@ The user also has the option of choosing a different path for the slitlist file,
 .sp
 Layers affect the way that windows will overlap each other on the screen\&. Windows on a higher layer will always appear above those on a lower one, whether they are focused or not\&. By default, fluxbox uses 13 layers, starting from 1 (highest)\&. The total number of layers can be changed by using the \fBsession\&.numLayers\fR resource\&.
 .sp
-There are two ways to assign a window to a different layer\&. When the window is open, you may select the layer in the `Layer \&...\' submenu of the window menu\&. The menu gives six choices for the layer, which fluxbox manages by name\&. The names are (from highest to lowest layer):
+There are two ways to assign a window to a different layer\&. When the window is open, you may select the layer in the \(oqLayer \&...\(cq submenu of the window menu\&. The menu gives six choices for the layer, which fluxbox manages by name\&. The names are (from highest to lowest layer):
 .sp
 .RS 4
 .ie n \{\
@@ -1598,10 +1444,10 @@ There are two ways to assign a window to a different layer\&. When the window is
 12 \- Desktop
 .RE
 .sp
-The other way to set the layer for a window is through the `apps\' file\&. This method is described in \fBfluxbox\-apps(5)\fR\&.
+The other way to set the layer for a window is through the \(oqapps\(cq file\&. This method is described in \fBfluxbox\-apps(5)\fR\&.
 .SH "RESOURCES"
 .sp
-Usually the \fB~/\&.fluxbox/init\fR resource file is created and maintained by fluxbox itself\&. You can use the \fBConfigure Menu\fR, mentioned above, to set most of these options\&. However, we\'ll cover all of the resource options that are available to the user\&. If you edit this file while fluxbox is running, you must \(lqreconfigure\(rq to reload the resource options\&.
+Usually the \fB\e~/\&.fluxbox/init\fR resource file is created and maintained by fluxbox itself\&. You can use the \fBConfigure Menu\fR, mentioned above, to set most of these options\&. However, we\(cqll cover all of the resource options that are available to the user\&. If you edit this file while fluxbox is running, you must \(lqreconfigure\(rq to reload the resource options\&.
 .sp
 When running fluxbox in a multiple\-screen environment the screen0 key can also be screen1, screen2, to customize the behavior of fluxbox on each desktop accordingly\&. Here are the resources that are currently available:
 .PP
@@ -1721,6 +1567,9 @@ For those that use xinerama, users can set this value to the number of the head 
 .sp
 Default:
 \fB0\fR
+for slit,
+\fB1\fR
+for toolbar
 .RE
 .PP
 \fBsession\&.screen0\&.iconbar\&.mode\fR: \fIpattern\fR
@@ -1759,7 +1608,6 @@ This value should be changed in the Iconbar Mode menu\&.
 .PP
 Available options:
 .RS 4
-
 .sp
 .RS 4
 .ie n \{\
@@ -1847,7 +1695,7 @@ Default:
 .PP
 \fBsession\&.screen0\&.focusModel\fR: \fBClickToFocus|MouseFocus\fR
 .RS 4
-This controls how windows gain focus via the mouse\&. With `ClickToFocus\', the user must click on the window\&. With `MouseFocus\', windows gain focus whenever the mouse moves over them\&.
+This controls how windows gain focus via the mouse\&. With \(oqClickToFocus\(cq, the user must click on the window\&. With \(oqMouseFocus\(cq, windows gain focus whenever the mouse moves over them\&.
 .sp
 Default:
 \fBClickToFocus\fR
@@ -1897,7 +1745,7 @@ Default:
 .RS 4
 This specifies the default window decorations, according to the same options available to the
 \fB[Deco]\fR
-option in the `apps\' file, described in
+option in the \(oqapps\(cq file, described in
 \fBfluxbox\-apps(5)\fR\&.
 .sp
 Default:
@@ -1930,7 +1778,7 @@ Default:
 .PP
 \fBsession\&.screen0\&.edgeSnapThreshold\fR: \fIinteger\fR
 .RS 4
-When moving a window across your screen, fluxbox is able to have it `snap\' to the edges of the screen and other windows for easy placement\&. This variable tells fluxbox the distance (in pixels) at which the window will jump to the edge\&.
+When moving a window across your screen, fluxbox is able to have it \(oqsnap\(cq to the edges of the screen and other windows for easy placement\&. This variable tells fluxbox the distance (in pixels) at which the window will jump to the edge\&.
 .sp
 Default:
 \fB10\fR
@@ -1938,11 +1786,10 @@ Default:
 .PP
 \fBsession\&.screen0\&.windowPlacement\fR: \fIstrategy\fR
 .RS 4
-This resource specifies where to place new windows when not otherwise specified (by the program or the `apps\' file, for example)\&.
+This resource specifies where to place new windows when not otherwise specified (by the program or the \(oqapps\(cq file, for example)\&.
 .PP
 Available strategies:
 .RS 4
-
 .sp
 .RS 4
 .ie n \{\
@@ -2035,7 +1882,7 @@ Default:
 .PP
 \fBsession\&.cacheLife\fR: \fIminutes\fR
 .RS 4
-This tells fluxbox how long unused pixmaps may stay in the X server\'s memory\&.
+This tells fluxbox how long unused pixmaps may stay in the X server\(cqs memory\&.
 .sp
 Default:
 \fB5\fR
@@ -2067,7 +1914,7 @@ Default:
 .PP
 \fBsession\&.forcePseudoTransparency\fR: \fIboolean\fR
 .RS 4
-If you have Xorg\'s composite extension enabled, this setting will force the menu, windows, toolbar, and slit to use pseudo\-transparency instead of true transparency\&.
+If you have Xorg\(cqs composite extension enabled, this setting will force the menu, windows, toolbar, and slit to use pseudo\-transparency instead of true transparency\&.
 .sp
 Default:
 \fBFalse\fR
@@ -2091,7 +1938,7 @@ Default:
 .PP
 \fBsession\&.tabsAttachArea\fR: \fBWindow|Titlebar\fR
 .RS 4
-With this set to `Window\', windows may be grouped by dragging one tab with the middle mouse button and dropping it anywhere on another window\&. With `Titlebar\', the user must drop the tab on the target window\'s titlebar\&.
+With this set to \(oqWindow\(cq, windows may be grouped by dragging one tab with the middle mouse button and dropping it anywhere on another window\&. With \(oqTitlebar\(cq, the user must drop the tab on the target window\(cqs titlebar\&.
 .sp
 Default:
 \fBWindow\fR
@@ -2119,11 +1966,11 @@ Default right:
 \fBShade Minimize Maximize Close\fR
 .RE
 .sp
-All of the \fIlocation\fR resources following require a pathname to their specific files\&. This is where you can specify different files\&. Most of the defaults will be located in the user\'s \fB~/\&.fluxbox\fR directory\&.
+All of the \fIlocation\fR resources following require a pathname to their specific files\&. This is where you can specify different files\&. Most of the defaults will be located in the user\(cqs \fB\e~/\&.fluxbox\fR directory\&.
 .PP
 \fBsession\&.appsFile\fR: \fIlocation\fR
 .RS 4
-Location of persistent application settings, or the `apps\' file\&. See the
+Location of persistent application settings, or the \(oqapps\(cq file\&. See the
 \fBRemember\&...\fR
 item in the
 \fBWindow Menu\fR
@@ -2134,14 +1981,14 @@ for details\&.
 .PP
 \fBsession\&.groupFile\fR: \fIlocation\fR
 .RS 4
-Deprecated, auto\-grouping is now done in the `apps\' file, see
+Deprecated, auto\-grouping is now done in the \(oqapps\(cq file, see
 \fBfluxbox\-apps(5)\fR
 for details\&.
 .RE
 .PP
 \fBsession\&.keyFile\fR: \fIlocation\fR
 .RS 4
-Location of the keyboard mapping settings, or the `keys\' file\&. See
+Location of the keyboard mapping settings, or the \(oqkeys\(cq file\&. See
 \fBfluxbox\-keys(5)\fR
 for details\&.
 .RE
@@ -2172,15 +2019,15 @@ for details\&.
 Location of the style overlay file\&. See
 \fBfluxbox\-style(5)\fR
 for details\&.
-.RE
 .PP
-\fBsession\&.screen0\&.windowMenu\fR: \fIlocation\fR:
+\fBsession\&.screen0\&.windowMenu\fR: \fIlocation\fR
 .RS 4
 This optionally specifies the location of a user\-defined window menu\&. If left blank, it will use
-\fB~/\&.fluxbox/windowmenu\fR\&.
+\fB\e~/\&.fluxbox/windowmenu\fR\&.
 .sp
 Default:
 \fBblank\fR
+.RE
 .RE
 .SH "ENVIRONMENT"
 .PP
@@ -2196,11 +2043,11 @@ to find the \&.fluxbox/init file and to resolve style file and \-directory names
 When no other display was given on the command line, fluxbox will start on the display specified by this variable\&.
 .RE
 .sp
-fluxbox can also take advantage of other environment variables if they are set before fluxbox is started\&. For example, if $TERM is set, then it will be available whenever fluxbox uses the shell, such as the `keys\' file \fBExecCommand\fR or the root menu\'s \fB[exec]\fR tag\&. See \fBfluxbox\-keys(5)\fR and \fBfluxbox\-menu(5)\fR for details\&.
+fluxbox can also take advantage of other environment variables if they are set before fluxbox is started\&. For example, if $TERM is set, then it will be available whenever fluxbox uses the shell, such as the \(oqkeys\(cq file \fBExecCommand\fR or the root menu\(cqs \fB[exec]\fR tag\&. See \fBfluxbox\-keys(5)\fR and \fBfluxbox\-menu(5)\fR for details\&.
 .sp
-The `keys\' file also provides two commands that can alter the current environment of fluxbox: \fBSetEnv\fR and \fBExport\fR\&. Any changes made by these commands will also affect the environment as seen by fluxbox and all child processes started after that point\&. See \fBfluxbox\-keys(5)\fR for details\&.
+The \(oqkeys\(cq file also provides two commands that can alter the current environment of fluxbox: \fBSetEnv\fR and \fBExport\fR\&. Any changes made by these commands will also affect the environment as seen by fluxbox and all child processes started after that point\&. See \fBfluxbox\-keys(5)\fR for details\&.
 .sp
-For more information about environment variables in general, see your shell\'s manual\&.
+For more information about environment variables in general, see your shell\(cqs manual\&.
 .SH "SIGNALS"
 .sp
 fluxbox responds to the following signals:
