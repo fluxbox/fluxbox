@@ -101,36 +101,17 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         item = new SystemTray(parent, dynamic_cast<ButtonTheme &>(*m_systray_theme), screen());
     } else if (name == "clock") {
         item = new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
-    } else if (name == "nextworkspace" || 
-               name == "prevworkspace") {
-
-        FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(name));
-        if (*cmd == 0) // we need a command
-            return 0;
-
-		// TODO maybe direction of arrows should depend on toolbar layout ?
-        FbTk::FbDrawable::TriangleType arrow_type = FbTk::FbDrawable::LEFT;
-        if (name == "nextworkspace")
-            arrow_type = FbTk::FbDrawable::RIGHT;
-
-        ArrowButton *win = new ArrowButton(arrow_type, parent,
-                                           0, 0,
-                                           button_size, button_size);
-        win->setOnClick(cmd);
-        item = new ButtonTool(win, ToolbarItem::SQUARE, 
-                              dynamic_cast<ButtonTheme &>(*m_button_theme),
-                              screen().imageControl());
-
     } else {
-
         FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(name));
         if (*cmd == 0) // we need a command
             return 0;
 
-        FbTk::FbDrawable::TriangleType arrow_type = FbTk::FbDrawable::LEFT;
-        if (name == "nextwindow")
-            arrow_type = FbTk::FbDrawable::RIGHT;
-                    
+        // TODO maybe direction of arrows should depend on toolbar layout ?
+        FbTk::FbDrawable::TriangleType arrow_type = FbTk::FbDrawable::RIGHT;
+        const char *tmp = name.c_str();
+        if (FbTk::StringUtil::strcasestr(tmp, "prev"))
+            arrow_type = FbTk::FbDrawable::LEFT;
+
         ArrowButton *win = new ArrowButton(arrow_type, parent,
                                            0, 0,
                                            button_size, button_size);
@@ -138,7 +119,6 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         item = new ButtonTool(win, ToolbarItem::SQUARE, 
                               dynamic_cast<ButtonTheme &>(*m_button_theme),
                               screen().imageControl());
-
     }
 
     if (item)

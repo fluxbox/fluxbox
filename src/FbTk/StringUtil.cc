@@ -63,7 +63,7 @@ namespace StringUtil {
 /**
    Tries to find a string in another and
    ignoring the case of the characters
-   Returns 0 on success else pointer to str.
+   Returns 0 on failure else pointer to str.
 */
 const char *strcasestr(const char *str, const char *ptn) {
     const char *s2, *p2;
