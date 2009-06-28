@@ -1,161 +1,13 @@
+'\" t
 .\"     Title: fluxbox-keys
 .\"    Author: [see the "AUTHORS" section]
-.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 05/27/2009
+.\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
+.\"      Date: 06/28/2009
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxbox-keys.txt 1.1.2
+.\"    Source: fluxbox-keys.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "05/27/2009" "fluxbox\-keys\&.txt 1\&.1\&.2" "Fluxbox Manual"
-.\" -----------------------------------------------------------------
-.\" * (re)Define some macros
-.\" -----------------------------------------------------------------
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" toupper - uppercase a string (locale-aware)
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de toupper
-.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
-\\$*
-.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH-xref - format a cross-reference to an SH section
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de SH-xref
-.ie n \{\
-.\}
-.toupper \\$*
-.el \{\
-\\$*
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH - level-one heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SH
-.\" put an extra blank line of space above the head in non-TTY output
-.if t \{\
-.sp 1
-.\}
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[an-margin]u
-.ti 0
-.HTML-TAG ".NH \\n[an-level]"
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-\." make the size of the head bigger
-.ps +3
-.ft B
-.ne (2v + 1u)
-.ie n \{\
-.\" if n (TTY output), use uppercase
-.toupper \\$*
-.\}
-.el \{\
-.nr an-break-flag 0
-.\" if not n (not TTY), use normal case (not uppercase)
-\\$1
-.in \\n[an-margin]u
-.ti 0
-.\" if not n (not TTY), put a border/line under subheading
-.sp -.6
-\l'\n(.lu'
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SS - level-two heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SS
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[IN]u
-.ti \\n[SN]u
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.ps \\n[PS-SS]u
-\." make the size of the head bigger
-.ps +2
-.ft B
-.ne (2v + 1u)
-.if \\n[.$] \&\\$*
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BB/BE - put background/screen (filled box) around block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BB
-.if t \{\
-.sp -.5
-.br
-.in +2n
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EB
-.if t \{\
-.if "\\$2"adjust-for-leading-newline" \{\
-.sp -1
-.\}
-.br
-.di
-.in
-.ll
-.gcolor
-.nr BW \\n(.lu-\\n(.i
-.nr BH \\n(dn+.5v
-.ne \\n(BHu+.5v
-.ie "\\$2"adjust-for-leading-newline" \{\
-\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.el \{\
-\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.in 0
-.sp -.5v
-.nf
-.BX
-.in
-.sp .5v
-.fi
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BM/EM - put colored marker in margin next to block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BM
-.if t \{\
-.br
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EM
-.if t \{\
-.br
-.di
-.ll
-.gcolor
-.nr BH \\n(dn
-.ne \\n(BHu
-\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
-.in 0
-.nf
-.BX
-.in
-.fi
-.\}
-..
+.TH "FLUXBOX\-KEYS" "5" "06/28/2009" "fluxbox\-keys\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -166,9 +18,9 @@
 .\" -----------------------------------------------------------------
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
-.SH "Name"
+.SH "NAME"
 fluxbox-keys \- keyboard shortcuts configuration for fluxbox(1)
-.SH "Synopsis"
+.SH "SYNOPSIS"
 .sp
 ~/\&.fluxbox/keys
 .SH "SYNTAX"
@@ -182,7 +34,7 @@ All other characters shown are required verbatim\&. Whitespace is required where
 .sp
 The keys file defines the keyboard shortcuts for \fIfluxbox(1)\fR\&.
 .sp
-You can customize fluxbox\'s key handling through the ~/\&.fluxbox/keys file\&. The file consists of lines of the basic format:
+You can customize fluxbox\(cqs key handling through the ~/\&.fluxbox/keys file\&. The file consists of lines of the basic format:
 .sp
 \fB[\fR\fB\fImodifiers\fR\fR\fB] \fR\fB\fIkey\fR\fR\fB :\fR\fB\fIcommand\fR\fR\fB [\fR\fB\fIarguments\fR\fR\fB \fR\fB\fI\&...\fR\fR\fB]\fR
 .sp
@@ -195,13 +47,13 @@ Lines beginning with a \fI#\fR or \fI!\fR are considered comments and are unread
 You will need to \(lqreload\(rq fluxbox after editing the keys file so it picks up your change\&.
 .SH "MODIFIERS"
 .sp
-You can get a list of possible modifiers by calling `xmodmap \-pm\'\&. This also shows you to which keys the modifiers are mapped, but the following modifiers are most commonly used:
+You can get a list of possible modifiers by calling \(oqxmodmap \-pm\(cq\&. This also shows you to which keys the modifiers are mapped, but the following modifiers are most commonly used:
 .sp
 \fBShift Control Mod1 Mod4\fR
 .sp
 where \fBMod1\fR is the Alt key on the PC keyboard and \fBMod4\fR is usually a key branded with a familiar company logo\&.
 .PP
-There are also some special modifiers that refer to mouse button presses:
+There are also some special modifiers that refer to mouse button presses
 .RS 4
 .PP
 \fBOnDesktop\fR
@@ -221,7 +73,7 @@ The mouse cursor is over a window\&.
 .PP
 \fBOnTitlebar\fR
 .RS 4
-The mouse cursor is over a window\'s titlebar\&.
+The mouse cursor is over a window\(cqs titlebar\&.
 .RE
 .PP
 \fBDouble\fR
@@ -236,11 +88,11 @@ To combine two or more modifiers, just list them (space\-delimited) in any order
 .sp
 You may specify a key by its key name (for example, \fBa\fR or \fBspace\fR) or by its numeric keycode (for example, \fB38\fR or \fB0xf3\fR)\&.
 .sp
-If you don\'t know the name of a key, you can run \fBxev(1)\fR in a terminal, push the key, and see the name in the output\&. If you have some "special" keys that do not produce a key name in the output of \fBxev(1)\fR, you can just use the keycode (NOT the keysym!) in your keys file\&.
+If you don\(cqt know the name of a key, you can run \fBxev(1)\fR in a terminal, push the key, and see the name in the output\&. If you have some "special" keys that do not produce a key name in the output of \fBxev(1)\fR, you can just use the keycode (NOT the keysym!) in your keys file\&.
 .sp
 Commands can also be bound to mouse button presses, for which the proper "key" name is \fBMouse\fR\fIn\fR where \fIn\fR is the number of the mouse button\&. For example, \fBMouse1\fR is the primary button, and \fBMouse4\fR / \fBMouse5\fR are the scroll wheel events, in normal configurations\&. \fBxev(1)\fR can also be used to tell the button number\&.
 .PP
-There are some special "keys" that let you bind events to non\-keyboard events:
+There are some special "keys" that let you bind events to non\-keyboard events
 .RS 4
 .PP
 \fBChangeWorkspace\fR
@@ -254,7 +106,6 @@ below for one idea\&.
 .sp
 .\}
 .RS 4
-.BM yellow
 .it 1 an-trap
 .nr an-no-space-flag 1
 .nr an-break-flag 1
@@ -266,7 +117,6 @@ below for one idea\&.
 .sp
 Use caution with this event! For example, do NOT bind this to any action that changes your current workspace\&. If you break your fluxbox with this feature, you get to keep the pieces\&.
 .sp .5v
-.EM yellow
 .RE
 .SH "CHAINING"
 .sp
@@ -281,15 +131,9 @@ To abort a chained command part\-way through typing it, press the <ESC> key\&.
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 Control c Control x :Quit
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -304,17 +148,17 @@ Where \fIkeymode\fR is any alpha\-numeric string name\&.
 When this keymode is activated (see the \fBKeyMode\fR command below), all bindings prefaced by that keymode name become active (and all other keybindings will be deactivated) until the keymode changes again\&.
 .SH "COMMANDS"
 .PP
-Some commands have multiple names which are shown below as:
+Some commands have multiple names which are shown below as
 .RS 4
 CMD1 | CMD2
 .RE
 .PP
-Related commands have been grouped below as:
+Related commands have been grouped below as
 .RS 4
 CMD1 / CMD2
 .RE
 .PP
-The commands are broken up into sections as follows:
+The commands are broken up into sections as follows
 .RS 4
 .sp
 .RS 4
@@ -400,13 +244,13 @@ Start dragging to resize the window as if you had grabbed the window at the spec
 By default \fIcorner\fR is \fBBottomRight\fR, but may be overridden with one of:
 .RS 4
 
-\fBNearestCorner NearestEdge Center TopLeft Top TopRight Left Right BottomLeft BottomRight\fR
+\fBNearestCorner NearestEdge Center TopLeft Top TopRight Left Right BottomLeft Bottom BottomRight\fR
 .RE
 .RE
 .PP
 \fBStartTabbing\fR
 .RS 4
-Start dragging to add this window to another\'s tabgroup\&.
+Start dragging to add this window to another\(cqs tabgroup\&.
 .RE
 .SS "Window Commands"
 .sp
@@ -463,7 +307,7 @@ Close the current window, equivalent to the window button\&.
 .PP
 \fBKill\fR | \fBKillWindow\fR
 .RS 4
-Close a window that\'s not responding to
+Close a window that\(cqs not responding to
 \fBClose\fR, like using
 \fBxkill(1)\fR\&.
 .RE
@@ -497,8 +341,7 @@ window is visible on all workspaces\&.
 .RS 4
 Sets which window decorations will be shown\&.
 \fIdecor\fR
-has the same format as the `\fI parameter in the apps file\&. See `man fluxbox\fR
-section APPLICATIONS for more info\&.
+has the same format as the \(oq[Deco]\(cq parameter in the apps file\&. See \(oqman fluxbox\(cq section APPLICATIONS for more info\&.
 .RE
 .PP
 \fBToggleDecor\fR
@@ -557,7 +400,7 @@ If either
 or
 \fIy\fR
 is set to
-\fB*\fR, that coordinate will be ignored, and the movement will only take place in one dimension\&.
+\fB\e\fR*, that coordinate will be ignored, and the movement will only take place in one dimension\&.
 .PP
 The default \fIanchor\fR is the upper left corner, but this may be overridden with one of:
 .RS 4
@@ -782,7 +625,7 @@ Deiconify to the current workspace\&.
 .PP
 \fBOriginQuiet\fR
 .RS 4
-Deiconify to the window\'s original workspace, but does so in the background, without moving you there\&.
+Deiconify to the window\(cqs original workspace, but does so in the background, without moving you there\&.
 .RE
 .RE
 .RE
@@ -897,7 +740,7 @@ commands, below\&. See
 for more details on the
 \fBENVIRONMENT\fR
 and
-\fB~/\&.fluxbox/startup\fR
+\fB\e~/\&.fluxbox/startup\fR
 file\&.
 .RE
 .PP
@@ -931,15 +774,9 @@ brackets are literally required, as in the following example:
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 MacroCmd {MoveTo 0 0} {ResizeTo 1280 800}
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -1081,7 +918,7 @@ of the truth values for all conditions listed\&.
 .sp
 Many of the more advanced commands take a \fIpattern\fR argument, which allows you to direct the action at a specific window or set of windows which match the properties specified in the \fIpattern\fR\&.
 .PP
-A \fIpattern\fR looks like this:
+A \fIpattern\fR looks like this
 .RS 4
 
 \fB(\fR[\fIpropertyname\fR[!]=]\fIregexp\fR\fB)\fR
@@ -1096,7 +933,7 @@ If you specify multiple \fB(\fR\fB\fIpattern\fR\fR) arguments, this implies an A
 .sp
 You can use \fB=\fR to test for equality or \fB!=\fR to test for inequality\&.
 .PP
-The following values are accepted for \fIpropertyname\fR:
+The following values are accepted for \fIpropertyname\fR
 .RS 4
 .PP
 \fBName\fR
@@ -1211,7 +1048,7 @@ which refers to the head where the mouse pointer currently resides\&.
 .PP
 \fBLayer\fR
 .RS 4
-The string name of the window\'s layer, which is one of
+The string name of the window\(cqs layer, which is one of
 \fBAboveDock\fR,
 \fBDock\fR,
 \fBTop\fR,
@@ -1226,15 +1063,9 @@ The string name of the window\'s layer, which is one of
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 (xterm)
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -1244,15 +1075,9 @@ The string name of the window\'s layer, which is one of
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 (Name=[current])
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -1262,21 +1087,15 @@ The string name of the window\'s layer, which is one of
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 (Head=[mouse]) (Layer!=[current])
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
 .SH "FILES"
 .PP
-\fB~/\&.fluxbox/keys\fR
+\fB\e~/\&.fluxbox/keys\fR
 .RS 4
 This is the default location for the keybinding definitions\&.
 .RE
@@ -1303,20 +1122,14 @@ Remember that \fBExecCommand\fR command can take advantage of other environment 
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 Mod1 x :ExecCommand $TERM
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
 .sp
-For more information about environment variables, see your shell\'s manual\&.
+For more information about environment variables, see your shell\(cqs manual\&.
 .SH "EXAMPLES"
 .sp
 Here are some interesting and/or useful examples you can do with your keys file\&.
@@ -1324,10 +1137,7 @@ Here are some interesting and/or useful examples you can do with your keys file\
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 # Mod4+drag moves a window
 OnWindow Mod4 Mouse1 :StartMoving
 
@@ -1337,10 +1147,7 @@ Mod4 t :If {Some Matches (xterm)} {NextWindow (xterm)} {Exec xterm}
 
 # Set a different wallpaper on every workspace:
 ChangeWorkspace :Exec fbsetbg ~/\&.fluxbox/bg$(xprop \-root _NET_CURRENT_DESKTOP | awk \'{print $3}\')\&.png
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}

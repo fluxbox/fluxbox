@@ -50,6 +50,8 @@ const struct t_modlist modlist[] = {
     {"MOD3", Mod3Mask},
     {"MOD4", Mod4Mask},
     {"MOD5", Mod5Mask},
+    {"ALT", Mod1Mask},
+    {"CTRL", ControlMask},
     {0, 0}
 };
 

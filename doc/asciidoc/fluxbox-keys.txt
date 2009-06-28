@@ -171,7 +171,7 @@ at the specified 'corner'.
 +
 By default 'corner' is *BottomRight*, but may be overridden with one of:;;
 *NearestCorner NearestEdge Center TopLeft Top TopRight Left Right BottomLeft
-BottomRight*
+Bottom BottomRight*
 
 *StartTabbing*::
 	Start dragging to add this window to another's tabgroup.
