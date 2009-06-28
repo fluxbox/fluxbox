@@ -255,6 +255,17 @@ private:
     int m_layer;
 };
 
+class ChangeLayerCmd: public WindowHelperCmd {
+public:
+    explicit ChangeLayerCmd(int diff): m_diff(diff) { }
+    static FbTk::Command<void> *parse(const std::string &command,
+                                      const std::string &args, bool trusted);
+protected:
+    void real_execute();
+private:
+    int m_diff;
+};
+
 class MatchCmd: public WindowHelperBoolCmd {
 public:
     MatchCmd(const std::string &pat): m_pat(pat.c_str()) { };

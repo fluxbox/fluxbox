@@ -52,12 +52,8 @@ FbTk::Command<void> *createCurrentWindowCmd(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal);
     else if (command == "raise")
         return new CurrentWindowCmd(&FluxboxWindow::raise);
-    else if (command == "raiselayer")
-        return new CurrentWindowCmd(&FluxboxWindow::raiseLayer);
     else if (command == "lower")
         return new CurrentWindowCmd(&FluxboxWindow::lower);
-    else if (command == "lowerlayer")
-        return new CurrentWindowCmd(&FluxboxWindow::lowerLayer);
     else if (command == "close")
         return new CurrentWindowCmd(&FluxboxWindow::close);
     else if (command == "killwindow" || command == "kill")
@@ -95,9 +91,7 @@ REGISTER_COMMAND_PARSER(maximize, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(maximizevertical, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(maximizehorizontal, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(raise, createCurrentWindowCmd, void);
-REGISTER_COMMAND_PARSER(raiselayer, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(lower, createCurrentWindowCmd, void);
-REGISTER_COMMAND_PARSER(lowerlayer, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(close, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(killwindow, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(kill, createCurrentWindowCmd, void);
@@ -464,6 +458,25 @@ REGISTER_COMMAND_PARSER(setlayer, SetLayerCmd::parse, void);
 
 void SetLayerCmd::real_execute() {
     fbwindow().moveToLayer(m_layer);
+}
+
+FbTk::Command<void> *ChangeLayerCmd::parse(const string &command,
+        const string &args, bool trusted) {
+    int num = 2;
+    FbTk_istringstream iss(args.c_str());
+    iss >> num;
+    if (command == "raiselayer")
+        return new ChangeLayerCmd(-num);
+    else if (command == "lowerlayer")
+        return new ChangeLayerCmd(num);
+    return 0;
+}
+
+REGISTER_COMMAND_PARSER(raiselayer, ChangeLayerCmd::parse, void);
+REGISTER_COMMAND_PARSER(lowerlayer, ChangeLayerCmd::parse, void);
+
+void ChangeLayerCmd::real_execute() {
+    fbwindow().changeLayer(m_diff);
 }
 
 namespace {

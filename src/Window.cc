@@ -1697,14 +1697,9 @@ void FluxboxWindow::tempRaise() {
 }
 
 
-void FluxboxWindow::raiseLayer() {
-    moveToLayer(m_state.layernum-1);
+void FluxboxWindow::changeLayer(int diff) {
+    moveToLayer(m_state.layernum+diff);
 }
-
-void FluxboxWindow::lowerLayer() {
-    moveToLayer(m_state.layernum+1);
-}
-
 
 void FluxboxWindow::moveToLayer(int layernum, bool force) {
 #ifdef DEBUG

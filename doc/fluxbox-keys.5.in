@@ -278,7 +278,7 @@ Reorder this window to the top or bottom of the window stack, within its current
 for a discussion of layers\&.
 .RE
 .PP
-\fBRaiseLayer\fR / \fBLowerLayer\fR
+\fBRaiseLayer\fR / \fBLowerLayer\fR [\fIoffset\fR]
 .RS 4
 Raise the window up to the layer above, or lower it to the layer below\&. See
 \fIfluxbox(1)\fR

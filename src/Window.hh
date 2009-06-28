@@ -243,8 +243,7 @@ public:
     void raise();
     void lower();
     void tempRaise();
-    void raiseLayer();
-    void lowerLayer();
+    void changeLayer(int diff);
     /// moves the window to a new layer
     void moveToLayer(int layernum, bool force = false);
     int getOnHead() const;

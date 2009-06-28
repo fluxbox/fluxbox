@@ -195,7 +195,7 @@ These commands ordinarily affect only the currently focused window. The
 	Reorder this window to the top or bottom of the window stack, within
 	its current layer. See 'fluxbox(1)' for a discussion of layers.
 
-*RaiseLayer* / *LowerLayer*::
+*RaiseLayer* / *LowerLayer* ['offset']::
 	Raise the window up to the layer above, or lower it to the layer
 	below. See 'fluxbox(1)' for a discussion of layers.
 
