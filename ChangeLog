@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *09/06/28:
+   * Add window menu and alt-tab to error case for keys file (Mark)
+     Keys.cc
    * Revert to relative iconbar alignment when too many windows are open (Mark)
      FbTk/Container.cc
 *09/05/26:

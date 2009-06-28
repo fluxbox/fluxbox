@@ -322,6 +322,9 @@ void Keys::loadDefaults() {
     addBinding("OnDesktop Mouse1 :HideMenus");
     addBinding("OnDesktop Mouse2 :WorkspaceMenu");
     addBinding("OnDesktop Mouse3 :RootMenu");
+    addBinding("OnTitlebar Mouse3 :WindowMenu");
+    addBinding("Mod1 Tab :NextWindow");
+    addBinding("Mod1 Shift Tab :PrevWindow");
     keyMode("default");
 }
 
