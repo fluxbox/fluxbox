@@ -1671,13 +1671,15 @@ append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${MUSICMENU}"
                normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gnome-alsamixer gmix kmix kscd \
                    grecord kmidi xplaycd soundtracker grip easytag audacity \
-                   zinf rhythmbox kaboodle beep-media-player amarok tagtool
+                   zinf rhythmbox kaboodle beep-media-player amarok tagtool \
+                   audacious bmpx
                cli_find cdcd cplay alsamixer orpheus mp3blaster
        append_menu_end
 
 
        append_submenu "${VIDEOMENU}"
-           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb realplay xawtv fxtv ogle goggles vlc
+           normal_find xine gxine aviplay gtv gmplayer xmovie xcdroast xgdb \
+               realplay xawtv fxtv ogle goggles vlc
            find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
        append_menu_end
 
