@@ -2403,10 +2403,9 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         } else if (frame().handle() == be.window)
             raise();
 
+        FbTk::Menu::hideShownMenu();
         if (!m_focused && acceptsFocus() && m_click_focus) //check focus
             focus();
-
-        menu().hide();
     }
 }
 
