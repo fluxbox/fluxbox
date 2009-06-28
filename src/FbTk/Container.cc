@@ -33,13 +33,14 @@ namespace FbTk {
 
 typedef CompareEqual_base<FbWindow, Window> CompareWindow;
 
-Container::Container(const FbWindow &parent):
+Container::Container(const FbWindow &parent, bool auto_resize):
     FbWindow(parent, 0, 0, 1, 1, ExposureMask),
     m_orientation(ROT0),
     m_align(RELATIVE),
     m_max_size_per_client(60),
     m_max_total_size(0),
-    m_update_lock(false) {
+    m_update_lock(false),
+    m_auto_resize(auto_resize) {
     EventManager::instance()->add(*this, *this);
 }
 
@@ -328,7 +329,7 @@ void Container::repositionItems() {
             } else
                 max_width_per_client = 1;
         }
-        if (total_width != cur_width) {
+        if (m_auto_resize && total_width != cur_width) {
             // calling Container::resize here risks infinite loops
             unsigned int neww = total_width, newh = height;
             translateSize(m_orientation, neww, newh);
@@ -410,24 +411,31 @@ void Container::repositionItems() {
 
 
 unsigned int Container::maxWidthPerClient() const {
-    unsigned int max_relative_size;
-    if (size() == 0)
-        max_relative_size = width();
-    else {
-        unsigned int borderW = m_item_list.front()->borderWidth();
-        // there're count-1 borders to fit in with the windows
-        // -> 1 per window plus end
-        unsigned int w = width(), h = height();
-        translateSize(m_orientation, w, h);
-        max_relative_size = w < (size()-1)*borderW ? 1 :
-                (w - (size() - 1) * borderW) / size();
+    switch (alignment()) {
+    case RIGHT:
+    case CENTER:
+    case LEFT:
+        return m_max_size_per_client;
+        break;
+    case RELATIVE:
+        if (size() == 0)
+            return width();
+        else {
+            unsigned int borderW = m_item_list.front()->borderWidth();
+            // there're count-1 borders to fit in with the windows
+            // -> 1 per window plus end
+            unsigned int w = width(), h = height();
+            translateSize(m_orientation, w, h);
+            if (w < (size()-1)*borderW)
+                return 1;
+            else
+                return (w - (size() - 1) * borderW) / size();
+        }
+        break;
     }
 
-    if (alignment() == RELATIVE)
-        return max_relative_size;
-
-    return (m_max_size_per_client < max_relative_size ?
-            m_max_size_per_client : max_relative_size);
+    // this will never happen anyway
+    return 1;
 }
 
 void Container::for_each(std::mem_fun_t<void, FbWindow> function) {

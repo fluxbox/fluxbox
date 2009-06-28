@@ -43,7 +43,7 @@ public:
     typedef const Button * ConstItem;
     typedef std::list<Item> ItemList;
 
-    explicit Container(const FbWindow &parent);
+    explicit Container(const FbWindow &parent, bool auto_resize = true);
     virtual ~Container();
 
     // manipulators
@@ -106,7 +106,7 @@ private:
     unsigned int m_max_size_per_client;
     unsigned int m_max_total_size;
     ItemList m_item_list;
-    bool m_update_lock;
+    bool m_update_lock, m_auto_resize;
 };
 
 } // end namespace FbTk

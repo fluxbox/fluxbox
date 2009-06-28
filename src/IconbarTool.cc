@@ -249,7 +249,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
                          BScreen &screen, FbTk::Menu &menu):
     ToolbarItem(ToolbarItem::RELATIVE),
     m_screen(screen),
-    m_icon_container(parent),
+    m_icon_container(parent, false),
     m_theme(theme),
     m_focused_theme(focused_theme),
     m_unfocused_theme(unfocused_theme),
@@ -307,6 +307,7 @@ void IconbarTool::move(int x, int y) {
 
 void IconbarTool::resize(unsigned int width, unsigned int height) {
     m_icon_container.resize(width, height);
+    m_icon_container.setMaxTotalSize(m_icon_container.orientation() == FbTk::ROT0 || m_icon_container.orientation() ? width : height);
     renderTheme();
 }
 
@@ -314,6 +315,7 @@ void IconbarTool::moveResize(int x, int y,
                              unsigned int width, unsigned int height) {
 
     m_icon_container.moveResize(x, y, width, height);
+    m_icon_container.setMaxTotalSize(m_icon_container.orientation() == FbTk::ROT0 || m_icon_container.orientation() ? width : height);
     renderTheme();
 }
 
