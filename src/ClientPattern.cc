@@ -134,6 +134,8 @@ ClientPattern::ClientPattern(const char *str):
                 prop = LAYER;
             } else if (strcasecmp(memstr.c_str(), "urgent") == 0) {
                 prop = URGENT;
+            } else if (strcasecmp(memstr.c_str(), "screen") == 0) {
+                prop = SCREEN;
             } else {
                 prop = NAME;
                 expr = match;
@@ -245,6 +247,10 @@ string ClientPattern::toString() const {
             break;
         case URGENT:
             pat.append("urgent=");
+            break;
+        case SCREEN:
+            pat.append("screen=");
+            break;
         }
 
         pat.append((*it)->orig);
@@ -407,6 +413,13 @@ string ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
         return Fluxbox::instance()->attentionHandler()
                 .isDemandingAttention(client) ? "yes" : "no";
         break;
+    case SCREEN: {
+        int screenId = client.screen().screenNumber();
+        char tmpstr[32];
+        sprintf(tmpstr, "%d", screenId);
+        return std::string(tmpstr);
+        break;
+    }
     }
     return client.getWMClassName();
 }

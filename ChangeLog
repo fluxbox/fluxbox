@@ -1,6 +1,8 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 *09/06/28:
+   * Allow matching screen number in ClientPattern (thanks Peter Hercek)
+     ClientPattern.cc
    * Hide the menu when you click on a window (Mark)
      Window.cc
    * Make Raise/LowerLayer commands accept integer argument, defualt 2 (Mark)
