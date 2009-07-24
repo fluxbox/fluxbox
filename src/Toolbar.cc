@@ -391,6 +391,8 @@ void Toolbar::reconfigure() {
 
     updateVisibleState();
 
+    if (doAutoHide() && !isHidden() && !m_hide_timer.isTiming())
+        m_hide_timer.start();
     if (!doAutoHide() && isHidden())
         toggleHidden();
 
@@ -456,9 +458,6 @@ void Toolbar::reconfigure() {
     } else { // just update the menu
         menu().reconfigure();
     }
-
-    if (doAutoHide())
-        m_hide_timer.start();
 
     frame.bevel_w = theme()->bevelWidth();
     // destroy shape if the theme wasn't specified with one,
@@ -655,7 +654,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_h = screen().getHeadHeight(head);
     }
 
-    int bevel_width = theme()->bevelWidth();
     int border_width = theme()->border().width();
 
     frame.width = (head_w - 2*border_width) * (*m_rc_width_percent) / 100;
@@ -682,8 +680,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
 
     // So we get at least one pixel visible in hidden mode
-    if (bevel_width <= border_width)
-        bevel_width = border_width + 1;
+    int pixel = (border_width == 0 ? 1 : 0);
 
     FbTk::Orientation orient = FbTk::ROT0;
 
@@ -692,7 +689,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x;
         frame.y = head_y;
         frame.x_hidden = head_x;
-        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
+        frame.y_hidden = head_y - border_width - frame.height + pixel;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
         break;
@@ -701,7 +698,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = head_x;
-        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        frame.y_hidden = head_y + head_h - border_width - pixel;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
         break;
@@ -710,7 +707,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x + (head_w - frame.width) / 2 - border_width;
         frame.y = head_y;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
+        frame.y_hidden = head_y - border_width - frame.height + pixel;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
         break;
@@ -718,7 +715,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
+        frame.y_hidden = head_y - border_width - frame.height + pixel;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
         break;
@@ -727,7 +724,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        frame.y_hidden = head_y + head_h - border_width - pixel;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
         break;
@@ -736,7 +733,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x + (head_w - frame.width) / 2 - border_width;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        frame.y_hidden = head_y + head_h - border_width - pixel;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
         break;
@@ -744,7 +741,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         orient = FbTk::ROT270;
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height)/2 - border_width;
-        frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
+        frame.x_hidden = frame.x - frame.width - border_width + pixel;
         frame.y_hidden = frame.y;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
@@ -753,7 +750,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         orient = FbTk::ROT270;
         frame.x = head_x;
         frame.y = head_y;
-        frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
+        frame.x_hidden = frame.x - frame.width - border_width + pixel;
         frame.y_hidden = frame.y;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
@@ -762,7 +759,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         orient = FbTk::ROT270;
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
+        frame.x_hidden = frame.x - frame.width - border_width + pixel;
         frame.y_hidden = frame.y;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
@@ -771,7 +768,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         orient = FbTk::ROT90;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + (head_h - frame.height)/2 - border_width;
-        frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
+        frame.x_hidden = frame.x + frame.width + border_width - pixel;
         frame.y_hidden = frame.y;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);
@@ -780,7 +777,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         orient = FbTk::ROT90;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
-        frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
+        frame.x_hidden = frame.x + frame.width + border_width - pixel;
         frame.y_hidden = frame.y;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);
@@ -789,7 +786,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         orient = FbTk::ROT90;
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
+        frame.x_hidden = frame.x + frame.width + border_width - pixel;
         frame.y_hidden = frame.y;
         if (m_shape.get())
             m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);

@@ -766,30 +766,27 @@ void Slit::reposition() {
     }
 
     int border_width = theme()->borderWidth();
-    int bevel_width = theme()->bevelWidth();
-    // make sure at leaste one pixel is visible
-    if (border_width >= bevel_width)
-        bevel_width = border_width + 1;
+    int pixel = (border_width == 0 ? 1 : 0);
     // place the slit in the appropriate place
     switch (placement()) {
     case TOPLEFT:
         frame.x = head_x;
         frame.y = head_y;
         frame.x_hidden = head_x;
-        frame.y_hidden = bevel_width - border_width - frame.height;
+        frame.y_hidden = head_y + pixel - border_width - frame.height;
         break;
 
     case LEFTTOP:
         frame.x = head_x;
         frame.y = head_y;
-        frame.x_hidden = bevel_width - border_width - frame.width;
+        frame.x_hidden = head_x + pixel - border_width - frame.width;
         frame.y_hidden = head_y;
         break;
 
     case LEFTCENTER:
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height) / 2;
-        frame.x_hidden = head_x + bevel_width - border_width - frame.width;
+        frame.x_hidden = head_x + pixel - border_width - frame.width;
         frame.y_hidden = frame.y;
         break;
 
@@ -797,13 +794,13 @@ void Slit::reposition() {
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = head_x;
-        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        frame.y_hidden = head_y + head_h - pixel - border_width;
         break;
 
     case LEFTBOTTOM:
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = head_x + bevel_width - border_width - frame.width;
+        frame.x_hidden = head_x + pixel - border_width - frame.width;
         frame.y_hidden = frame.y;
         break;
 
@@ -811,34 +808,34 @@ void Slit::reposition() {
         frame.x = head_x + ((head_w - frame.width) / 2);
         frame.y = head_y;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
+        frame.y_hidden = head_y + pixel - border_width - frame.height;
         break;
 
     case BOTTOMCENTER:
         frame.x = head_x + ((head_w - frame.width) / 2);
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        frame.y_hidden = head_y + head_h - pixel - border_width;
         break;
 
     case TOPRIGHT:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
+        frame.y_hidden = head_y + pixel - border_width - frame.height;
         break;
 
     case RIGHTTOP:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
-        frame.x_hidden = head_x + head_w - bevel_width - border_width;
+        frame.x_hidden = head_x + head_w - pixel - border_width;
         frame.y_hidden = head_y;
         break;
 
     case RIGHTCENTER:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + ((head_h - frame.height) / 2);
-        frame.x_hidden = head_x + head_w - bevel_width - border_width;
+        frame.x_hidden = head_x + head_w - pixel - border_width;
         frame.y_hidden = frame.y;
         break;
 
@@ -846,14 +843,14 @@ void Slit::reposition() {
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        frame.y_hidden = head_y + head_h - pixel - border_width;
         break;
 
     case RIGHTBOTTOM:
     default:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = head_x + head_w - bevel_width - border_width;
+        frame.x_hidden = head_x + head_w - pixel - border_width;
         frame.y_hidden = frame.y;
         break;
     }
