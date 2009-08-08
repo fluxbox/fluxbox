@@ -83,6 +83,8 @@ public:
     virtual void lower();
     /// cycle through menuitems
     void cycleItems(bool reverse);
+    /// set and highlight new active index
+    void setActiveIndex(int new_index);
     void enterSubmenu();
 
     void disableTitle();

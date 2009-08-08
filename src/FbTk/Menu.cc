@@ -328,9 +328,11 @@ void Menu::cycleItems(bool reverse) {
             new_index = vec[i]->getIndex();
     }
 
-    if (new_index == -1)
-        return;
+    if (new_index != -1)
+        setActiveIndex(new_index);
+}
 
+void Menu::setActiveIndex(int new_index) {
     // clear the items and close any open submenus
     int old_active_index = m_active_index;
     m_active_index = new_index;
@@ -1065,11 +1067,26 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Left: // enter parent if we have one
         resetTypeAhead();
-        internal_hide();
+        if (menu.sublevels > 1 && m_active_index >= menu.persub) {
+            int new_index = m_active_index - menu.persub;
+            while (new_index >= 0 && !isItemEnabled(new_index))
+                new_index -= menu.persub;
+            if (new_index >= 0)
+                setActiveIndex(new_index);
+        } else
+            internal_hide();
         break;
     case XK_Right: // enter submenu if we have one
         resetTypeAhead();
-        enterSubmenu();
+        if (menu.sublevels > 1 && validIndex(m_active_index) &&
+            validIndex(m_active_index + menu.persub)) {
+            int new_index = m_active_index + menu.persub;
+            while (validIndex(new_index) && !isItemEnabled(new_index))
+                new_index += menu.persub;
+            if (validIndex(new_index))
+                setActiveIndex(new_index);
+        } else
+            enterSubmenu();
         break;
     case XK_Escape: // close menu
         m_type_ahead.reset();
