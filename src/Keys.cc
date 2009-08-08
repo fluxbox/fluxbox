@@ -404,8 +404,15 @@ bool Keys::addBinding(const string &linebuffer) {
                     type = ButtonPress;
                     key = atoi(val[argc].substr(5,
                                                 val[argc].length()-5).c_str());
+                    // fluxconf mangles things like OnWindow Mouse# to Mouse#ow
                     if (strstr(val[argc].c_str(), "top"))
                         context = ON_DESKTOP;
+                    else if (strstr(val[argc].c_str(), "ebar"))
+                        context = ON_TITLEBAR;
+                    else if (strstr(val[argc].c_str(), "bar"))
+                        context = ON_TOOLBAR;
+                    else if (strstr(val[argc].c_str(), "ow"))
+                        context = ON_WINDOW;
                 // keycode covers the following three two-byte cases:
                 // 0x       - hex
                 // +[1-9]   - number between +1 and +9
