@@ -1,5 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+*09/09/12:
+   * Implemented visibility of titlebar buttons via the apps file (Mathias)
+     Window.cc
+
 *09/06/28:
    * Allow matching screen number in ClientPattern (thanks Peter Hercek)
      ClientPattern.cc
@@ -13,6 +17,7 @@ Changes for 1.1.2
      Keys.cc
    * Revert to relative iconbar alignment when too many windows are open (Mark)
      FbTk/Container.cc
+
 *09/05/26:
    * Fixed unexpected window focus changes under "focus follows mouse" (Jim)
      FocusControl.cc/hh Window.cc fluxbox.cc Screen.cc

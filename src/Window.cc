@@ -2810,6 +2810,7 @@ void FluxboxWindow::setDecorationMask(unsigned int mask, bool apply) {
     decorations.shade    = mask & WindowState::DECORM_SHADE;
     decorations.tab      = mask & WindowState::DECORM_TAB;
     decorations.enabled  = mask & WindowState::DECORM_ENABLED;
+
     // we don't want to do this during initialization
     if (apply)
         applyDecorations();
@@ -3574,7 +3575,7 @@ void FluxboxWindow::updateButtons() {
 
             switch (dir[i]) {
             case WinButton::MINIMIZE:
-                if (isIconifiable()) {
+                if (isIconifiable() && (m_state.deco_mask & WindowState::DECORM_ICONIFY)) {
                     winbtn = new WinButton(*this, m_button_theme,
                                            screen().pressedWinButtonTheme(),
                                            WinButton::MINIMIZE,
@@ -3584,7 +3585,7 @@ void FluxboxWindow::updateButtons() {
                 }
                 break;
             case WinButton::MAXIMIZE:
-                if (isMaximizable()) {
+                if (isMaximizable() && (m_state.deco_mask & WindowState::DECORM_MAXIMIZE) ) {
                     winbtn = new WinButton(*this, m_button_theme,
                                            screen().pressedWinButtonTheme(),
                                            dir[i],
@@ -3597,7 +3598,7 @@ void FluxboxWindow::updateButtons() {
                 }
                 break;
             case WinButton::CLOSE:
-                if (m_client->isClosable()) {
+                if (m_client->isClosable() && (m_state.deco_mask & WindowState::DECORM_CLOSE)) {
                     winbtn = new WinButton(*this, m_button_theme,
                                            screen().pressedWinButtonTheme(),
                                            dir[i],
@@ -3609,23 +3610,27 @@ void FluxboxWindow::updateButtons() {
                 }
                 break;
             case WinButton::STICK:
-                winbtn =  new WinButton(*this, m_button_theme,
-                                        screen().pressedWinButtonTheme(),
-                                        dir[i],
-                                        frame().titlebar(),
-                                        0, 0, 10, 10);
+                if (m_state.deco_mask & WindowState::DECORM_STICKY) {
+                    winbtn =  new WinButton(*this, m_button_theme,
+                            screen().pressedWinButtonTheme(),
+                            dir[i],
+                            frame().titlebar(),
+                            0, 0, 10, 10);
 
-                stateSig().attach(winbtn);
-                winbtn->setOnClick(stick_cmd);
+                    stateSig().attach(winbtn);
+                    winbtn->setOnClick(stick_cmd);
+                }
                 break;
             case WinButton::SHADE:
-                winbtn = new WinButton(*this, m_button_theme,
-                                       screen().pressedWinButtonTheme(),
-                                       dir[i],
-                                       frame().titlebar(),
-                                       0, 0, 10, 10);
-                stateSig().attach(winbtn);
-                winbtn->setOnClick(shade_cmd);
+                if (m_state.deco_mask & WindowState::DECORM_SHADE) {
+                    winbtn = new WinButton(*this, m_button_theme,
+                            screen().pressedWinButtonTheme(),
+                            dir[i],
+                            frame().titlebar(),
+                            0, 0, 10, 10);
+                    stateSig().attach(winbtn);
+                    winbtn->setOnClick(shade_cmd);
+                }
                 break;
             case WinButton::MENUICON:
                 winbtn = new WinButton(*this, m_button_theme,
