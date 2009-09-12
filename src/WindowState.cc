@@ -23,7 +23,8 @@
 
 #include "FbTk/StringUtil.hh"
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <errno.h>
 
 bool WindowState::useBorder() const {
     return !fullscreen && maximized != MAX_FULL && deco_mask & DECORM_BORDER;
@@ -92,10 +93,14 @@ int WindowState::getDecoMaskFromString(const std::string &str_label) {
         return DECOR_BORDER;
     if (label == "tab")
         return DECOR_TAB;
+
     int mask = -1;
-    if ((str_label.size() > 1 && str_label[0] == '0' && str_label[1] == 'x') ||
-        (str_label.size() > 0 && isdigit(str_label[0])))
-        mask = strtol(str_label.c_str(), NULL, 0);
+    int tmp;
+    errno = 0;
+    tmp = strtol(str_label.c_str(), NULL, 0);
+    if (errno == 0)
+        mask = tmp;
+
     return mask;
 }
 
