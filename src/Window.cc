@@ -1107,11 +1107,11 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
         if (hint->decorations & MwmDecorAll) {
             decorations.titlebar = decorations.handle = decorations.border =
                 decorations.iconify = decorations.maximize =
-                decorations.close = decorations.menu = true;
+                decorations.menu = true;
         } else {
             decorations.titlebar = decorations.handle = decorations.border =
                 decorations.iconify = decorations.maximize =
-                decorations.close = decorations.tab = false;
+                decorations.tab = false;
             decorations.menu = true;
             if (hint->decorations & MwmDecorBorder)
                 decorations.border = true;
