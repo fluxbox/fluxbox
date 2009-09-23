@@ -1,5 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+
+*09/09/23:
+   * Bugfix: Empty submenus lead to misfunction of the 'HideMenus' command (Mathias)
+     FbTk/Menu.cc
+
 *09/09/12:
    * Implemented visibility of titlebar buttons via the apps file (Mathias)
      Window.cc

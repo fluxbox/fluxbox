@@ -759,7 +759,7 @@ void Menu::drawSubmenu(unsigned int index) {
         if (! m_moving)
             clearItem(index);
 
-        if (! item->submenu()->isVisible()) {
+        if (! item->submenu()->isVisible() && item->submenu()->numberOfItems() > 0) {
             shown = item->submenu();
             item->showSubmenu();
             item->submenu()->raise();
