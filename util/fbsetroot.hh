@@ -27,7 +27,7 @@ namespace FbTk {
 
 class ImageControl;
 
-};
+}
 
 class fbsetroot : public FbTk::App {
 public:

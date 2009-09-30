@@ -62,20 +62,20 @@ bool doSkipWindow(const Focusable &win, const ClientPattern *pat) {
     return false; // else don't skip
 }
 
-}; // end anonymous namespace
-    
+} // end anonymous namespace
+
 FocusControl::FocusControl(BScreen &screen):
     m_screen(screen),
-    m_focus_model(screen.resourceManager(), 
-                  CLICKFOCUS, 
-                  screen.name()+".focusModel", 
+    m_focus_model(screen.resourceManager(),
+                  CLICKFOCUS,
+                  screen.name()+".focusModel",
                   screen.altName()+".FocusModel"),
-    m_tab_focus_model(screen.resourceManager(), 
-                      CLICKTABFOCUS, 
-                      screen.name()+".tabFocusModel", 
+    m_tab_focus_model(screen.resourceManager(),
+                      CLICKTABFOCUS,
+                      screen.name()+".tabFocusModel",
                       screen.altName()+".TabFocusModel"),
-    m_focus_new(screen.resourceManager(), true, 
-                screen.name()+".focusNewWindows", 
+    m_focus_new(screen.resourceManager(), true,
+                screen.name()+".focusNewWindows",
                 screen.altName()+".FocusNewWindows"),
     m_focused_list(screen), m_creation_order_list(screen),
     m_focused_win_list(screen), m_creation_order_win_list(screen),
@@ -85,7 +85,7 @@ FocusControl::FocusControl(BScreen &screen):
     m_ignore_mouse_x(-1), m_ignore_mouse_y(-1) {
 
     m_cycling_window = m_focused_list.clientList().end();
-    
+
 }
 
 void FocusControl::cycleFocus(const FocusableList &window_list,
@@ -252,7 +252,7 @@ Focusable *FocusControl::lastFocusedWindow(int workspace) {
     if (workspace < 0 || workspace >= (int) m_screen.numberOfWorkspaces())
         return m_focused_list.clientList().front();
 
-    Focusables::iterator it = m_focused_list.clientList().begin();    
+    Focusables::iterator it = m_focused_list.clientList().begin();
     Focusables::iterator it_end = m_focused_list.clientList().end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && (*it)->acceptsFocus() &&
@@ -307,11 +307,11 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
 
     // we scan through the list looking for the window that is "closest"
     // in the given direction
-    
+
     FluxboxWindow *foundwin = 0;
     int weight = 999999, exposure = 0; // extreme values
     int borderW = win.frame().window().borderWidth(),
-        top = win.y() + borderW, 
+        top = win.y() + borderW,
         bottom = win.y() + win.height() + borderW,
         left = win.x() + borderW,
         right = win.x() + win.width() + borderW;
@@ -319,17 +319,17 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
     Workspace::Windows &wins = m_screen.currentWorkspace()->windowList();
     Workspace::Windows::iterator it = wins.begin();
     for (; it != wins.end(); ++it) {
-        if ((*it) == &win 
-            || (*it)->isIconic() 
-            || (*it)->isFocusHidden() 
-            || !(*it)->acceptsFocus()) 
+        if ((*it) == &win
+            || (*it)->isIconic()
+            || (*it)->isFocusHidden()
+            || !(*it)->acceptsFocus())
             continue; // skip self
-        
+
         // we check things against an edge, and within the bounds (draw a picture)
         int edge=0, upper=0, lower=0, oedge=0, oupper=0, olower=0;
 
-        int otop = (*it)->y() + borderW, 
-            // 2 * border = border on each side 
+        int otop = (*it)->y() + borderW,
+            // 2 * border = border on each side
             obottom = (*it)->y() + (*it)->height() + borderW,
             oleft = (*it)->x() + borderW,
             // 2 * border = border on each side
@@ -371,7 +371,7 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
             break;
         }
 
-        if (oedge < edge) 
+        if (oedge < edge)
             continue; // not in the right direction
 
         if (olower <= upper || oupper >= lower) {
@@ -396,7 +396,7 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
         } // else not improvement
     }
 
-    if (foundwin) 
+    if (foundwin)
         foundwin->focus();
 
 }
@@ -516,7 +516,7 @@ void FocusControl::revertFocus(BScreen &screen) {
  * assumption: client has focus
  */
 void FocusControl::unfocusWindow(WinClient &client,
-                                 bool full_revert, 
+                                 bool full_revert,
                                  bool unfocus_frame) {
     // go up the transient tree looking for a focusable window
 
@@ -547,8 +547,8 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         return;
 
     BScreen *screen = client ? &client->screen() : 0;
-    BScreen *old_screen = 
-        FocusControl::focusedWindow() ? 
+    BScreen *old_screen =
+        FocusControl::focusedWindow() ?
         &FocusControl::focusedWindow()->screen() : 0;
 
 #ifdef DEBUG
@@ -567,10 +567,10 @@ void FocusControl::setFocusedWindow(WinClient *client) {
 
     if (client && client->fbwindow() && !client->fbwindow()->isIconic()) {
         // screen should be ok
-        s_focused_fbwindow = client->fbwindow();        
+        s_focused_fbwindow = client->fbwindow();
         s_focused_window = client;     // update focused window
         s_expecting_focus = 0;
-        s_focused_fbwindow->setCurrentClient(*client, 
+        s_focused_fbwindow->setCurrentClient(*client,
                               false); // don't set inputfocus
         s_focused_fbwindow->setFocusFlag(true); // set focus flag
 
@@ -604,9 +604,9 @@ std::string FbTk::Resource<FocusControl::FocusModel>::getString() const {
 template<>
 void FbTk::Resource<FocusControl::FocusModel>::
 setFromString(char const *strval) {
-    if (strcasecmp(strval, "MouseFocus") == 0) 
+    if (strcasecmp(strval, "MouseFocus") == 0)
         m_value = FocusControl::MOUSEFOCUS;
-    else if (strcasecmp(strval, "ClickToFocus") == 0) 
+    else if (strcasecmp(strval, "ClickToFocus") == 0)
         m_value = FocusControl::CLICKFOCUS;
     else
         setDefaultValue();
@@ -630,9 +630,11 @@ setFromString(char const *strval) {
 
     if (strcasecmp(strval, "SloppyTabFocus") == 0 )
         m_value = FocusControl::MOUSETABFOCUS;
-    else if (strcasecmp(strval, "ClickToTabFocus") == 0) 
+    else if (strcasecmp(strval, "ClickToTabFocus") == 0)
         m_value = FocusControl::CLICKTABFOCUS;
     else
         setDefaultValue();
 }
+
 } // end namespace FbTk
+

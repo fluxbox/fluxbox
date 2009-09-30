@@ -35,7 +35,7 @@ class Toolbar;
 
 namespace FbTk {
 class FbWindow;
-};
+}
 
 /// creates toolbaritems
 class ToolFactory:private FbTk::NotCopyable {

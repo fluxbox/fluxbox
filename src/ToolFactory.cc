@@ -66,7 +66,7 @@ private:
     Toolbar &m_tbar;
 };
 
-};
+}
 
 ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
     m_clock_theme(screen.screenNumber(), "toolbar.clock", "Toolbar.Clock"),

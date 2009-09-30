@@ -177,7 +177,7 @@ private:
     Toolbar::Placement m_place;
 };
 
-}; // end anonymous
+} // end anonymous
 
 // toolbar frame
 Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):

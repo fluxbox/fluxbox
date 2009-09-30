@@ -103,7 +103,7 @@ Picture createAlphaPic(Window drawable, unsigned char alpha) {
     return alpha_pic;
 }
 #endif //  HAVE_XRENDER
-};
+}
 
 namespace FbTk {
 

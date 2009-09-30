@@ -100,7 +100,7 @@ void resetEffects(FbTk::Font& font) {
     font.setShadowOffX(2);
 }
 
-}; // end nameless namespace
+} // end nameless namespace
 
 
 
@@ -301,5 +301,5 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
 
 }
 
-};
+}
 

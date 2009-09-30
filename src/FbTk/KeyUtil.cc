@@ -55,7 +55,7 @@ const struct t_modlist modlist[] = {
     {0, 0}
 };
 
-};
+}
 
 namespace FbTk {
 

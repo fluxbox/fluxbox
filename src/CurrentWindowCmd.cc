@@ -109,7 +109,7 @@ REGISTER_COMMAND_PARSER(movetabright, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(detachclient, createCurrentWindowCmd, void);
 REGISTER_COMMAND_PARSER(windowmenu, createCurrentWindowCmd, void);
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 void WindowHelperCmd::execute() {
     if (WindowCmd<void>::window() || FocusControl::focusedFbWindow())
@@ -201,7 +201,7 @@ FbTk::Command<void> *parseFocusCmd(const string &command, const string &args,
 REGISTER_COMMAND_PARSER(activate, parseFocusCmd, void);
 REGISTER_COMMAND_PARSER(focus, parseFocusCmd, void);
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 void SetHeadCmd::real_execute() {
     int num = m_head;

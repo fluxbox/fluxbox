@@ -87,7 +87,7 @@ FbWindow::FbWindow(int screen_num,
     create(RootWindow(display(), screen_num),
            x, y, width, height, eventmask,
            override_redirect, save_unders, depth, class_type);
-};
+}
 
 FbWindow::FbWindow(const FbWindow &parent,
                    int x, int y, unsigned int width, unsigned int height,
@@ -105,7 +105,7 @@ FbWindow::FbWindow(const FbWindow &parent,
            override_redirect, save_unders, depth, class_type);
 
 
-};
+}
 
 FbWindow::FbWindow(Window client):
     FbDrawable(),
@@ -686,4 +686,4 @@ bool operator == (Window win, const FbWindow &fbwin) {
     return win == fbwin.window();
 }
 
-};
+}

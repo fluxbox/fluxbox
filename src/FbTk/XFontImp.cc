@@ -410,4 +410,4 @@ bool XFontImp::validOrientation(FbTk::Orientation orient) {
     return m_rotfonts[orient] != 0;
 }
 
-};
+}

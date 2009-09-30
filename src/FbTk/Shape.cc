@@ -103,7 +103,7 @@ struct CornerPixmaps {
 // unfortunately, we need a separate pixmap per screen
 std::vector<CornerPixmaps> s_corners;
 
-}; // end of anonymous namespace
+} // end of anonymous namespace
 
 Shape::Shape(FbWindow &win, int shapeplaces):
     m_win(&win),

@@ -253,6 +253,6 @@ enum {
 
 }; // end enum
 
-}; // end namespace FBNLS
+} // end namespace FBNLS
 
 #endif // FLUXBOX_NLS_HH

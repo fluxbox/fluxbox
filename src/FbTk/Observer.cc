@@ -28,4 +28,4 @@ Observer::~Observer() {
     Subject::removeObserver(this); // make sure no subject has this observer attached
 }
 
-};
+}

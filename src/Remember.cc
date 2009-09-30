@@ -337,7 +337,7 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
 
     menu->updateMenu();
     return menu;
-};
+}
 
 // offset is the offset in the string that we start looking from
 // return true if all ok, false on error
@@ -395,7 +395,7 @@ bool handleStartupItem(const string &line, int offset) {
     tmp_exec_cmd->execute();
     delete tmp_exec_cmd;
     return true;
-};
+}
 
 
 
@@ -609,7 +609,7 @@ Application* findMatchingPatterns(ClientPattern *pat, Remember::Patterns *patlis
     return 0;
 }
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 /*------------------------------------------------------------------*\
 \*------------------------------------------------------------------*/

@@ -158,7 +158,8 @@ XFontSet createFontSet(const char *fontname, bool& utf8mode) {
     return fs;
 }
 
-};
+}
+
 namespace FbTk {
 
 XmbFontImp::XmbFontImp(const char *filename, bool utf8) : m_fontset(0), m_setextents(0), m_utf8mode(utf8) {

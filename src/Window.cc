@@ -259,7 +259,7 @@ private:
     int m_mode;
 };
 
-};
+}
 
 
 int FluxboxWindow::s_num_grabs = 0;

@@ -58,7 +58,7 @@ namespace FileUtil {
     /// copies file 'from' to 'to'
     bool copyFile(const char* from, const char* to);
 
-}; // end of File namespace
+} // end of File namespace
 
 ///  Wrapper class for DIR * routines
 class Directory : private FbTk::NotCopyable {

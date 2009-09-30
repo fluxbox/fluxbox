@@ -463,7 +463,7 @@ set<string> modified_files;
 // we may want to put a size limit on this cache, so it doesn't grow too big
 map<string,string> file_cache;
 
-};
+}
 
 // returns the contents of the file given, either from the cache or by reading
 // the file from disk

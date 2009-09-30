@@ -66,7 +66,7 @@ Command<void> *parseMacroCmd(const std::string &command, const std::string &args
 REGISTER_COMMAND_PARSER(macrocmd, parseMacroCmd, void);
 REGISTER_COMMAND_PARSER(togglecmd, parseMacroCmd, void);
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 void MacroCommand::add(RefCount<Command<void> > &com) {
     m_commandlist.push_back(com);

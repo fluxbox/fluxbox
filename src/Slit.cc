@@ -215,7 +215,7 @@ private:
     Slit::Placement m_place;
 };
 
-}; // End anonymous namespace
+} // End anonymous namespace
 
 unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
                                  EnterWindowMask | LeaveWindowMask | ExposureMask;

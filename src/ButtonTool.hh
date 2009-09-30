@@ -31,7 +31,7 @@ class ButtonTheme;
 namespace FbTk {
 class Button;
 class ImageControl;
-};
+}
 
 class ButtonTool: public GenericTool {
 public:

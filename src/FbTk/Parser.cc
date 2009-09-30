@@ -23,4 +23,4 @@
 
 namespace FbTk {
     const Parser::Item Parser::s_empty_item("", "");
-};
+}

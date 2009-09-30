@@ -37,7 +37,7 @@ inline unsigned char maxValue(unsigned short colval) {
    return colval == 65535 ? 0xFF : static_cast<unsigned char>(colval/0xFF);
 }
 
-};
+}
 
 namespace FbTk {
 
@@ -184,4 +184,4 @@ void Color::setRGB(unsigned short red, unsigned short green, unsigned short blue
     m_blue = blue;
 }
 
-};
+}

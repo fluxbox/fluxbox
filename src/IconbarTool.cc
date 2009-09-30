@@ -241,7 +241,7 @@ private:
     Focusable &m_win;
 };
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
                          FbTk::ThemeProxy<IconbarTheme> &focused_theme,

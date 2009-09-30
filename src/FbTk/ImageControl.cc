@@ -94,7 +94,7 @@ inline unsigned long bsqrt(unsigned long x) {
     }
 }
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 struct ImageControl::Cache {
     Pixmap pixmap;

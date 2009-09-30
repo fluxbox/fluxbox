@@ -50,7 +50,7 @@ namespace Image {
     void removeAllSearchPaths();
     /// locates an image in the search path
     std::string locateFile(const std::string &filename);
-};
+}
 
 /// common interface for all image classes
 class ImageBase {

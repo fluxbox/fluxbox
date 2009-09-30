@@ -66,7 +66,7 @@ void checkAtoms() {
     }
 }
 
-}; // end of anonymous namespace
+} // end of anonymous namespace
 
 FbPixmap::FbPixmap():m_pm(0),
                      m_width(0), m_height(0),

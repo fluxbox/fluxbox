@@ -41,7 +41,7 @@ class Application;
 
 namespace FbTk {
 class AutoReloadHelper;
-};
+}
 
 /**
  * Class Remember is an atomhandler to avoid interfering with

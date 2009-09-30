@@ -67,5 +67,5 @@ private:
     int m_lock;
 };
 
-};
+}
 #endif // FBTK_MULTLAYERS_HH

@@ -77,7 +77,7 @@ REGISTER_COMMAND_PARSER(and, parseLogicCommand, bool);
 REGISTER_COMMAND_PARSER(or, parseLogicCommand, bool);
 REGISTER_COMMAND_PARSER(xor, parseLogicCommand, bool);
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 Command<void> *IfCommand::parse(const std::string &command, const std::string &args,
                           bool trusted) {

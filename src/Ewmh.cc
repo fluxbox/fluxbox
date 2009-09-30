@@ -288,7 +288,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     winclient.setIcon(icon);
 }
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 class Ewmh::EwmhAtoms {
 public:
@@ -1535,3 +1535,4 @@ void Ewmh::updateFrameExtents(FluxboxWindow &win) {
                               (unsigned char *)extents, 4);
     }
 }
+

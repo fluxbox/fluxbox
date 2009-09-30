@@ -59,7 +59,7 @@ FbTk::ImageXPM xpm_loader;
 #endif
 
 
-}; // end of anonymous namespace
+} // end of anonymous namespace
 
 namespace FbTk {
 

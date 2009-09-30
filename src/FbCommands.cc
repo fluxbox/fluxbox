@@ -466,7 +466,7 @@ void SetResourceValueDialogCmd::execute() {
 
     FbTk::FbWindow *win = new CommandDialog(*screen,  "Type resource name and the value", "SetResourceValue ");
     win->show();
-};
+}
 
 REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(bindkey, FbCommands::BindKeyCmd, void);
 

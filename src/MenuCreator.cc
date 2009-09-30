@@ -364,7 +364,7 @@ bool getStart(FbMenuParser &parser, string &label, FbTk::StringConvertor &labelc
     return true;
 }
 
-}; // end of anonymous namespace
+} // end of anonymous namespace
 
 FbMenu *MenuCreator::createMenu(const string &label, int screen_number) {
     BScreen *screen = Fluxbox::instance()->findScreen(screen_number);

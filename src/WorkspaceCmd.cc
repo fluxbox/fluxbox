@@ -189,7 +189,7 @@ REGISTER_COMMAND_PARSER(prevwindow, parseWindowList, void);
 REGISTER_COMMAND_PARSER(prevgroup, parseWindowList, void);
 REGISTER_COMMAND_PARSER(arrangewindows, parseWindowList, void);
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 void AttachCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
@@ -318,7 +318,7 @@ REGISTER_COMMAND_PARSER(rightworkspace, parseIntCmd, void);
 REGISTER_COMMAND_PARSER(leftworkspace, parseIntCmd, void);
 REGISTER_COMMAND_PARSER(workspace, parseIntCmd, void);
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 void NextWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();

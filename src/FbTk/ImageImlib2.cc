@@ -35,7 +35,7 @@ typedef ScreenImlibContextContainer::iterator ScreenImlibContext;
 
 ScreenImlibContextContainer contexts;
 
-}; // anon namespace
+} // anon namespace
 
 
 namespace FbTk {
