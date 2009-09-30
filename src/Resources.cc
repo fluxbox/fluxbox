@@ -76,18 +76,20 @@ setFromString(char const *strval) {
     //clear old values
     m_value.clear();
 
+    std::string v;
     for (size_t i = 0; i < val.size(); i++) {
-        if (strcasecmp(val[i].c_str(), "Maximize")==0)
+        v = FbTk::StringUtil::toLower(val[i]);
+        if (v == "maximize")
             m_value.push_back(WinButton::MAXIMIZE);
-        else if (strcasecmp(val[i].c_str(), "Minimize")==0)
+        else if (v == "minimize")
             m_value.push_back(WinButton::MINIMIZE);
-        else if (strcasecmp(val[i].c_str(), "Shade")==0)
+        else if (v == "shade")
             m_value.push_back(WinButton::SHADE);
-        else if (strcasecmp(val[i].c_str(), "Stick")==0)
+        else if (v == "stick")
             m_value.push_back(WinButton::STICK);
-        else if (strcasecmp(val[i].c_str(), "MenuIcon")==0)
+        else if (v == "menuIcon")
             m_value.push_back(WinButton::MENUICON);
-        else if (strcasecmp(val[i].c_str(), "Close")==0)
+        else if (v == "close")
             m_value.push_back(WinButton::CLOSE);
     }
 }
