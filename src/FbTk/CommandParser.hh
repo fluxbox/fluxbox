@@ -33,9 +33,7 @@ namespace FbTk {
 
 // helper for registering a function to parse arguments
 #define REGISTER_COMMAND_PARSER(name, parser, type) \
-  namespace { \
-    static const bool p_register_command_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &parser); \
-  }
+    static const bool p_register_command_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &parser)
 
 // include some basic Command<void> creators
 template <typename ClassName, typename Type>
@@ -45,9 +43,7 @@ Command<Type> *CommandCreator(const string &name, const string &args,
 }
 
 #define REGISTER_COMMAND(name, classname, type) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::CommandCreator<classname, type>); \
-  }
+    static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::CommandCreator<classname, type>)
 
 template <typename ClassName, typename Type>
 Command<Type> *CommandCreatorWithArgs(const string &name, const string &args,
@@ -56,9 +52,7 @@ Command<Type> *CommandCreatorWithArgs(const string &name, const string &args,
 }
 
 #define REGISTER_COMMAND_WITH_ARGS(name, classname, type) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::CommandCreatorWithArgs<classname, type>); \
-  }
+    static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::CommandCreatorWithArgs<classname, type>)
 
 template <typename ClassName, typename Type>
 Command<Type> *UntrustedCommandCreator(const string &name, const string &args,
@@ -68,9 +62,7 @@ Command<Type> *UntrustedCommandCreator(const string &name, const string &args,
 }
 
 #define REGISTER_UNTRUSTED_COMMAND(name, classname, type) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::UntrustedCommandCreator<classname, type>); \
-  }
+    static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::UntrustedCommandCreator<classname, type>)
 
 template <typename ClassName, typename Type>
 Command<Type> *UntrustedCommandCreatorWithArgs(const string &name,
@@ -80,9 +72,7 @@ Command<Type> *UntrustedCommandCreatorWithArgs(const string &name,
 }
 
 #define REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(name, classname, type) \
-  namespace { \
-    static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::UntrustedCommandCreatorWithArgs<classname, type>); \
-  }
+    static const bool p_register_##type_##name = FbTk::CommandParser<type>::instance().registerCommand(#name, &FbTk::UntrustedCommandCreatorWithArgs<classname, type>)
 
 template <typename Type>
 class CommandParser {
