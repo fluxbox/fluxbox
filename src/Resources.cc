@@ -113,7 +113,7 @@ setFromString(const char *strval) {
 template<>
 void FbTk::Resource<long long>::
 setFromString(const char *strval) {
-    if (sscanf(strval, "%llu", &m_value) != 1)
+    if (sscanf(strval, "%lld", &m_value) != 1)
         setDefaultValue();
 }
 

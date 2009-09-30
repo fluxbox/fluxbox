@@ -120,7 +120,7 @@ void ThemeItem<unsigned int>::setDefaultValue() {
 
 template <>
 void ThemeItem<unsigned int>::setFromString(const char *str) {
-    sscanf(str, "%d", &m_value);
+    sscanf(str, "%u", &m_value);
 }
 
 template <>
