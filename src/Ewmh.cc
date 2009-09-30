@@ -822,7 +822,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     const BScreen::WorkspaceNames &workspacenames = screen.getWorkspaceNames();
     const size_t number_of_desks = workspacenames.size();
 
-    char *names[number_of_desks];
+    char** names = new char*[number_of_desks];
 
     for (size_t i = 0; i < number_of_desks; i++) {
         names[i] = new char[workspacenames[i].size() + 1]; // +1 for \0
@@ -844,13 +844,15 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
 #else
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
-			 &text, m_net->desktop_names);
+                &text, m_net->desktop_names);
         XFree(text.value);
     }
 #endif
 
     for (size_t i = 0; i < number_of_desks; i++)
-        delete [] names[i];
+        delete[] names[i];
+
+    delete[] names;
 
 }
 

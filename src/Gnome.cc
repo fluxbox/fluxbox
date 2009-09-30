@@ -228,7 +228,7 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
     size_t number_of_desks = screen.getWorkspaceNames().size();
     const BScreen::WorkspaceNames &workspace_names = screen.getWorkspaceNames();
     // convert our desktop names to a char * so we can send it
-    char *names[number_of_desks];
+    char** names = new char*[number_of_desks];
 
     for (size_t i = 0; i < number_of_desks; i++) {
         names[i] = new char[workspace_names[i].size() + 1];
@@ -238,13 +238,15 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
     XTextProperty  text;
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
-			 &text, m_gnome_wm_win_workspace_names);
+                &text, m_gnome_wm_win_workspace_names);
         XFree(text.value);
     }
 
     // destroy name buffers
     for (size_t i = 0; i < number_of_desks; i++)
-        delete [] names[i];
+        delete[] names[i];
+
+    delete[] names;
 }
 
 void Gnome::updateCurrentWorkspace(BScreen &screen) {
