@@ -139,12 +139,10 @@ public:
         }
     }
 protected:
-    static void ensureXrmIsInitialize();
 
     int m_db_lock;
 
 private:
-    static bool m_init;
 
     ResourceList m_resourcelist;
 
@@ -168,11 +166,8 @@ template <typename T>
 class Resource:public Resource_base, public Accessor<T> {
 public:
     typedef T Type;
-    Resource(ResourceManager &rm, T val,
-             const std::string &name, const std::string &altname):
-    Resource_base(name, altname),
-        m_value(val), m_defaultval(val),
-    m_rm(rm) {
+    Resource(ResourceManager &rm, T val, const std::string &name, const std::string &altname):
+        Resource_base(name, altname), m_value(val), m_defaultval(val), m_rm(rm) {
         m_rm.addResource(*this); // add this to resource handler
     }
     virtual ~Resource() {

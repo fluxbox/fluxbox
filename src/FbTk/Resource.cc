@@ -42,7 +42,11 @@ ResourceManager::ResourceManager(const char *filename, bool lock_db) :
  m_database(0),
  m_filename(filename ? filename : "")
 {
-    ensureXrmIsInitialize();
+    static bool xrm_initialized = false;
+    if (!xrm_initialized) {
+        XrmInitialize();
+        xrm_initialized = true;
+    }
 
     if (lock_db)
         lock();
@@ -53,7 +57,6 @@ ResourceManager::~ResourceManager() {
         delete m_database;
 }
 
-bool ResourceManager::m_init = false;
 
 /**
   reloads all resources from resourcefile
@@ -196,13 +199,6 @@ void ResourceManager::setResourceValue(const string &resname, const string &valu
     if (res != 0)
         res->setFromString(value.c_str());
 
-}
-
-void ResourceManager::ensureXrmIsInitialize() {
-    if (!m_init) {
-        XrmInitialize();
-        m_init = true;
-    }
 }
 
 ResourceManager &ResourceManager::lock() {
