@@ -34,7 +34,7 @@ DEFAULT_WINDOWMENU=@DEFAULT_WINDOWMENU@
 PROGRAM_PREFIX=@program_prefix@
 PROGRAM_SUFFIX=@program_suffix@
 
-AM_CPPFLAGS=-I$(srcdir)/FbTk
+AM_CPPFLAGS=
 
 bin_PROGRAMS= fluxbox
 BUILT_SOURCES = defaults.hh
