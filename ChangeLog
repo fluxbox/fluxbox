@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*09/10/01:
+   * Cleanup, compiler fixes, simplification all over the source (Mathias)
+
 *09/09/23:
    * Bugfix: Empty submenus lead to misfunction of the 'HideMenus' command (Mathias)
      FbTk/Menu.cc
