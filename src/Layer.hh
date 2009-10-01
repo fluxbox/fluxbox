@@ -48,7 +48,7 @@ public:
     static int getNumFromString(const std::string &str) {
         int tempnum = 0;
         std::string v = FbTk::StringUtil::toLower(str);
-        if (sscanf(str.c_str(), "%d", &tempnum) == 1)
+        if (FbTk::StringUtil::extractNumber(str, tempnum))
             return tempnum;
         if (v == "menu")
             return ::Layer::MENU;

@@ -30,6 +30,14 @@ namespace FbTk {
 
 namespace StringUtil {
 
+/// \@{
+/// @param in - input string, might be 0xab or 0123
+/// @param out - result if extraction was ok
+/// @return 1 - ok, result stored in 'out'
+int extractNumber(const std::string& in, unsigned int& out);
+int extractNumber(const std::string& in, int& out);
+/// \@}
+
 /// creates a number to a string
 std::string number2String(int num);
 

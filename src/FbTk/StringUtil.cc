@@ -48,6 +48,11 @@
   #include <string.h>
 #endif
 
+#ifdef HAVE_CERRNO
+  #include <cerrno>
+#else
+  #include <errno.h>
+#endif
 
 #include <memory>
 #include <algorithm>
@@ -56,10 +61,51 @@
 using std::string;
 using std::transform;
 
+namespace {
+
+int extractLongNumber(const char* in, long long int& out) {
+
+    errno = 0;
+
+    int ret = 0;
+    char* end = 0;
+    long long int result = strtoll(in, &end, 0);
+
+    if (errno == 0 && end != in) {
+        out = result;
+        ret = 1;
+    }
+
+    return ret;
+}
+
+template<typename T>
+int extractNumber(const std::string& in, T& out) {
+
+    long long int result = 0;
+
+    if (::extractLongNumber(in.c_str(), result) && out >= 0) {
+        out = static_cast<T>(result);
+        return 1;
+    }
+
+    return 0;
+}
+
+}
+
+
 namespace FbTk {
 
 namespace StringUtil {
 
+int extractNumber(const std::string& in, int& out) {
+    return ::extractNumber<int>(in, out);
+}
+
+int extractNumber(const std::string& in, unsigned int& out) {
+    return ::extractNumber<unsigned int>(in, out);
+}
 
 std::string number2String(int num) {
     char s[128];
