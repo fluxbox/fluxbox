@@ -36,6 +36,12 @@
   #include <string.h>
 #endif
 
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+
 #include <X11/Xutil.h>
 
 #ifdef SHAPE

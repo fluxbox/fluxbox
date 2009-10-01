@@ -23,7 +23,16 @@
 
 #include "FbTk/StringUtil.hh"
 
-#include <cstdlib>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+
 #include <errno.h>
 
 bool WindowState::useBorder() const {
