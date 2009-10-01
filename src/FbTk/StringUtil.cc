@@ -60,6 +60,13 @@ namespace FbTk {
 
 namespace StringUtil {
 
+
+std::string number2String(int num) {
+    char s[128];
+    sprintf(s, "%d", num);
+    return std::string(s);
+}
+
 /**
    Tries to find a string in another and
    ignoring the case of the characters

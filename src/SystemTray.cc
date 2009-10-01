@@ -180,10 +180,8 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     Display *disp = fluxbox->display();
 
     // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
-    char intbuff[16];
-    sprintf(intbuff, "%d", m_window.screenNumber());
     string atom_name("_NET_SYSTEM_TRAY_S");
-    atom_name += intbuff; // append number
+    atom_name += FbTk::StringUtil::number2String(m_window.screenNumber());
 
     // get selection owner and see if it's free
     Atom tray_atom = XInternAtom(disp, atom_name.c_str(), False);
@@ -232,10 +230,8 @@ SystemTray::~SystemTray() {
     fluxbox->removeAtomHandler(m_handler.get());
     Display *disp = fluxbox->display();
     // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
-    char intbuff[16];
-    sprintf(intbuff, "%d", m_window.screenNumber());
     string atom_name("_NET_SYSTEM_TRAY_S");
-    atom_name += intbuff; // append number
+    atom_name += FbTk::StringUtil::number2String(m_window.screenNumber());
 
     // get selection owner and see if it's free
     Atom tray_atom = XInternAtom(disp, atom_name.c_str(), False);

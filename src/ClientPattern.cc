@@ -102,39 +102,42 @@ ClientPattern::ClientPattern(const char *str):
                 negate = true;
                 memstr.assign(memstr, 0, memstr.length()-1);
             }
-            if (strcasecmp(memstr.c_str(), "name") == 0) {
+
+            memstr = FbTk::StringUtil::toLower(memstr);
+
+            if (memstr == "name") {
                 prop = NAME;
-            } else if (strcasecmp(memstr.c_str(), "class") == 0) {
+            } else if (memstr == "class") {
                 prop = CLASS;
-            } else if (strcasecmp(memstr.c_str(), "title") == 0) {
+            } else if (memstr == "title") {
                 prop = TITLE;
-            } else if (strcasecmp(memstr.c_str(), "role") == 0) {
+            } else if (memstr == "role") {
                 prop = ROLE;
-            } else if (strcasecmp(memstr.c_str(), "transient") == 0) {
+            } else if (memstr == "transient") {
                 prop = TRANSIENT;
-            } else if (strcasecmp(memstr.c_str(), "maximized") == 0) {
+            } else if (memstr == "maximized") {
                 prop = MAXIMIZED;
-            } else if (strcasecmp(memstr.c_str(), "minimized") == 0) {
+            } else if (memstr == "minimized") {
                 prop = MINIMIZED;
-            } else if (strcasecmp(memstr.c_str(), "shaded") == 0) {
+            } else if (memstr == "shaded") {
                 prop = SHADED;
-            } else if (strcasecmp(memstr.c_str(), "stuck") == 0) {
+            } else if (memstr == "stuck") {
                 prop = STUCK;
-            } else if (strcasecmp(memstr.c_str(), "focushidden") == 0) {
+            } else if (memstr == "focushidden") {
                 prop = FOCUSHIDDEN;
-            } else if (strcasecmp(memstr.c_str(), "iconhidden") == 0) {
+            } else if (memstr == "iconhidden") {
                 prop = ICONHIDDEN;
-            } else if (strcasecmp(memstr.c_str(), "workspace") == 0) {
+            } else if (memstr == "workspace") {
                 prop = WORKSPACE;
-            } else if (strcasecmp(memstr.c_str(), "workspacename") == 0) {
+            } else if (memstr == "workspacename") {
                 prop = WORKSPACENAME;
-            } else if (strcasecmp(memstr.c_str(), "head") == 0) {
+            } else if (memstr == "head") {
                 prop = HEAD;
-            } else if (strcasecmp(memstr.c_str(), "layer") == 0) {
+            } else if (memstr == "layer") {
                 prop = LAYER;
-            } else if (strcasecmp(memstr.c_str(), "urgent") == 0) {
+            } else if (memstr == "urgent") {
                 prop = URGENT;
-            } else if (strcasecmp(memstr.c_str(), "screen") == 0) {
+            } else if (memstr == "screen") {
                 prop = SCREEN;
             } else {
                 prop = NAME;
@@ -279,9 +282,7 @@ bool ClientPattern::match(const Focusable &win) const {
         if ((*it)->orig == "[current]") {
             WinClient *focused = FocusControl::focusedWindow();
             if ((*it)->prop == WORKSPACE) {
-                char tmpstr[128];
-                sprintf(tmpstr, "%d", win.screen().currentWorkspaceID());
-                if (!(*it)->negate ^ (getProperty((*it)->prop, win) == tmpstr))
+                if (!(*it)->negate ^ (getProperty((*it)->prop, win) == FbTk::StringUtil::number2String(win.screen().currentWorkspaceID())))
                     return false;
             } else if ((*it)->prop == WORKSPACENAME) {
                 const Workspace *w = win.screen().currentWorkspace();
@@ -292,16 +293,11 @@ bool ClientPattern::match(const Focusable &win) const {
                                     (getProperty((*it)->prop, win) ==
                                      getProperty((*it)->prop, *focused))))
                 return false;
-        } else if ((*it)->prop == HEAD &&
-                   (*it)->orig == "[mouse]") {
-            int mouse_head = win.screen().getCurrHead();
-            char num[32];
-            sprintf(num, "%d", mouse_head);
-            if (!(*it)->negate ^ (getProperty((*it)->prop, win) == num))
+        } else if ((*it)->prop == HEAD && (*it)->orig == "[mouse]") {
+            if (!(*it)->negate ^ (getProperty((*it)->prop, win) == FbTk::StringUtil::number2String(win.screen().getCurrHead())))
                 return false;
 
-        } else if (!(*it)->negate ^
-                   (*it)->regexp.match(getProperty((*it)->prop, win)))
+        } else if (!(*it)->negate ^ (*it)->regexp.match(getProperty((*it)->prop, win)))
             return false;
     }
     return true;
@@ -385,9 +381,7 @@ string ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
         break;
     case WORKSPACE: {
         unsigned int wsnum = (fbwin ? fbwin->workspaceNumber() : client.screen().currentWorkspaceID());
-        char tmpstr[128];
-        sprintf(tmpstr, "%d", wsnum);
-        return std::string(tmpstr);
+        return FbTk::StringUtil::number2String(wsnum);
         break;
     }
     case WORKSPACENAME: {
@@ -401,9 +395,7 @@ string ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
         if (!fbwin)
             return "";
         int head = client.screen().getHead(fbwin->fbWindow());
-        char tmpstr[128];
-        sprintf(tmpstr, "%d", head);
-        return std::string(tmpstr);
+        return FbTk::StringUtil::number2String(head);
         break;
     }
     case LAYER:
@@ -415,9 +407,7 @@ string ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
         break;
     case SCREEN: {
         int screenId = client.screen().screenNumber();
-        char tmpstr[32];
-        sprintf(tmpstr, "%d", screenId);
-        return std::string(tmpstr);
+        return FbTk::StringUtil::number2String(screenId);
         break;
     }
     }

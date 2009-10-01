@@ -22,16 +22,7 @@
 #ifndef LAYER_HH
 #define LAYER_HH
 
-#include <string>
-#include <cstdio>
-
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
-using std::string;
+#include "FbTk/StringUtil.hh"
 
 /** 
  * (This is not the layer->raise/lower handling stuff, @see FbTk::Layer)
@@ -54,52 +45,51 @@ public:
 
     explicit Layer(int i) : m_num(i) {};
 
-    static int getNumFromString(const string &str) {
+    static int getNumFromString(const std::string &str) {
         int tempnum = 0;
+        std::string v = FbTk::StringUtil::toLower(str);
         if (sscanf(str.c_str(), "%d", &tempnum) == 1)
             return tempnum;
-        if (strcasecmp(str.c_str(), "Menu") == 0)
+        if (v == "menu")
             return ::Layer::MENU;
-        if (strcasecmp(str.c_str(), "AboveDock") == 0)
+        if (v == "abovedock")
             return ::Layer::ABOVE_DOCK;
-        if (strcasecmp(str.c_str(), "Dock") == 0)
+        if (v == "dock")
             return ::Layer::DOCK;
-        if (strcasecmp(str.c_str(), "Top") == 0)
+        if (v == "top")
             return ::Layer::TOP;
-        if (strcasecmp(str.c_str(), "Normal") == 0)
+        if (v == "normal")
             return ::Layer::NORMAL;
-        if (strcasecmp(str.c_str(), "Bottom") == 0)
+        if (v == "bottom")
             return ::Layer::BOTTOM;
-        if (strcasecmp(str.c_str(), "Desktop") == 0)
+        if (v == "desktop")
             return ::Layer::DESKTOP;
         return -1;
     }
 
-    static string getString(int num) {
+    static std::string getString(int num) {
         switch (num) {
         case ::Layer::MENU:
-            return string("Menu");
+            return std::string("Menu");
         case ::Layer::ABOVE_DOCK:
-            return string("AboveDock");
+            return std::string("AboveDock");
         case ::Layer::DOCK:
-            return string("Dock");
+            return std::string("Dock");
         case ::Layer::TOP:
-            return string("Top");
+            return std::string("Top");
         case ::Layer::NORMAL:
-            return string("Normal");
+            return std::string("Normal");
         case ::Layer::BOTTOM:
-            return string("Bottom");
+            return std::string("Bottom");
         case ::Layer::DESKTOP:
-            return string("Desktop");
+            return std::string("Desktop");
         default:
-            char tmpstr[128];
-            sprintf(tmpstr, "%d", num);
-            return string(tmpstr);
+           return FbTk::StringUtil::number2String(num);
         }
     }
 
     int getNum() const { return m_num; }
-    string getString() const { return getString(m_num); }
+    std::string getString() const { return getString(m_num); }
 
     Layer &operator=(int num) { m_num = num; return *this; }
 

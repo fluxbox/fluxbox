@@ -1231,10 +1231,8 @@ bool BScreen::isKdeDockapp(Window client) const {
 bool BScreen::addKdeDockapp(Window client) {
 
     XSelectInput(FbTk::App::instance()->display(), client, StructureNotifyMask);
-    char intbuff[16];
-    sprintf(intbuff, "%d", screenNumber());
     string atom_name("_NET_SYSTEM_TRAY_S");
-    atom_name += intbuff; // append number
+    atom_name += FbTk::StringUtil::number2String(screenNumber());
     // find the right atomhandler that has the name: _NET_SYSTEM_TRAY_S<num>
     AtomHandler *handler = Fluxbox::instance()->getAtomHandler(atom_name);
     FbTk::EventHandler *evh  = 0;

@@ -30,6 +30,8 @@ namespace FbTk {
 
 namespace StringUtil {
 
+/// creates a number to a string
+std::string number2String(int num);
 
 /// Similar to `strstr' but this function ignores the case of both strings
 const char *strcasestr(const char *str, const char *ptn);

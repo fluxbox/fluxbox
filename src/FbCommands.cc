@@ -144,7 +144,6 @@ int ExecuteCmd::run() {
 
     string displaystring("DISPLAY=");
     displaystring += DisplayString(FbTk::App::instance()->display());
-    char intbuff[64];
     int screen_num = m_screen_num;
     if (screen_num < 0) {
         if (Fluxbox::instance()->mouseScreen() == 0)
@@ -152,8 +151,6 @@ int ExecuteCmd::run() {
         else
             screen_num = Fluxbox::instance()->mouseScreen()->screenNumber();
     }
-
-    sprintf(intbuff, "%d", screen_num);
 
     // get shell path from the environment
     // this process exits immediately, so we don't have to worry about memleaks
@@ -163,7 +160,7 @@ int ExecuteCmd::run() {
 
     // remove last number of display and add screen num
     displaystring.erase(displaystring.size()-1);
-    displaystring += intbuff;
+    displaystring += FbTk::StringUtil::number2String(screen_num);
 
     setsid();
     putenv(const_cast<char *>(displaystring.c_str()));
