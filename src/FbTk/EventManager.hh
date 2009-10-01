@@ -19,6 +19,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#ifndef FBTK_EVENTMANAGER_HH
+#define FBTK_EVENTMANAGER_HH
+
 #include <map>
 #include <X11/Xlib.h>
 
@@ -66,3 +69,6 @@ private:
 };
 
 } //end namespace FbTk
+
+#endif // FBTK_EVENTMANAGER_HH
+
