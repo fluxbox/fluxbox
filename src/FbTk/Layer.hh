@@ -43,8 +43,6 @@ public:
     virtual void raise(ItemType &item);
     /// move item to bottom
     virtual void lower(ItemType &item);
-    /// @return layer item on specific position, on failure 0
-    ItemType *getItem(unsigned int position);
     /// @return number of elements in layer
     size_t size() const { return m_list.size(); }
     /// @return layer list
@@ -100,19 +98,6 @@ void Layer<ItemType, Container>::lower(ItemType &item) {
     remove(item);
     insert(item, size());
     restack();
-}
-
-template <typename ItemType, typename Container>
-ItemType *Layer<ItemType, Container>::getItem(unsigned int position) {
-    if (position >= m_list.size())
-        return 0;
-    iterator it = m_list.begin();
-    iterator it_end = m_list.end();
-    for (unsigned int i=0; i < position && it != it_end; i++);
-        
-    if (it == it_end) return 0;
-    else 
-        return *it;
 }
 
 template <typename ItemType, typename Container>

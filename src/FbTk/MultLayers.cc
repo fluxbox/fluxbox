@@ -55,36 +55,6 @@ XLayerItem *MultLayers::getLowestItemAboveLayer(int layernum) {
 
 }
 
-XLayerItem *MultLayers::getItemBelow(XLayerItem &item) {
-    XLayer &curr_layer = item.getLayer();
-
-    // assume that the LayerItem does exist in a layer.
-    XLayerItem *ret = curr_layer.getItemBelow(item);
-
-    if (ret == 0) {
-        int num = curr_layer.getLayerNum()-1;
-        while (num >= 0 && !ret) {
-            ret = m_layers[num]->getItemBelow(item);
-            num--;
-        }
-    }
-
-    return ret;
-}
-
-XLayerItem *MultLayers::getItemAbove(XLayerItem &item) {
-    XLayer &curr_layer = item.getLayer();
-
-    // assume that the LayerItem does exist in a layer.
-    XLayerItem *ret = curr_layer.getItemAbove(item);
-
-    if (!ret) {
-        ret = getLowestItemAboveLayer(curr_layer.getLayerNum());
-    }
-
-    return ret;
-}
-
 void MultLayers::addToTop(XLayerItem &item, int layernum) {
     if (layernum < 0)
         layernum = 0;

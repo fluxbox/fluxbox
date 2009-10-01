@@ -314,28 +314,3 @@ XLayerItem *XLayer::getLowestItem() {
         return itemList().back();
 }
 
-XLayerItem *XLayer::getItemBelow(XLayerItem &item) {
-    // get our iterator
-    iterator it = find(itemList().begin(), itemList().end(), &item);
-
-    // go one lower
-    it++;
-
-    // if one lower is the end, there is no item below, otherwise we've got it
-    if (it == itemList().end())
-        return 0;
-    else
-        return *it;
-}
-
-XLayerItem *XLayer::getItemAbove(XLayerItem &item) {
-    // get our iterator
-    iterator it = find(itemList().begin(), itemList().end(), &item);
-
-    // if this is the beginning (top-most item), do nothing, otherwise give the next one up
-    // the list (which must be there since we aren't the beginning)
-    if (it == itemList().begin())
-        return 0;
-    else
-        return *(--it);
-}

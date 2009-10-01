@@ -49,9 +49,6 @@ public:
     int countWindows();
     void stackBelowItem(XLayerItem &item, XLayerItem *above);
     XLayerItem *getLowestItem();
-    XLayerItem *getItemBelow(XLayerItem &item);
-    XLayerItem *getItemAbove(XLayerItem &item);
-
     const ItemList &getItemList() const { return itemList(); }
     ItemList &getItemList() { return itemList(); }
 
