@@ -26,7 +26,7 @@
 
 namespace FbTk {
 
-class Accessor<class T>;
+template <typename> class Accessor;
 
 /// a bool menu item
 class BoolMenuItem: public FbTk::MenuItem {

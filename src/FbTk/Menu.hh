@@ -38,10 +38,10 @@
 
 namespace FbTk {
 
-class Command<class T>;
+template <typename T> class Command;
 class MenuItem;
 class ImageControl;
-class RefCount<class T>;
+template <typename T> class RefCount;
 
 ///   Base class for menus
 class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer,

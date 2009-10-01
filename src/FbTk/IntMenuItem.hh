@@ -26,7 +26,7 @@
 
 namespace FbTk {
 
-class Accessor<class T>;
+template <typename T> class Accessor;
 
 /// Changes an resource integer value between min and max
 class IntMenuItem: public FbTk::MenuItem {
