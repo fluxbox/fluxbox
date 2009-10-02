@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*09/10/02:
+   * Bugfix: fluxbox-update_configs wiped out keys file (Mathias)
+     util/fluxbox-update_configs.cc
+
 *09/10/01:
    * Cleanup, compiler fixes, simplification all over the source (Mathias)
 
