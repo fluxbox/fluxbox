@@ -489,12 +489,6 @@ string read_file(const string& filename) {
     string linebuffer;
     while (!infile.eof()) {
         getline(infile, linebuffer);
-
-        // check if we read something at all. if its 0, its a strange file
-        // (eg a directory) or we are at the end
-        if (infile.gcount() == 0) {
-            break;
-        }
         whole_file += linebuffer + "\n";
     }
     infile.close();
