@@ -28,6 +28,7 @@
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/FileUtil.hh"
 #include "FbTk/App.hh"
 #include "FbTk/Command.hh"
 #include "FbTk/RefCount.hh"
@@ -275,6 +276,10 @@ void Keys::reload() {
     }
 
     FbTk::App::instance()->sync(false);
+
+    if (! FbTk::FileUtil::isRegularFile(m_filename.c_str())) {
+        return;
+    }
 
     // open the file
     ifstream infile(m_filename.c_str());

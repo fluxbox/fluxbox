@@ -22,6 +22,7 @@
 #include "../src/FbTk/I18n.hh"
 #include "../src/FbTk/Resource.hh"
 #include "../src/FbTk/StringUtil.hh"
+#include "../src/FbTk/FileUtil.hh"
 
 #include "defaults.hh"
 
@@ -473,11 +474,9 @@ string read_file(const string& filename) {
     if (it != file_cache.end())
         return it->second;
 
-    struct stat s;
-    stat(filename.c_str(), &s);
-
-    if (! (s.st_mode & S_IFREG))
+    if (!FbTk::FileUtil::isRegularFile(filename.c_str())) {
         return "";
+    }
 
     // nope, we'll have to read the file
     ifstream infile(filename.c_str());
