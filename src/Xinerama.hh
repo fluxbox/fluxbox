@@ -92,7 +92,6 @@ void XineramaHeadMenu<ItemType>::reloadHeads()
     FbTk::RefCount<FbTk::Command<void> > saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
                                      *Fluxbox::instance(), 
                                      &Fluxbox::save_rc));
-    char tname[128];
     for (int i=1; i <= m_screen.numHeads(); ++i) {
         // TODO: nls
 /*
@@ -102,9 +101,10 @@ void XineramaHeadMenu<ItemType>::reloadHeads()
                     FBNLS::XineramaDefaultHeadFormat,
                     "Head %d"), i); //m_id starts at 0
 */
-        sprintf(tname, "Head %d", i);
+        std::string tname("Head ");
+        tname += FbTk::StringUtil::number2String(i);
         insert(new XineramaHeadMenuItem<ItemType>(
-                   tname, m_object, i, saverc_cmd));
+                   tname.c_str(), m_object, i, saverc_cmd));
     }
     // TODO: nls
     insert(new XineramaHeadMenuItem<ItemType>(
