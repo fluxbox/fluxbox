@@ -29,12 +29,12 @@
 namespace FbTk {
 
 template <typename ItemType, typename Container = std::vector<ItemType *> >
-class Layer {
+class LayerBase {
 public:
     typedef Container ListType;
     typedef typename Container::iterator iterator;
     typedef typename Container::reverse_iterator reverse_iterator;
-    virtual ~Layer() { }
+    virtual ~LayerBase() { }
     /// insert in top by default
     virtual iterator insert(ItemType &item, unsigned int pos=0);
     /// remove item from list
@@ -56,7 +56,7 @@ private:
 };
 
 template <typename ItemType, typename Container>
-typename Container::iterator Layer<ItemType, Container>::insert(ItemType &item, unsigned int position) {
+typename Container::iterator LayerBase<ItemType, Container>::insert(ItemType &item, unsigned int position) {
     // make sure we don't alreay have it in the list
     if (std::find(itemList().begin(), itemList().end(), &item) != itemList().end())
         return m_list.end();
@@ -76,14 +76,14 @@ typename Container::iterator Layer<ItemType, Container>::insert(ItemType &item, 
 
 
 template <typename ItemType, typename Container>
-void Layer<ItemType, Container>::remove(ItemType &item) {
+void LayerBase<ItemType, Container>::remove(ItemType &item) {
     iterator it = std::find(itemList().begin(), itemList().end(), &item);
     if (it != itemList().end())
         m_list.erase(it);
 }
 
 template <typename ItemType, typename Container>
-void Layer<ItemType, Container>::raise(ItemType &item) {
+void LayerBase<ItemType, Container>::raise(ItemType &item) {
     if (&item == itemList().front()) // already at the bottom
         return;
     remove(item);
@@ -92,7 +92,7 @@ void Layer<ItemType, Container>::raise(ItemType &item) {
 }
 
 template <typename ItemType, typename Container>
-void Layer<ItemType, Container>::lower(ItemType &item) {
+void LayerBase<ItemType, Container>::lower(ItemType &item) {
     if (&item == itemList().back()) // already at the bottom
         return;
     remove(item);
@@ -101,7 +101,7 @@ void Layer<ItemType, Container>::lower(ItemType &item) {
 }
 
 template <typename ItemType, typename Container>
-void Layer<ItemType, Container>::restack() {
+void LayerBase<ItemType, Container>::restack() {
 }
 
 

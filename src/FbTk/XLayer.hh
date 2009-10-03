@@ -31,7 +31,7 @@ namespace FbTk {
 class MultLayers;
 class XLayerItem;
 
-class XLayer : public FbTk::Layer<XLayerItem, std::list<XLayerItem *> > {
+class XLayer : public FbTk::LayerBase<XLayerItem, std::list<XLayerItem *> > {
 public:
 
     XLayer(MultLayers &manager, int layernum);
