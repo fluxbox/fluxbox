@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*09/10/03:
+   * Build system cleanup: Check for extension headers (Mathias)
+     autogen.sh configure.in, removed 'missing' file
+
 *09/10/02:
    * Bugfix: fluxbox-update_configs wiped out keys file (Mathias)
      util/fluxbox-update_configs.cc
