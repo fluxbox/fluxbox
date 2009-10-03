@@ -113,7 +113,7 @@ typedef struct scanargs {
 } scanargs;
 
 // look for valid enter or leave events (that may invalidate the earlier one we are interested in)
-static Bool queueScanner(Display *, XEvent *e, char *args) {
+extern "C" int queueScanner(Display *, XEvent *e, char *args) {
     if (e->type == LeaveNotify &&
         e->xcrossing.window == ((scanargs *) args)->w &&
         e->xcrossing.mode == NotifyNormal) {
