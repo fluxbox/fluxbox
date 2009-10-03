@@ -1204,7 +1204,7 @@ void Fluxbox::saveWindowSearchGroup(Window window, FluxboxWindow *data) {
 }
 
 void Fluxbox::saveGroupSearch(Window window, WinClient *data) {
-    m_group_search.insert(pair<Window, WinClient *>(window, data));
+    m_group_search.insert(pair<const Window, WinClient *>(window, data));
 }
 
 

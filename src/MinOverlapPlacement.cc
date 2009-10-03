@@ -79,8 +79,9 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
     // at the end, we'll find the one with minimum overlap
     // the size of this set is at most 2(n+2)(n+1) (n = number of windows)
     // finding overlaps is therefore O(n^3), but it can probably be improved
-    std::list<FluxboxWindow *>::const_reverse_iterator it = windowlist.rbegin(),
-                                                   it_end = windowlist.rend();
+    const std::list<FluxboxWindow* >& const_windowlist = windowlist;
+    std::list<FluxboxWindow *>::const_reverse_iterator it = const_windowlist.rbegin(),
+                                                   it_end = const_windowlist.rend();
     for (; it != it_end; ++it) {
         if (*it == &win) continue;
 
@@ -154,7 +155,7 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
     for (; reg_it != region_set.end(); ++reg_it) {
 
         int overlap = 0;
-        it = windowlist.rbegin();
+        it = const_windowlist.rbegin();
         for (; it != it_end; ++it) {
 
             // get the dimensions of the window

@@ -203,7 +203,7 @@ public:
     /// @return A tracking ID ( not unique )
     template <typename Signal, typename Functor>
     TrackID join(Signal& sig, const Functor& functor) {
-        ValueType value = std::make_pair(&sig, sig.connect(functor));
+        ValueType value = ValueType(&sig, sig.connect(functor));
         std::pair<TrackID, bool> ret = m_connections.insert(value);
         if ( !ret.second ) {
             // failed to insert this functor

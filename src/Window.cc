@@ -187,8 +187,9 @@ void lowerFluxboxWindow(FluxboxWindow &win) {
         win.screen().layerManager().lock();
 
     // lower the windows from the top down, so they don't change stacking order
-    WinClient::TransientList::const_reverse_iterator it = win.winClient().transientList().rbegin();
-    WinClient::TransientList::const_reverse_iterator it_end = win.winClient().transientList().rend();
+    const WinClient::TransientList& transients = win.winClient().transientList();
+    WinClient::TransientList::const_reverse_iterator it =     transients.rbegin();
+    WinClient::TransientList::const_reverse_iterator it_end = transients.rend();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && !(*it)->fbwindow()->isIconic())
             // TODO: should we also check if it is the active client?
