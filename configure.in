@@ -18,6 +18,13 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 
+AC_C_CONST
+AC_C_INLINE
+
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+
+
 AC_CHECK_PROGS(regex_cmd, sed)
 if test x$regex_cmd = "x"; then
   AC_MSG_ERROR([error. sed is required to build the data files.])
@@ -25,12 +32,15 @@ fi
 
 dnl Check for system header files
 AC_HEADER_STDC
+AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(errno.h ctype.h dirent.h fcntl.h libgen.h \
                  locale.h nl_types.h process.h signal.h stdarg.h \
                  stdio.h time.h unistd.h \
                  sys/param.h sys/select.h sys/signal.h sys/stat.h \
                  sys/time.h sys/types.h sys/wait.h \
-                 iconv.h)
+                 langinfo.h iconv.h)
+
+
 
 AC_CHECK_HEADERS(sstream, ,
         [ AC_CHECK_HEADERS(strstream,,
@@ -40,11 +50,21 @@ AC_CHECK_HEADERS(sstream, ,
 
 AC_CHECK_HEADERS(cassert cctype cerrno cmath cstdarg cstdio cstdlib cstring ctime)
 
-AC_HEADER_TIME
 
 dnl Check for existance of basename(), setlocale() and strftime()
+AC_FUNC_CLOSEDIR_VOID
+AC_FUNC_ERROR_AT_LINE
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_FUNC_SELECT_ARGTYPES
+AC_FUNC_STAT
+
 AC_CHECK_FUNCS(basename, , AC_CHECK_LIB(gen, basename, LIBS="$LIBS -lgen"))
-AC_CHECK_FUNCS(getpid setlocale sigaction strcasestr snprintf vsnprintf catopen catgets catclose)
+AC_CHECK_FUNCS(catclose catgets catopen getpid gettimeofday memset mkdir \
+    nl_langinfo putenv regcomp select setenv setlocale sigaction snprintf \
+    sqrt strcasecmp strcasestr strchr strstr strtol strtoul vsnprintf)
+
 dnl The autoconf test for strftime is broken now (due to gcc 3.3 bug?):
 dnl Gcc 3.3 testprog = ``extern "C" char strftime;'', build with g++ test.cc
 dnl breaks with:
@@ -68,6 +88,8 @@ size_t x = strftime(s, 5, "%a", localtime(&t));
 ],
 [AC_MSG_RESULT(no)])
 
+
+AC_STRUCT_TM
 
 dnl ---------------
 dnl CHECK FOR ICONV
@@ -608,21 +630,6 @@ AC_TYPE_SIGNAL
 dnl Determine if maintainer portions of the Makefiles should be included.
 dnl AM_MAINTAINER_MODE
 
-dnl Print results
-AC_MSG_RESULT([])
-AC_MSG_RESULT([	$PACKAGE version $VERSION configured successfully.])
-AC_MSG_RESULT([])
-AC_MSG_RESULT([Using '$prefix' for installation.])
-AC_MSG_RESULT([Using '$DEFAULT_MENU' for location menu file.])
-AC_MSG_RESULT([Using '$DEFAULT_STYLE' by default style.])
-AC_MSG_RESULT([Using '$DEFAULT_KEYS' for location keys file.])
-AC_MSG_RESULT([Using '$DEFAULT_INIT' for location init file.])
-AC_MSG_RESULT([Using '$LOCALE_PATH' for nls files.])
-AC_MSG_RESULT([Using '$CXX' for C++ compiler.])
-AC_MSG_RESULT([Building with '$CXXFLAGS' for C++ compiler flags.])
-AC_MSG_RESULT([Building with '$LIBS' for linker flags.])
-AC_MSG_RESULT([])
-
 dnl Output files
 AM_CONFIG_HEADER(config.h)
 
@@ -693,66 +700,19 @@ nls/zh_CN/Makefile
 nls/zh_TW/Makefile
 )
 
-dnl autoscan suggested these as of 2cac7ddf6fb0b3c937c4ea7b55b20960e362a360 
-dnl wanted by: src/ClockTool.cc:262
-AC_CHECK_FUNCS([gettimeofday])
-dnl wanted by: src/Ewmh.cc:770
-AC_CHECK_FUNCS([memset])
-dnl wanted by: src/fluxbox.cc:553
-AC_CHECK_FUNCS([mkdir])
-dnl wanted by: src/FbTk/FbString.cc:80
-AC_CHECK_FUNCS([nl_langinfo])
-dnl wanted by: src/FbCommands.cc:172
-AC_CHECK_FUNCS([putenv])
-dnl wanted by: src/FbTk/RegExp.cc:56
-AC_CHECK_FUNCS([regcomp])
-dnl wanted by: src/FbTk/Timer.cc:156
-AC_CHECK_FUNCS([select])
-dnl wanted by: src/FbCommands.cc:206
-AC_CHECK_FUNCS([setenv])
-dnl wanted by: src/WorkspaceCmd.cc:403
-AC_CHECK_FUNCS([sqrt])
-dnl wanted by: src/ClientPattern.cc:104
-AC_CHECK_FUNCS([strcasecmp])
-dnl wanted by: src/FbTk/XmbFontImp.cc:101
-AC_CHECK_FUNCS([strchr])
-dnl wanted by: src/RootTheme.cc:187
-AC_CHECK_FUNCS([strstr])
-dnl wanted by: src/Window.cc:4165
-AC_CHECK_FUNCS([strtol])
-dnl wanted by: src/Keys.cc:422
-AC_CHECK_FUNCS([strtoul])
-dnl wanted by: src/FbTk/FbString.cc:43
-AC_CHECK_HEADERS([langinfo.h])
-dnl wanted by: src/AlphaMenu.cc:51
-AC_C_CONST
-dnl wanted by: src/Window.cc:3259
-AC_C_INLINE
-dnl wanted by: src/FbTk/FileUtil.cc:117
-AC_FUNC_CLOSEDIR_VOID
-dnl wanted by: src/ClientPattern.cc:333
-AC_FUNC_ERROR_AT_LINE
-dnl wanted by: src/FbCommands.cc:144
-AC_FUNC_FORK
-dnl wanted by: src/FbTk/FbString.cc:150
-AC_FUNC_MALLOC
-dnl wanted by: src/FbTk/FbString.cc:181
-AC_FUNC_REALLOC
-dnl wanted by: src/FbTk/Timer.cc:156
-AC_FUNC_SELECT_ARGTYPES
-dnl wanted by: src/Slit.cc:1149
-AC_FUNC_STAT
-dnl wanted by: src/ClockTool.cc:273
-AC_FUNC_STRFTIME
-dnl wanted by: src/FbTk/FileUtil.hh:34
-AC_HEADER_DIRENT
-dnl wanted by: src/AlphaMenu.hh:49
-AC_HEADER_STDBOOL
-dnl wanted by: src/Keys.cc:75
-AC_HEADER_SYS_WAIT
-dnl wanted by: src/AlphaMenu.cc:37
-AC_STRUCT_TM
-dnl wanted by: src/FbCommands.cc:144
-AC_TYPE_PID_T
-dnl wanted by: src/ClientMenu.cc:128
-AC_TYPE_SIZE_T
+dnl Print results
+AC_MSG_RESULT([])
+AC_MSG_RESULT([	$PACKAGE version $VERSION configured successfully.])
+AC_MSG_RESULT([])
+AC_MSG_RESULT([Using '$prefix' for installation.])
+AC_MSG_RESULT([Using '$DEFAULT_MENU' for location menu file.])
+AC_MSG_RESULT([Using '$DEFAULT_STYLE' by default style.])
+AC_MSG_RESULT([Using '$DEFAULT_KEYS' for location keys file.])
+AC_MSG_RESULT([Using '$DEFAULT_INIT' for location init file.])
+AC_MSG_RESULT([Using '$LOCALE_PATH' for nls files.])
+AC_MSG_RESULT([Using '$CXX' for C++ compiler.])
+AC_MSG_RESULT([Building with '$CXXFLAGS' for C++ compiler flags.])
+AC_MSG_RESULT([Building with '$LIBS' for linker flags.])
+AC_MSG_RESULT([])
+AC_MSG_RESULT([Now build $PACKAGE with 'make'])
+AC_MSG_RESULT([])
