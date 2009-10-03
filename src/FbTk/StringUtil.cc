@@ -195,7 +195,7 @@ string replaceString(const string &original,
    for the position + 1 in the in-string where the "last"-char value
    was found.
 */
-int getStringBetween(string& out, const char *instr, const char first, const char last,
+int getStringBetween(string& out, const char *instr, char first, char last,
                      const char *ok_chars, bool allow_nesting) {
     assert(first);
     assert(last);
