@@ -45,6 +45,8 @@
   #include <assert.h>
 #endif
 
+#include <string.h>
+
 namespace FbTk {
 
 Timer::TimerList Timer::m_timerlist;
