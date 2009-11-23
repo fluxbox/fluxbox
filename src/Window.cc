@@ -2884,6 +2884,13 @@ void FluxboxWindow::stopMoving(bool interrupted) {
     ungrabPointer(CurrentTime);
 
     FbTk::App::instance()->sync(false); //make sure the redraw is made before we continue
+
+    // if Head has been changed we want it to redraw by current state
+    if (m_state.maximized || m_state.fullscreen) {
+        frame().applyState();
+        attachWorkAreaSig();
+        stateSig().notify();
+    }
 }
 
 /**
@@ -3766,6 +3773,13 @@ void FluxboxWindow::setOnHead(int head) {
         move(screen().getHeadX(head) + frame().x() - screen().getHeadX(cur),
              screen().getHeadY(head) + frame().y() - screen().getHeadY(cur));
         m_placed = placed;
+    }
+
+    // if Head has been changed we want it to redraw by current state
+    if (m_state.maximized || m_state.fullscreen) {
+        frame().applyState();
+        attachWorkAreaSig();
+        stateSig().notify();
     }
 }
 

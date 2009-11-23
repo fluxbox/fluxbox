@@ -1,6 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*09/11/23:
+   * Keep 'maximized/fullscreen' state when changing the current head of a
+   window (thanks Michal Zimen)
+     Window.cc
+
 *09/10/03:
    * Build system cleanup: Check for extension headers (Mathias)
      autogen.sh configure.in, removed 'missing' file
