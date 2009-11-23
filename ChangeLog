@@ -2,7 +2,7 @@
 Changes for 1.1.2
 
 *09/11/23:
-   * Keep 'maximized/fullscreen' state when changing the current head of a
+   * Keep 'maximized/fullscreen' state when moving a window between heads
    window (thanks Michal Zimen)
      Window.cc
 
