@@ -2,12 +2,12 @@
 .\"     Title: fluxbox-keys
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
-.\"      Date: 06/28/2009
+.\"      Date: 12/14/2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "06/28/2009" "fluxbox\-keys\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "12/14/2009" "fluxbox\-keys\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -269,6 +269,8 @@ Maximize the current window, equivalent to the window button\&.
 \fBMaximizeHorizontal\fR / \fBMaximizeVertical\fR
 .RS 4
 Maximize the current window in one direction only, leaving the other dimension unchanged\&.
+\fBFullscreen\fR
+Resize the window\(cqs content to fit the whole screen, without any window decoration\&.
 .RE
 .PP
 \fBRaise\fR / \fBLower\fR

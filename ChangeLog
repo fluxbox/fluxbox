@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*09/12/15:
+   * Updated fluxbox-keys documentation, added 'Fullscreen' (thanx Paul Tagliamonte)
+
 *09/11/23:
    * Keep 'maximized/fullscreen' state when moving a window between heads
    window (thanks Michal Zimen)

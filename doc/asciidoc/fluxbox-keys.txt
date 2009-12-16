@@ -190,6 +190,9 @@ These commands ordinarily affect only the currently focused window. The
 *MaximizeHorizontal* / *MaximizeVertical*::
 	Maximize the current window in one direction only, leaving the other
 	dimension unchanged.
+*Fullscreen*
+	Resize the window's content to fit the whole screen, without
+	any window decoration.
 
 *Raise* / *Lower*::
 	Reorder this window to the top or bottom of the window stack, within
