@@ -547,6 +547,7 @@ private:
     int m_last_resize_x, m_last_resize_y; // handles last button press event for resize
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
     int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
+    int m_last_pressed_button;
 
     timeval m_last_keypress_time;
 

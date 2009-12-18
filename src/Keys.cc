@@ -106,6 +106,28 @@ using std::pair;
 
 using FbTk::STLUtil::destroyAndClearSecond;
 
+namespace {
+
+// candidate for FbTk::StringUtil ?
+int extractKeyFromString(const std::string& in, const char* start_pattern, unsigned int& key) {
+
+    int ret = 0;
+
+    if (strstr(in.c_str(), start_pattern) != 0) {
+
+        unsigned int tmp_key = 0;
+        if (FbTk::StringUtil::extractNumber(in.substr(strlen(start_pattern)), tmp_key)) {
+
+            key = tmp_key;
+            ret = 1;
+        }
+    }
+
+    return ret;
+}
+
+} // end of anonymouse namespace
+
 // helper class 'keytree'
 class Keys::t_key {
 public:
@@ -254,10 +276,12 @@ void Keys::grabWindow(Window win) {
         if ((win_it->second & Keys::GLOBAL) > 0 && (*it)->type == KeyPress)
             FbTk::KeyUtil::grabKey((*it)->key, (*it)->mod, win);
         // ON_DESKTOP buttons don't need to be grabbed
-        else if ((win_it->second & (*it)->context & ~Keys::ON_DESKTOP) > 0 &&
-                 (*it)->type == ButtonPress)
-            FbTk::KeyUtil::grabButton((*it)->key, (*it)->mod, win,
-                                      ButtonPressMask|ButtonReleaseMask);
+        else if ((win_it->second & (*it)->context & ~Keys::ON_DESKTOP) > 0) {
+
+            if ((*it)->type == ButtonPress || (*it)->type == ButtonRelease || (*it)->type == MotionNotify) {
+                FbTk::KeyUtil::grabButton((*it)->key, (*it)->mod, win, ButtonPressMask|ButtonReleaseMask|ButtonMotionMask);
+            }
+        }
     }
 }
 
@@ -363,85 +387,84 @@ bool Keys::addBinding(const string &linebuffer) {
     // for each argument
     for (; argc < val.size(); argc++) {
 
-        if (val[argc][0] != ':') { // parse key(s)
+        std::string arg = FbTk::StringUtil::toLower(val[argc]);
 
-            int tmpmod = FbTk::KeyUtil::getModifier(val[argc].c_str());
+        if (arg[0] != ':') { // parse key(s)
+
+            int tmpmod = FbTk::KeyUtil::getModifier(arg.c_str());
             if(tmpmod)
                 mod |= tmpmod; //If it's a modifier
-            else if (strcasecmp("ondesktop", val[argc].c_str()) == 0)
+            else if (arg == "ondesktop")
                 context |= ON_DESKTOP;
-            else if (strcasecmp("ontoolbar", val[argc].c_str()) == 0)
+            else if (arg == "ontoolbar")
                 context |= ON_TOOLBAR;
-            else if (strcasecmp("onwindow", val[argc].c_str()) == 0)
+            else if (arg == "onwindow")
                 context |= ON_WINDOW;
-            else if (strcasecmp("ontitlebar", val[argc].c_str()) == 0)
+            else if (arg == "ontitlebar")
                 context |= ON_TITLEBAR;
-            else if (strcasecmp("double", val[argc].c_str()) == 0)
+            else if (arg == "double")
                 isdouble = true;
-            else if (strcasecmp("NONE",val[argc].c_str())) {
-                // check if it's a mouse button
-                if (strcasecmp("focusin", val[argc].c_str()) == 0) {
+            else if (arg != "none") {
+                if (arg == "focusin") {
                     context = ON_WINDOW;
                     mod = key = 0;
                     type = FocusIn;
-                } else if (strcasecmp("focusout", val[argc].c_str()) == 0) {
+                } else if (arg == "focusout") {
                     context = ON_WINDOW;
                     mod = key = 0;
                     type = FocusOut;
-                } else if (strcasecmp("changeworkspace",
-                                      val[argc].c_str()) == 0) {
+                } else if (arg == "changeworkspace") {
                     context = ON_DESKTOP;
                     mod = key = 0;
                     type = FocusIn;
-                } else if (strcasecmp("mouseover", val[argc].c_str()) == 0) {
+                } else if (arg == "mouseover") {
                     type = EnterNotify;
                     if (!(context & (ON_WINDOW|ON_TOOLBAR)))
                         context |= ON_WINDOW;
                     key = 0;
-                } else if (strcasecmp("mouseout", val[argc].c_str()) == 0) {
+                } else if (arg == "mouseout") {
                     type = LeaveNotify;
                     if (!(context & (ON_WINDOW|ON_TOOLBAR)))
                         context |= ON_WINDOW;
                     key = 0;
-                } else if (strcasecmp(val[argc].substr(0,5).c_str(),
-                                      "mouse") == 0 &&
-                           val[argc].length() > 5) {
+
+                // check if it's a mouse button
+                } else if (extractKeyFromString(arg, "mouse", key)) {
                     type = ButtonPress;
-                    key = atoi(val[argc].substr(5,
-                                                val[argc].length()-5).c_str());
+
                     // fluxconf mangles things like OnWindow Mouse# to Mouse#ow
-                    if (strstr(val[argc].c_str(), "top"))
+                    if (strstr(arg.c_str(), "top"))
                         context = ON_DESKTOP;
-                    else if (strstr(val[argc].c_str(), "ebar"))
+                    else if (strstr(arg.c_str(), "ebar"))
                         context = ON_TITLEBAR;
-                    else if (strstr(val[argc].c_str(), "bar"))
+                    else if (strstr(arg.c_str(), "bar"))
                         context = ON_TOOLBAR;
-                    else if (strstr(val[argc].c_str(), "ow"))
+                    else if (strstr(arg.c_str(), "ow"))
                         context = ON_WINDOW;
+                } else if (extractKeyFromString(arg, "click", key)) {
+                    type = ButtonRelease;
+                } else if (extractKeyFromString(arg, "move", key)) {
+                    type = MotionNotify;
+
+                } else if (key = FbTk::KeyUtil::getKey(val[argc].c_str())) { // convert from string symbol
+                    type = KeyPress;
+
                 // keycode covers the following three two-byte cases:
                 // 0x       - hex
                 // +[1-9]   - number between +1 and +9
                 // numbers 10 and above
                 //
-                } else if (!val[argc].empty() && ((isdigit(val[argc][0]) &&
-                           (isdigit(val[argc][1]) || val[argc][1] == 'x')) ||
-                           (val[argc][0] == '+' && isdigit(val[argc][1])))) {
-
-                    key = strtoul(val[argc].c_str(), NULL, 0);
-                    type = KeyPress;
-
-                    if (errno == EINVAL || errno == ERANGE)
-                        key = 0;
-
-                } else { // convert from string symbol
-                    key = FbTk::KeyUtil::getKey(val[argc].c_str());
+                } else {
+					FbTk::StringUtil::extractNumber(arg, key);
                     type = KeyPress;
                 }
 
-                if (key == 0 && (type == KeyPress || type == ButtonPress))
+                if (key == 0 && (type == KeyPress || type == ButtonPress || type == ButtonRelease))
                     return false;
+
                 if (type != ButtonPress)
                     isdouble = false;
+
                 if (!first_new_key) {
                     first_new_keylist = current_key;
                     current_key = current_key->find(type, mod, key, context,
@@ -470,7 +493,7 @@ bool Keys::addBinding(const string &linebuffer) {
                 return false;
 
             const char *str = FbTk::StringUtil::strcasestr(linebuffer.c_str(),
-                    val[argc].c_str());
+                   val[argc].c_str());
             if (str) // +1 to skip ':'
                 current_key->m_command = FbTk::CommandParser<void>::instance().parse(str + 1);
 
@@ -504,10 +527,11 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
     bool isdouble = false;
 
     if (type == ButtonPress) {
-        if (time > last_button_time)
+        if (time > last_button_time) {
             double_click = (time - last_button_time <
                 Fluxbox::instance()->getDoubleClickInterval()) &&
                 last_button == key;
+        }
         last_button_time = time;
         last_button = key;
         isdouble = double_click;

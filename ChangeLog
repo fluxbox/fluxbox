@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*09/12/18:
+   * Implemented new 'MoveN' and 'ClickN' support for keys file (Mathias)
+     Keys.cc Window.cc/hh CurrentWindowCmd.cc FbTk/KeyUtil.cc
+
 *09/12/15:
    * Updated fluxbox-keys documentation, added 'Fullscreen' (thanx Paul Tagliamonte)
 

@@ -55,7 +55,7 @@ are most commonly used:
 where *Mod1* is the Alt key on the PC keyboard and *Mod4* is usually a key
 branded with a familiar company logo.
 
-There are also some special modifiers that refer to mouse button presses:::
+There are also some special modifiers that refer to mouse button events:::
 *OnDesktop*;;
 	The mouse cursor is over the desktop (root window), and not any
 	window.
@@ -84,13 +84,21 @@ the key, and see the name in the output. If you have some "special" keys that
 do not produce a key name in the output of *xev(1)*, you can just use the
 keycode (NOT the keysym!) in your keys file.
 
-Commands can also be bound to mouse button presses, for which the proper "key"
-name is *Mouse*'n' where 'n' is the number of the mouse button. For example,
-*Mouse1* is the primary button, and *Mouse4* / *Mouse5* are the scroll wheel
-events, in normal configurations. *xev(1)* can also be used to tell the button
-number.
+Commands can also be bound to mouse events ('N' denotes the number of the
+button, eg. '1' is the primary button, '4'/'5' are the wheel buttons):
 
-There are some special "keys" that let you bind events to non-keyboard events:::
+*MouseN*;;
+	The mouse button 'N' is pressed down and holded.
+*ClickN*;;
+	The mouse button 'N' is clicked (pressed and released with no
+	movement in between)
+*MoveN*;;
+	The mouse button 'N' is currently holded, the binded action is triggered
+	as often as the mouse moves.
+
+
+There are some special "keys" that let you bind events to non-keyboard events:
+
 *ChangeWorkspace*;;
 	Fires when the workspace changes. This can be used to change backgrounds or
 	do anything else you like when you switch to a new workspace. See the

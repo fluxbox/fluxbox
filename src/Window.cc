@@ -280,6 +280,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     m_button_grab_x(0), m_button_grab_y(0),
     m_last_move_x(0), m_last_move_y(0),
     m_last_resize_h(1), m_last_resize_w(1),
+    m_last_pressed_button(0),
     m_workspace_number(0),
     m_current_state(0),
     m_old_decoration_mask(0),
@@ -1073,7 +1074,6 @@ void FluxboxWindow::grabButtons() {
                 GrabModeSync, GrabModeSync, None, None);
     XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask,
                   frame().window().window());
-
 }
 
 
@@ -1478,7 +1478,7 @@ void FluxboxWindow::setFullscreenLayer() {
     FluxboxWindow *foc = FocusControl::focusedFbWindow();
     // if another window on the same head is focused, make sure we can see it
     if (isFocused() || !foc || &foc->screen() != &screen() ||
-        getOnHead() != foc->getOnHead() || 
+        getOnHead() != foc->getOnHead() ||
         (foc->winClient().isTransient() &&
          foc->winClient().transientFor()->fbwindow() == this)) {
         moveToLayer(::Layer::ABOVE_DOCK);
@@ -2370,13 +2370,16 @@ bool FluxboxWindow::isTyping() const {
 void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_last_button_x = be.x_root;
     m_last_button_y = be.y_root;
+    m_last_pressed_button = be.button;
 
     bool onTitlebar =
         frame().insideTitlebar( be.window ) &&
         frame().handle().window() != be.window;
 
+#if 0 // disabled
     if (onTitlebar && be.button == 1)
         raise();
+#endif
 
     // check keys file first
     Keys *k = Fluxbox::instance()->keys();
@@ -2412,19 +2415,27 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
 
+    if (m_last_pressed_button == re.button) {
+        m_last_pressed_button = 0;
+    }
+
     if (isMoving())
         stopMoving();
     else if (isResizing())
         stopResizing();
     else if (m_attaching_tab)
         attachTo(re.x_root, re.y_root);
-    else
-        frame().tabcontainer().tryButtonReleaseEvent(re);
+    else if (!frame().tabcontainer().tryButtonReleaseEvent(re)) {
 
+        if (m_last_button_x == re.x_root && m_last_button_y == re.y_root) {
+            Fluxbox::instance()->keys()->doAction(re.type, re.state, re.button, Keys::ON_WINDOW, &winClient(), re.time);
+        }
+    }
 }
 
 
 void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
+
     if (isMoving() && me.window == parent()) {
         me.window = frame().window().window();
     }
@@ -2451,6 +2462,13 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             return;
         }
     }
+
+
+    // in case someone put  MoveX :StartMoving etc into keys, we have
+    // to activate it before doing the actual motionNotify code
+    Fluxbox::instance()->keys()->doAction(me.type, me.state, m_last_pressed_button,
+                inside_titlebar ? Keys::ON_TITLEBAR : Keys::ON_WINDOW,
+                &winClient(), me.time);
 
     if (moving || ((me.state & Button1Mask) && functions.move &&
         inside_titlebar && !isResizing() && m_attaching_tab == 0)) {
@@ -2818,8 +2836,14 @@ void FluxboxWindow::setDecorationMask(unsigned int mask, bool apply) {
 }
 
 void FluxboxWindow::startMoving(int x, int y) {
-    if (s_num_grabs > 0)
+
+    if (isMoving()) {
         return;
+    }
+
+    if (s_num_grabs > 0) {
+        return;
+    }
 
     if (isMaximized() && screen().getMaxDisableMove())
         return;
@@ -3062,6 +3086,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
 FluxboxWindow::ReferenceCorner FluxboxWindow::getResizeDirection(int x, int y,
         ResizeModel model) const {
+
     int cx = frame().width() / 2;
     int cy = frame().height() / 2;
     if (model == CENTERRESIZE)
@@ -3087,6 +3112,9 @@ FluxboxWindow::ReferenceCorner FluxboxWindow::getResizeDirection(int x, int y,
 }
 
 void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
+
+    if (isResizing())
+        return;
 
     if (s_num_grabs > 0 || isShaded() || isIconic() )
         return;
@@ -3550,7 +3578,7 @@ void FluxboxWindow::updateButtons() {
                     need_update = true;
             }
         }
-                
+
     }
 
     if (!need_update)
@@ -3680,6 +3708,7 @@ void FluxboxWindow::grabPointer(Window grab_window,
                                 Window confine_to,
                                 Cursor cursor,
                                 Time time) {
+
     XGrabPointer(FbTk::App::instance()->display(),
                  grab_window,
                  owner_events,
@@ -3870,7 +3899,7 @@ void FluxboxWindow::setWindowType(WindowState::WindowType type) {
      */
 }
 
-void FluxboxWindow::focusedWindowChanged(BScreen &screen, 
+void FluxboxWindow::focusedWindowChanged(BScreen &screen,
                                          FluxboxWindow *focused_win, WinClient* client) {
     if (focused_win) {
         setFullscreenLayer();

@@ -262,11 +262,26 @@ void GoToTabCmd::real_execute() {
 REGISTER_COMMAND(startmoving, StartMovingCmd, void);
 
 void StartMovingCmd::real_execute() {
+
+    int x;
+    int y;
     const XEvent &last = Fluxbox::instance()->lastEvent();
-    if (last.type == ButtonPress) {
-        const XButtonEvent &be = last.xbutton;
-        fbwindow().startMoving(be.x_root, be.y_root);
+    switch (last.type) {
+    case ButtonPress:
+        x = last.xbutton.x_root;
+        y = last.xbutton.y_root;
+        break;
+
+    case MotionNotify:
+        x = last.xmotion.x_root;
+        y = last.xmotion.y_root;
+        break;
+
+    default:
+        return;
     }
+
+    fbwindow().startMoving(x, y);
 }
 
 FbTk::Command<void> *StartResizingCmd::parse(const string &cmd, const string &args,
@@ -305,15 +320,27 @@ FbTk::Command<void> *StartResizingCmd::parse(const string &cmd, const string &ar
 REGISTER_COMMAND_PARSER(startresizing, StartResizingCmd::parse, void);
 
 void StartResizingCmd::real_execute() {
+
+    int x;
+    int y;
     const XEvent &last = Fluxbox::instance()->lastEvent();
-    if (last.type == ButtonPress) {
-        const XButtonEvent &be = last.xbutton;
-        int x = be.x_root - fbwindow().x()
-                - fbwindow().frame().window().borderWidth();
-        int y = be.y_root - fbwindow().y()
-                - fbwindow().frame().window().borderWidth();
-        fbwindow().startResizing(x, y, fbwindow().getResizeDirection(x, y, m_mode));
+    switch (last.type) {
+    case ButtonPress:
+        x = last.xbutton.x_root;
+        y = last.xbutton.y_root;
+        break;
+    case MotionNotify:
+        x = last.xmotion.x_root;
+        y = last.xmotion.y_root;
+        break;
+    default:
+        return;
     }
+
+    x -= fbwindow().x() - fbwindow().frame().window().borderWidth();
+    y -= fbwindow().y() - fbwindow().frame().window().borderWidth();
+
+    fbwindow().startResizing(x, y, fbwindow().getResizeDirection(x, y, m_mode));
 }
 
 REGISTER_COMMAND(starttabbing, StartTabbingCmd, void);
