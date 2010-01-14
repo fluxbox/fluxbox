@@ -55,7 +55,7 @@ Renders the specified texture string to the root window.
 Rectangle / Pyramid*
 +
 Select one of these texture types, they only apply when  *-gradient* is
-specifed.  You must also specify both a *-from* and a *-to* color.
+specified.  You must also specify both a *-from* and a *-to* color.
 
 *-display* 'display'::
 Tells fbsetroot to connect to the specified display.

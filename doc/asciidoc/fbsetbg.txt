@@ -65,10 +65,10 @@ Set previous wallpaper. Or, if the random feature was last used,
 set another random wallpaper from the same directory.
 
 *-i*::
-Display usefull information about best wallpapersetter found.
+Display useful information about best wallpapersetter found.
 
 *-p*::
-Display some usefull tips.
+Display some useful tips.
 
 *-h*::
 Display a help message.

@@ -576,7 +576,7 @@ The possible tools are:
     current workspace.
 
 Other aspects of the toolbar can be configured in two ways: through the toolbar
-menu, which is accessable in the Configuration part of the RootMenu or with a
+menu, which is accessible in the Configuration part of the RootMenu or with a
 right click on the edge the toolbar, or by editing the init file (see the
 *RESOURCES* section for more information about that).
 
