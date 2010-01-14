@@ -2,12 +2,12 @@
 .\"     Title: fluxbox
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
-.\"      Date: 06/28/2009
+.\"      Date: 01/14/2010
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "06/28/2009" "fluxbox\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX" "1" "01/14/2010" "fluxbox\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -1095,7 +1095,7 @@ This displays an arrow that switches focus to the previous visible window on the
 This displays an arrow that switches focus to the next visible window on the current workspace\&.
 .RE
 .sp
-Other aspects of the toolbar can be configured in two ways: through the toolbar menu, which is accessable in the Configuration part of the RootMenu or with a right click on the edge the toolbar, or by editing the init file (see the \fBRESOURCES\fR section for more information about that)\&.
+Other aspects of the toolbar can be configured in two ways: through the toolbar menu, which is accessible in the Configuration part of the RootMenu or with a right click on the edge the toolbar, or by editing the init file (see the \fBRESOURCES\fR section for more information about that)\&.
 .SS "Toolbar Menu"
 .sp
 This menu can be opened by right\-clicking on the toolbar (though not on a window\(cqs name in the iconbar), or from the \fBConfiguration Menu\fR\&.
