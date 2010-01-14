@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*10/01/14:
+   * Fixed spelling in documentation (thanx Paul Tagliamonte)
+
 *09/12/18:
    * Implemented new 'MoveN' and 'ClickN' support for keys file (Mathias)
      Keys.cc Window.cc/hh CurrentWindowCmd.cc FbTk/KeyUtil.cc
