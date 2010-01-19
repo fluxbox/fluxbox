@@ -47,6 +47,48 @@
 #include <sys/time.h>
 #include <typeinfo>
 
+
+namespace {
+
+/**
+ * return true if clock shows seconds. If clock doesn't show seconds then
+ * there is no need to wake up every second to redraw the clock.
+ */
+
+int showSeconds(const std::string& fmt_string) {
+
+    return fmt_string.find("%c") != -1
+        || fmt_string.find("%r") != -1
+        || fmt_string.find("%s") != -1
+        || fmt_string.find("%S") != -1
+        || fmt_string.find("%T") != -1
+        || fmt_string.find("%X") != -1
+        || fmt_string.find("%+") != -1;
+}
+
+timeval calcNextTimeout(const std::string& fmt_string) {
+    timeval now;
+    timeval next;
+    gettimeofday(&now, 0);
+    next.tv_sec = 60 - (now.tv_sec % 60) - 1;
+    next.tv_usec = 1000000 - now.tv_usec;
+    if (next.tv_usec >= 1000000) {
+        next.tv_sec++;
+        next.tv_usec -= 1000000;
+    }
+
+    // wake up at next second-change
+    if (showSeconds(fmt_string)) {
+        next.tv_sec = 0;
+    }
+
+    return next;
+}
+
+
+} // end of anonymous namespace
+
+
 class ClockMenuItem: public FbTk::MenuItem {
 public:
     explicit ClockMenuItem(ClockTool &tool):
@@ -157,10 +199,8 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
 
     _FB_USES_NLS;
 
-    // setup timer to check the clock every 0.01 second
-    // if nothing has changed, it wont update the graphics
-    m_timer.setInterval(1);
-    // m_timer.setTimeout(delay); // don't need to set timeout on interval timer
+    m_timer.setTimeout(calcNextTimeout(*m_timeformat));
+
     FbTk::RefCount<FbTk::Command<void> > update_graphic(new FbTk::SimpleCommand<ClockTool>(*this,
                                                                                     &ClockTool::updateTime));
     m_timer.setCommand(update_graphic);
@@ -261,6 +301,8 @@ void ClockTool::updateTime() {
     timeval now;
     gettimeofday(&now, 0);
     time_t the_time = now.tv_sec;
+
+    m_timer.setTimeout(calcNextTimeout(*m_timeformat));
 
     if (the_time != -1) {
         char time_string[255];
