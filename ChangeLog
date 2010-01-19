@@ -1,6 +1,10 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*10/01/19:
+   * Reduce clock update checks (modified patch of Thomas Habets, thanx)
+     ClockTool.cc FbTk/Timer.cc
+
 *10/01/14:
    * Fixed spelling in documentation (thanx Paul Tagliamonte)
 
