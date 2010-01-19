@@ -45,8 +45,6 @@
   #include <assert.h>
 #endif
 
-#include <string.h>
-
 namespace FbTk {
 
 Timer::TimerList Timer::m_timerlist;
@@ -124,7 +122,9 @@ void Timer::updateTimers(int fd) {
     FD_SET(fd, &rfds);
 
     bool overdue = false;
-  
+
+    // see, if the first timer in the
+    // list is overdue
     if (!m_timerlist.empty()) {
         gettimeofday(&now, 0);
 
@@ -155,8 +155,11 @@ void Timer::updateTimers(int fd) {
         timeout = &tm;
     }
 
+    // if not overdue, wait for the next xevent via the blocking
+    // select(), so OS sends fluxbox to sleep. the select() will
+    // time out when the next timer has to be handled
     if (!overdue && select(fd + 1, &rfds, 0, 0, timeout) != 0)
-        // didn't time out! x events pending
+        // didn't time out! x events are pending
         return;
 
     TimerList::iterator it;
@@ -168,7 +171,7 @@ void Timer::updateTimers(int fd) {
     // so we have to adjust the start_time
     static time_t last_time = 0;
     if (now.tv_sec < last_time) {
-    
+
         time_t delta = last_time - now.tv_sec;
 
         for (it = m_timerlist.begin(); it != m_timerlist.end(); it++) {
