@@ -30,7 +30,7 @@
 #include <sstream>
 #define FbTk_istringstream std::istringstream
 #define FbTk_ostringstream std::ostringstream
-#elif HAVE_STRSTREAM 
+#elif defined(HAVE_STRSTREAM)
 #include <strstream>
 #define FbTk_istringstream std::istrstream
 #define FbTk_ostringstream std::ostrstream
