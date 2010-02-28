@@ -1898,8 +1898,8 @@ fi
 
 # escapes any parentheses in menu label
 # e.g.,  "[exec] (konqueror (web))" becomes  "[exec] (konqueror (web\))"
-sed 's/(\(.*\)(\(.*\)))/(\1 (\2\\))/' $MENUFILENAME > menu.tmp
-mv -f menu.tmp $MENUFILENAME
+sed 's/(\(.*\)(\(.*\)))/(\1 (\2\\))/' $MENUFILENAME > $MENUFILENAME.tmp
+mv -f $MENUFILENAME.tmp $MENUFILENAME
 
 if [ -z "$INSTALL" ]; then
     if [ -z "$CHECKINIT" ]; then
