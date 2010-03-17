@@ -1,6 +1,9 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*10/03/17:
+   * Changed debug output to use fbdbg instead of cerr (Henrik)
+
 *10/01/19:
    * Reduce clock update checks (modified patch of Thomas Habets, thanx)
      ClockTool.cc FbTk/Timer.cc
