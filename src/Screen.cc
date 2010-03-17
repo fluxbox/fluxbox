@@ -54,6 +54,7 @@
 #include "AtomHandler.hh"
 #include "HeadArea.hh"
 #include "FbCommands.hh"
+#include "Debug.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/Subject.hh"
@@ -154,10 +155,8 @@ using std::mem_fun;
 using std::bind2nd;
 using std::equal_to;
 
-#ifdef DEBUG
 using std::hex;
 using std::dec;
-#endif // DEBUG
 
 static bool running = true;
 namespace {
@@ -631,10 +630,10 @@ void BScreen::initWindows() {
                 (wmhints->icon_window != children[i]))
                 for (unsigned int j = 0; j < nchild; j++) {
                     if (children[j] == wmhints->icon_window) {
-#ifdef DEBUG
-                        cerr<<"BScreen::initWindows(): children[j] = 0x"<<hex<<children[j]<<dec<<endl;
-                        cerr<<"BScreen::initWindows(): = icon_window"<<endl;
-#endif // DEBUG
+
+                        fbdbg<<"BScreen::initWindows(): children[j] = 0x"<<hex<<children[j]<<dec<<endl;
+                        fbdbg<<"BScreen::initWindows(): = icon_window"<<endl;
+
                         children[j] = None;
                         break;
                     }
@@ -664,9 +663,9 @@ void BScreen::initWindows() {
         if (children[i] == None)
             continue;
         else if (!fluxbox->validateWindow(children[i])) {
-#ifdef DEBUG
-            cerr<<"BScreen::initWindows(): not valid window = "<<hex<<children[i]<<dec<<endl;
-#endif // DEBUG
+
+            fbdbg<<"BScreen::initWindows(): not valid window = "<<hex<<children[i]<<dec<<endl;
+
             children[i] = None;
             continue;
         }
@@ -679,10 +678,9 @@ void BScreen::initWindows() {
             children[num_transients] = children[i];
             num_transients++;
 
-#ifdef DEBUG
-            cerr<<"BScreen::initWindows(): postpone creation of 0x"<<hex<<children[i]<<dec<<endl;
-            cerr<<"BScreen::initWindows(): transient_for = 0x"<<hex<<transient_for<<dec<<endl;
-#endif // DEBUG
+            fbdbg<<"BScreen::initWindows(): postpone creation of 0x"<<hex<<children[i]<<dec<<endl;
+            fbdbg<<"BScreen::initWindows(): transient_for = 0x"<<hex<<transient_for<<dec<<endl;
+
             continue;
         }
 
@@ -1001,9 +999,9 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 }
 
 void BScreen::removeWindow(FluxboxWindow *win) {
-#ifdef DEBUG
-    cerr<<"BScreen::removeWindow("<<win<<")"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"BScreen::removeWindow("<<win<<")"<<endl;
+
     // extra precaution, if for some reason, the
     // icon list should be out of sync
     removeIcon(win);
@@ -1922,9 +1920,8 @@ WinClient *BScreen::findGroupRight(WinClient &winclient) {
     return other;
 }
 void BScreen::clearXinerama() {
-#ifdef DEBUG
-    cerr<<"BScreen::initXinerama(): dont have Xinerama"<<endl;
-#endif // DEBUG
+    fbdbg<<"BScreen::initXinerama(): dont have Xinerama"<<endl;
+
     m_xinerama_avail = false;
     if (m_xinerama_headinfo)
         delete [] m_xinerama_headinfo;
@@ -1940,9 +1937,9 @@ void BScreen::initXinerama() {
         clearXinerama();
         return;
     }
-#ifdef DEBUG
-    cerr<<"BScreen::initXinerama(): have Xinerama"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"BScreen::initXinerama(): have Xinerama"<<endl;
+
     m_xinerama_avail = true;
 
     XineramaScreenInfo *screen_info;
@@ -1969,9 +1966,8 @@ void BScreen::initXinerama() {
         m_xinerama_headinfo[i].height = screen_info[i].height;
     }
     XFree(screen_info);
-#ifdef DEBUG
-    cerr<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
-#endif // DEBUG
+
+    fbdbg<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
 
     /* Reallocate to the new number of heads. */
     int ha_num = numHeads() ? numHeads() : 1, ha_oldnum = m_head_areas.size();

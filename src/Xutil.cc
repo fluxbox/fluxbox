@@ -21,6 +21,7 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "Xutil.hh"
+#include "Debug.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/App.hh"
@@ -37,11 +38,8 @@
 
 using std::string;
 using std::strlen;
-
-#ifdef DEBUG
-using std::cerr;
 using std::endl;
-#endif // DEBUG
+
 
 namespace Xutil {
 
@@ -97,9 +95,8 @@ string getWMClassName(Window win) {
     string instance_name;
 
     if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
-#ifdef DEBUG
-        cerr<<"Xutil: Failed to read class hint!"<<endl;
-#endif //DEBUG
+        fbdbg<<"Xutil: Failed to read class hint!"<<endl;
+
         instance_name = "";
     } else {
 
@@ -123,9 +120,7 @@ string getWMClassClass(Window win) {
     string class_name;
 
     if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
-#ifdef DEBUG
-        cerr<<"Xutil: Failed to read class hint!"<<endl;
-#endif //DEBUG
+        fbdbg<<"Xutil: Failed to read class hint!"<<endl;
         class_name = "";
     } else {
 

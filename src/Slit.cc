@@ -53,6 +53,8 @@
 #include "SlitTheme.hh"
 #include "SlitClient.hh"
 #include "Xutil.hh"
+#include "Debug.hh"
+
 #include "FbTk/App.hh"
 #include "FbTk/MenuSeparator.hh"
 #include "FbTk/StringUtil.hh"
@@ -82,12 +84,8 @@ using std::list;
 using std::ifstream;
 using std::ofstream;
 using std::endl;
-
-#ifdef DEBUG
-using std::cerr;
 using std::hex;
 using std::dec;
-#endif // DEBUG
 
 namespace FbTk {
 
@@ -393,9 +391,9 @@ void Slit::updateStrut() {
 }
 
 void Slit::addClient(Window w) {
-#ifdef DEBUG
-    cerr<<__FILE__": addClient(w = 0x"<<hex<<w<<dec<<")"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"addClient(w = 0x"<<hex<<w<<dec<<")"<<endl;
+
     // Can't add non existent window
     if (w == None)
         return;
@@ -460,12 +458,9 @@ void Slit::addClient(Window w) {
     int num_return = 0;
 
     if (XGetWMProtocols(disp, w, &proto, &num_return)) {
-
         XFree((void *) proto);
-#ifdef DEBUG
     } else {
-        cerr<<"Warning: Failed to read WM Protocols. "<<endl;
-#endif // DEBUG
+        fbdbg<<"Warning: Failed to read WM Protocols. "<<endl;
     }
 
     XWindowAttributes attrib;

@@ -30,6 +30,7 @@
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "Layer.hh"
+#include "Debug.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/StringUtil.hh"
@@ -389,9 +390,9 @@ bool handleStartupItem(const string &line, int offset) {
         return true;
 
     FbCommands::ExecuteCmd *tmp_exec_cmd = new FbCommands::ExecuteCmd(str, screen);
-#ifdef DEBUG
-    cerr<<"Executing startup Command<void> '"<<str<<"' on screen "<<screen<<endl;
-#endif // DEBUG
+
+    fbdbg<<"Executing startup Command<void> '"<<str<<"' on screen "<<screen<<endl;
+
     tmp_exec_cmd->execute();
     delete tmp_exec_cmd;
     return true;
@@ -708,9 +709,8 @@ void Remember::checkReload() {
 void Remember::reload() {
     string apps_string = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getAppsFilename());
 
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;
 
     ifstream apps_file(apps_string.c_str());
 
@@ -810,9 +810,7 @@ void Remember::reload() {
 
             }
         } else {
-#ifdef DEBUG
-            cerr<<__FILE__<<"("<<__FUNCTION__<< ") Empty apps file" << endl;
-#endif
+            fbdbg<<"("<<__FUNCTION__<< ") Empty apps file" << endl;
         }
     } else {
         cerr << "failed to open apps file" << endl;
@@ -857,9 +855,8 @@ void Remember::save() {
 
     string apps_string = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getAppsFilename());
 
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): Saving apps file ["<<apps_string<<"]"<<endl;
-#endif // DEBUG
+    fbdbg<<"("<<__FUNCTION__<<"): Saving apps file ["<<apps_string<<"]"<<endl;
+
     ofstream apps_file(apps_string.c_str());
 
     // first of all we output all the startup commands

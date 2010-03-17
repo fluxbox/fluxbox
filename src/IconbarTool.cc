@@ -35,6 +35,7 @@
 #include "FocusControl.hh"
 #include "FbCommands.hh"
 #include "Layer.hh"
+#include "Debug.hh"
 
 #include "FbTk/STLUtil.hh"
 #include "FbTk/I18n.hh"
@@ -57,11 +58,7 @@
 
 using std::string;
 using std::list;
-
-#ifdef DEBUG
-using std::cerr;
 using std::endl;
-#endif // DEBUG
 
 namespace FbTk {
 
@@ -530,9 +527,8 @@ void IconbarTool::removeWindow(Focusable &win) {
     IconMap::iterator it = m_icons.find(&win);
     if (it == m_icons.end())
         return;
-#ifdef DEBUG
-    cerr<<"IconbarTool::"<<__FUNCTION__<<"( 0x"<<&win<<" title = "<<win.title()<<") found!"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"IconbarTool::"<<__FUNCTION__<<"( 0x"<<&win<<" title = "<<win.title()<<") found!"<<endl;
 
     // remove from list and render theme again
     IconButton *button = it->second;
@@ -546,9 +542,9 @@ IconButton *IconbarTool::makeButton(Focusable &win) {
     FluxboxWindow *fbwin = win.fbwindow();
     if (!fbwin || fbwin->clientList().empty())
         return 0;
-#ifdef DEBUG
-    cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
+
     IconButton *button = new IconButton(m_icon_container, m_focused_theme,
                                         m_unfocused_theme, win);
 

@@ -29,6 +29,7 @@
 #include "fluxbox.hh"
 #include "FbWinFrameTheme.hh"
 #include "FocusControl.hh"
+#include "Debug.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/FbWindow.hh"
@@ -129,10 +130,10 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
         // actually there is some data in _NET_WM_ICON
         nr_icon_data = nr_bytes_left / sizeof(CARD32);
-#ifdef DEBUG
-        std::cerr << "extractNetWmIcon: " << winclient.title() << "\n";
-        std::cerr << "nr_icon_data: " << nr_icon_data << "\n";
-#endif
+
+        fbdbg << "extractNetWmIcon: " << winclient.title() << "\n";
+        fbdbg << "nr_icon_data: " << nr_icon_data << "\n";
+
         // read all the icons stored in _NET_WM_ICON
         if (raw_data)
             XFree(raw_data);
@@ -144,9 +145,9 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
             return;
         }
-#ifdef DEBUG
-        std::cerr << "nr_read: " << nr_read << "|" << nr_bytes_left << "\n";
-#endif
+
+        fbdbg << "nr_read: " << nr_read << "|" << nr_bytes_left << "\n";
+
     }
 
     IconContainer icon_data; // stores all available data, sorted by size (width x height)
@@ -161,28 +162,26 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
         width = raw_data[i++];
         if (width >= nr_icon_data) {
-#ifdef DEBUG
-            std::cerr << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON width (" 
+
+            fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON width (" 
                 << width << ") for " << winclient.title() << "\n";
-#endif
             break;
         }
 
         height = raw_data[i++];
         if (height >= nr_icon_data) {
-#ifdef DEBUG
-            std::cerr << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON height (" 
+
+            fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON height (" 
                 << height << ") for " << winclient.title() << "\n";
-#endif
+
             break;
         }
 
         // strange values stored in the NETWM_ICON
         if (i + width * height > nr_icon_data) {
-#ifdef DEBUG
-            std::cerr << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON dimensions (" 
+            fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON dimensions (" 
                 << width << "x" << height << ")for " << winclient.title() << "\n";
-#endif
+
             break;
         }
 
@@ -1190,9 +1189,9 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             win_gravity, winclient->old_bw);
         return true;
     } else if (ce.message_type == m_net->restack_window) {
-#ifndef DEBUG
-        cerr << "Ewmh: restack window" << endl;
-#endif // DEBUG
+
+        fbdbg << "Ewmh: restack window" << endl;
+
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
 

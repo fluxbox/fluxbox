@@ -28,6 +28,7 @@
 #include "Workspace.hh"
 #include "fluxbox.hh"
 #include "FbWinFrameTheme.hh"
+#include "Debug.hh"
 
 #include "FbTk/EventManager.hh"
 
@@ -39,7 +40,6 @@
   #include <string.h>
 #endif
 
-using std::cerr;
 using std::endl;
 using std::string;
 
@@ -551,14 +551,13 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         FocusControl::focusedWindow() ?
         &FocusControl::focusedWindow()->screen() : 0;
 
-#ifdef DEBUG
-    cerr<<"------------------"<<endl;
-    cerr<<"Setting Focused window = "<<client<<endl;
+    fbdbg<<"------------------"<<endl;
+    fbdbg<<"Setting Focused window = "<<client<<endl;
     if (client != 0)
-        cerr<<"title: "<<client->title()<<endl;
-    cerr<<"Current Focused window = "<<s_focused_window<<endl;
-    cerr<<"------------------"<<endl;
-#endif // DEBUG
+        fbdbg<<"title: "<<client->title()<<endl;
+    fbdbg<<"Current Focused window = "<<s_focused_window<<endl;
+    fbdbg<<"------------------"<<endl;
+
 
     // Update the old focused client to non focus
     if (s_focused_fbwindow &&

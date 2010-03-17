@@ -47,8 +47,6 @@
   #include <string.h>
 #endif
 
-using std::cerr;
-using std::endl;
 using std::string;
 
 class BackgroundItem: public FbTk::ThemeItem<FbTk::Texture> {

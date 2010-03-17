@@ -36,6 +36,7 @@
 #include "Layer.hh"
 
 #include "defaults.hh"
+#include "Debug.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/Image.hh"
@@ -141,11 +142,8 @@ using std::pair;
 using std::bind2nd;
 using std::mem_fun;
 using std::equal_to;
-
-#ifdef DEBUG
 using std::hex;
 using std::dec;
-#endif // DEBUG
 
 using namespace FbTk;
 
@@ -407,10 +405,10 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
     m_resourcemanager.unlock();
     ungrab();
 
-#ifdef DEBUG
-    if (m_resourcemanager.lockDepth() != 0)
-        cerr<<"--- resource manager lockdepth = "<<m_resourcemanager.lockDepth()<<endl;
-#endif //DEBUG
+    if (m_resourcemanager.lockDepth() != 0) {
+        fbdbg<<"--- resource manager lockdepth = "<<m_resourcemanager.lockDepth()<<endl;
+    }
+
     m_starting = false;
     //
     // For dumping theme items
@@ -494,10 +492,8 @@ void Fluxbox::eventLoop() {
                 e.type != DestroyNotify) { // we must let the actual destroys through
                 if (e.type == FocusOut)
                     revertFocus();
-#ifdef DEBUG
                 else
-                    cerr<<"Fluxbox::eventLoop(): removing bad window from event queue"<<endl;
-#endif // DEBUG
+                    fbdbg<<"Fluxbox::eventLoop(): removing bad window from event queue"<<endl;
             } else {
                 last_bad_window = None;
                 handleEvent(&e);
@@ -568,9 +564,7 @@ void Fluxbox::setupConfigFiles() {
             create_windowmenu = true;
 
     } else {
-#ifdef DEBUG
-        cerr <<__FILE__<<"("<<__LINE__<<"): Creating dir: " << dirname.c_str() << endl;
-#endif // DEBUG
+        fbdbg<<"Creating dir: " << dirname.c_str() << endl;
         _FB_USES_NLS;
         // create directory with perm 700
         if (mkdir(dirname.c_str(), 0700)) {
@@ -715,10 +709,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case MapRequest: {
 
-#ifdef DEBUG
-        cerr<<"MapRequest for 0x"<<hex<<e->xmaprequest.window<<dec<<endl;
-
-#endif // DEBUG
+        fbdbg<<"MapRequest for 0x"<<hex<<e->xmaprequest.window<<dec<<endl;
 
         WinClient *winclient = searchWindow(e->xmaprequest.window);
 
@@ -764,9 +755,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 	break;
     case MappingNotify:
         // Update stored modifier mapping
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): MappingNotify"<<endl;
-#endif // DEBUG
+        fbdbg<<"MappingNotify"<<endl;
+
         if (e->xmapping.request == MappingKeyboard
             || e->xmapping.request == MappingModifier) {
             XRefreshKeyboardMapping(&e->xmapping);
@@ -942,7 +932,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
     if (ce.message_type)
         atom = XGetAtomName(FbTk::App::instance()->display(), ce.message_type);
 
-    cerr<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]=0x"<<hex<<ce.data.l[0]<<
+    fbdbg<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]=0x"<<hex<<ce.data.l[0]<<
 	"  message_type=0x"<<ce.message_type<<dec<<" = \""<<atom<<"\""<<endl;
 
     if (ce.message_type && atom) XFree((char *) atom);
@@ -1295,9 +1285,9 @@ void Fluxbox::save_rc() {
     XrmMergeDatabases(new_blackboxrc, &old_blackboxrc); //merge database together
     XrmPutFileDatabase(old_blackboxrc, dbfile.c_str());
     XrmDestroyDatabase(old_blackboxrc);
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): ------------ SAVING DONE"<<endl;
-#endif // DEBUG
+
+    fbdbg<<__FILE__<<"("<<__LINE__<<"): ------------ SAVING DONE"<<endl;
+
 }
 
 /// @return filename of resource file

@@ -44,6 +44,7 @@
 #include "IconButton.hh"
 #include "ScreenPlacement.hh"
 #include "RectangleUtil.hh"
+#include "Debug.hh"
 
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Compose.hh"
@@ -87,7 +88,6 @@
 #include <functional>
 #include <algorithm>
 
-using std::cerr;
 using std::endl;
 using std::string;
 using std::vector;
@@ -96,13 +96,10 @@ using std::mem_fun;
 using std::equal_to;
 using std::max;
 using std::swap;
-
-using namespace FbTk;
-
-#ifdef DEBUG
 using std::dec;
 using std::hex;
-#endif // DEBUG
+
+using namespace FbTk;
 
 namespace {
 
@@ -332,13 +329,11 @@ FluxboxWindow::~FluxboxWindow() {
     }
 
 
-#ifdef DEBUG
     const char* title = m_client ? m_client->title().c_str() : "" ;
-    cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<","<<title<<")"<<endl;
-    cerr<<__FILE__<<"("<<__LINE__<<"): num clients = "<<numClients()<<endl;
-    cerr<<__FILE__<<"("<<__LINE__<<"): curr client = "<<m_client<<endl;
-    cerr<<__FILE__<<"("<<__LINE__<<"): m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
-#endif // DEBUG
+    fbdbg<<"starting ~FluxboxWindow("<<this<<","<<title<<")"<<endl;
+    fbdbg<<"num clients = "<<numClients()<<endl;
+    fbdbg<<"curr client = "<<m_client<<endl;
+    fbdbg<<"m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
 
     if (moving)
         stopMoving(true);
@@ -368,7 +363,7 @@ FluxboxWindow::~FluxboxWindow() {
     m_client = 0;
 
     if (m_clientlist.size() > 1) {
-        cerr<<__FILE__<<"(~FluxboxWindow()) WARNING! clientlist > 1"<<endl;
+        fbdbg<<"(~FluxboxWindow()) WARNING! clientlist > 1"<<endl;
         while (!m_clientlist.empty()) {
             detachClient(*m_clientlist.back());
         }
@@ -377,9 +372,8 @@ FluxboxWindow::~FluxboxWindow() {
     if (!screen().isShuttingdown())
         screen().focusControl().removeWindow(*this);
 
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"~FluxboxWindow("<<this<<")"<<endl;
 }
 
 
@@ -406,11 +400,9 @@ void FluxboxWindow::init() {
     //!! TODO init of client should be better
     // we don't want to duplicate code here and in attachClient
     m_clientlist.push_back(m_client);
-#ifdef DEBUG
-    cerr<<__FILE__<<": FluxboxWindow::init(this="<<this<<", client="<<hex<<
-        m_client->window()<<", frame = "<<frame().window().window()<<dec<<")"<<endl;
 
-#endif // DEBUG
+    fbdbg<<"FluxboxWindow::init(this="<<this<<", client="<<hex<<
+        m_client->window()<<", frame = "<<frame().window().window()<<dec<<")"<<endl;
 
     Fluxbox &fluxbox = *Fluxbox::instance();
 
@@ -495,14 +487,13 @@ void FluxboxWindow::init() {
     } else // if no parent then set default layer
         moveToLayer(m_state.layernum, m_state.layernum != ::Layer::NORMAL);
 
-#ifdef DEBUG
-    cerr<<"FluxboxWindow::init("<<title()<<") transientFor: "<<
-        m_client->transientFor()<<endl;
+    fbdbg<<"FluxboxWindow::init("<<title()<<") transientFor: "<<
+       m_client->transientFor()<<endl;
     if (m_client->transientFor() && m_client->transientFor()->fbwindow()) {
-        cerr<<"FluxboxWindow::init("<<title()<<") transientFor->title(): "<<
-            m_client->transientFor()->fbwindow()->title()<<endl;
+        fbdbg<<"FluxboxWindow::init("<<title()<<") transientFor->title(): "<<
+           m_client->transientFor()->fbwindow()->title()<<endl;
     }
-#endif // DEBUG
+
 
     unsigned int real_width = frame().width(), real_height = frame().height();
     frame().applySizeHints(real_width, real_height);
@@ -699,9 +690,9 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     if (client.fbwindow() != this || numClients() == 0)
         return false;
 
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
+
 
     // if it is our active client, deal with it...
     if (m_client == &client) {
@@ -735,9 +726,7 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     frame().reconfigure();
     updateClientLeftWindow();
 
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"] numClients = "<<numClients()<<endl;
-#endif // DEBUG
+    fbdbg<<"("<<__FUNCTION__<<")["<<this<<"] numClients = "<<numClients()<<endl;
 
     return true;
 }
@@ -995,10 +984,8 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
             old->focusSig().notify();
     }
 
-#ifdef DEBUG
-    cerr<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
+    fbdbg<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
         button<<endl;
-#endif // DEBUG
 
     if (old != &client) {
         titleSig().notify();
@@ -1300,23 +1287,19 @@ bool FluxboxWindow::focus() {
     // FocusControl::revertFocus will return before FocusIn events arrive
     m_screen.focusControl().setScreenFocusedWindow(*m_client);
 
-#ifdef DEBUG
-    cerr<<"FluxboxWindow::"<<__FUNCTION__<<" isModal() = "<<m_client->isModal()<<endl;
-    cerr<<"FluxboxWindow::"<<__FUNCTION__<<" transient size = "<<m_client->transients.size()<<endl;
-#endif // DEBUG
+
+    fbdbg<<"FluxboxWindow::"<<__FUNCTION__<<" isModal() = "<<m_client->isModal()<<endl;
+    fbdbg<<"FluxboxWindow::"<<__FUNCTION__<<" transient size = "<<m_client->transients.size()<<endl;
+
     if (!m_client->transients.empty() && m_client->isModal()) {
-#ifdef DEBUG
-        cerr<<__FUNCTION__<<": isModal and have transients client = "<<
+        fbdbg<<__FUNCTION__<<": isModal and have transients client = "<<
             hex<<m_client->window()<<dec<<endl;
-        cerr<<__FUNCTION__<<": this = "<<this<<endl;
-#endif // DEBUG
+        fbdbg<<__FUNCTION__<<": this = "<<this<<endl;
 
         WinClient::TransientList::iterator it = m_client->transients.begin();
         WinClient::TransientList::iterator it_end = m_client->transients.end();
         for (; it != it_end; ++it) {
-#ifdef DEBUG
-            cerr<<__FUNCTION__<<": transient 0x"<<(*it)<<endl;
-#endif // DEBUG
+            fbdbg<<__FUNCTION__<<": transient 0x"<<(*it)<<endl;
             if ((*it)->isStateModal())
                 return (*it)->focus();
         }
@@ -1330,9 +1313,8 @@ bool FluxboxWindow::focus() {
 
 // don't hide the frame directly, use this function
 void FluxboxWindow::hide(bool interrupt_moving) {
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
-#endif // DEBUG
+   fbdbg<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
+
     // resizing always stops on hides
     if (resizing)
         stopResizing(true);
@@ -1555,9 +1537,7 @@ void FluxboxWindow::setWorkspace(int n) {
 
     // notify workspace change
     if (m_initialized && old_wkspc != m_workspace_number) {
-#ifdef DEBUG
-        cerr<<this<<" notify workspace signal"<<endl;
-#endif // DEBUG
+        fbdbg<<this<<" notify workspace signal"<<endl;
         m_workspacesig.notify();
     }
 }
@@ -1566,10 +1546,7 @@ void FluxboxWindow::setLayerNum(int layernum) {
     m_state.layernum = layernum;
 
     if (m_initialized) {
-#ifdef DEBUG
-        cerr<<this<<" notify layer signal"<<endl;
-#endif // DEBUG
-
+        fbdbg<<this<<" notify layer signal"<<endl;
         m_layersig.notify();
     }
 }
@@ -1643,9 +1620,9 @@ void FluxboxWindow::setIconic(bool val) {
 void FluxboxWindow::raise() {
     if (isIconic())
         return;
-#ifdef DEBUG
-    cerr<<"FluxboxWindow("<<title()<<")::raise()[layer="<<layerNum()<<"]"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"FluxboxWindow("<<title()<<")::raise()[layer="<<layerNum()<<"]"<<endl;
+
     // get root window
     WinClient *client = getRootTransientFor(m_client);
 
@@ -1671,9 +1648,8 @@ void FluxboxWindow::raise() {
 void FluxboxWindow::lower() {
     if (isIconic())
         return;
-#ifdef DEBUG
-    cerr<<"FluxboxWindow("<<title()<<")::lower()"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"FluxboxWindow("<<title()<<")::lower()"<<endl;
 
     /* Ignore all EnterNotify events until the pointer actually moves */
     screen().focusControl().ignoreAtPointer();
@@ -1703,9 +1679,8 @@ void FluxboxWindow::changeLayer(int diff) {
 }
 
 void FluxboxWindow::moveToLayer(int layernum, bool force) {
-#ifdef DEBUG
-    cerr<<"FluxboxWindow("<<title()<<")::moveToLayer("<<layernum<<")"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"FluxboxWindow("<<title()<<")::moveToLayer("<<layernum<<")"<<endl;
 
     // don't let it set its layer into menu area
     if (layernum <= ::Layer::MENU)
@@ -1769,9 +1744,9 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
     bool was_focused = isFocused();
     m_focused = focus;
-#ifdef DEBUG
-    cerr<<"FluxboxWindow("<<title()<<")::setFocusFlag("<<focus<<")"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"FluxboxWindow("<<title()<<")::setFocusFlag("<<focus<<")"<<endl;
+
 
     installColormap(focus);
 
@@ -1961,9 +1936,7 @@ void FluxboxWindow::popupMenu() {
 void FluxboxWindow::handleEvent(XEvent &event) {
     switch (event.type) {
     case ConfigureRequest:
-#ifdef DEBUG
-        cerr<<"ConfigureRequest("<<title()<<")"<<endl;
-#endif // DEBUG
+       fbdbg<<"ConfigureRequest("<<title()<<")"<<endl;
 
         configureRequestEvent(event.xconfigurerequest);
         break;
@@ -1978,7 +1951,7 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 
 #ifdef DEBUG
         char *atomname = XGetAtomName(display, event.xproperty.atom);
-        cerr<<"PropertyNotify("<<title()<<"), property = "<<atomname<<endl;
+        fbdbg<<"PropertyNotify("<<title()<<"), property = "<<atomname<<endl;
         if (atomname)
             XFree(atomname);
 #endif // DEBUG
@@ -1993,9 +1966,9 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 #ifdef SHAPE
         if (Fluxbox::instance()->haveShape() &&
             event.type == Fluxbox::instance()->shapeEventbase() + ShapeNotify) {
-#ifdef DEBUG
-            cerr<<"ShapeNotify("<<title()<<")"<<endl;
-#endif // DEBUG
+
+            fbdbg<<"ShapeNotify("<<title()<<")"<<endl;
+
             XShapeEvent *shape_event = (XShapeEvent *)&event;
 
             if (shape_event->shaped)
@@ -2017,9 +1990,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     // we're only concerned about client window event
     WinClient *client = findClient(re.window);
     if (client == 0) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): Can't find client!"<<endl;
-#endif // DEBUG
+        fbdbg<<"("<<__FUNCTION__<<"): Can't find client!"<<endl;
         return;
     }
 
@@ -2089,10 +2060,9 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
     if (client == 0)
         return;
 
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): title="<<client->title()<<endl;
-#endif // DEBUG
+
+    fbdbg<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
+    fbdbg<<"("<<__FUNCTION__<<"): title="<<client->title()<<endl;
 
     restore(client, false);
 
@@ -2105,9 +2075,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
 */
 void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent &de) {
     if (de.window == m_client->window()) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): DestroyNotifyEvent this="<<this<<" title = "<<title()<<endl;
-#endif // DEBUG
+        fbdbg<<"DestroyNotifyEvent this="<<this<<" title = "<<title()<<endl;
         delete m_client;
         if (numClients() == 0)
             delete this;
@@ -2149,9 +2117,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         break;
 
     case XA_WM_NORMAL_HINTS: {
-#ifdef DEBUG
-        cerr<<"XA_WM_NORMAL_HINTS("<<title()<<")"<<endl;
-#endif // DEBUG
+        fbdbg<<"XA_WM_NORMAL_HINTS("<<title()<<")"<<endl;
         unsigned int old_max_width = client.maxWidth();
         unsigned int old_min_width = client.minWidth();
         unsigned int old_min_height = client.minHeight();
@@ -2396,9 +2362,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
             frame().tabcontainer().window() == be.window) {
             if (screen().clickRaises())
                 raise();
-#ifdef DEBUG
-            cerr<<"FluxboxWindow::buttonPressEvent: AllowEvent"<<endl;
-#endif // DEBUG
+
+            fbdbg<<"FluxboxWindow::buttonPressEvent: AllowEvent"<<endl;
 
             XAllowEvents(display, ReplayPointer, be.time);
 
@@ -3317,10 +3282,9 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
     XEvent xev;
     if (! XCheckTypedWindowEvent(display, client->window(), ReparentNotify,
                                  &xev)) {
-#ifdef DEBUG
-        cerr<<"FluxboxWindow::restore: reparent 0x"<<hex<<client->window()<<dec<<" to root"<<endl;
 
-#endif // DEBUG
+        fbdbg<<"FluxboxWindow::restore: reparent 0x"<<hex<<client->window()<<dec<<" to root"<<endl;
+
         // reparent to root window
         client->reparent(screen().rootWindow(), wx, wy, false);
 
@@ -3336,10 +3300,9 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
     delete client;
 
 
-#ifdef DEBUG
-    cerr<<"FluxboxWindow::restore: remap = "<<remap<<endl;
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): numClients() = "<<numClients()<<endl;
-#endif // DEBUG
+    fbdbg<<"FluxboxWindow::restore: remap = "<<remap<<endl;
+    fbdbg<<"("<<__FUNCTION__<<"): numClients() = "<<numClients()<<endl;
+
     if (numClients() == 0)
         delete this;
 
@@ -3348,9 +3311,9 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
 void FluxboxWindow::restore(bool remap) {
     if (numClients() == 0)
         return;
-#ifdef DEBUG
-    cerr<<"restore("<<remap<<")"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"restore("<<remap<<")"<<endl;
+
     while (!clientList().empty()) {
         restore(clientList().back(), remap);
         // deleting winClient removes it from the clientList

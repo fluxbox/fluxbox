@@ -25,6 +25,7 @@
 #include "Screen.hh"
 #include "WinClient.hh"
 #include "WindowCmd.hh"
+#include "Debug.hh"
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/StringUtil.hh"
@@ -343,9 +344,8 @@ void Keys::reload() {
  * Load critical key/mouse bindings for when there are fatal errors reading the keyFile.
  */
 void Keys::loadDefaults() {
-#ifdef DEBUG
-    cerr<<"Loading default key bindings"<<endl;
-#endif
+    fbdbg<<"Loading default key bindings"<<endl;
+
     deleteTree();
     m_map["default:"] = new t_key(0,0,0,0,false);
     addBinding("OnDesktop Mouse1 :HideMenus");

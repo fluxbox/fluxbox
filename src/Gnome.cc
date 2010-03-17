@@ -28,6 +28,7 @@
 #include "WinClient.hh"
 #include "Workspace.hh"
 #include "Layer.hh"
+#include "Debug.hh"
 
 #include <iostream>
 #ifdef HAVE_CSTRING
@@ -39,11 +40,8 @@
 using std::cerr;
 using std::endl;
 using std::list;
-
-#ifdef DEBUG
 using std::hex;
 using std::dec;
-#endif // DEBUG
 
 Gnome::Gnome() {
     createAtoms();
@@ -142,14 +140,10 @@ void Gnome::setupFrame(FluxboxWindow &win) {
 
 bool Gnome::propertyNotify(WinClient &winclient, Atom the_property) {
     if (the_property == m_gnome_wm_win_state) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): _WIN_STATE"<<endl;
-#endif // DEBUG
+        fbdbg<<"("<<__FUNCTION__<<"): _WIN_STATE"<<endl;
         return true;
     } else if (the_property == m_gnome_wm_win_layer) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): _WIN_LAYER"<<endl;
-#endif // DEBUG
+        fbdbg<<"("<<__FUNCTION__<<"): _WIN_LAYER"<<endl;
         return true;
     }
     return false;
@@ -268,10 +262,8 @@ void Gnome::updateWorkspace(FluxboxWindow &win) {
     if (win.isStuck()) {
         val = -1;
     }
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): setting workspace("<<val<<
-        ") for window("<<&win<<")"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"setting workspace("<<val<<") for window("<<&win<<")"<<endl;
 
     FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
@@ -321,9 +313,9 @@ void Gnome::updateHints(FluxboxWindow &win) {
 
 bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient) {
     if (ce.message_type == m_gnome_wm_win_workspace) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;
-#endif//!DEBUG
+
+        fbdbg<<"Got workspace atom="<<ce.data.l[0]<<endl;
+
         if ( winclient !=0 && // the message sent to client window?
              ce.data.l[0] >= 0 &&
              ce.data.l[0] < (signed)winclient->screen().numberOfWorkspaces()) {
@@ -339,12 +331,12 @@ bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, 
 
 
     if (ce.message_type == m_gnome_wm_win_state) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_STATE"<<endl;
-        cerr<<__FILE__<<"("<<__LINE__<<"): Mask of members to change:"<<
+
+        fbdbg<<"_WIN_STATE"<<endl;
+        fbdbg<<"Mask of members to change:"<<
             hex<<ce.data.l[0]<<dec<<endl; // mask_of_members_to_change
-        cerr<<"New members:"<<ce.data.l[1]<<endl;
-#endif // DEBUG
+        fbdbg<<"New members:"<<ce.data.l[1]<<endl;
+
 
         if (winclient && winclient->fbwindow()) {
             //get new states
@@ -357,15 +349,9 @@ bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, 
             enableUpdate();
         }
     } else if (ce.message_type == m_gnome_wm_win_hints) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_HINTS"<<endl;
-#endif // DEBUG
-
+        fbdbg<<"_WIN_HINTS"<<endl;
     } else if (ce.message_type == m_gnome_wm_win_layer) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_LAYER"<<endl;
-#endif // DEBUG
-
+        fbdbg<<"_WIN_LAYER"<<endl;
         if (winclient && winclient->fbwindow())
             setLayer(winclient->fbwindow(), ce.data.l[0]);
     } else
@@ -375,32 +361,29 @@ bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, 
 }
 
 void Gnome::setState(FluxboxWindow *win, int state) {
-#ifdef DEBUG
-    cerr<<"Gnome: state=0x"<<hex<<state<<dec<<endl;
-#endif // DEBUG
+    fbdbg<<"Gnome: state=0x"<<hex<<state<<dec<<endl;
 
     if (state & WIN_STATE_STICKY) {
-#ifdef DEBUG
-        cerr<<"Gnome state: Sticky"<<endl;
-#endif // DEBUG
+
+        fbdbg<<"Gnome state: Sticky"<<endl;
+
         if (!win->isStuck())
             win->stick();
     } else if (win->isStuck())
         win->stick();
 
     if (state & WIN_STATE_MINIMIZED) {
-#ifdef DEBUG
-        cerr<<"Gnome state: Minimized"<<endl;
-#endif // DEBUG
+        fbdbg<<"Gnome state: Minimized"<<endl;
+
         if (win->isIconic())
             win->iconify();
     } else if (win->isIconic())
         win->deiconify(true);
 
     if (state & WIN_STATE_SHADED) {
-#ifdef DEBUG
-        cerr<<"Gnome state: Shade"<<endl;
-#endif // DEBUG
+
+        fbdbg<<"Gnome state: Shade"<<endl;
+
         if (!win->isShaded())
             win->shade();
     } else if (win->isShaded())
@@ -436,53 +419,39 @@ void Gnome::setLayer(FluxboxWindow *win, int layer) {
 
     switch (layer) {
     case WIN_LAYER_DESKTOP:
-#ifdef DEBUG
-        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DESKTOP)"<<endl;
-#endif // DEBUG
+        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DESKTOP)"<<endl;
         layer = Layer::DESKTOP;
         break;
     case WIN_LAYER_BELOW:
-#ifdef DEBUG
-        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_BELOW)"<<endl;
-#endif // DEBUG
+        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_BELOW)"<<endl;
         layer = Layer::BOTTOM;
         break;
     case WIN_LAYER_NORMAL:
-#ifdef DEBUG
-        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_NORMAL)"<<endl;
-#endif // DEBUG
+        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_NORMAL)"<<endl;
         layer = Layer::NORMAL;
         break;
     case WIN_LAYER_ONTOP:
-#ifdef DEBUG
-        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ONTOP)"<<endl;
-#endif // DEBUG
+        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ONTOP)"<<endl;
         layer = Layer::TOP;
         break;
     case WIN_LAYER_DOCK:
-#ifdef DEBUG
-        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DOCK)"<<endl;
-#endif // DEBUG
+        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DOCK)"<<endl;
         layer = Layer::DOCK;
         break;
     case WIN_LAYER_ABOVE_DOCK:
-#ifdef DEBUG
-        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ABOVE_DOCK)"<<endl;
-#endif // DEBUG
+        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ABOVE_DOCK)"<<endl;
         layer = Layer::ABOVE_DOCK;
         break;
     case WIN_LAYER_MENU:
-#ifdef DEBUG
-        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_MENU)"<<endl;
-#endif // DEBUG
+        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_MENU)"<<endl;
         layer = Layer::MENU;
         break;
     default:
         // our windows are in the opposite direction to gnome
         layer = Layer::DESKTOP - layer;
-#ifdef DEBUG
-        cerr<<"Gnome::setLayer("<<win->title()<<", "<<layer<<")"<<endl;
-#endif // DEBUG
+
+        fbdbg<<"Gnome::setLayer("<<win->title()<<", "<<layer<<")"<<endl;
+
         break;
     }
 

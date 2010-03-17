@@ -32,6 +32,7 @@
 #include "WinClient.hh"
 #include "Screen.hh"
 #include "ButtonTheme.hh"
+#include "Debug.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -40,13 +41,10 @@
 
 using std::string;
 
-#ifdef DEBUG
-#include <iostream>
-using std::cerr;
+
 using std::endl;
 using std::hex;
 using std::dec;
-#endif // DEBUG
 
 /// helper class for tray windows, so we dont call XDestroyWindow
 class TrayWindow: public FbTk::FbWindow {
@@ -86,9 +84,9 @@ public:
             mapped = (bool)(static_cast<unsigned long>(prop[1]) & XEMBED_MAPPED);
             XFree(static_cast<void *>(prop));
 
-#ifdef DEBUG
-            cerr<<__FILE__<<"(SystemTray::TrayWindow::getMappedDefault(): XEMBED_MAPPED = "<<mapped<<endl;
-#endif // DEBUG
+
+            fbdbg<<"(SystemTray::TrayWindow::getMappedDefault(): XEMBED_MAPPED = "<<mapped<<endl;
+
 
         }
         return true;
@@ -187,16 +185,14 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     Atom tray_atom = XInternAtom(disp, atom_name.c_str(), False);
     Window owner = XGetSelectionOwner(disp, tray_atom);
     if (owner != 0) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"(SystemTray(const FbTk::FbWindow)): can't set owner!"<<endl;
-#endif // DEBUG
+        fbdbg<<"(SystemTray(const FbTk::FbWindow)): can't set owner!"<<endl;
         return;  // the're can't be more than one owner
     }
 
     // ok, it was free. Lets set owner
-#ifdef DEBUG
-    cerr<<__FILE__<<"(SystemTray(const FbTk::FbWindow)): SETTING OWNER!"<<endl;
-#endif // DEBUG
+
+    fbdbg<<"(SystemTray(const FbTk::FbWindow)): SETTING OWNER!"<<endl;
+
     // set owner
     XSetSelectionOwner(disp, tray_atom, m_selection_owner.window(), CurrentTime);
 
@@ -311,17 +307,17 @@ bool SystemTray::clientMessage(const XClientMessageEvent &event) {
 
         int type = event.data.l[1];
         if (type == SYSTEM_TRAY_REQUEST_DOCK) {
-#ifdef DEBUG
-            cerr<<"SystemTray::clientMessage(const XClientMessageEvent): SYSTEM_TRAY_REQUEST_DOCK"<<endl;
-            cerr<<"window = event.data.l[2] = "<<event.data.l[2]<<endl;
-#endif // DEBUG
+
+            fbdbg<<"SystemTray::clientMessage(const XClientMessageEvent): SYSTEM_TRAY_REQUEST_DOCK"<<endl;
+            fbdbg<<"window = event.data.l[2] = "<<event.data.l[2]<<endl;
+
             addClient(event.data.l[2], true);
         }
         /*
         else if (type == SYSTEM_TRAY_BEGIN_MESSAGE)
-            cerr<<"BEGIN MESSAGE"<<endl;
+            fbdbg<<"BEGIN MESSAGE"<<endl;
         else if (type == SYSTEM_TRAY_CANCEL_MESSAGE)
-            cerr<<"CANCEL MESSAGE"<<endl;
+            fbdbg<<"CANCEL MESSAGE"<<endl;
         */
 
         return true;
@@ -362,9 +358,7 @@ void SystemTray::addClient(Window win, bool using_xembed) {
 
     TrayWindow *traywin = new TrayWindow(win, using_xembed);
 
-#ifdef DEBUG
-    cerr<<"SystemTray::addClient(Window): 0x"<<hex<<win<<dec<<endl;
-#endif // DEBUG
+    fbdbg<<"SystemTray::addClient(Window): 0x"<<hex<<win<<dec<<endl;
 
     m_clients.push_back(traywin);
     FbTk::EventManager::instance()->add(*this, win);
@@ -400,9 +394,8 @@ void SystemTray::removeClient(Window win, bool destroyed) {
     if (tray_it == m_clients.end())
         return;
 
-#ifdef DEBUG
-    cerr<<__FILE__<<"(SystemTray::removeClient(Window)): 0x"<<hex<<win<<dec<<endl;
-#endif // DEBUG
+    fbdbg<<"(SystemTray::removeClient(Window)): 0x"<<hex<<win<<dec<<endl;
+
     TrayWindow *traywin = *tray_it;
     m_clients.erase(tray_it);
     if (!destroyed) {

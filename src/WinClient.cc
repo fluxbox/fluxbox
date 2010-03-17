@@ -26,8 +26,8 @@
 #include "FocusControl.hh"
 #include "Screen.hh"
 #include "FbAtoms.hh"
-
 #include "Xutil.hh"
+#include "Debug.hh"
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/MultLayers.hh"
@@ -52,13 +52,11 @@
 using std::string;
 using std::list;
 using std::mem_fun;
-
-#ifdef DEBUG
-using std::cerr;
 using std::endl;
+using std::cerr;
 using std::hex;
 using std::dec;
-#endif // DEBUG
+
 
 WinClient::TransientWaitMap WinClient::s_transient_wait;
 
@@ -110,9 +108,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
 }
 
 WinClient::~WinClient() {
-#ifdef DEBUG
-    cerr<<__FILE__<<"(~"<<__FUNCTION__<<")[this="<<this<<"]"<<endl;
-#endif // DEBUG
+    fbdbg<<__FILE__<<"(~"<<__FUNCTION__<<")[this="<<this<<"]"<<endl;
 
     FbTk::EventManager::instance()->remove(window());
 
@@ -175,10 +171,9 @@ bool WinClient::sendFocus() {
     }
     if (!send_focus_message)
         return false;
-#ifdef DEBUG
-    cerr<<"WinClient::"<<__FUNCTION__<<": this = "<<this<<
+
+    fbdbg<<"WinClient::"<<__FUNCTION__<<": this = "<<this<<
         " window = 0x"<<hex<<window()<<dec<<endl;
-#endif // DEBUG
 
     // setup focus msg
     XEvent ce;
@@ -241,9 +236,9 @@ string WinClient::getWMRole() const {
 void WinClient::updateWMClassHint() {
     XClassHint ch;
     if (XGetClassHint(display(), window(), &ch) == 0) {
-#ifdef DEBUG
-        cerr<<"WinClient: Failed to read class hint!"<<endl;
-#endif //DEBUG
+
+        fbdbg<<"WinClient: Failed to read class hint!"<<endl;
+
         m_instance_name = m_class_name = "";
     } else {
 
@@ -275,17 +270,14 @@ void WinClient::updateTransientInfo() {
     // determine if this is a transient window
     Window win = 0;
     if (!XGetTransientForHint(display(), window(), &win)) {
-#ifdef DEBUG
-        cerr<<__FUNCTION__<<": window() = 0x"<<hex<<window()<<dec<<"Failed to read transient for hint."<<endl;
-#endif // DEBUG
+
+        fbdbg<<__FUNCTION__<<": window() = 0x"<<hex<<window()<<dec<<"Failed to read transient for hint."<<endl;
         return;
     }
 
     // we can't be transient to ourself
     if (win == window()) {
-#ifdef DEBUG
         cerr<<__FUNCTION__<<": transient to ourself"<<endl;
-#endif // DEBUG
         return;
     }
 
@@ -314,10 +306,9 @@ void WinClient::updateTransientInfo() {
     }
 
 
-#ifdef DEBUG
-    cerr<<__FUNCTION__<<": transient_for window = 0x"<<hex<<win<<dec<<endl;
-    cerr<<__FUNCTION__<<": transient_for = "<<transient_for<<endl;
-#endif // DEBUG
+    fbdbg<<__FUNCTION__<<": transient_for window = 0x"<<hex<<win<<dec<<endl;
+    fbdbg<<__FUNCTION__<<": transient_for = "<<transient_for<<endl;
+
     // make sure we don't have deadlock loop in transient chain
     for (WinClient *w = this; w != 0; w = w->transient_for) {
         if (this == w->transient_for)
@@ -604,10 +595,9 @@ void WinClient::updateWMProtocols() {
         XFree(proto);
         if (fbwindow())
             fbwindow()->updateFunctions();
-#ifdef DEBUG
+
     } else {
-        cerr<<"Warning: Failed to read WM Protocols. "<<endl;
-#endif // DEBUG
+        fbdbg<<"Warning: Failed to read WM Protocols. "<<endl;
     }
 
 }

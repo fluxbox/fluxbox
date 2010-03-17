@@ -63,12 +63,6 @@
 
 using std::string;
 
-#ifdef DEBUG
-#include <iostream>
-using std::cerr;
-using std::endl;
-#endif // DEBUG
-
 Workspace::Workspace(BScreen &scrn, const string &name, unsigned int id):
     m_screen(scrn),
     m_clientmenu(scrn, m_windowlist, false),
