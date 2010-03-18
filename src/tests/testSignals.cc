@@ -21,7 +21,8 @@ struct OneArgument {
 };
 
 struct TwoArguments {
-    void operator ()( int value, const string& message ) {
+    template <typename T1, typename T2>
+    void operator ()( const T1& value, const T2& message ) {
         cout << "Two arguments, (1) = " << value << ", (2) = " << message << endl;
     }
 };
@@ -50,6 +51,9 @@ struct FunctionClass {
 
     void showMessage( int value, const string& message ) {
         cout << "(" << value << "): " << message << endl;
+    }
+    void showMessage2( const string& message1, const string& message2) {
+        cout << "(" << message1 << ", " << message2 << ")" << endl;
     }
     void threeArgs( int value, const string& str, double pi ) {
         cout << "(" << value << "): " << str << ", pi = " << pi << endl;
@@ -118,4 +122,21 @@ int main() {
     three_args.clear();
     three_args.connect(MemFun(obj, &FunctionClass::threeArgs));
     three_args.emit(9, "nine", 3.141592);
+
+    // Test ignore signals
+    {
+        cout << "----------- Testing ignoring arguments for signal." << endl;
+        using FbTk::MemFunIgnoreArgs;
+        // Create a signal that emits with three arguments, and connect
+        // sinks that takes less than three arguments.
+        Signal<void, string, string, float> more_args;
+        more_args.connect(MemFunIgnoreArgs(obj, &FunctionClass::print));
+        more_args.connect(MemFunIgnoreArgs(obj, &FunctionClass::takeIt));
+        more_args.connect(MemFunIgnoreArgs(obj, &FunctionClass::showMessage2));
+        more_args.emit("This should be visible for takeIt(string)",
+                       "Visible to the two args function.",
+                       2.9);
+
+    }
+
 }

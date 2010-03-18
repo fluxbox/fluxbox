@@ -38,7 +38,9 @@ public:
     void operator ()() {
         (m_obj.*m_action)();
     }
-
+    void call() {
+        (m_obj.*m_action)();
+    }
 private:
     Object& m_obj;
     Action m_action;
@@ -132,6 +134,92 @@ MemFun3<ReturnType, Object, Arg1, Arg2, Arg3>
 MemFun( Object& obj, ReturnType (Object:: *action)(Arg1, Arg2, Arg3) ) {
     return MemFun3<ReturnType, Object, Arg1, Arg2, Arg3>(obj, action);
 }
+
+/// Ignores all arguments
+template <typename ReturnType, typename Object>
+class MemFun0IgnoreArgs: public MemFun0<ReturnType, Object> {
+public:
+    typedef MemFun0<ReturnType, Object> BaseType;
+
+    MemFun0IgnoreArgs(Object& obj,
+                      typename BaseType::Action action):
+        BaseType(obj, action) {
+    }
+
+    template <typename IgnoreType1, typename IgnoreType2, typename IgnoreType3>
+    void operator ()(IgnoreType1&, IgnoreType2&, IgnoreType3&) {
+        BaseType::operator ()();
+    }
+    
+    template <typename IgnoreType1, typename IgnoreType2>
+    void operator ()(IgnoreType1&, IgnoreType2&) {
+        BaseType::operator ()();
+    }
+
+    template <typename IgnoreType1>
+    void operator ()(IgnoreType1&) {
+        BaseType::operator ()();
+    }
+};
+
+/// Ignores second and third argument
+template <typename ReturnType, typename Object, typename Arg1>
+class MemFun1IgnoreArgs: public MemFun1<ReturnType, Object, Arg1> {
+public:
+    typedef MemFun1<ReturnType, Object, Arg1> BaseType;
+
+    MemFun1IgnoreArgs(Object& obj, typename BaseType::Action& action):
+        BaseType(obj, action) {
+    }
+
+    template <typename IgnoreType1, typename IgnoreType2>
+    void operator ()(Arg1 arg1, IgnoreType1&, IgnoreType2&) {
+        BaseType::operator ()(arg1);
+    }
+
+    template <typename IgnoreType>
+    void operator ()(Arg1 arg1, IgnoreType&) {
+        BaseType::operator ()(arg1);
+    }
+};
+
+/// Takes two arguments but ignores the third
+template <typename ReturnType, typename Object, typename Arg1, typename Arg2>
+class MemFun2IgnoreArgs: public MemFun2<ReturnType, Object, Arg1, Arg2> {
+public:
+    typedef MemFun2<ReturnType, Object, Arg1, Arg2> BaseType;
+
+    MemFun2IgnoreArgs(Object& obj, typename BaseType::Action& action):
+        BaseType(obj, action) {
+    }
+
+    template < typename IgnoreType >
+    void operator ()(Arg1 arg1, Arg2 arg2, IgnoreType&) {
+        BaseType::operator ()(arg1, arg2);
+    }
+};
+
+/// Creates functor that ignores all arguments.
+template <typename ReturnType, typename Object>
+MemFun0IgnoreArgs<ReturnType, Object>
+MemFunIgnoreArgs( Object& obj, ReturnType (Object:: *action)() ) {
+    return MemFun0IgnoreArgs<ReturnType, Object>(obj, action);
+}
+
+/// Creates functor that ignores second and third argument.
+template <typename ReturnType, typename Object, typename Arg1>
+MemFun1IgnoreArgs<ReturnType, Object, Arg1>
+MemFunIgnoreArgs( Object& obj, ReturnType (Object:: *action)(Arg1) ) {
+    return MemFun1IgnoreArgs<ReturnType, Object, Arg1>(obj, action);
+}
+
+/// Creates functor that ignores third argument. 
+template <typename ReturnType, typename Object, typename Arg1, typename Arg2>
+MemFun2IgnoreArgs<ReturnType, Object, Arg1, Arg2> 
+MemFunIgnoreArgs( Object& obj, ReturnType (Object:: *action)(Arg1,Arg2) ) {
+    return MemFun2IgnoreArgs<ReturnType, Object, Arg1, Arg2>(obj, action);
+}
+
 
 } // namespace FbTk
 
