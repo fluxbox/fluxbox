@@ -33,7 +33,9 @@
 #include <X11/keysym.h>
 
 #include <string>
+#include <string.h>
 #include <iostream>
+
 using namespace std;
 
 class App:public FbTk::App, public FbTk::EventHandler {
@@ -56,9 +58,9 @@ public:
             XInternAtom(m_win.display(),
                         "_NET_WM_STATE_DEMANDS_ATTENTION",
                         False);
-        FbTk::RefCount<FbTk::Command> cmd(new FbTk::SimpleCommand<App>
-                                          (*this,
-                                           &App::demandAttention));
+        FbTk::RefCount<FbTk::Command<void> > cmd(new FbTk::SimpleCommand<App>
+                                                 (*this,
+                                                  &App::demandAttention));
         timeval t;
         t.tv_sec = 5;
         t.tv_usec = 0;
