@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS= -I.. -I../FbTk -I../.. -DDEBUG -DUSE_XFT -Wall -g -O2 ../FbTk/libFbTk.a
+CXXFLAGS= -I.. -I../FbTk -I../.. -DDEBUG -DUSE_XFT -Wall -g -O2 -fno-inline
 LIBS= 
 XFLAGS= -I/usr/X11R6/include
 XLIBS= -L/usr/X11R6/lib -lX11 -lXft -lXpm -lImlib2
@@ -17,7 +17,7 @@ glxtest: ../FbTk/App.hh glxtest.cc
 	${CXX} glxtest.cc ${CXXFLAGS} ${XLIBS} -lGL -lGLU -lXpm -o glxtest
 
 testSignals: testSignals.o ../FbTk/Signal.hh ../FbTk/MemFun.hh
-	$(CXX) $(LIBS) testSignals.o -o testSignals
+	$(CXX) $(LIBS) testSignals.o -o testSignals ../FbTk/libFbTk.a
 
 testStringUtil: StringUtiltest.o
 	$(CXX) $(LIBS) StringUtiltest.o ../FbTk/libFbTk.a -o testStringUtil
