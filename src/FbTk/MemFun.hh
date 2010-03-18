@@ -38,9 +38,7 @@ public:
     void operator ()() {
         (m_obj.*m_action)();
     }
-    void call() {
-        (m_obj.*m_action)();
-    }
+
 private:
     Object& m_obj;
     Action m_action;
@@ -150,7 +148,7 @@ public:
     void operator ()(IgnoreType1&, IgnoreType2&, IgnoreType3&) {
         BaseType::operator ()();
     }
-    
+
     template <typename IgnoreType1, typename IgnoreType2>
     void operator ()(IgnoreType1&, IgnoreType2&) {
         BaseType::operator ()();
@@ -213,9 +211,9 @@ MemFunIgnoreArgs( Object& obj, ReturnType (Object:: *action)(Arg1) ) {
     return MemFun1IgnoreArgs<ReturnType, Object, Arg1>(obj, action);
 }
 
-/// Creates functor that ignores third argument. 
+/// Creates functor that ignores third argument.
 template <typename ReturnType, typename Object, typename Arg1, typename Arg2>
-MemFun2IgnoreArgs<ReturnType, Object, Arg1, Arg2> 
+MemFun2IgnoreArgs<ReturnType, Object, Arg1, Arg2>
 MemFunIgnoreArgs( Object& obj, ReturnType (Object:: *action)(Arg1,Arg2) ) {
     return MemFun2IgnoreArgs<ReturnType, Object, Arg1, Arg2>(obj, action);
 }
