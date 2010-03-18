@@ -29,6 +29,7 @@
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/TextButton.hh"
+#include "FbTk/Signal.hh"
 
 class IconbarTheme;
 
@@ -68,6 +69,7 @@ public:
 protected:
     void drawText(int x, int y, FbTk::FbDrawable *drawable_override);
 private:
+    void reconfigAndClear();
     void setupWindow();
     void showTooltip();
 
@@ -82,6 +84,7 @@ private:
     FocusableTheme<IconbarTheme> m_theme;
     // cached pixmaps
     FbTk::CachedPixmap m_pm;
+    FbTk::SignalTracker m_signals;
 };
 
 #endif // ICONBUTTON_HH

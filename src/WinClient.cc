@@ -433,8 +433,7 @@ void WinClient::updateWMHints() {
             if (wmhint->flags & XUrgencyHint) {
                 Fluxbox::instance()->attentionHandler().addAttention(*this);
             } else {
-                Fluxbox::instance()->attentionHandler().
-                    update(&m_focussig);
+                Fluxbox::instance()->attentionHandler().windowFocusChanged(*this);
             }
         }
 

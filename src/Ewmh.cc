@@ -1358,8 +1358,7 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value,
         if (value) { // if add attention
             Fluxbox::instance()->attentionHandler().addAttention(client);
         } else { // erase it
-            Fluxbox::instance()->attentionHandler().
-                update(&client.focusSig());
+            Fluxbox::instance()->attentionHandler().removeWindow(client);
         }
     } else if (state == m_net->wm_state_modal) {
         client.setStateModal(value);

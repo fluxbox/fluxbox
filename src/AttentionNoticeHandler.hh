@@ -48,8 +48,16 @@ public:
     void update(FbTk::Subject *subj);
 
     bool isDemandingAttention(const Focusable &client);
-    
+
+    /// Called when window focus changes.
+    void windowFocusChanged(Focusable& win);
+    /// Remove window from attentionHandler.
+    void removeWindow(Focusable& win);
+
 private:
+    /// updates the windows state in this instance.
+    void updateWindow(Focusable& win, bool died);
+
     NoticeMap m_attentions;
 };
 

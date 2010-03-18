@@ -979,9 +979,9 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
 
     m_client->raise();
     if (m_focused) {
-        m_client->focusSig().notify();
+        m_client->notifyFocusChanged();
         if (old)
-            old->focusSig().notify();
+            old->notifyFocusChanged();
     }
 
     fbdbg<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
@@ -1777,9 +1777,9 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     // did focus change? notify listeners
     if (was_focused != focus) {
         m_attention_state = false;
-        m_focussig.notify();
+        notifyFocusChanged();
         if (m_client)
-            m_client->focusSig().notify();
+            m_client->notifyFocusChanged();
         Fluxbox::instance()->keys()->doAction(focus ? FocusIn : FocusOut, 0, 0,
                                               Keys::ON_WINDOW, m_client);
     }

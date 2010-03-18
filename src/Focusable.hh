@@ -25,6 +25,7 @@
 #include "FbTk/PixmapWithMask.hh"
 #include "FbTk/ITypeAheadable.hh"
 #include "FbTk/Subject.hh"
+#include "FbTk/Signal.hh"
 
 #include <string>
 
@@ -41,8 +42,9 @@ public:
         m_screen(scr), m_fbwin(fbwin),
         m_instance_name("fluxbox"), m_class_name("fluxbox"),
         m_focused(false), m_attention_state(false),
-        m_titlesig(*this), m_focussig(*this), m_diesig(*this),
-        m_attentionsig(*this) { }
+        m_titlesig(*this), m_diesig(*this),
+        m_attentionsig(*this),
+        m_focussig() { }
     virtual ~Focusable() { }
 
     /**
@@ -118,13 +120,18 @@ public:
     FbTk::Subject &titleSig() { return m_titlesig; }
     // Used for both title and icon changes.
     const FbTk::Subject &titleSig() const { return m_titlesig; }
-    FbTk::Subject &focusSig() { return m_focussig; }
-    const FbTk::Subject &focusSig() const { return m_focussig; }
+    FbTk::Signal<void, Focusable&> &focusSig() { return m_focussig; }
+    const FbTk::Signal<void, Focusable&> &focusSig() const { return m_focussig; }
     FbTk::Subject &dieSig() { return m_diesig; }
     const FbTk::Subject &dieSig() const { return m_diesig; }
     FbTk::Subject &attentionSig() { return m_attentionsig; }
     const FbTk::Subject &attentionSig() const { return m_attentionsig; }
     /** @} */ // end group signals
+
+    /// Notify any listeners that the focus changed for this window.
+    void notifyFocusChanged() {
+        m_focussig.emit(*this);
+    }
 
 protected:
     BScreen &m_screen; //< the screen in which it works
@@ -136,7 +143,10 @@ protected:
     FbTk::PixmapWithMask m_icon; //< icon pixmap with mask
 
     // state and hint signals
-    FocusSubject m_titlesig, m_focussig, m_diesig, m_attentionsig;
+    FocusSubject m_titlesig, m_diesig, m_attentionsig;
+
+private:
+    FbTk::Signal<void, Focusable&> m_focussig;
 };
 
 #endif // FOCUSABLE_HH

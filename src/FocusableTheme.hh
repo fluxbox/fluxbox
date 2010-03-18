@@ -25,6 +25,7 @@
 #include "Focusable.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/Theme.hh"
+#include "FbTk/RelaySignal.hh"
 
 template <typename BaseTheme>
 class FocusableTheme: public FbTk::ThemeProxy<BaseTheme>,
@@ -33,7 +34,9 @@ public:
     FocusableTheme(Focusable &win, FbTk::ThemeProxy<BaseTheme> &focused,
                    FbTk::ThemeProxy<BaseTheme> &unfocused):
         m_win(win), m_focused_theme(focused), m_unfocused_theme(unfocused) {
-        m_win.focusSig().attach(this);
+        // relay focus signal to reconfig signal
+        FbTk::relaySignal(m_signals, m_win.focusSig(), m_reconfig_sig);
+
         m_win.attentionSig().attach(this);
         m_focused_theme.reconfigSig().attach(this);
         m_unfocused_theme.reconfigSig().attach(this);
@@ -66,6 +69,7 @@ private:
     Focusable &m_win;
     FbTk::ThemeProxy<BaseTheme> &m_focused_theme, &m_unfocused_theme;
     FbTk::Subject m_reconfig_sig;
+    FbTk::SignalTracker m_signals;
 };
 
 #endif // FOCUSABLETHEME_HH

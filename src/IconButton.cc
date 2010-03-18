@@ -60,7 +60,8 @@ IconButton::IconButton(const FbTk::FbWindow &parent,
     m_pm(win.screen().imageControl()) {
 
     m_win.titleSig().attach(this);
-    m_win.focusSig().attach(this);
+    m_signals.join(m_win.focusSig(),
+                   MemFunIgnoreArgs(*this, &IconButton::reconfigAndClear));
     m_win.attentionSig().attach(this);
 
     FbTk::EventManager::instance()->add(*this, m_icon_window);
@@ -169,11 +170,15 @@ void IconButton::reconfigTheme() {
 
 }
 
+void IconButton::reconfigAndClear() {
+    reconfigTheme();
+    clear();
+}
+
 void IconButton::update(FbTk::Subject *subj) {
     // if the window's focus state changed, we need to update the background
-    if (subj == &m_win.focusSig() || subj == &m_win.attentionSig()) {
-        reconfigTheme();
-        clear();
+    if (subj == &m_win.attentionSig()) {
+        reconfigAndClear();
         return;
     }
 

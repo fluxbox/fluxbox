@@ -28,6 +28,7 @@
 #include "FbTk/Subject.hh"
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
+#include "FbTk/MemFun.hh"
 
 namespace {
 class ToggleFrameFocusCmd: public FbTk::Command<void> {
@@ -91,30 +92,41 @@ void AttentionNoticeHandler::addAttention(Focusable &client) {
     m_attentions[&client] = timer; 
     // attach signals that will make notice go away
     client.dieSig().attach(this);
-    client.focusSig().attach(this);
+
+    client.focusSig().connect(MemFun(*this, &AttentionNoticeHandler::windowFocusChanged));
 
     // update _NET_WM_STATE atom
     if (client.fbwindow())
         client.fbwindow()->stateSig().notify();
 }
 
-void AttentionNoticeHandler::update(FbTk::Subject *subj) {
+void AttentionNoticeHandler::windowFocusChanged(Focusable& win) {
+    updateWindow(win, false);
+}
+void AttentionNoticeHandler::removeWindow(Focusable& win) {
+    updateWindow(win, true);
+}
 
+void AttentionNoticeHandler::update(FbTk::Subject* subj) {
     // we need to be able to get the window
     if (!subj || typeid(*subj) != typeid(Focusable::FocusSubject))
         return;
+    Focusable::FocusSubject *winsubj =
+        static_cast<Focusable::FocusSubject *>(subj);
 
+    removeWindow(winsubj->win());
+}
+
+void AttentionNoticeHandler::updateWindow(Focusable& win, bool died) {
     // all signals results in destruction of the notice
 
-    Focusable::FocusSubject *winsubj = 
-        static_cast<Focusable::FocusSubject *>(subj);
-    delete m_attentions[&winsubj->win()];
-    m_attentions.erase(&winsubj->win());
-    winsubj->win().setAttentionState(false);
+    delete m_attentions[&win];
+    m_attentions.erase(&win);
+    win.setAttentionState(false);
 
-    // update _NET_WM_STATE atom
-    FluxboxWindow *fbwin = winsubj->win().fbwindow();
-    if (fbwin && winsubj != &winsubj->win().dieSig())
+    // update _NET_WM_STATE atom if the window is not dead
+    FluxboxWindow *fbwin = win.fbwindow();
+    if (fbwin && ! died)
         fbwin->stateSig().notify();
 
 }
