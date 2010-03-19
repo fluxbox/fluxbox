@@ -22,6 +22,8 @@
 #ifndef FBTK_MEM_FUN_HH
 #define FBTK_MEM_FUN_HH
 
+#include "SelectArg.hh"
+
 namespace FbTk {
 
 /// No argument functor
@@ -218,6 +220,60 @@ MemFunIgnoreArgs( Object& obj, ReturnType (Object:: *action)(Arg1,Arg2) ) {
     return MemFun2IgnoreArgs<ReturnType, Object, Arg1, Arg2>(obj, action);
 }
 
+/**
+ * Creates a functor that selects a specific argument of three possible ones
+ * and uses it for the single argument operator.
+ */
+template < int ArgNum, typename Functor>
+class MemFunSelectArgImpl {
+public:
+
+    MemFunSelectArgImpl(Functor func):
+        m_func(func) {
+    }
+
+    template <typename Type1, typename Type2, typename Type3>
+    void operator ()(Type1 a, Type2 b, Type3 c) {
+        m_func(STLUtil::SelectArg<ArgNum>()(a, b, c));
+    }
+
+    template <typename Type1, typename Type2>
+    void operator ()(Type1 a, Type2 b) {
+        m_func(STLUtil::SelectArg<ArgNum>()(a, b));
+    }
+
+    template <typename Type1>
+    void operator ()(Type1 a) {
+        m_func(a);
+    }
+
+private:
+    Functor m_func;
+};
+
+/// Creates a functor that selects the first argument of three possible ones
+/// and uses it for the single argument operator.
+template <typename ReturnType, typename Object, typename Arg1>
+MemFunSelectArgImpl<0, MemFun1<ReturnType, Object, Arg1> >
+MemFunSelectArg0(Object& obj, ReturnType (Object:: *action)(Arg1)) {
+    return MemFunSelectArgImpl<0, MemFun1<ReturnType, Object, Arg1> >(MemFun(obj, action));
+}
+
+/// Creates a functor that selects the second argument (or first if there is
+/// only one) of three possible onesand uses it for the single argument operator.
+template <typename ReturnType, typename Object, typename Arg1>
+MemFunSelectArgImpl<1, MemFun1<ReturnType, Object, Arg1> >
+MemFunSelectArg1(Object& obj, ReturnType (Object:: *action)(Arg1)) {
+    return MemFunSelectArgImpl<1, MemFun1<ReturnType, Object, Arg1> >(MemFun(obj, action));
+}
+
+/// Creates a functor that selects the third argument (or the last argument if there is
+/// less than three arguments) of three possible onesand uses it for the single argument operator.
+template <typename ReturnType, typename Object, typename Arg1>
+MemFunSelectArgImpl<2, MemFun1<ReturnType, Object, Arg1> >
+MemFunSelectArg2(Object& obj, ReturnType (Object:: *action)(Arg1)) {
+    return MemFunSelectArgImpl<2, MemFun1<ReturnType, Object, Arg1> >(MemFun(obj, action));
+}
 
 } // namespace FbTk
 

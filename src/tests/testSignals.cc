@@ -49,7 +49,7 @@ struct FunctionClass {
     }
 
     void takeIt( string& str ) {
-        cout << "takeIt( " << str << ")" << endl;
+        cout << "FunctionClass::takeIt( " << str << " )" << endl;
     }
 
     void showMessage( int value, const string& message ) {
@@ -61,7 +61,20 @@ struct FunctionClass {
     void threeArgs( int value, const string& str, double pi ) {
         cout << "(" << value << "): " << str << ", pi = " << pi << endl;
     }
+
 };
+
+struct Printer {
+    void printInt(int value) {
+        cout << "Int:" << value << endl;
+    }
+    void printString(string value) {
+        cout << "string:" << value << endl;
+    }
+    void printFloat(float value) {
+        cout << "Float:" << value << endl;
+    }
+}; 
 
 int main() {
     using FbTk::Signal;
@@ -160,5 +173,23 @@ int main() {
         // the new signal should now make the old
         // subject notify its observers
         source.emit("hello world");
+    }
+
+    // Test argument selector
+    {
+        using namespace FbTk;
+        Signal<void, int, string, float> source;
+
+        Printer printer;
+        source.connect(MemFunSelectArg0(printer, &Printer::printInt));
+        source.connect(MemFunSelectArg1(printer, &Printer::printString));
+        source.connect(MemFunSelectArg2(printer, &Printer::printFloat));
+
+        source.emit(10, "hello", 3.141592);
+
+        Signal<void, string, int> source2;
+        source2.connect(MemFunSelectArg0(printer, &Printer::printString));
+        source2.connect(MemFunSelectArg1(printer, &Printer::printInt));
+        source2.emit("world", 37);
     }
 }

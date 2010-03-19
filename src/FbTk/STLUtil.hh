@@ -26,6 +26,25 @@
 namespace FbTk {
 namespace STLUtil {
 
+template<bool C, typename Ta, typename Tb>
+struct IfThenElse;
+
+template<typename Ta, typename Tb>
+struct IfThenElse<true, Ta, Tb> {
+    Ta& operator ()(Ta& ta, Tb& tb) const {
+        return ta;
+    }
+    typedef Ta ResultType;
+};
+
+template<typename Ta, typename Tb>
+struct IfThenElse<false, Ta, Tb> {
+    Tb& operator ()(Ta& ta, Tb& tb) const {
+        return tb;
+    }
+    typedef Tb ResultType;
+};
+
 /// calls delete on each item in the container and then clears the container
 template <typename A>
 void destroyAndClear(A &a) {
