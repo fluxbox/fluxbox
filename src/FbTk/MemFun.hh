@@ -233,17 +233,17 @@ public:
     }
 
     template <typename Type1, typename Type2, typename Type3>
-    void operator ()(Type1 a, Type2 b, Type3 c) {
+    void operator ()(Type1& a, Type2& b, Type3& c) {
         m_func(STLUtil::SelectArg<ArgNum>()(a, b, c));
     }
 
     template <typename Type1, typename Type2>
-    void operator ()(Type1 a, Type2 b) {
+    void operator ()(Type1& a, Type2& b) {
         m_func(STLUtil::SelectArg<ArgNum>()(a, b));
     }
 
     template <typename Type1>
-    void operator ()(Type1 a) {
+    void operator ()(Type1& a) {
         m_func(a);
     }
 
