@@ -26,6 +26,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <set>
 
 namespace FbTk {
 
@@ -39,6 +40,14 @@ namespace SigImpl {
  */
 class SignalHolder {
 public:
+    /// Special tracker interface used by SignalTracker.
+    class Tracker {
+    public:
+        virtual ~Tracker() { }
+        /// Disconnect this holder.
+        virtual void disconnect(SignalHolder& signal) = 0;
+    };
+
     /// Do not use this type outside this class
     typedef std::list<SlotHolder> SlotList;
 
@@ -46,7 +55,14 @@ public:
     typedef Iterator SlotID;
     typedef SlotList::const_iterator ConstIterator;
 
-    ~SignalHolder() { }
+    ~SignalHolder() {
+        // Disconnect this holder from all trackers.
+        for (Trackers::iterator it = m_trackers.begin(),
+                 it_end = m_trackers.end();
+             it != it_end; ++it ) {
+            (*it)->disconnect(*this);
+        }
+    }
 
     /// Remove a specific slot \c id from this signal
     void disconnect(SlotID slotIt) {
@@ -57,6 +73,14 @@ public:
     /// Removes all slots connected to this
     void clear() {
         m_slots.clear();
+    }
+
+    void connectTracker(SignalHolder::Tracker& tracker) {
+        m_trackers.insert(&tracker);
+    }
+
+    void disconnectTracker(SignalHolder::Tracker& tracker) {
+        m_trackers.erase(&tracker);
     }
 
 protected:
@@ -72,7 +96,9 @@ protected:
     }
 
 private:
+    typedef std::set<Tracker*> Trackers;
     SlotList m_slots; ///< all slots connected to a signal
+    Trackers m_trackers; ///< all instances that tracks this signal.
 };
 
 /// Signal with no argument
@@ -188,7 +214,7 @@ public:
  * Tracks a signal during it's life time. All signals connected using \c
  * SignalTracker::join will be erased when this instance dies.
  */
-class SignalTracker {
+class SignalTracker: public SigImpl::SignalHolder::Tracker {
 public:
     /// Internal type, do not use.
     typedef std::map<SigImpl::SignalHolder*,
@@ -200,7 +226,7 @@ public:
     }
 
     /// Starts tracking a signal.
-    /// @return A tracking ID ( not unique )
+    /// @return A tracking ID
     template <typename Signal, typename Functor>
     TrackID join(Signal& sig, const Functor& functor) {
         ValueType value = ValueType(&sig, sig.connect(functor));
@@ -209,6 +235,9 @@ public:
             // failed to insert this functor
             sig.disconnect(value.second);
         }
+
+        sig.connectTracker(*this);
+
         return ret.first;
     }
 
@@ -239,8 +268,16 @@ public:
             ValueType tmp = *conIt;
             m_connections.erase(conIt);
             tmp.first->disconnect(tmp.second);
+            tmp.first->disconnectTracker(*this);
         }
     }
+
+protected:
+
+    void disconnect(SigImpl::SignalHolder& signal) {
+        m_connections.erase(&signal);
+    }
+
 private:
     typedef Connections::value_type ValueType;
     typedef Connections::iterator Iterator;
