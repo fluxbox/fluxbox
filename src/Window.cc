@@ -988,7 +988,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
         button<<endl;
 
     if (old != &client) {
-        titleSig().notify();
+        titleSig().emit(title(), *this);
         frame().setFocusTitle(title());
         frame().setShapingClient(&client, false);
     }
@@ -2103,7 +2103,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
 
     case XA_WM_HINTS:
         client.updateWMHints();
-        titleSig().notify();
+        titleSig().emit(title(), *this);
         // nothing uses this yet
         // hintSig().notify(); // notify listeners
         break;
@@ -2707,18 +2707,19 @@ void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
     //installColormap(false);
 }
 
+void FluxboxWindow::setTitle(const std::string& title, Focusable &client) {
+    // only update focus title for current client
+    if (&client != m_client) {
+        return;
+    }
+
+    frame().setFocusTitle(title);
+    // relay title to others that display the focus title
+    titleSig().emit(title, *this);
+}
+
 void FluxboxWindow::update(FbTk::Subject *subj) {
-    if (subj && typeid(*subj) == typeid(Focusable::FocusSubject)) {
-        Focusable::FocusSubject &fsubj =
-                static_cast<Focusable::FocusSubject &>(*subj);
-        Focusable &win = fsubj.win();
-
-        if (&fsubj == &win.titleSig() && &win == m_client) {
-            frame().setFocusTitle(win.title());
-            titleSig().notify();
-        }
-
-    } else if (subj == &m_theme.reconfigSig()) {
+    if (subj == &m_theme.reconfigSig()) {
         frame().applyDecorations();
         sendConfigureNotify();
     } else if (m_initialized && subj == &m_frame.frameExtentSig()) {
@@ -3637,7 +3638,9 @@ void FluxboxWindow::updateButtons() {
                                        dir[i],
                                        frame().titlebar(),
                                        0, 0, 10, 10);
-                titleSig().attach(winbtn);
+                winbtn->join(titleSig(),
+                             FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
+
                 winbtn->setOnClick(show_menu_cmd);
                 break;
             }
@@ -3709,7 +3712,8 @@ void FluxboxWindow::associateClient(WinClient &client) {
     evm.add(*this, btn->window()); // we take care of button events for this
     evm.add(*this, client.window());
     client.setFluxboxWindow(this);
-    client.titleSig().attach(this);
+    join(client.titleSig(),
+         FbTk::MemFun(*this, &FluxboxWindow::setTitle));
 }
 
 FluxboxWindow::ReferenceCorner FluxboxWindow::getCorner(string str) {

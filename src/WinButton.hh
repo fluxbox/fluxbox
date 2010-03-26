@@ -25,6 +25,7 @@
 #include "FbTk/Button.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/FbPixmap.hh"
+#include "FbTk/Signal.hh"
 
 class FluxboxWindow;
 class WinButtonTheme;
@@ -35,7 +36,7 @@ template <class T> class ThemeProxy;
 }
 
 /// draws and handles basic window button graphic
-class WinButton:public FbTk::Button, public FbTk::Observer {
+class WinButton:public FbTk::Button, public FbTk::Observer, public FbTk::SignalTracker {
 public:
     /// draw type for the button
     enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE, MENUICON};
@@ -57,6 +58,7 @@ public:
     /// override for redrawing
     void clear();
     void update(FbTk::Subject *subj);
+    void updateAll();
 private:
     void drawType();
     Type m_type; ///< the button type

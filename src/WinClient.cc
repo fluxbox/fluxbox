@@ -341,13 +341,13 @@ void WinClient::updateTitle() {
         return;
 
     m_title = string(Xutil::getWMName(window()), 0, 512);
-    titleSig().notify();
+    titleSig().emit(m_title, *this);
 }
 
 void WinClient::setTitle(const FbTk::FbString &title) {
     m_title = title;
     m_title_override = true;
-    titleSig().notify();
+    titleSig().emit(m_title, *this);
 }
 
 void WinClient::setIcon(const FbTk::PixmapWithMask& pm) {
@@ -355,7 +355,7 @@ void WinClient::setIcon(const FbTk::PixmapWithMask& pm) {
     m_icon.pixmap().copy(pm.pixmap());
     m_icon.mask().copy(pm.mask());
     m_icon_override = true;
-    titleSig().notify();
+    titleSig().emit(m_title, *this);
 }
 
 void WinClient::setFluxboxWindow(FluxboxWindow *win) {

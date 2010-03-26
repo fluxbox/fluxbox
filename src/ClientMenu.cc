@@ -37,10 +37,13 @@ public:
     ClientMenuItem(Focusable &client, ClientMenu &menu):
         FbTk::MenuItem(client.title().c_str(), menu),
         m_client(client) {
-            client.titleSig().attach(&menu);
-            client.dieSig().attach(&menu);
-        }
-    ~ClientMenuItem() { m_client.titleSig().detach(menu()); }
+        m_signals.join(client.titleSig(),
+                       FbTk::MemFunSelectArg1(menu, &ClientMenu::titleChanged));
+        client.dieSig().attach(&menu);
+    }
+
+    ~ClientMenuItem() {
+    }
 
     void click(int button, int time, unsigned int mods) {
         FluxboxWindow *fbwin = m_client.fbwindow();
@@ -75,6 +78,7 @@ public:
 
 private:
     Focusable &m_client;
+    FbTk::SignalTracker m_signals;
 };
 
 } // end anonymous namespace
@@ -118,30 +122,46 @@ void ClientMenu::refreshMenu() {
     updateMenu();
 }
 
+namespace {
+
+ClientMenuItem* getMenuItem(ClientMenu& menu, Focusable& win) {
+    // find the corresponding menuitem
+    ClientMenuItem *cl_item = 0;
+    for (size_t i = 0; i < menu.numberOfItems(); i++) {
+        FbTk::MenuItem *item = menu.find(i);
+        if (item && typeid(*item) == typeid(ClientMenuItem)) {
+            cl_item = static_cast<ClientMenuItem *>(item);
+            if (cl_item->client() == &win)
+                break;
+        }
+    }
+
+    return cl_item;
+
+}
+
+} // anonymous
+
+void ClientMenu::titleChanged(Focusable& win) {
+    // find correct menu item
+    ClientMenuItem* cl_item = getMenuItem(*this, win);
+    if (cl_item)
+        FbTk::Menu::update(0);
+}
+
 void ClientMenu::update(FbTk::Subject *subj) {
     if (subj && typeid(*subj) == typeid(Focusable::FocusSubject)) {
 
         Focusable::FocusSubject *fsubj = static_cast<Focusable::FocusSubject *>(subj);
         Focusable &win = fsubj->win();
 
-        // find the corresponding menuitem
-        ClientMenuItem *cl_item = 0;
-        for (size_t i = 0; i < numberOfItems(); i++) {
-            FbTk::MenuItem *item = find(i);
-            if (item && typeid(*item) == typeid(ClientMenuItem)) {
-                cl_item = static_cast<ClientMenuItem *>(item);
-                if (cl_item->client() == &win)
-                    break;
-            }
-        }
+        // find correct menu item
+        ClientMenuItem* cl_item = getMenuItem(*this, win);
 
         // update accordingly
-        if (cl_item && fsubj == &win.dieSig())
+        if (cl_item && fsubj == &win.dieSig()) {
             remove(cl_item->getIndex());
-        else if (cl_item && fsubj == &win.titleSig())
-            // this could change the size of the menu, so do a full update
-            FbTk::Menu::update(subj);
-
+        }
     } else
         FbTk::Menu::update(subj);
 }

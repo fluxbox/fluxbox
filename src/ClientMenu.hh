@@ -28,6 +28,8 @@
 
 class BScreen;
 class FluxboxWindow;
+class Focusable;
+
 /**
  * A menu holding a set of client menus.
  * @see WorkspaceMenu
@@ -47,6 +49,10 @@ public:
 
     /// refresh the entire menu
     void refreshMenu();
+
+    /// Called when window title changed.
+    void titleChanged(Focusable& win);
+
 private:
 
     void updateClientList(BScreen& screen) {

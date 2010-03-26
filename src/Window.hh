@@ -474,6 +474,9 @@ public:
     bool oplock; ///< Used to help stop transient loops occurring by locking a window during certain operations
 
 private:
+    /// signal callback for title changes by clients
+    void setTitle(const std::string &title, Focusable &client);
+
     void setupWindow();
     void updateButtons();
 

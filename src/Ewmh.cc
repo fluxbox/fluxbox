@@ -164,7 +164,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         if (width >= nr_icon_data) {
 
             fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON width (" 
-                << width << ") for " << winclient.title() << "\n";
+                  << width << ") for " << winclient.title() << "\n";
             break;
         }
 
@@ -172,7 +172,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         if (height >= nr_icon_data) {
 
             fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON height (" 
-                << height << ") for " << winclient.title() << "\n";
+                  << height << ") for " << winclient.title() << "\n";
 
             break;
         }
@@ -180,7 +180,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         // strange values stored in the NETWM_ICON
         if (i + width * height > nr_icon_data) {
             fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON dimensions (" 
-                << width << "x" << height << ")for " << winclient.title() << "\n";
+                  << width << "x" << height << ")for " << winclient.title() << "\n";
 
             break;
         }
@@ -1293,7 +1293,7 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
         if (!newtitle.empty())
             winclient.setTitle(newtitle);
         if (winclient.fbwindow())
-            winclient.fbwindow()->titleSig().notify();
+            winclient.fbwindow()->titleSig().emit(newtitle, *winclient.fbwindow());
         return true;
     } else if (the_property == m_net->wm_icon_name) {
         // we don't use icon title, since we don't show icons

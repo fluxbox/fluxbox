@@ -113,10 +113,9 @@ void FocusableList::update(FbTk::Subject *subj) {
     if (typeid(*subj) == typeid(Focusable::FocusSubject)) {
         Focusable::FocusSubject *fsubj =
             static_cast<Focusable::FocusSubject *>(subj);
-        if (fsubj == &fsubj->win().dieSig())
+        if (fsubj == &fsubj->win().dieSig()) {
             remove(fsubj->win());
-        else if (fsubj == &fsubj->win().titleSig())
-            checkUpdate(fsubj->win());
+        }
     }
     if (typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
         FluxboxWindow::WinSubject *fsubj =
@@ -244,17 +243,27 @@ void FocusableList::remove(Focusable &win) {
     bool contained = contains(win);
 
     detachSignals(win);
-    if (!contained)
+    if (!contained) {
         return;
+    }
     m_list.remove(&win);
     m_removesig.notify(&win);
+}
+
+void FocusableList::updateTitle(Focusable& win) {
+    checkUpdate(win);
 }
 
 void FocusableList::attachSignals(Focusable &win) {
     win.dieSig().attach(this);
     if (m_parent) {
         // attach various signals for matching
-        win.titleSig().attach(this);
+        if (m_signal_map.find(&win) == m_signal_map.end()) {
+            m_signal_map[&win] = join(win.titleSig(),
+                                      MemFunSelectArg1(*this,
+                                                       &FocusableList::updateTitle));
+        }
+
         FluxboxWindow *fbwin = win.fbwindow();
         if (!fbwin)
             return;
@@ -268,8 +277,14 @@ void FocusableList::attachSignals(Focusable &win) {
 void FocusableList::detachSignals(Focusable &win) {
     win.dieSig().detach(this);
     if (m_parent) {
+        // disconnect client
+        SignalMap::iterator sigIt = m_signal_map.find(&win);
+        if (sigIt != m_signal_map.end()) {
+            leave(sigIt->second);
+            m_signal_map.erase(sigIt);
+        }
+
         // detach various signals for matching
-        win.titleSig().detach(this);
         FluxboxWindow *fbwin = win.fbwindow();
         if (!fbwin)
             return;

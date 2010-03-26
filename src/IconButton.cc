@@ -59,15 +59,18 @@ IconButton::IconButton(const FbTk::FbWindow &parent,
     m_theme(win, focused_theme, unfocused_theme),
     m_pm(win.screen().imageControl()) {
 
-    m_win.titleSig().attach(this);
+    m_signals.join(m_win.titleSig(),
+                   MemFunIgnoreArgs(*this, &IconButton::clientTitleChanged));
+
     m_signals.join(m_win.focusSig(),
                    MemFunIgnoreArgs(*this, &IconButton::reconfigAndClear));
+
     m_win.attentionSig().attach(this);
 
     FbTk::EventManager::instance()->add(*this, m_icon_window);
 
     reconfigTheme();
-    update(0);
+    refreshEverything(false);
 }
 
 IconButton::~IconButton() {
@@ -102,7 +105,7 @@ void IconButton::moveResize(int x, int y,
     if (m_icon_window.width() != FbTk::Button::width() ||
         m_icon_window.height() != FbTk::Button::height()) {
         reconfigTheme();
-        update(0); // update icon window
+        refreshEverything(false); // update icon window
     }
 }
 
@@ -111,7 +114,7 @@ void IconButton::resize(unsigned int width, unsigned int height) {
     if (m_icon_window.width() != FbTk::Button::width() ||
         m_icon_window.height() != FbTk::Button::height()) {
         reconfigTheme();
-        update(0); // update icon window
+        refreshEverything(false); // update icon window
     }
 }
 
@@ -140,7 +143,7 @@ void IconButton::clearArea(int x, int y,
 void IconButton::setPixmap(bool use) {
     if (m_use_pixmap != use) {
         m_use_pixmap = use;
-        update(0);
+        refreshEverything(false);
     }
 }
 
@@ -175,16 +178,7 @@ void IconButton::reconfigAndClear() {
     clear();
 }
 
-void IconButton::update(FbTk::Subject *subj) {
-    // if the window's focus state changed, we need to update the background
-    if (subj == &m_win.attentionSig()) {
-        reconfigAndClear();
-        return;
-    }
-
-    // we got signal that either title or
-    // icon pixmap was updated,
-    // so we refresh everything
+void IconButton::refreshEverything(bool setup) {
 
     Display *display = FbTk::App::instance()->display();
     int screen = m_win.screen().screenNumber();
@@ -242,17 +236,36 @@ void IconButton::update(FbTk::Subject *subj) {
 
 #endif // SHAPE
 
-    if (subj != 0) {
+    if (setup) {
         setupWindow();
     } else {
         m_icon_window.clear();
     }
 
+
+}
+
+void IconButton::clientTitleChanged() {
+    refreshEverything(true);
+
+    if (m_has_tooltip)
+        showTooltip();
+}
+
+void IconButton::update(FbTk::Subject *subj) {
+    // if the window's focus state changed, we need to update the background
+    if (subj == &m_win.attentionSig()) {
+        reconfigAndClear();
+        return;
+    }
+
+    // we got signal that either title or
+    // icon pixmap was updated,
+    // so we refresh everything
     // if the title was changed AND the mouse is over *this,
     // update the tooltip
-    if (subj == &m_win.titleSig() && m_has_tooltip)
-        showTooltip();
 
+    refreshEverything(subj != 0);
 }
 
 void IconButton::setupWindow() {

@@ -116,12 +116,18 @@ private:
     void attachChild(FocusableList &child) const;
     void workspaceChanged(BScreen &screen);
     void focusedWindowChanged(BScreen &screen, FluxboxWindow *win, WinClient *client);
+    /// Title has changed for a window
+    /// @param win The window that title changed for.
+    void updateTitle(Focusable& win);
+
     std::auto_ptr<ClientPattern> m_pat;
     const FocusableList *m_parent;
     BScreen &m_screen;
     std::list<Focusable *> m_list;
 
     mutable FocusableListSubject m_ordersig, m_addsig, m_removesig, m_resetsig;
+    typedef std::map<Focusable*, FbTk::SignalTracker::TrackID> SignalMap;
+    SignalMap m_signal_map;
 };
 
 #endif // FOCUSABLELIST_HH

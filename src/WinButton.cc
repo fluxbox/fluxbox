@@ -278,8 +278,7 @@ void WinButton::clear() {
     FbTk::Button::clear();
     drawType();
 }
-
-void WinButton::update(FbTk::Subject *subj) {
+void WinButton::updateAll() {
 
     // update the menu icon
     if (m_type == MENUICON && !m_listen_to.empty()) {
@@ -315,4 +314,8 @@ void WinButton::update(FbTk::Subject *subj) {
     }
 
     clear();
+}
+
+void WinButton::update(FbTk::Subject *subj) {
+    updateAll();
 }
