@@ -980,7 +980,7 @@ void Ewmh::updateState(FluxboxWindow &win) {
 
     updateActions(win);
 
-    typedef vector<unsigned int> StateVec;
+    typedef vector<Atom> StateVec;
 
     StateVec state;
 
