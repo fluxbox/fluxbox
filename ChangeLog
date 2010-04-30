@@ -1,10 +1,16 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
+
+*10/04/30:
+   * Bugfix: _NET_WM_STATE was not set correctly on 64bit systems (Mathias)
+     Ewmh.cc
+
 *10/03/26:
    * Changed title signal from Focusable to use the new signal system
      (Henrik)
      Focusable.cc/hh,WinClient.cc,Window.cc/hh,WinButton.cc/hh,IconButton.cc/hh,
      Ewmh.cc,ClientMenu.cc/hh,FocusableList.cc/hh
+
 *10/03/17:
    * Changed debug output to use fbdbg instead of cerr (Henrik)
 
