@@ -1998,14 +1998,16 @@ void BScreen::clearHeads() {
     if (!hasXinerama()) return;
 
     for (Workspaces::iterator i = m_workspaces_list.begin();
-	    i != m_workspaces_list.end(); i++) {
-	for (Workspace::Windows::iterator win = (*i)->windowList().begin();
-		win != (*i)->windowList().end(); win++) {
-	    if (getHead((*win)->fbWindow()) == 0) {
-                // first head is a safe bet here
-                (*win)->placeWindow(1);
+            i != m_workspaces_list.end(); i++) {
+        for (Workspace::Windows::iterator win = (*i)->windowList().begin();
+                win != (*i)->windowList().end(); win++) {
+
+            int closest_head = getHead((*win)->fbWindow());
+            if (closest_head == 0) {
+                closest_head = 1; // first head is a safe bet here
             }
-	}
+            (*win)->placeWindow(closest_head);
+        }
     }
 }
 
