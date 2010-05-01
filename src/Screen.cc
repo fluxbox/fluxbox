@@ -1961,6 +1961,7 @@ void BScreen::initXinerama() {
 
     if (m_xinerama_headinfo)
         delete [] m_xinerama_headinfo;
+
     m_xinerama_headinfo = new XineramaHeadInfo[number];
     m_xinerama_num_heads = number;
     for (int i=0; i < number; i++) {
@@ -1974,7 +1975,8 @@ void BScreen::initXinerama() {
     fbdbg<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
 
     /* Reallocate to the new number of heads. */
-    int ha_num = numHeads() ? numHeads() : 1, ha_oldnum = m_head_areas.size();
+    int ha_num = numHeads() ? numHeads() : 1;
+    int ha_oldnum = m_head_areas.size();
     if (ha_num > ha_oldnum) {
         m_head_areas.resize(ha_num);
         for (int i = ha_oldnum; i < ha_num; i++)
@@ -2012,18 +2014,18 @@ void BScreen::clearHeads() {
 }
 
 int BScreen::getHead(int x, int y) const {
-    if (!hasXinerama()) return 0;
-#ifdef XINERAMA
 
-    for (int i=0; i < m_xinerama_num_heads; i++) {
-        if (x >= m_xinerama_headinfo[i].x &&
-            x < (m_xinerama_headinfo[i].x + m_xinerama_headinfo[i].width) &&
-            y >= m_xinerama_headinfo[i].y &&
-            y < (m_xinerama_headinfo[i].y + m_xinerama_headinfo[i].height)) {
-            return i+1;
+#ifdef XINERAMA
+    if (hasXinerama()) {
+        for (int i=0; i < m_xinerama_num_heads; i++) {
+            if (x >= m_xinerama_headinfo[i].x &&
+                    x < (m_xinerama_headinfo[i].x + m_xinerama_headinfo[i].width) &&
+                    y >= m_xinerama_headinfo[i].y &&
+                    y < (m_xinerama_headinfo[i].y + m_xinerama_headinfo[i].height)) {
+                return i+1;
+            }
         }
     }
-
 #endif // XINERAMA
     return 0;
 }
@@ -2119,7 +2121,7 @@ pair<int,int> BScreen::clampToHead(int head, int x, int y, int w, int h) const {
     // if there are multiple heads, head=0 is not valid
     // a better way would be to search the closest head
     if (head == 0 && numHeads() != 0)
-	head = 1;
+        head = 1;
 
     int hx = getHeadX(head);
     int hy = getHeadY(head);
