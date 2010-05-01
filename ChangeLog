@@ -1,6 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*10/05/01:
+   * Fixed placement bug of maximized windows when moved out of a xinerama
+     screen (Mathias)
+     Screen.cc
+
 *10/04/30:
    * Bugfix: _NET_WM_STATE was not set correctly on 64bit systems (Mathias)
      Ewmh.cc
