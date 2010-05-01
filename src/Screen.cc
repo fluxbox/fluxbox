@@ -175,6 +175,10 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 }
 
 
+int calcSquareDistance(int x1, int y1, int x2, int y2) {
+    return (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1);
+}
+
 class TabPlacementMenuItem: public FbTk::RadioMenuItem {
 public:
     TabPlacementMenuItem(FbTk::FbString & label, BScreen &screen,
@@ -2022,11 +2026,36 @@ int BScreen::getHead(int x, int y) const {
     return 0;
 }
 
+
 int BScreen::getHead(const FbTk::FbWindow &win) const {
-    if (hasXinerama())
-        return getHead(win.x() + win.width()/2, win.y() + win.height()/2);
-    else
-        return 0;
+
+    int head = 0; // whole screen
+
+#if XINERAMA
+    if (hasXinerama()) {
+
+        // cast needed to prevent win.x() become "unsigned int" which is bad
+        // since it might become negative
+        int cx = win.x() + static_cast<int>(win.width() / 2);
+        int cy = win.y() + static_cast<int>(win.height() / 2);
+
+        long dist = -1;
+
+        int i;
+        for (i = 0; i < m_xinerama_num_heads; ++i) {
+
+            XineramaHeadInfo& hi = m_xinerama_headinfo[i];
+            int d = calcSquareDistance(cx, cy, hi.x + (hi.width / 2), hi.y + (hi.height / 2));
+
+            if (dist == -1 || d < dist) { // found a closer head
+                head = i + 1;
+                dist = d;
+            }
+        }
+    }
+#endif
+
+    return head;
 }
 
 
