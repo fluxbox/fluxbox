@@ -379,6 +379,23 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         new_version = 10;
     }
 
+    if (old_version < 11) { // update keys for OnLeftGrip/OnRightGrip/OnWindowBorder
+
+        string whole_keyfile = read_file(keyfilename);
+        string new_keyfile = "";
+        // let's put our new keybindings first, so they're easy to find
+        new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
+        new_keyfile += "OnTitlebar Move1 :StartMoving\n";
+        new_keyfile += "OnLeftGrip Move1 :StartResizing bottomleft\n";
+        new_keyfile += "OnRightGrip Move1 :StartResizing bottomright\n";
+        new_keyfile += "OnWindowBorder Move1 :StartMoving\n\n";
+        new_keyfile += whole_keyfile; // don't forget user's old keybindings
+
+        write_file(keyfilename, new_keyfile);
+
+        new_version = 11;
+    }
+
     return new_version;
 }
 
