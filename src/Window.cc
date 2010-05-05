@@ -3082,7 +3082,9 @@ void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
     m_state.maximized = WindowState::MAX_NONE;
     m_state.saveGeometry(frame().x(), frame().y(),
                          frame().width(), frame().height());
+
     frame().applyState();
+    stateSig().notify();
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme()->upperLeftAngleCursor() :
                            (m_resize_corner == RIGHTTOP) ? frame().theme()->upperRightAngleCursor() :
