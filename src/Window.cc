@@ -2406,205 +2406,193 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
     }
 
     bool inside_titlebar = frame().insideTitlebar( me.window );
+    bool inside_grips = (me.window == frame().gripRight() || me.window == frame().gripLeft());
+    bool inside_border = false;
+
+    if (!inside_grips)
+    {
+        using RectangleUtil::insideBorder;
+        int borderw = frame().window().borderWidth();
+
+
+        //!! TODO(tabs): the below test ought to be in FbWinFrame
+
+        inside_border =
+
+                // if mouse is currently on the window border, ignore it
+                ! insideBorder(frame(), me.x_root, me.y_root, borderw)  &&
+                    ( !frame().externalTabMode() ||
+                      ! insideBorder(frame().tabcontainer(), me.x_root, me.y_root, borderw) )
+
+                || // or if mouse was on border when it was last clicked
+
+                ! insideBorder(frame(), m_last_button_x, m_last_button_y, borderw) &&
+                    ( ! frame().externalTabMode() ||
+                      ! insideBorder(frame().tabcontainer(), m_last_button_x, m_last_button_y, borderw ) );
+    }
 
     if (Fluxbox::instance()->getIgnoreBorder() && m_attaching_tab == 0
         && !(isMoving() || isResizing())) {
 
-        using RectangleUtil::insideBorder;
-
-        int borderw = frame().window().borderWidth();
-        //!! TODO(tabs): the below test ought to be in FbWinFrame
-        // if mouse is currently on the window border, ignore it
-        if ( ! insideBorder(frame(), me.x_root, me.y_root, borderw)  &&
-             ( !frame().externalTabMode() ||
-               ! insideBorder(frame().tabcontainer(), me.x_root, me.y_root, borderw) )
-
-             || // or if mouse was on border when it was last clicked
-
-             ! insideBorder(frame(), m_last_button_x, m_last_button_y, borderw) &&
-             ( ! frame().externalTabMode() ||
-               ! insideBorder(frame().tabcontainer(), m_last_button_x, m_last_button_y, borderw ) ) ) {
+        if (inside_border) {
             return;
         }
     }
 
 
+    int context = Keys::ON_WINDOW;
+    if (inside_titlebar) {
+        context = Keys::ON_TITLEBAR;
+    } else if (inside_border) {
+        context = Keys::ON_WINDOWBORDER;
+    } else if (me.window == frame().gripRight()) {
+        context = Keys::ON_RIGHTGRIP;
+    } else if (me.window == frame().gripLeft()) {
+        context = Keys::ON_LEFTGRIP;
+    }
+
+
     // in case someone put  MoveX :StartMoving etc into keys, we have
     // to activate it before doing the actual motionNotify code
-    Fluxbox::instance()->keys()->doAction(me.type, me.state, m_last_pressed_button,
-                inside_titlebar ? Keys::ON_TITLEBAR : Keys::ON_WINDOW,
-                &winClient(), me.time);
+    Fluxbox::instance()->keys()->doAction(me.type, me.state, m_last_pressed_button, context, &winClient(), me.time);
 
-    if (moving || ((me.state & Button1Mask) && functions.move &&
-        inside_titlebar && !isResizing() && m_attaching_tab == 0)) {
+    if (moving) {
 
-        if (! isMoving()) {
-            startMoving(me.x_root, me.y_root);
-        } else {
-            // Warp to next or previous workspace?, must have moved sideways some
-            int moved_x = me.x_root - m_last_resize_x;
-            // save last event point
-            m_last_resize_x = me.x_root;
-            m_last_resize_y = me.y_root;
+        // Warp to next or previous workspace?, must have moved sideways some
+        int moved_x = me.x_root - m_last_resize_x;
+        // save last event point
+        m_last_resize_x = me.x_root;
+        m_last_resize_y = me.y_root;
 
-            // undraw rectangle before warping workspaces
-            if (!screen().doOpaqueMove()) {
-                parent().drawRectangle(screen().rootTheme()->opGC(),
-                                       m_last_move_x, m_last_move_y,
-                                       frame().width() + 2*frame().window().borderWidth()-1,
-                                       frame().height() + 2*frame().window().borderWidth()-1);
-            }
+        // undraw rectangle before warping workspaces
+        if (!screen().doOpaqueMove()) {
+            parent().drawRectangle(screen().rootTheme()->opGC(),
+                    m_last_move_x, m_last_move_y,
+                    frame().width() + 2*frame().window().borderWidth()-1,
+                    frame().height() + 2*frame().window().borderWidth()-1);
+        }
 
-            if (moved_x && screen().isWorkspaceWarping()) {
-                unsigned int cur_id = screen().currentWorkspaceID();
-                unsigned int new_id = cur_id;
-                const int warpPad = screen().getEdgeSnapThreshold();
-                // 1) if we're inside the border threshold
-                // 2) if we moved in the right direction
-                if (me.x_root >= int(screen().width()) - warpPad - 1 &&
+        if (moved_x && screen().isWorkspaceWarping()) {
+            unsigned int cur_id = screen().currentWorkspaceID();
+            unsigned int new_id = cur_id;
+            const int warpPad = screen().getEdgeSnapThreshold();
+            // 1) if we're inside the border threshold
+            // 2) if we moved in the right direction
+            if (me.x_root >= int(screen().width()) - warpPad - 1 &&
                     moved_x > 0) {
-                    //warp right
-                    new_id = (cur_id + 1) % screen().numberOfWorkspaces();
-                    m_last_resize_x = 0; // move mouse back to x=0
-                } else if (me.x_root <= warpPad &&
-                           moved_x < 0) {
-                    //warp left
-                    new_id = (cur_id + screen().numberOfWorkspaces() - 1) % screen().numberOfWorkspaces();
-                    m_last_resize_x = screen().width() - 1; // move mouse to screen width - 1
-                }
-                if (new_id != cur_id) {
-
-                    // remove motion events from queue to avoid repeated warps
-                    XEvent e;
-                    while (XCheckTypedEvent(display, MotionNotify, &e)) {
-                        // might as well update the y-coordinate
-                        m_last_resize_y = e.xmotion.y_root;
-                    }
-
-                    // move the pointer to (m_last_resize_x,m_last_resize_y)
-                    XWarpPointer(display, None, me.root, 0, 0, 0, 0,
-                                 m_last_resize_x, m_last_resize_y);
-
-                    if (screen().doOpaqueMove())
-                        screen().sendToWorkspace(new_id, this, true);
-                    else
-                        screen().changeWorkspaceID(new_id, false);
-                }
+                //warp right
+                new_id = (cur_id + 1) % screen().numberOfWorkspaces();
+                m_last_resize_x = 0; // move mouse back to x=0
+            } else if (me.x_root <= warpPad &&
+                    moved_x < 0) {
+                //warp left
+                new_id = (cur_id + screen().numberOfWorkspaces() - 1) % screen().numberOfWorkspaces();
+                m_last_resize_x = screen().width() - 1; // move mouse to screen width - 1
             }
+            if (new_id != cur_id) {
 
-            int dx = m_last_resize_x - m_button_grab_x,
-                dy = m_last_resize_y - m_button_grab_y;
+                // remove motion events from queue to avoid repeated warps
+                XEvent e;
+                while (XCheckTypedEvent(display, MotionNotify, &e)) {
+                    // might as well update the y-coordinate
+                    m_last_resize_y = e.xmotion.y_root;
+                }
 
-            dx -= frame().window().borderWidth();
-            dy -= frame().window().borderWidth();
+                // move the pointer to (m_last_resize_x,m_last_resize_y)
+                XWarpPointer(display, None, me.root, 0, 0, 0, 0,
+                        m_last_resize_x, m_last_resize_y);
 
-            // dx = current left side, dy = current top
-            doSnapping(dx, dy);
-
-            if (!screen().doOpaqueMove()) {
-                parent().drawRectangle(screen().rootTheme()->opGC(),
-                                       dx, dy,
-                                       frame().width() + 2*frame().window().borderWidth()-1,
-                                       frame().height() + 2*frame().window().borderWidth()-1);
-                m_last_move_x = dx;
-                m_last_move_y = dy;
-            } else {
-                //moveResize(dx, dy, frame().width(), frame().height());
-                // need to move the base window without interfering with transparency
-                frame().quietMoveResize(dx, dy, frame().width(), frame().height());
+                if (screen().doOpaqueMove())
+                    screen().sendToWorkspace(new_id, this, true);
+                else
+                    screen().changeWorkspaceID(new_id, false);
             }
+        }
 
-            screen().showPosition(dx, dy);
-        } // end if moving
-    } else if (resizing || (m_attaching_tab == 0 && functions.resize &&
-                            (((me.state & Button1Mask) &&
-                              (me.window == frame().gripRight() ||
-                               me.window == frame().gripLeft())) ||
-                              me.window == frame().window()))) {
+        int dx = m_last_resize_x - m_button_grab_x,
+            dy = m_last_resize_y - m_button_grab_y;
 
-        if (! resizing) {
+        dx -= frame().window().borderWidth();
+        dy -= frame().window().borderWidth();
 
-          ReferenceCorner resize_corner = RIGHTBOTTOM;
-          if (me.window == frame().gripRight())
-              resize_corner = RIGHTBOTTOM;
-          else if (me.window == frame().gripLeft())
-              resize_corner = LEFTBOTTOM;
-          else // dragging border of window, so choose nearest corner
-              resize_corner = getResizeDirection(me.x, me.y, QUADRANTRESIZE);
+        // dx = current left side, dy = current top
+        doSnapping(dx, dy);
 
-          // We are grabbing frame window in startResizing
-          // we need to translate coordinates to it.
-          int start_x = me.x, start_y = me.y;
-          Window child;
-          XTranslateCoordinates(display,
-                                me.window, fbWindow().window(),
-                                start_x, start_y,
-                                &start_x, &start_y,
-                                &child);
+        if (!screen().doOpaqueMove()) {
+            parent().drawRectangle(screen().rootTheme()->opGC(),
+                    dx, dy,
+                    frame().width() + 2*frame().window().borderWidth()-1,
+                    frame().height() + 2*frame().window().borderWidth()-1);
+            m_last_move_x = dx;
+            m_last_move_y = dy;
+        } else {
+            //moveResize(dx, dy, frame().width(), frame().height());
+            // need to move the base window without interfering with transparency
+            frame().quietMoveResize(dx, dy, frame().width(), frame().height());
+        }
 
-          startResizing(start_x, start_y, resize_corner);
+        screen().showPosition(dx, dy);
+        // end if moving
+    } else if (resizing) {
 
-        } else if (resizing) {
+        int old_resize_x = m_last_resize_x;
+        int old_resize_y = m_last_resize_y;
+        int old_resize_w = m_last_resize_w;
+        int old_resize_h = m_last_resize_h;
 
-            int old_resize_x = m_last_resize_x;
-            int old_resize_y = m_last_resize_y;
-            int old_resize_w = m_last_resize_w;
-            int old_resize_h = m_last_resize_h;
+        int dx = me.x - m_button_grab_x;
+        int dy = me.y - m_button_grab_y;
 
-            int dx = me.x - m_button_grab_x;
-            int dy = me.y - m_button_grab_y;
-
-            if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
+        if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM ||
                 m_resize_corner == LEFT) {
-                m_last_resize_w = frame().width() - dx;
-                m_last_resize_x = frame().x() + dx;
-            }
-            if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP ||
+            m_last_resize_w = frame().width() - dx;
+            m_last_resize_x = frame().x() + dx;
+        }
+        if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP ||
                 m_resize_corner == TOP) {
-                m_last_resize_h = frame().height() - dy;
-                m_last_resize_y = frame().y() + dy;
-            }
-            if (m_resize_corner == LEFTBOTTOM || m_resize_corner == BOTTOM ||
+            m_last_resize_h = frame().height() - dy;
+            m_last_resize_y = frame().y() + dy;
+        }
+        if (m_resize_corner == LEFTBOTTOM || m_resize_corner == BOTTOM ||
                 m_resize_corner == RIGHTBOTTOM)
-                m_last_resize_h = frame().height() + dy;
-            if (m_resize_corner == RIGHTBOTTOM || m_resize_corner == RIGHTTOP ||
+            m_last_resize_h = frame().height() + dy;
+        if (m_resize_corner == RIGHTBOTTOM || m_resize_corner == RIGHTTOP ||
                 m_resize_corner == RIGHT)
-                m_last_resize_w = frame().width() + dx;
-            if (m_resize_corner == CENTER) {
-                // dx or dy must be at least 2
-                if (abs(dx) >= 2 || abs(dy) >= 2) {
-                    // take max and make it even
-                    int diff = 2 * (max(dx, dy) / 2);
+            m_last_resize_w = frame().width() + dx;
+        if (m_resize_corner == CENTER) {
+            // dx or dy must be at least 2
+            if (abs(dx) >= 2 || abs(dy) >= 2) {
+                // take max and make it even
+                int diff = 2 * (max(dx, dy) / 2);
 
-                    m_last_resize_h =  frame().height() + diff;
+                m_last_resize_h =  frame().height() + diff;
 
-                    m_last_resize_w = frame().width() + diff;
-                    m_last_resize_x = frame().x() - diff/2;
-                    m_last_resize_y = frame().y() - diff/2;
-                }
+                m_last_resize_w = frame().width() + diff;
+                m_last_resize_x = frame().x() - diff/2;
+                m_last_resize_y = frame().y() - diff/2;
             }
+        }
 
-            fixSize();
-            frame().displaySize(m_last_resize_w, m_last_resize_h);
+        fixSize();
+        frame().displaySize(m_last_resize_w, m_last_resize_h);
 
-            if (old_resize_x != m_last_resize_x ||
+        if (old_resize_x != m_last_resize_x ||
                 old_resize_y != m_last_resize_y ||
                 old_resize_w != m_last_resize_w ||
                 old_resize_h != m_last_resize_h ) {
 
-                // draw over old rect
-                parent().drawRectangle(screen().rootTheme()->opGC(),
-                                       old_resize_x, old_resize_y,
-                                       old_resize_w - 1 + 2 * frame().window().borderWidth(),
-                                       old_resize_h - 1 + 2 * frame().window().borderWidth());
+            // draw over old rect
+            parent().drawRectangle(screen().rootTheme()->opGC(),
+                    old_resize_x, old_resize_y,
+                    old_resize_w - 1 + 2 * frame().window().borderWidth(),
+                    old_resize_h - 1 + 2 * frame().window().borderWidth());
 
-                // draw resize rectangle
-                parent().drawRectangle(screen().rootTheme()->opGC(),
-                                       m_last_resize_x, m_last_resize_y,
-                                       m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
-                                       m_last_resize_h - 1 + 2 * frame().window().borderWidth());
+            // draw resize rectangle
+            parent().drawRectangle(screen().rootTheme()->opGC(),
+                    m_last_resize_x, m_last_resize_y,
+                    m_last_resize_w - 1 + 2 * frame().window().borderWidth(),
+                    m_last_resize_h - 1 + 2 * frame().window().borderWidth());
 
-            }
         }
     } else if (m_attaching_tab != 0) {
         //

@@ -352,6 +352,10 @@ void Keys::loadDefaults() {
     addBinding("OnDesktop Mouse2 :WorkspaceMenu");
     addBinding("OnDesktop Mouse3 :RootMenu");
     addBinding("OnTitlebar Mouse3 :WindowMenu");
+    addBinding("OnTitlebar Move1 :StartMoving");
+    addBinding("OnLeftGrip Move1 :StartResizing bottomleft");
+    addBinding("OnRighttGrip Move1 :StartResizing bottomright");
+    addBinding("OnWindowBorder Move1 :StartMoving");
     addBinding("Mod1 Tab :NextWindow");
     addBinding("Mod1 Shift Tab :PrevWindow");
     keyMode("default");
@@ -402,6 +406,12 @@ bool Keys::addBinding(const string &linebuffer) {
                 context |= ON_WINDOW;
             else if (arg == "ontitlebar")
                 context |= ON_TITLEBAR;
+            else if (arg == "onwindowborder")
+                context |= ON_WINDOWBORDER;
+            else if (arg == "onleftgrip")
+                context |= ON_LEFTGRIP;
+            else if (arg == "onrightgrip")
+                context |= ON_RIGHTGRIP;
             else if (arg == "double")
                 isdouble = true;
             else if (arg != "none") {
