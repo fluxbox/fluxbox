@@ -2799,7 +2799,7 @@ void FluxboxWindow::startMoving(int x, int y) {
         return;
     }
 
-    if (isMaximized() && screen().getMaxDisableMove())
+    if ((isMaximized() || isFullscreen()) && screen().getMaxDisableMove())
         return;
 
     // save first event point
@@ -3073,7 +3073,7 @@ void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
     if (s_num_grabs > 0 || isShaded() || isIconic() )
         return;
 
-    if (isMaximized() && screen().getMaxDisableResize())
+    if ((isMaximized() || isFullscreen()) && screen().getMaxDisableResize())
         return;
 
     m_resize_corner = dir;
