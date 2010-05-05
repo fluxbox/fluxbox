@@ -465,7 +465,7 @@ bool Keys::addBinding(const string &linebuffer) {
                 // numbers 10 and above
                 //
                 } else {
-					FbTk::StringUtil::extractNumber(arg, key);
+                    FbTk::StringUtil::extractNumber(arg, key);
                     type = KeyPress;
                 }
 
