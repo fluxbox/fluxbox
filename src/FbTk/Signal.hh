@@ -274,7 +274,7 @@ public:
 
 protected:
 
-    void disconnect(SigImpl::SignalHolder& signal) {
+    virtual void disconnect(SigImpl::SignalHolder& signal) {
         m_connections.erase(&signal);
     }
 
