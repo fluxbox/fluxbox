@@ -1500,6 +1500,12 @@ void FluxboxWindow::setMaximizedState(int type) {
     if (isResizing())
         stopResizing();
 
+    if (isShaded()) {
+        // do not call ::shade() here to trigger frame().applyState() and
+        // stateSig().notfiy() only once
+        m_state.shaded = false;
+    }
+
     m_state.maximized = type;
     frame().applyState();
 
