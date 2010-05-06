@@ -1509,6 +1509,18 @@ void FluxboxWindow::setMaximizedState(int type) {
     stateSig().notify();
 }
 
+void FluxboxWindow::disableMaximization() {
+
+    m_state.maximized = WindowState::MAX_NONE;
+    // TODO: could be optional, if the window gets back to original size /
+    // position after maximization is disabled
+    m_state.saveGeometry(frame().x(), frame().y(),
+                         frame().width(), frame().height());
+    frame().applyState();
+    stateSig().notify();
+}
+
+
 /**
  * Maximize window horizontal
  */
@@ -3079,12 +3091,8 @@ void FluxboxWindow::startResizing(int x, int y, ReferenceCorner dir) {
     m_resize_corner = dir;
 
     resizing = true;
-    m_state.maximized = WindowState::MAX_NONE;
-    m_state.saveGeometry(frame().x(), frame().y(),
-                         frame().width(), frame().height());
 
-    frame().applyState();
-    stateSig().notify();
+    disableMaximization();
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme()->upperLeftAngleCursor() :
                            (m_resize_corner == RIGHTTOP) ? frame().theme()->upperRightAngleCursor() :

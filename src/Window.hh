@@ -224,6 +224,10 @@ public:
     void maximizeVertical();
     /// maximizes the window fully
     void maximizeFull();
+
+    /// disables maximization, without restoring the old size
+    void disableMaximization();
+
     /// toggles shade
     void shade();
     /// shades window
