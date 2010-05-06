@@ -36,14 +36,20 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 #ifdef HAVE_CASSERT
   #include <cassert>
 #else
   #include <assert.h>
 #endif
+
+// sys/select.h on solaris wants to use memset()
+#ifdef HAVE_CSTRING
+#  include <cstring>
+#else
+#  include <string.h>
+#endif
+
+#include <sys/select.h>
 
 namespace FbTk {
 
@@ -90,7 +96,7 @@ void Timer::start() {
     if ((! m_timing || m_interval != 0) && *m_handler) {
         m_timing = true;
         addTimer(this); //add us to the list
-    }        
+    }
 }
 
 
