@@ -51,6 +51,17 @@ using FbTk::Command;
 
 namespace {
 
+void disableMaximizationIfNeeded(FluxboxWindow& win) {
+
+    if (win.isMaximized() ||
+            win.isMaximizedVert() ||
+            win.isMaximizedHorz() ||
+            win.isFullscreen()) {
+
+        win.disableMaximization();
+    }
+}
+
 FbTk::Command<void> *createCurrentWindowCmd(const std::string &command,
                                       const std::string &args, bool trusted) {
     if (command == "minimizewindow" || command == "minimize" || command == "iconify")
@@ -384,9 +395,15 @@ MoveCmd::MoveCmd(const int step_size_x, const int step_size_y) :
   m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
 void MoveCmd::real_execute() {
-  fbwindow().move(
-      fbwindow().x() + m_step_size_x,
-      fbwindow().y() + m_step_size_y);
+    if (fbwindow().isMaximized() || fbwindow().isFullscreen()) {
+        if (fbwindow().screen().getMaxDisableMove()) {
+            return;
+        }
+
+        fbwindow().setMaximizedState(WindowState::MAX_NONE);
+    }
+
+    fbwindow().move(fbwindow().x() + m_step_size_x, fbwindow().y() + m_step_size_y);
 }
 
 FbTk::Command<void> *ResizeCmd::parse(const string &command, const string &args,
@@ -416,12 +433,21 @@ ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
 
 void ResizeCmd::real_execute() {
 
+    if (fbwindow().isMaximized() || fbwindow().isFullscreen()) {
+        if (fbwindow().screen().getMaxDisableResize()) {
+            return;
+        }
+    }
+
+    disableMaximizationIfNeeded(fbwindow());
+
     int w = std::max<int>(static_cast<int>(fbwindow().width() +
                                       m_step_size_x * fbwindow().winClient().widthInc()),
                      fbwindow().frame().titlebarHeight() * 2 + 10);
     int h = std::max<int>(static_cast<int>(fbwindow().height() +
                                       m_step_size_y * fbwindow().winClient().heightInc()),
                      fbwindow().frame().titlebarHeight() + 10);
+
     fbwindow().resize(w, h);
 }
 
@@ -460,6 +486,16 @@ FbTk::Command<void> *MoveToCmd::parse(const string &cmd, const string &args,
 REGISTER_COMMAND_PARSER(moveto, MoveToCmd::parse, void);
 
 void MoveToCmd::real_execute() {
+
+    if (fbwindow().isMaximized() || fbwindow().isFullscreen()) {
+        if (fbwindow().screen().getMaxDisableMove()) {
+            return;
+        }
+    }
+
+    disableMaximizationIfNeeded(fbwindow());
+
+
     int x = m_pos_x, y = m_pos_y;
 
     fbwindow().translateCoords(x, y, m_corner);
@@ -476,6 +512,16 @@ ResizeToCmd::ResizeToCmd(const int step_size_x, const int step_size_y) :
     m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
 void ResizeToCmd::real_execute() {
+
+    if (fbwindow().isMaximized() || fbwindow().isFullscreen()) {
+        if (fbwindow().screen().getMaxDisableResize()) {
+            return;
+        }
+    }
+
+    disableMaximizationIfNeeded(fbwindow());
+
+
     if (m_step_size_x > 0 && m_step_size_y > 0)
         fbwindow().resize(m_step_size_x, m_step_size_y);
 }
