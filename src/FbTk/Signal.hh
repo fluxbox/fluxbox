@@ -117,7 +117,6 @@ public:
 
     SlotID connect(const SlotType& slot) {
         return SignalHolder::connect(slot);
-
     }
 };
 
@@ -243,8 +242,14 @@ public:
 
     /// Leave tracking for a signal
     /// @param id the \c id from the previous \c join 
-    void leave(TrackID id) {
+   void leave(TrackID id, bool disconnect = false) {
+       // keep temporary, while disconnecting we can
+       // in some strange cases get a call to this again
+        ValueType tmp = *id;
         m_connections.erase(id);
+        if (disconnect)
+            tmp.first->disconnect(tmp.second);
+        tmp.first->disconnectTracker(*this);
     }
 
     /// Leave tracking for a signal
@@ -253,8 +258,7 @@ public:
     void leave(Signal &sig) {
         Iterator it = m_connections.find(&sig);
         if (it != m_connections.end()) {
-            it->first->disconnect( it->second );
-            m_connections.erase(it);
+            leave(it);
         }
     }
 
@@ -263,12 +267,7 @@ public:
         // disconnect all connections
         for ( Iterator conIt = m_connections.begin();
               conIt != m_connections.end(); ++conIt) {
-            // keep temporary, while disconnecting we can
-            // in some strange cases get a call to this again
-            ValueType tmp = *conIt;
-            m_connections.erase(conIt);
-            tmp.first->disconnect(tmp.second);
-            tmp.first->disconnectTracker(*this);
+            leave(conIt, true);
         }
     }
 
