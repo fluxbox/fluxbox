@@ -199,6 +199,7 @@ Keys::t_key::~t_key() {
 
 Keys::Keys():
     m_reloader(new FbTk::AutoReloadHelper()),
+    m_keylist(0),
     next_key(0), saved_keymode(0) {
     m_reloader->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<Keys>(*this, &Keys::reload)));
 }
@@ -214,6 +215,7 @@ Keys::~Keys() {
 void Keys::deleteTree() {
 
     destroyAndClearSecond(m_map);
+    m_keylist = 0;
     next_key = 0;
     saved_keymode = 0;
 }
