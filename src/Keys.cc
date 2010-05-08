@@ -527,6 +527,9 @@ bool Keys::addBinding(const string &linebuffer) {
 bool Keys::doAction(int type, unsigned int mods, unsigned int key,
                     int context, WinClient *current, Time time) {
 
+    if (!m_keylist)
+        return false;
+
     static Time last_button_time = 0;
     static unsigned int last_button = 0;
 
