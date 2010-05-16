@@ -77,8 +77,10 @@ Pixmap makePixmap(FbWindow &drawable, const unsigned char rows[]) {
                                   data,
                                   8, 8,
                                   32, 0);
-    if (ximage == 0)
+    if (ximage == 0) {
+        free(data);
         return 0;
+    }
 
     XInitImage(ximage);
 
