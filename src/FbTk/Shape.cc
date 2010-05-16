@@ -109,6 +109,36 @@ struct CornerPixmaps {
 // unfortunately, we need a separate pixmap per screen
 std::vector<CornerPixmaps> s_corners;
 
+unsigned long nr_shapes = 0;
+
+void initCorners(FbWindow& win) {
+
+    if (s_corners.empty())
+        s_corners.resize(ScreenCount(App::instance()->display()));
+
+    static const unsigned char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
+    static const unsigned char right_bits[] = { 0x03, 0x1f, 0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff};
+    static const unsigned char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
+    static const unsigned char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
+
+    const int screen_num = win.screenNumber();
+    s_corners[screen_num].topleft = makePixmap(win, left_bits);
+    s_corners[screen_num].topright = makePixmap(win, right_bits);
+    s_corners[screen_num].botleft = makePixmap(win, bottom_left_bits);
+    s_corners[screen_num].botright = makePixmap(win, bottom_right_bits);
+
+    nr_shapes++; // refcounting
+}
+
+void cleanCorners() {
+
+    if (nr_shapes == 0) {
+        s_corners.clear();
+    } else {
+        nr_shapes--; // refcounting
+    }
+}
+
 } // end of anonymous namespace
 
 Shape::Shape(FbWindow &win, int shapeplaces):
@@ -119,7 +149,7 @@ Shape::Shape(FbWindow &win, int shapeplaces):
     m_shapeplaces(shapeplaces) {
 
 #ifdef SHAPE
-    initCorners(win.screenNumber());
+    initCorners(win);
 #endif
 
     update();
@@ -143,26 +173,9 @@ Shape::~Shape() {
                           0,
                           ShapeSet);
     }
+
+    cleanCorners();
 #endif // SHAPE
-}
-
-void Shape::initCorners(int screen_num) {
-    if (!m_win->window())
-        return;
-
-    if (s_corners.size() == 0)
-        s_corners.resize(ScreenCount(App::instance()->display()));
-
-    static const unsigned char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
-    static const unsigned char right_bits[] = { 0x03, 0x1f, 0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff};
-    static const unsigned char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
-    static const unsigned char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
-
-    s_corners[screen_num].topleft = makePixmap(*m_win, left_bits);
-    s_corners[screen_num].topright = makePixmap(*m_win, right_bits);
-    s_corners[screen_num].botleft = makePixmap(*m_win, bottom_left_bits);
-    s_corners[screen_num].botright = makePixmap(*m_win, bottom_right_bits);
-
 }
 
 void Shape::setPlaces(int shapeplaces) {

@@ -63,9 +63,6 @@ private:
     FbWindow *m_shapesource; ///< window to pull shape from
     int m_shapesource_xoff, m_shapesource_yoff;
 
-    void initCorners(int screen_num);
-
-
     int m_shapeplaces; ///< places to shape
 };
 
