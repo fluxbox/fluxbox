@@ -265,9 +265,8 @@ public:
 
     void leaveAll() {
         // disconnect all connections
-        for ( Iterator conIt = m_connections.begin();
-              conIt != m_connections.end(); ++conIt) {
-            leave(conIt, true);
+        for ( ; !m_connections.empty(); ) {
+            leave(m_connections.begin(), true);
         }
     }
 
