@@ -132,24 +132,6 @@ bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
 
 ////////////////////// Placement Resources
 namespace FbTk {
-    
-template <>
-void FbTk::Resource<ScreenPlacement::PlacementPolicy>::setFromString(const char *str) {
-    if (strcasecmp("RowSmartPlacement", str) == 0)
-        *(*this) = ScreenPlacement::ROWSMARTPLACEMENT;
-    else if (strcasecmp("ColSmartPlacement", str) == 0)
-        *(*this) = ScreenPlacement::COLSMARTPLACEMENT;
-    else if (strcasecmp("RowMinOverlapPlacement", str) == 0)
-        *(*this) = ScreenPlacement::ROWMINOVERLAPPLACEMENT;
-    else if (strcasecmp("ColMinOverlapPlacement", str) == 0)
-        *(*this) = ScreenPlacement::COLMINOVERLAPPLACEMENT;
-    else if (strcasecmp("UnderMousePlacement", str) == 0)
-        *(*this) = ScreenPlacement::UNDERMOUSEPLACEMENT;
-    else if (strcasecmp("CascadePlacement", str) == 0)
-        *(*this) = ScreenPlacement::CASCADEPLACEMENT;
-    else
-        setDefaultValue();
-}
 
 template <>
 std::string FbTk::Resource<ScreenPlacement::PlacementPolicy>::getString() const {
@@ -172,15 +154,23 @@ std::string FbTk::Resource<ScreenPlacement::PlacementPolicy>::getString() const 
 }
 
 template <>
-void FbTk::Resource<ScreenPlacement::RowDirection>::setFromString(const char *str) {
-    if (strcasecmp("LeftToRight", str) == 0)
-        *(*this) = ScreenPlacement::LEFTRIGHT;
-    else if (strcasecmp("RightToLeft", str) == 0)
-        *(*this) = ScreenPlacement::RIGHTLEFT;
+void FbTk::Resource<ScreenPlacement::PlacementPolicy>::setFromString(const char *str) {
+    if (strcasecmp("RowSmartPlacement", str) == 0)
+        *(*this) = ScreenPlacement::ROWSMARTPLACEMENT;
+    else if (strcasecmp("ColSmartPlacement", str) == 0)
+        *(*this) = ScreenPlacement::COLSMARTPLACEMENT;
+    else if (strcasecmp("RowMinOverlapPlacement", str) == 0)
+        *(*this) = ScreenPlacement::ROWMINOVERLAPPLACEMENT;
+    else if (strcasecmp("ColMinOverlapPlacement", str) == 0)
+        *(*this) = ScreenPlacement::COLMINOVERLAPPLACEMENT;
+    else if (strcasecmp("UnderMousePlacement", str) == 0)
+        *(*this) = ScreenPlacement::UNDERMOUSEPLACEMENT;
+    else if (strcasecmp("CascadePlacement", str) == 0)
+        *(*this) = ScreenPlacement::CASCADEPLACEMENT;
     else
         setDefaultValue();
-    
 }
+
 
 template <>
 std::string FbTk::Resource<ScreenPlacement::RowDirection>::getString() const {
@@ -196,14 +186,13 @@ std::string FbTk::Resource<ScreenPlacement::RowDirection>::getString() const {
 
 
 template <>
-void FbTk::Resource<ScreenPlacement::ColumnDirection>::setFromString(const char *str) {
-    if (strcasecmp("TopToBottom", str) == 0)
-        *(*this) = ScreenPlacement::TOPBOTTOM;
-    else if (strcasecmp("BottomToTop", str) == 0)
-        *(*this) = ScreenPlacement::BOTTOMTOP;
+void FbTk::Resource<ScreenPlacement::RowDirection>::setFromString(const char *str) {
+    if (strcasecmp("LeftToRight", str) == 0)
+        *(*this) = ScreenPlacement::LEFTRIGHT;
+    else if (strcasecmp("RightToLeft", str) == 0)
+        *(*this) = ScreenPlacement::RIGHTLEFT;
     else
         setDefaultValue();
-    
 }
 
 template <>
@@ -217,4 +206,16 @@ std::string FbTk::Resource<ScreenPlacement::ColumnDirection>::getString() const 
 
     return "TopToBottom";
 }
+
+
+template <>
+void FbTk::Resource<ScreenPlacement::ColumnDirection>::setFromString(const char *str) {
+    if (strcasecmp("TopToBottom", str) == 0)
+        *(*this) = ScreenPlacement::TOPBOTTOM;
+    else if (strcasecmp("BottomToTop", str) == 0)
+        *(*this) = ScreenPlacement::BOTTOMTOP;
+    else
+        setDefaultValue();
+}
+
 } // end namespace FbTk

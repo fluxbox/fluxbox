@@ -90,36 +90,6 @@ using std::dec;
 namespace FbTk {
 
 template<>
-void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft")==0)
-        m_value = Slit::TOPLEFT;
-    else if (strcasecmp(strval, "LeftCenter")==0)
-        m_value = Slit::LEFTCENTER;
-    else if (strcasecmp(strval, "BottomLeft")==0)
-        m_value = Slit::BOTTOMLEFT;
-    else if (strcasecmp(strval, "TopCenter")==0)
-        m_value = Slit::TOPCENTER;
-    else if (strcasecmp(strval, "BottomCenter")==0)
-        m_value = Slit::BOTTOMCENTER;
-    else if (strcasecmp(strval, "TopRight")==0)
-        m_value = Slit::TOPRIGHT;
-    else if (strcasecmp(strval, "RightCenter")==0)
-        m_value = Slit::RIGHTCENTER;
-    else if (strcasecmp(strval, "BottomRight")==0)
-        m_value = Slit::BOTTOMRIGHT;
-    else if (strcasecmp(strval, "LeftTop")==0)
-        m_value = Slit::LEFTTOP;
-    else if (strcasecmp(strval, "LeftBottom")==0)
-        m_value = Slit::LEFTBOTTOM;
-    else if (strcasecmp(strval, "RightTop")==0)
-        m_value = Slit::RIGHTTOP;
-    else if (strcasecmp(strval, "RightBottom")==0)
-        m_value = Slit::RIGHTBOTTOM;
-    else
-        setDefaultValue();
-}
-
-template<>
 string FbTk::Resource<Slit::Placement>::getString() const {
     switch (m_value) {
     case Slit::TOPLEFT:
@@ -161,6 +131,36 @@ string FbTk::Resource<Slit::Placement>::getString() const {
     }
     //default string
     return string("RightBottom");
+}
+
+template<>
+void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
+    if (strcasecmp(strval, "TopLeft")==0)
+        m_value = Slit::TOPLEFT;
+    else if (strcasecmp(strval, "LeftCenter")==0)
+        m_value = Slit::LEFTCENTER;
+    else if (strcasecmp(strval, "BottomLeft")==0)
+        m_value = Slit::BOTTOMLEFT;
+    else if (strcasecmp(strval, "TopCenter")==0)
+        m_value = Slit::TOPCENTER;
+    else if (strcasecmp(strval, "BottomCenter")==0)
+        m_value = Slit::BOTTOMCENTER;
+    else if (strcasecmp(strval, "TopRight")==0)
+        m_value = Slit::TOPRIGHT;
+    else if (strcasecmp(strval, "RightCenter")==0)
+        m_value = Slit::RIGHTCENTER;
+    else if (strcasecmp(strval, "BottomRight")==0)
+        m_value = Slit::BOTTOMRIGHT;
+    else if (strcasecmp(strval, "LeftTop")==0)
+        m_value = Slit::LEFTTOP;
+    else if (strcasecmp(strval, "LeftBottom")==0)
+        m_value = Slit::LEFTBOTTOM;
+    else if (strcasecmp(strval, "RightTop")==0)
+        m_value = Slit::RIGHTTOP;
+    else if (strcasecmp(strval, "RightBottom")==0)
+        m_value = Slit::RIGHTBOTTOM;
+    else
+        setDefaultValue();
 }
 
 } // end namespace FbTk

@@ -209,37 +209,6 @@ private:
 namespace FbTk {
 
 template<>
-void FbTk::Resource<FbWinFrame::TabPlacement>::
-setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft") == 0)
-        m_value = FbWinFrame::TOPLEFT;
-    else if (strcasecmp(strval, "BottomLeft") == 0)
-        m_value = FbWinFrame::BOTTOMLEFT;
-    else if (strcasecmp(strval, "Top") == 0)
-        m_value = FbWinFrame::TOP;
-    else if (strcasecmp(strval, "Bottom") == 0)
-        m_value = FbWinFrame::BOTTOM;
-    else if (strcasecmp(strval, "TopRight") == 0)
-        m_value = FbWinFrame::TOPRIGHT;
-    else if (strcasecmp(strval, "BottomRight") == 0)
-        m_value = FbWinFrame::BOTTOMRIGHT;
-    else if (strcasecmp(strval, "LeftTop") == 0)
-        m_value = FbWinFrame::LEFTTOP;
-    else if (strcasecmp(strval, "Left") == 0)
-        m_value = FbWinFrame::LEFT;
-    else if (strcasecmp(strval, "LeftBottom") == 0)
-        m_value = FbWinFrame::LEFTBOTTOM;
-    else if (strcasecmp(strval, "RightTop") == 0)
-        m_value = FbWinFrame::RIGHTTOP;
-    else if (strcasecmp(strval, "Right") == 0)
-        m_value = FbWinFrame::RIGHT;
-    else if (strcasecmp(strval, "RightBottom") == 0)
-        m_value = FbWinFrame::RIGHTBOTTOM;
-    else
-        setDefaultValue();
-}
-
-template<>
 string FbTk::Resource<FbWinFrame::TabPlacement>::
 getString() const {
     switch (m_value) {
@@ -283,6 +252,38 @@ getString() const {
     //default string
     return string("TopLeft");
 }
+
+template<>
+void FbTk::Resource<FbWinFrame::TabPlacement>::
+setFromString(const char *strval) {
+    if (strcasecmp(strval, "TopLeft") == 0)
+        m_value = FbWinFrame::TOPLEFT;
+    else if (strcasecmp(strval, "BottomLeft") == 0)
+        m_value = FbWinFrame::BOTTOMLEFT;
+    else if (strcasecmp(strval, "Top") == 0)
+        m_value = FbWinFrame::TOP;
+    else if (strcasecmp(strval, "Bottom") == 0)
+        m_value = FbWinFrame::BOTTOM;
+    else if (strcasecmp(strval, "TopRight") == 0)
+        m_value = FbWinFrame::TOPRIGHT;
+    else if (strcasecmp(strval, "BottomRight") == 0)
+        m_value = FbWinFrame::BOTTOMRIGHT;
+    else if (strcasecmp(strval, "LeftTop") == 0)
+        m_value = FbWinFrame::LEFTTOP;
+    else if (strcasecmp(strval, "Left") == 0)
+        m_value = FbWinFrame::LEFT;
+    else if (strcasecmp(strval, "LeftBottom") == 0)
+        m_value = FbWinFrame::LEFTBOTTOM;
+    else if (strcasecmp(strval, "RightTop") == 0)
+        m_value = FbWinFrame::RIGHTTOP;
+    else if (strcasecmp(strval, "Right") == 0)
+        m_value = FbWinFrame::RIGHT;
+    else if (strcasecmp(strval, "RightBottom") == 0)
+        m_value = FbWinFrame::RIGHTBOTTOM;
+    else
+        setDefaultValue();
+}
+
 } // end namespace FbTk
 
 

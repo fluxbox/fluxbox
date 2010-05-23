@@ -68,7 +68,7 @@ TextureRender::TextureRender(ImageControl &imgctrl,
                              XColor *_colors, size_t num_colors):
     control(imgctrl),
     colors(_colors),
-    ncolors(ncolors),
+    ncolors(static_cast<int>(num_colors)),
     cpc(imgctrl.colorsPerChannel()),
     cpccpc(cpc * cpc),
     red(0), green(0), blue(0),

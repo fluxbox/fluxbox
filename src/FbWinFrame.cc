@@ -160,7 +160,7 @@ bool FbWinFrame::setTabMode(TabMode tabmode) {
 //        reconfigure();
     }
 
-    return true;
+    return ret;
 }
 
 void FbWinFrame::hide() {

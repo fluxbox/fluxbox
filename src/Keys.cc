@@ -458,7 +458,7 @@ bool Keys::addBinding(const string &linebuffer) {
                 } else if (extractKeyFromString(arg, "move", key)) {
                     type = MotionNotify;
 
-                } else if (key = FbTk::KeyUtil::getKey(val[argc].c_str())) { // convert from string symbol
+                } else if ((key = FbTk::KeyUtil::getKey(val[argc].c_str()))) { // convert from string symbol
                     type = KeyPress;
 
                 // keycode covers the following three two-byte cases:

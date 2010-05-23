@@ -189,8 +189,10 @@ void IconButton::refreshEverything(bool setup) {
         unsigned int w = width();
         unsigned int h = height();
         FbTk::translateSize(orientation(), w, h);
-        int iconx = 1, icony = 1;
-        unsigned int neww = w, newh = h;
+        int iconx = 1;
+        int icony = 1;
+        unsigned int neww;
+        unsigned int newh = h;
         if (newh > 2*static_cast<unsigned>(icony))
             newh -= 2*icony;
         else

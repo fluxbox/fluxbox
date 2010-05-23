@@ -80,37 +80,6 @@ using std::list;
 namespace FbTk {
 
 template<>
-void FbTk::Resource<Toolbar::Placement>::
-setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft")==0)
-        m_value = Toolbar::TOPLEFT;
-    else if (strcasecmp(strval, "BottomLeft")==0)
-        m_value = Toolbar::BOTTOMLEFT;
-    else if (strcasecmp(strval, "TopCenter")==0)
-        m_value = Toolbar::TOPCENTER;
-    else if (strcasecmp(strval, "BottomCenter")==0)
-        m_value = Toolbar::BOTTOMCENTER;
-    else if (strcasecmp(strval, "TopRight")==0)
-        m_value = Toolbar::TOPRIGHT;
-    else if (strcasecmp(strval, "BottomRight")==0)
-        m_value = Toolbar::BOTTOMRIGHT;
-    else if (strcasecmp(strval, "LeftTop") == 0)
-        m_value = Toolbar::LEFTTOP;
-    else if (strcasecmp(strval, "LeftCenter") == 0)
-        m_value = Toolbar::LEFTCENTER;
-    else if (strcasecmp(strval, "LeftBottom") == 0)
-        m_value = Toolbar::LEFTBOTTOM;
-    else if (strcasecmp(strval, "RightTop") == 0)
-        m_value = Toolbar::RIGHTTOP;
-    else if (strcasecmp(strval, "RightCenter") == 0)
-        m_value = Toolbar::RIGHTCENTER;
-    else if (strcasecmp(strval, "RightBottom") == 0)
-        m_value = Toolbar::RIGHTBOTTOM;
-    else
-        setDefaultValue();
-}
-
-template<>
 string FbTk::Resource<Toolbar::Placement>::
 getString() const {
     switch (m_value) {
@@ -154,6 +123,38 @@ getString() const {
     //default string
     return string("BottomCenter");
 }
+
+template<>
+void FbTk::Resource<Toolbar::Placement>::
+setFromString(const char *strval) {
+    if (strcasecmp(strval, "TopLeft")==0)
+        m_value = Toolbar::TOPLEFT;
+    else if (strcasecmp(strval, "BottomLeft")==0)
+        m_value = Toolbar::BOTTOMLEFT;
+    else if (strcasecmp(strval, "TopCenter")==0)
+        m_value = Toolbar::TOPCENTER;
+    else if (strcasecmp(strval, "BottomCenter")==0)
+        m_value = Toolbar::BOTTOMCENTER;
+    else if (strcasecmp(strval, "TopRight")==0)
+        m_value = Toolbar::TOPRIGHT;
+    else if (strcasecmp(strval, "BottomRight")==0)
+        m_value = Toolbar::BOTTOMRIGHT;
+    else if (strcasecmp(strval, "LeftTop") == 0)
+        m_value = Toolbar::LEFTTOP;
+    else if (strcasecmp(strval, "LeftCenter") == 0)
+        m_value = Toolbar::LEFTCENTER;
+    else if (strcasecmp(strval, "LeftBottom") == 0)
+        m_value = Toolbar::LEFTBOTTOM;
+    else if (strcasecmp(strval, "RightTop") == 0)
+        m_value = Toolbar::RIGHTTOP;
+    else if (strcasecmp(strval, "RightCenter") == 0)
+        m_value = Toolbar::RIGHTCENTER;
+    else if (strcasecmp(strval, "RightBottom") == 0)
+        m_value = Toolbar::RIGHTBOTTOM;
+    else
+        setDefaultValue();
+}
+
 } // end namespace FbTk
 
 namespace {
