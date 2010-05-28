@@ -42,8 +42,9 @@ public:
     typedef std::list<Focusable *> Focusables;
     /// main focus model
     enum FocusModel { 
-        MOUSEFOCUS = 0, ///< focus follows mouse
-        CLICKFOCUS      ///< focus on click
+        MOUSEFOCUS = 0,  ///< focus follows mouse, but only when the mouse is moving
+        CLICKFOCUS,      ///< focus on click
+        STRICTMOUSEFOCUS ///< focus always follows mouse, even when stationary
     };
     /// focus model for tabs
     enum TabFocusModel { 
@@ -90,7 +91,7 @@ public:
      */
     void dirFocus(FluxboxWindow &win, FocusDir dir);
     /// @return true if focus mode is mouse focus
-    bool isMouseFocus() const { return focusModel() == MOUSEFOCUS; }
+    bool isMouseFocus() const { return focusModel() != CLICKFOCUS; }
     /// @return true if tab focus mode is mouse tab focus
     bool isMouseTabFocus() const { return tabFocusModel() == MOUSETABFOCUS; }
 

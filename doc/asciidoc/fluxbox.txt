@@ -1001,10 +1001,12 @@ This specifies the width of external tabs in pixels.
 +
 Default: *64*
 
-*session.screen0.focusModel*: *ClickToFocus|MouseFocus*::
+*session.screen0.focusModel*: *ClickToFocus|MouseFocus|StrictMouseFocus*::
 This controls how windows gain focus via the mouse. With `ClickToFocus',
 the user must click on the window. With `MouseFocus', windows gain focus
-whenever the mouse moves over them.
+whenever the mouse moves over them, but only when the mouse is moving. With
+`StrictMouseFocus', windows gain focus whenever the mouse enters any exposed
+area, even if this is due to layer changes, window movement, changing desktops, closing windows, etc.
 +
 Default: *ClickToFocus*
       

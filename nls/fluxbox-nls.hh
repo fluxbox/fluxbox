@@ -84,6 +84,7 @@ enum {
         ConfigmenuMaxIgnoreInc = 27,
         ConfigmenuMaxDisableMove = 28,
         ConfigmenuMaxDisableResize = 29,
+	ConfigmenuStrictMouseFocus = 30,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,

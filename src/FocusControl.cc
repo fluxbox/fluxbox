@@ -489,6 +489,7 @@ void FocusControl::revertFocus(BScreen &screen) {
         else {
             switch (screen.focusControl().focusModel()) {
             case FocusControl::MOUSEFOCUS:
+            case FocusControl::STRICTMOUSEFOCUS:
                 XSetInputFocus(screen.rootWindow().display(),
                                PointerRoot, None, CurrentTime);
                 break;
@@ -593,6 +594,8 @@ std::string FbTk::Resource<FocusControl::FocusModel>::getString() const {
     switch (m_value) {
     case FocusControl::MOUSEFOCUS:
         return string("MouseFocus");
+    case FocusControl::STRICTMOUSEFOCUS:
+        return string("StrictMouseFocus");
     case FocusControl::CLICKFOCUS:
         return string("ClickFocus");
     }
@@ -605,6 +608,8 @@ void FbTk::Resource<FocusControl::FocusModel>::
 setFromString(char const *strval) {
     if (strcasecmp(strval, "MouseFocus") == 0)
         m_value = FocusControl::MOUSEFOCUS;
+    else if (strcasecmp(strval, "StrictMouseFocus") == 0)
+        m_value = FocusControl::STRICTMOUSEFOCUS;
     else if (strcasecmp(strval, "ClickToFocus") == 0)
         m_value = FocusControl::CLICKFOCUS;
     else

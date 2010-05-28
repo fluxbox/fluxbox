@@ -1555,8 +1555,13 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                "Click To Focus", "Click to focus",
                FocusControl::CLICKFOCUS);
     _FOCUSITEM(Configmenu, MouseFocus,
-               "Mouse Focus", "Mouse Focus",
+               "Mouse Focus (Keyboard Friendly)",
+               "Mouse Focus (Keyboard Friendly)",
                FocusControl::MOUSEFOCUS);
+    _FOCUSITEM(Configmenu, StrictMouseFocus,
+               "Mouse Focus (Strict)",
+               "Mouse Focus (Strict)",
+               FocusControl::STRICTMOUSEFOCUS);
 #undef _FOCUSITEM
 
     focus_menu->insert(new FbTk::MenuSeparator());
