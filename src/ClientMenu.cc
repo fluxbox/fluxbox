@@ -25,6 +25,7 @@
 #include "Screen.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
+#include "FocusControl.hh"
 #include <X11/keysym.h>
 
 #include "FbTk/MenuItem.hh"
@@ -56,8 +57,12 @@ public:
 
         m_client.focus();
         fbwin->raise();
-        if ((mods & ControlMask) == 0)
+        if ((mods & ControlMask) == 0) {
+            // Ignore any focus changes due to this menu closing
+            // (even in StrictMouseFocus mode)
+            m_client.screen().focusControl().ignoreAtPointer(true);
             parent->hide();
+        }
     }
 
     const std::string &label() const { return m_client.title(); }

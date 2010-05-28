@@ -96,9 +96,15 @@ public:
     bool isMouseTabFocus() const { return tabFocusModel() == MOUSETABFOCUS; }
 
     /// Set the "ignore" pointer location to the current pointer location
-    void ignoreAtPointer();
+    /// @param force If true, ignore even in StrictMouseFocus mode
+    void ignoreAtPointer(bool force = false);
     /// Set the "ignore" pointer location to the given coordinates
-    void ignoreAt(int x, int y);
+    /// @param x Current X position of the pointer
+    /// @param y Current Y position of the pointer
+    /// @param force If true, ignore even in StrictMouseFocus mode
+    void ignoreAt(int x, int y, bool force = false);
+    /// unset the "ignore" pointer location
+    void ignoreCancel();
     /// @return true if events at the given X/Y coordinate should be ignored
     /// (ie, they were previously cached via one of the ignoreAt calls)
     bool isIgnored(int x, int y);

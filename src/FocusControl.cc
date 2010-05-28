@@ -401,21 +401,30 @@ void FocusControl::dirFocus(FluxboxWindow &win, FocusDir dir) {
 
 }
 
-void FocusControl::ignoreAtPointer()
+void FocusControl::ignoreAtPointer(bool force)
 {
-    int ignore_i;
+    int ignore_i, ignore_x, ignore_y;
     unsigned int ignore_ui;
     Window ignore_w;
 
     XQueryPointer(m_screen.rootWindow().display(),
         m_screen.rootWindow().window(), &ignore_w, &ignore_w,
-        &m_ignore_mouse_x, &m_ignore_mouse_y,
+        &ignore_x, &ignore_y,
         &ignore_i, &ignore_i, &ignore_ui);
+
+    this->ignoreAt(ignore_x, ignore_y, force);
 }
 
-void FocusControl::ignoreAt(int x, int y)
+void FocusControl::ignoreAt(int x, int y, bool force)
 {
-    m_ignore_mouse_x = x; m_ignore_mouse_y = y;
+	if (force || this->focusModel() == MOUSEFOCUS) {
+		m_ignore_mouse_x = x; m_ignore_mouse_y = y;
+	}
+}
+
+void FocusControl::ignoreCancel()
+{
+	m_ignore_mouse_x = m_ignore_mouse_y = -1;
 }
 
 bool FocusControl::isIgnored(int x, int y)
