@@ -1,6 +1,12 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*10/06/01:
+   * Added new focus model 'StrictMouseFocus'.  This will affect focus when
+     closing, moving, lowering windows, changing desktops, etc, whereas the
+     'MouseFocus' model will only change focus when you move the mouse (Jim)
+     FocusControl.cc/hh, Screen.cc, ClientMenu.cc
+
 *10/05/01:
    * Fixed placement bug of maximized windows when moved out of a xinerama
      screen (Mathias)
