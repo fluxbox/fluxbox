@@ -242,14 +242,14 @@ public:
 
     /// Leave tracking for a signal
     /// @param id the \c id from the previous \c join 
-   void leave(TrackID id, bool disconnect = false) {
+   void leave(TrackID id, bool withTracker = false) {
        // keep temporary, while disconnecting we can
        // in some strange cases get a call to this again
         ValueType tmp = *id;
         m_connections.erase(id);
-        if (disconnect)
-            tmp.first->disconnect(tmp.second);
-        tmp.first->disconnectTracker(*this);
+        tmp.first->disconnect(tmp.second);
+        if (withTracker)
+            tmp.first->disconnectTracker(*this);
     }
 
     /// Leave tracking for a signal
