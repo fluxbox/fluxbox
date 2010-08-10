@@ -48,6 +48,5 @@ util/fluxbox-remote
 util/fluxbox-update_configs
 util/startfluxbox
 version.h
-INSTALL
 install-sh
 missing
