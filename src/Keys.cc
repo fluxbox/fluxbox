@@ -356,7 +356,7 @@ void Keys::loadDefaults() {
     addBinding("OnTitlebar Mouse3 :WindowMenu");
     addBinding("OnTitlebar Move1 :StartMoving");
     addBinding("OnLeftGrip Move1 :StartResizing bottomleft");
-    addBinding("OnRighttGrip Move1 :StartResizing bottomright");
+    addBinding("OnRightGrip Move1 :StartResizing bottomright");
     addBinding("OnWindowBorder Move1 :StartMoving");
     addBinding("Mod1 Tab :NextWindow");
     addBinding("Mod1 Shift Tab :PrevWindow");
