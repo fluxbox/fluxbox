@@ -13,7 +13,11 @@ OnToolbar Mouse5 :NextWindow {static groups} (iconhidden=no)
 
 # alt + left/right click to move/resize a window
 OnWindow Mod1 Mouse1 :MacroCmd {Raise} {Focus} {StartMoving}
+OnWindowBorder Move1 :StartMoving
+
 OnWindow Mod1 Mouse3 :MacroCmd {Raise} {Focus} {StartResizing NearestCorner}
+OnLeftGrip Move1 :StartResizing bottomleft
+OnRightGrip Move1 :StartResizing bottomright
 
 # alt + middle click to lower the window
 OnWindow Mod1 Mouse2 :Lower
@@ -23,6 +27,9 @@ OnTitlebar Control Mouse1 :StartTabbing
 
 # double click on the titlebar to shade
 OnTitlebar Double Mouse1 :Shade
+
+# left click on the titlebar to move the window
+OnTitlebar Mouse1 :StartMoving
 
 # middle click on the titlebar to lower
 OnTitlebar Mouse2 :Lower
