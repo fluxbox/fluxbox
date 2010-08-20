@@ -1,6 +1,11 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*10/08/20:
+    * Added new action 'ActivateTab' (Mathias)
+    Window.{cc,hh} Keys.cc fluxbox.cc CurrentWindowCmd.cc
+    fluxbox-update_configs.cc
+
 *10/06/01:
    * Added new focus model 'StrictMouseFocus'.  This will affect focus when
      closing, moving, lowering windows, changing desktops, etc, whereas the
