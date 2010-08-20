@@ -812,16 +812,10 @@ FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x
                                &labelbutton))
         return m_clientlist.end();
 
-    Client2ButtonMap::iterator it =
-        find_if(m_labelbuttons.begin(),
-                m_labelbuttons.end(),
-                Compose(bind2nd(equal_to<Window>(), labelbutton),
-                        Compose(mem_fun(&TextButton::window),
-                                Select2nd<Client2ButtonMap::value_type>())));
-
+    WinClient* c = winClientOfLabelButtonWindow(labelbutton);
 
     // label button not found
-    if (it == m_labelbuttons.end())
+    if (!c)
         return m_clientlist.end();
 
     Window child_return=0;
@@ -834,8 +828,8 @@ FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x
 
     ClientList::iterator client = find(m_clientlist.begin(),
                                        m_clientlist.end(),
-                                       it->first);
-    if (x > static_cast<signed>((*it).second->width()) / 2)
+                                       c);
+    if (x > static_cast<signed>(m_labelbuttons[c]->width()) / 2)
         client++;
 
     return client;
@@ -853,15 +847,9 @@ void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
                                &labelbutton))
         return;
 
-    Client2ButtonMap::iterator it =
-        find_if(m_labelbuttons.begin(),
-                m_labelbuttons.end(),
-                Compose(bind2nd(equal_to<Window>(), labelbutton),
-                        Compose(mem_fun(&TextButton::window),
-                                Select2nd<Client2ButtonMap::value_type>())));
+    WinClient* client = winClientOfLabelButtonWindow(labelbutton);
 
-    // label button not found
-    if (it == m_labelbuttons.end())
+    if (!client)
         return;
 
     Window child_return = 0;
@@ -871,10 +859,10 @@ void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
                                dest_x, dest_y, &x, &y,
                                &child_return))
         return;
-    if (x > static_cast<signed>((*it).second->width()) / 2)
-        moveClientRightOf(win, *it->first);
+    if (x > static_cast<signed>(m_labelbuttons[client]->width()) / 2)
+        moveClientRightOf(win, *client);
     else
-        moveClientLeftOf(win, *it->first);
+        moveClientLeftOf(win, *client);
 
 }
 
@@ -2360,40 +2348,15 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         frame().insideTitlebar( be.window ) &&
         frame().handle().window() != be.window;
 
-#if 0 // disabled
-    if (onTitlebar && be.button == 1)
-        raise();
-#endif
-
-    // check keys file first
     Keys *k = Fluxbox::instance()->keys();
-    if ((onTitlebar && k->doAction(be.type, be.state, be.button,
-                                  Keys::ON_TITLEBAR, m_client, be.time)) ||
-        k->doAction(be.type, be.state, be.button, Keys::ON_WINDOW, m_client,
-                    be.time)) {
+    if ((onTitlebar && k->doAction(be.type, be.state, be.button, Keys::ON_TITLEBAR, &winClient(), be.time)) ||
+        k->doAction(be.type, be.state, be.button, Keys::ON_WINDOW, &winClient(), be.time)) {
+
         return;
     }
 
-    frame().tabcontainer().tryButtonPressEvent(be);
-    if (be.button == 1) {
-        if (frame().window().window() == be.window ||
-            frame().tabcontainer().window() == be.window) {
-            if (screen().clickRaises())
-                raise();
 
-            fbdbg<<"FluxboxWindow::buttonPressEvent: AllowEvent"<<endl;
-
-            XAllowEvents(display, ReplayPointer, be.time);
-
-            m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
-            m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
-        } else if (frame().handle() == be.window)
-            raise();
-
-        FbTk::Menu::hideShownMenu();
-        if (!m_focused && acceptsFocus() && m_click_focus) //check focus
-            focus();
-    }
+    XAllowEvents(display, ReplayPointer, be.time);
 }
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
@@ -2650,15 +2613,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
     WinClient *client = 0;
     if (screen().focusControl().isMouseTabFocus()) {
         // determine if we're in a label button (tab)
-        Client2ButtonMap::iterator it =
-            find_if(m_labelbuttons.begin(),
-                    m_labelbuttons.end(),
-                    Compose(bind2nd(equal_to<Window>(), ev.window),
-                            Compose(mem_fun(&TextButton::window),
-                                    Select2nd<Client2ButtonMap::value_type>())));
-        if (it != m_labelbuttons.end())
-            client = (*it).first;
-
+        client = winClientOfLabelButtonWindow(ev.window);
     }
 
     if (ev.window == frame().window() ||
@@ -3149,21 +3104,26 @@ void FluxboxWindow::stopResizing(bool interrupted) {
     ungrabPointer(CurrentTime);
 }
 
+WinClient* FluxboxWindow::winClientOfLabelButtonWindow(Window window) {
+    WinClient* result = 0;
+    Client2ButtonMap::iterator it =
+        find_if(m_labelbuttons.begin(),
+                m_labelbuttons.end(),
+                Compose(bind2nd(equal_to<Window>(), window),
+                        Compose(mem_fun(&FbTk::Button::window),
+                                Select2nd<Client2ButtonMap::value_type>())));
+    if (it != m_labelbuttons.end())
+        result = it->first;
+
+    return result;
+}
+
 void FluxboxWindow::startTabbing(const XButtonEvent &be) {
 
     if (s_num_grabs > 0)
         return;
 
-    m_attaching_tab = 0;
-    // determine if we're in titlebar
-    Client2ButtonMap::iterator it =
-        find_if(m_labelbuttons.begin(),
-                m_labelbuttons.end(),
-                Compose(bind2nd(equal_to<Window>(), be.window),
-                        Compose(mem_fun(&TextButton::window),
-                                Select2nd<Client2ButtonMap::value_type>())));
-    if (it != m_labelbuttons.end())
-        m_attaching_tab = it->first;
+    m_attaching_tab = winClientOfLabelButtonWindow(be.window);
 
     // start drag'n'drop for tab
     grabPointer(be.window, False, ButtonMotionMask |
@@ -3704,8 +3664,6 @@ void FluxboxWindow::associateClient(WinClient &client) {
             frame().theme().unfocusedTheme()->iconbarTheme(), client);
     frame().createTab(*btn);
 
-    FbTk::RefCount<FbTk::Command<void> > setcmd(new SetClientCmd(client));
-    btn->setOnClick(setcmd, 1);
     btn->setTextPadding(Fluxbox::instance()->getTabsPadding());
     btn->setPixmap(screen().getTabsUsePixmap());
 
@@ -3715,6 +3673,7 @@ void FluxboxWindow::associateClient(WinClient &client) {
 
     evm.add(*this, btn->window()); // we take care of button events for this
     evm.add(*this, client.window());
+
     client.setFluxboxWindow(this);
     join(client.titleSig(),
          FbTk::MemFun(*this, &FluxboxWindow::setTitle));

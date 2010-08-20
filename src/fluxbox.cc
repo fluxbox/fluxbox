@@ -605,7 +605,7 @@ void Fluxbox::setupConfigFiles() {
     if (create_windowmenu)
         FbTk::FileUtil::copyFile(DEFAULT_WINDOWMENU, windowmenu_file.c_str());
 
-#define CONFIG_VERSION 11
+#define CONFIG_VERSION 12
     FbTk::Resource<int> config_version(m_resourcemanager, 0,
             "session.configVersion", "Session.ConfigVersion");
     if (*config_version < CONFIG_VERSION) {

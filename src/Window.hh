@@ -398,6 +398,8 @@ public:
     WinClient &winClient() { return *m_client; }
     const WinClient &winClient() const { return *m_client; }
 
+    WinClient* winClientOfLabelButtonWindow(Window w);
+
     bool isTyping() const;
 
     const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }

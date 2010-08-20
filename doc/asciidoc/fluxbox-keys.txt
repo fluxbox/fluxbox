@@ -184,6 +184,9 @@ Bottom BottomRight*
 *StartTabbing*::
 	Start dragging to add this window to another's tabgroup.
 
+*ActivateTab*::
+	Activates the tab underneath the mouse.
+
 Window Commands
 ~~~~~~~~~~~~~~~
 These commands ordinarily affect only the currently focused window. The

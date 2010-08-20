@@ -223,6 +223,27 @@ FbTk::Command<void> *parseFocusCmd(const string &command, const string &args,
 REGISTER_COMMAND_PARSER(activate, parseFocusCmd, void);
 REGISTER_COMMAND_PARSER(focus, parseFocusCmd, void);
 
+
+class ActivateTabCmd: public WindowHelperCmd {
+public:
+    ActivateTabCmd() { }
+protected:
+    void real_execute();
+};
+
+
+void ActivateTabCmd::real_execute() {
+
+    WinClient* winclient = fbwindow().winClientOfLabelButtonWindow(
+            Fluxbox::instance()->lastEvent().xany.window);
+
+    if (winclient && winclient != &fbwindow().winClient()) {
+        fbwindow().setCurrentClient(*winclient, true);
+    }
+}
+
+REGISTER_COMMAND(activatetab, ActivateTabCmd, void);
+
 } // end anonymous namespace
 
 void SetHeadCmd::real_execute() {

@@ -29,7 +29,8 @@ OnTitlebar Control Mouse1 :StartTabbing
 OnTitlebar Double Mouse1 :Shade
 
 # left click on the titlebar to move the window
-OnTitlebar Mouse1 :StartMoving
+OnTitlebar Mouse1 :MacroCmd {ActivateTab} {Raise} {Focus}
+OnTitlebar Move1  :StartMoving
 
 # middle click on the titlebar to lower
 OnTitlebar Mouse2 :Lower

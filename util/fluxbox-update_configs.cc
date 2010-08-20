@@ -391,9 +391,25 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         new_keyfile += "OnWindowBorder Move1 :StartMoving\n\n";
         new_keyfile += whole_keyfile; // don't forget user's old keybindings
 
+        new_keyfile += "\n"; // just for good looks
         write_file(keyfilename, new_keyfile);
 
         new_version = 11;
+    }
+
+    if (old_version < 12) { // update keys for ActivateTab
+
+        string whole_file = read_file(keyfilename);
+        string new_keyfile = "";
+
+        new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
+        new_keyfile += "OnTitlebar Mouse1 :MacroCmd {ActivateTab} {Raise} {Focus}\n";
+        new_keyfile += whole_file;
+
+        new_keyfile += "\n"; // just for good looks
+        write_file(keyfilename, new_keyfile);
+
+        new_version = 12;
     }
 
     return new_version;
