@@ -2041,7 +2041,7 @@ int BScreen::getHead(const FbTk::FbWindow &win) const {
 
     int head = 0; // whole screen
 
-#if XINERAMA
+#ifdef XINERAMA
     if (hasXinerama()) {
 
         // cast needed to prevent win.x() become "unsigned int" which is bad
