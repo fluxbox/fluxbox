@@ -644,7 +644,7 @@ The first section outlines what types of windows will be shown in the iconbar:
 --
 +
 The next section specifies the alignment of the window names shown in the
-iconbar. The with is specified via the *session.screen0.iconbar.iconWidth*
+iconbar. The width is specified via the *session.screen0.iconbar.iconWidth*
 resource:
 +
 --
