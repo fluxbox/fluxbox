@@ -2361,7 +2361,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
 
-    if (m_last_pressed_button == re.button) {
+    if (m_last_pressed_button == static_cast<int>(re.button)) {
         m_last_pressed_button = 0;
     }
 
@@ -2401,15 +2401,22 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         inside_border =
 
                 // if mouse is currently on the window border, ignore it
-                ! insideBorder(frame(), me.x_root, me.y_root, borderw)  &&
-                    ( !frame().externalTabMode() ||
-                      ! insideBorder(frame().tabcontainer(), me.x_root, me.y_root, borderw) )
+                (
+                    ! insideBorder(frame(), me.x_root, me.y_root, borderw) 
+                    && ( !frame().externalTabMode() 
+                         || ! insideBorder(frame().tabcontainer(), me.x_root, me.y_root, borderw) )
+
+                )
 
                 || // or if mouse was on border when it was last clicked
 
-                ! insideBorder(frame(), m_last_button_x, m_last_button_y, borderw) &&
-                    ( ! frame().externalTabMode() ||
-                      ! insideBorder(frame().tabcontainer(), m_last_button_x, m_last_button_y, borderw ) );
+                (
+                    ! insideBorder(frame(), m_last_button_x, m_last_button_y, borderw) 
+                    && 
+                        ( ! frame().externalTabMode() 
+                          || ! insideBorder(frame().tabcontainer(), m_last_button_x, m_last_button_y, borderw ) 
+                        )
+                );
     }
 
     if (Fluxbox::instance()->getIgnoreBorder() && m_attaching_tab == 0
