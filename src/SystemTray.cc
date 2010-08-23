@@ -177,11 +177,8 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     Fluxbox* fluxbox = Fluxbox::instance();
     Display *disp = fluxbox->display();
 
-    // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
-    string atom_name("_NET_SYSTEM_TRAY_S");
-    atom_name += FbTk::StringUtil::number2String(m_window.screenNumber());
-
     // get selection owner and see if it's free
+    string atom_name = getNetSystemTrayAtom(m_window.screenNumber());
     Atom tray_atom = XInternAtom(disp, atom_name.c_str(), False);
     Window owner = XGetSelectionOwner(disp, tray_atom);
     if (owner != 0) {
@@ -225,11 +222,9 @@ SystemTray::~SystemTray() {
     Fluxbox* fluxbox = Fluxbox::instance();
     fluxbox->removeAtomHandler(m_handler.get());
     Display *disp = fluxbox->display();
-    // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
-    string atom_name("_NET_SYSTEM_TRAY_S");
-    atom_name += FbTk::StringUtil::number2String(m_window.screenNumber());
 
     // get selection owner and see if it's free
+    string atom_name = getNetSystemTrayAtom(m_window.screenNumber());
     Atom tray_atom = XInternAtom(disp, atom_name.c_str(), False);
 
     // Properly give up selection.
@@ -553,6 +548,14 @@ void SystemTray::update() {
 }
 
 Atom SystemTray::getXEmbedInfoAtom() {
-static Atom theatom =  XInternAtom(Fluxbox::instance()->display(), "_XEMBED_INFO", False);
-return theatom;
+    static Atom theatom = XInternAtom(Fluxbox::instance()->display(), "_XEMBED_INFO", False);
+    return theatom;
+}
+
+string SystemTray::getNetSystemTrayAtom(int screen_nr) {
+
+    string atom_name("_NET_SYSTEM_TRAY_S");
+    atom_name += FbTk::StringUtil::number2String(screen_nr);
+
+    return atom_name;
 }

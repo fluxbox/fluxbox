@@ -84,6 +84,8 @@ public:
 
     void parentMoved() { m_window.parentMoved(); }
 
+    static std::string getNetSystemTrayAtom(int screen_nr);
+
     static Atom getXEmbedInfoAtom();
 
 private:

@@ -54,6 +54,7 @@
 #include "AtomHandler.hh"
 #include "HeadArea.hh"
 #include "FbCommands.hh"
+#include "SystemTray.hh"
 #include "Debug.hh"
 
 #include "FbTk/I18n.hh"
@@ -1234,12 +1235,10 @@ bool BScreen::isKdeDockapp(Window client) const {
 bool BScreen::addKdeDockapp(Window client) {
 
     XSelectInput(FbTk::App::instance()->display(), client, StructureNotifyMask);
-    string atom_name("_NET_SYSTEM_TRAY_S");
-    atom_name += FbTk::StringUtil::number2String(screenNumber());
-    // find the right atomhandler that has the name: _NET_SYSTEM_TRAY_S<num>
-    AtomHandler *handler = Fluxbox::instance()->getAtomHandler(atom_name);
     FbTk::EventHandler *evh  = 0;
     FbTk::EventManager *evm = FbTk::EventManager::instance();
+
+    AtomHandler *handler = Fluxbox::instance()->getAtomHandler(SystemTray::getNetSystemTrayAtom(screenNumber()));
     if (handler == 0) {
 #ifdef SLIT
         if (slit() != 0 && slit()->acceptKdeDockapp())
