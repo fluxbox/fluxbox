@@ -57,13 +57,13 @@ namespace {
 
 int showSeconds(const std::string& fmt_string) {
 
-    return fmt_string.find("%c") != -1
-        || fmt_string.find("%r") != -1
-        || fmt_string.find("%s") != -1
-        || fmt_string.find("%S") != -1
-        || fmt_string.find("%T") != -1
-        || fmt_string.find("%X") != -1
-        || fmt_string.find("%+") != -1;
+    return fmt_string.find("%c") != std::string::npos
+        || fmt_string.find("%r") != std::string::npos
+        || fmt_string.find("%s") != std::string::npos
+        || fmt_string.find("%S") != std::string::npos
+        || fmt_string.find("%T") != std::string::npos
+        || fmt_string.find("%X") != std::string::npos
+        || fmt_string.find("%+") != std::string::npos;
 }
 
 timeval calcNextTimeout(const std::string& fmt_string) {
