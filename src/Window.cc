@@ -2355,8 +2355,24 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         return;
     }
 
+    // if nothing was bound via keys-file then
+    // - raise() if clickRaise is enabled
+    // - hide open menues
+    // - focus on clickFocus
+    // - refeed the event into the queue so the app gets it
+    if (frame().window().window() == be.window) {
+        if (screen().clickRaises())
+            raise();
 
-    XAllowEvents(display, ReplayPointer, be.time);
+        XAllowEvents(display, ReplayPointer, be.time);
+
+        m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
+        m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
+    }
+    FbTk::Menu::hideShownMenu();
+    if (!m_focused && acceptsFocus() && m_click_focus)
+        focus();
+
 }
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
