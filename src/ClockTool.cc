@@ -50,6 +50,11 @@
 
 namespace {
 
+static const char SWITCHES_SECONDS[] = "crsSTX+";
+static const char SWITCHES_12_24H[] = "lIrkHT";
+static const char SWITCHES_24_12H[] = "kHTlIr";
+static const char SWITCH_AM_PM[] = "pP";
+
 /**
  * return true if clock shows seconds. If clock doesn't show seconds then
  * there is no need to wake up every second to redraw the clock.
@@ -57,14 +62,10 @@ namespace {
 
 int showSeconds(const std::string& fmt_string) {
 
-    return fmt_string.find("%c") != std::string::npos
-        || fmt_string.find("%r") != std::string::npos
-        || fmt_string.find("%s") != std::string::npos
-        || fmt_string.find("%S") != std::string::npos
-        || fmt_string.find("%T") != std::string::npos
-        || fmt_string.find("%X") != std::string::npos
-        || fmt_string.find("%+") != std::string::npos;
+    return FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
+        fmt_string, '%', SWITCHES_SECONDS, sizeof(SWITCHES_SECONDS), 0) != std::string::npos;
 }
+
 
 timeval calcNextTimeout(const std::string& fmt_string) {
     timeval now;
@@ -93,69 +94,48 @@ class ClockMenuItem: public FbTk::MenuItem {
 public:
     explicit ClockMenuItem(ClockTool &tool):
         FbTk::MenuItem(""), m_tool(tool) {
-        // determine 12/24 hour format
-        _FB_USES_NLS;
-        if (m_tool.timeFormat().find("%k") != std::string::npos ||
-            m_tool.timeFormat().find("%H") != std::string::npos ||
-            m_tool.timeFormat().find("%T") != std::string::npos)
-            setLabel( _FB_XTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
-        else
-            setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
+
+        setClockModeLabel();
         setCloseOnClick(false);
     }
 
     void click(int button, int time, unsigned int mods) {
-        std::string newformat = m_tool.timeFormat();
-        size_t pos = newformat.find("%k");
-        std::string newstr;
-        bool clock24hour = true;
 
-        _FB_USES_NLS;
+        // does the current format string contain something with 24/12h?
+        size_t found;
+        size_t pos = FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
+                m_tool.timeFormat(), '%', SWITCHES_24_12H, sizeof(SWITCHES_24_12H), &found);
 
-        if (pos != std::string::npos)
-            newstr = "%l";
-        else if ((pos = newformat.find("%H")) != std::string::npos)
-            newstr = "%I";
-        else if ((pos = newformat.find("%T")) != std::string::npos)
-            newstr = "%r";
+        if (pos != std::string::npos) { // if so, exchange it with 12/24h
+            std::string newformat = m_tool.timeFormat();
+            newformat[pos+1] = SWITCHES_12_24H[found];
 
-        // 12 hour
-        if (newstr.empty()) {
-            clock24hour = false;
-            if ((pos = newformat.find("%l")) != std::string::npos)
-                newstr = "%k";
-            else if ((pos = newformat.find("%I")) != std::string::npos)
-                newstr = "%H";
-            else if ((pos = newformat.find("%r")) != std::string::npos)
-                newstr = "%T";
-
-        }
-
-        if (!newstr.empty()) {
-
-            newformat.replace(pos, 2, newstr);
-            if (!clock24hour) { // erase %P/%p (AM|PM / am|pm)
-                pos = newformat.find("%p");
-                if (pos != std::string::npos)
+            if (found < 3) { // 24h? erase %P/%p (AM|PM / am|pm)
+                pos = FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
+                    newformat, '%', SWITCH_AM_PM, sizeof(SWITCH_AM_PM), 0);
+                if (pos != std::string::npos) {
                     newformat.erase(pos, 2);
-                else if ((pos = newformat.find("%P")) != std::string::npos)
-                    newformat.erase(pos, 2);
+                }
             }
 
-
             m_tool.setTimeFormat(newformat);
-
-            if (m_tool.timeFormat().find("%k") != std::string::npos ||
-                m_tool.timeFormat().find("%H") != std::string::npos ||
-                m_tool.timeFormat().find("%T") != std::string::npos)
-                setLabel( _FB_XTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
-            else
-                setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
+            setClockModeLabel();
 
         } // else some other strange format...so we don't do anything
         FbTk::MenuItem::click(button, time, mods);
     }
 private:
+
+    void setClockModeLabel() {
+        _FB_USES_NLS;
+        if (FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
+            m_tool.timeFormat(), '%', SWITCHES_24_12H, 3, 0) != std::string::npos) {
+            setLabel( _FB_XTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
+        } else {
+            setLabel( _FB_XTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
+        }
+    }
+
     ClockTool &m_tool;
 };
 

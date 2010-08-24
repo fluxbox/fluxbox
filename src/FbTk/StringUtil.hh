@@ -50,6 +50,18 @@ std::string expandFilename(const std::string &filename);
 /// @return extension of filename (ex: filename.txt will return txt)
 std::string findExtension(const std::string &filename);
 
+/// is the char after a 'trigger' part of an alphabet?
+/// @param in - string to analyze
+/// @param trigger - check for char after trigger
+/// @param alphabet - contains chars to search for
+/// @param len_alphabet - length of alphabet
+/// @param found - position of found char in alphabet (optional)
+/// @return position of trigger if found
+/// @return std::string::npos if nothing found
+std::string::size_type findCharFromAlphabetAfterTrigger(const std::string& in, 
+    char trigger,
+    const char alphabet[], size_t len_alphabet, size_t* found);
+
 /// @return copy of original with find_string replaced with "replace"
 std::string replaceString(const std::string &original, 
                           const char *find_string,
