@@ -163,8 +163,6 @@ dnl Check if iconv uses const in prototype declaration
     fi
 fi
 
-
-
 AC_CHECK_LIB(nsl, t_open, LIBS="$LIBS -lnsl")
 AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
 
@@ -601,6 +599,31 @@ fi
 #   AC_CHECK_LIB(Xrandr, XRRUpdateConfiguration,
 # 		AC_DEFINE(HAVE_RANDR1_2, 1, "randr 1.2 support"))
 # )
+
+
+enableval="yes"
+AC_MSG_CHECKING([whether to have FRIBIDI support])
+AC_ARG_ENABLE(fribidi,
+	AC_HELP_STRING([--enable-fribidi],
+								 [FRIBIDI support [default=yes]]), ,
+							[enableval=yes])
+if test "x$enableval" = "xyes"; then
+	AC_MSG_RESULT([yes])
+	AC_CHECK_LIB(fribidi, fribidi_version_info,
+		AC_MSG_CHECKING([for fribidi/fribidi.h])
+		AC_TRY_COMPILE(
+#include <fribidi/fribidi.h>
+      , fribidi_version_info,
+			AC_MSG_RESULT([yes])
+			AC_DEFINE(HAVE_FRIBIDI, [1], [Define to 1 if you have FRIBIDI])
+			LIBS="$LIBS -lfribidi",
+		AC_MSG_RESULT([no])))
+else
+  AC_MSG_RESULT([no])
+  CONFIGOPTS="$CONFIGOPTS --disable-fribidi"
+fi
+
+
 
 
 

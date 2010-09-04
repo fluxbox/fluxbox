@@ -45,6 +45,11 @@
 
 #include <iostream>
 
+#ifdef HAVE_FRIBIDI
+#include <fribidi/fribidi.h>
+#endif
+
+
 using std::string;
 
 #ifdef DEBUG
@@ -239,6 +244,37 @@ bool haveUTF8() {
 }
 
 
+#ifdef HAVE_FRIBIDI
+
+FbString BidiLog2Vis (const FbString& src){
+	FriBidiChar * us, * out_us;
+	FriBidiCharType base;
+	FbString r;
+	char * out;
+
+	us = new FriBidiChar[src.size()+1];
+	out_us = new FriBidiChar[src.size()+1];
+
+	unsigned int len = fribidi_charset_to_unicode(FRIBIDI_CHAR_SET_UTF8, const_cast<char *>(src.c_str()), src.length(), us);
+
+	base = FRIBIDI_TYPE_N;
+	fribidi_log2vis(us, len, &base, out_us, NULL, NULL, NULL);
+
+	out = new char[4*src.size()+1];
+
+	fribidi_unicode_to_charset(FRIBIDI_CHAR_SET_UTF8, out_us, len, out);
+
+	r = out;
+
+	delete[] out_us;
+	delete[] us;
+	delete[] out;
+
+	return r;
+}
+
+#endif
+
 } // end namespace StringUtil
 
 StringConvertor::StringConvertor(EncodingTarget target):
@@ -288,5 +324,6 @@ string StringConvertor::recode(const string &src) {
     return src;
 #endif
 }
+
 
 } // end namespace FbTk

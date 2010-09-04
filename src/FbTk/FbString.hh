@@ -52,6 +52,11 @@ std::string FbStrToX(const FbString &src);
 FbString LocaleStrToFb(const std::string &src);
 std::string FbStrToLocale(const FbString &src);
 
+#ifdef HAVE_FRIBIDI
+/// Make Bidi
+FbString BidiLog2Vis (const FbString& src);
+#endif
+
 bool haveUTF8();
 
 } // namespace FbStringUtil
