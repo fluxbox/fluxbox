@@ -403,7 +403,7 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
         string new_keyfile = "";
 
         new_keyfile += "!mouse actions added by fluxbox-update_configs\n";
-        new_keyfile += "OnTitlebar Mouse1 :MacroCmd {ActivateTab} {Raise} {Focus}\n";
+        new_keyfile += "OnTitlebar Mouse1 :MacroCmd {Focus} {Raise} {ActivateTab}\n";
         new_keyfile += whole_file;
 
         new_keyfile += "\n"; // just for good looks

@@ -354,8 +354,8 @@ void Keys::loadDefaults() {
     addBinding("OnDesktop Mouse2 :WorkspaceMenu");
     addBinding("OnDesktop Mouse3 :RootMenu");
     addBinding("OnTitlebar Mouse3 :WindowMenu");
-    addBinding("OnWindow Mouse1 :MacroCmd {Raise} {Focus} {StartMoving}");
-    addBinding("OnTitlebar Mouse1 :MacroCmd {ActivateTab} {Raise} {Focus}");
+    addBinding("OnWindow Mouse1 :MacroCmd {Focus} {Raise} {StartMoving}");
+    addBinding("OnTitlebar Mouse1 :MacroCmd {Focus} {Raise} {ActivateTab}");
     addBinding("OnTitlebar Move1 :StartMoving");
     addBinding("OnLeftGrip Move1 :StartResizing bottomleft");
     addBinding("OnRightGrip Move1 :StartResizing bottomright");
