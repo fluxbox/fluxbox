@@ -44,6 +44,7 @@
 #include <locale.h>
 
 #include <iostream>
+#include <vector>
 
 #ifdef HAVE_FRIBIDI
 #include <fribidi/fribidi.h>
@@ -246,31 +247,38 @@ bool haveUTF8() {
 
 #ifdef HAVE_FRIBIDI
 
-FbString BidiLog2Vis (const FbString& src){
-	FriBidiChar * us, * out_us;
-	FriBidiCharType base;
-	FbString r;
-	char * out;
+FbString BidiLog2Vis (const FbString& src) {
 
-	us = new FriBidiChar[src.size()+1];
-	out_us = new FriBidiChar[src.size()+1];
+    FriBidiCharType base = FRIBIDI_TYPE_N;
 
-	unsigned int len = fribidi_charset_to_unicode(FRIBIDI_CHAR_SET_UTF8, const_cast<char *>(src.c_str()), src.length(), us);
+    // reuse allocated memory for reencoding / reordering
+    static std::vector<FriBidiChar> us;
+    static std::vector<FriBidiChar> out_us;
+    static FbString result;
 
-	base = FRIBIDI_TYPE_N;
-	fribidi_log2vis(us, len, &base, out_us, NULL, NULL, NULL);
+    const size_t S = src.size() + 1;
+    const size_t S4 = S * 4;
 
-	out = new char[4*src.size()+1];
+    if (us.capacity() < S)
+        us.reserve(S);
+    if (out_us.capacity() < S)
+        out_us.reserve(S);
+    if (result.capacity() < S4)
+        result.reserve(S4);
 
-	fribidi_unicode_to_charset(FRIBIDI_CHAR_SET_UTF8, out_us, len, out);
+    us.resize(S);
+    FriBidiStrIndex len = fribidi_charset_to_unicode(FRIBIDI_CHAR_SET_UTF8,
+            const_cast<char*>(src.c_str()), S - 1,
+            &us[0]);
 
-	r = out;
+    out_us.resize(S);
+    fribidi_log2vis(&us[0], len, &base, &out_us[0], NULL, NULL, NULL);
 
-	delete[] out_us;
-	delete[] us;
-	delete[] out;
+    result.resize(S4);
+    len = fribidi_unicode_to_charset(FRIBIDI_CHAR_SET_UTF8, &out_us[0], len, &result[0]);
+    result.resize(len); // trim to currently used chars
 
-	return r;
+    return result;
 }
 
 #endif
