@@ -1,9 +1,14 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*10/09/05:
+    * Added support for bidirectional text (thanx to Ken Bloom), bug #2801836
+    FbTk/FbString.{cc,hh} FbTk/Font.cc
+
 *10/08/24:
     * Code deduplication and simplification (Mathias)
     Clocktool.cc FbTk/StringUtil.hh
+
 *10/08/20:
     * Added new action 'ActivateTab' (Mathias)
     Window.{cc,hh} Keys.cc fluxbox.cc CurrentWindowCmd.cc
