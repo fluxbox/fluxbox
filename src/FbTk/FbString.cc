@@ -38,7 +38,11 @@
   #include <stdlib.h>
 #endif
 
-#include <stdio.h>
+#ifdef HAVE_CSTDIO
+  #include <cstdio>
+#else
+  #include <stdio.h>
+#endif
 
 #include <langinfo.h>
 #include <locale.h>
@@ -47,7 +51,7 @@
 #include <vector>
 
 #ifdef HAVE_FRIBIDI
-#include <fribidi/fribidi.h>
+  #include <fribidi/fribidi.h>
 #endif
 
 
