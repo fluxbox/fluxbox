@@ -104,6 +104,11 @@ static void showInfo(ostream &ostr) {
 
 /**** NOTE: This list is in alphabetical order! ****/
 
+#ifndef HAVE_FRIBIDI
+        NOT<<
+#endif
+        "BIDI"<<endl<<
+
 #ifndef DEBUG
         NOT<<
 #endif // DEBUG
@@ -173,7 +178,6 @@ static void showInfo(ostream &ostr) {
         NOT<<
 #endif // HAVE_XPM
         "XPM"<<endl<<
-
 
         endl;
 }
