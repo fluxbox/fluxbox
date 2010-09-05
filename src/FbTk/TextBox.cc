@@ -369,7 +369,7 @@ void TextBox::adjustEndPos() {
 
 void TextBox::adjustStartPos() {
     
-    int text_width = font().textWidth(text().c_str(), m_end_pos);
+    int text_width = font().textWidth(text(), m_end_pos);
     if (text_width < static_cast<signed>(width()))
         return;
 

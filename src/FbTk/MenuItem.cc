@@ -54,12 +54,12 @@ void MenuItem::drawLine(FbDrawable &draw,
     int bottom = height - bevelW - 1;
     
     text_y += bottom > underline_height ? underline_height : bottom;
-    int text_w = theme->frameFont().textWidth(m_label.c_str(), m_label.size());
+    int text_w = theme->frameFont().textWidth(m_label, m_label.size());
 
     // width of the searchstring
     size = size > m_label.length() ? m_label.length() : size;
     std::string search_string = m_label.substr(0,size);
-    int search_string_w = theme->frameFont().textWidth(search_string.c_str(), size);
+    int search_string_w = theme->frameFont().textWidth(search_string, size);
 
     // pay attention to the text justification
     switch(theme->frameFontJustify()) {
@@ -157,7 +157,7 @@ void MenuItem::draw(FbDrawable &draw,
         //
         int text_y = y, text_x = x;
 
-        int text_w = theme->frameFont().textWidth(label().c_str(), label().size());
+        int text_w = theme->frameFont().textWidth(label(), label().size());
 
         int height_offset = theme->itemHeight() - (theme->frameFont().height() + 2*theme->bevelWidth());
         text_y = y + theme->bevelWidth() + theme->frameFont().ascent() + height_offset/2;

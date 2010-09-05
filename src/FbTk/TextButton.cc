@@ -126,7 +126,7 @@ void TextButton::clearArea(int x, int y,
 
 
 unsigned int TextButton::textWidth() const {
-    return font().textWidth(text().data(), text().size());
+    return font().textWidth(text(), text().size());
 }
 
 void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
@@ -161,7 +161,7 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
     font().drawText(*drawable,
                     screenNumber(),
                     gc(), // graphic context
-                    text().data(), textlen, // string and string size
+                    text(), textlen, // string and string size
                     textx, texty, m_orientation); // position
 }
 

@@ -255,7 +255,7 @@ void ClockTool::update(FbTk::Subject *subj) {
     unsigned int new_width = m_button.width();
     unsigned int new_height = m_button.height();
     translateSize(orientation(), new_width, new_height);
-    new_width = m_theme->font().textWidth(text.c_str(), text.size());
+    new_width = m_theme->font().textWidth(text, text.size());
     translateSize(orientation(), new_width, new_height);
     if (new_width != m_button.width() || new_height != m_button.height()) {
         resize(new_width, new_height);
