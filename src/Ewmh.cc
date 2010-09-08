@@ -679,14 +679,12 @@ void Ewmh::setupClient(WinClient &winclient) {
     } else if (winclient.isTransient()) {
         // if _NET_WM_WINDOW_TYPE not set and this window
         // has transient_for the type must be set to _NET_WM_WINDOW_TYPE_DIALOG
-        if (winclient.isTransient()) {
-            type = WindowState::TYPE_DIALOG;
-            winclient.
-                changeProperty(m_net->wm_window_type,
-                               XA_ATOM, 32, PropModeReplace,
-                               (unsigned char*)&m_net->wm_window_type_dialog, 1);
+        type = WindowState::TYPE_DIALOG;
+        winclient.
+            changeProperty(m_net->wm_window_type,
+                           XA_ATOM, 32, PropModeReplace,
+                           (unsigned char*)&m_net->wm_window_type_dialog, 1);
 
-        }
     }
     winclient.setWindowType(type);
 
