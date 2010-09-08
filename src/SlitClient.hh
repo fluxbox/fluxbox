@@ -22,10 +22,10 @@
 #ifndef SLITCLIENT_HH
 #define SLITCLIENT_HH
 
+#include "FbTk/FbString.hh"
 #include "FbTk/NotCopyable.hh"
 
 #include <X11/Xlib.h>
-#include <string>
 
 class BScreen;
 
@@ -37,7 +37,7 @@ public:
     /// For adding a placeholder
     explicit SlitClient(const char *name);
 
-    const std::string &matchName() const { return m_match_name; }
+    const FbTk::BiDiString &matchName() const { return m_match_name; }
     Window window() const { return m_window; }
     Window clientWindow() const { return m_client_window; }
     Window iconWindow() const { return m_icon_window; }
@@ -62,7 +62,7 @@ public:
     void enableEvents();
 
 private:
-    std::string m_match_name;
+    FbTk::BiDiString m_match_name;
     Window m_window, m_client_window, m_icon_window;
     int m_x, m_y;
     unsigned int m_width, m_height;

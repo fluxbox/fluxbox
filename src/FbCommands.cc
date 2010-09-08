@@ -364,7 +364,7 @@ void ShowCustomMenuCmd::execute() {
 
 void ShowCustomMenuCmd::reload() {
     m_menu->removeAll();
-    m_menu->setLabel("");
+    m_menu->setLabel(FbTk::BiDiString(""));
     MenuCreator::createFromFile(custom_menu_file, *m_menu.get(), m_menu->reloadHelper());
 }
 

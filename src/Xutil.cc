@@ -46,7 +46,7 @@ namespace Xutil {
 FbTk::FbString getWMName(Window window) {
 
     if (window == None)
-        return "";
+        return FbTk::FbString("");
 
     Display *display = FbTk::App::instance()->display();
 
@@ -55,7 +55,7 @@ FbTk::FbString getWMName(Window window) {
     char **list = 0;
     int num = 0;
     _FB_USES_NLS;
-    string name;
+    FbTk::FbString name;
 
     if (XGetWMName(display, window, &text_prop)) {
         if (text_prop.value && text_prop.nitems > 0) {
@@ -90,9 +90,10 @@ FbTk::FbString getWMName(Window window) {
 
 
 // The name of this particular instance
-string getWMClassName(Window win) {
+FbTk::FbString getWMClassName(Window win) {
+
     XClassHint ch;
-    string instance_name;
+    FbTk::FbString instance_name;
 
     if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
         fbdbg<<"Xutil: Failed to read class hint!"<<endl;
@@ -111,13 +112,13 @@ string getWMClassName(Window win) {
     }
 
     return instance_name;
-
 }
 
 // the name of the general class of the app
-string getWMClassClass(Window win) {
+FbTk::FbString getWMClassClass(Window win) {
+
     XClassHint ch;
-    string class_name;
+    FbTk::FbString class_name;
 
     if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
         fbdbg<<"Xutil: Failed to read class hint!"<<endl;

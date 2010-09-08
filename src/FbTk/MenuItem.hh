@@ -41,7 +41,7 @@ template <class T> class ThemeProxy;
 class MenuItem : public FbTk::ITypeAheadable {
 public:
     MenuItem()
-        : m_label(""),
+        : m_label(BiDiString("")),
           m_menu(0),
           m_submenu(0),
           m_enabled(true),
@@ -49,7 +49,7 @@ public:
           m_close_on_click(true),
           m_toggle_item(false)
     { }
-    explicit MenuItem(const FbString &label)
+    explicit MenuItem(const BiDiString &label)
         : m_label(label),
           m_menu(0),
           m_submenu(0),
@@ -59,7 +59,7 @@ public:
           m_toggle_item(false)
     { }
 
-    MenuItem(const FbString &label, Menu &host_menu)
+    MenuItem(const BiDiString &label, Menu &host_menu)
         : m_label(label),
           m_menu(&host_menu),
           m_submenu(0),
@@ -69,7 +69,7 @@ public:
           m_toggle_item(false)
     { }
     /// create a menu item with a specific command to be executed on click
-    MenuItem(const FbString &label, RefCount<Command<void> > &cmd, Menu *menu = 0)
+    MenuItem(const BiDiString &label, RefCount<Command<void> > &cmd, Menu *menu = 0)
         : m_label(label),
           m_menu(menu),
           m_submenu(0),
@@ -80,7 +80,7 @@ public:
           m_toggle_item(false)
     { }
 
-    MenuItem(const FbString &label, Menu *submenu, Menu *host_menu = 0)
+    MenuItem(const BiDiString &label, Menu *submenu, Menu *host_menu = 0)
         : m_label(label),
           m_menu(host_menu),
           m_submenu(submenu),
@@ -94,7 +94,7 @@ public:
     void setCommand(RefCount<Command<void> > &cmd) { m_command = cmd; }
     virtual void setSelected(bool selected) { m_selected = selected; }
     virtual void setEnabled(bool enabled) { m_enabled = enabled; }
-    virtual void setLabel(const FbString &label) { m_label = label; }
+    virtual void setLabel(const BiDiString &label) { m_label = label; }
     virtual void setToggleItem(bool val) { m_toggle_item = val; }
     void setCloseOnClick(bool val) { m_close_on_click = val; }
     void setIcon(const std::string &filename, int screen_num);
@@ -103,7 +103,7 @@ public:
         @name accessors
     */
     //@{
-    virtual const std::string &label() const { return m_label; }
+    virtual const FbTk::BiDiString& label() const { return m_label; }
     virtual const PixmapWithMask *icon() const {
         return m_icon.get() ? m_icon->pixmap.get() : 0;
     }
@@ -115,7 +115,7 @@ public:
     // iType functions
     virtual void setIndex(int index) { m_index = index; }
     virtual int getIndex() { return m_index; }
-    const std::string &iTypeString() const { return m_label; }
+    const FbString &iTypeString() const { return m_label.visual(); }
     virtual void drawLine(FbDrawable &draw,
                       const FbTk::ThemeProxy<MenuTheme> &theme,
                       size_t size,
@@ -148,7 +148,7 @@ public:
     Menu *menu() { return m_menu; }
 
 private:
-    FbString m_label; ///< label of this item
+    BiDiString m_label; ///< label of this item
     Menu *m_menu; ///< the menu we live in
     Menu *m_submenu; ///< a submenu, 0 if we don't have one
     RefCount<Command<void> > m_command; ///< command to be executed

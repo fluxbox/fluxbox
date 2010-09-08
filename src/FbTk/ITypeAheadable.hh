@@ -22,7 +22,7 @@
 #ifndef FBTK_ITYPEAHEADABLE_HH
 #define FBTK_ITYPEAHEADABLE_HH
 
-#include <string>
+#include "FbString.hh"
 
 #ifdef HAVE_CCTYPE
   #include <cctype>

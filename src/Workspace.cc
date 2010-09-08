@@ -171,7 +171,7 @@ void Workspace::setName(const string &name) {
 
     screen().updateWorkspaceName(m_id);
 
-    menu().setLabel(m_name);
+    menu().setLabel(FbTk::BiDiString(m_name));
     menu().updateMenu();
 }
 

@@ -23,13 +23,13 @@
 #define OSDWINDOW_HH
 
 #include "FbTk/FbWindow.hh"
-#include <string>
 
 class BScreen;
 class FbWinFrameTheme;
 
 namespace FbTk {
 template <class T> class ThemeProxy;
+class BiDiString;
 }
 
 class OSDWindow: public FbTk::FbWindow {
@@ -41,8 +41,8 @@ public:
         m_pixmap(None), m_visible(false) { }
 
     void reconfigTheme();
-    void resize(const std::string &text);
-    void showText(const std::string &text);
+    void resize(const FbTk::BiDiString &text);
+    void showText(const FbTk::BiDiString &text);
     void hide();
 
     bool isVisible() const { return m_visible; }

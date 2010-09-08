@@ -26,14 +26,14 @@
 
 namespace FbTk {
 
-MultiButtonMenuItem::MultiButtonMenuItem(int buttons, const FbString &label):
+MultiButtonMenuItem::MultiButtonMenuItem(int buttons, const FbTk::BiDiString &label):
     MenuItem(label),
     m_button_exe(0),
     m_buttons(buttons) {
     init(buttons);
 }
 
-MultiButtonMenuItem::MultiButtonMenuItem(int buttons, const FbString &label, Menu *submenu):
+MultiButtonMenuItem::MultiButtonMenuItem(int buttons, const FbTk::BiDiString &label, Menu *submenu):
     MenuItem(label, submenu),
     m_button_exe(0),
     m_buttons(buttons) {

@@ -169,13 +169,13 @@ namespace {
 class SlitClientMenuItem: public FbTk::MenuItem{
 public:
     explicit SlitClientMenuItem(Slit& slit, SlitClient &client, FbTk::RefCount<FbTk::Command<void> > &cmd):
-        FbTk::MenuItem(client.matchName().c_str(), cmd), m_slit(slit), m_client(client) {
+        FbTk::MenuItem(client.matchName(), cmd), m_slit(slit), m_client(client) {
         setCommand(cmd);
         FbTk::MenuItem::setSelected(client.visible());
         setToggleItem(true);
         setCloseOnClick(false);
     }
-    const string &label() const {
+    const FbTk::BiDiString &label() const {
         return m_client.matchName();
     }
     bool isSelected() const {
@@ -345,44 +345,44 @@ void Slit::updateStrut() {
         return;
     }
 
-    unsigned int bw = m_slit_theme->borderWidth();
+    const unsigned int bw = m_slit_theme->borderWidth() * 2;
     int left = 0, right = 0, top = 0, bottom = 0;
     switch (placement()) {
     case TOPLEFT:
-        top = height() + 2 * bw;
+        top = height() + bw;
         break;
     case LEFTTOP:
-        left = width() + 2 * bw;
+        left = width() + bw;
         break;
     case TOPCENTER:
-        top = height() + 2 * bw;
+        top = height() + bw;
         break;
     case TOPRIGHT:
-        top = height() + 2 * bw;
+        top = height() + bw;
         break;
     case RIGHTTOP:
-        right = width() + 2 * bw;
+        right = width() + bw;
         break;
     case BOTTOMLEFT:
-        bottom = height() + 2 * bw;
+        bottom = height() + bw;
         break;
     case LEFTBOTTOM:
-        left = width() + 2 * bw;
+        left = width() + bw;
         break;
     case BOTTOMCENTER:
-        bottom = height() + 2 * bw;
+        bottom = height() + bw;
         break;
     case BOTTOMRIGHT:
-        bottom = height() + 2 * bw;
+        bottom = height() + bw;
         break;
     case RIGHTBOTTOM:
-        right = width() + 2 * bw;
+        right = width() + bw;
         break;
     case LEFTCENTER:
-        left = width() + 2 * bw;
+        left = width() + bw;
         break;
     case RIGHTCENTER:
-        right = width() + 2 * bw;
+        right = width() + bw;
         break;
     }
 
@@ -403,14 +403,13 @@ void Slit::addClient(Window w) {
 
     // Look for slot in client list by name
     SlitClient *client = 0;
-    string match_name;
-    match_name = Xutil::getWMClassName(w);
+    FbTk::FbString match_name = Xutil::getWMClassName(w);
     SlitClients::iterator it = m_client_list.begin();
     SlitClients::iterator it_end = m_client_list.end();
     bool found_match = false;
     for (; it != it_end; ++it) {
         // If the name matches...
-        if ((*it)->matchName() == match_name) {
+        if ((*it)->matchName().logical() == match_name) {
             // Use the slot if no window is assigned
             if ((*it)->window() == None) {
                 client = (*it);
@@ -1158,7 +1157,7 @@ void Slit::saveClientList() {
     string prevName;
     string name;
     for (; it != it_end; ++it) {
-        name = (*it)->matchName();
+        name = (*it)->matchName().logical();
         if (name != prevName)
             file << name.c_str() << endl;
 

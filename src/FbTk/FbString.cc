@@ -62,7 +62,85 @@ using std::cerr;
 using std::endl;
 #endif // DEBUG
 
+namespace {
+
+#ifdef HAVE_FRIBIDI
+FbTk::FbString makeVisualFromLogical(const FbTk::FbString& src) {
+
+    FriBidiCharType base = FRIBIDI_TYPE_N;
+
+    // reuse allocated memory for reencoding / reordering
+    static std::vector<FriBidiChar> us;
+    static std::vector<FriBidiChar> out_us;
+    static FbTk::FbString result;
+
+    const size_t S = src.size() + 1;
+    const size_t S4 = S * 4;
+
+    if (us.capacity() < S)
+        us.reserve(S);
+    if (out_us.capacity() < S)
+        out_us.reserve(S);
+    if (result.capacity() < S4)
+        result.reserve(S4);
+
+    us.resize(S);
+    FriBidiStrIndex len = fribidi_charset_to_unicode(FRIBIDI_CHAR_SET_UTF8,
+            const_cast<char*>(src.c_str()), S - 1,
+            &us[0]);
+
+    out_us.resize(S);
+    fribidi_log2vis(&us[0], len, &base, &out_us[0], NULL, NULL, NULL);
+
+    result.resize(S4);
+    len = fribidi_unicode_to_charset(FRIBIDI_CHAR_SET_UTF8, &out_us[0], len, &result[0]);
+    result.resize(len); // trim to currently used chars
+
+    return result;
+}
+
+#endif
+
+} // end of anonymous namespace
+
+
 namespace FbTk {
+
+
+BiDiString::BiDiString(const FbString& logical) 
+#ifdef HAVE_FRIBIDI
+    : m_visual_dirty(false)
+#endif
+{
+    if (!logical.empty())
+        setLogical(logical);
+}
+
+const FbString& BiDiString::setLogical(const FbString& logical) {
+    m_logical = logical;
+#if HAVE_FRIBIDI
+    if (m_logical.empty()) {
+        m_visual_dirty = false;
+        m_visual.clear();
+    } else {
+        m_visual_dirty = true;
+    }
+#endif
+}
+
+const FbString& BiDiString::visual() const {
+#if HAVE_FRIBIDI
+    if (m_visual_dirty) {
+        m_visual = ::makeVisualFromLogical(logical());
+    }
+    m_visual_dirty = false;
+    return m_visual;
+#else
+    return m_logical;
+#endif
+}
+
+
 
 namespace FbStringUtil {
 
@@ -128,7 +206,6 @@ void shutdown() {
 
 
 
-#ifdef HAVE_ICONV
 /**
    Recodes the text from one encoding to another
    assuming cd is correct
@@ -137,7 +214,9 @@ void shutdown() {
    @param size number of BYTES to convert
    @return the recoded string, or 0 on failure
 */
+string recode(iconv_t cd, const string &in) {
 
+#ifdef HAVE_ICONV
 /**
   --NOTE--
   In the "C" locale, this will strip any high-bit characters
@@ -145,8 +224,6 @@ void shutdown() {
   then you need to set your locale to something UTF-8, OR something
   ISO8859-1.
 */
-string recode(iconv_t cd,
-             const string &in) {
 
     // If empty message, yes this can happen, return
     if (in.empty())
@@ -163,18 +240,18 @@ string recode(iconv_t cd,
     size_t inbytesleft = insize;
     size_t outbytesleft = outsize;
 
+#ifdef HAVE_CONST_ICONV
+    const char* in_ptr = in.data();
+#else
     char * in_ptr = const_cast<char *>(in.data());
+#endif
     size_t result = (size_t)(-1);
     bool again = true;
 
     while (again) {
         again = false;
 
-#ifdef HAVE_CONST_ICONV
-        result = iconv(cd, (const char**)(&in_ptr), &inbytesleft, &out_ptr, &outbytesleft);
-#else
         result = iconv(cd, &in_ptr, &inbytesleft, &out_ptr, &outbytesleft);
-#endif  // HAVE_CONST_ICONV
 
         if (result == (size_t)(-1)) {
             switch(errno) {
@@ -213,13 +290,10 @@ string recode(iconv_t cd,
         free(out);
 
     return ret;
-}
 #else
-string recode(int cd,
-             const string &str) {
     return str;
-}
 #endif // HAVE_ICONV
+}
 
 FbString XStrToFb(const string &src) {
     return recode(iconv_convs[X2FB], src);
@@ -249,58 +323,18 @@ bool haveUTF8() {
 }
 
 
-#ifdef HAVE_FRIBIDI
-
-FbString BidiLog2Vis (const FbString& src) {
-
-    FriBidiCharType base = FRIBIDI_TYPE_N;
-
-    // reuse allocated memory for reencoding / reordering
-    static std::vector<FriBidiChar> us;
-    static std::vector<FriBidiChar> out_us;
-    static FbString result;
-
-    const size_t S = src.size() + 1;
-    const size_t S4 = S * 4;
-
-    if (us.capacity() < S)
-        us.reserve(S);
-    if (out_us.capacity() < S)
-        out_us.reserve(S);
-    if (result.capacity() < S4)
-        result.reserve(S4);
-
-    us.resize(S);
-    FriBidiStrIndex len = fribidi_charset_to_unicode(FRIBIDI_CHAR_SET_UTF8,
-            const_cast<char*>(src.c_str()), S - 1,
-            &us[0]);
-
-    out_us.resize(S);
-    fribidi_log2vis(&us[0], len, &base, &out_us[0], NULL, NULL, NULL);
-
-    result.resize(S4);
-    len = fribidi_unicode_to_charset(FRIBIDI_CHAR_SET_UTF8, &out_us[0], len, &result[0]);
-    result.resize(len); // trim to currently used chars
-
-    return result;
-}
-
-#endif
-
 } // end namespace StringUtil
 
-StringConvertor::StringConvertor(EncodingTarget target):
 #ifdef HAVE_ICONV
-    m_iconv((iconv_t)(-1)) {
+StringConvertor::StringConvertor(EncodingTarget target) : m_iconv((iconv_t)(-1)) {
     if (target == ToLocaleStr)
         m_destencoding = FbStringUtil::locale_codeset;
     else
         m_destencoding = "UTF-8";
 }
 #else
-     m_iconv(-1) {}
+StringConvertor::StringConvertor(EncodingTarget target) { }
 #endif
-
 
 StringConvertor::~StringConvertor() {
 #ifdef HAVE_ICONV
@@ -329,11 +363,19 @@ bool StringConvertor::setSource(const string &encoding) {
 #endif
 }
 
-string StringConvertor::recode(const string &src) {
+FbString StringConvertor::recode(const string &src) {
 #ifdef HAVE_ICONV
     return FbStringUtil::recode(m_iconv, src);
 #else
     return src;
+#endif
+}
+
+void StringConvertor::reset() {
+#ifdef HAVE_ICONV
+    if (m_iconv != ((iconv_t)-1))
+        iconv_close(m_iconv);
+    m_iconv = ((iconv_t)(-1));
 #endif
 }
 

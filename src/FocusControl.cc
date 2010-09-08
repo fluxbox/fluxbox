@@ -564,7 +564,7 @@ void FocusControl::setFocusedWindow(WinClient *client) {
     fbdbg<<"------------------"<<endl;
     fbdbg<<"Setting Focused window = "<<client<<endl;
     if (client != 0)
-        fbdbg<<"title: "<<client->title()<<endl;
+        fbdbg<<"title: "<<client->title().logical()<<endl;
     fbdbg<<"Current Focused window = "<<s_focused_window<<endl;
     fbdbg<<"------------------"<<endl;
 

@@ -30,8 +30,8 @@ namespace Xutil {
 
 FbTk::FbString getWMName(Window window);
 
-std::string getWMClassName(Window win);
-std::string getWMClassClass(Window win);
+FbTk::FbString getWMClassName(Window win);
+FbTk::FbString getWMClassClass(Window win);
 
 
 } // end namespace Xutil

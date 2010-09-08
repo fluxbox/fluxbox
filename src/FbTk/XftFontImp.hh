@@ -34,8 +34,8 @@ public:
     XftFontImp(const char *fontname, bool utf8);
     ~XftFontImp();
     bool load(const std::string &name);
-    void drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y , FbTk::Orientation orient);
-    unsigned int textWidth(const FbString &text, unsigned int len) const;
+    void drawText(const FbDrawable &w, int screen, GC gc, const char* text, size_t len, int x, int y , FbTk::Orientation orient);
+    unsigned int textWidth(const char* text, unsigned int len) const;
     unsigned int height() const;
     int ascent() const { return m_xftfonts[0] ? m_xftfonts[0]->ascent : 0; }
     int descent() const { return m_xftfonts[0] ? m_xftfonts[0]->descent : 0; }

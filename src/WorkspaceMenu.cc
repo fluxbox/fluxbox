@@ -72,9 +72,7 @@ void WorkspaceMenu::workspaceInfoChanged( BScreen& screen ) {
          ++workspace) {
         Workspace *wkspc = screen.getWorkspace(workspace);
         wkspc->menu().setInternalMenu();
-        FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5,
-                                                                           wkspc->name().c_str(),
-                                                                           &wkspc->menu());
+        FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5, FbTk::BiDiString(wkspc->name()), &wkspc->menu());
         FbTk::RefCount<FbTk::Command<void> > jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
         mb_menu->setCommand(3, jump_cmd);
         insert(mb_menu, workspace + IDX_AFTER_ICONS);
@@ -119,9 +117,7 @@ void WorkspaceMenu::init(BScreen &screen) {
     for (size_t workspace = 0; workspace < screen.numberOfWorkspaces(); ++workspace) {
         Workspace *wkspc = screen.getWorkspace(workspace);
         wkspc->menu().setInternalMenu();
-        FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5, 
-                                                                           wkspc->name().c_str(),
-                                                                           &wkspc->menu());
+        FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5, FbTk::BiDiString(wkspc->name()), &wkspc->menu());
         FbTk::RefCount<FbTk::Command<void> > jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
         mb_menu->setCommand(3, jump_cmd);
         insert(mb_menu, workspace + IDX_AFTER_ICONS);

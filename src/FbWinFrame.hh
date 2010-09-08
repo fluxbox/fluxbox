@@ -114,7 +114,7 @@ public:
     /// set focus/unfocus style
     void setFocus(bool newvalue);
 
-    void setFocusTitle(const std::string &str) { m_label.setText(str); }
+    void setFocusTitle(const FbTk::BiDiString &str) { m_label.setText(str); }
     bool setTabMode(TabMode tabmode);
     void updateTabProperties() { alignTabs(); }
 

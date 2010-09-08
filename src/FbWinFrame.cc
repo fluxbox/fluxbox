@@ -58,7 +58,7 @@ FbWinFrame::FbWinFrame(BScreen &screen, WindowState &state,
                ButtonMotionMask | ExposureMask |
                EnterWindowMask | LeaveWindowMask),
     m_tab_container(m_titlebar),
-    m_label(m_titlebar, m_theme->font(), ""),
+    m_label(m_titlebar, m_theme->font(), FbTk::BiDiString("")),
     m_handle(m_window, 0, 0, 100, 5,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | ExposureMask |

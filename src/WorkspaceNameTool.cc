@@ -34,7 +34,7 @@
 WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent, 
         FbTk::ThemeProxy<ToolTheme> &theme, BScreen &screen):
     ToolbarItem(ToolbarItem::FIXED),
-    m_button(parent, theme->font(), "a workspace name"),
+    m_button(parent, theme->font(), FbTk::BiDiString("a workspace name")),
     m_theme(theme),
     m_screen(screen),
     m_pixmap(0) {
@@ -93,9 +93,7 @@ unsigned int WorkspaceNameTool::width() const {
     const BScreen::Workspaces& workspaces = m_screen.getWorkspacesList();
     BScreen::Workspaces::const_iterator it;
     for (it = workspaces.begin(); it != workspaces.end(); it++) {
-        const std::string &name = (*it)->name();
-        max_size = std::max(m_theme->font().textWidth(name, name.size()), 
-                            max_size);
+        max_size = std::max(m_theme->font().textWidth((*it)->name()), max_size);
     }
     // so align text dont cut the last character
     max_size += 2;
@@ -111,9 +109,7 @@ unsigned int WorkspaceNameTool::height() const {
     const BScreen::Workspaces& workspaces = m_screen.getWorkspacesList();
     BScreen::Workspaces::const_iterator it;
     for (it = workspaces.begin(); it != workspaces.end(); it++) {
-        const std::string &name = (*it)->name();
-        max_size = std::max(m_theme->font().textWidth(name, name.size()), 
-                            max_size);
+        max_size = std::max(m_theme->font().textWidth((*it)->name()), max_size);
     }
     // so align text dont cut the last character
     max_size += 2;

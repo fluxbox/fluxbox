@@ -247,14 +247,8 @@ bool Font::load(const string &name) {
     return false;
 }
 
-unsigned int Font::textWidth(const FbString &text, unsigned int size) const {
-#ifdef HAVE_FRIBIDI
-    const FbString visualOrder(FbTk::FbStringUtil::BidiLog2Vis(text));
-#else
-    const FbString &visualOrder = text;
-#endif
-
-    return m_fontimp->textWidth(visualOrder, size);
+unsigned int Font::textWidth(const char* text, unsigned int size) const {
+    return m_fontimp->textWidth(text, size);
 }
 
 unsigned int Font::height() const {
@@ -274,34 +268,28 @@ bool Font::validOrientation(FbTk::Orientation orient) {
 }
 
 void Font::drawText(const FbDrawable &w, int screen, GC gc,
-                    const FbString &text, size_t len, int x, int y,
+                    const char* text, size_t len, int x, int y,
                     Orientation orient) const {
-    if (text.empty() || len == 0)
+
+    if (!text || !*text || len == 0)
         return;
-
-#ifdef HAVE_FRIBIDI
-    const FbString visualOrder(FbTk::FbStringUtil::BidiLog2Vis(text));
-#else
-    const FbString &visualOrder = text;
-#endif
-
 
     // draw "effects" first
     if (m_shadow) {
         FbTk::GContext shadow_gc(w);
         shadow_gc.setForeground(m_shadow_color);
-        m_fontimp->drawText(w, screen, shadow_gc.gc(), visualOrder, len,
+        m_fontimp->drawText(w, screen, shadow_gc.gc(), text, len,
                  x + m_shadow_offx, y + m_shadow_offy, orient);
     } else if (m_halo) {
         FbTk::GContext halo_gc(w);
         halo_gc.setForeground(m_halo_color);
-        m_fontimp->drawText(w, screen, halo_gc.gc(), visualOrder, len, x + 1, y + 1, orient);
-        m_fontimp->drawText(w, screen, halo_gc.gc(), visualOrder, len, x - 1, y + 1, orient);
-        m_fontimp->drawText(w, screen, halo_gc.gc(), visualOrder, len, x - 1, y - 1, orient);
-        m_fontimp->drawText(w, screen, halo_gc.gc(), visualOrder, len, x + 1, y - 1, orient);
+        m_fontimp->drawText(w, screen, halo_gc.gc(), text, len, x + 1, y + 1, orient);
+        m_fontimp->drawText(w, screen, halo_gc.gc(), text, len, x - 1, y + 1, orient);
+        m_fontimp->drawText(w, screen, halo_gc.gc(), text, len, x - 1, y - 1, orient);
+        m_fontimp->drawText(w, screen, halo_gc.gc(), text, len, x + 1, y - 1, orient);
     }
 
-    m_fontimp->drawText(w, screen, gc, visualOrder, len, x, y, orient);
+    m_fontimp->drawText(w, screen, gc, text, len, x, y, orient);
 
 
 }

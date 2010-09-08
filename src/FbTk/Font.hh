@@ -75,7 +75,11 @@ public:
        @param size length of text in bytes
        @return size of text in pixels
     */
-    unsigned int textWidth(const FbString &text, unsigned int size) const;
+    unsigned int textWidth(const char* text, unsigned int size) const;
+    unsigned int textWidth(const BiDiString &text) const {
+        return textWidth(text.visual().c_str(), text.visual().size());
+    }
+
     unsigned int height() const;
     int ascent() const;
     int descent() const;
@@ -99,8 +103,14 @@ public:
        @param rotate if the text should be drawn rotated (if it's rotated before)
     */
     void drawText(const FbDrawable &w, int screen, GC gc,
-                  const FbString &text, size_t len,
+                  const char* text, size_t len,
                   int x, int y, FbTk::Orientation orient = ROT0) const;
+    void drawText(const FbDrawable &w, int screen, GC gc,
+                  const BiDiString &text,
+                  int x, int y, FbTk::Orientation orient = ROT0) const {
+        drawText(w, screen, gc, text.visual().c_str(), text.visual().size(), x, y, orient);
+    }
+
 
     bool hasShadow() const { return m_shadow; }
     bool hasHalo() const { return m_halo; }

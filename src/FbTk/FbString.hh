@@ -36,6 +36,25 @@ namespace FbTk {
 // (or just plain whatever for now if no utf-8 available)
 typedef std::string FbString;
 
+class BiDiString {
+
+public:
+
+    BiDiString(const FbString& logical = FbString());
+
+    const FbString& logical() const { return m_logical; }
+    const FbString& visual() const;
+
+    const FbString& setLogical(const FbString& logical);
+
+private:
+    FbString m_logical;
+#ifdef HAVE_FRIBIDI
+    mutable FbString m_visual;
+    mutable bool m_visual_dirty;
+#endif
+};
+
 namespace FbStringUtil {
 
 void init();
@@ -52,11 +71,6 @@ std::string FbStrToX(const FbString &src);
 FbString LocaleStrToFb(const std::string &src);
 std::string FbStrToLocale(const FbString &src);
 
-#ifdef HAVE_FRIBIDI
-/// Make Bidi
-FbString BidiLog2Vis (const FbString& src);
-#endif
-
 bool haveUTF8();
 
 } // namespace FbStringUtil
@@ -70,23 +84,14 @@ public:
     ~StringConvertor();
 
     bool setSource(const std::string &encoding);
-    void reset() {
-#ifdef HAVE_ICONV
- if (m_iconv != ((iconv_t)-1))
-     iconv_close(m_iconv);
- m_iconv = ((iconv_t)(-1));
-#endif
-    }
+    void reset();
 
-    std::string recode(const std::string &src);
+    FbString recode(const FbString &src);
 
 private:
 #ifdef HAVE_ICONV
     iconv_t m_iconv;
-#else
-    int m_iconv;
 #endif
-
     std::string m_destencoding;
 };
 

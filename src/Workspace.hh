@@ -48,7 +48,7 @@ public:
     ~Workspace();
 
     /// Set workspace name
-    void setName(const std::string &name);
+    void setName(const FbTk::FbString& name);
     /// Deiconify all windows on this workspace
     void showAll();
     void hideAll(bool interrupt_moving);
@@ -68,7 +68,7 @@ public:
     FbTk::Menu &menu() { return m_clientmenu; }
     const FbTk::Menu &menu() const { return m_clientmenu; }
     ///    name of this workspace
-    const std::string &name() const { return m_name; }
+    const FbTk::FbString &name() const { return m_name; }
     /**
        @return the number of this workspace, note: obsolete, should be in BScreen
     */
@@ -88,7 +88,7 @@ private:
     FbTk::Signal<void> m_clientlist_sig;
     ClientMenu m_clientmenu;
 
-    std::string m_name;  ///< name of this workspace
+    FbTk::FbString m_name;  ///< name of this workspace
     unsigned int m_id;    ///< id, obsolete, this should be in BScreen
 
 };

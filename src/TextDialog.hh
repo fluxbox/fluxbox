@@ -32,9 +32,9 @@ class TextDialog: public FbTk::FbWindow, public FbTk::EventHandler {
 public:
     TextDialog(BScreen &screen, const std::string &title);
     virtual ~TextDialog();
-    
+
     /// Sets the entry text.
-    void setText(const std::string &text);
+    void setText(const FbTk::BiDiString& text);
 
     void show();
     void hide();

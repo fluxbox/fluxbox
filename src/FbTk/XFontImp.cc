@@ -97,8 +97,9 @@ bool XFontImp::load(const string &fontname) {
     return true;
 }
 
-void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) {
-    if (m_fontstruct == 0)
+void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char* text, size_t len, int x, int y, FbTk::Orientation orient) {
+
+    if (!text || !*text || m_fontstruct == 0)
         return;
 
     // use roated font functions?
@@ -107,21 +108,18 @@ void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &
         return;
     }
 
-    string localestr = text;
-    localestr.erase(len, string::npos);
-    localestr = FbStringUtil::FbStrToLocale(localestr);
+    std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, 0, len));
 
     XSetFont(w.display(), gc, m_fontstruct->fid);
     XDrawString(w.display(), w.drawable(), gc, x, y, localestr.data(), localestr.size());
 }
 
-unsigned int XFontImp::textWidth(const FbString &text, unsigned int size) const {
-    if (text.empty() || m_fontstruct == 0)
+unsigned int XFontImp::textWidth(const char* text, unsigned int size) const {
+
+    if (!text || !*text || m_fontstruct == 0)
         return 0;
 
-    string localestr = text;
-    localestr.erase(size, string::npos);
-    localestr = FbStringUtil::FbStrToLocale(localestr);
+    std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, size));
 
     return XTextWidth(m_fontstruct, localestr.data(), localestr.size());
 }

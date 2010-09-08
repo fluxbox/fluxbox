@@ -26,8 +26,7 @@
 #include "FbTk/ITypeAheadable.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/Signal.hh"
-
-#include <string>
+#include "FbTk/FbString.hh"
 
 class BScreen;
 class FluxboxWindow;
@@ -83,9 +82,9 @@ public:
     FluxboxWindow *fbwindow() { return m_fbwin; }
 
     /// @return WM_CLASS class string (for pattern matching)
-    virtual const std::string &getWMClassClass() const { return m_class_name; }
+    virtual const FbTk::FbString &getWMClassClass() const { return m_class_name; }
     /// @return WM_CLASS name string (for pattern matching)
-    virtual const std::string &getWMClassName() const { return m_instance_name; }
+    virtual const FbTk::FbString &getWMClassName() const { return m_instance_name; }
     /// @return wm role string (for pattern matching)
     virtual std::string getWMRole() const { return "Focusable"; }
 
@@ -96,9 +95,9 @@ public:
     /// @return icon pixmap of the focusable
     virtual const FbTk::PixmapWithMask &icon() const { return m_icon; }
     /// @return title string
-    virtual const std::string &title() const { return m_title; }
+    virtual const FbTk::BiDiString &title() const { return m_title; }
     /// @return type ahead string
-    const std::string &iTypeString() const { return title(); }
+    const std::string &iTypeString() const { return title().logical(); }
     /**
      * Signaling object to attatch observers to.
      */
@@ -139,7 +138,10 @@ protected:
     BScreen &m_screen; //< the screen in which it works
     FluxboxWindow *m_fbwin; //< the working fluxbox window
 
-    std::string m_title, m_instance_name, m_class_name;
+    FbTk::BiDiString m_title;
+    FbTk::FbString m_instance_name;
+    FbTk::FbString m_class_name;
+
     bool m_focused; //< whether or not it has focus
     bool m_attention_state; //< state of icon button while demanding attention
     FbTk::PixmapWithMask m_icon; //< icon pixmap with mask

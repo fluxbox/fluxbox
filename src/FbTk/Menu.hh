@@ -108,7 +108,7 @@ public:
     void grabInputFocus();
     virtual void reconfigure();
     /// set label string
-    void setLabel(const FbString &labelstr);
+    void setLabel(const FbTk::BiDiString &labelstr);
     /// move menu to x,y
     virtual void move(int x, int y);
     virtual void updateMenu();
@@ -136,7 +136,7 @@ public:
     const FbWindow &fbwindow() const { return menu.window; }
     FbWindow &titleWindow() { return menu.title; }
     FbWindow &frameWindow() { return menu.frame; }
-    const std::string &label() const { return menu.label; }
+    const FbTk::BiDiString &label() const { return menu.label; }
     int x() const { return menu.window.x(); }
     int y() const { return menu.window.y(); }
     unsigned int width() const { return menu.window.width(); }
@@ -225,7 +225,7 @@ private:
         Pixmap frame_pixmap, title_pixmap, hilite_pixmap;
         FbTk::FbWindow window, frame, title;
 
-        std::string label;
+        FbTk::BiDiString label;
         int x_move, y_move, sublevels, persub, minsub, grab_x, grab_y;
 
         unsigned int frame_h, item_w;

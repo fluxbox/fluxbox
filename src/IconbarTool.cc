@@ -285,7 +285,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_menu.setInternalMenu();
 
     // add iconbar menu to toolbar menu
-    menu.insert(m_menu.label(), &m_menu);
+    menu.insert(m_menu.label().logical(), &m_menu);
 
     // setup signals
     theme.reconfigSig().attach(this);
@@ -528,7 +528,7 @@ void IconbarTool::removeWindow(Focusable &win) {
     if (it == m_icons.end())
         return;
 
-    fbdbg<<"IconbarTool::"<<__FUNCTION__<<"( 0x"<<&win<<" title = "<<win.title()<<") found!"<<endl;
+    fbdbg<<"IconbarTool::"<<__FUNCTION__<<"( 0x"<<&win<<" title = "<<win.title().logical()<<") found!"<<endl;
 
     // remove from list and render theme again
     IconButton *button = it->second;
@@ -543,7 +543,7 @@ IconButton *IconbarTool::makeButton(Focusable &win) {
     if (!fbwin || fbwin->clientList().empty())
         return 0;
 
-    fbdbg<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
+    fbdbg<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title().logical()<<")"<<endl;
 
     IconButton *button = new IconButton(m_icon_container, m_focused_theme,
                                         m_unfocused_theme, win);
@@ -573,3 +573,4 @@ void IconbarTool::setOrientation(FbTk::Orientation orient) {
     m_icon_container.setOrientation(orient);
     ToolbarItem::setOrientation(orient);
 }
+

@@ -340,14 +340,14 @@ void WinClient::updateTitle() {
     if (m_title_override)
         return;
 
-    m_title = string(Xutil::getWMName(window()), 0, 512);
-    titleSig().emit(m_title, *this);
+    m_title.setLogical(FbTk::FbString(Xutil::getWMName(window()), 0, 512));
+    titleSig().emit(m_title.logical(), *this);
 }
 
 void WinClient::setTitle(const FbTk::FbString &title) {
-    m_title = title;
+    m_title.setLogical(title);
     m_title_override = true;
-    titleSig().emit(m_title, *this);
+    titleSig().emit(m_title.logical(), *this);
 }
 
 void WinClient::setIcon(const FbTk::PixmapWithMask& pm) {
@@ -355,7 +355,7 @@ void WinClient::setIcon(const FbTk::PixmapWithMask& pm) {
     m_icon.pixmap().copy(pm.pixmap());
     m_icon.mask().copy(pm.mask());
     m_icon_override = true;
-    titleSig().emit(m_title, *this);
+    titleSig().emit(m_title.logical(), *this);
 }
 
 void WinClient::setFluxboxWindow(FluxboxWindow *win) {

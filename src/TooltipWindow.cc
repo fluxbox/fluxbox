@@ -38,7 +38,7 @@ TooltipWindow::TooltipWindow(const FbTk::FbWindow &parent, BScreen &screen,
 
 }
 
-void TooltipWindow::showText(const std::string &text) {
+void TooltipWindow::showText(const FbTk::BiDiString& text) {
 
     m_lastText = text;
     if (m_delay == 0)
@@ -50,13 +50,13 @@ void TooltipWindow::showText(const std::string &text) {
 
 void TooltipWindow::raiseTooltip() {
 
-    if (m_lastText.empty())
+    if (m_lastText.logical().empty())
         return;
 
     resize(m_lastText);
     reconfigTheme();
     int h = theme()->font().height() + theme()->bevelWidth() * 2;
-    int w = theme()->font().textWidth(m_lastText, m_lastText.size()) + theme()->bevelWidth() * 2;
+    int w = theme()->font().textWidth(m_lastText) + theme()->bevelWidth() * 2;
 
     Window root_ret; // not used
     Window window_ret; // not used
@@ -92,12 +92,12 @@ void TooltipWindow::raiseTooltip() {
     clear();
     theme()->font().drawText(*this, screen().screenNumber(),
                              theme()->iconbarTheme().text().textGC(), 
-                             m_lastText, m_lastText.size(), 
+                             m_lastText,
                              theme()->bevelWidth(),
                              theme()->bevelWidth() + theme()->font().ascent());
 }
 
-void TooltipWindow::updateText(const std::string &text) {
+void TooltipWindow::updateText(const FbTk::BiDiString& text) {
     m_lastText = text;
     raiseTooltip();
 }

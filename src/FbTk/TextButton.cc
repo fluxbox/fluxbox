@@ -28,7 +28,7 @@ namespace FbTk {
 
 TextButton::TextButton(const FbTk::FbWindow &parent,
                        FbTk::Font &font,
-                       const std::string &text):
+                       const FbTk::BiDiString &text):
     FbTk::Button(parent, 0, 0, 10, 10),
     m_font(&font),
     m_text(text),
@@ -81,8 +81,8 @@ bool TextButton::setOrientation(FbTk::Orientation orient) {
     return true;
 }
 
-void TextButton::setText(const std::string &text) {
-    if (m_text != text) {
+void TextButton::setText(const FbTk::BiDiString &text) {
+    if (m_text.logical() != text.logical()) {
         m_text = text;
         updateBackground(false);
         clear();
@@ -126,7 +126,7 @@ void TextButton::clearArea(int x, int y,
 
 
 unsigned int TextButton::textWidth() const {
-    return font().textWidth(text(), text().size());
+    return font().textWidth(text());
 }
 
 void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
@@ -135,15 +135,15 @@ void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
 }
 
 void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
-    unsigned int textlen = text().size();
-    // do text alignment
-
-    unsigned int textw = width(), texth = height();
+    const FbString& visual = text().visual();
+    unsigned int textlen = visual.size();
+    unsigned int textw = width();
+    unsigned int texth = height();
     translateSize(m_orientation, textw, texth);
 
     int align_x = FbTk::doAlignment(textw - x_offset - m_left_padding - m_right_padding,
                                     bevel(), justify(), font(),
-                                    text().data(), text().size(),
+                                    visual.data(), visual.size(),
                                     textlen); // return new text len
 
     // center text by default
@@ -161,25 +161,24 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
     font().drawText(*drawable,
                     screenNumber(),
                     gc(), // graphic context
-                    text(), textlen, // string and string size
+                    visual.c_str(), textlen, // string and string size
                     textx, texty, m_orientation); // position
 }
 
 
 bool TextButton::textExceeds(int x_offset) {
-    
-    unsigned int textlen = text().size();
-    // do text alignment
 
-    unsigned int textw = width(), texth = height();
+    const FbString& visual = text().visual();
+    unsigned int textlen = visual.size();
+    unsigned int textw = width();
+    unsigned int texth = height();
     translateSize(m_orientation, textw, texth);
 
     FbTk::doAlignment(textw - x_offset - m_left_padding - m_right_padding,
-                      bevel(), justify(), font(), text().data(), text().size(),
+                      bevel(), justify(), font(), visual.data(), visual.size(),
                       textlen); // return new text len
 
-    return text().size()>textlen;
-    
+    return visual.size()>textlen;
 }
 
 void TextButton::exposeEvent(XExposeEvent &event) {

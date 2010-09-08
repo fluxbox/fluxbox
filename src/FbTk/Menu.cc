@@ -375,8 +375,7 @@ void Menu::enableTitle() {
 
 void Menu::updateMenu() {
     if (m_title_vis) {
-        menu.item_w = theme()->titleFont().textWidth(menu.label,
-                                                    menu.label.size());
+        menu.item_w = theme()->titleFont().textWidth(menu.label);
         menu.item_w += (theme()->bevelWidth() * 2);
     } else
         menu.item_w = 1;
@@ -669,8 +668,7 @@ void Menu::redrawTitle(FbDrawable &drawable) {
 
     const FbTk::Font &font = theme()->titleFont();
     int dx = theme()->bevelWidth();
-    size_t len = menu.label.size();
-    unsigned int l = font.textWidth(menu.label, len) + theme()->bevelWidth()*2;
+    unsigned int l = font.textWidth(menu.label) + theme()->bevelWidth()*2;
 
     switch (theme()->titleFontJustify()) {
     case FbTk::RIGHT:
@@ -686,10 +684,7 @@ void Menu::redrawTitle(FbDrawable &drawable) {
 
     // difference between height based on font, and style-set height
     int height_offset = theme()->titleHeight() - (font.height() + 2*theme()->bevelWidth());
-    font.drawText(drawable, // drawable
-                  screenNumber(),
-                  theme()->titleTextGC().gc(), // graphic context
-                  menu.label, len,  // text string with length
+    font.drawText(drawable, screenNumber(), theme()->titleTextGC().gc(), menu.label,
                   dx, font.ascent() + theme()->bevelWidth() + height_offset/2);  // position
 }
 
@@ -795,7 +790,7 @@ int Menu::drawItem(FbDrawable &drawable, unsigned int index,
     return item_y;
 }
 
-void Menu::setLabel(const FbString &labelstr) {
+void Menu::setLabel(const FbTk::BiDiString &labelstr) {
     //make sure we don't send 0 to std::string
     menu.label = labelstr;
     reconfigure();

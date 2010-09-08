@@ -416,41 +416,40 @@ void Gnome::setState(FluxboxWindow *win, int state) {
 void Gnome::setLayer(FluxboxWindow *win, int layer) {
     if (!win) return;
 
-
+    const FbTk::FbString& title = win->title().logical();
     switch (layer) {
     case WIN_LAYER_DESKTOP:
-        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DESKTOP)"<<endl;
+        fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_DESKTOP)"<<endl;
         layer = Layer::DESKTOP;
         break;
     case WIN_LAYER_BELOW:
-        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_BELOW)"<<endl;
+        fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_BELOW)"<<endl;
         layer = Layer::BOTTOM;
         break;
     case WIN_LAYER_NORMAL:
-        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_NORMAL)"<<endl;
+        fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_NORMAL)"<<endl;
         layer = Layer::NORMAL;
         break;
     case WIN_LAYER_ONTOP:
-        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ONTOP)"<<endl;
+        fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_ONTOP)"<<endl;
         layer = Layer::TOP;
         break;
     case WIN_LAYER_DOCK:
-        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DOCK)"<<endl;
+        fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_DOCK)"<<endl;
         layer = Layer::DOCK;
         break;
     case WIN_LAYER_ABOVE_DOCK:
-        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ABOVE_DOCK)"<<endl;
+        fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_ABOVE_DOCK)"<<endl;
         layer = Layer::ABOVE_DOCK;
         break;
     case WIN_LAYER_MENU:
-        fbdbg<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_MENU)"<<endl;
+        fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_MENU)"<<endl;
         layer = Layer::MENU;
         break;
     default:
         // our windows are in the opposite direction to gnome
         layer = Layer::DESKTOP - layer;
-
-        fbdbg<<"Gnome::setLayer("<<win->title()<<", "<<layer<<")"<<endl;
+        fbdbg<<"Gnome::setLayer("<<win->title().logical()<<", "<<layer<<")"<<endl;
 
         break;
     }

@@ -62,7 +62,7 @@ TextDialog::~TextDialog() {
 }
 
 
-void TextDialog::setText(const string &text) {
+void TextDialog::setText(const FbTk::BiDiString& text) {
     m_textbox.setText(text);
 }
 

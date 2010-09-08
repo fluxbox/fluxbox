@@ -380,7 +380,7 @@ public:
     void hideGeometry();
 
     /// @param text the text to be displayed in the tooltip window
-    void showTooltip(const std::string &text);
+    void showTooltip(const FbTk::BiDiString &text);
     /// Hides the tooltip window
     void hideTooltip();
 

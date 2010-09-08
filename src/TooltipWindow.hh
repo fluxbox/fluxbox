@@ -27,6 +27,7 @@
 #include "FbTk/RefCount.hh"
 #include "FbTk/Timer.hh"
 #include "FbTk/SimpleCommand.hh"
+#include "FbTk/FbString.hh"
 
 /**
  * Displays a tooltip window
@@ -39,9 +40,9 @@ public:
      * Sets the text in the window and starts the display timer.
      * @param text the text to show in the window.
      */
-    void showText(const std::string &text);
+    void showText(const FbTk::BiDiString& text);
     /// updates the text directly without any delay
-    void updateText(const std::string &text);
+    void updateText(const FbTk::BiDiString& text);
 
     /// Sets the delay before the window pops up
     void setDelay(int delay) {
@@ -56,10 +57,9 @@ private:
     void raiseTooltip();
     void show();
     int m_delay; ///< delay time for the timer
-    std::string m_lastText; ///< last text to be displayed
+    FbTk::BiDiString m_lastText; ///< last text to be displayed
     FbTk::Timer m_timer; ///< delay timer before the tooltip will show
 };
 
-
-
 #endif // TOOLTIPWINDOW_HH_
+

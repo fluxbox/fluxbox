@@ -36,7 +36,7 @@ namespace { // anonymous
 class ClientMenuItem: public FbTk::MenuItem {
 public:
     ClientMenuItem(Focusable &client, ClientMenu &menu):
-        FbTk::MenuItem(client.title().c_str(), menu),
+        FbTk::MenuItem(client.title(), menu),
         m_client(client) {
         m_signals.join(client.titleSig(),
                        FbTk::MemFunSelectArg1(menu, &ClientMenu::titleChanged));
@@ -65,7 +65,7 @@ public:
         }
     }
 
-    const std::string &label() const { return m_client.title(); }
+    const FbTk::BiDiString &label() const { return m_client.title(); }
     const FbTk::PixmapWithMask *icon() const {
         return m_client.screen().clientMenuUsePixmap() ? &m_client.icon() : 0;
     }

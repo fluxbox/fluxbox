@@ -131,7 +131,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         // actually there is some data in _NET_WM_ICON
         nr_icon_data = nr_bytes_left / sizeof(CARD32);
 
-        fbdbg << "extractNetWmIcon: " << winclient.title() << "\n";
+        fbdbg << "extractNetWmIcon: " << winclient.title().logical() << "\n";
         fbdbg << "nr_icon_data: " << nr_icon_data << "\n";
 
         // read all the icons stored in _NET_WM_ICON
@@ -164,7 +164,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         if (width >= nr_icon_data) {
 
             fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON width (" 
-                  << width << ") for " << winclient.title() << "\n";
+                  << width << ") for " << winclient.title().logical() << "\n";
             break;
         }
 
@@ -172,7 +172,7 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         if (height >= nr_icon_data) {
 
             fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON height (" 
-                  << height << ") for " << winclient.title() << "\n";
+                  << height << ") for " << winclient.title().logical() << "\n";
 
             break;
         }
@@ -180,7 +180,8 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
         // strange values stored in the NETWM_ICON
         if (i + width * height > nr_icon_data) {
             fbdbg << "Ewmh.cc extractNetWmIcon found strange _NET_WM_ICON dimensions (" 
-                  << width << "x" << height << ")for " << winclient.title() << "\n";
+
+                  << width << "x" << height << ")for " << winclient.title().logical() << "\n";
 
             break;
         }

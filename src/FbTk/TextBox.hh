@@ -24,8 +24,7 @@
 
 #include "FbWindow.hh"
 #include "EventHandler.hh"
-
-#include <string>
+#include "FbString.hh"
 
 namespace FbTk {
 
@@ -37,7 +36,7 @@ public:
     TextBox(const FbWindow &parent, const Font &font, const std::string &text);
     virtual ~TextBox();
 
-    void setText(const std::string &text);
+    void setText(const FbTk::BiDiString &text);
     void setFont(const Font &font);
     void setGC(GC gc);
     void setCursorPosition(int cursor);    
@@ -60,7 +59,7 @@ public:
     void buttonPressEvent(XButtonEvent &event);
     void keyPressEvent(XKeyEvent &event);
 
-    const std::string &text() const { return m_text; }
+    const FbString &text() const { return m_text.logical(); }
     const Font &font() const { return *m_font; }
     GC gc() const { return m_gc; }
     int cursorPosition() const { return m_cursor_pos; }
@@ -76,7 +75,7 @@ private:
     void adjustPos();
 
     const FbTk::Font *m_font;
-    std::string m_text;
+    BiDiString m_text;
     GC m_gc;
     std::string::size_type m_cursor_pos, m_start_pos, m_end_pos;
 };

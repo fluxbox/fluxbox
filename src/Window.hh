@@ -418,9 +418,9 @@ public:
 
     bool acceptsFocus() const;
     const FbTk::PixmapWithMask &icon() const;
-    const std::string &title() const;
-    const std::string &getWMClassName() const;
-    const std::string &getWMClassClass() const;
+    const FbTk::BiDiString &title() const;
+    const FbTk::FbString &getWMClassName() const;
+    const FbTk::FbString &getWMClassClass() const;
     std::string getWMRole() const;
     void setWindowType(WindowState::WindowType type);
     bool isTransient() const;

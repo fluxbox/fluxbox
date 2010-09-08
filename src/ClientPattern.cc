@@ -341,13 +341,13 @@ bool ClientPattern::addTerm(const string &str, WinProperty prop, bool negate) {
     return true;
 }
 
-string ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
+FbTk::FbString ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
     // we need this for some of the window properties
     const FluxboxWindow *fbwin = client.fbwindow();
 
     switch (prop) {
     case TITLE:
-        return client.title();
+        return client.title().logical();
         break;
     case CLASS:
         return client.getWMClassClass();

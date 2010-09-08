@@ -1051,7 +1051,7 @@ int BScreen::addWorkspace() {
     m_workspaces_list.push_back(wkspc);
 
     if (save_name) {
-        addWorkspaceName(wkspc->name().c_str()); //update names
+        addWorkspaceName(wkspc->name().c_str());
         m_workspacenames_sig.emit(*this);
     }
 
@@ -1451,7 +1451,7 @@ void BScreen::initMenus() {
 void BScreen::rereadMenu() {
 
     m_rootmenu->removeAll();
-    m_rootmenu->setLabel("");
+    m_rootmenu->setLabel(FbTk::BiDiString(""));
 
     Fluxbox * const fb = Fluxbox::instance();
     if (!fb->getMenuFilename().empty())
@@ -1776,8 +1776,10 @@ void BScreen::showPosition(int x, int y) {
     if (!doShowWindowPos())
         return;
 
-    char label[256];
-    sprintf(label, "X:%5d x Y:%5d", x, y);
+    char buf[256];
+    sprintf(buf, "X:%5d x Y:%5d", x, y);
+
+    FbTk::BiDiString label(buf);
     m_pos_window->showText(label);
 }
 
@@ -1790,19 +1792,21 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     if (!doShowWindowPos())
         return;
 
-    char label[256];
+    char buf[256];
     _FB_USES_NLS;
 
-    sprintf(label,
+    sprintf(buf,
             _FB_XTEXT(Screen, GeometryFormat,
                     "W: %4d x H: %4d",
                     "Format for width and height window, %4d for width, and %4d for height").c_str(),
             gx, gy);
+
+    FbTk::BiDiString label(buf);
     m_geom_window->showText(label);
 }
 
 
-void BScreen::showTooltip(const std::string &text) {
+void BScreen::showTooltip(const FbTk::BiDiString &text) {
     if (*resource.tooltip_delay >= 0)
         m_tooltip_window->showText(text);
 }
@@ -1855,20 +1859,22 @@ void BScreen::leftWorkspace(const int delta) {
 
 void BScreen::renderGeomWindow() {
 
-    char label[256];
+    char buf[256];
     _FB_USES_NLS;
 
-    sprintf(label,
+    sprintf(buf,
             _FB_XTEXT(Screen, GeometrySpacing,
             "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog").c_str(),
             0, 0);
+
+    FbTk::BiDiString label(buf);
     m_geom_window->resize(label);
     m_geom_window->reconfigTheme();
 }
 
 
 void BScreen::renderPosWindow() {
-    m_pos_window->resize("0:00000 x 0:00000");
+    m_pos_window->resize(FbTk::BiDiString("0:00000 x 0:00000"));
     m_pos_window->reconfigTheme();
 }
 

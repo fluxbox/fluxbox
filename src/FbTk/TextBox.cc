@@ -75,7 +75,7 @@ TextBox::~TextBox() {
 
 }
 
-void TextBox::setText(const std::string &text) {
+void TextBox::setText(const FbTk::BiDiString &text) {
     m_text = text;
     m_start_pos = 0;
     cursorEnd();
@@ -129,7 +129,9 @@ void TextBox::cursorBackward() {
 
 void TextBox::backspace() {
     if (m_start_pos || cursorPosition()) {
-        m_text.erase(m_start_pos + cursorPosition() - 1, 1);
+        FbString t = text();
+        t.erase(m_start_pos + cursorPosition() - 1, 1);
+        m_text.setLogical(t);
         if (cursorPosition())
             setCursorPosition(cursorPosition() - 1);
         else
@@ -140,23 +142,28 @@ void TextBox::backspace() {
 
 void TextBox::deleteForward() {
     if (m_start_pos + m_cursor_pos < m_end_pos) {
-        m_text.erase(m_start_pos + m_cursor_pos, 1);
+        FbString t = text();
+        t.erase(m_start_pos + m_cursor_pos, 1);
+        m_text.setLogical(t);
         adjustEndPos();
     }
 }
 
 void TextBox::insertText(const std::string &val) {
-    m_text.insert(m_start_pos + cursorPosition(), val);
+    FbString t = text();
+    t.insert(m_start_pos + cursorPosition(), val);
+    m_text.setLogical(t);
     m_cursor_pos += val.size();
     m_end_pos += val.size();
- 
+
     adjustPos();
 }
 
 void TextBox::killToEnd() {
     if (cursorPosition() >= 0 && cursorPosition() < static_cast<signed>(text().size())) {
-        m_text.erase(cursorPosition());
-        setText(m_text);
+        FbString t = text();
+        t.erase(cursorPosition());
+        setText(t);
     }
 }
 
@@ -168,13 +175,13 @@ void TextBox::clear() {
         setGC(DefaultGC(FbTk::App::instance()->display(), screenNumber()));
 
     font().drawText(*this, screenNumber(), 
-                    gc(),                     
-                    text().c_str() + m_start_pos, 
-                    m_end_pos - m_start_pos, 
+                    gc(),
+                    m_text.visual().c_str() + m_start_pos,
+                    m_end_pos - m_start_pos,
                     0, center_pos); // pos
 
     // draw cursor position
-    int cursor_pos = font().textWidth(text().c_str() + m_start_pos, m_cursor_pos) + 1;
+    int cursor_pos = font().textWidth(m_text.visual().c_str() + m_start_pos, m_cursor_pos) + 1;
     drawLine(gc(), cursor_pos, center_pos, cursor_pos, center_pos - font().height());
 }
 
@@ -202,9 +209,7 @@ void TextBox::buttonPressEvent(XButtonEvent &event) {
         int tmp = 0;
         for(i = m_start_pos; i <= m_end_pos; i++) {
             tmp = abs(static_cast<int>
-                      (event.x - font().
-                       textWidth(m_text.c_str() + m_start_pos, 
-                                 i - m_start_pos)));
+                      (event.x - font().textWidth(m_text.visual().c_str() + m_start_pos, i - m_start_pos)));
 
             if (tmp < delta) {
                 delta = tmp;
@@ -244,7 +249,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
             }
                 break;
             case XK_Right:
-                if (m_text.size() && m_cursor_pos < m_text.size()){
+                if (!m_text.logical().empty() && m_cursor_pos < m_text.logical().size()){
                     unsigned int pos = findEmptySpaceRight();
                     if (pos > m_start_pos)
                         pos -= m_start_pos;
@@ -264,7 +269,9 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
 
             case XK_BackSpace: {
                     unsigned int pos = findEmptySpaceLeft();
-                    m_text.erase(pos, m_cursor_pos - pos + m_start_pos);
+                    FbString t = text();
+                    t.erase(pos, m_cursor_pos - pos + m_start_pos);
+                    m_text.setLogical(t);
 
                     if (pos < m_start_pos){
                         m_start_pos  = pos;
@@ -278,10 +285,12 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 }
                 break;
             case XK_Delete: {
-                    if (!m_text.size() || m_cursor_pos >= m_text.size())
+                    if (text().empty() || m_cursor_pos >= text().size())
                         break;
                     unsigned int pos = findEmptySpaceRight();
-                    m_text.erase(m_cursor_pos + m_start_pos, pos - (m_cursor_pos + m_start_pos));
+                    FbString t = text();
+                    t.erase(m_cursor_pos + m_start_pos, pos - (m_cursor_pos + m_start_pos));
+                    m_text.setLogical(t);
                     adjustPos();
                 }
                 break;
@@ -368,15 +377,17 @@ void TextBox::adjustEndPos() {
 }
 
 void TextBox::adjustStartPos() {
-    
-    int text_width = font().textWidth(text(), m_end_pos);
+
+    const char* visual = m_text.visual().c_str();
+
+    int text_width = font().textWidth(visual, m_end_pos);
     if (text_width < static_cast<signed>(width()))
         return;
 
     int start_pos = 0;
     while (text_width > static_cast<signed>(width())) {
         start_pos++;
-        text_width = font().textWidth(text().c_str() + start_pos, m_end_pos - start_pos);
+        text_width = font().textWidth(visual + start_pos, m_end_pos - start_pos);
     }
 
     // adjust cursorPosition() according relative to change to m_start_pos
@@ -387,12 +398,12 @@ void TextBox::adjustStartPos() {
 unsigned int TextBox::findEmptySpaceLeft(){
 
     // found the first left space symbol
-    int pos = m_text.rfind(' ', (m_start_pos + m_cursor_pos) > 0 ? 
+    int pos = text().rfind(' ', (m_start_pos + m_cursor_pos) > 0 ? 
                                  m_start_pos + m_cursor_pos - 1 : 0);
 
     // do we have one more space symbol near?
     int next_pos = -1;
-    while (pos > 0 && (next_pos = m_text.rfind(' ', pos - 1)) > -1){
+    while (pos > 0 && (next_pos = text().rfind(' ', pos - 1)) > -1){
         if (next_pos + 1 < pos)
             break;
         pos = next_pos;
@@ -406,18 +417,18 @@ unsigned int TextBox::findEmptySpaceLeft(){
 unsigned int TextBox::findEmptySpaceRight(){
 
     // found the first right space symbol
-    int pos = m_text.find(' ', m_start_pos + m_cursor_pos);
+    int pos = text().find(' ', m_start_pos + m_cursor_pos);
 
     // do we have one more space symbol near?
     int next_pos = -1;
-    while (pos > -1 && pos < static_cast<signed>(m_text.size()) && (next_pos = m_text.find(' ', pos + 1)) > -1 ){
+    while (pos > -1 && pos < static_cast<signed>(text().size()) && (next_pos = text().find(' ', pos + 1)) > -1 ){
 
         if (next_pos - 1 > pos)
             break;
         pos = next_pos;
     }
     if (pos < 0)
-        pos = m_text.size() - 1;
+        pos = text().size() - 1;
 
     return pos + 1; // (+1) - sets cursor at the right.
 

@@ -77,7 +77,10 @@ bool XftFontImp::load(const std::string &name) {
     return true;
 }
 
-void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) {
+void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char* text, size_t len, int x, int y, FbTk::Orientation orient) {
+
+    if (!text || !*text)
+        return;
 
     if (!validOrientation(orient))
         return;
@@ -98,12 +101,11 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString
         break;
     }
 
-    XftFont *font = m_xftfonts[orient];
+    Visual* def_visual = DefaultVisual(w.display(), screen);
+    Colormap def_colmap = DefaultColormap(w.display(), screen);
 
-    XftDraw *draw = XftDrawCreate(w.display(),
-                                  w.drawable(),
-                                  DefaultVisual(w.display(), screen),
-                                  DefaultColormap(w.display(), screen));
+    XftFont *font = m_xftfonts[orient];
+    XftDraw *draw = XftDrawCreate(w.display(), w.drawable(), def_visual, def_colmap);
 
     XGCValues gc_val;
 
@@ -114,7 +116,7 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString
     // get red, green, blue values
     XColor xcol;
     xcol.pixel = gc_val.foreground;
-    XQueryColor(w.display(), DefaultColormap(w.display(), screen), &xcol);
+    XQueryColor(w.display(), def_colmap, &xcol);
 
     // convert xcolor to XftColor
     XRenderColor rendcol;
@@ -123,10 +125,7 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString
     rendcol.blue = xcol.blue;
     rendcol.alpha = 0xFFFF;
     XftColor xftcolor;
-    XftColorAllocValue(w.display(), 
-                       DefaultVisual(w.display(), screen), 
-                       DefaultColormap(w.display(), screen),
-                       &rendcol, &xftcolor);
+    XftColorAllocValue(w.display(), def_visual, def_colmap, &rendcol, &xftcolor);
 
     // draw string
 #ifdef HAVE_XFT_UTF8_STRING
@@ -134,39 +133,25 @@ void XftFontImp::drawText(const FbDrawable &w, int screen, GC gc, const FbString
         // check the string size,
         // if the size is zero we use the XftDrawString8 function instead.
         XGlyphInfo ginfo;
-        XftTextExtentsUtf8(w.display(),
-                           m_xftfonts[ROT0],
-                           (XftChar8 *)text.data(), len,
-                           &ginfo);
+        XftTextExtentsUtf8(w.display(), m_xftfonts[ROT0], (XftChar8 *)text, len, &ginfo);
         if (ginfo.xOff != 0) {
-            XftDrawStringUtf8(draw,
-                              &xftcolor,
-                              font,
-                              x, y,
-                              (XftChar8 *)(text.data()), len);
-            XftColorFree(w.display(), 
-                         DefaultVisual(w.display(), screen),
-                         DefaultColormap(w.display(), screen), &xftcolor);
+            XftDrawStringUtf8(draw, &xftcolor, font, x, y, (XftChar8 *)text, len);
+            XftColorFree(w.display(), def_visual, def_colmap, &xftcolor);
             XftDrawDestroy(draw);
             return;
         }
     }
 #endif // HAVE_XFT_UTF8_STRING
 
-    XftDrawString8(draw,
-                   &xftcolor,
-                   font,
-                   x, y,
-                   (XftChar8 *)(text.data()), len);
+    XftDrawString8(draw, &xftcolor, font, x, y, (XftChar8 *)text, len);
 
 
-    XftColorFree(w.display(), 
-                 DefaultVisual(w.display(), screen),
-                 DefaultColormap(w.display(), screen), &xftcolor);
+    XftColorFree(w.display(), def_visual, def_colmap, &xftcolor);
     XftDrawDestroy(draw);
 }
 
-unsigned int XftFontImp::textWidth(const FbString &text, unsigned int len) const {
+unsigned int XftFontImp::textWidth(const char* text, unsigned int len) const {
+
     if (m_xftfonts[ROT0] == 0)
         return 0;
 
@@ -180,7 +165,7 @@ unsigned int XftFontImp::textWidth(const FbString &text, unsigned int len) const
     if (m_utf8mode) {
         XftTextExtentsUtf8(disp,
                            font,
-                           (XftChar8 *)text.data(), len,
+                           (XftChar8 *)text, len,
                            &ginfo);
         if (ginfo.xOff != 0)
             return ginfo.xOff;
@@ -189,9 +174,7 @@ unsigned int XftFontImp::textWidth(const FbString &text, unsigned int len) const
     }
 #endif  //HAVE_XFT_UTF8_STRING
 
-    std::string localestr = text;
-    localestr.erase(len, std::string::npos);
-    localestr = FbStringUtil::FbStrToLocale(localestr);
+    std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, len));
 
     XftTextExtents8(disp,
                     font,

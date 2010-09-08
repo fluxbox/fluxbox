@@ -22,8 +22,9 @@
 #include "SlitClient.hh"
 
 #include "Screen.hh"
-#include "FbTk/App.hh"
 #include "Xutil.hh"
+
+#include "FbTk/App.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -32,7 +33,8 @@ SlitClient::SlitClient(BScreen *screen, Window win) {
     initialize(screen, win);
 }
 
-SlitClient::SlitClient(const char *name):m_match_name(name == 0 ? "" : name) { 
+SlitClient::SlitClient(const char *name) :
+    m_match_name(FbTk::BiDiString(!name ? "" : name)) {
     initialize();
 }
 
@@ -50,9 +52,9 @@ void SlitClient::initialize(BScreen *screen, Window win) {
     move(0, 0);
     resize(0, 0);
 
-    if (matchName().empty())
-        m_match_name = Xutil::getWMClassName(clientWindow());
-    m_visible = true;        
+    if (matchName().logical().empty())
+        m_match_name.setLogical(Xutil::getWMClassName(clientWindow()));
+    m_visible = true;
 }
 
 void SlitClient::disableEvents() {

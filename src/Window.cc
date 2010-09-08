@@ -329,7 +329,7 @@ FluxboxWindow::~FluxboxWindow() {
     }
 
 
-    const char* title = m_client ? m_client->title().c_str() : "" ;
+    const char* title = m_client ? m_client->title().logical().c_str() : "" ;
     fbdbg<<"starting ~FluxboxWindow("<<this<<","<<title<<")"<<endl;
     fbdbg<<"num clients = "<<numClients()<<endl;
     fbdbg<<"curr client = "<<m_client<<endl;
@@ -487,11 +487,11 @@ void FluxboxWindow::init() {
     } else // if no parent then set default layer
         moveToLayer(m_state.layernum, m_state.layernum != ::Layer::NORMAL);
 
-    fbdbg<<"FluxboxWindow::init("<<title()<<") transientFor: "<<
+    fbdbg<<"FluxboxWindow::init("<<title().logical()<<") transientFor: "<<
        m_client->transientFor()<<endl;
     if (m_client->transientFor() && m_client->transientFor()->fbwindow()) {
-        fbdbg<<"FluxboxWindow::init("<<title()<<") transientFor->title(): "<<
-           m_client->transientFor()->fbwindow()->title()<<endl;
+        fbdbg<<"FluxboxWindow::init("<<title().logical()<<") transientFor->title(): "<<
+           m_client->transientFor()->fbwindow()->title().logical()<<endl;
     }
 
 
@@ -976,7 +976,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
         button<<endl;
 
     if (old != &client) {
-        titleSig().emit(title(), *this);
+        titleSig().emit(title().logical(), *this);
         frame().setFocusTitle(title());
         frame().setShapingClient(&client, false);
     }
@@ -1627,7 +1627,7 @@ void FluxboxWindow::raise() {
     if (isIconic())
         return;
 
-    fbdbg<<"FluxboxWindow("<<title()<<")::raise()[layer="<<layerNum()<<"]"<<endl;
+    fbdbg<<"FluxboxWindow("<<title().logical()<<")::raise()[layer="<<layerNum()<<"]"<<endl;
 
     // get root window
     WinClient *client = getRootTransientFor(m_client);
@@ -1655,7 +1655,7 @@ void FluxboxWindow::lower() {
     if (isIconic())
         return;
 
-    fbdbg<<"FluxboxWindow("<<title()<<")::lower()"<<endl;
+    fbdbg<<"FluxboxWindow("<<title().logical()<<")::lower()"<<endl;
 
     /* Ignore all EnterNotify events until the pointer actually moves */
     screen().focusControl().ignoreAtPointer();
@@ -1686,7 +1686,7 @@ void FluxboxWindow::changeLayer(int diff) {
 
 void FluxboxWindow::moveToLayer(int layernum, bool force) {
 
-    fbdbg<<"FluxboxWindow("<<title()<<")::moveToLayer("<<layernum<<")"<<endl;
+    fbdbg<<"FluxboxWindow("<<title().logical()<<")::moveToLayer("<<layernum<<")"<<endl;
 
     // don't let it set its layer into menu area
     if (layernum <= ::Layer::MENU)
@@ -1751,7 +1751,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     bool was_focused = isFocused();
     m_focused = focus;
 
-    fbdbg<<"FluxboxWindow("<<title()<<")::setFocusFlag("<<focus<<")"<<endl;
+    fbdbg<<"FluxboxWindow("<<title().logical()<<")::setFocusFlag("<<focus<<")"<<endl;
 
 
     installColormap(focus);
@@ -1942,7 +1942,7 @@ void FluxboxWindow::popupMenu() {
 void FluxboxWindow::handleEvent(XEvent &event) {
     switch (event.type) {
     case ConfigureRequest:
-       fbdbg<<"ConfigureRequest("<<title()<<")"<<endl;
+       fbdbg<<"ConfigureRequest("<<title().logical()<<")"<<endl;
 
         configureRequestEvent(event.xconfigurerequest);
         break;
@@ -1957,7 +1957,7 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 
 #ifdef DEBUG
         char *atomname = XGetAtomName(display, event.xproperty.atom);
-        fbdbg<<"PropertyNotify("<<title()<<"), property = "<<atomname<<endl;
+        fbdbg<<"PropertyNotify("<<title().logical()<<"), property = "<<atomname<<endl;
         if (atomname)
             XFree(atomname);
 #endif // DEBUG
@@ -1973,7 +1973,7 @@ void FluxboxWindow::handleEvent(XEvent &event) {
         if (Fluxbox::instance()->haveShape() &&
             event.type == Fluxbox::instance()->shapeEventbase() + ShapeNotify) {
 
-            fbdbg<<"ShapeNotify("<<title()<<")"<<endl;
+            fbdbg<<"ShapeNotify("<<title().logical()<<")"<<endl;
 
             XShapeEvent *shape_event = (XShapeEvent *)&event;
 
@@ -2068,7 +2068,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
 
 
     fbdbg<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
-    fbdbg<<"("<<__FUNCTION__<<"): title="<<client->title()<<endl;
+    fbdbg<<"("<<__FUNCTION__<<"): title="<<client->title().logical()<<endl;
 
     restore(client, false);
 
@@ -2081,7 +2081,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
 */
 void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent &de) {
     if (de.window == m_client->window()) {
-        fbdbg<<"DestroyNotifyEvent this="<<this<<" title = "<<title()<<endl;
+        fbdbg<<"DestroyNotifyEvent this="<<this<<" title = "<<title().logical()<<endl;
         delete m_client;
         if (numClients() == 0)
             delete this;
@@ -2109,7 +2109,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
 
     case XA_WM_HINTS:
         client.updateWMHints();
-        titleSig().emit(title(), *this);
+        titleSig().emit(title().logical(), *this);
         // nothing uses this yet
         // hintSig().notify(); // notify listeners
         break;
@@ -2123,7 +2123,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         break;
 
     case XA_WM_NORMAL_HINTS: {
-        fbdbg<<"XA_WM_NORMAL_HINTS("<<title()<<")"<<endl;
+        fbdbg<<"XA_WM_NORMAL_HINTS("<<title().logical()<<")"<<endl;
         unsigned int old_max_width = client.maxWidth();
         unsigned int old_min_width = client.minWidth();
         unsigned int old_min_height = client.minHeight();
@@ -3347,19 +3347,19 @@ Window FluxboxWindow::clientWindow() const  {
 }
 
 
-const string &FluxboxWindow::title() const {
+const FbTk::BiDiString& FluxboxWindow::title() const {
     return (m_client ? m_client->title() : m_title);
 }
 
-const std::string &FluxboxWindow::getWMClassName() const {
+const FbTk::FbString& FluxboxWindow::getWMClassName() const {
     return (m_client ? m_client->getWMClassName() : getWMClassName());
 }
 
-const std::string &FluxboxWindow::getWMClassClass() const {
+const FbTk::FbString& FluxboxWindow::getWMClassClass() const {
     return (m_client ? m_client->getWMClassClass() : getWMClassClass());
 }
 
-std::string FluxboxWindow::getWMRole() const {
+FbTk::FbString FluxboxWindow::getWMRole() const {
     return (m_client ? m_client->getWMRole() : "FluxboxWindow");
 }
 

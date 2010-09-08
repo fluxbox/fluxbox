@@ -93,7 +93,7 @@ timeval calcNextTimeout(const std::string& fmt_string) {
 class ClockMenuItem: public FbTk::MenuItem {
 public:
     explicit ClockMenuItem(ClockTool &tool):
-        FbTk::MenuItem(""), m_tool(tool) {
+        FbTk::MenuItem(FbTk::BiDiString("")), m_tool(tool) {
 
         setClockModeLabel();
         setCloseOnClick(false);
@@ -160,7 +160,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
                      FbTk::ThemeProxy<ToolTheme> &theme, BScreen &screen,
                      FbTk::Menu &menu):
     ToolbarItem(ToolbarItem::FIXED),
-    m_button(parent, theme->font(), ""),
+    m_button(parent, theme->font(), FbTk::BiDiString("")),
     m_theme(theme),
     m_screen(screen),
     m_pixmap(0),
@@ -243,7 +243,7 @@ void ClockTool::update(FbTk::Subject *subj) {
     // we only replace numbers with zeros because everything else should be
     // relatively static. If we replace all text with zeros then widths of
     // proportional fonts with some strftime formats will be considerably off.
-    std::string text(m_button.text());
+    FbTk::FbString text(m_button.text().logical());
 
     int textlen = text.size();
     for (int i=0; i < textlen; ++i) {
@@ -255,7 +255,7 @@ void ClockTool::update(FbTk::Subject *subj) {
     unsigned int new_width = m_button.width();
     unsigned int new_height = m_button.height();
     translateSize(orientation(), new_width, new_height);
-    new_width = m_theme->font().textWidth(text, text.size());
+    new_width = m_theme->font().textWidth(text.c_str(), text.size());
     translateSize(orientation(), new_width, new_height);
     if (new_width != m_button.width() || new_height != m_button.height()) {
         resize(new_width, new_height);
@@ -296,7 +296,7 @@ void ClockTool::updateTime() {
         if( time_string_len == 0)
             return;
         std::string text = m_stringconvertor.recode(time_string);
-        if (m_button.text() == text)
+        if (m_button.text().logical() == text)
             return;
 
         m_button.setText(text);

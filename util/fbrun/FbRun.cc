@@ -334,11 +334,13 @@ void FbRun::nextHistoryItem() {
         XBell(m_display, 0);
     } else {
         m_current_history_item++;
+        FbTk::BiDiString text("");
         if (m_current_history_item == m_history.size()) {
             m_current_history_item = m_history.size();
-            setText("");
-         } else
-            setText(m_history[m_current_history_item]);
+        } else
+            text.setLogical((m_history[m_current_history_item]));
+
+        setText(text);
     }
 }
 
@@ -347,7 +349,7 @@ void FbRun::firstHistoryItem() {
         XBell(m_display, 0);
     } else {
         m_current_history_item = 0;
-        setText(m_history[m_current_history_item]);
+        setText(FbTk::BiDiString(m_history[m_current_history_item]));
     }
 }
 
@@ -357,7 +359,7 @@ void FbRun::lastHistoryItem() {
         XBell(m_display, 0);
     } else {
         m_current_history_item = m_history.size();
-        setText("");
+        setText(FbTk::BiDiString(""));
     }
 }
 
@@ -373,7 +375,7 @@ void FbRun::tabCompleteHistory() {
         while (history_item != m_current_history_item && nr++ < m_history.size()) {
             if (m_history[history_item].find(m_last_completion_prefix) == 0) {
                 m_current_history_item = history_item;
-                setText(m_history[m_current_history_item]);
+                setText(FbTk::BiDiString(m_history[m_current_history_item]));
                 cursorEnd();
                 break;
             }
