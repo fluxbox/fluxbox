@@ -1,6 +1,14 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*10/09/08: Introduced 'FbTk::BidiString'
+
+    * 'BidiString' holds both the logical content and the visual reordered
+    version of the content of a string. this helps to reduce the number of
+    calls to reorder the string before drawing it (as introduced in the patch
+    from Ken Bloom) and to be more consistent in menus and textboxes (drawing
+    cursors and underlining text).
+
 *10/09/05:
     * Added support for bidirectional text (thanx to Ken Bloom), bug #2801836
     FbTk/FbString.{cc,hh} FbTk/Font.cc
