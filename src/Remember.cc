@@ -360,7 +360,7 @@ bool handleStartupItem(const string &line, int offset) {
         if (pos > 0) {
             option = str.substr(0, pos);
             if (strcasecmp(option.c_str(), "screen") == 0) {
-                error = !getuint(str.c_str() + pos + 1, screen);
+                error = !FbTk::StringUtil::extractNumber(str.c_str() + pos + 1, screen);
             } else {
                 error = true;
             }
@@ -453,13 +453,13 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
 
             if (str_key == "workspace") {
                 unsigned int w;
-                if (getuint(str_label.c_str(), w))
+                if (FbTk::StringUtil::extractNumber(str_label, w))
                     app.rememberWorkspace(w);
                 else
                     had_error = true;
             } else if (str_key == "head") {
                 unsigned int h;
-                if (getuint(str_label.c_str(), h))
+                if (FbTk::StringUtil::extractNumber(str_label, h))
                     app.rememberHead(h);
                 else
                     had_error = true;
