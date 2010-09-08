@@ -104,11 +104,7 @@ int WindowState::getDecoMaskFromString(const std::string &str_label) {
         return DECOR_TAB;
 
     int mask = -1;
-    int tmp;
-    errno = 0;
-    tmp = strtol(str_label.c_str(), NULL, 0);
-    if (errno == 0)
-        mask = tmp;
+    FbTk::StringUtil::extractNumber(str_label, mask);
 
     return mask;
 }
