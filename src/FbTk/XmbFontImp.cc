@@ -204,7 +204,7 @@ void XmbFontImp::drawText(const FbDrawable &d, int screen, GC main_gc, const cha
         } else
 #endif //X_HAVE_UTF8_STRING
             {
-                std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, 0, len));
+                std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, len));
                 XmbDrawString(d.display(), d.drawable(), m_fontset,
                               main_gc, x, y,
                               localestr.data(), localestr.size());
@@ -241,7 +241,7 @@ void XmbFontImp::drawText(const FbDrawable &d, int screen, GC main_gc, const cha
     } else
 #endif //X_HAVE_UTF8_STRING
     {
-        std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, 0, len));
+        std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, len));
         XmbDrawString(dpy, canvas.drawable(), m_fontset,
                            font_gc.gc(), xpos, ypos,
                            localestr.data(), localestr.size());

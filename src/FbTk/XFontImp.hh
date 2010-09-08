@@ -72,7 +72,7 @@ private:
     void rotate(FbTk::Orientation orient);
 
     void freeRotFont(XRotFontStruct * rotfont);
-    void drawRotText(Drawable w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const;
+    void drawRotText(Drawable w, int screen, GC gc, const char* text, size_t len, int x, int y, FbTk::Orientation orient) const;
 
     XRotFontStruct *m_rotfonts[4]; ///< rotated font structure (only 3 used)
     bool m_rotfonts_loaded[4]; // whether we've tried yet

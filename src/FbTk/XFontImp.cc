@@ -102,13 +102,13 @@ void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char* text
     if (!text || !*text || m_fontstruct == 0)
         return;
 
+    std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, len));
+
     // use roated font functions?
     if (orient != ROT0 && validOrientation(orient)) {
-        drawRotText(w.drawable(), screen, gc, text, len, x, y, orient);
+        drawRotText(w.drawable(), screen, gc, localestr.c_str(), localestr.size(), x, y, orient);
         return;
     }
-
-    std::string localestr = FbStringUtil::FbStrToLocale(FbString(text, 0, len));
 
     XSetFont(w.display(), gc, m_fontstruct->fid);
     XDrawString(w.display(), w.drawable(), gc, x, y, localestr.data(), localestr.size());
@@ -330,7 +330,10 @@ void XFontImp::freeRotFont(XRotFontStruct *rotfont) {
     rotfont = 0;
 }
 
-void XFontImp::drawRotText(Drawable w, int screen, GC gc, const FbString &text, size_t len, int x, int y, FbTk::Orientation orient) const {
+void XFontImp::drawRotText(Drawable w, int screen, GC gc, const char* text, size_t len, int x, int y, FbTk::Orientation orient) const {
+
+    if (!text || !*text || len<1)
+        return;
 
     Display *dpy = App::instance()->display();
     static GC my_gc = 0;
@@ -338,27 +341,17 @@ void XFontImp::drawRotText(Drawable w, int screen, GC gc, const FbString &text, 
 
     XRotFontStruct *rotfont = m_rotfonts[orient];
 
-    if (text.empty() || len<1)
-        return;
-
     if (my_gc == 0)
         my_gc = XCreateGC(dpy, w, 0, 0);
 
     XCopyGC(dpy, gc, GCForeground|GCBackground, my_gc);
 
     // vertical or upside down
-
     XSetFillStyle(dpy, my_gc, FillStippled);
-    string localestr = text;
-    localestr.erase(len, string::npos);
-    localestr = FbStringUtil::FbStrToLocale(localestr);
-    const char *ctext = localestr.data();
-    len = localestr.size();
-
 
     // loop through each character in texting
     for (size_t i = 0; i<len; i++) {
-        ichar = ctext[i]-32;
+        ichar = text[i]-32;
 
         // make sure it's a printing character
         if (ichar >= 0 && ichar<95) {
