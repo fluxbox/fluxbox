@@ -95,16 +95,15 @@ bool ColSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
 
             next_y = test_y + change_y;
 
-            std::list<FluxboxWindow *>::const_iterator it = 
-                windowlist.begin();
-            std::list<FluxboxWindow *>::const_iterator it_end = 
-                windowlist.end();
+            std::list<FluxboxWindow *>::const_iterator it = windowlist.begin();
+            std::list<FluxboxWindow *>::const_iterator it_end = windowlist.end();
             for (; it != it_end && placed; ++it) {
                 if (*it == &win) continue;
+                int bw = 2 * (*it)->fbWindow().borderWidth();
                 int curr_x = (*it)->x() - (*it)->xOffset();
                 int curr_y = (*it)->y() - (*it)->yOffset();
-                int curr_w = (*it)->width()  + (*it)->fbWindow().borderWidth()*2 + (*it)->widthOffset();
-                int curr_h = (*it)->height() + (*it)->fbWindow().borderWidth()*2 + (*it)->heightOffset();
+                int curr_w = (*it)->width()  + bw + (*it)->widthOffset();
+                int curr_h = (*it)->height() + bw + (*it)->heightOffset();
 
                 if (curr_x < test_x + win_w &&
                     curr_x + curr_w > test_x &&
