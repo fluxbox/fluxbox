@@ -27,7 +27,6 @@
 /// atom handler for basic X atoms
 class FbAtoms {
 public:
-    FbAtoms();
     ~FbAtoms();
 
     static FbAtoms *instance();
@@ -45,16 +44,16 @@ public:
     Atom getFluxboxAttributesAtom() const { return blackbox_attributes; }
 
 private:
-    void initAtoms();
-// NETAttributes
+    FbAtoms();
+
     Atom blackbox_attributes;
     Atom motif_wm_hints;
-
-    Atom xa_wm_protocols, xa_wm_state,
-        xa_wm_delete_window, xa_wm_take_focus, xa_wm_change_state;
-
-    bool m_init;
-    static FbAtoms *s_singleton;
+    Atom xa_wm_protocols;
+    Atom xa_wm_state;
+    Atom xa_wm_delete_window;
+    Atom xa_wm_take_focus;
+    Atom xa_wm_change_state;
 };
 
 #endif //FBATOMS_HH
+

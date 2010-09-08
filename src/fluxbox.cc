@@ -181,7 +181,7 @@ Fluxbox *Fluxbox::s_singleton=0;
 Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
                  const char *rcfilename, bool xsync)
     : FbTk::App(dpy_name),
-      m_fbatoms(new FbAtoms()),
+      m_fbatoms(FbAtoms::instance()),
       m_resourcemanager(rcfilename, true),
       // TODO: shouldn't need a separate one for screen
       m_screen_rm(m_resourcemanager),

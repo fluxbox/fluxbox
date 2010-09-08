@@ -22,42 +22,36 @@
 #include "FbAtoms.hh"
 #include "FbTk/App.hh"
 
-#include <string>
+namespace {
 
-using std::string;
+FbAtoms* s_singleton = 0;
 
-FbAtoms *FbAtoms::s_singleton = 0;
+} // end of anonymous namespace
 
-FbAtoms::FbAtoms():m_init(false) {
-    if (s_singleton != 0)
-        throw string("You can only create one instance of FbAtoms");
+FbAtoms::FbAtoms() {
+
+    Display* dpy = FbTk::App::instance()->display();
+
+    xa_wm_protocols = XInternAtom(dpy, "WM_PROTOCOLS", False);
+    xa_wm_state = XInternAtom(dpy, "WM_STATE", False);
+    xa_wm_change_state = XInternAtom(dpy, "WM_CHANGE_STATE", False);
+    xa_wm_delete_window = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+    xa_wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
+    motif_wm_hints = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
+
+    blackbox_attributes = XInternAtom(dpy, "_BLACKBOX_ATTRIBUTES", False);
 
     s_singleton = this;
-    initAtoms();
 }
 
 FbAtoms::~FbAtoms() {
-
+    s_singleton = 0;
 }
 
 FbAtoms *FbAtoms::instance() {
-    if (s_singleton == 0)
-        throw string("Create one instance of FbAtoms first!");
+    if (s_singleton == 0) {
+        s_singleton = new FbAtoms();
+    }
     return s_singleton;
 }
 
-void FbAtoms::initAtoms() {
-    Display *display = FbTk::App::instance()->display();
-    if (display == 0)
-        return;
-
-    xa_wm_protocols = XInternAtom(display, "WM_PROTOCOLS", False);
-    xa_wm_state = XInternAtom(display, "WM_STATE", False);
-    xa_wm_change_state = XInternAtom(display, "WM_CHANGE_STATE", False);
-    xa_wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
-    xa_wm_take_focus = XInternAtom(display, "WM_TAKE_FOCUS", False);
-    motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
-
-    blackbox_attributes = XInternAtom(display, "_BLACKBOX_ATTRIBUTES", False);
-
-}
