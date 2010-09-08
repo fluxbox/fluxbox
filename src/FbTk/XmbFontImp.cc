@@ -254,15 +254,8 @@ void XmbFontImp::drawText(const FbDrawable &d, int screen, GC main_gc, const cha
     XCopyGC(dpy, main_gc, GCForeground|GCBackground, my_gc);
 
     // vertical or upside down
-
     XSetFillStyle(dpy, my_gc, FillStippled);
-
-    // vertical or upside down
-
-    XSetFillStyle(dpy, my_gc, FillStippled);
-
     XSetStipple(dpy, my_gc, canvas.drawable());
-
     XSetTSOrigin(dpy, my_gc, 0, 0);
 
     XFillRectangle(dpy, d.drawable(), my_gc, 0, 0,
