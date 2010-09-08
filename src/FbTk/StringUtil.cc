@@ -63,13 +63,14 @@ using std::transform;
 
 namespace {
 
-int extractLongNumber(const char* in, long long int& out) {
+template <typename T>
+int extractBigNumber(const char* in, T (*extractFunc)(const char*, char**, int), T& out) {
 
     errno = 0;
 
     int ret = 0;
     char* end = 0;
-    long long int result = strtoll(in, &end, 0);
+    T result = extractFunc(in, &end, 0);
 
     if (errno == 0 && end != in) {
         out = result;
@@ -80,17 +81,32 @@ int extractLongNumber(const char* in, long long int& out) {
 }
 
 template<typename T>
-int extractNumber(const std::string& in, T& out) {
+int extractSignedNumber(const std::string& in, T& out) {
 
     long long int result = 0;
 
-    if (::extractLongNumber(in.c_str(), result) && out >= 0) {
+    if (::extractBigNumber(in.c_str(), strtoll, result)) {
         out = static_cast<T>(result);
         return 1;
     }
 
     return 0;
 }
+
+template<typename T>
+int extractUnsignedNumber(const std::string& in, T& out) {
+
+    unsigned long long int result = 0;
+
+    if (::extractBigNumber(in.c_str(), strtoull, result) && result >= 0) {
+        out = static_cast<T>(result);
+        return 1;
+    }
+
+    return 0;
+}
+
+
 
 }
 
@@ -100,11 +116,11 @@ namespace FbTk {
 namespace StringUtil {
 
 int extractNumber(const std::string& in, int& out) {
-    return ::extractNumber<int>(in, out);
+    return ::extractSignedNumber<int>(in, out);
 }
 
 int extractNumber(const std::string& in, unsigned int& out) {
-    return ::extractNumber<unsigned int>(in, out);
+    return ::extractUnsignedNumber<unsigned int>(in, out);
 }
 
 std::string number2String(int num) {
