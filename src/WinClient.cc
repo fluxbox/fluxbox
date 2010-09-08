@@ -234,28 +234,9 @@ string WinClient::getWMRole() const {
 }
 
 void WinClient::updateWMClassHint() {
-    XClassHint ch;
-    if (XGetClassHint(display(), window(), &ch) == 0) {
 
-        fbdbg<<"WinClient: Failed to read class hint!"<<endl;
-
-        m_instance_name = m_class_name = "";
-    } else {
-
-        if (ch.res_name != 0) {
-            m_instance_name = const_cast<char *>(ch.res_name);
-            XFree(ch.res_name);
-            ch.res_name = 0;
-        } else
-            m_instance_name = "";
-
-        if (ch.res_class != 0) {
-            m_class_name = const_cast<char *>(ch.res_class);
-            XFree(ch.res_class);
-            ch.res_class = 0;
-        } else
-            m_class_name = "";
-    }
+    m_instance_name = Xutil::getWMClassName(window());
+    m_class_name = Xutil::getWMClassClass(window());
 }
 
 void WinClient::updateTransientInfo() {
