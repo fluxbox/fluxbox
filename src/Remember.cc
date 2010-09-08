@@ -224,19 +224,24 @@ void Application::reset() {
 namespace {
 
 // replace special chars like ( ) and [ ] with \( \) and \[ \]
-static string escapeRememberChars(string str) {
+string escapeRememberChars(const string& str) {
     if (str.empty())
         return str;
 
-    str = FbTk::StringUtil::replaceString(str, "(", "\\(");
-    str = FbTk::StringUtil::replaceString(str, ")", "\\)");
-    str = FbTk::StringUtil::replaceString(str, "[", "\\[");
-    str = FbTk::StringUtil::replaceString(str, "]", "\\]");
-    return str;
-}
+    string escaped_str;
+    escaped_str.reserve(str.capacity());
 
-bool getuint(const char *val, unsigned int &ret) {
-    return (sscanf(val, "%u", &ret) == 1);
+    string::const_iterator i;
+    for (i = str.begin(); i != str.end(); i++) {
+        switch (*i) {
+            case '(': case ')': case '[': case ']':
+                escaped_str += '\\';
+            default:
+                escaped_str += *i;
+        }
+    }
+
+    return escaped_str;
 }
 
 class RememberMenuItem : public FbTk::MenuItem {
