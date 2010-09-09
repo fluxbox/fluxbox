@@ -499,9 +499,6 @@ private:
 
     bool root_colormap_installed, managed;
 
-    GC opGC;
-
-
     std::auto_ptr<FbTk::ImageControl> m_image_control;
     std::auto_ptr<FbMenu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
 
