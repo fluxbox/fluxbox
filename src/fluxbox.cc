@@ -256,10 +256,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
     // because it could affect ongoing menu stuff so we need to reconfig in
     // the next event "round".
     FbTk::RefCount<FbTk::Command<void> > reconfig_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::timed_reconfigure));
-    timeval to;
-    to.tv_sec = 0;
-    to.tv_usec = 1;
-    m_reconfig_timer.setTimeout(to);
+    m_reconfig_timer.setTimeout(0, 1);
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
 
