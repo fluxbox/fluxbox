@@ -1216,7 +1216,7 @@ void Fluxbox::restart(const char *prog) {
 
     m_restarting = true;
 
-    if (prog) {
+    if (prog && *prog != '\0') {
         m_restart_argument = prog;
     }
 }

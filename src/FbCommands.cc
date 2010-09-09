@@ -253,10 +253,7 @@ RestartFluxboxCmd::RestartFluxboxCmd(const string &cmd):m_cmd(cmd){
 }
 
 void RestartFluxboxCmd::execute() {
-    if (m_cmd.empty())
-        Fluxbox::instance()->restart();
-    else
-        Fluxbox::instance()->restart(m_cmd.c_str());
+    Fluxbox::instance()->restart(m_cmd.c_str());
 }
 
 REGISTER_COMMAND(reconfigure, FbCommands::ReconfigureFluxboxCmd, void);

@@ -170,6 +170,8 @@ void SizeHints::reset(const XSizeHints &sizehint) {
         min_height = base_height;
 }
 
+namespace {
+
 void closestPointToAspect(unsigned int &ret_x, unsigned int &ret_y,
                           unsigned int point_x, unsigned int point_y,
                           unsigned int aspect_x, unsigned int aspect_y) {
@@ -187,7 +189,9 @@ unsigned int increaseToMultiple(unsigned int val, unsigned int inc) {
 unsigned int decreaseToMultiple(unsigned int val, unsigned int inc) {
     return val % inc ? val - (val % inc) : val;
 }
-    
+
+} // end of anonymous namespace
+
 /**
  * Changes width and height to the nearest (lower) value
  * that conforms to it's size hints.
