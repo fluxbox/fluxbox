@@ -398,7 +398,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     int ret_format;
     unsigned long ret_nitems, ret_bytes_after;
     unsigned char *ret_prop;
-    if (XGetWindowProperty(disp, m_root_window.window(), wm_check, 0l, 1l,
+    if (rootWindow().property(wm_check, 0l, 1l,
             False, XA_WINDOW, &xa_ret_type, &ret_format, &ret_nitems,
             &ret_bytes_after, &ret_prop) == Success) {
         m_restart = (ret_prop != NULL);
@@ -500,12 +500,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     unsigned int first_desktop = 0;
     if (m_restart) {
         Atom net_desktop = XInternAtom(disp, "_NET_CURRENT_DESKTOP", False);
-        // other arguments are already defined above
-        if (XGetWindowProperty(disp, m_root_window.window(), net_desktop, 0l,
-                1l, False, XA_CARDINAL, &xa_ret_type, &ret_format, &ret_nitems,
+        if (rootWindow().property(net_desktop, 0l, 1l, 
+                False, XA_CARDINAL, &xa_ret_type, &ret_format, &ret_nitems,
                 &ret_bytes_after, &ret_prop) == Success) {
-            if (ret_prop && (unsigned int) *ret_prop < (unsigned) nr_ws)
-                first_desktop = (unsigned int) *ret_prop;
+            if (ret_prop && static_cast<unsigned int>(*ret_prop) < static_cast<unsigned int>(nr_ws))
+                first_desktop = static_cast<unsigned int>(*ret_prop);
             XFree(ret_prop);
         }
     }
