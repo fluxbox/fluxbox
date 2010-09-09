@@ -91,7 +91,7 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     m_screen_height(DisplayHeight(FbTk::App::instance()->display(), tm->screenNum())),
     m_alignment(ALIGNDONTCARE),
     m_active_index(-1),
-    m_shape(new Shape(fbwindow(), tm->shapePlaces())),
+    m_shape(0),
     m_need_update(true) {
     // setup timers
 
@@ -142,6 +142,9 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
                                  event_mask,
                                  true,  // override redirect
                                  true); // save_under
+
+    // initialize 'shape' here AFTER we created menu.window aka fbwindow()
+    m_shape.reset(new Shape(fbwindow(), tm->shapePlaces()));
 
     // strip focus change mask from attrib, since we should only use it with main window
     event_mask ^= FocusChangeMask;
