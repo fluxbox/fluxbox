@@ -51,7 +51,7 @@ public:
     std::string toString() const;
 
     enum WinProperty {
-        TITLE, CLASS, NAME, ROLE, TRANSIENT,
+        TITLE = 0, CLASS, NAME, ROLE, TRANSIENT,
         MAXIMIZED, MINIMIZED, SHADED, STUCK, FOCUSHIDDEN, ICONHIDDEN,
         WORKSPACE, WORKSPACENAME, HEAD, LAYER, URGENT, SCREEN
     };

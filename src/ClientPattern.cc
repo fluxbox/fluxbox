@@ -47,10 +47,77 @@
   #include <stdio.h>
 #endif
 
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+
 // needed as well for index on some systems (e.g. solaris)
 #include <strings.h>
 
 using std::string;
+
+namespace {
+
+struct Name2WinProperty {
+    const char* name;
+    ClientPattern::WinProperty prop;
+};
+
+Name2WinProperty name_2_winproperties[] = { // sorted for 'bsearch'
+    { "class", ClientPattern::CLASS },
+    { "focushidden", ClientPattern::FOCUSHIDDEN },
+    { "head", ClientPattern::HEAD },
+    { "iconhidden", ClientPattern::ICONHIDDEN },
+    { "layer", ClientPattern::LAYER },
+    { "maximized", ClientPattern::MAXIMIZED },
+    { "minimized", ClientPattern::MINIMIZED },
+    { "name", ClientPattern::NAME },
+    { "role", ClientPattern::ROLE },
+    { "screen", ClientPattern::SCREEN },
+    { "shaded", ClientPattern::SHADED },
+    { "stuck", ClientPattern::STUCK },
+    { "title", ClientPattern::TITLE },
+    { "transient", ClientPattern::TRANSIENT },
+    { "urgent", ClientPattern::URGENT },
+    { "workspace", ClientPattern::WORKSPACE },
+    { "workspacename", ClientPattern::WORKSPACENAME }
+};
+
+int name_2_winproperty_cmp(const void* a, const void* b) {
+    return strcmp(
+            reinterpret_cast<const Name2WinProperty*>(a)->name,
+            reinterpret_cast<const Name2WinProperty*>(b)->name);
+}
+
+struct Prop2String {
+    ClientPattern::WinProperty prop;
+    const char* str;
+};
+
+Prop2String property_2_strings[] = { // sorted by 'prop'
+    { ClientPattern::TITLE, "title=" },
+    { ClientPattern::CLASS, "class=" },
+    { ClientPattern::NAME, "name=" },
+    { ClientPattern::ROLE, "role=" },
+    { ClientPattern::TRANSIENT, "transient=" },
+    { ClientPattern::MAXIMIZED,  "maximized=" },
+    { ClientPattern::MINIMIZED, "minimized=" }, 
+    { ClientPattern::SHADED, "shaded=" },
+    { ClientPattern::STUCK, "stuck=" },
+    { ClientPattern::FOCUSHIDDEN, "focushidden=" },
+    { ClientPattern::ICONHIDDEN, "iconhidden=" },
+    { ClientPattern::WORKSPACE, "workspace=" },
+    { ClientPattern::WORKSPACENAME, "workspacename=" },
+    { ClientPattern::HEAD, "head=" },
+    { ClientPattern::LAYER, "layer=" },
+    { ClientPattern::URGENT, "urgent=" },
+    { ClientPattern::SCREEN, "screen=" }
+};
+
+
+} // end of anonymous namespace
 
 
 ClientPattern::ClientPattern():
@@ -105,44 +172,20 @@ ClientPattern::ClientPattern(const char *str):
 
             memstr = FbTk::StringUtil::toLower(memstr);
 
-            if (memstr == "name") {
-                prop = NAME;
-            } else if (memstr == "class") {
-                prop = CLASS;
-            } else if (memstr == "title") {
-                prop = TITLE;
-            } else if (memstr == "role") {
-                prop = ROLE;
-            } else if (memstr == "transient") {
-                prop = TRANSIENT;
-            } else if (memstr == "maximized") {
-                prop = MAXIMIZED;
-            } else if (memstr == "minimized") {
-                prop = MINIMIZED;
-            } else if (memstr == "shaded") {
-                prop = SHADED;
-            } else if (memstr == "stuck") {
-                prop = STUCK;
-            } else if (memstr == "focushidden") {
-                prop = FOCUSHIDDEN;
-            } else if (memstr == "iconhidden") {
-                prop = ICONHIDDEN;
-            } else if (memstr == "workspace") {
-                prop = WORKSPACE;
-            } else if (memstr == "workspacename") {
-                prop = WORKSPACENAME;
-            } else if (memstr == "head") {
-                prop = HEAD;
-            } else if (memstr == "layer") {
-                prop = LAYER;
-            } else if (memstr == "urgent") {
-                prop = URGENT;
-            } else if (memstr == "screen") {
-                prop = SCREEN;
+            Name2WinProperty key = { memstr.c_str(), CLASS };
+            Name2WinProperty* i = reinterpret_cast<Name2WinProperty*>(
+                bsearch(&key, name_2_winproperties,
+                    sizeof(name_2_winproperties) / sizeof(Name2WinProperty),
+                    sizeof(Name2WinProperty),
+                    name_2_winproperty_cmp));
+
+            if (i) {
+                prop = i->prop;
             } else {
                 prop = NAME;
                 expr = match;
             }
+
             had_error = !addTerm(expr, prop, negate);
             pos += err;
         }
@@ -201,69 +244,15 @@ string ClientPattern::toString() const {
     for (; it != it_end; ++it) {
 
         pat.append(" (");
-
-        switch ((*it)->prop) {
-        case NAME:
-            pat.append("name=");
-            break;
-        case CLASS:
-            pat.append("class=");
-            break;
-        case TITLE:
-            pat.append("title=");
-            break;
-        case ROLE:
-            pat.append("role=");
-            break;
-        case TRANSIENT:
-            pat.append("transient=");
-            break;
-        case MAXIMIZED:
-            pat.append("maximized=");
-            break;
-        case MINIMIZED:
-            pat.append("minimized=");
-            break;
-        case SHADED:
-            pat.append("shaded=");
-            break;
-        case STUCK:
-            pat.append("stuck=");
-            break;
-        case FOCUSHIDDEN:
-            pat.append("focushidden=");
-            break;
-        case ICONHIDDEN:
-            pat.append("iconhidden=");
-            break;
-        case WORKSPACE:
-            pat.append("workspace=");
-            break;
-        case WORKSPACENAME:
-            pat.append("workspacename=");
-            break;
-        case HEAD:
-            pat.append("head=");
-            break;
-        case LAYER:
-            pat.append("layer=");
-            break;
-        case URGENT:
-            pat.append("urgent=");
-            break;
-        case SCREEN:
-            pat.append("screen=");
-            break;
-        }
-
+        pat.append(property_2_strings[(*it)->prop].str);
         pat.append((*it)->orig);
         pat.append(")");
     }
 
     if (m_matchlimit > 0) {
-        char num[20];
-        sprintf(num, " {%d}", m_matchlimit);
-        pat.append(num);
+        pat.append(" {");
+        pat.append(FbTk::StringUtil::number2String(m_matchlimit));
+        pat.append("}");
     }
     return pat;
 }
