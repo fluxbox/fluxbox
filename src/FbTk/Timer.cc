@@ -85,6 +85,11 @@ void Timer::setTimeout(const timeval &t) {
     m_timeout.tv_usec = t.tv_usec;
 }
 
+void Timer::setTimeout(unsigned int secs, unsigned int usecs) {
+    m_timeout.tv_sec = secs;
+    m_timeout.tv_usec = usecs;
+}
+
 void Timer::setCommand(RefCount<Command<void> > &cmd) {
     m_handler = cmd;
 }

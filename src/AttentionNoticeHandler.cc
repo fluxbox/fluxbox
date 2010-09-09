@@ -78,14 +78,11 @@ void AttentionNoticeHandler::addAttention(Focusable &client) {
     if (**timeout_res == 0) 
         return;
 
-    Timer *timer = new Timer();
     // setup timer
-    timeval timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_usec = **timeout_res * 1000;
     RefCount<Command<void> > cmd(new ToggleFrameFocusCmd(client));
+    Timer *timer = new Timer();
     timer->setCommand(cmd);
-    timer->setTimeout(timeout); 
+    timer->setTimeout(0, **timeout_res * 1000);
     timer->fireOnce(false); // will repeat until window has focus
     timer->start();
 

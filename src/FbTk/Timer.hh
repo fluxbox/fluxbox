@@ -64,6 +64,7 @@ public:
     void setTimeout(time_t val);
     /// set timeout 
     void setTimeout(const timeval &val);
+    void setTimeout(unsigned int secs, unsigned int usecs);
     void setCommand(RefCount<Command<void> > &cmd);
     void setInterval(int val) { m_interval = val; }
     /// start timing
