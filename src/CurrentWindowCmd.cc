@@ -35,6 +35,7 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/stringstream.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/Util.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -250,8 +251,7 @@ void SetHeadCmd::real_execute() {
     int num = m_head;
     int total = fbwindow().screen().numHeads();
     if (num < 0) num += total + 1;
-    if (num < 1) num = 1;
-    if (num > total) num = total;
+    num = FbTk::Util::clamp(num, 1, total);
     fbwindow().setOnHead(num);
 }
 
@@ -259,8 +259,7 @@ void SendToWorkspaceCmd::real_execute() {
     int num = m_workspace_num;
     int total = fbwindow().screen().numberOfWorkspaces();
     if (num < 0) num += total + 1;
-    if (num < 1) num = 1;
-    if (num > total) num = total;
+    num = FbTk::Util::clamp(num, 1, total);
     fbwindow().screen().sendToWorkspace(num-1, &fbwindow(), m_take);
 }
 
@@ -281,8 +280,7 @@ void SendToNextHeadCmd::real_execute() {
 void GoToTabCmd::real_execute() {
     int num = m_tab_num;
     if (num < 0) num += fbwindow().numClients() + 1;
-    if (num < 1) num = 1;
-    if (num > fbwindow().numClients()) num = fbwindow().numClients();
+    num = FbTk::Util::clamp(num, 1, fbwindow().numClients());
 
     FluxboxWindow::ClientList::iterator it = fbwindow().clientList().begin();
 
@@ -670,22 +668,13 @@ void SetAlphaCmd::real_execute() {
         return;
     }
 
-    int new_alpha;
-    if (m_relative) {
-        new_alpha = fbwindow().getFocusedAlpha() + m_focus;
-        if (new_alpha < 0) new_alpha = 0;
-        if (new_alpha > 255) new_alpha = 255;
-        fbwindow().setFocusedAlpha(new_alpha);
-    } else
-        fbwindow().setFocusedAlpha(m_focus);
+    fbwindow().setFocusedAlpha(m_relative 
+            ?  FbTk::Util::clamp(fbwindow().getFocusedAlpha() + m_focus, 0, 255)
+            : m_focus);
 
-    if (m_un_relative) {
-        new_alpha = fbwindow().getUnfocusedAlpha() + m_unfocus;
-        if (new_alpha < 0) new_alpha = 0;
-        if (new_alpha > 255) new_alpha = 255;
-        fbwindow().setUnfocusedAlpha(new_alpha);
-    } else
-        fbwindow().setUnfocusedAlpha(m_unfocus);
+    fbwindow().setUnfocusedAlpha(m_un_relative
+            ? FbTk::Util::clamp(fbwindow().getUnfocusedAlpha() + m_unfocus, 0, 255)
+            : m_unfocus);
 }
 
 REGISTER_COMMAND_WITH_ARGS(matches, MatchCmd, bool);

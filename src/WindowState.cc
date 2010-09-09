@@ -246,10 +246,8 @@ void SizeHints::apply(unsigned int &width, unsigned int &height,
             w = increaseToMultiple(h * min_aspect_x / min_aspect_y, width_inc);
     }
 
-    unsigned int max_w = make_fit && (width < max_width || max_width == 0) ?
-                         width : max_width;
-    unsigned int max_h = make_fit && (height < max_height || max_height == 0) ?
-                         height : max_height;
+    unsigned int max_w = (make_fit && (width < max_width || max_width == 0)) ?  width : max_width;
+    unsigned int max_h = (make_fit && (height < max_height || max_height == 0)) ?  height : max_height;
 
     // Check maximum size
     if (max_w > 0 && w + base_width > max_w)

@@ -21,6 +21,7 @@
 
 #include "FbWinFrameTheme.hh"
 #include "FbTk/App.hh"
+#include "FbTk/Util.hh"
 
 #include "IconbarTheme.hh"
 
@@ -88,16 +89,10 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
 }
 
 void FbWinFrameTheme::reconfigTheme() {
-    if (*m_bevel_width > 20)
-        *m_bevel_width = 20;
-    else if (*m_bevel_width < 0)
-        *m_bevel_width = 0;
-
-    if (*m_handle_width > 200)
-        *m_handle_width = 200;
-    else if (*m_handle_width < 0)
+    *m_bevel_width = FbTk::Util::clamp(*m_bevel_width, 0, 20);
+    if (*m_handle_width < 0)
         *m_handle_width = 1;
-
+    *m_handle_width = FbTk::Util::clamp(*m_handle_width, 0, 200);
     m_button_pic_gc.setForeground(*m_button_color);
     m_iconbar_theme.reconfigTheme();
 }

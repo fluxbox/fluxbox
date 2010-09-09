@@ -26,6 +26,8 @@
 #include "App.hh"
 #include "FbWindow.hh"
 
+#include "Util.hh"
+
 using namespace FbTk;
 
 MultLayers::MultLayers(int numlayers) :
@@ -56,11 +58,7 @@ XLayerItem *MultLayers::getLowestItemAboveLayer(int layernum) {
 }
 
 void MultLayers::addToTop(XLayerItem &item, int layernum) {
-    if (layernum < 0)
-        layernum = 0;
-    else if (layernum >= static_cast<signed>(m_layers.size()))
-        layernum = m_layers.size()-1;
-
+    layernum = FbTk::Util::clamp(layernum, 0, static_cast<signed>(m_layers.size()) - 1);
     m_layers[layernum]->insert(item);
     restack();
 }
@@ -108,12 +106,7 @@ void MultLayers::moveToLayer(XLayerItem &item, int layernum) {
     if (curr_layer.getLayerNum() == layernum)
         return;
 
-    // clamp layer number
-    if (layernum < 0)
-        layernum = 0;
-    else if (layernum >= static_cast<signed>(m_layers.size()))
-        layernum = m_layers.size()-1;
-    // remove item from old layer and insert it into the
+    layernum = FbTk::Util::clamp(layernum, 0, static_cast<signed>(m_layers.size()) - 1);
     item.setLayer(*m_layers[layernum]);
 }
 

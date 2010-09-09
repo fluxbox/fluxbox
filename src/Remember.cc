@@ -41,6 +41,7 @@
 #include "FbTk/Transparent.hh"
 #include "FbTk/AutoReloadHelper.hh"
 #include "FbTk/RefCount.hh"
+#include "FbTk/Util.hh"
 
 #ifdef HAVE_CSTRING
   #include <cstring>
@@ -512,28 +513,18 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                     app.rememberDecostate((unsigned int)deco);
             } else if (str_key == "alpha") {
                 int focused_a, unfocused_a;
-                if (sscanf(str_label.c_str(), "%i %i", &focused_a, &unfocused_a) == 2)
-                {
-                    // clamp;
-                    if (focused_a > 255)
-                        focused_a = 255;
-                    if (unfocused_a > 255)
-                        unfocused_a = 255;
-                    if (focused_a <= 0)
-                        focused_a = 0;
-                    if (unfocused_a <= 0)
-                        unfocused_a = 0;
-
+                switch (sscanf(str_label.c_str(), "%i %i", &focused_a, &unfocused_a)) {
+                case 1: // 'alpha <focus>'
+                    unfocused_a = focused_a;
+                case 2: // 'alpha <focus> <unfocus>'
+                    focused_a = FbTk::Util::clamp(focused_a, 0, 255);
+                    unfocused_a = FbTk::Util::clamp(unfocused_a, 0, 255);
                     app.rememberAlpha(focused_a, unfocused_a);
-                } else if (sscanf(str_label.c_str(), "%i", &focused_a) == 1) {
-                    if (focused_a > 255)
-                        focused_a = 255;
-                    if (focused_a <= 0)
-                        focused_a = 0;
-                    app.rememberAlpha(focused_a, focused_a);
+                    break;
+                default:
+                    had_error = true;
+                    break;
                 }
-                else
-                    had_error = 1;
             } else if (str_key == "sticky") {
                 app.rememberStuckstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "minimized") {

@@ -73,6 +73,7 @@
 #include "FbTk/FbString.hh"
 #include "FbTk/STLUtil.hh"
 #include "FbTk/KeyUtil.hh"
+#include "FbTk/Util.hh"
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -202,6 +203,10 @@ private:
     BScreen &m_screen;
     FbWinFrame::TabPlacement m_place;
 };
+
+void clampMenuDelay(int& delay) {
+    delay = FbTk::Util::clamp(delay, 0, 5000);
+}
 
 } // end anonymous namespace
 
@@ -453,11 +458,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     focusedWinFrameTheme()->setAlpha(*resource.focused_alpha);
     unfocusedWinFrameTheme()->setAlpha(*resource.unfocused_alpha);
     m_menutheme->setAlpha(*resource.menu_alpha);
-    // clamp values
-    if (*resource.menu_delay > 5000)
-        *resource.menu_delay = 5000;
-    if (*resource.menu_delay < 0)
-        *resource.menu_delay = 0;
+
+    clampMenuDelay(*resource.menu_delay);
 
     m_menutheme->setDelay(*resource.menu_delay);
 
@@ -905,11 +907,7 @@ void BScreen::reconfigure() {
     unfocusedWinFrameTheme()->setAlpha(*resource.unfocused_alpha);
     m_menutheme->setAlpha(*resource.menu_alpha);
 
-    // clamp values
-    if (*resource.menu_delay > 5000)
-        *resource.menu_delay = 5000;
-    if (*resource.menu_delay < 0)
-        *resource.menu_delay = 0;
+    clampMenuDelay(*resource.menu_delay);
 
     m_menutheme->setDelay(*resource.menu_delay);
 
@@ -2138,15 +2136,8 @@ pair<int,int> BScreen::clampToHead(int head, int x, int y, int w, int h) const {
     int hw = getHeadWidth(head);
     int hh = getHeadHeight(head);
 
-    if (x + w > hx + hw)
-        x = hx + hw - w;
-    if (y + h > hy + hh)
-        y = hy + hh - h;
-
-    if (x < hx)
-        x = hx;
-    if (y < hy)
-       y = hy;
+    x = FbTk::Util::clamp(x, hx, hx + hw - w);
+    y = FbTk::Util::clamp(y, hy, hy + hh - h);
 
     return make_pair(x,y);
 }

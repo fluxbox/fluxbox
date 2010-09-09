@@ -47,6 +47,7 @@
 #include "FbTk/ImageControl.hh"
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/MenuSeparator.hh"
+#include "FbTk/Util.hh"
 
 #include <typeinfo>
 #include <iterator>
@@ -389,12 +390,8 @@ void IconbarTool::update(FbTk::Subject *subj) {
     }
 
     m_icon_container.setAlignment(*m_rc_alignment);
-    // clamp to normal values
-    if (*m_rc_client_width < 1)
-        *m_rc_client_width = 10;
-    else if (*m_rc_client_width > 400)
-        *m_rc_client_width = 400;
 
+    *m_rc_client_width = FbTk::Util::clamp(*m_rc_client_width, 10, 400);
     m_icon_container.setMaxSizePerClient(*m_rc_client_width);
 
     if (subj == &m_focused_theme.reconfigSig() ||

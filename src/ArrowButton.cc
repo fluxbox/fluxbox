@@ -22,6 +22,8 @@
 #include "ArrowButton.hh"
 #include "ButtonTheme.hh"
 
+#include "FbTk/Util.hh"
+
 ArrowButton::ArrowButton(FbTk::FbDrawable::TriangleType arrow_type,
                          const FbTk::FbWindow &parent,
                          int x, int y,
@@ -92,6 +94,6 @@ void ArrowButton::updateTheme(const FbTk::Theme &theme) {
 
     m_arrowscale = btheme.scale();
     if (m_arrowscale == 0) m_arrowscale = 250; // default is 0 => 300
-    else if (m_arrowscale < 100) m_arrowscale = 100; // otherwise clamp
-    else if (m_arrowscale > 100000) m_arrowscale = 100000; // clamp below overflow when *100
+
+    m_arrowscale = FbTk::Util::clamp(m_arrowscale, 100, 100000);
 }
