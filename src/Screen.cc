@@ -470,10 +470,13 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     renderPosWindow();
     m_tooltip_window->setDelay(*resource.tooltip_delay);
 
+#if 0 // TODO: check if this is obsolete code!
 
     //!! TODO: we shouldn't do this more than once, but since slit handles their
     // own resources we must do this.
     fluxbox->load_rc(*this);
+
+#endif
 
     // setup workspaces and workspace menu
     int nr_ws = *resource.workspaces;
