@@ -26,6 +26,7 @@
 
 #include "FbTk/RegExp.hh"
 #include "FbTk/NotCopyable.hh"
+#include "FbTk/FbString.hh"
 
 #include <list>
 
@@ -48,7 +49,7 @@ public:
     ~ClientPattern();
 
     /// @return a string representation of this pattern
-    std::string toString() const;
+    FbTk::FbString toString() const;
 
     enum WinProperty {
         TITLE = 0, CLASS, NAME, ROLE, TRANSIENT,
@@ -71,7 +72,7 @@ public:
      * @param prop is the member function that we wish to match against
      * @return false if the regexp wasn't valid
      */
-    bool addTerm(const std::string &str, WinProperty prop, bool negate = false);
+    bool addTerm(const FbTk::FbString &str, WinProperty prop, bool negate = false);
 
     void addMatch() { ++m_nummatches; }
     void removeMatch() { --m_nummatches; }
@@ -86,29 +87,16 @@ public:
      */
     int error() const { return m_terms.empty() ? 1 : 0; }
 
-    static std::string getProperty(WinProperty prop, const Focusable &client);
+    static FbTk::FbString getProperty(WinProperty prop, const Focusable &client);
 
 private:
-    /**
-     * This is the type of the actual pattern we want to match against
-     * We have a "term" in the whole expression which is the full pattern
-     * we also need to keep track of the uncompiled regular expression
-     * for final output
-     */
-    struct Term {
-        Term(const std::string &regstr, bool full_match) :regexp(regstr, full_match){};
-        std::string orig;
-        FbTk::RegExp regexp;
-        WinProperty prop;
-        bool negate;
-    };
-
-
+    struct Term;
+    friend struct Term;
     typedef std::list<Term *> Terms;
 
-    Terms m_terms; ///< our pattern is made up of a sequence of terms currently we "and" them all
-
-    int m_matchlimit, m_nummatches;
+    Terms m_terms; ///< our pattern is made up of a sequence of terms, currently we "and" them all
+    int m_matchlimit;
+    int m_nummatches;
 };
 
 #endif // CLIENTPATTERN_HH

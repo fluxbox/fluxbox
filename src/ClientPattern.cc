@@ -32,6 +32,7 @@
 #include "FbTk/StringUtil.hh"
 #include "FbTk/App.hh"
 #include "FbTk/stringstream.hh"
+#include "FbTk/STLUtil.hh"
 
 // use GNU extensions
 #ifndef _GNU_SOURCE
@@ -120,6 +121,28 @@ Prop2String property_2_strings[] = { // sorted by 'prop'
 } // end of anonymous namespace
 
 
+/**
+ * This is the type of the actual pattern we want to match against
+ * We have a "term" in the whole expression which is the full pattern
+ * we also need to keep track of the uncompiled regular expression
+ * for final output
+ */
+struct ClientPattern::Term {
+
+    Term(const FbTk::FbString& _regstr, WinProperty _prop, bool _negate) :
+        orig(_regstr),
+        regexp(_regstr, true),
+        prop(_prop),
+        negate(_negate) {
+
+    }
+
+    FbTk::FbString orig;
+    FbTk::RegExp regexp;
+    WinProperty prop;
+    bool negate;
+};
+
 ClientPattern::ClientPattern():
     m_matchlimit(0),
     m_nummatches(0) {}
@@ -202,8 +225,7 @@ ClientPattern::ClientPattern(const char *str):
                                              str+pos,
                                              '{', '}');
         if (err > 0) {
-            FbTk_istringstream iss(number.c_str());
-            iss >> m_matchlimit;
+            FbTk::StringUtil::extractNumber(number, m_matchlimit);
             pos+=err;
         }
         // we don't care if there isn't one
@@ -219,21 +241,12 @@ ClientPattern::ClientPattern(const char *str):
     }
 
     if (had_error) {
-        // delete all the terms
-        while (!m_terms.empty()) {
-            Term * term = m_terms.back();
-            delete term;
-            m_terms.pop_back();
-        }
+        FbTk::STLUtil::destroyAndClear(m_terms);
     }
 }
 
 ClientPattern::~ClientPattern() {
-    // delete all the terms
-    while (!m_terms.empty()) {
-        delete m_terms.back();
-        m_terms.pop_back();
-    }
+    FbTk::STLUtil::destroyAndClear(m_terms);
 }
 
 // return a string representation of this pattern
@@ -268,25 +281,23 @@ bool ClientPattern::match(const Focusable &win) const {
     Terms::const_iterator it = m_terms.begin();
     Terms::const_iterator it_end = m_terms.end();
     for (; it != it_end; ++it) {
-        if ((*it)->orig == "[current]") {
+        const Term& term = *(*it);
+        if (term.orig == "[current]") {
             WinClient *focused = FocusControl::focusedWindow();
-            if ((*it)->prop == WORKSPACE) {
-                if (!(*it)->negate ^ (getProperty((*it)->prop, win) == FbTk::StringUtil::number2String(win.screen().currentWorkspaceID())))
+            if (term.prop == WORKSPACE) {
+                if (!term.negate ^ (getProperty(term.prop, win) == FbTk::StringUtil::number2String(win.screen().currentWorkspaceID())))
                     return false;
-            } else if ((*it)->prop == WORKSPACENAME) {
+            } else if (term.prop == WORKSPACENAME) {
                 const Workspace *w = win.screen().currentWorkspace();
-                if (!w || (!(*it)->negate ^
-                           (getProperty((*it)->prop, win) == w->name())))
+                if (!w || (!term.negate ^ (getProperty(term.prop, win) == w->name())))
                     return false;
-            } else if (!focused || (!(*it)->negate ^
-                                    (getProperty((*it)->prop, win) ==
-                                     getProperty((*it)->prop, *focused))))
+            } else if (!focused || (!term.negate ^ (getProperty(term.prop, win) == getProperty(term.prop, *focused))))
                 return false;
-        } else if ((*it)->prop == HEAD && (*it)->orig == "[mouse]") {
-            if (!(*it)->negate ^ (getProperty((*it)->prop, win) == FbTk::StringUtil::number2String(win.screen().getCurrHead())))
+        } else if (term.prop == HEAD && term.orig == "[mouse]") {
+            if (!term.negate ^ (getProperty(term.prop, win) == FbTk::StringUtil::number2String(win.screen().getCurrHead())))
                 return false;
 
-        } else if (!(*it)->negate ^ (*it)->regexp.match(getProperty((*it)->prop, win)))
+        } else if (!term.negate ^ term.regexp.match(getProperty(term.prop, win)))
             return false;
     }
     return true;
@@ -315,19 +326,22 @@ bool ClientPattern::dependsOnCurrentWorkspace() const {
 // add an expression to match against
 // The first argument is a regular expression, the second is the member
 // function that we wish to match against.
-bool ClientPattern::addTerm(const string &str, WinProperty prop, bool negate) {
+bool ClientPattern::addTerm(const FbTk::FbString &str, WinProperty prop, bool negate) {
 
-    Term *term = new Term(str, true);
-    term->orig = str;
-    term->prop = prop;
-    term->negate = negate;
+    bool rc = false;
+    Term* term = new Term(str, prop, negate);
 
-    if (term->regexp.error()) {
+    if (!term)
+        return rc;
+
+    if (!term->regexp.error()) {
+        m_terms.push_back(term);
+        rc = true;
+    } else {
         delete term;
-        return false;
     }
-    m_terms.push_back(term);
-    return true;
+
+    return rc;
 }
 
 FbTk::FbString ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
