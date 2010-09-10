@@ -469,6 +469,8 @@ void FbWindow::reparent(const FbWindow &parent, int x, int y, bool continuing) {
     if (continuing) // we will continue managing this window after reparent
         updateGeometry();
 }
+
+namespace {
 struct TextPropPtr {
     TextPropPtr(XTextProperty& prop):m_prop(prop) {}
     ~TextPropPtr() {
@@ -479,6 +481,8 @@ struct TextPropPtr {
     }
     XTextProperty& m_prop;
 };
+}
+
 std::string FbWindow::textProperty(Atom property) const {
     XTextProperty text_prop;
     TextPropPtr helper(text_prop);
