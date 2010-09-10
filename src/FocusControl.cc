@@ -56,9 +56,7 @@ bool doSkipWindow(const Focusable &win, const ClientPattern *pat) {
         return true; // skip if no fbwindow or if focushidden
     if (pat && !pat->match(win))
         return true; // skip if it doesn't match the pattern
-    if (fbwin->workspaceNumber() != win.screen().currentWorkspaceID() &&
-        !fbwin->isStuck())
-        return true; // for now, we only cycle through the current workspace
+
     return false; // else don't skip
 }
 
