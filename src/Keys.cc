@@ -360,8 +360,8 @@ void Keys::loadDefaults() {
     addBinding("OnLeftGrip Move1 :StartResizing bottomleft");
     addBinding("OnRightGrip Move1 :StartResizing bottomright");
     addBinding("OnWindowBorder Move1 :StartMoving");
-    addBinding("Mod1 Tab :NextWindow");
-    addBinding("Mod1 Shift Tab :PrevWindow");
+    addBinding("Mod1 Tab :NextWindow (workspace=[current])");
+    addBinding("Mod1 Shift Tab :PrevWindow (workspace=[current])");
     keyMode("default");
 }
 
