@@ -227,23 +227,75 @@ REGISTER_COMMAND_PARSER(focus, parseFocusCmd, void);
 
 class ActivateTabCmd: public WindowHelperCmd {
 public:
-    ActivateTabCmd() { }
+    explicit ActivateTabCmd() { }
 protected:
-    void real_execute();
+    void real_execute() {
+        WinClient* winclient = fbwindow().winClientOfLabelButtonWindow(
+                Fluxbox::instance()->lastEvent().xany.window);
+
+        if (winclient && winclient != &fbwindow().winClient()) {
+            fbwindow().setCurrentClient(*winclient, true);
+        }
+
+    }
 };
 
 
-void ActivateTabCmd::real_execute() {
+REGISTER_COMMAND(activatetab, ActivateTabCmd, void);
 
-    WinClient* winclient = fbwindow().winClientOfLabelButtonWindow(
-            Fluxbox::instance()->lastEvent().xany.window);
+class SetXPropCmd: public WindowHelperCmd {
+public:
+    explicit SetXPropCmd(const FbTk::FbString& name, const FbTk::FbString& value) :
+        m_name(name), m_value(value) { }
 
-    if (winclient && winclient != &fbwindow().winClient()) {
-        fbwindow().setCurrentClient(*winclient, true);
+protected:
+    void real_execute() {
+
+        WinClient& client = fbwindow().winClient();
+        Atom prop = XInternAtom(client.display(), m_name.c_str(), False);
+
+        client.changeProperty(prop, XInternAtom(client.display(), "UTF8_STRING", False), 8,
+                PropModeReplace, (unsigned char*)m_value.c_str(), m_value.size());
     }
+
+private:
+    FbTk::FbString m_name;
+    FbTk::FbString m_value;
+};
+
+FbTk::Command<void> *parseSetXPropCmd(const string &command, const string &args, bool trusted) {
+
+    SetXPropCmd* cmd = 0;
+
+    if (trusted) {
+
+        FbTk::FbString name = args;
+
+        FbTk::StringUtil::removeFirstWhitespace(name);
+        FbTk::StringUtil::removeTrailingWhitespace(name);
+
+        if (name.size() > 1 && name[0] != '=') {  // the smallest valid argument is 'X='
+
+            FbTk::FbString value;
+
+            size_t eq = name.find('=');
+            if (eq != name.npos && eq != name.size()) {
+
+                value.assign(name, eq + 1, name.size());
+                name.resize(eq);
+            }
+
+            cmd = new SetXPropCmd(name, value);
+
+        }
+    }
+
+    return cmd;
 }
 
-REGISTER_COMMAND(activatetab, ActivateTabCmd, void);
+REGISTER_COMMAND_PARSER(setxprop, parseSetXPropCmd, void);
+
+
 
 } // end anonymous namespace
 
@@ -676,6 +728,7 @@ void SetAlphaCmd::real_execute() {
             ? FbTk::Util::clamp(fbwindow().getUnfocusedAlpha() + m_unfocus, 0, 255)
             : m_unfocus);
 }
+
 
 REGISTER_COMMAND_WITH_ARGS(matches, MatchCmd, bool);
 

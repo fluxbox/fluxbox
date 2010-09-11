@@ -64,6 +64,9 @@ The following values are accepted for 'propertyname':::
 *Layer*;;
 	The string name of the window's layer, which is one of
 	*AboveDock*, *Dock*, *Top*, *Normal*, *Bottom*, *Desktop*
+*@XPROP*;;
+	A string, corresponding to any xproperty (Use either the *xprop(1)*
+	utility or the 'SetXProp' command to set a xproperty to a window)
 
 .Matches any windows with the CLASSNAME of "xterm"
 ..........
@@ -79,3 +82,9 @@ The following values are accepted for 'propertyname':::
 ...........
 (Head=[mouse]) (Layer!=[current])
 ...........
+
+.Matches any windows having a xproperty named FOO with "bar" in it
+..............
+(@FOO=.*bar.*)
+..............
+

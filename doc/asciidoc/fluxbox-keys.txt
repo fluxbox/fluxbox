@@ -327,6 +327,10 @@ two arguments;;
 	heads. If this takes the window beyond the total number of heads, it
 	will wrap around to the beginning.
 
+*SetXProp* 'PROP=value'::
+	Sets the xproperty 'PROP' of the current window to 'value'. Delete the
+	content of 'PROP' by using 'PROP='.
+
 Workspace Commands
 ~~~~~~~~~~~~~~~~~~
 These commands affect the entire workspace (or "desktop" as it is sometimes
@@ -643,7 +647,11 @@ Mod4 t :If {Some Matches (xterm)} {NextWindow (xterm)} {Exec xterm}
 
 # Set a different wallpaper on every workspace:
 ChangeWorkspace :Exec fbsetbg ~/.fluxbox/bg$(xprop -root _NET_CURRENT_DESKTOP | awk '{print $3}').png
+
+# Focusses the next window with it's xproperty 'PROP' set to 'foo'
+Mod4 p Mod4 Tab :NextWindow (@PROP=foo)
 ..................
+
 
 AUTHORS
 -------

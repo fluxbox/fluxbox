@@ -66,7 +66,7 @@ struct Name2WinProperty {
     ClientPattern::WinProperty prop;
 };
 
-Name2WinProperty name_2_winproperties[] = { // sorted for 'bsearch'
+const Name2WinProperty name_2_winproperties[] = { // sorted for 'bsearch'
     { "class", ClientPattern::CLASS },
     { "focushidden", ClientPattern::FOCUSHIDDEN },
     { "head", ClientPattern::HEAD },
@@ -92,29 +92,43 @@ int name_2_winproperty_cmp(const void* a, const void* b) {
             reinterpret_cast<const Name2WinProperty*>(b)->name);
 }
 
+const Name2WinProperty* find_winproperty_by_name(const FbTk::FbString& name) {
+
+    const Name2WinProperty key = { name.c_str(), ClientPattern::CLASS };
+    const Name2WinProperty* result = reinterpret_cast<Name2WinProperty*>(
+            bsearch(&key, name_2_winproperties,
+                sizeof(name_2_winproperties) / sizeof(Name2WinProperty),
+                sizeof(Name2WinProperty),
+                name_2_winproperty_cmp));
+
+    return result;
+}
+
+
 struct Prop2String {
     ClientPattern::WinProperty prop;
     const char* str;
 };
 
 Prop2String property_2_strings[] = { // sorted by 'prop'
-    { ClientPattern::TITLE, "title=" },
-    { ClientPattern::CLASS, "class=" },
-    { ClientPattern::NAME, "name=" },
-    { ClientPattern::ROLE, "role=" },
-    { ClientPattern::TRANSIENT, "transient=" },
-    { ClientPattern::MAXIMIZED,  "maximized=" },
-    { ClientPattern::MINIMIZED, "minimized=" }, 
-    { ClientPattern::SHADED, "shaded=" },
-    { ClientPattern::STUCK, "stuck=" },
-    { ClientPattern::FOCUSHIDDEN, "focushidden=" },
-    { ClientPattern::ICONHIDDEN, "iconhidden=" },
-    { ClientPattern::WORKSPACE, "workspace=" },
-    { ClientPattern::WORKSPACENAME, "workspacename=" },
-    { ClientPattern::HEAD, "head=" },
-    { ClientPattern::LAYER, "layer=" },
-    { ClientPattern::URGENT, "urgent=" },
-    { ClientPattern::SCREEN, "screen=" }
+    { ClientPattern::TITLE, "title" },
+    { ClientPattern::CLASS, "class" },
+    { ClientPattern::NAME, "name" },
+    { ClientPattern::ROLE, "role" },
+    { ClientPattern::TRANSIENT, "transient" },
+    { ClientPattern::MAXIMIZED,  "maximized" },
+    { ClientPattern::MINIMIZED, "minimized" }, 
+    { ClientPattern::SHADED, "shaded" },
+    { ClientPattern::STUCK, "stuck" },
+    { ClientPattern::FOCUSHIDDEN, "focushidden" },
+    { ClientPattern::ICONHIDDEN, "iconhidden" },
+    { ClientPattern::WORKSPACE, "workspace" },
+    { ClientPattern::WORKSPACENAME, "workspacename" },
+    { ClientPattern::HEAD, "head" },
+    { ClientPattern::LAYER, "layer" },
+    { ClientPattern::URGENT, "urgent" },
+    { ClientPattern::SCREEN, "screen" },
+    { ClientPattern::XPROP, "@" },
 };
 
 
@@ -129,16 +143,21 @@ Prop2String property_2_strings[] = { // sorted by 'prop'
  */
 struct ClientPattern::Term {
 
-    Term(const FbTk::FbString& _regstr, WinProperty _prop, bool _negate) :
-        orig(_regstr),
+    Term(const FbTk::FbString& _regstr, WinProperty _prop, bool _negate, const FbTk::FbString& _xprop) :
+        regstr(_regstr),
+        xpropstr(_xprop),
         regexp(_regstr, true),
         prop(_prop),
         negate(_negate) {
 
+        xprop = XInternAtom(FbTk::App::instance()->display(), xpropstr.c_str(), False);
     }
 
-    FbTk::FbString orig;
-    FbTk::RegExp regexp;
+    // (title=.*bar) or (@FOO=.*bar)
+    FbTk::FbString regstr;     // .*bar
+    FbTk::FbString xpropstr;  // @FOO=.*bar
+    Atom xprop;                // Atom of 'FOO'
+    FbTk::RegExp regexp;       // compiled version of '.*bar'
     WinProperty prop;
     bool negate;
 };
@@ -175,51 +194,65 @@ ClientPattern::ClientPattern(const char *str):
         err = FbTk::StringUtil::getStringBetween(match,
                                                  str + pos,
                                                  '(', ')', " \t\n", true);
+
         if (err > 0) {
-            // need to determine the property used
-            string memstr, expr;
-            WinProperty prop;
-            string::size_type eq = match.find_first_of('=');
-            if (eq == match.npos) {
-                memstr = match;
-                expr = "[current]";
-            } else {
-                memstr.assign(match, 0, eq); // memstr = our identifier
-                expr.assign(match, eq+1, match.length());
-            }
+
+            WinProperty prop = NAME;
+            std::string expr;
+            std::string xprop;
             bool negate = false;
-            if (!memstr.empty() && memstr[memstr.length()-1] == '!') {
-                negate = true;
-                memstr.assign(memstr, 0, memstr.length()-1);
+
+            // need to determine the property used, potential patterns:
+            //
+            //  A) foo               (short for 'title=foo')
+            //  B) foo=bar
+            //  C) foo!=bar
+            //
+            //  D) @foo=bar          (xproperty 'foo' equal to 'bar')
+            //
+
+            string propstr = match;
+            string::size_type eq = propstr.find_first_of('=');
+
+            if (eq == propstr.npos) {           // A
+                expr = "[current]";
+            } else {                            // B or C, so strip away the '='
+
+                // 'bar'
+                expr.assign(propstr.begin() + eq + 1, propstr.end());
+
+                // 'foo' or 'foo!'
+                propstr.resize(eq);
+                if (propstr.rfind("!", propstr.npos, 1) != propstr.npos) { // C 'foo!'
+                    negate = true;
+                    propstr.resize(propstr.size()-1);
+                }
             }
 
-            memstr = FbTk::StringUtil::toLower(memstr);
+            if (propstr[0] != '@') { // not D
 
-            Name2WinProperty key = { memstr.c_str(), CLASS };
-            Name2WinProperty* i = reinterpret_cast<Name2WinProperty*>(
-                bsearch(&key, name_2_winproperties,
-                    sizeof(name_2_winproperties) / sizeof(Name2WinProperty),
-                    sizeof(Name2WinProperty),
-                    name_2_winproperty_cmp));
+                const Name2WinProperty* p = find_winproperty_by_name(FbTk::StringUtil::toLower(propstr));
 
-            if (i) {
-                prop = i->prop;
-            } else {
-                prop = NAME;
-                expr = match;
+                if (p) {
+                    prop = p->prop;
+                } else {
+                    expr = match;
+                }
+            } else { // D
+                prop = XPROP;
+                xprop.assign(propstr, 1, propstr.size());
             }
 
-            had_error = !addTerm(expr, prop, negate);
+            had_error = !addTerm(expr, prop, negate, xprop);
             pos += err;
         }
     }
-    if (pos == 0 && !had_error) {
-        // no match terms given, this is not allowed
+    if (pos == 0 && !had_error) { // no match terms given, this is not allowed
         had_error = true;
     }
 
-    if (!had_error) {
-        // otherwise, we check for a number
+    if (!had_error) { // otherwise, we check for a number
+
         string number;
         err = FbTk::StringUtil::getStringBetween(number,
                                              str+pos,
@@ -251,23 +284,26 @@ ClientPattern::~ClientPattern() {
 
 // return a string representation of this pattern
 string ClientPattern::toString() const {
-    string pat;
+    string result;
     Terms::const_iterator it = m_terms.begin();
     Terms::const_iterator it_end = m_terms.end();
     for (; it != it_end; ++it) {
-
-        pat.append(" (");
-        pat.append(property_2_strings[(*it)->prop].str);
-        pat.append((*it)->orig);
-        pat.append(")");
+        const Term& term = *(*it);
+        result.append(" (");
+        result.append(property_2_strings[term.prop].str);
+        if (term.prop == XPROP)
+            result.append(term.xpropstr);
+        result.append(term.negate ? "!=" : "=");
+        result.append(term.regstr);
+        result.append(")");
     }
 
     if (m_matchlimit > 0) {
-        pat.append(" {");
-        pat.append(FbTk::StringUtil::number2String(m_matchlimit));
-        pat.append("}");
+        result.append(" {");
+        result.append(FbTk::StringUtil::number2String(m_matchlimit));
+        result.append("}");
     }
-    return pat;
+    return result;
 }
 
 // does this client match this pattern?
@@ -282,7 +318,10 @@ bool ClientPattern::match(const Focusable &win) const {
     Terms::const_iterator it_end = m_terms.end();
     for (; it != it_end; ++it) {
         const Term& term = *(*it);
-        if (term.orig == "[current]") {
+        if (term.prop == XPROP) {
+            if (!term.negate ^ (term.regexp.match(win.getTextProperty(term.xprop))))
+                return false;
+        } else if (term.regstr == "[current]") {
             WinClient *focused = FocusControl::focusedWindow();
             if (term.prop == WORKSPACE) {
                 if (!term.negate ^ (getProperty(term.prop, win) == FbTk::StringUtil::number2String(win.screen().currentWorkspaceID())))
@@ -293,7 +332,7 @@ bool ClientPattern::match(const Focusable &win) const {
                     return false;
             } else if (!focused || (!term.negate ^ (getProperty(term.prop, win) == getProperty(term.prop, *focused))))
                 return false;
-        } else if (term.prop == HEAD && term.orig == "[mouse]") {
+        } else if (term.prop == HEAD && term.regstr == "[mouse]") {
             if (!term.negate ^ (getProperty(term.prop, win) == FbTk::StringUtil::number2String(win.screen().getCurrHead())))
                 return false;
 
@@ -307,7 +346,7 @@ bool ClientPattern::dependsOnFocusedWindow() const {
     Terms::const_iterator it = m_terms.begin(), it_end = m_terms.end();
     for (; it != it_end; ++it) {
         if ((*it)->prop != WORKSPACE && (*it)->prop != WORKSPACENAME &&
-            (*it)->orig == "[current]")
+            (*it)->regstr == "[current]")
             return true;
     }
     return false;
@@ -317,7 +356,7 @@ bool ClientPattern::dependsOnCurrentWorkspace() const {
     Terms::const_iterator it = m_terms.begin(), it_end = m_terms.end();
     for (; it != it_end; ++it) {
         if (((*it)->prop == WORKSPACE || (*it)->prop == WORKSPACENAME) &&
-            (*it)->orig == "[current]")
+            (*it)->regstr == "[current]")
             return true;
     }
     return false;
@@ -326,17 +365,16 @@ bool ClientPattern::dependsOnCurrentWorkspace() const {
 // add an expression to match against
 // The first argument is a regular expression, the second is the member
 // function that we wish to match against.
-bool ClientPattern::addTerm(const FbTk::FbString &str, WinProperty prop, bool negate) {
+bool ClientPattern::addTerm(const FbTk::FbString &str, WinProperty prop, bool negate, const FbTk::FbString& xprop) {
 
     bool rc = false;
-    Term* term = new Term(str, prop, negate);
+    Term* term = new Term(str, prop, negate, xprop);
 
     if (!term)
         return rc;
 
-    if (!term->regexp.error()) {
+    if (rc = !term->regexp.error()) {
         m_terms.push_back(term);
-        rc = true;
     } else {
         delete term;
     }
@@ -424,8 +462,11 @@ bool ClientPattern::operator ==(const ClientPattern &pat) const {
     Terms::const_iterator other_it = pat.m_terms.begin();
     Terms::const_iterator other_it_end = pat.m_terms.end();
     for (; it != it_end && other_it != other_it_end; ++it, ++other_it) {
-        if ((*it)->orig != (*other_it)->orig ||
-            (*it)->negate != (*other_it)->negate)
+        const Term& i = *(*it);
+        const Term& o = *(*other_it);
+        if (i.regstr != o.regstr ||
+            i.negate != o.negate ||
+            i.xpropstr != o.xpropstr)
             return false;
     }
     if (it != it_end || other_it != other_it_end)
@@ -433,3 +474,4 @@ bool ClientPattern::operator ==(const ClientPattern &pat) const {
 
     return true;
 }
+

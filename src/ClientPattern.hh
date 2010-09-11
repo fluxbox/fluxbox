@@ -54,7 +54,8 @@ public:
     enum WinProperty {
         TITLE = 0, CLASS, NAME, ROLE, TRANSIENT,
         MAXIMIZED, MINIMIZED, SHADED, STUCK, FOCUSHIDDEN, ICONHIDDEN,
-        WORKSPACE, WORKSPACENAME, HEAD, LAYER, URGENT, SCREEN
+        WORKSPACE, WORKSPACENAME, HEAD, LAYER, URGENT, SCREEN,
+        XPROP
     };
 
     /// Does this client match this pattern?
@@ -70,9 +71,11 @@ public:
      * Add an expression to match against
      * @param str is a regular expression
      * @param prop is the member function that we wish to match against
+     * @param negate is if the term should be negated
+     * @param xprop is the name of the prop if prop is XPROP
      * @return false if the regexp wasn't valid
      */
-    bool addTerm(const FbTk::FbString &str, WinProperty prop, bool negate = false);
+    bool addTerm(const FbTk::FbString &str, WinProperty prop, bool negate = false, const FbTk::FbString& xprop = FbTk::FbString());
 
     void addMatch() { ++m_nummatches; }
     void removeMatch() { --m_nummatches; }
