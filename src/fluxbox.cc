@@ -530,37 +530,30 @@ void Fluxbox::ungrab() {
 */
 void Fluxbox::setupConfigFiles() {
 
-    bool create_init = false, create_keys = false, create_menu = false,
-         create_apps = false, create_overlay = false, create_windowmenu = false;
-
     string dirname = getDefaultDataFilename("");
-    string init_file = getDefaultDataFilename(m_RC_INIT_FILE);
-    string keys_file = getDefaultDataFilename("keys");
-    string menu_file = getDefaultDataFilename("menu");
-    string apps_file = getDefaultDataFilename("apps");
-    string overlay_file = getDefaultDataFilename("overlay");
-    string windowmenu_file = getDefaultDataFilename("windowmenu");
-
-    struct stat buf;
 
     // is file/dir already there?
-    if (! stat(dirname.c_str(), &buf)) {
+    const bool create_dir = FbTk::FileUtil::isDirectory(dirname.c_str());
 
-        // check if anything with those name exists, if not create new
-        if (stat(init_file.c_str(), &buf))
-            create_init = true;
-        if (stat(keys_file.c_str(), &buf))
-            create_keys = true;
-        if (stat(menu_file.c_str(), &buf))
-            create_menu = true;
-        if (stat(apps_file.c_str(), &buf))
-            create_apps = true;
-        if (stat(overlay_file.c_str(), &buf))
-            create_overlay = true;
-        if (stat(windowmenu_file.c_str(), &buf))
-            create_windowmenu = true;
+    struct CFInfo {
+        bool create_file;
+        const char* default_name;
+        const std::string filename;
+    } cfiles[] = {
+        { create_dir, DEFAULT_INITFILE, getDefaultDataFilename(m_RC_INIT_FILE) },
+        { create_dir, DEFAULTKEYSFILE, getDefaultDataFilename("keys") },
+        { create_dir, DEFAULTMENU, getDefaultDataFilename("menu") },
+        { create_dir, DEFAULT_APPSFILE, getDefaultDataFilename("apps") },
+        { create_dir, DEFAULT_OVERLAY, getDefaultDataFilename("overlay") },
+        { create_dir, DEFAULT_WINDOWMENU, getDefaultDataFilename("windowmenu") }
+    };
+    const size_t nr_of_cfiles = sizeof(cfiles)/sizeof(CFInfo);
 
-    } else {
+    if (create_dir) { // check if anything with those name exists, if not create new
+        for (size_t i = 0; i < nr_of_cfiles; ++i) {
+            cfiles[i].create_file = access(cfiles[i].filename.c_str(), F_OK);
+        }
+    } else{
         fbdbg<<"Creating dir: " << dirname.c_str() << endl;
         _FB_USES_NLS;
         // create directory with perm 700
@@ -572,35 +565,14 @@ void Fluxbox::setupConfigFiles() {
             cerr<<endl;
             return;
         }
-
-        //mark creation of files
-        create_init = create_keys = create_menu = create_apps = create_overlay =
-            create_windowmenu = true;
     }
 
-
-    // copy key configuration
-    if (create_keys)
-        FbTk::FileUtil::copyFile(DEFAULTKEYSFILE, keys_file.c_str());
-
-    // copy menu configuration
-    if (create_menu)
-        FbTk::FileUtil::copyFile(DEFAULTMENU, menu_file.c_str());
-
-    // copy apps file
-    if (create_apps)
-        FbTk::FileUtil::copyFile(DEFAULT_APPSFILE, apps_file.c_str());
-
-    // copy overlay file
-    if (create_overlay)
-        FbTk::FileUtil::copyFile(DEFAULT_OVERLAY, overlay_file.c_str());
-
-    // copy init file
-    if (create_init)
-        FbTk::FileUtil::copyFile(DEFAULT_INITFILE, init_file.c_str());
-
-    if (create_windowmenu)
-        FbTk::FileUtil::copyFile(DEFAULT_WINDOWMENU, windowmenu_file.c_str());
+    // copy default files if needed
+    for (size_t i = 0; i < nr_of_cfiles; ++i) {
+        if (cfiles[i].create_file) {
+            FbTk::FileUtil::copyFile(cfiles[i].default_name, cfiles[i].filename.c_str());
+        }
+    }
 
 #define CONFIG_VERSION 13
     FbTk::Resource<int> config_version(m_resourcemanager, 0,
@@ -609,7 +581,7 @@ void Fluxbox::setupConfigFiles() {
         // configs are out of date, so run fluxbox-update_configs
 
         string commandargs = realProgramName("fluxbox-update_configs");
-        commandargs += " -rc " + init_file;
+        commandargs += " -rc " + cfiles[0].filename;
 
 #ifdef HAVE_GETPID
         // add the fluxbox pid so fbuc can have us reload rc if necessary
