@@ -23,6 +23,7 @@
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
 
+#include <string>
 #include <X11/Xlib.h>
 
 class FluxboxWindow;
@@ -61,6 +62,10 @@ public:
 
     /// should this object be updated or not?
     bool update() const { return m_update; }
+
+    void setName(const std::string& name) { m_name = name; }
+    const std::string& getName() const { return m_name; }
+
 protected:
     AtomHandler():m_update(true) { }
 
@@ -68,6 +73,7 @@ protected:
     void enableUpdate() { m_update = true; }
 private:
     bool m_update; ///< do we get update or not
+    std::string m_name; ///< name of atomhandler
 };
 
 #endif // ATOMHANDLER_HH

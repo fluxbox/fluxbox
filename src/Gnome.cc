@@ -44,6 +44,7 @@ using std::hex;
 using std::dec;
 
 Gnome::Gnome() {
+    setName("gnome");
     createAtoms();
     enableUpdate();
 }

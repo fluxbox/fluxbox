@@ -617,6 +617,8 @@ Remember::Remember():
     m_pats(new Patterns()),
     m_reloader(new FbTk::AutoReloadHelper()) {
 
+    setName("remember");
+
     if (s_instance != 0)
         throw string("Can not create more than one instance of Remember");
 

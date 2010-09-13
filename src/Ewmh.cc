@@ -477,6 +477,7 @@ enum EwmhMoveResizeDirection {
 };
 
 Ewmh::Ewmh() {
+    setName("ewmh");
     m_net = new EwmhAtoms;
 }
 

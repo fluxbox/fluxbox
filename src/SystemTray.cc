@@ -195,7 +195,8 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
 
     m_handler.reset(new SystemTrayHandler(*this));
 
-    fluxbox->addAtomHandler(m_handler.get(), atom_name);
+    m_handler.get()->setName(atom_name);
+    fluxbox->addAtomHandler(m_handler.get());
 
 
     // send selection owner msg

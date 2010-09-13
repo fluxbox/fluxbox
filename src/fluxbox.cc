@@ -373,17 +373,17 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
 #ifdef USE_NEWWMSPEC
-    addAtomHandler(new Ewmh(), "ewmh"); // for Extended window manager atom support
+    addAtomHandler(new Ewmh()); // for Extended window manager atom support
 #endif // USE_NEWWMSPEC
 #ifdef USE_GNOME
-    addAtomHandler(new Gnome(), "gnome"); // for gnome 1 atom support
+    addAtomHandler(new Gnome()); // for gnome 1 atom support
 #endif //USE_GNOME
     // parse apps file after creating screens (so we can tell if it's a restart
     // for [startup] items) but before creating windows
     // this needs to be after ewmh and gnome, so state atoms don't get
     // overwritten before they're applied
 #ifdef REMEMBER
-    addAtomHandler(new Remember(), "remember"); // for remembering window attribs
+    addAtomHandler(new Remember()); // for remembering window attribs
 #endif // REMEMBER
 
     // init all "screens"
@@ -425,18 +425,9 @@ Fluxbox::~Fluxbox() {
     leaveAll(); // leave all connections
 
     // destroy screens (after others, as they may do screen things)
-    while (!m_screen_list.empty()) {
-        delete m_screen_list.back();
-        m_screen_list.pop_back();
-    }
+    FbTk::STLUtil::destroyAndClear(m_screen_list);
 
-    // destroy atomhandlers
-    for (AtomHandlerContainerIt it= m_atomhandler.begin();
-         it != m_atomhandler.end();
-         it++) {
-        delete (*it).first;
-    }
-    m_atomhandler.clear();
+    FbTk::STLUtil::destroyAndClear(m_atomhandler);
 }
 
 
@@ -470,7 +461,7 @@ void Fluxbox::initScreen(BScreen *screen) {
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end();
          it++) {
-        (*it).first->initForScreen(*screen);
+        (*it)->initForScreen(*screen);
     }
 
     FocusControl::revertFocus(*screen); // make sure focus style is correct
@@ -758,7 +749,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         // but some special cases like ewmh propertys needs to be checked
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++) {
-            if ( (*it).first->propertyNotify(*winclient, e->xproperty.atom))
+            if ( (*it)->propertyNotify(*winclient, e->xproperty.atom))
                 break;
         }
     } break;
@@ -927,7 +918,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         // it's up to the atomhandler to check that
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++) {
-            (*it).first->checkClientMessage(ce, screen, winclient);
+            (*it)->checkClientMessage(ce, screen, winclient);
         }
 
     }
@@ -999,8 +990,8 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     if (fbwin && &fbwin->stateSig() == changedsub) { // state signal
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); ++it) {
-            if ((*it).first->update())
-                (*it).first->updateState(*fbwin);
+            if ((*it)->update())
+                (*it)->updateState(*fbwin);
         }
         // if window changed to iconic state
         // add to icon list
@@ -1024,14 +1015,14 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (fbwin && &fbwin->layerSig() == changedsub) { // layer signal
         AtomHandlerContainerIt it= m_atomhandler.begin();
         for (; it != m_atomhandler.end(); ++it) {
-            if ((*it).first->update())
-                (*it).first->updateLayer(*fbwin);
+            if ((*it)->update())
+                (*it)->updateLayer(*fbwin);
         }
     } else if (fbwin && &fbwin->dieSig() == changedsub) { // window death signal
         AtomHandlerContainerIt it= m_atomhandler.begin();
         for (; it != m_atomhandler.end(); ++it) {
-            if ((*it).first->update())
-                (*it).first->updateFrameClose(*fbwin);
+            if ((*it)->update())
+                (*it)->updateFrameClose(*fbwin);
         }
 
         // make sure each workspace get this
@@ -1042,14 +1033,14 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (fbwin && &fbwin->workspaceSig() == changedsub) {  // workspace signal
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); ++it) {
-            if ((*it).first->update())
-                (*it).first->updateWorkspace(*fbwin);
+            if ((*it)->update())
+                (*it)->updateWorkspace(*fbwin);
         }
     } else if (client && &client->dieSig() == changedsub) { // client death
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); ++it) {
-            if ((*it).first->update())
-                (*it).first->updateClientClose(*client);
+            if ((*it)->update())
+                (*it)->updateClientClose(*client);
         }
 
         BScreen &screen = client->screen();
@@ -1081,7 +1072,7 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.dieSig().attach(this);
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
-        (*it).first->setupFrame(win);
+        (*it)->setupFrame(win);
     }
 }
 
@@ -1090,7 +1081,7 @@ void Fluxbox::attachSignals(WinClient &winclient) {
 
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
-        (*it).first->setupClient(winclient);
+        (*it)->setupClient(winclient);
     }
 }
 
@@ -1109,29 +1100,21 @@ BScreen *Fluxbox::searchScreen(Window window) {
 
 AtomHandler* Fluxbox::getAtomHandler(const string &name) {
     if ( name != "" ) {
-        using namespace FbTk;
-        AtomHandlerContainerIt it = find_if(m_atomhandler.begin(),
-                                            m_atomhandler.end(),
-                                            Compose(bind2nd(equal_to<string>(), name),
-                                                    Select2nd<AtomHandlerContainer::value_type>()));
-        if (it != m_atomhandler.end())
-            return (*it).first;
+
+        AtomHandlerContainerIt it;
+        for (it = m_atomhandler.begin(); it != m_atomhandler.end(); it++) {
+            if (name == (*it)->getName())
+                return *it;
+        }
     }
     return 0;
 }
-void Fluxbox::addAtomHandler(AtomHandler *atomh, const string &name) {
-    m_atomhandler[atomh]= name;
+void Fluxbox::addAtomHandler(AtomHandler *atomh) {
+    m_atomhandler.insert(atomh);
 }
 
 void Fluxbox::removeAtomHandler(AtomHandler *atomh) {
-    for (AtomHandlerContainerIt it= m_atomhandler.begin();
-         it != m_atomhandler.end();
-         ++it) {
-        if ((*it).first == atomh) {
-            m_atomhandler.erase(it);
-            return;
-        }
-    }
+    m_atomhandler.erase(atomh);
 }
 
 WinClient *Fluxbox::searchWindow(Window window) {
@@ -1387,7 +1370,7 @@ void Fluxbox::real_reconfigure() {
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end();
          it++) {
-        (*it).first->reconfigure();
+        (*it)->reconfigure();
     }
 }
 
@@ -1453,39 +1436,39 @@ void Fluxbox::updateFrameExtents(FluxboxWindow &win) {
     AtomHandlerContainerIt it = m_atomhandler.begin();
     AtomHandlerContainerIt it_end = m_atomhandler.end();
     for (; it != it_end; ++it ) {
-        (*it).first->updateFrameExtents(win);
+        (*it)->updateFrameExtents(win);
     }
 }
 
 void Fluxbox::workspaceCountChanged( BScreen& screen ) {
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
-        if ((*it).first->update())
-            (*it).first->updateWorkspaceCount(screen);
+        if ((*it)->update())
+            (*it)->updateWorkspaceCount(screen);
     }
 }
 
 void Fluxbox::workspaceChanged( BScreen& screen ) {
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
-        if ((*it).first->update())
-            (*it).first->updateCurrentWorkspace(screen);
+        if ((*it)->update())
+            (*it)->updateCurrentWorkspace(screen);
     }
 }
 
 void Fluxbox::workspaceNamesChanged(BScreen &screen) {
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
-        if ((*it).first->update())
-            (*it).first->updateWorkspaceNames(screen);
+        if ((*it)->update())
+            (*it)->updateWorkspaceNames(screen);
     }
 }
 
 void Fluxbox::clientListChanged(BScreen &screen) {
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
-        if ((*it).first->update())
-            (*it).first->updateClientList(screen);
+        if ((*it)->update())
+            (*it)->updateClientList(screen);
     }
 }
 
@@ -1494,14 +1477,14 @@ void Fluxbox::focusedWindowChanged(BScreen &screen,
                                    WinClient* client) {
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); it++) {
-        (*it).first->updateFocusedWindow(screen, client ? client->window() : 0 );
+        (*it)->updateFocusedWindow(screen, client ? client->window() : 0 );
     }
 }
 
 void Fluxbox::workspaceAreaChanged(BScreen &screen) {
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
-        if ((*it).first->update())
-            (*it).first->updateWorkarea(screen);
+        if ((*it)->update())
+            (*it)->updateWorkarea(screen);
     }
 }

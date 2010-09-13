@@ -106,7 +106,7 @@ public:
     Time getLastTime() const { return m_last_time; }
 
     AtomHandler *getAtomHandler(const std::string &name);
-    void addAtomHandler(AtomHandler *atomh, const std::string &name);
+    void addAtomHandler(AtomHandler *atomh);
     void removeAtomHandler(AtomHandler *atomh);
 
     /// obsolete
@@ -277,7 +277,7 @@ private:
     //default arguments for titlebar left and right
     static Fluxbox *s_singleton;
 
-    typedef std::map<AtomHandler *, std::string> AtomHandlerContainer;
+    typedef std::set<AtomHandler *> AtomHandlerContainer;
     typedef AtomHandlerContainer::iterator AtomHandlerContainerIt;
 
     AtomHandlerContainer m_atomhandler;
