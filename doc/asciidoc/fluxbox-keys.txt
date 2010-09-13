@@ -395,10 +395,12 @@ doing so.
 *FocusLeft* / *FocusRight* / *FocusUp* / *FocusDown*::
 	Focus to the next window which is located in the direction specified.
 
-*ArrangeWindows* 'pattern'::
-	Tries to arrange all windows on the current workspace so that they
-	overlap the least amount possible. See *CLIENT PATTERNS* for more about
-	the 'pattern' arguments.
+*ArrangeWindows* 'pattern' / *ArrangeWindowsVertical* 'pattern' / *ArrangeWindowsHorizontal* 'pattern'::
+	Tries to arrange all windows on the current workspace so that they overlap the
+	least amount possible. *ArrangeWindowsVertical* prefers vertical splits
+	(windows side by side), whereas *ArrangeWindowsHorizontal* prefers horizontal
+	splits (windows on top of eachother). See *CLIENT PATTERNS* for more about the
+	'pattern' arguments.
 
 *ShowDesktop*::
 	Minimizes all windows on the current workspace. If they are already all

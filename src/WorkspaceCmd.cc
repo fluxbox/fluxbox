@@ -177,8 +177,16 @@ FbTk::Command<void> *parseWindowList(const string &command,
     else if (command == "prevgroup") {
         opts |= FocusableList::LIST_GROUPS;
         return new PrevWindowCmd(opts, pat);
-    } else if (command == "arrangewindows")
-        return new ArrangeWindowsCmd(pat);
+    } else if (command == "arrangewindows") {
+        int method = ArrangeWindowsCmd::UNSPECIFIED;
+        return new ArrangeWindowsCmd(method,pat);
+    } else if (command == "arrangewindowsvertical") {
+        int method = ArrangeWindowsCmd::VERTICAL;
+        return new ArrangeWindowsCmd(method,pat);
+    } else if (command == "arrangewindowshorizontal") {
+        int method = ArrangeWindowsCmd::HORIZONTAL;
+        return new ArrangeWindowsCmd(method,pat);
+    }
     return 0;
 }
 
@@ -188,6 +196,8 @@ REGISTER_COMMAND_PARSER(nextgroup, parseWindowList, void);
 REGISTER_COMMAND_PARSER(prevwindow, parseWindowList, void);
 REGISTER_COMMAND_PARSER(prevgroup, parseWindowList, void);
 REGISTER_COMMAND_PARSER(arrangewindows, parseWindowList, void);
+REGISTER_COMMAND_PARSER(arrangewindowsvertical, parseWindowList, void);
+REGISTER_COMMAND_PARSER(arrangewindowshorizontal, parseWindowList, void);
 
 } // end anonymous namespace
 
@@ -404,7 +414,8 @@ void ArrangeWindowsCmd::execute() {
     // try to get the same number of rows as columns.
     unsigned int cols = int(sqrt((float)win_count));  // truncate to lower
     unsigned int rows = int(0.99 + float(win_count) / float(cols));
-    if (max_width<max_height) {    // rotate
+    if (  (m_tile_method == VERTICAL) ||  // rotate if the user has asked for it or automagically
+          ( (m_tile_method == UNSPECIFIED) && (max_width<max_height)) ) {
         std::swap(cols, rows);
     }
 
