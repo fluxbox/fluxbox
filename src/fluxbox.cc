@@ -44,6 +44,7 @@
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/Util.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/XrmDatabaseHelper.hh"
@@ -347,11 +348,10 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
 
     // create screens
     for (size_t s = 0; s < screens.size(); s++) {
-        char scrname[128], altscrname[128];
-        sprintf(scrname, "session.screen%d", screens[s]);
-        sprintf(altscrname, "session.Screen%d", screens[s]);
+        std::string sc_nr = FbTk::StringUtil::number2String(screens[s]);
         BScreen *screen = new BScreen(m_screen_rm.lock(),
-                                      scrname, altscrname,
+                                      std::string("session.screen") + sc_nr,
+                                      std::string("session.Screen") + sc_nr,
                                       screens[s], ::Layer::NUM_LAYERS);
 
         // already handled
@@ -576,17 +576,13 @@ void Fluxbox::setupConfigFiles() {
 
 #ifdef HAVE_GETPID
         // add the fluxbox pid so fbuc can have us reload rc if necessary
-        pid_t bpid = getpid();
-        char intbuff[64];
-        sprintf(intbuff, "%d", bpid);
         commandargs += " -pid ";
-        commandargs += intbuff;
+        commandargs += FbTk::StringUtil::number2String(getpid());
 #endif // HAVE_GETPID
 
         FbCommands::ExecuteCmd fbuc(commandargs, 0);
         fbuc.execute();
     }
-
 }
 
 void Fluxbox::handleEvent(XEvent * const e) {
@@ -756,11 +752,11 @@ void Fluxbox::handleEvent(XEvent * const e) {
     case EnterNotify: {
 
         m_last_time = e->xcrossing.time;
-        BScreen *screen = 0;
 
         if (e->xcrossing.mode == NotifyGrab)
             break;
 
+        BScreen *screen = 0;
         if ((e->xcrossing.window == e->xcrossing.root) &&
             (screen = searchScreen(e->xcrossing.window))) {
             screen->imageControl().installRootColormap();
@@ -775,7 +771,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case KeyRelease:
     case KeyPress:
-	break;
+        break;
     case ColormapNotify: {
         BScreen *screen = searchScreen(e->xcolormap.window);
 
@@ -822,10 +818,10 @@ void Fluxbox::handleEvent(XEvent * const e) {
              !winclient->fbwindow()->isMoving()))
             revertFocus();
     }
-	break;
+        break;
     case ClientMessage:
         handleClientMessage(e->xclient);
-	break;
+        break;
     default: {
 
 #ifdef HAVE_RANDR
@@ -1194,8 +1190,6 @@ void Fluxbox::save_rc() {
     _FB_USES_NLS;
     XrmDatabase new_blackboxrc = 0;
 
-    char rc_string[1024];
-
     string dbfile(getRcFilename());
 
     if (!dbfile.empty()) {
@@ -1204,28 +1198,25 @@ void Fluxbox::save_rc() {
     } else
         cerr<<_FB_CONSOLETEXT(Fluxbox, BadRCFile, "rc filename is invalid!", "Bad settings file")<<endl;
 
+
     ScreenList::iterator it = m_screen_list.begin();
     ScreenList::iterator it_end = m_screen_list.end();
-
-    //Save screen resources
-
     for (; it != it_end; ++it) {
         BScreen *screen = *it;
-        int screen_number = screen->screenNumber();
+
+        std::string workspaces_string("session.screen");
+        workspaces_string += FbTk::StringUtil::number2String(screen->screenNumber());
+        workspaces_string += ".workspaceNames: ";
 
         // these are static, but may not be saved in the users resource file,
         // writing these resources will allow the user to edit them at a later
         // time... but loading the defaults before saving allows us to rewrite the
         // users changes...
 
-        // write out the users workspace names
-        sprintf(rc_string, "session.screen%d.workspaceNames: ", screen_number);
-        string workspaces_string(rc_string);
-
-        const vector<string> names = screen->getWorkspaceNames();
+        const BScreen::WorkspaceNames& names = screen->getWorkspaceNames();
         for (size_t i=0; i < names.size(); i++) {
-            workspaces_string.append(FbTk::FbStringUtil::FbStrToLocale(names[i]));
-            workspaces_string.append(",");
+            workspaces_string += FbTk::FbStringUtil::FbStrToLocale(names[i]);
+            workspaces_string += ',';
         }
 
         XrmPutLineResource(&new_blackboxrc, workspaces_string.c_str());
@@ -1284,10 +1275,7 @@ void Fluxbox::load_rc() {
         m_rc_slitlistfile.setFromString(filename.c_str());
     }
 
-    if (*m_rc_colors_per_channel < 2)
-        *m_rc_colors_per_channel = 2;
-    else if (*m_rc_colors_per_channel > 6)
-        *m_rc_colors_per_channel = 6;
+    *m_rc_colors_per_channel = FbTk::Util::clamp(*m_rc_colors_per_channel, 2, 6);
 
     if (m_rc_stylefile->empty())
         *m_rc_stylefile = DEFAULTSTYLE;
@@ -1304,16 +1292,21 @@ void Fluxbox::load_rc(BScreen &screen) {
     if (database==0)
         database = XrmGetFileDatabase(DEFAULT_INITFILE);
 
-    XrmValue value;
-    char *value_type, name_lookup[1024], class_lookup[1024];
-    int screen_number = screen.screenNumber();
-
 
     screen.removeWorkspaceNames();
 
-    sprintf(name_lookup, "session.screen%d.workspaceNames", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
+    std::string screen_number = FbTk::StringUtil::number2String(screen.screenNumber());
+
+    std::string name_lookup("session.screen");
+    name_lookup += screen_number;
+    name_lookup += ".WorkspaceNames";
+    std::string class_lookup("session.screen");
+    class_lookup += screen_number;
+    class_lookup += ".WorkspaceNames";
+
+    XrmValue value;
+    char *value_type;
+    if (XrmGetResource(*database, name_lookup.c_str(), class_lookup.c_str(), &value_type,
                        &value)) {
 
         string values(value.addr);

@@ -598,16 +598,9 @@ void FbWinFrame::addRightButton(FbTk::Button *btn) {
 }
 
 void FbWinFrame::removeAllButtons() {
-    // destroy left side
-    while (!m_buttons_left.empty()) {
-        delete m_buttons_left.back();
-        m_buttons_left.pop_back();
-    }
-    // destroy right side
-    while (!m_buttons_right.empty()) {
-        delete m_buttons_right.back();
-        m_buttons_right.pop_back();
-    }
+
+    FbTk::STLUtil::destroyAndClear(m_buttons_left);
+    FbTk::STLUtil::destroyAndClear(m_buttons_right);
 }
 
 void FbWinFrame::createTab(FbTk::Button &button) {
