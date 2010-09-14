@@ -43,25 +43,22 @@ namespace {
 
 Pixmap *root_pixmaps = 0;
 
-const char* root_prop_ids[] = {
-    "_XROOTPMAP_ID",
-    "_XSETROOT_ID",
-    0
+struct RootProps {
+    const char* name;
+    Atom atom;
 };
 
-// same number as in root_prop_ids
-Atom root_prop_atoms[] = {
-    None,
-    None,
-    None
+struct RootProps root_props[] = {
+    { "_XROOTPMAP_ID", None },
+    { "_XSETROOT_ID", None }
 };
 
 void checkAtoms() {
 
     Display* display = FbTk::App::instance()->display();
-    for (int i=0; root_prop_ids[i] != 0; ++i) {
-        if (root_prop_atoms[i] == None) {
-            root_prop_atoms[i] = XInternAtom(display, root_prop_ids[i], False);
+    for (size_t i = 0; i < sizeof(root_props)/sizeof(RootProps); ++i) {
+        if (root_props[i].atom == None) {
+            root_props[i].atom = XInternAtom(display, root_props[i].name, False);
         }
     }
 }
@@ -372,8 +369,8 @@ bool FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
         return false;
 
     checkAtoms();
-    for (int i=0; root_prop_ids[i] != 0; ++i) {
-        if (root_prop_atoms[i] == atom) {
+    for (int i=0; i < sizeof(root_props)/sizeof(RootProps); ++i) {
+        if (root_props[i].atom == atom) {
             Pixmap root_pm = None;
             Atom real_type;
             int real_format;
@@ -382,7 +379,7 @@ bool FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
 
             if (XGetWindowProperty(display(),
                                    RootWindow(display(), screen_num),
-                                   root_prop_atoms[i],
+                                   root_props[i].atom,
                                    0l, 1l,
                                    False, XA_PIXMAP,
                                    &real_type, &real_format,
@@ -427,6 +424,8 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
     if (root_pixmaps && !force_update)
         return root_pixmaps[screen_num];
 
+    checkAtoms();
+
     // else setup pixmap cache
     int numscreens = ScreenCount(display());
     for (int i=0; i < numscreens; ++i) {
@@ -435,32 +434,31 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
         unsigned long items_read, items_left;
         unsigned long *data;
 
-        unsigned int prop = 0;
-
         static bool print_error = true; // print error_message only once
-        static const char* error_message = {
-            "\n\n !!! WARNING WARNING WARNING WARNING !!!!!\n"
-            "   if you experience problems with transparency:\n"
-            "   you are using a wallpapersetter that \n"
-            "   uses _XSETROOT_ID .. which we do not support.\n"
-            "   consult 'fbsetbg -i' or try any other wallpapersetter\n"
-            "   that uses _XROOTPMAP_ID !\n"
-            " !!! WARNING WARNING WARNING WARNING !!!!!!\n\n"
-        };
 
         Pixmap root_pm = None;
-        for (prop = 0; root_prop_ids[prop]; prop++) {
-            checkAtoms();
+
+        unsigned int prop = 0;
+        for (prop = 0; prop < sizeof(root_props)/sizeof(RootProps); ++prop) {
             if (XGetWindowProperty(display(),
                                    RootWindow(display(), i),
-                                   root_prop_atoms[prop],
+                                   root_props[prop].atom,
                                    0l, 1l,
                                    False, XA_PIXMAP,
                                    &real_type, &real_format,
                                    &items_read, &items_left,
                                    (unsigned char **) &data) == Success) {
                 if (real_format == 32 && items_read == 1) {
-                    if (print_error && strcmp(root_prop_ids[prop], "_XSETROOT_ID") == 0) {
+                    if (print_error && strcmp(root_props[prop].name, "_XSETROOT_ID") == 0) {
+                        static const char* error_message = {
+                            "\n\n !!! WARNING WARNING WARNING WARNING !!!!!\n"
+                            "   if you experience problems with transparency:\n"
+                            "   you are using a wallpapersetter that \n"
+                            "   uses _XSETROOT_ID .. which we do not support.\n"
+                            "   consult 'fbsetbg -i' or try any other wallpapersetter\n"
+                            "   that uses _XROOTPMAP_ID !\n"
+                            " !!! WARNING WARNING WARNING WARNING !!!!!!\n\n"
+                        };
                         cerr<<error_message;
                         print_error = false;
                     } else
@@ -507,3 +505,4 @@ void FbPixmap::create(Drawable src,
 }
 
 } // end namespace FbTk
+
