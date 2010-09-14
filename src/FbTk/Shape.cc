@@ -134,7 +134,7 @@ void initCorners(FbWindow& win) {
 
 void cleanCorners() {
 
-    if (nr_shapes == 0) {
+    if (nr_shapes == 1) {
         s_corners.clear();
     } else {
         nr_shapes--; // refcounting
