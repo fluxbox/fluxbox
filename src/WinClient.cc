@@ -57,6 +57,24 @@ using std::cerr;
 using std::hex;
 using std::dec;
 
+namespace {
+
+void sendMessage(const WinClient& win, Atom atom, Time time) {
+    XEvent ce;
+    ce.xclient.type = ClientMessage;
+    ce.xclient.message_type = FbAtoms::instance()->getWMProtocolsAtom();
+    ce.xclient.display = win.display();
+    ce.xclient.window = win.window();
+    ce.xclient.format = 32;
+    ce.xclient.data.l[0] = atom;
+    ce.xclient.data.l[1] = time;
+    ce.xclient.data.l[2] = 0l;
+    ce.xclient.data.l[3] = 0l;
+    ce.xclient.data.l[4] = 0l;
+    XSendEvent(win.display(), win.window(), false, NoEventMask, &ce);
+}
+
+} // end of anonymous namespace
 
 WinClient::TransientWaitMap WinClient::s_transient_wait;
 
@@ -176,19 +194,7 @@ bool WinClient::sendFocus() {
         " window = 0x"<<hex<<window()<<dec<<endl;
 
     // setup focus msg
-    XEvent ce;
-    ce.xclient.type = ClientMessage;
-    ce.xclient.message_type = FbAtoms::instance()->getWMProtocolsAtom();
-    ce.xclient.display = display();
-    ce.xclient.window = window();
-    ce.xclient.format = 32;
-    ce.xclient.data.l[0] = FbAtoms::instance()->getWMTakeFocusAtom();
-    ce.xclient.data.l[1] = Fluxbox::instance()->getLastTime();
-    ce.xclient.data.l[2] = 0l;
-    ce.xclient.data.l[3] = 0l;
-    ce.xclient.data.l[4] = 0l;
-    // send focus msg
-    XSendEvent(display(), window(), false, NoEventMask, &ce);
+    sendMessage(*this, FbAtoms::instance()->getWMTakeFocusAtom(), Fluxbox::instance()->getLastTime());
     FocusControl::setExpectingFocus(this);
     return true;
 }
@@ -198,20 +204,7 @@ void WinClient::sendClose(bool forceful) {
         XKillClient(display(), window());
     else {
         // send WM_DELETE message
-        // fill in XClientMessage structure for delete message
-        XEvent ce;
-        ce.xclient.type = ClientMessage;
-        ce.xclient.message_type = FbAtoms::instance()->getWMProtocolsAtom();
-        ce.xclient.display = display();
-        ce.xclient.window = window();
-        ce.xclient.format = 32;
-        ce.xclient.data.l[0] = FbAtoms::instance()->getWMDeleteAtom();
-        ce.xclient.data.l[1] = CurrentTime;
-        ce.xclient.data.l[2] = 0l;
-        ce.xclient.data.l[3] = 0l;
-        ce.xclient.data.l[4] = 0l;
-        // send event delete message to client window
-        XSendEvent(display(), window(), false, NoEventMask, &ce);
+        sendMessage(*this, FbAtoms::instance()->getWMDeleteAtom(), CurrentTime);
     }
 }
 
@@ -437,7 +430,7 @@ Window WinClient::getGroupLeftWindow() const {
     int format;
     Atom atom_return;
     unsigned long num = 0, len = 0;
-    Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
+    static Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
 
     Window *data = 0;
     if (property(group_left_hint, 0,
@@ -462,7 +455,7 @@ Window WinClient::getGroupLeftWindow() const {
 void WinClient::setGroupLeftWindow(Window win) {
     if (m_screen.isShuttingdown())
         return;
-    Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
+    static Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
     changeProperty(group_left_hint, XA_WINDOW, 32,
                    PropModeReplace, (unsigned char *) &win, 1);
 }
@@ -473,7 +466,7 @@ bool WinClient::hasGroupLeftWindow() const {
     int format;
     Atom atom_return;
     unsigned long num = 0, len = 0;
-    Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
+    static Atom group_left_hint = XInternAtom(display(), "_FLUXBOX_GROUP_LEFT", False);
 
     Window *data = 0;
     if (property(group_left_hint, 0,
