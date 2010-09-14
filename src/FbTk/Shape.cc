@@ -151,7 +151,9 @@ void cleanCorners() {
 
     if (nr_shapes == 1) {
         s_corners.clear();
-    } else {
+    }
+
+    if (nr_shapes > 0) {
         nr_shapes--; // refcounting
     }
 }
