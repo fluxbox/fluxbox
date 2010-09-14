@@ -50,6 +50,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <iostream>
 
 using std::min;
 
@@ -57,9 +58,7 @@ namespace FbTk {
 
 namespace {
 /* rows is an array of 8 bytes, i.e. 8x8 bits */
-Pixmap makePixmap(FbWindow &drawable, const unsigned char rows[]) {
-
-    Display *disp = App::instance()->display();
+Pixmap makePixmap(Display* disp, int screen_nr, Window parent, const unsigned char rows[]) {
 
     const size_t data_size = 8 * 8;
     // we use malloc here so we get consistent C alloc/free with XDestroyImage
@@ -71,7 +70,7 @@ Pixmap makePixmap(FbWindow &drawable, const unsigned char rows[]) {
     memset(data, 0xFF, data_size);
 
     XImage *ximage = XCreateImage(disp,
-                                  DefaultVisual(disp, drawable.screenNumber()),
+                                  DefaultVisual(disp, screen_nr),
                                   1,
                                   XYPixmap, 0,
                                   data,
@@ -90,7 +89,7 @@ Pixmap makePixmap(FbWindow &drawable, const unsigned char rows[]) {
         }
     }
 
-    FbPixmap pm(drawable, 8, 8, 1);
+    FbPixmap pm(parent, 8, 8, 1);
     GContext gc(pm);
 
     XPutImage(disp, pm.drawable(), gc.gc(), ximage, 0, 0, 0, 0,
@@ -102,10 +101,14 @@ Pixmap makePixmap(FbWindow &drawable, const unsigned char rows[]) {
 }
 
 struct CornerPixmaps {
+    CornerPixmaps() : do_create(true) { }
+
     FbPixmap topleft;
     FbPixmap topright;
     FbPixmap botleft;
     FbPixmap botright;
+
+    bool do_create;
 };
 
 // unfortunately, we need a separate pixmap per screen
@@ -113,21 +116,33 @@ std::vector<CornerPixmaps> s_corners;
 
 unsigned long nr_shapes = 0;
 
-void initCorners(FbWindow& win) {
+void initCorners(int screen) {
 
+    Display* disp = App::instance()->display();
     if (s_corners.empty())
-        s_corners.resize(ScreenCount(App::instance()->display()));
+        s_corners.resize(ScreenCount(disp));
+
+
+    if (screen < 0 || screen > static_cast<int>(s_corners.size())) {
+        std::cerr << "FbTk/Shape.cc:initCorners(), invalid argument: " << screen << "\n";
+        return;
+    }
 
     static const unsigned char left_bits[] = { 0xc0, 0xf8, 0xfc, 0xfe, 0xfe, 0xfe, 0xff, 0xff };
     static const unsigned char right_bits[] = { 0x03, 0x1f, 0x3f, 0x7f, 0x7f, 0x7f, 0xff, 0xff};
     static const unsigned char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
     static const unsigned char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
 
-    const int screen_num = win.screenNumber();
-    s_corners[screen_num].topleft = makePixmap(win, left_bits);
-    s_corners[screen_num].topright = makePixmap(win, right_bits);
-    s_corners[screen_num].botleft = makePixmap(win, bottom_left_bits);
-    s_corners[screen_num].botright = makePixmap(win, bottom_right_bits);
+    CornerPixmaps& corners = s_corners[screen];
+    if (corners.do_create) {
+
+        Window root = RootWindow(disp, screen);
+        corners.topleft = makePixmap(disp, screen, root, left_bits);
+        corners.topright = makePixmap(disp, screen, root, right_bits);
+        corners.botleft = makePixmap(disp, screen, root, bottom_left_bits);
+        corners.botright = makePixmap(disp, screen, root, bottom_right_bits);
+        corners.do_create = false;
+    }
 
     nr_shapes++; // refcounting
 }
@@ -151,7 +166,7 @@ Shape::Shape(FbWindow &win, int shapeplaces):
     m_shapeplaces(shapeplaces) {
 
 #ifdef SHAPE
-    initCorners(win);
+    initCorners(win.screenNumber());
 #endif
 
     update();
@@ -287,7 +302,7 @@ void Shape::update() {
     XDestroyRegion(clip);
     XDestroyRegion(bound);
 
-    CornerPixmaps &corners = s_corners[m_win->screenNumber()];
+   const CornerPixmaps &corners = s_corners[m_win->screenNumber()];
 #define SHAPECORNER(corner, x, y, shapekind)            \
     XShapeCombineMask(App::instance()->display(), \
                       m_win->window(),                  \
