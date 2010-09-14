@@ -1299,7 +1299,7 @@ void Fluxbox::load_rc(BScreen &screen) {
 
     std::string name_lookup("session.screen");
     name_lookup += screen_number;
-    name_lookup += ".WorkspaceNames";
+    name_lookup += ".workspaceNames";
     std::string class_lookup("session.screen");
     class_lookup += screen_number;
     class_lookup += ".WorkspaceNames";
