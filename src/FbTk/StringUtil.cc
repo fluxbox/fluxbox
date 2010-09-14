@@ -183,7 +183,7 @@ string findExtension(const string &filename) {
 string::size_type findCharFromAlphabetAfterTrigger(const std::string& in, char trigger, const char alphabet[], size_t len_alphabet, size_t* found) {
     for (const char* s = in.c_str(); *s != '\0'; ) {
         if (*s++ == trigger && *s != '\0') {
-            for (const char* a = alphabet; (a - alphabet) < len_alphabet; ++a) {
+            for (const char* a = alphabet; (a - alphabet) < static_cast<ssize_t>(len_alphabet); ++a) {
                 if (*s == *a) {
                     if (found) {
                         *found = a - alphabet;

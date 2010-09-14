@@ -126,6 +126,7 @@ const FbString& BiDiString::setLogical(const FbString& logical) {
         m_visual_dirty = true;
     }
 #endif
+    return m_logical;
 }
 
 const FbString& BiDiString::visual() const {

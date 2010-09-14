@@ -369,7 +369,7 @@ bool FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
         return false;
 
     checkAtoms();
-    for (int i=0; i < sizeof(root_props)/sizeof(RootProps); ++i) {
+    for (size_t i = 0; i < sizeof(root_props)/sizeof(RootProps); ++i) {
         if (root_props[i].atom == atom) {
             Pixmap root_pm = None;
             Atom real_type;

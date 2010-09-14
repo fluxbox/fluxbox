@@ -133,6 +133,16 @@ WinClient *getRootTransientFor(WinClient *client) {
 }
 
 
+void callForAllTransient(FluxboxWindow& win, void (*callFunc)(FluxboxWindow&)) {
+    WinClient::TransientList::const_iterator it = win.winClient().transientList().begin();
+    WinClient::TransientList::const_iterator it_end = win.winClient().transientList().end();
+    for (; it != it_end; ++it) {
+        if ((*it)->fbwindow() && !(*it)->fbwindow()->isIconic())
+            // TODO: should we also check if it is the active client?
+            callFunc(*(*it)->fbwindow());
+    }
+}
+
 /// raise window and do the same for each transient of the current window
 void raiseFluxboxWindow(FluxboxWindow &win) {
     if (win.oplock)
@@ -150,18 +160,9 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
 
     win.layerItem().raise();
 
-    // for each transient do raise
-
-    WinClient::TransientList::const_iterator it = win.winClient().transientList().begin();
-    WinClient::TransientList::const_iterator it_end = win.winClient().transientList().end();
-    for (; it != it_end; ++it) {
-        if ((*it)->fbwindow() && !(*it)->fbwindow()->isIconic())
-            // TODO: should we also check if it is the active client?
-            raiseFluxboxWindow(*(*it)->fbwindow());
-    }
+    callForAllTransient(win, raiseFluxboxWindow);
 
     win.oplock = false;
-
 
     if (!win.winClient().transientList().empty())
         win.screen().layerManager().unlock();
@@ -210,16 +211,9 @@ void tempRaiseFluxboxWindow(FluxboxWindow &win) {
         win.layerItem().tempRaise();
     }
 
-    // for each transient do raise
-    WinClient::TransientList::const_iterator it = win.winClient().transientList().begin();
-    WinClient::TransientList::const_iterator it_end = win.winClient().transientList().end();
-    for (; it != it_end; ++it) {
-        if ((*it)->fbwindow() && !(*it)->fbwindow()->isIconic())
-            // TODO: should we also check if it is the active client?
-            tempRaiseFluxboxWindow(*(*it)->fbwindow());
-    }
-    win.oplock = false;
+    callForAllTransient(win, tempRaiseFluxboxWindow);
 
+    win.oplock = false;
 }
 
 class SetClientCmd:public FbTk::Command<void> {
@@ -1063,8 +1057,8 @@ void FluxboxWindow::reconfigure() {
     m_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
 
     updateButtons();
-    frame().reconfigure();
 
+    frame().reconfigure();
     menu().reconfigure();
 
     Client2ButtonMap::iterator it = m_labelbuttons.begin(),

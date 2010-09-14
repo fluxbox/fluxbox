@@ -373,7 +373,7 @@ bool ClientPattern::addTerm(const FbTk::FbString &str, WinProperty prop, bool ne
     if (!term)
         return rc;
 
-    if (rc = !term->regexp.error()) {
+    if ((rc = !term->regexp.error())) {
         m_terms.push_back(term);
     } else {
         delete term;
@@ -383,76 +383,84 @@ bool ClientPattern::addTerm(const FbTk::FbString &str, WinProperty prop, bool ne
 }
 
 FbTk::FbString ClientPattern::getProperty(WinProperty prop, const Focusable &client) {
+
+    FbTk::FbString result;
+
     // we need this for some of the window properties
     const FluxboxWindow *fbwin = client.fbwindow();
 
     switch (prop) {
     case TITLE:
-        return client.title().logical();
+        result = client.title().logical();
         break;
     case CLASS:
-        return client.getWMClassClass();
-        break;
-    case NAME:
-        return client.getWMClassName();
+        result = client.getWMClassClass();
         break;
     case ROLE:
-        return client.getWMRole();
+        result = client.getWMRole();
         break;
     case TRANSIENT:
-        return client.isTransient() ? "yes" : "no";
+        result = client.isTransient() ? "yes" : "no";
         break;
     case MAXIMIZED:
-        return (fbwin && fbwin->isMaximized()) ? "yes" : "no";
+        result = (fbwin && fbwin->isMaximized()) ? "yes" : "no";
         break;
     case MINIMIZED:
-        return (fbwin && fbwin->isIconic()) ? "yes" : "no";
+        result = (fbwin && fbwin->isIconic()) ? "yes" : "no";
         break;
     case SHADED:
-        return (fbwin && fbwin->isShaded()) ? "yes" : "no";
+        result = (fbwin && fbwin->isShaded()) ? "yes" : "no";
         break;
     case STUCK:
-        return (fbwin && fbwin->isStuck()) ? "yes" : "no";
+        result = (fbwin && fbwin->isStuck()) ? "yes" : "no";
         break;
     case FOCUSHIDDEN:
-        return (fbwin && fbwin->isFocusHidden()) ? "yes" : "no";
+        result = (fbwin && fbwin->isFocusHidden()) ? "yes" : "no";
         break;
     case ICONHIDDEN:
-        return (fbwin && fbwin->isIconHidden()) ? "yes" : "no";
+        result = (fbwin && fbwin->isIconHidden()) ? "yes" : "no";
         break;
     case WORKSPACE: {
         unsigned int wsnum = (fbwin ? fbwin->workspaceNumber() : client.screen().currentWorkspaceID());
-        return FbTk::StringUtil::number2String(wsnum);
+        result = FbTk::StringUtil::number2String(wsnum);
         break;
     }
     case WORKSPACENAME: {
         const Workspace *w = (fbwin ?
                 client.screen().getWorkspace(fbwin->workspaceNumber()) :
                 client.screen().currentWorkspace());
-        return w ? w->name() : "";
+        if (w) {
+            result = w->name();
+        }
         break;
     }
-    case HEAD: {
-        if (!fbwin)
-            return "";
-        int head = client.screen().getHead(fbwin->fbWindow());
-        return FbTk::StringUtil::number2String(head);
+    case HEAD:
+        if (fbwin) {
+            result = FbTk::StringUtil::number2String(client.screen().getHead(fbwin->fbWindow()));
+        }
         break;
-    }
     case LAYER:
-        return fbwin ? ::Layer::getString(fbwin->layerNum()) : "";
+        if (fbwin) {
+            result = ::Layer::getString(fbwin->layerNum());
+        }
         break;
     case URGENT:
-        return Fluxbox::instance()->attentionHandler()
+        result = Fluxbox::instance()->attentionHandler()
                 .isDemandingAttention(client) ? "yes" : "no";
         break;
-    case SCREEN: {
-        int screenId = client.screen().screenNumber();
-        return FbTk::StringUtil::number2String(screenId);
+    case SCREEN:
+        result = FbTk::StringUtil::number2String(client.screen().screenNumber());
+        break;
+
+    case XPROP:
+        break;
+
+    case NAME:
+    default:
+        result = client.getWMClassName();
         break;
     }
-    }
-    return client.getWMClassName();
+    return result;
 }
 
 bool ClientPattern::operator ==(const ClientPattern &pat) const {
