@@ -878,41 +878,39 @@ void Toolbar::setupMenus(bool skip_new_placement) {
 
     // menu is 3 wide, 5 down
     if (!skip_new_placement) {
-        typedef pair<FbTk::FbString, Toolbar::Placement> PlacementP;
-        typedef list<PlacementP> Placements;
-        Placements place_menu;
+        struct PlacementP {
+             const FbTk::FbString label;
+             Toolbar::Placement placement;
+        };
 
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), Toolbar::TOPLEFT));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), Toolbar::LEFTTOP));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), Toolbar::LEFTCENTER));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), Toolbar::LEFTBOTTOM));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Toolbar::BOTTOMLEFT));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopCenter, "Top Center", "Top Center"), Toolbar::TOPCENTER));
-        place_menu.push_back(PlacementP("", Toolbar::TOPLEFT));
-        place_menu.push_back(PlacementP("", Toolbar::TOPLEFT));
-        place_menu.push_back(PlacementP("", Toolbar::TOPLEFT));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Toolbar::BOTTOMCENTER));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), Toolbar::TOPRIGHT));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightTop, "Right Top", "Right Top"), Toolbar::RIGHTTOP));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightCenter, "Right Center", "Right Center"), Toolbar::RIGHTCENTER));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), Toolbar::RIGHTBOTTOM));
-        place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Toolbar::BOTTOMRIGHT));
-
+        static const PlacementP place_menu[] = {
+            { _FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), Toolbar::TOPLEFT},
+            { _FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), Toolbar::LEFTTOP},
+            { _FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), Toolbar::LEFTCENTER},
+            { _FB_XTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), Toolbar::LEFTBOTTOM},
+            { _FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Toolbar::BOTTOMLEFT},
+            { _FB_XTEXT(Align, TopCenter, "Top Center", "Top Center"), Toolbar::TOPCENTER},
+            { "", Toolbar::TOPLEFT},
+            { "", Toolbar::TOPLEFT},
+            { "", Toolbar::TOPLEFT},
+            { _FB_XTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Toolbar::BOTTOMCENTER},
+            { _FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), Toolbar::TOPRIGHT},
+            { _FB_XTEXT(Align, RightTop, "Right Top", "Right Top"), Toolbar::RIGHTTOP},
+            { _FB_XTEXT(Align, RightCenter, "Right Center", "Right Center"), Toolbar::RIGHTCENTER},
+            { _FB_XTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), Toolbar::RIGHTBOTTOM},
+            { _FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Toolbar::BOTTOMRIGHT}
+        };
 
         placementMenu().setMinimumSublevels(3);
         // create items in sub menu
-        for (size_t i=0; i<15; ++i) {
-            FbTk::FbString &str = place_menu.front().first;
-            Toolbar::Placement placement = place_menu.front().second;
-
-            if (str == "") {
-                placementMenu().insert("");
+        for (size_t i=0; i< sizeof(place_menu)/sizeof(PlacementP); ++i) {
+            const PlacementP& p = place_menu[i];
+            if (p.label == "") {
+                placementMenu().insert(p.label);
                 placementMenu().setItemEnabled(i, false);
             } else
-                placementMenu().insert(new PlaceToolbarMenuItem(str, *this,
-                                                                placement));
-
-            place_menu.pop_front();
+                placementMenu().insert(new PlaceToolbarMenuItem(p.label, *this,
+                                                                p.placement));
         }
     }
 
