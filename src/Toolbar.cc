@@ -52,6 +52,7 @@
 #include "FbTk/Shape.hh"
 #include "FbTk/SimpleObserver.hh"
 #include "FbTk/MemFun.hh"
+#include "FbTk/STLUtil.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -72,10 +73,13 @@
 #endif
 #include <iterator>
 #include <typeinfo>
+#include <functional>
 
 using std::string;
 using std::pair;
 using std::list;
+
+using FbTk::STLUtil::forAll;
 
 namespace FbTk {
 
@@ -518,18 +522,11 @@ void Toolbar::reconfigure() {
     if (theme()->shape() && m_shape.get())
         m_shape->update();
 
-    ItemList::iterator item_it = m_item_list.begin();
-    ItemList::iterator item_it_end = m_item_list.end();
-    for (; item_it != item_it_end; ++item_it) {
-        (*item_it)->updateSizing();
-    }
+    forAll(m_item_list, std::mem_fun(&ToolbarItem::updateSizing));
 
     rearrangeItems();
 
-    for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
-        (*item_it)->renderTheme(alpha());
-    }
-
+    forAll(m_item_list, std::bind2nd(std::mem_fun(&ToolbarItem::renderTheme), alpha()));
 
     // we're done with all resizing and stuff now we can request a new
     // area to be reserved on screen
@@ -794,10 +791,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
     }
 
-    ItemList::iterator item_it = m_item_list.begin();
-    ItemList::iterator item_it_end = m_item_list.end();
-    for (; item_it != item_it_end; ++item_it)
-        (*item_it)->setOrientation(orient);
+    forAll(m_item_list, std::bind2nd(std::mem_fun(&ToolbarItem::setOrientation), orient));
 }
 
 void Toolbar::updateVisibleState() {
@@ -812,10 +806,7 @@ void Toolbar::toggleHidden() {
         frame.window.move(frame.x_hidden, frame.y_hidden);
     else {
         frame.window.move(frame.x, frame.y);
-        ItemList::iterator item_it = m_item_list.begin();
-        ItemList::iterator item_it_end = m_item_list.end();
-        for ( ; item_it != item_it_end; ++item_it)
-            (*item_it)->parentMoved();
+        forAll(m_item_list, std::mem_fun(&ToolbarItem::parentMoved));
     }
 
 }
