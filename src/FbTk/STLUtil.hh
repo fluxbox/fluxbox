@@ -68,6 +68,33 @@ void destroyAndClearSecond(A &a) {
     a.clear();
 }
 
+
+template <typename C, typename F>
+F forAll(C& c, F f) {
+    typedef typename C::iterator iterator;
+    iterator i = c.begin();
+    iterator e = c.end();
+    for (; i != e; i++) {
+        f(*i);
+    }
+    return f;
+}
+
+template <typename C, typename I, typename F>
+F forAllIf(C& c, I i, F f) {
+    typedef typename C::iterator iterator;
+    iterator it = c.begin();
+    iterator end = c.end();
+    for (; it != end; it++) {
+        if (i(*it))
+            f(*it);
+    }
+    return f;
+}
+
+
+
+
 } // end namespace STLUtil
 } // end namespace FbTk
 

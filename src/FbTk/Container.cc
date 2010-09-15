@@ -26,6 +26,7 @@
 #include "TextUtils.hh"
 #include "EventManager.hh"
 #include "CompareEqual.hh"
+#include "STLUtil.hh"
 
 #include <algorithm>
 
@@ -78,7 +79,7 @@ void Container::insertItem(Item item, int pos) {
     } else if (pos == 0) {
         m_item_list.push_front(item);
     } else {
-        ItemList::iterator it = m_item_list.begin();
+        ItemList::iterator it = begin();
         for (; pos != 0; ++it, --pos)
             continue;
 
@@ -104,12 +105,10 @@ void Container::moveItem(Item item, int movement) {
     if (newindex < 0) // neg wrap
         newindex += size;
 
-    ItemList::iterator it = std::find(m_item_list.begin(),
-                                      m_item_list.end(),
-                                      item);
+    ItemList::iterator it = std::find(begin(), end(), item);
     m_item_list.erase(it);
 
-    for (it = m_item_list.begin(); newindex >= 0; ++it, --newindex) {
+    for (it = begin(); newindex >= 0; ++it, --newindex) {
         if (newindex == 0) {
             break;
         }
@@ -143,12 +142,11 @@ bool Container::moveItemTo(Item item, int x, int y) {
                                &itemwin))
         return false;
 
-    ItemList::iterator it = find_if(m_item_list.begin(),
-                                    m_item_list.end(),
+    ItemList::iterator it = find_if(begin(), end(),
                                     CompareWindow(&FbWindow::window,
                                                   itemwin));
     // not found :(
-    if (it == m_item_list.end())
+    if (it == end())
         return false;
 
     Window child_return = 0;
@@ -162,8 +160,8 @@ bool Container::moveItemTo(Item item, int x, int y) {
 }
 
 bool Container::removeItem(Item item) {
-    ItemList::iterator it = m_item_list.begin();
-    ItemList::iterator it_end = m_item_list.end();
+    ItemList::iterator it = begin();
+    ItemList::iterator it_end = end();
     for (; it != it_end && (*it) != item; ++it);
 
     if (it == it_end)
@@ -178,7 +176,7 @@ bool Container::removeItem(int index) {
     if (index < 0 || index > size())
         return false;
 
-    ItemList::iterator it = m_item_list.begin();
+    ItemList::iterator it = begin();
     for (; index != 0; ++it, --index)
         continue;
 
@@ -247,12 +245,11 @@ bool Container::tryExposeEvent(XExposeEvent &event) {
         return true;
     }
 
-    ItemList::iterator it = find_if(m_item_list.begin(),
-                                    m_item_list.end(),
+    ItemList::iterator it = find_if(begin(), end(),
                                     CompareWindow(&FbWindow::window,
                                                   event.window));
     // not found :(
-    if (it == m_item_list.end())
+    if (it == end())
         return false;
 
     (*it)->exposeEvent(event);
@@ -265,12 +262,11 @@ bool Container::tryButtonPressEvent(XButtonEvent &event) {
         return true;
     }
 
-    ItemList::iterator it = find_if(m_item_list.begin(),
-                                    m_item_list.end(),
+    ItemList::iterator it = find_if(begin(), end(),
                                     CompareWindow(&FbWindow::window,
                                                   event.window));
     // not found :(
-    if (it == m_item_list.end())
+    if (it == end())
         return false;
 
     (*it)->buttonPressEvent(event);
@@ -283,12 +279,11 @@ bool Container::tryButtonReleaseEvent(XButtonEvent &event) {
         return true;
     }
 
-    ItemList::iterator it = find_if(m_item_list.begin(),
-                                    m_item_list.end(),
+    ItemList::iterator it = find_if(begin(), end(),
                                     CompareWindow(&FbWindow::window,
                                                   event.window));
     // not found :(
-    if (it == m_item_list.end())
+    if (it == end())
         return false;
 
     (*it)->buttonReleaseEvent(event);
@@ -360,8 +355,8 @@ void Container::repositionItems() {
     }
 
 
-    ItemList::iterator it = m_item_list.begin();
-    const ItemList::iterator it_end = m_item_list.end();
+    ItemList::iterator it = begin();
+    const ItemList::iterator it_end = end();
 
     int rounding_error = 0;
 
@@ -442,41 +437,26 @@ unsigned int Container::maxWidthPerClient() const {
 }
 
 void Container::for_each(std::mem_fun_t<void, FbWindow> function) {
-    std::for_each(m_item_list.begin(),
-                  m_item_list.end(),
-                  function);
+    std::for_each(begin(), end(), function);
 }
 
 void Container::setAlpha(unsigned char alpha) {
     FbWindow::setAlpha(alpha);
-    ItemList::iterator it = m_item_list.begin();
-    ItemList::iterator it_end = m_item_list.end();
-    for (; it != it_end; ++it)
-        (*it)->setAlpha(alpha);
+    STLUtil::forAll(m_item_list, std::bind2nd(std::mem_fun(&Button::setAlpha), alpha));
 }
 
 void Container::parentMoved() {
     FbWindow::parentMoved();
-    ItemList::iterator it = m_item_list.begin();
-    ItemList::iterator it_end = m_item_list.end();
-    for (; it != it_end; ++it)
-        (*it)->parentMoved();
+    STLUtil::forAll(m_item_list, std::mem_fun(&Button::parentMoved));
 }
 
 void Container::invalidateBackground() {
     FbWindow::invalidateBackground();
-    ItemList::iterator it = m_item_list.begin();
-    ItemList::iterator it_end = m_item_list.end();
-    for (; it != it_end; ++it)
-        (*it)->invalidateBackground();
+    STLUtil::forAll(m_item_list, std::mem_fun(&Button::invalidateBackground));
 }
 
 void Container::clear() {
-    ItemList::iterator it = m_item_list.begin();
-    ItemList::iterator it_end = m_item_list.end();
-    for (; it != it_end; ++it)
-        (*it)->clear();
-
+    STLUtil::forAll(m_item_list, std::mem_fun(&Button::clear));
 }
 
 void Container::setOrientation(Orientation orient) {
@@ -484,11 +464,7 @@ void Container::setOrientation(Orientation orient) {
         return;
 
     FbWindow::invalidateBackground();
-
-    ItemList::iterator it = m_item_list.begin();
-    ItemList::iterator it_end = m_item_list.end();
-    for (; it != it_end; ++it)
-        (*it)->setOrientation(orient);
+    STLUtil::forAll(m_item_list, std::bind2nd(std::mem_fun(&Button::setOrientation), orient));
 
     if (((m_orientation == ROT0 || m_orientation == ROT180) &&
         (orient == ROT90 || orient == ROT270)) ||

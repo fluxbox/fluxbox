@@ -48,6 +48,9 @@
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/MenuSeparator.hh"
 #include "FbTk/Util.hh"
+#include "FbTk/STLUtil.hh"
+#include "FbTk/Select2nd.hh"
+#include "FbTk/Compose.hh"
 
 #include <typeinfo>
 #include <iterator>
@@ -465,10 +468,9 @@ void IconbarTool::updateSizing() {
     m_icon_container.setBorderWidth(m_theme.border().width());
     m_icon_container.setBorderColor(m_theme.border().color());
 
-    IconMap::iterator icon_it = m_icons.begin();
-    const IconMap::iterator icon_it_end = m_icons.end();
-    for (; icon_it != icon_it_end; ++icon_it)
-        icon_it->second->reconfigTheme();
+    FbTk::STLUtil::forAll(m_icons, 
+            FbTk::Compose(std::mem_fun(&IconButton::reconfigTheme), 
+                FbTk::Select2nd<IconMap::value_type>()));
 
 }
 

@@ -29,6 +29,7 @@
 #include "FbTk/Transparent.hh"
 #include "FbTk/CompareEqual.hh"
 #include "FbTk/TextUtils.hh"
+#include "FbTk/STLUtil.hh"
 
 #include "FbWinFrameTheme.hh"
 #include "Screen.hh"
@@ -41,6 +42,8 @@
 using std::max;
 using std::mem_fun;
 using std::string;
+
+using FbTk::STLUtil::forAll;
 
 FbWinFrame::FbWinFrame(BScreen &screen, WindowState &state,
                        FocusableTheme<FbWinFrameTheme> &theme):
@@ -439,12 +442,8 @@ void FbWinFrame::notifyMoved(bool clear) {
 
         m_titlebar.parentMoved();
 
-        for_each(m_buttons_left.begin(),
-                 m_buttons_left.end(),
-                 mem_fun(&FbTk::Button::parentMoved));
-        for_each(m_buttons_right.begin(),
-                 m_buttons_right.end(),
-                 mem_fun(&FbTk::Button::parentMoved));
+        forAll(m_buttons_left, mem_fun(&FbTk::Button::parentMoved));
+        forAll(m_buttons_right, mem_fun(&FbTk::Button::parentMoved));
     }
 
     if (m_use_handle) {
@@ -463,13 +462,8 @@ void FbWinFrame::clearAll() {
 
     if  (m_use_titlebar) {
         redrawTitlebar();
-
-        for_each(m_buttons_left.begin(),
-                 m_buttons_left.end(),
-                 mem_fun(&FbTk::Button::clear));
-        for_each(m_buttons_right.begin(),
-                 m_buttons_right.end(),
-                 mem_fun(&FbTk::Button::clear));
+        forAll(m_buttons_left, mem_fun(&FbTk::Button::clear));
+        forAll(m_buttons_right, mem_fun(&FbTk::Button::clear));
     } else if (m_tabmode == EXTERNAL && m_use_tabs)
         m_tab_container.clear();
 
