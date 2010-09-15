@@ -439,10 +439,6 @@ void Toolbar::reconfigure() {
         m_tools = tools; // copy values
 
         if (!m_tools.empty()) {
-            // make lower case
-            transform(m_tools.begin(), m_tools.end(),
-                      m_tools.begin(),
-                      FbTk::StringUtil::toLower);
 
             // create items
             StringList::const_iterator item_it = m_tools.begin();
