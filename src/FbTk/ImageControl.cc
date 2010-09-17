@@ -381,10 +381,10 @@ void ImageControl::getGradientBuffers(unsigned int w,
                                       unsigned int **ybuf) {
 
     if (w > grad_xbuffer.size())
-        grad_xbuffer.resize(w * 3);
+        grad_xbuffer.resize(w);
 
     if (h > grad_ybuffer.size())
-        grad_ybuffer.resize(h * 3);
+        grad_ybuffer.resize(h);
 
     *xbuf = &grad_xbuffer[0];
     *ybuf = &grad_ybuffer[0];

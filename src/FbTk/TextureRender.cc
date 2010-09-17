@@ -374,12 +374,7 @@ void renderHGradient(bool interlaced,
     unsigned char* red = r;
     unsigned char* green = g;
     unsigned char* blue = b;
-    unsigned int* xtable;
-    unsigned int* ytable;
     register unsigned int x, y;
-
-    imgctrl.getGradientBuffers(width, height, &xtable, &ytable);
-
 
     drx = (float) (to->red() - from->red());
     dgx = (float) (to->green() - from->green());
@@ -479,11 +474,6 @@ void renderVGradient(bool interlaced,
 
     register unsigned int y;
 
-    unsigned int* xtable;
-    unsigned int* ytable;
-
-    imgctrl.getGradientBuffers(width, height, &xtable, &ytable);
-
     dry = (float) (to->red() - from->red());
     dgy = (float) (to->green() - from->green());
     dby = (float) (to->blue() - from->blue());
@@ -571,7 +561,7 @@ void renderPGradient(bool interlaced,
 
     register unsigned int x, y;
 
-    imgctrl.getGradientBuffers(width, height, &xtable, &ytable);
+    imgctrl.getGradientBuffers(width * 3, height * 3, &xtable, &ytable);
     xt = xtable;
     yt = ytable;
 
@@ -695,7 +685,7 @@ void renderRGradient(bool interlaced,
 
     register unsigned int x, y;
 
-    imgctrl.getGradientBuffers(width, height, &xtable, &ytable);
+    imgctrl.getGradientBuffers(width * 3, height * 3, &xtable, &ytable);
     xt = xtable;
     yt = ytable;
 
@@ -821,7 +811,7 @@ void renderDGradient(bool interlaced,
     unsigned int* yt;
     register unsigned int x, y;
 
-    imgctrl.getGradientBuffers(w, h, &xtable, &ytable);
+    imgctrl.getGradientBuffers(width * 3, height * 3, &xtable, &ytable);
     xt = xtable;
     yt = ytable;
 
@@ -939,7 +929,7 @@ void renderEGradient(bool interlaced,
     register unsigned int x, y;
 
 
-    imgctrl.getGradientBuffers(width, height, &xtable, &ytable);
+    imgctrl.getGradientBuffers(width * 3, height * 3, &xtable, &ytable);
     xt = xtable;
     yt = ytable;
 
@@ -1070,7 +1060,7 @@ void renderPCGradient(bool interlaced,
         tb = to->blue();
     register unsigned int x, y;
 
-    imgctrl.getGradientBuffers(width, height, &xtable, &ytable);
+    imgctrl.getGradientBuffers(width * 3, height * 3, &xtable, &ytable);
     xt = xtable;
     yt = ytable;
 
@@ -1192,7 +1182,7 @@ void renderCDGradient(bool interlaced,
 
     register unsigned int x, y;
 
-    imgctrl.getGradientBuffers(w, h, &xtable, &ytable);
+    imgctrl.getGradientBuffers(width * 3, height * 3, &xtable, &ytable);
     xt = xtable;
     yt = ytable;
 
