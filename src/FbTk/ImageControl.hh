@@ -30,7 +30,9 @@
 #include "NotCopyable.hh"
 
 #include <X11/Xlib.h> // for Visual* etc
+
 #include <list>
+#include <vector>
 
 namespace FbTk {
 
@@ -45,9 +47,10 @@ public:
 
     int depth() const { return m_screen_depth; }
     int colorsPerChannel() const { return m_colors_per_channel; }
+    size_t nrColors() const { return m_colors.size(); }
+    const XColor* colors() const { return &m_colors[0]; }
     int screenNumber() const { return m_screen_num; }
     Visual *visual() const { return m_visual; }
-    unsigned long getSqrt(unsigned int val) const;
 
     /**
        Render to pixmap
@@ -84,24 +87,24 @@ private:
 
     Colormap m_colormap;
 
-    Window m_root_window;
-
-    XColor *m_colors; ///< color table
-    unsigned int m_num_colors; ///< number of colors in color table
+    std::vector<XColor> m_colors; ///< color table
 
     Visual *m_visual;
 
-    int bits_per_pixel, red_offset, green_offset, blue_offset,
+    int bits_per_pixel;
+    int red_offset, green_offset, blue_offset,
         red_bits, green_bits, blue_bits;
     int m_colors_per_channel; ///< number of colors per channel
     int m_screen_depth; ///< bit depth of screen
     int m_screen_num;  ///< screen number
+
     unsigned char red_color_table[256];
     unsigned char green_color_table[256];
     unsigned char blue_color_table[256];
 
-    unsigned int *grad_xbuffer, *grad_ybuffer, grad_buffer_width,
-        grad_buffer_height;
+    // TextureRenderer uses these buffers
+    std::vector<unsigned int> grad_xbuffer;
+    std::vector<unsigned int> grad_ybuffer;
 
     struct Cache;
     typedef std::list<Cache *> CacheList;
