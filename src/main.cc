@@ -183,6 +183,7 @@ static void showInfo(ostream &ostr) {
 }
 
 struct Options {
+    Options() : xsync(false) { }
     std::string session_display;
     std::string rc_file;
     std::string log_filename;

@@ -332,6 +332,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  int scrn, int num_layers) :
     m_reconfigure_sig(*this), // reconfigure signal
     m_layermanager(num_layers),
+    m_image_control(0),
     m_focused_windowtheme(new FbWinFrameTheme(scrn, ".focus", ".Focus")),
     m_unfocused_windowtheme(new FbWinFrameTheme(scrn, ".unfocus", ".Unfocus")),
     // the order of windowtheme and winbutton theme is important
