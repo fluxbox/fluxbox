@@ -203,12 +203,12 @@ ImageControl::~ImageControl() {
     Display *disp = FbTk::App::instance()->display();
 
     if (!m_colors.empty()) {
-        std::vector<unsigned long> pixels;
+        std::vector<unsigned long> pixels(m_colors.size());
 
         for (unsigned int i = 0; i < m_colors.size(); i++)
             pixels[i] = m_colors[i].pixel;
 
-        XFreeColors(disp, m_colormap, &pixels[0], m_colors.size(), 0);
+        XFreeColors(disp, m_colormap, &pixels[0], pixels.size(), 0);
     }
 
     if (!cache.empty()) {
