@@ -182,14 +182,15 @@ static void showInfo(ostream &ostr) {
         endl;
 }
 
-int main(int argc, char **argv) {
+struct Options {
+    std::string session_display;
+    std::string rc_file;
+    std::string log_filename;
+    bool xsync;
+};
 
-    string session_display("");
-    string rc_file;
-    string log_filename;
-    bool xsync = false;
+static void parseOptions(int argc, char** argv, Options& opts) {
 
-    FbTk::NLSInit("fluxbox.cat");
     _FB_USES_NLS;
 
     int i;
@@ -204,7 +205,7 @@ int main(int argc, char **argv) {
                 exit(EXIT_FAILURE);
             }
 
-            rc_file = argv[i];
+            opts.rc_file = argv[i];
         } else if (arg == "-display" || arg == "--display") {
             // check for -display option... to run on a display other than the one
             // set by the environment variable DISPLAY
@@ -216,8 +217,8 @@ int main(int argc, char **argv) {
                 exit(EXIT_FAILURE);
             }
 
-            session_display = argv[i];
-            string display_env = "DISPLAY=" + session_display;
+            opts.session_display = argv[i];
+            string display_env = "DISPLAY=" + opts.session_display;
             if (putenv(const_cast<char *>(display_env.c_str()))) {
                 cerr<<_FB_CONSOLETEXT(main, WarnDisplayEnv,
                                 "warning: couldn't set environment variable 'DISPLAY'",
@@ -226,16 +227,16 @@ int main(int argc, char **argv) {
             }
         } else if (arg == "-version" || arg == "-v" || arg == "--version") {
             // print current version string
-            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2008 Fluxbox Team " << endl << endl;
+            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2010 Fluxbox Team " << endl << endl;
             exit(EXIT_SUCCESS);
         } else if (arg == "-log" || arg == "--log") {
             if (++i >= argc) {
                 cerr<<_FB_CONSOLETEXT(main, LOGRequiresArg, "error: '-log' needs an argument", "")<<endl;
                 exit(EXIT_FAILURE);
             }
-            log_filename = argv[i];
+            opts.log_filename = argv[i];
         } else if (arg == "-sync" || arg == "--sync") {
-             xsync = true;
+            opts.xsync = true;
         } else if (arg == "-help" || arg == "-h" || arg == "--help") {
             // print program usage and command line options
             printf(_FB_CONSOLETEXT(main, Usage,
@@ -252,7 +253,7 @@ int main(int argc, char **argv) {
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
                            "Main usage string. Please lay it out nicely. There is one %s that is given the version").c_str(),
-                   __fluxbox_version, "2001-2008");
+                   __fluxbox_version, "2001-2010");
             exit(EXIT_SUCCESS);
         } else if (arg == "-info" || arg == "-i" || arg == "--info") {
             showInfo(cout);
@@ -268,23 +269,34 @@ int main(int argc, char **argv) {
             FbTk::ThemeManager::instance().setVerbose(true);
         }
     }
+}
+
+
+
+int main(int argc, char **argv) {
+
+    FbTk::NLSInit("fluxbox.cat");
+
+    Options opts;
+    parseOptions(argc, argv, opts);
 
 #ifdef __EMX__
     _chdir2(getenv("X11ROOT"));
 #endif // __EMX__
     auto_ptr<Fluxbox> fluxbox;
-    int exitcode=EXIT_FAILURE;
 
     streambuf *outbuf = 0;
     streambuf *errbuf = 0;
 
-    ofstream log_file(log_filename.c_str());
+    ofstream log_file(opts.log_filename.c_str());
+
+    _FB_USES_NLS;
 
     // setup log file
-    if (log_file) {
-        cerr<<_FB_CONSOLETEXT(main, LoggingTo, "Logging to", "Logging to a file")<<": "<<log_filename<<endl;
+    if (log_file.is_open()) {
+        cerr<<_FB_CONSOLETEXT(main, LoggingTo, "Logging to", "Logging to a file")<<": "<<opts.log_filename<<endl;
         log_file<<"------------------------------------------"<<endl;
-        log_file<<_FB_CONSOLETEXT(main, LogFile, "Log File", "")<<": "<<log_filename<<endl;
+        log_file<<_FB_CONSOLETEXT(main, LogFile, "Log File", "")<<": "<<opts.log_filename<<endl;
         showInfo(log_file);
         log_file<<"------------------------------------------"<<endl;
         // setup log to use cout and cerr stream
@@ -292,10 +304,14 @@ int main(int argc, char **argv) {
         errbuf = cerr.rdbuf(log_file.rdbuf());
     }
 
+    int exitcode = EXIT_FAILURE;
+
     try {
 
-        fluxbox.reset(new Fluxbox(argc, argv, session_display.c_str(),
-                                  rc_file.c_str(), xsync));
+        fluxbox.reset(new Fluxbox(argc, argv,
+                    opts.session_display.c_str(),
+                    opts.rc_file.c_str(),
+                    opts.xsync));
         fluxbox->eventLoop();
 
         exitcode = EXIT_SUCCESS;
