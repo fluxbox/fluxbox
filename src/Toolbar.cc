@@ -53,6 +53,7 @@
 #include "FbTk/SimpleObserver.hh"
 #include "FbTk/MemFun.hh"
 #include "FbTk/STLUtil.hh"
+#include "FbTk/Util.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -81,82 +82,53 @@ using std::list;
 
 using FbTk::STLUtil::forAll;
 
+namespace {
+
+struct ToolbarPlacementString {
+    Toolbar::Placement placement;
+    const char* str;
+};
+
+const ToolbarPlacementString placement_strings[] = {
+    { Toolbar::TOPLEFT, "TopLeft" },
+    { Toolbar::TOPCENTER, "TopCenter" },
+    { Toolbar::TOPRIGHT, "TopRight" },
+    { Toolbar::BOTTOMLEFT, "BottomLeft" },
+    { Toolbar::BOTTOMCENTER, "BottomCenter" },
+    { Toolbar::BOTTOMRIGHT, "BottomRight" },
+    { Toolbar::LEFTBOTTOM, "LeftBottom" },
+    { Toolbar::LEFTCENTER, "LeftCenter" },
+    { Toolbar::LEFTTOP, "LeftTop" },
+    { Toolbar::RIGHTCENTER, "RightCenter" },
+    { Toolbar::RIGHTBOTTOM, "RightBottom" },
+    { Toolbar::RIGHTTOP, "RightTop" }
+};
+
+}
+
 namespace FbTk {
 
 template<>
 string FbTk::Resource<Toolbar::Placement>::
 getString() const {
-    switch (m_value) {
-    case Toolbar::TOPLEFT:
-        return string("TopLeft");
-        break;
-    case Toolbar::BOTTOMLEFT:
-        return string("BottomLeft");
-        break;
-    case Toolbar::TOPCENTER:
-        return string("TopCenter");
-        break;
-    case Toolbar::BOTTOMCENTER:
-        return string("BottomCenter");
-        break;
-    case Toolbar::TOPRIGHT:
-        return string("TopRight");
-        break;
-    case Toolbar::BOTTOMRIGHT:
-        return string("BottomRight");
-        break;
-    case Toolbar::LEFTTOP:
-        return string("LeftTop");
-        break;
-    case Toolbar::LEFTCENTER:
-        return string("LeftCenter");
-        break;
-    case Toolbar::LEFTBOTTOM:
-        return string("LeftBottom");
-        break;
-    case Toolbar::RIGHTTOP:
-        return string("RightTop");
-        break;
-    case Toolbar::RIGHTCENTER:
-        return string("RightCenter");
-        break;
-    case Toolbar::RIGHTBOTTOM:
-        return string("RightBottom");
-        break;
-    }
-    //default string
-    return string("BottomCenter");
+
+    size_t i = (m_value == FbTk::Util::clamp(m_value, Toolbar::TOPLEFT, Toolbar::RIGHTTOP)
+                ? m_value 
+                : Toolbar::DEFAULT) - 1;
+    return placement_strings[i].str;
 }
 
 template<>
 void FbTk::Resource<Toolbar::Placement>::
 setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft")==0)
-        m_value = Toolbar::TOPLEFT;
-    else if (strcasecmp(strval, "BottomLeft")==0)
-        m_value = Toolbar::BOTTOMLEFT;
-    else if (strcasecmp(strval, "TopCenter")==0)
-        m_value = Toolbar::TOPCENTER;
-    else if (strcasecmp(strval, "BottomCenter")==0)
-        m_value = Toolbar::BOTTOMCENTER;
-    else if (strcasecmp(strval, "TopRight")==0)
-        m_value = Toolbar::TOPRIGHT;
-    else if (strcasecmp(strval, "BottomRight")==0)
-        m_value = Toolbar::BOTTOMRIGHT;
-    else if (strcasecmp(strval, "LeftTop") == 0)
-        m_value = Toolbar::LEFTTOP;
-    else if (strcasecmp(strval, "LeftCenter") == 0)
-        m_value = Toolbar::LEFTCENTER;
-    else if (strcasecmp(strval, "LeftBottom") == 0)
-        m_value = Toolbar::LEFTBOTTOM;
-    else if (strcasecmp(strval, "RightTop") == 0)
-        m_value = Toolbar::RIGHTTOP;
-    else if (strcasecmp(strval, "RightCenter") == 0)
-        m_value = Toolbar::RIGHTCENTER;
-    else if (strcasecmp(strval, "RightBottom") == 0)
-        m_value = Toolbar::RIGHTBOTTOM;
-    else
-        setDefaultValue();
+    size_t i;
+    for (i = 0; i < sizeof(placement_strings)/sizeof(ToolbarPlacementString); ++i) {
+        if (strcasecmp(strval, placement_strings[i].str) == 0) {
+            m_value = placement_strings[i].placement;
+            return;
+        }
+    }
+    setDefaultValue();
 }
 
 } // end namespace FbTk

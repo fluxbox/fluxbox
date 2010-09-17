@@ -67,7 +67,9 @@ public:
         BOTTOMLEFT, BOTTOM, BOTTOMRIGHT,
         // left and right placement
         LEFTBOTTOM, LEFT, LEFTTOP,
-        RIGHTBOTTOM, RIGHT, RIGHTTOP
+        RIGHTBOTTOM, RIGHT, RIGHTTOP,
+
+        DEFAULT = TOPLEFT
     };
 
     /// create a top level window

@@ -68,7 +68,9 @@ public:
         BOTTOMLEFT, BOTTOMCENTER, BOTTOMRIGHT,
         // left and right placement
         LEFTBOTTOM, LEFTCENTER, LEFTTOP,
-        RIGHTBOTTOM, RIGHTCENTER, RIGHTTOP
+        RIGHTBOTTOM, RIGHTCENTER, RIGHTTOP,
+
+        DEFAULT = BOTTOMRIGHT
     };
 
     /// Create a toolbar on the screen with specific width
