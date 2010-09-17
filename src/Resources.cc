@@ -51,17 +51,13 @@ namespace FbTk {
 template<>
 string FbTk::Resource<int>::
 getString() const {
-    char strval[256];
-    sprintf(strval, "%d", **this);
-    return string(strval);
+    return FbTk::StringUtil::number2String(**this);
 }
 
 template<>
 void FbTk::Resource<int>::
 setFromString(const char* strval) {
-    int val;
-    if (sscanf(strval, "%d", &val)==1)
-        *this = val;
+    FbTk::StringUtil::extractNumber(strval, get());
 }
 
 template<>
@@ -142,7 +138,7 @@ setFromString(char const *strval) {
             m_value.push_back(WinButton::SHADE);
         else if (v == "stick")
             m_value.push_back(WinButton::STICK);
-        else if (v == "menuIcon")
+        else if (v == "menuicon")
             m_value.push_back(WinButton::MENUICON);
         else if (v == "close")
             m_value.push_back(WinButton::CLOSE);
@@ -170,15 +166,13 @@ setFromString(char const *strval) {
 template<>
 string FbTk::Resource<unsigned int>::
 getString() const {
-    char tmpstr[128];
-    sprintf(tmpstr, "%ul", m_value);
-    return string(tmpstr);
+    return FbTk::StringUtil::number2String(m_value);
 }
 
 template<>
 void FbTk::Resource<unsigned int>::
 setFromString(const char *strval) {
-    if (sscanf(strval, "%ul", &m_value) != 1)
+    if (!FbTk::StringUtil::extractNumber(strval, m_value))
         setDefaultValue();
 }
 
@@ -186,15 +180,13 @@ setFromString(const char *strval) {
 template<>
 string FbTk::Resource<long long>::
 getString() const {
-    char tmpstr[128];
-    sprintf(tmpstr, "%llu", (unsigned long long) m_value);
-    return string(tmpstr);
+    return FbTk::StringUtil::number2String(m_value);
 }
 
 template<>
 void FbTk::Resource<long long>::
 setFromString(const char *strval) {
-    if (sscanf(strval, "%lld", &m_value) != 1)
+    if (!FbTk::StringUtil::extractNumber(strval, m_value))
         setDefaultValue();
 }
 
@@ -219,15 +211,13 @@ setFromString(const char *strval) {
 template<>
 string FbTk::Resource<long>::
 getString() const {
-    char tmpstr[128];
-    sprintf(tmpstr, "%ld", m_value);
-    return string(tmpstr);
+    return FbTk::StringUtil::number2String(m_value);
 }
 
 template<>
 void FbTk::Resource<long>::
 setFromString(const char *strval) {
-    if (sscanf(strval, "%ld", &m_value) != 1)
+    if (!FbTk::StringUtil::extractNumber(strval, m_value))
         setDefaultValue();
 }
 

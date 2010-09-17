@@ -36,10 +36,14 @@ namespace StringUtil {
 /// @return 1 - ok, result stored in 'out'
 int extractNumber(const std::string& in, unsigned int& out);
 int extractNumber(const std::string& in, int& out);
+int extractNumber(const std::string& in, unsigned long& out);
+int extractNumber(const std::string& in, long& out);
+int extractNumber(const std::string& in, long long& out);
+int extractNumber(const std::string& in, unsigned long& out);
 /// \@}
 
 /// creates a number to a string
-std::string number2String(int num);
+std::string number2String(long long num);
 
 /// Similar to `strstr' but this function ignores the case of both strings
 const char *strcasestr(const char *str, const char *ptn);

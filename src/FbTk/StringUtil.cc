@@ -123,9 +123,27 @@ int extractNumber(const std::string& in, unsigned int& out) {
     return ::extractUnsignedNumber<unsigned int>(in, out);
 }
 
-std::string number2String(int num) {
+int extractNumber(const std::string& in, long& out) {
+    return ::extractSignedNumber<long>(in, out);
+}
+
+int extractNumber(const std::string& in, unsigned long& out) {
+    return ::extractUnsignedNumber<unsigned long>(in, out);
+}
+
+int extractNumber(const std::string& in, long long& out) {
+    return ::extractSignedNumber<long long>(in, out);
+}
+
+int extractNumber(const std::string& in, unsigned long long& out) {
+    return ::extractUnsignedNumber<unsigned long long>(in, out);
+}
+
+
+
+std::string number2String(long long num) {
     char s[128];
-    sprintf(s, "%d", num);
+    sprintf(s, "%lld", num);
     return std::string(s);
 }
 
