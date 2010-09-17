@@ -142,8 +142,7 @@ int ExecuteCmd::run() {
     if (pid)
         return pid;
 
-    string displaystring("DISPLAY=");
-    displaystring += DisplayString(FbTk::App::instance()->display());
+    string display = DisplayString(FbTk::App::instance()->display());
     int screen_num = m_screen_num;
     if (screen_num < 0) {
         if (Fluxbox::instance()->mouseScreen() == 0)
@@ -158,12 +157,11 @@ int ExecuteCmd::run() {
     if (!shell)
         shell = "/bin/sh";
 
-    // remove last number of display and add screen num
-    displaystring.erase(displaystring.size()-1);
-    displaystring += FbTk::StringUtil::number2String(screen_num);
+    display.erase(display.size()-1);
+    display += FbTk::StringUtil::number2String(screen_num);
 
     setsid();
-    putenv(const_cast<char *>(displaystring.c_str()));
+    FbTk::App::setenv("DISPLAY", display.c_str());
     execl(shell, shell, "-c", m_cmd.c_str(), static_cast<void*>(NULL));
     exit(EXIT_SUCCESS);
 
@@ -197,34 +195,7 @@ ExportCmd::ExportCmd(const string& name, const string& value) :
 
 void ExportCmd::execute() {
 
-    // the setenv()-routine is not everywhere available and
-    // putenv() doesnt manage the strings in the environment
-    // and hence we have to do that on our own to avoid memleaking
-    static set<char*> stored;
-    char* newenv = new char[m_name.size() + m_value.size() + 2];
-    if (newenv) {
-
-        char* oldenv = getenv(m_name.c_str());
-
-        // oldenv points to the value .. we have to go back a bit
-        if (oldenv && stored.find(oldenv - (m_name.size() + 1)) != stored.end())
-            oldenv -= (m_name.size() + 1);
-        else
-            oldenv = NULL;
-
-        memset(newenv, 0, m_name.size() + m_value.size() + 2);
-        strcat(newenv, m_name.c_str());
-        strcat(newenv, "=");
-        strcat(newenv, m_value.c_str());
-
-        if (putenv(newenv) == 0) {
-            if (oldenv) {
-                stored.erase(oldenv);
-                delete[] oldenv;
-            }
-            stored.insert(newenv);
-        }
-    }
+    FbTk::App::instance()->setenv(m_name.c_str(), m_value.c_str());
 }
 
 REGISTER_COMMAND(exit, FbCommands::ExitFluxboxCmd, void);

@@ -53,6 +53,11 @@ public:
     /// forces an end to event loop
     void end();
     bool done() const { return m_done; }
+
+    // the setenv()-routine is not everywhere available and
+    // putenv() doesnt manage the strings in the environment
+    // and hence we have to do that on our own to avoid memleaking
+    static bool setenv(const char* key, const char* value);
 private:
     static App *s_app;
     bool m_done;

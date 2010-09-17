@@ -26,6 +26,21 @@
 
 #include "EventManager.hh"
 
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+
+
+#include <set>
+
+
 namespace FbTk {
 
 App *App::s_app = 0;
@@ -77,6 +92,46 @@ void App::eventLoop() {
 
 void App::end() {
     m_done = true; //end loop in App::eventLoop
+}
+
+bool App::setenv(const char* key, const char* value) {
+
+    if (!key || !*key)
+        return false;
+
+    static std::set<char*> stored;
+
+    const size_t key_size = strlen(key);
+    const size_t value_size = value ? strlen(value) : 0;
+
+    char* newenv = new char[key_size + value_size + 2];
+    if (newenv) {
+
+        char* oldenv = getenv(key);
+
+        // oldenv points to the value .. we have to go back a bit
+        if (oldenv && stored.find(oldenv - (key_size + 1)) != stored.end())
+            oldenv -= (key_size + 1);
+        else
+            oldenv = NULL;
+
+        memset(newenv, 0, key_size + value_size + 2);
+        strcat(newenv, key);
+        strcat(newenv, "=");
+        if (value_size > 0)
+            strcat(newenv, value);
+
+        if (putenv(newenv) == 0) {
+            if (oldenv) {
+                stored.erase(oldenv);
+                delete[] oldenv;
+            }
+            stored.insert(newenv);
+        }
+        return true;
+    }
+
+    return false;
 }
 
 } // end namespace FbTk

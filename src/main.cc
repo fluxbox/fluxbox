@@ -219,8 +219,7 @@ static void parseOptions(int argc, char** argv, Options& opts) {
             }
 
             opts.session_display = argv[i];
-            string display_env = "DISPLAY=" + opts.session_display;
-            if (putenv(const_cast<char *>(display_env.c_str()))) {
+            if (!FbTk::App::setenv("DISPLAY", argv[i])) {
                 cerr<<_FB_CONSOLETEXT(main, WarnDisplayEnv,
                                 "warning: couldn't set environment variable 'DISPLAY'",
                               "")<<endl;
