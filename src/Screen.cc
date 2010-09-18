@@ -183,7 +183,7 @@ int calcSquareDistance(int x1, int y1, int x2, int y2) {
 
 class TabPlacementMenuItem: public FbTk::RadioMenuItem {
 public:
-    TabPlacementMenuItem(FbTk::FbString & label, BScreen &screen,
+    TabPlacementMenuItem(const FbTk::FbString & label, BScreen &screen,
                          FbWinFrame::TabPlacement place,
                          FbTk::RefCount<FbTk::Command<void> > &cmd):
         FbTk::RadioMenuItem(label, cmd),
@@ -208,6 +208,28 @@ void clampMenuDelay(int& delay) {
     delay = FbTk::Util::clamp(delay, 0, 5000);
 }
 
+
+struct TabPlacementString {
+    FbWinFrame::TabPlacement placement;
+    const char* str;
+};
+
+const TabPlacementString placement_strings[] = {
+    { FbWinFrame::TOPLEFT, "TopLeft" },
+    { FbWinFrame::TOP, "Top" },
+    { FbWinFrame::TOPRIGHT, "TopRight" },
+    { FbWinFrame::BOTTOMLEFT, "BottomLeft" },
+    { FbWinFrame::BOTTOM, "Bottom" },
+    { FbWinFrame::BOTTOMRIGHT, "BottomRight" },
+    { FbWinFrame::LEFTBOTTOM, "LeftBottom" },
+    { FbWinFrame::LEFT, "Left" },
+    { FbWinFrame::LEFTTOP, "LeftTop" },
+    { FbWinFrame::RIGHTBOTTOM, "RightBottom" },
+    { FbWinFrame::RIGHT, "Right" },
+    { FbWinFrame::RIGHTTOP, "RightTop" }
+};
+
+
 } // end anonymous namespace
 
 
@@ -217,77 +239,25 @@ namespace FbTk {
 template<>
 string FbTk::Resource<FbWinFrame::TabPlacement>::
 getString() const {
-    switch (m_value) {
-    case FbWinFrame::TOPLEFT:
-        return string("TopLeft");
-        break;
-    case FbWinFrame::BOTTOMLEFT:
-        return string("BottomLeft");
-        break;
-    case FbWinFrame::TOP:
-        return string("Top");
-        break;
-    case FbWinFrame::BOTTOM:
-        return string("Bottom");
-        break;
-    case FbWinFrame::TOPRIGHT:
-        return string("TopRight");
-        break;
-    case FbWinFrame::BOTTOMRIGHT:
-        return string("BottomRight");
-        break;
-    case FbWinFrame::LEFTTOP:
-        return string("LeftTop");
-        break;
-    case FbWinFrame::LEFT:
-        return string("Left");
-        break;
-    case FbWinFrame::LEFTBOTTOM:
-        return string("LeftBottom");
-        break;
-    case FbWinFrame::RIGHTTOP:
-        return string("RightTop");
-        break;
-    case FbWinFrame::RIGHT:
-        return string("Right");
-        break;
-    case FbWinFrame::RIGHTBOTTOM:
-        return string("RightBottom");
-        break;
-    }
-    //default string
-    return string("TopLeft");
+
+    size_t i = (m_value == FbTk::Util::clamp(m_value, FbWinFrame::TOPLEFT, FbWinFrame::RIGHTTOP)
+                ? m_value 
+                : FbWinFrame::DEFAULT) - 1;
+    return placement_strings[i].str;
 }
 
 template<>
 void FbTk::Resource<FbWinFrame::TabPlacement>::
 setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft") == 0)
-        m_value = FbWinFrame::TOPLEFT;
-    else if (strcasecmp(strval, "BottomLeft") == 0)
-        m_value = FbWinFrame::BOTTOMLEFT;
-    else if (strcasecmp(strval, "Top") == 0)
-        m_value = FbWinFrame::TOP;
-    else if (strcasecmp(strval, "Bottom") == 0)
-        m_value = FbWinFrame::BOTTOM;
-    else if (strcasecmp(strval, "TopRight") == 0)
-        m_value = FbWinFrame::TOPRIGHT;
-    else if (strcasecmp(strval, "BottomRight") == 0)
-        m_value = FbWinFrame::BOTTOMRIGHT;
-    else if (strcasecmp(strval, "LeftTop") == 0)
-        m_value = FbWinFrame::LEFTTOP;
-    else if (strcasecmp(strval, "Left") == 0)
-        m_value = FbWinFrame::LEFT;
-    else if (strcasecmp(strval, "LeftBottom") == 0)
-        m_value = FbWinFrame::LEFTBOTTOM;
-    else if (strcasecmp(strval, "RightTop") == 0)
-        m_value = FbWinFrame::RIGHTTOP;
-    else if (strcasecmp(strval, "Right") == 0)
-        m_value = FbWinFrame::RIGHT;
-    else if (strcasecmp(strval, "RightBottom") == 0)
-        m_value = FbWinFrame::RIGHTBOTTOM;
-    else
-        setDefaultValue();
+
+    size_t i;
+    for (i = 0; i < sizeof(placement_strings)/sizeof(TabPlacementString); ++i) {
+        if (strcasecmp(strval, placement_strings[i].str) == 0) {
+            m_value = placement_strings[i].placement;
+            return;
+        }
+    }
+    setDefaultValue();
 }
 
 } // end namespace FbTk
@@ -1650,40 +1620,39 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     tab_width_item->setCommand(save_and_reconftabs);
     tab_menu->insert(tab_width_item);
 
-
-    typedef pair<FbTk::FbString, FbWinFrame::TabPlacement> PlacementP;
-    typedef list<PlacementP> Placements;
-    Placements place_menu;
-
     // menu is 3 wide, 5 down
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), FbWinFrame::LEFTTOP));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), FbWinFrame::LEFT));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), FbWinFrame::LEFTBOTTOM));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopCenter, "Top Center", "Top Center"), FbWinFrame::TOP));
-    place_menu.push_back(PlacementP("", FbWinFrame::TOPLEFT));
-    place_menu.push_back(PlacementP("", FbWinFrame::TOPLEFT));
-    place_menu.push_back(PlacementP("", FbWinFrame::TOPLEFT));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), FbWinFrame::BOTTOM));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightTop, "Right Top", "Right Top"), FbWinFrame::RIGHTTOP));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightCenter, "Right Center", "Right Center"), FbWinFrame::RIGHT));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), FbWinFrame::RIGHTBOTTOM));
-    place_menu.push_back(PlacementP(_FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT));
+    struct PlacementP {
+         const FbTk::FbString label;
+         FbWinFrame::TabPlacement placement;
+    };
+    static const PlacementP place_menu[] = {
+
+        { _FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT},
+        { _FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), FbWinFrame::LEFTTOP},
+        { _FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), FbWinFrame::LEFT},
+        { _FB_XTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), FbWinFrame::LEFTBOTTOM},
+        { _FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT},
+        { _FB_XTEXT(Align, TopCenter, "Top Center", "Top Center"), FbWinFrame::TOP},
+        { "", FbWinFrame::TOPLEFT},
+        { "", FbWinFrame::TOPLEFT},
+        { "", FbWinFrame::TOPLEFT},
+        { _FB_XTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), FbWinFrame::BOTTOM},
+        { _FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT},
+        { _FB_XTEXT(Align, RightTop, "Right Top", "Right Top"), FbWinFrame::RIGHTTOP},
+        { _FB_XTEXT(Align, RightCenter, "Right Center", "Right Center"), FbWinFrame::RIGHT},
+        { _FB_XTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), FbWinFrame::RIGHTBOTTOM},
+        { _FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT}
+    };
 
     tabplacement_menu->setMinimumSublevels(3);
     // create items in sub menu
-    for (size_t i=0; i<15; ++i) {
-        FbTk::FbString &str = place_menu.front().first;
-        FbWinFrame::TabPlacement placement = place_menu.front().second;
-        if (str == "") {
-            tabplacement_menu->insert("");
+    for (size_t i=0; i< sizeof(place_menu)/sizeof(PlacementP); ++i) {
+        const PlacementP& p = place_menu[i];
+        if (p.label == "") {
+            tabplacement_menu->insert(p.label);
             tabplacement_menu->setItemEnabled(i, false);
-        } else {
-            tabplacement_menu->insert(new TabPlacementMenuItem(str, *this, placement, save_and_reconftabs));
-        }
-        place_menu.pop_front();
+        } else
+            tabplacement_menu->insert(new TabPlacementMenuItem(p.label, *this, p.placement, save_and_reconftabs));
     }
     tabplacement_menu->updateMenu();
 
