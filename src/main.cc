@@ -70,116 +70,142 @@ using std::exception;
 
 static void showInfo(ostream &ostr) {
     _FB_USES_NLS;
-    ostr<<_FB_CONSOLETEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")<<": "<<__fluxbox_version<<endl;
+    ostr <<
+        _FB_CONSOLETEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")
+        << ": " 
+        << __fluxbox_version <<endl;
 
     if (strlen(gitrevision()) > 0)
-        ostr << _FB_CONSOLETEXT(Common, SvnRevision, "GIT Revision", "Revision number in GIT repositary") << ": " << gitrevision() << endl;
+        ostr << _FB_CONSOLETEXT(Common, SvnRevision, "GIT Revision", "Revision number in GIT repositary") 
+            << ": " 
+            << gitrevision() << endl;
 #if defined(__DATE__) && defined(__TIME__)
-    ostr<<_FB_CONSOLETEXT(Common, Compiled, "Compiled", "Time fluxbox was compiled")<<": "<<__DATE__<<" "<<__TIME__<<endl;
+    ostr << _FB_CONSOLETEXT(Common, Compiled, "Compiled", "Time fluxbox was compiled")
+        << ": " 
+        << __DATE__ 
+        << " "
+        << __TIME__ << endl;
 #endif
 #ifdef __fluxbox_compiler
-    ostr<<_FB_CONSOLETEXT(Common, Compiler, "Compiler", "Compiler used to build fluxbox")<<": "<<__fluxbox_compiler<<endl;
+    ostr << _FB_CONSOLETEXT(Common, Compiler, "Compiler", "Compiler used to build fluxbox")
+        << ": "
+        << __fluxbox_compiler << endl;
 #endif // __fluxbox_compiler
 #ifdef __fluxbox_compiler_version
-    ostr<<_FB_CONSOLETEXT(Common, CompilerVersion, "Compiler version", "Compiler version used to build fluxbox")<<": "<<__fluxbox_compiler_version<<endl;
+    ostr << _FB_CONSOLETEXT(Common, CompilerVersion, "Compiler version", "Compiler version used to build fluxbox")
+        << ": " 
+        << __fluxbox_compiler_version << endl;
 #endif // __fluxbox_compiler_version
 
-    ostr<<endl<<_FB_CONSOLETEXT(Common, Defaults, "Defaults", "Default values compiled in")<<":"<<endl;
+    ostr << endl 
+        <<_FB_CONSOLETEXT(Common, Defaults, "Defaults", "Default values compiled in") 
+        << ": " << endl;
 
-    ostr<<_FB_CONSOLETEXT(Common, DefaultMenuFile, "    menu", "default menu file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTMENU<<endl;
-    ostr<<_FB_CONSOLETEXT(Common, DefaultStyle, "   style", "default style (right aligned - make sure same width as other default values)")<<": "<<DEFAULTSTYLE<<endl;
+    ostr <<_FB_CONSOLETEXT(Common, DefaultMenuFile, "    menu", "default menu file (right aligned - make sure same width as other default values)")
+        << ": "
+        << DEFAULTMENU << endl;
+    ostr << _FB_CONSOLETEXT(Common, DefaultStyle, "   style", "default style (right aligned - make sure same width as other default values)")
+        << ": "
+        << DEFAULTSTYLE << endl;
 
-    ostr<<_FB_CONSOLETEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTKEYSFILE<<endl;
-    ostr<<_FB_CONSOLETEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")<<": "<<DEFAULT_INITFILE<<endl;
+    ostr << _FB_CONSOLETEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")
+        << ": "
+        << DEFAULTKEYSFILE << endl;
+    ostr << _FB_CONSOLETEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")
+        << ": "
+        << DEFAULT_INITFILE << endl;
 
 #ifdef NLS
-    ostr<<_FB_CONSOLETEXT(Common, DefaultLocalePath, "    nls", "location for localization files (right aligned - make sure same width as other default values)")<<": "<<LOCALEPATH<<endl;
+    ostr << _FB_CONSOLETEXT(Common, DefaultLocalePath, "    nls", "location for localization files (right aligned - make sure same width as other default values)")
+        << ": "
+        << LOCALEPATH << endl;
 #endif
 
     const char NOT[] = "-";
-    ostr<<endl<<
-        _FB_CONSOLETEXT(Common, CompiledOptions, "Compiled options", "Options used when compiled")
-        <<" ("<<NOT<<" => "<<
-        _FB_CONSOLETEXT(Common, Disabled, "disabled", "option is turned off")<<"): "<<endl<<
+    ostr << endl
+        << _FB_CONSOLETEXT(Common, CompiledOptions, "Compiled options", "Options used when compiled")
+        << " (" << NOT << " => " 
+        << _FB_CONSOLETEXT(Common, Disabled, "disabled", "option is turned off") << "): " << endl
+        <<
 
 /**** NOTE: This list is in alphabetical order! ****/
 
 #ifndef HAVE_FRIBIDI
-        NOT<<
+        NOT <<
 #endif
-        "BIDI"<<endl<<
+        "BIDI" << endl <<
 
 #ifndef DEBUG
-        NOT<<
+        NOT <<
 #endif // DEBUG
-        "DEBUG"<<endl<<
+        "DEBUG" << endl <<
 
 #ifndef USE_NEWWMSPEC
-        NOT<<
+        NOT <<
 #endif // USE_NEWWMSPEC
-        "EWMH"<<endl<<
+        "EWMH" << endl <<
 
 #ifndef USE_GNOME
-        NOT<<
+        NOT <<
 #endif // USE_GNOME
-        "GNOME"<<endl<<
+        "GNOME" << endl <<
 
 #ifndef HAVE_IMLIB2
         NOT<<
 #endif // HAVE_IMLIB2
-        "IMLIB2"<<endl<<
+        "IMLIB2" << endl <<
 
 #ifndef NLS
         NOT<<
 #endif // NLS
-        "NLS"<<endl<<
+        "NLS" << endl <<
 
 #ifndef REMEMBER
-        NOT<<
+        NOT <<
 #endif // REMEMBER
-        "REMEMBER"<<endl<<
+        "REMEMBER" << endl <<
 
 #ifndef HAVE_XRENDER
-        NOT<<
+        NOT <<
 #endif // HAVE_XRENDER
-        "RENDER"<<endl<<
+        "RENDER" << endl <<
 
 #ifndef SHAPE
-        NOT<<
+        NOT <<
 #endif // SHAPE
-        "SHAPE"<<endl<<
+        "SHAPE" << endl <<
 
 #ifndef SLIT
-        NOT<<
+        NOT <<
 #endif // SLIT
-        "SLIT"<<endl<<
+        "SLIT" << endl <<
 
 #ifndef USE_TOOLBAR
-        NOT<<
+        NOT <<
 #endif // USE_TOOLBAR
-        "TOOLBAR"<<endl<<
+        "TOOLBAR" << endl <<
 
 #ifndef USE_XFT
-        NOT<<
+        NOT <<
 #endif // USE_XFT
-        "XFT"<<endl<<
+        "XFT" << endl <<
 
 #ifndef XINERAMA
-        NOT<<
+        NOT <<
 #endif // XINERAMA
-        "XINERAMA"<<endl<<
+        "XINERAMA" << endl <<
 
 #ifndef USE_XMB
-        NOT<<
+        NOT <<
 #endif // USE_XMB
-        "XMB"<<endl<<
+        "XMB" << endl <<
 
 #ifndef HAVE_XPM
-        NOT<<
+        NOT <<
 #endif // HAVE_XPM
-        "XPM"<<endl<<
+        "XPM" << endl
 
-        endl;
+        << endl;
 }
 
 struct Options {
@@ -294,11 +320,17 @@ int main(int argc, char **argv) {
 
     // setup log file
     if (log_file.is_open()) {
-        cerr<<_FB_CONSOLETEXT(main, LoggingTo, "Logging to", "Logging to a file")<<": "<<opts.log_filename<<endl;
-        log_file<<"------------------------------------------"<<endl;
-        log_file<<_FB_CONSOLETEXT(main, LogFile, "Log File", "")<<": "<<opts.log_filename<<endl;
+        cerr << _FB_CONSOLETEXT(main, LoggingTo, "Logging to", "Logging to a file") 
+            << ": " 
+            << opts.log_filename << endl;
+
+        log_file <<"------------------------------------------" << endl;
+        log_file << _FB_CONSOLETEXT(main, LogFile, "Log File", "")
+            << ": "
+            << opts.log_filename <<endl;
+
         showInfo(log_file);
-        log_file<<"------------------------------------------"<<endl;
+        log_file << "------------------------------------------" << endl;
         // setup log to use cout and cerr stream
         outbuf = cout.rdbuf(log_file.rdbuf());
         errbuf = cerr.rdbuf(log_file.rdbuf());
@@ -317,19 +349,38 @@ int main(int argc, char **argv) {
         exitcode = EXIT_SUCCESS;
 
     } catch (out_of_range &oor) {
-        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorOutOfRange, "Out of range", "Error message")<<": "<<oor.what()<<endl;
+        cerr <<"Fluxbox: "
+            << _FB_CONSOLETEXT(main, ErrorOutOfRange, "Out of range", "Error message")
+            << ": "
+            << oor.what() << endl;
     } catch (runtime_error &re) {
-        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorRuntime, "Runtime error", "Error message")<<": "<<re.what()<<endl;
+        cerr << "Fluxbox: "
+            << _FB_CONSOLETEXT(main, ErrorRuntime, "Runtime error", "Error message")
+            << ": "
+            << re.what() << endl;
     } catch (bad_cast &bc) {
-        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorBadCast, "Bad cast", "Error message")<<": "<<bc.what()<<endl;
+        cerr << "Fluxbox: "
+            << _FB_CONSOLETEXT(main, ErrorBadCast, "Bad cast", "Error message")
+            << ": "
+            << bc.what() << endl;
     } catch (bad_alloc &ba) {
-        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorBadAlloc, "Bad Alloc", "Error message")<<": "<<ba.what()<<endl;
+        cerr << "Fluxbox: "
+            << _FB_CONSOLETEXT(main, ErrorBadAlloc, "Bad Alloc", "Error message")
+            << ": "
+            << ba.what() << endl;
     } catch (exception &e) {
-        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorStandardException, "Standard Exception", "Error message")<<": "<<e.what()<<endl;
+        cerr << "Fluxbox: "
+            << _FB_CONSOLETEXT(main, ErrorStandardException, "Standard Exception", "Error message")
+            << ": "
+            << e.what() << endl;
     } catch (string error_str) {
-        cerr<<_FB_CONSOLETEXT(Common, Error, "Error", "Error message header")<<": "<<error_str<<endl;
+        cerr << _FB_CONSOLETEXT(Common, Error, "Error", "Error message header")
+            << ": "
+            << error_str << endl;
     } catch (...) {
-        cerr<<"Fluxbox: "<<_FB_CONSOLETEXT(main, ErrorUnknown, "Unknown error", "Error message")<<"."<<endl;
+        cerr << "Fluxbox: "
+            << _FB_CONSOLETEXT(main, ErrorUnknown, "Unknown error", "Error message")
+            << "." << endl;
         abort();
     }
 

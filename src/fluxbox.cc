@@ -164,8 +164,14 @@ int handleXErrors(Display *d, XErrorEvent *e) {
         char errtxt[128];
 
         XGetErrorText(d, e->error_code, errtxt, 128);
-        cerr<<"Fluxbox: X Error: "<<errtxt<<"("<<(int)e->error_code<<") opcodes "<<
-            (int)e->request_code<<"/"<<(int)e->minor_code<<" resource 0x"<<hex<<(int)e->resourceid<<dec<<endl;
+        cerr << "Fluxbox: X Error: " 
+             << errtxt 
+             << "(" <<(int)e->error_code << ") opcodes " 
+             << (int)e->request_code 
+             << "/" 
+             << (int)e->minor_code 
+             << " resource 0x" << hex <<(int)e->resourceid 
+             << dec << endl;
 //        if (e->error_code != 9 && e->error_code != 183)
 //            kill(0, 2);
     }
@@ -1156,7 +1162,7 @@ void Fluxbox::shutdown() {
 /// saves resources
 void Fluxbox::save_rc() {
     _FB_USES_NLS;
-    XrmDatabase new_blackboxrc = 0;
+    XrmDatabase new_rc = 0;
 
     string dbfile(getRcFilename());
 
@@ -1187,15 +1193,15 @@ void Fluxbox::save_rc() {
             workspaces_string += ',';
         }
 
-        XrmPutLineResource(&new_blackboxrc, workspaces_string.c_str());
+        XrmPutLineResource(&new_rc, workspaces_string.c_str());
 
     }
 
-    XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.c_str());
+    XrmDatabase old_rc = XrmGetFileDatabase(dbfile.c_str());
 
-    XrmMergeDatabases(new_blackboxrc, &old_blackboxrc); //merge database together
-    XrmPutFileDatabase(old_blackboxrc, dbfile.c_str());
-    XrmDestroyDatabase(old_blackboxrc);
+    XrmMergeDatabases(new_rc, &old_rc); //merge database together
+    XrmPutFileDatabase(old_rc, dbfile.c_str());
+    XrmDestroyDatabase(old_rc);
 
     fbdbg<<__FILE__<<"("<<__LINE__<<"): ------------ SAVING DONE"<<endl;
 
