@@ -185,13 +185,17 @@ int handleXErrors(Display *d, XErrorEvent *e) {
 //static singleton var
 Fluxbox *Fluxbox::s_singleton=0;
 
-Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
-                 const char *rcfilename, bool xsync)
-    : FbTk::App(dpy_name),
+Fluxbox::Fluxbox(int argc, char **argv,
+                 const std::string& dpy_name,
+                 const std::string& rc_path, const std::string& rc_filename, bool xsync)
+    : FbTk::App(dpy_name.c_str()),
       m_fbatoms(FbAtoms::instance()),
-      m_resourcemanager(rcfilename, true),
+      m_resourcemanager(rc_filename.c_str(), true),
       // TODO: shouldn't need a separate one for screen
       m_screen_rm(m_resourcemanager),
+
+      m_RC_PATH(rc_path),
+      m_RC_INIT_FILE("init"),
       m_rc_ignoreborder(m_resourcemanager, false, "session.ignoreBorder", "Session.IgnoreBorder"),
       m_rc_pseudotrans(m_resourcemanager, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
       m_rc_colors_per_channel(m_resourcemanager, 4,
@@ -199,11 +203,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
       m_rc_tabs_padding(m_resourcemanager, 0, "session.tabPadding", "Session.TabPadding"),
       m_rc_stylefile(m_resourcemanager, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
-      m_rc_styleoverlayfile(m_resourcemanager, "~/." + realProgramName("fluxbox") + "/overlay", "session.styleOverlay", "Session.StyleOverlay"),
-      m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
-      m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
-      m_rc_slitlistfile(m_resourcemanager, "~/." + realProgramName("fluxbox") + "/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
-      m_rc_appsfile(m_resourcemanager, "~/." + realProgramName("fluxbox") + "/apps", "session.appsFile", "Session.AppsFile"),
+      m_rc_styleoverlayfile(m_resourcemanager, m_RC_PATH + "/overlay", "session.styleOverlay", "Session.StyleOverlay"),
+      m_rc_menufile(m_resourcemanager, m_RC_PATH + "/menu", "session.menuFile", "Session.MenuFile"),
+      m_rc_keyfile(m_resourcemanager, m_RC_PATH + "/keys", "session.keyFile", "Session.KeyFile"),
+      m_rc_slitlistfile(m_resourcemanager, m_RC_PATH + "/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
+      m_rc_appsfile(m_resourcemanager, m_RC_PATH + "/apps", "session.appsFile", "Session.AppsFile"),
       m_rc_tabs_attach_area(m_resourcemanager, ATTACH_AREA_WINDOW, "session.tabsAttachArea", "Session.TabsAttachArea"),
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
@@ -213,16 +217,14 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
       m_keyscreen(0),
       m_last_time(0),
       m_masked(0),
-      m_rc_file(rcfilename ? rcfilename : ""),
+      m_rc_file(rc_filename),
       m_argv(argv), m_argc(argc),
       m_showing_dialog(false),
       m_starting(true),
       m_restarting(false),
       m_shutdown(false),
       m_server_grabs(0),
-      m_randr_event_type(0),
-      m_RC_PATH(realProgramName("fluxbox")),
-      m_RC_INIT_FILE("init") {
+      m_randr_event_type(0) {
 
     _FB_USES_NLS;
     if (s_singleton != 0)
@@ -287,8 +289,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name,
     load_rc();
 
     grab();
-
-    setupConfigFiles();
 
     if (! XSupportsLocale())
         cerr<<_FB_CONSOLETEXT(Fluxbox, WarningLocale, 
@@ -510,76 +510,6 @@ void Fluxbox::ungrab() {
 
     if (m_server_grabs < 0)
         m_server_grabs = 0;
-}
-
-/**
- setup the configutation files in
- home directory
-*/
-void Fluxbox::setupConfigFiles() {
-
-    string dirname = getDefaultDataFilename("");
-
-    // is file/dir already there?
-    const bool create_dir = FbTk::FileUtil::isDirectory(dirname.c_str());
-
-    struct CFInfo {
-        bool create_file;
-        const char* default_name;
-        const std::string filename;
-    } cfiles[] = {
-        { create_dir, DEFAULT_INITFILE, getDefaultDataFilename(m_RC_INIT_FILE) },
-        { create_dir, DEFAULTKEYSFILE, getDefaultDataFilename("keys") },
-        { create_dir, DEFAULTMENU, getDefaultDataFilename("menu") },
-        { create_dir, DEFAULT_APPSFILE, getDefaultDataFilename("apps") },
-        { create_dir, DEFAULT_OVERLAY, getDefaultDataFilename("overlay") },
-        { create_dir, DEFAULT_WINDOWMENU, getDefaultDataFilename("windowmenu") }
-    };
-    const size_t nr_of_cfiles = sizeof(cfiles)/sizeof(CFInfo);
-
-    if (create_dir) { // check if anything with those name exists, if not create new
-        for (size_t i = 0; i < nr_of_cfiles; ++i) {
-            cfiles[i].create_file = access(cfiles[i].filename.c_str(), F_OK);
-        }
-    } else{
-        fbdbg<<"Creating dir: " << dirname.c_str() << endl;
-        _FB_USES_NLS;
-        // create directory with perm 700
-        if (mkdir(dirname.c_str(), 0700)) {
-            fprintf(stderr, _FB_CONSOLETEXT(Fluxbox, ErrorCreatingDirectory,
-                                    "Can't create %s directory",
-                                    "Can't create a directory, one %s for directory name").c_str(),
-                    dirname.c_str());
-            cerr<<endl;
-            return;
-        }
-    }
-
-    // copy default files if needed
-    for (size_t i = 0; i < nr_of_cfiles; ++i) {
-        if (cfiles[i].create_file) {
-            FbTk::FileUtil::copyFile(cfiles[i].default_name, cfiles[i].filename.c_str());
-        }
-    }
-
-#define CONFIG_VERSION 13
-    FbTk::Resource<int> config_version(m_resourcemanager, 0,
-            "session.configVersion", "Session.ConfigVersion");
-    if (*config_version < CONFIG_VERSION) {
-        // configs are out of date, so run fluxbox-update_configs
-
-        string commandargs = realProgramName("fluxbox-update_configs");
-        commandargs += " -rc " + cfiles[0].filename;
-
-#ifdef HAVE_GETPID
-        // add the fluxbox pid so fbuc can have us reload rc if necessary
-        commandargs += " -pid ";
-        commandargs += FbTk::StringUtil::number2String(getpid());
-#endif // HAVE_GETPID
-
-        FbCommands::ExecuteCmd fbuc(commandargs, 0);
-        fbuc.execute();
-    }
 }
 
 void Fluxbox::handleEvent(XEvent * const e) {
@@ -1216,7 +1146,7 @@ string Fluxbox::getRcFilename() {
 
 /// Provides default filename of data file
 string Fluxbox::getDefaultDataFilename(const char *name) const {
-    return (getenv("HOME") + string("/.") + m_RC_PATH + string("/") + name);
+    return m_RC_PATH + string("/") + name;
 }
 
 /// loads resources
@@ -1311,7 +1241,6 @@ void Fluxbox::load_rc(BScreen &screen) {
 }
 
 void Fluxbox::reconfigure() {
-    setupConfigFiles();
     load_rc();
     m_reconfigure_wait = true;
     m_reconfig_timer.start();

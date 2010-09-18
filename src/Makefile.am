@@ -53,14 +53,14 @@ defaults.hh: Makefile
 		echo '#define DEFAULT_WINDOWMENU "$(DEFAULT_WINDOWMENU)"'; \
 		echo '#define PROGRAM_PREFIX "$(PROGRAM_PREFIX:NONE=)"'; \
 		echo '#define PROGRAM_SUFFIX "$(PROGRAM_SUFFIX:NONE=)"'; \
-		echo 'std::string realProgramName(std::string name);'; \
+		echo 'std::string realProgramName(const std::string& name);'; \
 		echo 'const char* gitrevision();' ) > defaults.hh
 
 defaults.cc: force
 	@( \
 		echo '#include "defaults.hh"'; \
 		echo ''; \
-		echo 'std::string realProgramName(std::string name) {'; \
+		echo 'std::string realProgramName(const std::string& name) {'; \
 		echo '  return PROGRAM_PREFIX + name + PROGRAM_SUFFIX;'; \
 		echo '}'; \
 		echo ''; \

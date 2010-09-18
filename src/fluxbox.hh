@@ -79,8 +79,10 @@ class Fluxbox : public FbTk::App,
                 public FbTk::Observer,
                 private FbTk::SignalTracker {
 public:
-    Fluxbox(int argc, char **argv, const char * dpy_name= 0,
-            const char *rcfilename = 0, bool xsync = false);
+    Fluxbox(int argc, char **argv,
+            const std::string& dpy_name,
+            const std::string& rc_path, const std::string& rc_filename,
+            bool xsync = false);
     virtual ~Fluxbox();
 
     static Fluxbox *instance() { return s_singleton; }
@@ -197,7 +199,6 @@ private:
 
     void handleEvent(XEvent *xe);
 
-    void setupConfigFiles();
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
 
@@ -220,6 +221,9 @@ private:
     std::auto_ptr<FbAtoms> m_fbatoms;
 
     FbTk::ResourceManager m_resourcemanager, &m_screen_rm;
+
+    std::string m_RC_PATH;
+    const char *m_RC_INIT_FILE;
 
     //--- Resources
 
@@ -289,8 +293,6 @@ private:
     int m_randr_event_type; ///< the type number of randr event
     int m_shape_eventbase; ///< event base for shape events
     bool m_have_shape; ///< if shape is supported by server
-    std::string m_RC_PATH;
-    const char *m_RC_INIT_FILE;
     Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
 
     AttentionNoticeHandler m_attention_handler;

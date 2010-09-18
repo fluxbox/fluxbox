@@ -20,17 +20,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
 #include "fluxbox.hh"
 #include "version.h"
 #include "defaults.hh"
 
+#include "Debug.hh"
+#include "FbCommands.hh"
+
 #include "FbTk/Theme.hh"
 #include "FbTk/I18n.hh"
 #include "FbTk/CommandParser.hh"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
+#include "FbTk/FileUtil.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -49,7 +53,11 @@
   #include <string.h>
 #endif
 
-#include <iostream>
+#ifdef HAVE_SYS_STAT_H
+#include <sys/types.h>
+#include <sys/stat.h>
+#endif // HAVE_SYS_STAT_H
+
 #include <fstream>
 #include <stdexcept>
 #include <typeinfo>
@@ -209,8 +217,16 @@ static void showInfo(ostream &ostr) {
 }
 
 struct Options {
-    Options() : xsync(false) { }
+    Options() : 
+        session_display(getenv("DISPLAY")),
+        rc_path(std::string(getenv("HOME")) + "/." + realProgramName("fluxbox")),
+        rc_file(rc_path + "/init"),
+        xsync(false) {
+
+    }
+
     std::string session_display;
+    std::string rc_path;
     std::string rc_file;
     std::string log_filename;
     bool xsync;
@@ -298,6 +314,92 @@ static void parseOptions(int argc, char** argv, Options& opts) {
 }
 
 
+/**
+ setup the configutation files in
+ home directory
+*/
+void setupConfigFiles(const std::string& dirname, const std::string& rc) {
+
+    _FB_USES_NLS;
+
+    const bool has_dir = FbTk::FileUtil::isDirectory(dirname.c_str());
+
+
+    struct CFInfo {
+        bool create_file;
+        const char* default_name;
+        const std::string filename;
+    } cfiles[] = {
+        { !has_dir, DEFAULT_INITFILE, rc },
+        { !has_dir, DEFAULTKEYSFILE, dirname + "/keys" },
+        { !has_dir, DEFAULTMENU, dirname + "/menu" },
+        { !has_dir, DEFAULT_APPSFILE, dirname + "/apps" },
+        { !has_dir, DEFAULT_OVERLAY, dirname + "/overlay" },
+        { !has_dir, DEFAULT_WINDOWMENU, dirname + "/windowmenu" }
+    };
+    const size_t nr_of_cfiles = sizeof(cfiles)/sizeof(CFInfo);
+
+
+    if (has_dir) { // check if anything with these names exists, if not create new
+        for (size_t i = 0; i < nr_of_cfiles; ++i) {
+            cfiles[i].create_file = access(cfiles[i].filename.c_str(), F_OK);
+        }
+    } else {
+
+        fbdbg << "Creating dir: " << dirname << endl;
+        if (mkdir(dirname.c_str(), 0700)) {
+            fprintf(stderr, _FB_CONSOLETEXT(Fluxbox, ErrorCreatingDirectory,
+                                    "Can't create %s directory",
+                                    "Can't create a directory, one %s for directory name").c_str(),
+                    dirname.c_str());
+            cerr << endl;
+            return;
+        }
+    }
+
+    // copy default files if needed
+    for (size_t i = 0; i < nr_of_cfiles; ++i) {
+        if (cfiles[i].create_file) {
+            FbTk::FileUtil::copyFile(cfiles[i].default_name, cfiles[i].filename.c_str());
+        }
+    }
+
+}
+
+
+// configs might be out of date, so run fluxbox-update_configs
+// if necassary.
+void updateConfigFilesIfNeeded(const std::string& rc_file) {
+
+    const int CONFIG_VERSION = 13; // TODO: move this to 'defaults.hh' or 'config.h'
+
+    FbTk::ResourceManager r_mgr(rc_file.c_str(), false);
+    FbTk::Resource<int> c_version(r_mgr, 0, "session.configVersion", "Session.ConfigVersion");
+
+    if (!r_mgr.load(rc_file.c_str())) {
+        _FB_USES_NLS;
+        cerr << _FB_CONSOLETEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "")
+            << ": " 
+            << rc_file << endl;
+        return;
+    }
+
+    if (*c_version < CONFIG_VERSION) {
+
+        fbdbg << "updating config files from version " 
+            << *c_version
+            << " to "
+            << CONFIG_VERSION
+            << endl;
+
+        string commandargs = realProgramName("fluxbox-update_configs");
+        commandargs += " -rc " + rc_file;
+
+        FbCommands::ExecuteCmd fbuc(commandargs, 0);
+        fbuc.execute();
+    }
+}
+
 
 int main(int argc, char **argv) {
 
@@ -309,7 +411,6 @@ int main(int argc, char **argv) {
 #ifdef __EMX__
     _chdir2(getenv("X11ROOT"));
 #endif // __EMX__
-    auto_ptr<Fluxbox> fluxbox;
 
     streambuf *outbuf = 0;
     streambuf *errbuf = 0;
@@ -338,11 +439,16 @@ int main(int argc, char **argv) {
 
     int exitcode = EXIT_FAILURE;
 
+    setupConfigFiles(opts.rc_path, opts.rc_file);
+    updateConfigFilesIfNeeded(opts.rc_file);
+
+    auto_ptr<Fluxbox> fluxbox;
     try {
 
         fluxbox.reset(new Fluxbox(argc, argv,
-                    opts.session_display.c_str(),
-                    opts.rc_file.c_str(),
+                    opts.session_display,
+                    opts.rc_path,
+                    opts.rc_file,
                     opts.xsync));
         fluxbox->eventLoop();
 
