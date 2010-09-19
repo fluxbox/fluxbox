@@ -180,6 +180,49 @@ int handleXErrors(Display *d, XErrorEvent *e) {
     return False;
 }
 
+
+
+/* functor to call a memberfunction with by a reference argument
+   other places needs this helper as well it should be moved
+   to FbTk/
+
+   g++-4.1 does not like to work with:
+
+      struct Bar;
+      struct Foo {
+          void foo(Bar&);
+      };
+
+      Bar bar;
+      bind2nd(mem_fun(&F::foo), bar);
+
+   it complaints about not beeing able to store a reference to
+   a reference (Bar&&).
+
+   'CallMemFunWithRefArg' makes g++-4.1 happy without
+   having to consider switching over to boost::bind() or enforcing 
+   a newer compiler.
+ */
+template <typename Type, typename ArgType, typename ResultType>
+struct CallMemFunWithRefArg : std::unary_function<Type, ResultType> {
+
+    explicit CallMemFunWithRefArg(ResultType (Type::*func)(ArgType), ArgType arg) :
+        m_arg(arg),
+        m_func(func) { }
+
+    ResultType operator()(Type p) const {
+        (p.*m_func)(m_arg);
+    }
+
+    ResultType operator()(Type* p) const {
+        (*p.*m_func)(m_arg);
+    }
+
+    ArgType m_arg;
+    ResultType (Type::*m_func)(ArgType);
+};
+
+
 } // end anonymous
 
 //static singleton var
@@ -459,7 +502,9 @@ void Fluxbox::initScreen(BScreen *screen) {
          FbTk::MemFun(*this, &Fluxbox::workspaceCountChanged));
 
     // initiate atomhandler for screen specific stuff
-    STLUtil::forAll(m_atomhandler, bind2nd(mem_fun(&AtomHandler::initForScreen), *screen));
+    STLUtil::forAll(m_atomhandler, 
+            CallMemFunWithRefArg<AtomHandler, BScreen&, void>(&AtomHandler::initForScreen, *screen));
+    //STLUtil::forAll(m_atomhandler, bind2nd(mem_fun(&AtomHandler::initForScreen), *screen));
 
     FocusControl::revertFocus(*screen); // make sure focus style is correct
 
@@ -912,7 +957,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 
     if (fbwin && &fbwin->stateSig() == changedsub) { // state signal
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateState), *fbwin));
+                CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateState, *fbwin));
 
         // if window changed to iconic state
         // add to icon list
@@ -935,10 +980,10 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         }
     } else if (fbwin && &fbwin->layerSig() == changedsub) { // layer signal
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateLayer), *fbwin));
+            CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateLayer, *fbwin));
     } else if (fbwin && &fbwin->dieSig() == changedsub) { // window death signal
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateFrameClose), *fbwin));
+            CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateFrameClose, *fbwin));
 
         // make sure each workspace get this
         BScreen &scr = fbwin->screen();
@@ -947,10 +992,10 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             FocusControl::setFocusedFbWindow(0);
     } else if (fbwin && &fbwin->workspaceSig() == changedsub) {  // workspace signal
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateClientClose), *fbwin));
+            CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateWorkspace, *fbwin));
     } else if (client && &client->dieSig() == changedsub) { // client death
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-                bind2nd(mem_fun(&AtomHandler::updateClientClose), *client));
+            CallMemFunWithRefArg<AtomHandler, WinClient&, void>(&AtomHandler::updateClientClose, *client));
 
         BScreen &screen = client->screen();
 
@@ -979,12 +1024,14 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.workspaceSig().attach(this);
     win.layerSig().attach(this);
     win.dieSig().attach(this);
-    STLUtil::forAll(m_atomhandler, bind2nd(mem_fun(&AtomHandler::setupFrame), win));
+    STLUtil::forAll(m_atomhandler,
+            CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::setupFrame, win));
 }
 
 void Fluxbox::attachSignals(WinClient &winclient) {
     winclient.dieSig().attach(this);
-    STLUtil::forAll(m_atomhandler, bind2nd(mem_fun(&AtomHandler::setupClient), winclient));
+    STLUtil::forAll(m_atomhandler,
+            CallMemFunWithRefArg<AtomHandler, WinClient&, void>(&AtomHandler::setupClient, winclient));
 }
 
 BScreen *Fluxbox::searchScreen(Window window) {
@@ -1129,7 +1176,7 @@ void Fluxbox::save_rc() {
 
     XrmDatabase old_rc = XrmGetFileDatabase(dbfile.c_str());
 
-    XrmMergeDatabases(new_rc, &old_rc); //merge database together
+    XrmMergeDatabases(new_rc, &old_rc);
     XrmPutFileDatabase(old_rc, dbfile.c_str());
     XrmDestroyDatabase(old_rc);
 
@@ -1152,7 +1199,7 @@ string Fluxbox::getDefaultDataFilename(const char *name) const {
 /// loads resources
 void Fluxbox::load_rc() {
     _FB_USES_NLS;
-    //get resource filename
+
     string dbfile(getRcFilename());
 
     if (!dbfile.empty()) {
@@ -1318,27 +1365,28 @@ bool Fluxbox::validateClient(const WinClient *client) const {
 }
 
 void Fluxbox::updateFrameExtents(FluxboxWindow &win) {
-    STLUtil::forAll(m_atomhandler, bind2nd(mem_fun(&AtomHandler::updateFrameExtents), win));
+    STLUtil::forAll(m_atomhandler, 
+            CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateFrameExtents, win));
 }
 
 void Fluxbox::workspaceCountChanged( BScreen& screen ) {
     STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateWorkspaceCount), screen));
+            CallMemFunWithRefArg<AtomHandler, BScreen&, void>(&AtomHandler::updateWorkspaceCount, screen));
 }
 
 void Fluxbox::workspaceChanged( BScreen& screen ) {
     STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateCurrentWorkspace), screen));
+            CallMemFunWithRefArg<AtomHandler, BScreen&, void>(&AtomHandler::updateCurrentWorkspace, screen));
 }
 
 void Fluxbox::workspaceNamesChanged(BScreen &screen) {
     STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateWorkspaceNames), screen));
+            CallMemFunWithRefArg<AtomHandler, BScreen&, void>(&AtomHandler::updateWorkspaceNames, screen));
 }
 
 void Fluxbox::clientListChanged(BScreen &screen) {
     STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateClientList), screen));
+            CallMemFunWithRefArg<AtomHandler, BScreen&, void>(&AtomHandler::updateClientList, screen));
 }
 
 void Fluxbox::focusedWindowChanged(BScreen &screen, 
@@ -1353,6 +1401,6 @@ void Fluxbox::focusedWindowChanged(BScreen &screen,
 
 void Fluxbox::workspaceAreaChanged(BScreen &screen) {
     STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            bind2nd(mem_fun(&AtomHandler::updateWorkarea), screen));
+            CallMemFunWithRefArg<AtomHandler, BScreen&, void>(&AtomHandler::updateWorkarea, screen));
 }
 
