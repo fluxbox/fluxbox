@@ -1,13 +1,114 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
-*10/09/08: Introduced 'FbTk::BidiString'
+*10/09/19:
 
-    * 'BidiString' holds both the logical content and the visual reordered
-    version of the content of a string. this helps to reduce the number of
-    calls to reorder the string before drawing it (as introduced in the patch
-    from Ken Bloom) and to be more consistent in menus and textboxes (drawing
-    cursors and underlining text).
+    * Compile fix: fluxbox loves g++-4.1 again (Mathias)
+    fluxbox.cc
+
+*10/09/18:
+
+    * Bugfix: redesigned bootstrapping (Mathias)
+    The old bootstrap could lead to corrupt files. We now first
+    bootstrap, then try to upgrade potentially old config files and
+    after that we bring up flubox. This eliminates to signal USR2
+    from 'fluxbox-update_configs' the current running fluxbox
+    instance and retriggering bootstrapping and updating the config
+    files which could again lead to resignal fluxbox.
+    fluxbox.cc/hh main.cc
+
+*10/09/17:
+
+    * New command 'ArrangeWindowsVertical' (thanks John K Pate)
+    WorkspaceCmd.cc/hh
+
+    * Code clean up (Mathias)
+    FbTk/StringUtil.cc/hh FbTk/ImageControl.cc/hh FbTk/TextureRenderer.cc/hh
+    FbWinFrame.hh Screen.cc Toolbar.cc/hh Resources.cc main.cc
+
+    * Bugfix: do use soon-to-be-dead pointers for putenv() (Mathias)
+    FbTk/App.cc/hh FbCommands.cc main.cc
+
+*10/09/15:
+
+    * Bugfix: correct refcounting of the corner shapes (Mathias)
+    FbTk/Shape.cc
+
+    * Code clean up (Mathias)
+    FbTk/FbPixmap.cc FbTk/FbString.cc FbTk/StringUtil.cc
+    FbTk/Container.cc FbTk/STLUtil.hh FbTk/Theme.cc
+    ClientPattern.cc Window.cc WinClient.cc IconbarTool.cc
+    fluxbox.cc Toolbar.cc
+
+*10/09/14:
+
+    * Bugfix: create corner pixmaps of FbTk::Shape only once 
+    per Screen (Mathias)
+    FbTk/Shape.cc
+
+    * Bugfix: correctly free corner pixmaps of FbTk::Shape (Mathias)
+    FbTk/Shape.cc
+
+    * Continue to clean up code (Mathias)
+    FbTk/FbPixmap.cc
+
+*10/09/13:
+
+    * Continue to clean up code (Mathias)
+    AtomHandler.hh Ewmh.cc Gnome.cc Remember.cc SystemTray.cc
+    fluxbox.cc/hh FbWinFrame.cc
+
+*10/09/11:
+
+    * Implemented simple tagging mechanism (Mathias)
+    Apply (or delete) a 'tag' with the new command "SetXProp TAG1=yes",
+    then use the client pattern mechanism to match such 'tagged'
+    windows, eg. "NextWindow (@TAG1=yes)"
+    ClientPattern.cc/hh CurrentWindowCmd.cc Focusable.hh WinClient.hh
+    Window.cc/hh
+
+    * Add '(workspace=[current])' to default keys-file (Mathias)
+    Upgraded the config version to '13', also updated 'fluxbox-update_configs'
+    to add '(workspace=[current])' to old '~/.fluxbox/keys' for lines
+    having 'NextWindow/PrevWindow/NextGroup/PrevGroup'.
+
+    * Code cleanup for 'fluxbox-update_configs' (Mathias)
+    Moved the code for each 'update step' into its own function.
+    util/fluxbox-update_configs.cc
+
+*10/09/10:
+
+    * Do not limit cycleFocus() to windows on the current workspace (Mathias)
+    This could be achieved by adding '(workspace=[current])' to the client
+    pattern of the command anyway.
+    Closes #1732115: 'focus urgent (chat) windows on other workspaces'
+    FocusControl.cc
+
+    * Continue to clean up code (Mathias)
+    ClientPattern.cc/hh FbTk/FbWindow.cc
+
+*10/09/09:
+
+    * Bugfix: 'Shape' of a menu was created before the parent window (Mathias)
+    FbTk/Menu.cc
+
+    * Continue to clean up the code base, mostly by using FbTk::Util::clamp()
+    FbTk/Util.hh FbTk/Timer.cc FbTk/MultLayers.cc
+    AttentionHandler.cc Screen.cc ArrowButton.cc IconbarTool.cc WindowState.cc
+    Remember.cc ClientPattern.cc FbCommands.cc fluxbox.cc
+
+*10/09/08:
+
+    * Introduced 'FbTk::BidiString' which holds both the logical content and
+    the visual reordered version of the content of a string. this helps to
+    reduce the number of calls to reorder the string before drawing it (as
+    introduced in the patch from Ken Bloom) and to be more consistent
+    in menus and textboxes (drawing cursors and underlining text). (Mathias)
+
+    * Minor changes all over the place, mostly by using simpler or shared
+      code (Mathias)
+    FbTk/XmbFont.cc, FbTk/XftFont.cc, FbTk/XFontImp.cc, FbTk/StringUtil.cc
+    Remember.cc WindowState.cc FbAtoms.cc ColSmartPlacement.cc
 
 *10/09/05:
     * Added support for bidirectional text (thanx to Ken Bloom), bug #2801836
