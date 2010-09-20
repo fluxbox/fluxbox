@@ -76,9 +76,10 @@ unsigned long bsqrt(unsigned int x) {
         sqrt_table[0] = 0;
         sqrt_table[1] = 1;
 
-        unsigned long r = x >> 1;
+        unsigned long r;
         unsigned long q;
         for (x = 2; x < SQRT_TABLE_ENTRIES; x++) {
+            r = x >> 1;
             while (1) {
                 q = x / r;
                 if (q >= r) {
