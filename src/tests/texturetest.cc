@@ -13,6 +13,9 @@
 #include "Font.hh"
 #include "App.hh"
 
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include <memory>
 #include <string>
 
@@ -33,8 +36,7 @@ public:
         m_box_size(box_size),
         m_num(num),
         m_font("fixed"),
-        m_imgctrl(screenNumber(), true, 8,
-                  100, 100),
+        m_imgctrl(screenNumber()),
         m_background(*this, 640, 480, depth()),
         m_gc(m_background) {
         setName("Texture Test");
@@ -47,7 +49,7 @@ public:
         show();        
     }
     void keyPressEvent(XKeyEvent &ev) {
-        App::instance()->end();
+        //App::instance()->end();
     }
     void exposeEvent(XExposeEvent &ev) {
         clear();
@@ -90,7 +92,7 @@ private:
                         string("texture") + value, 
                         string("Texture") + value));
             // load new style
-            ThemeManager::instance().load("test.theme");
+            ThemeManager::instance().load("test.theme", "");
 
             renderPixmap(**text.get(), next_x, next_y);
 
