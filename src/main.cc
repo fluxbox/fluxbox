@@ -29,7 +29,6 @@
 #include "defaults.hh"
 
 #include "Debug.hh"
-#include "FbCommands.hh"
 
 #include "FbTk/Theme.hh"
 #include "FbTk/I18n.hh"
@@ -395,8 +394,7 @@ void updateConfigFilesIfNeeded(const std::string& rc_file) {
         string commandargs = realProgramName("fluxbox-update_configs");
         commandargs += " -rc " + rc_file;
 
-        FbCommands::ExecuteCmd fbuc(commandargs, 0);
-        fbuc.execute();
+        system(commandargs.c_str());
     }
 }
 
