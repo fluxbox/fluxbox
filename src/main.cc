@@ -216,13 +216,22 @@ static void showInfo(ostream &ostr) {
 }
 
 struct Options {
-    Options() : 
-        session_display(getenv("DISPLAY")),
-        rc_path(std::string(getenv("HOME")) + "/." + realProgramName("fluxbox")),
-        rc_file(rc_path + "/init"),
-        xsync(false) {
+    Options() : xsync(false) {
 
+        const char* env;
+
+        env = getenv("DISPLAY");
+        if (env) {
+            session_display.assign(env);
+        }
+
+        env = getenv("HOME");
+        if (env) {
+            rc_path.assign(std::string(env) + "/." + realProgramName("fluxbox"));
+            rc_file = rc_path + "/init";
+        }
     }
+
 
     std::string session_display;
     std::string rc_path;
@@ -394,7 +403,11 @@ void updateConfigFilesIfNeeded(const std::string& rc_file) {
         string commandargs = realProgramName("fluxbox-update_configs");
         commandargs += " -rc " + rc_file;
 
-        system(commandargs.c_str());
+        if (system(commandargs.c_str())) {
+            fbdbg << "running '" 
+                << commandargs
+                << "' failed." << endl;
+        }
     }
 }
 
