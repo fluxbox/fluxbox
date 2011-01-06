@@ -1,6 +1,27 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*11/01/06:
+
+    * Bugfix: handle result of DisplayString() correctly, bug #3136775 (Mathias)
+    fluxbox assumed that the result of DisplayString() contains always the screen
+    number. This is not the case in some (newer) versions of libX11.
+    FbCommands.cc
+
+*10/10/13:
+
+    * Bugfix: handle situation when DISPLAY is not set (Mathias)
+    main.cc
+
+*10/09/21:
+
+    * Bugfix: use system() for launching 'fluxbox-update_configs' (Mathias)
+      FbCommands::ExecuteCmd() was used before. This changes the config
+      while fluxbox is loading (from the config), this caused some nasty
+      effects on 'slower' systems. system() now blocks until
+      'fluxbox-update_configs' is done and then launches flubox.
+      main.cc
+
 *10/09/19:
 
     * Compile fix: fluxbox loves g++-4.1 again (Mathias)
