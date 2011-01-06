@@ -142,6 +142,10 @@ int ExecuteCmd::run() {
     if (pid)
         return pid;
 
+    // 'display' is given as 'host:number.screen'. we want to give the
+    // new app a good home, so we remove '.screen' from what is given
+    // us from the xserver and replace it with the screen_num of the Screen
+    // the user currently points at with the mouse
     string display = DisplayString(FbTk::App::instance()->display());
     int screen_num = m_screen_num;
     if (screen_num < 0) {
@@ -151,17 +155,24 @@ int ExecuteCmd::run() {
             screen_num = Fluxbox::instance()->mouseScreen()->screenNumber();
     }
 
+    // strip away the '.screen'
+    size_t dot = display.rfind(':');
+    dot = display.find('.', dot);
+    if (dot != string::npos) { // 'display' has actually a '.screen' part
+        display.erase(dot);
+    }
+    display += '.';
+    display += FbTk::StringUtil::number2String(screen_num);
+
+    FbTk::App::setenv("DISPLAY", display.c_str());
+
     // get shell path from the environment
     // this process exits immediately, so we don't have to worry about memleaks
     const char *shell = getenv("SHELL");
     if (!shell)
         shell = "/bin/sh";
 
-    display.erase(display.size()-1);
-    display += FbTk::StringUtil::number2String(screen_num);
-
     setsid();
-    FbTk::App::setenv("DISPLAY", display.c_str());
     execl(shell, shell, "-c", m_cmd.c_str(), static_cast<void*>(NULL));
     exit(EXIT_SUCCESS);
 
