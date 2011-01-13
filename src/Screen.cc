@@ -1209,7 +1209,10 @@ bool BScreen::addKdeDockapp(Window client) {
     FbTk::EventHandler *evh  = 0;
     FbTk::EventManager *evm = FbTk::EventManager::instance();
 
-    AtomHandler *handler = Fluxbox::instance()->getAtomHandler(SystemTray::getNetSystemTrayAtom(screenNumber()));
+    AtomHandler* handler = 0;
+#if USE_TOOLBAR
+    handler = Fluxbox::instance()->getAtomHandler(SystemTray::getNetSystemTrayAtom(screenNumber()));
+#endif
     if (handler == 0) {
 #ifdef SLIT
         if (slit() != 0 && slit()->acceptKdeDockapp())
