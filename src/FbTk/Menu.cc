@@ -1200,10 +1200,7 @@ void Menu::closeMenu() {
 }
 
 void Menu::startHide() {
-    timeval timeout;
-    timeout.tv_sec = 0;
-    timeout.tv_usec = theme()->getDelay() * 1000; // transformed to usec
-    m_hide_timer.setTimeout(timeout);
+    m_hide_timer.setTimeout(theme()->getDelay() * 1000);
     m_hide_timer.start();
 }
 
