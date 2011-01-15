@@ -842,9 +842,7 @@ bool Menu::isItemSelectable(unsigned int index) const {
     if (index >= menuitems.size()) return false;
 
     const MenuItem *item = find(index);
-    return (!item ||
-        (typeid(*item) == typeid(FbTk::MenuSeparator)) ||
-        !item->isEnabled()) ? false : true;
+    return (!item || !item->isEnabled()) ? false : true;
 }
 
 
