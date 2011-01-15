@@ -64,10 +64,6 @@
 #else
   #include <string.h>
 #endif
-#include <typeinfo>
-
-#include <algorithm>
-
 
 #ifdef DEBUG
 #include <iostream>
