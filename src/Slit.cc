@@ -1241,7 +1241,7 @@ void Slit::setupMenu() {
 
     // setup sub menu
     placement_menu->setLabel(_FB_XTEXT(Slit, Placement, "Slit Placement", "Slit Placement"));
-    placement_menu->setMinimumSublevels(3);
+    placement_menu->setMinimumColumns(3);
     m_layermenu->setInternalMenu();
     m_clientlist_menu.setInternalMenu();
     m_slitmenu.setInternalMenu();

@@ -114,7 +114,7 @@ public:
     virtual void updateMenu();
     void setItemSelected(unsigned int index, bool val);
     void setItemEnabled(unsigned int index, bool val);
-    void setMinimumSublevels(int m) { menu.minsub = m; }
+    void setMinimumColumns(int columns) { m_min_columns = columns; }
     virtual void drawSubmenu(unsigned int index);
     /// show menu
     virtual void show();
@@ -130,17 +130,17 @@ public:
     bool isTorn() const { return m_torn; }
     bool isVisible() const { return m_visible; }
     bool isMoving() const { return m_moving; }
-    int screenNumber() const { return menu.window.screenNumber(); }
-    Window window() const { return menu.window.window(); }
-    FbWindow &fbwindow() { return menu.window; }
-    const FbWindow &fbwindow() const { return menu.window; }
-    FbWindow &titleWindow() { return menu.title; }
-    FbWindow &frameWindow() { return menu.frame; }
-    const FbTk::BiDiString &label() const { return menu.label; }
-    int x() const { return menu.window.x(); }
-    int y() const { return menu.window.y(); }
-    unsigned int width() const { return menu.window.width(); }
-    unsigned int height() const { return menu.window.height(); }
+    int screenNumber() const { return m_window.screenNumber(); }
+    Window window() const { return m_window.window(); }
+    FbWindow &fbwindow() { return m_window; }
+    const FbWindow &fbwindow() const { return m_window; }
+    FbWindow &titleWindow() { return m_title; }
+    FbWindow &frameWindow() { return m_frame; }
+    const FbTk::BiDiString &label() const { return m_label; }
+    int x() const { return m_window.x(); }
+    int y() const { return m_window.y(); }
+    unsigned int width() const { return m_window.width(); }
+    unsigned int height() const { return m_window.height(); }
     size_t numberOfItems() const { return menuitems.size(); }
     int currentSubmenu() const { return m_which_sub; }
 
@@ -221,18 +221,37 @@ private:
     int m_which_sub;
     Alignment m_alignment;
 
-    struct _menu {
-        Pixmap frame_pixmap, title_pixmap, hilite_pixmap;
-        FbTk::FbWindow window, frame, title;
+    // the menu window
+    FbTk::FbWindow m_window;
+    Pixmap m_hilite_pixmap;
 
-        FbTk::BiDiString label;
-        int x_move, y_move, sublevels, persub, minsub, grab_x, grab_y;
+    // the title
+    FbTk::FbWindow m_title;
+    Pixmap m_title_pixmap;
+    FbTk::BiDiString m_label;
 
-        unsigned int frame_h, item_w;
-    } menu;
+    // area for the menuitems
+    FbTk::FbWindow m_frame;
+    Pixmap m_frame_pixmap;
+    unsigned int m_frame_h;
+
+    int m_x_move;
+    int m_y_move;
+    int m_grab_x;
+    int m_grab_y;
+
+    // the menuitems are rendered in a grid with
+    // 'm_columns' (a minimum of 'm_min_columns') and
+    // a max of 'm_rows_per_column'
+    int m_columns;
+    int m_rows_per_column;
+    int m_min_columns;
+
+    unsigned int m_item_w;
 
     int m_active_index; ///< current highlighted index
 
+    // the corners
     std::auto_ptr<FbTk::Shape> m_shape;
 
     Drawable m_root_pm;

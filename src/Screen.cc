@@ -1647,7 +1647,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         { _FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT}
     };
 
-    tabplacement_menu->setMinimumSublevels(3);
+    tabplacement_menu->setMinimumColumns(3);
     // create items in sub menu
     for (size_t i=0; i< sizeof(place_menu)/sizeof(PlacementP); ++i) {
         const PlacementP& p = place_menu[i];
