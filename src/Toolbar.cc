@@ -873,7 +873,7 @@ void Toolbar::setupMenus(bool skip_new_placement) {
             { _FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Toolbar::BOTTOMRIGHT}
         };
 
-        placementMenu().setMinimumSublevels(3);
+        placementMenu().setMinimumColumns(3);
         // create items in sub menu
         for (size_t i=0; i< sizeof(place_menu)/sizeof(PlacementP); ++i) {
             const PlacementP& p = place_menu[i];
