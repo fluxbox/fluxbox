@@ -702,6 +702,14 @@ void Menu::drawSubmenu(unsigned int index) {
 
         item->submenu()->setScreen(m_screen_x, m_screen_y, m_screen_width, m_screen_height);
 
+        // ensure we do not divide by 0 and thus cause a SIGFPE
+        if (m_rows_per_column == 0) {
+#if DEBUG
+            cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+#endif
+            return;
+        }
+
         int column = index / m_rows_per_column;
         int row = index - (column * m_rows_per_column);
         int new_x = x() + ((m_item_w * (column + 1)) + m_window.borderWidth());
@@ -768,6 +776,14 @@ int Menu::drawItem(FbDrawable &drawable, unsigned int index,
 
     MenuItem *item = menuitems[index];
     if (! item) return 0;
+
+    // ensure we do not divide by 0 and thus cause a SIGFPE
+    if (m_rows_per_column == 0) {
+#if DEBUG
+        cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+#endif
+        return 0;
+    }
 
     int column = index / m_rows_per_column;
     int row = index - (column * m_rows_per_column);
@@ -999,6 +1015,15 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
 
 void Menu::exposeEvent(XExposeEvent &ee) {
+
+    // some xservers (eg: nxserver) send XExposeEvent for the unmapped menu.
+    // this caused a SIGFPE in ::clearItem(), since m_rows_per_column is 
+    // still 0 -> division by 0.
+    //
+    // it is still unclear, why nxserver behaves this way
+    if (!isVisible())
+        return;
+
     if (ee.window == m_title) {
         m_title.clearArea(ee.x, ee.y, ee.width, ee.height);
     } else if (ee.window == m_frame) {
@@ -1241,6 +1266,14 @@ void Menu::clearItem(int index, bool clear, int search_index) {
     if (!validIndex(index))
         return;
 
+    // ensure we do not divide by 0 and thus cause a SIGFPE
+    if (m_rows_per_column == 0) {
+#if DEBUG
+        cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+#endif
+        return;
+    }
+
     int column = index / m_rows_per_column;
     int row = index - (column * m_rows_per_column);
     unsigned int item_w = m_item_w;
@@ -1276,6 +1309,15 @@ void Menu::clearItem(int index, bool clear, int search_index) {
 
 // Area must have been cleared before calling highlight
 void Menu::highlightItem(int index) {
+
+    // ensure we do not divide by 0 and thus cause a SIGFPE
+    if (m_rows_per_column == 0) {
+#if DEBUG
+        cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+#endif
+        return;
+    }
+
     int column = index / m_rows_per_column;
     int row = index - (column * m_rows_per_column);
     unsigned int item_w = m_item_w;
@@ -1332,6 +1374,14 @@ void Menu::drawTypeAheadItems() {
 void Menu::drawLine(int index, int size){
     if (!validIndex(index))
         return;
+
+    // ensure we do not divide by 0 and thus cause a SIGFPE
+    if (m_rows_per_column == 0) {
+#if DEBUG
+        cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+#endif
+        return;
+    }
 
     int column = index / m_rows_per_column;
     int row = index - (column * m_rows_per_column);
