@@ -1,4 +1,4 @@
--- AUTHORS for Fluxbox 
+-- AUTHORS for Fluxbox
 
 Author/Project leader:
     Henrik Kinnunen <fluxgen(at)fluxbox.org>
@@ -10,23 +10,28 @@ Main developers:
     Mark Tiefenbruck <mark(at)fluxbox.org>
 
 Contributors:
+    Andreas 'Segaja' Schleifer <webmaste(at)segaja.de>
+      - Vim files
+    Paul Tagliamonte <paultag(at)ubuntu.com>
+      - debian package work, small fixes and
+        the like.
     Jim Ramsay <i.am(at)jimramsay.com>
       - documentation updates, bugfixes, some code.
     Han Boetes <han(at)mijncomputer.nl>
       - RPM Packaging, debugging and scripts.
-	  - fbsetbg, fluxbox-generate_menu
+      - fbsetbg, fluxbox-generate_menu
     Joel Carlbark <skypher(at)linuxmail.org>
       - suggestions, bug reports, beta testing, styles
         and some code.
     Cleas Nästén <pekdon(at)gmx.net>
-      - suggestions, bug reports, beta testing and 
+      - suggestions, bug reports, beta testing and
         in version 0.1.x: Tab placement/alignment and Xinerama code.
     Johan Andersson <xfs(at)linux.se>
       - suggestions, bug reports and beta testing
     Oliwier Ptak  <aleczapka(at)gmx.net>
       - suggestions, styles and webpage
     Matt Hope <dopey(at)debian.org>
-	  - debian package maintainer, some minor fixes	  
+      - debian package maintainer, some minor fixes
     Paul W Brannan <pbrannan(at)atdesk.com>
       - consulting, code clean up
     Rando Christensen <rando(at)babblica.net>
@@ -43,8 +48,8 @@ Contributors:
       - Workspace warping, window cycling with optional parameters,
         slit order
     David J Burger <dburger<at>hawaii.edu>
-	  - emacs style keybindings for FbRun and
-	    tab completion for FbRun
+      - emacs style keybindings for FbRun and
+        tab completion for FbRun
     Jeramy B. Smith
       - Packaging assistance, gnome and kde menu system.
     Artis Trops <hornet at navigator.lv >
