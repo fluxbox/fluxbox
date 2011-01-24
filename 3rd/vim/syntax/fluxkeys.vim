@@ -71,9 +71,15 @@ syntax keyword fbModifierNames None  contained
 syntax keyword fbModifierNames OnDesktop OnToolbar OnTitlebar OnWindow OnWindowBorder OnLeftGrip OnRightGrip contained
 
 " reference corners
-syntax keyword fbParameterNames UpperLeft Upper UpperRight contained
-syntax keyword fbParameterNames Left Right contained
-syntax keyword fbParameterNames LowerLeft Lower LowerRight contained
+syntax keyword fbParameterNames UpperLeft LeftTop TopLeft contained
+syntax keyword fbParameterNames Upper Top TopCenter contained
+syntax keyword fbParameterNames UpperRight RightTop TopRight contained
+syntax keyword fbParameterNames Left LeftCenter contained
+syntax keyword fbParameterNames Center WinCenter contained
+syntax keyword fbParameterNames Right RightCenter contained
+syntax keyword fbParameterNames LowerLeft LeftBottom BottomLeft contained
+syntax keyword fbParameterNames Lower Bottom BottomCenter contained
+syntax keyword fbParameterNames LowerRight RightBottom BottomRight contained
 " deiconfiy
 syntax keyword fbParameterNames LastWorkspace Last All AllWorkspace OriginQuiet contained
 
