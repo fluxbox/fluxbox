@@ -170,24 +170,24 @@ AC_DEFUN([AM_PATH_XFT2],
 [
     if test x$pkg_exec_prefix != x ; then
         xft_args="$xft_args --exec-prefix=$pkg_exec_prefix"
-        if test x${XFT_CONFIG+set} != xset ; then
-            XFT_CONFIG=$pkg_exec_prefix/bin/xft-config
+        if test x${PKG_CONFIG+set} != xset ; then
+            PKG_CONFIG=$pkg_exec_prefix/bin/pkg-config
         fi
     fi
 
     if test x$xft_prefix != x ; then
-       xft_args="$xft_args --prefix=$xft_prefix"
-       if test x${XFT_CONFIG+set} != xset ; then
-          XFT_CONFIG=$xft_prefix/bin/xft-config
-       fi
+        xft_args="$xft_args --prefix=$xft_prefix"
+        if test x${PKG_CONFIG+set} != xset ; then
+            PKG_CONFIG=$xft_prefix/bin/pkg-config
+        fi
     fi
 
-    AC_PATH_PROG(XFT_CONFIG, xft-config, no)
-    if test "x$XFT_CONFIG" = "xno" ; then
+    AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
+    if test "x$PKG_CONFIG" = "xno" ; then
         ifelse([$2], , :, [$2])
-    else
-        XFT_CFLAGS=`$XFT_CONFIG $xftconf_args --cflags`
-        XFT_LIBS=`$XFT_CONFIG $xftconf_args --libs`
+    else 
+        XFT_CFLAGS=`$PKG_CONFIG $xftconf_args --cflags xft fontconfig`
+        XFT_LIBS=`$PKG_CONFIG $xftconf_args --libs xft fontconfig`
         ifelse([$1], , :, [$1])
     fi
 ])
