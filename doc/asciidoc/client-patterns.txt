@@ -64,6 +64,11 @@ The following values are accepted for 'propertyname':::
 *Layer*;;
 	The string name of the window's layer, which is one of
 	*AboveDock*, *Dock*, *Top*, *Normal*, *Bottom*, *Desktop*
+*Screen*;;
+	The number of the currently used 'screen'. If the setup of the
+	running xserver involves independant screens ('not Xinerama'), the $DISPLAY
+	environment contains something like ':0.1' or ':1.0'. The part after the
+	dot ('.') is the number of the screen.
 *@XPROP*;;
 	A string, corresponding to any xproperty (Use either the *xprop(1)*
 	utility or the 'SetXProp' command to set a xproperty to a window)
