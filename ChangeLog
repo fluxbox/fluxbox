@@ -1,6 +1,32 @@
  (Format: Year/Month/Day)
 Changes for 1.1.2
 
+*11/02/03:
+
+    * Allow to override 'Focus New Windows' via .fluxbox/apps (thanks Peter Hercek)
+      Remember.{cc,hh} Window.hh
+    * Bugfix: semantical difference between WinState::Decoration and
+      Remember::save() (thanks Peter)
+
+*11/02/25:
+
+    * Added 'fontconfig' as link dependency if Xft is used (Mathias)
+      acinclude.m4
+
+*11/01/24:
+
+    * Added syntax / coloring for 'Vim' to '3rd/vim'
+
+*11/01/18:
+
+    * Bugfix: Prevent SIGFPE when using nxserver, closes #2813828 (Mathias)
+      FbTk/Menu.cc
+
+*11/01/15:
+
+    * Code cleanup (Mathias)
+    FbTk/Menu.{cc,hh} Screen.cc Slit.cc Toolbar.cc
+
 *11/01/06:
 
     * Bugfix: handle result of DisplayString() correctly, bug #3136775 (Mathias)
