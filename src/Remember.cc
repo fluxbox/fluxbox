@@ -947,25 +947,19 @@ void Remember::save() {
                 apps_file << "  [Deco]\t{NONE}" << endl;
                 break;
             case (0xffffffff):
-            case (WindowState::DECORM_LAST - 1):
+            case (WindowState::DECOR_NORMAL):
                 apps_file << "  [Deco]\t{NORMAL}" << endl;
                 break;
-            case (WindowState::DECORM_TITLEBAR
-                  | WindowState::DECORM_ICONIFY
-                  | WindowState::DECORM_MENU):
+            case (WindowState::DECOR_TOOL):
                 apps_file << "  [Deco]\t{TOOL}" << endl;
                 break;
-            case (WindowState::DECORM_TITLEBAR
-                  | WindowState::DECORM_MENU):
+            case (WindowState::DECOR_TINY):
                 apps_file << "  [Deco]\t{TINY}" << endl;
                 break;
-            case (WindowState::DECORM_BORDER
-                  | WindowState::DECORM_MENU):
+            case (WindowState::DECOR_BORDER):
                 apps_file << "  [Deco]\t{BORDER}" << endl;
                 break;
-            case (WindowState::DECORM_BORDER
-                  | WindowState::DECORM_MENU
-                  | WindowState::DECORM_TAB):
+            case (WindowState::DECORM_TAB):
                 apps_file << "  [Deco]\t{TAB}" << endl;
                 break;
             default:
