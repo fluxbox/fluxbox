@@ -156,6 +156,10 @@ enabled, Focus Enabled.
 *[Tab]* {'bool'}::
 	Whether the window has tabs enabled.
 
+*[FocusNewWindow]* {'bool'}::
+	If enabled, a new window will grab X focus as soon as it is opened.
+	If disabled, a new window will not grab X focus as soon as it is opened.
+
 *[FocusHidden]* {'bool'}::
 	If enabled, the window will not appear in 'NextWindow'/'PrevWindow' lists.
 

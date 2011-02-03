@@ -73,6 +73,7 @@ public:
         REM_MINIMIZEDSTATE,
         REM_MAXIMIZEDSTATE,
         REM_FULLSCREENSTATE,
+        REM_FOCUSNEWWINDOW,
         REM_LASTATTRIB // not actually used
     };
 

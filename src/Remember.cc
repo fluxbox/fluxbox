@@ -86,6 +86,7 @@ public:
     void forgetFocusHiddenstate() { focushiddenstate_remember= false; }
     void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
     void forgetStuckstate() { stuckstate_remember = false; }
+    void forgetFocusNewWindow() { focusnewwindow_remember = false; }
     void forgetJumpworkspace() { jumpworkspace_remember = false; }
     void forgetLayer() { layer_remember = false; }
     void forgetSaveOnClose() { save_on_close_remember = false; }
@@ -115,6 +116,8 @@ public:
         { decostate = state; decostate_remember = true; }
     void rememberStuckstate(bool state)
         { stuckstate = state; stuckstate_remember = true; }
+    void rememberFocusNewWindow(bool state)
+        { focusnewwindow = state; focusnewwindow_remember = true; }
     void rememberJumpworkspace(bool state)
         { jumpworkspace = state; jumpworkspace_remember = true; }
     void rememberLayer(int layernum) 
@@ -158,6 +161,9 @@ public:
 
     bool stuckstate_remember;
     bool stuckstate;
+
+    bool focusnewwindow_remember;
+    bool focusnewwindow;
 
     bool focushiddenstate_remember;
     bool focushiddenstate;
@@ -209,6 +215,7 @@ void Application::reset() {
         position_remember =
         shadedstate_remember =
         stuckstate_remember =
+        focusnewwindow_remember =
         tabstate_remember =
         workspace_remember =
         head_remember =
@@ -527,6 +534,8 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 }
             } else if (str_key == "sticky") {
                 app.rememberStuckstate((strcasecmp(str_label.c_str(), "yes") == 0));
+            } else if (str_key == "focusnewwindow") {
+                app.rememberFocusNewWindow((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "minimized") {
                 app.rememberMinimizedstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "maximized") {
@@ -981,6 +990,9 @@ void Remember::save() {
         if (a.stuckstate_remember) {
             apps_file << "  [Sticky]\t{" << ((a.stuckstate)?"yes":"no") << "}" << endl;
         }
+        if (a.focusnewwindow_remember) {
+            apps_file << "  [FocusNewWindow]\t{" << ((a.focusnewwindow)?"yes":"no") << "}" << endl;
+        }
         if (a.minimizedstate_remember) {
             apps_file << "  [Minimized]\t{" << ((a.minimizedstate)?"yes":"no") << "}" << endl;
         }
@@ -1051,6 +1063,9 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
         break;
     case REM_STUCKSTATE:
         return app->stuckstate_remember;
+        break;
+    case REM_FOCUSNEWWINDOW:
+        return app->focusnewwindow_remember;
         break;
     case REM_MINIMIZEDSTATE:
         return app->minimizedstate_remember;
@@ -1129,6 +1144,9 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_STUCKSTATE:
         app->rememberStuckstate(win->isStuck());
         break;
+    case REM_FOCUSNEWWINDOW:
+        app->rememberFocusNewWindow(win->isFocusNew());
+        break;
     case REM_MINIMIZEDSTATE:
         app->rememberMinimizedstate(win->isIconic());
         break;
@@ -1188,6 +1206,9 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_STUCKSTATE:
         app->forgetStuckstate();
+        break;
+    case REM_FOCUSNEWWINDOW:
+        app->forgetFocusNewWindow();
         break;
     case REM_MINIMIZEDSTATE:
         app->forgetMinimizedstate();
@@ -1290,6 +1311,9 @@ void Remember::setupFrame(FluxboxWindow &win) {
         if ((win.isStuck() && !app->stuckstate) ||
             (!win.isStuck() && app->stuckstate))
             win.stick(); // toggles
+
+    if (app->focusnewwindow_remember)
+        win.setFocusNew(app->focusnewwindow);
 
     if (app->minimizedstate_remember) {
         // if inconsistent...

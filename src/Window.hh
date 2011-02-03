@@ -387,6 +387,7 @@ public:
     bool isClosable() const { return functions.close; }
     bool isMoveable() const { return functions.move; }
     bool isStuck() const { return m_state.stuck; }
+    bool isFocusNew() const { return m_focus_new; }
     bool hasTitlebar() const { return decorations.titlebar; }
     bool isMoving() const { return moving; }
     bool isResizing() const { return resizing; }
