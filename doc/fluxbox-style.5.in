@@ -1,161 +1,22 @@
+'\" t
 .\"     Title: fluxbox-style
 .\"    Author: [see the "AUTHORS" section]
-.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 05/26/2009
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 02/19/2011
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxbox-style.txt 1.1.2
+.\"    Source: fluxbox-style.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-STYLE" "5" "05/26/2009" "fluxbox\-style\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-STYLE" "5" "02/19/2011" "fluxbox\-style\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
-.\" * (re)Define some macros
+.\" * Define some portability stuff
 .\" -----------------------------------------------------------------
 .\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" toupper - uppercase a string (locale-aware)
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
 .\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de toupper
-.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
-\\$*
-.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH-xref - format a cross-reference to an SH section
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de SH-xref
-.ie n \{\
-.\}
-.toupper \\$*
-.el \{\
-\\$*
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH - level-one heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SH
-.\" put an extra blank line of space above the head in non-TTY output
-.if t \{\
-.sp 1
-.\}
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[an-margin]u
-.ti 0
-.HTML-TAG ".NH \\n[an-level]"
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-\." make the size of the head bigger
-.ps +3
-.ft B
-.ne (2v + 1u)
-.ie n \{\
-.\" if n (TTY output), use uppercase
-.toupper \\$*
-.\}
-.el \{\
-.nr an-break-flag 0
-.\" if not n (not TTY), use normal case (not uppercase)
-\\$1
-.in \\n[an-margin]u
-.ti 0
-.\" if not n (not TTY), put a border/line under subheading
-.sp -.6
-\l'\n(.lu'
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SS - level-two heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SS
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[IN]u
-.ti \\n[SN]u
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.ps \\n[PS-SS]u
-\." make the size of the head bigger
-.ps +2
-.ft B
-.ne (2v + 1u)
-.if \\n[.$] \&\\$*
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BB/BE - put background/screen (filled box) around block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BB
-.if t \{\
-.sp -.5
-.br
-.in +2n
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EB
-.if t \{\
-.if "\\$2"adjust-for-leading-newline" \{\
-.sp -1
-.\}
-.br
-.di
-.in
-.ll
-.gcolor
-.nr BW \\n(.lu-\\n(.i
-.nr BH \\n(dn+.5v
-.ne \\n(BHu+.5v
-.ie "\\$2"adjust-for-leading-newline" \{\
-\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.el \{\
-\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.in 0
-.sp -.5v
-.nf
-.BX
-.in
-.sp .5v
-.fi
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BM/EM - put colored marker in margin next to block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BM
-.if t \{\
-.br
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EM
-.if t \{\
-.br
-.di
-.ll
-.gcolor
-.nr BH \\n(dn
-.ne \\n(BHu
-\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
-.in 0
-.nf
-.BX
-.in
-.fi
-.\}
-..
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -166,9 +27,9 @@
 .\" -----------------------------------------------------------------
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
-.SH "Name"
+.SH "NAME"
 fluxbox-style \- A comprehensive look at styles/themes for fluxbox(1)\&.
-.SH "Synopsis"
+.SH "SYNOPSIS"
 .sp
 This document describes various options available for fluxbox styles\&.
 .SH "DESCRIPTION"
@@ -184,32 +45,26 @@ fluxbox(1) uses its own graphics class to render its images on the fly\&. By usi
 .sp
 A style is made up of a few major components which then have their own sub\-directives\&. The major components are as follows:
 .sp
-The \fIwindow\&.*\fR directives control the appearance of the window frames, window\&.tab\&.* controls the appearance of the window tabs, \fImenu\&.*\fR controls the appearance of the popup menu that you see when you right click on the desktop\&. \fItoolbar\&.*\fR is the bar you will see at the top or bottom of your screen\&. Finally the \fIslit\&.*\fR has options you can use to customize the appearance of the slit\&. However if you don\'t set the slit directives specifically, the slit\'s appearance is controlled by the toolbar directives instead\&.
+The \fIwindow\&.*\fR directives control the appearance of the window frames, window\&.tab\&.* controls the appearance of the window tabs, \fImenu\&.*\fR controls the appearance of the popup menu that you see when you right click on the desktop\&. \fItoolbar\&.*\fR is the bar you will see at the top or bottom of your screen\&. Finally the \fIslit\&.\e*\fR has options you can use to customize the appearance of the slit\&. However if you don\(cqt set the slit directives specifically, the slit\(cqs appearance is controlled by the toolbar directives instead\&.
 .sp
-To understand how the style mechanism works, it is nice to know a little about how X11 resources work\&. X11 resources consist of a key and a value\&. The key is constructed of several smaller keys (sometimes referred to as children), delimited by a period (\&.)\&. Keys may also contain an asterisk (*) to serve as a wildcard, which means that one line of text will match several keys\&. This is useful for styles that are based on one or two colors\&.
+To understand how the style mechanism works, it is nice to know a little about how X11 resources work\&. X11 resources consist of a key and a value\&. The key is constructed of several smaller keys (sometimes referred to as children), delimited by a period (\&.)\&. Keys may also contain an asterisk (\e*) to serve as a wildcard, which means that one line of text will match several keys\&. This is useful for styles that are based on one or two colors\&.
 .sp
 A more complete reference to this can be found in X(7), section \fIRESOURCES\fR\&.
 .SH "LOCATION"
 .sp
 There are many places to store your styles, the most common is in your \fI~/\&.fluxbox/styles\fR directory\&. The initial installation will place the default styles in \fI@pkgdatadir@/styles\fR providing a basic usable configuration\&.
 .sp
-When creating your own style, create a directory (normally the name of your style) in \fI~/\&.fluxbox/styles/\fR (If the \fIstyles\fR directory doesn\'t exist, create that also)\&. While there isn\'t an official structure, it is common to create a directory named after your style and place your pixmaps directory (if required) in there along with a file called theme\&.cfg (may also be named style\&.cfg)\&. This file is where you will construct your style using the components covered later in this manual page\&. An example of steps taken when beginning a style project of your own may look like:
+When creating your own style, create a directory (normally the name of your style) in \fI~/\&.fluxbox/styles/\fR (If the \fIstyles\fR directory doesn\(cqt exist, create that also)\&. While there isn\(cqt an official structure, it is common to create a directory named after your style and place your pixmaps directory (if required) in there along with a file called theme\&.cfg (may also be named style\&.cfg)\&. This file is where you will construct your style using the components covered later in this manual page\&. An example of steps taken when beginning a style project of your own may look like:
 .sp
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 $ cd
 $ mkdir \-p ~/\&.fluxbox/styles/YourStyle/pixmaps
 $ cd ~/\&.fluxbox/styles/YourStyle
 $ nano theme\&.cfg
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -219,25 +74,19 @@ Output of a packaged style should look like the following:
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 $ cd
 $ tar \-tjvf YourStyle\&.tar\&.bz2
  \&.fluxbox/styles/YourStyle/theme\&.cfg
  \&.fluxbox/styles/YourStyle/pixmaps
  \&.fluxbox/styles/YourStyle/pixmaps/stick\&.xpm
  \&.\&.\&.
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
 .sp
-Of course, all of these are just preferences, fluxbox(1) allows for the customization of many things, including how you handle your styles\&. Just remember, however, that if you plan to distribute your style you may find some community bickering if you don\'t follow practices\&. :)
+Of course, all of these are just preferences, fluxbox(1) allows for the customization of many things, including how you handle your styles\&. Just remember, however, that if you plan to distribute your style you may find some community bickering if you don\(cqt follow practices\&. :)
 .SH "CREATING YOUR STYLE"
 .sp
 As discussed above, fluxbox(1) allows you to configure its four main components: the toolbar, menus, slit and window decorations\&. Remember that you can customize the slit with its own directives, otherwise the slit will take the appearance of the toolbar\&.
@@ -247,15 +96,9 @@ Here are some quick examples to illustrate basic syntax:
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 toolbar\&.clock\&.color: green
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -265,53 +108,35 @@ This sets the color resource of the toolbar clock to \fIgreen\fR\&. Another exam
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 menu*color:     rgb:3/4/5
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
 .sp
-This sets the color resource of the menu and all of its \fIchildren\fR to `rgb:3/4/5\'\&. (For a description of color names, see X(1)\&.) So this one also applies to \fImenu\&.title\&.color\fR and \fImenu\&.frame\&.color\fR\&. And with
+This sets the color resource of the menu and all of its \fIchildren\fR to \(oqrgb:3/4/5\(cq\&. (For a description of color names, see X(1)\&.) So this one also applies to \fImenu\&.title\&.color\fR and \fImenu\&.frame\&.color\fR\&. And with
 .sp
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 *font:  \-b&h\-lucida\-medium\-r\-normal\-*\-*\-140\-*
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
 .sp
 you set the font resource for all keys to this font name all at once (For information about the fonts installed on your system, you can use a program like xfontsel(1), gtkfontsel, or xlsfonts(1)\&.)
 .sp
-In the last example you will notice the wildcard (*) before font\&. In a Fluxbox style you can set a value with a wildcard\&. The example means that every font in the style will be what is specified\&. You can do this with any component/value\&. For example if you wanted all of the text to be one color you would do:
+In the last example you will notice the wildcard (\e*) before font\&. In a Fluxbox style you can set a value with a wildcard\&. The example means that every font in the style will be what is specified\&. You can do this with any component/value\&. For example if you wanted all of the text to be one color you would do:
 .sp
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 *textColor:  rgb:3/4/5
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -321,16 +146,10 @@ This means that you can setup a very simple style with very few properties\&. Se
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 *textColor: rgb:3/4/5
 toolbar\&.clock\&.textColor: rgb:255/0/0
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -342,22 +161,16 @@ Now what makes fluxbox(1) so spectacular is its ability to render textures on th
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 toolbar\&.clock:  Raised Gradient Diagonal Bevel1
 toolbar\&.clock\&.color:    rgb:8/6/4
 toolbar\&.clock\&.colorTo:  rgb:4/3/2
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
 .sp
-Don\'t worry, we will explain what these mean\&. A texture description consists of up to five fields, which are as follows:
+Don\(cqt worry, we will explain what these mean\&. A texture description consists of up to five fields, which are as follows:
 .PP
 \fBFlat | Raised | Sunken\fR. gives the component either a flat, raised or sunken appearance\&.
 .PP
@@ -378,16 +191,10 @@ Or for even more possibilities Pixmap\&. If pixmap texture is specified (it migh
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 toolbar\&.clock: pixmap
 toolbar\&.clock\&.pixmap: clock_background\&.xpm
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -402,15 +209,9 @@ We should comment about fonts before we move on to the complete component list\&
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 menu\&.title\&.font: sans\-8:bold,shadow
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -420,17 +221,11 @@ The latest versions of fluxbox(1) (> 0\&.9\&.8) also support different values fo
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 \-\-\-\-\-\-\-\-
 Shadow color=<colorname> offsetx=<integer> offsety=<integer> Halo color=<colorname>
 \-\-\-\-\-\-\-\-
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -440,16 +235,10 @@ For the case of completeness, here are some real world examples:
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 *\&.font: Verdana\-10:bold,shadow:offsetx=2;offsety=4;color=green
 *\&.font: Verdana\-10:halo:color=blue
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -468,10 +257,7 @@ Many, many things you can do with window design in fluxbox(1), below are your op
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 window\&.bevelWidth:              <integer>
 window\&.borderColor:             <color>
@@ -551,10 +337,7 @@ window\&.title\&.unfocus\&.color:     <color>
 window\&.title\&.unfocus\&.colorTo:   <color>
 window\&.title\&.unfocus\&.pixmap:    <filename>
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -565,10 +348,7 @@ Everything you need to make your menu look pretty\&.
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 menu\&.bevelWidth:                <integer>
 menu\&.borderColor:               <color>
@@ -602,34 +382,25 @@ menu\&.selected\&.pixmap:           <filename>
 menu\&.submenu\&.pixmap:            <filename>
 menu\&.unselected\&.pixmap:         <filename>
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
 .SH "BACKGROUND"
 .sp
-Every style must specify the background option\&. If you don\'t want your style to change the user\'s background, then use `background: none\'\&. The options `centered\', `aspect\', `tiled\', and `fullscreen\' require the `background\&.pixmap\' resource to contain a valid file name\&. The `random\' option requires `background\&.pixmap\' to contain a valid directory name\&. For these options, \fBfluxbox(1)\fR will call \fBfbsetbg(1)\fR to set the background\&. The options `gradient\', `solid\', and `mod\' all require `background\&.color\' to be set\&. `gradient\' and `mod\' both require `background\&.colorTo\'\&. `mod\' requires `background\&.modX\' and `background\&.modY\' to be set as well\&. These options will be passed to \fBfbsetroot(1)\fR to set the background\&. The special option `unset\' is for use in user overlay files only\&. It specifies that fbsetbg should never be run (by default, even when `none\' is set in the overlay, fluxbox will try to run \(lqfbsetbg \-z\(rq to restore the last wallpaper)\&.
+Every style must specify the background option\&. If you don\(cqt want your style to change the user\(cqs background, then use \(oqbackground: none\(cq\&. The options \(oqcentered\(cq, \(oqaspect\(cq, \(oqtiled\(cq, and \(oqfullscreen\(cq require the \(oqbackground\&.pixmap\(cq resource to contain a valid file name\&. The \(oqrandom\(cq option requires \(oqbackground\&.pixmap\(cq to contain a valid directory name\&. For these options, \fBfluxbox(1)\fR will call \fBfbsetbg(1)\fR to set the background\&. The options \(oqgradient\(cq, \(oqsolid\(cq, and \(oqmod\(cq all require \(oqbackground\&.color\(cq to be set\&. \(oqgradient\(cq and \(oqmod\(cq both require \(oqbackground\&.colorTo\(cq\&. \(oqmod\(cq requires \(oqbackground\&.modX\(cq and \(oqbackground\&.modY\(cq to be set as well\&. These options will be passed to \fBfbsetroot(1)\fR to set the background\&. The special option \(oqunset\(cq is for use in user overlay files only\&. It specifies that fbsetbg should never be run (by default, even when \(oqnone\(cq is set in the overlay, fluxbox will try to run \(lqfbsetbg \-z\(rq to restore the last wallpaper)\&.
 .sp
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 background: centered|aspect|tiled|fullscreen|random|solid|gradient <texture>|mod|none|unset
 background\&.pixmap: <file or directory>
 background\&.color: <color>
 background\&.colorTo: <color>
 background\&.modX: <integer>
 background\&.modY: <integer>
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -640,10 +411,7 @@ Here are all of the options for the slit\&.
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 slit: <texture type>
 slit\&.bevelWidth: <integer>
@@ -653,10 +421,7 @@ slit\&.color:                     <color>
 slit\&.colorTo:                   <color>
 slit\&.pixmap:                    <filename>
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -667,10 +432,7 @@ Below you will find all of the configuration possibilities for the toolbar\&. Th
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 toolbar: <texture type>
 toolbar\&.bevelWidth:             <integer (0\-255)>
@@ -725,10 +487,7 @@ toolbar\&.workspace\&.color:        <color>
 toolbar\&.workspace\&.colorTo:      <color>
 toolbar\&.workspace\&.pixmap:       <filename>
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -739,10 +498,7 @@ This list may seem intimidating, but remember, when you create your own style yo
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
 *color: slategrey
 *colorTo:       darkslategrey
@@ -752,10 +508,7 @@ This list may seem intimidating, but remember, when you create your own style yo
 *unfocus\&.textColor:     lightgrey
 *font:  lucidasans\-10
 \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
@@ -768,16 +521,10 @@ These are the color formats for styles:
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 #000000 (Hexadecimal)
 rgb:<0\-255>/<0\-255>/<0\-255>
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}

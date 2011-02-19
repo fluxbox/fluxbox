@@ -1,13 +1,22 @@
 '\" t
 .\"     Title: fluxbox-keys
 .\"    Author: [see the "AUTHORS" section]
-.\" Generator: DocBook XSL Stylesheets v1.75.1 <http://docbook.sf.net/>
-.\"      Date: 12/17/2009
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 02/19/2011
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "12/17/2009" "fluxbox\-keys\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "02/19/2011" "fluxbox\-keys\&.txt" "Fluxbox Manual"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -36,7 +45,7 @@ The keys file defines the keyboard shortcuts for \fIfluxbox(1)\fR\&.
 .sp
 You can customize fluxbox\(cqs key handling through the ~/\&.fluxbox/keys file\&. The file consists of lines of the basic format:
 .sp
-\fB[\fR\fB\fImodifiers\fR\fR\fB] \fR\fB\fIkey\fR\fR\fB :\fR\fB\fIcommand\fR\fR\fB [\fR\fB\fIarguments\fR\fR\fB \fR\fB\fI\&...\fR\fR\fB]\fR
+\fB[\fR\fB\fImodifiers\fR\fR\fB] \fR\fB\fIkey\fR\fR\fB :\*(Aqcommand\*(Aq [\fR\fB\fIarguments\fR\fR\fB \fR\fB\fI\&...\fR\fR\fB]\fR
 .sp
 The space between the \fIkey\fR and the \fB:\fR before the \fIcommand\fR is mandatory\&.
 .sp
@@ -141,11 +150,11 @@ Use caution with this event! For example, do NOT bind this to any action that ch
 .sp
 Key bindings can be chained in a fashion similar to Emacs key bindings using the syntax:
 .sp
-\fImodifiers\-1\fR \fIkey\-1\fR \fImodifiers\-2\fR \fIkey\-2\fR :\fIcommand\fR [\fIarguments \&...\fR]*
+\fImodifiers\-1\fR \fIkey\-1\fR \fImodifiers\-2\fR \fIkey\-2\fR :\*(Aqcommand\*(Aq [\fIarguments \&...\fR]*
 .sp
 To abort a chained command part\-way through typing it, press the <ESC> key\&.
 .PP
-\fBExample\ \&1.\ \&To Bind CTRL+C CTRL+X (Which means, press CTRL+C then CTRL+X) to quit fluxbox\fR
+\fBTo Bind CTRL+C CTRL+X (Which means, press CTRL+C then CTRL+X) to quit fluxbox\fR. 
 .sp
 .if n \{\
 .RS 4
@@ -156,11 +165,12 @@ Control c Control x :Quit
 .if n \{\
 .RE
 .\}
+.sp
 .SH "KEYMODES"
 .sp
 A specific set of key mappings can be activated and de\-activated on\-the\-fly using what are called keymodes\&. The syntax to define a mapping in a keymode is:
 .sp
-\fB\fIkeymode\fR\fR\fB: \fR\fB\fImodifiers\fR\fR\fB \fR\fB\fIkey\fR\fR\fB :\fR\fB\fIcommand\fR\fR\fB [\fR\fB\fIarguments\fR\fR\fB \fR\fB\fI\&...\fR\fR\fB]\fR
+\fB\fIkeymode\fR\fR\fB: \fR\fB\fImodifiers\fR\fR\fB \fR\fB\fIkey\fR\fR\fB :\*(Aqcommand\*(Aq [\fR\fB\fIarguments\fR\fR\fB \fR\fB\fI\&...\fR\fR\fB]\fR
 .sp
 Where \fIkeymode\fR is any alpha\-numeric string name\&.
 .sp
@@ -270,6 +280,11 @@ By default \fIcorner\fR is \fBBottomRight\fR, but may be overridden with one of:
 \fBStartTabbing\fR
 .RS 4
 Start dragging to add this window to another\(cqs tabgroup\&.
+.RE
+.PP
+\fBActivateTab\fR
+.RS 4
+Activates the tab underneath the mouse\&.
 .RE
 .SS "Window Commands"
 .sp
@@ -498,6 +513,17 @@ Sends the current window to the next/previous display head\&. If you specify an
 greater than
 \fB1\fR, it will move the window that many heads\&. If this takes the window beyond the total number of heads, it will wrap around to the beginning\&.
 .RE
+.PP
+\fBSetXProp\fR \fIPROP=value\fR
+.RS 4
+Sets the xproperty
+\fIPROP\fR
+of the current window to
+\fIvalue\fR\&. Delete the content of
+\fIPROP\fR
+by using
+\fIPROP=\fR\&.
+.RE
 .SS "Workspace Commands"
 .sp
 These commands affect the entire workspace (or "desktop" as it is sometimes called)\&.
@@ -594,9 +620,13 @@ arguments\&.
 Focus to the next window which is located in the direction specified\&.
 .RE
 .PP
-\fBArrangeWindows\fR \fIpattern\fR
+\fBArrangeWindows\fR \fIpattern\fR / \fBArrangeWindowsVertical\fR \fIpattern\fR / \fBArrangeWindowsHorizontal\fR \fIpattern\fR
 .RS 4
-Tries to arrange all windows on the current workspace so that they overlap the least amount possible\&. See
+Tries to arrange all windows on the current workspace so that they overlap the least amount possible\&.
+\fBArrangeWindowsVertical\fR
+prefers vertical splits (windows side by side), whereas
+\fBArrangeWindowsHorizontal\fR
+prefers horizontal splits (windows on top of eachother)\&. See
 \fBCLIENT PATTERNS\fR
 for more about the
 \fIpattern\fR
@@ -1077,9 +1107,27 @@ The string name of the window\(cqs layer, which is one of
 \fBBottom\fR,
 \fBDesktop\fR
 .RE
+.PP
+\fBScreen\fR
+.RS 4
+The number of the currently used
+\fIscreen\fR\&. If the setup of the running xserver involves independant screens (\fInot Xinerama\fR), the $DISPLAY environment contains something like
+\fI:0\&.1\fR
+or
+\fI:1\&.0\fR\&. The part after the dot (\fI\&.\fR) is the number of the screen\&.
 .RE
 .PP
-\fBExample\ \&2.\ \&Matches any windows with the CLASSNAME of "xterm"\fR
+\fB@XPROP\fR
+.RS 4
+A string, corresponding to any xproperty (Use either the
+\fBxprop(1)\fR
+utility or the
+\fISetXProp\fR
+command to set a xproperty to a window)
+.RE
+.RE
+.PP
+\fBMatches any windows with the CLASSNAME of "xterm"\fR. 
 .sp
 .if n \{\
 .RS 4
@@ -1091,7 +1139,7 @@ The string name of the window\(cqs layer, which is one of
 .RE
 .\}
 .PP
-\fBExample\ \&3.\ \&Matches any windows with the same CLASSNAME as the currently focused window\fR
+\fBMatches any windows with the same CLASSNAME as the currently focused window\fR. 
 .sp
 .if n \{\
 .RS 4
@@ -1103,7 +1151,7 @@ The string name of the window\(cqs layer, which is one of
 .RE
 .\}
 .PP
-\fBExample\ \&4.\ \&Matches any windows on the same head as the mouse but on a different layer than the currently focused window\fR
+\fBMatches any windows on the same head as the mouse but on a different layer than the currently focused window\fR. 
 .sp
 .if n \{\
 .RS 4
@@ -1114,6 +1162,19 @@ The string name of the window\(cqs layer, which is one of
 .if n \{\
 .RE
 .\}
+.PP
+\fBMatches any windows having a xproperty named FOO with "bar" in it\fR. 
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+(@FOO=\&.*bar\&.*)
+.fi
+.if n \{\
+.RE
+.\}
+.sp
 .SH "FILES"
 .PP
 \fB\e~/\&.fluxbox/keys\fR
@@ -1167,7 +1228,10 @@ OnWindow Mod4 Mouse1 :StartMoving
 Mod4 t :If {Some Matches (xterm)} {NextWindow (xterm)} {Exec xterm}
 
 # Set a different wallpaper on every workspace:
-ChangeWorkspace :Exec fbsetbg ~/\&.fluxbox/bg$(xprop \-root _NET_CURRENT_DESKTOP | awk \'{print $3}\')\&.png
+ChangeWorkspace :Exec fbsetbg ~/\&.fluxbox/bg$(xprop \-root _NET_CURRENT_DESKTOP | awk \*(Aq{print $3}\*(Aq)\&.png
+
+# Focusses the next window with it\*(Aqs xproperty \*(AqPROP\*(Aq set to \*(Aqfoo\*(Aq
+Mod4 p Mod4 Tab :NextWindow (@PROP=foo)
 .fi
 .if n \{\
 .RE

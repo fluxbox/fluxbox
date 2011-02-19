@@ -1,161 +1,22 @@
+'\" t
 .\"     Title: fluxbox-menu
 .\"    Author: [see the "AUTHORS" section]
-.\" Generator: DocBook XSL Stylesheets v1.74.0 <http://docbook.sf.net/>
-.\"      Date: 02/19/2009
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 02/19/2011
 .\"    Manual: Fluxbox Manual
-.\"    Source: fluxbox-menu.txt 1.1.2
+.\"    Source: fluxbox-menu.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-MENU" "5" "02/19/2009" "fluxbox\-menu\&.txt 1\&.1\&.2" "Fluxbox Manual"
+.TH "FLUXBOX\-MENU" "5" "02/19/2011" "fluxbox\-menu\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
-.\" * (re)Define some macros
+.\" * Define some portability stuff
 .\" -----------------------------------------------------------------
 .\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" toupper - uppercase a string (locale-aware)
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
 .\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de toupper
-.tr aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ
-\\$*
-.tr aabbccddeeffgghhiijjkkllmmnnooppqqrrssttuuvvwwxxyyzz
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH-xref - format a cross-reference to an SH section
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de SH-xref
-.ie n \{\
-.\}
-.toupper \\$*
-.el \{\
-\\$*
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SH - level-one heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SH
-.\" put an extra blank line of space above the head in non-TTY output
-.if t \{\
-.sp 1
-.\}
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[an-margin]u
-.ti 0
-.HTML-TAG ".NH \\n[an-level]"
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-\." make the size of the head bigger
-.ps +3
-.ft B
-.ne (2v + 1u)
-.ie n \{\
-.\" if n (TTY output), use uppercase
-.toupper \\$*
-.\}
-.el \{\
-.nr an-break-flag 0
-.\" if not n (not TTY), use normal case (not uppercase)
-\\$1
-.in \\n[an-margin]u
-.ti 0
-.\" if not n (not TTY), put a border/line under subheading
-.sp -.6
-\l'\n(.lu'
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" SS - level-two heading that works better for non-TTY output
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de1 SS
-.sp \\n[PD]u
-.nr an-level 1
-.set-an-margin
-.nr an-prevailing-indent \\n[IN]
-.fi
-.in \\n[IN]u
-.ti \\n[SN]u
-.it 1 an-trap
-.nr an-no-space-flag 1
-.nr an-break-flag 1
-.ps \\n[PS-SS]u
-\." make the size of the head bigger
-.ps +2
-.ft B
-.ne (2v + 1u)
-.if \\n[.$] \&\\$*
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BB/BE - put background/screen (filled box) around block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BB
-.if t \{\
-.sp -.5
-.br
-.in +2n
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EB
-.if t \{\
-.if "\\$2"adjust-for-leading-newline" \{\
-.sp -1
-.\}
-.br
-.di
-.in
-.ll
-.gcolor
-.nr BW \\n(.lu-\\n(.i
-.nr BH \\n(dn+.5v
-.ne \\n(BHu+.5v
-.ie "\\$2"adjust-for-leading-newline" \{\
-\M[\\$1]\h'1n'\v'+.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.el \{\
-\M[\\$1]\h'1n'\v'-.5v'\D'P \\n(BWu 0 0 \\n(BHu -\\n(BWu 0 0 -\\n(BHu'\M[]
-.\}
-.in 0
-.sp -.5v
-.nf
-.BX
-.in
-.sp .5v
-.fi
-.\}
-..
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.\" BM/EM - put colored marker in margin next to block of text
-.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-.de BM
-.if t \{\
-.br
-.ll -2n
-.gcolor red
-.di BX
-.\}
-..
-.de EM
-.if t \{\
-.br
-.di
-.ll
-.gcolor
-.nr BH \\n(dn
-.ne \\n(BHu
-\M[\\$1]\D'P -.75n 0 0 \\n(BHu -(\\n[.i]u - \\n(INu - .75n) 0 0 -\\n(BHu'\M[]
-.in 0
-.nf
-.BX
-.in
-.fi
-.\}
-..
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -166,9 +27,9 @@
 .\" -----------------------------------------------------------------
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
-.SH "Name"
+.SH "NAME"
 fluxbox-menu \- fluxbox(1) menu syntax
-.SH "Synopsis"
+.SH "SYNOPSIS"
 .sp
 @pkgdatadir@/menu
 .sp
@@ -186,23 +47,23 @@ There are two types of menus in fluxbox which can be configured\&.
 .sp
 The first is the root menu, which normally appears when you right\-click on the desktop\&.
 .sp
-The first is the \fBROOT MENU\fR (Or right\-click menu), is usually bound to a right\-click on the desktop, though this binding can be changed in the `keys\' file (\fBfluxbox\-keys(5)\fR)\&. This same syntax is used for the \fBCustomMenu\fR command, also mentioned in \fBfluxbox\-keys(5)\fR\&.
+The first is the \fBROOT MENU\fR (Or right\-click menu), is usually bound to a right\-click on the desktop, though this binding can be changed in the \(oqkeys\(cq file (\fBfluxbox\-keys(5)\fR)\&. This same syntax is used for the \fBCustomMenu\fR command, also mentioned in \fBfluxbox\-keys(5)\fR\&.
 .sp
-Fluxbox installs a default root menu file in \fB@pkgdatadir@/menu\fR\&. You can also use fluxbox \-i to confirm this location\&. Of course this system\-wide menu can be customized for all users at once, but it is also possible to create an individual menu file for each user\&. By convention, users create a menu file in \fB~/\&.fluxbox/menu\fR\&. Once you\'ve created your own menu file, you\'ll want to make sure that you properly declare this location in your `init\' file so that fluxbox knows where to look\&. See \fBRESOURCES\fR, below for details\&.
+Fluxbox installs a default root menu file in \fB@pkgdatadir@/menu\fR\&. You can also use fluxbox \-i to confirm this location\&. Of course this system\-wide menu can be customized for all users at once, but it is also possible to create an individual menu file for each user\&. By convention, users create a menu file in \fB~/\&.fluxbox/menu\fR\&. Once you\(cqve created your own menu file, you\(cqll want to make sure that you properly declare this location in your \(oqinit\(cq file so that fluxbox knows where to look\&. See \fBRESOURCES\fR, below for details\&.
 .sp
-The second type is the \fBWINDOW MENU\fR, which defines the contents of the menu which appears when you right\-click on a window\'s titlebar or iconbar\&. This opens a menu file as defined by \fB~/\&.fluxbox/windowmenu\fR\&. If this file does not exist, fluxbox will copy in the default from \fB@pkgdatadir@/windowmenu\fR\&.
+The second type is the \fBWINDOW MENU\fR, which defines the contents of the menu which appears when you right\-click on a window\(cqs titlebar or iconbar\&. This opens a menu file as defined by \fB~/\&.fluxbox/windowmenu\fR\&. If this file does not exist, fluxbox will copy in the default from \fB@pkgdatadir@/windowmenu\fR\&.
 .sp
 You do not need to \(lqreload\(rq fluxbox after editing the apps file, the changes should be taken into account the next time you open the menu\&.
 .SH "ROOT MENU"
 .sp
 The root menu must begin with a \fB[begin]\fR tag and end with an \fB[end]\fR tag, and every tag must be on its own line\&.
 .PP
-There are up to four fields in a menu line\&. They are of the form:
+There are up to four fields in a menu line\&. They are of the form
 .RS 4
-[\fItag\fR] (\fIlabel\fR) {\fIcommand\fR} <\fIicon\fR>
+[\fItag\fR] (\fIlabel\fR) {\fIcommand\fR} <\*(Aqicon\*(Aq>
 .RE
 .sp
-The <\fIicon\fR> field is always optional when show below\&. If specified, the \fIicon\fR will be scaled down and displayed in the menu alongside the text label of the item\&. It must be in \&.xpm or \&.png format\&.
+The <\*(Aqicon\*(Aq> field is always optional when show below\&. If specified, the \fIicon\fR will be scaled down and displayed in the menu alongside the text label of the item\&. It must be in \&.xpm or \&.png format\&.
 .sp
 Any line that starts with a \fI#\fR or \fI!\fR is considered a comment and ignored by fluxbox\&. Also, in the label/command/filename fields you can escape any character\&. Using \fI\e\e\fR inserts a literal back\-slash into the label/command/filename field\&.
 .sp
@@ -218,7 +79,7 @@ appears at the top of the menu\&. And
 tag is required to end the menu\&.
 .RE
 .PP
-\fB[submenu]\fR (\fIlabel\fR) {\fItitle\fR} <\fIicon\fR>
+\fB[submenu]\fR (\fIlabel\fR) {\fItitle\fR} <\*(Aqicon\*(Aq>
 .RS 4
 This tells fluxbox to create and parse a new menu, which is inserted as a submenu into the parent menu\&. These menus are parsed recursively, so there is no limit to the number of levels or nested submenus you can have\&. The
 \fIlabel\fR
@@ -278,7 +139,7 @@ This will create a nice separation line\&. Useful for splitting up sections in a
 is not displayed, but can be useful for internal documentation or script parsing of menu files\&.
 .RE
 .PP
-\fB[nop]\fR (\fIlabel\fR) <\fIicon\fR>
+\fB[nop]\fR (\fIlabel\fR) <\*(Aqicon\*(Aq>
 .RS 4
 Insert a non\-operational item into the current menu\&. This is much like
 \fB[separator]\fR, but instead of a line, it inserts a
@@ -288,7 +149,7 @@ is optional, and if omitted a blank item will be inserted\&.
 .RE
 .SS "Applications"
 .PP
-\fB[exec]\fR (\fIlabel\fR) {\fIcommand\&...\fR} <\fIicon\fR>
+\fB[exec]\fR (\fIlabel\fR) {\fIcommand\&...\fR} <\*(Aqicon\*(Aq>
 .RS 4
 Inserts a command item into the menu\&. When you select the menu item from the menu, fluxbox runs
 \fIcommand\&...\fR
@@ -298,7 +159,7 @@ in your
 .RE
 .SS "Fluxbox Functions"
 .PP
-\fB[config]\fR (\fIlabel\fR) <\fIicon\fR>
+\fB[config]\fR (\fIlabel\fR) <\*(Aqicon\*(Aq>
 .RS 4
 Inserts a fluxbox native submenu item, containing numerous configuration options concerning window placement, focus style, window moving style, etc\&. See
 \fBConfiguration Menu\fR
@@ -307,12 +168,12 @@ in
 for details\&.
 .RE
 .PP
-\fB[reconfig]\fR (\fIlabel\fR) <\fIicon\fR>
+\fB[reconfig]\fR (\fIlabel\fR) <\*(Aqicon\*(Aq>
 .RS 4
-When selected this item re\-reads the current style and menu files and applies any changes\&. This is useful for creating a new style or theme, as you don\'t have to constantly restart fluxbox every time you save your style\&. However, fluxbox automatically rereads the menu whenever it changes\&.
+When selected this item re\-reads the current style and menu files and applies any changes\&. This is useful for creating a new style or theme, as you don\(cqt have to constantly restart fluxbox every time you save your style\&. However, fluxbox automatically rereads the menu whenever it changes\&.
 .RE
 .PP
-\fB[restart]\fR (\fIlabel\fR) {\fIcommand\fR} <\fIicon\fR>
+\fB[restart]\fR (\fIlabel\fR) {\fIcommand\fR} <\*(Aqicon\*(Aq>
 .RS 4
 This tells fluxbox to restart\&. If
 \fIcommand\fR
@@ -321,22 +182,22 @@ is supplied, it shuts down and runs the command (which is commonly the name of a
 is omitted, fluxbox restarts itself\&.
 .RE
 .PP
-\fB[exit]\fR (\fIlabel\fR) <\fIicon\fR>
+\fB[exit]\fR (\fIlabel\fR) <\*(Aqicon\*(Aq>
 .RS 4
 Inserts an item that shuts down and exits fluxbox\&. Any open windows are reparented to the root window before fluxbox exits\&.
 .RE
 .PP
-\fB[style]\fR (\fIlabel\fR) {\fIfilename\fR} <\fIicon\fR>
+\fB[style]\fR (\fIlabel\fR) {\fIfilename\fR} <\*(Aqicon\*(Aq>
 .RS 4
 This tells fluxbox to insert an item that, when selected, reads style file named filename and apply the new textures, colors and fonts to the current running session\&.
 .RE
 .PP
-\fB[stylesmenu]\fR (\fIdirectory\fR) <\fIicon\fR>
+\fB[stylesmenu]\fR (\fIdirectory\fR) <\*(Aqicon\*(Aq>
 .RS 4
 Reads all filenames from the specified directory, assuming that they are all valid style files, and creates inline menu items in the current menu for every filename, that, when selected by the user will apply the selected style file to the current session\&. The labels that are created in the menu are the filenames of the style files\&.
 .RE
 .PP
-\fB[stylesdir]\fR (\fIlabel\fR) {\fIdirectory\fR} <\fIicon\fR>
+\fB[stylesdir]\fR (\fIlabel\fR) {\fIdirectory\fR} <\*(Aqicon\*(Aq>
 .RS 4
 Creates a submenu entry with
 \fIlabel\fR
@@ -350,7 +211,7 @@ and
 commands make it possible to install style files without editing your init file\&.
 .RE
 .PP
-\fB[wallpapers]\fR (\fIdirectory\fR) {\fIcommand\fR} <\fIicon\fR>
+\fB[wallpapers]\fR (\fIdirectory\fR) {\fIcommand\fR} <\*(Aqicon\*(Aq>
 .RS 4
 This inserts a menu item to set the wallpaper for each file in the given directory\&. The
 \fIcommand\fR
@@ -358,7 +219,7 @@ is optional, and defaults to
 \fBfbsetbg\fR\&.
 .RE
 .PP
-\fB[workspaces]\fR (\fIlabel\fR) <\fIicon\fR>
+\fB[workspaces]\fR (\fIlabel\fR) <\*(Aqicon\*(Aq>
 .RS 4
 This tells fluxbox to insert a link to the workspaces menu directly into your menu\&. See
 \fBWorkspace Menu\fR
@@ -367,7 +228,7 @@ in
 for details\&.
 .RE
 .PP
-\fB[\fR\fIcommand\fR\fB]\fR (\fIlabel\fR) <\fIicon\fR>
+\fB[\fR\fIcommand\fR\fB]\fR (\fIlabel\fR) <\*(Aqicon\*(Aq>
 .RS 4
 In addition to the commands above, any legal keys file
 \fIcommand\fR
@@ -441,7 +302,7 @@ Closes the window gracefully, equivalent to the titlebar button\&.
 .PP
 \fB[kill]\fR
 .RS 4
-Kills the window\'s process, like
+Kills the window\(cqs process, like
 \fBxkill(1)\fR\&.
 .RE
 .PP
@@ -457,7 +318,7 @@ Lower the window to the bottom of the stack within its layer\&.
 .PP
 \fB[settitledialog]\fR
 .RS 4
-Opens a dialog which can be used to set the window\'s title\&. Some applications may re\-set their own title from time\-to\-time, wiping out your setting\&.
+Opens a dialog which can be used to set the window\(cqs title\&. Some applications may re\-set their own title from time\-to\-time, wiping out your setting\&.
 .RE
 .PP
 \fB[sendto]\fR
@@ -477,7 +338,7 @@ Adds a \(lqTransparency\&...\(rq submenu which lets you change the focused and u
 .PP
 \fB[extramenus]\fR
 .RS 4
-Adds the \(lqRemember\&...\(rq menu item, which allows you to specify which settings should be stored in the `apps\' file (See
+Adds the \(lqRemember\&...\(rq menu item, which allows you to specify which settings should be stored in the \(oqapps\(cq file (See
 \fBfluxbox\-apps(5)\fR
 for more details)\&.
 .RE
@@ -490,17 +351,17 @@ Adds a horizontal line to the menu
 .PP
 \fB~/\&.fluxbox/menu\fR
 .RS 4
-This is the default location for the user\'s root menu\&.
+This is the default location for the user\(cqs root menu\&.
 .RE
 .PP
 \fB@pkgdatadir@/menu\fR
 .RS 4
-This is the system\-wide root menu file\&. It will be used if the user\'s root menu is missing or unparseable\&.
+This is the system\-wide root menu file\&. It will be used if the user\(cqs root menu is missing or unparseable\&.
 .RE
 .PP
 \fB~/\&.fluxbox/windowmenu\fR
 .RS 4
-This is the user\'s window menu definition file
+This is the user\(cqs window menu definition file
 .RE
 .PP
 \fB@pkgdatadir@/menu\fR
@@ -513,22 +374,19 @@ on fluxbox startup\&.
 .PP
 \fBsession\&.menuFile:\fR \fIlocation\fR
 .RS 4
-This may be set to override the location of the user\'s root menu\&.
+This may be set to override the location of the user\(cqs root menu\&.
 .RE
 .SH "ENVIRONMENT"
 .sp
 The \fIcomand\&...\fR field of the \fB[exec]\fR tag can take advantage of other environment variables if they are set before fluxbox is started\&.
 .SH "EXAMPLES"
 .PP
-\fBExample\ \&1.\ \&Root Menu\fR
+\fBRoot Menu\fR. 
 .sp
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 # fluxbox menu file
 [begin] (fluxbox)
     [exec] (rxvt) {rxvt \-ls} </usr/X11R6/share/icons/terminal\&.xpm>
@@ -556,23 +414,17 @@ The \fIcomand\&...\fR field of the \fB[exec]\fR tag can take advantage of other 
     [end]
     [exit] (Log Out)
 [end]
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
 .PP
-\fBExample\ \&2.\ \&Default Window Menu\fR
+\fBDefault Window Menu\fR. 
 .sp
 .if n \{\
 .RS 4
 .\}
-.fam C
-.ps -1
 .nf
-.BB lightgray
 [begin]
   [shade]
   [stick]
@@ -588,13 +440,11 @@ The \fIcomand\&...\fR field of the \fB[exec]\fR tag can take advantage of other 
   [separator]
   [close]
 [end]
-.EB lightgray
 .fi
-.fam
-.ps +1
 .if n \{\
 .RE
 .\}
+.sp
 .SH "AUTHORS"
 .sp
 .RS 4
