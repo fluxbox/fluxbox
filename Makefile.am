@@ -6,7 +6,7 @@
 SUBDIRS = doc nls src util data
 MAINTAINERCLEANFILES = aclocal.m4 config.h.in configure Makefile.in stamp-h.in
 ACLOCAL_AMFLAGS = -I .
-EXTRA_DIST = acinclude.m4
+EXTRA_DIST = acinclude.m4 3rd/vim/* 3rd/vim/syntax/*
 
 uninstall-local:
 	rmdir $(pkgdatadir)
