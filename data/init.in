@@ -3,4 +3,5 @@
 
 session.menuFile:	~/.@pkgprefix@fluxbox@pkgsuffix@/menu
 session.keyFile: ~/.@pkgprefix@fluxbox@pkgsuffix@/keys
+session.styleFile: @default_style@
 session.configVersion:	13
