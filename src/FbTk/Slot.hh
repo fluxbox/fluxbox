@@ -229,7 +229,8 @@ public:
     }
 
     void operator()() {
-       reinterpret_cast<CallbackType>(m_holder->m_callback)( m_holder );
+        if (m_holder)
+            reinterpret_cast<CallbackType>(m_holder->m_callback)( m_holder );
     }
 };
 
@@ -247,7 +248,8 @@ public:
     }
 
     void operator()(Arg1 arg) {
-        reinterpret_cast<CallbackType>(m_holder->m_callback)(m_holder, arg);
+        if (m_holder)
+            reinterpret_cast<CallbackType>(m_holder->m_callback)(m_holder, arg);
     }
 
 };
@@ -265,7 +267,8 @@ public:
     }
 
     void operator()(Arg1 arg1, Arg2 arg2) {
-        reinterpret_cast<CallbackType>(m_holder->m_callback)(m_holder, arg1, arg2);
+        if (m_holder)
+            reinterpret_cast<CallbackType>(m_holder->m_callback)(m_holder, arg1, arg2);
     }
 };
 
@@ -282,8 +285,9 @@ public:
     }
 
     void operator()(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
-        reinterpret_cast<CallbackType>(m_holder->m_callback)
-            ( m_holder, arg1, arg2, arg3 );
+        if (m_holder)
+            reinterpret_cast<CallbackType>(m_holder->m_callback)
+                ( m_holder, arg1, arg2, arg3 );
     }
 };
 
