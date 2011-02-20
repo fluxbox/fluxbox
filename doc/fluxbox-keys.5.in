@@ -1111,7 +1111,7 @@ The string name of the window\(cqs layer, which is one of
 \fBScreen\fR
 .RS 4
 The number of the currently used
-\fIscreen\fR\&. If the setup of the running xserver involves independant screens (\fInot Xinerama\fR), the $DISPLAY environment contains something like
+\fIscreen\fR\&. If the setup of the running xserver involves independent screens (\fInot Xinerama\fR), the $DISPLAY environment contains something like
 \fI:0\&.1\fR
 or
 \fI:1\&.0\fR\&. The part after the dot (\fI\&.\fR) is the number of the screen\&.
