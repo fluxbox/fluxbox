@@ -610,7 +610,7 @@ include::client-patterns.txt[]
 
 FILES
 -----
-*\~/.fluxbox/keys*::
+*~/.fluxbox/keys*::
 	This is the default location for the keybinding definitions.
 */usr/X11R6/include/X11/keysymdef.h*::
 	X key names are in this file.
