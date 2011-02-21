@@ -218,61 +218,70 @@ void FbPixmap::rotate(FbTk::Orientation orient) {
     unsigned int neww = oldw, newh = oldh;
     translateSize(orient, neww, newh);
 
+    // reverse height/width for new pixmap
+    FbPixmap new_pm(drawable(), neww, newh, depth());
+
+    // width|height could be 0. this happens (for example) if
+    // the systemtray-tool is ROT90. in that case 'src_image'
+    // becomes NULL and caused a SIGSEV upon XDestroyImage()
+    // TODO: catch dimensions with '0' earlier?
+    //
     // make an image copy
     XImage *src_image = XGetImage(display(), drawable(),
                                   0, 0, // pos
                                   oldw, oldh, // size
                                   ~0, // plane mask
                                   ZPixmap); // format
-    // reverse height/width for new pixmap
-    FbPixmap new_pm(drawable(), neww, newh, depth());
+    if (src_image) {
 
-    GContext gc(drawable());
+        GContext gc(drawable());
 
-    if (orient == ROT180) {
-        unsigned int srcx, srcy, destx, desty;
-        for (srcy = 0, desty = oldh; srcy < oldh; ++srcy, --desty) {
-            for (srcx = 0, destx = oldw; srcx < oldw; ++srcx, --destx) {
-                gc.setForeground(XGetPixel(src_image, srcx, srcy));
-                XDrawPoint(display(), new_pm.drawable(), gc.gc(), destx, desty);
+        if (orient == ROT180) {
+            unsigned int srcx, srcy, destx, desty;
+            for (srcy = 0, desty = oldh; srcy < oldh; ++srcy, --desty) {
+                for (srcx = 0, destx = oldw; srcx < oldw; ++srcx, --destx) {
+                    gc.setForeground(XGetPixel(src_image, srcx, srcy));
+                    XDrawPoint(display(), new_pm.drawable(), gc.gc(), destx, desty);
+                }
+            }
+        } else {
+            // need to flip x and y
+
+            // set start, end and direction based on rotation
+            // NOTE that startx etc are in the direction of the OLD pixmap
+            unsigned int startx = 0, starty = 0;
+            int dirx = 0, diry = 0;
+            switch (orient) {
+            case ROT90:
+                startx = neww-1;
+                starty = 0;
+                dirx = -1;
+                diry = 1;
+                break;
+            case ROT270:
+                startx = 0;
+                starty = newh-1;
+                dirx = 1;
+                diry = -1;
+                break;
+            default: // kill warning
+                break;
+            }
+
+
+            // copy new area
+            unsigned int srcx, srcy, destx, desty;
+            for (srcy = 0, destx = startx; srcy < oldh; ++srcy, destx+=dirx) {
+                for (srcx = 0, desty = starty; srcx < oldw; ++srcx, desty+=diry) {
+                    gc.setForeground(XGetPixel(src_image, srcx, srcy));
+                    XDrawPoint(display(), new_pm.drawable(), gc.gc(), destx, desty);
+                }
             }
         }
-    } else {
-        // need to flip x and y
 
-        // set start, end and direction based on rotation
-        // NOTE that startx etc are in the direction of the OLD pixmap
-        unsigned int startx = 0, starty = 0;
-        int dirx = 0, diry = 0;
-        switch (orient) {
-        case ROT90:
-            startx = neww-1;
-            starty = 0;
-            dirx = -1;
-            diry = 1;
-            break;
-        case ROT270:
-            startx = 0;
-            starty = newh-1;
-            dirx = 1;
-            diry = -1;
-            break;
-        default: // kill warning
-            break;
-        }
-
-
-        // copy new area
-        unsigned int srcx, srcy, destx, desty;
-        for (srcy = 0, destx = startx; srcy < oldh; ++srcy, destx+=dirx) {
-            for (srcx = 0, desty = starty; srcx < oldw; ++srcx, desty+=diry) {
-                gc.setForeground(XGetPixel(src_image, srcx, srcy));
-                XDrawPoint(display(), new_pm.drawable(), gc.gc(), destx, desty);
-            }
-        }
+        XDestroyImage(src_image);
     }
 
-    XDestroyImage(src_image);
     // free old pixmap and set new from new_pm
     free();
 
