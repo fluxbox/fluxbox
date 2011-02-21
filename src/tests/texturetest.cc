@@ -32,12 +32,12 @@ public:
 class Application: public FbTk::FbWindow, public FbTk::EventHandler {
 public:
     Application(int box_size, int num):
-        FbWindow(0,  0, 0, 640, box_size*num/8 - 3*5, ExposureMask | KeyPressMask),
+        FbWindow(0,  0, 0, 640, ((5+box_size)*num)/9 + 5, ExposureMask | KeyPressMask),
         m_box_size(box_size),
         m_num(num),
         m_font("fixed"),
         m_imgctrl(screenNumber()),
-        m_background(*this, 640, 480, depth()),
+        m_background(*this, width(), height(), depth()),
         m_gc(m_background) {
         setName("Texture Test");
         setBackgroundPixmap(m_background.drawable());
@@ -58,13 +58,13 @@ public:
 private:
 
     void renderPixmap(const Texture &text, int x, int y) {
-        Pixmap pm = m_imgctrl.renderImage(m_box_size, m_box_size,
+        Pixmap pm = m_imgctrl.renderImage(2*m_box_size, m_box_size,
                                           text);
 
         m_background.copyArea(pm, m_gc.gc(),
                               0, 0,
                               x, y,
-                              m_box_size, m_box_size);
+                              2*m_box_size, m_box_size);
         m_imgctrl.removeImage(pm);
     }
 
@@ -87,17 +87,13 @@ private:
         char value[18];
         for (int i=0; i<m_num; ++i) {
             sprintf(value, "%d", i);
-            text.reset(new ThemeItem<Texture>
-                       (tm, 
-                        string("texture") + value, 
-                        string("Texture") + value));
-            // load new style
-            ThemeManager::instance().load("test.theme", "");
+            text.reset(new ThemeItem<Texture> (tm, string("texture") + value, string("Texture") + value));
 
+            ThemeManager::instance().load("test.theme", "");
             renderPixmap(**text.get(), next_x, next_y);
 
-            next_x += step_size;
-            if (next_x + m_box_size > width()) {
+            next_x += (step_size + m_box_size);
+            if (next_x + 2*m_box_size > width()) {
                 m_font.drawText(m_background,
                                 screenNumber(),
                                 m_gc.gc(),
@@ -122,7 +118,7 @@ private:
 };
 
 int main(int argc, char **argv) {
-    int boxsize= 60;
+    int boxsize= 30;
     int num = 63;
     for (int i=1; i<argc; ++i) {
         if (strcmp(argv[i], "-boxsize") == 0 && i + 1 < argc)
