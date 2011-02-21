@@ -88,12 +88,12 @@ Commands can also be bound to mouse events ('N' denotes the number of the
 button, eg. '1' is the primary button, '4'/'5' are the wheel buttons):
 
 *MouseN*;;
-	The mouse button 'N' is pressed down and holded.
+	The mouse button 'N' is pressed down and held.
 *ClickN*;;
 	The mouse button 'N' is clicked (pressed and released with no
 	movement in between)
 *MoveN*;;
-	The mouse button 'N' is currently holded, the binded action is triggered
+	The mouse button 'N' is currently held, the binded action is triggered
 	as often as the mouse moves.
 
 
