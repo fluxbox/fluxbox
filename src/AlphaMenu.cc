@@ -51,18 +51,18 @@ AlphaMenu::AlphaMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
                   "Focused Window Alpha",
                   "Transparency level of the focused window");
 
-    FbTk::MenuItem *focused_alpha_item =
+    m_focused_alpha_item =
         new FbTk::IntMenuItem(focused_alpha_label, m_focused_alpha, 0, 255, *this);
-    insert(focused_alpha_item);
+    insert(m_focused_alpha_item);
 
     const FbTk::FbString unfocused_alpha_label =
         _FB_XTEXT(Configmenu, UnfocusedAlpha,
                   "Unfocused Window Alpha",
                   "Transparency level of unfocused windows");
 
-    FbTk::MenuItem *unfocused_alpha_item =
+    m_unfocused_alpha_item =
         new FbTk::IntMenuItem(unfocused_alpha_label, m_unfocused_alpha, 0, 255, *this);
-    insert(unfocused_alpha_item);
+    insert(m_unfocused_alpha_item);
 
     const FbTk::FbString usedefault_label = _FB_XTEXT(Windowmenu, DefaultAlpha,
                                                       "Use Defaults",
@@ -79,18 +79,16 @@ void AlphaMenu::move(int x, int y) {
     FbTk::Menu::move(x, y);
 
     if (isVisible()) {
-        // TODO: hardcoding the indices is a bad idea
-        ((FbTk::IntMenuItem *)find(0))->updateLabel();
-        ((FbTk::IntMenuItem *)find(1))->updateLabel();
+        m_focused_alpha_item->updateLabel();
+        m_unfocused_alpha_item->updateLabel();
         frameWindow().updateBackground(false);
         FbTk::Menu::clearWindow();
     }
 }
-    
+
 void AlphaMenu::show() {
-    // TODO: hardcoding the indices is a bad idea
-    ((FbTk::IntMenuItem *)find(0))->updateLabel();
-    ((FbTk::IntMenuItem *)find(1))->updateLabel();
+    m_focused_alpha_item->updateLabel();
+    m_unfocused_alpha_item->updateLabel();
     frameWindow().updateBackground(false);
     FbTk::Menu::clearWindow();
 
