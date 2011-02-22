@@ -1457,7 +1457,7 @@ Pixmap TextureRender::renderGradient(const FbTk::Texture &texture) {
     // invert our width and height if necessary
     translateSize(orientation, width, height);
 
-    bool inverted = texture.type() & Texture::SUNKEN;
+    bool inverted = texture.type() & Texture::INVERT;
     const Color* from = &(texture.color());
     const Color* to = &(texture.colorTo());
 
