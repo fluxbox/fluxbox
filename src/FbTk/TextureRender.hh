@@ -68,7 +68,7 @@ private:
     ImageControl &control;
 
     int red_offset, green_offset, blue_offset, red_bits, green_bits, blue_bits,
-        cpc, cpccpc;
+        cpc;
     unsigned char *red, *green, *blue;
     const unsigned char *red_table, *green_table, *blue_table;
     Orientation orientation;

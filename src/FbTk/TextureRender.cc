@@ -1310,7 +1310,6 @@ TextureRender::TextureRender(ImageControl &imgctrl,
                              FbTk::Orientation orient):
     control(imgctrl),
     cpc(imgctrl.colorsPerChannel()),
-    cpccpc(cpc * cpc),
     red(0), green(0), blue(0),
     orientation(orient),
     width(w),
@@ -1545,19 +1544,21 @@ XImage *TextureRender::renderXImage() {
     switch (control.visual()->c_class) {
     case StaticColor:
     case PseudoColor:
-        for (y = 0, offset = 0; y < height; y++) {
-            for (x = 0; x < width; x++, offset++) {
-                r = red_table[red[offset]];
-                g = green_table[green[offset]];
-                b = blue_table[blue[offset]];
+        {
+                int cpccpc = cpc * cpc;
+            for (y = 0, offset = 0; y < height; y++) {
+                for (x = 0; x < width; x++, offset++) {
+                    r = red_table[red[offset]];
+                    g = green_table[green[offset]];
+                    b = blue_table[blue[offset]];
 
-                pixel = (r * cpccpc) + (g * cpc) + b;
-                *pixel_data++ = control.colors()[pixel].pixel;
+                    pixel = (r * cpccpc) + (g * cpc) + b;
+                    *pixel_data++ = control.colors()[pixel].pixel;
+                }
+
+                pixel_data = (ppixel_data += image->bytes_per_line);
             }
-
-            pixel_data = (ppixel_data += image->bytes_per_line);
         }
-
         break;
 
     case TrueColor:
