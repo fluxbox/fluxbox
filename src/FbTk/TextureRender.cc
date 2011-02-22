@@ -1349,7 +1349,10 @@ TextureRender::~TextureRender() {
 
 
 Pixmap TextureRender::render(const FbTk::Texture &texture) {
-    if (texture.pixmap().drawable() != 0)
+
+    if (width == 0 || height == 0)
+        return None;
+    else if (texture.pixmap().drawable() != 0)
         return renderPixmap(texture);
     else if (texture.type() & FbTk::Texture::PARENTRELATIVE)
         return ParentRelative;
