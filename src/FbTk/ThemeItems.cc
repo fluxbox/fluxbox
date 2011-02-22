@@ -242,7 +242,7 @@ void ThemeItem<Texture>::load(const string *o_name, const string *o_altname) {
 
 template <>
 void ThemeItem<Texture>::setDefaultValue() {
-    m_value.setType(Texture::DEFAULT_BEVEL | Texture::DEFAULT_TEXTURE);
+    m_value.setType(Texture::DEFAULT_LEVEL | Texture::DEFAULT_TEXTURE);
     load(); // one might forget to add line something:  so we try to load something.*:  too
 }
 

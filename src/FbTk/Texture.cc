@@ -87,7 +87,7 @@ void Texture::setFromString(const char * const texture_str) {
         else if (strstr(ts, "flat"))
             addType(Texture::FLAT);
         else
-            addType(Texture::DEFAULT_BEVEL);
+            addType(Texture::DEFAULT_LEVEL);
 
         if (! (type() & Texture::FLAT)) {
             if (strstr(ts, "bevel2"))

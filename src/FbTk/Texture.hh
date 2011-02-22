@@ -41,7 +41,7 @@ public:
         FLAT =     0x00002,
         SUNKEN =   0x00004,
         RAISED =   0x00008,
-        DEFAULT_BEVEL = FLAT
+        DEFAULT_LEVEL = FLAT
     };
 
     enum Textures {
