@@ -41,7 +41,7 @@ public:
     virtual ~ButtonTool();
 
 protected:
-    void renderTheme(unsigned char alpha);
+    void renderTheme(int alpha);
     void updateSizing();
     Pixmap m_cache_pm, m_cache_pressed_pm;
     FbTk::ImageControl &m_image_ctrl;

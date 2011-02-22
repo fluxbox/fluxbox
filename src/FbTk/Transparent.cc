@@ -43,7 +43,7 @@ using std::endl;
 
 namespace {
 #ifdef HAVE_XRENDER
-Picture createAlphaPic(Window drawable, unsigned char alpha) {
+Picture createAlphaPic(Window drawable, int alpha) {
     Display *disp = FbTk::App::instance()->display();
     _FB_USES_NLS;
 
@@ -149,7 +149,7 @@ bool Transparent::haveComposite(bool for_real) {
         return s_use_composite;
 }
 
-Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int screen_num):
+Transparent::Transparent(Drawable src, Drawable dest, int alpha, int screen_num):
     m_alpha_pic(0), m_src_pic(0), m_dest_pic(0),
     m_source(src), m_dest(dest), m_alpha(alpha) {
 
@@ -196,7 +196,7 @@ Transparent::~Transparent() {
 #endif // HAVE_XRENDER
 }
 
-void Transparent::setAlpha(unsigned char alpha) {
+void Transparent::setAlpha(int alpha) {
     if (m_source == 0 || !s_render)
         return;
 
@@ -254,7 +254,7 @@ void Transparent::setSource(Drawable source, int screen_num) {
         return;
     // save old alpha value so we can recreate new later
     // with the same value
-    unsigned char old_alpha = m_alpha;
+    int old_alpha = m_alpha;
     if (m_alpha_pic != 0)
         freeAlpha();
 
@@ -314,7 +314,7 @@ void Transparent::render(int src_x, int src_y,
 #endif // HAVE_XRENDER
 }
 
-void Transparent::allocAlpha(unsigned char alpha) {
+void Transparent::allocAlpha(int alpha) {
 #ifdef HAVE_XRENDER
     if (m_source == 0 || !s_render)
         return;

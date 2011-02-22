@@ -427,7 +427,7 @@ void FbWinFrame::alignTabs() {
 
 void FbWinFrame::notifyMoved(bool clear) {
     // not important if no alpha...
-    unsigned char alpha = getAlpha(m_state.focused);
+    int alpha = getAlpha(m_state.focused);
     if (alpha == 255)
         return;
 
@@ -482,7 +482,7 @@ void FbWinFrame::setFocus(bool newvalue) {
 
     if (FbTk::Transparent::haveRender() && 
         getAlpha(true) != getAlpha(false)) { // different alpha for focused and unfocused
-        unsigned char alpha = getAlpha(m_state.focused);
+        int alpha = getAlpha(m_state.focused);
         if (FbTk::Transparent::haveComposite()) {
             m_tab_container.setAlpha(255);
             m_window.setOpaque(alpha);
@@ -536,7 +536,7 @@ void FbWinFrame::applyState() {
     frameExtentSig().notify();
 }
 
-void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
+void FbWinFrame::setAlpha(bool focused, int alpha) {
     if (focused)
         m_focused_alpha = alpha;
     else
@@ -547,7 +547,7 @@ void FbWinFrame::setAlpha(bool focused, unsigned char alpha) {
 }
 
 void FbWinFrame::applyAlpha() {
-    unsigned char alpha = getAlpha(m_state.focused);
+    int alpha = getAlpha(m_state.focused);
     if (FbTk::Transparent::haveComposite())
         m_window.setOpaque(alpha);
     else {
@@ -557,8 +557,11 @@ void FbWinFrame::applyAlpha() {
     }
 }
 
-unsigned char FbWinFrame::getAlpha(bool focused) const {
-  return focused ? m_focused_alpha : m_unfocused_alpha;
+int FbWinFrame::getAlpha(bool focused) const {
+    if (focused)
+        return m_focused_alpha;
+    else
+        return m_unfocused_alpha;
 }
 
 void FbWinFrame::setDefaultAlpha() {
@@ -966,8 +969,7 @@ void FbWinFrame::reconfigure() {
     if (isVisible()) {
         // update transparency settings
         if (FbTk::Transparent::haveRender()) {
-            unsigned char alpha =
-                getAlpha(m_state.focused);
+            int alpha = getAlpha(m_state.focused);
             if (FbTk::Transparent::haveComposite()) {
                 m_tab_container.setAlpha(255);
                 m_window.setOpaque(alpha);
@@ -1168,7 +1170,7 @@ void FbWinFrame::applyTitlebar() {
     getCurrentFocusPixmap(label_pm, title_pm,
                           label_color, title_color);
 
-    unsigned char alpha = getAlpha (m_state.focused);
+    int alpha = getAlpha (m_state.focused);
     m_titlebar.setAlpha(alpha);
     m_label.setAlpha(alpha);
 
@@ -1220,7 +1222,7 @@ void FbWinFrame::renderHandles() {
 
 void FbWinFrame::applyHandles() {
 
-    unsigned char alpha = getAlpha(m_state.focused);
+    int alpha = getAlpha(m_state.focused);
     m_handle.setAlpha(alpha);
     m_grip_left.setAlpha(alpha);
     m_grip_right.setAlpha(alpha);

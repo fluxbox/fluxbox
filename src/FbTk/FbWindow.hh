@@ -88,7 +88,7 @@ public:
                            unsigned int height = 0, Pixmap dest_override = None,
                            bool override_is_offset = false);
 
-    void setAlpha(unsigned char alpha);
+    void setAlpha(int alpha);
 
     virtual FbWindow &operator = (const FbWindow &win);
     /// assign a new X window to this
@@ -176,7 +176,7 @@ public:
     unsigned int borderWidth() const { return m_border_width; }
     unsigned long borderColor() const { return m_border_color; }
     unsigned int depth() const { return m_depth; }
-    unsigned char alpha() const;
+    int alpha() const;
     int screenNumber() const;
     long eventMask() const;
 
@@ -188,7 +188,7 @@ public:
     bool operator != (const FbWindow &win) const { return m_window != win.m_window; }
 
     // used for composite
-    void setOpaque(unsigned char alpha);
+    void setOpaque(int alpha);
 
     void setRenderer(FbWindowRenderer &renderer) { m_renderer = &renderer; }
     void sendConfigureNotify(int x, int y, unsigned int width,

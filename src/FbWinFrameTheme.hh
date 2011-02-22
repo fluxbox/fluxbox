@@ -74,8 +74,8 @@ public:
     unsigned int bevelWidth() const { return *m_bevel_width; }
     unsigned int handleWidth() const { return *m_handle_width; }
 
-    unsigned char alpha() const { return m_alpha; }
-    void setAlpha(unsigned char alpha) { m_alpha = alpha; }
+    int alpha() const { return m_alpha; }
+    void setAlpha(int alpha) { m_alpha = alpha; }
 
     IconbarTheme &iconbarTheme() { return m_iconbar_theme; }
 
@@ -107,7 +107,7 @@ private:
     Cursor m_cursor_right_side;
     Cursor m_cursor_top_side;
     Cursor m_cursor_bottom_side;
-    unsigned char m_alpha;
+    int m_alpha;
 
     IconbarTheme m_iconbar_theme;
 };

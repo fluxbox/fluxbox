@@ -81,7 +81,7 @@ private:
     void renderButton(IconButton &button, bool clear = true);
     /// render all buttons
     void renderTheme();
-    void renderTheme(unsigned char alpha);
+    void renderTheme(int alpha);
     /// destroy all icons
     void deleteIcons();
     /// add or move a single window
@@ -111,7 +111,7 @@ private:
     FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
     FbMenu m_menu;
-    unsigned char m_alpha;
+    int m_alpha;
 };
 
 #endif // ICONBARTOOL_HH

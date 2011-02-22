@@ -440,7 +440,7 @@ void Container::for_each(std::mem_fun_t<void, FbWindow> function) {
     std::for_each(begin(), end(), function);
 }
 
-void Container::setAlpha(unsigned char alpha) {
+void Container::setAlpha(int alpha) {
     FbWindow::setAlpha(alpha);
     STLUtil::forAll(m_item_list, std::bind2nd(std::mem_fun(&Button::setAlpha), alpha));
 }

@@ -121,9 +121,9 @@ public:
     void updateTabProperties() { alignTabs(); }
 
     /// Alpha settings
-    void setAlpha(bool focused, unsigned char value);
+    void setAlpha(bool focused, int value);
     void applyAlpha();
-    unsigned char getAlpha(bool focused) const;
+    int getAlpha(bool focused) const;
 
     void setDefaultAlpha();
     bool getUseDefaultAlpha() const;
@@ -377,9 +377,9 @@ private:
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
     /// alpha values
-    typedef FbTk::ConstObjectAccessor<unsigned char, FbWinFrameTheme> AlphaAcc;
-    FbTk::DefaultValue<unsigned char, AlphaAcc> m_focused_alpha;
-    FbTk::DefaultValue<unsigned char, AlphaAcc> m_unfocused_alpha;
+    typedef FbTk::ConstObjectAccessor<int, FbWinFrameTheme> AlphaAcc;
+    FbTk::DefaultValue<int, AlphaAcc> m_focused_alpha;
+    FbTk::DefaultValue<int, AlphaAcc> m_unfocused_alpha;
 
     FbTk::Shape m_shape;
 };

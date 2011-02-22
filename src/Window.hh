@@ -198,11 +198,11 @@ public:
 
     // ------------------
     // Per window transparency addons
-    unsigned char getFocusedAlpha() const { return frame().getAlpha(true); }
-    unsigned char getUnfocusedAlpha() const { return frame().getAlpha(false); }
-    void setFocusedAlpha(unsigned char alpha) { frame().setAlpha(true, alpha); }
-    void setUnfocusedAlpha(unsigned char alpha) { frame().setAlpha(false, alpha); }
-    void updateAlpha(bool focused, unsigned char alpha)  { frame().setAlpha(focused, alpha); }
+    int getFocusedAlpha() const { return frame().getAlpha(true); }
+    int getUnfocusedAlpha() const { return frame().getAlpha(false); }
+    void setFocusedAlpha(int alpha) { frame().setAlpha(true, alpha); }
+    void setUnfocusedAlpha(int alpha) { frame().setAlpha(false, alpha); }
+    void updateAlpha(bool focused, int alpha)  { frame().setAlpha(focused, alpha); }
 
     bool getUseDefaultAlpha() const { return frame().getUseDefaultAlpha(); }
     void setDefaultAlpha() { frame().setDefaultAlpha(); }

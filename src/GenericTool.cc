@@ -75,7 +75,7 @@ unsigned int GenericTool::borderWidth() const {
     return m_window->borderWidth();
 }
 
-void GenericTool::renderTheme(unsigned char alpha) {
+void GenericTool::renderTheme(int alpha) {
     m_window->setAlpha(alpha);
     m_window->clear();
 }

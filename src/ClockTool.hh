@@ -69,7 +69,7 @@ public:
 private:
     void updateTime();
     void update(FbTk::Subject *subj);
-    void renderTheme(unsigned char alpha);
+    void renderTheme(int alpha);
     void reRender();
     void updateSizing();
 

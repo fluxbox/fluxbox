@@ -171,7 +171,7 @@ void FbWindow::invalidateBackground() {
 
 void FbWindow::updateBackground(bool only_if_alpha) {
     Pixmap newbg = m_lastbg_pm;
-    unsigned char alpha = 255;
+    int alpha = 255;
     bool free_newbg = false;
 
     if (m_lastbg_pm == None && !m_lastbg_color_set)
@@ -344,7 +344,7 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
 #endif // HAVE_XRENDER
 }
 
-void FbWindow::setAlpha(unsigned char alpha) {
+void FbWindow::setAlpha(int alpha) {
 #ifdef HAVE_XRENDER
     if (FbTk::Transparent::haveComposite()) {
         if (m_transparent.get() != 0) {
@@ -371,7 +371,7 @@ void FbWindow::setAlpha(unsigned char alpha) {
 #endif // HAVE_XRENDER
 }
 
-unsigned char FbWindow::alpha() const {
+int FbWindow::alpha() const {
 #ifdef HAVE_XRENDER
     if (m_transparent.get())
         return m_transparent->alpha();
@@ -588,7 +588,7 @@ long FbWindow::eventMask() const {
 
 }
 
-void FbWindow::setOpaque(unsigned char alpha) {
+void FbWindow::setOpaque(int alpha) {
 #ifdef HAVE_XRENDER
     static Atom m_alphaatom = XInternAtom(display(), "_NET_WM_WINDOW_OPACITY", False);
     unsigned long opacity = alpha * 0x1010101;

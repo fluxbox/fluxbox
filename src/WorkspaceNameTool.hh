@@ -64,7 +64,7 @@ private:
     /// Called when workspace changed on \c screen
     void updateForScreen(BScreen &screen);
 
-    void renderTheme(unsigned char alpha);
+    void renderTheme(int alpha);
     void reRender();
     void updateSizing();
     FbTk::TextButton m_button;

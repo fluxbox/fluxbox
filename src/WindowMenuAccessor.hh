@@ -37,7 +37,9 @@ public:
 
     operator Ret() const {
         FluxboxWindow *fbwin = FbMenu::window();
-        return fbwin ? (fbwin->*m_getter)() : m_def;
+        if (fbwin)
+            return (Ret)(fbwin->*m_getter)();
+        return m_def;
     }
     FbTk::Accessor<Ret> &operator =(const Ret &val) {
         FluxboxWindow *fbwin = FbMenu::window();

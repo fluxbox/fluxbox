@@ -41,8 +41,8 @@ public:
     // textures
     const FbTk::Texture &texture() const { return *m_texture; }
     const FbTk::BorderTheme &border() const { return m_border; }
-    unsigned char alpha() const { return m_alpha; }
-    void setAlpha(unsigned char alpha) { m_alpha = alpha; }
+    int alpha() const { return m_alpha; }
+    void setAlpha(int alpha) { m_alpha = alpha; }
 
     virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
     virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
@@ -56,7 +56,7 @@ protected:
 private:
     FbTk::ThemeItem<FbTk::Texture> m_texture;
     FbTk::BorderTheme m_border;
-    unsigned char m_alpha;
+    int m_alpha;
 };
 
 #endif // TOOLTHEME_HH

@@ -78,7 +78,7 @@ FocusControl::FocusControl(BScreen &screen):
     m_focused_list(screen), m_creation_order_list(screen),
     m_focused_win_list(screen), m_creation_order_win_list(screen),
     m_cycling_list(0),
-    m_was_iconic(false),
+    m_was_iconic(0),
     m_cycling_last(0),
     m_ignore_mouse_x(-1), m_ignore_mouse_y(-1) {
 

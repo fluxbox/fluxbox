@@ -49,7 +49,7 @@ void ButtonTool::updateSizing() {
     btn.setBorderWidth(theme()->border().width());
 }
 
-void ButtonTool::renderTheme(unsigned char alpha) {
+void ButtonTool::renderTheme(int alpha) {
     FbTk::Button &btn = static_cast<FbTk::Button &>(window());
 
     btn.setGC(static_cast<const ButtonTheme &>(*theme()).gc());

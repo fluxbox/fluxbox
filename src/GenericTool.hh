@@ -60,7 +60,7 @@ public:
     const FbTk::FbWindow &window() const { return *m_window; }
 
 protected:
-    virtual void renderTheme(unsigned char alpha);
+    virtual void renderTheme(int alpha);
 
 private:
     void update(FbTk::Subject *subj);

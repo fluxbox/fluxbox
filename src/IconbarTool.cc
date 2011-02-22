@@ -475,7 +475,7 @@ void IconbarTool::updateSizing() {
 
 }
 
-void IconbarTool::renderTheme(unsigned char alpha) {
+void IconbarTool::renderTheme(int alpha) {
 
     m_alpha = alpha;
     renderTheme();

@@ -147,7 +147,7 @@ void WorkspaceNameTool::reRender() {
     }
 }
 
-void WorkspaceNameTool::renderTheme(unsigned char alpha) {
+void WorkspaceNameTool::renderTheme(int alpha) {
     
     m_button.setJustify(m_theme->justify());
     m_button.setBorderWidth(m_theme->border().width());

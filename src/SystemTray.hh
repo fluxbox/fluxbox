@@ -74,7 +74,7 @@ public:
     int numClients() const { return m_clients.size(); }
     const FbTk::FbWindow &window() const { return m_window; }
 
-    void renderTheme(unsigned char alpha) { 
+    void renderTheme(int alpha) { 
         m_window.setBorderWidth(m_theme->border().width());
         m_window.setBorderColor(m_theme->border().color());
         m_window.setAlpha(alpha); 

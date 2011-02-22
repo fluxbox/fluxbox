@@ -54,7 +54,7 @@ public:
 
     // Tools should NOT listen to theme changes - they'll get notified by
     // the toolbar instead. Otherwise there are ordering problems.
-    virtual void renderTheme(unsigned char alpha) = 0;
+    virtual void renderTheme(int alpha) = 0;
 
     // insist implemented, even if blank
     virtual void parentMoved() = 0; // called when moved from hiding

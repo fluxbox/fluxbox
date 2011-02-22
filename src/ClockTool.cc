@@ -334,7 +334,7 @@ void ClockTool::reRender() {
 }
 
 
-void ClockTool::renderTheme(unsigned char alpha) {
+void ClockTool::renderTheme(int alpha) {
     m_button.setAlpha(alpha);
     m_button.setJustify(m_theme->justify());
 

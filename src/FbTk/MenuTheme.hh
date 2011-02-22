@@ -107,7 +107,7 @@ public:
     unsigned int bevelWidth() const { return *m_bevel_width; }
 
     unsigned char alpha() const { return m_alpha; }
-    void setAlpha(unsigned char alpha) { m_alpha = alpha; }
+    void setAlpha(int alpha) { m_alpha = alpha; }
     // this isn't actually a theme item
     // but we'll let it be here for now, until there's a better way to
     // get resources into menu
@@ -154,7 +154,7 @@ private:
     Display *m_display;
     GContext t_text_gc, f_text_gc, u_text_gc, h_text_gc, d_text_gc, hilite_gc;
 
-    unsigned char m_alpha;
+    int m_alpha;
     unsigned int m_delay; ///< in msec
     unsigned int m_real_title_height; ///< the calculated item height (from font and menu.titleHeight)
     unsigned int m_real_item_height; ///< the calculated item height (from font and menu.itemHeight)
