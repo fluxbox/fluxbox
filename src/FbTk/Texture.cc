@@ -22,19 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "App.hh"
 #include "Texture.hh"
-
+#include "App.hh"
+#include "StringUtil.hh"
 #include <X11/Xlib.h>
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else
   #include <string.h>
-#endif
-#ifdef HAVE_CCTYPE
-  #include <cctype>
-#else
-  #include <ctype.h>
 #endif
 
 namespace FbTk {
@@ -42,13 +37,9 @@ namespace FbTk {
 void Texture::setFromString(const char * const texture_str) {
     if (texture_str == 0)
         return;
-    int t_len = strlen(texture_str) + 1;
-    char *ts = new char[t_len];
-    strcpy(ts, texture_str);
 
-    // to lower
-    for (size_t byte_pos = 0; byte_pos < strlen(ts); ++byte_pos)
-        ts[byte_pos] = tolower(ts[byte_pos]);
+    const std::string t = FbTk::StringUtil::toLower(texture_str);
+    const char* ts = t.c_str();
 
     if (strstr(ts, "parentrelative")) {
         setType(Texture::PARENTRELATIVE);
@@ -105,8 +96,6 @@ void Texture::setFromString(const char * const texture_str) {
         if (strstr(ts, "tiled"))
             addType(Texture::TILED);
     }
-
-    delete [] ts;
 }
 
 void Texture::calcHiLoColors(int screen_num) {
