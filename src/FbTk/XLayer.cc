@@ -27,6 +27,7 @@
 #include "MultLayers.hh"
 
 #include <iostream>
+#include <numeric>
 
 using std::find;
 using namespace FbTk;
@@ -35,6 +36,67 @@ using namespace FbTk;
 using std::cerr;
 using std::endl;
 #endif // DEBUG
+
+namespace {
+
+int sum_windows(int nr, XLayerItem* item) {
+    return nr + item->numWindows();
+}
+
+int count_windows(const FbTk::XLayer::ItemList& items) {
+    return std::accumulate(items.begin(), items.end(), 0, sum_windows);
+}
+
+
+void extract_windows_to_stack(const XLayerItem::Windows& windows, std::vector<Window>& stack) {
+    XLayerItem::Windows::const_iterator i = windows.begin();
+    XLayerItem::Windows::const_iterator end = windows.end();
+    for (; i != end; ++i) {
+        Window w = (*i)->window();
+        if (w)
+            stack.push_back(w);
+    }
+}
+
+void extract_windows_to_stack(const FbTk::XLayer::ItemList& items, XLayerItem* temp_raised, std::vector<Window>& stack) {
+
+    if (temp_raised) { // add windows that go on top
+        extract_windows_to_stack(temp_raised->getWindows(), stack);
+    }
+
+    FbTk::XLayer::ItemList::const_iterator it = items.begin();
+    FbTk::XLayer::ItemList::const_iterator it_end = items.end();
+    for (; it != it_end; ++it) { // add all the windows from each other item
+        if (*it == temp_raised) {
+            continue;
+        }
+        extract_windows_to_stack((*it)->getWindows(), stack);
+    }
+}
+
+void restack(const FbTk::XLayer::ItemList& items, XLayerItem* temp_raised) {
+
+    std::vector<Window> stack;
+    extract_windows_to_stack(items, temp_raised, stack);
+
+    if (!stack.empty())
+        XRestackWindows(FbTk::App::instance()->display(), &stack[0], stack.size());
+}
+
+} // end of anonymous namespace
+
+
+void XLayer::restack(const std::vector<XLayer*>& layers) {
+
+    std::vector<Window> stack;
+    std::vector<XLayer*>::const_iterator l;
+    for (l = layers.begin(); l != layers.end(); ++l) {
+        extract_windows_to_stack((*l)->getItemList(), 0, stack);
+    }
+
+    if (!stack.empty())
+        XRestackWindows(FbTk::App::instance()->display(), &stack[0], stack.size());
+}
 
 XLayer::XLayer(MultLayers &manager, int layernum):
     m_manager(manager), m_layernum(layernum), m_needs_restack(false) {
@@ -45,76 +107,18 @@ XLayer::~XLayer() {
 }
 
 void XLayer::restack() {
-    if (!m_manager.isUpdatable())
-        return;
-
-    int num_windows = countWindows();
-
-    // each LayerItem can contain several windows
-    iterator it = itemList().begin();
-    iterator it_end = itemList().end();
-    Window *winlist = new Window[num_windows];
-    size_t j=0;
-
-    // add all the windows from each item
-    for (; it != it_end; ++it) {
-        XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
-        XLayerItem::Windows::const_iterator wit_end = (*it)->getWindows().end();
-        for (; wit != wit_end; ++wit) {
-            if ((*wit)->window())
-                winlist[j++] = (*wit)->window();
-        }
+    if (m_manager.isUpdatable()) {
+        ::restack(itemList(), 0);
+        m_needs_restack = false;
     }
-
-    XRestackWindows(FbTk::App::instance()->display(), winlist, j);
-
-    delete [] winlist;
-
-    m_needs_restack = false;
 }
 
 void XLayer::restackAndTempRaise(XLayerItem &item) {
-    int num_windows = countWindows();
-
-    // each LayerItem can contain several windows
-    iterator it = itemList().begin();
-    iterator it_end = itemList().end();
-    Window *winlist = new Window[num_windows];
-    size_t j=0;
-
-    // add windows that go on top
-    XLayerItem::Windows::const_iterator wit = item.getWindows().begin();
-    XLayerItem::Windows::const_iterator wit_end = item.getWindows().end();
-    for (; wit != wit_end; ++wit) {
-        if ((*wit)->window())
-            winlist[j++] = (*wit)->window();
-    }
-
-    // add all the windows from each other item
-    for (; it != it_end; ++it) {
-        if (*it == &item)
-            continue;
-        wit = (*it)->getWindows().begin();
-        wit_end = (*it)->getWindows().end();
-        for (; wit != wit_end; ++wit) {
-            if ((*wit)->window())
-                winlist[j++] = (*wit)->window();
-        }
-    }
-
-    XRestackWindows(FbTk::App::instance()->display(), winlist, j);
-
-    delete [] winlist;
+    ::restack(itemList(), &item);
 }
 
 int XLayer::countWindows() {
-    int num_windows = 0;
-    iterator it = itemList().begin();
-    iterator it_end = itemList().end();
-    for (; it != it_end; ++it) {
-        num_windows += (*it)->numWindows();
-    }
-    return num_windows;
+    return ::count_windows(itemList());
 }
 
 
@@ -132,28 +136,17 @@ void XLayer::stackBelowItem(XLayerItem &item, XLayerItem *above) {
         return;
     }
 
-    Window *winlist;
-    size_t winnum = 1, size = item.numWindows()+1;
+    std::vector<Window> stack;
 
     // We do have a window to stack below
     // so we put it on top, and fill the rest of the array with the ones to go below it.
-    winlist = new Window[size];
     // assume that above's window exists
-    winlist[0] = above->getWindows().back()->window();
+    stack.push_back(above->getWindows().back()->window());
 
     // fill the rest of the array
-    XLayerItem::Windows::iterator it = item.getWindows().begin();
-    XLayerItem::Windows::iterator it_end = item.getWindows().end();
-    for (; it != it_end; ++it) {
-        if ((*it)->window())
-            winlist[winnum++] = (*it)->window();
-    }
+    extract_windows_to_stack(item.getWindows(), stack);
 
-    // stack the windows
-    XRestackWindows(FbTk::App::instance()->display(), winlist, winnum);
-
-    delete [] winlist;
-
+    XRestackWindows(FbTk::App::instance()->display(), &stack[0], stack.size());
 }
 
 // We can't just use Restack here, because it won't do anything if they're

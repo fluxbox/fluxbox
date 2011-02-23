@@ -68,6 +68,8 @@ public:
     void lowerLayer(XLayerItem &item);
     void moveToLayer(XLayerItem &item, int layernum);
 
+    static void restack(const std::vector<XLayer*>& layers);
+
 private:
     void restack();
     void restackAndTempRaise(XLayerItem &item);

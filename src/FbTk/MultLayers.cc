@@ -114,28 +114,7 @@ void MultLayers::restack() {
     if (!isUpdatable())
         return;
 
-    int layernum=0, winnum=0, size = this->size();
-
-    Window *winlist = new Window[size];
-    for (layernum=0; layernum < static_cast<signed>(m_layers.size()); layernum++) {
-
-        XLayer::ItemList::iterator it = m_layers[layernum]->getItemList().begin();
-        XLayer::ItemList::iterator it_end = m_layers[layernum]->getItemList().end();
-
-        // add all windows from each layeritem in each layer
-        for (; it != it_end; ++it) {
-            XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
-            XLayerItem::Windows::const_iterator wit_end = (*it)->getWindows().end();
-            for (; wit != wit_end; ++wit) {
-                if ((*wit)->window())
-                    winlist[winnum++] = (*wit)->window();
-            }
-        }
-    }
-
-    XRestackWindows(FbTk::App::instance()->display(), winlist, winnum);
-
-    delete [] winlist;
+    XLayer::restack(m_layers);
 }
 
 int MultLayers::size() {
