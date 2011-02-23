@@ -75,6 +75,7 @@
 #include <iterator>
 #include <typeinfo>
 #include <functional>
+#include <algorithm>
 
 using std::string;
 using std::pair;

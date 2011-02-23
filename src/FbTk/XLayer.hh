@@ -23,7 +23,7 @@
 #ifndef FBTK_XLAYER_HH
 #define FBTK_XLAYER_HH
 
-#include "Layer.hh"
+#include <vector>
 #include <list>
 
 namespace FbTk {
@@ -31,7 +31,7 @@ namespace FbTk {
 class MultLayers;
 class XLayerItem;
 
-class XLayer : public FbTk::LayerBase<XLayerItem, std::list<XLayerItem *> > {
+class XLayer {
 public:
 
     XLayer(MultLayers &manager, int layernum);
@@ -49,8 +49,8 @@ public:
     int countWindows();
     void stackBelowItem(XLayerItem &item, XLayerItem *above);
     XLayerItem *getLowestItem();
-    const ItemList &getItemList() const { return itemList(); }
-    ItemList &getItemList() { return itemList(); }
+    const ItemList &itemList() const { return m_items; }
+    ItemList &itemList() { return m_items; }
 
     // we redefine these as XLayer has special optimisations, and X restacking needs
     iterator insert(XLayerItem &item, unsigned int pos=0);
@@ -77,6 +77,7 @@ private:
     MultLayers &m_manager;
     int m_layernum;
     bool m_needs_restack;
+    ItemList m_items;
 };
 
 } // namespace FbTk

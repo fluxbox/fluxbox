@@ -31,6 +31,7 @@
 #include "FbTk/MemFun.hh"
 
 #include <vector>
+#include <algorithm>
 
 #ifdef HAVE_CSTRING
   #include <cstring>

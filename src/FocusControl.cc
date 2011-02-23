@@ -34,6 +34,7 @@
 
 #include <string>
 #include <iostream>
+#include <algorithm>
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else

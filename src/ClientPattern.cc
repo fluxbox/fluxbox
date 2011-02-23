@@ -42,6 +42,7 @@
 #include <fstream>
 #include <string>
 #include <memory>
+#include <algorithm>
 #ifdef HAVE_CSTDIO
   #include <cstdio>
 #else

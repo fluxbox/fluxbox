@@ -54,6 +54,7 @@
 #include "FbTk/Transparent.hh"
 
 #include <iostream>
+#include <algorithm>
 
 using std::cerr;
 using std::endl;

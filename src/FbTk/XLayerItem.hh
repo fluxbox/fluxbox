@@ -23,17 +23,17 @@
 #ifndef FBTK_XLAYERITEM_HH
 #define FBTK_XLAYERITEM_HH
 
-#include "LayerItem.hh"
 #include "XLayer.hh"
 #include "NotCopyable.hh"
+#include <vector>
 
 namespace FbTk {
 
 class FbWindow;
 
-class XLayerItem : public LayerItem, private NotCopyable {
+class XLayerItem : private NotCopyable {
 public:
-    typedef std::list<FbWindow *> Windows;
+    typedef std::vector<FbWindow *> Windows;
 
     XLayerItem(FbWindow &win, XLayer &layer);
     ~XLayerItem();

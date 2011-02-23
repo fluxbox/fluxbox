@@ -27,9 +27,9 @@
 #include "MultLayers.hh"
 
 #include <iostream>
+#include <algorithm>
 #include <numeric>
 
-using std::find;
 using namespace FbTk;
 
 #ifdef DEBUG
@@ -91,7 +91,7 @@ void XLayer::restack(const std::vector<XLayer*>& layers) {
     std::vector<Window> stack;
     std::vector<XLayer*>::const_iterator l;
     for (l = layers.begin(); l != layers.end(); ++l) {
-        extract_windows_to_stack((*l)->getItemList(), 0, stack);
+        extract_windows_to_stack((*l)->itemList(), 0, stack);
     }
 
     if (!stack.empty())
@@ -160,7 +160,7 @@ void XLayer::alignItem(XLayerItem &item) {
     // Note: some other things effectively assume that the window list is
     // sorted from highest to lowest
     // get our item
-    iterator myit = find(itemList().begin(), itemList().end(), &item);
+    iterator myit = std::find(itemList().begin(), itemList().end(), &item);
     iterator it = myit;
 
     // go to the one above it in our layer (top is front, so we decrement)
@@ -211,7 +211,8 @@ void XLayer::raise(XLayerItem &item) {
         return; // nothing to do
     }
 
-    iterator it = find(itemList().begin(), itemList().end(), &item);
+
+    iterator it = std::find(itemList().begin(), itemList().end(), &item);
     if (it != itemList().end())
         itemList().erase(it);
     else {
@@ -232,7 +233,7 @@ void XLayer::tempRaise(XLayerItem &item) {
     if (!m_needs_restack && &item == itemList().front())
         return; // nothing to do
 
-    iterator it = find(itemList().begin(), itemList().end(), &item);
+    iterator it = std::find(itemList().begin(), itemList().end(), &item);
     if (it == itemList().end()) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): WARNING: raise on item not in layer["<<m_layernum<<"]"<<endl;
@@ -258,7 +259,7 @@ void XLayer::lower(XLayerItem &item) {
         return; // nothing to do
     }
 
-    iterator it = find(itemList().begin(), itemList().end(), &item);
+    iterator it = std::find(itemList().begin(), itemList().end(), &item);
     if (it != itemList().end())
         // remove this item
         itemList().erase(it);

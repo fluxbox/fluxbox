@@ -23,11 +23,13 @@
 #include "XLayerItem.hh"
 #include "XLayer.hh"
 
+#include <algorithm>
+
 using namespace FbTk;
 
 XLayerItem::XLayerItem(FbWindow &win, XLayer &layer) :
     m_layer(&layer) {
-    m_windows.push_front(&win);
+    m_windows.push_back(&win);
     m_layer->insert(*this);
 }
 
@@ -78,15 +80,15 @@ void XLayerItem::addWindow(FbWindow &win) {
 }
 
 void XLayerItem::removeWindow(FbWindow &win) {
-  // I'd like to think we can trust ourselves that it won't be added twice...
-  // Otherwise we're always scanning through the list.
+    // I'd like to think we can trust ourselves that it won't be added twice...
+    // Otherwise we're always scanning through the list.
 
-  XLayerItem::Windows::iterator it = std::find(m_windows.begin(), m_windows.end(), &win);
-  if (it != m_windows.end())
-      m_windows.erase(it);
+    XLayerItem::Windows::iterator it = std::find(m_windows.begin(), m_windows.end(), &win);
+    if (it != m_windows.end())
+        m_windows.erase(it);
 }
 
 void XLayerItem::bringToTop(FbWindow &win) {
-  removeWindow(win);
-  addWindow(win);
+    removeWindow(win);
+    addWindow(win);
 }
