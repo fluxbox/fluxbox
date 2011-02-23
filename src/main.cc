@@ -277,7 +277,7 @@ static void parseOptions(int argc, char** argv, Options& opts) {
             }
         } else if (arg == "-version" || arg == "-v" || arg == "--version") {
             // print current version string
-            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2010 Fluxbox Team " << endl << endl;
+            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2011 Fluxbox Team " << endl << endl;
             exit(EXIT_SUCCESS);
         } else if (arg == "-log" || arg == "--log") {
             if (++i >= argc) {
