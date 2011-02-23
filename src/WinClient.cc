@@ -129,6 +129,9 @@ WinClient::~WinClient() {
     fbdbg<<__FILE__<<"(~"<<__FUNCTION__<<")[this="<<this<<"]"<<endl;
 
     FbTk::EventManager::instance()->remove(window());
+    Fluxbox *fluxbox = Fluxbox::instance();
+    if (window())
+        fluxbox->removeWindowSearch(window());
 
     clearStrut();
 
@@ -160,8 +163,6 @@ WinClient::~WinClient() {
     removeTransientFromWaitingList();
     s_transient_wait.erase(window());
 
-    Fluxbox *fluxbox = Fluxbox::instance();
-
     if (window_group != 0) {
         fluxbox->removeGroupSearch(window_group);
         window_group = 0;
@@ -170,8 +171,6 @@ WinClient::~WinClient() {
     if (m_mwm_hint != 0)
         XFree(m_mwm_hint);
 
-    if (window())
-        fluxbox->removeWindowSearch(window());
 }
 
 bool WinClient::acceptsFocus() const {
