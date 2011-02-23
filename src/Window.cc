@@ -1887,6 +1887,8 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
 
     int head = screen().getHead(menu_x, menu_y);
 
+    menu().updateMenu(); // recalculate the menu size
+
     // move menu directly under titlebar but not off the screen
     if (menu_y < static_cast<signed>(screen().maxTop(head)))
         menu_y = screen().maxTop(head);
@@ -1901,7 +1903,6 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
     FbMenu::setWindow(this);
     menu().move(menu_x, menu_y);
     menu().show();
-    menu().raise();
     menu().grabInputFocus();
 }
 
