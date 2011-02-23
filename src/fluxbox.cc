@@ -465,7 +465,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
 Fluxbox::~Fluxbox() {
 
     // this needs to be destroyed before screens; otherwise, menus stored in
-    // key commands cause a segfault when the XLayerItem is destroyed
+    // key commands cause a segfault when the LayerItem is destroyed
     m_key.reset(0);
 
     leaveAll(); // leave all connections

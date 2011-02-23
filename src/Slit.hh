@@ -37,7 +37,7 @@
 #include "FbTk/FbWindow.hh"
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
-#include "FbTk/XLayerItem.hh"
+#include "FbTk/LayerItem.hh"
 #include "FbTk/Signal.hh"
 
 #include <X11/Xutil.h>
@@ -69,7 +69,7 @@ public:
         RIGHTBOTTOM, RIGHTCENTER, RIGHTTOP
     };
 
-    Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
+    Slit(BScreen &screen, FbTk::Layer &layer, const char *filename = 0);
     virtual ~Slit();
 
     void show() { frame.window.show(); m_visible = true; }
@@ -178,7 +178,7 @@ private:
     // for KDE
     Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
 
-    std::auto_ptr<FbTk::XLayerItem> m_layeritem;
+    std::auto_ptr<FbTk::LayerItem> m_layeritem;
     std::auto_ptr<SlitTheme> m_slit_theme;
     static unsigned int s_eventmask;
     Strut *m_strut;

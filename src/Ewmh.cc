@@ -34,8 +34,8 @@
 #include "FbTk/App.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/I18n.hh"
-#include "FbTk/XLayerItem.hh"
-#include "FbTk/XLayer.hh"
+#include "FbTk/LayerItem.hh"
+#include "FbTk/Layer.hh"
 #include "FbTk/FbPixmap.hh"
 
 #include <X11/Xproto.h>
@@ -1205,8 +1205,8 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             above_win == winclient) // this would be very wrong :)
             return true;
 
-        FbTk::XLayerItem &below_item = winclient->fbwindow()->layerItem();
-        FbTk::XLayerItem &above_item = above_win->fbwindow()->layerItem();
+        FbTk::LayerItem &below_item = winclient->fbwindow()->layerItem();
+        FbTk::LayerItem &above_item = above_win->fbwindow()->layerItem();
 
         // this might break the transient_for layering
 

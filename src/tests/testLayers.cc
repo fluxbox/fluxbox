@@ -7,8 +7,8 @@
 #include "Color.hh"
 #include "EventManager.hh"
 #include <iostream>
-#include "XLayer.hh"
-#include "XLayerItem.hh"
+#include "Layer.hh"
+#include "LayerItem.hh"
 #include "MultLayers.hh"
 
 using namespace FbTk;
@@ -87,26 +87,26 @@ int main() {
     Display *disp = app.display();
     XEvent event;
     MultLayers *ml = new MultLayers(3);
-    XLayerItem *item_red = new XLayerItem(win_red.window());
+    LayerItem *item_red = new XLayerItem(win_red.window());
     item_red->addWindow(win_redB.window());
-    XLayerItem *item_green = new XLayerItem(win_green.window());
-    XLayerItem *item_blue = new XLayerItem(win_blue.window());
+    LayerItem *item_green = new LayerItem(win_green.window());
+    LayerItem *item_blue = new LayerItem(win_blue.window());
 
     ml->addToTop(*item_blue, 0);
     ml->addToTop(*item_green, 0);
     ml->addToTop(*item_red, 0);
 
-    XLayerItem *item_red2 = new XLayerItem(win_red2.window());
-    XLayerItem *item_green2 = new XLayerItem(win_green2.window());
-    XLayerItem *item_blue2 = new XLayerItem(win_blue2.window());
+    LayerItem *item_red2 = new LayerItem(win_red2.window());
+    LayerItem *item_green2 = new LayerItem(win_green2.window());
+    LayerItem *item_blue2 = new LayerItem(win_blue2.window());
 
     ml->addToTop(*item_blue2, 1);
     ml->addToTop(*item_green2, 1);
     ml->addToTop(*item_red2, 1);
 
-    XLayerItem *item_red3 = new XLayerItem(win_red3.window());
-    XLayerItem *item_green3 = new XLayerItem(win_green3.window());
-    XLayerItem *item_blue3 = new XLayerItem(win_blue3.window());
+    LayerItem *item_red3 = new LayerItem(win_red3.window());
+    LayerItem *item_green3 = new LayerItem(win_green3.window());
+    LayerItem *item_blue3 = new LayerItem(win_blue3.window());
 
     ml->addToTop(*item_blue3, 2);
     ml->addToTop(*item_green3, 2);

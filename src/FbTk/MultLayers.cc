@@ -21,8 +21,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "MultLayers.hh"
-#include "XLayer.hh"
-#include "XLayerItem.hh"
+#include "Layer.hh"
+#include "LayerItem.hh"
 #include "App.hh"
 #include "FbWindow.hh"
 
@@ -34,7 +34,7 @@ MultLayers::MultLayers(int numlayers) :
     m_lock(0)
 {
     for (int i=0; i < numlayers; ++i)
-        m_layers.push_back(new XLayer(*this, i));
+        m_layers.push_back(new Layer(*this, i));
 }
 
 MultLayers::~MultLayers() {
@@ -45,19 +45,19 @@ MultLayers::~MultLayers() {
 }
 
 
-XLayerItem *MultLayers::getLowestItemAboveLayer(int layernum) {
+LayerItem *MultLayers::getLowestItemAboveLayer(int layernum) {
     if (layernum >= static_cast<signed>(m_layers.size()) || layernum <= 0)
         return 0;
 
     layernum--; // next one up
-    XLayerItem *item = 0;
+    LayerItem *item = 0;
     while (layernum >= 0 && (item = m_layers[layernum]->getLowestItem()) == 0)
         layernum--;
     return item;
 
 }
 
-void MultLayers::addToTop(XLayerItem &item, int layernum) {
+void MultLayers::addToTop(LayerItem &item, int layernum) {
     layernum = FbTk::Util::clamp(layernum, 0, static_cast<signed>(m_layers.size()) - 1);
     m_layers[layernum]->insert(item);
     restack();
@@ -65,7 +65,7 @@ void MultLayers::addToTop(XLayerItem &item, int layernum) {
 
 
 // raise the whole layer
-void MultLayers::raise(XLayer &layer) {
+void MultLayers::raise(Layer &layer) {
     int layernum = layer.getLayerNum();
     if (layernum >= static_cast<signed>(m_layers.size() - 1))
         // already on top
@@ -75,7 +75,7 @@ void MultLayers::raise(XLayer &layer) {
 }
 
 // lower the whole layer
-void MultLayers::lower(XLayer &layer) {
+void MultLayers::lower(Layer &layer) {
     int layernum = layer.getLayerNum();
     if (layernum == 0)
         // already on bottom
@@ -85,22 +85,22 @@ void MultLayers::lower(XLayer &layer) {
 }
 
 /* raise the item one level */
-void MultLayers::raiseLayer(XLayerItem &item) {
+void MultLayers::raiseLayer(LayerItem &item) {
     // get the layer it is in
-    XLayer &curr_layer = item.getLayer();
+    Layer &curr_layer = item.getLayer();
     moveToLayer(item, curr_layer.getLayerNum()-1);
 }
 
 /* raise the item one level */
-void MultLayers::lowerLayer(XLayerItem &item) {
+void MultLayers::lowerLayer(LayerItem &item) {
     // get the layer it is in
-    XLayer &curr_layer = item.getLayer();
+    Layer &curr_layer = item.getLayer();
     moveToLayer(item, curr_layer.getLayerNum()+1);
 }
 
-void MultLayers::moveToLayer(XLayerItem &item, int layernum) {
+void MultLayers::moveToLayer(LayerItem &item, int layernum) {
     // get the layer it is in
-    XLayer &curr_layer = item.getLayer();
+    Layer &curr_layer = item.getLayer();
 
     // do nothing if the item already is in the requested layer
     if (curr_layer.getLayerNum() == layernum)
@@ -114,7 +114,7 @@ void MultLayers::restack() {
     if (!isUpdatable())
         return;
 
-    XLayer::restack(m_layers);
+    Layer::restack(m_layers);
 }
 
 int MultLayers::size() {
@@ -125,13 +125,13 @@ int MultLayers::size() {
     return num;
 }
 
-XLayer *MultLayers::getLayer(size_t num) {
+Layer *MultLayers::getLayer(size_t num) {
     if (num >= m_layers.size())
         return 0;
     return m_layers[num];
 }
 
-const XLayer *MultLayers::getLayer(size_t num) const {
+const Layer *MultLayers::getLayer(size_t num) const {
     if (num >= m_layers.size())
         return 0;
     return m_layers[num];

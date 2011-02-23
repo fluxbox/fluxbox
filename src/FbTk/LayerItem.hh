@@ -1,7 +1,7 @@
-// LayerItem.hh for fluxbox 
+// LayerItem.hh for FbTk - fluxbox toolkit
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -20,20 +20,60 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef FBTK_LAYERITEM_HH
-#define FBTK_LAYERITEM_HH
+#ifndef FBTK_XLAYERITEM_HH
+#define FBTK_XLAYERITEM_HH
+
+#include "Layer.hh"
+#include "NotCopyable.hh"
+#include <vector>
 
 namespace FbTk {
 
-/// pure interface class, an item in layer
-class LayerItem {
-public:
-    virtual ~LayerItem() { }
+class FbWindow;
 
-    virtual void raise() = 0;
-    virtual void lower() = 0;
+class LayerItem : private NotCopyable {
+public:
+    typedef std::vector<FbWindow *> Windows;
+
+    LayerItem(FbWindow &win, Layer &layer);
+    ~LayerItem();
+
+    void setLayer(Layer &layer);
+
+    void raise();
+    void lower();
+    void tempRaise(); // this raise gets reverted by a restack()
+
+    // send to next layer up
+    void raiseLayer();
+    void lowerLayer();
+    void moveToLayer(int layernum);
+
+    // this is needed for step and cycle functions
+    // (you need to know the next one visible, otherwise nothing may appear to happen)
+    // not yet implemented
+    bool visible() const { return true; } 
+
+    const Layer &getLayer() const { return *m_layer; }
+    Layer &getLayer() { return *m_layer; }
+    int getLayerNum() { return m_layer->getLayerNum(); }
+
+    // an LayerItem holds several windows that are equivalent in a layer 
+    // (i.e. if one is raised, then they should all be).
+    void addWindow(FbWindow &win);
+    void removeWindow(FbWindow &win);
+
+    // using this you can bring one window to the top of this item (equivalent to add then remove)
+    void bringToTop(FbWindow &win);
+
+    Windows &getWindows() { return m_windows; }
+    size_t numWindows() const { return m_windows.size(); }
+
+private:
+    Layer *m_layer;
+    Windows m_windows;
 };
 
-} // end namespace FbTk
+}
 
-#endif // FBTK_LAYERITEM_HH
+#endif // FBTK_XLAYERITEM_HH

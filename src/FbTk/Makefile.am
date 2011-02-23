@@ -40,8 +40,8 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Button.hh Button.cc \
 	TextButton.hh TextButton.cc \
 	Container.hh Container.cc \
-	Layer.hh LayerItem.hh MultLayers.cc MultLayers.hh \
-	XLayer.cc XLayer.hh XLayerItem.cc XLayerItem.hh \
+	MultLayers.cc MultLayers.hh \
+	Layer.cc Layer.hh LayerItem.cc LayerItem.hh \
 	Resource.hh Resource.cc \
 	StringUtil.hh StringUtil.cc Parser.hh Parser.cc \
 	RegExp.hh RegExp.cc \

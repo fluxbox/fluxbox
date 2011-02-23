@@ -64,7 +64,7 @@ class LayerMenu : public ToggleMenu {
 public:
     LayerMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
               FbTk::ImageControl &imgctrl,
-              FbTk::XLayer &layer, LayerObject *item, bool save_rc);
+              FbTk::Layer &layer, LayerObject *item, bool save_rc);
     void show();
 };
 

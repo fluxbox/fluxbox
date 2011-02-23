@@ -27,7 +27,7 @@
 #include "FbTk/RefCount.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/Color.hh"
-#include "FbTk/XLayerItem.hh"
+#include "FbTk/LayerItem.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/DefaultValue.hh"
 #include "FbTk/Container.hh"
@@ -50,7 +50,7 @@ namespace FbTk {
 class ImageControl;
 template <class T> class Command;
 class Texture;
-class XLayer;
+class Layer;
 }
 
 /// holds a window frame with a client window
@@ -231,8 +231,8 @@ public:
     unsigned int buttonHeight() const;
     bool externalTabMode() const { return m_tabmode == EXTERNAL && m_use_tabs; }
 
-    const FbTk::XLayerItem &layerItem() const { return m_layeritem; }
-    FbTk::XLayerItem &layerItem() { return m_layeritem; }
+    const FbTk::LayerItem &layerItem() const { return m_layeritem; }
+    FbTk::LayerItem &layerItem() { return m_layeritem; }
 
     const FbTk::Subject &frameExtentSig() const { return m_frame_extent_sig; }
     FbTk::Subject &frameExtentSig() { return m_frame_extent_sig; }
@@ -310,7 +310,7 @@ private:
     //@{
     FbTk::FbWindow m_window; ///< base window that holds each decorations (ie titlebar, handles)
     // want this deleted before the windows in it
-    FbTk::XLayerItem m_layeritem;
+    FbTk::LayerItem m_layeritem;
 
     FbTk::FbWindow m_titlebar; ///<  titlebar window
     FbTk::Container m_tab_container; ///< Holds tabs

@@ -33,7 +33,7 @@
 #include "Window.hh"
 
 AlphaMenu::AlphaMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
-                     FbTk::ImageControl &imgctrl, FbTk::XLayer &layer):
+                     FbTk::ImageControl &imgctrl, FbTk::Layer &layer):
     ToggleMenu(tm, imgctrl, layer)
 {
 

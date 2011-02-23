@@ -25,7 +25,7 @@
 #include <memory>
 
 #include "FbTk/Menu.hh"
-#include "FbTk/XLayerItem.hh"
+#include "FbTk/LayerItem.hh"
 #include "FbTk/AutoReloadHelper.hh"
 
 class FluxboxWindow;
@@ -38,7 +38,7 @@ class MenuTheme;
 class FbMenu:public FbTk::Menu {
 public:
     FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm, FbTk::ImageControl &imgctrl,
-           FbTk::XLayer &layer);
+           FbTk::Layer &layer);
     virtual ~FbMenu() { }
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
@@ -53,7 +53,7 @@ public:
     static FluxboxWindow *window() { return s_window; }
 
 private:
-    FbTk::XLayerItem m_layeritem;
+    FbTk::LayerItem m_layeritem;
     std::auto_ptr<FbTk::AutoReloadHelper> m_reloader;
     static FluxboxWindow *s_window;
 };

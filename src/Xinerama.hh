@@ -63,7 +63,7 @@ template <typename ItemType>
 class XineramaHeadMenu : public ToggleMenu {
 public:
     XineramaHeadMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm, BScreen &screen,
-                     FbTk::ImageControl &imgctrl, FbTk::XLayer &layer,
+                     FbTk::ImageControl &imgctrl, FbTk::Layer &layer,
                      ItemType &item, const FbTk::FbString & title = "");
     void reloadHeads();
 
@@ -76,7 +76,7 @@ private:
 template <typename ItemType>
 XineramaHeadMenu<ItemType>::XineramaHeadMenu(
         FbTk::ThemeProxy<FbTk::MenuTheme> &tm, BScreen &screen,
-        FbTk::ImageControl &imgctrl, FbTk::XLayer &layer, ItemType &item,
+        FbTk::ImageControl &imgctrl, FbTk::Layer &layer, ItemType &item,
         const FbTk::FbString & title):
     ToggleMenu(tm, imgctrl, layer),
     m_object(item), m_screen(screen)

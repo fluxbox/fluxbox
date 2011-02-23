@@ -30,7 +30,7 @@
 
 LayerMenu::LayerMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
                      FbTk::ImageControl &imgctrl,
-                     FbTk::XLayer &layer, LayerObject *object, bool save_rc):
+                     FbTk::Layer &layer, LayerObject *object, bool save_rc):
     ToggleMenu(tm, imgctrl, layer) {
     _FB_USES_NLS;
 

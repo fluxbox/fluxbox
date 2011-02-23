@@ -27,34 +27,34 @@
 
 namespace FbTk {
 
-class XLayerItem;
-class XLayer;
+class LayerItem;
+class Layer;
 
 class MultLayers {
 public:
     explicit MultLayers(int numlayers);
     ~MultLayers();
-    XLayerItem *getLowestItemAboveLayer(int layernum);
+    LayerItem *getLowestItemAboveLayer(int layernum);
 
     /// if there are none below, it will return null
-    XLayerItem *getItemBelow(XLayerItem &item);
-    XLayerItem *getItemAbove(XLayerItem &item);
-    void addToTop(XLayerItem &item, int layernum);
-    void remove(XLayerItem &item);
+    LayerItem *getItemBelow(LayerItem &item);
+    LayerItem *getItemAbove(LayerItem &item);
+    void addToTop(LayerItem &item, int layernum);
+    void remove(LayerItem &item);
 
     // raise/lower the whole layer
-    void raise(XLayer &layer);
-    void lower(XLayer &layer);
+    void raise(Layer &layer);
+    void lower(Layer &layer);
 
     // raise/lower the item a whole layer, not just to top of current layer
-    void raiseLayer(XLayerItem &item);
-    void lowerLayer(XLayerItem &item);
+    void raiseLayer(LayerItem &item);
+    void lowerLayer(LayerItem &item);
 
-    void moveToLayer(XLayerItem &item, int layernum);
+    void moveToLayer(LayerItem &item, int layernum);
     int  size();
 
-    XLayer *getLayer(size_t num);
-    const XLayer *getLayer(size_t num) const;
+    Layer *getLayer(size_t num);
+    const Layer *getLayer(size_t num) const;
 
     bool isUpdatable() const { return m_lock == 0; }
     void lock() { ++m_lock; }
@@ -63,7 +63,7 @@ public:
 private:
     void restack();
 
-    std::vector<XLayer *> m_layers;
+    std::vector<Layer *> m_layers;
     int m_lock;
 };
 

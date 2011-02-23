@@ -31,7 +31,7 @@
 class ToggleMenu: public FbMenu {
 public:
     ToggleMenu(class FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
-               FbTk::ImageControl &imgctrl, FbTk::XLayer &layer):
+               FbTk::ImageControl &imgctrl, FbTk::Layer &layer):
         FbMenu(tm, imgctrl, layer) { }
 
     virtual ~ToggleMenu() {}

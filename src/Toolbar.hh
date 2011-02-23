@@ -37,8 +37,8 @@
 
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
-#include "FbTk/XLayer.hh"
-#include "FbTk/XLayerItem.hh"
+#include "FbTk/Layer.hh"
+#include "FbTk/LayerItem.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/Signal.hh"
@@ -74,7 +74,7 @@ public:
     };
 
     /// Create a toolbar on the screen with specific width
-    Toolbar(BScreen &screen, FbTk::XLayer &layer, size_t width = 200);
+    Toolbar(BScreen &screen, FbTk::Layer &layer, size_t width = 200);
 
     virtual ~Toolbar();
 
@@ -102,7 +102,7 @@ public:
     void reconfigure();
     void setPlacement(Placement where);
 
-    int layerNumber() const { return const_cast<FbTk::XLayerItem &>(m_layeritem).getLayerNum(); }
+    int layerNumber() const { return const_cast<FbTk::LayerItem &>(m_layeritem).getLayerNum(); }
 
     const FbTk::Menu &menu() const { return m_toolbarmenu; }
     FbTk::Menu &menu() { return m_toolbarmenu; }
@@ -164,7 +164,7 @@ private:
 
     FbTk::Timer m_hide_timer; ///< timer to for auto hide toolbar
 
-    FbTk::XLayerItem m_layeritem; ///< layer item, must be declared before layermenu
+    FbTk::LayerItem m_layeritem; ///< layer item, must be declared before layermenu
     LayerMenu m_layermenu;
     FbMenu m_placementmenu, m_toolbarmenu;
 #ifdef XINERAMA

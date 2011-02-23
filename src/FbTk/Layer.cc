@@ -1,4 +1,4 @@
-// XLayer.cc for FbTk - fluxbox toolkit
+// Layer.cc for FbTk - fluxbox toolkit
 // Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
@@ -20,8 +20,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "XLayer.hh"
-#include "XLayerItem.hh"
+#include "Layer.hh"
+#include "LayerItem.hh"
 #include "App.hh"
 #include "FbWindow.hh"
 #include "MultLayers.hh"
@@ -39,18 +39,18 @@ using std::endl;
 
 namespace {
 
-int sum_windows(int nr, XLayerItem* item) {
+int sum_windows(int nr, LayerItem* item) {
     return nr + item->numWindows();
 }
 
-int count_windows(const FbTk::XLayer::ItemList& items) {
+int count_windows(const FbTk::Layer::ItemList& items) {
     return std::accumulate(items.begin(), items.end(), 0, sum_windows);
 }
 
 
-void extract_windows_to_stack(const XLayerItem::Windows& windows, std::vector<Window>& stack) {
-    XLayerItem::Windows::const_iterator i = windows.begin();
-    XLayerItem::Windows::const_iterator end = windows.end();
+void extract_windows_to_stack(const LayerItem::Windows& windows, std::vector<Window>& stack) {
+    LayerItem::Windows::const_iterator i = windows.begin();
+    LayerItem::Windows::const_iterator end = windows.end();
     for (; i != end; ++i) {
         Window w = (*i)->window();
         if (w)
@@ -58,14 +58,14 @@ void extract_windows_to_stack(const XLayerItem::Windows& windows, std::vector<Wi
     }
 }
 
-void extract_windows_to_stack(const FbTk::XLayer::ItemList& items, XLayerItem* temp_raised, std::vector<Window>& stack) {
+void extract_windows_to_stack(const FbTk::Layer::ItemList& items, LayerItem* temp_raised, std::vector<Window>& stack) {
 
     if (temp_raised) { // add windows that go on top
         extract_windows_to_stack(temp_raised->getWindows(), stack);
     }
 
-    FbTk::XLayer::ItemList::const_iterator it = items.begin();
-    FbTk::XLayer::ItemList::const_iterator it_end = items.end();
+    FbTk::Layer::ItemList::const_iterator it = items.begin();
+    FbTk::Layer::ItemList::const_iterator it_end = items.end();
     for (; it != it_end; ++it) { // add all the windows from each other item
         if (*it == temp_raised) {
             continue;
@@ -74,7 +74,7 @@ void extract_windows_to_stack(const FbTk::XLayer::ItemList& items, XLayerItem* t
     }
 }
 
-void restack(const FbTk::XLayer::ItemList& items, XLayerItem* temp_raised) {
+void restack(const FbTk::Layer::ItemList& items, LayerItem* temp_raised) {
 
     std::vector<Window> stack;
     extract_windows_to_stack(items, temp_raised, stack);
@@ -86,10 +86,10 @@ void restack(const FbTk::XLayer::ItemList& items, XLayerItem* temp_raised) {
 } // end of anonymous namespace
 
 
-void XLayer::restack(const std::vector<XLayer*>& layers) {
+void Layer::restack(const std::vector<Layer*>& layers) {
 
     std::vector<Window> stack;
-    std::vector<XLayer*>::const_iterator l;
+    std::vector<Layer*>::const_iterator l;
     for (l = layers.begin(); l != layers.end(); ++l) {
         extract_windows_to_stack((*l)->itemList(), 0, stack);
     }
@@ -98,32 +98,32 @@ void XLayer::restack(const std::vector<XLayer*>& layers) {
         XRestackWindows(FbTk::App::instance()->display(), &stack[0], stack.size());
 }
 
-XLayer::XLayer(MultLayers &manager, int layernum):
+Layer::Layer(MultLayers &manager, int layernum):
     m_manager(manager), m_layernum(layernum), m_needs_restack(false) {
 }
 
-XLayer::~XLayer() {
+Layer::~Layer() {
 
 }
 
-void XLayer::restack() {
+void Layer::restack() {
     if (m_manager.isUpdatable()) {
         ::restack(itemList(), 0);
         m_needs_restack = false;
     }
 }
 
-void XLayer::restackAndTempRaise(XLayerItem &item) {
+void Layer::restackAndTempRaise(LayerItem &item) {
     ::restack(itemList(), &item);
 }
 
-int XLayer::countWindows() {
+int Layer::countWindows() {
     return ::count_windows(itemList());
 }
 
 
 // Stack all windows associated with 'item' below the 'above' item
-void XLayer::stackBelowItem(XLayerItem &item, XLayerItem *above) {
+void Layer::stackBelowItem(LayerItem &item, LayerItem *above) {
     if (!m_manager.isUpdatable())
         return;
 
@@ -151,7 +151,7 @@ void XLayer::stackBelowItem(XLayerItem &item, XLayerItem *above) {
 
 // We can't just use Restack here, because it won't do anything if they're
 // already in the same relative order excluding other windows
-void XLayer::alignItem(XLayerItem &item) {
+void Layer::alignItem(LayerItem &item) {
     if (itemList().front() == &item) {
         stackBelowItem(item, m_manager.getLowestItemAboveLayer(m_layernum));
         return;
@@ -178,11 +178,11 @@ void XLayer::alignItem(XLayerItem &item) {
 
 }
 
-XLayer::iterator XLayer::insert(XLayerItem &item, unsigned int pos) {
+Layer::iterator Layer::insert(LayerItem &item, unsigned int pos) {
 #ifdef DEBUG
     // at this point we don't support insertions into a layer other than at the top
     if (pos != 0)
-        cerr<<__FILE__<<"("<<__LINE__<<"): Insert using non-zero position not valid in XLayer"<<endl;
+        cerr<<__FILE__<<"("<<__LINE__<<"): Insert using non-zero position not valid in Layer"<<endl;
 #endif // DEBUG
 
     itemList().push_front(&item);
@@ -191,7 +191,7 @@ XLayer::iterator XLayer::insert(XLayerItem &item, unsigned int pos) {
     return itemList().begin();
 }
 
-void XLayer::remove(XLayerItem &item) {
+void Layer::remove(LayerItem &item) {
     iterator it = itemList().begin();
     iterator it_end = itemList().end();
     for (; it != it_end; ++it) {
@@ -202,7 +202,7 @@ void XLayer::remove(XLayerItem &item) {
     }
 }
 
-void XLayer::raise(XLayerItem &item) {
+void Layer::raise(LayerItem &item) {
     // assume it is already in this layer
 
     if (&item == itemList().front()) {
@@ -227,7 +227,7 @@ void XLayer::raise(XLayerItem &item) {
 
 }
 
-void XLayer::tempRaise(XLayerItem &item) {
+void Layer::tempRaise(LayerItem &item) {
     // assume it is already in this layer
 
     if (!m_needs_restack && &item == itemList().front())
@@ -249,7 +249,7 @@ void XLayer::tempRaise(XLayerItem &item) {
     m_needs_restack = true;
 }
 
-void XLayer::lower(XLayerItem &item) {
+void Layer::lower(LayerItem &item) {
     // assume already in this layer
 
     // is it already the lowest?
@@ -288,20 +288,20 @@ void XLayer::lower(XLayerItem &item) {
     stackBelowItem(item, *it);
 }
 
-void XLayer::raiseLayer(XLayerItem &item) {
+void Layer::raiseLayer(LayerItem &item) {
     m_manager.raiseLayer(item);
 }
 
-void XLayer::lowerLayer(XLayerItem &item) {
+void Layer::lowerLayer(LayerItem &item) {
     m_manager.lowerLayer(item);
 }
 
-void XLayer::moveToLayer(XLayerItem &item, int layernum) {
+void Layer::moveToLayer(LayerItem &item, int layernum) {
     m_manager.moveToLayer(item, layernum);
 }
 
 
-XLayerItem *XLayer::getLowestItem() {
+LayerItem *Layer::getLowestItem() {
     if (itemList().empty())
         return 0;
     else

@@ -72,7 +72,7 @@ class OSDWindow;
 namespace FbTk {
 class Menu;
 class ImageControl;
-class XLayerItem;
+class LayerItem;
 class FbWindow;
 class Subject;
 }
@@ -386,7 +386,7 @@ public:
 
     TooltipWindow& tooltipWindow() { return *m_tooltip_window; }
 
-    void setLayer(FbTk::XLayerItem &item, int layernum);
+    void setLayer(FbTk::LayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
 
     /// updates root window size and resizes/reconfigures screen clients

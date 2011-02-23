@@ -30,7 +30,7 @@
 #include "FbTk/Subject.hh"
 #include "FbTk/Observer.hh"
 #include "FbTk/EventHandler.hh"
-#include "FbTk/XLayerItem.hh"
+#include "FbTk/LayerItem.hh"
 #include "FbTk/Signal.hh"
 
 #include "FbWinFrame.hh"
@@ -55,7 +55,7 @@ namespace FbTk {
 class TextButton;
 class MenuTheme;
 class ImageControl;
-class XLayer;
+class Layer;
 }
 
 /// Creates the window frame and handles any window event for it
@@ -403,8 +403,8 @@ public:
 
     bool isTyping() const;
 
-    const FbTk::XLayerItem &layerItem() const { return m_frame.layerItem(); }
-    FbTk::XLayerItem &layerItem() { return m_frame.layerItem(); }
+    const FbTk::LayerItem &layerItem() const { return m_frame.layerItem(); }
+    FbTk::LayerItem &layerItem() { return m_frame.layerItem(); }
 
     Window clientWindow() const;
 

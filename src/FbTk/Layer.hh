@@ -1,7 +1,7 @@
 // Layer.hh for FbTk - fluxbox toolkit
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -20,92 +20,66 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef FBTK_LAYERTEMPLATE_HH
-#define FBTK_LAYERTEMPLATE_HH
+#ifndef FBTK_XLAYER_HH
+#define FBTK_XLAYER_HH
 
 #include <vector>
-#include <algorithm>
+#include <list>
 
 namespace FbTk {
 
-template <typename ItemType, typename Container = std::vector<ItemType *> >
-class LayerBase {
+class MultLayers;
+class LayerItem;
+
+class Layer {
 public:
-    typedef Container ListType;
-    typedef typename Container::iterator iterator;
-    typedef typename Container::reverse_iterator reverse_iterator;
-    virtual ~LayerBase() { }
-    /// insert in top by default
-    virtual iterator insert(ItemType &item, unsigned int pos=0);
-    /// remove item from list
-    virtual void remove(ItemType &item);
-    /// move item to top
-    virtual void raise(ItemType &item);
-    /// move item to bottom
-    virtual void lower(ItemType &item);
-    /// @return number of elements in layer
-    size_t size() const { return m_list.size(); }
-    /// @return layer list
-    const ListType &itemList() const { return m_list; }
-    /// @return layer list
-    ListType &itemList() { return m_list; }
-protected:
-    virtual void restack();
+
+    Layer(MultLayers &manager, int layernum);
+    ~Layer();
+
+    typedef std::list<LayerItem *> ItemList;
+    typedef std::list<LayerItem *>::iterator iterator;
+
+    //typedef std::list<LayerItem *>::reverse_iterator reverse_iterator;
+
+    void setLayerNum(int layernum) { m_layernum = layernum; };
+    int  getLayerNum() { return m_layernum; };
+    // Put all items on the same layer (called when layer item added to)
+    void alignItem(LayerItem &item);
+    int countWindows();
+    void stackBelowItem(LayerItem &item, LayerItem *above);
+    LayerItem *getLowestItem();
+    const ItemList &itemList() const { return m_items; }
+    ItemList &itemList() { return m_items; }
+
+    // we redefine these as Layer has special optimisations, and X restacking needs
+    iterator insert(LayerItem &item, unsigned int pos=0);
+    void remove(LayerItem &item);
+
+    // bring to top of layer
+    void raise(LayerItem &item);
+    void lower(LayerItem &item);
+
+    // raise it, but don't make it permanent (i.e. restack will revert)
+    void tempRaise(LayerItem &item);
+
+    // send to next layer up
+    void raiseLayer(LayerItem &item);
+    void lowerLayer(LayerItem &item);
+    void moveToLayer(LayerItem &item, int layernum);
+
+    static void restack(const std::vector<Layer*>& layers);
+
 private:
-    ListType m_list;
+    void restack();
+    void restackAndTempRaise(LayerItem &item);
+
+    MultLayers &m_manager;
+    int m_layernum;
+    bool m_needs_restack;
+    ItemList m_items;
 };
 
-template <typename ItemType, typename Container>
-typename Container::iterator LayerBase<ItemType, Container>::insert(ItemType &item, unsigned int position) {
-    // make sure we don't alreay have it in the list
-    if (std::find(itemList().begin(), itemList().end(), &item) != itemList().end())
-        return m_list.end();
+} // namespace FbTk
 
-    if (position > size())
-        position = size();
-
-    iterator it = m_list.begin();
-
-    for (unsigned int i=0; i<position; ++it, ++i)
-        continue;
-
-    m_list.insert(it, &item);
-    restack();
-    return it++;
-}
-
-
-template <typename ItemType, typename Container>
-void LayerBase<ItemType, Container>::remove(ItemType &item) {
-    iterator it = std::find(itemList().begin(), itemList().end(), &item);
-    if (it != itemList().end())
-        m_list.erase(it);
-}
-
-template <typename ItemType, typename Container>
-void LayerBase<ItemType, Container>::raise(ItemType &item) {
-    if (&item == itemList().front()) // already at the bottom
-        return;
-    remove(item);
-    insert(item, 0);
-    restack();
-}
-
-template <typename ItemType, typename Container>
-void LayerBase<ItemType, Container>::lower(ItemType &item) {
-    if (&item == itemList().back()) // already at the bottom
-        return;
-    remove(item);
-    insert(item, size());
-    restack();
-}
-
-template <typename ItemType, typename Container>
-void LayerBase<ItemType, Container>::restack() {
-}
-
-
-} // end namespace FbTk
-
-
-#endif // FBTK_LAYERTEMPLATE_HH
+#endif // FBTK_XLAYER_HH

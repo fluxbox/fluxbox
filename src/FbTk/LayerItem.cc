@@ -1,4 +1,4 @@
-// XLayerItem.cc for FbTk - fluxbox toolkit
+// LayerItem.cc for FbTk - fluxbox toolkit
 // Copyright (c) 2003 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
@@ -20,25 +20,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "XLayerItem.hh"
-#include "XLayer.hh"
+#include "LayerItem.hh"
+#include "Layer.hh"
 
 #include <algorithm>
 
 using namespace FbTk;
 
-XLayerItem::XLayerItem(FbWindow &win, XLayer &layer) :
+LayerItem::LayerItem(FbWindow &win, Layer &layer) :
     m_layer(&layer) {
     m_windows.push_back(&win);
     m_layer->insert(*this);
 }
 
 
-XLayerItem::~XLayerItem() {
+LayerItem::~LayerItem() {
     m_layer->remove(*this);
 }
 
-void XLayerItem::setLayer(XLayer &layer) {
+void LayerItem::setLayer(Layer &layer) {
     // make sure we don't try to set the same layer
     if (m_layer == &layer)
         return;
@@ -48,47 +48,47 @@ void XLayerItem::setLayer(XLayer &layer) {
     m_layer->insert(*this);
 }
 
-void XLayerItem::raise() {
+void LayerItem::raise() {
     m_layer->raise(*this); 
 }
 
-void XLayerItem::lower() {
+void LayerItem::lower() {
     m_layer->lower(*this);
 }
 
-void XLayerItem::tempRaise() {
+void LayerItem::tempRaise() {
     m_layer->tempRaise(*this); 
 }
 
-void XLayerItem::raiseLayer() {
+void LayerItem::raiseLayer() {
     m_layer->raiseLayer(*this); 
 }
 
-void XLayerItem::lowerLayer() {
+void LayerItem::lowerLayer() {
     m_layer->lowerLayer(*this);
 }
 
-void XLayerItem::moveToLayer(int layernum) {
+void LayerItem::moveToLayer(int layernum) {
     m_layer->moveToLayer(*this, layernum);
 }
 
-void XLayerItem::addWindow(FbWindow &win) {
+void LayerItem::addWindow(FbWindow &win) {
     // I'd like to think we can trust ourselves that it won't be added twice...
     // Otherwise we're always scanning through the list.
     m_windows.push_back(&win);
     m_layer->alignItem(*this);
 }
 
-void XLayerItem::removeWindow(FbWindow &win) {
+void LayerItem::removeWindow(FbWindow &win) {
     // I'd like to think we can trust ourselves that it won't be added twice...
     // Otherwise we're always scanning through the list.
 
-    XLayerItem::Windows::iterator it = std::find(m_windows.begin(), m_windows.end(), &win);
+    LayerItem::Windows::iterator it = std::find(m_windows.begin(), m_windows.end(), &win);
     if (it != m_windows.end())
         m_windows.erase(it);
 }
 
-void XLayerItem::bringToTop(FbWindow &win) {
+void LayerItem::bringToTop(FbWindow &win) {
     removeWindow(win);
     addWindow(win);
 }

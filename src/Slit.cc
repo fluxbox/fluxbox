@@ -46,7 +46,7 @@
 #include "FbCommands.hh"
 #include "Layer.hh"
 #include "LayerMenu.hh"
-#include "FbTk/XLayer.hh"
+#include "FbTk/Layer.hh"
 #include "RootTheme.hh"
 #include "FbMenu.hh"
 
@@ -218,7 +218,7 @@ private:
 unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
                                  EnterWindowMask | LeaveWindowMask | ExposureMask;
 
-Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
+Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     : m_hidden(false), m_visible(false),
       m_screen(scr),
       m_clientlist_menu(scr.menuTheme(),
@@ -292,7 +292,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
         frame.window.setAlpha(*m_rc_alpha);
     }
 
-    m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
+    m_layeritem.reset(new FbTk::LayerItem(frame.window, layer));
 
     m_layermenu.reset(new LayerMenu(scr.menuTheme(),
                                     scr.imageControl(),

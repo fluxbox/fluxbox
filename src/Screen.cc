@@ -62,7 +62,7 @@
 #include "FbTk/FbWindow.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/MultLayers.hh"
-#include "FbTk/XLayerItem.hh"
+#include "FbTk/LayerItem.hh"
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/ImageControl.hh"
@@ -1794,7 +1794,7 @@ void BScreen::hideGeometry() {
     m_geom_window->hide();
 }
 
-void BScreen::setLayer(FbTk::XLayerItem &item, int layernum) {
+void BScreen::setLayer(FbTk::LayerItem &item, int layernum) {
     m_layermanager.moveToLayer(item, layernum);
 }
 

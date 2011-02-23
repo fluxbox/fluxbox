@@ -181,7 +181,7 @@ Toolbar::Frame::~Frame() {
     evm.remove(window);
 }
 
-Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
+Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     m_hidden(false),
     frame(*this, scrn.screenNumber()),
     m_window_pm(0),
