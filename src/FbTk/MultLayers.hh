@@ -33,7 +33,7 @@ class XLayer;
 class MultLayers {
 public:
     explicit MultLayers(int numlayers);
-    virtual ~MultLayers();
+    ~MultLayers();
     XLayerItem *getLowestItemAboveLayer(int layernum);
 
     /// if there are none below, it will return null
