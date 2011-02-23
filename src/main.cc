@@ -290,7 +290,7 @@ static void parseOptions(int argc, char** argv, Options& opts) {
         } else if (arg == "-help" || arg == "-h" || arg == "--help") {
             // print program usage and command line options
             printf(_FB_CONSOLETEXT(main, Usage,
-                           "Fluxbox %s : (c) %s Henrik Kinnunen\n"
+                           "Fluxbox %s : (c) %s Fluxbox Team\n"
                            "Website: http://www.fluxbox.org/\n\n"
                            "-display <string>\t\tuse display connection.\n"
                            "-screen <all|int,int,int>\trun on specified screens only.\n"
@@ -303,7 +303,7 @@ static void parseOptions(int argc, char** argv, Options& opts) {
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
                            "Main usage string. Please lay it out nicely. There is one %s that is given the version").c_str(),
-                   __fluxbox_version, "2001-2010");
+                   __fluxbox_version, "2001-2011");
             exit(EXIT_SUCCESS);
         } else if (arg == "-info" || arg == "-i" || arg == "--info") {
             showInfo(cout);
