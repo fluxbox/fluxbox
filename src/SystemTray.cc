@@ -279,14 +279,14 @@ unsigned int SystemTray::width() const {
     if (orientation() == FbTk::ROT90 || orientation() == FbTk::ROT270)
         return m_window.width();
 
-    return m_num_visible_clients * (height() - 2 * m_theme->border().width());
+    return m_num_visible_clients * (height() + 2 * m_theme->border().width());
 }
 
 unsigned int SystemTray::height() const {
     if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180)
         return m_window.height();
 
-    return m_num_visible_clients * (width() - 2 * m_theme->border().width());
+    return m_num_visible_clients * (width() + 2 * m_theme->border().width());
 }
 
 unsigned int SystemTray::borderWidth() const {
