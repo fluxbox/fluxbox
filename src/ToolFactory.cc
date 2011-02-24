@@ -63,7 +63,7 @@ ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
                                    "toolbar.clock", "Toolbar.Clock")),
     m_workspace_theme(new WorkspaceNameTheme(screen.screenNumber(), "toolbar.workspace", "Toolbar.Workspace")),
     m_systray_theme(new ButtonTheme(screen.screenNumber(), "toolbar.systray", "Toolbar.Systray",
-                                    "toolbar.clock", "Toolbar.Systray")),
+                                    "toolbar.clock", "Toolbar.Clock")),
     m_iconbar_theme(screen.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar"),
     m_focused_iconbar_theme(screen.screenNumber(), "toolbar.iconbar.focused", "Toolbar.Iconbar.Focused"),
     m_unfocused_iconbar_theme(screen.screenNumber(), "toolbar.iconbar.unfocused", "Toolbar.Iconbar.Unfocused") {
