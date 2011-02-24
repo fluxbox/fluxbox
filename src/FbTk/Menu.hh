@@ -89,6 +89,7 @@ public:
 
     void disableTitle();
     void enableTitle();
+    bool isTitleVisible() const { return m_title_vis; }
 
     void setScreen(int x, int y, int w, int h);
 
