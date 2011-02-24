@@ -103,7 +103,12 @@ int Workspace::removeWindow(FluxboxWindow *w, bool still_alive) {
     if (w == 0)
         return -1;
 
-    if (w->isFocused() && still_alive)
+    // if w is focused and alive, remove the focus ... except if it
+    // is a transient window. removing the focus from such a window
+    // leads in a wild race between BScreen::reassociateWindow(),
+    // BScreen::changeWorkspaceID(), FluxboxWindow::focus() etc. which
+    // finally leads to crash.
+    if (w->isFocused() && !w->isTransient() && still_alive)
         FocusControl::unfocusWindow(w->winClient(), true, true);
 
     m_windowlist.remove(w);
