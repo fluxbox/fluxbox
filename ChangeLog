@@ -1,7 +1,40 @@
  (Format: Year/Month/Day)
 
 Changes for 1.3.1
+
+*11/02/24:
+    * Bugfix: place WindowMenu correctly upon first call, closes #2731524 (Mathias)
+      Window.cc
+    * Code cleanup (Mathias)
+      WorkspaceMenu.cc FbCommands.cc IconbarTool.cc ScreenPlacement.{cc,hh}
+      Slit.cc ToolFactory.cc Toolbar.cc Window.cc IconButton.cc
+
+*11/02/23:
+    * Bugfix: possible crash when getting an Unmap before a FocusIn event (Henrik)
+      WinClient.cc
+    * Code cleanup (Mathias)
+      FbTk/MultLayers.cc FbTk/XLayer.{cc,hh} FbTk/Layer.{cc,hh} FbTk/LayerItem.{cc,hh}
+      FocusControl.{cc,hh} MenuCreator.cc Toolbar.cc
+
+*11/02/22:
+    * Bugfix: crash for Textures with dimension == 0, closes #3188223 (Mathias)
+      FbTk/TextureRender.cc FbTk/FbPixmap.cc
+    * Bugfix: render 'sunken' Textures correctly (Mathias)
+      FbTk/TextureRender.cc
+    * Bugfix: AlphaMenu did not show correct alpha values (#3187373) (Mathias)
+      g++ -Os triggered strange conflict with returning 'int' values from an
+      'unsigned char' function. Changed fluxbox to hold alpha values as ints.
+    * General code cleanup (Mathias)
+      AlphaMenu.{cc,hh} 
+      FbTk/Texture.{hh,cc} FbTk/ThemeItems.cc FbTk/TextureRender.{cc,hh}
+
+*11/02/21:
+    * Better option for 'feh' when keeping aspect ration (thanks Jeremiah Mahler)
+      util/fbsetbg
+
 *11/02/20:
+    * Bugfix: possible crash if m_holder == 0 (Henrik)
+      FbTk/Slot.hh
     * Spelling fixes (thanks Paul)
 
 -----------------------------
