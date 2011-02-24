@@ -35,32 +35,21 @@
 
 #include "FbTk/CommandParser.hh"
 #include "Screen.hh"
+#include "ScreenPlacement.hh"
 #include "Toolbar.hh"
 #include "fluxbox.hh"
-
-#include <utility>
 
 namespace {
 class ShowMenuAboveToolbar: public FbTk::Command<void> {
 public:
     explicit ShowMenuAboveToolbar(Toolbar &tbar):m_tbar(tbar) { }
     void execute() {
-        // get last button pos
-        const XEvent &event = Fluxbox::instance()->lastEvent();
-        int head = m_tbar.screen().getHead(event.xbutton.x_root, event.xbutton.y_root);
-        std::pair<int, int> m = 
-            m_tbar.screen().clampToHead( head,
-                                         event.xbutton.x_root - (m_tbar.menu().width() / 2),
-                                         event.xbutton.y_root - (m_tbar.menu().height() / 2),
-                                         m_tbar.menu().width(),
-                                         m_tbar.menu().height());
-        m_tbar.menu().setScreen(m_tbar.screen().getHeadX(head),
-                                m_tbar.screen().getHeadY(head),
-                                m_tbar.screen().getHeadWidth(head),
-                                m_tbar.screen().getHeadHeight(head));
-        m_tbar.menu().move(m.first, m.second);
-        m_tbar.menu().show();
-        m_tbar.menu().grabInputFocus();
+
+        const XEvent& e= Fluxbox::instance()->lastEvent();
+
+        m_tbar.screen()
+            .placementStrategy()
+            .placeAndShowMenu(m_tbar.menu(), e.xbutton.x_root, e.xbutton.y_root, false);
     }
 private:
     Toolbar &m_tbar;

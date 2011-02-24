@@ -30,6 +30,8 @@
 #include "Screen.hh"
 #include "Window.hh"
 
+#include "FbTk/Menu.hh"
+
 #include <iostream>
 #include <exception>
 #ifdef HAVE_CSTRING
@@ -51,7 +53,8 @@ ScreenPlacement::ScreenPlacement(BScreen &screen):
                        screen.name()+".windowPlacement", 
                        screen.altName()+".WindowPlacement"),
     m_old_policy(ROWSMARTPLACEMENT),
-    m_strategy(0)
+    m_strategy(0),
+    m_screen(screen)
 {
 }
 
@@ -128,7 +131,51 @@ bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
     return true;
 }
 
+bool ScreenPlacement::placeAndShowMenu(FbTk::Menu& menu, int x, int y, bool respect_struts) {
 
+    int head = m_screen.getHead(x, y);
+
+    menu.setScreen(m_screen.getHeadX(head),
+        m_screen.getHeadY(head),
+        m_screen.getHeadWidth(head),
+        m_screen.getHeadHeight(head));
+
+    menu.updateMenu(); // recalculate the size
+
+    x = x - (menu.width() / 2);
+    if (menu.isTitleVisible())
+        y = y - (menu.titleWindow().height() / 2);
+
+    // adjust (x, y) to fit on the screen
+    if (!respect_struts) {
+
+        int bw = 2 * menu.fbwindow().borderWidth();
+        std::pair<int, int> pos = m_screen.clampToHead(head, x, y, menu.width() + bw, menu.height() + bw);
+        x = pos.first;
+        y = pos.second;
+
+    } else { // do not cover toolbar if no title
+
+        int top = static_cast<signed>(m_screen.maxTop(head));
+        int bottom = static_cast<signed>(m_screen.maxBottom(head));
+        int left = static_cast<signed>(m_screen.maxLeft(head));
+        int right = static_cast<signed>(m_screen.maxRight(head));
+
+        if (y < top)
+            y = top;
+        else if (y + static_cast<signed>(menu.height()) >= bottom)
+            y = bottom - menu.height() - 1 - menu.fbwindow().borderWidth();
+
+        if (x < left)
+            x = left;
+        else if (x + static_cast<signed>(menu.width()) >= right)
+            x = right - static_cast<int>(menu.width()) - 1;
+    }
+
+    menu.move(x, y);
+    menu.show();
+    menu.grabInputFocus();
+}
 
 ////////////////////// Placement Resources
 namespace FbTk {

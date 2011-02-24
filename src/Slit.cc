@@ -34,6 +34,7 @@
 #endif // HAVE_CONFIG_H
 
 #include "Screen.hh"
+#include "ScreenPlacement.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/EventManager.hh"
@@ -952,21 +953,8 @@ void Slit::buttonPressEvent(XButtonEvent &be) {
 
     if (be.button == Button3) {
         if (! m_slitmenu.isVisible()) {
-            int head = screen().getHead(be.x_root, be.y_root);
-            int borderw = m_slitmenu.fbwindow().borderWidth();
-            pair<int, int> m = screen().clampToHead(head,
-                    be.x_root - (m_slitmenu.width() / 2),
-                    be.y_root - (m_slitmenu.titleWindow().height() / 2),
-                    m_slitmenu.width() + 2*borderw,
-                    m_slitmenu.height() + 2*borderw);
-
-            m_slitmenu.setScreen(screen().getHeadX(head),
-                                 screen().getHeadY(head),
-                                 screen().getHeadWidth(head),
-                                 screen().getHeadHeight(head));
-            m_slitmenu.move(m.first, m.second);
-            m_slitmenu.show();
-            m_slitmenu.grabInputFocus();
+            screen().placementStrategy()
+                .placeAndShowMenu(m_slitmenu, be.x_root, be.y_root, false);
         } else
             m_slitmenu.hide();
     }

@@ -33,6 +33,7 @@
 #include "fluxbox.hh"
 #include "Keys.hh"
 #include "Screen.hh"
+#include "ScreenPlacement.hh"
 #include "WindowCmd.hh"
 
 #include "Strut.hh"
@@ -520,22 +521,9 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
     if (be.button != 3)
         return;
 
-    int head = screen().getHead(be.x_root, be.y_root);
-    int borderw = menu().fbwindow().borderWidth();
-    pair<int, int> m = screen().clampToHead(head,
-                                            be.x_root - (menu().width() / 2),
-                                            be.y_root - (menu().titleWindow().height() / 2),
-                                            menu().width() + 2*borderw,
-                                            menu().height() + 2*borderw);
-
-    menu().setScreen(screen().getHeadX(head),
-                     screen().getHeadY(head),
-                     screen().getHeadWidth(head),
-                     screen().getHeadHeight(head));
-    menu().move(m.first, m.second);
-    menu().show();
-    menu().grabInputFocus();
-
+    screen()
+        .placementStrategy()
+        .placeAndShowMenu(menu(), be.x_root, be.y_root, false);
 }
 
 void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {

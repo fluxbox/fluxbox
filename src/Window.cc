@@ -1880,30 +1880,14 @@ bool FluxboxWindow::getState() {
 }
 
 /**
-   Show the window menu at pos mx, my
+   Show the window menu at pos x, y
 */
-void FluxboxWindow::showMenu(int menu_x, int menu_y) {
+void FluxboxWindow::showMenu(int x, int y) {
+
     menu().reloadHelper()->checkReload();
-
-    int head = screen().getHead(menu_x, menu_y);
-
-    menu().updateMenu(); // recalculate the menu size
-
-    // move menu directly under titlebar but not off the screen
-    if (menu_y < static_cast<signed>(screen().maxTop(head)))
-        menu_y = screen().maxTop(head);
-    else if (menu_y + menu().height() >= screen().maxBottom(head))
-        menu_y = screen().maxBottom(head) - menu().height() - 1 - menu().fbwindow().borderWidth();
-
-    if (menu_x < static_cast<signed>(screen().maxLeft(head)))
-        menu_x = screen().maxLeft(head);
-    else if (menu_x + static_cast<signed>(menu().width()) >= static_cast<signed>(screen().maxRight(head)))
-        menu_x = screen().maxRight(head) - menu().width() - 1;
-
     FbMenu::setWindow(this);
-    menu().move(menu_x, menu_y);
-    menu().show();
-    menu().grabInputFocus();
+    screen().placementStrategy()
+        .placeAndShowMenu(menu(), x, y, true);
 }
 
 void FluxboxWindow::popupMenu(int x, int y) {

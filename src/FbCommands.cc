@@ -22,6 +22,7 @@
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
+#include "ScreenPlacement.hh"
 #include "CommandDialog.hh"
 #include "FocusControl.hh"
 #include "Workspace.hh"
@@ -71,7 +72,7 @@ using std::ios;
 
 namespace {
 
-void showMenu(const BScreen &screen, FbTk::Menu &menu) {
+void showMenu(BScreen &screen, FbTk::Menu &menu) {
 
     // check if menu has changed
     if (typeid(menu) == typeid(FbMenu)) {
@@ -82,36 +83,19 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
 
     FbMenu::setWindow(FocusControl::focusedFbWindow());
 
-    Window root_ret; // not used
-    Window window_ret; // not used
+    Window ignored_w;
+    int ignored_i;
+    unsigned int ignored_ui;
 
-    int rx = 0, ry = 0;
-    int wx, wy; // not used
-    unsigned int mask; // not used
+    int x = 0;
+    int y = 0;
 
     XQueryPointer(menu.fbwindow().display(),
-                  screen.rootWindow().window(), &root_ret, &window_ret,
-                  &rx, &ry, &wx, &wy, &mask);
+                  screen.rootWindow().window(), &ignored_w, &ignored_w,
+                  &x, &y, &ignored_i, &ignored_i, &ignored_ui);
 
-    int borderw = menu.fbwindow().borderWidth();
-    int head = screen.getHead(rx, ry);
-
-    menu.updateMenu();
-    pair<int, int> m =
-        screen.clampToHead(head,
-                           rx - menu.width() / 2,
-                           ry - menu.titleWindow().height() / 2,
-                           menu.width() + 2*borderw,
-                           menu.height() + 2*borderw);
-
-    menu.move(m.first, m.second);
-    menu.setScreen(screen.getHeadX(head),
-                   screen.getHeadY(head),
-                   screen.getHeadWidth(head),
-                   screen.getHeadHeight(head));
-
-    menu.show();
-    menu.grabInputFocus();
+    screen.placementStrategy()
+        .placeAndShowMenu(menu, x, y, false);
 }
 
 }

@@ -212,10 +212,8 @@ public:
     explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
     void execute() {
         // get last button pos
-        const XEvent &event = Fluxbox::instance()->lastEvent();
-        int x = event.xbutton.x_root - (m_win.menu().width() / 2);
-        int y = event.xbutton.y_root - (m_win.menu().height() / 2);
-        m_win.popupMenu(x, y);
+        const XEvent &e = Fluxbox::instance()->lastEvent();
+        m_win.popupMenu(e.xbutton.x_root, e.xbutton.y_root);
     }
 private:
     FluxboxWindow &m_win;

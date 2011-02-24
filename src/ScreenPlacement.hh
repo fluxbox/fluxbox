@@ -27,6 +27,9 @@
 
 #include <memory>
 
+namespace FbTk {
+    class Menu;
+}
 class BScreen;
 
 /**
@@ -65,6 +68,9 @@ public:
     bool placeWindow(const FluxboxWindow &window, int head,
                      int &place_x, int &place_y);
 
+    // places and show 'menu' at 'x','y'
+    bool placeAndShowMenu(FbTk::Menu& menu, int x, int y, bool respect_struts);
+
     RowDirection rowDirection() const { return *m_row_direction; }
     ColumnDirection colDirection() const { return *m_col_direction; }
 
@@ -75,6 +81,7 @@ private:
     PlacementPolicy m_old_policy; ///< holds old policy, used to determine if resources has changed
     std::auto_ptr<PlacementStrategy> m_strategy; ///< main strategy
     std::auto_ptr<PlacementStrategy> m_fallback_strategy; ///< a fallback strategy if the main strategy fails
+    BScreen& m_screen;
 };
 
 #endif // SCREENPLACEMENT_HH
