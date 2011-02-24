@@ -2455,7 +2455,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     frame().height() + 2*frame().window().borderWidth()-1);
         }
 
-        if (moved_x && screen().isWorkspaceWarping()) {
+        if (moved_x && screen().isWorkspaceWarping() && !isTransient() ) {
             unsigned int cur_id = screen().currentWorkspaceID();
             unsigned int new_id = cur_id;
             const int warpPad = screen().getEdgeSnapThreshold();
