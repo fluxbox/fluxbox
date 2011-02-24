@@ -1409,8 +1409,9 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
     } else if (ignore_sticky || ! w->isStuck()) {
         // fresh windows have workspaceNumber == -1, which leads to
         // an invalid workspace (unsigned int)
-        if (getWorkspace(w->workspaceNumber()))
-            getWorkspace(w->workspaceNumber())->removeWindow(w, true);
+        Workspace* ws = getWorkspace(w->workspaceNumber());
+        if (ws)
+            ws->removeWindow(w, true);
         getWorkspace(wkspc_id)->addWindow(*w);
     }
 }
