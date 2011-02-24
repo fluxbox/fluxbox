@@ -31,10 +31,6 @@
 #include "FbTk/EventManager.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/TextUtils.hh"
-#include "FbTk/MacroCommand.hh"
-#include "FbTk/Menu.hh"
-#include "FbTk/RefCount.hh"
-#include "FbTk/SimpleCommand.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
