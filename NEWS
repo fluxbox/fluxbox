@@ -1,33 +1,18 @@
-Here are some of the new features and bug fixes in this release.
-For a more complete list and detailed description of them see the documention
-and ChangeLog.
+This is mostly a bug fix release. For a more complete list and detailed
+description of them see the documention and ChangeLog.
 
-News in 1.3.0:
-    * Added support for bidirectional text, #2801836.
-    * Allow to override 'Focus New Windows' via .fluxbox/apps
-    * New actions:
-      * ActivateTab
-      * ArrangeWindowsVertical
-    * New 'MoveN' and 'ClickN' action support for keys file
-    * New focus model 'StrictMouseFocus'. This will affect focus when
-      closing, moving, lowering windows, changing desktops, etc, whereas the
-      'MouseFocus' model will only change focus when you move the mouse.
-    * New "background: unset" property for use in overlays.
-    * Allowing relative paths for background images in style files.
-    * Allowing matching screen number in ClientPattern.
-    * Removed rootcommand from init, as fbsetbg is run automatically nowadays.
-    * Removed line style resources from init file.
+Critical Bugfixes in 1.3.1:
+    * Fix for not hiding submenus if menuDelay is set.
+    * Fix crash when moving transient windows (Dialogs) between Workspaces,
+      #3088856.
+    * Fix crash when SystemTray was rotated 90/270°, #3188223.
+    * Fix potential crash when gettting an UnmapEvent before a FocusEvent.
+    * Fix potential crash on accessing NULL-pointer.
 
-Bug fixes:
-    * Fixed issues with round corners on restart, #2110455.
-    * Fix for flickering of shaped windows, #2131548 and #2001027.
-    * Key file parsing error for MacroCmd with unterminated {...} pairs.
-    * Empty submenus lead to misfunction of the 'HideMenus' command
-    * Fixed so fluxbox-update_configs does not wipe out keys file
-    * Fixed placement bug of maximized windows when moved out of a xinerama
-      screen.
-    * Handle result of DisplayString() correctly, #3136775.
-    * Prevent SIGFPE when using nxserver, #2813828.
-
+Other Bugfixes:
+    * Fix wrong width calculation of Systemtray, #3150939.
+    * Fix initial placement of WindowMenu, #2731524.
+    * Fix incorrectly shown alpha values in Menus, #3187373.
+    * Fix render 'sunken' Textures correctly.
 
 
