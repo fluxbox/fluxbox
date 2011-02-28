@@ -1,7 +1,6 @@
 # doc/Makefile.am for Fluxbox 0.9  - an X11 Window manager
 # Makefile.am for fluxbox/doc
 
-SUBDIRS = ru
 CLEANFILES = fluxbox.1 fbrun.1 fbsetbg.1 fbsetroot.1 startfluxbox.1 fluxbox-apps.5 \
 	fluxbox-keys.5 fluxbox-menu.5 fluxbox-remote.1 fluxbox-style.5
 MAINTAINERCLEANFILES = Makefile.in
