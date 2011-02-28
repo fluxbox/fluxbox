@@ -79,11 +79,6 @@ giving fluxbox 1 second to startup.
 For more details on what else you can do in this script, see *sh(1p)*, or the
 documentation for your shell.
 
-ONLINE DOCUMENTATION
---------------------
-More extensive documentation for *startfluxbox(1)* can be found at:::
-http://www.xs4all.nl/~hanb/software/fluxbox/startfluxbox.html
-
 AUTHORS
 -------
 The author of *startfluxbox(1)* is Han Boetes <han at fluxbox.org>

@@ -98,11 +98,6 @@ Recall the last set wallpaper on display *:0.0* with the stored options.
 
 	$ DISPLAY=:0.0 fbsetbg -l
 
-ONLINE DOCUMENTATION
---------------------
-Much more extensive documentation for *fbsetbg(1)* is provided on:::
-http://www.xs4all.nl/~hanb/software/fbsetbg/fbsetbg.html
-
 BUGS
 ----
 *fbsetbg(1)* is not foolproof.
