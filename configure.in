@@ -733,7 +733,6 @@ data/styles/carp/Makefile
 data/styles/bloe/Makefile
 data/styles/bloe/pixmaps/Makefile
 doc/Makefile
-doc/ru/Makefile
 nls/Makefile
 nls/C/Makefile
 nls/be_BY/Makefile
