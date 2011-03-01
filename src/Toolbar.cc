@@ -101,8 +101,8 @@ const ToolbarPlacementString placement_strings[] = {
     { Toolbar::LEFTBOTTOM, "LeftBottom" },
     { Toolbar::LEFTCENTER, "LeftCenter" },
     { Toolbar::LEFTTOP, "LeftTop" },
-    { Toolbar::RIGHTCENTER, "RightCenter" },
     { Toolbar::RIGHTBOTTOM, "RightBottom" },
+    { Toolbar::RIGHTCENTER, "RightCenter" },
     { Toolbar::RIGHTTOP, "RightTop" }
 };
 
@@ -115,8 +115,8 @@ string FbTk::Resource<Toolbar::Placement>::
 getString() const {
 
     size_t i = (m_value == FbTk::Util::clamp(m_value, Toolbar::TOPLEFT, Toolbar::RIGHTTOP)
-                ? m_value 
-                : Toolbar::DEFAULT) - 1;
+                ? m_value
+                : Toolbar::DEFAULT) - Toolbar::TOPLEFT;
     return placement_strings[i].str;
 }
 
