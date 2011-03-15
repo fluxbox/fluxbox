@@ -52,15 +52,17 @@ public:
             return;
 
         // this MenuItem object can get destroyed as a result of focus(), so we
-        // must get a local copy of the parent menu
+        // must get a local copy of anything we want to use here
+        // AFTER ~ClientMenuItem() is called.
         FbTk::Menu *parent = menu();
+        FocusControl& focus_control = m_client.screen().focusControl();
 
         m_client.focus();
         fbwin->raise();
         if ((mods & ControlMask) == 0) {
             // Ignore any focus changes due to this menu closing
             // (even in StrictMouseFocus mode)
-            m_client.screen().focusControl().ignoreAtPointer(true);
+            focus_control.ignoreAtPointer(true);
             parent->hide();
         }
     }
