@@ -1,17 +1,17 @@
 // texturetest.cc a test app for Textures
 // Copyright (c) 2004 - 2006 Henrik Kinnunen (fluxgen at fluxbox dot org)
 
-#include "ImageControl.hh"
-#include "Color.hh"
-#include "GContext.hh"
-#include "FbPixmap.hh"
-#include "Texture.hh"
-#include "FbWindow.hh"
-#include "EventHandler.hh"
-#include "EventManager.hh"
-#include "Theme.hh"
-#include "Font.hh"
-#include "App.hh"
+#include "FbTk/ImageControl.hh"
+#include "FbTk/Color.hh"
+#include "FbTk/GContext.hh"
+#include "FbTk/FbPixmap.hh"
+#include "FbTk/Texture.hh"
+#include "FbTk/FbWindow.hh"
+#include "FbTk/EventHandler.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/Theme.hh"
+#include "FbTk/Font.hh"
+#include "FbTk/App.hh"
 
 #include <stdlib.h>
 #include <string.h>

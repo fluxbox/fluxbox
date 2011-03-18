@@ -1,0 +1,22 @@
+INCLUDES= -I..
+
+noinst_PROGRAMS= \
+	 testTexture \
+	 testFont \
+	 testSignals \
+	 testKeys \
+	 testDemandAttention \
+	 testFullscreen \
+	 testStringUtil
+
+testTexture_SOURCES         = texturetest.cc
+testFont_SOURCES            = testFont.cc
+testSignals_SOURCES         = testSignals.cc
+testKeys_SOURCES            = testKeys.cc
+testDemandAttention_SOURCES = testDemandAttention.cc
+#testResource_SOURCES        = Resourcetest.cc
+testFullscreen_SOURCES      = fullscreentest.cc
+testStringUtil_SOURCES      = StringUtiltest.cc
+
+LDADD=../FbTk/libFbTk.a
+

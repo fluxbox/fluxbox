@@ -19,11 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "StringUtil.hh"
+#include "FbTk/StringUtil.hh"
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif //_GNU_SOURCE
 
+#include <cstring>
+#include <cstdlib>
 #include <vector>
 #include <iostream>
 #include <memory>

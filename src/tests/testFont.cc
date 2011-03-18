@@ -18,19 +18,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "App.hh"
-#include "FbWindow.hh"
-#include "Font.hh"
-#include "EventHandler.hh"
-#include "EventManager.hh"
-#include "GContext.hh"
-#include "Color.hh"
-#include "FbString.hh"
+#include "FbTk/App.hh"
+#include "FbTk/FbWindow.hh"
+#include "FbTk/Font.hh"
+#include "FbTk/EventHandler.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/GContext.hh"
+#include "FbTk/Color.hh"
+#include "FbTk/FbString.hh"
 
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 
 #include <string>
+#include <cstring>
+#include <cstdlib>
 #include <iostream>
 using namespace std;
 

@@ -711,6 +711,7 @@ AC_OUTPUT(Makefile
 version.h
 src/Makefile
 src/FbTk/Makefile
+src/tests/Makefile
 util/Makefile
 util/fbrun/Makefile
 data/Makefile
