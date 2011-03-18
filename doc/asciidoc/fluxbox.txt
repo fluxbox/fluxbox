@@ -74,7 +74,7 @@ OPTIONS
     Starting fluxbox with this option will designate a file in which you
     want to log events to.
 *-rc* 'rcfile'::
-    Use a different config file other than the default *\~/.fluxbox/init*.
+    Use a different config file other than the default *~/.fluxbox/init*.
 *-v*, *-version*::
     The version of fluxbox installed.
 *-screen* all|'scr','scr'...::
@@ -94,7 +94,7 @@ variables that can be set when starting fluxbox. To actually call fluxbox and
 begin using it, you should place ``exec startfluxbox'' in your *\~/.xinitrc* as
 the last executed command. This is assuming that the location of *fluxbox(1)*
 and *startfluxbox(1)* are in your shell's $PATH. Also note that you may need to
-create the *\~/.xinitrc* file or your setup may use *\~/.xsession* instead,
+create the *\~/.xinitrc* file or your setup may use *~/.xsession* instead,
 depending on your X setup. Some X login managers like *gdm(1)* or *kdm(1)* may
 simply provide a ``Fluxbox'' session for you without having to alter any
 settings.
@@ -105,7 +105,7 @@ file location, this is where you can provide a system-wide menu file for your
 users.
 
 On exit or restart, fluxbox will save user defaults in the file
-*\~/.fluxbox/init*. Resources in this file can also be edited by hand, see the
+*~/.fluxbox/init*. Resources in this file can also be edited by hand, see the
 *RESOURCES* section for more details. *fluxbox(1)* also has many tools to edit
 these; look through the main menu once fluxbox has started to find different
 ways of managing your session.
@@ -250,7 +250,7 @@ Keyboard bindings:
 
 - *ALT+Tab* / *ALT+Shift+Tab*: Cycle through windows
 - *WIN+Tab* / *WIN+Shift+Tab*: Cycle through tabs
-- *Win+1* -> *Win+9*: Select the 1st -> 9th tab in the current window
+- *WIN+1* - *WIN+9*: Select the 1st -> 9th tab in the current window
 - *ALT+F1*: Run *xterm(1)* to open a new terminal
 - *ALT+F2*: Run *fbrun(1)* for a small ``run program'' dialog
 - *ALT+F4*: Close the current window
@@ -262,12 +262,12 @@ Keyboard bindings:
 - *CTRL+ALT+Del*: Exit fluxbox (log out)
 - *CTRL+ALT+Left* / *CTRL+ALT+Right*: Go to the previous/next workspace
 - *WIN+Left* / *WIN+Right*: Send the current window to the previous/next
-  workspace, but remain on this workspace
+    workspace, but remain on this workspace
 - *CTRL+WIN+Left* / *CTRL+WIN+Right*: Take the current window to the previous/next
-  workspace, and switch to that workspace
-- *CTRL+F1* -> *CTRL+F12*: Switch to the 1st -> 12th workspace
-- *WIN+F1* -> *WIN+F12*: Send the current window to a specific workspace
-- *CTRL+WIN+F1* -> *CTRL+WIN+F12*: Take the current window to a specific workspace
+    workspace, and switch to that workspace
+- *CTRL+F1* - *CTRL+F12*: Switch to the 1st -> 12th workspace
+- *WIN+F1* - *WIN+F12*: Send the current window to a specific workspace
+- *CTRL+WIN+F1* - *CTRL+WIN+F12*: Take the current window to a specific workspace
 
 MENUS
 -----
@@ -310,7 +310,7 @@ item with the items detailed below:
 
 *User Styles*:::
 	 This is where your custom styles are listed. It will list any styles from
-	 *\~/.fluxbox/styles/*, which may be styles you grab from the Internet, or
+	 *~/.fluxbox/styles/*, which may be styles you grab from the Internet, or
 	 your own custom styles, provided you follow the standards described in
 	 *fluxbox-style(5)*.
 
@@ -741,7 +741,7 @@ The default installation of fluxbox provides some of these style files. See
 Style Overlay
 ~~~~~~~~~~~~~
 In addition to the style file, the overlay file, whose location is specified by
-*session.screen0.styleOverlay* (default: *\~/.fluxbox/overlay*) can be used to
+*session.screen0.styleOverlay* (default: *~/.fluxbox/overlay*) can be used to
 set style resources that override all styles. For more information about which
 parts of fluxbox can be controlled by the overlay file, see *fluxbox-style(5)*.
 
@@ -755,7 +755,7 @@ own; instead they are framed in the slit, and they are always visible in the
 current workspace.
 
 Most dockable applications use the -w option to run in the slit. For example,
-you could put in your *\~/.fluxbox/startup*:
+you could put in your *~/.fluxbox/startup*:
 
 ..............
 bbmail -w &
@@ -803,21 +803,22 @@ All changes take effect immediately. Here are the settings:
 	 slit. You are able to hide apps from the slit by unselecting them in the
 	 list showing. This will not kill the app. You can make them re-appear by
 	 selecting them in the list. The "Save SlitList" option saves the new order
-	 to you slitlist located in *\~/.fluxbox/slitlist*.  See the next section for
+	 to you slitlist located in *~/.fluxbox/slitlist*.  See the next section for
 	 details.
 
 Slitlist File
 ~~~~~~~~~~~~~
 fluxbox's slitlist file is available for those that use dockapps in the slit.
 This file helps fluxbox keep track of the *order* of the dockapps when in the
-slit. The file is generally located at *\~/.fluxbox/slitlist*.
+slit. The file is generally located at *~/.fluxbox/slitlist*.
 
 A simple procedure for getting the slit sequences the way you like it is:
 1.   Run fluxbox with no pre-loaded dockapps
 2.   Run dockapps individually in the order you want them
 3.   Add dockapps to your *startfluxbox(1)* script
 
-This sequence will be saved by default to *\~/.fluxbox/slitlist* and will be
+
+This sequence will be saved by default to *~/.fluxbox/slitlist* and will be
 remembered for future instances of fluxbox.
 
 Users are free to manually edit the slitlist file. It is a simple list of window
@@ -852,7 +853,7 @@ method is described in *fluxbox-apps(5)*.
 
 RESOURCES
 ---------
-Usually the *\~/.fluxbox/init* resource file is created and maintained by
+Usually the *~/.fluxbox/init* resource file is created and maintained by
 fluxbox itself. You can use the *Configure Menu*, mentioned above, to set most
 of these options.  However, we'll cover all of the resource options that are
 available to the user.  If you edit this file while fluxbox is running, you must
@@ -1185,7 +1186,7 @@ Default right: *Shade Minimize Maximize Close*
 
 All of the 'location' resources following require a pathname to their specific
 files. This is where you can specify different files. Most of the defaults will
-be located in the user's *\~/.fluxbox* directory.
+be located in the user's *~/.fluxbox* directory.
 
 *session.appsFile*: 'location'::
 	Location of persistent application settings, or the `apps' file. See the
@@ -1218,7 +1219,7 @@ be located in the user's *\~/.fluxbox* directory.
 
 *session.screen0.windowMenu*: 'location':::
 This optionally specifies the location of a user-defined window menu. If left
-blank, it will use *\~/.fluxbox/windowmenu*.
+blank, it will use *~/.fluxbox/windowmenu*.
 +
 Default: *blank*
 

@@ -16,22 +16,22 @@ SYNOPSIS
 
 DESCRIPTION
 -----------
-*startfluxbox* is a script which runs the file *\~/.fluxbox/startup* If it
+*startfluxbox* is a script which runs the file *~/.fluxbox/startup* If it
 doesn't exist it will be generated.
 
 *startfluxbox* should be started from your *\~/.xinitrc* if you use startx, or
-*\~/.xsession* if you run a display manager, like xdm.
+ *~/.xsession* if you run a display manager, like xdm.
 
 FILES
 -----
-*\~/.fluxbox/startup*::
+*~/.fluxbox/startup*::
 	This file contains all commands that should be executed before fluxbox is
 	started. The initial file contains helpful comments for beginners. It also
 	starts fluxbox.
 
 EXAMPLES
 --------
-The default *\~/.fluxbox/startup* is as follows:
+The default *~/.fluxbox/startup* is as follows:
 ....
 #!/bin/sh
 #
