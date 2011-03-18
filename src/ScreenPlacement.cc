@@ -131,7 +131,7 @@ bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
     return true;
 }
 
-bool ScreenPlacement::placeAndShowMenu(FbTk::Menu& menu, int x, int y, bool respect_struts) {
+void ScreenPlacement::placeAndShowMenu(FbTk::Menu& menu, int x, int y, bool respect_struts) {
 
     int head = m_screen.getHead(x, y);
 

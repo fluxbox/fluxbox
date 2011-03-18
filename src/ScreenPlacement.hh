@@ -69,7 +69,7 @@ public:
                      int &place_x, int &place_y);
 
     // places and show 'menu' at 'x','y'
-    bool placeAndShowMenu(FbTk::Menu& menu, int x, int y, bool respect_struts);
+    void placeAndShowMenu(FbTk::Menu& menu, int x, int y, bool respect_struts);
 
     RowDirection rowDirection() const { return *m_row_direction; }
     ColumnDirection colDirection() const { return *m_col_direction; }
