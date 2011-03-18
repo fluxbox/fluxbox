@@ -41,6 +41,8 @@
 #include "FbTk/Observer.hh"
 #include "FbTk/Signal.hh"
 
+#include "FocusControl.hh"
+
 #include <X11/Xresource.h>
 
 #ifdef HAVE_CSTDIO
@@ -64,7 +66,6 @@ class Strut;
 class Slit;
 class Toolbar;
 class HeadArea;
-class FocusControl;
 class ScreenPlacement;
 class TooltipWindow;
 class OSDWindow;

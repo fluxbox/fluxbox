@@ -36,6 +36,7 @@
 #include "FbWinFrame.hh"
 #include "Focusable.hh"
 #include "FocusableTheme.hh"
+#include "FocusControl.hh"
 #include "WinButton.hh"
 
 
@@ -48,7 +49,6 @@
 class WinClient;
 class FbWinFrameTheme;
 class BScreen;
-class FocusControl;
 class FbMenu;
 
 namespace FbTk {
