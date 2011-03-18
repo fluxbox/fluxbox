@@ -7,7 +7,8 @@ noinst_PROGRAMS= \
 	 testKeys \
 	 testDemandAttention \
 	 testFullscreen \
-	 testStringUtil
+	 testStringUtil \
+	 testRectangleUtil
 
 testTexture_SOURCES         = texturetest.cc
 testFont_SOURCES            = testFont.cc
@@ -17,6 +18,7 @@ testDemandAttention_SOURCES = testDemandAttention.cc
 #testResource_SOURCES        = Resourcetest.cc
 testFullscreen_SOURCES      = fullscreentest.cc
 testStringUtil_SOURCES      = StringUtiltest.cc
+testRectangleUtil_SOURCES   = testRectangleUtil.cc
 
 LDADD=../FbTk/libFbTk.a
 
