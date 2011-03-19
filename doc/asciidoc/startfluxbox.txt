@@ -1,7 +1,7 @@
 startfluxbox(1)
 ===============
 Jim Ramsay <i.am@jimramsay.com>
-v1.1.2, 18 February 2009
+v1.3.1, 27 February 2011
 :man source:   startfluxbox.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
