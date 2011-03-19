@@ -1990,11 +1990,26 @@ void BScreen::clearHeads() {
         for (Workspace::Windows::iterator win = (*i)->windowList().begin();
                 win != (*i)->windowList().end(); win++) {
 
-            int closest_head = getHead((*win)->fbWindow());
-            if (closest_head == 0) {
-                closest_head = 1; // first head is a safe bet here
+            FluxboxWindow& w = *(*win);
+
+            // check if the window is invisible
+            bool invisible = true;
+            int j;
+            for (j = 0; j < m_xinerama_num_heads; ++j) {
+                XineramaHeadInfo& hi = m_xinerama_headinfo[j];
+                if (RectangleUtil::overlapRectangles(hi, w)) {
+                    invisible = false;
+                    break;
+                }
             }
-            (*win)->placeWindow(closest_head);
+
+            if (invisible) { // get closest head and replace the (now invisible) cwindow
+                int closest_head = getHead(w.fbWindow());
+                if (closest_head == 0) {
+                    closest_head = 1; // first head is a safe bet here
+                }
+                w.placeWindow(closest_head);
+            }
         }
     }
 }
