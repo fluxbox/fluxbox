@@ -2004,10 +2004,7 @@ int BScreen::getHead(int x, int y) const {
 #ifdef XINERAMA
     if (hasXinerama()) {
         for (int i=0; i < m_xinerama_num_heads; i++) {
-            if (x >= m_xinerama_headinfo[i].x &&
-                    x < (m_xinerama_headinfo[i].x + m_xinerama_headinfo[i].width) &&
-                    y >= m_xinerama_headinfo[i].y &&
-                    y < (m_xinerama_headinfo[i].y + m_xinerama_headinfo[i].height)) {
+            if (RectangleUtil::insideBorder(m_xinerama_headinfo[i], x, y, 0)) {
                 return i+1;
             }
         }
