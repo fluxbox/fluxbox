@@ -25,16 +25,74 @@
 #include "Window.hh"
 #include "Screen.hh"
 
-ScreenPlacement::PlacementPolicy MinOverlapPlacement::s_policy = ScreenPlacement::ROWMINOVERLAPPLACEMENT;
-ScreenPlacement::RowDirection MinOverlapPlacement::s_row_dir = ScreenPlacement::LEFTRIGHT;
-ScreenPlacement::ColumnDirection MinOverlapPlacement::s_col_dir = ScreenPlacement::TOPBOTTOM;
+namespace {
 
-MinOverlapPlacement::MinOverlapPlacement(ScreenPlacement::PlacementPolicy policy) {
-    s_policy = policy;
+inline void getWindowDimensions(const FluxboxWindow& win, int& left, int& top, int& right, int& bottom) {
+
+    const int bw = 2 * win.frame().window().borderWidth();
+    left = win.x() - win.xOffset();
+    top = win.y() - win.yOffset();
+    right = left + win.width() + bw + win.widthOffset();
+    bottom = top + win.height() + bw + win.heightOffset();
 }
+
+class Area {
+public:
+
+    enum Corner {
+        TOPLEFT,
+        TOPRIGHT,
+        BOTTOMLEFT,
+        BOTTOMRIGHT
+    } corner; // indicates the corner of the window that will be placed
+
+    Area(Corner _corner, int _x, int _y):
+        corner(_corner), x(_x), y(_y) { };
+
+    // do all STL set implementations use this for sorting?
+    bool operator <(const Area &o) const {
+        switch (s_policy) {
+            case ScreenPlacement::ROWMINOVERLAPPLACEMENT:
+                // if we're making rows, y-value is most important
+                if (y != o.y)
+                    return ((y < o.y) ^ (s_col_dir == ScreenPlacement::BOTTOMTOP));
+                if (x != o.x)
+                    return ((x < o.x) ^ (s_row_dir == ScreenPlacement::RIGHTLEFT));
+                return (corner < o.corner);
+            case ScreenPlacement::COLMINOVERLAPPLACEMENT:
+                // if we're making columns, x-value is most important
+                if (x != o.x)
+                    return ((x < o.x) ^ (s_row_dir == ScreenPlacement::RIGHTLEFT));
+                if (y != o.y)
+                    return ((y < o.y) ^ (s_col_dir == ScreenPlacement::BOTTOMTOP));
+                return (corner < o.corner);
+            default:
+                return false;
+        }
+    }
+
+    // position where the top left corner of the window will be placed
+    int x, y;
+
+    static ScreenPlacement::RowDirection s_row_dir;
+    static ScreenPlacement::ColumnDirection s_col_dir;
+    static ScreenPlacement::PlacementPolicy s_policy;
+};
+
+ScreenPlacement::RowDirection Area::s_row_dir = ScreenPlacement::LEFTRIGHT;
+ScreenPlacement::ColumnDirection Area::s_col_dir = ScreenPlacement::TOPBOTTOM;
+ScreenPlacement::PlacementPolicy Area::s_policy = ScreenPlacement::ROWMINOVERLAPPLACEMENT;
+
+} // end of anonymous namespace
+
 
 bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
                                       int &place_x, int &place_y) {
+
+    int left;
+    int top;
+    int right;
+    int bottom;
 
     std::list<FluxboxWindow *> windowlist;
     const std::list<Focusable *> focusables =
@@ -56,24 +114,26 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
     int head_top = (signed) win.screen().maxTop(head);
     int head_bot = (signed) win.screen().maxBottom(head);
 
-    const ScreenPlacement &screen_placement = win.screen().placementStrategy();
-    s_row_dir = screen_placement.rowDirection();
-    s_col_dir = screen_placement.colDirection();
-
     int win_w = win.normalWidth() + win.fbWindow().borderWidth()*2 +
                 win.widthOffset();
     int win_h = win.normalHeight() + win.fbWindow().borderWidth()*2 +
                 win.heightOffset();
 
     // we keep a set of open spaces on the desktop, sorted by size/location
-    std::set<Region> region_set;
+    std::set<Area> areas;
 
-    // initialize the set of regions to contain the entire head
-    region_set.insert(Region(Region::TOPLEFT, head_left, head_top));
-    region_set.insert(Region(Region::TOPRIGHT, head_right - win_w, head_top));
-    region_set.insert(Region(Region::BOTTOMLEFT, head_left, head_bot - win_h));
-    region_set.insert(Region(Region::BOTTOMRIGHT, head_right - win_w,
-                             head_bot - win_h));
+    // setup stuff in order to make Area::operator< work
+    const ScreenPlacement& p = win.screen().placementStrategy();
+    Area::s_policy = p.placementPolicy();
+    Area::s_row_dir = p.rowDirection();
+    Area::s_col_dir = p.colDirection();
+
+
+    // initialize the set of areas to contain the entire head
+    areas.insert(Area(Area::TOPLEFT, head_left, head_top));
+    areas.insert(Area(Area::TOPRIGHT, head_right - win_w, head_top));
+    areas.insert(Area(Area::BOTTOMLEFT, head_left, head_bot - win_h));
+    areas.insert(Area(Area::BOTTOMRIGHT, head_right - win_w, head_bot - win_h));
 
     // go through the list of windows, creating other reasonable placements
     // at the end, we'll find the one with minimum overlap
@@ -85,61 +145,45 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
     for (; it != it_end; ++it) {
         if (*it == &win) continue;
 
-        // get the dimensions of the window
-        int left = (*it)->x() - (*it)->xOffset();
-        int top = (*it)->y() - (*it)->yOffset();
-        int right = left + (*it)->width() +
-            2*(*it)->frame().window().borderWidth() +
-            (*it)->widthOffset();
-        int bottom = top + (*it)->height() +
-            2*(*it)->frame().window().borderWidth() +
-            (*it)->heightOffset();
+        getWindowDimensions(*(*it), left, top, right, bottom);
 
         // go through the list of regions
         // if this window overlaps that region and the new window still fits,
         // it will create new regions to test
-        std::set<Region>::iterator reg_it = region_set.begin();
-        for (; reg_it != region_set.end(); ++reg_it) {
+        std::set<Area>::iterator ar_it = areas.begin();
+        for (; ar_it != areas.end(); ++ar_it) {
 
-            switch (reg_it->corner) {
-                case Region::TOPLEFT:
-                    if (right > reg_it->x && bottom > reg_it->y) {
+            switch (ar_it->corner) {
+                case Area::TOPLEFT:
+                    if (right > ar_it->x && bottom > ar_it->y) {
                         if (bottom + win_h <= head_bot)
-                            region_set.insert(Region(Region::TOPLEFT,
-                                                     reg_it->x, bottom));
+                            areas.insert(Area(Area::TOPLEFT, ar_it->x, bottom));
                         if (right + win_w <= head_right)
-                            region_set.insert(Region(Region::TOPLEFT,
-                                                     right, reg_it->y));
+                            areas.insert(Area(Area::TOPLEFT, right, ar_it->y));
                     }
                     break;
-                case Region::TOPRIGHT:
-                    if (left < reg_it->x + win_w && bottom > reg_it->y) {
+                case Area::TOPRIGHT:
+                    if (left < ar_it->x + win_w && bottom > ar_it->y) {
                         if (bottom + win_h <= head_bot)
-                            region_set.insert(Region(Region::TOPRIGHT,
-                                                     reg_it->x, bottom));
+                            areas.insert(Area(Area::TOPRIGHT, ar_it->x, bottom));
                         if (left - win_w >= head_left)
-                            region_set.insert(Region(Region::TOPRIGHT,
-                                                     left - win_w, reg_it->y));
+                            areas.insert(Area(Area::TOPRIGHT, left - win_w, ar_it->y));
                     }
                     break;
-                case Region::BOTTOMRIGHT:
-                    if (left < reg_it->x + win_w && top < reg_it->y + win_h) {
+                case Area::BOTTOMRIGHT:
+                    if (left < ar_it->x + win_w && top < ar_it->y + win_h) {
                         if (top - win_h >= head_top)
-                            region_set.insert(Region(Region::BOTTOMRIGHT,
-                                                     reg_it->x, top - win_h));
+                            areas.insert(Area(Area::BOTTOMRIGHT, ar_it->x, top - win_h));
                         if (left - win_w >= head_left)
-                            region_set.insert(Region(Region::BOTTOMRIGHT,
-                                                     left - win_w, reg_it->y));
+                            areas.insert(Area(Area::BOTTOMRIGHT, left - win_w, ar_it->y));
                     }
                     break;
-                case Region::BOTTOMLEFT:
-                    if (right > reg_it->x && top < reg_it->y + win_h) {
+                case Area::BOTTOMLEFT:
+                    if (right > ar_it->x && top < ar_it->y + win_h) {
                         if (top - win_h >= head_top)
-                            region_set.insert(Region(Region::BOTTOMLEFT,
-                                                     reg_it->x, top - win_h));
+                            areas.insert(Area(Area::BOTTOMLEFT, ar_it->x, top - win_h));
                         if (right + win_w <= head_right)
-                            region_set.insert(Region(Region::BOTTOMLEFT,
-                                                     right, reg_it->y));
+                            areas.insert(Area(Area::BOTTOMLEFT, right, ar_it->y));
                     }
                     break;
             }
@@ -149,32 +193,22 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
 
     // choose the region with minimum overlap
     int min_so_far = win_w * win_h * windowlist.size() + 1;
-    std::set<Region>::iterator min_reg = region_set.end();
+    std::set<Area>::iterator min_reg = areas.end();
 
-    std::set<Region>::iterator reg_it = region_set.begin();
-    for (; reg_it != region_set.end(); ++reg_it) {
+    std::set<Area>::iterator ar_it = areas.begin();
+    for (; ar_it != areas.end(); ++ar_it) {
 
         int overlap = 0;
         it = const_windowlist.rbegin();
         for (; it != it_end; ++it) {
 
-            // get the dimensions of the window
-            int left = (*it)->x() - (*it)->xOffset();
-            int top = (*it)->y() - (*it)->yOffset();
-            int right = left + (*it)->width() +
-                2*(*it)->frame().window().borderWidth() +
-                (*it)->widthOffset();
-            int bottom = top + (*it)->height() +
-                2*(*it)->frame().window().borderWidth() +
-                (*it)->heightOffset();
+            getWindowDimensions(*(*it), left, top, right, bottom);
 
             // get the coordinates of the overlap region
-            int min_right = (right > reg_it->x + win_w) ?
-                reg_it->x + win_w : right;
-            int min_bottom = (bottom > reg_it->y + win_h) ?
-                reg_it->y + win_h : bottom;
-            int max_left = (left > reg_it->x) ? left : reg_it->x;
-            int max_top = (top > reg_it->y) ? top : reg_it->y;
+            int min_right = std::min(right, ar_it->x + win_w);
+            int min_bottom = std::min(bottom, ar_it->y + win_h);
+            int max_left = std::max(left, ar_it->x);
+            int max_top = std::max(top, ar_it->y);
 
             // now compute the overlap and add to running total
             if (min_right > max_left && min_bottom > max_top)
@@ -184,7 +218,7 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
 
         // if this placement is better, use it
         if (overlap < min_so_far) {
-            min_reg = reg_it;
+            min_reg = ar_it;
             min_so_far = overlap;
             if (overlap == 0) // can't do better than this
                 break;

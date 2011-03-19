@@ -75,7 +75,7 @@ bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
             break;
         case ROWMINOVERLAPPLACEMENT:
         case COLMINOVERLAPPLACEMENT:
-            m_strategy.reset(new MinOverlapPlacement(*m_placement_policy));
+            m_strategy.reset(new MinOverlapPlacement());
             break;
         case CASCADEPLACEMENT:
             m_strategy.reset(new CascadePlacement(win.screen()));

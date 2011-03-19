@@ -71,6 +71,7 @@ public:
     // places and show 'menu' at 'x','y'
     void placeAndShowMenu(FbTk::Menu& menu, int x, int y, bool respect_struts);
 
+    PlacementPolicy placementPolicy() const { return *m_placement_policy; }
     RowDirection rowDirection() const { return *m_row_direction; }
     ColumnDirection colDirection() const { return *m_col_direction; }
 
