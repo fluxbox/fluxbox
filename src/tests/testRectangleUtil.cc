@@ -55,12 +55,67 @@ int test_insideBorder() {
     return 0;
 }
 
+int test_overlapRectangles() {
 
+    printf("testing RectangleUtil::overlapRectangles()\n");
+
+    struct _t {
+        struct Rect a;
+        struct Rect b;
+        int truth;
+    };
+
+    struct _test {
+        bool operator()(const Rect& a, const Rect& b, int truth, int i) {
+
+            int result = RectangleUtil::overlapRectangles(a, b);
+
+            printf("  %d: [%2d %2d]-[%2d %2d] %s [%2d %2d]-[%2d %2d]: %s\n",
+                    i,
+                    a.x(), a.y(),
+                    a.x() + (int)a.width(),
+                    a.y() + (int)a.height(),
+                    result ? "overlaps" : "does not overlap",
+                    b.x(), b.y(),
+                    b.x() + (int)b.width(),
+                    b.y() + (int)b.height(),
+                    result == truth ? "ok" : "failed");
+            return result == truth;
+        }
+    };
+
+    const _t tests[] = {
+
+        { { 0, 0, 8, 8 }, {  0, 0, 8, 8 }, true  }, // b equals a
+        { { 0, 0, 8, 8 }, {  3, 3, 3, 3 }, true  }, // b completely inside a
+        { { 0, 0, 8, 8 }, {  4, 4, 8, 8 }, true  }, // b overlaps a in one corner
+        { { 0, 0, 8, 8 }, {  4,-1, 2, 9 }, true  }, // b overlaps a in the middle
+
+        { { 0, 0, 8, 8 }, { -8, 0, 5, 8 }, false }, // b completely left from a
+        { { 0, 0, 8, 8 }, {  9, 0, 5, 8 }, false }, // b completely right from a
+        { { 0, 0, 8, 8 }, {  0,-9, 5, 8 }, false }, // b completely down below a
+        { { 0, 0, 8, 8 }, {  0, 9, 5, 8 }, false }, // b completely up above a
+    };
+
+
+
+    _test test;
+    int i;
+    for (i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
+        test(tests[i].a, tests[i].b, tests[i].truth, i);
+        test(tests[i].b, tests[i].a, tests[i].truth, i);
+    }
+
+    printf("done.\n");
+
+    return 0;
+}
 
 
 int main(int argc, char **argv) {
 
     test_insideBorder();
+    test_overlapRectangles();
 
     return 0;
 }
