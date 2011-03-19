@@ -504,7 +504,9 @@ BScreen::~BScreen() {
 
     if (! managed)
         return;
-
+    
+    m_configmenu.reset(0);
+    
     m_toolbar.reset(0);
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
@@ -573,7 +575,12 @@ BScreen::~BScreen() {
 
     // slit must be destroyed before headAreas (Struts)
     m_slit.reset(0);
+    
 
+    delete m_rootmenu.release();
+    delete m_workspacemenu.release();
+    delete m_windowmenu.release();
+    
     // TODO fluxgen: check if this is the right place
     for (size_t i = 0; i < m_head_areas.size(); i++)
         delete m_head_areas[i];
@@ -1469,7 +1476,8 @@ void BScreen::rereadWindowMenu() {
 
 void BScreen::addConfigMenu(const FbTk::FbString &label, FbTk::Menu &menu) {
     m_configmenu_list.push_back(make_pair(label, &menu));
-    setupConfigmenu(*m_configmenu.get());
+    if (m_configmenu.get())
+        setupConfigmenu(*m_configmenu.get());
 }
 
 void BScreen::removeConfigMenu(FbTk::Menu &menu) {
@@ -1480,7 +1488,7 @@ void BScreen::removeConfigMenu(FbTk::Menu &menu) {
     if (erase_it != m_configmenu_list.end())
         m_configmenu_list.erase(erase_it);
 
-    if (!isShuttingdown())
+    if (!isShuttingdown() && m_configmenu.get())
         setupConfigmenu(*m_configmenu.get());
 
 }
