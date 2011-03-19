@@ -579,7 +579,11 @@ private:
     std::vector<HeadArea *> m_head_areas;
 
     struct XineramaHeadInfo {
-        int x, y, width, height;
+        int _x, _y, _width, _height;
+        int x() const { return _x; }
+        int y() const { return _y; }
+        int width() const { return _width; }
+        int height() const { return _height; }
     } *m_xinerama_headinfo;
 
     bool m_restart, m_shutdown;

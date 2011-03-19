@@ -53,6 +53,7 @@
 #include "FbTk/CommandParser.hh"
 #include "AtomHandler.hh"
 #include "HeadArea.hh"
+#include "RectangleUtil.hh"
 #include "FbCommands.hh"
 #include "SystemTray.hh"
 #include "Debug.hh"
@@ -1950,10 +1951,10 @@ void BScreen::initXinerama() {
     m_xinerama_headinfo = new XineramaHeadInfo[number];
     m_xinerama_num_heads = number;
     for (int i=0; i < number; i++) {
-        m_xinerama_headinfo[i].x = screen_info[i].x_org;
-        m_xinerama_headinfo[i].y = screen_info[i].y_org;
-        m_xinerama_headinfo[i].width = screen_info[i].width;
-        m_xinerama_headinfo[i].height = screen_info[i].height;
+        m_xinerama_headinfo[i]._x = screen_info[i].x_org;
+        m_xinerama_headinfo[i]._y = screen_info[i].y_org;
+        m_xinerama_headinfo[i]._width = screen_info[i].width;
+        m_xinerama_headinfo[i]._height = screen_info[i].height;
     }
     XFree(screen_info);
 
@@ -2034,7 +2035,7 @@ int BScreen::getHead(const FbTk::FbWindow &win) const {
         for (i = 0; i < m_xinerama_num_heads; ++i) {
 
             XineramaHeadInfo& hi = m_xinerama_headinfo[i];
-            int d = calcSquareDistance(cx, cy, hi.x + (hi.width / 2), hi.y + (hi.height / 2));
+            int d = calcSquareDistance(cx, cy, hi.x() + (hi.width() / 2), hi.y() + (hi.height() / 2));
 
             if (dist == -1 || d < dist) { // found a closer head
                 head = i + 1;
@@ -2068,7 +2069,7 @@ int BScreen::getCurrHead() const {
 int BScreen::getHeadX(int head) const {
 #ifdef XINERAMA
     if (head == 0 || head > m_xinerama_num_heads) return 0;
-    return m_xinerama_headinfo[head-1].x;
+    return m_xinerama_headinfo[head-1].x();
 #else
     return 0;
 #endif // XINERAMA
@@ -2077,7 +2078,7 @@ int BScreen::getHeadX(int head) const {
 int BScreen::getHeadY(int head) const {
 #ifdef XINERAMA
     if (head == 0 || head > m_xinerama_num_heads) return 0;
-    return m_xinerama_headinfo[head-1].y;
+    return m_xinerama_headinfo[head-1].y();
 #else
     return 0;
 #endif // XINERAMA
@@ -2086,7 +2087,7 @@ int BScreen::getHeadY(int head) const {
 int BScreen::getHeadWidth(int head) const {
 #ifdef XINERAMA
     if (head == 0 || head > m_xinerama_num_heads) return width();
-    return m_xinerama_headinfo[head-1].width;
+    return m_xinerama_headinfo[head-1].width();
 #else
     return width();
 #endif // XINERAMA
@@ -2095,7 +2096,7 @@ int BScreen::getHeadWidth(int head) const {
 int BScreen::getHeadHeight(int head) const {
 #ifdef XINERAMA
     if (head == 0 || head > m_xinerama_num_heads) return height();
-    return m_xinerama_headinfo[head-1].height;
+    return m_xinerama_headinfo[head-1].height();
 #else
     return height();
 #endif // XINERAMA
