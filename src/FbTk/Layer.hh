@@ -20,8 +20,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef FBTK_XLAYER_HH
-#define FBTK_XLAYER_HH
+#ifndef FBTK_LAYER_HH
+#define FBTK_LAYER_HH
 
 #include <vector>
 #include <list>
@@ -82,4 +82,4 @@ private:
 
 } // namespace FbTk
 
-#endif // FBTK_XLAYER_HH
+#endif // FBTK_LAYER_HH

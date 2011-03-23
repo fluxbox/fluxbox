@@ -20,8 +20,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef FBTK_XLAYERITEM_HH
-#define FBTK_XLAYERITEM_HH
+#ifndef FBTK_LAYERITEM_HH
+#define FBTK_LAYERITEM_HH
 
 #include "Layer.hh"
 #include "NotCopyable.hh"
@@ -76,4 +76,4 @@ private:
 
 }
 
-#endif // FBTK_XLAYERITEM_HH
+#endif // FBTK_LAYERITEM_HH
