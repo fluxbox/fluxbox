@@ -303,20 +303,16 @@ public:
     int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
-    /// go to next workspace ( right )
-    void nextWorkspace() { nextWorkspace(1); }
-    /// go to previous workspace
-    void prevWorkspace() { prevWorkspace(1); }
     /**
      * Jump forward to a workspace
      * @param delta number of steps to jump
      */
-    void nextWorkspace(int delta);
+    void nextWorkspace(int delta = 1);
     /**
      * Jump backwards to a workspace
      * @param delta number of steps to jump
      */
-    void prevWorkspace(int delta);
+    void prevWorkspace(int delta = 1);
     /**
      * Jump right to a workspace.
      * @param delta number of steps to jump
