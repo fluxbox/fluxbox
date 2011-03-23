@@ -34,7 +34,7 @@ dnl Check for system header files
 AC_HEADER_STDC
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(errno.h ctype.h dirent.h fcntl.h libgen.h \
-                 locale.h nl_types.h process.h signal.h stdarg.h \
+                 locale.h math.h nl_types.h process.h signal.h stdarg.h \
                  stdio.h time.h unistd.h \
                  sys/param.h sys/select.h sys/signal.h sys/stat.h \
                  sys/time.h sys/types.h sys/wait.h \
