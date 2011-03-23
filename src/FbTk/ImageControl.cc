@@ -111,14 +111,14 @@ void allocateUnallocatedColors(std::vector<XColor> colors, Display* dpy, Colorma
     // 'icolors' will hold the first 'nr_icolors' colors of the
     // given (indexed) colormap.
     const size_t nr_icolors = std::min(256, 1 << screen_depth);
-    XColor icolors[nr_icolors];
+    std::vector<XColor> icolors(nr_icolors);
 
     // give each icolor an index
     for (i = 0; i < nr_icolors; i++)
         icolors[i].pixel = i;
 
     // query the colors of the colormap and store them into 'icolors'
-    XQueryColors(dpy, cmap, icolors, nr_icolors);
+    XQueryColors(dpy, cmap, &icolors[0], nr_icolors);
 
     // try to find a close color for all not allocated colors
     for (i = 0; i < colors.size(); i++) {
