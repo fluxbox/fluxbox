@@ -605,7 +605,7 @@ void FullscreenCmd::real_execute() {
 
 FbTk::Command<void> *SetLayerCmd::parse(const string &command,
                                         const string &args, bool trusted) {
-    int l = Layer::getNumFromString(args);
+    int l = ResourceLayer::getNumFromString(args);
     return (l == -1) ? 0 : new SetLayerCmd(l);
 }
 

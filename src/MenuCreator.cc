@@ -374,7 +374,7 @@ FbMenu *MenuCreator::createMenu(const string &label, int screen_number) {
 
     FbMenu *menu = new FbMenu(screen->menuTheme(),
                                   screen->imageControl(),
-                                  *screen->layerManager().getLayer(Layer::MENU));
+                                  *screen->layerManager().getLayer(ResourceLayer::MENU));
     if (!label.empty())
         menu->setLabel(label);
 
@@ -511,7 +511,7 @@ bool MenuCreator::createWindowMenuItem(const string &type,
             FbTk::Menu *submenu =
                 new AlphaMenu(screen->menuTheme(),
                               screen->imageControl(),
-                              *screen->layerManager().getLayer(Layer::MENU));
+                              *screen->layerManager().getLayer(ResourceLayer::MENU));
             submenu->disableTitle();
             menu.insert(label.empty() ? _FB_XTEXT(Configmenu, Transparency, "Transparency",
                                                   "Menu containing various transparency options"): label,
@@ -537,7 +537,7 @@ bool MenuCreator::createWindowMenuItem(const string &type,
 
         FbTk::Menu *submenu = new LayerMenu(screen->menuTheme(),
                                             screen->imageControl(),
-                                            *screen->layerManager().getLayer(Layer::MENU),
+                                            *screen->layerManager().getLayer(ResourceLayer::MENU),
                                             &context,
                                             false);
         submenu->disableTitle();

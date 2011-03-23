@@ -224,10 +224,10 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
       m_screen(scr),
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
-                        *scr.layerManager().getLayer(Layer::MENU)),
+                        *scr.layerManager().getLayer(ResourceLayer::MENU)),
       m_slitmenu(scr.menuTheme(),
                  scr.imageControl(),
-                 *scr.layerManager().getLayer(Layer::MENU)),
+                 *scr.layerManager().getLayer(ResourceLayer::MENU)),
 #ifdef XINERAMA
       m_xineramaheadmenu(0),
 #endif // XINERAMA
@@ -257,7 +257,7 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
                  scr.name() + ".slit.alpha", scr.altName() + ".Slit.Alpha"),
       m_rc_on_head(scr.resourceManager(), 0,
                    scr.name() + ".slit.onhead", scr.altName() + ".Slit.onHead"),
-      m_rc_layernum(scr.resourceManager(), Layer(Layer::DOCK),
+      m_rc_layernum(scr.resourceManager(), ResourceLayer(ResourceLayer::DOCK),
                     scr.name() + ".slit.layer", scr.altName() + ".Slit.Layer") {
 
     _FB_USES_NLS;
@@ -298,7 +298,7 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     m_layermenu.reset(new LayerMenu(scr.menuTheme(),
                                     scr.imageControl(),
                                     *scr.layerManager().
-                                    getLayer(Layer::MENU),
+                                    getLayer(ResourceLayer::MENU),
                                     this,
                                     true));
     m_layermenu->setLabel(_FB_XTEXT(Slit, Layer, "Slit Layer", "Title of Slit Layer Menu"));
@@ -1176,7 +1176,7 @@ void Slit::setupMenu() {
     // it'll be freed by the slitmenu (since not marked internal)
     FbMenu *placement_menu = new FbMenu(m_screen.menuTheme(),
                                         m_screen.imageControl(),
-                                        *m_screen.layerManager().getLayer(::Layer::MENU));
+                                        *m_screen.layerManager().getLayer(::ResourceLayer::MENU));
 
 
     // setup base menu
@@ -1194,7 +1194,7 @@ void Slit::setupMenu() {
                               screen().menuTheme(),
                               screen(),
                               screen().imageControl(),
-                              *screen().layerManager().getLayer(::Layer::MENU),
+                              *screen().layerManager().getLayer(::ResourceLayer::MENU),
                               *this,
                               _FB_XTEXT(Slit, OnHead, "Slit on Head", "Title of Slits On Head menu")
                               ));

@@ -93,7 +93,7 @@ private:
 ClientMenu::ClientMenu(BScreen &screen, Focusables &clients,
                        bool listen_for_iconlist_changes):
     FbMenu(screen.menuTheme(), screen.imageControl(),
-           *screen.layerManager().getLayer(Layer::MENU)),
+           *screen.layerManager().getLayer(ResourceLayer::MENU)),
     m_list(clients) {
 
     if (listen_for_iconlist_changes) {

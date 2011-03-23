@@ -509,7 +509,7 @@ void ShowDesktopCmd::execute() {
     for (; it != it_end; ++it) {
         if (!(*it)->fbwindow()->isIconic() && ((*it)->fbwindow()->isStuck() ||
             (*it)->fbwindow()->workspaceNumber() == space) &&
-            (*it)->fbwindow()->layerNum() < Layer::DESKTOP) {
+            (*it)->fbwindow()->layerNum() < ResourceLayer::DESKTOP) {
             (*it)->fbwindow()->iconify();
             count++;
         }

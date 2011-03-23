@@ -87,10 +87,12 @@ const Name2WinProperty name_2_winproperties[] = { // sorted for 'bsearch'
     { "workspacename", ClientPattern::WORKSPACENAME }
 };
 
+extern "C" {
 int name_2_winproperty_cmp(const void* a, const void* b) {
     return strcmp(
             reinterpret_cast<const Name2WinProperty*>(a)->name,
             reinterpret_cast<const Name2WinProperty*>(b)->name);
+}
 }
 
 const Name2WinProperty* find_winproperty_by_name(const FbTk::FbString& name) {
@@ -442,7 +444,7 @@ FbTk::FbString ClientPattern::getProperty(WinProperty prop, const Focusable &cli
         break;
     case LAYER:
         if (fbwin) {
-            result = ::Layer::getString(fbwin->layerNum());
+            result = ::ResourceLayer::getString(fbwin->layerNum());
         }
         break;
     case URGENT:

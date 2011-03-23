@@ -192,17 +192,17 @@ setFromString(const char *strval) {
 
 
 template<>
-string FbTk::Resource<Layer>::
+string FbTk::Resource<ResourceLayer>::
 getString() const {
-    return ::Layer::getString(m_value.getNum());
+    return ::ResourceLayer::getString(m_value.getNum());
 }
 
 template<>
-void FbTk::Resource<Layer>::
+void FbTk::Resource<ResourceLayer>::
 setFromString(const char *strval) {
     string str(strval);
-    int tempnum = ::Layer::getNumFromString(str);
-    if (tempnum >= 0 && tempnum < ::Layer::NUM_LAYERS)
+    int tempnum = ::ResourceLayer::getNumFromString(str);
+    if (tempnum >= 0 && tempnum < ::ResourceLayer::NUM_LAYERS)
         m_value = tempnum;
     else
         setDefaultValue();

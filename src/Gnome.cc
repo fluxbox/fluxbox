@@ -296,7 +296,7 @@ void Gnome::updateState(FluxboxWindow &win) {
 void Gnome::updateLayer(FluxboxWindow &win) {
     //TODO - map from flux layers to gnome ones
     // our layers are in the opposite direction to GNOME
-    long layernum = Layer::DESKTOP - win.layerNum();
+    long layernum = ResourceLayer::DESKTOP - win.layerNum();
 
     FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
@@ -421,35 +421,35 @@ void Gnome::setLayer(FluxboxWindow *win, int layer) {
     switch (layer) {
     case WIN_LAYER_DESKTOP:
         fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_DESKTOP)"<<endl;
-        layer = Layer::DESKTOP;
+        layer = ResourceLayer::DESKTOP;
         break;
     case WIN_LAYER_BELOW:
         fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_BELOW)"<<endl;
-        layer = Layer::BOTTOM;
+        layer = ResourceLayer::BOTTOM;
         break;
     case WIN_LAYER_NORMAL:
         fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_NORMAL)"<<endl;
-        layer = Layer::NORMAL;
+        layer = ResourceLayer::NORMAL;
         break;
     case WIN_LAYER_ONTOP:
         fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_ONTOP)"<<endl;
-        layer = Layer::TOP;
+        layer = ResourceLayer::TOP;
         break;
     case WIN_LAYER_DOCK:
         fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_DOCK)"<<endl;
-        layer = Layer::DOCK;
+        layer = ResourceLayer::DOCK;
         break;
     case WIN_LAYER_ABOVE_DOCK:
         fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_ABOVE_DOCK)"<<endl;
-        layer = Layer::ABOVE_DOCK;
+        layer = ResourceLayer::ABOVE_DOCK;
         break;
     case WIN_LAYER_MENU:
         fbdbg<<"Gnome::setLayer("<<title<<", WIN_LAYER_MENU)"<<endl;
-        layer = Layer::MENU;
+        layer = ResourceLayer::MENU;
         break;
     default:
         // our windows are in the opposite direction to gnome
-        layer = Layer::DESKTOP - layer;
+        layer = ResourceLayer::DESKTOP - layer;
         fbdbg<<"Gnome::setLayer("<<win->title().logical()<<", "<<layer<<")"<<endl;
 
         break;

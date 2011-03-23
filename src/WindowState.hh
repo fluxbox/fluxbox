@@ -113,7 +113,7 @@ public:
         focused(false),
         shaded(false), fullscreen(false), stuck(false), iconic(false),
         focus_hidden(false), icon_hidden(false),
-        maximized(0), layernum(Layer::NORMAL),
+        maximized(0), layernum(ResourceLayer::NORMAL),
         x(0), y(0), width(1), height(1) { }
 
     void saveGeometry(int x, int y, unsigned int width, unsigned int height,

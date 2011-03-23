@@ -489,7 +489,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     changeWorkspaceID(first_desktop);
 
 #ifdef SLIT
-    m_slit.reset(new Slit(*this, *layerManager().getLayer(Layer::DESKTOP),
+    m_slit.reset(new Slit(*this, *layerManager().getLayer(ResourceLayer::DESKTOP),
                  fluxbox->getSlitlistFilename().c_str()));
 #endif // SLIT
 
@@ -598,7 +598,7 @@ void BScreen::initWindows() {
 
 #ifdef USE_TOOLBAR
     m_toolbar.reset(new Toolbar(*this,
-                                *layerManager().getLayer(::Layer::NORMAL)));
+                                *layerManager().getLayer(::ResourceLayer::NORMAL)));
 #endif // USE_TOOLBAR
 
     unsigned int nchild;
@@ -858,7 +858,7 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
 FbMenu *BScreen::createMenu(const string &label) {
     FbMenu *menu = new FbMenu(menuTheme(),
                                   imageControl(),
-                                  *layerManager().getLayer(Layer::MENU));
+                                  *layerManager().getLayer(ResourceLayer::MENU));
     if (!label.empty())
         menu->setLabel(label);
 
@@ -868,7 +868,7 @@ FbMenu *BScreen::createMenu(const string &label) {
 FbMenu *BScreen::createToggleMenu(const string &label) {
     FbMenu *menu = new ToggleMenu(menuTheme(),
                                       imageControl(),
-                                      *layerManager().getLayer(Layer::MENU));
+                                      *layerManager().getLayer(ResourceLayer::MENU));
     if (!label.empty())
         menu->setLabel(label);
 

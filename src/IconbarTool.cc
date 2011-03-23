@@ -266,7 +266,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_rc_use_pixmap(screen.resourceManager(), true,
                     screen.name() + ".iconbar.usePixmap", screen.altName() + ".Iconbar.UsePixmap"),
     m_menu(screen.menuTheme(), screen.imageControl(),
-           *screen.layerManager().getLayer(Layer::MENU)),
+           *screen.layerManager().getLayer(ResourceLayer::MENU)),
     m_alpha(255) {
 
     // setup mode menu

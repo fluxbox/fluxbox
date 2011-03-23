@@ -477,7 +477,7 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 else
                     had_error = true;
             } else if (str_key == "layer") {
-                int l = Layer::getNumFromString(str_label);
+                int l = ResourceLayer::getNumFromString(str_label);
                 had_error = (l == -1);
                 if (!had_error)
                     app.rememberLayer(l);

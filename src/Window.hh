@@ -25,6 +25,12 @@
 #ifndef WINDOW_HH
 #define WINDOW_HH
 
+#include "FbWinFrame.hh"
+#include "Focusable.hh"
+#include "FocusableTheme.hh"
+#include "FocusControl.hh"
+#include "WinButton.hh"
+
 #include "FbTk/DefaultValue.hh"
 #include "FbTk/Timer.hh"
 #include "FbTk/Subject.hh"
@@ -32,13 +38,6 @@
 #include "FbTk/EventHandler.hh"
 #include "FbTk/LayerItem.hh"
 #include "FbTk/Signal.hh"
-
-#include "FbWinFrame.hh"
-#include "Focusable.hh"
-#include "FocusableTheme.hh"
-#include "FocusControl.hh"
-#include "WinButton.hh"
-
 
 #include <sys/time.h>
 #include <vector>

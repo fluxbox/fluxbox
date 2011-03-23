@@ -479,7 +479,7 @@ void FluxboxWindow::init() {
         m_workspace_number =
                 m_client->transientFor()->fbwindow()->workspaceNumber();
     } else // if no parent then set default layer
-        moveToLayer(m_state.layernum, m_state.layernum != ::Layer::NORMAL);
+        moveToLayer(m_state.layernum, m_state.layernum != ::ResourceLayer::NORMAL);
 
     fbdbg<<"FluxboxWindow::init("<<title().logical()<<") transientFor: "<<
        m_client->transientFor()<<endl;
@@ -1445,9 +1445,9 @@ void FluxboxWindow::setFullscreenLayer() {
         getOnHead() != foc->getOnHead() ||
         (foc->winClient().isTransient() &&
          foc->winClient().transientFor()->fbwindow() == this)) {
-        moveToLayer(::Layer::ABOVE_DOCK);
+        moveToLayer(::ResourceLayer::ABOVE_DOCK);
     } else {
-        moveToLayer(::Layer::DESKTOP);
+        moveToLayer(::ResourceLayer::DESKTOP);
     }
     stateSig().notify();
 
@@ -1683,10 +1683,10 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
     fbdbg<<"FluxboxWindow("<<title().logical()<<")::moveToLayer("<<layernum<<")"<<endl;
 
     // don't let it set its layer into menu area
-    if (layernum <= ::Layer::MENU)
-        layernum = ::Layer::MENU + 1;
-    else if (layernum >= ::Layer::NUM_LAYERS)
-        layernum = ::Layer::NUM_LAYERS - 1;
+    if (layernum <= ::ResourceLayer::MENU)
+        layernum = ::ResourceLayer::MENU + 1;
+    else if (layernum >= ::ResourceLayer::NUM_LAYERS)
+        layernum = ::ResourceLayer::NUM_LAYERS - 1;
 
     if (!m_initialized)
         m_state.layernum = layernum;
@@ -1758,7 +1758,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     }
 
     if (m_state.fullscreen && focus) {
-        moveToLayer(::Layer::ABOVE_DOCK);
+        moveToLayer(::ResourceLayer::ABOVE_DOCK);
         leave(screen().focusedWindowSig());
     }
 
@@ -3774,7 +3774,7 @@ void FluxboxWindow::setWindowType(WindowState::WindowType type) {
         setMouseFocus(false);
         setClickFocus(false);
         setDecorationMask(WindowState::DECOR_NONE);
-        moveToLayer(::Layer::DOCK);
+        moveToLayer(::ResourceLayer::DOCK);
         break;
     case WindowState::TYPE_DESKTOP:
         /*
@@ -3787,7 +3787,7 @@ void FluxboxWindow::setWindowType(WindowState::WindowType type) {
         setIconHidden(true);
         setFocusNew(false);
         setMouseFocus(false);
-        moveToLayer(::Layer::DESKTOP);
+        moveToLayer(::ResourceLayer::DESKTOP);
         setDecorationMask(WindowState::DECOR_NONE);
         setTabable(false);
         setMovable(false);
@@ -3822,7 +3822,7 @@ void FluxboxWindow::setWindowType(WindowState::WindowType type) {
          */
         setDecorationMask(WindowState::DECOR_TOOL);
         setIconHidden(true);
-        moveToLayer(::Layer::ABOVE_DOCK);
+        moveToLayer(::ResourceLayer::ABOVE_DOCK);
         break;
     case WindowState::TYPE_NORMAL:
     default:

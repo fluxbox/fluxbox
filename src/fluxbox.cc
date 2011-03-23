@@ -401,7 +401,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
         BScreen *screen = new BScreen(m_screen_rm.lock(),
                                       std::string("session.screen") + sc_nr,
                                       std::string("session.Screen") + sc_nr,
-                                      screens[s], ::Layer::NUM_LAYERS);
+                                      screens[s], ::ResourceLayer::NUM_LAYERS);
 
         // already handled
         if (! screen->isScreenManaged()) {

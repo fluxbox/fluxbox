@@ -55,7 +55,7 @@ FbWinFrame::FbWinFrame(BScreen &screen, WindowState &state,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | EnterWindowMask |
              LeaveWindowMask, true),
-    m_layeritem(window(), *screen.layerManager().getLayer(Layer::NORMAL)),
+    m_layeritem(window(), *screen.layerManager().getLayer(ResourceLayer::NORMAL)),
     m_titlebar(m_window, 0, 0, 100, 16,
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |

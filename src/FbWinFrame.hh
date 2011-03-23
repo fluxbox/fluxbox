@@ -22,6 +22,8 @@
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
 
+#include "WindowState.hh"
+
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/RefCount.hh"
@@ -32,10 +34,6 @@
 #include "FbTk/DefaultValue.hh"
 #include "FbTk/Container.hh"
 #include "FbTk/Shape.hh"
-
-#include "WindowState.hh"
-
-#include <X11/Xutil.h>
 
 #include <vector>
 #include <memory>
@@ -50,7 +48,6 @@ namespace FbTk {
 class ImageControl;
 template <class T> class Command;
 class Texture;
-class Layer;
 }
 
 /// holds a window frame with a client window
