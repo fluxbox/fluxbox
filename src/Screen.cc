@@ -1812,21 +1812,21 @@ void BScreen::setLayer(FbTk::LayerItem &item, int layernum) {
 /**
  Goes to the workspace "right" of the current
 */
-void BScreen::nextWorkspace(const int delta) {
+void BScreen::nextWorkspace(int delta) {
     changeWorkspaceID( (currentWorkspaceID() + delta) % numberOfWorkspaces());
 }
 
 /**
  Goes to the workspace "left" of the current
 */
-void BScreen::prevWorkspace(const int delta) {
+void BScreen::prevWorkspace(int delta) {
     changeWorkspaceID( (static_cast<signed>(numberOfWorkspaces()) + currentWorkspaceID() - (delta % numberOfWorkspaces())) % numberOfWorkspaces());
 }
 
 /**
  Goes to the workspace "right" of the current
 */
-void BScreen::rightWorkspace(const int delta) {
+void BScreen::rightWorkspace(int delta) {
     if (currentWorkspaceID()+delta < numberOfWorkspaces())
         changeWorkspaceID(currentWorkspaceID()+delta);
 }
@@ -1834,7 +1834,7 @@ void BScreen::rightWorkspace(const int delta) {
 /**
  Goes to the workspace "left" of the current
 */
-void BScreen::leftWorkspace(const int delta) {
+void BScreen::leftWorkspace(int delta) {
     if (currentWorkspaceID() >= static_cast<unsigned int>(delta))
         changeWorkspaceID(currentWorkspaceID()-delta);
 }
