@@ -26,6 +26,7 @@
 #include "Layer.hh"
 #include "NotCopyable.hh"
 #include <vector>
+#include <cstdlib> // size_t
 
 namespace FbTk {
 

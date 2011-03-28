@@ -26,6 +26,7 @@
 #include "RefCount.hh"
 
 #include <vector>
+#include <cstdlib> // size_t
 
 namespace FbTk {
 

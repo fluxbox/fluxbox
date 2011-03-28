@@ -24,6 +24,7 @@
 #define FBTK_MULTLAYERS_HH
 
 #include <vector>
+#include <cstdlib> // size_t
 
 namespace FbTk {
 
