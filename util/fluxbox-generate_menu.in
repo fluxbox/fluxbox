@@ -1314,6 +1314,11 @@ EOF
 fi
 
 BACKUPOPTIONS=$@
+if [ -n "$BACKUPOPTIONS" ]; then
+    FBGM_CMD="@pkgprefix@fluxbox-generate_menu@pkgsuffix@ $BACKUPOPTIONS"
+else
+    FBGM_CMD=@pkgprefix@fluxbox-generate_menu@pkgsuffix@
+fi
 # Get options.
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -1530,6 +1535,13 @@ DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
 if [ -z "$LAUNCHER" ]; then
     LAUNCHER=@pkgprefix@fbrun@pkgsuffix@
 fi
+if [ -n "$FBRUNOPTIONS" ]; then
+    # with this, LAUNCHER should be renamed LAUNCHER_NAME, but then there's
+    # backwards-compatibility...
+    LAUNCHER_CMD="$LAUNCHER $FBRUNOPTIONS"
+else
+    LAUNCHER_CMD=$LAUNCHER
+fi
 
 # Start of menu
 cat << EOF > ${MENUFILENAME}
@@ -1570,7 +1582,7 @@ case "$DEFAULT_BROWSERNAME" in
     *) append "[exec] ($DEFAULT_BROWSERNAME) {$DEFAULT_BROWSER}" ;;
 esac
 
-find_it "${LAUNCHER}" append "[exec]   (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
+find_it "${LAUNCHER}" append "[exec]   (${RUNCOMMAND}) {$LAUNCHER_CMD}"
 
 
 append_submenu "${TERMINALMENU}"
@@ -1859,10 +1871,10 @@ append_submenu "${FBSETTINGSMENU}"
             "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
         find_it import append "[exec] (${SCREENSHOT} - JPG) {import screenshot.jpg && display -resize 50% screenshot.jpg}"
         find_it import append "[exec] (${SCREENSHOT} - PNG) {import screenshot.png && display -resize 50% screenshot.png}"
-        find_it ${LAUNCHER} append "[exec] (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
+        find_it ${LAUNCHER} append "[exec] (${RUNCOMMAND}) {$LAUNCHER_CMD}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
-        find_it @pkgprefix@fluxbox-generate_menu@pkgsuffix@ append "[exec] (${REGENERATEMENU}) {@pkgprefix@fluxbox-generate_menu@pkgsuffix@ ${BACKUPOPTIONS}}"
+        find_it @pkgprefix@fluxbox-generate_menu@pkgsuffix@ append "[exec] (${REGENERATEMENU}) {$FBGM_CMD}"
     append_menu_end
 
     append_submenu "${WINDOWMANAGERS}"
