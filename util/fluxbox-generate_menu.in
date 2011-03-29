@@ -518,7 +518,7 @@ rm -f ${MENUFILENAME}.tmp
 touch ${MENUFILENAME}.tmp
 counter=10 # prevent looping in odd circumstances
 until [ $counter -lt 1 ] || \
-    cmp ${MENUFILENAME} ${MENUFILENAME}.tmp 2>&1 > /dev/null; do
+    cmp ${MENUFILENAME} ${MENUFILENAME}.tmp >/dev/null 2>&1; do
     [ -s ${MENUFILENAME}.tmp ] && mv ${MENUFILENAME}.tmp ${MENUFILENAME}
     counter=`expr $counter - 1`
     grep -v '^$' ${MENUFILENAME}|sed -e "/^\[submenu].*/{
