@@ -1267,6 +1267,9 @@ if [ ! "${INSTALL}" = Yes ]; then
 # Don't cleanup the menu
 # REMOVE=no
 
+# Don't add icons to the menu
+# NO_ICON=yes
+
 EOF
             else
                 echo "Warning: I couldn't create ${MENUCONFIG}" >&2
