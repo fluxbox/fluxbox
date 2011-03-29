@@ -44,17 +44,6 @@
 #   other ways.
 
 
-WHOAMI=`whoami`
-[ "$WHOAMI" = root ] && PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
-
-# Check for Imlib2-support
-if @pkgprefix@fluxbox@pkgsuffix@ -info 2> /dev/null | grep -q "^IMLIB"; then
-    PNG_ICONS="yes"
-else
-    # better assume to assume "no"
-    PNG_ICONS="no"
-fi
-
 # Functions
 display_usage() {
     cat << EOF
@@ -121,6 +110,39 @@ display_authors() {
     $WHOAMI:            Innocent bystander.
 
 EOF
+}
+
+testoption() {
+    if [ -z "$3" -o -n "`echo $3|grep '^-'`" ]; then
+        echo "Error: The option $2 requires an argument." >&2
+        exit 1
+    fi
+    case $1 in
+        ex) # executable
+            if find_it "$3"; then
+                :
+            else
+                echo "Error: The option $2 needs an executable as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        di) # directory
+            if [ -d "$3" ]; then
+                :
+            else
+                echo "Error: The option $2 needs a directory as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        fl) # file
+            if [ -r "$3" ]; then
+                :
+            else
+                echo "Error: The option $2 needs a readable file as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        sk) # skip
+            :
+            ;;
+    esac
 }
 
 find_it() {
@@ -532,6 +554,19 @@ N
 done
 rm -f ${MENUFILENAME}.tmp
 }
+# End functions
+
+
+WHOAMI=`whoami`
+[ "$WHOAMI" = root ] && PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
+
+# Check for Imlib2-support
+if @pkgprefix@fluxbox@pkgsuffix@ -info 2> /dev/null | grep -q "^IMLIB"; then
+    PNG_ICONS="yes"
+else
+    # better assume to assume "no"
+    PNG_ICONS="no"
+fi
 
 # menu defaults (if translation forget to set one of them)
 
@@ -1277,39 +1312,6 @@ EOF
         fi
     fi
 fi
-
-testoption() {
-    if [ -z "$3" -o -n "`echo $3|grep '^-'`" ]; then
-        echo "Error: The option $2 requires an argument." >&2
-        exit 1
-    fi
-    case $1 in
-        ex) # executable
-            if find_it "$3"; then
-                :
-            else
-                echo "Error: The option $2 needs an executable as argument, and \`$3' is not." >&2
-            fi
-            ;;
-        di) # directory
-            if [ -d "$3" ]; then
-                :
-            else
-                echo "Error: The option $2 needs a directory as argument, and \`$3' is not." >&2
-            fi
-            ;;
-        fl) # file
-            if [ -r "$3" ]; then
-                :
-            else
-                echo "Error: The option $2 needs a readable file as argument, and \`$3' is not." >&2
-            fi
-            ;;
-        sk) # skip
-            :
-            ;;
-    esac
-}
 
 BACKUPOPTIONS=$@
 # Get options.
