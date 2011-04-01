@@ -529,7 +529,7 @@ workspaces, windows, and add/remove/rename workspaces.
 	Pops up a dialog to enter a new name for the current workspace.
 
 *Remove Last*:::
-	Remove the last workspace in the list. Any windows curretly open there will
+	Remove the last workspace in the list. Any windows currently open there will
 	be sent to the next-to-last workspace.
 
 TOOLBAR

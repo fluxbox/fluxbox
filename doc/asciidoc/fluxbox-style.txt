@@ -41,10 +41,10 @@ A style is made up of a few major components which then have their own
 sub-directives. The major components are as follows:
 
 The 'window.\*' directives control the appearance of the window frames,
-window.tab.* controls the appearance of the window tabs, 'menu.\*' controls
+'window.tab.\*' controls the appearance of the window tabs, 'menu.\*' controls
 the appearance of the popup menu that you see when you right click on the
 desktop. 'toolbar.\*' is the bar you will see at the top or bottom of your
-screen. Finally the 'slit.\*' has options you can use to customize the
+screen. Finally the 'slit.*' has options you can use to customize the
 appearance of the slit. However if you don't set the slit directives
 specifically, the slit's appearance is controlled by the toolbar
 directives instead.
@@ -52,7 +52,7 @@ directives instead.
 To understand how the style mechanism works, it is nice to know a little about
 how X11 resources work. X11 resources consist of a key and a value. The key is
 constructed of several smaller keys (sometimes referred to as children),
-delimited by a period (.). Keys may also contain an asterisk (\*)
+delimited by a period (.). Keys may also contain an asterisk (*)
 to serve as a wildcard, which means that one line of text will match
 several keys. This is useful for styles that are based on one or two
 colors.
@@ -119,7 +119,7 @@ you set the font resource for all keys to this font name all at once (For
 information about the fonts installed on your system, you can use a
 program like xfontsel(1), gtkfontsel, or xlsfonts(1).)
 
-In the last example you will notice the wildcard (\*) before font. In a Fluxbox
+In the last example you will notice the wildcard (*) before font. In a Fluxbox
 style you can set a value with a wildcard. The example means that every font
 in the style will be what is specified. You can do this with any
 component/value. For example if you wanted all of the text to be one color you
@@ -222,7 +222,7 @@ FULL COMPONENT LIST
 Here is the exhaustive component list for fluxbox(1) styles. Each one is listed
 with their type of value required. Comments in a style file are preceded
 with an exclamation point (!) which we also use here so that these can be
-pasted into a new theme.cfg to be customized appropiately. Please note that
+pasted into a new theme.cfg to be customized appropriately. Please note that
 in order to keep styles consistent it is  often the practice of stylists
 to provide all of the theme-items in their style file even if they are not
 used. This allows the user the ease of changing different components.
@@ -473,7 +473,7 @@ These are the color formats for styles:
    #000000 (Hexadecimal)
    rgb:<0-255>/<0-255>/<0-255>
 
-See /usr/share/X11/rgb.txt for an explaination.
+See /usr/share/X11/rgb.txt for an explanation.
 
 AUTHORS
 -------

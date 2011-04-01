@@ -93,7 +93,7 @@ button, eg. '1' is the primary button, '4'/'5' are the wheel buttons):
 	The mouse button 'N' is clicked (pressed and released with no
 	movement in between)
 *MoveN*;;
-	The mouse button 'N' is currently held, the binded action is triggered
+	The mouse button 'N' is currently held, the bound action is triggered
 	as often as the mouse moves.
 
 
@@ -201,7 +201,8 @@ These commands ordinarily affect only the currently focused window. The
 *MaximizeHorizontal* / *MaximizeVertical*::
 	Maximize the current window in one direction only, leaving the other
 	dimension unchanged.
-*Fullscreen*
+
+*Fullscreen*::
 	Resize the window's content to fit the whole screen, without
 	any window decoration.
 
@@ -237,8 +238,7 @@ These commands ordinarily affect only the currently focused window. The
 
 *SetDecor* 'decor'::
 	Sets which window decorations will be shown. 'decor' has the same format
-	as the `[Deco]' parameter in the apps file. See `man fluxbox' section
-	APPLICATIONS for more info.
+	as the `[Deco]' parameter in the apps file. See 'fluxbox-apps(5)' for more info.
 
 *ToggleDecor*::
 	Toggles the presence of the window decorations (title bar, window
@@ -579,11 +579,11 @@ To check other windows besides the currently focused one, see the *Every* and
 *Some* conditions below.
 
 *Some* 'condition'::
-	Retuns *true* if any window on any workspace (not just the currently
+	Returns *true* if any window on any workspace (not just the currently
 	focused one) matches the 'condition'.
 
 *Every* 'condition'::
-	Retuns *true* if every window on every workspace (not just the
+	Returns *true* if every window on every workspace (not just the
 	current one) matches the 'condition'.
 
 *Not* 'condition'::

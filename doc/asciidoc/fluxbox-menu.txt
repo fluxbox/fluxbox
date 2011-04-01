@@ -22,7 +22,7 @@ SYNTAX
 ------
 Variable parameters are shown in emphasis: 'argument'
 
-All other characters shown are required verbatim. Whitespce is only required to
+All other characters shown are required verbatim. Whitespace is only required to
 delimit words, but it is fine to add more whitespace.
 
 DESCRIPTION
@@ -61,7 +61,7 @@ every tag must be on its own line.
 There are up to four fields in a menu line. They are of the form:::
     ['tag'] ('label') {'command'} <'icon'>
 
-The <'icon'> field is always optional when show below. If specified, the 'icon'
+The <'icon'> field is always optional when shown below. If specified, the 'icon'
 will be scaled down and displayed in the menu alongside the text label of the
 item. It must be in .xpm or .png format.
 
@@ -127,7 +127,7 @@ Applications
 	Inserts a command item into the menu. When you select the menu item from the
 	menu, fluxbox runs 'command...' in your *$SHELL* (or /bin/sh if $SHELL is not
 	set). You can use this to launch applications, run shell scripts, etc. Since
-	all arguments are passed verbatim to te shell, you can use environment
+	all arguments are passed verbatim to the shell, you can use environment
 	variables, pipes, or anything else the shell can do. Note that processes only
 	see environment variables that were set before fluxbox started (such as in
 	~/.fluxbox/startup).

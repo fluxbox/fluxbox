@@ -18,7 +18,7 @@ SYNTAX
 ------
 Variable parameters are shown in emphasis: 'argument'
 
-All other characters shown are required verbatim. Whitespce is only required to
+All other characters shown are required verbatim. Whitespace is only required to
 delimit words, but it is fine to add more whitespace.
 
 DESCRIPTION
@@ -71,7 +71,7 @@ Where the 'pattern' item is optional. If specified, this pattern must match for
 the group to take effect. It is common to use non-window-specific patterns such
 as *(workspace)* here. See *CLIENT PATTERNS* for more details.
 
-This is followed by any number of *[app]* lines. These have a simiar format to
+This is followed by any number of *[app]* lines. These have a similar format to
 the *[app]* section detailed above in *APP SECTIONS*, but do not contain any
 settings and do not have an associated *[end]* line.
 
