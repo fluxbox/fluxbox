@@ -307,7 +307,7 @@ void IconbarTool::move(int x, int y) {
 
 void IconbarTool::resize(unsigned int width, unsigned int height) {
     m_icon_container.resize(width, height);
-    m_icon_container.setMaxTotalSize(m_icon_container.orientation() == FbTk::ROT0 || m_icon_container.orientation() ? width : height);
+    m_icon_container.setMaxTotalSize(m_icon_container.orientation() == FbTk::ROT0 || m_icon_container.orientation() == FbTk::ROT180 ? width : height);
     renderTheme();
 }
 
@@ -315,7 +315,7 @@ void IconbarTool::moveResize(int x, int y,
                              unsigned int width, unsigned int height) {
 
     m_icon_container.moveResize(x, y, width, height);
-    m_icon_container.setMaxTotalSize(m_icon_container.orientation() == FbTk::ROT0 || m_icon_container.orientation() ? width : height);
+    m_icon_container.setMaxTotalSize(m_icon_container.orientation() == FbTk::ROT0 || m_icon_container.orientation() == FbTk::ROT180 ? width : height);
     renderTheme();
 }
 
