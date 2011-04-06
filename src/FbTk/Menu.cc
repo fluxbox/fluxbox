@@ -67,7 +67,7 @@
 
 #ifdef DEBUG
 #include <iostream>
-using std::cout;
+using std::cerr;
 using std::endl;
 #endif // DEBUG
 
@@ -254,9 +254,10 @@ void Menu::fixMenuItemIndices() {
 int Menu::remove(unsigned int index) {
     if (index >= menuitems.size()) {
 #ifdef DEBUG
-        cout << "Bad index (" << index << ") given to Menu::remove()"
-                  << " -- should be between 0 and " << menuitems.size()-1
-                  << " inclusive." << endl;
+        cerr << __FILE__ << "(" << __LINE__ << ") Bad index (" << index
+             << ") given to Menu::remove()"
+             << " -- should be between 0 and " << menuitems.size()-1
+             << " inclusive." << endl;
 #endif // DEBUG
         return -1;
     }
@@ -705,7 +706,8 @@ void Menu::drawSubmenu(unsigned int index) {
         // ensure we do not divide by 0 and thus cause a SIGFPE
         if (m_rows_per_column == 0) {
 #if DEBUG
-            cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+            cerr << __FILE__ << "(" << __LINE__
+                 << ") Error: m_rows_per_column == 0 in FbTk::Menu::drawSubmenu()\n";
 #endif
             return;
         }
@@ -780,7 +782,8 @@ int Menu::drawItem(FbDrawable &drawable, unsigned int index,
     // ensure we do not divide by 0 and thus cause a SIGFPE
     if (m_rows_per_column == 0) {
 #if DEBUG
-        cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+        cerr << __FILE__ << "(" << __LINE__
+             << ") Error: m_rows_per_column == 0 in FbTk::Menu::drawItem()\n";
 #endif
         return 0;
     }
@@ -1269,7 +1272,8 @@ void Menu::clearItem(int index, bool clear, int search_index) {
     // ensure we do not divide by 0 and thus cause a SIGFPE
     if (m_rows_per_column == 0) {
 #if DEBUG
-        cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+        cerr << __FILE__ << "(" << __LINE__
+             << ") Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
 #endif
         return;
     }
@@ -1313,7 +1317,8 @@ void Menu::highlightItem(int index) {
     // ensure we do not divide by 0 and thus cause a SIGFPE
     if (m_rows_per_column == 0) {
 #if DEBUG
-        cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+        cerr << __FILE__ << "(" << __LINE__
+             << ") Error: m_rows_per_column == 0 in FbTk::Menu::highlightItem()\n";
 #endif
         return;
     }
@@ -1378,7 +1383,8 @@ void Menu::drawLine(int index, int size){
     // ensure we do not divide by 0 and thus cause a SIGFPE
     if (m_rows_per_column == 0) {
 #if DEBUG
-        cout << "Error: m_rows_per_column == 0 in FbTk::Menu::clearItem()\n";
+        cerr << __FILE__ << "(" << __LINE__
+             << ") Error: m_rows_per_column == 0 in FbTk::Menu::drawLine()\n";
 #endif
         return;
     }
