@@ -67,14 +67,14 @@ PixmapWithMask *Image::load(const string &filename, int screen_num) {
 
 
     if (filename.empty())
-        return false;
+        return NULL;
 
     // determine file ending
     string extension(StringUtil::toUpper(StringUtil::findExtension(filename)));
 
     // valid handle?
     if (s_image_map.find(extension) == s_image_map.end())
-        return false;
+        return NULL;
 
     string path = locateFile(filename);
     if (!path.empty())
