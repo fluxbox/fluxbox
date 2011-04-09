@@ -24,7 +24,7 @@
 #include "../src/FbTk/StringUtil.hh"
 #include "../src/FbTk/FileUtil.hh"
 
-#include "defaults.hh"
+#include "../src/defaults.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

@@ -20,19 +20,19 @@ all-local: 		menu init apps
 install-pkgdataDATA:
 	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_MENU))
-	$(INSTALL_DATA) $(srcdir)/menu $(DESTDIR)$(DEFAULT_MENU)
+	$(INSTALL_DATA) $(builddir)/menu $(DESTDIR)$(DEFAULT_MENU)
 	@echo "Installing keys file in $(DESTDIR)$(DEFAULT_KEYS)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_KEYS))
 	$(INSTALL_DATA) $(srcdir)/keys $(DESTDIR)$(DEFAULT_KEYS)
 	@echo "Installing apps file in $(DESTDIR)$(DEFAULT_APPS)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_APPS))
-	$(INSTALL_DATA) $(srcdir)/apps $(DESTDIR)$(DEFAULT_APPS)
+	$(INSTALL_DATA) $(builddir)/apps $(DESTDIR)$(DEFAULT_APPS)
 	@echo "Installing overlay file in $(DESTDIR)$(DEFAULT_OVERLAY)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_OVERLAY))
 	$(INSTALL_DATA) $(srcdir)/overlay $(DESTDIR)$(DEFAULT_OVERLAY)
 	@echo "Installing init file in $(DESTDIR)$(DEFAULT_INIT)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_INIT))
-	$(INSTALL_DATA) $(srcdir)/init $(DESTDIR)$(DEFAULT_INIT)
+	$(INSTALL_DATA) $(builddir)/init $(DESTDIR)$(DEFAULT_INIT)
 	@echo "Installing windowmenu file in $(DESTDIR)$(DEFAULT_WINDOWMENU)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_WINDOWMENU))
 	$(INSTALL_DATA) $(srcdir)/windowmenu $(DESTDIR)$(DEFAULT_WINDOWMENU)

@@ -58,6 +58,7 @@ defaults.hh: Makefile
 
 defaults.cc: force
 	@( \
+		GITDIR=$(top_srcdir)/.git; \
 		echo '#include "defaults.hh"'; \
 		echo ''; \
 		echo 'std::string realProgramName(const std::string& name) {'; \
@@ -65,7 +66,7 @@ defaults.cc: force
 		echo '}'; \
 		echo ''; \
 		echo 'const char* gitrevision() {'; \
-		echo '  return "'`cat ../.git/$$(cat ../.git/HEAD | cut -f 2 -d ' ')`'";';\
+		echo '  return "'`cat $$GITDIR/$$(cat $$GITDIR/HEAD | cut -f 2 -d ' ')`'";';\
 		echo '}' ) > defaults_tmp.cc
 	@if ! cmp defaults_tmp.cc defaults.cc ; then cp defaults_tmp.cc defaults.cc; fi
 	@rm defaults_tmp.cc

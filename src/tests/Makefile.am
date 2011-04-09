@@ -1,4 +1,4 @@
-INCLUDES= -I..
+INCLUDES= -I$(top_srcdir)/src
 
 noinst_PROGRAMS= \
 	 testTexture \
