@@ -122,10 +122,10 @@ Common tips to use with $command:
 
    perl -pi -e 's,([^f]|^)bsetbg,$command,' filename
 
-2) If you want the style to set the wallpaper and you want $command to
-   remember the previous wallpaper put this in your ~/.fluxbox/init
+2) If you want to set the wallpaper and you want $command to
+   remember the previous wallpaper put this in your ~/.fluxbox/overlay
 
-   session.screen0.rootCommand:    $command -l
+   background: none
 
 3) Use $command -i to find out what wallpapersetter $command will be
    used and what $command thinks about it.
