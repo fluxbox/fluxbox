@@ -5,7 +5,7 @@
 # by Pax, thanks!)
 # update: added *.tab.* stuff to make fluxbox look real cool :)
 
-toolbar:                             Raised Gradient Veritcal
+toolbar:                             Raised Gradient Vertical
 toolbar.color:                       rgb:62/70/85
 toolbar.colorTo:                     rgb:56/66/75
 
