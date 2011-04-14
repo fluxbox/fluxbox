@@ -362,7 +362,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     // we're going to manage the screen, so now add our pid
 #ifdef HAVE_GETPID
-    pid_t bpid = getpid();
+    unsigned long bpid = static_cast<unsigned long>(getpid());
 
     rootWindow().changeProperty(fluxbox->getFluxboxPidAtom(), XA_CARDINAL,
                                 sizeof(pid_t) * 8, PropModeReplace,
