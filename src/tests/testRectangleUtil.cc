@@ -35,12 +35,11 @@ int test_insideBorder() {
         { { 0, 0, 10, 10 }, 20, 20, 2, false }  // outside for sure
     };
 
-    int i;
-    for (i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
+    for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
         const _t& t = tests[i];
         int result = RectangleUtil::insideBorder<Rect>(t.rect, t.x, t.y, t.bw);
 
-        printf("  %d: is (%02d|%02d) inside [%d %d]-[%d %d] with border %d: %s, %s\n",
+        printf("  %u: is (%02d|%02d) inside [%d %d]-[%d %d] with border %d: %s, %s\n",
                 i,
                 t.x, t.y,
                 t.rect.x(), t.rect.y(),
@@ -66,11 +65,11 @@ int test_overlapRectangles() {
     };
 
     struct _test {
-        bool operator()(const Rect& a, const Rect& b, int truth, int i) {
+        bool operator()(const Rect& a, const Rect& b, int truth, unsigned int i) {
 
             int result = RectangleUtil::overlapRectangles(a, b);
 
-            printf("  %d: [%2d %2d]-[%2d %2d] %s [%2d %2d]-[%2d %2d]: %s\n",
+            printf("  %u: [%2d %2d]-[%2d %2d] %s [%2d %2d]-[%2d %2d]: %s\n",
                     i,
                     a.x(), a.y(),
                     a.x() + (int)a.width(),
@@ -100,8 +99,7 @@ int test_overlapRectangles() {
 
 
     _test test;
-    int i;
-    for (i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
+    for (unsigned int i = 0; i < sizeof(tests)/sizeof(_t); ++i) {
         test(tests[i].a, tests[i].b, tests[i].truth, i);
         test(tests[i].b, tests[i].a, tests[i].truth, i);
     }

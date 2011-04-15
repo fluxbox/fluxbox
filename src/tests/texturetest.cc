@@ -79,8 +79,8 @@ private:
         m_gc.setForeground(Color("black", screenNumber()));
 
         const int step_size = m_box_size + 5;
-        int next_x = 5;
-        int next_y = 5;
+        unsigned int next_x = 5;
+        unsigned int next_y = 5;
 
         TestTheme tm(screenNumber());
         std::auto_ptr<ThemeItem<Texture> > text;
