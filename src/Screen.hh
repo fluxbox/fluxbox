@@ -102,7 +102,7 @@ public:
 
     bool isRootColormapInstalled() const { return root_colormap_installed; }
     bool isScreenManaged() const { return managed; }
-    bool isWorkspaceWarping() const { return *resource.workspace_warping; }
+    bool isWorkspaceWarping() const { return (m_workspaces_list.size() > 1) && *resource.workspace_warping; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
     bool doOpaqueMove() const { return *resource.opaque_move; }
