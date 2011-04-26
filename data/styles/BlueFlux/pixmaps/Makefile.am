@@ -8,4 +8,4 @@ style_DATA = button_close_active.xpm button_close_pressed.xpm \
 	button_toolbar.xpm button_toolbar_pressed.xpm menu_frame.xpm title_bar.xpm \
 	title_bar_unfocus.xpm toolbar.xpm toolbar_label.xpm
 
-EXTRA_DIST=$(style_DATA)
+include ../../Makefile.include

@@ -10,4 +10,4 @@ style_DATA = bullet.xpm closepr.xpm frame.xpm maxfcs.xpm \
 	stickufcs.xpm stuckufcs.xpm tbarufcs.xpm \
 	unshadefcs.xpm unshadeufcs.xpm windowlabelufcs.xpm
 
-EXTRA_DIST=$(style_DATA)
+include ../../Makefile.include

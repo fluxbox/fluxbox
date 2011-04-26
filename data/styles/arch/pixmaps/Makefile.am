@@ -8,4 +8,5 @@ style_DATA = closepr.xpm gripfcs.xpm maxufcs.xpm menuiconufcs.xpm \
 	frame.xpm maxpr.xpm menuiconpr.xpm minpr.xpm shadefcs.xpm \
 	 stickfcs.xpm stuckfcs.xpm tbarufcs.xpm unshadepr.xpm
 
-EXTRA_DIST=$(style_DATA)
+
+include ../../Makefile.include

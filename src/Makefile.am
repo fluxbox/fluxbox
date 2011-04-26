@@ -37,8 +37,8 @@ PROGRAM_SUFFIX=@program_suffix@
 AM_CPPFLAGS=
 
 bin_PROGRAMS= fluxbox
-BUILT_SOURCES = defaults.hh
-CONFIG_CLEAN_FILES = defaults.hh
+BUILT_SOURCES = defaults.hh defaults.cc
+CONFIG_CLEAN_FILES = defaults.hh defaults.cc
 defaults.hh: Makefile
 	@( \
 		echo '// This file is generated from Makefile. Do not edit!'; \
