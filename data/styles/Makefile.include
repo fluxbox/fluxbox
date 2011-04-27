@@ -1,0 +1,10 @@
+## included by all Makefile.am files under the data/styles directory
+
+MAINTAINERCLEANFILES = Makefile.in
+
+EXTRA_DIST=$(style_DATA)
+
+uninstall-hook:
+	rmdir $(DESTDIR)$(styledir)
+distclean-local:
+	rm -f *\~
