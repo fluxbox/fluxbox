@@ -50,3 +50,5 @@ util/startfluxbox
 version.h
 install-sh
 missing
+*~
+.*.swp
