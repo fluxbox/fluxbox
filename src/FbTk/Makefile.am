@@ -46,7 +46,6 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	StringUtil.hh StringUtil.cc Parser.hh Parser.cc \
 	RegExp.hh RegExp.cc \
 	FbString.hh FbString.cc \
-	Subject.hh Subject.cc Observer.hh Observer.cc SimpleObserver.hh \
 	AutoReloadHelper.hh AutoReloadHelper.cc \
 	Transparent.hh Transparent.cc \
 	FbPixmap.hh FbPixmap.cc \
@@ -63,7 +62,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	TypeAhead.hh SearchResult.hh SearchResult.cc ITypeAheadable.hh \
 	Select2nd.hh STLUtil.hh \
 	CachedPixmap.hh CachedPixmap.cc \
-	Slot.hh Signal.hh MemFun.hh RelaySignal.hh SelectArg.hh \
+	Slot.hh Signal.hh MemFun.hh SelectArg.hh \
 	Util.hh \
 	${xpm_SOURCE} \
 	${xft_SOURCE} \

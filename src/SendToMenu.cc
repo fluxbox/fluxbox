@@ -30,7 +30,6 @@
 
 #include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/Command.hh"
-#include "FbTk/SimpleObserver.hh"
 #include "FbTk/MemFun.hh"
 
 class SendToCmd: public FbTk::Command<void> {

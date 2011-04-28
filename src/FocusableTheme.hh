@@ -23,8 +23,8 @@
 #define FOCUSABLETHEME_HH
 
 #include "Focusable.hh"
+#include "FbTk/MemFun.hh"
 #include "FbTk/Theme.hh"
-#include "FbTk/RelaySignal.hh"
 
 template <typename BaseTheme>
 class FocusableTheme: public FbTk::ThemeProxy<BaseTheme> {

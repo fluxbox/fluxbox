@@ -25,7 +25,6 @@
 #include "Screen.hh"
 
 #include "FbTk/STLUtil.hh"
-#include "FbTk/Subject.hh"
 #include "FbTk/Timer.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/MemFun.hh"

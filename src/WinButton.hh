@@ -23,7 +23,6 @@
 #define WINBUTTON_HH
 
 #include "FbTk/Button.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/Signal.hh"
 

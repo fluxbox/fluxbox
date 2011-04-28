@@ -35,10 +35,8 @@
 #include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/Resource.hh"
-#include "FbTk/Subject.hh"
 #include "FbTk/MultLayers.hh"
 #include "FbTk/NotCopyable.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/Signal.hh"
 
 #include "FocusControl.hh"

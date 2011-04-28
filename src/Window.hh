@@ -317,9 +317,6 @@ public:
     void leaveNotifyEvent(XCrossingEvent &ev);
     //@}
 
-    /// handle Subject notifications
-    void update(FbTk::Subject *subj);
-
     void applyDecorations();
     void toggleDecoration();
 

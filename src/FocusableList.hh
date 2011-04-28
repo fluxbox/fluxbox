@@ -23,9 +23,7 @@
 #define FOCUSABLELIST_HH
 
 #include "FbTk/NotCopyable.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/RefCount.hh"
-#include "FbTk/Subject.hh"
 #include "FbTk/Signal.hh"
 
 #include "ClientPattern.hh"

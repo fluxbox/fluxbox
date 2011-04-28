@@ -27,10 +27,6 @@
 
 #include "FbTk/Signal.hh"
 
-namespace FbTk {
-class Observer;
-}
-
 class BScreen;
 
 /**
