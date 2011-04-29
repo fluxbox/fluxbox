@@ -563,8 +563,7 @@ int run_updates(int old_version, FbTk::ResourceManager &rm) {
     string appsfilename = FbTk::StringUtil::expandFilename(*rc_appsfile);
     string keyfilename = FbTk::StringUtil::expandFilename(*rc_keyfile);
 
-    int i;
-    for (i = 0; i < sizeof(UPDATES) / sizeof(Update); ++i) {
+    for (size_t i = 0; i < sizeof(UPDATES) / sizeof(Update); ++i) {
         if (old_version < UPDATES[i].version) {
             UPDATES[i].update(rm, keyfilename, appsfilename);
             new_version = UPDATES[i].version;
