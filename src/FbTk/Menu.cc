@@ -36,6 +36,7 @@
 #include "MenuItem.hh"
 #include "MenuSeparator.hh"
 #include "ImageControl.hh"
+#include "MemFun.hh"
 #include "MenuTheme.hh"
 #include "App.hh"
 #include "EventManager.hh"
@@ -121,7 +122,7 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     m_hide_timer.fireOnce(true);
 
     // make sure we get updated when the theme is reloaded
-    tm.reconfigSig().attach(this);
+    m_tracker.join(tm.reconfigSig(), MemFun(*this, &Menu::themeReconfigured));
 
     m_title_vis = true;
 
@@ -1243,7 +1244,6 @@ void Menu::update(FbTk::Subject *subj) {
     }
     reconfigure();
 }
-
 
 void Menu::setScreen(int x, int y, int w, int h) {
     m_screen_x = x;

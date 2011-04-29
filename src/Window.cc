@@ -291,7 +291,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     m_parent(client.screen().rootWindow()),
     m_resize_corner(RIGHTBOTTOM) {
 
-    m_theme.reconfigSig().attach(this);
+    join(m_theme.reconfigSig(), FbTk::MemFun(*this, &FluxboxWindow::themeReconfigured));
     m_frame.frameExtentSig().attach(this);
 
     init();
@@ -2682,13 +2682,15 @@ void FluxboxWindow::setTitle(const std::string& title, Focusable &client) {
 }
 
 void FluxboxWindow::update(FbTk::Subject *subj) {
-    if (subj == &m_theme.reconfigSig()) {
-        frame().applyDecorations();
-        sendConfigureNotify();
-    } else if (m_initialized && subj == &m_frame.frameExtentSig()) {
+    if (m_initialized && subj == &m_frame.frameExtentSig()) {
         Fluxbox::instance()->updateFrameExtents(*this);
         sendConfigureNotify();
     }
+}
+
+void FluxboxWindow::themeReconfigured() {
+    frame().applyDecorations();
+    sendConfigureNotify();
 }
 
 void FluxboxWindow::workspaceAreaChanged(BScreen &screen) {

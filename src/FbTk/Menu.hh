@@ -195,6 +195,7 @@ private:
     void closeMenu();
     void startHide();
     void stopHide();
+    void themeReconfigured() { update(NULL); }
 
     FbTk::ThemeProxy<MenuTheme> &m_theme;
     Menu *m_parent;
@@ -261,6 +262,8 @@ private:
     bool m_need_update;
     Timer m_submenu_timer;
     Timer m_hide_timer;
+
+    SignalTracker m_tracker;
 };
 
 } // end namespace FbTk

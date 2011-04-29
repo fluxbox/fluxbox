@@ -49,8 +49,7 @@ public:
         return ToolTheme::fallback(item);
     }
 
-    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
-    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual WorkspaceNameTheme &operator *() { return *this; }
     virtual const WorkspaceNameTheme &operator *() const { return *this; }

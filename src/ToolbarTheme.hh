@@ -44,8 +44,7 @@ public:
     int height() const { return *m_height; }
     int buttonSize() const { return *m_button_size; }
 
-    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
-    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual ToolbarTheme &operator *() { return *this; }
     virtual const ToolbarTheme &operator *() const { return *this; }

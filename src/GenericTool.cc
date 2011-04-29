@@ -21,6 +21,7 @@
 
 #include "GenericTool.hh"
 #include "FbTk/FbWindow.hh"
+#include "FbTk/MemFun.hh"
 #include "ToolTheme.hh"
 
 #include <string>
@@ -31,7 +32,7 @@ GenericTool::GenericTool(FbTk::FbWindow *new_window, ToolbarItem::Type type,
     m_window(new_window),
     m_theme(theme) {
 
-    theme.reconfigSig().attach(this);
+    m_tracker.join(theme.reconfigSig(), FbTk::MemFun(*this, &GenericTool::themeReconfigured));
 
     if (new_window == 0)
         throw std::string("GenericTool: Error! Tried to create a tool with window = 0");
@@ -80,7 +81,7 @@ void GenericTool::renderTheme(int alpha) {
     m_window->clear();
 }
 
-void GenericTool::update(FbTk::Subject *subj) {
+void GenericTool::themeReconfigured() {
     m_window->clear();
 }
 

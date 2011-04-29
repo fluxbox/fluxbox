@@ -492,6 +492,8 @@ private:
     void updateClientLeftWindow();
     void grabButtons();
 
+    void themeReconfigured();
+
     /**
      * Calculates insertition position in the list by
      * using pixel position x and y.

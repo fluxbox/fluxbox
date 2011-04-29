@@ -263,13 +263,13 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     _FB_USES_NLS;
 
     // attach to theme and root window change signal
-    theme().reconfigSig().attach(this);
+    join(theme().reconfigSig(), FbTk::MemFun(*this, &Slit::reconfigure));
 
     join(scr.resizeSig(),
          FbTk::MemFun(*this, &Slit::screenSizeChanged));
 
     join(scr.bgChangeSig(),
-         FbTk::MemFun(*this, &Slit::updateForScreen));
+         FbTk::MemFunIgnoreArgs(*this, &Slit::reconfigure));
 
     scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
 
@@ -1042,12 +1042,8 @@ void Slit::screenSizeChanged(BScreen &screen) {
 #endif // XINERAMA
 }
 
-void Slit::updateForScreen(BScreen &screen) {
-    reconfigure();
-}
-
 void Slit::update(FbTk::Subject*) {
-    updateForScreen(screen());
+    reconfigure();
 }
 
 void Slit::clearWindow() {

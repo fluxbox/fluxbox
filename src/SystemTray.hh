@@ -40,7 +40,6 @@ class AtomHandler;
 
 namespace FbTk {
 template <class T> class ThemeProxy;
-class Observer;
 }
 
 class SystemTray: public ToolbarItem, public FbTk::EventHandler,
@@ -89,10 +88,6 @@ public:
     static Atom getXEmbedInfoAtom();
 
 private:
-    /// Called when an update for a screen is needed.
-    void updateForScreen(BScreen &screen) {
-        update();
-    }
     void update();
 
     typedef std::list<TrayWindow *> ClientList;
@@ -116,7 +111,6 @@ private:
     // gaim/pidgin seems to barf if the selection is not an independent window.
     // I suspect it's an interacton with parent relationship and gdk window caching.
     FbTk::FbWindow m_selection_owner;
-    std::auto_ptr<FbTk::Observer> m_observer;
 };
 
 #endif // SYSTEMTRAY_HH

@@ -28,6 +28,7 @@
 #include "CommandDialog.hh"
 #include "fluxbox.hh"
 
+#include "FbTk/MemFun.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/TextUtils.hh"
@@ -168,7 +169,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
                  screen.name() + ".strftimeFormat", screen.altName() + ".StrftimeFormat"),
     m_stringconvertor(FbTk::StringConvertor::ToFbString) {
     // attach signals
-    theme.reconfigSig().attach(this);
+    m_tracker.join(theme.reconfigSig(), FbTk::MemFun(*this, &ClockTool::themeReconfigured));
 
     std::string time_locale = setlocale(LC_TIME, NULL);
     size_t pos = time_locale.find('.');
@@ -197,7 +198,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     menu.insert(_FB_XTEXT(Toolbar, ClockEditFormat,   "Edit Clock Format",   "edit Clock Format") , editformat_cmd);
 
 
-    update(0);
+    themeReconfigured();
 }
 
 ClockTool::~ClockTool() {
@@ -233,10 +234,10 @@ void ClockTool::hide() {
 
 void ClockTool::setTimeFormat(const std::string &format) {
     *m_timeformat = format;
-    update(0);
+    themeReconfigured();
 }
 
-void ClockTool::update(FbTk::Subject *subj) {
+void ClockTool::themeReconfigured() {
     updateTime();
 
     // + 2 to make the entire text fit inside
@@ -316,7 +317,7 @@ void ClockTool::updateTime() {
 void ClockTool::updateSizing() {
     m_button.setBorderWidth(m_theme->border().width());
     // resizes if new timeformat
-    update(0);
+    themeReconfigured();
 }
 
 void ClockTool::reRender() {

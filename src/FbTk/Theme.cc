@@ -56,7 +56,7 @@ struct LoadThemeHelper {
         ThemeManager::ThemeList::iterator it = tmlist.begin();
         ThemeManager::ThemeList::iterator it_end = tmlist.end();
         for (; it != it_end; ++it) {
-            (*it)->reconfigSig().notify();
+            (*it)->reconfigSig().emit();
         }
     }
 

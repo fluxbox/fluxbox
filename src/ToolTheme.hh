@@ -23,7 +23,6 @@
 #ifndef TOOLTHEME_HH
 #define TOOLTHEME_HH
 
-
 #include "FbTk/TextTheme.hh"
 #include "FbTk/BorderTheme.hh"
 #include "FbTk/Texture.hh"
@@ -44,8 +43,7 @@ public:
     int alpha() const { return m_alpha; }
     void setAlpha(int alpha) { m_alpha = alpha; }
 
-    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
-    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual ToolTheme &operator *() { return *this; }
     virtual const ToolTheme &operator *() const { return *this; }

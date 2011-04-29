@@ -25,7 +25,7 @@
 #include "ToolbarItem.hh"
 
 #include "FbTk/NotCopyable.hh"
-#include "FbTk/Observer.hh"
+#include "FbTk/Signal.hh"
 
 #include <memory>
 
@@ -37,7 +37,7 @@ template <class T> class ThemeProxy;
 }
 
 /// helper class for simple tools, i.e buttons etc
-class GenericTool: public ToolbarItem, public FbTk::Observer, private FbTk::NotCopyable {
+class GenericTool: public ToolbarItem, private FbTk::NotCopyable {
 public:
     GenericTool(FbTk::FbWindow *new_window, ToolbarItem::Type type,
                 FbTk::ThemeProxy<ToolTheme> &theme);
@@ -63,10 +63,11 @@ protected:
     virtual void renderTheme(int alpha);
 
 private:
-    void update(FbTk::Subject *subj);
+    void themeReconfigured();
     
     std::auto_ptr<FbTk::FbWindow> m_window;
     FbTk::ThemeProxy<ToolTheme> &m_theme;
+    FbTk::SignalTracker m_tracker;
 };
 
 #endif // GENERICTOOL_HH

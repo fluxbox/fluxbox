@@ -26,8 +26,8 @@
 
 #include "ToolbarItem.hh"
 
+#include "FbTk/Signal.hh"
 #include "FbTk/TextButton.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Timer.hh"
 #include "FbTk/FbString.hh"
@@ -37,12 +37,11 @@ class BScreen;
 
 namespace FbTk {
 class ImageControl;
-class Subject;
 class Menu;
 template <class T> class ThemeProxy;
 }
 
-class ClockTool:public ToolbarItem, public FbTk::Observer {
+class ClockTool:public ToolbarItem {
 public:
     ClockTool(const FbTk::FbWindow &parent, FbTk::ThemeProxy<ToolTheme> &theme,
               BScreen &screen, FbTk::Menu &menu);
@@ -68,7 +67,7 @@ public:
 
 private:
     void updateTime();
-    void update(FbTk::Subject *subj);
+    void themeReconfigured();
     void renderTheme(int alpha);
     void reRender();
     void updateSizing();
@@ -83,6 +82,8 @@ private:
     FbTk::Resource<std::string> m_timeformat;
 
     FbTk::StringConvertor m_stringconvertor;
+
+    FbTk::SignalTracker m_tracker;
 };
 
 #endif // CLOCKTOOL_HH

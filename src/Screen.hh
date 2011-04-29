@@ -75,7 +75,6 @@ class Menu;
 class ImageControl;
 class LayerItem;
 class FbWindow;
-class Subject;
 }
 
 
@@ -83,8 +82,7 @@ class Subject;
 /**
  Create workspaces, handles switching between workspaces and windows
  */
-class BScreen: public FbTk::EventHandler, public FbTk::Observer,
-               private FbTk::NotCopyable {
+class BScreen: public FbTk::EventHandler, private FbTk::NotCopyable {
 public:
     typedef std::list<FluxboxWindow *> Icons;
 
@@ -219,9 +217,6 @@ public:
     ScreenSignal &resizeSig() { return m_resize_sig; }
     ScreenSignal &bgChangeSig() { return m_bg_change_sig; }
     //@}
-
-    /// called when the screen receives a signal from a subject
-    void update(FbTk::Subject *subj);
 
     void propertyNotify(Atom atom);
     void keyPressEvent(XKeyEvent &ke);
@@ -476,9 +471,11 @@ private:
     void setupConfigmenu(FbTk::Menu &menu);
     void renderGeomWindow();
     void renderPosWindow();
+    void focusedWinFrameThemeReconfigured();
 
     const Strut* availableWorkspaceArea(int head) const;
 
+    FbTk::SignalTracker m_tracker;
     ScreenSubject m_reconfigure_sig; ///< reconfigure signal
 
 

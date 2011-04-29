@@ -25,6 +25,7 @@
 #include "FbMenu.hh"
 
 #include "FbTk/Signal.hh"
+#include "FbTk/Subject.hh"
 
 class BScreen;
 class FluxboxWindow;

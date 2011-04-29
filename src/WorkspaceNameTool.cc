@@ -44,11 +44,11 @@ WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent,
 
     // setup signals
     join(screen.currentWorkspaceSig(),
-         FbTk::MemFun(*this, &WorkspaceNameTool::updateForScreen));
+         FbTk::MemFunIgnoreArgs(*this, &WorkspaceNameTool::update));
     join(screen.workspaceNamesSig(),
-         FbTk::MemFun(*this, &WorkspaceNameTool::updateForScreen));
+         FbTk::MemFunIgnoreArgs(*this, &WorkspaceNameTool::update));
 
-    theme.reconfigSig().attach(this);
+    join(theme.reconfigSig(), FbTk::MemFun(*this, &WorkspaceNameTool::update));
 }
 
 WorkspaceNameTool::~WorkspaceNameTool() {
@@ -70,12 +70,8 @@ void WorkspaceNameTool::moveResize(int x, int y,
     m_button.moveResize(x, y, width, height);
 }
 
-void WorkspaceNameTool::update(FbTk::Subject *subj) {
-    updateForScreen(m_screen);
-}
-
-void WorkspaceNameTool::updateForScreen(BScreen &screen) {
-    m_button.setText(screen.currentWorkspace()->name());
+void WorkspaceNameTool::update() {
+    m_button.setText(m_screen.currentWorkspace()->name());
     if (m_button.width() != width()) {
         resize(width(), height());
         resizeSig().notify();

@@ -134,7 +134,6 @@ public:
 private:
     /// Called when screen has changed
     void screenSizeChanged(BScreen &screen);
-    void updateForScreen(BScreen &screen);
 
     void updateAlpha();
     void clearWindow();

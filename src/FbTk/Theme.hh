@@ -26,8 +26,8 @@
 #ifndef FBTK_THEME_HH
 #define FBTK_THEME_HH
 
+#include "Signal.hh"
 #include "XrmDatabaseHelper.hh"
-#include "Subject.hh"
 
 #include <string>
 #include <list>
@@ -107,15 +107,13 @@ public:
     template <typename T>
     void remove(ThemeItem<T> &item);
     virtual bool fallback(ThemeItem_base &) { return false; }
-    FbTk::Subject &reconfigSig() { return m_reconfig_sig; }
-    const FbTk::Subject &reconfigSig() const { return m_reconfig_sig; }
-
+    Signal<void> &reconfigSig() { return m_reconfig_sig; }
 
 private:
     const int m_screen_num;
 
     ItemList m_themeitems;
-    FbTk::Subject m_reconfig_sig;
+    Signal<void> m_reconfig_sig;
 };
 
 /// Proxy interface for themes, so they can be substituted dynamically
@@ -124,8 +122,7 @@ class ThemeProxy {
 public:
     virtual ~ThemeProxy() { }
 
-    virtual Subject &reconfigSig() = 0;
-    virtual const Subject &reconfigSig() const = 0;
+    virtual Signal<void> &reconfigSig() = 0;
 
     virtual BaseTheme &operator *() = 0;
     virtual const BaseTheme &operator *() const = 0;

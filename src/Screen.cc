@@ -435,7 +435,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     m_menutheme->setDelay(*resource.menu_delay);
 
-    focusedWinFrameTheme()->reconfigSig().attach(this);// for geom window
+    m_tracker.join(focusedWinFrameTheme()->reconfigSig(),
+            FbTk::MemFun(*this, &BScreen::focusedWinFrameThemeReconfigured));
 
 
     renderGeomWindow();
@@ -749,10 +750,7 @@ unsigned int BScreen::maxBottom(int head) const {
         return doFullMax() ? height() : height() - availableWorkspaceArea(head)->bottom();
 }
 
-void BScreen::update(FbTk::Subject *subj) {
-    // for now we're only listening to the theme sig, so no object check
-    // if another signal is added later, will need to differentiate here
-
+void BScreen::focusedWinFrameThemeReconfigured() {
     renderGeomWindow();
     renderPosWindow();
 

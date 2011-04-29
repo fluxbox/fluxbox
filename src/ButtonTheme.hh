@@ -43,8 +43,7 @@ public:
     int scale() const { return *m_scale; } // scale factor for inside objects
     const std::string &name() { return m_name; }
 
-    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
-    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual ButtonTheme &operator *() { return *this; }
     virtual const ButtonTheme &operator *() const { return *this; }

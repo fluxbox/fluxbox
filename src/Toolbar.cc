@@ -231,8 +231,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     m_observers.push_back(makeObserver(*this, &Toolbar::rearrangeItems));
     // we need to get notified when the theme is reloaded
     m_observers.push_back(makeObserver(*this, &Toolbar::reconfigure));
-    m_theme.reconfigSig().attach(m_observers.back());
     screen().reconfigureSig().attach(m_observers.back()); // get this on antialias change
+    m_signal_tracker.join(m_theme.reconfigSig(), FbTk::MemFun(*this, &Toolbar::reconfigure));
 
     // listen to screen size changes
     m_signal_tracker.join(screen().resizeSig(),

@@ -65,8 +65,7 @@ public:
     FbTk::PixmapWithMask &titlePixmap() { return *m_title_pm; }
     const FbTk::PixmapWithMask &titlePixmap() const { return *m_title_pm; }
 
-    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
-    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual WinButtonTheme &operator *() { return *this; }
     virtual const WinButtonTheme &operator *() const { return *this; }

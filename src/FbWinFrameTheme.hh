@@ -79,8 +79,7 @@ public:
 
     IconbarTheme &iconbarTheme() { return m_iconbar_theme; }
 
-    virtual FbTk::Subject &reconfigSig() { return FbTk::Theme::reconfigSig(); }
-    virtual const FbTk::Subject &reconfigSig() const { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual FbWinFrameTheme &operator *() { return *this; }
     virtual const FbWinFrameTheme &operator *() const { return *this; }

@@ -95,12 +95,15 @@ private:
     /// add icons to the list
     void updateList();
 
+    void themeReconfigured();
+
     BScreen &m_screen;
     FbTk::Container m_icon_container;
     IconbarTheme &m_theme;
     FbTk::ThemeProxy<IconbarTheme> &m_focused_theme, &m_unfocused_theme;
     FbTk::CachedPixmap m_empty_pm; ///< pixmap for empty container
 
+    FbTk::SignalTracker m_tracker;
 
     std::auto_ptr<FocusableList> m_winlist;
     IconMap m_icons;

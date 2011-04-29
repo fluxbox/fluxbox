@@ -291,10 +291,12 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     menu.insert(m_menu.label().logical(), &m_menu);
 
     // setup signals
-    theme.reconfigSig().attach(this);
-    focused_theme.reconfigSig().attach(this);
-    unfocused_theme.reconfigSig().attach(this);
-    setMode(*m_rc_mode);
+    m_tracker.join(theme.reconfigSig(), FbTk::MemFun(*this, &IconbarTool::themeReconfigured));
+    m_tracker.join(focused_theme.reconfigSig(),
+            FbTk::MemFun(*this, &IconbarTool::themeReconfigured));
+    m_tracker.join(unfocused_theme.reconfigSig(),
+            FbTk::MemFun(*this, &IconbarTool::themeReconfigured));
+    themeReconfigured();
 }
 
 IconbarTool::~IconbarTool() {
@@ -383,6 +385,10 @@ unsigned int IconbarTool::borderWidth() const {
     return m_icon_container.borderWidth();
 }
 
+void IconbarTool::themeReconfigured() {
+    setMode(*m_rc_mode);
+}
+
 void IconbarTool::update(FbTk::Subject *subj) {
     // ignore updates if we're shutting down
     if (m_screen.isShuttingdown()) {
@@ -395,13 +401,6 @@ void IconbarTool::update(FbTk::Subject *subj) {
 
     *m_rc_client_width = FbTk::Util::clamp(*m_rc_client_width, 10, 400);
     m_icon_container.setMaxSizePerClient(*m_rc_client_width);
-
-    if (subj == &m_focused_theme.reconfigSig() ||
-        subj == &m_unfocused_theme.reconfigSig() ||
-        subj == &m_theme.reconfigSig()) {
-        setMode(*m_rc_mode);
-        return;
-    }
 
     // lock graphic update
     m_icon_container.setUpdateLock(true);

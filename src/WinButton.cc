@@ -44,7 +44,8 @@ WinButton::WinButton(FluxboxWindow &listen_to,
     m_theme(theme), m_pressed_theme(pressed),
     m_icon_pixmap(0), m_icon_mask(0),
     overrode_bg(false), overrode_pressed(false) {
-    theme.reconfigSig().attach(this);
+
+    join(theme.reconfigSig(), FbTk::MemFun(*this, &WinButton::updateAll));
 
     if (buttontype == MENUICON)
         update(0);
