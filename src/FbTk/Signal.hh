@@ -101,17 +101,21 @@ private:
     Trackers m_trackers; ///< all instances that tracks this signal.
 };
 
-/// Signal with no argument
-template <typename ReturnType>
-class Signal0: public SignalHolder {
+struct EmptyArg {};
+
+} // namespace SigImpl
+
+
+/// Specialization for three arguments.
+template <typename ReturnType,
+          typename Arg1 = SigImpl::EmptyArg, typename Arg2 = SigImpl::EmptyArg, typename Arg3 = SigImpl::EmptyArg >
+class Signal: public SigImpl::SignalHolder {
 public:
-    typedef Slot0<ReturnType> SlotType;
+    typedef SigImpl::Slot3<ReturnType, Arg1, Arg2, Arg3> SlotType;
 
-    ~Signal0() { }
-
-    void emit() {
+    void emit(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SlotType&>(*it)();
+            static_cast<SlotType&>(*it)(arg1, arg2, arg3);
         }
     }
 
@@ -120,33 +124,11 @@ public:
     }
 };
 
-/// Signal with one argument
-template <typename ReturnType, typename Arg1>
-class Signal1: public SignalHolder {
-public:
-    typedef Slot1<ReturnType, Arg1> SlotType;
-
-    ~Signal1() { }
-
-    void emit(Arg1 arg) {
-        for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SlotType&>(*it)(arg);
-        }
-    }
-
-    SlotID connect(const SlotType& slot) {
-        return SignalHolder::connect(slot);
-    }
-
-};
-
-/// Signal with two arguments
+/// Specialization for two arguments.
 template <typename ReturnType, typename Arg1, typename Arg2>
-class Signal2: public SignalHolder {
+class Signal<ReturnType, Arg1, Arg2, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
-    typedef Slot2<ReturnType, Arg1, Arg2> SlotType;
-
-    ~Signal2() { }
+    typedef SigImpl::Slot2<ReturnType, Arg1, Arg2> SlotType;
 
     void emit(Arg1 arg1, Arg2 arg2) {
         for ( Iterator it = begin(); it != end(); ++it ) {
@@ -159,54 +141,38 @@ public:
     }
 };
 
-/// Signal with three arguments
-template <typename ReturnType, typename Arg1, typename Arg2, typename Arg3>
-class Signal3: public SignalHolder {
+/// Specialization for one argument.
+template <typename ReturnType, typename Arg1>
+class Signal<ReturnType, Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
-    typedef Slot3<ReturnType, Arg1, Arg2, Arg3> SlotType;
+    typedef SigImpl::Slot1<ReturnType, Arg1> SlotType;
 
-    ~Signal3() { }
-
-    void emit(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+    void emit(Arg1 arg) {
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SlotType&>(*it)(arg1, arg2, arg3);
+            static_cast<SlotType&>(*it)(arg);
         }
     }
 
     SlotID connect(const SlotType& slot) {
         return SignalHolder::connect(slot);
     }
-
 };
 
-struct EmptyArg {};
-
-} // namespace SigImpl
-
-
-/// Specialization for three arguments.
-template <typename ReturnType,
-          typename Arg1 = SigImpl::EmptyArg, typename Arg2 = SigImpl::EmptyArg, typename Arg3 = SigImpl::EmptyArg >
-class Signal: public SigImpl::Signal3< ReturnType, Arg1, Arg2, Arg3 > {
-public:
-};
-
-/// Specialization for two arguments.
-template <typename ReturnType, typename Arg1, typename Arg2>
-class Signal<ReturnType, Arg1, Arg2, SigImpl::EmptyArg>: public SigImpl::Signal2< ReturnType, Arg1, Arg2 > {
-public:
-};
-
-/// Specialization for one argument.
-template <typename ReturnType, typename Arg1>
-class Signal<ReturnType, Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::Signal1< ReturnType, Arg1 > {
-public:
-};
-
-/// Specialization for no argument.
+/// Specialization for no arguments.
 template <typename ReturnType>
-class Signal<ReturnType, SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::Signal0< ReturnType > {
+class Signal<ReturnType, SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
+    typedef SigImpl::Slot0<ReturnType> SlotType;
+
+    void emit() {
+        for ( Iterator it = begin(); it != end(); ++it ) {
+            static_cast<SlotType&>(*it)();
+        }
+    }
+
+    SlotID connect(const SlotType& slot) {
+        return SignalHolder::connect(slot);
+    }
 };
 
 /**
