@@ -153,13 +153,11 @@ void ClientMenu::titleChanged(Focusable& win) {
     // find correct menu item
     ClientMenuItem* cl_item = getMenuItem(*this, win);
     if (cl_item)
-        FbTk::Menu::update(0);
+        themeReconfigured();
 }
 
 void ClientMenu::update(FbTk::Subject *subj) {
-    if (subj && typeid(*subj) == typeid(Focusable::FocusSubject)) {
-
-        Focusable::FocusSubject *fsubj = static_cast<Focusable::FocusSubject *>(subj);
+    if (Focusable::FocusSubject *fsubj = dynamic_cast<Focusable::FocusSubject *>(subj)) {
         Focusable &win = fsubj->win();
 
         // find correct menu item
@@ -169,6 +167,5 @@ void ClientMenu::update(FbTk::Subject *subj) {
         if (cl_item && fsubj == &win.dieSig()) {
             remove(cl_item->getIndex());
         }
-    } else
-        FbTk::Menu::update(subj);
+    }
 }

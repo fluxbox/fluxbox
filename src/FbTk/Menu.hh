@@ -31,7 +31,6 @@
 #include "FbString.hh"
 #include "FbWindow.hh"
 #include "EventHandler.hh"
-#include "Observer.hh"
 #include "MenuTheme.hh"
 #include "Timer.hh"
 #include "TypeAhead.hh"
@@ -44,8 +43,7 @@ class ImageControl;
 template <typename T> class RefCount;
 
 ///   Base class for menus
-class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer,
-            public FbTk::Observer {
+class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer {
 public:
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
     enum { RIGHT = 1, LEFT };
@@ -168,6 +166,7 @@ public:
 
 protected:
 
+    void themeReconfigured();
     void setTitleVisibility(bool b) {
         m_title_vis = b; m_need_update = true;
         if (!b)
@@ -187,15 +186,12 @@ protected:
 
     virtual void internal_hide(bool first = true);
 
-    virtual void update(FbTk::Subject *);
-
 private:
 
     void openSubmenu();
     void closeMenu();
     void startHide();
     void stopHide();
-    void themeReconfigured() { update(NULL); }
 
     FbTk::ThemeProxy<MenuTheme> &m_theme;
     Menu *m_parent;

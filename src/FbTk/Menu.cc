@@ -1233,7 +1233,7 @@ void Menu::stopHide() {
     m_hide_timer.stop();
 }
 
-void Menu::update(FbTk::Subject *subj) {
+void Menu::themeReconfigured() {
 
     m_need_update = true;
 
