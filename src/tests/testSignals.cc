@@ -3,9 +3,6 @@ using namespace std;
 
 #include "../FbTk/Signal.hh"
 #include "../FbTk/MemFun.hh"
-#include "../FbTk/RelaySignal.hh"
-#include "../FbTk/Observer.hh"
-#include "../FbTk/Subject.hh"
 
 #include <string>
 
@@ -153,26 +150,6 @@ int main() {
                        "Visible to the two args function.",
                        2.9);
 
-    }
-    // Test relay new signals to old
-    {
-        cout << "---------- Testing relay of signals" << endl;
-        struct Observer: public FbTk::Observer {
-            void update(FbTk::Subject* subj) {
-                cout << "Observer called." << endl;
-            }
-        };
-        // setup old subject->observer listening
-        FbTk::Subject destination;
-        Observer obs;
-        destination.attach(&obs);
-        // create a new signal and relay it to the
-        // old subject
-        FbTk::Signal<string> source;
-        FbTk::relaySignal(source, destination);
-        // the new signal should now make the old
-        // subject notify its observers
-        source.emit("hello world");
     }
 
     // Test argument selector
