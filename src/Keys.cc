@@ -487,7 +487,7 @@ bool Keys::addBinding(const string &linebuffer) {
                         first_new_key = new t_key(type, mod, key, context,
                                                   isdouble);
                         current_key = first_new_key;
-                    } else if (*current_key->m_command) // already being used
+                    } else if (current_key->m_command) // already being used
                         return false;
                 } else {
                     t_key *temp_key = new t_key(type, mod, key, context,
@@ -511,7 +511,7 @@ bool Keys::addBinding(const string &linebuffer) {
             if (str) // +1 to skip ':'
                 current_key->m_command = FbTk::CommandParser<void>::instance().parse(str + 1);
 
-            if (!str || *current_key->m_command == 0 || mod) {
+            if (!str || current_key->m_command == 0 || mod) {
                 delete first_new_key;
                 return false;
             }
@@ -572,7 +572,7 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         setKeyMode(next_key);
         return true;
     }
-    if (!temp_key || *temp_key->m_command == 0) {
+    if (!temp_key || temp_key->m_command == 0) {
         if (type == KeyPress &&
             !FbTk::KeyUtil::instance().keycodeToModmask(key)) {
             // if we're in the middle of an emacs-style keychain, exit it

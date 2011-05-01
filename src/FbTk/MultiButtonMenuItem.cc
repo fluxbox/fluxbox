@@ -55,7 +55,7 @@ void MultiButtonMenuItem::click(int button, int time, unsigned int mods) {
     if (button <= 0 || button > static_cast<signed>(buttons()) || buttons() == 0)
         return;
 
-    if (*m_button_exe[button - 1] != 0)
+    if (m_button_exe[button - 1] != 0)
         m_button_exe[button - 1]->execute();
 }
 

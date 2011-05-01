@@ -328,7 +328,7 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem,
         // we need to attach command to arguments so command parser can parse it
         string line = str_key + " " + str_cmd;
         FbTk::RefCount<FbTk::Command<void> > command(FbTk::CommandParser<void>::instance().parse(line));
-        if (*command != 0) {
+        if (command != 0) {
             // special NLS default labels
             if (str_label.empty()) {
                 if (str_key == "reconfig" || str_key == "reconfigure") {

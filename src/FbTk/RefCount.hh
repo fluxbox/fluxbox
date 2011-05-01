@@ -27,6 +27,8 @@ namespace FbTk {
 /// holds a pointer with reference counting, similar to std:auto_ptr
 template <typename Pointer>
 class RefCount {
+    typedef Pointer* RefCount::*bool_type;
+
 public:
     RefCount();
     explicit RefCount(Pointer *p);
@@ -35,9 +37,11 @@ public:
     ~RefCount();
     RefCount<Pointer> &operator = (const RefCount<Pointer> &copy);
     RefCount<Pointer> &operator = (Pointer *p);
-    Pointer *operator * () const { return get(); } 
+    Pointer &operator * () const { return *get(); }
     Pointer *operator -> () const { return get(); }
     Pointer *get() const { return m_data; }
+    /// conversion to "bool"
+    operator bool_type() const { return m_data ? &RefCount::m_data : 0; }
 
 private:
     /// increase reference count
@@ -45,7 +49,7 @@ private:
     /// decrease reference count
     void decRefCount();
     Pointer *m_data; ///< data holder
-    mutable unsigned int *m_refcount; ///< holds reference counting
+    unsigned int *m_refcount; ///< holds reference counting
 };
 
 // implementation

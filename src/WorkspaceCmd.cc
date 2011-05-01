@@ -90,7 +90,7 @@ void WindowListCmd::execute() {
                 WindowCmd<void>::setWindow((*it)->fbwindow());
             else if (typeid(**it) == typeid(WinClient))
                 WindowCmd<void>::setClient(dynamic_cast<WinClient *>(*it));
-            if (!*m_filter || m_filter->execute())
+            if (!m_filter || m_filter->execute())
                 m_cmd->execute();
         }
         WindowCmd<void>::setClient(old);

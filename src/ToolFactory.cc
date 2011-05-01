@@ -92,7 +92,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         item = new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
     } else {
         FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(name));
-        if (*cmd == 0) // we need a command
+        if (cmd == 0) // we need a command
             return 0;
 
         // TODO maybe direction of arrows should depend on toolbar layout ?

@@ -98,7 +98,7 @@ void Timer::start() {
     gettimeofday(&m_start, 0);
 
     // only add Timers that actually DO something
-    if ((! m_timing || m_interval != 0) && *m_handler) {
+    if ((! m_timing || m_interval != 0) && m_handler) {
         m_timing = true;
         addTimer(this); //add us to the list
     }
@@ -121,7 +121,7 @@ void Timer::makeEndTime(timeval &tm) const {
 
 
 void Timer::fireTimeout() {
-    if (*m_handler)
+    if (m_handler)
         m_handler->execute();
 }
 
@@ -273,7 +273,7 @@ Command<void> *DelayedCmd::parse(const std::string &command,
         return 0;
 
     RefCount<Command<void> > cmd(CommandParser<void>::instance().parse(cmd_str, trusted));
-    if (*cmd == 0)
+    if (cmd == 0)
         return 0;
 
     int delay = 200000;

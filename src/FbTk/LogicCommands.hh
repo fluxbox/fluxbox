@@ -38,9 +38,9 @@ public:
         m_cond(cond), m_t(t), m_f(f) { }
     void execute() {
         if (m_cond->execute()) {
-            if (*m_t) m_t->execute();
+            if (m_t) m_t->execute();
         } else
-            if (*m_f) m_f->execute();
+            if (m_f) m_f->execute();
     }
     static Command<void> *parse(const std::string &cmd, const std::string &args,
                           bool trusted);

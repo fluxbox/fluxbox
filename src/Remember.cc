@@ -584,8 +584,8 @@ Application* findMatchingPatterns(ClientPattern *pat, Remember::Patterns *patlis
     for (; it != it_end; ++it) {
         if (*it->first == *pat && is_group == it->second->is_grouped &&
             transient == it->second->is_transient &&
-            ((match_pat == 0 && *it->second->group_pattern == 0) ||
-             (match_pat && *match_pat == **it->second->group_pattern))) {
+            ((match_pat == 0 && it->second->group_pattern == 0) ||
+             (match_pat && *match_pat == *it->second->group_pattern))) {
 
             Application *ret = it->second;
 
@@ -887,7 +887,7 @@ void Remember::save() {
             grouped_apps.insert(&a);
             // otherwise output this whole group
             apps_file << "[group]";
-            if (*a.group_pattern)
+            if (a.group_pattern)
                 apps_file << " " << a.group_pattern->toString();
             apps_file << endl;
 
@@ -1366,7 +1366,7 @@ FluxboxWindow *Remember::findGroup(Application *app, BScreen &screen) {
     for (; it != it_end; ++it) {
         if (it->second == app && it->first->fbwindow() &&
             &screen == &it->first->screen() &&
-            (!*app->group_pattern || app->group_pattern->match(*it->first)))
+            (!app->group_pattern || app->group_pattern->match(*it->first)))
             return it->first->fbwindow();
     }
 

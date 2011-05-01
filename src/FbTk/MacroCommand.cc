@@ -42,7 +42,7 @@ M *addCommands(M *macro, const std::string &args, bool trusted) {
         std::list<std::string>::iterator it = cmds.begin(), it_end = cmds.end();
         for (; it != it_end; ++it) {
             cmd = CommandParser<void>::instance().parse(*it, trusted);
-            if (*cmd)
+            if (cmd)
                 macro->add(cmd);
         }
     }

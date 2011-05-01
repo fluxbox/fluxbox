@@ -51,7 +51,7 @@ void CommandDialog::exec(const std::string &text){
     if (cmd.get())
         cmd->execute();
     // post execute
-    if (*m_postcommand != 0)
+    if (m_postcommand != 0)
         m_postcommand->execute();
 }
 
