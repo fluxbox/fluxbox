@@ -22,6 +22,7 @@
 #ifndef FBTK_SIGNAL_HH
 #define FBTK_SIGNAL_HH
 
+#include "RefCount.hh"
 #include "Slot.hh"
 #include <list>
 #include <map>
@@ -49,7 +50,7 @@ public:
     };
 
     /// Do not use this type outside this class
-    typedef std::list<SlotHolder> SlotList;
+    typedef std::list<RefCount<SlotBase> > SlotList;
 
     typedef SlotList::iterator Iterator;
     typedef Iterator SlotID;
@@ -91,7 +92,7 @@ protected:
     Iterator end() { return m_slots.end(); }
 
     /// Connect a slot to this signal. Must only be called by child classes.
-    SlotID connect(const SlotHolder& slot) {
+    SlotID connect(const RefCount<SlotBase>& slot) {
         return m_slots.insert(m_slots.end(), slot);
     }
 
@@ -111,16 +112,17 @@ template <typename ReturnType,
           typename Arg1 = SigImpl::EmptyArg, typename Arg2 = SigImpl::EmptyArg, typename Arg3 = SigImpl::EmptyArg >
 class Signal: public SigImpl::SignalHolder {
 public:
-    typedef SigImpl::Slot3<ReturnType, Arg1, Arg2, Arg3> SlotType;
-
     void emit(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SlotType&>(*it)(arg1, arg2, arg3);
+            static_cast<SigImpl::SlotBase3<ReturnType, Arg1, Arg2, Arg3> &>(**it)(arg1, arg2, arg3);
         }
     }
 
-    SlotID connect(const SlotType& slot) {
-        return SignalHolder::connect(slot);
+    template<typename Functor>
+    SlotID connect(const Functor& functor) {
+        return SignalHolder::connect(FbTk::RefCount<SigImpl::SlotBase>(
+                        new SigImpl::Slot3<ReturnType, Arg1, Arg2, Arg3, Functor>(functor)
+                    ));
     }
 };
 
@@ -128,16 +130,17 @@ public:
 template <typename ReturnType, typename Arg1, typename Arg2>
 class Signal<ReturnType, Arg1, Arg2, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
-    typedef SigImpl::Slot2<ReturnType, Arg1, Arg2> SlotType;
-
     void emit(Arg1 arg1, Arg2 arg2) {
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SlotType&>(*it)(arg1, arg2);
+            static_cast<SigImpl::SlotBase2<ReturnType, Arg1, Arg2> &>(**it)(arg1, arg2);
         }
     }
 
-    SlotID connect(const SlotType& slot) {
-        return SignalHolder::connect(slot);
+    template<typename Functor>
+    SlotID connect(const Functor& functor) {
+        return SignalHolder::connect(FbTk::RefCount<SigImpl::SlotBase>(
+                        new SigImpl::Slot2<ReturnType, Arg1, Arg2, Functor>(functor)
+                    ));
     }
 };
 
@@ -145,16 +148,17 @@ public:
 template <typename ReturnType, typename Arg1>
 class Signal<ReturnType, Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
-    typedef SigImpl::Slot1<ReturnType, Arg1> SlotType;
-
     void emit(Arg1 arg) {
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SlotType&>(*it)(arg);
+            static_cast<SigImpl::SlotBase1<ReturnType, Arg1> &>(**it)(arg);
         }
     }
 
-    SlotID connect(const SlotType& slot) {
-        return SignalHolder::connect(slot);
+    template<typename Functor>
+    SlotID connect(const Functor& functor) {
+        return SignalHolder::connect(FbTk::RefCount<SigImpl::SlotBase>(
+                        new SigImpl::Slot1<ReturnType, Arg1, Functor>(functor)
+                    ));
     }
 };
 
@@ -162,16 +166,17 @@ public:
 template <typename ReturnType>
 class Signal<ReturnType, SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
-    typedef SigImpl::Slot0<ReturnType> SlotType;
-
     void emit() {
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SlotType&>(*it)();
+            static_cast<SigImpl::SlotBase0<ReturnType> &>(**it)();
         }
     }
 
-    SlotID connect(const SlotType& slot) {
-        return SignalHolder::connect(slot);
+    template<typename Functor>
+    SlotID connect(const Functor& functor) {
+        return SignalHolder::connect(FbTk::RefCount<SigImpl::SlotBase>(
+                        new SigImpl::Slot0<ReturnType, Functor>(functor)
+                    ));
     }
 };
 
