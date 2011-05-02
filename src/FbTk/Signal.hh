@@ -24,9 +24,9 @@
 
 #include "RefCount.hh"
 #include "Slot.hh"
+#include <algorithm>
 #include <list>
 #include <map>
-#include <vector>
 #include <set>
 
 namespace FbTk {
@@ -40,6 +40,10 @@ namespace SigImpl {
  * handled by the child class so it can do the type checking.
  */
 class SignalHolder {
+protected:
+    typedef RefCount<SlotBase> SlotPtr;
+    typedef std::list<SlotPtr> SlotList;
+
 public:
     /// Special tracker interface used by SignalTracker.
     class Tracker {
@@ -49,12 +53,11 @@ public:
         virtual void disconnect(SignalHolder& signal) = 0;
     };
 
-    /// Do not use this type outside this class
-    typedef std::list<RefCount<SlotBase> > SlotList;
-
     typedef SlotList::iterator Iterator;
     typedef Iterator SlotID;
     typedef SlotList::const_iterator ConstIterator;
+
+    SignalHolder() : m_emitting(0) {}
 
     ~SignalHolder() {
         // Disconnect this holder from all trackers.
@@ -67,13 +70,21 @@ public:
 
     /// Remove a specific slot \c id from this signal
     void disconnect(SlotID slotIt) {
-        m_slots.erase( slotIt );
+        if(m_emitting) {
+            // if we are emitting, we must not erase the actual element, as that would
+            // invalidate iterators in the emit() function
+            *slotIt = SlotPtr();
+        } else
+            m_slots.erase( slotIt );
     }
 
 
     /// Removes all slots connected to this
     void clear() {
-        m_slots.clear();
+        if(m_emitting)
+            std::fill(m_slots.begin(), m_slots.end(), SlotPtr());
+        else
+            m_slots.clear();
     }
 
     void connectTracker(SignalHolder::Tracker& tracker) {
@@ -92,14 +103,22 @@ protected:
     Iterator end() { return m_slots.end(); }
 
     /// Connect a slot to this signal. Must only be called by child classes.
-    SlotID connect(const RefCount<SlotBase>& slot) {
+    SlotID connect(const SlotPtr& slot) {
         return m_slots.insert(m_slots.end(), slot);
     }
 
+    void begin_emitting() { ++m_emitting; }
+    void end_emitting() {
+        if(--m_emitting == 0) {
+            // remove elements which belonged slots that detached themselves
+            m_slots.erase(std::remove(m_slots.begin(), m_slots.end(), SlotPtr()), m_slots.end());
+        }
+    }
 private:
     typedef std::set<Tracker*> Trackers;
     SlotList m_slots; ///< all slots connected to a signal
     Trackers m_trackers; ///< all instances that tracks this signal.
+    unsigned m_emitting;
 };
 
 struct EmptyArg {};
@@ -113,14 +132,17 @@ template <typename ReturnType,
 class Signal: public SigImpl::SignalHolder {
 public:
     void emit(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+        begin_emitting();
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SigImpl::SlotBase3<ReturnType, Arg1, Arg2, Arg3> &>(**it)(arg1, arg2, arg3);
+            if(*it)
+                static_cast<SigImpl::SlotBase3<ReturnType, Arg1, Arg2, Arg3> &>(**it)(arg1, arg2, arg3);
         }
+        end_emitting();
     }
 
     template<typename Functor>
     SlotID connect(const Functor& functor) {
-        return SignalHolder::connect(FbTk::RefCount<SigImpl::SlotBase>(
+        return SignalHolder::connect(SlotPtr(
                         new SigImpl::Slot3<ReturnType, Arg1, Arg2, Arg3, Functor>(functor)
                     ));
     }
@@ -131,14 +153,17 @@ template <typename ReturnType, typename Arg1, typename Arg2>
 class Signal<ReturnType, Arg1, Arg2, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
     void emit(Arg1 arg1, Arg2 arg2) {
+        begin_emitting();
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SigImpl::SlotBase2<ReturnType, Arg1, Arg2> &>(**it)(arg1, arg2);
+            if(*it)
+                static_cast<SigImpl::SlotBase2<ReturnType, Arg1, Arg2> &>(**it)(arg1, arg2);
         }
+        end_emitting();
     }
 
     template<typename Functor>
     SlotID connect(const Functor& functor) {
-        return SignalHolder::connect(FbTk::RefCount<SigImpl::SlotBase>(
+        return SignalHolder::connect(SlotPtr(
                         new SigImpl::Slot2<ReturnType, Arg1, Arg2, Functor>(functor)
                     ));
     }
@@ -149,14 +174,17 @@ template <typename ReturnType, typename Arg1>
 class Signal<ReturnType, Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
     void emit(Arg1 arg) {
+        begin_emitting();
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SigImpl::SlotBase1<ReturnType, Arg1> &>(**it)(arg);
+            if(*it)
+                static_cast<SigImpl::SlotBase1<ReturnType, Arg1> &>(**it)(arg);
         }
+        end_emitting();
     }
 
     template<typename Functor>
     SlotID connect(const Functor& functor) {
-        return SignalHolder::connect(FbTk::RefCount<SigImpl::SlotBase>(
+        return SignalHolder::connect(SlotPtr(
                         new SigImpl::Slot1<ReturnType, Arg1, Functor>(functor)
                     ));
     }
@@ -167,14 +195,17 @@ template <typename ReturnType>
 class Signal<ReturnType, SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
 public:
     void emit() {
+        begin_emitting();
         for ( Iterator it = begin(); it != end(); ++it ) {
-            static_cast<SigImpl::SlotBase0<ReturnType> &>(**it)();
+            if(*it)
+                static_cast<SigImpl::SlotBase0<ReturnType> &>(**it)();
         }
+        end_emitting();
     }
 
     template<typename Functor>
     SlotID connect(const Functor& functor) {
-        return SignalHolder::connect(FbTk::RefCount<SigImpl::SlotBase>(
+        return SignalHolder::connect(SlotPtr(
                         new SigImpl::Slot0<ReturnType, Functor>(functor)
                     ));
     }
