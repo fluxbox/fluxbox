@@ -48,7 +48,7 @@ public:
 
     GC opGC() const { return m_opgc.gc(); }
 
-    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual RootTheme &operator *() { return *this; }
     virtual const RootTheme &operator *() const { return *this; }

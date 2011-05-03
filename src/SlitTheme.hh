@@ -38,7 +38,7 @@ public:
     int borderWidth() const { return *m_border_width; }
     int bevelWidth() const { return *m_bevel_width; }
 
-    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual SlitTheme &operator *() { return *this; }
     virtual const SlitTheme &operator *() const { return *this; }

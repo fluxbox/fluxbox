@@ -22,7 +22,6 @@
 #ifndef FBTK_SIGNAL_HH
 #define FBTK_SIGNAL_HH
 
-#include "RefCount.hh"
 #include "Slot.hh"
 #include <algorithm>
 #include <list>
@@ -35,7 +34,7 @@ namespace FbTk {
 namespace SigImpl {
 
 /**
- * Parent class for all \c Signal[0...*] classes.
+ * Parent class for all \c Signal template classes.
  * It handles the disconnect and holds all the slots. The connect must be
  * handled by the child class so it can do the type checking.
  */
@@ -121,93 +120,66 @@ private:
     unsigned m_emitting;
 };
 
-struct EmptyArg {};
+template <typename Arg1, typename Arg2, typename Arg3>
+class SignalTemplate: public SignalHolder {
+public:
+    template<typename Functor>
+    SlotID connect(const Functor& functor) {
+        return SignalHolder::connect(SlotPtr( new Slot<Arg1, Arg2, Arg3, Functor>(functor) ));
+    }
+
+protected:
+    void emit_(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+        begin_emitting();
+        for ( Iterator it = begin(); it != end(); ++it ) {
+            if(*it)
+                static_cast<SigImpl::SlotTemplate<Arg1, Arg2, Arg3> &>(**it)(arg1, arg2, arg3);
+        }
+        end_emitting();
+    }
+};
 
 } // namespace SigImpl
 
 
-/// Specialization for three arguments.
-template <typename ReturnType,
-          typename Arg1 = SigImpl::EmptyArg, typename Arg2 = SigImpl::EmptyArg, typename Arg3 = SigImpl::EmptyArg >
-class Signal: public SigImpl::SignalHolder {
+/// Base template for three arguments.
+template <typename Arg1 = SigImpl::EmptyArg, typename Arg2 = SigImpl::EmptyArg, typename Arg3 = SigImpl::EmptyArg >
+class Signal: public SigImpl::SignalTemplate<Arg1, Arg2, Arg3> {
 public:
-    void emit(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
-        begin_emitting();
-        for ( Iterator it = begin(); it != end(); ++it ) {
-            if(*it)
-                static_cast<SigImpl::SlotBase3<ReturnType, Arg1, Arg2, Arg3> &>(**it)(arg1, arg2, arg3);
-        }
-        end_emitting();
-    }
-
-    template<typename Functor>
-    SlotID connect(const Functor& functor) {
-        return SignalHolder::connect(SlotPtr(
-                        new SigImpl::Slot3<ReturnType, Arg1, Arg2, Arg3, Functor>(functor)
-                    ));
-    }
+    void emit(Arg1 arg1, Arg2 arg2, Arg3 arg3)
+    { SigImpl::SignalTemplate<Arg1, Arg2, Arg3>::emit_(arg1, arg2, arg3); }
 };
 
 /// Specialization for two arguments.
-template <typename ReturnType, typename Arg1, typename Arg2>
-class Signal<ReturnType, Arg1, Arg2, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
+template <typename Arg1, typename Arg2>
+class Signal<Arg1, Arg2, SigImpl::EmptyArg>:
+        public SigImpl::SignalTemplate<Arg1, Arg2, SigImpl::EmptyArg> {
 public:
     void emit(Arg1 arg1, Arg2 arg2) {
-        begin_emitting();
-        for ( Iterator it = begin(); it != end(); ++it ) {
-            if(*it)
-                static_cast<SigImpl::SlotBase2<ReturnType, Arg1, Arg2> &>(**it)(arg1, arg2);
-        }
-        end_emitting();
-    }
-
-    template<typename Functor>
-    SlotID connect(const Functor& functor) {
-        return SignalHolder::connect(SlotPtr(
-                        new SigImpl::Slot2<ReturnType, Arg1, Arg2, Functor>(functor)
-                    ));
+        SigImpl::SignalTemplate<Arg1, Arg2, SigImpl::EmptyArg>::
+            emit_(arg1, arg2, SigImpl::EmptyArg());
     }
 };
 
 /// Specialization for one argument.
-template <typename ReturnType, typename Arg1>
-class Signal<ReturnType, Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
+template <typename Arg1>
+class Signal<Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg>:
+        public SigImpl::SignalTemplate<Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg> {
 public:
-    void emit(Arg1 arg) {
-        begin_emitting();
-        for ( Iterator it = begin(); it != end(); ++it ) {
-            if(*it)
-                static_cast<SigImpl::SlotBase1<ReturnType, Arg1> &>(**it)(arg);
-        }
-        end_emitting();
-    }
-
-    template<typename Functor>
-    SlotID connect(const Functor& functor) {
-        return SignalHolder::connect(SlotPtr(
-                        new SigImpl::Slot1<ReturnType, Arg1, Functor>(functor)
-                    ));
+    void emit(Arg1 arg1) {
+        SigImpl::SignalTemplate<Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg>
+            ::emit_(arg1, SigImpl::EmptyArg(), SigImpl::EmptyArg());
     }
 };
 
 /// Specialization for no arguments.
-template <typename ReturnType>
-class Signal<ReturnType, SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg>: public SigImpl::SignalHolder {
+template <>
+class Signal<SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg>:
+        public SigImpl::SignalTemplate<SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg> {
 public:
     void emit() {
-        begin_emitting();
-        for ( Iterator it = begin(); it != end(); ++it ) {
-            if(*it)
-                static_cast<SigImpl::SlotBase0<ReturnType> &>(**it)();
-        }
-        end_emitting();
-    }
-
-    template<typename Functor>
-    SlotID connect(const Functor& functor) {
-        return SignalHolder::connect(SlotPtr(
-                        new SigImpl::Slot0<ReturnType, Functor>(functor)
-                    ));
+        SigImpl::SignalTemplate<SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg>
+            ::emit_(SigImpl::EmptyArg(), SigImpl::EmptyArg(), SigImpl::EmptyArg());
     }
 };
 

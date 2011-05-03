@@ -43,7 +43,7 @@ public:
     int alpha() const { return m_alpha; }
     void setAlpha(int alpha) { m_alpha = alpha; }
 
-    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual ToolTheme &operator *() { return *this; }
     virtual const ToolTheme &operator *() const { return *this; }

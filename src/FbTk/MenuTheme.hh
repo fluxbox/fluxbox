@@ -130,7 +130,7 @@ public:
             m_hl_selected_pixmap->pixmap().dontFree();
     }
 
-    virtual Signal<void> &reconfigSig() { return Theme::reconfigSig(); }
+    virtual Signal<> &reconfigSig() { return Theme::reconfigSig(); }
 
     virtual MenuTheme &operator *() { return *this; }
     virtual const MenuTheme &operator *() const { return *this; }

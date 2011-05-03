@@ -80,16 +80,16 @@ int main() {
     using FbTk::Signal;
     using FbTk::SignalTracker;
 
-    Signal<void> no_arg;
+    Signal<> no_arg;
     no_arg.connect( NoArgument() );
 
-    Signal<void, int> one_arg;
+    Signal<int> one_arg;
     one_arg.connect( OneArgument() );
 
-    Signal<void, int, const string&> two_args;
+    Signal<int, const string&> two_args;
     two_args.connect( TwoArguments() );
     
-    Signal<void, int, const string&, double> three_args;
+    Signal<int, const string&, double> three_args;
     three_args.connect( ThreeArguments() );
 
     // emit test
@@ -127,7 +127,7 @@ int main() {
     no_arg.emit();
 
     string takeThis("Take this");
-    Signal<void, string&> ref_arg;
+    Signal<string&> ref_arg;
     ref_arg.connect(MemFun(obj, &FunctionClass::takeIt));
     ref_arg.emit( takeThis );
 
@@ -145,7 +145,7 @@ int main() {
         using FbTk::MemFunIgnoreArgs;
         // Create a signal that emits with three arguments, and connect
         // sinks that takes less than three arguments.
-        Signal<void, string, string, float> more_args;
+        Signal<string, string, float> more_args;
         more_args.connect(MemFunIgnoreArgs(obj, &FunctionClass::print));
         more_args.connect(MemFunIgnoreArgs(obj, &FunctionClass::takeIt));
         more_args.connect(MemFunIgnoreArgs(obj, &FunctionClass::showMessage2));
@@ -168,7 +168,7 @@ int main() {
         destination.attach(&obs);
         // create a new signal and relay it to the
         // old subject
-        FbTk::Signal<void, string> source;
+        FbTk::Signal<string> source;
         FbTk::relaySignal(source, destination);
         // the new signal should now make the old
         // subject notify its observers
@@ -178,7 +178,7 @@ int main() {
     // Test argument selector
     {
         using namespace FbTk;
-        Signal<void, int, string, float> source;
+        Signal<int, string, float> source;
 
         Printer printer;
         source.connect(MemFunSelectArg0(printer, &Printer::printInt));
@@ -187,7 +187,7 @@ int main() {
 
         source.emit(10, "hello", 3.141592);
 
-        Signal<void, string, int> source2;
+        Signal<string, int> source2;
         source2.connect(MemFunSelectArg0(printer, &Printer::printString));
         source2.connect(MemFunSelectArg1(printer, &Printer::printInt));
         source2.emit("world", 37);

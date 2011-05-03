@@ -107,13 +107,13 @@ public:
     template <typename T>
     void remove(ThemeItem<T> &item);
     virtual bool fallback(ThemeItem_base &) { return false; }
-    Signal<void> &reconfigSig() { return m_reconfig_sig; }
+    Signal<> &reconfigSig() { return m_reconfig_sig; }
 
 private:
     const int m_screen_num;
 
     ItemList m_themeitems;
-    Signal<void> m_reconfig_sig;
+    Signal<> m_reconfig_sig;
 };
 
 /// Proxy interface for themes, so they can be substituted dynamically
@@ -122,7 +122,7 @@ class ThemeProxy {
 public:
     virtual ~ThemeProxy() { }
 
-    virtual Signal<void> &reconfigSig() = 0;
+    virtual Signal<> &reconfigSig() = 0;
 
     virtual BaseTheme &operator *() = 0;
     virtual const BaseTheme &operator *() const = 0;

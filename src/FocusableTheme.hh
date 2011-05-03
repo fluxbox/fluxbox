@@ -36,13 +36,13 @@ public:
         m_win(win), m_focused_theme(focused), m_unfocused_theme(unfocused) {
 
         m_signals.join(m_win.focusSig(),
-                FbTk::MemFunIgnoreArgs(m_reconfig_sig, &FbTk::Signal<void>::emit));
+                FbTk::MemFunIgnoreArgs(m_reconfig_sig, &FbTk::Signal<>::emit));
 
         m_win.attentionSig().attach(this);
         m_signals.join(m_focused_theme.reconfigSig(),
-                FbTk::MemFun(m_reconfig_sig, &FbTk::Signal<void>::emit));
+                FbTk::MemFun(m_reconfig_sig, &FbTk::Signal<>::emit));
         m_signals.join(m_unfocused_theme.reconfigSig(),
-                FbTk::MemFun(m_reconfig_sig, &FbTk::Signal<void>::emit));
+                FbTk::MemFun(m_reconfig_sig, &FbTk::Signal<>::emit));
     }
 
     Focusable &win() { return m_win; }
@@ -54,7 +54,7 @@ public:
     FbTk::ThemeProxy<BaseTheme> &unfocusedTheme() { return m_unfocused_theme; }
     const FbTk::ThemeProxy<BaseTheme> &unfocusedTheme() const { return m_unfocused_theme; }
 
-    FbTk::Signal<void> &reconfigSig() { return m_reconfig_sig; }
+    FbTk::Signal<> &reconfigSig() { return m_reconfig_sig; }
 
     virtual BaseTheme &operator *() {
         return (m_win.isFocused() || m_win.getAttentionState()) ?
@@ -70,7 +70,7 @@ private:
 
     Focusable &m_win;
     FbTk::ThemeProxy<BaseTheme> &m_focused_theme, &m_unfocused_theme;
-    FbTk::Signal<void> m_reconfig_sig;
+    FbTk::Signal<> m_reconfig_sig;
     FbTk::SignalTracker m_signals;
 };
 

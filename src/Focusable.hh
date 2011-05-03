@@ -119,13 +119,13 @@ public:
        @name signals
        @{
     */
-    typedef FbTk::Signal<void, const std::string&, Focusable&> TitleSignal;
+    typedef FbTk::Signal<const std::string&, Focusable&> TitleSignal;
     /// Used for both title and icon changes.
     TitleSignal &titleSig() { return m_titlesig; }
     /// Used for both title and icon changes.
     const TitleSignal &titleSig() const { return m_titlesig; }
-    FbTk::Signal<void, Focusable&> &focusSig() { return m_focussig; }
-    const FbTk::Signal<void, Focusable&> &focusSig() const { return m_focussig; }
+    FbTk::Signal<Focusable&> &focusSig() { return m_focussig; }
+    const FbTk::Signal<Focusable&> &focusSig() const { return m_focussig; }
     FbTk::Subject &dieSig() { return m_diesig; }
     const FbTk::Subject &dieSig() const { return m_diesig; }
     FbTk::Subject &attentionSig() { return m_attentionsig; }
@@ -153,7 +153,7 @@ protected:
     FocusSubject m_diesig, m_attentionsig;
 
 private:
-    FbTk::Signal<void, Focusable&> m_focussig;
+    FbTk::Signal<Focusable&> m_focussig;
     TitleSignal m_titlesig;
 };
 

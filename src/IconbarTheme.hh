@@ -41,7 +41,7 @@ public:
     const FbTk::Texture &texture() const { return *m_texture; }
     const FbTk::Texture &emptyTexture() const { return *m_empty_texture; }
 
-    virtual FbTk::Signal<void> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
+    virtual FbTk::Signal<> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
     virtual IconbarTheme &operator *() { return *this; }
     virtual const IconbarTheme &operator *() const { return *this; }

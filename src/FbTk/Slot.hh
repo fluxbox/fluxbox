@@ -22,81 +22,72 @@
 #ifndef FBTK_SLOT_HH
 #define FBTK_SLOT_HH
 
+#include "RefCount.hh"
+
 namespace FbTk {
 
 /// \namespace Implementation details for signals, do not use anything in this namespace
 namespace SigImpl {
+
+struct EmptyArg {};
 
 class SlotBase {
 public:
     virtual ~SlotBase() {}
 };
 
-template<typename ReturnType>
-class SlotBase0: public SlotBase {
+template<typename Arg1, typename Arg2, typename Arg3>
+class SlotTemplate: public SlotBase {
 public:
-    virtual ReturnType operator()() = 0;
+    virtual void operator()(Arg1, Arg2, Arg3) = 0;
 };
 
-template<typename ReturnType, typename Functor>
-class Slot0: public SlotBase0<ReturnType> {
+template<typename Arg1, typename Arg2, typename Arg3, typename Functor>
+class Slot: public SlotTemplate<Arg1, Arg2, Arg3> {
 public:
-    virtual ReturnType operator()() { return m_functor(); }
+    virtual void operator()(Arg1 arg1, Arg2 arg2, Arg3 arg3)
+    { m_functor(arg1, arg2, arg3); }
 
-    Slot0(Functor functor) : m_functor(functor) {}
+    Slot(Functor functor) : m_functor(functor) {}
 
 private:
     Functor m_functor;
 };
 
-template<typename ReturnType, typename Arg1>
-class SlotBase1: public SlotBase {
+// specialization for two arguments
+template<typename Arg1, typename Arg2, typename Functor>
+class Slot<Arg1, Arg2, EmptyArg, Functor>: public SlotTemplate<Arg1, Arg2, EmptyArg> {
 public:
-    virtual ReturnType operator()(Arg1) = 0;
-};
+    virtual void operator()(Arg1 arg1, Arg2 arg2, EmptyArg)
+    { m_functor(arg1, arg2); }
 
-template<typename ReturnType, typename Arg1, typename Functor>
-class Slot1: public SlotBase1<ReturnType, Arg1> {
-public:
-    virtual ReturnType operator()(Arg1 arg1) { return m_functor(arg1); }
-
-    Slot1(Functor functor) : m_functor(functor) {}
+    Slot(Functor functor) : m_functor(functor) {}
 
 private:
     Functor m_functor;
 };
 
-template<typename ReturnType, typename Arg1, typename Arg2>
-class SlotBase2: public SlotBase {
+// specialization for one argument
+template<typename Arg1, typename Functor>
+class Slot<Arg1, EmptyArg, EmptyArg, Functor>: public SlotTemplate<Arg1, EmptyArg, EmptyArg> {
 public:
-    virtual ReturnType operator()(Arg1, Arg2) = 0;
-};
+    virtual void operator()(Arg1 arg1, EmptyArg, EmptyArg)
+    { m_functor(arg1); }
 
-template<typename ReturnType, typename Arg1, typename Arg2, typename Functor>
-class Slot2: public SlotBase2<ReturnType, Arg1, Arg2> {
-public:
-    virtual ReturnType operator()(Arg1 arg1, Arg2 arg2) { return m_functor(arg1, arg2); }
-
-    Slot2(Functor functor) : m_functor(functor) {}
+    Slot(Functor functor) : m_functor(functor) {}
 
 private:
     Functor m_functor;
 };
 
-template<typename ReturnType, typename Arg1, typename Arg2, typename Arg3>
-class SlotBase3: public SlotBase {
+// specialization for no arguments
+template<typename Functor>
+class Slot<EmptyArg, EmptyArg, EmptyArg, Functor>: public SlotTemplate<EmptyArg, EmptyArg, EmptyArg> {
 public:
-    virtual ReturnType operator()(Arg1, Arg2, Arg3) = 0;
-    virtual ~SlotBase3() {}
-};
+    virtual void operator()(EmptyArg, EmptyArg, EmptyArg)
+    { m_functor(); }
 
-template<typename ReturnType, typename Arg1, typename Arg2, typename Arg3, typename Functor>
-class Slot3: public SlotBase3<ReturnType, Arg1, Arg2, Arg3> {
-public:
-    virtual ReturnType operator()(Arg1 arg1, Arg2 arg2, Arg3 arg3)
-    { return m_functor(arg1, arg2, arg3); }
-
-    Slot3(Functor functor) : m_functor(functor) {}
+    Slot(Functor functor) : m_functor(functor) {}
 
 private:
     Functor m_functor;
@@ -105,5 +96,6 @@ private:
 } // namespace SigImpl
 
 } // namespace FbTk
+
 
 #endif // FBTK_SLOT_H

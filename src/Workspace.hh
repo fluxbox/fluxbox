@@ -85,7 +85,7 @@ private:
     BScreen &m_screen;
 
     Windows m_windowlist;
-    FbTk::Signal<void> m_clientlist_sig;
+    FbTk::Signal<> m_clientlist_sig;
     ClientMenu m_clientmenu;
 
     FbTk::FbString m_name;  ///< name of this workspace

@@ -197,7 +197,7 @@ public:
        @name Screen signals
     */
     //@{
-    typedef FbTk::Signal<void, BScreen&> ScreenSignal;
+    typedef FbTk::Signal<BScreen&> ScreenSignal;
     /// client list signal
     ScreenSignal &clientListSig() { return m_clientlist_sig; }
     /// icon list sig
@@ -211,7 +211,7 @@ public:
     /// current workspace signal
     ScreenSignal &currentWorkspaceSig() { return m_currentworkspace_sig; }
     /// focused window signal
-    FbTk::Signal<void, BScreen&, FluxboxWindow*, WinClient*> &focusedWindowSig() { return m_focusedwindow_sig; }
+    FbTk::Signal<BScreen&, FluxboxWindow*, WinClient*> &focusedWindowSig() { return m_focusedwindow_sig; }
     /// reconfigure signal
     FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
     ScreenSignal &resizeSig() { return m_resize_sig; }
@@ -479,7 +479,7 @@ private:
     ScreenSubject m_reconfigure_sig; ///< reconfigure signal
 
 
-    FbTk::Signal<void, BScreen&, FluxboxWindow*, WinClient*> m_focusedwindow_sig;  ///< focused window signal
+    FbTk::Signal<BScreen&, FluxboxWindow*, WinClient*> m_focusedwindow_sig;  ///< focused window signal
     ScreenSignal m_resize_sig; ///< resize signal
     ScreenSignal m_workspace_area_sig; ///< workspace area changed signal
     ScreenSignal m_iconlist_sig; ///< notify if a window gets iconified/deiconified
