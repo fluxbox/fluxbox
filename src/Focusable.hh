@@ -41,9 +41,9 @@ public:
         m_screen(scr), m_fbwin(fbwin),
         m_instance_name("fluxbox"), m_class_name("fluxbox"),
         m_focused(false), m_attention_state(false),
-        m_diesig(*this),
         m_attentionsig(*this),
         m_focussig(),
+        m_diesig(),
         m_titlesig() { }
     virtual ~Focusable() { }
 
@@ -125,9 +125,7 @@ public:
     /// Used for both title and icon changes.
     const TitleSignal &titleSig() const { return m_titlesig; }
     FbTk::Signal<Focusable&> &focusSig() { return m_focussig; }
-    const FbTk::Signal<Focusable&> &focusSig() const { return m_focussig; }
-    FbTk::Subject &dieSig() { return m_diesig; }
-    const FbTk::Subject &dieSig() const { return m_diesig; }
+    FbTk::Signal<Focusable&> &dieSig() { return m_diesig; }
     FbTk::Subject &attentionSig() { return m_attentionsig; }
     const FbTk::Subject &attentionSig() const { return m_attentionsig; }
     /** @} */ // end group signals
@@ -150,10 +148,11 @@ protected:
     FbTk::PixmapWithMask m_icon; //< icon pixmap with mask
 
     // state and hint signals
-    FocusSubject m_diesig, m_attentionsig;
+    FocusSubject m_attentionsig;
 
 private:
     FbTk::Signal<Focusable&> m_focussig;
+    FbTk::Signal<Focusable&> m_diesig;
     TitleSignal m_titlesig;
 };
 

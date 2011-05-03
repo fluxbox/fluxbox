@@ -25,7 +25,6 @@
 #include "FbMenu.hh"
 
 #include "FbTk/Signal.hh"
-#include "FbTk/Observer.hh"
 
 class BScreen;
 class FluxboxWindow;
@@ -35,7 +34,7 @@ class Focusable;
  * A menu holding a set of client menus.
  * @see WorkspaceMenu
  */
-class ClientMenu: public FbMenu, public FbTk::Observer {
+class ClientMenu: public FbMenu {
 public:
 
     typedef std::list<FluxboxWindow *> Focusables;
@@ -54,14 +53,14 @@ public:
     /// Called when window title changed.
     void titleChanged(Focusable& win);
 
+    /// Called when a client dies. Removes the corresponding menu item
+    void clientDied(Focusable& win);
+
 private:
 
     void updateClientList(BScreen& screen) {
         refreshMenu();
     }
-
-    /// called when receiving a subject signal
-    void update(FbTk::Subject *subj);
 
     Focusables &m_list; ///< clients in the menu
     FbTk::SignalTracker m_slots; ///< track all the slots

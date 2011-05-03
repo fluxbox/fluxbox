@@ -350,7 +350,7 @@ FluxboxWindow::~FluxboxWindow() {
     m_timer.stop();
 
     // notify die
-    m_diesig.notify();
+    dieSig().emit(*this);
 
     if (m_client != 0 && !m_screen.isShuttingdown())
         delete m_client; // this also removes client from our list

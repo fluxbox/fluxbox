@@ -943,7 +943,6 @@ void Fluxbox::handleSignal(int signum) {
 void Fluxbox::update(FbTk::Subject *changedsub) {
     //TODO: fix signaling, this does not look good
     FluxboxWindow *fbwin = 0;
-    WinClient *client = 0;
 
     if (typeid(*changedsub) == typeid(FluxboxWindow::WinSubject)) {
         FluxboxWindow::WinSubject *winsub = dynamic_cast<FluxboxWindow::WinSubject *>(changedsub);
@@ -951,8 +950,6 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (typeid(*changedsub) == typeid(Focusable::FocusSubject)) {
         Focusable::FocusSubject *winsub = dynamic_cast<Focusable::FocusSubject *>(changedsub);
         fbwin = winsub->win().fbwindow();
-        if (typeid(winsub->win()) == typeid(WinClient))
-            client = dynamic_cast<WinClient *>(&winsub->win());
     }
 
     if (fbwin && &fbwin->stateSig() == changedsub) { // state signal
@@ -981,41 +978,49 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (fbwin && &fbwin->layerSig() == changedsub) { // layer signal
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
             CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateLayer, *fbwin));
-    } else if (fbwin && &fbwin->dieSig() == changedsub) { // window death signal
-        STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateFrameClose, *fbwin));
-
-        // make sure each workspace get this
-        BScreen &scr = fbwin->screen();
-        scr.removeWindow(fbwin);
-        if (FocusControl::focusedFbWindow() == fbwin)
-            FocusControl::setFocusedFbWindow(0);
     } else if (fbwin && &fbwin->workspaceSig() == changedsub) {  // workspace signal
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
             CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateWorkspace, *fbwin));
-    } else if (client && &client->dieSig() == changedsub) { // client death
-        STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            CallMemFunWithRefArg<AtomHandler, WinClient&, void>(&AtomHandler::updateClientClose, *client));
-
-        BScreen &screen = client->screen();
-
-        // At this point, we trust that this client is no longer in the
-        // client list of its frame (but it still has reference to the frame)
-        // We also assume that any remaining active one is the last focused one
-
-        // This is where we revert focus on window close
-        // NOWHERE ELSE!!!
-        if (FocusControl::focusedWindow() == client) {
-            FocusControl::unfocusWindow(*client);
-            // make sure nothing else uses this window before focus reverts
-            FocusControl::setFocusedWindow(0);
-        } else if (FocusControl::expectingFocus() == client) {
-            FocusControl::setExpectingFocus(0);
-            revertFocus();
-        }
-
-        screen.removeClient(*client);
     }
+}
+
+void Fluxbox::windowDied(Focusable &focusable) {
+    FluxboxWindow *fbwin = focusable.fbwindow();
+
+    STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
+        CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateFrameClose, *focusable.fbwindow()));
+
+    // make sure each workspace get this
+    BScreen &scr = focusable.screen();
+    scr.removeWindow(fbwin);
+    if (FocusControl::focusedFbWindow() == fbwin)
+        FocusControl::setFocusedFbWindow(0);
+}
+
+void Fluxbox::clientDied(Focusable &focusable) {
+    WinClient &client = dynamic_cast<WinClient &>(focusable);
+
+    STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
+            CallMemFunWithRefArg<AtomHandler, WinClient&, void>(&AtomHandler::updateClientClose, client));
+
+    BScreen &screen = client.screen();
+
+    // At this point, we trust that this client is no longer in the
+    // client list of its frame (but it still has reference to the frame)
+    // We also assume that any remaining active one is the last focused one
+
+    // This is where we revert focus on window close
+    // NOWHERE ELSE!!!
+    if (FocusControl::focusedWindow() == &client) {
+        FocusControl::unfocusWindow(client);
+        // make sure nothing else uses this window before focus reverts
+        FocusControl::setFocusedWindow(0);
+    } else if (FocusControl::expectingFocus() == &client) {
+        FocusControl::setExpectingFocus(0);
+        revertFocus();
+    }
+
+    screen.removeClient(client);
 }
 
 void Fluxbox::attachSignals(FluxboxWindow &win) {
@@ -1023,13 +1028,13 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.stateSig().attach(this);
     win.workspaceSig().attach(this);
     win.layerSig().attach(this);
-    win.dieSig().attach(this);
+    join(win.dieSig(), FbTk::MemFun(*this, &Fluxbox::windowDied));
     STLUtil::forAll(m_atomhandler,
             CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::setupFrame, win));
 }
 
 void Fluxbox::attachSignals(WinClient &winclient) {
-    winclient.dieSig().attach(this);
+    join(winclient.dieSig(), FbTk::MemFun(*this, &Fluxbox::clientDied));
     STLUtil::forAll(m_atomhandler,
             CallMemFunWithRefArg<AtomHandler, WinClient&, void>(&AtomHandler::setupClient, winclient));
 }

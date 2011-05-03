@@ -88,9 +88,8 @@ void AttentionNoticeHandler::addAttention(Focusable &client) {
 
     m_attentions[&client] = timer; 
     // attach signals that will make notice go away
-    client.dieSig().attach(this);
-
-    client.focusSig().connect(MemFun(*this, &AttentionNoticeHandler::windowFocusChanged));
+    join(client.dieSig(), MemFun(*this, &AttentionNoticeHandler::removeWindow));
+    join(client.focusSig(), MemFun(*this, &AttentionNoticeHandler::windowFocusChanged));
 
     // update _NET_WM_STATE atom
     if (client.fbwindow())
@@ -102,16 +101,6 @@ void AttentionNoticeHandler::windowFocusChanged(Focusable& win) {
 }
 void AttentionNoticeHandler::removeWindow(Focusable& win) {
     updateWindow(win, true);
-}
-
-void AttentionNoticeHandler::update(FbTk::Subject* subj) {
-    // we need to be able to get the window
-    if (!subj || typeid(*subj) != typeid(Focusable::FocusSubject))
-        return;
-    Focusable::FocusSubject *winsubj =
-        static_cast<Focusable::FocusSubject *>(subj);
-
-    removeWindow(winsubj->win());
 }
 
 void AttentionNoticeHandler::updateWindow(Focusable& win, bool died) {

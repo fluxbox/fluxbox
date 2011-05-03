@@ -111,13 +111,6 @@ void FocusableList::update(FbTk::Subject *subj) {
     if (subj == 0 || m_screen.isShuttingdown())
         return;
 
-    if (typeid(*subj) == typeid(Focusable::FocusSubject)) {
-        Focusable::FocusSubject *fsubj =
-            static_cast<Focusable::FocusSubject *>(subj);
-        if (fsubj == &fsubj->win().dieSig()) {
-            remove(fsubj->win());
-        }
-    }
     if (typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
         FluxboxWindow::WinSubject *fsubj =
             static_cast<FluxboxWindow::WinSubject *>(subj);
@@ -254,15 +247,17 @@ void FocusableList::remove(Focusable &win) {
 void FocusableList::updateTitle(Focusable& win) {
     checkUpdate(win);
 }
+#include "Debug.hh"
 
 void FocusableList::attachSignals(Focusable &win) {
-    win.dieSig().attach(this);
     if (m_parent) {
         // attach various signals for matching
-        if (m_signal_map.find(&win) == m_signal_map.end()) {
-            m_signal_map[&win] = join(win.titleSig(),
-                                      MemFunSelectArg1(*this,
-                                                       &FocusableList::updateTitle));
+        FbTk::RefCount<FbTk::SignalTracker> &tracker = m_signal_map[&win];
+        if (! tracker) {
+            // we have not attached to this window yet
+            tracker = new SignalTracker;
+            tracker->join(win.titleSig(), MemFunSelectArg1(*this, &FocusableList::updateTitle));
+            tracker->join(win.dieSig(), MemFun(*this, &FocusableList::remove));
         }
 
         FluxboxWindow *fbwin = win.fbwindow();
@@ -276,15 +271,8 @@ void FocusableList::attachSignals(Focusable &win) {
 }
 
 void FocusableList::detachSignals(Focusable &win) {
-    win.dieSig().detach(this);
+    m_signal_map.erase(&win);
     if (m_parent) {
-        // disconnect client
-        SignalMap::iterator sigIt = m_signal_map.find(&win);
-        if (sigIt != m_signal_map.end()) {
-            leave(sigIt->second);
-            m_signal_map.erase(sigIt);
-        }
-
         // detach various signals for matching
         FluxboxWindow *fbwin = win.fbwindow();
         if (!fbwin)

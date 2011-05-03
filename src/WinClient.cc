@@ -155,7 +155,7 @@ WinClient::~WinClient() {
         fbwindow()->removeClient(*this);
 
     // this takes care of any focus issues
-    m_diesig.notify();
+    dieSig().emit(*this);
 
     // This fixes issue 1 (see WinClient.hh):
     // If transients die before the transient_for is created

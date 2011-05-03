@@ -40,10 +40,7 @@ public:
         m_client(client) {
         m_signals.join(client.titleSig(),
                        FbTk::MemFunSelectArg1(menu, &ClientMenu::titleChanged));
-        client.dieSig().attach(&menu);
-    }
-
-    ~ClientMenuItem() {
+        m_signals.join(client.dieSig(), FbTk::MemFun(menu, &ClientMenu::clientDied));
     }
 
     void click(int button, int time, unsigned int mods) {
@@ -156,16 +153,11 @@ void ClientMenu::titleChanged(Focusable& win) {
         themeReconfigured();
 }
 
-void ClientMenu::update(FbTk::Subject *subj) {
-    if (Focusable::FocusSubject *fsubj = dynamic_cast<Focusable::FocusSubject *>(subj)) {
-        Focusable &win = fsubj->win();
+void ClientMenu::clientDied(Focusable &win) {
+    // find correct menu item
+    ClientMenuItem* cl_item = getMenuItem(*this, win);
 
-        // find correct menu item
-        ClientMenuItem* cl_item = getMenuItem(*this, win);
-
-        // update accordingly
-        if (cl_item && fsubj == &win.dieSig()) {
-            remove(cl_item->getIndex());
-        }
-    }
+    // update accordingly
+    if (cl_item)
+        remove(cl_item->getIndex());
 }

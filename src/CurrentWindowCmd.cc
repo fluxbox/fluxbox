@@ -635,18 +635,18 @@ void ChangeLayerCmd::real_execute() {
 }
 
 namespace {
-class SetTitleDialog: public TextDialog, public FbTk::Observer {
+class SetTitleDialog: public TextDialog, private FbTk::SignalTracker {
 public:
     SetTitleDialog(FluxboxWindow &win, const string &title):
         TextDialog(win.screen(), title), window(win) {
-        win.dieSig().attach(this);
+        join(win.dieSig(), FbTk::MemFunIgnoreArgs(*this, &SetTitleDialog::windowDied));
         setText(win.title());
     }
 
-    // only attached signal is window destruction
-    void update(FbTk::Subject *subj) { delete this; }
-
 private:
+    // only attached signal is window destruction
+    void windowDied() { delete this; }
+
     void exec(const std::string &text) {
         window.winClient().setTitle(text);
     }

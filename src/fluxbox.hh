@@ -217,6 +217,10 @@ private:
 
     /// Called when the workspace area changed.
     void workspaceAreaChanged(BScreen &screen);
+    /// Called when a window (FluxboxWindow) dies
+    void windowDied(Focusable &focusable);
+    /// Called when a client (WinClient) dies
+    void clientDied(Focusable &focusable);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 

@@ -24,6 +24,7 @@
 
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/Observer.hh"
+#include "FbTk/RefCount.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/Signal.hh"
 
@@ -126,7 +127,7 @@ private:
     std::list<Focusable *> m_list;
 
     mutable FocusableListSubject m_ordersig, m_addsig, m_removesig, m_resetsig;
-    typedef std::map<Focusable*, FbTk::SignalTracker::TrackID> SignalMap;
+    typedef std::map<Focusable*, FbTk::RefCount<FbTk::SignalTracker> > SignalMap;
     SignalMap m_signal_map;
 };
 
