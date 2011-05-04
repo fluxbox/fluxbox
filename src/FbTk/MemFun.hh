@@ -37,8 +37,8 @@ public:
         m_action(action) {
     }
 
-    void operator ()() {
-        (m_obj.*m_action)();
+    ReturnType operator ()() const {
+        return (m_obj.*m_action)();
     }
 
 private:
@@ -64,8 +64,8 @@ public:
         m_action(action) {
     }
 
-    void operator ()(Arg1 arg1) {
-        (m_obj.*m_action)(arg1);
+    ReturnType operator ()(Arg1 arg1) const {
+        return (m_obj.*m_action)(arg1);
     }
 
 private:
@@ -91,8 +91,8 @@ public:
         m_action(action) {
     }
     
-    void operator ()(Arg1 arg1, Arg2 arg2) {
-        (m_obj.*m_action)(arg1, arg2);
+    ReturnType operator ()(Arg1 arg1, Arg2 arg2) const {
+        return (m_obj.*m_action)(arg1, arg2);
     }
 
 private:
@@ -119,8 +119,8 @@ public:
         m_action(action) {
     }
 
-    void operator ()(Arg1 arg1, Arg2 arg2, Arg3 arg3) {
-        (m_obj.*m_action)(arg1, arg2, arg3);
+    ReturnType operator ()(Arg1 arg1, Arg2 arg2, Arg3 arg3) const {
+        return (m_obj.*m_action)(arg1, arg2, arg3);
     }
 
 private:
@@ -147,18 +147,18 @@ public:
     }
 
     template <typename IgnoreType1, typename IgnoreType2, typename IgnoreType3>
-    void operator ()(IgnoreType1&, IgnoreType2&, IgnoreType3&) {
-        BaseType::operator ()();
+    ReturnType operator ()(IgnoreType1&, IgnoreType2&, IgnoreType3&) const {
+        return BaseType::operator ()();
     }
 
     template <typename IgnoreType1, typename IgnoreType2>
-    void operator ()(IgnoreType1&, IgnoreType2&) {
-        BaseType::operator ()();
+    ReturnType operator ()(IgnoreType1&, IgnoreType2&) const {
+        return BaseType::operator ()();
     }
 
     template <typename IgnoreType1>
-    void operator ()(IgnoreType1&) {
-        BaseType::operator ()();
+    ReturnType operator ()(IgnoreType1&) const {
+        return BaseType::operator ()();
     }
 };
 
@@ -173,13 +173,13 @@ public:
     }
 
     template <typename IgnoreType1, typename IgnoreType2>
-    void operator ()(Arg1 arg1, IgnoreType1&, IgnoreType2&) {
-        BaseType::operator ()(arg1);
+    ReturnType operator ()(Arg1 arg1, IgnoreType1&, IgnoreType2&) const {
+        return BaseType::operator ()(arg1);
     }
 
     template <typename IgnoreType>
-    void operator ()(Arg1 arg1, IgnoreType&) {
-        BaseType::operator ()(arg1);
+    ReturnType operator ()(Arg1 arg1, IgnoreType&) const {
+        return BaseType::operator ()(arg1);
     }
 };
 
@@ -194,8 +194,8 @@ public:
     }
 
     template < typename IgnoreType >
-    void operator ()(Arg1 arg1, Arg2 arg2, IgnoreType&) {
-        BaseType::operator ()(arg1, arg2);
+    ReturnType operator ()(Arg1 arg1, Arg2 arg2, IgnoreType&) const {
+        return BaseType::operator ()(arg1, arg2);
     }
 };
 
@@ -224,7 +224,7 @@ MemFunIgnoreArgs( Object& obj, ReturnType (Object:: *action)(Arg1,Arg2) ) {
  * Creates a functor that selects a specific argument of three possible ones
  * and uses it for the single argument operator.
  */
-template < int ArgNum, typename Functor>
+template < int ArgNum, typename Functor, typename ReturnType>
 class MemFunSelectArgImpl {
 public:
 
@@ -233,18 +233,18 @@ public:
     }
 
     template <typename Type1, typename Type2, typename Type3>
-    void operator ()(Type1& a, Type2& b, Type3& c) {
-        m_func(STLUtil::SelectArg<ArgNum>()(a, b, c));
+    ReturnType operator ()(Type1& a, Type2& b, Type3& c) const {
+        return m_func(STLUtil::SelectArg<ArgNum>()(a, b, c));
     }
 
     template <typename Type1, typename Type2>
-    void operator ()(Type1& a, Type2& b) {
-        m_func(STLUtil::SelectArg<ArgNum>()(a, b));
+    ReturnType operator ()(Type1& a, Type2& b) const {
+        return m_func(STLUtil::SelectArg<ArgNum>()(a, b));
     }
 
     template <typename Type1>
-    void operator ()(Type1& a) {
-        m_func(a);
+    ReturnType operator ()(Type1& a) const {
+        return m_func(a);
     }
 
 private:
@@ -254,25 +254,25 @@ private:
 /// Creates a functor that selects the first argument of three possible ones
 /// and uses it for the single argument operator.
 template <typename ReturnType, typename Object, typename Arg1>
-MemFunSelectArgImpl<0, MemFun1<ReturnType, Object, Arg1> >
+MemFunSelectArgImpl<0, MemFun1<ReturnType, Object, Arg1>, ReturnType>
 MemFunSelectArg0(Object& obj, ReturnType (Object:: *action)(Arg1)) {
-    return MemFunSelectArgImpl<0, MemFun1<ReturnType, Object, Arg1> >(MemFun(obj, action));
+    return MemFunSelectArgImpl<0, MemFun1<ReturnType, Object, Arg1>, ReturnType>(MemFun(obj, action));
 }
 
 /// Creates a functor that selects the second argument (or first if there is
 /// only one) of three possible onesand uses it for the single argument operator.
 template <typename ReturnType, typename Object, typename Arg1>
-MemFunSelectArgImpl<1, MemFun1<ReturnType, Object, Arg1> >
+MemFunSelectArgImpl<1, MemFun1<ReturnType, Object, Arg1>, ReturnType>
 MemFunSelectArg1(Object& obj, ReturnType (Object:: *action)(Arg1)) {
-    return MemFunSelectArgImpl<1, MemFun1<ReturnType, Object, Arg1> >(MemFun(obj, action));
+    return MemFunSelectArgImpl<1, MemFun1<ReturnType, Object, Arg1>, ReturnType>(MemFun(obj, action));
 }
 
 /// Creates a functor that selects the third argument (or the last argument if there is
 /// less than three arguments) of three possible onesand uses it for the single argument operator.
 template <typename ReturnType, typename Object, typename Arg1>
-MemFunSelectArgImpl<2, MemFun1<ReturnType, Object, Arg1> >
+MemFunSelectArgImpl<2, MemFun1<ReturnType, Object, Arg1>, ReturnType>
 MemFunSelectArg2(Object& obj, ReturnType (Object:: *action)(Arg1)) {
-    return MemFunSelectArgImpl<2, MemFun1<ReturnType, Object, Arg1> >(MemFun(obj, action));
+    return MemFunSelectArgImpl<2, MemFun1<ReturnType, Object, Arg1>, ReturnType>(MemFun(obj, action));
 }
 
 } // namespace FbTk
