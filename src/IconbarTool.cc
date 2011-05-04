@@ -331,7 +331,7 @@ void IconbarTool::hide() {
 
 void IconbarTool::setAlignment(FbTk::Container::Alignment align) {
     *m_rc_alignment = align;
-    update(0);
+    update(ALIGN, NULL);
     m_menu.reconfigure();
 }
 
@@ -344,22 +344,24 @@ void IconbarTool::setMode(string mode) {
     // lock graphics update
     m_icon_container.setUpdateLock(true);
 
-    if (m_winlist.get()) {
-        m_winlist->addSig().detach(this);
-        m_winlist->removeSig().detach(this);
-        m_winlist->orderSig().detach(this);
-        m_winlist->resetSig().detach(this);
-    }
     if (mode == "none")
         m_winlist.reset(new FocusableList(m_screen));
     else
         m_winlist.reset(new FocusableList(m_screen,
                                            mode + " (iconhidden=no)"));
     if (m_winlist.get()) {
-        m_winlist->addSig().attach(this);
-        m_winlist->removeSig().attach(this);
-        m_winlist->orderSig().attach(this);
-        m_winlist->resetSig().attach(this);
+        m_winlist->addSig().connect(
+                    std::bind1st(FbTk::MemFun(*this, &IconbarTool::update), LIST_ADD)
+                );
+        m_winlist->removeSig().connect(
+                    std::bind1st(FbTk::MemFun(*this, &IconbarTool::update), LIST_REMOVE)
+                );
+        m_winlist->addSig().connect(
+                    std::bind1st(FbTk::MemFun(*this, &IconbarTool::update), LIST_ORDER)
+                );
+        m_winlist->resetSig().connect(FbTk::MemFunBind(
+                        *this, &IconbarTool::update, LIST_RESET, static_cast<Focusable *>(0)
+                    ));
     }
     reset();
 
@@ -389,7 +391,7 @@ void IconbarTool::themeReconfigured() {
     setMode(*m_rc_mode);
 }
 
-void IconbarTool::update(FbTk::Subject *subj) {
+void IconbarTool::update(UpdateReason reason, Focusable *win) {
     // ignore updates if we're shutting down
     if (m_screen.isShuttingdown()) {
         if (!m_icons.empty())
@@ -405,17 +407,18 @@ void IconbarTool::update(FbTk::Subject *subj) {
     // lock graphic update
     m_icon_container.setUpdateLock(true);
 
-    if (subj && typeid(*subj) == typeid(FocusableList::FocusableListSubject)) {
-        FocusableList::FocusableListSubject *fsubj =
-            static_cast<FocusableList::FocusableListSubject *>(subj);
-        if (subj == &m_winlist->addSig())
-            insertWindow(*fsubj->win());
-        else if (subj == &m_winlist->removeSig())
-            removeWindow(*fsubj->win());
-        else if (subj == &m_winlist->resetSig())
+    switch(reason) {
+        case LIST_ADD: case LIST_ORDER:
+            insertWindow(*win);
+            break;
+        case LIST_REMOVE:
+            removeWindow(*win);
+            break;
+        case LIST_RESET:
             reset();
-        else if (subj == &m_winlist->orderSig())
-            insertWindow(*fsubj->win());
+            break;
+        case ALIGN:
+            break;
     }
 
     // unlock container and update graphics

@@ -82,29 +82,11 @@ public:
        @name signals
        @{
     */
-    FbTk::Subject &orderSig() { return m_ordersig; }
-    const FbTk::Subject &orderSig() const { return m_ordersig; }
-    FbTk::Subject &addSig() { return m_addsig; }
-    const FbTk::Subject &addSig() const { return m_addsig; }
-    FbTk::Subject &removeSig() { return m_removesig; }
-    const FbTk::Subject &removeSig() const { return m_removesig; }
-    FbTk::Subject &resetSig() { return m_resetsig; }
-    const FbTk::Subject &resetSig() const { return m_resetsig; }
+    FbTk::Signal<Focusable *> &orderSig() { return m_ordersig; }
+    FbTk::Signal<Focusable *> &addSig() { return m_addsig; }
+    FbTk::Signal<Focusable *> &removeSig() { return m_removesig; }
+    FbTk::Signal<> &resetSig() { return m_resetsig; }
     /** @} */ // end group signals
-
-    /**
-     * Signaling object to attatch observers to.
-     */
-    class FocusableListSubject: public FbTk::Subject {
-    public:
-        explicit FocusableListSubject(): m_win(0) { }
-        void notify(Focusable *win) { m_win = win; FbTk::Subject::notify(); }
-        /// @return context for this signal
-        Focusable *win() { return m_win; }
-
-    private:
-        Focusable *m_win;
-    };
 
 private:
     void init();
@@ -120,13 +102,18 @@ private:
     /// Title has changed for a window
     /// @param win The window that title changed for.
     void updateTitle(Focusable& win);
+    void parentOrderChanged(Focusable* win);
+    void parentWindowAdded(Focusable* win);
+    void parentWindowRemoved(Focusable* win);
+
 
     std::auto_ptr<ClientPattern> m_pat;
     const FocusableList *m_parent;
     BScreen &m_screen;
     std::list<Focusable *> m_list;
 
-    mutable FocusableListSubject m_ordersig, m_addsig, m_removesig, m_resetsig;
+    mutable FbTk::Signal<Focusable *> m_ordersig, m_addsig, m_removesig;
+    mutable FbTk::Signal<> m_resetsig;
     typedef std::map<Focusable*, FbTk::RefCount<FbTk::SignalTracker> > SignalMap;
     SignalMap m_signal_map;
 };

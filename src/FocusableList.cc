@@ -125,27 +125,28 @@ void FocusableList::update(FbTk::Subject *subj) {
                 checkUpdate(**it);
         }
     }
-    if (typeid(*subj) == typeid(FocusableListSubject)) {
-        FocusableListSubject *fsubj =
-            static_cast<FocusableListSubject *>(subj);
-        if (subj == &m_parent->addSig()) {
-            attachSignals(*fsubj->win());
-            if (m_pat->match(*fsubj->win())) {
-                insertFromParent(*fsubj->win());
-                m_addsig.notify(fsubj->win());
-            }
-        } else if (subj == &m_parent->removeSig())
-            remove(*fsubj->win());
-        else if (subj == &m_parent->resetSig())
-            reset();
-        else if (subj == &m_parent->orderSig()) {
-            Focusable *win = fsubj->win();
-            if (!win || !contains(*win))
-                return;
-            if (insertFromParent(*win))
-                m_ordersig.notify(win);
+}
+
+void FocusableList::parentOrderChanged(Focusable *win) {
+    if(!m_screen.isShuttingdown() && contains(*win)) {
+        if(insertFromParent(*win))
+            m_ordersig.emit(win);
+    }
+}
+
+void FocusableList::parentWindowAdded(Focusable *win) {
+    if(!m_screen.isShuttingdown()) {
+        attachSignals(*win);
+        if (m_pat->match(*win)) {
+            insertFromParent(*win);
+            m_addsig.emit(win);
         }
     }
+}
+
+void FocusableList::parentWindowRemoved(Focusable *win) {
+    if(!m_screen.isShuttingdown())
+        remove(*win);
 }
 
 void FocusableList::checkUpdate(Focusable &win) {
@@ -153,12 +154,12 @@ void FocusableList::checkUpdate(Focusable &win) {
         if (!m_pat->match(win)) {
             m_list.remove(&win);
             m_pat->removeMatch();
-            m_removesig.notify(&win);
+            m_removesig.emit(&win);
         }
     } else if (m_pat->match(win)) {
         insertFromParent(win);
         m_pat->addMatch();
-        m_addsig.notify(&win);
+        m_addsig.emit(&win);
     }
 }
 
@@ -203,13 +204,13 @@ void FocusableList::addMatching() {
 void FocusableList::pushFront(Focusable &win) {
     m_list.push_front(&win);
     attachSignals(win);
-    m_addsig.notify(&win);
+    m_addsig.emit(&win);
 }
 
 void FocusableList::pushBack(Focusable &win) {
     m_list.push_back(&win);
     attachSignals(win);
-    m_addsig.notify(&win);
+    m_addsig.emit(&win);
 }
 
 void FocusableList::moveToFront(Focusable &win) {
@@ -219,7 +220,7 @@ void FocusableList::moveToFront(Focusable &win) {
 
     m_list.remove(&win);
     m_list.push_front(&win);
-    m_ordersig.notify(&win);
+    m_ordersig.emit(&win);
 }
 
 void FocusableList::moveToBack(Focusable &win) {
@@ -229,7 +230,7 @@ void FocusableList::moveToBack(Focusable &win) {
 
     m_list.remove(&win);
     m_list.push_back(&win);
-    m_ordersig.notify(&win);
+    m_ordersig.emit(&win);
 }
 
 void FocusableList::remove(Focusable &win) {
@@ -241,7 +242,7 @@ void FocusableList::remove(Focusable &win) {
         return;
     }
     m_list.remove(&win);
-    m_removesig.notify(&win);
+    m_removesig.emit(&win);
 }
 
 void FocusableList::updateTitle(Focusable& win) {
@@ -292,7 +293,7 @@ void FocusableList::reset() {
     m_pat->resetMatches();
     if (m_parent)
         addMatching();
-    m_resetsig.notify(0);
+    m_resetsig.emit();
 }
 
 bool FocusableList::contains(const Focusable &win) const {
@@ -311,10 +312,10 @@ Focusable *FocusableList::find(const ClientPattern &pat) const {
 }
 
 void FocusableList::attachChild(FocusableList &child) const {
-    m_addsig.attach(&child);
-    m_removesig.attach(&child);
-    m_resetsig.attach(&child);
-    m_ordersig.attach(&child);
+    m_addsig.connect(FbTk::MemFun(child, &FocusableList::parentWindowAdded));
+    m_ordersig.connect(FbTk::MemFun(child, &FocusableList::parentOrderChanged));
+    m_removesig.connect(FbTk::MemFun(child, &FocusableList::parentWindowRemoved));
+    m_resetsig.connect(FbTk::MemFun(child, &FocusableList::reset));
 }
 
 void FocusableList::workspaceChanged(BScreen &screen) {

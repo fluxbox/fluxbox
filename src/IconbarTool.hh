@@ -28,7 +28,6 @@
 
 #include "FbTk/Container.hh"
 #include "FbTk/CachedPixmap.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/Resource.hh"
 
 #include <map>
@@ -39,7 +38,7 @@ class IconButton;
 class Focusable;
 class FocusableList;
 
-class IconbarTool: public ToolbarItem, public FbTk::Observer {
+class IconbarTool: public ToolbarItem {
 public:
     typedef std::map<Focusable *, IconButton *> IconMap;
 
@@ -54,7 +53,6 @@ public:
     void moveResize(int x, int y,
                     unsigned int width, unsigned int height);
 
-    void update(FbTk::Subject *subj);
     void show();
     void hide();
     void setAlignment(FbTk::Container::Alignment a);
@@ -72,6 +70,7 @@ public:
 
     const BScreen &screen() const { return m_screen; }
 private:
+    enum UpdateReason { LIST_ORDER, LIST_ADD, LIST_REMOVE, LIST_RESET, ALIGN };
 
     void updateSizing();
 
@@ -94,6 +93,9 @@ private:
     void reset();
     /// add icons to the list
     void updateList();
+
+    /// called when the list emits a signal
+    void update(UpdateReason reason, Focusable *win);
 
     void themeReconfigured();
 
