@@ -276,6 +276,100 @@ MemFunSelectArg2(Object& obj, ReturnType (Object:: *action)(Arg1)) {
     return MemFunSelectArgImpl<2, MemFun1<ReturnType, Object, Arg1>, ReturnType>(MemFun(obj, action));
 }
 
+/// Creates a functor with a bound parameter
+template<typename ReturnType, typename Object, typename Arg1>
+class MemFunBind1 {
+public:
+    typedef ReturnType (Object:: *Action)(Arg1);
+
+    MemFunBind1(Object& obj, Action action, Arg1 arg1):
+        m_obj(obj),
+        m_action(action),
+        m_arg1(arg1) {
+    }
+
+    ReturnType operator()() const {
+        return (m_obj.*m_action)(m_arg1);
+    }
+
+private:
+    Object& m_obj;
+    Action m_action;
+    Arg1 m_arg1;
+};
+
+/// Creates a functor with a bound parameter
+template<typename ReturnType, typename Object, typename Arg1>
+MemFunBind1<ReturnType, Object, Arg1>
+MemFunBind( Object& obj, ReturnType (Object:: *action)(Arg1), Arg1 arg1 ) {
+    return MemFunBind1<ReturnType, Object, Arg1>(obj, action, arg1);
+}
+
+/// Creates a functor with a bound parameter
+template<typename ReturnType, typename Object, typename Arg1, typename Arg2>
+class MemFunBind2 {
+public:
+    typedef ReturnType (Object:: *Action)(Arg1, Arg2);
+
+    MemFunBind2(Object& obj, Action action, Arg1 arg1, Arg2 arg2):
+        m_obj(obj),
+        m_action(action),
+        m_arg1(arg1),
+        m_arg2(arg2) {
+    }
+
+    ReturnType operator()() const {
+        return (m_obj.*m_action)(m_arg1, m_arg2);
+    }
+
+private:
+    Object& m_obj;
+    Action m_action;
+    Arg1 m_arg1;
+    Arg2 m_arg2;
+};
+
+/// Creates a functor with a bound parameter
+template<typename ReturnType, typename Object, typename Arg1, typename Arg2>
+MemFunBind2<ReturnType, Object, Arg1, Arg2>
+MemFunBind( Object& obj, ReturnType (Object:: *action)(Arg1, Arg2), Arg1 arg1, Arg2 arg2 ) {
+    return MemFunBind2<ReturnType, Object, Arg1, Arg2>(obj, action, arg1, arg2);
+}
+
+/// Creates a functor with a bound parameter
+template<typename ReturnType, typename Object, typename Arg1, typename Arg2, typename Arg3>
+class MemFunBind3 {
+public:
+    typedef ReturnType (Object:: *Action)(Arg1, Arg2, Arg3);
+
+    MemFunBind3(Object& obj, Action action, Arg1 arg1, Arg2 arg2, Arg3 arg3):
+        m_obj(obj),
+        m_action(action),
+        m_arg1(arg1),
+        m_arg2(arg2),
+        m_arg3(arg3) {
+    }
+
+    ReturnType operator()() const {
+        return (m_obj.*m_action)(m_arg1, m_arg2, m_arg3);
+    }
+
+private:
+    Object& m_obj;
+    Action m_action;
+    Arg1 m_arg1;
+    Arg2 m_arg2;
+    Arg3 m_arg3;
+};
+
+/// Creates a functor with a bound parameter
+template<typename ReturnType, typename Object, typename Arg1, typename Arg2, typename Arg3>
+MemFunBind2<ReturnType, Object, Arg1, Arg2>
+MemFunBind( Object& obj, ReturnType (Object:: *action)(Arg1, Arg2, Arg3),
+            Arg1 arg1, Arg2 arg2, Arg3 arg3 ) {
+    return MemFunBind3<ReturnType, Object, Arg1, Arg2, Arg3>(obj, action, arg1, arg2, arg3);
+}
+
 } // namespace FbTk
 
 #endif // FBTK_MEM_FUN_HH
