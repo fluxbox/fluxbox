@@ -22,6 +22,7 @@
 #ifndef FBTK_MEM_FUN_HH
 #define FBTK_MEM_FUN_HH
 
+#include <functional>
 #include "SelectArg.hh"
 
 namespace FbTk {
@@ -55,7 +56,7 @@ MemFun( Object& obj, ReturnType (Object:: *action)() ) {
 
 /// One argument functor
 template <typename ReturnType, typename Object, typename Arg1>
-class MemFun1 {
+class MemFun1: public std::unary_function<Arg1, ReturnType> {
 public:
     typedef ReturnType (Object:: *Action)(Arg1);
 
@@ -82,7 +83,7 @@ MemFun( Object& obj, ReturnType (Object:: *action)(Arg1) ) {
 
 /// Two argument functor
 template <typename ReturnType, typename Object, typename Arg1, typename Arg2>
-class MemFun2 {
+class MemFun2: public std::binary_function<Arg1, Arg2, ReturnType> {
 public:
     typedef ReturnType (Object:: *Action)(Arg1,Arg2);
 
