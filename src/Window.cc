@@ -259,7 +259,6 @@ int FluxboxWindow::s_num_grabs = 0;
 FluxboxWindow::FluxboxWindow(WinClient &client):
     Focusable(client.screen(), this),
     oplock(false),
-    m_hintsig(*this),
     m_creation_time(0),
     moving(false), resizing(false),
     m_initialized(false),
@@ -2087,7 +2086,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         client.updateWMHints();
         titleSig().emit(title().logical(), *this);
         // nothing uses this yet
-        // hintSig().notify(); // notify listeners
+        // hintSig().emit(*this);
         break;
 
     case XA_WM_ICON_NAME:
