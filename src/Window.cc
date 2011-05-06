@@ -288,7 +288,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     m_resize_corner(RIGHTBOTTOM) {
 
     join(m_theme.reconfigSig(), FbTk::MemFun(*this, &FluxboxWindow::themeReconfigured));
-    m_frame.frameExtentSig().attach(this);
+    join(m_frame.frameExtentSig(), FbTk::MemFun(*this, &FluxboxWindow::frameExtentChanged));
 
     init();
 
@@ -538,7 +538,7 @@ void FluxboxWindow::init() {
     gettimeofday(&now, NULL);
     m_creation_time = now.tv_sec;
 
-    frame().frameExtentSig().notify();
+    frame().frameExtentSig().emit();
 
     setupWindow();
 
@@ -1452,6 +1452,7 @@ void FluxboxWindow::setFullscreenLayer() {
 void FluxboxWindow::attachWorkAreaSig() {
     // notify when struts change, so we can resize accordingly
     // Subject checks for duplicates for us
+    // XXX: this is no longer true with signals
     if (m_state.maximized || m_state.fullscreen)
         join(screen().workspaceAreaSig(),
              FbTk::MemFun(*this, &FluxboxWindow::workspaceAreaChanged));
@@ -2677,8 +2678,8 @@ void FluxboxWindow::setTitle(const std::string& title, Focusable &client) {
     titleSig().emit(title, *this);
 }
 
-void FluxboxWindow::update(FbTk::Subject *subj) {
-    if (m_initialized && subj == &m_frame.frameExtentSig()) {
+void FluxboxWindow::frameExtentChanged() {
+    if (m_initialized) {
         Fluxbox::instance()->updateFrameExtents(*this);
         sendConfigureNotify();
     }

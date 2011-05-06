@@ -533,7 +533,7 @@ void FbWinFrame::applyState() {
     }
 
     moveResize(new_x, new_y, new_w, new_h);
-    frameExtentSig().notify();
+    frameExtentSig().emit();
 }
 
 void FbWinFrame::setAlpha(bool focused, int alpha) {
@@ -1478,7 +1478,7 @@ void FbWinFrame::applyDecorations(bool do_move) {
         m_state.saveGeometry(x(), y(), width(), height());
     }
     if (client_move)
-        frameExtentSig().notify();
+        frameExtentSig().emit();
 }
 
 bool FbWinFrame::setBorderWidth(bool do_move) {
@@ -1529,7 +1529,7 @@ bool FbWinFrame::setBorderWidth(bool do_move) {
         alignTabs();
 
     if (do_move) {
-        frameExtentSig().notify();
+        frameExtentSig().emit();
         gravityTranslate(grav_x, grav_y, sizeHints().win_gravity,
                          m_active_orig_client_bw, false);
         // if the location changes, shift it

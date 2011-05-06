@@ -33,8 +33,6 @@
 
 #include "FbTk/DefaultValue.hh"
 #include "FbTk/Timer.hh"
-#include "FbTk/Subject.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/LayerItem.hh"
 #include "FbTk/Signal.hh"
@@ -58,7 +56,7 @@ class Layer;
 }
 
 /// Creates the window frame and handles any window event for it
-class FluxboxWindow: public Focusable, public FbTk::Observer,
+class FluxboxWindow: public Focusable,
                      public FbTk::EventHandler,
                      private FbTk::SignalTracker {
 public:
@@ -466,15 +464,6 @@ public:
 
     //@}
 
-    class WinSubject: public FbTk::Subject {
-    public:
-        WinSubject(FluxboxWindow &w):m_win(w) { }
-        FluxboxWindow &win() { return m_win; }
-        const FluxboxWindow &win() const { return m_win; }
-    private:
-        FluxboxWindow &m_win;
-    };
-
     bool oplock; ///< Used to help stop transient loops occurring by locking a window during certain operations
 
 private:
@@ -534,6 +523,7 @@ private:
     void focusedWindowChanged(BScreen &screen, FluxboxWindow *focused_win, WinClient* client);
     /// Called when workspace area on screen changed.
     void workspaceAreaChanged(BScreen &screen);
+    void frameExtentChanged();
 
 
     // state and hint signals

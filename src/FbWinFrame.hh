@@ -27,13 +27,13 @@
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/RefCount.hh"
-#include "FbTk/Subject.hh"
 #include "FbTk/Color.hh"
 #include "FbTk/LayerItem.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/DefaultValue.hh"
 #include "FbTk/Container.hh"
 #include "FbTk/Shape.hh"
+#include "FbTk/Signal.hh"
 
 #include <vector>
 #include <memory>
@@ -231,8 +231,7 @@ public:
     const FbTk::LayerItem &layerItem() const { return m_layeritem; }
     FbTk::LayerItem &layerItem() { return m_layeritem; }
 
-    const FbTk::Subject &frameExtentSig() const { return m_frame_extent_sig; }
-    FbTk::Subject &frameExtentSig() { return m_frame_extent_sig; }
+    FbTk::Signal<> &frameExtentSig() { return m_frame_extent_sig; }
     /// @returns true if the window is inside titlebar, 
     /// assuming window is an event window that was generated for this frame.
     bool insideTitlebar(Window win) const;
@@ -318,7 +317,7 @@ private:
     FbTk::FbWindow m_clientarea; ///< window that sits behind client window to fill gaps @see setClientWindow
     //@}
 
-    FbTk::Subject m_frame_extent_sig;
+    FbTk::Signal<> m_frame_extent_sig;
 
     typedef std::vector<FbTk::Button *> ButtonList;
     ButtonList m_buttons_left, ///< buttons to the left
