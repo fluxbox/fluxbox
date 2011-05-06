@@ -260,7 +260,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     Focusable(client.screen(), this),
     oplock(false),
     m_hintsig(*this),
-    m_statesig(*this),
     m_layersig(*this),
     m_creation_time(0),
     moving(false), resizing(false),
@@ -625,7 +624,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     // make sure that the state etc etc is updated for the new client
     // TODO: one day these should probably be neatened to only act on the
     // affected clients if possible
-    m_statesig.notify();
+    m_statesig.emit(*this);
     m_workspacesig.emit(*this);
     m_layersig.notify();
 
@@ -1336,7 +1335,7 @@ void FluxboxWindow::iconify() {
         return;
 
     m_state.iconic = true;
-    m_statesig.notify();
+    m_statesig.emit(*this);
 
     hide(true);
 
@@ -1365,7 +1364,7 @@ void FluxboxWindow::deiconify(bool do_raise) {
     // reassociate first, so it gets removed from screen's icon list
     screen().reassociateWindow(this, m_workspace_number, false);
     m_state.iconic = false;
-    m_statesig.notify();
+    m_statesig.emit(*this);
 
     // deiconify all transients
     ClientList::iterator client_it = clientList().begin();
@@ -1418,7 +1417,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
         m_state.fullscreen = true;
         frame().applyState();
 
-        setFullscreenLayer(); // calls stateSig().notify()
+        setFullscreenLayer(); // calls stateSig().emit()
         if (!isFocused()) {
             join(screen().focusedWindowSig(),
                  FbTk::MemFun(*this, &FluxboxWindow::focusedWindowChanged));
@@ -1430,7 +1429,7 @@ void FluxboxWindow::setFullscreen(bool flag) {
         frame().applyState();
 
         moveToLayer(m_old_layernum);
-        stateSig().notify();
+        stateSig().emit(*this);
     }
 
     attachWorkAreaSig();
@@ -1448,7 +1447,7 @@ void FluxboxWindow::setFullscreenLayer() {
     } else {
         moveToLayer(::ResourceLayer::DESKTOP);
     }
-    stateSig().notify();
+    stateSig().emit(*this);
 
 }
 
@@ -1483,7 +1482,7 @@ void FluxboxWindow::setMaximizedState(int type) {
 
     if (isShaded()) {
         // do not call ::shade() here to trigger frame().applyState() and
-        // stateSig().notfiy() only once
+        // stateSig().emit() only once
         m_state.shaded = false;
     }
 
@@ -1493,7 +1492,7 @@ void FluxboxWindow::setMaximizedState(int type) {
     attachWorkAreaSig();
 
     // notify listeners that we changed state
-    stateSig().notify();
+    stateSig().emit(*this);
 }
 
 void FluxboxWindow::disableMaximization() {
@@ -1504,7 +1503,7 @@ void FluxboxWindow::disableMaximization() {
     m_state.saveGeometry(frame().x(), frame().y(),
                          frame().width(), frame().height());
     frame().applyState();
-    stateSig().notify();
+    stateSig().emit(*this);
 }
 
 
@@ -1560,7 +1559,7 @@ void FluxboxWindow::shade() {
         return;
 
     frame().applyState();
-    stateSig().notify();
+    stateSig().emit(*this);
     // TODO: this should set IconicState, but then we can't focus the window
 }
 
@@ -1584,7 +1583,7 @@ void FluxboxWindow::stick() {
     m_state.stuck = !m_state.stuck;
 
     if (m_initialized) {
-        stateSig().notify();
+        stateSig().emit(*this);
         // notify since some things consider "stuck" to be a pseudo-workspace
         m_workspacesig.emit(*this);
     }
@@ -1726,13 +1725,13 @@ void FluxboxWindow::moveToLayer(int layernum, bool force) {
 void FluxboxWindow::setFocusHidden(bool value) {
     m_state.focus_hidden = value;
     if (m_initialized)
-        m_statesig.notify();
+        m_statesig.emit(*this);
 }
 
 void FluxboxWindow::setIconHidden(bool value) {
     m_state.icon_hidden = value;
     if (m_initialized)
-        m_statesig.notify();
+        m_statesig.emit(*this);
 }
 
 
@@ -2843,7 +2842,7 @@ void FluxboxWindow::stopMoving(bool interrupted) {
     if (m_state.maximized || m_state.fullscreen) {
         frame().applyState();
         attachWorkAreaSig();
-        stateSig().notify();
+        stateSig().emit(*this);
     }
 }
 
@@ -3581,7 +3580,8 @@ void FluxboxWindow::updateButtons() {
                                            0, 0, 10, 10);
 
                     winbtn->setOnClick(close_cmd);
-                    stateSig().attach(winbtn);
+                    winbtn->join(stateSig(),
+                            FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
                 }
                 break;
             case WinButton::STICK:
@@ -3592,7 +3592,8 @@ void FluxboxWindow::updateButtons() {
                             frame().titlebar(),
                             0, 0, 10, 10);
 
-                    stateSig().attach(winbtn);
+                    winbtn->join(stateSig(),
+                            FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
                     winbtn->setOnClick(stick_cmd);
                 }
                 break;
@@ -3603,7 +3604,8 @@ void FluxboxWindow::updateButtons() {
                             dir[i],
                             frame().titlebar(),
                             0, 0, 10, 10);
-                    stateSig().attach(winbtn);
+                    winbtn->join(stateSig(),
+                            FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
                     winbtn->setOnClick(shade_cmd);
                 }
                 break;
@@ -3749,7 +3751,7 @@ void FluxboxWindow::setOnHead(int head) {
     if (m_state.maximized || m_state.fullscreen) {
         frame().applyState();
         attachWorkAreaSig();
-        stateSig().notify();
+        stateSig().emit(*this);
     }
 }
 

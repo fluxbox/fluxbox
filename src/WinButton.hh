@@ -36,7 +36,7 @@ template <class T> class ThemeProxy;
 }
 
 /// draws and handles basic window button graphic
-class WinButton:public FbTk::Button, public FbTk::Observer, public FbTk::SignalTracker {
+class WinButton:public FbTk::Button, public FbTk::SignalTracker {
 public:
     /// draw type for the button
     enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE, MENUICON};
@@ -57,7 +57,6 @@ public:
     Pixmap getPressedPixmap() const;
     /// override for redrawing
     void clear();
-    void update(FbTk::Subject *subj);
     void updateAll();
 private:
     void drawType();

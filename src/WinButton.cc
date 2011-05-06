@@ -48,7 +48,7 @@ WinButton::WinButton(FluxboxWindow &listen_to,
     join(theme.reconfigSig(), FbTk::MemFun(*this, &WinButton::updateAll));
 
     if (buttontype == MENUICON)
-        update(0);
+        updateAll();
 }
 
 void WinButton::exposeEvent(XExposeEvent &event) {
@@ -315,8 +315,4 @@ void WinButton::updateAll() {
     }
 
     clear();
-}
-
-void WinButton::update(FbTk::Subject *subj) {
-    updateAll();
 }

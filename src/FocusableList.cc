@@ -271,12 +271,14 @@ void FocusableList::attachSignals(Focusable &win) {
                 tracker->join(fbwin->workspaceSig(),
                             MemFun(*this, &FocusableList::windowUpdated)
                         );
+                tracker->join(fbwin->stateSig(),
+                            MemFun(*this, &FocusableList::windowUpdated)
+                        );
             }
         }
 
         if (!fbwin)
             return;
-        fbwin->stateSig().attach(this);
         fbwin->layerSig().attach(this);
         // TODO: can't watch (head=...) yet
     }
@@ -289,7 +291,6 @@ void FocusableList::detachSignals(Focusable &win) {
         FluxboxWindow *fbwin = win.fbwindow();
         if (!fbwin)
             return;
-        fbwin->stateSig().detach(this);
         fbwin->layerSig().detach(this);
         // TODO: can't watch (head=...) yet
     }

@@ -93,7 +93,7 @@ void AttentionNoticeHandler::addAttention(Focusable &client) {
 
     // update _NET_WM_STATE atom
     if (client.fbwindow())
-        client.fbwindow()->stateSig().notify();
+        client.fbwindow()->stateSig().emit(*client.fbwindow());
 }
 
 void AttentionNoticeHandler::windowFocusChanged(Focusable& win) {
@@ -113,7 +113,7 @@ void AttentionNoticeHandler::updateWindow(Focusable& win, bool died) {
     // update _NET_WM_STATE atom if the window is not dead
     FluxboxWindow *fbwin = win.fbwindow();
     if (fbwin && ! died)
-        fbwin->stateSig().notify();
+        fbwin->stateSig().emit(*fbwin);
 
 }
 

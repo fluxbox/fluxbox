@@ -952,30 +952,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         fbwin = winsub->win().fbwindow();
     }
 
-    if (fbwin && &fbwin->stateSig() == changedsub) { // state signal
-        STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-                CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateState, *fbwin));
-
-        // if window changed to iconic state
-        // add to icon list
-        if (fbwin->isIconic()) {
-            fbwin->screen().addIcon(fbwin);
-            Workspace *space = fbwin->screen().getWorkspace(fbwin->workspaceNumber());
-            if (space != 0)
-                space->removeWindow(fbwin, true);
-        }
-
-        if (fbwin->isStuck()) {
-            // if we're sticky then reassociate window
-            // to all workspaces
-            BScreen &scr = fbwin->screen();
-            if (scr.currentWorkspaceID() != fbwin->workspaceNumber()) {
-                scr.reassociateWindow(fbwin,
-                                      scr.currentWorkspaceID(),
-                                      true);
-            }
-        }
-    } else if (fbwin && &fbwin->layerSig() == changedsub) { // layer signal
+    if (fbwin && &fbwin->layerSig() == changedsub) { // layer signal
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
             CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateLayer, *fbwin));
     }
@@ -1025,9 +1002,31 @@ void Fluxbox::windowWorkspaceChanged(FluxboxWindow &win) {
         CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateWorkspace, win));
 }
 
+void Fluxbox::windowStateChanged(FluxboxWindow &win) {
+    STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
+        CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateState, win));
+
+    // if window changed to iconic state
+    // add to icon list
+    if (win.isIconic()) {
+        win.screen().addIcon(&win);
+        Workspace *space = win.screen().getWorkspace(win.workspaceNumber());
+        if (space != 0)
+            space->removeWindow(&win, true);
+    }
+
+    if (win.isStuck()) {
+        // if we're sticky then reassociate window
+        // to all workspaces
+        BScreen &scr = win.screen();
+        if (scr.currentWorkspaceID() != win.workspaceNumber())
+            scr.reassociateWindow(&win, scr.currentWorkspaceID(), true);
+    }
+}
+
 void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.hintSig().attach(this);
-    win.stateSig().attach(this);
+    join(win.stateSig(), FbTk::MemFun(*this, &Fluxbox::windowStateChanged));
     join(win.workspaceSig(), FbTk::MemFun(*this, &Fluxbox::windowWorkspaceChanged));
     win.layerSig().attach(this);
     join(win.dieSig(), FbTk::MemFun(*this, &Fluxbox::windowDied));
