@@ -260,7 +260,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     Focusable(client.screen(), this),
     oplock(false),
     m_hintsig(*this),
-    m_layersig(*this),
     m_creation_time(0),
     moving(false), resizing(false),
     m_initialized(false),
@@ -626,7 +625,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     // affected clients if possible
     m_statesig.emit(*this);
     m_workspacesig.emit(*this);
-    m_layersig.notify();
+    m_layersig.emit(*this);
 
     if (was_focused) {
         // don't ask me why, but client doesn't seem to keep focus in new window
@@ -1545,7 +1544,7 @@ void FluxboxWindow::setLayerNum(int layernum) {
 
     if (m_initialized) {
         fbdbg<<this<<" notify layer signal"<<endl;
-        m_layersig.notify();
+        m_layersig.emit(*this);
     }
 }
 

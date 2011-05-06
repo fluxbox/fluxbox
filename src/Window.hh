@@ -459,8 +459,7 @@ public:
        @{
     */
     FbTk::Signal<FluxboxWindow &> &stateSig() { return m_statesig; }
-    FbTk::Subject &layerSig() { return m_layersig; }
-    const FbTk::Subject &layerSig() const { return m_layersig; }
+    FbTk::Signal<FluxboxWindow &> &layerSig() { return m_layersig; }
     FbTk::Subject &hintSig() { return m_hintsig; }
     const FbTk::Subject &hintSig() const { return m_hintsig; }
     FbTk::Signal<FluxboxWindow &> &workspaceSig() { return m_workspacesig; }
@@ -539,9 +538,8 @@ private:
 
 
     // state and hint signals
-    WinSubject m_hintsig,
-        m_layersig;
-    FbTk::Signal<FluxboxWindow &> m_workspacesig, m_statesig;
+    WinSubject m_hintsig;
+    FbTk::Signal<FluxboxWindow &> m_workspacesig, m_statesig, m_layersig;
 
     time_t m_creation_time;
 

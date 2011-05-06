@@ -39,7 +39,7 @@ class Focusable;
 class WinClient;
 class FluxboxWindow;
 
-class FocusableList: public FbTk::Observer, private FbTk::NotCopyable,
+class FocusableList: private FbTk::NotCopyable,
                      private FbTk::SignalTracker {
 public:
     typedef std::list<Focusable *> Focusables;
@@ -57,8 +57,6 @@ public:
 
     static void parseArgs(const std::string &in, int &opts, std::string &out);
     static const FocusableList *getListFromOptions(BScreen &scr, int opts);
-
-    void update(FbTk::Subject *subj);
 
     /// functions for modifying the list contents
     void pushFront(Focusable &win);
@@ -94,7 +92,6 @@ private:
     void checkUpdate(Focusable &win);
     bool insertFromParent(Focusable &win);
     void attachSignals(Focusable &win);
-    void detachSignals(Focusable &win);
     void reset();
     void attachChild(FocusableList &child) const;
     void workspaceChanged(BScreen &screen);

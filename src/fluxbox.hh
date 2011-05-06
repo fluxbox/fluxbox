@@ -28,7 +28,6 @@
 #include "FbTk/App.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Timer.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/SignalHandler.hh"
 #include "FbTk/Signal.hh"
 
@@ -76,7 +75,6 @@ class FbAtoms;
 */
 class Fluxbox : public FbTk::App,
                 public FbTk::SignalEventHandler,
-                public FbTk::Observer,
                 private FbTk::SignalTracker {
 public:
     Fluxbox(int argc, char **argv,
@@ -156,7 +154,6 @@ public:
 
     /// handle any system signal sent to the application
     void handleSignal(int signum);
-    void update(FbTk::Subject *changed);
     /// todo, remove this. just temporary
     void updateFrameExtents(FluxboxWindow &win);
 
@@ -225,6 +222,8 @@ private:
     void windowWorkspaceChanged(FluxboxWindow &win);
     /// Called when a window changes state
     void windowStateChanged(FluxboxWindow &win);
+    /// Called when a window layer changes
+    void windowLayerChanged(FluxboxWindow &win);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 

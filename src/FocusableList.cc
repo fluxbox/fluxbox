@@ -107,17 +107,6 @@ void FocusableList::init() {
     }
 }
 
-void FocusableList::update(FbTk::Subject *subj) {
-    if (subj == 0 || m_screen.isShuttingdown())
-        return;
-
-    if (typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
-        FluxboxWindow::WinSubject *fsubj =
-            static_cast<FluxboxWindow::WinSubject *>(subj);
-        windowUpdated(fsubj->win());
-    }
-}
-
 void FocusableList::windowUpdated(FluxboxWindow &fbwin) {
     if (m_screen.isShuttingdown())
         return;
@@ -243,7 +232,7 @@ void FocusableList::remove(Focusable &win) {
     // if the window isn't already in this list, we could send a bad signal
     bool contained = contains(win);
 
-    detachSignals(win);
+    m_signal_map.erase(&win);
     if (!contained) {
         return;
     }
@@ -257,50 +246,30 @@ void FocusableList::updateTitle(Focusable& win) {
 #include "Debug.hh"
 
 void FocusableList::attachSignals(Focusable &win) {
-    if (m_parent) {
-        FluxboxWindow *fbwin = win.fbwindow();
+    if (m_parent == NULL)
+        return;
 
-        // attach various signals for matching
-        FbTk::RefCount<FbTk::SignalTracker> &tracker = m_signal_map[&win];
-        if (! tracker) {
-            // we have not attached to this window yet
-            tracker = new SignalTracker;
-            tracker->join(win.titleSig(), MemFunSelectArg1(*this, &FocusableList::updateTitle));
-            tracker->join(win.dieSig(), MemFun(*this, &FocusableList::remove));
-            if(fbwin) {
-                tracker->join(fbwin->workspaceSig(),
-                            MemFun(*this, &FocusableList::windowUpdated)
-                        );
-                tracker->join(fbwin->stateSig(),
-                            MemFun(*this, &FocusableList::windowUpdated)
-                        );
-            }
+    FluxboxWindow *fbwin = win.fbwindow();
+
+    // attach various signals for matching
+    FbTk::RefCount<FbTk::SignalTracker> &tracker = m_signal_map[&win];
+    if (! tracker) {
+        // we have not attached to this window yet
+        tracker = new SignalTracker;
+        tracker->join(win.titleSig(), MemFunSelectArg1(*this, &FocusableList::updateTitle));
+        tracker->join(win.dieSig(), MemFun(*this, &FocusableList::remove));
+        if(fbwin) {
+            tracker->join(fbwin->workspaceSig(), MemFun(*this, &FocusableList::windowUpdated));
+            tracker->join(fbwin->stateSig(), MemFun(*this, &FocusableList::windowUpdated));
+            tracker->join(fbwin->layerSig(), MemFun(*this, &FocusableList::windowUpdated));
+            // TODO: can't watch (head=...) yet
         }
-
-        if (!fbwin)
-            return;
-        fbwin->layerSig().attach(this);
-        // TODO: can't watch (head=...) yet
-    }
-}
-
-void FocusableList::detachSignals(Focusable &win) {
-    m_signal_map.erase(&win);
-    if (m_parent) {
-        // detach various signals for matching
-        FluxboxWindow *fbwin = win.fbwindow();
-        if (!fbwin)
-            return;
-        fbwin->layerSig().detach(this);
-        // TODO: can't watch (head=...) yet
     }
 }
 
 void FocusableList::reset() {
-    while (!m_list.empty()) {
-        detachSignals(*m_list.back());
-        m_list.pop_back();
-    }
+    m_signal_map.clear();
+    m_list.clear();
     m_pat->resetMatches();
     if (m_parent)
         addMatching();
