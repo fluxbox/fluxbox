@@ -105,6 +105,7 @@ private:
     void parentOrderChanged(Focusable* win);
     void parentWindowAdded(Focusable* win);
     void parentWindowRemoved(Focusable* win);
+    void windowUpdated(FluxboxWindow &fbwin);
 
 
     std::auto_ptr<ClientPattern> m_pat;

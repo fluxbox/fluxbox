@@ -464,8 +464,7 @@ public:
     const FbTk::Subject &layerSig() const { return m_layersig; }
     FbTk::Subject &hintSig() { return m_hintsig; }
     const FbTk::Subject &hintSig() const { return m_hintsig; }
-    FbTk::Subject &workspaceSig() { return m_workspacesig; }
-    const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
+    FbTk::Signal<FluxboxWindow &> &workspaceSig() { return m_workspacesig; }
     /** @} */ // end group signals
 
     //@}
@@ -543,8 +542,8 @@ private:
     // state and hint signals
     WinSubject m_hintsig,
         m_statesig,
-        m_layersig,
-        m_workspacesig;
+        m_layersig;
+    FbTk::Signal<FluxboxWindow &> m_workspacesig;
 
     time_t m_creation_time;
 

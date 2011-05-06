@@ -221,6 +221,8 @@ private:
     void windowDied(Focusable &focusable);
     /// Called when a client (WinClient) dies
     void clientDied(Focusable &focusable);
+    /// Called when a window changes workspace
+    void windowWorkspaceChanged(FluxboxWindow &win);
 
     std::auto_ptr<FbAtoms> m_fbatoms;
 

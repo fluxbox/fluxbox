@@ -262,7 +262,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     m_hintsig(*this),
     m_statesig(*this),
     m_layersig(*this),
-    m_workspacesig(*this),
     m_creation_time(0),
     moving(false), resizing(false),
     m_initialized(false),
@@ -536,7 +535,7 @@ void FluxboxWindow::init() {
         setMaximizedState(tmp);
     }
 
-    m_workspacesig.notify();
+    m_workspacesig.emit(*this);
 
     struct timeval now;
     gettimeofday(&now, NULL);
@@ -627,7 +626,7 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     // TODO: one day these should probably be neatened to only act on the
     // affected clients if possible
     m_statesig.notify();
-    m_workspacesig.notify();
+    m_workspacesig.emit(*this);
     m_layersig.notify();
 
     if (was_focused) {
@@ -1537,8 +1536,8 @@ void FluxboxWindow::setWorkspace(int n) {
 
     // notify workspace change
     if (m_initialized && old_wkspc != m_workspace_number) {
-        fbdbg<<this<<" notify workspace signal"<<endl;
-        m_workspacesig.notify();
+        fbdbg<<this<<" emit workspace signal"<<endl;
+        m_workspacesig.emit(*this);
     }
 }
 
@@ -1587,7 +1586,7 @@ void FluxboxWindow::stick() {
     if (m_initialized) {
         stateSig().notify();
         // notify since some things consider "stuck" to be a pseudo-workspace
-        m_workspacesig.notify();
+        m_workspacesig.emit(*this);
     }
 
     ClientList::iterator client_it = clientList().begin();

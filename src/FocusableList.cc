@@ -114,16 +114,22 @@ void FocusableList::update(FbTk::Subject *subj) {
     if (typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
         FluxboxWindow::WinSubject *fsubj =
             static_cast<FluxboxWindow::WinSubject *>(subj);
-        // we only bind these for matching patterns, so skip finding out signal
-        FluxboxWindow &fbwin = fsubj->win();
-        if (m_parent->contains(fbwin))
-            checkUpdate(fbwin);
-        std::list<WinClient *> list = fbwin.clientList();
-        std::list<WinClient *>::iterator it = list.begin(), it_end = list.end();
-        for (; it != it_end; ++it) {
-            if (m_parent->contains(**it))
-                checkUpdate(**it);
-        }
+        windowUpdated(fsubj->win());
+    }
+}
+
+void FocusableList::windowUpdated(FluxboxWindow &fbwin) {
+    if (m_screen.isShuttingdown())
+        return;
+
+    // we only bind these for matching patterns, so skip finding out signal
+    if (m_parent->contains(fbwin))
+        checkUpdate(fbwin);
+    const std::list<WinClient *> &list = fbwin.clientList();
+    std::list<WinClient *>::const_iterator it = list.begin(), it_end = list.end();
+    for (; it != it_end; ++it) {
+        if (m_parent->contains(**it))
+            checkUpdate(**it);
     }
 }
 
@@ -252,6 +258,8 @@ void FocusableList::updateTitle(Focusable& win) {
 
 void FocusableList::attachSignals(Focusable &win) {
     if (m_parent) {
+        FluxboxWindow *fbwin = win.fbwindow();
+
         // attach various signals for matching
         FbTk::RefCount<FbTk::SignalTracker> &tracker = m_signal_map[&win];
         if (! tracker) {
@@ -259,12 +267,15 @@ void FocusableList::attachSignals(Focusable &win) {
             tracker = new SignalTracker;
             tracker->join(win.titleSig(), MemFunSelectArg1(*this, &FocusableList::updateTitle));
             tracker->join(win.dieSig(), MemFun(*this, &FocusableList::remove));
+            if(fbwin) {
+                tracker->join(fbwin->workspaceSig(),
+                            MemFun(*this, &FocusableList::windowUpdated)
+                        );
+            }
         }
 
-        FluxboxWindow *fbwin = win.fbwindow();
         if (!fbwin)
             return;
-        fbwin->workspaceSig().attach(this);
         fbwin->stateSig().attach(this);
         fbwin->layerSig().attach(this);
         // TODO: can't watch (head=...) yet
@@ -278,7 +289,6 @@ void FocusableList::detachSignals(Focusable &win) {
         FluxboxWindow *fbwin = win.fbwindow();
         if (!fbwin)
             return;
-        fbwin->workspaceSig().detach(this);
         fbwin->stateSig().detach(this);
         fbwin->layerSig().detach(this);
         // TODO: can't watch (head=...) yet

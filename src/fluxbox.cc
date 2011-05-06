@@ -978,9 +978,6 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (fbwin && &fbwin->layerSig() == changedsub) { // layer signal
         STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
             CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateLayer, *fbwin));
-    } else if (fbwin && &fbwin->workspaceSig() == changedsub) {  // workspace signal
-        STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
-            CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateWorkspace, *fbwin));
     }
 }
 
@@ -1023,10 +1020,15 @@ void Fluxbox::clientDied(Focusable &focusable) {
     screen.removeClient(client);
 }
 
+void Fluxbox::windowWorkspaceChanged(FluxboxWindow &win) {
+    STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
+        CallMemFunWithRefArg<AtomHandler, FluxboxWindow&, void>(&AtomHandler::updateWorkspace, win));
+}
+
 void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.hintSig().attach(this);
     win.stateSig().attach(this);
-    win.workspaceSig().attach(this);
+    join(win.workspaceSig(), FbTk::MemFun(*this, &Fluxbox::windowWorkspaceChanged));
     win.layerSig().attach(this);
     join(win.dieSig(), FbTk::MemFun(*this, &Fluxbox::windowDied));
     STLUtil::forAll(m_atomhandler,
