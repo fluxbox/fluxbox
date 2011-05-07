@@ -246,7 +246,7 @@ void SystemTray::resize(unsigned int width, unsigned int height) {
         m_window.resize(width, height);
         if (m_num_visible_clients)
             rearrangeClients();
-        resizeSig().notify();
+        resizeSig().emit();
     }
 }
 
@@ -257,7 +257,7 @@ void SystemTray::moveResize(int x, int y,
         m_window.moveResize(x, y, width, height);
         if (m_num_visible_clients)
             rearrangeClients();
-        resizeSig().notify();
+        resizeSig().emit();
     } else {
         move(x, y);
     }
@@ -435,7 +435,7 @@ void SystemTray::handleEvent(XEvent &event) {
                 (*it)->sendConfigureNotify(0, 0, (*it)->width(), (*it)->height());
                 // so toolbar know that we changed size
                 // done inside this loop, because otherwise we can get into nasty looping
-                resizeSig().notify();
+                resizeSig().emit();
             }
         }
 

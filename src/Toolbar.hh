@@ -197,8 +197,6 @@ private:
     StringList m_tools;
 
     bool m_resize_lock; ///< to lock rearrangeItems or not
-    /// observers for various signals
-    std::vector<FbTk::Observer*> m_observers;
     FbTk::SignalTracker m_signal_tracker;
 };
 

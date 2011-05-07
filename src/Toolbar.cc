@@ -51,7 +51,6 @@
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
 #include "FbTk/Shape.hh"
-#include "FbTk/SimpleObserver.hh"
 #include "FbTk/MemFun.hh"
 #include "FbTk/STLUtil.hh"
 #include "FbTk/Util.hh"
@@ -227,8 +226,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     m_shape(new FbTk::Shape(frame.window, 0)),
     m_resize_lock(false) {
     _FB_USES_NLS;
-    // NOTE: first subject is always the rearrangeItem !
-    m_observers.push_back(makeObserver(*this, &Toolbar::rearrangeItems));
 
     // get this on antialias change
     m_signal_tracker.join(screen().reconfigureSig(),
@@ -425,9 +422,8 @@ void Toolbar::reconfigure() {
                 if (item == 0)
                     continue;
                 m_item_list.push_back(item);
-                // attach to first observer ( which must be rearrangeItems )
-                item->resizeSig().attach(m_observers[0]);
-
+                m_signal_tracker.join(item->resizeSig(),
+                        FbTk::MemFun(*this, &Toolbar::rearrangeItems));
             }
             // show all items
             frame.window.showSubwindows();

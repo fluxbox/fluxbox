@@ -74,7 +74,7 @@ void WorkspaceNameTool::update() {
     m_button.setText(m_screen.currentWorkspace()->name());
     if (m_button.width() != width()) {
         resize(width(), height());
-        resizeSig().notify();
+        resizeSig().emit();
     }
     reRender();
     m_button.clear();

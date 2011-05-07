@@ -260,7 +260,7 @@ void ClockTool::themeReconfigured() {
     translateSize(orientation(), new_width, new_height);
     if (new_width != m_button.width() || new_height != m_button.height()) {
         resize(new_width, new_height);
-        resizeSig().notify();
+        resizeSig().emit();
     }
 
 }
@@ -305,7 +305,7 @@ void ClockTool::updateTime() {
         unsigned int new_width = m_theme->font().textWidth(time_string, time_string_len) + 2;
         if (new_width > m_button.width()) {
             resize(new_width, m_button.height());
-            resizeSig().notify();
+            resizeSig().emit();
         }
 #else // dont have strftime so we have to set it to hour:minut
         //        sprintf(time_string, "%d:%d", );
