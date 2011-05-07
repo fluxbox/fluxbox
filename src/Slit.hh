@@ -52,8 +52,7 @@ class Strut;
 class Layer;
 
 /// Handles dock apps
-class Slit: public FbTk::EventHandler, public FbTk::Observer,
-            public LayerObject, private FbTk::SignalTracker
+class Slit: public FbTk::EventHandler, public LayerObject, private FbTk::SignalTracker
 {
 public:
     typedef std::list<SlitClient *> SlitClients;
@@ -101,8 +100,6 @@ public:
     void configureRequestEvent(XConfigureRequestEvent &event);
     void exposeEvent(XExposeEvent &event);
     //@}
-
-    void update(FbTk::Subject *subj);
 
     void moveToLayer(int layernum);
     void toggleHidden();

@@ -59,7 +59,6 @@
 #include "Debug.hh"
 
 #include "FbTk/I18n.hh"
-#include "FbTk/Subject.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/MultLayers.hh"
@@ -301,7 +300,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname,
                  const string &altscreenname,
                  int scrn, int num_layers) :
-    m_reconfigure_sig(*this), // reconfigure signal
     m_layermanager(num_layers),
     m_image_control(0),
     m_focused_windowtheme(new FbWinFrameTheme(scrn, ".focus", ".Focus")),
@@ -918,7 +916,7 @@ void BScreen::reconfigure() {
 
     imageControl().cleanCache();
     // notify objects that the screen is reconfigured
-    m_reconfigure_sig.notify();
+    m_reconfigure_sig.emit(*this);
 
     // Reload style
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),

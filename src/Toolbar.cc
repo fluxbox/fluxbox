@@ -229,9 +229,12 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     _FB_USES_NLS;
     // NOTE: first subject is always the rearrangeItem !
     m_observers.push_back(makeObserver(*this, &Toolbar::rearrangeItems));
+
+    // get this on antialias change
+    m_signal_tracker.join(screen().reconfigureSig(),
+            FbTk::MemFunIgnoreArgs(*this, &Toolbar::reconfigure));
+
     // we need to get notified when the theme is reloaded
-    m_observers.push_back(makeObserver(*this, &Toolbar::reconfigure));
-    screen().reconfigureSig().attach(m_observers.back()); // get this on antialias change
     m_signal_tracker.join(m_theme.reconfigSig(), FbTk::MemFun(*this, &Toolbar::reconfigure));
 
     // listen to screen size changes

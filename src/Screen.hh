@@ -213,7 +213,7 @@ public:
     /// focused window signal
     FbTk::Signal<BScreen&, FluxboxWindow*, WinClient*> &focusedWindowSig() { return m_focusedwindow_sig; }
     /// reconfigure signal
-    FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
+    ScreenSignal &reconfigureSig() { return m_reconfigure_sig; }
     ScreenSignal &resizeSig() { return m_resize_sig; }
     ScreenSignal &bgChangeSig() { return m_bg_change_sig; }
     //@}
@@ -455,18 +455,6 @@ public:
     /// when screen dies
     void addManagedResource(FbTk::Resource_base *resource);
 
-    /**
-     * Used to emit different signals for the screen
-     */
-    class ScreenSubject:public FbTk::Subject {
-    public:
-        ScreenSubject(BScreen &scr):m_scr(scr) { }
-        const BScreen &screen() const { return m_scr; }
-        BScreen &screen() { return m_scr; }
-    private:
-        BScreen &m_scr;
-    };
-
 private:
     void setupConfigmenu(FbTk::Menu &menu);
     void renderGeomWindow();
@@ -476,8 +464,7 @@ private:
     const Strut* availableWorkspaceArea(int head) const;
 
     FbTk::SignalTracker m_tracker;
-    ScreenSubject m_reconfigure_sig; ///< reconfigure signal
-
+    ScreenSignal m_reconfigure_sig; ///< reconfigure signal
 
     FbTk::Signal<BScreen&, FluxboxWindow*, WinClient*> m_focusedwindow_sig;  ///< focused window signal
     ScreenSignal m_resize_sig; ///< resize signal

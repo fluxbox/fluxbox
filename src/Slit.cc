@@ -271,7 +271,7 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     join(scr.bgChangeSig(),
          FbTk::MemFunIgnoreArgs(*this, &Slit::reconfigure));
 
-    scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
+    join(scr.reconfigureSig(), FbTk::MemFunIgnoreArgs(*this, &Slit::reconfigure));
 
     scr.addConfigMenu(_FB_XTEXT(Slit, Slit, "Slit", "The Slit"), m_slitmenu);
 
@@ -1040,10 +1040,6 @@ void Slit::screenSizeChanged(BScreen &screen) {
     if (m_xineramaheadmenu)
         m_xineramaheadmenu->reloadHeads();
 #endif // XINERAMA
-}
-
-void Slit::update(FbTk::Subject*) {
-    reconfigure();
 }
 
 void Slit::clearWindow() {
