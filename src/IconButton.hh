@@ -27,7 +27,6 @@
 
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/FbPixmap.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/Signal.hh"
 
@@ -37,7 +36,7 @@ namespace FbTk {
 template <class T> class ThemeProxy;
 }
 
-class IconButton: public FbTk::TextButton, public FbTk::Observer {
+class IconButton: public FbTk::TextButton {
 public:
     IconButton(const FbTk::FbWindow &parent,
                FbTk::ThemeProxy<IconbarTheme> &focused_theme,
@@ -58,7 +57,6 @@ public:
 
     void reconfigTheme();
 
-    void update(FbTk::Subject *subj);
     void setPixmap(bool use);
 
     Focusable &win() { return m_win; }

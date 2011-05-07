@@ -61,7 +61,8 @@ IconButton::IconButton(const FbTk::FbWindow &parent,
     m_signals.join(m_win.focusSig(),
                    MemFunIgnoreArgs(*this, &IconButton::reconfigAndClear));
 
-    m_win.attentionSig().attach(this);
+    m_signals.join(m_win.attentionSig(),
+                   MemFunIgnoreArgs(*this, &IconButton::reconfigAndClear));
 
     FbTk::EventManager::instance()->add(*this, m_icon_window);
 
@@ -248,22 +249,6 @@ void IconButton::clientTitleChanged() {
 
     if (m_has_tooltip)
         showTooltip();
-}
-
-void IconButton::update(FbTk::Subject *subj) {
-    // if the window's focus state changed, we need to update the background
-    if (subj == &m_win.attentionSig()) {
-        reconfigAndClear();
-        return;
-    }
-
-    // we got signal that either title or
-    // icon pixmap was updated,
-    // so we refresh everything
-    // if the title was changed AND the mouse is over *this,
-    // update the tooltip
-
-    refreshEverything(subj != 0);
 }
 
 void IconButton::setupWindow() {

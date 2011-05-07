@@ -23,13 +23,11 @@
 #define FOCUSABLETHEME_HH
 
 #include "Focusable.hh"
-#include "FbTk/Observer.hh"
 #include "FbTk/Theme.hh"
 #include "FbTk/RelaySignal.hh"
 
 template <typename BaseTheme>
-class FocusableTheme: public FbTk::ThemeProxy<BaseTheme>,
-                      private FbTk::Observer {
+class FocusableTheme: public FbTk::ThemeProxy<BaseTheme> {
 public:
     FocusableTheme(Focusable &win, FbTk::ThemeProxy<BaseTheme> &focused,
                    FbTk::ThemeProxy<BaseTheme> &unfocused):
@@ -37,8 +35,8 @@ public:
 
         m_signals.join(m_win.focusSig(),
                 FbTk::MemFunIgnoreArgs(m_reconfig_sig, &FbTk::Signal<>::emit));
-
-        m_win.attentionSig().attach(this);
+        m_signals.join(m_win.attentionSig(),
+                FbTk::MemFunIgnoreArgs(m_reconfig_sig, &FbTk::Signal<>::emit));
         m_signals.join(m_focused_theme.reconfigSig(),
                 FbTk::MemFun(m_reconfig_sig, &FbTk::Signal<>::emit));
         m_signals.join(m_unfocused_theme.reconfigSig(),
@@ -66,8 +64,6 @@ public:
     }
 
 private:
-    void update(FbTk::Subject *subj) { m_reconfig_sig.emit(); }
-
     Focusable &m_win;
     FbTk::ThemeProxy<BaseTheme> &m_focused_theme, &m_unfocused_theme;
     FbTk::Signal<> m_reconfig_sig;

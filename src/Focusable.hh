@@ -24,7 +24,6 @@
 
 #include "FbTk/PixmapWithMask.hh"
 #include "FbTk/ITypeAheadable.hh"
-#include "FbTk/Subject.hh"
 #include "FbTk/Signal.hh"
 #include "FbTk/FbString.hh"
 
@@ -41,7 +40,7 @@ public:
         m_screen(scr), m_fbwin(fbwin),
         m_instance_name("fluxbox"), m_class_name("fluxbox"),
         m_focused(false), m_attention_state(false),
-        m_attentionsig(*this),
+        m_attentionsig(),
         m_focussig(),
         m_diesig(),
         m_titlesig() { }
@@ -62,7 +61,7 @@ public:
     bool getAttentionState() const { return m_attention_state; }
     /// @set the attention state
     virtual void setAttentionState(bool value) {
-        m_attention_state = value; attentionSig().notify();
+        m_attention_state = value; attentionSig().emit(*this);
     }
 
     /// @return the screen in which this object resides
@@ -101,19 +100,6 @@ public:
     virtual const FbTk::BiDiString &title() const { return m_title; }
     /// @return type ahead string
     const std::string &iTypeString() const { return title().logical(); }
-    /**
-     * Signaling object to attatch observers to.
-     */
-    class FocusSubject: public FbTk::Subject {
-    public:
-        explicit FocusSubject(Focusable &w):m_win(w) { }
-        /// @return context focusable for this signal
-        Focusable &win() { return m_win; }
-        /// @return context focusable for this signal
-        const Focusable &win() const { return m_win; }
-    private:
-        Focusable &m_win; //< the context
-    };
 
     /**
        @name signals
@@ -126,8 +112,7 @@ public:
     const TitleSignal &titleSig() const { return m_titlesig; }
     FbTk::Signal<Focusable&> &focusSig() { return m_focussig; }
     FbTk::Signal<Focusable&> &dieSig() { return m_diesig; }
-    FbTk::Subject &attentionSig() { return m_attentionsig; }
-    const FbTk::Subject &attentionSig() const { return m_attentionsig; }
+    FbTk::Signal<Focusable&> &attentionSig() { return m_attentionsig; }
     /** @} */ // end group signals
 
     /// Notify any listeners that the focus changed for this window.
@@ -147,10 +132,9 @@ protected:
     bool m_attention_state; //< state of icon button while demanding attention
     FbTk::PixmapWithMask m_icon; //< icon pixmap with mask
 
-    // state and hint signals
-    FocusSubject m_attentionsig;
 
 private:
+    FbTk::Signal<Focusable&> m_attentionsig;
     FbTk::Signal<Focusable&> m_focussig;
     FbTk::Signal<Focusable&> m_diesig;
     TitleSignal m_titlesig;
