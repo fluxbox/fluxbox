@@ -25,6 +25,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+bool g_gotError;
+static int HandleIPCError(Display *disp, XErrorEvent*ptr)
+{
+	// ptr->error_code contains the actual error flags
+	g_gotError=true;
+	return( 0 );
+}
+
 int main(int argc, char **argv) {
 
     if (argc <= 1) {
@@ -42,14 +50,21 @@ int main(int argc, char **argv) {
     Window root = DefaultRootWindow(disp);
 
     char *str = argv[1];
-    int ret = XChangeProperty(disp, root, fbcmd_atom,
+
+    typedef int (*x_error_handler_t)(Display*,XErrorEvent*);
+
+    // assign the custom handler, clear the flag, sync the data, then check it for success/failure
+    x_error_handler_t handler = XSetErrorHandler( HandleIPCError );
+    g_gotError=false;
+    XChangeProperty(disp, root, fbcmd_atom,
                               XA_STRING, 8, PropModeReplace,
                               (unsigned char *) str, strlen(str));
+    XSync(disp,False);
+    int ret=(g_gotError?EXIT_FAILURE:EXIT_SUCCESS);
+    XSetErrorHandler(handler);
+
     XCloseDisplay(disp);
 
-    if (ret == Success)
-        return EXIT_SUCCESS;
-
-    return EXIT_FAILURE;
+    return ret;
 }
 
