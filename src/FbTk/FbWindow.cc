@@ -41,6 +41,8 @@
   #include <assert.h>
 #endif
 
+#include <limits>
+
 namespace FbTk {
 
 FbWindow::FbWindow():
@@ -483,29 +485,45 @@ struct TextPropPtr {
 };
 }
 
-std::string FbWindow::textProperty(Atom property) const {
+long FbWindow::cardinalProperty(Atom prop,bool*exists) const {
+    Atom type;
+    int format;
+    unsigned long nitems, bytes_after;
+    int result;
+    long* num;
+    long ret=0;
+    if (exists) *exists=false;
+    if (property(prop, 0, 1, False, XA_CARDINAL, &type, &format, &nitems, &bytes_after, reinterpret_cast<unsigned char**>(&num))) {
+        if (type == XA_CARDINAL && nitems) {
+            ret = *num;
+            if (exists) *exists=true;
+        }
+        XFree(num);
+    }
+    return ret;
+}
+
+FbTk::FbString FbWindow::textProperty(Atom prop,bool*exists) const {
     XTextProperty text_prop;
     TextPropPtr helper(text_prop);
     char ** stringlist = 0;
     int count = 0;
-    std::string ret;
+    FbTk::FbString ret;
 
-    static Atom m_utf8string = XInternAtom(display(), "UTF8_STRING", False);
+    static const Atom utf8string = XInternAtom(display(), "UTF8_STRING", False);
 
-    if (XGetTextProperty(display(), window(), &text_prop, property) == 0) {
+    if (exists) *exists=false;
+    if (XGetTextProperty(display(), window(), &text_prop, prop) == 0 || text_prop.value == 0 || text_prop.nitems == 0) {
         return "";
     }
 
-    if (text_prop.value == 0 || text_prop.nitems == 0) {
-        return "";
-    }
 
     if (text_prop.encoding == XA_STRING) {
         if (XTextPropertyToStringList(&text_prop, &stringlist, &count) == 0 || count == 0) {
             return "";
         }
         ret = FbStringUtil::XStrToFb(stringlist[0]);
-    } else if (text_prop.encoding == m_utf8string && text_prop.format == 8) {
+    } else if (text_prop.encoding == utf8string && text_prop.format == 8) {
 #ifdef X_HAVE_UTF8_STRING
         Xutf8TextPropertyToTextList(display(), &text_prop, &stringlist, &count);
         if (count == 0 || stringlist == 0) {
@@ -530,11 +548,11 @@ std::string FbWindow::textProperty(Atom property) const {
     if (stringlist) {
         XFreeStringList(stringlist);
     }
-
+    if (exists) *exists=true;
     return ret;
 }
 
-bool FbWindow::property(Atom property,
+bool FbWindow::property(Atom prop,
                         long long_offset, long long_length,
                         bool do_delete,
                         Atom req_type,
@@ -544,7 +562,7 @@ bool FbWindow::property(Atom property,
                         unsigned long *bytes_after_return,
                         unsigned char **prop_return) const {
     if (XGetWindowProperty(display(), window(),
-                           property, long_offset, long_length, do_delete,
+                           prop, long_offset, long_length, do_delete,
                            req_type, actual_type_return,
                            actual_format_return, nitems_return,
                            bytes_after_return, prop_return) == Success)
@@ -553,19 +571,19 @@ bool FbWindow::property(Atom property,
     return false;
 }
 
-void FbWindow::changeProperty(Atom property, Atom type,
+void FbWindow::changeProperty(Atom prop, Atom type,
                               int format,
                               int mode,
                               unsigned char *data,
                               int nelements) {
 
-    XChangeProperty(display(), m_window, property, type,
+    XChangeProperty(display(), m_window, prop, type,
                     format, mode,
                     data, nelements);
 }
 
-void FbWindow::deleteProperty(Atom property) {
-    XDeleteProperty(display(), m_window, property);
+void FbWindow::deleteProperty(Atom prop) {
+    XDeleteProperty(display(), m_window, prop);
 }
 
 void FbWindow::addToSaveSet() {
@@ -590,9 +608,9 @@ long FbWindow::eventMask() const {
 
 void FbWindow::setOpaque(int alpha) {
 #ifdef HAVE_XRENDER
-    static Atom m_alphaatom = XInternAtom(display(), "_NET_WM_WINDOW_OPACITY", False);
+    static const Atom alphaatom = XInternAtom(display(), "_NET_WM_WINDOW_OPACITY", False);
     unsigned long opacity = alpha * 0x1010101;
-    changeProperty(m_alphaatom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1l);
+    changeProperty(alphaatom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1l);
 #endif // HAVE_XRENDER
 }
 

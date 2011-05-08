@@ -477,12 +477,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     unsigned int first_desktop = 0;
     if (m_restart) {
         Atom net_desktop = XInternAtom(disp, "_NET_CURRENT_DESKTOP", False);
-        if (rootWindow().property(net_desktop, 0l, 1l, 
-                False, XA_CARDINAL, &xa_ret_type, &ret_format, &ret_nitems,
-                &ret_bytes_after, &ret_prop) == Success) {
-            if (ret_prop && static_cast<unsigned int>(*ret_prop) < static_cast<unsigned int>(nr_ws))
-                first_desktop = static_cast<unsigned int>(*ret_prop);
-            XFree(ret_prop);
+        bool exists;
+        unsigned int ret=static_cast<unsigned int>(rootWindow().cardinalProperty(net_desktop, &exists));
+        if (exists) {
+            if (ret < static_cast<unsigned int>(nr_ws))
+                first_desktop = ret;
         }
     }
 

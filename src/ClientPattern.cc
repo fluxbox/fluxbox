@@ -322,7 +322,7 @@ bool ClientPattern::match(const Focusable &win) const {
     for (; it != it_end; ++it) {
         const Term& term = *(*it);
         if (term.prop == XPROP) {
-            if (!term.negate ^ (term.regexp.match(win.getTextProperty(term.xprop))))
+            if (!term.negate ^ ((term.regexp.match(win.getTextProperty(term.xprop))) || term.regexp.match(FbTk::StringUtil::number2String(win.getCardinalProperty(term.xprop)))))
                 return false;
         } else if (term.regstr == "[current]") {
             WinClient *focused = FocusControl::focusedWindow();

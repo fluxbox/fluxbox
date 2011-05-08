@@ -695,22 +695,13 @@ void Ewmh::setupClient(WinClient &winclient) {
 
 void Ewmh::setupFrame(FluxboxWindow &win) {
     setupState(win);
-
-    Atom ret_type;
-    int fmt;
-    unsigned long nitems, bytes_after;
-    unsigned char *data = 0;
-
-    if (win.winClient().property(m_net->wm_desktop, 0, 1, False, XA_CARDINAL,
-                                 &ret_type, &fmt, &nitems, &bytes_after,
-                                 (unsigned char **) &data) && data) {
-        unsigned int desktop = static_cast<long>(*data);
+    bool exists;
+    unsigned int desktop=static_cast<unsigned int>(win.winClient().cardinalProperty(m_net->wm_desktop, &exists));
+    if (exists) {
         if (desktop == (unsigned int)(-1) && !win.isStuck())
             win.stick();
         else
             win.setWorkspace(desktop);
-
-        XFree(data);
     } else {
         updateWorkspace(win);
     }

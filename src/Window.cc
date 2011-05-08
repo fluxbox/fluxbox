@@ -3342,8 +3342,12 @@ FbTk::FbString FluxboxWindow::getWMRole() const {
     return (m_client ? m_client->getWMRole() : "FluxboxWindow");
 }
 
-FbTk::FbString FluxboxWindow::getTextProperty(Atom prop) const {
-    return (m_client ? m_client->getTextProperty(prop) : Focusable::getTextProperty(prop));
+long FluxboxWindow::getCardinalProperty(Atom prop,bool*exists) const {
+    return (m_client ? m_client->getCardinalProperty(prop,exists) : Focusable::getCardinalProperty(prop,exists));
+}
+
+FbTk::FbString FluxboxWindow::getTextProperty(Atom prop,bool*exists) const {
+    return (m_client ? m_client->getTextProperty(prop,exists) : Focusable::getTextProperty(prop,exists));
 }
 
 bool FluxboxWindow::isTransient() const {

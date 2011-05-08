@@ -98,40 +98,30 @@ void Gnome::initForScreen(BScreen &screen) {
 
 void Gnome::setupFrame(FluxboxWindow &win) {
     // load gnome state (take queues from the main window of the frame)
-    Atom ret_type;
-    int fmt;
-    unsigned long nitems, bytes_after;
-    long flags, *data = 0;
-
-    if (win.winClient().property(m_gnome_wm_win_state, 0, 1, False, XA_CARDINAL,
-                                 &ret_type, &fmt, &nitems, &bytes_after,
-                                 (unsigned char **) &data) && data) {
-        flags = *data;
+    long flags;
+    bool exists;
+    flags=win.winClient().cardinalProperty(m_gnome_wm_win_state,&exists);
+    if (exists) {
         setState(&win, flags);
-        XFree (data);
     } else {
         updateState(win);
     }
 
     // load gnome layer atom
-    if (win.winClient().property(m_gnome_wm_win_layer, 0, 1, False, XA_CARDINAL,
-                                 &ret_type, &fmt, &nitems, &bytes_after,
-                                 (unsigned char **) &data) && data) {
-        flags = *data;
+    flags=win.winClient().cardinalProperty(m_gnome_wm_win_layer,&exists);
+    if (exists) {
         setLayer(&win, flags);
-        XFree (data);
     } else {
         updateLayer(win);
     }
 
     // load gnome workspace atom
-    if (win.winClient().property(m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL,
-                                 &ret_type, &fmt, &nitems, &bytes_after,
-                                 (unsigned char **) &data) && data) {
-        unsigned int workspace_num = *data;
+    flags=win.winClient().cardinalProperty(m_gnome_wm_win_workspace,&exists);
+    if (exists)
+    {
+        unsigned int workspace_num = flags;
         if (win.workspaceNumber() != workspace_num)
             win.setWorkspace(workspace_num);
-        XFree (data);
     } else {
         updateWorkspace(win);
     }

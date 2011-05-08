@@ -422,7 +422,8 @@ public:
     const FbTk::FbString &getWMClassName() const;
     const FbTk::FbString &getWMClassClass() const;
     std::string getWMRole() const;
-    FbTk::FbString getTextProperty(Atom prop) const;
+    long getCardinalProperty(Atom prop,bool*exists=NULL) const;
+    FbTk::FbString getTextProperty(Atom prop,bool*exists=NULL) const;
     void setWindowType(WindowState::WindowType type);
     bool isTransient() const;
 

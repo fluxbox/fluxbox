@@ -96,7 +96,8 @@ public:
     std::string getWMRole() const;
     WindowState::WindowType getWindowType() const { return m_window_type; }
     void setWindowType(WindowState::WindowType type) { m_window_type = type; }
-    FbTk::FbString getTextProperty(Atom prop) const { return FbTk::FbWindow::textProperty(prop); }
+    long getCardinalProperty(Atom prop,bool*exists=NULL) const { return FbTk::FbWindow::cardinalProperty(prop,exists); }
+    FbTk::FbString getTextProperty(Atom prop,bool*exists=NULL) const { return FbTk::FbWindow::textProperty(prop,exists); }
 
     WinClient *transientFor() { return transient_for; }
     const WinClient *transientFor() const { return transient_for; }

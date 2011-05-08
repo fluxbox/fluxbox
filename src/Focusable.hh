@@ -88,7 +88,8 @@ public:
     /// @return wm role string (for pattern matching)
     virtual std::string getWMRole() const { return "Focusable"; }
 
-    virtual FbTk::FbString getTextProperty(Atom prop) const { return ""; }
+    virtual FbTk::FbString getTextProperty(Atom prop,bool*exists=NULL) const { return ""; }
+    virtual long getCardinalProperty(Atom prop,bool*exists=NULL) const { return 0; }
 
     /// @return whether this window is a transient (for pattern matching)
     virtual bool isTransient() const { return false; }

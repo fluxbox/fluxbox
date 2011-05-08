@@ -23,7 +23,7 @@
 #define FBTK_FBWINDOW_HH
 
 #include "FbDrawable.hh"
-
+#include "FbString.hh"
 #include <memory>
 #include <string>
 #include <set>
@@ -158,7 +158,8 @@ public:
 
     void deleteProperty(Atom property);
 
-    std::string textProperty(Atom property) const;
+    long cardinalProperty(Atom property,bool*exists=NULL) const;
+    FbTk::FbString textProperty(Atom property,bool*exists=NULL) const;
 
     void addToSaveSet();
     void removeFromSaveSet();
