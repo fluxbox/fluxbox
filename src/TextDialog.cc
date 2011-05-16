@@ -135,19 +135,28 @@ void TextDialog::keyPressEvent(XKeyEvent &event) {
 }
 
 void TextDialog::render() {
-    Pixmap tmp = m_pixmap;
-    if (!m_screen.focusedWinFrameTheme()->iconbarTheme().texture().usePixmap()) {
-        m_label.setBackgroundColor(m_screen.focusedWinFrameTheme()->iconbarTheme().texture().color());
-        m_pixmap = 0;
+    if (m_screen.focusedWinFrameTheme()->iconbarTheme().texture().type() &
+        FbTk::Texture::PARENTRELATIVE) {
+        if (!m_screen.focusedWinFrameTheme()->titleTexture().usePixmap()) {
+            m_pixmap = None;
+            m_label.setBackgroundColor(m_screen.focusedWinFrameTheme()->titleTexture().color());
+        } else {
+            m_pixmap = m_screen.imageControl().renderImage(m_label.width(), m_label.height(),
+                    m_screen.focusedWinFrameTheme()->titleTexture());
+            m_label.setBackgroundPixmap(m_pixmap);
+        }
     } else {
-        m_pixmap = m_screen.imageControl().renderImage(m_label.width(), m_label.height(),
-                                                       m_screen.focusedWinFrameTheme()->iconbarTheme().texture());
-        m_label.setBackgroundPixmap(m_pixmap);
+        if (!m_screen.focusedWinFrameTheme()->iconbarTheme().texture().usePixmap()) {
+            m_pixmap = None;
+            m_label.setBackgroundColor(m_screen.focusedWinFrameTheme()->iconbarTheme().texture().color());
+        } else {
+            m_pixmap = m_screen.imageControl().renderImage(m_label.width(), m_label.height(),
+                    m_screen.focusedWinFrameTheme()->iconbarTheme().texture());
+            m_label.setBackgroundPixmap(m_pixmap);
+        }
     }
-
-    if (tmp)
-        m_screen.imageControl().removeImage(tmp);
-
+    if (m_pixmap)
+        m_screen.imageControl().removeImage(m_pixmap);
 }
 
 void TextDialog::init() {
