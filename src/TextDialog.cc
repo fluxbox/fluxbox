@@ -44,7 +44,7 @@ TextDialog::TextDialog(BScreen &screen,
         const string &title) :
     FbTk::FbWindow(screen.rootWindow().screenNumber(), 0, 0, 200, 1, ExposureMask),
     m_textbox(*this, screen.focusedWinFrameTheme()->font(), ""),
-    m_label(*this, screen.focusedWinFrameTheme()->font(), title),
+    m_label(*this, screen.focusedWinFrameTheme()->iconbarTheme().text().font(), title),
     m_gc(m_textbox),
     m_screen(screen),
     m_move_x(0),
@@ -156,6 +156,7 @@ void TextDialog::init() {
     // we listen to motion notify too
     m_label.setEventMask(m_label.eventMask() | ButtonPressMask | ButtonMotionMask);
     m_label.setGC(m_screen.focusedWinFrameTheme()->iconbarTheme().text().textGC());
+    m_label.setJustify(m_screen.focusedWinFrameTheme()->iconbarTheme().text().justify());
     m_label.show();
 
     // setup text box
@@ -167,10 +168,14 @@ void TextDialog::init() {
     m_textbox.show();
 
     // setup this window
-    setBorderWidth(1);
-    setBackgroundColor(white);
-    // move to center of the screen
-    move((m_screen.width() - width())/2, (m_screen.height() - height())/2);
+    setBorderWidth(m_screen.focusedWinFrameTheme()->border().width());
+    setBorderColor(m_screen.focusedWinFrameTheme()->border().color());
+
+    // move to center of the current head
+    unsigned int head = m_screen.getCurrHead();
+    move(m_screen.getHeadX(head) + (m_screen.getHeadWidth(head) - width()) / 2,
+         m_screen.getHeadY(head) + (m_screen.getHeadHeight(head) - height()) / 2);
+
 
     updateSizes();
     resize(width(), m_textbox.height() + m_label.height());
@@ -185,6 +190,6 @@ void TextDialog::updateSizes() {
     m_label.moveResize(0, 0,
                        width(), m_textbox.font().height() + 2);
 
-    m_textbox.moveResize(2, m_label.height(),
-                         width() - 4, m_textbox.font().height() + 2);
+    m_textbox.moveResize(0, m_label.height(),
+                         width(), m_textbox.font().height() + 2);
 }
