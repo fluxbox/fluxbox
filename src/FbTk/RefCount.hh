@@ -32,8 +32,9 @@ class RefCount {
 public:
     RefCount();
     explicit RefCount(Pointer *p);
-    explicit RefCount(RefCount<Pointer> &copy);
     RefCount(const RefCount<Pointer> &copy);
+    template<typename Pointer2>
+    RefCount(const RefCount<Pointer2> &copy);
     ~RefCount();
     RefCount<Pointer> &operator = (const RefCount<Pointer> &copy);
     RefCount<Pointer> &operator = (Pointer *p);
@@ -50,6 +51,10 @@ private:
     void decRefCount();
     Pointer *m_data; ///< data holder
     unsigned int *m_refcount; ///< holds reference counting
+
+    // we need this for the template copy constructor
+    template<typename Pointer2>
+    friend class RefCount;
 };
 
 // implementation
@@ -60,7 +65,8 @@ RefCount<Pointer>::RefCount():m_data(0), m_refcount(new unsigned int(0)) {
 }
 
 template <typename Pointer>
-RefCount<Pointer>::RefCount(RefCount<Pointer> &copy):
+template <typename Pointer2>
+RefCount<Pointer>::RefCount(const RefCount<Pointer2> &copy):
     m_data(copy.m_data),
     m_refcount(copy.m_refcount) {
     incRefCount();
