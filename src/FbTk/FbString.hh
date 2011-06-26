@@ -30,6 +30,8 @@
 #include <iconv.h>
 #endif // HAVE_ICONV
 
+#include "NotCopyable.hh"
+
 namespace FbTk {
 
 // Use this type for things converted to our internal encoding (UTF-8)
@@ -75,7 +77,7 @@ bool haveUTF8();
 
 } // namespace FbStringUtil
 
-class StringConvertor {
+class StringConvertor: private NotCopyable {
 public:
 
     enum EncodingTarget { ToFbString, ToLocaleStr };
