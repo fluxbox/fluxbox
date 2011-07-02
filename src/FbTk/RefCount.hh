@@ -41,6 +41,7 @@ public:
     Pointer &operator * () const { return *get(); }
     Pointer *operator -> () const { return get(); }
     Pointer *get() const { return m_data; }
+    void reset(Pointer *p) { *this = p; }
     /// conversion to "bool"
     operator bool_type() const { return m_data ? &RefCount::m_data : 0; }
 
