@@ -375,7 +375,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     unsigned char *ret_prop;
     if (rootWindow().property(wm_check, 0l, 1l,
             False, XA_WINDOW, &xa_ret_type, &ret_format, &ret_nitems,
-            &ret_bytes_after, &ret_prop) == Success) {
+            &ret_bytes_after, &ret_prop) ) {
         m_restart = (ret_prop != NULL);
         XFree(ret_prop);
     }
