@@ -143,6 +143,10 @@ public:
                         new SlotImpl<Functor, void, Arg1, Arg2, Arg3>(functor)
                     ));
     }
+
+    SlotID connect(const RefCount<FbTk::Slot<void, Arg1, Arg2, Arg3> > &slot) {
+        return SignalHolder::connect(slot);
+    }
 };
 
 /// Specialization for two arguments.
@@ -163,6 +167,10 @@ public:
         return SignalHolder::connect(SlotPtr(
                         new SlotImpl<Functor, void, Arg1, Arg2>(functor)
                     ));
+    }
+
+    SlotID connect(const RefCount<FbTk::Slot<void, Arg1, Arg2> > &slot) {
+        return SignalHolder::connect(slot);
     }
 };
 
@@ -185,6 +193,10 @@ public:
                         new SlotImpl<Functor, void, Arg1>(functor)
                     ));
     }
+
+    SlotID connect(const RefCount<FbTk::Slot<void, Arg1> > &slot) {
+        return SignalHolder::connect(slot);
+    }
 };
 
 /// Specialization for no arguments.
@@ -206,6 +218,10 @@ public:
                         new SlotImpl<Functor, void>(functor)
                     ));
     }
+
+    SlotID connect(const RefCount<FbTk::Slot<void> > &slot) {
+        return SignalHolder::connect(slot);
+    }
 };
 
 /**
@@ -225,9 +241,17 @@ public:
 
     /// Starts tracking a signal.
     /// @return A tracking ID
-    template <typename Signal, typename Functor>
-    TrackID join(Signal& sig, const Functor& functor) {
-        ValueType value = ValueType(&sig, sig.connect(functor));
+    template<typename Arg1, typename Arg2, typename Arg3, typename Functor>
+    TrackID join(Signal<Arg1, Arg2, Arg3> &sig, const Functor &functor) {
+        return join(sig, RefCount<Slot<void, Arg1, Arg2, Arg3> >(
+                    new SlotImpl<Functor, void, Arg1, Arg2, Arg3>(functor)
+                    ));
+    }
+
+    template<typename Arg1, typename Arg2, typename Arg3>
+    TrackID
+    join(Signal<Arg1, Arg2, Arg3> &sig, const RefCount<Slot<void, Arg1, Arg2, Arg3> > &slot) {
+        ValueType value = ValueType(&sig, sig.connect(slot));
         std::pair<TrackID, bool> ret = m_connections.insert(value);
         if ( !ret.second ) {
             // failed to insert this functor
