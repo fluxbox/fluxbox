@@ -56,7 +56,7 @@ namespace FbTk {
 class Timer {
 public:
     Timer();
-    explicit Timer(RefCount<Command<void> > &handler);
+    explicit Timer(const RefCount<Slot<void> > &handler);
     virtual ~Timer();
 
     void fireOnce(bool once) { m_once = once; }
@@ -65,7 +65,7 @@ public:
     /// set timeout 
     void setTimeout(const timeval &val);
     void setTimeout(unsigned int secs, unsigned int usecs);
-    void setCommand(RefCount<Command<void> > &cmd);
+    void setCommand(const RefCount<Slot<void> > &cmd);
     void setInterval(int val) { m_interval = val; }
     /// start timing
     void start();
@@ -96,7 +96,7 @@ private:
     typedef std::list<Timer *> TimerList;
     static TimerList m_timerlist; ///< list of all timers, sorted by next trigger time (start + timeout)
 
-    RefCount<Command<void> > m_handler; ///< what to do on a timeout
+    RefCount<Slot<void> > m_handler; ///< what to do on a timeout
 
     bool m_timing; ///< clock running?
     bool m_once;  ///< do timeout only once?
@@ -110,7 +110,7 @@ private:
 /// executes a command after a specified timeout
 class DelayedCmd: public Command<void> {
 public:
-    DelayedCmd(RefCount<Command<void> > &cmd, unsigned int timeout = 200000);
+    DelayedCmd(const RefCount<Slot<void> > &cmd, unsigned int timeout = 200000);
     void execute();
     static Command<void> *parse(const std::string &command,
                           const std::string &args, bool trusted);

@@ -59,7 +59,7 @@ Timer::Timer():m_timing(false), m_once(false), m_interval(0) {
 
 }
 
-Timer::Timer(RefCount<Command<void> > &handler):
+Timer::Timer(const RefCount<Slot<void> > &handler):
     m_handler(handler),
     m_timing(false),
     m_once(false),
@@ -90,7 +90,7 @@ void Timer::setTimeout(unsigned int secs, unsigned int usecs) {
     m_timeout.tv_usec = usecs;
 }
 
-void Timer::setCommand(RefCount<Command<void> > &cmd) {
+void Timer::setCommand(const RefCount<Slot<void> > &cmd) {
     m_handler = cmd;
 }
 
@@ -122,7 +122,7 @@ void Timer::makeEndTime(timeval &tm) const {
 
 void Timer::fireTimeout() {
     if (m_handler)
-        m_handler->execute();
+        (*m_handler)();
 }
 
 void Timer::updateTimers(int fd) {
@@ -284,7 +284,7 @@ Command<void> *DelayedCmd::parse(const std::string &command,
 
 REGISTER_COMMAND_PARSER(delay, DelayedCmd::parse, void);
 
-DelayedCmd::DelayedCmd(RefCount<Command<void> > &cmd, unsigned int timeout) {
+DelayedCmd::DelayedCmd(const RefCount<Slot<void> > &cmd, unsigned int timeout) {
     timeval to; // defaults to 200ms
     to.tv_sec = timeout/1000000;
     to.tv_usec = timeout % 1000000;
