@@ -134,6 +134,26 @@ void RefCount<Pointer>::incRefCount() {
     (*m_refcount)++;
 }
 
+template <typename Pointer>
+inline RefCount<Pointer> makeRef() {
+    return RefCount<Pointer>(new Pointer);
+}
+
+template <typename Pointer, typename Arg1>
+inline RefCount<Pointer> makeRef(const Arg1 &arg1) {
+    return RefCount<Pointer>(new Pointer(arg1));
+}
+
+template <typename Pointer, typename Arg1, typename Arg2>
+inline RefCount<Pointer> makeRef(const Arg1 &arg1, const Arg2 &arg2) {
+    return RefCount<Pointer>(new Pointer(arg1, arg2));
+}
+
+template <typename Pointer, typename Arg1, typename Arg2, typename Arg3>
+inline RefCount<Pointer> makeRef(const Arg1 &arg1, const Arg2 &arg2, const Arg3 &arg3) {
+    return RefCount<Pointer>(new Pointer(arg1, arg2, arg3));
+}
+
 } // end namespace FbTk
 
 #endif // FBTK_REFCOUNT_HH
