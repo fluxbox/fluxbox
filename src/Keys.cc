@@ -127,22 +127,21 @@ int extractKeyFromString(const std::string& in, const char* start_pattern, unsig
     return ret;
 }
 
-} // end of anonymouse namespace
+} // end of anonymous namespace
 
 // helper class 'keytree'
 class Keys::t_key {
 public:
 
     // typedefs
-    typedef std::list<t_key*> keylist_t;
+    typedef std::list<RefKey> keylist_t;
 
     // constructor / destructor
-    t_key(int type, unsigned int mod, unsigned int key, const char* key_str, int context,
-          bool isdouble);
-    t_key(t_key *k);
-    ~t_key();
+    t_key(int type = 0, unsigned int mod = 0, unsigned int key = 0,
+            const std::string &key_str = std::string(), int context = 0,
+            bool isdouble = false);
 
-    t_key *find(int type_, unsigned int mod_, unsigned int key_,
+    RefKey find(int type_, unsigned int mod_, unsigned int key_,
                 int context_, bool isdouble_) {
         // t_key ctor sets context_ of 0 to GLOBAL, so we must here too
         context_ = context_ ? context_ : GLOBAL;
@@ -154,7 +153,7 @@ public:
                 FbTk::KeyUtil::instance().isolateModifierMask(mod_))
                 return *it;
         }
-        return 0;
+        return RefKey();
     }
 
     // member variables
@@ -171,36 +170,18 @@ public:
 };
 
 Keys::t_key::t_key(int type_, unsigned int mod_, unsigned int key_,
-                   const char* key_str_,
+                   const std::string &key_str_,
                    int context_, bool isdouble_) :
     type(type_),
     mod(mod_),
     key(key_),
+    key_str(key_str_),
     context(context_),
     isdouble(isdouble_),
     m_command(0) {
 
-    if (key_str_) {
-        key_str.assign(key_str_);
-    }
     context = context_ ? context_ : GLOBAL;
 }
-
-Keys::t_key::t_key(t_key *k) {
-    key = k->key;
-    mod = k->mod;
-    type = k->type;
-    context = k->context;
-    isdouble = k->isdouble;
-    m_command = k->m_command;
-}
-
-Keys::t_key::~t_key() {
-    for (keylist_t::iterator list_it = keylist.begin(); list_it != keylist.end(); ++list_it)
-        delete *list_it;
-    keylist.clear();
-}
-
 
 
 Keys::Keys():
@@ -220,10 +201,10 @@ Keys::~Keys() {
 /// Destroys the keytree
 void Keys::deleteTree() {
 
-    destroyAndClearSecond(m_map);
-    m_keylist = 0;
-    next_key = 0;
-    saved_keymode = 0;
+    m_map.clear();
+    m_keylist.reset();
+    next_key.reset();
+    saved_keymode.reset();
 }
 
 // keys are only grabbed in global context
@@ -325,7 +306,7 @@ void Keys::reload() {
     // free memory of previous grabs
     deleteTree();
 
-    m_map["default:"] = new t_key(0,0,0,0,0,false);
+    m_map["default:"] = FbTk::makeRef<t_key>();
 
     unsigned int current_line = 0; //so we can tell the user where the fault is
 
@@ -355,7 +336,7 @@ void Keys::loadDefaults() {
     fbdbg<<"Loading default key bindings"<<endl;
 
     deleteTree();
-    m_map["default:"] = new t_key(0,0,0,0,0,false);
+    m_map["default:"] = FbTk::makeRef<t_key>();
     addBinding("OnDesktop Mouse1 :HideMenus");
     addBinding("OnDesktop Mouse2 :WorkspaceMenu");
     addBinding("OnDesktop Mouse3 :RootMenu");
@@ -388,14 +369,14 @@ bool Keys::addBinding(const string &linebuffer) {
     int type = 0, context = 0;
     bool isdouble = false;
     size_t argc = 0;
-    t_key *current_key=m_map["default:"];
-    t_key *first_new_keylist = current_key, *first_new_key=0;
+    RefKey current_key = m_map["default:"];
+    RefKey first_new_keylist = current_key, first_new_key;
 
     if (val[0][val[0].length()-1] == ':') {
         argc++;
         keyspace_t::iterator it = m_map.find(val[0]);
         if (it == m_map.end())
-            m_map[val[0]] = new t_key(0,0,0,0,0,false);
+            m_map[val[0]] = FbTk::makeRef<t_key>();
         current_key = m_map[val[0]];
     }
     // for each argument
@@ -405,7 +386,7 @@ bool Keys::addBinding(const string &linebuffer) {
 
         if (arg[0] != ':') { // parse key(s)
 
-            const char* key_str = 0;
+            std::string key_str;
 
             int tmpmod = FbTk::KeyUtil::getModifier(arg.c_str());
             if(tmpmod)
@@ -470,7 +451,7 @@ bool Keys::addBinding(const string &linebuffer) {
 
                 } else if ((key = FbTk::KeyUtil::getKey(val[argc].c_str()))) { // convert from string symbol
                     type = KeyPress;
-                    key_str = val[argc].c_str();
+                    key_str = val[argc];
 
                 // keycode covers the following three two-byte cases:
                 // 0x       - hex
@@ -493,14 +474,14 @@ bool Keys::addBinding(const string &linebuffer) {
                     current_key = current_key->find(type, mod, key, context,
                                                     isdouble);
                     if (!current_key) {
-                        first_new_key = new t_key(type, mod, key, key_str, context,
-                                                  isdouble);
+                        first_new_key.reset( new t_key(type, mod, key, key_str, context,
+                                                  isdouble) );
                         current_key = first_new_key;
                     } else if (current_key->m_command) // already being used
                         return false;
                 } else {
-                    t_key *temp_key = new t_key(type, mod, key, key_str, context,
-                                                isdouble);
+                    RefKey temp_key( new t_key(type, mod, key, key_str, context,
+                                                isdouble) );
                     current_key->keylist.push_back(temp_key);
                     current_key = temp_key;
                 }
@@ -520,10 +501,8 @@ bool Keys::addBinding(const string &linebuffer) {
             if (str) // +1 to skip ':'
                 current_key->m_command.reset(FbTk::CommandParser<void>::instance().parse(str + 1));
 
-            if (!str || current_key->m_command == 0 || mod) {
-                delete first_new_key;
+            if (!str || current_key->m_command == 0 || mod)
                 return false;
-            }
 
             // success
             first_new_keylist->keylist.push_back(first_new_key);
@@ -567,7 +546,7 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         next_key = m_keylist;
 
     mods = FbTk::KeyUtil::instance().cleanMods(mods);
-    t_key *temp_key = next_key->find(type, mods, key, context, isdouble);
+    RefKey temp_key = next_key->find(type, mods, key, context, isdouble);
 
     // just because we double-clicked doesn't mean we shouldn't look for single
     // click commands
@@ -585,10 +564,10 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         if (type == KeyPress &&
             !FbTk::KeyUtil::instance().keycodeToModmask(key)) {
             // if we're in the middle of an emacs-style keychain, exit it
-            next_key = 0;
+            next_key.reset();
             if (saved_keymode) {
                 setKeyMode(saved_keymode);
-                saved_keymode = 0;
+                saved_keymode.reset();
             }
         }
         return false;
@@ -607,9 +586,9 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
     if (saved_keymode) {
         if (next_key == m_keylist) // don't reset keymode if command changed it
             setKeyMode(saved_keymode);
-        saved_keymode = 0;
+        saved_keymode.reset();
     }
-    next_key = 0;
+    next_key.reset();
     return true;
 }
 
@@ -650,7 +629,7 @@ void Keys::keyMode(const string& keyMode) {
         setKeyMode(it->second);
 }
 
-void Keys::setKeyMode(t_key *keyMode) {
+void Keys::setKeyMode(const FbTk::RefCount<t_key> &keyMode) {
     ungrabKeys();
     ungrabButtons();
 
@@ -663,7 +642,7 @@ void Keys::setKeyMode(t_key *keyMode) {
     t_key::keylist_t::iterator it = keyMode->keylist.begin();
     t_key::keylist_t::iterator it_end = keyMode->keylist.end();
     for (; it != it_end; ++it) {
-        t_key* t = *it;
+        RefKey t = *it;
         if (t->type == KeyPress) {
             if (!t->key_str.empty()) {
                 int key = FbTk::KeyUtil::getKey(t->key_str.c_str());

@@ -23,6 +23,7 @@
 #define KEYS_HH
 
 #include "FbTk/NotCopyable.hh"
+#include "FbTk/RefCount.hh"
 
 #include <X11/Xlib.h>
 #include <string>
@@ -94,7 +95,8 @@ public:
 
 private:
     class t_key; // helper class to build a 'keytree'
-    typedef std::map<std::string, t_key *> keyspace_t;
+    typedef FbTk::RefCount<t_key> RefKey;
+    typedef std::map<std::string, RefKey> keyspace_t;
     typedef std::map<Window, int> WindowMap;
     typedef std::map<Window, FbTk::EventHandler*> HandlerMap;
 
@@ -108,17 +110,17 @@ private:
 
     // Load default keybindings for when there are errors loading the keys file
     void loadDefaults();
-    void setKeyMode(t_key *keyMode);
+    void setKeyMode(const FbTk::RefCount<t_key> &keyMode);
 
 
     // member variables
     std::string m_filename;
     FbTk::AutoReloadHelper* m_reloader;
-    t_key *m_keylist;
+    RefKey m_keylist;
     keyspace_t m_map;
 
-    // former doAction static var, we need to access it from deleteTree
-    t_key *next_key, *saved_keymode;
+    RefKey next_key;
+    RefKey saved_keymode;
 
     WindowMap m_window_map;
     HandlerMap m_handler_map;
