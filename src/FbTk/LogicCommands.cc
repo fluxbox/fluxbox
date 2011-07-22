@@ -43,7 +43,7 @@ M *addCommands(M *macro, const string &args, bool trusted) {
 
     std::vector<std::string>::iterator it = cmds.begin(), it_end = cmds.end();
     for (; it != it_end; ++it) {
-        cmd = CommandParser<bool>::instance().parse(*it, trusted);
+        cmd.reset( CommandParser<bool>::instance().parse(*it, trusted) );
         if (cmd)
             macro->add(cmd);
     }
@@ -90,13 +90,13 @@ Command<void> *IfCommand::parse(const std::string &command, const std::string &a
     if (cmds.size() < 2)
         return 0;
 
-    cond = CommandParser<bool>::instance().parse(cmds[0], trusted);
+    cond.reset( CommandParser<bool>::instance().parse(cmds[0], trusted) );
     if (cond == 0)
         return 0;
 
-    t = CommandParser<void>::instance().parse(cmds[1], trusted);
+    t.reset( CommandParser<void>::instance().parse(cmds[1], trusted) );
     if (cmds.size() >= 3)
-        f = CommandParser<void>::instance().parse(cmds[2], trusted);
+        f.reset( CommandParser<void>::instance().parse(cmds[2], trusted) );
     if (t == 0 && f == 0)
         return 0;
 

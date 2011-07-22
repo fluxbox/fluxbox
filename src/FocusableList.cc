@@ -255,7 +255,7 @@ void FocusableList::attachSignals(Focusable &win) {
     FbTk::RefCount<FbTk::SignalTracker> &tracker = m_signal_map[&win];
     if (! tracker) {
         // we have not attached to this window yet
-        tracker = new SignalTracker;
+        tracker.reset(new SignalTracker);
         tracker->join(win.titleSig(), MemFunSelectArg1(*this, &FocusableList::updateTitle));
         tracker->join(win.dieSig(), MemFun(*this, &FocusableList::remove));
         if(fbwin) {

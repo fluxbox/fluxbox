@@ -37,11 +37,10 @@ public:
     RefCount(const RefCount<Pointer2> &copy);
     ~RefCount();
     RefCount<Pointer> &operator = (const RefCount<Pointer> &copy);
-    RefCount<Pointer> &operator = (Pointer *p);
     Pointer &operator * () const { return *get(); }
     Pointer *operator -> () const { return get(); }
     Pointer *get() const { return m_data; }
-    void reset(Pointer *p) { *this = p; }
+    void reset(Pointer *p = 0);
     /// conversion to "bool"
     operator bool_type() const { return m_data ? &RefCount::m_data : 0; }
 
@@ -100,12 +99,11 @@ RefCount<Pointer> &RefCount<Pointer>::operator = (const RefCount<Pointer> &copy)
 }
 
 template <typename Pointer>
-RefCount<Pointer> &RefCount<Pointer>::operator = (Pointer *p) {
+void RefCount<Pointer>::reset(Pointer *p) {
     decRefCount();
     m_data = p; // set data pointer
     m_refcount = new unsigned int(0); // create new counter
     incRefCount();
-    return *this;
 }
 
 template <typename Pointer>
