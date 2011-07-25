@@ -152,6 +152,36 @@ inline RefCount<Pointer> makeRef(const Arg1 &arg1, const Arg2 &arg2, const Arg3 
     return RefCount<Pointer>(new Pointer(arg1, arg2, arg3));
 }
 
+template <typename Pointer, typename Pointer2>
+inline bool operator == (const RefCount<Pointer> &a, const RefCount<Pointer2> &b) {
+    return a.get() == b.get();
+}
+
+template <typename Pointer, typename Pointer2>
+inline bool operator != (const RefCount<Pointer> &a, const RefCount<Pointer2> &b) {
+    return a.get() != b.get();
+}
+
+template <typename Pointer, typename Pointer2>
+inline bool operator < (const RefCount<Pointer> &a, const RefCount<Pointer2> &b) {
+    return a.get() < b.get();
+}
+
+template <typename Pointer, typename Pointer2>
+inline bool operator > (const RefCount<Pointer> &a, const RefCount<Pointer2> &b) {
+    return a.get() > b.get();
+}
+
+template <typename Pointer, typename Pointer2>
+inline bool operator <= (const RefCount<Pointer> &a, const RefCount<Pointer2> &b) {
+    return a.get() <= b.get();
+}
+
+template <typename Pointer, typename Pointer2>
+inline bool operator >= (const RefCount<Pointer> &a, const RefCount<Pointer2> &b) {
+    return a.get() >= b.get();
+}
+
 } // end namespace FbTk
 
 #endif // FBTK_REFCOUNT_HH
