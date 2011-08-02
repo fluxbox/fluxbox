@@ -285,11 +285,15 @@ Command<void> *DelayedCmd::parse(const std::string &command,
 REGISTER_COMMAND_PARSER(delay, DelayedCmd::parse, void);
 
 DelayedCmd::DelayedCmd(const RefCount<Slot<void> > &cmd, unsigned int timeout) {
-    timeval to; // defaults to 200ms
+    initTimer(timeout);
+    m_timer.setCommand(cmd);
+}
+
+void DelayedCmd::initTimer(unsigned int timeout) {
+    timeval to;
     to.tv_sec = timeout/1000000;
     to.tv_usec = timeout % 1000000;
     m_timer.setTimeout(to);
-    m_timer.setCommand(cmd);
     m_timer.fireOnce(true);
 }
 

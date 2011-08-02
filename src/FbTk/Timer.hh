@@ -66,6 +66,9 @@ public:
     void setTimeout(const timeval &val);
     void setTimeout(unsigned int secs, unsigned int usecs);
     void setCommand(const RefCount<Slot<void> > &cmd);
+    template<typename Functor>
+    void setFunctor(const Functor &functor)
+    { setCommand(RefCount<Slot<void> >(new SlotImpl<Functor, void>(functor))); }
     void setInterval(int val) { m_interval = val; }
     /// start timing
     void start();
@@ -111,10 +114,21 @@ private:
 class DelayedCmd: public Command<void> {
 public:
     DelayedCmd(const RefCount<Slot<void> > &cmd, unsigned int timeout = 200000);
+
+    // this constructor has inverted order of parameters to avoid ambiguity with the previous
+    // constructor
+    template<typename Functor>
+    DelayedCmd(unsigned int timeout, const Functor &functor) {
+        initTimer(timeout);
+        m_timer.setFunctor(functor);
+    }
+
     void execute();
     static Command<void> *parse(const std::string &command,
                           const std::string &args, bool trusted);
 private:
+    void initTimer(unsigned int timeout);
+
     Timer m_timer;
 };
 
