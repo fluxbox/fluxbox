@@ -144,7 +144,7 @@ public:
                     ));
     }
 
-    SlotID connect(const RefCount<FbTk::Slot<void, Arg1, Arg2, Arg3> > &slot) {
+    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1, Arg2, Arg3> > &slot) {
         return SignalHolder::connect(slot);
     }
 };
@@ -169,7 +169,7 @@ public:
                     ));
     }
 
-    SlotID connect(const RefCount<FbTk::Slot<void, Arg1, Arg2> > &slot) {
+    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1, Arg2> > &slot) {
         return SignalHolder::connect(slot);
     }
 };
@@ -194,7 +194,7 @@ public:
                     ));
     }
 
-    SlotID connect(const RefCount<FbTk::Slot<void, Arg1> > &slot) {
+    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1> > &slot) {
         return SignalHolder::connect(slot);
     }
 };
@@ -219,7 +219,7 @@ public:
                     ));
     }
 
-    SlotID connect(const RefCount<FbTk::Slot<void> > &slot) {
+    SlotID connectSlot(const RefCount<FbTk::Slot<void> > &slot) {
         return SignalHolder::connect(slot);
     }
 };
@@ -243,15 +243,15 @@ public:
     /// @return A tracking ID
     template<typename Arg1, typename Arg2, typename Arg3, typename Functor>
     TrackID join(Signal<Arg1, Arg2, Arg3> &sig, const Functor &functor) {
-        return join(sig, RefCount<Slot<void, Arg1, Arg2, Arg3> >(
+        return joinSlot(sig, RefCount<Slot<void, Arg1, Arg2, Arg3> >(
                     new SlotImpl<Functor, void, Arg1, Arg2, Arg3>(functor)
                     ));
     }
 
     template<typename Arg1, typename Arg2, typename Arg3>
     TrackID
-    join(Signal<Arg1, Arg2, Arg3> &sig, const RefCount<Slot<void, Arg1, Arg2, Arg3> > &slot) {
-        ValueType value = ValueType(&sig, sig.connect(slot));
+    joinSlot(Signal<Arg1, Arg2, Arg3> &sig, const RefCount<Slot<void, Arg1, Arg2, Arg3> > &slot) {
+        ValueType value = ValueType(&sig, sig.connectSlot(slot));
         std::pair<TrackID, bool> ret = m_connections.insert(value);
         if ( !ret.second ) {
             // failed to insert this functor
