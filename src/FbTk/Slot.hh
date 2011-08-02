@@ -80,7 +80,7 @@ template<typename Functor, typename ReturnType, typename Arg1 = SigImpl::EmptyAr
 class SlotImpl: public Slot<ReturnType, Arg1, Arg2, Arg3> {
 public:
     virtual ReturnType operator()(Arg1 arg1, Arg2 arg2, Arg3 arg3)
-    { return m_functor(arg1, arg2, arg3); }
+    { return static_cast<ReturnType>(m_functor(arg1, arg2, arg3)); }
 
     SlotImpl(Functor functor) : m_functor(functor) {}
 
@@ -92,7 +92,8 @@ private:
 template<typename Functor, typename ReturnType, typename Arg1, typename Arg2>
 class SlotImpl<Functor, ReturnType, Arg1, Arg2, SigImpl::EmptyArg>: public Slot<ReturnType, Arg1, Arg2> {
 public:
-    virtual ReturnType operator()(Arg1 arg1, Arg2 arg2) { return m_functor(arg1, arg2); }
+    virtual ReturnType operator()(Arg1 arg1, Arg2 arg2)
+    { return static_cast<ReturnType>(m_functor(arg1, arg2)); }
 
     SlotImpl(Functor functor) : m_functor(functor) {}
 
@@ -104,7 +105,7 @@ private:
 template<typename Functor, typename ReturnType, typename Arg1>
 class SlotImpl<Functor, ReturnType, Arg1, SigImpl::EmptyArg, SigImpl::EmptyArg>: public Slot<ReturnType, Arg1> {
 public:
-    virtual ReturnType operator()(Arg1 arg1) { return m_functor(arg1); }
+    virtual ReturnType operator()(Arg1 arg1) { return static_cast<ReturnType>(m_functor(arg1)); }
 
     SlotImpl(Functor functor) : m_functor(functor) {}
 
@@ -116,7 +117,7 @@ private:
 template<typename Functor, typename ReturnType>
 class SlotImpl<Functor, ReturnType, SigImpl::EmptyArg, SigImpl::EmptyArg, SigImpl::EmptyArg>: public Slot<ReturnType> {
 public:
-    virtual ReturnType operator()() { return m_functor(); }
+    virtual ReturnType operator()() { return static_cast<ReturnType>(m_functor()); }
 
     SlotImpl(Functor functor) : m_functor(functor) {}
 
