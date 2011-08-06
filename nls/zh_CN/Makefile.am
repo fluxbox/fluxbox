@@ -29,7 +29,7 @@ install-data-local: $(CATFILES)
 translations: $(GENERATED_MFILES)
 
 generated-%.m: Translation.m
-	iconv -c -f $(SRC_CODESET) -t $* Translation.m | sed s/$(SRC_CODESET)/$*/ > $@
+	iconv -c -f $(SRC_CODESET) -t $* $(srcdir)/Translation.m | sed s/$(SRC_CODESET)/$*/ > $@
 
 uninstall-local:
 	@if test x$(NLSTEST) = "x-DNLS"; then \

@@ -25,6 +25,6 @@ uninstall-local:
 
 fluxbox.cat: Translation.m
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		$(gencat_cmd) fluxbox.cat Translation.m; \
+		$(gencat_cmd) fluxbox.cat $(srcdir)/Translation.m; \
 	fi
 
