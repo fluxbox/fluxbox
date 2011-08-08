@@ -94,7 +94,11 @@ FocusableList::FocusableList(BScreen &scr, const FocusableList &parent,
 
 void FocusableList::init() {
     addMatching();
-    m_parent->attachChild(*this);
+
+    join(m_parent->addSig(), FbTk::MemFun(*this, &FocusableList::parentWindowAdded));
+    join(m_parent->orderSig(), FbTk::MemFun(*this, &FocusableList::parentOrderChanged));
+    join(m_parent->removeSig(), FbTk::MemFun(*this, &FocusableList::parentWindowRemoved));
+    join(m_parent->resetSig(), FbTk::MemFun(*this, &FocusableList::reset));
 
     // TODO: can't handle (head=[mouse]) yet
     if (m_pat->dependsOnCurrentWorkspace()) {
@@ -289,13 +293,6 @@ Focusable *FocusableList::find(const ClientPattern &pat) const {
             return *it;
     }
     return 0;
-}
-
-void FocusableList::attachChild(FocusableList &child) const {
-    m_addsig.connect(FbTk::MemFun(child, &FocusableList::parentWindowAdded));
-    m_ordersig.connect(FbTk::MemFun(child, &FocusableList::parentOrderChanged));
-    m_removesig.connect(FbTk::MemFun(child, &FocusableList::parentWindowRemoved));
-    m_resetsig.connect(FbTk::MemFun(child, &FocusableList::reset));
 }
 
 void FocusableList::workspaceChanged(BScreen &screen) {

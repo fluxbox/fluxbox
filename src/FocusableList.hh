@@ -78,10 +78,10 @@ public:
        @name signals
        @{
     */
-    FbTk::Signal<Focusable *> &orderSig() { return m_ordersig; }
-    FbTk::Signal<Focusable *> &addSig() { return m_addsig; }
-    FbTk::Signal<Focusable *> &removeSig() { return m_removesig; }
-    FbTk::Signal<> &resetSig() { return m_resetsig; }
+    const FbTk::Signal<Focusable *> &orderSig() const { return m_ordersig; }
+    const FbTk::Signal<Focusable *> &addSig() const { return m_addsig; }
+    const FbTk::Signal<Focusable *> &removeSig() const { return m_removesig; }
+    const FbTk::Signal<> &resetSig() const { return m_resetsig; }
     /** @} */ // end group signals
 
 private:
@@ -91,7 +91,6 @@ private:
     bool insertFromParent(Focusable &win);
     void attachSignals(Focusable &win);
     void reset();
-    void attachChild(FocusableList &child) const;
     void workspaceChanged(BScreen &screen);
     void focusedWindowChanged(BScreen &screen, FluxboxWindow *win, WinClient *client);
     /// Title has changed for a window
@@ -108,8 +107,8 @@ private:
     BScreen &m_screen;
     std::list<Focusable *> m_list;
 
-    mutable FbTk::Signal<Focusable *> m_ordersig, m_addsig, m_removesig;
-    mutable FbTk::Signal<> m_resetsig;
+    FbTk::Signal<Focusable *> m_ordersig, m_addsig, m_removesig;
+    FbTk::Signal<> m_resetsig;
     typedef std::map<Focusable*, FbTk::RefCount<FbTk::SignalTracker> > SignalMap;
     SignalMap m_signal_map;
 };
