@@ -69,7 +69,7 @@ public:
     }
 
     /// Remove a specific slot \c id from this signal
-    void disconnect(SlotID slotIt) {
+    void disconnect(SlotID slotIt) const {
         if(m_emitting) {
             // if we are emitting, we must not erase the actual element, as that would
             // invalidate iterators in the emit() function
@@ -87,11 +87,11 @@ public:
             m_slots.clear();
     }
 
-    void connectTracker(SignalHolder::Tracker& tracker) {
+    void connectTracker(SignalHolder::Tracker& tracker) const {
         m_trackers.insert(&tracker);
     }
 
-    void disconnectTracker(SignalHolder::Tracker& tracker) {
+    void disconnectTracker(SignalHolder::Tracker& tracker) const {
         m_trackers.erase(&tracker);
     }
 
@@ -103,7 +103,7 @@ protected:
     Iterator end() { return m_slots.end(); }
 
     /// Connect a slot to this signal. Must only be called by child classes.
-    SlotID connect(const SlotPtr& slot) {
+    SlotID connect(const SlotPtr& slot) const {
         return m_slots.insert(m_slots.end(), slot);
     }
 
@@ -116,8 +116,8 @@ protected:
     }
 private:
     typedef std::set<Tracker*> Trackers;
-    SlotList m_slots; ///< all slots connected to a signal
-    Trackers m_trackers; ///< all instances that tracks this signal.
+    mutable SlotList m_slots; ///< all slots connected to a signal
+    mutable Trackers m_trackers; ///< all instances that tracks this signal.
     unsigned m_emitting;
 };
 
@@ -138,13 +138,13 @@ public:
     }
 
     template<typename Functor>
-    SlotID connect(const Functor& functor) {
+    SlotID connect(const Functor& functor) const {
         return SignalHolder::connect(SlotPtr(
                         new SlotImpl<Functor, void, Arg1, Arg2, Arg3>(functor)
                     ));
     }
 
-    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1, Arg2, Arg3> > &slot) {
+    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1, Arg2, Arg3> > &slot) const {
         return SignalHolder::connect(slot);
     }
 };
@@ -163,13 +163,13 @@ public:
     }
 
     template<typename Functor>
-    SlotID connect(const Functor& functor) {
+    SlotID connect(const Functor& functor) const {
         return SignalHolder::connect(SlotPtr(
                         new SlotImpl<Functor, void, Arg1, Arg2>(functor)
                     ));
     }
 
-    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1, Arg2> > &slot) {
+    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1, Arg2> > &slot) const {
         return SignalHolder::connect(slot);
     }
 };
@@ -188,13 +188,13 @@ public:
     }
 
     template<typename Functor>
-    SlotID connect(const Functor& functor) {
+    SlotID connect(const Functor& functor) const {
         return SignalHolder::connect(SlotPtr(
                         new SlotImpl<Functor, void, Arg1>(functor)
                     ));
     }
 
-    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1> > &slot) {
+    SlotID connectSlot(const RefCount<FbTk::Slot<void, Arg1> > &slot) const {
         return SignalHolder::connect(slot);
     }
 };
@@ -213,13 +213,13 @@ public:
     }
 
     template<typename Functor>
-    SlotID connect(const Functor& functor) {
+    SlotID connect(const Functor& functor) const {
         return SignalHolder::connect(SlotPtr(
                         new SlotImpl<Functor, void>(functor)
                     ));
     }
 
-    SlotID connectSlot(const RefCount<FbTk::Slot<void> > &slot) {
+    SlotID connectSlot(const RefCount<FbTk::Slot<void> > &slot) const {
         return SignalHolder::connect(slot);
     }
 };
@@ -231,7 +231,7 @@ public:
 class SignalTracker: public SigImpl::SignalHolder::Tracker {
 public:
     /// Internal type, do not use.
-    typedef std::map<SigImpl::SignalHolder*,
+    typedef std::map<const SigImpl::SignalHolder*,
                      SigImpl::SignalHolder::SlotID> Connections;
     typedef Connections::iterator TrackID; ///< \c ID type for join/leave.
 
@@ -242,7 +242,7 @@ public:
     /// Starts tracking a signal.
     /// @return A tracking ID
     template<typename Arg1, typename Arg2, typename Arg3, typename Functor>
-    TrackID join(Signal<Arg1, Arg2, Arg3> &sig, const Functor &functor) {
+    TrackID join(const Signal<Arg1, Arg2, Arg3> &sig, const Functor &functor) {
         return joinSlot(sig, RefCount<Slot<void, Arg1, Arg2, Arg3> >(
                     new SlotImpl<Functor, void, Arg1, Arg2, Arg3>(functor)
                     ));
@@ -250,7 +250,9 @@ public:
 
     template<typename Arg1, typename Arg2, typename Arg3>
     TrackID
-    joinSlot(Signal<Arg1, Arg2, Arg3> &sig, const RefCount<Slot<void, Arg1, Arg2, Arg3> > &slot) {
+    joinSlot(const Signal<Arg1, Arg2, Arg3> &sig,
+            const RefCount<Slot<void, Arg1, Arg2, Arg3> > &slot) {
+
         ValueType value = ValueType(&sig, sig.connectSlot(slot));
         std::pair<TrackID, bool> ret = m_connections.insert(value);
         if ( !ret.second ) {
