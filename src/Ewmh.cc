@@ -198,13 +198,23 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
     Display* dpy = FbTk::App::instance()->display();
     int scrn = winclient.screen().screenNumber();
 
+    // the icon will not be used by the client but by
+    // 'menu', 'iconbar', 'titlebar'. all these entities
+    // are created based upon the rootwindow and
+    // the default depth. if we would use winclient.depth()
+    // and winclient.drawable() here we might get into trouble
+    // (xfce4-terminal, skype .. 32bit visuals vs 24bit fluxbox
+    // entities)
+    Drawable parent = winclient.screen().rootWindow().drawable();
+    unsigned int depth = DefaultDepth(dpy, scrn);
+
     // pick the smallest icon size atm
     // TODO: find a better criteria
     width = icon_data.begin()->first.first;
     height = icon_data.begin()->first.second;
 
     // tmp image for the pixmap
-    XImage* img_pm = XCreateImage(dpy, DefaultVisual(dpy, scrn), winclient.depth(),
+    XImage* img_pm = XCreateImage(dpy, DefaultVisual(dpy, scrn), depth,
                                   ZPixmap,
                                   0, NULL, width, height, 32, 0);
     if (!img_pm) {
@@ -280,8 +290,8 @@ void extractNetWmIcon(Atom net_wm_icon, WinClient& winclient) {
 
     // the final icon
     FbTk::PixmapWithMask icon;
-    icon.pixmap() = FbTk::FbPixmap(winclient.drawable(), width, height, winclient.depth());
-    icon.mask() = FbTk::FbPixmap(winclient.drawable(), width, height, 1);
+    icon.pixmap() = FbTk::FbPixmap(parent, width, height, depth);
+    icon.mask() = FbTk::FbPixmap(parent, width, height, 1);
 
     FbTk::GContext gc_pm(icon.pixmap());
     FbTk::GContext gc_mask(icon.mask());
