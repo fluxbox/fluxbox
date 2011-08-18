@@ -982,7 +982,7 @@ Default: *128*
 This adjusts the way the current time is displayed in the toolbar. The
 *strftime(3)* format is used.
 +
-Default: *%I:%M %p*
+Default: *%k:%M*
 
 *session.screen0.tabs.intitlebar*: 'boolean'::
 This specifies whether tabs should be embedded in the titlebar or placed
@@ -1038,7 +1038,7 @@ Setting this resource to True shows the user, in a little window,
 the exact position of the application window while the user is
 dragging it. Allows a precise placement of windows on a screen.
 +
-Default: *True*
+Default: *False*
 
 *session.screen0.defaultDeco*: 'string'::
 This specifies the default window decorations, according to the same
@@ -1063,7 +1063,7 @@ Here is where the user can name their workspaces, in a comma-delimited list.
 However it is recommended to use the tool available in the Workspace Menu to set
 these.
 +
-Default: *one, two, three, four*
+Default: *Workspace 1, Workspace 2, Workspace 3, Workspace 4*
 
 *session.screen0.edgeSnapThreshold*: 'integer'::
 When moving a window across your screen, fluxbox is able to have it `snap'
@@ -1179,7 +1179,7 @@ The available options are:;;
 	*Close* *Maximize* *MenuIcon* *Minimize* *Shade* *Stick*
 --
 +
-Default left: *Stick MenuIcon*
+Default left: *Stick*
 +
 Default right: *Shade Minimize Maximize Close*
 
@@ -1216,7 +1216,7 @@ be located in the user's *~/.fluxbox* directory.
 	Location of the style overlay file.
 	See *fluxbox-style(5)* for details.
 
-*session.screen0.windowMenu*: 'location':::
+*session.screen0.windowMenu*: 'location'::
 This optionally specifies the location of a user-defined window menu. If left
 blank, it will use *~/.fluxbox/windowmenu*.
 +
