@@ -891,7 +891,7 @@ Possible options are:;;
 	*RightBottom* *RightCenter* *RightTop* *TopLeft* *TopCenter* *TopRight*
 --
 +
-Slit default: *TopRight*
+Slit default: *RightBottom*
 +
 Toolbar default: *BottomCenter*
 
