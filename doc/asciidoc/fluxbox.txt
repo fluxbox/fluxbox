@@ -832,9 +832,8 @@ LAYERS
 ------
 Layers affect the way that windows will overlap each other on the screen.
 Windows on a higher layer will always appear above those on a lower one,
-whether they are focused or not. By default, fluxbox uses 13 layers, starting
-from 1 (highest). The total number of layers can be changed by using the
-*session.numLayers* resource.
+whether they are focused or not. Fluxbox uses 13 layers, starting from 1
+(highest).
 
 There are two ways to assign a window to a different layer. When the window is
 open, you may select the layer in the `Layer ...' submenu of the window menu.
