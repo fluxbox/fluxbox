@@ -256,7 +256,7 @@ void Keys::grabButton(unsigned int button, unsigned int mod, int context) {
     for (; it != it_end; ++it) {
         if ((context & it->second & ~Keys::ON_DESKTOP) > 0)
             FbTk::KeyUtil::grabButton(button, mod, it->first,
-                                      ButtonPressMask|ButtonReleaseMask);
+                                      ButtonPressMask|ButtonReleaseMask|ButtonMotionMask);
     }
 }
 
