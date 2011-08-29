@@ -210,10 +210,6 @@ struct CallMemFunWithRefArg : std::unary_function<Type, ResultType> {
         m_arg(arg),
         m_func(func) { }
 
-    ResultType operator()(Type p) const {
-        (p.*m_func)(m_arg);
-    }
-
     ResultType operator()(Type* p) const {
         (*p.*m_func)(m_arg);
     }
