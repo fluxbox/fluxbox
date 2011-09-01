@@ -91,14 +91,19 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
     } else if (name == "clock") {
         item = new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
     } else {
-        FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(name));
+
+        std::string cmd_str = name;
+        if (name == "prevwindow" || name == "nextwindow") {
+            cmd_str += " (workspace=[current])";
+        }
+
+        FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(cmd_str));
         if (cmd == 0) // we need a command
             return 0;
 
         // TODO maybe direction of arrows should depend on toolbar layout ?
         FbTk::FbDrawable::TriangleType arrow_type = FbTk::FbDrawable::RIGHT;
-        const char *tmp = name.c_str();
-        if (FbTk::StringUtil::strcasestr(tmp, "prev"))
+        if (name.find("prev") != std::string::npos)
             arrow_type = FbTk::FbDrawable::LEFT;
 
         ArrowButton *win = new ArrowButton(arrow_type, parent,
