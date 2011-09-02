@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fbrun
-.\"    Author: [see the "AUTHORS" section]
+.\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/19/2011
+.\"      Date: 18 February 2009
 .\"    Manual: Fluxbox Manual
 .\"    Source: fbrun.txt
 .\"  Language: English
 .\"
-.TH "FBRUN" "1" "02/19/2011" "fbrun\&.txt" "Fluxbox Manual"
+.TH "FBRUN" "1" "18 February 2009" "fbrun\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -128,3 +128,9 @@ It was then converted to asciidoc format by Jim Ramsay <i\&.am at jimramsay\&.co
 .SH "SEE ALSO"
 .sp
 fluxbox(1)
+.SH "AUTHOR"
+.PP
+\fBJim Ramsay\fR <\&i\&.am@jimramsay\&.com\&>
+.RS 4
+Author.
+.RE

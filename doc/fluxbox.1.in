@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fluxbox
-.\"    Author: [see the "AUTHORS" section]
+.\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/19/2011
+.\"      Date: 27 February 2011
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "02/19/2011" "fluxbox\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX" "1" "27 February 2011" "fluxbox\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -74,7 +74,7 @@ Starting fluxbox with this option will designate a file in which you want to log
 \fB\-rc\fR \fIrcfile\fR
 .RS 4
 Use a different config file other than the default
-\fB\e~/\&.fluxbox/init\fR\&.
+\fB~/\&.fluxbox/init\fR\&.
 .RE
 .PP
 \fB\-v\fR, \fB\-version\fR
@@ -103,11 +103,11 @@ Lists all available internal commands\&.
 .RE
 .SH "STARTING FLUXBOX"
 .sp
-\fBfluxbox(1)\fR comes with a program called \fBstartfluxbox(1)\fR usually located wherever you installed fluxbox\&. This script provides you with many options and variables that can be set when starting fluxbox\&. To actually call fluxbox and begin using it, you should place \(lqexec startfluxbox\(rq in your \fB~/\&.xinitrc\fR as the last executed command\&. This is assuming that the location of \fBfluxbox(1)\fR and \fBstartfluxbox(1)\fR are in your shell\(cqs $PATH\&. Also note that you may need to create the \fB~/\&.xinitrc\fR file or your setup may use \fB\e~/\&.xsession\fR instead, depending on your X setup\&. Some X login managers like \fBgdm(1)\fR or \fBkdm(1)\fR may simply provide a \(lqFluxbox\(rq session for you without having to alter any settings\&.
+\fBfluxbox(1)\fR comes with a program called \fBstartfluxbox(1)\fR usually located wherever you installed fluxbox\&. This script provides you with many options and variables that can be set when starting fluxbox\&. To actually call fluxbox and begin using it, you should place \(lqexec startfluxbox\(rq in your \fB~/\&.xinitrc\fR as the last executed command\&. This is assuming that the location of \fBfluxbox(1)\fR and \fBstartfluxbox(1)\fR are in your shell\(cqs $PATH\&. Also note that you may need to create the \fB~/\&.xinitrc\fR file or your setup may use \fB~/\&.xsession\fR instead, depending on your X setup\&. Some X login managers like \fBgdm(1)\fR or \fBkdm(1)\fR may simply provide a \(lqFluxbox\(rq session for you without having to alter any settings\&.
 .sp
 By using fluxbox \-i you\(cqll see the defaults used by \fBfluxbox(1)\fR\&. These are what fluxbox looks for upon startup\&. In the list of \(lqDefaults:\(rq you\(cqll see a menu file location, this is where you can provide a system\-wide menu file for your users\&.
 .sp
-On exit or restart, fluxbox will save user defaults in the file \fB\e~/\&.fluxbox/init\fR\&. Resources in this file can also be edited by hand, see the \fBRESOURCES\fR section for more details\&. \fBfluxbox(1)\fR also has many tools to edit these; look through the main menu once fluxbox has started to find different ways of managing your session\&.
+On exit or restart, fluxbox will save user defaults in the file \fB~/\&.fluxbox/init\fR\&. Resources in this file can also be edited by hand, see the \fBRESOURCES\fR section for more details\&. \fBfluxbox(1)\fR also has many tools to edit these; look through the main menu once fluxbox has started to find different ways of managing your session\&.
 .SH "USING FLUXBOX"
 .sp
 When using fluxbox for the first time, users who are more accustomed to full desktop environments such as KDE or Gnome may be a little surprised by the minimal screen content\&. fluxbox is designed to be fast and powerful, so it may take a bit of getting used to \(em however, the rewards are worthwhile\&.
@@ -491,9 +491,9 @@ Keyboard bindings:
 .IP \(bu 2.3
 .\}
 
-\fBWin+1\fR
-\(->
-\fBWin+9\fR: Select the 1st \(-> 9th tab in the current window
+\fBWIN+1\fR
+\-
+\fBWIN+9\fR: Select the 1st \(-> 9th tab in the current window
 .RE
 .sp
 .RS 4
@@ -662,7 +662,7 @@ for a small \(lqrun program\(rq dialog
 .\}
 
 \fBCTRL+F1\fR
-\(->
+\-
 \fBCTRL+F12\fR: Switch to the 1st \(-> 12th workspace
 .RE
 .sp
@@ -676,7 +676,7 @@ for a small \(lqrun program\(rq dialog
 .\}
 
 \fBWIN+F1\fR
-\(->
+\-
 \fBWIN+F12\fR: Send the current window to a specific workspace
 .RE
 .sp
@@ -690,7 +690,7 @@ for a small \(lqrun program\(rq dialog
 .\}
 
 \fBCTRL+WIN+F1\fR
-\(->
+\-
 \fBCTRL+WIN+F12\fR: Take the current window to a specific workspace
 .RE
 .SH "MENUS"
@@ -726,7 +726,7 @@ upon a default install\&. Remember that you can confirm this with fluxbox \-i\&.
 \fBUser Styles\fR
 .RS 4
 This is where your custom styles are listed\&. It will list any styles from
-\fB\e~/\&.fluxbox/styles/\fR, which may be styles you grab from the Internet, or your own custom styles, provided you follow the standards described in
+\fB~/\&.fluxbox/styles/\fR, which may be styles you grab from the Internet, or your own custom styles, provided you follow the standards described in
 \fBfluxbox\-style(5)\fR\&.
 .RE
 .PP
@@ -1054,7 +1054,7 @@ Pops up a dialog to enter a new name for the current workspace\&.
 .PP
 \fBRemove Last\fR
 .RS 4
-Remove the last workspace in the list\&. Any windows curretly open there will be sent to the next\-to\-last workspace\&.
+Remove the last workspace in the list\&. Any windows currently open there will be sent to the next\-to\-last workspace\&.
 .RE
 .SH "TOOLBAR"
 .sp
@@ -1086,12 +1086,12 @@ This displays the name of the current workspace\&.
 .PP
 \fBPrevWorkspace\fR
 .RS 4
-This displays an arrow that allows to switch to the workspace left of the current one\&.
+This displays an arrow that allows one to switch to the workspace left of the current one\&.
 .RE
 .PP
 \fBNextWorkspace\fR
 .RS 4
-This displays an arrow that allows to switch to the workspace right of the current one\&.
+This displays an arrow that allows one to switch to the workspace right of the current one\&.
 .RE
 .PP
 \fBPrevWindow\fR
@@ -1306,14 +1306,14 @@ fluxbox enables you to use specialized files that contain \fBX(1)\fR resources t
 The default installation of fluxbox provides some of these style files\&. See \fBfluxbox\-style(5)\fR to accommodate the growing number of style components\&.
 .SS "Style Overlay"
 .sp
-In addition to the style file, the overlay file, whose location is specified by \fBsession\&.screen0\&.styleOverlay\fR (default: \fB\e~/\&.fluxbox/overlay\fR) can be used to set style resources that override all styles\&. For more information about which parts of fluxbox can be controlled by the overlay file, see \fBfluxbox\-style(5)\fR\&.
+In addition to the style file, the overlay file, whose location is specified by \fBsession\&.screen0\&.styleOverlay\fR (default: \fB~/\&.fluxbox/overlay\fR) can be used to set style resources that override all styles\&. For more information about which parts of fluxbox can be controlled by the overlay file, see \fBfluxbox\-style(5)\fR\&.
 .SH "THE SLIT"
 .sp
 The slit is a special fluxbox window frame that can contain dockable applications, such as \(lqbbtools\(rq or \(lqwindow maker dockapps\(rq\&.
 .sp
 When applications are run in the slit they have no window borders of their own; instead they are framed in the slit, and they are always visible in the current workspace\&.
 .sp
-Most dockable applications use the \-w option to run in the slit\&. For example, you could put in your \fB\e~/\&.fluxbox/startup\fR:
+Most dockable applications use the \-w option to run in the slit\&. For example, you could put in your \fB~/\&.fluxbox/startup\fR:
 .sp
 .if n \{\
 .RS 4
@@ -1368,15 +1368,15 @@ This sets the alpha value for the slit\&. Use the left mouse button to decrease 
 \fBClients\fR
 .RS 4
 This submenu lets you reorder the the applications running in the slit\&. You are able to hide apps from the slit by unselecting them in the list showing\&. This will not kill the app\&. You can make them re\-appear by selecting them in the list\&. The "Save SlitList" option saves the new order to you slitlist located in
-\fB\e~/\&.fluxbox/slitlist\fR\&. See the next section for details\&.
+\fB~/\&.fluxbox/slitlist\fR\&. See the next section for details\&.
 .RE
 .SS "Slitlist File"
 .sp
-fluxbox\(cqs slitlist file is available for those that use dockapps in the slit\&. This file helps fluxbox keep track of the \fBorder\fR of the dockapps when in the slit\&. The file is generally located at \fB\e~/\&.fluxbox/slitlist\fR\&.
+fluxbox\(cqs slitlist file is available for those that use dockapps in the slit\&. This file helps fluxbox keep track of the \fBorder\fR of the dockapps when in the slit\&. The file is generally located at \fB~/\&.fluxbox/slitlist\fR\&.
 .sp
 A simple procedure for getting the slit sequences the way you like it is: 1\&. Run fluxbox with no pre\-loaded dockapps 2\&. Run dockapps individually in the order you want them 3\&. Add dockapps to your \fBstartfluxbox(1)\fR script
 .sp
-This sequence will be saved by default to \fB\e~/\&.fluxbox/slitlist\fR and will be remembered for future instances of fluxbox\&.
+This sequence will be saved by default to \fB~/\&.fluxbox/slitlist\fR and will be remembered for future instances of fluxbox\&.
 .sp
 Users are free to manually edit the slitlist file\&. It is a simple list of window names, as given by \fBxprop(1)\fR, one per dockapp\&. Similar to the init file it should not be edited while fluxbox is running\&. Otherwise changes may get overwritten\&.
 .sp
@@ -1456,7 +1456,7 @@ There are two ways to assign a window to a different layer\&. When the window is
 The other way to set the layer for a window is through the \(oqapps\(cq file\&. This method is described in \fBfluxbox\-apps(5)\fR\&.
 .SH "RESOURCES"
 .sp
-Usually the \fB\e~/\&.fluxbox/init\fR resource file is created and maintained by fluxbox itself\&. You can use the \fBConfigure Menu\fR, mentioned above, to set most of these options\&. However, we\(cqll cover all of the resource options that are available to the user\&. If you edit this file while fluxbox is running, you must \(lqreconfigure\(rq to reload the resource options\&.
+Usually the \fB~/\&.fluxbox/init\fR resource file is created and maintained by fluxbox itself\&. You can use the \fBConfigure Menu\fR, mentioned above, to set most of these options\&. However, we\(cqll cover all of the resource options that are available to the user\&. If you edit this file while fluxbox is running, you must \(lqreconfigure\(rq to reload the resource options\&.
 .sp
 When running fluxbox in a multiple\-screen environment the screen0 key can also be screen1, screen2, to customize the behavior of fluxbox on each desktop accordingly\&. Here are the resources that are currently available:
 .PP
@@ -1975,7 +1975,7 @@ Default right:
 \fBShade Minimize Maximize Close\fR
 .RE
 .sp
-All of the \fIlocation\fR resources following require a pathname to their specific files\&. This is where you can specify different files\&. Most of the defaults will be located in the user\(cqs \fB\e~/\&.fluxbox\fR directory\&.
+All of the \fIlocation\fR resources following require a pathname to their specific files\&. This is where you can specify different files\&. Most of the defaults will be located in the user\(cqs \fB~/\&.fluxbox\fR directory\&.
 .PP
 \fBsession\&.appsFile\fR: \fIlocation\fR
 .RS 4
@@ -2032,7 +2032,7 @@ for details\&.
 \fBsession\&.screen0\&.windowMenu\fR: \fIlocation\fR
 .RS 4
 This optionally specifies the location of a user\-defined window menu\&. If left blank, it will use
-\fB\e~/\&.fluxbox/windowmenu\fR\&.
+\fB~/\&.fluxbox/windowmenu\fR\&.
 .sp
 Default:
 \fBblank\fR
@@ -2190,3 +2190,9 @@ If you find any bugs, please visit the #fluxbox irc channel on irc\&.freenode\&.
 .SH "SEE ALSO"
 .sp
 fluxbox\-apps(5) fluxbox\-keys(5) fluxbox\-style(5) fluxbox\-menu(5) fluxbox\-remote(1) fbsetroot(1) fbsetbg(1) fbrun(1) startfluxbox(1)
+.SH "AUTHOR"
+.PP
+\fBHenrik Kinnunen\fR <\&fluxgen@fluxbox\&.org\&>
+.RS 4
+Author.
+.RE

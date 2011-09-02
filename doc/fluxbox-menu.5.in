@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fluxbox-menu
-.\"    Author: [see the "AUTHORS" section]
+.\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/19/2011
+.\"      Date: 27 February 2011
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-menu.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-MENU" "5" "02/19/2011" "fluxbox\-menu\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-MENU" "5" "27 February 2011" "fluxbox\-menu\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -40,7 +40,7 @@ fluxbox-menu \- fluxbox(1) menu syntax
 .sp
 Variable parameters are shown in emphasis: \fIargument\fR
 .sp
-All other characters shown are required verbatim\&. Whitespce is only required to delimit words, but it is fine to add more whitespace\&.
+All other characters shown are required verbatim\&. Whitespace is only required to delimit words, but it is fine to add more whitespace\&.
 .SH "DESCRIPTION"
 .sp
 There are two types of menus in fluxbox which can be configured\&.
@@ -63,7 +63,7 @@ There are up to four fields in a menu line\&. They are of the form
 [\fItag\fR] (\fIlabel\fR) {\fIcommand\fR} <\*(Aqicon\*(Aq>
 .RE
 .sp
-The <\*(Aqicon\*(Aq> field is always optional when show below\&. If specified, the \fIicon\fR will be scaled down and displayed in the menu alongside the text label of the item\&. It must be in \&.xpm or \&.png format\&.
+The <\*(Aqicon\*(Aq> field is always optional when shown below\&. If specified, the \fIicon\fR will be scaled down and displayed in the menu alongside the text label of the item\&. It must be in \&.xpm or \&.png format\&.
 .sp
 Any line that starts with a \fI#\fR or \fI!\fR is considered a comment and ignored by fluxbox\&. Also, in the label/command/filename fields you can escape any character\&. Using \fI\e\e\fR inserts a literal back\-slash into the label/command/filename field\&.
 .sp
@@ -155,7 +155,7 @@ Inserts a command item into the menu\&. When you select the menu item from the m
 \fIcommand\&...\fR
 in your
 \fB$SHELL\fR
-(or /bin/sh if $SHELL is not set)\&. You can use this to launch applications, run shell scripts, etc\&. Since all arguments are passed verbatim to te shell, you can use environment variables, pipes, or anything else the shell can do\&. Note that processes only see environment variables that were set before fluxbox started (such as in ~/\&.fluxbox/startup)\&.
+(or /bin/sh if $SHELL is not set)\&. You can use this to launch applications, run shell scripts, etc\&. Since all arguments are passed verbatim to the shell, you can use environment variables, pipes, or anything else the shell can do\&. Note that processes only see environment variables that were set before fluxbox started (such as in ~/\&.fluxbox/startup)\&.
 .RE
 .SS "Fluxbox Functions"
 .PP
@@ -515,3 +515,9 @@ Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 .SH "SEE ALSO"
 .sp
 fluxbox(1) fluxbox\-keys(5) fluxbox\-apps(5) xkill(1) iconv(1)
+.SH "AUTHOR"
+.PP
+\fBJim Ramsay\fR <\&i\&.am@jimramsay\&.com\&>
+.RS 4
+Author.
+.RE

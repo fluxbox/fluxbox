@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fluxbox-style
-.\"    Author: [see the "AUTHORS" section]
+.\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/19/2011
+.\"      Date: 27 February 2011
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-style.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-STYLE" "5" "02/19/2011" "fluxbox\-style\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-STYLE" "5" "27 February 2011" "fluxbox\-style\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -45,9 +45,9 @@ fluxbox(1) uses its own graphics class to render its images on the fly\&. By usi
 .sp
 A style is made up of a few major components which then have their own sub\-directives\&. The major components are as follows:
 .sp
-The \fIwindow\&.*\fR directives control the appearance of the window frames, window\&.tab\&.* controls the appearance of the window tabs, \fImenu\&.*\fR controls the appearance of the popup menu that you see when you right click on the desktop\&. \fItoolbar\&.*\fR is the bar you will see at the top or bottom of your screen\&. Finally the \fIslit\&.\e*\fR has options you can use to customize the appearance of the slit\&. However if you don\(cqt set the slit directives specifically, the slit\(cqs appearance is controlled by the toolbar directives instead\&.
+The \fIwindow\&.*\fR directives control the appearance of the window frames, \fIwindow\&.tab\&.*\fR controls the appearance of the window tabs, \fImenu\&.*\fR controls the appearance of the popup menu that you see when you right click on the desktop\&. \fItoolbar\&.*\fR is the bar you will see at the top or bottom of your screen\&. Finally the \fIslit\&.*\fR has options you can use to customize the appearance of the slit\&. However if you don\(cqt set the slit directives specifically, the slit\(cqs appearance is controlled by the toolbar directives instead\&.
 .sp
-To understand how the style mechanism works, it is nice to know a little about how X11 resources work\&. X11 resources consist of a key and a value\&. The key is constructed of several smaller keys (sometimes referred to as children), delimited by a period (\&.)\&. Keys may also contain an asterisk (\e*) to serve as a wildcard, which means that one line of text will match several keys\&. This is useful for styles that are based on one or two colors\&.
+To understand how the style mechanism works, it is nice to know a little about how X11 resources work\&. X11 resources consist of a key and a value\&. The key is constructed of several smaller keys (sometimes referred to as children), delimited by a period (\&.)\&. Keys may also contain an asterisk (*) to serve as a wildcard, which means that one line of text will match several keys\&. This is useful for styles that are based on one or two colors\&.
 .sp
 A more complete reference to this can be found in X(7), section \fIRESOURCES\fR\&.
 .SH "LOCATION"
@@ -129,7 +129,7 @@ This sets the color resource of the menu and all of its \fIchildren\fR to \(oqrg
 .sp
 you set the font resource for all keys to this font name all at once (For information about the fonts installed on your system, you can use a program like xfontsel(1), gtkfontsel, or xlsfonts(1)\&.)
 .sp
-In the last example you will notice the wildcard (\e*) before font\&. In a Fluxbox style you can set a value with a wildcard\&. The example means that every font in the style will be what is specified\&. You can do this with any component/value\&. For example if you wanted all of the text to be one color you would do:
+In the last example you will notice the wildcard (*) before font\&. In a Fluxbox style you can set a value with a wildcard\&. The example means that every font in the style will be what is specified\&. You can do this with any component/value\&. For example if you wanted all of the text to be one color you would do:
 .sp
 .if n \{\
 .RS 4
@@ -249,7 +249,7 @@ Of course this could all be placed on one line\&. Also note that for the offset 
 If you have problems installing fonts or getting them to work, you should read the docs page at xfree\&.org\&. Here is a link to one of these: \m[blue]\fBhttp://xfree\&.org/4\&.3\&.0/fonts2\&.html#3\fR\m[]
 .SH "FULL COMPONENT LIST"
 .sp
-Here is the exhaustive component list for fluxbox(1) styles\&. Each one is listed with their type of value required\&. Comments in a style file are preceded with an exclamation point (!) which we also use here so that these can be pasted into a new theme\&.cfg to be customized appropiately\&. Please note that in order to keep styles consistent it is often the practice of stylists to provide all of the theme\-items in their style file even if they are not used\&. This allows the user the ease of changing different components\&.
+Here is the exhaustive component list for fluxbox(1) styles\&. Each one is listed with their type of value required\&. Comments in a style file are preceded with an exclamation point (!) which we also use here so that these can be pasted into a new theme\&.cfg to be customized appropriately\&. Please note that in order to keep styles consistent it is often the practice of stylists to provide all of the theme\-items in their style file even if they are not used\&. This allows the user the ease of changing different components\&.
 .SH "WINDOW OPTIONS"
 .sp
 Many, many things you can do with window design in fluxbox(1), below are your options\&. Have fun\&.
@@ -529,7 +529,7 @@ rgb:<0\-255>/<0\-255>/<0\-255>
 .RE
 .\}
 .sp
-See /usr/share/X11/rgb\&.txt for an explaination\&.
+See /usr/share/X11/rgb\&.txt for an explanation\&.
 .SH "AUTHORS"
 .sp
 Blackbox was written and maintained by Brad Hughes <blackbox at alug\&.org> and Jeff Raven <jraven at psu\&.edu>\&.
@@ -542,3 +542,9 @@ This manpage was composed from various resources including the official document
 .SH "SEE ALSO"
 .sp
 fluxbox(1) fbsetbg(1) fbsetroot(1)
+.SH "AUTHOR"
+.PP
+\fBHenrik Kinnunen\fR <\&fluxgen@fluxbox\&.org\&>
+.RS 4
+Author.
+.RE

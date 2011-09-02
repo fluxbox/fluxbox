@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fluxbox-keys
-.\"    Author: [see the "AUTHORS" section]
+.\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 02/27/2011
+.\"      Date: 27 February 2011
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "02/27/2011" "fluxbox\-keys\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "27 February 2011" "fluxbox\-keys\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -119,7 +119,7 @@ is clicked (pressed and released with no movement in between)
 .RS 4
 The mouse button
 \fIN\fR
-is currently held, the binded action is triggered as often as the mouse moves\&.
+is currently held, the bound action is triggered as often as the mouse moves\&.
 .RE
 .sp
 There are some special "keys" that let you bind events to non\-keyboard events:
@@ -303,7 +303,10 @@ Maximize the current window, equivalent to the window button\&.
 \fBMaximizeHorizontal\fR / \fBMaximizeVertical\fR
 .RS 4
 Maximize the current window in one direction only, leaving the other dimension unchanged\&.
+.RE
+.PP
 \fBFullscreen\fR
+.RS 4
 Resize the window\(cqs content to fit the whole screen, without any window decoration\&.
 .RE
 .PP
@@ -377,7 +380,9 @@ window is visible on all workspaces\&.
 .RS 4
 Sets which window decorations will be shown\&.
 \fIdecor\fR
-has the same format as the \(oq[Deco]\(cq parameter in the apps file\&. See \(oqman fluxbox\(cq section APPLICATIONS for more info\&.
+has the same format as the \(oq[Deco]\(cq parameter in the apps file\&. See
+\fIfluxbox\-apps(5)\fR
+for more info\&.
 .RE
 .PP
 \fBToggleDecor\fR
@@ -919,7 +924,7 @@ conditions below\&.
 .PP
 \fBSome\fR \fIcondition\fR
 .RS 4
-Retuns
+Returns
 \fBtrue\fR
 if any window on any workspace (not just the currently focused one) matches the
 \fIcondition\fR\&.
@@ -927,7 +932,7 @@ if any window on any workspace (not just the currently focused one) matches the
 .PP
 \fBEvery\fR \fIcondition\fR
 .RS 4
-Retuns
+Returns
 \fBtrue\fR
 if every window on every workspace (not just the current one) matches the
 \fIcondition\fR\&.
@@ -1306,3 +1311,9 @@ Wilbert Berendsen <wbsoft at xs4all nl> (blackbox)
 .SH "SEE ALSO"
 .sp
 fluxbox(1) xprop(1) xev(1) xkill(1) regex(7)
+.SH "AUTHOR"
+.PP
+\fBJim Ramsay\fR <\&i\&.am@jimramsay\&.com\&>
+.RS 4
+Author.
+.RE

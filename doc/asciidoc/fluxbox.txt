@@ -560,12 +560,12 @@ The possible tools are:
     This displays the name of the current workspace.
 
 *PrevWorkspace*:::
-    This displays an arrow that allows to switch to the workspace left of the
-    current one.
+    This displays an arrow that allows one to switch to the workspace left of
+    the current one.
 
 *NextWorkspace*:::
-    This displays an arrow that allows to switch to the workspace right of the
-    current one.
+    This displays an arrow that allows one to switch to the workspace right of
+    the current one.
 
 *PrevWindow*:::
     This displays an arrow that switches focus to the previous visible window on
