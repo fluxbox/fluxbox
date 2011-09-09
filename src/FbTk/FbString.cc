@@ -150,6 +150,7 @@ enum ConvType { FB2X = 0, X2FB, LOCALE2FB, FB2LOCALE, CONVSIZE };
 #ifdef HAVE_ICONV
 static iconv_t *iconv_convs = 0;
 #else
+typedef int iconv_t;
 static int iconv_convs[CONVSIZE];
 #endif // HAVE_ICONV
 
@@ -292,7 +293,7 @@ string recode(iconv_t cd, const string &in) {
 
     return ret;
 #else
-    return str;
+    return in;
 #endif // HAVE_ICONV
 }
 
