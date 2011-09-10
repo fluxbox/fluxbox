@@ -52,6 +52,10 @@
   #include <string.h>
 #endif
 
+#ifdef HAVE_UNISTD_H
+  #include <unistd.h>
+#endif
+
 #ifdef HAVE_SYS_STAT_H
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -365,13 +369,19 @@ void setupConfigFiles(const std::string& dirname, const std::string& rc) {
         }
     }
 
+    bool sync_fs = false;
+
     // copy default files if needed
     for (size_t i = 0; i < nr_of_cfiles; ++i) {
         if (cfiles[i].create_file) {
             FbTk::FileUtil::copyFile(cfiles[i].default_name, cfiles[i].filename.c_str());
+            sync_fs = true;
         }
     }
 
+    if (sync_fs) {
+       sync();
+    }
 }
 
 
@@ -408,6 +418,7 @@ void updateConfigFilesIfNeeded(const std::string& rc_file) {
                 << commandargs
                 << "' failed." << endl;
         }
+        sync();
     }
 }
 
