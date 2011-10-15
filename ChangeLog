@@ -1,5 +1,137 @@
  (Format: Year/Month/Day)
 
+Changes for 1.3.2
+
+*11/10/15:
+    * Cleaned master translation file from obsolete stuff (Thanks skizzhg)
+      Marked obsolete entries as _OBSOLTE to help other translators to identify
+      them. Also, removed entries which are meant for error reporting anyway.
+      nls/C/Translation.m
+    * Updated italian translation (Thanks skizzhg)
+      nls/it_IT/Translation.m
+
+*11/09/17:
+    * Tons of changes all over the place (Pavel)
+      RefCount, FbTk::Timer, const Signals, Documentation fixes etc
+
+*11/09/11:
+    * Compilefix: build without 'iconv' support (Thanks to Peter Korsgaard)
+
+*11/09/10:
+    * Bugfix: sync the copied config files to the disk before continuing to
+      launch. This avoids possible race conditions, eg. under MacOSX (Mathias)
+      main.cc
+
+*11/09/01:
+    * Relicense 'ostrich' theme (to please Debian / Ubuntu) (Sven)
+    * Bugfix: Do not change workspaces when using NextWindow/PrevWindow in toolbar (Mathias)
+      ToolFactory.cc
+
+*11/08/26:
+    * Mapping keysyms to keycodes after 'MappingNotify', closes #3386257 (Mathias)
+      Keys.cc
+    * Regrab ButtonMotionMask, needed for 'Move' events in .fluxbox/keys (Mathias)
+      Keys.cc
+
+*11/08/11:
+    * Fixed using _NET_WM_ICON wrongly, (re)closes #1852693 (Mathias)
+      Ewmh.cc
+    * Updated 'bloe' and 'arch' styles to work without XPM support (Sven)
+
+*11/05/16:
+    * Fixed Textdialog and TooltipWindow style rendering bugs, added
+      parentrelative labels (Thanks Nacitar Sevaht)
+      TextDialog.cc TooltipWindow.cc
+
+*11/05/10:
+    * Use the new signal system exclusively (Pavel)
+      In 2010 Henrik introduced a new signal/slot system as a replacement
+      to the observer/subject code. That transition was never completed.
+      Pavel cleaned up the missing parts, fixed some crashes related to
+      restart() / shutdown of fluxbox.
+
+*11/05/09:
+    * Fix build system (Pavel)
+      data/Makefile.am
+
+*11/05/08:
+    * Added check for CARDINAL via client patterns (Thanks to Nacitar Sevaht)
+      ClientPattern.cc Ewmh.cc FbTk/FbWindow.{cc,hh} Focusable.hh Gnome.cc
+      Screen.cc WinClient.hh Window.{cc,hh}
+
+*11/04/27:
+    * Fixed build system issues, tuned .gitignore (Thanks Pavel)
+
+*11/04/25:
+    * Bugfix: do not warp workspaces with only one workspace (Mathias)
+      Screen.hh
+
+*11/04/15:
+    * Fixed some compiler warnings (Thanks Pavel)
+      tests/testRectangleUtil.cc tests/texturetest.cc
+
+*11/04/14:
+    * Bugfix: crash on Sparc64, closes #3285968 (Thanks David Coppa)
+      src/Screen.cc
+    * Fixed typo on style 'MerleyKay', closes #3286430 (Thanks David Coppa)
+
+*11/04/11:
+    * Adjusted tips of 'fbsetbg' to current behavior (Thanks skizzhg)
+      util/fbsetbg
+
+*11/04/09:
+    * Fixed some clang-compiler warnings (Thanks to Pavel)
+      FbTk/Image.cc
+    * Fixed VPATH builds (Thanks to Pavel)
+      Makefile.am data/Makefile.am src/Makefile.am src/tests/Makefile.am
+      util/update-fluxbox_configs.cc
+
+*11/04/03:
+    * Bugfix: correct calculation of height if container is rotated
+      vertically, closes #3195728 (Thanks to Gediminas Liktaras)
+      IconbarTool.cc
+
+*11/04/02:
+    * Fixed some typos in the manpages (Thanks to Pavel Labath)
+
+*11/03/29:
+    * fluxbox-generate_menu cleanups (Thanks slakmagic at gmail com)
+
+*11/03/28:
+    * Compile fix: gcc-4.6.x needs <cstdlib> for 'size_t' (Thanks Danial Diaz)
+      FbTk/LayerItem.hh FbTk/MacroCommand.h FbTk/MultLayers.hh
+    * Updated turkish translations (Thanks Mesutcan Kurt)
+      nls/tr_TR/*
+
+*11/03/23:
+    * Compile fixes for Sunstudio12 (sunCC 5.1), cosmetics (Mathias)
+    * Fix 'sstream' configure test (Mathias)
+      configure.in
+
+*11/03/19:
+    * Bugfix: delete configmenu first at shutdown (Henrik)
+      Screen.cc
+    * Bugfix: reposition windows only if invisible (Mathias)
+      Screen.cc
+    * API cleanup (Mathias)
+      ScreenPlacement.{cc,hh} MinOverlapPlacement.{cc,hh}
+    * Reduced code deduplication (Mathias)
+      RectangleUtil.hh Screen.{cc,hh}
+
+*11/03/18:
+    * Bugfix: crash when using ClientMenu after changing the client, closes #3210493 (Mathias)
+      ClientMenu.cc
+    * Bugfix: misordered Toolbarplacmenet strings, closes #3195721 (Mathias)
+      Toolbar.cc
+    * Compiler patting, closed #3204402, love for src/tests and manpages (Mathias)
+      Screen.hh Window.hh ScreenPlacement.{cc,hh} configure.in
+      src/tests/* doc/asciidoc/fluxbox.txt doc/asciidoc/startfluxbox.txt
+
+*11/02/27:
+    * removed (outdated) russian documentation (Thanks Slava Semushin)
+      doc/ru/* configure.in
+
+-----------------------------
 Changes for 1.3.1
 
 *11/02/25:
