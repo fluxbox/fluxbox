@@ -5,23 +5,23 @@ $set 1 #Align
 1 Bottom Center
 2 Bottom Left
 3 Bottom Right
-4 Horizontal
-5 Left
+4 Horizontal_OBSOLETE
+5 Left_OBSOLETE
 6 Left Bottom
 7 Left Center
 8 Left Top
-9 Relative
-10 Right
+9 Relative_OBSOLETE
+10 Right_OBSOLETE
 11 Right Bottom
 12 Right Center
 13 Right Top
 14 Top Center
 15 Top Left
 16 Top Right
-17 Vertical
-18 Center
-19 Top
-20 Bottom
+17 Vertical_OBSOLETE
+18 Center_OBSOLETE
+19 Top_OBSOLETE
+20 Bottom_OBSOLETE
 
 $set 2 #BaseDisplay
 
@@ -53,18 +53,19 @@ $set 3 #Common
 
 $set 4 #Configmenu
 
-1 AntiAlias
+1 AntiAlias_OBSOLETE
 2 Auto Raise
 3 Click Raises
 4 Click to Focus
-5 Decorate Transient Windows
-6 Desktop MouseWheel Switching
-7 Focus Window on Workspace Change
+5 Decorate Transient Windows_OBSOLETE
+6 Desktop MouseWheel Switching_OBSOLETE
+7 Focus Window on Workspace Change_OBSOLETE
 8 Focus Model
 9 Focus New Windows
 10 Full Maximization
-11 Image Dithering
+11 Image Dithering_OBSOLETE
 12 Opaque Window Moving
+13 Mouse Focus (Strict)
 14 Mouse Focus
 15 Workspace Warping
 16 Force Pseudo-Transparency
@@ -82,9 +83,9 @@ $set 4 #Configmenu
 28 Disable Moving
 29 Disable Resizing
 
-$set 5 #Ewmh
+$set 5 #Ewmh_OBSOLETE
 
-1 Fatal: Out of memory, can't allocate for EWMH client list
+1 Fatal: Out of memory, can't allocate for EWMH client list_OBSOLETE
 
 $set 6 #FbTkError
 
@@ -110,7 +111,7 @@ $set 6 #FbTkError
 $set 7 #Fluxbox
 
 1 rc filename is invalid!
-2 Failed to load groupfile
+2 Failed to load groupfile_OBSOLETE
 3 Failed to load database
 4 Retrying with
 5 Warning! Could not find screen to map window on!
@@ -122,14 +123,14 @@ $set 7 #Fluxbox
 11 Warning: X server does not support locale
 12 Warning: cannot set locale modifiers
 
-$set 8 #Gnome
+$set 8 #Gnome_OBSOLETE
 
-1 Fatal: Out of memory, can't allocate for GNOME client list
+1 Fatal: Out of memory, can't allocate for GNOME client list_OBSOLETE
 
 $set 9 #Keys
 
 1 Keys: Error on line
-2 Keys: Failed to merge keytree!
+2 Keys: Failed to merge keytree!_OBSOLETE
 3 Keys: Invalid key/modifier on line
 
 $set 10 #Menu
@@ -156,10 +157,13 @@ $set 11 #Remember
 7 Save on close
 8 Shaded
 9 Sticky
-10 Unknown apps key
+10 Unknown apps key_OBSOLETE
 11 Workspace
 12 Head
 13 Transparency
+14 Minimized
+15 Maximize
+16 Fullscreen
 
 $set 12 #Screen
 
@@ -216,8 +220,8 @@ $set 16 #Windowmenu
 7 Send To ...
 8 Shade
 9 Stick
-10 Kill
-11 Use Defaults
+10 Kill_OBSOLETE
+11 Use Defaults_OBSOLETE
 12 Set Window Title
 
 $set 17 #Workspace
