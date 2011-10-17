@@ -85,9 +85,6 @@ fluxbox.$(OBJEXT): defaults.hh
 if NEWWMSPEC
 newwmspec_SOURCE= Ewmh.hh Ewmh.cc
 endif
-if GNOME
-gnome_SOURCE= Gnome.hh Gnome.cc
-endif
 if REMEMBER_SRC
 REMEMBER_SOURCE= Remember.hh Remember.cc
 endif
@@ -158,7 +155,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	WindowMenuAccessor.hh \
 	RectangleUtil.hh \
 	Debug.hh \
-	${newwmspec_SOURCE} ${gnome_SOURCE} \
+	${newwmspec_SOURCE} \
 	${REMEMBER_SOURCE} ${TOOLBAR_SOURCE}
 
 

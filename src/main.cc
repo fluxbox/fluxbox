@@ -156,11 +156,6 @@ static void showInfo(ostream &ostr) {
 #endif // USE_NEWWMSPEC
         "EWMH" << endl <<
 
-#ifndef USE_GNOME
-        NOT <<
-#endif // USE_GNOME
-        "GNOME" << endl <<
-
 #ifndef HAVE_IMLIB2
         NOT<<
 #endif // HAVE_IMLIB2
