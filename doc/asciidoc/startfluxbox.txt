@@ -76,7 +76,7 @@ wait $fbpid
 So xsetroot, ipager, and gkrellm2 will all be started after fluxbox, after
 giving fluxbox 1 second to startup.
 
-For more details on what else you can do in this script, see *sh(1p)*, or the
+For more details on what else you can do in this script, see *sh(1)*, or the
 documentation for your shell.
 
 AUTHORS
