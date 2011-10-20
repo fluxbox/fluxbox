@@ -70,7 +70,7 @@ public:
     };
 
     /// create a top level window
-    FbWinFrame(BScreen &screen, WindowState &state,
+    FbWinFrame(BScreen &screen, unsigned int client_depth, WindowState &state,
                FocusableTheme<FbWinFrameTheme> &theme);
 
 /*    /// create a frame window inside another FbWindow, NOT IMPLEMENTED!

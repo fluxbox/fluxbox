@@ -281,7 +281,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
                    screen().unfocusedWinButtonTheme()),
     m_theme(*this, screen().focusedWinFrameTheme(),
             screen().unfocusedWinFrameTheme()),
-    m_frame(client.screen(), m_state, m_theme),
+    m_frame(client.screen(), client.depth(), m_state, m_theme),
     m_placed(false),
     m_old_layernum(0),
     m_parent(client.screen().rootWindow()),

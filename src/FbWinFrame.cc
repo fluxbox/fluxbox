@@ -45,7 +45,8 @@ using std::string;
 
 using FbTk::STLUtil::forAll;
 
-FbWinFrame::FbWinFrame(BScreen &screen, WindowState &state,
+FbWinFrame::FbWinFrame(BScreen &screen, unsigned int client_depth,
+                       WindowState &state,
                        FocusableTheme<FbWinFrameTheme> &theme):
     m_screen(screen),
     m_theme(theme),
@@ -54,26 +55,41 @@ FbWinFrame::FbWinFrame(BScreen &screen, WindowState &state,
     m_window(theme->screenNum(), state.x, state.y, state.width, state.height,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | EnterWindowMask |
-             LeaveWindowMask, true),
+             LeaveWindowMask, true, false,
+             client_depth, InputOutput,
+             ((client_depth == 32) && (screen.rootWindow().depth() == 32) ? screen.rootWindow().visual() : CopyFromParent),
+             ((client_depth == 32) && (screen.rootWindow().depth() == 32) ? screen.rootWindow().colormap() : CopyFromParent)),
     m_layeritem(window(), *screen.layerManager().getLayer(ResourceLayer::NORMAL)),
     m_titlebar(m_window, 0, 0, 100, 16,
                ButtonPressMask | ButtonReleaseMask |
                ButtonMotionMask | ExposureMask |
-               EnterWindowMask | LeaveWindowMask),
+               EnterWindowMask | LeaveWindowMask,
+               false, false, screen.rootWindow().decorationDepth(), InputOutput,
+               screen.rootWindow().decorationVisual(),
+               screen.rootWindow().decorationColormap()),
     m_tab_container(m_titlebar),
     m_label(m_titlebar, m_theme->font(), FbTk::BiDiString("")),
     m_handle(m_window, 0, 0, 100, 5,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | ExposureMask |
-             EnterWindowMask | LeaveWindowMask),
+             EnterWindowMask | LeaveWindowMask,
+             false, false, screen.rootWindow().decorationDepth(), InputOutput,
+             screen.rootWindow().decorationVisual(),
+             screen.rootWindow().decorationColormap()),
     m_grip_right(m_handle, 0, 0, 10, 4,
                  ButtonPressMask | ButtonReleaseMask |
                  ButtonMotionMask | ExposureMask |
-                 EnterWindowMask | LeaveWindowMask),
+                 EnterWindowMask | LeaveWindowMask,
+                 false, false, screen.rootWindow().decorationDepth(), InputOutput,
+                 screen.rootWindow().decorationVisual(),
+                 screen.rootWindow().decorationColormap()),
     m_grip_left(m_handle, 0, 0, 10, 4,
-        ButtonPressMask | ButtonReleaseMask |
-        ButtonMotionMask | ExposureMask |
-        EnterWindowMask | LeaveWindowMask),
+                ButtonPressMask | ButtonReleaseMask |
+                ButtonMotionMask | ExposureMask |
+                EnterWindowMask | LeaveWindowMask,
+                false, false, screen.rootWindow().decorationDepth(), InputOutput,
+                screen.rootWindow().decorationVisual(),
+                screen.rootWindow().decorationColormap()),
     m_clientarea(m_window, 0, 0, 100, 100,
                  ButtonPressMask | ButtonReleaseMask |
                  ButtonMotionMask | ExposureMask |

@@ -77,7 +77,9 @@ FbWindow::FbWindow(int screen_num,
                    bool override_redirect,
                    bool save_unders,
                    unsigned int depth,
-                   int class_type):
+                   int class_type,
+                   Visual *visual,
+                   Colormap cmap):
     FbDrawable(),
     m_parent(0),
     m_screen_num(screen_num),
@@ -93,7 +95,7 @@ FbWindow::FbWindow(int screen_num,
 
     create(RootWindow(display(), screen_num),
            x, y, width, height, eventmask,
-           override_redirect, save_unders, depth, class_type);
+           override_redirect, save_unders, depth, class_type, visual, cmap);
 }
 
 FbWindow::FbWindow(const FbWindow &parent,
@@ -101,7 +103,10 @@ FbWindow::FbWindow(const FbWindow &parent,
                    long eventmask,
                    bool override_redirect,
                    bool save_unders,
-                   unsigned int depth, int class_type):
+                   unsigned int depth,
+                   int class_type,
+                   Visual *visual,
+                   Colormap cmap):
     FbDrawable(),
     m_parent(&parent),
     m_screen_num(parent.screenNumber()),
@@ -113,9 +118,7 @@ FbWindow::FbWindow(const FbWindow &parent,
     m_lastbg_pm(0), m_renderer(0) {
 
     create(parent.window(), x, y, width, height, eventmask,
-           override_redirect, save_unders, depth, class_type);
-
-
+           override_redirect, save_unders, depth, class_type, visual, cmap);
 }
 
 FbWindow::FbWindow(Window client):
@@ -634,9 +637,8 @@ bool FbWindow::updateGeometry() {
 void FbWindow::create(Window parent, int x, int y,
                       unsigned int width, unsigned int height,
                       long eventmask, bool override_redirect,
-                      bool save_unders, unsigned int depth, int class_type) {
-
-
+                      bool save_unders, unsigned int depth, int class_type,
+                      Visual *visual, Colormap cmap) {
     m_border_width = 0;
     m_border_color = 0;
 
@@ -654,11 +656,18 @@ void FbWindow::create(Window parent, int x, int y,
         values.save_under = True;
     }
 
+    if (cmap != CopyFromParent) {
+        valmask |= CWColormap | CWBackPixel | CWBorderPixel;
+        values.colormap = cmap;
+        values.background_pixel = XWhitePixel(display(), 0);
+        values.border_pixel = XBlackPixel(display(), 0);
+    }
+
     m_window = XCreateWindow(display(), parent, x, y, width, height,
                              0, // border width
                              depth, // depth
                              class_type, // class
-                             CopyFromParent, // visual
+                             visual, // visual
                              valmask, // create mask
                              &values); // create atrribs
 

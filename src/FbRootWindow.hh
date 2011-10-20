@@ -38,9 +38,17 @@ public:
     Visual *visual() const { return m_visual; }
     Colormap colormap() const { return m_colormap; } 
 
+    int decorationDepth() const { return m_decorationDepth; }
+    Visual *decorationVisual() const { return m_decorationVisual; }
+    Colormap decorationColormap() const { return m_decorationColormap; }
+
 private:
     Visual *m_visual;
     Colormap m_colormap;
+
+    int m_decorationDepth;
+    Visual *m_decorationVisual;
+    Colormap m_decorationColormap;
 };
 
 #endif // FBROOTWINDOW_HH

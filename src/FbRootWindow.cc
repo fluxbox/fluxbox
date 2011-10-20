@@ -27,9 +27,19 @@
 FbRootWindow::FbRootWindow(int screen_num):
     FbTk::FbWindow(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_visual(0),
-    m_colormap(0) {
+    m_colormap(0),
+    m_decorationDepth(0),
+    m_decorationVisual(0),
+    m_decorationColormap(0) {
 
     Display *disp = FbTk::App::instance()->display();
+
+    m_visual = DefaultVisual(disp, screen_num);
+    m_colormap = DefaultColormap(disp, screen_num);
+
+    m_decorationDepth = DefaultDepth(disp, screen_num);
+    m_decorationVisual = DefaultVisual(disp, screen_num);
+    m_decorationColormap = DefaultColormap(disp, screen_num);
 
     // search for a TrueColor Visual... if we can't find one... we will use the
     // default visual for the screen
@@ -44,19 +54,26 @@ FbRootWindow::FbRootWindow(int screen_num):
         vinfo_nitems > 0) {
 
         for (int i = 0; i < vinfo_nitems; i++) {
-            // We can't handle 32-bit visuals just yet (Composite ARGB)
-            if (vinfo_return[i].depth != 32 && DefaultDepth(disp, screen_num) < vinfo_return[i].depth)
+            if ((DefaultDepth(disp, screen_num) < vinfo_return[i].depth)
+                    && (depth() < vinfo_return[i].depth)){
                 m_visual = vinfo_return[i].visual;
+                setDepth(vinfo_return[i].depth);
+            }
+
+            if((m_decorationDepth < vinfo_return[i].depth)
+                    && (vinfo_return[i].depth != 32)) {
+                m_decorationVisual = vinfo_return[i].visual;
+                m_decorationDepth = vinfo_return[i].depth;
+            }
         }
 
         XFree(vinfo_return);
     }
 
-    if (m_visual) {
-        m_colormap = XCreateColormap(disp, window(),
-                                     m_visual, AllocNone);
-    } else {
-        m_visual = DefaultVisual(disp, screen_num);
-        m_colormap = DefaultColormap(disp, screen_num);
+    if (m_visual != DefaultVisual(disp, screen_num)) {
+        m_colormap = XCreateColormap(disp, window(), m_visual, AllocNone);
+    }
+    if (m_decorationVisual != DefaultVisual(disp, screen_num)) {
+        m_decorationColormap = XCreateColormap(disp, window(), m_visual, AllocNone);
     }
 }

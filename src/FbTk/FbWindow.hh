@@ -57,7 +57,9 @@ public:
              bool overrride_redirect = false,
              bool save_unders = false,
              unsigned int depth = CopyFromParent,
-             int class_type = InputOutput);
+             int class_type = InputOutput,
+             Visual *visual = CopyFromParent,
+             Colormap cmap = CopyFromParent);
 
     FbWindow(const FbWindow &parent,
              int x, int y,
@@ -66,7 +68,9 @@ public:
              bool overrride_redirect = false,
              bool save_unders = false,
              unsigned int depth = CopyFromParent,
-             int class_type = InputOutput);
+             int class_type = InputOutput,
+             Visual *visual = CopyFromParent,
+             Colormap cmap = CopyFromParent);
 
     virtual ~FbWindow();
     virtual void setBackgroundColor(const FbTk::Color &bg_color);
@@ -207,6 +211,8 @@ protected:
     /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);
 
+    void setDepth(unsigned int depth) { m_depth = depth; }
+
 private:
     /// sets new X window and destroys old
     void setNew(Window win);
@@ -216,7 +222,9 @@ private:
                 bool override_redirect,
                 bool save_unders,
                 unsigned int depth,
-                int class_type);
+                int class_type,
+                Visual *visual,
+                Colormap cmap);
 
     const FbWindow *m_parent; ///< parent FbWindow
     int m_screen_num;  ///< screen num on which this window exist
