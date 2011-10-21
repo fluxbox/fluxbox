@@ -234,6 +234,9 @@ void fbsetroot::solid() {
  fg and bg colors.
 */
 void fbsetroot::modula(int x, int y) {
+
+    const int s = 16;
+
     char data[32];
     long pattern = 0;
 
@@ -241,13 +244,13 @@ void fbsetroot::modula(int x, int y) {
 
     FbRootWindow root(screen);
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < s; i++) {
         pattern <<= 1;
         if ((i % x) == 0)
             pattern |= 0x0001;
     }
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < s; i++) {
         if ((i %  y) == 0) {
             data[(i * 2)] = (char) 0xff;
             data[(i * 2) + 1] = (char) 0xff;
@@ -262,11 +265,11 @@ void fbsetroot::modula(int x, int y) {
 
 
     bitmap = XCreateBitmapFromData(display(),
-                                   root.window(), data, 16, 16);
+                                   root.window(), data, s, s);
 
     // bitmap used as tile, needs to have the same depth as background pixmap
     r_bitmap = XCreatePixmap(display(),
-                             root.window(), 16, 16,
+                             root.window(), s, s,
                              (root.depth() == 32 ? 24 : root.depth()));
 
     FbTk::Color f(fore, screen), b(back, screen);
@@ -283,7 +286,7 @@ void fbsetroot::modula(int x, int y) {
 
     // copying bitmap to the one going to be used as tile
     XCopyPlane(display(), bitmap, r_bitmap, gc.gc(),
-               0, 0, 16, 16, 0, 0, 1l);
+               0, 0, s, s, 0, 0, 1l);
 
     gc.setTile(r_bitmap);
     gc.setFillStyle(FillTiled);
@@ -361,7 +364,7 @@ void fbsetroot::gradient() {
 */
 void fbsetroot::usage(int exit_code) {
     _FB_USES_NLS;
-    cout << m_app_name << " 2.3 : (c) 2003-2006 Fluxbox Development Team" << endl;
+    cout << m_app_name << " 2.3 : (c) 2003-2011 Fluxbox Development Team" << endl;
     cout << m_app_name << " 2.1 : (c) 2002 Claes Nasten" << endl;
     cout << m_app_name << " 2.0 : (c) 1997-2000 Brad Hughes\n" << endl;
     cout << _FB_CONSOLETEXT(fbsetroot, Usage,
