@@ -35,37 +35,16 @@ class Menu;
 class FbMenu;
 class FluxboxWindow;
 
-class MenuCreator {
-public:
-    static FbMenu *createMenu(const std::string &label, int screen_num);
-    static FbMenu *createMenuType(const std::string &label, int screen_num);
-    static bool createFromFile(const std::string &filename,
-                               FbTk::Menu &inject_into,
-                               FbTk::AutoReloadHelper *reloader = NULL,
-                               bool begin = true);
-    static bool createWindowMenuItem(const std::string &type, const std::string &label, 
+namespace MenuCreator {
+
+    FbMenu *createMenu(const std::string &label, int screen_num);
+    FbMenu *createMenuType(const std::string &label, int screen_num);
+    bool createFromFile(const std::string &filename,
+                        FbTk::Menu &inject_into,
+                        FbTk::AutoReloadHelper *reloader = NULL,
+                        bool begin = true);
+    bool createWindowMenuItem(const std::string &type, const std::string &label, 
                                      FbTk::Menu &inject_into);
-
-    /**
-     * Encoding-related helpers (encoding, aka codeset)
-     */
-
-    // Files are guaranteed to be "balanced", unlike user-created [encoding] tags.
-    static void startFile();
-    static void endFile();
-
-    static void startEncoding(const std::string &encoding);
-    static void endEncoding();
-
-private:
-    // stack of encodings
-    static std::list<std::string> encoding_stack;
-    // stack of ints, representing stack size as each file is entered
-    // (a file should never end more encodings than it starts)
-    static std::list<size_t> stacksize_stack;
-
-    static FbTk::StringConvertor m_stringconvertor;
-
 };
 
 #endif // MENUCREATOR_HH

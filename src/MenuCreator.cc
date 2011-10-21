@@ -64,12 +64,79 @@ using std::list;
 using std::less;
 using FbTk::AutoReloadHelper;
 
-list<string> MenuCreator::encoding_stack;
-list<size_t> MenuCreator::stacksize_stack;
-
-FbTk::StringConvertor MenuCreator::m_stringconvertor(FbTk::StringConvertor::ToFbString);
-
 namespace {
+
+FbTk::StringConvertor s_stringconvertor(FbTk::StringConvertor::ToFbString);
+
+list<string> s_encoding_stack;
+list<size_t> s_stacksize_stack;
+
+/**
+ * Push the encoding onto the stack, and make it active.
+ */
+void startEncoding(const string &encoding) {
+    // we push it regardless of whether it's valid, since we
+    // need to stay balanced with the endEncodings.
+    s_encoding_stack.push_back(encoding);
+
+    // this won't change if it doesn't succeed
+    s_stringconvertor.setSource(encoding);
+}
+
+/**
+ * Pop the encoding from the stack, unless we are at our stacksize limit.
+ * Restore the previous (valid) encoding.
+ */
+void endEncoding() {
+    size_t min_size = s_stacksize_stack.back();
+    if (s_encoding_stack.size() <= min_size) {
+        _FB_USES_NLS;
+        cerr<<_FB_CONSOLETEXT(Menu, ErrorEndEncoding, "Warning: unbalanced [encoding] tags", "User menu file had unbalanced [encoding] tags")<<endl;
+        return;
+    }
+
+    s_encoding_stack.pop_back();
+    s_stringconvertor.reset();
+
+    list<string>::reverse_iterator it = s_encoding_stack.rbegin();
+    list<string>::reverse_iterator it_end = s_encoding_stack.rend();
+    while (it != it_end && !s_stringconvertor.setSource(*it))
+        ++it;
+
+    if (it == it_end)
+        s_stringconvertor.setSource("");
+}
+
+
+/* push our encoding-stacksize onto the stack */
+void startFile() {
+    if (s_encoding_stack.empty())
+        s_stringconvertor.setSource("");
+    s_stacksize_stack.push_back(s_encoding_stack.size());
+}
+
+/**
+ * Pop necessary encodings from the stack
+ * (and endEncoding the final one) to our matching encoding-stacksize.
+ */
+void endFile() {
+    size_t target_size = s_stacksize_stack.back();
+    size_t curr_size = s_encoding_stack.size();
+
+    if (target_size != curr_size) {
+        _FB_USES_NLS;
+        cerr<<_FB_CONSOLETEXT(Menu, ErrorEndEncoding, "Warning: unbalanced [encoding] tags", "User menu file had unbalanced [encoding] tags")<<endl;
+    }
+
+    for (; curr_size > (target_size+1); --curr_size)
+        s_encoding_stack.pop_back();
+
+    if (curr_size == (target_size+1))
+        endEncoding();
+
+    s_stacksize_stack.pop_back();
+}
+
 
 void createStyleMenu(FbTk::Menu &parent, const string &label,
                      AutoReloadHelper *reloader, const string &directory) {
@@ -112,6 +179,7 @@ void createStyleMenu(FbTk::Menu &parent, const string &label,
 void createRootCmdMenu(FbTk::Menu &parent, const string &label,
                        const string &directory, AutoReloadHelper *reloader,
                        const string &cmd) {
+
     // perform shell style ~ home directory expansion
     string rootcmddir(FbTk::StringUtil::expandFilename(directory));
 
@@ -320,9 +388,9 @@ void translateMenuItem(FbTk::Parser &parse, ParseItem &pitem,
     } else if (str_key == "separator") {
         menu.insert(new FbTk::MenuSeparator());
     } else if (str_key == "encoding") {
-        MenuCreator::startEncoding(str_cmd);
+        startEncoding(str_cmd);
     } else if (str_key == "endencoding") {
-        MenuCreator::endEncoding();
+        endEncoding();
     } else if (!MenuCreator::createWindowMenuItem(str_key, str_label, menu)) {
         // if we didn't find any special menu item we try with command parser
         // we need to attach command to arguments so command parser can parse it
@@ -393,7 +461,7 @@ bool MenuCreator::createFromFile(const string &filename,
     startFile();
     if (begin) {
         string label;
-        if (!getStart(parser, label, m_stringconvertor)) {
+        if (!getStart(parser, label, s_stringconvertor)) {
             endFile();
             return false;
         }
@@ -404,7 +472,7 @@ bool MenuCreator::createFromFile(const string &filename,
     if (reloader)
         reloader->addFile(real_filename);
 
-    parseMenu(parser, inject_into, m_stringconvertor, reloader);
+    parseMenu(parser, inject_into, s_stringconvertor, reloader);
     endFile();
 
     return true;
@@ -552,68 +620,4 @@ bool MenuCreator::createWindowMenuItem(const string &type,
     return true;
 }
 
-/* push our encoding-stacksize onto the stack */
-void MenuCreator::startFile() {
-    if (encoding_stack.empty())
-        m_stringconvertor.setSource("");
-    stacksize_stack.push_back(encoding_stack.size());
-}
-
-/**
- * Pop necessary encodings from the stack
- * (and endEncoding the final one) to our matching encoding-stacksize.
- */
-void MenuCreator::endFile() {
-    size_t target_size = stacksize_stack.back();
-    size_t curr_size = encoding_stack.size();
-
-    if (target_size != curr_size) {
-        _FB_USES_NLS;
-        cerr<<_FB_CONSOLETEXT(Menu, ErrorEndEncoding, "Warning: unbalanced [encoding] tags", "User menu file had unbalanced [encoding] tags")<<endl;
-    }
-
-    for (; curr_size > (target_size+1); --curr_size)
-        encoding_stack.pop_back();
-
-    if (curr_size == (target_size+1))
-        endEncoding();
-
-    stacksize_stack.pop_back();
-}
-
-/**
- * Push the encoding onto the stack, and make it active.
- */
-void MenuCreator::startEncoding(const string &encoding) {
-    // we push it regardless of whether it's valid, since we
-    // need to stay balanced with the endEncodings.
-    encoding_stack.push_back(encoding);
-
-    // this won't change if it doesn't succeed
-    m_stringconvertor.setSource(encoding);
-}
-
-/**
- * Pop the encoding from the stack, unless we are at our stacksize limit.
- * Restore the previous (valid) encoding.
- */
-void MenuCreator::endEncoding() {
-    size_t min_size = stacksize_stack.back();
-    if (encoding_stack.size() <= min_size) {
-        _FB_USES_NLS;
-        cerr<<_FB_CONSOLETEXT(Menu, ErrorEndEncoding, "Warning: unbalanced [encoding] tags", "User menu file had unbalanced [encoding] tags")<<endl;
-        return;
-    }
-
-    encoding_stack.pop_back();
-    m_stringconvertor.reset();
-
-    list<string>::reverse_iterator it = encoding_stack.rbegin();
-    list<string>::reverse_iterator it_end = encoding_stack.rend();
-    while (it != it_end && !m_stringconvertor.setSource(*it))
-        ++it;
-
-    if (it == it_end)
-        m_stringconvertor.setSource("");
-}
 
