@@ -54,6 +54,11 @@ using std::cerr;
 using std::endl;
 using std::string;
 
+inline int getRootDepth(const FbTk::FbWindow& w) {
+    return (w.depth() == 32 ? 24 : w.depth());
+}
+
+
 fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
     : FbTk::App(dpy_name), m_app_name(argv[0]) {
 
@@ -213,7 +218,7 @@ void fbsetroot::solid() {
     pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
-                                      root.depth()));
+                                      getRootDepth(root)));
 
     XFillRectangle(display(), *pixmap, gc.gc(), 0, 0,
                    root.width(), root.height());
@@ -262,7 +267,7 @@ void fbsetroot::modula(int x, int y) {
     // bitmap used as tile, needs to have the same depth as background pixmap
     r_bitmap = XCreatePixmap(display(),
                              root.window(), 16, 16,
-                             root.depth());
+                             (root.depth() == 32 ? 24 : root.depth()));
 
     FbTk::Color f(fore, screen), b(back, screen);
 
@@ -286,7 +291,7 @@ void fbsetroot::modula(int x, int y) {
     pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
-                                      root.depth()));
+                                      getRootDepth(root)));
 
     XFillRectangle(display(), *pixmap, gc.gc(), 0, 0,
                    root.width(), root.height());
@@ -332,7 +337,7 @@ void fbsetroot::gradient() {
     pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
-                                      root.depth()));
+                                      getRootDepth(root)));
 
 
     XCopyArea(display(), tmp, *pixmap, gc.gc(), 0, 0,
