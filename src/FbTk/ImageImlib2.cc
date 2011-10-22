@@ -30,11 +30,20 @@
 
 namespace {
 
-typedef std::map<int, Imlib_Context> ScreenImlibContextContainer;
+class ScreenImlibContextContainer : public std::map<int, Imlib_Context> {
+public:
+    ~ScreenImlibContextContainer() {
+
+        std::map<int, Imlib_Context>::iterator it = this->begin();
+        std::map<int, Imlib_Context>::iterator it_end = this->end();
+        for (; it != it_end; it++) {
+            imlib_context_free(it->second);
+        }
+    }
+};
 typedef ScreenImlibContextContainer::iterator ScreenImlibContext;
 
 ScreenImlibContextContainer contexts;
-
 } // anon namespace
 
 
@@ -67,16 +76,6 @@ ImageImlib2::ImageImlib2() {
     for(format = format_list; *format != NULL; format++) {
         Image::registerType(*format, *this);
     }
-}
-
-ImageImlib2::~ImageImlib2() {
-    
-    ScreenImlibContext it = contexts.begin();
-    ScreenImlibContext it_end = contexts.end();
-    for (; it != it_end; it++) {
-        imlib_context_free(it->second);
-    }
-    contexts.clear();
 }
 
 PixmapWithMask *ImageImlib2::load(const std::string &filename, int screen_num) const {

@@ -28,7 +28,6 @@ namespace FbTk {
 class ImageImlib2: public ImageBase {
 public:
     ImageImlib2();
-    ~ImageImlib2();
     PixmapWithMask *load(const std::string &filename, int screen_num) const;
 };
 
