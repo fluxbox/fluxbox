@@ -29,6 +29,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <iostream>
+#include <vector>
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else
@@ -41,7 +42,7 @@ namespace FbTk {
 
 namespace {
 
-Pixmap *root_pixmaps = 0;
+std::vector <Pixmap> s_root_pixmaps;
 
 struct RootProps {
     const char* name;
@@ -409,14 +410,15 @@ bool FbPixmap::rootwinPropertyNotify(int screen_num, Atom atom) {
 
 // returns whether or not the background was changed
 bool FbPixmap::setRootPixmap(int screen_num, Pixmap pm) {
-    if (!root_pixmaps) {
-        root_pixmaps = new Pixmap[ScreenCount(display())];
-        for (int i=0; i < ScreenCount(display()); ++i)
-            root_pixmaps[i] = None;
+
+    if (s_root_pixmaps.empty()) {
+        int i;
+        for (i = 0; i < ScreenCount(display()); ++i)
+            s_root_pixmaps.push_back(None);
     }
 
-    if (root_pixmaps[screen_num] != pm) {
-        root_pixmaps[screen_num] = pm;
+    if (s_root_pixmaps[screen_num] != pm) {
+        s_root_pixmaps[screen_num] = pm;
         FbWindow::updatedAlphaBackground(screen_num);
         return true;
     }
@@ -430,8 +432,8 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
     */
 
     // check and see if if we have the pixmaps in cache
-    if (root_pixmaps && !force_update)
-        return root_pixmaps[screen_num];
+    if (!s_root_pixmaps.empty() && !force_update)
+        return s_root_pixmaps[screen_num];
 
     checkAtoms();
 
@@ -481,7 +483,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num, bool force_update) {
         setRootPixmap(i, root_pm);
     }
 
-    return root_pixmaps[screen_num];
+    return s_root_pixmaps[screen_num];
 }
 
 void FbPixmap::free() {
