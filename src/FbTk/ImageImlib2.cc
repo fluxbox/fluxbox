@@ -53,10 +53,6 @@ namespace FbTk {
 
 ImageImlib2::ImageImlib2() {
 
-    // lets have a 2mb cache inside imlib, holds
-    // uncompressed images
-    imlib_set_cache_size(2048 * 1024);
-
     // TODO: this are the potential candidates,
     //       choose only sane ones. open for discussion
     static const char* format_list[] = {
@@ -90,11 +86,15 @@ PixmapWithMask *ImageImlib2::load(const std::string &filename, int screen_num) c
 
         Imlib_Context new_context = imlib_context_new();
         imlib_context_push(new_context);
-        
+
         imlib_context_set_display(dpy);
         imlib_context_set_visual(DefaultVisual(dpy, screen_num));
         imlib_context_set_colormap(DefaultColormap(dpy, screen_num));
         imlib_context_set_drawable(RootWindow(dpy, screen_num));
+
+        // lets have a 2mb cache inside imlib, holds
+        // uncompressed images
+        imlib_set_cache_size(2048 * 1024);
 
         imlib_context_pop();
 
