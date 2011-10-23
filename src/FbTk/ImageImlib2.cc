@@ -39,6 +39,8 @@ public:
         for (; it != it_end; it++) {
             imlib_context_free(it->second);
         }
+
+        imlib_flush_loaders();
     }
 };
 typedef ScreenImlibContextContainer::iterator ScreenImlibContext;
