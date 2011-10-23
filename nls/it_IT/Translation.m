@@ -54,7 +54,7 @@ $set 4 #Configmenu
 14 Focus al passaggio del mouse
 15 Cambia area di lavoro trascinando le finestre
 16 Forza pseudo trasparenza
-17 Canale alfa del menu
+17 Canale alfa del menù
 18 Trasparenza
 19 Canale alfa della finestra focalizzata
 20 Canale alfa della finestra non focalizzata
@@ -111,7 +111,7 @@ $set 9 #Keys
 $set 10 #Menu
 
 1 Configurazione
-2 Menu di Fluxbox predefinito
+2 Menù di Fluxbox predefinito
 3 Uscita
 4 Icone
 5 Livello...
@@ -160,7 +160,7 @@ $set 13 #Slit
 
 $set 14 #Toolbar
 
-1 Cambia nome a questa area di lavoro
+1 Cambia nome a quest'area di lavoro
 2 Modalità delle icone della barra
 3 Tutte le finestre
 4 Icone
@@ -205,7 +205,7 @@ $set 17 #Workspace
 
 $set 18 #fbsetroot
 
-1 errore: specicare una delle opzioni : -solid, -mod, -gradient\n
+1 errore: specificare una delle opzioni : -solid, -mod, -gradient\n
 2 Impossibile creare atomi pixmap, abbandono!
 3 -display <stringa>        connessione al display\n\
 -mod <x> <y>              schema\n\
@@ -215,7 +215,7 @@ $set 18 #fbsetroot
 -from <colore>            colore di partenza della gradazione\n\
 -to <colore>              colore finale della gradazione\n\n\
 -solid <colore>           colore pieno\n\n\
--help                     mostra questo messaggio ed esci\n
+-help                     mostra questo messaggio ed esce\n
 
 $set 19 #main
 
