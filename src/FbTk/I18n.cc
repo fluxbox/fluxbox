@@ -72,17 +72,17 @@ void NLSInit(const char *catalog) {
 
 
 I18n::I18n():m_multibyte(false), m_utf8_translate(false), m_catalog_fd((nl_catd)(-1)) {
-#ifdef 	HAVE_SETLOCALE
+#if defined(HAVE_SETLOCALE) && defined(NLS)
     //make sure we don't get 0 to m_locale string
     char *temp = setlocale(LC_MESSAGES, "");
     m_locale = ( temp ?  temp : "");
     if (m_locale.empty()) {
         cerr<<"Warning: Failed to set locale, reverting to \"C\""<<endl;
-#endif // HAVE_SETLOCALE
+#endif // defined(HAVE_SETLOCALE) && defined(NLS)
 
         m_locale = "C";
 
-#ifdef	HAVE_SETLOCALE
+#if defined(HAVE_SETLOCALE) && defined(NLS)
 
     } else {		
 
@@ -102,7 +102,7 @@ I18n::I18n():m_multibyte(false), m_utf8_translate(false), m_catalog_fd((nl_catd)
         if (index != string::npos) 
             m_locale.erase(0,index+1); //erase all characters starting up to index 
     }
-#endif // HAVE_SETLOCALE
+#endif // defined(HAVE_SETLOCALE) && defined(NLS)
 }
 
 
