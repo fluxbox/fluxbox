@@ -2,12 +2,12 @@
 .\"     Title: fluxbox
 .\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 27 February 2011
+.\"      Date: 28 October 2011
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "27 February 2011" "fluxbox\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX" "1" "28 October 2011" "fluxbox\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1383,7 +1383,7 @@ Users are free to manually edit the slitlist file\&. It is a simple list of wind
 The user also has the option of choosing a different path for the slitlist file, by setting the \fBsession\&.session0\&.slitlistFile\fR resource\&.
 .SH "LAYERS"
 .sp
-Layers affect the way that windows will overlap each other on the screen\&. Windows on a higher layer will always appear above those on a lower one, whether they are focused or not\&. By default, fluxbox uses 13 layers, starting from 1 (highest)\&. The total number of layers can be changed by using the \fBsession\&.numLayers\fR resource\&.
+Layers affect the way that windows will overlap each other on the screen\&. Windows on a higher layer will always appear above those on a lower one, whether they are focused or not\&. Fluxbox uses 13 layers, starting from 1 (highest)\&.
 .sp
 There are two ways to assign a window to a different layer\&. When the window is open, you may select the layer in the \(oqLayer \&...\(cq submenu of the window menu\&. The menu gives six choices for the layer, which fluxbox manages by name\&. The names are (from highest to lowest layer):
 .sp
@@ -1506,7 +1506,7 @@ Possible options are:
 .RE
 .sp
 Slit default:
-\fBTopRight\fR
+\fBRightBottom\fR
 .sp
 Toolbar default:
 \fBBottomCenter\fR
@@ -1674,7 +1674,7 @@ This adjusts the way the current time is displayed in the toolbar\&. The
 format is used\&.
 .sp
 Default:
-\fB%I:%M %p\fR
+\fB%k:%M\fR
 .RE
 .PP
 \fBsession\&.screen0\&.tabs\&.intitlebar\fR: \fIboolean\fR
@@ -1747,7 +1747,7 @@ Default:
 Setting this resource to True shows the user, in a little window, the exact position of the application window while the user is dragging it\&. Allows a precise placement of windows on a screen\&.
 .sp
 Default:
-\fBTrue\fR
+\fBFalse\fR
 .RE
 .PP
 \fBsession\&.screen0\&.defaultDeco\fR: \fIstring\fR
@@ -1782,7 +1782,7 @@ Default:
 Here is where the user can name their workspaces, in a comma\-delimited list\&. However it is recommended to use the tool available in the Workspace Menu to set these\&.
 .sp
 Default:
-\fBone, two, three, four\fR
+\fBWorkspace 1, Workspace 2, Workspace 3, Workspace 4\fR
 .RE
 .PP
 \fBsession\&.screen0\&.edgeSnapThreshold\fR: \fIinteger\fR
@@ -1969,7 +1969,7 @@ The available options are:
 .RE
 .sp
 Default left:
-\fBStick MenuIcon\fR
+\fBStick\fR
 .sp
 Default right:
 \fBShade Minimize Maximize Close\fR
@@ -2028,6 +2028,7 @@ for details\&.
 Location of the style overlay file\&. See
 \fBfluxbox\-style(5)\fR
 for details\&.
+.RE
 .PP
 \fBsession\&.screen0\&.windowMenu\fR: \fIlocation\fR
 .RS 4
@@ -2036,7 +2037,6 @@ This optionally specifies the location of a user\-defined window menu\&. If left
 .sp
 Default:
 \fBblank\fR
-.RE
 .RE
 .SH "ENVIRONMENT"
 .PP

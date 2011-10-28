@@ -1,18 +1,24 @@
 This is mostly a bug fix release. For a more complete list and detailed
-description of them see the documention and ChangeLog.
+description of them see the documentation and ChangeLog.
 
-Critical Bugfixes in 1.3.1:
-    * Fix for not hiding submenus if menuDelay is set.
-    * Fix crash when moving transient windows (Dialogs) between Workspaces,
-      #3088856.
-    * Fix crash when SystemTray was rotated 90/270°, #3188223.
-    * Fix potential crash when gettting an UnmapEvent before a FocusEvent.
-    * Fix potential crash on accessing NULL-pointer.
+General:
+    * Supprot for ARG32 visuals (cairo-dock etc)
+    * Support for VPATH builds
+    * Updated translations
+    * Removed Gnome window manager hints
+    * Relicense 'ostrich' theme
+    * Support CARDINAL for client pattern
+
+Critical Bugfixes in 1.3.2:
+    * Crash at SIGINT / exit
+    * Signal/Slot related crashes on exit
+    * Sync bootstraped config files to disk before launching
+    * Don't warp workspaces on single workspaces
+    * Crash on Sparc64, #3285968
+    * Crash when using ClientMenu after changing the client, #3210493
 
 Other Bugfixes:
-    * Fix wrong width calculation of Systemtray, #3150939.
-    * Fix initial placement of WindowMenu, #2731524.
-    * Fix incorrectly shown alpha values in Menus, #3187373.
-    * Fix render 'sunken' Textures correctly.
-
-
+    * Remap keysyms to keycodes after 'MappingNotify' (setxkbmap, xmodmap), #3386257
+    * Use _NET_WM_ICON correctly, #1852693
+    * Compile fixes for Clang, SunStudio, gcc-4.6.x
+    * Updated 'bloe' and 'arch' styles to work without XPM support
