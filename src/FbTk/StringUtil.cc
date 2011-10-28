@@ -175,7 +175,11 @@ string expandFilename(const string &filename) {
     string retval;
     size_t pos = filename.find_first_not_of(" \t");
     if (pos != string::npos && filename[pos] == '~') {
+#ifdef _WIN32
+        retval = getenv("USERPROFILE");
+#else
         retval = getenv("HOME");
+#endif
         if (pos + 1 < filename.size()) {
             // copy from the character after '~'
             retval += static_cast<const char *>(filename.c_str() + pos + 1);
