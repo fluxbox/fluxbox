@@ -65,6 +65,9 @@ AC_CHECK_FUNCS(catclose catgets catopen getpid gettimeofday memset mkdir \
     nl_langinfo putenv regcomp select setenv setlocale sigaction snprintf \
     sqrt strcasecmp strcasestr strchr strstr strtol strtoul sync vsnprintf)
 
+dnl Windows requires the mingw-catgets library for the catgets function.
+AC_SEARCH_LIBS([catgets], [catgets], [], [])
+
 dnl The autoconf test for strftime is broken now (due to gcc 3.3 bug?):
 dnl Gcc 3.3 testprog = ``extern "C" char strftime;'', build with g++ test.cc
 dnl breaks with:
