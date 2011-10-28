@@ -220,12 +220,12 @@ struct Options {
         const char* env;
 
         env = getenv("DISPLAY");
-        if (env) {
+        if (env && strlen(env) > 0) {
             session_display.assign(env);
         }
 
         env = getenv("HOME");
-        if (env) {
+        if (env && strlen(env) > 0) {
             rc_path.assign(std::string(env) + "/." + realProgramName("fluxbox"));
             rc_file = rc_path + "/init";
         }
