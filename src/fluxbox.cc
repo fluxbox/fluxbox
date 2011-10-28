@@ -289,13 +289,16 @@ Fluxbox::Fluxbox(int argc, char **argv,
     SignalHandler &sigh = SignalHandler::instance();
     sigh.registerHandler(SIGSEGV, this);
     sigh.registerHandler(SIGFPE, this);
-    sigh.registerHandler(SIGPIPE, this); // e.g. output sent to grep
     sigh.registerHandler(SIGTERM, this);
     sigh.registerHandler(SIGINT, this);
+#ifndef _WIN32
+    sigh.registerHandler(SIGPIPE, this); // e.g. output sent to grep
     sigh.registerHandler(SIGCHLD, this);
     sigh.registerHandler(SIGHUP, this);
     sigh.registerHandler(SIGUSR1, this);
     sigh.registerHandler(SIGUSR2, this);
+#endif
+
     //
     // setup timer
     // This timer is used to we can issue a safe reconfig command.
@@ -891,6 +894,7 @@ void Fluxbox::handleSignal(int signum) {
     static int re_enter = 0;
 
     switch (signum) {
+#ifndef _WIN32
     case SIGCHLD: // we don't want the child process to kill us
         // more than one process may have terminated
         while (waitpid(-1, 0, WNOHANG | WUNTRACED) > 0);
@@ -904,12 +908,15 @@ void Fluxbox::handleSignal(int signum) {
     case SIGUSR2:
         reconfigure();
         break;
+#endif
     case SIGSEGV:
         abort();
         break;
     case SIGFPE:
     case SIGINT:
+#ifndef _WIN32
     case SIGPIPE:
+#endif
     case SIGTERM:
         shutdown();
         break;
