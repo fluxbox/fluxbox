@@ -47,6 +47,10 @@
 #include <fstream>
 #include <algorithm>
 
+#ifdef _WIN32
+#include <cstring>
+#endif
+
 using std::cerr;
 using std::endl;
 using std::string;
@@ -122,6 +126,7 @@ void FbRun::run(const std::string &command) {
         return;
     }
 
+#ifdef HAVE_FORK
     // fork and execute program
     if (!fork()) {
 
@@ -133,6 +138,26 @@ void FbRun::run(const std::string &command) {
         execl(shell, shell, "-c", command.c_str(), static_cast<void*>(NULL));
         exit(0); //exit child
     }
+#elif defined(_WIN32)
+	/// @todo - unduplicate from FbCommands.cc
+#ifndef PATH_MAX
+#define PATH_MAX 1024
+#endif
+    char comspec[PATH_MAX] = {0};
+    char * env_var = getenv("COMSPEC");
+    if (env_var != NULL) {
+        strncpy(comspec, env_var, PATH_MAX - 1);
+        comspec[PATH_MAX - 1] = '\0';
+    } else {
+        strncpy(comspec, "cmd.exe", 7);
+        comspec[7] = '\0';
+    }
+
+    spawnlp(P_NOWAIT, comspec, comspec, "/c", command.c_str(), static_cast<void*>(NULL));
+
+#else
+#error "Can't build FbRun - don't know how to launch without fork on your platform"
+#endif
 
     hide(); // hide gui
 
