@@ -63,6 +63,7 @@ defaults.hh: Makefile
 defaults.cc: force
 	@( \
 		GITDIR=$(top_srcdir)/.git; \
+		echo '// This file is generated from Makefile. Do not edit!'; \
 		echo '#include "defaults.hh"'; \
 		echo ''; \
 		echo 'std::string realProgramName(const std::string& name) {'; \
