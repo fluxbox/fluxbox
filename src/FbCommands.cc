@@ -113,15 +113,26 @@ ExecuteCmd::ExecuteCmd(const string &cmd, int screen_num):m_cmd(cmd), m_screen_n
 }
 
 void ExecuteCmd::execute() {
-#ifndef __EMX__
     run();
-#else //   __EMX__
-    spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_cmd.c_str(), static_cast<void*>(NULL));
-#endif // !__EMX__
-
 }
 
 int ExecuteCmd::run() {
+#if defined(__EMX__) || defined(_WIN32)
+#ifndef PATH_MAX
+#define PATH_MAX 1024
+#endif
+    char comspec[PATH_MAX] = {0};
+    char * env_var = getenv("COMSPEC");
+    if (env_var != NULL) {
+        strncpy(comspec, env_var, PATH_MAX - 1);
+        comspec[PATH_MAX - 1] = '\0';
+    } else {
+        strncpy(comspec, "cmd.exe", 7);
+        comspec[7] = '\0';
+    }
+
+    return spawnlp(P_NOWAIT, comspec, comspec, "/c", m_cmd.c_str(), static_cast<void*>(NULL));
+#else
     pid_t pid = fork();
     if (pid)
         return pid;
@@ -161,6 +172,7 @@ int ExecuteCmd::run() {
     exit(EXIT_SUCCESS);
 
     return pid; // compiler happy -> we are happy ;)
+#endif
 }
 
 FbTk::Command<void> *ExportCmd::parse(const string &command, const string &args,
