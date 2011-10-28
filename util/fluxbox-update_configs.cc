@@ -651,11 +651,11 @@ int main(int argc, char **argv) {
         resource_manager.save(rc_filename.c_str(), rc_filename.c_str());
         save_all_files();
 
-#ifdef HAVE_SIGNAL_H
+#if defined(HAVE_SIGNAL_H) && !defined(_WIN32)
         // if we were given a fluxbox pid, send it a reconfigure signal
         if (fb_pid > 0)
             kill(fb_pid, SIGUSR2);
-#endif // HAVE_SIGNAL_H
+#endif // defined(HAVE_SIGNAL_H) && !defined(_WIN32)
 
     }
 
