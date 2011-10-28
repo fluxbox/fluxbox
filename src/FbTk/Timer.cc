@@ -51,6 +51,8 @@
 
 #ifdef HAVE_SYS_SELECT_H
 #  include <sys/select.h>
+#elif defined(_WIN32)
+#  include <winsock.h>
 #endif
 
 namespace FbTk {
