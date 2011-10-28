@@ -176,7 +176,7 @@ string expandFilename(const string &filename) {
     size_t pos = filename.find_first_not_of(" \t");
     if (pos != string::npos && filename[pos] == '~') {
         retval = getenv("HOME");
-        if (pos != filename.size()) {
+        if (pos + 1 < filename.size()) {
             // copy from the character after '~'
             retval += static_cast<const char *>(filename.c_str() + pos + 1);
         }
