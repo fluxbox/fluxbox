@@ -36,6 +36,7 @@ startfluxbox: 	startfluxbox.in
 		            -e "s,@pkgbindir@,$(bindir),g" \
 		            -e "s,@pkgprefix@,$(PROGRAM_PREFIX:NONE=),g" \
 		            -e "s,@pkgsuffix@,$(PROGRAM_SUFFIX:NONE=),g" \
+		            -e "s,@EXEEXT@,$(EXEEXT),g" \
 				$(srcdir)/startfluxbox.in > startfluxbox
 		-chmod 755 startfluxbox
 
@@ -43,6 +44,7 @@ fluxbox-generate_menu: fluxbox-generate_menu.in
 		@regex_cmd@ -e "s,@PREFIX@,$(prefix),g" \
 		            -e "s,@pkgprefix@,$(PROGRAM_PREFIX:NONE=),g" \
 		            -e "s,@pkgsuffix@,$(PROGRAM_SUFFIX:NONE=),g" \
+		            -e "s,@EXEEXT@,$(EXEEXT),g" \
 				$(srcdir)/fluxbox-generate_menu.in \
 				> fluxbox-generate_menu
 		-chmod 755 fluxbox-generate_menu

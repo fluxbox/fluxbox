@@ -561,7 +561,7 @@ WHOAMI=`whoami`
 [ "$WHOAMI" = root ] && PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
 
 # Check for Imlib2-support
-if @pkgprefix@fluxbox@pkgsuffix@ -info 2> /dev/null | grep -q "^IMLIB"; then
+if @pkgprefix@fluxbox@pkgsuffix@@EXEEXT@ -info 2> /dev/null | grep -q "^IMLIB"; then
     PNG_ICONS="yes"
 else
     # better assume to assume "no"
@@ -1252,7 +1252,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 # Name of the outputfile
 # MENUFILENAME=${USERFLUXDIR}/menu
 
-# MENUTITLE=\`@pkgprefix@fluxbox@pkgsuffix@ -version|cut -d " " -f-2\`
+# MENUTITLE=\`@pkgprefix@fluxbox@pkgsuffix@@EXEEXT@ -version|cut -d " " -f-2\`
 
 # standard url for console-browsers
 # HOMEPAGE=fluxbox.org
@@ -1261,7 +1261,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 # USERMENU=~/.@pkgprefix@fluxbox@pkgsuffix@/usermenu
 
 # Put the launcher you would like to use here
-# LAUNCHER=@pkgprefix@fbrun@pkgsuffix@
+# LAUNCHER=@pkgprefix@fbrun@pkgsuffix@@EXEEXT@
 # LAUNCHER=fbgm
 
 # Options for fbrun
@@ -1420,8 +1420,8 @@ fi
 # prefix
 PREFIX="${PREFIX:=@PREFIX@}"
 if [  -z "${PREFIX}" -o ! -d "${PREFIX}" ]; then
-    hash @pkgprefix@fluxbox@pkgsuffix@
-    PREFIX=`hash | grep @pkgprefix@fluxbox@pkgsuffix@ | sed 's,.*\t/,/,' | sed 's,/bin/@pkgprefix@fluxbox@pkgsuffix@$,,'`
+    hash @pkgprefix@fluxbox@pkgsuffix@@EXEEXT@
+    PREFIX=`hash | grep @pkgprefix@fluxbox@pkgsuffix@ | sed 's,.*\t/,/,' | sed 's,/bin/@pkgprefix@fluxbox@pkgsuffix@@EXEEXT@$,,'`
 fi
 
 
@@ -1533,7 +1533,7 @@ DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
 DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
 
 if [ -z "$LAUNCHER" ]; then
-    LAUNCHER=@pkgprefix@fbrun@pkgsuffix@
+    LAUNCHER=@pkgprefix@fbrun@pkgsuffix@@EXEEXT@
 fi
 if [ -n "$FBRUNOPTIONS" ]; then
     # with this, LAUNCHER should be renamed LAUNCHER_NAME, but then there's
@@ -1898,7 +1898,7 @@ append_submenu "${FBSETTINGSMENU}"
     append "[commanddialog] (${FLUXBOXCOMMAND})"
     append "[reconfig] (${RELOADITEM})"
     append "[restart] (${RESTARTITEM})"
-    append "[exec] (${ABOUTITEM}) {(@pkgprefix@fluxbox@pkgsuffix@ -v; @pkgprefix@fluxbox@pkgsuffix@ -info | sed 1d) | $XMESSAGE -file - -center}"
+    append "[exec] (${ABOUTITEM}) {(@pkgprefix@fluxbox@pkgsuffix@@EXEEXT@ -v; @pkgprefix@fluxbox@pkgsuffix@@EXEEXT@ -info | sed 1d) | $XMESSAGE -file - -center}"
     append "[separator]"
     append "[exit] (${EXITITEM})"
 
