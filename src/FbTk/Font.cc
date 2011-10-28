@@ -136,11 +136,11 @@ Font::Font(const char *name):
         s_multibyte = true;
 
     // check for utf-8 mode
-#ifdef CODESET
+#if defined(CODESET) && !defined(_WIN32)
     char *locale_codeset = nl_langinfo(CODESET);
 #else // openbsd doesnt have this (yet?)
     char *locale_codeset = 0;
-#endif // CODESET
+#endif // defined(CODESET) && !defined(_WIN32)
 
     if (locale_codeset && strcmp("UTF-8", locale_codeset) == 0) {
         s_utf8mode = true;

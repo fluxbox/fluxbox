@@ -169,12 +169,12 @@ void init() {
     setlocale(LC_CTYPE, "");
 
 #ifdef HAVE_ICONV
-#ifdef CODESET
+#if defined(CODESET) && !defined(_WIN32)
     s_locale_codeset = nl_langinfo(CODESET);
 #else // openbsd doesnt have this (yet?)
     std::string locale = setlocale(LC_CTYPE, NULL);
     size_t pos = locale.find('.');
-    if (pos != string::npos)
+    if (pos != std::string::npos)
         s_locale_codeset = locale.substr(pos+1);
 #endif // CODESET
 
