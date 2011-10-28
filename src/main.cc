@@ -373,10 +373,11 @@ void setupConfigFiles(const std::string& dirname, const std::string& rc) {
             sync_fs = true;
         }
     }
-
+#ifdef HAVE_SYNC
     if (sync_fs) {
        sync();
     }
+#endif
 }
 
 
@@ -413,7 +414,9 @@ void updateConfigFilesIfNeeded(const std::string& rc_file) {
                 << commandargs
                 << "' failed." << endl;
         }
+#ifdef HAVE_SYNC
         sync();
+#endif // HAVE_SYNC
     }
 }
 
