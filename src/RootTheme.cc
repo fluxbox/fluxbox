@@ -40,7 +40,10 @@
 #include <iostream>
 
 #include <sys/types.h>
+#ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif
+
 #ifdef HAVE_CSTRING
   #include <cstring>
 #else
