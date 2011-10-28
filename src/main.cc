@@ -321,6 +321,14 @@ static void parseOptions(int argc, char** argv, Options& opts) {
     }
 }
 
+#ifdef _WIN32
+/**
+ Wrapper function for Windows builds - mkdir takes only one param.
+*/
+static int mkdir(const char *dirname, int /*permissions*/) {
+    return mkdir(dirname);
+}
+#endif
 
 /**
  setup the configutation files in
