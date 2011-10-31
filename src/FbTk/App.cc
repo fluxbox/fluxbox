@@ -60,8 +60,13 @@ App::App(const char *displayname):m_done(false), m_display(0) {
     if (displayname != 0 && displayname[0] == '\0')
         displayname = 0;
     m_display = XOpenDisplay(displayname);
-    if (!m_display)
-        throw std::string("Couldn't connect to XServer");
+    if (!m_display) {
+        if (displayname) {
+            throw std::string("Couldn't connect to XServer") + displayname;
+        } else {
+            throw std::string("Couldn't connect to XServer passing null display");
+        }
+    }
 
     FbStringUtil::init();
 }

@@ -49,7 +49,9 @@
 #  include <string.h>
 #endif
 
-#include <sys/select.h>
+#ifdef HAVE_SYS_SELECT_H
+#  include <sys/select.h>
+#endif
 
 namespace FbTk {
 
