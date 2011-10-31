@@ -48,13 +48,19 @@ defaults.hh: Makefile
 		echo '// This file is generated from Makefile. Do not edit!'; \
 		echo '#include <string>'; \
 		echo ''; \
-		echo '#define DEFAULTMENU "$(DEFAULT_MENU)"'; \
-		echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"'; \
-		echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"'; \
-		echo '#define DEFAULT_APPSFILE "$(DEFAULT_APPSFILE)"'; \
-		echo '#define DEFAULT_OVERLAY "$(DEFAULT_OVERLAY)"'; \
-		echo '#define DEFAULT_INITFILE "$(DEFAULT_INITFILE)"'; \
-		echo '#define DEFAULT_WINDOWMENU "$(DEFAULT_WINDOWMENU)"'; \
+		echo '#ifdef _WIN32'; \
+		echo '#define DUMMYPREFIX "/DUMMYPREFIX"'; \
+		echo '#define PATHPREFIX DUMMYPREFIX'; \
+		echo '#else'; \
+		echo '#define PATHPREFIX'; \
+		echo '#endif'; \
+		echo '#define DEFAULTMENU PATHPREFIX "$(DEFAULT_MENU)"'; \
+		echo '#define DEFAULTSTYLE PATHPREFIX "$(DEFAULT_STYLE)"'; \
+		echo '#define DEFAULTKEYSFILE PATHPREFIX "$(DEFAULT_KEYSFILE)"'; \
+		echo '#define DEFAULT_APPSFILE PATHPREFIX "$(DEFAULT_APPSFILE)"'; \
+		echo '#define DEFAULT_OVERLAY PATHPREFIX "$(DEFAULT_OVERLAY)"'; \
+		echo '#define DEFAULT_INITFILE PATHPREFIX "$(DEFAULT_INITFILE)"'; \
+		echo '#define DEFAULT_WINDOWMENU PATHPREFIX "$(DEFAULT_WINDOWMENU)"'; \
 		echo '#define PROGRAM_PREFIX "$(PROGRAM_PREFIX:NONE=)"'; \
 		echo '#define PROGRAM_SUFFIX "$(PROGRAM_SUFFIX:NONE=)"'; \
 		echo 'std::string realProgramName(const std::string& name);'; \

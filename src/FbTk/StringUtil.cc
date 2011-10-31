@@ -21,6 +21,7 @@
 
 #include "StringUtil.hh"
 
+#include "../defaults.hh"
 
 #ifdef HAVE_CSTDIO
   #include <cstdio>
@@ -57,6 +58,7 @@
 #include <memory>
 #include <algorithm>
 #include <string>
+#include <iostream>
 
 using std::string;
 using std::transform;
@@ -167,8 +169,64 @@ const char *strcasestr(const char *str, const char *ptn) {
     return 0;
 }
 
+
+#ifdef _WIN32
+
+#include <string>
+#define WIN32_LEAN_AND_MEAN 1
+#define NOMINMAX
+#include <windows.h>
+
+static void removeTrailingPathSeparators(std::string & path) {
+        // Remove any trailing path separators
+        size_t beforeLastPathSep = path.find_last_not_of("/\\");
+        if (beforeLastPathSep != path.size() - 1) {
+            path.erase(beforeLastPathSep + 1);
+        }
+}
+
+static std::string getFluxboxPrefix() {
+    static std::string ret;
+    static bool init = false;
+    if (!init) {
+        char buffer[1024];
+        HMODULE module = GetModuleHandle(NULL);
+        DWORD size = GetModuleFileName(module, buffer, sizeof(buffer));
+        if (sizeof(buffer) > 0)
+        {
+          buffer[sizeof(buffer) - 1] = 0;
+        }
+        static const char slash = '/';
+        static const char backslash = '\\';
+        char * lastslash = std::find_end(buffer, buffer+size, &slash, &slash + 1);
+        char * lastbackslash = std::find_end(buffer, buffer+size, &backslash, &backslash + 1);
+        ret.assign(buffer);
+
+        // Remove the filename
+        size_t lastPathSep = ret.find_last_of("/\\");
+        if (lastPathSep != std::string::npos) {
+            ret.erase(lastPathSep);
+        }
+
+        removeTrailingPathSeparators(ret);
+
+        // If the last directory is bin, remove that too.
+        lastPathSep = ret.find_last_of("/\\");
+        if (lastPathSep != std::string::npos && ret.substr(lastPathSep + 1) == "bin") {
+            ret.erase(lastPathSep);
+        }
+
+        removeTrailingPathSeparators(ret);
+    }
+    return ret;
+}
+
+#endif // _WIN32
+
 /**
    if ~ then expand it to home of user
+   if /DUMMYPREFIX on Windows then expand it to the prefix relative to the
+   executable on Windows.
    returns expanded filename
 */
 string expandFilename(const string &filename) {
@@ -187,6 +245,13 @@ string expandFilename(const string &filename) {
     } else {
         retval = filename; //return unmodified value
     }
+
+#if defined(_WIN32) && defined(DUMMYPREFIX)
+    if (retval.find(DUMMYPREFIX) == 0) {
+      static const std::string dummyPrefix = DUMMYPREFIX;
+      retval.replace(0, dummyPrefix.size(), getFluxboxPrefix());
+    }
+#endif
 
     return retval;
 }
