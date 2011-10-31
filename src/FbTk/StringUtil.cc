@@ -184,8 +184,9 @@ string expandFilename(const string &filename) {
             // copy from the character after '~'
             retval += static_cast<const char *>(filename.c_str() + pos + 1);
         }
-    } else
-        return filename; //return unmodified value
+    } else {
+        retval = filename; //return unmodified value
+    }
 
     return retval;
 }
