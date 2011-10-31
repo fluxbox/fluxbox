@@ -34,6 +34,7 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/CommandParser.hh"
 #include "FbTk/FileUtil.hh"
+#include "FbTk/StringUtil.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -114,22 +115,22 @@ static void showInfo(ostream &ostr) {
 
     ostr <<_FB_CONSOLETEXT(Common, DefaultMenuFile, "    menu", "default menu file (right aligned - make sure same width as other default values)")
         << ": "
-        << DEFAULTMENU << endl;
+        << FbTk::StringUtil::expandFilename(DEFAULTMENU) << endl;
     ostr << _FB_CONSOLETEXT(Common, DefaultStyle, "   style", "default style (right aligned - make sure same width as other default values)")
         << ": "
-        << DEFAULTSTYLE << endl;
+        << FbTk::StringUtil::expandFilename(DEFAULTSTYLE) << endl;
 
     ostr << _FB_CONSOLETEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")
         << ": "
-        << DEFAULTKEYSFILE << endl;
+        << FbTk::StringUtil::expandFilename(DEFAULTKEYSFILE) << endl;
     ostr << _FB_CONSOLETEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")
         << ": "
-        << DEFAULT_INITFILE << endl;
+        << FbTk::StringUtil::expandFilename(DEFAULT_INITFILE) << endl;
 
 #ifdef NLS
     ostr << _FB_CONSOLETEXT(Common, DefaultLocalePath, "    nls", "location for localization files (right aligned - make sure same width as other default values)")
         << ": "
-        << LOCALEPATH << endl;
+        << FbTk::StringUtil::expandFilename(LOCALEPATH) << endl;
 #endif
 
     const char NOT[] = "-";
@@ -369,7 +370,7 @@ void setupConfigFiles(const std::string& dirname, const std::string& rc) {
     // copy default files if needed
     for (size_t i = 0; i < nr_of_cfiles; ++i) {
         if (cfiles[i].create_file) {
-            FbTk::FileUtil::copyFile(cfiles[i].default_name, cfiles[i].filename.c_str());
+            FbTk::FileUtil::copyFile(FbTk::StringUtil::expandFilename(cfiles[i].default_name).c_str(), cfiles[i].filename.c_str());
             sync_fs = true;
         }
     }
