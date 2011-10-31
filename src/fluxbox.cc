@@ -124,7 +124,9 @@
 #include <sys/stat.h>
 #endif // HAVE_SYS_STAT_H
 
+#ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
+#endif // HAVE_SYS_WAIT_H
 
 #include <iostream>
 #include <memory>

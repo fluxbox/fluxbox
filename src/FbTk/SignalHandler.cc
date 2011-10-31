@@ -46,6 +46,7 @@ bool SignalHandler::registerHandler(int signum, SignalEventHandler *eh,
     if (oldhandler_ret != 0)
         *oldhandler_ret = s_signal_handler[signum];
 
+#ifdef HAVE_SIGACTION
     struct sigaction sa;
     // set callback
     sa.sa_handler = SignalHandler::handleSignal;
@@ -54,7 +55,12 @@ bool SignalHandler::registerHandler(int signum, SignalEventHandler *eh,
 
     if (sigaction(signum, &sa, 0) == -1)
         return false;
-
+#else
+    // Fallback code for Windows and other platforms lacking sigaction.
+    if (signal(signum, &SignalHandler::handleSignal) == SIG_ERR) {
+        return false;
+    }
+#endif
     s_signal_handler[signum] = eh;
 
     return true;
