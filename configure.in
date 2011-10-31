@@ -60,7 +60,7 @@ AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STAT
 
-AC_CHECK_FUNCS(basename, , AC_CHECK_LIB(gen, basename, LIBS="$LIBS -lgen"))
+AC_CHECK_FUNCS(basename, , AC_CHECK_LIB(gen, basename, LIBS="-lgen $LIBS"))
 AC_CHECK_FUNCS(catclose catgets catopen getpid gettimeofday memset mkdir \
     nl_langinfo putenv regcomp select setenv setlocale sigaction snprintf \
     sqrt strcasecmp strcasestr strchr strstr strtol strtoul vsnprintf)
@@ -130,13 +130,13 @@ if test "x$ac_cv_header_iconv_h" = "xyes"; then
         AC_CHECK_LIB([iconv], 
                      [iconv_open], 
                      [
-                        LIBS="$LIBS -liconv"
+                        LIBS="-liconv $LIBS"
                      ], 
                      [])
         AC_CHECK_LIB([iconv], 
                      [libiconv_open], 
                      [
-                        LIBS="$LIBS -liconv"
+                        LIBS="-liconv $LIBS"
                      ], 
                      [])
 
@@ -163,8 +163,8 @@ dnl Check if iconv uses const in prototype declaration
     fi
 fi
 
-AC_CHECK_LIB(nsl, t_open, LIBS="$LIBS -lnsl")
-AC_CHECK_LIB(socket, socket, LIBS="$LIBS -lsocket")
+AC_CHECK_LIB(nsl, t_open, LIBS="-lnsl $LIBS")
+AC_CHECK_LIB(socket, socket, LIBS="-lsocket $LIBS")
 
 dnl Check for X headers and libraries
 AC_PATH_X
@@ -177,18 +177,18 @@ test x$x_libraries = "x" && x_libraries="/usr/lib"
 
 CFLAGS="$CFLAGS $X_CFLAGS"
 CXXFLAGS="$CXXFLAGS $X_CFLAGS"
-LIBS="$LIBS $X_LIBS"
+LIBS="$X_LIBS $LIBS"
 LDFLAGS="$LDFLAGS $LIBS $X_PRE_LIBS"
 
 
 dnl Check for required functions in -lX11
 AC_CHECK_LIB(X11, XOpenDisplay,
-  LIBS="$LIBS -lX11",
+  LIBS="-lX11 $LIBS",
   AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.])
 )
-LIBS="$LIBS $X_EXTRA_LIBS"
+LIBS="$X_EXTRA_LIBS $LIBS"
 
-AC_CHECK_LIB(xpg4, setlocale, LIBS="$LIBS -lxpg4")
+AC_CHECK_LIB(xpg4, setlocale, LIBS="-lxpg4 $LIBS")
 
 AC_CHECK_PROGS(gencat_cmd, gencat)
 if test x$gencat_cmd = "x"; then
@@ -397,14 +397,14 @@ AC_ARG_ENABLE(
 	AC_MSG_RESULT([yes])
 	AC_CHECK_LIB(Xrender, XRenderCreatePicture, 
 		AC_DEFINE(HAVE_XRENDER, 1, "Xrender support")
-		LIBS="$LIBS -lXrender")
+		LIBS="-lXrender $LIBS")
   else
     AC_MSG_RESULT([no])	
   fi,  
   AC_MSG_RESULT([yes])
   AC_CHECK_LIB(Xrender, XRenderCreatePicture, 
 	AC_DEFINE(HAVE_XRENDER, 1, "Xrender support")
-	LIBS="$LIBS -lXrender")
+	LIBS="-lXrender $LIBS")
 )
 
 XPM=false
@@ -417,7 +417,7 @@ AC_ARG_ENABLE(
 	AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
 		AC_DEFINE(HAVE_XPM, 1, "Xpm support")
 		XPM=true
-		LIBS="$LIBS -lXpm")
+		LIBS="-lXpm $LIBS")
   else
     AC_MSG_RESULT([no])	
   fi,  
@@ -425,7 +425,7 @@ AC_ARG_ENABLE(
   AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
 	AC_DEFINE(HAVE_XPM, 1, "Xpm support")
 	XPM=true
-	LIBS="$LIBS -lXpm")
+	LIBS="-lXpm $LIBS")
 )
 
 AM_CONDITIONAL(XPM, test x$XPM = xtrue)
@@ -445,7 +445,7 @@ if test x$enable_imlib2 = "xyes"; then
          AC_DEFINE(HAVE_IMLIB2, [], [Imlib2 support])
          IMLIB2_LIBS=`imlib2-config --libs`
          IMLIB2_CFLAGS=`imlib2-config --cflags`
-         LIBS="$LIBS $IMLIB2_LIBS"
+         LIBS="$IMLIB2_LIBS $LIBS"
          CXXFLAGS="$CXXFLAGS $IMLIB2_CFLAGS"
        ], [ AC_MSG_RESULT(no)]
     )
@@ -494,7 +494,7 @@ if test "x$enableval" = "xyes"; then
       , XineramaQueryScreens(0, 0),
 			AC_MSG_RESULT([yes])
 			AC_DEFINE(XINERAMA, [1], [Define to 1 if you have XINERAMA])
-			LIBS="$LIBS -lXinerama",
+			LIBS="-lXinerama $LIBS",
 		AC_MSG_RESULT([no])))
 else
   AC_MSG_RESULT([no])
@@ -519,7 +519,7 @@ if test "x$enableval" = "xyes"; then
       , long foo = ShapeSet,
 			AC_MSG_RESULT([yes])
 			AC_DEFINE(SHAPE, [1], [Define to 1 if you have SHAPE])
-			LIBS="$LIBS -lXext"
+			LIBS="-lXext $LIBS"
 			FEATURES="$FEATURES XShape",
 		AC_MSG_RESULT([no])))
 else
@@ -547,7 +547,7 @@ if test "x$enableval" = "xyes"; then
       , XRRQueryExtension(0, 0, 0),
 			AC_MSG_RESULT([yes])
 			AC_DEFINE(HAVE_RANDR, [1], [Define to 1 if you have RANDR])
-			LIBS="$LIBS -lXrandr",
+			LIBS="-lXrandr $LIBS",
 		AC_MSG_RESULT([no])))
 else
   AC_MSG_RESULT([no])
@@ -571,7 +571,7 @@ if test "x$enableval" = "xyes"; then
       , XRRUpdateConfiguration(0),
 			AC_MSG_RESULT([yes])
 			AC_DEFINE(HAVE_RANDR1_2, [1], [Define to 1 if you have RANDR 1.2])
-			LIBS="$LIBS -lXrandr",
+			LIBS="-lXrandr $LIBS",
 		AC_MSG_RESULT([no])))
 else
   AC_MSG_RESULT([no])
@@ -613,7 +613,7 @@ if test "x$enableval" = "xyes"; then
       , fribidi_version_info,
 			AC_MSG_RESULT([yes])
 			AC_DEFINE(HAVE_FRIBIDI, [1], [Define to 1 if you have FRIBIDI])
-			LIBS="$LIBS -lfribidi",
+			LIBS="-lfribidi $LIBS",
 		AC_MSG_RESULT([no])))
 else
   AC_MSG_RESULT([no])
