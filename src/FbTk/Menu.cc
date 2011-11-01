@@ -378,7 +378,7 @@ void Menu::enterSubmenu() {
     if (submenu == 0)
         return;
 
-    if (submenu->menuitems.size() == 0)
+    if (submenu->menuitems.empty())
         return;
 
     drawSubmenu(m_active_index);
@@ -773,7 +773,7 @@ void Menu::drawSubmenu(unsigned int index) {
 int Menu::drawItem(FbDrawable &drawable, unsigned int index,
                    bool highlight, bool exclusive_drawable) {
 
-    if (index >= menuitems.size() || menuitems.size() == 0 ||
+    if (index >= menuitems.size() || menuitems.empty() ||
         m_rows_per_column == 0)
         return 0;
 
