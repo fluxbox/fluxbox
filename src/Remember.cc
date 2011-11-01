@@ -240,7 +240,7 @@ string escapeRememberChars(const string& str) {
     escaped_str.reserve(str.capacity());
 
     string::const_iterator i;
-    for (i = str.begin(); i != str.end(); i++) {
+    for (i = str.begin(); i != str.end(); ++i) {
         switch (*i) {
             case '(': case ')': case '[': case ']':
                 escaped_str += '\\';
@@ -671,7 +671,7 @@ Application* Remember::find(WinClient &winclient) {
         return wc_it->second;
     else {
         Patterns::iterator it = m_pats->begin();
-        for (; it != m_pats->end(); it++)
+        for (; it != m_pats->end(); ++it)
             if (it->first->match(winclient) &&
                 it->second->is_transient == winclient.isTransient()) {
                 it->first->addMatch();
@@ -893,7 +893,7 @@ void Remember::save() {
 
             Patterns::iterator git = m_pats->begin();
             Patterns::iterator git_end = m_pats->end();
-            for (; git != git_end; git++) {
+            for (; git != git_end; ++git) {
                 if (git->second == &a) {
                     apps_file << (a.is_transient ? " [transient]" : " [app]") <<
                                  git->first->toString()<<endl;
@@ -1389,7 +1389,7 @@ void Remember::updateClientClose(WinClient &winclient) {
 
     if (app) {
         Patterns::iterator it = m_pats->begin();
-        for (; it != m_pats->end(); it++) {
+        for (; it != m_pats->end(); ++it) {
             if (it->second == app) {
                 it->first->removeMatch();
                 break;

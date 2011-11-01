@@ -879,7 +879,7 @@ void Slit::clientUp(SlitClient* client) {
     }
 
     SlitClients::iterator it = m_client_list.begin();
-    for(it++; it != m_client_list.end(); it++) {
+    for(++it; it != m_client_list.end(); ++it) {
         if ((*it) == client) {
             SlitClients::iterator prev = it;
             prev--;
@@ -900,7 +900,7 @@ void Slit::clientDown(SlitClient* client) {
     }
 
     SlitClients::reverse_iterator it = m_client_list.rbegin();
-    for(it++; it != m_client_list.rend(); it++) {
+    for(++it; it != m_client_list.rend(); ++it) {
         if ((*it) == client) {
             SlitClients::reverse_iterator next = it;
             next--;

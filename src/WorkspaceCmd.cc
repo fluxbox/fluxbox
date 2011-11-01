@@ -393,7 +393,7 @@ void ArrangeWindowsCmd::execute() {
 
     Workspace::Windows normal_windows;
     Workspace::Windows shaded_windows;
-    for(win = space->windowList().begin(); win != space->windowList().end(); win++) {
+    for(win = space->windowList().begin(); win != space->windowList().end(); ++win) {
         int winhead = screen->getHead((*win)->fbWindow());
         if ((winhead == head || winhead == 0) && m_pat.match(**win)) {
             if ((*win)->isShaded())
@@ -430,7 +430,7 @@ void ArrangeWindowsCmd::execute() {
     // TODO: until i resolve the shadedwindow->moveResize() issue to place
     // them in the same columns as the normal windows i just place the shaded
     // windows unchanged ontop of the current head
-    for (i = 0, win = shaded_windows.begin(); win != shaded_windows.end(); win++, i++) {
+    for (i = 0, win = shaded_windows.begin(); win != shaded_windows.end(); ++win, ++i) {
         if (i & 1)
             (*win)->move(x_offs, y_offs);
         else
@@ -449,7 +449,7 @@ void ArrangeWindowsCmd::execute() {
     // Resizes and sets windows positions in columns and rows.
     for (i = 0; i < rows; ++i) {
         x_offs = screen->maxLeft(head);
-        for (j = 0; j < cols && normal_windows.size() > 0; ++j) {
+        for (j = 0; j < cols && !normal_windows.empty(); ++j) {
 
 
             int cell_center_x = x_offs + (x_offs + cal_width) / 2;
@@ -457,7 +457,7 @@ void ArrangeWindowsCmd::execute() {
             unsigned int closest_dist = ~0;
 
             Workspace::Windows::iterator closest = normal_windows.end();
-            for (win = normal_windows.begin(); win != normal_windows.end(); win++) {
+            for (win = normal_windows.begin(); win != normal_windows.end(); ++win) {
 
                 int win_center_x = (*win)->frame().x() + ((*win)->frame().x() + (*win)->frame().width() / 2);
                 int win_center_y = (*win)->frame().y() + ((*win)->frame().y() + (*win)->frame().height() / 2);
@@ -519,7 +519,7 @@ void ShowDesktopCmd::execute() {
         BScreen::Icons icon_list = screen->iconList();
         BScreen::Icons::reverse_iterator iconit = icon_list.rbegin();
         BScreen::Icons::reverse_iterator itend= icon_list.rend();
-        for(; iconit != itend; iconit++) {
+        for(; iconit != itend; ++iconit) {
             if ((*iconit)->workspaceNumber() == space || (*iconit)->isStuck())
                 (*iconit)->deiconify(false);
         }

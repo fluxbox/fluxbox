@@ -36,7 +36,7 @@ public:
 
         std::map<int, Imlib_Context>::iterator it = this->begin();
         std::map<int, Imlib_Context>::iterator it_end = this->end();
-        for (; it != it_end; it++) {
+        for (; it != it_end; ++it) {
             imlib_context_free(it->second);
         }
 

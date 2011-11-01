@@ -1981,9 +1981,9 @@ void BScreen::clearHeads() {
     if (!hasXinerama()) return;
 
     for (Workspaces::iterator i = m_workspaces_list.begin();
-            i != m_workspaces_list.end(); i++) {
+            i != m_workspaces_list.end(); ++i) {
         for (Workspace::Windows::iterator win = (*i)->windowList().begin();
-                win != (*i)->windowList().end(); win++) {
+                win != (*i)->windowList().end(); ++win) {
 
             FluxboxWindow& w = *(*win);
 
