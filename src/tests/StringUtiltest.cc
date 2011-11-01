@@ -137,7 +137,7 @@ int main() {
 
         cerr<<"original =  "<<replaceme<<endl;
         cerr<<"newstr   =  "<<newstr<<endl;
-    } catch (std::exception e) {
+    } catch (std::exception & e) {
         cerr<<"exception: "<<e.what()<<endl;
     }
     cerr<<"Testing stringtok."<<endl;	

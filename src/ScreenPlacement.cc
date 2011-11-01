@@ -99,7 +99,7 @@ bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
     bool placed = false;
     try {
         placed = m_strategy->placeWindow(win, head, place_x, place_y);
-    } catch (std::bad_cast cast) {
+    } catch (std::bad_cast & cast) {
         // This should not happen. 
         // If for some reason we change the PlacementStrategy in Screen
         // from ScreenPlacement to something else then we might get 

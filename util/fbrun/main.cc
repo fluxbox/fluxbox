@@ -227,7 +227,7 @@ int main(int argc, char **argv) {
 
         application.eventLoop();
 
-    } catch (string errstr) {
+    } catch (string & errstr) {
         cerr<<"Error: "<<errstr<<endl;
     }
 }

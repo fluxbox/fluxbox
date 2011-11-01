@@ -1548,7 +1548,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
             "Focus New Windows", "Focus newly created windows"),
             m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
             saverc_cmd));
-    } catch (FbTk::ResourceException e) {
+    } catch (FbTk::ResourceException & e) {
         cerr<<e.what()<<endl;
     }
 
