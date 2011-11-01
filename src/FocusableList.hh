@@ -49,9 +49,9 @@ public:
     };
 
     FocusableList(BScreen &scr): m_pat(0), m_parent(0), m_screen(scr) { }
-    FocusableList(BScreen &scr, const std::string pat);
+    FocusableList(BScreen &scr, const std::string & pat);
     FocusableList(BScreen &scr, const FocusableList &parent,
-                  const std::string pat);
+                  const std::string & pat);
 
     static void parseArgs(const std::string &in, int &opts, std::string &out);
     static const FocusableList *getListFromOptions(BScreen &scr, int opts);
