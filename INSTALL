@@ -1,7 +1,16 @@
--- INSTALL for Fluxbox
+= INSTALL for Fluxbox
 
-Compilation and Installation:
---------------------------------
+== TL;DR Instructions
+
+    $ ./configure
+    $ make
+
+and then as root
+
+    $ make install
+
+== Compilation and Installation
+
    The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
 those values to create a `Makefile' in each directory in the
@@ -46,8 +55,8 @@ The simplest way to compile this package is:
      a different kind of computer), type `make distclean'. 
 
 
-Compilers and Options:
-----------------------
+== Compilers and Options
+
    Some systems require unusual options for compilation or linking that
 the `configure' script does not know about.  You can give `configure'
 initial values for variables by setting them in the environment.  Using
@@ -58,9 +67,35 @@ this:
 Or on systems that have the `env' program, you can do it like this:
      env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
+=== Cross-Compiler for Microsoft Windows:
 
-Optional Features:
-------------------
+You'll want mingw-cross-env installed, with libX11 and mingw-catgets built.
+A configure line that works is:
+
+    $ ./configure \
+        --prefix=/ \
+        --host=i686-pc-mingw32 \
+        --disable-imlib2 \
+        --disable-xmb \
+        --disable-slit \
+        --disable-remember \
+        --disable-toolbar \
+        --disable-fribidi \
+        --disable-nls \
+        --disable-xft \
+        LIBS="-lxcb -lXdmcp -lXau -lpthread -lws2_32"
+
+Then, build and install with
+
+    $ make install DESTDIR=$(pwd)/stage
+
+You can then copy the whole "stage" directory to a Windows machine and
+run it on your choice of X server.
+
+
+
+== Optional Features
+
 Fluxbox supports the XShape extension of X11R6.  This support is enabled by
 default, but may be overridden by specifying `--disable-shape' on the configure
 script's command line.
@@ -83,8 +118,4 @@ Also, `configure' can usually find the X include and library files
 automatically, but if it doesn't, you can use the `configure'
 options `--x-includes=DIR' and `--x-libraries=DIR' to specify
 their locations.
-
-
-Please read the README file also.
-
 

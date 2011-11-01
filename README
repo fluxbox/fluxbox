@@ -1,44 +1,12 @@
-Fluxbox is a fork of the original Blackbox 0.61.1 sourcecode with
-different goals.
+Fluxbox is a windowmanager for X that was based on the Blackbox 0.61.1 code.
+It is very light on resources and easy to handle but yet full of features to
+make an easy, and extremely fast, desktop experience.
 
-Read NEWS to see whats new in this release.
+Read INSTALL to read about building and installing fluxbox. Read NEWS to see
+whats new in this release, for copyright information see COPYING. For more
+information go to:
 
-For copyright information see COPYING
-
-For more information go to:
-  http://fluxbox.org/
-
-
-Compile and Install:
-
-  $ ./configure
-  $ make
-  and then as root
-  # make install
-
-
-Cross-Compile for Windows:
-
-  You'll want mingw-cross-env installed, with libX11 and mingw-catgets built.
-  A configure line that works is:
-  $ ./configure \
-        --prefix=/ \
-        --host=i686-pc-mingw32 \
-        --disable-imlib2 \
-        --disable-xmb \
-        --disable-slit \
-        --disable-remember \
-        --disable-toolbar \
-        --disable-fribidi \
-        --disable-nls \
-        --disable-xft \
-        LIBS="-lxcb -lXdmcp -lXau -lpthread -lws2_32"
-
-  Then, build and install with
-  $ make install DESTDIR=$(pwd)/stage
-
-  You can then copy the whole "stage" directory to a Windows machine and
-  run it on your choice of X server.
+    http://fluxbox.org/
 
 Thanks:
 
@@ -46,11 +14,7 @@ Thanks:
 
   People at #fluxbox on the irc.freenode.net irc-network.
 
-  skypher of openprojects for bugtesting and providing fluxbox with
-    themes: Clean CleanColor Makro, Carbondioxide and MerleyKay.
-
-
   And all the people who sent bugfixes/patches and helped us making
-  Fluxbox a better application.
-
+  Fluxbox a better application, see AUTHORS for a incomplete list
+  of people who helped fluxbox.
 
