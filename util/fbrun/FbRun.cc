@@ -346,7 +346,7 @@ void FbRun::lockPosition(bool size_too) {
 }
 
 void FbRun::prevHistoryItem() {
-    if (m_history.size() == 0 || m_current_history_item == 0) {
+    if (m_history.empty() || m_current_history_item == 0) {
         XBell(m_display, 0);
     } else {
         m_current_history_item--;
@@ -370,7 +370,7 @@ void FbRun::nextHistoryItem() {
 }
 
 void FbRun::firstHistoryItem() {
-    if (m_history.size() == 0 || m_current_history_item == 0) {
+    if (m_history.empty() || m_current_history_item == 0) {
         XBell(m_display, 0);
     } else {
         m_current_history_item = 0;
@@ -380,7 +380,7 @@ void FbRun::firstHistoryItem() {
 
 void FbRun::lastHistoryItem() {
     // actually one past the end
-    if (m_history.size() == 0) {
+    if (m_history.empty()) {
         XBell(m_display, 0);
     } else {
         m_current_history_item = m_history.size();
