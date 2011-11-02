@@ -69,7 +69,7 @@ public:
         }
     }
 
-    bool operator == (const XrmDatabase& database) { return m_database == database; }
+    bool operator == (const XrmDatabase& database) const { return m_database == database; }
     XrmDatabase & operator*() { return m_database; }
 
 private:
