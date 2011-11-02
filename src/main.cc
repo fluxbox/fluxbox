@@ -511,7 +511,7 @@ int main(int argc, char **argv) {
             << _FB_CONSOLETEXT(main, ErrorStandardException, "Standard Exception", "Error message")
             << ": "
             << e.what() << endl;
-    } catch (string error_str) {
+    } catch (string & error_str) {
         cerr << _FB_CONSOLETEXT(Common, Error, "Error", "Error message header")
             << ": "
             << error_str << endl;
