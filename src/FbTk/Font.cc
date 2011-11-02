@@ -117,7 +117,7 @@ void Font::shutdown() {
         FontImp* font = fit->second;
         if (font) {
             FontCacheIt it;
-            for (it = fit; it != font_cache.end(); it++)
+            for (it = fit; it != font_cache.end(); ++it)
                 if (it->second == font)
                     it->second = 0;
             delete font;
@@ -181,7 +181,7 @@ bool Font::load(const string &name) {
     FbTk::StringUtil::stringtok<StringList>(names, name, "|");
 
     StringListIt name_it;
-    for (name_it = names.begin(); name_it != names.end(); name_it++) {
+    for (name_it = names.begin(); name_it != names.end(); ++name_it) {
         FbTk::StringUtil::removeTrailingWhitespace(*name_it);
         FbTk::StringUtil::removeFirstWhitespace(*name_it);
 

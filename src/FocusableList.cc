@@ -169,7 +169,7 @@ bool FocusableList::insertFromParent(Focusable &win) {
     Focusables::iterator our_it = m_list.begin(), our_it_end = m_list.end();
     // walk through our list looking for corresponding entries in
     // parent's list, until we find the window that moved
-    for (; our_it != our_it_end && p_it != p_it_end; p_it++) {
+    for (; our_it != our_it_end && p_it != p_it_end; ++p_it) {
         if (*p_it == &win) {
             if (*our_it == &win) // win didn't move in our list
                 return false;

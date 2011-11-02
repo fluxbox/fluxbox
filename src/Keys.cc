@@ -146,7 +146,7 @@ public:
         // t_key ctor sets context_ of 0 to GLOBAL, so we must here too
         context_ = context_ ? context_ : GLOBAL;
         keylist_t::iterator it = keylist.begin(), it_end = keylist.end();
-        for (; it != it_end; it++) {
+        for (; it != it_end; ++it) {
             if (*it && (*it)->type == type_ && (*it)->key == key_ &&
                 ((*it)->context & context_) > 0 &&
                 isdouble_ == (*it)->isdouble && (*it)->mod ==

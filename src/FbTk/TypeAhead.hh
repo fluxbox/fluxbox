@@ -113,7 +113,7 @@ private:
     Items const *m_ref; // reference to vector we are operating on
 
     void fillValues(BaseItems const &search, Items &fillin) const {
-        for (BaseItemscIt it = search.begin(); it != search.end(); it++) {
+        for (BaseItemscIt it = search.begin(); it != search.end(); ++it) {
             Item_Type tmp = dynamic_cast<Item_Type>(*it);
             if (tmp)
                 fillin.push_back(tmp);
@@ -153,7 +153,7 @@ private:
     // iteration based on original list of items
     void doSearch(char to_test, Items const &items,
                   SearchResult &mySearchResult) const {
-        for (ItemscIt it = items.begin(); it != items.end(); it++) {
+        for (ItemscIt it = items.begin(); it != items.end(); ++it) {
             if ((*it)->iTypeCompareChar(to_test, stringSize()) && (*it)->isEnabled())
                 mySearchResult.add(*it);
         }
@@ -162,7 +162,7 @@ private:
     // iteration based on last SearchResult
     void doSearch(char to_test, BaseItems const &search,
                   SearchResult &mySearchResult) const {
-        for (BaseItemscIt it = search.begin(); it != search.end(); it++) {
+        for (BaseItemscIt it = search.begin(); it != search.end(); ++it) {
             if ((*it)->iTypeCompareChar(to_test, stringSize()) && (*it)->isEnabled())
                 mySearchResult.add(*it);
         }

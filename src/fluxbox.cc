@@ -382,7 +382,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
             int scrnr = 0;
             FbTk::StringUtil::stringtok(vals, m_argv[i], ",:");
             for (vector<string>::iterator scrit = vals.begin();
-                 scrit != vals.end(); scrit++) {
+                 scrit != vals.end(); ++scrit) {
                 scrnr = atoi(scrit->c_str());
                 if (scrnr >= 0 && scrnr < ScreenCount(disp))
                     scrtmp.push_back(scrnr);
@@ -711,7 +711,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         // most of them are handled in FluxboxWindow::handleEvent
         // but some special cases like ewmh propertys needs to be checked
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
-             it != m_atomhandler.end(); it++) {
+             it != m_atomhandler.end(); ++it) {
             if ( (*it)->propertyNotify(*winclient, e->xproperty.atom))
                 break;
         }
@@ -880,7 +880,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         // note: we dont need screen nor winclient to be non-null,
         // it's up to the atomhandler to check that
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
-             it != m_atomhandler.end(); it++) {
+             it != m_atomhandler.end(); ++it) {
             (*it)->checkClientMessage(ce, screen, winclient);
         }
 
@@ -1042,7 +1042,7 @@ AtomHandler* Fluxbox::getAtomHandler(const string &name) {
     if ( name != "" ) {
 
         AtomHandlerContainerIt it;
-        for (it = m_atomhandler.begin(); it != m_atomhandler.end(); it++) {
+        for (it = m_atomhandler.begin(); it != m_atomhandler.end(); ++it) {
             if (name == (*it)->getName())
                 return *it;
         }
@@ -1258,7 +1258,7 @@ void Fluxbox::load_rc(BScreen &screen) {
         StringUtil::removeFirstWhitespace(values);
         StringUtil::stringtok<BScreen::WorkspaceNames>(names, values, ",");
         BScreen::WorkspaceNames::iterator it;
-        for(it = names.begin(); it != names.end(); it++) {
+        for(it = names.begin(); it != names.end(); ++it) {
             if (!(*it).empty() && (*it) != "")
             screen.addWorkspaceName((*it).c_str());
         }
@@ -1385,7 +1385,7 @@ void Fluxbox::focusedWindowChanged(BScreen &screen,
                                    WinClient* client) {
 
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
-         it != m_atomhandler.end(); it++) {
+         it != m_atomhandler.end(); ++it) {
         (*it)->updateFocusedWindow(screen, client ? client->window() : 0 );
     }
 }

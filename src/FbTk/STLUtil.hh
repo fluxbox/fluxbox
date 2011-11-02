@@ -85,7 +85,7 @@ F forAllIf(C& c, I i, F f) {
     typedef typename C::iterator iterator;
     iterator it = c.begin();
     iterator end = c.end();
-    for (; it != end; it++) {
+    for (; it != end; ++it) {
         if (i(*it))
             f(*it);
     }

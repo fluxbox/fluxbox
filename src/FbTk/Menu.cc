@@ -1361,7 +1361,7 @@ void Menu::resetTypeAhead() {
     m_type_ahead.reset();
     m_matches.clear();
 
-    for (; it != vec.end(); it++)
+    for (; it != vec.end(); ++it)
         clearItem((*it)->getIndex(), true, 1);
 }
 

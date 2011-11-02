@@ -189,7 +189,7 @@ void Timer::updateTimers(int fd) {
 
         time_t delta = last_time - now.tv_sec;
 
-        for (it = m_timerlist.begin(); it != m_timerlist.end(); it++) {
+        for (it = m_timerlist.begin(); it != m_timerlist.end(); ++it) {
             (*it)->m_start.tv_sec -= delta;
         }
     }

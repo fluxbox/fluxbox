@@ -1345,7 +1345,7 @@ void FluxboxWindow::iconify() {
         WinClient &client = *(*client_it);
         WinClient::TransientList::iterator it = client.transientList().begin();
         WinClient::TransientList::iterator it_end = client.transientList().end();
-        for (; it != it_end; it++)
+        for (; it != it_end; ++it)
             if ((*it)->fbwindow())
                 (*it)->fbwindow()->iconify();
     }
@@ -2966,7 +2966,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     Workspace::Windows::iterator it_end = wins.end();
 
     unsigned int bw;
-    for (; it != it_end; it++) {
+    for (; it != it_end; ++it) {
         if ((*it) == this)
             continue; // skip myself
 
