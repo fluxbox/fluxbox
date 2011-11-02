@@ -73,7 +73,7 @@ const FocusableList *FocusableList::getListFromOptions(BScreen &scr, int opts) {
             &scr.focusControl().focusedOrderList();
 }
 
-FocusableList::FocusableList(BScreen &scr, const string pat):
+FocusableList::FocusableList(BScreen &scr, const string & pat):
     m_pat(0), m_parent(0), m_screen(scr) {
 
     int options = 0;
@@ -86,7 +86,7 @@ FocusableList::FocusableList(BScreen &scr, const string pat):
 }
 
 FocusableList::FocusableList(BScreen &scr, const FocusableList &parent,
-                             const string pat):
+                             const string & pat):
     m_pat(new ClientPattern(pat.c_str())), m_parent(&parent), m_screen(scr) {
 
     init();
