@@ -41,8 +41,7 @@ MultiButtonMenuItem::MultiButtonMenuItem(int buttons, const FbTk::BiDiString &la
 }
 
 MultiButtonMenuItem::~MultiButtonMenuItem() {
-    if (m_button_exe != 0)
-        delete [] m_button_exe;
+    delete [] m_button_exe;
 }
 
 void MultiButtonMenuItem::setCommand(int button, FbTk::RefCount<FbTk::Command<void> > &cmd) {
