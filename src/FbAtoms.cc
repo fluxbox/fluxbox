@@ -37,6 +37,7 @@ FbAtoms::FbAtoms() {
     xa_wm_change_state = XInternAtom(dpy, "WM_CHANGE_STATE", False);
     xa_wm_delete_window = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
     xa_wm_take_focus = XInternAtom(dpy, "WM_TAKE_FOCUS", False);
+    motif_wm_info = XInternAtom(dpy, "_MOTIF_WM_INFO", False);
     motif_wm_hints = XInternAtom(dpy, "_MOTIF_WM_HINTS", False);
 
     blackbox_attributes = XInternAtom(dpy, "_BLACKBOX_ATTRIBUTES", False);

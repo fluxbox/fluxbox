@@ -47,6 +47,7 @@ private:
     FbAtoms();
 
     Atom blackbox_attributes;
+    Atom motif_wm_info;
     Atom motif_wm_hints;
     Atom xa_wm_protocols;
     Atom xa_wm_state;
