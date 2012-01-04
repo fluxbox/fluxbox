@@ -39,7 +39,7 @@ $set 3 #Common
 16 Ingrandisci sopra tutto
 17 Revisione GIT
 18 Visibile
-19 In questo tema non √® specificata un'opzione background.\nConsultare il manuale o leggere le FAQ.
+19 In questo tema non Ë specificata un'opzione background.\nConsultare il manuale o leggere le FAQ.
 
 $set 4 #Configmenu
 
@@ -50,11 +50,11 @@ $set 4 #Configmenu
 9 Dai il focus alle nuove finestre
 10 Massimo ingrandimento
 12 Mostra il contenuto spostando le finestre
-13 Focus al passaggio del mouse (modalit√† Strict)
+13 Focus al passaggio del mouse (modalit‡ Strict)
 14 Focus al passaggio del mouse
 15 Cambia area di lavoro trascinando le finestre
 16 Forza pseudo trasparenza
-17 Canale alfa del men√π
+17 Canale alfa del men˘
 18 Trasparenza
 19 Canale alfa della finestra focalizzata
 20 Canale alfa della finestra non focalizzata
@@ -91,14 +91,14 @@ $set 6 #FbTkError
 
 $set 7 #Fluxbox
 
-1 Il nome del rc non √® valido!
+1 Il nome del rc non Ë valido!
 3 Impossibile caricare il database
 4 Nuovo tentativo con
 5 Attenzione! Impossibile trovare lo schermo su cui disegnare una finestra!
 6 Impossibile creare la directory %s
 7 Impossibile trovare schermi da gestire.\nAssicurarsi di non avere un altro window manager in esecuzione.
 8 Errore nell'analisi dell'espressione regolare
-9 Errore fatale! Pu√≤ esserci solo un'istanza di una classe fluxbox.
+9 Errore fatale! PuÚ esserci solo un'istanza di una classe fluxbox.
 10 Impossibile connettersi al server X.\nAssicurarsi di aver avviato X prima di Fluxbox.
 11 Attenzione: il server X non gestisce la localizzazione
 12 Attenzione: impossibile impostare i modificatori di localizzazione
@@ -111,7 +111,7 @@ $set 9 #Keys
 $set 10 #Menu
 
 1 Configurazione
-2 Men√π di Fluxbox predefinito
+2 Men˘ di Fluxbox predefinito
 3 Uscita
 4 Icone
 5 Livello...
@@ -141,9 +141,9 @@ $set 11 #Remember
 
 $set 12 #Screen
 
-1 BScreen::BScreen: si √® verificato un errore interrogando il server X.\n	sul display √® gi√† in esecuzione un altro window manager
+1 BScreen::BScreen: si Ë verificato un errore interrogando il server X.\n	sul display Ë gi‡ in esecuzione un altro window manager
 2 W: %4d x H: %4d
-3 BScreen::BScreen: gestione dello schermo %d usando visuale 0x%lx, profondit√† %d\n
+3 BScreen::BScreen: gestione dello schermo %d usando visuale 0x%lx, profondit‡ %d\n
 4 W: %04d x H: %04d
 
 $set 13 #Slit
@@ -161,7 +161,7 @@ $set 13 #Slit
 $set 14 #Toolbar
 
 1 Cambia nome a quest'area di lavoro
-2 Modalit√† delle icone della barra
+2 Modalit‡ delle icone della barra
 3 Tutte le finestre
 4 Icone
 5 Nessuna
