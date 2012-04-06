@@ -259,17 +259,22 @@ These commands ordinarily affect only the currently focused window. The
 *DetachClient*::
 	Remove the current tab from the tab group, placing it in its own window.
 
-*ResizeTo* 'width' 'height'::
-	Resizes the window to the given width and height.
+*ResizeTo* 'width[%]' 'height[%]'::
+	Resizes the window to the given width and height. If the value is given in
+	percent, then the window size will be based on the current screen's size.
 
-*Resize* 'delta-width' 'delta-height'::
-	Resizes the window relative to the current width and height.
+*Resize* 'delta-width[%]' 'delta-height[%]'::
+	Resizes the window relative to the current width and height. If the value
+	is given in percent, then the window size will be based on the current
+	window's size.
 
-*ResizeHorizontal* 'delta-width' / *ResizeVertical* 'delta-height'::
-	Resizes the window in one dimension only
+*ResizeHorizontal* 'delta-width[%]' / *ResizeVertical* 'delta-height[%]'::
+	Resizes the window in one dimension only. If the value is given in
+	percent, then the window size will be based on the current window's size.
 
-*MoveTo* 'x' 'y' ['anchor']::
-Moves the window to the given coordinates, given in pixels.
+*MoveTo* 'x[%]' 'y[%]' ['anchor']::
+Moves the window to the given coordinates, given in pixels or relatively to
+the current screen size if % is specified after the value.
 +
 If either 'x' or 'y' is set to *\**, that coordinate will be ignored, and the
 movement will only take place in one dimension.

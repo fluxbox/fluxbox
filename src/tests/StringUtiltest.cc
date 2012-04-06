@@ -33,9 +33,9 @@
 using namespace std;
 using namespace FbTk;
 
-void testStringtok() {	
+void testStringtok() {
     vector<string> ls;
-    StringUtil::stringtok(ls, "   arg1   arg2   \targ3\n  arg4 arg5\t\t\t\targ6\n\n \n\n \t\t\narg7");	
+    StringUtil::stringtok(ls, "   arg1   arg2   \targ3\n  arg4 arg5\t\t\t\targ6\n\n \n\n \t\t\narg7");
     cerr<<"Size:  "<<ls.size()<<". Should be: 7."<<endl;
     for (vector<string>::const_iterator i = ls.begin();
          i != ls.end(); ++i) {
@@ -66,7 +66,7 @@ void testStrcasestr() {
         cerr<<"ok."<<endl;
     else
         cerr<<"faild."<<endl;
-	
+
     cerr<<"test3 ";
     if (StringUtil::strcasestr("TeSt", "abcTEStabc") == strcasestr("TeSt", "abcTEStabc"))
         cerr<<"ok."<<endl;
@@ -82,7 +82,7 @@ void testStrcasestr() {
 }
 
 void showError(int line, int pos, string& instr) {
-	
+
     cerr<<"Error on line: "<<line<<endl;
     cerr<<instr<<endl;
     for (int c=0; c<pos; c++) {
@@ -91,8 +91,8 @@ void showError(int line, int pos, string& instr) {
         else
             cerr<<" ";
     }
-    cerr<<"^ here"<<endl;	
-	
+    cerr<<"^ here"<<endl;
+
 }
 
 void testGetStringBetween() {
@@ -101,7 +101,7 @@ void testGetStringBetween() {
     stringlist.push_back(" \t\t\t   \t[(in \\)\t haha )]  \t\t ");
     stringlist.push_back("(in\\)) {_  _  my_ _}");
     stringlist.push_back("(in) {_  _  my_ _}");
-    stringlist.push_back("(in){_  _  my_ _}");	
+    stringlist.push_back("(in){_  _  my_ _}");
     stringlist.push_back("\t      \t \t (    in     )    {haha}");
     stringlist.push_back("\t      \t \t (( 	in  \\) )  {haha}");
     stringlist.push_back("\t      \t \t (( 	in  \\) ){hihi}");
@@ -116,17 +116,18 @@ void testGetStringBetween() {
         cerr<<"string="<<stringlist[i]<<endl;
         cerr<<"pos="<<pos<<" ::"<<out;
         total_pos += pos;
-        pos = StringUtil::getStringBetween(out, stringlist[i].c_str()+total_pos, '{', '}');				
+        pos = StringUtil::getStringBetween(out, stringlist[i].c_str()+total_pos, '{', '}');
         if (pos<=0) {
             pos=-pos;
             showError(i+1, total_pos+pos, stringlist[i]);
             continue;
-        } 
+        }
         cerr<<"::"<<out<<"::"<<endl;
         total_pos += pos;
     }
 }
-int main() {	
+
+int main() {
     try {
         string replaceme = "something((((otherthanthis)could[be]changed";
 
@@ -140,13 +141,10 @@ int main() {
     } catch (std::exception & e) {
         cerr<<"exception: "<<e.what()<<endl;
     }
-    cerr<<"Testing stringtok."<<endl;	
+    cerr<<"Testing stringtok."<<endl;
     testStringtok();
     cerr<<"Testing expandFilename."<<endl;
     testExpandFilename();
     cerr<<"Testing strcasestr."<<endl;
     testStrcasestr();
-
-
-    
 }

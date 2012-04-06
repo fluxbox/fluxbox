@@ -1485,6 +1485,55 @@ void BScreen::addManagedResource(FbTk::Resource_base *resource) {
     m_managed_resources.push_back(resource);
 }
 
+int BScreen::getGap(int head, const char type) {
+    return type == 'w' ? getXGap(head) : getYGap(head);
+}
+
+int BScreen::calRelativeSize(int head, int i, char type) {
+    // return floor(i * getGap(head, type) / 100 + 0.5);
+    return FbTk::RelCalcHelper::calPercentageValueOf(i, getGap(head, type));
+}
+int BScreen::calRelativeWidth(int head, int i) {
+    return calRelativeSize(head, i, 'w');
+}
+int BScreen::calRelativeHeight(int head, int i) {
+    return calRelativeSize(head, i, 'h');
+}
+
+int BScreen::calRelativePosition(int head, int i, char type) {
+    int max = type == 'w' ? maxLeft(head) : maxTop(head);
+    // return floor((i - min) / getGap(head, type)  * 100 + 0.5);
+    return FbTk::RelCalcHelper::calPercentageOf((i - max), getGap(head, type));
+}
+// returns a pixel, which is relative to the width of the screen
+// screen starts from 0, 1000 px width, if i is 10 then it should return 100
+int BScreen::calRelativePositionWidth(int head, int i) {
+    return calRelativePosition(head, i, 'w');
+}
+// returns a pixel, which is relative to the height of th escreen
+// screen starts from 0, 1000 px height, if i is 10 then it should return 100
+int BScreen::calRelativePositionHeight(int head, int i) {
+    return calRelativePosition(head, i, 'h');
+}
+
+int BScreen::calRelativeDimension(int head, int i, char type) {
+    // return floor(i / getGap(head, type) * 100 + 0.5);
+    return FbTk::RelCalcHelper::calPercentageOf(i, getGap(head, type));
+  }
+int BScreen::calRelativeDimensionWidth(int head, int i) {
+    return calRelativeDimension(head, i, 'w');
+}
+int BScreen::calRelativeDimensionHeight(int head, int i) {
+    return calRelativeDimension(head, i, 'h');
+}
+
+float BScreen::getXGap(int head) {
+    return maxRight(head) - maxLeft(head);
+}
+float BScreen::getYGap(int head) {
+    return maxBottom(head) - maxTop(head);
+}
+
 void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     _FB_USES_NLS;
 

@@ -51,5 +51,13 @@ util/startfluxbox
 version.h
 install-sh
 missing
+src/tests/testFont
+src/tests/testFullscreen
+src/tests/testDemandAttention
+src/tests/testKeys
+src/tests/testRectangleUtil
+src/tests/testSignals
+src/tests/testStringUtil
+src/tests/testTexture
 *~
 .*.swp

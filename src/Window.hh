@@ -350,6 +350,8 @@ public:
     /// determine the reference corner from a string
     static ReferenceCorner getCorner(std::string str);
     /// convert to coordinates on the root window
+    void translateXCoords(int &x, ReferenceCorner dir = LEFTTOP) const;
+    void translateYCoords(int &y, ReferenceCorner dir = LEFTTOP) const;
     void translateCoords(int &x, int &y, ReferenceCorner dir = LEFTTOP) const;
 
     /**

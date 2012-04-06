@@ -114,14 +114,17 @@ respectively.
 	number. The named ones are: 2-AboveDock, 4-Dock, 6-Top, 8-Normal, 10-Bottom,
 	12-Desktop.
 
-*[Dimensions]* {'width' 'height'}::
+*[Dimensions]* {'width[%]' 'height[%]'}::
 	Opens the application with the specified 'width' and 'height', in pixels.
+	If the value is given in percent, then the window size will be based on
+	the current screen's size.
 
-*[Position]* ('anchor') {'X' 'Y'}::
+*[Position]* ('anchor') {'X[%]' 'Y[%]'}::
 Position the application at a particular spot. By default the upper-left corner
 is placed at screen coordinates ('X','Y'). If you specify an 'anchor', say
 BottomRight, then the lower-right corner of the window is positioned ('X','Y')
-pixels from the lower-right corner of the screen.
+pixels from the lower-right corner of the screen. If the value is given in
+percent, then the coordinates will be based on the current screen's size.
 +
 'anchor' may be set to one of:;;
 *TopLeft Left BottomLeft Top Center Bottom TopRight Right BottomRight*

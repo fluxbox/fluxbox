@@ -36,6 +36,7 @@
 #include "FbTk/stringstream.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Util.hh"
+#include "FbTk/RelCalcHelper.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -46,7 +47,6 @@
 #else
 #include <stdlib.h>
 #endif
-
 
 using FbTk::Command;
 
@@ -477,21 +477,59 @@ void MoveCmd::real_execute() {
     fbwindow().move(fbwindow().x() + m_step_size_x, fbwindow().y() + m_step_size_y);
 }
 
+namespace {
+  template <typename Container>
+  static void parseToken(Container &container, int &d, bool &is_relative, bool &ignore) {
+      if (container.size() < 1)
+          return;
+
+      d = 0;
+      is_relative = false;
+      ignore = false;
+      if (container[0] == '*') {
+          ignore = true;
+      } else if (container[container.size() - 1] == '%') {
+          // its a percent
+          is_relative = true;
+          d = atoi(container.substr(0, container.size() - 1).c_str());
+      } else {
+          d = atoi(container.c_str());
+      }
+  }
+}
+
 FbTk::Command<void> *ResizeCmd::parse(const string &command, const string &args,
                                 bool trusted) {
-    FbTk_istringstream is(args.c_str());
-    int dx = 0, dy = 0;
-    is >> dx >> dy;
-    if (command == "resizehorizontal")
-        dy = 0;
-    else if (command == "resizevertical") {
-        dy = dx;
-        dx = 0;
+
+    typedef std::vector<string> StringTokens;
+    StringTokens tokens;
+    FbTk::StringUtil::stringtok<StringTokens>(tokens, args);
+
+    if (tokens.size() < 1) {
+        return 0;
     }
 
-    if (command == "resizeto")
-        return new ResizeToCmd(dx, dy);
-    return new ResizeCmd(dx, dy);
+    int dx, dy;
+    bool is_relative_x = false, is_relative_y = false, ignore_x = false, ignore_y = false;
+
+    if (command == "resizehorizontal") {
+        parseToken(tokens[0], dx, is_relative_x, ignore_x);
+        dy = 0;
+    } else if (command == "resizevertical") {
+        parseToken(tokens[0], dy, is_relative_y, ignore_y);
+        dx = 0;
+    } else {
+        if (tokens.size() < 2) {
+            return 0;
+        }
+        parseToken(tokens[0], dx, is_relative_x, ignore_x);
+        parseToken(tokens[1], dy, is_relative_y, ignore_y);
+    }
+
+    if (command == "resizeto") {
+        return new ResizeToCmd(dx, dy, is_relative_x, is_relative_y);
+    }
+    return new ResizeCmd(dx, dy, is_relative_x, is_relative_y);
 }
 
 REGISTER_COMMAND_PARSER(resize, ResizeCmd::parse, void);
@@ -499,8 +537,8 @@ REGISTER_COMMAND_PARSER(resizeto, ResizeCmd::parse, void);
 REGISTER_COMMAND_PARSER(resizehorizontal, ResizeCmd::parse, void);
 REGISTER_COMMAND_PARSER(resizevertical, ResizeCmd::parse, void);
 
-ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
-    m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
+ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y, bool is_relative_x, bool is_relative_y) :
+    m_step_size_x(step_size_x), m_step_size_y(step_size_y), m_is_relative_x(is_relative_x), m_is_relative_y(is_relative_y) { }
 
 void ResizeCmd::real_execute() {
 
@@ -512,11 +550,27 @@ void ResizeCmd::real_execute() {
 
     disableMaximizationIfNeeded(fbwindow());
 
-    int w = std::max<int>(static_cast<int>(fbwindow().width() +
-                                      m_step_size_x * fbwindow().winClient().widthInc()),
+    int dx = m_step_size_x, dy = m_step_size_y;
+    int windowWidth = fbwindow().width(), windowHeight = fbwindow().height();
+
+    unsigned int widthInc = fbwindow().winClient().widthInc(),
+        heightInc = fbwindow().winClient().heightInc();
+
+    if (m_is_relative_x) {
+        // dx = floor(windowWidth * m_step_size_x / 100 / widthInc + 0.5);
+        dx = static_cast<int>(FbTk::RelCalcHelper::calPercentageValueOf(windowWidth, m_step_size_x) / widthInc);
+    }
+
+    if (m_is_relative_y) {
+        // dy = floor(windowHeight * m_step_size_y / 100 / heightInc + 0.5);
+        dy = static_cast<int>(FbTk::RelCalcHelper::calPercentageValueOf(windowHeight, m_step_size_y) / heightInc);
+    }
+
+    int w = std::max<int>(static_cast<int>(windowWidth +
+                                      dx * widthInc),
                      fbwindow().frame().titlebarHeight() * 2 + 10);
-    int h = std::max<int>(static_cast<int>(fbwindow().height() +
-                                      m_step_size_y * fbwindow().winClient().heightInc()),
+    int h = std::max<int>(static_cast<int>(windowHeight +
+                                      dy * heightInc),
                      fbwindow().frame().titlebarHeight() + 10);
 
     fbwindow().resize(w, h);
@@ -533,17 +587,10 @@ FbTk::Command<void> *MoveToCmd::parse(const string &cmd, const string &args,
 
     FluxboxWindow::ReferenceCorner refc = FluxboxWindow::LEFTTOP;
     int x = 0, y = 0;
-    bool ignore_x = false, ignore_y = false;
+    bool ignore_x = false, ignore_y = false, is_relative_x = false, is_relative_y = false;
 
-    if (tokens[0][0] == '*')
-        ignore_x = true;
-    else
-        x = atoi(tokens[0].c_str());
-
-    if (tokens[1][0] == '*' && !ignore_x)
-        ignore_y = true;
-    else
-        y = atoi(tokens[1].c_str());
+    parseToken(tokens[0], x, is_relative_x, ignore_x);
+    parseToken(tokens[1], y, is_relative_y, ignore_y);
 
     if (tokens.size() >= 3) {
         refc = FluxboxWindow::getCorner(tokens[2]);
@@ -551,7 +598,7 @@ FbTk::Command<void> *MoveToCmd::parse(const string &cmd, const string &args,
             refc = FluxboxWindow::LEFTTOP;
     }
 
-    return new MoveToCmd(x, y, ignore_x, ignore_y, refc);
+    return new MoveToCmd(x, y, ignore_x, ignore_y, is_relative_x, is_relative_y, refc);
 }
 
 REGISTER_COMMAND_PARSER(moveto, MoveToCmd::parse, void);
@@ -568,19 +615,31 @@ void MoveToCmd::real_execute() {
 
 
     int x = m_pos_x, y = m_pos_y;
+    int head = fbwindow().getOnHead();
 
-    fbwindow().translateCoords(x, y, m_corner);
-    if (m_ignore_x)
+    if (m_ignore_x) {
         x = fbwindow().x();
-    if (m_ignore_y)
+    } else {
+        if (m_is_relative_x) {
+            x = fbwindow().screen().calRelativeWidth(head, x);
+        }
+        fbwindow().translateXCoords(x, m_corner);
+    }
+    if (m_ignore_y) {
         y = fbwindow().y();
+    } else {
+        if (m_is_relative_y) {
+            y = fbwindow().screen().calRelativeHeight(head, y);
+        }
+        fbwindow().translateYCoords(y, m_corner);
+    }
 
     fbwindow().move(x, y);
 }
 
 
-ResizeToCmd::ResizeToCmd(const int step_size_x, const int step_size_y) :
-    m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
+ResizeToCmd::ResizeToCmd(const int step_size_x, const int step_size_y, const bool is_relative_x, const bool is_relative_y) :
+    m_step_size_x(step_size_x), m_step_size_y(step_size_y), m_is_relative_x(is_relative_x), m_is_relative_y(is_relative_y) { }
 
 void ResizeToCmd::real_execute() {
 
@@ -592,9 +651,31 @@ void ResizeToCmd::real_execute() {
 
     disableMaximizationIfNeeded(fbwindow());
 
+    int dx = m_step_size_x, dy = m_step_size_y;
+    int head = fbwindow().getOnHead();
 
-    if (m_step_size_x > 0 && m_step_size_y > 0)
-        fbwindow().resize(m_step_size_x, m_step_size_y);
+    if (m_is_relative_x) {
+        dx = fbwindow().screen().calRelativeWidth(head, dx);
+        if(dx <= 0) {
+            dx = fbwindow().width();
+        }
+    }
+
+    if (m_is_relative_y) {
+        dy = fbwindow().screen().calRelativeHeight(head, dy);
+        if(dy <= 0) {
+            dy = fbwindow().height();
+        }
+    }
+
+    if (dx == 0) {
+      dx = fbwindow().width();
+    }
+    if (dy == 0) {
+      dy = fbwindow().height();
+    }
+
+    fbwindow().resize(dx, dy);
 }
 
 REGISTER_COMMAND(fullscreen, FullscreenCmd, void);
@@ -720,7 +801,7 @@ void SetAlphaCmd::real_execute() {
         return;
     }
 
-    fbwindow().setFocusedAlpha(m_relative 
+    fbwindow().setFocusedAlpha(m_relative
             ?  FbTk::Util::clamp(fbwindow().getFocusedAlpha() + m_focus, 0, 255)
             : m_focus);
 

@@ -38,6 +38,7 @@
 #include "FbTk/MultLayers.hh"
 #include "FbTk/NotCopyable.hh"
 #include "FbTk/Signal.hh"
+#include "FbTk/RelCalcHelper.hh"
 
 #include "FocusControl.hh"
 
@@ -453,11 +454,27 @@ public:
     /// when screen dies
     void addManagedResource(FbTk::Resource_base *resource);
 
+    int calRelativeSize(int head, int i, char type);
+    int calRelativeWidth(int head, int i);
+    int calRelativeHeight(int head, int i);
+
+    int calRelativePosition(int head, int i, char type);
+    int calRelativePositionWidth(int head, int i);
+    int calRelativePositionHeight(int head, int i);
+
+    int calRelativeDimension(int head, int i, char type);
+    int calRelativeDimensionWidth(int head, int i);
+    int calRelativeDimensionHeight(int head, int i);
+
 private:
     void setupConfigmenu(FbTk::Menu &menu);
     void renderGeomWindow();
     void renderPosWindow();
     void focusedWinFrameThemeReconfigured();
+
+    int getGap(int head, const char type);
+    float getXGap(int head);
+    float getYGap(int head);
 
     const Strut* availableWorkspaceArea(int head) const;
 

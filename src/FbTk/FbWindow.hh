@@ -28,6 +28,12 @@
 #include <string>
 #include <set>
 
+#ifdef HAVE_CMATH
+  #include <cmath>
+#else
+  #include <math.h>
+#endif
+
 namespace FbTk {
 
 class Color;
@@ -257,6 +263,7 @@ public:
     virtual void renderForeground(FbWindow &win, FbDrawable &drawable) = 0;
     virtual ~FbWindowRenderer() { }
 };
+
 
 
 } // end namespace FbTk

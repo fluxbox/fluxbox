@@ -54,7 +54,6 @@
 #define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#include <iostream>
 #include <set>
 
 
@@ -99,15 +98,24 @@ public:
         { workspace = ws; workspace_remember = true; }
     void rememberHead(int h)
         { head = h; head_remember = true; }
-    void rememberDimensions(int width, int height)
-        { w = width; h = height; dimensions_remember = true; }
+    void rememberDimensions(int width, int height, bool is_relative)
+        {
+          dimension_is_relative = is_relative;
+          w = width; h = height;
+          dimensions_remember = true;
+        }
     void rememberFocusHiddenstate(bool state)
         { focushiddenstate= state; focushiddenstate_remember= true; }
     void rememberIconHiddenstate(bool state)
         { iconhiddenstate= state; iconhiddenstate_remember= true; }
-    void rememberPosition(int posx, int posy,
+    void rememberPosition(int posx, int posy, bool is_relative,
                  FluxboxWindow::ReferenceCorner rfc = FluxboxWindow::LEFTTOP)
-        { x = posx; y = posy; refc = rfc; position_remember = true; }
+        {
+          position_is_relative = is_relative;
+          x = posx; y = posy;
+          refc = rfc;
+          position_remember = true;
+        }
     void rememberShadedstate(bool state)
         { shadedstate = state; shadedstate_remember = true; }
     void rememberTabstate(bool state)
@@ -120,7 +128,7 @@ public:
         { focusnewwindow = state; focusnewwindow_remember = true; }
     void rememberJumpworkspace(bool state)
         { jumpworkspace = state; jumpworkspace_remember = true; }
-    void rememberLayer(int layernum) 
+    void rememberLayer(int layernum)
         { layer = layernum; layer_remember = true; }
     void rememberSaveOnClose(bool state)
         { save_on_close = state; save_on_close_remember = true; }
@@ -141,9 +149,11 @@ public:
 
     bool dimensions_remember;
     int w,h; // width, height
+    bool dimension_is_relative;
 
     bool position_remember;
     int x,y;
+    bool position_is_relative;
     FluxboxWindow::ReferenceCorner refc;
 
     bool alpha_remember;
@@ -483,10 +493,13 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                     app.rememberLayer(l);
             } else if (str_key == "dimensions") {
                 unsigned int h,w;
-                if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2)
-                    app.rememberDimensions(w, h);
-                else
+                if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2) {
+                    app.rememberDimensions(w, h, false);
+                } else if(sscanf(str_label.c_str(), "%u%% %u%%", &w, &h) == 2) {
+                    app.rememberDimensions(w, h, true);
+                } else {
                     had_error = true;
+                }
             } else if (str_key == "position") {
                 FluxboxWindow::ReferenceCorner r = FluxboxWindow::LEFTTOP;
                 int x = 0, y = 0;
@@ -497,10 +510,15 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                     r = FluxboxWindow::getCorner(str_option);
                 had_error = (r == FluxboxWindow::ERROR);
 
-                if (!had_error && sscanf(str_label.c_str(), "%d %d", &x, &y) == 2)
-                    app.rememberPosition(x, y, r);
-                else
+                if (!had_error){
+                    if(sscanf(str_label.c_str(), "%d %d", &x, &y) == 2) {
+                      app.rememberPosition(x, y, false, r);
+                    } else if (sscanf(str_label.c_str(), "%d%% %d%%", &x, &y) == 2){
+                      app.rememberPosition(x, y, true, r);
+                    }
+                } else {
                     had_error = true;
+                }
             } else if (str_key == "shaded") {
                 app.rememberShadedstate((strcasecmp(str_label.c_str(), "yes") == 0));
             } else if (str_key == "tab") {
@@ -910,7 +928,11 @@ void Remember::save() {
             apps_file << "  [Head]\t{" << a.head << "}" << endl;
         }
         if (a.dimensions_remember) {
-            apps_file << "  [Dimensions]\t{" << a.w << " " << a.h << "}" << endl;
+            if(a.dimension_is_relative) {
+              apps_file << "  [Dimensions]\t{" << a.w << "% " << a.h << "%}" << endl;
+            } else {
+              apps_file << "  [Dimensions]\t{" << a.w << " " << a.h << "}" << endl;
+            }
         }
         if (a.position_remember) {
             apps_file << "  [Position]\t(";
@@ -942,7 +964,11 @@ void Remember::save() {
             default:
                 apps_file << "UPPERLEFT";
             }
-            apps_file << ")\t{" << a.x << " " << a.y << "}" << endl;
+            if(a.position_is_relative) {
+              apps_file << ")\t{" << a.x << "% " << a.y << "%}" << endl;
+            } else {
+              apps_file << ")\t{" << a.x << " " << a.y << "}" << endl;
+            }
         }
         if (a.shadedstate_remember) {
             apps_file << "  [Shaded]\t{" << ((a.shadedstate)?"yes":"no") << "}" << endl;
@@ -1029,7 +1055,7 @@ void Remember::save() {
         if (a.alpha_remember) {
             if (a.focused_alpha == a.unfocused_alpha)
                 apps_file << "  [Alpha]\t{" << a.focused_alpha << "}" << endl;
-            else 
+            else
                 apps_file << "  [Alpha]\t{" << a.focused_alpha << " " << a.unfocused_alpha << "}" << endl;
         }
         apps_file << "[end]" << endl;
@@ -1110,6 +1136,7 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         app = add(winclient);
         if (!app) return;
     }
+    int head, head_x, head_y, win_w, win_h, percx, percy;
     switch (attrib) {
     case REM_WORKSPACE:
         app->rememberWorkspace(win->workspaceNumber());
@@ -1117,16 +1144,18 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_HEAD:
         app->rememberHead(win->screen().getHead(win->fbWindow()));
         break;
-    case REM_DIMENSIONS:
-        app->rememberDimensions(win->normalWidth(),
-                                win->normalHeight());
+    case REM_DIMENSIONS: {
+        head = win->screen().getHead(win->fbWindow());
+        int percx = win->screen().calRelativeDimensionWidth(head, win->normalWidth());
+        int percy = win->screen().calRelativeDimensionHeight(head, win->normalHeight());
+        app->rememberDimensions(percx, percy, true);
         break;
+    }
     case REM_POSITION: {
-        int head = win->screen().getHead(win->fbWindow());
-        int head_x = win->screen().maxLeft(head);
-        int head_y = win->screen().maxTop(head);
-        app->rememberPosition(win->normalX() - head_x,
-                              win->normalY() - head_y);
+        head = win->screen().getHead(win->fbWindow());
+        int percx = win->screen().calRelativePositionWidth(head, win->normalX());
+        int percy = win->screen().calRelativePositionHeight(head, win->normalY());
+        app->rememberPosition(percx, percy, true);
         break;
     }
     case REM_FOCUSHIDDENSTATE:
@@ -1288,13 +1317,32 @@ void Remember::setupFrame(FluxboxWindow &win) {
         win.setOnHead(app->head);
     }
 
-    if (app->dimensions_remember)
-        win.resize(app->w, app->h);
+    if (app->dimensions_remember) {
+
+        int win_w, win_h;
+        if(app->dimension_is_relative) {
+          int head = screen.getHead(win.fbWindow());
+          int screen_y = screen.maxBottom(head) - screen.maxTop(head);
+          win_w = screen.calRelativeWidth(head, app->w);
+          win_h = screen.calRelativeHeight(head, app->h);
+        } else {
+          win_w = app->w;
+          win_h = app->h;
+        }
+        win.resize(win_w, win_h);
+    }
 
     if (app->position_remember) {
-        int newx = app->x, newy = app->y;
-        win.translateCoords(newx, newy, app->refc);
-        win.move(newx, newy);
+      int newx, newy;
+      if(app->position_is_relative) {
+          int head = screen.getHead(win.fbWindow());
+          newx = screen.calRelativeWidth(head, app->x);
+          newy = screen.calRelativeHeight(head, app->y);
+      } else {
+        newx = app->x, newy = app->y;
+      }
+      win.translateCoords(newx, newy, app->refc);
+      win.move(newx, newy);
     }
 
     if (app->shadedstate_remember)
