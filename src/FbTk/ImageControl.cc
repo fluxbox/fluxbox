@@ -495,7 +495,7 @@ void ImageControl::createColorTable() {
         }
 
         if (m_colors_per_channel < 2 || num_colors > static_cast<unsigned>(1 << m_screen_depth)) {
-            fprintf(stderr, "ImageControl::ImageControl: invalid colormap size %ld "
+            fprintf(stderr, "ImageControl::ImageControl: invalid colormap size %zd "
                     "(%d/%d/%d) - reducing",
                     num_colors, m_colors_per_channel, m_colors_per_channel,
                     m_colors_per_channel);
@@ -543,7 +543,7 @@ void ImageControl::createColorTable() {
             }
 
             if (m_colors_per_channel < 2 || num_colors > static_cast<unsigned>(1 << m_screen_depth)) {
-                fprintf(stderr,"FbTk::ImageControl: invalid colormap size %ld "
+                fprintf(stderr,"FbTk::ImageControl: invalid colormap size %zd "
                         "(%d/%d/%d) - reducing",
                         num_colors, m_colors_per_channel, m_colors_per_channel,
                         m_colors_per_channel);
