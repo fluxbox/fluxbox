@@ -1427,7 +1427,7 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
         lgc.setForeground(texture.colorTo());
         register unsigned int i = 0;
         for (; i < height; i += 2)
-            pixmap.drawLine(lgc.gc(), 0, i, width, i);
+            pixmap.drawLine(lgc.gc(), 0, i, width - 1, i);
 
     }
 
