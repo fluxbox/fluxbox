@@ -100,7 +100,7 @@ int extractUnsignedNumber(const std::string& in, T& out) {
 
     unsigned long long int result = 0;
 
-    if (::extractBigNumber(in.c_str(), strtoull, result) && result >= 0) {
+    if (::extractBigNumber(in.c_str(), strtoull, result)) {
         out = static_cast<T>(result);
         return 1;
     }
