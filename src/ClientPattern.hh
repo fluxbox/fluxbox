@@ -55,7 +55,7 @@ public:
         TITLE = 0, CLASS, NAME, ROLE, TRANSIENT,
         MAXIMIZED, MINIMIZED, SHADED, STUCK, FOCUSHIDDEN, ICONHIDDEN,
         WORKSPACE, WORKSPACENAME, HEAD, LAYER, URGENT, SCREEN,
-        XPROP
+        XPROP, FULLSCREEN, VERTMAX, HORZMAX
     };
 
     /// Does this client match this pattern?

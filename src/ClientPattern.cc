@@ -67,13 +67,17 @@ struct Name2WinProperty {
     ClientPattern::WinProperty prop;
 };
 
-const Name2WinProperty name_2_winproperties[] = { // sorted for 'bsearch'
+// sorted alphabetically for 'bsearch'
+const Name2WinProperty name_2_winproperties[] = {
     { "class", ClientPattern::CLASS },
     { "focushidden", ClientPattern::FOCUSHIDDEN },
+    { "fullscreen", ClientPattern::FULLSCREEN },
     { "head", ClientPattern::HEAD },
     { "iconhidden", ClientPattern::ICONHIDDEN },
     { "layer", ClientPattern::LAYER },
     { "maximized", ClientPattern::MAXIMIZED },
+    { "maximizedhorizontal", ClientPattern::HORZMAX },
+    { "maximizedvertical", ClientPattern::VERTMAX },
     { "minimized", ClientPattern::MINIMIZED },
     { "name", ClientPattern::NAME },
     { "role", ClientPattern::ROLE },
@@ -132,6 +136,9 @@ Prop2String property_2_strings[] = { // sorted by 'prop'
     { ClientPattern::URGENT, "urgent" },
     { ClientPattern::SCREEN, "screen" },
     { ClientPattern::XPROP, "@" },
+    { ClientPattern::FULLSCREEN, "fullscreen" },
+    { ClientPattern::VERTMAX, "maximizedvertical" },
+    { ClientPattern::HORZMAX, "maximizedhorizontal" },
 };
 
 
@@ -410,6 +417,15 @@ FbTk::FbString ClientPattern::getProperty(WinProperty prop, const Focusable &cli
         break;
     case MINIMIZED:
         result = (fbwin && fbwin->isIconic()) ? "yes" : "no";
+        break;
+    case FULLSCREEN:
+        result = (fbwin && fbwin->isFullscreen()) ? "yes" : "no";
+        break;
+    case VERTMAX:
+        result = (fbwin && fbwin->isMaximizedVert()) ? "yes" : "no";
+        break;
+    case HORZMAX:
+        result = (fbwin && fbwin->isMaximizedHorz()) ? "yes" : "no";
         break;
     case SHADED:
         result = (fbwin && fbwin->isShaded()) ? "yes" : "no";
