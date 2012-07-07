@@ -3306,6 +3306,10 @@ bool FluxboxWindow::acceptsFocus() const {
     return (m_client ? m_client->acceptsFocus() : false);
 }
 
+bool FluxboxWindow::isModal() const {
+    return (m_client ? m_client->isModal() : true);
+}
+
 const FbTk::PixmapWithMask &FluxboxWindow::icon() const {
     return (m_client ? m_client->icon() : m_icon);
 }
