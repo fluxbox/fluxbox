@@ -137,10 +137,10 @@ Specify the decoration state. There are several predefined 'value' sets:;;
 		Standard decorations
 	*NONE*;;
 		No decorations
-	*TAB*
-		Like TAB except keep the tabs
-	*Border*;;
+	*BORDER*;;
 		Like NONE except keep the X window border
+	*TAB*;;
+		Like BORDER except keep external tabs (if enabled)
 	*TINY*;;
 		Titlebar with only an iconify button
 	*TOOL*;;
@@ -150,8 +150,7 @@ Specify the decoration state. There are several predefined 'value' sets:;;
 +
 The 'value' may also be a bitmask for finer-grained control. The bits are, from
 (1<<0) to (1<<10): Titlebar, Handle/Grips, Border, Iconify Button, Maximize
-Button, Close Button, Menu Enabled, Sticky Button, Shade Button, Tabbing
-enabled, Focus Enabled.
+Button, Close Button, Menu Button, Sticky Button, Shade Button, External Tabs, Focus Enabled.
 
 *[Shaded]* {'bool'}::
 	Whether the window is Shaded (rolled-up) or not.

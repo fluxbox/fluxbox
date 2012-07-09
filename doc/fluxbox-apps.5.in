@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: fluxbox-apps
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
 .\"      Date: 28 October 2011
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-apps.txt
@@ -137,18 +137,18 @@ head specified (Xinerama only)\&.
 Specify the layer to open the window on (by number)\&. Each layer has a number\&. The named ones are: 2\-AboveDock, 4\-Dock, 6\-Top, 8\-Normal, 10\-Bottom, 12\-Desktop\&.
 .RE
 .PP
-\fB[Dimensions]\fR {\fIwidth\fR \fIheight\fR}
+\fB[Dimensions]\fR {\fIwidth[%]\fR \fIheight[%]\fR}
 .RS 4
 Opens the application with the specified
 \fIwidth\fR
 and
-\fIheight\fR, in pixels\&.
+\fIheight\fR, in pixels\&. If the value is given in percent, then the window size will be based on the current screen\(cqs size\&.
 .RE
 .PP
-\fB[Position]\fR (\fIanchor\fR) {\fIX\fR \fIY\fR}
+\fB[Position]\fR (\fIanchor\fR) {\fIX[%]\fR \fIY[%]\fR}
 .RS 4
 Position the application at a particular spot\&. By default the upper\-left corner is placed at screen coordinates (\fIX\fR,\fIY\fR)\&. If you specify an
-\fIanchor\fR, say BottomRight, then the lower\-right corner of the window is positioned (\fIX\fR,\fIY\fR) pixels from the lower\-right corner of the screen\&.
+\fIanchor\fR, say BottomRight, then the lower\-right corner of the window is positioned (\fIX\fR,\fIY\fR) pixels from the lower\-right corner of the screen\&. If the value is given in percent, then the coordinates will be based on the current screen\(cqs size\&.
 .PP
 \fIanchor\fR may be set to one of:
 .RS 4
@@ -171,13 +171,16 @@ Standard decorations
 \fBNONE\fR
 .RS 4
 No decorations
-\fBTAB\fR
-Like TAB except keep the tabs
 .RE
 .PP
-\fBBorder\fR
+\fBBORDER\fR
 .RS 4
 Like NONE except keep the X window border
+.RE
+.PP
+\fBTAB\fR
+.RS 4
+Like BORDER except keep external tabs (if enabled)
 .RE
 .PP
 \fBTINY\fR
@@ -192,7 +195,7 @@ Titlebar only
 .sp
 The
 \fIvalue\fR
-may also be a bitmask for finer\-grained control\&. The bits are, from (1<<0) to (1<<10): Titlebar, Handle/Grips, Border, Iconify Button, Maximize Button, Close Button, Menu Enabled, Sticky Button, Shade Button, Tabbing enabled, Focus Enabled\&.
+may also be a bitmask for finer\-grained control\&. The bits are, from (1<<0) to (1<<10): Titlebar, Handle/Grips, Border, Iconify Button, Maximize Button, Close Button, Menu Button, Sticky Button, Shade Button, External Tabs, Focus Enabled\&.
 .RE
 .RE
 .PP
@@ -348,12 +351,36 @@ or
 \fBno\fR, depending on whether the window is maximized or not\&.
 .RE
 .PP
+\fBMaximizedHorizontal\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is maximized horizontally or not\&.
+.RE
+.PP
+\fBMaximizedVertical\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is maximized vertically or not\&.
+.RE
+.PP
 \fBMinimized\fR
 .RS 4
 Either
 \fByes\fR
 or
 \fBno\fR, depending on whether the window is minimized (iconified) or not\&.
+.RE
+.PP
+\fBFullscreen\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is fullscreen or not\&.
 .RE
 .PP
 \fBShaded\fR
