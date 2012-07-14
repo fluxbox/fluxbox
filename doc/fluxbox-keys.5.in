@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: fluxbox-keys
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
 .\"      Date: 28 October 2011
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
@@ -417,24 +417,24 @@ Reorder the tabs in the current tab group, swapping the current tab with the one
 Remove the current tab from the tab group, placing it in its own window\&.
 .RE
 .PP
-\fBResizeTo\fR \fIwidth\fR \fIheight\fR
+\fBResizeTo\fR \fIwidth[%]\fR \fIheight[%]\fR
 .RS 4
-Resizes the window to the given width and height\&.
+Resizes the window to the given width and height\&. If the value is given in percent, then the window size will be based on the current screen\(cqs size\&.
 .RE
 .PP
-\fBResize\fR \fIdelta\-width\fR \fIdelta\-height\fR
+\fBResize\fR \fIdelta\-width[%]\fR \fIdelta\-height[%]\fR
 .RS 4
-Resizes the window relative to the current width and height\&.
+Resizes the window relative to the current width and height\&. If the value is given in percent, then the window size will be based on the current window\(cqs size\&.
 .RE
 .PP
-\fBResizeHorizontal\fR \fIdelta\-width\fR / \fBResizeVertical\fR \fIdelta\-height\fR
+\fBResizeHorizontal\fR \fIdelta\-width[%]\fR / \fBResizeVertical\fR \fIdelta\-height[%]\fR
 .RS 4
-Resizes the window in one dimension only
+Resizes the window in one dimension only\&. If the value is given in percent, then the window size will be based on the current window\(cqs size\&.
 .RE
 .PP
-\fBMoveTo\fR \fIx\fR \fIy\fR [\fIanchor\fR]
+\fBMoveTo\fR \fIx[%]\fR \fIy[%]\fR [\fIanchor\fR]
 .RS 4
-Moves the window to the given coordinates, given in pixels\&.
+Moves the window to the given coordinates, given in pixels or relatively to the current screen size if % is specified after the value\&.
 .sp
 If either
 \fIx\fR
@@ -1034,12 +1034,36 @@ or
 \fBno\fR, depending on whether the window is maximized or not\&.
 .RE
 .PP
+\fBMaximizedHorizontal\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is maximized horizontally or not\&.
+.RE
+.PP
+\fBMaximizedVertical\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is maximized vertically or not\&.
+.RE
+.PP
 \fBMinimized\fR
 .RS 4
 Either
 \fByes\fR
 or
 \fBno\fR, depending on whether the window is minimized (iconified) or not\&.
+.RE
+.PP
+\fBFullscreen\fR
+.RS 4
+Either
+\fByes\fR
+or
+\fBno\fR, depending on whether the window is fullscreen or not\&.
 .RE
 .PP
 \fBShaded\fR

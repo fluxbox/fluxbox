@@ -53,7 +53,7 @@ namespace {
 
 bool doSkipWindow(const Focusable &win, const ClientPattern *pat) {
     const FluxboxWindow *fbwin = win.fbwindow();
-    if (!fbwin || fbwin->isFocusHidden())
+    if (!fbwin || fbwin->isFocusHidden() || fbwin->isModal())
         return true; // skip if no fbwindow or if focushidden
     if (pat && !pat->match(win))
         return true; // skip if it doesn't match the pattern

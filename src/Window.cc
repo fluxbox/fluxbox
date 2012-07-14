@@ -3306,6 +3306,10 @@ bool FluxboxWindow::acceptsFocus() const {
     return (m_client ? m_client->acceptsFocus() : false);
 }
 
+bool FluxboxWindow::isModal() const {
+    return (m_client ? m_client->isModal() : true);
+}
+
 const FbTk::PixmapWithMask &FluxboxWindow::icon() const {
     return (m_client ? m_client->icon() : m_icon);
 }
@@ -3609,15 +3613,16 @@ void FluxboxWindow::updateButtons() {
                 }
                 break;
             case WinButton::MENUICON:
-                winbtn = new WinButton(*this, m_button_theme,
-                                       screen().pressedWinButtonTheme(),
-                                       dir[i],
-                                       frame().titlebar(),
-                                       0, 0, 10, 10);
-                winbtn->join(titleSig(),
+                if (m_state.deco_mask & WindowState::DECORM_MENU) {
+                    winbtn = new WinButton(*this, m_button_theme,
+                            screen().pressedWinButtonTheme(),
+                            dir[i],
+                            frame().titlebar(),
+                            0, 0, 10, 10);
+                    winbtn->join(titleSig(),
                              FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
-
-                winbtn->setOnClick(show_menu_cmd);
+                    winbtn->setOnClick(show_menu_cmd);
+                }
                 break;
             }
 

@@ -414,6 +414,7 @@ public:
     FbTk::FbWindow &parent() { return m_parent; }
 
     bool acceptsFocus() const;
+    bool isModal() const;
     const FbTk::PixmapWithMask &icon() const;
     const FbTk::BiDiString &title() const;
     const FbTk::FbString &getWMClassName() const;

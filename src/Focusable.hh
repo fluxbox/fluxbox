@@ -54,8 +54,10 @@ public:
 
     /// @return true if the focusable has input focus
     virtual bool isFocused() const { return m_focused; }
-    /// @return return true if it can be focused
+    /// @return true if it can be focused
     virtual bool acceptsFocus() const { return true; }
+    /// @return true if temporarily prevented from being focused
+    virtual bool isModal() const { return false; }
 
     /// @return true if icon button should appear focused
     bool getAttentionState() const { return m_attention_state; }

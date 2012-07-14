@@ -32,9 +32,18 @@ The following values are accepted for 'propertyname':::
 *Maximized*;;
 	Either *yes* or *no*, depending on whether the window is maximized or
 	not.
+*MaximizedHorizontal*;;
+	Either *yes* or *no*, depending on whether the window is maximized
+	horizontally or not.
+*MaximizedVertical*;;
+	Either *yes* or *no*, depending on whether the window is maximized
+	vertically or not.
 *Minimized*;;
 	Either *yes* or *no*, depending on whether the window is minimized
 	(iconified) or not.
+*Fullscreen*;;
+	Either *yes* or *no*, depending on whether the window is fullscreen or
+	not.
 *Shaded*;;
 	Either *yes* or *no*, depending on whether the window is shaded or
 	not.
