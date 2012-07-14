@@ -187,29 +187,24 @@ All gradiented textures are composed of two color values: the 'color' and
 'colorTo' resources. When *Interlaced* is used in *Solid* mode, the 'colorTo'
 resource is used to find the interlacing color.
 
-A WORD ABOUT FONTS
-------------------
-We should comment about fonts before we move on to the complete component
-list. fluxbox(1) supports different options for text. These options currently
-include bold, halo and shadow. To set these do this: fontname-size:options for
-any of the font components in the style file. For example:
+FONT EFFECTS
+------------
+In addition to specifying the font-family and the font-weight via the
+supported font-rendering-engine (eg, Xft), fluxbox(1) supports some effects:
+'halo' and 'shadow'. To set the shadow effect:
 
-   menu.title.font: sans-8:bold,shadow
+   menu.title.font: sans-8:bold
+   menu.title.effect: shadow
+   menu.title.shadow.color: green
+   menu.title.shadow.x: 3
+   menu.title.shadow.y: 3
 
-The latest versions of fluxbox(1) (> 0.9.8) also support different values for
-these text options.  The  possibilities  are  as  follows:
+To set the halo effect:
 
-   --------
-   Shadow color=<colorname> offsetx=<integer> offsety=<integer> Halo color=<colorname>
-   --------
+   menu.title.font: sans-8:bold
+   menu.title.effect: halo
+   menu.title.halo.color: green
 
-For the case of completeness, here are some real world examples:
-
-   *.font: Verdana-10:bold,shadow:offsetx=2;offsety=4;color=green
-   *.font: Verdana-10:halo:color=blue
-
-Of course this could all be placed on one line. Also note that for the offset
-options, negative integers are allowed.
 
 FONT PROBLEMS
 ~~~~~~~~~~~~~
