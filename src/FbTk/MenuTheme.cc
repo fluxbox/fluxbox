@@ -48,7 +48,9 @@ MenuTheme::MenuTheme(int screen_num):
     hilite(*this, "menu.hilite", "Menu.Hilite"),
     titlefont(*this, "menu.title.font", "Menu.Title.Font"),
     framefont(*this, "menu.frame.font", "Menu.Frame.Font"),
+    hilitefont(*this, "menu.hilite.font", "Menu.Hilite.Font"),
     framefont_justify(*this, "menu.frame.justify", "Menu.Frame.Justify"),
+    hilitefont_justify(*this, "menu.hilite.justify", "Menu.Hilite.Justify"),
     titlefont_justify(*this, "menu.title.justify", "Menu.Title.Justify"),
     bullet_pos(*this, "menu.bullet.position", "Menu.Bullet.Position"),
     m_bullet(*this, "menu.bullet", "Menu.Bullet"),
@@ -84,7 +86,9 @@ MenuTheme::MenuTheme(int screen_num):
 
     ThemeManager::instance().loadTheme(*this);
 
-    m_real_item_height = std::max(*m_item_height, frameFont().height() + 2*bevelWidth());
+    m_real_item_height = std::max(*m_item_height,
+                                  std::max(frameFont().height() + 2*bevelWidth(),
+                                           hiliteFont().height() + 2*bevelWidth()));
     m_real_title_height = std::max(*m_title_height,
                                    titleFont().height() + 2*bevelWidth());
 
@@ -111,7 +115,9 @@ void MenuTheme::reconfigTheme() {
     if (*m_border_width > 20)
         *m_border_width = 20;
 
-    m_real_item_height = std::max(*m_item_height, frameFont().height() + 2*bevelWidth());
+    m_real_item_height = std::max(*m_item_height,
+                                  std::max(frameFont().height() + 2*bevelWidth(),
+                                           hiliteFont().height() + 2*bevelWidth()));
     m_real_title_height = std::max(*m_title_height,
                                    titleFont().height() + 2*bevelWidth());
 
@@ -143,6 +149,10 @@ bool MenuTheme::fallback(ThemeItem_base &item) {
         return ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
     } else if (item.name() == "menu.bevelWidth") {
         return ThemeManager::instance().loadItem(item, "bevelWidth", "BevelWidth");
+    } else if (item.name() == "menu.hilite.font") {
+        return ThemeManager::instance().loadItem(item, "menu.frame.font", "Menu.Frame.Font");
+    } else if (item.name() == "menu.hilite.justify") {
+        return ThemeManager::instance().loadItem(item, "menu.frame.justify", "Menu.Frame.Justify");
     }
 
     return false;

@@ -76,9 +76,12 @@ public:
     Font &titleFont() { return *titlefont; }
     const Font &frameFont() const { return *framefont; }
     Font &frameFont() { return *framefont; }
+    const Font &hiliteFont() const { return *hilitefont; }
+    Font &hiliteFont() { return *hilitefont; }
     ///@}
 
     Justify frameFontJustify() const { return *framefont_justify; }
+    Justify hiliteFontJustify() const { return *hilitefont_justify; }
     Justify titleFontJustify() const { return *titlefont_justify; }
 
     /**
@@ -87,13 +90,13 @@ public:
     ///@{
     const GContext &titleTextGC() const { return t_text_gc; }
     const GContext &frameTextGC() const { return f_text_gc; }
-    const GContext &frameUnderlineGC() const { return u_text_gc; }
+    const GContext &hiliteUnderlineGC() const { return u_text_gc; }
     const GContext &hiliteTextGC() const { return h_text_gc; }
     const GContext &disableTextGC() const { return d_text_gc; }
     const GContext &hiliteGC() const { return hilite_gc; }
     GContext &titleTextGC() { return t_text_gc; }
     GContext &frameTextGC() { return f_text_gc; }
-    GContext &frameUnderlineGC() { return u_text_gc; }
+    GContext &hiliteUnderlineGC() { return u_text_gc; }
     GContext &hiliteTextGC() { return h_text_gc; }
     GContext &disableTextGC() { return d_text_gc; }
     GContext &hiliteGC() { return hilite_gc; }
@@ -138,8 +141,8 @@ public:
 private:
     ThemeItem<Color> t_text, f_text, h_text, d_text, u_text;
     ThemeItem<Texture> title, frame, hilite;
-    ThemeItem<Font> titlefont, framefont;
-    ThemeItem<Justify> framefont_justify, titlefont_justify;
+    ThemeItem<Font> titlefont, framefont, hilitefont;
+    ThemeItem<Justify> framefont_justify, hilitefont_justify, titlefont_justify;
     ThemeItem<Justify> bullet_pos;
     ThemeItem<BulletType> m_bullet;
     ThemeItem<Shape::ShapePlace> m_shapeplace;

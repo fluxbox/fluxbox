@@ -49,20 +49,20 @@ void MenuItem::drawLine(FbDrawable &draw,
     unsigned int height = theme->itemHeight();
     int bevelW = theme->bevelWidth();
 
-    int font_top = (height - theme->frameFont().height())/2;
-    int underline_height = font_top + theme->frameFont().ascent() + 2;
+    int font_top = (height - theme->hiliteFont().height())/2;
+    int underline_height = font_top + theme->hiliteFont().ascent() + 2;
     int bottom = height - bevelW - 1;
 
     text_y += bottom > underline_height ? underline_height : bottom;
 
-    int text_w = theme->frameFont().textWidth(label());
+    int text_w = theme->hiliteFont().textWidth(label());
 
     const FbString& visual = m_label.visual();
     BiDiString search_string(FbString(visual, 0, size > visual.size() ? visual.size() : size));
-    int search_string_w = theme->frameFont().textWidth(search_string);
+    int search_string_w = theme->hiliteFont().textWidth(search_string);
 
     // pay attention to the text justification
-    switch(theme->frameFontJustify()) {
+    switch(theme->hiliteFontJustify()) {
     case FbTk::LEFT:
         text_x += bevelW + height + 1;
         break;
@@ -76,7 +76,7 @@ void MenuItem::drawLine(FbDrawable &draw,
 
     // avoid drawing an ugly dot
     if (size != 0)
-        draw.drawLine(theme->frameUnderlineGC().gc(),
+        draw.drawLine(theme->hiliteUnderlineGC().gc(),
                       text_x, text_y, text_x + search_string_w, text_y);
 
 }
@@ -152,16 +152,17 @@ void MenuItem::draw(FbDrawable &draw,
         const GContext &tgc =
             (highlight ? theme->hiliteTextGC() :
              (isEnabled() ? theme->frameTextGC() : theme->disableTextGC() ) );
+        const Font& font = (highlight ? theme->hiliteFont() : theme->frameFont());
         //
         // Text
         //
         int text_y = y, text_x = x;
-        int text_w = theme->frameFont().textWidth(label());
+        int text_w = font.textWidth(label());
 
-        int height_offset = theme->itemHeight() - (theme->frameFont().height() + 2*theme->bevelWidth());
-        text_y = y + theme->bevelWidth() + theme->frameFont().ascent() + height_offset/2;
+        int height_offset = theme->itemHeight() - (font.height() + 2*theme->bevelWidth());
+        text_y = y + theme->bevelWidth() + font.ascent() + height_offset/2;
 
-        switch(theme->frameFontJustify()) {
+        switch(highlight ? theme->hiliteFontJustify() : theme->frameFontJustify()) {
         case FbTk::LEFT:
             text_x = x + theme->bevelWidth() + height + 1;
             break;
@@ -174,7 +175,7 @@ void MenuItem::draw(FbDrawable &draw,
             break;
         }
 
-        theme->frameFont().drawText(draw, theme->screenNum(), tgc.gc(), label(), text_x, text_y);
+        font.drawText(draw, theme->screenNum(), tgc.gc(), label(), text_x, text_y);
     }
 
     GC gc = (highlight) ? theme->hiliteTextGC().gc() :
@@ -324,14 +325,17 @@ void MenuItem::setIcon(const std::string &filename, int screen_num) {
 }
 
 unsigned int MenuItem::height(const FbTk::ThemeProxy<MenuTheme> &theme) const {
-    return std::max(theme->frameFont().height() + 2*theme->bevelWidth(), theme->itemHeight());
+    return std::max(theme->itemHeight(),
+                    std::max(theme->frameFont().height() + 2*theme->bevelWidth(),
+                             theme->hiliteFont().height() + 2*theme->bevelWidth()));
 }
 
 unsigned int MenuItem::width(const FbTk::ThemeProxy<MenuTheme> &theme) const {
     // textwidth + bevel width on each side of the text
     const unsigned int icon_width = height(theme);
-    const unsigned int normal = theme->frameFont().textWidth(label()) +
-                                2 * (theme->bevelWidth() + icon_width);
+    const unsigned int normal = 2 * (theme->bevelWidth() + icon_width) +
+                                std::max(theme->frameFont().textWidth(label()),
+                                         theme->hiliteFont().textWidth(label()));
     return m_icon.get() == 0 ? normal : normal + icon_width;
 }
 

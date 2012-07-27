@@ -328,6 +328,8 @@ Everything you need to make your menu look pretty.
    menu.hilite:                    <texture type>
    menu.hilite.color:              <color>
    menu.hilite.colorTo:            <color>
+   menu.hilite.font:               <font>
+   menu.hilite.justify:            <{left|center|right}>
    menu.hilite.pixmap:             <filename>
    menu.hilite.textColor:          <color>
    menu.itemHeight:                <integer>
