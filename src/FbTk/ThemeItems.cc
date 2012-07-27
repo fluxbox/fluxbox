@@ -149,34 +149,30 @@ void ThemeItem<Font>::setFromString(const char *str) {
             cerr<<"Theme: Setting default value"<<endl;
         }
         setDefaultValue();
-    } else {
-        string effect(ThemeManager::instance().resourceValue(name()+".effect", altName()+".Effect"));
-        if (effect == "halo") {
-            m_value.setHalo(true);
-            Color halo_color(ThemeManager::instance().resourceValue(name()+".halo.color", altName()+".Halo.Color").c_str(), 
-                    theme().screenNum());
-            m_value.setHaloColor(halo_color);
-
-        } else if (effect == "shadow" ) {
-            Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.color", altName()+".Shadow.Color").c_str(), 
-                    theme().screenNum());
-            
-            m_value.setShadow(true);
-            m_value.setShadowColor(shadow_color);
-
-            int offset_x = atoi(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str());
-            int offset_y = atoi(ThemeManager::instance().resourceValue(name()+".shadow.y", altName()+".Shadow.Y").c_str());
-            if (offset_x != 0)
-                m_value.setShadowOffX(offset_x);
-            if (offset_y != 0)
-                m_value.setShadowOffY(offset_y);
-        }
     }
 }
 
-// do nothing
 template <>
-void ThemeItem<Font>::load(const string *name, const string *altname) {
+void ThemeItem<Font>::load(const string *o_name, const string *o_altname) {
+    const string &m_name = o_name ? *o_name : name();
+    const string &m_altname = o_altname ? *o_altname : altName();
+
+    string effect(ThemeManager::instance().resourceValue(m_name+".effect", m_altname+".Effect"));
+    if (effect == "halo") {
+        Color halo_color(ThemeManager::instance().resourceValue(m_name+".halo.color", m_altname+".Halo.Color").c_str(), 
+                theme().screenNum());
+
+        m_value.setHalo(true);
+        m_value.setHaloColor(halo_color);
+    } else if (effect == "shadow" ) {
+        Color shadow_color(ThemeManager::instance().resourceValue(m_name+".shadow.color", m_altname+".Shadow.Color").c_str(), 
+                theme().screenNum());
+        
+        m_value.setShadow(true);
+        m_value.setShadowColor(shadow_color);
+        m_value.setShadowOffX(atoi(ThemeManager::instance().resourceValue(m_name+".shadow.x", m_altname+".Shadow.X").c_str()));
+        m_value.setShadowOffY(atoi(ThemeManager::instance().resourceValue(m_name+".shadow.y", m_altname+".Shadow.Y").c_str()));
+    }
 }
 
 
