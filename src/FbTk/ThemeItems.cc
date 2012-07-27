@@ -132,22 +132,8 @@ void ThemeItem<Font>::setDefaultValue() {
     if (!m_value.load("__DEFAULT__")) {
         cerr<<"ThemeItem<Font>: Warning! Failed to load default value 'fixed'"<<endl;
     } else {
-        string effect(ThemeManager::instance().resourceValue(name()+".effect", altName()+".Effect"));
-        if (effect == "halo") {
-            m_value.setHalo(true);
-            Color halo_color(ThemeManager::instance().resourceValue(name()+".halo.color", altName()+".Halo.Color").c_str(), 
-                    theme().screenNum());
-            m_value.setHaloColor(halo_color);
-
-        } else if (effect == "shadow" ) {
-            Color shadow_color(ThemeManager::instance().resourceValue(name()+".shadow.color", altName()+".Shadow.Color").c_str(), 
-                    theme().screenNum());
-            
-            m_value.setShadow(true);
-            m_value.setShadowColor(shadow_color);
-            m_value.setShadowOffX(atoi(ThemeManager::instance().resourceValue(name()+".shadow.x", altName()+".Shadow.X").c_str()));
-            m_value.setShadowOffY(atoi(ThemeManager::instance().resourceValue(name()+".shadow.y", altName()+".Shadow.Y").c_str()));
-        }
+        m_value.setHalo(false);
+        m_value.setShadow(false);
     }
 }
 
