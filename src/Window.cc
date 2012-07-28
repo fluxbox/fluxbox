@@ -446,11 +446,15 @@ void FluxboxWindow::init() {
         int real_x = frame().x();
         int real_y = frame().y();
 
-        if (real_x >= 0 &&
-            real_y >= 0 &&
-            real_x <= (signed) screen().width() &&
-            real_y <= (signed) screen().height())
-            m_placed = true;
+        if (screen().hasXinerama()) { // xinerama available => use head info
+            if (0 != screen().getHead(real_x, real_y)) // if visible on some head
+                m_placed = true;
+        } else { // no xinerama available => use screen info
+            if (real_x >= 0 && real_y >= 0 &&
+                real_x <= (signed) screen().width() &&
+                real_y <= (signed) screen().height()) // if visible on the screen
+                m_placed = true;
+        }
 
     } else
         setOnHead(screen().getCurrHead());
