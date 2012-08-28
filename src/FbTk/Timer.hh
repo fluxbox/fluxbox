@@ -27,26 +27,13 @@
 
 #include "RefCount.hh"
 #include "Command.hh"
-
-#ifdef HAVE_CTIME
-  #include <ctime>
-#else
-  #include <time.h>
-#endif
-#include <list>
-#include <string>
+#include "FbTime.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif //HAVE_CONFIG_H
 
-#ifdef HAVE_INTTYPES_H
-#include <inttypes.h>
-#endif // HAVE_INTTYPES_H
-
-#include <sys/types.h>
-#include <sys/time.h>
-#include <unistd.h>
+#include <string>
 
 namespace FbTk {
 
@@ -57,24 +44,21 @@ class Timer {
 public:
     Timer();
     explicit Timer(const RefCount<Slot<void> > &handler);
-    virtual ~Timer();
+    ~Timer();
 
     void fireOnce(bool once) { m_once = once; }
-    /// set timeout
-    void setTimeout(time_t val);
-    /// set timeout 
-    void setTimeout(const timeval &val);
-    void setTimeout(unsigned int secs, unsigned int usecs);
+    void setTimeout(uint64_t timeout);
     void setCommand(const RefCount<Slot<void> > &cmd);
+
     template<typename Functor>
-    void setFunctor(const Functor &functor)
-    { setCommand(RefCount<Slot<void> >(new SlotImpl<Functor, void>(functor))); }
-    void setInterval(int val) { m_interval = val; }
-    /// start timing
+    void setFunctor(const Functor &functor) { 
+        setCommand(RefCount<Slot<void> >(new SlotImpl<Functor, void>(functor)));
+    }
+
+    void setInterval(int seconds) { m_interval = seconds; }
     void start();
-    /// stop timing
     void stop();
-    /// update all timers
+
     static void updateTimers(int file_descriptor);
 
     int isTiming() const { return m_timing; }
@@ -82,38 +66,29 @@ public:
 
     int doOnce() const { return m_once; }
 
-    const timeval &getTimeout() const { return m_timeout; }
-    const timeval &getStartTime() const { return m_start; }
-    void makeEndTime(timeval &tm) const;
+    uint64_t getTimeout() const { return m_timeout; }
+    uint64_t getStartTime() const { return m_start; }
+    uint64_t getEndTime() const;
 
 protected:
     /// force a timeout
     void fireTimeout();
 
 private:
-    /// add a timer to the static list
-    static void addTimer(Timer *timer);
-    /// remove a timer from the static list
-    static void removeTimer(Timer *timer);
-
-    typedef std::list<Timer *> TimerList;
-    static TimerList m_timerlist; ///< list of all timers, sorted by next trigger time (start + timeout)
-
     RefCount<Slot<void> > m_handler; ///< what to do on a timeout
 
     bool m_timing; ///< clock running?
     bool m_once;  ///< do timeout only once?
-    int m_interval; ///< Is an interval-only timer (e.g. clock)
-    // note that intervals only take note of the seconds, not microseconds
+    int m_interval; ///< Is an interval-only timer (e.g. clock), in seconds
 
-    timeval m_start;    ///< start time
-    timeval m_timeout; ///< time length
+    uint64_t m_start;   ///< start time in microseconds
+    uint64_t m_timeout; ///< time length in microseconds
 };
 
 /// executes a command after a specified timeout
 class DelayedCmd: public Command<void> {
 public:
-    DelayedCmd(const RefCount<Slot<void> > &cmd, unsigned int timeout = 200000);
+    DelayedCmd(const RefCount<Slot<void> > &cmd, unsigned int timeout = 200);
 
     // this constructor has inverted order of parameters to avoid ambiguity with the previous
     // constructor

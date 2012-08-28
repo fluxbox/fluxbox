@@ -36,6 +36,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Texture.cc Texture.hh TextureRender.hh TextureRender.cc \
 	Shape.hh Shape.cc \
 	Theme.hh Theme.cc ThemeItems.cc Timer.hh Timer.cc \
+	FbTime.cc FbTime.hh \
 	XFontImp.cc XFontImp.hh \
 	Button.hh Button.cc \
 	TextButton.hh TextButton.cc \

@@ -35,6 +35,7 @@
 #include "FbTk/Menu.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/I18n.hh"
+#include "FbTk/FbTime.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -45,16 +46,15 @@
 #else
   #include <time.h>
 #endif
-#include <sys/time.h>
 #include <typeinfo>
-
+#include <cstdio>
 
 namespace {
 
-static const char SWITCHES_SECONDS[] = "crsSTX+";
-static const char SWITCHES_12_24H[] = "lIrkHT";
-static const char SWITCHES_24_12H[] = "kHTlIr";
-static const char SWITCH_AM_PM[] = "pP";
+const char SWITCHES_SECONDS[] = "crsSTX+";
+const char SWITCHES_12_24H[] = "lIrkHT";
+const char SWITCHES_24_12H[] = "kHTlIr";
+const char SWITCH_AM_PM[] = "pP";
 
 /**
  * return true if clock shows seconds. If clock doesn't show seconds then
@@ -68,23 +68,13 @@ int showSeconds(const std::string& fmt_string) {
 }
 
 
-timeval calcNextTimeout(const std::string& fmt_string) {
-    timeval now;
-    timeval next;
-    gettimeofday(&now, 0);
-    next.tv_sec = 60 - (now.tv_sec % 60) - 1;
-    next.tv_usec = 1000000 - now.tv_usec;
-    if (next.tv_usec >= 1000000) {
-        next.tv_sec++;
-        next.tv_usec -= 1000000;
-    }
+uint64_t calcNextTimeout(const std::string& fmt_string) {
 
-    // wake up at next second-change
-    if (showSeconds(fmt_string)) {
-        next.tv_sec = 0;
+    if (showSeconds(fmt_string)) { // microseconds till next full second
+        return FbTk::FbTime::remainingNext(FbTk::FbTime::IN_SECONDS);
+    } else { // microseconds until next full minute
+        return FbTk::FbTime::remainingNext(60L * FbTk::FbTime::IN_SECONDS);
     }
-
-    return next;
 }
 
 
@@ -278,13 +268,10 @@ unsigned int ClockTool::height() const {
 }
 
 void ClockTool::updateTime() {
-    // update clock
-    timeval now;
-    gettimeofday(&now, 0);
-    time_t the_time = now.tv_sec;
 
     m_timer.setTimeout(calcNextTimeout(*m_timeformat));
 
+    time_t the_time = time(NULL);
     if (the_time != -1) {
         char time_string[255];
         int time_string_len;

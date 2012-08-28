@@ -416,7 +416,7 @@ void FluxboxWindow::init() {
 
     updateMWMHintsFromClient(*m_client);
 
-    m_timer.setTimeout(fluxbox.getAutoRaiseDelay());
+    m_timer.setTimeout(fluxbox.getAutoRaiseDelay() * FbTk::FbTime::IN_MILLISECONDS);
     FbTk::RefCount<FbTk::Command<void> > raise_cmd(new FbTk::SimpleCommand<FluxboxWindow>(*this,
                                                                                    &FluxboxWindow::raise));
     m_timer.setCommand(raise_cmd);
@@ -538,9 +538,7 @@ void FluxboxWindow::init() {
 
     m_workspacesig.emit(*this);
 
-    struct timeval now;
-    gettimeofday(&now, NULL);
-    m_creation_time = now.tv_sec;
+    m_creation_time = FbTk::FbTime::now();
 
     frame().frameExtentSig().emit();
 
@@ -1049,15 +1047,10 @@ void FluxboxWindow::grabButtons() {
 void FluxboxWindow::reconfigure() {
 
     applyDecorations();
-
     setFocusFlag(m_focused);
-
     moveResize(frame().x(), frame().y(), frame().width(), frame().height());
-
-    m_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
-
+    m_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay() * FbTk::FbTime::IN_MILLISECONDS);
     updateButtons();
-
     frame().reconfigure();
     menu().reconfigure();
 
@@ -2200,14 +2193,14 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     // don't let misbehaving clients (e.g. MPlayer) move/resize their windows
     // just after creation if the user has a saved position/size
     if (m_creation_time) {
-        struct timeval now;
-        gettimeofday(&now, NULL);
+
+        uint64_t now = FbTk::FbTime::now();
 
         Remember& rinst = Remember::instance();
 
-        if (now.tv_sec > m_creation_time + 1)
+        if (now > (m_creation_time + FbTk::FbTime::IN_SECONDS)) {
             m_creation_time = 0;
-        else if (rinst.isRemembered(*client, Remember::REM_MAXIMIZEDSTATE) ||
+        } else if (rinst.isRemembered(*client, Remember::REM_MAXIMIZEDSTATE) ||
                  rinst.isRemembered(*client, Remember::REM_FULLSCREENSTATE)) {
             cr.value_mask = cr.value_mask & ~(CWWidth | CWHeight);
             cr.value_mask = cr.value_mask & ~(CWX | CWY);
@@ -2300,23 +2293,18 @@ void FluxboxWindow::keyPressEvent(XKeyEvent &ke) {
     // e.g., typed the command in a terminal
     if (ks == XK_KP_Enter || ks == XK_Return) {
         // we'll actually reset the time for this one
-        m_last_keypress_time.tv_sec = 0;
+        m_last_keypress_time = 0;
         return;
     }
 
     // otherwise, make a note that the user is typing
-    gettimeofday(&m_last_keypress_time, 0);
+    m_last_keypress_time = FbTk::FbTime::now();
 }
 
 bool FluxboxWindow::isTyping() const {
-    timeval now;
-    if (gettimeofday(&now, NULL) == -1)
-        return false;
 
-    unsigned int diff = 1000*(now.tv_sec - m_last_keypress_time.tv_sec);
-    diff += (now.tv_usec - m_last_keypress_time.tv_usec)/1000;
-
-    return (diff < screen().noFocusWhileTypingDelay());
+    uint64_t diff = FbTk::FbTime::now() - m_last_keypress_time;
+    return ((diff / 1000) < screen().noFocusWhileTypingDelay());
 }
 
 void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {

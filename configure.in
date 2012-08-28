@@ -35,7 +35,7 @@ AC_HEADER_STDC
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(errno.h ctype.h dirent.h fcntl.h libgen.h \
                  locale.h math.h nl_types.h process.h signal.h stdarg.h \
-                 stdio.h time.h unistd.h \
+                 stdint.h stdio.h time.h unistd.h \
                  sys/param.h sys/select.h sys/signal.h sys/stat.h \
                  sys/time.h sys/types.h sys/wait.h \
                  langinfo.h iconv.h)
@@ -48,7 +48,7 @@ AC_CHECK_HEADERS(sstream, ,
         )]
 )
 
-AC_CHECK_HEADERS(cassert cctype cerrno cmath cstdarg cstdio cstdlib cstring ctime)
+AC_CHECK_HEADERS(cassert cctype cerrno cmath cstdarg cstdint cstdio cstdlib cstring ctime)
 
 
 dnl Check for existance of basename(), setlocale() and strftime()
@@ -61,9 +61,10 @@ AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STAT
 
 AC_CHECK_FUNCS(basename, , AC_CHECK_LIB(gen, basename, LIBS="-lgen $LIBS"))
-AC_CHECK_FUNCS(catclose catgets catopen getpid gettimeofday memset mkdir \
+AC_CHECK_FUNCS(catclose catgets catopen getpid memset mkdir \
     nl_langinfo putenv regcomp select setenv setlocale sigaction snprintf \
     sqrt strcasecmp strcasestr strchr strstr strtol strtoul sync vsnprintf)
+
 
 dnl Windows requires the mingw-catgets library for the catgets function.
 AC_SEARCH_LIBS([catgets], [catgets], [], [])
@@ -90,6 +91,48 @@ size_t x = strftime(s, 5, "%a", localtime(&t));
 	AC_MSG_RESULT(yes)
 ],
 [AC_MSG_RESULT(no)])
+
+
+AC_MSG_CHECKING(for clock_gettime)
+AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM(
+        [#include <time.h>],
+        [[
+        clock_gettime(CLOCK_MONOTONIC, 0);
+        return 0;
+        ]]
+    )],
+    [
+        AC_DEFINE(HAVE_CLOCK_GETTIME, 1, [Define to 1 if you have the 'clock_gettime' function.])
+        AC_MSG_RESULT(yes)
+        # *bsd has clock_gettime() in libc
+        AC_CHECK_LIB(rt, clock_gettime, LIBS="-lrt $LIBS")
+    ],
+    [
+        AC_MSG_RESULT(no)
+    ]
+)
+
+AC_MSG_CHECKING(for mach_absolute_time)
+AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM(
+        [#include <mach/mach_time.h>],
+        [[
+        mach_absolute_time();
+        return 0;
+        ]]
+    )],
+    [
+        AC_DEFINE(HAVE_MACH_ABSOLUTE_TIME, 1, [Define to 1 if you have the 'mach_absolute_time' function.])
+        AC_MSG_RESULT(yes)
+        #AC_CHECK_LIB(, clock_gettime, LIBS="-lrt $LIBS")
+    ],
+    [
+        AC_MSG_RESULT(no)
+    ]
+)
+
+
 
 
 AC_STRUCT_TM
@@ -130,18 +173,8 @@ if test "x$ac_cv_header_iconv_h" = "xyes"; then
 
     if test "x$ac_found_iconv" = xyes; then
         AC_DEFINE(HAVE_ICONV, 1, [Define if you have the iconv() function.])
-        AC_CHECK_LIB([iconv], 
-                     [iconv_open], 
-                     [
-                        LIBS="-liconv $LIBS"
-                     ], 
-                     [])
-        AC_CHECK_LIB([iconv], 
-                     [libiconv_open], 
-                     [
-                        LIBS="-liconv $LIBS"
-                     ], 
-                     [])
+        AC_CHECK_LIB(iconv, iconv_open, LIBS="-liconv $LIBS")
+        AC_CHECK_LIB(iconv, libiconv_open, LIBS="-liconv $LIBS")
 
 dnl Check if iconv uses const in prototype declaration
         AC_CACHE_CHECK(for iconv declaration, 
@@ -185,10 +218,7 @@ LDFLAGS="$LDFLAGS $LIBS $X_PRE_LIBS"
 
 
 dnl Check for required functions in -lX11
-AC_CHECK_LIB(X11, XOpenDisplay,
-  LIBS="-lX11 $LIBS",
-  AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.])
-)
+AC_CHECK_LIB(X11, XOpenDisplay, LIBS="-lX11 $LIBS", AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.]))
 LIBS="$X_EXTRA_LIBS $LIBS"
 
 AC_CHECK_LIB(xpg4, setlocale, LIBS="-lxpg4 $LIBS")

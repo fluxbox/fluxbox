@@ -279,7 +279,7 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     // move the frame out of sight for a moment
     frame.window.move(-frame.window.width(), -frame.window.height());
     // setup timer
-    m_timer.setTimeout(200); // default timeout
+    m_timer.setTimeout(200L * FbTk::FbTime::IN_MILLISECONDS); // default timeout
     m_timer.fireOnce(true);
     FbTk::RefCount<FbTk::Command<void> > toggle_hidden(new FbTk::SimpleCommand<Slit>(*this, &Slit::toggleHidden));
     m_timer.setCommand(toggle_hidden);

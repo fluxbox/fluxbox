@@ -188,7 +188,7 @@ ImageControl::ImageControl(int screen_num,
     cache_max = cmax;
 
     if (cache_timeout && s_timed_cache) {
-        m_timer.setTimeout(cache_timeout);
+        m_timer.setTimeout(cache_timeout * FbTk::FbTime::IN_MILLISECONDS);
         RefCount<Command<void> > clean_cache(new SimpleCommand<ImageControl>(*this, &ImageControl::cleanCache));
         m_timer.setCommand(clean_cache);
         m_timer.start();

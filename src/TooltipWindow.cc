@@ -55,8 +55,11 @@ void TooltipWindow::raiseTooltip() {
 
     resize(m_lastText);
     reconfigTheme();
-    int h = theme()->iconbarTheme().text().font().height() + theme()->bevelWidth() * 2;
-    int w = theme()->iconbarTheme().text().font().textWidth(m_lastText) + theme()->bevelWidth() * 2;
+
+    FbTk::Font& font = theme()->iconbarTheme().text().font();
+
+    int h = font.height() + theme()->bevelWidth() * 2;
+    int w = font.textWidth(m_lastText) + theme()->bevelWidth() * 2;
 
     Window root_ret; // not used
     Window window_ret; // not used
@@ -91,11 +94,11 @@ void TooltipWindow::raiseTooltip() {
     show();
     clear();
     // TODO: make this use a TextButton like TextDialog does
-    theme()->iconbarTheme().text().font().drawText(*this, screen().screenNumber(),
-                             theme()->iconbarTheme().text().textGC(), 
-                             m_lastText,
-                             theme()->bevelWidth(),
-                             theme()->bevelWidth() + theme()->iconbarTheme().text().font().ascent());
+    font.drawText(*this, screen().screenNumber(),
+                  theme()->iconbarTheme().text().textGC(), 
+                  m_lastText,
+                  theme()->bevelWidth(),
+                  theme()->bevelWidth() + font.ascent());
 }
 
 void TooltipWindow::updateText(const FbTk::BiDiString& text) {

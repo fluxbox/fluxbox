@@ -1006,7 +1006,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         }
 
         if (itmp->submenu()) { // start submenu open delay
-            m_submenu_timer.setTimeout(theme()->getDelay());
+            m_submenu_timer.setTimeout(theme()->getDelay() * FbTk::FbTime::IN_MILLISECONDS);
             m_submenu_timer.start();
         } else if (isItemSelectable(w)){
             // else normal menu item
@@ -1225,7 +1225,7 @@ void Menu::closeMenu() {
 }
 
 void Menu::startHide() {
-    m_hide_timer.setTimeout(theme()->getDelay());
+    m_hide_timer.setTimeout(theme()->getDelay() * FbTk::FbTime::IN_MILLISECONDS);
     m_hide_timer.start();
 }
 

@@ -47,7 +47,7 @@ public:
     /// Sets the delay before the window pops up
     void setDelay(int delay) {
         m_delay = delay;
-        m_timer.setTimeout(delay);
+        m_timer.setTimeout(delay * FbTk::FbTime::IN_MILLISECONDS);
     }
 
     void hide();

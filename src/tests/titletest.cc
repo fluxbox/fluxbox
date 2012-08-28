@@ -52,10 +52,7 @@ public:
         FbTk::RefCount<FbTk::Command> cmd(new FbTk::SimpleCommand<App>
                                           (*this,
                                            &App::updateTitle));
-        timeval t;
-        t.tv_sec = 0;
-        t.tv_usec = 150000;
-        m_timer.setTimeout(t);
+        m_timer.setTimeout(150 * FbTk::FbTime::IN_MILLISECONDS);
         m_timer.setCommand(cmd);
         m_timer.fireOnce(false);
         m_timer.start();

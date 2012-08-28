@@ -33,11 +33,11 @@
 
 #include "FbTk/DefaultValue.hh"
 #include "FbTk/Timer.hh"
+#include "FbTk/FbTime.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/LayerItem.hh"
 #include "FbTk/Signal.hh"
 
-#include <sys/time.h>
 #include <vector>
 #include <string>
 #include <memory>
@@ -529,14 +529,15 @@ private:
     // state and hint signals
     FbTk::Signal<FluxboxWindow &> m_workspacesig, m_statesig, m_layersig, m_hintsig;
 
-    time_t m_creation_time;
+    uint64_t m_creation_time;
+    uint64_t m_last_keypress_time;
+    FbTk::Timer m_timer;
 
     // Window states
     bool moving, resizing, m_initialized;
 
     WinClient *m_attaching_tab;
 
-    FbTk::Timer m_timer;
     Display *display; /// display connection
 
     int m_button_grab_x, m_button_grab_y; // handles last button press event for move
@@ -544,8 +545,6 @@ private:
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
     int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
     int m_last_pressed_button;
-
-    timeval m_last_keypress_time;
 
     unsigned int m_workspace_number;
     unsigned long m_current_state; // NormalState | IconicState | Withdrawn

@@ -306,7 +306,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
     // because it could affect ongoing menu stuff so we need to reconfig in
     // the next event "round".
     FbTk::RefCount<FbTk::Command<void> > reconfig_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::timed_reconfigure));
-    m_reconfig_timer.setTimeout(0, 1);
+    m_reconfig_timer.setTimeout(1);
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
 
@@ -363,7 +363,6 @@ Fluxbox::Fluxbox(int argc, char **argv,
         screens.push_back(i);
 
     // find out, on what "screens" fluxbox should run
-    // FIXME(php-coder): maybe it worths moving this code to main.cc, where command line is parsed?
     for (i = 1; i < m_argc; i++) {
         if (! strcmp(m_argv[i], "-screen")) {
             if ((++i) >= m_argc) {
@@ -507,8 +506,11 @@ void Fluxbox::initScreen(BScreen *screen) {
 
 
 void Fluxbox::eventLoop() {
+
     Display *disp = display();
+
     while (!m_shutdown) {
+
         if (XPending(disp)) {
             XEvent e;
             XNextEvent(disp, &e);
@@ -524,8 +526,9 @@ void Fluxbox::eventLoop() {
                 handleEvent(&e);
             }
         } else {
-            FbTk::Timer::updateTimers(ConnectionNumber(disp)); //handle all timers
+            FbTk::Timer::updateTimers(ConnectionNumber(disp));
         }
+
     }
 }
 
@@ -553,8 +556,10 @@ void Fluxbox::ungrab() {
 }
 
 void Fluxbox::handleEvent(XEvent * const e) {
+
     _FB_USES_NLS;
     m_last_event = *e;
+
 
     // it is possible (e.g. during moving) for a window
     // to mask all events to go to it

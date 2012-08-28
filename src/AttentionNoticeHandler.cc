@@ -81,7 +81,7 @@ void AttentionNoticeHandler::addAttention(Focusable &client) {
     RefCount<Command<void> > cmd(new ToggleFrameFocusCmd(client));
     Timer *timer = new Timer();
     timer->setCommand(cmd);
-    timer->setTimeout(**timeout_res);
+    timer->setTimeout(**timeout_res * FbTk::FbTime::IN_MILLISECONDS);
     timer->fireOnce(false); // will repeat until window has focus
     timer->start();
 

@@ -258,7 +258,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     frame.grab_x = frame.grab_y = 0;
 
     // setup hide timer
-    m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
+    m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay() * FbTk::FbTime::IN_MILLISECONDS);
     FbTk::RefCount<FbTk::Command<void> > toggle_hidden(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::toggleHidden));
     m_hide_timer.setCommand(toggle_hidden);
     m_hide_timer.fireOnce(true);
