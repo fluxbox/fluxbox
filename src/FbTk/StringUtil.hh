@@ -36,10 +36,10 @@ namespace StringUtil {
 /// @return 1 - ok, result stored in 'out'
 int extractNumber(const std::string& in, unsigned int& out);
 int extractNumber(const std::string& in, int& out);
-int extractNumber(const std::string& in, unsigned long& out);
 int extractNumber(const std::string& in, long& out);
 int extractNumber(const std::string& in, long long& out);
 int extractNumber(const std::string& in, unsigned long& out);
+int extractNumber(const std::string& in, unsigned long long& out);
 /// \@}
 
 /// creates a number to a string
