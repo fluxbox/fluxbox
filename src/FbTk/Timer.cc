@@ -170,8 +170,7 @@ void Timer::updateTimers(int fd) {
     uint64_t now = FbTime::now();
     uint64_t end_time;
 
-    // see, if the first timer in the
-    // list is overdue
+    // search for overdue timers
     if (!s_timerlist.empty()) {
 
         Timer* timer = *s_timerlist.begin();
@@ -200,8 +199,7 @@ void Timer::updateTimers(int fd) {
     for (it = s_timerlist.begin(); it != s_timerlist.end(); ) {
 
         // t->fireTimeout() might add timers to the list
-        // this invalidates 'it'. thus we store the current
-        // item here
+        // this invalidates 'it'. thus we store the current timer
         Timer* t = *it;
         if (now < t->getEndTime()) {
             break;

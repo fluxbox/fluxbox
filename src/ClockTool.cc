@@ -72,9 +72,10 @@ uint64_t calcNextTimeout(const std::string& fmt_string) {
 
     if (showSeconds(fmt_string)) { // microseconds till next full second
         return FbTk::FbTime::remainingNext(FbTk::FbTime::IN_SECONDS);
-    } else { // microseconds until next full minute
-        return FbTk::FbTime::remainingNext(60L * FbTk::FbTime::IN_SECONDS);
-    }
+    } 
+
+    // microseconds until next full minute
+    return FbTk::FbTime::remainingNext(60L * FbTk::FbTime::IN_SECONDS);
 }
 
 
