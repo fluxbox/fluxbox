@@ -112,7 +112,16 @@ Timer::~Timer() {
 
 
 void Timer::setTimeout(uint64_t timeout) {
+
+    bool was_timing = isTiming();
+    if (was_timing) {
+        stop();
+    }
     m_timeout = timeout;
+
+    if (was_timing) {
+        start();
+    }
 }
 
 void Timer::setCommand(const RefCount<Slot<void> > &cmd) {
