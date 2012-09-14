@@ -85,15 +85,19 @@ private:
     uint64_t m_timeout; ///< time length in microseconds
 };
 
+
+
 /// executes a command after a specified timeout
 class DelayedCmd: public Command<void> {
 public:
-    DelayedCmd(const RefCount<Slot<void> > &cmd, unsigned int timeout = 200);
+
+    // timeout in microseconds
+    DelayedCmd(const RefCount<Slot<void> > &cmd, uint64_t timeout = 200);
 
     // this constructor has inverted order of parameters to avoid ambiguity with the previous
     // constructor
     template<typename Functor>
-    DelayedCmd(unsigned int timeout, const Functor &functor) {
+    DelayedCmd(uint64_t timeout, const Functor &functor) {
         initTimer(timeout);
         m_timer.setFunctor(functor);
     }
@@ -102,7 +106,7 @@ public:
     static Command<void> *parse(const std::string &command,
                           const std::string &args, bool trusted);
 private:
-    void initTimer(unsigned int timeout);
+    void initTimer(uint64_t timeout);
 
     Timer m_timer;
 };

@@ -239,21 +239,21 @@ Command<void> *DelayedCmd::parse(const std::string &command,
     if (cmd == 0)
         return 0;
 
-    int delay = 200;
-    StringUtil::fromString<int>(args.c_str() + err, delay);
+    uint64_t delay = 200;
+    StringUtil::fromString<uint64_t>(args.c_str() + err, delay);
 
     return new DelayedCmd(cmd, delay);
 }
 
 REGISTER_COMMAND_PARSER(delay, DelayedCmd::parse, void);
 
-DelayedCmd::DelayedCmd(const RefCount<Slot<void> > &cmd, unsigned int timeout) {
+DelayedCmd::DelayedCmd(const RefCount<Slot<void> > &cmd, uint64_t timeout) {
     initTimer(timeout);
     m_timer.setCommand(cmd);
 }
 
-void DelayedCmd::initTimer(unsigned int timeout) {
-    m_timer.setTimeout(timeout * FbTime::IN_MILLISECONDS);
+void DelayedCmd::initTimer(uint64_t timeout) {
+    m_timer.setTimeout(timeout);
     m_timer.fireOnce(true);
 }
 
