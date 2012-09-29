@@ -89,9 +89,7 @@ public:
 
     /// Different resize modes when resizing a window
     enum ResizeModel {
-        QUADRANTRESIZE,                   ///< resizes from one quadrant
         CENTERRESIZE,                     ///< resizes from center
-        NEARESTEDGERESIZE,                ///< resizes the nearest edge
         TOPLEFTRESIZE,                    ///< resizes top left corner
         TOPRESIZE,                        ///< resizes top edge
         TOPRIGHTRESIZE,                   ///< resizes top right corner
@@ -100,6 +98,7 @@ public:
         BOTTOMLEFTRESIZE,                 ///< resizes bottom left corner
         BOTTOMRESIZE,                     ///< resizes bottom edge
         BOTTOMRIGHTRESIZE,                ///< resizes bottom right corner
+        EDGEORCORNERRESIZE,               ///< resizes nearest edge or corner
         DEFAULTRESIZE = BOTTOMRIGHTRESIZE ///< default resize mode
     };
 
@@ -341,7 +340,7 @@ public:
      */
     void startResizing(int x, int y, ReferenceCorner dir);
     /// determine which edge or corner to resize
-    ReferenceCorner getResizeDirection(int x, int y, ResizeModel model) const;
+    ReferenceCorner getResizeDirection(int x, int y, ResizeModel model, int corner_size_px, int corner_size_pc) const;
     /// stops the resizing
     void stopResizing(bool interrupted = false);
     /// starts tabbing

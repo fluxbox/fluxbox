@@ -20,6 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#include <string.h>
 #include "CurrentWindowCmd.hh"
 
 #include "fluxbox.hh"
@@ -369,15 +370,13 @@ void StartMovingCmd::real_execute() {
 FbTk::Command<void> *StartResizingCmd::parse(const string &cmd, const string &args,
                                        bool trusted) {
     FluxboxWindow::ResizeModel mode = FluxboxWindow::DEFAULTRESIZE;
+    int corner_size_px = 0;
+    int corner_size_pc = 0;
     std::vector<string> tokens;
     FbTk::StringUtil::stringtok<std::vector<string> >(tokens, args);
     if (!tokens.empty()) {
         string arg = FbTk::StringUtil::toLower(tokens[0]);
-        if (arg == "nearestcorner")
-            mode = FluxboxWindow::QUADRANTRESIZE;
-        else if (arg == "nearestedge")
-            mode = FluxboxWindow::NEARESTEDGERESIZE;
-        else if (arg == "center")
+        if (arg == "center")
             mode = FluxboxWindow::CENTERRESIZE;
         else if (arg == "topleft")
             mode = FluxboxWindow::TOPLEFTRESIZE;
@@ -395,8 +394,35 @@ FbTk::Command<void> *StartResizingCmd::parse(const string &cmd, const string &ar
             mode = FluxboxWindow::BOTTOMRESIZE;
         else if (arg == "bottomright")
             mode = FluxboxWindow::BOTTOMRIGHTRESIZE;
+        else if (arg == "nearestcorner") {
+            mode = FluxboxWindow::EDGEORCORNERRESIZE;
+            corner_size_pc = 100;
+        } else if (arg == "nearestedge") {
+            mode = FluxboxWindow::EDGEORCORNERRESIZE;
+        } else if (arg == "nearestcorneroredge") {
+            mode = FluxboxWindow::EDGEORCORNERRESIZE;
+            /* The NearestCornerOrEdge can be followed by a corner size in
+             * one of three forms:
+             *      <size in pixels>
+             *      <size in pixels> <size in percent>
+             *      <size in percent>%
+             * If no corner size is given then it defaults to 50 pixels, 30%. */
+            if (tokens.size() > 1) {
+                const char * size1 = tokens[1].c_str();
+                if (size1[strlen(size1)-1] == '%')
+                    corner_size_pc = atoi(size1);
+                else {
+                    corner_size_px = atoi(size1);
+                    if (tokens.size() > 2)
+                        corner_size_pc = atoi(tokens[2].c_str());
+                }
+            } else {
+                corner_size_px = 50;
+                corner_size_pc = 30;
+            }
+        }
     }
-    return new StartResizingCmd(mode);
+    return new StartResizingCmd(mode, corner_size_px, corner_size_pc);
 }
 
 REGISTER_COMMAND_PARSER(startresizing, StartResizingCmd::parse, void);
@@ -422,7 +448,8 @@ void StartResizingCmd::real_execute() {
     x -= fbwindow().x() - fbwindow().frame().window().borderWidth();
     y -= fbwindow().y() - fbwindow().frame().window().borderWidth();
 
-    fbwindow().startResizing(x, y, fbwindow().getResizeDirection(x, y, m_mode));
+    fbwindow().startResizing(x, y, fbwindow().getResizeDirection(
+        x, y, m_mode, m_corner_size_px, m_corner_size_pc));
 }
 
 REGISTER_COMMAND(starttabbing, StartTabbingCmd, void);

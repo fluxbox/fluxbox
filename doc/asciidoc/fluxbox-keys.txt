@@ -178,8 +178,16 @@ Start dragging to resize the window as if you had grabbed the window
 at the specified 'corner'.
 +
 By default 'corner' is *BottomRight*, but may be overridden with one of:;;
-*NearestCorner NearestEdge Center TopLeft Top TopRight Left Right BottomLeft
-Bottom BottomRight*
+*NearestCorner NearestEdge NearestCornerOrEdge Center TopLeft Top TopRight
+Left Right BottomLeft Bottom BottomRight*
+
++
+If *NearestCornerOrEdge* is specified the size of the corner can also be
+specified to be the larger of one or two following numbers: ['pixel-size'
+['percent-size']] or 'percent-size'%, where 'percent-size' is the
+percentage of half the window width or height.  If no size is given, it
+defaults to 50 pixels and 30%.
+
 
 *StartTabbing*::
 	Start dragging to add this window to another's tabgroup.

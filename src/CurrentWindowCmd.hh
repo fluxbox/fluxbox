@@ -124,13 +124,16 @@ protected:
 // begin resizing with mouse
 class StartResizingCmd: public WindowHelperCmd {
 public:
-    explicit StartResizingCmd(FluxboxWindow::ResizeModel mode):m_mode(mode) { }
+    explicit StartResizingCmd(FluxboxWindow::ResizeModel mode, int corner_size_px, int corner_size_pc):
+        m_mode(mode), m_corner_size_px(corner_size_px), m_corner_size_pc(corner_size_pc) { }
     static FbTk::Command<void> *parse(const std::string &command,
                                 const std::string &args, bool trusted);
 protected:
     void real_execute();
 private:
     const FluxboxWindow::ResizeModel m_mode;
+    const int m_corner_size_px; // Corner size in pixels
+    const int m_corner_size_pc; // and in percent of half window width/height
 };
 
 // begin tabbing with mouse

@@ -251,6 +251,18 @@ private:
     int m_mode;
 };
 
+
+// Helper class for getResizeDirection below
+// Tests whether a point is on an edge or the corner.
+struct TestEdgeHelper {
+    int corner_size_px, corner_size_pc;
+    inline bool operator()(int xy, int wh)
+    {
+        /* The % checking must be right: 0% must fail, 100% must succeed. */
+        return xy < corner_size_px  ||  100 * xy < corner_size_pc * wh;
+    }
+};
+
 }
 
 
@@ -3004,30 +3016,44 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
 }
 
-FluxboxWindow::ReferenceCorner FluxboxWindow::getResizeDirection(int x, int y,
-        ResizeModel model) const {
 
-    int cx = frame().width() / 2;
-    int cy = frame().height() / 2;
-    if (model == CENTERRESIZE)
-        return CENTER;
-    if (model == NEARESTEDGERESIZE) {
+FluxboxWindow::ReferenceCorner FluxboxWindow::getResizeDirection(int x, int y,
+        ResizeModel model, int corner_size_px, int corner_size_pc) const
+{
+    if (model == TOPLEFTRESIZE)     return LEFTTOP;
+    if (model == TOPRESIZE)         return TOP;
+    if (model == TOPRIGHTRESIZE)    return RIGHTTOP;
+    if (model == LEFTRESIZE)        return LEFT;
+    if (model == RIGHTRESIZE)       return RIGHT;
+    if (model == BOTTOMLEFTRESIZE)  return LEFTBOTTOM;
+    if (model == BOTTOMRESIZE)      return BOTTOM;
+    if (model == CENTERRESIZE)      return CENTER;
+
+    if (model == EDGEORCORNERRESIZE)
+    {
+        int w = frame().width();
+        int h = frame().height();
+        int cx = w / 2;
+        int cy = h / 2;
+        TestEdgeHelper test_edge = { corner_size_px, corner_size_pc };
+        if (x < cx  &&  test_edge(x, cx)) {
+            if (y < cy  &&  test_edge(y, cy))
+                return LEFTTOP;
+            else if (test_edge(h - y - 1, h - cy))
+                return LEFTBOTTOM;
+        } else if (test_edge(w - x - 1, w - cx)) {
+            if (y < cy  &&  test_edge(y, cy))
+                return RIGHTTOP;
+            else if (test_edge(h - y - 1, h - cy))
+                return RIGHTBOTTOM;
+        }
+
+        /* Nope, not a corner; find the nearest edge instead. */
         if (cy - abs(y - cy) < cx - abs(x - cx)) // y is nearest
             return (y > cy) ? BOTTOM : TOP;
-        return (x > cx) ? RIGHT : LEFT;
+        else
+            return (x > cx) ? RIGHT : LEFT;
     }
-    if (model == QUADRANTRESIZE) {
-        if (x < cx)
-            return (y < cy) ? LEFTTOP : LEFTBOTTOM;
-        return (y < cy) ? RIGHTTOP : RIGHTBOTTOM;
-    }
-    if (model == TOPLEFTRESIZE) return LEFTTOP;
-    if (model == TOPRESIZE) return TOP;
-    if (model == TOPRIGHTRESIZE) return RIGHTTOP;
-    if (model == LEFTRESIZE) return LEFT;
-    if (model == RIGHTRESIZE) return RIGHT;
-    if (model == BOTTOMLEFTRESIZE) return LEFTBOTTOM;
-    if (model == BOTTOMRESIZE) return BOTTOM;
     return RIGHTBOTTOM;
 }
 
