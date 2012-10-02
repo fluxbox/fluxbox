@@ -56,7 +56,8 @@ public:
 
     void exposeEvent(XExposeEvent &event);
 
-    void renderForeground(FbDrawable &drawable);
+    //void renderForeground(FbDrawable &drawable);
+    void renderForeground(FbWindow &win, FbDrawable &drawable);
 
     FbTk::Justify justify() const { return m_justify; }
     const BiDiString &text() const { return m_text; }
@@ -65,7 +66,6 @@ public:
     unsigned int textWidth() const;
     int bevel() const { return m_bevel; }
 
-    void renderForeground(FbWindow &win, FbDrawable &drawable);
 
 protected:
     virtual void drawText(int x_offset, int y_offset, FbDrawable *drawable_override);

@@ -43,17 +43,19 @@ class FbDrawable;
 class Font {
 public:
 
+    static const char DEFAULT_FONT[];
+
+
     /// called at FbTk::App destruction time, cleans up cache
     static void shutdown();
 
     /// @return true if multibyte is enabled, else false
-    static bool multibyte() { return s_multibyte; }
+    static bool multibyte();
     /// @return true if utf-8 mode is enabled, else false
-    static bool utf8() { return s_utf8mode; }
+    static bool utf8();
 
 
-
-    explicit Font(const char *name = "__DEFAULT__");
+    explicit Font(const char* name = DEFAULT_FONT);
     virtual ~Font();
     /**
         Load a font
@@ -76,9 +78,7 @@ public:
        @return size of text in pixels
     */
     unsigned int textWidth(const char* text, unsigned int size) const;
-    unsigned int textWidth(const BiDiString &text) const {
-        return textWidth(text.visual().c_str(), text.visual().size());
-    }
+    unsigned int textWidth(const BiDiString &text) const;
 
     unsigned int height() const;
     int ascent() const;
@@ -118,9 +118,6 @@ private:
 
     FbTk::FontImp* m_fontimp; ///< font implementation
     std::string m_fontstr; ///< font name
-
-    static bool s_multibyte; ///< if the fontimp should be a multibyte font
-    static bool s_utf8mode; ///< should the font use utf8 font imp
 
     int m_angle; ///< rotation angle
     bool m_shadow; ///< shadow text

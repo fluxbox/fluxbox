@@ -66,6 +66,7 @@
 #include <map>
 #include <typeinfo>
 #include <langinfo.h>
+#include <cstdio>
 
 #include <errno.h>
 
@@ -83,12 +84,10 @@ namespace {
 // use to map <font1>|<font2>|<font3> => <fontthatworks>
 typedef map<string, string> StringMap;
 typedef StringMap::iterator StringMapIt;
-StringMap lookup_map;
 
 // stores <fontthatworks and the fontimp
 typedef map<string, FbTk::FontImp* > FontCache;
 typedef FontCache::iterator FontCacheIt;
-FontCache font_cache;
 
 
 void resetEffects(FbTk::Font& font) {
@@ -100,30 +99,45 @@ void resetEffects(FbTk::Font& font) {
     font.setShadowOffX(2);
 }
 
+
+StringMap s_lookup_map;
+FontCache s_font_cache;
+bool s_multibyte = false; // if the fontimp should be a multibyte font
+bool s_utf8mode = false; // should the font use utf8 font imp
+
+
 } // end nameless namespace
 
 
 
 namespace FbTk {
 
-bool Font::s_multibyte = false;
-bool Font::s_utf8mode = false;
+const char Font::DEFAULT_FONT[] = "__DEFAULT__";
 
 
 void Font::shutdown() {
 
     FontCacheIt fit;
-    for (fit = font_cache.begin(); fit != font_cache.end(); fit++) {
+    for (fit = s_font_cache.begin(); fit != s_font_cache.end(); ++fit) {
         FontImp* font = fit->second;
         if (font) {
             FontCacheIt it;
-            for (it = fit; it != font_cache.end(); ++it)
+            for (it = fit; it != s_font_cache.end(); ++it)
                 if (it->second == font)
                     it->second = 0;
             delete font;
         }
     }
 }
+
+bool Font::multibyte() {
+    return s_multibyte;
+}
+
+bool Font::utf8() {
+    return s_utf8mode;
+}
+
 
 Font::Font(const char *name):
     m_fontimp(0),
@@ -135,13 +149,15 @@ Font::Font(const char *name):
     if (MB_CUR_MAX > 1) // more than one byte, then we're multibyte
         s_multibyte = true;
 
-    // check for utf-8 mode
-#if defined(CODESET) && !defined(_WIN32)
-    char *locale_codeset = nl_langinfo(CODESET);
-#else // openbsd doesnt have this (yet?)
-    char *locale_codeset = 0;
-#endif // defined(CODESET) && !defined(_WIN32)
 
+    char *locale_codeset = 0;
+
+    // openbsd doesnt have this (yet?)
+#if defined(CODESET) && !defined(_WIN32)
+    locale_codeset = nl_langinfo(CODESET);
+#endif
+
+    // check for utf-8 mode
     if (locale_codeset && strcmp("UTF-8", locale_codeset) == 0) {
         s_utf8mode = true;
     } else if (locale_codeset != 0) {
@@ -159,15 +175,15 @@ Font::~Font() {
 
 bool Font::load(const string &name) {
 
-    if (name.size() == 0)
+    if (name.empty())
         return false;
 
     StringMapIt lookup_entry;
     FontCacheIt cache_entry;
 
     // check if one of <font1>|<font2>|<font3> is already there
-    if ((lookup_entry = lookup_map.find(name)) != lookup_map.end() &&
-            (cache_entry = font_cache.find(lookup_entry->second)) != font_cache.end()) {
+    if ((lookup_entry = s_lookup_map.find(name)) != s_lookup_map.end() &&
+            (cache_entry = s_font_cache.find(lookup_entry->second)) != s_font_cache.end()) {
         m_fontstr = cache_entry->first;
         m_fontimp = cache_entry->second;
         resetEffects(*this);
@@ -185,10 +201,10 @@ bool Font::load(const string &name) {
         FbTk::StringUtil::removeTrailingWhitespace(*name_it);
         FbTk::StringUtil::removeFirstWhitespace(*name_it);
 
-        if ((cache_entry = font_cache.find(*name_it)) != font_cache.end()) {
+        if ((cache_entry = s_font_cache.find(*name_it)) != s_font_cache.end()) {
             m_fontstr = cache_entry->first;
             m_fontimp = cache_entry->second;
-            lookup_map[name] = m_fontstr;
+            s_lookup_map[name] = m_fontstr;
             resetEffects(*this);
             return true;
         }
@@ -210,32 +226,33 @@ bool Font::load(const string &name) {
 #ifdef USE_XFT
         if ((*name_it)[0] != '-') {
 
-            if (*name_it == "__DEFAULT__")
+            if (*name_it == Font::DEFAULT_FONT)
                 realname = "monospace";
 
-            tmp_font = new XftFontImp(0, s_utf8mode);
+            tmp_font = new XftFontImp(0, utf8());
         }
 #endif // USE_XFT
 
         if (!tmp_font) {
-            if (*name_it == "__DEFAULT__")
+            if (*name_it == Font::DEFAULT_FONT)
                 realname = "fixed";
 
 #ifdef USE_XMB
 
-            if (s_multibyte || s_utf8mode) {
-                tmp_font = new XmbFontImp(0, s_utf8mode);
-            } else // basic font implementation
+            if (multibyte() || utf8()) {
+                tmp_font = new XmbFontImp(0, utf8());
+            }
 #endif // USE_XMB
-    {
-               tmp_font = new XFontImp();
-    }
+        }
+
+        if (!tmp_font) {
+           tmp_font = new XFontImp();
         }
 
         if (tmp_font && tmp_font->load(realname.c_str())) {
-            lookup_map[name] = (*name_it);
+            s_lookup_map[name] = (*name_it);
             m_fontimp = tmp_font;
-            font_cache[(*name_it)] = tmp_font;
+            s_font_cache[(*name_it)] = tmp_font;
             m_fontstr = name;
             resetEffects(*this);
             return true;
@@ -249,6 +266,10 @@ bool Font::load(const string &name) {
 
 unsigned int Font::textWidth(const char* text, unsigned int size) const {
     return m_fontimp->textWidth(text, size);
+}
+
+unsigned int Font::textWidth(const BiDiString &text) const {
+    return textWidth(text.visual().c_str(), text.visual().size());
 }
 
 unsigned int Font::height() const {

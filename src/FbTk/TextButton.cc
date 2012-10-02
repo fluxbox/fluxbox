@@ -23,6 +23,7 @@
 #include "TextUtils.hh"
 #include "Font.hh"
 #include "GContext.hh"
+#include <cstdio>
 
 namespace FbTk {
 
@@ -62,16 +63,18 @@ void TextButton::setJustify(FbTk::Justify just) {
 }
 
 bool TextButton::setOrientation(FbTk::Orientation orient) {
+
     if (orient == m_orientation
         || !m_font->validOrientation(orient))
         return false;
+
     invalidateBackground();
 
     if (((m_orientation == FbTk::ROT0 || m_orientation == FbTk::ROT180) &&
          (orient == FbTk::ROT90 || orient == FbTk::ROT270)) ||
         ((m_orientation == FbTk::ROT90 || m_orientation == FbTk::ROT270) &&
          (orient == FbTk::ROT0 || orient == FbTk::ROT180))) {
-        // flip width and height
+
         m_orientation = orient;
         resize(height(), width());
     } else {
@@ -112,8 +115,7 @@ void TextButton::setTextPadding(unsigned int padding) {
 
 /// clear window and redraw text
 void TextButton::clear() {
-    TextButton::clearArea(0, 0,
-                          width(), height());
+    TextButton::clearArea(0, 0, width(), height());
 }
 
 void TextButton::clearArea(int x, int y,
@@ -135,34 +137,58 @@ void TextButton::renderForeground(FbWindow &win, FbDrawable &drawable) {
 }
 
 void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
-    const FbString& visual = text().visual();
-    unsigned int textlen = visual.size();
-    unsigned int textw = width();
-    unsigned int texth = height();
-    translateSize(m_orientation, textw, texth);
-
-    int align_x = FbTk::doAlignment(textw - x_offset - m_left_padding - m_right_padding,
-                                    bevel(), justify(), font(),
-                                    visual.data(), visual.size(),
-                                    textlen); // return new text len
-
-    // center text by default
-    int center_pos = texth/2 + font().ascent()/2 - 1;
-
-    int textx = align_x + x_offset + m_left_padding;
-    int texty = center_pos + y_offset;
 
     if (drawable == 0)
         drawable = this;
 
-    // give it ROT0 style coords
-    translateCoords(m_orientation, textx, texty, textw, texth);
+    const FbString& visual = text().visual();
+    unsigned int textlen = visual.size();
+    unsigned int button_width = width();
+    unsigned int button_height = height();
 
-    font().drawText(*drawable,
-                    screenNumber(),
-                    gc(), // graphic context
-                    visual.c_str(), textlen, // string and string size
-                    textx, texty, m_orientation); // position
+    translateSize(m_orientation, button_width, button_height);
+
+    // horizontal alignment, cut off text if needed
+    int align_x = FbTk::doAlignment(button_width - x_offset - m_left_padding - m_right_padding,
+                                    bevel(), justify(), font(),
+                                    visual.data(), visual.size(),
+                                    textlen); // return new text len
+
+    //
+    //  we center the text vertically. to do this we have to nudge the
+    //  baseline a little bit down so the "middle" of the glyph is placed
+    //  on the middle of the button. we "assume", that ascent/2 is roughly
+    //  the middle of the glyph. example:
+    //
+    //   +== ascent <--------->==                       +=====================
+    //   |          |         |                         |
+    //   |          |  ggggg  |                         |   ascent <--------->
+    //   |          |  g  gg  |                         |          |         |
+    //   | baseline <  glyph  |                         |          |  ggggg  |
+    //   |          |      g  |  -- middle of button -- |          |  g  gg  |
+    //   |  descent <  ggggg  |                         | baseline <  glyph  |
+    //   |  height  |_________|                         |          |      g  |
+    //   |                                              |  descent <  ggggg  |
+    //   |                                              |   height |_________|
+    //   |                                              |
+    //   +=======================                       +=====================
+    //
+    //    ascent = 4
+    //    button_height = 11
+    //    baseline = (11 + 4) / 2 - 1 = 6
+    //
+
+    int baseline_x = align_x + x_offset + m_left_padding;
+    int baseline_y = ((button_height + font().ascent()) / 2) - 1 + y_offset;
+
+    // TODO: remove debug output fprintf(stderr, "%d | %d %d %d\n", height(), font().height(), font().ascent(), font().descent());
+
+    // give it ROT0 style coords
+    translateCoords(m_orientation, baseline_x, baseline_y, button_width, button_height);
+
+    font().drawText(*drawable, screenNumber(), gc(),
+                    visual.c_str(), textlen,
+                    baseline_x, baseline_y, m_orientation);
 }
 
 
@@ -170,15 +196,15 @@ bool TextButton::textExceeds(int x_offset) {
 
     const FbString& visual = text().visual();
     unsigned int textlen = visual.size();
-    unsigned int textw = width();
-    unsigned int texth = height();
-    translateSize(m_orientation, textw, texth);
+    unsigned int button_width = width();
+    unsigned int button_height = height();
+    translateSize(m_orientation, button_width, button_height);
 
-    FbTk::doAlignment(textw - x_offset - m_left_padding - m_right_padding,
+    FbTk::doAlignment(button_width - x_offset - m_left_padding - m_right_padding,
                       bevel(), justify(), font(), visual.data(), visual.size(),
                       textlen); // return new text len
 
-    return visual.size()>textlen;
+    return visual.size() > textlen;
 }
 
 void TextButton::exposeEvent(XExposeEvent &event) {

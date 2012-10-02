@@ -170,14 +170,12 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
 {
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
-    // add windows to eventmanager
     evm.add(evh, window);
 
 }
 
 Toolbar::Frame::~Frame() {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
-    // remove windows from eventmanager
     evm.remove(window);
 }
 
