@@ -254,7 +254,7 @@ private:
 
 // Helper class for getResizeDirection below
 // Tests whether a point is on an edge or the corner.
-struct TestEdgeHelper {
+struct TestCornerHelper {
     int corner_size_px, corner_size_pc;
     inline bool operator()(int xy, int wh)
     {
@@ -3035,16 +3035,16 @@ FluxboxWindow::ReferenceCorner FluxboxWindow::getResizeDirection(int x, int y,
         int h = frame().height();
         int cx = w / 2;
         int cy = h / 2;
-        TestEdgeHelper test_edge = { corner_size_px, corner_size_pc };
-        if (x < cx  &&  test_edge(x, cx)) {
-            if (y < cy  &&  test_edge(y, cy))
+        TestCornerHelper test_corner = { corner_size_px, corner_size_pc };
+        if (x < cx  &&  test_corner(x, cx)) {
+            if (y < cy  &&  test_corner(y, cy))
                 return LEFTTOP;
-            else if (test_edge(h - y - 1, h - cy))
+            else if (test_corner(h - y - 1, h - cy))
                 return LEFTBOTTOM;
-        } else if (test_edge(w - x - 1, w - cx)) {
-            if (y < cy  &&  test_edge(y, cy))
+        } else if (test_corner(w - x - 1, w - cx)) {
+            if (y < cy  &&  test_corner(y, cy))
                 return RIGHTTOP;
-            else if (test_edge(h - y - 1, h - cy))
+            else if (test_corner(h - y - 1, h - cy))
                 return RIGHTBOTTOM;
         }
 
