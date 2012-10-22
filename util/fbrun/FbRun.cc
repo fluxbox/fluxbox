@@ -79,14 +79,11 @@ FbRun::FbRun(int x, int y, size_t width):
     resize(width, font().height() + m_bevel);
 
     // setup class name
-    XClassHint *class_hint = XAllocClassHint();
-    if (class_hint == 0)
-        throw string("Out of memory");
-    class_hint->res_name = const_cast<char *>("fbrun");
-    class_hint->res_class = const_cast<char *>("FbRun");
-    XSetClassHint(m_display, window(), class_hint);
+    XClassHint ch;
+    ch.res_name = const_cast<char *>("fbrun");
+    ch.res_class = const_cast<char *>("FbRun");
+    XSetClassHint(m_display, window(), &ch);
 
-    XFree(class_hint);
 #ifdef HAVE_XPM
     Pixmap mask = 0;
     Pixmap pm;
