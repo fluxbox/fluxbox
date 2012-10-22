@@ -87,6 +87,8 @@ public:
     virtual void setBorderWidth(unsigned int size);
     /// set window name ("title")
     void setName(const char *name);
+    /// set window role
+    void setWindowRole(const char *windowRole);
     void setEventMask(long mask);
     /// clear window with background pixmap or color
     virtual void clear();

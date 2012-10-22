@@ -33,6 +33,7 @@ FbMenu::FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
     FbTk::Menu(tm, imgctrl), 
     m_layeritem(fbwindow(), layer) {
 
+    fbwindow().setWindowRole("fluxbox-menu");
 }
 
 void FbMenu::buttonPressEvent(XButtonEvent &be) {

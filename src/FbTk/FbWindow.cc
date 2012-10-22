@@ -265,6 +265,13 @@ void FbWindow::setName(const char *name) {
     XStoreName(display(), m_window, name);
 }
 
+void FbWindow::setWindowRole(const char *windowRole) {
+    XTextProperty tp;
+    XStringListToTextProperty(const_cast<char **>(&windowRole), 1, &tp);
+    XSetTextProperty(display(), m_window, &tp, XInternAtom(display(), "WM_WINDOW_ROLE", False));
+    XFree(tp.value);
+}
+
 void FbWindow::setEventMask(long mask) {
     XSelectInput(display(), m_window, mask);
 }

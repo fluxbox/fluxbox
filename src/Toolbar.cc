@@ -225,6 +225,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     m_resize_lock(false) {
     _FB_USES_NLS;
 
+    frame.window.setWindowRole("fluxbox-toolbar");
+
     // get this on antialias change
     m_signal_tracker.join(screen().reconfigureSig(),
             FbTk::MemFunIgnoreArgs(*this, &Toolbar::reconfigure));

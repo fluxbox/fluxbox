@@ -50,6 +50,7 @@ TextDialog::TextDialog(BScreen &screen,
     m_move_x(0),
     m_move_y(0),
     m_pixmap(0){
+    setWindowRole("fluxbox-dialog-text");
     init();
 }
 
