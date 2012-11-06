@@ -405,6 +405,8 @@ bool Keys::addBinding(const string &linebuffer) {
                 context |= ON_LEFTGRIP;
             else if (arg == "onrightgrip")
                 context |= ON_RIGHTGRIP;
+            else if (arg == "ontab")
+                context |= ON_TAB;
             else if (arg == "double")
                 isdouble = true;
             else if (arg != "none") {

@@ -236,6 +236,10 @@ public:
     /// assuming window is an event window that was generated for this frame.
     bool insideTitlebar(Window win) const;
 
+    /// @returns context for window,
+    /// assuming window is an event window that was generated for this frame.
+    int getContext(Window win, int x=0, int y=0, int last_x=0, int last_y=0, bool doBorders=false);
+
     //@}
 
 private:

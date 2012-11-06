@@ -2324,14 +2324,10 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_last_button_y = be.y_root;
     m_last_pressed_button = be.button;
 
-    bool onTitlebar =
-        frame().insideTitlebar( be.window ) &&
-        frame().handle().window() != be.window;
-
     Keys *k = Fluxbox::instance()->keys();
-    if ((onTitlebar && k->doAction(be.type, be.state, be.button, Keys::ON_TITLEBAR, &winClient(), be.time)) ||
-        k->doAction(be.type, be.state, be.button, Keys::ON_WINDOW, &winClient(), be.time)) {
-
+    int context = frame().getContext(be.window);
+    if (k->doAction(be.type, be.state, be.button,
+                    context, &winClient(), be.time)) {
         return;
     }
 
@@ -2382,59 +2378,15 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         me.window = frame().window().window();
     }
 
-    bool inside_titlebar = frame().insideTitlebar( me.window );
-    bool inside_grips = (me.window == frame().gripRight() || me.window == frame().gripLeft());
-    bool inside_border = false;
-
-    if (!inside_grips)
-    {
-        using RectangleUtil::insideBorder;
-        int borderw = frame().window().borderWidth();
-
-
-        //!! TODO(tabs): the below test ought to be in FbWinFrame
-
-        inside_border =
-
-                // if mouse is currently on the window border, ignore it
-                (
-                    ! insideBorder(frame(), me.x_root, me.y_root, borderw) 
-                    && ( !frame().externalTabMode() 
-                         || ! insideBorder(frame().tabcontainer(), me.x_root, me.y_root, borderw) )
-
-                )
-
-                || // or if mouse was on border when it was last clicked
-
-                (
-                    ! insideBorder(frame(), m_last_button_x, m_last_button_y, borderw) 
-                    && 
-                        ( ! frame().externalTabMode() 
-                          || ! insideBorder(frame().tabcontainer(), m_last_button_x, m_last_button_y, borderw ) 
-                        )
-                );
-    }
+    int context = frame().getContext(me.window,  me.x_root, me.y_root, m_last_button_x, m_last_button_y, true);
 
     if (Fluxbox::instance()->getIgnoreBorder() && m_attaching_tab == 0
         && !(isMoving() || isResizing())) {
 
-        if (inside_border) {
+        if (context & Keys::ON_WINDOWBORDER) {
             return;
         }
     }
-
-
-    int context = Keys::ON_WINDOW;
-    if (inside_titlebar) {
-        context = Keys::ON_TITLEBAR;
-    } else if (inside_border) {
-        context = Keys::ON_WINDOWBORDER;
-    } else if (me.window == frame().gripRight()) {
-        context = Keys::ON_RIGHTGRIP;
-    } else if (me.window == frame().gripLeft()) {
-        context = Keys::ON_LEFTGRIP;
-    }
-
 
     // in case someone put  MoveX :StartMoving etc into keys, we have
     // to activate it before doing the actual motionNotify code

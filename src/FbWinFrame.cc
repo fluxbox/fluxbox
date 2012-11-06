@@ -35,9 +35,12 @@
 #include "Screen.hh"
 #include "FocusableTheme.hh"
 #include "IconButton.hh"
+#include "RectangleUtil.hh"
 
 #include <algorithm>
 #include <X11/X.h>
+
+#include "Keys.hh"
 
 using std::max;
 using std::mem_fun;
@@ -1726,4 +1729,50 @@ bool FbWinFrame::insideTitlebar(Window win) const {
         gripLeft().window() != win &&
         gripRight().window() != win &&
         window().window() != win;
+}
+
+int FbWinFrame::getContext(Window win, int x, int y, int last_x, int last_y, bool doBorders) {
+    int context = 0;
+    if (gripLeft().window()  == win) return Keys::ON_LEFTGRIP;
+    if (gripRight().window() == win) return Keys::ON_RIGHTGRIP;
+    if (doBorders) {
+        using RectangleUtil::insideBorder;
+        int borderw = window().borderWidth();
+        if ( // if mouse is currently on the window border, ignore it
+                (
+                    ! insideBorder(window(), x, y, borderw) 
+                    && ( externalTabMode() 
+                        || ! insideBorder(tabcontainer(), x, y, borderw) )
+                )
+                || // or if mouse was on border when it was last clicked
+                (
+                    ! insideBorder(window(), last_x, last_y, borderw) 
+                    && ( externalTabMode() 
+                        || ! insideBorder(tabcontainer(), last_x, last_y, borderw ) )
+                )
+           ) context = Keys::ON_WINDOWBORDER;
+    }
+
+    if (window().window()    == win) return context | Keys::ON_WINDOW;
+    // /!\ old code: handle = titlebar in motionNotifyEvent but only there !
+    // handle() as border ??
+    if (handle().window()    == win) return Keys::ON_WINDOWBORDER | Keys::ON_WINDOW;
+    if (titlebar().window()  == win) return context | Keys::ON_TITLEBAR;
+    if (label().window()     == win) return context | Keys::ON_TITLEBAR;
+    // internal tabs are on title bar
+    if (tabcontainer().window() == win)
+        return context | Keys::ON_TAB | (externalTabMode()?0:Keys::ON_TITLEBAR);
+
+
+    FbTk::Container::ItemList::iterator it = tabcontainer().begin();
+    FbTk::Container::ItemList::iterator it_end = tabcontainer().end();
+    for (; it != it_end; ++it) {
+        if ((*it)->window() == win)
+            break;
+    }
+    // internal tabs are on title bar
+    if (it != it_end)
+        return context | Keys::ON_TAB | (externalTabMode()?0:Keys::ON_TITLEBAR);
+
+    return context;
 }
