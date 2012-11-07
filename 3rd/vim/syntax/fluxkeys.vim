@@ -68,7 +68,7 @@ syntax keyword fbActionNames If Cond  contained
 syntax keyword fbModifierNames Control Shift Double  contained
 syntax keyword fbModifierNames Mod1 Mod2 Mod3 Mod4 Mod5  contained
 syntax keyword fbModifierNames None  contained
-syntax keyword fbModifierNames OnDesktop OnToolbar OnTitlebar OnWindow OnWindowBorder OnLeftGrip OnRightGrip contained
+syntax keyword fbModifierNames OnDesktop OnToolbar OnTitlebar OnTab OnWindow OnWindowBorder OnLeftGrip OnRightGrip contained
 
 " reference corners
 syntax keyword fbParameterNames UpperLeft LeftTop TopLeft contained
