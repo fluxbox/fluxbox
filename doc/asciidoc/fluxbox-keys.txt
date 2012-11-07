@@ -66,6 +66,8 @@ There are also some special modifiers that refer to mouse button events:::
 	The mouse cursor is over a window.
 *OnTitlebar*;;
 	The mouse cursor is over a window's titlebar.
+*OnTab*;;
+	The mouse cursor is over a tab.
 *Double*;;
 	Limits this action to double-clicks only.
 
