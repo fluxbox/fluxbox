@@ -186,7 +186,7 @@ texture44.colorTo: green
 
 --- new line
 texture45: Flat Solid bevel1
-texture45.color: blue
+texture45.color: grey
 texture45.colorTo: green
 
 texture46: Gradient Vertical bevel1
