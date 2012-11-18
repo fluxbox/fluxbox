@@ -76,6 +76,11 @@ FocusControl::FocusControl(BScreen &screen):
     m_focus_new(screen.resourceManager(), true,
                 screen.name()+".focusNewWindows",
                 screen.altName()+".FocusNewWindows"),
+#ifdef XINERAMA
+    m_focus_same_head(screen.resourceManager(), false,
+                screen.name()+".focusSameHead",
+                screen.altName()+".FocusSameHead"),
+#endif // XINERAMA
     m_focused_list(screen), m_creation_order_list(screen),
     m_focused_win_list(screen), m_creation_order_win_list(screen),
     m_cycling_list(0),
@@ -251,11 +256,18 @@ Focusable *FocusControl::lastFocusedWindow(int workspace) {
     if (workspace < 0 || workspace >= (int) m_screen.numberOfWorkspaces())
         return m_focused_list.clientList().front();
 
+#ifdef XINERAMA
+    int cur_head = focusSameHead() ? m_screen.getCurrHead() : (-1);
+#endif // XINERAMA
+
     Focusables::iterator it = m_focused_list.clientList().begin();
     Focusables::iterator it_end = m_focused_list.clientList().end();
     for (; it != it_end; ++it) {
         if ((*it)->fbwindow() && (*it)->acceptsFocus() &&
             (*it)->fbwindow()->winClient().validateClient() &&
+#ifdef XINERAMA
+            ( (cur_head == -1) || ((*it)->fbwindow()->getOnHead() == cur_head) ) &&
+#endif // XINERAMA
             ((((int)(*it)->fbwindow()->workspaceNumber()) == workspace ||
              (*it)->fbwindow()->isStuck()) && !(*it)->fbwindow()->isIconic()))
             return *it;

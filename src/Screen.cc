@@ -1600,6 +1600,17 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     } catch (FbTk::ResourceException & e) {
         cerr<<e.what()<<endl;
     }
+   
+#ifdef XINERAMA
+    try {
+        focus_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, FocusSameHead,
+            "Keep Head", "Only revert focus on same head"),
+            m_resource_manager.getResource<bool>(name() + ".focusSameHead"),
+            saverc_cmd));
+    } catch (FbTk::ResourceException e) {
+        cerr<<e.what()<<endl;
+    }
+#endif // XINERAMA
 
     _BOOLITEM(*focus_menu, Configmenu, AutoRaise,
               "Auto Raise", "Auto Raise windows on sloppy",

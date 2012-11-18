@@ -124,6 +124,10 @@ public:
     TabFocusModel tabFocusModel() const { return *m_tab_focus_model; }
     /// @return true if newly created windows are focused
     bool focusNew() const { return *m_focus_new; }
+#ifdef XINERAMA
+    /// @return true if focus reverts to same head only
+    bool focusSameHead() const { return *m_focus_same_head; }
+#endif // XINERAMA
 
     /// @return last focused client in a specific workspace, or NULL.
     Focusable *lastFocusedWindow(int workspace);
@@ -161,6 +165,9 @@ private:
     FbTk::Resource<FocusModel> m_focus_model;    
     FbTk::Resource<TabFocusModel> m_tab_focus_model;
     FbTk::Resource<bool> m_focus_new;
+#ifdef XINERAMA
+    FbTk::Resource<bool> m_focus_same_head;
+#endif // XINERAMA
 
     // This list keeps the order of window focusing for this screen
     // Screen global so it works for sticky windows too.
