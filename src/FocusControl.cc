@@ -258,6 +258,12 @@ Focusable *FocusControl::lastFocusedWindow(int workspace) {
 
 #ifdef XINERAMA
     int cur_head = focusSameHead() ? m_screen.getCurrHead() : (-1);
+    if(cur_head != -1) {
+      FluxboxWindow *fbwindow = focusedFbWindow();
+      if(fbwindow && fbwindow->isMoving()) {
+        cur_head = -1;
+      }
+    }
 #endif // XINERAMA
 
     Focusables::iterator it = m_focused_list.clientList().begin();
