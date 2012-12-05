@@ -152,9 +152,9 @@ static void showInfo(ostream &ostr) {
 #endif // DEBUG
         "DEBUG" << endl <<
 
-#ifndef USE_NEWWMSPEC
+#ifndef USE_EWMH
         NOT <<
-#endif // USE_NEWWMSPEC
+#endif // USE_EWMH
         "EWMH" << endl <<
 
 #ifndef HAVE_IMLIB2
@@ -182,7 +182,7 @@ static void showInfo(ostream &ostr) {
 #endif // SHAPE
         "SHAPE" << endl <<
 
-#ifndef SLIT
+#ifndef USE_SLIT
         NOT <<
 #endif // SLIT
         "SLIT" << endl <<

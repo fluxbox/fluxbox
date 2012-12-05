@@ -66,9 +66,9 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#ifdef USE_NEWWMSPEC
+#ifdef USE_EWMH
 #include "Ewmh.hh"
-#endif // USE_NEWWMSPEC
+#endif // USE_EWMH
 #ifdef REMEMBER
 #include "Remember.hh"
 #endif // REMEMBER
@@ -418,9 +418,9 @@ Fluxbox::Fluxbox(int argc, char **argv,
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
-#ifdef USE_NEWWMSPEC
-    addAtomHandler(new Ewmh()); // for Extended window manager atom support
-#endif // USE_NEWWMSPEC
+#ifdef USE_EWMH
+    addAtomHandler(new Ewmh());
+#endif // USE_EWMH
     // parse apps file after creating screens (so we can tell if it's a restart
     // for [startup] items) but before creating windows
     // this needs to be after ewmh and gnome, so state atoms don't get

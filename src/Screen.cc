@@ -84,13 +84,13 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#ifdef SLIT
+#ifdef USE_SLIT
 #include "Slit.hh"
 #include "SlitClient.hh"
 #else
 // fill it in
 class Slit {};
-#endif // SLIT
+#endif // USE_SLIT
 
 #ifdef USE_TOOLBAR
 #include "Toolbar.hh"
@@ -478,10 +478,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     changeWorkspaceID(first_desktop);
 
-#ifdef SLIT
+#ifdef USE_SLIT
     m_slit.reset(new Slit(*this, *layerManager().getLayer(ResourceLayer::DESKTOP),
                  fluxbox->getSlitlistFilename().c_str()));
-#endif // SLIT
+#endif // USE_SLIT
 
     rm.unlock();
 
@@ -682,10 +682,10 @@ void BScreen::initWindows() {
     XFree(children);
 
     // now, show slit and toolbar
-#ifdef SLIT
+#ifdef USE_SLIT
     if (slit())
         slit()->show();
-#endif // SLIT
+#endif // USE_SLIT
 
 }
 
@@ -1209,11 +1209,11 @@ bool BScreen::addKdeDockapp(Window client) {
     handler = Fluxbox::instance()->getAtomHandler(SystemTray::getNetSystemTrayAtom(screenNumber()));
 #endif
     if (handler == 0) {
-#ifdef SLIT
+#ifdef USE_SLIT
         if (slit() != 0 && slit()->acceptKdeDockapp())
             slit()->addClient(client);
         else
-#endif // SLIT
+#endif // USE_SLIT
             return false;
     } else {
         // this handler is a special case
@@ -1242,10 +1242,10 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
     if (winclient->initial_state == WithdrawnState) {
         delete winclient;
-#ifdef SLIT
+#ifdef USE_SLIT
         if (slit() && !isKdeDockapp(client))
             slit()->addClient(client);
-#endif // SLIT
+#endif // USE_SLIT
         return 0;
     }
 

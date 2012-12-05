@@ -89,8 +89,8 @@ fluxbox.$(OBJEXT): defaults.hh
 
 
 
-if NEWWMSPEC
-newwmspec_SOURCE= Ewmh.hh Ewmh.cc
+if EWMH
+EWMH_SOURCE= Ewmh.hh Ewmh.cc
 endif
 if REMEMBER_SRC
 REMEMBER_SOURCE= Remember.hh Remember.cc
@@ -108,6 +108,10 @@ TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \
 	ToolFactory.hh ToolFactory.cc
 endif
 
+if SLIT_SRC
+SLIT_SOURCE = Slit.cc Slit.hh SlitTheme.hh SlitTheme.cc SlitClient.hh SlitClient.cc
+endif
+
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
@@ -118,7 +122,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	OSDWindow.hh OSDWindow.cc \
 	TooltipWindow.hh TooltipWindow.cc \
 	Screen.cc Screen.hh \
-	Slit.cc Slit.hh SlitTheme.hh SlitTheme.cc SlitClient.hh SlitClient.cc \
 	WinButton.hh WinButton.cc \
 	WinButtonTheme.hh WinButtonTheme.cc \
 	Window.cc Window.hh WindowState.cc WindowState.hh\
@@ -162,8 +165,10 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	WindowMenuAccessor.hh \
 	RectangleUtil.hh \
 	Debug.hh \
-	${newwmspec_SOURCE} \
-	${REMEMBER_SOURCE} ${TOOLBAR_SOURCE}
+	${EWMH_SOURCE} \
+	${REMEMBER_SOURCE} \
+	${SLIT_SOURCE} \
+	${TOOLBAR_SOURCE}
 
 
 LDADD=FbTk/libFbTk.a FbTk/LogicCommands.o defaults.$(OBJEXT)
