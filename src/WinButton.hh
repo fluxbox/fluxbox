@@ -52,13 +52,14 @@ public:
     void setBackgroundColor(const FbTk::Color &color);
     void setPressedColor(const FbTk::Color &color);
 
-    Pixmap getBackgroundPixmap() const;
-    Pixmap getPressedPixmap() const;
+    Pixmap getBackgroundPixmap() const { return getPixmap(m_theme); }
+    Pixmap getPressedPixmap() const { return getPixmap(m_pressed_theme); }
     /// override for redrawing
     void clear();
     void updateAll();
 private:
     void drawType();
+    Pixmap getPixmap(const FbTk::ThemeProxy<WinButtonTheme> &) const;
     Type m_type; ///< the button type
     FluxboxWindow &m_listen_to;
     FbTk::ThemeProxy<WinButtonTheme> &m_theme, &m_pressed_theme;

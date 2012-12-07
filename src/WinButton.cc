@@ -114,60 +114,32 @@ void WinButton::setPressedColor(const FbTk::Color &color) {
     }
 }
 
-Pixmap WinButton::getBackgroundPixmap() const {
+Pixmap WinButton::getPixmap(const FbTk::ThemeProxy<WinButtonTheme> &theme) const {
     switch(m_type) {
     case MAXIMIZE:
-        return m_theme->maximizePixmap().pixmap().drawable();
-        break;
+        return theme->maximizePixmap().pixmap().drawable();
     case MINIMIZE:
-        return m_theme->iconifyPixmap().pixmap().drawable();
-        break;
+        return theme->iconifyPixmap().pixmap().drawable();
     case STICK:
         if (m_listen_to.isStuck())
-            return m_theme->stuckPixmap().pixmap().drawable();
-        return m_theme->stickPixmap().pixmap().drawable();
-        break;
+            return theme->stuckPixmap().pixmap().drawable();
+        else
+            return theme->stickPixmap().pixmap().drawable();
     case CLOSE:
-        return m_theme->closePixmap().pixmap().drawable();
-        break;
+        return theme->closePixmap().pixmap().drawable();
     case SHADE:
         if (m_listen_to.isShaded())
-            return m_theme->unshadePixmap().pixmap().drawable();
-        return m_theme->shadePixmap().pixmap().drawable();
-        break;
+            return theme->unshadePixmap().pixmap().drawable();
+        else
+            return theme->shadePixmap().pixmap().drawable();
     case MENUICON:
         if (m_icon_pixmap.drawable())
-            return m_theme->titlePixmap().pixmap().drawable();
-        return m_theme->menuiconPixmap().pixmap().drawable();
-        break;
-    }
-    return None;
-}
-
-Pixmap WinButton::getPressedPixmap() const {
-    switch(m_type) {
-    case MAXIMIZE:
-        return m_pressed_theme->maximizePixmap().pixmap().drawable();
-    case MINIMIZE:
-        return m_pressed_theme->iconifyPixmap().pixmap().drawable();
-    case STICK:
-        if (m_listen_to.isStuck())
-            return m_pressed_theme->stuckPixmap().pixmap().drawable();
-        return m_pressed_theme->stickPixmap().pixmap().drawable();
-    case CLOSE:
-        return m_pressed_theme->closePixmap().pixmap().drawable();
-    case SHADE:
-        if (m_listen_to.isShaded())
-            return m_pressed_theme->unshadePixmap().pixmap().drawable();
+            return theme->titlePixmap().pixmap().drawable();
         else
-            return m_pressed_theme->shadePixmap().pixmap().drawable();
-    case MENUICON:
-        if (m_icon_pixmap.drawable())
-            return m_theme->titlePixmap().pixmap().drawable();
-        else
-            return m_pressed_theme->menuiconPixmap().pixmap().drawable();
+            return theme->menuiconPixmap().pixmap().drawable();
+    default:
+        return None;
     }
-    return None;
 }
 
 // clear is used to force this to clear the window (e.g. called from clear())
