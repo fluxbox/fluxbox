@@ -151,6 +151,8 @@ Pixmap WinButton::getPressedPixmap() const {
     case MINIMIZE:
         return m_pressed_theme->iconifyPixmap().pixmap().drawable();
     case STICK:
+        if (m_listen_to.isStuck())
+            return m_pressed_theme->stuckPixmap().pixmap().drawable();
         return m_pressed_theme->stickPixmap().pixmap().drawable();
     case CLOSE:
         return m_pressed_theme->closePixmap().pixmap().drawable();
@@ -308,7 +310,7 @@ void WinButton::updateAll() {
         setBackgroundPixmap(my_pm);
 
     // incorrect, pressed_pixmap is stateful in shade, so we'll do oneoff for now
-    if (m_type == SHADE) {
+    if (m_type == SHADE || m_type == STICK) {
         Pixmap p_pm = getPressedPixmap();
         if (p_pm != None)
             setPressedPixmap(p_pm);

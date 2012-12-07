@@ -51,6 +51,7 @@ public:
     const FbTk::PixmapWithMask &stickPixmap() const { return *m_stick_pm; }
     FbTk::PixmapWithMask &stickPixmap() { return *m_stick_pm; }
 
+    const FbTk::PixmapWithMask &stuckPixmap() const { return *m_stuck_pm; }
     FbTk::PixmapWithMask &stuckPixmap() { return *m_stuck_pm; }
 
     const FbTk::PixmapWithMask &shadePixmap() const { return *m_shade_pm; }
