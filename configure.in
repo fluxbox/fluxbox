@@ -334,11 +334,12 @@ AS_IF(test "x$XFT" = "xtrue",[
 	[
 		
 		AC_DEFINE(USE_XFT, 1, "antialias support")
-	    AC_MSG_CHECKING([Xft UTF-8 support])
-   	     AC_TRY_LINK([
+        AC_MSG_CHECKING([Xft UTF-8 support])
+        AC_TRY_LINK([
 			#include <X11/Xft/Xft.h>
 		], [ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; ],
 		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
+        FEATURES="$FEATURES XFT"
 		AC_MSG_RESULT(yes),
 		AC_MSG_RESULT(no)
 		)
@@ -350,9 +351,9 @@ AS_IF(test "x$XFT" = "xtrue",[
 AM_CONDITIONAL(XFT, test "x$XFT" = "xtrue")
 
 
-AC_MSG_CHECKING([whether to have Xrender (transparent) support])
+AC_MSG_CHECKING([whether to have XRENDER (transparent) support])
 AC_ARG_ENABLE(xrender,
-              AS_HELP_STRING([--enable-xrender],[Xrender (transparent) support (default=yes)]),,[enable_xrender=yes])
+              AS_HELP_STRING([--enable-xrender],[XRENDER (transparent) support (default=yes)]),,[enable_xrender=yes])
 AC_MSG_RESULT([$enable_xrender])
 AS_IF(test "x$enable_xrender" = "xyes",[
     AC_CHECK_LIB(Xrender, XRenderCreatePicture, 
@@ -362,9 +363,9 @@ AS_IF(test "x$enable_xrender" = "xyes",[
 
 
 XPM=false
-AC_MSG_CHECKING([whether to have Xpm (pixmap themes) support])
+AC_MSG_CHECKING([whether to have XPM (pixmap themes) support])
 AC_ARG_ENABLE(xpm, 
-    AS_HELP_STRING([--enable-xpm],[Xpm (pixmap themes) support (default=yes)]),[],[enable_xpm=yes])
+    AS_HELP_STRING([--enable-xpm],[XPM (pixmap themes) support (default=yes)]),[],[enable_xpm=yes])
 AC_MSG_RESULT([$enable_xpm])
 AS_IF(test "x$enable_xpm" = "xyes",[
    AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
@@ -377,9 +378,9 @@ AM_CONDITIONAL(XPM, test "x$XPM" = "xtrue")
 
 dnl Check whether to use imlib2
 IMLIB2=false
-AC_MSG_CHECKING([whether to have Imlib2 (pixmap themes) support])
+AC_MSG_CHECKING([whether to have IMLIB2 (pixmap themes) support])
 AC_ARG_ENABLE(imlib2,
-    AS_HELP_STRING([--enable-imlib2], [Imlib2 (pixmap themes) support (default=yes)]), , [enable_imlib2=yes])
+    AS_HELP_STRING([--enable-imlib2], [IMLIB2 (pixmap themes) support (default=yes)]), , [enable_imlib2=yes])
 AC_MSG_RESULT([$enable_imlib2])
 AS_IF(test x$enable_imlib2 = "xyes",[
     AC_PATH_GENERIC(imlib2, 1.0.0,[
@@ -387,6 +388,7 @@ AS_IF(test x$enable_imlib2 = "xyes",[
         AC_DEFINE(HAVE_IMLIB2, [], [Imlib2 support])
         LIBS="$IMLIB2_LIBS $LIBS"
         CXXFLAGS="$CXXFLAGS $IMLIB2_CFLAGS"
+        FEATURES="$FEATURES IMLIB2"
         ], []
         )],[])
 
@@ -394,17 +396,17 @@ AM_CONDITIONAL(IMLIB2, test "x$IMLIB2" = "xtrue")
 
 
 
-AC_MSG_CHECKING([whether to have Xmb (multibyte font, utf-8) support])
-AC_ARG_ENABLE(xmb, AS_HELP_STRING([--enable-xmb],[Xmb (multibyte font, utf-8) support (default=yes)]),,[enable_xmb=yes])
+AC_MSG_CHECKING([whether to have XMB (multibyte font, utf-8) support])
+AC_ARG_ENABLE(xmb, AS_HELP_STRING([--enable-xmb],[XMB (multibyte font, utf-8) support (default=yes)]),,[enable_xmb=yes])
 AC_MSG_RESULT([$enable_xmb])
 AS_IF([test "x$enable_xmb" = "xyes"],[ AC_DEFINE(USE_XMB, 1, "multibyte support")], [])
 AM_CONDITIONAL(MULTIBYTE, test "x$enable_xmb" = "xyes")
 
 
 dnl Check for Xinerama support and proper library files.
-AC_MSG_CHECKING([whether to build support for the Xinerama extension])
+AC_MSG_CHECKING([whether to build support for the XINERAMA extension])
 AC_ARG_ENABLE(xinerama,
-              AS_HELP_STRING([--enable-xinerama], [enable support of the Xinerama extension (default=yes)]), ,[enable_xinerama=yes])
+              AS_HELP_STRING([--enable-xinerama], [XINERAMA extension support (default=yes)]), ,[enable_xinerama=yes])
 
 AS_IF(test "x$enable_xinerama" = "xyes",[
     AC_CHECK_LIB(Xinerama, XineramaQueryScreens,
@@ -416,16 +418,17 @@ AS_IF(test "x$enable_xinerama" = "xyes",[
       , XineramaQueryScreens(0, 0),
                  AC_MSG_RESULT([yes])
                  AC_DEFINE(XINERAMA, [1], [Define to 1 if you have XINERAMA])
-                 LIBS="-lXinerama $LIBS",
+                 LIBS="-lXinerama $LIBS"
+                 FEATURES="$FEATURES XINERAMA",
                  AC_MSG_RESULT([no])))],[
   AC_MSG_RESULT([no])
   CONFIGOPTS="$CONFIGOPTS --disable-xinerama"])
 
 
 dnl Check for XShape extension support and proper library files.
-AC_MSG_CHECKING([whether to build support for the XShape extension])
+AC_MSG_CHECKING([whether to build support for the XSHAPE extension])
 AC_ARG_ENABLE(shape,
-	AS_HELP_STRING([--enable-shape], [enable support of the XShape extension (default=yes)]), , [enable_shape=yes])
+	AS_HELP_STRING([--enable-shape], [XSHAPE extension support (default=yes)]), , [enable_shape=yes])
 AS_IF(test "x$enable_shape" = "xyes",[
     AC_CHECK_LIB(Xext, XShapeCombineShape,
         AC_MSG_CHECKING([for X11/extensions/shape.h])
@@ -437,7 +440,7 @@ AS_IF(test "x$enable_shape" = "xyes",[
         AC_MSG_RESULT([yes])
         AC_DEFINE(SHAPE, [1], [Define to 1 if you have SHAPE])
         LIBS="-lXext $LIBS"
-        FEATURES="$FEATURES XShape",
+        FEATURES="$FEATURES SHAPE",
         AC_MSG_RESULT([no])))],[
   AC_MSG_RESULT([no])
   CONFIGOPTS="$CONFIGOPTS --disable-shape"])
@@ -652,15 +655,21 @@ dnl Print results
 AC_MSG_RESULT([])
 AC_MSG_RESULT([	$PACKAGE version $VERSION configured successfully.])
 AC_MSG_RESULT([])
-AC_MSG_RESULT([Using '$prefix' for installation.])
-AC_MSG_RESULT([Using '$DEFAULT_MENU' for location menu file.])
-AC_MSG_RESULT([Using '$DEFAULT_STYLE' by default style.])
-AC_MSG_RESULT([Using '$DEFAULT_KEYS' for location keys file.])
-AC_MSG_RESULT([Using '$DEFAULT_INIT' for location init file.])
-AC_MSG_RESULT([Using '$LOCALE_PATH' for nls files.])
-AC_MSG_RESULT([Using '$CXX' for C++ compiler.])
-AC_MSG_RESULT([Building with '$CXXFLAGS' for C++ compiler flags.])
-AC_MSG_RESULT([Building with '$LIBS' for linker flags.])
+AC_MSG_RESULT([Features:])
+AC_MSG_RESULT([	$FEATURES])
+AC_MSG_RESULT([])
+AC_MSG_RESULT([Using:])
+AC_MSG_RESULT([	'$prefix' for installation.])
+AC_MSG_RESULT([	'$DEFAULT_MENU' for location menu file.])
+AC_MSG_RESULT([	'$DEFAULT_STYLE' by default style.])
+AC_MSG_RESULT([	'$DEFAULT_KEYS' for location keys file.])
+AC_MSG_RESULT([	'$DEFAULT_INIT' for location init file.])
+AC_MSG_RESULT([	'$LOCALE_PATH' for nls files.])
+AC_MSG_RESULT([	'$CXX' for C++ compiler.])
+AC_MSG_RESULT([])
+AC_MSG_RESULT([Building with:])
+AC_MSG_RESULT([	'$CXXFLAGS' for C++ compiler flags.])
+AC_MSG_RESULT([	'$LIBS' for linker flags.])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Now build $PACKAGE with 'make'])
 AC_MSG_RESULT([])
