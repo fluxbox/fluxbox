@@ -445,45 +445,47 @@ AS_IF(test "x$enable_shape" = "xyes",[
 
 
 dnl Check for RANDR support and proper library files.
-enableval="yes"
-AC_MSG_CHECKING([whether to build support for the Xrandr (X resize and rotate) extension])
-AC_ARG_ENABLE(randr,
-	AS_HELP_STRING([--enable-randr], [enable support of the Xrandr extension (default=yes)]),, [enableval=yes])
 
-AS_IF(test "x$enable_randr" = "xyes",[
-    AC_CHECK_LIB(Xrandr, XRRQueryExtension,
+AC_MSG_CHECKING([whether to build support for the XRANDR (X Resize And Rotate) extension])
+AC_ARG_ENABLE(randr,
+	AS_HELP_STRING([--enable-randr], [XRANDR extension support (default=no)]),,[enable_randr=yes])
+
+AS_IF(test "x$enable_randr" = "xyes", [
+    AC_MSG_RESULT([yes])
+    AC_CHECK_LIB(Xrandr, XRRQueryExtension, [
         AC_MSG_CHECKING([for X11/extensions/Xrandr.h])
-        AC_TRY_COMPILE(
-#include <X11/Xlib.h>
+        AC_COMPILE_IFELSE([
+            AC_LANG_PROGRAM([[#include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/Xrandr.h>
-          , XRRQueryExtension(0, 0, 0),
-			AC_MSG_RESULT([yes])
-			AC_DEFINE(HAVE_RANDR, [1], [Define to 1 if you have RANDR])
-			LIBS="-lXrandr $LIBS",
-		AC_MSG_RESULT([no])))],[
+                ]], [[XRRQueryExtension(0, 0, 0);]]
+            )], [
+            AC_MSG_RESULT([yes])
+            AC_DEFINE(HAVE_RANDR, [1], [Define to 1 if you have RANDR])
+            LIBS="-lXrandr $LIBS"
+            FEATURES="$FEATURES RANDR"
+
+            AC_MSG_CHECKING([for XRRUpdateConfiguration])
+            AC_COMPILE_IFELSE([
+                AC_LANG_PROGRAM([[#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/extensions/Xrandr.h>
+                    ]], [[XRRUpdateConfiguration(0);]]
+                )], [
+                    AC_MSG_RESULT([yes])
+                    AC_DEFINE(HAVE_RANDR1_2, [1], [Define to 1 if you have RANDR 1.2])
+                ], [
+                    AC_MSG_RESULT([no])
+                ])
+            ], [
+                AC_MSG_RESULT([no])
+            ])
+        ],[
+        AC_MSG_RESULT([no])
+    ])],[
     AC_MSG_RESULT([no])
     CONFIGOPTS="$CONFIGOPTS --disable-randr"])
 
-
-AC_MSG_CHECKING([whether to have RANDR 1.2 support])
-AC_ARG_ENABLE(randr12,
-	AS_HELP_STRING([--enable-randr12], [RANDR 1.2 support (default=yes)]), , [enable_randr12=yes])
-AS_IF(test "x$enable_randr12" = "xyes",[
-    AC_MSG_RESULT([yes])
-    AC_CHECK_LIB(Xrandr, XRRQueryExtension,
-        AC_MSG_CHECKING([for X11/extensions/Xrandr.h])
-        AC_TRY_COMPILE(
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/extensions/Xrandr.h>
-          , XRRUpdateConfiguration(0),
-			AC_MSG_RESULT([yes])
-			AC_DEFINE(HAVE_RANDR1_2, [1], [Define to 1 if you have RANDR 1.2])
-			LIBS="-lXrandr $LIBS",
-		AC_MSG_RESULT([no])))],[
-    AC_MSG_RESULT([no])
-    CONFIGOPTS="$CONFIGOPTS --disable-randr1.2"])
 
 
 

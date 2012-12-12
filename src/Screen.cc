@@ -132,7 +132,7 @@ extern  "C" {
 }
 #endif // XINERAMA
 
-#ifdef HAVE_RANDR
+#if defined(HAVE_RANDR) || defined(HAVE_RANDR1_2)
 #include <X11/extensions/Xrandr.h>
 #endif // HAVE_RANDR
 
@@ -380,18 +380,25 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         XFree(ret_prop);
     }
 
-#ifdef HAVE_RANDR
-    // setup RANDR for this screens root window
-    // we need to determine if we should use old randr select input function or not
-#ifdef X_RRScreenChangeSelectInput
-    // use old set randr event
-    XRRScreenChangeSelectInput(disp, rootWindow().window(), True);
-#else
-    XRRSelectInput(disp, rootWindow().window(),
-                   RRScreenChangeNotifyMask);
-#endif // X_RRScreenChangeSelectInput
 
+// setup RANDR for this screens root window
+#if defined(HAVE_RANDR1_2)
+    int randr_mask = RRScreenChangeNotifyMask;
+#ifdef RRCrtcChangeNotifyMask
+    randr_mask |= RRCrtcChangeNotifyMask;
+#endif
+#ifdef RROutputChangeNotifyMask
+    randr_mask |= RROutputChangeNotifyMask;
+#endif
+#ifdef RROutputPropertyNotifyMask
+    randr_mask |= RROutputPropertyNotifyMask;
+#endif
+    XRRSelectInput(disp, rootWindow().window(), randr_mask);
+
+#elif defined(HAVE_RANDR)
+    XRRScreenChangeSelectInput(disp, rootWindow().window(), True);
 #endif // HAVE_RANDR
+
 
     _FB_USES_NLS;
 

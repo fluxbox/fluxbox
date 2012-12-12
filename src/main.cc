@@ -192,6 +192,15 @@ static void showInfo(ostream &ostr) {
 #endif // USE_TOOLBAR
         "TOOLBAR" << endl <<
 
+#ifndef HAVE_RANDR
+        NOT <<
+#endif
+        "RANDR" <<
+#ifdef HAVE_RANDR1_2
+        "1.2" <<
+#endif
+        endl <<
+
 #ifndef USE_XFT
         NOT <<
 #endif // USE_XFT

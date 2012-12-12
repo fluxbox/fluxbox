@@ -84,7 +84,7 @@
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
-#ifdef HAVE_RANDR
+#if defined(HAVE_RANDR) || defined(HAVE_RANDR1_2)
 #include <X11/extensions/Xrandr.h>
 #endif // HAVE_RANDR
 
@@ -218,10 +218,17 @@ struct CallMemFunWithRefArg : std::unary_function<Type, ResultType> {
 };
 
 
+int s_randr_event_type = 0; ///< the type number of randr event
+int s_shape_eventbase = 0;  ///< event base for shape events
+bool s_have_shape = false ; ///< if shape is supported by server
+
+Atom s_kwm1_dockwindow;
+Atom s_kwm2_dockwindow;
+
+Fluxbox* s_singleton = 0;
+
 } // end anonymous
 
-//static singleton var
-Fluxbox *Fluxbox::s_singleton=0;
 
 Fluxbox::Fluxbox(int argc, char **argv,
                  const std::string& dpy_name,
@@ -261,8 +268,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
       m_starting(true),
       m_restarting(false),
       m_shutdown(false),
-      m_server_grabs(0),
-      m_randr_event_type(0) {
+      m_server_grabs(0) {
 
     _FB_USES_NLS;
     if (s_singleton != 0)
@@ -277,10 +283,10 @@ Fluxbox::Fluxbox(int argc, char **argv,
     Display *disp = FbTk::App::instance()->display();
     // For KDE dock applets
     // KDE v1.x
-    m_kwm1_dockwindow = XInternAtom(disp,
+    s_kwm1_dockwindow = XInternAtom(disp,
                                     "KWM_DOCKWINDOW", False);
     // KDE v2.x
-    m_kwm2_dockwindow = XInternAtom(disp,
+    s_kwm2_dockwindow = XInternAtom(disp,
                                     "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False);
     // setup X error handler
     XSetErrorHandler((XErrorHandler) handleXErrors);
@@ -314,21 +320,18 @@ Fluxbox::Fluxbox(int argc, char **argv,
         XSynchronize(disp, True);
 
     s_singleton = this;
-    m_have_shape = false;
-    m_shape_eventbase = 0;
+
 #ifdef SHAPE
     int shape_err;
-    m_have_shape = XShapeQueryExtension(disp, &m_shape_eventbase, &shape_err);
+    s_have_shape = XShapeQueryExtension(disp, &s_shape_eventbase, &shape_err);
 #endif // SHAPE
 
-#ifdef HAVE_RANDR
-    // get randr event type
+#if defined(HAVE_RANDR) || defined(HAVE_RANDR1_2)
     int randr_error_base;
-    XRRQueryExtension(disp, &m_randr_event_type, &randr_error_base);
+    XRRQueryExtension(disp, &s_randr_event_type, &randr_error_base);
 #endif // HAVE_RANDR
 
     load_rc();
-
     grab();
 
     if (! XSupportsLocale())
@@ -796,8 +799,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     default: {
 
-#ifdef HAVE_RANDR
-        if (e->type == m_randr_event_type) {
+#if defined(HAVE_RANDR) || defined(HAVE_RANDR1_2)
+        if (e->type == s_randr_event_type) {
 #ifdef HAVE_RANDR1_2
             XRRUpdateConfiguration(e);
 #endif
@@ -1399,4 +1402,18 @@ void Fluxbox::workspaceAreaChanged(BScreen &screen) {
     STLUtil::forAllIf(m_atomhandler, mem_fun(&AtomHandler::update),
             CallMemFunWithRefArg<AtomHandler, BScreen&, void>(&AtomHandler::updateWorkarea, screen));
 }
+
+bool Fluxbox::haveShape() const {
+    return s_have_shape;
+}
+
+int Fluxbox::shapeEventbase() const {
+    return s_shape_eventbase;
+}
+
+Fluxbox* Fluxbox::instance() {
+    return s_singleton;
+}
+
+
 

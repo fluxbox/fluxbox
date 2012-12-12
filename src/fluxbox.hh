@@ -83,7 +83,7 @@ public:
             bool xsync = false);
     virtual ~Fluxbox();
 
-    static Fluxbox *instance() { return s_singleton; }
+    static Fluxbox *instance();
 
     /// main event loop
     void eventLoop();
@@ -177,8 +177,8 @@ public:
     typedef std::list<BScreen *> ScreenList;
     const ScreenList screenList() const { return m_screen_list; }
 
-    bool haveShape() const { return m_have_shape; }
-    int shapeEventbase() const { return m_shape_eventbase; }
+    bool haveShape() const;
+    int shapeEventbase() const;
     std::string getDefaultDataFilename(const char *name) const;
     // screen mouse was in at last key event
     BScreen *mouseScreen() { return m_mousescreen; }
@@ -285,9 +285,6 @@ private:
 
     std::auto_ptr<Keys> m_key;
 
-    //default arguments for titlebar left and right
-    static Fluxbox *s_singleton;
-
     typedef std::set<AtomHandler *> AtomHandlerContainer;
     typedef AtomHandlerContainer::iterator AtomHandlerContainerIt;
 
@@ -297,10 +294,6 @@ private:
     bool m_restarting;
     bool m_shutdown;
     int m_server_grabs;
-    int m_randr_event_type; ///< the type number of randr event
-    int m_shape_eventbase; ///< event base for shape events
-    bool m_have_shape; ///< if shape is supported by server
-    Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
 
     AttentionNoticeHandler m_attention_handler;
 };
