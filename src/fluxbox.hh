@@ -230,7 +230,6 @@ private:
     FbTk::ResourceManager m_resourcemanager, &m_screen_rm;
 
     std::string m_RC_PATH;
-    const char *m_RC_INIT_FILE;
 
     //--- Resources
 

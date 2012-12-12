@@ -149,6 +149,8 @@ using namespace FbTk;
 
 namespace {
 
+const char RC_INIT_FILE[] = "init";
+
 Window last_bad_window = None;
 
 // *** NOTE: if you want to debug here the X errors are
@@ -240,7 +242,6 @@ Fluxbox::Fluxbox(int argc, char **argv,
       m_screen_rm(m_resourcemanager),
 
       m_RC_PATH(rc_path),
-      m_RC_INIT_FILE("init"),
       m_rc_ignoreborder(m_resourcemanager, false, "session.ignoreBorder", "Session.IgnoreBorder"),
       m_rc_pseudotrans(m_resourcemanager, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
       m_rc_colors_per_channel(m_resourcemanager, 4,
@@ -1186,7 +1187,7 @@ void Fluxbox::save_rc() {
 /// @return filename of resource file
 string Fluxbox::getRcFilename() {
     if (m_rc_file.empty())
-        return getDefaultDataFilename(m_RC_INIT_FILE);
+        return getDefaultDataFilename(RC_INIT_FILE);
     return m_rc_file;
 }
 
