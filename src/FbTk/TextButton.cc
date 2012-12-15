@@ -122,8 +122,6 @@ void TextButton::clearArea(int x, int y,
                            unsigned int width, unsigned int height,
                            bool exposure) {
     Button::clearArea(x, y, width, height, exposure);
-    if (backgroundPixmap() == ParentRelative) 
-        drawText(0, 0, this);
 }
 
 
