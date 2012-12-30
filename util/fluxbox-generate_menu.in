@@ -331,7 +331,7 @@ searchForIcon(){
     if [ -f "$entry_icon" ]; then
     # if icon exists and entry does not already exists, add it
         if ! grep -q -m 1 "^.${entry_exec}.[[:space:]]*<.*/${icon_base}\....>" $ICONMAPPING 2> /dev/null; then
-            echo -e "\"${entry_exec}\" \t <${entry_icon}>" >> $ICONMAPPING
+            printf "\"${entry_exec}\" \t <${entry_icon}>\n" >> $ICONMAPPING
         else 
             : echo "#    mapping already exists for ${entry_exec}" >> $ICONMAPPING
         fi

@@ -505,7 +505,11 @@ if [ "$option" = random ]; then
             randomnumber=`random_number`
         # some shells don't support $RANDOM
         elif [ -z "$RANDOM" ]; then
-            randomnumber=`(echo $$ ;time ps; w ; date )2>&1 | cksum | cut -f1 -d' '`
+            if [ -r /dev/urandom ]; then
+                randomnumber=`hexdump -n 2 -e '/2 "%u"' /dev/urandom`
+            else
+                randomnumber=`(echo $$; ps; w; date) 2>&1 | cksum | cut -f1 -d' '`
+            fi
         else
             randomnumber="$RANDOM"
         fi
@@ -526,7 +530,7 @@ fi
 
 
 if [ ! -r "$wallpaper" ]; then
-	if [ "$ignore_missing_wallpaper" == "true" ]; then
+	if [ "$ignore_missing_wallpaper" = "true" ]; then
 		exit 0
 	fi
     message "Can't find wallpaper $wallpaper"
