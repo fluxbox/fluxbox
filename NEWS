@@ -21,6 +21,7 @@ Critical Bugfixes in 1.3.3:
 Other Bugfixes:
     * Fixed placement off transient windows in a multi-monitor setup with 'holes'
     * Fixed usage of '~' as part of style filenames
+    * Replaced (deprecated) XKeycodeToKeysym() with XkbKeycodeToKeysym()
     * Improved vertical alignment of text in decorations
     * Fixed compiler and code style issues
     * Updated italian translations
