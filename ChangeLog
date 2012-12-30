@@ -3,6 +3,11 @@
 -----------------------------
 Changes for 1.3.3
 
+*12/12/30:
+	* Use WM_WINDOW_ROLE for fluxbox' own windows (Thanks Vladimir Pavlov)
+	* Bugfix: Use window.stuck.pressed.pixmap in (Thanks Vladimir)
+	* Bugfix: Do not render the text twice in FbTk::TextButton (Vladimir)
+
 *12/12/11:
     * Bugfix: use expanded style-filename #3576586 (Mathias)
 
