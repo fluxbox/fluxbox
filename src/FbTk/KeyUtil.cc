@@ -23,6 +23,7 @@
 #include "App.hh"
 
 #include <X11/keysym.h>
+#include <X11/XKBlib.h>
 
 #include <string>
 #ifdef HAVE_CSTRING
@@ -96,8 +97,8 @@ void KeyUtil::loadModmap() {
             if (m_modmap->modifiermap[realkey] == 0)
                 continue;
 
-            KeySym ks = XKeycodeToKeysym(App::instance()->display(),
-                    m_modmap->modifiermap[realkey], 0);
+            KeySym ks = XkbKeycodeToKeysym(App::instance()->display(),
+                    m_modmap->modifiermap[realkey], 0, 0);
 
             switch (ks) {
             // we just want to clean the Lock modifier, not specifically the
