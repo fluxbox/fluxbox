@@ -1,7 +1,7 @@
 fluxbox-remote(1)
 =================
 Mark Tiefenbruck <mark@fluxbox.org>
-v1.3.1, 27 February 2011
+v1.3.3, 30 December 2012
 :man source: fluxbox-remote.txt
 :man version: {revision}
 :man manual: Fluxbox Manual

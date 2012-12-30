@@ -1,7 +1,7 @@
 fbrun(1)
 ========
 Jim Ramsay <i.am@jimramsay.com>
-v1.1.2, 18 February 2009
+v1.3.3, 30 December 2012
 :man source:   fbrun.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
