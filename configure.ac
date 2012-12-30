@@ -11,7 +11,7 @@ dnl AC_AIX
 dnl AC_ISC_POSIX
 
 AC_LANG_CPLUSPLUS
- 
+
 dnl Locate required external software
 AC_PROG_CC
 AC_PROG_CXX
@@ -32,18 +32,18 @@ dnl Check for system header files
 AC_HEADER_STDC
 AC_HEADER_STDBOOL
 AC_CHECK_HEADERS(errno.h ctype.h dirent.h fcntl.h libgen.h \
-                 locale.h math.h nl_types.h process.h signal.h stdarg.h \
-                 stdint.h stdio.h time.h unistd.h \
-                 sys/param.h sys/select.h sys/signal.h sys/stat.h \
-                 sys/time.h sys/types.h sys/wait.h \
-                 langinfo.h iconv.h)
+		 locale.h math.h nl_types.h process.h signal.h stdarg.h \
+		 stdint.h stdio.h time.h unistd.h \
+		 sys/param.h sys/select.h sys/signal.h sys/stat.h \
+		 sys/time.h sys/types.h sys/wait.h \
+		 langinfo.h iconv.h)
 
 
 
 AC_CHECK_HEADERS(sstream,,[
     AC_CHECK_HEADERS(strstream,,[
-        AC_MSG_ERROR([Your libstdc++ doesn't have the sstream or strstream classes])]
-        )]
+	AC_MSG_ERROR([Your libstdc++ doesn't have the sstream or strstream classes])]
+	)]
 )
 
 AC_CHECK_HEADERS(cassert cctype cerrno cmath cstdarg cstdint cstdio cstdlib cstring ctime)
@@ -70,7 +70,7 @@ AC_SEARCH_LIBS([catgets], [catgets], [], [])
 dnl The autoconf test for strftime is broken now (due to gcc 3.3 bug?):
 dnl Gcc 3.3 testprog = ``extern "C" char strftime;'', build with g++ test.cc
 dnl breaks with:
-dnl   test.cc:1: error: nonnull argument with out-of-range operand number 
+dnl   test.cc:1: error: nonnull argument with out-of-range operand number
 dnl   (arg 1, operand 3)
 
 
@@ -94,39 +94,39 @@ size_t x = strftime(s, 5, "%a", localtime(&t));
 AC_MSG_CHECKING(for clock_gettime)
 AC_COMPILE_IFELSE(
     [AC_LANG_PROGRAM(
-        [#include <time.h>],
-        [[
-        clock_gettime(CLOCK_MONOTONIC, 0);
-        return 0;
-        ]]
+	[#include <time.h>],
+	[[
+	clock_gettime(CLOCK_MONOTONIC, 0);
+	return 0;
+	]]
     )],
     [
-        AC_DEFINE(HAVE_CLOCK_GETTIME, 1, [Define to 1 if you have the 'clock_gettime' function.])
-        AC_MSG_RESULT(yes)
-        # *bsd has clock_gettime() in libc
-        AC_CHECK_LIB(rt, clock_gettime, LIBS="-lrt $LIBS")
+	AC_DEFINE(HAVE_CLOCK_GETTIME, 1, [Define to 1 if you have the 'clock_gettime' function.])
+	AC_MSG_RESULT(yes)
+	# *bsd has clock_gettime() in libc
+	AC_CHECK_LIB(rt, clock_gettime, LIBS="-lrt $LIBS")
     ],
     [
-        AC_MSG_RESULT(no)
+	AC_MSG_RESULT(no)
     ]
 )
 
 AC_MSG_CHECKING(for mach_absolute_time)
 AC_COMPILE_IFELSE(
     [AC_LANG_PROGRAM(
-        [#include <mach/mach_time.h>],
-        [[
-        mach_absolute_time();
-        return 0;
-        ]]
+	[#include <mach/mach_time.h>],
+	[[
+	mach_absolute_time();
+	return 0;
+	]]
     )],
     [
-        AC_DEFINE(HAVE_MACH_ABSOLUTE_TIME, 1, [Define to 1 if you have the 'mach_absolute_time' function.])
-        AC_MSG_RESULT(yes)
-        #AC_CHECK_LIB(, clock_gettime, LIBS="-lrt $LIBS")
+	AC_DEFINE(HAVE_MACH_ABSOLUTE_TIME, 1, [Define to 1 if you have the 'mach_absolute_time' function.])
+	AC_MSG_RESULT(yes)
+	#AC_CHECK_LIB(, clock_gettime, LIBS="-lrt $LIBS")
     ],
     [
-        AC_MSG_RESULT(no)
+	AC_MSG_RESULT(no)
     ]
 )
 
@@ -142,58 +142,58 @@ dnl Find iconv. It may be in libiconv and may be iconv() or libiconv()
 if test "x$ac_cv_header_iconv_h" = "xyes"; then
     ac_found_iconv=no
     AC_COMPILE_IFELSE(
-        [AC_LANG_PROGRAM(
-        [[#include <stdlib.h>
-          #include <iconv.h>]],
-        [[
-          iconv_open(NULL, NULL);
-          return 0;
-        ]]
-        )],
-        [
-            ac_found_iconv=yes
-        ],
-        [ ])
-     
+	[AC_LANG_PROGRAM(
+	[[#include <stdlib.h>
+	  #include <iconv.h>]],
+	[[
+	  iconv_open(NULL, NULL);
+	  return 0;
+	]]
+	)],
+	[
+	    ac_found_iconv=yes
+	],
+	[ ])
+
     AC_COMPILE_IFELSE(
-        [AC_LANG_PROGRAM(
-        [[#include <stdlib.h>
-          #include <iconv.h>]],
-        [[
-          libiconv_open(NULL, NULL);
-          return 0;
-        ]]
-        )],
-        [
-            ac_found_iconv=yes
-        ],
-        [ ])
+	[AC_LANG_PROGRAM(
+	[[#include <stdlib.h>
+	  #include <iconv.h>]],
+	[[
+	  libiconv_open(NULL, NULL);
+	  return 0;
+	]]
+	)],
+	[
+	    ac_found_iconv=yes
+	],
+	[ ])
 
     if test "x$ac_found_iconv" = xyes; then
-        AC_DEFINE(HAVE_ICONV, 1, [Define if you have the iconv() function.])
-        AC_CHECK_LIB(iconv, iconv_open, LIBS="-liconv $LIBS")
-        AC_CHECK_LIB(iconv, libiconv_open, LIBS="-liconv $LIBS")
+	AC_DEFINE(HAVE_ICONV, 1, [Define if you have the iconv() function.])
+	AC_CHECK_LIB(iconv, iconv_open, LIBS="-liconv $LIBS")
+	AC_CHECK_LIB(iconv, libiconv_open, LIBS="-liconv $LIBS")
 
 dnl Check if iconv uses const in prototype declaration
-        AC_CACHE_CHECK(for iconv declaration, 
-                        ac_cv_iconv_const,
-                        [AC_COMPILE_IFELSE(
-                            [AC_LANG_PROGRAM(
-                             [[#include <stdlib.h>
-                               #include <iconv.h>]],
-                             [[
-                               char **msg, **new_msg; 
-                               size_t result, inleft, outleft; 
-                               result = iconv((iconv_t)(-1), msg, &inleft, new_msg, &outleft);
-                               return 0;
-                             ]]
-                             )],
-                             [ac_cv_iconv_const=no],
-                             [ac_cv_iconv_const=yes])
-                        ])
-        if test "x$ac_cv_iconv_const" = xyes; then
-            AC_DEFINE(HAVE_CONST_ICONV, 1, [Define if you have the iconv() function.])
-        fi
+	AC_CACHE_CHECK(for iconv declaration,
+			ac_cv_iconv_const,
+			[AC_COMPILE_IFELSE(
+			    [AC_LANG_PROGRAM(
+			     [[#include <stdlib.h>
+			       #include <iconv.h>]],
+			     [[
+			       char **msg, **new_msg;
+			       size_t result, inleft, outleft;
+			       result = iconv((iconv_t)(-1), msg, &inleft, new_msg, &outleft);
+			       return 0;
+			     ]]
+			     )],
+			     [ac_cv_iconv_const=no],
+			     [ac_cv_iconv_const=yes])
+			])
+	if test "x$ac_cv_iconv_const" = xyes; then
+	    AC_DEFINE(HAVE_CONST_ICONV, 1, [Define if you have the iconv() function.])
+	fi
     fi
 fi
 
@@ -241,11 +241,11 @@ AC_ARG_ENABLE(regexp,
     AS_HELP_STRING([--enable-regexp],[regular expression support (default=yes)]),,[enable_regexp=yes])
 AS_IF(test "x$enable_regexp" = "xyes",[
     AC_EGREP_HEADER([regex_t],regex.h,
-        AC_DEFINE(USE_REGEXP, 1, "Regular Expression support")
-        AC_MSG_RESULT([yes])
-        REGEXP_SRC=true,
-        AC_MSG_RESULT([no])
-        REGEXP_SRC=false
+	AC_DEFINE(USE_REGEXP, 1, "Regular Expression support")
+	AC_MSG_RESULT([yes])
+	REGEXP_SRC=true,
+	AC_MSG_RESULT([no])
+	REGEXP_SRC=false
     )],[])
 AM_CONDITIONAL(REGEXP_SRC, test x$REGEXP_SRC = xtrue)
 
@@ -263,7 +263,7 @@ AM_CONDITIONAL(SLIT_SRC, test "x$enable_slit" = "xyes")
 
 dnl Check for Toolbar options
 AC_MSG_CHECKING([whether to include Toolbar])
-AC_ARG_ENABLE(toolbar, 
+AC_ARG_ENABLE(toolbar,
     AS_HELP_STRING([--enable-toolbar],[include Toolbar (default=yes)]),,[enable_toolbar=yes])
 AC_MSG_RESULT([$enable_toolbar])
 AS_IF(test "x$enable_toolbar" = "xyes",[AC_DEFINE(USE_TOOLBAR, 1, " compile with toolbar")],[])
@@ -330,16 +330,16 @@ AM_PATH_XFT(yes, XFT=true, XFT=false)
 AS_IF(test "x$XFT" = "xtrue",[
 	AC_TRY_LINK([
 			#include <X11/Xft/Xft.h>
-		], [ XftFontClose(0, 0); return 1; ], 
+		], [ XftFontClose(0, 0); return 1; ],
 	[
-		
+
 		AC_DEFINE(USE_XFT, 1, "antialias support")
-        AC_MSG_CHECKING([Xft UTF-8 support])
-        AC_TRY_LINK([
+	AC_MSG_CHECKING([Xft UTF-8 support])
+	AC_TRY_LINK([
 			#include <X11/Xft/Xft.h>
 		], [ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; ],
 		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
-        FEATURES="$FEATURES XFT"
+	FEATURES="$FEATURES XFT"
 		AC_MSG_RESULT(yes),
 		AC_MSG_RESULT(no)
 		)
@@ -353,25 +353,25 @@ AM_CONDITIONAL(XFT, test "x$XFT" = "xtrue")
 
 AC_MSG_CHECKING([whether to have XRENDER (transparent) support])
 AC_ARG_ENABLE(xrender,
-              AS_HELP_STRING([--enable-xrender],[XRENDER (transparent) support (default=yes)]),,[enable_xrender=yes])
+	      AS_HELP_STRING([--enable-xrender],[XRENDER (transparent) support (default=yes)]),,[enable_xrender=yes])
 AC_MSG_RESULT([$enable_xrender])
 AS_IF(test "x$enable_xrender" = "xyes",[
-    AC_CHECK_LIB(Xrender, XRenderCreatePicture, 
-        AC_DEFINE(HAVE_XRENDER, 1, "Xrender support")
-        LIBS="-lXrender $LIBS")
+    AC_CHECK_LIB(Xrender, XRenderCreatePicture,
+	AC_DEFINE(HAVE_XRENDER, 1, "Xrender support")
+	LIBS="-lXrender $LIBS")
     ],[])
 
 
 XPM=false
 AC_MSG_CHECKING([whether to have XPM (pixmap themes) support])
-AC_ARG_ENABLE(xpm, 
+AC_ARG_ENABLE(xpm,
     AS_HELP_STRING([--enable-xpm],[XPM (pixmap themes) support (default=yes)]),[],[enable_xpm=yes])
 AC_MSG_RESULT([$enable_xpm])
 AS_IF(test "x$enable_xpm" = "xyes",[
    AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
-                AC_DEFINE(HAVE_XPM, 1, "Xpm support")
-                XPM=true
-                LIBS="-lXpm $LIBS")
+		AC_DEFINE(HAVE_XPM, 1, "Xpm support")
+		XPM=true
+		LIBS="-lXpm $LIBS")
    ],[])
 
 AM_CONDITIONAL(XPM, test "x$XPM" = "xtrue")
@@ -384,13 +384,13 @@ AC_ARG_ENABLE(imlib2,
 AC_MSG_RESULT([$enable_imlib2])
 AS_IF(test x$enable_imlib2 = "xyes",[
     AC_PATH_GENERIC(imlib2, 1.0.0,[
-        IMLIB2=true
-        AC_DEFINE(HAVE_IMLIB2, [], [Imlib2 support])
-        LIBS="$IMLIB2_LIBS $LIBS"
-        CXXFLAGS="$CXXFLAGS $IMLIB2_CFLAGS"
-        FEATURES="$FEATURES IMLIB2"
-        ], []
-        )],[])
+	IMLIB2=true
+	AC_DEFINE(HAVE_IMLIB2, [], [Imlib2 support])
+	LIBS="$IMLIB2_LIBS $LIBS"
+	CXXFLAGS="$CXXFLAGS $IMLIB2_CFLAGS"
+	FEATURES="$FEATURES IMLIB2"
+	], []
+	)],[])
 
 AM_CONDITIONAL(IMLIB2, test "x$IMLIB2" = "xtrue")
 
@@ -406,21 +406,21 @@ AM_CONDITIONAL(MULTIBYTE, test "x$enable_xmb" = "xyes")
 dnl Check for Xinerama support and proper library files.
 AC_MSG_CHECKING([whether to build support for the XINERAMA extension])
 AC_ARG_ENABLE(xinerama,
-              AS_HELP_STRING([--enable-xinerama], [XINERAMA extension support (default=yes)]), ,[enable_xinerama=yes])
+	      AS_HELP_STRING([--enable-xinerama], [XINERAMA extension support (default=yes)]), ,[enable_xinerama=yes])
 
 AS_IF(test "x$enable_xinerama" = "xyes",[
     AC_CHECK_LIB(Xinerama, XineramaQueryScreens,
-                 AC_MSG_CHECKING([for X11/extensions/Xinerama.h])
-                 AC_TRY_COMPILE(
+		 AC_MSG_CHECKING([for X11/extensions/Xinerama.h])
+		 AC_TRY_COMPILE(
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/Xinerama.h>
       , XineramaQueryScreens(0, 0),
-                 AC_MSG_RESULT([yes])
-                 AC_DEFINE(XINERAMA, [1], [Define to 1 if you have XINERAMA])
-                 LIBS="-lXinerama $LIBS"
-                 FEATURES="$FEATURES XINERAMA",
-                 AC_MSG_RESULT([no])))],[
+		 AC_MSG_RESULT([yes])
+		 AC_DEFINE(XINERAMA, [1], [Define to 1 if you have XINERAMA])
+		 LIBS="-lXinerama $LIBS"
+		 FEATURES="$FEATURES XINERAMA",
+		 AC_MSG_RESULT([no])))],[
   AC_MSG_RESULT([no])
   CONFIGOPTS="$CONFIGOPTS --disable-xinerama"])
 
@@ -431,17 +431,17 @@ AC_ARG_ENABLE(shape,
 	AS_HELP_STRING([--enable-shape], [XSHAPE extension support (default=yes)]), , [enable_shape=yes])
 AS_IF(test "x$enable_shape" = "xyes",[
     AC_CHECK_LIB(Xext, XShapeCombineShape,
-        AC_MSG_CHECKING([for X11/extensions/shape.h])
-        AC_TRY_COMPILE(
+	AC_MSG_CHECKING([for X11/extensions/shape.h])
+	AC_TRY_COMPILE(
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/shape.h>
       , long foo = ShapeSet,
-        AC_MSG_RESULT([yes])
-        AC_DEFINE(SHAPE, [1], [Define to 1 if you have SHAPE])
-        LIBS="-lXext $LIBS"
-        FEATURES="$FEATURES SHAPE",
-        AC_MSG_RESULT([no])))],[
+	AC_MSG_RESULT([yes])
+	AC_DEFINE(SHAPE, [1], [Define to 1 if you have SHAPE])
+	LIBS="-lXext $LIBS"
+	FEATURES="$FEATURES SHAPE",
+	AC_MSG_RESULT([no])))],[
   AC_MSG_RESULT([no])
   CONFIGOPTS="$CONFIGOPTS --disable-shape"])
 
@@ -456,35 +456,35 @@ AC_ARG_ENABLE(randr,
 AS_IF(test "x$enable_randr" = "xyes", [
     AC_MSG_RESULT([yes])
     AC_CHECK_LIB(Xrandr, XRRQueryExtension, [
-        AC_MSG_CHECKING([for X11/extensions/Xrandr.h])
-        AC_COMPILE_IFELSE([
-            AC_LANG_PROGRAM([[#include <X11/Xlib.h>
+	AC_MSG_CHECKING([for X11/extensions/Xrandr.h])
+	AC_COMPILE_IFELSE([
+	    AC_LANG_PROGRAM([[#include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/Xrandr.h>
-                ]], [[XRRQueryExtension(0, 0, 0);]]
-            )], [
-            AC_MSG_RESULT([yes])
-            AC_DEFINE(HAVE_RANDR, [1], [Define to 1 if you have RANDR])
-            LIBS="-lXrandr $LIBS"
-            FEATURES="$FEATURES RANDR"
+		]], [[XRRQueryExtension(0, 0, 0);]]
+	    )], [
+	    AC_MSG_RESULT([yes])
+	    AC_DEFINE(HAVE_RANDR, [1], [Define to 1 if you have RANDR])
+	    LIBS="-lXrandr $LIBS"
+	    FEATURES="$FEATURES RANDR"
 
-            AC_MSG_CHECKING([for XRRUpdateConfiguration])
-            AC_COMPILE_IFELSE([
-                AC_LANG_PROGRAM([[#include <X11/Xlib.h>
+	    AC_MSG_CHECKING([for XRRUpdateConfiguration])
+	    AC_COMPILE_IFELSE([
+		AC_LANG_PROGRAM([[#include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/extensions/Xrandr.h>
-                    ]], [[XRRUpdateConfiguration(0);]]
-                )], [
-                    AC_MSG_RESULT([yes])
-                    AC_DEFINE(HAVE_RANDR1_2, [1], [Define to 1 if you have RANDR 1.2])
-                ], [
-                    AC_MSG_RESULT([no])
-                ])
-            ], [
-                AC_MSG_RESULT([no])
-            ])
-        ],[
-        AC_MSG_RESULT([no])
+		    ]], [[XRRUpdateConfiguration(0);]]
+		)], [
+		    AC_MSG_RESULT([yes])
+		    AC_DEFINE(HAVE_RANDR1_2, [1], [Define to 1 if you have RANDR 1.2])
+		], [
+		    AC_MSG_RESULT([no])
+		])
+	    ], [
+		AC_MSG_RESULT([no])
+	    ])
+	],[
+	AC_MSG_RESULT([no])
     ])],[
     AC_MSG_RESULT([no])
     CONFIGOPTS="$CONFIGOPTS --disable-randr"])
@@ -582,7 +582,7 @@ dnl Determine if maintainer portions of the Makefiles should be included.
 dnl AM_MAINTAINER_MODE
 
 dnl Output files
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADER(config.h)
 
 AC_OUTPUT(Makefile
 version.h
