@@ -2,12 +2,12 @@
 .\"     Title: fluxbox-keys
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 28 October 2011
+.\"      Date: 30 December 2012
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "28 October 2011" "fluxbox\-keys\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "30 December 2012" "fluxbox\-keys\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -83,6 +83,11 @@ The mouse cursor is over a window\&.
 \fBOnTitlebar\fR
 .RS 4
 The mouse cursor is over a window\(cqs titlebar\&.
+.RE
+.PP
+\fBOnTab\fR
+.RS 4
+The mouse cursor is over a tab\&.
 .RE
 .PP
 \fBDouble\fR
@@ -273,8 +278,16 @@ Start dragging to resize the window as if you had grabbed the window at the spec
 By default \fIcorner\fR is \fBBottomRight\fR, but may be overridden with one of:
 .RS 4
 
-\fBNearestCorner NearestEdge Center TopLeft Top TopRight Left Right BottomLeft Bottom BottomRight\fR
+\fBNearestCorner NearestEdge NearestCornerOrEdge Center TopLeft Top TopRight Left Right BottomLeft Bottom BottomRight\fR
 .RE
+.sp
+If
+\fBNearestCornerOrEdge\fR
+is specified the size of the corner can also be specified to be the larger of one or two following numbers: [\fIpixel\-size\fR
+[\fIpercent\-size\fR]] or
+\fIpercent\-size\fR%, where
+\fIpercent\-size\fR
+is the percentage of half the window width or height\&. If no size is given, it defaults to 50 pixels and 30%\&.
 .RE
 .PP
 \fBStartTabbing\fR

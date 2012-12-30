@@ -2,12 +2,12 @@
 .\"     Title: fluxbox-apps
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 28 October 2011
+.\"      Date: 30 December 2012
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-apps.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-APPS" "5" "28 October 2011" "fluxbox\-apps\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-APPS" "5" "30 December 2012" "fluxbox\-apps\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
