@@ -1530,7 +1530,11 @@ else
     done
 fi
 DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
-DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
+if [ "x$DEFAULT_BROWSERNAME" != "x" ]; then
+	DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
+else
+	DEFAULT_BROWSERNAME="firefox"
+fi
 
 if [ -z "$LAUNCHER" ]; then
     LAUNCHER=@pkgprefix@fbrun@pkgsuffix@@EXEEXT@
