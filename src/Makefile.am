@@ -77,7 +77,11 @@ defaults.cc: force
 		echo '}'; \
 		echo ''; \
 		echo 'const char* gitrevision() {'; \
-		echo '  return "'`cat $$GITDIR/$$(cat $$GITDIR/HEAD | cut -f 2 -d ' ')`'";';\
+		if test -r $$GITDIR/HEAD; then \
+			echo '  return "'`cat $$GITDIR/$$(cat $$GITDIR/HEAD | cut -f 2 -d ' ')`'";'; \
+		else \
+			echo '  return "this_is_tar_ball_build";'; \
+		fi; \
 		echo '}' ) > defaults_tmp.cc
 	@if ! cmp defaults_tmp.cc defaults.cc ; then cp defaults_tmp.cc defaults.cc; fi
 	@rm defaults_tmp.cc
