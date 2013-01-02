@@ -1,7 +1,11 @@
 dnl Initialize autoconf and automake
-AC_INIT(src/main.cc)
 AC_PREREQ(2.52)
-AM_INIT_AUTOMAKE(fluxbox,1.3.3,[no-define])
+AC_INIT([fluxbox],
+	[1.3.3],
+	[fluxbox-devel@lists.sourceforge.net],,
+	[http://fluxbox.org/])
+AC_CONFIG_SRCDIR([src/fluxbox.cc])
+AM_INIT_AUTOMAKE([foreign 1.10 tar-pax dist-bzip2 no-dist-gzip dist-xz])
 
 dnl Determine default prefix
 AS_IF(test "x$prefix" = "xNONE",[prefix="$ac_default_prefix"])
