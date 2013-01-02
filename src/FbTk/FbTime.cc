@@ -71,7 +71,7 @@ uint64_t _now() {
         initial = false;
         mach_timebase_info_data_t info;
         if (mach_timebase_info(&info) == 0) {
-            micro_scale *= static_cast<double>info.numer / static_cast<double>(info.denom);
+            micro_scale *= static_cast<double>(info.numer) / static_cast<double>(info.denom);
         }
     }
 
