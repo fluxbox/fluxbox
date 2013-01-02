@@ -1,6 +1,6 @@
 # util/Makefile.am for Fluxbox
 SUBDIRS=		fbrun
-INCLUDES= 		-I$(top_srcdir)/src -I$(top_srcdir)/src/FbTk
+AM_CPPFLAGS= 		-I$(top_srcdir)/src -I$(top_srcdir)/src/FbTk
 bin_SCRIPTS= 		fbsetbg fluxbox-generate_menu startfluxbox
 bin_PROGRAMS=		fbsetroot fluxbox-update_configs fluxbox-remote
 fbsetroot_SOURCES=	fbsetroot.cc fbsetroot.hh
