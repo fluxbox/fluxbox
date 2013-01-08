@@ -10,10 +10,9 @@ Adding a new translation
      THE_LANG = sv_SE
      CODESET = ISO-8859-1
 
-5. Add your directory at the end of configure.in.
+5. Add your directory at the end of configure.ac.
 6. run ./autogen.sh (in upper directory)
 7. run ./configure
-     
 
     Details regarding the meaning of all of the positions & default values
     would be listed in Translation.m.desc, if you're kind enough to write it.
