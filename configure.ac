@@ -5,7 +5,7 @@ AC_INIT([fluxbox],
 	[fluxbox-devel@lists.sourceforge.net],,
 	[http://fluxbox.org/])
 AC_CONFIG_SRCDIR([src/fluxbox.cc])
-AM_INIT_AUTOMAKE([foreign 1.10 tar-pax dist-bzip2 no-dist-gzip dist-xz])
+AM_INIT_AUTOMAKE([foreign 1.10 tar-pax dist-bzip2])
 
 dnl Determine default prefix
 AS_IF(test "x$prefix" = "xNONE",[prefix="$ac_default_prefix"])
