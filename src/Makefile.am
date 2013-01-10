@@ -106,11 +106,14 @@ TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \
 	WorkspaceNameTool.hh WorkspaceNameTool.cc WorkspaceNameTheme.hh \
 	IconbarTool.hh IconbarTool.cc \
 	ToolTheme.hh ToolTheme.cc \
-	SystemTray.hh SystemTray.cc \
 	GenericTool.hh GenericTool.cc \
 	ButtonTool.hh ButtonTool.cc ButtonTheme.hh ButtonTheme.cc \
 	ToolFactory.hh ToolFactory.cc
+if SYSTRAY_SRC
+TOOLBAR_SOURCE += SystemTray.hh SystemTray.cc
 endif
+endif
+
 
 if SLIT_SRC
 SLIT_SOURCE = Slit.cc Slit.hh SlitTheme.hh SlitTheme.cc SlitClient.hh SlitClient.cc
@@ -174,5 +177,4 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	${SLIT_SOURCE} \
 	${TOOLBAR_SOURCE}
 
-
-LDADD=FbTk/libFbTk.a FbTk/LogicCommands.o defaults.$(OBJEXT)
+LDADD=FbTk/libFbTk.a defaults.$(OBJEXT)

@@ -55,7 +55,9 @@
 #include "HeadArea.hh"
 #include "RectangleUtil.hh"
 #include "FbCommands.hh"
+#ifdef USE_SYSTRAY
 #include "SystemTray.hh"
+#endif
 #include "Debug.hh"
 
 #include "FbTk/I18n.hh"
@@ -1212,7 +1214,7 @@ bool BScreen::addKdeDockapp(Window client) {
     FbTk::EventManager *evm = FbTk::EventManager::instance();
 
     AtomHandler* handler = 0;
-#if USE_TOOLBAR
+#if USE_SYSTRAY
     handler = Fluxbox::instance()->getAtomHandler(SystemTray::getNetSystemTrayAtom(screenNumber()));
 #endif
     if (handler == 0) {

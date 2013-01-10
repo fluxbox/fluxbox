@@ -24,7 +24,9 @@
 // Tools
 #include "ButtonTool.hh"
 #include "ClockTool.hh"
+#ifdef USE_SYSTRAY
 #include "SystemTray.hh"
+#endif
 #include "IconbarTool.hh"
 #include "WorkspaceNameTool.hh"
 #include "ArrowButton.hh"
@@ -87,7 +89,9 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
     } else if (name == "iconbar") {
         item = new IconbarTool(parent, m_iconbar_theme, m_focused_iconbar_theme, m_unfocused_iconbar_theme, screen(), tbar.menu());
     } else if (name == "systemtray") {
+#ifdef USE_SYSTRAY
         item = new SystemTray(parent, dynamic_cast<ButtonTheme &>(*m_systray_theme), screen());
+#endif
     } else if (name == "clock") {
         item = new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
     } else {

@@ -265,11 +265,23 @@ AS_IF(test "x$enable_slit" = "xyes",[AC_DEFINE(USE_SLIT, 1, " compile with slit"
 AM_CONDITIONAL(SLIT_SRC, test "x$enable_slit" = "xyes")
 
 
+
+dnl Check for Systemtray options
+AC_MSG_CHECKING([whether to include SystemTray])
+AC_ARG_ENABLE(systray,
+    AS_HELP_STRING([--enable-systray],[include SystemTray (default=yes)]),,[enable_systray=yes])
+AC_MSG_RESULT([$enable_systray])
+AS_IF(test "x$enable_systray" = "xyes",[AC_DEFINE(USE_SYSTRAY, 1, " compile with systemtray")],[])
+AM_CONDITIONAL(SYSTRAY_SRC, test "x$enable_systray" = "xyes")
+
 dnl Check for Toolbar options
-AC_MSG_CHECKING([whether to include Toolbar])
+AC_MSG_CHECKING([whether to include Toolbaddr])
 AC_ARG_ENABLE(toolbar,
     AS_HELP_STRING([--enable-toolbar],[include Toolbar (default=yes)]),,[enable_toolbar=yes])
 AC_MSG_RESULT([$enable_toolbar])
+AS_IF(test "x$enable_systray" = "xyes" -a "x$enable_toolbar" != "xyes",[
+    AC_MSG_RESULT([disabled toolbar, but enabled systray => reenable toolbar])
+    AS_VAR_SET(enable_toolbar, "yes")],[])
 AS_IF(test "x$enable_toolbar" = "xyes",[AC_DEFINE(USE_TOOLBAR, 1, " compile with toolbar")],[])
 AM_CONDITIONAL(TOOLBAR_SRC, test "x$enable_toolbar" = "xyes")
 

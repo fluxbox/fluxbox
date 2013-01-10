@@ -187,6 +187,12 @@ static void showInfo(ostream &ostr) {
 #endif // SLIT
         "SLIT" << endl <<
 
+#ifndef USE_SYSTRAY
+        NOT <<
+#endif
+        "SYSTEMTRAY" << endl <<
+
+
 #ifndef USE_TOOLBAR
         NOT <<
 #endif // USE_TOOLBAR
