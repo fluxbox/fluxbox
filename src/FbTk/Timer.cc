@@ -52,6 +52,7 @@
 #endif
 
 #include <cstdio>
+#include <vector>
 #include <set>
 
 
@@ -195,32 +196,35 @@ void Timer::updateTimers(int fd) {
         return;
     }
 
-    now = FbTime::now();
-    for (it = s_timerlist.begin(); it != s_timerlist.end(); ) {
+    // stoping / restarting the timers modifies the list in an upredictable
+    // way. to avoid problems such as infinite loops we save the current
+    // (ordered) list of timers into a list and work on it.
 
-        // t->fireTimeout() might add timers to the list
-        // this invalidates 'it'. thus we store the current timer
-        Timer* t = *it;
+    ssize_t i;
+    const ssize_t ts = s_timerlist.size();
+    std::vector<FbTk::Timer*> timers;
+
+    timers.reserve(ts);
+    for (it = s_timerlist.begin(); it != s_timerlist.end(); ++it ) {
+        timers.push_back(*it);
+    }
+
+    now = FbTime::now();
+    for (i = 0; i < ts; ++i) {
+
+        FbTk::Timer* t = timers[i];
+
         if (now < t->getEndTime()) {
             break;
         }
 
         t->fireTimeout();
-
-        // find the iterator to the timer again
-        // and continue working on the list
-        it = s_timerlist.find(t);
-        it++;
-        s_timerlist.erase(t);
+        t->stop();
 
         if (! t->doOnce()) { // restart the current timer
-            t->m_timing = false;
             t->start();
-        } else {
-            t->stop();
         }
     }
-
 }
 
 
