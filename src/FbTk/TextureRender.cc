@@ -779,25 +779,26 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
 
     if (texture.type() & Texture::INTERLACED) {
         lgc.setForeground(texture.colorTo());
-        register unsigned int i = 0;
-        for (; i < height; i += 2)
+        unsigned int i;
+        for (i = 0; i < height; i += 2)
             pixmap.drawLine(lgc.gc(), 0, i, width - 1, i);
 
     }
 
     lgc.setForeground(texture.loColor());
 
-    if (texture.type() & Texture::BEVEL1) {
+
+    if (height > 1 && width > 1 && texture.type() & Texture::BEVEL1) {
         if (texture.type() & Texture::RAISED) {
-            drawBevelRectangle(pixmap, lgc.gc(), hgc.gc(), 0, height - 1, width -1 , 0);
+            drawBevelRectangle(pixmap, lgc.gc(), hgc.gc(), 0, height - 1, width - 1, 0);
         } else if (texture.type() & Texture::SUNKEN) {
             drawBevelRectangle(pixmap, hgc.gc(), lgc.gc(), 0, height - 1, width - 1, 0);
         }
-    } else if (texture.type() & Texture::BEVEL2) {
+    } else if (width > 2 && height > 2 && texture.type() & Texture::BEVEL2) {
         if (texture.type() & Texture::RAISED) {
-            drawBevelRectangle(pixmap, lgc.gc(), hgc.gc(), 1, height - 3, width - 3, 1);
+            drawBevelRectangle(pixmap, lgc.gc(), hgc.gc(), 1, height - 2, width - 2, 1);
         } else if (texture.type() & Texture::SUNKEN) {
-            drawBevelRectangle(pixmap, hgc.gc(), lgc.gc(), 1, height - 3, width - 3, 1);
+            drawBevelRectangle(pixmap, hgc.gc(), lgc.gc(), 1, height - 2, width - 2, 1);
         }
     }
 
