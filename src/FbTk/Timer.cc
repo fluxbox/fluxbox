@@ -200,31 +200,31 @@ void Timer::updateTimers(int fd) {
     // way. to avoid problems such as infinite loops we save the current
     // (ordered) list of timers into a list and work on it.
 
-    ssize_t i;
-    const ssize_t ts = s_timerlist.size();
-    std::vector<FbTk::Timer*> timers;
-
-    timers.reserve(ts);
-    for (it = s_timerlist.begin(); it != s_timerlist.end(); ++it ) {
-        timers.push_back(*it);
-    }
+    static std::vector<FbTk::Timer*> timeouts;
 
     now = FbTime::now();
-    for (i = 0; i < ts; ++i) {
-
-        FbTk::Timer* t = timers[i];
-
-        if (now < t->getEndTime()) {
+    for (it = s_timerlist.begin(); it != s_timerlist.end(); ++it ) {
+        if (now < (*it)->getEndTime()) {
             break;
         }
+        timeouts.push_back(*it);
+    }
 
-        t->fireTimeout();
-        t->stop();
+    size_t i;
+    const size_t ts = timeouts.size();
+    for (i = 0; i < ts; ++i) {
 
-        if (! t->doOnce()) { // restart the current timer
-            t->start();
+        FbTk::Timer& t = *timeouts[i];
+
+        t.fireTimeout();
+        t.stop();
+
+        if (! t.doOnce()) { // restart the current timer
+            t.start();
         }
     }
+
+    timeouts.clear();
 }
 
 
