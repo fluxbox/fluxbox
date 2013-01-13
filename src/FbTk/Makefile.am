@@ -15,7 +15,9 @@ if IMLIB2
 imlib2_SOURCE= ImageImlib2.hh ImageImlib2.cc
 endif
 
-libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
+libFbTk_a_SOURCES = App.hh App.cc \
+	Color.cc Color.hh Command.hh \
+	ColorLUT.cc ColorLUT.hh \
 	Accessor.hh DefaultValue.hh \
 	FileUtil.hh FileUtil.cc \
 	EventHandler.hh EventManager.hh EventManager.cc \
