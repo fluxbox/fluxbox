@@ -872,11 +872,17 @@ Pixmap TextureRender::renderPixmap(const FbTk::Texture &src_texture) {
     return pm_copy.release();
 }
 
+
+
+
+
+
+
+
 XImage *TextureRender::renderXImage() {
 
     Display *disp = FbTk::App::instance()->display();
-    XImage *image =
-        XCreateImage(disp,
+    XImage *image = XCreateImage(disp,
                      control.visual(), control.depth(), ZPixmap, 0, 0,
                      width, height, 32, 0);
 
@@ -903,98 +909,86 @@ XImage *TextureRender::renderXImage() {
                         0, 0, 0);
 
     unsigned char *d = new unsigned char[image->bytes_per_line * (height + 1)];
-    register unsigned int x, y, r, g, b, o, offset;
+    unsigned int x, y, r, g, b, offset;
 
     unsigned char *pixel_data = d, *ppixel_data = d;
     unsigned long pixel;
 
-    o = image->bits_per_pixel + ((image->byte_order == MSBFirst) ? 1 : 0);
+    unsigned int o = image->bits_per_pixel + ((image->byte_order == MSBFirst) ? 1 : 0);
+
+
+#define TRANSFER_PIXELS(pixel_stmt, transfer_stmt) { \
+    RGBA _rgba; \
+    for (y = 0, offset = 0; y < height; y++) { \
+        for (x = 0; x < width; x++, offset++) { \
+            _rgba = rgba[offset]; \
+            r = red_table[_rgba.r]; \
+            g = green_table[_rgba.g]; \
+            b = blue_table[_rgba.b]; \
+            pixel = pixel_stmt; \
+            transfer_stmt; \
+        } \
+        pixel_data = (ppixel_data += image->bytes_per_line); \
+    } }
+
 
     switch (control.visual()->c_class) {
     case StaticColor:
     case PseudoColor:
-        for (y = 0, offset = 0; y < height; y++) {
-            for (x = 0; x < width; x++, offset++) {
-                r = red_table[rgba[offset].r];
-                g = green_table[rgba[offset].g];
-                b = blue_table[rgba[offset].b];
-
-                pixel_data = (ppixel_data += image->bytes_per_line);
-            }
-        }
+        TRANSFER_PIXELS((r * cpccpc) + (g * cpc) + b,
+                *pixel_data++ = control.colors()[pixel].pixel);
         break;
 
     case TrueColor:
-        for (y = 0, offset = 0; y < height; y++) {
-            for (x = 0; x < width; x++, offset++) {
-                r = red_table[rgba[offset].r];
-                g = green_table[rgba[offset].g];
-                b = blue_table[rgba[offset].b];
-
-                pixel = (r << red_offset) | (g << green_offset) | (b << blue_offset);
-
-                switch (o) {
-                case 8: //	8bpp
+        switch (o) {
+        case 8:
+            TRANSFER_PIXELS((r << red_offset)|(g << green_offset)|(b << blue_offset),
+                    *pixel_data++ = pixel);
+            break;
+        case 16:
+            TRANSFER_PIXELS((r << red_offset)|(g << green_offset)|(b << blue_offset),
                     *pixel_data++ = pixel;
-                    break;
-
-                case 16: // 16bpp LSB
+                    *pixel_data++ = pixel >> 8);
+            break;
+        case 17:
+            TRANSFER_PIXELS((r << red_offset)|(g << green_offset)|(b << blue_offset),
+                    *pixel_data++ = pixel >> 8;
+                    *pixel_data++ = pixel);
+            break;
+        case 24:
+            TRANSFER_PIXELS((r << red_offset)|(g << green_offset)|(b << blue_offset),
                     *pixel_data++ = pixel;
                     *pixel_data++ = pixel >> 8;
-                    break;
-
-                case 17: // 16bpp MSB
+                    *pixel_data++ = pixel >> 16);
+            break;
+        case 25:
+            TRANSFER_PIXELS((r << red_offset)|(g << green_offset)|(b << blue_offset),
+                    *pixel_data++ = pixel >> 16;
                     *pixel_data++ = pixel >> 8;
-                    *pixel_data++ = pixel;
-                    break;
-
-                case 24: // 24bpp LSB
+                    *pixel_data++ = pixel);
+            break;
+        case 32:
+            TRANSFER_PIXELS((r << red_offset)|(g << green_offset)|(b << blue_offset),
                     *pixel_data++ = pixel;
                     *pixel_data++ = pixel >> 8;
                     *pixel_data++ = pixel >> 16;
-                    break;
-
-                case 25: // 24bpp MSB
-                    *pixel_data++ = pixel >> 16;
-                    *pixel_data++ = pixel >> 8;
-                    *pixel_data++ = pixel;
-                    break;
-
-                case 32: // 32bpp LSB
-                    *pixel_data++ = pixel;
-                    *pixel_data++ = pixel >> 8;
-                    *pixel_data++ = pixel >> 16;
-                    *pixel_data++ = pixel >> 24;
-                    break;
-
-                case 33: // 32bpp MSB
+                    *pixel_data++ = pixel >> 24);
+            break;
+        case 33:
+            TRANSFER_PIXELS((r << red_offset)|(g << green_offset)|(b << blue_offset),
                     *pixel_data++ = pixel >> 24;
                     *pixel_data++ = pixel >> 16;
                     *pixel_data++ = pixel >> 8;
-                    *pixel_data++ = pixel;
-                    break;
-                }
-            }
-
-            pixel_data = (ppixel_data += image->bytes_per_line);
+                    *pixel_data++ = pixel);
+            break;
         }
 
         break;
 
     case StaticGray:
     case GrayScale:
-        for (y = 0, offset = 0; y < height; y++) {
-            for (x = 0; x < width; x++, offset++) {
-                r = *(red_table + rgba[offset].r);
-                g = *(green_table + rgba[offset].g);
-                b = *(blue_table + rgba[offset].b);
-
-                g = ((r * 30) + (g * 59) + (b * 11)) / 100;
-                *pixel_data++ = control.colors()[g].pixel;
-            }
-
-            pixel_data = (ppixel_data += image->bytes_per_line);
-        }
+        TRANSFER_PIXELS(((r * 30) + (g * 59) + (b * 11)) / 100,
+                    *pixel_data++ = control.colors()[pixel].pixel);
 
         break;
 
@@ -1006,6 +1000,8 @@ XImage *TextureRender::renderXImage() {
         XDestroyImage(image);
         return (XImage *) 0;
     }
+
+#undef TRANSFER_PIXELS
 
     image->data = (char *) d;
     return image;
