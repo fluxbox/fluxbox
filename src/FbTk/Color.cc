@@ -31,14 +31,6 @@ using std::cerr;
 using std::endl;
 using std::string;
 
-namespace {
-
-inline unsigned char maxValue(unsigned short colval) {
-   return colval == 65535 ? 0xFF : static_cast<unsigned char>(colval/0xFF);
-}
-
-}
-
 namespace FbTk {
 
 Color::Color():
@@ -96,9 +88,7 @@ bool Color::setFromString(const char *color_string, int screen) {
         return false;
 
     setPixel(color.pixel);
-    setRGB(maxValue(color.red),
-           maxValue(color.green),
-           maxValue(color.blue));
+    setRGB(color.red / 256, color.green / 256, color.blue / 256);
     setAllocated(true);
     m_screen = screen;
 
@@ -168,9 +158,7 @@ void Color::allocate(unsigned short red, unsigned short green, unsigned short bl
         cerr<<"FbTk::Color: "<<_FBTK_CONSOLETEXT(Error, ColorAllocation, "Allocation error.", "XAllocColor failed...")<<endl;
     } else {
         free();
-        setRGB(maxValue(color.red),
-               maxValue(color.green),
-               maxValue(color.blue));
+        setRGB(color.red / 256, color.green / 256, color.blue / 256);
         setPixel(color.pixel);
         setAllocated(true);
     }

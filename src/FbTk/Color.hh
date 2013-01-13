@@ -63,6 +63,7 @@ private:
     void setRGB(unsigned short red, unsigned short green, unsigned short blue);
 
 
+    // stored in [0 - 255] range
     unsigned short m_red, m_green, m_blue;
     unsigned long m_pixel;
     bool m_allocated;
