@@ -55,7 +55,6 @@
 #include <vector>
 #include <set>
 
-
 namespace {
 
 struct TimerCompare {
@@ -64,51 +63,30 @@ struct TimerCompare {
     }
 };
 typedef std::set<FbTk::Timer*, TimerCompare> TimerList;
-
 TimerList s_timerlist;
-
-
-/// add a timer to the static list
-void addTimer(FbTk::Timer *timer) {
-
-    assert(timer);
-    int interval = timer->getInterval();
-
-    // interval timers have their timeout change every time they are started!
-    if (interval != 0) {
-        timer->setTimeout(interval * FbTk::FbTime::IN_SECONDS);
-    }
-
-    s_timerlist.insert(timer);
-}
-
-/// remove a timer from the static list
-void removeTimer(FbTk::Timer *timer) {
-
-    assert(timer);
-    s_timerlist.erase(timer);
-}
-
 
 }
 
 
 namespace FbTk {
 
-Timer::Timer():m_timing(false), m_once(false), m_interval(0) {
+Timer::Timer() :
+    m_once(false),
+    m_interval(0),
+    m_start(0) {
 
 }
 
 Timer::Timer(const RefCount<Slot<void> > &handler):
     m_handler(handler),
-    m_timing(false),
     m_once(false),
-    m_interval(0) {
+    m_interval(0),
+    m_start(0) {
 }
 
 
 Timer::~Timer() {
-    if (isTiming()) stop();
+    stop();
 }
 
 
@@ -131,19 +109,31 @@ void Timer::setCommand(const RefCount<Slot<void> > &cmd) {
 
 void Timer::start() {
 
-    m_start = FbTk::FbTime::now();
-
     // only add Timers that actually DO something
-    if ((! m_timing || m_interval != 0) && m_handler) {
-        m_timing = true;
-        ::addTimer(this);
+    if ( ( ! isTiming() || m_interval > 0 ) && m_handler) {
+
+        // in case start() gets triggered on a started 
+        // timer with 'm_interval != 0' we have to remove
+        // it from s_timerlist before restarting it
+        stop();
+
+        m_start = FbTk::FbTime::now();
+
+        // interval timers have their timeout change every 
+        // time they are started!
+        if (m_interval != 0) {
+            m_timeout = m_interval * FbTk::FbTime::IN_SECONDS;
+        }
+        s_timerlist.insert(this);
     }
 }
 
 
 void Timer::stop() {
-    m_timing = false;
-    ::removeTimer(this);
+    if (isTiming()) {
+        s_timerlist.erase(this);
+        m_start = 0;
+    }
 }
 
 uint64_t Timer::getEndTime() const {
@@ -216,10 +206,16 @@ void Timer::updateTimers(int fd) {
 
         FbTk::Timer& t = *timeouts[i];
 
-        t.fireTimeout();
+        // first we stop the timer to remove it
+        // from s_timerlist
         t.stop();
 
-        if (! t.doOnce()) { // restart the current timer
+        // then we call the handler which might (re)start 't'
+        // on it's own
+        t.fireTimeout();
+
+        // restart 't' if needed
+        if (!t.doOnce() && !t.isTiming()) {
             t.start();
         }
     }
