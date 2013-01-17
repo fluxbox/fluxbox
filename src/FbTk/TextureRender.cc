@@ -127,7 +127,7 @@ void invertRGB(unsigned int w, unsigned int h, FbTk::RGBA* rgba) {
     FbTk::RGBA* r = rgba + (w * h);
 
     for (--r; l < r; ++l, --r) { // swapping 32bits (RGBA) at ones.
-        std::swap(*((unsigned int*)r), *(unsigned int*)r);
+        std::swap(*((unsigned int*)l), *(unsigned int*)r);
     }
 }
 
