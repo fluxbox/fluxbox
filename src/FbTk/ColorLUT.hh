@@ -24,9 +24,17 @@ namespace FbTk {
 
 namespace ColorLUT {
 
+#if 0 // unused
 extern const unsigned char PRE_MULTIPLY_1_5[256];
 extern const unsigned char PRE_MULTIPLY_1_125[256];
+#endif
 extern const unsigned char PRE_MULTIPLY_0_75[256];
+
+extern const unsigned char BRIGHTER_4[256];
+extern const unsigned char BRIGHTER_8[256];
+#if 0 // unused
+extern const unsigned char BRIGHTER_16[256];
+#endif
 
 }
 

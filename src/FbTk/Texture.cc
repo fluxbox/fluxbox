@@ -37,7 +37,7 @@
 namespace {
 
 unsigned short inline brighten(unsigned short c) {
-    return 0x101 * FbTk::ColorLUT::PRE_MULTIPLY_1_5[c];
+    return 0x101 * FbTk::ColorLUT::BRIGHTER_8[c];
 }
 
 unsigned short inline darken(unsigned short c) {
