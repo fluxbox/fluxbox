@@ -70,12 +70,13 @@ int showSeconds(const std::string& fmt_string) {
 
 uint64_t calcNextTimeout(const std::string& fmt_string) {
 
-    if (showSeconds(fmt_string)) { // microseconds till next full second
-        return FbTk::FbTime::remainingNext(FbTk::FbTime::IN_SECONDS);
+    uint64_t now = FbTk::FbTime::system();
+    uint64_t unit = FbTk::FbTime::IN_SECONDS;
+    if (!showSeconds(fmt_string)) { // microseconds till next full minute
+        unit *= 60L;
     } 
 
-    // microseconds until next full minute
-    return FbTk::FbTime::remainingNext(60L * FbTk::FbTime::IN_SECONDS);
+    return FbTk::FbTime::remainingNext(now, unit);
 }
 
 

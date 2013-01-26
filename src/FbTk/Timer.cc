@@ -117,7 +117,7 @@ void Timer::start() {
         // it from s_timerlist before restarting it
         stop();
 
-        m_start = FbTk::FbTime::now();
+        m_start = FbTk::FbTime::mono();
 
         // interval timers have their timeout change every 
         // time they are started!
@@ -158,7 +158,7 @@ void Timer::updateTimers(int fd) {
     FD_SET(fd, &rfds);
 
     bool overdue = false;
-    uint64_t now = FbTime::now();
+    uint64_t now = FbTime::mono();
     uint64_t end_time;
 
     // search for overdue timers
@@ -192,7 +192,7 @@ void Timer::updateTimers(int fd) {
 
     static std::vector<FbTk::Timer*> timeouts;
 
-    now = FbTime::now();
+    now = FbTime::mono();
     for (it = s_timerlist.begin(); it != s_timerlist.end(); ++it ) {
         if (now < (*it)->getEndTime()) {
             break;

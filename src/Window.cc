@@ -550,7 +550,7 @@ void FluxboxWindow::init() {
 
     m_workspacesig.emit(*this);
 
-    m_creation_time = FbTk::FbTime::now();
+    m_creation_time = FbTk::FbTime::mono();
 
     frame().frameExtentSig().emit();
 
@@ -2206,7 +2206,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     // just after creation if the user has a saved position/size
     if (m_creation_time) {
 
-        uint64_t now = FbTk::FbTime::now();
+        uint64_t now = FbTk::FbTime::mono();
 
         Remember& rinst = Remember::instance();
 
@@ -2310,12 +2310,12 @@ void FluxboxWindow::keyPressEvent(XKeyEvent &ke) {
     }
 
     // otherwise, make a note that the user is typing
-    m_last_keypress_time = FbTk::FbTime::now();
+    m_last_keypress_time = FbTk::FbTime::mono();
 }
 
 bool FluxboxWindow::isTyping() const {
 
-    uint64_t diff = FbTk::FbTime::now() - m_last_keypress_time;
+    uint64_t diff = FbTk::FbTime::mono() - m_last_keypress_time;
     return ((diff / 1000) < screen().noFocusWhileTypingDelay());
 }
 

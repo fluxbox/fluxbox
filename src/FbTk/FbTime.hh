@@ -34,7 +34,7 @@
 
 namespace FbTk {
 
-// time in micro-seconds, monotonic increasing
+// time in micro-seconds
 //
 // interesting links:
 //
@@ -44,12 +44,17 @@ namespace FbTk {
 namespace FbTime {
 
     const uint64_t IN_MILLISECONDS =  1000L;
-    const uint64_t IN_SECONDS = 1000L * 1000L;
+    const uint64_t IN_SECONDS = 1000L * IN_MILLISECONDS;
+    const uint64_t IN_MINUTES = 60 * IN_SECONDS;
 
-    uint64_t now();
+    uint64_t mono();   // point in time, always monotonic
+    uint64_t system(); // system time, might jump (DST, leap seconds)
 
-    // calculates the remaining microseconds up to the next full 'unit'
-    uint64_t remainingNext(uint64_t unit);
+    // calculates the remaining microseconds from 'now' up to the
+    // next full 'unit'
+    inline uint64_t remainingNext(uint64_t now, uint64_t unit) {
+        return (unit - (now % unit) - 1);
+    }
 
 } // namespace FbTime
 

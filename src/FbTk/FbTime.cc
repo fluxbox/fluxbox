@@ -21,6 +21,8 @@
 
 #include "FbTime.hh"
 
+#include <cstdlib>
+#include <sys/time.h>
 
 
 #ifdef HAVE_CLOCK_GETTIME // linux|*bsd|solaris
@@ -28,16 +30,16 @@
 
 namespace {
 
-uint64_t _now() {
+uint64_t _mono() {
 
-    uint64_t n = 0L;
+    uint64_t t = 0L;
     timespec ts;
 
     if (clock_gettime(CLOCK_MONOTONIC, &ts) == 0) {
-        n = (ts.tv_sec * FbTk::FbTime::IN_SECONDS) + (ts.tv_nsec / 1000L);
+        t = (ts.tv_sec * FbTk::FbTime::IN_SECONDS) + (ts.tv_nsec / 1000L);
     }
 
-    return n;
+    return t;
 }
 
 }
@@ -59,7 +61,7 @@ uint64_t _now() {
 
 namespace {
 
-uint64_t _now() {
+uint64_t _mono() {
 
     // mach_absolute_time() * info.numer / info.denom yields
     // nanoseconds.
@@ -85,13 +87,15 @@ uint64_t _now() {
 
 
 
-
-uint64_t FbTk::FbTime::now() {
-    return ::_now();
+uint64_t FbTk::FbTime::mono() {
+    return ::_mono();
 }
 
 
-uint64_t FbTk::FbTime::remainingNext(uint64_t unit) {
-    return (unit - (::_now() % unit) - 1);
+uint64_t FbTk::FbTime::system() {
+    static timeval v;
+    gettimeofday(&v, NULL);
+    return (v.tv_sec * FbTk::FbTime::IN_SECONDS) + v.tv_usec;
 }
+
 
