@@ -145,9 +145,16 @@ int extractNumber(const std::string& in, unsigned long long& out) {
 
 std::string number2String(long long num) {
     char s[128];
-    sprintf(s, "%lld", num);
+    snprintf(s, sizeof(s), "%lld", num);
     return std::string(s);
 }
+
+std::string number2HexString(long long num) {
+    char s[17];
+    snprintf(s, sizeof(s), "%lx", num);
+    return std::string(s);
+}
+
 
 /**
    Tries to find a string in another and

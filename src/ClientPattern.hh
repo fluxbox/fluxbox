@@ -89,6 +89,7 @@ public:
      * the column of the error is stored in m_matchlimit
      */
     int error() const { return m_terms.empty() ? 1 : 0; }
+    int error_col() const { return m_matchlimit; }
 
     static FbTk::FbString getProperty(WinProperty prop, const Focusable &client);
 

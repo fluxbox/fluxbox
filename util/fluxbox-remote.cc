@@ -21,50 +21,77 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#include <X11/Xutil.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-bool g_gotError;
+
+bool g_gotError = false;
 static int HandleIPCError(Display *disp, XErrorEvent*ptr)
 {
 	// ptr->error_code contains the actual error flags
-	g_gotError=true;
+	g_gotError = true;
 	return( 0 );
 }
 
+typedef int (*xerror_cb_t)(Display*,XErrorEvent*);
+
+
 int main(int argc, char **argv) {
+
+    int         rc;
+    Display*    disp;
+    Window      root;
+    Atom        atom_utf8;
+    Atom        atom_fbcmd; 
+    Atom        atom_result;
+    xerror_cb_t error_cb;
+    char*       cmd;
 
     if (argc <= 1) {
         printf("fluxbox-remote <fluxbox-command>\n");
         return EXIT_SUCCESS;
     }
 
-    Display *disp = XOpenDisplay(NULL);
+    disp = XOpenDisplay(NULL);
     if (!disp) {
         perror("error, can't open display.");
-        return EXIT_FAILURE;
+        return rc;
     }
 
-    Atom fbcmd_atom = XInternAtom(disp, "_FLUXBOX_ACTION", False);
-    Window root = DefaultRootWindow(disp);
+    cmd = argv[1];
+    atom_utf8 = XInternAtom(disp, "UTF8_STRING", False);
+    atom_fbcmd = XInternAtom(disp, "_FLUXBOX_ACTION", False);
+    atom_result = XInternAtom(disp, "_FLUXBOX_ACTION_RESULT", False);
+    root = DefaultRootWindow(disp);
 
-    char *str = argv[1];
+    // assign the custom handler, clear the flag, sync the data,
+    // then check it for success/failure
+    error_cb = XSetErrorHandler(HandleIPCError);
 
-    typedef int (*x_error_handler_t)(Display*,XErrorEvent*);
 
-    // assign the custom handler, clear the flag, sync the data, then check it for success/failure
-    x_error_handler_t handler = XSetErrorHandler( HandleIPCError );
-    g_gotError=false;
-    XChangeProperty(disp, root, fbcmd_atom,
+    if (strcmp(cmd, "result") == 0) {
+        XTextProperty text_prop;
+        if (XGetTextProperty(disp, root, &text_prop, atom_result) != 0
+            && text_prop.value > 0
+            && text_prop.nitems > 0) {
+
+            printf("%s", text_prop.value);
+            XFree(text_prop.value);
+        }
+    } else {
+        XChangeProperty(disp, root, atom_fbcmd,
                               XA_STRING, 8, PropModeReplace,
-                              (unsigned char *) str, strlen(str));
-    XSync(disp,False);
-    int ret=(g_gotError?EXIT_FAILURE:EXIT_SUCCESS);
-    XSetErrorHandler(handler);
+                              (unsigned char *)cmd, strlen(cmd));
+        XSync(disp, false);
+    }
 
+    rc = (g_gotError ? EXIT_FAILURE : EXIT_SUCCESS);
+
+    XSetErrorHandler(error_cb);
     XCloseDisplay(disp);
 
-    return ret;
+    return rc;
 }
 

@@ -231,6 +231,22 @@ const TabPlacementString placement_strings[] = {
     { FbWinFrame::RIGHTTOP, "RightTop" }
 };
 
+Atom atom_fbcmd = 0;
+Atom atom_wm_check = 0;
+Atom atom_net_desktop = 0;
+Atom atom_utf8_string = 0;
+Atom atom_kde_systray = 0;
+Atom atom_kwm1 = 0;
+
+void initAtoms(Display* dpy) {
+    atom_wm_check = XInternAtom(dpy, "_NET_SUPPORTING_WM_CHECK", False);
+    atom_net_desktop = XInternAtom(dpy, "_NET_CURRENT_DESKTOP", False);
+    atom_fbcmd = XInternAtom(dpy, "_FLUXBOX_ACTION", False);
+    atom_utf8_string = XInternAtom(dpy, "UTF8_STRING", False);
+    atom_kde_systray = XInternAtom(dpy, "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False);
+    atom_kwm1 = XInternAtom(dpy, "KWM_DOCKWINDOW", False);
+}
+
 
 } // end anonymous namespace
 
@@ -317,8 +333,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_geom_window(new OSDWindow(m_root_window, *this, *m_focused_windowtheme)),
     m_pos_window(new OSDWindow(m_root_window, *this, *m_focused_windowtheme)),
     m_tooltip_window(new TooltipWindow(m_root_window, *this, *m_focused_windowtheme)),
-    m_dummy_window(scrn, -1, -1, 1, 1, 0, true, false, CopyFromParent,
-                   InputOnly),
+    m_dummy_window(scrn, -1, -1, 1, 1, 0, true, false, CopyFromParent, InputOnly),
     resource(rm, screenname, altscreenname),
     m_resource_manager(rm),
     m_name(screenname),
@@ -331,8 +346,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_shutdown(false) {
 
 
-    Display *disp = m_root_window.display();
     Fluxbox *fluxbox = Fluxbox::instance();
+    Display *disp = fluxbox->display();
+
+    initAtoms(disp);
+
 
     // TODO fluxgen: check if this is the right place (it was not -lis)
     //
@@ -349,7 +367,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                               SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
                               ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask);
 
-    FbTk::App::instance()->sync(false);
+    fluxbox->sync(false);
 
     XSetErrorHandler((XErrorHandler) old);
 
@@ -370,12 +388,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 #endif // HAVE_GETPID
 
     // check if we're the first EWMH compliant window manager on this screen
-    Atom wm_check = XInternAtom(disp, "_NET_SUPPORTING_WM_CHECK", False);
     Atom xa_ret_type;
     int ret_format;
     unsigned long ret_nitems, ret_bytes_after;
     unsigned char *ret_prop;
-    if (rootWindow().property(wm_check, 0l, 1l,
+    if (rootWindow().property(atom_wm_check, 0l, 1l,
             False, XA_WINDOW, &xa_ret_type, &ret_format, &ret_nitems,
             &ret_bytes_after, &ret_prop) ) {
         m_restart = (ret_prop != NULL);
@@ -415,7 +432,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->add(*this, rootWindow());
-    Keys *keys = Fluxbox::instance()->keys();
+    Keys *keys = fluxbox->keys();
     if (keys)
         keys->registerWindow(rootWindow().window(), *this,
                              Keys::GLOBAL|Keys::ON_DESKTOP);
@@ -476,9 +493,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // check which desktop we should start on
     unsigned int first_desktop = 0;
     if (m_restart) {
-        Atom net_desktop = XInternAtom(disp, "_NET_CURRENT_DESKTOP", False);
         bool exists;
-        unsigned int ret=static_cast<unsigned int>(rootWindow().cardinalProperty(net_desktop, &exists));
+        unsigned int ret=static_cast<unsigned int>(rootWindow().cardinalProperty(atom_net_desktop, &exists));
         if (exists) {
             if (ret < static_cast<unsigned int>(nr_ws))
                 first_desktop = ret;
@@ -764,29 +780,29 @@ void BScreen::focusedWinFrameThemeReconfigured() {
 }
 
 void BScreen::propertyNotify(Atom atom) {
-    static Atom fbcmd_atom = XInternAtom(FbTk::App::instance()->display(),
-                                         "_FLUXBOX_ACTION", False);
-    if (allowRemoteActions() && atom == fbcmd_atom) {
+
+    if (allowRemoteActions() && atom == atom_fbcmd) {
         Atom xa_ret_type;
         int ret_format;
         unsigned long ret_nitems, ret_bytes_after;
         char *str;
-        if (rootWindow().property(fbcmd_atom, 0l, 64l,
+        if (rootWindow().property(atom_fbcmd, 0l, 64l,
                 True, XA_STRING, &xa_ret_type, &ret_format, &ret_nitems,
                 &ret_bytes_after, (unsigned char **)&str) && str) {
 
             if (ret_bytes_after) {
                 XFree(str);
                 long len = 64 + (ret_bytes_after + 3)/4;
-                rootWindow().property(fbcmd_atom, 0l, len,
+                rootWindow().property(atom_fbcmd, 0l, len,
                     True, XA_STRING, &xa_ret_type, &ret_format, &ret_nitems,
                     &ret_bytes_after, (unsigned char **)&str);
             }
 
             static std::auto_ptr<FbTk::Command<void> > cmd(0);
             cmd.reset(FbTk::CommandParser<void>::instance().parse(str, false));
-            if (cmd.get())
+            if (cmd.get()) {
                 cmd->execute();
+            }
             XFree(str);
 
         }
@@ -852,9 +868,8 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
 }
 
 FbMenu *BScreen::createMenu(const string &label) {
-    FbMenu *menu = new FbMenu(menuTheme(),
-                                  imageControl(),
-                                  *layerManager().getLayer(ResourceLayer::MENU));
+    FbTk::Layer* layer = layerManager().getLayer(ResourceLayer::MENU);
+    FbMenu *menu = new FbMenu(menuTheme(), imageControl(), *layer);
     if (!label.empty())
         menu->setLabel(label);
 
@@ -862,9 +877,8 @@ FbMenu *BScreen::createMenu(const string &label) {
 }
 
 FbMenu *BScreen::createToggleMenu(const string &label) {
-    FbMenu *menu = new ToggleMenu(menuTheme(),
-                                      imageControl(),
-                                      *layerManager().getLayer(ResourceLayer::MENU));
+    FbTk::Layer* layer = layerManager().getLayer(ResourceLayer::MENU);
+    FbMenu *menu = new ToggleMenu(menuTheme(), imageControl(), *layer);
     if (!label.empty())
         menu->setLabel(label);
 
@@ -1177,9 +1191,7 @@ bool BScreen::isKdeDockapp(Window client) const {
     unsigned long *data = 0, uljunk;
     Display *disp = FbTk::App::instance()->display();
     // Check if KDE v2.x dock applet
-    if (XGetWindowProperty(disp, client,
-                           XInternAtom(FbTk::App::instance()->display(),
-                                       "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False),
+    if (XGetWindowProperty(disp, client, atom_kde_systray,
                            0l, 1l, False,
                            XA_WINDOW, &ajunk, &ijunk, &uljunk,
                            &uljunk, (unsigned char **) &data) == Success) {
@@ -1192,11 +1204,9 @@ bool BScreen::isKdeDockapp(Window client) const {
 
     // Check if KDE v1.x dock applet
     if (!iskdedockapp) {
-        Atom kwm1 = XInternAtom(FbTk::App::instance()->display(),
-                                "KWM_DOCKWINDOW", False);
         if (XGetWindowProperty(disp, client,
-                               kwm1, 0l, 1l, False,
-                               kwm1, &ajunk, &ijunk, &uljunk,
+                               atom_kwm1, 0l, 1l, False,
+                               atom_kwm1, &ajunk, &ijunk, &uljunk,
                                &uljunk, (unsigned char **) &data) == Success && data) {
             iskdedockapp = (data && data[0] != 0);
             XFree((void *) data);

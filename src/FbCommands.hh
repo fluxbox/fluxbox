@@ -218,6 +218,16 @@ private:
     Destination m_dest;
 };
 
+
+/// test client pattern
+class ClientPatternTestCmd: public FbTk::Command<void> {
+public:
+    ClientPatternTestCmd(const std::string& args) : m_args(args) { };
+    void execute();
+private:
+    std::string m_args;
+};
+
 } // end namespace FbCommands
 
 #endif // FBCOMMANDS_HH

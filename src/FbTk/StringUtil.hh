@@ -44,6 +44,7 @@ int extractNumber(const std::string& in, unsigned long long& out);
 
 /// creates a number to a string
 std::string number2String(long long num);
+std::string number2HexString(long long num);
 
 /// Similar to `strstr' but this function ignores the case of both strings
 const char *strcasestr(const char *str, const char *ptn);

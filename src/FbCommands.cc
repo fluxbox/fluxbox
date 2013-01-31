@@ -445,13 +445,12 @@ REGISTER_UNTRUSTED_COMMAND_WITH_ARGS(bindkey, FbCommands::BindKeyCmd, void);
 BindKeyCmd::BindKeyCmd(const string &keybind):m_keybind(keybind) { }
 
 void BindKeyCmd::execute() {
-    if (Fluxbox::instance()->keys() != 0) {
-        if (Fluxbox::instance()->keys()->addBinding(m_keybind)) {
-            ofstream ofile(Fluxbox::instance()->keys()->filename().c_str(), ios::app);
-            if (!ofile)
-                return;
-            ofile<<m_keybind<<endl;
-        }
+    Keys* keys = Fluxbox::instance()->keys();
+    if (keys && keys->addBinding(m_keybind)) {
+        ofstream ofile(keys->filename().c_str(), ios::app);
+        if (!ofile)
+            return;
+        ofile<<m_keybind<<endl;
     }
 }
 
@@ -541,5 +540,74 @@ void DeiconifyCmd::execute() {
         break;
     };
 }
+
+
+REGISTER_COMMAND_WITH_ARGS(clientpatterntest, FbCommands::ClientPatternTestCmd, void);
+
+void ClientPatternTestCmd::execute() {
+
+    std::vector< const FluxboxWindow* > matches;
+    std::string                         result;
+    std::string                         pat;
+    int                                 opts;
+    ClientPattern*                      cp;
+    Display*                            dpy;
+    Atom                                atom_utf8;
+    Atom                                atom_fbcmd_result;
+    Fluxbox::ScreenList::const_iterator screen;
+    const Fluxbox::ScreenList           screens(Fluxbox::instance()->screenList());
+
+    dpy = Fluxbox::instance()->display();
+    atom_utf8 = XInternAtom(dpy, "UTF8_STRING", False);
+    atom_fbcmd_result = XInternAtom(dpy, "_FLUXBOX_ACTION_RESULT", False);
+
+    FocusableList::parseArgs(m_args, opts, pat);
+    cp = new ClientPattern(pat.c_str());
+
+    if (!cp->error()) {
+
+        const FocusableList*                        windows;
+        FocusControl::Focusables::const_iterator    wit;
+        FocusControl::Focusables::const_iterator    wit_end;
+
+        for (screen = screens.begin(); screen != screens.end(); screen++) {
+
+            windows = FocusableList::getListFromOptions(**screen, opts|FocusableList::LIST_GROUPS);
+            wit = windows->clientList().begin();
+            wit_end = windows->clientList().end();
+
+            for ( ; wit != wit_end; wit++) {
+                if (typeid(**wit) == typeid(FluxboxWindow) && cp->match(**wit)) {
+                    matches.push_back(static_cast<const FluxboxWindow*>(*wit));
+                }
+            }
+        }
+
+        if (!matches.empty()) {
+            std::vector< const FluxboxWindow* >::const_iterator win;
+            for (win = matches.begin(); win != matches.end(); win++) {
+                result += "0x";
+                result += FbTk::StringUtil::number2HexString((*win)->clientWindow());
+                result += "\t";
+                result += (*win)->title().logical();
+                result += "\n";
+            }
+        } else {
+            result += "0\n";
+        }
+    } else {
+        result = "-1\t";
+        result += FbTk::StringUtil::number2String(cp->error_col());
+        result += "\n";
+    }
+
+
+    // write result to _FLUXBOX_ACTION_RESULT property
+    for (screen = screens.begin(); screen != screens.end(); screen++) {
+        (*screen)->rootWindow().changeProperty(atom_fbcmd_result, atom_utf8, 8,
+            PropModeReplace, (unsigned char*)result.c_str(), result.size());
+    }
+}
+
 
 } // end namespace FbCommands
