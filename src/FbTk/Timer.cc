@@ -58,8 +58,12 @@
 namespace {
 
 struct TimerCompare {
-    bool operator() (const FbTk::Timer* a, const FbTk::Timer* b) {
-        return a->getEndTime() < b->getEndTime();
+    // stable sort order and allows multiple timers to have
+    // the same end-time
+    bool operator() (const FbTk::Timer* a, const FbTk::Timer* b) const {
+        uint64_t ae = a->getEndTime();
+        uint64_t be = b->getEndTime();
+        return (ae < be) || (ae == be && a < b);
     }
 };
 typedef std::set<FbTk::Timer*, TimerCompare> TimerList;
