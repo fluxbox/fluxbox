@@ -403,7 +403,7 @@ void renderPyramidGradient(bool interlaced,
         FbTk::ImageControl& imgctrl) {
 
 
-    const size_t s = width * height;
+    const size_t s = width + height;
 
     // we need 2 gradients but use only 'one' buffer
     FbTk::RGBA* x_gradient = (FbTk::RGBA*)&getGradientBuffer(s * sizeof(FbTk::RGBA))[0];
@@ -446,7 +446,7 @@ void renderRectangleGradient(bool interlaced,
         const FbTk::Color* from, const FbTk::Color* to,
         FbTk::ImageControl& imgctrl) {
 
-    const size_t s = width * height;
+    const size_t s = width + height;
 
     // we need 2 gradients but use only 'one' buffer
     FbTk::RGBA* x_gradient = (FbTk::RGBA*)&getGradientBuffer(s * sizeof(FbTk::RGBA))[0];
@@ -488,7 +488,7 @@ void renderPipeCrossGradient(bool interlaced,
         const FbTk::Color* from, const FbTk::Color* to,
         FbTk::ImageControl& imgctrl) {
 
-    size_t s = width * height;
+    size_t s = width + height;
 
     // we need 2 gradients but use only 'one' buffer
     FbTk::RGBA* x_gradient = (FbTk::RGBA*)&getGradientBuffer(s * sizeof(FbTk::RGBA))[0];
@@ -535,7 +535,7 @@ void renderDiagonalGradient(bool interlaced,
         FbTk::ImageControl& imgctrl) {
 
 
-    size_t s = width * height;
+    size_t s = width + height;
 
     // we need 2 gradients but use only 'one' buffer
     FbTk::RGBA* x_gradient = (FbTk::RGBA*)&getGradientBuffer(s * sizeof(FbTk::RGBA))[0];
@@ -568,8 +568,6 @@ void renderEllipticGradient(bool interlaced,
         FbTk::RGBA* rgba,
         const FbTk::Color* from, const FbTk::Color* to,
         FbTk::ImageControl& imgctrl) {
-
-    size_t s = width * height;
 
     size_t i;
     int x;
@@ -614,7 +612,7 @@ void renderCrossDiagonalGradient(bool interlaced,
         const FbTk::Color* from, const FbTk::Color* to,
         FbTk::ImageControl& imgctrl) {
 
-    size_t s = width * height;
+    size_t s = width + height;
 
     // we need 2 gradients but use only 'one' buffer
     FbTk::RGBA* x_gradient = (FbTk::RGBA*)&getGradientBuffer(s * sizeof(FbTk::RGBA))[0];
