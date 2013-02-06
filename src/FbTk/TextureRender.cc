@@ -85,12 +85,14 @@ struct RGBA {
         color.b = PRE_MULTIPLY_0_75[color.b];
     }
 
+    static void noop(RGBA& color) { }
 
     typedef void (*colorFunc)(RGBA&);
-    static const colorFunc pseudoInterlaceFuncs[2];
+    static const colorFunc pseudoInterlaceFuncs[3];
 };
 
-const RGBA::colorFunc RGBA::pseudoInterlaceFuncs[2] = {
+const RGBA::colorFunc RGBA::pseudoInterlaceFuncs[3] = {
+    RGBA::noop,
     RGBA::brighten_4,
     RGBA::darken
 };
@@ -233,12 +235,11 @@ void prepareMirrorTable(prepareFunc prepare, size_t size, FbTk::RGBA* rgba,
     size_t half_size = (size >> 1) + (size & 1);
 
     prepare(half_size, &rgba[0], from, to, scale);
-    mirrorRGB(size, 1, rgba); // TODO!!
+    mirrorRGB(size, 1, rgba);
 }
 
-
-inline void pseudoInterlace(FbTk::RGBA& rgba, const size_t& y) {
-    FbTk::RGBA::pseudoInterlaceFuncs[y & 1](rgba);
+inline void pseudoInterlace(FbTk::RGBA& rgba, const bool& do_interlace, const size_t& y) {
+    FbTk::RGBA::pseudoInterlaceFuncs[do_interlace + (do_interlace * (y & 1))](rgba);
 }
 
 
@@ -367,11 +368,8 @@ void renderHorizontalGradient(bool interlaced,
 
     for (i = 0, y = 0; y < height; ++y) {
         for (x = 0; x < width; ++x, ++i) {
-
             rgba[i] = gradient[x];
-
-            if (interlaced)
-                pseudoInterlace(rgba[i], y);
+            pseudoInterlace(rgba[i], interlaced, y);
         }
     }
 }
@@ -392,9 +390,7 @@ void renderVerticalGradient(bool interlaced,
     for (i = 0, y = 0; y < height; ++y) {
         for (x = 0; x < width; ++x, ++i) {
             rgba[i] = gradient[y];
-
-            if (interlaced)
-                pseudoInterlace(rgba[i], y);
+            pseudoInterlace(rgba[i], interlaced, y);
         }
     }
 }
@@ -427,8 +423,7 @@ void renderPyramidGradient(bool interlaced,
             rgba[i].g = x_gradient[x].g + y_gradient[y].g;
             rgba[i].b = x_gradient[x].b + y_gradient[y].b;
 
-            if (interlaced)
-                pseudoInterlace(rgba[i], y);
+            pseudoInterlace(rgba[i], interlaced, y);
         }
     }
 }
@@ -482,8 +477,7 @@ void renderRectangleGradient(bool interlaced,
                 rgba[i] = y_gradient[y];
             }
 
-            if (interlaced)
-                pseudoInterlace(rgba[i], y);
+            pseudoInterlace(rgba[i], interlaced, y);
         }
     }
 }
@@ -525,8 +519,7 @@ void renderPipeCrossGradient(bool interlaced,
                 rgba[i] = y_gradient[y];
             }
 
-            if (interlaced)
-                pseudoInterlace(rgba[i], y);
+            pseudoInterlace(rgba[i], interlaced, y);
         }
     }
 }
@@ -562,8 +555,7 @@ void renderDiagonalGradient(bool interlaced,
             rgba[i].g = x_gradient[x].g + y_gradient[y].g;
             rgba[i].b = x_gradient[x].b + y_gradient[y].b;
 
-            if (interlaced)
-                pseudoInterlace(rgba[i], y);
+            pseudoInterlace(rgba[i], interlaced, y);
         }
     }
 }
@@ -608,8 +600,7 @@ void renderEllipticGradient(bool interlaced,
             rgba[i].g = (unsigned char)(g - (d * dg));
             rgba[i].b = (unsigned char)(b - (d * db));
 
-            if (interlaced)
-                pseudoInterlace(rgba[i], y);
+            pseudoInterlace(rgba[i], interlaced, y);
         }
     }
 }
@@ -643,8 +634,7 @@ void renderCrossDiagonalGradient(bool interlaced,
             rgba[i].g = x_gradient[x].g + y_gradient[y].g;
             rgba[i].b = x_gradient[x].b + y_gradient[y].b;
 
-            if (interlaced)
-                pseudoInterlace(rgba[i], y);
+            pseudoInterlace(rgba[i], interlaced, y);
         }
     }
 }
