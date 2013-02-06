@@ -109,7 +109,7 @@ struct Vec2 {
     // negative: 'other' is counterclockwise of this
     // 0: same line
     int cross(int other_x, int other_y) const {
-        return (x * other_y) - (other_x * y);
+        return (x * other_y) - (y * other_x);
     }
 };
 
@@ -165,13 +165,13 @@ typedef void (*prepareFunc)(size_t, FbTk::RGBA*, const FbTk::Color*, const FbTk:
 void prepareLinearTable(size_t size, FbTk::RGBA* rgba,
         const FbTk::Color* from, const FbTk::Color* to, double scale) {
 
-    const double delta_r = (double)(to->red() - from->red()) / (double)size;
-    const double delta_g = (double)(to->green() - from->green()) / (double)size;
-    const double delta_b = (double)(to->blue() - from->blue()) / (double)size;
+    const double r = from->red();
+    const double g = from->green();
+    const double b = from->blue();
 
-    double r = from->red();
-    double g = from->green();
-    double b = from->blue();
+    const double delta_r = (to->red() - r) / (double)size;
+    const double delta_g = (to->green() - g) / (double)size;
+    const double delta_b = (to->blue() - b) / (double)size;
 
     size_t i;
     for (i = 0; i < size; ++i) {
@@ -184,19 +184,20 @@ void prepareLinearTable(size_t size, FbTk::RGBA* rgba,
 void prepareSquareTable(size_t size, FbTk::RGBA* rgba,
         const FbTk::Color* from, const FbTk::Color* to, double scale) {
 
-    const double delta_r = (double)(to->red() - from->red());
-    const double delta_g = (double)(to->green() - from->green());
-    const double delta_b = (double)(to->blue() - from->blue());
 
-    double r = from->red();
-    double g = from->green();
-    double b = from->blue();
+    const double r = from->red();
+    const double g = from->green();
+    const double b = from->blue();
+
+    const double delta_r = (to->red() - r);
+    const double delta_g = (to->green() - g);
+    const double delta_b = (to->blue() - b);
 
     double s;
     size_t i;
     for (i = 0; i < size; ++i) {
         s = 1.0 - ((double)(i + 1) / (double)size);
-        s *=s;
+        s *= s;
         rgba[i].r = static_cast<unsigned char>(scale * (r + (s * delta_r)));
         rgba[i].g = static_cast<unsigned char>(scale * (g + (s * delta_g)));
         rgba[i].b = static_cast<unsigned char>(scale * (b + (s * delta_b)));
@@ -407,7 +408,7 @@ void renderPyramidGradient(bool interlaced,
 
     // we need 2 gradients but use only 'one' buffer
     FbTk::RGBA* x_gradient = (FbTk::RGBA*)&getGradientBuffer(s * sizeof(FbTk::RGBA))[0];
-    FbTk::RGBA* y_gradient = &x_gradient[width];
+    FbTk::RGBA* y_gradient = x_gradient + width;
 
     prepareMirrorTable(prepareLinearTable, width, x_gradient, from, to, 0.5);
     prepareMirrorTable(prepareLinearTable, height, y_gradient, from, to, 0.5);
@@ -430,15 +431,15 @@ void renderPyramidGradient(bool interlaced,
 
 
 /*
- *  .................
- *    .............
- *      .........
- *        ....          '.' - x_gradient
- *          .           ' ' - y_gradient
- *        ....
- *      .........
- *    .............
- *  .................
+    .................
+      .............
+        .........
+          ....          '.' - x_gradient
+            .           ' ' - y_gradient
+          ....
+        .........
+      .............
+    .................
  */
 void renderRectangleGradient(bool interlaced,
         unsigned int width, unsigned int height,
@@ -450,13 +451,13 @@ void renderRectangleGradient(bool interlaced,
 
     // we need 2 gradients but use only 'one' buffer
     FbTk::RGBA* x_gradient = (FbTk::RGBA*)&getGradientBuffer(s * sizeof(FbTk::RGBA))[0];
-    FbTk::RGBA* y_gradient = &x_gradient[width];
+    FbTk::RGBA* y_gradient = x_gradient + width;
 
     prepareMirrorTable(prepareLinearTable, width, x_gradient, from, to, 1.0);
     prepareMirrorTable(prepareLinearTable, height, y_gradient, from, to, 1.0);
 
     // diagonal vectors
-    const Vec2 a = { static_cast<int>(width) - 1,  static_cast<int>(height - 1) };
+    const Vec2 a = { static_cast<int>(width) - 1, static_cast<int>(height) - 1 };
     const Vec2 b = { a.x, -a.y };
 
     int x;
@@ -468,8 +469,8 @@ void renderRectangleGradient(bool interlaced,
 
             // check, if the point (x, y) is left or right of the vectors
             // 'a' and 'b'. if the point is on the same side for both 'a' and
-            // 'b' (a.cross() is equal to b.cross()) then use the x_gradient,
-            // otherwise use y_gradient
+            // 'b' (sign(a.cross()) is equal to sign(b.cross())) then use the 
+            // y_gradient, otherwise use x_gradient
 
             if (sign(a.cross(x, y)) * sign(b.cross(x, b.y + y)) < 0) {
                 rgba[i] = x_gradient[x];
@@ -510,8 +511,8 @@ void renderPipeCrossGradient(bool interlaced,
 
             // check, if the point (x, y) is left or right of the vectors
             // 'a' and 'b'. if the point is on the same side for both 'a' and
-            // 'b' (a.cross() is equal to b.cross()) then use the x_gradient,
-            // otherwise use y_gradient
+            // 'b' (sign(a.cross()) is equal to sign(b.cross())) then use the 
+            // x_gradient, otherwise use y_gradient
 
             if (sign(a.cross(x, y)) * sign(b.cross(x, b.y + y)) > 0) {
                 rgba[i] = x_gradient[x];
@@ -573,18 +574,19 @@ void renderEllipticGradient(bool interlaced,
     int x;
     int y;
 
-    double dr = (double)to->red()  - (double)from->red()   ;
-    double dg = (double)to->green()- (double)from->green() ;
-    double db = (double)to->blue() - (double)from->blue()  ;
+
+    double r = to->red();
+    double g = to->green();
+    double b = to->blue();
+
+    double dr = r - from->red();
+    double dg = g - from->green();
+    double db = b - from->blue();
 
     int w2 = width/2;
     int h2 = height/2;
 
     double d;
-    double r = to->red();
-    double g = to->green();
-    double b = to->blue();
-
 
     for (i = 0, y = -h2; y < h2; ++y) {
         for (x = -w2; x < w2; ++x, ++i) {
@@ -829,8 +831,9 @@ Pixmap TextureRender::renderGradient(const FbTk::Texture &texture) {
         }
     }
 
-    if (inverted)
+    if (inverted) {
         invertRGB(width, height, rgba);
+    }
 
     return renderPixmap();
 
