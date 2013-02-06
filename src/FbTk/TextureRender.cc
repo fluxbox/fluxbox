@@ -570,31 +570,34 @@ void renderEllipticGradient(bool interlaced,
         const FbTk::Color* from, const FbTk::Color* to,
         FbTk::ImageControl& imgctrl) {
 
+    const double r = to->red();
+    const double g = to->green();
+    const double b = to->blue();
+
+    const double dr = r - from->red();
+    const double dg = g - from->green();
+    const double db = b - from->blue();
+
+    const double w2 = width / 2.0;
+    const double h2 = height / 2.0;
+
+    const double sw = 1.0 / (w2 * w2);
+    const double sh = 1.0 / (h2 * h2);
+
     size_t i;
     int x;
     int y;
-
-
-    double r = to->red();
-    double g = to->green();
-    double b = to->blue();
-
-    double dr = r - from->red();
-    double dg = g - from->green();
-    double db = b - from->blue();
-
-    int w2 = width/2;
-    int h2 = height/2;
-
+    double _x;
+    double _y;
     double d;
 
-    for (i = 0, y = -h2; y < h2; ++y) {
-        for (x = -w2; x < w2; ++x, ++i) {
+    for (i = 0, y = 0; y < height; ++y) {
+        for (x = 0; x < width; ++x, ++i) {
 
-            d = ((double)(x*x) / (double)(w2*w2))
-                + ((double)(y*y) / (double)(h2*h2));
+            _x = x - w2;
+            _y = y - h2;
 
-            d *= 0.5;
+            d = ((_x * _x * sw) + (_y * _y * sh)) / 2.0;
 
             rgba[i].r = (unsigned char)(r - (d * dr));
             rgba[i].g = (unsigned char)(g - (d * dg));
