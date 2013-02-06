@@ -513,7 +513,7 @@ void renderPipeCrossGradient(bool interlaced,
             // 'b' (a.cross() is equal to b.cross()) then use the x_gradient,
             // otherwise use y_gradient
 
-            if ((a.cross(x, y) * b.cross(x, b.y + y)) > 0) {
+            if (sign(a.cross(x, y)) * sign(b.cross(x, b.y + y)) > 0) {
                 rgba[i] = x_gradient[x];
             } else {
                 rgba[i] = y_gradient[y];
