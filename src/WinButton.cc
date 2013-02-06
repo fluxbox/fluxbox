@@ -137,6 +137,10 @@ Pixmap WinButton::getPixmap(const FbTk::ThemeProxy<WinButtonTheme> &theme) const
             return theme->titlePixmap().pixmap().drawable();
         else
             return theme->menuiconPixmap().pixmap().drawable();
+    case LEFT_HALF:
+        return theme->leftHalfPixmap().pixmap().drawable();
+    case RIGHT_HALF:
+        return theme->rightHalfPixmap().pixmap().drawable();
     default:
         return None;
     }
@@ -160,18 +164,14 @@ void WinButton::drawType() {
     // otherwise draw old style imagery
     switch (m_type) {
     case MAXIMIZE:
-        // if no pixmap was used, use old style
-        if (gc() == 0) // must have valid graphic context
-            return;
-
-        drawRectangle(gc(),
-                      2, 2, width() - 5, height() - 5);
-        drawLine(gc(),
-                 2, 3, width() - 3, 3);
+        drawRectangle(gc(), 2, 2, width() - 5, height() - 5);
+        drawLine(gc(), 2, 3, width() - 3, 3);
         break;
+
     case MINIMIZE:
         drawRectangle(gc(), 2, height() - 5, width() - 5, 2);
         break;
+
     case STICK:
         // width/4 != width/2, so we use /4*2 so that it's properly centred
         if (m_listen_to.isStuck()) {
@@ -184,6 +184,7 @@ void WinButton::drawType() {
                           width()/10*2 + oddW, height()/10*2 + oddH);
         }
         break;
+
     case CLOSE:
         drawLine(gc(),
                  2, 2,
@@ -199,15 +200,12 @@ void WinButton::drawType() {
         // XFree86 Version 4.3.0.1 (Debian 4.3.0.dfsg.1-1 20040428170728)
         // (X Protocol Version 11, Revision 0, Release 6.6)
 
-        drawLine(gc(),
-                 2, height() - 3,
-                 width() - 3, 2);
+        drawLine(gc(), 2, height() - 3, width() - 3, 2);
         break;
-    case SHADE:
 
+    case SHADE:
     {
         int size = width() - 5 - oddW;
-
         drawRectangle(gc(), 2, 2, size, 2);
 
         // draw a one-quarter triangle below the rectangle
@@ -220,6 +218,7 @@ void WinButton::drawType() {
 
         break;
     }
+
     case MENUICON:
         if (m_icon_pixmap.drawable()) {
 
@@ -242,9 +241,15 @@ void WinButton::drawType() {
             for (unsigned int y = height()/3; y <= height() - height()/3; y+=3) {
                 drawLine(gc(), width()/4, y, width() - width()/4 - oddW - 1, y);
             }
-            drawRectangle(gc(),
-                      2, 2, width() - 5, height() - 5);
+            drawRectangle(gc(), 2, 2, width() - 5, height() - 5);
         }
+        break;
+
+    case LEFT_HALF:
+        fillRectangle(gc(), 2, 2, (width() / 2) - oddW, height() - 4);
+        break;
+    case RIGHT_HALF:
+        fillRectangle(gc(), width() / 2, 2, (width() / 2) - 2 + oddW, height() - 4);
         break;
     }
 }

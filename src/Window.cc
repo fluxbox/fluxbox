@@ -48,6 +48,7 @@
 
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Compose.hh"
+#include "FbTk/CommandParser.hh"
 #include "FbTk/EventManager.hh"
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -3600,6 +3601,32 @@ void FluxboxWindow::updateButtons() {
                     winbtn->setOnClick(show_menu_cmd);
                 }
                 break;
+
+            case WinButton::LEFT_HALF:
+                {
+                    winbtn = new WinButton(*this, m_button_theme,
+                                screen().pressedWinButtonTheme(),
+                                dir[i],
+                                frame().titlebar(),
+                                0, 0, 10, 10);
+
+                    CommandRef lhalf_cmd(FbTk::CommandParser<void>::instance().parse("MacroCmd {MoveTo 0 0} {ResizeTo 50% 100%}"));
+                    winbtn->setOnClick(lhalf_cmd);
+                }
+                break;
+
+            case WinButton::RIGHT_HALF:
+                {
+                    winbtn = new WinButton(*this, m_button_theme,
+                                screen().pressedWinButtonTheme(),
+                                dir[i],
+                                frame().titlebar(),
+                                0, 0, 10, 10);
+                    CommandRef rhalf_cmd(FbTk::CommandParser<void>::instance().parse("MacroCmd {MoveTo 50% 0} {ResizeTo 50% 100%}"));
+                    winbtn->setOnClick(rhalf_cmd);
+                }
+                break;
+
             }
 
 

@@ -108,6 +108,12 @@ getString() const {
         case WinButton::MENUICON:
             retval.append("MenuIcon");
             break;
+        case WinButton::LEFT_HALF:
+            retval.append("LHalf");
+            break;
+        case WinButton::RIGHT_HALF:
+            retval.append("RHalf");
+            break;
         default:
             break;
         }
@@ -142,6 +148,10 @@ setFromString(char const *strval) {
             m_value.push_back(WinButton::MENUICON);
         else if (v == "close")
             m_value.push_back(WinButton::CLOSE);
+        else if (v == "lhalf")
+            m_value.push_back(WinButton::LEFT_HALF);
+        else if (v == "rhalf")
+            m_value.push_back(WinButton::RIGHT_HALF);
     }
 }
 

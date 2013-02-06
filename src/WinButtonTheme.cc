@@ -52,6 +52,10 @@ WinButtonTheme::WinButtonTheme(int screen_num,
                "Window.Stick" + altextra + ".Pixmap"),
     m_stuck_pm(*this, "window.stuck" + extra + ".pixmap",
                "Window.Stuck" + altextra + ".Pixmap"),
+    m_lefthalf_pm(*this, "window.lhalf" + extra + ".pixmap",
+               "Window.LHalf" + altextra + ".Pixmap"),
+    m_righthalf_pm(*this, "window.rhalf" + extra + ".pixmap",
+               "Window.RHalf" + altextra + ".Pixmap"),
     m_frame_theme(frame_theme) {
 
     FbTk::ThemeManager::instance().loadTheme(*this);
@@ -82,5 +86,7 @@ void WinButtonTheme::reconfigTheme() {
     m_title_pm->scale(size, size);
     m_stick_pm->scale(size, size);
     m_stuck_pm->scale(size, size);
+    m_lefthalf_pm->scale(size, size);
+    m_righthalf_pm->scale(size, size);
 }
 

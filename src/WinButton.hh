@@ -38,7 +38,17 @@ template <class T> class ThemeProxy;
 class WinButton:public FbTk::Button, public FbTk::SignalTracker {
 public:
     /// draw type for the button
-    enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE, MENUICON};
+    enum Type {
+        MAXIMIZE,
+        MINIMIZE,
+        SHADE,
+        STICK,
+        CLOSE,
+        MENUICON,
+        LEFT_HALF,
+        RIGHT_HALF
+    };
+
     WinButton(FluxboxWindow &listen_to, 
               FbTk::ThemeProxy<WinButtonTheme> &theme,
               FbTk::ThemeProxy<WinButtonTheme> &pressed,
@@ -66,7 +76,7 @@ private:
 
     FbTk::FbPixmap m_icon_pixmap;
     FbTk::FbPixmap m_icon_mask;
-    
+
     bool overrode_bg, overrode_pressed;
 };
 
