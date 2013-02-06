@@ -111,6 +111,10 @@ struct Vec2 {
     }
 };
 
+template <typename T> int sign(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
 std::vector<char>& getGradientBuffer(size_t size) {
     static std::vector<char> buffer;
     if (buffer.size() < size)
@@ -469,10 +473,10 @@ void renderRectangleGradient(bool interlaced,
 
             // check, if the point (x, y) is left or right of the vectors
             // 'a' and 'b'. if the point is on the same side for both 'a' and
-            // 'b' (a.cross() is equal to b.cross()) then use the y_gradient,
+            // 'b' (a.cross() is equal to b.cross()) then use the x_gradient,
             // otherwise use y_gradient
 
-            if ((a.cross(x, y) * b.cross(x, b.y + y)) < 0) {
+            if (sign(a.cross(x, y)) * sign(b.cross(x, b.y + y)) < 0) {
                 rgba[i] = x_gradient[x];
             } else {
                 rgba[i] = y_gradient[y];
