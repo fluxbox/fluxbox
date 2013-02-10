@@ -84,11 +84,10 @@ uint64_t _mono() {
 
 #endif // HAVE_MACH_ABSOLUTE_TIME
 
-
-
+static uint64_t start = ::_mono();
 
 uint64_t FbTk::FbTime::mono() {
-    return ::_mono();
+    return ::_mono() - start;
 }
 
 
