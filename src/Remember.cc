@@ -1321,28 +1321,28 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
         int win_w, win_h;
         if(app->dimension_is_relative) {
-          int head = screen.getHead(win.fbWindow());
-          int screen_y = screen.maxBottom(head) - screen.maxTop(head);
-          win_w = screen.calRelativeWidth(head, app->w);
-          win_h = screen.calRelativeHeight(head, app->h);
+            int head = screen.getHead(win.fbWindow());
+            win_w = screen.calRelativeWidth(head, app->w);
+            win_h = screen.calRelativeHeight(head, app->h);
         } else {
-          win_w = app->w;
-          win_h = app->h;
+            win_w = app->w;
+            win_h = app->h;
         }
         win.resize(win_w, win_h);
     }
 
     if (app->position_remember) {
-      int newx, newy;
-      if(app->position_is_relative) {
-          int head = screen.getHead(win.fbWindow());
-          newx = screen.calRelativeWidth(head, app->x);
-          newy = screen.calRelativeHeight(head, app->y);
-      } else {
-        newx = app->x, newy = app->y;
-      }
-      win.translateCoords(newx, newy, app->refc);
-      win.move(newx, newy);
+        int newx, newy;
+        if(app->position_is_relative) {
+            int head = screen.getHead(win.fbWindow());
+            newx = screen.calRelativeWidth(head, app->x);
+            newy = screen.calRelativeHeight(head, app->y);
+        } else {
+            newx = app->x;
+            newy = app->y;
+        }
+        win.translateCoords(newx, newy, app->refc);
+        win.move(newx, newy);
     }
 
     if (app->shadedstate_remember)
