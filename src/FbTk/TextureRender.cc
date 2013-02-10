@@ -93,7 +93,7 @@ struct RGBA {
 
 const RGBA::colorFunc RGBA::pseudoInterlaceFuncs[3] = {
     RGBA::noop,
-    RGBA::brighten_4,
+    RGBA::brighten_8,
     RGBA::darken
 };
 
@@ -291,13 +291,13 @@ void renderBevel1(bool interlaced,
     // brighten top line and first pixel of the
     // 2nd line
     for (i = 0; i < width + 1; ++i) {
-        FbTk::RGBA::brighten_4(rgba[i]);
+        FbTk::RGBA::brighten_8(rgba[i]);
     }
 
     // bright and darken left and right border
     for (i = 2 * width - 1; i < s - width; i += width) {
         FbTk::RGBA::darken(rgba[i]); // right border
-        FbTk::RGBA::brighten_4(rgba[i + 1]);  // left border on the next line
+        FbTk::RGBA::brighten_8(rgba[i + 1]);  // left border on the next line
     }
 
     // darken bottom line, except the first pixel
@@ -335,14 +335,14 @@ void renderBevel2(bool interlaced,
 
     // top line, but stop 2 pixels before right border
     for (i = (width + 1); i < ((2 * width) - 2); i++) {
-        FbTk::RGBA::brighten_4(rgba[i]);
+        FbTk::RGBA::brighten_8(rgba[i]);
     }
 
     // first darken the right border, then brighten the
     // left border
     for ( ; i < (s - (2 * width) - 1); i += width) {
         FbTk::RGBA::darken(rgba[i]);
-        FbTk::RGBA::brighten_4(rgba[i + 3]);
+        FbTk::RGBA::brighten_8(rgba[i + 3]);
     }
 
     // bottom line
