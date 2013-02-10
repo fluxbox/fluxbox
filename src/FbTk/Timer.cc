@@ -134,16 +134,16 @@ void Timer::start() {
 
 
 void Timer::stop() {
-    if (isTiming()) {
-        s_timerlist.erase(this);
-        m_start = 0;
-    }
+    s_timerlist.erase(this);
 }
 
 uint64_t Timer::getEndTime() const {
     return m_start + m_timeout;
 }
 
+int Timer::isTiming() const {
+    return s_timerlist.find(const_cast<FbTk::Timer*>(this)) != s_timerlist.end();
+}
 
 void Timer::fireTimeout() {
     if (m_handler)
@@ -153,74 +153,74 @@ void Timer::fireTimeout() {
 
 void Timer::updateTimers(int fd) {
 
-    fd_set rfds;
-    timeval tm;
-    timeval* timeout = 0;
-    TimerList::iterator it;
+    fd_set              rfds;
+    timeval*            tout;
+    timeval             tm;
+    TimerList::iterator t;
+    bool                overdue = false;
+    uint64_t            now;
+
 
     FD_ZERO(&rfds);
     FD_SET(fd, &rfds);
-
-    bool overdue = false;
-    uint64_t now = FbTime::mono();
-    uint64_t end_time;
+    tout = NULL;
 
     // search for overdue timers
     if (!s_timerlist.empty()) {
 
-        Timer* timer = *s_timerlist.begin();
-        end_time = timer->getEndTime();
+        Timer*      timer = *s_timerlist.begin();
+        uint64_t    end_time = timer->getEndTime();
 
-        if (end_time < now) {
+        now = FbTime::mono();
+        if (end_time <= now) {
             overdue = true;
         } else {
-            uint64_t diff = (end_time - now);
+            uint64_t    diff = (end_time - now);
             tm.tv_sec = diff / FbTime::IN_SECONDS;
             tm.tv_usec = diff % FbTime::IN_SECONDS;
+            tout = &tm;
         }
-
-        timeout = &tm;
     }
 
     // if not overdue, wait for the next xevent via the blocking
     // select(), so OS sends fluxbox to sleep. the select() will
     // time out when the next timer has to be handled
-    if (!overdue && select(fd + 1, &rfds, 0, 0, timeout) != 0) {
+    if (!overdue && select(fd + 1, &rfds, 0, 0, tout) != 0) {
         // didn't time out! x events are pending
         return;
     }
 
     // stoping / restarting the timers modifies the list in an upredictable
-    // way. to avoid problems such as infinite loops we save the current
-    // (ordered) list of timers into a list and work on it.
+    // way. to avoid problems (infinite loops etc) we copy the current overdue
+    // timers from the gloabl (and ordered) list of timers and work on it.
 
     static std::vector<FbTk::Timer*> timeouts;
 
     now = FbTime::mono();
-    for (it = s_timerlist.begin(); it != s_timerlist.end(); ++it ) {
-        if (now < (*it)->getEndTime()) {
+    for (t = s_timerlist.begin(); t != s_timerlist.end(); ++t ) {
+        if (now < (*t)->getEndTime()) {
             break;
         }
-        timeouts.push_back(*it);
+        timeouts.push_back(*t);
     }
 
     size_t i;
     const size_t ts = timeouts.size();
     for (i = 0; i < ts; ++i) {
 
-        FbTk::Timer& t = *timeouts[i];
+        FbTk::Timer& timer = *timeouts[i];
 
         // first we stop the timer to remove it
         // from s_timerlist
-        t.stop();
+        timer.stop();
 
         // then we call the handler which might (re)start 't'
         // on it's own
-        t.fireTimeout();
+        timer.fireTimeout();
 
         // restart 't' if needed
-        if (!t.doOnce() && !t.isTiming()) {
-            t.start();
+        if (!timer.doOnce() && !timer.isTiming()) {
+            timer.start();
         }
     }
 

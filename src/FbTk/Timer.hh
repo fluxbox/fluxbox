@@ -61,7 +61,7 @@ public:
 
     static void updateTimers(int file_descriptor);
 
-    int isTiming() const { return (m_start > 0); }
+    int isTiming() const;
     int getInterval() const { return m_interval; }
 
     int doOnce() const { return m_once; }
@@ -80,7 +80,7 @@ private:
     bool m_once;  ///< do timeout only once?
     int m_interval; ///< Is an interval-only timer (e.g. clock), in seconds
 
-    uint64_t m_start;   ///< start time in microseconds, 0 if not running
+    uint64_t m_start;   ///< start time in microseconds
     uint64_t m_timeout; ///< time length in microseconds
 };
 
