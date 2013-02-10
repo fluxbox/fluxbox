@@ -1,6 +1,64 @@
  (Format: Year/Month/Day)
 
 -----------------------------
+Changes for 1.3.4
+
+*13/02/10:
+    * More subtle brightening of colors
+    * FbTk::FbTime::mono() yields microseconds since fluxbox started
+
+*13/02/06:
+    * Feature: Added 'LHalf' / 'RHalf' buttons for titlebar
+    * Bugfix: Elliptic gradients are rendered correctly now
+    * Bugfix: Avoid integer overflow for some gradients
+    * Code optimization in texture rendering code (RAM, reduced branches)
+
+*13/02/01:
+    * Feature: Added 'ClientPatternTest' command to help debugging
+               client patterns via 'fluxbox-remote'
+    * Bugfix: Handle FbTk::Timers with equal end time correctly
+    * Bugfix: Align ClockTool timers with system clock to trigger clock
+              switches when the users expects them
+
+*13/01/23:
+    * Improved calculation of brighter colors
+
+*13/01/20:
+    * Added 'he_IL' translations (Thanks Genghis Khan)
+
+*13/01/17:
+    * Bugfix: Invert a texture correctly
+
+*13/01/16:
+    * Cleanup of build-system and .gitignore
+
+*13/01/15:
+    * Simplification of FbTK::Timer code
+
+*13/01/13:
+    * Simplification of FbTK::TextureRender code
+    * Use the same lookup-tables for solid colors and gradient textures
+
+*13/01/12:
+    * Bugfix: Do not handle list of timers in place
+    * Improved documentation of code
+
+*13/01/10:
+    * Including the code of the SystemTray into the binary is optional now
+    * Reduce window-movement lagging on slower systems (Thanks Aymeric Vincent)
+
+*13/01/02:
+    * Build-system improvements (Thanks Sami Kerola)
+
+*12/12/31:
+    * Removed bashisms from fluxbox-generate_menu (Thanks Sami Kerola)
+
+*12/12/30:
+    * Build-system improvements (Thanks Sami Kerola)
+    * Combile fix: forgotten parentheses in code for MacOS
+
+
+-----------------------------
 Changes for 1.3.3
 
 *12/12/30:

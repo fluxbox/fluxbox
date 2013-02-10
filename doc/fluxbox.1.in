@@ -2,12 +2,12 @@
 .\"     Title: fluxbox
 .\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 30 December 2012
+.\"      Date: 10 February 2013
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "30 December 2012" "fluxbox\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX" "1" "10 February 2013" "fluxbox\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1966,6 +1966,8 @@ The available options are:
 \fBMinimize\fR
 \fBShade\fR
 \fBStick\fR
+\fBLHalf\fR
+\fBRHalf\fR
 .RE
 .sp
 Default left:
@@ -1973,6 +1975,11 @@ Default left:
 .sp
 Default right:
 \fBShade Minimize Maximize Close\fR
+.sp
+\fILHalf\fR
+and
+\fIRHalf\fR
+are buttons to quickly place a window into the left and right half of the current monitor\&.
 .RE
 .sp
 All of the \fIlocation\fR resources following require a pathname to their specific files\&. This is where you can specify different files\&. Most of the defaults will be located in the user\(cqs \fB~/\&.fluxbox\fR directory\&.

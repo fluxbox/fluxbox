@@ -1,7 +1,7 @@
 fluxbox-style(5)
 ================
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v1.3.3, 30 December 2012
+v1.3.4, 10 February 2013
 :man source:   fluxbox-style.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual
@@ -231,14 +231,14 @@ options. Have fun.
    window.bevelWidth:              <integer>
    window.borderColor:             <color>
    window.borderWidth:             <integer>
-   window.button.focus: <texture type>
-   window.button.focus.color:  <color>
-   window.button.focus.colorTo: <color>
+   window.button.focus:            <texture type>
+   window.button.focus.color:      <color>
+   window.button.focus.colorTo:    <color>
    window.button.focus.picColor:   <color>
    window.button.focus.pixmap:     <filename>
    window.button.pressed: <texture type>
-   window.button.pressed.color:  <color>
-   window.button.pressed.colorTo: <color>
+   window.button.pressed.color:    <color>
+   window.button.pressed.colorTo:  <color>
    window.button.pressed.pixmap:   <filename>
    window.button.unfocus:          <texture type>
    window.button.unfocus.color:    <color>
@@ -251,13 +251,13 @@ options. Have fun.
    window.font:                    <font>
    window.frame.focusColor:        <color>
    window.frame.unfocusColor:      <color>
-   window.grip.focus: <texture type>
-   window.grip.focus.color:  <color>
-   window.grip.focus.colorTo: <color>
+   window.grip.focus:              <texture type>
+   window.grip.focus.color:        <color>
+   window.grip.focus.colorTo:      <color>
    window.grip.focus.pixmap:       <filename>
-   window.grip.unfocus: <texture type>
-   window.grip.unfocus.color:  <color>
-   window.grip.unfocus.colorTo: <color>
+   window.grip.unfocus:            <texture type>
+   window.grip.unfocus.color:      <color>
+   window.grip.unfocus.colorTo:    <color>
    window.grip.unfocus.pixmap:     <filename>
    window.handle.focus:            <texture type>
    window.handle.focus.color:      <color>
@@ -282,20 +282,24 @@ options. Have fun.
    window.label.unfocus.color:     <color>
    window.label.unfocus.colorTo:   <color>
    window.label.unfocus.pixmap:    <filename>
-   window.label.focus.textColor: <color>
+   window.label.focus.textColor:   <color>
    window.label.unfocus.textColor: <color>
-   window.maximize.pixmap: <filename>
+   window.maximize.pixmap:         <filename>
    window.maximize.pressed.pixmap: <filename>
    window.maximize.unfocus.pixmap: <filename>
    window.roundCorners:            <{Top|Bottom}{Left|Right}>
-   window.shade.pixmap: <filename>
-   window.shade.pressed.pixmap: <filename>
+   window.shade.pixmap:            <filename>
+   window.shade.pressed.pixmap:    <filename>
    window.shade.unfocus.pixmap:    <filename>
-   window.stick.pixmap: <filename>
-   window.stick.pressed.pixmap: <filename>
+   window.stick.pixmap:            <filename>
+   window.stick.pressed.pixmap:    <filename>
    window.stick.unfocus.pixmap:    <filename>
-   window.stuck.pixmap: <filename>
-   window.stuck.unfocus.pixmap: <filename>
+   window.stuck.pixmap:            <filename>
+   window.stuck.unfocus.pixmap:    <filename>
+   window.lhalf.pixmap:            <filename>
+   window.lhalf.unfocus.pixmap:    <filename>
+   window.rhalf.pixmap:            <filename>
+   window.rhalf.unfocus.pixmap:    <filename>
    window.title.focus:             <texture type>
    window.title.focus.color:       <color>
    window.title.focus.colorTo:     <color>
@@ -396,37 +400,37 @@ look just the way you want it.
    toolbar.borderColor:            <color>
    toolbar.borderWidth:            <integer>
    toolbar.button.scale:           <integer>
-   toolbar.color:  <color>
-   toolbar.colorTo: <color>
-   toolbar.clock: <texture type>
+   toolbar.color:                  <color>
+   toolbar.colorTo:                <color>
+   toolbar.clock:                  <texture type>
    toolbar.clock.borderColor:      <color>
    toolbar.clock.borderWidth:      <integer>
    toolbar.clock.font:             <font>
    toolbar.clock.justify:          <{Left|Right|Center}>
-   toolbar.clock.pixmap:  <filename>
-   toolbar.clock.color:  <color>
-   toolbar.clock.colorTo: <color>
+   toolbar.clock.pixmap:           <filename>
+   toolbar.clock.color:            <color>
+   toolbar.clock.colorTo:          <color>
    toolbar.clock.textColor:        <color>
    toolbar.height:                 <integer>
-   toolbar.iconbar.focused: <texture type>
+   toolbar.iconbar.focused:        <texture type>
    toolbar.iconbar.focused.color:  <color>
    toolbar.iconbar.focused.colorTo:<color>
    toolbar.iconbar.focused.pixmap: <filename>
-   toolbar.iconbar.unfocused: <texture type>
+   toolbar.iconbar.unfocused:      <texture type>
    toolbar.iconbar.unfocused.color:  <color>
    toolbar.iconbar.unfocused.colorTo: <color>
-   toolbar.iconbar.unfocused.pixmap:       <filename>
-   toolbar.iconbar.empty: <texture type>
-   toolbar.iconbar.empty.color:  <color>
-   toolbar.iconbar.empty.colorTo: <color>
+   toolbar.iconbar.unfocused.pixmap: <filename>
+   toolbar.iconbar.empty:          <texture type>
+   toolbar.iconbar.empty.color:    <color>
+   toolbar.iconbar.empty.colorTo:  <color>
    toolbar.iconbar.empty.pixmap:   <filename>
    toolbar.iconbar.focused.borderColor: <color>
    toolbar.iconbar.focused.borderWidth:    <integer>
    toolbar.iconbar.unfocused.borderColor: <color>
    toolbar.iconbar.unfocused.borderWidth:  <integer>
-   toolbar.iconbar.borderColor: <color>
-   toolbar.iconbar.borderWidth:            <integer>
-   toolbar.iconbar.focused.font: <font>
+   toolbar.iconbar.borderColor:    <color>
+   toolbar.iconbar.borderWidth:    <integer>
+   toolbar.iconbar.focused.font:   <font>
    toolbar.iconbar.focused.justify:        <{Left|Right|Center}>
    toolbar.iconbar.focused.textColor: <color>
    toolbar.iconbar.unfocused.font: <font>

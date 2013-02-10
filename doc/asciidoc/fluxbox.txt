@@ -1,7 +1,7 @@
 fluxbox(1)
 ==========
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v1.3.3, 30 December 2012
+v1.3.4, 10 February 2013
 :man source:   fluxbox.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
@@ -1176,12 +1176,16 @@ may specify any number, space-delimited.
 +
 --
 The available options are:;;
-	*Close* *Maximize* *MenuIcon* *Minimize* *Shade* *Stick*
+	*Close* *Maximize* *MenuIcon* *Minimize* *Shade* *Stick* *LHalf* *RHalf*
 --
 +
 Default left: *Stick*
 +
 Default right: *Shade Minimize Maximize Close*
++
+'LHalf' and 'RHalf' are buttons to quickly place a window into the left and
+right half of the current monitor.
+
 
 All of the 'location' resources following require a pathname to their specific
 files. This is where you can specify different files. Most of the defaults will
