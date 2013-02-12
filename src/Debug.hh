@@ -1,7 +1,6 @@
 #ifndef DEBUG_HH
 #define DEBUG_HH
 
-#include "config.h"
 #include <iostream>
 
 #ifdef DEBUG

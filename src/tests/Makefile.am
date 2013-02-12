@@ -1,4 +1,4 @@
-AM_CPPFLAGS= -I$(top_srcdir)/src
+AM_CPPFLAGS= -I$(top_srcdir)/src -include $(top_builddir)/config.h
 
 noinst_PROGRAMS= \
 	 testTexture \

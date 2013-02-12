@@ -1,6 +1,6 @@
 # util/Makefile.am for Fluxbox
 SUBDIRS=		fbrun
-AM_CPPFLAGS= 		-I$(top_srcdir)/src -I$(top_srcdir)/src/FbTk
+AM_CPPFLAGS= 		-I$(top_srcdir)/src -I$(top_srcdir)/src/FbTk -include $(top_builddir)/config.h
 bin_SCRIPTS= 		fbsetbg fluxbox-generate_menu startfluxbox
 bin_PROGRAMS=		fbsetroot fluxbox-update_configs fluxbox-remote
 fbsetroot_SOURCES=	fbsetroot.cc fbsetroot.hh
@@ -23,10 +23,10 @@ all-local:	startfluxbox
 clean-local:
 		rm -f startfluxbox fluxbox-generate_menu
 
-fbsetroot.o: 	fbsetroot.cc ../config.h $(srcdir)/fbsetroot.hh \
+fbsetroot.o: 	fbsetroot.cc $(srcdir)/fbsetroot.hh \
 			$(top_srcdir)/src/FbRootWindow.hh $(top_srcdir)/src/FbAtoms.hh
 
-fluxbox-update_configs.o:	fluxbox-update_configs.cc ../config.h \
+fluxbox-update_configs.o:	fluxbox-update_configs.cc \
 			$(top_builddir)/src/defaults.hh
 
 fluxbox-remote.o:	fluxbox-remote.cc

@@ -26,10 +26,6 @@
 
 #include "NotCopyable.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #include <string>
 
 /*

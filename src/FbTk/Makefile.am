@@ -1,6 +1,6 @@
 noinst_LIBRARIES = libFbTk.a
 
-AM_CPPFLAGS=@CPPFLAGS@
+AM_CPPFLAGS=-include $(top_builddir)/config.h
 
 if XFT
 xft_SOURCE= XftFontImp.hh XftFontImp.cc

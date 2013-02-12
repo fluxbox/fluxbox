@@ -25,10 +25,6 @@
 #include "FontImp.hh"
 #include "App.hh"
 
-#ifdef    HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 // for antialias
 #ifdef USE_XFT
 #include "XftFontImp.hh"

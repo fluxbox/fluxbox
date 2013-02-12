@@ -23,10 +23,6 @@
 #include "App.hh"
 #include "I18n.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #ifdef HAVE_XRENDER
 #include <X11/extensions/Xrender.h>
 #endif // HAVE_XRENDER

@@ -62,10 +62,6 @@
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #ifdef USE_EWMH
 #include "Ewmh.hh"
 #endif // USE_EWMH

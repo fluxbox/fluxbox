@@ -32,10 +32,6 @@
 #include "FbTk/ImageControl.hh"
 #include "FbTk/TextUtils.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #include <X11/Xutil.h>
 #ifdef SHAPE
 #include <X11/extensions/shape.h>

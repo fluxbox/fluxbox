@@ -55,9 +55,6 @@
 #include "FbTk/Select2nd.hh"
 #include "FbTk/MemFun.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE

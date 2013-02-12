@@ -22,12 +22,6 @@
 #ifndef FBTK_FBTIME_HH
 #define FBTK_FBTIME_HH
 
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
-
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
 #endif // HAVE_INTTYPES_H

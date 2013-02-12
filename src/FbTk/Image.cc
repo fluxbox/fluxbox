@@ -23,10 +23,6 @@
 #include "StringUtil.hh"
 #include "FileUtil.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #ifdef HAVE_XPM
 #include "ImageXPM.hh"
 #endif // HAVE_XPM

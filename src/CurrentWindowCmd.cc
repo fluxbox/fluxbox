@@ -39,10 +39,6 @@
 #include "FbTk/Util.hh"
 #include "FbTk/RelCalcHelper.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #ifdef HAVE_CSTDLIB
 #include <cstdlib>
 #else

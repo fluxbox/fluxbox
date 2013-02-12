@@ -27,10 +27,6 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/FileUtil.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #ifdef HAVE_XPM
 #include <X11/xpm.h>
 #include "fbrun.xpm"
