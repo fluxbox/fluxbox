@@ -32,11 +32,6 @@
 #include "FbTk/FileUtil.hh"
 #include "FbTk/StringUtil.hh"
 
-//use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #ifdef HAVE_CSTDLIB
   #include <cstdlib>
 #else

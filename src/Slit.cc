@@ -24,11 +24,6 @@
 
 #include "Slit.hh"
 
-//use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #include "Screen.hh"
 #include "ScreenPlacement.hh"
 #include "FbTk/ImageControl.hh"

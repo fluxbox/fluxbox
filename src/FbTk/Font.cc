@@ -39,10 +39,6 @@
 #include "XFontImp.hh"
 
 #include "GContext.hh"
-//use gnu extensions
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif //_GNU_SOURCE
 
 #ifndef __USE_GNU
 #define __USE_GNU

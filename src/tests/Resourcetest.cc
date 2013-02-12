@@ -21,11 +21,6 @@
 
 #include "Resource.hh"
 
-//use of strcasecmp 
-#ifndef   _GNU_SOURCE
-#define   _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #include <string>
 #include <iostream>
 #ifdef HAVE_CSTDIO

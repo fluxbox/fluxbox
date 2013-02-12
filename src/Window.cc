@@ -59,11 +59,6 @@
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
-//use GNU extensions
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 

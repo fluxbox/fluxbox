@@ -30,11 +30,6 @@
 #include "SimpleCommand.hh"
 #include "I18n.hh"
 
-//use GNU extensions
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif // HAVE_SYS_TYPES_H

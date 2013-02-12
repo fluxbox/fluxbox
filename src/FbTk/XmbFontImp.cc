@@ -31,10 +31,6 @@
 #include <locale.h>
 #endif // HAVE_SETLOCALE
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #ifdef HAVE_CSTDIO
   #include <cstdio>
 #else

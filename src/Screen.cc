@@ -77,11 +77,6 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/Util.hh"
 
-//use GNU extensions
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #ifdef USE_SLIT
 #include "Slit.hh"
 #include "SlitClient.hh"

@@ -57,11 +57,6 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/MemFun.hh"
 
-//Use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #ifdef USE_EWMH
 #include "Ewmh.hh"
 #endif // USE_EWMH

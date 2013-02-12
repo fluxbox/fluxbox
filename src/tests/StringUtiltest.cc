@@ -20,9 +20,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "FbTk/StringUtil.hh"
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif //_GNU_SOURCE
 
 #include <cstring>
 #include <cstdlib>

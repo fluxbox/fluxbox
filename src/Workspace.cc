@@ -36,11 +36,6 @@
 #include "FbTk/FbString.hh"
 #include "FbTk/MemFun.hh"
 
-// use GNU extensions
-#ifndef  _GNU_SOURCE
-#define  _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 

@@ -27,11 +27,6 @@
 #include "CommandParser.hh"
 #include "StringUtil.hh"
 
-//use GNU extensions
-#ifndef	_GNU_SOURCE
-#define _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #ifdef HAVE_CASSERT
   #include <cassert>
 #else
