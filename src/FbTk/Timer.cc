@@ -77,7 +77,8 @@ namespace FbTk {
 Timer::Timer() :
     m_once(false),
     m_interval(0),
-    m_start(0) {
+    m_start(0),
+    m_timeout(0) {
 
 }
 
@@ -85,7 +86,8 @@ Timer::Timer(const RefCount<Slot<void> > &handler):
     m_handler(handler),
     m_once(false),
     m_interval(0),
-    m_start(0) {
+    m_start(0),
+    m_timeout(0) {
 }
 
 
