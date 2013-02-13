@@ -1,6 +1,12 @@
  (Format: Year/Month/Day)
 
 -----------------------------
+Changes for 1.3.5
+
+*13/02/13:
+    * Bugfix: reenable 'If', 'Or', 'And' actions.
+
+-----------------------------
 Changes for 1.3.4
 
 *13/02/10:

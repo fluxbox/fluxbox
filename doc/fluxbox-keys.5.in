@@ -2,12 +2,12 @@
 .\"     Title: fluxbox-keys
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 10 February 2013
+.\"      Date: 13 February 2013
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "10 February 2013" "fluxbox\-keys\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "13 February 2013" "fluxbox\-keys\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------

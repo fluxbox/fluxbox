@@ -1,7 +1,7 @@
 fluxbox-remote(1)
 =================
 Mark Tiefenbruck <mark@fluxbox.org>
-v1.3.4, 10 February 2013
+v1.3.5, 13 February 2013
 :man source: fluxbox-remote.txt
 :man version: {revision}
 :man manual: Fluxbox Manual
@@ -16,7 +16,11 @@ SYNOPSIS
 
 DESCRIPTION
 -----------
-'fluxbox-remote(1)' is designed to allow scripts to execute most key commands from 'fluxbox(1)'. 'fluxbox-remote(1)' will only work with 'fluxbox(1)': its communications with 'fluxbox(1)' are not standardized in any way. It is recommended that a standards-based tool such as 'wmctrl(1)' be used whenever possible, in order for scripts to work with other window managers.
+'fluxbox-remote(1)' is designed to allow scripts to execute most key commands
+from 'fluxbox(1)'. 'fluxbox-remote(1)' will only work with 'fluxbox(1)': its
+communications with 'fluxbox(1)' are not standardized in any way. It is
+recommended that a standards-based tool such as 'wmctrl(1)' be used whenever
+possible, in order for scripts to work with other window managers.
 
 CAVEATS
 -------

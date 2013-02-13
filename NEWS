@@ -1,20 +1,5 @@
-This is mostly a bug fix release. For a more complete list and detailed
-description of them see the documentation and ChangeLog.
+Version 1.3.5 is a bug fix release.
 
-General:
-    * Added 'LHalf' / 'RHalf' titlebar buttons
-    * Added 'ClientPatternTest' command for testing clientpatterns via
-      fluxbox-remote
-    * Added 'he_IL' translations
+Critical Bugfixes in 1.3.5:
+    * Reenabled 'If' 'Or' 'And' actions again
 
-Critical Bugfixes in 1.3.4:
-    * All timer based problems are fixed now
-    * Fixed integer overflows for some gradient textures
-    * Fixed compile issue on MacOS
-
-Other Bugfixes:
-    * Correct renderinger of 'sunken' textures
-    * Move windows without the lagging-behind-effect on slower machines
-    * Improved color brightening in textures
-    * Memory and other code improvements in texture rendering code
-    * Fix build-system issues
