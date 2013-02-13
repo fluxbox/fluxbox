@@ -392,21 +392,18 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
 
 // setup RANDR for this screens root window
-#if defined(HAVE_RANDR1_2)
+#if defined(HAVE_RANDR)
     int randr_mask = RRScreenChangeNotifyMask;
-#ifdef RRCrtcChangeNotifyMask
+# ifdef RRCrtcChangeNotifyMask
     randr_mask |= RRCrtcChangeNotifyMask;
-#endif
-#ifdef RROutputChangeNotifyMask
+# endif
+# ifdef RROutputChangeNotifyMask
     randr_mask |= RROutputChangeNotifyMask;
-#endif
-#ifdef RROutputPropertyNotifyMask
+# endif
+# ifdef RROutputPropertyNotifyMask
     randr_mask |= RROutputPropertyNotifyMask;
-#endif
+# endif
     XRRSelectInput(disp, rootWindow().window(), randr_mask);
-
-#elif defined(HAVE_RANDR)
-    XRRScreenChangeSelectInput(disp, rootWindow().window(), True);
 #endif // HAVE_RANDR
 
 

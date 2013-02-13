@@ -11,12 +11,18 @@ noinst_PROGRAMS= \
 	 testRectangleUtil
 
 testTexture_SOURCES         = texturetest.cc
+testTexture_LDFLAGS	    = $(X_LIBS) $(X11_LIBS) $(FRIBIDI_LIBS) $(XRENDER_LIBS) $(IMLIB2_LIBS) $(XPM_LIBS) $(XFT_LIBS) $(FONTCONFIG_LIBS)
 testFont_SOURCES            = testFont.cc
+testFont_LDFLAGS	    = $(X_LIBS) $(X11_LIBS) $(FRIBIDI_LIBS) $(XRENDER_LIBS) $(XFT_LIBS) $(FONTCONFIG_LIBS)
 testSignals_SOURCES         = testSignals.cc
+testSignals_LDFLAGS	    = $(X_LIBS) $(X11_LIBS) $(FRIBIDI_LIBS) $(XRENDER_LIBS)
 testKeys_SOURCES            = testKeys.cc
+testKeys_LDFLAGS	    = $(X_LIBS) $(X11_LIBS) $(FRIBIDI_LIBS) $(XRENDER_LIBS) $(XFT_LIBS) $(FONTCONFIG_LIBS)
 testDemandAttention_SOURCES = testDemandAttention.cc
+testDemandAttention_LDFLAGS = $(X_LIBS) $(X11_LIBS) $(FRIBIDI_LIBS) $(XRENDER_LIBS) $(XFT_LIBS) $(FONTCONFIG_LIBS)
 #testResource_SOURCES        = Resourcetest.cc
 testFullscreen_SOURCES      = fullscreentest.cc
+testFullscreen_LDFLAGS	    = $(X_LIBS) $(X11_LIBS) $(FRIBIDI_LIBS) $(XRENDER_LIBS) $(XFT_LIBS) $(FONTCONFIG_LIBS)
 testStringUtil_SOURCES      = StringUtiltest.cc
 testRectangleUtil_SOURCES   = testRectangleUtil.cc
 

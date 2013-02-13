@@ -6,7 +6,7 @@
 SUBDIRS = doc nls src util data
 MAINTAINERCLEANFILES = aclocal.m4 config.h.in configure Makefile.in stamp-h.in
 ACLOCAL_AMFLAGS = -I m4
-EXTRA_DIST = acinclude.m4 $(top_srcdir)/3rd/vim/* $(top_srcdir)/3rd/vim/syntax/*
+EXTRA_DIST = $(top_srcdir)/3rd/vim/* $(top_srcdir)/3rd/vim/syntax/*
 
 uninstall-hook:
 	rmdir $(DESTDIR)$(pkgdatadir)

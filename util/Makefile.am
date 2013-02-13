@@ -6,10 +6,21 @@ bin_PROGRAMS=		fbsetroot fluxbox-update_configs fluxbox-remote
 fbsetroot_SOURCES=	fbsetroot.cc fbsetroot.hh
 fbsetroot_LDADD=../src/FbRootWindow.o ../src/FbAtoms.o \
 			../src/FbTk/libFbTk.a
+fbsetroot_LDFLAGS = \
+	$(FONTCONFIG_LIBS) \
+	$(FRIBIDI_LIBS) \
+	$(X11_LIBS) \
+	$(XFT_LIBS) \
+	$(XRENDER_LIBS)
+
 fluxbox_update_configs_SOURCES=	fluxbox-update_configs.cc
 fluxbox_update_configs_LDADD=	../src/defaults.o ../src/Resources.o \
 			../src/FbTk/libFbTk.a
+fluxbox_update_configs_LDFLAGS = \
+	$(FRIBIDI_LIBS) \
+	$(X11_LIBS)
 fluxbox_remote_SOURCES=	fluxbox-remote.cc
+fluxbox_remote_LDFLAGS = $(X11_LIBS)
 
 MAINTAINERCLEANFILES=	Makefile.in
 EXTRA_DIST=		fbsetbg fluxbox-generate_menu.in \

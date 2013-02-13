@@ -31,6 +31,13 @@ AC_C_INLINE
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
+m4_ifndef([PKG_PROG_PKG_CONFIG],
+  [m4_fatal([Could not locate the pkg-config autoconf macros.  These are usually
+located in /usr/share/aclocal/pkg.m4.  If your macros are in a different
+location, try setting the environment variable
+export ACLOCAL_FLAGS="-I/other/macro/dir"
+before running ./autogen.sh or autoreconf again.])])
+PKG_PROG_PKG_CONFIG
 
 AC_CHECK_PROGS(regex_cmd, sed)
 AS_IF(test "x$regex_cmd" = "x",[AC_MSG_ERROR([error. sed is required to build the data files.])])
@@ -221,18 +228,12 @@ CXXFLAGS="$CXXFLAGS $X_CFLAGS"
 LIBS="$X_LIBS $LIBS"
 LDFLAGS="$LDFLAGS $LIBS $X_PRE_LIBS"
 
-
-dnl Check for required functions in -lX11
-AC_CHECK_LIB(X11, XOpenDisplay, LIBS="-lX11 $LIBS", AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.]))
-LIBS="$X_EXTRA_LIBS $LIBS"
-
+dnl Check for xpg4
 AC_CHECK_LIB(xpg4, setlocale, LIBS="-lxpg4 $LIBS")
 AC_CHECK_PROGS(gencat_cmd, gencat)
 AS_IF(test "x$gencat_cmd" = "x",[NLS=""],[])
 
 Xext_lib=""
-
-
 
 dnl Check for Remember options
 AC_MSG_CHECKING([whether to include remember functionality])
@@ -241,7 +242,6 @@ AC_ARG_ENABLE(remember,
 AC_MSG_RESULT([$enable_remember])
 AS_IF(test "x$enable_remember" = "xyes",[AC_DEFINE(REMEMBER, 1, " compile with remember")],[])
 AM_CONDITIONAL(REMEMBER_SRC, test "x$enable_remember" = "xyes")
-
 
 AC_MSG_CHECKING([whether to have (POSIX) regular expression support])
 AC_ARG_ENABLE(regexp,
@@ -256,9 +256,6 @@ AS_IF(test "x$enable_regexp" = "xyes",[
     )],[])
 AM_CONDITIONAL(REGEXP_SRC, test x$REGEXP_SRC = xtrue)
 
-
-
-
 dnl Check for the Slit
 AC_MSG_CHECKING([whether to include the Slit])
 AC_ARG_ENABLE(slit,
@@ -266,8 +263,6 @@ AC_ARG_ENABLE(slit,
 AC_MSG_RESULT([$enable_slit])
 AS_IF(test "x$enable_slit" = "xyes",[AC_DEFINE(USE_SLIT, 1, " compile with slit")],[])
 AM_CONDITIONAL(SLIT_SRC, test "x$enable_slit" = "xyes")
-
-
 
 dnl Check for Systemtray options
 AC_MSG_CHECKING([whether to include SystemTray])
@@ -288,16 +283,12 @@ AS_IF(test "x$enable_systray" = "xyes" -a "x$enable_toolbar" != "xyes",[
 AS_IF(test "x$enable_toolbar" = "xyes",[AC_DEFINE(USE_TOOLBAR, 1, " compile with toolbar")],[])
 AM_CONDITIONAL(TOOLBAR_SRC, test "x$enable_toolbar" = "xyes")
 
-
-
 AC_MSG_CHECKING([whether to support Extended Window Manager Hints])
 AC_ARG_ENABLE(ewmh,
     AS_HELP_STRING([--enable-ewmh],[enable support for Extended Window Manager Hints (default=yes)]),,[enable_ewmh=yes])
 AC_MSG_RESULT([$enable_ewmh])
 AS_IF(test "x$enable_ewmh" = "xyes",[AC_DEFINE(USE_EWMH, 1, "use extened window manager hints")],[])
 AM_CONDITIONAL(EWMH, test "x$enable_ewmh" = "xyes")
-
-
 
 dnl Check whether to include debugging code
 DEBUG=""
@@ -309,16 +300,12 @@ AS_IF(test "x$enable_debug" = "xyes",[ DEBUG="-DDEBUG -Wall" ],[])
 AC_SUBST(DEBUG)
 CXXFLAGS="$CXXFLAGS $DEBUG"
 
-
-
 dnl Check whether to build test programs
 AC_MSG_CHECKING([whether to build test programs])
 AC_ARG_ENABLE(test,
     AS_HELP_STRING([--enable-test],[build programs used in testing fluxbox (default=no)]),,[enable_test=no])
 AC_MSG_RESULT([$enable_test])
 AM_CONDITIONAL(TEST, test "x$enable_test" = "xyes")
-
-
 
 dnl Check whether to include native language support (i18n)
 AC_MSG_CHECKING([whether to include NLS support])
@@ -330,9 +317,6 @@ AS_IF(test "x$enable_nls" = "xyes",[
     NLS="-DNLS"],[])
 AC_SUBST(NLS)
 
-
-
-
 dnl Check for new timed pixmap cache
 AC_MSG_CHECKING([whether to use a timed pixmap cache])
 AC_ARG_ENABLE(timedcache,
@@ -341,194 +325,127 @@ AC_MSG_RESULT([$enable_timedcache])
 AS_IF(test "x$enable_timedcached" = "xyes",[
     AC_DEFINE(TIMEDCACHE, 1, "timed cache")],[])
 
-
-
-AC_MSG_CHECKING([whether to have Xft support])
-AM_PATH_XFT(yes, XFT=true, XFT=false)
-
-AS_IF(test "x$XFT" = "xtrue",[
-	AC_TRY_LINK([
-			#include <X11/Xft/Xft.h>
-		], [ XftFontClose(0, 0); return 1; ],
-	[
-
-		AC_DEFINE(USE_XFT, 1, "antialias support")
-	AC_MSG_CHECKING([Xft UTF-8 support])
-	AC_TRY_LINK([
-			#include <X11/Xft/Xft.h>
-		], [ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; ],
-		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
-	FEATURES="$FEATURES XFT"
-		AC_MSG_RESULT(yes),
-		AC_MSG_RESULT(no)
-		)
-	],
-	[	AC_MSG_RESULT([Could not link with Xft. Install Xft if you want support for it.])
-		XFT=false
-	])])
-
-AM_CONDITIONAL(XFT, test "x$XFT" = "xtrue")
-
-
-AC_MSG_CHECKING([whether to have XRENDER (transparent) support])
-AC_ARG_ENABLE(xrender,
-	      AS_HELP_STRING([--enable-xrender],[XRENDER (transparent) support (default=yes)]),,[enable_xrender=yes])
-AC_MSG_RESULT([$enable_xrender])
-AS_IF(test "x$enable_xrender" = "xyes",[
-    AC_CHECK_LIB(Xrender, XRenderCreatePicture,
-	AC_DEFINE(HAVE_XRENDER, 1, "Xrender support")
-	LIBS="-lXrender $LIBS")
-    ],[])
-
-
-XPM=false
-AC_MSG_CHECKING([whether to have XPM (pixmap themes) support])
-AC_ARG_ENABLE(xpm,
-    AS_HELP_STRING([--enable-xpm],[XPM (pixmap themes) support (default=yes)]),[],[enable_xpm=yes])
-AC_MSG_RESULT([$enable_xpm])
-AS_IF(test "x$enable_xpm" = "xyes",[
-   AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
-		AC_DEFINE(HAVE_XPM, 1, "Xpm support")
-		XPM=true
-		LIBS="-lXpm $LIBS")
-   ],[])
-
-AM_CONDITIONAL(XPM, test "x$XPM" = "xtrue")
-
-dnl Check whether to use imlib2
-IMLIB2=false
-AC_MSG_CHECKING([whether to have IMLIB2 (pixmap themes) support])
-AC_ARG_ENABLE(imlib2,
-    AS_HELP_STRING([--enable-imlib2], [IMLIB2 (pixmap themes) support (default=yes)]), , [enable_imlib2=yes])
-AC_MSG_RESULT([$enable_imlib2])
-AS_IF(test x$enable_imlib2 = "xyes",[
-    AC_PATH_GENERIC(imlib2, 1.0.0,[
-	IMLIB2=true
-	AC_DEFINE(HAVE_IMLIB2, [], [Imlib2 support])
-	LIBS="$IMLIB2_LIBS $LIBS"
-	CXXFLAGS="$CXXFLAGS $IMLIB2_CFLAGS"
-	FEATURES="$FEATURES IMLIB2"
-	], []
-	)],[])
-
-AM_CONDITIONAL(IMLIB2, test "x$IMLIB2" = "xtrue")
-
-
-
 AC_MSG_CHECKING([whether to have XMB (multibyte font, utf-8) support])
 AC_ARG_ENABLE(xmb, AS_HELP_STRING([--enable-xmb],[XMB (multibyte font, utf-8) support (default=yes)]),,[enable_xmb=yes])
 AC_MSG_RESULT([$enable_xmb])
 AS_IF([test "x$enable_xmb" = "xyes"],[ AC_DEFINE(USE_XMB, 1, "multibyte support")], [])
 AM_CONDITIONAL(MULTIBYTE, test "x$enable_xmb" = "xyes")
 
+dnl Check for imlib2
+have_imlib2=no
+AC_ARG_ENABLE([imlib2], AS_HELP_STRING([--disable-imlib2], [disable imlib2 support]))
+AS_IF([test "x$enable_imlib2" != "xno"], [
+	PKG_CHECK_MODULES([IMLIB2], [ imlib2 >= 1.0.0 ],
+		[AC_DEFINE([HAVE_IMLIB2], [1], [Define if imlib2 is available]) have_imlib2=yes], [have_imlib2=no])
+	AS_IF([test "x$have_imlib2" = xno -a "x$enable_imlib2" = xyes], [
+		AC_MSG_ERROR([*** imlib2 support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([IMLIB2], [test "$have_imlib2" = "yes"])
+
+dnl Check for X11
+PKG_CHECK_MODULES([X11], [ x11 ],
+	[AC_DEFINE([HAVE_X11], [1], [Define if x11 is available]) have_x11=yes],
+	[have_x11=no])
+AM_CONDITIONAL([X11], [test "$have_x11" = "yes"], AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.]))
+
+have_xft=no
+AC_ARG_ENABLE([xft], AS_HELP_STRING([--disable-xft], [disable xft support]))
+AS_IF([test "x$enable_xft" != "xno"], [
+	PKG_CHECK_MODULES([XFT], [ xft ],
+		[AC_DEFINE([USE_XFT], [1], [Define if xft is available]) have_xft=yes], [have_xft=no])
+	AS_IF([test "x$have_xft" = xno -a "x$enable_xft" = xyes], [
+		AC_MSG_ERROR([*** xft support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([XFT], [test "$have_xft" = "yes"])
+AS_IF([test "$have_xft" = "yes"], [
+	AC_CHECK_LIB([Xft], [XftDrawStringUtf8], [have_utf8=yes], [have_utf8=no])
+	AS_IF([test "$have_utf8" = yes], [
+		AC_DEFINE([HAVE_XFT_UTF8_STRING], [1], [Define if you have XftDrawStringUtf8])
+	])
+	PKG_CHECK_MODULES([FONTCONFIG], [ fontconfig ], [], AC_MSG_ERROR([Could not find -lfontconfig.]))
+])
+
+have_xrender=no
+AC_ARG_ENABLE([xrender], AS_HELP_STRING([--disable-xrender], [disable xrender support]))
+AS_IF([test "x$enable_xrender" != "xno"], [
+	PKG_CHECK_MODULES([XRENDER], [ xrender ],
+		[AC_DEFINE([HAVE_XRENDER], [1], [Define if xrender is available]) have_xrender=yes], [have_xrender=no])
+	AS_IF([test "x$have_xrender" = xno -a "x$enable_xrender" = xyes], [
+		AC_MSG_ERROR([*** xrender support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([XRENDER], [test "$have_xrender" = "yes"])
+
+have_xpm=no
+AC_ARG_ENABLE([xpm], AS_HELP_STRING([--disable-xpm], [disable xpm support]))
+AS_IF([test "x$enable_xpm" != "xno"], [
+	PKG_CHECK_MODULES([XPM], [ xpm ],
+		[AC_DEFINE([HAVE_XPM], [1], [Define if xpm is available]) have_xpm=yes], [have_xpm=no])
+	AS_IF([test "x$have_xpm" = xno -a "x$enable_xpm" = xyes], [
+		AC_MSG_ERROR([*** xpm support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([XPM], [test "$have_xpm" = "yes"])
 
 dnl Check for Xinerama support and proper library files.
-AC_MSG_CHECKING([whether to build support for the XINERAMA extension])
-AC_ARG_ENABLE(xinerama,
-	      AS_HELP_STRING([--enable-xinerama], [XINERAMA extension support (default=yes)]), ,[enable_xinerama=yes])
-
-AS_IF(test "x$enable_xinerama" = "xyes",[
-    AC_CHECK_LIB(Xinerama, XineramaQueryScreens,
-		 AC_MSG_CHECKING([for X11/extensions/Xinerama.h])
-		 AC_TRY_COMPILE(
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/extensions/Xinerama.h>
-      , XineramaQueryScreens(0, 0),
-		 AC_MSG_RESULT([yes])
-		 AC_DEFINE(XINERAMA, [1], [Define to 1 if you have XINERAMA])
-		 LIBS="-lXinerama $LIBS"
-		 FEATURES="$FEATURES XINERAMA",
-		 AC_MSG_RESULT([no])))],[
-  AC_MSG_RESULT([no])
-  CONFIGOPTS="$CONFIGOPTS --disable-xinerama"])
-
+have_xinerama=no
+AC_ARG_ENABLE([xinerama], AS_HELP_STRING([--disable-xinerama], [disable xinerama support]))
+AS_IF([test "x$enable_xinerama" != "xno"], [
+	PKG_CHECK_MODULES([XINERAMA], [ xinerama ],
+		[AC_DEFINE([XINERAMA], [1], [Define if xinerama is available]) have_xinerama=yes], [have_xinerama=no])
+	AS_IF([test "x$have_xinerama" = xno -a "x$enable_xinerama" = xyes], [
+		AC_MSG_ERROR([*** xinerama support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([XINERAMA], [test "$have_xinerama" = "yes"])
 
 dnl Check for XShape extension support and proper library files.
-AC_MSG_CHECKING([whether to build support for the XSHAPE extension])
-AC_ARG_ENABLE(shape,
-	AS_HELP_STRING([--enable-shape], [XSHAPE extension support (default=yes)]), , [enable_shape=yes])
-AS_IF(test "x$enable_shape" = "xyes",[
-    AC_CHECK_LIB(Xext, XShapeCombineShape,
-	AC_MSG_CHECKING([for X11/extensions/shape.h])
-	AC_TRY_COMPILE(
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/extensions/shape.h>
-      , long foo = ShapeSet,
-	AC_MSG_RESULT([yes])
-	AC_DEFINE(SHAPE, [1], [Define to 1 if you have SHAPE])
-	LIBS="-lXext $LIBS"
-	FEATURES="$FEATURES SHAPE",
-	AC_MSG_RESULT([no])))],[
-  AC_MSG_RESULT([no])
-  CONFIGOPTS="$CONFIGOPTS --disable-shape"])
-
-
+have_xext=no
+AC_ARG_ENABLE([xext], AS_HELP_STRING([--disable-xext], [disable Misc X Extension Library support]))
+AS_IF([test "x$enable_xext" != "xno"], [
+	PKG_CHECK_MODULES([XEXT], [ xext ],
+		[AC_DEFINE([SHAPE], [1], [Define if xext is available]) have_xext=yes], [have_xext=no])
+	AS_IF([test "x$have_xext" = xno -a "x$enable_xext" = xyes], [
+		AC_MSG_ERROR([*** xext support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([XEXT], [test "$have_xext" = "yes"])
 
 dnl Check for RANDR support and proper library files.
+have_xrandr=no
+AC_ARG_ENABLE([xrandr], AS_HELP_STRING([--disable-xrandr], [disable xrandr support]))
+AS_IF([test "x$enable_xrandr" != "xno"], [
+	PKG_CHECK_MODULES([RANDR], [ xrandr >= 1.4.0 ],
+		[AC_DEFINE([HAVE_RANDR], [1], [Define if xrandr is available]) have_xrandr=yes], [have_xrandr=no])
+	AS_IF([test "x$have_xrandr" = xno -a "x$enable_xrandr" = xyes], [
+		AC_MSG_ERROR([*** xrandr support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([RANDR], [test "$have_xrandr" = "yes"])
 
-AC_MSG_CHECKING([whether to build support for the XRANDR (X Resize And Rotate) extension])
-AC_ARG_ENABLE(randr,
-	AS_HELP_STRING([--enable-randr], [XRANDR extension support (default=no)]),,[enable_randr=yes])
+have_fribidi=no
+AC_ARG_ENABLE([fribidi], AS_HELP_STRING([--disable-fribidi], [disable fribidi support]))
+AS_IF([test "x$enable_fribidi" != "xno"], [
+	PKG_CHECK_MODULES([FRIBIDI], [ fribidi ],
+		[AC_DEFINE([HAVE_FRIBIDI], [1], [Define if fribidi is available]) have_fribidi=yes], [have_fribidi=no])
+	AS_IF([test "x$have_fribidi" = xno -a "x$enable_fribidi" = xyes], [
+		AC_MSG_ERROR([*** fribidi support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([FRIBIDI], [test "$have_fribidi" = "yes"])
 
-AS_IF(test "x$enable_randr" = "xyes", [
-    AC_MSG_RESULT([yes])
-    AC_CHECK_LIB(Xrandr, XRRQueryExtension, [
-	AC_MSG_CHECKING([for X11/extensions/Xrandr.h])
-	AC_COMPILE_IFELSE([
-	    AC_LANG_PROGRAM([[#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/extensions/Xrandr.h>
-		]], [[XRRQueryExtension(0, 0, 0);]]
-	    )], [
-	    AC_MSG_RESULT([yes])
-	    AC_DEFINE(HAVE_RANDR, [1], [Define to 1 if you have RANDR])
-	    LIBS="-lXrandr $LIBS"
-	    FEATURES="$FEATURES RANDR"
-
-	    AC_MSG_CHECKING([for XRRUpdateConfiguration])
-	    AC_COMPILE_IFELSE([
-		AC_LANG_PROGRAM([[#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/extensions/Xrandr.h>
-		    ]], [[XRRUpdateConfiguration(0);]]
-		)], [
-		    AC_MSG_RESULT([yes])
-		    AC_DEFINE(HAVE_RANDR1_2, [1], [Define to 1 if you have RANDR 1.2])
-		], [
-		    AC_MSG_RESULT([no])
-		])
-	    ], [
-		AC_MSG_RESULT([no])
-	    ])
-	],[
-	AC_MSG_RESULT([no])
-    ])],[
-    AC_MSG_RESULT([no])
-    CONFIGOPTS="$CONFIGOPTS --disable-randr"])
-
-
-
-
-AC_MSG_CHECKING([whether to have FRIBIDI support])
-AC_ARG_ENABLE(fribidi,
-	AS_HELP_STRING([--enable-fribidi], [FRIBIDI support (default=yes)]), , [enable_fribidi=yes])
-AS_IF(test "x$enable_fribidi" = "xyes",[
-	AC_MSG_RESULT([yes])
-	AC_CHECK_LIB(fribidi, fribidi_version_info,
-		AC_MSG_CHECKING([for fribidi/fribidi.h])
-		AC_TRY_COMPILE(
-#include <fribidi/fribidi.h>
-      , fribidi_version_info,
-			AC_MSG_RESULT([yes])
-			AC_DEFINE(HAVE_FRIBIDI, [1], [Define to 1 if you have FRIBIDI])
-			LIBS="-lfribidi $LIBS",
-		AC_MSG_RESULT([no])))],[
-    AC_MSG_RESULT([no])
-    CONFIGOPTS="$CONFIGOPTS --disable-fribidi"])
-
-
+have_freetype2=no
+AC_ARG_ENABLE([freetype2], AS_HELP_STRING([--disable-freetype2], [disable freetype2 support]))
+AS_IF([test "x$enable_freetype2" != "xno"], [
+	PKG_CHECK_MODULES([FREETYPE2], [ freetype2 ],
+		[AC_DEFINE([HAVE_FREETYPE2], [1], [Define if freetype2 is available]) have_freetype2=yes], [have_freetype2=no])
+	AS_IF([test "x$have_freetype2" = xno -a "x$enable_freetype2" = xyes], [
+		AC_MSG_ERROR([*** freetype2 support requested but libraries not found])
+	])
+])
+AM_CONDITIONAL([FREETYPE2], [test "$have_freetype2" = "yes"])
 
 
 AC_ARG_WITH(menu,
@@ -674,9 +591,6 @@ nls/zh_TW/Makefile
 dnl Print results
 AC_MSG_RESULT([])
 AC_MSG_RESULT([	$PACKAGE version $VERSION configured successfully.])
-AC_MSG_RESULT([])
-AC_MSG_RESULT([Features:])
-AC_MSG_RESULT([	$FEATURES])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Using:])
 AC_MSG_RESULT([	'$prefix' for installation.])

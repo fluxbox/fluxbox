@@ -119,6 +119,27 @@ if SLIT_SRC
 SLIT_SOURCE = Slit.cc Slit.hh SlitTheme.hh SlitTheme.cc SlitClient.hh SlitClient.cc
 endif
 
+fluxbox_CPPFLAGS = \
+	$(XRANDR_CFLAGS) \
+	$(FRIBIDI_CFLAGS) \
+	$(AM_CPPFLAGS)
+
+fluxbox_LDFLAGS = \
+	$(FONTCONFIG_LIBS) \
+	$(FREETYPE2_LIBS) \
+	$(FRIBIDI_LIBS) \
+	$(IMLIB2_LIBS) \
+	$(RANDR_LIBS) \
+	$(X11_LIBS) \
+	$(XEXT_LIBS) \
+	$(XFT_LIBS) \
+	$(XINERAMA_LIBS) \
+	$(XPM_LIBS) \
+	$(XRENDER_LIBS) \
+	$(X_EXTRA_LIBS) \
+	$(X_LIBS) \
+	$(X_PRE_LIBS)
+
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \

@@ -3,7 +3,7 @@ noinst_LIBRARIES = libFbTk.a
 AM_CPPFLAGS=-include $(top_builddir)/config.h
 
 if XFT
-xft_SOURCE= XftFontImp.hh XftFontImp.cc
+xft_SOURCE = XftFontImp.hh XftFontImp.cc
 endif
 if MULTIBYTE
 xmb_SOURCE= XmbFontImp.hh XmbFontImp.cc
@@ -14,6 +14,8 @@ endif
 if IMLIB2
 imlib2_SOURCE= ImageImlib2.hh ImageImlib2.cc
 endif
+
+libFbTk_a_CPPFLAGS = $(FREETYPE2_CFLAGS) $(FRIBIDI_CFLAGS) $(AM_CPPFLAGS)
 
 libFbTk_a_SOURCES = App.hh App.cc \
 	Color.cc Color.hh Command.hh \
