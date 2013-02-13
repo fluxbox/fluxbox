@@ -14,7 +14,7 @@ dothis() {
 
 libtoolize --copy --force --automake
 rm -f config.cache
-dothis aclocal -I . ${ACLOCAL_FLAGS}
+dothis aclocal -I m4 ${ACLOCAL_FLAGS}
 dothis autoheader
 dothis automake -a -c
 dothis autoconf

@@ -7,17 +7,18 @@ Makefile
 Makefile.in
 
 # Exact wildcard, e.g., not in subdirs.
-/*.m4
 /doc/*.1
 /doc/*.5
 /doc/*/*.1
 /doc/*/*.5
 /nls/*/*.cat
 /nls/*/generated-*.m
+/m4/*.m4
 
 # Exact match, if a directory then everything in directory.
 /aclocal.m4
 /autom4te.cache/
+/build-aux/
 /config.h
 /config.h.in
 /config.log
@@ -26,10 +27,6 @@ Makefile.in
 /data/apps
 /data/init
 /data/menu
-/depcomp
-/install-sh
-/ltmain.sh
-/missing
 /src/FbTk/libFbTk.a
 /src/defaults.cc
 /src/defaults.hh

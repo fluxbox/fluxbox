@@ -5,6 +5,8 @@ AC_INIT([fluxbox],
 	[fluxbox-devel@lists.sourceforge.net],,
 	[http://fluxbox.org/])
 AC_CONFIG_SRCDIR([src/fluxbox.cc])
+AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_MACRO_DIR([m4])
 AC_USE_SYSTEM_EXTENSIONS
 AM_INIT_AUTOMAKE([foreign 1.10 tar-pax dist-bzip2 subdir-objects])
 
