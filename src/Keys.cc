@@ -35,6 +35,7 @@
 #include "FbTk/RefCount.hh"
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/CommandParser.hh"
+#include "FbTk/LogicCommands.hh"
 #include "FbTk/I18n.hh"
 #include "FbTk/AutoReloadHelper.hh"
 #include "FbTk/STLUtil.hh"
@@ -108,6 +109,11 @@ using std::pair;
 using FbTk::STLUtil::destroyAndClearSecond;
 
 namespace {
+
+// enforces the linking of FbTk/LogicCommands
+FbTk::Command<void>* link_helper = FbTk::IfCommand::parse("", "", false);
+
+
 
 // candidate for FbTk::StringUtil ?
 int extractKeyFromString(const std::string& in, const char* start_pattern, unsigned int& key) {
