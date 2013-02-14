@@ -72,18 +72,16 @@ private:
     void reRender();
     void updateSizing();
 
-    FbTk::TextButton m_button;
+    FbTk::TextButton                    m_button;
 
-    const FbTk::ThemeProxy<ToolTheme> &m_theme;
-    BScreen &m_screen;
-    Pixmap m_pixmap;
-    FbTk::Timer m_timer;
+    const FbTk::ThemeProxy<ToolTheme>&  m_theme;
+    BScreen&                            m_screen;
+    Pixmap                              m_pixmap;
+    FbTk::Timer                         m_timer;
 
-    FbTk::Resource<std::string> m_timeformat;
-
-    FbTk::StringConvertor m_stringconvertor;
-
-    FbTk::SignalTracker m_tracker;
+    FbTk::Resource<std::string>         m_timeformat;
+    FbTk::StringConvertor               m_stringconvertor;
+    FbTk::SignalTracker                 m_tracker;
 };
 
 #endif // CLOCKTOOL_HH

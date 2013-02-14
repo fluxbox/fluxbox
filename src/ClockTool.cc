@@ -56,26 +56,10 @@ const char SWITCHES_12_24H[] = "lIrkHT";
 const char SWITCHES_24_12H[] = "kHTlIr";
 const char SWITCH_AM_PM[] = "pP";
 
-/**
- * return true if clock shows seconds. If clock doesn't show seconds then
- * there is no need to wake up every second to redraw the clock.
- */
-
-int showSeconds(const std::string& fmt_string) {
-
-    return FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
-        fmt_string, '%', SWITCHES_SECONDS, sizeof(SWITCHES_SECONDS), 0) != std::string::npos;
-}
-
-
-uint64_t calcNextTimeout(const std::string& fmt_string) {
+uint64_t calcNextTimeout() {
 
     uint64_t now = FbTk::FbTime::system();
     uint64_t unit = FbTk::FbTime::IN_SECONDS;
-    if (!showSeconds(fmt_string)) { // microseconds till next full minute
-        unit *= 60L;
-    } 
-
     return FbTk::FbTime::remainingNext(now, unit);
 }
 
@@ -161,7 +145,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
                  screen.name() + ".strftimeFormat", screen.altName() + ".StrftimeFormat"),
     m_stringconvertor(FbTk::StringConvertor::ToFbString) {
     // attach signals
-    m_tracker.join(theme.reconfigSig(), FbTk::MemFun(*this, &ClockTool::themeReconfigured));
+    m_tracker.join(theme.reconfigSig(), FbTk::MemFun(*this, &ClockTool::updateTime));
 
     std::string time_locale = setlocale(LC_TIME, NULL);
     size_t pos = time_locale.find('.');
@@ -172,12 +156,9 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
 
     _FB_USES_NLS;
 
-    m_timer.setTimeout(calcNextTimeout(*m_timeformat));
-
     FbTk::RefCount<FbTk::Command<void> > update_graphic(new FbTk::SimpleCommand<ClockTool>(*this,
                                                                                     &ClockTool::updateTime));
     m_timer.setCommand(update_graphic);
-    m_timer.start();
 
     m_button.setGC(m_theme->textGC());
 
@@ -189,8 +170,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     FbTk::RefCount<FbTk::Command<void> > editformat_cmd(new EditClockFormatCmd());
     menu.insert(_FB_XTEXT(Toolbar, ClockEditFormat,   "Edit Clock Format",   "edit Clock Format") , editformat_cmd);
 
-
-    themeReconfigured();
+    updateTime();
 }
 
 ClockTool::~ClockTool() {
@@ -226,29 +206,29 @@ void ClockTool::hide() {
 
 void ClockTool::setTimeFormat(const std::string &format) {
     *m_timeformat = format;
-    themeReconfigured();
+    updateTime();
 }
 
 void ClockTool::themeReconfigured() {
-    updateTime();
 
     // + 2 to make the entire text fit inside
     // we only replace numbers with zeros because everything else should be
     // relatively static. If we replace all text with zeros then widths of
-    // proportional fonts with some strftime formats will be considerably off.
-    FbTk::FbString text(m_button.text().logical());
 
-    int textlen = text.size();
-    for (int i=0; i < textlen; ++i) {
-        if (isdigit(text[i])) // don't bother replacing zeros
-            text[i] = '0';
+    // proportional fonts with some strftime formats will be considerably off.
+    const FbTk::FbString& t = m_button.text().logical();
+    size_t s = t.size() + 2;
+    FbTk::FbString text(s, '0');
+
+    for (size_t i = 0; i < (s - 2); ++i) {
+        if (!isdigit(t[i]))
+            text[i] = t[i];
     }
-    text.append("00"); // pad
 
     unsigned int new_width = m_button.width();
     unsigned int new_height = m_button.height();
     translateSize(orientation(), new_width, new_height);
-    new_width = m_theme->font().textWidth(text.c_str(), text.size());
+    new_width = m_theme->font().textWidth(text.c_str(), s);
     translateSize(orientation(), new_width, new_height);
     if (new_width != m_button.width() || new_height != m_button.height()) {
         resize(new_width, new_height);
@@ -271,41 +251,44 @@ unsigned int ClockTool::height() const {
 
 void ClockTool::updateTime() {
 
-    m_timer.setTimeout(calcNextTimeout(*m_timeformat));
+    time_t t = time(NULL);
 
-    time_t the_time = time(NULL);
-    if (the_time != -1) {
-        char time_string[255];
-        int time_string_len;
-        struct tm *time_type = localtime(&the_time);
-        if (time_type == 0)
-            return;
+    if (t != -1) {
+
+        char            buf[255];
+        int             len;
+        struct tm*      type;
+        FbTk::FbString  text;
+
+        if ((type = localtime(&t)) == 0)
+            goto restart_timer;
 
 #ifdef HAVE_STRFTIME
-        time_string_len = strftime(time_string, 255, m_timeformat->c_str(), time_type);
-        if( time_string_len == 0)
-            return;
-        std::string text = m_stringconvertor.recode(time_string);
+
+        len = strftime(buf, sizeof(buf), m_timeformat->c_str(), type);
+        if (len == 0)
+            goto restart_timer;
+
+        text = m_stringconvertor.recode(buf);
         if (m_button.text().logical() == text)
-            return;
+            goto restart_timer;
 
-        m_button.setText(text);
-
-        unsigned int new_width = m_theme->font().textWidth(time_string, time_string_len) + 2;
-        if (new_width > m_button.width()) {
-            resize(new_width, m_button.height());
-            resizeSig().emit();
-        }
 #else // dont have strftime so we have to set it to hour:minut
         //        sprintf(time_string, "%d:%d", );
 #endif // HAVE_STRFTIME
+
+        m_button.setText(text);
+        themeReconfigured();
     }
+
+restart_timer:
+    m_timer.setTimeout(calcNextTimeout());
+    m_timer.start();
 }
 
 // Just change things that affect the size
 void ClockTool::updateSizing() {
     m_button.setBorderWidth(m_theme->border().width());
-    // resizes if new timeformat
     themeReconfigured();
 }
 
