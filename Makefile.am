@@ -1,3 +1,4 @@
+
 # Makefile.am for Fluxbox - http://fluxbox.org
 
 # data dir after util so that utils are built for path searching
@@ -6,7 +7,7 @@
 SUBDIRS = doc nls src util data
 MAINTAINERCLEANFILES = aclocal.m4 config.h.in configure Makefile.in stamp-h.in
 ACLOCAL_AMFLAGS = -I m4
-EXTRA_DIST = $(top_srcdir)/3rd/vim/* $(top_srcdir)/3rd/vim/syntax/*
+EXTRA_DIST = $(top_srcdir)/3rd/vim/* $(top_srcdir)/3rd/vim/syntax/* build-aux/config.rpath
 
 uninstall-hook:
 	rmdir $(DESTDIR)$(pkgdatadir)

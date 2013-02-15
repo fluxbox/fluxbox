@@ -52,7 +52,6 @@ AC_CHECK_HEADERS([ \
 	dirent.h \
 	errno.h \
 	fcntl.h \
-	iconv.h \
 	langinfo.h \
 	libgen.h \
 	locale.h \
@@ -129,7 +128,6 @@ AC_CHECK_FUNCS([ \
 	vsnprintf \
 ])
 
-
 dnl Windows requires the mingw-catgets library for the catgets function.
 AC_SEARCH_LIBS([catgets], [catgets], [], [])
 
@@ -182,68 +180,10 @@ AC_COMPILE_IFELSE([
 	AC_MSG_RESULT([no])
 ])
 
-
-dnl ---------------
-dnl CHECK FOR ICONV
-dnl ---------------
-dnl Find iconv. It may be in libiconv and may be iconv() or libiconv()
-if test "x$ac_cv_header_iconv_h" = "xyes"; then
-    ac_found_iconv=no
-    AC_COMPILE_IFELSE(
-	[AC_LANG_PROGRAM(
-	[[#include <stdlib.h>
-	  #include <iconv.h>]],
-	[[
-	  iconv_open(NULL, NULL);
-	  return 0;
-	]]
-	)],
-	[
-	    ac_found_iconv=yes
-	],
-	[ ])
-
-    AC_COMPILE_IFELSE(
-	[AC_LANG_PROGRAM(
-	[[#include <stdlib.h>
-	  #include <iconv.h>]],
-	[[
-	  libiconv_open(NULL, NULL);
-	  return 0;
-	]]
-	)],
-	[
-	    ac_found_iconv=yes
-	],
-	[ ])
-
-    if test "x$ac_found_iconv" = xyes; then
-	AC_DEFINE(HAVE_ICONV, 1, [Define if you have the iconv() function.])
-	AC_CHECK_LIB(iconv, iconv_open, LIBS="-liconv $LIBS")
-	AC_CHECK_LIB(iconv, libiconv_open, LIBS="-liconv $LIBS")
-
-dnl Check if iconv uses const in prototype declaration
-	AC_CACHE_CHECK(for iconv declaration,
-			ac_cv_iconv_const,
-			[AC_COMPILE_IFELSE(
-			    [AC_LANG_PROGRAM(
-			     [[#include <stdlib.h>
-			       #include <iconv.h>]],
-			     [[
-			       char **msg, **new_msg;
-			       size_t result, inleft, outleft;
-			       result = iconv((iconv_t)(-1), msg, &inleft, new_msg, &outleft);
-			       return 0;
-			     ]]
-			     )],
-			     [ac_cv_iconv_const=no],
-			     [ac_cv_iconv_const=yes])
-			])
-	if test "x$ac_cv_iconv_const" = xyes; then
-	    AC_DEFINE(HAVE_CONST_ICONV, 1, [Define if you have the iconv() function.])
-	fi
-    fi
-fi
+AM_ICONV
+AS_IF([test x$am_cv_proto_iconv_arg1 = "xconst"], [
+	AC_DEFINE([HAVE_CONST_ICONV], [1], [Is second argument of iconv() is of type 'const char **' or 'char **'])
+])
 
 dnl Check for networking libraries
 AC_CHECK_LIB([nsl], [t_open], [LIBS="-lnsl $LIBS"])
