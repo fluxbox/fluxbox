@@ -31,6 +31,14 @@ Makefile.in
 /src/defaults.cc
 /src/defaults.hh
 /src/fluxbox
+/src/tests/testDemandAttention
+/src/tests/testFont
+/src/tests/testFullscreen
+/src/tests/testKeys
+/src/tests/testRectangleUtil
+/src/tests/testSignals
+/src/tests/testStringUtil
+/src/tests/testTexture
 /stamp-h1
 /util/fbrun/fbrun
 /util/fbsetroot
