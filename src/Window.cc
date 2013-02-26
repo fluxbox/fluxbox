@@ -217,6 +217,19 @@ void tempRaiseFluxboxWindow(FluxboxWindow &win) {
     win.oplock = false;
 }
 
+bool isWindowVisibleOnSomeHeadOrScreen(FluxboxWindow const& w) {
+    int real_x = w.frame().x();
+    int real_y = w.frame().y();
+
+    if (w.screen().hasXinerama()) { // xinerama available => use head info
+        return (0 != w.screen().getHead(real_x, real_y)); // if visible on some head
+    } else { // no xinerama available => use screen info
+        return (real_x >= 0 && real_y >= 0 &&
+            real_x <= (signed) w.screen().width() &&
+            real_y <= (signed) w.screen().height()); // if visible on the screen
+    }
+}
+
 class SetClientCmd:public FbTk::Command<void> {
 public:
     explicit SetClientCmd(WinClient &client):m_client(client) {
@@ -455,22 +468,16 @@ void FluxboxWindow::init() {
         m_placed = true;
     else if (m_client->isTransient() ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
-
-        int real_x = frame().x();
-        int real_y = frame().y();
-
-        if (screen().hasXinerama()) { // xinerama available => use head info
-            if (0 != screen().getHead(real_x, real_y)) // if visible on some head
-                m_placed = true;
-        } else { // no xinerama available => use screen info
-            if (real_x >= 0 && real_y >= 0 &&
-                real_x <= (signed) screen().width() &&
-                real_y <= (signed) screen().height()) // if visible on the screen
-                m_placed = true;
+        if (isWindowVisibleOnSomeHeadOrScreen(*this))
+            m_placed = true;
+    } else {
+        if (!isWindowVisibleOnSomeHeadOrScreen(*this)) {
+            int cur = screen().getHead(fbWindow());
+            move(screen().getHeadX(cur), screen().getHeadY(cur));
+            m_placed = false; // allow placement strategy to fix position
         }
-
-    } else
         setOnHead(screen().getCurrHead());
+    }
 
     // we must do this now, or else resizing may not work properly
     applyDecorations();
