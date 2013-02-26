@@ -2115,17 +2115,20 @@ int BScreen::getHead(const FbTk::FbWindow &win) const {
         int cx = win.x() + static_cast<int>(win.width() / 2);
         int cy = win.y() + static_cast<int>(win.height() / 2);
 
-        long dist = -1;
-
-        int i;
-        for (i = 0; i < m_xinerama_num_heads; ++i) {
-
-            XineramaHeadInfo& hi = m_xinerama_headinfo[i];
-            int d = calcSquareDistance(cx, cy, hi.x() + (hi.width() / 2), hi.y() + (hi.height() / 2));
-
-            if (dist == -1 || d < dist) { // found a closer head
-                head = i + 1;
-                dist = d;
+        head = getHead(cx, cy);
+        if ( head == 0 ) {
+            // if the center of the window is not on any head then select
+            // the head which center is nearest to the window center
+            long dist = -1;
+            int i;
+            for (i = 0; i < m_xinerama_num_heads; ++i) {
+                XineramaHeadInfo& hi = m_xinerama_headinfo[i];
+                int d = calcSquareDistance(cx, cy,
+                    hi.x() + (hi.width() / 2), hi.y() + (hi.height() / 2));
+                if (dist == -1 || d < dist) { // found a closer head
+                    head = i + 1;
+                    dist = d;
+                }
             }
         }
     }
