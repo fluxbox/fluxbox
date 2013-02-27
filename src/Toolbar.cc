@@ -517,7 +517,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 
     if (be.button == 1)
         raise();
-    if (be.button != 3)
+    if (be.button != 2)
         return;
 
     screen()

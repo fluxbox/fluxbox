@@ -75,6 +75,8 @@ ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
 ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &parent, Toolbar &tbar) {
     ToolbarItem * item = 0;
 
+    FbTk::CommandParser<void>& cp = FbTk::CommandParser<void>::instance();
+
     unsigned int button_size = 24;
     if (tbar.theme()->buttonSize() > 0)
         button_size = tbar.theme()->buttonSize();
@@ -83,8 +85,10 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         WorkspaceNameTool *witem = new WorkspaceNameTool(parent,
                                                         *m_workspace_theme, screen());
         using namespace FbTk;
-        RefCount<Command<void> > showmenu(new ShowMenuAboveToolbar(tbar));
-        witem->button().setOnClick(showmenu);
+        RefCount< Command<void> > leftCommand(cp.parse("prevworkspace"));
+        RefCount< Command<void> > rightCommand(cp.parse("nextworkspace"));
+        witem->button().setOnClick(leftCommand);
+        witem->button().setOnClick(rightCommand, 3);
         item = witem;
     } else if (name == "iconbar") {
         item = new IconbarTool(parent, m_iconbar_theme, m_focused_iconbar_theme, m_unfocused_iconbar_theme, screen(), tbar.menu());
@@ -101,7 +105,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
             cmd_str += " (workspace=[current])";
         }
 
-        FbTk::RefCount<FbTk::Command<void> > cmd(FbTk::CommandParser<void>::instance().parse(cmd_str));
+        FbTk::RefCount<FbTk::Command<void> > cmd(cp.parse(cmd_str));
         if (cmd == 0) // we need a command
             return 0;
 

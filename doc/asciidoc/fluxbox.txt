@@ -557,7 +557,9 @@ The possible tools are:
     The Systemtray can hold applications that are made to use it.
 
 *WorkspaceName*:::
-    This displays the name of the current workspace.
+    This displays the name of the current workspace. Also, one is able to switch
+    to the workspace left of the current one with a left click and to the
+    workspace right of the current one with a right click.
 
 *PrevWorkspace*:::
     This displays an arrow that allows one to switch to the workspace left of
@@ -577,7 +579,7 @@ The possible tools are:
 
 Other aspects of the toolbar can be configured in two ways: through the toolbar
 menu, which is accessible in the Configuration part of the RootMenu or with a
-right click on the edge the toolbar, or by editing the init file (see the
+middle click on the edge the toolbar, or by editing the init file (see the
 *RESOURCES* section for more information about that).
 
 Toolbar Menu
