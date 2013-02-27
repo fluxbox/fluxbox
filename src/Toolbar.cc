@@ -953,10 +953,7 @@ void Toolbar::rearrangeItems() {
             fixed_width += bevel_width + 2*borderW;
         } else {
             if (!first) {
-                if (borderW > last_bw)
-                    fixed_width += borderW;
-                else
-                    fixed_width += last_bw;
+                fixed_width += std::max(borderW, last_bw);
             } else {
                 first = false;
             }
@@ -1013,10 +1010,7 @@ void Toolbar::rearrangeItems() {
         if (bevel_width == 0) {
             offset = -borderW;
             size_offset = 0;
-            if (borderW > last_bw)
-                next_x += borderW;
-            else
-                next_x += last_bw;
+            next_x += std::max(borderW, last_bw);
         }
         last_bw = borderW;
 

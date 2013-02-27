@@ -139,18 +139,13 @@ void ToolFactory::updateThemes() {
 
 
 int ToolFactory::maxFontHeight() {
+
     unsigned int max_height = 0;
-    if (max_height < m_clock_theme.font().height())
-        max_height = m_clock_theme.font().height();
 
-    if (max_height < m_focused_iconbar_theme.text().font().height())
-        max_height = m_focused_iconbar_theme.text().font().height();
-
-    if (max_height < m_unfocused_iconbar_theme.text().font().height())
-        max_height = m_unfocused_iconbar_theme.text().font().height();
-
-    if (max_height < m_workspace_theme->font().height())
-        max_height = m_workspace_theme->font().height();
+    max_height = std::max(max_height, m_clock_theme.font().height());
+    max_height = std::max(max_height, m_focused_iconbar_theme.text().font().height());
+    max_height = std::max(max_height, m_unfocused_iconbar_theme.text().font().height());
+    max_height = std::max(max_height, m_workspace_theme->font().height());
 
     return max_height;
 }
