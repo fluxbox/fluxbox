@@ -5,23 +5,23 @@ $set 1 #Align
 1 תחת מרכזי
 2 תחת שמאלי
 3 תחת ימני
-4 Horizontal_OBSOLETE
-5 Left_OBSOLETE
+4 מאוזן
+5 שמאל
 6 שמאל תחתון
 7 שמאל מרכז
 8 שמאל עליון
-9 Relative_OBSOLETE
-10 Right_OBSOLETE
+9 יחסי
+10 ימין
 11 ימין תחתון
 12 ימין מרכז
 13 ימין עליון
 14 שיא מרכזי
 15 שיא שמאלי
 16 שיא ימני
-17 Vertical_OBSOLETE
-18 Center_OBSOLETE
-19 Top_OBSOLETE
-20 Bottom_OBSOLETE
+17 מאונך
+18 מרכז
+19 שיא
+20 תחת
 
 $set 2 #BaseDisplay
 
@@ -48,7 +48,7 @@ $set 3 #Common
 15 Fluxbox version
 16 הגדל על פני
 17 GIT Revision
-18 Visible
+18 נראה
 19 There is no background option specified in this style.\nPlease consult the manual or read the FAQ.
 
 $set 4 #Configmenu
@@ -57,13 +57,13 @@ $set 4 #Configmenu
 2 הרם אוטומטית
 3 קליק מרים
 4 קליק למקד
-5 Decorate Transient Windows_OBSOLETE
+5 עטר חלונות ארעים
 6 Desktop MouseWheel Switching_OBSOLETE
-7 Focus Window on Workspace Change_OBSOLETE
+7 מקד חלון בעת שינוי מרחב עבודה
 8 אימום מיקוד
 9 מקד חלונות חדשים
 10 הגדלה מרבית
-11 Image Dithering_OBSOLETE
+11 מיזוג צבע צלם
 12 הזזת חלון אטומה
 13 מיקוד עכבר (מוחלט)
 14 מיקוד עכבר
@@ -190,11 +190,11 @@ $set 14 #Toolbar
 2 מצב סרגל צלמיות
 3 כל החלונות
 4 צלמיות
-5 None
+5 כלום
 6 מרחב עבודה
 7 מרחב עבודה צלמיות
 8 רובד סרגל כלים
-9 דרגל כלים על ראש
+9 סרגל כלים על ראש
 10 מיקום סרגל כלים
 11 סרגל כלים
 12 אחוז רוחב סרגל כלים
@@ -220,8 +220,8 @@ $set 16 #Windowmenu
 7 שלח אל ...
 8 האפל
 9 דביק
-10 Kill_OBSOLETE
-11 Use Defaults_OBSOLETE
+10 הרוג
+11 השתמש בברירות מחדל
 12 קבע כותרת חלון
 
 $set 17 #Workspace
