@@ -2394,7 +2394,13 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
     Fluxbox::instance()->keys()->doAction(me.type, me.state, m_last_pressed_button, context, &winClient(), me.time);
 
     if (moving) {
+
         XEvent e;
+
+        if (XCheckTypedEvent(display, MotionNotify, &e)) {
+            XPutBackEvent(display, &e);
+            return;
+        }
 
         // Warp to next or previous workspace?, must have moved sideways some
         int moved_x = me.x_root - m_last_resize_x;
@@ -2456,10 +2462,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         doSnapping(dx, dy);
 
         // do not update display if another motion event is already pending
-        if (XCheckTypedEvent(display, MotionNotify, &e)) {
-            XPutBackEvent(display, &e);
-            return;
-        }
 
         if (!screen().doOpaqueMove()) {
             parent().drawRectangle(screen().rootTheme()->opGC(),
