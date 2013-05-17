@@ -100,6 +100,7 @@ public:
     bool isRootColormapInstalled() const { return root_colormap_installed; }
     bool isScreenManaged() const { return managed; }
     bool isWorkspaceWarping() const { return (m_workspaces_list.size() > 1) && *resource.workspace_warping; }
+    bool isWorkspaceBackAndForth() const { return *resource.workspace_back_and_forth; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
     bool doOpaqueMove() const { return *resource.opaque_move; }
@@ -150,6 +151,9 @@ public:
     /// @return the current workspace
     Workspace *currentWorkspace() { return m_current_workspace; }
     const Workspace *currentWorkspace() const { return m_current_workspace; }
+    /// @return the previous workspace
+    Workspace *previousWorkspace() { return m_previous_workspace; }
+    const Workspace *previousWorkspace() const { return m_previous_workspace; }
     /// @return the workspace menu
     const FbMenu &workspaceMenu() const { return *m_workspacemenu.get(); }
     /// @return the workspace menu
@@ -510,6 +514,7 @@ private:
     std::auto_ptr<Toolbar> m_toolbar;
 
     Workspace *m_current_workspace;
+    Workspace *m_previous_workspace;
 
     WorkspaceNames m_workspace_names;
     Workspaces m_workspaces_list;
@@ -532,7 +537,8 @@ private:
 
         FbTk::Resource<bool> opaque_move, full_max,
             max_ignore_inc, max_disable_move, max_disable_resize,
-            workspace_warping, show_window_pos, auto_raise, click_raises;
+            workspace_warping, workspace_back_and_forth, show_window_pos,
+            auto_raise, click_raises;
         FbTk::Resource<std::string> default_deco;
         FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
         FbTk::Resource<std::string> windowmenufile;

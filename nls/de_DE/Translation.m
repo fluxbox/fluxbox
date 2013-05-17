@@ -80,6 +80,7 @@ $set 4 #Configmenu
 29 Größe fixieren
 30 Fokus folgt Maus (strikt)
 31 Gleicher Head
+32 Desktop hin- und herwechseln
 
 $set 5 #Ewmh
 

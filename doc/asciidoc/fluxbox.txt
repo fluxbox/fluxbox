@@ -410,6 +410,10 @@ titlebars, not window contents.
     If enabled, you can drag windows from one workspace to another. The previous
 	 workspace is to the left, the next workspace is to the right.
 
+*Workspace Back And Forth*:::
+    If enabled, you can jump to a workspace back and forth with the same command
+    (or keyboard shortcut)
+
 Window Menu
 ~~~~~~~~~~~
 The Window menu is displayed when you right click on the titlebar of a window.

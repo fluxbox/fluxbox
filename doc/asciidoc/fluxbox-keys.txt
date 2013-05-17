@@ -361,7 +361,10 @@ called).
 	going past the last workspace, whereas {Right,Left}Workspace do not.
 
 *Workspace* 'number'::
-	Jumps to the given workspace 'number'. The first workspace is *1*.
+	Jumps to the given workspace 'number', or to the previous workspace if
+	the target workspace is the current workspace and
+	*WorkspaceBackAndForth* is set. The first workspace is *1*.
+
 
 *NextWindow* [{'options'}] ['pattern'] / *PrevWindow* [{'options'}] ['pattern']::
 Focuses the next / previous window in the focus list.

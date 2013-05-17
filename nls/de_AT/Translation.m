@@ -78,6 +78,7 @@ $set 4 #Configmenu
 27 Resize-Increment nicht beachten
 28 Position fixieren
 29 Größe fixieren
+32 Desktop hin- und herwechseln
 
 $set 5 #Ewmh
 

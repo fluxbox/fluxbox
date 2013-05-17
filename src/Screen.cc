@@ -290,6 +290,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     max_disable_move(rm, false, scrname+".maxDisableMove", altscrname+".MaxDisableMove"),
     max_disable_resize(rm, false, scrname+".maxDisableResize", altscrname+".MaxDisableResize"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
+    workspace_back_and_forth(rm, true, scrname+".workspaceBackAndForth", altscrname+".WorkspaceBackAndForth"),
     show_window_pos(rm, false, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
     auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
@@ -474,7 +475,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         addWorkspace();
     }
 
-    m_current_workspace = m_workspaces_list.front();
+    m_previous_workspace = m_current_workspace = m_workspaces_list.front();
 
     m_windowmenu.reset(createMenu(""));
     m_windowmenu->setInternalMenu();
@@ -1086,9 +1087,10 @@ int BScreen::removeLastWorkspace() {
 
 
 void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
+    bool sameWs = (id == m_current_workspace->workspaceID());
 
     if (! m_current_workspace || id >= m_workspaces_list.size() ||
-        id == m_current_workspace->workspaceID())
+        (sameWs && ! isWorkspaceBackAndForth()))
         return;
 
     /* Ignore all EnterNotify events until the pointer actually moves */
@@ -1104,7 +1106,12 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
 
     // set new workspace
     Workspace *old = currentWorkspace();
-    m_current_workspace = getWorkspace(id);
+    if (sameWs)
+      m_current_workspace = previousWorkspace();
+    else {
+      m_previous_workspace = old;
+      m_current_workspace = getWorkspace(id);
+    }
 
     // we show new workspace first in order to appear faster
     currentWorkspace()->showAll();
@@ -1802,6 +1809,10 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "Workspace Warping",
               "Workspace Warping - dragging windows to the edge and onto the next workspace",
               resource.workspace_warping, saverc_cmd);
+    _BOOLITEM(menu, Configmenu, WorkspaceBackAndForth,
+              "Workspace Back And Forth",
+              "Jump to Workspace Back And Forth with the same command (or keyboard shortcut)",
+              resource.workspace_back_and_forth, saverc_cmd);
 
 #undef _BOOLITEM
 

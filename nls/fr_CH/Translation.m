@@ -69,6 +69,7 @@ $set 4 #Configmenu
 23 Largeur de l'onglet externe
 24 Sélectionner l'onglet par clique
 25 Sélectionner l'onglet avec la souris
+32 Va-et-vient entre bureaux
 
 $set 5 #Ewmh
 
