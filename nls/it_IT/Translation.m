@@ -232,7 +232,6 @@ $set 19 #main
 11 errore: '-rc' richiede un argomento
 12 errore: '-screen' richiede un argomento
 13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
-
 Sito web: http://www.fluxbox.org/\n\n\
 -display <stringa>\t\tusa la connessione al display.\n\
 -screen <all|int,int,int>\tesegue solo sugli schermi specificati.\n\
