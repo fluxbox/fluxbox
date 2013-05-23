@@ -2111,7 +2111,7 @@ int BScreen::getHead(const FbTk::FbWindow &win) const {
     if (hasXinerama()) {
 
         // cast needed to prevent win.x() become "unsigned int" which is bad
-        // since it might become negative
+        // since it might be negative
         int cx = win.x() + static_cast<int>(win.width() / 2);
         int cy = win.y() + static_cast<int>(win.height() / 2);
 
