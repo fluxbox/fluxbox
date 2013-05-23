@@ -3,6 +3,14 @@
 
 namespace RectangleUtil {
 
+inline bool insideRectangle(int x, int y, int width, int height, int px, int py) {
+
+    return
+        px >= x &&
+        px < (x + width) &&
+        py >= y &&
+        py < (y + height);
+}
 
 /*
  * Determines if a point is inside a rectangle-like objects border.
@@ -10,18 +18,17 @@ namespace RectangleUtil {
  *        height.
  * @param x
  * @param y 
- * @param border_width The size of the border.
+ * @param border The size of the border.
  * @returns true if point is inside the rectangle-like object.
 */
+
 template <typename RectangleLike>
 bool insideBorder(const RectangleLike& rect,
                   int x, int y,
-                  int border_width) {
-    return
-        x >= rect.x() + border_width &&
-        x < rect.x() + (int)rect.width() + border_width &&
-        y >= rect.y() + border_width &&
-        y < rect.y() + (int)rect.height() + border_width;
+                  int border) {
+    const int w = static_cast<int>(rect.width()) - border;
+    const int h = static_cast<int>(rect.height()) - border;
+    return insideRectangle(rect.x() + border, rect.y() + border, w, h, x, y);
 }
 
 

@@ -223,11 +223,8 @@ bool isWindowVisibleOnSomeHeadOrScreen(FluxboxWindow const& w) {
 
     if (w.screen().hasXinerama()) { // xinerama available => use head info
         return (0 != w.screen().getHead(real_x, real_y)); // if visible on some head
-    } else { // no xinerama available => use screen info
-        return (real_x >= 0 && real_y >= 0 &&
-            real_x <= (signed) w.screen().width() &&
-            real_y <= (signed) w.screen().height()); // if visible on the screen
     }
+    return RectangleUtil::insideRectangle(0, 0, w.screen().width(), w.screen().height(), real_x, real_y);
 }
 
 class SetClientCmd:public FbTk::Command<void> {
@@ -464,14 +461,15 @@ void FluxboxWindow::init() {
 
     setWindowType(m_client->getWindowType());
 
+    bool is_visible = isWindowVisibleOnSomeHeadOrScreen(*this);
+
     if (fluxbox.isStartup())
         m_placed = true;
     else if (m_client->isTransient() ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
-        if (isWindowVisibleOnSomeHeadOrScreen(*this))
-            m_placed = true;
+        m_placed = is_visible;
     } else {
-        if (!isWindowVisibleOnSomeHeadOrScreen(*this)) {
+        if (!is_visible) {
             int cur = screen().getHead(fbWindow());
             move(screen().getHeadX(cur), screen().getHeadY(cur));
             m_placed = false; // allow placement strategy to fix position
