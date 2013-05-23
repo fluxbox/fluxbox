@@ -229,8 +229,7 @@ bool isWindowVisibleOnSomeHeadOrScreen(FluxboxWindow const& w) {
 
 class SetClientCmd:public FbTk::Command<void> {
 public:
-    explicit SetClientCmd(WinClient &client):m_client(client) {
-    }
+    explicit SetClientCmd(WinClient &client):m_client(client) { }
     void execute() {
         m_client.focus();
     }
@@ -480,7 +479,7 @@ void FluxboxWindow::init() {
     // we must do this now, or else resizing may not work properly
     applyDecorations();
 
-    Fluxbox::instance()->attachSignals(*this);
+    fluxbox.attachSignals(*this);
 
     // this window is managed, we are now allowed to modify actual state
     m_initialized = true;
@@ -489,25 +488,23 @@ void FluxboxWindow::init() {
         m_workspace_number = screen().currentWorkspaceID();
 
     // if we're a transient then we should be on the same layer and workspace
-    if (m_client->isTransient() &&
-        m_client->transientFor()->fbwindow() &&
-        m_client->transientFor()->fbwindow() != this) {
-        layerItem().setLayer(m_client->transientFor()->fbwindow()->layerItem().getLayer());
-        m_state.layernum = m_client->transientFor()->fbwindow()->layerNum();
-        m_workspace_number =
-                m_client->transientFor()->fbwindow()->workspaceNumber();
+    FluxboxWindow* twin = m_client->transientFor() ? m_client->transientFor()->fbwindow() : 0;
+    if (twin && twin != this) {
+        layerItem().setLayer(twin->layerItem().getLayer());
+        m_state.layernum = twin->layerNum();
+        m_workspace_number = twin->workspaceNumber();
     } else // if no parent then set default layer
         moveToLayer(m_state.layernum, m_state.layernum != ::ResourceLayer::NORMAL);
 
     fbdbg<<"FluxboxWindow::init("<<title().logical()<<") transientFor: "<<
        m_client->transientFor()<<endl;
-    if (m_client->transientFor() && m_client->transientFor()->fbwindow()) {
+    if (twin) {
         fbdbg<<"FluxboxWindow::init("<<title().logical()<<") transientFor->title(): "<<
-           m_client->transientFor()->fbwindow()->title().logical()<<endl;
+           twin->title().logical()<<endl;
     }
 
-
-    unsigned int real_width = frame().width(), real_height = frame().height();
+    unsigned int real_width = frame().width();
+    unsigned int real_height = frame().height();
     frame().applySizeHints(real_width, real_height);
 
     screen().getWorkspace(m_workspace_number)->addWindow(*this);
@@ -555,14 +552,10 @@ void FluxboxWindow::init() {
     }
 
     m_workspacesig.emit(*this);
-
     m_creation_time = FbTk::FbTime::mono();
-
     frame().frameExtentSig().emit();
-
     setupWindow();
-
-    FbTk::App::instance()->sync(false);
+    fluxbox.sync(false);
 
 }
 
