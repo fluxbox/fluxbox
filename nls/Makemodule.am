@@ -1,0 +1,53 @@
+# nls/Makefile.am for fluxbox - http://fluxbox.org
+
+LOCALE_PATH = @LOCALE_PATH@
+NLSTEST = @NLS@
+
+SUBDIRS = \
+	nls/C \
+	nls/be_BY \
+	nls/bg_BG \
+	nls/cs_CZ \
+	nls/da_DK \
+	nls/de_AT \
+	nls/de_CH \
+	nls/de_DE \
+	nls/el_GR \
+	nls/en_GB \
+	nls/en_US \
+	nls/es_AR \
+	nls/es_ES \
+	nls/et_EE \
+	nls/fi_FI \
+	nls/fr_CH \
+	nls/fr_FR \
+	nls/he_IL \
+	nls/it_IT \
+	nls/ja_JP \
+	nls/ko_KR \
+	nls/lv_LV \
+	nls/mk_MK \
+	nls/nb_NO \
+	nls/nl_NL \
+	nls/no_NO \
+	nls/pl_PL \
+	nls/pt_BR \
+	nls/pt_PT \
+	nls/ru_RU \
+	nls/sk_SK \
+	nls/sl_SI \
+	nls/sv_SE \
+	nls/tr_TR \
+	nls/uk_UA \
+	nls/vi_VN \
+	nls/zh_CN \
+	nls/zh_TW
+
+uninstall-local:
+	@if test x$(NLSTEST) = "x-DNLS"; then \
+		rmdir $(DESTDIR)$(LOCALE_PATH); \
+	fi
+
+fluxbox-nls.hh:
+	chmod +x $(srcdir)/nlsinfo
+	$(srcdir)/nlsinfo -H -N FBNLS $(top_srcdir)/src $(top_srcdir)/util > fluxbox-nls.hh

@@ -1,22 +1,33 @@
 # data/Makefile.am for Fluxbox - an X11 Window manager
 
-PROGRAM_PREFIX=@program_prefix@
-PROGRAM_SUFFIX=@program_suffix@
+EXTRA_DIST += \
+	data/keys \
+	data/overlay \
+	data/windowmenu
 
-DEFAULT_MENU = @DEFAULT_MENU@
-DEFAULT_STYLE = @DEFAULT_STYLE@
-DEFAULT_KEYS = @DEFAULT_KEYS@
-DEFAULT_APPS = @DEFAULT_APPS@
-DEFAULT_OVERLAY = @DEFAULT_OVERLAY@
-DEFAULT_INIT = @DEFAULT_INIT@
-DEFAULT_WINDOWMENU = @DEFAULT_WINDOWMENU@
+PATHFILES += \
+	data/apps \
+	data/init
 
-SUBDIRS= 		styles
-CLEANFILES= 		menu menu.in menu.pre menu.bak init apps
-MAINTAINERCLEANFILES= 	Makefile.in
-pkgdata_DATA= 		keys menu init apps overlay windowmenu
-EXTRA_DIST= 		keys init.in apps.in overlay windowmenu
-all-local: 		menu init apps
+include data/styles/carp/Makemodule.am
+include data/styles/bora_blue/Makemodule.am
+include data/styles/green_tea/Makemodule.am
+include data/styles/bora_green/Makemodule.am
+include data/styles/Makemodule.am
+include data/styles/zimek_bisque/Makemodule.am
+include data/styles/bloe/pixmaps/Makemodule.am
+include data/styles/bloe/Makemodule.am
+include data/styles/Emerge/pixmaps/Makemodule.am
+include data/styles/Emerge/Makemodule.am
+include data/styles/ostrich/Makemodule.am
+include data/styles/zimek_green/Makemodule.am
+include data/styles/zimek_darkblue/Makemodule.am
+include data/styles/BlueFlux/pixmaps/Makemodule.am
+include data/styles/BlueFlux/Makemodule.am
+include data/styles/bora_black/Makemodule.am
+include data/styles/arch/pixmaps/Makemodule.am
+include data/styles/arch/Makemodule.am
+
 install-pkgdataDATA:
 	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_MENU))
@@ -37,26 +48,10 @@ install-pkgdataDATA:
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_WINDOWMENU))
 	$(INSTALL_DATA) $(srcdir)/windowmenu $(DESTDIR)$(DEFAULT_WINDOWMENU)
 
-distclean-local:
-		rm -f *\~
-init: 			init.in
-	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" \
-			-e "s,@pkgprefix@,$(PROGRAM_PREFIX:NONE=),g" \
-			-e "s,@pkgsuffix@,$(PROGRAM_SUFFIX:NONE=),g" \
-			-e "s,@default_style@,$(DEFAULT_STYLE),g" $(srcdir)/init.in > init
-
-apps: 			apps.in
-	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" \
-			-e "s,@pkgprefix@,$(PROGRAM_PREFIX:NONE=),g" \
-			-e "s,@pkgsuffix@,$(PROGRAM_SUFFIX:NONE=),g" $(srcdir)/apps.in > apps
-
-menu: 			../util/fluxbox-generate_menu
+menu:
 	env	MENUFILENAME=menu \
 		PREFIX="${prefix}" \
 		MENUTITLE="Fluxbox-${VERSION}" \
 		INSTALL=Yes \
 		PATH="${PATH}:../util:../util/fbrun" \
-		../util/fluxbox-generate_menu
-
-../util/fluxbox-generate_menu:
-	cd ../util && ${MAKE} fluxbox-generate_menu
+		util/fluxbox-generate_menu

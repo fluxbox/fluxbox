@@ -2,10 +2,24 @@
 # create manpages from the asciidoc files
 #
 
-SRC1 = fluxbox.txt fluxbox-remote.txt fbrun.txt fbsetbg.txt fbsetroot.txt startfluxbox.txt
-SRC5 = fluxbox-keys.txt fluxbox-apps.txt fluxbox-style.txt fluxbox-menu.txt
+SRC1 = \
+	fbrun.txt \
+	fbsetbg.txt \
+	fbsetroot.txt \
+	fluxbox-remote.txt \
+	fluxbox.txt \
+	startfluxbox.txt
 
-MAN = $(SRC1:.txt=.1) $(SRC5:.txt=.5)
+SRC5 = \
+	fluxbox-apps.txt \
+	fluxbox-keys.txt \
+	fluxbox-menu.txt \
+	fluxbox-style.txt
+
+MAN = \
+	$(SRC1:.txt=.1) \
+	$(SRC5:.txt=.5)
+
 MANdotIN = $(addsuffix .in,$(MAN))
 DISTFILES = $(addprefix ../,$(MANdotIN))
 

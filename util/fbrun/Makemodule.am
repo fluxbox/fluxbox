@@ -1,0 +1,22 @@
+bin_PROGRAMS += fbrun
+
+fbrun_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(fbtk_incdir)
+
+fbrun_SOURCES = \
+	util/fbrun/FbRun.hh \
+	util/fbrun/FbRun.cc \
+	util/fbrun/main.cc \
+	util/fbrun/fbrun.xpm
+
+fbrun_LDADD = libFbTk.a
+
+fbrun_LDFLAGS = \
+	$(FONTCONFIG_LIBS) \
+	$(FRIBIDI_LIBS) \
+	$(X11_LIBS) \
+	$(XFT_LIBS) \
+	$(XINERAMA_LIBS) \
+	$(XPM_LIBS) \
+	$(XRENDER_LIBS)

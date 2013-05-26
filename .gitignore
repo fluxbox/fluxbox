@@ -3,6 +3,7 @@
 
 # Exact filename in any subdir.
 .deps
+.dirstamp
 Makefile
 Makefile.in
 
@@ -27,23 +28,23 @@ Makefile.in
 /data/apps
 /data/init
 /data/menu
-/src/FbTk/libFbTk.a
+/fbrun
+/fbsetroot
+/fluxbox
+/fluxbox-remote
+/fluxbox-update_configs
+/libFbTk.a
 /src/defaults.cc
 /src/defaults.hh
-/src/fluxbox
-/src/tests/testDemandAttention
-/src/tests/testFont
-/src/tests/testFullscreen
-/src/tests/testKeys
-/src/tests/testRectangleUtil
-/src/tests/testSignals
-/src/tests/testStringUtil
-/src/tests/testTexture
 /stamp-h1
-/util/fbrun/fbrun
-/util/fbsetroot
+/testDemandAttention
+/testFont
+/testFullscreen
+/testKeys
+/testRectangleUtil
+/testSignals
+/testStringUtil
+/testTexture
 /util/fluxbox-generate_menu
-/util/fluxbox-remote
-/util/fluxbox-update_configs
 /util/startfluxbox
 /version.h
