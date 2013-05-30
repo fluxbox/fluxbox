@@ -1106,9 +1106,10 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
 
     // set new workspace
     Workspace *old = currentWorkspace();
-    if (sameWs)
+    if (sameWs) {
       m_current_workspace = previousWorkspace();
-    else {
+      m_previous_workspace = old;
+    } else {
       m_previous_workspace = old;
       m_current_workspace = getWorkspace(id);
     }
