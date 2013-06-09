@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
     disp = XOpenDisplay(NULL);
     if (!disp) {
         perror("error, can't open display.");
+        rc = EXIT_FAILURE;
         return rc;
     }
 
