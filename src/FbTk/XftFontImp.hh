@@ -51,7 +51,7 @@ private:
     bool m_utf8mode;
 
     std::string m_name;
-    int m_angle;
+    unsigned int m_maxlength;
 };
 
 } // end namespace FbTk

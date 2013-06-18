@@ -23,7 +23,9 @@
 #include "App.hh"
 #include "FbDrawable.hh"
 
-#include <math.h>
+#include <cmath>
+#include <cstdio>
+#include <algorithm>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -32,7 +34,7 @@
 namespace FbTk {
 
 XftFontImp::XftFontImp(const char *name, bool utf8):
-    m_utf8mode(utf8), m_name("") {
+    m_utf8mode(utf8), m_name(""), m_maxlength(0x8000) {
 
     for (int r = ROT0; r <= ROT270; r++) {
         m_xftfonts[r] = 0;
@@ -73,6 +75,15 @@ bool XftFontImp::load(const std::string &name) {
     m_xftfonts[ROT0] = newxftfont;
     m_xftfonts_loaded[ROT0] = true;
     m_name = name;
+
+    // XGlyphInfo (used by XftFontImp::textWidth() / XftTextExtents8() etc)
+    // holds only type 'short' or 'unsigned short'. any text bigger than that
+    // yields either some negative or some 'wrapped' values ('integer
+    // overflow'). to prevent something like this we detect the maximium
+    // number of glyphs by calculating the amount of 'WW' (pretending a 'wide'
+    // glyph) fitting into 32k pixels 
+    unsigned int tw = textWidth("WW", 2);
+    m_maxlength = 0x8000 / tw;
 
     return true;
 }
@@ -159,6 +170,8 @@ unsigned int XftFontImp::textWidth(const char* text, unsigned int len) const {
     Display* disp = App::instance()->display();
 
     XftFont *font = m_xftfonts[ROT0];
+
+    len = std::min(len, m_maxlength);
 
 
 #ifdef HAVE_XFT_UTF8_STRING

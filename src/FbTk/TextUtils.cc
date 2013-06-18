@@ -24,7 +24,50 @@
 #include "Font.hh"
 #include "Theme.hh"
 
-#include <strings.h>
+#include <cstring>
+
+namespace {
+
+// calcs longest substring of 'text', fitting into 'max_width'
+// 'text_len' is an in-out parameter
+// 'text_width' is out parameter
+void maxTextLength(int max_width, const FbTk::Font& font, const char* const text,
+        unsigned int& text_len, int& text_width) {
+
+    text_width = font.textWidth(text, text_len);
+
+    // rendered text exceeds max_width. calculate 'len' to cut off 'text'.
+    if (text_width > max_width) {
+
+        // pick some good starting points for the search
+        //
+        //  [...........|.R ]
+        //  [WWWWWWWWWWL|   ]
+        //
+        //          max_width
+
+        int right = max_width / (font.textWidth(".", 1) + 1);
+        int left = max_width / (font.textWidth("WW", 2) + 1);
+        int middle;
+
+        // binary search for longest substring fitting into 'max_width' pixels
+        for ( ; left < (right - 1); ) {
+
+            middle = left + ((right - left) / 2);
+            text_width = font.textWidth(text, middle);
+
+            if (text_width < max_width) {
+                left = middle;
+            } else {
+                right = middle;
+            }
+        }
+
+        text_len = left;
+    }
+}
+
+}
 
 namespace FbTk {
 
@@ -35,31 +78,19 @@ int doAlignment(int max_width, int bevel, FbTk::Justify justify,
     if (text == 0 || textlen == 0)
         return 0;
 
-    int l = font.textWidth(text, textlen) + bevel;
-    unsigned int dlen = textlen;
-    int dx = bevel;
-    if (l > max_width) {
-        for (; dlen > 0; dlen--) {
-            l = font.textWidth(text, dlen) + bevel;
-            if (l<=max_width)
-                break;
-        }
+    int text_width;
+
+    maxTextLength(max_width - bevel, font, text, textlen, text_width);
+
+    newlen = textlen;
+
+    if (justify == FbTk::RIGHT) {
+        return max_width - text_width;
+    } else if (justify == FbTk::CENTER) {
+        return (max_width - text_width + bevel)/2;
     }
 
-    newlen = dlen;
-
-    switch (justify) {
-    case FbTk::RIGHT:
-        dx = max_width - l - bevel;
-    break;
-    case FbTk::CENTER:
-        dx = (max_width - l)/2;
-    break;
-    case FbTk::LEFT:
-    break;
-    }
-
-    return dx;
+    return bevel;
 }
 
 
