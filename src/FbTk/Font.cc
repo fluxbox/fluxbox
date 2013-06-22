@@ -91,10 +91,11 @@ typedef FontCache::iterator FontCacheIt;
 
 
 void resetEffects(FbTk::Font& font) {
+    int nr_scr = DefaultScreen(FbTk::App::instance()->display());
     font.setHalo(false);
-    font.setHaloColor(FbTk::Color("white", DefaultScreen(FbTk::App::instance()->display())));
+    font.setHaloColor(FbTk::Color("white", nr_scr));
     font.setShadow(false);
-    font.setShadowColor(FbTk::Color("black", DefaultScreen(FbTk::App::instance()->display())));
+    font.setShadowColor(FbTk::Color("black", nr_scr));
     font.setShadowOffY(2);
     font.setShadowOffX(2);
 }

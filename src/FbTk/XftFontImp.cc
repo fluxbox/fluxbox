@@ -62,12 +62,12 @@ bool XftFontImp::load(const std::string &name) {
         if (newxftfont == 0)
             return false;
     }
-    
+
     // destroy all old fonts and set new
     for (int r = ROT0; r <= ROT270; r++) {
         m_xftfonts_loaded[r] = false;
         if (m_xftfonts[r] != 0) {
-            XftFontClose(App::instance()->display(), m_xftfonts[r]);
+            XftFontClose(disp, m_xftfonts[r]);
             m_xftfonts[r] = 0;
         }
     }
@@ -176,12 +176,10 @@ unsigned int XftFontImp::textWidth(const char* text, unsigned int len) const {
 
 #ifdef HAVE_XFT_UTF8_STRING
     if (m_utf8mode) {
-        XftTextExtentsUtf8(disp,
-                           font,
-                           (XftChar8 *)text, len,
-                           &ginfo);
-        if (ginfo.xOff != 0)
+        XftTextExtentsUtf8(disp, font, (XftChar8 *)text, len, &ginfo);
+        if (ginfo.xOff != 0) {
             return ginfo.xOff;
+        }
 
         // the utf8 failed, try normal extents
     }
