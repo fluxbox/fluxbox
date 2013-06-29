@@ -1359,7 +1359,7 @@ bool Fluxbox::validateClient(const WinClient *client) const {
     WinClientMap::const_iterator it =
         find_if(m_window_search.begin(),
                 m_window_search.end(),
-                Compose(bind2nd(equal_to<WinClient *>(), client),
+                Compose(bind2nd(equal_to<const WinClient *>(), client),
                         Select2nd<WinClientMap::value_type>()));
     return it != m_window_search.end();
 }
