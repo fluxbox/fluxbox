@@ -55,6 +55,12 @@
   #include <errno.h>
 #endif
 
+#ifndef _WIN32
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+#endif
+
 #include <memory>
 #include <algorithm>
 #include <string>
@@ -109,6 +115,28 @@ int extractUnsignedNumber(const std::string& in, T& out) {
 }
 
 
+std::string getHomePath() {
+
+    std::string home;
+    const char* h = NULL;
+#ifdef _WIN32
+    h = getenv("USERPROFILE");
+#else
+    h = getenv("HOME");
+#endif
+    if (h) {
+        home.assign(h);
+    } else {
+#ifndef _WIN32
+        uid_t uid = geteuid();
+        struct passwd* pw = getpwuid(uid);
+        if (pw) {
+            home.assign(pw->pw_dir);
+        }
+#endif
+    }
+    return home;
+}
 
 }
 
@@ -240,11 +268,7 @@ string expandFilename(const string &filename) {
     string retval;
     size_t pos = filename.find_first_not_of(" \t");
     if (pos != string::npos && filename[pos] == '~') {
-#ifdef _WIN32
-        retval = getenv("USERPROFILE");
-#else
-        retval = getenv("HOME");
-#endif
+        retval = getHomePath();
         if (pos + 1 < filename.size()) {
             // copy from the character after '~'
             retval += static_cast<const char *>(filename.c_str() + pos + 1);

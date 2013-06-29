@@ -46,11 +46,16 @@ void testStringtok() {
 void testExpandFilename() {
     string filename(StringUtil::expandFilename("~/filename/~filename2/file3~/file4"));
     cerr<<"test ";
-    string test = string(getenv("HOME"))+"/filename/~filename2/file3~/file4";
-    if (test == filename)
-        cerr<<"ok.";
-    else
-        cerr<<"faild";
+    const char* home = getenv("HOME");
+    if (home) {
+        string test = string(home)+"/filename/~filename2/file3~/file4";
+        if (test == filename)
+            cerr<<"ok.";
+        else
+            cerr<<"failed";
+    } else {
+        cerr << "failed, can't get $HOME.";
+    }
     cerr<<endl;
 }
 

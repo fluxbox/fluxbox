@@ -239,13 +239,10 @@ struct Options {
         if (env && strlen(env) > 0) {
             session_display.assign(env);
         }
-#ifdef _WIN32
-        env = getenv("USERPROFILE");
-#else
-        env = getenv("HOME");
-#endif
-        if (env && strlen(env) > 0) {
-            rc_path.assign(std::string(env) + "/." + realProgramName("fluxbox"));
+
+        rc_path = FbTk::StringUtil::expandFilename(std::string("~/.") + realProgramName("fluxbox"));
+
+        if (!rc_path.empty()) {
             rc_file = rc_path + "/init";
         }
     }

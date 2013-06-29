@@ -64,7 +64,6 @@ using std::set;
 using std::map;
 using std::list;
 using std::exit;
-using std::getenv;
 
 string read_file(const string& filename);
 void write_file(const string& filename, const string &contents);
@@ -615,7 +614,7 @@ int main(int argc, char **argv) {
     }
 
     if (rc_filename.empty())
-        rc_filename = getenv("HOME") + string("/.fluxbox/init");
+        rc_filename = FbTk::StringUtil::expandFilename("~/.fluxbox/init");
 
     FbTk::ResourceManager resource_manager(rc_filename.c_str(),false);
     if (!resource_manager.load(rc_filename.c_str())) {
