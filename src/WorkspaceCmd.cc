@@ -407,20 +407,17 @@ void ArrangeWindowsCmd::execute() {
     //        -  only on current head
     const int head = screen->getCurrHead();
     Workspace::Windows::iterator win;
-
     Workspace::Windows normal_windows;
     Workspace::Windows shaded_windows;
     FluxboxWindow* main_window = NULL; // Main (big) window for stacked modes
-    for(win = space->windowList().begin(); win != space->windowList().end(); ++win) {
+
+    for (win = space->windowList().begin(); win != space->windowList().end(); ++win) {
         int winhead = screen->getHead((*win)->fbWindow());
         if ((winhead == head || winhead == 0) && m_pat.match(**win)) {
-            // If using stacked tiling, and this window is focused, set it as main window
-            if (((m_tile_method == STACKLEFT) || (m_tile_method == STACKRIGHT)
-                || (m_tile_method == STACKBOTTOM) || (m_tile_method == STACKTOP))
-                 && (*win)->isFocused()){
+
+            if ((m_tile_method >= STACKLEFT) && (*win)->isFocused()) {
                 main_window = (*win);
-            }
-            else{
+            } else {
                 if ((*win)->isShaded())
                     shaded_windows.push_back(*win);
                 else
@@ -428,31 +425,35 @@ void ArrangeWindowsCmd::execute() {
             }
         }
     }
+
     // if using stacked-left/right/top/bottom and we don't have a main window yet
     // (no focused window?), we'll fall back on using the last window in the
     // window list.
-    if (main_window == NULL)
-    {
-        if ((m_tile_method == STACKLEFT) || (m_tile_method == STACKRIGHT)
-            || (m_tile_method == STACKTOP) || (m_tile_method == STACKBOTTOM)) {
-            main_window = normal_windows.back();
-            normal_windows.pop_back();
-        }
+    if (main_window == NULL && (m_tile_method >= STACKLEFT)) {
+        main_window = normal_windows.back();
+        normal_windows.pop_back();
     }
 
     // to arrange only shaded windows is a bit pointless imho (mathias)
     size_t win_count = normal_windows.size();
-    if (win_count == 0)
-        return;
+    if (win_count == 0) {
+        if (!main_window) {
+            return;
+        }
+        win_count = 1;
+    }
 
+
+    int x_offs = screen->maxLeft(head); // window position offset in x
+    int y_offs = screen->maxTop(head); // window position offset in y
     unsigned int max_width = screen->maxRight(head) - screen->maxLeft(head);
-    // If stacked left or right, max width is divided in 2
-    if ((m_tile_method == STACKLEFT) || (m_tile_method == STACKRIGHT)){
+    unsigned int max_height = screen->maxBottom(head) - screen->maxTop(head);
+
+    if ((m_tile_method == STACKLEFT) || (m_tile_method == STACKRIGHT)) {
         max_width = max_width / 2;
     }
-    unsigned int max_height = screen->maxBottom(head) - screen->maxTop(head);
-    // If stacked top or bottom, max height is divided in 2
-    if ((m_tile_method == STACKTOP) || (m_tile_method == STACKBOTTOM)){
+
+    if ((m_tile_method == STACKTOP) || (m_tile_method == STACKBOTTOM)) {
         max_height = max_height / 2;
     }
 
@@ -464,29 +465,27 @@ void ArrangeWindowsCmd::execute() {
         std::swap(cols, rows);
     }
 
-    unsigned int x_offs = screen->maxLeft(head); // window position offset in x
-    unsigned int y_offs = screen->maxTop(head); // window position offset in y
-    // Stacked mode only uses half the screen for tiled windows, so adjust offset to half the screen
-    // (horizontal or vertical depending on stacking mode)
-    switch(m_tile_method)
-    {
-        case STACKRIGHT:
-          x_offs = int(abs((screen->maxLeft(head)-screen->maxRight(head)))/2);
-          break;
-        case STACKBOTTOM:
-          y_offs = int(abs(screen->maxBottom(head) - screen->maxTop(head))/2);
-          break;
-        default:
-          // no change needed for STACKLEFT/STACKTOP
-          break;
+    // Stacked mode only uses half the screen for tiled windows, so adjust
+    // offset to half the screen (horizontal or vertical depending on 
+    // stacking mode)
+    switch (m_tile_method) {
+    case STACKRIGHT:
+        x_offs += static_cast<int>(max_width);
+        break;
+    case STACKBOTTOM:
+        y_offs += static_cast<int>(max_height);
+        break;
+    default:
+        // no change needed for STACKLEFT/STACKTOP
+        break;
     }
-    // Since the placing algorithm loop below modifies the offsets, but we still need them to
-    // position the main window, we save the calculated values.
-    const unsigned int orig_x_offs = x_offs;
-    const unsigned int orig_y_offs = y_offs;
 
-    // unsigned int window = 0; // current window
-    const unsigned int cal_width = max_width/cols; // calculated width ratio (width of every window)
+    // Since the placing algorithm loop below modifies the offsets, but we
+    // still need them to position the main window, we save the calculated
+    // values.
+    const int orig_x_offs = x_offs;
+    const int orig_y_offs = y_offs;
+
     unsigned int i;
     unsigned int j;
 
@@ -509,7 +508,9 @@ void ArrangeWindowsCmd::execute() {
     if (!shaded_windows.empty())
         max_height -= i * (*shaded_windows.begin())->frame().height();
 
+    const unsigned int cal_width = max_width/cols; // width ratio (width of every window)
     const unsigned int cal_height = max_height/rows; // height ratio (height of every window)
+
     // Resizes and sets windows positions in columns and rows.
     for (i = 0; i < rows; ++i) {
         x_offs = orig_x_offs;
@@ -534,48 +535,52 @@ void ArrangeWindowsCmd::execute() {
                 }
             }
 
-            if (normal_windows.size() > 1) {
-                (*closest)->moveResize(x_offs + (*closest)->xOffset(),
-                                       y_offs + (*closest)->yOffset(),
-                                       cal_width - (*closest)->widthOffset(),
-                                       cal_height - (*closest)->heightOffset());
-            } else { // the last window gets everything that is left.
-                (*closest)->moveResize(x_offs + (*closest)->xOffset(),
-                                       y_offs + (*closest)->yOffset(),
-                                       max_width - x_offs - (*closest)->widthOffset(),
-                                       cal_height - (*closest)->heightOffset());
+            int x = x_offs + (*closest)->xOffset();
+            int y = y_offs + (*closest)->yOffset();
+            unsigned int w = cal_width - (*closest)->widthOffset();
+            unsigned int h = cal_height - (*closest)->heightOffset();
+
+            // the last window gets everything that is left.
+            if (normal_windows.size() == 1) {
+
+                w = static_cast<int>(screen->maxRight(head)) - x_offs - (*closest)->widthOffset();
+                h = static_cast<int>(cal_height) - (*closest)->heightOffset();
+
+                if (m_tile_method == STACKLEFT) {
+                    w -= max_width;
+                }
             }
 
+            (*closest)->moveResize(x, y, w, h);
             normal_windows.erase(closest);
 
-            // next x offset
-            x_offs += cal_width;
+            x_offs += static_cast<int>(cal_width);
         }
-        // next y offset
-        y_offs += cal_height;
+
+        y_offs += static_cast<int>(cal_height);
     }
 
     // If using a stacked mechanism we now need to place the main window.
     if (main_window != NULL){
+        x_offs = screen->maxLeft(head);
         switch (m_tile_method){
             case STACKLEFT:
-                main_window->moveResize(max_width,orig_y_offs,max_width,max_height);
+                main_window->moveResize(x_offs + max_width, orig_y_offs, max_width, max_height);
                 break;
             case STACKRIGHT:
-                main_window->moveResize(screen->maxLeft(head),screen->maxTop(head),max_width,max_height);
+                main_window->moveResize(x_offs, screen->maxTop(head), max_width, max_height);
                 break;
             case STACKTOP:
-                main_window->moveResize(screen->maxLeft(head),max_height,max_width,max_height);
+                main_window->moveResize(x_offs, max_height, max_width, max_height);
                 break;
             case STACKBOTTOM:
-                main_window->moveResize(screen->maxLeft(head),screen->maxTop(head),max_width,max_height);
+                main_window->moveResize(x_offs, screen->maxTop(head), max_width, max_height);
                 break;
             default:
                 // Shouldn't happen.
                 break;
         }
     }
-
 }
 
 REGISTER_COMMAND(showdesktop, ShowDesktopCmd, void);
