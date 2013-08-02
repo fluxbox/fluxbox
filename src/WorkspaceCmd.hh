@@ -86,7 +86,7 @@ private:
 
 class PrevWindowCmd: public FbTk::Command<void> {
 public:
-    explicit PrevWindowCmd(int option, std::string &pat): 
+    explicit PrevWindowCmd(int option, std::string &pat):
             m_option(option), m_pat(pat.c_str()) { }
     void execute();
 private:
@@ -173,7 +173,11 @@ public:
     enum {
       UNSPECIFIED,
       VERTICAL,
-      HORIZONTAL
+      HORIZONTAL,
+      STACKLEFT,
+      STACKRIGHT,
+      STACKTOP,
+      STACKBOTTOM
     };
     explicit ArrangeWindowsCmd(int tile_method, std::string &pat):
             m_tile_method( tile_method ), m_pat(pat.c_str()) { }

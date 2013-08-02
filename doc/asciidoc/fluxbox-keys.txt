@@ -417,6 +417,23 @@ doing so.
 	splits (windows on top of eachother). See *CLIENT PATTERNS* for more about the
 	'pattern' arguments.
 
+*ArrangeWindowsStackLeft* 'pattern' / *ArrangeWindowsStackRight* 'pattern'::
+  Similar to *ArrangeWindows*, these commands arrange windows on the current
+  workspace. The currently focussed window is used as the 'main' window, and
+  will fill half the screen, while the other windows are tiled on the
+  other half of the screen as if they were tiled with ArrangeWindows.
+  *ArrangeWindowsStackLeft* puts the main window on the RIGHT hand side of the
+  screen, and the tiled windows are on the LEFT hand side of the screen.
+  *ArrangeWindowsStackRight* puts the main window on the LEFT hand side of the
+  screen, and the tiled windows are on the RIGHT hand side of the screen.
+
+*ArrangeWindowsStackTop* 'pattern' / *ArrangeWindowsStackBottom 'pattern'::
+  Behaves just like *ArrangeWindowsStackLeft* and *ArrangeWindowsStackRight*.
+  *ArrangeWindowsStackBottom* places the main window on the TOP half of the
+  screen, and the tiled windows on the bottom half of the screen.
+  *ArrangeWindowsStackTop* places the main window on the BOTTOM half of the
+  screen and the tiled windows on the top half of the screen.
+
 *ShowDesktop*::
 	Minimizes all windows on the current workspace. If they are already all
 	minimized, then it restores them.
