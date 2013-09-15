@@ -3725,25 +3725,27 @@ FluxboxWindow::ReferenceCorner FluxboxWindow::getCorner(string str) {
 void FluxboxWindow::translateXCoords(int &x, ReferenceCorner dir) const {
     int head = getOnHead(), bw = 2 * frame().window().borderWidth(),
         left = screen().maxLeft(head), right = screen().maxRight(head);
+    int w = width();
 
     if (dir == LEFTTOP || dir == LEFT || dir == LEFTBOTTOM)
         x += left;
     if (dir == RIGHTTOP || dir == RIGHT || dir == RIGHTBOTTOM)
-        x = right - width() - bw - x;
+        x = right - w - bw - x;
     if (dir == TOP || dir == CENTER || dir == BOTTOM)
-        x += (left + right - width() - bw)/2;
+        x += (left + right - w - bw)/2;
 }
 
 void FluxboxWindow::translateYCoords(int &y, ReferenceCorner dir) const {
     int head = getOnHead(), bw = 2 * frame().window().borderWidth(),
         top = screen().maxTop(head), bottom = screen().maxBottom(head);
+    int h = height();
 
     if (dir == LEFTTOP || dir == TOP || dir == RIGHTTOP)
         y += top;
     if (dir == LEFTBOTTOM || dir == BOTTOM || dir == RIGHTBOTTOM)
-        y = bottom - height() - bw - y;
+        y = bottom - h - bw - y;
     if (dir == LEFT || dir == CENTER || dir == RIGHT)
-        y += (top + bottom - height() - bw)/2;
+        y += (top + bottom - h - bw)/2;
 }
 
 void FluxboxWindow::translateCoords(int &x, int &y, ReferenceCorner dir) const {
