@@ -26,12 +26,14 @@
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
 #include "FbTk/Signal.hh"
+#include "FbTk/Resource.hh"
 
 #include "ToolTheme.hh"
 #include "ToolbarItem.hh"
 
 #include <list>
 #include <memory>
+#include <string>
 
 class BScreen;
 class ButtonTheme;
@@ -91,6 +93,7 @@ public:
 
 private:
     void update();
+    void sortClients();
 
     class TrayWindow;
     typedef std::list<TrayWindow*> ClientList;
@@ -114,6 +117,10 @@ private:
     // gaim/pidgin seems to barf if the selection is not an independent window.
     // I suspect it's an interacton with parent relationship and gdk window caching.
     FbTk::FbWindow m_selection_owner;
+    
+    // resources
+    FbTk::Resource<std::string> m_rc_systray_pinleft;
+    FbTk::Resource<std::string> m_rc_systray_pinright;
 };
 
 #endif // SYSTEMTRAY_HH

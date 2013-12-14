@@ -37,6 +37,11 @@
 #include <X11/Xatom.h>
 
 #include <string>
+#include <sstream>
+#include <vector>
+#include <memory>
+#include <algorithm>
+#include <functional>
 
 
 using std::string;
@@ -161,7 +166,6 @@ public:
         winclient.setEventMask(StructureNotifyMask |
                                SubstructureNotifyMask | EnterWindowMask);
         m_tray.addClient(winclient.window(), false);
-
     };
 
     void updateWorkarea(BScreen &) { }
@@ -192,7 +196,13 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     m_theme(theme),
     m_screen(screen),
     m_pixmap(0), m_num_visible_clients(0),
-    m_selection_owner(m_window, 0, 0, 1, 1, SubstructureNotifyMask, false, false, CopyFromParent, InputOnly) {
+    m_selection_owner(m_window, 0, 0, 1, 1, SubstructureNotifyMask, false, false, CopyFromParent, InputOnly),
+    m_rc_systray_pinleft(screen.resourceManager(),
+            "", screen.name() + ".systray.pinLeft",
+            screen.altName() + ".Systray.PinLeft"),
+    m_rc_systray_pinright(screen.resourceManager(),
+            "", screen.name() + ".systray.pinRight",
+            screen.altName() + ".Systray.PinRight") {
 
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
@@ -456,6 +466,9 @@ void SystemTray::handleEvent(XEvent &event) {
         // check and see if we need to update it's size
         // and we must reposition and resize them to fit
         // our toolbar
+
+        sortClients();
+
         ClientList::iterator it = findClient(event.xconfigure.window);
         if (it != m_clients.end()) {
             if (static_cast<unsigned int>(event.xconfigure.width) != (*it)->width() ||
@@ -473,7 +486,6 @@ void SystemTray::handleEvent(XEvent &event) {
                 resizeSig().emit();
             }
         }
-
     } else if (event.type == PropertyNotify) {
         ClientList::iterator it = findClient(event.xproperty.window);
         if (it != m_clients.end()) {
@@ -484,8 +496,7 @@ void SystemTray::handleEvent(XEvent &event) {
                     hideClient(*it);
             }
         }
-    } 
-
+    }
 }
 
 void SystemTray::rearrangeClients() {
@@ -553,6 +564,74 @@ void SystemTray::showClient(TrayWindow *traywin) {
 
     traywin->show();
     m_num_visible_clients++;
+    rearrangeClients();
+}
+
+static std::string trim(const std::string& str)
+{
+    const std::string whitespace(" \t");
+    const auto strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == std::string::npos)
+        return ""; // no content
+
+    const auto strEnd = str.find_last_not_of(whitespace);
+    const auto strRange = strEnd - strBegin + 1;
+
+    return str.substr(strBegin, strRange);
+}
+
+static void parse_order(const std::string s, std::vector<std::string> &out) {
+    std::stringstream ss(s);
+    std::string item;
+
+    while (std::getline(ss, item, ','))
+        out.push_back(trim(item));
+}
+
+static int client_to_ordinal(const std::vector<std::string> left,
+        const std::vector<std::string> right,
+        TrayWindow *i) {
+
+    std::unique_ptr<XClassHint> xclasshint (XAllocClassHint());
+    if(XGetClassHint(Fluxbox::instance()->display(),
+                i->window(), xclasshint.get()) != BadWindow)
+    {
+        std::string classname(xclasshint.get()->res_class);
+
+        auto ix = std::find(left.begin(), left.end(), classname);
+        if (ix != left.end())
+            return -(left.end()-ix); // the more left, the negative (<0)
+        else {
+            ix = std::find(right.begin(), right.end(), classname);
+            if (ix != right.end())
+                // the more right, the positive (>0)
+                return ix-right.begin()+1;
+        }
+    }
+
+    // in neither list or invalid window (=0)
+    return 0;
+}
+
+static bool client_comperator(const std::vector<std::string> left,
+        const std::vector<std::string> right,
+        TrayWindow *item1, TrayWindow *item2) {
+    const int a = client_to_ordinal(left, right, item1);
+    const int b = client_to_ordinal(left, right, item2);
+    return a<b;
+}
+
+
+void SystemTray::sortClients() {
+    std::vector<std::string> pinleft, pinright;
+
+    parse_order(m_rc_systray_pinleft, pinleft);
+    parse_order(m_rc_systray_pinright, pinright);
+
+    m_clients.sort(std::bind(client_comperator,
+                pinleft, pinright,
+                std::placeholders::_1, std::placeholders::_2));
+
     rearrangeClients();
 }
 
