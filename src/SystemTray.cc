@@ -592,7 +592,11 @@ static int client_to_ordinal(const std::vector<std::string> left,
         const std::vector<std::string> right,
         TrayWindow *i) {
 
-    std::unique_ptr<XClassHint> xclasshint (XAllocClassHint());
+    auto Xdeleter = [](XClassHint *x){XFree(x);};
+
+    std::unique_ptr<XClassHint, decltype(Xdeleter)>
+            xclasshint (XAllocClassHint(), Xdeleter);
+
     if(XGetClassHint(Fluxbox::instance()->display(),
                 i->window(), xclasshint.get()) != BadWindow)
     {
