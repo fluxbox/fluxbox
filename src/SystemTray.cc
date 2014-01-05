@@ -87,7 +87,7 @@ static SystemTray *s_theoneandonly = 0;
 /// helper class for tray windows, so we dont call XDestroyWindow
 class SystemTray::TrayWindow : public FbTk::FbWindow {
 public:
-    TrayWindow(Window win, bool using_xembed):FbTk::FbWindow(win), m_visible(false), m_xembedded(using_xembed) {
+    TrayWindow(Window win, bool using_xembed):FbTk::FbWindow(win), m_order(0), m_visible(false), m_xembedded(using_xembed) {
         setEventMask(PropertyChangeMask);
     }
 
@@ -127,6 +127,7 @@ public:
         return true;
     }
 
+    int m_order;
 private:
     bool m_visible;
     bool m_xembedded; // using xembed protocol? (i.e. unmap when done)
@@ -569,6 +570,8 @@ void SystemTray::showClient(TrayWindow *traywin) {
 
 static std::string trim(const std::string& str)
 {
+    // removes trailing and leading whitespace from a string
+
     const std::string whitespace(" \t");
     const auto strBegin = str.find_first_not_of(whitespace);
     if (strBegin == std::string::npos)
@@ -581,6 +584,8 @@ static std::string trim(const std::string& str)
 }
 
 static void parse_order(const std::string s, std::vector<std::string> &out) {
+    // splits a comma seperated list and performs trimming
+
     std::stringstream ss(s);
     std::string item;
 
@@ -591,6 +596,8 @@ static void parse_order(const std::string s, std::vector<std::string> &out) {
 static int client_to_ordinal(const std::vector<std::string> left,
         const std::vector<std::string> right,
         TrayWindow *i) {
+    // based on the parsed order list and a given window returns an
+    // ordinal used to sort the tray icons.
 
     auto Xdeleter = [](XClassHint *x){XFree(x);};
 
@@ -617,24 +624,16 @@ static int client_to_ordinal(const std::vector<std::string> left,
     return 0;
 }
 
-static bool client_comperator(const std::vector<std::string> left,
-        const std::vector<std::string> right,
-        TrayWindow *item1, TrayWindow *item2) {
-    const int a = client_to_ordinal(left, right, item1);
-    const int b = client_to_ordinal(left, right, item2);
-    return a<b;
-}
-
-
 void SystemTray::sortClients() {
     std::vector<std::string> pinleft, pinright;
 
     parse_order(m_rc_systray_pinleft, pinleft);
     parse_order(m_rc_systray_pinright, pinright);
 
-    m_clients.sort(std::bind(client_comperator,
-                pinleft, pinright,
-                std::placeholders::_1, std::placeholders::_2));
+    for(TrayWindow *i: m_clients)
+        i->m_order = client_to_ordinal(pinleft, pinright, i);
+
+    m_clients.sort([](TrayWindow *a, TrayWindow *b){return a->m_order < b->m_order;});
 
     rearrangeClients();
 }
