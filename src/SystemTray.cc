@@ -599,13 +599,11 @@ static int client_to_ordinal(const std::vector<std::string> left,
     // based on the parsed order list and a given window returns an
     // ordinal used to sort the tray icons.
 
-    auto Xdeleter = [](XClassHint *x){XFree(x);};
-
-    std::unique_ptr<XClassHint, decltype(Xdeleter)>
-            xclasshint (XAllocClassHint(), Xdeleter);
+    std::unique_ptr<XClassHint, int(*)(void*)>
+        xclasshint(XAllocClassHint(), XFree);
 
     if(XGetClassHint(Fluxbox::instance()->display(),
-                i->window(), xclasshint.get()) != BadWindow)
+                i->window(), xclasshint.get()))
     {
         std::string classname(xclasshint.get()->res_class);
 
