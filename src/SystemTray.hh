@@ -121,6 +121,7 @@ private:
     // resources
     FbTk::Resource<std::string> m_rc_systray_pinleft;
     FbTk::Resource<std::string> m_rc_systray_pinright;
+    std::vector<std::string> m_pinleft, m_pinright;
 };
 
 #endif // SYSTEMTRAY_HH

@@ -41,7 +41,6 @@
 #include <vector>
 #include <memory>
 #include <algorithm>
-#include <functional>
 
 
 using std::string;
@@ -84,12 +83,39 @@ void getScreenCoordinates(Window win, int x, int y, int &screen_x, int &screen_y
 
 static SystemTray *s_theoneandonly = 0;
 
+static std::string trim(const std::string& str)
+{
+    // removes trailing and leading whitespace from a string
+
+    const std::string whitespace(" \t");
+    const auto strBegin = str.find_first_not_of(whitespace);
+    if (strBegin == std::string::npos)
+        return ""; // no content
+
+    const auto strEnd = str.find_last_not_of(whitespace);
+    const auto strRange = strEnd - strBegin + 1;
+
+    return str.substr(strBegin, strRange);
+}
+
+static void parse_order(const std::string s, std::vector<std::string> &out) {
+    // splits a comma seperated list and performs trimming
+
+    std::stringstream ss(s);
+    std::string item;
+
+    while (std::getline(ss, item, ','))
+        out.push_back(trim(item));
+}
+
 /// helper class for tray windows, so we dont call XDestroyWindow
 class SystemTray::TrayWindow : public FbTk::FbWindow {
 public:
     TrayWindow(Window win, bool using_xembed):FbTk::FbWindow(win), m_order(0), m_visible(false), m_xembedded(using_xembed) {
         setEventMask(PropertyChangeMask);
     }
+
+    void pinByClassname(const std::vector<std::string> left, const std::vector<std::string> right);
 
     bool isVisible() { return m_visible; }
     bool isXEmbedded() { return m_xembedded; }
@@ -132,6 +158,34 @@ private:
     bool m_visible;
     bool m_xembedded; // using xembed protocol? (i.e. unmap when done)
 };
+
+void TrayWindow::pinByClassname(const std::vector<std::string> left,
+        const std::vector<std::string> right) {
+    // based on the parsed order list and a given window returns an
+    // ordinal used to sort the tray icons.
+
+    auto deleter = [](XClassHint *x){if(x) XFree(x);};
+
+    std::unique_ptr<XClassHint, decltype(deleter)>
+        xclasshint(XAllocClassHint(), deleter);
+
+    if(XGetClassHint(Fluxbox::instance()->display(),
+                this->window(), xclasshint.get()))
+    {
+        std::string classname(xclasshint.get()->res_class);
+
+        auto ix = std::find(left.begin(), left.end(), classname);
+        if (ix != left.end())
+            m_order = -(left.end()-ix); // the more left, the negative (<0)
+        else {
+            ix = std::find(right.begin(), right.end(), classname);
+            if (ix != right.end())
+                // the more right, the positive (>0)
+                m_order = ix-right.begin()+1;
+        }
+    }
+    // in neither list or invalid window (=0)
+}
 
 /// handles clientmessage event and notifies systemtray
 class SystemTrayHandler: public AtomHandler {
@@ -204,6 +258,9 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     m_rc_systray_pinright(screen.resourceManager(),
             "", screen.name() + ".systray.pinRight",
             screen.altName() + ".Systray.PinRight") {
+
+    parse_order(m_rc_systray_pinleft, m_pinleft);
+    parse_order(m_rc_systray_pinright, m_pinright);
 
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
@@ -427,6 +484,9 @@ void SystemTray::addClient(Window win, bool using_xembed) {
 
     if (traywin->getMappedDefault())
         showClient(traywin);
+
+    traywin->pinByClassname(m_pinleft, m_pinright);
+    sortClients();
 }
 
 void SystemTray::removeClient(Window win, bool destroyed) {
@@ -444,6 +504,8 @@ void SystemTray::removeClient(Window win, bool destroyed) {
     }
     hideClient(traywin, destroyed);
     delete traywin;
+
+    sortClients();
 }
 
 void SystemTray::exposeEvent(XExposeEvent &event) {
@@ -467,8 +529,6 @@ void SystemTray::handleEvent(XEvent &event) {
         // check and see if we need to update it's size
         // and we must reposition and resize them to fit
         // our toolbar
-
-        sortClients();
 
         ClientList::iterator it = findClient(event.xconfigure.window);
         if (it != m_clients.end()) {
@@ -568,73 +628,8 @@ void SystemTray::showClient(TrayWindow *traywin) {
     rearrangeClients();
 }
 
-static std::string trim(const std::string& str)
-{
-    // removes trailing and leading whitespace from a string
-
-    const std::string whitespace(" \t");
-    const auto strBegin = str.find_first_not_of(whitespace);
-    if (strBegin == std::string::npos)
-        return ""; // no content
-
-    const auto strEnd = str.find_last_not_of(whitespace);
-    const auto strRange = strEnd - strBegin + 1;
-
-    return str.substr(strBegin, strRange);
-}
-
-static void parse_order(const std::string s, std::vector<std::string> &out) {
-    // splits a comma seperated list and performs trimming
-
-    std::stringstream ss(s);
-    std::string item;
-
-    while (std::getline(ss, item, ','))
-        out.push_back(trim(item));
-}
-
-static int client_to_ordinal(const std::vector<std::string> left,
-        const std::vector<std::string> right,
-        TrayWindow *i) {
-    // based on the parsed order list and a given window returns an
-    // ordinal used to sort the tray icons.
-
-    auto deleter = [](XClassHint *x){if(x) XFree(x);};
-
-    std::unique_ptr<XClassHint, decltype(deleter)>
-        xclasshint(XAllocClassHint(), deleter);
-
-    if(XGetClassHint(Fluxbox::instance()->display(),
-                i->window(), xclasshint.get()))
-    {
-        std::string classname(xclasshint.get()->res_class);
-
-        auto ix = std::find(left.begin(), left.end(), classname);
-        if (ix != left.end())
-            return -(left.end()-ix); // the more left, the negative (<0)
-        else {
-            ix = std::find(right.begin(), right.end(), classname);
-            if (ix != right.end())
-                // the more right, the positive (>0)
-                return ix-right.begin()+1;
-        }
-    }
-
-    // in neither list or invalid window (=0)
-    return 0;
-}
-
 void SystemTray::sortClients() {
-    std::vector<std::string> pinleft, pinright;
-
-    parse_order(m_rc_systray_pinleft, pinleft);
-    parse_order(m_rc_systray_pinright, pinright);
-
-    for(TrayWindow *i: m_clients)
-        i->m_order = client_to_ordinal(pinleft, pinright, i);
-
     m_clients.sort([](TrayWindow *a, TrayWindow *b){return a->m_order < b->m_order;});
-
     rearrangeClients();
 }
 
