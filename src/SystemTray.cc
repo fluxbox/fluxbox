@@ -469,8 +469,6 @@ void SystemTray::removeClient(Window win, bool destroyed) {
     }
     hideClient(traywin, destroyed);
     delete traywin;
-    
-    sortClients();
 }
 
 void SystemTray::exposeEvent(XExposeEvent &event) {
