@@ -23,6 +23,7 @@
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/StringUtil.hh"
 #include "FbTk/TextUtils.hh"
 #include "FbTk/MemFun.hh"
 
@@ -82,31 +83,6 @@ void getScreenCoordinates(Window win, int x, int y, int &screen_x, int &screen_y
 };
 
 static SystemTray *s_theoneandonly = 0;
-
-static std::string trim(const std::string& str)
-{
-    // removes trailing and leading whitespace from a string
-
-    const std::string whitespace(" \t");
-    const auto strBegin = str.find_first_not_of(whitespace);
-    if (strBegin == std::string::npos)
-        return ""; // no content
-
-    const auto strEnd = str.find_last_not_of(whitespace);
-    const auto strRange = strEnd - strBegin + 1;
-
-    return str.substr(strBegin, strRange);
-}
-
-static void parse_order(const std::string s, std::vector<std::string> &out) {
-    // splits a comma seperated list and performs trimming
-
-    std::stringstream ss(s);
-    std::string item;
-
-    while (std::getline(ss, item, ','))
-        out.push_back(trim(item));
-}
 
 /// helper class for tray windows, so we dont call XDestroyWindow
 class SystemTray::TrayWindow : public FbTk::FbWindow {
@@ -259,8 +235,8 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
             "", screen.name() + ".systray.pinRight",
             screen.altName() + ".Systray.PinRight") {
 
-    parse_order(m_rc_systray_pinleft, m_pinleft);
-    parse_order(m_rc_systray_pinright, m_pinright);
+    FbTk::StringUtil::stringtok(m_pinleft, m_rc_systray_pinleft, " ,");
+    FbTk::StringUtil::stringtok(m_pinright, m_rc_systray_pinright, " ,");
 
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
@@ -627,7 +603,12 @@ void SystemTray::showClient(TrayWindow *traywin) {
 }
 
 void SystemTray::sortClients() {
-    m_clients.sort([](TrayWindow *a, TrayWindow *b){return a->m_order < b->m_order;});
+    m_clients.sort(
+        [](TrayWindow *a, TrayWindow *b) {
+            return a->m_order < b->m_order;
+        }
+    );
+
     rearrangeClients();
 }
 
