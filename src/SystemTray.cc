@@ -137,8 +137,8 @@ private:
 
 void TrayWindow::pinByClassname(const std::vector<std::string> left,
         const std::vector<std::string> right) {
-    // based on the parsed order list and a given window returns an
-    // ordinal used to sort the tray icons.
+    // based on the parsed order list and a given window sets m_order to
+    // an ordinal used to sort the tray icons.
 
     auto deleter = [](XClassHint *x){if(x) XFree(x);};
 
