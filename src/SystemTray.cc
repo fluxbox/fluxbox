@@ -149,6 +149,7 @@ void TrayWindow::pinByClassname(const std::vector<std::string> left,
                 this->window(), xclasshint.get()))
     {
         std::string classname(xclasshint.get()->res_class);
+        classname = FbTk::StringUtil::toLower(classname);
 
         auto ix = std::find(left.begin(), left.end(), classname);
         if (ix != left.end())
@@ -235,8 +236,10 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
             "", screen.name() + ".systray.pinRight",
             screen.altName() + ".Systray.PinRight") {
 
-    FbTk::StringUtil::stringtok(m_pinleft, m_rc_systray_pinleft, " ,");
-    FbTk::StringUtil::stringtok(m_pinright, m_rc_systray_pinright, " ,");
+    FbTk::StringUtil::stringtok(m_pinleft,
+            FbTk::StringUtil::toLower(m_rc_systray_pinleft), " ,");
+    FbTk::StringUtil::stringtok(m_pinright,
+            FbTk::StringUtil::toLower(m_rc_systray_pinright), " ,");
 
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
