@@ -91,7 +91,7 @@ public:
         setEventMask(PropertyChangeMask);
     }
 
-    void pinByClassname(const std::vector<std::string> left, const std::vector<std::string> right);
+    void pinByClassname(const std::vector<std::string> &left, const std::vector<std::string> &right);
 
     bool isVisible() { return m_visible; }
     bool isXEmbedded() { return m_xembedded; }
@@ -135,8 +135,8 @@ private:
     bool m_xembedded; // using xembed protocol? (i.e. unmap when done)
 };
 
-void TrayWindow::pinByClassname(const std::vector<std::string> left,
-        const std::vector<std::string> right) {
+void TrayWindow::pinByClassname(const std::vector<std::string> &left,
+        const std::vector<std::string> &right) {
     // based on the parsed order list and a given window sets m_order to
     // an ordinal used to sort the tray icons.
 
