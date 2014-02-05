@@ -1,4 +1,4 @@
-$ codeset=ISO-8859-1
+$ codeset=CP1251
 
 $set 1 #Align
 
