@@ -54,6 +54,7 @@ defaults.hh: Makefile
 		echo '#else'; \
 		echo '#define PATHPREFIX'; \
 		echo '#endif'; \
+		echo '#define CONFIG_VERSION 13'; \
 		echo '#define DEFAULTMENU PATHPREFIX "$(DEFAULT_MENU)"'; \
 		echo '#define DEFAULTSTYLE PATHPREFIX "$(DEFAULT_STYLE)"'; \
 		echo '#define DEFAULTKEYSFILE PATHPREFIX "$(DEFAULT_KEYSFILE)"'; \
@@ -123,7 +124,9 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh \
-	Keys.cc Keys.hh main.cc \
+	Keys.cc Keys.hh \
+	main.cc \
+	cli.hh cli_cfiles.cc cli_options.cc cli_info.cc \
 	RootTheme.hh RootTheme.cc \
 	FbRootWindow.hh FbRootWindow.cc \
 	OSDWindow.hh OSDWindow.cc \

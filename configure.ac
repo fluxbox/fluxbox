@@ -63,7 +63,7 @@ AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STAT
 
 AC_CHECK_FUNCS(basename, , AC_CHECK_LIB(gen, basename, LIBS="-lgen $LIBS"))
-AC_CHECK_FUNCS(catclose catgets catopen getpid memset mkdir \
+AC_CHECK_FUNCS(alarm catclose catgets catopen getpid memset mkdir \
     nl_langinfo putenv regcomp select setenv setlocale sigaction snprintf \
     sqrt strcasecmp strcasestr strchr strstr strtol strtoul sync vsnprintf)
 

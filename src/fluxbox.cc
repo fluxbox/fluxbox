@@ -177,10 +177,14 @@ int handleXErrors(Display *d, XErrorEvent *e) {
 //            kill(0, 2);
     }
 #endif // !DEBUG
-
     return False;
 }
 
+
+int handleXIOErrors(Display* d) {
+    cerr << "Fluxbox: XIOError: lost connection to display.\n";
+    exit(1);
+}
 
 
 /* functor to call a memberfunction with by a reference argument
@@ -290,21 +294,8 @@ Fluxbox::Fluxbox(int argc, char **argv,
     s_kwm2_dockwindow = XInternAtom(disp,
                                     "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False);
     // setup X error handler
-    XSetErrorHandler((XErrorHandler) handleXErrors);
-
-    //catch system signals
-    SignalHandler &sigh = SignalHandler::instance();
-    sigh.registerHandler(SIGSEGV, this);
-    sigh.registerHandler(SIGFPE, this);
-    sigh.registerHandler(SIGTERM, this);
-    sigh.registerHandler(SIGINT, this);
-#ifndef _WIN32
-    sigh.registerHandler(SIGPIPE, this); // e.g. output sent to grep
-    sigh.registerHandler(SIGCHLD, this);
-    sigh.registerHandler(SIGHUP, this);
-    sigh.registerHandler(SIGUSR1, this);
-    sigh.registerHandler(SIGUSR2, this);
-#endif
+    XSetErrorHandler(handleXErrors);
+    XSetIOErrorHandler(handleXIOErrors);
 
     //
     // setup timer
@@ -896,58 +887,6 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
     }
 }
 
-/// handle system signals
-void Fluxbox::handleSignal(int signum) {
-    _FB_USES_NLS;
-
-    static int re_enter = 0;
-
-    switch (signum) {
-#ifndef _WIN32
-    case SIGCHLD: // we don't want the child process to kill us
-        // more than one process may have terminated
-        while (waitpid(-1, 0, WNOHANG | WUNTRACED) > 0);
-        break;
-    case SIGHUP:
-        restart();
-        break;
-    case SIGUSR1:
-        load_rc();
-        break;
-    case SIGUSR2:
-        reconfigure();
-        break;
-#endif
-    case SIGSEGV:
-        abort();
-        break;
-    case SIGFPE:
-    case SIGINT:
-#ifndef _WIN32
-    case SIGPIPE:
-#endif
-    case SIGTERM:
-        shutdown();
-        break;
-    default:
-        fprintf(stderr,
-                _FB_CONSOLETEXT(BaseDisplay, SignalCaught, "%s:      signal %d caught\n", "signal catch debug message. Include %s for Command<void> and %d for signal number").c_str(),
-                m_argv[0], signum);
-
-        if (! m_starting && ! re_enter) {
-            re_enter = 1;
-            cerr<<_FB_CONSOLETEXT(BaseDisplay, ShuttingDown, "Shutting Down\n", "Quitting because of signal, end with newline");
-            shutdown();
-        }
-
-
-        cerr<<_FB_CONSOLETEXT(BaseDisplay, Aborting, "Aborting... dumping core\n", "Aboring and dumping core, end with newline");
-        abort();
-        break;
-    }
-}
-
-
 void Fluxbox::windowDied(Focusable &focusable) {
     FluxboxWindow *fbwin = focusable.fbwindow();
 
@@ -1122,18 +1061,30 @@ void Fluxbox::restart(const char *prog) {
     }
 }
 
-/// prepares fluxbox for a shutdown
-void Fluxbox::shutdown() {
+// prepares fluxbox for a shutdown. when x_wants_down is != 0 we assume that
+// the xserver is about to shutdown or is in the midst of shutting down
+// already. trying to cleanup over a shaky xserver connection is pointless and
+// might lead to hangups.
+void Fluxbox::shutdown(int x_wants_down) {
     if (m_shutdown)
         return;
 
+    Display *dpy = FbTk::App::instance()->display();
     m_shutdown = true;
 
-    XSetInputFocus(FbTk::App::instance()->display(), PointerRoot, None, CurrentTime);
+#ifdef HAVE_ALARM
+    // give ourself 2 seconds (randomly picked randon number) to shutdown
+    // and then try to reenter signal handling. a bad race condition might
+    // lead to an inifite loop and this is some kind of last resort
+    alarm(2);
+#endif
 
-    STLUtil::forAll(m_screen_list, mem_fun(&BScreen::shutdown));
+    XSetInputFocus(dpy, PointerRoot, None, CurrentTime);
 
-    sync(false);
+    if (x_wants_down == 0) {
+        STLUtil::forAll(m_screen_list, mem_fun(&BScreen::shutdown));
+        sync(false);
+    }
 }
 
 /// saves resources

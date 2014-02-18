@@ -1256,9 +1256,8 @@ SIGNALS
 -------
 fluxbox responds to the following signals:
 
-- SIGHUP   fluxbox loads the configuration.
-- SIGUSR1  Forces reloading of configuration.
-- SIGUSR2  Forces reloading of menu file.
+- SIGUSR1  restarts fluxbox.
+- SIGUSR2  Forces reloading of configuration.
 
 AUTHORS
 -------

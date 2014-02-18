@@ -28,22 +28,21 @@
 #include "FbTk/App.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/Timer.hh"
-#include "FbTk/SignalHandler.hh"
 #include "FbTk/Signal.hh"
 
 #include "AttentionNoticeHandler.hh"
 
 #include <X11/Xresource.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
 #ifdef HAVE_CSTDIO
   #include <cstdio>
 #else
   #include <stdio.h>
 #endif
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
 
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
@@ -74,7 +73,6 @@ class FbAtoms;
     singleton type
 */
 class Fluxbox : public FbTk::App,
-                public FbTk::SignalEventHandler,
                 private FbTk::SignalTracker {
 public:
     Fluxbox(int argc, char **argv,
@@ -137,7 +135,7 @@ public:
     void maskWindowEvents(Window w, FluxboxWindow *bw)
         { m_masked = w; m_masked_window = bw; }
 
-    void shutdown();
+    void shutdown(int x_wants_down = 0);
     void load_rc(BScreen &scr);
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
     void saveWindowSearch(Window win, WinClient *winclient);
@@ -152,8 +150,6 @@ public:
     void restart(const char *command = 0);
     void reconfigure();
 
-    /// handle any system signal sent to the application
-    void handleSignal(int signum);
     /// todo, remove this. just temporary
     void updateFrameExtents(FluxboxWindow &win);
 
@@ -168,6 +164,7 @@ public:
 
     bool isStartup() const { return m_starting; }
     bool isRestarting() const { return m_restarting; }
+    bool isShuttingDown() const { return m_shutdown; }
 
     const std::string &getRestartArgument() const { return m_restart_argument; }
 
