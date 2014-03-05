@@ -489,7 +489,7 @@ void FluxboxWindow::init() {
 
     // if we're a transient then we should be on the same layer and workspace
     FluxboxWindow* twin = m_client->transientFor() ? m_client->transientFor()->fbwindow() : 0;
-    if (twin && twin != this) {
+    if (twin && twin != this && twin->layerItem().getLayerNum() != ::ResourceLayer::DESKTOP) {
         layerItem().setLayer(twin->layerItem().getLayer());
         m_state.layernum = twin->layerNum();
         m_workspace_number = twin->workspaceNumber();
