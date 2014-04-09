@@ -671,20 +671,12 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
         if (! winclient) {
             BScreen *screen = 0;
-            int screen_num;
             XWindowAttributes attr;
             // find screen
             if (XGetWindowAttributes(display(),
                                      e->xmaprequest.window,
                                      &attr) && attr.screen != 0) {
-                screen_num = XScreenNumberOfScreen(attr.screen);
-
-                // find screen
-                ScreenList::iterator screen_it = find_if(m_screen_list.begin(),
-                                                         m_screen_list.end(),
-                                                         FbTk::CompareEqual<BScreen>(&BScreen::screenNumber, screen_num));
-                if (screen_it != m_screen_list.end())
-                    screen = *screen_it;
+                screen = findScreen(XScreenNumberOfScreen(attr.screen));
             }
             // try with parent if we failed to find screen num
             if (screen == 0)
