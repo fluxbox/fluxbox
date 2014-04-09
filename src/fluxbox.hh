@@ -277,6 +277,7 @@ private:
 
     ///< when we execute reconfig command we must wait until next event round
     FbTk::Timer m_reconfig_timer;
+    FbTk::Timer m_key_reload_timer;
     bool m_showing_dialog;
 
     std::auto_ptr<Keys> m_key;

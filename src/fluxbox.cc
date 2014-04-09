@@ -187,6 +187,29 @@ int handleXIOErrors(Display* d) {
 }
 
 
+
+class KeyReloadHelper {
+public:
+    void reload() {
+        Fluxbox* f = Fluxbox::instance();
+        Keys* k = (f ? f->keys() : 0);
+        if (k) {
+            XRefreshKeyboardMapping(&(this->xmapping));
+            FbTk::KeyUtil::instance().init();
+            k->regrab();
+        }
+    }
+
+    XMappingEvent xmapping;
+};
+
+KeyReloadHelper s_key_reloader;
+
+typedef FbTk::SimpleCommand<KeyReloadHelper> KeyReloadHelperCmd;
+typedef FbTk::SimpleCommand<Fluxbox> FluxboxCmd;
+
+
+
 /* functor to call a memberfunction with by a reference argument
    other places needs this helper as well it should be moved
    to FbTk/
@@ -303,10 +326,20 @@ Fluxbox::Fluxbox(int argc, char **argv,
     // Because when the command is executed we shouldn't do reconfig directly
     // because it could affect ongoing menu stuff so we need to reconfig in
     // the next event "round".
-    FbTk::RefCount<FbTk::Command<void> > reconfig_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::timed_reconfigure));
+    FluxboxCmd* reconfig_cmd = new FluxboxCmd(*this, &Fluxbox::timed_reconfigure);
     m_reconfig_timer.setTimeout(1);
-    m_reconfig_timer.setCommand(reconfig_cmd);
+    m_reconfig_timer.setCommand(FbTk::RefCount<FbTk::Command<void> >(reconfig_cmd));
     m_reconfig_timer.fireOnce(true);
+
+    // xmodmap and other tools send a lot of MappingNotify events under some
+    // circumstances ("keysym comma = comma semicolon" creates 4 or 5).
+    // reloading the keys-file for every one of them is unclever. we postpone
+    // the reload() via a timer.
+    KeyReloadHelperCmd* rh_cmd = 
+        new KeyReloadHelperCmd(s_key_reloader, &KeyReloadHelper::reload);
+    m_key_reload_timer.setTimeout(250 * FbTk::FbTime::IN_MILLISECONDS);
+    m_key_reload_timer.setCommand(FbTk::RefCount<FbTk::Command<void> >(rh_cmd));
+    m_key_reload_timer.fireOnce(true);
 
     if (xsync)
         XSynchronize(disp, True);
@@ -675,21 +708,18 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case UnmapNotify:
         handleUnmapNotify(e->xunmap);
-	break;
-    case MappingNotify:
-        // Update stored modifier mapping
-        fbdbg<<"MappingNotify"<<endl;
+        break;
+    case MappingNotify: // Update stored modifier mapping
 
         if (e->xmapping.request == MappingKeyboard
             || e->xmapping.request == MappingModifier) {
-            XRefreshKeyboardMapping(&e->xmapping);
-            FbTk::KeyUtil::instance().init(); // reinitialise the key utils
-            // reconfigure keys (if the mapping changes, they don't otherwise update
-            m_key->regrab();
+
+            s_key_reloader.xmapping = e->xmapping;
+            m_key_reload_timer.start();
         }
         break;
     case CreateNotify:
-	break;
+        break;
     case DestroyNotify: {
         WinClient *winclient = searchWindow(e->xdestroywindow.window);
         if (winclient != 0) {
@@ -1239,6 +1269,7 @@ void Fluxbox::load_rc(BScreen &screen) {
 }
 
 void Fluxbox::reconfigure() {
+    m_key_reload_timer.stop();
     load_rc();
     m_reconfigure_wait = true;
     m_reconfig_timer.start();
