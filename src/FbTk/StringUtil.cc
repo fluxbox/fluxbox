@@ -21,8 +21,6 @@
 
 #include "StringUtil.hh"
 
-#include "../defaults.hh"
-
 #ifdef HAVE_CSTDIO
   #include <cstdio>
 #else
