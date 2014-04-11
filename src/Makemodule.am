@@ -1,0 +1,275 @@
+# Makefile.am for fluxbox
+# Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+#
+# src/Makefile.am for Blackbox 0.61.x  - an X11 Window manager
+# Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+BUILT_SOURCES = src/defaults.hh src/defaults.cc
+CONFIG_CLEAN_FILES = src/defaults.hh src/defaults.cc
+
+bin_PROGRAMS += fluxbox
+
+src/defaults.hh:
+	@( \
+		echo '// This file is generated from Makefile. Do not edit!'; \
+		echo '#include <string>'; \
+		echo ''; \
+		echo '#ifdef _WIN32'; \
+		echo '#define DUMMYPREFIX "/DUMMYPREFIX"'; \
+		echo '#define PATHPREFIX DUMMYPREFIX'; \
+		echo '#else'; \
+		echo '#define PATHPREFIX'; \
+		echo '#endif'; \
+		echo '#define CONFIG_VERSION 13'; \
+		echo '#define DEFAULTMENU PATHPREFIX "$(DEFAULT_MENU)"'; \
+		echo '#define DEFAULTSTYLE PATHPREFIX "$(DEFAULT_STYLE)"'; \
+		echo '#define DEFAULTKEYSFILE PATHPREFIX "$(DEFAULT_KEYSFILE)"'; \
+		echo '#define DEFAULT_APPSFILE PATHPREFIX "$(DEFAULT_APPSFILE)"'; \
+		echo '#define DEFAULT_OVERLAY PATHPREFIX "$(DEFAULT_OVERLAY)"'; \
+		echo '#define DEFAULT_INITFILE PATHPREFIX "$(DEFAULT_INITFILE)"'; \
+		echo '#define DEFAULT_WINDOWMENU PATHPREFIX "$(DEFAULT_WINDOWMENU)"'; \
+		echo '#define PROGRAM_PREFIX "$(PROGRAM_PREFIX:NONE=)"'; \
+		echo '#define PROGRAM_SUFFIX "$(PROGRAM_SUFFIX:NONE=)"'; \
+		echo 'std::string realProgramName(const std::string& name);'; \
+		echo 'const char* gitrevision();' ) > $(top_builddir)/src/defaults.hh
+
+src/defaults.cc: force
+	@( \
+		GITDIR=$(top_srcdir)/.git; \
+		echo '// This file is generated from Makefile. Do not edit!'; \
+		echo '#include "defaults.hh"'; \
+		echo ''; \
+		echo 'std::string realProgramName(const std::string& name) {'; \
+		echo '  return PROGRAM_PREFIX + name + PROGRAM_SUFFIX;'; \
+		echo '}'; \
+		echo ''; \
+		echo 'const char* gitrevision() {'; \
+		if test -r $$GITDIR/HEAD; then \
+			echo '  return "'`cat $$GITDIR/$$(cat $$GITDIR/HEAD | cut -f 2 -d ' ')`'";'; \
+		else \
+			echo '  return "this_is_tar_ball_build";'; \
+		fi; \
+		echo '}' ) > $(top_builddir)/src/defaults_tmp.cc
+	@if ! cmp defaults_tmp.cc defaults.cc ; then cp $(top_builddir)/src/defaults_tmp.cc $(top_builddir)/src/defaults.cc; fi
+	@rm $(top_builddir)/src/defaults_tmp.cc
+
+force: ;
+
+# an extra dep for fluxbox
+fluxbox.$(OBJEXT): src/defaults.hh
+
+if EWMH
+EWMH_SOURCE = \
+	src/Ewmh.hh \
+	src/Ewmh.cc
+endif
+
+if REMEMBER_SRC
+REMEMBER_SOURCE = \
+	src/Remember.hh \
+	src/Remember.cc
+endif
+
+if TOOLBAR_SRC
+TOOLBAR_SOURCE = \
+	src/ButtonTheme.cc \
+	src/ButtonTheme.hh \
+	src/ButtonTool.cc \
+	src/ButtonTool.hh \
+	src/ClockTool.cc \
+	src/ClockTool.hh \
+	src/GenericTool.cc \
+	src/GenericTool.hh \
+	src/IconbarTool.cc \
+	src/IconbarTool.hh \
+	src/ToolFactory.cc \
+	src/ToolFactory.hh \
+	src/ToolTheme.cc \
+	src/ToolTheme.hh \
+	src/Toolbar.cc \
+	src/Toolbar.hh \
+	src/ToolbarItem.cc \
+	src/ToolbarItem.hh \
+	src/ToolbarTheme.cc \
+	src/ToolbarTheme.hh \
+	src/WorkspaceNameTheme.hh \
+	src/WorkspaceNameTool.cc \
+	src/WorkspaceNameTool.hh
+if SYSTRAY_SRC
+TOOLBAR_SOURCE += \
+	src/SystemTray.cc \
+	src/SystemTray.hh
+endif
+endif
+
+if SLIT_SRC
+SLIT_SOURCE = \
+	src/Slit.cc \
+	src/Slit.hh \
+	src/SlitClient.cc \
+	src/SlitClient.hh \
+	src/SlitTheme.cc \
+	src/SlitTheme.hh
+endif
+
+fluxbox_CPPFLAGS = \
+	$(FRIBIDI_CFLAGS) \
+	$(XRANDR_CFLAGS) \
+	$(AM_CPPFLAGS) \
+	-I$(src_incdir) \
+	-I$(fbtk_incdir) \
+	-I$(nls_incdir)
+
+fluxbox_LDFLAGS = \
+	$(FONTCONFIG_LIBS) \
+	$(FREETYPE2_LIBS) \
+	$(FRIBIDI_LIBS) \
+	$(IMLIB2_LIBS) \
+	$(RANDR_LIBS) \
+	$(X11_LIBS) \
+	$(XEXT_LIBS) \
+	$(XFT_LIBS) \
+	$(XINERAMA_LIBS) \
+	$(XPM_LIBS) \
+	$(XRENDER_LIBS) \
+	$(X_EXTRA_LIBS) \
+	$(X_LIBS) \
+	$(X_PRE_LIBS)
+
+fluxbox_SOURCES = \
+	src/AlphaMenu.cc \
+	src/AlphaMenu.hh \
+	src/ArrowButton.cc \
+	src/ArrowButton.hh \
+	src/AtomHandler.hh \
+	src/AttentionNoticeHandler.cc \
+	src/AttentionNoticeHandler.hh \
+	src/CascadePlacement.cc \
+	src/CascadePlacement.hh \
+	src/ClientMenu.cc \
+	src/ClientMenu.hh \
+	src/ClientPattern.cc \
+	src/ClientPattern.hh \
+	src/ColSmartPlacement.cc \
+	src/ColSmartPlacement.hh \
+	src/CommandDialog.cc \
+	src/CommandDialog.hh \
+	src/CurrentWindowCmd.cc \
+	src/CurrentWindowCmd.hh \
+	src/Debug.hh \
+	src/FbAtoms.cc \
+	src/FbAtoms.hh \
+	src/FbCommands.cc \
+	src/FbCommands.hh \
+	src/FbMenu.cc \
+	src/FbMenu.hh \
+	src/FbMenuParser.cc \
+	src/FbMenuParser.hh \
+	src/FbRootWindow.cc \
+	src/FbRootWindow.hh \
+	src/FbWinFrame.cc \
+	src/FbWinFrame.hh \
+	src/FbWinFrameTheme.cc \
+	src/FbWinFrameTheme.hh \
+	src/FocusControl.cc \
+	src/FocusControl.hh \
+	src/FocusModelMenuItem.hh \
+	src/Focusable.hh \
+	src/FocusableList.cc \
+	src/FocusableList.hh \
+	src/FocusableTheme.hh \
+	src/HeadArea.cc \
+	src/HeadArea.hh \
+	src/IconButton.cc \
+	src/IconButton.hh \
+	src/IconbarTheme.cc \
+	src/IconbarTheme.hh \
+	src/Keys.cc \
+	src/Keys.hh \
+	src/Layer.hh \
+	src/LayerMenu.cc \
+	src/LayerMenu.hh \
+	src/MenuCreator.cc \
+	src/MenuCreator.hh \
+	src/MinOverlapPlacement.cc \
+	src/MinOverlapPlacement.hh \
+	src/OSDWindow.cc \
+	src/OSDWindow.hh \
+	src/PlacementStrategy.hh \
+	src/RectangleUtil.hh \
+	src/Resources.cc \
+	src/RootCmdMenuItem.cc\
+	src/RootCmdMenuItem.hh \
+	src/RootTheme.cc \
+	src/RootTheme.hh \
+	src/RowSmartPlacement.cc \
+	src/RowSmartPlacement.hh \
+	src/Screen.cc \
+	src/Screen.hh \
+	src/ScreenPlacement.cc \
+	src/ScreenPlacement.hh \
+	src/SendToMenu.cc \
+	src/SendToMenu.hh \
+	src/Strut.hh \
+	src/StyleMenuItem.cc \
+	src/StyleMenuItem.hh \
+	src/TextDialog.cc \
+	src/TextDialog.hh \
+	src/ToggleMenu.hh \
+	src/TooltipWindow.cc \
+	src/TooltipWindow.hh \
+	src/UnderMousePlacement.cc \
+	src/UnderMousePlacement.hh \
+	src/WinButton.cc \
+	src/WinButton.hh \
+	src/WinButtonTheme.cc \
+	src/WinButtonTheme.hh \
+	src/WinClient.cc \
+	src/WinClient.hh \
+	src/Window.cc \
+	src/Window.hh \
+	src/WindowCmd.cc \
+	src/WindowCmd.hh \
+	src/WindowMenuAccessor.hh \
+	src/WindowState.cc \
+	src/WindowState.hh\
+	src/Workspace.cc \
+	src/Workspace.hh \
+	src/WorkspaceCmd.cc \
+	src/WorkspaceCmd.hh \
+	src/WorkspaceMenu.cc \
+	src/WorkspaceMenu.hh \
+	src/Xinerama.hh \
+	src/Xutil.cc \
+	src/Xutil.hh \
+	src/fluxbox.cc \
+	src/fluxbox.hh \
+	src/main.cc \
+	src/cli.hh \
+	src/cli_cfiles.cc \
+	src/cli_options.cc \
+	src/cli_info.cc \
+	${EWMH_SOURCE} \
+	${REMEMBER_SOURCE} \
+	${SLIT_SOURCE} \
+	${TOOLBAR_SOURCE}
+
+LDADD = libFbTk.a src/defaults.$(OBJEXT)

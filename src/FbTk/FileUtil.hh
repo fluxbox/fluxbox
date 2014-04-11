@@ -22,9 +22,6 @@
 #ifndef FBTK_FILEUTIL_HH
 #define FBTK_FILEUTIL_HH
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
 #ifdef HAVE_CTIME
   #include <ctime>
 #else

@@ -24,10 +24,6 @@
 #ifndef THEMEITEMS_HH
 #define THEMEITEMS_HH
 
-#ifdef    HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #include "Theme.hh"
 #include "Color.hh"
 #include "Texture.hh"

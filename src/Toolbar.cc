@@ -55,15 +55,6 @@
 #include "FbTk/STLUtil.hh"
 #include "FbTk/Util.hh"
 
-// use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 

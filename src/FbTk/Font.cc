@@ -25,10 +25,6 @@
 #include "FontImp.hh"
 #include "App.hh"
 
-#ifdef    HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 // for antialias
 #ifdef USE_XFT
 #include "XftFontImp.hh"
@@ -43,10 +39,6 @@
 #include "XFontImp.hh"
 
 #include "GContext.hh"
-//use gnu extensions
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif //_GNU_SOURCE
 
 #ifndef __USE_GNU
 #define __USE_GNU

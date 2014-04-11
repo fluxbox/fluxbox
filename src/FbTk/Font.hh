@@ -24,10 +24,6 @@
 
 #include <X11/Xlib.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #include "FbString.hh"
 #include "Color.hh"
 #include "Orientation.hh"

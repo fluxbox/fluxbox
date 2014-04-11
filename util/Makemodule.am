@@ -1,0 +1,58 @@
+# util/Makefile.am for Fluxbox
+
+bin_SCRIPTS = \
+	util/fbsetbg \
+	util/fluxbox-generate_menu \
+	util/startfluxbox
+EXTRA_DIST += \
+	util/fbsetbg
+PATHFILES += \
+	util/startfluxbox \
+	util/fluxbox-generate_menu
+
+bin_PROGRAMS += \
+	fbsetroot \
+	fluxbox-remote \
+	fluxbox-update_configs
+
+fbsetroot_SOURCES = \
+	src/FbAtoms.cc \
+	src/FbRootWindow.cc \
+	util/fbsetroot.cc \
+	util/fbsetroot.hh
+fbsetroot_LDADD = \
+	libFbTk.a
+fbsetroot_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(fbtk_incdir) \
+	-I$(src_incdir) \
+	-I$(nls_incdir)
+fbsetroot_LDFLAGS = \
+	$(FONTCONFIG_LIBS) \
+	$(FRIBIDI_LIBS) \
+	$(X11_LIBS) \
+	$(XFT_LIBS) \
+	$(XRENDER_LIBS)
+
+fluxbox_update_configs_SOURCES = \
+	src/defaults.cc \
+	src/Resources.cc \
+	util/fluxbox-update_configs.cc
+fluxbox_update_configs_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(fbtk_incdir) \
+	-I$(src_incdir) \
+	-I$(nls_incdir)
+fluxbox_update_configs_LDADD = \
+	libFbTk.a
+fluxbox_update_configs_LDFLAGS = \
+	$(FRIBIDI_LIBS) \
+	$(X11_LIBS)
+
+fluxbox_remote_SOURCES = \
+	util/fluxbox-remote.cc
+fluxbox_remote_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(fbtk_incdir)
+fluxbox_remote_LDFLAGS = \
+	$(X11_LIBS)

@@ -37,10 +37,6 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/FbTime.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #ifdef HAVE_CTIME
   #include <ctime>
 #else

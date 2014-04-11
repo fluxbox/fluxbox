@@ -22,16 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #include "Menu.hh"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif //HAVE_CONFIG_H
 
 #include "MenuItem.hh"
 #include "MenuSeparator.hh"

@@ -54,11 +54,6 @@
   #include <string.h>
 #endif
 
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #if defined(__EMX__) && defined(HAVE_PROCESS_H)
 #include <process.h> // for P_NOWAIT
 #endif // __EMX__

@@ -20,10 +20,6 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #include "fluxbox.hh"
 #include "version.h"
 #include "defaults.hh"
@@ -36,6 +32,18 @@
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
+
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+
+#ifdef HAVE_CSTRING
+  #include <cstring>
+#else
+  #include <string.h>
+#endif
 
 #ifdef HAVE_UNISTD_H
   #include <unistd.h>

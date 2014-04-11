@@ -77,15 +77,6 @@
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/Util.hh"
 
-//use GNU extensions
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #ifdef USE_SLIT
 #include "Slit.hh"
 #include "SlitClient.hh"
@@ -401,21 +392,18 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
 
 // setup RANDR for this screens root window
-#if defined(HAVE_RANDR1_2)
+#if defined(HAVE_RANDR)
     int randr_mask = RRScreenChangeNotifyMask;
-#ifdef RRCrtcChangeNotifyMask
+# ifdef RRCrtcChangeNotifyMask
     randr_mask |= RRCrtcChangeNotifyMask;
-#endif
-#ifdef RROutputChangeNotifyMask
+# endif
+# ifdef RROutputChangeNotifyMask
     randr_mask |= RROutputChangeNotifyMask;
-#endif
-#ifdef RROutputPropertyNotifyMask
+# endif
+# ifdef RROutputPropertyNotifyMask
     randr_mask |= RROutputPropertyNotifyMask;
-#endif
+# endif
     XRRSelectInput(disp, rootWindow().window(), randr_mask);
-
-#elif defined(HAVE_RANDR)
-    XRRScreenChangeSelectInput(disp, rootWindow().window(), True);
 #endif // HAVE_RANDR
 
 

@@ -55,7 +55,7 @@ typedef int iconv_t;
 #endif // HAVE_ICONV
 
 #ifdef HAVE_FRIBIDI
-  #include <fribidi/fribidi.h>
+  #include <fribidi.h>
 #endif
 
 #ifdef DEBUG

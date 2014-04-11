@@ -1,0 +1,162 @@
+noinst_LIBRARIES = libFbTk.a
+
+if XFT
+xft_SOURCE = \
+	src/FbTk/XftFontImp.hh \
+	src/FbTk/XftFontImp.cc
+endif
+
+if MULTIBYTE
+xmb_SOURCE = \
+	src/FbTk/XmbFontImp.hh \
+	src/FbTk/XmbFontImp.cc
+endif
+
+if XPM
+xpm_SOURCE = \
+	src/FbTk/ImageXPM.hh \
+	src/FbTk/ImageXPM.cc
+endif
+
+if IMLIB2
+imlib2_SOURCE = \
+	src/FbTk/ImageImlib2.hh \
+	src/FbTk/ImageImlib2.cc
+endif
+
+libFbTk_a_CPPFLAGS = \
+	$(FREETYPE2_CFLAGS) \
+	$(FRIBIDI_CFLAGS) \
+	$(AM_CPPFLAGS) \
+	-I$(src_incdir) \
+	-I$(nls_incdir)
+
+libFbTk_a_SOURCES = \
+	$(imlib2_SOURCE) \
+	${xft_SOURCE} \
+	${xmb_SOURCE} \
+	${xpm_SOURCE} \
+	src/FbTk/Accessor.hh \
+	src/FbTk/App.cc \
+	src/FbTk/App.hh \
+	src/FbTk/AutoReloadHelper.cc \
+	src/FbTk/AutoReloadHelper.hh \
+	src/FbTk/BoolMenuItem.hh \
+	src/FbTk/BorderTheme.cc \
+	src/FbTk/BorderTheme.hh \
+	src/FbTk/Button.cc \
+	src/FbTk/Button.hh \
+	src/FbTk/CachedPixmap.cc \
+	src/FbTk/CachedPixmap.hh \
+	src/FbTk/Color.cc \
+	src/FbTk/Color.hh \
+	src/FbTk/ColorLUT.cc \
+	src/FbTk/ColorLUT.hh \
+	src/FbTk/Command.hh \
+	src/FbTk/CommandParser.hh \
+	src/FbTk/CompareEqual.hh \
+	src/FbTk/Compose.hh \
+	src/FbTk/Container.cc \
+	src/FbTk/Container.hh \
+	src/FbTk/DefaultValue.hh \
+	src/FbTk/EventHandler.hh \
+	src/FbTk/EventManager.cc \
+	src/FbTk/EventManager.hh \
+	src/FbTk/FbDrawable.cc \
+	src/FbTk/FbDrawable.hh \
+	src/FbTk/FbPixmap.cc \
+	src/FbTk/FbPixmap.hh \
+	src/FbTk/FbString.cc \
+	src/FbTk/FbString.hh \
+	src/FbTk/FbTime.cc \
+	src/FbTk/FbTime.hh \
+	src/FbTk/FbWindow.cc \
+	src/FbTk/FbWindow.hh \
+	src/FbTk/FileUtil.cc \
+	src/FbTk/FileUtil.hh \
+	src/FbTk/Font.cc \
+	src/FbTk/Font.hh \
+	src/FbTk/FontImp.hh \
+	src/FbTk/GContext.cc \
+	src/FbTk/GContext.hh \
+	src/FbTk/I18n.cc \
+	src/FbTk/I18n.hh \
+	src/FbTk/ITypeAheadable.hh \
+	src/FbTk/Image.cc \
+	src/FbTk/Image.hh \
+	src/FbTk/ImageControl.cc \
+	src/FbTk/ImageControl.hh \
+	src/FbTk/IntMenuItem.hh \
+	src/FbTk/KeyUtil.cc \
+	src/FbTk/KeyUtil.hh \
+	src/FbTk/Layer.cc \
+	src/FbTk/Layer.hh \
+	src/FbTk/LayerItem.cc \
+	src/FbTk/LayerItem.hh \
+	src/FbTk/LogicCommands.cc \
+	src/FbTk/LogicCommands.hh \
+	src/FbTk/MacroCommand.cc \
+	src/FbTk/MacroCommand.hh \
+	src/FbTk/MemFun.hh \
+	src/FbTk/Menu.cc \
+	src/FbTk/Menu.hh \
+	src/FbTk/MenuItem.cc \
+	src/FbTk/MenuItem.hh \
+	src/FbTk/MenuSeparator.cc \
+	src/FbTk/MenuSeparator.hh \
+	src/FbTk/MenuTheme.cc \
+	src/FbTk/MenuTheme.hh \
+	src/FbTk/MultLayers.cc \
+	src/FbTk/MultLayers.hh \
+	src/FbTk/MultiButtonMenuItem.cc \
+	src/FbTk/MultiButtonMenuItem.hh \
+	src/FbTk/NotCopyable.hh \
+	src/FbTk/Orientation.hh \
+	src/FbTk/Parser.cc \
+	src/FbTk/Parser.hh \
+	src/FbTk/PixmapWithMask.hh \
+	src/FbTk/RadioMenuItem.hh \
+	src/FbTk/RefCount.hh \
+	src/FbTk/RegExp.cc \
+	src/FbTk/RegExp.hh \
+	src/FbTk/RelCalcHelper.cc \
+	src/FbTk/RelCalcHelper.hh \
+	src/FbTk/Resource.cc \
+	src/FbTk/Resource.hh \
+	src/FbTk/STLUtil.hh \
+	src/FbTk/SearchResult.cc \
+	src/FbTk/SearchResult.hh \
+	src/FbTk/Select2nd.hh \
+	src/FbTk/SelectArg.hh \
+	src/FbTk/Shape.cc \
+	src/FbTk/Shape.hh \
+	src/FbTk/Signal.hh \
+	src/FbTk/SimpleCommand.hh \
+	src/FbTk/Slot.hh \
+	src/FbTk/StringUtil.cc \
+	src/FbTk/StringUtil.hh \
+	src/FbTk/TextBox.cc \
+	src/FbTk/TextBox.hh \
+	src/FbTk/TextButton.cc \
+	src/FbTk/TextButton.hh \
+	src/FbTk/TextTheme.cc \
+	src/FbTk/TextTheme.hh \
+	src/FbTk/TextUtils.cc \
+	src/FbTk/TextUtils.hh \
+	src/FbTk/Texture.cc \
+	src/FbTk/Texture.hh \
+	src/FbTk/TextureRender.cc \
+	src/FbTk/TextureRender.hh \
+	src/FbTk/Theme.cc \
+	src/FbTk/Theme.hh \
+	src/FbTk/ThemeItems.cc \
+	src/FbTk/Timer.cc \
+	src/FbTk/Timer.hh \
+	src/FbTk/Transparent.cc \
+	src/FbTk/Transparent.hh \
+	src/FbTk/TypeAhead.hh \
+	src/FbTk/Util.hh \
+	src/FbTk/XFontImp.cc \
+	src/FbTk/XFontImp.hh \
+	src/FbTk/XrmDatabaseHelper.hh \
+	src/FbTk/stringstream.hh

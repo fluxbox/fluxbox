@@ -30,11 +30,6 @@
  * http://www.kulichki.com/moshkow/CYRILLIC/locale-tutorial-0_8.txt
  */
 
-//use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
 #include "I18n.hh"
 #include "FileUtil.hh"
 
