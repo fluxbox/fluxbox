@@ -216,16 +216,16 @@ void ClockTool::setTimeFormat(const std::string &format) {
 
 void ClockTool::themeReconfigured() {
 
-    // + 2 to make the entire text fit inside
-    // we only replace numbers with zeros because everything else should be
-    // relatively static. If we replace all text with zeros then widths of
-
+    // we replace only numbers with zeros because everything else should be
+    // relatively static. if we replace all text with zeros then widths of
     // proportional fonts with some strftime formats will be considerably off.
-    const FbTk::FbString& t = m_button.text().logical();
-    size_t s = t.size() + 2;
-    FbTk::FbString text(s, '0');
 
-    for (size_t i = 0; i < (s - 2); ++i) {
+    const FbTk::FbString& t = m_button.text().logical();
+    const size_t s = t.size();
+    size_t i;
+    FbTk::FbString text(s + 2, '0'); // +2 for extra padding
+
+    for (i = 0; i < s; ++i) {
         if (!isdigit(t[i]))
             text[i] = t[i];
     }
@@ -233,7 +233,7 @@ void ClockTool::themeReconfigured() {
     unsigned int new_width = m_button.width();
     unsigned int new_height = m_button.height();
     translateSize(orientation(), new_width, new_height);
-    new_width = m_theme->font().textWidth(text.c_str(), s);
+    new_width = m_theme->font().textWidth(text.c_str(), text.size());
     translateSize(orientation(), new_width, new_height);
     if (new_width != m_button.width() || new_height != m_button.height()) {
         resize(new_width, new_height);
@@ -286,8 +286,9 @@ void ClockTool::updateTime() {
             goto restart_timer;
 
         text = m_stringconvertor.recode(buf);
-        if (m_button.text().logical() == text)
+        if (m_button.text().logical() == text) {
             goto restart_timer;
+        }
 
 #else // dont have strftime so we have to set it to hour:minut
         //        sprintf(time_string, "%d:%d", );
