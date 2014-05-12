@@ -52,10 +52,19 @@ const char SWITCHES_12_24H[] = "lIrkHT";
 const char SWITCHES_24_12H[] = "kHTlIr";
 const char SWITCH_AM_PM[] = "pP";
 
-uint64_t calcNextTimeout() {
+int showSeconds(const std::string& fmt) {
+
+    return FbTk::StringUtil::findCharFromAlphabetAfterTrigger(
+                    fmt, '%', SWITCHES_SECONDS, sizeof(SWITCHES_SECONDS), 0) != std::string::npos;
+}
+
+uint64_t calcNextTimeout(const std::string& fmt) {
 
     uint64_t now = FbTk::FbTime::system();
     uint64_t unit = FbTk::FbTime::IN_SECONDS;
+    if (!showSeconds(fmt)) { // microseconds till next full minute
+         unit *= 60L;
+    }
     return FbTk::FbTime::remainingNext(now, unit);
 }
 
@@ -289,8 +298,7 @@ void ClockTool::updateTime() {
     }
 
 restart_timer:
-    m_timer.setTimeout(calcNextTimeout());
-    m_timer.start();
+    m_timer.setTimeout(calcNextTimeout(*m_timeformat), true);
 }
 
 // Just change things that affect the size

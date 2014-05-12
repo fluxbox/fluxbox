@@ -91,7 +91,7 @@ Timer::~Timer() {
 }
 
 
-void Timer::setTimeout(uint64_t timeout) {
+void Timer::setTimeout(uint64_t timeout, bool force_start) {
 
     bool was_timing = isTiming();
     if (was_timing) {
@@ -99,7 +99,7 @@ void Timer::setTimeout(uint64_t timeout) {
     }
     m_timeout = timeout;
 
-    if (was_timing) {
+    if (force_start || was_timing) {
         start();
     }
 }

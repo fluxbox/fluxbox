@@ -43,7 +43,7 @@ public:
     ~Timer();
 
     void fireOnce(bool once) { m_once = once; }
-    void setTimeout(uint64_t timeout);
+    void setTimeout(uint64_t timeout, bool force_start = false);
     void setCommand(const RefCount<Slot<void> > &cmd);
 
     template<typename Functor>
