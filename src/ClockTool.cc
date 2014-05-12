@@ -247,9 +247,20 @@ unsigned int ClockTool::height() const {
 
 void ClockTool::updateTime() {
 
-    time_t t = time(NULL);
+    // time() might result in a different seconds-since-epoch than
+    // gettimeofday() due to the fact that time() might be implemented by just
+    // returning the amount of elapsed full seconds without taking into
+    // account the sum of accumulated sub-seconds might be bigger than a
+    // second. in this situation time() is 1s behind gettimeofday() which would
+    // result in having the same 'text' and thus fluxbox would skip this
+    // round. reference:
+    //
+    //    http://stackoverflow.com/questions/22917318/time-and-gettimeofday-return-different-seconds/23597725#23597725
 
-    if (t != -1) {
+    uint64_t now = FbTk::FbTime::system();
+    time_t t = static_cast<time_t>(now / 1000000L);
+
+    if (t != static_cast<time_t>(-1)) {
 
         char            buf[255];
         int             len;
