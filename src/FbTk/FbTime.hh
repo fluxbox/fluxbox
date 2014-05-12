@@ -47,7 +47,7 @@ namespace FbTime {
     // calculates the remaining microseconds from 'now' up to the
     // next full 'unit'
     inline uint64_t remainingNext(uint64_t now, uint64_t unit) {
-        return (unit - (now % unit) - 1);
+        return (unit - (now % unit));
     }
 
 } // namespace FbTime
