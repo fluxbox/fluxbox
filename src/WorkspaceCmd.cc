@@ -55,7 +55,7 @@ FbTk::Command<void> *WindowListCmd::parse(const string &command, const string &a
     FbTk::Command<void> *cmd = 0;
     FbTk::Command<bool> *filter = 0;
     std::vector<string> tokens;
-    int opts;
+    int opts = 0;
     string pat;
 
     FbTk::StringUtil::stringTokensBetween(tokens, args, pat, '{', '}');
