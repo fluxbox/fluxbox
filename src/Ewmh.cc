@@ -1177,14 +1177,14 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
         // ce.data.l[0] = gravity and flags
-        int x = (ce.data.l[0] & 0x0100) ? ce.data.l[1] :
+        int x = (ce.data.l[0] & (1 << 8)) ? ce.data.l[1] :
             winclient->fbwindow()->x();
-        int y = (ce.data.l[0] & 0x0200) ? ce.data.l[2] :
+        int y = (ce.data.l[0] & (1 << 9)) ? ce.data.l[2] :
             winclient->fbwindow()->y();
-        unsigned int width = (ce.data.l[0] & 0x0400) ? ce.data.l[3] :
-            winclient->fbwindow()->width();
-        unsigned int height = (ce.data.l[0] & 0x0800) ? ce.data.l[4] :
-            winclient->fbwindow()->height();
+        unsigned int width = (ce.data.l[0] & (1 << 10)) ? ce.data.l[3] :
+            winclient->width();
+        unsigned int height = (ce.data.l[0] & (1 << 11)) ? ce.data.l[4] :
+            winclient->height();
         int win_gravity=ce.data.l[0] & 0xFF;
         winclient->fbwindow()->moveResizeForClient(x, y, width, height,
             win_gravity, winclient->old_bw);
