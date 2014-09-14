@@ -1183,9 +1183,7 @@ void Fluxbox::load_rc() {
 
     FbTk::Transparent::usePseudoTransparent(*m_rc_pseudotrans);
 
-    if (!m_rc_slitlistfile->empty()) {
-        *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);
-    } else {
+    if (m_rc_slitlistfile->empty()) {
         string filename = getDefaultDataFilename("slitlist");
         m_rc_slitlistfile.setFromString(filename.c_str());
     }
