@@ -677,6 +677,7 @@ void ResizeToCmd::real_execute() {
 
     if (m_is_relative_x) {
         dx = fbwindow().screen().calRelativeWidth(head, dx);
+        dx -= 2 * fbwindow().frame().window().borderWidth();
         if(dx <= 0) {
             dx = fbwindow().width();
         }
@@ -684,6 +685,7 @@ void ResizeToCmd::real_execute() {
 
     if (m_is_relative_y) {
         dy = fbwindow().screen().calRelativeHeight(head, dy);
+        dy -= 2 * fbwindow().frame().window().borderWidth();
         if(dy <= 0) {
             dy = fbwindow().height();
         }
