@@ -389,8 +389,10 @@ void FluxboxWindow::init() {
     if (! m_client->getAttrib(wattrib) ||
         !wattrib.screen  || // no screen? ??
         wattrib.override_redirect || // override redirect
-        m_client->initial_state == WithdrawnState) // Slit client
+        m_client->initial_state == WithdrawnState ||
+        m_client->getWMClassClass() == "DockApp") { // Slit client
         return;
+    }
 
     if (m_client->initial_state == IconicState)
         m_state.iconic = true;
@@ -399,6 +401,7 @@ void FluxboxWindow::init() {
     m_client->setGroupLeftWindow(None); // nothing to the left.
 
     if (Fluxbox::instance()->haveShape())
+
         Shape::setShapeNotify(winClient());
 
     //!! TODO init of client should be better

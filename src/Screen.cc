@@ -1236,14 +1236,14 @@ bool BScreen::addKdeDockapp(Window client) {
 FluxboxWindow *BScreen::createWindow(Window client) {
     FbTk::App::instance()->sync(false);
 
-
     if (isKdeDockapp(client) && addKdeDockapp(client)) {
         return 0; // dont create a FluxboxWindow for this one
     }
 
     WinClient *winclient = new WinClient(client, *this);
 
-    if (winclient->initial_state == WithdrawnState) {
+    if (winclient->initial_state == WithdrawnState ||
+        winclient->getWMClassClass() == "DockApp") {
         delete winclient;
 #ifdef USE_SLIT
         if (slit() && !isKdeDockapp(client))
@@ -1306,8 +1306,13 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     FluxboxWindow *win = new FluxboxWindow(client);
 
 #ifdef SLIT
-    if (win->initialState() == WithdrawnState && slit() != 0) {
-        slit()->addClient(client.window());
+    if (slit() != 0) {
+
+        if (win->initialState() == WithdrawnState) {
+            slit()->addClient(client.window());
+        } else if (client->getWMClassClass() == "DockApp") {
+            slit()->addClient(client.window());
+        }
     }
 #endif // SLIT
 
