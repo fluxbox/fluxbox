@@ -15,4 +15,4 @@ accordingly and retain the order in which they are specified.
 
 consider a system tray: A C B D E F
 with pinRight = A, B and pinLeft = E, F it will look like
-E F [C D E] A B while the icons in [] are un-ordered as usual.
+E F [C D] A B while the icons in [] are un-ordered as usual.
