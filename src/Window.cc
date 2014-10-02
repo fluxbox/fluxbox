@@ -315,9 +315,16 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
         screen().focusControl().addFocusWinFront(*this);
     else
         screen().focusControl().addFocusWinBack(*this);
-
-    Fluxbox::instance()->keys()->registerWindow(frame().window().window(),
+    
+    //Make sure to only allow global key shortcuts for normal state windows
+    // - Ignore Desktop windows (or lower) and Panels (or higher if not fullscreened)
+    //   This prevent the user from accidentally closing/minimizing windows that are
+    //   registered as the Desktop or a Panel (so it should be managed by the DE)
+    int layer = layerNum();
+    if( layer > ::ResourceLayer::DOCK  || layer < ::ResourceLayer::DESKTOP || isFullscreen() ){
+      Fluxbox::instance()->keys()->registerWindow(frame().window().window(),
                                                 *this, Keys::ON_WINDOW);
+    }
 
 }
 
@@ -2391,9 +2398,10 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             XPutBackEvent(display, &e);
             return;
         }
-
+	
         // Warp to next or previous workspace?, must have moved sideways some
         int moved_x = me.x_root - m_last_resize_x;
+	int moved_y = me.y_root - m_last_resize_y;
         // save last event point
         m_last_resize_x = me.x_root;
         m_last_resize_y = me.y_root;
@@ -2448,6 +2456,20 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         dx -= frame().window().borderWidth();
         dy -= frame().window().borderWidth();
 
+	//Ensure the window frame title bar is always visible (cannot  completely leave work area)
+	// - only an issue in the vertical dimension: left/right movement is already accounted for
+	if(frame().titlebarHeight()!=0 && moved_y){
+	  int head = screen().getCurrHead();
+	  int head_top = (signed) screen().maxTop(head);
+	  int head_bot = (signed) screen().maxBottom(head);
+	  //If the move puts it over the edge: have it snap directly to the edge instead
+	  if( (frame().titlebar().y()+dy < head_top) ){
+	    dy = head_top-frame().titlebar().y(); //snap to edge
+	  }else if( frame().titlebar().y()+frame().titlebarHeight()+dy > head_bot ){
+	    dy = head_bot - frame().titlebar().y() - frame().titlebarHeight(); //snap to edge
+	  }
+	}
+	
         // dx = current left side, dy = current top
         doSnapping(dx, dy);
 
@@ -2729,8 +2751,8 @@ void FluxboxWindow::startMoving(int x, int y) {
     }
 
     if ((isMaximized() || isFullscreen()) && screen().getMaxDisableMove())
-        return;
-
+        return;	    
+    
     // save first event point
     m_last_resize_x = x;
     m_last_resize_y = y;

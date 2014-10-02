@@ -253,12 +253,12 @@ void Keys::ungrabButtons() {
 void Keys::grabWindow(Window win) {
     if (!m_keylist)
         return;
-
+    
     // make sure the window is in our list
     WindowMap::iterator win_it = m_window_map.find(win);
     if (win_it == m_window_map.end())
         return;
-
+    
     m_handler_map[win]->grabButtons();
     t_key::keylist_t::iterator it = m_keylist->keylist.begin();
     t_key::keylist_t::iterator it_end = m_keylist->keylist.end();
