@@ -253,21 +253,12 @@ void Keys::ungrabButtons() {
 void Keys::grabWindow(Window win) {
     if (!m_keylist)
         return;
-
-    //Make sure to only allow global key shortcuts for normal state windows
-    // - Ignore Desktop windows (or lower) and Panels (or higher if not fullscreened)
-    //   This prevent the user from accidentally closing/minimizing windows that are
-    //   registered as the Desktop or a Panel (so it should be managed by the DE)
-    if( (win->layerNum() <= ::ResourceLayer::DOCK && !win->isFullscreen() ) \ //dock or higher
-	    || (win->layerNum() >= ::ResourceLayer::DESKTOP) ){ 	//desktop or lower
-	return;
-    }
     
     // make sure the window is in our list
     WindowMap::iterator win_it = m_window_map.find(win);
     if (win_it == m_window_map.end())
         return;
-
+    
     m_handler_map[win]->grabButtons();
     t_key::keylist_t::iterator it = m_keylist->keylist.begin();
     t_key::keylist_t::iterator it_end = m_keylist->keylist.end();
