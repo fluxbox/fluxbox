@@ -49,16 +49,12 @@
 
 #include "FbTk/App.hh"
 #include "FbTk/MenuSeparator.hh"
+#include "FbTk/FileUtil.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/I18n.hh"
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
 #include "FbTk/RadioMenuItem.hh"
-
-#ifdef HAVE_SYS_STAT_H
-#include <sys/types.h>
-#include <sys/stat.h>
-#endif // HAVE_SYS_STAT_H
 
 #include <X11/Xatom.h>
 
@@ -1043,10 +1039,12 @@ void Slit::toggleHidden() {
     if (doAutoHide()) {
         if (!m_slitmenu.isVisible()) {
             m_timer.fireOnce(true);
-        } else
+        } else {
             return;
-    } else
-        if (!isHidden()) return;
+        }
+    //} else if (!isHidden()) {
+    //    return;
+    }
 
     m_hidden = ! m_hidden; // toggle hidden state
     if (isHidden())
@@ -1063,29 +1061,30 @@ void Slit::loadClientList(const char *filename) {
     m_filename = filename;
     string real_filename= FbTk::StringUtil::expandFilename(filename);
 
-    struct stat buf;
-    if (stat(real_filename.c_str(), &buf) == 0) {
-        ifstream file(real_filename.c_str());
-        string name;
-        while (! file.eof()) {
-            name = "";
-            getline(file, name); // get the entire line
-            if (name.empty())
-                continue;
+    if (!FbTk::FileUtil::isRegularFile(real_filename.c_str())) {
+        return;
+    }
 
-            // remove whitespaces from start and end
-            FbTk::StringUtil::removeFirstWhitespace(name);
+    ifstream file(real_filename.c_str());
+    string name;
+    while (! file.eof()) {
+        name.clear();
+        getline(file, name); // get the entire line
+        if (name.empty())
+            continue;
 
-            // the cleaned string could still be a comment, or blank
-            if ( name.empty() || name[0] == '#' || name[0] == '!' )
-                continue;
+        // remove whitespaces from start and end
+        FbTk::StringUtil::removeFirstWhitespace(name);
 
-            // trailing whitespace won't affect the above test
-            FbTk::StringUtil::removeTrailingWhitespace(name);
+        // the cleaned string could still be a comment, or blank
+        if ( name.empty() || name[0] == '#' || name[0] == '!' )
+            continue;
 
-            SlitClient *client = new SlitClient(name.c_str());
-            m_client_list.push_back(client);
-        }
+        // trailing whitespace won't affect the above test
+        FbTk::StringUtil::removeTrailingWhitespace(name);
+
+        SlitClient *client = new SlitClient(name.c_str());
+        m_client_list.push_back(client);
     }
 }
 
