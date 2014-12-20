@@ -44,7 +44,7 @@ using namespace std;
 void doSubmenu(Parser &parser, FbTk::Menu &menu, 
                FbTk::MenuTheme &theme,
                FbTk::ImageControl &image_ctrl,
-               const std::string labelstr) {
+               const std::string &labelstr) {
 
     Parser::Item key, label, cmd, icon;
 
