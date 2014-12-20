@@ -47,7 +47,8 @@ public:
           m_enabled(true),
           m_selected(false),
           m_close_on_click(true),
-          m_toggle_item(false)
+          m_toggle_item(false),
+          m_index(0)
     { }
     explicit MenuItem(const BiDiString &label)
         : m_label(label),
@@ -57,6 +58,7 @@ public:
           m_selected(false),
           m_close_on_click(true),
           m_toggle_item(false)
+          m_index(0)
     { }
 
     MenuItem(const BiDiString &label, Menu &host_menu)
@@ -67,6 +69,7 @@ public:
           m_selected(false),
           m_close_on_click(true),
           m_toggle_item(false)
+          m_index(0)
     { }
     /// create a menu item with a specific command to be executed on click
     MenuItem(const BiDiString &label, RefCount<Command<void> > &cmd, Menu *menu = 0)
@@ -78,6 +81,7 @@ public:
           m_selected(false),
           m_close_on_click(true),
           m_toggle_item(false)
+          m_index(0)
     { }
 
     MenuItem(const BiDiString &label, Menu *submenu, Menu *host_menu = 0)
@@ -88,6 +92,7 @@ public:
           m_selected(false),
           m_close_on_click(true),
           m_toggle_item(false)
+          m_index(0)
     { }
     virtual ~MenuItem() { }
 
