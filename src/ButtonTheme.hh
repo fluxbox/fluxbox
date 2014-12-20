@@ -41,7 +41,7 @@ public:
     const FbTk::Texture &pressed() const { return *m_pressed_texture; }
     GC gc() const { return m_gc.gc(); }
     int scale() const { return *m_scale; } // scale factor for inside objects
-    const std::string &name() { return m_name; }
+    const std::string &name() const { return m_name; }
 
     virtual FbTk::Signal<> &reconfigSig() { return FbTk::Theme::reconfigSig(); }
 
