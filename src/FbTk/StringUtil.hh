@@ -98,10 +98,10 @@ static void stringTokensBetween(Container &container, const std::string &in,
         const char *ok_chars = " \t\n", bool allow_nesting = true) {
 
     std::string token;
-    int err = 0, pos = 0;
+    int pos = 0;
 
     while (true) {
-        err = getStringBetween(token, in.c_str() + pos, first, last, ok_chars,
+        int err = getStringBetween(token, in.c_str() + pos, first, last, ok_chars,
                                allow_nesting);
         if (err <= 0)
             break;
