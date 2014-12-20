@@ -164,7 +164,7 @@ void FocusableList::checkUpdate(Focusable &win) {
 
 // returns whether or not the window was moved
 bool FocusableList::insertFromParent(Focusable &win) {
-    const Focusables list = m_parent->clientList();
+    const Focusables &list = m_parent->clientList();
     Focusables::const_iterator p_it = list.begin(), p_it_end = list.end();
     Focusables::iterator our_it = m_list.begin(), our_it_end = m_list.end();
     // walk through our list looking for corresponding entries in
@@ -189,7 +189,7 @@ void FocusableList::addMatching() {
     if (!m_parent)
         return;
 
-    const Focusables list = m_parent->clientList();
+    const Focusables &list = m_parent->clientList();
     Focusables::const_iterator it = list.begin(), it_end = list.end();
     for (; it != it_end; ++it) {
         if (m_pat->match(**it)) {
