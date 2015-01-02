@@ -110,12 +110,18 @@ FbRun::~FbRun() {
 }
 
 void FbRun::run(const std::string &command) {
+
     FbTk::App::instance()->end(); // end application
     m_end = true; // mark end of processing
 
+    hide(); // hide gui
+
     if (m_print) {
         std::cout << command;
-        hide();
+        return;
+    }
+
+    if (command.empty()) {
         return;
     }
 
@@ -152,51 +158,23 @@ void FbRun::run(const std::string &command) {
 #error "Can't build FbRun - don't know how to launch without fork on your platform"
 #endif
 
-    hide(); // hide gui
-
-    // save command history to file
-    if (text().size() != 0) { // no need to save empty command
-
-        // don't allow duplicates into the history file, first
-        // look for a duplicate
-        if (m_current_history_item < m_history.size()
-            && text() == m_history[m_current_history_item]) {
-            // m_current_history_item is the duplicate
-        } else {
-            m_current_history_item = 0;
-            for (; m_current_history_item < m_history.size();
-                 ++m_current_history_item) {
-                if (m_history[m_current_history_item] == text())
-                    break;
-            }
-        }
-
-        fstream inoutfile(m_history_file.c_str(), ios::in|ios::out);
-        if (inoutfile) {
-            // now m_current_history_item points at the duplicate, or
-            // at m_history.size() if no duplicate
-            if (m_current_history_item != m_history.size()) {
-                unsigned int i = 0;
-                // read past history items before current
-                for (; inoutfile.good() && i < m_current_history_item; i++)
-                    inoutfile.ignore(1, '\n');
-
-                // write the history items that come after current
-                for (i++; i < m_history.size(); i++)
-                    inoutfile<<m_history[i]<<endl;
-
-            } else {
-                // set put-pointer at end of file
-                inoutfile.seekp(0, ios::end);
-            }
-            // append current command to the file
-            inoutfile<<command<<endl;
-
-        } else
-            cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
+    ofstream outfile(m_history_file.c_str());
+    if (!outfile) {
+        cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
+        return;
     }
 
+    for (unsigned i = 0; i != m_history.size(); ++i) {
+        // don't allow duplicates into the history file
+        if (m_history[i] == command)
+            continue;
+
+        outfile<<m_history[i]<<endl;
+    }
+    outfile<<command<<endl;
+    outfile.close();
 }
+
 
 bool FbRun::loadHistory(const char *filename) {
     if (filename == 0)
