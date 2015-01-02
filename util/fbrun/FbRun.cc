@@ -211,13 +211,11 @@ bool FbRun::loadHistory(const char *filename) {
         }
         return false;
     }
-    // clear old history and load new one from file
+
     m_history.clear();
-    // each line is a command
     string line;
-    while (!infile.eof()) {
-        getline(infile, line);
-        if (line.size()) // don't add empty lines
+    while (getline(infile, line)) {
+        if (!line.empty()) // don't add empty lines
             m_history.push_back(line);
     }
     // set no current histor to display
