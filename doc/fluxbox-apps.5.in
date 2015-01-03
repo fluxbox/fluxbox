@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fluxbox-apps
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 13 February 2013
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 03 January 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-apps.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-APPS" "5" "13 February 2013" "fluxbox\-apps\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-APPS" "5" "03 January 2015" "fluxbox\-apps\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -52,10 +52,7 @@ The file is made up of two main types of sections, apps and groups, detailed bel
 .PP
 These sections begin with a line of the format
 .RS 4
-
-\fB[app]\fR
-\fB(\fR\fIpattern\fR\fB)\fR
-\fB{\fR\fIcount\fR\fB}\fR
+\fB[app]\fR\fB(\fR\fIpattern\fR\fB)\fR\fB{\fR\fIcount\fR\fB}\fR
 .RE
 .sp
 The \fIpattern\fR can be one or more patterns which match windows\&. For more details, see \fBCLIENT PATTERNS\fR\&. If you specify more than one \fIpattern\fR, they must ALL match for the settings to be applied\&.
@@ -66,7 +63,6 @@ This opening \fB[apps]\fR line is followed by any number of settings for the app
 .PP
 Each of these sections ends with the single line
 .RS 4
-
 \fB[end]\fR
 .RE
 .SH "GROUP SECTIONS"
@@ -75,9 +71,7 @@ The primary purpose of \fB[group]\fR sections is to group windows together\&. Al
 .PP
 These sections begin with a line of the format
 .RS 4
-
-\fB[group]\fR
-\fB(\fR\fIpattern\fR\fB)\fR
+\fB[group]\fR\fB(\fR\fIpattern\fR\fB)\fR
 .RE
 .sp
 Where the \fIpattern\fR item is optional\&. If specified, this pattern must match for the group to take effect\&. It is common to use non\-window\-specific patterns such as \fB(workspace)\fR here\&. See \fBCLIENT PATTERNS\fR for more details\&.
@@ -86,16 +80,13 @@ This is followed by any number of \fB[app]\fR lines\&. These have a similar form
 .PP
 Like this
 .RS 4
-
-\fB[app]\fR
-\fB(\fR\fIpattern\fR\fB)\fR
+\fB[app]\fR\fB(\fR\fIpattern\fR\fB)\fR
 .RE
 .sp
 This section may also contain settings that are applied to every window in the group\&. See the \fBSETTINGS\fR section for details\&.
 .PP
 As with \fB[app]\fR sections, each of these sections ends with the single line
 .RS 4
-
 \fB[end]\fR
 .RE
 .SH "SETTINGS"
@@ -104,9 +95,7 @@ These settings may be stored in the \(oqapps\(cq file\&. A settings line must ap
 .PP
 The general format is
 .RS 4
-
-\fB[\fR\fIsetting\fR\fB]\fR
-\fB{\fR\fIvalue\fR\fB}\fR
+\fB[\fR\fIsetting\fR\fB]\fR\fB{\fR\fIvalue\fR\fB}\fR
 .RE
 .sp
 All allowed values are described below, except for \fIbool\fR which can simply have the value \fByes\fR or \fBno\fR, which enables or disables the associated setting, respectively\&.
@@ -152,7 +141,6 @@ Position the application at a particular spot\&. By default the upper\-left corn
 .PP
 \fIanchor\fR may be set to one of:
 .RS 4
-
 \fBTopLeft Left BottomLeft Top Center Bottom TopRight Right BottomRight\fR
 .RE
 .RE
@@ -293,7 +281,6 @@ is an integer between 0 and 255\&.
 .PP
 A \fIpattern\fR looks like this
 .RS 4
-
 \fB(\fR[\fIpropertyname\fR[!]=]\fIregexp\fR\fB)\fR
 \&...
 .RE

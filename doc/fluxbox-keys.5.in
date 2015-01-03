@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fluxbox-keys
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 13 February 2013
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 03 January 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "13 February 2013" "fluxbox\-keys\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "03 January 2015" "fluxbox\-keys\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -277,7 +277,6 @@ Start dragging to resize the window as if you had grabbed the window at the spec
 .PP
 By default \fIcorner\fR is \fBBottomRight\fR, but may be overridden with one of:
 .RS 4
-
 \fBNearestCorner NearestEdge NearestCornerOrEdge Center TopLeft Top TopRight Left Right BottomLeft Bottom BottomRight\fR
 .RE
 .sp
@@ -458,7 +457,6 @@ is set to
 .PP
 The default \fIanchor\fR is the upper left corner, but this may be overridden with one of:
 .RS 4
-
 \fBTopLeft Left BottomLeft Top Center Bottom TopRight Right BottomRight\fR
 .RE
 .RE
@@ -651,6 +649,30 @@ for more about the
 arguments\&.
 .RE
 .PP
+\fBArrangeWindowsStackLeft\fR \fIpattern\fR / \fBArrangeWindowsStackRight\fR \fIpattern\fR
+.RS 4
+Similar to
+\fBArrangeWindows\fR, these commands arrange windows on the current workspace\&. The currently focussed window is used as the
+\fImain\fR
+window, and will fill half the screen, while the other windows are tiled on the other half of the screen as if they were tiled with ArrangeWindows\&.
+\fBArrangeWindowsStackLeft\fR
+puts the main window on the RIGHT hand side of the screen, and the tiled windows are on the LEFT hand side of the screen\&.
+\fBArrangeWindowsStackRight\fR
+puts the main window on the LEFT hand side of the screen, and the tiled windows are on the RIGHT hand side of the screen\&.
+.RE
+.PP
+\fBArrangeWindowsStackTop\fR \fIpattern\fR / *ArrangeWindowsStackBottom \fIpattern\fR
+.RS 4
+Behaves just like
+\fBArrangeWindowsStackLeft\fR
+and
+\fBArrangeWindowsStackRight\fR\&.
+\fBArrangeWindowsStackBottom\fR
+places the main window on the TOP half of the screen, and the tiled windows on the bottom half of the screen\&.
+\fBArrangeWindowsStackTop\fR
+places the main window on the BOTTOM half of the screen and the tiled windows on the top half of the screen\&.
+.RE
+.PP
 \fBShowDesktop\fR
 .RS 4
 Minimizes all windows on the current workspace\&. If they are already all minimized, then it restores them\&.
@@ -836,8 +858,7 @@ These commands have special meanings or behaviors\&.
 \fBMacroCmd\fR {\fIcommand1\fR} {\fIcommand2\fR} {\fIcommand3\fR} \fI\&...\fR
 .RS 4
 Allows you to execute more than one command with one keybinding\&. The commands will be executed in series\&. The
-\fB{\fR
-\fB}\fR
+\fB{\fR\fB}\fR
 brackets are literally required, as in the following example:
 .sp
 .if n \{\
@@ -989,7 +1010,6 @@ Many of the more advanced commands take a \fIpattern\fR argument, which allows y
 .PP
 A \fIpattern\fR looks like this
 .RS 4
-
 \fB(\fR[\fIpropertyname\fR[!]=]\fIregexp\fR\fB)\fR
 \&...
 .RE

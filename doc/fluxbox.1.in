@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fluxbox
 .\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
-.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 13 February 2013
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 03 January 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "13 February 2013" "fluxbox\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX" "1" "03 January 2015" "fluxbox\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -131,7 +131,6 @@ The toolbar contains any combination of the following tools, by default in this 
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBWorkspace Name\fR: Name of the current visible workspace
 .RE
 .sp
@@ -143,7 +142,6 @@ The toolbar contains any combination of the following tools, by default in this 
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBWorkspace Arrows\fR: Previous/Next Workspace
 .RE
 .sp
@@ -155,7 +153,6 @@ The toolbar contains any combination of the following tools, by default in this 
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBIconbar\fR: List of windows managed by fluxbox
 .RE
 .sp
@@ -167,7 +164,6 @@ The toolbar contains any combination of the following tools, by default in this 
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBWindow Arrows\fR: Previous/Next Application Window
 .RE
 .sp
@@ -179,7 +175,6 @@ The toolbar contains any combination of the following tools, by default in this 
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBSystem Tray\fR: Area for applets
 .RE
 .sp
@@ -191,7 +186,6 @@ The toolbar contains any combination of the following tools, by default in this 
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBClock\fR: Date and Time
 .RE
 .sp
@@ -297,7 +291,6 @@ Mouse clicks on the empty desktop:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBLeft\-click\fR
 (Button 1): hides all fluxbox menus
 .RE
@@ -310,7 +303,6 @@ Mouse clicks on the empty desktop:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBMiddle\-click\fR
 (Button 2): shows the Workspace Menu
 .RE
@@ -323,7 +315,6 @@ Mouse clicks on the empty desktop:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBRight\-click\fR
 (Button 3): shows the Root Menu
 .RE
@@ -336,7 +327,6 @@ Mouse clicks on the empty desktop:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBScroll wheel\fR
 (Buttons 4 and 5): jump to the previous/next workspace
 .RE
@@ -351,7 +341,6 @@ Mouse gestures on a window:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+Drag Left\-click\fR
 anywhere on a window moves the window\&.
 .RE
@@ -364,7 +353,6 @@ anywhere on a window moves the window\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+Drag Right\-click\fR
 anywhere on a window resizes the window\&.
 .RE
@@ -377,7 +365,6 @@ anywhere on a window resizes the window\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+Middle\-click\fR
 anywhere on a window lowers the current window\&.
 .RE
@@ -392,7 +379,6 @@ Mouse gestures on a window\(cqs titlebar:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBCTRL+Drag Left\-click\fR
 on a window\(cqs titlebar lets you drag to attach the window to another\(cqs tab group
 .RE
@@ -405,7 +391,6 @@ on a window\(cqs titlebar lets you drag to attach the window to another\(cqs tab
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBDouble Left\-click\fR
 on a window\(cqs titlebar shades the window
 .RE
@@ -418,7 +403,6 @@ on a window\(cqs titlebar shades the window
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBMiddle\-click\fR
 on a window\(cqs titlebar lowers the window
 .RE
@@ -431,7 +415,6 @@ on a window\(cqs titlebar lowers the window
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBRight\-click\fR
 on a window\(cqs titlebar pops up the
 \fBWindow Menu\fR
@@ -447,7 +430,6 @@ Mouse gestures on the toolbar:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBScroll wheel\fR
 on the toolbar cycles through windows
 .RE
@@ -462,7 +444,6 @@ Keyboard bindings:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+Tab\fR
 /
 \fBALT+Shift+Tab\fR: Cycle through windows
@@ -476,7 +457,6 @@ Keyboard bindings:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBWIN+Tab\fR
 /
 \fBWIN+Shift+Tab\fR: Cycle through tabs
@@ -490,7 +470,6 @@ Keyboard bindings:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBWIN+1\fR
 \-
 \fBWIN+9\fR: Select the 1st \(-> 9th tab in the current window
@@ -504,7 +483,6 @@ Keyboard bindings:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+F1\fR: Run
 \fBxterm(1)\fR
 to open a new terminal
@@ -518,7 +496,6 @@ to open a new terminal
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+F2\fR: Run
 \fBfbrun(1)\fR
 for a small \(lqrun program\(rq dialog
@@ -532,7 +509,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+F4\fR: Close the current window
 .RE
 .sp
@@ -544,7 +520,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+F5\fR: Kill the current window (like
 \fBxkill(1)\fR)
 .RE
@@ -557,7 +532,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+F9\fR: Minimize (iconify) the current window
 .RE
 .sp
@@ -569,7 +543,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+F10\fR: Maximize the current window
 .RE
 .sp
@@ -581,7 +554,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+F11\fR: Full\-screen the current window
 .RE
 .sp
@@ -593,7 +565,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBALT+Space\fR: Open the
 \fBWindow Menu\fR
 .RE
@@ -606,7 +577,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBCTRL+ALT+Del\fR: Exit fluxbox (log out)
 .RE
 .sp
@@ -618,7 +588,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBCTRL+ALT+Left\fR
 /
 \fBCTRL+ALT+Right\fR: Go to the previous/next workspace
@@ -632,7 +601,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBWIN+Left\fR
 /
 \fBWIN+Right\fR: Send the current window to the previous/next workspace, but remain on this workspace
@@ -646,7 +614,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBCTRL+WIN+Left\fR
 /
 \fBCTRL+WIN+Right\fR: Take the current window to the previous/next workspace, and switch to that workspace
@@ -660,7 +627,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBCTRL+F1\fR
 \-
 \fBCTRL+F12\fR: Switch to the 1st \(-> 12th workspace
@@ -674,7 +640,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBWIN+F1\fR
 \-
 \fBWIN+F12\fR: Send the current window to a specific workspace
@@ -688,7 +653,6 @@ for a small \(lqrun program\(rq dialog
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBCTRL+WIN+F1\fR
 \-
 \fBCTRL+WIN+F12\fR: Take the current window to a specific workspace
@@ -1081,7 +1045,7 @@ The Systemtray can hold applications that are made to use it\&.
 .PP
 \fBWorkspaceName\fR
 .RS 4
-This displays the name of the current workspace\&.
+This displays the name of the current workspace\&. Also, one is able to switch to the workspace left of the current one with a left click and to the workspace right of the current one with a right click\&.
 .RE
 .PP
 \fBPrevWorkspace\fR
@@ -1104,7 +1068,7 @@ This displays an arrow that switches focus to the previous visible window on the
 This displays an arrow that switches focus to the next visible window on the current workspace\&.
 .RE
 .sp
-Other aspects of the toolbar can be configured in two ways: through the toolbar menu, which is accessible in the Configuration part of the RootMenu or with a right click on the edge the toolbar, or by editing the init file (see the \fBRESOURCES\fR section for more information about that)\&.
+Other aspects of the toolbar can be configured in two ways: through the toolbar menu, which is accessible in the Configuration part of the RootMenu or with a middle click on the edge the toolbar, or by editing the init file (see the \fBRESOURCES\fR section for more information about that)\&.
 .SS "Toolbar Menu"
 .sp
 This menu can be opened by right\-clicking on the toolbar (though not on a window\(cqs name in the iconbar), or from the \fBConfiguration Menu\fR\&.
@@ -1490,19 +1454,7 @@ These allow users to place the slit and toolbar where they like\&.
 .PP
 Possible options are:
 .RS 4
-
-\fBBottomLeft\fR
-\fBBottomCenter\fR
-\fBBottomRight\fR
-\fBLeftBottom\fR
-\fBLeftCenter\fR
-\fBLeftTop\fR
-\fBRightBottom\fR
-\fBRightCenter\fR
-\fBRightTop\fR
-\fBTopLeft\fR
-\fBTopCenter\fR
-\fBTopRight\fR
+\fBBottomLeft\fR\fBBottomCenter\fR\fBBottomRight\fR\fBLeftBottom\fR\fBLeftCenter\fR\fBLeftTop\fR\fBRightBottom\fR\fBRightCenter\fR\fBRightTop\fR\fBTopLeft\fR\fBTopCenter\fR\fBTopRight\fR
 .RE
 .sp
 Slit default:
@@ -1552,20 +1504,11 @@ character\&. They will appear in the order given\&.
 .PP
 Possible tools:
 .RS 4
-
-\fBclock\fR
-\fBiconbar\fR
-\fBnextwindow\fR
-\fBprevwindow\fR
-\fBnextworkspace\fR
-\fBprevworkspace\fR
-\fBsystemtray\fR
-\fBworkspacename\fR
+\fBclock\fR\fBiconbar\fR\fBnextwindow\fR\fBprevwindow\fR\fBnextworkspace\fR\fBprevworkspace\fR\fBsystemtray\fR\fBworkspacename\fR
 .RE
 .PP
 Default:
 .RS 4
-
 \fBworkspacename, prevworkspace, nextworkspace, iconbar, prevwindow, nextwindow, systemtray, clock\fR
 .RE
 .RE
@@ -1626,7 +1569,6 @@ Available options:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBLeft\fR: Fixed width, aligned left
 .RE
 .sp
@@ -1638,7 +1580,6 @@ Available options:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBRelative\fR: Width varies to fill the iconbar
 .RE
 .sp
@@ -1650,7 +1591,6 @@ Available options:
 .sp -1
 .IP \(bu 2.3
 .\}
-
 \fBRight\fR: Fixed width, aligned right
 .RE
 .RE
@@ -1959,15 +1899,7 @@ The buttons or icons to place in the titlebar of decorated windows\&. You may sp
 .PP
 The available options are:
 .RS 4
-
-\fBClose\fR
-\fBMaximize\fR
-\fBMenuIcon\fR
-\fBMinimize\fR
-\fBShade\fR
-\fBStick\fR
-\fBLHalf\fR
-\fBRHalf\fR
+\fBClose\fR\fBMaximize\fR\fBMenuIcon\fR\fBMinimize\fR\fBShade\fR\fBStick\fR\fBLHalf\fR\fBRHalf\fR
 .RE
 .sp
 Default left:
@@ -2076,7 +2008,7 @@ fluxbox responds to the following signals:
 .sp -1
 .IP \(bu 2.3
 .\}
-SIGHUP fluxbox loads the configuration\&.
+SIGUSR1 restarts fluxbox\&.
 .RE
 .sp
 .RS 4
@@ -2087,18 +2019,7 @@ SIGHUP fluxbox loads the configuration\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-SIGUSR1 Forces reloading of configuration\&.
-.RE
-.sp
-.RS 4
-.ie n \{\
-\h'-04'\(bu\h'+03'\c
-.\}
-.el \{\
-.sp -1
-.IP \(bu 2.3
-.\}
-SIGUSR2 Forces reloading of menu file\&.
+SIGUSR2 Forces reloading of configuration\&.
 .RE
 .SH "AUTHORS"
 .sp
