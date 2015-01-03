@@ -181,29 +181,6 @@ void prepareLinearTable(size_t size, FbTk::RGBA* rgba,
     }
 }
 
-void prepareSquareTable(size_t size, FbTk::RGBA* rgba,
-        const FbTk::Color* from, const FbTk::Color* to, double scale) {
-
-
-    const double r = from->red();
-    const double g = from->green();
-    const double b = from->blue();
-
-    const double delta_r = (to->red() - r);
-    const double delta_g = (to->green() - g);
-    const double delta_b = (to->blue() - b);
-
-    double s;
-    size_t i;
-    for (i = 0; i < size; ++i) {
-        s = 1.0 - ((double)(i + 1) / (double)size);
-        s *= s;
-        rgba[i].r = static_cast<unsigned char>(scale * (r + (s * delta_r)));
-        rgba[i].g = static_cast<unsigned char>(scale * (g + (s * delta_g)));
-        rgba[i].b = static_cast<unsigned char>(scale * (b + (s * delta_b)));
-    }
-}
-
 //
 //
 //   To   +     .         From +           .
@@ -591,17 +568,17 @@ void renderEllipticGradient(bool interlaced,
     double _y;
     double d;
 
-    for (i = 0, y = 0; y < height; ++y) {
-        for (x = 0; x < width; ++x, ++i) {
+    for (i = 0, y = 0; y < static_cast<int>(height); ++y) {
+        for (x = 0; x < static_cast<int>(width); ++x, ++i) {
 
             _x = x - w2;
             _y = y - h2;
 
             d = ((_x * _x * sw) + (_y * _y * sh)) / 2.0;
 
-            rgba[i].r = (unsigned char)(r - (d * dr));
-            rgba[i].g = (unsigned char)(g - (d * dg));
-            rgba[i].b = (unsigned char)(b - (d * db));
+            rgba[i].r = static_cast<unsigned char>(r - (d * dr));
+            rgba[i].g = static_cast<unsigned char>(g - (d * dg));
+            rgba[i].b = static_cast<unsigned char>(b - (d * db));
 
             pseudoInterlace(rgba[i], interlaced, y);
         }

@@ -51,56 +51,6 @@ using std::string;
 
 namespace {
 
-const char *getFontSize(const char *pattern, int *size) {
-    const char *p;
-    const char *p2=0;
-    int n=0;
-
-    for (p=pattern; 1; p++) {
-        if (!*p) {
-            if (p2!=0 && n>1 && n<72) {
-                *size = n; return p2+1;
-            } else {
-                *size = 16; return 0;
-            }
-        } else if (*p=='-') {
-            if (n>1 && n<72 && p2!=0) {
-                *size = n;
-                return p2+1;
-            }
-            p2=p; n=0;
-        } else if (*p>='0' && *p<='9' && p2!=0) {
-            n *= 10;
-            n += *p-'0';
-        } else {
-            p2=0; n=0;
-        }
-    }
-}
-
-const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
-    const char *p, *v;
-    char *p2;
-    va_list va;
-
-    va_start(va, bufsiz);
-    buf[bufsiz-1] = 0;
-    buf[bufsiz-2] = '*';
-    while((v = va_arg(va, char *)) != 0) {
-        p = FbTk::StringUtil::strcasestr(pattern, v);
-        if (p) {
-            strncpy(buf, p+1, bufsiz-2);
-            p2 = strchr(buf, '-');
-            if (p2) *p2=0;
-            va_end(va);
-            return p;
-        }
-    }
-    va_end(va);
-    strncpy(buf, "*", bufsiz);
-    return 0;
-}
-
 XFontSet createFontSet(const char *fontname, bool& utf8mode) {
     Display *display = FbTk::App::instance()->display();
     XFontSet fs;
