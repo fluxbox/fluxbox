@@ -58,14 +58,13 @@ public:
     void unregisterEventHandler(Window win);
 
 private:
-    EventManager(): m_grabbing_keyboard(0) { }
+    EventManager() { }
     ~EventManager();
     void dispatch(Window win, XEvent &event, bool parent = false);
 
     typedef std::map<Window, EventHandler *> EventHandlerMap;
     EventHandlerMap m_eventhandlers;
     EventHandlerMap m_parent;
-    EventHandler *m_grabbing_keyboard;
 };
 
 } //end namespace FbTk

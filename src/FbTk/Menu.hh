@@ -235,8 +235,6 @@ private:
 
     int m_x_move;
     int m_y_move;
-    int m_grab_x;
-    int m_grab_y;
 
     // the menuitems are rendered in a grid with
     // 'm_columns' (a minimum of 'm_min_columns') and
@@ -252,7 +250,6 @@ private:
     // the corners
     std::auto_ptr<FbTk::Shape> m_shape;
 
-    Drawable m_root_pm;
     static Menu *shown; ///< used for determining if there's a menu open at all
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
     bool m_need_update;

@@ -39,7 +39,6 @@ class FbRun: public FbTk::TextBox {
 public:
     FbRun(int x = 0, int y = 0, size_t width = 200);
     ~FbRun();
-    void handleEvent(XEvent * const ev);
     void setTitle(const std::string &title);
     void resize(unsigned int width, unsigned int height);
     void setPrint(bool print) { m_print = print; }

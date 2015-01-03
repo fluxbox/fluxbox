@@ -152,7 +152,6 @@ RootTheme::RootTheme(FbTk::ImageControl &image_control):
     FbTk::Theme(image_control.screenNumber()),
     m_background(new BackgroundItem(*this, "background", "Background")),
     m_opgc(RootWindow(FbTk::App::instance()->display(), image_control.screenNumber())),
-    m_image_ctrl(image_control),
     m_first(true) {
 
     Display *disp = FbTk::App::instance()->display();
