@@ -53,6 +53,10 @@
 #include <sys/wait.h>
 #endif // HAVE_SYS_WAIT_H
 
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
+
 
 #include <iostream>
 #include <stdexcept>

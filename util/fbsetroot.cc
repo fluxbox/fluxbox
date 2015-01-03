@@ -360,7 +360,7 @@ void fbsetroot::gradient() {
 */
 void fbsetroot::usage(int exit_code) {
     _FB_USES_NLS;
-    cout << m_app_name << " 2.3 : (c) 2003-2014 Fluxbox Development Team" << endl;
+    cout << m_app_name << " 2.3 : (c) 2003-2015 Fluxbox Development Team" << endl;
     cout << m_app_name << " 2.1 : (c) 2002 Claes Nasten" << endl;
     cout << m_app_name << " 2.0 : (c) 1997-2000 Brad Hughes\n" << endl;
     cout << _FB_CONSOLETEXT(fbsetroot, Usage,

@@ -137,7 +137,7 @@ int FluxboxCli::Options::parse(int argc, char** argv) {
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
                            "Main usage string. Please lay it out nicely. There is one %s that is given the version").c_str(),
-                   __fluxbox_version, "2001-2014");
+                   __fluxbox_version, "2001-2015");
             return EXIT_SUCCESS;
         } else if (arg == "-info" || arg == "-i" || arg == "--info") {
             FluxboxCli::showInfo(cout);

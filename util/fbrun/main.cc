@@ -48,7 +48,7 @@ using std::endl;
 using std::string;
 
 void showUsage(const char *progname) {
-    cerr<<"fbrun 1.5 : (c) 2002-2014 Henrik Kinnunen"<<endl;
+    cerr<<"fbrun 1.5 : (c) 2002-2015 Henrik Kinnunen"<<endl;
     cerr<<"Usage: "<<
         progname<<" [arguments]"<<endl<<
         "Arguments: "<<endl<<
