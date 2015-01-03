@@ -69,6 +69,9 @@ using std::transform;
 
 namespace {
 
+const size_t DIGITS10_ULONGLONGINT = 20; // ULLONG_MAX = 18446744073709551615
+const size_t DIGITS16_ULONGLONGINT = 18; // ULLONG_MAX = 0xffffffffffffffff
+
 template <typename T>
 int extractBigNumber(const char* in, T (*extractFunc)(const char*, char**, int), T& out) {
 
@@ -170,14 +173,14 @@ int extractNumber(const std::string& in, unsigned long long& out) {
 
 
 std::string number2String(long long num) {
-    char s[128];
+    char s[DIGITS10_ULONGLONGINT];
     snprintf(s, sizeof(s), "%lld", num);
     return std::string(s);
 }
 
 std::string number2HexString(long long num) {
-    char s[17];
-    snprintf(s, sizeof(s), "%lx", num);
+    char s[DIGITS16_ULONGLONGINT];
+    snprintf(s, sizeof(s), "%llx", num);
     return std::string(s);
 }
 
