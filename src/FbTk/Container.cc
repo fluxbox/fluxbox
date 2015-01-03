@@ -129,7 +129,7 @@ bool Container::moveItemTo(Item item, int x, int y) {
     // get the root window
     if (!XQueryTree(display(), window(),
                     &root_return, &parent_return, &children_return, &nchildren_return))
-        parent_return = parent_return;
+        return false;
 
     if (children_return != NULL)
         XFree(children_return);
