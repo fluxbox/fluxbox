@@ -38,7 +38,7 @@ public:
     virtual ~ITypeAheadable() { }
 
     virtual const std::string &iTypeString() const = 0;
-    virtual bool isEnabled() { return true; }
+    virtual bool isEnabled() const { return true; }
     char iTypeChar(size_t i) const { return iTypeString()[i]; }
     bool iTypeCheckStringSize(size_t sz) const {
         return (iTypeString().size() > sz);
