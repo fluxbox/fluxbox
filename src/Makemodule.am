@@ -68,7 +68,7 @@ src/defaults.cc: force
 			echo '  return "this_is_tar_ball_build";'; \
 		fi; \
 		echo '}' ) > $(top_builddir)/src/defaults_tmp.cc
-	@if ! cmp defaults_tmp.cc defaults.cc ; then cp $(top_builddir)/src/defaults_tmp.cc $(top_builddir)/src/defaults.cc; fi
+	@if ! cmp $(top_builddir)/src/defaults_tmp.cc $(top_builddir)/src/defaults.cc ; then cp $(top_builddir)/src/defaults_tmp.cc $(top_builddir)/src/defaults.cc; fi
 	@rm $(top_builddir)/src/defaults_tmp.cc
 
 force: ;
