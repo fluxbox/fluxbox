@@ -86,12 +86,15 @@ void WindowListCmd::execute() {
         // save old value, so we can restore it later
         WinClient *old = WindowCmd<void>::client();
         for (; it != it_end; ++it) {
-            if (typeid(**it) == typeid(FluxboxWindow))
-                WindowCmd<void>::setWindow((*it)->fbwindow());
-            else if (typeid(**it) == typeid(WinClient))
-                WindowCmd<void>::setClient(dynamic_cast<WinClient *>(*it));
-            if (!m_filter || m_filter->execute())
+            Focusable* wptr = *it;
+            if (typeid(*wptr) == typeid(FluxboxWindow)) {
+                WindowCmd<void>::setWindow((wptr)->fbwindow());
+            } else if (typeid(*wptr) == typeid(WinClient)) {
+                WindowCmd<void>::setClient(dynamic_cast<WinClient *>(wptr));
+            }
+            if (!m_filter || m_filter->execute()) {
                 m_cmd->execute();
+            }
         }
         WindowCmd<void>::setClient(old);
     }

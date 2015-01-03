@@ -303,8 +303,9 @@ void ShowClientMenuCmd::execute() {
     FocusControl::Focusables::const_iterator it = list->clientList().begin(),
                                              it_end = list->clientList().end();
     for (; it != it_end; ++it) {
-        if (typeid(**it) == typeid(FluxboxWindow) && m_pat.match(**it))
-            m_list.push_back(static_cast<FluxboxWindow *>(*it));
+        Focusable* f = *it;
+        if (typeid(*f) == typeid(FluxboxWindow) && m_pat.match(*f))
+            m_list.push_back(static_cast<FluxboxWindow *>(f));
     }
 
     m_menu.reset(new ClientMenu(*screen, m_list,
@@ -572,8 +573,9 @@ void ClientPatternTestCmd::execute() {
             wit_end = windows->clientList().end();
 
             for ( ; wit != wit_end; wit++) {
-                if (typeid(**wit) == typeid(FluxboxWindow) && cp->match(**wit)) {
-                    matches.push_back(static_cast<const FluxboxWindow*>(*wit));
+                Focusable* f = *wit;
+                if (typeid(*f) == typeid(FluxboxWindow) && cp->match(*f)) {
+                    matches.push_back(static_cast<const FluxboxWindow*>(f));
                 }
             }
         }
