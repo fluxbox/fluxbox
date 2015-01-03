@@ -75,7 +75,6 @@ int main(int argc, char **argv) {
     bool set_height = false, set_width=false; // use height/width of font by default
     bool set_pos = false; // set position
     bool near_mouse = false; // popup near mouse
-    bool antialias = true; // antialias text
     bool print = false;
     string fontname; // font name
     string title("Run program"); // default title
@@ -114,8 +113,6 @@ int main(int argc, char **argv) {
             foreground = argv[++i];
         } else if (strcmp(argv[i], "-bg") == 0 && i+1 < argc) {
             background = argv[++i];
-        } else if (strcmp(argv[i], "-na") == 0) {
-            antialias = false;
         } else if (strcmp(argv[i], "-hf") == 0 && i+1 < argc) {
             history_file = argv[++i];
         } else if (arg == "-h" || arg == "-help" || arg == "--help") {
@@ -154,8 +151,7 @@ int main(int argc, char **argv) {
             fbrun.resize(fbrun.width(), height);
         if (set_width)
             fbrun.resize(width, fbrun.height());
-        //if (antialias)
-        //    fbrun.setAntialias(antialias);
+
         // expand and load command history
         string expanded_filename = FbTk::StringUtil::expandFilename(history_file);
         if (!fbrun.loadHistory(expanded_filename.c_str()))

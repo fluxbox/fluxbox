@@ -63,9 +63,6 @@ OPTIONS
 *-font* 'name'::
 	Text font name
 
-*-na*::
-	Disable font antialias
-
 *-hf* 'filename'::
 	History file to load. The default is *~/.fluxbox/fbrun_history*.
 
