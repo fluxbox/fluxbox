@@ -4,7 +4,6 @@ check_PROGRAMS= \
 	testFullscreen \
 	testKeys \
 	testRectangleUtil \
-	testSignals \
 	testStringUtil \
 	testTexture
 
@@ -67,18 +66,6 @@ testRectangleUtil_SOURCES = \
 testRectangleUtil_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src
-
-testSignals_LDFLAGS = \
-	$(FRIBIDI_LIBS) \
-	$(X11_LIBS) \
-	$(XRENDER_LIBS) \
-	$(X_LIBS)
-
-testSignals_SOURCES = \
-	src/tests/testSignals.cc
-testSignals_CPPFLAGS = \
-	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir)
 
 testStringUtil_SOURCES = \
 	src/tests/StringUtiltest.cc
