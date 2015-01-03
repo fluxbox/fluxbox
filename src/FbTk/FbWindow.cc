@@ -495,7 +495,6 @@ long FbWindow::cardinalProperty(Atom prop,bool*exists) const {
     Atom type;
     int format;
     unsigned long nitems, bytes_after;
-    int result;
     long* num;
     long ret=0;
     if (exists) *exists=false;

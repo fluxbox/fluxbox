@@ -332,12 +332,11 @@ FluxboxWindow::~FluxboxWindow() {
             unregisterWindow(frame().window().window());
     }
 
-
-    const char* title = m_client ? m_client->title().logical().c_str() : "" ;
-    fbdbg<<"starting ~FluxboxWindow("<<this<<","<<title<<")"<<endl;
-    fbdbg<<"num clients = "<<numClients()<<endl;
-    fbdbg<<"curr client = "<<m_client<<endl;
-    fbdbg<<"m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
+    fbdbg << "starting ~FluxboxWindow(" << this << "," 
+        << (m_client ? m_client->title().logical().c_str() : "") << ")" << endl
+        << "num clients = " << numClients() << endl
+        << "curr client = "<< m_client << endl
+        << "m_labelbuttons.size = " << m_labelbuttons.size() << endl;
 
     if (moving)
         stopMoving(true);

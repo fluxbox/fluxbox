@@ -490,7 +490,6 @@ bool Keys::addBinding(const string &linebuffer) {
                 }
                 mod = 0;
                 key = 0;
-                type = 0;
                 context = 0;
                 isdouble = false;
             }

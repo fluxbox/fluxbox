@@ -55,7 +55,7 @@ FbRootWindow::FbRootWindow(int screen_num):
 
         for (int i = 0; i < vinfo_nitems; i++) {
             if ((DefaultDepth(disp, screen_num) < vinfo_return[i].depth)
-                    && (depth() < vinfo_return[i].depth)){
+                    && (static_cast<int>(depth()) < vinfo_return[i].depth)){
                 m_visual = vinfo_return[i].visual;
                 setDepth(vinfo_return[i].depth);
             }

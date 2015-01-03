@@ -453,12 +453,9 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
             }
             if (err > 0 ) {
                 parse_pos += err;
-                err = FbTk::StringUtil::getStringBetween(str_label,
+                FbTk::StringUtil::getStringBetween(str_label,
                                                          line.c_str() + parse_pos,
                                                          '{', '}');
-                if (err>0) {
-                    parse_pos += err;
-                }
             } else
                 continue; //read next line
 
@@ -1131,7 +1128,7 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         app = add(winclient);
         if (!app) return;
     }
-    int head, head_x, head_y, win_w, win_h, percx, percy;
+    int head, percx, percy;
     switch (attrib) {
     case REM_WORKSPACE:
         app->rememberWorkspace(win->workspaceNumber());
@@ -1141,15 +1138,15 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_DIMENSIONS: {
         head = win->screen().getHead(win->fbWindow());
-        int percx = win->screen().calRelativeDimensionWidth(head, win->normalWidth());
-        int percy = win->screen().calRelativeDimensionHeight(head, win->normalHeight());
+        percx = win->screen().calRelativeDimensionWidth(head, win->normalWidth());
+        percy = win->screen().calRelativeDimensionHeight(head, win->normalHeight());
         app->rememberDimensions(percx, percy, true);
         break;
     }
     case REM_POSITION: {
         head = win->screen().getHead(win->fbWindow());
-        int percx = win->screen().calRelativePositionWidth(head, win->normalX());
-        int percy = win->screen().calRelativePositionHeight(head, win->normalY());
+        percx = win->screen().calRelativePositionWidth(head, win->normalX());
+        percy = win->screen().calRelativePositionHeight(head, win->normalY());
         app->rememberPosition(percx, percy, true);
         break;
     }

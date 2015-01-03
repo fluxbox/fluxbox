@@ -43,7 +43,6 @@ int main(int argc, char **argv) {
     int         rc;
     Display*    disp;
     Window      root;
-    Atom        atom_utf8;
     Atom        atom_fbcmd; 
     Atom        atom_result;
     xerror_cb_t error_cb;
@@ -62,7 +61,6 @@ int main(int argc, char **argv) {
     }
 
     cmd = argv[1];
-    atom_utf8 = XInternAtom(disp, "UTF8_STRING", False);
     atom_fbcmd = XInternAtom(disp, "_FLUXBOX_ACTION", False);
     atom_result = XInternAtom(disp, "_FLUXBOX_ACTION_RESULT", False);
     root = DefaultRootWindow(disp);

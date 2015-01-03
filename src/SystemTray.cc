@@ -75,18 +75,15 @@ public:
         int actual_format;
         unsigned long nitems, bytes_after;
         unsigned long *prop;
-        bool mapped = false;
         Atom embed_info = SystemTray::getXEmbedInfoAtom();
         if (property(embed_info, 0l, 2l, false, embed_info,
                      &actual_type, &actual_format, &nitems, &bytes_after,
                      (unsigned char **) &prop) && prop != 0) {
-            mapped = (bool)(static_cast<unsigned long>(prop[1]) & XEMBED_MAPPED);
+
             XFree(static_cast<void *>(prop));
-
-
-            fbdbg<<"(SystemTray::TrayWindow::getMappedDefault(): XEMBED_MAPPED = "<<mapped<<endl;
-
-
+            fbdbg << "(SystemTray::TrayWindow::getMappedDefault(): XEMBED_MAPPED = "
+                << (bool)(static_cast<unsigned long>(prop[1]) & XEMBED_MAPPED)
+                << endl;
         }
         return true;
     }
