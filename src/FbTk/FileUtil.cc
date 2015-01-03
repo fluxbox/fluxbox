@@ -112,9 +112,11 @@ struct dirent *Directory::read() {
 
 std::string Directory::readFilename() {
     dirent *ent = read();
-    if (ent == 0)
-        return "";
-    return (ent->d_name ? ent->d_name : "");
+    const char* name = 0;
+    if (ent) {
+        name = ent->d_name;
+    }
+    return (name ? name : "");
 }
 
 void Directory::close() {
