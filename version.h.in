@@ -25,7 +25,9 @@
 #ifdef __VERSION__
 #define __fluxbox_compiler_version __VERSION__
 
-#ifdef __GNUG__
+#ifdef __clang__
+#define __fluxbox_compiler "CLANG"
+#elif defined(__GNUG__)
 #define __fluxbox_compiler "GCC"
 #endif  // __GNUG__
 
