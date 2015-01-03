@@ -1,5 +1,19 @@
-Version 1.3.5 is a bug fix release.
+Version 1.3.6 is a bug fix release.
 
-Critical Bugfixes in 1.3.5:
-    * Reenabled 'If' 'Or' 'And' actions again
+Critical Bugfixes:
+    * Clocktool problems
+    * Rendering long text
+    * Race condition on shutdown
+    * Lost keypresses after workspace switch
+    * Corruption of fbrun-history
 
+Minor Bugfixes:
+    * Resize and Move problems
+
+Features:
+    * 'ArrangeWindowsStack' action
+    * Treat Windows with WM_CLASS == "DockApp" as DockApps
+
+Minor:
+    * Updated translations (Bulgarian, Hebrew, Japanese)
+    * Updated build system
