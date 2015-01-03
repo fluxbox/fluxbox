@@ -1900,19 +1900,18 @@ void BScreen::renderGeomWindow() {
     char buf[256];
     _FB_USES_NLS;
 
-    sprintf(buf,
-            _FB_XTEXT(Screen, GeometrySpacing,
-            "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog").c_str(),
-            0, 0);
+    const std::string msg = _FB_XTEXT(Screen, GeometrySpacing,
+            "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog");
+    const int n = snprintf(buf, msg.size(), msg.c_str(), 0, 0);
 
-    FbTk::BiDiString label(buf);
-    m_geom_window->resize(label);
+    FbTk::BiDiString label(std::string(buf, n));
+    m_geom_window->resizeForText(label);
     m_geom_window->reconfigTheme();
 }
 
 
 void BScreen::renderPosWindow() {
-    m_pos_window->resize(FbTk::BiDiString("0:00000 x 0:00000"));
+    m_pos_window->resizeForText(FbTk::BiDiString("0:00000 x 0:00000"));
     m_pos_window->reconfigTheme();
 }
 
