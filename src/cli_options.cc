@@ -109,7 +109,7 @@ int FluxboxCli::Options::parse(int argc, char** argv) {
             }
         } else if (arg == "-version" || arg == "-v" || arg == "--version") {
             // print current version string
-            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2014 Fluxbox Team " 
+            cout << "Fluxbox " << __fluxbox_version << " : (c) 2001-2015 Fluxbox Team " 
                 << endl << endl;
             return EXIT_SUCCESS;
         } else if (arg == "-log" || arg == "--log") {
