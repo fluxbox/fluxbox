@@ -21,18 +21,18 @@ fbsetroot_SOURCES = \
 	util/fbsetroot.cc \
 	util/fbsetroot.hh
 fbsetroot_LDADD = \
-	libFbTk.a
-fbsetroot_CPPFLAGS = \
-	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir) \
-	-I$(src_incdir) \
-	-I$(nls_incdir)
-fbsetroot_LDFLAGS = \
+	libFbTk.a \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
 	$(X11_LIBS) \
 	$(XFT_LIBS) \
 	$(XRENDER_LIBS)
+
+fbsetroot_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(fbtk_incdir) \
+	-I$(src_incdir) \
+	-I$(nls_incdir)
 
 fluxbox_update_configs_SOURCES = \
 	src/defaults.cc \
@@ -44,8 +44,7 @@ fluxbox_update_configs_CPPFLAGS = \
 	-I$(src_incdir) \
 	-I$(nls_incdir)
 fluxbox_update_configs_LDADD = \
-	libFbTk.a
-fluxbox_update_configs_LDFLAGS = \
+	libFbTk.a \
 	$(FRIBIDI_LIBS) \
 	$(X11_LIBS)
 
@@ -54,5 +53,5 @@ fluxbox_remote_SOURCES = \
 fluxbox_remote_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-I$(fbtk_incdir)
-fluxbox_remote_LDFLAGS = \
+fluxbox_remote_LDADD = \
 	$(X11_LIBS)

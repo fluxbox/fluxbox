@@ -129,6 +129,10 @@ AC_CHECK_FUNCS([ \
 	vsnprintf \
 ])
 
+AC_CHECK_LIBM
+AC_SUBST(LIBM)
+LIBS="$LIBS $LIBM"
+
 dnl Windows requires the mingw-catgets library for the catgets function.
 AC_SEARCH_LIBS([catgets], [catgets], [], [])
 
