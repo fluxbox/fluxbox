@@ -194,14 +194,24 @@ dnl Check for networking libraries
 AC_CHECK_LIB([nsl], [t_open], [LIBS="-lnsl $LIBS"])
 AC_CHECK_LIB([socket], [socket], [LIBS="-lsocket $LIBS"])
 
-dnl Check for X headers and libraries
-AC_PATH_X
-AC_PATH_XTRA
-AS_IF([test x$no_x = "xyes"], [
+#dnl Check for X headers and libraries
+#AC_PATH_X
+#AC_PATH_XTRA
+#AS_IF([test x$no_x = "xyes"], [
+#	AC_MSG_ERROR([Fluxbox requires the X Window System libraries and headers.])
+#])
+
+dnl Check for X11
+PKG_CHECK_MODULES([X11], [ x11 ],
+	[AC_DEFINE([HAVE_X11], [1], [Define if x11 is available]) have_x11=yes],
+	[have_x11=no])
+AM_CONDITIONAL([X11], [test "$have_x11" = "yes"], AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.]))
+AS_IF([test x$have_x11 = "xno"], [
 	AC_MSG_ERROR([Fluxbox requires the X Window System libraries and headers.])
 ])
 
-LIBS="$X_LIBS $LIBS"
+CXXFLAGS="$X11_CFLAGS $CXXFLAGS"
+LIBS="$X11_LIBS $LIBS"
 
 dnl Check for xpg4
 AC_CHECK_LIB([xpg4], [setlocale], [LIBS="-lxpg4 $LIBS"])
@@ -370,12 +380,6 @@ AS_IF([test "x$enable_imlib2" != "xno"], [
 	])
 ])
 AM_CONDITIONAL([IMLIB2], [test "$have_imlib2" = "yes"])
-
-dnl Check for X11
-PKG_CHECK_MODULES([X11], [ x11 ],
-	[AC_DEFINE([HAVE_X11], [1], [Define if x11 is available]) have_x11=yes],
-	[have_x11=no])
-AM_CONDITIONAL([X11], [test "$have_x11" = "yes"], AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.]))
 
 dnl Check for X fonts
 have_xft=no

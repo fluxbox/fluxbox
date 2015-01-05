@@ -24,7 +24,6 @@ fbsetroot_LDADD = \
 	libFbTk.a \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
-	$(X11_LIBS) \
 	$(XFT_LIBS) \
 	$(XRENDER_LIBS)
 
@@ -45,13 +44,11 @@ fluxbox_update_configs_CPPFLAGS = \
 	-I$(nls_incdir)
 fluxbox_update_configs_LDADD = \
 	libFbTk.a \
-	$(FRIBIDI_LIBS) \
-	$(X11_LIBS)
+	$(FRIBIDI_LIBS)
 
 fluxbox_remote_SOURCES = \
 	util/fluxbox-remote.cc
 fluxbox_remote_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-I$(fbtk_incdir)
-fluxbox_remote_LDADD = \
-	$(X11_LIBS)
+

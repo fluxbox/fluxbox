@@ -38,6 +38,10 @@ PROGRAM_SUFFIX=@program_suffix@
 # Do not rely on configure.ac AC_CONFIG_FILES for install paths.  The
 # paths should be expanded at make time rather than configure.
 edit_cmd = sed \
+	 -e 's|@default_style[@]|$(DEFAULT_STYLE)|g' \
+	 -e 's|@default_menu[@]|$(DEFAULT_MENU)|g' \
+	 -e 's|@default_keysfile[@]|$(DEFAULT_KEYSFILE)|g' \
+	 -e 's|@default_appsfile[@]|$(DEFAULT_APPSFILE)|g' \
 	 -e 's|@bindir[@]|$(bindir)|g' \
 	 -e 's|@datadir[@]|$(datadir)|g' \
 	 -e 's|@exec_prefix[@]|$(exec_prefix)|g' \
@@ -53,6 +57,7 @@ edit_cmd = sed \
 	 -e 's|@usrbin_execdir[@]|$(usrbin_execdir)|g' \
 	 -e 's|@usrlib_execdir[@]|$(usrlib_execdir)|g' \
 	 -e 's|@usrsbin_execdir[@]|$(usrsbin_execdir)|g' \
+	 -e 's|@EXEEXT[@]|$(EXEEXT)|g' \
 	 -e 's|@VERSION[@]|$(VERSION)|g'
 
 PATHFILES =
@@ -60,6 +65,7 @@ CLEANFILES += $(PATHFILES)
 EXTRA_DIST += $(PATHFILES:=.in)
 
 $(PATHFILES): Makefile
+	$(MKDIR_P) $(dir $@)
 	@ rm -f $@ $@.tmp
 	$(AM_V_GEN) srcdir=''; \
 		test -f ./$@.in || srcdir=$(srcdir)/; \
