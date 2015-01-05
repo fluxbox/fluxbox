@@ -189,6 +189,7 @@ AM_ICONV
 AS_IF([test x$am_cv_proto_iconv_arg1 = "xconst"], [
 	AC_DEFINE([HAVE_CONST_ICONV], [1], [Is second argument of iconv() is of type 'const char **' or 'char **'])
 ])
+LIBS="$LIBICONV $LIBS"
 
 dnl Check for networking libraries
 AC_CHECK_LIB([nsl], [t_open], [LIBS="-lnsl $LIBS"])
