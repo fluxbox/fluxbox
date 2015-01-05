@@ -43,7 +43,7 @@ APP SECTIONS
 *[app]* sections provide settings for individual application windows.
 
 These sections begin with a line of the format:::
-	*[app]* *(*'pattern'*)* *{*'count'*}*
+    *[app]* *(*'pattern'*)* *{*'count'*}*
 
 The 'pattern' can be one or more patterns which match windows. For more
 details, see *CLIENT PATTERNS*. If you specify more than one 'pattern', they
@@ -57,7 +57,7 @@ This opening *[apps]* line is followed by any number of settings for the
 application. See *SETTINGS* for more details.
 
 Each of these sections ends with the single line:::
-	*[end]*
+    *[end]*
 
 GROUP SECTIONS
 --------------
@@ -65,7 +65,7 @@ The primary purpose of *[group]* sections is to group windows together. All
 windows in a group will be tabbed together automatically.
 
 These sections begin with a line of the format:::
-	*[group]* *(*'pattern'*)*
+    *[group]* *(*'pattern'*)*
 
 Where the 'pattern' item is optional. If specified, this pattern must match for
 the group to take effect. It is common to use non-window-specific patterns such
@@ -76,13 +76,13 @@ the *[app]* section detailed above in *APP SECTIONS*, but do not contain any
 settings and do not have an associated *[end]* line.
 
 Like this:::
-	*[app]* *(*'pattern'*)*
+    *[app]* *(*'pattern'*)*
 
 This section may also contain settings that are applied to every window in the
 group. See the *SETTINGS* section for details.
 
 As with *[app]* sections, each of these sections ends with the single line:::
-	*[end]*
+    *[end]*
 
 SETTINGS
 --------
@@ -90,34 +90,34 @@ These settings may be stored in the `apps' file. A settings line must appear
 inside either an *[app]* or *[group]* section.
 
 The general format is:::
-	*[*'setting'*]* *{*'value'*}*
+    *[*'setting'*]* *{*'value'*}*
 
 All allowed values are described below, except for 'bool' which can simply have
 the value *yes* or *no*, which enables or disables the associated setting,
 respectively.
 
 *[Workspace]* {'number'}::
-	Forces the application to open on the 'number' workspace specified.
-	Workspaces are set by number, beginning with 0.
+    Forces the application to open on the 'number' workspace specified.
+    Workspaces are set by number, beginning with 0.
 
 *[Jump]* {'bool'}::
-	Changes the active workspace to the remembered one when the application is
-	opened. This is only useful when used in conjunction with '[Workspace]'. See
-	*EXAMPLES*.
+    Changes the active workspace to the remembered one when the application is
+    opened. This is only useful when used in conjunction with '[Workspace]'. See
+    *EXAMPLES*.
 
 *[Head]* {'number'}::
-	Forces the application to open on the 'number' head specified (Xinerama
-	only).
+    Forces the application to open on the 'number' head specified (Xinerama
+    only).
 
 *[Layer]* {'number'}::
-	Specify the layer to open the window on (by number). Each layer has a
-	number. The named ones are: 2-AboveDock, 4-Dock, 6-Top, 8-Normal, 10-Bottom,
-	12-Desktop.
+    Specify the layer to open the window on (by number). Each layer has a
+    number. The named ones are: 2-AboveDock, 4-Dock, 6-Top, 8-Normal, 10-Bottom,
+    12-Desktop.
 
 *[Dimensions]* {'width[%]' 'height[%]'}::
-	Opens the application with the specified 'width' and 'height', in pixels.
-	If the value is given in percent, then the window size will be based on
-	the current screen's size.
+    Opens the application with the specified 'width' and 'height', in pixels.
+    If the value is given in percent, then the window size will be based on
+    the current screen's size.
 
 *[Position]* ('anchor') {'X[%]' 'Y[%]'}::
 Position the application at a particular spot. By default the upper-left corner
@@ -133,18 +133,18 @@ percent, then the coordinates will be based on the current screen's size.
 Specify the decoration state. There are several predefined 'value' sets:;;
 +
 --
-	*NORMAL*;;
-		Standard decorations
-	*NONE*;;
-		No decorations
-	*BORDER*;;
-		Like NONE except keep the X window border
-	*TAB*;;
-		Like BORDER except keep external tabs (if enabled)
-	*TINY*;;
-		Titlebar with only an iconify button
-	*TOOL*;;
-		Titlebar only
+    *NORMAL*;;
+        Standard decorations
+    *NONE*;;
+        No decorations
+    *BORDER*;;
+        Like NONE except keep the X window border
+    *TAB*;;
+        Like BORDER except keep external tabs (if enabled)
+    *TINY*;;
+        Titlebar with only an iconify button
+    *TOOL*;;
+        Titlebar only
 
 --
 +
@@ -153,58 +153,58 @@ The 'value' may also be a bitmask for finer-grained control. The bits are, from
 Button, Close Button, Menu Button, Sticky Button, Shade Button, External Tabs, Focus Enabled.
 
 *[Shaded]* {'bool'}::
-	Whether the window is Shaded (rolled-up) or not.
+    Whether the window is Shaded (rolled-up) or not.
 
 *[Tab]* {'bool'}::
-	Whether the window has tabs enabled.
+    Whether the window has tabs enabled.
 
 *[FocusNewWindow]* {'bool'}::
-	If enabled, a new window will grab X focus as soon as it is opened.
-	If disabled, a new window will not grab X focus as soon as it is opened.
+    If enabled, a new window will grab X focus as soon as it is opened.
+    If disabled, a new window will not grab X focus as soon as it is opened.
 
 *[FocusHidden]* {'bool'}::
-	If enabled, the window will not appear in 'NextWindow'/'PrevWindow' lists.
+    If enabled, the window will not appear in 'NextWindow'/'PrevWindow' lists.
 
 *[IconHidden]* {'bool'}::
-	If enabled, the window will not appear in the icon area of the toolbar.
+    If enabled, the window will not appear in the icon area of the toolbar.
 
 *[Hidden]* {'bool'}::
-	A shortcut for setting both *FocusHidden* and *IconHidden* at the same time.
+    A shortcut for setting both *FocusHidden* and *IconHidden* at the same time.
 
 *[Sticky]* {'bool'}::
-	Specify if an application should be sticky (shown on all workspaces) or not.
+    Specify if an application should be sticky (shown on all workspaces) or not.
 
 *[Minimized]* {'bool'}::
-	Application should start minimized
+    Application should start minimized
 
 *[Maximized]* {'value'}::
 Application should start maximized. 'value' may be:;;
 +
 --
-	*yes*;;
-		Fully maximized
-	*horz*;;
-		Horizontally maximized
-	*vert*;;
-		Vertically maximized
-	*no*;;
-		Not maximized
+    *yes*;;
+        Fully maximized
+    *horz*;;
+        Horizontally maximized
+    *vert*;;
+        Vertically maximized
+    *no*;;
+        Not maximized
 
 --
 
 *[Fullscreen]* {'bool'}::
-	Application should start in fullscreen mode (fully maximized without any
-	decorations).
+    Application should start in fullscreen mode (fully maximized without any
+    decorations).
 
 *[Close]* {'bool'}::
-	Save settings on close. By default, application settings are not updated when
-	a window is closed.
+    Save settings on close. By default, application settings are not updated when
+    a window is closed.
 
 *[Alpha]* {'value' ['value']}::
-	Set the alpha value for this window. If two values are given, they
-	correspond to the focused and unfocused transparency, respectively. One
-	number only will be used for both values. 'value' is an integer between 0
-	and 255.
+    Set the alpha value for this window. If two values are given, they
+    correspond to the focused and unfocused transparency, respectively. One
+    number only will be used for both values. 'value' is an integer between 0
+    and 255.
 
 CLIENT PATTERNS
 ---------------
@@ -213,12 +213,12 @@ include::client-patterns.txt[]
 FILES
 -----
 *~/.fluxbox/apps*::
-	This is the default location for the application settings.
+    This is the default location for the application settings.
 
 RESOURCES
 ---------
 *session.appsFile:* 'location'::
-	This may be set to override the location of the application settings.
+    This may be set to override the location of the application settings.
 
 EXAMPLES
 --------

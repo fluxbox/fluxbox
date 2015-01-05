@@ -1454,7 +1454,7 @@ These allow users to place the slit and toolbar where they like\&.
 .PP
 Possible options are:
 .RS 4
-\fBBottomLeft\fR\fBBottomCenter\fR\fBBottomRight\fR\fBLeftBottom\fR\fBLeftCenter\fR\fBLeftTop\fR\fBRightBottom\fR\fBRightCenter\fR\fBRightTop\fR\fBTopLeft\fR\fBTopCenter\fR\fBTopRight\fR
+\fBBottomLeft BottomCenter BottomRight LeftBottom LeftCenter LeftTop RightBottom RightCenter RightTop TopLeft TopCenter TopRight\fR
 .RE
 .sp
 Slit default:
@@ -1504,7 +1504,7 @@ character\&. They will appear in the order given\&.
 .PP
 Possible tools:
 .RS 4
-\fBclock\fR\fBiconbar\fR\fBnextwindow\fR\fBprevwindow\fR\fBnextworkspace\fR\fBprevworkspace\fR\fBsystemtray\fR\fBworkspacename\fR
+\fBclock iconbar nextwindow prevwindow nextworkspace prevworkspace systemtray workspacename\fR
 .RE
 .PP
 Default:
@@ -1899,7 +1899,7 @@ The buttons or icons to place in the titlebar of decorated windows\&. You may sp
 .PP
 The available options are:
 .RS 4
-\fBClose\fR\fBMaximize\fR\fBMenuIcon\fR\fBMinimize\fR\fBShade\fR\fBStick\fR\fBLHalf\fR\fBRHalf\fR
+\fBClose Maximize MenuIcon Minimize Shade Stick LHalf RHalf\fR
 .RE
 .sp
 Default left:

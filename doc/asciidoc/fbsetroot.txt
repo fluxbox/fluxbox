@@ -51,7 +51,7 @@ Creates a modula pattern. You must specify *-bg* and *-fg* colors.
 Renders the specified texture string to the root window.
 +
 'texturestring' may be one of:;;
-	*Horizontal  /  Vertical / Diagonal / Crossdiagonal / Pipecross / Elliptic /
+    *Horizontal  /  Vertical / Diagonal / Crossdiagonal / Pipecross / Elliptic /
 Rectangle / Pyramid*
 +
 Select one of these texture types, they only apply when  *-gradient* is

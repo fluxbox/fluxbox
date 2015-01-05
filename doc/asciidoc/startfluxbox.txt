@@ -4,7 +4,7 @@ Jim Ramsay <i.am@jimramsay.com>
 v1.3.5, 13 February 2013
 :man source:   startfluxbox.txt
 :man version:  {revision}
-:man manual:   Fluxbox Manual  
+:man manual:   Fluxbox Manual
 
 NAME
 ----
@@ -25,9 +25,9 @@ doesn't exist it will be generated.
 FILES
 -----
 *~/.fluxbox/startup*::
-	This file contains all commands that should be executed before fluxbox is
-	started. The initial file contains helpful comments for beginners. It also
-	starts fluxbox.
+    This file contains all commands that should be executed before fluxbox is
+    started. The initial file contains helpful comments for beginners. It also
+    starts fluxbox.
 
 EXAMPLES
 --------
@@ -63,14 +63,14 @@ fluxbox* line above to something like this:
 ....
 exec fluxbox &
 fbpid=$!
-  
-sleep 1 
-{ 
-	xsetroot -cursor_name left_ptr -fg white -bg black &
-	ipager &
-	gkrellm2 &
+
+sleep 1
+{
+    xsetroot -cursor_name left_ptr -fg white -bg black &
+    ipager &
+    gkrellm2 &
 } &
-					   
+
 wait $fbpid
 ....
 So xsetroot, ipager, and gkrellm2 will all be started after fluxbox, after

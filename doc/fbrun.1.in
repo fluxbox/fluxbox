@@ -94,11 +94,6 @@ Background color\&. The default is
 Text font name
 .RE
 .PP
-\fB\-na\fR
-.RS 4
-Disable font antialias
-.RE
-.PP
 \fB\-hf\fR \fIfilename\fR
 .RS 4
 History file to load\&. The default is

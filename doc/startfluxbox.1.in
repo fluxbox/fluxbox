@@ -1,7 +1,7 @@
 '\" t
 .\"     Title: startfluxbox
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
 .\"      Date: 13 February 2013
 .\"    Manual: Fluxbox Manual
 .\"    Source: startfluxbox.txt
@@ -90,9 +90,9 @@ fbpid=$!
 
 sleep 1
 {
-        xsetroot \-cursor_name left_ptr \-fg white \-bg black &
-        ipager &
-        gkrellm2 &
+    xsetroot \-cursor_name left_ptr \-fg white \-bg black &
+    ipager &
+    gkrellm2 &
 } &
 
 wait $fbpid

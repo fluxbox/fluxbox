@@ -92,11 +92,11 @@ EXAMPLES
 To use *feh(1)* as wallpapersetter and set *wallpapper.jpg* from the current
 directory as wallpaper.
 
-	$ wpsetters=feh fbsetbg wallpaper.jpg
+    $ wpsetters=feh fbsetbg wallpaper.jpg
 
 Recall the last set wallpaper on display *:0.0* with the stored options.
 
-	$ DISPLAY=:0.0 fbsetbg -l
+    $ DISPLAY=:0.0 fbsetbg -l
 
 BUGS
 ----
