@@ -19,11 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "StringUtil.hh"
-#include "stringstream.hh"
 #include "Font.hh"
 #include "FontImp.hh"
+#include "StringUtil.hh"
+#include "stringstream.hh"
 #include "App.hh"
+#include "GContext.hh"
+#include "XFontImp.hh"
 
 // for antialias
 #ifdef USE_XFT
@@ -35,41 +37,20 @@
 #include "XmbFontImp.hh"
 #endif //USE_XMB
 
-// standard font system
-#include "XFontImp.hh"
-
-#include "GContext.hh"
-
-#ifndef __USE_GNU
-#define __USE_GNU
-#endif //__USE_GNU
-
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
+#include <cstring>
+#include <cstdlib>
 #include <list>
 #include <map>
 #include <typeinfo>
 #include <langinfo.h>
-#include <cstdio>
-
-#include <errno.h>
-
-using std::string;
-using std::map;
-using std::list;
-
 
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
 #endif //HAVE_SETLOCALE
+
+using std::string;
+using std::map;
+using std::list;
 
 namespace {
 
@@ -207,12 +188,13 @@ bool Font::load(const string &name) {
         // Xft and X/Xmb fonts have different defaults
         // (fixed doesn't really work right with Xft, especially rotated)
 
-        // HOWEVER, note that if a Xft-style font is requested (not start with "-"), and
-        // it turns out to be a bitmapped XFont, then Xft will load it, BUT it does not 
-        // currently (5jan2007) rotate bitmapped fonts (ok-ish), nor adjust the baseline for its
-        // lack of rotation (not ok: messes up placement). I can't see a neat way around this, 
-        // other than the user re-specifying their font explicitly in XFont form so we don't use the
-        // Xft backend.
+        // HOWEVER, note that if a Xft-style font is requested (does not start
+        // with "-"), and it turns out to be a bitmapped XFont, then Xft will
+        // load it, BUT it does not currently (2007-01-05) rotate bitmapped
+        // fonts (ok-ish), nor adjust the baseline for its lack of rotation
+        // (not ok: messes up placement). I can't see a neat way around this, 
+        // other than the user re-specifying their font explicitly in XFont
+        // form so we don't use the Xft backend.
 
         std::string realname = *name_it;
 
@@ -304,8 +286,6 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
     }
 
     m_fontimp->drawText(w, screen, gc, text, len, x, y, orient);
-
-
 }
 
 }

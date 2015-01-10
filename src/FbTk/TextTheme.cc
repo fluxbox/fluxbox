@@ -21,7 +21,6 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "TextTheme.hh"
-
 #include "App.hh"
 
 #include <X11/Xlib.h>

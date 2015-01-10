@@ -31,29 +31,17 @@
 #include <locale.h>
 #endif // HAVE_SETLOCALE
 
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
-#ifdef HAVE_CSTDARG
-  #include <cstdarg>
-#else
-  #include <stdarg.h>
-#endif
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+#include <cstdarg>
+#include <cstring>
 
 using std::string;
 
 namespace {
 
 XFontSet createFontSet(const char *fontname, bool& utf8mode) {
+
     Display *display = FbTk::App::instance()->display();
-    XFontSet fs;
+    XFontSet fs = 0;
     char **missing;
     const char *constdef = "-";
     char *def = const_cast<char *>(constdef);
