@@ -42,22 +42,6 @@ TextButton::TextButton(const FbTk::FbWindow &parent,
     setRenderer(*this);
 }
 
-void TextButton::resize(unsigned int width, unsigned int height) {
-    if (this->width() == width && height == this->height())
-        return;
-
-    Button::resize(width, height);
-}
-
-void TextButton::moveResize(int x, int y,
-                            unsigned int width, unsigned int height) {
-    if (this->width() == width && height == this->height() &&
-        x == this->x() && y == this->y())
-        return;
-
-    Button::moveResize(x, y, width, height);
-}
-
 void TextButton::setJustify(FbTk::Justify just) {
     m_justify = just;
 }
