@@ -142,28 +142,24 @@ void IconButton::setPixmap(bool use) {
 
 void IconButton::reconfigTheme() {
 
-    if (m_theme->texture().usePixmap())
+    setFont(m_theme->text().font());
+    setGC(m_theme->text().textGC());
+    setBorderWidth(m_theme->border().width());
+    setBorderColor(m_theme->border().color());
+    setJustify(m_theme->text().justify());
+    setAlpha(parent()->alpha());
+
+    if (m_theme->texture().usePixmap()) {
         m_pm.reset(m_win.screen().imageControl().renderImage(
                            width(), height(), m_theme->texture(),
                            orientation()));
-    else
-        m_pm.reset(0);
-
-    setAlpha(parent()->alpha());
-
-    if (m_pm != 0)
         setBackgroundPixmap(m_pm);
-    else
+    } else{
+        m_pm.reset(0);
         setBackgroundColor(m_theme->texture().color());
-
-    setGC(m_theme->text().textGC());
-    setFont(m_theme->text().font());
-    setJustify(m_theme->text().justify());
-    setBorderWidth(m_theme->border().width());
-    setBorderColor(m_theme->border().color());
+    }
 
     updateBackground(false);
-
 }
 
 void IconButton::reconfigAndClear() {
