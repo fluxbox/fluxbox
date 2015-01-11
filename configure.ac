@@ -335,7 +335,7 @@ dnl Check whether to include native language support (i18n)
 AC_MSG_CHECKING([whether to include NLS support])
 AC_ARG_ENABLE([nls],
 	AS_HELP_STRING([--enable-nls],
-		[include native language support (default=no)]),
+		[include native language support (default=yes)]),
 	[], [enable_nls=yes]
 )
 AC_MSG_RESULT([$enable_nls])
