@@ -427,7 +427,7 @@ doing so.
   *ArrangeWindowsStackRight* puts the main window on the LEFT hand side of the
   screen, and the tiled windows are on the RIGHT hand side of the screen.
 
-*ArrangeWindowsStackTop* 'pattern' / *ArrangeWindowsStackBottom 'pattern'::
+*ArrangeWindowsStackTop* 'pattern' / *ArrangeWindowsStackBottom* 'pattern'::
   Behaves just like *ArrangeWindowsStackLeft* and *ArrangeWindowsStackRight*.
   *ArrangeWindowsStackBottom* places the main window on the TOP half of the
   screen, and the tiled windows on the bottom half of the screen.
