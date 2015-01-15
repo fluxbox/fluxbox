@@ -171,6 +171,8 @@ fluxbox_SOURCES = \
 	src/ColSmartPlacement.hh \
 	src/CommandDialog.cc \
 	src/CommandDialog.hh \
+	src/ConfigMenu.hh \
+	src/ConfigMenu.cc \
 	src/CurrentWindowCmd.cc \
 	src/CurrentWindowCmd.hh \
 	src/Debug.hh \
@@ -225,6 +227,8 @@ fluxbox_SOURCES = \
 	src/Screen.hh \
 	src/ScreenPlacement.cc \
 	src/ScreenPlacement.hh \
+	src/ScreenResource.cc \
+	src/ScreenResource.hh \
 	src/SendToMenu.cc \
 	src/SendToMenu.hh \
 	src/Strut.hh \

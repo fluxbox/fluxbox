@@ -42,6 +42,7 @@
 #include "FbTk/RadioMenuItem.hh"
 
 // menus
+#include "ConfigMenu.hh"
 #include "FbMenu.hh"
 #include "LayerMenu.hh"
 
@@ -173,54 +174,10 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 int calcSquareDistance(int x1, int y1, int x2, int y2) {
     return (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1);
 }
-
-class TabPlacementMenuItem: public FbTk::RadioMenuItem {
-public:
-    TabPlacementMenuItem(const FbTk::FbString & label, BScreen &screen,
-                         FbWinFrame::TabPlacement place,
-                         FbTk::RefCount<FbTk::Command<void> > &cmd):
-        FbTk::RadioMenuItem(label, cmd),
-        m_screen(screen),
-        m_place(place) {
-        setCloseOnClick(false);
-    }
-
-    bool isSelected() const { return m_screen.getTabPlacement() == m_place; }
-    void click(int button, int time, unsigned int mods) {
-        m_screen.saveTabPlacement(m_place);
-        FbTk::RadioMenuItem::click(button, time, mods);
-    }
-
-
-private:
-    BScreen &m_screen;
-    FbWinFrame::TabPlacement m_place;
-};
-
 void clampMenuDelay(int& delay) {
     delay = FbTk::Util::clamp(delay, 0, 5000);
 }
 
-
-struct TabPlacementString {
-    FbWinFrame::TabPlacement placement;
-    const char* str;
-};
-
-const TabPlacementString placement_strings[] = {
-    { FbWinFrame::TOPLEFT, "TopLeft" },
-    { FbWinFrame::TOP, "Top" },
-    { FbWinFrame::TOPRIGHT, "TopRight" },
-    { FbWinFrame::BOTTOMLEFT, "BottomLeft" },
-    { FbWinFrame::BOTTOM, "Bottom" },
-    { FbWinFrame::BOTTOMRIGHT, "BottomRight" },
-    { FbWinFrame::LEFTBOTTOM, "LeftBottom" },
-    { FbWinFrame::LEFT, "Left" },
-    { FbWinFrame::LEFTTOP, "LeftTop" },
-    { FbWinFrame::RIGHTBOTTOM, "RightBottom" },
-    { FbWinFrame::RIGHT, "Right" },
-    { FbWinFrame::RIGHTTOP, "RightTop" }
-};
 
 Atom atom_fbcmd = 0;
 Atom atom_wm_check = 0;
@@ -238,72 +195,10 @@ void initAtoms(Display* dpy) {
     atom_kwm1 = XInternAtom(dpy, "KWM_DOCKWINDOW", False);
 }
 
-
 } // end anonymous namespace
 
 
 
-namespace FbTk {
-
-template<>
-string FbTk::Resource<FbWinFrame::TabPlacement>::
-getString() const {
-
-    size_t i = (m_value == FbTk::Util::clamp(m_value, FbWinFrame::TOPLEFT, FbWinFrame::RIGHTTOP)
-                ? m_value 
-                : FbWinFrame::DEFAULT) - 1;
-    return placement_strings[i].str;
-}
-
-template<>
-void FbTk::Resource<FbWinFrame::TabPlacement>::
-setFromString(const char *strval) {
-
-    size_t i;
-    for (i = 0; i < sizeof(placement_strings)/sizeof(TabPlacementString); ++i) {
-        if (strcasecmp(strval, placement_strings[i].str) == 0) {
-            m_value = placement_strings[i].placement;
-            return;
-        }
-    }
-    setDefaultValue();
-}
-
-} // end namespace FbTk
-
-
-BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
-                                        const string &scrname,
-                                        const string &altscrname):
-    opaque_move(rm, true, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
-    full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
-    max_ignore_inc(rm, true, scrname+".maxIgnoreIncrement", altscrname+".MaxIgnoreIncrement"),
-    max_disable_move(rm, false, scrname+".maxDisableMove", altscrname+".MaxDisableMove"),
-    max_disable_resize(rm, false, scrname+".maxDisableResize", altscrname+".MaxDisableResize"),
-    workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
-    show_window_pos(rm, false, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
-    auto_raise(rm, true, scrname+".autoRaise", altscrname+".AutoRaise"),
-    click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
-    default_deco(rm, "NORMAL", scrname+".defaultDeco", altscrname+".DefaultDeco"),
-    tab_placement(rm, FbWinFrame::TOPLEFT, scrname+".tab.placement", altscrname+".Tab.Placement"),
-    windowmenufile(rm, Fluxbox::instance()->getDefaultDataFilename("windowmenu"), scrname+".windowMenu", altscrname+".WindowMenu"),
-    typing_delay(rm, 0, scrname+".noFocusWhileTypingDelay", altscrname+".NoFocusWhileTypingDelay"),
-    workspaces(rm, 4, scrname+".workspaces", altscrname+".Workspaces"),
-    edge_snap_threshold(rm, 10, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
-    focused_alpha(rm, 255, scrname+".window.focus.alpha", altscrname+".Window.Focus.Alpha"),
-    unfocused_alpha(rm, 255, scrname+".window.unfocus.alpha", altscrname+".Window.Unfocus.Alpha"),
-    menu_alpha(rm, 255, scrname+".menu.alpha", altscrname+".Menu.Alpha"),
-    menu_delay(rm, 200, scrname + ".menuDelay", altscrname+".MenuDelay"),
-    tab_width(rm, 64, scrname + ".tab.width", altscrname+".Tab.Width"),
-    tooltip_delay(rm, 500, scrname + ".tooltipDelay", altscrname+".TooltipDelay"),
-    allow_remote_actions(rm, false, scrname+".allowRemoteActions", altscrname+".AllowRemoteActions"),
-    clientmenu_use_pixmap(rm, true, scrname+".clientMenu.usePixmap", altscrname+".ClientMenu.UsePixmap"),
-    tabs_use_pixmap(rm, true, scrname+".tabs.usePixmap", altscrname+".Tabs.UsePixmap"),
-    max_over_tabs(rm, false, scrname+".tabs.maxOver", altscrname+".Tabs.MaxOver"),
-    default_internal_tabs(rm, true /* TODO: autoconf option? */ , scrname+".tabs.intitlebar", altscrname+".Tabs.InTitlebar") {
-
-
-}
 
 BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname,
@@ -514,6 +409,7 @@ BScreen::~BScreen() {
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->remove(rootWindow());
+
     Keys *keys = Fluxbox::instance()->keys();
     if (keys)
         keys->unregisterWindow(rootWindow().window());
@@ -578,19 +474,17 @@ BScreen::~BScreen() {
 
     // slit must be destroyed before headAreas (Struts)
     m_slit.reset(0);
-    
 
     delete m_rootmenu.release();
     delete m_workspacemenu.release();
     delete m_windowmenu.release();
-    
+
     // TODO fluxgen: check if this is the right place
     for (size_t i = 0; i < m_head_areas.size(); i++)
         delete m_head_areas[i];
 
     delete m_focus_control;
     delete m_placement_strategy;
-
 }
 
 bool BScreen::isRestart() {
@@ -1541,258 +1435,15 @@ float BScreen::getYGap(int head) {
 }
 
 void BScreen::setupConfigmenu(FbTk::Menu &menu) {
-    _FB_USES_NLS;
+
+    struct ConfigMenu::SetupHelper sh = {
+        .screen = *this,
+        .rm = m_resource_manager,
+        .resource = resource,
+    };
 
     menu.removeAll();
-
-    FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
-    FbTk::MacroCommand *s_a_reconftabs_macro = new FbTk::MacroCommand();
-    FbTk::RefCount<FbTk::Command<void> > saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
-                                                 *Fluxbox::instance(),
-                                                 &Fluxbox::save_rc));
-    FbTk::RefCount<FbTk::Command<void> > reconf_cmd(FbTk::CommandParser<void>::instance().parse("reconfigure"));
-
-    FbTk::RefCount<FbTk::Command<void> > reconftabs_cmd(new FbTk::SimpleCommand<BScreen>(
-                                                 *this,
-                                                 &BScreen::reconfigureTabs));
-    s_a_reconf_macro->add(saverc_cmd);
-    s_a_reconf_macro->add(reconf_cmd);
-    s_a_reconftabs_macro->add(saverc_cmd);
-    s_a_reconftabs_macro->add(reconftabs_cmd);
-    FbTk::RefCount<FbTk::Command<void> > save_and_reconfigure(s_a_reconf_macro);
-    FbTk::RefCount<FbTk::Command<void> > save_and_reconftabs(s_a_reconftabs_macro);
-    // create focus menu
-    // we don't set this to internal menu so will
-    // be deleted toghether with the parent
-    FbTk::FbString focusmenu_label = _FB_XTEXT(Configmenu, FocusModel,
-                                          "Focus Model",
-                                          "Method used to give focus to windows");
-    FbTk::Menu *focus_menu = createMenu(focusmenu_label);
-
-#define _BOOLITEM(m,a, b, c, d, e, f) (m).insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(a, b, c, d), e, f))
-
-
-#define _FOCUSITEM(a, b, c, d, e) \
-    focus_menu->insertItem(new FocusModelMenuItem(_FB_XTEXT(a, b, c, d), focusControl(), \
-                                              e, save_and_reconfigure))
-
-    _FOCUSITEM(Configmenu, ClickFocus,
-               "Click To Focus", "Click to focus",
-               FocusControl::CLICKFOCUS);
-    _FOCUSITEM(Configmenu, MouseFocus,
-               "Mouse Focus (Keyboard Friendly)",
-               "Mouse Focus (Keyboard Friendly)",
-               FocusControl::MOUSEFOCUS);
-    _FOCUSITEM(Configmenu, StrictMouseFocus,
-               "Mouse Focus (Strict)",
-               "Mouse Focus (Strict)",
-               FocusControl::STRICTMOUSEFOCUS);
-#undef _FOCUSITEM
-
-    focus_menu->insertItem(new FbTk::MenuSeparator());
-    focus_menu->insertItem(new TabFocusModelMenuItem(_FB_XTEXT(Configmenu,
-        ClickTabFocus, "ClickTabFocus", "Click tab to focus windows"),
-        focusControl(), FocusControl::CLICKTABFOCUS, save_and_reconfigure));
-    focus_menu->insertItem(new TabFocusModelMenuItem(_FB_XTEXT(Configmenu,
-        MouseTabFocus, "MouseTabFocus", "Hover over tab to focus windows"),
-        focusControl(), FocusControl::MOUSETABFOCUS, save_and_reconfigure));
-    focus_menu->insertItem(new FbTk::MenuSeparator());
-
-    try {
-        focus_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, FocusNew,
-            "Focus New Windows", "Focus newly created windows"),
-            m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
-            saverc_cmd));
-    } catch (FbTk::ResourceException & e) {
-        cerr<<e.what()<<endl;
-    }
-   
-#ifdef XINERAMA
-    try {
-        focus_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, FocusSameHead,
-            "Keep Head", "Only revert focus on same head"),
-            m_resource_manager.getResource<bool>(name() + ".focusSameHead"),
-            saverc_cmd));
-    } catch (FbTk::ResourceException e) {
-        cerr<<e.what()<<endl;
-    }
-#endif // XINERAMA
-
-    _BOOLITEM(*focus_menu, Configmenu, AutoRaise,
-              "Auto Raise", "Auto Raise windows on sloppy",
-              resource.auto_raise, saverc_cmd);
-    _BOOLITEM(*focus_menu, Configmenu, ClickRaises,
-              "Click Raises", "Click Raises",
-              resource.click_raises, saverc_cmd);
-
-    focus_menu->updateMenu();
-
-    menu.insertSubmenu(focusmenu_label, focus_menu);
-
-    // END focus menu
-
-    // BEGIN maximize menu
-
-    FbTk::FbString maxmenu_label = _FB_XTEXT(Configmenu, MaxMenu,
-            "Maximize Options", "heading for maximization options");
-    FbTk::Menu *maxmenu = createMenu(maxmenu_label);
-
-    _BOOLITEM(*maxmenu, Configmenu, FullMax,
-              "Full Maximization", "Maximise over slit, toolbar, etc",
-              resource.full_max, saverc_cmd);
-    _BOOLITEM(*maxmenu, Configmenu, MaxIgnoreInc,
-              "Ignore Resize Increment",
-              "Maximizing Ignores Resize Increment (e.g. xterm)",
-              resource.max_ignore_inc, saverc_cmd);
-    _BOOLITEM(*maxmenu, Configmenu, MaxDisableMove,
-              "Disable Moving", "Don't Allow Moving While Maximized",
-              resource.max_disable_move, saverc_cmd);
-    _BOOLITEM(*maxmenu, Configmenu, MaxDisableResize,
-              "Disable Resizing", "Don't Allow Resizing While Maximized",
-              resource.max_disable_resize, saverc_cmd);
-
-    maxmenu->updateMenu();
-    menu.insertSubmenu(maxmenu_label, maxmenu);
-
-    // END maximize menu
-
-    // BEGIN tab menu
-
-    FbTk::FbString tabmenu_label = _FB_XTEXT(Configmenu, TabMenu,
-                                        "Tab Options",
-                                        "heading for tab-related options");
-    FbTk::Menu *tab_menu = createMenu(tabmenu_label);
-    FbTk::FbString tabplacement_label = _FB_XTEXT(Menu, Placement, "Placement", "Title of Placement menu");
-    FbTk::Menu *tabplacement_menu = createToggleMenu(tabplacement_label);
-
-    tab_menu->insertSubmenu(tabplacement_label, tabplacement_menu);
-
-    _BOOLITEM(*tab_menu,Configmenu, TabsInTitlebar,
-              "Tabs in Titlebar", "Tabs in Titlebar",
-              resource.default_internal_tabs, save_and_reconftabs);
-    tab_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
-              "Maximize Over", "Maximize over this thing when maximizing"),
-              resource.max_over_tabs, save_and_reconfigure));
-    tab_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
-              "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
-              resource.tabs_use_pixmap, save_and_reconfigure));
-
-    FbTk::MenuItem *tab_width_item =
-        new FbTk::IntMenuItem(_FB_XTEXT(Configmenu, ExternalTabWidth,
-                                       "External Tab Width",
-                                       "Width of external-style tabs"),
-                               resource.tab_width, 10, 3000, /* silly number */
-                               *tab_menu);
-    tab_width_item->setCommand(save_and_reconftabs);
-    tab_menu->insertItem(tab_width_item);
-
-    // menu is 3 wide, 5 down
-    struct PlacementP {
-         const FbTk::FbString label;
-         FbWinFrame::TabPlacement placement;
-    };
-    static const PlacementP place_menu[] = {
-
-        { _FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), FbWinFrame::TOPLEFT},
-        { _FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), FbWinFrame::LEFTTOP},
-        { _FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), FbWinFrame::LEFT},
-        { _FB_XTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), FbWinFrame::LEFTBOTTOM},
-        { _FB_XTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), FbWinFrame::BOTTOMLEFT},
-        { _FB_XTEXT(Align, TopCenter, "Top Center", "Top Center"), FbWinFrame::TOP},
-        { "", FbWinFrame::TOPLEFT},
-        { "", FbWinFrame::TOPLEFT},
-        { "", FbWinFrame::TOPLEFT},
-        { _FB_XTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), FbWinFrame::BOTTOM},
-        { _FB_XTEXT(Align, TopRight, "Top Right", "Top Right"), FbWinFrame::TOPRIGHT},
-        { _FB_XTEXT(Align, RightTop, "Right Top", "Right Top"), FbWinFrame::RIGHTTOP},
-        { _FB_XTEXT(Align, RightCenter, "Right Center", "Right Center"), FbWinFrame::RIGHT},
-        { _FB_XTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), FbWinFrame::RIGHTBOTTOM},
-        { _FB_XTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), FbWinFrame::BOTTOMRIGHT}
-    };
-
-    tabplacement_menu->setMinimumColumns(3);
-    // create items in sub menu
-    for (size_t i=0; i< sizeof(place_menu)/sizeof(PlacementP); ++i) {
-        const PlacementP& p = place_menu[i];
-        if (p.label == "") {
-            tabplacement_menu->insert(p.label);
-            tabplacement_menu->setItemEnabled(i, false);
-        } else
-            tabplacement_menu->insertItem(new TabPlacementMenuItem(p.label, *this, p.placement, save_and_reconftabs));
-    }
-    tabplacement_menu->updateMenu();
-
-    menu.insertSubmenu(tabmenu_label, tab_menu);
-
-#ifdef HAVE_XRENDER
-    if (FbTk::Transparent::haveRender() ||
-        FbTk::Transparent::haveComposite()) {
-
-        FbTk::FbString alphamenu_label = _FB_XTEXT(Configmenu, Transparency,
-                                          "Transparency",
-                                           "Menu containing various transparency options");
-        FbTk::Menu *alpha_menu = createMenu(alphamenu_label);
-
-        if (FbTk::Transparent::haveComposite(true)) {
-            static FbTk::SimpleAccessor<bool> s_pseudo(Fluxbox::instance()->getPseudoTrans());
-            alpha_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, ForcePseudoTrans,
-                               "Force Pseudo-Transparency",
-                               "When composite is available, still use old pseudo-transparency"),
-                    s_pseudo, save_and_reconfigure));
-        }
-
-        // in order to save system resources, don't save or reconfigure alpha
-        // settings until after the user is done changing them
-        FbTk::RefCount<FbTk::Command<void> > delayed_save_and_reconf(
-            new FbTk::DelayedCmd(save_and_reconfigure));
-
-        FbTk::MenuItem *focused_alpha_item =
-            new FbTk::IntMenuItem(_FB_XTEXT(Configmenu, FocusedAlpha,
-                                       "Focused Window Alpha",
-                                       "Transparency level of the focused window"),
-                    resource.focused_alpha, 0, 255, *alpha_menu);
-        focused_alpha_item->setCommand(delayed_save_and_reconf);
-        alpha_menu->insertItem(focused_alpha_item);
-
-        FbTk::MenuItem *unfocused_alpha_item =
-            new FbTk::IntMenuItem(_FB_XTEXT(Configmenu,
-                                       UnfocusedAlpha,
-                                       "Unfocused Window Alpha",
-                                       "Transparency level of unfocused windows"),
-
-                    resource.unfocused_alpha, 0, 255, *alpha_menu);
-        unfocused_alpha_item->setCommand(delayed_save_and_reconf);
-        alpha_menu->insertItem(unfocused_alpha_item);
-
-        FbTk::MenuItem *menu_alpha_item =
-            new FbTk::IntMenuItem(_FB_XTEXT(Configmenu, MenuAlpha,
-                                       "Menu Alpha", "Transparency level of menu"),
-                    resource.menu_alpha, 0, 255, *alpha_menu);
-        menu_alpha_item->setCommand(delayed_save_and_reconf);
-        alpha_menu->insertItem(menu_alpha_item);
-
-        alpha_menu->updateMenu();
-        menu.insertSubmenu(alphamenu_label, alpha_menu);
-    }
-#endif // HAVE_XRENDER
-
-    Configmenus::iterator it = m_configmenu_list.begin();
-    Configmenus::iterator it_end = m_configmenu_list.end();
-    for (; it != it_end; ++it)
-        menu.insertSubmenu(it->first, it->second);
-
-    _BOOLITEM(menu, Configmenu, OpaqueMove,
-              "Opaque Window Moving",
-              "Window Moving with whole window visible (as opposed to outline moving)",
-              resource.opaque_move, saverc_cmd);
-    _BOOLITEM(menu, Configmenu, WorkspaceWarping,
-              "Workspace Warping",
-              "Workspace Warping - dragging windows to the edge and onto the next workspace",
-              resource.workspace_warping, saverc_cmd);
-
-#undef _BOOLITEM
-
-    // finaly update menu
+    ConfigMenu::setup(menu, sh);
     menu.updateMenu();
 }
 

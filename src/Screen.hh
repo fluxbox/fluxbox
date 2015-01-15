@@ -31,6 +31,7 @@
 #include "WinButtonTheme.hh"
 #include "FbWinFrameTheme.hh"
 #include "TooltipWindow.hh"
+#include "ScreenResource.hh"
 
 #include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
@@ -522,32 +523,12 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
-    std::auto_ptr<OSDWindow> m_geom_window, m_pos_window;
+    std::auto_ptr<OSDWindow> m_geom_window;
+    std::auto_ptr<OSDWindow> m_pos_window;
     std::auto_ptr<TooltipWindow> m_tooltip_window;
     FbTk::FbWindow m_dummy_window;
 
-    struct ScreenResource {
-        ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
-                       const std::string &altscrname);
-
-        FbTk::Resource<bool> opaque_move, full_max,
-            max_ignore_inc, max_disable_move, max_disable_resize,
-            workspace_warping, show_window_pos, auto_raise, click_raises;
-        FbTk::Resource<std::string> default_deco;
-        FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
-        FbTk::Resource<std::string> windowmenufile;
-        FbTk::Resource<unsigned int> typing_delay;
-        FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
-            unfocused_alpha, menu_alpha, menu_delay,
-            tab_width, tooltip_delay;
-        FbTk::Resource<bool> allow_remote_actions;
-        FbTk::Resource<bool> clientmenu_use_pixmap;
-        FbTk::Resource<bool> tabs_use_pixmap;
-        FbTk::Resource<bool> max_over_tabs;
-        FbTk::Resource<bool> default_internal_tabs;
-
-
-    } resource;
+    ScreenResource resource;
 
     /// Holds manage resources that screen destroys
     FbTk::ResourceManager::ResourceList m_managed_resources;
