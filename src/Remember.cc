@@ -43,12 +43,7 @@
 #include "FbTk/RefCount.hh"
 #include "FbTk/Util.hh"
 
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
+#include <cstring>
 #include <set>
 
 
@@ -323,35 +318,35 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
     }
     */
     _FB_USES_NLS;
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Workspace, "Workspace", "Remember Workspace"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Workspace, "Workspace", "Remember Workspace"),
                                       Remember::REM_WORKSPACE));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"),
                                       Remember::REM_JUMPWORKSPACE));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Head, "Head", "Remember Head"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Head, "Head", "Remember Head"),
                                       Remember::REM_HEAD));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - with width and height"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - with width and height"),
                                       Remember::REM_DIMENSIONS));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"),
                                       Remember::REM_POSITION));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Sticky, "Sticky", "Remember Sticky"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Sticky, "Sticky", "Remember Sticky"),
                                       Remember::REM_STUCKSTATE));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Decorations, "Decorations", "Remember window decorations"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Decorations, "Decorations", "Remember window decorations"),
                                       Remember::REM_DECOSTATE));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
                                       Remember::REM_SHADEDSTATE));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Minimized, "Minimized", "Remember minimized"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Minimized, "Minimized", "Remember minimized"),
                                       Remember::REM_MINIMIZEDSTATE));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Maximized, "Maximized", "Remember maximized"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Maximized, "Maximized", "Remember maximized"),
                                       Remember::REM_MAXIMIZEDSTATE));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Fullscreen, "Fullscreen", "Remember fullscreen"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Fullscreen, "Fullscreen", "Remember fullscreen"),
                                       Remember::REM_FULLSCREENSTATE));
     if (FbTk::Transparent::haveComposite()
         || FbTk::Transparent::haveRender())
-        menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Alpha, "Transparency", "Remember window tranparency settings"),
+        menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Alpha, "Transparency", "Remember window tranparency settings"),
                                           Remember::REM_ALPHA));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, Layer, "Layer", "Remember Layer"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Layer, "Layer", "Remember Layer"),
                                       Remember::REM_LAYER));
-    menu->insert(new RememberMenuItem(_FB_XTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
+    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
                                       Remember::REM_SAVEONCLOSE));
 
     menu->updateMenu();

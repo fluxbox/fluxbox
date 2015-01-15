@@ -54,11 +54,7 @@
 
 #include <typeinfo>
 #include <iterator>
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+#include <cstring>
 
 using std::string;
 using std::list;
@@ -134,73 +130,60 @@ private:
     FbTk::Container::Alignment m_mode;
 };
 
+
+enum {
+    L_TITLE = 0,
+    L_MODE_NONE,
+    L_MODE_ICONS,
+    L_MODE_NO_ICONS,
+    L_MODE_ICONS_WORKSPACE,
+    L_MODE_NOICONS_WORKSPACE,
+    L_MODE_WORKSPACE,
+    L_MODE_ALL,
+
+    L_LEFT,
+    L_RELATIVE,
+    L_RIGHT,
+};
+
 void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
+
     using namespace FbTk;
     _FB_USES_NLS;
 
-    menu.setLabel(_FB_XTEXT(Toolbar, IconbarMode, "Iconbar Mode", "Menu title - chooses which set of icons are shown in the iconbar"));
+    static const FbString _labels[] = {
+        _FB_XTEXT(Toolbar, IconbarMode, "Iconbar Mode", "Menu title - chooses which set of icons are shown in the iconbar"),
+        _FB_XTEXT(Toolbar, IconbarModeNone, "None", "No icons are shown in the iconbar"),
+        _FB_XTEXT(Toolbar, IconbarModeIcons, "Icons", "Iconified windows from all workspaces are shown"),
+        _FB_XTEXT(Toolbar, IconbarModeNoIcons, "NoIcons", "No iconified windows from all workspaces are shown"),
+        _FB_XTEXT(Toolbar, IconbarModeWorkspaceIcons, "WorkspaceIcons", "Iconified windows from this workspace are shown"),
+        _FB_XTEXT(Toolbar, IconbarModeWorkspaceNoIcons, "WorkspaceNoIcons", "No iconified windows from this workspace are shown"),
+        _FB_XTEXT(Toolbar, IconbarModeWorkspace, "Workspace", "Normal and iconified windows from this workspace are shown"),
+        _FB_XTEXT(Toolbar, IconbarModeAllWindows, "All Windows", "All windows are shown"),
+
+        _FB_XTEXT(Align, Left, "Left", "Align to the left"),
+        _FB_XTEXT(Align, Relative, "Relative", "Align relative to the width"),
+        _FB_XTEXT(Align, Right, "Right", "Align to the right"),
+    };
 
     RefCount<Command<void> > saverc_cmd(new FbCommands::SaveResources());
 
+    menu.setLabel(_labels[L_TITLE]);
+    menu.insertItem(new ToolbarModeMenuItem(_labels[L_MODE_NONE], handler, "none", saverc_cmd));
+    menu.insertItem(new ToolbarModeMenuItem(_labels[L_MODE_ICONS], handler, "{static groups} (minimized=yes)", saverc_cmd));
+    menu.insertItem(new ToolbarModeMenuItem(_labels[L_MODE_NO_ICONS], handler, "{static groups} (minimized=no)", saverc_cmd));
+    menu.insertItem(new ToolbarModeMenuItem(_labels[L_MODE_ICONS_WORKSPACE], handler, "{static groups} (minimized=yes) (workspace)", saverc_cmd));
+    menu.insertItem(new ToolbarModeMenuItem(_labels[L_MODE_NOICONS_WORKSPACE], handler, "{static groups} (minimized=no) (workspace)", saverc_cmd));
+    menu.insertItem(new ToolbarModeMenuItem(_labels[L_MODE_WORKSPACE], handler, "{static groups} (workspace)", saverc_cmd));
+    menu.insertItem(new ToolbarModeMenuItem(_labels[L_MODE_ALL], handler, "{static groups}", saverc_cmd));
 
-    menu.insert(new ToolbarModeMenuItem(_FB_XTEXT(Toolbar, IconbarModeNone,
-                                                "None", "No icons are shown in the iconbar"),
-                    handler,
-                    "none", saverc_cmd));
+    menu.insertItem(new FbTk::MenuSeparator());
 
-    menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeIcons,
-                            "Icons", "Iconified windows from all workspaces are shown"),
-                    handler,
-                    "{static groups} (minimized=yes)", saverc_cmd));
+    menu.insertItem(new ToolbarAlignMenuItem(_labels[L_LEFT], handler, FbTk::Container::LEFT, saverc_cmd));
+    menu.insertItem(new ToolbarAlignMenuItem(_labels[L_RELATIVE], handler, FbTk::Container::RELATIVE, saverc_cmd));
+    menu.insertItem(new ToolbarAlignMenuItem(_labels[L_RIGHT], handler, FbTk::Container::RIGHT, saverc_cmd));
 
-    menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeNoIcons,
-                        "NoIcons", "No iconified windows from all workspaces are shown"),
-                    handler,
-                    "{static groups} (minimized=no)", saverc_cmd));
-
-    menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeWorkspaceIcons,
-                            "WorkspaceIcons", "Iconified windows from this workspace are shown"),
-                    handler,
-                    "{static groups} (minimized=yes) (workspace)", saverc_cmd));
-
-    menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeWorkspaceNoIcons,
-                            "WorkspaceNoIcons", "No iconified windows from this workspace are shown"),
-                    handler,
-                    "{static groups} (minimized=no) (workspace)", saverc_cmd));
-
-    menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeWorkspace,
-                            "Workspace", "Normal and iconified windows from this workspace are shown"),
-                    handler,
-                    "{static groups} (workspace)", saverc_cmd));
-
-    menu.insert(new ToolbarModeMenuItem(
-                    _FB_XTEXT(Toolbar, IconbarModeAllWindows, "All Windows", "All windows are shown"),
-                    handler,
-                    "{static groups}", saverc_cmd));
-
-    menu.insert(new FbTk::MenuSeparator());
-
-    menu.insert(new ToolbarAlignMenuItem(
-                    _FB_XTEXT(Align, Left, "Left", "Align to the left"),
-                    handler,
-                    FbTk::Container::LEFT, saverc_cmd));
-
-    menu.insert(new ToolbarAlignMenuItem(
-                    _FB_XTEXT(Align, Relative, "Relative", "Align relative to the width"),
-                    handler,
-                    FbTk::Container::RELATIVE, saverc_cmd));
-
-    menu.insert(new ToolbarAlignMenuItem(
-                    _FB_XTEXT(Align, Right, "Right", "Align to the right"),
-                    handler,
-                    FbTk::Container::RIGHT, saverc_cmd));
-
-    menu.insert(new FbTk::MenuSeparator());
+    menu.insertItem(new FbTk::MenuSeparator());
 
     menu.updateMenu();
 }
@@ -280,7 +263,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     save_and_reconfig->add(reconfig);
     save_and_reconfig->add(save);
     RefCount<Command<void> > s_and_reconfig(save_and_reconfig);
-    m_menu.insert(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
+    m_menu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
                     "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
                            m_rc_use_pixmap, s_and_reconfig));
     m_menu.updateMenu();
@@ -288,7 +271,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_menu.setInternalMenu();
 
     // add iconbar menu to toolbar menu
-    menu.insert(m_menu.label().logical(), &m_menu);
+    menu.insertSubmenu(m_menu.label().logical(), &m_menu);
 
     // setup signals
     m_tracker.join(theme.reconfigSig(), FbTk::MemFun(*this, &IconbarTool::themeReconfigured));

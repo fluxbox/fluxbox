@@ -1443,12 +1443,10 @@ void BScreen::rereadMenu() {
         FbTk::RefCount<FbTk::Command<void> > exit_fb(FbTk::CommandParser<void>::instance().parse("exit"));
         FbTk::RefCount<FbTk::Command<void> > execute_xterm(FbTk::CommandParser<void>::instance().parse("exec xterm"));
         m_rootmenu->setInternalMenu();
-        m_rootmenu->insert("xterm", execute_xterm);
-        m_rootmenu->insert(_FB_XTEXT(Menu, Reconfigure, "Reconfigure",
-                                     "Reload Configuration command")),
-        m_rootmenu->insert(_FB_XTEXT(Menu, Restart, "Restart", "Restart command"),
+        m_rootmenu->insertCommand("xterm", execute_xterm);
+        m_rootmenu->insertCommand(_FB_XTEXT(Menu, Restart, "Restart", "Restart command"),
                            restart_fb);
-        m_rootmenu->insert(_FB_XTEXT(Menu, Exit, "Exit", "Exit command"),
+        m_rootmenu->insertCommand(_FB_XTEXT(Menu, Exit, "Exit", "Exit command"),
                            exit_fb);
     }
 
@@ -1571,11 +1569,11 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                           "Method used to give focus to windows");
     FbTk::Menu *focus_menu = createMenu(focusmenu_label);
 
-#define _BOOLITEM(m,a, b, c, d, e, f) (m).insert(new FbTk::BoolMenuItem(_FB_XTEXT(a, b, c, d), e, f))
+#define _BOOLITEM(m,a, b, c, d, e, f) (m).insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(a, b, c, d), e, f))
 
 
 #define _FOCUSITEM(a, b, c, d, e) \
-    focus_menu->insert(new FocusModelMenuItem(_FB_XTEXT(a, b, c, d), focusControl(), \
+    focus_menu->insertItem(new FocusModelMenuItem(_FB_XTEXT(a, b, c, d), focusControl(), \
                                               e, save_and_reconfigure))
 
     _FOCUSITEM(Configmenu, ClickFocus,
@@ -1591,17 +1589,17 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                FocusControl::STRICTMOUSEFOCUS);
 #undef _FOCUSITEM
 
-    focus_menu->insert(new FbTk::MenuSeparator());
-    focus_menu->insert(new TabFocusModelMenuItem(_FB_XTEXT(Configmenu,
+    focus_menu->insertItem(new FbTk::MenuSeparator());
+    focus_menu->insertItem(new TabFocusModelMenuItem(_FB_XTEXT(Configmenu,
         ClickTabFocus, "ClickTabFocus", "Click tab to focus windows"),
         focusControl(), FocusControl::CLICKTABFOCUS, save_and_reconfigure));
-    focus_menu->insert(new TabFocusModelMenuItem(_FB_XTEXT(Configmenu,
+    focus_menu->insertItem(new TabFocusModelMenuItem(_FB_XTEXT(Configmenu,
         MouseTabFocus, "MouseTabFocus", "Hover over tab to focus windows"),
         focusControl(), FocusControl::MOUSETABFOCUS, save_and_reconfigure));
-    focus_menu->insert(new FbTk::MenuSeparator());
+    focus_menu->insertItem(new FbTk::MenuSeparator());
 
     try {
-        focus_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, FocusNew,
+        focus_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, FocusNew,
             "Focus New Windows", "Focus newly created windows"),
             m_resource_manager.getResource<bool>(name() + ".focusNewWindows"),
             saverc_cmd));
@@ -1611,7 +1609,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
    
 #ifdef XINERAMA
     try {
-        focus_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, FocusSameHead,
+        focus_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, FocusSameHead,
             "Keep Head", "Only revert focus on same head"),
             m_resource_manager.getResource<bool>(name() + ".focusSameHead"),
             saverc_cmd));
@@ -1629,7 +1627,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     focus_menu->updateMenu();
 
-    menu.insert(focusmenu_label, focus_menu);
+    menu.insertSubmenu(focusmenu_label, focus_menu);
 
     // END focus menu
 
@@ -1654,7 +1652,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               resource.max_disable_resize, saverc_cmd);
 
     maxmenu->updateMenu();
-    menu.insert(maxmenu_label, maxmenu);
+    menu.insertSubmenu(maxmenu_label, maxmenu);
 
     // END maximize menu
 
@@ -1667,15 +1665,15 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     FbTk::FbString tabplacement_label = _FB_XTEXT(Menu, Placement, "Placement", "Title of Placement menu");
     FbTk::Menu *tabplacement_menu = createToggleMenu(tabplacement_label);
 
-    tab_menu->insert(tabplacement_label, tabplacement_menu);
+    tab_menu->insertSubmenu(tabplacement_label, tabplacement_menu);
 
     _BOOLITEM(*tab_menu,Configmenu, TabsInTitlebar,
               "Tabs in Titlebar", "Tabs in Titlebar",
               resource.default_internal_tabs, save_and_reconftabs);
-    tab_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
+    tab_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
               "Maximize Over", "Maximize over this thing when maximizing"),
               resource.max_over_tabs, save_and_reconfigure));
-    tab_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
+    tab_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Toolbar, ShowIcons,
               "Show Pictures", "chooses if little icons are shown next to title in the iconbar"),
               resource.tabs_use_pixmap, save_and_reconfigure));
 
@@ -1686,7 +1684,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                resource.tab_width, 10, 3000, /* silly number */
                                *tab_menu);
     tab_width_item->setCommand(save_and_reconftabs);
-    tab_menu->insert(tab_width_item);
+    tab_menu->insertItem(tab_width_item);
 
     // menu is 3 wide, 5 down
     struct PlacementP {
@@ -1720,11 +1718,11 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
             tabplacement_menu->insert(p.label);
             tabplacement_menu->setItemEnabled(i, false);
         } else
-            tabplacement_menu->insert(new TabPlacementMenuItem(p.label, *this, p.placement, save_and_reconftabs));
+            tabplacement_menu->insertItem(new TabPlacementMenuItem(p.label, *this, p.placement, save_and_reconftabs));
     }
     tabplacement_menu->updateMenu();
 
-    menu.insert(tabmenu_label, tab_menu);
+    menu.insertSubmenu(tabmenu_label, tab_menu);
 
 #ifdef HAVE_XRENDER
     if (FbTk::Transparent::haveRender() ||
@@ -1737,7 +1735,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
         if (FbTk::Transparent::haveComposite(true)) {
             static FbTk::SimpleAccessor<bool> s_pseudo(Fluxbox::instance()->getPseudoTrans());
-            alpha_menu->insert(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, ForcePseudoTrans,
+            alpha_menu->insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Configmenu, ForcePseudoTrans,
                                "Force Pseudo-Transparency",
                                "When composite is available, still use old pseudo-transparency"),
                     s_pseudo, save_and_reconfigure));
@@ -1754,7 +1752,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                        "Transparency level of the focused window"),
                     resource.focused_alpha, 0, 255, *alpha_menu);
         focused_alpha_item->setCommand(delayed_save_and_reconf);
-        alpha_menu->insert(focused_alpha_item);
+        alpha_menu->insertItem(focused_alpha_item);
 
         FbTk::MenuItem *unfocused_alpha_item =
             new FbTk::IntMenuItem(_FB_XTEXT(Configmenu,
@@ -1764,24 +1762,24 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
                     resource.unfocused_alpha, 0, 255, *alpha_menu);
         unfocused_alpha_item->setCommand(delayed_save_and_reconf);
-        alpha_menu->insert(unfocused_alpha_item);
+        alpha_menu->insertItem(unfocused_alpha_item);
 
         FbTk::MenuItem *menu_alpha_item =
             new FbTk::IntMenuItem(_FB_XTEXT(Configmenu, MenuAlpha,
                                        "Menu Alpha", "Transparency level of menu"),
                     resource.menu_alpha, 0, 255, *alpha_menu);
         menu_alpha_item->setCommand(delayed_save_and_reconf);
-        alpha_menu->insert(menu_alpha_item);
+        alpha_menu->insertItem(menu_alpha_item);
 
         alpha_menu->updateMenu();
-        menu.insert(alphamenu_label, alpha_menu);
+        menu.insertSubmenu(alphamenu_label, alpha_menu);
     }
 #endif // HAVE_XRENDER
 
     Configmenus::iterator it = m_configmenu_list.begin();
     Configmenus::iterator it_end = m_configmenu_list.end();
     for (; it != it_end; ++it)
-        menu.insert(it->first, it->second);
+        menu.insertSubmenu(it->first, it->second);
 
     _BOOLITEM(menu, Configmenu, OpaqueMove,
               "Opaque Window Moving",

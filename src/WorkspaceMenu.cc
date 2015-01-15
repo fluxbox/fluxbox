@@ -60,7 +60,7 @@ void add_workspaces(WorkspaceMenu& menu, BScreen& screen) {
         FbTk::MultiButtonMenuItem* submenu = new FbTk::MultiButtonMenuItem(5, FbTk::BiDiString(w->name()), &w->menu());
         FbTk::RefCount<FbTk::Command<void> > jump_cmd(new JumpToWorkspaceCmd(w->workspaceID()));
         submenu->setCommand(3, jump_cmd);
-        menu.insert(submenu, i + IDX_AFTER_ICONS);
+        menu.insertItem(submenu, i + IDX_AFTER_ICONS);
     }
 }
 
@@ -111,9 +111,9 @@ void WorkspaceMenu::init(BScreen &screen) {
     removeAll();
 
     setLabel(_FB_XTEXT(Workspace, MenuTitle, "Workspaces", "Title of main workspace menu"));
-    insert(_FB_XTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
+    insertSubmenu(_FB_XTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
            MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
-    insert(new FbTk::MenuSeparator());
+    insertItem(new FbTk::MenuSeparator());
 
     ::add_workspaces(*this, screen);
     setItemSelected(screen.currentWorkspace()->workspaceID() + IDX_AFTER_ICONS, true);
@@ -134,12 +134,12 @@ void WorkspaceMenu::init(BScreen &screen) {
 
     RefCount<Command<void> > start_edit(FbTk::CommandParser<void>::instance().parse("setworkspacenamedialog"));
 
-    insert(new FbTk::MenuSeparator());
-    insert(_FB_XTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 
+    insertItem(new FbTk::MenuSeparator());
+    insertCommand(_FB_XTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 
            new_workspace_cmd);
-    insert(_FB_XTEXT(Toolbar, EditWkspcName, "Edit current workspace name", "Edit current workspace name"),
+    insertCommand(_FB_XTEXT(Toolbar, EditWkspcName, "Edit current workspace name", "Edit current workspace name"),
            start_edit);
-    insert(_FB_XTEXT(Workspace, RemoveLast, "Remove Last", "Remove the last workspace"), 
+    insertCommand(_FB_XTEXT(Workspace, RemoveLast, "Remove Last", "Remove the last workspace"), 
           remove_last_cmd);
 
     updateMenu();

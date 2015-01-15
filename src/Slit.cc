@@ -1099,21 +1099,21 @@ void Slit::updateClientmenu() {
 
     FbTk::RefCount<FbTk::Command<void> > cycle_up(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsUp));
     FbTk::RefCount<FbTk::Command<void> > cycle_down(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsDown));
-    m_clientlist_menu.insert(_FB_XTEXT(Slit, CycleUp, "Cycle Up", "Cycle clients upwards"), cycle_up);
-    m_clientlist_menu.insert(_FB_XTEXT(Slit, CycleDown, "Cycle Down", "Cycle clients downwards"), cycle_down);
+    m_clientlist_menu.insertCommand(_FB_XTEXT(Slit, CycleUp, "Cycle Up", "Cycle clients upwards"), cycle_up);
+    m_clientlist_menu.insertCommand(_FB_XTEXT(Slit, CycleDown, "Cycle Down", "Cycle clients downwards"), cycle_down);
 
-    m_clientlist_menu.insert(new FbTk::MenuSeparator());
+    m_clientlist_menu.insertItem(new FbTk::MenuSeparator());
 
     FbTk::RefCount<FbTk::Command<void> > reconfig(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
     SlitClients::iterator it = m_client_list.begin();
     for (; it != m_client_list.end(); ++it) {
         if ((*it) != 0 && (*it)->window() != 0)
-            m_clientlist_menu.insert(new SlitClientMenuItem(*this, *(*it), reconfig));
+            m_clientlist_menu.insertItem(new SlitClientMenuItem(*this, *(*it), reconfig));
     }
 
-    m_clientlist_menu.insert(new FbTk::MenuSeparator());
+    m_clientlist_menu.insertItem(new FbTk::MenuSeparator());
     FbTk::RefCount<FbTk::Command<void> > savecmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::saveClientList));
-    m_clientlist_menu.insert(_FB_XTEXT(Slit,
+    m_clientlist_menu.insertCommand(_FB_XTEXT(Slit,
                                      SaveSlitList,
                                      "Save SlitList", "Saves the current order in the slit"),
                              savecmd);
@@ -1165,31 +1165,32 @@ void Slit::setupMenu() {
 
     // setup base menu
     m_slitmenu.setLabel(_FB_XTEXT(Slit, Slit, "Slit", "The Slit"));
-    m_slitmenu.insert(_FB_XTEXT(Menu, Placement, "Placement", "Title of Placement menu"),
-                      placement_menu);
+    m_slitmenu.insertSubmenu(
+        _FB_XTEXT(Menu, Placement, "Placement", "Title of Placement menu"),
+        placement_menu);
 
-    m_slitmenu.insert(_FB_XTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), m_layermenu.get());
+    m_slitmenu.insertSubmenu(
+        _FB_XTEXT(Menu, Layer, "Layer...", "Title of Layer menu"),
+        m_layermenu.get());
 
 #ifdef XINERAMA
     if (screen().hasXinerama()) {
-        m_slitmenu.insert(_FB_XTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
-                          m_xineramaheadmenu =
-                          new XineramaHeadMenu<Slit>(
-                              screen().menuTheme(),
-                              screen(),
-                              screen().imageControl(),
-                              *screen().layerManager().getLayer(::ResourceLayer::MENU),
-                              *this,
-                              _FB_XTEXT(Slit, OnHead, "Slit on Head", "Title of Slits On Head menu")
-                              ));
+        m_xineramaheadmenu = new XineramaHeadMenu<Slit>(
+            screen().menuTheme(),
+            screen(),
+            screen().imageControl(),
+            *screen().layerManager().getLayer(::ResourceLayer::MENU),
+            *this,
+            _FB_XTEXT(Slit, OnHead, "Slit on Head", "Title of Slits On Head menu"));
+        m_slitmenu.insertSubmenu(_FB_XTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"), m_xineramaheadmenu);
     }
 #endif //XINERAMA
 
-    m_slitmenu.insert(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
+    m_slitmenu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
                                        m_rc_auto_hide,
                                        save_and_reconfigure_slit));
 
-    m_slitmenu.insert(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
+    m_slitmenu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
                                        m_rc_maximize_over,
                                        save_and_reconfigure_slit));
 
@@ -1206,9 +1207,9 @@ void Slit::setupMenu() {
     RefCount<Command<void> > set_alpha_cmd(alpha_macrocmd);
     alpha_menuitem->setCommand(set_alpha_cmd);
 
-    m_slitmenu.insert(alpha_menuitem);
+    m_slitmenu.insertItem(alpha_menuitem);
 
-    m_slitmenu.insert(_FB_XTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);
+    m_slitmenu.insertSubmenu(_FB_XTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);
     m_slitmenu.updateMenu();
 
     // setup sub menu
@@ -1249,10 +1250,8 @@ void Slit::setupMenu() {
             placement_menu->insert("");
             placement_menu->setItemEnabled(i, false);
         } else {
-            placement_menu->insert(new PlaceSlitMenuItem(str, *this,
-                                                          placement,
-                                                          save_and_reconfigure));
-
+            FbTk::MenuItem* item = new PlaceSlitMenuItem(str, *this, placement, save_and_reconfigure);
+            placement_menu->insertItem(item);
         }
         place_menu.pop_front();
     }
@@ -1268,7 +1267,6 @@ void Slit::moveToLayer(int layernum) {
 
 void Slit::saveOnHead(int head) {
     m_rc_on_head = head;
-    // reposition
     reconfigure();
 }
 

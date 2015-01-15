@@ -53,7 +53,7 @@ AlphaMenu::AlphaMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
 
     m_focused_alpha_item =
         new FbTk::IntMenuItem(focused_alpha_label, m_focused_alpha, 0, 255, *this);
-    insert(m_focused_alpha_item);
+    insertItem(m_focused_alpha_item);
 
     const FbTk::FbString unfocused_alpha_label =
         _FB_XTEXT(Configmenu, UnfocusedAlpha,
@@ -62,14 +62,14 @@ AlphaMenu::AlphaMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
 
     m_unfocused_alpha_item =
         new FbTk::IntMenuItem(unfocused_alpha_label, m_unfocused_alpha, 0, 255, *this);
-    insert(m_unfocused_alpha_item);
+    insertItem(m_unfocused_alpha_item);
 
     const FbTk::FbString usedefault_label = _FB_XTEXT(Windowmenu, DefaultAlpha,
                                                       "Use Defaults",
                                                       "Default transparency settings for this window");
     FbTk::MenuItem *usedefault_item =
         new AlphaMenuSelectItem(usedefault_label, *this);
-    insert(usedefault_item);
+    insertItem(usedefault_item);
 
     updateMenu();
 }

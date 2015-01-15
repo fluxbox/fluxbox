@@ -118,9 +118,9 @@ void ClientMenu::refreshMenu() {
             FluxboxWindow::ClientList::iterator client_it_end =
                 win->clientList().end();
             for (; client_it != client_it_end; ++client_it)
-                insert(new ClientMenuItem(**client_it, *this));
+                insertItem(new ClientMenuItem(**client_it, *this));
         } else
-            insert(new ClientMenuItem(**win_it, *this));
+            insertItem(new ClientMenuItem(**win_it, *this));
     }
 
     updateMenu();

@@ -60,28 +60,18 @@ public:
        @name manipulators
     */
     //@{
-    /// add a menu item with a label and a command
-    int insert(const FbString &label, RefCount<Command<void> > &cmd, int pos=-1);
-    /// add empty menu item
+    int insertCommand(const FbString &label, RefCount<Command<void> > &cmd, int pos=-1);
     int insert(const FbString &label, int pos=-1);
-    /// add submenu
-    int insert(const FbString &label, Menu *submenu, int pos= -1);
-    /// add menu item
-    int insert(MenuItem *item, int pos=-1);
-    /// remove an item
+    int insertSubmenu(const FbString &label, Menu *submenu, int pos= -1);
+    int insertItem(MenuItem *item, int pos=-1);
     int remove(unsigned int item);
-    /// remove all items
     void removeAll();
     void setInternalMenu(bool val = true) { m_internal_menu = val; }
     void setAlignment(Alignment a) { m_alignment = a; }
 
-    /// raise this window
     virtual void raise();
-    /// lower this window
     virtual void lower();
-    /// cycle through menuitems
     void cycleItems(bool reverse);
-    /// set and highlight new active index
     void setActiveIndex(int new_index);
     void enterSubmenu();
 
@@ -89,7 +79,7 @@ public:
     void enableTitle();
     bool isTitleVisible() const { return m_title_vis; }
 
-    void setScreen(int x, int y, int w, int h);
+    void setScreen(int x, int y, unsigned int w, unsigned int h);
 
     /**
        @name event handlers
@@ -103,21 +93,16 @@ public:
     void keyPressEvent(XKeyEvent &ke);
     void leaveNotifyEvent(XCrossingEvent &ce);
     //@}
-    /// get input focus
     void grabInputFocus();
     virtual void reconfigure();
-    /// set label string
     void setLabel(const FbTk::BiDiString &labelstr);
-    /// move menu to x,y
     virtual void move(int x, int y);
     virtual void updateMenu();
     void setItemSelected(unsigned int index, bool val);
     void setItemEnabled(unsigned int index, bool val);
     void setMinimumColumns(int columns) { m_min_columns = columns; }
     virtual void drawSubmenu(unsigned int index);
-    /// show menu
     virtual void show();
-    /// hide menu
     virtual void hide(bool force = false);
     virtual void clearWindow();
     /*@}*/
@@ -140,7 +125,7 @@ public:
     int y() const { return m_window.y(); }
     unsigned int width() const { return m_window.width(); }
     unsigned int height() const { return m_window.height(); }
-    size_t numberOfItems() const { return menuitems.size(); }
+    size_t numberOfItems() const { return m_items.size(); }
     int currentSubmenu() const { return m_which_sub; }
 
     bool isItemSelected(unsigned int index) const;
@@ -149,12 +134,11 @@ public:
     FbTk::ThemeProxy<MenuTheme> &theme() { return m_theme; }
     const FbTk::ThemeProxy<MenuTheme> &theme() const { return m_theme; }
     unsigned char alpha() const { return theme()->alpha(); }
-    static Menu *shownMenu() { return shown; }
-    static Menu *focused() { return s_focused; }
+    static Menu* shownMenu();
+    static Menu* focused();
     static void hideShownMenu();
-    /// @return menuitem at index
-    const MenuItem *find(unsigned int index) const { return menuitems[index]; }
-    MenuItem *find(unsigned int index) { return menuitems[index]; }
+    const MenuItem *find(size_t i) const { return m_items[i]; }
+    MenuItem *find(size_t i) { return m_items[i]; }
     //@}
     /// @return true if index is valid
     bool validIndex(int index) const { return (index < static_cast<int>(numberOfItems()) && index >= 0); }
@@ -198,7 +182,7 @@ private:
     ImageControl &m_image_ctrl;
 
     typedef std::vector<MenuItem *> Menuitems;
-    Menuitems menuitems;
+    Menuitems m_items;
     TypeAhead<Menuitems, MenuItem *> m_type_ahead;
     Menuitems m_matches;
 
@@ -250,8 +234,6 @@ private:
     // the corners
     std::auto_ptr<FbTk::Shape> m_shape;
 
-    static Menu *shown; ///< used for determining if there's a menu open at all
-    static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
     bool m_need_update;
     Timer m_submenu_timer;
     Timer m_hide_timer;

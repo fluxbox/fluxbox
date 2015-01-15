@@ -37,11 +37,7 @@
 #include "FbTk/I18n.hh"
 #include "FbTk/FbTime.hh"
 
-#ifdef HAVE_CTIME
-  #include <ctime>
-#else
-  #include <time.h>
-#endif
+#include <ctime>
 #include <typeinfo>
 #include <cstdio>
 
@@ -171,9 +167,9 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     FbTk::RefCount<FbTk::Command<void> > saverc(FbTk::CommandParser<void>::instance().parse("saverc"));
     FbTk::MenuItem *item = new ClockMenuItem(*this);
     item->setCommand(saverc);
-    menu.insert(item);
+    menu.insertItem(item);
     FbTk::RefCount<FbTk::Command<void> > editformat_cmd(new EditClockFormatCmd());
-    menu.insert(_FB_XTEXT(Toolbar, ClockEditFormat,   "Edit Clock Format",   "edit Clock Format") , editformat_cmd);
+    menu.insertCommand(_FB_XTEXT(Toolbar, ClockEditFormat,   "Edit Clock Format",   "edit Clock Format") , editformat_cmd);
 
     updateTime();
 }

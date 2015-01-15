@@ -84,12 +84,12 @@ void SendToMenu::rebuildMenu() {
     for (size_t i = 0; i < wlist.size(); ++i) {
         FbTk::RefCount<FbTk::Command<void> > sendto_cmd(new SendToCmd(i, false));
         FbTk::RefCount<FbTk::Command<void> > sendto_follow_cmd(new SendToCmd(i, true));
-        
+
         FbTk::MultiButtonMenuItem* item = new FbTk::MultiButtonMenuItem(3, wlist[i]->name());
         item->setCommand(1, sendto_cmd);
         item->setCommand(2, sendto_follow_cmd);
         item->setCommand(3, sendto_cmd);
-        insert(item);
+        insertItem(item);
     }
 
     updateMenu();
