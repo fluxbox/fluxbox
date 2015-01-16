@@ -45,6 +45,12 @@ template <typename T> class RefCount;
 ///   Base class for menus
 class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer {
 public:
+
+    static Menu* shownMenu();
+    static Menu* focused();
+    static void hideShownMenu();
+
+
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
     enum { RIGHT = 1, LEFT };
 
@@ -134,11 +140,13 @@ public:
     FbTk::ThemeProxy<MenuTheme> &theme() { return m_theme; }
     const FbTk::ThemeProxy<MenuTheme> &theme() const { return m_theme; }
     unsigned char alpha() const { return theme()->alpha(); }
-    static Menu* shownMenu();
-    static Menu* focused();
-    static void hideShownMenu();
     const MenuItem *find(size_t i) const { return m_items[i]; }
     MenuItem *find(size_t i) { return m_items[i]; }
+
+    // returns index of 'submenu', it it is in the top most list of
+    // menu items. -1 if no match is found
+    int findSubmenuIndex(const Menu* submenu) const;
+
     //@}
     /// @return true if index is valid
     bool validIndex(int index) const { return (index < static_cast<int>(numberOfItems()) && index >= 0); }

@@ -501,10 +501,6 @@ private:
 
     ExtraMenus m_extramenus;
 
-    typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > Configmenus;
-
-
-    Configmenus m_configmenu_list;
     Icons m_icon_list;
 
     std::auto_ptr<Slit> m_slit;

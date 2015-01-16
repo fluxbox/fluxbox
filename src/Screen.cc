@@ -1362,22 +1362,25 @@ void BScreen::rereadWindowMenu() {
 }
 
 void BScreen::addConfigMenu(const FbTk::FbString &label, FbTk::Menu &menu) {
-    m_configmenu_list.push_back(make_pair(label, &menu));
-    if (m_configmenu.get())
-        setupConfigmenu(*m_configmenu.get());
+
+    FbTk::Menu* cm = m_configmenu.get();
+    if (cm) {
+        int pos = cm->findSubmenuIndex(&menu);
+        if (pos == -1) { // not found? add
+            cm->insertSubmenu(label, &menu, pos);
+        }
+    }
 }
 
 void BScreen::removeConfigMenu(FbTk::Menu &menu) {
-    Configmenus::iterator erase_it = find_if(m_configmenu_list.begin(),
-                                             m_configmenu_list.end(),
-                                             FbTk::Compose(bind2nd(equal_to<FbTk::Menu *>(), &menu),
-                                                           FbTk::Select2nd<Configmenus::value_type>()));
-    if (erase_it != m_configmenu_list.end())
-        m_configmenu_list.erase(erase_it);
 
-    if (!isShuttingdown() && m_configmenu.get())
-        setupConfigmenu(*m_configmenu.get());
-
+    FbTk::Menu* cm = m_configmenu.get();
+    if (cm) {
+        int pos = cm->findSubmenuIndex(&menu);
+        if (pos > -1) {
+            cm->remove(pos);
+        }
+    }
 }
 
 

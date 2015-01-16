@@ -91,6 +91,12 @@ Menu* s_focused = 0; // holds currently focused menu
 Menu* Menu::shownMenu() { return s_shown; }
 Menu* Menu::focused() { return s_focused; }
 
+void Menu::hideShownMenu() {
+    if (s_shown)
+        s_shown->hide();
+}
+
+
 Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     m_theme(tm),
     m_parent(0),
@@ -239,6 +245,18 @@ int Menu::insertItem(MenuItem *item, int pos) {
     m_need_update = true; // we need to redraw the menu
     return m_items.size();
 }
+
+
+int Menu::findSubmenuIndex(const FbTk::Menu* submenu) const {
+    size_t i;
+    for (i = 0; i < m_items.size(); i++) {
+        if (m_items[i]->submenu() == submenu) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 
 void Menu::fixMenuItemIndices() {
     for (size_t i = 0; i < m_items.size(); i++)
@@ -1391,9 +1409,5 @@ void Menu::drawLine(int index, int size){
     item->drawLine(m_frame, theme(), size, item_x, item_y, m_item_w);
 }
 
-void Menu::hideShownMenu() {
-    if (s_shown)
-        s_shown->hide();
-}
 
 } // end namespace FbTk
