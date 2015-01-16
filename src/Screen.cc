@@ -227,7 +227,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_focus_control(new FocusControl(*this)),
     m_placement_strategy(new ScreenPlacement(*this)),
     m_cycling(false), m_cycle_opts(0),
-    m_xinerama_headinfo(0),
     m_restart(false),
     m_shutdown(false) {
 
@@ -468,8 +467,8 @@ BScreen::~BScreen() {
         tmp.pop_back();
     }
 
-    if (hasXinerama() && m_xinerama_headinfo) {
-        delete [] m_xinerama_headinfo;
+    if (hasXinerama()) {
+        m_xinerama.heads.clear();
     }
 
     // slit must be destroyed before headAreas (Struts)
@@ -1608,51 +1607,42 @@ WinClient *BScreen::findGroupRight(WinClient &winclient) {
 void BScreen::clearXinerama() {
     fbdbg<<"BScreen::initXinerama(): dont have Xinerama"<<endl;
 
-    m_xinerama_avail = false;
-    if (m_xinerama_headinfo)
-        delete [] m_xinerama_headinfo;
-    m_xinerama_headinfo = 0;
-    m_xinerama_num_heads = 0;
+    m_xinerama.avail = false;
+    m_xinerama.heads.clear();
 }
 
 void BScreen::initXinerama() {
 #ifdef XINERAMA
-    Display *display = FbTk::App::instance()->display();
+    Display* display = FbTk::App::instance()->display();
+    int number = 0;
+    XineramaScreenInfo *si = XineramaQueryScreens(display, &number);
 
-    if (!XineramaIsActive(display)) {
+    if (!si && number == 0) {
         clearXinerama();
         return;
     }
 
+    m_xinerama.avail = true;
+
     fbdbg<<"BScreen::initXinerama(): have Xinerama"<<endl;
-
-    m_xinerama_avail = true;
-
-    XineramaScreenInfo *screen_info;
-    int number;
-    screen_info = XineramaQueryScreens(display, &number);
 
     /* The call may have actually failed. If this is the first time we init
      * Xinerama, fall back to turning it off. If not, pretend nothing
      * happened -- another event will tell us and it will work then. */
-    if (!screen_info) {
-        if (!m_xinerama_headinfo)
+    if (!si) {
+        if (m_xinerama.heads.empty())
             clearXinerama();
         return;
     }
 
-    if (m_xinerama_headinfo)
-        delete [] m_xinerama_headinfo;
-
-    m_xinerama_headinfo = new XineramaHeadInfo[number];
-    m_xinerama_num_heads = number;
-    for (int i=0; i < number; i++) {
-        m_xinerama_headinfo[i]._x = screen_info[i].x_org;
-        m_xinerama_headinfo[i]._y = screen_info[i].y_org;
-        m_xinerama_headinfo[i]._width = screen_info[i].width;
-        m_xinerama_headinfo[i]._height = screen_info[i].height;
+    m_xinerama.heads.resize(number);
+    for (int i = 0; i < number; i++) {
+        m_xinerama.heads[i]._x = si[i].x_org;
+        m_xinerama.heads[i]._y = si[i].y_org;
+        m_xinerama.heads[i]._width = si[i].width;
+        m_xinerama.heads[i]._height = si[i].height;
     }
-    XFree(screen_info);
+    XFree(si);
 
     fbdbg<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
 
@@ -1670,11 +1660,8 @@ void BScreen::initXinerama() {
     }
 
 #else // XINERAMA
-    // no xinerama
-    m_xinerama_avail = false;
-    m_xinerama_num_heads = 0;
+    m_xinerama.avail = false;
 #endif // XINERAMA
-
 }
 
 /* Move windows out of inactive heads */
@@ -1691,8 +1678,8 @@ void BScreen::clearHeads() {
             // check if the window is invisible
             bool invisible = true;
             int j;
-            for (j = 0; j < m_xinerama_num_heads; ++j) {
-                XineramaHeadInfo& hi = m_xinerama_headinfo[j];
+            for (j = 0; j < numHeads(); ++j) {
+                XineramaHeadInfo& hi = m_xinerama.heads[j];
                 if (RectangleUtil::overlapRectangles(hi, w)) {
                     invisible = false;
                     break;
@@ -1711,11 +1698,10 @@ void BScreen::clearHeads() {
 }
 
 int BScreen::getHead(int x, int y) const {
-
 #ifdef XINERAMA
     if (hasXinerama()) {
-        for (int i=0; i < m_xinerama_num_heads; i++) {
-            if (RectangleUtil::insideBorder(m_xinerama_headinfo[i], x, y, 0)) {
+        for (int i = 0; i < numHeads(); i++) {
+            if (RectangleUtil::insideBorder(m_xinerama.heads[i], x, y, 0)) {
                 return i+1;
             }
         }
@@ -1743,9 +1729,9 @@ int BScreen::getHead(const FbTk::FbWindow &win) const {
             // the head which center is nearest to the window center
             long dist = -1;
             int i;
-            for (i = 0; i < m_xinerama_num_heads; ++i) {
-                XineramaHeadInfo& hi = m_xinerama_headinfo[i];
-                int d = calcSquareDistance(cx, cy,
+            for (i = 0; i < numHeads(); ++i) {
+                const XineramaHeadInfo& hi = m_xinerama.heads[i];
+                long d = calcSquareDistance(cx, cy,
                     hi.x() + (hi.width() / 2), hi.y() + (hi.height() / 2));
                 if (dist == -1 || d < dist) { // found a closer head
                     head = i + 1;
@@ -1779,8 +1765,8 @@ int BScreen::getCurrHead() const {
 
 int BScreen::getHeadX(int head) const {
 #ifdef XINERAMA
-    if (head == 0 || head > m_xinerama_num_heads) return 0;
-    return m_xinerama_headinfo[head-1].x();
+    if (head == 0 || head > numHeads()) return 0;
+    return m_xinerama.heads[head-1].x();
 #else
     return 0;
 #endif // XINERAMA
@@ -1788,8 +1774,8 @@ int BScreen::getHeadX(int head) const {
 
 int BScreen::getHeadY(int head) const {
 #ifdef XINERAMA
-    if (head == 0 || head > m_xinerama_num_heads) return 0;
-    return m_xinerama_headinfo[head-1].y();
+    if (head == 0 || head > numHeads()) return 0;
+    return m_xinerama.heads[head-1].y();
 #else
     return 0;
 #endif // XINERAMA
@@ -1797,8 +1783,8 @@ int BScreen::getHeadY(int head) const {
 
 int BScreen::getHeadWidth(int head) const {
 #ifdef XINERAMA
-    if (head == 0 || head > m_xinerama_num_heads) return width();
-    return m_xinerama_headinfo[head-1].width();
+    if (head == 0 || head > numHeads()) return width();
+    return m_xinerama.heads[head-1].width();
 #else
     return width();
 #endif // XINERAMA
@@ -1806,8 +1792,8 @@ int BScreen::getHeadWidth(int head) const {
 
 int BScreen::getHeadHeight(int head) const {
 #ifdef XINERAMA
-    if (head == 0 || head > m_xinerama_num_heads) return height();
-    return m_xinerama_headinfo[head-1].height();
+    if (head == 0 || head > numHeads()) return height();
+    return m_xinerama.heads[head-1].height();
 #else
     return height();
 #endif // XINERAMA

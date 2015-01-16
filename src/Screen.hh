@@ -370,14 +370,14 @@ public:
     // Xinerama-related functions
 
     /// @return true if xinerama is available
-    bool hasXinerama() const { return m_xinerama_avail; }
+    bool hasXinerama() const { return m_xinerama.avail; }
     /// @return umber of xinerama heads
-    int numHeads() const { return m_xinerama_num_heads; }
+    int numHeads() const { return m_xinerama.heads.size(); }
 
     void initXinerama();
+    void clearXinerama();
     void clearHeads();
     /// clean up xinerama
-    void clearXinerama();
 
     /**
      * Determines head number for a position
@@ -475,7 +475,7 @@ private:
 
     FbTk::MultLayers m_layermanager;
 
-    bool root_colormap_installed, managed;
+    bool root_colormap_installed;
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
     std::auto_ptr<FbMenu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
@@ -525,21 +525,26 @@ private:
     const ClientPattern *m_cycle_opts;
 
     // Xinerama related private data
-    bool m_xinerama_avail;
-    int m_xinerama_num_heads;
-    int m_xinerama_center_x, m_xinerama_center_y;
-
-    std::vector<HeadArea *> m_head_areas;
-
     struct XineramaHeadInfo {
         int _x, _y, _width, _height;
         int x() const { return _x; }
         int y() const { return _y; }
         int width() const { return _width; }
         int height() const { return _height; }
-    } *m_xinerama_headinfo;
+    };
+    struct {
+        bool avail;
+        int center_x;
+        int center_y;
+        std::vector<XineramaHeadInfo> heads;
+    } m_xinerama;
 
-    bool m_restart, m_shutdown;
+    std::vector<HeadArea*> m_head_areas;
+
+
+    bool m_restart;
+    bool m_shutdown;
+    bool managed;
 };
 
 
