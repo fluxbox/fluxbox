@@ -43,13 +43,7 @@
 
 #include "FocusControl.hh"
 
-#include <X11/Xresource.h>
-
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
+#include <cstdio>
 #include <list>
 #include <vector>
 #include <fstream>
@@ -232,19 +226,6 @@ public:
     void cycleFocus(int opts = 0, const ClientPattern *pat = 0, bool reverse = false);
 
     bool isCycling() const { return m_cycling; }
-
-    /**
-     * Creates an empty menu with specified label
-     * @param label for the menu
-     * @return created menu
-     */
-    FbMenu *createMenu(const std::string &label);
-    /**
-     * Creates an empty toggle menu with a specific label
-     * @param label
-     * @return created menu
-     */
-    FbMenu *createToggleMenu(const std::string &label);
 
     /**
      * For extras to add menus.

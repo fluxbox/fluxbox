@@ -359,17 +359,17 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     m_current_workspace = m_workspaces_list.front();
 
-    m_windowmenu.reset(createMenu(""));
+    m_windowmenu.reset(MenuCreator::createMenu("", *this));
     m_windowmenu->setInternalMenu();
     m_windowmenu->setReloadHelper(new FbTk::AutoReloadHelper());
     m_windowmenu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<BScreen>(*this, &BScreen::rereadWindowMenu)));
 
-    m_rootmenu.reset(createMenu(""));
+    m_rootmenu.reset(MenuCreator::createMenu("", *this));
     m_rootmenu->setReloadHelper(new FbTk::AutoReloadHelper());
     m_rootmenu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<BScreen>(*this, &BScreen::rereadMenu)));
 
-    m_configmenu.reset(createMenu(_FB_XTEXT(Menu, Configuration,
-                                  "Configuration", "Title of configuration menu")));
+    m_configmenu.reset(MenuCreator::createMenu(_FB_XTEXT(Menu, Configuration,
+                                  "Configuration", "Title of configuration menu"), *this));
     setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
 
@@ -743,24 +743,6 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
         FocusableList::getListFromOptions(*this, options);
     focusControl().cycleFocus(*win_list, pat, reverse);
 
-}
-
-FbMenu *BScreen::createMenu(const string &label) {
-    FbTk::Layer* layer = layerManager().getLayer(ResourceLayer::MENU);
-    FbMenu *menu = new FbMenu(menuTheme(), imageControl(), *layer);
-    if (!label.empty())
-        menu->setLabel(label);
-
-    return menu;
-}
-
-FbMenu *BScreen::createToggleMenu(const string &label) {
-    FbTk::Layer* layer = layerManager().getLayer(ResourceLayer::MENU);
-    FbMenu *menu = new ToggleMenu(menuTheme(), imageControl(), *layer);
-    if (!label.empty())
-        menu->setLabel(label);
-
-    return menu;
 }
 
 void BScreen::addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu) {

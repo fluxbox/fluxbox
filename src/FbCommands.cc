@@ -323,7 +323,7 @@ void ShowCustomMenuCmd::execute() {
         return;
 
     if (!m_menu.get() || screen->screenNumber() != m_menu->screenNumber()) {
-        m_menu.reset(screen->createMenu(""));
+        m_menu.reset(MenuCreator::createMenu("", *screen));
         m_menu->setReloadHelper(new FbTk::AutoReloadHelper());
         m_menu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<ShowCustomMenuCmd>(*this, &ShowCustomMenuCmd::reload)));
         m_menu->reloadHelper()->setMainFile(custom_menu_file);

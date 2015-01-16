@@ -27,6 +27,7 @@
 #include "Window.hh"
 #include "WinClient.hh"
 #include "FbMenu.hh"
+#include "MenuCreator.hh"
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "Layer.hh"
@@ -305,7 +306,7 @@ private:
 FbTk::Menu *createRememberMenu(BScreen &screen) {
     // each fluxboxwindow has its own windowmenu
     // so we also create a remember menu just for it...
-    FbTk::Menu *menu = screen.createMenu("Remember");
+    FbTk::Menu *menu = MenuCreator::createMenu("Remember", screen);
 
     // if enabled, then we want this to be a unavailable menu
     /*

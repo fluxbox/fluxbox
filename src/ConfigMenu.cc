@@ -20,12 +20,14 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "ConfigMenu.hh"
+#include "MenuCreator.hh"
 #include "Screen.hh"
 #include "fluxbox.hh"
 
 #include "FocusModelMenuItem.hh"
 #include "ScreenPlacement.hh"
 #include "FbMenu.hh"
+#include "ToggleMenu.hh"
 #include "FbTk/Menu.hh"
 #include "FbTk/BoolMenuItem.hh"
 #include "FbTk/IntMenuItem.hh"
@@ -67,18 +69,29 @@ private:
 
 typedef FbTk::RefCount<FbTk::Command<void> > _Cmd;
 
-enum {
-    L_ALPHA = 0,
-    L_PSEUDO_TRANS,
-    L_FOCUS_ALPHA,
-    L_UNFOCUS_ALPHA,
-    L_MENU_ALPHA,
-};
 
+// NOTE: might also be placed into MenuCreator; for now it ends up here
+// because it's just used here
+FbMenu *createToggleMenu(const std::string &label, BScreen& screen) {
+    FbTk::Layer* layer = screen.layerManager().getLayer(ResourceLayer::MENU);
+    FbMenu *menu = new ToggleMenu(screen.menuTheme(), screen.imageControl(), *layer);
+    if (!label.empty())
+        menu->setLabel(label);
+
+    return menu;
+}
 
 void setupAlphaMenu(FbTk::Menu& parent, ConfigMenu::SetupHelper& sh, _Cmd& save_reconf) {
 #ifdef HAVE_XRENDER
     _FB_USES_NLS;
+
+    enum {
+        L_ALPHA = 0,
+        L_PSEUDO_TRANS,
+        L_FOCUS_ALPHA,
+        L_UNFOCUS_ALPHA,
+        L_MENU_ALPHA,
+    };
 
     static const FbTk::FbString _labels[] = {
         _FB_XTEXT(Configmenu, Transparency, "Transparency", "Menu containing various transparency options"),
@@ -90,7 +103,7 @@ void setupAlphaMenu(FbTk::Menu& parent, ConfigMenu::SetupHelper& sh, _Cmd& save_
 
 
     FbTk::FbString label = _labels[L_ALPHA];
-    FbTk::Menu* menu = sh.screen.createMenu(label);
+    FbTk::Menu* menu = MenuCreator::createMenu(label, sh.screen);
 
     if (FbTk::Transparent::haveComposite(true)) {
         static FbTk::SimpleAccessor<bool> s_pseudo = Fluxbox::instance()->getPseudoTrans();
@@ -131,7 +144,7 @@ void setupFocusMenu(FbTk::Menu& menu, ConfigMenu::SetupHelper& sh, _Cmd& save_rc
     // we don't set this to internal menu so will
     // be deleted toghether with the parent
     FbTk::FbString label = _FB_XTEXT(Configmenu, FocusModel, "Focus Model", "Method used to give focus to windows");
-    FbMenu* fm = sh.screen.createMenu(label);
+    FbMenu* fm = MenuCreator::createMenu(label, sh.screen);
 
 #define _FOCUSITEM(a, b, c, d, e) \
     fm->insertItem(new FocusModelMenuItem(_FB_XTEXT(a, b, c, d), sh.screen.focusControl(), \
@@ -197,7 +210,7 @@ void setupMaximizeMenu(FbTk::Menu& menu, ConfigMenu::SetupHelper& sh, _Cmd& save
 
     FbTk::FbString label = _FB_XTEXT(Configmenu, MaxMenu,
             "Maximize Options", "heading for maximization options");
-    FbTk::Menu* mm = sh.screen.createMenu(label);
+    FbTk::Menu* mm = MenuCreator::createMenu(label, sh.screen);
 
     _BOOLITEM(*mm, Configmenu, FullMax,
               "Full Maximization", "Maximise over slit, toolbar, etc",
@@ -224,8 +237,8 @@ void setupTabMenu(FbTk::Menu& parent, ConfigMenu::SetupHelper& sh, _Cmd& save_re
     FbTk::FbString label = _FB_XTEXT(Configmenu, TabMenu, "Tab Options", "heading for tab-related options");
     // TODO: main-category is 'Menu'?? should be 'ConfigMenu'???
     FbTk::FbString p_label = _FB_XTEXT(Menu, Placement, "Placement", "Title of Placement menu");
-    FbTk::Menu* menu = sh.screen.createMenu(label);
-    FbTk::Menu* p_menu = sh.screen.createToggleMenu(p_label);
+    FbTk::Menu* menu = MenuCreator::createMenu(label, sh.screen);
+    FbTk::Menu* p_menu = createToggleMenu(p_label, sh.screen);
 
     menu->insertSubmenu(p_label, p_menu);
 

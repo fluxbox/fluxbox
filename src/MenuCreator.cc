@@ -482,18 +482,22 @@ bool getStart(FbMenuParser &parser, string &label, FbTk::StringConvertor &labelc
 
 } // end of anonymous namespace
 
-FbMenu *MenuCreator::createMenu(const string &label, int screen_number) {
-    BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
-    if (screen == 0)
-        return 0;
 
-    FbMenu *menu = new FbMenu(screen->menuTheme(),
-                                  screen->imageControl(),
-                                  *screen->layerManager().getLayer(ResourceLayer::MENU));
+
+FbMenu* MenuCreator::createMenu(const std::string& label, BScreen& screen) {
+    FbTk::Layer* layer = screen.layerManager().getLayer(ResourceLayer::MENU);
+    FbMenu *menu = new FbMenu(screen.menuTheme(), screen.imageControl(), *layer);
     if (!label.empty())
         menu->setLabel(label);
 
     return menu;
+}
+
+FbMenu *MenuCreator::createMenu(const string &label, int screen_number) {
+    BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
+    if (screen == 0)
+        return 0;
+    return MenuCreator::createMenu(label, *screen);
 }
 
 bool MenuCreator::createFromFile(const string &filename,
