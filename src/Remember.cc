@@ -247,6 +247,7 @@ string escapeRememberChars(const string& str) {
                 escaped_str += '\\';
             default:
                 escaped_str += *i;
+                break;
         }
     }
 
@@ -982,7 +983,7 @@ void Remember::save() {
             case (WindowState::DECOR_BORDER):
                 apps_file << "  [Deco]\t{BORDER}" << endl;
                 break;
-            case (WindowState::DECORM_TAB):
+            case (WindowState::DECOR_TAB):
                 apps_file << "  [Deco]\t{TAB}" << endl;
                 break;
             default:

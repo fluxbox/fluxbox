@@ -74,6 +74,6 @@ FbRootWindow::FbRootWindow(int screen_num):
         m_colormap = XCreateColormap(disp, window(), m_visual, AllocNone);
     }
     if (m_decorationVisual != DefaultVisual(disp, screen_num)) {
-        m_decorationColormap = XCreateColormap(disp, window(), m_visual, AllocNone);
+        m_decorationColormap = XCreateColormap(disp, window(), m_decorationVisual, AllocNone);
     }
 }
