@@ -21,37 +21,11 @@
 
 #include "StringUtil.hh"
 
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-#ifdef HAVE_CCTYPE
-  #include <cctype>
-#else
-  #include <ctype.h>
-#endif
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
-#ifdef HAVE_CERRNO
-  #include <cerrno>
-#else
-  #include <errno.h>
-#endif
+#include <cstdio>
+#include <cctype>
+#include <cassert>
+#include <cstring>
+#include <cerrno>
 
 #ifndef _WIN32
 #include <unistd.h>

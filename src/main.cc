@@ -33,20 +33,8 @@
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
 #ifdef HAVE_UNISTD_H
-  #include <unistd.h>
+#include <unistd.h>
 #endif
 
 #ifdef HAVE_SYS_WAIT_H
@@ -58,6 +46,8 @@
 #endif
 
 
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <typeinfo>
@@ -290,9 +280,9 @@ int main(int argc, char **argv) {
         execvp(argv[0], argv);
         perror(argv[0]);
 
-        const char *basename = FbTk::StringUtil::basename(argv[0]).c_str();
-        execvp(basename, argv);
-        perror(basename);
+        const std::string basename = FbTk::StringUtil::basename(argv[0]);
+        execvp(basename.c_str(), argv);
+        perror(basename.c_str());
     }
 
     return exitcode;

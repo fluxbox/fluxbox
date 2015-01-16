@@ -158,15 +158,16 @@ private:
 
     struct frame {
         frame(const FbTk::FbWindow &parent):
+            pixmap(0),
             window(parent, 0, 0, 10, 10,
                    SubstructureRedirectMask |  ButtonPressMask |
                    EnterWindowMask | LeaveWindowMask | ExposureMask,
                    true),  // override redirect
             x(0), y(0), x_hidden(0), y_hidden(0),
-        width(10), height(10) {}
+        width(10), height(10) {  }
+
         Pixmap pixmap;
         FbTk::FbWindow window;
-
         int x, y, x_hidden, y_hidden;
         unsigned int width, height;
     } frame;

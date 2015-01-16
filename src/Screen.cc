@@ -34,13 +34,6 @@
 #include "FocusControl.hh"
 #include "ScreenPlacement.hh"
 
-// menu items
-#include "FbTk/BoolMenuItem.hh"
-#include "FbTk/IntMenuItem.hh"
-#include "FbTk/MenuSeparator.hh"
-#include "FocusModelMenuItem.hh"
-#include "FbTk/RadioMenuItem.hh"
-
 // menus
 #include "ConfigMenu.hh"
 #include "FbMenu.hh"
@@ -101,15 +94,11 @@ class Toolbar {};
 #include <unistd.h>
 #endif // HAVE_UNISTD_H
 
-#ifdef HAVE_STDARG_H
-#include <stdarg.h>
-#endif // HAVE_STDARG_H
-
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
 #include <time.h>
 #else // !TIME_WITH_SYS_TIME
-#ifdef	HAVE_SYS_TIME_H
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #else // !HAVE_SYS_TIME_H
 #include <time.h>
@@ -134,11 +123,8 @@ extern  "C" {
 #include <algorithm>
 #include <functional>
 #include <stack>
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+#include <cstdarg>
+#include <cstring>
 
 using std::cerr;
 using std::endl;
@@ -205,7 +191,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &altscreenname,
                  int scrn, int num_layers) :
     m_layermanager(num_layers),
+    root_colormap_installed(false),
     m_image_control(0),
+    m_current_workspace(0),
     m_focused_windowtheme(new FbWinFrameTheme(scrn, ".focus", ".Focus")),
     m_unfocused_windowtheme(new FbWinFrameTheme(scrn, ".unfocus", ".Unfocus")),
     // the order of windowtheme and winbutton theme is important

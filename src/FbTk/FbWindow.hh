@@ -170,7 +170,7 @@ public:
 
     void deleteProperty(Atom property);
 
-    long cardinalProperty(Atom property,bool*exists=NULL) const;
+    long cardinalProperty(Atom property, bool*exists=NULL) const;
     FbTk::FbString textProperty(Atom property,bool*exists=NULL) const;
 
     void addToSaveSet();

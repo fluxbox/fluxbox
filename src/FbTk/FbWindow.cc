@@ -491,7 +491,7 @@ struct TextPropPtr {
 };
 }
 
-long FbWindow::cardinalProperty(Atom prop,bool*exists) const {
+long FbWindow::cardinalProperty(Atom prop, bool* exists) const {
     Atom type;
     int format;
     unsigned long nitems, bytes_after;
@@ -549,10 +549,8 @@ FbTk::FbString FbWindow::textProperty(Atom prop,bool*exists) const {
         ret = FbStringUtil::LocaleStrToFb(stringlist[0]);
     }
 
-    // they all use stringlist
-    if (stringlist) {
-        XFreeStringList(stringlist);
-    }
+    XFreeStringList(stringlist);
+
     if (exists) *exists=true;
     return ret;
 }

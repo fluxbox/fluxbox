@@ -72,6 +72,8 @@ public:
     typedef std::vector < SearchResult > SearchResults;
     typedef typename Items::const_iterator ItemscIt;
 
+    TypeAhead() : m_ref(0) { }
+
     void init(Items const &items) { m_ref = &items; }
 
     size_t stringSize() const { return m_searchstr.size(); }
