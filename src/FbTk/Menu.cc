@@ -132,7 +132,7 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
         m_visible = false;
 
 
-    m_type_ahead.init(menuitems);
+    m_type_ahead.init(m_items);
 
     m_x_move =
         m_y_move = 0;
