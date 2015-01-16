@@ -94,6 +94,10 @@ void Container::insertItem(Item item, int pos) {
 
 void Container::moveItem(Item item, int movement) {
 
+    if (m_item_list.empty()) {
+        return;
+    }
+
     int index = find(item);
     const size_t size = m_item_list.size();
 
