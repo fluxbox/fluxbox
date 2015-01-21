@@ -355,9 +355,9 @@ void Keys::loadDefaults() {
 
 bool Keys::addBinding(const string &linebuffer) {
 
-    vector<string> val;
     // Parse arguments
-    FbTk::StringUtil::stringtok(val, linebuffer.c_str());
+    vector<string> val;
+    FbTk::StringUtil::stringtok(val, linebuffer);
 
     // must have at least 1 argument
     if (val.empty())

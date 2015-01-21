@@ -361,13 +361,12 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_configmenu->setInternalMenu();
 
     // check which desktop we should start on
-    unsigned int first_desktop = 0;
+    int first_desktop = 0;
     if (m_restart) {
         bool exists;
-        unsigned int ret=static_cast<unsigned int>(rootWindow().cardinalProperty(atom_net_desktop, &exists));
+        int ret = (rootWindow().cardinalProperty(atom_net_desktop, &exists));
         if (exists) {
-            if (ret < static_cast<unsigned int>(nr_ws))
-                first_desktop = ret;
+            first_desktop = FbTk::Util::clamp<int>(ret, 0, nr_ws);
         }
     }
 
@@ -1431,7 +1430,7 @@ void BScreen::showPosition(int x, int y) {
         return;
 
     char buf[256];
-    sprintf(buf, "X:%5d x Y:%5d", x, y);
+    snprintf(buf, sizeof(buf), "X:%5d x Y:%5d", x, y);
 
     FbTk::BiDiString label(buf);
     m_pos_window->showText(label);
@@ -1449,7 +1448,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     char buf[256];
     _FB_USES_NLS;
 
-    sprintf(buf,
+    snprintf(buf, sizeof(buf),
             _FB_XTEXT(Screen, GeometryFormat,
                     "W: %4d x H: %4d",
                     "Format for width and height window, %4d for width, and %4d for height").c_str(),
@@ -1518,7 +1517,7 @@ void BScreen::renderGeomWindow() {
 
     const std::string msg = _FB_XTEXT(Screen, GeometrySpacing,
             "W: %04d x H: %04d", "Representative maximum sized text for width and height dialog");
-    const int n = snprintf(buf, msg.size(), msg.c_str(), 0, 0);
+    const int n = snprintf(buf, sizeof(buf), msg.c_str(), 0, 0);
 
     FbTk::BiDiString label(std::string(buf, n));
     m_geom_window->resizeForText(label);
