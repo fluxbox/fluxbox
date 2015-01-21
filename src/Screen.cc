@@ -1408,11 +1408,7 @@ float BScreen::getYGap(int head) {
 
 void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
-    struct ConfigMenu::SetupHelper sh;
-    sh.screen = *this;
-    sh.rm = m_resource_manager;
-    sh.resource = resource;
-
+    struct ConfigMenu::SetupHelper sh(*this, m_resource_manager, resource);
     menu.removeAll();
     ConfigMenu::setup(menu, sh);
     menu.updateMenu();

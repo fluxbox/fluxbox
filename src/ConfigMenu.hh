@@ -24,7 +24,7 @@
 
 
 class BScreen;
-class ScreenResource;
+struct ScreenResource;
 
 namespace FbTk{
     class Menu;
@@ -36,6 +36,8 @@ public:
 
     // makes the setup() function-signature shorter
     struct SetupHelper {
+        SetupHelper(BScreen& _s, FbTk::ResourceManager& _rm, ScreenResource& _r) :
+            screen(_s), rm(_rm), resource(_r) { }
         BScreen& screen;
         FbTk::ResourceManager& rm;
         ScreenResource& resource;
