@@ -41,6 +41,7 @@ class Application;
 
 namespace FbTk {
 class AutoReloadHelper;
+class Menu;
 }
 
 /**
@@ -124,6 +125,8 @@ public:
     void updateClientClose(WinClient &winclient);
 
     void initForScreen(BScreen &screen);
+
+    static FbTk::Menu* createMenu(BScreen& screen);
 
     // Functions we ignore (zero from AtomHandler)
     // Leaving here in case they might be useful later

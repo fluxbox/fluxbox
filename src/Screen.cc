@@ -357,8 +357,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     m_configmenu.reset(MenuCreator::createMenu(_FB_XTEXT(Menu, Configuration,
                                   "Configuration", "Title of configuration menu"), *this));
-    setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
+    setupConfigmenu(*m_configmenu.get());
 
     // check which desktop we should start on
     int first_desktop = 0;
@@ -388,9 +388,7 @@ BScreen::~BScreen() {
 
     if (! managed)
         return;
-    
-    m_configmenu.reset(0);
-    
+
     m_toolbar.reset(0);
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
@@ -406,35 +404,6 @@ BScreen::~BScreen() {
     // Since workspacemenu holds client list menus (from workspace)
     // we need to destroy it before we destroy workspaces
     m_workspacemenu.reset(0);
-
-    if (m_extramenus.size()) {
-        // check whether extramenus are included in windowmenu
-        // if not, we clean them ourselves
-        bool extramenus_in_windowmenu = false;
-        for (size_t i = 0, n = m_windowmenu->numberOfItems(); i < n; i++)
-            if (m_windowmenu->find(i)->submenu() == m_extramenus.begin()->second) {
-                extramenus_in_windowmenu = true;
-                break;
-            }
-
-        ExtraMenus::iterator mit = m_extramenus.begin();
-        ExtraMenus::iterator mit_end = m_extramenus.end();
-        for (; mit != mit_end; ++mit) {
-            // we set them to NOT internal so that they will be deleted when the
-            // menu is cleaned up. We can't delete them here because they are
-            // still in the menu
-            // (They need to be internal for most of the time so that if we
-            // rebuild the menu, then they won't be removed.
-            if (! extramenus_in_windowmenu) {
-                // not attached to our windowmenu
-                // so we clean it up
-                delete mit->second;
-            } else {
-                // let the parent clean it up
-                mit->second->setInternalMenu(false);
-            }
-        }
-    }
 
     removeWorkspaceNames();
     using namespace FbTk::STLUtil;
@@ -461,9 +430,10 @@ BScreen::~BScreen() {
     // slit must be destroyed before headAreas (Struts)
     m_slit.reset(0);
 
-    delete m_rootmenu.release();
-    delete m_workspacemenu.release();
-    delete m_windowmenu.release();
+    m_windowmenu.reset(0);
+    m_rootmenu.reset(0);
+    m_workspacemenu.reset(0);
+    m_configmenu.reset(0);
 
     // TODO fluxgen: check if this is the right place
     for (size_t i = 0; i < m_head_areas.size(); i++)
@@ -471,6 +441,7 @@ BScreen::~BScreen() {
 
     delete m_focus_control;
     delete m_placement_strategy;
+
 }
 
 bool BScreen::isRestart() {
@@ -736,13 +707,6 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
 
 }
 
-void BScreen::addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu) {
-    menu->setInternalMenu();
-    menu->disableTitle();
-    m_extramenus.push_back(make_pair(label, menu));
-    rereadWindowMenu();
-}
-
 void BScreen::reconfigure() {
     Fluxbox *fluxbox = Fluxbox::instance();
 
@@ -754,7 +718,7 @@ void BScreen::reconfigure() {
 
     m_menutheme->setDelay(*resource.menu_delay);
 
-    // realize the number of workspaces from the init-file
+    // provide the number of workspaces from the init-file
     const unsigned int nr_ws = *resource.workspaces;
     if (nr_ws > m_workspaces_list.size()) {
         while(nr_ws != m_workspaces_list.size()) {

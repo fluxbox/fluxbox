@@ -56,6 +56,10 @@
 #include <iostream>
 #include <algorithm>
 
+#ifdef REMEMBER
+#include "Remember.hh"
+#endif // REMEMBER
+
 using std::cerr;
 using std::endl;
 using std::string;
@@ -88,6 +92,8 @@ enum {
 
     L_ALPHA,
 
+    L_REMEMBER,
+
     L_MENU_EXIT,
     L_MENU_ICONS,
 };
@@ -111,6 +117,8 @@ const FbTk::FbString& _l(const FbTk::FbString& label, size_t type) {
         _FB_XTEXT(Windowmenu, Layer, "Layer ...", "Layer menu"),
 
         _FB_XTEXT(Configmenu, Transparency, "Transparency", "Menu containing various transparency options"),
+
+        _FB_XTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
 
         _FB_XTEXT(Menu, Exit, "Exit", "Exit Command"),
         _FB_XTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
@@ -602,14 +610,13 @@ bool MenuCreator::createWindowMenuItem(const string &type,
         }
 #endif // HAVE_XRENDER
     } else if (type == "extramenus") {
+#ifdef REMEMBER
         BScreen* s = Fluxbox::instance()->findScreen(screen);
-        BScreen::ExtraMenus::iterator it = s->extraWindowMenus().begin();
-        BScreen::ExtraMenus::iterator it_end = s->extraWindowMenus().end();
-        for (; it != it_end; ++it) {
-            it->second->disableTitle();
-            menu.insertSubmenu(it->first, it->second);
+        if (s == 0) {
+            return false;
         }
-
+        menu.insertSubmenu(_l("", L_REMEMBER), Remember::createMenu(*s));
+#endif
     } else if (type == "sendto") {
         menu.insertSubmenu(_l(label, L_SENDTO), 
             new SendToMenu(*Fluxbox::instance()->findScreen(screen)));
@@ -633,5 +640,4 @@ bool MenuCreator::createWindowMenuItem(const string &type,
 
     return true;
 }
-
 

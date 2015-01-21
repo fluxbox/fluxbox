@@ -82,7 +82,6 @@ public:
 
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
-    typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > ExtraMenus;
 
     BScreen(FbTk::ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
@@ -113,8 +112,6 @@ public:
     FbMenu &configMenu() { return *m_configmenu.get(); }
     const FbMenu &windowMenu() const { return *m_windowmenu.get(); }
     FbMenu &windowMenu() { return *m_windowmenu.get(); }
-    ExtraMenus &extraWindowMenus() { return m_extramenus; }
-    const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
 
     FbWinFrame::TabPlacement getTabPlacement() const { return *resource.tab_placement; }
 
@@ -479,8 +476,6 @@ private:
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
     std::auto_ptr<FbMenu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
-
-    ExtraMenus m_extramenus;
 
     Icons m_icon_list;
 
