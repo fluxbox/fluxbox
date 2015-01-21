@@ -83,7 +83,7 @@ public:
 
     void disableTitle();
     void enableTitle();
-    bool isTitleVisible() const { return m_title_vis; }
+    bool isTitleVisible() const { return m_title.visible; }
 
     void setScreen(int x, int y, unsigned int w, unsigned int h);
 
@@ -117,22 +117,23 @@ public:
        @name accessors
     */
     //@{
-    bool isTorn() const { return m_torn; }
-    bool isVisible() const { return m_visible; }
-    bool isMoving() const { return m_moving; }
-    int screenNumber() const { return m_window.screenNumber(); }
-    Window window() const { return m_window.window(); }
-    FbWindow &fbwindow() { return m_window; }
+    bool isTorn() const              { return m_state.torn; }
+    bool isVisible() const           { return m_state.visible; }
+    bool isMoving() const            { return m_state.moving; }
+    int screenNumber() const         { return m_window.screenNumber(); }
+    Window window() const            { return m_window.window(); }
+    FbWindow &fbwindow()             { return m_window; }
     const FbWindow &fbwindow() const { return m_window; }
-    FbWindow &titleWindow() { return m_title; }
-    FbWindow &frameWindow() { return m_frame; }
-    const FbTk::BiDiString &label() const { return m_label; }
-    int x() const { return m_window.x(); }
-    int y() const { return m_window.y(); }
-    unsigned int width() const { return m_window.width(); }
-    unsigned int height() const { return m_window.height(); }
-    size_t numberOfItems() const { return m_items.size(); }
-    int currentSubmenu() const { return m_which_sub; }
+    FbWindow &titleWindow()          { return m_title.win; }
+    FbWindow &frameWindow()          { return m_frame.win; }
+
+    const FbTk::BiDiString &label() const { return m_title.label; }
+    int x() const                    { return m_window.x(); }
+    int y() const                    { return m_window.y(); }
+    unsigned int width() const       { return m_window.width(); }
+    unsigned int height() const      { return m_window.height(); }
+    size_t numberOfItems() const     { return m_items.size(); }
+    int currentSubmenu() const       { return m_which_sub; }
 
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
@@ -159,13 +160,7 @@ public:
 protected:
 
     void themeReconfigured();
-    void setTitleVisibility(bool b) {
-        m_title_vis = b; m_need_update = true;
-        if (!b)
-            titleWindow().lower();
-        else
-            titleWindow().raise();
-    }
+    void setTitleVisibility(bool b);
 
     // renders item onto pm
     int drawItem(FbDrawable &pm, unsigned int index,
@@ -199,16 +194,21 @@ private:
     void drawLine(int index, int size);
     void fixMenuItemIndices();
 
-    int m_screen_x, m_screen_y;
-    unsigned int m_screen_width, m_screen_height;
-    bool m_moving; ///< if we're moving/draging or not
-    bool m_closing; ///< if we're right clicking on the menu title
-    bool m_visible; ///< menu visibility
-    bool m_torn; ///< torn from parent
-    bool m_internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
-    bool m_title_vis; ///< title visibility
+    struct Rect {
+        int x, y;
+        unsigned int width, height;
+    } m_screen;
 
+    struct State {
+        bool moving;
+        bool closing; // right click title
+        bool visible;
+        bool torn; // torn from parent
+    } m_state;
+
+    bool m_internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
     int m_which_sub;
+
     Alignment m_alignment;
 
     // the menu window
@@ -216,14 +216,20 @@ private:
     Pixmap m_hilite_pixmap;
 
     // the title
-    FbTk::FbWindow m_title;
-    Pixmap m_title_pixmap;
-    FbTk::BiDiString m_label;
+    struct Title {
+        FbTk::FbWindow   win;
+        Pixmap           pixmap;
+        FbTk::BiDiString label;
+        bool             visible;
+    } m_title;
 
     // area for the menuitems
-    FbTk::FbWindow m_frame;
-    Pixmap m_frame_pixmap;
-    unsigned int m_frame_h;
+    struct Frame {
+        FbTk::FbWindow win;
+        Pixmap pixmap;
+        unsigned int height;
+    } m_frame;
+
 
     int m_x_move;
     int m_y_move;
