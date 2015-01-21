@@ -34,6 +34,7 @@
 #include "Debug.hh"
 
 #include "FbTk/I18n.hh"
+#include "FbTk/FbString.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/FileUtil.hh"
 #include "FbTk/MenuItem.hh"
@@ -256,8 +257,8 @@ string escapeRememberChars(const string& str) {
 
 class RememberMenuItem : public FbTk::MenuItem {
 public:
-    RememberMenuItem(const FbTk::FbString &label,
-                     Remember::Attribute attrib) :
+    RememberMenuItem(const FbTk::BiDiString &label,
+                     const Remember::Attribute attrib) :
         FbTk::MenuItem(label),
         m_attrib(attrib) {
         setToggleItem(true);
@@ -270,8 +271,7 @@ public:
 
         if (FbMenu::window()->numClients()) // ensure it HAS clients
             return Remember::instance().isRemembered(FbMenu::window()->winClient(), m_attrib);
-        else
-            return false;
+        return false;
     }
 
     bool isEnabled() const {
@@ -282,21 +282,22 @@ public:
             return true;
         else if (FbMenu::window()->numClients())
             return (Remember::instance().isRemembered(FbMenu::window()->winClient(), Remember::REM_WORKSPACE));
-        else
-            return false;
+        return false;
     }
 
     void click(int button, int time, unsigned int mods) {
         // reconfigure only does stuff if the apps file has changed
-        Remember::instance().checkReload();
+        Remember& r = Remember::instance();
+        r.checkReload();
         if (FbMenu::window() != 0) {
+            WinClient wc = FbMenu::window()->winClient();
             if (isSelected()) {
-                Remember::instance().forgetAttrib(FbMenu::window()->winClient(), m_attrib);
+                r.forgetAttrib(wc, m_attrib);
             } else {
-                Remember::instance().rememberAttrib(FbMenu::window()->winClient(), m_attrib);
+                r.rememberAttrib(wc, m_attrib);
             }
         }
-        Remember::instance().save();
+        r.save();
         FbTk::MenuItem::click(button, time, mods);
     }
 
@@ -305,51 +306,38 @@ private:
 };
 
 FbTk::Menu *createRememberMenu(BScreen &screen) {
+
+    _FB_USES_NLS;
+
+    typedef struct { bool is_alpha; const FbTk::BiDiString label; Remember::Attribute attr; } MenuEntry;
+    static const MenuEntry _entries[] = {
+        { false, _FB_XTEXT(Remember, Workspace, "Workspace", "Remember Workspace"), Remember::REM_WORKSPACE },
+        { false, _FB_XTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"), Remember::REM_JUMPWORKSPACE },
+        { false, _FB_XTEXT(Remember, Head, "Head", "Remember Head"), Remember::REM_HEAD},
+        { false, _FB_XTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - with width and height"), Remember::REM_DIMENSIONS},
+        { false, _FB_XTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"), Remember::REM_POSITION},
+        { false, _FB_XTEXT(Remember, Sticky, "Sticky", "Remember Sticky"), Remember::REM_STUCKSTATE},
+        { false, _FB_XTEXT(Remember, Decorations, "Decorations", "Remember window decorations"), Remember::REM_DECOSTATE},
+        { false, _FB_XTEXT(Remember, Shaded, "Shaded", "Remember shaded"), Remember::REM_SHADEDSTATE},
+        { false, _FB_XTEXT(Remember, Minimized, "Minimized", "Remember minimized"), Remember::REM_MINIMIZEDSTATE},
+        { false, _FB_XTEXT(Remember, Maximized, "Maximized", "Remember maximized"), Remember::REM_MAXIMIZEDSTATE},
+        { false, _FB_XTEXT(Remember, Fullscreen, "Fullscreen", "Remember fullscreen"), Remember::REM_FULLSCREENSTATE},
+        { true,  _FB_XTEXT(Remember, Alpha, "Transparency", "Remember window tranparency settings"), Remember::REM_ALPHA},
+        { false, _FB_XTEXT(Remember, Layer, "Layer", "Remember Layer"), Remember::REM_LAYER},
+        { false, _FB_XTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"), Remember::REM_SAVEONCLOSE}
+    };
+    bool needs_alpha = (FbTk::Transparent::haveComposite() || FbTk::Transparent::haveRender());
+
     // each fluxboxwindow has its own windowmenu
     // so we also create a remember menu just for it...
     FbTk::Menu *menu = MenuCreator::createMenu("Remember", screen);
-
-    // if enabled, then we want this to be a unavailable menu
-    /*
-    if (!enabled) {
-        FbTk::MenuItem *item = new FbTk::MenuItem("unavailable");
-        item->setEnabled(false);
-        menu->insert(item);
-        menu->updateMenu();
-        return menu;
+    size_t i;
+    for (i = 0; i < sizeof(_entries)/sizeof(_entries[0]); i++) {
+        if (_entries[i].is_alpha && !needs_alpha) { // skip alpha-entry when not needed
+            continue;
+        }
+        menu->insertItem(new RememberMenuItem(_entries[i].label, _entries[i].attr));
     }
-    */
-    _FB_USES_NLS;
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Workspace, "Workspace", "Remember Workspace"),
-                                      Remember::REM_WORKSPACE));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"),
-                                      Remember::REM_JUMPWORKSPACE));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Head, "Head", "Remember Head"),
-                                      Remember::REM_HEAD));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - with width and height"),
-                                      Remember::REM_DIMENSIONS));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"),
-                                      Remember::REM_POSITION));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Sticky, "Sticky", "Remember Sticky"),
-                                      Remember::REM_STUCKSTATE));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Decorations, "Decorations", "Remember window decorations"),
-                                      Remember::REM_DECOSTATE));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
-                                      Remember::REM_SHADEDSTATE));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Minimized, "Minimized", "Remember minimized"),
-                                      Remember::REM_MINIMIZEDSTATE));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Maximized, "Maximized", "Remember maximized"),
-                                      Remember::REM_MAXIMIZEDSTATE));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Fullscreen, "Fullscreen", "Remember fullscreen"),
-                                      Remember::REM_FULLSCREENSTATE));
-    if (FbTk::Transparent::haveComposite()
-        || FbTk::Transparent::haveRender())
-        menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Alpha, "Transparency", "Remember window tranparency settings"),
-                                          Remember::REM_ALPHA));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, Layer, "Layer", "Remember Layer"),
-                                      Remember::REM_LAYER));
-    menu->insertItem(new RememberMenuItem(_FB_XTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
-                                      Remember::REM_SAVEONCLOSE));
 
     menu->updateMenu();
     return menu;
@@ -462,6 +450,7 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 continue; //read next line
 
             str_key = FbTk::StringUtil::toLower(str_key);
+            str_label = FbTk::StringUtil::toLower(str_label);
 
             if (str_key == "workspace") {
                 unsigned int w;
@@ -481,7 +470,7 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 if (!had_error)
                     app.rememberLayer(l);
             } else if (str_key == "dimensions") {
-                unsigned int h,w;
+                unsigned int h, w;
                 if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2) {
                     app.rememberDimensions(w, h, false);
                 } else if(sscanf(str_label.c_str(), "%u%% %u%%", &w, &h) == 2) {
@@ -509,16 +498,16 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                     had_error = true;
                 }
             } else if (str_key == "shaded") {
-                app.rememberShadedstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberShadedstate(str_label == "yes");
             } else if (str_key == "tab") {
-                app.rememberTabstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberTabstate(str_label == "yes");
             } else if (str_key == "focushidden") {
-                app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberFocusHiddenstate(str_label == "yes");
             } else if (str_key == "iconhidden") {
-                app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberIconHiddenstate(str_label == "yes");
             } else if (str_key == "hidden") {
-                app.rememberIconHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
-                app.rememberFocusHiddenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberIconHiddenstate(str_label == "yes");
+                app.rememberFocusHiddenstate(str_label == "yes");
             } else if (str_key == "deco") {
                 int deco = WindowState::getDecoMaskFromString(str_label);
                 if (deco == -1)
@@ -540,26 +529,25 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                     break;
                 }
             } else if (str_key == "sticky") {
-                app.rememberStuckstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberStuckstate(str_label == "yes");
             } else if (str_key == "focusnewwindow") {
-                app.rememberFocusNewWindow((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberFocusNewWindow(str_label == "yes");
             } else if (str_key == "minimized") {
-                app.rememberMinimizedstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberMinimizedstate(str_label == "yes");
             } else if (str_key == "maximized") {
-                if (strcasecmp(str_label.c_str(), "yes") == 0)
+                if (str_label == "yes")
                     app.rememberMaximizedstate(WindowState::MAX_FULL);
-                else if (strcasecmp(str_label.c_str(), "horz") == 0)
+                else if (str_label == "horz")
                     app.rememberMaximizedstate(WindowState::MAX_HORZ);
-                else if (strcasecmp(str_label.c_str(), "vert") == 0)
+                else if (str_label == "vert")
                     app.rememberMaximizedstate(WindowState::MAX_VERT);
-                else
-                    app.rememberMaximizedstate(WindowState::MAX_NONE);
+                app.rememberMaximizedstate(WindowState::MAX_NONE);
             } else if (str_key == "fullscreen") {
-                app.rememberFullscreenstate((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberFullscreenstate(str_label == "yes");
             } else if (str_key == "jump") {
-                app.rememberJumpworkspace((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberJumpworkspace(str_label == "yes");
             } else if (str_key == "close") {
-                app.rememberSaveOnClose((strcasecmp(str_label.c_str(), "yes") == 0));
+                app.rememberSaveOnClose(str_label == "yes");
             } else if (str_key == "end") {
                 return row;
             } else {
