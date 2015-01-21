@@ -545,8 +545,8 @@ FbMenu *MenuCreator::createMenuType(const string &type, int screen_num) {
 bool MenuCreator::createWindowMenuItem(const string &type,
                                        const string &label,
                                        FbTk::Menu &menu) {
+
     typedef FbTk::RefCount<FbTk::Command<void> > RefCmd;
-    _FB_USES_NLS;
 
     static MenuContext context;
     int screen = menu.screenNumber();
