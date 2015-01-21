@@ -26,7 +26,15 @@
 #include "WindowCmd.hh"
 #include "FbTk/AutoReloadHelper.hh"
 
-FluxboxWindow *FbMenu::s_window = 0;
+namespace {
+
+FluxboxWindow* s_window = 0;
+
+}
+
+void FbMenu::setWindow(FluxboxWindow* win) { s_window = win; }
+FluxboxWindow* FbMenu::window() { return s_window; }
+
 
 FbMenu::FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
                FbTk::ImageControl &imgctrl, FbTk::Layer &layer):

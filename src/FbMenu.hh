@@ -37,6 +37,11 @@ class MenuTheme;
 /// a layered and shaped menu
 class FbMenu:public FbTk::Menu {
 public:
+
+    static void setWindow(FluxboxWindow *win);
+    static FluxboxWindow *window();
+
+
     FbMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm, FbTk::ImageControl &imgctrl,
            FbTk::Layer &layer);
     virtual ~FbMenu() { }
@@ -49,13 +54,9 @@ public:
     void setReloadHelper(FbTk::AutoReloadHelper *helper) { m_reloader.reset(helper); }
     FbTk::AutoReloadHelper *reloadHelper() { return m_reloader.get(); }
 
-    static void setWindow(FluxboxWindow *win) { s_window = win; }
-    static FluxboxWindow *window() { return s_window; }
-
 private:
     FbTk::LayerItem m_layeritem;
     std::auto_ptr<FbTk::AutoReloadHelper> m_reloader;
-    static FluxboxWindow *s_window;
 };
 
 #endif // FBMENU_HH
