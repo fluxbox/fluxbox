@@ -385,7 +385,7 @@ void Container::repositionItems() {
             --rounding_error;
             extra = 1;
             //counter for different direction
-            if (align == RIGHT && !extra)
+            if (align == RIGHT)
                 --next_x;
         } else {
             if (extra && align == RIGHT) // last extra
