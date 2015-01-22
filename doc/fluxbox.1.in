@@ -31,7 +31,7 @@
 fluxbox \- A lightweight window manager for the X Windowing System
 .SH "SYNOPSIS"
 .sp
-\fBfluxbox\fR [\-rc \fIrcfile\fR] [\-log \fIlogfile\fR] [\-display \fIdisplay\fR] [\-screen all|\fIscr\fR,\fIscr\fR\&...] [\-verbose] [\-sync]
+\fBfluxbox\fR [\-rc \fIrcfile\fR] [\-no\-slit] [\-no\-toolbar] [\-log \fIlogfile\fR] [\-display \fIdisplay\fR] [\-screen all|\fIscr\fR,\fIscr\fR\&...] [\-verbose] [\-sync]
 .sp
 \fBfluxbox\fR [\-v | \-version] | [\-h | \-help] | [\-i | \-info] | [\-list\-commands]
 .SH "DESCRIPTION"
@@ -69,6 +69,16 @@ Display useful information concerning the defaults and compiled\-in options\&.
 \fB\-log\fR \fIlogfile\fR
 .RS 4
 Starting fluxbox with this option will designate a file in which you want to log events to\&.
+.RE
+.PP
+\fB\-no\-slit\fR
+.RS 4
+Do not use the container for DockApps (aka the Slit)
+.RE
+.PP
+\fB\-no\-toolbar\fR
+.RS 4
+Do not use the toolbar
 .RE
 .PP
 \fB\-rc\fR \fIrcfile\fR
