@@ -42,6 +42,7 @@
 #include <string>
 #include <memory>
 #include <map>
+#include <inttypes.h>
 
 class WinClient;
 class FbWinFrameTheme;

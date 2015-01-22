@@ -44,18 +44,8 @@
 #include <iostream>
 #include <algorithm>
 #include <new>
-
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
+#include <cstring>
+#include <cstdlib>
 
 
 using std::cerr;

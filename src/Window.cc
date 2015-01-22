@@ -62,22 +62,10 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
+#include <cstring>
+#include <cstdio>
 #include <iostream>
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
+#include <cassert>
 #include <functional>
 #include <algorithm>
 
@@ -258,7 +246,7 @@ private:
 // Tests whether a point is on an edge or the corner.
 struct TestCornerHelper {
     int corner_size_px, corner_size_pc;
-    inline bool operator()(int xy, int wh)
+    bool operator()(int xy, int wh)
     {
         /* The % checking must be right: 0% must fail, 100% must succeed. */
         return xy < corner_size_px  ||  100 * xy < corner_size_pc * wh;

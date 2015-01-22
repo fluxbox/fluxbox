@@ -81,21 +81,9 @@
 
 // system headers
 
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #ifdef HAVE_UNISTD_H
 #include <sys/types.h>
@@ -1302,8 +1290,8 @@ void Fluxbox::revertFocus() {
             return; // already handled
 
         Window win;
-        int blah;
-        XGetInputFocus(display(), &win, &blah);
+        int ignore;
+        XGetInputFocus(display(), &win, &ignore);
 
         // we only want to revert focus if it's left dangling, as some other
         // application may have set the focus to an unmanaged window
