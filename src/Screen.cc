@@ -797,9 +797,9 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     if (w == 0)
         return;
 
-    Icons::iterator erase_it = remove_if(iconList().begin(),
-                                         iconList().end(),
-                                         bind2nd(equal_to<FluxboxWindow *>(), w));
+    Icons::iterator erase_it = find_if(iconList().begin(),
+                                       iconList().end(),
+                                       bind2nd(equal_to<FluxboxWindow *>(), w));
     // no need to send iconlist signal if we didn't
     // change the iconlist
     if (erase_it != m_icon_list.end()) {
