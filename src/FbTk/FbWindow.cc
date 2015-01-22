@@ -31,15 +31,18 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
-
+#include <cassert>
 #include <limits>
 
 namespace FbTk {
+
+Window FbWindow::rootWindow(Display* dpy, Drawable win) {
+    union { int i; unsigned int ui; } ignore;
+    Window root = None;
+    XGetGeometry(dpy, win, &root, &ignore.i, &ignore.i, &ignore.ui, &ignore.ui, &ignore.ui, &ignore.ui);
+    return root;
+}
+
 
 FbWindow::FbWindow():
     FbDrawable(),

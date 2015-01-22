@@ -24,15 +24,11 @@
 
 #include "FbDrawable.hh"
 #include "FbString.hh"
+
 #include <memory>
 #include <string>
 #include <set>
-
-#ifdef HAVE_CMATH
-  #include <cmath>
-#else
-  #include <math.h>
-#endif
+#include <cmath>
 
 namespace FbTk {
 
@@ -54,8 +50,10 @@ class FbWindowRenderer;
  */
 class FbWindow: public FbDrawable {
 public:
-    FbWindow();
 
+    static Window rootWindow(Display* dpy, Drawable win);
+
+    FbWindow();
     FbWindow(const FbWindow &win_copy);
 
     FbWindow(int screen_num,

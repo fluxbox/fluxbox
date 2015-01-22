@@ -976,10 +976,15 @@ void Fluxbox::attachSignals(WinClient &winclient) {
 
 BScreen *Fluxbox::searchScreen(Window window) {
 
+    Window window_root = FbTk::FbWindow::rootWindow(display(), window);
+    if (window_root == None) {
+        return 0;
+    }
+
     ScreenList::iterator it = m_screen_list.begin();
     ScreenList::iterator it_end = m_screen_list.end();
     for (; it != it_end; ++it) {
-        if (*it && (*it)->rootWindow() == window)
+        if (*it && (*it)->rootWindow() == window_root)
             return *it;
     }
 
