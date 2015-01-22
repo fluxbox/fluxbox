@@ -129,6 +129,8 @@ int FluxboxCli::Options::parse(int argc, char** argv) {
                            "-display <string>\t\tuse display connection.\n"
                            "-screen <all|int,int,int>\trun on specified screens only.\n"
                            "-rc <string>\t\t\tuse alternate resource file.\n"
+                           "-no-slit\t\t\tdo not provide a slit.\n"
+                           "-no-toolbar\t\t\tdo not provide a toolbar.\n"
                            "-version\t\t\tdisplay version and exit.\n"
                            "-info\t\t\t\tdisplay some useful information.\n"
                            "-list-commands\t\t\tlist all valid key commands.\n"
@@ -136,7 +138,7 @@ int FluxboxCli::Options::parse(int argc, char** argv) {
                            "-log <filename>\t\t\tlog output to file.\n"
                            "-help\t\t\t\tdisplay this help text and exit.\n\n",
 
-                           "Main usage string. Please lay it out nicely. There is one %s that is given the version").c_str(),
+                           "Main usage string. Please lay it out nicely. One %%s gives the version, ther other gives the year").c_str(),
                    __fluxbox_version, "2001-2015");
             return EXIT_SUCCESS;
         } else if (arg == "-info" || arg == "-i" || arg == "--info") {

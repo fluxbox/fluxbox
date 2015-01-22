@@ -189,7 +189,8 @@ void initAtoms(Display* dpy) {
 BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname,
                  const string &altscreenname,
-                 int scrn, int num_layers) :
+                 int scrn, int num_layers,
+                 unsigned int opts) :
     m_layermanager(num_layers),
     root_colormap_installed(false),
     m_image_control(0),
@@ -214,19 +215,20 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_altname(altscreenname),
     m_focus_control(new FocusControl(*this)),
     m_placement_strategy(new ScreenPlacement(*this)),
-    m_cycling(false), m_cycle_opts(0),
-    m_restart(false),
-    m_shutdown(false) {
+    m_cycle_opts(0),
+    m_opts(opts) {
 
+
+    m_state.cycling = false;
+    m_state.restart = false;
+    m_state.shutdown = false;
+    m_state.managed = false;
 
     Fluxbox *fluxbox = Fluxbox::instance();
     Display *disp = fluxbox->display();
 
     initAtoms(disp);
 
-
-    // TODO fluxgen: check if this is the right place (it was not -lis)
-    //
     // Create the first one, initXinerama will expand this if needed.
     m_head_areas.resize(1);
     m_head_areas[0] = new HeadArea();
@@ -244,8 +246,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     XSetErrorHandler((XErrorHandler) old);
 
-    managed = running;
-    if (! managed) {
+    m_state.managed = running;
+    if (!m_state.managed) {
         delete m_placement_strategy; m_placement_strategy = 0;
         delete m_focus_control; m_focus_control = 0;
         return;
@@ -261,14 +263,12 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 #endif // HAVE_GETPID
 
     // check if we're the first EWMH compliant window manager on this screen
-    Atom xa_ret_type;
-    int ret_format;
-    unsigned long ret_nitems, ret_bytes_after;
+    union { Atom atom; unsigned long ul; int i; } ignore;
     unsigned char *ret_prop;
     if (rootWindow().property(atom_wm_check, 0l, 1l,
-            False, XA_WINDOW, &xa_ret_type, &ret_format, &ret_nitems,
-            &ret_bytes_after, &ret_prop) ) {
-        m_restart = (ret_prop != NULL);
+            False, XA_WINDOW, &ignore.atom, &ignore.i, &ignore.ul,
+            &ignore.ul, &ret_prop) ) {
+        m_state.restart = (ret_prop != NULL);
         XFree(ret_prop);
     }
 
@@ -362,7 +362,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     // check which desktop we should start on
     int first_desktop = 0;
-    if (m_restart) {
+    if (m_state.restart) {
         bool exists;
         int ret = (rootWindow().cardinalProperty(atom_net_desktop, &exists));
         if (exists) {
@@ -373,8 +373,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     changeWorkspaceID(first_desktop);
 
 #ifdef USE_SLIT
-    m_slit.reset(new Slit(*this, *layerManager().getLayer(ResourceLayer::DESKTOP),
-                 fluxbox->getSlitlistFilename().c_str()));
+    if (opts & Fluxbox::OPT_SLIT) {
+        Slit* slit = new Slit(*this, *layerManager().getLayer(ResourceLayer::DESKTOP), fluxbox->getSlitlistFilename().c_str());
+        m_slit.reset(slit);
+    }
 #endif // USE_SLIT
 
     rm.unlock();
@@ -386,7 +388,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
 BScreen::~BScreen() {
 
-    if (! managed)
+    if (!m_state.managed)
         return;
 
     m_toolbar.reset(0);
@@ -445,19 +447,23 @@ BScreen::~BScreen() {
 }
 
 bool BScreen::isRestart() {
-    return Fluxbox::instance()->isStartup() && m_restart;
+    return Fluxbox::instance()->isStartup() && m_state.restart;
 }
 
 void BScreen::initWindows() {
 
 #ifdef USE_TOOLBAR
-    m_toolbar.reset(new Toolbar(*this,
-                                *layerManager().getLayer(::ResourceLayer::NORMAL)));
+    if (m_opts & Fluxbox::OPT_TOOLBAR) {
+        Toolbar* tb = new Toolbar(*this, *layerManager().getLayer(::ResourceLayer::NORMAL));
+        m_toolbar.reset(tb);
+    }
 #endif // USE_TOOLBAR
 
     unsigned int nchild;
     Window r, p, *children;
-    Display *disp = FbTk::App::instance()->display();
+    Fluxbox* fluxbox = Fluxbox::instance();
+    Display* disp = fluxbox->display();
+
     XQueryTree(disp, rootWindow().window(), &r, &p, &children, &nchild);
 
     // preen the window list of all icon windows... for better dockapp support
@@ -483,10 +489,8 @@ void BScreen::initWindows() {
                 }
             XFree(wmhints);
         }
-
     }
 
-    Fluxbox *fluxbox = Fluxbox::instance();
 
     // manage shown windows
     Window transient_for = 0;
@@ -611,8 +615,8 @@ void BScreen::focusedWinFrameThemeReconfigured() {
     Fluxbox *fluxbox = Fluxbox::instance();
     const std::list<Focusable *> winlist =
             focusControl().focusedOrderWinList().clientList();
-    std::list<Focusable *>::const_iterator it = winlist.begin(),
-                                           it_end = winlist.end();
+    std::list<Focusable *>::const_iterator it = winlist.begin();
+    std::list<Focusable *>::const_iterator it_end = winlist.end();
     for (; it != it_end; ++it)
         fluxbox->updateFrameExtents(*(*it)->fbwindow());
 
@@ -661,14 +665,15 @@ void BScreen::keyPressEvent(XKeyEvent &ke) {
 }
 
 void BScreen::keyReleaseEvent(XKeyEvent &ke) {
-    if (m_cycling) {
+    if (m_state.cycling) {
+
         unsigned int state = FbTk::KeyUtil::instance().cleanMods(ke.state);
         state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
 
         if (state) // still cycling
             return;
 
-        m_cycling = false;
+        m_state.cycling = false;
         focusControl().stopCyclingFocus();
     }
     if (!Fluxbox::instance()->keys()->inKeychain())
@@ -693,8 +698,8 @@ void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
     else if (ev.type == ButtonPress)
         mods = FbTk::KeyUtil::instance().cleanMods(ev.xbutton.state);
 
-    if (!m_cycling && mods) {
-        m_cycling = true;
+    if (!m_state.cycling && mods) {
+        m_state.cycling = true;
         FbTk::EventManager::instance()->grabKeyboard(rootWindow().window());
     }
 
@@ -849,13 +854,12 @@ void BScreen::removeClient(WinClient &client) {
 int BScreen::addWorkspace() {
 
     bool save_name = getNameOfWorkspace(m_workspaces_list.size()) == "";
-    Workspace *wkspc = new Workspace(*this,
-                                     getNameOfWorkspace(m_workspaces_list.size()),
-                                     m_workspaces_list.size());
-    m_workspaces_list.push_back(wkspc);
+    std::string name = getNameOfWorkspace(m_workspaces_list.size());
+    Workspace *ws = new Workspace(*this, name, m_workspaces_list.size());
+    m_workspaces_list.push_back(ws);
 
     if (save_name) {
-        addWorkspaceName(wkspc->name().c_str());
+        addWorkspaceName(ws->name().c_str());
         m_workspacenames_sig.emit(*this);
     }
 
@@ -1065,7 +1069,9 @@ bool BScreen::addKdeDockapp(Window client) {
 }
 
 FluxboxWindow *BScreen::createWindow(Window client) {
-    FbTk::App::instance()->sync(false);
+
+    Fluxbox* fluxbox = Fluxbox::instance();
+    fluxbox->sync(false);
 
     if (isKdeDockapp(client) && addKdeDockapp(client)) {
         return 0; // dont create a FluxboxWindow for this one
@@ -1084,14 +1090,14 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     }
 
     // check if it should be grouped with something else
-    FluxboxWindow *win;
-    WinClient *other;
-    if ((other = findGroupLeft(*winclient)) && (win = other->fbwindow())) {
-        win->attachClient(*winclient);
-        Fluxbox::instance()->attachSignals(*winclient);
-    } else {
+    WinClient*      other = findGroupLeft(*winclient);
+    FluxboxWindow*  win = other ? other->fbwindow() : 0;
 
-        Fluxbox::instance()->attachSignals(*winclient);
+    if (other && win) {
+        win->attachClient(*winclient);
+        fluxbox->attachSignals(*winclient);
+    } else {
+        fluxbox->attachSignals(*winclient);
         if (winclient->fbwindow()) { // may have been set in an atomhandler
             win = winclient->fbwindow();
             Workspace *workspace = getWorkspace(win->workspaceNumber());
@@ -1109,7 +1115,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
     // add the window to the focus list
     // always add to front on startup to keep the focus order the same
-    if (win->isFocused() || Fluxbox::instance()->isStartup())
+    if (win->isFocused() || fluxbox->isStartup())
         focusControl().addFocusFront(*winclient);
     else
         focusControl().addFocusBack(*winclient);
@@ -1123,7 +1129,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
     m_clientlist_sig.emit(*this);
 
-    FbTk::App::instance()->sync(false);
+    fluxbox->sync(false);
     return win;
 }
 
@@ -1386,7 +1392,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 void BScreen::shutdown() {
     rootWindow().setEventMask(NoEventMask);
     FbTk::App::instance()->sync(false);
-    m_shutdown = true;
+    m_state.shutdown = true;
     m_focus_control->shutdown();
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
@@ -1701,15 +1707,12 @@ int BScreen::getCurrHead() const {
     if (!hasXinerama()) return 0;
     int root_x = 0, root_y = 0;
 #ifdef XINERAMA
-    int ignore_i;
-    unsigned int ignore_ui;
-
-    Window ignore_w;
+    union { int i; unsigned int ui; Window w; } ignore;
 
     XQueryPointer(FbTk::App::instance()->display(),
-                  rootWindow().window(), &ignore_w,
-                  &ignore_w, &root_x, &root_y,
-                  &ignore_i, &ignore_i, &ignore_ui);
+                  rootWindow().window(), &ignore.w,
+                  &ignore.w, &root_x, &root_y,
+                  &ignore.i, &ignore.i, &ignore.ui);
 #endif // XINERAMA
     return getHead(root_x, root_y);
 }

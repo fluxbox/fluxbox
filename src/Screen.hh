@@ -79,20 +79,19 @@ class FbWindow;
 class BScreen: public FbTk::EventHandler, private FbTk::NotCopyable {
 public:
     typedef std::list<FluxboxWindow *> Icons;
-
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
 
     BScreen(FbTk::ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
-            int scrn, int number_of_layers);
+            int scrn, int number_of_layers, unsigned int opts);
     ~BScreen();
 
     void initWindows();
     void initMenus();
 
     bool isRootColormapInstalled() const { return root_colormap_installed; }
-    bool isScreenManaged() const { return managed; }
+    bool isScreenManaged() const { return m_state.managed; }
     bool isWorkspaceWarping() const { return (m_workspaces_list.size() > 1) && *resource.workspace_warping; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
@@ -222,7 +221,7 @@ public:
      */
     void cycleFocus(int opts = 0, const ClientPattern *pat = 0, bool reverse = false);
 
-    bool isCycling() const { return m_cycling; }
+    bool isCycling() const { return m_state.cycling; }
 
     /**
      * For extras to add menus.
@@ -267,7 +266,7 @@ public:
     const FbTk::ResourceManager &resourceManager() const { return m_resource_manager; }
     const std::string &name() const { return m_name; }
     const std::string &altName() const { return m_altname; }
-    bool isShuttingdown() const { return m_shutdown; }
+    bool isShuttingdown() const { return m_state.shutdown; }
     bool isRestart();
 
     ScreenPlacement &placementStrategy() { return *m_placement_strategy; }
@@ -479,8 +478,8 @@ private:
 
     Icons m_icon_list;
 
-    std::auto_ptr<Slit> m_slit;
-    std::auto_ptr<Toolbar> m_toolbar;
+    std::auto_ptr<Slit>     m_slit;
+    std::auto_ptr<Toolbar>  m_toolbar;
 
     Workspace *m_current_workspace;
 
@@ -516,7 +515,6 @@ private:
     typedef std::map<Window, WinClient *> Groupables;
     Groupables m_expecting_groups;
 
-    bool m_cycling;
     const ClientPattern *m_cycle_opts;
 
     // Xinerama related private data
@@ -536,10 +534,13 @@ private:
 
     std::vector<HeadArea*> m_head_areas;
 
-
-    bool m_restart;
-    bool m_shutdown;
-    bool managed;
+    struct {
+        bool cycling;
+        bool restart;
+        bool shutdown;
+        bool managed;
+    } m_state;
+    unsigned int m_opts; // hold Fluxbox::OPT_SLIT etc
 };
 
 
