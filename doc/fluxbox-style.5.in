@@ -2,12 +2,12 @@
 .\"     Title: fluxbox-style
 .\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03 January 2015
+.\"      Date: 22 January 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-style.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-STYLE" "5" "03 January 2015" "fluxbox\-style\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-STYLE" "5" "22 January 2015" "fluxbox\-style\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------

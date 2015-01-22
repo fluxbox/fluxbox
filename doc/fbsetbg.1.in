@@ -2,12 +2,12 @@
 .\"     Title: fbsetbg
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03 January 2015
+.\"      Date: 22 January 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fbsetbg.txt
 .\"  Language: English
 .\"
-.TH "FBSETBG" "1" "03 January 2015" "fbsetbg\&.txt" "Fluxbox Manual"
+.TH "FBSETBG" "1" "22 January 2015" "fbsetbg\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------

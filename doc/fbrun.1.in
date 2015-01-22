@@ -2,12 +2,12 @@
 .\"     Title: fbrun
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03 January 2015
+.\"      Date: 22 January 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fbrun.txt
 .\"  Language: English
 .\"
-.TH "FBRUN" "1" "03 January 2015" "fbrun\&.txt" "Fluxbox Manual"
+.TH "FBRUN" "1" "22 January 2015" "fbrun\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------

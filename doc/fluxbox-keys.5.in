@@ -2,12 +2,12 @@
 .\"     Title: fluxbox-keys
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 03 January 2015
+.\"      Date: 22 January 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-keys.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-KEYS" "5" "03 January 2015" "fluxbox\-keys\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-KEYS" "5" "22 January 2015" "fluxbox\-keys\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -661,7 +661,7 @@ puts the main window on the RIGHT hand side of the screen, and the tiled windows
 puts the main window on the LEFT hand side of the screen, and the tiled windows are on the RIGHT hand side of the screen\&.
 .RE
 .PP
-\fBArrangeWindowsStackTop\fR \fIpattern\fR / *ArrangeWindowsStackBottom \fIpattern\fR
+\fBArrangeWindowsStackTop\fR \fIpattern\fR / \fBArrangeWindowsStackBottom\fR \fIpattern\fR
 .RS 4
 Behaves just like
 \fBArrangeWindowsStackLeft\fR

@@ -1,7 +1,7 @@
 fluxbox-style(5)
 ================
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v1.3.6, 03 January 2015
+v1.3.7, 22 January 2015
 :man source:   fluxbox-style.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual

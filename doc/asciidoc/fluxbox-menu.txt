@@ -1,7 +1,7 @@
 fluxbox-menu(5)
 ===============
 Jim Ramsay <i.am@jimramsay.com>
-v1.3.5, 13 February 2013
+v1.3.7, 22 January 2015
 :man source:   fluxbox-menu.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual

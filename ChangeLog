@@ -1,6 +1,30 @@
  (Format: Year/Month/Day)
 
 -----------------------------
+Changes for 1.3.7
+
+*15/01/22:
+    * Bugfix: _NET_REQUEST_FRAME_EXTENTS (closes #1121)
+    * Bugfix: emit signal when window gets decionified
+
+*15/01/21:
+    * Bugfix: segfault on shutdown due to menu code (closes #1118;
+      refactoring; makes clang '-fsanitize=address' happy)
+    * Bugfix: potential memory leak in XFontImp.cc (closes #1120)
+    * Fix regression: autorepeated keys did not work anymore (closes #1115,
+      reopens #1067 ("lost keypresses after workspace change"))
+
+*15/01/16:
+    * Code cleanup: coverity-scan pointed out some flaws; reordering code
+    * Reduce number of allocations on menu generation
+
+*15/01/15:
+    * Refactor menu code
+
+*15/01/10:
+    * Bugfix: catch integer underflow (closes #1116, #1117)
+
+-----------------------------
 Changes for 1.3.6
 
 *15/01/03:
