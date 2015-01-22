@@ -259,11 +259,13 @@ $set 19 #main
 10 Logging to
 11 error: '-rc' requires an argument
 12 error: '-screen' requires an argument
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Website: http://www.fluxbox.org/\n\n\
 -display <string>\t\tuse display connection.\n\
 -screen <all|int,int,int>\trun on specified screens only.\n\
--rc <string>\t\t\tuse alternate resource file.\n\
+-no-slit\t\t\tdo not provide a slit\n\
+-no-toolbar\t\tdo not provide a toolbar\n\
+-rc <stringt\t\tuse alternate resource file.\n\
 -version\t\t\tdisplay version and exit.\n\
 -info\t\t\t\tdisplay some useful information.\n\
 -list-commands\t\t\tlist all valid key commands.\n\

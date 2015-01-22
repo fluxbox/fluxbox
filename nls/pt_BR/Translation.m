@@ -255,10 +255,12 @@ $set 19 #main
 10 Registrando o log em
 11 erro: '-rc' requer um argumento
 12 erro: '-screen' requer um argumento
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Site: http://www.fluxbox.org/\n\n\
 -display <string>\t\tusar conexão com o monitor.\n\
 -screen <all|int,int,int>\texecutar apenas nas telas especificadas.\n\
+-no-slit\t\t\tdo not provide a slit\n\
+-no-toolbar\t\tdo not provide a toolbar\n\
 -rc <string>\t\t\tusar arquivo de configuração alternativo.\n\
 -version\t\t\texibir a versão e finalizar.\n\
 -info\t\t\t\texibir algumas informações úteis.\n\

@@ -245,13 +245,17 @@ $set 19 #main
 10 登入記錄到
 11 錯誤：「-rc」需要一個引數
 12 錯誤：「-screen」需要一個引數
-13 Fluxbox %s：(c) %s Henrik Kinnunen\n\
+13 Fluxbox %s：(c) %s Fluxbox Team\n\
 網站：http://www.fluxbox.org/\n\n\
 -display <string>\t\t所使用的顯示連接。\n\
 -screen <all|int,int,int>\t只運行於指定的螢幕。\n\
+-no-slit\t\t\tdo not provide a slit\n\
+-no-toolbar\t\tdo not provide a toolbar\n\
 -rc <string>\t\t\t使用替代的資源檔案。\n\
 -version\t\t\t顯示版本然後離開。\n\
 -info\t\t\t\t顯示一些有用資訊。\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\t記錄輸出到檔案。\n\
 -help\t\t\t\t顯示此說明文字然後離開。\n\n
 14 警告：無法設定環境變數「DISPLAY」

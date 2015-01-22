@@ -234,11 +234,16 @@ $set 19 #main
 9 Logovací soubor
 10 Loguji do
 11 chyba: '-rc' vy¾aduje argument
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\tpouz¾ije propojení s displejem <string>.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit\n\
+-no-toolbar\t\tdo not provide a toolbar\n\
 -rc <string>\t\t\tpouzije alternativní soubor zdrojù (resource file).\n\
 -version\t\t\tzobrazi verzi a skonci.\n\
 -info\t\t\t\tzobrazi nektere zajimave informace.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tlogovat výstup do souboru <filename>.\n\
 -help\t\t\t\tzobrazí tuto nápovìdu a skonèí.\n\n
 14 varování: nemohu nastavit promìnnou prostøedí 'DISPLAY'

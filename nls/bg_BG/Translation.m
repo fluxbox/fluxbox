@@ -119,11 +119,16 @@ $set 19 #main
 
 1 грешка: '-display' изисква аргумент
 11 грешка: '-rc' изисква аргумент
-13 Fluxkbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxkbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\tuse display connection.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit\n\
+-no-toolbar\t\tdo not provide a toolbar\n\
 -rc <string>\t\t\tползвай заместващ ресурсен файл.\n\
 -version\t\t\tпокажи версията и излез.\n\
 -info\t\t\t\tdisplay some useful information.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tпокажи този помощен текст и излез.\n\n
 
