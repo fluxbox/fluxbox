@@ -24,10 +24,7 @@
 
 #include "Toolbar.hh"
 
-// tool
 #include "ToolbarItem.hh"
-
-// themes
 #include "ToolbarTheme.hh"
 
 #include "fluxbox.hh"
@@ -37,9 +34,9 @@
 #include "WindowCmd.hh"
 
 #include "Strut.hh"
-#include "FbTk/CommandParser.hh"
 #include "Layer.hh"
 
+#include "FbTk/CommandParser.hh"
 #include "FbTk/I18n.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/TextUtils.hh"
@@ -76,24 +73,25 @@ using FbTk::STLUtil::forAll;
 
 namespace {
 
-struct ToolbarPlacementString {
+const struct { 
     Toolbar::Placement placement;
     const char* str;
-};
-
-const ToolbarPlacementString placement_strings[] = {
-    { Toolbar::TOPLEFT, "TopLeft" },
-    { Toolbar::TOPCENTER, "TopCenter" },
-    { Toolbar::TOPRIGHT, "TopRight" },
-    { Toolbar::BOTTOMLEFT, "BottomLeft" },
-    { Toolbar::BOTTOMCENTER, "BottomCenter" },
-    { Toolbar::BOTTOMRIGHT, "BottomRight" },
-    { Toolbar::LEFTBOTTOM, "LeftBottom" },
-    { Toolbar::LEFTCENTER, "LeftCenter" },
-    { Toolbar::LEFTTOP, "LeftTop" },
-    { Toolbar::RIGHTBOTTOM, "RightBottom" },
-    { Toolbar::RIGHTCENTER, "RightCenter" },
-    { Toolbar::RIGHTTOP, "RightTop" }
+    FbTk::Orientation orient;
+    unsigned int shape;
+} _values[] = {
+    { /* unused */ },
+    { Toolbar::TOPLEFT,      "TopLeft",      FbTk::ROT0,   FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT},
+    { Toolbar::TOPCENTER,    "TopCenter",    FbTk::ROT0,   FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT},
+    { Toolbar::TOPRIGHT,     "TopRight",     FbTk::ROT0,   FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT},
+    { Toolbar::BOTTOMLEFT,   "BottomLeft",   FbTk::ROT0,   FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT},
+    { Toolbar::BOTTOMCENTER, "BottomCenter", FbTk::ROT0,   FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT},
+    { Toolbar::BOTTOMRIGHT,  "BottomRight",  FbTk::ROT0,   FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT},
+    { Toolbar::LEFTBOTTOM,   "LeftBottom",   FbTk::ROT270, FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT},
+    { Toolbar::LEFTCENTER,   "LeftCenter",   FbTk::ROT270, FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT},
+    { Toolbar::LEFTTOP,      "LeftTop",      FbTk::ROT270, FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT},
+    { Toolbar::RIGHTBOTTOM,  "RightBottom",  FbTk::ROT90,  FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT},
+    { Toolbar::RIGHTCENTER,  "RightCenter",  FbTk::ROT90,  FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT},
+    { Toolbar::RIGHTTOP,     "RightTop",     FbTk::ROT90,  FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT},
 };
 
 }
@@ -106,17 +104,17 @@ getString() const {
 
     size_t i = (m_value == FbTk::Util::clamp(m_value, Toolbar::TOPLEFT, Toolbar::RIGHTTOP)
                 ? m_value
-                : Toolbar::DEFAULT) - Toolbar::TOPLEFT;
-    return placement_strings[i].str;
+                : Toolbar::DEFAULT);
+    return _values[i].str;
 }
 
 template<>
 void FbTk::Resource<Toolbar::Placement>::
 setFromString(const char *strval) {
     size_t i;
-    for (i = 0; i < sizeof(placement_strings)/sizeof(ToolbarPlacementString); ++i) {
-        if (strcasecmp(strval, placement_strings[i].str) == 0) {
-            m_value = placement_strings[i].placement;
+    for (i = 1; i < sizeof(_values)/sizeof(_values[0]); ++i) {
+        if (strcasecmp(strval, _values[i].str) == 0) {
+            m_value = _values[i].placement;
             return;
         }
     }
@@ -312,27 +310,30 @@ void Toolbar::updateStrut() {
     }
 
     // request area on screen
+    int w = static_cast<int>(width());
+    int h = static_cast<int>(height());
+    int bw = theme()->border().width();
     int top = 0, bottom = 0, left = 0, right = 0;
     switch (placement()) {
     case TOPLEFT:
     case TOPCENTER:
     case TOPRIGHT:
-        top = height() + 2 * theme()->border().width();
+        top = h + 2 * bw;
         break;
     case BOTTOMLEFT:
     case BOTTOMCENTER:
     case BOTTOMRIGHT:
-        bottom = height() + 2 * theme()->border().width();
+        bottom = h + 2 * bw;
         break;
     case RIGHTTOP:
     case RIGHTCENTER:
     case RIGHTBOTTOM:
-        right = width() + 2 * theme()->border().width();
+        right = w + 2 * bw;
         break;
     case LEFTTOP:
     case LEFTCENTER:
     case LEFTBOTTOM:
-        left = width() + 2 * theme()->border().width();
+        left = w + 2 * bw;
         break;
     };
     m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);
@@ -590,10 +591,10 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     // disable vertical toolbar
 
     *m_rc_placement = where;
-    int head_x = 0,
-        head_y = 0,
-        head_w = screen().width(),
-        head_h = screen().height();
+    int head_x = 0;
+    int head_y = 0;
+    int head_w = screen().width();
+    int head_h = screen().height();
 
     if (screen().hasXinerama()) {
         int head = *m_rc_on_head;
@@ -603,9 +604,11 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_h = screen().getHeadHeight(head);
     }
 
-    int border_width = theme()->border().width();
+    int bw = theme()->border().width();
+    int pixel = (bw == 0 ? 1 : 0); // So we get at least one pixel visible in hidden mode
 
-    frame.width = (head_w - 2*border_width) * (*m_rc_width_percent) / 100;
+    frame.width = (head_w - 2*bw) * (*m_rc_width_percent) / 100;
+
     //!! TODO: change this
     // max height of each toolbar items font...
     unsigned int max_height = m_tool_factory.maxFontHeight() + 2;
@@ -617,7 +620,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         max_height = *m_rc_height;
 
     frame.height = max_height;
-
     frame.height += (frame.bevel_w * 2);
 
     // should we flipp sizes?
@@ -628,117 +630,64 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     } // else horizontal toolbar
 
 
-    // So we get at least one pixel visible in hidden mode
-    int pixel = (border_width == 0 ? 1 : 0);
-
-    FbTk::Orientation orient = FbTk::ROT0;
+    frame.x = head_x;
+    frame.y = head_y;
+    frame.x_hidden = head_x;
+    frame.y_hidden = head_y;
+    FbTk::Orientation orient = _values[where].orient;
+    if (m_shape.get())
+        m_shape->setPlaces(_values[where].shape);
 
     switch (where) {
     case TOPLEFT:
-        frame.x = head_x;
-        frame.y = head_y;
-        frame.x_hidden = head_x;
-        frame.y_hidden = head_y - border_width - frame.height + pixel;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
+        frame.y_hidden += pixel - bw - frame.height;
         break;
-
     case BOTTOMLEFT:
-        frame.x = head_x;
-        frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = head_x;
-        frame.y_hidden = head_y + head_h - border_width - pixel;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
+        frame.y += head_h - static_cast<int>(frame.height) - 2*bw;
+        frame.y_hidden += head_h - bw - pixel;
         break;
-
     case TOPCENTER:
-        frame.x = head_x + (head_w - frame.width) / 2 - border_width;
-        frame.y = head_y;
-        frame.x_hidden = frame.x;
-        frame.y_hidden = head_y - border_width - frame.height + pixel;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
+        frame.x += (head_w - static_cast<int>(frame.width))/2 - bw;
+        frame.y_hidden += pixel - bw - static_cast<int>(frame.height);
         break;
     case TOPRIGHT:
-        frame.x = head_x + head_w - frame.width - border_width*2;
-        frame.y = head_y;
-        frame.x_hidden = frame.x;
-        frame.y_hidden = head_y - border_width - frame.height + pixel;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT);
+        frame.x += head_w - static_cast<int>(frame.width) - bw*2;
+        frame.y_hidden += pixel - bw - static_cast<int>(frame.height);
         break;
-
     case BOTTOMRIGHT:
-        frame.x = head_x + head_w - frame.width - border_width*2;
-        frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - border_width - pixel;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
+        frame.x += head_w - static_cast<int>(frame.width) - bw*2;
+        frame.y += head_h - static_cast<int>(frame.height) - bw*2;
+        frame.y_hidden += head_h - bw - pixel;
         break;
-
     case BOTTOMCENTER: // default is BOTTOMCENTER
-        frame.x = head_x + (head_w - frame.width) / 2 - border_width;
-        frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - border_width - pixel;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT);
+        frame.x += (head_w - static_cast<int>(frame.width))/2 - bw;
+        frame.y += head_h - static_cast<int>(frame.height) - bw*2;
+        frame.y_hidden += head_h - bw - pixel;
         break;
     case LEFTCENTER:
-        orient = FbTk::ROT270;
-        frame.x = head_x;
-        frame.y = head_y + (head_h - frame.height)/2 - border_width;
-        frame.x_hidden = frame.x - frame.width - border_width + pixel;
-        frame.y_hidden = frame.y;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
+        frame.y += (head_h - static_cast<int>(frame.height))/2 - bw;
+        frame.x_hidden += pixel - static_cast<int>(frame.width) - bw;
         break;
     case LEFTTOP:
-        orient = FbTk::ROT270;
-        frame.x = head_x;
-        frame.y = head_y;
-        frame.x_hidden = frame.x - frame.width - border_width + pixel;
-        frame.y_hidden = frame.y;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
+        frame.x_hidden += pixel - static_cast<int>(frame.width) - bw;
         break;
     case LEFTBOTTOM:
-        orient = FbTk::ROT270;
-        frame.x = head_x;
-        frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = frame.x - frame.width - border_width + pixel;
-        frame.y_hidden = frame.y;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT);
+        frame.y = head_h - static_cast<int>(frame.height) - bw*2;
+        frame.x_hidden += pixel - static_cast<int>(frame.width) - bw;
         break;
     case RIGHTCENTER:
-        orient = FbTk::ROT90;
-        frame.x = head_x + head_w - frame.width - border_width*2;
-        frame.y = head_y + (head_h - frame.height)/2 - border_width;
-        frame.x_hidden = frame.x + frame.width + border_width - pixel;
-        frame.y_hidden = frame.y;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);
+        frame.x += head_w - static_cast<int>(frame.width) - bw*2;
+        frame.y += (head_h - static_cast<int>(frame.height))/2 * bw;
+        frame.x_hidden += static_cast<int>(frame.width) + bw - pixel;
         break;
     case RIGHTTOP:
-        orient = FbTk::ROT90;
-        frame.x = head_x + head_w - frame.width - border_width*2;
-        frame.y = head_y;
-        frame.x_hidden = frame.x + frame.width + border_width - pixel;
-        frame.y_hidden = frame.y;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);
+        frame.x += head_w - static_cast<int>(frame.width) - bw*2;
+        frame.x_hidden += static_cast<int>(frame.width) + bw - pixel;
         break;
     case RIGHTBOTTOM:
-        orient = FbTk::ROT90;
-        frame.x = head_x + head_w - frame.width - border_width*2;
-        frame.y = head_y + head_h - frame.height - border_width*2;
-        frame.x_hidden = frame.x + frame.width + border_width - pixel;
-        frame.y_hidden = frame.y;
-        if (m_shape.get())
-            m_shape->setPlaces(FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT);
+        frame.x += head_w - static_cast<int>(frame.width) - bw*2;
+        frame.y += head_h - static_cast<int>(frame.height) - bw*2;
+        frame.x_hidden +=   static_cast<int>(frame.width) + bw - pixel;
         break;
     }
 
@@ -809,7 +758,6 @@ void Toolbar::setupMenus(bool skip_new_placement) {
 
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);
     menu().insertItem(toolbar_menuitem);
-
     menu().insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,
                                              "Maximize Over",
                                              "Maximize over this thing when maximizing"),
@@ -832,12 +780,11 @@ void Toolbar::setupMenus(bool skip_new_placement) {
 
     // menu is 3 wide, 5 down
     if (!skip_new_placement) {
-        struct PlacementP {
+
+        static const struct {
              const FbTk::FbString label;
              Toolbar::Placement placement;
-        };
-
-        static const PlacementP place_menu[] = {
+        } pm[] = {
             { _FB_XTEXT(Align, TopLeft, "Top Left", "Top Left"), Toolbar::TOPLEFT},
             { _FB_XTEXT(Align, LeftTop, "Left Top", "Left Top"), Toolbar::LEFTTOP},
             { _FB_XTEXT(Align, LeftCenter, "Left Center", "Left Center"), Toolbar::LEFTCENTER},
@@ -857,14 +804,13 @@ void Toolbar::setupMenus(bool skip_new_placement) {
 
         placementMenu().setMinimumColumns(3);
         // create items in sub menu
-        for (size_t i=0; i< sizeof(place_menu)/sizeof(PlacementP); ++i) {
-            const PlacementP& p = place_menu[i];
-            if (p.label == "") {
-                placementMenu().insert(p.label);
+        for (size_t i=0; i< sizeof(pm)/sizeof(pm[0]); ++i) {
+            if (pm[i].label == "") {
+                placementMenu().insert(pm[i].label);
                 placementMenu().setItemEnabled(i, false);
             } else
-                placementMenu().insertItem(new PlaceToolbarMenuItem(p.label, *this,
-                                                                p.placement));
+                placementMenu().insertItem(new PlaceToolbarMenuItem(pm[i].label, *this,
+                                                                pm[i].placement));
         }
     }
 
@@ -905,21 +851,7 @@ void Toolbar::rearrangeItems() {
         m_item_list.empty())
         return;
 
-    FbTk::Orientation orient = FbTk::ROT0;
-    switch (placement()) {
-    case LEFTTOP:
-    case LEFTCENTER:
-    case LEFTBOTTOM:
-        orient = FbTk::ROT270;
-        break;
-    case RIGHTTOP:
-    case RIGHTCENTER:
-    case RIGHTBOTTOM:
-        orient = FbTk::ROT90;
-        break;
-    default:
-        orient = FbTk::ROT0;
-    }
+    FbTk::Orientation orient = _values[placement()].orient;
 
     // lock this
     m_resize_lock = true;
