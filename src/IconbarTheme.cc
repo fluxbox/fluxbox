@@ -64,15 +64,13 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
                 || tm.loadItem(item, "toolbar", "toolbar"));
     } else if (item.name() == m_name + ".borderWidth")
         // don't fallback for base border, for theme backwards compatibility
-        return (tm.loadItem(item, base + ".borderWidth",
-                            altbase + ".BorderWidth") ||
+        return (tm.loadItem(item, base + ".borderWidth", altbase + ".BorderWidth") ||
                 tm.loadItem(item, "window.borderWidth", "Window.BorderWidth") ||
                 tm.loadItem(item, "borderWidth", "BorderWidth"));
 
     else if (item.name() == m_name + ".borderColor")
 
-        return (tm.loadItem(item, base + ".borderColor",
-                            altbase + ".BorderColor") ||
+        return (tm.loadItem(item, base + ".borderColor", altbase + ".BorderColor") ||
                 tm.loadItem(item, "window.borderColor", "Window.BorderColor") ||
                 tm.loadItem(item, "borderColor", "BorderColor"));
 

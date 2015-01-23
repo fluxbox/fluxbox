@@ -239,7 +239,7 @@ bool Fluxbox::haveShape() const { return s_have_shape; }
 int Fluxbox::shapeEventbase() const { return s_shape_eventbase; }
 Fluxbox* Fluxbox::instance() { return s_singleton; }
 
-Fluxbox::Config::Config(FbTk::ResourceManager& rm, const std::string& path) : 
+Fluxbox::Config::Config(FbTk::ResourceManager& rm, const std::string& path) :
     ignore_border(rm, false, "session.ignoreBorder", "Session.IgnoreBorder"),
     pseudotrans(rm, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
     colors_per_channel(rm, 4, "session.colorsPerChannel", "Session.ColorsPerChannel"),
