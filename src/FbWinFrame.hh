@@ -30,7 +30,6 @@
 #include "FbTk/Color.hh"
 #include "FbTk/LayerItem.hh"
 #include "FbTk/TextButton.hh"
-#include "FbTk/DefaultValue.hh"
 #include "FbTk/Container.hh"
 #include "FbTk/Shape.hh"
 #include "FbTk/Signal.hh"
@@ -73,12 +72,6 @@ public:
     FbWinFrame(BScreen &screen, unsigned int client_depth, WindowState &state,
                FocusableTheme<FbWinFrameTheme> &theme);
 
-/*    /// create a frame window inside another FbWindow, NOT IMPLEMENTED!
-    FbWinFrame(BScreen &screen, FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
-               const FbTk::FbWindow &parent,
-               int x, int y,
-               unsigned int width, unsigned int height);
-*/
     /// destroy frame
     ~FbWinFrame();
 
@@ -119,8 +112,8 @@ public:
 
     /// Alpha settings
     void setAlpha(bool focused, int value);
-    void applyAlpha();
     int getAlpha(bool focused) const;
+    void applyAlpha();
 
     void setDefaultAlpha();
     bool getUseDefaultAlpha() const;
@@ -258,10 +251,6 @@ private:
 
     void renderButtons(); // subset of renderTitlebar - don't call directly
 
-    /// renders to pixmap or sets color
-    void render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
-                unsigned int width, unsigned int height, FbTk::Orientation orient = FbTk::ROT0);
-
     //@}
 
     // these return true/false for if something changed
@@ -286,8 +275,10 @@ private:
     void applyTabContainer(); // and label buttons
     void applyButtons(); // only called within applyTitlebar
 
+#if 0
     void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                FbTk::Color &label_color, FbTk::Color &title_color);
+#endif
 
     /// initiate inserted button for current theme
     void applyButton(FbTk::Button &btn);
@@ -338,36 +329,19 @@ private:
        @name pixmaps and colors for rendering
     */
     //@{
-    Pixmap m_title_focused_pm; ///< pixmap for focused title
-    FbTk::Color m_title_focused_color; ///< color for focused title
-    Pixmap m_title_unfocused_pm; ///< pixmap for unfocused title
-    FbTk::Color m_title_unfocused_color; ///< color for unfocused title
 
-    Pixmap m_label_focused_pm; ///< pixmap for focused label (only visible with external tabs)
-    FbTk::Color m_label_focused_color; ///< color for focused label
-    Pixmap m_label_unfocused_pm; ///< pixmap for unfocused label
-    FbTk::Color m_label_unfocused_color; ///< color for unfocused label
+    // 0-unfocus, 1-focus
+    struct Face { Pixmap pm[2]; FbTk::Color color[2]; };
+    // 0-unfocus, 1-focus, 2-pressed
+    struct BtnFace { Pixmap pm[3]; FbTk::Color color[3]; };
 
-    Pixmap m_tabcontainer_focused_pm; ///< pixmap for focused tab container
-    FbTk::Color m_tabcontainer_focused_color; ///< color for focused tab container
-    Pixmap m_tabcontainer_unfocused_pm; ///< pixmap for unfocused tab container
-    FbTk::Color m_tabcontainer_unfocused_color; ///< color for unfocused tab container
+    Face m_title_face;
+    Face m_label_face;
+    Face m_tabcontainer_face;
+    Face m_handle_face;
+    Face m_grip_face;
+    BtnFace m_button_face;
 
-    FbTk::Color m_handle_focused_color, m_handle_unfocused_color;
-    Pixmap m_handle_focused_pm, m_handle_unfocused_pm;
-
-
-    Pixmap m_button_pm;  ///< normal button
-    FbTk::Color m_button_color; ///< normal color button
-    Pixmap m_button_unfocused_pm; ///< unfocused button
-    FbTk::Color m_button_unfocused_color; ///< unfocused color button
-    Pixmap m_button_pressed_pm; ///< pressed button
-    FbTk::Color m_button_pressed_color; ///< pressed button color
-
-    Pixmap m_grip_focused_pm;
-    FbTk::Color m_grip_focused_color; ///< if no pixmap is given for grip, use this color
-    Pixmap m_grip_unfocused_pm; ///< unfocused pixmap for grip
-    FbTk::Color m_grip_unfocused_color; ///< unfocused color for grip if no pixmap is given
     //@}
 
     TabMode m_tabmode;
@@ -376,10 +350,7 @@ private:
 
     bool m_need_render;
     int m_button_size; ///< size for all titlebar buttons
-    /// alpha values
-    typedef FbTk::ConstObjectAccessor<int, FbWinFrameTheme> AlphaAcc;
-    FbTk::DefaultValue<int, AlphaAcc> m_focused_alpha;
-    FbTk::DefaultValue<int, AlphaAcc> m_unfocused_alpha;
+    int m_alpha[2]; // 0-unfocused, 1-focused
 
     FbTk::Shape m_shape;
 };
