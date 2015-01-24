@@ -28,26 +28,34 @@
 
 namespace {
 
-// calcs longest substring of 'text', fitting into 'max_width'
+// calcs longest substring of 'text', fitting into 'n_pixels'
 // 'text_len' is an in-out parameter
 // 'text_width' is out parameter
-void maxTextLength(int max_width, const FbTk::Font& font, const char* const text,
+void maxTextLength(int n_pixels, const FbTk::Font& font, const char* const text,
         unsigned int& text_len, int& text_width) {
 
     text_width = font.textWidth(text, text_len);
 
-    // rendered text exceeds max_width. calculate 'len' to cut off 'text'.
-    if (text_width > max_width) {
+    // rendered text exceeds n_pixels. calculate 'len' to cut off 'text'.
+    if (text_width > n_pixels) {
 
-        // pick some good starting points for the search
+        // there is less room for thicker glyphs than for
+        // thin glyphs. 'text' contains usually a good mix of both. to decide
+        // upon where we cut off glyphs from 'text', we do a binary search
+        // over 'text' to find the optimal length that fits into 'n_pixels'.
         //
+        // by assuming a text that consists of only thick glyphs ("WW") and
+        // a text that consist of only thin glyphs (".") we find a good
+        // start to binary search:
+        //
+        //                +---right
         //  [...........|.R ]
         //  [WWWWWWWWWWL|   ]
-        //
-        //          max_width
+        //             +------left
+        //              n_pixels
 
-        int right = max_width / (font.textWidth(".", 1) + 1);
-        int left = max_width / (font.textWidth("WW", 2) + 1);
+        int right = n_pixels / (font.textWidth(".", 1) + 1);
+        int left = n_pixels / (font.textWidth("WW", 2) + 1);
         int middle;
 
         // binary search for longest substring fitting into 'max_width' pixels
@@ -56,7 +64,7 @@ void maxTextLength(int max_width, const FbTk::Font& font, const char* const text
             middle = left + ((right - left) / 2);
             text_width = font.textWidth(text, middle);
 
-            if (text_width < max_width) {
+            if (text_width < n_pixels) {
                 left = middle;
             } else {
                 right = middle;
@@ -71,7 +79,7 @@ void maxTextLength(int max_width, const FbTk::Font& font, const char* const text
 
 namespace FbTk {
 
-int doAlignment(int max_width, int bevel, FbTk::Justify justify,
+int doAlignment(int n_pixels, int bevel, FbTk::Justify justify,
                 const FbTk::Font &font, const char * const text,
                 unsigned int textlen, unsigned int &newlen) {
 
@@ -80,14 +88,14 @@ int doAlignment(int max_width, int bevel, FbTk::Justify justify,
 
     int text_width;
 
-    maxTextLength(max_width - bevel, font, text, textlen, text_width);
+    maxTextLength(n_pixels - bevel, font, text, textlen, text_width);
 
     newlen = textlen;
 
     if (justify == FbTk::RIGHT) {
-        return max_width - text_width;
+        return n_pixels - text_width;
     } else if (justify == FbTk::CENTER) {
-        return (max_width - text_width + bevel)/2;
+        return (n_pixels - text_width + bevel)/2;
     }
 
     return bevel;

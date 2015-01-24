@@ -29,9 +29,9 @@ namespace FbTk {
 class Font;
 
 /**
-   Aligns the text after max width and bevel
+   Aligns the text after max_pixels and bevel
  */
-int doAlignment(int max_width, int bevel, FbTk::Justify justify, 
+int doAlignment(int max_pixels, int bevel, FbTk::Justify justify, 
                 const FbTk::Font &font, const char * const text, 
                 unsigned int textlen, unsigned int &newlen);
 
