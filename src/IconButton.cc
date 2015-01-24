@@ -250,6 +250,7 @@ void IconButton::setupWindow() {
 }
 
 void IconButton::drawText(int x, int y, FbTk::FbDrawable *drawable) {
+
     // offset text
     if (m_icon_pixmap.drawable() != 0)
         FbTk::TextButton::drawText(m_icon_window.x() + m_icon_window.width() + 1, y, drawable);
@@ -269,8 +270,7 @@ bool IconButton::setOrientation(FbTk::Orientation orient) {
         FbTk::translatePosition(orient, iconx, icony, m_icon_window.width(), m_icon_window.height(), 0);
         m_icon_window.move(iconx, icony);
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
