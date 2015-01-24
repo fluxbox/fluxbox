@@ -1,7 +1,7 @@
 dnl Initialize autoconf and automake
 AC_PREREQ([2.52])
 AC_INIT([fluxbox],
-	[1.3.6],
+	[1.3.7],
 	[fluxbox-devel@lists.sourceforge.net], [],
 	[http://fluxbox.org/])
 AC_CONFIG_SRCDIR([src/fluxbox.cc])

@@ -3,6 +3,9 @@
 -----------------------------
 Changes for 1.3.7
 
+*15/01/24:
+    * Bugfix: render vertical text (affects Tabs and Toolbar; closes #1119)
+
 *15/01/22:
     * Bugfix: _NET_REQUEST_FRAME_EXTENTS (closes #1121)
     * Bugfix: emit signal when window gets decionified
