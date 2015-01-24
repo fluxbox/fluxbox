@@ -1598,7 +1598,7 @@ find_it "${LAUNCHER}" append "[exec]   (${RUNCOMMAND}) {$LAUNCHER_CMD}"
 
 append_submenu "${TERMINALMENU}"
     normal_find xterm urxvt urxvtc gnome-terminal multi-gnome-terminal Eterm \
-        konsole aterm mlterm multi-aterm rxvt mrxvt
+        konsole aterm mlterm multi-aterm rxvt mrxvt lxterminal
 append_menu_end
 
 
@@ -1663,7 +1663,7 @@ append_submenu "${NETMENU}"
 append_menu_end
 
 append_submenu "${EDITORMENU}"
-    normal_find gvim bluefish nedit gedit xedit kword kwrite kate anjuta \
+    normal_find gvim bluefish nedit gedit geany xedit kword kwrite kate anjuta \
         wings xemacs emacs kvim cream evim scite Ted
     cli_find nano vim vi zile jed joe
     find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
