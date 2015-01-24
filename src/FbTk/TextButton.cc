@@ -23,7 +23,6 @@
 #include "TextUtils.hh"
 #include "Font.hh"
 #include "GContext.hh"
-#include <cstdio>
 
 namespace FbTk {
 
@@ -123,21 +122,29 @@ void TextButton::drawText(int x_offset, int y_offset, FbDrawable *drawable) {
     if (drawable == 0)
         drawable = this;
 
+
     const FbString& visual = text().visual();
     unsigned int textlen = visual.size();
     unsigned int button_width = width();
     unsigned int button_height = height();
-    const int max_width = static_cast<int>(button_width) - x_offset -
-        m_left_padding - m_right_padding;
+    int padding = m_left_padding + m_right_padding;
 
-    if (max_width <= bevel()) {
+    int n_pixels = static_cast<int>(button_width) - x_offset;
+    if (m_orientation == ROT90 || m_orientation == ROT270) {
+        n_pixels = static_cast<int>(button_height) - y_offset;
+    }
+    n_pixels -= padding;
+
+    // text is to small to render
+    if (n_pixels <= bevel()) {
         return;
     }
+
 
     translateSize(m_orientation, button_width, button_height);
 
     // horizontal alignment, cut off text if needed
-    int align_x = FbTk::doAlignment(max_width,
+    int align_x = FbTk::doAlignment(n_pixels,
                                     bevel(), justify(), font(),
                                     visual.data(), visual.size(),
                                     textlen); // return new text len
