@@ -38,17 +38,8 @@
 #include <string>
 #include <memory>
 #include <algorithm>
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
-
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+#include <cstdio>
+#include <cstring>
 
 // needed as well for index on some systems (e.g. solaris)
 #include <strings.h>

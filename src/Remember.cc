@@ -60,6 +60,26 @@ using std::ofstream;
 using std::hex;
 using std::dec;
 
+using FbTk::StringUtil::getStringBetween;
+using FbTk::StringUtil::removeFirstWhitespace;
+using FbTk::StringUtil::removeTrailingWhitespace;
+using FbTk::StringUtil::toLower;
+using FbTk::StringUtil::toLower;
+using FbTk::StringUtil::extractNumber;
+using FbTk::StringUtil::expandFilename;
+
+namespace {
+
+inline bool isComment(std::string& line) {
+    removeFirstWhitespace(line);
+    removeTrailingWhitespace(line);
+    if (line.size() == 0 || line[0] == '#')
+        return true;
+    return false;
+}
+
+}
+
 /*------------------------------------------------------------------*\
 \*------------------------------------------------------------------*/
 
@@ -309,8 +329,7 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
 
     _FB_USES_NLS;
 
-    typedef struct { bool is_alpha; const FbTk::BiDiString label; Remember::Attribute attr; } MenuEntry;
-    static const MenuEntry _entries[] = {
+    static const struct { bool is_alpha; const FbTk::BiDiString label; Remember::Attribute attr; } _entries[] = {
         { false, _FB_XTEXT(Remember, Workspace, "Workspace", "Remember Workspace"), Remember::REM_WORKSPACE },
         { false, _FB_XTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"), Remember::REM_JUMPWORKSPACE },
         { false, _FB_XTEXT(Remember, Head, "Head", "Remember Head"), Remember::REM_HEAD},
@@ -346,15 +365,15 @@ FbTk::Menu *createRememberMenu(BScreen &screen) {
 // offset is the offset in the string that we start looking from
 // return true if all ok, false on error
 bool handleStartupItem(const string &line, int offset) {
+
+    Fluxbox* fb = Fluxbox::instance();
+    unsigned int screen = fb->keyScreen()->screenNumber();
     int next = 0;
     string str;
-    unsigned int screen = Fluxbox::instance()->keyScreen()->screenNumber();
 
     // accept some options, for now only "screen=NN"
     // these option are given in parentheses before the command
-    next = FbTk::StringUtil::getStringBetween(str,
-                                              line.c_str() + offset,
-                                              '(', ')');
+    next = getStringBetween(str, line.c_str() + offset, '(', ')');
     if (next > 0) {
         // there are some options
         string option;
@@ -363,7 +382,7 @@ bool handleStartupItem(const string &line, int offset) {
         if (pos > 0) {
             option = str.substr(0, pos);
             if (strcasecmp(option.c_str(), "screen") == 0) {
-                error = !FbTk::StringUtil::extractNumber(str.c_str() + pos + 1, screen);
+                error = !extractNumber(str.c_str() + pos + 1, screen);
             } else {
                 error = true;
             }
@@ -378,9 +397,7 @@ bool handleStartupItem(const string &line, int offset) {
         next = 0;
     }
 
-    next = FbTk::StringUtil::getStringBetween(str,
-                                              line.c_str() + offset + next,
-                                              '{', '}');
+    next = getStringBetween(str, line.c_str() + offset + next, '{', '}');
 
     if (next <= 0) {
         cerr<<"Error parsing [startup] at column "<<offset<<" - expecting {command}."<<endl;
@@ -388,7 +405,7 @@ bool handleStartupItem(const string &line, int offset) {
     }
 
     // don't run command if fluxbox is restarting
-    if (Fluxbox::instance()->findScreen(screen)->isRestart())
+    if (fb->findScreen(screen)->isRestart())
         // the line was successfully read; we just didn't use it
         return true;
 
@@ -410,152 +427,146 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
     _FB_USES_NLS;
     int row = 0;
     while (! file.eof()) {
-        if (first_line || getline(file, line)) {
-            if (first_line) {
-                line = *first_line;
-                first_line = 0;
-            }
+        if (!(first_line || getline(file, line))) {
+            continue;
+        }
 
-            row++;
-            FbTk::StringUtil::removeFirstWhitespace(line);
-            FbTk::StringUtil::removeTrailingWhitespace(line);
-            if (line.size() == 0 || line[0] == '#')
-                continue;  //the line is commented or blank
+        if (first_line) {
+            line = *first_line;
+            first_line = 0;
+        }
 
-            int parse_pos = 0, err = 0;
-            string str_key, str_option, str_label;
+        row++;
+        if (isComment(line)) {
+            continue;
+        }
 
-            err = FbTk::StringUtil::getStringBetween(str_key,
-                                                     line.c_str(),
-                                                     '[', ']');
-            if (err > 0) {
-                int tmp;
-                tmp= FbTk::StringUtil::getStringBetween(str_option,
-                                                        line.c_str() + err,
-                                                        '(', ')');
-                if (tmp>0)
-                    err += tmp;
-            }
-            if (err > 0 ) {
-                parse_pos += err;
-                FbTk::StringUtil::getStringBetween(str_label,
-                                                         line.c_str() + parse_pos,
-                                                         '{', '}');
-            } else
-                continue; //read next line
+        string str_key, str_option, str_label;
+        int parse_pos = 0;
+        int err = getStringBetween(str_key, line.c_str(), '[', ']');
+        if (err > 0) {
+            int tmp = getStringBetween(str_option, line.c_str() + err, '(', ')');
+            if (tmp > 0)
+                err += tmp;
+        }
+        if (err > 0 ) {
+            parse_pos += err;
+            getStringBetween(str_label, line.c_str() + parse_pos, '{', '}');
+        } else
+            continue; //read next line
 
-            bool had_error = false;
+        bool had_error = false;
 
-            if (str_key.empty())
-                continue; //read next line
+        if (str_key.empty())
+            continue; //read next line
 
-            str_key = FbTk::StringUtil::toLower(str_key);
-            str_label = FbTk::StringUtil::toLower(str_label);
+        str_key = toLower(str_key);
+        str_label = toLower(str_label);
 
-            if (str_key == "workspace") {
-                unsigned int w;
-                if (FbTk::StringUtil::extractNumber(str_label, w))
-                    app.rememberWorkspace(w);
-                else
-                    had_error = true;
-            } else if (str_key == "head") {
-                unsigned int h;
-                if (FbTk::StringUtil::extractNumber(str_label, h))
-                    app.rememberHead(h);
-                else
-                    had_error = true;
-            } else if (str_key == "layer") {
-                int l = ResourceLayer::getNumFromString(str_label);
-                had_error = (l == -1);
-                if (!had_error)
-                    app.rememberLayer(l);
-            } else if (str_key == "dimensions") {
-                unsigned int h, w;
-                if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2) {
-                    app.rememberDimensions(w, h, false);
-                } else if(sscanf(str_label.c_str(), "%u%% %u%%", &w, &h) == 2) {
-                    app.rememberDimensions(w, h, true);
-                } else {
-                    had_error = true;
-                }
-            } else if (str_key == "position") {
-                FluxboxWindow::ReferenceCorner r = FluxboxWindow::LEFTTOP;
-                int x = 0, y = 0;
-                // more info about the parameter
-                // in ::rememberPosition
-
-                if (str_option.length())
-                    r = FluxboxWindow::getCorner(str_option);
-                had_error = (r == FluxboxWindow::ERROR);
-
-                if (!had_error){
-                    if(sscanf(str_label.c_str(), "%d %d", &x, &y) == 2) {
-                      app.rememberPosition(x, y, false, r);
-                    } else if (sscanf(str_label.c_str(), "%d%% %d%%", &x, &y) == 2){
-                      app.rememberPosition(x, y, true, r);
-                    }
-                } else {
-                    had_error = true;
-                }
-            } else if (str_key == "shaded") {
-                app.rememberShadedstate(str_label == "yes");
-            } else if (str_key == "tab") {
-                app.rememberTabstate(str_label == "yes");
-            } else if (str_key == "focushidden") {
-                app.rememberFocusHiddenstate(str_label == "yes");
-            } else if (str_key == "iconhidden") {
-                app.rememberIconHiddenstate(str_label == "yes");
-            } else if (str_key == "hidden") {
-                app.rememberIconHiddenstate(str_label == "yes");
-                app.rememberFocusHiddenstate(str_label == "yes");
-            } else if (str_key == "deco") {
-                int deco = WindowState::getDecoMaskFromString(str_label);
-                if (deco == -1)
-                    had_error = 1;
-                else
-                    app.rememberDecostate((unsigned int)deco);
-            } else if (str_key == "alpha") {
-                int focused_a, unfocused_a;
-                switch (sscanf(str_label.c_str(), "%i %i", &focused_a, &unfocused_a)) {
-                case 1: // 'alpha <focus>'
-                    unfocused_a = focused_a;
-                case 2: // 'alpha <focus> <unfocus>'
-                    focused_a = FbTk::Util::clamp(focused_a, 0, 255);
-                    unfocused_a = FbTk::Util::clamp(unfocused_a, 0, 255);
-                    app.rememberAlpha(focused_a, unfocused_a);
-                    break;
-                default:
-                    had_error = true;
-                    break;
-                }
-            } else if (str_key == "sticky") {
-                app.rememberStuckstate(str_label == "yes");
-            } else if (str_key == "focusnewwindow") {
-                app.rememberFocusNewWindow(str_label == "yes");
-            } else if (str_key == "minimized") {
-                app.rememberMinimizedstate(str_label == "yes");
-            } else if (str_key == "maximized") {
-                if (str_label == "yes")
-                    app.rememberMaximizedstate(WindowState::MAX_FULL);
-                else if (str_label == "horz")
-                    app.rememberMaximizedstate(WindowState::MAX_HORZ);
-                else if (str_label == "vert")
-                    app.rememberMaximizedstate(WindowState::MAX_VERT);
-                app.rememberMaximizedstate(WindowState::MAX_NONE);
-            } else if (str_key == "fullscreen") {
-                app.rememberFullscreenstate(str_label == "yes");
-            } else if (str_key == "jump") {
-                app.rememberJumpworkspace(str_label == "yes");
-            } else if (str_key == "close") {
-                app.rememberSaveOnClose(str_label == "yes");
-            } else if (str_key == "end") {
-                return row;
+        if (str_key == "workspace") {
+            unsigned int w;
+            if (extractNumber(str_label, w))
+                app.rememberWorkspace(w);
+            else
+                had_error = true;
+        } else if (str_key == "head") {
+            unsigned int h;
+            if (extractNumber(str_label, h))
+                app.rememberHead(h);
+            else
+                had_error = true;
+        } else if (str_key == "layer") {
+            int l = ResourceLayer::getNumFromString(str_label);
+            had_error = (l == -1);
+            if (!had_error)
+                app.rememberLayer(l);
+        } else if (str_key == "dimensions") {
+            unsigned int h, w;
+            if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2) {
+                app.rememberDimensions(w, h, false);
+            } else if(sscanf(str_label.c_str(), "%u%% %u%%", &w, &h) == 2) {
+                app.rememberDimensions(w, h, true);
             } else {
-                cerr << _FB_CONSOLETEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
+                had_error = true;
             }
-            if (had_error) {
-                cerr<<"Error parsing apps entry: ("<<line<<")"<<endl;
+        } else if (str_key == "position") {
+            FluxboxWindow::ReferenceCorner r = FluxboxWindow::LEFTTOP;
+            int x = 0, y = 0;
+            // more info about the parameter
+            // in ::rememberPosition
+
+            if (str_option.length())
+                r = FluxboxWindow::getCorner(str_option);
+            had_error = (r == FluxboxWindow::ERROR);
+
+            if (!had_error){
+                if(sscanf(str_label.c_str(), "%d %d", &x, &y) == 2) {
+                  app.rememberPosition(x, y, false, r);
+                } else if (sscanf(str_label.c_str(), "%d%% %d%%", &x, &y) == 2){
+                  app.rememberPosition(x, y, true, r);
+                }
+            } else {
+                had_error = true;
             }
+        } else if (str_key == "shaded") {
+            app.rememberShadedstate(str_label == "yes");
+        } else if (str_key == "tab") {
+            app.rememberTabstate(str_label == "yes");
+        } else if (str_key == "focushidden") {
+            app.rememberFocusHiddenstate(str_label == "yes");
+        } else if (str_key == "iconhidden") {
+            app.rememberIconHiddenstate(str_label == "yes");
+        } else if (str_key == "hidden") {
+            app.rememberIconHiddenstate(str_label == "yes");
+            app.rememberFocusHiddenstate(str_label == "yes");
+        } else if (str_key == "deco") {
+            int deco = WindowState::getDecoMaskFromString(str_label);
+            if (deco == -1)
+                had_error = 1;
+            else
+                app.rememberDecostate((unsigned int)deco);
+        } else if (str_key == "alpha") {
+            int focused_a, unfocused_a;
+            switch (sscanf(str_label.c_str(), "%i %i", &focused_a, &unfocused_a)) {
+            case 1: // 'alpha <focus>'
+                unfocused_a = focused_a;
+            case 2: // 'alpha <focus> <unfocus>'
+                focused_a = FbTk::Util::clamp(focused_a, 0, 255);
+                unfocused_a = FbTk::Util::clamp(unfocused_a, 0, 255);
+                app.rememberAlpha(focused_a, unfocused_a);
+                break;
+            default:
+                had_error = true;
+                break;
+            }
+        } else if (str_key == "sticky") {
+            app.rememberStuckstate(str_label == "yes");
+        } else if (str_key == "focusnewwindow") {
+            app.rememberFocusNewWindow(str_label == "yes");
+        } else if (str_key == "minimized") {
+            app.rememberMinimizedstate(str_label == "yes");
+        } else if (str_key == "maximized") {
+            WindowState::MaximizeMode m = WindowState::MAX_NONE;
+            if (str_label == "yes")
+                m = WindowState::MAX_FULL;
+            else if (str_label == "horz")
+                m = WindowState::MAX_HORZ;
+            else if (str_label == "vert")
+                m = WindowState::MAX_VERT;
+            app.rememberMaximizedstate(m);
+        } else if (str_key == "fullscreen") {
+            app.rememberFullscreenstate(str_label == "yes");
+        } else if (str_key == "jump") {
+            app.rememberJumpworkspace(str_label == "yes");
+        } else if (str_key == "close") {
+            app.rememberSaveOnClose(str_label == "yes");
+        } else if (str_key == "end") {
+            return row;
+        } else {
+            cerr << _FB_CONSOLETEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
+        }
+        if (had_error) {
+            cerr<<"Error parsing apps entry: ("<<line<<")"<<endl;
         }
     }
     return row;
@@ -709,8 +720,10 @@ void Remember::checkReload() {
 }
 
 void Remember::reload() {
-    string apps_string = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getAppsFilename());
 
+    Fluxbox& fb = *Fluxbox::instance();
+    string apps_string = expandFilename(fb.getAppsFilename());
+    bool ok = true;
 
     fbdbg<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;
 
@@ -722,100 +735,98 @@ void Remember::reload() {
     m_pats.reset(new Patterns());
     m_startups.clear();
 
-    if (!apps_file.fail()) {
-        if (!apps_file.eof()) {
-            string line;
-            int row = 0;
-            bool in_group = false;
-            ClientPattern *pat = 0;
-            list<ClientPattern *> grouped_pats;
-            while (getline(apps_file, line) && ! apps_file.eof()) {
-                row++;
-                FbTk::StringUtil::removeFirstWhitespace(line);
-                FbTk::StringUtil::removeTrailingWhitespace(line);
-                if (line.size() == 0 || line[0] == '#')
-                    continue;
-                string key;
-                int err=0;
-                int pos = FbTk::StringUtil::getStringBetween(key,
-                                                             line.c_str(),
-                                                             '[', ']');
+    if (apps_file.fail()) {
+        ok = false;
+        cerr << "failed to open apps file " << apps_string << endl;
+    }
 
-                if (pos > 0 && (strcasecmp(key.c_str(), "app") == 0 ||
-                                strcasecmp(key.c_str(), "transient") == 0)) {
-                    ClientPattern *pat = new ClientPattern(line.c_str() + pos);
-                    if (!in_group) {
-                        if ((err = pat->error()) == 0) {
-                            bool transient = (strcasecmp(key.c_str(),
-                                                         "transient") == 0);
-                            Application *app = findMatchingPatterns(pat,
-                                                   old_pats, transient, false);
-                            if (app) {
-                                app->reset();
-                                reused_apps.insert(app);
-                            } else {
-                                app = new Application(transient, false);
-                            }
+    if (ok && apps_file.eof()) {
+        ok = false;
+        fbdbg<<"("<<__FUNCTION__<< ") Empty apps file" << endl;
+    }
 
-                            m_pats->push_back(make_pair(pat, app));
-                            row += parseApp(apps_file, *app);
-                        } else {
-                            cerr<<"Error reading apps file at line "<<row<<", column "<<(err+pos)<<"."<<endl;
-                            delete pat; // since it didn't work
-                        }
-                    } else {
-                        grouped_pats.push_back(pat);
-                    }
-                } else if (pos > 0 && strcasecmp(key.c_str(), "startup") == 0 &&
-                           Fluxbox::instance()->isStartup()) {
-                    if (!handleStartupItem(line, pos)) {
-                        cerr<<"Error reading apps file at line "<<row<<"."<<endl;
-                    }
-                    // save the item even if it was bad (aren't we nice)
-                    m_startups.push_back(line.substr(pos));
-                } else if (pos > 0 && strcasecmp(key.c_str(), "group") == 0) {
-                    in_group = true;
-                    if (line.find('(') != string::npos)
-                        pat = new ClientPattern(line.c_str() + pos);
-                } else if (in_group) {
-                    // otherwise assume that it is the start of the attributes
-                    Application *app = 0;
-                    // search for a matching app
-                    list<ClientPattern *>::iterator it = grouped_pats.begin();
-                    list<ClientPattern *>::iterator it_end = grouped_pats.end();
-                    while (!app && it != it_end) {
-                        app = findMatchingPatterns(*it, old_pats, false,
-                                                   in_group, pat);
-                        ++it;
-                    }
+    if (ok) {
+        string line;
+        int row = 0;
+        bool in_group = false;
+        ClientPattern *pat = 0;
+        list<ClientPattern *> grouped_pats;
+        while (getline(apps_file, line) && ! apps_file.eof()) {
+            row++;
 
-                    if (!app)
-                        app = new Application(false, in_group, pat);
-                    else
-                        reused_apps.insert(app);
-
-                    while (!grouped_pats.empty()) {
-                        // associate all the patterns with this app
-                        m_pats->push_back(make_pair(grouped_pats.front(), app));
-                        grouped_pats.pop_front();
-                    }
-
-                    // we hit end... probably don't have attribs for the group
-                    // so finish it off with an empty application
-                    // otherwise parse the app
-                    if (!(pos>0 && strcasecmp(key.c_str(), "end") == 0)) {
-                        row += parseApp(apps_file, *app, &line);
-                    }
-                    in_group = false;
-                } else
-                    cerr<<"Error in apps file on line "<<row<<"."<<endl;
-
+            if (isComment(line)) {
+                continue;
             }
-        } else {
-            fbdbg<<"("<<__FUNCTION__<< ") Empty apps file" << endl;
+
+            string key;
+            int err=0;
+            int pos = getStringBetween(key, line.c_str(), '[', ']');
+            string lc_key = toLower(key);
+
+            if (pos > 0 && (lc_key == "app" || lc_key == "transient")) {
+                ClientPattern *pat = new ClientPattern(line.c_str() + pos);
+                if (!in_group) {
+                    if ((err = pat->error()) == 0) {
+                        bool transient = (lc_key == "transient");
+                        Application *app = findMatchingPatterns(pat,
+                                               old_pats, transient, false);
+                        if (app) {
+                            app->reset();
+                            reused_apps.insert(app);
+                        } else {
+                            app = new Application(transient, false);
+                        }
+
+                        m_pats->push_back(make_pair(pat, app));
+                        row += parseApp(apps_file, *app);
+                    } else {
+                        cerr<<"Error reading apps file at line "<<row<<", column "<<(err+pos)<<"."<<endl;
+                        delete pat; // since it didn't work
+                    }
+                } else {
+                    grouped_pats.push_back(pat);
+                }
+            } else if (pos > 0 && lc_key == "startup" && fb.isStartup()) {
+                if (!handleStartupItem(line, pos)) {
+                    cerr<<"Error reading apps file at line "<<row<<"."<<endl;
+                }
+                // save the item even if it was bad (aren't we nice)
+                m_startups.push_back(line.substr(pos));
+            } else if (pos > 0 && lc_key == "group") {
+                in_group = true;
+                if (line.find('(') != string::npos)
+                    pat = new ClientPattern(line.c_str() + pos);
+            } else if (in_group) {
+                // otherwise assume that it is the start of the attributes
+                Application *app = 0;
+                // search for a matching app
+                list<ClientPattern *>::iterator it = grouped_pats.begin();
+                list<ClientPattern *>::iterator it_end = grouped_pats.end();
+                for (; !app && it != it_end; ++it) {
+                    app = findMatchingPatterns(*it, old_pats, false, in_group, pat);
+                }
+
+                if (!app)
+                    app = new Application(false, in_group, pat);
+                else
+                    reused_apps.insert(app);
+
+                while (!grouped_pats.empty()) {
+                    // associate all the patterns with this app
+                    m_pats->push_back(make_pair(grouped_pats.front(), app));
+                    grouped_pats.pop_front();
+                }
+
+                // we hit end... probably don't have attribs for the group
+                // so finish it off with an empty application
+                // otherwise parse the app
+                if (!(pos>0 && lc_key == "end")) {
+                    row += parseApp(apps_file, *app, &line);
+                }
+                in_group = false;
+            } else
+                cerr<<"Error in apps file on line "<<row<<"."<<endl;
         }
-    } else {
-        cerr << "failed to open apps file" << endl;
     }
 
     // Clean up old state
