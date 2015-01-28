@@ -33,7 +33,6 @@
 #include "EventHandler.hh"
 #include "MenuTheme.hh"
 #include "Timer.hh"
-#include "TypeAhead.hh"
 
 namespace FbTk {
 
@@ -53,6 +52,7 @@ public:
 
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
     enum { RIGHT = 1, LEFT };
+    enum { UP = 1, DOWN = 0 };
 
     /**
        Bullet type
@@ -71,6 +71,7 @@ public:
     int insertSubmenu(const FbString &label, Menu *submenu, int pos= -1);
     int insertItem(MenuItem *item, int pos=-1);
     int remove(unsigned int item);
+    int removeItem(MenuItem* item);
     void removeAll();
     void setInternalMenu(bool val = true) { m_internal_menu = val; }
     void setAlignment(Alignment a) { m_alignment = a; }
@@ -180,24 +181,16 @@ private:
     void startHide();
     void stopHide();
 
-    FbTk::ThemeProxy<MenuTheme> &m_theme;
-    Menu *m_parent;
-    ImageControl &m_image_ctrl;
-
-    typedef std::vector<MenuItem *> Menuitems;
-    Menuitems m_items;
-    TypeAhead<Menuitems, MenuItem *> m_type_ahead;
-    Menuitems m_matches;
-
     void resetTypeAhead();
     void drawTypeAheadItems();
-    void drawLine(int index, int size);
-    void fixMenuItemIndices();
 
-    struct Rect {
-        int x, y;
-        unsigned int width, height;
-    } m_screen;
+
+    Menu *m_parent;
+
+    class TypeSearch;
+
+    std::vector<MenuItem *>   m_items;
+    std::auto_ptr<TypeSearch> m_search;
 
     struct State {
         bool moving;
@@ -206,14 +199,20 @@ private:
         bool torn; // torn from parent
     } m_state;
 
+    bool m_need_update;
     bool m_internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
+    int m_active_index; ///< current highlighted index
     int m_which_sub;
+    int m_x_move;
+    int m_y_move;
 
-    Alignment m_alignment;
+    struct Rect {
+        int x, y;
+        unsigned int width, height;
+    } m_screen;
 
     // the menu window
     FbTk::FbWindow m_window;
-    Pixmap m_hilite_pixmap;
 
     // the title
     struct Title {
@@ -231,24 +230,20 @@ private:
     } m_frame;
 
 
-    int m_x_move;
-    int m_y_move;
-
     // the menuitems are rendered in a grid with
     // 'm_columns' (a minimum of 'm_min_columns') and
     // a max of 'm_rows_per_column'
     int m_columns;
     int m_rows_per_column;
     int m_min_columns;
-
     unsigned int m_item_w;
 
-    int m_active_index; ///< current highlighted index
+    FbTk::ThemeProxy<MenuTheme>& m_theme;
+    ImageControl& m_image_ctrl;
+    std::auto_ptr<FbTk::Shape> m_shape; // the corners
+    Pixmap      m_hilite_pixmap;
+    Alignment   m_alignment;
 
-    // the corners
-    std::auto_ptr<FbTk::Shape> m_shape;
-
-    bool m_need_update;
     Timer m_submenu_timer;
     Timer m_hide_timer;
 

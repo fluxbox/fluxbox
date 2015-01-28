@@ -28,9 +28,12 @@
 #include "App.hh"
 #include "StringUtil.hh"
 #include "Menu.hh"
+
 #include <X11/keysym.h>
 
 namespace FbTk {
+
+MenuItem::~MenuItem() { }
 
 void MenuItem::click(int button, int time, unsigned int mods) {
     if (m_command.get() != 0) {
@@ -43,41 +46,50 @@ void MenuItem::click(int button, int time, unsigned int mods) {
 }
 
 void MenuItem::drawLine(FbDrawable &draw,
-                        const FbTk::ThemeProxy<MenuTheme> &theme, size_t size,
-                        int text_x, int text_y, unsigned int width) const {
+                        const FbTk::ThemeProxy<MenuTheme> &theme, size_t n_chars,
+                        int text_x, int text_y, unsigned int width,
+                        size_t skip_chars) const {
 
-    unsigned int height = theme->itemHeight();
-    int bevelW = theme->bevelWidth();
+    // avoid drawing an ugly dot
+    if (n_chars == 0) {
+        return;
+    }
 
-    int font_top = (height - theme->hiliteFont().height())/2;
-    int underline_height = font_top + theme->hiliteFont().ascent() + 2;
-    int bottom = height - bevelW - 1;
+    const FbString& text = m_label.visual();
+    const size_t n = std::min(n_chars, text.size());
+    const FbTk::Font& font = theme->hiliteFont();
+    int font_height = static_cast<int>(font.height());
+    int height = static_cast<int>(theme->itemHeight());
+    int font_top = (height - font_height)/2;
+    int bevel_width = static_cast<int>(theme->bevelWidth());
+    int underline_height = font_top + font.ascent() + 2;
+    int bottom = height - bevel_width - 1;
+    int text_w = font.textWidth(label());
+    int text_pixels = font.textWidth(text.c_str()+skip_chars, n);
+    int skip_pixels = 0;
+    if (skip_chars > 0) {
+        skip_pixels = font.textWidth(text.c_str(), skip_chars);
+    }
 
-    text_y += bottom > underline_height ? underline_height : bottom;
-
-    int text_w = theme->hiliteFont().textWidth(label());
-
-    const FbString& visual = m_label.visual();
-    BiDiString search_string(FbString(visual, 0, size > visual.size() ? visual.size() : size));
-    int search_string_w = theme->hiliteFont().textWidth(search_string);
+    text_y += std::min(bottom, underline_height);
 
     // pay attention to the text justification
     switch(theme->hiliteFontJustify()) {
     case FbTk::LEFT:
-        text_x += bevelW + height + 1;
+        text_x += bevel_width + height + 1;
         break;
     case FbTk::RIGHT:
-        text_x += width - (height + bevelW + text_w);
+        text_x += width - (height + bevel_width + text_w);
         break;
     default: //center
         text_x += ((width + 1 - text_w) / 2);
         break;
     }
 
-    // avoid drawing an ugly dot
-    if (size != 0)
-        draw.drawLine(theme->hiliteUnderlineGC().gc(),
-                      text_x, text_y, text_x + search_string_w, text_y);
+    text_x += skip_pixels;
+
+    draw.drawLine(theme->hiliteUnderlineGC().gc(),
+                  text_x, text_y, text_x + text_pixels, text_y);
 
 }
 

@@ -26,10 +26,11 @@
 #include "Window.hh"
 #include "WindowCmd.hh"
 #include "FocusControl.hh"
-#include <X11/keysym.h>
 
 #include "FbTk/MenuItem.hh"
 #include "FbTk/MemFun.hh"
+
+#include <X11/keysym.h>
 
 namespace { // anonymous
 
@@ -159,5 +160,5 @@ void ClientMenu::clientDied(Focusable &win) {
 
     // update accordingly
     if (cl_item)
-        remove(cl_item->getIndex());
+        FbTk::Menu::removeItem(cl_item);
 }
