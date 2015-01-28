@@ -118,7 +118,7 @@ size_t search_string(const std::string& text, const std::string& pattern) {
                 return t+p;
             }
         }
-        t += skip[text[t+p]];
+        t += skip[std::tolower(text[t+p])];
     }
 
     return std::string::npos;
