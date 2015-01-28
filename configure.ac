@@ -599,6 +599,9 @@ nls/zh_CN/Makefile
 nls/zh_TW/Makefile
 ])
 
+MSG_RESULT_CXXFLAGS="$FRIBIDI_CFLAGS $XRANDR_CFLAGS $AM_CPPFLAGS $CXXFLAGS"
+MSG_RESULT_LIBS="$LDADD $FONTCONFIG_LIBS $FREETYPE2_LIBS $FRIBIDI_LIBS $IMLIB2_LIBS $RANDR_LIBS $XEXT_LIBS $XFT_LIBS $XINERAMA_LIBS $XPM_LIBS $XRENDER_LIBS"
+
 dnl Print results
 AC_MSG_RESULT([])
 AC_MSG_RESULT([	$PACKAGE version $VERSION configured successfully.])
@@ -614,8 +617,8 @@ AC_MSG_RESULT([	'$locale_path' for nls files.])
 AC_MSG_RESULT([	'$CXX' for C++ compiler.])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Building with:])
-AC_MSG_RESULT([	'$CXXFLAGS' for C++ compiler flags.])
-AC_MSG_RESULT([	'$LIBS' for linker flags.])
+AC_MSG_RESULT([	'$MSG_RESULT_CXXFLAGS' for C++ compiler flags.])
+AC_MSG_RESULT([	'$MSG_RESULT_LIBS' for linker flags.])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Now build $PACKAGE with 'make'])
 AC_MSG_RESULT([])
