@@ -821,17 +821,15 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     const BScreen::WorkspaceNames &workspacenames = screen.getWorkspaceNames();
     const size_t number_of_desks = workspacenames.size();
 
-    char** names = new char*[number_of_desks];
+    const char** names = new const char*[number_of_desks];
 
     for (size_t i = 0; i < number_of_desks; i++) {
-        names[i] = new char[workspacenames[i].size() + 1]; // +1 for \0
-        memset(names[i], 0, workspacenames[i].size());
-        strcpy(names[i], workspacenames[i].c_str());
+        names[i] = workspacenames[i].c_str();
     }
 
 #ifdef X_HAVE_UTF8_STRING
     int code = Xutf8TextListToTextProperty(FbTk::App::instance()->display(),
-                                names, number_of_desks, XUTF8StringStyle, &text);
+                                const_cast<char**>(names), number_of_desks, XUTF8StringStyle, &text);
     if (code != XNoMemory && code != XLocaleNotSupported) {
         XSetTextProperty(FbTk::App::instance()->display(),
                          screen.rootWindow().window(),
@@ -848,11 +846,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     }
 #endif
 
-    for (size_t i = 0; i < number_of_desks; i++)
-        delete[] names[i];
-
     delete[] names;
-
 }
 
 void Ewmh::updateCurrentWorkspace(BScreen &screen) {
