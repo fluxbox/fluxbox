@@ -287,6 +287,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
                       "Error message when no X display appears to exist");
     }
 
+    m_config.path = rc_path;
     m_config.file = rc_filename;
     m_active_screen.mouse = 0;
     m_active_screen.key = 0;
