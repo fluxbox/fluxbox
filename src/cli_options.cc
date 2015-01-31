@@ -32,22 +32,8 @@
 #include "FbTk/Command.hh"
 #include "FbTk/CommandParser.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 using std::cerr;

@@ -370,7 +370,7 @@ int main(int argc, char **argv) {
     char *display_name = (char *) 0;
     int i = 1;
 
-    FbTk::I18n::init("fluxbox.cat");
+    FbTk::I18n::init(0);
 
     for (; i < argc; i++) {
         if (!strcmp(argv[i], "-display") || !strcmp(argv[i], "--display")) {

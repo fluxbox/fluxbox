@@ -565,7 +565,7 @@ int main(int argc, char **argv) {
     bool check = 0;
     pid_t fb_pid = 0;
 
-    FbTk::I18n::init("fluxbox.cat");
+    FbTk::I18n::init(0);
     _FB_USES_NLS;
 
     for (; i < argc; i++) {
