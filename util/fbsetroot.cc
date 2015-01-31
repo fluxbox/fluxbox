@@ -28,21 +28,9 @@
 
 #include <X11/Xatom.h>
 
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 
 using std::cout;
@@ -382,7 +370,7 @@ int main(int argc, char **argv) {
     char *display_name = (char *) 0;
     int i = 1;
 
-    FbTk::NLSInit("fluxbox.cat");
+    FbTk::I18n::init("fluxbox.cat");
 
     for (; i < argc; i++) {
         if (!strcmp(argv[i], "-display") || !strcmp(argv[i], "--display")) {

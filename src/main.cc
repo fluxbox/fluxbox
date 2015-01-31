@@ -158,7 +158,7 @@ void setupSignalHandling() {
 
 int main(int argc, char **argv) {
 
-    FbTk::NLSInit("fluxbox.cat");
+    FbTk::I18n::init("fluxbox.cat");
 
     FluxboxCli::Options opts;
     int exitcode = opts.parse(argc, argv);
