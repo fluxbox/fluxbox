@@ -34,11 +34,12 @@ $set 3 #Common
 4 Opciones compiladas
 5 Compilador
 6 Versión del compilador
-7      init
-8      keys
-9       nls
-10      menu
-11     style
+7        init
+8        keys
+9         nls
+10        menu
+20  windowmenu
+11       style
 12 Opciones por defecto
 13 desactivado
 14 Error
@@ -251,8 +252,8 @@ $set 19 #main
 Página web: http://www.fluxbox.org/\n\n\
 -display <string>\t\tutilizar conexion a un diplay.\n\
 -screen <all|int,int,int>\tejecutar solamente en pantallas especificadas.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tusar archivo de recursos alternativo.\n\
 -version\t\t\tmostrar versión y salir.\n\
 -info\t\t\t\tmostrar información útil.\n\

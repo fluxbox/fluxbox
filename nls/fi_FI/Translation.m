@@ -34,11 +34,12 @@ $set 3 #Common
 4 K‰‰nnetyt vaihtoehdot
 5 K‰‰nt‰j‰
 6 K‰‰nt‰j‰n versio
-7     init
-8     keys
-9      nls
-10     menu
-11    style
+7        init
+8        keys
+9         nls
+10       menu
+20  windowmenu
+11       style
 12 Oletukset
 13 pois k‰ytˆst‰
 14 Virhe

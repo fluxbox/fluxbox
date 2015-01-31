@@ -121,8 +121,8 @@ $set 19 #main
 13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <virkne>\t\tlietot displeja savienojumu.\n\
 -screen <all|int,int,int>\trun on specified screens only.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <virkne>\t\t\tlietot citu resersu failu.\n\
 -version\t\t\tparâdît versiju un iziet.\n\
 -info\t\t\t\tdisplay some useful information.\n\

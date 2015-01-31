@@ -194,8 +194,8 @@ $set 19 #main
 13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\t 指定ディスプレイに接続.\n\
 -screen <all|int,int,int>\trun on specified screens only.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\t 代わりのリソースファイルを使用.\n\
 -version\t\t\t バージョン情報を表示して終了.\n\
 -info\t\t\t\tdisplay some useful information.\n\

@@ -232,7 +232,7 @@ $set 19 #main
 13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\tкарыстацца адзначаным дасыплем.\n\
 -no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-toolbar\t\t\tdo not provide a toolbar\n\
 -rc <string>\t\t\tкарыстацца другім файлам рэсурсаў.\n\
 -version\t\t\tпаказаць нумар вэрсіі ды выйсьці.\n\
 -info\t\t\t\tпаказаць некаторую карысную інфармацыю ды выйсьці.\n\

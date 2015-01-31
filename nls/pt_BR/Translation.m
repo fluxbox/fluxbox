@@ -37,11 +37,12 @@ $set 3 #Common
 4 Opções de compilação
 5 Compilador
 6 Versão do compilador
-7     init
-8     keys
-9      nls
-10     menu
-11    style
+7        init
+8        keys
+9         nls
+10        menu
+20  windowmenu
+11       style
 12 Padrões
 13 desativado
 14 Erro
@@ -259,8 +260,8 @@ $set 19 #main
 Site: http://www.fluxbox.org/\n\n\
 -display <string>\t\tusar conexão com o monitor.\n\
 -screen <all|int,int,int>\texecutar apenas nas telas especificadas.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tusar arquivo de configuração alternativo.\n\
 -version\t\t\texibir a versão e finalizar.\n\
 -info\t\t\t\texibir algumas informações úteis.\n\

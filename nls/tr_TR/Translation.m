@@ -37,11 +37,12 @@ $set 3 #Common
 4 Derlenmiş ayarlar
 5 Derleyici
 6 Derleyici versiyonu
-7     başlat
-8     tuşlar
-9      nls
-10     menü
-11    stil
+7      başlat
+8      tuşlar
+9         nls
+10        menü
+20  windowmenu
+11        stil
 12 Varsayılanlar
 13 Devre Dışı
 14 Hata

@@ -249,8 +249,8 @@ $set 19 #main
 主页: http://www.fluxbox.org/\n\n\
 -display <string>\t\t指定display连接。\n\
 -screen <all|int,int,int>\t在特定的屏幕上显示。\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\t使用指定的资源文件。\n\
 -version\t\t\t显示版本号然后退出。\n\
 -info\t\t\t\t显示一些有用的信息。\n\

@@ -34,11 +34,12 @@ $set 3 #Common
 4 Nastavenie kompilácie
 5 Kompilátor
 6 Verzia kompilátora
-7     init
+7        init
 8     klávesy
-9      nls
-10     menu
-11    štýl
+9         nls
+10        menu
+20  windowmenu
+11        štýl
 12 Predvolené
 13 vypnuté
 14 Chyba
@@ -251,8 +252,8 @@ $set 19 #main
 Webová stránka: http://www.fluxbox.org/\n\n\
 -display <string>\t\tpoužiť pripojenie k displeju.\n\
 -screen <all|int,int,int>\tspustiť iba na zadaných obrazovkách.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tpoužiť alternatívny súbor zdrojov.\n\
 -version\t\t\tzobraziť verziu a skončiť.\n\
 -info\t\t\t\tzobraziť nejaké užitočné informácie.\n\

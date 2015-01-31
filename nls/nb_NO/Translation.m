@@ -241,8 +241,8 @@ $set 19 #main
 Nettside: http://www.fluxbox.org/\n\n\
 -display <streng>\t\tbruk visningsenhetforbindelse.\n\
 -screen <alle|int,int,int>\tkjør kun på valgte skjermer.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <streng>\t\t\tbruk alternativ ressursfil.\n\
 -version\t\t\tvis versjonnummer og avslutt.\n\
 -info\t\t\t\tvis litt nyttig informasjon.\n\

@@ -218,8 +218,8 @@ $set 19 #main
 13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\tbrug skærmtilslutning.\n\
 -screen <all|int,int,int>\trun on specified screens only.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tbrug alternativ resourcefil.\n\
 -version\t\t\tvis versionsnummer og afslut.\n\
 -info\t\t\t\tvis noget nyttig information.\n\

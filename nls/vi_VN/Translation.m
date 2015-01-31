@@ -213,8 +213,8 @@ $set 19 #main
 Website: http://www.fluxbox.org/\n\n\
 -display <string>\t\tsử dụng màn hình lựa chọn.\n\
 -screen <all|int,int,int>\trun on specified screens only.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tsử dụng tệp tin tài nguyên khác.\n\
 -version\t\t\tđưa ra số phiên bản và thoát.\n\
 -info\t\t\t\thiển thị vài thông tin có ích.\n\

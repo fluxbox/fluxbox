@@ -245,8 +245,8 @@ $set 19 #main
 Веб-сайт: http://www.fluxbox.org/\n\n\
 -display <string>\t\tиспользовать заданный дисплей.\n\
 -screen <all|int,int,int>\tзапускать только на определенном экране.\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tиспользовать альтернативный файл ресурсов.\n\
 -version\t\t\tвывести номер версии и выйти.\n\
 -info\t\t\t\tвывести некоторую полезную информацию и выйти.\n\

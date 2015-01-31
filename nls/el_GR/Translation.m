@@ -34,11 +34,12 @@ $set 3 #Common
 4 Επιλογές μεταγλώττισης
 5 Μεταγλωττιστής
 6 Έκδοση μεταγλωττιστή
-7 init
-8 keys
-9 nls
-10 menu
-11 style
+7        init
+8        keys
+9         nls
+10        menu
+20  windowmenu
+11       style
 12 Defaults
 13 απενεργοποιημένη
 14 Σφάλμα
@@ -240,7 +241,7 @@ $set 19 #main
 -display <string>\t\tχρησιμοποίησε σύνδεση display.\n\
 -screen <all|int,int,int>\trun on specified screens only.\n\
 -no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
+-no-toolbar\t\t\tdo not provide a toolbar\n\
 -rc <string>\t\t\tχρησιμοποίησε εναλλακτικό αρχείο πόρων.\n\
 -version\t\t\tεμφάνιση έκδοσης και τερματισμός.\n\
 -info\t\t\t\tεμφάνιση μερικών χρήσιμων πληροφοριών.\n\

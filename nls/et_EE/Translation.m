@@ -117,12 +117,12 @@ $set 19 #main
 
 1 viga: '-display' vajab argumenti
 11 viga: '-rc' vajab argumenti
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
+\n\
 -display <string>\t\tkasuta displei ühendust.\n\
 -rc <string>\t\t\tkasuta alternatiivseid resursse.\n\
 -version\t\t\tnäita versiooninumber ja välju.\n\
 -info\t\t\t\tdisplay some useful information.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tnäita seda abiteksti ja välju.\n\n
-
 
