@@ -310,7 +310,7 @@ public:
         Remember& r = Remember::instance();
         r.checkReload();
         if (FbMenu::window() != 0) {
-            WinClient wc = FbMenu::window()->winClient();
+            WinClient& wc = FbMenu::window()->winClient();
             if (isSelected()) {
                 r.forgetAttrib(wc, m_attrib);
             } else {
