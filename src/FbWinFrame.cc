@@ -95,7 +95,7 @@ void render(FbTk::Color &col, Pixmap &pm, unsigned int width, unsigned int heigh
 
 }
 
-void bg_pm_or_color(FbTk::FbWindow& win, Pixmap& pm, FbTk::Color& color) {
+void bg_pm_or_color(FbTk::FbWindow& win, const Pixmap& pm, const FbTk::Color& color) {
     if (pm) {
         win.setBackgroundPixmap(pm);
     } else {
@@ -855,12 +855,9 @@ void FbWinFrame::reconfigure() {
         m_window.resize(m_window.width(), m_window.height() -
                         orig_handle_h + theme()->handleWidth());
 
-    handle().resize(handle().width(),
-                    theme()->handleWidth());
-    gripLeft().resize(buttonHeight(),
-                      theme()->handleWidth());
-    gripRight().resize(gripLeft().width(),
-                       gripLeft().height());
+    handle().resize(handle().width(), theme()->handleWidth());
+    gripLeft().resize(buttonHeight(), theme()->handleWidth());
+    gripRight().resize(gripLeft().width(), gripLeft().height());
 
     // align titlebar and render it
     if (m_use_titlebar) {
@@ -1168,23 +1165,24 @@ void FbWinFrame::renderHandles() {
 
     render(m_grip_face.color[FOCUS], m_grip_face.pm[FOCUS],
            m_grip_left.width(), m_grip_left.height(),
-           ft->handleTexture(), m_imagectrl);
+           ft->gripTexture(), m_imagectrl);
 
     render(m_grip_face.color[UNFOCUS], m_grip_face.pm[UNFOCUS],
            m_grip_left.width(), m_grip_left.height(),
-           uft->handleTexture(), m_imagectrl);
+           uft->gripTexture(), m_imagectrl);
 }
 
 void FbWinFrame::applyHandles() {
 
     bool f = m_state.focused;
-    int alpha = getAlpha(m_state.focused);
+    int alpha = getAlpha(f);
 
     m_handle.setAlpha(alpha);
     bg_pm_or_color(m_handle, m_handle_face.pm[f], m_handle_face.color[f]);
 
     m_grip_left.setAlpha(alpha);
     m_grip_right.setAlpha(alpha);
+
     bg_pm_or_color(m_grip_left, m_grip_face.pm[f], m_grip_face.color[f]);
     bg_pm_or_color(m_grip_right, m_grip_face.pm[f], m_grip_face.color[f]);
 }
