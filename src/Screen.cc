@@ -1290,9 +1290,11 @@ void BScreen::rereadMenu() {
 }
 
 const std::string BScreen::windowMenuFilename() const {
-    if ((*resource.windowmenufile).empty())
-        return Fluxbox::instance()->getDefaultDataFilename("windowmenu");
-    return *resource.windowmenufile;
+    std::string name = *resource.windowmenufile;
+    if (name.empty()) {
+        name = Fluxbox::instance()->getDefaultDataFilename("windowmenu");
+    }
+    return name;
 }
 
 void BScreen::rereadWindowMenu() {

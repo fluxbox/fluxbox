@@ -79,9 +79,9 @@ setFromString(const char *strval) {
 
 
 
-ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
-        const std::string &scrname,
-        const std::string &altscrname):
+ScreenResource::ScreenResource(FbTk::ResourceManager& rm,
+        const std::string& scrname,
+        const std::string& altscrname):
     opaque_move(rm, true, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
     full_max(rm, false, scrname+".fullMaximization", altscrname+".FullMaximization"),
     max_ignore_inc(rm, true, scrname+".maxIgnoreIncrement", altscrname+".MaxIgnoreIncrement"),

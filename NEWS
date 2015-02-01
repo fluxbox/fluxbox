@@ -10,7 +10,7 @@ Minor Bugfixes:
     * working autorepeat keys
     * working vertical rotated Tabs and Toolbar
 
-Featuere:
+Features:
     * The improved TypeAhead sytem is not limited to matches on beginning
       of menu items anymore, it matches everywhere.
     * Minor tweaks to the i18n system

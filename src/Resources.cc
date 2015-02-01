@@ -26,17 +26,11 @@
 #include "WinButton.hh"
 
 #include "fluxbox.hh"
-
 #include "Layer.hh"
 
-#include <stdio.h>
 #include <string>
 #include <vector>
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+#include <cstring>
 
 using std::string;
 using std::vector;
