@@ -149,11 +149,12 @@ Pixmap WinButton::getPixmap(const FbTk::ThemeProxy<WinButtonTheme> &theme) const
 // clear is used to force this to clear the window (e.g. called from clear())
 void WinButton::drawType() {
 
-    // if it's odd and we're centring, we need to add one
-    int oddW = width()%2;
-    int oddH = height()%2;
-
+    int w = width();
+    int h = height();
+    int oddW = w % 2; // if it's odd and we're centring, we need to add one
+    int oddH = h % 2;
     bool is_pressed = pressed();
+
     if (is_pressed && overrode_pressed && !m_icon_pixmap.drawable())
         return;
     if (!is_pressed && overrode_bg && !m_icon_pixmap.drawable())
@@ -164,31 +165,35 @@ void WinButton::drawType() {
     // otherwise draw old style imagery
     switch (m_type) {
     case MAXIMIZE:
-        drawRectangle(gc(), 2, 2, width() - 5, height() - 5);
-        drawLine(gc(), 2, 3, width() - 3, 3);
+        if ((w < 6) || (h < 6)) {
+            return;
+        }
+        drawRectangle(gc(), 2, 2, w - 5, h - 5);
+        drawLine(gc(), 2, 3, w - 3, 3);
         break;
 
     case MINIMIZE:
-        drawRectangle(gc(), 2, height() - 5, width() - 5, 2);
+        if ((w < 6) || (h < 6)) {
+            return;
+        }
+        drawRectangle(gc(), 2, w - 5, h - 5, 2);
         break;
 
-    case STICK:
-        // width/4 != width/2, so we use /4*2 so that it's properly centred
-        if (m_listen_to.isStuck()) {
-            fillRectangle(gc(),
-                          width()/2 - width()/4, height()/2 - height()/4,
-                          width()/4*2 + oddW, height()/4*2 + oddH);
-        } else {
-            fillRectangle(gc(),
-                          width()/2 - width()/10, height()/2 - height()/10,
-                          width()/10*2 + oddW, height()/10*2 + oddH);
+    case STICK: {
+            int s = 4;
+            if (!m_listen_to.isStuck())
+                s = 8;
+
+            fillRectangle(gc(), (w / 2) - (w / s), (h / 2) - (h / s),
+                                2*(w / s) + oddW, 2*(h / s) + oddH);
         }
         break;
 
     case CLOSE:
-        drawLine(gc(),
-                 2, 2,
-                 width() - 3, height() - 3);
+        if ((w < 4) || (h < 4)) {
+            return;
+        }
+        drawLine(gc(), 2, 2, w - 3, h - 3);
         // I can't figure out why this second one needs a y offset of 1?????
         // but it does - at least on my box:
         //   XFree86 Version 4.2.1.1 (Debian 4.2.1-12.1 20031003005825)
@@ -200,56 +205,64 @@ void WinButton::drawType() {
         // XFree86 Version 4.3.0.1 (Debian 4.3.0.dfsg.1-1 20040428170728)
         // (X Protocol Version 11, Revision 0, Release 6.6)
 
-        drawLine(gc(), 2, height() - 3, width() - 3, 2);
+        drawLine(gc(), 2, w - 3, h - 3, 2);
         break;
 
-    case SHADE:
-    {
-        int size = width() - 5 - oddW;
+    case SHADE: {
+        int size = w - 5 - oddW;
+        if (size < 4) {
+            return;
+        }
+
+        FbTk::FbDrawable::TriangleType dir = (m_listen_to.isShaded() ? FbTk::FbDrawable::DOWN: FbTk::FbDrawable::UP);
+
         drawRectangle(gc(), 2, 2, size, 2);
 
         // draw a one-quarter triangle below the rectangle
-        drawTriangle(gc(), (m_listen_to.isShaded() ?
-                            FbTk::FbDrawable::DOWN:
-                            FbTk::FbDrawable::UP),
-                     4, 6,
-                     size-2, size/2 - 1,
-                     100);
-
+        drawTriangle(gc(), dir, 4, 6, size-2, size/2 - 1, 100);
         break;
     }
 
     case MENUICON:
         if (m_icon_pixmap.drawable()) {
 
+            Display* disp = m_listen_to.fbWindow().display();
+
             if (m_icon_mask.drawable()) {
-                XSetClipMask(m_listen_to.fbWindow().display(),
-                             gc(), m_icon_mask.drawable());
-                XSetClipOrigin(m_listen_to.fbWindow().display(),
-                             gc(), 2, 2);
+                XSetClipMask(disp, gc(), m_icon_mask.drawable());
+                XSetClipOrigin(disp, gc(), 2, 2);
             }
 
-            copyArea(m_icon_pixmap.drawable(),
-                     gc(),
-                     0, 0,
-                     2, 2,
+            copyArea(m_icon_pixmap.drawable(), gc(),
+                     0, 0, 2, 2,
                      m_icon_pixmap.width(), m_icon_pixmap.height());
 
             if (m_icon_mask.drawable())
-                XSetClipMask(m_listen_to.fbWindow().display(), gc(), None);
+                XSetClipMask(disp, gc(), None);
         } else {
-            for (unsigned int y = height()/3; y <= height() - height()/3; y+=3) {
-                drawLine(gc(), width()/4, y, width() - width()/4 - oddW - 1, y);
+            if ((w < 6) || (h < 6)) {
+                return;
             }
-            drawRectangle(gc(), 2, 2, width() - 5, height() - 5);
+
+            int y = h / 3;
+            for ( ; y <= h; y += 3) {
+                drawLine(gc(), w / 4, y, w - (w / 4) - 1, y);
+            }
+            drawRectangle(gc(), 2, 2, w - 5, h - 5);
         }
         break;
 
     case LEFT_HALF:
-        fillRectangle(gc(), 2, 2, (width() / 2) - oddW, height() - 4);
+        if ((w < 4) || (h < 5)) {
+            return;
+        }
+        fillRectangle(gc(), 2, 2, (w / 2) - oddW, h - 4);
         break;
     case RIGHT_HALF:
-        fillRectangle(gc(), width() / 2, 2, (width() / 2) - 2 + oddW, height() - 4);
+        if ((w < 5) || (h < 5)) {
+            return;
+        }
+        fillRectangle(gc(), w / 2, 2, (w / 2) - 2 + oddW, h - 4);
         break;
     }
 }
@@ -260,21 +273,26 @@ void WinButton::clear() {
 }
 void WinButton::updateAll() {
 
+    int w = static_cast<int>(width()) - 4;
+    int h = static_cast<int>(height()) - 4;
+
     // update the menu icon
-    if (m_type == MENUICON && !m_listen_to.empty()) {
+    if ((w > 0 && h > 0) && m_type == MENUICON && !m_listen_to.empty()) {
 
         Display* display = m_listen_to.fbWindow().display();
         int screen = m_listen_to.screen().screenNumber();
-        if (m_listen_to.icon().pixmap().drawable() != None) {
-             m_icon_pixmap.copy(m_listen_to.icon().pixmap().drawable(),
-                                DefaultDepth(display, screen), screen);
-             m_icon_pixmap.scale(width() - 4, height() - 4);
+
+        Drawable d = m_listen_to.icon().pixmap().drawable();
+        if (d != None) {
+             m_icon_pixmap.copy(d, DefaultDepth(display, screen), screen);
+             m_icon_pixmap.scale(w, h);
         } else
             m_icon_pixmap.release();
 
-        if (m_listen_to.icon().mask().drawable() != None) {
-            m_icon_mask.copy(m_listen_to.icon().mask().drawable(), 0, 0);
-            m_icon_mask.scale(width() - 4, height() - 4);
+        d = m_listen_to.icon().mask().drawable();
+        if (d != None) {
+            m_icon_mask.copy(d, 0, 0);
+            m_icon_mask.scale(w, h);
         } else
             m_icon_mask.release();
 
