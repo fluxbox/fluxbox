@@ -66,14 +66,13 @@ using std::string;
 
 namespace {
 
+#if defined(NLS)
+
 const char     UTF8_SUFFIX[]     = "-UTF-8.cat";
 const size_t   UTF8_SUFFIX_LEN   = sizeof(UTF8_SUFFIX)-1; // without \0
 const char     DEFAULT_CATFILE[] = "fluxbox.cat";
 const char     ENV_CATFILE[]     = "FLUXBOX_CATFILE";
 const char     ENV_CATDIR[]      = "FLUXBOX_CATDIR";
-
-const nl_catd  INVALID_CATALOG   = (nl_catd)(-1);
-nl_catd        s_catalog_fd      = INVALID_CATALOG;
 
 
 const char* getCatalogDir() {
@@ -83,6 +82,12 @@ const char* getCatalogDir() {
     }
     return LOCALEPATH;
 }
+
+#endif
+
+
+const nl_catd  INVALID_CATALOG   = (nl_catd)(-1);
+nl_catd        s_catalog_fd      = INVALID_CATALOG;
 
 
 std::string join_str(size_t n, ...) {
