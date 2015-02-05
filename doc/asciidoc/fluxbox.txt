@@ -1234,6 +1234,17 @@ blank, it will use *~/.fluxbox/windowmenu*.
 +
 Default: *blank*
 
+*session.menuSearch*: *nowhere*|*itemstart*|*somewhere*::
+This setting controls the way the menu search feature works.
+--
+Available options:;;
+- nowhere: disables the menu search
+- itemstart: typed text matches at the start of a menu items
+- somewhere: typed text matches somewhere in a menu item
+--
++
+Default: *itemstart*
+
 ENVIRONMENT
 -----------
 *HOME*::
