@@ -69,142 +69,10 @@ void renderMenuPixmap(Pixmap& pm, FbTk::FbWindow* win, int width, int height, co
     }
 }
 
-
-// finds 'pattern' in 'text', case insensitive.
-// returns position or std::string::npos if not found.
-//
-// implements Boyer–Moore–Horspool
-size_t search_string(const std::string& text, const std::string& pattern) {
-
-    if (pattern.empty()) {
-        return 0;
-    }
-    if (text.empty() || pattern.size() > text.size()) {
-        return std::string::npos;
-    }
-
-    size_t t;
-    size_t tlen = text.size();
-
-    // simple case, no need to be too clever
-    if (pattern.size() == 1) {
-        int b = std::tolower(pattern[0]);
-        for (t = 0; t < tlen; t++) {
-            if (b == std::tolower(text[t])) {
-                return t;
-            }
-        }
-        return std::string::npos;
-    }
-
-
-    size_t plast = pattern.size() - 1;
-    size_t p;
-
-    // prepare skip-table
-    //
-    size_t skip[256];
-    for (p = 0; p < sizeof(skip)/sizeof(skip[0]); p++) {
-        skip[p] = plast + 1;
-    }
-    for (p = 0; p < plast; p++) {
-        skip[std::tolower(pattern[p])] = plast - p;
-    }
-
-    // match
-    for (t = 0; t + plast < tlen; ) {
-        for (p = plast; std::tolower(text[t+p]) == std::tolower(pattern[p]); p--) {
-            if (p == 0) {
-                return t+p;
-            }
-        }
-        t += skip[std::tolower(text[t+p])];
-    }
-
-    return std::string::npos;
-}
-
 } // end of anonymous namespace
 
 
 namespace FbTk {
-
-// a small helper which applies search operations on a list of MenuItems*.
-// the former incarnation of this class was FbTk::TypeAhead in combination with
-// the now non-existent FbTk::SearchResults, but the complexity of these
-// are not needed for our use case. as a bonus we have less lose parts
-// flying around.
-class FbTk::Menu::TypeSearch {
-public:
-    TypeSearch(std::vector<FbTk::MenuItem*>& items) : m_items(items) { }
-
-    size_t size() const { return pattern.size(); }
-    void clear() { pattern.clear(); }
-    void add(char c) { pattern.push_back(c); }
-    void backspace() {
-        size_t s = pattern.size();
-        if (s > 0) {
-            pattern.erase(s - 1, 1);
-        }
-    }
-
-    // is 'pattern' matching something?
-    bool has_match() {
-        size_t l = m_items.size();
-        size_t i;
-        for (i = 0; i < l; i++) {
-            if (!m_items[i]->isEnabled())
-                continue;
-            if (search_string(m_items[i]->iTypeString(), pattern) != std::string::npos) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // would 'the_pattern' match something?
-    bool would_match(const std::string& the_pattern) {
-        size_t l = m_items.size();
-        size_t i;
-        for (i = 0; i < l; i++) {
-            if (!m_items[i]->isEnabled())
-                continue;
-            if (search_string(m_items[i]->iTypeString(), the_pattern) != std::string::npos) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    size_t num_matches() {
-        size_t l = m_items.size();
-        size_t i, n;
-        for (i = 0, n = 0; i < l; i++) {
-            if (!m_items[i]->isEnabled())
-                continue;
-            if (search_string(m_items[i]->iTypeString(), pattern) != std::string::npos) {
-                n++;
-            }
-        }
-        return n;
-    }
-
-
-    // returns true if m_text matches against m_items[i] and stores
-    // the position where it matches in the string
-    bool get_match(size_t i, size_t& idx) {
-        if (i > m_items.size()) {
-            return false;
-        }
-        idx = search_string(m_items[i]->iTypeString(), pattern);
-        return idx != std::string::npos;
-    }
-
-    std::string pattern;
-private:
-    const std::vector<FbTk::MenuItem*>& m_items;
-};
-
 
 
 Menu* s_shown = 0; // if there's a menu open at all
@@ -250,7 +118,7 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     m_internal_menu = false;
     m_state.moving = m_state.closing = m_state.torn = m_state.visible = false;
 
-    m_search.reset(new TypeSearch(m_items));
+    m_search.reset(new MenuSearch(m_items));
 
     m_x_move = m_y_move = 0;
     m_which_sub = -1;

@@ -102,6 +102,8 @@ libFbTk_a_SOURCES = \
 	src/FbTk/Menu.hh \
 	src/FbTk/MenuItem.cc \
 	src/FbTk/MenuItem.hh \
+	src/FbTk/MenuSearch.hh \
+	src/FbTk/MenuSearch.cc \
 	src/FbTk/MenuSeparator.cc \
 	src/FbTk/MenuSeparator.hh \
 	src/FbTk/MenuTheme.cc \

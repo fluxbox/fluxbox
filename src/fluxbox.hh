@@ -29,6 +29,7 @@
 #include "FbTk/Resource.hh"
 #include "FbTk/Timer.hh"
 #include "FbTk/Signal.hh"
+#include "FbTk/MenuSearch.hh"
 
 #include "AttentionNoticeHandler.hh"
 
@@ -251,6 +252,7 @@ private:
         FbTk::Resource<std::string> apps_file;
 
         FbTk::Resource<TabsAttachArea> tabs_attach_area;
+        FbTk::Resource<FbTk::MenuSearch::Mode> menusearch;
         FbTk::Resource<unsigned int>   cache_life;
         FbTk::Resource<unsigned int>   cache_max;
         FbTk::Resource<time_t>         auto_raise_delay;

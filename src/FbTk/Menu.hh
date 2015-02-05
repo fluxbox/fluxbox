@@ -37,9 +37,10 @@
 namespace FbTk {
 
 template <typename T> class Command;
-class MenuItem;
-class ImageControl;
 template <typename T> class RefCount;
+class MenuItem;
+class MenuSearch;
+class ImageControl;
 
 ///   Base class for menus
 class Menu: public FbTk::EventHandler, FbTk::FbWindowRenderer {
@@ -187,10 +188,8 @@ private:
 
     Menu *m_parent;
 
-    class TypeSearch;
-
-    std::vector<MenuItem *>   m_items;
-    std::auto_ptr<TypeSearch> m_search;
+    std::vector<MenuItem*>    m_items;
+    std::auto_ptr<MenuSearch> m_search;
 
     struct State {
         bool moving;

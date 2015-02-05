@@ -252,6 +252,7 @@ Fluxbox::Config::Config(FbTk::ResourceManager& rm, const std::string& path) :
     slit_file(rm, path + "/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
     apps_file(rm, path + "/apps", "session.appsFile", "Session.AppsFile"),
     tabs_attach_area(rm, ATTACH_AREA_WINDOW, "session.tabsAttachArea", "Session.TabsAttachArea"),
+    menusearch(rm, FbTk::MenuSearch::DEFAULT, "session.menuSearch", "Session.MenuSearch"),
     cache_life(rm, 5, "session.cacheLife", "Session.CacheLife"),
     cache_max(rm, 200, "session.cacheMax", "Session.CacheMax"),
     auto_raise_delay(rm, 250, "session.autoRaiseDelay", "Session.AutoRaiseDelay") {
@@ -360,7 +361,7 @@ Fluxbox::Fluxbox(int argc, char **argv,
     // Note: this needs to be done before creating screens
     m_key.reset(new Keys);
     m_key->reconfigure();
-
+    FbTk::MenuSearch::setMode(*m_config.menusearch);
 
     unsigned int opts = OPT_SLIT|OPT_TOOLBAR;
     vector<int> screens;
@@ -541,7 +542,6 @@ void Fluxbox::eventLoop() {
         } else {
             FbTk::Timer::updateTimers(ConnectionNumber(disp));
         }
-
     }
 }
 
@@ -862,7 +862,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         atom = XGetAtomName(FbTk::App::instance()->display(), ce.message_type);
 
     fbdbg<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]=0x"<<hex<<ce.data.l[0]<<
-	"  message_type=0x"<<ce.message_type<<dec<<" = \""<<atom<<"\""<<endl;
+        "  message_type=0x"<<ce.message_type<<dec<<" = \""<<atom<<"\""<<endl;
 
     if (ce.message_type && atom) XFree((char *) atom);
 #endif // DEBUG
@@ -1266,6 +1266,7 @@ void Fluxbox::real_reconfigure() {
     STLUtil::forAll(m_screens, mem_fun(&BScreen::reconfigure));
     m_key->reconfigure();
     STLUtil::forAll(m_atomhandler, mem_fun(&AtomHandler::reconfigure));
+    FbTk::MenuSearch::setMode(*m_config.menusearch);
 }
 
 BScreen *Fluxbox::findScreen(int id) {

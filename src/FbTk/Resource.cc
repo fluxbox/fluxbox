@@ -25,11 +25,7 @@
 #include "StringUtil.hh"
 
 #include <iostream>
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
+#include <cassert>
 
 using std::cerr;
 using std::endl;
@@ -38,9 +34,9 @@ using std::string;
 namespace FbTk {
 
 ResourceManager::ResourceManager(const char *filename, bool lock_db) :
- m_db_lock(0),
- m_database(0),
- m_filename(filename ? filename : "")
+    m_db_lock(0),
+    m_database(0),
+    m_filename(filename ? filename : "")
 {
     static bool xrm_initialized = false;
     if (!xrm_initialized) {
