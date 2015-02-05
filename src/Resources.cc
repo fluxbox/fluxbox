@@ -35,8 +35,6 @@
 using std::string;
 using std::vector;
 
-using namespace FbTk;
-
 //-----------------------------------------------------------------
 //---- accessors for int, bool, and some enums with Resource ------
 //-----------------------------------------------------------------
