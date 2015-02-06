@@ -25,6 +25,7 @@
 #include "Menu.hh"
 
 #include "MenuItem.hh"
+#include "MenuSearch.hh"
 #include "MenuSeparator.hh"
 #include "ImageControl.hh"
 #include "MemFun.hh"
