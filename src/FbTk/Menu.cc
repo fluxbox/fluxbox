@@ -1024,36 +1024,30 @@ void Menu::exposeEvent(XExposeEvent &ee) {
         m_title.win.clearArea(ee.x, ee.y, ee.width, ee.height);
     } else if (ee.window == m_frame.win) {
 
-        // find where to clear
-        // this is a compilicated algorithm... lets do it step by step...
-        // first... we see in which column the expose starts... and how many
-        // items down in that column
-        int column = (ee.x / m_item_w);
-        int id = (ee.y / theme()->itemHeight());
+        // the menu has a list of items. the expose-event spans
+        // a number of columns across a number of rows
+        //
+        //  |item1|item4|item7|     * - exposed items
+        //  |item2|*tem5|*tem8| i
+        //  |item3|*tem6|*tem9| |
+        //           j   ->    ts
+        //
 
-        // next... figure out how many sublevels over the redrawspans
-        int column_d = ((ee.x + ee.width) / m_item_w);
+        size_t item_h = theme()->itemHeight();
+        size_t t = ((ee.x + ee.width) / m_item_w) + 1;
+        size_t row = ee.y / item_h;
+        size_t end_row = ((ee.y + ee.height) / item_h);
 
-        // then we see how many items down to redraw
-        int id_d = ((ee.y + ee.height) / theme()->itemHeight());
+        if (end_row > m_rows_per_column)
+            end_row = m_rows_per_column;
 
-        if (id_d > m_rows_per_column)
-            id_d = m_rows_per_column;
+        for (size_t j = (ee.x / m_item_w); j < t; j++) {
 
-        // draw the columns and the number of items the exposure spans
-        int i, ii;
-        for (i = column; i <= column_d; i++) {
-            // set the iterator to the first item in the column needing redrawing
-            int index = id + i * m_rows_per_column;
-
-            if (index < static_cast<int>(m_items.size()) && index >= 0) {
-                size_t l = m_items.size();
-                size_t j;
-                for (j = 0, ii = id; ii <= id_d && j < l; i++, ii++) {
-                    int index = ii + (i * m_rows_per_column);
-                    // redraw the item
-                    clearItem(index);
-                }
+            size_t offset = j * m_rows_per_column;
+            size_t s = end_row + offset;
+            s = std::min(m_items.size(), s);
+            for (size_t i = row + offset; i < s; i++ ) {
+                clearItem(i);
             }
         }
     }
