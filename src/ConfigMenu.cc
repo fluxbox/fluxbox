@@ -297,6 +297,7 @@ void setupTabMenu(FbTk::Menu& parent, ConfigMenu::SetupHelper& sh, _Cmd& save_re
                 sh.screen, p.placement, save_reconftabs));
     }
     p_menu->updateMenu();
+    menu->updateMenu();
     parent.insertSubmenu(label, menu);
 }
 
