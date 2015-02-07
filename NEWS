@@ -3,16 +3,24 @@ Version 1.3.7 is a bug fix release.
 Critical Bugfixes:
     * Segfault on startup (mostly *BSD)
     * Segfault on shutdown
+    * Segfault on clicking the Remember menu
     * Menu crops on TypeAhead
 
 Minor Bugfixes:
     * _NET_REQUEST_FRAME_EXTENTS
-    * working autorepeat keys
-    * working vertical rotated Tabs and Toolbar
+    * Working autorepeat keys
+    * Working vertical rotated Tabs and Toolbar
+    * Proper size of titlebar buttons on restart / detaching tabs
+    * Missing windowmenu works again
+    * Several glitches in the menu
+    * Correct handling of 'maximized' statement in the apps file
 
 Features:
     * The improved TypeAhead sytem is not limited to matches on beginning
-      of menu items anymore, it matches everywhere.
+      of menu items anymore, the behavior is configurable:
+      - Nowhere - disables TypeAhead support
+      - ItemStart - matches typed text only at the start of a menu item
+      - Somewhere - matches typed text somewhere in a menu item
     * Minor tweaks to the i18n system
 
 End User unrelated:

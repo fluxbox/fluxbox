@@ -3,6 +3,21 @@
 -----------------------------
 Changes for 1.3.7
 
+*15/02/07:
+    * Bugfix: initialize titlebar buttons with the proper size (closes #1125)
+    * Bugfix: correct initialization of the taboptions menu
+    * Bugfix: render toggleitems in menus correctly
+
+*15/02/05:
+    * Feature: typeahead search options: 'nowhere', 'itemstart', 'somewhere'
+
+*15/02/04:
+    * Bugfix: prevent tiny titlebar buttons to cause crashes
+
+*15/02/01:
+    * Bugfix: crash on click the remember menu
+    * Bugfix: use proper texture for window grips
+
 *15/01/31:
     * Improve i18n: support NLSPATH, FLUXBOX_CATFILE and FLUXBOX_CATDIR
     * Update translations
