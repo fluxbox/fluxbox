@@ -1038,8 +1038,8 @@ void Menu::exposeEvent(XExposeEvent &ee) {
         size_t row = ee.y / item_h;
         size_t end_row = ((ee.y + ee.height) / item_h);
 
-        if (end_row > m_rows_per_column)
-            end_row = m_rows_per_column;
+        if (end_row > static_cast<size_t>(m_rows_per_column))
+            end_row = static_cast<size_t>(m_rows_per_column);
 
         for (size_t j = (ee.x / m_item_w); j < t; j++) {
 
