@@ -20,16 +20,17 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "MenuItem.hh"
-#include "Command.hh"
-#include "GContext.hh"
-#include "MenuTheme.hh"
-#include "PixmapWithMask.hh"
-#include "Image.hh"
-#include "App.hh"
-#include "StringUtil.hh"
 #include "Menu.hh"
+#include "MenuTheme.hh"
+#include "App.hh"
+#include "Command.hh"
+#include "Image.hh"
+#include "GContext.hh"
+#include "PixmapWithMask.hh"
+#include "StringUtil.hh"
 
 #include <X11/keysym.h>
+
 
 namespace FbTk {
 
@@ -102,7 +103,10 @@ void MenuItem::draw(FbDrawable &draw,
     // text and submenu icon are background
     // selected pixmaps are foreground
 
+    int h = static_cast<int>(height);
+    int bevel = theme->bevelWidth();
     Display *disp = App::instance()->display();
+
     //
     // Icon
     //
@@ -114,16 +118,18 @@ void MenuItem::draw(FbDrawable &draw,
             tmp_mask.copy(icon()->mask());
 
             // scale pixmap to right size
-            if (height - 2*theme->bevelWidth() != tmp_pixmap.height()) {
-                unsigned int scale_size = height - 2*theme->bevelWidth();
-                tmp_pixmap.scale(scale_size, scale_size);
-                tmp_mask.scale(scale_size, scale_size);
+            if ((h - (2*bevel)) != static_cast<int>(tmp_pixmap.height())) {
+                int scale_size = h - 2*bevel;
+                if (scale_size > 0) {
+                    tmp_pixmap.scale(scale_size, scale_size);
+                    tmp_mask.scale(scale_size, scale_size);
+                }
             }
 
             if (tmp_pixmap.drawable() != 0) {
                 GC gc = theme->frameTextGC().gc();
-                int icon_x = x + theme->bevelWidth();
-                int icon_y = y + theme->bevelWidth();
+                int icon_x = x + bevel;
+                int icon_y = y + bevel;
                 // enable clip mask
                 XSetClipMask(disp, gc, tmp_mask.drawable());
                 XSetClipOrigin(disp, gc, icon_x, icon_y);
@@ -165,22 +171,24 @@ void MenuItem::draw(FbDrawable &draw,
             (highlight ? theme->hiliteTextGC() :
              (isEnabled() ? theme->frameTextGC() : theme->disableTextGC() ) );
         const Font& font = (highlight ? theme->hiliteFont() : theme->frameFont());
+
         //
         // Text
         //
-        int text_y = y, text_x = x;
+        int text_y = y;
+        int text_x = x;
         int text_w = font.textWidth(label());
 
-        int height_offset = theme->itemHeight() - (font.height() + 2*theme->bevelWidth());
-        text_y = y + theme->bevelWidth() + font.ascent() + height_offset/2;
+        int height_offset = theme->itemHeight() - (font.height() + 2*bevel);
+        text_y = y + bevel + font.ascent() + height_offset/2;
 
         switch(highlight ? theme->hiliteFontJustify() : theme->frameFontJustify()) {
         case FbTk::LEFT:
-            text_x = x + theme->bevelWidth() + height + 1;
+            text_x = x + bevel + h + 1;
             break;
 
         case FbTk::RIGHT:
-            text_x = x +  width - (height + theme->bevelWidth() + text_w);
+            text_x = x +  width - (h + bevel + text_w);
             break;
         default: //center
             text_x = x + ((width + 1 - text_w) / 2);
@@ -194,10 +202,10 @@ void MenuItem::draw(FbDrawable &draw,
         theme->frameTextGC().gc();
     int sel_x = x;
     int sel_y = y;
-    unsigned int item_pm_height = theme->itemHeight();
+    int item_pm_height = static_cast<int>(theme->itemHeight());
 
     if (theme->bulletPos() == FbTk::RIGHT)
-        sel_x += width - height - theme->bevelWidth();
+        sel_x += static_cast<int>(width) - h - bevel;
 
     // selected pixmap is foreground
     if (draw_foreground && isToggleItem()) {
@@ -218,9 +226,10 @@ void MenuItem::draw(FbDrawable &draw,
             else
                 pm = &theme->unselectedPixmap();
         }
+
         if (pm != 0 && pm->pixmap().drawable() != 0) {
-            unsigned int selw = pm->width();
-            unsigned int selh = pm->height();
+            int selw = static_cast<int>(pm->width());
+            int selh = static_cast<int>(pm->height());
             int offset_x = 0;
             int offset_y = 0;
             if (selw < item_pm_height)
@@ -258,9 +267,8 @@ void MenuItem::draw(FbDrawable &draw,
             pm = &theme->bulletPixmap();
 
         if (pm && pm->pixmap().drawable() != 0) {
-            unsigned int selw = pm->width();
-            unsigned int selh = pm->height();
-
+            int selw = static_cast<int>(pm->width());
+            int selh = static_cast<int>(pm->height());
             int offset_x = 0;
             int offset_y = 0;
             if (selw < item_pm_height)
@@ -281,7 +289,8 @@ void MenuItem::draw(FbDrawable &draw,
             XSetClipMask(disp, gc, None);
 
         } else {
-            unsigned int half_w = item_pm_height / 2, quarter_w = item_pm_height / 4;
+            int half_w = item_pm_height / 2;
+            int quarter_w = item_pm_height / 4;
             switch (theme->bullet()) {
             case MenuTheme::SQUARE:
                 draw.drawRectangle(gc, sel_x+quarter_w, y+quarter_w, half_w, half_w);
@@ -323,8 +332,7 @@ void MenuItem::draw(FbDrawable &draw,
 
 void MenuItem::setIcon(const std::string &filename, int screen_num) {
     if (filename.empty()) {
-        if (m_icon.get() != 0)
-            m_icon.reset(0);
+        m_icon.reset(0);
         return;
     }
 
@@ -337,9 +345,10 @@ void MenuItem::setIcon(const std::string &filename, int screen_num) {
 }
 
 unsigned int MenuItem::height(const FbTk::ThemeProxy<MenuTheme> &theme) const {
+    const unsigned int bevel = theme->bevelWidth();
     return std::max(theme->itemHeight(),
-                    std::max(theme->frameFont().height() + 2*theme->bevelWidth(),
-                             theme->hiliteFont().height() + 2*theme->bevelWidth()));
+                    std::max(theme->frameFont().height() + 2*bevel,
+                             theme->hiliteFont().height() + 2*bevel));
 }
 
 unsigned int MenuItem::width(const FbTk::ThemeProxy<MenuTheme> &theme) const {
