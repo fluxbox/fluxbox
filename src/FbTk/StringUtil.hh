@@ -24,8 +24,6 @@
 
 #include <string>
 
-#include "stringstream.hh"
-
 namespace FbTk {
 
 namespace StringUtil {

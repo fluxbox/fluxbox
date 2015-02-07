@@ -214,8 +214,6 @@ void FbTk::Resource<FbTk::MenuSearch::Mode>::setFromString(const char *strval) {
     } else {
         setDefaultValue();
     }
-
-    std::cerr << "** " << val << " " << m_value << "\n";
 }
 
 }
