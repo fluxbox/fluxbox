@@ -207,12 +207,14 @@ void MenuItem::draw(FbDrawable &draw,
     if (theme->bulletPos() == FbTk::RIGHT)
         sel_x += static_cast<int>(width) - h - bevel;
 
-    // selected pixmap is foreground
-    if (draw_foreground && isToggleItem()) {
 
-        //
-        // ToggleItem
-        //
+    // 'draw_foreground' was used to decide if to draw the toggleitem.
+    // somehow(tm) this lead to not rendering the toggleitem on bringing
+    // up the menu. it would be rendered once the user highlights the item,
+    // but not before. i removed the check against 'draw_foreground' and
+    // thus make it an unused variable.
+    if (isToggleItem()) {
+
         const PixmapWithMask *pm = 0;
 
         if (isSelected()) {
