@@ -253,6 +253,21 @@ struct TestCornerHelper {
     }
 };
 
+// used in FluxboxWindow::updateAll() and FluxboxWindow::Setu
+typedef FbTk::Resource<vector<WinButton::Type> > WBR;
+
+// create a button ready to be used in the frame-titlebar
+WinButton* makeButton(FluxboxWindow& win, FocusableTheme<WinButtonTheme>& btheme, WinButton::Type btype) {
+
+    FbTk::ThemeProxy<WinButtonTheme>& theme = win.screen().pressedWinButtonTheme();
+    FbWinFrame& frame = win.frame();
+    FbTk::FbWindow& parent = frame.titlebar();
+    const unsigned int h = frame.buttonHeight();
+    const unsigned int w = h;
+
+    return new WinButton(win, btheme, theme, btype, parent, 0, 0, w, h);
+}
+
 }
 
 
@@ -3395,101 +3410,95 @@ void FluxboxWindow::kill() {
 }
 
 void FluxboxWindow::setupWindow() {
+
     // sets up our window
     // we allow both to be done at once to share the commands
+    FbTk::ResourceManager &rm = screen().resourceManager();
 
-    using namespace FbTk;
-    typedef FbTk::Resource<vector<WinButton::Type> > WinButtonsResource;
+    struct {
+        std::string name;
+        std::string alt_name;
+        size_t n_buttons;
+        WinButton::Type buttons[3];
+    } side[2] = {
+        {
+            screen().name() + ".titlebar.left",
+            screen().name() + ".Titlebar.Left",
+            1, { WinButton::STICK },
+        },
+        {
+            screen().name() + ".titlebar.right",
+            screen().name() + ".Titlebar.Right",
+            3, { WinButton::MINIMIZE, WinButton::MAXIMIZE, WinButton::CLOSE },
+        }
+    };
 
-    string titlebar_name[2];
-    string titlebar_alt_name[2];
-    titlebar_name[0] = screen().name() + ".titlebar.left";
-    titlebar_alt_name[0] = screen().altName() + ".Titlebar.Left";
-    titlebar_name[1] = screen().name() + ".titlebar.right";
-    titlebar_alt_name[1] = screen().altName() + ".Titlebar.Right";
-
-    WinButtonsResource *titlebar_side[2];
-
-
-
-    ResourceManager &rm = screen().resourceManager();
 
     // create resource for titlebar
-    for (int i=0; i < 2; ++i) {
-        titlebar_side[i] = dynamic_cast<WinButtonsResource *>(
-                            rm.findResource( titlebar_name[i] ) );
+    for (size_t i = 0; i < sizeof(side)/sizeof(side[0]); ++i) {
 
-        if (titlebar_side[i] != 0)
+        WBR* res = dynamic_cast<WBR*>(rm.findResource(side[i].name));
+        if (res != 0)
             continue; // find next resource too
 
-        WinButton::Type titlebar_left[] =  {
-            WinButton::STICK
-        };
-
-        WinButton::Type titlebar_right[] =  {
-            WinButton::MINIMIZE,
-            WinButton::MAXIMIZE,
-            WinButton::CLOSE
-        };
-
-        WinButton::Type *begin = 0;
-        WinButton::Type *end = 0;
-
-        if (i == 0) {
-            begin = titlebar_left;
-            end = titlebar_left + 1;
-        } else {
-            begin = titlebar_right;
-            end = titlebar_right + 3;
-        }
-
-        titlebar_side[i] =
-            new WinButtonsResource(rm,
-                                   WinButtonsResource::Type(begin, end),
-                                   titlebar_name[i], titlebar_alt_name[i]);
-
-
-        screen().addManagedResource(titlebar_side[i]);
+        WinButton::Type* s = &side[i].buttons[0];
+        WinButton::Type* e = s + side[i].n_buttons;
+        res = new WBR(rm, WBR::Type(s, e), side[i].name, side[i].alt_name);
+        screen().addManagedResource(res);
     }
 
     updateButtons();
-
-    // end setup frame
-
 }
 
+
 void FluxboxWindow::updateButtons() {
-    string titlebar_name[2];
-    titlebar_name[0] = screen().name() + ".titlebar.left";
-    titlebar_name[1] = screen().name() + ".titlebar.right";
 
-    typedef FbTk::Resource<vector<WinButton::Type> > WinButtonsResource;
-    WinButtonsResource *titlebar_side[2];
     ResourceManager &rm = screen().resourceManager();
-
+    size_t i;
+    size_t j;
+    struct {
+        std::string name;
+        WBR* res;
+    } sides[2] = {
+        { screen().name() + ".titlebar.left", 0 },
+        { screen().name() + ".titlebar.right", 0 },
+    };
+    const size_t n_sides = sizeof(sides)/sizeof(sides[0]);
     bool need_update = false;
-    // get resource for titlebar
-    for (int i=0; i < 2; ++i) {
-        titlebar_side[i] = dynamic_cast<WinButtonsResource *>(
-                            rm.findResource( titlebar_name[i] ) );
 
-        // check if we need to update our buttons
-        size_t new_size = (*titlebar_side[i])->size();
-        if (new_size != m_titlebar_buttons[i].size() || need_update)
-            need_update = true;
-        else {
-            for (size_t j=0; j < new_size && !need_update; j++) {
-                if ((*(*titlebar_side[i]))[j] != m_titlebar_buttons[i][j])
-                    need_update = true;
+
+    // get button resources for each titlebar and check if they differ
+    for (i = 0; i < n_sides; ++i) {
+
+        sides[i].res = dynamic_cast<WBR*>(rm.findResource(sides[i].name));
+
+        if (sides[i].res == 0) {
+            if (!m_titlebar_buttons[i].empty()) {
+                need_update = true;
             }
+            continue;
         }
 
+        // check if we need to update our buttons
+        const vector<WinButton::Type>& buttons = *(*sides[i].res);
+        size_t s = buttons.size();
+
+        if (s != m_titlebar_buttons[i].size()) {
+            need_update = true;
+            continue;
+        }
+
+        for (j = 0; !need_update && j < s; j++) {
+            if (buttons[j] != m_titlebar_buttons[i][j]) {
+                need_update = true;
+                break;
+            }
+        }
     }
 
     if (!need_update)
         return;
 
-    // clear old buttons from frame
     frame().removeAllButtons();
 
     using namespace FbTk;
@@ -3505,129 +3514,91 @@ void FluxboxWindow::updateButtons() {
     CommandRef stick_cmd(new WindowCmd(*this, &FluxboxWindow::stick));
     CommandRef show_menu_cmd(new WindowCmd(*this, &FluxboxWindow::popupMenu));
 
-    for (size_t c = 0; c < 2 ; c++) {
-        // get titlebar configuration for current side
-        const vector<WinButton::Type> &dir = *(*titlebar_side[c]);
-        m_titlebar_buttons[c] = dir;
+    for (i = 0; i < n_sides; i++) {
 
-        for (size_t i=0; i < dir.size(); ++i) {
-            //create new buttons
-            WinButton *winbtn = 0;
+        if (sides[i].res == 0) {
+            continue;
+        }
 
-            switch (dir[i]) {
+        const vector<WinButton::Type>& buttons = *(*sides[i].res);
+        m_titlebar_buttons[i] = buttons;
+
+        for (j = 0; j < buttons.size(); ++j) {
+
+            WinButton* btn = 0;
+
+            switch (buttons[j]) {
             case WinButton::MINIMIZE:
                 if (isIconifiable() && (m_state.deco_mask & WindowState::DECORM_ICONIFY)) {
-                    winbtn = new WinButton(*this, m_button_theme,
-                                           screen().pressedWinButtonTheme(),
-                                           WinButton::MINIMIZE,
-                                           frame().titlebar(),
-                                           0, 0, 10, 10);
-                    winbtn->setOnClick(iconify_cmd);
+                    btn = makeButton(*this, m_button_theme, buttons[j]);
+                    btn->setOnClick(iconify_cmd);
                 }
                 break;
             case WinButton::MAXIMIZE:
                 if (isMaximizable() && (m_state.deco_mask & WindowState::DECORM_MAXIMIZE) ) {
-                    winbtn = new WinButton(*this, m_button_theme,
-                                           screen().pressedWinButtonTheme(),
-                                           dir[i],
-                                           frame().titlebar(),
-                                           0, 0, 10, 10);
-                    winbtn->setOnClick(maximize_cmd, 1);
-                    winbtn->setOnClick(maximize_horiz_cmd, 3);
-                    winbtn->setOnClick(maximize_vert_cmd, 2);
-
+                    btn = makeButton(*this, m_button_theme, buttons[j]);
+                    btn->setOnClick(maximize_cmd, 1);
+                    btn->setOnClick(maximize_horiz_cmd, 3);
+                    btn->setOnClick(maximize_vert_cmd, 2);
                 }
                 break;
             case WinButton::CLOSE:
                 if (m_client->isClosable() && (m_state.deco_mask & WindowState::DECORM_CLOSE)) {
-                    winbtn = new WinButton(*this, m_button_theme,
-                                           screen().pressedWinButtonTheme(),
-                                           dir[i],
-                                           frame().titlebar(),
-                                           0, 0, 10, 10);
-
-                    winbtn->setOnClick(close_cmd);
-                    winbtn->join(stateSig(),
-                            FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
+                    btn = makeButton(*this, m_button_theme, buttons[j]);
+                    btn->setOnClick(close_cmd);
+                    btn->join(stateSig(), FbTk::MemFunIgnoreArgs(*btn, &WinButton::updateAll));
                 }
                 break;
             case WinButton::STICK:
                 if (m_state.deco_mask & WindowState::DECORM_STICKY) {
-                    winbtn =  new WinButton(*this, m_button_theme,
-                            screen().pressedWinButtonTheme(),
-                            dir[i],
-                            frame().titlebar(),
-                            0, 0, 10, 10);
-
-                    winbtn->join(stateSig(),
-                            FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
-                    winbtn->setOnClick(stick_cmd);
+                    btn = makeButton(*this, m_button_theme, buttons[j]);
+                    btn->join(stateSig(), FbTk::MemFunIgnoreArgs(*btn, &WinButton::updateAll));
+                    btn->setOnClick(stick_cmd);
                 }
                 break;
             case WinButton::SHADE:
                 if (m_state.deco_mask & WindowState::DECORM_SHADE) {
-                    winbtn = new WinButton(*this, m_button_theme,
-                            screen().pressedWinButtonTheme(),
-                            dir[i],
-                            frame().titlebar(),
-                            0, 0, 10, 10);
-                    winbtn->join(stateSig(),
-                            FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
-                    winbtn->setOnClick(shade_cmd);
+                    btn = makeButton(*this, m_button_theme, buttons[j]);
+                    btn->join(stateSig(), FbTk::MemFunIgnoreArgs(*btn, &WinButton::updateAll));
+                    btn->setOnClick(shade_cmd);
                 }
                 break;
             case WinButton::MENUICON:
                 if (m_state.deco_mask & WindowState::DECORM_MENU) {
-                    winbtn = new WinButton(*this, m_button_theme,
-                            screen().pressedWinButtonTheme(),
-                            dir[i],
-                            frame().titlebar(),
-                            0, 0, 10, 10);
-                    winbtn->join(titleSig(),
-                             FbTk::MemFunIgnoreArgs(*winbtn, &WinButton::updateAll));
-                    winbtn->setOnClick(show_menu_cmd);
+                    btn = makeButton(*this, m_button_theme, buttons[j]);
+                    btn->join(titleSig(), FbTk::MemFunIgnoreArgs(*btn, &WinButton::updateAll));
+                    btn->setOnClick(show_menu_cmd);
                 }
                 break;
 
             case WinButton::LEFT_HALF:
                 {
-                    winbtn = new WinButton(*this, m_button_theme,
-                                screen().pressedWinButtonTheme(),
-                                dir[i],
-                                frame().titlebar(),
-                                0, 0, 10, 10);
-
+                    btn = makeButton(*this, m_button_theme, buttons[j]);
                     CommandRef lhalf_cmd(FbTk::CommandParser<void>::instance().parse("MacroCmd {MoveTo 0 0} {ResizeTo 50% 100%}"));
-                    winbtn->setOnClick(lhalf_cmd);
+                    btn->setOnClick(lhalf_cmd);
                 }
                 break;
 
             case WinButton::RIGHT_HALF:
                 {
-                    winbtn = new WinButton(*this, m_button_theme,
-                                screen().pressedWinButtonTheme(),
-                                dir[i],
-                                frame().titlebar(),
-                                0, 0, 10, 10);
+                    btn = makeButton(*this, m_button_theme, buttons[j]);
                     CommandRef rhalf_cmd(FbTk::CommandParser<void>::instance().parse("MacroCmd {MoveTo 50% 0} {ResizeTo 50% 100%}"));
-                    winbtn->setOnClick(rhalf_cmd);
+                    btn->setOnClick(rhalf_cmd);
                 }
                 break;
 
             }
 
 
-            if (winbtn != 0) {
-                winbtn->show();
-                if (c == 0)
-                    frame().addLeftButton(winbtn);
+            if (btn != 0) {
+                btn->show();
+                if (i == 0)
+                    frame().addLeftButton(btn);
                 else
-                    frame().addRightButton(winbtn);
+                    frame().addRightButton(btn);
             }
-        } //end for i
-
-
-    } // end for c
+        }
+    }
 
     frame().reconfigure();
 }
