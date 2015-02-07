@@ -457,7 +457,7 @@ void FbWinFrame::setFocus(bool newvalue) {
 
         int alpha = getAlpha(m_state.focused);
         int opaque = 255;
-        if (!FbTk::Transparent::haveComposite()) {
+        if (FbTk::Transparent::haveComposite()) {
             std::swap(alpha, opaque);
         }
         m_tab_container.setAlpha(alpha);
@@ -935,7 +935,7 @@ void FbWinFrame::reconfigure() {
         if (FbTk::Transparent::haveRender()) {
             int alpha = getAlpha(m_state.focused);
             int opaque = 255;
-            if (!FbTk::Transparent::haveComposite()) {
+            if (FbTk::Transparent::haveComposite()) {
                 std::swap(alpha, opaque);
             }
             m_tab_container.setAlpha(alpha);
