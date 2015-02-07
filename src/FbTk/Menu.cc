@@ -157,23 +157,18 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     event_mask ^= FocusChangeMask;
     event_mask |= EnterWindowMask | LeaveWindowMask;
 
+    int w = width();
+    int th = theme()->titleHeight();
+    int fh = std::max(m_frame.height, m_frame.height);
+
     //create menu title
-    m_title.win = FbTk::FbWindow(m_window,
-                             0, 0, width(), theme()->titleHeight(),
-                             event_mask,
-                             false, // override redirect
-                             true); // save under
+    m_title.win = FbTk::FbWindow(m_window, 0, 0, w, th, event_mask, false, true);
 
     evm.add(*this, m_title.win);
     m_title.win.setRenderer(*this);
 
     event_mask |= PointerMotionMask;
-    m_frame.win = FbTk::FbWindow(m_window,
-                             0, theme()->titleHeight(),
-                             width(), m_frame.height ? m_frame.height : 1,
-                             event_mask,
-                             false,  // override redirect
-                             true); // save under
+    m_frame.win = FbTk::FbWindow(m_window, 0, th, w, fh, event_mask, false, true);
     evm.add(*this, m_frame.win);
     m_frame.win.setRenderer(*this);
     m_title.win.raise();
@@ -395,15 +390,21 @@ void Menu::enableTitle() {
 }
 
 void Menu::updateMenu() {
-    if (m_title.visible) {
-        m_item_w = theme()->titleFont().textWidth(m_title.label);
-        m_item_w += (theme()->bevelWidth() * 2);
-    } else
-        m_item_w = 1;
 
+    int bevel = theme()->bevelWidth();
+    int bw = theme()->borderWidth();
+    int ih = theme()->itemHeight();
+    unsigned int iw = 1;
+    int th = theme()->titleHeight();
+    int tbw = m_title.win.borderWidth();
+    int w = static_cast<int>(width());
+    size_t l = m_items.size();
+    size_t i;
+
+
+    // find the nearest enabled menuitem and highlight it
     if (validIndex(m_active_index) && !m_items[m_active_index]->isEnabled()) {
-        // find the nearest enabled menuitem and highlight it
-        for (size_t i = 1; i < m_items.size(); i++) {
+        for (i = 1; i < l; i++) {
             if (validIndex(m_active_index + i) &&
                 m_items[m_active_index + i]->isEnabled()) {
                 m_active_index += i;
@@ -416,43 +417,44 @@ void Menu::updateMenu() {
         }
     }
 
-    unsigned int ii = 0;
-    size_t l = m_items.size();
-    size_t i;
+
+    // calculate needed item width
+    m_item_w = 1;
+    if (m_title.visible) {
+        m_item_w = theme()->titleFont().textWidth(m_title.label);
+        m_item_w += bevel * 2;
+    }
+    m_item_w = std::max(iw, m_item_w);
     for (i = 0; i < l; i++) {
-        ii = m_items[i]->width(theme());
-        m_item_w = (ii > m_item_w ? ii : m_item_w);
+        iw = m_items[i]->width(theme());
+        m_item_w = std::max(iw, m_item_w);
     }
 
-    if (m_item_w < 1)
-        m_item_w = 1;
 
+    // calculate needed columns
+    m_columns = 0;
+    m_rows_per_column = 0;
     if (!m_items.empty()) {
         m_columns = 1;
 
-        while (theme()->itemHeight() * (m_items.size() + 1) / m_columns +
-               theme()->titleHeight() + theme()->borderWidth() > m_screen.height) {
+        while (ih * (l + 1) / m_columns + th + bw > m_screen.height) {
             m_columns++;
         }
 
-        if (m_columns < m_min_columns)
-            m_columns = m_min_columns;
-
+        m_columns = std::max(m_min_columns, m_columns);
         m_rows_per_column = m_items.size() / m_columns;
-        if (m_items.size() % m_columns) m_rows_per_column++;
-    } else {
-        m_columns = 0;
-        m_rows_per_column = 0;
+        if (m_items.size() % m_columns)
+            m_rows_per_column++;
     }
 
-    int itmp = (theme()->itemHeight() * m_rows_per_column);
-    m_frame.height = itmp < 1 ? 1 : itmp;
+    int itmp = ih * m_rows_per_column;
+    m_frame.height = std::max(1, itmp);
 
     unsigned int new_width = (m_columns * m_item_w);
     unsigned int new_height = m_frame.height;
 
     if (m_title.visible)
-        new_height += theme()->titleHeight() + ((m_frame.height > 0)?m_title.win.borderWidth():0);
+        new_height += th + ((m_frame.height > 0) ? tbw : 0);
 
 
     if (new_width == 0)
@@ -474,52 +476,39 @@ void Menu::updateMenu() {
     if (m_frame.win.alpha() != alpha())
         m_frame.win.setAlpha(alpha());
 
-    renderMenuPixmap(m_hilite_pixmap, NULL,
-            m_item_w, theme()->itemHeight(),
-            theme()->hiliteTexture(), m_image_ctrl);
+    renderMenuPixmap(m_hilite_pixmap, NULL, m_item_w, ih, theme()->hiliteTexture(), m_image_ctrl);
 
 
     if (!theme()->selectedPixmap().pixmap().drawable()) {
-        int hw = theme()->itemHeight() / 2;
+        int hw = ih / 2;
         // render image, disable cache and let the theme remove the pixmap
-        theme()->setSelectedPixmap(m_image_ctrl.
-                                   renderImage(hw, hw,
-                                               theme()->hiliteTexture(), ROT0,
-                                               false // no cache
-                                               ),
-                                   false); // the theme takes care of this pixmap
+        Pixmap pm = m_image_ctrl.renderImage(hw, hw, theme()->hiliteTexture(), ROT0, false);
+        theme()->setSelectedPixmap(pm, false); // the theme takes care of this pixmap
 
         if (!theme()->highlightSelectedPixmap().pixmap().drawable()) {
-            int hw = theme()->itemHeight() / 2;
+            hw = ih / 2;
             // render image, disable cache and let the theme remove the pixmap
-            theme()->setHighlightSelectedPixmap(m_image_ctrl.
-                                                renderImage(hw, hw,
-                                                            theme()->frameTexture(), ROT0,
-                                                            false  // no cache
-                                                            ),
-                                                false); // theme takes care of this pixmap
+            pm = m_image_ctrl.renderImage(hw, hw, theme()->frameTexture(), ROT0, false);
+            theme()->setHighlightSelectedPixmap(pm, false); // theme takes care of this pixmap
        }
     }
 
+    int y = 0;
     if (m_title.visible) {
-        m_title.win.moveResize(-m_title.win.borderWidth(), -m_title.win.borderWidth(),
-                              width() + m_title.win.borderWidth(), theme()->titleHeight());
+        m_title.win.moveResize(-tbw, -tbw, w + tbw, th);
+        y = m_title.win.y() + m_title.win.height() + 2 * tbw;
     }
 
-    m_frame.win.moveResize(0, ((m_title.visible) ? m_title.win.y() + m_title.win.height() +
-                              m_title.win.borderWidth()*2 : 0),
-                          width(), m_frame.height);
+    m_frame.win.moveResize(0, y, w, m_frame.height);
 
     if (m_title.visible && m_need_update) {
         renderMenuPixmap(m_title.pixmap, &m_title.win,
-                width(), theme()->titleHeight(),
-                theme()->titleTexture(), m_image_ctrl);
+                w, th, theme()->titleTexture(), m_image_ctrl);
     }
 
     if (m_need_update) {
         renderMenuPixmap(m_frame.pixmap, &m_frame.win,
-                width(), m_frame.height,
-                theme()->frameTexture(), m_image_ctrl);
+                w, m_frame.height, theme()->frameTexture(), m_image_ctrl);
     }
 
     clearWindow();
@@ -534,7 +523,6 @@ void Menu::show() {
         return;
 
     m_state.visible = true;
-
     if (m_need_update)
         updateMenu();
 
@@ -662,7 +650,7 @@ void Menu::redrawTitle(FbDrawable &drawable) {
 
     const FbTk::Font &font = theme()->titleFont();
     int dx = theme()->bevelWidth();
-    int l = static_cast<int>(font.textWidth(m_title.label) + theme()->bevelWidth()*2);
+    int l = static_cast<int>(font.textWidth(m_title.label) + dx*2);
 
     switch (theme()->titleFontJustify()) {
     case FbTk::RIGHT:
@@ -677,9 +665,9 @@ void Menu::redrawTitle(FbDrawable &drawable) {
     }
 
     // difference between height based on font, and style-set height
-    int height_offset = theme()->titleHeight() - (font.height() + 2*theme()->bevelWidth());
+    int height_offset = theme()->titleHeight() - (font.height() + 2*dx);
     font.drawText(drawable, screenNumber(), theme()->titleTextGC().gc(), m_title.label,
-                  dx, font.ascent() + theme()->bevelWidth() + height_offset/2);  // position
+                  dx, font.ascent() + dx + height_offset/2);  // position
 }
 
 
@@ -1310,25 +1298,21 @@ void Menu::clearItem(int index, bool clear, int search_index) {
 #endif
     }
 
-    // don't highlight if moving, doesn't work with alpha on
+    // highlight only if not if moving, doesn't work with alpha on
     if (highlight && !m_state.moving) {
         highlightItem(index);
-        if (start_idx != end_idx) { // need a underline (aka "matched item")
-            m_items[index]->drawLine(m_frame.win, theme(),
-                    end_idx - start_idx, item_x, item_y, m_item_w, start_idx);
+    } else {
+        if (clear) {
+            m_frame.win.clearArea(item_x, item_y, item_w, item_h);
         }
-        return;
+
+        m_items[index]->draw(m_frame.win, theme(), highlight,
+                true, false, item_x, item_y,
+                item_w, item_h);
     }
 
-    if (clear) {
-        m_frame.win.clearArea(item_x, item_y, item_w, item_h);
-    }
-
-    m_items[index]->draw(m_frame.win, theme(), highlight,
-                         true, false, item_x, item_y,
-                         item_w, item_h);
-
-    if (start_idx != end_idx) { // need a underline (aka "matched item")
+    // need a underline (aka "matched item")
+    if (start_idx != end_idx) {
         m_items[index]->drawLine(m_frame.win, theme(),
                 end_idx - start_idx, item_x, item_y, m_item_w, start_idx);
     }
