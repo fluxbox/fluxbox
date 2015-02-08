@@ -2,12 +2,12 @@
 .\"     Title: fluxbox-menu
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 22 January 2015
+.\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-menu.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-MENU" "5" "22 January 2015" "fluxbox\-menu\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-MENU" "5" "08 February 2015" "fluxbox\-menu\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------

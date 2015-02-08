@@ -2,12 +2,12 @@
 .\"     Title: fbsetroot
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 22 January 2015
+.\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fbsetroot.txt
 .\"  Language: English
 .\"
-.TH "FBSETROOT" "1" "22 January 2015" "fbsetroot\&.txt" "Fluxbox Manual"
+.TH "FBSETROOT" "1" "08 February 2015" "fbsetroot\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------

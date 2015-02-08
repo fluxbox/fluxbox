@@ -2,12 +2,12 @@
 .\"     Title: fluxbox-remote
 .\"    Author: Mark Tiefenbruck <mark@fluxbox.org>
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 22 January 2015
+.\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox-remote.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX\-REMOTE" "1" "22 January 2015" "fluxbox\-remote\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX\-REMOTE" "1" "08 February 2015" "fluxbox\-remote\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------

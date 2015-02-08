@@ -2,12 +2,12 @@
 .\"     Title: fluxbox
 .\"    Author: Henrik Kinnunen <fluxgen@fluxbox.org>
 .\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
-.\"      Date: 22 January 2015
+.\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fluxbox.txt
 .\"  Language: English
 .\"
-.TH "FLUXBOX" "1" "22 January 2015" "fluxbox\&.txt" "Fluxbox Manual"
+.TH "FLUXBOX" "1" "08 February 2015" "fluxbox\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -1987,6 +1987,50 @@ This optionally specifies the location of a user\-defined window menu\&. If left
 Default:
 \fBblank\fR
 .RE
+.PP
+\fBsession\&.menuSearch\fR: \fBnowhere\fR|\fBitemstart\fR|\fBsomewhere\fR
+.RS 4
+This setting controls the way the menu search feature works\&.
+.RE
+.PP
+Available options:
+.RS 4
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+nowhere: disables the menu search
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+itemstart: typed text matches at the start of a menu items
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+somewhere: typed text matches somewhere in a menu item
+.RE
+.RE
+.sp
++ Default: \fBitemstart\fR
 .SH "ENVIRONMENT"
 .PP
 \fBHOME\fR

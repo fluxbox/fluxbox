@@ -1,7 +1,7 @@
 fbsetroot(1)
 ============
 Jim Ramsay <i.am@jimramsay.com>
-v1.3.7, 22 January 2015
+v1.3.7, 08 February 2015
 :man source:   fbsetroot.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
