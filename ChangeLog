@@ -7,6 +7,8 @@ Changes for 1.3.7
     * Bugfix: initialize titlebar buttons with the proper size (closes #1125)
     * Bugfix: correct initialization of the taboptions menu
     * Bugfix: render toggleitems in menus correctly
+    * Bugfix: transparent windows work again (Thanks to Arkadiusz Bokowy)
+    * Update turkish translations (Thanks Volkan Gezer)
 
 *15/02/05:
     * Feature: typeahead search options: 'nowhere', 'itemstart', 'somewhere'

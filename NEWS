@@ -21,7 +21,9 @@ Features:
       - Nowhere - disables TypeAhead support
       - ItemStart - matches typed text only at the start of a menu item
       - Somewhere - matches typed text somewhere in a menu item
+      (Currently this is a configfile-only option)
     * Minor tweaks to the i18n system
+    * Updated turkish translations
 
 End User unrelated:
     * Code refactoring and cleanup, assisted by Coverity and
