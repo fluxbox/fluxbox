@@ -45,6 +45,30 @@ using std::endl;
 using std::hex;
 using std::dec;
 
+void getScreenCoordinates(Window win, int x, int y, int &screen_x, int &screen_y) {
+    XWindowAttributes attr;
+    if (XGetWindowAttributes(FbTk::App::instance()->display(), win, &attr) == 0) {
+        return;
+    }
+
+    Window child_win; // not used
+    Window parent_win; // not used
+    Window root_win = 0; 
+    Window* child_windows; // not used
+    unsigned int num_child_windows; // not used
+    XQueryTree(FbTk::App::instance()->display(), win,
+               &root_win,
+               &parent_win,
+               &child_windows, &num_child_windows);
+    if (child_windows != 0) {
+        XFree(child_windows);
+    }
+    XTranslateCoordinates(FbTk::App::instance()->display(),
+                          parent_win, root_win,
+                          x, y,
+                          &screen_x, &screen_y, &child_win);
+}
+
 /// helper class for tray windows, so we dont call XDestroyWindow
 class TrayWindow: public FbTk::FbWindow {
 public:
@@ -470,9 +494,11 @@ void SystemTray::rearrangeClients() {
         next_x += h_rot0+bw;
         translateCoords(orientation(), x, y, w_rot0, h_rot0);
         translatePosition(orientation(), x, y, h_rot0, h_rot0, 0);
+        int screen_x = 0, screen_y = 0;
+        getScreenCoordinates((*client_it)->window(), (*client_it)->x(), (*client_it)->y(), screen_x, screen_y);
 
         (*client_it)->moveResize(x, y, h_rot0, h_rot0);
-        (*client_it)->sendConfigureNotify(x, y, h_rot0, h_rot0);
+        (*client_it)->sendConfigureNotify(screen_x, screen_y, h_rot0, h_rot0);
     }
 }
 
