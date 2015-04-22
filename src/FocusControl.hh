@@ -92,6 +92,8 @@ public:
     void dirFocus(FluxboxWindow &win, FocusDir dir);
     /// @return true if focus mode is mouse focus
     bool isMouseFocus() const { return focusModel() != CLICKFOCUS; }
+    /// @return true if focus mode is strict mouse focus
+    bool isStrictMouseFocus() const { return focusModel() == STRICTMOUSEFOCUS; }
     /// @return true if tab focus mode is mouse tab focus
     bool isMouseTabFocus() const { return tabFocusModel() == MOUSETABFOCUS; }
 
