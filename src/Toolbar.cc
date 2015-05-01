@@ -677,7 +677,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
     case RIGHTCENTER:
         frame.x += head_w - static_cast<int>(frame.width) - bw*2;
-        frame.y += (head_h - static_cast<int>(frame.height))/2 * bw;
+        frame.y += (head_h - static_cast<int>(frame.height))/2 - bw;
         frame.x_hidden += static_cast<int>(frame.width) + bw - pixel;
         break;
     case RIGHTTOP:
