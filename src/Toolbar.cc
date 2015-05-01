@@ -81,17 +81,17 @@ const struct {
 } _values[] = {
     { /* unused */ },
     { Toolbar::TOPLEFT,      "TopLeft",      FbTk::ROT0,   FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT},
-    { Toolbar::TOPCENTER,    "TopCenter",    FbTk::ROT0,   FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT},
+    { Toolbar::TOPCENTER,    "TopCenter",    FbTk::ROT0,   FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT},
     { Toolbar::TOPRIGHT,     "TopRight",     FbTk::ROT0,   FbTk::Shape::BOTTOMRIGHT | FbTk::Shape::BOTTOMLEFT},
-    { Toolbar::BOTTOMLEFT,   "BottomLeft",   FbTk::ROT0,   FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT},
-    { Toolbar::BOTTOMCENTER, "BottomCenter", FbTk::ROT0,   FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT},
-    { Toolbar::BOTTOMRIGHT,  "BottomRight",  FbTk::ROT0,   FbTk::Shape::TOPRIGHT | FbTk::Shape::TOPLEFT},
-    { Toolbar::LEFTBOTTOM,   "LeftBottom",   FbTk::ROT270, FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT},
-    { Toolbar::LEFTCENTER,   "LeftCenter",   FbTk::ROT270, FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT},
-    { Toolbar::LEFTTOP,      "LeftTop",      FbTk::ROT270, FbTk::Shape::TOPRIGHT | FbTk::Shape::BOTTOMRIGHT},
-    { Toolbar::RIGHTBOTTOM,  "RightBottom",  FbTk::ROT90,  FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT},
-    { Toolbar::RIGHTCENTER,  "RightCenter",  FbTk::ROT90,  FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT},
-    { Toolbar::RIGHTTOP,     "RightTop",     FbTk::ROT90,  FbTk::Shape::TOPLEFT | FbTk::Shape::BOTTOMLEFT},
+    { Toolbar::BOTTOMLEFT,   "BottomLeft",   FbTk::ROT0,   FbTk::Shape::TOPRIGHT    | FbTk::Shape::TOPLEFT},
+    { Toolbar::BOTTOMCENTER, "BottomCenter", FbTk::ROT0,   FbTk::Shape::TOPRIGHT    | FbTk::Shape::TOPLEFT},
+    { Toolbar::BOTTOMRIGHT,  "BottomRight",  FbTk::ROT0,   FbTk::Shape::TOPRIGHT    | FbTk::Shape::TOPLEFT},
+    { Toolbar::LEFTBOTTOM,   "LeftBottom",   FbTk::ROT270, FbTk::Shape::TOPRIGHT    | FbTk::Shape::BOTTOMRIGHT},
+    { Toolbar::LEFTCENTER,   "LeftCenter",   FbTk::ROT270, FbTk::Shape::TOPRIGHT    | FbTk::Shape::BOTTOMRIGHT},
+    { Toolbar::LEFTTOP,      "LeftTop",      FbTk::ROT270, FbTk::Shape::TOPRIGHT    | FbTk::Shape::BOTTOMRIGHT},
+    { Toolbar::RIGHTBOTTOM,  "RightBottom",  FbTk::ROT90,  FbTk::Shape::TOPLEFT     | FbTk::Shape::BOTTOMLEFT},
+    { Toolbar::RIGHTCENTER,  "RightCenter",  FbTk::ROT90,  FbTk::Shape::TOPLEFT     | FbTk::Shape::BOTTOMLEFT},
+    { Toolbar::RIGHTTOP,     "RightTop",     FbTk::ROT90,  FbTk::Shape::TOPLEFT     | FbTk::Shape::BOTTOMLEFT},
 };
 
 }
