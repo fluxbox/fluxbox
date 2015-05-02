@@ -19,7 +19,7 @@ size_t search_str_textstart(const std::string& text, const std::string& pattern)
 
     size_t i;
     for (i = l; i > 0; i--) {
-        if (std::tolower(text[i-1]) != std::tolower(pattern[i-1])) {
+        if (std::tolower(text[i-1]) != pattern[i-1]) {
             return std::string::npos;
         }
     }
@@ -40,12 +40,13 @@ size_t search_str_bmh(const std::string& text, const std::string& pattern) {
         return std::string::npos;
     }
 
-    size_t t;
-    size_t tlen = text.size();
+    const size_t tlen = text.size();
+    const size_t plen = pattern.size();
+    size_t t; // index in text
 
     // simple case, no need to be too clever
-    if (pattern.size() == 1) {
-        int b = std::tolower(pattern[0]);
+    if (plen == 1) {
+        int b = pattern[0];
         for (t = 0; t < tlen; t++) {
             if (b == std::tolower(text[t])) {
                 return t;
@@ -54,28 +55,28 @@ size_t search_str_bmh(const std::string& text, const std::string& pattern) {
         return std::string::npos;
     }
 
-
-    size_t plast = pattern.size() - 1;
-    size_t p;
-
     // prepare skip-table
     //
-    size_t skip[256];
+    size_t       skip[256];
+    const size_t pe = plen - 1; // end index in pattern
+    size_t       p;             // index in pattern
+
     for (p = 0; p < sizeof(skip)/sizeof(skip[0]); p++) {
-        skip[p] = plast + 1;
+        skip[p] = plen;
     }
-    for (p = 0; p < plast; p++) {
-        skip[std::tolower(pattern[p])] = plast - p;
+    for (p = 0; p < pe; p++) {
+        skip[pattern[p]] = pe - p;
     }
 
     // match
-    for (t = 0; t + plast < tlen; ) {
-        for (p = plast; std::tolower(text[t+p]) == std::tolower(pattern[p]); p--) {
+    //
+    for (t = 0; (t+pe) < tlen; ) {
+        for (p = pe; std::tolower(text[t+p]) == pattern[p]; p--) {
             if (p == 0) {
-                return t+p;
+                return t;
             }
         }
-        t += skip[std::tolower(text[t+plast])];
+        t += skip[std::tolower(text[t+pe])];
     }
 
     return std::string::npos;
@@ -117,7 +118,7 @@ void MenuSearch::clear() {
 }
 
 void MenuSearch::add(char c) {
-    pattern.push_back(c);
+    pattern.push_back(std::tolower(c));
 }
 
 void MenuSearch::backspace() {

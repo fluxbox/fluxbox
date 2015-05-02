@@ -13,9 +13,10 @@ class MenuItem;
 // a small helper which applies search operations on a list of MenuItems*.
 // the former incarnation of this class was FbTk::TypeAhead in combination with
 // the now non-existent FbTk::SearchResults, but the complexity of these
-// are not needed for our use case. as a bonus we have less lose parts
+// are not needed for our use case. as a bonus, we have less lose parts
 // flying around.
-
+//
+// MenuSearch is case insensitive.
 class MenuSearch {
 public:
 
