@@ -75,7 +75,7 @@ size_t search_str_bmh(const std::string& text, const std::string& pattern) {
                 return t+p;
             }
         }
-        t += skip[std::tolower(text[t+p])];
+        t += skip[std::tolower(text[t+plast])];
     }
 
     return std::string::npos;
