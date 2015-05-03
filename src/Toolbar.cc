@@ -648,24 +648,29 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
     case TOPCENTER:
         frame.x += (head_w - static_cast<int>(frame.width))/2 - bw;
+        frame.x_hidden = frame.x;
         frame.y_hidden += pixel - bw - static_cast<int>(frame.height);
         break;
     case TOPRIGHT:
         frame.x += head_w - static_cast<int>(frame.width) - bw*2;
+        frame.x_hidden = frame.x;
         frame.y_hidden += pixel - bw - static_cast<int>(frame.height);
         break;
     case BOTTOMRIGHT:
         frame.x += head_w - static_cast<int>(frame.width) - bw*2;
         frame.y += head_h - static_cast<int>(frame.height) - bw*2;
+        frame.x_hidden = frame.x;
         frame.y_hidden += head_h - bw - pixel;
         break;
     case BOTTOMCENTER: // default is BOTTOMCENTER
         frame.x += (head_w - static_cast<int>(frame.width))/2 - bw;
         frame.y += head_h - static_cast<int>(frame.height) - bw*2;
+        frame.x_hidden = frame.x;
         frame.y_hidden += head_h - bw - pixel;
         break;
     case LEFTCENTER:
         frame.y += (head_h - static_cast<int>(frame.height))/2 - bw;
+        frame.y_hidden = frame.y;
         frame.x_hidden += pixel - static_cast<int>(frame.width) - bw;
         break;
     case LEFTTOP:
@@ -673,21 +678,24 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
     case LEFTBOTTOM:
         frame.y = head_h - static_cast<int>(frame.height) - bw*2;
+        frame.y_hidden = frame.y;
         frame.x_hidden += pixel - static_cast<int>(frame.width) - bw;
         break;
     case RIGHTCENTER:
         frame.x += head_w - static_cast<int>(frame.width) - bw*2;
         frame.y += (head_h - static_cast<int>(frame.height))/2 - bw;
-        frame.x_hidden += static_cast<int>(frame.width) + bw - pixel;
+        frame.x_hidden += head_w - bw - pixel;
+        frame.y_hidden = frame.y;
         break;
     case RIGHTTOP:
         frame.x += head_w - static_cast<int>(frame.width) - bw*2;
-        frame.x_hidden += static_cast<int>(frame.width) + bw - pixel;
+        frame.x_hidden += head_w - bw - pixel;
         break;
     case RIGHTBOTTOM:
         frame.x += head_w - static_cast<int>(frame.width) - bw*2;
         frame.y += head_h - static_cast<int>(frame.height) - bw*2;
-        frame.x_hidden +=   static_cast<int>(frame.width) + bw - pixel;
+        frame.x_hidden += head_w - bw - pixel;
+        frame.y_hidden = frame.y;
         break;
     }
 
