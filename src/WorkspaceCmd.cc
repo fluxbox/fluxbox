@@ -545,14 +545,21 @@ void ArrangeWindowsCmd::execute() {
             unsigned int w = cal_width - (*closest)->widthOffset();
             unsigned int h = cal_height - (*closest)->heightOffset();
 
-            // the last window gets everything that is left.
-            if (normal_windows.size() == 1) {
-
+            // the last window of every row gets all the remaining width.
+            if ( (normal_windows.size() == 1) || (j == (cols-1)) ) {
                 w = static_cast<int>(screen->maxRight(head)) - x_offs - (*closest)->widthOffset();
-                h = static_cast<int>(cal_height) - (*closest)->heightOffset();
 
                 if (m_tile_method == STACKLEFT) {
                     w -= max_width;
+                }
+             }
+
+            // the last window of every column also gets all the remaining height.
+            if ( (normal_windows.size() == 1) || (i == (rows-1)) ) {
+                h = static_cast<int>(screen->maxBottom(head)) - y_offs - (*closest)->heightOffset();
+
+                if (m_tile_method == STACKTOP) {
+                    h -= max_height;
                 }
             }
 
