@@ -580,20 +580,20 @@ void ArrangeWindowsCmd::execute() {
     if (main_window != NULL){
         x_offs = screen->maxLeft(head);
         // mind the width of window borders
-        max_width -= main_window->fbWindow().borderWidth() * 2;
-        max_height -= main_window->fbWindow().borderWidth() * 2;
+        unsigned int max_width_b = max_width - (main_window->fbWindow().borderWidth() * 2);
+        unsigned int max_height_b = max_height - (main_window->fbWindow().borderWidth() * 2);
         switch (m_tile_method){
             case STACKLEFT:
-                main_window->moveResize(x_offs + max_width, orig_y_offs, max_width, max_height);
+                main_window->moveResize(x_offs + max_width, orig_y_offs, max_width_b, max_height_b);
                 break;
             case STACKRIGHT:
-                main_window->moveResize(x_offs, screen->maxTop(head), max_width, max_height);
+                main_window->moveResize(x_offs, screen->maxTop(head), max_width_b, max_height_b);
                 break;
             case STACKTOP:
-                main_window->moveResize(x_offs, max_height, max_width, max_height);
+                main_window->moveResize(x_offs, max_height, max_width_b, max_height_b);
                 break;
             case STACKBOTTOM:
-                main_window->moveResize(x_offs, screen->maxTop(head), max_width, max_height);
+                main_window->moveResize(x_offs, screen->maxTop(head), max_width_b, max_height_b);
                 break;
             default:
                 // Shouldn't happen.
