@@ -502,7 +502,7 @@ private:
     void attachWorkAreaSig();
 
     // modifies left and top if snap is necessary
-    void doSnapping(int &left, int &top);
+    void doSnapping(int &left, int &top, bool resize = false);
     // user_w/h return the values that should be shown to the user
     void fixSize();
     void moveResizeClient(WinClient &client);
