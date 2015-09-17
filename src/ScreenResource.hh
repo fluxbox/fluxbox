@@ -47,6 +47,7 @@ struct ScreenResource {
     FbTk::Resource<unsigned int> typing_delay;
     FbTk::Resource<int> workspaces,
         edge_snap_threshold,
+        edge_resize_snap_threshold,
         focused_alpha,
         unfocused_alpha,
         menu_alpha,

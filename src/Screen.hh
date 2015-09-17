@@ -232,6 +232,8 @@ public:
 
     int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
 
+    int getEdgeResizeSnapThreshold() const { return *resource.edge_resize_snap_threshold; }
+
     void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
 
     void saveTabPlacement(FbWinFrame::TabPlacement place) { *resource.tab_placement = place; }
