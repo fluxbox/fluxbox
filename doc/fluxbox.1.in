@@ -1743,6 +1743,14 @@ Default:
 \fB10\fR
 .RE
 .PP
+\fBsession\&.screen0\&.edgeResizeSnapThreshold\fR: \fIinteger\fR
+.RS 4
+When resizing a window by grabbing a corner, fluxbox is able to have it \(oqsnap\(cq to the edges of the screen and other windows for easy placement\&. This variable tells fluxbox the distance (in pixels) at which the window corner will jump to the edge\&.
+.sp
+Default:
+\fB0\fR
+.RE
+.PP
 \fBsession\&.screen0\&.windowPlacement\fR: \fIstrategy\fR
 .RS 4
 This resource specifies where to place new windows when not otherwise specified (by the program or the \(oqapps\(cq file, for example)\&.
