@@ -38,39 +38,47 @@
 
 #include <string>
 
+
 using std::string;
-
-
 using std::endl;
 using std::hex;
 using std::dec;
 
+
+namespace {
+
 void getScreenCoordinates(Window win, int x, int y, int &screen_x, int &screen_y) {
+
     XWindowAttributes attr;
     if (XGetWindowAttributes(FbTk::App::instance()->display(), win, &attr) == 0) {
         return;
     }
 
-    Window child_win; // not used
-    Window parent_win; // not used
-    Window root_win = 0; 
-    Window* child_windows; // not used
-    unsigned int num_child_windows; // not used
+    Window unused_win;
+    Window parent_win;
+    Window root_win = 0;
+    Window* unused_childs = 0;
+    unsigned int unused_number;
+
     XQueryTree(FbTk::App::instance()->display(), win,
                &root_win,
                &parent_win,
-               &child_windows, &num_child_windows);
-    if (child_windows != 0) {
-        XFree(child_windows);
+               &unused_childs, &unused_number);
+
+    if (unused_childs != 0) {
+        XFree(unused_childs);
     }
+
     XTranslateCoordinates(FbTk::App::instance()->display(),
                           parent_win, root_win,
                           x, y,
-                          &screen_x, &screen_y, &child_win);
+                          &screen_x, &screen_y, &unused_win);
 }
 
+};
+
 /// helper class for tray windows, so we dont call XDestroyWindow
-class TrayWindow: public FbTk::FbWindow {
+class SystemTray::TrayWindow : public FbTk::FbWindow {
 public:
     TrayWindow(Window win, bool using_xembed):FbTk::FbWindow(win), m_visible(false), m_xembedded(using_xembed) {
         setEventMask(PropertyChangeMask);
@@ -183,7 +191,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     m_screen(screen),
     m_pixmap(0), m_num_visible_clients(0),
     m_selection_owner(m_window, 0, 0, 1, 1, SubstructureNotifyMask, false, false, CopyFromParent, InputOnly) {
-    
+
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
     // setup signals
