@@ -24,6 +24,12 @@
 
 #include <string>
 
+#ifdef HAVE_CSTDLIB
+#include <cstdlib>
+#else
+#include <stdlib.h>
+#endif
+
 namespace FbTk {
 
 namespace StringUtil {
@@ -61,12 +67,12 @@ std::string findExtension(const std::string &filename);
 /// @param found - position of found char in alphabet (optional)
 /// @return position of trigger if found
 /// @return std::string::npos if nothing found
-std::string::size_type findCharFromAlphabetAfterTrigger(const std::string& in, 
+std::string::size_type findCharFromAlphabetAfterTrigger(const std::string& in,
     char trigger,
     const char alphabet[], size_t len_alphabet, size_t* found);
 
 /// @return copy of original with find_string replaced with "replace"
-std::string replaceString(const std::string &original, 
+std::string replaceString(const std::string &original,
                           const char *find_string,
                           const char *replace);
 
@@ -141,6 +147,31 @@ stringtok (Container &container, std::string const &in,
         // set up for next loop
         i = j + 1;
     }
+}
+
+/// Parse token, which might be in formats as follows: <int>, <int>% or *.
+/// @param relative - parsed relative value (percentage suffix)
+/// @param ignore - this token should be ignored (asterisk)
+/// @return parsed integer value or 0 if not applicable
+template <typename Container>
+static int
+parseSizeToken(Container &container, bool &relative, bool &ignore) {
+
+    if (container.empty())
+        return 0;
+
+    relative = false;
+    ignore = false;
+
+    if (container[0] == '*') {
+        ignore = true;
+        return 0;
+    }
+
+    if (container[container.size() - 1] == '%')
+        relative = true;
+
+    return atoi(container.c_str());
 }
 
 } // end namespace StringUtil
