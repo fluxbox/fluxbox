@@ -484,11 +484,14 @@ void FluxboxWindow::init() {
     if (m_workspace_number >= screen().numberOfWorkspaces())
         m_workspace_number = screen().currentWorkspaceID();
 
-    // if we're a transient then we should be on the same layer and workspace
+    // if we're a transient then we should be on the same layer
+    // (exception: DESKTOP) and workspace
     FluxboxWindow* twin = m_client->transientFor() ? m_client->transientFor()->fbwindow() : 0;
     if (twin && twin != this) {
-        layerItem().setLayer(twin->layerItem().getLayer());
-        m_state.layernum = twin->layerNum();
+        if (twin->layerNum() != ::ResourceLayer::DESKTOP) {
+            layerItem().setLayer(twin->layerItem().getLayer());
+            m_state.layernum = twin->layerNum();
+        }
         m_workspace_number = twin->workspaceNumber();
     } else // if no parent then set default layer
         moveToLayer(m_state.layernum, m_state.layernum != ::ResourceLayer::NORMAL);
