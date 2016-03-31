@@ -461,8 +461,7 @@ void FluxboxWindow::init() {
 
     if (fluxbox.isStartup())
         m_placed = true;
-    else if (m_client->isTransient() ||
-        m_client->normal_hint_flags & (PPosition|USPosition)) {
+    else if (m_client->normal_hint_flags & (PPosition|USPosition)) {
         m_placed = is_visible;
     } else {
         if (!is_visible) {
@@ -484,12 +483,20 @@ void FluxboxWindow::init() {
     if (m_workspace_number >= screen().numberOfWorkspaces())
         m_workspace_number = screen().currentWorkspaceID();
 
+    unsigned int real_width = frame().width();
+    unsigned int real_height = frame().height();
+    frame().applySizeHints(real_width, real_height);
+
     // if we're a transient then we should be on the same layer and workspace
     FluxboxWindow* twin = m_client->transientFor() ? m_client->transientFor()->fbwindow() : 0;
     if (twin && twin != this) {
         layerItem().setLayer(twin->layerItem().getLayer());
         m_state.layernum = twin->layerNum();
         m_workspace_number = twin->workspaceNumber();
+        const int x = twin->frame().x() + (twin->frame().width() - frame().width())/2;
+        const int y = twin->frame().y() + (twin->frame().height() - frame().height())/2;
+        frame().move(x, y);
+        m_placed = true;
     } else // if no parent then set default layer
         moveToLayer(m_state.layernum, m_state.layernum != ::ResourceLayer::NORMAL);
 
@@ -499,10 +506,6 @@ void FluxboxWindow::init() {
         fbdbg<<"FluxboxWindow::init("<<title().logical()<<") transientFor->title(): "<<
            twin->title().logical()<<endl;
     }
-
-    unsigned int real_width = frame().width();
-    unsigned int real_height = frame().height();
-    frame().applySizeHints(real_width, real_height);
 
     screen().getWorkspace(m_workspace_number)->addWindow(*this);
     if (m_placed)
