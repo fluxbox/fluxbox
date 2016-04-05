@@ -23,6 +23,7 @@
 #include "ButtonTheme.hh"
 #include "FbTk/Button.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/TextButton.hh"
 
 ButtonTool::ButtonTool(FbTk::Button *button, 
                        ToolbarItem::Type type, 
@@ -46,7 +47,13 @@ ButtonTool::~ButtonTool() {
 
 void ButtonTool::updateSizing() {
     FbTk::Button &btn = static_cast<FbTk::Button &>(window());
-    btn.setBorderWidth(theme()->border().width());
+    int bw = theme()->border().width();
+    btn.setBorderWidth(bw);
+    if (FbTk::TextButton *txtBtn = dynamic_cast<FbTk::TextButton*>(&btn)) {
+        bw += 2; // extra padding, seems somehow required...
+        resize(theme()->font().textWidth(txtBtn->text()) + 2*bw,
+               theme()->font().height() + 2*bw);
+	}
 }
 
 void ButtonTool::renderTheme(int alpha) {
