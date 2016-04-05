@@ -37,6 +37,7 @@
 #include "ButtonTheme.hh"
 
 #include "FbTk/CommandParser.hh"
+#include "FbTk/Resource.hh"
 #include "Screen.hh"
 #include "ScreenPlacement.hh"
 #include "Toolbar.hh"
@@ -109,13 +110,40 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
                 return 0;
         }
         item = new SpacerTool(size);
-    } else {
+    } else if (name.find("button.") == 0) {
+        // A generic button. Needs a label and a command (chain) configured
+        std::string label = FbTk::Resource<std::string>
+                            (m_screen.resourceManager(), "",
+                             m_screen.name() + ".toolbar." + name + ".label",
+                             m_screen.altName() + ".Toolbar." + name + ".Label");
+        if (label.empty())
+            return 0;
+        FbTk::TextButton *btn = new FbTk::TextButton(parent, m_button_theme->font(), label);
 
+        std::string cmd_str = FbTk::Resource<std::string>
+                              (m_screen.resourceManager(), "",
+                               m_screen.name() + ".toolbar." + name + ".commands",
+                               m_screen.altName() + ".Toolbar." + name + ".Commands");
+        std::list<std::string> commands;
+        FbTk::StringUtil::stringtok(commands, cmd_str, ":");
+        std::list<std::string>::iterator it = commands.begin();
+        int i = 1;
+        for (; it != commands.end(); ++it, ++i) {
+            std::string cmd_str = *it;
+            FbTk::StringUtil::removeTrailingWhitespace(cmd_str);
+            FbTk::StringUtil::removeFirstWhitespace(cmd_str);
+            FbTk::RefCount<FbTk::Command<void> > cmd(cp.parse(cmd_str));
+            if (cmd)
+                btn->setOnClick(cmd, i);
+        }
+        item = new ButtonTool(btn, ToolbarItem::FIXED,
+                              dynamic_cast<ButtonTheme &>(*m_button_theme),
+                              screen().imageControl());
+    } else {
         std::string cmd_str = name;
         if (name == "prevwindow" || name == "nextwindow") {
             cmd_str += " (workspace=[current])";
         }
-
         FbTk::RefCount<FbTk::Command<void> > cmd(cp.parse(cmd_str));
         if (cmd == 0) // we need a command
             return 0;
@@ -129,7 +157,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
                                            0, 0,
                                            button_size, button_size);
         win->setOnClick(cmd);
-        item = new ButtonTool(win, ToolbarItem::SQUARE, 
+        item = new ButtonTool(win, ToolbarItem::SQUARE,
                               dynamic_cast<ButtonTheme &>(*m_button_theme),
                               screen().imageControl());
     }
