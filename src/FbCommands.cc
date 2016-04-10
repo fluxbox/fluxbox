@@ -82,8 +82,13 @@ void showMenu(BScreen &screen, FbTk::Menu &menu) {
                   screen.rootWindow().window(), &ignored.w, &ignored.w,
                   &x, &y, &ignored.i, &ignored.i, &ignored.ui);
 
-    screen.placementStrategy()
-        .placeAndShowMenu(menu, x, y, false);
+    int head = screen.getHead(x, y);
+	const bool mouseInStrut = y < static_cast<signed>(screen.maxTop(head)) ||
+                              y > static_cast<signed>(screen.maxBottom(head)) ||
+                              x < static_cast<signed>(screen.maxLeft(head)) ||
+                              x > static_cast<signed>(screen.maxRight(head));
+
+    screen.placementStrategy().placeAndShowMenu(menu, x, y, mouseInStrut);
 }
 
 }
