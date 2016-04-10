@@ -457,14 +457,43 @@ void FluxboxWindow::init() {
 
     setWindowType(m_client->getWindowType());
 
-    bool is_visible = isWindowVisibleOnSomeHeadOrScreen(*this);
-
-    if (fluxbox.isStartup())
+    if (fluxbox.isStartup()) {
         m_placed = true;
-    else if (m_client->normal_hint_flags & (PPosition|USPosition)) {
-        m_placed = is_visible;
+    } else if (m_client->normal_hint_flags & (PPosition|USPosition)) {
+        m_placed = true;
+        // sanitize explicit position
+        int head = screen().getHead(fbWindow());
+        if (head == 0 && screen().hasXinerama())
+            head = screen().getCurrHead();
+        int left = screen().maxLeft(head),   top  = screen().maxTop(head),
+            btm  = screen().maxBottom(head), rght = screen().maxRight(head);
+        const int margin = hasTitlebar() ? 32 : 8;
+        // ensure the window intersects with the workspace x-axis
+        if (int(frame().x() + frame().width()) < left) {
+            left += margin - frame().width();
+        } else if (frame().x() > rght) {
+            left = rght - margin;
+        } else {
+            left = frame().x();
+        }
+        if (hasTitlebar()) {
+            // ensure the titlebar is inside the workspace
+            top  = std::max(top,  std::min(frame().y(), btm  - margin));
+        } else {
+            // ensure "something" is inside the workspace
+            if (int(frame().y() + frame().height()) < top)
+                top += margin - frame().height();
+            else if (frame().y() > btm)
+                top = btm - margin;
+            else
+                top = frame().y();
+        }
+        frame().move(left, top);
     } else {
-        if (!is_visible) {
+        if (!isWindowVisibleOnSomeHeadOrScreen(*this)) {
+            // this probably should never happen, but if a window
+            // unexplicitly has its topleft corner outside any screen,
+            // move it to the current screen and ensure it's just placed
             int cur = screen().getHead(fbWindow());
             move(screen().getHeadX(cur), screen().getHeadY(cur));
             m_placed = false; // allow placement strategy to fix position
