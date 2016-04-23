@@ -1081,6 +1081,14 @@ jump to the edge.
 +
 Default: *10*
 
+*session.screen0.edgeResizeSnapThreshold*: 'integer'::
+When resizing a window by grabbing a corner, fluxbox is able to have it `snap'
+to the edges of the screen and other windows for easy placement. This
+variable tells fluxbox the distance (in pixels) at which the window will
+jump to the edge.
++
+Default: *0*
+
 *session.screen0.windowPlacement*: 'strategy'::
 This resource specifies where to place new windows when not otherwise
 specified (by the program or the `apps' file, for example).

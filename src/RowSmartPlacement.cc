@@ -115,6 +115,7 @@ bool RowSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
             for (; win_it != win_it_end && placed; ++win_it) {
                 FluxboxWindow &window = **win_it;
                 if (&window == &win) continue;
+                if (window.layerNum() != win.layerNum() ){ continue; } //windows are in different layers - skip it
 
                 int curr_x = window.x() - window.xOffset(); // minus offset to get back up to fake place
                 int curr_y = window.y() - window.yOffset();

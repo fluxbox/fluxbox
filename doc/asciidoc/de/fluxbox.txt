@@ -894,7 +894,13 @@ Magneteffekt
 session.screen0.edgeSnapThreshold: <integer>
     Magneteffekt, damit Fenster sich an anderen oder an
     den Seitenraendern festkleben. Die Zahl gibt den Abstand
-    an ab dem dieser Effekt aktiviert wird
+    an ab dem dieser Effekt aktiviert wird.
+    Standardwert: 10
+
+session.screen0.edgeResizeSnapThreshold: <integer>
+    Magneteffekt, damit Fensterecken sich an anderen Fenstern oder an den
+    Seitenraendern festkleben, wenn man die Groesse eraendert. Die Zahl gibt
+    den Abstand an ab dem dieser Effekt aktiviert wird.
     Standardwert: 0
 
 Diverses

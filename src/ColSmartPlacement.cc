@@ -99,6 +99,8 @@ bool ColSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
             std::list<FluxboxWindow *>::const_iterator it_end = windowlist.end();
             for (; it != it_end && placed; ++it) {
                 if (*it == &win) continue;
+                if ((*it)->layerNum() != win.layerNum() ){ continue; } //windows are in different layers - skip it
+                
                 int bw = 2 * (*it)->fbWindow().borderWidth();
                 int curr_x = (*it)->x() - (*it)->xOffset();
                 int curr_y = (*it)->y() - (*it)->yOffset();

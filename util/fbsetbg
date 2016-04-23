@@ -523,7 +523,7 @@ if [ "$option" = random ]; then
         wallpaper="$wallpaperdir/`ls \"$wallpaperdir\"|sed -n ${wallpapernumber}p`"
         option=$option2 # have to choose something...
     else
-        message "Invalid random wallpaper directory specified."
+        message "Invalid random wallpaper directory specified: '$wallpaperdir'."
         exit 1
     fi
 fi

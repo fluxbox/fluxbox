@@ -430,6 +430,8 @@ void Menu::updateMenu() {
         m_item_w = std::max(iw, m_item_w);
     }
 
+    // the menu width should be as wide as the widest menu item
+    w = m_item_w;
 
     // calculate needed columns
     m_columns = 0;

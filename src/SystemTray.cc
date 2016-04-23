@@ -38,15 +38,47 @@
 
 #include <string>
 
+
 using std::string;
-
-
 using std::endl;
 using std::hex;
 using std::dec;
 
+
+namespace {
+
+void getScreenCoordinates(Window win, int x, int y, int &screen_x, int &screen_y) {
+
+    XWindowAttributes attr;
+    if (XGetWindowAttributes(FbTk::App::instance()->display(), win, &attr) == 0) {
+        return;
+    }
+
+    Window unused_win;
+    Window parent_win;
+    Window root_win = 0;
+    Window* unused_childs = 0;
+    unsigned int unused_number;
+
+    XQueryTree(FbTk::App::instance()->display(), win,
+               &root_win,
+               &parent_win,
+               &unused_childs, &unused_number);
+
+    if (unused_childs != 0) {
+        XFree(unused_childs);
+    }
+
+    XTranslateCoordinates(FbTk::App::instance()->display(),
+                          parent_win, root_win,
+                          x, y,
+                          &screen_x, &screen_y, &unused_win);
+}
+
+};
+
 /// helper class for tray windows, so we dont call XDestroyWindow
-class TrayWindow: public FbTk::FbWindow {
+class SystemTray::TrayWindow : public FbTk::FbWindow {
 public:
     TrayWindow(Window win, bool using_xembed):FbTk::FbWindow(win), m_visible(false), m_xembedded(using_xembed) {
         setEventMask(PropertyChangeMask);
@@ -159,7 +191,7 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     m_screen(screen),
     m_pixmap(0), m_num_visible_clients(0),
     m_selection_owner(m_window, 0, 0, 1, 1, SubstructureNotifyMask, false, false, CopyFromParent, InputOnly) {
-    
+
     FbTk::EventManager::instance()->add(*this, m_window);
     FbTk::EventManager::instance()->add(*this, m_selection_owner);
     // setup signals
@@ -470,9 +502,11 @@ void SystemTray::rearrangeClients() {
         next_x += h_rot0+bw;
         translateCoords(orientation(), x, y, w_rot0, h_rot0);
         translatePosition(orientation(), x, y, h_rot0, h_rot0, 0);
+        int screen_x = 0, screen_y = 0;
+        getScreenCoordinates((*client_it)->window(), (*client_it)->x(), (*client_it)->y(), screen_x, screen_y);
 
         (*client_it)->moveResize(x, y, h_rot0, h_rot0);
-        (*client_it)->sendConfigureNotify(x, y, h_rot0, h_rot0);
+        (*client_it)->sendConfigureNotify(screen_x, screen_y, h_rot0, h_rot0);
     }
 }
 

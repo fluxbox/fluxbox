@@ -110,9 +110,10 @@ public:
         { workspace = ws; workspace_remember = true; }
     void rememberHead(int h)
         { head = h; head_remember = true; }
-    void rememberDimensions(int width, int height, bool is_relative)
+    void rememberDimensions(int width, int height, bool is_w_relative, bool is_h_relative)
         {
-          dimension_is_relative = is_relative;
+          dimension_is_w_relative = is_w_relative;
+          dimension_is_h_relative = is_h_relative;
           w = width; h = height;
           dimensions_remember = true;
         }
@@ -120,10 +121,11 @@ public:
         { focushiddenstate= state; focushiddenstate_remember= true; }
     void rememberIconHiddenstate(bool state)
         { iconhiddenstate= state; iconhiddenstate_remember= true; }
-    void rememberPosition(int posx, int posy, bool is_relative,
+    void rememberPosition(int posx, int posy, bool is_x_relative, bool is_y_relative,
                  FluxboxWindow::ReferenceCorner rfc = FluxboxWindow::LEFTTOP)
         {
-          position_is_relative = is_relative;
+          position_is_x_relative = is_x_relative;
+          position_is_y_relative = is_y_relative;
           x = posx; y = posy;
           refc = rfc;
           position_remember = true;
@@ -161,11 +163,13 @@ public:
 
     bool dimensions_remember;
     int w,h; // width, height
-    bool dimension_is_relative;
+    bool dimension_is_w_relative;
+    bool dimension_is_h_relative;
 
     bool position_remember;
     int x,y;
-    bool position_is_relative;
+    bool position_is_x_relative;
+    bool position_is_y_relative;
     FluxboxWindow::ReferenceCorner refc;
 
     bool alpha_remember;
@@ -481,32 +485,34 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
             if (!had_error)
                 app.rememberLayer(l);
         } else if (str_key == "dimensions") {
-            unsigned int h, w;
-            if (sscanf(str_label.c_str(), "%u %u", &w, &h) == 2) {
-                app.rememberDimensions(w, h, false);
-            } else if(sscanf(str_label.c_str(), "%u%% %u%%", &w, &h) == 2) {
-                app.rememberDimensions(w, h, true);
-            } else {
+            std::vector<string> tokens;
+            FbTk::StringUtil::stringtok<std::vector<string> >(tokens, str_label);
+            if (tokens.size() == 2) {
+                unsigned int h, w;
+                bool h_relative, w_relative, ignore;
+                w = FbTk::StringUtil::parseSizeToken(tokens[0], w_relative, ignore);
+                h = FbTk::StringUtil::parseSizeToken(tokens[1], h_relative, ignore);
+                app.rememberDimensions(w, h, w_relative, h_relative);
+            } else
                 had_error = true;
-            }
         } else if (str_key == "position") {
             FluxboxWindow::ReferenceCorner r = FluxboxWindow::LEFTTOP;
-            int x = 0, y = 0;
             // more info about the parameter
             // in ::rememberPosition
 
             if (str_option.length())
                 r = FluxboxWindow::getCorner(str_option);
-            had_error = (r == FluxboxWindow::ERROR);
-
-            if (!had_error){
-                if(sscanf(str_label.c_str(), "%d %d", &x, &y) == 2) {
-                  app.rememberPosition(x, y, false, r);
-                } else if (sscanf(str_label.c_str(), "%d%% %d%%", &x, &y) == 2){
-                  app.rememberPosition(x, y, true, r);
-                }
-            } else {
-                had_error = true;
+            if (!(had_error = (r == FluxboxWindow::ERROR))) {
+                std::vector<string> tokens;
+                FbTk::StringUtil::stringtok<std::vector<string> >(tokens, str_label);
+                if (tokens.size() == 2) {
+                    int x, y;
+                    bool x_relative, y_relative, ignore;
+                    x = FbTk::StringUtil::parseSizeToken(tokens[0], x_relative, ignore);
+                    y = FbTk::StringUtil::parseSizeToken(tokens[1], y_relative, ignore);
+                    app.rememberPosition(x, y, x_relative, y_relative, r);
+                } else
+                    had_error = true;
             }
         } else if (str_key == "shaded") {
             app.rememberShadedstate(str_label == "yes");
@@ -916,11 +922,9 @@ void Remember::save() {
             apps_file << "  [Head]\t{" << a.head << "}" << endl;
         }
         if (a.dimensions_remember) {
-            if(a.dimension_is_relative) {
-              apps_file << "  [Dimensions]\t{" << a.w << "% " << a.h << "%}" << endl;
-            } else {
-              apps_file << "  [Dimensions]\t{" << a.w << " " << a.h << "}" << endl;
-            }
+            apps_file << "  [Dimensions]\t{" <<
+                a.w << (a.dimension_is_w_relative ? "% " : " ") <<
+                a.h << (a.dimension_is_h_relative ? "%}" : "}") << endl;
         }
         if (a.position_remember) {
             apps_file << "  [Position]\t(";
@@ -952,11 +956,9 @@ void Remember::save() {
             default:
                 apps_file << "UPPERLEFT";
             }
-            if(a.position_is_relative) {
-              apps_file << ")\t{" << a.x << "% " << a.y << "%}" << endl;
-            } else {
-              apps_file << ")\t{" << a.x << " " << a.y << "}" << endl;
-            }
+            apps_file << ")\t{" <<
+                a.x << (a.position_is_x_relative ? "% " : " ") <<
+                a.y << (a.position_is_y_relative ? "%}" : "}") << endl;
         }
         if (a.shadedstate_remember) {
             apps_file << "  [Shaded]\t{" << ((a.shadedstate)?"yes":"no") << "}" << endl;
@@ -1136,14 +1138,14 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         head = win->screen().getHead(win->fbWindow());
         percx = win->screen().calRelativeDimensionWidth(head, win->normalWidth());
         percy = win->screen().calRelativeDimensionHeight(head, win->normalHeight());
-        app->rememberDimensions(percx, percy, true);
+        app->rememberDimensions(percx, percy, true, true);
         break;
     }
     case REM_POSITION: {
         head = win->screen().getHead(win->fbWindow());
         percx = win->screen().calRelativePositionWidth(head, win->normalX());
         percy = win->screen().calRelativePositionHeight(head, win->normalY());
-        app->rememberPosition(percx, percy, true);
+        app->rememberPosition(percx, percy, true, true);
         break;
     }
     case REM_FOCUSHIDDENSTATE:
@@ -1307,28 +1309,30 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
     if (app->dimensions_remember) {
 
-        int win_w, win_h;
-        if(app->dimension_is_relative) {
-            int head = screen.getHead(win.fbWindow());
-            win_w = screen.calRelativeWidth(head, app->w);
-            win_h = screen.calRelativeHeight(head, app->h);
-        } else {
-            win_w = app->w;
-            win_h = app->h;
-        }
-        win.resize(win_w, win_h);
+        int win_w = app->w;
+        int win_h = app->h;
+        int head = screen.getHead(win.fbWindow());
+        int border_w = win.frame().window().borderWidth();
+
+        if (app->dimension_is_w_relative)
+            win_w = screen.calRelativeWidth(head, win_w);
+        if (app->dimension_is_h_relative)
+            win_h = screen.calRelativeHeight(head, win_h);
+
+        win.resize(win_w - 2 * border_w, win_h - 2 * border_w);
     }
 
     if (app->position_remember) {
-        int newx, newy;
-        if(app->position_is_relative) {
-            int head = screen.getHead(win.fbWindow());
-            newx = screen.calRelativeWidth(head, app->x);
-            newy = screen.calRelativeHeight(head, app->y);
-        } else {
-            newx = app->x;
-            newy = app->y;
-        }
+
+        int newx = app->x;
+        int newy = app->y;
+        int head = screen.getHead(win.fbWindow());
+
+        if (app->position_is_x_relative)
+            newx = screen.calRelativeWidth(head, newx);
+        if (app->position_is_y_relative)
+            newy = screen.calRelativeHeight(head, newy);
+
         win.translateCoords(newx, newy, app->refc);
         win.move(newx, newy);
     }
