@@ -65,6 +65,7 @@ void showUsage(const char *progname) {
         "   -bg [color name]            Background color"<<endl<<
         "   -na                         Disable antialias"<<endl<<
         "   -hf [history file]          History file to load (default ~/.fluxbox/fbrun_history)"<<endl<<
+        "   -preselect                  Select preset text"<<endl<<
         "   -help                       Show this help"<<endl<<endl<<
         "Example: fbrun -fg black -bg white -text xterm -title \"run xterm\""<<endl;
 }
@@ -76,6 +77,7 @@ int main(int argc, char **argv) {
     bool set_pos = false; // set position
     bool near_mouse = false; // popup near mouse
     bool print = false;
+    bool preselect = false;
     string fontname; // font name
     string title("Run program"); // default title
     string text;         // default input text
@@ -115,6 +117,8 @@ int main(int argc, char **argv) {
             background = argv[++i];
         } else if (strcmp(argv[i], "-hf") == 0 && i+1 < argc) {
             history_file = argv[++i];
+        } else if (strcmp(argv[i], "-preselect") == 0) {
+            preselect = true;
         } else if (arg == "-h" || arg == "-help" || arg == "--help") {
             showUsage(argv[0]);
             exit(0);
@@ -159,6 +163,8 @@ int main(int argc, char **argv) {
 
         fbrun.setTitle(title);
         fbrun.setText(text);
+        if (preselect)
+            fbrun.selectAll();
 
         if (near_mouse) {
 
