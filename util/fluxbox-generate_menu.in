@@ -145,13 +145,28 @@ testoption() {
     esac
 }
 
-find_it() {
-    [ -n "$1" ] && hash $1 2> /dev/null && shift && "$@"
-}
+# some shell's hash returns 0 always
+if hash this_program_does_not_exist-no_really-aA1zZ9 > /dev/null 2>&1; then
+    # can't rely on return value
+    # ash / ksh
+    find_it() {
+        which "$1" > /dev/null 2>&1 && shift && "$@"
+    }
 
-find_it_options() {
-    [ -n "$1" ] && hash $1 2> /dev/null
-}
+    find_it_options() {
+        which "$1" > /dev/null 2>&1
+    }
+else
+    # can rely on return value
+    # bash / dash / zsh / sh on Solaris
+    find_it() {
+        [ -n "$1" ] && hash "$1" 2> /dev/null && shift && "$@"
+    }
+
+    find_it_options() {
+        [ -n "$1" ] && hash "$1" 2> /dev/null
+    }
+fi
 
 #echo "replaceWithinString: $1, $2, $3" >&2
 #echo ${1//$2/$3} # causes error in BSD even though not used
@@ -203,7 +218,7 @@ convertIcon(){
     if [ -f "${entry_icon}" ]; then
         : echo "File exists. To overwrite, type: convert \"$1\" \"$entry_icon\"" >&2
     else
-        if hash convert 2> /dev/null; then
+        if find_it_options convert; then
             convert "$1" "$entry_icon"
             # echo convert "$1" , "$entry_icon" >> $ICONMAPPING
         else
