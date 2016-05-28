@@ -67,7 +67,8 @@ TextBox::TextBox(const FbWindow &parent,
     m_gc(0),
     m_cursor_pos(0),
     m_start_pos(0),
-    m_end_pos(0) {
+    m_end_pos(0),
+    m_select_pos(-1) {
 
     FbTk::EventManager::instance()->add(*this, *this);
 }
