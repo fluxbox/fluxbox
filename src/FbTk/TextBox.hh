@@ -39,7 +39,7 @@ public:
     void setText(const FbTk::BiDiString &text);
     void setFont(const Font &font);
     void setGC(GC gc);
-    void setCursorPosition(int cursor);    
+    void setCursorPosition(int cursor);
     void setInputFocus();
     void cursorEnd();
     void cursorHome();
@@ -65,7 +65,8 @@ public:
     int cursorPosition() const { return m_cursor_pos; }
     int textStartPos() const { return m_start_pos; }
 
-    bool hasSelection() const { return m_select_pos != -1 && m_select_pos != m_cursor_pos + m_start_pos; }
+    bool hasSelection() const {
+        return (m_select_pos != std::string::npos) && (m_select_pos != m_cursor_pos + m_start_pos); }
     void select(std::string::size_type pos, int length);
     void selectAll();
 

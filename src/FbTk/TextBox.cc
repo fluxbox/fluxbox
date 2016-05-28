@@ -54,7 +54,7 @@ TextBox::TextBox(int screen_num,
     m_cursor_pos(0),
     m_start_pos(0),
     m_end_pos(0),
-    m_select_pos(-1) {
+    m_select_pos(std::string::npos) {
 
     FbTk::EventManager::instance()->add(*this, *this);
 }
@@ -68,7 +68,7 @@ TextBox::TextBox(const FbWindow &parent,
     m_cursor_pos(0),
     m_start_pos(0),
     m_end_pos(0),
-    m_select_pos(-1) {
+    m_select_pos(std::string::npos) {
 
     FbTk::EventManager::instance()->add(*this, *this);
 }
@@ -277,7 +277,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
     if (IsModifierKey(ks)) return;
 
 
-    if (m_select_pos == -1 && (event.state & ShiftMask) == ShiftMask) {
+    if (m_select_pos == std::string::npos && (event.state & ShiftMask) == ShiftMask) {
         m_select_pos = m_cursor_pos + m_start_pos;
     }
 
@@ -407,7 +407,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
         insertText(val);
     }
     if ((event.state & ShiftMask) != ShiftMask)
-        m_select_pos = -1;
+        m_select_pos = std::string::npos;
     clear();
 }
 
@@ -432,7 +432,7 @@ void TextBox::adjustStartPos() {
     const char* visual = m_text.visual().c_str();
 
     int text_width = font().textWidth(visual, m_end_pos);
-    if (m_cursor_pos > -1 && text_width < static_cast<signed>(width()))
+    if (m_cursor_pos >= 0 && text_width < static_cast<signed>(width()))
         return;
 
     int start_pos = 0;
@@ -459,7 +459,7 @@ unsigned int TextBox::findEmptySpaceLeft(){
             break;
         pos = next_pos;
     }
-    if (pos < 0)  
+    if (pos < 0)
         pos = 0;
 
     return pos;
@@ -517,7 +517,7 @@ void TextBox::select(std::string::size_type pos, int length)
 
         adjustPos();
     } else {
-        m_select_pos = -1;
+        m_select_pos = std::string::npos;
     }
     clear();
 }
