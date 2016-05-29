@@ -239,7 +239,11 @@ void FocusControl::stopCyclingFocus() {
 
     // put currently focused window to top
     if (s_focused_window) {
-        setScreenFocusedWindow(*s_focused_window);
+        // re-focus last window to give the client a chance to redistribute the
+        // focus internally (client-side only modality)
+        s_focused_window->focus();
+        if (s_focused_window)
+            setScreenFocusedWindow(*s_focused_window);
         if (s_focused_fbwindow)
             s_focused_fbwindow->raise();
     } else
@@ -574,6 +578,16 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         return;
 
     BScreen *screen = client ? &client->screen() : 0;
+    if (screen && screen->focusControl().isCycling()) {
+        WinClient *last = screen->focusControl().m_cycling_last;
+        if (last && last != client && screen->focusControl().m_cycling_list->contains(*last)) {
+            // if we're currently cycling and the client tries to juggle around focus
+            // on FocusIn events to provide client-side modality - don't let him
+            last->focus();
+            return;
+        }
+    }
+
     BScreen *old_screen =
         FocusControl::focusedWindow() ?
         &FocusControl::focusedWindow()->screen() : 0;

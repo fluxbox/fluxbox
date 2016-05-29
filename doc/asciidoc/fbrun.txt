@@ -66,6 +66,9 @@ OPTIONS
 *-hf* 'filename'::
 	History file to load. The default is *~/.fluxbox/fbrun_history*.
 
+*-preselect*::
+    Select the preset text given by the *-text* parameter
+
 *-help*::
 	Show this help
 

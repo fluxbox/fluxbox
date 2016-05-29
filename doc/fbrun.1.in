@@ -100,6 +100,11 @@ History file to load\&. The default is
 \fB~/\&.fluxbox/fbrun_history\fR\&.
 .RE
 .PP
+\fB\-preselect\fR
+.RS 4
+Select the preset text given by the \fB\&-text\fR\& parameter
+.RE
+.PP
 \fB\-help\fR
 .RS 4
 Show this help
