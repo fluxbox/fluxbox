@@ -98,6 +98,7 @@ public:
     void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
     void forgetStuckstate() { stuckstate_remember = false; }
     void forgetFocusNewWindow() { focusnewwindow_remember = false; }
+    void forgetFocusProtection() { focusprotection_remember = false; }
     void forgetJumpworkspace() { jumpworkspace_remember = false; }
     void forgetLayer() { layer_remember = false; }
     void forgetSaveOnClose() { save_on_close_remember = false; }
@@ -140,6 +141,8 @@ public:
         { stuckstate = state; stuckstate_remember = true; }
     void rememberFocusNewWindow(bool state)
         { focusnewwindow = state; focusnewwindow_remember = true; }
+    void rememberFocusProtection(unsigned int protect)
+        { focusprotection = protect; focusprotection_remember = true; }
     void rememberJumpworkspace(bool state)
         { jumpworkspace = state; jumpworkspace_remember = true; }
     void rememberLayer(int layernum)
@@ -190,6 +193,9 @@ public:
 
     bool focusnewwindow_remember;
     bool focusnewwindow;
+
+    bool focusprotection_remember;
+    unsigned int focusprotection;
 
     bool focushiddenstate_remember;
     bool focushiddenstate;
@@ -242,6 +248,7 @@ void Application::reset() {
         shadedstate_remember =
         stuckstate_remember =
         focusnewwindow_remember =
+        focusprotection_remember =
         tabstate_remember =
         workspace_remember =
         head_remember =
@@ -549,6 +556,26 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
             app.rememberStuckstate(str_label == "yes");
         } else if (str_key == "focusnewwindow") {
             app.rememberFocusNewWindow(str_label == "yes");
+        } else if (str_key == "focusprotection") {
+            Focus::Protection protect = Focus::NoProtection;
+            std::list<std::string> labels;
+            FbTk::StringUtil::stringtok(labels, str_label, ", ");
+            std::list<std::string>::iterator it = labels.begin();
+            for (; it != labels.end(); ++it) {
+                if (*it == "lock")
+                    protect = (protect & ~Focus::Deny) | Focus::Lock;
+                else if (*it == "deny")
+                    protect = (protect & ~Focus::Lock) | Focus::Deny;
+                else if (*it == "gain")
+                    protect = (protect & ~Focus::Refuse) | Focus::Gain;
+                else if (*it == "refuse")
+                    protect = (protect & ~Focus::Gain) | Focus::Refuse;
+                else if (*it == "none")
+                    protect = Focus::NoProtection;
+                else
+                    had_error = 1;
+            }
+            app.rememberFocusProtection(protect);
         } else if (str_key == "minimized") {
             app.rememberMinimizedstate(str_label == "yes");
         } else if (str_key == "maximized") {
@@ -1009,6 +1036,31 @@ void Remember::save() {
         if (a.focusnewwindow_remember) {
             apps_file << "  [FocusNewWindow]\t{" << ((a.focusnewwindow)?"yes":"no") << "}" << endl;
         }
+        if (a.focusprotection_remember) {
+            apps_file << "  [FocusProtection]\t{";
+            if (a.focusprotection == Focus::NoProtection) {
+                apps_file << "none";
+            } else {
+                bool b = false;
+                if (a.focusprotection & Focus::Gain) {
+                    apps_file << (b?",":"") << "gain";
+                    b = true;
+                }
+                if (a.focusprotection & Focus::Refuse) {
+                    apps_file << (b?",":"") << "refuse";
+                    b = true;
+                }
+                if (a.focusprotection & Focus::Lock) {
+                    apps_file << (b?",":"") << "lock";
+                    b = true;
+                }
+                if (a.focusprotection & Focus::Deny) {
+                    apps_file << (b?",":"") << "deny";
+                    b = true;
+                }
+            }
+            apps_file << "}" << endl;
+        }
         if (a.minimizedstate_remember) {
             apps_file << "  [Minimized]\t{" << ((a.minimizedstate)?"yes":"no") << "}" << endl;
         }
@@ -1082,6 +1134,9 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
         break;
     case REM_FOCUSNEWWINDOW:
         return app->focusnewwindow_remember;
+        break;
+    case REM_FOCUSPROTECTION:
+        return app->focusprotection_remember;
         break;
     case REM_MINIMIZEDSTATE:
         return app->minimizedstate_remember;
@@ -1166,6 +1221,9 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_FOCUSNEWWINDOW:
         app->rememberFocusNewWindow(win->isFocusNew());
         break;
+    case REM_FOCUSPROTECTION:
+        app->rememberFocusProtection(win->focusProtection());
+        break;
     case REM_MINIMIZEDSTATE:
         app->rememberMinimizedstate(win->isIconic());
         break;
@@ -1228,6 +1286,9 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_FOCUSNEWWINDOW:
         app->forgetFocusNewWindow();
+        break;
+    case REM_FOCUSPROTECTION:
+        app->forgetFocusProtection();
         break;
     case REM_MINIMIZEDSTATE:
         app->forgetMinimizedstate();
@@ -1354,6 +1415,10 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
     if (app->focusnewwindow_remember)
         win.setFocusNew(app->focusnewwindow);
+
+    if (app->focusprotection_remember) {
+        win.setFocusProtection(app->focusprotection);
+    }
 
     if (app->minimizedstate_remember) {
         // if inconsistent...

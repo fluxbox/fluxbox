@@ -56,6 +56,18 @@ class ImageControl;
 class Layer;
 }
 
+namespace Focus {
+    enum {
+        NoProtection = 0,
+        Gain = 1,
+        Refuse = 2,
+        Lock = 4,
+        Deny = 8
+    };
+    typedef unsigned int Protection;
+}
+
+
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow: public Focusable,
                      public FbTk::EventHandler,
@@ -256,6 +268,8 @@ public:
     void setIconHidden(bool value);
     /// sets whether or not the window normally gets focus when mapped
     void setFocusNew(bool value) { m_focus_new = value; }
+    /// sets how to protect the focus on or against this window
+    void setFocusProtection(Focus::Protection value) { m_focus_protection = value; }
     /// sets whether or not the window gets focused with mouse
     void setMouseFocus(bool value) { m_mouse_focus = value; }
     /// sets whether or not the window gets focused with click
@@ -384,6 +398,7 @@ public:
     bool isMoveable() const { return functions.move; }
     bool isStuck() const { return m_state.stuck; }
     bool isFocusNew() const { return m_focus_new; }
+    Focus::Protection focusProtection() const { return m_focus_protection; }
     bool hasTitlebar() const { return decorations.titlebar; }
     bool isMoving() const { return moving; }
     bool isResizing() const { return resizing; }
@@ -572,6 +587,8 @@ private:
     typedef FbTk::ConstObjectAccessor<bool, FocusControl> BoolAcc;
     /// if the window is normally focused when mapped
     FbTk::DefaultValue<bool, BoolAcc> m_focus_new;
+    /// special focus permissions
+    Focus::Protection m_focus_protection;
     /// if the window is focused with EnterNotify
     FbTk::DefaultValue<bool, BoolAcc> m_mouse_focus;
     bool m_click_focus;  ///< if the window is focused by clicking

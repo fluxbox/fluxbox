@@ -75,6 +75,7 @@ public:
         REM_MAXIMIZEDSTATE,
         REM_FULLSCREENSTATE,
         REM_FOCUSNEWWINDOW,
+        REM_FOCUSPROTECTION,
         REM_LASTATTRIB // not actually used
     };
 
@@ -85,7 +86,6 @@ public:
       POS_LOWERRIGHT,
       POS_CENTER
     };
-
 
 
     // a "pattern"  to the relevant app

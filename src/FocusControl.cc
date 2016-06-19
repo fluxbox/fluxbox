@@ -588,6 +588,13 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         }
     }
 
+    if (client != expectingFocus() && s_focused_window &&
+        ((s_focused_fbwindow->focusProtection() & Focus::Lock) ||
+        (client && client->fbwindow() && (client->fbwindow()->focusProtection() & Focus::Deny)))) {
+        s_focused_window->focus();
+        return;
+    }
+
     BScreen *old_screen =
         FocusControl::focusedWindow() ?
         &FocusControl::focusedWindow()->screen() : 0;

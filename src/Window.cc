@@ -291,6 +291,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     m_client(&client),
     m_toggled_decos(false),
     m_focus_new(BoolAcc(screen().focusControl(), &FocusControl::focusNew)),
+    m_focus_protection(Focus::NoProtection),
     m_mouse_focus(BoolAcc(screen().focusControl(), &FocusControl::isMouseFocus)),
     m_click_focus(true),
     m_last_button_x(0),  m_last_button_y(0),
@@ -563,7 +564,10 @@ void FluxboxWindow::init() {
         // check if we should prevent this window from gaining focus
         m_focused = false; // deiconify sets this
         if (!Fluxbox::instance()->isStartup() && m_focus_new) {
+            Focus::Protection fp = m_focus_protection;
+            m_focus_protection &= ~Focus::Deny; // new windows run as "Refuse"
             m_focused = focusRequestFromClient(*m_client);
+            m_focus_protection = fp;
             if (!m_focused)
                 lower();
         }
@@ -2025,7 +2029,10 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 
     if (m_focus_new) {
         m_focused = false; // deiconify sets this
+        Focus::Protection fp = m_focus_protection;
+        m_focus_protection &= ~Focus::Deny; // goes by "Refuse"
         m_focused = focusRequestFromClient(*client);
+        m_focus_protection = fp;
         if (!m_focused)
             lower();
     }
@@ -2041,9 +2048,13 @@ bool FluxboxWindow::focusRequestFromClient(WinClient &from) {
 
     FluxboxWindow *cur = FocusControl::focusedFbWindow();
     WinClient *client = FocusControl::focusedWindow();
-    if (cur && getRootTransientFor(&from) != getRootTransientFor(client))
+    if ((from.fbwindow() && (from.fbwindow()->focusProtection() & Focus::Deny)) ||
+        (cur && (cur->focusProtection() & Focus::Lock))) {
+        ret = false;
+    } else if (cur && getRootTransientFor(&from) != getRootTransientFor(client)) {
         ret = !(cur->isFullscreen() && getOnHead() == cur->getOnHead()) &&
               !cur->isTyping();
+    }
 
     if (!ret)
         Fluxbox::instance()->attentionHandler().addAttention(from);
