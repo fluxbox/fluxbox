@@ -1104,9 +1104,7 @@ void FluxboxWindow::reconfigure() {
 void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
     const WinClient::MwmHints *hint = client.getMwmHint();
 
-    if (!hint) return;
-
-    if (!m_toggled_decos && hint->flags & MwmHintsDecorations) {
+    if (hint && !m_toggled_decos && hint->flags & MwmHintsDecorations) {
         if (hint->decorations & MwmDecorAll) {
             decorations.titlebar = decorations.handle = decorations.border =
                 decorations.iconify = decorations.maximize =
@@ -1131,6 +1129,9 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
             if (hint->decorations & MwmDecorMaximize)
                 decorations.maximize = true;
         }
+    } else {
+        decorations.titlebar = decorations.handle = decorations.border =
+        decorations.iconify = decorations.maximize = decorations.menu = true;
     }
 
     unsigned int mask = decorationMask();
@@ -1139,7 +1140,7 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
 
     // functions.tabable is ours, not special one
     // note that it means this window is "tabbable"
-    if (hint->flags & MwmHintsFunctions) {
+    if (hint && hint->flags & MwmHintsFunctions) {
         if (hint->functions & MwmFuncAll) {
             functions.resize = functions.move = functions.iconify =
                 functions.maximize = functions.close = true;
@@ -1158,6 +1159,9 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
             if (hint->functions & MwmFuncClose)
                 functions.close = true;
         }
+    } else {
+        functions.resize = functions.move = functions.iconify =
+        functions.maximize = functions.close = true;
     }
 }
 
