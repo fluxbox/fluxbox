@@ -1402,6 +1402,8 @@ void Ewmh::updateStrut(WinClient &winclient) {
                            data[0], data[1],
                            data[2], data[3]));
         winclient.screen().updateAvailableWorkspaceArea();
+    } else {
+        winclient.clearStrut();
     }
 }
 
