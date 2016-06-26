@@ -2381,6 +2381,14 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         return;
     }
 
+    WinClient *client = 0;
+    if (!screen().focusControl().isMouseTabFocus()) {
+        // determine if we're in a label button (tab)
+        client = winClientOfLabelButtonWindow(be.window);
+    }
+
+
+
     // if nothing was bound via keys-file then
     // - raise() if clickRaise is enabled
     // - hide open menues
@@ -2398,6 +2406,14 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     FbTk::Menu::hideShownMenu();
     if (!m_focused && acceptsFocus() && m_click_focus)
         focus();
+
+    if (!screen().focusControl().isMouseTabFocus() &&
+        client && client != m_client &&
+        !screen().focusControl().isIgnored(be.x_root, be.y_root) ) {
+        setCurrentClient(*client, isFocused());
+    }
+
+
 
 }
 
