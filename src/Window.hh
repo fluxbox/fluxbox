@@ -267,7 +267,12 @@ public:
     /// sets the window icon hidden state
     void setIconHidden(bool value);
     /// sets whether or not the window normally gets focus when mapped
-    void setFocusNew(bool value) { m_focus_new = value; }
+    void setFocusNew(bool value) {
+        if (value)
+            m_focus_protection = (m_focus_protection & ~Focus::Refuse) | Focus::Gain;
+        else
+            m_focus_protection = (m_focus_protection & ~Focus::Gain) | Focus::Refuse;
+    }
     /// sets how to protect the focus on or against this window
     void setFocusProtection(Focus::Protection value) { m_focus_protection = value; }
     /// sets whether or not the window gets focused with mouse
@@ -397,7 +402,7 @@ public:
     bool isClosable() const { return functions.close; }
     bool isMoveable() const { return functions.move; }
     bool isStuck() const { return m_state.stuck; }
-    bool isFocusNew() const { return m_focus_new; }
+    bool isFocusNew() const;
     Focus::Protection focusProtection() const { return m_focus_protection; }
     bool hasTitlebar() const { return decorations.titlebar; }
     bool isMoving() const { return moving; }
@@ -586,7 +591,6 @@ private:
 
     typedef FbTk::ConstObjectAccessor<bool, FocusControl> BoolAcc;
     /// if the window is normally focused when mapped
-    FbTk::DefaultValue<bool, BoolAcc> m_focus_new;
     /// special focus permissions
     Focus::Protection m_focus_protection;
     /// if the window is focused with EnterNotify

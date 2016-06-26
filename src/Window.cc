@@ -290,7 +290,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client):
     m_old_decoration_mask(0),
     m_client(&client),
     m_toggled_decos(false),
-    m_focus_new(BoolAcc(screen().focusControl(), &FocusControl::focusNew)),
     m_focus_protection(Focus::NoProtection),
     m_mouse_focus(BoolAcc(screen().focusControl(), &FocusControl::isMouseFocus)),
     m_click_focus(true),
@@ -563,7 +562,7 @@ void FluxboxWindow::init() {
         deiconify(false);
         // check if we should prevent this window from gaining focus
         m_focused = false; // deiconify sets this
-        if (!Fluxbox::instance()->isStartup() && m_focus_new) {
+        if (!Fluxbox::instance()->isStartup() && isFocusNew()) {
             Focus::Protection fp = m_focus_protection;
             m_focus_protection &= ~Focus::Deny; // new windows run as "Refuse"
             m_focused = focusRequestFromClient(*m_client);
@@ -658,9 +657,9 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
         bool is_startup = Fluxbox::instance()->isStartup();
 
         // we use m_focused as a signal to focus the window when mapped
-        if (m_focus_new && !is_startup)
+        if (isFocusNew() && !is_startup)
             m_focused = focusRequestFromClient(client);
-        focused_win = (m_focus_new || is_startup) ? &client : m_client;
+        focused_win = (isFocusNew() || is_startup) ? &client : m_client;
 
         m_clientlist.push_back(&client);
     }
@@ -1023,6 +1022,14 @@ bool FluxboxWindow::isGroupable() const {
     if (isResizable() && isMaximizable() && !winClient().isTransient())
         return true;
     return false;
+}
+
+bool FluxboxWindow::isFocusNew() const {
+    if (m_focus_protection & Focus::Gain)
+        return true;
+    if (m_focus_protection & Focus::Refuse)
+        return false;
+    return screen().focusControl().focusNew();
 }
 
 void FluxboxWindow::associateClientWindow() {
@@ -1432,7 +1439,7 @@ void FluxboxWindow::deiconify(bool do_raise) {
     // but not on startup: focus will be handled after creating everything
     // we use m_focused as a signal to focus the window when mapped
     if (screen().currentWorkspace()->numberOfWindows() == 1 ||
-        m_focus_new || m_client->isTransient())
+        isFocusNew() || m_client->isTransient())
         m_focused = true;
 
     oplock = false;
@@ -2027,7 +2034,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     setCurrentClient(*client, false); // focus handled on MapNotify
     deiconify();
 
-    if (m_focus_new) {
+    if (isFocusNew()) {
         m_focused = false; // deiconify sets this
         Focus::Protection fp = m_focus_protection;
         m_focus_protection &= ~Focus::Deny; // goes by "Refuse"

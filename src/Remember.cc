@@ -97,7 +97,6 @@ public:
     void forgetFocusHiddenstate() { focushiddenstate_remember= false; }
     void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
     void forgetStuckstate() { stuckstate_remember = false; }
-    void forgetFocusNewWindow() { focusnewwindow_remember = false; }
     void forgetFocusProtection() { focusprotection_remember = false; }
     void forgetJumpworkspace() { jumpworkspace_remember = false; }
     void forgetLayer() { layer_remember = false; }
@@ -139,8 +138,6 @@ public:
         { decostate = state; decostate_remember = true; }
     void rememberStuckstate(bool state)
         { stuckstate = state; stuckstate_remember = true; }
-    void rememberFocusNewWindow(bool state)
-        { focusnewwindow = state; focusnewwindow_remember = true; }
     void rememberFocusProtection(unsigned int protect)
         { focusprotection = protect; focusprotection_remember = true; }
     void rememberJumpworkspace(bool state)
@@ -190,9 +187,6 @@ public:
 
     bool stuckstate_remember;
     bool stuckstate;
-
-    bool focusnewwindow_remember;
-    bool focusnewwindow;
 
     bool focusprotection_remember;
     unsigned int focusprotection;
@@ -247,7 +241,6 @@ void Application::reset() {
         position_remember =
         shadedstate_remember =
         stuckstate_remember =
-        focusnewwindow_remember =
         focusprotection_remember =
         tabstate_remember =
         workspace_remember =
@@ -436,6 +429,8 @@ bool handleStartupItem(const string &line, int offset) {
 int parseApp(ifstream &file, Application &app, string *first_line = 0) {
     string line;
     _FB_USES_NLS;
+    Focus::Protection protect = Focus::NoProtection;
+    bool remember_protect = false;
     int row = 0;
     while (! file.eof()) {
         if (!(first_line || getline(file, line))) {
@@ -555,9 +550,15 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
         } else if (str_key == "sticky") {
             app.rememberStuckstate(str_label == "yes");
         } else if (str_key == "focusnewwindow") {
-            app.rememberFocusNewWindow(str_label == "yes");
+            remember_protect = true;
+            if (!(protect & (Focus::Gain|Focus::Refuse))) { // cut back on contradiction
+                if (str_label == "yes")
+                    protect |= Focus::Gain;
+                else
+                    protect |= Focus::Refuse;
+            }
         } else if (str_key == "focusprotection") {
-            Focus::Protection protect = Focus::NoProtection;
+            remember_protect = true;
             std::list<std::string> labels;
             FbTk::StringUtil::stringtok(labels, str_label, ", ");
             std::list<std::string>::iterator it = labels.begin();
@@ -575,7 +576,6 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 else
                     had_error = 1;
             }
-            app.rememberFocusProtection(protect);
         } else if (str_key == "minimized") {
             app.rememberMinimizedstate(str_label == "yes");
         } else if (str_key == "maximized") {
@@ -594,7 +594,7 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
         } else if (str_key == "close") {
             app.rememberSaveOnClose(str_label == "yes");
         } else if (str_key == "end") {
-            return row;
+            break;
         } else {
             cerr << _FB_CONSOLETEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
         }
@@ -602,6 +602,8 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
             cerr<<"Error parsing apps entry: ("<<line<<")"<<endl;
         }
     }
+    if (remember_protect)
+        app.rememberFocusProtection(protect);
     return row;
 }
 
@@ -1033,9 +1035,6 @@ void Remember::save() {
         if (a.stuckstate_remember) {
             apps_file << "  [Sticky]\t{" << ((a.stuckstate)?"yes":"no") << "}" << endl;
         }
-        if (a.focusnewwindow_remember) {
-            apps_file << "  [FocusNewWindow]\t{" << ((a.focusnewwindow)?"yes":"no") << "}" << endl;
-        }
         if (a.focusprotection_remember) {
             apps_file << "  [FocusProtection]\t{";
             if (a.focusprotection == Focus::NoProtection) {
@@ -1132,9 +1131,6 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
     case REM_STUCKSTATE:
         return app->stuckstate_remember;
         break;
-    case REM_FOCUSNEWWINDOW:
-        return app->focusnewwindow_remember;
-        break;
     case REM_FOCUSPROTECTION:
         return app->focusprotection_remember;
         break;
@@ -1218,9 +1214,6 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_STUCKSTATE:
         app->rememberStuckstate(win->isStuck());
         break;
-    case REM_FOCUSNEWWINDOW:
-        app->rememberFocusNewWindow(win->isFocusNew());
-        break;
     case REM_FOCUSPROTECTION:
         app->rememberFocusProtection(win->focusProtection());
         break;
@@ -1283,9 +1276,6 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_STUCKSTATE:
         app->forgetStuckstate();
-        break;
-    case REM_FOCUSNEWWINDOW:
-        app->forgetFocusNewWindow();
         break;
     case REM_FOCUSPROTECTION:
         app->forgetFocusProtection();
@@ -1412,9 +1402,6 @@ void Remember::setupFrame(FluxboxWindow &win) {
         if ((win.isStuck() && !app->stuckstate) ||
             (!win.isStuck() && app->stuckstate))
             win.stick(); // toggles
-
-    if (app->focusnewwindow_remember)
-        win.setFocusNew(app->focusnewwindow);
 
     if (app->focusprotection_remember) {
         win.setFocusProtection(app->focusprotection);
