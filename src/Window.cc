@@ -1495,7 +1495,8 @@ void FluxboxWindow::setFullscreenLayer() {
          foc->winClient().transientFor()->fbwindow() == this)) {
         moveToLayer(::ResourceLayer::ABOVE_DOCK);
     } else {
-        moveToLayer(::ResourceLayer::DESKTOP);
+        moveToLayer(foc->layerNum());
+        foc->raise();
     }
     stateSig().emit(*this);
 
