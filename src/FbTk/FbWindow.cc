@@ -33,6 +33,7 @@
 
 #include <cassert>
 #include <limits>
+#include <string.h>
 
 namespace FbTk {
 
@@ -262,6 +263,13 @@ void FbWindow::setBorderWidth(unsigned int size) {
 
 void FbWindow::setName(const char *name) {
     XStoreName(display(), m_window, name);
+    Atom net_wm_name = XInternAtom(display(), "_NET_WM_NAME", False);
+    Atom utf8_string = XInternAtom(display(), "UTF8_STRING", False);
+    XChangeProperty(display(), m_window, 
+                    net_wm_name, utf8_string, 8,
+                    PropModeReplace, 
+                    (unsigned char*)name, strlen(name));
+
 }
 
 void FbWindow::setWindowRole(const char *windowRole) {
