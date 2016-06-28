@@ -55,6 +55,9 @@ public:
         FbTk::Menu *parent = menu();
         FocusControl& focus_control = m_client.screen().focusControl();
 
+        if (WinClient *winc = dynamic_cast<WinClient*>(&m_client)) {
+            fbwin->setCurrentClient(*winc, false);
+        }
         m_client.focus();
         fbwin->raise();
         if ((mods & ControlMask) == 0) {
