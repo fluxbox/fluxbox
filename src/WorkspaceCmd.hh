@@ -217,4 +217,15 @@ public:
     void execute();
 };
 
+class RelabelButtonCmd: public FbTk::Command<void> {
+public:
+    explicit RelabelButtonCmd(std::string button, std::string label):
+            m_button(button), m_label(label) {}
+    void execute();
+    static FbTk::Command<void> *parse(const std::string &command,
+                                const std::string &args, bool trusted);
+private:
+    std::string m_button, m_label;
+};
+
 #endif // WORKSPACECMD_HH

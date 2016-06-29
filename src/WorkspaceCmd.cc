@@ -686,3 +686,28 @@ void CloseAllWindowsCmd::execute() {
             windows.end(), std::mem_fun(&FluxboxWindow::close));
 
 }
+
+void RelabelButtonCmd::execute() {
+#if USE_TOOLBAR
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen())
+        screen->relabelToolButton(m_button, m_label);
+#endif
+}
+
+FbTk::Command<void> *RelabelButtonCmd::parse(const std::string &command,
+                                             const std::string &args, bool trusted) {
+    std::string button, label;
+    std::size_t ws = args.find_first_of(" \t\n");
+    if (ws != std::string::npos) {
+        button = args.substr(0, ws);
+        if (button.find("button.") == 0) {
+            label = args.substr(ws + 1, std::string::npos);
+        } else {
+            button.clear();
+        }
+    }
+    return new RelabelButtonCmd(button, label);
+}
+
+REGISTER_COMMAND_PARSER(relabelbutton, RelabelButtonCmd::parse, void);
+

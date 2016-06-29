@@ -364,6 +364,12 @@ void Toolbar::screenChanged(BScreen &screen) {
     reconfigure();
 }
 
+void Toolbar::relayout() {
+    forAll(m_item_list, std::mem_fun(&ToolbarItem::updateSizing));
+    rearrangeItems();
+    forAll(m_item_list, std::bind2nd(std::mem_fun(&ToolbarItem::renderTheme), alpha()));
+}
+
 void Toolbar::reconfigure() {
 
     updateVisibleState();
@@ -404,6 +410,7 @@ void Toolbar::reconfigure() {
 
         // destroy tools and rebuild them
         deleteItems();
+        screen().clearToolButtonMap();
         // they will be readded later
         menu().removeAll();
         setupMenus(true); // rebuild menu but skip rebuild of placement menu
@@ -489,11 +496,7 @@ void Toolbar::reconfigure() {
     if (theme()->shape() && m_shape.get())
         m_shape->update();
 
-    forAll(m_item_list, std::mem_fun(&ToolbarItem::updateSizing));
-
-    rearrangeItems();
-
-    forAll(m_item_list, std::bind2nd(std::mem_fun(&ToolbarItem::renderTheme), alpha()));
+    relayout();
 
     // we're done with all resizing and stuff now we can request a new
     // area to be reserved on screen

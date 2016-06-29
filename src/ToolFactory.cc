@@ -119,6 +119,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         if (label.empty())
             return 0;
         FbTk::TextButton *btn = new FbTk::TextButton(parent, m_button_theme->font(), label);
+        screen().mapToolButton(name, btn);
 
         std::string cmd_str = FbTk::Resource<std::string>
                               (m_screen.resourceManager(), "",

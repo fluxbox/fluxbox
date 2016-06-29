@@ -69,8 +69,10 @@ class Menu;
 class ImageControl;
 class LayerItem;
 class FbWindow;
+class TextButton;
 }
 
+typedef std::map<std::string, FbTk::TextButton*> ToolButtonMap;
 
 /// Handles screen connection, screen clients and workspaces
 /**
@@ -343,6 +345,14 @@ public:
     void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id,
                            bool ignore_sticky);
 
+#if USE_TOOLBAR
+    /**
+     * manage a map of named FbTk::TextButton's
+     */
+    void clearToolButtonMap();
+    void mapToolButton(std::string name, FbTk::TextButton *button);
+    bool relabelToolButton(std::string button, std::string label);
+#endif
 
     void reconfigure();
     void reconfigureTabs();
@@ -489,6 +499,7 @@ private:
 
     std::auto_ptr<Slit>     m_slit;
     std::auto_ptr<Toolbar>  m_toolbar;
+    std::auto_ptr<ToolButtonMap> m_toolButtonMap;
 
     Workspace *m_current_workspace;
 

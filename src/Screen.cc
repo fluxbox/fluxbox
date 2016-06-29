@@ -392,6 +392,7 @@ BScreen::~BScreen() {
         return;
 
     m_toolbar.reset(0);
+    m_toolButtonMap.reset(0);
 
     FbTk::EventManager *evm = FbTk::EventManager::instance();
     evm->remove(rootWindow());
@@ -454,6 +455,7 @@ void BScreen::initWindows() {
 
 #ifdef USE_TOOLBAR
     if (m_opts & Fluxbox::OPT_TOOLBAR) {
+        m_toolButtonMap.reset(new ToolButtonMap());
         Toolbar* tb = new Toolbar(*this, *layerManager().getLayer(::ResourceLayer::NORMAL));
         m_toolbar.reset(tb);
     }
@@ -1292,6 +1294,28 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
         getWorkspace(wkspc_id)->addWindow(*w);
     }
 }
+
+#if USE_TOOLBAR
+
+void BScreen::clearToolButtonMap() {
+    m_toolButtonMap->clear();
+}
+
+void BScreen::mapToolButton(std::string name, FbTk::TextButton *button) {
+    m_toolButtonMap->insert(std::pair<std::string, FbTk::TextButton*>(name, button));
+}
+
+bool BScreen::relabelToolButton(std::string button, std::string label) {
+    ToolButtonMap::const_iterator it = m_toolButtonMap->find(button);
+    if (it != m_toolButtonMap->end() && it->second) {
+        it->second->setText(label);
+        m_toolbar->relayout();
+        return true;
+    }
+    return false;
+}
+
+#endif
 
 void BScreen::initMenus() {
     m_workspacemenu.reset(MenuCreator::createMenuType("workspacemenu", screenNumber()));
