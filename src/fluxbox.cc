@@ -981,14 +981,22 @@ void Fluxbox::attachSignals(WinClient &winclient) {
 
 BScreen *Fluxbox::searchScreen(Window window) {
 
+    ScreenList::iterator it = m_screens.begin();
+    ScreenList::iterator it_end = m_screens.end();
+
+    // let's first assume window is a root window
+    for (; it != it_end; ++it) {
+        if (*it && (*it)->rootWindow() == window)
+            return *it;
+    }
+
+    // no? query the root for window and try with that
     Window window_root = FbTk::FbWindow::rootWindow(display(), window);
-    if (window_root == None) {
+    if (window_root == None || window_root == window) {
         return 0;
     }
 
-    ScreenList::iterator it = m_screens.begin();
-    ScreenList::iterator it_end = m_screens.end();
-    for (; it != it_end; ++it) {
+    for (it = m_screens.begin(); it != it_end; ++it) {
         if (*it && (*it)->rootWindow() == window_root)
             return *it;
     }
