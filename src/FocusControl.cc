@@ -86,6 +86,7 @@ FocusControl::FocusControl(BScreen &screen):
     m_cycling_list(0),
     m_was_iconic(0),
     m_cycling_last(0),
+    m_cycling_next(0),
     m_ignore_mouse_x(-1), m_ignore_mouse_y(-1) {
 
     m_cycling_window = m_focused_list.clientList().end();
@@ -101,6 +102,7 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
             m_cycling_list = &window_list;
         m_was_iconic = 0;
         m_cycling_last = 0;
+        m_cycling_next = 0;
     } else if (m_cycling_list != &window_list)
         m_cycling_list = &window_list;
 
@@ -140,7 +142,7 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
         was_iconic = (fbwin->isIconic() ? last_client : 0);
 
         // now we actually try to focus the window
-        if (!doSkipWindow(**it, pat) && (*it)->focus())
+        if (!doSkipWindow(**it, pat) && (m_cycling_next = *it) && (*it)->focus())
             break;
     }
     m_cycling_window = it;
@@ -235,6 +237,7 @@ void FocusControl::stopCyclingFocus() {
         return;
 
     m_cycling_last = 0;
+    m_cycling_next = 0;
     m_cycling_list = 0;
 
     // put currently focused window to top
@@ -461,8 +464,11 @@ void FocusControl::removeClient(WinClient &client) {
         *m_cycling_window == &client) {
         m_cycling_window = m_cycling_list->clientList().end();
         stopCyclingFocus();
-    } else if (m_cycling_last == &client)
+    } else if (m_cycling_last == &client) {
         m_cycling_last = 0;
+    } else if (m_cycling_next == &client) {
+        m_cycling_next = 0;
+    }
 
     m_focused_list.remove(client);
     m_creation_order_list.remove(client);
@@ -579,11 +585,11 @@ void FocusControl::setFocusedWindow(WinClient *client) {
 
     BScreen *screen = client ? &client->screen() : 0;
     if (screen && screen->focusControl().isCycling()) {
-        WinClient *last = screen->focusControl().m_cycling_last;
-        if (last && last != client && screen->focusControl().m_cycling_list->contains(*last)) {
+        Focusable *next = screen->focusControl().m_cycling_next;
+        if (next && next != client && screen->focusControl().m_cycling_list->contains(*next)) {
             // if we're currently cycling and the client tries to juggle around focus
             // on FocusIn events to provide client-side modality - don't let him
-            last->focus();
+            next->focus();
             return;
         }
     }
