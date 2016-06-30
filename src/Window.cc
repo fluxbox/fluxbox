@@ -991,11 +991,14 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     if (!button)
         return false;
 
+    if (!client.acceptsFocus())
+        setinput = false; // don't try
+
     WinClient *old = m_client;
     m_client = &client;
 
     bool ret = setinput && focus();
-    if (setinput) {
+    if (setinput && old->acceptsFocus()) {
         m_client = old;
         return ret;
     }
