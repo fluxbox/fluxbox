@@ -1430,8 +1430,10 @@ void FluxboxWindow::deiconify(bool do_raise) {
         }
     }
 
-    if (m_workspace_number != screen().currentWorkspaceID())
+    if (m_workspace_number != screen().currentWorkspaceID()) {
+        oplock = false;
         return;
+    }
 
     show();
 
