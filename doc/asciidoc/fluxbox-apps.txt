@@ -59,6 +59,15 @@ application. See *SETTINGS* for more details.
 Each of these sections ends with the single line:::
     *[end]*
 
+TRANSIENT SECTIONS
+------------------
+*[transient]* sections provide settings for "dialogs".
+
+This is the same as the *[app]* section, but applies to transient windows.
+Transient windows have a WM_TRANSIENT_FOR property. This will apply to all
+modal and several other dialogs which have a "leader" they remain above.
+Notably, open/save dialogs fall into this category.
+
 GROUP SECTIONS
 --------------
 The primary purpose of *[group]* sections is to group windows together. All
