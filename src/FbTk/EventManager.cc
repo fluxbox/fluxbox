@@ -179,9 +179,7 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
         evhand->exposeEvent(ev.xexpose);
     break;
     case EnterNotify:
-        if (ev.xcrossing.mode != NotifyGrab &&
-            ev.xcrossing.mode != NotifyUngrab)
-            evhand->enterNotifyEvent(ev.xcrossing);
+        evhand->enterNotifyEvent(ev.xcrossing);
     break;
     case LeaveNotify:
         if (ev.xcrossing.mode != NotifyGrab &&
