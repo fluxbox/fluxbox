@@ -697,6 +697,8 @@ one of the first two and one of the last two. They are:
     Click to focus windows.
 *Mouse Focus*:::
     Window focus follows mouse.
+*Mouse Focus (Strict)*:::
+    Like Mouse Focus, but no mouse movement is required, ie. the window is also focused if it moves below the mouse, eg. because it shows up or you change the virtual desktop.
 *ClickTabFocus*:::
     Click to focus tabs.
 *MouseTabFocus*:::
