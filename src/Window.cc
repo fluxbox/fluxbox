@@ -2716,12 +2716,21 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
 void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
 
-    // ignore grab activates, or if we're not visible
-    if (ev.mode == NotifyGrab || ev.mode == NotifyUngrab ||
-        !isVisible()) {
+    static FluxboxWindow *s_last_really_entered = 0;
+
+    if (ev.mode == NotifyUngrab && s_last_really_entered == this) {
+        // if this results from an ungrab, only act if the window really changed.
+        // otherwise we might pollute the focus which could have been assigned
+        // by alt+tab (bug #597)
         return;
     }
 
+    // ignore grab activates, or if we're not visible
+    if (ev.mode == NotifyGrab || !isVisible()) {
+        return;
+    }
+
+    s_last_really_entered = this;
     if (ev.window == frame().window())
         Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
                                               Keys::ON_WINDOW, m_client);
