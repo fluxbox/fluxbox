@@ -144,7 +144,7 @@ void KeyUtil::grabButton(unsigned int button, unsigned int mod, Window win,
     for (int i = 0; i < 8; i++) {
         XGrabButton(display, button, mod | (i & 1 ? LockMask : 0) |
                     (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
-                    win, False, event_mask, GrabModeAsync, GrabModeAsync,
+                    win, False, event_mask, GrabModeSync, GrabModeAsync,
                     None, cursor);
     }
 

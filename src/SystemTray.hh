@@ -87,6 +87,8 @@ public:
 
     static Atom getXEmbedInfoAtom();
 
+    static bool doesControl(Window win);
+
 private:
     void update();
 

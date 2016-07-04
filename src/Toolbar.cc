@@ -31,6 +31,7 @@
 #include "Keys.hh"
 #include "Screen.hh"
 #include "ScreenPlacement.hh"
+#include "SystemTray.hh"
 #include "WindowCmd.hh"
 
 #include "Strut.hh"
@@ -512,14 +513,39 @@ void Toolbar::reconfigure() {
 
 
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
+    Display *dpy = Fluxbox::instance()->display();
+    if (be.subwindow) {
+        // Do not intercept mouse events that are meant for the tray icon
+        if (SystemTray::doesControl(be.subwindow)) {
+            XAllowEvents(dpy, ReplayPointer, CurrentTime);
+            return;
+        }
+#if 0
+        // Unfortunately, the subwindow isn't exactly a reliable source here, so
+        // we COULD query the pointer (what will usually return the systray itself) and
+        // check that as well. NOTICE that due to the async nature of X11, the
+        // pointer might have moved and the result isn't correct either.
+        Window wr, wc; int junk; unsigned int ujunk;
+        XQueryPointer(dpy, be.window, &wr, &wc, &junk, &junk, &junk, &junk, &ujunk);
+        if (SystemTray::doesControl(wc)) {
+            XAllowEvents(dpy, ReplayPointer, CurrentTime);
+            return;
+        }
+#endif
+    }
+
     if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
-                                              Keys::ON_TOOLBAR, 0, be.time))
+                                              Keys::ON_TOOLBAR, 0, be.time)) {
+        XAllowEvents(dpy, SyncPointer, CurrentTime);
         return;
+    }
 
     if (be.button == 1)
         raise();
-    if (be.button != 2)
+    if (be.button != 2 || be.subwindow) { // only handle direct toolbar MMBs
+        XAllowEvents(dpy, ReplayPointer, CurrentTime);
         return;
+    }
 
     screen()
         .placementStrategy()

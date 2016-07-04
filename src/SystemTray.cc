@@ -77,6 +77,8 @@ void getScreenCoordinates(Window win, int x, int y, int &screen_x, int &screen_y
 
 };
 
+static SystemTray *s_theoneandonly = 0;
+
 /// helper class for tray windows, so we dont call XDestroyWindow
 class SystemTray::TrayWindow : public FbTk::FbWindow {
 public:
@@ -220,6 +222,8 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
     // set owner
     XSetSelectionOwner(disp, tray_atom, m_selection_owner.window(), CurrentTime);
 
+    s_theoneandonly = this;
+
     m_handler.reset(new SystemTrayHandler(*this));
 
     m_handler.get()->setName(atom_name);
@@ -247,6 +251,8 @@ SystemTray::SystemTray(const FbTk::FbWindow& parent,
 
 SystemTray::~SystemTray() {
     // remove us, else fluxbox might delete the memory too
+    if (s_theoneandonly == this)
+        s_theoneandonly = 0;
     Fluxbox* fluxbox = Fluxbox::instance();
     fluxbox->removeAtomHandler(m_handler.get());
     Display *disp = fluxbox->display();
@@ -588,4 +594,11 @@ string SystemTray::getNetSystemTrayAtom(int screen_nr) {
     atom_name += FbTk::StringUtil::number2String(screen_nr);
 
     return atom_name;
+}
+
+bool SystemTray::doesControl(Window win) {
+    if (win == None || !s_theoneandonly)
+        return false;
+    return win == s_theoneandonly->window().window() ||
+           s_theoneandonly->findClient(win) != s_theoneandonly->m_clients.end();
 }
