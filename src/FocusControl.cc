@@ -110,7 +110,11 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
     Focusables::const_iterator it_end = window_list.clientList().end();
 
     // too many things can go wrong with remembering this
-    m_cycling_window = find(it_begin, it_end, s_focused_window);
+    m_cycling_window = it_end;
+    if (m_cycling_next)
+        m_cycling_window = find(it_begin, it_end, m_cycling_next);
+    if (m_cycling_window == it_end)
+        m_cycling_window = find(it_begin, it_end, s_focused_window);
     if (m_cycling_window == it_end)
         m_cycling_window = find(it_begin, it_end, s_focused_fbwindow);
 
@@ -144,6 +148,7 @@ void FocusControl::cycleFocus(const FocusableList &window_list,
         // now we actually try to focus the window
         if (!doSkipWindow(**it, pat) && (m_cycling_next = *it) && (*it)->focus())
             break;
+        m_cycling_next = 0;
     }
     m_cycling_window = it;
 
