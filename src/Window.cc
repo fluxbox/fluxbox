@@ -2460,11 +2460,15 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
         stopResizing();
     else if (m_attaching_tab)
         attachTo(re.x_root, re.y_root);
-    else if (!frame().tabcontainer().tryButtonReleaseEvent(re)) {
+    else if (m_last_button_x == re.x_root && m_last_button_y == re.y_root) {
+        int context = 0;
+        context = frame().getContext(re.subwindow ? re.subwindow : re.window,
+                                     re.x_root, re.y_root);
+        if (!context && re.subwindow)
+            context = frame().getContext(re.window);
 
-        if (m_last_button_x == re.x_root && m_last_button_y == re.y_root) {
-            Fluxbox::instance()->keys()->doAction(re.type, re.state, re.button, Keys::ON_WINDOW, &winClient(), re.time);
-        }
+        Fluxbox::instance()->keys()->doAction(re.type, re.state, re.button,
+                                              context, &winClient(), re.time);
     }
 }
 
