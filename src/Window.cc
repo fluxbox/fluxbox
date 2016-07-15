@@ -2402,9 +2402,13 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_last_pressed_button = be.button;
 
     Keys *k = Fluxbox::instance()->keys();
-    int context = frame().getContext(be.window);
-    if (k->doAction(be.type, be.state, be.button,
-                    context, &winClient(), be.time)) {
+    int context = 0;
+    context = frame().getContext(be.subwindow ? be.subwindow : be.window, be.x_root, be.y_root);
+    if (!context && be.subwindow)
+        context = frame().getContext(be.window);
+
+    if (k->doAction(be.type, be.state, be.button, context, &winClient(), be.time)) {
+        XAllowEvents(display, SyncPointer, CurrentTime);
         return;
     }
 
@@ -2415,17 +2419,17 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     }
 
 
+    // - refeed the event into the queue so the app or titlebar subwindow gets it
+    if (be.subwindow)
+        XAllowEvents(display, ReplayPointer, CurrentTime);
 
     // if nothing was bound via keys-file then
     // - raise() if clickRaise is enabled
     // - hide open menues
     // - focus on clickFocus
-    // - refeed the event into the queue so the app gets it
     if (frame().window().window() == be.window) {
         if (screen().clickRaises())
             raise();
-
-        XAllowEvents(display, ReplayPointer, CurrentTime);
 
         m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
         m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();

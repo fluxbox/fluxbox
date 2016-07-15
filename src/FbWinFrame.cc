@@ -1590,7 +1590,12 @@ int FbWinFrame::getContext(Window win, int x, int y, int last_x, int last_y, boo
     // /!\ old code: handle = titlebar in motionNotifyEvent but only there !
     // handle() as border ??
     if (handle().window()    == win) return Keys::ON_WINDOWBORDER | Keys::ON_WINDOW;
-    if (titlebar().window()  == win) return context | Keys::ON_TITLEBAR;
+    if (titlebar().window()  == win) {
+        const int px = x - this->x() - window().borderWidth();
+        if (px < label().x() || px > label().x() + label().width())
+            return context; // one of the buttons, asked from a grabbed event
+        return context | Keys::ON_TITLEBAR;
+    }
     if (label().window()     == win) return context | Keys::ON_TITLEBAR;
     // internal tabs are on title bar
     if (tabcontainer().window() == win)
