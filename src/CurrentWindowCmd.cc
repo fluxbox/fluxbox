@@ -227,8 +227,16 @@ public:
     explicit ActivateTabCmd() { }
 protected:
     void real_execute() {
-        WinClient* winclient = fbwindow().winClientOfLabelButtonWindow(
-                Fluxbox::instance()->lastEvent().xany.window);
+        Window root, last = 0,
+               tab = Fluxbox::instance()->lastEvent().xany.window;
+        int junk; unsigned int ujunk;
+        WinClient *winclient = 0;
+        Display *dpy = Fluxbox::instance()->display();
+        while (!winclient && tab && tab != last) {
+            last = tab;
+            XQueryPointer(dpy, tab, &root, &tab, &junk, &junk, &junk, &junk, &ujunk);
+            winclient = fbwindow().winClientOfLabelButtonWindow(tab);
+        }
 
         if (winclient && winclient != &fbwindow().winClient()) {
             fbwindow().setCurrentClient(*winclient, true);
