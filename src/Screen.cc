@@ -658,11 +658,14 @@ void BScreen::propertyNotify(Atom atom) {
 
 void BScreen::keyPressEvent(XKeyEvent &ke) {
     if (Fluxbox::instance()->keys()->doAction(ke.type, ke.state, ke.keycode,
-                Keys::GLOBAL|Keys::ON_DESKTOP)) {
+                Keys::GLOBAL|(ke.subwindow ? 0 : Keys::ON_DESKTOP))) {
 
         // re-grab keyboard, so we don't pass KeyRelease to clients
         // also for catching invalid keys in the middle of keychains
         FbTk::EventManager::instance()->grabKeyboard(rootWindow().window());
+        XAllowEvents(Fluxbox::instance()->display(), SyncKeyboard, CurrentTime);
+    } else {
+        XAllowEvents(Fluxbox::instance()->display(), ReplayKeyboard, CurrentTime);
     }
 }
 

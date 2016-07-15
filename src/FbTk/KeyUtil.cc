@@ -129,7 +129,7 @@ void KeyUtil::grabKey(unsigned int key, unsigned int mod, Window win) {
     for (int i = 0; i < 8; i++) {
         XGrabKey(display, key, mod | (i & 1 ? LockMask : 0) |
                  (i & 2 ? nummod : 0) | (i & 4 ? scrollmod : 0),
-                 win, True, GrabModeAsync, GrabModeAsync);
+                 win, True, GrabModeAsync, GrabModeSync);
     }
 
 }
