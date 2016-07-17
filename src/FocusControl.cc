@@ -600,6 +600,7 @@ void FocusControl::setFocusedWindow(WinClient *client) {
     }
 
     if (client && client != expectingFocus() && s_focused_window &&
+        (!(screen && screen->focusControl().isCycling())) &&
         ((s_focused_fbwindow->focusProtection() & Focus::Lock) ||
         (client && client->fbwindow() && (client->fbwindow()->focusProtection() & Focus::Deny)))) {
         s_focused_window->focus();
