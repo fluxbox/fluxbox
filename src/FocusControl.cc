@@ -599,7 +599,7 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         }
     }
 
-    if (client != expectingFocus() && s_focused_window &&
+    if (client && client != expectingFocus() && s_focused_window &&
         ((s_focused_fbwindow->focusProtection() & Focus::Lock) ||
         (client && client->fbwindow() && (client->fbwindow()->focusProtection() & Focus::Deny)))) {
         s_focused_window->focus();
