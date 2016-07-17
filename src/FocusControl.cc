@@ -589,7 +589,7 @@ void FocusControl::setFocusedWindow(WinClient *client) {
         return;
 
     BScreen *screen = client ? &client->screen() : 0;
-    if (screen && screen->focusControl().isCycling()) {
+    if (client && screen && screen->focusControl().isCycling()) {
         Focusable *next = screen->focusControl().m_cycling_next;
         if (next && next != client && screen->focusControl().m_cycling_list->contains(*next)) {
             // if we're currently cycling and the client tries to juggle around focus
