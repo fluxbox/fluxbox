@@ -80,7 +80,7 @@ private:
     void adjustEndPos();
     void firstHistoryItem();
     void lastHistoryItem();
-    void tabCompleteHistory();
+    void tabComplete(const std::vector<std::string> &list, int &current, bool reverse = false);
     void tabCompleteApps();
 
     bool m_print; ///< the input should be printed to stdout rather than run
@@ -89,16 +89,20 @@ private:
     int m_bevel;
     FbTk::GContext m_gc; ///< graphic context
     bool m_end; ///< marks when this object is done
+
     std::vector<std::string> m_history; ///< history list of commands
     std::string m_history_file; ///< holds filename for command history file
-    size_t m_current_history_item; ///< holds current position in command history
-    std::string m_last_completion_prefix; ///< last prefix we completed on
-    
-    typedef std::vector<std::string> AppsContainer;
-    typedef AppsContainer::iterator AppsContainerIt;
-    AppsContainer m_apps; ///< holds all apps in $PATH
-    size_t m_current_apps_item; ///< holds current position in apps-history
-    
+    int m_current_history_item; ///< holds current position in command history
+
+    std::vector<std::string> m_files;
+    int m_current_files_item;
+    std::string m_last_completion_path; ///< last prefix we completed on
+
+    std::vector<std::string> m_apps;
+    int m_current_apps_item; ///< holds current position in apps-history
+
+    size_t m_completion_pos;
+
     Cursor m_cursor;
 
     FbTk::FbPixmap m_pixmap;
