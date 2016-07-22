@@ -405,6 +405,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
         std::string val;
         val += keychar[0];
         insertText(val);
+        m_select_pos = std::string::npos;
     }
     if ((event.state & ShiftMask) != ShiftMask)
         m_select_pos = std::string::npos;
