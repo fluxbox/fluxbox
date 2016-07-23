@@ -54,6 +54,9 @@ OPTIONS
 *-nearmouse*::
 	Position the window under the mouse cursor
 
+*-center*::
+	Position the window on the screen center
+
 *-fg* 'color'::
 	Foreground text color. The default is *black*
 

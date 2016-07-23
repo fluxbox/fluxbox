@@ -61,6 +61,7 @@ void showUsage(const char *progname) {
         "   -display [display string]   Display name"<<endl<<
         "   -pos [x] [y]                Window position in pixels"<<endl<<
         "   -nearmouse                  Window position near mouse"<<endl<<
+        "   -center                     Window position on screen center"<<endl<<
         "   -fg [color name]            Foreground text color"<<endl<<
         "   -bg [color name]            Background color"<<endl<<
         "   -na                         Disable antialias"<<endl<<
@@ -77,6 +78,7 @@ int main(int argc, char **argv) {
     bool set_height = false, set_width=false; // use height/width of font by default
     bool set_pos = false; // set position
     bool near_mouse = false; // popup near mouse
+    bool center = false;
     bool print = false;
     bool preselect = false;
     bool autocomplete = getenv("FBRUN_AUTOCOMPLETE");
@@ -113,6 +115,9 @@ int main(int argc, char **argv) {
         } else if (arg == "-nearmouse" || arg == "--nearmouse") {
             set_pos = true;
             near_mouse = true;
+        } else if (arg == "-center" || arg == "--center") {
+            set_pos = true;
+            center = true;
         } else if (strcmp(argv[i], "-fg") == 0 && i+1 < argc) {
             foreground = argv[++i];
         } else if (strcmp(argv[i], "-bg") == 0 && i+1 < argc) {
@@ -171,7 +176,7 @@ int main(int argc, char **argv) {
         if (preselect)
             fbrun.selectAll();
 
-        if (near_mouse) {
+        if (near_mouse || center) {
 
             int wx, wy;
             unsigned int mask;
@@ -179,15 +184,15 @@ int main(int argc, char **argv) {
             Window child_win;
 
             Display* dpy = FbTk::App::instance()->display();
+            int root_x = 0;
+            int root_y = 0;
+            unsigned int root_w = WidthOfScreen(DefaultScreenOfDisplay(dpy));
+            unsigned int root_h = HeightOfScreen(DefaultScreenOfDisplay(dpy));
 
             if (XQueryPointer(dpy, DefaultRootWindow(dpy),
                               &ret_win, &child_win,
                               &x, &y, &wx, &wy, &mask)) {
 
-                int root_x = 0;
-                int root_y = 0;
-                unsigned int root_w = WidthOfScreen(DefaultScreenOfDisplay(dpy));
-                unsigned int root_h = HeightOfScreen(DefaultScreenOfDisplay(dpy));
 #ifdef XINERAMA
                 if(XineramaIsActive(dpy)) {
                     XineramaScreenInfo* screen_info = 0;
@@ -211,18 +216,26 @@ int main(int argc, char **argv) {
                     }
                 }
 #endif // XINERAMA
-                x-= fbrun.width()/2;
-                y-= fbrun.height()/2;
-
-                if (x < root_x)
-                    x = root_x;
-                if (x + fbrun.width() > root_x + root_w)
-                    x = root_x + root_w - fbrun.width();
-                if (y < root_y)
-                    y = root_y;
-                if (y + fbrun.height() > root_y + root_h)
-                    y = root_y + root_h - fbrun.height();
+            } else if (!center) {
+                set_pos = false;
             }
+
+            if (center) {
+                x = root_x + root_w/2;
+                y = root_y + root_h/2;
+            }
+
+            x-= fbrun.width()/2;
+            y-= fbrun.height()/2;
+
+            if (x < root_x)
+                x = root_x;
+            if (x + fbrun.width() > root_x + root_w)
+                x = root_x + root_w - fbrun.width();
+            if (y < root_y)
+                y = root_y;
+            if (y + fbrun.height() > root_y + root_h)
+                y = root_y + root_h - fbrun.height();
         }
 
         if (set_pos)
