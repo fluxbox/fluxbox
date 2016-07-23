@@ -214,6 +214,23 @@ bool FbRun::loadHistory(const char *filename) {
     return true;
 }
 
+bool FbRun::loadCompletion(const char *filename) {
+    if (!filename)
+        return false;
+    ifstream infile(filename);
+    if (!infile)
+        return false;
+
+    m_apps.clear();
+    string line;
+    while (getline(infile, line)) {
+        if (!line.empty()) // don't add empty lines
+            m_apps.push_back(line);
+    }
+    return true;
+}
+
+
 bool FbRun::loadFont(const string &fontname) {
     if (!m_font.load(fontname.c_str()))
         return false;
@@ -472,7 +489,7 @@ void FbRun::tabCompleteApps() {
         tabComplete(m_files, m_current_files_item);
     } else {
         static bool first_run = true;
-        if (first_run) {
+        if (first_run && m_apps.empty()) {
             first_run = false;
             std::string path = getenv("PATH");
             FbTk::Directory dir;

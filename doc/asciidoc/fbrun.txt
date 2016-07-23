@@ -69,6 +69,10 @@ OPTIONS
 *-hf* 'filename'::
 	History file to load. The default is *~/.fluxbox/fbrun_history*.
 
+*-cf* 'filename'::
+    Completion data to load. The default is empty. If no data can be loaded,
+    completion defaults to executables in $PATH
+
 *-preselect*::
     Select the preset text given by the *-text* parameter
 

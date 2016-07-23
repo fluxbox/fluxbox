@@ -66,6 +66,7 @@ void showUsage(const char *progname) {
         "   -bg [color name]            Background color"<<endl<<
         "   -na                         Disable antialias"<<endl<<
         "   -hf [history file]          History file to load (default ~/.fluxbox/fbrun_history)"<<endl<<
+        "   -cf [completion file]       Complete contents of this file instead of $PATH binaries"<<endl<<
         "   -autocomplete               Complete on typing"<<endl<<
         "   -preselect                  Select preset text"<<endl<<
         "   -help                       Show this help"<<endl<<endl<<
@@ -89,6 +90,7 @@ int main(int argc, char **argv) {
     string background("white");   // text background color
     string display_name; // name of the display connection
     string history_file("~/.fluxbox/fbrun_history"); // command history file
+    string completion_file; // command history file
     // parse arguments
     for (int i=1; i<argc; i++) {
         string arg = argv[i];
@@ -124,6 +126,8 @@ int main(int argc, char **argv) {
             background = argv[++i];
         } else if (strcmp(argv[i], "-hf") == 0 && i+1 < argc) {
             history_file = argv[++i];
+        } else if (strcmp(argv[i], "-cf") == 0 && i+1 < argc) {
+            completion_file = argv[++i];
         } else if (strcmp(argv[i], "-preselect") == 0) {
             preselect = true;
         } else if (strcmp(argv[i], "-autocomplete") == 0) {
@@ -170,6 +174,12 @@ int main(int argc, char **argv) {
         string expanded_filename = FbTk::StringUtil::expandFilename(history_file);
         if (!fbrun.loadHistory(expanded_filename.c_str()))
             cerr<<"FbRun Warning: Failed to load history file: "<<expanded_filename<<endl;
+
+        if (!completion_file.empty()) {
+            expanded_filename = FbTk::StringUtil::expandFilename(completion_file);
+            if (!fbrun.loadCompletion(expanded_filename.c_str()))
+                cerr<<"FbRun Warning: Failed to load completion file: "<<expanded_filename<<endl;
+        }
 
         fbrun.setTitle(title);
         fbrun.setText(text);

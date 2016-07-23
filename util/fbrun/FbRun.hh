@@ -58,6 +58,7 @@ public:
        @return true on success, else false
     */
     bool loadHistory(const char *filename);
+    bool loadCompletion(const char *filename);
     /**
        @name events
     */
