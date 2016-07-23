@@ -166,14 +166,23 @@ void FbRun::run(const std::string &command) {
         return;
     }
 
-    for (unsigned i = 0; i != m_history.size(); ++i) {
+    int n = 1024;
+    char *a = getenv("FBRUN_HISTORY_SIZE");
+    if (a)
+        n = atoi(a);
+    int j = m_history.size();
+    --n; // NOTICE: this should be "-=2", but a duplicate entry in the late
+         // (good) section would wait "too" long
+         // (we'd wait until 3 items are left and then still skip one for being a dupe)
+         // IOW: the limit is either n or n+1, depending in the history structure
+    for (unsigned int i = 0; i != m_history.size(); ++i) {
         // don't allow duplicates into the history file
-        if (m_history[i] == command)
+        if (--j > n || m_history[i] == command)
             continue;
-
         outfile<<m_history[i]<<endl;
     }
-    outfile<<command<<endl;
+    if (++n > 0) // n was decremented for the loop
+        outfile << command << endl;
     outfile.close();
 }
 
