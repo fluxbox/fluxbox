@@ -69,6 +69,9 @@ OPTIONS
 *-preselect*::
     Select the preset text given by the *-text* parameter
 
+*-autocomplete*::
+    Complete on typing. You can also set the FBRUN_AUTOCOMPLETE environment (to any value)
+
 *-help*::
 	Show this help
 

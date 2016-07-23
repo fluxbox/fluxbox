@@ -42,6 +42,7 @@ public:
     void setTitle(const std::string &title);
     void resize(unsigned int width, unsigned int height);
     void setPrint(bool print) { m_print = print; }
+    void setAutocomplete(bool complete) { m_autocomplete = complete; }
 
     /// load and reconfigure for new font
     bool loadFont(const std::string &fontname);
@@ -102,6 +103,7 @@ private:
     int m_current_apps_item; ///< holds current position in apps-history
 
     size_t m_completion_pos;
+    bool m_autocomplete;
 
     Cursor m_cursor;
 

@@ -244,7 +244,16 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
     if (IsModifierKey(ks))
         return;
 
-    if (FbTk::KeyUtil::instance().isolateModifierMask(ke.state)) { // a modifier key is down
+    if (m_autocomplete && isprint(keychar[0])) {
+        did_tab_complete = true;
+        if (m_completion_pos == std::string::npos) {
+            m_completion_pos = cursorPosition();
+        } else {
+            ++m_completion_pos;
+        }
+        tabCompleteApps();
+    } else if (FbTk::KeyUtil::instance().isolateModifierMask(ke.state)) {
+        // a modifier key is down
         if ((ke.state & ControlMask) == ControlMask) {
             switch (ks) {
             case XK_p:
