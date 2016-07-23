@@ -92,7 +92,7 @@ public:
     // can elect to ignore move or resize (mainly for use of move/resize individual functions
     void moveResize(int x, int y,
                     unsigned int width, unsigned int height,
-                    bool move = true, bool resize = true);
+                    bool move = true, bool resize = true, bool force = false);
 
     // move without transparency or special effects (generally when dragging)
     void quietMoveResize(int x, int y,

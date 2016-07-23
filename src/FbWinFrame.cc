@@ -272,11 +272,11 @@ void FbWinFrame::resizeForClient(unsigned int width, unsigned int height,
     moveResizeForClient(0, 0, width, height, win_gravity, client_bw, false, true);
 }
 
-void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height, bool move, bool resize) {
-    if (move && x == window().x() && y == window().y())
+void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height, bool move, bool resize, bool force) {
+    if (!force && move && x == window().x() && y == window().y())
         move = false;
 
-    if (resize && width == FbWinFrame::width() &&
+    if (!force && resize && width == FbWinFrame::width() &&
                   height == FbWinFrame::height())
         resize = false;
 
@@ -504,7 +504,7 @@ void FbWinFrame::applyState() {
         new_h = m_screen.getHeadHeight(head);
     }
 
-    moveResize(new_x, new_y, new_w, new_h);
+    moveResize(new_x, new_y, new_w, new_h, true, true, true);
     frameExtentSig().emit();
 }
 
