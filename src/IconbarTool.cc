@@ -352,6 +352,8 @@ void IconbarTool::setMode(string mode) {
     }
     reset();
 
+    resizeSig().emit();
+
     // unlock graphics update
     m_icon_container.setUpdateLock(false);
     m_icon_container.update();
