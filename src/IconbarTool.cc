@@ -292,7 +292,9 @@ void IconbarTool::move(int x, int y) {
 
 void IconbarTool::resize(unsigned int width, unsigned int height) {
     m_icon_container.resize(width, height);
-    m_icon_container.setMaxTotalSize(m_icon_container.orientation() == FbTk::ROT0 || m_icon_container.orientation() == FbTk::ROT180 ? width : height);
+    const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height : width;
+    m_icon_container.setMaxTotalSize(maxsize);
+    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
     renderTheme();
 }
 
@@ -300,7 +302,9 @@ void IconbarTool::moveResize(int x, int y,
                              unsigned int width, unsigned int height) {
 
     m_icon_container.moveResize(x, y, width, height);
-    m_icon_container.setMaxTotalSize(m_icon_container.orientation() == FbTk::ROT0 || m_icon_container.orientation() == FbTk::ROT180 ? width : height);
+    const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height : width;
+    m_icon_container.setMaxTotalSize(maxsize);
+    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
     renderTheme();
 }
 
@@ -362,6 +366,18 @@ unsigned int IconbarTool::width() const {
     return m_icon_container.width();
 }
 
+unsigned int IconbarTool::preferredWidth() const {
+    // border and paddings
+    unsigned int w = 2*borderWidth() + *m_rc_client_padding * m_icons.size();
+
+    // the buttons
+    for (IconMap::const_iterator it = m_icons.begin(), end = m_icons.end(); it != end; ++it) {
+        w += it->second->preferredWidth();
+    }
+
+    return w;
+}
+
 unsigned int IconbarTool::height() const {
     return m_icon_container.height();
 }
@@ -384,9 +400,6 @@ void IconbarTool::update(UpdateReason reason, Focusable *win) {
 
     m_icon_container.setAlignment(*m_rc_alignment);
 
-    *m_rc_client_width = FbTk::Util::clamp(*m_rc_client_width, 10, 400);
-    m_icon_container.setMaxSizePerClient(*m_rc_client_width);
-
     // lock graphic update
     m_icon_container.setUpdateLock(true);
 
@@ -403,6 +416,11 @@ void IconbarTool::update(UpdateReason reason, Focusable *win) {
         case ALIGN:
             break;
     }
+
+    resizeSig().emit();
+    const unsigned int maxsize = (m_icon_container.orientation() & 1) ? height() : width();
+    m_icon_container.setMaxTotalSize(maxsize);
+    m_icon_container.setMaxSizePerClient(maxsize/std::max(1, m_icon_container.size()));
 
     // unlock container and update graphics
     m_icon_container.setUpdateLock(false);
@@ -441,6 +459,7 @@ void IconbarTool::insertWindow(Focusable &win, int pos) {
     }
 
     m_icon_container.insertItem(button, pos);
+    m_tracker.join(button->titleChanged(), FbTk::MemFun(resizeSig(), &FbTk::Signal<>::emit));
 }
 
 void IconbarTool::reset() {

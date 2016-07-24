@@ -60,6 +60,7 @@ public:
     void parentMoved() { m_icon_container.parentMoved(); }
 
     unsigned int width() const;
+    unsigned int preferredWidth() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
 

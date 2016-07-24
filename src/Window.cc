@@ -2804,6 +2804,7 @@ void FluxboxWindow::setTitle(const std::string& title, Focusable &client) {
     frame().setFocusTitle(title);
     // relay title to others that display the focus title
     titleSig().emit(title, *this);
+    frame().tabcontainer().repositionItems();
 }
 
 void FluxboxWindow::frameExtentChanged() {

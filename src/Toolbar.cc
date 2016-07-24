@@ -868,6 +868,8 @@ void Toolbar::rearrangeItems() {
     ItemList::iterator item_it_end = m_item_list.end();
     int bevel_width = theme()->bevelWidth();
     int fixed_width = bevel_width; // combined size of all fixed items
+    int relative_width = 0; // combined *desired* size of all relative items
+    int stretch_items = 0;
     int relative_items = 0;
     int last_bw = 0; // we show the largest border of adjoining items
     bool first = true;
@@ -895,7 +897,7 @@ void Toolbar::rearrangeItems() {
 
         last_bw = borderW;
 
-        tmpw = (*item_it)->width();
+        tmpw = (*item_it)->preferredWidth();
         tmph = (*item_it)->height();
         FbTk::translateSize(orient, tmpw, tmph);
 
@@ -906,18 +908,22 @@ void Toolbar::rearrangeItems() {
             if (bevel_width)
                 fixed_width -= 2*(borderW + bevel_width);
         } else {
-            relative_items++;
+            ++relative_items;
+            relative_width += tmpw;
+            if (!tmpw)
+                ++stretch_items;
         }
     }
 
     // calculate what's going to be left over to the relative sized items
-    int relative_width = 0;
-    int rounding_error = 0;
-    if (relative_items == 0)
-        relative_width = 0;
-    else { // size left after fixed items / number of relative items
-        relative_width = (width - fixed_width) / relative_items;
-        rounding_error = width - fixed_width - relative_items * relative_width;
+    float stretch_factor = 1.0f;
+    if (relative_items) {
+        if (relative_width <= width - fixed_width && stretch_items) {
+            relative_width = int(width - fixed_width - relative_width)/stretch_items;
+        } else {
+            stretch_factor = float(width - fixed_width)/relative_width;
+            relative_width = 0;
+        }
     }
 
     // now move and resize the items
@@ -952,12 +958,9 @@ void Toolbar::rearrangeItems() {
             tmpy = offset;
 
         if ((*item_it)->type() == ToolbarItem::RELATIVE) {
-            int extra = 0;
-            if (rounding_error != 0) { // distribute rounding error over all relatives
-                extra = 1;
-                --rounding_error;
-            }
-            tmpw = extra + relative_width;
+            unsigned int itemw = (*item_it)->preferredWidth(), itemh = (*item_it)->height();
+            FbTk::translateSize(orient, itemw, itemh);
+            tmpw = itemw ? std::floor(stretch_factor * itemw) : relative_width;
             tmph = height - size_offset;
         } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
             tmpw = tmph = height - size_offset;
