@@ -29,6 +29,7 @@
 #endif
 #include "IconbarTool.hh"
 #include "WorkspaceNameTool.hh"
+#include "SpacerTool.hh"
 #include "ArrowButton.hh"
 
 // Themes
@@ -98,6 +99,16 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
 #endif
     } else if (name == "clock") {
         item = new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
+    } else if (name.find("spacer") == 0) {
+        int size = -1;
+        if (name.size() > 6) { // spacer_20 creates a 20px spacer
+            if (name.at(6) != '_')
+                return 0;
+            size = atoi(name.substr(7, std::string::npos).c_str());
+            if (size < 1)
+                return 0;
+        }
+        item = new SpacerTool(size);
     } else {
 
         std::string cmd_str = name;

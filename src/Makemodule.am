@@ -102,6 +102,8 @@ TOOLBAR_SOURCE = \
 	src/GenericTool.hh \
 	src/IconbarTool.cc \
 	src/IconbarTool.hh \
+	src/SpacerTool.cc \
+	src/SpacerTool.hh \
 	src/ToolFactory.cc \
 	src/ToolFactory.hh \
 	src/ToolTheme.cc \
