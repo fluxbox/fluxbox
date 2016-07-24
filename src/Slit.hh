@@ -144,6 +144,7 @@ private:
 
     // m_hidden is for autohide, m_visible is the FbWindow state
     bool m_hidden, m_visible;
+    bool m_pending_reconfigure;
 
     BScreen &m_screen;
     FbTk::Timer m_timer;

@@ -207,7 +207,7 @@ unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
                                  EnterWindowMask | LeaveWindowMask | ExposureMask;
 
 Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
-    : m_hidden(false), m_visible(false),
+    : m_hidden(false), m_visible(false), m_pending_reconfigure(false),
       m_screen(scr),
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
@@ -565,6 +565,12 @@ void Slit::removeClient(Window w, bool remap) {
 
 void Slit::reconfigure() {
 
+    bool allow_autohide = true;
+    if (m_hidden)
+        m_pending_reconfigure = true;
+    else if (m_pending_reconfigure)
+        allow_autohide = false; // this is for a pending one, triggerd by unhide
+
     frame.width = 0;
     frame.height = 0;
 
@@ -720,7 +726,7 @@ void Slit::reconfigure() {
             x += (*client_it)->width() + bevel_width;
     } // end for
 
-    if (doAutoHide() && !isHidden() && !m_timer.isTiming())
+    if (allow_autohide && doAutoHide() && !isHidden() && !m_timer.isTiming())
         m_timer.start();
     else if (!doAutoHide() && isHidden())
         toggleHidden(); // restore visible
@@ -1049,8 +1055,13 @@ void Slit::toggleHidden() {
     m_hidden = ! m_hidden; // toggle hidden state
     if (isHidden())
         frame.window.move(frame.x_hidden, frame.y_hidden);
-    else
+    else {
         frame.window.move(frame.x, frame.y);
+        if (m_pending_reconfigure) {
+            reconfigure();
+            m_pending_reconfigure = false;
+        }
+    }
 }
 
 void Slit::loadClientList(const char *filename) {
