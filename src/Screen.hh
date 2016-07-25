@@ -248,6 +248,7 @@ public:
     FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() { return *m_menutheme.get(); }
     const FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() const { return *m_menutheme.get(); }
     const FbTk::ThemeProxy<RootTheme> &rootTheme() const { return *m_root_theme.get(); }
+    FbTk::ThemeProxy<RootTheme> &rootTheme() { return *m_root_theme.get(); }
 
     FbTk::ThemeProxy<WinButtonTheme> &focusedWinButtonTheme() { return *m_focused_winbutton_theme.get(); }
     const FbTk::ThemeProxy<WinButtonTheme> &focusedWinButtonTheme() const { return *m_focused_winbutton_theme.get(); }

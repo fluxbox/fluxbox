@@ -151,6 +151,7 @@ public:
     void removeGroupSearch(Window win);
     void restart(const char *command = 0);
     void reconfigure();
+    void reconfigThemes();
 
     /// todo, remove this. just temporary
     void updateFrameExtents(FluxboxWindow &win);

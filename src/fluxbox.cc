@@ -56,6 +56,7 @@
 #include "FbTk/Compose.hh"
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/MemFun.hh"
+#include "FbTk/MenuItem.hh"
 
 #ifdef USE_EWMH
 #include "Ewmh.hh"
@@ -1261,6 +1262,35 @@ void Fluxbox::reconfigure() {
     m_reconfig_timer.start();
 }
 
+// TODO: once c++11 is required, make this a local var and a closure
+static std::list<FbTk::Menu*> s_seenMenus;
+static void rec_reconfigMenu(FbTk::Menu *menu) {
+    if (!menu || std::find(s_seenMenus.begin(), s_seenMenus.end(), menu) != s_seenMenus.end())
+        return;
+    s_seenMenus.push_back(menu);
+    menu->reconfigure();
+    for (size_t i = 0; i < menu->numberOfItems(); ++i)
+        rec_reconfigMenu(menu->find(i)->submenu());
+}
+
+
+void Fluxbox::reconfigThemes() {
+    for (ScreenList::iterator it = m_screens.begin(), end = m_screens.end(); it != end; ++it) {
+        (*it)->focusedWinFrameTheme()->reconfigTheme();
+        (*it)->unfocusedWinFrameTheme()->reconfigTheme();
+        (*it)->menuTheme()->reconfigTheme();
+        (*it)->rootTheme()->reconfigTheme();
+        (*it)->focusedWinButtonTheme()->reconfigTheme();
+        (*it)->unfocusedWinButtonTheme()->reconfigTheme();
+        (*it)->pressedWinButtonTheme()->reconfigTheme();
+
+        rec_reconfigMenu(&(*it)->rootMenu());
+        rec_reconfigMenu(&(*it)->configMenu());
+        rec_reconfigMenu(&(*it)->windowMenu());
+        rec_reconfigMenu(&(*it)->workspaceMenu());
+        s_seenMenus.clear();
+    }
+}
 
 void Fluxbox::real_reconfigure() {
 
