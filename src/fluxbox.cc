@@ -1269,8 +1269,11 @@ static void rec_reconfigMenu(FbTk::Menu *menu) {
         return;
     s_seenMenus.push_back(menu);
     menu->reconfigure();
-    for (size_t i = 0; i < menu->numberOfItems(); ++i)
+    for (size_t i = 0; i < menu->numberOfItems(); ++i) {
         rec_reconfigMenu(menu->find(i)->submenu());
+        if (menu->find(i)->submenu() && menu->find(i)->submenu()->isVisible())
+            menu->drawSubmenu(i);
+    }
 }
 
 
