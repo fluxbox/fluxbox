@@ -522,8 +522,8 @@ void FluxboxWindow::init() {
         layerItem().setLayer(twin->layerItem().getLayer());
         m_state.layernum = twin->layerNum();
         m_workspace_number = twin->workspaceNumber();
-        const int x = twin->frame().x() + (twin->frame().width() - frame().width())/2;
-        const int y = twin->frame().y() + (twin->frame().height() - frame().height())/2;
+        const int x = twin->frame().x() + int(twin->frame().width() - frame().width())/2;
+        const int y = twin->frame().y() + int(twin->frame().height() - frame().height())/2;
         frame().move(x, y);
         m_placed = true;
     } else // if no parent then set default layer
