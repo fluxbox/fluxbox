@@ -2111,6 +2111,8 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
     fbdbg<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
     fbdbg<<"("<<__FUNCTION__<<"): title="<<client->title().logical()<<endl;
 
+    if (numClients() == 1) // unmapping the last client
+        frame().hide(); // hide this now, otherwise compositors will fade out the frame, bug #1110
     restore(client, false);
 
 }
