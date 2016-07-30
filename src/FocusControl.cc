@@ -595,6 +595,8 @@ void FocusControl::setFocusedWindow(WinClient *client) {
             // if we're currently cycling and the client tries to juggle around focus
             // on FocusIn events to provide client-side modality - don't let him
             next->focus();
+            if (WinClient *nextClient = dynamic_cast<WinClient*>(next))
+                setFocusedWindow(nextClient); // doesn't happen automatically while cycling, 1148
             return;
         }
     }
