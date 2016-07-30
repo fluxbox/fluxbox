@@ -591,11 +591,14 @@ void FocusControl::setFocusedWindow(WinClient *client) {
     BScreen *screen = client ? &client->screen() : 0;
     if (client && screen && screen->focusControl().isCycling()) {
         Focusable *next = screen->focusControl().m_cycling_next;
-        if (next && next != client && screen->focusControl().m_cycling_list->contains(*next)) {
+        WinClient *nextClient = dynamic_cast<WinClient*>(next);
+        FluxboxWindow *nextWindow = nextClient ? 0 : dynamic_cast<FluxboxWindow*>(next);
+        if (next && nextClient != client && nextWindow != client->fbwindow() &&
+                screen->focusControl().m_cycling_list->contains(*next)) {
             // if we're currently cycling and the client tries to juggle around focus
             // on FocusIn events to provide client-side modality - don't let him
             next->focus();
-            if (WinClient *nextClient = dynamic_cast<WinClient*>(next))
+            if (nextClient)
                 setFocusedWindow(nextClient); // doesn't happen automatically while cycling, 1148
             return;
         }
