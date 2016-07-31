@@ -494,14 +494,16 @@ void FbWinFrame::applyState() {
         }
     }
 
-    if (m_state.shaded)
+    if (m_state.shaded) {
         new_h = m_titlebar.height();
-
-    if (m_state.fullscreen) {
+    } else if (m_state.fullscreen) {
         new_x = m_screen.getHeadX(head);
         new_y = m_screen.getHeadY(head);
         new_w = m_screen.getHeadWidth(head);
         new_h = m_screen.getHeadHeight(head);
+    } else {
+        applySizeHints(new_w, new_h, m_state.maximized == WindowState::MAX_NONE ||
+                                     !m_screen.getMaxIgnoreIncrement());
     }
 
     moveResize(new_x, new_y, new_w, new_h, true, true, true);
