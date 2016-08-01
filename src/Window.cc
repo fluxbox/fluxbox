@@ -506,6 +506,25 @@ void FluxboxWindow::init() {
 
     fluxbox.attachSignals(*this);
 
+    if (!m_state.fullscreen) {
+        unsigned int new_width = 0, new_height = 0;
+        if (m_client->width() >= screen().width()) {
+            m_state.maximized |= WindowState::MAX_HORZ;
+            new_width = 2 * screen().width() / 3;
+        }
+        if (m_client->height() >= screen().height()) {
+            m_state.maximized |= WindowState::MAX_VERT;
+            new_height = 2 * screen().height() / 3;
+        }
+        if (new_width || new_height) {
+            const int maximized = m_state.maximized;
+            m_state.maximized = WindowState::MAX_NONE;
+            resize(new_width ? new_width : width(), new_height ? new_height : height());
+            m_placed = false;
+            m_state.maximized = maximized;
+        }
+    }
+
     // this window is managed, we are now allowed to modify actual state
     m_initialized = true;
 
