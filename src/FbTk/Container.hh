@@ -98,8 +98,8 @@ public:
 
     void clear(); // clear all windows
 
-private:
     void repositionItems();
+private:
 
     Orientation m_orientation;
 
