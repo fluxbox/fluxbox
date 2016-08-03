@@ -64,6 +64,8 @@ public:
 
     bool setOrientation(FbTk::Orientation orient);
 
+    const FbTk::Signal<> &titleChanged() { return m_title_changed; }
+
 protected:
     void drawText(int x, int y, FbTk::FbDrawable *drawable_override);
 private:
@@ -89,6 +91,7 @@ private:
     // cached pixmaps
     FbTk::CachedPixmap m_pm;
     FbTk::SignalTracker m_signals;
+    FbTk::Signal<> m_title_changed;
 };
 
 #endif // ICONBUTTON_HH

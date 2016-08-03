@@ -238,6 +238,7 @@ void IconButton::refreshEverything(bool setup) {
 
 void IconButton::clientTitleChanged() {
     refreshEverything(true);
+    m_title_changed.emit();
 
     if (m_has_tooltip)
         showTooltip();
