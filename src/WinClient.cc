@@ -119,6 +119,11 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):
         s_transient_wait.erase(win);
     }
 
+    m_title_update_timer.setTimeout(100 * FbTk::FbTime::IN_MILLISECONDS);
+    m_title_update_timer.fireOnce(true);
+    FbTk::RefCount<FbTk::Command<void> > ets(new FbTk::SimpleCommand<WinClient>(*this, &WinClient::emitTitleSig));
+    m_title_update_timer.setCommand(ets);
+
     // also check if this window is a transient
     // this needs to be done before creating an fbwindow, so this doesn't get
     // tabbed using the apps file
@@ -314,13 +319,17 @@ void WinClient::updateTitle() {
         return;
 
     m_title.setLogical(FbTk::FbString(Xutil::getWMName(window()), 0, 512));
+    m_title_update_timer.start();
+}
+
+void WinClient::emitTitleSig() {
     titleSig().emit(m_title.logical(), *this);
 }
 
 void WinClient::setTitle(const FbTk::FbString &title) {
     m_title.setLogical(title);
     m_title_override = true;
-    titleSig().emit(m_title.logical(), *this);
+    m_title_update_timer.start();
 }
 
 void WinClient::setIcon(const FbTk::PixmapWithMask& pm) {

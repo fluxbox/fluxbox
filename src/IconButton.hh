@@ -28,6 +28,7 @@
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/TextButton.hh"
+#include "FbTk/Timer.hh"
 #include "FbTk/Signal.hh"
 
 class IconbarTheme;
@@ -92,6 +93,7 @@ private:
     FbTk::CachedPixmap m_pm;
     FbTk::SignalTracker m_signals;
     FbTk::Signal<> m_title_changed;
+    FbTk::Timer m_title_update_timer;
 };
 
 #endif // ICONBUTTON_HH

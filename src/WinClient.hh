@@ -149,6 +149,9 @@ private:
     // some transient (or us) is no longer modal
     void removeModal() { --m_modal_count; }
 
+    FbTk::Timer m_title_update_timer;
+    void emitTitleSig();
+
     // number of transients which we are modal for
     int m_modal_count;
     bool m_modal;
