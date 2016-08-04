@@ -65,6 +65,8 @@ public:
 
     bool setOrientation(FbTk::Orientation orient);
 
+    virtual unsigned int preferredWidth() const;
+
     const FbTk::Signal<> &titleChanged() { return m_title_changed; }
 
 protected:

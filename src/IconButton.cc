@@ -279,3 +279,10 @@ bool IconButton::setOrientation(FbTk::Orientation orient) {
     return false;
 }
 
+unsigned int IconButton::preferredWidth() const {
+    unsigned int r = TextButton::preferredWidth();
+    if (m_icon_pixmap.drawable())
+        r += m_icon_window.width() + 1;
+    return r;
+}
+

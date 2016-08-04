@@ -55,6 +55,8 @@ public:
     virtual void setBackgroundColor(const Color &color);
     virtual bool setOrientation(FbTk::Orientation orient) { return orient == FbTk::ROT0; }
 
+    virtual unsigned int preferredWidth() const { return width(); }
+
     /**
        @name eventhandlers
      */
