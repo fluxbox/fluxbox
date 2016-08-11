@@ -602,6 +602,7 @@ void ShowDesktopCmd::execute() {
                                            it_end = wins.end();
     unsigned int space = screen->currentWorkspaceID();
     unsigned int count = 0;
+    XGrabServer(Fluxbox::instance()->display());
     for (; it != it_end; ++it) {
         if (!(*it)->fbwindow()->isIconic() && ((*it)->fbwindow()->isStuck() ||
             (*it)->fbwindow()->workspaceNumber() == space) &&
@@ -621,6 +622,7 @@ void ShowDesktopCmd::execute() {
         }
     } else
         FocusControl::revertFocus(*screen);
+    XUngrabServer(Fluxbox::instance()->display());
 
 }
 
