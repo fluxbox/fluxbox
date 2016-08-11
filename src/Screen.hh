@@ -341,6 +341,7 @@ public:
 
     void reconfigure();
     void reconfigureTabs();
+    void reconfigureStruts();
     void rereadMenu();
     void rereadWindowMenu();
     void shutdown();
@@ -536,6 +537,7 @@ private:
     } m_xinerama;
 
     std::vector<HeadArea*> m_head_areas;
+    std::vector<Strut*> m_head_struts;
 
     struct {
         bool cycling;

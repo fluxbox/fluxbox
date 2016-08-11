@@ -759,6 +759,7 @@ void BScreen::reconfigure() {
                                         m_root_theme->screenNum());
 
     reconfigureTabs();
+    reconfigureStruts();
 }
 
 void BScreen::reconfigureTabs() {
@@ -768,6 +769,42 @@ void BScreen::reconfigureTabs() {
                                            it_end = winlist.end();
     for (; it != it_end; ++it)
         (*it)->fbwindow()->applyDecorations();
+}
+
+static void parseStruts(const std::string &s, int &l, int &r, int &t, int &b) {
+    std::list<std::string> v;
+    FbTk::StringUtil::stringtok(v, s, " ,");
+    std::list<std::string>::iterator it = v.begin();
+    if (it != v.end())   l = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) r = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) t = std::max(0, atoi(it->c_str()));
+    if (++it != v.end()) b = std::max(0, atoi(it->c_str()));
+}
+
+void BScreen::reconfigureStruts() {
+    for (std::vector<Strut*>::iterator it = m_head_struts.begin(),
+                                      end = m_head_struts.end(); it != end; ++it) {
+        clearStrut(*it);
+    }
+
+    m_head_struts.clear();
+
+    int gl = 0, gr = 0, gt = 0, gb = 0;
+    parseStruts(FbTk::Resource<std::string>(resourceManager(), "",
+                                            name() + ".struts",
+                                         altName() + ".Struts"), gl, gr, gt, gb);
+    const int nh = std::max(1, numHeads());
+    for (int i = 1; i <= nh; ++i) {
+        int l = gl, r = gr, t = gt, b = gb;
+        char ai[16];
+        sprintf(ai, "%d", i);
+        parseStruts(FbTk::Resource<std::string>(resourceManager(), "",
+                                            name() + ".struts." + ai,
+                                         altName() + ".Struts." + ai), l, r, t, b);
+        if (l+t+r+b)
+            m_head_struts.push_back(requestStrut(i, l, r, t, b));
+    }
+    updateAvailableWorkspaceArea();
 }
 
 void BScreen::updateWorkspaceName(unsigned int w) {
@@ -1621,6 +1658,8 @@ void BScreen::initXinerama() {
 #else // XINERAMA
     m_xinerama.avail = false;
 #endif // XINERAMA
+
+    reconfigureStruts();
 }
 
 /* Move windows out of inactive heads */

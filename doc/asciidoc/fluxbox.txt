@@ -1136,6 +1136,15 @@ Set this to the number of workspaces the users wants.
 +
 Default: *4*
 
+*session.screen0.struts*: 'integer', 'integer', 'integer', 'integer'::
+Shrink the workspace by left, right, top, bottom pixels (positive integers)
+This allows you to add some padding to the workspace eg. to keep a fraction
+of the desktop visible against maximized windows.
+session.screen0.struts.<n> allows to control this for individual heads
+(<n> starts counting at 1)
++
+Default: *0,0,0,0*
+
 *session.cacheLife*: 'minutes'::
 This tells fluxbox how long unused pixmaps may stay in the X
 server's memory.
