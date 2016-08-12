@@ -24,6 +24,7 @@
 #include "Window.hh"
 #include "fluxbox.hh"
 #include "FocusControl.hh"
+#include "Remember.hh"
 #include "Screen.hh"
 #include "FbAtoms.hh"
 #include "Xutil.hh"
@@ -427,7 +428,8 @@ void WinClient::updateWMHints() {
 void WinClient::updateWMNormalHints() {
     long icccm_mask;
     XSizeHints sizehint;
-    if (!XGetWMNormalHints(display(), window(), &sizehint, &icccm_mask))
+    if (Remember::instance().isRemembered(*this, Remember::REM_IGNORE_SIZEHINTS) ||
+        !XGetWMNormalHints(display(), window(), &sizehint, &icccm_mask))
         sizehint.flags = 0;
 
     normal_hint_flags = sizehint.flags;

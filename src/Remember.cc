@@ -166,6 +166,8 @@ public:
     bool dimension_is_w_relative;
     bool dimension_is_h_relative;
 
+    bool ignoreSizeHints_remember;
+
     bool position_remember;
     int x,y;
     bool position_is_x_relative;
@@ -497,6 +499,8 @@ int parseApp(ifstream &file, Application &app, string *first_line = 0) {
                 app.rememberDimensions(w, h, w_relative, h_relative);
             } else
                 had_error = true;
+        } else if (str_key == "ignoresizehints") {
+            app.ignoreSizeHints_remember = str_label == "yes";
         } else if (str_key == "position") {
             FluxboxWindow::ReferenceCorner r = FluxboxWindow::LEFTTOP;
             // more info about the parameter
@@ -1119,6 +1123,9 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
     case REM_DIMENSIONS:
         return app->dimensions_remember;
         break;
+    case REM_IGNORE_SIZEHINTS:
+        return app->ignoreSizeHints_remember;
+        break;
     case REM_POSITION:
         return app->position_remember;
         break;
@@ -1264,6 +1271,9 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_DIMENSIONS:
         app->forgetDimensions();
+        break;
+    case REM_IGNORE_SIZEHINTS:
+        app->ignoreSizeHints_remember = false;
         break;
     case REM_POSITION:
         app->forgetPosition();

@@ -75,6 +75,7 @@ public:
         REM_MAXIMIZEDSTATE,
         REM_FULLSCREENSTATE,
         REM_FOCUSPROTECTION,
+        REM_IGNORE_SIZEHINTS,
         REM_LASTATTRIB // not actually used
     };
 
