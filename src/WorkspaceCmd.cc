@@ -26,6 +26,8 @@
 #include "Workspace.hh"
 #include "Window.hh"
 #include "Screen.hh"
+#include "Slit.hh"
+#include "Toolbar.hh"
 #include "fluxbox.hh"
 #include "WinClient.hh"
 #include "FocusControl.hh"
@@ -620,6 +622,26 @@ void ShowDesktopCmd::execute() {
     } else
         FocusControl::revertFocus(*screen);
 
+}
+
+REGISTER_COMMAND(toggleslitbarabove, ToggleSlitAboveCmd, void);
+void ToggleSlitAboveCmd::execute() {
+#if USE_SLIT
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
+        screen->slit()->toggleAboveDock();
+        const_cast<FbTk::FbWindow&>(screen->slit()->window()).raise();
+    }
+#endif
+}
+
+REGISTER_COMMAND(toggletoolbarabove, ToggleToolbarAboveCmd, void);
+void ToggleToolbarAboveCmd::execute() {
+#if USE_TOOLBAR
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
+        screen->toolbar()->toggleAboveDock();
+        const_cast<FbTk::FbWindow&>(screen->toolbar()->window()).raise();
+    }
+#endif
 }
 
 REGISTER_COMMAND(closeallwindows, CloseAllWindowsCmd, void);

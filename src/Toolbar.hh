@@ -83,6 +83,7 @@ public:
     void updateVisibleState();
     void toggleHidden();
 
+    void toggleAboveDock();
 
     void moveToLayer(int layernum);
 

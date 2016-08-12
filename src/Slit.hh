@@ -103,6 +103,7 @@ public:
 
     void moveToLayer(int layernum);
     void toggleHidden();
+    void toggleAboveDock();
 
     BScreen &screen() { return m_screen; }
     const BScreen &screen() const { return m_screen; }

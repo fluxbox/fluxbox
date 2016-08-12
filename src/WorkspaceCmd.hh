@@ -192,6 +192,16 @@ public:
     void execute();
 };
 
+class ToggleSlitAboveCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
+class ToggleToolbarAboveCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
 class CloseAllWindowsCmd: public FbTk::Command<void> {
 public:
     void execute();

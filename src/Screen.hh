@@ -126,6 +126,11 @@ public:
     Slit *slit() { return m_slit.get(); }
     /// @return the slit, @see Slit
     const Slit *slit() const { return m_slit.get(); }
+
+    /// @return the toolbar, @see Toolbar
+    Toolbar *toolbar() { return m_toolbar.get(); }
+    /// @return the toolbar, @see Toolbar
+    const Toolbar *toolbar() const { return m_toolbar.get(); }
     /**
      * @param w the workspace number
      * @return workspace for the given workspace number

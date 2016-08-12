@@ -438,6 +438,12 @@ doing so.
 	Minimizes all windows on the current workspace. If they are already all
 	minimized, then it restores them.
 
+*ToggleSlitAbove*::
+	Toggles the slit between its regular and the AboveDock layer
+
+*ToggleToolbarAbove*::
+	Toggles the toolbar between its regular and the AboveDock layer
+
 *Deiconify* 'mode' 'destination'::
 Deiconifies windows (or, restores from a minimized state).
 +

@@ -1064,6 +1064,13 @@ void Slit::toggleHidden() {
     }
 }
 
+void Slit::toggleAboveDock() {
+    if (m_layeritem->getLayerNum() == m_rc_layernum->getNum())
+        m_layeritem->moveToLayer(ResourceLayer::ABOVE_DOCK);
+    else
+        m_layeritem->moveToLayer(m_rc_layernum->getNum());
+}
+
 void Slit::loadClientList(const char *filename) {
     if (filename == 0 || filename[0] == '\0')
         return;
