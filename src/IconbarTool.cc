@@ -225,6 +225,8 @@ private:
 
 } // end anonymous namespace
 
+std::string IconbarTool::s_iconifiedDecoration[2];
+
 IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
                          FbTk::ThemeProxy<IconbarTheme> &focused_theme,
                          FbTk::ThemeProxy<IconbarTheme> &unfocused_theme,
@@ -251,6 +253,8 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
     m_menu(screen.menuTheme(), screen.imageControl(),
            *screen.layerManager().getLayer(ResourceLayer::MENU)),
     m_alpha(255) {
+
+    updateIconifiedPattern();
 
     // setup mode menu
     setupModeMenu(m_menu, *this);
@@ -279,6 +283,8 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme,
             FbTk::MemFun(*this, &IconbarTool::themeReconfigured));
     m_tracker.join(unfocused_theme.reconfigSig(),
             FbTk::MemFun(*this, &IconbarTool::themeReconfigured));
+    m_tracker.join(screen.reconfigureSig(),
+            FbTk::MemFunIgnoreArgs(*this, &IconbarTool::updateIconifiedPattern));
     themeReconfigured();
 }
 
@@ -437,6 +443,19 @@ void IconbarTool::update(UpdateReason reason, Focusable *win) {
     // m_icon_container.update() above; then, it never runs drawText() again,
     // so text can end up behind program icons
     renderTheme();
+}
+
+void IconbarTool::updateIconifiedPattern() {
+    FbTk::Resource<std::string> p(m_screen.resourceManager(), "( %t )",
+                                  m_screen.name() + ".iconbar.iconifiedPattern",
+                                  m_screen.altName() + ".Iconbar.IconifiedPattern");
+    size_t tidx = p->find("%t");
+    s_iconifiedDecoration[0].clear();
+    s_iconifiedDecoration[1].clear();
+    if (tidx != std::string::npos) {
+        s_iconifiedDecoration[0] = p->substr(0, tidx);
+        s_iconifiedDecoration[1] = p->substr(tidx+2);
+    }
 }
 
 void IconbarTool::insertWindow(Focusable &win, int pos) {

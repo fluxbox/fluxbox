@@ -68,6 +68,8 @@ public:
 
     void setOrientation(FbTk::Orientation orient);
     FbTk::Container::Alignment alignment() const { return m_icon_container.alignment(); }
+    static std::string &iconifiedPrefix() { return s_iconifiedDecoration[0]; }
+    static std::string &iconifiedSuffix() { return s_iconifiedDecoration[1]; }
 
     const BScreen &screen() const { return m_screen; }
 private:
@@ -98,6 +100,8 @@ private:
     /// called when the list emits a signal
     void update(UpdateReason reason, Focusable *win);
 
+    void updateIconifiedPattern();
+
     void themeReconfigured();
 
     BScreen &m_screen;
@@ -118,6 +122,7 @@ private:
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
     FbMenu m_menu;
     int m_alpha;
+    static std::string s_iconifiedDecoration[2];
 };
 
 #endif // ICONBARTOOL_HH

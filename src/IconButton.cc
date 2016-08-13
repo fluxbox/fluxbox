@@ -25,6 +25,7 @@
 #include "IconbarTheme.hh"
 
 #include "Screen.hh"
+#include "Window.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/Command.hh"
@@ -57,6 +58,10 @@ IconButton::IconButton(const FbTk::FbWindow &parent,
     m_title_update_timer.setCommand(ets);
     m_signals.join(m_win.titleSig(),
                    MemFunIgnoreArgs(m_title_update_timer, &FbTk::Timer::start));
+
+    if (m_win.fbwindow())
+        m_signals.join(m_win.fbwindow()->stateSig(),
+                       MemFunIgnoreArgs(*this, &IconButton::clientTitleChanged));
 
     m_signals.join(m_win.focusSig(),
                    MemFunIgnoreArgs(*this, &IconButton::reconfigAndClear));
@@ -250,7 +255,10 @@ void IconButton::clientTitleChanged() {
 
 void IconButton::setupWindow() {
     m_icon_window.clear();
-    setText(m_win.title());
+    FbTk::FbString title = m_win.title().logical();
+    if (m_win.fbwindow() && m_win.fbwindow()->isIconic())
+        title = IconbarTool::iconifiedPrefix() + title + IconbarTool::iconifiedSuffix();
+    setText(title);
     FbTk::TextButton::clear();
 }
 
