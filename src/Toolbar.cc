@@ -194,6 +194,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
     // lock rcmanager here
     m_rc_auto_hide(scrn.resourceManager().lock(), false,
                    scrn.name() + ".toolbar.autoHide", scrn.altName() + ".Toolbar.AutoHide"),
+    m_rc_auto_raise(scrn.resourceManager().lock(), false,
+                   scrn.name() + ".toolbar.autoRaise", scrn.altName() + ".Toolbar.AutoRaise"),
     m_rc_maximize_over(scrn.resourceManager(), false,
                        scrn.name() + ".toolbar.maxOver", scrn.altName() + ".Toolbar.MaxOver"),
     m_rc_visible(scrn.resourceManager(), true, scrn.name() + ".toolbar.visible", scrn.altName() + ".Toolbar.Visible"),
@@ -522,6 +524,9 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 }
 
 void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
+    if (m_rc_auto_raise)
+        m_layeritem.moveToLayer(ResourceLayer::ABOVE_DOCK);
+
     Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0,
                                           Keys::ON_TOOLBAR);
 
@@ -551,6 +556,9 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
         event.subwindow == None ) {
         return;
     }
+
+    if (m_rc_auto_raise)
+        m_layeritem.moveToLayer(m_rc_layernum->getNum());
 
     Fluxbox::instance()->keys()->doAction(event.type, event.state, 0,
                                           Keys::ON_TOOLBAR);
@@ -761,6 +769,10 @@ void Toolbar::setupMenus(bool skip_new_placement) {
     menu().insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoHide,
                                              "Auto hide", "Toggle auto hide of toolbar"),
                                    m_rc_auto_hide,
+                                   reconfig_toolbar_and_save_resource));
+    menu().insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoRaise,
+                                             "Auto raise", "Toggle auto raise of toolbar"),
+                                   m_rc_auto_raise,
                                    reconfig_toolbar_and_save_resource));
 
     MenuItem *toolbar_menuitem =

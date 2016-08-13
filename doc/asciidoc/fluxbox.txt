@@ -604,6 +604,11 @@ All changes take effect immediately. Here are the settings:
     remaining edge of the toolbar. See the *session.autoRaiseDelay* resource for
      the delay time.
 
+*Auto raise*:::
+    If this is enabled the toolbar will elevate after a defined time when the
+    mouse pointer enters the it. It will fall back when the cursor leaves the
+    toolbar. See the *session.autoRaiseDelay* resource for the delay time.
+
 *Toolbar width percentage*:::
      Sets the width of the toolbar in a percentage of your total screen size. Use
      the left mouse button to decrease and the right mouse-button to increase the
@@ -796,6 +801,11 @@ All changes take effect immediately. Here are the settings:
     remaining edge of the slit. See the *session.autoRaiseDelay* resource for
      the delay time.
 
+*Auto raise*:::
+    If this is enabled the slit will elevate after a defined time when the
+    mouse pointer enters the it. It will fall back when the cursor leaves the
+    slit. See the *session.autoRaiseDelay* resource for the delay time.
+
 *Maximize Over*:::
      Enabling this option will allow windows to maximizing over the slit.  With
      this switched off they will only expand to the edge of the slit.  This
@@ -883,6 +893,16 @@ Default: *255*
 The autoHide resources allow the user to set the behavior of the toolbar
 and slit. This behavior can be that they disappear when they are not being
 used actively by the user, or they remain visible at all times.
++
+Default: *False*
+
+*session.screen0.{slit|toolbar}.autoRaise*: 'boolean'::
+If enabled, the respective item will elevate to the AboveDock layer when entered
+and fall back to its regular layer when left.
+Notice that this does *not* implicitly alter the items regular layer or the
+workspace padding, ie. if the item is already set to AboveDock this does nothing
+and if a mximized window completely covers the item you won't be able to enter,
+thus elevate it.
 +
 Default: *False*
 

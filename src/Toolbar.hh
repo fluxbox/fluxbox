@@ -185,7 +185,7 @@ private:
     Strut *m_strut; ///< created and destroyed by BScreen
 
     // resources
-    FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over, m_rc_visible;
+    FbTk::Resource<bool> m_rc_auto_hide, m_rc_auto_raise, m_rc_maximize_over, m_rc_visible;
     FbTk::Resource<int> m_rc_width_percent;
     FbTk::Resource<int> m_rc_alpha;
     FbTk::Resource<class ResourceLayer> m_rc_layernum;

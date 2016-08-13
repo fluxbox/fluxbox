@@ -235,6 +235,8 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
                        scr.name() + ".slit.acceptKdeDockapps", scr.altName() + ".Slit.AcceptKdeDockapps"),
       m_rc_auto_hide(scr.resourceManager().lock(), false,
                      scr.name() + ".slit.autoHide", scr.altName() + ".Slit.AutoHide"),
+      m_rc_auto_raise(scr.resourceManager().lock(), false,
+                     scr.name() + ".slit.autoRaise", scr.altName() + ".Slit.AutoRaise"),
       // TODO: this resource name must change
       m_rc_maximize_over(scr.resourceManager(), false,
                          scr.name() + ".slit.maxOver", scr.altName() + ".Slit.MaxOver"),
@@ -957,6 +959,9 @@ void Slit::buttonPressEvent(XButtonEvent &be) {
 
 
 void Slit::enterNotifyEvent(XCrossingEvent &) {
+    if (m_rc_auto_raise)
+        m_layeritem->moveToLayer(ResourceLayer::ABOVE_DOCK);
+
     if (! doAutoHide())
         return;
 
@@ -971,6 +976,9 @@ void Slit::enterNotifyEvent(XCrossingEvent &) {
 
 
 void Slit::leaveNotifyEvent(XCrossingEvent &ev) {
+    if (m_rc_auto_raise)
+        m_layeritem->moveToLayer(m_rc_layernum->getNum());
+
     if (! doAutoHide())
         return;
 
@@ -1206,6 +1214,9 @@ void Slit::setupMenu() {
 
     m_slitmenu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
                                        m_rc_auto_hide,
+                                       save_and_reconfigure_slit));
+    m_slitmenu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, AutoRaise, "Auto raise", "This thing automatically raises when entered"),
+                                       m_rc_auto_raise,
                                        save_and_reconfigure_slit));
 
     m_slitmenu.insertItem(new FbTk::BoolMenuItem(_FB_XTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),

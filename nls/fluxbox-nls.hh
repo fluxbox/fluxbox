@@ -54,6 +54,7 @@ enum {
 	CommonVisible = 18,
 	CommonBackgroundWarning = 19,
     CommonDefaultWindowMenuFile = 20,
+	CommonAutoRaise = 21,
 
 	ConfigmenuSet = 4,
 	ConfigmenuAntiAlias = 1,
