@@ -143,6 +143,8 @@ private:
     void updateStrut();
     void updateAlpha();
 
+    void updateCrossingState();
+
     /// Called when the screen changed property.
     void screenChanged(BScreen &screen);
 

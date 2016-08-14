@@ -250,8 +250,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::Layer &layer, size_t width):
 
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay() * FbTk::FbTime::IN_MILLISECONDS);
-    FbTk::RefCount<FbTk::Command<void> > toggle_hidden(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::toggleHidden));
-    m_hide_timer.setCommand(toggle_hidden);
+    FbTk::RefCount<FbTk::Command<void> > ucs(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::updateCrossingState));
+    m_hide_timer.setCommand(ucs);
     m_hide_timer.fireOnce(true);
 
 
@@ -523,55 +523,49 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
         .placeAndShowMenu(menu(), be.x_root, be.y_root, false);
 }
 
-void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
-    if (m_rc_auto_raise)
-        m_layeritem.moveToLayer(ResourceLayer::ABOVE_DOCK);
-
-    Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0,
-                                          Keys::ON_TOOLBAR);
-
-    if (! doAutoHide()) {
-        if (isHidden())
+void Toolbar::updateCrossingState() {
+    Window wr, wc;
+    int rx, ry, x, y;
+    unsigned int mask;
+    const int bw = -theme()->border().width();
+    bool hovered = false;
+    if (XQueryPointer(Fluxbox::instance()->display(), window().window(), &wr, &wc, &rx, &ry, &x, &y, &mask))
+        hovered = x >= bw && y >= bw && x < int(width()) && y < int(height());
+    if (hovered) {
+        if (m_rc_auto_raise)
+            m_layeritem.moveToLayer(ResourceLayer::ABOVE_DOCK);
+        if (m_rc_auto_hide && isHidden())
             toggleHidden();
-        return;
+    } else {
+        if (m_rc_auto_hide && !isHidden())
+            toggleHidden();
+        if (m_rc_auto_raise)
+            m_layeritem.moveToLayer(m_rc_layernum->getNum());
+    }
+}
+
+void Toolbar::enterNotifyEvent(XCrossingEvent &ce) {
+    Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0, Keys::ON_TOOLBAR);
+
+    if (!m_rc_auto_hide && isHidden()) {
+        toggleHidden();
     }
 
-    if (isHidden()) {
-        if (! m_hide_timer.isTiming())
-            m_hide_timer.start();
-    } else {
-        if (m_hide_timer.isTiming())
-            m_hide_timer.stop();
-    }
+    if ((m_rc_auto_hide || m_rc_auto_raise) && !m_hide_timer.isTiming())
+        m_hide_timer.start();
 }
 
 void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
 
-    // in autoHide mode we'll receive a leaveNotifyEvent when activating
-    // the toolbar. so check if we are still inside the toolbar area.
-    // event.subwindow gets != None if we really left the window (eg the Slit
-    // was entered ontop of the toolbar)
-    if (event.x_root > x() && event.x_root <= (int)(x() + width()) &&
-        event.y_root > y() && event.y_root <= (int)(y() + height()) && 
-        event.subwindow == None ) {
-        return;
-    }
-
-    if (m_rc_auto_raise)
-        m_layeritem.moveToLayer(m_rc_layernum->getNum());
-
-    Fluxbox::instance()->keys()->doAction(event.type, event.state, 0,
-                                          Keys::ON_TOOLBAR);
-
-    if (! doAutoHide())
+    if (menu().isVisible())
         return;
 
-    if (isHidden()) {
-        if (m_hide_timer.isTiming())
-            m_hide_timer.stop();
-    } else if (! menu().isVisible() && ! m_hide_timer.isTiming())
+    if (!m_hide_timer.isTiming() && (m_rc_auto_hide && !isHidden()) ||
+       (m_rc_auto_raise && m_layeritem.getLayerNum() != m_rc_layernum->getNum()))
         m_hide_timer.start();
 
+    if (!isHidden())
+        Fluxbox::instance()->keys()->doAction(event.type, event.state, 0, Keys::ON_TOOLBAR);
 }
 
 

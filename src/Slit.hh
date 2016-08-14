@@ -134,6 +134,7 @@ private:
     void screenSizeChanged(BScreen &screen);
 
     void updateAlpha();
+    void updateCrossingState();
     void clearWindow();
     void setupMenu();
 

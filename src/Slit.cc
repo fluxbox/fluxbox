@@ -272,8 +272,8 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
     // setup timer
     m_timer.setTimeout(200L * FbTk::FbTime::IN_MILLISECONDS); // default timeout
     m_timer.fireOnce(true);
-    FbTk::RefCount<FbTk::Command<void> > toggle_hidden(new FbTk::SimpleCommand<Slit>(*this, &Slit::toggleHidden));
-    m_timer.setCommand(toggle_hidden);
+    FbTk::RefCount<FbTk::Command<void> > ucs(new FbTk::SimpleCommand<Slit>(*this, &Slit::updateCrossingState));
+    m_timer.setCommand(ucs);
 
 
     FbTk::EventManager::instance()->add(*this, frame.window);
@@ -958,44 +958,46 @@ void Slit::buttonPressEvent(XButtonEvent &be) {
 }
 
 
-void Slit::enterNotifyEvent(XCrossingEvent &) {
-    if (m_rc_auto_raise)
-        m_layeritem->moveToLayer(ResourceLayer::ABOVE_DOCK);
+void Slit::updateCrossingState() {
+    Window wr, wc;
+    int rx, ry, x, y;
+    unsigned int mask;
+    const int bw = -theme()->borderWidth();
+    bool hovered = false;
+    if (XQueryPointer(Fluxbox::instance()->display(), window().window(), &wr, &wc, &rx, &ry, &x, &y, &mask))
+        hovered = x >= bw && y >= bw && x < int(width()) && y < int(height());
 
-    if (! doAutoHide())
-        return;
-
-    if (isHidden()) {
-        if (! m_timer.isTiming())
-            m_timer.start();
+    if (hovered) {
+        if (m_rc_auto_raise)
+            m_layeritem->moveToLayer(ResourceLayer::ABOVE_DOCK);
+        if (m_rc_auto_hide && isHidden())
+            toggleHidden();
     } else {
-        if (m_timer.isTiming())
-            m_timer.stop();
+        if (m_rc_auto_hide && !isHidden())
+            toggleHidden();
+        if (m_rc_auto_raise)
+            m_layeritem->moveToLayer(m_rc_layernum->getNum());
     }
 }
 
-
-void Slit::leaveNotifyEvent(XCrossingEvent &ev) {
-    if (m_rc_auto_raise)
-        m_layeritem->moveToLayer(m_rc_layernum->getNum());
-
-    if (! doAutoHide())
-        return;
-
-    if (isHidden()) {
-        if (m_timer.isTiming())
-            m_timer.stop();
-    } else {
-        if (! m_timer.isTiming()) {
-            // the menu is open, keep it firing until it closes
-            if (m_slitmenu.isVisible())
-                m_timer.fireOnce(false);
-            m_timer.start();
-        }
+void Slit::enterNotifyEvent(XCrossingEvent &ce) {
+    if (!m_rc_auto_hide && isHidden()) {
+        toggleHidden();
     }
 
+    if (!m_timer.isTiming() && (m_rc_auto_hide && isHidden()) ||
+       (m_rc_auto_raise && m_layeritem->getLayerNum() != ResourceLayer::ABOVE_DOCK))
+        m_timer.start();
 }
 
+void Slit::leaveNotifyEvent(XCrossingEvent &event) {
+    if (m_slitmenu.isVisible())
+        return;
+
+    if (!m_timer.isTiming() && (m_rc_auto_hide && !isHidden()) ||
+       (m_rc_auto_raise && m_layeritem->getLayerNum() != m_rc_layernum->getNum()))
+        m_timer.start();
+}
 
 void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
     bool reconf = false;
@@ -1050,16 +1052,6 @@ void Slit::clearWindow() {
 }
 
 void Slit::toggleHidden() {
-    if (doAutoHide()) {
-        if (!m_slitmenu.isVisible()) {
-            m_timer.fireOnce(true);
-        } else {
-            return;
-        }
-    //} else if (!isHidden()) {
-    //    return;
-    }
-
     m_hidden = ! m_hidden; // toggle hidden state
     if (isHidden())
         frame.window.move(frame.x_hidden, frame.y_hidden);
