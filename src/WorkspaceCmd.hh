@@ -197,7 +197,17 @@ public:
     void execute();
 };
 
+class ToggleSlitHiddenCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
 class ToggleToolbarAboveCmd: public FbTk::Command<void> {
+public:
+    void execute();
+};
+
+class ToggleToolbarHiddenCmd: public FbTk::Command<void> {
 public:
     void execute();
 };

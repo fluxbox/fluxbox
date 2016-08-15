@@ -634,11 +634,31 @@ void ToggleSlitAboveCmd::execute() {
 #endif
 }
 
+REGISTER_COMMAND(toggleslithidden, ToggleSlitHiddenCmd, void);
+void ToggleSlitHiddenCmd::execute() {
+#if USE_SLIT
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
+        screen->slit()->toggleHidden();
+        const_cast<FbTk::FbWindow&>(screen->slit()->window()).raise();
+    }
+#endif
+}
+
 REGISTER_COMMAND(toggletoolbarabove, ToggleToolbarAboveCmd, void);
 void ToggleToolbarAboveCmd::execute() {
 #if USE_TOOLBAR
     if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
         screen->toolbar()->toggleAboveDock();
+        const_cast<FbTk::FbWindow&>(screen->toolbar()->window()).raise();
+    }
+#endif
+}
+
+REGISTER_COMMAND(toggletoolbarvisible, ToggleToolbarHiddenCmd, void);
+void ToggleToolbarHiddenCmd::execute() {
+#if USE_TOOLBAR
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen()) {
+        screen->toolbar()->toggleHidden();
         const_cast<FbTk::FbWindow&>(screen->toolbar()->window()).raise();
     }
 #endif

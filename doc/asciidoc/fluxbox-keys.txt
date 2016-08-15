@@ -441,8 +441,14 @@ doing so.
 *ToggleSlitAbove*::
 	Toggles the slit between its regular and the AboveDock layer
 
+*ToggleSlitHidden*::
+	Toggles the slit's autohiding state (autohide doesn't have to be enabled)
+
 *ToggleToolbarAbove*::
 	Toggles the toolbar between its regular and the AboveDock layer
+
+*ToggleToolbarHidden*::
+	Toggles the toolbar's autohiding state (autohide doesn't have to be enabled)
 
 *Deiconify* 'mode' 'destination'::
 Deiconifies windows (or, restores from a minimized state).
