@@ -55,10 +55,10 @@ LayerMenu::LayerMenu(FbTk::ThemeProxy<FbTk::MenuTheme> &tm,
     for (size_t i=0; i < 6; ++i) {
         // TODO: fetch nls string
         if (save_rc) {
-            insert(new LayerMenuItem(layer_menuitems[i].default_str,
+            insertItem(new LayerMenuItem(layer_menuitems[i].default_str,
                                      object, layer_menuitems[i].layernum, saverc_cmd));
         } else {
-            insert(new LayerMenuItem(layer_menuitems[i].default_str,
+            insertItem(new LayerMenuItem(layer_menuitems[i].default_str,
                                      object, layer_menuitems[i].layernum));
         }
     }

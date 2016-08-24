@@ -30,7 +30,8 @@ FbRootWindow::FbRootWindow(int screen_num):
     m_colormap(0),
     m_decorationDepth(0),
     m_decorationVisual(0),
-    m_decorationColormap(0) {
+    m_decorationColormap(0),
+    m_maxDepth(depth()) {
 
     Display *disp = FbTk::App::instance()->display();
 
@@ -55,9 +56,9 @@ FbRootWindow::FbRootWindow(int screen_num):
 
         for (int i = 0; i < vinfo_nitems; i++) {
             if ((DefaultDepth(disp, screen_num) < vinfo_return[i].depth)
-                    && (depth() < vinfo_return[i].depth)){
+                    && (m_maxDepth < vinfo_return[i].depth)){
                 m_visual = vinfo_return[i].visual;
-                setDepth(vinfo_return[i].depth);
+                m_maxDepth = vinfo_return[i].depth;
             }
 
             if((m_decorationDepth < vinfo_return[i].depth)
@@ -74,6 +75,6 @@ FbRootWindow::FbRootWindow(int screen_num):
         m_colormap = XCreateColormap(disp, window(), m_visual, AllocNone);
     }
     if (m_decorationVisual != DefaultVisual(disp, screen_num)) {
-        m_decorationColormap = XCreateColormap(disp, window(), m_visual, AllocNone);
+        m_decorationColormap = XCreateColormap(disp, window(), m_decorationVisual, AllocNone);
     }
 }

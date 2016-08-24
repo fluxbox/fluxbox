@@ -48,7 +48,7 @@ using std::endl;
 using std::string;
 
 void showUsage(const char *progname) {
-    cerr<<"fbrun 1.5 : (c) 2002-2014 Henrik Kinnunen"<<endl;
+    cerr<<"fbrun 1.5 : (c) 2002-2015 Henrik Kinnunen"<<endl;
     cerr<<"Usage: "<<
         progname<<" [arguments]"<<endl<<
         "Arguments: "<<endl<<
@@ -61,10 +61,14 @@ void showUsage(const char *progname) {
         "   -display [display string]   Display name"<<endl<<
         "   -pos [x] [y]                Window position in pixels"<<endl<<
         "   -nearmouse                  Window position near mouse"<<endl<<
+        "   -center                     Window position on screen center"<<endl<<
         "   -fg [color name]            Foreground text color"<<endl<<
         "   -bg [color name]            Background color"<<endl<<
         "   -na                         Disable antialias"<<endl<<
         "   -hf [history file]          History file to load (default ~/.fluxbox/fbrun_history)"<<endl<<
+        "   -cf [completion file]       Complete contents of this file instead of $PATH binaries"<<endl<<
+        "   -autocomplete               Complete on typing"<<endl<<
+        "   -preselect                  Select preset text"<<endl<<
         "   -help                       Show this help"<<endl<<endl<<
         "Example: fbrun -fg black -bg white -text xterm -title \"run xterm\""<<endl;
 }
@@ -75,8 +79,10 @@ int main(int argc, char **argv) {
     bool set_height = false, set_width=false; // use height/width of font by default
     bool set_pos = false; // set position
     bool near_mouse = false; // popup near mouse
-    bool antialias = true; // antialias text
+    bool center = false;
     bool print = false;
+    bool preselect = false;
+    bool autocomplete = getenv("FBRUN_AUTOCOMPLETE");
     string fontname; // font name
     string title("Run program"); // default title
     string text;         // default input text
@@ -84,6 +90,7 @@ int main(int argc, char **argv) {
     string background("white");   // text background color
     string display_name; // name of the display connection
     string history_file("~/.fluxbox/fbrun_history"); // command history file
+    string completion_file; // command history file
     // parse arguments
     for (int i=1; i<argc; i++) {
         string arg = argv[i];
@@ -110,14 +117,21 @@ int main(int argc, char **argv) {
         } else if (arg == "-nearmouse" || arg == "--nearmouse") {
             set_pos = true;
             near_mouse = true;
+        } else if (arg == "-center" || arg == "--center") {
+            set_pos = true;
+            center = true;
         } else if (strcmp(argv[i], "-fg") == 0 && i+1 < argc) {
             foreground = argv[++i];
         } else if (strcmp(argv[i], "-bg") == 0 && i+1 < argc) {
             background = argv[++i];
-        } else if (strcmp(argv[i], "-na") == 0) {
-            antialias = false;
         } else if (strcmp(argv[i], "-hf") == 0 && i+1 < argc) {
             history_file = argv[++i];
+        } else if (strcmp(argv[i], "-cf") == 0 && i+1 < argc) {
+            completion_file = argv[++i];
+        } else if (strcmp(argv[i], "-preselect") == 0) {
+            preselect = true;
+        } else if (strcmp(argv[i], "-autocomplete") == 0) {
+            autocomplete = true;
         } else if (arg == "-h" || arg == "-help" || arg == "--help") {
             showUsage(argv[0]);
             exit(0);
@@ -135,6 +149,7 @@ int main(int argc, char **argv) {
         FbRun fbrun;
 
         fbrun.setPrint(print);
+        fbrun.setAutocomplete(autocomplete);
 
         if (fontname.size() != 0) {
             if (!fbrun.loadFont(fontname.c_str())) {
@@ -154,17 +169,24 @@ int main(int argc, char **argv) {
             fbrun.resize(fbrun.width(), height);
         if (set_width)
             fbrun.resize(width, fbrun.height());
-        //if (antialias)
-        //    fbrun.setAntialias(antialias);
+
         // expand and load command history
         string expanded_filename = FbTk::StringUtil::expandFilename(history_file);
         if (!fbrun.loadHistory(expanded_filename.c_str()))
             cerr<<"FbRun Warning: Failed to load history file: "<<expanded_filename<<endl;
 
+        if (!completion_file.empty()) {
+            expanded_filename = FbTk::StringUtil::expandFilename(completion_file);
+            if (!fbrun.loadCompletion(expanded_filename.c_str()))
+                cerr<<"FbRun Warning: Failed to load completion file: "<<expanded_filename<<endl;
+        }
+
         fbrun.setTitle(title);
         fbrun.setText(text);
+        if (preselect)
+            fbrun.selectAll();
 
-        if (near_mouse) {
+        if (near_mouse || center) {
 
             int wx, wy;
             unsigned int mask;
@@ -172,15 +194,15 @@ int main(int argc, char **argv) {
             Window child_win;
 
             Display* dpy = FbTk::App::instance()->display();
+            int root_x = 0;
+            int root_y = 0;
+            unsigned int root_w = WidthOfScreen(DefaultScreenOfDisplay(dpy));
+            unsigned int root_h = HeightOfScreen(DefaultScreenOfDisplay(dpy));
 
             if (XQueryPointer(dpy, DefaultRootWindow(dpy),
                               &ret_win, &child_win,
                               &x, &y, &wx, &wy, &mask)) {
 
-                int root_x = 0;
-                int root_y = 0;
-                unsigned int root_w = WidthOfScreen(DefaultScreenOfDisplay(dpy));
-                unsigned int root_h = HeightOfScreen(DefaultScreenOfDisplay(dpy));
 #ifdef XINERAMA
                 if(XineramaIsActive(dpy)) {
                     XineramaScreenInfo* screen_info = 0;
@@ -204,18 +226,26 @@ int main(int argc, char **argv) {
                     }
                 }
 #endif // XINERAMA
-                x-= fbrun.width()/2;
-                y-= fbrun.height()/2;
-
-                if (x < root_x)
-                    x = root_x;
-                if (x + fbrun.width() > root_x + root_w)
-                    x = root_x + root_w - fbrun.width();
-                if (y < root_y)
-                    y = root_y;
-                if (y + fbrun.height() > root_y + root_h)
-                    y = root_y + root_h - fbrun.height();
+            } else if (!center) {
+                set_pos = false;
             }
+
+            if (center) {
+                x = root_x + root_w/2;
+                y = root_y + root_h/2;
+            }
+
+            x-= fbrun.width()/2;
+            y-= fbrun.height()/2;
+
+            if (x < root_x)
+                x = root_x;
+            if (x + fbrun.width() > root_x + root_w)
+                x = root_x + root_w - fbrun.width();
+            if (y < root_y)
+                y = root_y;
+            if (y + fbrun.height() > root_y + root_h)
+                y = root_y + root_h - fbrun.height();
         }
 
         if (set_pos)

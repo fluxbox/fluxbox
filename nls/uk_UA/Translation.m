@@ -163,11 +163,17 @@ $set 19 #main
 
 1 помилка: '-display' потребу╓ аргумент
 11 помилка: '-rc' потребу╓ аргумент
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n
+Website: http://www.fluxbox.org/\n\n\
 -display <string>\t\tвикористовувати заданий дисплей.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tвикористовувати альтернативний файл ресурс╕в.\n\
 -version\t\t\tвивести номер верс╕╖ ╕ вийти.\n\
 -info\t\t\t\tвивести деяку корисну ╕нформац╕ю ╕ вийти.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tжурналювати вив╕д у вказаний файл.\n\
 -help\t\t\t\tвивести цю п╕дказку ╕ вийти.\n\n
 

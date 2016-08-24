@@ -35,7 +35,7 @@ class Command;
 class CommandDialog: public TextDialog {
 public:
     CommandDialog(BScreen &screen, const std::string &title,
-                  const std::string pre_command = "");
+                  const std::string &pre_command = "");
 
     /**
      * Sets the command to be executed after the command is done.

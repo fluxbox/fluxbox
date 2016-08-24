@@ -25,6 +25,8 @@
 BUILT_SOURCES = src/defaults.hh src/defaults.cc
 CONFIG_CLEAN_FILES = src/defaults.hh src/defaults.cc
 
+LDADD = libFbTk.a src/defaults.$(OBJEXT)
+
 bin_PROGRAMS += fluxbox
 
 src/defaults.hh:
@@ -63,12 +65,12 @@ src/defaults.cc: force
 		echo ''; \
 		echo 'const char* gitrevision() {'; \
 		if test -r $$GITDIR/HEAD; then \
-			echo '  return "'`cat $$GITDIR/$$(cat $$GITDIR/HEAD | cut -f 2 -d ' ')`'";'; \
+			echo '  return "'`cd $$GITDIR && git rev-parse HEAD`'";'; \
 		else \
-			echo '  return "this_is_tar_ball_build";'; \
+			echo '  return "unknown";'; \
 		fi; \
 		echo '}' ) > $(top_builddir)/src/defaults_tmp.cc
-	@if ! cmp defaults_tmp.cc defaults.cc ; then cp $(top_builddir)/src/defaults_tmp.cc $(top_builddir)/src/defaults.cc; fi
+	@if ! cmp $(top_builddir)/src/defaults_tmp.cc $(top_builddir)/src/defaults.cc ; then cp $(top_builddir)/src/defaults_tmp.cc $(top_builddir)/src/defaults.cc; fi
 	@rm $(top_builddir)/src/defaults_tmp.cc
 
 force: ;
@@ -138,21 +140,18 @@ fluxbox_CPPFLAGS = \
 	-I$(fbtk_incdir) \
 	-I$(nls_incdir)
 
-fluxbox_LDFLAGS = \
+fluxbox_LDADD = \
+	$(LDADD) \
 	$(FONTCONFIG_LIBS) \
 	$(FREETYPE2_LIBS) \
 	$(FRIBIDI_LIBS) \
 	$(IMLIB2_LIBS) \
 	$(RANDR_LIBS) \
-	$(X11_LIBS) \
 	$(XEXT_LIBS) \
 	$(XFT_LIBS) \
 	$(XINERAMA_LIBS) \
 	$(XPM_LIBS) \
-	$(XRENDER_LIBS) \
-	$(X_EXTRA_LIBS) \
-	$(X_LIBS) \
-	$(X_PRE_LIBS)
+	$(XRENDER_LIBS)
 
 fluxbox_SOURCES = \
 	src/AlphaMenu.cc \
@@ -172,6 +171,8 @@ fluxbox_SOURCES = \
 	src/ColSmartPlacement.hh \
 	src/CommandDialog.cc \
 	src/CommandDialog.hh \
+	src/ConfigMenu.hh \
+	src/ConfigMenu.cc \
 	src/CurrentWindowCmd.cc \
 	src/CurrentWindowCmd.hh \
 	src/Debug.hh \
@@ -226,6 +227,8 @@ fluxbox_SOURCES = \
 	src/Screen.hh \
 	src/ScreenPlacement.cc \
 	src/ScreenPlacement.hh \
+	src/ScreenResource.cc \
+	src/ScreenResource.hh \
 	src/SendToMenu.cc \
 	src/SendToMenu.hh \
 	src/Strut.hh \
@@ -272,4 +275,3 @@ fluxbox_SOURCES = \
 	${SLIT_SOURCE} \
 	${TOOLBAR_SOURCE}
 
-LDADD = libFbTk.a src/defaults.$(OBJEXT)

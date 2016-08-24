@@ -57,7 +57,7 @@ void OSDWindow::reconfigTheme() {
 
 }
 
-void OSDWindow::resize(const FbTk::BiDiString &text) {
+void OSDWindow::resizeForText(const FbTk::BiDiString &text) {
 
     int bw = 2 * m_theme->bevelWidth();
     int h = m_theme->font().height() + bw;

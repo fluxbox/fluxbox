@@ -34,11 +34,12 @@ $set 3 #Common
 4 Nastavenie kompilácie
 5 Kompilátor
 6 Verzia kompilátora
-7     init
+7        init
 8     klávesy
-9      nls
-10     menu
-11    štýl
+9         nls
+10        menu
+20  windowmenu
+11        štýl
 12 Predvolené
 13 vypnuté
 14 Chyba
@@ -247,13 +248,17 @@ $set 19 #main
 10 Zaznamenávam do
 11 chyba: '-rc' vyžaduje argument
 12 chyba: '-screen' vyžaduje argument
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Webová stránka: http://www.fluxbox.org/\n\n\
 -display <string>\t\tpoužiť pripojenie k displeju.\n\
 -screen <all|int,int,int>\tspustiť iba na zadaných obrazovkách.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tpoužiť alternatívny súbor zdrojov.\n\
 -version\t\t\tzobraziť verziu a skončiť.\n\
 -info\t\t\t\tzobraziť nejaké užitočné informácie.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tzaznamenávať výstup do súboru.\n\
 -help\t\t\t\tzobraziť tento text pomocníka a skončiť.\n\n
 14 varovanie: nepodarilo sa nastaviť premennú prostredia 'DISPLAY'

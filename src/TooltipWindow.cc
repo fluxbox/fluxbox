@@ -53,7 +53,7 @@ void TooltipWindow::raiseTooltip() {
     if (m_lastText.logical().empty())
         return;
 
-    resize(m_lastText);
+    resizeForText(m_lastText);
     reconfigTheme();
 
     FbTk::Font& font = theme()->iconbarTheme().text().font();

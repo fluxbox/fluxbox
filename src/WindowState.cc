@@ -23,13 +23,8 @@
 
 #include "FbTk/StringUtil.hh"
 
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-
-#include <errno.h>
+#include <cstdlib>
+#include <cerrno>
 
 bool WindowState::useBorder() const {
     return !fullscreen && maximized != MAX_FULL && deco_mask & DECORM_BORDER;

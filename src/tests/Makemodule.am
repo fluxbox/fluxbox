@@ -4,46 +4,38 @@ check_PROGRAMS= \
 	testFullscreen \
 	testKeys \
 	testRectangleUtil \
-	testSignals \
 	testStringUtil \
 	testTexture
 
 testDemandAttention_LDFLAGS = \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
-	$(X11_LIBS) \
 	$(XFT_LIBS) \
-	$(XRENDER_LIBS) \
-	$(X_LIBS)
+	$(XRENDER_LIBS)
 testDemandAttention_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir)
+	-I$(src_incdir)
 testDemandAttention_SOURCES = \
 	src/tests/testDemandAttention.cc
 
 testFont_LDFLAGS = \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
-	$(X11_LIBS) \
 	$(XFT_LIBS) \
-	$(XRENDER_LIBS) \
-	$(X_LIBS)
+	$(XRENDER_LIBS)
 testFont_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir)
+	-I$(src_incdir)
 testFont_SOURCES = \
 	src/tests/testFont.cc
 
 testFullscreen_LDFLAGS = \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
-	$(X11_LIBS) \
 	$(XFT_LIBS) \
-	$(XRENDER_LIBS) \
-	$(X_LIBS)
+	$(XRENDER_LIBS)
 testFullscreen_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir) \
 	-I$(src_incdir)
 testFullscreen_SOURCES = \
 	src/tests/fullscreentest.cc
@@ -51,13 +43,11 @@ testFullscreen_SOURCES = \
 testKeys_LDFLAGS = \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
-	$(X11_LIBS) \
 	$(XFT_LIBS) \
-	$(XRENDER_LIBS) \
-	$(X_LIBS)
+	$(XRENDER_LIBS)
 testKeys_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir)
+	-I$(src_incdir)
 testKeys_SOURCES = \
 	src/tests/testKeys.cc
 
@@ -68,37 +58,23 @@ testRectangleUtil_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
 	-I$(top_srcdir)/src
 
-testSignals_LDFLAGS = \
-	$(FRIBIDI_LIBS) \
-	$(X11_LIBS) \
-	$(XRENDER_LIBS) \
-	$(X_LIBS)
-
-testSignals_SOURCES = \
-	src/tests/testSignals.cc
-testSignals_CPPFLAGS = \
-	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir)
-
 testStringUtil_SOURCES = \
 	src/tests/StringUtiltest.cc
 testStringUtil_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir)
+	-I$(src_incdir)
 
 testTexture_LDFLAGS = \
 	$(FONTCONFIG_LIBS) \
 	$(FRIBIDI_LIBS) \
 	$(IMLIB2_LIBS) \
-	$(X11_LIBS) \
 	$(XFT_LIBS) \
 	$(XPM_LIBS) \
-	$(XRENDER_LIBS) \
-	$(X_LIBS)
+	$(XRENDER_LIBS)
 testTexture_SOURCES = \
 	src/tests/texturetest.cc
 testTexture_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
-	-I$(fbtk_incdir)
+	-I$(src_incdir)
 
 #testResource_SOURCE = Resourcetest.cc

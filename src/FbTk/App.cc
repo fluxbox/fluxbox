@@ -23,23 +23,13 @@
 #include "FbString.hh"
 #include "Font.hh"
 #include "Image.hh"
-
 #include "EventManager.hh"
 
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-
+#include <cstring>
+#include <cstdlib>
 
 #include <set>
-
+#include <iostream>
 
 namespace FbTk {
 
@@ -108,35 +98,47 @@ bool App::setenv(const char* key, const char* value) {
 
     const size_t key_size = strlen(key);
     const size_t value_size = value ? strlen(value) : 0;
+    const size_t newenv_size = key_size + value_size + 2;
 
-    char* newenv = new char[key_size + value_size + 2];
-    if (newenv) {
-
-        char* oldenv = getenv(key);
-
-        // oldenv points to the value .. we have to go back a bit
-        if (oldenv && stored.find(oldenv - (key_size + 1)) != stored.end())
-            oldenv -= (key_size + 1);
-        else
-            oldenv = NULL;
-
-        memset(newenv, 0, key_size + value_size + 2);
-        strcat(newenv, key);
-        strcat(newenv, "=");
-        if (value_size > 0)
-            strcat(newenv, value);
-
-        if (putenv(newenv) == 0) {
-            if (oldenv) {
-                stored.erase(oldenv);
-                delete[] oldenv;
-            }
-            stored.insert(newenv);
-        }
-        return true;
+    char* newenv = new char[newenv_size];
+    if (!newenv) {
+        return false;
     }
 
-    return false;
+
+    // someone might have used putenv("key=value") (or setenv()) before. 
+    // if getenv("key") succeeds, the returning value points to the address
+    // of "value" (right after the "="). this means, that that address 
+    // minus "key=" points to the beginning of what was set. if fluxbox 
+    // set that variable we have the pointer in "stored" and can dealloc it.
+    //
+    // we use putenv() to have control over the dealloction (valgrind and
+    // other complaint about it)
+
+    char* oldenv = getenv(key);
+    if (oldenv) {
+        oldenv = oldenv - (key_size + 1);
+    }
+    if (stored.find(oldenv) == stored.end()) {
+        oldenv = NULL;
+    }
+
+    // create the new environment
+    strncpy(newenv, key, key_size);
+    newenv[key_size] = '=';
+    if (value_size > 0) {
+        strncpy(newenv+key_size+1, value, value_size);
+    }
+    newenv[newenv_size-1] = 0;
+
+    if (putenv(newenv) == 0) {
+        if (oldenv) {
+            stored.erase(oldenv);
+            delete[] oldenv;
+        }
+        stored.insert(newenv);
+    }
+    return true;
 }
 
 } // end namespace FbTk

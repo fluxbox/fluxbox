@@ -30,33 +30,10 @@
 
 #include "FbString.hh"
 
-#ifdef HAVE_LOCALE_H
-#include <locale.h>
-#endif // HAVE_LOCALE_H
-
-#ifdef HAVE_NL_TYPES_H
-// this is needed for linux libc5 systems
-extern "C" {
-#include <nl_types.h>
-}
-#elif defined(__CYGWIN__) || defined(__EMX__) || defined(__APPLE__)
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus
-typedef int nl_catd;
-char *catgets(nl_catd cat, int set_number, int message_number, char *message);
-nl_catd catopen(char *name, int flag);
-void catclose(nl_catd cat);
-#ifdef __cplusplus
-}
-#endif // __cplusplus
-
-#endif // HAVE_NL_TYPES_H
-
 // Some defines to help out
 #ifdef NLS
 #define _FB_USES_NLS \
-    FbTk::I18n &i18n = *FbTk::I18n::instance()
+    FbTk::I18n &i18n = FbTk::I18n::instance()
 
 // ignore the description, it's for helping translators
 
@@ -97,26 +74,22 @@ namespace FbTk {
 
 class I18n {
 public:
-    static I18n *instance();
+
+    static void init(const char*);
+    static I18n& instance();
+
     const char *getLocale() const { return m_locale.c_str(); }
     bool multibyte() const { return m_multibyte; }
-    const nl_catd &getCatalogFd() const { return m_catalog_fd; }
-
     FbString getMessage(int set_number, int message_number, 
-                           const char *default_messsage = 0, bool translate_fb = false) const;
+                        const char *default_messsage = 0, bool translate_fb = false) const;
 
-    void openCatalog(const char *catalog);
 private:
     I18n();
     ~I18n();
     std::string m_locale;
-    bool m_multibyte, m_utf8_translate;
-    nl_catd m_catalog_fd;
-
-
+    bool m_multibyte;
+    bool m_utf8_translate;
 };
-
-void NLSInit(const char *);
 
 } // end namespace FbTk
 

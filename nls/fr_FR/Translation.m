@@ -242,6 +242,8 @@ Website: http://www.fluxbox.org/\n\n\
 -rc <chaîne>\t\t\tutilise un autre fichier de configuration.\n\
 -version\t\t\taffiche la version et quitte.\n\
 -info\t\t\t\taffiche quelques informations utiles.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tjournaliser la sortie vers le fichier.\n\
 -help\t\t\t\taffiche ce texte d'aide et quitte.\n\n
 14 attention: il n'est pas possible de placer la variable 'DISPLAY'
@@ -254,5 +256,3 @@ $set 20 #layers
 4 Dock
 5 Normal
 6 En haut du Dock
-
-

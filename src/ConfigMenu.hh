@@ -1,5 +1,8 @@
-// SearchResult.cc for FbTk - Fluxbox Toolkit
-// Copyright (c) 2007 Fluxbox Team (fluxgen at fluxbox dot org)
+#ifndef CONFIG_MENU_HH
+#define CONFIG_MENU_HH
+
+// ConfigMenu.cc for Fluxbox Window Manager
+// Copyright (c) 2015 - Mathias Gumz <akira@fluxbox.org>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,33 +22,28 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "SearchResult.hh"
-#include "ITypeAheadable.hh"
 
-namespace FbTk {
+class BScreen;
+struct ScreenResource;
 
-void SearchResult::seek() {
-    switch (m_results.size()) {
-    case 0:
-        break;
-    case 1:
-        m_seeked_string = m_results[0]->iTypeString();
-        break;
-    default:
-        bool seekforward = true;
-        for (size_t i=1; i < m_results.size() && seekforward &&
-            m_results[0]->iTypeCheckStringSize(m_seeked_string.size()); i++) {
-            if (!m_results[i]->iTypeCompareChar(
-                    m_results[0]->iTypeChar(m_seeked_string.size()),
-                    m_seeked_string.size())) {
-                seekforward = false;
-            } else if (i == m_results.size() - 1) {
-                m_seeked_string += m_results[0]->iTypeChar(m_seeked_string.size());
-                i = 0;
-            }
-        }
-        break;
-    }
+namespace FbTk{
+    class Menu;
+    class ResourceManager;
 }
 
-} // end namespace FbTk
+class ConfigMenu {
+public:
+
+    // makes the setup() function-signature shorter
+    struct SetupHelper {
+        SetupHelper(BScreen& _s, FbTk::ResourceManager& _rm, ScreenResource& _r) :
+            screen(_s), rm(_rm), resource(_r) { }
+        BScreen& screen;
+        FbTk::ResourceManager& rm;
+        ScreenResource& resource;
+    };
+
+    static void setup(FbTk::Menu& menu, SetupHelper& sh);
+};
+
+#endif

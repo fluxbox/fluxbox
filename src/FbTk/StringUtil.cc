@@ -21,37 +21,11 @@
 
 #include "StringUtil.hh"
 
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-#ifdef HAVE_CCTYPE
-  #include <cctype>
-#else
-  #include <ctype.h>
-#endif
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
-#ifdef HAVE_CERRNO
-  #include <cerrno>
-#else
-  #include <errno.h>
-#endif
+#include <cstdio>
+#include <cctype>
+#include <cassert>
+#include <cstring>
+#include <cerrno>
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -68,6 +42,9 @@ using std::string;
 using std::transform;
 
 namespace {
+
+const size_t DIGITS10_ULONGLONGINT = 20; // ULLONG_MAX = 18446744073709551615
+const size_t DIGITS16_ULONGLONGINT = 16; // ULLONG_MAX = ffffffffffffffff
 
 template <typename T>
 int extractBigNumber(const char* in, T (*extractFunc)(const char*, char**, int), T& out) {
@@ -170,15 +147,15 @@ int extractNumber(const std::string& in, unsigned long long& out) {
 
 
 std::string number2String(long long num) {
-    char s[128];
-    snprintf(s, sizeof(s), "%lld", num);
-    return std::string(s);
+    char s[DIGITS10_ULONGLONGINT+1];
+    int n = snprintf(s, sizeof(s), "%lld", num);
+    return std::string(s, n);
 }
 
 std::string number2HexString(long long num) {
-    char s[17];
-    snprintf(s, sizeof(s), "%lx", num);
-    return std::string(s);
+    char s[DIGITS16_ULONGLONGINT+1];
+    int n = snprintf(s, sizeof(s), "%llx", num);
+    return std::string(s, n);
 }
 
 

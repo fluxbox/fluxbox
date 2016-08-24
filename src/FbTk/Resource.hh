@@ -24,14 +24,13 @@
 
 #include "NotCopyable.hh"
 #include "Accessor.hh"
+#include "XrmDatabaseHelper.hh"
 
 #include <string>
 #include <list>
 #include <iostream>
-
 #include <exception>
 #include <typeinfo>
-#include "XrmDatabaseHelper.hh"
 
 namespace FbTk {
 

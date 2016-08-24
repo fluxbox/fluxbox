@@ -144,7 +144,8 @@ bool MinOverlapPlacement::placeWindow(const FluxboxWindow &win, int head,
                                                    it_end = const_windowlist.rend();
     for (; it != it_end; ++it) {
         if (*it == &win) continue;
-
+        if ((*it)->layerNum() != win.layerNum() ){ continue; } //windows are in different layers - skip it
+        
         getWindowDimensions(*(*it), left, top, right, bottom);
 
         // go through the list of regions

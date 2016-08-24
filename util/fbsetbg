@@ -133,9 +133,20 @@ Common tips to use with $command:
 EOF
 }
 
-find_it() {
-    [ -n "$1" ] && hash $1 2> /dev/null
-}
+# some shell's hash returns 0 always
+if hash this_program_does_not_exist-no_really-aA1zZ9 > /dev/null 2>&1; then
+    # can't rely on return value
+    # ash / ksh
+    find_it() {
+        which "$1" > /dev/null 2>&1
+    }
+else
+    # can rely on return value
+    # bash / dash / zsh / sh on Solaris
+    find_it() {
+        [ -n "$1" ] && hash "$1" 2> /dev/null
+    }
+fi
 
 message() {
 
@@ -523,7 +534,7 @@ if [ "$option" = random ]; then
         wallpaper="$wallpaperdir/`ls \"$wallpaperdir\"|sed -n ${wallpapernumber}p`"
         option=$option2 # have to choose something...
     else
-        message "Invalid random wallpaper directory specified."
+        message "Invalid random wallpaper directory specified: '$wallpaperdir'."
         exit 1
     fi
 fi

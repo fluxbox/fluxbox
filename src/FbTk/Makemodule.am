@@ -102,6 +102,8 @@ libFbTk_a_SOURCES = \
 	src/FbTk/Menu.hh \
 	src/FbTk/MenuItem.cc \
 	src/FbTk/MenuItem.hh \
+	src/FbTk/MenuSearch.hh \
+	src/FbTk/MenuSearch.cc \
 	src/FbTk/MenuSeparator.cc \
 	src/FbTk/MenuSeparator.hh \
 	src/FbTk/MenuTheme.cc \
@@ -124,8 +126,6 @@ libFbTk_a_SOURCES = \
 	src/FbTk/Resource.cc \
 	src/FbTk/Resource.hh \
 	src/FbTk/STLUtil.hh \
-	src/FbTk/SearchResult.cc \
-	src/FbTk/SearchResult.hh \
 	src/FbTk/Select2nd.hh \
 	src/FbTk/SelectArg.hh \
 	src/FbTk/Shape.cc \
@@ -154,7 +154,6 @@ libFbTk_a_SOURCES = \
 	src/FbTk/Timer.hh \
 	src/FbTk/Transparent.cc \
 	src/FbTk/Transparent.hh \
-	src/FbTk/TypeAhead.hh \
 	src/FbTk/Util.hh \
 	src/FbTk/XFontImp.cc \
 	src/FbTk/XFontImp.hh \

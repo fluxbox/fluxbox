@@ -31,6 +31,7 @@
 #include "WinButtonTheme.hh"
 #include "FbWinFrameTheme.hh"
 #include "TooltipWindow.hh"
+#include "ScreenResource.hh"
 
 #include "FbTk/MenuTheme.hh"
 #include "FbTk/EventHandler.hh"
@@ -42,13 +43,7 @@
 
 #include "FocusControl.hh"
 
-#include <X11/Xresource.h>
-
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
+#include <cstdio>
 #include <list>
 #include <vector>
 #include <fstream>
@@ -84,21 +79,19 @@ class FbWindow;
 class BScreen: public FbTk::EventHandler, private FbTk::NotCopyable {
 public:
     typedef std::list<FluxboxWindow *> Icons;
-
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
-    typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > ExtraMenus;
 
     BScreen(FbTk::ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
-            int scrn, int number_of_layers);
+            int scrn, int number_of_layers, unsigned int opts);
     ~BScreen();
 
     void initWindows();
     void initMenus();
 
     bool isRootColormapInstalled() const { return root_colormap_installed; }
-    bool isScreenManaged() const { return managed; }
+    bool isScreenManaged() const { return m_state.managed; }
     bool isWorkspaceWarping() const { return (m_workspaces_list.size() > 1) && *resource.workspace_warping; }
     bool doAutoRaise() const { return *resource.auto_raise; }
     bool clickRaises() const { return *resource.click_raises; }
@@ -118,8 +111,6 @@ public:
     FbMenu &configMenu() { return *m_configmenu.get(); }
     const FbMenu &windowMenu() const { return *m_windowmenu.get(); }
     FbMenu &windowMenu() { return *m_windowmenu.get(); }
-    ExtraMenus &extraWindowMenus() { return m_extramenus; }
-    const ExtraMenus &extraWindowMenus() const { return m_extramenus; }
 
     FbWinFrame::TabPlacement getTabPlacement() const { return *resource.tab_placement; }
 
@@ -230,20 +221,7 @@ public:
      */
     void cycleFocus(int opts = 0, const ClientPattern *pat = 0, bool reverse = false);
 
-    bool isCycling() const { return m_cycling; }
-
-    /**
-     * Creates an empty menu with specified label
-     * @param label for the menu
-     * @return created menu
-     */
-    FbMenu *createMenu(const std::string &label);
-    /**
-     * Creates an empty toggle menu with a specific label
-     * @param label
-     * @return created menu
-     */
-    FbMenu *createToggleMenu(const std::string &label);
+    bool isCycling() const { return m_state.cycling; }
 
     /**
      * For extras to add menus.
@@ -253,6 +231,8 @@ public:
     void addExtraWindowMenu(const FbTk::FbString &label, FbTk::Menu *menu);
 
     int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
+
+    int getEdgeResizeSnapThreshold() const { return *resource.edge_resize_snap_threshold; }
 
     void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
 
@@ -268,6 +248,7 @@ public:
     FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() { return *m_menutheme.get(); }
     const FbTk::ThemeProxy<FbTk::MenuTheme> &menuTheme() const { return *m_menutheme.get(); }
     const FbTk::ThemeProxy<RootTheme> &rootTheme() const { return *m_root_theme.get(); }
+    FbTk::ThemeProxy<RootTheme> &rootTheme() { return *m_root_theme.get(); }
 
     FbTk::ThemeProxy<WinButtonTheme> &focusedWinButtonTheme() { return *m_focused_winbutton_theme.get(); }
     const FbTk::ThemeProxy<WinButtonTheme> &focusedWinButtonTheme() const { return *m_focused_winbutton_theme.get(); }
@@ -288,7 +269,7 @@ public:
     const FbTk::ResourceManager &resourceManager() const { return m_resource_manager; }
     const std::string &name() const { return m_name; }
     const std::string &altName() const { return m_altname; }
-    bool isShuttingdown() const { return m_shutdown; }
+    bool isShuttingdown() const { return m_state.shutdown; }
     bool isRestart();
 
     ScreenPlacement &placementStrategy() { return *m_placement_strategy; }
@@ -388,14 +369,14 @@ public:
     // Xinerama-related functions
 
     /// @return true if xinerama is available
-    bool hasXinerama() const { return m_xinerama_avail; }
+    bool hasXinerama() const { return m_xinerama.avail; }
     /// @return umber of xinerama heads
-    int numHeads() const { return m_xinerama_num_heads; }
+    int numHeads() const { return m_xinerama.heads.size(); }
 
     void initXinerama();
+    void clearXinerama();
     void clearHeads();
     /// clean up xinerama
-    void clearXinerama();
 
     /**
      * Determines head number for a position
@@ -493,21 +474,15 @@ private:
 
     FbTk::MultLayers m_layermanager;
 
-    bool root_colormap_installed, managed;
+    bool root_colormap_installed;
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
     std::auto_ptr<FbMenu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
 
-    ExtraMenus m_extramenus;
-
-    typedef std::list<std::pair<FbTk::FbString, FbTk::Menu *> > Configmenus;
-
-
-    Configmenus m_configmenu_list;
     Icons m_icon_list;
 
-    std::auto_ptr<Slit> m_slit;
-    std::auto_ptr<Toolbar> m_toolbar;
+    std::auto_ptr<Slit>     m_slit;
+    std::auto_ptr<Toolbar>  m_toolbar;
 
     Workspace *m_current_workspace;
 
@@ -522,32 +497,12 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
-    std::auto_ptr<OSDWindow> m_geom_window, m_pos_window;
+    std::auto_ptr<OSDWindow> m_geom_window;
+    std::auto_ptr<OSDWindow> m_pos_window;
     std::auto_ptr<TooltipWindow> m_tooltip_window;
     FbTk::FbWindow m_dummy_window;
 
-    struct ScreenResource {
-        ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
-                       const std::string &altscrname);
-
-        FbTk::Resource<bool> opaque_move, full_max,
-            max_ignore_inc, max_disable_move, max_disable_resize,
-            workspace_warping, show_window_pos, auto_raise, click_raises;
-        FbTk::Resource<std::string> default_deco;
-        FbTk::Resource<FbWinFrame::TabPlacement> tab_placement;
-        FbTk::Resource<std::string> windowmenufile;
-        FbTk::Resource<unsigned int> typing_delay;
-        FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
-            unfocused_alpha, menu_alpha, menu_delay,
-            tab_width, tooltip_delay;
-        FbTk::Resource<bool> allow_remote_actions;
-        FbTk::Resource<bool> clientmenu_use_pixmap;
-        FbTk::Resource<bool> tabs_use_pixmap;
-        FbTk::Resource<bool> max_over_tabs;
-        FbTk::Resource<bool> default_internal_tabs;
-
-
-    } resource;
+    ScreenResource resource;
 
     /// Holds manage resources that screen destroys
     FbTk::ResourceManager::ResourceList m_managed_resources;
@@ -563,25 +518,32 @@ private:
     typedef std::map<Window, WinClient *> Groupables;
     Groupables m_expecting_groups;
 
-    bool m_cycling;
     const ClientPattern *m_cycle_opts;
 
     // Xinerama related private data
-    bool m_xinerama_avail;
-    int m_xinerama_num_heads;
-    int m_xinerama_center_x, m_xinerama_center_y;
-
-    std::vector<HeadArea *> m_head_areas;
-
     struct XineramaHeadInfo {
         int _x, _y, _width, _height;
         int x() const { return _x; }
         int y() const { return _y; }
         int width() const { return _width; }
         int height() const { return _height; }
-    } *m_xinerama_headinfo;
+    };
+    struct {
+        bool avail;
+        int center_x;
+        int center_y;
+        std::vector<XineramaHeadInfo> heads;
+    } m_xinerama;
 
-    bool m_restart, m_shutdown;
+    std::vector<HeadArea*> m_head_areas;
+
+    struct {
+        bool cycling;
+        bool restart;
+        bool shutdown;
+        bool managed;
+    } m_state;
+    unsigned int m_opts; // hold Fluxbox::OPT_SLIT etc
 };
 
 

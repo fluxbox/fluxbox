@@ -241,13 +241,17 @@ $set 19 #main
 10 Записывается в 
 11 ошибка: '-rc' требует наличие аргумента
 12 ошибка: '-screen' требует наличие аргумента
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Веб-сайт: http://www.fluxbox.org/\n\n\
 -display <string>\t\tиспользовать заданный дисплей.\n\
 -screen <all|int,int,int>\tзапускать только на определенном экране.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tиспользовать альтернативный файл ресурсов.\n\
 -version\t\t\tвывести номер версии и выйти.\n\
 -info\t\t\t\tвывести некоторую полезную информацию и выйти.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tжурналировать вывод в указанный файл.\n\
 -help\t\t\t\tвывести эту подсказку и выйти.\n\n
 14 предупреждение: не удалось установить переменную окружения 'DISPLAY'

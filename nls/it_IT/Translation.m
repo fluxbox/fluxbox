@@ -27,11 +27,12 @@ $set 3 #Common
 4 Opzioni compilate
 5 Compilatore
 6 Versione del compilatore
-7     init
-8     keys
-9      nls
-10     menu
-11    style
+7        init
+8        keys
+9         nls
+10        menu
+20  windowmenu
+11       style
 12 Predefiniti
 13 disabilitata
 14 Errore
@@ -231,10 +232,12 @@ $set 19 #main
 10 Registrazione su
 11 errore: '-rc' richiede un argomento
 12 errore: '-screen' richiede un argomento
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 Sito web: http://www.fluxbox.org/\n\n\
 -display <stringa>\t\tusa la connessione al display.\n\
 -screen <all|int,int,int>\tesegue solo sugli schermi specificati.\n\
+-no-slit\t\t\tdo not provide a slit\n\
+-no-toolbar\t\tdo not provide a toolbar\n\
 -rc <stringa>\t\t\tusa un file di configurazione alternativo.\n\
 -version\t\t\tmostra la versione ed esce.\n\
 -info\t\t\t\tmostra alcune informazioni utili.\n\

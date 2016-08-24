@@ -25,6 +25,7 @@
 #include "Menu.hh"
 
 #include "MenuItem.hh"
+#include "MenuSearch.hh"
 #include "MenuSeparator.hh"
 #include "ImageControl.hh"
 #include "MemFun.hh"
@@ -40,22 +41,11 @@
 #include <X11/keysym.h>
 
 #include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+#include <iostream>
 
 #ifdef DEBUG
 #include <iostream>
@@ -85,28 +75,39 @@ void renderMenuPixmap(Pixmap& pm, FbTk::FbWindow* win, int width, int height, co
 
 namespace FbTk {
 
-Menu *Menu::shown = 0;
 
-Menu *Menu::s_focused = 0;
+Menu* s_shown = 0; // if there's a menu open at all
+Menu* s_focused = 0; // holds currently focused menu
+
+
+Menu* Menu::shownMenu() { return s_shown; }
+Menu* Menu::focused() { return s_focused; }
+
+void Menu::hideShownMenu() {
+    if (s_shown)
+        s_shown->hide();
+}
+
 
 Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
-    m_theme(tm),
     m_parent(0),
-    m_image_ctrl(imgctrl),
-    m_screen_x(0),
-    m_screen_y(0),
-    m_screen_width(DisplayWidth(FbTk::App::instance()->display(), tm->screenNum())),
-    m_screen_height(DisplayHeight(FbTk::App::instance()->display(), tm->screenNum())),
-    m_alignment(ALIGNDONTCARE),
+    m_need_update(true),
     m_active_index(-1),
+    m_theme(tm),
+    m_image_ctrl(imgctrl),
     m_shape(0),
-    m_need_update(true) {
-    // setup timers
+    m_alignment(ALIGNDONTCARE) {
 
+    Display* disp = FbTk::App::instance()->display();
+    m_screen.x = 0;
+    m_screen.y = 0;
+    m_screen.width = DisplayWidth(disp, tm->screenNum());
+    m_screen.height = DisplayHeight(disp, tm->screenNum());
+
+    // setup timers
     RefCount<Command<void> > show_cmd(new SimpleCommand<Menu>(*this, &Menu::openSubmenu));
     m_submenu_timer.setCommand(show_cmd);
     m_submenu_timer.fireOnce(true);
-
 
     RefCount<Command<void> > hide_cmd(new SimpleCommand<Menu>(*this, &Menu::closeMenu));
     m_hide_timer.setCommand(hide_cmd);
@@ -115,34 +116,26 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     // make sure we get updated when the theme is reloaded
     m_tracker.join(tm.reconfigSig(), MemFun(*this, &Menu::themeReconfigured));
 
-    m_title_vis = true;
+    m_internal_menu = false;
+    m_state.moving = m_state.closing = m_state.torn = m_state.visible = false;
 
-    m_internal_menu =
-        m_moving =
-        m_closing =
-        m_torn =
-        m_visible = false;
+    m_search.reset(new MenuSearch(m_items));
 
-
-    m_type_ahead.init(menuitems);
-
-    m_x_move =
-        m_y_move = 0;
-
+    m_x_move = m_y_move = 0;
     m_which_sub = -1;
 
-    m_frame_pixmap =
-        m_title_pixmap =
-        m_hilite_pixmap = None;
+    m_hilite_pixmap = None;
 
-    m_item_w = m_frame_h =
-        theme()->titleFont().height() + theme()->bevelWidth() * 2;
+    m_title.visible = true;
+    m_title.pixmap = None;
 
-    m_columns =
-        m_rows_per_column =
-        m_min_columns = 0;
+    m_frame.pixmap = None;
+    m_frame.height = theme()->titleFont().height() + theme()->bevelWidth() * 2;
 
-    FbTk::EventManager &evm = *FbTk::EventManager::instance();
+    m_item_w = m_frame.height;
+
+    m_columns = m_rows_per_column = m_min_columns = 0;
+
     long event_mask = ButtonPressMask | ButtonReleaseMask |
         ButtonMotionMask | KeyPressMask | ExposureMask | FocusChangeMask;
 
@@ -156,52 +149,45 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     // initialize 'shape' here AFTER we created m_window aka fbwindow()
     m_shape.reset(new Shape(fbwindow(), tm->shapePlaces()));
 
+    FbTk::EventManager &evm = *FbTk::EventManager::instance();
     evm.add(*this, m_window);
 
-    // strip focus change mask from attrib, since we should only use it with main window
+    // strip focus change mask from attrib, since we should only use it with
+    // main window
     event_mask ^= FocusChangeMask;
-
     event_mask |= EnterWindowMask | LeaveWindowMask;
 
-    //create menu title
-    m_title = FbTk::FbWindow(m_window, // parent
-                                0, 0, width(), theme()->titleHeight(), // pos and size
-                                event_mask, // mask
-                                false, // override redirect
-                                true); // save under
+    int w = width();
+    int th = theme()->titleHeight(!m_title.label.logical().empty());
+    int fh = std::max(m_frame.height, m_frame.height);
 
-    evm.add(*this, m_title);
-    m_title.setRenderer(*this);
+    //create menu title
+    m_title.win = FbTk::FbWindow(m_window, 0, 0, w, th, event_mask, false, true);
+
+    evm.add(*this, m_title.win);
+    m_title.win.setRenderer(*this);
 
     event_mask |= PointerMotionMask;
-    m_frame = FbTk::FbWindow(m_window, // parent
-                                0, theme()->titleHeight(), // pos
-                                width(), m_frame_h ? m_frame_h : 1, // size
-                                event_mask,  // mask
-                                false,  // override redirect
-                                true); // save under
-    evm.add(*this, m_frame);
-    m_frame.setRenderer(*this);
-
-    m_title.raise();
-
+    m_frame.win = FbTk::FbWindow(m_window, 0, th, w, fh, event_mask, false, true);
+    evm.add(*this, m_frame.win);
+    m_frame.win.setRenderer(*this);
+    m_title.win.raise();
     reconfigure();
 }
 
 Menu::~Menu() {
 
     m_window.hide();
-
-    if (shown && shown->window() == window())
-        shown = 0;
-
     removeAll();
 
-    if (m_title_pixmap)
-        m_image_ctrl.removeImage(m_title_pixmap);
+    if (s_shown && s_shown->window() == window())
+        s_shown = 0;
 
-    if (m_frame_pixmap)
-        m_image_ctrl.removeImage(m_frame_pixmap);
+    if (m_title.pixmap)
+        m_image_ctrl.removeImage(m_title.pixmap);
+
+    if (m_frame.pixmap)
+        m_image_ctrl.removeImage(m_frame.pixmap);
 
     if (m_hilite_pixmap)
         m_image_ctrl.removeImage(m_hilite_pixmap);
@@ -210,93 +196,119 @@ Menu::~Menu() {
         s_focused = 0;
 }
 
-int Menu::insert(const FbString &label, RefCount<Command<void> > &cmd, int pos) {
-    return insert(new MenuItem(label, cmd, this), pos);
+int Menu::insertCommand(const FbString &label, RefCount<Command<void> > &cmd, int pos) {
+    return insertItem(new MenuItem(label, cmd, this), pos);
 }
 
 int Menu::insert(const FbString &label, int pos) {
-    return insert(new MenuItem(label, *this), pos);
+    return insertItem(new MenuItem(label, *this), pos);
 }
 
-int Menu::insert(const FbString &label, Menu *submenu, int pos) {
-    return insert(new MenuItem(label, submenu, this), pos);
+int Menu::insertSubmenu(const FbString &label, Menu *submenu, int pos) {
+    return insertItem(new MenuItem(label, submenu, this), pos);
 }
 
-int Menu::insert(MenuItem *item, int pos) {
+int Menu::insertItem(MenuItem *item, int pos) {
+
     if (item == 0)
-        return menuitems.size();
+        return m_items.size();
     if (pos == -1) {
-        item->setIndex(menuitems.size());
-        menuitems.push_back(item);
+        m_items.push_back(item);
     } else {
-        menuitems.insert(menuitems.begin() + pos, item);
-        fixMenuItemIndices();
+        m_items.insert(m_items.begin() + pos, item);
         if (m_active_index >= pos)
             m_active_index++;
     }
     m_need_update = true; // we need to redraw the menu
-    return menuitems.size();
+    return m_items.size();
 }
 
-void Menu::fixMenuItemIndices() {
-    for (size_t i = 0; i < menuitems.size(); i++)
-        menuitems[i]->setIndex(i);
+
+int Menu::findSubmenuIndex(const FbTk::Menu* submenu) const {
+    size_t i;
+    for (i = 0; i < m_items.size(); i++) {
+        if (m_items[i]->submenu() == submenu) {
+            return i;
+        }
+    }
+    return -1;
 }
+
 
 int Menu::remove(unsigned int index) {
-    if (index >= menuitems.size()) {
+    if (!validIndex(index)) {
 #ifdef DEBUG
         cerr << __FILE__ << "(" << __LINE__ << ") Bad index (" << index
              << ") given to Menu::remove()"
-             << " -- should be between 0 and " << menuitems.size()-1
+             << " -- should be between 0 and " << m_items.size()-1
              << " inclusive." << endl;
 #endif // DEBUG
         return -1;
     }
 
-    Menuitems::iterator it = menuitems.begin() + index;
-    MenuItem *item = (*it);
+    return removeItem(m_items[index]);
+}
+
+int Menu::removeItem(FbTk::MenuItem* item) {
+
+    size_t l = m_items.size();
+    size_t i;
+    size_t found = 0;
+
+    // find index of first occurance of item
+    for (i = 0; i < l; i++) {
+        if (m_items[i] == item) {
+            found++;
+        }
+    }
+
+    if (found == 0) {
+        return l;
+    }
+
+    // sigh. http://en.wikipedia.org/wiki/Erase-remove_idiom
+    std::vector<MenuItem*>::iterator start_erase = std::remove(m_items.begin(), m_items.end(), item);
+    m_items.erase(start_erase, m_items.end());
 
     if (item) {
-        if (!m_matches.empty())
-            resetTypeAhead();
-        menuitems.erase(it);
-        // avoid O(n^2) algorithm with removeAll()
-        if (index != menuitems.size())
-            fixMenuItemIndices();
-
-        if (item->submenu() != 0) {
-            Menu *tmp = item->submenu();
-            // if menu is internal we should just hide it instead
-            // if destroying it
-            if (! tmp->m_internal_menu) {
-                delete tmp;
+        Menu* sm = item->submenu();
+        if (sm) {
+            if (! sm->m_internal_menu) {
+                delete sm;
             }
-            // We can't internal_hide here, as the child may be deleted!
-//            } else
-//                tmp->internal_hide();
         }
-
-
         delete item;
     }
 
-    if (static_cast<unsigned int>(m_which_sub) == index)
+    m_need_update = true;
+
+    if (m_items.empty()) {
         m_which_sub = -1;
-    else if (static_cast<unsigned int>(m_which_sub) > index)
-        m_which_sub--;
+        m_active_index = 0;
+        return 0;
+    }
 
-    if (static_cast<unsigned int>(m_active_index) > index)
-        m_active_index--;
+    if (static_cast<unsigned int>(m_which_sub) == i)
+        m_which_sub = -1;
+    else if (static_cast<unsigned int>(m_which_sub) > i)
+        m_which_sub -= found;
 
-    m_need_update = true; // we need to redraw the menu
+    if (static_cast<unsigned int>(m_active_index) > i) {
+        int ai = static_cast<int>(m_active_index) - found;
+        if (ai >= 0) {
+            m_active_index = ai;
+        } else {
+            m_active_index = 0;
+        }
+    }
 
-    return menuitems.size();
+    return m_items.size();
 }
 
+
 void Menu::removeAll() {
-    while (!menuitems.empty())
-        remove(menuitems.size()-1);
+    while (!m_items.empty())
+        remove(m_items.size()-1);
 }
 
 void Menu::raise() {
@@ -308,41 +320,32 @@ void Menu::lower() {
 }
 
 void Menu::cycleItems(bool reverse) {
-    Menuitems vec;
-    if (m_type_ahead.stringSize())
-        vec = m_matches;
-    else
-        vec = menuitems;
 
-    if (vec.size() < 1)
+    if (m_items.empty())
         return;
 
-    // find the next item to select
-    // this algorithm assumes menuitems are sorted properly
-    int new_index = -1;
-    bool passed = !validIndex(m_active_index);
-    for (size_t i = 0; i < vec.size(); i++) {
-        if (!isItemSelectable(vec[i]->getIndex()) ||
-            vec[i]->getIndex() == m_active_index)
-            continue;
+    int offset = reverse ? -1 : 1;
+    int l = m_items.size();
+    int i = m_active_index;
+    size_t ignore;
 
-        // determine whether or not we've passed the active index
-        if (!passed && vec[i]->getIndex() > m_active_index) {
-            if (reverse && new_index != -1)
-                break;
-            passed = true;
+    for (i += offset; i != m_active_index; i += offset ) {
+        if (i < 0) {
+            i = l - 1;
+        } else if (i >= l) {
+            i = 0;
         }
 
-        // decide if we want to keep this item
-        if (passed && !reverse) {
-            new_index = vec[i]->getIndex();
-            break;
-        } else if (reverse || new_index == -1)
-            new_index = vec[i]->getIndex();
-    }
+        if (!isItemSelectable(i)) {
+            continue;
+        }
 
-    if (new_index != -1)
-        setActiveIndex(new_index);
+        // empty-string ("nothing was typed") matches always
+        if (m_search->get_match(i, ignore)) {
+            setActiveIndex(i);
+            break;
+        }
+    }
 }
 
 void Menu::setActiveIndex(int new_index) {
@@ -350,11 +353,11 @@ void Menu::setActiveIndex(int new_index) {
     int old_active_index = m_active_index;
     m_active_index = new_index;
     if (validIndex(old_active_index) &&
-        menuitems[old_active_index] != 0) {
-        if (menuitems[old_active_index]->submenu()) {
+        m_items[old_active_index] != 0) {
+        if (m_items[old_active_index]->submenu()) {
             // we need to do this explicitly on the m_window
             // since it might hide the parent if we use Menu::hide
-            menuitems[old_active_index]->submenu()->internal_hide();
+            m_items[old_active_index]->submenu()->internal_hide();
         }
         clearItem(old_active_index);
     }
@@ -365,11 +368,11 @@ void Menu::enterSubmenu() {
     if (!validIndex(m_active_index))
         return;
 
-    Menu *submenu = menuitems[m_active_index]->submenu();
+    Menu *submenu = m_items[m_active_index]->submenu();
     if (submenu == 0)
         return;
 
-    if (submenu->menuitems.empty())
+    if (submenu->m_items.empty())
         return;
 
     drawSubmenu(m_active_index);
@@ -387,64 +390,74 @@ void Menu::enableTitle() {
 }
 
 void Menu::updateMenu() {
-    if (m_title_vis) {
-        m_item_w = theme()->titleFont().textWidth(m_label);
-        m_item_w += (theme()->bevelWidth() * 2);
-    } else
-        m_item_w = 1;
 
-    if (validIndex(m_active_index) && !menuitems[m_active_index]->isEnabled()) {
-        // find the nearest enabled menuitem and highlight it
-        for (size_t i = 1; i < menuitems.size(); i++) {
+    int bevel = theme()->bevelWidth();
+    int bw = theme()->borderWidth();
+    int ih = theme()->itemHeight();
+    unsigned int iw = 1;
+    int th = theme()->titleHeight(!m_title.label.logical().empty());
+    int tbw = m_title.win.borderWidth();
+    int w = static_cast<int>(width());
+    size_t l = m_items.size();
+    size_t i;
+
+
+    // find the nearest enabled menuitem and highlight it
+    if (validIndex(m_active_index) && !m_items[m_active_index]->isEnabled()) {
+        for (i = 1; i < l; i++) {
             if (validIndex(m_active_index + i) &&
-                menuitems[m_active_index + i]->isEnabled()) {
+                m_items[m_active_index + i]->isEnabled()) {
                 m_active_index += i;
                 break;
             } else if (validIndex(m_active_index - i) &&
-                       menuitems[m_active_index - i]->isEnabled()) {
+                       m_items[m_active_index - i]->isEnabled()) {
                 m_active_index -= i;
                 break;
             }
         }
     }
 
-    unsigned int ii = 0;
-    Menuitems::iterator it = menuitems.begin();
-    Menuitems::iterator it_end = menuitems.end();
-    for (; it != it_end; ++it) {
-        ii = (*it)->width(theme());
-        m_item_w = (ii > m_item_w ? ii : m_item_w);
+
+    // calculate needed item width
+    m_item_w = 1;
+    if (m_title.visible) {
+        m_item_w = theme()->titleFont().textWidth(m_title.label);
+        m_item_w += bevel * 2;
+    }
+    m_item_w = std::max(iw, m_item_w);
+    for (i = 0; i < l; i++) {
+        iw = m_items[i]->width(theme());
+        m_item_w = std::max(iw, m_item_w);
     }
 
-    if (m_item_w < 1)
-        m_item_w = 1;
-
-    if (!menuitems.empty()) {
+    // calculate needed columns
+    m_columns = 0;
+    m_rows_per_column = 0;
+    if (!m_items.empty()) {
         m_columns = 1;
 
-        while (theme()->itemHeight() * (menuitems.size() + 1) / m_columns +
-               theme()->titleHeight() + theme()->borderWidth() > m_screen_height) {
+        while (ih * (l + 1) / m_columns + th + bw > m_screen.height) {
             m_columns++;
         }
 
-        if (m_columns < m_min_columns)
-            m_columns = m_min_columns;
+        m_columns = std::max(m_min_columns, m_columns);
 
-        m_rows_per_column = menuitems.size() / m_columns;
-        if (menuitems.size() % m_columns) m_rows_per_column++;
-    } else {
-        m_columns = 0;
-        m_rows_per_column = 0;
+        // the menu width should be as wide as the widest menu item
+        w = m_item_w * m_columns;
+
+        m_rows_per_column = m_items.size() / m_columns;
+        if (m_items.size() % m_columns)
+            m_rows_per_column++;
     }
 
-    int itmp = (theme()->itemHeight() * m_rows_per_column);
-    m_frame_h = itmp < 1 ? 1 : itmp;
+    int itmp = ih * m_rows_per_column;
+    m_frame.height = std::max(1, itmp);
 
     unsigned int new_width = (m_columns * m_item_w);
-    unsigned int new_height = m_frame_h;
+    unsigned int new_height = m_frame.height;
 
-    if (m_title_vis)
-        new_height += theme()->titleHeight() + ((m_frame_h > 0)?m_title.borderWidth():0);
+    if (m_title.visible)
+        new_height += th + ((m_frame.height > 0) ? tbw : 0);
 
 
     if (new_width == 0)
@@ -463,55 +476,42 @@ void Menu::updateMenu() {
     if (!isVisible())
         return;
 
-    if (m_frame.alpha() != alpha())
-        m_frame.setAlpha(alpha());
+    if (m_frame.win.alpha() != alpha())
+        m_frame.win.setAlpha(alpha());
 
-    renderMenuPixmap(m_hilite_pixmap, NULL,
-            m_item_w, theme()->itemHeight(),
-            theme()->hiliteTexture(), m_image_ctrl);
+    renderMenuPixmap(m_hilite_pixmap, NULL, m_item_w, ih, theme()->hiliteTexture(), m_image_ctrl);
 
 
     if (!theme()->selectedPixmap().pixmap().drawable()) {
-        int hw = theme()->itemHeight() / 2;
+        int hw = ih / 2;
         // render image, disable cache and let the theme remove the pixmap
-        theme()->setSelectedPixmap(m_image_ctrl.
-                                   renderImage(hw, hw,
-                                               theme()->hiliteTexture(), ROT0, 
-                                               false // no cache
-                                               ),  
-                                   false); // the theme takes care of this pixmap
+        Pixmap pm = m_image_ctrl.renderImage(hw, hw, theme()->hiliteTexture(), ROT0, false);
+        theme()->setSelectedPixmap(pm, false); // the theme takes care of this pixmap
 
         if (!theme()->highlightSelectedPixmap().pixmap().drawable()) {
-            int hw = theme()->itemHeight() / 2;
+            hw = ih / 2;
             // render image, disable cache and let the theme remove the pixmap
-            theme()->setHighlightSelectedPixmap(m_image_ctrl.
-                                                renderImage(hw, hw,
-                                                            theme()->frameTexture(), ROT0, 
-                                                            false  // no cache
-                                                            ), 
-                                                false); // theme takes care of this pixmap
+            pm = m_image_ctrl.renderImage(hw, hw, theme()->frameTexture(), ROT0, false);
+            theme()->setHighlightSelectedPixmap(pm, false); // theme takes care of this pixmap
        }
     }
 
-    if (m_title_vis) {
-        m_title.moveResize(-m_title.borderWidth(), -m_title.borderWidth(),
-                              width() + m_title.borderWidth(), theme()->titleHeight());
+    int y = 0;
+    if (m_title.visible) {
+        m_title.win.moveResize(-tbw, -tbw, w + tbw, th);
+        y = m_title.win.y() + m_title.win.height() + 2 * tbw;
     }
 
-    m_frame.moveResize(0, ((m_title_vis) ? m_title.y() + m_title.height() +
-                              m_title.borderWidth()*2 : 0),
-                          width(), m_frame_h);
+    m_frame.win.moveResize(0, y, w, m_frame.height);
 
-    if (m_title_vis && m_need_update) {
-        renderMenuPixmap(m_title_pixmap, &m_title,
-                width(), theme()->titleHeight(),
-                theme()->titleTexture(), m_image_ctrl);
+    if (m_title.visible && m_need_update) {
+        renderMenuPixmap(m_title.pixmap, &m_title.win,
+                w, th, theme()->titleTexture(), m_image_ctrl);
     }
 
     if (m_need_update) {
-        renderMenuPixmap(m_frame_pixmap, &m_frame,
-                width(), m_frame_h,
-                theme()->frameTexture(), m_image_ctrl);
+        renderMenuPixmap(m_frame.pixmap, &m_frame.win,
+                w, m_frame.height, theme()->frameTexture(), m_image_ctrl);
     }
 
     clearWindow();
@@ -522,24 +522,22 @@ void Menu::updateMenu() {
 
 void Menu::show() {
 
-    if (isVisible() || menuitems.empty())
+    if (isVisible() || m_items.empty())
         return;
 
-    m_visible = true;
-
+    m_state.visible = true;
     if (m_need_update)
         updateMenu();
 
-    m_type_ahead.reset();
-    m_matches.clear();
+    m_search->clear();
 
     m_window.showSubwindows();
     m_window.show();
     raise();
 
-    if (shown && shown != this)
-        shown->hide();
-    shown = this;
+    if (s_shown && s_shown != this)
+        s_shown->hide();
+    s_shown = this;
 
 }
 
@@ -553,7 +551,7 @@ void Menu::hide(bool force) {
     Menu *p = this;
     while (p && p->isVisible()) {
         Menu *tmp = p->m_parent;
-        if (force || !p->m_torn)
+        if (force || !p->m_state.torn)
             p->internal_hide();
         else
             p->m_parent = 0;
@@ -565,8 +563,8 @@ void Menu::hide(bool force) {
 void Menu::grabInputFocus() {
     // if there's a submenu open, focus it instead
     if (validIndex(m_which_sub) &&
-            menuitems[m_which_sub]->submenu()->isVisible()) {
-        menuitems[m_which_sub]->submenu()->grabInputFocus();
+            m_items[m_which_sub]->submenu()->isVisible()) {
+        m_items[m_which_sub]->submenu()->grabInputFocus();
         return;
     }
 
@@ -578,18 +576,20 @@ void Menu::grabInputFocus() {
 
 
 void Menu::clearWindow() {
-    m_title.clear();
-    m_frame.clear();
+    m_title.win.clear();
+    m_frame.win.clear();
 
     // clear foreground bits of frame items
-    for (size_t i = 0; i < menuitems.size(); i++) {
+    size_t i;
+    size_t l = m_items.size();
+    for (i = 0; i < l; i++) {
         clearItem(i, false);   // no clear
     }
     m_shape->update();
 }
 
 void Menu::redrawFrame(FbDrawable &drawable) {
-    for (size_t i = 0; i < menuitems.size(); i++) {
+    for (size_t i = 0; i < m_items.size(); i++) {
         drawItem(drawable, i);
     }
 
@@ -598,7 +598,7 @@ void Menu::redrawFrame(FbDrawable &drawable) {
 void Menu::internal_hide(bool first) {
 
     if (validIndex(m_which_sub)) {
-        MenuItem *tmp = menuitems[m_which_sub];
+        MenuItem *tmp = m_items[m_which_sub];
         if (tmp && tmp->submenu() && tmp->submenu()->isVisible())
             tmp->submenu()->internal_hide(false);
     }
@@ -609,14 +609,14 @@ void Menu::internal_hide(bool first) {
     m_active_index = -1;
     clearItem(old); // clear old area from highlight
 
-    if (shown == this) {
+    if (s_shown == this) {
         if (m_parent && m_parent->isVisible())
-            shown = m_parent;
+            s_shown = m_parent;
         else
-            shown = (Menu *) 0;
+            s_shown = 0;
     }
 
-    m_torn = m_visible = m_closing = false;
+    m_state.torn = m_state.visible = m_state.closing = false;
     m_which_sub = -1;
 
     if (first && m_parent && m_parent->isVisible() &&
@@ -634,8 +634,8 @@ void Menu::move(int x, int y) {
 
     m_window.move(x, y);
     // potentially transparent children
-    m_title.parentMoved();
-    m_frame.parentMoved();
+    m_title.win.parentMoved();
+    m_frame.win.parentMoved();
 
     if (!isVisible())
         return;
@@ -644,7 +644,7 @@ void Menu::move(int x, int y) {
         clearWindow();
 
     if (validIndex(m_which_sub) &&
-            menuitems[m_which_sub]->submenu()->isVisible())
+            m_items[m_which_sub]->submenu()->isVisible())
         drawSubmenu(m_which_sub);
 }
 
@@ -653,7 +653,7 @@ void Menu::redrawTitle(FbDrawable &drawable) {
 
     const FbTk::Font &font = theme()->titleFont();
     int dx = theme()->bevelWidth();
-    unsigned int l = font.textWidth(m_label) + theme()->bevelWidth()*2;
+    int l = static_cast<int>(font.textWidth(m_title.label) + dx*2);
 
     switch (theme()->titleFontJustify()) {
     case FbTk::RIGHT:
@@ -668,32 +668,32 @@ void Menu::redrawTitle(FbDrawable &drawable) {
     }
 
     // difference between height based on font, and style-set height
-    int height_offset = theme()->titleHeight() - (font.height() + 2*theme()->bevelWidth());
-    font.drawText(drawable, screenNumber(), theme()->titleTextGC().gc(), m_label,
-                  dx, font.ascent() + theme()->bevelWidth() + height_offset/2);  // position
+    int height_offset = theme()->titleHeight(!m_title.label.logical().empty()) - (font.height() + 2*dx);
+    font.drawText(drawable, screenNumber(), theme()->titleTextGC().gc(), m_title.label,
+                  dx, font.ascent() + dx + height_offset/2);  // position
 }
 
 
 void Menu::drawSubmenu(unsigned int index) {
     if (validIndex(m_which_sub) && static_cast<unsigned int>(m_which_sub) != index) {
-        MenuItem *itmp = menuitems[m_which_sub];
+        MenuItem *itmp = m_items[m_which_sub];
 
         if (! itmp->submenu()->isTorn())
             itmp->submenu()->internal_hide();
     }
 
-    if (index >= menuitems.size())
+    if (index >= m_items.size())
         return;
 
 
-    MenuItem *item = menuitems[index];
+    MenuItem *item = m_items[index];
     if (item->submenu() && isVisible() && (! item->submenu()->isTorn()) &&
         item->isEnabled()) {
 
         if (item->submenu()->m_parent != this)
             item->submenu()->m_parent = this;
 
-        item->submenu()->setScreen(m_screen_x, m_screen_y, m_screen_width, m_screen_height);
+        item->submenu()->setScreen(m_screen.x, m_screen.y, m_screen.width, m_screen.height);
 
         // ensure we do not divide by 0 and thus cause a SIGFPE
         if (m_rows_per_column == 0) {
@@ -704,53 +704,53 @@ void Menu::drawSubmenu(unsigned int index) {
             return;
         }
 
+        int bw = m_window.borderWidth();
+        int h = static_cast<int>(height());
+        int title_bw = m_title.win.borderWidth();
+        int title_height = (m_title.visible ? theme()->titleHeight(!m_title.label.logical().empty()) + title_bw : 0);
+
+        int subm_title_height = (item->submenu()->m_title.visible) ?
+                item->submenu()->theme()->titleHeight(!m_title.label.logical().empty()) + bw : 0;
+        int subm_height = static_cast<int>(item->submenu()->height());
+        int subm_width = static_cast<int>(item->submenu()->width());
+        int subm_bw = item->submenu()->fbwindow().borderWidth();
+
         int column = index / m_rows_per_column;
         int row = index - (column * m_rows_per_column);
-        int new_x = x() + ((m_item_w * (column + 1)) + m_window.borderWidth());
-        int new_y;
+        int new_x = x() + ((m_item_w * (column + 1)) + bw);
+        int new_y = y() + title_height - subm_title_height;
 
-        if (m_alignment == ALIGNTOP) {
-            new_y = (y() + ((m_title_vis) ? theme()->titleHeight() + m_title.borderWidth() : 0) -
-                     ((item->submenu()->m_title_vis) ?
-                      item->submenu()->theme()->titleHeight() + m_window.borderWidth() : 0));
-        } else {
-            new_y = (y() + (theme()->itemHeight() * row) +
-                     ((m_title_vis) ? theme()->titleHeight() + m_window.borderWidth() : 0) -
-                     ((item->submenu()->m_title_vis) ?
-                      item->submenu()->theme()->titleHeight() + m_window.borderWidth() : 0));
+        if (m_alignment != ALIGNTOP) {
+            new_y = new_y + (theme()->itemHeight() * row);
         }
 
-        if (m_alignment == ALIGNBOTTOM &&
-            (new_y + item->submenu()->height()) > (y() + height())) {
-            new_y = (y() + height() - item->submenu()->height());
+        if (m_alignment == ALIGNBOTTOM && (new_y + subm_height) > (y() + h)) {
+            new_y = (y() + h - subm_height);
         }
 
-        int borderw = item->submenu()->fbwindow().borderWidth();
-
-        if ((new_x + item->submenu()->width()) + 2*borderw > m_screen_x + m_screen_width) {
-            new_x = x() - item->submenu()->width() - m_window.borderWidth();
+        if ((new_x + subm_width + 2*subm_bw) > (m_screen.x + static_cast<int>(m_screen.width))) {
+            new_x = x() - subm_width - bw;
         }
 
-        if (new_x < m_screen_x)
-            new_x = m_screen_x;
+        if (new_x < m_screen.x)
+            new_x = m_screen.x;
 
-        if ((new_y + item->submenu()->height()) > m_screen_y + m_screen_height) {
-            new_y = m_screen_y + m_screen_height - item->submenu()->height() -
-                m_window.borderWidth() * 2;
+        if ((new_y + subm_height) > (m_screen.y + static_cast<int>(m_screen.height))) {
+            new_y = m_screen.y + static_cast<int>(m_screen.height) - subm_height - 2*bw;
         }
 
-        item->submenu()->m_moving = m_moving;
+        item->submenu()->m_state.moving = m_state.moving;
         m_which_sub = index;
 
-        if (new_y < m_screen_y)
-            new_y = m_screen_y;
+        if (new_y < m_screen.y)
+            new_y = m_screen.y;
 
         item->submenu()->move(new_x, new_y);
-        if (! m_moving)
+        if (! m_state.moving)
             clearItem(index);
 
         if (! item->submenu()->isVisible() && item->submenu()->numberOfItems() > 0) {
-            shown = item->submenu();
+            s_shown = item->submenu();
             item->showSubmenu();
             item->submenu()->raise();
         }
@@ -764,12 +764,9 @@ void Menu::drawSubmenu(unsigned int index) {
 int Menu::drawItem(FbDrawable &drawable, unsigned int index,
                    bool highlight, bool exclusive_drawable) {
 
-    if (index >= menuitems.size() || menuitems.empty() ||
-        m_rows_per_column == 0)
+    if (!validIndex(index) || m_items.empty()) {
         return 0;
-
-    MenuItem *item = menuitems[index];
-    if (! item) return 0;
+    }
 
     // ensure we do not divide by 0 and thus cause a SIGFPE
     if (m_rows_per_column == 0) {
@@ -779,6 +776,10 @@ int Menu::drawItem(FbDrawable &drawable, unsigned int index,
 #endif
         return 0;
     }
+
+    MenuItem *item = m_items[index];
+    if (!item)
+        return 0;
 
     int column = index / m_rows_per_column;
     int row = index - (column * m_rows_per_column);
@@ -797,15 +798,15 @@ int Menu::drawItem(FbDrawable &drawable, unsigned int index,
 }
 
 void Menu::setLabel(const FbTk::BiDiString &labelstr) {
-    //make sure we don't send 0 to std::string
-    m_label = labelstr;
+    m_title.label = labelstr;
     reconfigure();
 }
 
 
 void Menu::setItemSelected(unsigned int index, bool sel) {
-    if (index >= menuitems.size()) return;
-
+    if (!validIndex(index)) {
+        return;
+    }
     MenuItem *item = find(index);
     if (! item) return;
 
@@ -814,8 +815,9 @@ void Menu::setItemSelected(unsigned int index, bool sel) {
 
 
 bool Menu::isItemSelected(unsigned int index) const{
-    if (index >= menuitems.size()) return false;
-
+    if (!validIndex(index)) {
+        return false;
+    }
     const MenuItem *item = find(index);
     if (!item)
         return false;
@@ -825,29 +827,30 @@ bool Menu::isItemSelected(unsigned int index) const{
 
 
 void Menu::setItemEnabled(unsigned int index, bool enable) {
-    if (index >= menuitems.size()) return;
-
+    if (!validIndex(index)) {
+        return;
+    }
     MenuItem *item = find(index);
-    if (! item) return;
-
-    item->setEnabled(enable);
+    if (item) {
+        item->setEnabled(enable);
+    }
 }
 
 
 bool Menu::isItemEnabled(unsigned int index) const {
-    if (index >= menuitems.size()) return false;
-
+    if (!validIndex(index)) {
+        return false;
+    }
     const MenuItem *item = find(index);
     if (!item)
         return false;
-
     return item->isEnabled();
 }
 
 bool Menu::isItemSelectable(unsigned int index) const {
-
-    if (index >= menuitems.size()) return false;
-
+    if (!validIndex(index)) {
+        return false;
+    }
     const MenuItem *item = find(index);
     return (!item || !item->isEnabled()) ? false : true;
 }
@@ -864,26 +867,27 @@ void Menu::handleEvent(XEvent &event) {
             s_focused = this;
         // if there's a submenu open, focus it instead
         if (validIndex(m_which_sub) &&
-                menuitems[m_which_sub]->submenu()->isVisible())
-            menuitems[m_which_sub]->submenu()->grabInputFocus();
+                m_items[m_which_sub]->submenu()->isVisible())
+            m_items[m_which_sub]->submenu()->grabInputFocus();
     }
 }
 
 void Menu::buttonPressEvent(XButtonEvent &be) {
-    if (be.window == m_title) {
-        grabInputFocus();
-        m_closing = (be.button == 3);
-    } else
-        m_closing = false;
 
-    if (be.window == m_frame && m_item_w != 0) {
+    m_state.closing = false;
+    if (be.window == m_title.win) {
+        grabInputFocus();
+        m_state.closing = (be.button == 3);
+    }
+
+    if (be.window == m_frame.win && m_item_w != 0) {
 
         int column = (be.x / m_item_w);
         int i = (be.y / theme()->itemHeight());
         int w = (column * m_rows_per_column) + i;
 
-        if (validIndex(w) && isItemSelectable(static_cast<unsigned int>(w))) {
-            MenuItem *item = menuitems[w];
+        if (isItemSelectable(static_cast<unsigned int>(w))) {
+            MenuItem *item = m_items[w];
 
             if (item->submenu()) {
                 if (!item->submenu()->isVisible())
@@ -898,26 +902,26 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
 
 
 void Menu::buttonReleaseEvent(XButtonEvent &re) {
-    if (re.window == m_title) {
-        if (m_moving) {
-            m_moving = false;
+    if (re.window == m_title.win) {
+        if (m_state.moving) {
+            m_state.moving = false;
 
             if (validIndex(m_which_sub) &&
-                    menuitems[m_which_sub]->submenu()->isVisible())
+                    m_items[m_which_sub]->submenu()->isVisible())
                 drawSubmenu(m_which_sub);
 
             if (alpha() < 255) {
                 // update these since we've (probably) moved
-                m_title.parentMoved();
-                m_frame.parentMoved();
+                m_title.win.parentMoved();
+                m_frame.win.parentMoved();
                 clearWindow();
             }
         }
 
-        if (re.button == 3 && m_closing)
+        if (re.button == 3 && m_state.closing)
             internal_hide();
 
-    } else if (re.window == m_frame) {
+    } else if (re.window == m_frame.win) {
 
         int column = (re.x / m_item_w);
         int i = (re.y / theme()->itemHeight());
@@ -929,7 +933,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             if (m_active_index == w && isItemEnabled(w) &&
                 re.x > ix && re.x < (signed) (ix + m_item_w) &&
                 re.y > iy && re.y < (signed) (iy + theme()->itemHeight())) {
-                menuitems[w]->click(re.button, re.time, re.state);
+                m_items[w]->click(re.button, re.time, re.state);
             } else {
                 int old = m_active_index;
                 m_active_index = w;
@@ -943,19 +947,19 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
 
 void Menu::motionNotifyEvent(XMotionEvent &me) {
     // if draging the with the titlebar:
-    if (me.window == m_title && (me.state & Button1Mask)) {
+    if (me.window == m_title.win && (me.state & Button1Mask)) {
         stopHide();
 
-        if (! m_moving) {
-            // if not m_moving: start m_moving operation
-            m_moving = m_torn = true;
+        if (! m_state.moving) { // if not m_moving: start m_moving operation
+
+            m_state.moving = m_state.torn = true;
             if (m_parent)
                 m_parent->m_which_sub = -1;
-            // clear current highlighted item
+
             clearItem(m_active_index);
 
             if (validIndex(m_which_sub) &&
-                    menuitems[m_which_sub]->submenu()->isVisible())
+                    m_items[m_which_sub]->submenu()->isVisible())
                 drawSubmenu(m_which_sub);
         } else {
             // we dont call ::move here 'cause we dont want to update transparency
@@ -963,7 +967,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             m_window.move(me.x_root - m_x_move, me.y_root - m_y_move);
         }
 
-    } else if (!(me.state & Button1Mask) && me.window == m_frame) {
+    } else if (!(me.state & Button1Mask) && me.window == m_frame.win) {
         stopHide();
         int column = (me.x / m_item_w);
         int i = (me.y / theme()->itemHeight());
@@ -977,7 +981,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         if (s_focused != this && s_focused != 0)
             grabInputFocus();
 
-        MenuItem *itmp = menuitems[w];
+        MenuItem *itmp = m_items[w];
         if (itmp == 0)
             return;
 
@@ -987,7 +991,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             clearItem(w);
             clearItem(old);
 
-            MenuItem *item = validIndex(m_which_sub) ? menuitems[m_which_sub] : 0;
+            MenuItem *item = validIndex(m_which_sub) ? m_items[m_which_sub] : 0;
             if (item != 0 && item->submenu() && item->submenu()->isVisible() &&
                 !item->submenu()->isTorn()) {
                 // setup hide timer for submenu
@@ -1012,47 +1016,41 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 void Menu::exposeEvent(XExposeEvent &ee) {
 
     // some xservers (eg: nxserver) send XExposeEvent for the unmapped menu.
-    // this caused a SIGFPE in ::clearItem(), since m_rows_per_column is 
+    // this caused a SIGFPE in ::clearItem(), since m_rows_per_column is
     // still 0 -> division by 0.
     //
     // it is still unclear, why nxserver behaves this way
     if (!isVisible())
         return;
 
-    if (ee.window == m_title) {
-        m_title.clearArea(ee.x, ee.y, ee.width, ee.height);
-    } else if (ee.window == m_frame) {
+    if (ee.window == m_title.win) {
+        m_title.win.clearArea(ee.x, ee.y, ee.width, ee.height);
+    } else if (ee.window == m_frame.win) {
 
-        // find where to clear
-        // this is a compilicated algorithm... lets do it step by step...
-        // first... we see in which column the expose starts... and how many
-        // items down in that column
-        int column = (ee.x / m_item_w);
-        int id = (ee.y / theme()->itemHeight());
+        // the menu has a list of items. the expose-event spans
+        // a number of columns across a number of rows
+        //
+        //  |item1|item4|item7|     * - exposed items
+        //  |item2|*tem5|*tem8| i
+        //  |item3|*tem6|*tem9| |
+        //           j   ->    ts
+        //
 
-        // next... figure out how many sublevels over the redrawspans
-        int column_d = ((ee.x + ee.width) / m_item_w);
+        size_t item_h = theme()->itemHeight();
+        size_t t = ((ee.x + ee.width) / m_item_w) + 1;
+        size_t row = ee.y / item_h;
+        size_t end_row = ((ee.y + ee.height) / item_h);
 
-        // then we see how many items down to redraw
-        int id_d = ((ee.y + ee.height) / theme()->itemHeight());
+        if (end_row > static_cast<size_t>(m_rows_per_column))
+            end_row = static_cast<size_t>(m_rows_per_column);
 
-        if (id_d > m_rows_per_column)
-            id_d = m_rows_per_column;
+        for (size_t j = (ee.x / m_item_w); j < t; j++) {
 
-        // draw the columns and the number of items the exposure spans
-        int i, ii;
-        for (i = column; i <= column_d; i++) {
-            // set the iterator to the first item in the column needing redrawing
-            int index = id + i * m_rows_per_column;
-
-            if (index < static_cast<int>(menuitems.size()) && index >= 0) {
-                Menuitems::iterator it = menuitems.begin() + index;
-                Menuitems::iterator it_end = menuitems.end();
-                for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
-                    int index = ii + (i * m_rows_per_column);
-                    // redraw the item
-                    clearItem(index);
-                }
+            size_t offset = j * m_rows_per_column;
+            size_t s = end_row + offset;
+            s = std::min(m_items.size(), s);
+            for (size_t i = row + offset; i < s; i++ ) {
+                clearItem(i);
             }
         }
     }
@@ -1069,11 +1067,11 @@ void Menu::keyPressEvent(XKeyEvent &event) {
     switch (ks) {
     case XK_Up:
         resetTypeAhead();
-        cycleItems(true);
+        cycleItems(UP);
         break;
     case XK_Down:
         resetTypeAhead();
-        cycleItems(false);
+        cycleItems(DOWN);
         break;
     case XK_Left: // enter parent if we have one
         resetTypeAhead();
@@ -1099,17 +1097,16 @@ void Menu::keyPressEvent(XKeyEvent &event) {
             enterSubmenu();
         break;
     case XK_Escape: // close menu
-        m_type_ahead.reset();
-        m_torn = false;
+        m_search->clear();
+        m_state.torn = false;
         hide(true);
         break;
     case XK_BackSpace:
-        if (m_type_ahead.stringSize() == 0) {
+        if (m_search->size() == 0) {
             internal_hide();
             break;
         }
-
-        m_type_ahead.putBackSpace();
+        m_search->backspace();
         drawTypeAheadItems();
         break;
     case XK_KP_Enter:
@@ -1119,7 +1116,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
             isItemEnabled(m_active_index)) {
             // send fake button click
             int button = (event.state & ShiftMask) ? 3 : 1;
-            if (menuitems[m_active_index]->submenu() != 0 && button == 1)
+            if (m_items[m_active_index]->submenu() != 0 && button == 1)
                 enterSubmenu();
             else {
                 find(m_active_index)->click(button, event.time, event.state);
@@ -1129,63 +1126,71 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         }
         break;
     case XK_Tab:
-    case XK_ISO_Left_Tab:
+    case XK_ISO_Left_Tab: // XXX: number matches == 1 -> enter submenu
         if (validIndex(m_active_index) && isItemEnabled(m_active_index) &&
-            menuitems[m_active_index]->submenu() && m_matches.size() == 1) {
+            m_items[m_active_index]->submenu() && m_search->num_matches() == 1) {
             enterSubmenu();
-            m_type_ahead.reset();
+            m_search->clear();
         } else {
-            m_type_ahead.seek();
             cycleItems((bool)(event.state & ShiftMask));
         }
         drawTypeAheadItems();
         break;
     default:
-        m_type_ahead.putCharacter(keychar[0]);
-        // if current item doesn't match new search string, find the next one
-        drawTypeAheadItems();
-        if (!m_matches.empty() && (!validIndex(m_active_index) ||
-            std::find(m_matches.begin(), m_matches.end(),
-                      find(m_active_index)) == m_matches.end()))
-            cycleItems(false);
+
+        if (m_search->would_match(m_search->pattern + keychar[0])) {
+            m_search->add(keychar[0]);
+            drawTypeAheadItems();
+            // if current item doesn't match new search string, find
+            // the next one
+            size_t ignore;
+            if (!m_search->get_match(m_active_index, ignore)) {
+                cycleItems(DOWN);
+            }
+        }
+
         break;
     }
 }
 
 void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
-    m_closing = false;
+    m_state.closing = false;
     // if there's a submenu open, highlight its index and stop hide
     if (validIndex(m_which_sub) && m_active_index != m_which_sub &&
-        menuitems[m_which_sub]->submenu()->isVisible()) {
+        m_items[m_which_sub]->submenu()->isVisible()) {
         int old = m_active_index;
         m_active_index = m_which_sub;
         clearItem(m_active_index);
         clearItem(old);
-        menuitems[m_which_sub]->submenu()->stopHide();
+        m_items[m_which_sub]->submenu()->stopHide();
     }
 }
 
 void Menu::reconfigure() {
+
     m_shape->setPlaces(theme()->shapePlaces());
 
+    FbTk::Color bc = theme()->borderColor();
+    int bw = theme()->borderWidth();
+    int alpha = this->alpha();
+    int opaque = 255;
+
     if (FbTk::Transparent::haveComposite()) {
-        m_window.setOpaque(alpha());
-        m_title.setAlpha(255);
-        m_frame.setAlpha(255);
-    } else {
-        m_window.setOpaque(255);
-        m_title.setAlpha(alpha());
-        m_frame.setAlpha(alpha());
+        std::swap(opaque, alpha);
     }
+
+    m_window.setOpaque(opaque);
+    m_title.win.setAlpha(alpha);
+    m_frame.win.setAlpha(alpha);
 
     m_need_update = true; // redraw items
 
-    m_window.setBorderColor(theme()->borderColor());
-    m_title.setBorderColor(theme()->borderColor());
-    m_frame.setBorderColor(theme()->borderColor());
+    m_window.setBorderColor(bc);
+    m_title.win.setBorderColor(bc);
+    m_frame.win.setBorderColor(bc);
 
-    m_window.setBorderWidth(theme()->borderWidth());
-    m_title.setBorderWidth(theme()->borderWidth());
+    m_window.setBorderWidth(bw);
+    m_title.win.setBorderWidth(bw);
 
     updateMenu();
 }
@@ -1193,19 +1198,19 @@ void Menu::reconfigure() {
 
 void Menu::openSubmenu() {
 
-    int item = m_active_index;
-    if (!isVisible() || !validIndex(item) || !menuitems[item]->isEnabled() ||
+    size_t i = m_active_index;
+    if (!isVisible() || !validIndex(i) || !m_items[i]->isEnabled() ||
         (s_focused != this && s_focused && s_focused->isVisible()))
         return;
 
-    clearItem(item);
+    clearItem(i);
 
-    if (menuitems[item]->submenu() != 0) {
+    if (m_items[i]->submenu() != 0) {
         // stop hide timer, so it doesnt hides the menu if we
         // have the same submenu as the last shown submenu
         // (window menu for clients inside workspacemenu for example)
-        menuitems[item]->submenu()->m_hide_timer.stop();
-        drawSubmenu(item);
+        m_items[i]->submenu()->m_hide_timer.stop();
+        drawSubmenu(i);
     }
 
 }
@@ -1228,26 +1233,26 @@ void Menu::themeReconfigured() {
 
     m_need_update = true;
 
-    Menuitems::iterator it = menuitems.begin();
-    Menuitems::iterator it_end = menuitems.end();
-    for (; it != it_end; ++it) {
-        (*it)->updateTheme(theme());
+    size_t l = m_items.size();
+    size_t i;
+    for (i = 0; i < l; i++) {
+        m_items[i]->updateTheme(theme());
     }
     reconfigure();
 }
 
-void Menu::setScreen(int x, int y, int w, int h) {
-    m_screen_x = x;
-    m_screen_y = y;
-    m_screen_width = w;
-    m_screen_height = h;
+void Menu::setScreen(int x, int y, unsigned int w, unsigned int h) {
+    m_screen.x = x;
+    m_screen.y = y;
+    m_screen.width = w;
+    m_screen.height = h;
 }
 
 // Render the foreground objects of given window onto given pixmap
 void Menu::renderForeground(FbWindow &win, FbDrawable &drawable) {
-    if (&win == &m_frame) {
+    if (&win == &m_frame.win) {
         redrawFrame(drawable);
-    } else if (&win == &m_title) {
+    } else if (&win == &m_title.win) {
         redrawTitle(drawable);
     }
 }
@@ -1271,35 +1276,43 @@ void Menu::clearItem(int index, bool clear, int search_index) {
 
     int column = index / m_rows_per_column;
     int row = index - (column * m_rows_per_column);
-    unsigned int item_w = m_item_w;
-    unsigned int item_h = theme()->itemHeight();
+    int item_w = m_item_w;
+    int item_h = theme()->itemHeight();
     int item_x = (column * item_w);
     int item_y = (row * item_h);
     bool highlight = (index == m_active_index && isItemSelectable(index));
 
-    if (search_index < 0)
-        // find if we need to underline the item
-        search_index = std::find(m_matches.begin(), m_matches.end(),
-                                 find(index)) - m_matches.begin();
+    size_t start_idx = std::string::npos;
+    size_t end_idx = std::string::npos;
 
-    // don't highlight if moving, doesn't work with alpha on
-    if (highlight && !m_moving) {
+    if (m_search->get_match(index, start_idx)) {
+        end_idx = start_idx + m_search->size();
+
+#if 0
+        std::cerr << "m_search " << index << "|"
+            << m_items[index]->iTypeString() << "|" << m_search->text
+            << "|" << start_idx << " " << end_idx  << "\n";
+#endif
+    }
+
+    // highlight only if not if moving, doesn't work with alpha on
+    if (highlight && !m_state.moving) {
         highlightItem(index);
-        if (search_index < (int)m_matches.size())
-            drawLine(index, m_type_ahead.stringSize());
-        return;
-    } else if (clear)
-        m_frame.clearArea(item_x, item_y, item_w, item_h);
+    } else {
+        if (clear) {
+            m_frame.win.clearArea(item_x, item_y, item_w, item_h);
+        }
 
-    MenuItem *item = menuitems[index];
-    if (! item) return;
+        m_items[index]->draw(m_frame.win, theme(), highlight,
+                true, false, item_x, item_y,
+                item_w, item_h);
+    }
 
-    item->draw(m_frame, theme(), highlight,
-               true, false, item_x, item_y,
-               item_w, item_h);
-
-    if (search_index < (int)m_matches.size())
-        drawLine(index, m_type_ahead.stringSize());
+    // need a underline (aka "matched item")
+    if (start_idx != end_idx) {
+        m_items[index]->drawLine(m_frame.win, theme(),
+                end_idx - start_idx, item_x, item_y, m_item_w, start_idx);
+    }
 }
 
 // Area must have been cleared before calling highlight
@@ -1316,16 +1329,16 @@ void Menu::highlightItem(int index) {
 
     int column = index / m_rows_per_column;
     int row = index - (column * m_rows_per_column);
-    unsigned int item_w = m_item_w;
-    unsigned int item_h = theme()->itemHeight();
+    int item_w = m_item_w;
+    int item_h = theme()->itemHeight();
     int item_x = (column * m_item_w);
     int item_y = (row * item_h);
+    FbPixmap buffer = FbPixmap(m_frame.win, item_w, item_h, m_frame.win.depth());
+    bool parent_rel = (m_hilite_pixmap == ParentRelative);
+    Pixmap pixmap = parent_rel ? m_frame.pixmap : m_hilite_pixmap;
+    int pixmap_x = parent_rel ? item_x : 0;
+    int pixmap_y = parent_rel ? item_y : 0;
 
-    FbPixmap buffer = FbPixmap(m_frame, item_w, item_h, m_frame.depth());
-
-    bool parent_rel = m_hilite_pixmap == ParentRelative;
-    Pixmap pixmap = parent_rel ? m_frame_pixmap : m_hilite_pixmap;
-    int pixmap_x = parent_rel ? item_x : 0, pixmap_y = parent_rel ? item_y : 0;
     if (pixmap) {
         buffer.copyArea(pixmap,
                         theme()->hiliteGC().gc(), pixmap_x, pixmap_y,
@@ -1335,11 +1348,10 @@ void Menu::highlightItem(int index) {
         buffer.fillRectangle(theme()->hiliteGC().gc(),
                              0, 0, item_w, item_h);
     }
-    m_frame.updateTransparent(item_x, item_y, item_w, item_h, buffer.drawable(), true);
 
+    m_frame.win.updateTransparent(item_x, item_y, item_w, item_h, buffer.drawable(), true);
     drawItem(buffer, index, true, true);
-
-    m_frame.copyArea(buffer.drawable(), theme()->hiliteGC().gc(),
+    m_frame.win.copyArea(buffer.drawable(), theme()->hiliteGC().gc(),
                         0, 0,
                         item_x, item_y,
                         item_w, item_h);
@@ -1347,51 +1359,24 @@ void Menu::highlightItem(int index) {
 }
 
 void Menu::resetTypeAhead() {
-    Menuitems vec = m_matches;
-    Menuitems::iterator it = vec.begin();
-    m_type_ahead.reset();
-    m_matches.clear();
-
-    for (; it != vec.end(); ++it)
-        clearItem((*it)->getIndex(), true, 1);
+    m_search->clear();
+    drawTypeAheadItems();
 }
 
 void Menu::drawTypeAheadItems() {
-    // remove underlines from old matches
-    for (size_t i = 0; i < m_matches.size(); i++)
-        clearItem(m_matches[i]->getIndex(), true, m_matches.size());
-
-    m_matches = m_type_ahead.matched();
-    for (size_t j = 0; j < m_matches.size(); j++)
-        clearItem(m_matches[j]->getIndex(), false, j);
-}
-
-// underline menuitem[index] with respect to matchstringsize size
-void Menu::drawLine(int index, int size){
-    if (!validIndex(index))
-        return;
-
-    // ensure we do not divide by 0 and thus cause a SIGFPE
-    if (m_rows_per_column == 0) {
-#if DEBUG
-        cerr << __FILE__ << "(" << __LINE__
-             << ") Error: m_rows_per_column == 0 in FbTk::Menu::drawLine()\n";
-#endif
-        return;
+    size_t i;
+    for (i = 0; i < m_items.size(); i++) {
+        clearItem(i, true);
     }
-
-    int column = index / m_rows_per_column;
-    int row = index - (column * m_rows_per_column);
-    int item_x = (column * m_item_w);
-    int item_y = (row * theme()->itemHeight());
-
-    FbTk::MenuItem *item = find(index);
-    item->drawLine(m_frame, theme(), size, item_x, item_y, m_item_w);
 }
 
-void Menu::hideShownMenu() {
-    if (shown)
-        shown->hide();
+void Menu::setTitleVisibility(bool b) {
+    m_title.visible = b;
+    m_need_update = true;
+    if (!b)
+        titleWindow().lower();
+    else
+        titleWindow().raise();
 }
 
 } // end namespace FbTk

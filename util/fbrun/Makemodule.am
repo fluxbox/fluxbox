@@ -10,13 +10,12 @@ fbrun_SOURCES = \
 	util/fbrun/main.cc \
 	util/fbrun/fbrun.xpm
 
-fbrun_LDADD = libFbTk.a
-
-fbrun_LDFLAGS = \
-	$(FONTCONFIG_LIBS) \
+fbrun_LDADD = libFbTk.a \
 	$(FRIBIDI_LIBS) \
-	$(X11_LIBS) \
+	$(FONTCONFIG_LIBS) \
+    $(FREETYEP_LIBS) \
 	$(XFT_LIBS) \
 	$(XINERAMA_LIBS) \
 	$(XPM_LIBS) \
-	$(XRENDER_LIBS)
+	$(XRENDER_LIBS) \
+	$(X11_LIBS)

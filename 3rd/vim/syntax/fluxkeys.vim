@@ -44,6 +44,8 @@ syntax keyword fbActionNames NextWindow PrevWindow Next\Group PrevGroup GotoWind
 syntax keyword fbActionNames Activate Focus Attach FocusLeft FocusRight FocusUp FocusDown  contained
 syntax keyword fbActionNames ArrangeWindows ShowDesktop Deiconify CloseAllWindows  contained
 syntax keyword fbActionNames ArrangeWindowsHorizontal ArrangeWindowsVertical  contained
+syntax keyword fbActionNames ArrangeWindowsStackLeft ArrangeWindowsStackRight  contained
+syntax keyword fbActionNames ArrangeWindowsStackTop ArrangeWindowsStackBottom  contained
 syntax keyword fbActionNames SetWorkspaceName SetWorkspaceNameDialog  contained
 
 " Menu Commands

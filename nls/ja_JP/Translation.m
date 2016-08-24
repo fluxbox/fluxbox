@@ -191,13 +191,19 @@ $set 19 #main
 
 1 error: '-display' オプションは引数を必要とします
 11 error: '-rc' オプションは引数を必要とします
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\t 指定ディスプレイに接続.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\t 代わりのリソースファイルを使用.\n\
 -version\t\t\t バージョン情報を表示して終了.\n\
 -info\t\t\t\tdisplay some useful information.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\t このヘルプを表示して終了.\n\n
+14 warning: couldn't set environment variable 'DISPLAY'
 
 $set 20 #layers
 

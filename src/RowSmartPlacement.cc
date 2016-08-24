@@ -59,10 +59,12 @@ bool RowSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
     bool left_right = 
         screen_placement.rowDirection() == ScreenPlacement::LEFTRIGHT;
 
-    int change_x = 1, change_y = 1;
+    int change_x = 1;
 
-    if (screen_placement.colDirection() == ScreenPlacement::BOTTOMTOP)
-        change_y = -1;
+// unused code:
+//  int  change_y = 1;
+//  if (screen_placement.colDirection() == ScreenPlacement::BOTTOMTOP)
+//      change_y = -1;
 
     if (screen_placement.rowDirection() == ScreenPlacement::RIGHTLEFT)
         change_x = -1;
@@ -113,6 +115,7 @@ bool RowSmartPlacement::placeWindow(const FluxboxWindow &win, int head,
             for (; win_it != win_it_end && placed; ++win_it) {
                 FluxboxWindow &window = **win_it;
                 if (&window == &win) continue;
+                if (window.layerNum() != win.layerNum() ){ continue; } //windows are in different layers - skip it
 
                 int curr_x = window.x() - window.xOffset(); // minus offset to get back up to fake place
                 int curr_y = window.y() - window.yOffset();

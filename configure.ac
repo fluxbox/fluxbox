@@ -1,7 +1,7 @@
 dnl Initialize autoconf and automake
 AC_PREREQ([2.52])
 AC_INIT([fluxbox],
-	[1.3.5],
+	[1.3.7],
 	[fluxbox-devel@lists.sourceforge.net], [],
 	[http://fluxbox.org/])
 AC_CONFIG_SRCDIR([src/fluxbox.cc])
@@ -129,6 +129,10 @@ AC_CHECK_FUNCS([ \
 	vsnprintf \
 ])
 
+AC_CHECK_LIBM
+AC_SUBST(LIBM)
+LIBS="$LIBS $LIBM"
+
 dnl Windows requires the mingw-catgets library for the catgets function.
 AC_SEARCH_LIBS([catgets], [catgets], [], [])
 
@@ -185,19 +189,30 @@ AM_ICONV
 AS_IF([test x$am_cv_proto_iconv_arg1 = "xconst"], [
 	AC_DEFINE([HAVE_CONST_ICONV], [1], [Is second argument of iconv() is of type 'const char **' or 'char **'])
 ])
+LIBS="$LIBICONV $LIBS"
 
 dnl Check for networking libraries
 AC_CHECK_LIB([nsl], [t_open], [LIBS="-lnsl $LIBS"])
 AC_CHECK_LIB([socket], [socket], [LIBS="-lsocket $LIBS"])
 
-dnl Check for X headers and libraries
-AC_PATH_X
-AC_PATH_XTRA
-AS_IF([test x$no_x = "xyes"], [
+#dnl Check for X headers and libraries
+#AC_PATH_X
+#AC_PATH_XTRA
+#AS_IF([test x$no_x = "xyes"], [
+#	AC_MSG_ERROR([Fluxbox requires the X Window System libraries and headers.])
+#])
+
+dnl Check for X11
+PKG_CHECK_MODULES([X11], [ x11 ],
+	[AC_DEFINE([HAVE_X11], [1], [Define if x11 is available]) have_x11=yes],
+	[have_x11=no])
+AM_CONDITIONAL([X11], [test "$have_x11" = "yes"], AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.]))
+AS_IF([test x$have_x11 = "xno"], [
 	AC_MSG_ERROR([Fluxbox requires the X Window System libraries and headers.])
 ])
 
-LIBS="$X_LIBS $LIBS"
+CXXFLAGS="$X11_CFLAGS $CXXFLAGS"
+LIBS="$X11_LIBS $LIBS"
 
 dnl Check for xpg4
 AC_CHECK_LIB([xpg4], [setlocale], [LIBS="-lxpg4 $LIBS"])
@@ -320,7 +335,7 @@ dnl Check whether to include native language support (i18n)
 AC_MSG_CHECKING([whether to include NLS support])
 AC_ARG_ENABLE([nls],
 	AS_HELP_STRING([--enable-nls],
-		[include native language support (default=no)]),
+		[include native language support (default=yes)]),
 	[], [enable_nls=yes]
 )
 AC_MSG_RESULT([$enable_nls])
@@ -366,12 +381,6 @@ AS_IF([test "x$enable_imlib2" != "xno"], [
 	])
 ])
 AM_CONDITIONAL([IMLIB2], [test "$have_imlib2" = "yes"])
-
-dnl Check for X11
-PKG_CHECK_MODULES([X11], [ x11 ],
-	[AC_DEFINE([HAVE_X11], [1], [Define if x11 is available]) have_x11=yes],
-	[have_x11=no])
-AM_CONDITIONAL([X11], [test "$have_x11" = "yes"], AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.]))
 
 dnl Check for X fonts
 have_xft=no
@@ -590,6 +599,9 @@ nls/zh_CN/Makefile
 nls/zh_TW/Makefile
 ])
 
+MSG_RESULT_CXXFLAGS="$FRIBIDI_CFLAGS $XRANDR_CFLAGS $AM_CPPFLAGS $CXXFLAGS"
+MSG_RESULT_LIBS="$LDADD $FONTCONFIG_LIBS $FREETYPE2_LIBS $FRIBIDI_LIBS $IMLIB2_LIBS $RANDR_LIBS $XEXT_LIBS $XFT_LIBS $XINERAMA_LIBS $XPM_LIBS $XRENDER_LIBS"
+
 dnl Print results
 AC_MSG_RESULT([])
 AC_MSG_RESULT([	$PACKAGE version $VERSION configured successfully.])
@@ -605,8 +617,8 @@ AC_MSG_RESULT([	'$locale_path' for nls files.])
 AC_MSG_RESULT([	'$CXX' for C++ compiler.])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Building with:])
-AC_MSG_RESULT([	'$CXXFLAGS' for C++ compiler flags.])
-AC_MSG_RESULT([	'$LIBS' for linker flags.])
+AC_MSG_RESULT([	'$MSG_RESULT_CXXFLAGS' for C++ compiler flags.])
+AC_MSG_RESULT([	'$MSG_RESULT_LIBS' for linker flags.])
 AC_MSG_RESULT([])
 AC_MSG_RESULT([Now build $PACKAGE with 'make'])
 AC_MSG_RESULT([])

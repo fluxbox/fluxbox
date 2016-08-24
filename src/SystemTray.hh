@@ -35,7 +35,6 @@
 
 class BScreen;
 class ButtonTheme;
-class TrayWindow;
 class AtomHandler;
 
 namespace FbTk {
@@ -73,12 +72,13 @@ public:
     int numClients() const { return m_clients.size(); }
     const FbTk::FbWindow &window() const { return m_window; }
 
-    void renderTheme(int alpha) { 
+    void renderTheme(int alpha) {
         m_window.setBorderWidth(m_theme->border().width());
         m_window.setBorderColor(m_theme->border().color());
-        m_window.setAlpha(alpha); 
-        update(); 
+        m_window.setAlpha(alpha);
+        update();
     }
+
     void updateSizing() { m_window.setBorderWidth(m_theme->border().width()); }
 
     void parentMoved() { m_window.parentMoved(); }
@@ -90,7 +90,8 @@ public:
 private:
     void update();
 
-    typedef std::list<TrayWindow *> ClientList;
+    class TrayWindow;
+    typedef std::list<TrayWindow*> ClientList;
     ClientList::iterator findClient(Window win);
 
     void rearrangeClients();

@@ -241,11 +241,16 @@ $set 19 #main
 9 Plik dziennika
 10 Zapisujê dziennik
 11 b³±d: '-rc' wymaga argumentu
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\tu¿yj po³±czenia ekranu.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tu¿yj innego pliku zasobów.\n\
 -version\t\t\twy¶wietlam wersjê i wychodzê.\n\
 -info\t\t\t\twy¶wietlam przydatne informacje.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tlogi przesy³am do pliku.\n\
 -help\t\t\t\twy¶wietlam tê pomoc i wychodzê.\n\
 14 Nie mog³em ustawiæ zmiennej ¶rodowiskowej 'DISPLAY'\n\n

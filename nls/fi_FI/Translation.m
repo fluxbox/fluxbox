@@ -34,11 +34,12 @@ $set 3 #Common
 4 Käännetyt vaihtoehdot
 5 Kääntäjä
 6 Kääntäjän versio
-7     init
-8     keys
-9      nls
-10     menu
-11    style
+7        init
+8        keys
+9         nls
+10       menu
+20  windowmenu
+11       style
 12 Oletukset
 13 pois käytöstä
 14 Virhe
@@ -244,13 +245,17 @@ $set 19 #main
 10 Kirjoittaudutaan
 11 virhe: '-rc' vaatii määreen
 12 virhe: '-screen' vaatii määreen
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Web-sivu: http://www.fluxbox.org/\n\n\
 -display <string>\t\tmuuta $DISPLAY.\n\
 -screen <all|int,int,int>\tsuorita vain määrätyillä näytöillä.\n\
+-no-slit\t\t\tdo not provide a slit\n\
+-no-toolbar\t\tdo not provide a toolbar\n\
 -rc <string>\t\t\tkäytä vaihtoehtoista resurssitiedostoa.\n\
 -version\t\t\ttulosta ainoastaan ohjelman versio.\n\
 -info\t\t\t\tnäytä tietoja.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tkirjoita lokiin.\n\
 -help\t\t\t\ttulosta vain tämä ohje.\n\n
 14 varoitus: 'DISPLAY' ympäristömuuttujaa ei voitu asettaa

@@ -41,7 +41,7 @@ public:
         m_pixmap(None), m_visible(false) { }
 
     void reconfigTheme();
-    void resize(const FbTk::BiDiString &text);
+    void resizeForText(const FbTk::BiDiString &text);
     void showText(const FbTk::BiDiString &text);
     void hide();
 

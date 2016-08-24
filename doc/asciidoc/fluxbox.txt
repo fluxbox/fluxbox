@@ -1,7 +1,7 @@
 fluxbox(1)
 ==========
 Henrik Kinnunen <fluxgen@fluxbox.org>
-v1.3.5, 13 February 2013
+v1.3.7, 08 February 2015
 :man source:   fluxbox.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
@@ -13,6 +13,8 @@ fluxbox - A lightweight window manager for the X Windowing System
 SYNOPSIS
 --------
 *fluxbox* [-rc 'rcfile']
+          [-no-slit]
+          [-no-toolbar]
           [-log 'logfile']
           [-display 'display']
           [-screen all|'scr','scr'...]
@@ -73,6 +75,10 @@ OPTIONS
 *-log* 'logfile'::
     Starting fluxbox with this option will designate a file in which you
     want to log events to.
+*-no-slit*::
+    Do not use the container for DockApps (aka the Slit)
+*-no-toolbar*::
+    Do not use the toolbar
 *-rc* 'rcfile'::
     Use a different config file other than the default *~/.fluxbox/init*.
 *-v*, *-version*::
@@ -300,19 +306,19 @@ item with the items detailed below:
 *Configure*::
     The next level under this menu is where you can set certain resources and
     really begin to customize the look and feel of your desktop. See the
-	 *Configure Menu* section below for more details.
+     *Configure Menu* section below for more details.
 
 *System Styles*::
-	 This is where the standard styles are listed. You can select one of these by
-	 clicking on it, and it will be applied immediately.  System styles are
-	 located in *@pkgdatadir@/styles/* upon a default install.  Remember that you
-	 can confirm this with fluxbox -i.
+     This is where the standard styles are listed. You can select one of these by
+     clicking on it, and it will be applied immediately.  System styles are
+     located in *@pkgdatadir@/styles/* upon a default install.  Remember that you
+     can confirm this with fluxbox -i.
 
 *User Styles*:::
-	 This is where your custom styles are listed. It will list any styles from
-	 *~/.fluxbox/styles/*, which may be styles you grab from the Internet, or
-	 your own custom styles, provided you follow the standards described in
-	 *fluxbox-style(5)*.
+     This is where your custom styles are listed. It will list any styles from
+     *~/.fluxbox/styles/*, which may be styles you grab from the Internet, or
+     your own custom styles, provided you follow the standards described in
+     *fluxbox-style(5)*.
 
 *Workspace List*:::
     This is the same as the *Workspace Menu* detailed below.
@@ -330,21 +336,21 @@ item with the items detailed below:
 
 *Fluxbox Command*:::
     A little Commandline will popup where you can enter a fluxbox command. These
-	 commands are the same as those detailed in *fluxbox-keys(5)*.
+     commands are the same as those detailed in *fluxbox-keys(5)*.
 
 *Reload config*:::
     Use this to reload the fluxbox configuration files. You must do this after
-	 editing the `keys' file, `init' file, or the current style.
+     editing the `keys' file, `init' file, or the current style.
 
 *Restart*:::
     Restart the whole darn thing. This starts a completely new fluxbox process,
     rereads files and redraws all graphical elements. Running applications will
     remain open, however, and restored to the same workspaces they were
-	 previously in once fluxbox returns.
+     previously in once fluxbox returns.
 
 *Exit*:::
     Exits fluxbox, which in turn either shuts down the X Window server or
-	 returns you to the graphical login screen.
+     returns you to the graphical login screen.
 
 Configuration Menu
 ~~~~~~~~~~~~~~~~~~
@@ -355,25 +361,25 @@ faster way to change the most common settings.
 All changes take effect immediately.
 
 *Focus Model*:::
-	 Lets you configure the window focus model. For details, see *FOCUS MODEL*,
-	 below.
+     Lets you configure the window focus model. For details, see *FOCUS MODEL*,
+     below.
 
 *Maximize Options*:::
 Lets you configure what happens when you maximize a window. The four
 options are:
 +
 --
-	*Full Maximization*:;;
-		Normally, a maximized window will not overlap the toolbar, slit, or any
-		docked windows (like panels). Enabling this option allows maximized
-		windows to be as large as the actual screen resolution.
-	*Ignore Resize Increment*:;;
-		Normally, terminal windows specify a ``resize increment'' which mean
-		fluxbox will only resize the window to an even multiple of the character
-		size. Enabling this option will ignore this specification when maximizing.
-	*Disable Moving* / *Disable Resizing*:;;
-		Normally, maximized windows can still be moved and resized. Enabling these
-		options prevents these behaviour.
+    *Full Maximization*:;;
+        Normally, a maximized window will not overlap the toolbar, slit, or any
+        docked windows (like panels). Enabling this option allows maximized
+        windows to be as large as the actual screen resolution.
+    *Ignore Resize Increment*:;;
+        Normally, terminal windows specify a ``resize increment'' which mean
+        fluxbox will only resize the window to an even multiple of the character
+        size. Enabling this option will ignore this specification when maximizing.
+    *Disable Moving* / *Disable Resizing*:;;
+        Normally, maximized windows can still be moved and resized. Enabling these
+        options prevents these behaviour.
 --
 
 *Tab Options*:::
@@ -386,8 +392,8 @@ options are:
 
 *Toolbar*:::
     This menu can also be found by right-clicking any non-icon part of the
-	 toolbar. Find more information about this menu's options in the *Toolbar
-	 Menu* section, below.
+     toolbar. Find more information about this menu's options in the *Toolbar
+     Menu* section, below.
 
 *Transparency*:::
 This sets the default transparency for a focused windows, unfocused window and
@@ -408,7 +414,7 @@ titlebars, not window contents.
 
 *Workspace Warping*:::
     If enabled, you can drag windows from one workspace to another. The previous
-	 workspace is to the left, the next workspace is to the right.
+     workspace is to the left, the next workspace is to the right.
 
 Window Menu
 ~~~~~~~~~~~
@@ -440,9 +446,9 @@ By default, this menu contains:
     * Button 3  (Un)Maximize window horizontally.
 
 *Iconify*:::
-	 Iconify (or minimize) a window. The `icon' can be found in the Icons submenu
-	 of the workspace menu as well as in the toolbar (if a Toolbar mode showing
-	 Icons is selected).
+     Iconify (or minimize) a window. The `icon' can be found in the Icons submenu
+     of the workspace menu as well as in the toolbar (if a Toolbar mode showing
+     Icons is selected).
 
 *Raise*:::
     Raise the window above all others in the same layer.
@@ -455,7 +461,7 @@ By default, this menu contains:
 
 *Transparency*:::
     Change this window's transparency, overriding the defaults from the
-	 *Configuration Menu*.
+     *Configuration Menu*.
 
 *Remember...*:::
 Specify which window settings should be stored in the `apps' file and
@@ -465,36 +471,36 @@ Specifically the setting you may store are:
 +
 --
 *Workpace:*;;
-	Open this in the same workspace as where the window currently resides.
+    Open this in the same workspace as where the window currently resides.
 *Jump to workspace:*;;
-	When *Workspace* is selected, fluxbox will jump to the appropriate workspace
-	when this window is opened there. If not selected, the window will open in
-	the background.
+    When *Workspace* is selected, fluxbox will jump to the appropriate workspace
+    when this window is opened there. If not selected, the window will open in
+    the background.
 *Head*:;;
-	For xinerama users only, start this window on the current head (or screen).
+    For xinerama users only, start this window on the current head (or screen).
 *Dimensions*:;;
-	Record the current window height and width.
+    Record the current window height and width.
 *Position*:;;
-	Record the current X and Y coordinates of the window.
+    Record the current X and Y coordinates of the window.
 *Sticky*:;;
-	Record whether the window is on all desktops, or not.
+    Record whether the window is on all desktops, or not.
 *Decorations*:;;
-	Record the current set of decorations (title bar, grips, tabs, etc) on the window.
+    Record the current set of decorations (title bar, grips, tabs, etc) on the window.
 *Shaded*:;;
-	Record whether the window is shaded (or rolled-up) or not.
+    Record whether the window is shaded (or rolled-up) or not.
 *Minimized*:;;
-	Record whether the window is iconified (or minimized) or not.
+    Record whether the window is iconified (or minimized) or not.
 *Maximized*:;;
-	Record whether the window is maximized or not.
+    Record whether the window is maximized or not.
 *Fullscreen*:;;
-	Record whether the window is in fullscreen mode or not.
+    Record whether the window is in fullscreen mode or not.
 *Transparency*:;;
-	Record the current *Transparency* settings.
+    Record the current *Transparency* settings.
 *Layer*:;;
-	Record the current layer.
+    Record the current layer.
 *Save on close*:;;
-	If selected, any of the above items which are also selected will be updated
-	with the window's current values as it is closed.
+    If selected, any of the above items which are also selected will be updated
+    with the window's current values as it is closed.
 
 --
 +
@@ -513,24 +519,24 @@ background. This menu contains entries to explore the currently defined
 workspaces, windows, and add/remove/rename workspaces.
 
 *Icons*:::
-	This menu shows any iconified (or, minimized) windows. Clicking on a window
-	in this menu will raise it on the current workspace.
+    This menu shows any iconified (or, minimized) windows. Clicking on a window
+    in this menu will raise it on the current workspace.
 
 'Workspaces':::
-	The next section provides one submenu per workspace. Middle-clicking on a
-	workspace name will take you to that workspace. The submenu contains a list
-	of all open windows on that workspace. Clicking on a window name will take
-	you to that window and raise it, changing the active workspace if necessary.
+    The next section provides one submenu per workspace. Middle-clicking on a
+    workspace name will take you to that workspace. The submenu contains a list
+    of all open windows on that workspace. Clicking on a window name will take
+    you to that window and raise it, changing the active workspace if necessary.
 
 *New Workspace*:::
-	This entry adds a new workspace to the end of the list of current workspaces.
+    This entry adds a new workspace to the end of the list of current workspaces.
 
 *Edit current workspace name*:::
-	Pops up a dialog to enter a new name for the current workspace.
+    Pops up a dialog to enter a new name for the current workspace.
 
 *Remove Last*:::
-	Remove the last workspace in the list. Any windows currently open there will
-	be sent to the next-to-last workspace.
+    Remove the last workspace in the list. Any windows currently open there will
+    be sent to the next-to-last workspace.
 
 TOOLBAR
 -------
@@ -596,18 +602,18 @@ All changes take effect immediately. Here are the settings:
     If this is enabled the toolbar will disappear after a defined time when the
     mouse pointer leaves the toolbar. It will slide in when the cursor hits the
     remaining edge of the toolbar. See the *session.autoRaiseDelay* resource for
-	 the delay time.
+     the delay time.
 
 *Toolbar width percentage*:::
-	 Sets the width of the toolbar in a percentage of your total screen size. Use
-	 the left mouse button to decrease and the right mouse-button to increase the
-	 value. The value can be from 1-100.
+     Sets the width of the toolbar in a percentage of your total screen size. Use
+     the left mouse button to decrease and the right mouse-button to increase the
+     value. The value can be from 1-100.
 
 *Maximize Over*:::
-	 Enabling this option will allow windows to maximize over the toolbar.  With
-	 this switched on they will only expand to the edge of the bar.  This option
-	 may be overridden by the ``Full Maximization'' from the *Configuration
-	 Menu*.  If that option is enabled, this option will have no effect..
+     Enabling this option will allow windows to maximize over the toolbar.  With
+     this switched on they will only expand to the edge of the bar.  This option
+     may be overridden by the ``Full Maximization'' from the *Configuration
+     Menu*.  If that option is enabled, this option will have no effect..
 
 *Layer...*:::
     This sets the layer on which the toolbar is set. With this you can set the
@@ -629,19 +635,19 @@ The first section outlines what types of windows will be shown in the iconbar:
 +
 --
 *None*:;;
-	Will not show any windows
+    Will not show any windows
 *Icons*:;;
-	Shows windows from all workspaces that are iconified (or, minimized)
+    Shows windows from all workspaces that are iconified (or, minimized)
 *NoIcons*:;;
-	Shows windows from all workspaces that are not iconified
+    Shows windows from all workspaces that are not iconified
 *WorkspaceIcons*:;;
-	Shows windows from the current workspace that are iconified
+    Shows windows from the current workspace that are iconified
 *WorkspaceNoIcons*:;;
-	Shows windows from the current workspace that are not iconified
+    Shows windows from the current workspace that are not iconified
 *Workspace*:;;
-	Shows all windows (iconified or not) from the current workspace
+    Shows all windows (iconified or not) from the current workspace
 *All Windows*:;;
-	Shows all windows (iconified or not) from all workspaces
+    Shows all windows (iconified or not) from all workspaces
 
 --
 +
@@ -651,11 +657,11 @@ resource:
 +
 --
 *Left*:;;
-	All icons will be left-aligned with the width set in the `init' file
+    All icons will be left-aligned with the width set in the `init' file
 *Relative*:;;
-	All icons will be sized evenly to fill the iconbar completely
+    All icons will be sized evenly to fill the iconbar completely
 *Right*:;;
-	All icons will be right-aligned with the width set in the `init' file
+    All icons will be right-aligned with the width set in the `init' file
 
 --
 +
@@ -691,6 +697,8 @@ one of the first two and one of the last two. They are:
     Click to focus windows.
 *Mouse Focus*:::
     Window focus follows mouse.
+*Mouse Focus (Strict)*:::
+    Like Mouse Focus, but no mouse movement is required, ie. the window is also focused if it moves below the mouse, eg. because it shows up or you change the virtual desktop.
 *ClickTabFocus*:::
     Click to focus tabs.
 *MouseTabFocus*:::
@@ -699,16 +707,16 @@ one of the first two and one of the last two. They are:
 There are three more settings in the ``Focus Model'' menu:
 
 *Focus New Windows*:::
-	If enabled, a new window will grab X focus as soon as it is opened.
+    If enabled, a new window will grab X focus as soon as it is opened.
 
 *Auto Raise*::
-	If enabled, focusing on a new window will automatically raise that window
-	above all others within its layer. When disabled, you must explicitly raise a
-	focused window using the window menu, keybinding, or *Click Raises*.
+    If enabled, focusing on a new window will automatically raise that window
+    above all others within its layer. When disabled, you must explicitly raise a
+    focused window using the window menu, keybinding, or *Click Raises*.
 
 *Click Raises*::
-	If enabled, clicking anywhere on a window will raise it above all others
-	within its layer.
+    If enabled, clicking anywhere on a window will raise it above all others
+    within its layer.
 
 TAB OPTIONS
 -----------
@@ -726,7 +734,7 @@ tabs. Inside of it there are three main options:
 *Maximize Over*:::
     When this option is on, maximizing a window will disregard the size and
     location of external tabs, which means they may be pushed out of the screen
-	 entirely.
+     entirely.
 
 *External Tab Width*:::
     This specifies in pixels the width of external tabs.
@@ -786,14 +794,14 @@ All changes take effect immediately. Here are the settings:
     If this is enabled the slit will disappear after a defined time when the
     mouse pointer leaves the slit. It will slide in when the cursor hits the
     remaining edge of the slit. See the *session.autoRaiseDelay* resource for
-	 the delay time.
+     the delay time.
 
 *Maximize Over*:::
-	 Enabling this option will allow windows to maximizing over the slit.  With
-	 this switched off they will only expand to the edge of the slit.  This
-	 option may be overridden by the ``Full Maximization'' from the
-	 *Configuration Menu*. If that option is enabled, this option will have no
-	 effect..
+     Enabling this option will allow windows to maximizing over the slit.  With
+     this switched off they will only expand to the edge of the slit.  This
+     option may be overridden by the ``Full Maximization'' from the
+     *Configuration Menu*. If that option is enabled, this option will have no
+     effect..
 
 *Alpha*:::
     This sets the alpha value for the slit. Use the left mouse button to
@@ -802,11 +810,11 @@ All changes take effect immediately. Here are the settings:
 
 *Clients*:::
     This submenu lets you reorder the the applications running in the
-	 slit. You are able to hide apps from the slit by unselecting them in the
-	 list showing. This will not kill the app. You can make them re-appear by
-	 selecting them in the list. The "Save SlitList" option saves the new order
-	 to you slitlist located in *~/.fluxbox/slitlist*.  See the next section for
-	 details.
+     slit. You are able to hide apps from the slit by unselecting them in the
+     list showing. This will not kill the app. You can make them re-appear by
+     selecting them in the list. The "Save SlitList" option saves the new order
+     to you slitlist located in *~/.fluxbox/slitlist*.  See the next section for
+     details.
 
 Slitlist File
 ~~~~~~~~~~~~~
@@ -889,8 +897,8 @@ These allow users to place the slit and toolbar where they like.
 +
 --
 Possible options are:;;
-	*BottomLeft* *BottomCenter* *BottomRight* *LeftBottom* *LeftCenter* *LeftTop*
-	*RightBottom* *RightCenter* *RightTop* *TopLeft* *TopCenter* *TopRight*
+    *BottomLeft BottomCenter BottomRight LeftBottom LeftCenter LeftTop
+    RightBottom RightCenter RightTop TopLeft TopCenter TopRight*
 --
 +
 Slit default: *RightBottom*
@@ -930,8 +938,8 @@ They may be specified in any order, delimited by the *,* character.
 They will appear in the order given.
 +
 Possible tools:;;
-*clock* *iconbar* *nextwindow* *prevwindow* *nextworkspace* *prevworkspace*
-*systemtray* *workspacename*
+*clock iconbar nextwindow prevwindow nextworkspace  prevworkspace
+systemtray workspacename*
 +
 Default:;;
 *workspacename, prevworkspace, nextworkspace, iconbar, prevwindow, nextwindow,
@@ -1075,6 +1083,14 @@ jump to the edge.
 +
 Default: *10*
 
+*session.screen0.edgeResizeSnapThreshold*: 'integer'::
+When resizing a window by grabbing a corner, fluxbox is able to have it `snap'
+to the edges of the screen and other windows for easy placement. This
+variable tells fluxbox the distance (in pixels) at which the window will
+jump to the edge.
++
+Default: *0*
+
 *session.screen0.windowPlacement*: 'strategy'::
 This resource specifies where to place new windows when not otherwise
 specified (by the program or the `apps' file, for example).
@@ -1178,7 +1194,7 @@ may specify any number, space-delimited.
 +
 --
 The available options are:;;
-	*Close* *Maximize* *MenuIcon* *Minimize* *Shade* *Stick* *LHalf* *RHalf*
+    *Close Maximize MenuIcon Minimize Shade Stick LHalf RHalf*
 --
 +
 Default left: *Stick*
@@ -1194,39 +1210,50 @@ files. This is where you can specify different files. Most of the defaults will
 be located in the user's *~/.fluxbox* directory.
 
 *session.appsFile*: 'location'::
-	Location of persistent application settings, or the `apps' file. See the
-	*Remember...* item in the *Window Menu* section above or *fluxbox-apps(5)*
-	for details.
+    Location of persistent application settings, or the `apps' file. See the
+    *Remember...* item in the *Window Menu* section above or *fluxbox-apps(5)*
+    for details.
 
 *session.groupFile*: 'location'::
-	Deprecated, auto-grouping is now done in the `apps' file, see
-	*fluxbox-apps(5)* for details.
+    Deprecated, auto-grouping is now done in the `apps' file, see
+    *fluxbox-apps(5)* for details.
 
 *session.keyFile*: 'location'::
-	Location of the keyboard mapping settings, or the `keys' file.
-	See *fluxbox-keys(5)* for details.
+    Location of the keyboard mapping settings, or the `keys' file.
+    See *fluxbox-keys(5)* for details.
 
 *session.menuFile*: 'location'::
-	Location of the Root Menu file.
-	See *fluxbox-menu(5)* for details.
+    Location of the Root Menu file.
+    See *fluxbox-menu(5)* for details.
 
 *session.slitlistFile*: 'location'::
-	Location of the file used to remember slit client ordering.
-	See *SLIT* above for details.
+    Location of the file used to remember slit client ordering.
+    See *SLIT* above for details.
 
 *session.styleFile*: 'location'::
-	Location of the currently selected style.
-	See *fluxbox-style(5)* for details.
+    Location of the currently selected style.
+    See *fluxbox-style(5)* for details.
 
 *session.styleOverlay*: 'location'::
-	Location of the style overlay file.
-	See *fluxbox-style(5)* for details.
+    Location of the style overlay file.
+    See *fluxbox-style(5)* for details.
 
 *session.screen0.windowMenu*: 'location'::
 This optionally specifies the location of a user-defined window menu. If left
 blank, it will use *~/.fluxbox/windowmenu*.
 +
 Default: *blank*
+
+*session.menuSearch*: *nowhere*|*itemstart*|*somewhere*::
+This setting controls the way the menu search feature works.
+--
+Available options:;;
+- nowhere: disables the menu search
+- itemstart: typed text matches at the start of a menu items
+- somewhere: typed text matches somewhere in a menu item
+--
++
+Default: *itemstart*
 
 ENVIRONMENT
 -----------

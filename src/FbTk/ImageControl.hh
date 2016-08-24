@@ -82,7 +82,6 @@ private:
     Pixmap searchCache(unsigned int width, unsigned int height, const Texture &text, Orientation orient) const;
 
     void createColorTable();
-    bool m_dither;
     Timer m_timer;
 
     Colormap m_colormap;

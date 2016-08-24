@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: fbrun
 .\"    Author: Jim Ramsay <i.am@jimramsay.com>
-.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
-.\"      Date: 13 February 2013
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 08 February 2015
 .\"    Manual: Fluxbox Manual
 .\"    Source: fbrun.txt
 .\"  Language: English
 .\"
-.TH "FBRUN" "1" "13 February 2013" "fbrun\&.txt" "Fluxbox Manual"
+.TH "FBRUN" "1" "08 February 2015" "fbrun\&.txt" "Fluxbox Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -94,15 +94,15 @@ Background color\&. The default is
 Text font name
 .RE
 .PP
-\fB\-na\fR
-.RS 4
-Disable font antialias
-.RE
-.PP
 \fB\-hf\fR \fIfilename\fR
 .RS 4
 History file to load\&. The default is
 \fB~/\&.fluxbox/fbrun_history\fR\&.
+.RE
+.PP
+\fB\-preselect\fR
+.RS 4
+Select the preset text given by the \fB\&-text\fR\& parameter
 .RE
 .PP
 \fB\-help\fR

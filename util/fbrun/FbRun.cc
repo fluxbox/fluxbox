@@ -65,8 +65,10 @@ FbRun::FbRun(int x, int y, size_t width):
     m_gc(*this),
     m_end(false),
     m_current_history_item(0),
-    m_last_completion_prefix(""),
-    m_current_apps_item(0),
+    m_current_files_item(-1),
+    m_last_completion_path(""),
+    m_current_apps_item(-1),
+    m_completion_pos(std::string::npos),
     m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)) {
 
     setGC(m_gc.gc());
@@ -110,12 +112,18 @@ FbRun::~FbRun() {
 }
 
 void FbRun::run(const std::string &command) {
+
     FbTk::App::instance()->end(); // end application
     m_end = true; // mark end of processing
 
+    hide(); // hide gui
+
     if (m_print) {
         std::cout << command;
-        hide();
+        return;
+    }
+
+    if (command.empty()) {
         return;
     }
 
@@ -152,51 +160,32 @@ void FbRun::run(const std::string &command) {
 #error "Can't build FbRun - don't know how to launch without fork on your platform"
 #endif
 
-    hide(); // hide gui
-
-    // save command history to file
-    if (text().size() != 0) { // no need to save empty command
-
-        // don't allow duplicates into the history file, first
-        // look for a duplicate
-        if (m_current_history_item < m_history.size()
-            && text() == m_history[m_current_history_item]) {
-            // m_current_history_item is the duplicate
-        } else {
-            m_current_history_item = 0;
-            for (; m_current_history_item < m_history.size();
-                 ++m_current_history_item) {
-                if (m_history[m_current_history_item] == text())
-                    break;
-            }
-        }
-
-        fstream inoutfile(m_history_file.c_str(), ios::in|ios::out);
-        if (inoutfile) {
-            // now m_current_history_item points at the duplicate, or
-            // at m_history.size() if no duplicate
-            if (m_current_history_item != m_history.size()) {
-                unsigned int i = 0;
-                // read past history items before current
-                for (; inoutfile.good() && i < m_current_history_item; i++)
-                    inoutfile.ignore(1, '\n');
-
-                // write the history items that come after current
-                for (i++; i < m_history.size(); i++)
-                    inoutfile<<m_history[i]<<endl;
-
-            } else {
-                // set put-pointer at end of file
-                inoutfile.seekp(0, ios::end);
-            }
-            // append current command to the file
-            inoutfile<<command<<endl;
-
-        } else
-            cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
+    ofstream outfile(m_history_file.c_str());
+    if (!outfile) {
+        cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
+        return;
     }
 
+    int n = 1024;
+    char *a = getenv("FBRUN_HISTORY_SIZE");
+    if (a)
+        n = atoi(a);
+    int j = m_history.size();
+    --n; // NOTICE: this should be "-=2", but a duplicate entry in the late
+         // (good) section would wait "too" long
+         // (we'd wait until 3 items are left and then still skip one for being a dupe)
+         // IOW: the limit is either n or n+1, depending in the history structure
+    for (unsigned int i = 0; i != m_history.size(); ++i) {
+        // don't allow duplicates into the history file
+        if (--j > n || m_history[i] == command)
+            continue;
+        outfile<<m_history[i]<<endl;
+    }
+    if (++n > 0) // n was decremented for the loop
+        outfile << command << endl;
+    outfile.close();
 }
+
 
 bool FbRun::loadHistory(const char *filename) {
     if (filename == 0)
@@ -211,13 +200,11 @@ bool FbRun::loadHistory(const char *filename) {
         }
         return false;
     }
-    // clear old history and load new one from file
+
     m_history.clear();
-    // each line is a command
     string line;
-    while (!infile.eof()) {
-        getline(infile, line);
-        if (line.size()) // don't add empty lines
+    while (getline(infile, line)) {
+        if (!line.empty()) // don't add empty lines
             m_history.push_back(line);
     }
     // set no current histor to display
@@ -226,6 +213,23 @@ bool FbRun::loadHistory(const char *filename) {
     m_history_file = filename;
     return true;
 }
+
+bool FbRun::loadCompletion(const char *filename) {
+    if (!filename)
+        return false;
+    ifstream infile(filename);
+    if (!infile)
+        return false;
+
+    m_apps.clear();
+    string line;
+    while (getline(infile, line)) {
+        if (!line.empty()) // don't add empty lines
+            m_apps.push_back(line);
+    }
+    return true;
+}
+
 
 bool FbRun::loadFont(const string &fontname) {
     if (!m_font.load(fontname.c_str()))
@@ -266,7 +270,16 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
     if (IsModifierKey(ks))
         return;
 
-    if (FbTk::KeyUtil::instance().isolateModifierMask(ke.state)) { // a modifier key is down
+    if (m_autocomplete && isprint(keychar[0])) {
+        did_tab_complete = true;
+        if (m_completion_pos == std::string::npos) {
+            m_completion_pos = cursorPosition();
+        } else {
+            ++m_completion_pos;
+        }
+        tabCompleteApps();
+    } else if (FbTk::KeyUtil::instance().isolateModifierMask(ke.state)) {
+        // a modifier key is down
         if ((ke.state & ControlMask) == ControlMask) {
             switch (ks) {
             case XK_p:
@@ -279,7 +292,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
                 break;
             case XK_Tab:
                 did_tab_complete = true;
-                tabCompleteHistory();
+                tabComplete(m_history, m_current_history_item, true); // reverse
                 break;
             }
         } else if ((ke.state & (Mod1Mask|ShiftMask)) == (Mod1Mask | ShiftMask)) {
@@ -317,9 +330,9 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
             break;
         }
     }
-    clear();
     if (!did_tab_complete)
-        m_last_completion_prefix = "";
+        m_completion_pos = std::string::npos;
+    clear();
 }
 
 void FbRun::lockPosition(bool size_too) {
@@ -381,134 +394,126 @@ void FbRun::lastHistoryItem() {
     }
 }
 
-void FbRun::tabCompleteHistory() {
-    if (m_current_history_item == 0 || m_history.empty() ) {
+void FbRun::tabComplete(const std::vector<std::string> &list, int &currentItem, bool reverse) {
+    if (list.empty()) {
         XBell(m_display, 0);
-    } else {
-        unsigned int nr= 0;
-        unsigned int history_item = m_current_history_item - 1;
-        if (m_last_completion_prefix.empty())
-            m_last_completion_prefix = text().substr(0, textStartPos() + cursorPosition());
-
-        while (history_item != m_current_history_item && nr++ < m_history.size()) {
-            if (m_history[history_item].find(m_last_completion_prefix) == 0) {
-                m_current_history_item = history_item;
-                setText(FbTk::BiDiString(m_history[m_current_history_item]));
-                cursorEnd();
-                break;
-            }
-            if (history_item == 0) // loop
-                history_item = m_history.size();
-            history_item--;
-        }
-        if (history_item == m_current_history_item) XBell(m_display, 0);
+        return;
     }
+
+    if (m_completion_pos == std::string::npos)
+        m_completion_pos = textStartPos() + cursorPosition();
+    size_t split = text().find_last_of(' ', m_completion_pos);
+    if (split == std::string::npos)
+        split = 0;
+    else
+        ++split; // skip space
+    std::string prefix = text().substr(split, m_completion_pos - split);
+
+    if (currentItem < 0)
+        currentItem = 0;
+    else if (currentItem >= list.size())
+        currentItem = list.size() - 1;
+    int item = currentItem;
+
+    while (true) {
+        if (reverse) {
+            if (--item < 0)
+                item = list.size() - 1;
+        } else {
+            if (++item >= list.size())
+                item = 0;
+        }
+        if (list.at(item).find(prefix) == 0) {
+            setText(FbTk::BiDiString(text().substr(0, split) + list.at(item)));
+            if (item == currentItem) {
+                cursorEnd();
+                m_completion_pos = std::string::npos;
+            } else {
+                select(split + prefix.size(), text().size() - (prefix.size() + split));
+            }
+            currentItem = item;
+            return;
+        }
+        if (item == currentItem) {
+            cursorEnd();
+            m_completion_pos = std::string::npos;
+            return;
+        }
+    }
+    // found nothing
+    XBell(m_display, 0);
 }
+
 
 void FbRun::tabCompleteApps() {
 
-    static bool first_run= true;
-    if (m_last_completion_prefix.empty())
-        m_last_completion_prefix = text().substr(0, textStartPos() + cursorPosition());
-    string prefix = m_last_completion_prefix;
-    FbTk::Directory dir;
+    if (m_completion_pos == std::string::npos)
+        m_completion_pos = textStartPos() + cursorPosition();
+    size_t split = text().find_last_of(' ', m_completion_pos);
+    if (split == std::string::npos)
+        split = 0;
+    else
+        ++split; // skip the space
+    std::string prefix = text().substr(split, m_completion_pos - split);
+    if (prefix.empty()) {
+        XBell(m_display, 0);
+        return;
+    }
+    if (prefix.at(0) == '/' || prefix.at(0) == '.' || prefix.at(0) == '~') {
+        // we're completing a directory, find subdirs
+        split = prefix.find_last_of('/');
+        prefix = prefix.substr(0, split+1);
+        if (prefix != m_last_completion_path) {
+            m_files.clear();
+            m_current_files_item = -1;
+            m_last_completion_path = prefix;
 
-    bool add_dirs= false;
-    bool changed_prefix= false;
-
-    // (re)build m_apps-container
-    if (first_run || m_last_completion_prefix != prefix) {
-        first_run= false;
-
-        string path;
-
-        if(!prefix.empty() &&
-            string("/.~").find_first_of(prefix[0]) != string::npos) {
-            size_t rseparator= prefix.find_last_of("/");
-            path= prefix.substr(0, rseparator + 1) +  ":";
-            add_dirs= true;
-        } else {
-            char* tmp_path = getenv("PATH");
-            if (tmp_path)
-                path = tmp_path;
+            FbTk::Directory dir;
+            std::string path = prefix;
+            if (path.at(0) == '~')
+                path.replace(0,1,getenv("HOME"));
+            dir.open(path.c_str());
+            int n = dir.entries();
+            while (--n > -1) {
+                std::string entry = dir.readFilename();
+                if (entry == "." || entry == "..")
+                    continue;
+                if (FbTk::FileUtil::isDirectory(std::string(path + entry).c_str()))
+                    m_files.push_back(prefix + entry + "/");
+                else
+                    m_files.push_back(prefix + entry);
+            }
+            dir.close();
+            sort(m_files.begin(), m_files.end());
         }
-        m_apps.clear();
-
-        unsigned int l;
-        unsigned int r;
-
-        for(l= 0, r= 0; r < path.size(); r++) {
-            if ((path[r]==':' || r == path.size() - 1) && r - l > 0) {
-                string filename;
-                string fncomplete;
-                dir.open(path.substr(l, r - l).c_str());
-                int n= dir.entries();
-                if (n >= 0) {
-                    while(n--) {
-                        filename= dir.readFilename();
-                        fncomplete= dir.name() +
-                                    (*dir.name().rbegin() != '/' ? "/" : "") +
-                                    filename;
-
-                        // directories in dirmode ?
-                        if (add_dirs && FbTk::FileUtil::isDirectory(fncomplete.c_str()) &&
-                            filename != ".." && filename != ".") {
-                            m_apps.push_back(fncomplete);
-                        // executables in dirmode ?
-                        } else if (add_dirs && FbTk::FileUtil::isRegularFile(fncomplete.c_str()) &&
-                                   FbTk::FileUtil::isExecutable(fncomplete.c_str()) &&
-                                   (prefix == "" ||
-                                    fncomplete.substr(0, prefix.size()) == prefix)) {
-                            m_apps.push_back(fncomplete);
-                        // executables in $PATH ?
-                        } else if (FbTk::FileUtil::isRegularFile(fncomplete.c_str()) &&
-                                   FbTk::FileUtil::isExecutable(fncomplete.c_str()) &&
-                                   (prefix == "" ||
-                                    filename.substr(0, prefix.size()) == prefix)) {
-                            m_apps.push_back(filename);
+        tabComplete(m_files, m_current_files_item);
+    } else {
+        static bool first_run = true;
+        if (first_run && m_apps.empty()) {
+            first_run = false;
+            std::string path = getenv("PATH");
+            FbTk::Directory dir;
+            for (unsigned int l = 0, r = 0; r < path.size(); ++r) {
+                if ((path.at(r) == ':' || r == path.size() - 1) && r - l > 1) {
+                    dir.open(path.substr(l, r - l).c_str());
+                    prefix = dir.name() + (*dir.name().rbegin() == '/' ? "" : "/");
+                    int n = dir.entries();
+                    while (--n > -1) {
+                        std::string entry = dir.readFilename();
+                        std::string file = prefix + entry;
+                        if (FbTk::FileUtil::isExecutable(file.c_str()) &&
+                                     !FbTk::FileUtil::isDirectory(file.c_str())) {
+                            m_apps.push_back(entry);
                         }
                     }
+                    dir.close();
+                    l = r + 1;
                 }
-                l= r + 1;
-                dir.close();
             }
+            sort(m_apps.begin(), m_apps.end());
+            unique(m_apps.begin(), m_apps.end());
         }
-        sort(m_apps.begin(), m_apps.end());
-        unique(m_apps.begin(), m_apps.end());
-
-        m_last_completion_prefix = prefix;
-        changed_prefix= true;
-        m_current_apps_item= 0;
-    }
-
-    if (m_apps.empty() ) {
-      XBell(m_display, 0);
-    } else {
-        size_t apps_item = m_current_apps_item + (changed_prefix ? 0 : 1);
-        bool loop= false;
-
-        while (true) {
-            if (apps_item >= m_apps.size() ) {
-                loop = true;
-                apps_item = 0;
-            }
-
-            if ((!changed_prefix || loop) && apps_item == m_current_apps_item) {
-                break;
-            }
-            if (m_apps[apps_item].find(prefix) == 0) {
-                m_current_apps_item = apps_item;
-                if (add_dirs && FbTk::FileUtil::isDirectory(m_apps[m_current_apps_item].c_str()))
-                    setText(m_apps[m_current_apps_item] +  "/");
-                else
-                    setText(m_apps[m_current_apps_item]);
-                cursorEnd();
-                break;
-            }
-            apps_item++;
-        }
-        if (!changed_prefix && apps_item == m_current_apps_item)
-            XBell(m_display, 0);
+        tabComplete(m_apps, m_current_apps_item);
     }
 }
 

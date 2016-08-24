@@ -43,10 +43,6 @@ public:
     void setTextPaddingLeft(unsigned int leftpadding);
     void setTextPaddingRight(unsigned int rightpadding);
 
-    void resize(unsigned int width, unsigned int height);
-    void moveResize(int x, int y,
-                    unsigned int width, unsigned int height);
-
     /// clears window and redraw text
     void clear();
     /// clears area and redraws text

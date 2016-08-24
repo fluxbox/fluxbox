@@ -49,6 +49,7 @@ public:
           m_close_on_click(true),
           m_toggle_item(false)
     { }
+
     explicit MenuItem(const BiDiString &label)
         : m_label(label),
           m_menu(0),
@@ -89,7 +90,7 @@ public:
           m_close_on_click(true),
           m_toggle_item(false)
     { }
-    virtual ~MenuItem() { }
+    virtual ~MenuItem();
 
     void setCommand(RefCount<Command<void> > &cmd) { m_command = cmd; }
     virtual void setSelected(bool selected) { m_selected = selected; }
@@ -113,14 +114,12 @@ public:
     virtual bool isToggleItem() const { return m_toggle_item; }
 
     // iType functions
-    virtual void setIndex(int index) { m_index = index; }
-    virtual int getIndex() { return m_index; }
     const FbString &iTypeString() const { return m_label.visual(); }
     virtual void drawLine(FbDrawable &draw,
                       const FbTk::ThemeProxy<MenuTheme> &theme,
-                      size_t size,
+                      size_t n_chars,
                       int text_x, int text_y,
-                      unsigned int width) const;
+                      unsigned int width, size_t skip_chars = 0) const;
 
     virtual unsigned int width(const FbTk::ThemeProxy<MenuTheme> &theme) const;
     virtual unsigned int height(const FbTk::ThemeProxy<MenuTheme> &theme) const;
@@ -154,14 +153,12 @@ private:
     RefCount<Command<void> > m_command; ///< command to be executed
     bool m_enabled, m_selected;
     bool m_close_on_click, m_toggle_item;
-    int m_index;
 
     struct Icon {
         std::auto_ptr<PixmapWithMask> pixmap;
         std::string filename;
     };
     std::auto_ptr<Icon> m_icon;
-
 };
 
 } // end namespace FbTk

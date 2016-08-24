@@ -1,5 +1,30 @@
-Version 1.3.5 is a bug fix release.
+Version 1.3.7 is a bug fix release.
 
-Critical Bugfixes in 1.3.5:
-    * Reenabled 'If' 'Or' 'And' actions again
+Critical Bugfixes:
+    * Segfault on startup (mostly *BSD)
+    * Segfault on shutdown
+    * Segfault on clicking the Remember menu
+    * Menu crops on TypeAhead
 
+Minor Bugfixes:
+    * _NET_REQUEST_FRAME_EXTENTS
+    * Working autorepeat keys
+    * Working vertical rotated Tabs and Toolbar
+    * Proper size of titlebar buttons on restart / detaching tabs
+    * Missing windowmenu works again
+    * Several glitches in the menu
+    * Correct handling of 'maximized' statement in the apps file
+
+Features:
+    * The improved TypeAhead sytem is not limited to matches on beginning
+      of menu items anymore, the behavior is configurable:
+      - Nowhere - disables TypeAhead support
+      - ItemStart - matches typed text only at the start of a menu item
+      - Somewhere - matches typed text somewhere in a menu item
+      (Currently this is a configfile-only option)
+    * Minor tweaks to the i18n system
+    * Updated turkish translations
+
+End User unrelated:
+    * Code refactoring and cleanup, assisted by Coverity and
+      clang static code analysis

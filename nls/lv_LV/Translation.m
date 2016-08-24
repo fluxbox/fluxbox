@@ -118,12 +118,16 @@ $set 19 #main
 
 1 kïûda: '-display' nepiecieðams arguments
 11 kïûda: '-rc' nepiecieðams arguments
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <virkne>\t\tlietot displeja savienojumu.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <virkne>\t\t\tlietot citu resersu failu.\n\
 -version\t\t\tparâdît versiju un iziet.\n\
 -info\t\t\t\tdisplay some useful information.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tparâdît ðo palîdzîbas tekstu un iziet.\n\n
-
 

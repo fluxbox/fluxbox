@@ -209,11 +209,17 @@ $set 19 #main
 9 Tệp tin sự kiện
 10 Ghi sự kiện vào
 11 lỗi: '-rc' cần đối số
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n
+Website: http://www.fluxbox.org/\n\n\
 -display <string>\t\tsử dụng màn hình lựa chọn.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tsử dụng tệp tin tài nguyên khác.\n\
 -version\t\t\tđưa ra số phiên bản và thoát.\n\
 -info\t\t\t\thiển thị vài thông tin có ích.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\ttên tệp tin sự kiện.\n\
 -help\t\t\t\thiển thị thông tin trợ giúp này và thoát.\n\n
 

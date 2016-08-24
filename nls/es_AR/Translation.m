@@ -34,11 +34,12 @@ $set 3 #Common
 4 Opciones compiladas
 5 Compilador
 6 Versión del compilador
-7      init
-8      keys
-9       nls
-10      menu
-11     style
+7        init
+8        keys
+9         nls
+10        menu
+20  windowmenu
+11       style
 12 Opciones por defecto
 13 desactivado
 14 Error
@@ -247,13 +248,17 @@ $set 19 #main
 10 Guardando registro en
 11 error: '-rc' requiere un argumento
 12 error: '-screen' requiere un argumento
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 Página web: http://www.fluxbox.org/\n\n\
 -display <string>\t\tutilizar conexion a un diplay.\n\
 -screen <all|int,int,int>\tejecutar solamente en pantallas especificadas.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tusar archivo de recursos alternativo.\n\
 -version\t\t\tmostrar versión y salir.\n\
 -info\t\t\t\tmostrar información útil.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tregistrar salidas en archivo.\n\
 -help\t\t\t\tmostrar esta ayuda y salir.\n\n
 14 atención: no se pudo establecer la variable de entorno 'DISPLAY'

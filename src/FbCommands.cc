@@ -42,17 +42,8 @@
 #include <fstream>
 #include <iostream>
 #include <set>
-
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
+#include <cstdlib>
+#include <cstring>
 
 #if defined(__EMX__) && defined(HAVE_PROCESS_H)
 #include <process.h> // for P_NOWAIT
@@ -78,19 +69,26 @@ void showMenu(BScreen &screen, FbTk::Menu &menu) {
 
     FbMenu::setWindow(FocusControl::focusedFbWindow());
 
-    Window ignored_w;
-    int ignored_i;
-    unsigned int ignored_ui;
+    union {
+        Window w;
+        int i;
+        unsigned int ui;
+    } ignored;
 
     int x = 0;
     int y = 0;
 
     XQueryPointer(menu.fbwindow().display(),
-                  screen.rootWindow().window(), &ignored_w, &ignored_w,
-                  &x, &y, &ignored_i, &ignored_i, &ignored_ui);
+                  screen.rootWindow().window(), &ignored.w, &ignored.w,
+                  &x, &y, &ignored.i, &ignored.i, &ignored.ui);
 
-    screen.placementStrategy()
-        .placeAndShowMenu(menu, x, y, false);
+    int head = screen.getHead(x, y);
+	const bool mouseInStrut = y < static_cast<signed>(screen.maxTop(head)) ||
+                              y > static_cast<signed>(screen.maxBottom(head)) ||
+                              x < static_cast<signed>(screen.maxLeft(head)) ||
+                              x > static_cast<signed>(screen.maxRight(head));
+
+    screen.placementStrategy().placeAndShowMenu(menu, x, y, mouseInStrut);
 }
 
 }
@@ -252,6 +250,7 @@ SetStyleCmd::SetStyleCmd(const string &filename):m_filename(filename) {
 void SetStyleCmd::execute() {
     if (FbTk::ThemeManager::instance().load(m_filename,
         Fluxbox::instance()->getStyleOverlayFilename())) {
+        Fluxbox::instance()->reconfigThemes();
         Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
         Fluxbox::instance()->save_rc();
     }
@@ -303,8 +302,9 @@ void ShowClientMenuCmd::execute() {
     FocusControl::Focusables::const_iterator it = list->clientList().begin(),
                                              it_end = list->clientList().end();
     for (; it != it_end; ++it) {
-        if (typeid(**it) == typeid(FluxboxWindow) && m_pat.match(**it))
-            m_list.push_back(static_cast<FluxboxWindow *>(*it));
+        Focusable* f = *it;
+        if (typeid(*f) == typeid(FluxboxWindow) && m_pat.match(*f))
+            m_list.push_back(static_cast<FluxboxWindow *>(f));
     }
 
     m_menu.reset(new ClientMenu(*screen, m_list,
@@ -322,7 +322,7 @@ void ShowCustomMenuCmd::execute() {
         return;
 
     if (!m_menu.get() || screen->screenNumber() != m_menu->screenNumber()) {
-        m_menu.reset(screen->createMenu(""));
+        m_menu.reset(MenuCreator::createMenu("", *screen));
         m_menu->setReloadHelper(new FbTk::AutoReloadHelper());
         m_menu->reloadHelper()->setReloadCmd(FbTk::RefCount<FbTk::Command<void> >(new FbTk::SimpleCommand<ShowCustomMenuCmd>(*this, &ShowCustomMenuCmd::reload)));
         m_menu->reloadHelper()->setMainFile(custom_menu_file);
@@ -545,7 +545,6 @@ void ClientPatternTestCmd::execute() {
     std::string                         result;
     std::string                         pat;
     int                                 opts;
-    ClientPattern*                      cp;
     Display*                            dpy;
     Atom                                atom_utf8;
     Atom                                atom_fbcmd_result;
@@ -557,9 +556,9 @@ void ClientPatternTestCmd::execute() {
     atom_fbcmd_result = XInternAtom(dpy, "_FLUXBOX_ACTION_RESULT", False);
 
     FocusableList::parseArgs(m_args, opts, pat);
-    cp = new ClientPattern(pat.c_str());
+    ClientPattern cp(pat.c_str());
 
-    if (!cp->error()) {
+    if (!cp.error()) {
 
         const FocusableList*                        windows;
         FocusControl::Focusables::const_iterator    wit;
@@ -572,8 +571,9 @@ void ClientPatternTestCmd::execute() {
             wit_end = windows->clientList().end();
 
             for ( ; wit != wit_end; wit++) {
-                if (typeid(**wit) == typeid(FluxboxWindow) && cp->match(**wit)) {
-                    matches.push_back(static_cast<const FluxboxWindow*>(*wit));
+                Focusable* f = *wit;
+                if (typeid(*f) == typeid(FluxboxWindow) && cp.match(*f)) {
+                    matches.push_back(static_cast<const FluxboxWindow*>(f));
                 }
             }
         }
@@ -592,7 +592,7 @@ void ClientPatternTestCmd::execute() {
         }
     } else {
         result = "-1\t";
-        result += FbTk::StringUtil::number2String(cp->error_col());
+        result += FbTk::StringUtil::number2String(cp.error_col());
         result += "\n";
     }
 

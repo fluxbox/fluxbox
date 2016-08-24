@@ -97,18 +97,15 @@ FbTk::FbString getWMClassName(Window win) {
 
     if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
         fbdbg<<"Xutil: Failed to read class hint!"<<endl;
-
-        instance_name = "";
     } else {
 
         XFree(ch.res_class);
 
-        if (ch.res_class != 0) {
+        if (ch.res_name != 0) {
             instance_name = const_cast<char *>(ch.res_name);
             XFree(ch.res_name);
             ch.res_name = 0;
-        } else
-            instance_name = "";
+        }
     }
 
     return instance_name;
@@ -122,7 +119,6 @@ FbTk::FbString getWMClassClass(Window win) {
 
     if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
         fbdbg<<"Xutil: Failed to read class hint!"<<endl;
-        class_name = "";
     } else {
 
         XFree(ch.res_name);
@@ -131,8 +127,7 @@ FbTk::FbString getWMClassClass(Window win) {
             class_name = const_cast<char *>(ch.res_class);
             XFree(ch.res_class);
             ch.res_class = 0;
-        } else
-            class_name = "";
+        }
     }
 
     return class_name;

@@ -47,7 +47,7 @@ public:
     virtual int descent() const = 0;
     virtual unsigned int height() const = 0;
     virtual bool loaded() const = 0;
-    virtual void rotate(int angle) { } // by default, no rotate support
+    virtual void rotate(FbTk::Orientation angle) { } // by default, no rotate support
     virtual bool utf8() const { return false; };
 protected:
     FontImp() { }

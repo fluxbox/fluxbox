@@ -29,6 +29,12 @@ namespace FbTk {
 /// renders to drawable together with an alpha mask
 class Transparent {
 public:
+
+    static bool haveComposite(bool for_real = false);
+    static bool haveRender();
+    static void usePseudoTransparent(bool force);
+
+
     Transparent(Drawable source, Drawable dest, int alpha, int screen_num);
     ~Transparent();
     /// sets alpha value
@@ -49,9 +55,6 @@ public:
     Drawable dest() const { return m_dest; }
     Drawable source() const { return m_source; }
 
-    static bool haveComposite(bool for_real = false);
-    static bool haveRender() { if (!s_init) init(); return s_render; }
-    static void usePseudoTransparent(bool force);
 
 private:
     void freeAlpha();
@@ -61,12 +64,6 @@ private:
     unsigned long m_dest_pic;
     Drawable m_source, m_dest;
     unsigned char m_alpha;
-    
-    static bool s_init;
-    static bool s_render; ///< wheter we have RENDER support
-    static bool s_composite; ///< wheter we have Composite support
-    static bool s_use_composite; ///< whether or not to use Composite
-    static void init();
 };
 
 } // end namespace  FbTk

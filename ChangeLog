@@ -1,6 +1,153 @@
  (Format: Year/Month/Day)
 
 -----------------------------
+Changes for 1.3.7
+
+*15/02/07:
+    * Bugfix: initialize titlebar buttons with the proper size (closes #1125)
+    * Bugfix: correct initialization of the taboptions menu
+    * Bugfix: render toggleitems in menus correctly
+    * Bugfix: transparent windows work again (Thanks to Arkadiusz Bokowy)
+    * Update turkish translations (Thanks Volkan Gezer)
+
+*15/02/05:
+    * Feature: typeahead search options: 'nowhere', 'itemstart', 'somewhere'
+
+*15/02/04:
+    * Bugfix: prevent tiny titlebar buttons to cause crashes
+
+*15/02/01:
+    * Bugfix: crash on click the remember menu
+    * Bugfix: use proper texture for window grips
+
+*15/01/31:
+    * Improve i18n: support NLSPATH, FLUXBOX_CATFILE and FLUXBOX_CATDIR
+    * Update translations
+
+*15/01/30:
+    * Bugfix: missing windowmenu
+
+*15/01/29:
+    * Boyscouting: make fluxbox strcat() free; use of strncpy
+    * Add chrome to fluxbox-generate_menu
+
+*15/01/28:
+    * Feature: typeahead matching is not limited to the beginning of
+      the menu entries anymore. Massive refactor of FbTk::Menu code.
+    * Bugfix: do not crop the menu when using typeahead (regression introduced
+      by 8387742c).
+    * Bugfix: proper handling of 'maximized' statement in .fluxbox/apps
+    * Increase verbosity of 'configure'
+
+*15/04/25:
+    * Bugfix: improper use of 'printf' in fluxbox-generate_menu
+      (Thanks Daniel Campbell)
+
+*15/01/24:
+    * Bugfix: render vertical text (affects Tabs and Toolbar; closes #1119)
+    * Add 'lxterminal' and 'geany' to fluxbox-generate_menu
+
+*15/01/22:
+    * Bugfix: _NET_REQUEST_FRAME_EXTENTS (closes #1121)
+    * Bugfix: emit signal when window gets decionified
+
+*15/01/21:
+    * Bugfix: segfault on shutdown due to menu code (closes #1118;
+      refactoring; makes clang '-fsanitize=address' happy)
+    * Bugfix: potential memory leak in XFontImp.cc (closes #1120)
+    * Fix regression: autorepeated keys did not work anymore (closes #1115,
+      reopens #1067 ("lost keypresses after workspace change"))
+
+*15/01/16:
+    * Code cleanup: coverity-scan pointed out some flaws; reordering code
+    * Reduce number of allocations on menu generation
+
+*15/01/15:
+    * Refactor menu code
+
+*15/01/10:
+    * Bugfix: catch integer underflow (closes #1116, #1117)
+
+-----------------------------
+Changes for 1.3.6
+
+*15/01/03:
+    * Code cleanup
+
+*15/01/02:
+    * Bugfix: Corruption of fbrun-history
+      (closes #72, #73 and patch #162, thanks to Mattias Guns,
+       'Nable 80' and Ulrich Eckhardt)
+
+*14/09/29:
+    * Feature: Treat Windows having WM_CLASS == "DockApp" set like DockApps
+
+*14/09/28:
+    * Bugfix: Fix border width for relative resizes (Thanks to Arkadiusz Bokowy)
+
+*14/09/14:
+    * Bugfix: Check correct XClassHint property (Thanks to Arkadiusz Bokowy)
+
+*14/07/22:
+    * Bugfix: Fix _NET_MOVERESIZE_WINDOW resize issue, closes #1108
+
+*14/05/12:
+    * Bugfix: Fix clocktool and other entities lagging behind the systemclock.
+
+*14/04/11:
+    * Build-System: Modernized variant of the autotools-based build system
+      fluxbox uses. Many thanks to Sami Kerola.
+
+14/04/09:
+    * Bugfix: Fix excessive loading of the keys file caused by xmodmap
+
+14/02/18:
+    * Bugfix: Fix race condition on shutdown
+
+14/02/05:
+    * Translation: Fix encoding of the Bulgarian translation
+      (Thanks Peter Pentchev)
+
+13/09/15:
+    * Bugfix: Fix integer math which caused problems with Focus, Resize and
+      Move commands. (Thanks Amadeusz S¿awi¿ski)
+
+13/08/02:
+    * Feature: Add 'ArrangeWindowsStack' (Thanks John Sennesael)
+    * Bugfix: Fix lost keypresses after workspace change (#1067)
+
+13/07/14:
+    * Translation: Update to Japanese translation (Thanks Takeshi Hamasaki)
+
+13/06/29:
+    * Code cleanup: Adjust use of std::equal_to to be more portable
+      with other implementations of STL (Thanks Raphael Kubo da Costa)
+    * Bugfix: Fix detection of $HOME folder
+
+13/06/18:
+    * Speedup: Use binary search to find longest possible text
+      to render. A malignant webpage could set a document title with something
+      like this: document.title = new Array(4999).join(".") and then fluxbox
+      would waste lots of cycles upon detecting the renderable width for that
+      title. Closes #1090
+    * Bugfix: Fix maximum length for text. XGlyphInfo.xOff is a signed short 
+      and thus it handles "only" ~32k pixels. A monospace font with a font-size
+      of 10 pixels will overflow after ~ 3276 glyphs.
+
+13/05/16:
+    * Bugfix: Fix Window-Motion-Outline
+
+13/03/18:
+    * Translation: Update to Hebrew translation (Thanks Isratine Citizen)
+
+13/02/27:
+    * Feature: Workspace switching via toolbar
+
+13/02/26:
+    * Bugfix: Fix initial window placement for better head detection
+      (Thanks Peter Hercek)
+
+-----------------------------
 Changes for 1.3.5
 
 *13/02/13:

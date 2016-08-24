@@ -1,7 +1,7 @@
 fbsetroot(1)
 ============
 Jim Ramsay <i.am@jimramsay.com>
-v1.3.5, 13 February 2013
+v1.3.7, 08 February 2015
 :man source:   fbsetroot.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
@@ -51,7 +51,7 @@ Creates a modula pattern. You must specify *-bg* and *-fg* colors.
 Renders the specified texture string to the root window.
 +
 'texturestring' may be one of:;;
-	*Horizontal  /  Vertical / Diagonal / Crossdiagonal / Pipecross / Elliptic /
+    *Horizontal  /  Vertical / Diagonal / Crossdiagonal / Pipecross / Elliptic /
 Rectangle / Pyramid*
 +
 Select one of these texture types, they only apply when  *-gradient* is

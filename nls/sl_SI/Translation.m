@@ -120,11 +120,16 @@ $set 19 #main
 
 1 napaka: '-display' zahteva argument
 11 napaka: '-rc' zahteva argument
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\tuporabi prikazovalnik.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tuporabi nadomestno datoteko z viri.\n\
 -version\t\t\tprika¾i oznako razlièice in konèaj.\n\
 -info\t\t\t\tprika¾i nekaj uporabnih informacij.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tzapi¹i dnevnik v datoteko.\n\
 -help\t\t\t\tprika¾i ta navodila in konèaj.\n\n
 

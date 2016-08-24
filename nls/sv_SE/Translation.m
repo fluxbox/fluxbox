@@ -226,11 +226,16 @@ $set 19 #main
 
 1 fel: '-display' kräver ett argument
 11 fel: '-rc' kräver ett argument
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <sträng>\t\tanvänd skärmanslutning.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <sträng>\t\t\tanvänd alternativ resursfil.\n\
 -version\t\t\tvisa version och avsluta.\n\
 -info\t\t\t\tVisar nyttig information.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filenamn>\t\t\tloggar utskriften till en fil.\n\
 -help\t\t\t\tvisa denna hjälptext och avsluta.\n\n
 

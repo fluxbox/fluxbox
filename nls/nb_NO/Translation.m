@@ -237,13 +237,17 @@ $set 19 #main
 10 Logger til
 11 feil: «-rc» krever et argument
 12 feil: «-rc» krever et argument
-13 FluxBox %s: kopirett %s Henrik Kinnunen\n\
+13 FluxBox %s: kopirett %s Fluxbox Team\n\
 Nettside: http://www.fluxbox.org/\n\n\
 -display <streng>\t\tbruk visningsenhetforbindelse.\n\
 -screen <alle|int,int,int>\tkjør kun på valgte skjermer.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <streng>\t\t\tbruk alternativ ressursfil.\n\
 -version\t\t\tvis versjonnummer og avslutt.\n\
 -info\t\t\t\tvis litt nyttig informasjon.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filnavn>\t\t\tlogg utdata til fil.\n\
 -help\t\t\t\tvis denne hjelpeteksten og avslutt.\n\n
 14 advarsel: klarte ikke angi miljøvariabelen «DISPLAY»

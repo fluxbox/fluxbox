@@ -25,15 +25,13 @@
 
 #ifdef HAVE_XRENDER
 #include <X11/extensions/Xrender.h>
-#endif // HAVE_XRENDER
 
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 
-
-#ifdef HAVE_XRENDER
 using std::cerr;
 using std::endl;
+
 #endif // HAVE_XRENDER
 
 
@@ -99,16 +97,14 @@ Picture createAlphaPic(Window drawable, int alpha) {
     return alpha_pic;
 }
 #endif //  HAVE_XRENDER
-}
 
-namespace FbTk {
+bool s_init = false;
+bool s_render = false;
+bool s_composite = false;
+bool s_use_composite = false;
 
-bool Transparent::s_init = false;
-bool Transparent::s_render = false;
-bool Transparent::s_composite = false;
-bool Transparent::s_use_composite = false;
+void init() {
 
-void Transparent::init() {
     Display *disp = FbTk::App::instance()->display();
 
     int major_opcode, first_event, first_error;
@@ -127,6 +123,16 @@ void Transparent::init() {
         }
     }
     s_init = true;
+}
+
+}
+
+namespace FbTk {
+
+bool Transparent::haveRender() {
+    if (!s_init)
+        init();
+    return s_render;
 }
 
 void Transparent::usePseudoTransparent(bool force) {

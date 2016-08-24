@@ -53,7 +53,8 @@ TextBox::TextBox(int screen_num,
     m_gc(0),
     m_cursor_pos(0),
     m_start_pos(0),
-    m_end_pos(0) {
+    m_end_pos(0),
+    m_select_pos(std::string::npos) {
 
     FbTk::EventManager::instance()->add(*this, *this);
 }
@@ -66,7 +67,8 @@ TextBox::TextBox(const FbWindow &parent,
     m_gc(0),
     m_cursor_pos(0),
     m_start_pos(0),
-    m_end_pos(0) {
+    m_end_pos(0),
+    m_select_pos(std::string::npos) {
 
     FbTk::EventManager::instance()->add(*this, *this);
 }
@@ -128,6 +130,9 @@ void TextBox::cursorBackward() {
 }
 
 void TextBox::backspace() {
+    if (hasSelection())
+        return deleteForward();
+
     if (m_start_pos || cursorPosition()) {
         FbString t = text();
         t.erase(m_start_pos + cursorPosition() - 1, 1);
@@ -141,15 +146,27 @@ void TextBox::backspace() {
 }
 
 void TextBox::deleteForward() {
-    if (m_start_pos + m_cursor_pos < m_end_pos) {
+    std::string::size_type pos = m_start_pos + m_cursor_pos;
+    int length = 1;
+    if (hasSelection()) {
+        pos = std::min(m_start_pos + m_cursor_pos, m_select_pos);
+        length = std::max(m_start_pos + m_cursor_pos, m_select_pos) - pos;
+        m_cursor_pos = pos - m_start_pos;
+    }
+    if (pos < m_end_pos) {
         FbString t = text();
-        t.erase(m_start_pos + m_cursor_pos, 1);
+        t.erase(pos, length);
         m_text.setLogical(t);
         adjustEndPos();
     }
+    if (length > 1)
+        adjustStartPos();
 }
 
 void TextBox::insertText(const std::string &val) {
+    if (hasSelection())
+        deleteForward();
+
     FbString t = text();
     t.insert(m_start_pos + cursorPosition(), val);
     m_text.setLogical(t);
@@ -168,20 +185,48 @@ void TextBox::killToEnd() {
 }
 
 void TextBox::clear() {
+    Display *dpy = FbTk::App::instance()->display();
     FbWindow::clear();
     // center text by default
     int center_pos = (height() + font().ascent())/2;
     if (gc() == 0)
-        setGC(DefaultGC(FbTk::App::instance()->display(), screenNumber()));
+        setGC(DefaultGC(dpy, screenNumber()));
 
-    font().drawText(*this, screenNumber(), 
-                    gc(),
+
+    int cursor_pos = font().textWidth(m_text.visual().c_str() + m_start_pos, m_cursor_pos);
+
+    font().drawText(*this, screenNumber(), gc(),
                     m_text.visual().c_str() + m_start_pos,
-                    m_end_pos - m_start_pos,
-                    0, center_pos); // pos
+                    m_end_pos - m_start_pos, -1, center_pos); // pos
+
+    if (hasSelection()) {
+        int select_pos = m_select_pos <= m_start_pos ? 0 :
+                         font().textWidth(m_text.visual().c_str() + m_start_pos,
+                                          m_select_pos - m_start_pos);
+        int start = std::max(m_start_pos, std::min(m_start_pos + m_cursor_pos, m_select_pos));
+        int length = std::max(m_start_pos + m_cursor_pos, m_select_pos) - start;
+        int x = std::min(select_pos, cursor_pos);
+        int width = std::abs(select_pos - cursor_pos);
+
+        XGCValues backup;
+        XGetGCValues(dpy, gc(), GCForeground|GCBackground, &backup);
+        XSetForeground(dpy, gc(), backup.foreground);
+
+        fillRectangle(gc(), x, 0, width, height());
+
+        XColor c;
+        c.pixel = backup.foreground;
+        XQueryColor(dpy, DefaultColormap(dpy, screenNumber()), &c);
+        XSetForeground(dpy, gc(), c.red + c.green + c.blue > 0x17ffe ?
+                                     BlackPixel(dpy, screenNumber()) :
+                                     WhitePixel(dpy, screenNumber()));
+        font().drawText(*this, screenNumber(), gc(),
+                        m_text.visual().c_str() + start, length, x, center_pos); // pos
+        XSetForeground(dpy, gc(), backup.foreground);
+    }
+
 
     // draw cursor position
-    int cursor_pos = font().textWidth(m_text.visual().c_str() + m_start_pos, m_cursor_pos) + 1;
     drawLine(gc(), cursor_pos, center_pos, cursor_pos, center_pos - font().height());
 }
 
@@ -231,12 +276,52 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
     // a modifier key by itself doesn't do anything
     if (IsModifierKey(ks)) return;
 
-    if (FbTk::KeyUtil::instance().isolateModifierMask(event.state)) { // handle keybindings with state
-        if ((event.state & ControlMask) == ControlMask) {
 
-            switch (ks) {
-            case XK_Left: {
+    if (m_select_pos == std::string::npos && (event.state & ShiftMask) == ShiftMask) {
+        m_select_pos = m_cursor_pos + m_start_pos;
+    }
+
+    if ((event.state & ControlMask) == ControlMask) {
+
+        switch (ks) {
+        case XK_Left: {
+            unsigned int pos = findEmptySpaceLeft();
+            if (pos < m_start_pos){
+                m_start_pos  = pos;
+                m_cursor_pos = 0;
+            } else if (m_start_pos > 0) {
+                m_cursor_pos = pos - m_start_pos;
+            } else {
+                m_cursor_pos = pos;
+            }
+            adjustPos();
+        }
+            break;
+        case XK_Right:
+            if (!m_text.logical().empty() && m_cursor_pos < m_text.logical().size()){
+                unsigned int pos = findEmptySpaceRight();
+                if (pos > m_start_pos)
+                    pos -= m_start_pos;
+                else
+                    pos = 0;
+                if (m_start_pos + pos <= m_end_pos)
+                    m_cursor_pos = pos;
+                else if (m_end_pos < text().size()) {
+                    m_cursor_pos = pos;
+                    m_end_pos = pos;
+                }
+
+                adjustPos();
+
+            }
+            break;
+
+        case XK_BackSpace: {
                 unsigned int pos = findEmptySpaceLeft();
+                FbString t = text();
+                t.erase(pos, m_cursor_pos - pos + m_start_pos);
+                m_text.setLogical(t);
+
                 if (pos < m_start_pos){
                     m_start_pos  = pos;
                     m_cursor_pos = 0;
@@ -247,54 +332,17 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 }
                 adjustPos();
             }
-                break;
-            case XK_Right:
-                if (!m_text.logical().empty() && m_cursor_pos < m_text.logical().size()){
-                    unsigned int pos = findEmptySpaceRight();
-                    if (pos > m_start_pos)
-                        pos -= m_start_pos;
-                    else 
-                        pos = 0;
-                    if (m_start_pos + pos <= m_end_pos)
-                        m_cursor_pos = pos;
-                    else if (m_end_pos < text().size()) {
-                        m_cursor_pos = pos;
-                        m_end_pos = pos;
-                    }
-
-                    adjustPos();
-
-                }
-                break;
-
-            case XK_BackSpace: {
-                    unsigned int pos = findEmptySpaceLeft();
-                    FbString t = text();
-                    t.erase(pos, m_cursor_pos - pos + m_start_pos);
-                    m_text.setLogical(t);
-
-                    if (pos < m_start_pos){
-                        m_start_pos  = pos;
-                        m_cursor_pos = 0;
-                    } else if (m_start_pos > 0) {
-                        m_cursor_pos = pos - m_start_pos;
-                    } else {
-                        m_cursor_pos = pos;
-                    }
-                    adjustPos();
-                }
-                break;
-            case XK_Delete: {
-                    if (text().empty() || m_cursor_pos >= text().size())
-                        break;
-                    unsigned int pos = findEmptySpaceRight();
-                    FbString t = text();
-                    t.erase(m_cursor_pos + m_start_pos, pos - (m_cursor_pos + m_start_pos));
-                    m_text.setLogical(t);
-                    adjustPos();
-                }
-                break;
+            break;
+        case XK_Delete: {
+                if (text().empty() || m_cursor_pos >= text().size())
+                    break;
+                unsigned int pos = findEmptySpaceRight();
+                FbString t = text();
+                t.erase(m_cursor_pos + m_start_pos, pos - (m_cursor_pos + m_start_pos));
+                m_text.setLogical(t);
+                adjustPos();
             }
+            break;
         }
 
     } else { // no state
@@ -357,7 +405,10 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
         std::string val;
         val += keychar[0];
         insertText(val);
+        m_select_pos = std::string::npos;
     }
+    if ((event.state & ShiftMask) != ShiftMask)
+        m_select_pos = std::string::npos;
     clear();
 }
 
@@ -369,6 +420,7 @@ void TextBox::setCursorPosition(int pos) {
 
 void TextBox::adjustEndPos() {
     m_end_pos = text().size();
+    m_start_pos = std::min(m_start_pos, m_end_pos);
     int text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
     while (text_width > static_cast<signed>(width())) {
         m_end_pos--;
@@ -381,7 +433,7 @@ void TextBox::adjustStartPos() {
     const char* visual = m_text.visual().c_str();
 
     int text_width = font().textWidth(visual, m_end_pos);
-    if (text_width < static_cast<signed>(width()))
+    if (m_cursor_pos >= 0 && text_width < static_cast<signed>(width()))
         return;
 
     int start_pos = 0;
@@ -408,7 +460,7 @@ unsigned int TextBox::findEmptySpaceLeft(){
             break;
         pos = next_pos;
     }
-    if (pos < 0)  
+    if (pos < 0)
         pos = 0;
 
     return pos;
@@ -440,4 +492,39 @@ void TextBox::adjustPos(){
         adjustStartPos();
 
 }
+
+
+void TextBox::select(std::string::size_type pos, int length)
+{
+    if (length < 0) {
+        length = -length;
+        pos = pos >= length ? pos - length : 0;
+    }
+
+    if (length > 0 && pos < text().size()) {
+        m_select_pos = pos;
+        pos = std::min(text().size(), pos + length);
+
+        if (pos > m_start_pos)
+            pos -= m_start_pos;
+        else
+            pos = 0;
+        if (m_start_pos + pos <= m_end_pos)
+            m_cursor_pos = pos;
+        else if (m_end_pos < text().size()) {
+            m_cursor_pos = pos;
+            m_end_pos = pos;
+        }
+
+        adjustPos();
+    } else {
+        m_select_pos = std::string::npos;
+    }
+    clear();
+}
+
+void TextBox::selectAll() {
+    select(0, m_text.visual().size());
+}
+
 } // end namespace FbTk

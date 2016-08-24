@@ -30,19 +30,14 @@
 #include <signal.h>
 #endif // HAVE_SIGNAL_H
 
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
 #include <sys/stat.h>
 
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+#include <cstring>
 #include <set>
 #include <map>
-#include <cstdlib>
 #include <list>
 
 using std::cout;
@@ -364,7 +359,7 @@ void update_update_keys_file_for_nextwindow_syntax_changes(FbTk::ResourceManager
             break;
 
         pos = whole_keyfile.find_first_not_of(" \t", pos);
-        if (pos != std::string::npos && isdigit(whole_keyfile[pos])) {
+        if (pos != std::string::npos && isdigit(keyfile[pos])) {
             char *endptr = 0;
             unsigned int mask = strtoul(keyfile + pos, &endptr, 0);
             string insert = "";
@@ -570,7 +565,7 @@ int main(int argc, char **argv) {
     bool check = 0;
     pid_t fb_pid = 0;
 
-    FbTk::NLSInit("fluxbox.cat");
+    FbTk::I18n::init(0);
     _FB_USES_NLS;
 
     for (; i < argc; i++) {

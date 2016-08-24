@@ -500,27 +500,6 @@ void MoveCmd::real_execute() {
     fbwindow().move(fbwindow().x() + m_step_size_x, fbwindow().y() + m_step_size_y);
 }
 
-namespace {
-  template <typename Container>
-  static void parseToken(Container &container, int &d, bool &is_relative, bool &ignore) {
-      if (container.size() < 1)
-          return;
-
-      d = 0;
-      is_relative = false;
-      ignore = false;
-      if (container[0] == '*') {
-          ignore = true;
-      } else if (container[container.size() - 1] == '%') {
-          // its a percent
-          is_relative = true;
-          d = atoi(container.substr(0, container.size() - 1).c_str());
-      } else {
-          d = atoi(container.c_str());
-      }
-  }
-}
-
 FbTk::Command<void> *ResizeCmd::parse(const string &command, const string &args,
                                 bool trusted) {
 
@@ -532,21 +511,19 @@ FbTk::Command<void> *ResizeCmd::parse(const string &command, const string &args,
         return 0;
     }
 
-    int dx, dy;
+    int dx = 0, dy = 0;
     bool is_relative_x = false, is_relative_y = false, ignore_x = false, ignore_y = false;
 
     if (command == "resizehorizontal") {
-        parseToken(tokens[0], dx, is_relative_x, ignore_x);
-        dy = 0;
+        dx = FbTk::StringUtil::parseSizeToken(tokens[0], is_relative_x, ignore_x);
     } else if (command == "resizevertical") {
-        parseToken(tokens[0], dy, is_relative_y, ignore_y);
-        dx = 0;
+        dy = FbTk::StringUtil::parseSizeToken(tokens[0], is_relative_y, ignore_y);
     } else {
         if (tokens.size() < 2) {
             return 0;
         }
-        parseToken(tokens[0], dx, is_relative_x, ignore_x);
-        parseToken(tokens[1], dy, is_relative_y, ignore_y);
+        dx = FbTk::StringUtil::parseSizeToken(tokens[0], is_relative_x, ignore_x);
+        dy = FbTk::StringUtil::parseSizeToken(tokens[1], is_relative_y, ignore_y);
     }
 
     if (command == "resizeto") {
@@ -612,8 +589,8 @@ FbTk::Command<void> *MoveToCmd::parse(const string &cmd, const string &args,
     int x = 0, y = 0;
     bool ignore_x = false, ignore_y = false, is_relative_x = false, is_relative_y = false;
 
-    parseToken(tokens[0], x, is_relative_x, ignore_x);
-    parseToken(tokens[1], y, is_relative_y, ignore_y);
+    x = FbTk::StringUtil::parseSizeToken(tokens[0], is_relative_x, ignore_x);
+    y = FbTk::StringUtil::parseSizeToken(tokens[1], is_relative_y, ignore_y);
 
     if (tokens.size() >= 3) {
         refc = FluxboxWindow::getCorner(tokens[2]);
@@ -679,6 +656,7 @@ void ResizeToCmd::real_execute() {
 
     if (m_is_relative_x) {
         dx = fbwindow().screen().calRelativeWidth(head, dx);
+        dx -= 2 * fbwindow().frame().window().borderWidth();
         if(dx <= 0) {
             dx = fbwindow().width();
         }
@@ -686,6 +664,7 @@ void ResizeToCmd::real_execute() {
 
     if (m_is_relative_y) {
         dy = fbwindow().screen().calRelativeHeight(head, dy);
+        dy -= 2 * fbwindow().frame().window().borderWidth();
         if(dy <= 0) {
             dy = fbwindow().height();
         }

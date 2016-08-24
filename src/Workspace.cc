@@ -158,7 +158,7 @@ void Workspace::setName(const string &name) {
     } else { //if name == 0 then set default name from nls
         _FB_USES_NLS;
         char tname[128];
-        sprintf(tname,
+        snprintf(tname, sizeof(tname),
                 _FB_XTEXT(Workspace, DefaultNameFormat,
                         "Workspace %d", "Default workspace names, with a %d for the workspace number").c_str(),
                 m_id + 1); //m_id starts at 0

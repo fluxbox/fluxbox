@@ -35,5 +35,6 @@ EXTRA_DIST += \
 	doc/fluxbox.1.in \
 	doc/startfluxbox.1.in
 
-%: %.in
+doc/%: doc/%.in
+	$(MKDIR_P) doc
 	@regex_cmd@ -e "s,@pkgdatadir[@],$(pkgdatadir)," $^ > $@

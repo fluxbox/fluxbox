@@ -214,13 +214,20 @@ $set 19 #main
 9 Logfil
 10 Logger til
 11 fejl: '-rc' kræver et argument
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+12 error: '-screen' requires an argument
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\tbrug skærmtilslutning.\n\
+-screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tbrug alternativ resourcefil.\n\
 -version\t\t\tvis versionsnummer og afslut.\n\
 -info\t\t\t\tvis noget nyttig information.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tlog output til fil.\n\
 -help\t\t\t\tvis denne hjælp og afslut.\n\n
+14 warning: couldn't set environment variable 'DISPLAY'
 
 $set 20 #layers
 

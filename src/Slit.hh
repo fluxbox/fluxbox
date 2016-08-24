@@ -144,6 +144,7 @@ private:
 
     // m_hidden is for autohide, m_visible is the FbWindow state
     bool m_hidden, m_visible;
+    bool m_pending_reconfigure;
 
     BScreen &m_screen;
     FbTk::Timer m_timer;
@@ -158,15 +159,16 @@ private:
 
     struct frame {
         frame(const FbTk::FbWindow &parent):
+            pixmap(0),
             window(parent, 0, 0, 10, 10,
                    SubstructureRedirectMask |  ButtonPressMask |
                    EnterWindowMask | LeaveWindowMask | ExposureMask,
                    true),  // override redirect
             x(0), y(0), x_hidden(0), y_hidden(0),
-        width(10), height(10) {}
+        width(10), height(10) {  }
+
         Pixmap pixmap;
         FbTk::FbWindow window;
-
         int x, y, x_hidden, y_hidden;
         unsigned int width, height;
     } frame;

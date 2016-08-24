@@ -31,15 +31,19 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-#ifdef HAVE_CASSERT
-  #include <cassert>
-#else
-  #include <assert.h>
-#endif
-
+#include <cassert>
 #include <limits>
+#include <string.h>
 
 namespace FbTk {
+
+Window FbWindow::rootWindow(Display* dpy, Drawable win) {
+    union { int i; unsigned int ui; } ignore;
+    Window root = None;
+    XGetGeometry(dpy, win, &root, &ignore.i, &ignore.i, &ignore.ui, &ignore.ui, &ignore.ui, &ignore.ui);
+    return root;
+}
+
 
 FbWindow::FbWindow():
     FbDrawable(),
@@ -259,6 +263,13 @@ void FbWindow::setBorderWidth(unsigned int size) {
 
 void FbWindow::setName(const char *name) {
     XStoreName(display(), m_window, name);
+    Atom net_wm_name = XInternAtom(display(), "_NET_WM_NAME", False);
+    Atom utf8_string = XInternAtom(display(), "UTF8_STRING", False);
+    XChangeProperty(display(), m_window, 
+                    net_wm_name, utf8_string, 8,
+                    PropModeReplace, 
+                    (unsigned char*)name, strlen(name));
+
 }
 
 void FbWindow::setWindowRole(const char *windowRole) {
@@ -491,11 +502,10 @@ struct TextPropPtr {
 };
 }
 
-long FbWindow::cardinalProperty(Atom prop,bool*exists) const {
+long FbWindow::cardinalProperty(Atom prop, bool* exists) const {
     Atom type;
     int format;
     unsigned long nitems, bytes_after;
-    int result;
     long* num;
     long ret=0;
     if (exists) *exists=false;
@@ -550,10 +560,8 @@ FbTk::FbString FbWindow::textProperty(Atom prop,bool*exists) const {
         ret = FbStringUtil::LocaleStrToFb(stringlist[0]);
     }
 
-    // they all use stringlist
-    if (stringlist) {
-        XFreeStringList(stringlist);
-    }
+    XFreeStringList(stringlist);
+
     if (exists) *exists=true;
     return ret;
 }

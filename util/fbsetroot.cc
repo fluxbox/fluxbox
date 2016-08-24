@@ -28,32 +28,15 @@
 
 #include <X11/Xatom.h>
 
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
-
-inline int getRootDepth(const FbTk::FbWindow& w) {
-    return (w.depth() == 32 ? 24 : w.depth());
-}
-
 
 fbsetroot::fbsetroot(int argc, char **argv, char *dpy_name)
     : FbTk::App(dpy_name), m_app_name(argv[0]) {
@@ -214,7 +197,7 @@ void fbsetroot::solid() {
     pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
-                                      getRootDepth(root)));
+                                      root.depth()));
 
     XFillRectangle(display(), *pixmap, gc.gc(), 0, 0,
                    root.width(), root.height());
@@ -266,7 +249,7 @@ void fbsetroot::modula(int x, int y) {
     // bitmap used as tile, needs to have the same depth as background pixmap
     r_bitmap = XCreatePixmap(display(),
                              root.window(), s, s,
-                             (root.depth() == 32 ? 24 : root.depth()));
+                             root.depth());
 
     FbTk::Color f(fore, screen), b(back, screen);
 
@@ -290,7 +273,7 @@ void fbsetroot::modula(int x, int y) {
     pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
-                                      getRootDepth(root)));
+                                      root.depth()));
 
     XFillRectangle(display(), *pixmap, gc.gc(), 0, 0,
                    root.width(), root.height());
@@ -336,7 +319,7 @@ void fbsetroot::gradient() {
     pixmap = new Pixmap(XCreatePixmap(display(),
                                       root.window(),
                                       root.width(), root.height(),
-                                      getRootDepth(root)));
+                                      root.depth()));
 
 
     XCopyArea(display(), tmp, *pixmap, gc.gc(), 0, 0,
@@ -360,7 +343,7 @@ void fbsetroot::gradient() {
 */
 void fbsetroot::usage(int exit_code) {
     _FB_USES_NLS;
-    cout << m_app_name << " 2.3 : (c) 2003-2014 Fluxbox Development Team" << endl;
+    cout << m_app_name << " 2.3 : (c) 2003-2015 Fluxbox Development Team" << endl;
     cout << m_app_name << " 2.1 : (c) 2002 Claes Nasten" << endl;
     cout << m_app_name << " 2.0 : (c) 1997-2000 Brad Hughes\n" << endl;
     cout << _FB_CONSOLETEXT(fbsetroot, Usage,
@@ -382,7 +365,7 @@ int main(int argc, char **argv) {
     char *display_name = (char *) 0;
     int i = 1;
 
-    FbTk::NLSInit("fluxbox.cat");
+    FbTk::I18n::init(0);
 
     for (; i < argc; i++) {
         if (!strcmp(argv[i], "-display") || !strcmp(argv[i], "--display")) {

@@ -115,7 +115,6 @@ private:
     FbTk::FontImp* m_fontimp; ///< font implementation
     std::string m_fontstr; ///< font name
 
-    int m_angle; ///< rotation angle
     bool m_shadow; ///< shadow text
     Color m_shadow_color; ///< shadow color
     int m_shadow_offx; ///< offset y for shadow

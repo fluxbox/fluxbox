@@ -33,27 +33,21 @@
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef HAVE_CSTDLIB
-  #include <cstdlib>
-#else
-  #include <stdlib.h>
-#endif
-
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
 #ifdef HAVE_UNISTD_H
-  #include <unistd.h>
+#include <unistd.h>
 #endif
 
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif // HAVE_SYS_WAIT_H
 
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
 
+
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #include <typeinfo>
@@ -164,7 +158,7 @@ void setupSignalHandling() {
 
 int main(int argc, char **argv) {
 
-    FbTk::NLSInit("fluxbox.cat");
+    FbTk::I18n::init(0);
 
     FluxboxCli::Options opts;
     int exitcode = opts.parse(argc, argv);
@@ -286,9 +280,9 @@ int main(int argc, char **argv) {
         execvp(argv[0], argv);
         perror(argv[0]);
 
-        const char *basename = FbTk::StringUtil::basename(argv[0]).c_str();
-        execvp(basename, argv);
-        perror(basename);
+        const std::string basename = FbTk::StringUtil::basename(argv[0]);
+        execvp(basename.c_str(), argv);
+        perror(basename.c_str());
     }
 
     return exitcode;

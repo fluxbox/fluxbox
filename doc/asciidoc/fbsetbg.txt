@@ -1,7 +1,7 @@
 fbsetbg(1)
 ==========
 Jim Ramsay <i.am@jimramsay.com>
-v1.3.5, 13 February 2013
+v1.3.7, 08 February 2015
 :man source:   fbsetbg.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
@@ -92,11 +92,11 @@ EXAMPLES
 To use *feh(1)* as wallpapersetter and set *wallpapper.jpg* from the current
 directory as wallpaper.
 
-	$ wpsetters=feh fbsetbg wallpaper.jpg
+    $ wpsetters=feh fbsetbg wallpaper.jpg
 
 Recall the last set wallpaper on display *:0.0* with the stored options.
 
-	$ DISPLAY=:0.0 fbsetbg -l
+    $ DISPLAY=:0.0 fbsetbg -l
 
 BUGS
 ----

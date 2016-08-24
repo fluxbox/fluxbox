@@ -168,6 +168,10 @@ void init() {
     s_inited = true;
     setlocale(LC_CTYPE, "");
 
+    for (int i = 0; i < CONVSIZE; i++) {
+        s_iconv_convs[i] = ICONV_NULL;
+    }
+
 #ifdef HAVE_ICONV
 #if defined(CODESET) && !defined(_WIN32)
     s_locale_codeset = nl_langinfo(CODESET);
@@ -186,8 +190,6 @@ void init() {
     s_iconv_convs[X2FB] = iconv_open("UTF-8", "ISO8859-1");
     s_iconv_convs[FB2LOCALE] = iconv_open(s_locale_codeset.c_str(), "UTF-8");
     s_iconv_convs[LOCALE2FB] = iconv_open("UTF-8", s_locale_codeset.c_str());
-#else
-    memset(s_iconv_convs, 0, sizeof(s_iconv_convs));
 #endif // HAVE_ICONV
 
 }
@@ -195,11 +197,13 @@ void init() {
 void shutdown() {
 #ifdef HAVE_ICONV
     int i;
-    for (i = 0; i < CONVSIZE; ++i)
-        if (s_iconv_convs[i] != ICONV_NULL)
+    for (i = 0; i < CONVSIZE; ++i) {
+        if (s_iconv_convs[i] != ICONV_NULL) {
             iconv_close(s_iconv_convs[i]);
+            s_iconv_convs[i] = ICONV_NULL;
+        }
+    }
 
-    memset(s_iconv_convs, 0, sizeof(s_iconv_convs));
     s_inited = false;
 #endif // HAVE_ICONV
 }

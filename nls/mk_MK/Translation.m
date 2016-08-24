@@ -34,11 +34,12 @@ $set 3 #Common
 4 Опции на Составувач
 5 Составувач
 6 Верзија на Составувач
-7     приклучување
-8     команди
-9      нлс
-10     мени
-11    стил
+7  приклучување
+8       команди
+9           нлс
+10         мени
+20   windowмени
+11         стил
 12 Основни
 13 оневозможени
 14 Грешки
@@ -251,13 +252,17 @@ $set 19 #main
 10 Најави се
 11 грешка: '-rc' бара аргумент
 12 грешка: '-screen' бара аргумент
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Вебсајт: http://www.fluxbox.org/\n\n\
 -display <string>\t\tuse display connection.\n\
 -screen <all|int,int,int>\trun on specified screens only.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tuse alternate resource file.\n\
 -version\t\t\tприкажува верзија на софтверот и се исклучува.\n\
 -info\t\t\t\tприкажува корисни податоци.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tводи записник во фајл.\n\
 -help\t\t\t\tја прикажува оваа текст помош и се исклучува .\n\n
 14 предупредување: неможам да ја наместам околинската променлива 'DISPLAY'

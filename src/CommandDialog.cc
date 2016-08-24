@@ -40,7 +40,7 @@ using std::less;
 using std::out_of_range;
 
 CommandDialog::CommandDialog(BScreen &screen, const string &title,
-                             const string precommand) : 
+                             const string &precommand) : 
     TextDialog(screen, title),
     m_precommand(precommand) { }
 

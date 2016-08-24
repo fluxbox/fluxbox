@@ -1,7 +1,7 @@
 fbrun(1)
 ========
 Jim Ramsay <i.am@jimramsay.com>
-v1.3.5, 13 February 2013
+v1.3.7, 08 February 2015
 :man source:   fbrun.txt
 :man version:  {revision}
 :man manual:   Fluxbox Manual  
@@ -54,6 +54,9 @@ OPTIONS
 *-nearmouse*::
 	Position the window under the mouse cursor
 
+*-center*::
+	Position the window on the screen center
+
 *-fg* 'color'::
 	Foreground text color. The default is *black*
 
@@ -63,11 +66,18 @@ OPTIONS
 *-font* 'name'::
 	Text font name
 
-*-na*::
-	Disable font antialias
-
 *-hf* 'filename'::
 	History file to load. The default is *~/.fluxbox/fbrun_history*.
+
+*-cf* 'filename'::
+    Completion data to load. The default is empty. If no data can be loaded,
+    completion defaults to executables in $PATH
+
+*-preselect*::
+    Select the preset text given by the *-text* parameter
+
+*-autocomplete*::
+    Complete on typing. You can also set the FBRUN_AUTOCOMPLETE environment (to any value)
 
 *-help*::
 	Show this help

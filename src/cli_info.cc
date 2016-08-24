@@ -72,22 +72,25 @@ void FluxboxCli::showInfo(ostream &ostr) {
         <<_FB_CONSOLETEXT(Common, Defaults, "Defaults", "Default values compiled in") 
         << ": " << endl;
 
-    ostr <<_FB_CONSOLETEXT(Common, DefaultMenuFile, "    menu", "default menu file (right aligned - make sure same width as other default values)")
+    ostr <<_FB_CONSOLETEXT(Common, DefaultMenuFile, "       menu", "default menu file (right aligned - make sure same width as other default values)")
         << ": "
         << FbTk::StringUtil::expandFilename(DEFAULTMENU) << endl;
-    ostr << _FB_CONSOLETEXT(Common, DefaultStyle, "   style", "default style (right aligned - make sure same width as other default values)")
+    ostr <<_FB_CONSOLETEXT(Common, DefaultWindowMenuFile, " windowmenu", "default windowmenu file (right aligned - make sure same width as other default values)")
+        << ": "
+        << FbTk::StringUtil::expandFilename(DEFAULT_WINDOWMENU) << endl;
+    ostr << _FB_CONSOLETEXT(Common, DefaultStyle, "      style", "default style (right aligned - make sure same width as other default values)")
         << ": "
         << FbTk::StringUtil::expandFilename(DEFAULTSTYLE) << endl;
 
-    ostr << _FB_CONSOLETEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")
+    ostr << _FB_CONSOLETEXT(Common, DefaultKeyFile, "       keys", "default key file (right aligned - make sure same width as other default values)")
         << ": "
         << FbTk::StringUtil::expandFilename(DEFAULTKEYSFILE) << endl;
-    ostr << _FB_CONSOLETEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")
+    ostr << _FB_CONSOLETEXT(Common, DefaultInitFile, "       init", "default init file (right aligned - make sure same width as other default values)")
         << ": "
         << FbTk::StringUtil::expandFilename(DEFAULT_INITFILE) << endl;
 
 #ifdef NLS
-    ostr << _FB_CONSOLETEXT(Common, DefaultLocalePath, "    nls", "location for localization files (right aligned - make sure same width as other default values)")
+    ostr << _FB_CONSOLETEXT(Common, DefaultLocalePath, "         nls", "location for localization files (right aligned - make sure same width as other default values)")
         << ": "
         << FbTk::StringUtil::expandFilename(LOCALEPATH) << endl;
 #endif

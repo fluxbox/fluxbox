@@ -239,7 +239,7 @@ Command<void> *DelayedCmd::parse(const std::string &command,
         return 0;
 
     uint64_t delay = 200;
-    StringUtil::fromString<uint64_t>(args.c_str() + err, delay);
+    StringUtil::extractNumber(args.c_str() + err, delay);
 
     return new DelayedCmd(cmd, delay);
 }

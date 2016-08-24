@@ -34,12 +34,13 @@ $set 3 #Common
 4 Einkompilierte Optionen
 5 Compiler
 6 Compilerversion
-7       init
-8       keys
-9        nls
-10       menu
-11      style
-12 Standardeinstellungen/-Dateien\n
+7        init
+8        keys
+9         nls
+10        menu
+20  windowmenu
+11       style
+12 Standardeinstellungen/-Dateien
 13 deaktiviert
 14 Fehler
 15 Fluxbox Version
@@ -251,13 +252,17 @@ $set 19 #main
 10 Schreibe Log in
 11 Fehler: '-rc' benötigt ein Argument
 12 Fehler: '-screen' benötigt ein Argument
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Webseite: http://www.fluxbox.org/\n\n\
 -display <string>\t\tBenutze ein anderes $DISPLAY.\n\
 -screen <all|int,int,int>\tNur auf angegebenen Screens laufen.\n\
+-no-slit\t\t\tKein Container (Slit) für DockApps benutzen.\n\
+-no-toolbar\t\t\tKeine Toolbar benutzen.\n\
 -rc <string>\t\t\tBenutze eine andere Init Datei.\n\
 -version\t\t\tZeige Version an.\n\
 -info\t\t\t\tZeige nützliche Informationen an.\n\
+-list-commands\t\t\tAuflistung aller gültigen Key-Kommandos.\n\
+-sync\t\t\t\tSynchronisation mit dem XServer, hilfreich beim debuggen.\n\
 -log <filename>\t\t\tSchreibe Log in Datei.\n\
 -help\t\t\t\tZeige diese Hilfe an.\n\n
 14 Warnung: Konnte Umgebungsvaribale 'DISPLAY' nicht setzen

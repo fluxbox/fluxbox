@@ -34,11 +34,12 @@ $set 3 #Common
 4 Opções de Compilação
 5 Compilador
 6 Versão do Compilador
-7     init
-8     keys
-9      nls
-10     menu
-11    style
+7        init
+8        keys
+9         nls
+10        menu
+20  windowmenu
+11       style
 12 Por Omissão
 13 desactivado
 14 Erro
@@ -247,13 +248,17 @@ $set 19 #main
 10 Guardando Registo em
 11 Erro: '-rc' necessita de um argumento
 12 Erro: '-screen' necessita de um argumento
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Website: http://www.fluxbox.org/\n\n\
 -display <string>\t\tusar ligação com o display.\n\
 -screen <all|int,int,int>\tcorrer nos ecrãs especificados apenas.\n\
+-no-slit\t\t\tdo not provide a slit.\n\
+-no-toolbar\t\t\tdo not provide a toolbar.\n\
 -rc <string>\t\t\tusar arquivo alternativo de recursos.\n\
 -version\t\t\tmostrar versão e sair.\n\
 -info\t\t\t\tmostrar alguma informação útil.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tguarda registos para um ficheiro.\n\
 -help\t\t\t\tmostrar esta ajuda e sair.\n\n
 14 aviso: não foi possível definir a variável de ambiente 'DISPLAY'

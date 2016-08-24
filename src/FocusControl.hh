@@ -180,6 +180,7 @@ private:
     const FocusableList *m_cycling_list;
     Focusable *m_was_iconic;
     WinClient *m_cycling_last;
+    Focusable *m_cycling_next;
     int m_ignore_mouse_x, m_ignore_mouse_y;
 
     static WinClient *s_focused_window;

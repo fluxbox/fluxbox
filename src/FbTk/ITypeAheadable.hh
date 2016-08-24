@@ -24,12 +24,6 @@
 
 #include "FbString.hh"
 
-#ifdef HAVE_CCTYPE
-  #include <cctype>
-#else
-  #include <ctype.h>
-#endif // HAVE_CCTYPE
-
 namespace FbTk {
 
 // abstract base class providing access and validation
@@ -38,16 +32,7 @@ public:
     virtual ~ITypeAheadable() { }
 
     virtual const std::string &iTypeString() const = 0;
-    virtual bool isEnabled() { return true; }
-    char iTypeChar(size_t i) const { return iTypeString()[i]; }
-    bool iTypeCheckStringSize(size_t sz) const {
-        return (iTypeString().size() > sz);
-    }
-    bool iTypeCompareChar(char ch, size_t sz) const {
-        return (bool)iTypeCheckStringSize(sz) &&
-               tolower(iTypeChar(sz)) == tolower(ch);
-    }
-
+    virtual bool isEnabled() const { return true; }
 };
 
 } // end namespace FbTk

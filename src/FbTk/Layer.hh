@@ -43,7 +43,7 @@ public:
     //typedef std::list<LayerItem *>::reverse_iterator reverse_iterator;
 
     void setLayerNum(int layernum) { m_layernum = layernum; };
-    int  getLayerNum() { return m_layernum; };
+    int  getLayerNum() const { return m_layernum; };
     // Put all items on the same layer (called when layer item added to)
     void alignItem(LayerItem &item);
     int countWindows();

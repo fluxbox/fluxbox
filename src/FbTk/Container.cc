@@ -94,6 +94,10 @@ void Container::insertItem(Item item, int pos) {
 
 void Container::moveItem(Item item, int movement) {
 
+    if (m_item_list.empty()) {
+        return;
+    }
+
     int index = find(item);
     const size_t size = m_item_list.size();
 
@@ -129,7 +133,7 @@ bool Container::moveItemTo(Item item, int x, int y) {
     // get the root window
     if (!XQueryTree(display(), window(),
                     &root_return, &parent_return, &children_return, &nchildren_return))
-        parent_return = parent_return;
+        return false;
 
     if (children_return != NULL)
         XFree(children_return);
@@ -381,7 +385,7 @@ void Container::repositionItems() {
             --rounding_error;
             extra = 1;
             //counter for different direction
-            if (align == RIGHT && !extra)
+            if (align == RIGHT)
                 --next_x;
         } else {
             if (extra && align == RIGHT) // last extra

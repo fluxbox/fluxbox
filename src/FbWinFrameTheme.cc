@@ -20,10 +20,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "FbWinFrameTheme.hh"
+#include "IconbarTheme.hh"
+
 #include "FbTk/App.hh"
 #include "FbTk/Util.hh"
-
-#include "IconbarTheme.hh"
 
 #include <X11/cursorfont.h>
 
@@ -49,8 +49,7 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num, const std::string &extra,
                     "Window.Label" + altextra) {
 
     *m_title_height = 0;
-    // set defaults
-    m_font->load("__DEFAULT__");
+    m_font->load(FbTk::Font::DEFAULT_FONT);
 
     // create cursors
     Display *disp = FbTk::App::instance()->display();

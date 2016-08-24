@@ -28,30 +28,32 @@ include data/styles/bora_black/Makemodule.am
 include data/styles/arch/pixmaps/Makemodule.am
 include data/styles/arch/Makemodule.am
 
-install-pkgdataDATA:
+pkgdata_FILES = data/init data/keys data/apps data/overlay data/menu
+
+install-data-local: $(pkgdata_FILES)
 	@echo "Installing menu file in $(DESTDIR)$(DEFAULT_MENU)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_MENU))
-	$(INSTALL_DATA) ./menu $(DESTDIR)$(DEFAULT_MENU)
+	$(INSTALL_DATA) ./data/menu $(DESTDIR)$(DEFAULT_MENU)
 	@echo "Installing keys file in $(DESTDIR)$(DEFAULT_KEYS)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_KEYS))
-	$(INSTALL_DATA) $(srcdir)/keys $(DESTDIR)$(DEFAULT_KEYS)
+	$(INSTALL_DATA) $(srcdir)/data/keys $(DESTDIR)$(DEFAULT_KEYS)
 	@echo "Installing apps file in $(DESTDIR)$(DEFAULT_APPS)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_APPS))
-	$(INSTALL_DATA) ./apps $(DESTDIR)$(DEFAULT_APPS)
+	$(INSTALL_DATA) ./data/apps $(DESTDIR)$(DEFAULT_APPS)
 	@echo "Installing overlay file in $(DESTDIR)$(DEFAULT_OVERLAY)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_OVERLAY))
-	$(INSTALL_DATA) $(srcdir)/overlay $(DESTDIR)$(DEFAULT_OVERLAY)
+	$(INSTALL_DATA) $(srcdir)/data/overlay $(DESTDIR)$(DEFAULT_OVERLAY)
 	@echo "Installing init file in $(DESTDIR)$(DEFAULT_INIT)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_INIT))
-	$(INSTALL_DATA) ./init $(DESTDIR)$(DEFAULT_INIT)
+	$(INSTALL_DATA) ./data/init $(DESTDIR)$(DEFAULT_INIT)
 	@echo "Installing windowmenu file in $(DESTDIR)$(DEFAULT_WINDOWMENU)"
 	$(mkinstalldirs) $(DESTDIR)$(dir $(DEFAULT_WINDOWMENU))
-	$(INSTALL_DATA) $(srcdir)/windowmenu $(DESTDIR)$(DEFAULT_WINDOWMENU)
+	$(INSTALL_DATA) $(srcdir)/data/windowmenu $(DESTDIR)$(DEFAULT_WINDOWMENU)
 
-menu:
-	env	MENUFILENAME=menu \
+data/menu:
+	env MENUFILENAME=$@ \
 		PREFIX="${prefix}" \
 		MENUTITLE="Fluxbox-${VERSION}" \
 		INSTALL=Yes \
 		PATH="${PATH}:../util:../util/fbrun" \
-		util/fluxbox-generate_menu
+		sh util/fluxbox-generate_menu

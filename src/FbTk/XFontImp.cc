@@ -29,17 +29,8 @@
 
 #include <iostream>
 #include <new>
-#ifdef HAVE_CSTDIO
-  #include <cstdio>
-#else
-  #include <stdio.h>
-#endif
-#ifdef HAVE_CSTRING
-  #include <cstring>
-#else
-  #include <string.h>
-#endif
-
+#include <cstdio>
+#include <cstring>
 #include <algorithm>
 
 
@@ -214,7 +205,7 @@ void XFontImp::rotate(FbTk::Orientation orient) {
                              0, 0,
                              boxlen, boxlen);
         // draw the character centre top right on canvas
-        sprintf(text, "%c", ichar);
+        snprintf(text, 1, "%c", ichar);
         font_gc.setForeground(1);
         XDrawImageString(dpy, canvas.drawable(), font_gc.gc(),
                          boxlen/2 - lbearing,
@@ -275,6 +266,7 @@ void XFontImp::rotate(FbTk::Orientation orient) {
                                           "Can't create XImage",
                                           "XCreateImage failed for some reason")
                  << "." << endl;
+            XDestroyImage(I1);
             free(bitdata);
             delete rotfont;
             m_rotfonts[orient] = 0;

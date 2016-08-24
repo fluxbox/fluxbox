@@ -51,7 +51,7 @@ public:
         m_object.saveOnHead(m_headnum);
         FbTk::RadioMenuItem::click(button, time, mods);
     }
-    
+
 private:
     ItemType &m_object;
     int m_headnum;
@@ -103,11 +103,11 @@ void XineramaHeadMenu<ItemType>::reloadHeads()
 */
         std::string tname("Head ");
         tname += FbTk::StringUtil::number2String(i);
-        insert(new XineramaHeadMenuItem<ItemType>(
+        insertItem(new XineramaHeadMenuItem<ItemType>(
                    tname.c_str(), m_object, i, saverc_cmd));
     }
     // TODO: nls
-    insert(new XineramaHeadMenuItem<ItemType>(
+    insertItem(new XineramaHeadMenuItem<ItemType>(
                "All Heads", m_object, 0, saverc_cmd));
     updateMenu();
 }

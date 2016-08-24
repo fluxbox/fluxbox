@@ -26,11 +26,11 @@ namespace FbTk {
     namespace RelCalcHelper {
 
         int calPercentageValueOf(int i, int j) {
-            return floor(i * j / 100 + 0.5);
+            return static_cast<int>(floor((static_cast<float>(i*j) / 100) + 0.5));
         }
 
         int calPercentageOf(int i, int j) {
-            return floor((float) i / (float) j * 100 + 0.5);
+            return static_cast<int>(floor((float) i / (float) j * 100 + 0.5));
         }
 
     }

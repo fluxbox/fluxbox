@@ -229,11 +229,15 @@ $set 19 #main
 9 Файл часопісу
 10 Запісваць часопісу
 11 памылка: '-rc' патрэбны аргумэнт
-13 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
 -display <string>\t\tкарыстацца адзначаным дасыплем.\n\
+-no-slit\t\t\tdo not provide a slit\n\
+-no-toolbar\t\t\tdo not provide a toolbar\n\
 -rc <string>\t\t\tкарыстацца другім файлам рэсурсаў.\n\
 -version\t\t\tпаказаць нумар вэрсіі ды выйсьці.\n\
 -info\t\t\t\tпаказаць некаторую карысную інфармацыю ды выйсьці.\n\
+-list-commands\t\t\tlist all valid key commands.\n\
+-sync\t\t\t\tsynchronize with X server for debugging.\n\
 -log <filename>\t\t\tЗапісваць лог у адзначаны файл.\n\
 -help\t\t\t\tнадрукаваць гэты тэкст ды выйсьці.\n\n
 14 увага: немагчыма прызначыць пераменную асяродку 'DISPLAY'
