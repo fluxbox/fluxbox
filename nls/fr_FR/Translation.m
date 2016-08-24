@@ -235,18 +235,18 @@ $set 19 #main
 10 Enregistrement du journal vers
 11 erreur: '-rc' nécessite un argument
 12 erreur: 'screen' nécessite un argument
-13 Fluxbox %s: (c) %s Fluxbox Team\n\n\
+13 Fluxbox %s: (c) %s Fluxbox Team\n\
 Website: http://www.fluxbox.org/\n\n\
--display <chaîne de caractere>\t\utilise la connexion sur le display\n\
--screen <tous|entier,entier,entier>\tfonctionne uniquement sur un écran spécifique\n\
--no-slit\t\t\tdo not provide a slit\n\
--no-toolbar\t\tdo not provide a toolbar\n\
--rc <chaîne>\t\t\tutilise un autre fichier de configuration.\n\
+-display <chaîne de caractères>\t\utilise la connexion sur le display.\n\
+-screen <tous|entier,entier,entier>\tfonctionne uniquement sur un écran spécifique.\n\
+-no-slit\t\t\tne pas fournir de slit.\n\
+-no-toolbar\t\tne pas fournir de toolbar.\n\
+-rc <chaîne de caractères>\t\t\tutilise un autre fichier de configuration.\n\
 -version\t\t\taffiche la version et quitte.\n\
 -info\t\t\t\taffiche quelques informations utiles.\n\
--list-commands\t\t\tlist all valid key commands.\n\
--sync\t\t\t\tsynchronize with X server for debugging.\n\
--log <filename>\t\t\tjournaliser la sortie vers le fichier.\n\
+-list-commands\t\t\tafficher la liste de toutes les commandes valides.\n\
+-sync\t\t\t\tse synchroniser avec le serveur X pour débugger.\n\
+-log <nom de fichier>\t\t\tjournaliser la sortie vers le fichier.\n\
 -help\t\t\t\taffiche ce texte d'aide et quitte.\n\n
 14 attention: il n'est pas possible de placer la variable 'DISPLAY'
 
