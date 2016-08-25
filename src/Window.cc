@@ -2406,7 +2406,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         if (screen().clickRaises())
             raise();
 
-        XAllowEvents(display, ReplayPointer, be.time);
+        XAllowEvents(display, ReplayPointer, CurrentTime);
 
         m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
         m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
