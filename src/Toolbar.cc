@@ -936,7 +936,7 @@ void Toolbar::rearrangeItems() {
     if (relative_items) {
         if (relative_width <= width - fixed_width && stretch_items) {
             relative_width = int(width - fixed_width - relative_width)/stretch_items;
-        } else {
+        } else if (relative_width) {
             stretch_factor = float(width - fixed_width)/relative_width;
             relative_width = 0;
         }
