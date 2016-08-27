@@ -108,7 +108,7 @@ private:
 
     FbTk::SignalTracker m_tracker;
 
-    std::auto_ptr<FocusableList> m_winlist;
+    std::unique_ptr<FocusableList> m_winlist;
     IconMap m_icons;
     std::string m_mode;
     FbTk::Resource<std::string> m_rc_mode;

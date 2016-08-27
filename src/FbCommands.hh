@@ -127,7 +127,7 @@ private:
     const int m_option;
     const ClientPattern m_pat;
     std::list<FluxboxWindow *> m_list;
-    std::auto_ptr<ClientMenu> m_menu;
+    std::unique_ptr<ClientMenu> m_menu;
 };
 
 class ShowCustomMenuCmd: public FbTk::Command<void> {
@@ -137,7 +137,7 @@ public:
     void reload();
 private:
    std::string custom_menu_file;
-   std::auto_ptr<FbMenu> m_menu;    
+   std::unique_ptr<FbMenu> m_menu;    
 };
 
 class ShowRootMenuCmd: public FbTk::Command<void> {

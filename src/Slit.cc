@@ -225,8 +225,6 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
       m_kwm2_dockwindow(XInternAtom(FbTk::App::instance()->display(),
                                     "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False)), //KDE v2.x
 
-      m_layeritem(0),
-
       m_slit_theme(new SlitTheme(scr.rootWindow().screenNumber())),
       m_strut(0),
       // resources

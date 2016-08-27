@@ -197,7 +197,7 @@ private:
     FbTk::Resource<Placement> m_rc_placement;
     FbTk::Resource<int> m_rc_height;
     FbTk::Resource<std::string> m_rc_tools;
-    std::auto_ptr<FbTk::Shape> m_shape;
+    std::unique_ptr<FbTk::Shape> m_shape;
     typedef std::list<std::string> StringList;
     StringList m_tools;
 

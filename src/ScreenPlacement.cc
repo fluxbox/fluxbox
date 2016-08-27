@@ -53,7 +53,6 @@ ScreenPlacement::ScreenPlacement(BScreen &screen):
                        screen.name()+".windowPlacement", 
                        screen.altName()+".WindowPlacement"),
     m_old_policy(ROWSMARTPLACEMENT),
-    m_strategy(0),
     m_screen(screen)
 {
 }

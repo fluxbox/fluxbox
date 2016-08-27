@@ -193,7 +193,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  unsigned int opts) :
     m_layermanager(num_layers),
     root_colormap_installed(false),
-    m_image_control(0),
     m_current_workspace(0),
     m_focused_windowtheme(new FbWinFrameTheme(scrn, ".focus", ".Focus")),
     m_unfocused_windowtheme(new FbWinFrameTheme(scrn, ".unfocus", ".Unfocus")),
@@ -215,7 +214,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_altname(altscreenname),
     m_focus_control(new FocusControl(*this)),
     m_placement_strategy(new ScreenPlacement(*this)),
-    m_cycle_opts(0),
     m_opts(opts) {
 
 
@@ -643,7 +641,7 @@ void BScreen::propertyNotify(Atom atom) {
                     &ret_bytes_after, (unsigned char **)&str);
             }
 
-            static std::auto_ptr<FbTk::Command<void> > cmd(0);
+            static std::unique_ptr<FbTk::Command<void> > cmd;
             cmd.reset(FbTk::CommandParser<void>::instance().parse(str, false));
             if (cmd.get()) {
                 cmd->execute();

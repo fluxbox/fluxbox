@@ -155,7 +155,7 @@ public:
 
 private:
 
-    std::auto_ptr<Patterns> m_pats;
+    std::unique_ptr<Patterns> m_pats;
     Clients m_clients;
 
     Startups m_startups;

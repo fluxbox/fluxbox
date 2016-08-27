@@ -106,7 +106,7 @@ private:
     BScreen& m_screen;
     Pixmap m_pixmap;
 
-    std::auto_ptr<AtomHandler> m_handler;
+    std::unique_ptr<AtomHandler> m_handler;
 
     ClientList m_clients;
     size_t m_num_visible_clients;

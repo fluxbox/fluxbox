@@ -40,7 +40,7 @@ public:
     }
 
 private:
-    std::auto_ptr<Strut> m_available_workspace_area;
+    std::unique_ptr<Strut> m_available_workspace_area;
     std::list<Strut*> m_strutlist;
 };
 

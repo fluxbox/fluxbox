@@ -152,7 +152,7 @@ private:
     FbTk::Timer m_timer;
 
     SlitClients m_client_list;
-    std::auto_ptr<LayerMenu> m_layermenu;
+    std::unique_ptr<LayerMenu> m_layermenu;
     FbMenu m_clientlist_menu, m_slitmenu;
 #ifdef XINERAMA
     XineramaHeadMenu<Slit> *m_xineramaheadmenu;
@@ -178,8 +178,8 @@ private:
     // for KDE
     Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
 
-    std::auto_ptr<FbTk::LayerItem> m_layeritem;
-    std::auto_ptr<SlitTheme> m_slit_theme;
+    std::unique_ptr<FbTk::LayerItem> m_layeritem;
+    std::unique_ptr<SlitTheme> m_slit_theme;
     static unsigned int s_eventmask;
     Strut *m_strut;
 

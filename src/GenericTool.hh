@@ -65,7 +65,7 @@ protected:
 private:
     void themeReconfigured();
     
-    std::auto_ptr<FbTk::FbWindow> m_window;
+    std::unique_ptr<FbTk::FbWindow> m_window;
     FbTk::ThemeProxy<ToolTheme> &m_theme;
     FbTk::SignalTracker m_tracker;
 };

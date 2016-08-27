@@ -93,7 +93,7 @@ private:
 
     XModifierKeymap *m_modmap;
     int m_numlock, m_scrolllock;
-    static std::auto_ptr<KeyUtil> s_keyutil;
+    static std::unique_ptr<KeyUtil> s_keyutil;
 };
 
 } // end namespace FbTk

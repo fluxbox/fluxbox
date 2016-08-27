@@ -60,7 +60,7 @@ const struct t_modlist modlist[] = {
 
 namespace FbTk {
 
-std::auto_ptr<KeyUtil> KeyUtil::s_keyutil;
+std::unique_ptr<KeyUtil> KeyUtil::s_keyutil;
 
 KeyUtil &KeyUtil::instance() {
     if (s_keyutil.get() == 0)

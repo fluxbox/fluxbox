@@ -492,31 +492,31 @@ private:
 
     bool root_colormap_installed;
 
-    std::auto_ptr<FbTk::ImageControl> m_image_control;
-    std::auto_ptr<FbMenu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
+    std::unique_ptr<FbTk::ImageControl> m_image_control;
+    std::unique_ptr<FbMenu> m_configmenu, m_rootmenu, m_workspacemenu, m_windowmenu;
 
     Icons m_icon_list;
 
-    std::auto_ptr<Slit>     m_slit;
-    std::auto_ptr<Toolbar>  m_toolbar;
-    std::auto_ptr<ToolButtonMap> m_toolButtonMap;
+    std::unique_ptr<Slit>     m_slit;
+    std::unique_ptr<Toolbar>  m_toolbar;
+    std::unique_ptr<ToolButtonMap> m_toolButtonMap;
 
     Workspace *m_current_workspace;
 
     WorkspaceNames m_workspace_names;
     Workspaces m_workspaces_list;
 
-    std::auto_ptr<FbWinFrameTheme> m_focused_windowtheme,
+    std::unique_ptr<FbWinFrameTheme> m_focused_windowtheme,
                                    m_unfocused_windowtheme;
-    std::auto_ptr<WinButtonTheme> m_focused_winbutton_theme,
+    std::unique_ptr<WinButtonTheme> m_focused_winbutton_theme,
             m_unfocused_winbutton_theme, m_pressed_winbutton_theme;
-    std::auto_ptr<FbTk::MenuTheme> m_menutheme;
-    std::auto_ptr<RootTheme> m_root_theme;
+    std::unique_ptr<FbTk::MenuTheme> m_menutheme;
+    std::unique_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
-    std::auto_ptr<OSDWindow> m_geom_window;
-    std::auto_ptr<OSDWindow> m_pos_window;
-    std::auto_ptr<TooltipWindow> m_tooltip_window;
+    std::unique_ptr<OSDWindow> m_geom_window;
+    std::unique_ptr<OSDWindow> m_pos_window;
+    std::unique_ptr<TooltipWindow> m_tooltip_window;
     FbTk::FbWindow m_dummy_window;
 
     ScreenResource resource;

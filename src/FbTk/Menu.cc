@@ -95,7 +95,6 @@ Menu::Menu(FbTk::ThemeProxy<MenuTheme> &tm, ImageControl &imgctrl):
     m_active_index(-1),
     m_theme(tm),
     m_image_ctrl(imgctrl),
-    m_shape(0),
     m_alignment(ALIGNDONTCARE) {
 
     Display* disp = FbTk::App::instance()->display();

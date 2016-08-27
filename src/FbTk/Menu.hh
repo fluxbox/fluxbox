@@ -189,7 +189,7 @@ private:
     Menu *m_parent;
 
     std::vector<MenuItem*>    m_items;
-    std::auto_ptr<MenuSearch> m_search;
+    std::unique_ptr<MenuSearch> m_search;
 
     struct State {
         bool moving;
@@ -239,7 +239,7 @@ private:
 
     FbTk::ThemeProxy<MenuTheme>& m_theme;
     ImageControl& m_image_ctrl;
-    std::auto_ptr<FbTk::Shape> m_shape; // the corners
+    std::unique_ptr<FbTk::Shape> m_shape; // the corners
     Pixmap      m_hilite_pixmap;
     Alignment   m_alignment;
 

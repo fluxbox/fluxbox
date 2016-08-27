@@ -48,7 +48,7 @@ public:
         STATIC_ORDER = 0x02  ///< use creation order instead of focused order
     };
 
-    FocusableList(BScreen &scr): m_pat(0), m_parent(0), m_screen(scr) { }
+    FocusableList(BScreen &scr): m_parent(0), m_screen(scr) { }
     FocusableList(BScreen &scr, const std::string & pat);
     FocusableList(BScreen &scr, const FocusableList &parent,
                   const std::string & pat);
@@ -102,7 +102,7 @@ private:
     void windowUpdated(FluxboxWindow &fbwin);
 
 
-    std::auto_ptr<ClientPattern> m_pat;
+    std::unique_ptr<ClientPattern> m_pat;
     const FocusableList *m_parent;
     BScreen &m_screen;
     std::list<Focusable *> m_list;

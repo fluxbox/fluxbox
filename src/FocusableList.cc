@@ -74,7 +74,7 @@ const FocusableList *FocusableList::getListFromOptions(BScreen &scr, int opts) {
 }
 
 FocusableList::FocusableList(BScreen &scr, const string & pat):
-    m_pat(0), m_parent(0), m_screen(scr) {
+    m_parent(0), m_screen(scr) {
 
     int options = 0;
     string pattern;
