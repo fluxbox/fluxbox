@@ -511,7 +511,9 @@ if [ "$option" = random ]; then
         exit 1
     fi
     if [ -d "$wallpaperdir" ]; then
-        number_of_wallpapers=`ls "$wallpaperdir"|wc -l`
+        cd "$wallpaperdir"
+        available_wallpapers=`find -L -type f ! -regex '.*/\..*'`
+        number_of_wallpapers=`echo "$available_wallpapers" | wc -l`
         if find_it random_number; then
             randomnumber=`random_number`
         # some shells don't support $RANDOM
@@ -531,7 +533,7 @@ if [ "$option" = random ]; then
         fi
         remember=false
         #set -x
-        wallpaper="$wallpaperdir/`ls \"$wallpaperdir\"|sed -n ${wallpapernumber}p`"
+        wallpaper="`echo "$available_wallpapers" | sed -n ${wallpapernumber}p`"
         option=$option2 # have to choose something...
     else
         message "Invalid random wallpaper directory specified: '$wallpaperdir'."
