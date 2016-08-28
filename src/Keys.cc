@@ -555,6 +555,10 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
     if (!temp_key && isdouble)
         temp_key = next_key->find(type, mods, key, context, false);
 
+    if (!temp_key && type == ButtonPress && // unassigned button press
+        next_key->find(MotionNotify, mods, key, context, false))
+        return true; // if there's a motion action, prevent replay to the client (but do nothing)
+
     if (temp_key && !temp_key->keylist.empty()) { // emacs-style
         if (!saved_keymode)
             saved_keymode = m_keylist;
