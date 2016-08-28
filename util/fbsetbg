@@ -408,10 +408,11 @@ case $WPSETTER in
         debugstory=$standardok
         ;;
     display)
-        full="`xwininfo -root 2> /dev/null|grep geom` -window root"
+        rootsize=`xwininfo -root 2> /dev/null|sed '/-geometry/!d; s/.* \([0-9]*x[0-9]*\)+.*/\1/g'`
+        full="-window root -resize ${rootsize}!"
         tile='-window root'
         center='-backdrop -window root'
-        aspect=$full
+        aspect="-window root -resize "${rootsize}^" -crop ${rootsize}+0+0 -gravity center -window root"
         debugstory=$standardrant
         ;;
     Esetroot)
@@ -553,7 +554,7 @@ fi
 
 
 $WPSETTER `eval echo $option` "$wallpaper"
-if [ $? -ne 0 ]; then
+if [ "$?" != "0" -a "$WPSETTER" != "display" ]; then # display is broken, all IM falsely fail for "unrecognized event type FOO"...
     message "Something went wrong while setting the wallpaper.
 Run '$WPSETTER "`eval echo $option` $wallpaper"' from an xterm to find out what."
     exit 1
