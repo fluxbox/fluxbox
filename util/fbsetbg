@@ -47,6 +47,7 @@
 wpsetters="${wpsetters:=Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg}" # broken icewmbg'
 lastwallpaper="${HOME}/.fluxbox/lastwallpaper"
 
+DISPLAY=${DISPLAY%.0}
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = root ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -167,7 +168,7 @@ message() {
 }
 
 remembercommand() {
-    grep -vs "|${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
+    grep -vs "|${DISPLAY}$\||${DISPLAY}\.0$" ${lastwallpaper} > ${lastwallpaper}.tmp
     mv -f ${lastwallpaper}.tmp ${lastwallpaper}
     if [ "$option" = fbsetroot ]; then
         echo $option"|$wallpaper|$style|"$DISPLAY >> $lastwallpaper
