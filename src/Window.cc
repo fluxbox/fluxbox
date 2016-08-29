@@ -3926,8 +3926,21 @@ void FluxboxWindow::setOnHead(int head) {
     if (head > 0 && head <= screen().numHeads()) {
         int cur = screen().getHead(fbWindow());
         bool placed = m_placed;
-        move(screen().getHeadX(head) + frame().x() - screen().getHeadX(cur),
-             screen().getHeadY(head) + frame().y() - screen().getHeadY(cur));
+        int x = frame().x(), y = frame().y();
+        const int w = frame().width(), h = frame().height(), bw = frame().window().borderWidth();
+        const int sx = screen().getHeadX(cur), sw = screen().getHeadWidth(cur),
+                  sy = screen().getHeadY(cur), sh = screen().getHeadHeight(cur);
+        int d = sx + sw - (x + bw + w);
+        if (std::abs(sx - x) > bw && std::abs(d) <= bw) // right aligned
+            x = screen().getHeadX(head) + screen().getHeadWidth(head) - (w + bw + d);
+        else // calc top-left relative position
+            x = screen().getHeadWidth(head) * (x - sx) / sw + screen().getHeadX(head);
+        d = sy + sh - (y + bw + h);
+        if (std::abs(sy - y) > bw && std::abs(d) <= bw) // bottom aligned
+            y = screen().getHeadY(head) + screen().getHeadHeight(head) - (h + bw + d);
+        else // calc top-left relative position
+            y = screen().getHeadHeight(head) * (y - sy) / sh + screen().getHeadY(head);
+        move(x, y);
         m_placed = placed;
     }
 
