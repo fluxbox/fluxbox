@@ -187,6 +187,14 @@ private:
     const ClientPattern m_pat;
 };
 
+class UnclutterCmd: public FbTk::Command<void> {
+public:
+    explicit UnclutterCmd(std::string &pat): m_pat(pat.c_str()) { }
+    void execute();
+private:
+    const ClientPattern m_pat;
+};
+
 class ShowDesktopCmd: public FbTk::Command<void> {
 public:
     void execute();

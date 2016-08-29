@@ -23,6 +23,7 @@
 #include "WorkspaceCmd.hh"
 
 #include "Layer.hh"
+#include "MinOverlapPlacement.hh"
 #include "Workspace.hh"
 #include "Window.hh"
 #include "Screen.hh"
@@ -203,6 +204,8 @@ FbTk::Command<void> *parseWindowList(const string &command,
     } else if (command == "arrangewindowsstackbottom") {
         int method = ArrangeWindowsCmd::STACKBOTTOM;
         return new ArrangeWindowsCmd(method,pat);
+    } else if (command == "unclutter") {
+        return new UnclutterCmd(pat);
     }
 
     return 0;
@@ -220,6 +223,7 @@ REGISTER_COMMAND_PARSER(arrangewindowsstackleft, parseWindowList, void);
 REGISTER_COMMAND_PARSER(arrangewindowsstackright, parseWindowList, void);
 REGISTER_COMMAND_PARSER(arrangewindowsstacktop, parseWindowList, void);
 REGISTER_COMMAND_PARSER(arrangewindowsstackbottom, parseWindowList, void);
+REGISTER_COMMAND_PARSER(unclutter, parseWindowList, void);
 
 } // end anonymous namespace
 
@@ -585,6 +589,41 @@ void ArrangeWindowsCmd::execute() {
                 // Shouldn't happen.
                 break;
         }
+    }
+}
+
+void UnclutterCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    Workspace *space = screen->currentWorkspace();
+
+    if (space->windowList().empty())
+        return;
+
+    const int head = screen->getCurrHead();
+    Workspace::Windows::iterator win;
+    Workspace::Windows placed_windows;
+
+    // list and clean up
+    for (win = space->windowList().begin(); win != space->windowList().end(); ++win) {
+        int winhead = screen->getHead((*win)->fbWindow());
+        if ((winhead == head || winhead == 0) && m_pat.match(**win)) {
+            placed_windows.push_back(*win);
+            (*win)->move(-(*win)->width(), -(*win)->height());
+        }
+    }
+
+    if (placed_windows.empty())
+        return;
+
+    // place
+    MinOverlapPlacement mopp;
+    int x, y;
+    for (win = placed_windows.begin(); win != placed_windows.end(); ++win) {
+        mopp.placeWindow(**win, head, x, y);
+        (*win)->move(x, y);
     }
 }
 

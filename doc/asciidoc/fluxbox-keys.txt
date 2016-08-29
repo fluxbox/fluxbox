@@ -434,6 +434,11 @@ doing so.
   *ArrangeWindowsStackTop* places the main window on the BOTTOM half of the
   screen and the tiled windows on the top half of the screen.
 
+*Unclutter* 'pattern'::
+    Arrange all matching windows to reduce the overall window overlap as much
+    as possible. Windows are not resized.
+    See *CLIENT PATTERNS* for more about the 'pattern' arguments.
+
 *ShowDesktop*::
 	Minimizes all windows on the current workspace. If they are already all
 	minimized, then it restores them.
