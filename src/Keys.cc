@@ -522,6 +522,8 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
     if (!m_keylist)
         return false;
 
+    static Time first_key_time = 0;
+
     static Time last_button_time = 0;
     static unsigned int last_button = 0;
 
@@ -544,6 +546,17 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         isdouble = double_click;
     }
 
+    auto resetKeyChain = [&]() {
+        first_key_time = 0;
+        next_key.reset();
+        if (saved_keymode) {
+            setKeyMode(saved_keymode);
+            saved_keymode.reset();
+        }
+    };
+    if (type == KeyPress && first_key_time && time - first_key_time > 5000)
+        resetKeyChain();
+
     if (!next_key)
         next_key = m_keylist;
 
@@ -560,8 +573,10 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         return true; // if there's a motion action, prevent replay to the client (but do nothing)
 
     if (temp_key && !temp_key->keylist.empty()) { // emacs-style
-        if (!saved_keymode)
+        if (!saved_keymode) {
+            first_key_time = time;
             saved_keymode = m_keylist;
+        }
         next_key = temp_key;
         setKeyMode(next_key);
         return true;
@@ -570,11 +585,7 @@ bool Keys::doAction(int type, unsigned int mods, unsigned int key,
         if (type == KeyPress &&
             !FbTk::KeyUtil::instance().keycodeToModmask(key)) {
             // if we're in the middle of an emacs-style keychain, exit it
-            next_key.reset();
-            if (saved_keymode) {
-                setKeyMode(saved_keymode);
-                saved_keymode.reset();
-            }
+            resetKeyChain();
         }
         return false;
     }
