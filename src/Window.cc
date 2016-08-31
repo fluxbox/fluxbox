@@ -457,11 +457,7 @@ void FluxboxWindow::init() {
 
     setWindowType(m_client->getWindowType());
 
-    if (fluxbox.isStartup()) {
-        m_placed = true;
-    } else if (m_client->normal_hint_flags & (PPosition|USPosition)) {
-        m_placed = true;
-        // sanitize explicit position
+    auto sanitizePosition = [&]() {
         int head = screen().getHead(fbWindow());
         if (head == 0 && screen().hasXinerama())
             head = screen().getCurrHead();
@@ -489,6 +485,13 @@ void FluxboxWindow::init() {
                 top = frame().y();
         }
         frame().move(left, top);
+    };
+
+    if (fluxbox.isStartup()) {
+        m_placed = true;
+    } else if (m_client->normal_hint_flags & (PPosition|USPosition)) {
+        m_placed = true;
+        sanitizePosition();
     } else {
         if (!isWindowVisibleOnSomeHeadOrScreen(*this)) {
             // this probably should never happen, but if a window
@@ -544,6 +547,7 @@ void FluxboxWindow::init() {
         const int x = twin->frame().x() + int(twin->frame().width() - frame().width())/2;
         const int y = twin->frame().y() + int(twin->frame().height() - frame().height())/2;
         frame().move(x, y);
+        sanitizePosition();
         m_placed = true;
     } else // if no parent then set default layer
         moveToLayer(m_state.layernum, m_state.layernum != ::ResourceLayer::NORMAL);
