@@ -548,8 +548,10 @@ void FluxboxWindow::init() {
     // if we're a transient then we should be on the same layer and workspace
     FluxboxWindow* twin = m_client->transientFor() ? m_client->transientFor()->fbwindow() : 0;
     if (twin && twin != this) {
-        layerItem().setLayer(twin->layerItem().getLayer());
-        m_state.layernum = twin->layerNum();
+        if (twin->layerNum() < ResourceLayer::DESKTOP) { // don't confine layer for desktops
+            layerItem().setLayer(twin->layerItem().getLayer());
+            m_state.layernum = twin->layerNum();
+        }
         m_workspace_number = twin->workspaceNumber();
         const int x = twin->frame().x() + int(twin->frame().width() - frame().width())/2;
         const int y = twin->frame().y() + int(twin->frame().height() - frame().height())/2;
