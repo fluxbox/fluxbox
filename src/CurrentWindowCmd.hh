@@ -282,4 +282,11 @@ private:
     ClientPattern m_pat;
 };
 
+class ActivateTabCmd: public WindowHelperCmd {
+public:
+    explicit ActivateTabCmd() { }
+protected:
+    void real_execute();
+};
+
 #endif // CURRENTWINDOWCMD_HH
