@@ -552,6 +552,7 @@ private:
     uint64_t m_creation_time;
     uint64_t m_last_keypress_time;
     FbTk::Timer m_timer;
+    FbTk::Timer m_tabActivationTimer;
 
     // Window states
     bool moving, resizing, m_initialized;

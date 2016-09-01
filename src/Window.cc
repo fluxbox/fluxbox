@@ -24,6 +24,7 @@
 
 #include "Window.hh"
 
+#include "CurrentWindowCmd.hh"
 #include "WinClient.hh"
 #include "fluxbox.hh"
 #include "Keys.hh"
@@ -360,6 +361,7 @@ FluxboxWindow::~FluxboxWindow() {
     m_labelbuttons.clear();
 
     m_timer.stop();
+    m_tabActivationTimer.stop();
 
     // notify die
     dieSig().emit(*this);
@@ -440,6 +442,11 @@ void FluxboxWindow::init() {
                                                                                    &FluxboxWindow::raise));
     m_timer.setCommand(raise_cmd);
     m_timer.fireOnce(true);
+
+    m_tabActivationTimer.setTimeout(fluxbox.getAutoRaiseDelay() * FbTk::FbTime::IN_MILLISECONDS);
+    FbTk::RefCount<ActivateTabCmd> activate_tab_cmd(new ActivateTabCmd());
+    m_tabActivationTimer.setCommand(activate_tab_cmd);
+    m_tabActivationTimer.fireOnce(true);
 
     /**************************************************/
     /* Read state above here, apply state below here. */
@@ -1127,6 +1134,7 @@ void FluxboxWindow::reconfigure() {
     setFocusFlag(m_focused);
     moveResize(frame().x(), frame().y(), frame().width(), frame().height());
     m_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay() * FbTk::FbTime::IN_MILLISECONDS);
+    m_tabActivationTimer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay() * FbTk::FbTime::IN_MILLISECONDS);
     updateButtons();
     frame().reconfigure();
     menu().reconfigure();
@@ -2799,7 +2807,7 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
     if (screen().focusControl().isMouseTabFocus() &&
         client && client != m_client &&
         !screen().focusControl().isIgnored(ev.x_root, ev.y_root) ) {
-        setCurrentClient(*client, isFocused());
+        m_tabActivationTimer.start();
     }
 
 }
