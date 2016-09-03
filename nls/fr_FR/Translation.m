@@ -215,11 +215,11 @@ $set 18 #fbsetroot
 -mod <x> <y>                motif de modula\n\
 -foreground, -fg <couleur>  couleur du premier plan de modula\n\
 -background, -bg <couleur>  couleur du second plan de modula\n\n\
--gradient <texture>      	texture du dégradé\n\
--from <couleur>            	couleur de départ du dégradé\n\
--to <couleur>              	couleur d'arrivé du dégradé\n\n\
--solid <couleur>           	couleur pleine\n\n\
--help                    	affiche ce texte d'aide et quitte\n
+-gradient <texture>         texture du dégradé\n\
+-from <couleur>             couleur de départ du dégradé\n\
+-to <couleur>               couleur d'arrivé du dégradé\n\n\
+-solid <couleur>            couleur pleine\n\n\
+-help                       affiche ce texte d'aide et quitte\n
 
 $set 19 #main
 
