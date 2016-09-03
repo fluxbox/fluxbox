@@ -502,6 +502,7 @@ private:
     std::unique_ptr<ToolButtonMap> m_toolButtonMap;
 
     Workspace *m_current_workspace;
+    Workspace *m_former_workspace;
 
     WorkspaceNames m_workspace_names;
     Workspaces m_workspaces_list;

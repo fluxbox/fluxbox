@@ -194,6 +194,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_layermanager(num_layers),
     root_colormap_installed(false),
     m_current_workspace(0),
+    m_former_workspace(0),
     m_focused_windowtheme(new FbWinFrameTheme(scrn, ".focus", ".Focus")),
     m_unfocused_windowtheme(new FbWinFrameTheme(scrn, ".unfocus", ".Unfocus")),
     // the order of windowtheme and winbutton theme is important
@@ -919,6 +920,8 @@ int BScreen::removeLastWorkspace() {
 
     if (m_current_workspace->workspaceID() == wkspc->workspaceID())
         changeWorkspaceID(m_current_workspace->workspaceID() - 1);
+    if (m_former_workspace && m_former_workspace->workspaceID() == wkspc->workspaceID())
+        m_former_workspace = 0;
 
     wkspc->removeAll(wkspc->workspaceID()-1);
 
@@ -949,6 +952,8 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
     if (! m_current_workspace || id >= m_workspaces_list.size() ||
         id == m_current_workspace->workspaceID())
         return;
+
+    m_former_workspace = m_current_workspace;
 
     /* Ignore all EnterNotify events until the pointer actually moves */
     this->focusControl().ignoreAtPointer();
@@ -1524,14 +1529,20 @@ void BScreen::setLayer(FbTk::LayerItem &item, int layernum) {
  Goes to the workspace "right" of the current
 */
 void BScreen::nextWorkspace(int delta) {
-    changeWorkspaceID( (currentWorkspaceID() + delta) % numberOfWorkspaces());
+    if (delta)
+        changeWorkspaceID( (currentWorkspaceID() + delta) % numberOfWorkspaces());
+    else if (m_former_workspace)
+        changeWorkspaceID(m_former_workspace->workspaceID());
 }
 
 /**
  Goes to the workspace "left" of the current
 */
 void BScreen::prevWorkspace(int delta) {
-    changeWorkspaceID( (static_cast<signed>(numberOfWorkspaces()) + currentWorkspaceID() - (delta % numberOfWorkspaces())) % numberOfWorkspaces());
+    if (delta)
+        changeWorkspaceID( (static_cast<signed>(numberOfWorkspaces()) + currentWorkspaceID() - (delta % numberOfWorkspaces())) % numberOfWorkspaces());
+    else if (m_former_workspace)
+        changeWorkspaceID(m_former_workspace->workspaceID());
 }
 
 /**

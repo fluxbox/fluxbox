@@ -359,6 +359,8 @@ called).
 	offset value 'n', which defaults to *1* and refers to the number of
 	workspaces to move at one time. {Next,Prev}Workspace wrap around when
 	going past the last workspace, whereas {Right,Left}Workspace do not.
+	The special offset "0" will toggle the former workspace for Next- and
+	PrevWorkspace
 
 *Workspace* 'number'::
 	Jumps to the given workspace 'number'. The first workspace is *1*.

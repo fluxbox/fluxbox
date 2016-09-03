@@ -357,15 +357,13 @@ REGISTER_COMMAND_PARSER(workspace, parseIntCmd, void);
 } // end anonymous namespace
 
 void NextWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->mouseScreen();
-    if (screen != 0)
-        screen->nextWorkspace(m_option == 0 ? 1 : m_option);
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen())
+        screen->nextWorkspace(m_option);
 }
 
 void PrevWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->mouseScreen();
-    if (screen != 0)
-        screen->prevWorkspace(m_option == 0 ? 1 : m_option);
+    if (BScreen *screen = Fluxbox::instance()->mouseScreen())
+        screen->prevWorkspace(m_option);
 }
 
 void LeftWorkspaceCmd::execute() {
