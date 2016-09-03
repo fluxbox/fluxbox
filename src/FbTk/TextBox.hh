@@ -58,6 +58,7 @@ public:
     void exposeEvent(XExposeEvent &event);
     void buttonPressEvent(XButtonEvent &event);
     void keyPressEvent(XKeyEvent &event);
+    void handleEvent(XEvent &event);
 
     const FbString &text() const { return m_text.logical(); }
     const Font &font() const { return *m_font; }
@@ -79,10 +80,14 @@ private:
 
     void adjustPos();
 
+    typedef struct { std::string::size_type begin, end; } StringRange;
+    StringRange charRange(std::string::size_type pos) const;
+
     const FbTk::Font *m_font;
     BiDiString m_text;
     GC m_gc;
     std::string::size_type m_cursor_pos, m_start_pos, m_end_pos, m_select_pos;
+    XIC m_xic;
 };
 
 } // end namespace FbTk

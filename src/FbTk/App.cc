@@ -45,6 +45,9 @@ App::App(const char *displayname):m_done(false), m_display(0) {
     if (s_app != 0)
         throw std::string("Can't create more than one instance of FbTk::App");
     s_app = this;
+    // with recent versions of X11 one needs to specify XSetLocaleModifiers,
+    // otherwise no extra events won't be generated.
+    const bool setmodifiers = XSetLocaleModifiers("@im=none");
     // this allows the use of std::string.c_str(), which returns 
     // a blank string, rather than a null string, so we make them equivalent
     if (displayname != 0 && displayname[0] == '\0')
@@ -59,6 +62,11 @@ App::App(const char *displayname):m_done(false), m_display(0) {
     }
 
     FbStringUtil::init();
+
+    m_xim = 0;
+    if (setmodifiers && FbStringUtil::haveUTF8()) {
+        m_xim = XOpenIM(m_display, NULL, NULL, NULL);
+    }
 }
 
 App::~App() {

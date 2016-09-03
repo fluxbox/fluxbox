@@ -161,7 +161,8 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
 
     switch (ev.type) {
     case KeyPress:
-        evhand->keyPressEvent(ev.xkey);
+        if (!XFilterEvent(&ev, win))
+            evhand->keyPressEvent(ev.xkey);
     break;
     case KeyRelease:
         evhand->keyReleaseEvent(ev.xkey);
