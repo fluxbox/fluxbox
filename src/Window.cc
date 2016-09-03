@@ -2415,6 +2415,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_last_button_y = be.y_root;
     m_last_pressed_button = be.button;
 
+    FbTk::Menu::hideShownMenu();
+
     Keys *k = Fluxbox::instance()->keys();
     int context = 0;
     context = frame().getContext(be.subwindow ? be.subwindow : be.window, be.x_root, be.y_root);
@@ -2448,7 +2450,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
         m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
     }
-    FbTk::Menu::hideShownMenu();
+
     if (!m_focused && acceptsFocus() && m_click_focus)
         focus();
 

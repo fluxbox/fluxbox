@@ -194,6 +194,7 @@ class ShowMenu: public FbTk::Command<void> {
 public:
     explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
     void execute() {
+        FbTk::Menu::hideShownMenu();
         // get last button pos
         const XEvent &e = Fluxbox::instance()->lastEvent();
         m_win.popupMenu(e.xbutton.x_root, e.xbutton.y_root);
@@ -206,6 +207,7 @@ class FocusCommand: public FbTk::Command<void> {
 public:
     explicit FocusCommand(Focusable &win): m_win(win) { }
     void execute() {
+        FbTk::Menu::hideShownMenu();
         // this needs to be a local variable, as this object could be destroyed
         // if the workspace is changed.
         FluxboxWindow *fbwin = m_win.fbwindow();

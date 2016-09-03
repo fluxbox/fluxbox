@@ -514,6 +514,9 @@ void Toolbar::reconfigure() {
 
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
     Display *dpy = Fluxbox::instance()->display();
+
+    FbTk::Menu::hideShownMenu();
+
     if (be.subwindow) {
         // Do not intercept mouse events that are meant for the tray icon
         if (SystemTray::doesControl(be.subwindow)) {
