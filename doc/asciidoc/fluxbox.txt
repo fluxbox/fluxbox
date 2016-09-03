@@ -994,6 +994,12 @@ Default: *10*
 *session.screen0.iconbar.alignment*: 'position'::
 This value should be changed in the Iconbar Mode menu.
 +
+
+*session.screen0.iconbar.iconifiedPattern*: 'string'::
+Allows to decorate the title of iconified (minimized) windows.
+The title is represented by "%t".
++
+Default: *( %t )*
 --
 Available options:;;
 - *Left*: Fixed width, aligned left
