@@ -366,7 +366,12 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 adjustPos();
             }
             break;
+        case 'a':
+            selectAll();
+            break;
         }
+        clear();
+        return;
 
     } else { // no state
 
