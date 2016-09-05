@@ -60,6 +60,8 @@ TextBox::TextBox(int screen_num,
     m_select_pos(std::string::npos),
     m_xic(0) {
 
+    if (App::instance()->inputModule())
+        m_xic = XCreateIC(App::instance()->inputModule(), XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window(), NULL);
     FbTk::EventManager::instance()->add(*this, *this);
 }
 
@@ -74,12 +76,15 @@ TextBox::TextBox(const FbWindow &parent,
     m_end_pos(0),
     m_select_pos(std::string::npos),
     m_xic(0) {
-
+    if (App::instance()->inputModule())
+        m_xic = XCreateIC(App::instance()->inputModule(), XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window(), NULL);
     FbTk::EventManager::instance()->add(*this, *this);
 }
 
 TextBox::~TextBox() {
-
+    if (m_xic)
+        XFree(m_xic);
+    m_xic = 0;
 }
 
 void TextBox::setText(const FbTk::BiDiString &text) {
@@ -290,11 +295,17 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
 
     KeySym ks;
     char keychar[20];
-    int count = 1;
-    if (m_xic)
-        count = Xutf8LookupString(m_xic, &event, keychar, 20, &ks, 0);
-    else
+    if (m_xic) {
+        Status status;
+        int count = Xutf8LookupString(m_xic, &event, keychar, sizeof(keychar), &ks, &status);
+        if (status == XBufferOverflow)
+            return;
+        keychar[count] = '\0';
+    }
+    else {
         XLookupString(&event, keychar, 1, &ks, 0);
+        keychar[1] = '\0';
+    }
 
     // a modifier key by itself doesn't do anything
     if (IsModifierKey(ks)) return;
@@ -366,7 +377,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 adjustPos();
             }
             break;
-        case 'a':
+        case XK_a:
             selectAll();
             break;
         }
@@ -394,56 +405,45 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
         case XK_Delete:
             deleteForward();
             break;
+#define SET_SINGLE_BYTE(_B_) keychar[0] = _B_; keychar[1] = '\0'
         case XK_KP_Insert:
-            keychar[0] = '0';
+            SET_SINGLE_BYTE('0');
             break;
         case XK_KP_End:
-            keychar[0] = '1';
+            SET_SINGLE_BYTE('1');
             break;
         case XK_KP_Down:
-            keychar[0] = '2';
+            SET_SINGLE_BYTE('2');
             break;
         case XK_KP_Page_Down:
-            keychar[0] = '3';
+            SET_SINGLE_BYTE('3');
             break;
         case XK_KP_Left:
-            keychar[0] = '4';
+            SET_SINGLE_BYTE('4');
             break;
         case XK_KP_Begin:
-            keychar[0] = '5';
+            SET_SINGLE_BYTE('5');
             break;
         case XK_KP_Right:
-            keychar[0] = '6';
+            SET_SINGLE_BYTE('6');
             break;
         case XK_KP_Home:
-            keychar[0] = '7';
+            SET_SINGLE_BYTE('7');
             break;
         case XK_KP_Up:
-            keychar[0] = '8';
+            SET_SINGLE_BYTE('8');
             break;
         case XK_KP_Page_Up:
-            keychar[0] = '9';
+            SET_SINGLE_BYTE('9');
             break;
         case XK_KP_Delete:
-            keychar[0] = ',';
+            SET_SINGLE_BYTE(',');
             break;
+#undef SET_SINGLE_BYTE
         }
     }
-    if (count > 1 && count < 20) {
-        wchar_t wc;
-        count = mbrtowc(&wc, keychar, count, 0);
-        if (count > 0 && iswprint(wc)) {
-            keychar[count] = '\0';
-            std::string val;
-            val += (char*)keychar;
-            insertText(val);
-            m_select_pos = std::string::npos;
-        }
-    }
-    if (isprint(keychar[0])) {
-        std::string val;
-        val += keychar[0];
-        insertText(val);
+    if ((m_xic && !std::iscntrl(*keychar)) || std::isprint(*keychar)) {
+        insertText(std::string(keychar));
         m_select_pos = std::string::npos;
     }
     if ((event.state & ShiftMask) != ShiftMask)
@@ -454,17 +454,10 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
 void TextBox::handleEvent(XEvent &event) {
     if (event.type == KeymapNotify) {
         XRefreshKeyboardMapping(&event.xmapping);
-    } else if (event.type == FocusIn) {
-        if (!m_xic && App::instance()->inputModule())
-            m_xic = XCreateIC(App::instance()->inputModule(), XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, window(), NULL);
-        if (m_xic)
-            XSetICFocus(m_xic);
-    } else if (event.type == FocusIn) {
-        if (m_xic) {
-            XUnsetICFocus(m_xic);
-            XFree(m_xic);
-            m_xic = 0;
-        }
+    } else if (event.type == FocusIn && m_xic) {
+        XSetICFocus(m_xic);
+    } else if (event.type == FocusOut && m_xic) {
+        XUnsetICFocus(m_xic);
     }
 }
 
@@ -590,6 +583,10 @@ TextBox::StringRange TextBox::charRange(std::string::size_type pos) const {
     };
 
     StringRange range = {pos, pos};
+
+    if (!m_xic)
+        return range;
+
     FbString t = text();
 
     if (pos < 0 || pos >= t.size() || t.at(pos) > 0) // invalid pos or ASCII
