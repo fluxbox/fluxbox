@@ -959,7 +959,7 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
     this->focusControl().ignoreAtPointer();
 
     FbTk::App::instance()->sync(false);
-    XGrabServer(Fluxbox::instance()->display());
+    Fluxbox::instance()->grab();
 
     FluxboxWindow *focused = FocusControl::focusedFbWindow();
 
@@ -997,7 +997,7 @@ void BScreen::changeWorkspaceID(unsigned int id, bool revert) {
 
     old->hideAll(false);
 
-    XUngrabServer(Fluxbox::instance()->display());
+    Fluxbox::instance()->ungrab();
     FbTk::App::instance()->sync(false);
 
     m_currentworkspace_sig.emit(*this);
