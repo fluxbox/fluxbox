@@ -82,6 +82,9 @@ bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
         case UNDERMOUSEPLACEMENT:
             m_strategy.reset(new UnderMousePlacement());
             break;
+        case AUTOTABPLACEMENT:
+            m_strategy.reset(0);
+            break;
         }
     }
 
@@ -96,14 +99,16 @@ bool ScreenPlacement::placeWindow(const FluxboxWindow &win, int head,
     place_y = head_top;
 
     bool placed = false;
-    try {
-        placed = m_strategy->placeWindow(win, head, place_x, place_y);
-    } catch (std::bad_cast & cast) {
-        // This should not happen. 
-        // If for some reason we change the PlacementStrategy in Screen
-        // from ScreenPlacement to something else then we might get 
-        // bad_cast from some placement strategies.
-        cerr<<"Failed to place window: "<<cast.what()<<endl;
+    if (m_strategy) {
+        try {
+            placed = m_strategy->placeWindow(win, head, place_x, place_y);
+        } catch (std::bad_cast & cast) {
+            // This should not happen.
+            // If for some reason we change the PlacementStrategy in Screen
+            // from ScreenPlacement to something else then we might get
+            // bad_cast from some placement strategies.
+            cerr<<"Failed to place window: "<<cast.what()<<endl;
+        }
     }
 
     if (!placed) {
@@ -194,6 +199,8 @@ std::string FbTk::Resource<ScreenPlacement::PlacementPolicy>::getString() const 
         return "UnderMousePlacement";
     case ScreenPlacement::CASCADEPLACEMENT:
         return "CascadePlacement";
+    case ScreenPlacement::AUTOTABPLACEMENT:
+        return "AutotabPlacement";
     }
 
     return "RowSmartPlacement";
@@ -213,6 +220,8 @@ void FbTk::Resource<ScreenPlacement::PlacementPolicy>::setFromString(const char 
         *(*this) = ScreenPlacement::UNDERMOUSEPLACEMENT;
     else if (strcasecmp("CascadePlacement", str) == 0)
         *(*this) = ScreenPlacement::CASCADEPLACEMENT;
+    else if (strcasecmp("AutotabPlacement", str) == 0)
+        *(*this) = ScreenPlacement::AUTOTABPLACEMENT;
     else
         setDefaultValue();
 }

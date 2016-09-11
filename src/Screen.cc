@@ -1138,6 +1138,8 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
     // check if it should be grouped with something else
     WinClient*      other = findGroupLeft(*winclient);
+    if (!other && m_placement_strategy->placementPolicy() == ScreenPlacement::AUTOTABPLACEMENT)
+        other = FocusControl::focusedWindow();
     FluxboxWindow*  win = other ? other->fbwindow() : 0;
 
     if (other && win) {
