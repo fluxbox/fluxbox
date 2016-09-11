@@ -59,7 +59,6 @@ using std::string;
 using std::ostream;
 using std::ofstream;
 using std::streambuf;
-using std::auto_ptr;
 using std::out_of_range;
 using std::runtime_error;
 using std::bad_cast;
@@ -68,7 +67,7 @@ using std::exception;
 
 namespace {
 
-auto_ptr<Fluxbox> fluxbox;
+std::unique_ptr<Fluxbox> fluxbox;
 
 void handleSignal(int signum) {
 
