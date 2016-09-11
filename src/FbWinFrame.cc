@@ -1589,7 +1589,12 @@ int FbWinFrame::getContext(Window win, int x, int y, int last_x, int last_y, boo
     if (window().window()    == win) return context | Keys::ON_WINDOW;
     // /!\ old code: handle = titlebar in motionNotifyEvent but only there !
     // handle() as border ??
-    if (handle().window()    == win) return Keys::ON_WINDOWBORDER | Keys::ON_WINDOW;
+    if (handle().window()    == win) {
+        const int px = x - this->x() - window().borderWidth();
+        if (px < gripLeft().x() + gripLeft().width() || px > gripRight().x())
+            return context; // one of the corners
+        return Keys::ON_WINDOWBORDER | Keys::ON_WINDOW;
+    }
     if (titlebar().window()  == win) {
         const int px = x - this->x() - window().borderWidth();
         if (px < label().x() || px > label().x() + label().width())
