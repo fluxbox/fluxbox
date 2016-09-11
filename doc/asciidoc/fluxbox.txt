@@ -1127,6 +1127,9 @@ Available strategies:;;
 - ColSmartPlacement: tries to place windows in columns without overlapping
 - CascadePlacement: places windows below the titlebar of the previous one
 - UnderMousePlacement: places new windows underneath the mouse
+- RowMinOverlapPlacement: place windows in rows with minimal overlapping
+- ColMinOverlapPlacement: place windows in columns with minimal overlapping
+- AutotabPlacement: tabs the window to the currently focused one
 --
 +
 Default: *RowSmartPlacement*
