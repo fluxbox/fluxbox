@@ -66,6 +66,7 @@ public:
     bool setOrientation(FbTk::Orientation orient);
 
     virtual unsigned int preferredWidth() const;
+    void showTooltip();
 
     const FbTk::Signal<> &titleChanged() { return m_title_changed; }
 
@@ -74,7 +75,6 @@ protected:
 private:
     void reconfigAndClear();
     void setupWindow();
-    void showTooltip();
 
     /// Refresh all pixmaps and windows
     /// @param setup Wether to setup window again.

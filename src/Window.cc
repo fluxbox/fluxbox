@@ -2774,10 +2774,13 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         Fluxbox::instance()->keys()->doAction(ev.type, ev.state, 0,
                                               Keys::ON_WINDOW, m_client);
 
-    WinClient *client = 0;
-    if (screen().focusControl().isMouseTabFocus()) {
-        // determine if we're in a label button (tab)
-        client = winClientOfLabelButtonWindow(ev.window);
+    // determine if we're in a label button (tab)
+    WinClient *client = winClientOfLabelButtonWindow(ev.window);
+    if (client) {
+        if (IconButton *tab = m_labelbuttons[client]) {
+            m_has_tooltip = true;
+            tab->showTooltip();
+        }
     }
 
     if (ev.window == frame().window() ||
@@ -2816,6 +2819,11 @@ void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
     if (ev.mode == NotifyGrab || ev.mode == NotifyUngrab ||
         !isVisible()) {
         return;
+    }
+
+    if (m_has_tooltip) {
+        m_has_tooltip = false;
+        screen().hideTooltip();
     }
 
     // still inside?

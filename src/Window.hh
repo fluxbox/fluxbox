@@ -576,6 +576,7 @@ private:
     WinClient *m_client; ///< current client
     typedef std::map<WinClient *, IconButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
+    bool m_has_tooltip;
 
     SizeHints m_size_hint;
     struct {
