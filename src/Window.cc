@@ -273,6 +273,7 @@ WinButton* makeButton(FluxboxWindow& win, FocusableTheme<WinButtonTheme>& btheme
 
 
 int FluxboxWindow::s_num_grabs = 0;
+static int s_original_workspace = 0;
 
 FluxboxWindow::FluxboxWindow(WinClient &client):
     Focusable(client.screen(), this),
@@ -2518,7 +2519,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         e.xmotion.y = me.y_root;
     }
 
-    if (moving) {
+    if (moving || m_attaching_tab) {
 
         XEvent e;
 
@@ -2527,6 +2528,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             return;
         }
 
+        const bool xor_outline = m_attaching_tab || !screen().doOpaqueMove();
+
         // Warp to next or previous workspace?, must have moved sideways some
         int moved_x = me.x_root - m_last_resize_x;
         // save last event point
@@ -2534,7 +2537,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         m_last_resize_y = me.y_root;
 
         // undraw rectangle before warping workspaces
-        if (!screen().doOpaqueMove()) {
+        if (xor_outline) {
             int bw = static_cast<int>(frame().window().borderWidth());
             int w = static_cast<int>(frame().width()) + 2*bw -1;
             int h = static_cast<int>(frame().height()) + 2*bw - 1;
@@ -2573,7 +2576,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 XWarpPointer(display, None, me.root, 0, 0, 0, 0,
                         m_last_resize_x, m_last_resize_y);
 
-                if (screen().doOpaqueMove())
+                if (m_attaching_tab || // tabbing grabs the pointer, we must not hide the window!
+                            screen().doOpaqueMove())
                     screen().sendToWorkspace(new_id, this, true);
                 else
                     screen().changeWorkspaceID(new_id, false);
@@ -2587,11 +2591,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         dy -= frame().window().borderWidth();
 
         // dx = current left side, dy = current top
-        doSnapping(dx, dy);
+        if (moving)
+            doSnapping(dx, dy);
 
         // do not update display if another motion event is already pending
 
-        if (!screen().doOpaqueMove()) {
+        if (xor_outline) {
             int bw = frame().window().borderWidth();
             int w = static_cast<int>(frame().width()) + 2*bw - 1;
             int h = static_cast<int>(frame().height()) + 2*bw - 1;
@@ -2605,8 +2610,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             // need to move the base window without interfering with transparency
             frame().quietMoveResize(dx, dy, frame().width(), frame().height());
         }
-
-        screen().showPosition(dx, dy);
+        if (moving)
+            screen().showPosition(dx, dy);
         // end if moving
     } else if (resizing) {
 
@@ -2745,27 +2750,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     m_last_resize_h - 1 + 2 * frame().window().borderWidth());
 
         }
-    } else if (m_attaching_tab != 0) {
-        //
-        // drag'n'drop code for tabs
-        //
-
-        // we already grabed and started to drag'n'drop tab
-        // so we update drag'n'drop-rectangle
-        int dx = me.x_root - m_button_grab_x, dy = me.y_root - m_button_grab_y;
-
-        parent().drawRectangle(screen().rootTheme()->opGC(),
-                               m_last_move_x, m_last_move_y,
-                               m_last_resize_w, m_last_resize_h);
-        parent().drawRectangle(screen().rootTheme()->opGC(),
-                               dx, dy,
-                               m_last_resize_w, m_last_resize_h);
-
-        // change remembered position of rectangle
-        m_last_move_x = dx;
-        m_last_move_y = dy;
     }
-
 }
 
 void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
@@ -3335,6 +3320,7 @@ void FluxboxWindow::startTabbing(const XButtonEvent &be) {
     if (s_num_grabs > 0)
         return;
 
+    s_original_workspace = workspaceNumber();
     m_attaching_tab = winClientOfLabelButtonWindow(be.window);
 
     // start drag'n'drop for tab
@@ -3423,11 +3409,9 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
             // disconnect client if we didn't drop on a window
             WinClient &client = *old_attached;
             detachClient(*old_attached);
-            // move window by relative amount of mouse movement
-            // since just detached, move relative to old location
-            if (client.fbwindow() != 0) {
-                client.fbwindow()->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
-            }
+            screen().sendToWorkspace(s_original_workspace, this, false);
+            if (FluxboxWindow *fbwin = client.fbwindow())
+                fbwin->move(m_last_move_x, m_last_move_y);
         } else if( attach_to_win == this && attach_to_win->isTabable()) {
             //reording of tabs within a frame
             moveClientTo(*old_attached, x, y);
