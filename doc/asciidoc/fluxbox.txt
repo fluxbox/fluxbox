@@ -157,6 +157,8 @@ order:
     Area for applets
 - *Clock*:
     Date and Time
+- *Button.<name>*:
+    A generic button with customizable label and mouse actions
 
 The contents and behavior of the toolbar can be configured, see the *TOOLBAR*
 section for details.
@@ -553,6 +555,9 @@ The possible tools are:
 *Clock*:::
     This will show an area to display a clock and the date according to the
     format specification listed in "man strtftime"
+
+*Button.<name>*:::
+    This displays a clickable label with custom text.
 
 *Iconbar*:::
     This is the area that contains all windows (all running applications, all
@@ -959,7 +964,7 @@ They will appear in the order given.
 +
 Possible tools:;;
 *clock iconbar nextwindow prevwindow nextworkspace  prevworkspace
-systemtray workspacename*
+systemtray workspacename button.<name>*
 +
 Default:;;
 *workspacename, prevworkspace, nextworkspace, iconbar, prevwindow, nextwindow,
@@ -1173,6 +1178,18 @@ session.screen0.struts.<n> allows to control this for individual heads
 (<n> starts counting at 1)
 +
 Default: *0,0,0,0*
+
+*session.screen0.toolbar.button.<name>.label*:	'string'::
+The label text for the toolbar button tool "button.<name>"
++
+Default: *blank*
+
+*session.screen0.toolbar.button.<name>.commands*:   'string':'string':'string':'string':'string'::
+A colon delimited list of commands, executed when the respective mouse button is
+pressed on the toolbar button tool "button.<name>"
+The commands are the same as those detailed in *fluxbox-keys(5)*.
++
+Default: *blank*
 
 *session.cacheLife*: 'minutes'::
 This tells fluxbox how long unused pixmaps may stay in the X
