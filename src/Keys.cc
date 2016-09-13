@@ -396,6 +396,8 @@ bool Keys::addBinding(const string &linebuffer) {
                 context |= ON_DESKTOP;
             else if (arg == "ontoolbar")
                 context |= ON_TOOLBAR;
+            else if (arg == "onslit")
+                context |= ON_SLIT;
             else if (arg == "onwindow")
                 context |= ON_WINDOW;
             else if (arg == "ontitlebar")
@@ -431,12 +433,12 @@ bool Keys::addBinding(const string &linebuffer) {
                     type = FocusIn;
                 } else if (arg == "mouseover") {
                     type = EnterNotify;
-                    if (!(context & (ON_WINDOW|ON_TOOLBAR)))
+                    if (!(context & (ON_WINDOW|ON_TOOLBAR|ON_SLIT)))
                         context |= ON_WINDOW;
                     key = 0;
                 } else if (arg == "mouseout") {
                     type = LeaveNotify;
-                    if (!(context & (ON_WINDOW|ON_TOOLBAR)))
+                    if (!(context & (ON_WINDOW|ON_TOOLBAR|ON_SLIT)))
                         context |= ON_WINDOW;
                     key = 0;
 
@@ -451,6 +453,8 @@ bool Keys::addBinding(const string &linebuffer) {
                         context = ON_TITLEBAR;
                     else if (strstr(arg.c_str(), "bar"))
                         context = ON_TOOLBAR;
+                    else if (strstr(arg.c_str(), "slit"))
+                        context = ON_SLIT;
                     else if (strstr(arg.c_str(), "ow"))
                         context = ON_WINDOW;
                 } else if (extractKeyFromString(arg, "click", key)) {

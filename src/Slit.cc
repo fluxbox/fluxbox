@@ -36,6 +36,7 @@
 #include "FbTk/MemFun.hh"
 
 #include "FbCommands.hh"
+#include "Keys.hh"
 #include "Layer.hh"
 #include "LayerMenu.hh"
 #include "FbTk/Layer.hh"
@@ -275,6 +276,8 @@ Slit::Slit(BScreen &scr, FbTk::Layer &layer, const char *filename)
 
 
     FbTk::EventManager::instance()->add(*this, frame.window);
+    FbTk::EventManager::instance()->addParent(*this, window());
+    Fluxbox::instance()->keys()->registerWindow(window().window(), *this, Keys::ON_SLIT);
 
     if (FbTk::Transparent::haveComposite()) {
         frame.window.setOpaque(*m_rc_alpha);
@@ -943,16 +946,27 @@ void Slit::handleEvent(XEvent &event) {
 }
 
 void Slit::buttonPressEvent(XButtonEvent &be) {
-    if (be.window != frame.window.window())
-        return;
+    Display *dpy = Fluxbox::instance()->display();
+    const bool myMenuWasVisible = m_slitmenu.isVisible();
 
-    if (be.button == Button3) {
-        if (! m_slitmenu.isVisible()) {
-            screen().placementStrategy()
-                .placeAndShowMenu(m_slitmenu, be.x_root, be.y_root, false);
-        } else
-            m_slitmenu.hide();
+    FbTk::Menu::hideShownMenu();
+
+    if (Fluxbox::instance()->keys()->doAction(be.type, be.state, be.button,
+                                              Keys::ON_SLIT, 0, be.time)) {
+        XAllowEvents(dpy, SyncPointer, CurrentTime);
+        return;
     }
+
+    if (be.button == 1)
+        frame.window.raise();
+
+    if (be.button != Button3) {
+        XAllowEvents(dpy, ReplayPointer, CurrentTime);
+        return;
+    }
+
+    if (!myMenuWasVisible)
+        screen().placementStrategy().placeAndShowMenu(m_slitmenu, be.x_root, be.y_root, false);
 }
 
 
@@ -979,6 +993,8 @@ void Slit::updateCrossingState() {
 }
 
 void Slit::enterNotifyEvent(XCrossingEvent &ce) {
+    Fluxbox::instance()->keys()->doAction(ce.type, ce.state, 0, Keys::ON_SLIT);
+
     if (!m_rc_auto_hide && isHidden()) {
         toggleHidden();
     }
@@ -995,6 +1011,9 @@ void Slit::leaveNotifyEvent(XCrossingEvent &event) {
     if (!m_timer.isTiming() && (m_rc_auto_hide && !isHidden()) ||
        (m_rc_auto_raise && m_layeritem->getLayerNum() != m_rc_layernum->getNum()))
         m_timer.start();
+
+    if (!isHidden())
+        Fluxbox::instance()->keys()->doAction(event.type, event.state, 0, Keys::ON_SLIT);
 }
 
 void Slit::configureRequestEvent(XConfigureRequestEvent &event) {

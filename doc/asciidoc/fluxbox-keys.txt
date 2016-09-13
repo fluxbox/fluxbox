@@ -62,6 +62,9 @@ There are also some special modifiers that refer to mouse button events:::
 *OnToolbar*;;
 	The mouse cursor is over the toolbar (which is normally at the bottom
 	of the screen).
+*OnSlit*;;
+	The mouse cursor is over the mystic slit (the thing that collects dock type
+	windows).
 *OnWindow*;;
 	The mouse cursor is over a window.
 *OnTitlebar*;;
