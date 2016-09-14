@@ -400,6 +400,12 @@ bool Keys::addBinding(const string &linebuffer) {
                 context |= ON_WINDOW;
             else if (arg == "ontitlebar")
                 context |= ON_TITLEBAR;
+            else if (arg == "onwinbutton")
+                context |= ON_WINBUTTON;
+            else if (arg == "onminbutton")
+                context |= ON_MINBUTTON; // one char diff, oh great ... ... blast!
+            else if (arg == "onmaxbutton")
+                context |= ON_MAXBUTTON;
             else if (arg == "onwindowborder")
                 context |= ON_WINDOWBORDER;
             else if (arg == "onleftgrip")

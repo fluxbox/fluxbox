@@ -20,6 +20,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "WinButton.hh"
+#include "fluxbox.hh"
+#include "Keys.hh"
 #include "Window.hh"
 #include "WindowCmd.hh"
 #include "Screen.hh"
@@ -27,6 +29,8 @@
 #include "WinButtonTheme.hh"
 #include "FbTk/App.hh"
 #include "FbTk/Color.hh"
+#include "FbTk/Command.hh"
+#include "FbTk/RefCount.hh"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -56,11 +60,33 @@ void WinButton::exposeEvent(XExposeEvent &event) {
     drawType();
 }
 
-void WinButton::buttonReleaseEvent(XButtonEvent &event) {
-    WinClient *old = WindowCmd<void>::client();
+void WinButton::buttonReleaseEvent(XButtonEvent &be) {
+    bool didCustomAction = false;
+    if (isPressed() && be.button > 0 && be.button <= 5 &&
+            be.x >= -static_cast<signed>(borderWidth()) &&
+            be.x <= static_cast<signed>(width()+borderWidth()) &&
+            be.y >= -static_cast<signed>(borderWidth()) &&
+            be.y <= static_cast<signed>(height()+borderWidth())) {
+        int context = Keys::ON_WINBUTTON;
+        if (m_type == MINIMIZE)
+            context = Keys::ON_MINBUTTON;
+        if (m_type == MAXIMIZE)
+            context = Keys::ON_MAXBUTTON;
+        Keys *k = Fluxbox::instance()->keys();
+        didCustomAction = k->doAction(be.type, be.state, be.button, context, &m_listen_to.winClient(), be.time);
+    }
+    static FbTk::RefCount<FbTk::Command<void> > noop = FbTk::RefCount<FbTk::Command<void> >(0);
+    FbTk::RefCount<FbTk::Command<void> > oldCmd;
+    if (didCustomAction) {
+        oldCmd = command(be.button);
+        setOnClick(noop, be.button);
+    }
+    WinClient *oldClient = WindowCmd<void>::client();
     WindowCmd<void>::setWindow(&m_listen_to);
-    FbTk::Button::buttonReleaseEvent(event);
-    WindowCmd<void>::setClient(old);
+    FbTk::Button::buttonReleaseEvent(be);
+    WindowCmd<void>::setClient(oldClient);
+    if (didCustomAction)
+        setOnClick(oldCmd, be.button);
 }
 
 // when someone else tries to set the background, we may override it
