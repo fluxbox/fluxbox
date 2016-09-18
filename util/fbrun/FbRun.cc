@@ -482,6 +482,13 @@ void FbRun::tabCompleteApps() {
                 std::string entry = dir.readFilename();
                 if (entry == "." || entry == "..")
                     continue;
+                // escape special characters
+                std::string needle(" !\"$&'()*,:;<=>?@[\\]^`{|}");
+                std::size_t pos = 0;
+                while ((pos = entry.find_first_of(needle, pos)) != std::string::npos) {
+                    entry.insert(pos, "\\");
+                    pos += 2;
+                }
                 if (FbTk::FileUtil::isDirectory(std::string(path + entry).c_str()))
                     m_files.push_back(prefix + entry + "/");
                 else
