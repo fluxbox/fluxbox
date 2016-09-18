@@ -462,6 +462,10 @@ void FbRun::tabCompleteApps() {
     if (prefix.at(0) == '/' || prefix.at(0) == '.' || prefix.at(0) == '~') {
         // we're completing a directory, find subdirs
         split = prefix.find_last_of('/');
+        if (split == std::string::npos) {
+            split = prefix.size();
+            prefix.append("/");
+        }
         prefix = prefix.substr(0, split+1);
         if (prefix != m_last_completion_path) {
             m_files.clear();
