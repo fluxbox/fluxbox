@@ -501,9 +501,8 @@ void FbWinFrame::applyState() {
         new_y = m_screen.getHeadY(head);
         new_w = m_screen.getHeadWidth(head);
         new_h = m_screen.getHeadHeight(head);
-    } else {
-        applySizeHints(new_w, new_h, m_state.maximized == WindowState::MAX_NONE ||
-                                     !m_screen.getMaxIgnoreIncrement());
+    } else if (m_state.maximized == WindowState::MAX_NONE || !m_screen.getMaxIgnoreIncrement()) {
+        applySizeHints(new_w, new_h, true);
     }
 
     moveResize(new_x, new_y, new_w, new_h, true, true, true);
