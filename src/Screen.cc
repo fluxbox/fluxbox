@@ -689,8 +689,12 @@ void BScreen::buttonPressEvent(XButtonEvent &be) {
         imageControl().installRootColormap();
 
     Keys *keys = Fluxbox::instance()->keys();
-    keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP,
-                   0, be.time);
+    if (keys->doAction(be.type, be.state, be.button, Keys::GLOBAL|Keys::ON_DESKTOP,
+                   0, be.time)) {
+        XAllowEvents(Fluxbox::instance()->display(), SyncPointer, CurrentTime);
+    } else {
+        XAllowEvents(Fluxbox::instance()->display(), ReplayPointer, CurrentTime);
+    }
 }
 
 void BScreen::cycleFocus(int options, const ClientPattern *pat, bool reverse) {
