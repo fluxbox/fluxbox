@@ -2439,6 +2439,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     // - refeed the event into the queue so the app or titlebar subwindow gets it
     if (be.subwindow)
         XAllowEvents(display, ReplayPointer, CurrentTime);
+    else
+        XAllowEvents(display, SyncPointer, CurrentTime);
 
     // if nothing was bound via keys-file then
     // - raise() if clickRaise is enabled

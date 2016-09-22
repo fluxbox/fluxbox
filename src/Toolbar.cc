@@ -550,6 +550,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
         return;
     }
 
+    XAllowEvents(dpy, SyncPointer, CurrentTime);
     screen()
         .placementStrategy()
         .placeAndShowMenu(menu(), be.x_root, be.y_root, false);

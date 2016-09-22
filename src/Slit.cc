@@ -965,6 +965,7 @@ void Slit::buttonPressEvent(XButtonEvent &be) {
         return;
     }
 
+    XAllowEvents(dpy, SyncPointer, CurrentTime);
     if (!myMenuWasVisible)
         screen().placementStrategy().placeAndShowMenu(m_slitmenu, be.x_root, be.y_root, false);
 }
