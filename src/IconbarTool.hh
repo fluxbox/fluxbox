@@ -29,6 +29,7 @@
 #include "FbTk/Container.hh"
 #include "FbTk/CachedPixmap.hh"
 #include "FbTk/Resource.hh"
+#include "FbTk/Timer.hh"
 
 #include <map>
 
@@ -103,6 +104,9 @@ private:
     void updateIconifiedPattern();
 
     void themeReconfigured();
+
+    FbTk::Timer m_resizeSig_timer;
+    void emitResizeSig();
 
     BScreen &m_screen;
     FbTk::Container m_icon_container;
