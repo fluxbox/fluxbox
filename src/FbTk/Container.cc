@@ -386,6 +386,35 @@ void Container::repositionItems() {
             totalDemands += buttonDemands.back();
         }
         if (totalDemands) {
+            int overhead = totalDemands - total_width;
+            if (overhead > int(buttonDemands.size())) {
+                // try to be fair. If we're short on space and some items
+                // take > 150% of the average, we preferably shrink them, so
+                // "a" and "a very long item with useless information" won't
+                // become "a very long item with" and ""
+                overhead += buttonDemands.size(); // compensate forrounding errors
+                const int mean = totalDemands / buttonDemands.size();
+                const int thresh = 3 * mean / 2;
+                int greed = 0;
+                for (int i = 0; i < buttonDemands.size(); ++i) {
+                    if (buttonDemands.at(i) > thresh)
+                        greed += buttonDemands.at(i);
+                }
+                if (greed) {
+                    for (int i = 0; i < buttonDemands.size(); ++i) {
+                        if (buttonDemands.at(i) > thresh) {
+                            int d = buttonDemands.at(i)*overhead/greed;
+                            if (buttonDemands.at(i) - d > mean) {
+                                buttonDemands.at(i) -= d;
+                            } else { // do not shrink below mean or a huge item number would super-punish larger ones
+                                d = buttonDemands.at(i) - mean;
+                                buttonDemands.at(i) = mean;
+                            }
+                            totalDemands -= d;
+                        }
+                    }
+                }
+            }
             rounding_error = total_width;
             for (int i = 0; i < buttonDemands.size(); ++i) {
                 rounding_error -= buttonDemands.at(i)*total_width/totalDemands;
