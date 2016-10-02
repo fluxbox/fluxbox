@@ -288,7 +288,13 @@ bool IconButton::setOrientation(FbTk::Orientation orient) {
 }
 
 unsigned int IconButton::preferredWidth() const {
+    IconButton *that = const_cast<IconButton*>(this);
+    that->setFont(that->m_theme.focusedTheme()->text().font());
     unsigned int r = TextButton::preferredWidth();
+    that->setFont(that->m_theme.unfocusedTheme()->text().font());
+    unsigned int r2 = TextButton::preferredWidth();
+    that->setFont(that->m_theme->text().font());
+    r = std::max(r, r2);
     if (m_icon_pixmap.drawable())
         r += m_icon_window.width() + 1;
     return r;
