@@ -404,7 +404,7 @@ void Container::repositionItems() {
                     for (int i = 0; i < buttonDemands.size(); ++i) {
                         if (buttonDemands.at(i) > thresh) {
                             int d = buttonDemands.at(i)*overhead/greed;
-                            if (buttonDemands.at(i) - d > mean) {
+                            if (buttonDemands.at(i) > mean + d) {
                                 buttonDemands.at(i) -= d;
                             } else { // do not shrink below mean or a huge item number would super-punish larger ones
                                 d = buttonDemands.at(i) - mean;
