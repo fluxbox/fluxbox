@@ -64,7 +64,6 @@ void showUsage(const char *progname) {
         "   -center                     Window position on screen center"<<endl<<
         "   -fg [color name]            Foreground text color"<<endl<<
         "   -bg [color name]            Background color"<<endl<<
-        "   -na                         Disable antialias"<<endl<<
         "   -hf [history file]          History file to load (default ~/.fluxbox/fbrun_history)"<<endl<<
         "   -cf [completion file]       Complete contents of this file instead of $PATH binaries"<<endl<<
         "   -autocomplete               Complete on typing"<<endl<<
