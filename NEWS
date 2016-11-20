@@ -1,30 +1,73 @@
-Version 1.3.7 is a bug fix release.
-
-Critical Bugfixes:
-    * Segfault on startup (mostly *BSD)
-    * Segfault on shutdown
-    * Segfault on clicking the Remember menu
-    * Menu crops on TypeAhead
-
-Minor Bugfixes:
-    * _NET_REQUEST_FRAME_EXTENTS
-    * Working autorepeat keys
-    * Working vertical rotated Tabs and Toolbar
-    * Proper size of titlebar buttons on restart / detaching tabs
-    * Missing windowmenu works again
-    * Several glitches in the menu
-    * Correct handling of 'maximized' statement in the apps file
+Version 1.4.0 is a feature release.
 
 Features:
-    * The improved TypeAhead sytem is not limited to matches on beginning
-      of menu items anymore, the behavior is configurable:
-      - Nowhere - disables TypeAhead support
-      - ItemStart - matches typed text only at the start of a menu item
-      - Somewhere - matches typed text somewhere in a menu item
-      (Currently this is a configfile-only option)
-    * Minor tweaks to the i18n system
-    * Updated turkish translations
+  * show tooltips for tabs
+  * add "autotabplacement": automatically tab new windows into the
+    currently focussed window group
+  * vertical workspace warping
+    - session.screenN.workspacewarpingvertical: true
+    - session.screenN.workspacewarpingverticaloffset: X
+  * recognize click-events inside a 4x4 zone (helps with shaky devices
+    or motoric problems)
+  * introduce 5s timeout on keychains
+  * support autoraising of Slit / Toolbar
+  * new modifiers
+    - onwinbutton
+    - onmaxbutton
+    - onminbutton
+    - onslit
+  * new actions:
+    - ToggleSlitHidden
+    - ToggleSlitAbove
+    - ToggleToolbarHidden
+    - ToggleToolbarAbove
+    - ActiveTabCmd
+    - Unclutter (FR#248)
+    * Prev/Nextworkspace accept "0" to jump to the "previously" used on
+    * new statements to the apps-file:
+      - FocusProtection (None, Lock, Deny)
 
-End User unrelated:
-    * Code refactoring and cleanup, assisted by Coverity and
-      clang static code analysis
+    * new SpacerTool
+    * allow generic buttons to be used in toolbar
+      - *.toolbar.tools: button.foo, iconbar, ...
+      - *.toolbar.button.foo.label: F
+      - *.toolbar.button.foo.commands: RootMenu:Exec foo
+    * allow to change the label of such button via fluxbox-remote
+      (example usage: update the unread mail counter)
+
+  * fbrun:
+    * support Ctrl-a keybinding to jump to beginning of textfield
+    * new flags:
+      - add -autocomplete flag
+      - add -cf <completion-data>
+
+General Improvements:
+
+  * improve placement of windows in invisible regions
+  * update provided vim files
+  * reduce amount of events triggerd by resize actions
+  * improve UTF8 handling
+    * fbrun FR#720: support entering UTF8 text
+  * delay mouse driven tab focus 
+  * update da_DK, fr, hebrew translations
+
+Critical Bugfixes:
+
+
+Bugfixes:
+  * Fix rare divsion by zero
+  * Mitigate rare freezes 
+  * Stop focus cycling on workspace changes
+  * #1155 delay repositioning of labels
+  * send ConfigureNotify events using root window coordinates
+  * #1149 hide menus by clicking the title or the toolbar
+  * Don't confine transient windows onto the Desktop layer
+  * #1052 handle $DISPLAY correctly
+  * fbrun:
+    * segfault on expanding . or ~
+    * escape special chars in filenames
+    * #1031 fix $WPSETTER "display"
+  * fbsetbg:
+    * #1065: handle subdirs and symlinks in $wallpaperd
+  * fuxbox-remote:
+    * fix bad "if" test

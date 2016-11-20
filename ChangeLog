@@ -1,6 +1,219 @@
  (Format: Year/Month/Day)
 
 -----------------------------
+Changes for 1.4.0
+
+* 2018/03/11:
+  * Optimization: parsing ExportCmd (Thanks Maik Broemme)
+* 2017/11/19:
+  * Feature: vertical workspace warping (Thanks Mark Murawski)
+* 2017/09/06:
+  * Improvement: Love to vim files (Thanks Lajos Koszti)
+* 2017/04/24:
+  * Documentation: updated `fluxbox-style` (Thanks Sillyslux)
+* 2017/03/01:
+  * Improvement: updated `da_DK` translations (Thanks Scooter Grinsen)
+    Patch #215
+* 2017/08/16:
+  * Bugfix: Rotate toolbar buttons on rotated toolbars (Thanks Lajos Koszti)
+* 2016/11/20:
+  * Bugfix: stop focus cycling on explicit workspace changes (Thomas)
+  * Bugfix: delay repositioning labels
+    Close #1155
+* 2016/11/05:
+  * Boyscouting: Add stdc++11 helpers to build system
+* 2016/10/09:
+  * Feature: prevent range overflow (Thomas)
+* 2016/09/24:
+  * Optimization: compress resize signals (Thomas)
+* 2016/09/21:
+  * Feature: show tooltips for tabs (Thomas)
+* 2016/09/18:
+  * Bugfix fbrun: fix segfault upon expanding "~" or "." (Thomas)
+  * Bugfix fbrun: escape special chars in filenames (Thomas)
+* 2016/09/14:
+  * Feature: add "onwinbutton", "onminbutton", "onmaxbutton" modifier (Thomas)
+* 2016/09/13:
+  * Feature: allow tabs to be moved accross workspaces (Thomas)
+  * Feature: add "onslit" modifier
+* 2016/09/11:
+  * Feature: add "autotabplacement" (Thomas)
+    new Windows are automatically tabbed to the currently focussed window
+* 2016/01/09:
+  * Bugfix: send ConfigureNotify events using root coordinates (Thanks Atlanta Bergamo)
+  * Bugfix fluxbox-remote: fix bad "if"-test (Thanks John Sennesael)
+* 2016/09/06:
+  * Improve UTF8 support: use std::iscntrl to avoid some conversions (Thomas)
+* 2016/09/05:
+  * Feature: ctrl-a for textboxes, eg. fbrun (Thomas)
+* 2016/09/04:
+  * Bugfix: allow entering UTF8-text like "Flüxbøx" into a textbox (Thomas)
+     Closes #720
+* 2016/09/03:
+  * Feature: "Next/PrevWorkspace 0" toggle "former Workspace" (Thomas)
+    Feature request #185
+  * Feature: allow a 4px deadzone for clicks (Thomas)
+    Feature request #178
+  * Bugfix: hide menus upon clicking the title or toolbar (Thomas)
+    Closes #1149
+* 2016/09/01:
+  * Bugfix: do not confine transient windows to the desktop layer (Thomas + gregor b)
+  * Feature: delay mouse driven tab focus by autoraise interval (Thomas)
+    Feature request #190
+  * Feature: add 'ActiveTabCmd' (Thomas)
+* 2016/08/31:
+  * Improvement: update hebrew translation (Thanks to Genghis Khan)
+  * Feature: introduce a 5s timeout for keychains (Thomas)
+    Feature request #291
+* 2016/08/29:
+  * Improvement: avoid placing a window in invisble places on a different head (Thomas)
+  * Feature: add "Unclutter" command (Thomas)
+     Feature request #248
+* 2016/08/28:
+  * Bugfix: fix "MoveX" actions (Thomas)
+  * Bugfix: handle $DISPLAY containing ":x" and ":x.0" (Thomas + Francesco Poli)
+    Closes #1052
+  * Bugfix fbrun: fix $WPSETTER "display" (Thomas)
+    Closes #1031
+  * Bugfix fbsetbg: handle subdirs and symlinks in $wallpaperdir (anonymous)
+    Closes #1065
+* 2016/08/27:
+  * Technical: switch from std::auto_ptr to std::unique_ptr
+  * Bugfix: catch rare division by zero (Thomas)
+* 2016/08/25:
+  * Bugfix: mitigate rare freezes by using XAllowEvents with CurrentTime (Thomas)
+* 2016/08/24:
+  * Improvement: updated FR translations (Thanks to Gaspard)
+* 2016/08/15:
+  * Feature: add actions "ToggleSlitHidden", "ToggleToolbarHidden" (Thomas)
+* 2016/08/13:
+  * Feature: support autoraising for Toolbar / Slit (Thomas)
+  * Feature: indicate iconified windows in iconbar (Thomas)
+* 2016/08/12:
+  * Feature: add actions "ToggleSlitAbove", "ToggleToolbarAbove" (Thomas)
+    Feature request #222
+  * Feature: support "IgnoreSizeHints" in ~/.fluxbox/apps (Thomas)
+    Closes #1075
+* 2016/08/11:
+  * Feature: support artificial structs (Thomas)
+    Feature request #150
+  * Improvement: grab Xserver to reduce exposure events on workspace change (Thomas)
+* 2016/08/03:
+  * Improvement: delay rerendering of title updates to reduce X11 rendering stress (Thomas)
+* 2016/08/01:
+  * Bugfix: handle oversized windows (Thomas)
+    Closes #688, #984
+* 2016/07/31:
+  * Bugfix: apply size hints upon state change (Thomas)
+   Closes #914
+* 2016/07/30:
+  * Bugfix: fix focus cycling (Thomas)
+    Close #1148
+* 2016/07/27:
+  * Bugfix: fix placement of transient windows (Thomas)
+  * Bugfix: fix hiding windows in combination with compositors (Thomas)
+    Close #1110
+* 2016/07/25:
+  * Bugfix: reposition submenus correctly after style change (Thomas)
+    Close #715
+  * Bugfix: address issues on loading a style (Thomas)
+    Close #1146, #1017, #1022
+* 2016/07/24:
+  * Feature: add SpacerTool (Thomas)
+    Close #1141
+  * Improvement: better stretching of relative toolbar items (Thomas)
+  * Bugfix: address slit glitches (Thomas)
+    Closes #1132
+* 2016/07/23:
+  * Feature fbrun: add -cf <completion-data> to fbrun (Thomas)
+  * Feature fbrun: add -center (Thomas)
+    Feature request #282
+  * Feature fbrun: limit history size of fbrun (Thomas)
+    Feature request #202
+  * Feature fbrun: add -autocomplete mode to fbrun (Thomas)
+  * Improvement: improve fbrun completion (Thomas)
+    Feature request #223
+  * Bugfix: fix switching fullscreen state with window with fullscreen dimensions (Thomas)
+    Close #992
+* 2016/07/22:
+  * Bugfix: clear selection on text input (Thomas)
+* 2016/07/15:
+  * Bugfix: replay unconfigured key-combos (Thomas)
+    Closes #1137
+  * Bugfix: correctly handle "OnTitlebar" / "OnWindow" (Thomas)
+    Closes #1035
+* 2016/07/08:
+  * Bugfix: fix "ClickN" handling on titlebar (Thomas)
+    Closes #1073
+* 2016/07/04:
+  * Bugfix: replay unconfigered events on toolbar items (Thomas)
+     Closes #940, #949
+* 2016/07/02:
+  * Bugfix: handle crossing events (Thomas)
+    Close #1012, #730, #597
+  * Bugfix: tweaks to fluxbox-generate_menu (Thomas)
+    Close #961, #975, #1057
+* 2016/07/01:
+  * Revert regression: 32bit visuals work again (Thomas)
+    Close #1093
+  * Improvement: update manpage (Thomas)
+* 2016/06/30:
+  * Bugfix: fix tabbing of unfocusable clients (Thomas)
+    Close #1050
+  * Bugfix: fix semi-inaccesible clients (Thomas)
+    Close #1010
+* 2016/06/29:
+  * Feature: allow to change the lable of a button via fluxbox-remote (Thomas)
+  * Bugfix: fix shaky calculation of different heads (Thomas)
+    Close #1128
+* 2016/06/28:
+  * Bugfix: fix bug with clientMenu (Thomas)
+    Close #997
+  * Bugfix: do not move unfocussed windows to desktop layer (Thomas)
+    Close #894
+* 2016/06/27:
+  * Bugfix: use _NET_WM_NAME upon setting the name of a window (Thomas)
+* 2016/06/26:
+  * Bugfix: fix tab selection by mouse press (Thomas)
+    Close #1103
+* 2016/06/25:
+  * Bugfix: create ARGB visuals correctly (Thomas)
+    Close #1102, #1058
+* 2016/06/19:
+  * Feature: add "FocusProtection" key to apps-file (Thomas)
+* 2016/04/25:
+  * Bugfix: fix fbsetbg in combination with picky shells (Thanks Yamashiro, Jun)
+* 2016/04/10:
+  * Improvement: prevent placing windows outisde of workspace (Thomas)
+* 2016/04/05:
+  * Feature: allows generic buttons to be used in toolbar (Thomas)
+* 2016/03/30:
+  * Improvement: place transient windows centered on its parent (Thomas)
+* 2016/03/01:
+  * Bugfix: send ConfigureNotify in root coordinates (Thanks to foobar0815)
+* 2016/02/11:
+  * Feature: allow relative and absolute values for apps (Thanks to Arkadiusz Bokowy)
+* 2016/01/04:
+  * Feature: add ResizeSnap (Thanks Nephiel and Ulrich Eckhardt)
+  * Bugfix: improve height calculation for empty title (Thanks Thomas Lübking)
+* 2015/08/10:
+  * Improve fbsetbg: show wallpaper directory upon error (Thanks to Oliver Gond¿a)
+* 2015/07/29:
+  * Bugfix: RowSmartPlacement, ColSmartPlacement, MinOverlapPlacement (Thanks Ken Moore)
+* 2015/05/14:
+  * Bugfix: placement of hidden toolbar (Thanks Peter Ganzhorn)
+* 2015/05/02:
+  * Bugfix: correct detection of text in MenuSearch (Mathias)
+* 2015/05/01:
+  * Bugfix: draw shaped toolbar correctly (Thanks Peter Ganzhorn)
+  * Bugfix: correct rendering of menus upon changing styles (Thanks Lajos Koszti)
+  * Cosmetics: various code cosmetics (Thanks Mario J. Rugiero)
+
+* 2015/04/09:
+  * Bugfix: proper initialization of iconv data structures (Thanks Casey Dahlin)
+
+
+-----------------------------
 Changes for 1.3.7
 
 *15/02/07:
@@ -288,6 +501,7 @@ Changes for 1.3.3
     * Bugfix: Don't draw the interlace lines 1px too far (Mathias)
 
 *12/04/06:
+
     * Allow percentage values for some Window commands (Thanks Lajos Koszti)
 
 *12/01/04:
