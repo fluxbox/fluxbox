@@ -52,7 +52,7 @@ IconButton::IconButton(const FbTk::FbWindow &parent,
     m_theme(win, focused_theme, unfocused_theme),
     m_pm(win.screen().imageControl()) {
 
-    m_title_update_timer.setTimeout(100 * FbTk::FbTime::IN_MILLISECONDS);
+    m_title_update_timer.setTimeout(updateLaziness());
     m_title_update_timer.fireOnce(true);
     FbTk::RefCount<FbTk::Command<void> > ets(new FbTk::SimpleCommand<IconButton>(*this, &IconButton::clientTitleChanged));
     m_title_update_timer.setCommand(ets);

@@ -576,6 +576,8 @@ private:
     WinClient *m_client; ///< current client
     typedef std::map<WinClient *, IconButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
+    FbTk::Timer m_reposLabels_timer;
+    void emitLabelReposSig();
     bool m_has_tooltip;
 
     SizeHints m_size_hint;

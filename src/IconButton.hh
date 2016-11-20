@@ -70,6 +70,8 @@ public:
 
     const FbTk::Signal<> &titleChanged() { return m_title_changed; }
 
+    static unsigned int updateLaziness() { return 100 * FbTk::FbTime::IN_MILLISECONDS; }
+
 protected:
     void drawText(int x, int y, FbTk::FbDrawable *drawable_override);
 private:

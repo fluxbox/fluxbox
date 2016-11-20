@@ -449,6 +449,11 @@ void FluxboxWindow::init() {
     m_tabActivationTimer.setCommand(activate_tab_cmd);
     m_tabActivationTimer.fireOnce(true);
 
+    m_reposLabels_timer.setTimeout(IconButton::updateLaziness());
+    m_reposLabels_timer.fireOnce(true);
+    FbTk::RefCount<FbTk::Command<void> > elrs(new FbTk::SimpleCommand<FluxboxWindow>(*this, &FluxboxWindow::emitLabelReposSig));
+    m_reposLabels_timer.setCommand(elrs);
+
     /**************************************************/
     /* Read state above here, apply state below here. */
     /**************************************************/
@@ -2851,6 +2856,10 @@ void FluxboxWindow::setTitle(const std::string& title, Focusable &client) {
     frame().setFocusTitle(title);
     // relay title to others that display the focus title
     titleSig().emit(title, *this);
+    m_reposLabels_timer.start();
+}
+
+void FluxboxWindow::emitLabelReposSig() {
     frame().tabcontainer().repositionItems();
 }
 
