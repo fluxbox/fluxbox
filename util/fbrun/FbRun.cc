@@ -112,7 +112,6 @@ FbRun::~FbRun() {
 }
 
 void FbRun::run(const std::string &command) {
-
     FbTk::App::instance()->end(); // end application
     m_end = true; // mark end of processing
 
@@ -446,7 +445,6 @@ void FbRun::tabComplete(const std::vector<std::string> &list, int &currentItem, 
 
 
 void FbRun::tabCompleteApps() {
-
     if (m_completion_pos == std::string::npos)
         m_completion_pos = textStartPos() + cursorPosition();
     size_t split = text().find_last_of(' ', m_completion_pos);
@@ -532,4 +530,3 @@ void FbRun::insertCharacter(char keychar) {
     char val[2] = {keychar, 0};
     insertText(val);
 }
-
