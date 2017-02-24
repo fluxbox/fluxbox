@@ -42,6 +42,7 @@
 #include "FbTk/Layer.hh"
 #include "RootTheme.hh"
 #include "FbMenu.hh"
+#include "fluxbox.hh"
 
 #include "SlitTheme.hh"
 #include "SlitClient.hh"
