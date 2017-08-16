@@ -51,8 +51,15 @@ void ButtonTool::updateSizing() {
     btn.setBorderWidth(bw);
     if (FbTk::TextButton *txtBtn = dynamic_cast<FbTk::TextButton*>(&btn)) {
         bw += 2; // extra padding, seems somehow required...
-        resize(theme()->font().textWidth(txtBtn->text()) + 2*bw,
-               theme()->font().height() + 2*bw);
+
+		unsigned int new_width = theme()->font().textWidth(txtBtn->text()) + 2*bw;
+		unsigned int new_height = theme()->font().height() + 2*bw;
+
+		if (orientation() == FbTk::ROT0 || orientation() == FbTk::ROT180)  {
+			resize(new_width, new_height);
+		} else {
+			resize(new_height, new_width);
+		}
 	}
 }
 
@@ -91,5 +98,11 @@ void ButtonTool::renderTheme(int alpha) {
         m_image_ctrl.removeImage(old_pm);
 
     btn.clear();
+}
+
+void ButtonTool::setOrientation(FbTk::Orientation orient) {
+    FbTk::Button &btn = static_cast<FbTk::Button &>(window());
+    btn.setOrientation(orient);
+    ToolbarItem::setOrientation(orient);
 }
 
