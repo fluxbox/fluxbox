@@ -2539,6 +2539,10 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
         // Warp to next or previous workspace?, must have moved sideways some
         int moved_x = me.x_root - m_last_resize_x;
+
+        // Warp to a workspace offset (if treating workspaces like a grid)
+        int moved_y = me.y_root - m_last_resize_y;
+
         // save last event point
         m_last_resize_x = me.x_root;
         m_last_resize_y = me.y_root;
@@ -2554,25 +2558,57 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             }
         }
 
-        if (moved_x && screen().isWorkspaceWarping()) {
+
+        // check for warping
+        //
+        // +--monitor-1--+--monitor-2---+
+        // |w            |             w|
+        // |w            |             w|
+        // +-------------+--------------+
+        //
+        // mouse-warping is enabled, the mouse needs to be in the "warp_pad"
+        // zone.
+        //
+        const int  warp_pad            = screen().getEdgeSnapThreshold();
+        const int  workspaces          = screen().numberOfWorkspaces();
+        const bool is_warping          = screen().isWorkspaceWarping();
+        const bool is_warping_vertical = screen().isWorkspaceWarpingVertical();
+
+        if ((moved_x || moved_y) && is_warping) {
             unsigned int cur_id = screen().currentWorkspaceID();
             unsigned int new_id = cur_id;
-            const int warpPad = screen().getEdgeSnapThreshold();
-            // 1) if we're inside the border threshold
-            // 2) if we moved in the right direction
-            if (me.x_root >= int(screen().width()) - warpPad - 1 &&
-                    moved_x > 0) {
-                //warp right
-                new_id = (cur_id + 1) % screen().numberOfWorkspaces();
-                m_last_resize_x = 0; // move mouse back to x=0
-            } else if (me.x_root <= warpPad &&
-                    moved_x < 0) {
-                //warp left
-                new_id = (cur_id + screen().numberOfWorkspaces() - 1) % screen().numberOfWorkspaces();
-                m_last_resize_x = screen().width() - 1; // move mouse to screen width - 1
-            }
-            if (new_id != cur_id) {
 
+            // border threshold
+            int bt_right  = int(screen().width()) - warp_pad - 1;
+            int bt_left   = warp_pad;
+            int bt_top    = int(screen().height()) - warp_pad - 1;
+            int bt_bottom = warp_pad;
+
+            if (moved_x) {
+                if (me.x_root >= bt_right && moved_x > 0) { //warp right
+                    new_id          = (cur_id + 1) % workspaces;
+                    m_last_resize_x = 0;
+                } else if (me.x_root <= bt_left && moved_x < 0) { //warp left
+                    new_id          = (cur_id +  -1) % workspaces;
+                    m_last_resize_x = screen().width() - 1;
+                }
+            }
+
+            if (moved_y && is_warping_vertical) {
+
+                const int warp_offset = screen().getWorkspaceWarpingVerticalOffset();
+
+                if (me.y_root >= bt_top && moved_y > 0) { // warp down
+                    new_id          = (cur_id + warp_offset) % workspaces;
+                    m_last_resize_y = 0;
+                } else if (me.y_root <= bt_bottom && moved_y < 0) { // warp up
+                    new_id          = (cur_id + workspaces - warp_offset) % workspaces;
+                    m_last_resize_y = screen().height() - 1;
+                }
+            }
+
+            // if we are warping
+            if (new_id != cur_id) {
                 // remove motion events from queue to avoid repeated warps
                 while (XCheckTypedEvent(display, MotionNotify, &e)) {
                     // might as well update the y-coordinate
