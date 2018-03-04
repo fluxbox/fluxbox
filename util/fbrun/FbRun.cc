@@ -62,6 +62,7 @@ FbRun::FbRun(int x, int y, size_t width):
     m_font("fixed"),
     m_display(FbTk::App::instance()->display()),
     m_bevel(4),
+    m_padding(0),
     m_gc(*this),
     m_end(false),
     m_current_history_item(0),
@@ -249,6 +250,11 @@ void FbRun::setTitle(const string &title) {
 
 void FbRun::resize(unsigned int width, unsigned int height) {
     FbTk::TextBox::resize(width, height);
+}
+
+void FbRun::setPadding(int padding) {
+    m_padding = padding;
+    FbTk::TextBox::setPadding(padding);
 }
 
 void FbRun::redrawLabel() {

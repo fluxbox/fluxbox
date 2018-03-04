@@ -43,6 +43,7 @@ public:
     void resize(unsigned int width, unsigned int height);
     void setPrint(bool print) { m_print = print; }
     void setAutocomplete(bool complete) { m_autocomplete = complete; }
+    void setPadding(int padding);
 
     /// load and reconfigure for new font
     bool loadFont(const std::string &fontname);
@@ -89,6 +90,7 @@ private:
     FbTk::Font m_font; ///< font used to draw command text
     Display *m_display;  ///< display connection
     int m_bevel;
+    int m_padding;
     FbTk::GContext m_gc; ///< graphic context
     bool m_end; ///< marks when this object is done
 
