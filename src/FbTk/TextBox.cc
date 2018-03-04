@@ -211,7 +211,7 @@ void TextBox::clear() {
     Display *dpy = FbTk::App::instance()->display();
     FbWindow::clear();
     // center text by default
-    int center_pos = (height() + font().ascent())/2;
+    int center_pos = (height() - font().height())/2 + font().ascent();
     if (gc() == 0)
         setGC(DefaultGC(dpy, screenNumber()));
 
