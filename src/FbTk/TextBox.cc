@@ -285,6 +285,8 @@ void TextBox::buttonPressEvent(XButtonEvent &event) {
             }
         }
         m_cursor_pos = click_pos - m_start_pos;
+        m_select_pos = std::string::npos; // clear select
+        adjustPos();
         clear();
     }
 }
