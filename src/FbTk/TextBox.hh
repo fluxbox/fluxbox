@@ -37,6 +37,7 @@ public:
     virtual ~TextBox();
 
     void setText(const FbTk::BiDiString &text);
+    void setPadding(int padding);
     void setFont(const Font &font);
     void setGC(GC gc);
     void setCursorPosition(int cursor);
@@ -87,6 +88,7 @@ private:
     BiDiString m_text;
     GC m_gc;
     std::string::size_type m_cursor_pos, m_start_pos, m_end_pos, m_select_pos;
+    int m_padding;
     XIC m_xic;
 };
 
