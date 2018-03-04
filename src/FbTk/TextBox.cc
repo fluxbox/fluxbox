@@ -250,7 +250,7 @@ void TextBox::clear() {
 
 
     // draw cursor position
-    drawLine(gc(), cursor_pos, center_pos, cursor_pos, center_pos - font().height());
+    drawLine(gc(), cursor_pos, height()/2 + font().ascent()/2, cursor_pos, height()/2 - font().ascent()/2);
 }
 
 void TextBox::moveResize(int x, int y,
