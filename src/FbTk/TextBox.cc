@@ -123,6 +123,18 @@ void TextBox::cursorEnd() {
 void TextBox::cursorForward() {
     StringRange r = charRange(m_start_pos + cursorPosition());
     const std::string::size_type s = r.end - r.begin + 1;
+
+    if (hasSelection()) {
+        int start = std::max(m_start_pos, std::min(m_start_pos + m_cursor_pos, m_select_pos));
+        int select_length = std::max(m_start_pos + m_cursor_pos, m_select_pos) - start;
+        if (select_length > static_cast<signed>(m_end_pos - m_start_pos)) {
+            // shift range
+            m_start_pos += s;
+            m_end_pos += s;
+            adjustPos();
+        }
+    }
+
     if (r.end < m_end_pos)
         m_cursor_pos = r.end + 1 - m_start_pos;
     else if (m_end_pos < text().size()) {
@@ -133,9 +145,22 @@ void TextBox::cursorForward() {
 }
 
 void TextBox::cursorBackward() {
+
+    StringRange r = charRange(m_start_pos + cursorPosition() - 1);
+    const std::string::size_type s = r.end - r.begin + 1;
+
+    if (hasSelection()) {
+       int end = std::max(m_end_pos, std::min(m_end_pos - m_cursor_pos, m_select_pos));
+       int select_length = end - std::min(m_end_pos - m_cursor_pos, m_select_pos);
+       if (select_length > static_cast<signed>(m_end_pos - m_start_pos)) {
+           // shift range
+           m_start_pos -= s;
+           m_end_pos -= s;
+           adjustPos();
+       }
+    }
+
     if (m_start_pos || cursorPosition()) {
-        StringRange r = charRange(m_start_pos + cursorPosition() - 1);
-        const std::string::size_type s = r.end - r.begin + 1;
         if (cursorPosition())
             m_cursor_pos = r.begin - m_start_pos;
         else if (m_start_pos) {
